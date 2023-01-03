@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFrameworks>$(TargetFrameworks)</TargetFrameworks>
 		<AssemblyName>BlackbirdSql.Data.DslClient</AssemblyName>
@@ -37,40 +37,40 @@
 	<ItemGroup>
 		<None Remove="Schema\FbMetaData.xml" />
 	</ItemGroup>
-	<ItemGroup>
-	  <Compile Include="..\EntityFramework.Blackbird\Helpers\MetadataHelpers.cs" Link="Entity\Helpers\MetadataHelpers.cs" />
-	  <Compile Include="..\EntityFramework.Blackbird\Helpers\TypeHelpers.cs" Link="Entity\Helpers\TypeHelpers.cs" />
-	  <Compile Include="..\EntityFramework.Blackbird\ProviderManifest.cs" Link="Entity\ProviderManifest.cs" />
-	  <Compile Include="..\EntityFramework.Blackbird\ProviderServices.cs" Link="Entity\ProviderServices.cs" />
-	  <Compile Include="..\EntityFramework.Blackbird\Sql\DmlSqlGenerator.cs" Link="Sql\DmlSqlGenerator.cs" />
-	  <Compile Include="..\EntityFramework.Blackbird\Sql\ExpressionTranslator.cs" Link="Sql\ExpressionTranslator.cs" />
-	  <Compile Include="..\EntityFramework.Blackbird\Sql\FirstClause.cs" Link="Sql\FirstClause.cs" />
-	  <Compile Include="..\EntityFramework.Blackbird\Sql\ISqlFragment.cs" Link="Sql\ISqlFragment.cs" />
-	  <Compile Include="..\EntityFramework.Blackbird\Sql\JoinSymbol.cs" Link="Sql\JoinSymbol.cs" />
-	  <Compile Include="..\EntityFramework.Blackbird\Sql\SkipClause.cs" Link="Sql\SkipClause.cs" />
-	  <Compile Include="..\EntityFramework.Blackbird\Sql\SqlBuilder.cs" Link="Sql\SqlBuilder.cs" />
-	  <Compile Include="..\EntityFramework.Blackbird\Sql\SqlGenerator.cs" Link="Sql\SqlGenerator.cs" />
-	  <Compile Include="..\EntityFramework.Blackbird\Sql\SqlSelectStatement.cs" Link="Sql\SqlSelectStatement.cs" />
-	  <Compile Include="..\EntityFramework.Blackbird\Sql\SqlWriter.cs" Link="Sql\SqlWriter.cs" />
-	  <Compile Include="..\EntityFramework.Blackbird\Sql\SsdlToFb.cs" Link="Sql\SsdlToFb.cs" />
-	  <Compile Include="..\EntityFramework.Blackbird\Sql\Symbol.cs" Link="Sql\Symbol.cs" />
-	  <Compile Include="..\EntityFramework.Blackbird\Sql\SymbolPair.cs" Link="Sql\SymbolPair.cs" />
-	  <Compile Include="..\EntityFramework.Blackbird\Sql\SymbolTable.cs" Link="Sql\SymbolTable.cs" />
+	<ItemGroup Condition="'$(TargetFramework)'=='net48'" >
+	  <Compile Include="..\BlackbirdSql.EntityFramework\Helpers\MetadataHelpers.cs" Link="Entity\Helpers\MetadataHelpers.cs" />
+	  <Compile Include="..\BlackbirdSql.EntityFramework\Helpers\TypeHelpers.cs" Link="Entity\Helpers\TypeHelpers.cs" />
+	  <Compile Include="..\BlackbirdSql.EntityFramework\ProviderManifest.cs" Link="Entity\ProviderManifest.cs" />
+	  <Compile Include="..\BlackbirdSql.EntityFramework\ProviderServices.cs" Link="Entity\ProviderServices.cs" />
+	  <Compile Include="..\BlackbirdSql.EntityFramework\Sql\DmlSqlGenerator.cs" Link="Sql\DmlSqlGenerator.cs" />
+	  <Compile Include="..\BlackbirdSql.EntityFramework\Sql\ExpressionTranslator.cs" Link="Sql\ExpressionTranslator.cs" />
+	  <Compile Include="..\BlackbirdSql.EntityFramework\Sql\FirstClause.cs" Link="Sql\FirstClause.cs" />
+	  <Compile Include="..\BlackbirdSql.EntityFramework\Sql\ISqlFragment.cs" Link="Sql\ISqlFragment.cs" />
+	  <Compile Include="..\BlackbirdSql.EntityFramework\Sql\JoinSymbol.cs" Link="Sql\JoinSymbol.cs" />
+	  <Compile Include="..\BlackbirdSql.EntityFramework\Sql\SkipClause.cs" Link="Sql\SkipClause.cs" />
+	  <Compile Include="..\BlackbirdSql.EntityFramework\Sql\SqlBuilder.cs" Link="Sql\SqlBuilder.cs" />
+	  <Compile Include="..\BlackbirdSql.EntityFramework\Sql\SqlGenerator.cs" Link="Sql\SqlGenerator.cs" />
+	  <Compile Include="..\BlackbirdSql.EntityFramework\Sql\SqlSelectStatement.cs" Link="Sql\SqlSelectStatement.cs" />
+	  <Compile Include="..\BlackbirdSql.EntityFramework\Sql\SqlWriter.cs" Link="Sql\SqlWriter.cs" />
+	  <Compile Include="..\BlackbirdSql.EntityFramework\Sql\SsdlToFb.cs" Link="Sql\SsdlToFb.cs" />
+	  <Compile Include="..\BlackbirdSql.EntityFramework\Sql\Symbol.cs" Link="Sql\Symbol.cs" />
+	  <Compile Include="..\BlackbirdSql.EntityFramework\Sql\SymbolPair.cs" Link="Sql\SymbolPair.cs" />
+	  <Compile Include="..\BlackbirdSql.EntityFramework\Sql\SymbolTable.cs" Link="Sql\SymbolTable.cs" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Content Include="Properties\Package.ico" />
 	</ItemGroup>
 	<ItemGroup>
-	  <EmbeddedResource Include="..\EntityFramework.Blackbird\Resources\ProviderManifest.xml" Link="Resources\ProviderManifest.xml" />
+	  <EmbeddedResource Include="..\BlackbirdSql.EntityFramework\Resources\ProviderManifest.xml" Link="Resources\ProviderManifest.xml" />
 	</ItemGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="Schema\FbMetaData.xml" />
 	</ItemGroup>
 	<ItemGroup>
-		<EmbeddedResource Include="..\EntityFramework.Blackbird\Resources\StoreSchemaDefinition.ssdl" Link="Resources\StoreSchemaDefinition.ssdl" />
-		<EmbeddedResource Include="..\EntityFramework.Blackbird\Resources\StoreSchemaDefinitionVersion3.ssdl" Link="Resources\StoreSchemaDefinitionVersion3.ssdl" />
-		<EmbeddedResource Include="..\EntityFramework.Blackbird\Resources\StoreSchemaMapping.msl" Link="Resources\StoreSchemaMapping.msl" />
-		<EmbeddedResource Include="..\EntityFramework.Blackbird\Resources\StoreSchemaMappingVersion3.msl" Link="Resources\StoreSchemaMappingVersion3.msl" />
+		<EmbeddedResource Include="..\BlackbirdSql.EntityFramework\Resources\StoreSchemaDefinition.ssdl" Link="Resources\StoreSchemaDefinition.ssdl" />
+		<EmbeddedResource Include="..\BlackbirdSql.EntityFramework\Resources\StoreSchemaDefinitionVersion3.ssdl" Link="Resources\StoreSchemaDefinitionVersion3.ssdl" />
+		<EmbeddedResource Include="..\BlackbirdSql.EntityFramework\Resources\StoreSchemaMapping.msl" Link="Resources\StoreSchemaMapping.msl" />
+		<EmbeddedResource Include="..\BlackbirdSql.EntityFramework\Resources\StoreSchemaMappingVersion3.msl" Link="Resources\StoreSchemaMappingVersion3.msl" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
 		<Reference Include="System.Configuration" />
@@ -86,6 +86,7 @@
 	  </PackageReference>
 	  <PackageReference Include="IndexRange" Version="1.0.2" />
 	  <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+	  <PackageReference Include="NETStandard.Library" Version="2.0.3" />
 	  <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
 	  <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
 	</ItemGroup>
@@ -132,7 +133,7 @@
 	<ItemGroup>
 	  <None Include="Schema\FbSystemTables.cs" />
 	</ItemGroup>
-	<Import Project="..\BlackbirdSql.Data.External\BlackbirdSql.Data.External.projitems" Label="Shared" />
+	<Import Project="..\Apis\Apis.projitems" Label="Shared" />
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
 	  <Exec Command=":: copy /v /y /b $(OutDir)\BlackbirdSql.Data.DslClient.* C:\Windows\Microsoft.NET\assembly\GAC_MSIL\BlackbirdSql.Data.DslClient\v4.0_9.1.0.0__e5f4a90eea6a9f33&#xD;&#xA;copy /v /y /b $(OutDir)\BlackbirdSql.Data.DslClient.* &quot;%25ProgramFiles%25\BlackbirdSql\BlackbirdClient.9.1.0&quot;&#xD;&#xA;&#xD;&#xA;:: The following are so that you don't have to do a reinstall of the vsix after a build&#xD;&#xA;:: NOTE:&#xD;&#xA;:: You will have to replace 17.0_xxx with your version and user id&#xD;&#xA;:: You will have to restart the ide before doing the build if you've used the ddex tool&#xD;&#xA;:: during your session because the dll will be locked&#xD;&#xA;set DestFolder=&quot;%25LocalAppData%25\Microsoft\VisualStudio\17.0_5d5e49fc\Extensions\d4sem1lb.ehh\&quot;&#xD;&#xA;if exist %25DestFolder%25 (&#xD;&#xA;copy /v /y /b $(ProjectDir)$(OutDir)*.dll %25DestFolder%25&#xD;&#xA;copy /v /y /b $(ProjectDir)$(OutDir)*.pdb %25DestFolder%25&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" />
 	</Target>

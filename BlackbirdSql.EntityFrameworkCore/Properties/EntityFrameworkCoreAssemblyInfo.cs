@@ -3,7 +3,7 @@
  *    Developer's Public License Version 1.0 (the "License");
  *    you may not use this file except in compliance with the
  *    License. You may obtain a copy of the License at
- *    https://github.com/BlackbirdSQL/NETProvider/master/license.txt.
+ *    https://github.com/BlackbirdSQL/NETProvider/raw/master/license.txt.
  *
  *    Software distributed under the License is distributed on
  *    an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either
@@ -13,15 +13,8 @@
  *    All Rights Reserved.
  */
 
-//$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
+//$Authors = Jiri Cincura (jiri@cincura.net), Jean Ressouche, Rafael Almeida (ralms@ralms.net)
 
-using System;
-using System.Runtime.InteropServices;
+using Microsoft.EntityFrameworkCore.Design;
 
-[assembly: ComVisible(true)]
-// [assembly: Guid("F37B8373-51FA-4CC6-934E-DF147DFBD9F1")] // FirebirdSql
-#if NET
-[assembly: Guid(BlackbirdSql.Data.Entity.PackageGuids.AssemblyStringNET)]
-#else
-[assembly: Guid(BlackbirdSql.Data.Entity.PackageData.AssemblyString)]
-#endif
+[assembly: DesignTimeProviderServices("BlackbirdSql.Data.Entity.Core.Design.Internal.FbDesignTimeServices")]

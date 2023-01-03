@@ -17,11 +17,6 @@
 using System;
 using System.Data.Common;
 
-
-#if NET
-using System.Data.Entity.Core.Common;
-#endif
-
 using BlackbirdSql.Common;
 using BlackbirdSql.Data.Common;
 

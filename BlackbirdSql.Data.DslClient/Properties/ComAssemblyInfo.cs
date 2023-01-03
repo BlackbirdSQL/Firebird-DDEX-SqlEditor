@@ -22,7 +22,7 @@ using BlackbirdSql.Data.Configuration;
 [assembly: ComVisible(true)]
 // [assembly: Guid("F37B8373-51FA-4CC6-934E-DF147DFBD9F1")] // FirebirdSql
 #if NET
-[assembly: Guid(BlackbirdSql.Data.DslClient.PackageGuids.AssemblyGuidNET)]
+[assembly: Guid(PackageData.AssemblyGuidNET)]
 #else
 [assembly: Guid(PackageData.AssemblyGuid)]
 #endif

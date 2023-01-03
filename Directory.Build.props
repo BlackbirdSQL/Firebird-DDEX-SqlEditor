@@ -6,7 +6,7 @@
 	<PropertyGroup>
 		<VersionPrefix>9.1.0</VersionPrefix>
 		<VersionSuffix></VersionSuffix>
-		<TargetFrameworks>net48</TargetFrameworks>
+		<TargetFrameworks>net48;net7.0</TargetFrameworks>
 		<Company>BlackbirdSQL</Company>
 		<Product>NETProvider</Product>
 		<Authors>BlackbirdSQL</Authors>

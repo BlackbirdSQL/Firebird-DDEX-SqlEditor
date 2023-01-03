@@ -41,7 +41,7 @@ Also on the priority list are DML commands
 |-------|---------|-----------|
 | [BlackbirdSql.Data.DslClient](https://www.nuget.org/packages/BlackbirdSql.Data.DslClient) | ![BlackbirdSql.Data.DslClient](https://img.shields.io/nuget/v/BlackbirdSql.Data.DslClient.svg) | ![BlackbirdSql.Data.DslClient](https://img.shields.io/nuget/dt/BlackbirdSql.Data.DslClient.svg) |
 | [EntityFramework.Blackbird](https://www.nuget.org/packages/EntityFramework.Blackbird) | ![EntityFramework.Blackbird](https://img.shields.io/nuget/v/EntityFramework.Blackbird.svg) | ![EntityFramework.Blackbird](https://img.shields.io/nuget/dt/EntityFramework.Blackbird.svg) |
-| [BlackbirdSql.EntityFrameworkCore.Blackbird](https://www.nuget.org/packages/BlackbirdSql.EntityFrameworkCore.Blackbird) | ![BlackbirdSql.EntityFrameworkCore.Blackbird](https://img.shields.io/nuget/v/BlackbirdSql.EntityFrameworkCore.Blackbird.svg) | ![BlackbirdSql.EntityFrameworkCore.Blackbird](https://img.shields.io/nuget/dt/BlackbirdSql.EntityFrameworkCore.Blackbird.svg) |
+| [BlackbirdSql.Data.Entity.Core](https://www.nuget.org/packages/BlackbirdSql.Data.Entity.Core) | ![BlackbirdSql.Data.Entity.Core](https://img.shields.io/nuget/v/BlackbirdSql.Data.Entity.Core.svg) | ![BlackbirdSql.Data.Entity.Core](https://img.shields.io/nuget/dt/BlackbirdSql.Data.Entity.Core.svg) |
 
 ## Resources
 

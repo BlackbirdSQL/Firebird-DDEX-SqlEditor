@@ -62,7 +62,7 @@ namespace BlackbirdSql.Common
 			int sourceLineNumber = 0)
 #endif
 		{
-			Dug(isException, ex.Message + (message != "" ? (" " + message) : "") + ":" + Environment.NewLine + ex.StackTrace.ToString(),
+			Dug(isException, ex?.Message + (message != "" ? (" " + message) : "") + ":" + Environment.NewLine + ex?.StackTrace?.ToString(),
 				memberName, sourceFilePath, sourceLineNumber);
 
 		}
@@ -79,7 +79,7 @@ namespace BlackbirdSql.Common
 			int sourceLineNumber = 0)
 #endif
 		{
-			Dug(true, ex.Message + (message != "" ? (" " + message) : "") + ":" + Environment.NewLine + ex.StackTrace.ToString(),
+			Dug(true, ex?.Message + (message != "" ? (" " + message) : "") + ":" + Environment.NewLine + ex?.StackTrace?.ToString(),
 				memberName, sourceFilePath, sourceLineNumber);
 
 		}

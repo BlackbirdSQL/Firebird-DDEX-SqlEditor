@@ -361,14 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/VS.Data.Sqlite/
-/ConsoleTest/
-/BlackbirdSql.Data.DslClient.Tests/
-/BlackbirdSql.Data.External/
-/BlackbirdSql.Data.TestsBase/
-/BlackbirdSql.EntityFrameworkCore.Blackbird/
-/BlackbirdSql.EntityFrameworkCore.Blackbird.FunctionalTests/
-/BlackbirdSql.EntityFrameworkCore.Blackbird.Tests/
-/EntityFramework.Blackbird.Tests/
-/Scratchpad/
-/Perf/
+/Tests/
+/Private/

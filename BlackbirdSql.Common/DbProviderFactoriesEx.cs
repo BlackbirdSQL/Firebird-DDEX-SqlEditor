@@ -45,7 +45,7 @@ public static class DbProviderFactoriesEx
 		 *										PublicKeyToken=3750abcc3150b00c
 		*/
 
-		string invariantName = factoryClass.Assembly.GetName().Name;
+		string? invariantName = factoryClass.Assembly.GetName().Name;
 
 		if (ConfigurationManager.GetSection("system.data") is not DataSet dataSet)
 		{
@@ -54,7 +54,7 @@ public static class DbProviderFactoriesEx
 		}
 
 		int num = dataSet.Tables.IndexOf("DbProviderFactories");
-		DataRow row;
+		DataRow? row;
 
 		DataTable table;
 		if (num == -1)
@@ -126,9 +126,9 @@ public static class DbProviderFactoriesEx
 		 *										PublicKeyToken=3750abcc3150b00c
 		*/
 		DataTable table = DbProviderFactories.GetFactoryClasses();
-		DataRow row;
+		DataRow? row;
 
-		string invariantName = factoryClass.Assembly.GetName().Name;
+		string? invariantName = factoryClass.Assembly.GetName().Name;
 
 		if ((row = table.Rows.Find(invariantName)) != null)
 		{
@@ -149,9 +149,9 @@ public static class DbProviderFactoriesEx
 		table.Rows.Add(factoryName, factoryDescription, invariantName, factoryClass.AssemblyQualifiedName);
 
 		Type dbProviderFactories = typeof(DbProviderFactories);
-		FieldInfo fieldInfo = dbProviderFactories.GetField("_providerTable", BindingFlags.Static | BindingFlags.NonPublic);
+		FieldInfo? fieldInfo = dbProviderFactories.GetField("_providerTable", BindingFlags.Static | BindingFlags.NonPublic);
 
-		fieldInfo.SetValue(null, table);
+		fieldInfo?.SetValue(null, table);
 
 
 		// EntityFramework

@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFrameworks>net7.0</TargetFrameworks>
+		<AssemblyName>EntityFrameworkCore.Blackbird</AssemblyName>
+		<RootNamespace>BlackbirdSql.Data.Entity.Core</RootNamespace>
+		<SignAssembly>true</SignAssembly>
+		<AssemblyOriginatorKeyFile>Properties\BlackbirdSql.EntityFrameworkCore.snk</AssemblyOriginatorKeyFile>
+		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+	</PropertyGroup>
+	<PropertyGroup>
+		<AssemblyTitle>NETProvider - Entity Framework Core Provider</AssemblyTitle>
+		<Copyright>(c) 2017-2021</Copyright>
+	</PropertyGroup>
+	<PropertyGroup>
+		<PackageId>BlackbirdSql.EntityFrameworkCore</PackageId>
+		<Title>Blackbird Entity Framework Core Provider</Title>
+		<PackageDescription>The Entity Framework Core provider for Blackbird enables you to develop .NET applications that connect to the Blackbird database using Entity Framework Core.</PackageDescription>
+		<PackageTags>blackbird;firebirsql;blackbirdclient;entityframeworkcore;adonet;database</PackageTags>
+		<RepositoryUrl />
+		<RepositoryType />
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<DefineConstants>EFCORE;TRACE</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+		<DefineConstants>EFCORE;DEBUG;TRACE</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Include="..\license.txt" Pack="true" PackagePath="" />
+		<None Include="..\blackbird-logo.png" Pack="true" PackagePath="" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.1" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\BlackbirdSql.Data.DslClient\BlackbirdSql.Data.DslClient.csproj" />
+	</ItemGroup>
+</Project>
