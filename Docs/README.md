@@ -24,16 +24,16 @@ Also on the priority list are DML commands
 
 ## Documentation
 
-* [ADO.NET provider](docs/ado-net.md)
-* [Entity Framework 6 provider](docs/entity-framework-6.md)
-* [Entity Framework Core provider](docs/entity-framework-core.md)
-* [Services - Backup](docs/services-backup.md)
-* [Events](docs/events.md)
-* [ADO.NET - Schema](docs/ado-net-schema.md)
-* [Time zones](docs/time-zones.md)
-* [DECFLOAT datatype](docs/decfloat.md)
-* [INT128 datatype](docs/int128.md)
-* [Batching](docs/batching.md)
+* [ADO.NET provider](ado-net.md)
+* [Entity Framework 6 provider](entity-framework-6.md)
+* [Entity Framework Core provider](entity-framework-core.md)
+* [Services - Backup](services-backup.md)
+* [Events](events.md)
+* [ADO.NET - Schema](ado-net-schema.md)
+* [Time zones](time-zones.md)
+* [DECFLOAT datatype](decfloat.md)
+* [INT128 datatype](int128.md)
+* [Batching](batching.md)
 
 ## Packages
 
