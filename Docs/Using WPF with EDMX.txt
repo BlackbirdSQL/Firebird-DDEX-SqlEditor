@@ -1,0 +1,9 @@
+The .tt files are general purpose and you need to tweak one of them to work with WPF databinding, which requires ObservableCollections. In Solution Explorer, expand the .edmx model node until you find the model.tt. (Make sure you are not in the .Context.tt file, which is directly below the .edmx file.)
+
+    Replace the two occurrences of ICollection with ObservableCollection<T>.
+
+    Replace the first occurrence of HashSet<T> with ObservableCollection<T> around line 51. Do not replace the second occurrence of HashSet.
+
+    Replace the only occurrence of System.Collections.Generic (around line 431) with System.Collections.ObjectModel.
+
+Press F5 or Ctrl+F5 to build and run the project. When the application first runs, the model classes are visible to the data sources wizard.

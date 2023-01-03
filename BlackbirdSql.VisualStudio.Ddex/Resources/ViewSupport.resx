@@ -1,0 +1,552 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Property_Desc_Parameter_Nullable" xml:space="preserve">
+    <value>True, if the parameter can contain the NULL value.</value>
+  </data>
+  <data name="Property_Desc_Column_Precision" xml:space="preserve">
+    <value>If the column's data type is of a numeric data type other than VARNUMERIC, this is the maximum precision of the column.</value>
+  </data>
+  <data name="Property_Desc_Column_Scale" xml:space="preserve">
+    <value>If the column's type indicator is DBTYPE_DECIMAL, DBTYPE_NUMERIC, or DBTYPE_VARNUMERIC, this is the number of digits to the right of the decimal point.</value>
+  </data>
+  <data name="Property_Name_Parameter_Ordinal" xml:space="preserve">
+    <value>Ordinal</value>
+  </data>
+  <data name="Property_Desc_ForeignKeyColumn_ReferencedColumn" xml:space="preserve">
+    <value>Name of the column referenced by the foreign key of the current column.</value>
+  </data>
+  <data name="Property_Desc_ForeignKey_FkColumnNames" xml:space="preserve">
+    <value>List of foreign key columns.</value>
+  </data>
+  <data name="Property_Desc_Description" xml:space="preserve">
+    <value>Human-readable description of the database object.</value>
+  </data>
+  <data name="Property_Desc_Parameter_ProviderDataType" xml:space="preserve">
+    <value>The indicator of the parameter's data type.</value>
+  </data>
+  <data name="Property_Desc_ForeignKey_PkColumnNames" xml:space="preserve">
+    <value>List of columns that are referenced by a foreign key.</value>
+  </data>
+  <data name="Property_Name_Column_FrameworkDataType" xml:space="preserve">
+    <value>.NET Data Type</value>
+  </data>
+  <data name="Type_SystemTable" xml:space="preserve">
+    <value>System Table</value>
+  </data>
+  <data name="Property_Desc_ForeignKey_ReferencedCatalog" xml:space="preserve">
+    <value>Catalog of the table referenced by the foreign key.</value>
+  </data>
+  <data name="Identifier_Name_ForeignKey" xml:space="preserve">
+    <value>Foreign Key</value>
+  </data>
+  <data name="Node_Name_Views" xml:space="preserve">
+    <value>Views</value>
+  </data>
+  <data name="Property_Desc_Column_Default" xml:space="preserve">
+    <value>Default value of the column.</value>
+  </data>
+  <data name="Property_Name_UniqueKeyColumn_Ordinal" xml:space="preserve">
+    <value>Ordinal</value>
+  </data>
+  <data name="Property_Name_ProcedureColumn_Ordinal" xml:space="preserve">
+    <value>Ordinal</value>
+  </data>
+  <data name="Identifier_Name_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Identifier_Name_View" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="Category_DataType" xml:space="preserve">
+    <value>Data Type</value>
+  </data>
+  <data name="Property_Name_UniqueKey_ColumnNames" xml:space="preserve">
+    <value>Key Columns</value>
+  </data>
+  <data name="Property_Name_Column_Default" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="Identifier_Name_UniqueKey" xml:space="preserve">
+    <value>Unique Key</value>
+  </data>
+  <data name="Property_Desc_ForeignKeyColumn_ReferencedSchema" xml:space="preserve">
+    <value>Schema of the table referenced by the foreign key of the current column.</value>
+  </data>
+  <data name="Property_Name_Column_Collation" xml:space="preserve">
+    <value>Collation</value>
+  </data>
+  <data name="Identifier_Name_Index" xml:space="preserve">
+    <value>Index</value>
+  </data>
+  <data name="Property_Name_ForeignKey_ReferencedTable" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Property_Desc_ProcedureColumn_RowsetNumber" xml:space="preserve">
+    <value>Number of the rowset containing the column. This is greater than one only if the procedure returns multiple rowsets.</value>
+  </data>
+  <data name="Node_Name_Procedures" xml:space="preserve">
+    <value>Procedures</value>
+  </data>
+  <data name="Identifier_Name_Table" xml:space="preserve">
+    <value>Table</value>
+  </data>
+  <data name="Property_Desc_ForeignKey_DeleteRule" xml:space="preserve">
+    <value>Behavior when you delete a record that is referenced by the foreign key.</value>
+  </data>
+  <data name="Type_View" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="Property_Name_Parameter_Scale" xml:space="preserve">
+    <value>Scale</value>
+  </data>
+  <data name="Identifier_Desc_Table" xml:space="preserve">
+    <value>The table that owns this database object.</value>
+  </data>
+  <data name="Identifier_Desc_Index" xml:space="preserve">
+    <value>The index that owns this column.</value>
+  </data>
+  <data name="Property_Desc_Index_IsUnique" xml:space="preserve">
+    <value>The index keys must be unique.</value>
+  </data>
+  <data name="Property_Desc_Parameter_Length" xml:space="preserve">
+    <value>The maximum possible length of a value in the parameter. Defined for text text or binary data only.</value>
+  </data>
+  <data name="Property_Name_ForeignKey_FkColumnNames" xml:space="preserve">
+    <value>Key's Columns</value>
+  </data>
+  <data name="Property_Desc_CreateDate" xml:space="preserve">
+    <value>Date when the this object was created.</value>
+  </data>
+  <data name="Property_Desc_ForeignKeyColumn_ReferencedCatalog" xml:space="preserve">
+    <value>Catalog of the table referenced by the foreign key of the current column.</value>
+  </data>
+  <data name="Property_Name_Column_CharacterSet" xml:space="preserve">
+    <value>Charset</value>
+  </data>
+  <data name="Property_Name_ForeignKey_ReferencedSchema" xml:space="preserve">
+    <value>Schema</value>
+  </data>
+  <data name="Type_StoredProcedureParameter" xml:space="preserve">
+    <value>Stored Procedure Parameter</value>
+  </data>
+  <data name="Property_Desc_ForeignKeyColumn_ReferencedTable" xml:space="preserve">
+    <value>Name of the table referenced by the foreign key of the current column.</value>
+  </data>
+  <data name="Property_Name_Parameter_Direction" xml:space="preserve">
+    <value>Direction</value>
+  </data>
+  <data name="Property_Name_Parameter_Precision" xml:space="preserve">
+    <value>Precision</value>
+  </data>
+  <data name="Property_Desc_Parameter_Ordinal" xml:space="preserve">
+    <value>The ordinal of the parameter. Arguments are numbered starting from one.</value>
+  </data>
+  <data name="Property_Desc_ForeignKeyColumn_Ordinal" xml:space="preserve">
+    <value>The ordinal of the column in foreign key. Columns are numbered starting from one.</value>
+  </data>
+  <data name="Property_Name_Index_IsUnique" xml:space="preserve">
+    <value>Is Unique</value>
+  </data>
+  <data name="Type_ForeignKey" xml:space="preserve">
+    <value>Foreign Key</value>
+  </data>
+  <data name="Type_ScalarFunction" xml:space="preserve">
+    <value>Function</value>
+  </data>
+  <data name="Property_Name_ForeignKey_ReferencedCatalog" xml:space="preserve">
+    <value>Catalog</value>
+  </data>
+  <data name="Type_Table" xml:space="preserve">
+    <value>Table</value>
+  </data>
+  <data name="Property_Desc_ForeignKey_ReferencedSchema" xml:space="preserve">
+    <value>Schema of the table referenced by the foreign key.</value>
+  </data>
+  <data name="Identifier_Name_Schema" xml:space="preserve">
+    <value>Schema</value>
+  </data>
+  <data name="Property_Desc_IndexColumn_Collation" xml:space="preserve">
+    <value>Sorting order for items index.</value>
+  </data>
+  <data name="Property_Name_Column_ProviderDataType" xml:space="preserve">
+    <value>Indicator</value>
+  </data>
+  <data name="Property_Name_UniqueKey_ConstraintType" xml:space="preserve">
+    <value>Constraint Type</value>
+  </data>
+  <data name="Category_TableProperties" xml:space="preserve">
+    <value>Structure</value>
+  </data>
+  <data name="Property_Name_IndexColumn_Collation" xml:space="preserve">
+    <value>Sort</value>
+  </data>
+  <data name="Property_Desc_UniqueKeyColumn_Ordinal" xml:space="preserve">
+    <value>The ordinal of the column in constraint. Columns are numbered starting from one.</value>
+  </data>
+  <data name="Property_Desc_ForeignKey_UpdateRule" xml:space="preserve">
+    <value>Behavior when changing the column values ​​referenced by the foreign key.</value>
+  </data>
+  <data name="Property_Name_Column_Scale" xml:space="preserve">
+    <value>Scale</value>
+  </data>
+  <data name="Property_Name_Parameter_ProviderDataType" xml:space="preserve">
+    <value>Indicator</value>
+  </data>
+  <data name="Type_IndexColumn" xml:space="preserve">
+    <value>Index Column</value>
+  </data>
+  <data name="Property_Name_Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Property_Desc_Parameter_Direction" xml:space="preserve">
+    <value>The direction of a parameter's data.</value>
+  </data>
+  <data name="Property_Desc_Column_FrameworkDataType" xml:space="preserve">
+    <value>Column's data type in OleDbDataReader.</value>
+  </data>
+  <data name="Property_Desc_Column_ProviderDataType" xml:space="preserve">
+    <value>The indicator of the column's data type.</value>
+  </data>
+  <data name="Type_StoredProcedureColumn" xml:space="preserve">
+    <value>Stored Procedure Column</value>
+  </data>
+  <data name="Property_Desc_ProcedureColumn_Ordinal" xml:space="preserve">
+    <value>The ordinal of the column in result set. Columns are numbered starting from one.</value>
+  </data>
+  <data name="Property_Desc_IndexColumn_Ordinal" xml:space="preserve">
+    <value>The ordinal of the column in index. Columns are numbered starting from one. </value>
+  </data>
+  <data name="Identifier_Desc_UniqueKey" xml:space="preserve">
+    <value>The unique key that owns this database object.</value>
+  </data>
+  <data name="Property_Name_Table_PkColumnNames" xml:space="preserve">
+    <value>Primary Key</value>
+  </data>
+  <data name="Type_UniqueKey" xml:space="preserve">
+    <value>Unique Key</value>
+  </data>
+  <data name="Identifier_Desc_Schema" xml:space="preserve">
+    <value>The schema that owns this database object.</value>
+  </data>
+  <data name="Identifier_Desc_Catalog" xml:space="preserve">
+    <value>The catalog that owns this database object.</value>
+  </data>
+  <data name="Category_ReferencedColumn" xml:space="preserve">
+    <value>Referenced Column</value>
+  </data>
+  <data name="Property_Desc_Parameter_FrameworkDataType" xml:space="preserve">
+    <value>Parameter's data type in OleDbParameter.</value>
+  </data>
+  <data name="Identifier_Desc_StoredProcedure" xml:space="preserve">
+    <value>The stored procedure that owns this database object.</value>
+  </data>
+  <data name="Property_Name_ForeignKey_DeleteRule" xml:space="preserve">
+    <value>Delete Rule</value>
+  </data>
+  <data name="Property_Name_Column_Length" xml:space="preserve">
+    <value>Length</value>
+  </data>
+  <data name="Property_Name_ForeignKey_PkColumnNames" xml:space="preserve">
+    <value>Columns</value>
+  </data>
+  <data name="Identifier_Name_Catalog" xml:space="preserve">
+    <value>Catalog</value>
+  </data>
+  <data name="Identifier_Desc_ScalarFunction" xml:space="preserve">
+    <value>The function that owns this database object.</value>
+  </data>
+  <data name="Property_Desc_ForeignKey_ReferencedTable" xml:space="preserve">
+    <value>Name of the table referenced by the foreign key.</value>
+  </data>
+  <data name="Type_ScalarFunctionParameter" xml:space="preserve">
+    <value>Function Parameter</value>
+  </data>
+  <data name="Property_Desc_Parameter_Precision" xml:space="preserve">
+    <value>If the parameter's data type is of a numeric data type other than VARNUMERIC, this is the maximum precision of the parameter.</value>
+  </data>
+  <data name="Category_ReferencedTable" xml:space="preserve">
+    <value>Referenced Table</value>
+  </data>
+  <data name="Type_StoredProcedure" xml:space="preserve">
+    <value>Stored Procedure</value>
+  </data>
+  <data name="Property_Name_Column_Ordinal" xml:space="preserve">
+    <value>Ordinal</value>
+  </data>
+  <data name="Type_SystemView" xml:space="preserve">
+    <value>System View</value>
+  </data>
+  <data name="Type_ForeignKeyColumn" xml:space="preserve">
+    <value>Foreign Key Column</value>
+  </data>
+  <data name="Node_Name_SystemTables" xml:space="preserve">
+    <value>System Tables</value>
+  </data>
+  <data name="Identifier_Desc_View" xml:space="preserve">
+    <value>The view that owns this database object.</value>
+  </data>
+  <data name="Identifier_Desc_Name" xml:space="preserve">
+    <value>The name of the database object.</value>
+  </data>
+  <data name="Property_Name_Parameter_Length" xml:space="preserve">
+    <value>Length</value>
+  </data>
+  <data name="Property_Name_ForeignKeyColumn_Ordinal" xml:space="preserve">
+    <value>Ordinal</value>
+  </data>
+  <data name="Property_Desc_Column_Ordinal" xml:space="preserve">
+    <value>The ordinal of the column in table. Columns are numbered starting from one.</value>
+  </data>
+  <data name="Property_Name_ForeignKeyColumn_ReferencedTable" xml:space="preserve">
+    <value>Table</value>
+  </data>
+  <data name="Property_Name_ProcedureColumn_RowsetNumber" xml:space="preserve">
+    <value>Rowset Number</value>
+  </data>
+  <data name="Node_Name_Tables" xml:space="preserve">
+    <value>Tables</value>
+  </data>
+  <data name="Property_Desc_Parameter_Scale" xml:space="preserve">
+    <value>If the parameter's type indicator is DBTYPE_DECIMAL, DBTYPE_NUMERIC, or DBTYPE_VARNUMERIC, this is the number of digits to the right of the decimal point.</value>
+  </data>
+  <data name="Property_Name_ForeignKey_UpdateRule" xml:space="preserve">
+    <value>Update Rule</value>
+  </data>
+  <data name="Property_Name_ForeignKeyColumn_ReferencedSchema" xml:space="preserve">
+    <value>Schema</value>
+  </data>
+  <data name="Property_Desc_Column_Length" xml:space="preserve">
+    <value>The maximum possible length of a value in the column. Defined for text text or binary data only.</value>
+  </data>
+  <data name="Property_Desc_Index_ColumnNames" xml:space="preserve">
+    <value>List of index columns.</value>
+  </data>
+  <data name="Identifier_Name_StoredProcedure" xml:space="preserve">
+    <value>Stored Procedure</value>
+  </data>
+  <data name="Property_Desc_UniqueKey_ColumnNames" xml:space="preserve">
+    <value>List of key columns.</value>
+  </data>
+  <data name="Property_Name_Parameter_Default" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="Property_Name_Column_Precision" xml:space="preserve">
+    <value>Precision</value>
+  </data>
+  <data name="Type_Column" xml:space="preserve">
+    <value>Column</value>
+  </data>
+  <data name="Node_Name_ScalarFunctions" xml:space="preserve">
+    <value>Functions</value>
+  </data>
+  <data name="Property_Name_CreateDate" xml:space="preserve">
+    <value>Date Created</value>
+  </data>
+  <data name="Property_Name_Parameter_Nullable" xml:space="preserve">
+    <value>Is Nullable</value>
+  </data>
+  <data name="Property_Desc_Column_Nullable" xml:space="preserve">
+    <value>True, if the column can contain the NULL value.</value>
+  </data>
+  <data name="Property_Name_Index_ColumnNames" xml:space="preserve">
+    <value>Index Columns</value>
+  </data>
+  <data name="Property_Desc_Index_IsPrimary" xml:space="preserve">
+    <value>Index is the basis of table primary key.</value>
+  </data>
+  <data name="Type_Index" xml:space="preserve">
+    <value>Index</value>
+  </data>
+  <data name="Property_Desc_Parameter_Default" xml:space="preserve">
+    <value>Default value of the parameter.</value>
+  </data>
+  <data name="Property_Name_Parameter_FrameworkDataType" xml:space="preserve">
+    <value>.NET Data Type</value>
+  </data>
+  <data name="Property_Name_Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Category_Identifier" xml:space="preserve">
+    <value>(Identifier)</value>
+  </data>
+  <data name="Type_UniqueKeyColumn" xml:space="preserve">
+    <value>Unique Key Column</value>
+  </data>
+  <data name="Property_Name_Column_Nullable" xml:space="preserve">
+    <value>Is Nullable</value>
+  </data>
+  <data name="Property_Name_IndexColumn_Ordinal" xml:space="preserve">
+    <value>Ordinal</value>
+  </data>
+  <data name="Property_Name_ForeignKeyColumn_ReferencedColumn" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Property_Desc_Table_PkColumnNames" xml:space="preserve">
+    <value>List of primary key columns of the table.</value>
+  </data>
+  <data name="Identifier_Name_ScalarFunction" xml:space="preserve">
+    <value>Function</value>
+  </data>
+  <data name="Property_Name_ForeignKeyColumn_ReferencedCatalog" xml:space="preserve">
+    <value>Catalog</value>
+  </data>
+  <data name="Identifier_Desc_ForeignKey" xml:space="preserve">
+    <value>The foreign key that owns this column.</value>
+  </data>
+  <data name="Property_Name_Index_IsPrimary" xml:space="preserve">
+    <value>Is Primary</value>
+  </data>
+  <data name="Node_Name_Domains" xml:space="preserve">
+    <value>Domains(Debug:008)</value>
+  </data>
+  <data name="Type_Domain" xml:space="preserve">
+    <value>Domain</value>
+  </data>
+  <data name="Node_Name_ProcedureColumns" xml:space="preserve">
+    <value>Procedure Columns</value>
+  </data>
+  <data name="Node_Name_ProcedureParameters" xml:space="preserve">
+    <value>Procedure Parameters</value>
+  </data>
+  <data name="Property_Desc_Dsl" xml:space="preserve">
+    <value>The Dsl source code of the procedure or function</value>
+  </data>
+  <data name="Property_Name_Dsl" xml:space="preserve">
+    <value>Dsl</value>
+  </data>
+  <data name="Property_Value_Direction_In" xml:space="preserve">
+    <value>In</value>
+  </data>
+  <data name="Property_Value_Direction_InOut" xml:space="preserve">
+    <value>In/Out</value>
+  </data>
+  <data name="Property_Value_Direction_Out" xml:space="preserve">
+    <value>Out</value>
+  </data>
+  <data name="Property_Value_Direction_Return" xml:space="preserve">
+    <value>Return value</value>
+  </data>
+  <data name="Property_Value_TableType_SystemTable" xml:space="preserve">
+    <value>System Table</value>
+  </data>
+  <data name="Property_Value_TableType_Table" xml:space="preserve">
+    <value>Table</value>
+  </data>
+</root>

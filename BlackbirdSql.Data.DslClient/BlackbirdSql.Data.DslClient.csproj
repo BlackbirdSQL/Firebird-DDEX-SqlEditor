@@ -1,0 +1,139 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFrameworks>$(TargetFrameworks)</TargetFrameworks>
+		<AssemblyName>BlackbirdSql.Data.DslClient</AssemblyName>
+		<RootNamespace>BlackbirdSql.Data</RootNamespace>
+		<SignAssembly>true</SignAssembly>
+		<AssemblyOriginatorKeyFile Condition="'$(TargetFramework)'=='net48'">Properties\BlackbirdSql.Data.DslClient.snk</AssemblyOriginatorKeyFile>
+		<AssemblyOriginatorKeyFile Condition="'$(TargetFramework)'=='net7.0'">Properties\BlackbirdSql.Data.DslClient.NET.snk</AssemblyOriginatorKeyFile>
+		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+	<PropertyGroup>
+		<AssemblyTitle>NETProvider - ADO.NET Data Provider</AssemblyTitle>
+		<Copyright>(c) 2002-2021</Copyright>
+	</PropertyGroup>
+	<PropertyGroup>
+		<PackageId>BlackbirdSql.Data.DslClient</PackageId>
+		<Title>BlackbirdSql ADO.NET Data provider</Title>
+		<PackageDescription>Blackbird ADO.NET data provider</PackageDescription>
+		<PackageTags>blackbird;blackbirdsql;dslclient;adonet;database</PackageTags>
+		<RepositoryUrl />
+		<RepositoryType />
+		<Description>.NET Framework Provider for Firebird (Blackbird)</Description>
+		<PackageIcon>blackbird-logo.png</PackageIcon>
+		<ApplicationIcon>Properties\Package.ico</ApplicationIcon>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<DefineConstants>TRACE</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup>
+	  <Compile Remove="CSharp8Range.cs" />
+	  <Compile Remove="Schema\FbSystemTables.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Remove="Schema\FbMetaData.xml" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Include="..\EntityFramework.Blackbird\Helpers\MetadataHelpers.cs" Link="Entity\Helpers\MetadataHelpers.cs" />
+	  <Compile Include="..\EntityFramework.Blackbird\Helpers\TypeHelpers.cs" Link="Entity\Helpers\TypeHelpers.cs" />
+	  <Compile Include="..\EntityFramework.Blackbird\ProviderManifest.cs" Link="Entity\ProviderManifest.cs" />
+	  <Compile Include="..\EntityFramework.Blackbird\ProviderServices.cs" Link="Entity\ProviderServices.cs" />
+	  <Compile Include="..\EntityFramework.Blackbird\Sql\DmlSqlGenerator.cs" Link="Sql\DmlSqlGenerator.cs" />
+	  <Compile Include="..\EntityFramework.Blackbird\Sql\ExpressionTranslator.cs" Link="Sql\ExpressionTranslator.cs" />
+	  <Compile Include="..\EntityFramework.Blackbird\Sql\FirstClause.cs" Link="Sql\FirstClause.cs" />
+	  <Compile Include="..\EntityFramework.Blackbird\Sql\ISqlFragment.cs" Link="Sql\ISqlFragment.cs" />
+	  <Compile Include="..\EntityFramework.Blackbird\Sql\JoinSymbol.cs" Link="Sql\JoinSymbol.cs" />
+	  <Compile Include="..\EntityFramework.Blackbird\Sql\SkipClause.cs" Link="Sql\SkipClause.cs" />
+	  <Compile Include="..\EntityFramework.Blackbird\Sql\SqlBuilder.cs" Link="Sql\SqlBuilder.cs" />
+	  <Compile Include="..\EntityFramework.Blackbird\Sql\SqlGenerator.cs" Link="Sql\SqlGenerator.cs" />
+	  <Compile Include="..\EntityFramework.Blackbird\Sql\SqlSelectStatement.cs" Link="Sql\SqlSelectStatement.cs" />
+	  <Compile Include="..\EntityFramework.Blackbird\Sql\SqlWriter.cs" Link="Sql\SqlWriter.cs" />
+	  <Compile Include="..\EntityFramework.Blackbird\Sql\SsdlToFb.cs" Link="Sql\SsdlToFb.cs" />
+	  <Compile Include="..\EntityFramework.Blackbird\Sql\Symbol.cs" Link="Sql\Symbol.cs" />
+	  <Compile Include="..\EntityFramework.Blackbird\Sql\SymbolPair.cs" Link="Sql\SymbolPair.cs" />
+	  <Compile Include="..\EntityFramework.Blackbird\Sql\SymbolTable.cs" Link="Sql\SymbolTable.cs" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Include="Properties\Package.ico" />
+	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Include="..\EntityFramework.Blackbird\Resources\ProviderManifest.xml" Link="Resources\ProviderManifest.xml" />
+	</ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="Schema\FbMetaData.xml" />
+	</ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="..\EntityFramework.Blackbird\Resources\StoreSchemaDefinition.ssdl" Link="Resources\StoreSchemaDefinition.ssdl" />
+		<EmbeddedResource Include="..\EntityFramework.Blackbird\Resources\StoreSchemaDefinitionVersion3.ssdl" Link="Resources\StoreSchemaDefinitionVersion3.ssdl" />
+		<EmbeddedResource Include="..\EntityFramework.Blackbird\Resources\StoreSchemaMapping.msl" Link="Resources\StoreSchemaMapping.msl" />
+		<EmbeddedResource Include="..\EntityFramework.Blackbird\Resources\StoreSchemaMappingVersion3.msl" Link="Resources\StoreSchemaMappingVersion3.msl" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
+		<Reference Include="System.Configuration" />
+		<Reference Include="System.Data.Entity" />
+		<Reference Include="System.Transactions" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)'=='net7.0'">
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="ConfigureAwaitChecker.Analyzer" Version="5.0.0.1">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	  <PackageReference Include="IndexRange" Version="1.0.2" />
+	  <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+	  <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
+	  <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\BlackbirdSql.Common\BlackbirdSql.Common.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="DslClient\FbBatchCommand.cs" />
+	  <Compile Update="Properties\Resources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Resources.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Properties\Settings.Designer.cs">
+	    <DesignTimeSharedInput>True</DesignTimeSharedInput>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Settings.settings</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Update="Properties\Resources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="Properties\blackbird-logo.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	  <None Update="Properties\Settings.settings">
+	    <Generator>SettingsSingleFileGenerator</Generator>
+	    <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+	  </None>
+	  <None Update="Schema\FbMetaData(NoRestrictions).xml">
+	    <SubType>Designer</SubType>
+	  </None>
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Entity\Helpers\" />
+	  <Folder Include="Resources\" />
+	  <Folder Include="Sql\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Include="Schema\FbSystemTables.cs" />
+	</ItemGroup>
+	<Import Project="..\BlackbirdSql.Data.External\BlackbirdSql.Data.External.projitems" Label="Shared" />
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command=":: copy /v /y /b $(OutDir)\BlackbirdSql.Data.DslClient.* C:\Windows\Microsoft.NET\assembly\GAC_MSIL\BlackbirdSql.Data.DslClient\v4.0_9.1.0.0__e5f4a90eea6a9f33&#xD;&#xA;copy /v /y /b $(OutDir)\BlackbirdSql.Data.DslClient.* &quot;%25ProgramFiles%25\BlackbirdSql\BlackbirdClient.9.1.0&quot;&#xD;&#xA;&#xD;&#xA;:: The following are so that you don't have to do a reinstall of the vsix after a build&#xD;&#xA;:: NOTE:&#xD;&#xA;:: You will have to replace 17.0_xxx with your version and user id&#xD;&#xA;:: You will have to restart the ide before doing the build if you've used the ddex tool&#xD;&#xA;:: during your session because the dll will be locked&#xD;&#xA;set DestFolder=&quot;%25LocalAppData%25\Microsoft\VisualStudio\17.0_5d5e49fc\Extensions\d4sem1lb.ehh\&quot;&#xD;&#xA;if exist %25DestFolder%25 (&#xD;&#xA;copy /v /y /b $(ProjectDir)$(OutDir)*.dll %25DestFolder%25&#xD;&#xA;copy /v /y /b $(ProjectDir)$(OutDir)*.pdb %25DestFolder%25&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" />
+	</Target>
+</Project>

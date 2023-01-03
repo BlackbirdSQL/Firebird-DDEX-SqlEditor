@@ -1,0 +1,26 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="EdmxTest.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="DefaultConnectionString" Type="(Connection string)" Scope="Application">
+      <DesignTimeValue Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;SerializableConnectionString xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+  &lt;ConnectionString&gt;data source=MMEI-LT01;port number=55504;initial catalog=C:\Server\Data\smartitplus_databases\MMEI_SI_DB.FDB;user id=SYSDBA;dialect=3;server type=0;character set=UTF8;password=masterkey&lt;/ConnectionString&gt;
+  &lt;ProviderName&gt;BlackbirdSql.Data.DslClient&lt;/ProviderName&gt;
+&lt;/SerializableConnectionString&gt;</DesignTimeValue>
+      <Value Profile="(Default)">data source=MMEI-LT01;port number=55504;initial catalog=C:\Server\Data\smartitplus_databases\MMEI_SI_DB.FDB;user id=SYSDBA;dialect=3;server type=0;character set=UTF8;password=masterkey</Value>
+    </Setting>
+    <Setting Name="DefaultDataSetConnectionString" Type="(Connection string)" Scope="Application">
+      <DesignTimeValue Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;SerializableConnectionString xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+  &lt;ConnectionString&gt;character set=UTF8;data source=MMEI-LT01;port number=55504;initial catalog=C:\Server\Data\smartitplus_databases\MMEI_SI_DB.FDB;user id=SYSDBA;password=masterkey;dialect=3;server type=0&lt;/ConnectionString&gt;
+  &lt;ProviderName&gt;BlackbirdSql.Data.DslClient&lt;/ProviderName&gt;
+&lt;/SerializableConnectionString&gt;</DesignTimeValue>
+      <Value Profile="(Default)">character set=UTF8;data source=MMEI-LT01;port number=55504;initial catalog=C:\Server\Data\smartitplus_databases\MMEI_SI_DB.FDB;user id=SYSDBA;password=masterkey;dialect=3;server type=0</Value>
+    </Setting>
+    <Setting Name="Setting2" Type="(Connection string)" Scope="Application">
+      <DesignTimeValue Profile="(Default)" />
+      <Value Profile="(Default)" />
+    </Setting>
+  </Settings>
+</SettingsFile>

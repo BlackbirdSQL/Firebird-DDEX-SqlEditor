@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="SIModel.Store" Provider="BlackbirdSql.Data.DslClient" ProviderManifestToken="2.5" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="SH_CONSIGNMENTTYPE">
+          <Key>
+            <PropertyRef Name="IDNO" />
+          </Key>
+          <Property Name="IDNO" Type="int" Nullable="false" />
+          <Property Name="CODE" Type="varchar" MaxLength="60" Unicode="true" />
+          <Property Name="DESCRIPTION" Type="varchar" MaxLength="255" Unicode="true" />
+          <Property Name="UNPACKAGED_ALLOCATION" Type="varchar" MaxLength="20" Unicode="true" />
+          <Property Name="PALLETIZED_ALLOCATION" Type="varchar" MaxLength="20" Unicode="true" />
+          <Property Name="BOXED_ALLOCATION" Type="varchar" MaxLength="20" Unicode="true" />
+          <Property Name="CARTONED_ALLOCATION" Type="varchar" MaxLength="20" Unicode="true" />
+          <Property Name="CONTENTS_DESC" Type="varchar" MaxLength="60" Unicode="true" />
+          <Property Name="PACKAGE_DESC" Type="varchar" MaxLength="60" Unicode="true" />
+          <Property Name="CONTAINER_CODE" Type="varchar" MaxLength="20" Unicode="true" />
+          <Property Name="CONTAINER_NAME" Type="varchar" MaxLength="60" Unicode="true" />
+          <Property Name="CONTAINERCONTENTS_DESC" Type="varchar" MaxLength="60" Unicode="true" />
+          <Property Name="CONTAINERPACKAGE_DESC" Type="varchar" MaxLength="60" Unicode="true" />
+          <Property Name="PALLET_CODE" Type="varchar" MaxLength="20" Unicode="true" />
+          <Property Name="PALLET_NAME" Type="varchar" MaxLength="60" Unicode="true" />
+          <Property Name="PALLETCONTENTS_DESC" Type="varchar" MaxLength="60" Unicode="true" />
+          <Property Name="PALLETPACKAGE_DESC" Type="varchar" MaxLength="60" Unicode="true" />
+          <Property Name="BOX_CODE" Type="varchar" MaxLength="20" Unicode="true" />
+          <Property Name="BOX_NAME" Type="varchar" MaxLength="60" Unicode="true" />
+          <Property Name="BOXCONTENTS_DESC" Type="varchar" MaxLength="60" Unicode="true" />
+          <Property Name="CARTON_CODE" Type="varchar" MaxLength="20" Unicode="true" />
+          <Property Name="CARTON_NAME" Type="varchar" MaxLength="60" Unicode="true" />
+          <Property Name="CARTONCONTENTS_DESC" Type="varchar" MaxLength="60" Unicode="true" />
+          <Property Name="ORDERING" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SH_DOCUMENT">
+          <Key>
+            <PropertyRef Name="IDNO" />
+          </Key>
+          <Property Name="IDNO" Type="int" Nullable="false" />
+          <Property Name="CONSIGNMENTTYPE_IDNO" Type="int" />
+          <Property Name="QUOTE_IDNO" Type="int" />
+          <Property Name="SALESORDER_IDNO" Type="int" />
+          <Property Name="CONTAINER_IDNO" Type="int" />
+          <Property Name="CONTAINER_QTY" Type="int" />
+          <Property Name="PALLET_IDNO" Type="int" />
+          <Property Name="PALLET_QTY" Type="int" />
+          <Property Name="BOX_IDNO" Type="int" />
+          <Property Name="BOX_QTY" Type="int" />
+          <Property Name="CARTON_IDNO" Type="int" />
+          <Property Name="CARTON_QTY" Type="int" />
+        </EntityType>
+        <EntityContainer Name="SIModelStoreContainer">
+          <EntitySet Name="SH_CONSIGNMENTTYPE" EntityType="Self.SH_CONSIGNMENTTYPE" Schema="Firebird" store:Type="Tables" />
+          <EntitySet Name="SH_DOCUMENT" EntityType="Self.SH_DOCUMENT" Schema="Firebird" store:Type="Tables" />
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="SIModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="SH_CONSIGNMENTTYPE">
+          <Key>
+            <PropertyRef Name="IDNO" />
+          </Key>
+          <Property Name="IDNO" Type="Int32" Nullable="false" />
+          <Property Name="CODE" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
+          <Property Name="DESCRIPTION" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="UNPACKAGED_ALLOCATION" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="PALLETIZED_ALLOCATION" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="BOXED_ALLOCATION" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="CARTONED_ALLOCATION" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="CONTENTS_DESC" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
+          <Property Name="PACKAGE_DESC" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
+          <Property Name="CONTAINER_CODE" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="CONTAINER_NAME" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
+          <Property Name="CONTAINERCONTENTS_DESC" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
+          <Property Name="CONTAINERPACKAGE_DESC" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
+          <Property Name="PALLET_CODE" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="PALLET_NAME" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
+          <Property Name="PALLETCONTENTS_DESC" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
+          <Property Name="PALLETPACKAGE_DESC" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
+          <Property Name="BOX_CODE" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="BOX_NAME" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
+          <Property Name="BOXCONTENTS_DESC" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
+          <Property Name="CARTON_CODE" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="CARTON_NAME" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
+          <Property Name="CARTONCONTENTS_DESC" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
+          <Property Name="ORDERING" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SH_DOCUMENT">
+          <Key>
+            <PropertyRef Name="IDNO" />
+          </Key>
+          <Property Name="IDNO" Type="Int32" Nullable="false" />
+          <Property Name="CONSIGNMENTTYPE_IDNO" Type="Int32" />
+          <Property Name="QUOTE_IDNO" Type="Int32" />
+          <Property Name="SALESORDER_IDNO" Type="Int32" />
+          <Property Name="CONTAINER_IDNO" Type="Int32" />
+          <Property Name="CONTAINER_QTY" Type="Int32" />
+          <Property Name="PALLET_IDNO" Type="Int32" />
+          <Property Name="PALLET_QTY" Type="Int32" />
+          <Property Name="BOX_IDNO" Type="Int32" />
+          <Property Name="BOX_QTY" Type="Int32" />
+          <Property Name="CARTON_IDNO" Type="Int32" />
+          <Property Name="CARTON_QTY" Type="Int32" />
+        </EntityType>
+        <EntityContainer Name="SIEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="SH_CONSIGNMENTTYPE" EntityType="Self.SH_CONSIGNMENTTYPE" />
+          <EntitySet Name="SH_DOCUMENT" EntityType="Self.SH_DOCUMENT" />
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="SIModelStoreContainer" CdmEntityContainer="SIEntities">
+          <EntitySetMapping Name="SH_CONSIGNMENTTYPE">
+            <EntityTypeMapping TypeName="SIModel.SH_CONSIGNMENTTYPE">
+              <MappingFragment StoreEntitySet="SH_CONSIGNMENTTYPE">
+                <ScalarProperty Name="IDNO" ColumnName="IDNO" />
+                <ScalarProperty Name="CODE" ColumnName="CODE" />
+                <ScalarProperty Name="DESCRIPTION" ColumnName="DESCRIPTION" />
+                <ScalarProperty Name="UNPACKAGED_ALLOCATION" ColumnName="UNPACKAGED_ALLOCATION" />
+                <ScalarProperty Name="PALLETIZED_ALLOCATION" ColumnName="PALLETIZED_ALLOCATION" />
+                <ScalarProperty Name="BOXED_ALLOCATION" ColumnName="BOXED_ALLOCATION" />
+                <ScalarProperty Name="CARTONED_ALLOCATION" ColumnName="CARTONED_ALLOCATION" />
+                <ScalarProperty Name="CONTENTS_DESC" ColumnName="CONTENTS_DESC" />
+                <ScalarProperty Name="PACKAGE_DESC" ColumnName="PACKAGE_DESC" />
+                <ScalarProperty Name="CONTAINER_CODE" ColumnName="CONTAINER_CODE" />
+                <ScalarProperty Name="CONTAINER_NAME" ColumnName="CONTAINER_NAME" />
+                <ScalarProperty Name="CONTAINERCONTENTS_DESC" ColumnName="CONTAINERCONTENTS_DESC" />
+                <ScalarProperty Name="CONTAINERPACKAGE_DESC" ColumnName="CONTAINERPACKAGE_DESC" />
+                <ScalarProperty Name="PALLET_CODE" ColumnName="PALLET_CODE" />
+                <ScalarProperty Name="PALLET_NAME" ColumnName="PALLET_NAME" />
+                <ScalarProperty Name="PALLETCONTENTS_DESC" ColumnName="PALLETCONTENTS_DESC" />
+                <ScalarProperty Name="PALLETPACKAGE_DESC" ColumnName="PALLETPACKAGE_DESC" />
+                <ScalarProperty Name="BOX_CODE" ColumnName="BOX_CODE" />
+                <ScalarProperty Name="BOX_NAME" ColumnName="BOX_NAME" />
+                <ScalarProperty Name="BOXCONTENTS_DESC" ColumnName="BOXCONTENTS_DESC" />
+                <ScalarProperty Name="CARTON_CODE" ColumnName="CARTON_CODE" />
+                <ScalarProperty Name="CARTON_NAME" ColumnName="CARTON_NAME" />
+                <ScalarProperty Name="CARTONCONTENTS_DESC" ColumnName="CARTONCONTENTS_DESC" />
+                <ScalarProperty Name="ORDERING" ColumnName="ORDERING" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SH_DOCUMENT">
+            <EntityTypeMapping TypeName="SIModel.SH_DOCUMENT">
+              <MappingFragment StoreEntitySet="SH_DOCUMENT">
+                <ScalarProperty Name="IDNO" ColumnName="IDNO" />
+                <ScalarProperty Name="CONSIGNMENTTYPE_IDNO" ColumnName="CONSIGNMENTTYPE_IDNO" />
+                <ScalarProperty Name="QUOTE_IDNO" ColumnName="QUOTE_IDNO" />
+                <ScalarProperty Name="SALESORDER_IDNO" ColumnName="SALESORDER_IDNO" />
+                <ScalarProperty Name="CONTAINER_IDNO" ColumnName="CONTAINER_IDNO" />
+                <ScalarProperty Name="CONTAINER_QTY" ColumnName="CONTAINER_QTY" />
+                <ScalarProperty Name="PALLET_IDNO" ColumnName="PALLET_IDNO" />
+                <ScalarProperty Name="PALLET_QTY" ColumnName="PALLET_QTY" />
+                <ScalarProperty Name="BOX_IDNO" ColumnName="BOX_IDNO" />
+                <ScalarProperty Name="BOX_QTY" ColumnName="BOX_QTY" />
+                <ScalarProperty Name="CARTON_IDNO" ColumnName="CARTON_IDNO" />
+                <ScalarProperty Name="CARTON_QTY" ColumnName="CARTON_QTY" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

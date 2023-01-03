@@ -1,0 +1,61 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_USERS\VS2022PrivateRegistry\Software\Microsoft\VisualStudio\17.0_5d5e49fc_Config\DataSources\{2979569E-416D-4DD8-B06B-EBCB70DE7A4E}]
+@="Firebird Data Source"
+"DefaultProvider"="{7787981E-E42A-412F-A42B-9AD07A7DE169}"
+
+[HKEY_USERS\VS2022PrivateRegistry\Software\Microsoft\VisualStudio\17.0_5d5e49fc_Config\DataSources\{2979569E-416D-4DD8-B06B-EBCB70DE7A4E}\SupportingProviders]
+[HKEY_USERS\VS2022PrivateRegistry\Software\Microsoft\VisualStudio\17.0_5d5e49fc_Config\DataSources\{2979569E-416D-4DD8-B06B-EBCB70DE7A4E}\SupportingProviders\{7787981E-E42A-412F-A42B-9AD07A7DE169}]
+"Description"="Use this selection to connect to a Firebird database through the Blackbird.Data.DslClient Provider.Resources"
+"DisplayName"="Firebird (Blackbird DslClient)"
+
+
+[HKEY_USERS\VS2022PrivateRegistry\Software\Microsoft\VisualStudio\17.0_5d5e49fc_Config\DataProviders\{7787981E-E42A-412F-A42B-9AD07A7DE169}]
+@=".NET Framework Data Provider for Firebird(Blackbird)"
+"AssociatedSource"="{2979569E-416D-4DD8-B06B-EBCB70DE7A4E}"
+"CodeBase"="C:\\Server\\Dev\\Lib\\Blackbird.9.1.0\\BlackbirdSql.VisualStudio.DataTools.dll"
+"Description"="DDEX Provider for BlackbirdClient"
+"DisplayName"=".NET Data Provider for Blackbird"
+"FactoryService"="{66F5BB69-4C70-4319-8947-A2E0643A4CE6}"
+"InvariantName"="BlackbirdSql.Data.DslClient"
+"PlatformVersion"="2.0"
+"ShortDisplayName"="DDEX Provider for Blackbird"
+"Technology"="{77AB9A9D-78B9-4ba7-91AC-873F5338F1D2}"
+
+
+
+[HKEY_USERS\VS2022PrivateRegistry\Software\Microsoft\VisualStudio\17.0_5d5e49fc_Config\DataProviders\{7787981E-E42A-412F-A42B-9AD07A7DE169}\SupportedObjects]
+
+[HKEY_USERS\VS2022PrivateRegistry\Software\Microsoft\VisualStudio\17.0_5d5e49fc_Config\DataProviders\{7787981E-E42A-412F-A42B-9AD07A7DE169}\SupportedObjects\IVsDataConnectionEquivalencyComparer]
+@="BlackbirdSql.VisualStudio.DataTools.DdexConnectionEquivalencyComparer"
+
+[HKEY_USERS\VS2022PrivateRegistry\Software\Microsoft\VisualStudio\17.0_5d5e49fc_Config\DataProviders\{7787981E-E42A-412F-A42B-9AD07A7DE169}\SupportedObjects\IVsDataConnectionProperties]
+@="BlackbirdSql.VisualStudio.DataTools.DdexConnectionProperties"
+
+[HKEY_USERS\VS2022PrivateRegistry\Software\Microsoft\VisualStudio\17.0_5d5e49fc_Config\DataProviders\{7787981E-E42A-412F-A42B-9AD07A7DE169}\SupportedObjects\IVsDataConnectionSupport]
+@="BlackbirdSql.VisualStudio.DataTools.DdexConnectionSupport"
+
+[HKEY_USERS\VS2022PrivateRegistry\Software\Microsoft\VisualStudio\17.0_5d5e49fc_Config\DataProviders\{7787981E-E42A-412F-A42B-9AD07A7DE169}\SupportedObjects\IVsDataConnectionUIControl]
+@="BlackbirdSql.VisualStudio.DataTools.DdexConnectionUIControl"
+
+[HKEY_USERS\VS2022PrivateRegistry\Software\Microsoft\VisualStudio\17.0_5d5e49fc_Config\DataProviders\{7787981E-E42A-412F-A42B-9AD07A7DE169}\SupportedObjects\IVsDataConnectionProperties]
+@="BlackbirdSql.VisualStudio.DataTools.DdexConnectionProperties"
+
+[HKEY_USERS\VS2022PrivateRegistry\Software\Microsoft\VisualStudio\17.0_5d5e49fc_Config\DataProviders\{7787981E-E42A-412F-A42B-9AD07A7DE169}\SupportedObjects\IVsDataMappedObjectConverter]
+@="BlackbirdSql.VisualStudio.DataTools.DdexMappedObjectConverter"
+
+[HKEY_USERS\VS2022PrivateRegistry\Software\Microsoft\VisualStudio\17.0_5d5e49fc_Config\DataProviders\{7787981E-E42A-412F-A42B-9AD07A7DE169}\SupportedObjects\IVsDataObjectIdentifierConverter]
+@="BlackbirdSql.VisualStudio.DataTools.DdexObjectIdentifierConverter"
+
+[HKEY_USERS\VS2022PrivateRegistry\Software\Microsoft\VisualStudio\17.0_5d5e49fc_Config\DataProviders\{7787981E-E42A-412F-A42B-9AD07A7DE169}\SupportedObjects\IVsDataObjectIdentifierResolver]
+@="BlackbirdSql.VisualStudio.DataTools.DdexObjectIdentifierResolver"
+
+[HKEY_USERS\VS2022PrivateRegistry\Software\Microsoft\VisualStudio\17.0_5d5e49fc_Config\DataProviders\{7787981E-E42A-412F-A42B-9AD07A7DE169}\SupportedObjects\IVsDataObjectSupport]
+@="BlackbirdSql.VisualStudio.DataTools.DdexObjectSupport"
+
+[HKEY_USERS\VS2022PrivateRegistry\Software\Microsoft\VisualStudio\17.0_5d5e49fc_Config\DataProviders\{7787981E-E42A-412F-A42B-9AD07A7DE169}\SupportedObjects\IVsDataSourceInformation]
+@="BlackbirdSql.VisualStudio.DataTools.DdexSourceInformation"
+
+[HKEY_USERS\VS2022PrivateRegistry\Software\Microsoft\VisualStudio\17.0_5d5e49fc_Config\DataProviders\{7787981E-E42A-412F-A42B-9AD07A7DE169}\SupportedObjects\IVsDataViewSupport]
+@="BlackbirdSql.VisualStudio.DataTools.DdexViewSupport"
+

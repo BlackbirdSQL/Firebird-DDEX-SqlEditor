@@ -1,0 +1,1166 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataObjectSupport xmlns="http://schemas.microsoft.com/VisualStudio/2007/07/Data/DataObjectSupport">
+	<!-- Data source specific object types -->
+
+	<!-- Definitions
+			xs:sequence is specified so this has to come first
+			so we're going to keep definitions limited and simple
+			otherwise it's just going to become a pita
+	-->
+	<Define name="ElementTypeTable" parameters="elementName" >
+		<Type name="$(elementName)" preferredOrdering="TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME" >
+			<Identifier>
+				<Part name="TABLE_CATALOG" type="System.String" />
+				<Part name="TABLE_SCHEMA" type="System.String" />
+				<Part name="TABLE_NAME" type="System.String"  />
+			</Identifier>
+			<Properties>
+				<Property name="TABLE_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="TABLE_TYPE" type="System.String" />
+				<Property name="DESCRIPTION" type="System.String" />
+				<Property name="IS_SYSTEM_TABLE" type="System.Boolean" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="Tables" />
+					</Parameters>
+				</Service>
+				<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
+					<Parameters method="AppendToDSRef">
+						<Parameter>
+							<!-- Name -->
+							<Parameter value="{2}" />
+							<!-- Owner -->
+							<Parameter value="{1}" />
+							<!-- Type -->
+							<Parameter value="Table" />
+							<!-- ExtendedType -->
+							<Parameter />
+							<!-- Properties -->
+							<Parameter>
+								<Parameter value="4656BAEA-F397-11CE-BFE1-00AA0057B34E">
+									<Parameter value="{0}" />
+								</Parameter>
+								<!-- GUID_DSRefProperty_PreciseType -->
+								<Parameter value="39A5A7E7-513F-44a4-B79D-7652CD8962D9">
+									<!-- Table -->
+									<Parameter value="101" type="System.Int32" />
+								</Parameter>
+							</Parameter>
+						</Parameter>
+					</Parameters>
+				</Service>
+			</Services>
+		</Type>
+	</Define>
+	<Define name="ElementMappedTypeTable" parameters="elementName, elementType" >
+		<MappedType name="$(elementName)" underlyingType="Table">
+			<Selection restrictions="{Catalog},{Schema},{Name},null" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="TABLE_CATALOG" />
+				<Part name="Schema" underlyingMember="TABLE_SCHEMA" />
+				<Part name="Name" underlyingMember="TABLE_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="Name" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
+				<Property name="Type" underlyingMember="TABLE_TYPE"/>
+				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_TABLE"/>
+			</Properties>
+		</MappedType>
+	</Define>
+
+
+	<Types>
+		<!-- Completed -->
+		<RootType>
+			<Properties>
+				<Property name="Server" type="System.String"/>
+				<Property name="Database" type="System.String"/>
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelectorRoot" />
+			</Services>
+		</RootType>
+
+		<!-- To be tested -->
+		<Type name="Domain" preferredOrdering="DOMAIN_CATALOG,DOMAIN_SCHEMA,DOMAIN_NAME">
+			<Identifier>
+				<Part name="DOMAIN_CATALOG" type="System.String" />
+				<Part name="DOMAIN_SCHEMA" type="System.String" />
+				<Part name="DOMAIN_NAME" type="System.String" />
+			</Identifier>
+			<Properties>
+				<Property name="DOMAIN_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="DESCRIPTION" type="System.String" />
+				<Property name="DOMAIN_DATA_TYPE" type="System.String" />
+				<Property name="DOMAIN_SIZE" type="System.Int32" />
+				<Property name="NUMERIC_PRECISION" type="System.Byte" />
+				<Property name="NUMERIC_SCALE" type="System.Int32" />
+				<Property name="IS_NULLABLE" type="System.Boolean" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="Domains" />
+					</Parameters>
+				</Service>
+				<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
+					<Parameters method="AppendToDSRef">
+						<Parameter>
+							<!-- Name -->
+							<Parameter value="{2}" />
+							<!-- Owner -->
+							<Parameter value="{1}" />
+							<!-- Type -->
+							<Parameter value="Domain" />
+							<!-- ExtendedType -->
+							<Parameter />
+							<!-- Properties -->
+							<Parameter>
+								<!-- GUID_DSRefProperty_PreciseType -->
+								<Parameter value="39A5A7E7-513F-44a4-B79D-7652CD8962D9">
+									<!-- Table -->
+									<Parameter value="101" type="System.Int32" />
+								</Parameter>
+							</Parameter>
+						</Parameter>
+					</Parameters>
+				</Service>
+			</Services>
+		</Type>
+
+		<!-- Completed -->
+		<TypeRef name="ElementTypeTable" arguments="Table" />
+		<!--<TypeRef name="ElementTypeTable" arguments="SystemTable" />-->
+
+		<!-- Completed -->
+		<Type name="TableColumn" preferredOrdering="TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME,ORDINAL_POSITION">
+			<Identifier>
+				<Part name="TABLE_CATALOG" type="System.String" />
+				<Part name="TABLE_SCHEMA" type="System.String" />
+				<Part name="TABLE_NAME" type="System.String" />
+				<Part name="COLUMN_NAME" type="System.String" />
+			</Identifier>
+			<Properties>
+				<Property name="TABLE_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="COLUMN_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="ORDINAL_POSITION" type="System.Int16" />
+				<Property name="DESCRIPTION" type="System.String" />
+				<Property name="COLUMN_DATA_TYPE" type="System.String" />
+				<Property name="COLUMN_SIZE" type="System.Int32" />
+				<Property name="NUMERIC_PRECISION" type="System.Byte" />
+				<Property name="NUMERIC_SCALE" type="System.Int32" />
+				<Property name="IS_NULLABLE" type="System.Boolean" />
+				<Property name="IS_COMPUTED" type="System.Boolean" />
+				<Property name="IS_PRIMARY" type="System.Boolean" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="Columns" />
+					</Parameters>
+				</Service>
+				<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
+					<Parameters method="AppendToDSRef">
+						<Parameter>
+							<Parameter value="{2}" />
+							<Parameter value="{1}" />
+							<Parameter value="Table" />
+							<Parameter />
+							<Parameter>
+								<Parameter value="4656BAEA-F397-11CE-BFE1-00AA0057B34E">
+									<Parameter value="{0}" />
+								</Parameter>
+								<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
+									<Parameter value="101" type="System.Int32" />
+								</Parameter>
+							</Parameter>
+							<Parameter>
+								<Parameter>
+									<Parameter value="{3}" />
+									<Parameter />
+									<Parameter value="Field" />
+									<Parameter />
+									<Parameter>
+										<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
+											<Parameter value="102" type="System.Int32" />
+										</Parameter>
+									</Parameter>
+								</Parameter>
+							</Parameter>
+						</Parameter>
+					</Parameters>
+				</Service>
+			</Services>
+		</Type>
+
+		<!-- Completed -->
+		<Type name="TableIndex" preferredOrdering="TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME,INDEX_NAME">
+			<Identifier>
+				<Part name="TABLE_CATALOG" type="System.String" />
+				<Part name="TABLE_SCHEMA" type="System.String" />
+				<Part name="TABLE_NAME" type="System.String" />
+				<Part name="INDEX_NAME" type="System.String" />
+			</Identifier>
+			<Properties>
+				<Property name="TABLE_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="INDEX_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="IS_PRIMARY" type="System.Boolean" />
+				<Property name="IS_UNIQUE" type="System.Boolean" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="Indexes" />
+					</Parameters>
+				</Service>
+				<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
+					<Parameters method="AppendToDSRef">
+						<Parameter>
+							<Parameter value="{2}" />
+							<Parameter value="{1}" />
+							<Parameter value="Table" />
+							<Parameter />
+							<Parameter>
+								<Parameter value="4656BAEA-F397-11CE-BFE1-00AA0057B34E">
+									<Parameter value="{0}" />
+								</Parameter>
+								<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
+									<Parameter value="101" type="System.Int32" />
+								</Parameter>
+							</Parameter>
+							<Parameter>
+								<Parameter>
+									<Parameter value="{3}" />
+									<Parameter />
+									<Parameter value="Index" />
+									<Parameter />
+									<Parameter>
+										<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
+											<Parameter value="104" type="System.Int32" />
+										</Parameter>
+									</Parameter>
+								</Parameter>
+							</Parameter>
+						</Parameter>
+					</Parameters>
+				</Service>
+			</Services>
+		</Type>
+
+		<!-- Completed -->
+		<Type name="TableIndexColumn" preferredOrdering="TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME,INDEX_NAME,ORDINAL_POSITION">
+			<Identifier>
+				<Part name="TABLE_CATALOG" type="System.String" />
+				<Part name="TABLE_SCHEMA" type="System.String" />
+				<Part name="TABLE_NAME" type="System.String" />
+				<Part name="INDEX_NAME" type="System.String" />
+				<Part name="COLUMN_NAME" type="System.String" />
+			</Identifier>
+			<Properties>
+				<Property name="TABLE_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="INDEX_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="COLUMN_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="ORDINAL_POSITION" type="System.Int16" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="IndexColumns" />
+					</Parameters>
+				</Service>
+				<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
+					<Parameters method="AppendToDSRef">
+						<Parameter>
+							<Parameter value="{2}" />
+							<Parameter value="{1}" />
+							<Parameter value="Table" />
+							<Parameter />
+							<Parameter>
+								<Parameter value="4656BAEA-F397-11CE-BFE1-00AA0057B34E">
+									<Parameter value="{0}" />
+								</Parameter>
+								<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
+									<Parameter value="101" type="System.Int32" />
+								</Parameter>
+							</Parameter>
+							<Parameter>
+								<Parameter>
+									<Parameter value="{3}" />
+									<Parameter />
+									<Parameter value="Index" />
+									<Parameter />
+									<Parameter>
+										<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
+											<Parameter value="104" type="System.Int32" />
+										</Parameter>
+									</Parameter>
+									<Parameter>
+										<Parameter>
+											<Parameter value="{4}" />
+											<Parameter />
+											<Parameter value="Field" />
+											<Parameter />
+											<Parameter>
+												<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
+													<Parameter value="105" type="System.Int32" />
+												</Parameter>
+											</Parameter>
+										</Parameter>
+									</Parameter>
+								</Parameter>
+							</Parameter>
+						</Parameter>
+					</Parameters>
+				</Service>
+			</Services>
+		</Type>
+
+		<!-- Completed -->
+		<Type name="TableForeignKey" preferredOrdering="CONSTRAINT_CATALOG,CONSTRAINT_SCHEMA,TABLE_NAME,CONSTRAINT_NAME">
+			<Identifier>
+				<Part name="CONSTRAINT_CATALOG" type="System.String" />
+				<Part name="CONSTRAINT_SCHEMA" type="System.String" />
+				<Part name="TABLE_NAME" type="System.String" />
+				<Part name="CONSTRAINT_NAME" type="System.String" />
+			</Identifier>
+			<Properties>
+				<Property name="CONSTRAINT_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="TABLE_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="REFERENCED_TABLE_CATALOG" type="System.String" />
+				<Property name="REFERENCED_TABLE_SCHEMA" type="System.String" />
+				<Property name="REFERENCED_TABLE_NAME" type="System.String" />
+				<Property name="UPDATE_RULE" type="System.String" />
+				<Property name="DELETE_RULE" type="System.String" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="ForeignKeys" />
+					</Parameters>
+				</Service>
+			</Services>
+		</Type>
+
+		<!-- Completed -->
+		<Type name="TableForeignKeyColumn" preferredOrdering="CONSTRAINT_CATALOG,CONSTRAINT_SCHEMA,TABLE_NAME,CONSTRAINT_NAME,ORDINAL_POSITION">
+			<Identifier>
+				<Part name="CONSTRAINT_CATALOG" type="System.String" />
+				<Part name="CONSTRAINT_SCHEMA" type="System.String" />
+				<Part name="TABLE_NAME" type="System.String" />
+				<Part name="CONSTRAINT_NAME" type="System.String" />
+				<Part name="COLUMN_NAME" type="System.String" />
+			</Identifier>
+			<Properties>
+				<Property name="CONSTRAINT_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="TABLE_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="COLUMN_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="REFERENCED_TABLE_CATALOG" type="System.String" />
+				<Property name="REFERENCED_TABLE_SCHEMA" type="System.String" />
+				<Property name="REFERENCED_TABLE_NAME" type="System.String" />
+				<Property name="REFERENCED_COLUMN_NAME" type="System.String" />
+				<Property name="ORDINAL_POSITION" type="System.Int16" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="ForeignKeyColumns" />
+					</Parameters>
+				</Service>
+			</Services>
+		</Type>
+
+		<!-- Completed -->
+		<Type name="View" preferredOrdering="VIEW_CATALOG,VIEW_SCHEMA,VIEW_NAME">
+			<Identifier>
+				<Part name="VIEW_CATALOG" type="System.String" />
+				<Part name="VIEW_SCHEMA" type="System.String" />
+				<Part name="VIEW_NAME" type="System.String" />
+			</Identifier>
+			<Properties>
+				<Property name="VIEW_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="IS_SYSTEM_VIEW" type="System.Boolean" />
+				<Property name="DESCRIPTION" type="System.String" />
+				<Property name="DEFINITION" type="System.String" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="Views" />
+					</Parameters>
+				</Service>
+				<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
+					<Parameters method="AppendToDSRef">
+						<Parameter>
+							<Parameter value="{2}" />
+							<Parameter value="{1}" />
+							<Parameter value="View" />
+							<Parameter />
+							<Parameter>
+								<Parameter value="4656BAEA-F397-11CE-BFE1-00AA0057B34E">
+									<Parameter value="{0}" />
+								</Parameter>
+								<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
+									<Parameter value="301" type="System.Int32" />
+								</Parameter>
+							</Parameter>
+						</Parameter>
+					</Parameters>
+				</Service>
+			</Services>
+		</Type>
+
+		<!-- Completed -->
+		<Type name="ViewColumn" preferredOrdering="VIEW_CATALOG,VIEW_SCHEMA,VIEW_NAME,ORDINAL_POSITION">
+			<Identifier>
+				<Part name="VIEW_CATALOG" type="System.String" />
+				<Part name="VIEW_SCHEMA" type="System.String" />
+				<Part name="VIEW_NAME" type="System.String" />
+				<Part name="COLUMN_NAME" type="System.String" />
+			</Identifier>
+			<Properties>
+				<Property name="VIEW_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="COLUMN_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="ORDINAL_POSITION" type="System.Int16" />
+				<Property name="DESCRIPTION" type="System.String" />
+				<Property name="IS_NULLABLE" type="System.Boolean" />
+				<Property name="COLUMN_SIZE" type="System.Int32" />
+				<Property name="NUMERIC_PRECISION" type="System.Byte" />
+				<Property name="NUMERIC_SCALE" type="System.Int32" />
+				<Property name="COLUMN_DATA_TYPE" type="System.String" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="ViewColumns" />
+					</Parameters>
+				</Service>
+				<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
+					<Parameters method="AppendToDSRef">
+						<Parameter>
+							<Parameter value="{2}" />
+							<Parameter value="{1}" />
+							<Parameter value="View" />
+							<Parameter />
+							<Parameter>
+								<Parameter value="4656BAEA-F397-11CE-BFE1-00AA0057B34E">
+									<Parameter value="{0}" />
+								</Parameter>
+								<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
+									<Parameter value="301" type="System.Int32" />
+								</Parameter>
+							</Parameter>
+							<Parameter>
+								<Parameter>
+									<Parameter value="{3}" />
+									<Parameter />
+									<Parameter value="Field" />
+									<Parameter />
+									<Parameter>
+										<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
+											<Parameter value="302" type="System.Int32" />
+										</Parameter>
+									</Parameter>
+								</Parameter>
+							</Parameter>
+						</Parameter>
+					</Parameters>
+				</Service>
+			</Services>
+		</Type>
+
+		<!-- Completed -->
+		<Type name="StoredProcedure" preferredOrdering="PROCEDURE_CATALOG,PROCEDURE_SCHEMA,PROCEDURE_NAME">
+			<Identifier>
+				<Part name="PROCEDURE_CATALOG" type="System.String" />
+				<Part name="PROCEDURE_SCHEMA" type="System.String" />
+				<Part name="PROCEDURE_NAME" type="System.String" />
+			</Identifier>
+			<Properties>
+				<Property name="PROCEDURE_SCHEMA" type="System.String" isIdentifierPart="true" />
+				<Property name="PROCEDURE_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="DESCRIPTION" type="System.String" />
+				<Property name="SOURCE" type="System.Array" />
+				<Property name="IS_SYSTEM_PROCEDURE" type="System.Boolean" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="Procedures" />
+					</Parameters>
+				</Service>
+				<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
+					<Parameters method="AppendToDSRef">
+						<Parameter>
+							<Parameter value="{2}" />
+							<Parameter value="{1}" />
+							<Parameter value="Procedure" />
+							<Parameter />
+							<Parameter>
+								<Parameter value="4656BAEA-F397-11CE-BFE1-00AA0057B34E">
+									<Parameter value="{0}" />
+								</Parameter>
+								<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
+									<Parameter value="401" type="System.Int32" />
+								</Parameter>
+							</Parameter>
+						</Parameter>
+					</Parameters>
+				</Service>
+			</Services>
+		</Type>
+
+		<!-- Completed -->
+		<Type name="StoredProcedureParameter" preferredOrdering="PROCEDURE_CATALOG,PROCEDURE_SCHEMA,PROCEDURE_NAME,ORDINAL_POSITION">
+			<Identifier>
+				<Part name="PROCEDURE_CATALOG" type="System.String" />
+				<Part name="PROCEDURE_SCHEMA" type="System.String" />
+				<Part name="PROCEDURE_NAME" type="System.String" />
+				<Part name="PARAMETER_NAME" type="System.String" />
+			</Identifier>
+			<Properties>
+				<Property name="PROCEDURE_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="PARAMETER_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="ORDINAL_POSITION" type="System.Int16" />
+				<Property name="PARAMETER_DATA_TYPE" type="System.String" />
+				<Property name="PARAMETER_SIZE" type="System.Int32" />
+				<Property name="NUMERIC_PRECISION" type="System.Byte" />
+				<Property name="NUMERIC_SCALE" type="System.Int32" />
+				<Property name="IS_NULLABLE" type="System.Boolean" />
+				<Property name="DESCRIPTION" type="System.String" />
+				<Property name="PARAMETER_DIRECTION" type="System.Int32" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="ProcedureParameters" />
+					</Parameters>
+				</Service>
+				<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
+					<Parameters method="AppendToDSRef">
+						<Parameter>
+							<Parameter value="{2}" />
+							<Parameter value="{1}" />
+							<Parameter value="StoredProcedure" />
+							<Parameter />
+							<Parameter>
+								<Parameter value="4656BAEA-F397-11CE-BFE1-00AA0057B34E">
+									<Parameter value="{0}" />
+								</Parameter>
+								<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
+									<Parameter value="401" type="System.Int32" />
+								</Parameter>
+							</Parameter>
+							<Parameter>
+								<Parameter>
+									<Parameter value="{3}" />
+									<Parameter />
+									<Parameter value="Field" />
+									<Parameter />
+									<Parameter>
+										<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
+											<Parameter value="402" type="System.Int32" />
+										</Parameter>
+									</Parameter>
+								</Parameter>
+							</Parameter>
+						</Parameter>
+					</Parameters>
+				</Service>
+			</Services>
+		</Type>
+
+		<Type name="StoredProcedureColumn" preferredOrdering="PROCEDURE_CATALOG,PROCEDURE_SCHEMA,PROCEDURE_NAME,ORDINAL_POSITION">
+			<Identifier>
+				<Part name="PROCEDURE_CATALOG" type="System.String" />
+				<Part name="PROCEDURE_SCHEMA" type="System.String" />
+				<Part name="PROCEDURE_NAME" type="System.String" />
+				<Part name="PARAMETER_NAME" type="System.String" />
+			</Identifier>
+			<Properties>
+				<Property name="PROCEDURE_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="PARAMETER_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="ORDINAL_POSITION" type="System.Int16" />
+				<Property name="PARAMETER_DATA_TYPE" type="System.String" />
+				<Property name="PARAMETER_SIZE" type="System.Int32" />
+				<Property name="NUMERIC_PRECISION" type="System.Byte" />
+				<Property name="NUMERIC_SCALE" type="System.Int32" />
+				<Property name="IS_NULLABLE" type="System.Boolean" />
+				<Property name="DESCRIPTION" type="System.String" />
+				<Property name="PARAMETER_DIRECTION" type="System.Int32" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="ProcedureParameters" />
+					</Parameters>
+				</Service>
+				<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
+					<Parameters method="AppendToDSRef">
+						<Parameter>
+							<Parameter value="{2}" />
+							<Parameter value="{1}" />
+							<Parameter value="StoredProcedure" />
+							<Parameter />
+							<Parameter>
+								<Parameter value="4656BAEA-F397-11CE-BFE1-00AA0057B34E">
+									<Parameter value="{0}" />
+								</Parameter>
+								<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
+									<Parameter value="401" type="System.Int32" />
+								</Parameter>
+							</Parameter>
+							<Parameter>
+								<Parameter>
+									<Parameter value="{3}" />
+									<Parameter />
+									<Parameter value="Field" />
+									<Parameter />
+									<Parameter>
+										<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
+											<Parameter value="402" type="System.Int32" />
+										</Parameter>
+									</Parameter>
+								</Parameter>
+							</Parameter>
+						</Parameter>
+					</Parameters>
+				</Service>
+			</Services>
+		</Type>
+
+		<!-- Completed -->
+		<Type name="ScalarFunction" preferredOrdering="FUNCTION_CATALOG,FUNCTION_SCHEMA,FUNCTION_NAME">
+			<Identifier>
+				<Part name="FUNCTION_CATALOG" type="System.String" />
+				<Part name="FUNCTION_SCHEMA" type="System.String" />
+				<Part name="FUNCTION_NAME" type="System.String" />
+			</Identifier>
+			<Properties>
+				<Property name="FUNCTION_SCHEMA" type="System.String" isIdentifierPart="true" />
+				<Property name="FUNCTION_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="DESCRIPTION" type="System.String" />
+				<Property name="SOURCE" type="System.Array" />
+				<Property name="IS_SYSTEM_FUNCTION" type="System.Boolean" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="Functions" />
+					</Parameters>
+				</Service>
+				<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
+					<Parameters method="AppendToDSRef">
+						<Parameter>
+							<Parameter value="{2}" />
+							<Parameter value="{1}" />
+							<Parameter value="Function" />
+							<Parameter />
+							<Parameter>
+								<Parameter value="4656BAEA-F397-11CE-BFE1-00AA0057B34E">
+									<Parameter value="{0}" />
+								</Parameter>
+								<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
+									<Parameter value="501" type="System.Int32" />
+								</Parameter>
+							</Parameter>
+						</Parameter>
+					</Parameters>
+				</Service>
+			</Services>
+		</Type>
+
+		<!-- Completed -->
+		<Type name="ScalarFunctionParameter" preferredOrdering="FUNCTION_CATALOG,FUNCTION_SCHEMA,FUNCTION_NAME,ORDINAL_POSITION">
+			<Identifier>
+				<Part name="FUNCTION_CATALOG" type="System.String" />
+				<Part name="FUNCTION_SCHEMA" type="System.String" />
+				<Part name="FUNCTION_NAME" type="System.String" />
+				<Part name="ARGUMENT_NAME" type="System.String" />
+			</Identifier>
+			<Properties>
+				<Property name="FUNCTION_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="ARGUMENT_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="ORDINAL_POSITION" type="System.Int16" />
+				<Property name="PSEUDO_NAME" type="System.String" />
+				<Property name="PARAMETER_DATA_TYPE" type="System.String" />
+				<Property name="PARAMETER_SIZE" type="System.Int32" />
+				<Property name="NUMERIC_PRECISION" type="System.Int32" />
+				<Property name="NUMERIC_SCALE" type="System.Int32" />
+				<Property name="IS_NULLABLE" type="System.Boolean" />
+				<Property name="DESCRIPTION" type="System.String" />
+				<Property name="PARAMETER_DIRECTION" type="System.Int32" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="FunctionArguments" />
+					</Parameters>
+				</Service>
+				<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
+					<Parameters method="AppendToDSRef">
+						<Parameter>
+							<Parameter value="{2}" />
+							<Parameter value="{1}" />
+							<Parameter value="Function" />
+							<Parameter />
+							<Parameter>
+								<Parameter value="4656BAEA-F397-11CE-BFE1-00AA0057B34E">
+									<Parameter value="{0}" />
+								</Parameter>
+								<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
+									<Parameter value="501" type="System.Int32" />
+								</Parameter>
+							</Parameter>
+							<Parameter>
+								<Parameter>
+									<Parameter value="{3}" />
+									<Parameter />
+									<Parameter value="Field" />
+									<Parameter />
+									<Parameter>
+										<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
+											<Parameter value="502" type="System.Int32" />
+										</Parameter>
+									</Parameter>
+								</Parameter>
+							</Parameter>
+						</Parameter>
+					</Parameters>
+				</Service>
+			</Services>
+		</Type>
+	</Types>
+
+
+	<!-- Mapped object types -->
+	<MappedTypes>
+
+		<!-- To be tested -->
+		<MappedType name="Domain" underlyingType="Domain">
+			<Selection restrictions="{Catalog},{Schema},{Name},null" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="DOMAIN_CATALOG" />
+				<Part name="Schema" underlyingMember="DOMAIN_SCHEMA" />
+				<Part name="Name" underlyingMember="DOMAIN_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="Name" underlyingMember="DOMAIN_NAME" isIdentifierPart="true" />
+				<Property name="IsNullable" underlyingMember="IS_NULLABLE" />
+				<Property name="Length" underlyingMember="DOMAIN_SIZE" />
+				<Property name="Precision" underlyingMember="NUMERIC_PRECISION" />
+				<Property name="Scale" underlyingMember="NUMERIC_SCALE" />
+				<Property name="NativeDataType" underlyingMember="DOMAIN_DATA_TYPE" />
+				<Property name="AdoDotNetDataType" underlyingMember="DOMAIN_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+				<Property name="AdoDotNetDbType" underlyingMember="DOMAIN_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+				<Property name="FrameworkDataType" underlyingMember="DOMAIN_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+			</Properties>
+		</MappedType>
+		<!-- -->
+
+		<!-- Completed -->
+		<MappedTypeRef name="ElementMappedTypeTable" arguments="Table,TABLE" />
+		<!--<MappedTypeRef name="ElementMappedTypeTable" arguments="SystemTable,SYSTEM TABLE" />-->
+
+		<!-- Completed -->
+		<MappedType name="TableColumn" underlyingType="TableColumn">
+			<Selection restrictions="{Catalog},{Schema},{Table},{Name}" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="TABLE_CATALOG" />
+				<Part name="Schema" underlyingMember="TABLE_SCHEMA" />
+				<Part name="Table" underlyingMember="TABLE_NAME" />
+				<Part name="Name" underlyingMember="COLUMN_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="Table" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
+				<Property name="Name" underlyingMember="COLUMN_NAME" isIdentifierPart="true" />
+				<Property name="Ordinal" underlyingMember="ORDINAL_POSITION">
+					<Conversion>
+						<ChangeType type="System.Int32" />
+					</Conversion>
+				</Property>
+				<Property name="IsNullable" underlyingMember="IS_NULLABLE" />
+				<Property name="Length" underlyingMember="COLUMN_SIZE" />
+				<Property name="Precision" underlyingMember="NUMERIC_PRECISION" />
+				<Property name="Scale" underlyingMember="NUMERIC_SCALE" />
+				<Property name="NativeDataType" underlyingMember="COLUMN_DATA_TYPE" />
+				<Property name="AdoDotNetDataType" underlyingMember="COLUMN_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+				<Property name="AdoDotNetDbType" underlyingMember="COLUMN_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+				<Property name="FrameworkDataType" underlyingMember="COLUMN_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+				<Property name="IsComputed" underlyingMember="IS_COMPUTED" />
+			</Properties>
+		</MappedType>
+
+		<!-- Completed -->
+		<MappedType name="TableIndex" underlyingType="TableIndex">
+			<Selection restrictions="{Catalog},{Schema},{Table},{Name}" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="TABLE_CATALOG" />
+				<Part name="Schema" underlyingMember="TABLE_SCHEMA" />
+				<Part name="Table" underlyingMember="TABLE_NAME" />
+				<Part name="Name" underlyingMember="INDEX_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="Table" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
+				<Property name="Name" underlyingMember="INDEX_NAME" isIdentifierPart="true" />
+				<Property name="IsPrimary" underlyingMember="IS_PRIMARY" />
+				<Property name="IsUnique" underlyingMember="IS_UNIQUE" />
+			</Properties>
+		</MappedType>
+
+		<!-- Completed -->
+		<MappedType name="TableIndexColumn" underlyingType="TableIndexColumn">
+			<Selection restrictions="{Catalog},{Schema},{Table},{Index},{Name}" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="TABLE_CATALOG" />
+				<Part name="Schema" underlyingMember="TABLE_SCHEMA" />
+				<Part name="Table" underlyingMember="TABLE_NAME" />
+				<Part name="Index" underlyingMember="INDEX_NAME" />
+				<Part name="Name" underlyingMember="COLUMN_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="Table" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
+				<Property name="Index" underlyingMember="INDEX_NAME" isIdentifierPart="true" />
+				<Property name="Name" underlyingMember="COLUMN_NAME" isIdentifierPart="true" />
+				<Property name="Ordinal" underlyingMember="ORDINAL_POSITION">
+					<Conversion>
+						<ChangeType type="System.Int32" />
+					</Conversion>
+				</Property>
+			</Properties>
+		</MappedType>
+
+		<!-- Completed -->
+		<MappedType name="TableUniqueKey" underlyingType="TableIndex">
+			<Selection restrictions="{Catalog},{Schema},{Table},{Name}" filter="IS_UNIQUE = true" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="TABLE_CATALOG" />
+				<Part name="Schema" underlyingMember="TABLE_SCHEMA" />
+				<Part name="Table" underlyingMember="TABLE_NAME" />
+				<Part name="Name" underlyingMember="INDEX_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="Table" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
+				<Property name="Name" underlyingMember="INDEX_NAME" isIdentifierPart="true" />
+				<Property name="IsPrimary" underlyingMember="IS_PRIMARY" />
+				<Property name="IsUnique" underlyingMember="IS_UNIQUE" />
+			</Properties>
+		</MappedType>
+
+		<!-- Completed -->
+		<MappedType name="TableUniqueKeyColumn" underlyingType="TableIndexColumn">
+			<Selection restrictions="{Catalog},{Schema},{Table},{Index},{Name}" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="TABLE_CATALOG" />
+				<Part name="Schema" underlyingMember="TABLE_SCHEMA" />
+				<Part name="Table" underlyingMember="TABLE_NAME" />
+				<Part name="TableUniqueKey" underlyingMember="INDEX_NAME" />
+				<Part name="Name" underlyingMember="COLUMN_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="Table" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
+				<Property name="TableUniqueKey" underlyingMember="INDEX_NAME" isIdentifierPart="true" />
+				<Property name="Name" underlyingMember="COLUMN_NAME" isIdentifierPart="true" />
+				<Property name="Ordinal" underlyingMember="ORDINAL_POSITION">
+					<Conversion>
+						<ChangeType type="System.Int32" />
+					</Conversion>
+				</Property>
+			</Properties>
+		</MappedType>
+
+		<!-- Completed -->
+		<MappedType name="TableForeignKey" underlyingType="TableForeignKey">
+			<Selection restrictions="{Catalog},{Schema},{Table},{Name}" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="CONSTRAINT_CATALOG" />
+				<Part name="Schema" underlyingMember="CONSTRAINT_SCHEMA" />
+				<Part name="Table" underlyingMember="TABLE_NAME" />
+				<Part name="Name" underlyingMember="CONSTRAINT_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="Name" underlyingMember="CONSTRAINT_NAME" isIdentifierPart="true" />
+				<Property name="Table" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
+				<Property name="ReferencedTableCatalog" underlyingMember="REFERENCED_TABLE_CATALOG" />
+				<Property name="ReferencedTableSchema" underlyingMember="REFERENCED_TABLE_SCHEMA" />
+				<Property name="ReferencedTableName" underlyingMember="REFERENCED_TABLE_NAME" />
+			</Properties>
+		</MappedType>
+
+		<!-- Completed -->
+		<MappedType name="TableForeignKeyColumn" underlyingType="TableForeignKeyColumn">
+			<Selection restrictions="{Catalog},{Schema},{Table},{TableForeignKey},{Name}" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="CONSTRAINT_CATALOG" />
+				<Part name="Schema" underlyingMember="CONSTRAINT_SCHEMA" />
+				<Part name="Table" underlyingMember="TABLE_NAME" />
+				<Part name="TableForeignKey" underlyingMember="CONSTRAINT_NAME" />
+				<Part name="Name" underlyingMember="COLUMN_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="TableForeignKey" underlyingMember="CONSTRAINT_NAME" isIdentifierPart="true" />
+				<Property name="Table" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
+				<Property name="Name" underlyingMember="COLUMN_NAME" isIdentifierPart="true" />
+				<Property name="ReferencedTableCatalog" underlyingMember="REFERENCED_TABLE_CATALOG" />
+				<Property name="ReferencedTableSchema" underlyingMember="REFERENCED_TABLE_SCHEMA" />
+				<Property name="ReferencedTableName" underlyingMember="REFERENCED_TABLE_NAME" />
+				<Property name="ReferencedTableColumn" underlyingMember="REFERENCED_COLUMN_NAME" />
+				<Property name="Ordinal" underlyingMember="ORDINAL_POSITION">
+					<Conversion>
+						<ChangeType type="System.Int32" />
+					</Conversion>
+				</Property>
+			</Properties>
+		</MappedType>
+
+		<!-- Completed -->
+		<MappedType name="View" underlyingType="View">
+			<Selection restrictions="{Catalog},{Schema},{Name}" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="VIEW_CATALOG" />
+				<Part name="Schema" underlyingMember="VIEW_SCHEMA" />
+				<Part name="Name" underlyingMember="VIEW_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="Name" underlyingMember="VIEW_NAME" isIdentifierPart="true" />
+				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_VIEW" />
+				<Property name="Sql" underlyingMember="DEFINITION" />
+				<Property name="Description" underlyingMember="DESCRIPTION" />
+			</Properties>
+		</MappedType>
+
+		<!-- Completed -->
+		<MappedType name="ViewColumn" underlyingType="ViewColumn">
+			<Selection restrictions="{Catalog},{Schema},{View},{Name}" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="VIEW_CATALOG" />
+				<Part name="Schema" underlyingMember="VIEW_SCHEMA" />
+				<Part name="View" underlyingMember="VIEW_NAME" />
+				<Part name="Name" underlyingMember="COLUMN_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="View" underlyingMember="VIEW_NAME" isIdentifierPart="true" />
+				<Property name="Name" underlyingMember="COLUMN_NAME" isIdentifierPart="true" />
+				<Property name="Ordinal" underlyingMember="ORDINAL_POSITION">
+					<Conversion>
+						<ChangeType type="System.Int32" />
+					</Conversion>
+				</Property>
+				<Property name="IsNullable" underlyingMember="IS_NULLABLE" />
+				<Property name="Length" underlyingMember="COLUMN_SIZE" />
+				<Property name="Precision" underlyingMember="NUMERIC_PRECISION" />
+				<Property name="Scale" underlyingMember="NUMERIC_SCALE" />
+				<Property name="NativeDataType" underlyingMember="COLUMN_DATA_TYPE" />
+				<Property name="AdoDotNetDataType" underlyingMember="COLUMN_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+				<Property name="AdoDotNetDbType" underlyingMember="COLUMN_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+				<Property name="FrameworkDataType" underlyingMember="COLUMN_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+			</Properties>
+		</MappedType>
+
+		<!-- Completed -->
+		<MappedType name="StoredProcedure" underlyingType="StoredProcedure">
+			<Selection restrictions="{Catalog},{Schema},{Name}" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="PROCEDURE_CATALOG" />
+				<Part name="Schema" underlyingMember="PROCEDURE_SCHEMA" />
+				<Part name="Name" underlyingMember="PROCEDURE_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="Schema" underlyingMember="PROCEDURE_SCHEMA" isIdentifierPart="true" />
+				<Property name="Name" underlyingMember="PROCEDURE_NAME" isIdentifierPart="true" />
+				<Property name="Description" underlyingMember="DESCRIPTION"/>
+				<Property name="Dsl" underlyingMember="SOURCE"/>
+				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_PROCEDURE"/>
+			</Properties>
+		</MappedType>
+
+		<!-- Completed -->
+		<MappedType name="StoredProcedureParameter" underlyingType="StoredProcedureParameter">
+			<Selection restrictions="{Catalog},{Schema},{StoredProcedure},{Name}" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="PROCEDURE_CATALOG" />
+				<Part name="Schema" underlyingMember="PROCEDURE_SCHEMA" />
+				<Part name="StoredProcedure" underlyingMember="PROCEDURE_NAME" />
+				<Part name="Name" underlyingMember="PARAMETER_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="StoredProcedure" underlyingMember="PROCEDURE_NAME" isIdentifierPart="true" />
+				<Property name="Name" underlyingMember="PARAMETER_NAME" isIdentifierPart="true" />
+				<Property name="Ordinal" underlyingMember="ORDINAL_POSITION">
+					<Conversion>
+						<ChangeType type="System.Int32" />
+					</Conversion>
+				</Property>
+				<Property name="Direction" underlyingMember="PARAMETER_DIRECTION" />
+				<Property name="IsNullable" underlyingMember="IS_NULLABLE" />
+				<Property name="Length" underlyingMember="PARAMETER_SIZE">
+					<Conversion>
+						<ChangeType type="System.Int32" />
+					</Conversion>
+				</Property>
+				<Property name="Precision" underlyingMember="NUMERIC_PRECISION" />
+				<Property name="Scale" underlyingMember="NUMERIC_SCALE" />
+				<Property name="NativeDataType" underlyingMember="PARAMETER_DATA_TYPE" />
+				<Property name="AdoDotNetDataType" underlyingMember="PARAMETER_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+				<Property name="AdoDotNetDbType" underlyingMember="PARAMETER_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+				<Property name="FrameworkDataType" underlyingMember="PARAMETER_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+			</Properties>
+		</MappedType>
+
+		<!-- Completed -->
+		<MappedType name="StoredProcedureColumn" underlyingType="StoredProcedureColumn">
+			<Selection restrictions="{Catalog},{Schema},{StoredProcedure},{Name}" filter="PARAMETER_DIRECTION = 1 OR PARAMETER_DIRECTION = 3" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="PROCEDURE_CATALOG" />
+				<Part name="Schema" underlyingMember="PROCEDURE_SCHEMA" />
+				<Part name="StoredProcedure" underlyingMember="PROCEDURE_NAME" />
+				<Part name="Name" underlyingMember="PARAMETER_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="StoredProcedure" underlyingMember="PROCEDURE_NAME" isIdentifierPart="true" />
+				<Property name="Name" underlyingMember="PARAMETER_NAME" isIdentifierPart="true" />
+				<Property name="Ordinal" underlyingMember="ORDINAL_POSITION">
+					<Conversion>
+						<ChangeType type="System.Int32" />
+					</Conversion>
+				</Property>
+				<Property name="IsNullable" underlyingMember="IS_NULLABLE" />
+				<Property name="Length" underlyingMember="PARAMETER_SIZE">
+					<Conversion>
+						<ChangeType type="System.Int32" />
+					</Conversion>
+				</Property>
+				<Property name="Precision" underlyingMember="NUMERIC_PRECISION" />
+				<Property name="Scale" underlyingMember="NUMERIC_SCALE" />
+				<Property name="NativeDataType" underlyingMember="PARAMETER_DATA_TYPE" />
+				<Property name="AdoDotNetDataType" underlyingMember="PARAMETER_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+				<Property name="AdoDotNetDbType" underlyingMember="PARAMETER_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+				<Property name="FrameworkDataType" underlyingMember="PARAMETER_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+			</Properties>
+		</MappedType>
+
+		<!-- Completed -->
+		<MappedType name="ScalarFunction" underlyingType="ScalarFunction">
+			<Selection restrictions="{Catalog},{Schema},{Name}" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="FUNCTION_CATALOG" />
+				<Part name="Schema" underlyingMember="FUNCTION_SCHEMA" />
+				<Part name="Name" underlyingMember="FUNCTION_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="Schema" underlyingMember="FUNCTION_SCHEMA" isIdentifierPart="true" />
+				<Property name="Name" underlyingMember="FUNCTION_NAME" isIdentifierPart="true" />
+				<Property name="Description" underlyingMember="DESCRIPTION"/>
+				<Property name="Dsl" underlyingMember="SOURCE"/>
+				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FUNCTION" />
+			</Properties>
+		</MappedType>
+
+		<!-- Completed -->
+		<MappedType name="ScalarFunctionParameter" underlyingType="ScalarFunctionParameter">
+			<Selection restrictions="{Catalog},{Schema},{ScalarFunction},{Name}" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="FUNCTION_CATALOG" />
+				<Part name="Schema" underlyingMember="FUNCTION_SCHEMA" />
+				<Part name="ScalarFunction" underlyingMember="FUNCTION_NAME" />
+				<Part name="Name" underlyingMember="ARGUMENT_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="ScalarFunction" underlyingMember="FUNCTION_NAME" isIdentifierPart="true" />
+				<Property name="Name" underlyingMember="ARGUMENT_NAME" isIdentifierPart="true" />
+				<Property name="PseudoName" underlyingMembers="PSEUDO_NAME" />
+				<Property name="Ordinal" underlyingMember="ORDINAL_POSITION">
+					<Conversion>
+						<ChangeType type="System.Int32" />
+					</Conversion>
+				</Property>
+				<Property name="Direction" underlyingMember="PARAMETER_DIRECTION" />
+				<Property name="IsNullable" underlyingMember="IS_NULLABLE" />
+				<Property name="Length" underlyingMember="PARAMETER_SIZE" />
+				<Property name="Precision" underlyingMember="NUMERIC_PRECISION" />
+				<Property name="Scale" underlyingMember="NUMERIC_SCALE" />
+				<Property name="NativeDataType" underlyingMember="PARAMETER_DATA_TYPE" />
+				<Property name="AdoDotNetDataType" underlyingMember="PARAMETER_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+				<Property name="AdoDotNetDbType" underlyingMember="PARAMETER_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+				<Property name="FrameworkDataType" underlyingMember="PARAMETER_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+			</Properties>
+		</MappedType>
+
+	</MappedTypes>
+
+
+
+</DataObjectSupport>
