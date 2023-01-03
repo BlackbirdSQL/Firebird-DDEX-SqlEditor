@@ -17,10 +17,13 @@ If you're planning on using EF Core and/or .NET, VS does not have wizard support
 This roadblock is easily overcome by creating a separate project using .NET Framework for your data models and then linking your .NET / EF Core projects to those datasets.
 I have yet to transfer the converted EF Core project to the repository so that you are able to do this, simply because I haven't done any testing on it. That should happen in the next few days.
 
-If you're like me then coding is art and the end result should be a piece of artwork with the focus being on making it look "pretty". I don't get a kick out of burning away precious coding time by going the code first route, so we're going to build on this project and develop this package into something really neat. 
+I'm not a purist. If you're like me then you see coding as an art form and the focus is on being creative. Taking the code first route is to me pretty pointless, so we're going to build on this project and develop this package into something really neat, eliminating unecessary coding where we can.
+
+The intention is to maintain a small footprint. We're not going to start altering VS menus and taking over the Visual Studio IDE. It is a data source UI provider for Firebird and the benchmark is the SqlServer provider, so whatever UI functionality is available for SqlServer is on the ToDo list for Firebird.
+
 If there's any magic you feel should be included here, pop me a mail.
-Scanning for preset FlamerRobin databases and including them in a dropdown in the VS connection dialog is on the priority Todo list. That's a simple enumeration of the FlameRobin db xml file, if it exists.
-Also on the priority list are DML commands 
+Scanning for preset FlamerRobin databases and including them in a dropdown in the VS connection dialog is on the priority ToDo list. That's a simple enumeration of the FlameRobin db xml file, if it exists.
+Also on the priority list are DML commands... Create, Alter etc.
 
 ## Documentation
 
