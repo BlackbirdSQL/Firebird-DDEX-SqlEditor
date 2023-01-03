@@ -64,6 +64,7 @@ namespace BlackbirdSql.Data;
 
 public class ProviderServices : DbProviderServices
 {
+	public const string Invariant = PackageData.Invariant;
 	public static readonly ProviderServices Instance = new ProviderServices();
 
 	public ProviderServices()

@@ -23,6 +23,8 @@
 		<Description>.NET Framework Provider for Firebird (Blackbird)</Description>
 		<PackageIcon>blackbird-logo.png</PackageIcon>
 		<ApplicationIcon>Properties\Package.ico</ApplicationIcon>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<PackageLicenseFile>license.txt</PackageLicenseFile>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
 		<DefineConstants>TRACE</DefineConstants>
@@ -37,7 +39,7 @@
 	<ItemGroup>
 		<None Remove="Schema\FbMetaData.xml" />
 	</ItemGroup>
-	<ItemGroup Condition="'$(TargetFramework)'=='net48'" >
+	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
 	  <Compile Include="..\BlackbirdSql.EntityFramework\Helpers\MetadataHelpers.cs" Link="Entity\Helpers\MetadataHelpers.cs" />
 	  <Compile Include="..\BlackbirdSql.EntityFramework\Helpers\TypeHelpers.cs" Link="Entity\Helpers\TypeHelpers.cs" />
 	  <Compile Include="..\BlackbirdSql.EntityFramework\ProviderManifest.cs" Link="Entity\ProviderManifest.cs" />
@@ -131,6 +133,14 @@
 	  <Folder Include="Sql\" />
 	</ItemGroup>
 	<ItemGroup>
+	  <None Include="..\Docs\license.txt">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	  <None Include="..\Resources\blackbird-logo.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	  <None Include="Schema\FbSystemTables.cs" />
 	</ItemGroup>
 	<Import Project="..\Apis\Apis.projitems" Label="Shared" />

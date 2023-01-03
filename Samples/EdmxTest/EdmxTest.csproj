@@ -171,11 +171,11 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BlackbirdSql.Data.DslClient\BlackbirdSql.Data.DslClient.csproj">
+    <ProjectReference Include="..\..\BlackbirdSql.Data.DslClient\BlackbirdSql.Data.DslClient.csproj">
       <Project>{2e2eabaa-3fca-4768-9455-a3a8b75ee1de}</Project>
       <Name>BlackbirdSql.Data.DslClient</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BlackbirdSql.Common\BlackbirdSql.Common.csproj">
+    <ProjectReference Include="..\..\BlackbirdSql.Common\BlackbirdSql.Common.csproj">
       <Project>{28d8b582-2320-446e-b286-9b42e65dae13}</Project>
       <Name>BlackbirdSql.Common</Name>
     </ProjectReference>
