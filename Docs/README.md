@@ -10,16 +10,16 @@ Loading is asynchronous so the provider needs time to register and load. A datab
 
 As it stands right now the code is littered with diagnostics calls with writes to a log file set to c:\bin\vsdiag.log.
 Also, defaults in the connection dialog are set to my own test database.
-There seems to be an issue with drag and drop on procedures and functions which I haven't looked at. It's likely something trivial.
-The localized new query command is working but has not yet been placed in the views or functions/procedures nodes of the SE.
+There seems to be an issue with drag and drop on procedures and functions which I haven't looked at. It's likely something trivial but this functionality isn't available to SqlServer so may be another rabbit hole. The same applies to drag and drop from the SE directly into the edmx, also not available on SqlServer but I don't see why it cannot be done.
+The enhanced localized new query command is working but has not yet been placed in the views or functions/procedures nodes of the SE.
 
 If you're planning on using EF Core and/or .NET, VS does not have wizard support for either of these in the edmx or xsd which makes no sense to me.
 This roadblock is easily overcome by creating a separate project using .NET Framework for your data models and then linking your .NET / EF Core projects to those datasets.
 I have yet to transfer the converted EF Core project to the repository so that you are able to do this, simply because I haven't done any testing on it. That should happen in the next few days.
 
-If you're like me then coding is artwork and the end result should be a piece of art with the focus being on making it look "pretty". I'm really not interested in burning away precious coding time by going the code first route, so we're going to build on this project and develop this package into something really neat. 
+If you're like me then coding is art and the end result should be a piece of artwork with the focus being on making it look "pretty". I don't get a kick out of burning away precious coding time by going the code first route, so we're going to build on this project and develop this package into something really neat. 
 If there's any magic you feel should be included here, pop me a mail.
-Scanning for preset FlamerRobin databases and including them in a dropdown in the VS connection dialog is on the priority Todo list.
+Scanning for preset FlamerRobin databases and including them in a dropdown in the VS connection dialog is on the priority Todo list. That's a simple enumeration of the FlameRobin db xml file, if it exists.
 
 ## Documentation
 
@@ -44,14 +44,12 @@ Scanning for preset FlamerRobin databases and including them in a dropdown in th
 
 ## Resources
 
-* [Downloads](https://github.com/BlackbirdSQL/NETProvider/releases)
-* [Issue tracker](https://github.com/BlackbirdSQL/NETProvider/issues)
-* [Development mailing list](https://groups.google.com/forum/#!forum/blackbird-net-provider)
+* [Downloads](https://github.com/BlackbirdSQL/NETProvider-DDEX/releases)
+* [Issue tracker](https://github.com/BlackbirdSQL/NETProvider-DDEX/issues)
 
 ## Builds
 
-[![TeamCity](https://teamcity.jetbrains.com/app/rest/builds/buildType:(id:OpenSourceProjects_BlackbirdClient_CiBuild)/statusIcon.svg)](https://teamcity.jetbrains.com/project.html?projectId=OpenSourceProjects_BlackbirdClient)
-[![GitHub Actions](https://github.com/BlackbirdSQL/NETProvider/workflows/CI/badge.svg)](https://github.com/BlackbirdSQL/NETProvider/actions)
+TBC
 
 ## Misc
 
