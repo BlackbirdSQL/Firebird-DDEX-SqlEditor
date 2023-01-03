@@ -20,6 +20,7 @@ I have yet to transfer the converted EF Core project to the repository so that y
 If you're like me then coding is art and the end result should be a piece of artwork with the focus being on making it look "pretty". I don't get a kick out of burning away precious coding time by going the code first route, so we're going to build on this project and develop this package into something really neat. 
 If there's any magic you feel should be included here, pop me a mail.
 Scanning for preset FlamerRobin databases and including them in a dropdown in the VS connection dialog is on the priority Todo list. That's a simple enumeration of the FlameRobin db xml file, if it exists.
+Also on the priority list are DML commands 
 
 ## Documentation
 
