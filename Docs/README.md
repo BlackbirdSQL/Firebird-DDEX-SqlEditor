@@ -20,7 +20,7 @@ The localized new query command is working but has not yet been placed in the vi
 
 If you're planning on using EF Core and/or .NET, VS does not have wizard support for either of these in the edmx or xsd which makes no sense to me.
 This roadblock is easily overcome by creating a separate project using .NET Framework for your data models and then linking your .NET / EF Core projects to those datasets.
-I have yet to transfer the converted EF Core project to the repository so you can do this simply because I haven't done any testing on it. That should happen in the next few days.
+I have yet to transfer the converted EF Core project to the repository so you are able to do this, simply because I haven't done any testing on it. That should happen in the next few days.
 
 ## Documentation
 
