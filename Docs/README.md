@@ -22,7 +22,7 @@ I'm not a purist. If you're like me then you see coding as an art form and the f
 The intention is to maintain a small footprint. We're not going to start altering VS menus and taking over the Visual Studio IDE. It is a data source UI provider for Firebird and the benchmark is the SqlServer provider, so whatever UI functionality is available for SqlServer is on the ToDo list for Firebird.
 
 If there's any magic you feel should be included here, pop me a mail.
-Scanning for preset FlamerRobin databases and including them in a dropdown in the VS connection dialog is on the priority ToDo list. That's a simple enumeration of the FlameRobin db xml file, if it exists.
+Scanning for preset FlameRobin databases and including them in a dropdown in the VS connection dialog is on the priority ToDo list. That's a simple enumeration of the FlameRobin db xml file, if it exists.
 Also on the priority list are DML commands... Create, Alter etc.
 
 ## Documentation
