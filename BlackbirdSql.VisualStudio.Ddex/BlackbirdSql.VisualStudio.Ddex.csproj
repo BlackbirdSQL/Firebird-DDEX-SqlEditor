@@ -52,8 +52,10 @@
   </PropertyGroup>
   <!-- Project Properties (Build Events) -->
   <PropertyGroup>
-    <PostBuildEvent>:: We set the codebase on legacy ddex without vsix to this location so this is not required
-copy /v /y /b $(ProjectDir)$(OutDir)BlackbirdSql.VisualStudio.Ddex.* "%25ProgramFiles%25\BlackbirdSql\BlackbirdDDEX.9.1.0"
+    <PostBuildEvent>:: *** Update: No longer required
+:: copy /v /y /b $(ProjectDir)$(OutDir)BlackbirdSql.VisualStudio.Ddex.* "%25ProgramFiles%25\BlackbirdSql\BlackbirdDDEX.9.1.0"
+
+:: *** Update: DestFolder has not been updated so this won't execute. It's easier to close the ide and do it manually 
 :: The following are so that you don't have to do a reinstall of the vsix after a build
 :: NOTE:
 :: You will have to replace 17.0_xxx with your version and user id

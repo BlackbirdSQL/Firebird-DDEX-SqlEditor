@@ -16,12 +16,12 @@
 //$Authors = Jiri Cincura (jiri@cincura.net)
 
 using System;
-using BlackbirdSql.Data.Entity.Core.Infrastructure;
-using BlackbirdSql.Data.Entity.Core.Infrastructure.Internal;
+using BlackbirdSql.EntityFrameworkCore.Infrastructure;
+using BlackbirdSql.EntityFrameworkCore.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace BlackbirdSql.Data.Entity.Core.Internal;
+namespace BlackbirdSql.EntityFrameworkCore.Internal;
 
 public class FbOptions : IFbOptions
 {

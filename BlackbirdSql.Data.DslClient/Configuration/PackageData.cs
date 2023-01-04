@@ -1,13 +1,10 @@
-﻿using System;
+﻿
 
 namespace BlackbirdSql.Data.Configuration
 {
 	static class PackageData
 	{
-		// public const string FactoryName = "BlackbirdSql DslClient Provider"; // Now Resources.Factory_DisplayName
-		// public const string FactoryDescription = ".NET Framework Provider for Firebird (Blackbird)"; // Now Resources.Factory_Description
-
-
+		public const string Invariant = "BlackbirdSql.Data.DslClient";
 
 		public const string AssemblyGuid = "2369BE0C-8690-485E-86FC-6BF56CF4E727";
 		public const string AssemblyGuidNET = "9C91865C-CBB0-4AA3-8984-D3C1DB4854F3";

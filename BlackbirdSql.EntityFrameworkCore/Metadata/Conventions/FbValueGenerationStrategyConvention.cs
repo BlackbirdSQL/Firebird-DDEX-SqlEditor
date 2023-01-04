@@ -20,7 +20,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 
-namespace BlackbirdSql.Data.Entity.Core.Metadata.Conventions;
+namespace BlackbirdSql.EntityFrameworkCore.Metadata.Conventions;
 
 public class FbValueGenerationStrategyConvention : IModelInitializedConvention, IModelFinalizingConvention
 {

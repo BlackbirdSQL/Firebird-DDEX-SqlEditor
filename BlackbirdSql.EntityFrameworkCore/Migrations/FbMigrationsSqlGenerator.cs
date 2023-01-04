@@ -20,16 +20,16 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using BlackbirdSql.Data.DslClient;
-using BlackbirdSql.Data.Entity.Core.Infrastructure.Internal;
-using BlackbirdSql.Data.Entity.Core.Metadata;
-using BlackbirdSql.Data.Entity.Core.Metadata.Internal;
+using BlackbirdSql.EntityFrameworkCore.Infrastructure.Internal;
+using BlackbirdSql.EntityFrameworkCore.Metadata;
+using BlackbirdSql.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace BlackbirdSql.Data.Entity.Core.Migrations;
+namespace BlackbirdSql.EntityFrameworkCore.Migrations;
 
 public class FbMigrationsSqlGenerator : MigrationsSqlGenerator
 {

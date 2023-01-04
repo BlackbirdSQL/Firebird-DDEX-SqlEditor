@@ -19,7 +19,7 @@ using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace BlackbirdSql.Data.Entity.Core.Migrations.Internal;
+namespace BlackbirdSql.EntityFrameworkCore.Migrations.Internal;
 
 public class FbHistoryRepository : HistoryRepository
 {

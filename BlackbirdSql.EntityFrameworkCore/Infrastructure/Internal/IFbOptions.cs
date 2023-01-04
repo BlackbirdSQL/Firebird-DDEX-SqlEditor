@@ -17,7 +17,7 @@
 
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace BlackbirdSql.Data.Entity.Core.Infrastructure.Internal;
+namespace BlackbirdSql.EntityFrameworkCore.Infrastructure.Internal;
 
 public interface IFbOptions : ISingletonOptions
 {

@@ -22,7 +22,7 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace BlackbirdSql.Data.Entity.Core.Query.Expressions.Internal;
+namespace BlackbirdSql.EntityFrameworkCore.Query.Expressions.Internal;
 
 public class FbSpacedFunctionExpression : SqlFunctionExpression, IEquatable<FbSpacedFunctionExpression>
 {

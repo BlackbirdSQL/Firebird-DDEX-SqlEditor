@@ -28,7 +28,7 @@ using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 using Microsoft.Extensions.Logging;
 
-namespace BlackbirdSql.Data.Entity.Core.Scaffolding.Internal;
+namespace BlackbirdSql.EntityFrameworkCore.Scaffolding.Internal;
 
 public class FbDatabaseModelFactory : DatabaseModelFactory
 {

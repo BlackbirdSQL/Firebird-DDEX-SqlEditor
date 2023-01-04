@@ -18,10 +18,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BlackbirdSql.Data.Entity.Core.Utilities;
+using BlackbirdSql.EntityFrameworkCore.Utilities;
 using Microsoft.EntityFrameworkCore.Query;
 
-namespace BlackbirdSql.Data.Entity.Core.Query.ExpressionTranslators.Internal;
+namespace BlackbirdSql.EntityFrameworkCore.Query.ExpressionTranslators.Internal;
 
 public class FbMethodCallTranslatorProvider : RelationalMethodCallTranslatorProvider
 {

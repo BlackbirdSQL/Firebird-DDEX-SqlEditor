@@ -15,7 +15,7 @@
 
 //$Authors = Jiri Cincura (jiri@cincura.net), Jean Ressouche, Rafael Almeida (ralms@ralms.net)
 
-namespace BlackbirdSql.Data.Entity.Core.Metadata.Internal;
+namespace BlackbirdSql.EntityFrameworkCore.Metadata.Internal;
 
 public static class FbAnnotationNames
 {

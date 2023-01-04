@@ -17,7 +17,7 @@
 
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace BlackbirdSql.Data.Entity.Core;
+namespace BlackbirdSql.EntityFrameworkCore;
 
 public interface IFbMigrationSqlGeneratorBehavior
 {

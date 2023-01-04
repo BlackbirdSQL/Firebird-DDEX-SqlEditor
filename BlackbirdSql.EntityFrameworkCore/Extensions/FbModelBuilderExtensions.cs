@@ -15,8 +15,8 @@
 
 //$Authors = Jiri Cincura (jiri@cincura.net)
 
-using BlackbirdSql.Data.Entity.Core.Metadata;
-using BlackbirdSql.Data.Entity.Core.Metadata.Internal;
+using BlackbirdSql.EntityFrameworkCore.Metadata;
+using BlackbirdSql.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Microsoft.EntityFrameworkCore;

@@ -17,7 +17,7 @@
 
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace BlackbirdSql.Data.Entity.Core.Diagnostics.Internal;
+namespace BlackbirdSql.EntityFrameworkCore.Diagnostics.Internal;
 
 public class FbLoggingDefinitions : RelationalLoggingDefinitions
 { }

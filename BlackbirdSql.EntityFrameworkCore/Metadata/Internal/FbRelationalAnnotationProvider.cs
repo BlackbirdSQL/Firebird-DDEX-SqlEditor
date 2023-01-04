@@ -21,7 +21,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace BlackbirdSql.Data.Entity.Core.Metadata.Internal;
+namespace BlackbirdSql.EntityFrameworkCore.Metadata.Internal;
 
 public class FbRelationalAnnotationProvider : RelationalAnnotationProvider
 {

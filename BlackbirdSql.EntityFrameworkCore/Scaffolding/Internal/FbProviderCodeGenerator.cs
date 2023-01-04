@@ -17,12 +17,12 @@
 
 using System;
 using System.Reflection;
-using BlackbirdSql.Data.Entity.Core.Infrastructure;
+using BlackbirdSql.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 
-namespace BlackbirdSql.Data.Entity.Core.Scaffolding.Internal;
+namespace BlackbirdSql.EntityFrameworkCore.Scaffolding.Internal;
 
 public class FbProviderCodeGenerator : ProviderCodeGenerator
 {

@@ -17,8 +17,8 @@
 
 using System;
 using System.Data.Common;
-using BlackbirdSql.Data.Entity.Core.Infrastructure;
-using BlackbirdSql.Data.Entity.Core.Infrastructure.Internal;
+using BlackbirdSql.EntityFrameworkCore.Infrastructure;
+using BlackbirdSql.EntityFrameworkCore.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Microsoft.EntityFrameworkCore;

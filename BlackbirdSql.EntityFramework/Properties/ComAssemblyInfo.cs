@@ -17,11 +17,12 @@
 
 using System;
 using System.Runtime.InteropServices;
+using BlackbirdSql.Data.Entity.Configuration;
 
 [assembly: ComVisible(true)]
 // [assembly: Guid("F37B8373-51FA-4CC6-934E-DF147DFBD9F1")] // FirebirdSql
 #if NET
-[assembly: Guid(BlackbirdSql.Data.Entity.PackageData.AssemblyStringNET)]
+[assembly: Guid(BlackbirdSql.Data.Entity.Configuration.PackageData.AssemblyStringNET)]
 #else
-[assembly: Guid(BlackbirdSql.Data.Entity.PackageData.AssemblyString)]
+[assembly: Guid(PackageData.AssemblyString)]
 #endif

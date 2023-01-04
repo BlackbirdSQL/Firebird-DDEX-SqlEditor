@@ -19,12 +19,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using BlackbirdSql.Data.Entity.Core.Storage.Internal;
+using BlackbirdSql.EntityFrameworkCore.Storage.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Update;
 
-namespace BlackbirdSql.Data.Entity.Core.Update.Internal;
+namespace BlackbirdSql.EntityFrameworkCore.Update.Internal;
 
 public class FbUpdateSqlGenerator : UpdateSqlGenerator, IFbUpdateSqlGenerator
 {

@@ -24,7 +24,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace BlackbirdSql.Data.Entity.Core.Storage.Internal;
+namespace BlackbirdSql.EntityFrameworkCore.Storage.Internal;
 
 public class FbDatabaseCreator : RelationalDatabaseCreator
 {

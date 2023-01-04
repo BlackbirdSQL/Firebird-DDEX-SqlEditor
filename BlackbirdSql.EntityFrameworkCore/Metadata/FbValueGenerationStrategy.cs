@@ -15,7 +15,7 @@
 
 //$Authors = Jiri Cincura (jiri@cincura.net), Jean Ressouche, Rafael Almeida (ralms@ralms.net)
 
-namespace BlackbirdSql.Data.Entity.Core.Metadata;
+namespace BlackbirdSql.EntityFrameworkCore.Metadata;
 
 public enum FbValueGenerationStrategy
 {

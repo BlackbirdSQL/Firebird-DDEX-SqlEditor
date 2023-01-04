@@ -16,7 +16,7 @@
 //$Authors = Jiri Cincura (jiri@cincura.net)
 
 using System;
-using BlackbirdSql.Data.Entity.Core.Metadata.Internal;
+using BlackbirdSql.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -24,7 +24,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
 
-namespace BlackbirdSql.Data.Entity.Core.Metadata.Conventions;
+namespace BlackbirdSql.EntityFrameworkCore.Metadata.Conventions;
 
 public class FbStoreGenerationConvention : StoreGenerationConvention
 {

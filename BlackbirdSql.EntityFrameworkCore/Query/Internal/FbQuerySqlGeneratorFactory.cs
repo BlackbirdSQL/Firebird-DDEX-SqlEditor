@@ -15,10 +15,10 @@
 
 //$Authors = Jiri Cincura (jiri@cincura.net)
 
-using BlackbirdSql.Data.Entity.Core.Infrastructure.Internal;
+using BlackbirdSql.EntityFrameworkCore.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore.Query;
 
-namespace BlackbirdSql.Data.Entity.Core.Query.Internal;
+namespace BlackbirdSql.EntityFrameworkCore.Query.Internal;
 
 public class FbQuerySqlGeneratorFactory : IQuerySqlGeneratorFactory
 {

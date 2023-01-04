@@ -15,11 +15,11 @@
 
 //$Authors = Jiri Cincura (jiri@cincura.net)
 
-using BlackbirdSql.Data.Entity.Core.Storage.Internal;
+using BlackbirdSql.EntityFrameworkCore.Storage.Internal;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace BlackbirdSql.Data.Entity.Core.Migrations;
+namespace BlackbirdSql.EntityFrameworkCore.Migrations;
 
 public class FbMigrationSqlGeneratorBehavior : IFbMigrationSqlGeneratorBehavior
 {

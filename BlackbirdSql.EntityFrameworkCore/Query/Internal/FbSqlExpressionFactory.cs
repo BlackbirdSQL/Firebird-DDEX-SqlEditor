@@ -17,12 +17,12 @@
 
 using System;
 using System.Collections.Generic;
-using BlackbirdSql.Data.Entity.Core.Query.Expressions.Internal;
+using BlackbirdSql.EntityFrameworkCore.Query.Expressions.Internal;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace BlackbirdSql.Data.Entity.Core.Query.Internal;
+namespace BlackbirdSql.EntityFrameworkCore.Query.Internal;
 
 public class FbSqlExpressionFactory : SqlExpressionFactory
 {

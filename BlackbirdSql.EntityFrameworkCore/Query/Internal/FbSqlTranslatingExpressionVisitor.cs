@@ -19,7 +19,7 @@ using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
-namespace BlackbirdSql.Data.Entity.Core.Query.Internal;
+namespace BlackbirdSql.EntityFrameworkCore.Query.Internal;
 
 public class FbSqlTranslatingExpressionVisitor : RelationalSqlTranslatingExpressionVisitor
 {

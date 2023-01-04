@@ -34,6 +34,7 @@ using System.Text.RegularExpressions;
 using BlackbirdSql.Data.Entity.Sql;
 using BlackbirdSql.Data.Common;
 using BlackbirdSql.Common;
+using BlackbirdSql.Data.Entity.Configuration;
 
 namespace BlackbirdSql.Data.Entity.Migrations;
 

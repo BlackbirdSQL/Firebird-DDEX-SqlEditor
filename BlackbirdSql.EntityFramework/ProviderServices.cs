@@ -41,9 +41,11 @@ using BlackbirdSql.Data.Isql;
 using BlackbirdSql.Data.Services;
 
 #if EF6 || NET
+using BlackbirdSql.Data.Entity.Configuration;
 using BlackbirdSql.Data.Entity.Helpers;
 using BlackbirdSql.Data.Entity.Sql;
 #else
+using BlackbirdSql.Data.Configuration;
 using BlackbirdSql.Data.Helpers;
 using BlackbirdSql.Data.Sql;
 #endif

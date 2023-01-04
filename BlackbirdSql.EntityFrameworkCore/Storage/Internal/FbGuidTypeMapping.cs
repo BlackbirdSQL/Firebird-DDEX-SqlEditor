@@ -19,7 +19,7 @@ using System.Data.Common;
 using BlackbirdSql.Data.DslClient;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace BlackbirdSql.Data.Entity.Core.Storage.Internal;
+namespace BlackbirdSql.EntityFrameworkCore.Storage.Internal;
 
 public class FbGuidTypeMapping : GuidTypeMapping
 {

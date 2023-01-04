@@ -15,13 +15,13 @@
 
 //$Authors = Jiri Cincura (jiri@cincura.net)
 
-using BlackbirdSql.Data.Entity.Core.Scaffolding.Internal;
+using BlackbirdSql.EntityFrameworkCore.Scaffolding.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Scaffolding;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BlackbirdSql.Data.Entity.Core.Design.Internal;
+namespace BlackbirdSql.EntityFrameworkCore.Design.Internal;
 
 public class FbDesignTimeServices : IDesignTimeServices
 {

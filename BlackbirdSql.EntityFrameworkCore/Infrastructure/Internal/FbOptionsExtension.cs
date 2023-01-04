@@ -21,7 +21,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BlackbirdSql.Data.Entity.Core.Infrastructure.Internal;
+namespace BlackbirdSql.EntityFrameworkCore.Infrastructure.Internal;
 
 public class FbOptionsExtension : RelationalOptionsExtension
 {

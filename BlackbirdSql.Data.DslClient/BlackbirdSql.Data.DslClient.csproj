@@ -33,7 +33,6 @@
 		<DefineConstants>DEBUG;TRACE</DefineConstants>
 	</PropertyGroup>
 	<ItemGroup>
-	  <Compile Remove="CSharp8Range.cs" />
 	  <Compile Remove="Schema\FbSystemTables.cs" />
 	</ItemGroup>
 	<ItemGroup>
@@ -145,6 +144,6 @@
 	</ItemGroup>
 	<Import Project="..\Apis\Apis.projitems" Label="Shared" />
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	  <Exec Command=":: copy /v /y /b $(OutDir)\BlackbirdSql.Data.DslClient.* C:\Windows\Microsoft.NET\assembly\GAC_MSIL\BlackbirdSql.Data.DslClient\v4.0_9.1.0.0__e5f4a90eea6a9f33&#xD;&#xA;copy /v /y /b $(OutDir)\BlackbirdSql.Data.DslClient.* &quot;%25ProgramFiles%25\BlackbirdSql\BlackbirdClient.9.1.0&quot;&#xD;&#xA;&#xD;&#xA;:: The following are so that you don't have to do a reinstall of the vsix after a build&#xD;&#xA;:: NOTE:&#xD;&#xA;:: You will have to replace 17.0_xxx with your version and user id&#xD;&#xA;:: You will have to restart the ide before doing the build if you've used the ddex tool&#xD;&#xA;:: during your session because the dll will be locked&#xD;&#xA;set DestFolder=&quot;%25LocalAppData%25\Microsoft\VisualStudio\17.0_5d5e49fc\Extensions\d4sem1lb.ehh\&quot;&#xD;&#xA;if exist %25DestFolder%25 (&#xD;&#xA;copy /v /y /b $(ProjectDir)$(OutDir)*.dll %25DestFolder%25&#xD;&#xA;copy /v /y /b $(ProjectDir)$(OutDir)*.pdb %25DestFolder%25&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" />
+	  <Exec Command=":: *** Update: No longer required&#xD;&#xA;:: copy /v /y /b $(OutDir)\BlackbirdSql.Data.DslClient.* C:\Windows\Microsoft.NET\assembly\GAC_MSIL\BlackbirdSql.Data.DslClient\v4.0_9.1.0.0__e5f4a90eea6a9f33&#xD;&#xA;:: copy /v /y /b $(OutDir)\BlackbirdSql.Data.DslClient.* &quot;%25ProgramFiles%25\BlackbirdSql\BlackbirdClient.9.1.0&quot;&#xD;&#xA;&#xD;&#xA;:: *** Update: DestFolder has not been updated so this won't execute. It's easier to close the ide and do it manually &#xD;&#xA;:: The following are so that you don't have to do a reinstall of the vsix after a build&#xD;&#xA;:: NOTE:&#xD;&#xA;:: You will have to replace 17.0_xxx with your version and user id&#xD;&#xA;:: You will have to restart the ide before doing the build if you've used the ddex tool&#xD;&#xA;:: during your session because the dll will be locked&#xD;&#xA;&#xD;&#xA;set DestFolder=&quot;%25LocalAppData%25\Microsoft\VisualStudio\17.0_5d5e49fc\Extensions\d4sem1lb.ehh\&quot;&#xD;&#xA;if exist %25DestFolder%25 (&#xD;&#xA;copy /v /y /b $(ProjectDir)$(OutDir)*.dll %25DestFolder%25&#xD;&#xA;copy /v /y /b $(ProjectDir)$(OutDir)*.pdb %25DestFolder%25&#xD;&#xA;)" />
 	</Target>
 </Project>

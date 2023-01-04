@@ -19,13 +19,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using BlackbirdSql.Data.Entity.Core.Query.Internal;
+using BlackbirdSql.EntityFrameworkCore.Query.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
-namespace BlackbirdSql.Data.Entity.Core.Query.ExpressionTranslators.Internal;
+namespace BlackbirdSql.EntityFrameworkCore.Query.ExpressionTranslators.Internal;
 
 public class FbMathTranslator : IMethodCallTranslator
 {

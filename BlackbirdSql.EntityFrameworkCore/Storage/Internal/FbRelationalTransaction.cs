@@ -21,7 +21,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace BlackbirdSql.Data.Entity.Core.Storage.Internal;
+namespace BlackbirdSql.EntityFrameworkCore.Storage.Internal;
 
 public class FbRelationalTransaction : RelationalTransaction, IFbRelationalTransaction
 {

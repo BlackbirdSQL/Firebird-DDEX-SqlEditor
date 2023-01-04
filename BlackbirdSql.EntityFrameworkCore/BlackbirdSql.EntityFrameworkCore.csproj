@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFrameworks>net7.0</TargetFrameworks>
-		<AssemblyName>EntityFrameworkCore.Blackbird</AssemblyName>
-		<RootNamespace>BlackbirdSql.Data.Entity.Core</RootNamespace>
+		<AssemblyName>BlackbirdSql.EntityFrameworkCore</AssemblyName>
+		<RootNamespace>BlackbirdSql.EntityFrameworkCore</RootNamespace>
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>Properties\BlackbirdSql.EntityFrameworkCore.snk</AssemblyOriginatorKeyFile>
 		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
@@ -27,8 +27,10 @@
 		<DefineConstants>EFCORE;DEBUG;TRACE</DefineConstants>
 	</PropertyGroup>
 	<ItemGroup>
+	  <Content Include="..\Resources\blackbird-logo.png" Link="blackbird-logo.png" />
+	</ItemGroup>
+	<ItemGroup>
 		<None Include="..\license.txt" Pack="true" PackagePath="" />
-		<None Include="..\blackbird-logo.png" Pack="true" PackagePath="" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.1" />

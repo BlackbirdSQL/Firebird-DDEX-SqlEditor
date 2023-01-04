@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
-using BlackbirdSql.Data.Entity.Core.Infrastructure.Internal;
+using BlackbirdSql.EntityFrameworkCore.Infrastructure.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace BlackbirdSql.Data.Entity.Core.Extensions;
+namespace BlackbirdSql.EntityFrameworkCore.Extensions;
 
 using System;
 

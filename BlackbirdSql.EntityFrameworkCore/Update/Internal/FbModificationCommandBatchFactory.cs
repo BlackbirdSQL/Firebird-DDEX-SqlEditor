@@ -17,7 +17,7 @@
 
 using Microsoft.EntityFrameworkCore.Update;
 
-namespace BlackbirdSql.Data.Entity.Core.Update.Internal;
+namespace BlackbirdSql.EntityFrameworkCore.Update.Internal;
 
 public class FbModificationCommandBatchFactory : IModificationCommandBatchFactory
 {

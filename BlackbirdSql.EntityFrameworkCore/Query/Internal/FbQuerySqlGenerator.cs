@@ -20,14 +20,14 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
-using BlackbirdSql.Data.Entity.Core.Infrastructure.Internal;
-using BlackbirdSql.Data.Entity.Core.Query.Expressions.Internal;
-using BlackbirdSql.Data.Entity.Core.Storage.Internal;
+using BlackbirdSql.EntityFrameworkCore.Infrastructure.Internal;
+using BlackbirdSql.EntityFrameworkCore.Query.Expressions.Internal;
+using BlackbirdSql.EntityFrameworkCore.Storage.Internal;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace BlackbirdSql.Data.Entity.Core.Query.Internal;
+namespace BlackbirdSql.EntityFrameworkCore.Query.Internal;
 
 public class FbQuerySqlGenerator : QuerySqlGenerator
 {

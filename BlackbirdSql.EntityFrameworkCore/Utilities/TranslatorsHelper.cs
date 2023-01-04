@@ -20,7 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace BlackbirdSql.Data.Entity.Core.Utilities;
+namespace BlackbirdSql.EntityFrameworkCore.Utilities;
 
 public class TranslatorsHelper
 {

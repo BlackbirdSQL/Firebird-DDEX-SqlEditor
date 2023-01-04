@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BlackbirdSql.Data.Entity
+namespace BlackbirdSql.Data.Entity.Configuration
 {
 	static class PackageData
 	{

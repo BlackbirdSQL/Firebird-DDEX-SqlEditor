@@ -17,4 +17,4 @@
 
 using Microsoft.EntityFrameworkCore.Design;
 
-[assembly: DesignTimeProviderServices("BlackbirdSql.Data.Entity.Core.Design.Internal.FbDesignTimeServices")]
+[assembly: DesignTimeProviderServices("BlackbirdSql.EntityFrameworkCore.Design.Internal.FbDesignTimeServices")]

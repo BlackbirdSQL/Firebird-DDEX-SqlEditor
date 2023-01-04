@@ -16,19 +16,19 @@
 //$Authors = Jiri Cincura (jiri@cincura.net)
 
 using System;
-using BlackbirdSql.Data.Entity.Core;
-using BlackbirdSql.Data.Entity.Core.Diagnostics.Internal;
-using BlackbirdSql.Data.Entity.Core.Infrastructure;
-using BlackbirdSql.Data.Entity.Core.Infrastructure.Internal;
-using BlackbirdSql.Data.Entity.Core.Internal;
-using BlackbirdSql.Data.Entity.Core.Metadata.Conventions;
-using BlackbirdSql.Data.Entity.Core.Metadata.Internal;
-using BlackbirdSql.Data.Entity.Core.Migrations;
-using BlackbirdSql.Data.Entity.Core.Migrations.Internal;
-using BlackbirdSql.Data.Entity.Core.Query.ExpressionTranslators.Internal;
-using BlackbirdSql.Data.Entity.Core.Query.Internal;
-using BlackbirdSql.Data.Entity.Core.Storage.Internal;
-using BlackbirdSql.Data.Entity.Core.Update.Internal;
+using BlackbirdSql.EntityFrameworkCore;
+using BlackbirdSql.EntityFrameworkCore.Diagnostics.Internal;
+using BlackbirdSql.EntityFrameworkCore.Infrastructure;
+using BlackbirdSql.EntityFrameworkCore.Infrastructure.Internal;
+using BlackbirdSql.EntityFrameworkCore.Internal;
+using BlackbirdSql.EntityFrameworkCore.Metadata.Conventions;
+using BlackbirdSql.EntityFrameworkCore.Metadata.Internal;
+using BlackbirdSql.EntityFrameworkCore.Migrations;
+using BlackbirdSql.EntityFrameworkCore.Migrations.Internal;
+using BlackbirdSql.EntityFrameworkCore.Query.ExpressionTranslators.Internal;
+using BlackbirdSql.EntityFrameworkCore.Query.Internal;
+using BlackbirdSql.EntityFrameworkCore.Storage.Internal;
+using BlackbirdSql.EntityFrameworkCore.Update.Internal;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
