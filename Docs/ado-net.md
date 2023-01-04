@@ -12,4 +12,5 @@
 
 * Go through the steps in [Entity Framework 6 provider](entity-framework-6.md) to set up EntityFramework 6 for your application
 * Add the edmx through the wizard using the `EF designer from database` option as you normally would, again connecting through the `BlackbirdSql DDEX 2.0` provider.
-* With your edmx open select `Project > Add new data source > Object` to complete the setup of your model.
+* With your edmx open select `Project > Add new data source > Object` to complete the setup of your model.</br>
+__Warning__ Operations within the edmx UI can take some time. Even a Cancel request can lock up the IDE. Be patient.
