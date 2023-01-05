@@ -1,9 +1,13 @@
 # BlackbirdSQL DDEX 2.0 .NET Data Provider
 
-This is a straight pull from FirebirdSQL.</br>
-The original DDEX data tool has been re-implemented with minor changes to the underlying `FirebirdSql.Data.FirebirdClient` code.</br>
+This is a straight pull from FirebirdSQL.
+
+The original DDEX data tool has been re-implemented with minor changes to the underlying `FirebirdSql.Data.FirebirdClient` code, purely for debugging.</br>
 A new data tool implementing DDEX 2.0, `BlackbirdSql.VisualStudio.Ddex`, has been added.</br>
-See [Extended Description](#extended-description) below
+The goal is that you don't have to do any configuring of .csproj, app.config or machine.config. For the most part this is already implemented. Auto-configuration of the EntityFramework provider will be implemented over the next few days.</br>
+See [Extended Description](#extended-description) below.
+
+Once the tools have been fully debugged, BlackbirdSql.Data.DslClient.dll and EntityFramework.BlackbirdSql.dll will be dropped and replaced with `FirebirdSql.Data.FirebirdClient` and `EntityFramework.Firebird` respectively.
 
 
 ## Documentation
@@ -49,7 +53,8 @@ TBC
 ## Extended Description
 
 I ended up going down the rabbit hole with this because the bulk of the FirebirdSQL code is behind lock and key with many of the class access modifiers set to internal, so it became impossible to just hook into the existing library which would have been the preferred route.
-Also a lot of the functionality required by DDEX was moved into EF and had to be linked back to the client library, so in the end it was a rename to BlackbirdSQL, but besides class name and namespace changes very little is different from the original code.
+Also a lot of the functionality required by DDEX was moved into EF and had to be linked back to the client library, so in the end it was a rename to BlackbirdSQL, but besides class name and namespace changes very little is different from the original code.</br>
+This is an interim measure while we're debugging.
 
 Although the original DDEX 1.0 DataTools package was revived, the DDEX 2.0 package, BlackbirdSql.VisualStudio.Ddex is click and go using VSIX and autoload, and requires no additional setup either in the app.config, csproj or machine.config.</br>
 Loading is asynchronous so the provider needs time to register and load. A database node in server explorer can simply be refreshed if an attempt was made to access it before it was fully loaded.</br>
