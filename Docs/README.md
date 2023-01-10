@@ -1,6 +1,6 @@
 # BlackbirdSQL DDEX 2.0 .NET Data Provider
 
-This is a straight pull from FirebirdSQL.
+This package is still under developemnt.
 
 The original DDEX data tool has been re-implemented with minor changes to the underlying `FirebirdSql.Data.FirebirdClient` code, purely for debugging.</br>
 A new data tool implementing DDEX 2.0, `BlackbirdSql.VisualStudio.Ddex`, has been added.</br>
