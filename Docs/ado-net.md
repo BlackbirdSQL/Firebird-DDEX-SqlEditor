@@ -2,7 +2,8 @@
 
 ### Setup procedure
 
-* Install the DDEX extension `BlackbirdSql.VisualStudio.Ddex.vsix`. </br>*We're still under development so install the debug version located in the output folder `BlackbirdSql.VisualStudio.Ddex\bin\Debug`.*
+* Install the DDEX extension `BlackbirdSql.VisualStudio.Ddex.vsix`. </br>*We're still under development so install the debug version located in the output folder `BlackbirdSql.VisualStudio.Ddex\bin\Debug`.
+* Add a reference to the `BlackbirdSql.Data.DslClient.dll` assembly located in the output folder `BlackbirdSql.VisualStudio.Ddex\bin\Debug`.
 * Create a dataset throught the xsd wizard or an entity data model through the edmx wizard.
 <p style="font-size:1.1em;margin-bottom:-8px">For an xsd dataset:</p>
 
@@ -10,10 +11,9 @@
 
 <p style="font-size:1.1em;margin-bottom:-8px">For an ADO.NET edmx:</p>
 
-* Go through the steps in [Entity Framework 6 provider](entity-framework-6.md) to set up EntityFramework 6 for your application
+* Add the `EntityFramework` package via Nuget.
+* Add a reference to the `EntityFramework.BlackbirdSql.dll` assembly located in the output folder `BlackbirdSql.VisualStudio.Ddex\bin\Debug`.
 * Add the edmx through the wizard using the `EF designer from database` option as you normally would, again connecting through the `BlackbirdSql DDEX 2.0` provider.
 * With your edmx open select `Project > Add new data source > Object` to complete the setup of your model.
-
-__Note__ A reference to the `BlackbirdSql.Data.DslClient.dll` assembly should automatically be added whenever you create a connection using the BlackbirdSql DDEX 2.0 provider and then compile your project.
 
 __Warning__ Operations within the edmx UI can take some time. Even a Cancel request can lock up the IDE. Be patient.
