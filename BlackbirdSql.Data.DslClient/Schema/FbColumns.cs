@@ -34,8 +34,6 @@ internal class FbColumns : FbSchema
 		var sql = new StringBuilder();
 		var where = new StringBuilder();
 
-
-		// BlackbirdSql added IS_PRIMARY column
 		sql.AppendFormat(
 			@"SELECT
 					null AS TABLE_CATALOG,
@@ -67,23 +65,11 @@ internal class FbColumns : FbSchema
 					null AS COLLATION_SCHEMA,
 					coll.rdb$collation_name AS COLLATION_NAME,
 					rfr.rdb$description AS DESCRIPTION,
-					(CASE WHEN seg.rdb$field_name IS NULL THEN
-						FALSE
-					ELSE
-						TRUE
-					END) AS IS_PRIMARY,
 					{0} AS IDENTITY_TYPE
 				FROM rdb$relation_fields rfr
-				LEFT JOIN rdb$fields fld
-					ON rfr.rdb$field_source = fld.rdb$field_name
-				LEFT JOIN rdb$character_sets cs
-					ON cs.rdb$character_set_id = fld.rdb$character_set_id
-				LEFT JOIN rdb$collations coll
-					ON (coll.rdb$collation_id = fld.rdb$collation_id AND coll.rdb$character_set_id = fld.rdb$character_set_id)
-				LEFT OUTER JOIN rdb$relation_constraints con
-					ON con.rdb$relation_name = rfr.rdb$relation_name AND con.rdb$constraint_type = 'PRIMARY KEY'
-				LEFT OUTER JOIN rdb$index_segments seg 
-					ON seg.rdb$index_name = con.rdb$index_name AND seg.rdb$field_name = rfr.rdb$field_name",
+				    LEFT JOIN rdb$fields fld ON rfr.rdb$field_source = fld.rdb$field_name
+				    LEFT JOIN rdb$character_sets cs ON cs.rdb$character_set_id = fld.rdb$character_set_id
+				    LEFT JOIN rdb$collations coll ON (coll.rdb$collation_id = fld.rdb$collation_id AND coll.rdb$character_set_id = fld.rdb$character_set_id)",
 			MajorVersionNumber >= 3 ? "rfr.rdb$identity_type" : "null");
 
 		if (restrictions != null)
@@ -134,8 +120,6 @@ internal class FbColumns : FbSchema
 		schema.Columns.Add("IS_NULLABLE", typeof(bool));
 		schema.Columns.Add("IS_ARRAY", typeof(bool));
 		schema.Columns.Add("IS_IDENTITY", typeof(bool));
-		// Blackbird additional fields
-		schema.Columns.Add("IS_COMPUTED", typeof(bool));
 
 		foreach (DataRow row in schema.Rows)
 		{
@@ -196,7 +180,6 @@ internal class FbColumns : FbSchema
 			}
 
 			row["IS_IDENTITY"] = row["IDENTITY_TYPE"] != DBNull.Value;
-			row["IS_COMPUTED"] = row["COMPUTED_SOURCE"] != DBNull.Value;
 		}
 
 		schema.EndLoadData();

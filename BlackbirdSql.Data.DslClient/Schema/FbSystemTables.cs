@@ -100,7 +100,7 @@ internal class FbSystemTables : FbTables
 
 		sql.Append(" ORDER BY IS_SYSTEM_TABLE, OWNER_NAME, TABLE_NAME");
 
-		Diag.Dug(sql.ToString());
+		Diag.Trace(sql.ToString());
 
 		return sql;
 	}

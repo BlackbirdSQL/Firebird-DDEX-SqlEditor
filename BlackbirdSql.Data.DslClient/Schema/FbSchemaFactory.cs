@@ -60,7 +60,7 @@ internal sealed class FbSchemaFactory
 			}
 		}
 
-		Diag.Dug(String.Format("{0} restrictions: {1}", filter, str));
+		Diag.Trace(String.Format("{0} restrictions: {1}", filter, str));
 
 		var ds = new DataSet();
 		using (var xmlStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(ResourceName))
@@ -119,7 +119,7 @@ internal sealed class FbSchemaFactory
 				throw new NotSupportedException("Unsupported population mechanism");
 		}
 
-		Diag.Dug("PopulationMechanism: " + collection[0]["PopulationMechanism"].ToString() + " PopulationString: " + collection[0]["PopulationString"].ToString() + " Rowcount: " + dataTable.Rows.Count);
+		Diag.Trace("PopulationMechanism: " + collection[0]["PopulationMechanism"].ToString() + " PopulationString: " + collection[0]["PopulationString"].ToString() + " Rowcount: " + dataTable.Rows.Count);
 
 		return dataTable;
 
@@ -190,7 +190,7 @@ internal sealed class FbSchemaFactory
 
 	private static DataTable PrepareCollection(DslConnection connection, string collectionName, string[] restrictions)
 	{
-		Diag.Dug("collectionName: " + collectionName);
+		Diag.Trace("collectionName: " + collectionName);
 
 		FbSchema returnSchema = collectionName.ToUpperInvariant() switch
 		{

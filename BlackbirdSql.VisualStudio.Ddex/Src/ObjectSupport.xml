@@ -152,8 +152,8 @@
 				<Property name="NUMERIC_PRECISION" type="System.Byte" />
 				<Property name="NUMERIC_SCALE" type="System.Int32" />
 				<Property name="IS_NULLABLE" type="System.Boolean" />
-				<Property name="IS_COMPUTED" type="System.Boolean" />
-				<Property name="IS_PRIMARY" type="System.Boolean" />
+				<Property name="COMPUTED_SOURCE" type="System.Array" />
+				<!--<Property name="IS_PRIMARY" type="System.Boolean" />-->
 			</Properties>
 			<Services>
 				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
@@ -641,7 +641,6 @@
 				<Property name="FUNCTION_SCHEMA" type="System.String" isIdentifierPart="true" />
 				<Property name="FUNCTION_NAME" type="System.String" isIdentifierPart="true" />
 				<Property name="DESCRIPTION" type="System.String" />
-				<Property name="SOURCE" type="System.Array" />
 				<Property name="IS_SYSTEM_FUNCTION" type="System.Boolean" />
 			</Properties>
 			<Services>
@@ -812,7 +811,11 @@
 						<CallMapper />
 					</Conversion>
 				</Property>
-				<Property name="IsComputed" underlyingMember="IS_COMPUTED" />
+				<Property name="IsComputed" underlyingMember="COMPUTED_SOURCE">
+					<Conversion>
+						<Calculate expr="IIF({0} IS NULL, false, true)" exprType="System.Boolean" />
+					</Conversion>
+				</Property>
 			</Properties>
 		</MappedType>
 
@@ -1112,7 +1115,6 @@
 				<Property name="Schema" underlyingMember="FUNCTION_SCHEMA" isIdentifierPart="true" />
 				<Property name="Name" underlyingMember="FUNCTION_NAME" isIdentifierPart="true" />
 				<Property name="Description" underlyingMember="DESCRIPTION"/>
-				<Property name="Dsl" underlyingMember="SOURCE"/>
 				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FUNCTION" />
 			</Properties>
 		</MappedType>

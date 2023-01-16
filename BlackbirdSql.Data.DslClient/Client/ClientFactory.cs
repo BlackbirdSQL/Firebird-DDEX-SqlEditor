@@ -28,9 +28,9 @@ namespace BlackbirdSql.Data.Client;
 
 internal static class ClientFactory
 {
-	public static DatabaseBase CreateDatabase(DbConnectionString options)
+	public static DatabaseBase CreateDatabase(ConnectionString options)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		return options.ServerType switch
 		{
@@ -39,9 +39,9 @@ internal static class ClientFactory
 			_ => throw IncorrectServerTypeException(),
 		};
 	}
-	public static ValueTask<DatabaseBase> CreateDatabaseAsync(DbConnectionString options, CancellationToken cancellationToken = default)
+	public static ValueTask<DatabaseBase> CreateDatabaseAsync(ConnectionString options, CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		return options.ServerType switch
 		{
@@ -51,9 +51,9 @@ internal static class ClientFactory
 		};
 	}
 
-	public static ServiceManagerBase CreateServiceManager(DbConnectionString options)
+	public static ServiceManagerBase CreateServiceManager(ConnectionString options)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		return options.ServerType switch
 		{
@@ -62,9 +62,9 @@ internal static class ClientFactory
 			_ => throw IncorrectServerTypeException(),
 		};
 	}
-	public static ValueTask<ServiceManagerBase> CreateServiceManagerAsync(DbConnectionString options, CancellationToken cancellationToken = default)
+	public static ValueTask<ServiceManagerBase> CreateServiceManagerAsync(ConnectionString options, CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		return options.ServerType switch
 		{
@@ -74,9 +74,9 @@ internal static class ClientFactory
 		};
 	}
 
-	private static DatabaseBase CreateManagedDatabase(DbConnectionString options)
+	private static DatabaseBase CreateManagedDatabase(ConnectionString options)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var charset = GetCharset(options);
 
@@ -102,9 +102,9 @@ internal static class ClientFactory
 			_ => throw UnsupportedProtocolException(),
 		};
 	}
-	private static async ValueTask<DatabaseBase> CreateManagedDatabaseAsync(DbConnectionString options, CancellationToken cancellationToken = default)
+	private static async ValueTask<DatabaseBase> CreateManagedDatabaseAsync(ConnectionString options, CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var charset = GetCharset(options);
 
@@ -131,26 +131,26 @@ internal static class ClientFactory
 		};
 	}
 
-	private static DatabaseBase CreateNativeDatabase(DbConnectionString options)
+	private static DatabaseBase CreateNativeDatabase(ConnectionString options)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var charset = GetCharset(options);
 
 		return new Native.FesDatabase(options.ClientLibrary, charset, options.PacketSize, options.Dialect);
 	}
-	private static ValueTask<DatabaseBase> CreateNativeDatabaseAsync(DbConnectionString options)
+	private static ValueTask<DatabaseBase> CreateNativeDatabaseAsync(ConnectionString options)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var charset = GetCharset(options);
 
 		return ValueTask2.FromResult<DatabaseBase>(new Native.FesDatabase(options.ClientLibrary, charset, options.PacketSize, options.Dialect));
 	}
 
-	private static ServiceManagerBase CreateManagedServiceManager(DbConnectionString options)
+	private static ServiceManagerBase CreateManagedServiceManager(ConnectionString options)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var charset = GetCharset(options);
 
@@ -176,9 +176,9 @@ internal static class ClientFactory
 			_ => throw UnsupportedProtocolException(),
 		};
 	}
-	private static async ValueTask<ServiceManagerBase> CreateManagedServiceManagerAsync(DbConnectionString options, CancellationToken cancellationToken = default)
+	private static async ValueTask<ServiceManagerBase> CreateManagedServiceManagerAsync(ConnectionString options, CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var charset = GetCharset(options);
 
@@ -205,17 +205,17 @@ internal static class ClientFactory
 		};
 	}
 
-	private static ServiceManagerBase CreateNativeServiceManager(DbConnectionString options)
+	private static ServiceManagerBase CreateNativeServiceManager(ConnectionString options)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var charset = GetCharset(options);
 
 		return new Native.FesServiceManager(options.ClientLibrary, charset);
 	}
-	private static ValueTask<ServiceManagerBase> CreateNativeServiceManagerAsync(DbConnectionString options)
+	private static ValueTask<ServiceManagerBase> CreateNativeServiceManagerAsync(ConnectionString options)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var charset = GetCharset(options);
 
@@ -226,7 +226,7 @@ internal static class ClientFactory
 	private static Exception IncorrectServerTypeException() => new NotSupportedException("Specified server type is not correct.");
 	private static Exception InvalidCharsetException() => new ArgumentException("Invalid character set specified.");
 
-	private static Charset GetCharset(DbConnectionString options)
+	private static Charset GetCharset(ConnectionString options)
 	{
 		if (!Charset.TryGetByName(options.Charset, out var charset))
 			throw InvalidCharsetException();
@@ -235,7 +235,7 @@ internal static class ClientFactory
 
 	private static WireCryptOption FbWireCryptToWireCryptOption(WireCrypt wireCrypt)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 
 		switch (wireCrypt)

@@ -1,5 +1,5 @@
 /*
- *  Visual Studio DDEX Provider for BlackbirdSql DslClient
+ *  Visual Studio DDEX Provider for FirebirdClient (BlackbirdSql)
  * 
  *     The contents of this file are subject to the Initial 
  *     Developer's Public License Version 1.0 (the "License"); 
@@ -26,7 +26,7 @@ using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Common;
-using BlackbirdSql.Data.DslClient;
+using FirebirdSql.Data.FirebirdClient;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -43,18 +43,17 @@ public sealed class ProviderObjectFactory : DataProviderObjectFactory, IProvider
 
 	public ProviderObjectFactory()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
-
-		// Inline attempt to register factory on machine
-		if (DbProviderFactoriesEx.DbProviderFactoriesRegisterFactory(typeof(DslProviderFactory),
-			Data.Properties.Resources.Provider_ShortDisplayName, Data.Properties.Resources.Provider_DisplayName))
+		// Adding FirebirdClient to assembly cache asynchronously
+		if (DbProviderFactoriesEx.AddAssemblyToCache(typeof(FirebirdClientFactory),
+			Properties.Resources.Provider_ShortDisplayName, Properties.Resources.Provider_DisplayName))
 		{
-			Diag.Dug("DbProviderFactory registration completed during ProviderObjectFactory instantiation");
+			Diag.Trace("DbProviderFactory added to assembly cache");
 
 			AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
 			{
-				var assembly = typeof(DslProviderFactory).Assembly;
+				var assembly = typeof(FirebirdClientFactory).Assembly;
 
 				if (args.Name == assembly.FullName)
 					Diag.Dug(true, "Dsl Provider Factory failed to load: " + assembly.FullName);
@@ -62,11 +61,24 @@ public sealed class ProviderObjectFactory : DataProviderObjectFactory, IProvider
 				return args.Name == assembly.FullName ? assembly : null;
 			};
 
+			// Instantiate ServiceHub for edmx EntityFramework hook and update app.config if the service is requested
+			// This is not in any project's scope so it's not working - TBC
+			// _ = Data.ServiceHub.ServiceProvider.Instance;
+
+			// This is also a nice try. According to documentation the class has to be declared in a project's
+			// assembly for this to work. Messing with a developers code is not a great idea so prob this option
+			// is dead
+			// _ = new Data.ServiceHub.DbConfigurationEx();
+
+			Diag.Trace("DbConfigurationEx EF Service Provider added");
+
 		}
 		else
 		{
-			Diag.Dug("DbProviderFactory registration not completed during ProviderObjectFactory instantiation. Factory already registered");
+			Diag.Trace("DbProviderFactory not added to assembly cache during package registration. Factory already cached");
 		}
+
+
 
 	}
 
@@ -76,7 +88,7 @@ public sealed class ProviderObjectFactory : DataProviderObjectFactory, IProvider
 
 	public override object CreateObject(Type objType)
 	{
-		Diag.Dug("CreateObject: " + objType.FullName);
+		Diag.Trace("CreateObject: " + objType.FullName);
 
 
 		if (objType == typeof(IVsDataConnectionSupport))

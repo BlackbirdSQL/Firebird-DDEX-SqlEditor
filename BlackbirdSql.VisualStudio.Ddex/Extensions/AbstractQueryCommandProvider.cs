@@ -41,7 +41,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Extensions
 
 		protected override MenuCommand CreateCommand(int itemId, CommandID commandId, object[] parameters)
 		{
-			Diag.Dug();
+			Diag.Trace();
 
 			MenuCommand command = null;
 
@@ -68,20 +68,20 @@ namespace BlackbirdSql.VisualStudio.Ddex.Extensions
 
 		private void OnNewQuery(int itemId, DataToolsCommands.DataObjectType objectType, int qualityMetricProvider)
 		{
-			Diag.Dug();
+			Diag.Trace();
 
 			IVsDataExplorerNode vsDataExplorerNode = base.Site.ExplorerConnection.FindNode(itemId);
 
-			Diag.Dug();
+			Diag.Trace();
 			MenuCommand command = vsDataExplorerNode.GetCommand(DataToolsCommands.GlobalNewQuery);
-			Diag.Dug();
+			Diag.Trace();
 
 			// This should be locked
 			DataToolsCommands.ObjectType = objectType;
 			command.Invoke();
 
 
-			Diag.Dug();
+			Diag.Trace();
 		}
 
 	}

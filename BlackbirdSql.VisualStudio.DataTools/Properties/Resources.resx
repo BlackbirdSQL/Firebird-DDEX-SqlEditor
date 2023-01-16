@@ -121,7 +121,7 @@
     <value>DDEX provider for Firebird (Blackbird)</value>
   </data>
   <data name="102" xml:space="preserve">
-    <value>DDEX Provider for DslClient (Blackbird)</value>
+    <value>DDEX Provider for FirebirdClient (Blackbird)</value>
   </data>
   <data name="106" xml:space="preserve">
     <value>RJDTMPQPE2PMCIRHDZM8APRHIJIEQDM8ZPZREQCTR1ETREI2JDHTDHHPPHJRC2HRK2JHPCZEM2H3E1AQA2QQIEJJR1AIDPZZDEZCZPRCH0HZJMPEQPETA3M3ERI8JTJJ</value>
@@ -256,7 +256,7 @@
     <value>View Column</value>
   </data>
   <data name="DdexProvider_Description" xml:space="preserve">
-    <value>Use this selection to connect to Firebird using the Legacy DDEX BlackbirdSql Provider</value>
+    <value>Use this selection to connect to Firebird using the Legacy DDEX FirebirdSql Provider</value>
   </data>
   <data name="DdexProvider_DisplayName" xml:space="preserve">
     <value>.NET Framework Legacy DDEX Provider for Firebird (Blackbird)</value>
@@ -269,5 +269,14 @@
   </data>
   <data name="Value_Yes" xml:space="preserve">
     <value>1</value>
+  </data>
+  <data name="Provider_Description" xml:space="preserve">
+    <value>The .NET Provider for Firebird FirebirdSql.Data.FirebirdClient)</value>
+  </data>
+  <data name="Provider_DisplayName" xml:space="preserve">
+    <value>.NET Provider for Firebird (BlackbirdSql)</value>
+  </data>
+  <data name="Provider_ShortDisplayName" xml:space="preserve">
+    <value>BlackbirdSql FirebirdClient Provider</value>
   </data>
 </root>

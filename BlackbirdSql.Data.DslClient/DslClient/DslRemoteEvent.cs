@@ -44,7 +44,7 @@ public sealed class DslRemoteEvent : IDisposable
 
 	public DslRemoteEvent(string connectionString)
 	{
-		_connection = new DslConnectionInternal(new DbConnectionString(connectionString));
+		_connection = new DslConnectionInternal(new ConnectionString(connectionString));
 	}
 
 	public void Open()

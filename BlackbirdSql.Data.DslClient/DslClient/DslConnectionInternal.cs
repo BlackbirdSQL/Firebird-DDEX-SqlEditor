@@ -41,7 +41,7 @@ internal class DslConnectionInternal
 	private DatabaseBase _db;
 	private DslTransaction _activeTransaction;
 	private readonly HashSet<IDslPreparedCommand> _preparedCommands;
-	private DbConnectionString _connectionStringOptions;
+	private ConnectionString _connectionStringOptions;
 	private DslConnection _owningConnection;
 	private DslEnlistmentNotification _enlistmentNotification;
 
@@ -80,7 +80,7 @@ internal class DslConnectionInternal
 		}
 	}
 
-	public DbConnectionString ConnectionStringOptions
+	public ConnectionString ConnectionStringOptions
 	{
 		get { return _connectionStringOptions; }
 	}
@@ -91,7 +91,7 @@ internal class DslConnectionInternal
 
 	#region Constructors
 
-	public DslConnectionInternal(DbConnectionString options)
+	public DslConnectionInternal(ConnectionString options)
 	{
 		_preparedCommands = new HashSet<IDslPreparedCommand>();
 
@@ -104,7 +104,7 @@ internal class DslConnectionInternal
 
 	public void CreateDatabase(int pageSize, bool forcedWrites, bool overwrite)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var db = ClientFactory.CreateDatabase(_connectionStringOptions);
 
@@ -159,7 +159,7 @@ internal class DslConnectionInternal
 	}
 	public async Task CreateDatabaseAsync(int pageSize, bool forcedWrites, bool overwrite, CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var db = await ClientFactory.CreateDatabaseAsync(_connectionStringOptions, cancellationToken).ConfigureAwait(false);
 
@@ -215,7 +215,7 @@ internal class DslConnectionInternal
 
 	public void DropDatabase()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var db = ClientFactory.CreateDatabase(_connectionStringOptions);
 
@@ -238,7 +238,7 @@ internal class DslConnectionInternal
 	}
 	public async Task DropDatabaseAsync(CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var db = await ClientFactory.CreateDatabaseAsync(_connectionStringOptions, cancellationToken).ConfigureAwait(false);
 
@@ -266,7 +266,7 @@ internal class DslConnectionInternal
 
 	public void Connect()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (!Charset.TryGetByName(_connectionStringOptions.Charset, out _))
 		{
@@ -295,7 +295,7 @@ internal class DslConnectionInternal
 	}
 	public async Task ConnectAsync(CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (!Charset.TryGetByName(_connectionStringOptions.Charset, out _))
 		{
@@ -325,7 +325,7 @@ internal class DslConnectionInternal
 
 	public void Disconnect()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (_db != null)
 		{
@@ -345,7 +345,7 @@ internal class DslConnectionInternal
 	}
 	public async Task DisconnectAsync(CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (_db != null)
 		{
@@ -370,7 +370,7 @@ internal class DslConnectionInternal
 
 	public DslTransaction BeginTransaction(IsolationLevel level, string transactionName)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		EnsureNoActiveTransaction();
 
@@ -395,7 +395,7 @@ internal class DslConnectionInternal
 	}
 	public async Task<DslTransaction> BeginTransactionAsync(IsolationLevel level, string transactionName, CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		EnsureNoActiveTransaction();
 
@@ -421,7 +421,7 @@ internal class DslConnectionInternal
 
 	public DslTransaction BeginTransaction(DslTransactionOptions options, string transactionName)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		EnsureNoActiveTransaction();
 
@@ -446,7 +446,7 @@ internal class DslConnectionInternal
 	}
 	public async Task<DslTransaction> BeginTransactionAsync(DslTransactionOptions options, string transactionName, CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		EnsureNoActiveTransaction();
 
@@ -472,7 +472,7 @@ internal class DslConnectionInternal
 
 	public void DisposeTransaction()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (_activeTransaction != null && !IsEnlisted)
 		{
@@ -482,7 +482,7 @@ internal class DslConnectionInternal
 	}
 	public async Task DisposeTransactionAsync(CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (_activeTransaction != null && !IsEnlisted)
 		{
@@ -498,7 +498,7 @@ internal class DslConnectionInternal
 
 	public void TransactionCompleted()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		foreach (var command in _preparedCommands)
 		{
@@ -507,7 +507,7 @@ internal class DslConnectionInternal
 	}
 	public async Task TransactionCompletedAsync(CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		foreach (var command in _preparedCommands)
 		{
@@ -521,7 +521,7 @@ internal class DslConnectionInternal
 
 	public void EnlistTransaction(System.Transactions.Transaction transaction)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (_owningConnection != null)
 		{
@@ -546,14 +546,14 @@ internal class DslConnectionInternal
 
 	private void EnlistmentCompleted(object sender, EventArgs e)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		_enlistmentNotification = null;
 	}
 
 	public DslTransaction BeginTransaction(System.Transactions.IsolationLevel isolationLevel)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var il = isolationLevel switch
 		{
@@ -569,7 +569,7 @@ internal class DslConnectionInternal
 	}
 	public Task<DslTransaction> BeginTransactionAsync(System.Transactions.IsolationLevel isolationLevel, CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var il = isolationLevel switch
 		{
@@ -590,13 +590,13 @@ internal class DslConnectionInternal
 
 	public DataTable GetSchema(string collectionName, string[] restrictions)
 	{
-		Diag.Dug("collectionName: " + collectionName);
+		Diag.Trace("collectionName: " + collectionName);
 
 		return FbSchemaFactory.GetSchema(_owningConnection, collectionName, restrictions);
 	}
 	public Task<DataTable> GetSchemaAsync(string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		return FbSchemaFactory.GetSchemaAsync(_owningConnection, collectionName, restrictions, cancellationToken);
 	}
@@ -607,7 +607,7 @@ internal class DslConnectionInternal
 
 	public void AddPreparedCommand(IDslPreparedCommand command)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (_preparedCommands.Contains(command))
 			return;
@@ -616,14 +616,14 @@ internal class DslConnectionInternal
 
 	public void RemovePreparedCommand(IDslPreparedCommand command)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		_preparedCommands.Remove(command);
 	}
 
 	public void ReleasePreparedCommands()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		// copy the data because the collection will be modified via RemovePreparedCommand from Release
 		var data = _preparedCommands.ToList();
@@ -647,7 +647,7 @@ internal class DslConnectionInternal
 	}
 	public async Task ReleasePreparedCommandsAsync(CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		// copy the data because the collection will be modified via RemovePreparedCommand from Release
 		var data = _preparedCommands.ToList();
@@ -672,11 +672,11 @@ internal class DslConnectionInternal
 
 	#endregion
 
-	#region Blackbird Events Methods
+	#region Firebird Events Methods
 
 	public void CloseEventManager()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (_db != null && _db.HasRemoteEventSupport)
 		{
@@ -685,7 +685,7 @@ internal class DslConnectionInternal
 	}
 	public Task CloseEventManagerAsync(CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (_db != null && _db.HasRemoteEventSupport)
 		{
@@ -700,7 +700,7 @@ internal class DslConnectionInternal
 
 	private void EnsureNoActiveTransaction()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (HasActiveTransaction)
 		{
@@ -709,9 +709,9 @@ internal class DslConnectionInternal
 		}
 	}
 
-	private static DatabaseParameterBufferBase BuildDpb(DatabaseBase db, DbConnectionString options)
+	private static DatabaseParameterBufferBase BuildDpb(DatabaseBase db, ConnectionString options)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var dpb = db.CreateDatabaseParameterBuffer();
 
@@ -754,9 +754,9 @@ internal class DslConnectionInternal
 		return dpb;
 	}
 
-	private static string GetProcessName(DbConnectionString options)
+	private static string GetProcessName(ConnectionString options)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (!string.IsNullOrEmpty(options.ApplicationName))
 		{
@@ -768,7 +768,7 @@ internal class DslConnectionInternal
 
 	private static string GetSystemWebHostingPath()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 #if NETFRAMEWORK
 		var assembly = AppDomain.CurrentDomain.GetAssemblies().Where(x => x.GetName().Name.Equals("System.Web", StringComparison.Ordinal)).FirstOrDefault();
@@ -784,7 +784,7 @@ internal class DslConnectionInternal
 
 	private static string GetRealProcessName()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 #if NETFRAMEWORK
 		return Assembly.GetEntryAssembly()?.Location ?? Process.GetCurrentProcess().MainModule.FileName;
@@ -806,7 +806,7 @@ internal class DslConnectionInternal
 
 	private static int GetProcessId()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		try
 		{
@@ -824,7 +824,7 @@ internal class DslConnectionInternal
 
 	private static string GetClientVersion()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		return typeof(DslConnectionInternal).GetTypeInfo().Assembly.GetName().Version.ToString();
 	}
@@ -833,14 +833,14 @@ internal class DslConnectionInternal
 	#region Cancelation
 	public void EnableCancel()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		_db.CancelOperation(IscCodes.fb_cancel_enable);
 		CancelDisabled = false;
 	}
 	public async Task EnableCancelAsync(CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		await _db.CancelOperationAsync(IscCodes.fb_cancel_enable, cancellationToken).ConfigureAwait(false);
 		CancelDisabled = false;
@@ -848,14 +848,14 @@ internal class DslConnectionInternal
 
 	public void DisableCancel()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		_db.CancelOperation(IscCodes.fb_cancel_disable);
 		CancelDisabled = true;
 	}
 	public async Task DisableCancelAsync(CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		await _db.CancelOperationAsync(IscCodes.fb_cancel_disable, cancellationToken).ConfigureAwait(false);
 		CancelDisabled = true;
@@ -863,13 +863,13 @@ internal class DslConnectionInternal
 
 	public void CancelCommand()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		_db.CancelOperation(IscCodes.fb_cancel_raise);
 	}
 	public Task CancelCommandAsync(CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		return _db.CancelOperationAsync(IscCodes.fb_cancel_raise, cancellationToken).AsTask();
 	}
@@ -878,7 +878,7 @@ internal class DslConnectionInternal
 	#region Infrastructure
 	public DslConnectionInternal SetOwningConnection(DslConnection owningConnection)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		_owningConnection = owningConnection;
 		return this;

@@ -88,7 +88,7 @@ public sealed class DslCommand : DbCommand, IDslPreparedCommand, IDescriptorFill
 	}
 
 	[Category("Behavior")]
-	[DefaultValue(ConnectionParameters.DefaultValueCommandTimeout)]
+	[DefaultValue(ConnectionString.DefaultValueCommandTimeout)]
 	public override int CommandTimeout
 	{
 		get
@@ -97,7 +97,7 @@ public sealed class DslCommand : DbCommand, IDslPreparedCommand, IDescriptorFill
 				return (int)_commandTimeout;
 			if (_connection?.CommandTimeout >= 0)
 				return (int)_connection?.CommandTimeout;
-			return ConnectionParameters.DefaultValueCommandTimeout;
+			return ConnectionString.DefaultValueCommandTimeout;
 		}
 		set
 		{
@@ -319,7 +319,7 @@ public sealed class DslCommand : DbCommand, IDslPreparedCommand, IDescriptorFill
 
 	public DslCommand(string cmdText, DslConnection connection, DslTransaction transaction)
 	{
-		Diag.Dug(cmdText);
+		Diag.Trace(cmdText);
 
 		_namedParameters = Array.Empty<string>();
 		_updatedRowSource = UpdateRowSource.Both;

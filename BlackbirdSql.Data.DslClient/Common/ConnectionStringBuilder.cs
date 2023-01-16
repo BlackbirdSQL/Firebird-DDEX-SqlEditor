@@ -1,7 +1,4 @@
-﻿//
-// BlackbirdSql - ConnectionParameters have been seperated into their own static for brevity
-//
-/*
+﻿/*
  *    The contents of this file are subject to the Initial
  *    Developer's Public License Version 1.0 (the "License");
  *    you may not use this file except in compliance with the
@@ -36,292 +33,292 @@ public class ConnectionStringBuilder : DbConnectionStringBuilder
 	[Category("Security")]
 	[DisplayName("User ID")]
 	[Description("Indicates the User ID to be used when connecting to the data source.")]
-	[DefaultValue(ConnectionParameters.DefaultValueUserId)]
+	[DefaultValue(Common.ConnectionString.DefaultValueUserId)]
 	public string UserID
 	{
-		get { return DbConnectionString.GetString(GetKey(ConnectionParameters.DefaultKeyUserId), base.TryGetValue, ConnectionParameters.DefaultValueUserId); }
-		set { SetValue(ConnectionParameters.DefaultKeyUserId, value); }
+		get { return Common.ConnectionString.GetString(GetKey(Common.ConnectionString.DefaultKeyUserId), base.TryGetValue, Common.ConnectionString.DefaultValueUserId); }
+		set { SetValue(Common.ConnectionString.DefaultKeyUserId, value); }
 	}
 
 	[Category("Security")]
 	[DisplayName("Password")]
 	[Description("Indicates the password to be used when connecting to the data source.")]
 	[PasswordPropertyText(true)]
-	[DefaultValue(ConnectionParameters.DefaultValuePassword)]
+	[DefaultValue(Common.ConnectionString.DefaultValuePassword)]
 	public string Password
 	{
-		get { return DbConnectionString.GetString(GetKey(ConnectionParameters.DefaultKeyPassword), base.TryGetValue, ConnectionParameters.DefaultValuePassword); }
-		set { SetValue(ConnectionParameters.DefaultKeyPassword, value); }
+		get { return Common.ConnectionString.GetString(GetKey(Common.ConnectionString.DefaultKeyPassword), base.TryGetValue, Common.ConnectionString.DefaultValuePassword); }
+		set { SetValue(Common.ConnectionString.DefaultKeyPassword, value); }
 	}
 
 	[Category("Source")]
 	[DisplayName("Data Source")]
 	[Description("The name of the Firebird server to which to connect.")]
-	[DefaultValue(ConnectionParameters.DefaultValueDataSource)]
+	[DefaultValue(Common.ConnectionString.DefaultValueDataSource)]
 	public string DataSource
 	{
-		get { return DbConnectionString.GetString(GetKey(ConnectionParameters.DefaultKeyDataSource), base.TryGetValue, ConnectionParameters.DefaultValueDataSource); }
-		set { SetValue(ConnectionParameters.DefaultKeyDataSource, value); }
+		get { return Common.ConnectionString.GetString(GetKey(Common.ConnectionString.DefaultKeyDataSource), base.TryGetValue, Common.ConnectionString.DefaultValueDataSource); }
+		set { SetValue(Common.ConnectionString.DefaultKeyDataSource, value); }
 	}
 
 	[Category("Source")]
 	[DisplayName("Initial Catalog")]
 	[Description("The name of the actual database or the database to be used when a connection is open. It is normally the path to an .FDB file or an alias.")]
-	[DefaultValue(ConnectionParameters.DefaultValueCatalog)]
+	[DefaultValue(Common.ConnectionString.DefaultValueCatalog)]
 	public string Database
 	{
-		get { return DbConnectionString.GetString(GetKey(ConnectionParameters.DefaultKeyCatalog), base.TryGetValue, ConnectionParameters.DefaultValueCatalog); }
-		set { SetValue(ConnectionParameters.DefaultKeyCatalog, value); }
+		get { return Common.ConnectionString.GetString(GetKey(Common.ConnectionString.DefaultKeyCatalog), base.TryGetValue, Common.ConnectionString.DefaultValueCatalog); }
+		set { SetValue(Common.ConnectionString.DefaultKeyCatalog, value); }
 	}
 
 	[Category("Source")]
 	[DisplayName("Port Number")]
 	[Description("Port to use for TCP/IP connections")]
-	[DefaultValue(ConnectionParameters.DefaultValuePortNumber)]
+	[DefaultValue(Common.ConnectionString.DefaultValuePortNumber)]
 	public int Port
 	{
-		get { return DbConnectionString.GetInt32(GetKey(ConnectionParameters.DefaultKeyPortNumber), base.TryGetValue, ConnectionParameters.DefaultValuePortNumber); }
-		set { SetValue(ConnectionParameters.DefaultKeyPortNumber, value); }
+		get { return Common.ConnectionString.GetInt32(GetKey(Common.ConnectionString.DefaultKeyPortNumber), base.TryGetValue, Common.ConnectionString.DefaultValuePortNumber); }
+		set { SetValue(Common.ConnectionString.DefaultKeyPortNumber, value); }
 	}
 
 	[Category("Advanced")]
 	[DisplayName("Packet Size")]
 	[Description("The size (in bytes) of network packets. PacketSize may be in the range 512-32767 bytes.")]
-	[DefaultValue(ConnectionParameters.DefaultValuePacketSize)]
+	[DefaultValue(Common.ConnectionString.DefaultValuePacketSize)]
 	public int PacketSize
 	{
-		get { return DbConnectionString.GetInt32(GetKey(ConnectionParameters.DefaultKeyPacketSize), base.TryGetValue, ConnectionParameters.DefaultValuePacketSize); }
-		set { SetValue(ConnectionParameters.DefaultKeyPacketSize, value); }
+		get { return Common.ConnectionString.GetInt32(GetKey(Common.ConnectionString.DefaultKeyPacketSize), base.TryGetValue, Common.ConnectionString.DefaultValuePacketSize); }
+		set { SetValue(Common.ConnectionString.DefaultKeyPacketSize, value); }
 	}
 
 	[Category("Security")]
 	[DisplayName("Role Name")]
 	[Description("The user role.")]
-	[DefaultValue(ConnectionParameters.DefaultValueRoleName)]
+	[DefaultValue(Common.ConnectionString.DefaultValueRoleName)]
 	public string Role
 	{
-		get { return DbConnectionString.GetString(GetKey(ConnectionParameters.DefaultKeyRoleName), base.TryGetValue, ConnectionParameters.DefaultValueRoleName); }
-		set { SetValue(ConnectionParameters.DefaultKeyRoleName, value); }
+		get { return Common.ConnectionString.GetString(GetKey(Common.ConnectionString.DefaultKeyRoleName), base.TryGetValue, Common.ConnectionString.DefaultValueRoleName); }
+		set { SetValue(Common.ConnectionString.DefaultKeyRoleName, value); }
 	}
 
 	[Category("Advanced")]
 	[DisplayName("Dialect")]
 	[Description("The database SQL dialect.")]
-	[DefaultValue(ConnectionParameters.DefaultValueDialect)]
+	[DefaultValue(Common.ConnectionString.DefaultValueDialect)]
 	public int Dialect
 	{
-		get { return DbConnectionString.GetInt32(GetKey(ConnectionParameters.DefaultKeyDialect), base.TryGetValue, ConnectionParameters.DefaultValueDialect); }
-		set { SetValue(ConnectionParameters.DefaultKeyDialect, value); }
+		get { return Common.ConnectionString.GetInt32(GetKey(Common.ConnectionString.DefaultKeyDialect), base.TryGetValue, Common.ConnectionString.DefaultValueDialect); }
+		set { SetValue(Common.ConnectionString.DefaultKeyDialect, value); }
 	}
 
 	[Category("Advanced")]
 	[DisplayName("Character Set")]
 	[Description("The connection character set encoding.")]
-	[DefaultValue(ConnectionParameters.DefaultValueCharacterSet)]
+	[DefaultValue(Common.ConnectionString.DefaultValueCharacterSet)]
 	public string Charset
 	{
-		get { return DbConnectionString.GetString(GetKey(ConnectionParameters.DefaultKeyCharacterSet), base.TryGetValue, ConnectionParameters.DefaultValueCharacterSet); }
-		set { SetValue(ConnectionParameters.DefaultKeyCharacterSet, value); }
+		get { return Common.ConnectionString.GetString(GetKey(Common.ConnectionString.DefaultKeyCharacterSet), base.TryGetValue, Common.ConnectionString.DefaultValueCharacterSet); }
+		set { SetValue(Common.ConnectionString.DefaultKeyCharacterSet, value); }
 	}
 
 	[Category("Connection")]
 	[DisplayName("Connection Timeout")]
 	[Description("The time (in seconds) to wait for a connection to open.")]
-	[DefaultValue(ConnectionParameters.DefaultValueConnectionTimeout)]
+	[DefaultValue(Common.ConnectionString.DefaultValueConnectionTimeout)]
 	public int ConnectionTimeout
 	{
-		get { return DbConnectionString.GetInt32(GetKey(ConnectionParameters.DefaultKeyConnectionTimeout), base.TryGetValue, ConnectionParameters.DefaultValueConnectionTimeout); }
-		set { SetValue(ConnectionParameters.DefaultKeyConnectionTimeout, value); }
+		get { return Common.ConnectionString.GetInt32(GetKey(Common.ConnectionString.DefaultKeyConnectionTimeout), base.TryGetValue, Common.ConnectionString.DefaultValueConnectionTimeout); }
+		set { SetValue(Common.ConnectionString.DefaultKeyConnectionTimeout, value); }
 	}
 
 	[Category("Pooling")]
 	[DisplayName("Pooling")]
 	[Description("When true the connection is grabbed from a pool or, if necessary, created and added to the appropriate pool.")]
-	[DefaultValue(ConnectionParameters.DefaultValuePooling)]
+	[DefaultValue(Common.ConnectionString.DefaultValuePooling)]
 	public bool Pooling
 	{
-		get { return DbConnectionString.GetBoolean(GetKey(ConnectionParameters.DefaultKeyPooling), base.TryGetValue, ConnectionParameters.DefaultValuePooling); }
-		set { SetValue(ConnectionParameters.DefaultKeyPooling, value); }
+		get { return Common.ConnectionString.GetBoolean(GetKey(Common.ConnectionString.DefaultKeyPooling), base.TryGetValue, Common.ConnectionString.DefaultValuePooling); }
+		set { SetValue(Common.ConnectionString.DefaultKeyPooling, value); }
 	}
 
 	[Category("Connection")]
 	[DisplayName("Connection LifeTime")]
 	[Description("When a connection is returned to the pool, its creation time is compared with the current time, and the connection is destroyed if that time span (in seconds) exceeds the value specified by connection lifetime.")]
-	[DefaultValue(ConnectionParameters.DefaultValueConnectionLifetime)]
+	[DefaultValue(Common.ConnectionString.DefaultValueConnectionLifetime)]
 	public int ConnectionLifeTime
 	{
-		get { return DbConnectionString.GetInt32(GetKey(ConnectionParameters.DefaultKeyConnectionLifetime), base.TryGetValue, ConnectionParameters.DefaultValueConnectionLifetime); }
-		set { SetValue(ConnectionParameters.DefaultKeyConnectionLifetime, value); }
+		get { return Common.ConnectionString.GetInt32(GetKey(Common.ConnectionString.DefaultKeyConnectionLifetime), base.TryGetValue, Common.ConnectionString.DefaultValueConnectionLifetime); }
+		set { SetValue(Common.ConnectionString.DefaultKeyConnectionLifetime, value); }
 	}
 
 	[Category("Pooling")]
 	[DisplayName("Min Pool Size")]
 	[Description("The minimun number of connections allowed in the pool.")]
-	[DefaultValue(ConnectionParameters.DefaultValueMinPoolSize)]
+	[DefaultValue(Common.ConnectionString.DefaultValueMinPoolSize)]
 	public int MinPoolSize
 	{
-		get { return DbConnectionString.GetInt32(GetKey(ConnectionParameters.DefaultKeyMinPoolSize), base.TryGetValue, ConnectionParameters.DefaultValueMinPoolSize); }
-		set { SetValue(ConnectionParameters.DefaultKeyMinPoolSize, value); }
+		get { return Common.ConnectionString.GetInt32(GetKey(Common.ConnectionString.DefaultKeyMinPoolSize), base.TryGetValue, Common.ConnectionString.DefaultValueMinPoolSize); }
+		set { SetValue(Common.ConnectionString.DefaultKeyMinPoolSize, value); }
 	}
 
 	[Category("Pooling")]
 	[DisplayName("Max Pool Size")]
 	[Description("The maximum number of connections allowed in the pool.")]
-	[DefaultValue(ConnectionParameters.DefaultValueMaxPoolSize)]
+	[DefaultValue(Common.ConnectionString.DefaultValueMaxPoolSize)]
 	public int MaxPoolSize
 	{
-		get { return DbConnectionString.GetInt32(GetKey(ConnectionParameters.DefaultKeyMaxPoolSize), base.TryGetValue, ConnectionParameters.DefaultValueMaxPoolSize); }
-		set { SetValue(ConnectionParameters.DefaultKeyMaxPoolSize, value); }
+		get { return Common.ConnectionString.GetInt32(GetKey(Common.ConnectionString.DefaultKeyMaxPoolSize), base.TryGetValue, Common.ConnectionString.DefaultValueMaxPoolSize); }
+		set { SetValue(Common.ConnectionString.DefaultKeyMaxPoolSize, value); }
 	}
 
 	[Category("Advanced")]
 	[DisplayName("Fetch Size")]
 	[Description("The maximum number of rows to be fetched in a single call to read into the internal row buffer.")]
-	[DefaultValue(ConnectionParameters.DefaultValueFetchSize)]
+	[DefaultValue(Common.ConnectionString.DefaultValueFetchSize)]
 	public int FetchSize
 	{
-		get { return DbConnectionString.GetInt32(GetKey(ConnectionParameters.DefaultKeyFetchSize), base.TryGetValue, ConnectionParameters.DefaultValueFetchSize); }
-		set { SetValue(ConnectionParameters.DefaultKeyFetchSize, value); }
+		get { return Common.ConnectionString.GetInt32(GetKey(Common.ConnectionString.DefaultKeyFetchSize), base.TryGetValue, Common.ConnectionString.DefaultValueFetchSize); }
+		set { SetValue(Common.ConnectionString.DefaultKeyFetchSize, value); }
 	}
 
 	[Category("Source")]
 	[DisplayName("Server Type")]
 	[Description("The type of server used.")]
-	[DefaultValue(ConnectionParameters.DefaultValueServerType)]
+	[DefaultValue(Common.ConnectionString.DefaultValueServerType)]
 	public ServerType ServerType
 	{
-		get { return GetServerType(ConnectionParameters.DefaultKeyServerType, ConnectionParameters.DefaultValueServerType); }
-		set { SetValue(ConnectionParameters.DefaultKeyServerType, value); }
+		get { return GetServerType(Common.ConnectionString.DefaultKeyServerType, Common.ConnectionString.DefaultValueServerType); }
+		set { SetValue(Common.ConnectionString.DefaultKeyServerType, value); }
 	}
 
 	[Category("Advanced")]
 	[DisplayName("Isolation Level")]
 	[Description("The default Isolation Level for implicit transactions.")]
-	[DefaultValue(ConnectionParameters.DefaultValueIsolationLevel)]
+	[DefaultValue(Common.ConnectionString.DefaultValueIsolationLevel)]
 	public IsolationLevel IsolationLevel
 	{
-		get { return GetIsolationLevel(ConnectionParameters.DefaultKeyIsolationLevel, ConnectionParameters.DefaultValueIsolationLevel); }
-		set { SetValue(ConnectionParameters.DefaultKeyIsolationLevel, value); }
+		get { return GetIsolationLevel(Common.ConnectionString.DefaultKeyIsolationLevel, Common.ConnectionString.DefaultValueIsolationLevel); }
+		set { SetValue(Common.ConnectionString.DefaultKeyIsolationLevel, value); }
 	}
 
 	[Category("Advanced")]
 	[DisplayName("Records Affected")]
 	[Description("Get the number of rows affected by a command when true.")]
-	[DefaultValue(ConnectionParameters.DefaultValueRecordsAffected)]
+	[DefaultValue(Common.ConnectionString.DefaultValueRecordsAffected)]
 	public bool ReturnRecordsAffected
 	{
-		get { return DbConnectionString.GetBoolean(GetKey(ConnectionParameters.DefaultKeyRecordsAffected), base.TryGetValue, ConnectionParameters.DefaultValueRecordsAffected); }
-		set { SetValue(ConnectionParameters.DefaultKeyRecordsAffected, value); }
+		get { return Common.ConnectionString.GetBoolean(GetKey(Common.ConnectionString.DefaultKeyRecordsAffected), base.TryGetValue, Common.ConnectionString.DefaultValueRecordsAffected); }
+		set { SetValue(Common.ConnectionString.DefaultKeyRecordsAffected, value); }
 	}
 
 	[Category("Pooling")]
 	[DisplayName("Enlist")]
 	[Description("If true, enlists the connections in the current transaction.")]
-	[DefaultValue(ConnectionParameters.DefaultValuePooling)]
+	[DefaultValue(Common.ConnectionString.DefaultValuePooling)]
 	public bool Enlist
 	{
-		get { return DbConnectionString.GetBoolean(GetKey(ConnectionParameters.DefaultKeyEnlist), base.TryGetValue, ConnectionParameters.DefaultValueEnlist); }
-		set { SetValue(ConnectionParameters.DefaultKeyEnlist, value); }
+		get { return Common.ConnectionString.GetBoolean(GetKey(Common.ConnectionString.DefaultKeyEnlist), base.TryGetValue, Common.ConnectionString.DefaultValueEnlist); }
+		set { SetValue(Common.ConnectionString.DefaultKeyEnlist, value); }
 	}
 
 	[Category("Advanced")]
 	[DisplayName("Client Library")]
 	[Description("Client library for Firebird Embedded.")]
-	[DefaultValue(ConnectionParameters.DefaultValueClientLibrary)]
+	[DefaultValue(Common.ConnectionString.DefaultValueClientLibrary)]
 	public string ClientLibrary
 	{
-		get { return DbConnectionString.GetString(GetKey(ConnectionParameters.DefaultKeyClientLibrary), base.TryGetValue, ConnectionParameters.DefaultValueClientLibrary); }
-		set { SetValue(ConnectionParameters.DefaultKeyClientLibrary, value); }
+		get { return Common.ConnectionString.GetString(GetKey(Common.ConnectionString.DefaultKeyClientLibrary), base.TryGetValue, Common.ConnectionString.DefaultValueClientLibrary); }
+		set { SetValue(Common.ConnectionString.DefaultKeyClientLibrary, value); }
 	}
 
 	[Category("Advanced")]
 	[DisplayName("Cache Pages")]
 	[Description("How many cache buffers to use for this session.")]
-	[DefaultValue(ConnectionParameters.DefaultValueDbCachePages)]
+	[DefaultValue(Common.ConnectionString.DefaultValueDbCachePages)]
 	public int DbCachePages
 	{
-		get { return DbConnectionString.GetInt32(GetKey(ConnectionParameters.DefaultKeyDbCachePages), base.TryGetValue, ConnectionParameters.DefaultValueDbCachePages); }
-		set { SetValue(ConnectionParameters.DefaultKeyDbCachePages, value); }
+		get { return Common.ConnectionString.GetInt32(GetKey(Common.ConnectionString.DefaultKeyDbCachePages), base.TryGetValue, Common.ConnectionString.DefaultValueDbCachePages); }
+		set { SetValue(Common.ConnectionString.DefaultKeyDbCachePages, value); }
 	}
 
 	[Category("Advanced")]
 	[DisplayName("No Db Triggers")]
 	[Description("Disables database triggers for this connection.")]
-	[DefaultValue(ConnectionParameters.DefaultValueNoDbTriggers)]
+	[DefaultValue(Common.ConnectionString.DefaultValueNoDbTriggers)]
 	public bool NoDatabaseTriggers
 	{
-		get { return DbConnectionString.GetBoolean(GetKey(ConnectionParameters.DefaultKeyNoDbTriggers), base.TryGetValue, ConnectionParameters.DefaultValueNoDbTriggers); }
-		set { SetValue(ConnectionParameters.DefaultKeyNoDbTriggers, value); }
+		get { return Common.ConnectionString.GetBoolean(GetKey(Common.ConnectionString.DefaultKeyNoDbTriggers), base.TryGetValue, Common.ConnectionString.DefaultValueNoDbTriggers); }
+		set { SetValue(Common.ConnectionString.DefaultKeyNoDbTriggers, value); }
 	}
 
 	[Category("Advanced")]
 	[DisplayName("No Garbage Collect")]
 	[Description("If true, disables sweeping the database upon attachment.")]
-	[DefaultValue(ConnectionParameters.DefaultValueNoGarbageCollect)]
+	[DefaultValue(Common.ConnectionString.DefaultValueNoGarbageCollect)]
 	public bool NoGarbageCollect
 	{
-		get { return DbConnectionString.GetBoolean(GetKey(ConnectionParameters.DefaultKeyNoGarbageCollect), base.TryGetValue, ConnectionParameters.DefaultValueNoGarbageCollect); }
-		set { SetValue(ConnectionParameters.DefaultKeyNoGarbageCollect, value); }
+		get { return Common.ConnectionString.GetBoolean(GetKey(Common.ConnectionString.DefaultKeyNoGarbageCollect), base.TryGetValue, Common.ConnectionString.DefaultValueNoGarbageCollect); }
+		set { SetValue(Common.ConnectionString.DefaultKeyNoGarbageCollect, value); }
 	}
 
 	[Category("Advanced")]
 	[DisplayName("Compression")]
 	[Description("Enables or disables wire compression.")]
-	[DefaultValue(ConnectionParameters.DefaultValueCompression)]
+	[DefaultValue(Common.ConnectionString.DefaultValueCompression)]
 	public bool Compression
 	{
-		get { return DbConnectionString.GetBoolean(GetKey(ConnectionParameters.DefaultKeyCompression), base.TryGetValue, ConnectionParameters.DefaultValueCompression); }
-		set { SetValue(ConnectionParameters.DefaultKeyCompression, value); }
+		get { return Common.ConnectionString.GetBoolean(GetKey(Common.ConnectionString.DefaultKeyCompression), base.TryGetValue, Common.ConnectionString.DefaultValueCompression); }
+		set { SetValue(Common.ConnectionString.DefaultKeyCompression, value); }
 	}
 
 	[Category("Advanced")]
 	[DisplayName("Crypt Key")]
 	[Description("Key used for database decryption.")]
-	[DefaultValue(ConnectionParameters.DefaultValueCryptKey)]
+	[DefaultValue(Common.ConnectionString.DefaultValueCryptKey)]
 	public byte[] CryptKey
 	{
-		get { return GetBytes(ConnectionParameters.DefaultKeyCryptKey, ConnectionParameters.DefaultValueCryptKey); }
-		set { SetValue(ConnectionParameters.DefaultKeyCryptKey, value); }
+		get { return GetBytes(Common.ConnectionString.DefaultKeyCryptKey, Common.ConnectionString.DefaultValueCryptKey); }
+		set { SetValue(Common.ConnectionString.DefaultKeyCryptKey, value); }
 	}
 
 	[Category("Advanced")]
 	[DisplayName("Wire Crypt")]
 	[Description("Selection for wire encryption.")]
-	[DefaultValue(ConnectionParameters.DefaultValueWireCrypt)]
+	[DefaultValue(Common.ConnectionString.DefaultValueWireCrypt)]
 	public WireCrypt WireCrypt
 	{
-		get { return GetWireCrypt(ConnectionParameters.DefaultKeyWireCrypt, ConnectionParameters.DefaultValueWireCrypt); }
-		set { SetValue(ConnectionParameters.DefaultKeyWireCrypt, value); }
+		get { return GetWireCrypt(Common.ConnectionString.DefaultKeyWireCrypt, Common.ConnectionString.DefaultValueWireCrypt); }
+		set { SetValue(Common.ConnectionString.DefaultKeyWireCrypt, value); }
 	}
 
 	[Category("Advanced")]
 	[DisplayName("Application Name")]
 	[Description("The name of the application making the connection.")]
-	[DefaultValue(ConnectionParameters.DefaultValueApplicationName)]
+	[DefaultValue(Common.ConnectionString.DefaultValueApplicationName)]
 	public string ApplicationName
 	{
-		get { return DbConnectionString.GetString(GetKey(ConnectionParameters.DefaultKeyApplicationName), base.TryGetValue, ConnectionParameters.DefaultValueApplicationName); }
-		set { SetValue(ConnectionParameters.DefaultKeyApplicationName, value); }
+		get { return Common.ConnectionString.GetString(GetKey(Common.ConnectionString.DefaultKeyApplicationName), base.TryGetValue, Common.ConnectionString.DefaultValueApplicationName); }
+		set { SetValue(Common.ConnectionString.DefaultKeyApplicationName, value); }
 	}
 
 	[Category("Advanced")]
 	[DisplayName("Command Timeout")]
 	[Description("The time (in seconds) for command execution.")]
-	[DefaultValue(ConnectionParameters.DefaultValueCommandTimeout)]
+	[DefaultValue(Common.ConnectionString.DefaultValueCommandTimeout)]
 	public int CommandTimeout
 	{
-		get { return DbConnectionString.GetInt32(GetKey(ConnectionParameters.DefaultKeyCommandTimeout), base.TryGetValue, ConnectionParameters.DefaultValueCommandTimeout); }
-		set { SetValue(ConnectionParameters.DefaultKeyCommandTimeout, value); }
+		get { return Common.ConnectionString.GetInt32(GetKey(Common.ConnectionString.DefaultKeyCommandTimeout), base.TryGetValue, Common.ConnectionString.DefaultValueCommandTimeout); }
+		set { SetValue(Common.ConnectionString.DefaultKeyCommandTimeout, value); }
 	}
 
 	[Category("Advanced")]
 	[DisplayName("Parallel Workers")]
 	[Description("Number of parallel workers to use for certain operations in Firebird.")]
-	[DefaultValue(ConnectionParameters.DefaultValueParallelWorkers)]
+	[DefaultValue(Common.ConnectionString.DefaultValueParallelWorkers)]
 	public int ParallelWorkers
 	{
-		get { return DbConnectionString.GetInt32(GetKey(ConnectionParameters.DefaultKeyParallelWorkers), base.TryGetValue, ConnectionParameters.DefaultValueParallelWorkers); }
-		set { SetValue(ConnectionParameters.DefaultKeyParallelWorkers, value); }
+		get { return Common.ConnectionString.GetInt32(GetKey(Common.ConnectionString.DefaultKeyParallelWorkers), base.TryGetValue, Common.ConnectionString.DefaultValueParallelWorkers); }
+		set { SetValue(Common.ConnectionString.DefaultKeyParallelWorkers, value); }
 	}
 
 	#endregion
@@ -330,12 +327,12 @@ public class ConnectionStringBuilder : DbConnectionStringBuilder
 
 	public ConnectionStringBuilder()
 	{
-		Diag.Dug();
+		Diag.Trace();
 	}
 
 	public ConnectionStringBuilder(string connectionString) : this()
 	{
-		Diag.Dug("Connection string: " + connectionString);
+		Diag.Trace("Connection string: " + connectionString);
 
 		ConnectionString = connectionString;
 	}
@@ -346,7 +343,7 @@ public class ConnectionStringBuilder : DbConnectionStringBuilder
 
 	private ServerType GetServerType(string keyword, ServerType defaultValue)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var key = GetKey(keyword);
 		if (!TryGetValue(key, out var value))
@@ -358,13 +355,13 @@ public class ConnectionStringBuilder : DbConnectionStringBuilder
 			case string s when Enum.TryParse<ServerType>(s, true, out var enumResult):
 				return enumResult;
 			default:
-				return DbConnectionString.GetServerType(key, base.TryGetValue, defaultValue);
+				return Common.ConnectionString.GetServerType(key, base.TryGetValue, defaultValue);
 		}
 	}
 
 	private IsolationLevel GetIsolationLevel(string keyword, IsolationLevel defaultValue)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var key = GetKey(keyword);
 		if (!TryGetValue(key, out var value))
@@ -377,13 +374,13 @@ public class ConnectionStringBuilder : DbConnectionStringBuilder
 			case string s when Enum.TryParse<IsolationLevel>(s, true, out var enumResult):
 				return enumResult;
 			default:
-				return DbConnectionString.GetIsolationLevel(key, base.TryGetValue, defaultValue);
+				return Common.ConnectionString.GetIsolationLevel(key, base.TryGetValue, defaultValue);
 		}
 	}
 
 	private WireCrypt GetWireCrypt(string keyword, WireCrypt defaultValue)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var key = GetKey(keyword);
 		if (!TryGetValue(key, out var value))
@@ -395,13 +392,13 @@ public class ConnectionStringBuilder : DbConnectionStringBuilder
 			case string s when Enum.TryParse<WireCrypt>(s, true, out var enumResult):
 				return enumResult;
 			default:
-				return DbConnectionString.GetWireCrypt(key, base.TryGetValue, defaultValue);
+				return Common.ConnectionString.GetWireCrypt(key, base.TryGetValue, defaultValue);
 		}
 	}
 
 	private byte[] GetBytes(string keyword, byte[] defaultValue)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var key = GetKey(keyword);
 
@@ -423,7 +420,7 @@ public class ConnectionStringBuilder : DbConnectionStringBuilder
 
 	private void SetValue<T>(string keyword, T value)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var key = GetKey(keyword);
 		if (value is byte[] bytes)
@@ -438,13 +435,13 @@ public class ConnectionStringBuilder : DbConnectionStringBuilder
 
 	private string GetKey(string keyword)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
-		string synonymKey = ConnectionParameters.Synonyms[keyword];
+		string synonymKey = Common.ConnectionString.Synonyms[keyword];
 
 		foreach (string key in Keys)
 		{
-			if (ConnectionParameters.Synonyms.ContainsKey(key) && ConnectionParameters.Synonyms[key] == synonymKey)
+			if (Common.ConnectionString.Synonyms.ContainsKey(key) && Common.ConnectionString.Synonyms[key] == synonymKey)
 			{
 				synonymKey = key;
 				break;

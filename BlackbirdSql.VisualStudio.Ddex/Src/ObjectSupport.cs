@@ -13,12 +13,12 @@ namespace BlackbirdSql.VisualStudio.Ddex
 
 		public ObjectSupport() : this(null)
 		{
-			Diag.Dug();
+			Diag.Trace();
 		}
 
 		public ObjectSupport(IVsDataConnection connection) : base("BlackbirdSql.VisualStudio.Ddex.ObjectSupport", typeof(ObjectSupport).Assembly)
 		{
-			Diag.Dug();
+			Diag.Trace();
 		}
 
 		#endregion

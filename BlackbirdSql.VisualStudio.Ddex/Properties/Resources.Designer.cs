@@ -61,7 +61,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to IVs provider for Firebird (Blackbird).
+        ///   Looks up a localized string similar to IVs provider for Firebird (BlackbirdSql).
         /// </summary>
         internal static string _100 {
             get {
@@ -70,7 +70,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to IVs Provider for DslClient (Blackbird).
+        ///   Looks up a localized string similar to IVs Provider for FirebirdClient (BlackbirdSql).
         /// </summary>
         internal static string _102 {
             get {
@@ -97,7 +97,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .NET Framework DDEX 2.0 Provider for Firebird (Blackbird).
+        ///   Looks up a localized string similar to .NET Framework DDEX 2.0 Provider for Firebird (BlackbirdSql).
         /// </summary>
         internal static string DdexProvider_DisplayName {
             get {
@@ -111,6 +111,33 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         internal static string DdexProvider_ShortDisplayName {
             get {
                 return ResourceManager.GetString("DdexProvider_ShortDisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The .NET Provider for Firebird (FirebirdSql.Data.FirebirdClient).
+        /// </summary>
+        internal static string Provider_Description {
+            get {
+                return ResourceManager.GetString("Provider_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .NET Provider for Firebird (BlackbirdSql).
+        /// </summary>
+        internal static string Provider_DisplayName {
+            get {
+                return ResourceManager.GetString("Provider_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BlackbirdSql FirebirdClient Provider.
+        /// </summary>
+        internal static string Provider_ShortDisplayName {
+            get {
+                return ResourceManager.GetString("Provider_ShortDisplayName", resourceCulture);
             }
         }
         

@@ -51,11 +51,11 @@ sealed class DslConnectionPoolManager : IDisposable
 	{
 		bool _disposed;
 		object _syncRoot;
-		DbConnectionString _connectionString;
+		ConnectionString _connectionString;
 		Stack<Item> _available;
 		List<DslConnectionInternal> _busy;
 
-		public Pool(DbConnectionString connectionString)
+		public Pool(ConnectionString connectionString)
 		{
 			_syncRoot = new object();
 			_connectionString = connectionString;
@@ -186,7 +186,7 @@ sealed class DslConnectionPoolManager : IDisposable
 		_cleanupTimer = new Timer(CleanupCallback, null, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(2));
 	}
 
-	internal DslConnectionInternal Get(DbConnectionString connectionString, out bool createdNew)
+	internal DslConnectionInternal Get(ConnectionString connectionString, out bool createdNew)
 	{
 		CheckDisposed();
 
@@ -210,7 +210,7 @@ sealed class DslConnectionPoolManager : IDisposable
 		Parallel.ForEach(_pools.Values, x => x.ClearPool());
 	}
 
-	internal void ClearPool(DbConnectionString connectionString)
+	internal void ClearPool(ConnectionString connectionString)
 	{
 		CheckDisposed();
 

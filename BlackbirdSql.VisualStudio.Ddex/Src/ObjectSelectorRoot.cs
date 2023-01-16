@@ -16,7 +16,7 @@ class ObjectSelectorRoot : AdoDotNetRootObjectSelector
 {
 	protected override IVsDataReader SelectObjects(string typeName, object[] restrictions, string[] properties, object[] parameters)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		IVsDataReader reader;
 

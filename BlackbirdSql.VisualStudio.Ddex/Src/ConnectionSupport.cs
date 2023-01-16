@@ -36,7 +36,7 @@ internal class ConnectionSupport : AdoDotNetConnectionSupport
 
 	public ConnectionSupport() : base()
 	{
-		Diag.Dug();
+		Diag.Trace();
 	}
 
 	#endregion
@@ -45,7 +45,7 @@ internal class ConnectionSupport : AdoDotNetConnectionSupport
 
 	protected override object CreateService(IServiceContainer container, Type serviceType)
 	{
-		Diag.Dug(String.Format("CreateService({0})", serviceType.FullName));
+		Diag.Trace(String.Format("CreateService({0})", serviceType.FullName));
 
 
 		if (serviceType == typeof(IVsDataSourceInformation))

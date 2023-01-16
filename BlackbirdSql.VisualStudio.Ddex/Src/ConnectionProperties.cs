@@ -1,5 +1,5 @@
 /*
- *  Visual Studio DDEX Provider for BlackbirdSql DslClient
+ *  Visual Studio DDEX Provider for FirebirdClient (BlackbirdSql)
  * 
  *     The contents of this file are subject to the Initial 
  *     Developer's Public License Version 1.0 (the "License"); 
@@ -24,7 +24,7 @@ using System.ComponentModel;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 
 using BlackbirdSql.Common;
-using BlackbirdSql.Data.Common;
+using FirebirdSql.Data.Common;
 
 
 
@@ -63,7 +63,7 @@ internal class ConnectionProperties : AdoDotNetConnectionProperties
 
 	public ConnectionProperties()
 	{
-		Diag.Dug(false);
+		Diag.Trace();
 	}
 
 	#endregion

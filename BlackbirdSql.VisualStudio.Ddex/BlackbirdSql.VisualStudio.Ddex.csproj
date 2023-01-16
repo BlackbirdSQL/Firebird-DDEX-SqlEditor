@@ -52,20 +52,22 @@
   </PropertyGroup>
   <!-- Project Properties (Build Events) -->
   <PropertyGroup>
-    <PostBuildEvent>:: *** Update: No longer required
-:: copy /v /y /b $(ProjectDir)$(OutDir)BlackbirdSql.VisualStudio.Ddex.* "%25ProgramFiles%25\BlackbirdSql\BlackbirdDDEX.9.1.0"
+    <PostBuildEvent>
+			:: *** Update: No longer required
+			:: copy /v /y /b $(ProjectDir)$(OutDir)BlackbirdSql.VisualStudio.Ddex.* "%25ProgramFiles%25\BlackbirdSql\BlackbirdDDEX.9.1.0"
 
-:: *** Update: DestFolder has not been updated so this won't execute. It's easier to close the ide and do it manually 
-:: The following are so that you don't have to do a reinstall of the vsix after a build
-:: NOTE:
-:: You will have to replace 17.0_xxx with your version and user id
-:: You will have to restart the ide before doing the build if you've used the ddex tool
-:: during your session because the dll will be locked
-set DestFolder="%25LocalAppData%25\Microsoft\VisualStudio\17.0_5d5e49fc\Extensions\d4sem1lb.ehh\"
-if exist %25DestFolder%25 (
-copy /v /y /b $(ProjectDir)$(OutDir)*.dll %25DestFolder%25
-copy /v /y /b $(ProjectDir)$(OutDir)*.pdb %25DestFolder%25
-)</PostBuildEvent>
+			:: *** Update: DestFolder has not been updated so this won't execute. It's easier to close the ide and do it manually
+			:: The following are so that you don't have to do a reinstall of the vsix after a build
+			:: NOTE:
+			:: You will have to replace 17.0_xxx with your version and user id
+			:: You will have to restart the ide before doing the build if you've used the ddex tool
+			:: during your session because the dll will be locked
+			set DestFolder="%25LocalAppData%25\Microsoft\VisualStudio\17.0_5d5e49fc\Extensions\d4sem1lb.ehh\"
+			if exist %25DestFolder%25 (
+			copy /v /y /b $(ProjectDir)$(OutDir)*.dll %25DestFolder%25
+			copy /v /y /b $(ProjectDir)$(OutDir)*.pdb %25DestFolder%25
+			)
+		</PostBuildEvent>
   </PropertyGroup>
   <!-- Project Properties (Signing) -->
   <PropertyGroup>
@@ -85,12 +87,18 @@ copy /v /y /b $(ProjectDir)$(OutDir)*.pdb %25DestFolder%25
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <HintPath>..\..\..\..\..\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Microsoft.VisualStudio.DataTools.Interop.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <!-- References (Packages) -->
   <ItemGroup>
@@ -128,10 +136,32 @@ copy /v /y /b $(ProjectDir)$(OutDir)*.pdb %25DestFolder%25
   </ItemGroup>
   <!-- Includes (Property Resources) -->
   <ItemGroup>
+    <Compile Include="Configuration\VsPackageController.cs" />
+    <Compile Include="Configuration\UIDebugOptionControl.xaml.cs">
+      <DependentUpon>UIDebugOptionControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\UIDebugOptionDialogPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Configuration\VsDebugOptionModel.cs" />
+    <Compile Include="Configuration\VsOptionsProvider.cs" />
+    <Compile Include="Extensions\AbstractOptionModel.cs" />
+    <Compile Include="Extensions\AbstractOptionPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Extensions\IOptionModelPropertyWrapper.cs" />
+    <Compile Include="Extensions\NativeSettingsType.cs" />
+    <Compile Include="Extensions\NativeSettingsTypeExtensions.cs" />
+    <Compile Include="Extensions\OptionModelPropertyWrapper.cs" />
+    <Compile Include="Extensions\OverrideCollectionNameAttribute.cs" />
+    <Compile Include="Extensions\OverrideDataTypeAttribute.cs" />
+    <Compile Include="Extensions\OverridePropertyNameAttribute.cs" />
+    <Compile Include="Extensions\SettingDataType.cs" />
     <Compile Include="Extensions\DataToolsCommands.cs" />
     <Compile Include="Extensions\AbstractQueryCommandProvider.cs" />
     <Compile Include="Extensions\SystemQueryCommandProvider.cs" />
     <Compile Include="Extensions\UserQueryCommandProvider.cs" />
+    <Compile Include="Configuration\VsGeneralOptionModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -211,21 +241,25 @@ copy /v /y /b $(ProjectDir)$(OutDir)*.pdb %25DestFolder%25
     <Compile Include="BlackbirdSqlDdexPackage.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Configuration\PackageData.cs" />
-    <Compile Include="Configuration\PackageRegistration.cs" />
+    <Compile Include="Configuration\VsPackageRegistration.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BlackbirdSql.Common\BlackbirdSql.Common.csproj">
       <Project>{28d8b582-2320-446e-b286-9b42e65dae13}</Project>
       <Name>BlackbirdSql.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BlackbirdSql.Data.DslClient\BlackbirdSql.Data.DslClient.csproj">
-      <Project>{2e2eabaa-3fca-4768-9455-a3a8b75ee1de}</Project>
-      <Name>BlackbirdSql.Data.DslClient</Name>
+    <ProjectReference Include="..\Firebird\EntityFramework.Firebird\EntityFramework.Firebird.csproj">
+      <Project>{57f1210c-d9c7-43de-999a-50cfd7c07ac1}</Project>
+      <Name>EntityFramework.Firebird</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Firebird\FirebirdSql.Data.FirebirdClient\FirebirdSql.Data.FirebirdClient.csproj">
+      <Project>{16f13584-61bc-411c-a146-2fe6b6c26016}</Project>
+      <Name>FirebirdSql.Data.FirebirdClient</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Package.ico" />
-    <Content Include="Properties\blackbird-logo.png" />
+    <None Include="Src\ViewSupportWL.xml" />
     <EmbeddedResource Include="Resources\ViewSupport.ComputedColumn.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.Procedure.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.ScalarFunction.ico" />
@@ -233,6 +267,12 @@ copy /v /y /b $(ProjectDir)$(OutDir)*.pdb %25DestFolder%25
     <EmbeddedResource Include="Resources\ViewSupport.View.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.ViewColumn.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.SystemColumn.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Configuration\UIDebugOptionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <!-- Imports -->
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />

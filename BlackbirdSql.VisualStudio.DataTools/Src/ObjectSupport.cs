@@ -1,5 +1,5 @@
 /*
- *  Visual Studio DDEX Provider for BlackbirdSql DslClient
+ *  Visual Studio DDEX Provider for FirebirdClient (BlackbirdSql)
  * 
  *     The contents of this file are subject to the Initial 
  *     Developer's Public License Version 1.0 (the "License"); 
@@ -33,7 +33,7 @@ internal class ObjectSupport : DataObjectSupport
 
 	public ObjectSupport() : base("BlackbirdSql.VisualStudio.DataTools.ObjectSupport", typeof(ObjectSupport).Assembly)
 	{
-		Diag.Dug();
+		Diag.Trace();
 	}
 
 	#endregion

@@ -24,7 +24,7 @@ using System.Windows.Forms;
 using Microsoft.VisualStudio.Data.Framework;
 
 using BlackbirdSql.Common;
-using BlackbirdSql.Data.Common;
+using FirebirdSql.Data.Common;
 
 
 
@@ -38,7 +38,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 
 		public ConnectionUIControl()
 		{
-			Diag.Dug();
+			Diag.Trace();
 			InitializeComponent();
 		}
 
@@ -48,53 +48,53 @@ namespace BlackbirdSql.VisualStudio.Ddex
 
 		public override void LoadProperties()
 		{
-			Diag.Dug();
+			Diag.Trace();
 
 			if (Site != null && Site.TryGetValue("Data Source", out object value))
 				txtDataSource.Text = (string)value;
 			else
-				txtDataSource.Text = ConnectionParameters.DefaultValueDataSource;
+				txtDataSource.Text = ConnectionString.DefaultValueDataSource;
 
 			if (Site != null && Site.TryGetValue("User ID", out value))
 				txtUserName.Text = (string)value;
 			else
-				txtUserName.Text = ConnectionParameters.DefaultValueUserId;
+				txtUserName.Text = ConnectionString.DefaultValueUserId;
 
 			if (Site != null && Site.TryGetValue("Initial Catalog", out value))
 				txtDatabase.Text = (string)value;
 			else
-				txtDatabase.Text = ConnectionParameters.DefaultValueCatalog;
+				txtDatabase.Text = ConnectionString.DefaultValueCatalog;
 
 			if (Site != null && Site.TryGetValue("Password", out value))
 				txtPassword.Text = (string)value;
 			else
-				txtPassword.Text = ConnectionParameters.DefaultValuePassword;
+				txtPassword.Text = ConnectionString.DefaultValuePassword;
 
 
 			if (Site != null && Site.TryGetValue("Role Name", out value))
 				txtRole.Text = (string)value;
 			else
-				txtRole.Text = ConnectionParameters.DefaultValueRoleName;
+				txtRole.Text = ConnectionString.DefaultValueRoleName;
 
 			if (Site != null && Site.TryGetValue("Character Set", out value))
 				cboCharset.Text = (string)value;
 			else
-				cboCharset.Text = ConnectionParameters.DefaultValueCharacterSet;
+				cboCharset.Text = ConnectionString.DefaultValueCharacterSet;
 
 			if (Site != null && Site.TryGetValue("Port Number", out value))
 				txtPort.Text = (string)value;
 			else
-				txtPort.Text = ConnectionParameters.DefaultValuePortNumber.ToString();
+				txtPort.Text = ConnectionString.DefaultValuePortNumber.ToString();
 
 			if (Site == null || !Site.TryGetValue("Dialect", out value))
-				value = ConnectionParameters.DefaultValueDialect;
+				value = ConnectionString.DefaultValueDialect;
 			if (Convert.ToInt32(value) == 1)
 				cboDialect.SelectedIndex = 0;
 			else
 				cboDialect.SelectedIndex = 1;
 
 			if (Site == null || !Site.TryGetValue("Server Type", out value))
-				value = ConnectionParameters.DefaultValueServerType;
+				value = ConnectionString.DefaultValueServerType;
 			// Strange bug here. The default on the enum is being returned as the literal. Cannot trace it
 			if (Convert.ToString(value) == "Default" || Convert.ToInt32(value) == 0)
 				cboServerType.SelectedIndex = 0;
@@ -151,7 +151,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 
 		private void CmdGetFile_Click(object sender, EventArgs e)
 		{
-			Diag.Dug();
+			Diag.Trace();
 
 			if (openFileDialog.ShowDialog() == DialogResult.OK)
 			{

@@ -30,9 +30,9 @@ internal class ConnectionSupport : AdoDotNetConnectionSupport
 {
 	#region · Constructors ·
 
-	public ConnectionSupport() : base(Configuration.PackageData.Invariant)
+	public ConnectionSupport() : base(SystemData.Invariant)
 	{
-		Diag.Dug();
+		Diag.Trace();
 	}
 
 	#endregion
@@ -42,7 +42,7 @@ internal class ConnectionSupport : AdoDotNetConnectionSupport
 
 	protected override DataSourceInformation CreateDataSourceInformation()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		return new SourceInformation(base.Site as DataConnection);
 	}
@@ -54,7 +54,7 @@ internal class ConnectionSupport : AdoDotNetConnectionSupport
 
 	protected override object GetServiceImpl(Type serviceType)
 	{
-		Diag.Dug("Service: " + serviceType.FullName);
+		Diag.Trace("Service: " + serviceType.FullName);
 
 		if (serviceType == typeof(DataViewSupport))
 		{

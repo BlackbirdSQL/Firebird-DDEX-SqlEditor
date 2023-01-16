@@ -35,7 +35,7 @@ public sealed class DslCommandBuilder : DbCommandBuilder
 
 	public static void DeriveParameters(DslCommand command)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (command.CommandType != CommandType.StoredProcedure)
 		{

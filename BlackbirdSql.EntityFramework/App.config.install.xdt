@@ -1,9 +1,9 @@
 ﻿<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
 	<entityFramework>
 		<defaultConnectionFactory xdt:Transform="Remove" />
-		<defaultConnectionFactory type="BlackbirdSql.Data.Entity.ConnectionFactory, EntityFramework.Blackbird" xdt:Transform="Insert" />
+		<defaultConnectionFactory type="BlackbirdSql.Data.Entity.ConnectionFactory, EntityFramework.BlackbirdSql" xdt:Transform="Insert" />
 		<providers>
-			<provider invariantName="BlackbirdSql.Data.DslClient" type="BlackbirdSql.Data.Entity.ProviderServices, EntityFramework.Blackbird" xdt:Transform="InsertIfMissing" xdt:Locator="Match(invariantName)" />
+			<provider invariantName="BlackbirdSql.Data.DslClient" type="BlackbirdSql.Data.Entity.ProviderServices, EntityFramework.BlackbirdSql" xdt:Transform="InsertIfMissing" xdt:Locator="Match(invariantName)" />
 		</providers>
 	</entityFramework>
 </configuration>

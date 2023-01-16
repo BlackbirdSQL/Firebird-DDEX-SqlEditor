@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Common;
-using BlackbirdSql.Data.DslClient;
+using FirebirdSql.Data.FirebirdClient;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using System.Data.Common;
 using Microsoft.VisualStudio.Data.Framework;
@@ -22,7 +22,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 class ObjectSelector : AdoDotNetObjectSelector
 {
 	// Unused - option to directly enumerate
-	readonly Dictionary<string, Func<DslConnection, object[], DataTable>> _objectSelectors
+	readonly Dictionary<string, Func<FbConnection, object[], DataTable>> _objectSelectors
 		= new()
 		{
 			{ "Tables",  SelectTables },
@@ -35,12 +35,12 @@ class ObjectSelector : AdoDotNetObjectSelector
 
 	public ObjectSelector()
 	{
-		Diag.Dug();
+		Diag.Trace();
 	}
 
 	public ObjectSelector(IVsDataConnection connection) : base(connection)
 	{
-		Diag.Dug();
+		Diag.Trace();
 	}
 
 
@@ -124,7 +124,7 @@ class ObjectSelector : AdoDotNetObjectSelector
 					}
 				}
 
-				Diag.Dug(str);
+				Diag.Trace(str);
 
 				base.Site.EnsureConnected();
 				DataTable schema = dbConnection.GetSchema(parameters[0].ToString(), array);
@@ -145,7 +145,7 @@ class ObjectSelector : AdoDotNetObjectSelector
 			finally
 			{
 				base.Site.UnlockProviderObject();
-				Diag.Dug(typeName);
+				Diag.Trace(typeName);
 			}
 		}
 		catch (Exception ex)
@@ -193,7 +193,7 @@ class ObjectSelector : AdoDotNetObjectSelector
 		}
 
 
-		Diag.Dug(str);
+		Diag.Trace(str);
 
 		// Table type hack
 		if (typeName == "Table" || typeName == "SystemTable")
@@ -251,7 +251,7 @@ class ObjectSelector : AdoDotNetObjectSelector
 		}
 
 
-		Diag.Dug(str);
+		Diag.Trace(str);
 
 		return list;
 	}
@@ -267,11 +267,11 @@ class ObjectSelector : AdoDotNetObjectSelector
 	string[] properties,
 	object[] parameters)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		IVsDataReader dataReader;
 
-		var connection = (DslConnection)Site.GetLockedProviderObject();
+		var connection = (FbConnection)Site.GetLockedProviderObject();
 		try
 		{
 			Site.EnsureConnected();
@@ -302,9 +302,9 @@ class ObjectSelector : AdoDotNetObjectSelector
 		return dataReader;
 	}
 
-	static DataTable SelectTables(DslConnection connection, object[] restrictions)
+	static DataTable SelectTables(FbConnection connection, object[] restrictions)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var command = connection.CreateCommand();
 		command.CommandText =
@@ -325,9 +325,9 @@ class ObjectSelector : AdoDotNetObjectSelector
 		return dataTable;
 	}
 
-	static DataTable SelectTableColumns(DslConnection connection, object[] restrictions)
+	static DataTable SelectTableColumns(FbConnection connection, object[] restrictions)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var command = connection.CreateCommand();
 		command.CommandText =
@@ -372,9 +372,9 @@ class ObjectSelector : AdoDotNetObjectSelector
 		return dataTable;
 	}
 
-	static DataTable SelectTableTriggers(DslConnection connection, object[] restrictions)
+	static DataTable SelectTableTriggers(FbConnection connection, object[] restrictions)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var command = connection.CreateCommand();
 		command.CommandText =
@@ -399,9 +399,9 @@ class ObjectSelector : AdoDotNetObjectSelector
 		return dataTable;
 	}
 
-	static DataTable SelectViews(DslConnection connection, object[] restrictions)
+	static DataTable SelectViews(FbConnection connection, object[] restrictions)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var command = connection.CreateCommand();
 		command.CommandText =
@@ -422,9 +422,9 @@ class ObjectSelector : AdoDotNetObjectSelector
 		return dataTable;
 	}
 
-	static DataTable SelectViewColumns(DslConnection connection, object[] restrictions)
+	static DataTable SelectViewColumns(FbConnection connection, object[] restrictions)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var command = connection.CreateCommand();
 		command.CommandText =
@@ -448,9 +448,9 @@ class ObjectSelector : AdoDotNetObjectSelector
 		return dataTable;
 	}
 
-	static DataTable SelectViewTriggers(DslConnection connection, object[] restrictions)
+	static DataTable SelectViewTriggers(FbConnection connection, object[] restrictions)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var command = connection.CreateCommand();
 		command.CommandText =

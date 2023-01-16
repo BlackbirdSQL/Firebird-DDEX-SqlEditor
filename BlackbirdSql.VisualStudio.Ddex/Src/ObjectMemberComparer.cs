@@ -12,13 +12,13 @@ internal sealed class ObjectMemberComparer : DataObjectMemberComparer
 
 	public ObjectMemberComparer(IVsDataConnection dataConnection)
 	{
-		Diag.Dug();
+		Diag.Trace();
 	}
 
 	// This method can come out after debugging
 	public override int Compare(string typeName, string propertyName, object value1, object value2)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		int result;
 
@@ -39,7 +39,7 @@ internal sealed class ObjectMemberComparer : DataObjectMemberComparer
 			throw;
 		}
 
-		Diag.Dug("typeName: " + typeName + " propertyName: " + propertyName + " values: " + value1 + ":" + value2 + " result: " + result);
+		Diag.Trace("typeName: " + typeName + " propertyName: " + propertyName + " values: " + value1 + ":" + value2 + " result: " + result);
 
 		return result;
 	}
@@ -113,7 +113,7 @@ internal sealed class ObjectMemberComparer : DataObjectMemberComparer
 			throw;
 		}
 
-		Diag.Dug(typeName + ":" + value1 + ":" + value2 + " result: " + result);
+		Diag.Trace(typeName + ":" + value1 + ":" + value2 + " result: " + result);
 
 		return result > 0 ? 1 : (result < 0 ? -1 : 0);
 

@@ -1,5 +1,5 @@
 /*
- *  Visual Studio DDEX Provider for BlackbirdSql DslClient
+ *  Visual Studio DDEX Provider for FirebirdClient (BlackbirdSql)
  * 
  *     The contents of this file are subject to the Initial 
  *     Developer's Public License Version 1.0 (the "License"); 
@@ -35,7 +35,7 @@ internal class ViewSupport : DataViewSupport
 	public ViewSupport(string resourceName, Assembly assembly) : base(resourceName, assembly)
 //	public ViewSupport() : base("BlackbirdSql.VisualStudio.Ddex.ViewSupport", typeof(ViewSupport).Assembly)
 	{
-		Diag.Dug();
+		Diag.Trace();
 	}
 
 	#endregion

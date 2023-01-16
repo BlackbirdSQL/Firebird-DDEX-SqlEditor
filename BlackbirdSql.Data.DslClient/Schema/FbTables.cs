@@ -66,19 +66,14 @@ internal class FbTables : FbSchema
 			}
 
 			/* TABLE_TYPE */
-			// BlackbirdSql - if table name is null then it's either a table
-			// or a view list >> if restriction[3] is null it's a table of
-			// type system or user
-			if (restrictions.Length >= 4)
+			if (restrictions.Length >= 4 && restrictions[3] != null)
 			{
 				if (where.Length > 0)
 				{
 					where.Append(" AND ");
 				}
 
-				string type = restrictions[3] ?? "";
-
-				switch (type)
+				switch (restrictions[3].ToString())
 				{
 					case "VIEW":
 						where.Append("rdb$view_source IS NOT NULL");
@@ -89,11 +84,8 @@ internal class FbTables : FbSchema
 						break;
 
 					case "TABLE":
-						where.Append("rdb$view_source IS NULL and rdb$system_flag = 0");
-						break;
-
 					default:
-						where.Append("rdb$view_source IS NULL");
+						where.Append("rdb$view_source IS NULL and rdb$system_flag = 0");
 						break;
 				}
 			}
@@ -105,8 +97,6 @@ internal class FbTables : FbSchema
 		}
 
 		sql.Append(" ORDER BY IS_SYSTEM_TABLE, OWNER_NAME, TABLE_NAME");
-
-		Diag.Dug(sql.ToString());
 
 		return sql;
 	}

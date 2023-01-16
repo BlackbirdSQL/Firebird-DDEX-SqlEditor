@@ -8,6 +8,9 @@ using System.Threading;
 using Microsoft.VisualStudio.Shell;
 
 using BlackbirdSql.Common;
+using FirebirdSql.Data.FirebirdClient;
+
+
 namespace BlackbirdSql.VisualStudio.DataTools.Configuration;
 
 
@@ -18,7 +21,7 @@ internal sealed class PackageRegistration : RegistrationAttribute
 	/// </summary>
 	public override void Register(RegistrationContext context)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (context == null)
 		{
@@ -34,7 +37,7 @@ internal sealed class PackageRegistration : RegistrationAttribute
 
 		try
 		{
-			Type providerFactoryClass = typeof(Data.DslClient.DslProviderFactory);
+			Type providerFactoryClass = typeof(FirebirdClientFactory);
 			string invariantName = providerFactoryClass.Assembly.GetName().Name;
 			string invariantFullName = providerFactoryClass.Assembly.FullName;
 
@@ -42,7 +45,7 @@ internal sealed class PackageRegistration : RegistrationAttribute
 			Type providerObjectFactoryClass = typeof(IProviderObjectFactory);
 			string nameProviderObjectFactory = providerObjectFactoryClass.Assembly.FullName;
 
-			string dataSourceGuid = "{" + Data.Configuration.PackageData.DataSourceGuid + "}";
+			string dataSourceGuid = "{" + SystemData.DataSourceGuid + "}";
 			string providerGuid = "{" + PackageData.ProviderGuid + "}";
 
 			// Clean up
@@ -51,14 +54,14 @@ internal sealed class PackageRegistration : RegistrationAttribute
 			// Add the Firebird data source (if not exists???)
 			key = context.CreateKey("DataSources\\" + dataSourceGuid);
 
-			key.SetValue(null, Data.Configuration.PackageData.TechnologyName);
+			key.SetValue(null, SystemData.TechnologyName);
 			key.SetValue("DefaultProvider", providerGuid);
 
 
 			// Add this package as a provider for the Firebird data source
 			key2 = key.CreateSubkey("SupportingProviders");
 			key3 = key2.CreateSubkey(providerGuid);
-			key3.SetValue("DisplayName", Data.Configuration.PackageData.TechnologyName);
+			key3.SetValue("DisplayName", SystemData.TechnologyName);
 			key3.SetValue("UsingDescription", "DdexProvider_Description, "
 				+ "BlackbirdSql.VisualStudio.DataTools.Properties.Resources, " + nameProviderObjectFactory);
 			DisposeKey(ref key3);
@@ -66,11 +69,11 @@ internal sealed class PackageRegistration : RegistrationAttribute
 			DisposeKey(ref key);
 
 			key = context.CreateKey("DataProviders\\" + providerGuid);
-			key.SetValue(null, Data.Properties.Resources.Provider_DisplayName);
+			key.SetValue(null, Properties.Resources.Provider_DisplayName);
 			key.SetValue("Assembly", nameProviderObjectFactory);
 
 			// key.SetValue("PlatformVersion", "2.0");
-			key.SetValue("Technology", "{" + Data.Configuration.PackageData.TechnologyGuid + "}");
+			key.SetValue("Technology", "{" + SystemData.TechnologyGuid + "}");
 			key.SetValue("AssociatedSource", dataSourceGuid);
 			key.SetValue("InvariantName", invariantName);
 			key.SetValue("Description", "DdexProvider_Description, "
@@ -139,7 +142,7 @@ internal sealed class PackageRegistration : RegistrationAttribute
 
 	public override void Unregister(RegistrationContext context)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (context == null)
 		{
@@ -148,7 +151,7 @@ internal sealed class PackageRegistration : RegistrationAttribute
 			throw new ArgumentNullException("context");
 		}
 
-		string dataSourceGuid = "{" + Data.Configuration.PackageData.DataSourceGuid + "}";
+		string dataSourceGuid = "{" + SystemData.DataSourceGuid + "}";
 		string providerGuid = "{" + PackageData.ProviderGuid + "}";
 		Type typeProviderObjectFactory = typeof(IProviderObjectFactory);
 		Attribute customAttribute = Attribute.GetCustomAttribute(typeProviderObjectFactory, typeof(GuidAttribute));
@@ -185,10 +188,10 @@ internal sealed class PackageRegistration : RegistrationAttribute
 
 	public static void InstallGlobalAssemblyCache()
 	{
-		Type factoryClass = typeof(Data.DslClient.DslProviderFactory);
+		Type factoryClass = typeof(FirebirdClientFactory);
 
 
-		Diag.Dug("GAC Install: " + factoryClass.Assembly.Location);
+		Diag.Trace("GAC Install: " + factoryClass.Assembly.Location);
 
 		// Publish publisher = new Publish();
 		// publisher.GacInstall(factoryClass.Assembly.Location);
@@ -196,9 +199,9 @@ internal sealed class PackageRegistration : RegistrationAttribute
 
 	public static void UninstallGlobalAssemblyCache()
 	{
-		Type factoryClass = typeof(Data.DslClient.DslProviderFactory);
+		Type factoryClass = typeof(FirebirdClientFactory);
 
-		Diag.Dug("GAC Uninstall: " + factoryClass.Assembly.Location);
+		Diag.Trace("GAC Uninstall: " + factoryClass.Assembly.Location);
 
 		// Publish publisher = new Publish();
 

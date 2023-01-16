@@ -73,18 +73,23 @@ public class ProviderServices : DbProviderServices
 	{
 
 #if EF6
-		Diag.Dug("In EF6");
+		Diag.Trace("In EF6");
 		AddDependencyResolver(new SingletonDependencyResolver<IDbConnectionFactory>(new ConnectionFactory()));
 		AddDependencyResolver(new SingletonDependencyResolver<Func<MigrationSqlGenerator>>(() => new EfbMigrationSqlGenerator(), PackageData.Invariant));
 		DbInterception.Add(new EfbMigrationsTransactionsInterceptor());
 #else
-		Diag.Dug("In DslClient");
+		Diag.Trace("In DslClient");
 #endif
+	}
+
+	public string SayHello()
+	{
+		return "I'm saying hello";
 	}
 
 	protected override DbCommandDefinition CreateDbCommandDefinition(DbProviderManifest manifest, DbCommandTree commandTree)
 	{
-		Diag.Dug();
+		Diag.Trace();
 		var prototype = CreateCommand(manifest, commandTree);
 		var result = CreateCommandDefinition(prototype);
 		return result;
@@ -92,7 +97,7 @@ public class ProviderServices : DbProviderServices
 
 	private DbCommand CreateCommand(DbProviderManifest manifest, DbCommandTree commandTree)
 	{
-		Diag.Dug();
+		Diag.Trace();
 		if (manifest == null)
 			throw new ArgumentNullException(nameof(manifest));
 
@@ -157,7 +162,7 @@ public class ProviderServices : DbProviderServices
 
 	protected override string GetDbProviderManifestToken(DbConnection connection)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		try
 		{
@@ -182,7 +187,7 @@ public class ProviderServices : DbProviderServices
 
 	protected override DbProviderManifest GetDbProviderManifest(string versionHint)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (string.IsNullOrEmpty(versionHint))
 		{
@@ -194,7 +199,7 @@ public class ProviderServices : DbProviderServices
 
 	internal static DslParameter CreateSqlParameter(string name, TypeUsage type, ParameterMode mode, object value)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var result = new DslParameter(name, value);
 
@@ -232,7 +237,7 @@ public class ProviderServices : DbProviderServices
 
 	private static DslDbType GetSqlDbType(TypeUsage type, bool isOutParam, out int? size)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		// only supported for primitive type
 		var primitiveTypeKind = MetadataHelpers.GetPrimitiveTypeKind(type);
@@ -289,7 +294,7 @@ public class ProviderServices : DbProviderServices
 
 	private static int? GetParameterSize(TypeUsage type, bool isOutParam)
 	{
-		Diag.Dug();
+		Diag.Trace();
 		if (MetadataHelpers.TryGetMaxLength(type, out var maxLength))
 		{
 			// if the MaxLength facet has a specific value use it
@@ -310,7 +315,7 @@ public class ProviderServices : DbProviderServices
 
 	private static DslDbType GetStringDbType(TypeUsage type)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		Debug.Assert(type.EdmType.BuiltInTypeKind == BuiltInTypeKind.PrimitiveType && PrimitiveTypeKind.String == ((PrimitiveType)type.EdmType).PrimitiveTypeKind, "only valid for string type");
 
@@ -352,7 +357,7 @@ public class ProviderServices : DbProviderServices
 
 	private static DslDbType GetBinaryDbType(TypeUsage type)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		Debug.Assert(type.EdmType.BuiltInTypeKind == BuiltInTypeKind.PrimitiveType &&
 			PrimitiveTypeKind.Binary == ((PrimitiveType)type.EdmType).PrimitiveTypeKind, "only valid for binary type");
@@ -369,7 +374,7 @@ public class ProviderServices : DbProviderServices
 
 	private static Type[] PrepareTypeCoercions(DbCommandTree commandTree)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (commandTree is DbQueryCommandTree queryTree)
 		{
@@ -413,7 +418,7 @@ public class ProviderServices : DbProviderServices
 
 	private static Type ExtractExpectedTypeForCoercion(EdmMember member)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var type = ((PrimitiveType)member.TypeUsage.EdmType).ClrEquivalentType;
 		return MakeTypeCoercion(type, member.TypeUsage);
@@ -421,7 +426,7 @@ public class ProviderServices : DbProviderServices
 
 	private static Type MakeTypeCoercion(Type type, TypeUsage typeUsage)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (type.IsValueType && MetadataHelpers.IsNullable(typeUsage))
 			return typeof(Nullable<>).MakeGenericType(type);
@@ -431,7 +436,7 @@ public class ProviderServices : DbProviderServices
 	protected override void DbCreateDatabase(DbConnection connection, int? commandTimeout,
 			StoreItemCollection storeItemCollection)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		DslConnection.CreateDatabase(connection.ConnectionString, pageSize: 16384);
 		var script = DbCreateDatabaseScript(GetDbProviderManifestToken(connection), storeItemCollection);
@@ -451,7 +456,7 @@ public class ProviderServices : DbProviderServices
 	protected override string DbCreateDatabaseScript(string providerManifestToken,
 			StoreItemCollection storeItemCollection)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		return SsdlToFb.Transform(storeItemCollection, providerManifestToken);
 	}
@@ -459,7 +464,7 @@ public class ProviderServices : DbProviderServices
 	protected override bool DbDatabaseExists(DbConnection connection, int? commandTimeout,
 			StoreItemCollection storeItemCollection)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (connection.State == ConnectionState.Open
 			   || connection.State == ConnectionState.Executing
@@ -492,7 +497,7 @@ public class ProviderServices : DbProviderServices
 	protected override void DbDeleteDatabase(DbConnection connection, int? commandTimeout,
 			StoreItemCollection storeItemCollection)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		DslConnection.DropDatabase(connection.ConnectionString);
 	}

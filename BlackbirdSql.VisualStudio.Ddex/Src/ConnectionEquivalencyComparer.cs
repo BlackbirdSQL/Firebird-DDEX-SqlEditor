@@ -4,7 +4,6 @@ using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Common;
-using BlackbirdSql.Data.Common;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
@@ -16,12 +15,12 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 
 	public ConnectionEquivalencyComparer()
 	{
-		Diag.Dug();
+		Diag.Trace();
 	}
 
 	protected override bool AreEquivalent(IVsDataConnectionProperties connectionProperties1, IVsDataConnectionProperties connectionProperties2)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		// Reset the connection if we're doing a localized server explorer node query
 		// It's the only way to get the built in query provider to reread the table list
@@ -38,7 +37,7 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 			foreach (KeyValuePair<string, object> param in connectionProperties1)
 			{
 				// Get the correct key for the parameter in connection 1
-				if (!ConnectionParameters.Synonyms.TryGetValue(param.Key, out string key))
+				if (!ConnectionString.Synonyms.TryGetValue(param.Key, out string key))
 				{
 					ArgumentException ex = new ArgumentException("Connection parameter '" + param.Key + "' in connection 1 is invalid");
 					Diag.Dug(ex);
@@ -54,17 +53,18 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 				if (param.Value != null)
 					value1 = param.Value;
 				else
-					value1 = ConnectionParameters.DefaultValues[key];
+					value1 = ConnectionString.DefaultValues[key];
 
 				// We can't do a straight lookup on the second string because it may be a synonym so we have to loop
 				// through the parameters, find the real key, and use that
 
 				value2 = FindKeyValueInConnection(key, connectionProperties2);
-				value2 ??= ConnectionParameters.DefaultValues[key];
+				value2 ??= ConnectionString.DefaultValues[key];
 
 				if (!AreEquivalent(key, value1, value2))
 				{
-					Diag.Dug(new ArgumentException("Parameter '" + param.Key + "' in connection 1 has no matching value in connection 2"));
+					ArgumentException ex = new ArgumentException("Parameter '" + param.Key + "' in connection 1 has no matching value in connection 2");
+					Diag.Dug(ex);
 					return false;
 				}
 			}
@@ -72,7 +72,7 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 			foreach (KeyValuePair<string, object> param in connectionProperties2)
 			{
 				// Get the correct key for the parameter in connection 2
-				if (!ConnectionParameters.Synonyms.TryGetValue(param.Key, out string key))
+				if (!ConnectionString.Synonyms.TryGetValue(param.Key, out string key))
 				{
 					ArgumentException ex = new ArgumentException("Connection parameter '" + param.Key + "' in connection 2 is invalid");
 					Diag.Dug(ex);
@@ -88,16 +88,18 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 				if (param.Value != null)
 					value2 = param.Value;
 				else
-					value2 = ConnectionParameters.DefaultValues[key];
+					value2 = ConnectionString.DefaultValues[key];
 
 				// We can't do a straight lookup on the first connection because it may be a synonym so we have to loop
 				// through the parameters, find the real key, and use that
 				value1 = FindKeyValueInConnection(key, connectionProperties1);
-				value1 ??= ConnectionParameters.DefaultValues[key];
+				value1 ??= ConnectionString.DefaultValues[key];
 
 				if (!AreEquivalent(key, value2, value1))
 				{
-					Diag.Dug(new ArgumentException("Parameter '" + param.Key + "' in connection 2 has no matching value in connection 1"));
+					ArgumentException ex = new ArgumentException("Parameter '" + param.Key + "' in connection 2 has no matching value in connection 1");
+					Diag.Dug(ex);
+
 					return false;
 				}
 			}
@@ -109,7 +111,7 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 			return false;
 		}
 
-		Diag.Dug("Connections are equivalent");
+		Diag.Trace("Connections are equivalent");
 
 		return true;
 	}
@@ -147,7 +149,7 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 	{
 		foreach (KeyValuePair<string, object> parameter in connectionProperties)
 		{
-			if (!ConnectionParameters.Synonyms.TryGetValue(parameter.Key, out string parameterKey))
+			if (!ConnectionString.Synonyms.TryGetValue(parameter.Key, out string parameterKey))
 				continue;
 
 			if (key == parameterKey)
@@ -162,7 +164,7 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 
 	private static string StandardizeDataSource(string dataSource)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		dataSource = dataSource.ToUpperInvariant();
 		string[] array = new string[2] { ".", "(LOCAL)" };

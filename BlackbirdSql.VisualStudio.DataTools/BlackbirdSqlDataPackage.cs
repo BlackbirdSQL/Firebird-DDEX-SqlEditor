@@ -1,5 +1,5 @@
 ﻿/*
- *  Visual Studio DDEX Provider for BlackbirdSql DslClient
+ *  Visual Studio DDEX Provider for FirebirdClient (BlackbirdSql)
  * 
  *     The contents of this file are subject to the Initial 
  *     Developer's Public License Version 1.0 (the "License"); 
@@ -82,7 +82,7 @@ public sealed class BlackbirdSqlDataPackage : AsyncPackage
 	/// </summary>
 	public BlackbirdSqlDataPackage()
 	{
-		Diag.Dug();
+		Diag.Trace();
 	}
 
 	#endregion
@@ -95,7 +95,7 @@ public sealed class BlackbirdSqlDataPackage : AsyncPackage
 	/// </summary>
 	protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 
 		await base.InitializeAsync(cancellationToken, progress);
@@ -111,21 +111,21 @@ public sealed class BlackbirdSqlDataPackage : AsyncPackage
 
 		// ((IServiceContainer)this).AddService(typeof(IProviderObjectFactory), new ServiceCreatorCallback(this.CreateService), true);
 
-		Diag.Dug("IProviderObjectFactory service added");
+		Diag.Trace("IProviderObjectFactory service added");
 
 
-
-		if (DbProviderFactoriesEx.ConfigurationManagerRegisterFactory(typeof(Data.DslClient.DslProviderFactory),
+		/*
+		if (DbProviderFactoriesEx.AddAssemblyToCacheUsingConfigurationManager(typeof(FirebirdClientFactory),
 			Data.Properties.Resources.Provider_ShortDisplayName, Data.Properties.Resources.Provider_DisplayName))
 		{
-			Diag.Dug("DbProviderFactory registration completed during package registration");
+			Diag.Trace("DbProviderFactory registration completed during package registration");
 		}
 		else
 		{
-			Diag.Dug("DbProviderFactory registration not completed during package registration. Factory already registered");
+			Diag.Trace("DbProviderFactory registration not completed during package registration. Factory already registered");
 		}
-
-		Diag.Dug("Package initialization complete - Switched to main thread");
+		*/
+		Diag.Trace("Package initialization complete - Switched to main thread");
 
 		// When initialized asynchronously, we *may* be on a background thread at this point.
 		// Do any initialization that requires the UI thread after switching to the UI thread.
@@ -139,7 +139,7 @@ public sealed class BlackbirdSqlDataPackage : AsyncPackage
 
 	private object CreateService(IServiceContainer container, Type serviceType)
 	{
-		Diag.Dug("Service type: " + serviceType.FullName);
+		Diag.Trace("Service type: " + serviceType.FullName);
 
 		if (serviceType == typeof(ProviderObjectFactory))
 		{

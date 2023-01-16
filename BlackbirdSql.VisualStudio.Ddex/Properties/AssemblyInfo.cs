@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("BlackbirdSql.VisualStudio.Ddex")]
-[assembly: AssemblyDescription("Blackbird IVs Provider for Firebird")]
+[assembly: AssemblyDescription("BlackbirdSql IVs Provider for Firebird")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("BlackbirdSql")]
 [assembly: AssemblyProduct("BlackbirdSql.VisualStudio.Ddex")]

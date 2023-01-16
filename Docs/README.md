@@ -27,9 +27,9 @@ Once the tools have been fully debugged, BlackbirdSql.Data.DslClient.dll and Ent
 
 | NuGet | Version | Downloads |
 |-------|---------|-----------|
-| [BlackbirdSql.Data.DslClient](https://www.nuget.org/packages/BlackbirdSql.Data.DslClient) | ![BlackbirdSql.Data.DslClient](https://img.shields.io/nuget/v/BlackbirdSql.Data.DslClient.svg) | ![BlackbirdSql.Data.DslClient](https://img.shields.io/nuget/dt/BlackbirdSql.Data.DslClient.svg) |
-| [EntityFramework.Blackbird](https://www.nuget.org/packages/EntityFramework.Blackbird) | ![EntityFramework.Blackbird](https://img.shields.io/nuget/v/EntityFramework.Blackbird.svg) | ![EntityFramework.Blackbird](https://img.shields.io/nuget/dt/EntityFramework.Blackbird.svg) |
-| [BlackbirdSql.EntityFrameworkCore.Blackbird](https://www.nuget.org/packages/BlackbirdSql.EntityFrameworkCore.Blackbird) | ![BlackbirdSql.EntityFrameworkCore.Blackbird](https://img.shields.io/nuget/v/BlackbirdSql.EntityFrameworkCore.Blackbird.svg) | ![BlackbirdSql.EntityFrameworkCore.Blackbird](https://img.shields.io/nuget/dt/BlackbirdSql.EntityFrameworkCore.Blackbird.svg) |
+| [FirebirdSql.Data.FireClient](https://www.nuget.org/packages/FirebirdSql.Data.FireClient) | ![FirebirdSql.Data.FireClient](https://img.shields.io/nuget/v/FirebirdSql.Data.FireClient.svg) | ![FirebirdSql.Data.FireClient](https://img.shields.io/nuget/dt/FirebirdSql.Data.FireClient.svg) |
+| [EntityFramework.Firebird](https://www.nuget.org/packages/EntityFramework.Firebird) | ![EntityFramework.Firebird](https://img.shields.io/nuget/v/EntityFramework.Firebird.svg) | ![EntityFramework.Firebird](https://img.shields.io/nuget/dt/EntityFramework.Firebird.svg) |
+| [FirebirdSql.EntityFrameworkCore.Firebird](https://www.nuget.org/packages/FirebirdSql.EntityFrameworkCore.Firebird) | ![FirebirdSql.EntityFrameworkCore.Firebird](https://img.shields.io/nuget/v/FirebirdSql.EntityFrameworkCore.Firebird.svg) | ![FirebirdSql.EntityFrameworkCore.Firebird](https://img.shields.io/nuget/dt/FirebirdSql.EntityFrameworkCore.Firebird.svg) |
 
 ## Resources
 

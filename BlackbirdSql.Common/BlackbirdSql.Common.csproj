@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <TargetFrameworks>$(TargetFrameworks)</TargetFrameworks>
     <RootNamespace>BlackbirdSql.Common</RootNamespace>
     <SignAssembly>True</SignAssembly>
@@ -17,6 +17,10 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="NETStandard.Library" Version="2.0.3" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Firebird\FirebirdSql.Data.FirebirdClient\FirebirdSql.Data.FirebirdClient.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,0 +1,60 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFrameworks>$(TargetFrameworks)</TargetFrameworks>
+		<AssemblyName>EntityFramework.Firebird</AssemblyName>
+		<RootNamespace>EntityFramework.Firebird</RootNamespace>
+		<SignAssembly>true</SignAssembly>
+		<AssemblyOriginatorKeyFile>Properties\EntityFramework.Firebird.snk</AssemblyOriginatorKeyFile>
+		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	</PropertyGroup>
+	<PropertyGroup>
+		<AssemblyTitle>NETProvider - Entity Framework Provider</AssemblyTitle>
+		<Copyright>(c) 2014-2021</Copyright>
+	</PropertyGroup>
+	<PropertyGroup>
+		<PackageId>EntityFramework.Firebird</PackageId>
+		<Title>Firebird Entity Framework Provider</Title>
+		<PackageDescription>The Entity Framework provider for Firebird enables you to develop .NET applications that connect to the Firebird database using Entity Framework.</PackageDescription>
+		<PackageTags>firebird;firebirsql;firebirdclient;entityframewor;adonet;database</PackageTags>
+		<PackageIcon>firebird-logo.png</PackageIcon>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<DefineConstants>EF6;TRACE</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+		<DefineConstants>EF6;DEBUG;TRACE</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Remove="Resources\ProviderManifest.xml" />
+		<None Remove="Resources\StoreSchemaDefinition.ssdl" />
+		<None Remove="Resources\StoreSchemaDefinitionVersion3.ssdl" />
+		<None Remove="Resources\StoreSchemaMapping.msl" />
+		<None Remove="Resources\StoreSchemaMappingVersion3.msl" />
+	</ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="Resources\ProviderManifest.xml" />
+		<EmbeddedResource Include="Resources\StoreSchemaDefinition.ssdl" />
+		<EmbeddedResource Include="Resources\StoreSchemaDefinitionVersion3.ssdl" />
+		<EmbeddedResource Include="Resources\StoreSchemaMapping.msl" />
+		<EmbeddedResource Include="Resources\StoreSchemaMappingVersion3.msl" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="App.config.install.xdt" Pack="true" PackagePath="content" />
+		<None Update="Web.config.install.xdt" Pack="true" PackagePath="content" />
+		<None Include="..\license.txt" Pack="true" PackagePath="" />
+		<None Include="..\firebird-logo.png" Pack="true" PackagePath="" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="EntityFramework" Version="6.4.4" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
+		<Reference Include="System.Configuration" />
+		<Reference Include="Microsoft.CSharp" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)'=='netstandard2.1'">
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\FirebirdSql.Data.FirebirdClient\FirebirdSql.Data.FirebirdClient.csproj" />
+	</ItemGroup>
+</Project>

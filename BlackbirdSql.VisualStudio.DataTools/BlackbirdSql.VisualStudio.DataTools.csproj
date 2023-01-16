@@ -118,9 +118,9 @@ copy /v /y /b $(ProjectDir)$(OutDir)*.pdb %25DestFolder%25
       <Project>{28d8b582-2320-446e-b286-9b42e65dae13}</Project>
       <Name>BlackbirdSql.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BlackbirdSql.Data.DslClient\BlackbirdSql.Data.DslClient.csproj">
-      <Project>{2e2eabaa-3fca-4768-9455-a3a8b75ee1de}</Project>
-      <Name>BlackbirdSql.Data.DslClient</Name>
+    <ProjectReference Include="..\Firebird\FirebirdSql.Data.FirebirdClient\FirebirdSql.Data.FirebirdClient.csproj">
+      <Project>{16f13584-61bc-411c-a146-2fe6b6c26016}</Project>
+      <Name>FirebirdSql.Data.FirebirdClient</Name>
     </ProjectReference>
   </ItemGroup>
   <!-- References (Services) -->
@@ -195,7 +195,6 @@ copy /v /y /b $(ProjectDir)$(OutDir)*.pdb %25DestFolder%25
   </ItemGroup>
   <ItemGroup>
     <Content Include="Package.ico" />
-    <Content Include="Properties\blackbird-logo.png" />
   </ItemGroup>
   <!-- Imports -->
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />

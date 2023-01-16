@@ -20,49 +20,54 @@ using System.Data.Common;
 using BlackbirdSql.Common;
 using BlackbirdSql.Data.Common;
 
-
-
+// Debug
+using System.Reflection;
 namespace BlackbirdSql.Data.DslClient;
 
 #if NET
 public class DslProviderFactory : DbProviderFactory
 #else
-public class DslProviderFactory : DbProviderFactory, IServiceProvider
+public class DslProviderFactory : DbProviderFactory/*, IServiceProvider*/
 #endif
 {
-#region Variables
+	#region Variables
 
 	/// <summary>
 	///     The singleton instance.
 	/// </summary>
 	public static readonly DslProviderFactory Instance = new();
 
-#endregion
+	#endregion
 
-#region Properties
+	#region Properties
 
 
 	public override bool CanCreateDataSourceEnumerator
 	{
 		get
 		{
-			Diag.Dug();
+			Diag.Trace();
 			return false;
 		}
 	}
 
-#endregion
 
-#region Constructors
+
+	#endregion
+
+
+
+
+	#region Constructors
 
 	private DslProviderFactory()
 	{
-		Diag.Dug();
+		Diag.Trace();
 	}
 
-#endregion
+	#endregion
 
-#region Methods
+	#region Methods
 
 	/// <summary>
 	///     Creates a new command.
@@ -70,7 +75,7 @@ public class DslProviderFactory : DbProviderFactory, IServiceProvider
 	/// <returns>The new command.</returns>
 	public override DbCommand CreateCommand()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		return new DslCommand();
 	}
@@ -81,14 +86,14 @@ public class DslProviderFactory : DbProviderFactory, IServiceProvider
 	/// <returns>The new connection.</returns>
 	public override DbConnection CreateConnection()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		return new DslConnection();
 	}
 
 	public override DbCommandBuilder CreateCommandBuilder()
 	{
-		Diag.Dug();
+		Diag.Trace();
 		return new DslCommandBuilder();
 	}
 
@@ -99,14 +104,14 @@ public class DslProviderFactory : DbProviderFactory, IServiceProvider
 	/// <returns>The new connection string builder.</returns>
 	public override DbConnectionStringBuilder CreateConnectionStringBuilder()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		return new ConnectionStringBuilder();
 	}
 
 	public override DbDataAdapter CreateDataAdapter()
 	{
-		Diag.Dug();
+		Diag.Trace();
 		return new DslDataAdapter();
 	}
 
@@ -116,33 +121,88 @@ public class DslProviderFactory : DbProviderFactory, IServiceProvider
 	/// <returns>The new parameter.</returns>
 	public override DbParameter CreateParameter()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		return new DslParameter();
 	}
 
 
-#endregion
+	#endregion
 
 #if NETFRAMEWORK
 
-#region IServiceProvider Members
+	/*
+	// Debug
+	private static Assembly _ProviderAssembly = null;
+	private static object _ProviderServices = null;
+	private static object _ConnectionFactory = null;
+
+
+	public static object ProviderServices
+	{
+		get
+		{
+			if (_ProviderServices != null)
+				return _ProviderServices;
+
+			_ProviderServices = GetProviderServices();
+
+			// If EntityFramework.BlackbirdSql was found place it in app.config.
+			// if (_ProviderServices != null)
+			//	_ = new DbConfigurationEx();
+
+
+			return _ProviderServices;
+		}
+	}
+
+	public static object ConnectionFactory
+	{
+		get
+		{
+			if (_ConnectionFactory != null)
+				return _ConnectionFactory;
+
+			_ConnectionFactory = GetConnectionFactory();
+
+
+			return _ConnectionFactory;
+		}
+	}
+
+	public static Assembly ProviderAssembly
+	{
+		get
+		{
+			string assemblyPath = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			Diag.Trace("GetExecutingAssembly().Location: " + assemblyPath);
+			if (_ProviderAssembly == null)
+				_ProviderAssembly = Assembly.LoadFrom(assemblyPath + "\\EntityFramework.BlackbirdSql.dll");
+
+			if (_ProviderAssembly == null)
+			{
+				NullReferenceException ex = new NullReferenceException("Assembly EntityFramework.BlackbirdSql could not be loaded");
+				Diag.Dug(ex);
+
+				throw ex;
+			}
+
+			return _ProviderAssembly;
+		}
+	}
+
+	#region IServiceProvider Members
 
 	object IServiceProvider.GetService(Type serviceType)
 	{
-		Diag.Dug();
+#pragma warning disable CS8603 // Possible null reference return.
 
-		if (serviceType == typeof(DbProviderServices))
+		Diag.Trace("Getting service: " + serviceType.FullName);
+
+		if (serviceType == typeof(DbProviderServices)
+			|| serviceType == typeof(System.Data.Entity.Core.Common.DbProviderServices))
 		{
-			Diag.Dug("Instantiating ProviderServices");
-
-			ProviderServices providerServices = ProviderServices.Instance;
-
-			if (providerServices == null)
-				Diag.Dug(true, "ProviderServices could not be instantiated");
-
-
-			return providerServices;
+			return ProviderServices;
 		}
 		else
 		{
@@ -150,9 +210,109 @@ public class DslProviderFactory : DbProviderFactory, IServiceProvider
 
 			return null;
 		}
+#pragma warning restore CS8603 // Possible null reference return.
 	}
 
-#endregion
 
+
+	/// <summary>
+	/// Loads BlackbirdSql.EntityFramework.dll and returns an instance to ProviderServices.
+	/// This call should only ever happen if the dev created an edmx and BlackbirdSql.EntityFramework
+	/// was not configured in the app.config
+	/// </summary>
+	/// <returns></returns>
+	/// <exception cref="NullReferenceException"></exception>
+	private static object GetProviderServices()
+	{
+		Diag.Trace();
+
+		Type providerServicesType = ProviderAssembly.GetType("BlackbirdSql.Data.Entity.ProviderServices");
+		if (providerServicesType == null)
+		{
+			NullReferenceException ex = new NullReferenceException("[Assembly: EntitityFramework.BlackbirdSql] BlackbirdSql.Data.Entity.ProviderServices could not be located");
+			Diag.Dug(ex);
+
+			throw ex;
+		}
+
+		FieldInfo fieldInfo = providerServicesType.GetField("Instance");
+		if (fieldInfo == null)
+		{
+			NullReferenceException ex = new NullReferenceException("[Assembly: EntitityFramework.BlackbirdSql] BlackbirdSql.Data.Entity.ProviderServices.Instance could not be located");
+			Diag.Dug(ex);
+
+			throw ex;
+		}
+
+		object instance = fieldInfo.GetValue(providerServicesType);
+
+		if (instance == null)
+		{
+			NullReferenceException ex = new NullReferenceException("[Assembly: EntitityFramework.BlackbirdSql] BlackbirdSql.Data.Entity.ProviderServices could not be located");
+			Diag.Dug(ex);
+
+			throw ex;
+		}
+
+		return instance;
+
+
+	}
+
+
+
+	/// <summary>
+	/// Loads BlackbirdSql.EntityFramework.dll and returns an instance to ConnectionFactory.
+	/// This call should only ever happen if the dev created an edmx and BlackbirdSql.EntityFramework
+	/// was not configured in the app.config
+	/// </summary>
+	/// <returns></returns>
+	/// <exception cref="NullReferenceException"></exception>
+	private static object GetConnectionFactory()
+	{
+		Diag.Trace();
+
+		object instance = ProviderAssembly.CreateInstance("BlackbirdSql.Data.Entity.ConnectionFactory");
+
+		if (instance == null)
+		{
+			NullReferenceException ex = new NullReferenceException("[Assembly: EntitityFramework.BlackbirdSql] BlackbirdSql.Data.Entity.ConnectionFactory could not be created");
+			Diag.Dug(ex);
+
+			throw ex;
+		}
+
+
+		return instance;
+	}
+
+
+	private static void AddEntityFrameworkProvider()
+	{
+		// Get the application configuration file.
+		System.Configuration.Configuration config =
+			ConfigurationManager.OpenExeConfiguration(
+			ConfigurationUserLevel.None);
+
+		// Get the conectionStrings section.
+		ConnectionStringsSection csSection =
+		  config.ConnectionStrings;
+
+		//Create your connection string into a connectionStringSettings object
+		ConnectionStringSettings connection = CreateNewConnectionString();
+
+		//Add the object to the configuration
+		csSection.ConnectionStrings.Add(connection);
+
+		//Save the configuration
+		config.Save(ConfigurationSaveMode.Modified);
+
+		//Refresh the Section
+		ConfigurationManager.RefreshSection("connectionStrings");
+	}
+
+
+	#endregion
+	*/
 #endif
 }

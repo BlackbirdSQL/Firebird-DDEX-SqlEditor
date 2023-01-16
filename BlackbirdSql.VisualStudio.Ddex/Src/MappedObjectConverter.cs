@@ -1,5 +1,5 @@
 /*
- *  Visual Studio DDEX Provider for BlackbirdSql DslClient
+ *  Visual Studio DDEX Provider for FirebirdClient (BlackbirdSql)
  * 
  *     The contents of this file are subject to the Initial 
  *     Developer's Public License Version 1.0 (the "License"); 
@@ -35,12 +35,12 @@ public class MappedObjectConverter : AdoDotNetMappedObjectConverter
 {
 	public MappedObjectConverter(IVsDataConnection connection) : base(connection)
 	{
-		Diag.Dug();
+		Diag.Trace();
 	}
 
 	protected override DbType GetDbTypeFromNativeType(string nativeType)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		DataRow[] rows = this.DataTypes.Select(String.Format("TypeName = '{0}'", nativeType));
 
@@ -54,7 +54,7 @@ public class MappedObjectConverter : AdoDotNetMappedObjectConverter
 
 	protected override int GetProviderTypeFromNativeType(string nativeType)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		DataRow[] rows = this.DataTypes.Select(String.Format("TypeName = '{0}'", nativeType));
 
@@ -68,7 +68,7 @@ public class MappedObjectConverter : AdoDotNetMappedObjectConverter
 
 	protected override Type GetFrameworkTypeFromNativeType(string nativeType)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		DataRow[] rows = this.DataTypes.Select(String.Format("TypeName = '{0}'", nativeType));
 

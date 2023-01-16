@@ -1,5 +1,5 @@
 /*
- *  Visual Studio DDEX Provider for BlackbirdSql DslClient
+ *  Visual Studio DDEX Provider for FirebirdClient (BlackbirdSql)
  * 
  *     The contents of this file are subject to the Initial 
  *     Developer's Public License Version 1.0 (the "License"); 
@@ -41,7 +41,7 @@ internal class ObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 
 	public ObjectIdentifierConverter(IVsDataConnection connection) : base(connection)
 	{
-		Diag.Dug();
+		Diag.Trace();
 	}
 
 	#endregion
@@ -52,11 +52,11 @@ internal class ObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 	{
 		if (identifierPart is null or DBNull)
 		{
-			Diag.Dug("Identifier is null");
+			Diag.Trace("Identifier is null");
 			return null;
 		}
 
-		Diag.Dug();
+		Diag.Trace();
 
 		IVsDataSourceInformation sourceInformation;
 		string openQuote;
@@ -74,7 +74,7 @@ internal class ObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 			identifierPartString = openQuote + identifierPartString + closeQuote;
 		}
 
-		Diag.Dug("Converted identifier: " + identifierPartString);
+		Diag.Trace("Converted identifier: " + identifierPartString);
 		// return ((identifier != null) ? identifier : String.Empty);
 		return identifierPartString;
 	}

@@ -24,7 +24,6 @@ using System.Windows.Forms;
 using Microsoft.VisualStudio.Data;
 
 using BlackbirdSql.Common;
-using BlackbirdSql.Data.Common;
 
 
 
@@ -37,7 +36,7 @@ namespace BlackbirdSql.VisualStudio.DataTools
 
 		public ConnectionUIControl()
 		{
-			Diag.Dug();
+			Diag.Trace();
 			InitializeComponent();
 		}
 
@@ -47,7 +46,7 @@ namespace BlackbirdSql.VisualStudio.DataTools
 
 		public override void LoadProperties()
 		{
-			Diag.Dug();
+			Diag.Trace();
 
 			object value;
 
@@ -56,44 +55,44 @@ namespace BlackbirdSql.VisualStudio.DataTools
 				if (ConnectionProperties.Contains("Data Source"))
 					txtDataSource.Text = (string)ConnectionProperties["Data Source"];
 				else
-					ConnectionProperties["Data Source"] = txtDataSource.Text = ConnectionParameters.DefaultValueDataSource;
+					ConnectionProperties["Data Source"] = txtDataSource.Text = ConnectionString.DefaultValueDataSource;
 
 				if (ConnectionProperties.Contains("User Id"))
 					txtUserName.Text = (string)ConnectionProperties["User ID"];
 				else
-					ConnectionProperties["User ID"] = txtUserName.Text = ConnectionParameters.DefaultValueUserId;
+					ConnectionProperties["User ID"] = txtUserName.Text = ConnectionString.DefaultValueUserId;
 
 				if (ConnectionProperties.Contains("Initial Catalog"))
 					txtDatabase.Text = (string)ConnectionProperties["Initial Catalog"];
 				else
-					ConnectionProperties["Initial Catalog"] = txtDatabase.Text = ConnectionParameters.DefaultValueCatalog;
+					ConnectionProperties["Initial Catalog"] = txtDatabase.Text = ConnectionString.DefaultValueCatalog;
 
 				if (ConnectionProperties.Contains("Password"))
 					txtPassword.Text = (string)ConnectionProperties["Password"];
 				else
-					ConnectionProperties["Password"] = txtPassword.Text = ConnectionParameters.DefaultValuePassword;
+					ConnectionProperties["Password"] = txtPassword.Text = ConnectionString.DefaultValuePassword;
 
 				if (ConnectionProperties.Contains("Role Name"))
 					txtRole.Text = (string)ConnectionProperties["Role Name"];
 				else
-					ConnectionProperties["Role Name"] = txtRole.Text = ConnectionParameters.DefaultValueRoleName;
+					ConnectionProperties["Role Name"] = txtRole.Text = ConnectionString.DefaultValueRoleName;
 
 				if (ConnectionProperties.Contains("Character Set"))
 					cboCharset.Text = (string)ConnectionProperties["Character Set"];
 				else
-					ConnectionProperties["Character Set"] = cboCharset.Text = ConnectionParameters.DefaultValueCharacterSet;
+					ConnectionProperties["Character Set"] = cboCharset.Text = ConnectionString.DefaultValueCharacterSet;
 
 
 				if (ConnectionProperties.Contains("Port Number"))
 					txtPort.Text = (string)ConnectionProperties["Port Number"];
 				else
-					ConnectionProperties["Port Number"]  = txtPort.Text = ConnectionParameters.DefaultValuePortNumber.ToString();
+					ConnectionProperties["Port Number"]  = txtPort.Text = ConnectionString.DefaultValuePortNumber.ToString();
 
 
 				if (ConnectionProperties.Contains("Dialect"))
 					value = ConnectionProperties["Dialect"];
 				else
-					ConnectionProperties["Dialect"] = value = ConnectionParameters.DefaultValueDialect;
+					ConnectionProperties["Dialect"] = value = ConnectionString.DefaultValueDialect;
 				if (Convert.ToInt32(value) == 1)
 					cboDialect.SelectedIndex = 0;
 				else
@@ -102,7 +101,7 @@ namespace BlackbirdSql.VisualStudio.DataTools
 				if (ConnectionProperties.Contains("Server Type"))
 					value = ConnectionProperties["Server Type"];
 				else
-					ConnectionProperties["Server Type"] = value = ConnectionParameters.DefaultValueServerType;
+					ConnectionProperties["Server Type"] = value = ConnectionString.DefaultValueServerType;
 
 				// Strange bug here. The default on the enum is being returned as the literal. Cannot trace it
 				if (Convert.ToString(value) == "Default" || Convert.ToInt32(value) == 0)

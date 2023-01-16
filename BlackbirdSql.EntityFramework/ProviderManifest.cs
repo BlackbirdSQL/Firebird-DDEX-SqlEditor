@@ -73,7 +73,7 @@ public class ProviderManifest : DbXmlEnabledProviderManifest
 	/// <param name="manifestToken">A token used to infer the capabilities of the store</param>
 	public ProviderManifest(string manifestToken) : base(GetProviderManifest())
 	{
-		Diag.Dug();
+		Diag.Trace();
 	}
 
 	#endregion
@@ -83,7 +83,7 @@ public class ProviderManifest : DbXmlEnabledProviderManifest
 
 	internal static XmlReader GetProviderManifest()
 	{
-		Diag.Dug();
+		Diag.Trace();
 		return GetXmlResource(GetManifestResourceName());
 	}
 
@@ -96,7 +96,7 @@ public class ProviderManifest : DbXmlEnabledProviderManifest
 	/// <returns>An XmlReader at the begining of the information requested.</returns>
 	protected override XmlReader GetDbInformation(string informationType)
 	{
-		Diag.Dug();
+		Diag.Trace();
 		if (informationType == StoreSchemaDefinition || informationType == StoreSchemaDefinitionVersion3)
 		{
 			return GetStoreSchemaDescription(informationType);
@@ -116,7 +116,7 @@ public class ProviderManifest : DbXmlEnabledProviderManifest
 
 	public override System.Collections.ObjectModel.ReadOnlyCollection<PrimitiveType> GetStoreTypes()
 	{
-		Diag.Dug();
+		Diag.Trace();
 		_primitiveTypes ??= base.GetStoreTypes();
 
 		return _primitiveTypes;
@@ -124,7 +124,7 @@ public class ProviderManifest : DbXmlEnabledProviderManifest
 
 	public override System.Collections.ObjectModel.ReadOnlyCollection<EdmFunction> GetStoreFunctions()
 	{
-		Diag.Dug();
+		Diag.Trace();
 		_functions ??= base.GetStoreFunctions();
 
 		return _functions;
@@ -259,7 +259,7 @@ public class ProviderManifest : DbXmlEnabledProviderManifest
 	/// <returns>A TypeUsage encapsulating a store type and a set of facets</returns>
 	public override TypeUsage GetStoreType(TypeUsage edmType)
 	{
-		Diag.Dug();
+		Diag.Trace();
 		if (edmType == null)
 		{
 			Diag.Dug(true, "Null argument: edmType");
@@ -421,19 +421,19 @@ public class ProviderManifest : DbXmlEnabledProviderManifest
 
 	private XmlReader GetStoreSchemaMapping(string mslName)
 	{
-		Diag.Dug();
+		Diag.Trace();
 		return GetXmlResource(GetStoreSchemaResourceName(mslName, "msl"));
 	}
 
 	private XmlReader GetStoreSchemaDescription(string ssdlName)
 	{
-		Diag.Dug();
+		Diag.Trace();
 		return GetXmlResource(GetStoreSchemaResourceName(ssdlName, "ssdl"));
 	}
 
 	private static XmlReader GetXmlResource(string resourceName)
 	{
-		Diag.Dug();
+		Diag.Trace();
 		var executingAssembly = Assembly.GetExecutingAssembly();
 		var stream = executingAssembly.GetManifestResourceStream(resourceName);
 		return XmlReader.Create(stream);
@@ -441,7 +441,7 @@ public class ProviderManifest : DbXmlEnabledProviderManifest
 
 	private static string GetManifestResourceName()
 	{
-		Diag.Dug();
+		Diag.Trace();
 #if EF6
 		return "BlackbirdSql.Data.Entity.Resources.ProviderManifest.xml";
 #else
@@ -451,7 +451,7 @@ public class ProviderManifest : DbXmlEnabledProviderManifest
 
 	private static string GetStoreSchemaResourceName(string name, string type)
 	{
-		Diag.Dug();
+		Diag.Trace();
 #if EF6
 		return string.Format("BlackbirdSql.Data.Entity.Resources.{0}.{1}", name, type);
 #else
@@ -461,14 +461,14 @@ public class ProviderManifest : DbXmlEnabledProviderManifest
 
 	public override bool SupportsEscapingLikeArgument(out char escapeCharacter)
 	{
-		Diag.Dug();
+		Diag.Trace();
 		escapeCharacter = LikeEscapeCharacter;
 		return true;
 	}
 
 	public override string EscapeLikeArgument(string argument)
 	{
-		Diag.Dug();
+		Diag.Trace();
 		var sb = new StringBuilder(argument);
 		sb.Replace(LikeEscapeCharacter.ToString(), LikeEscapeCharacter.ToString() + LikeEscapeCharacter.ToString());
 		sb.Replace("%", LikeEscapeCharacter + "%");
@@ -479,13 +479,13 @@ public class ProviderManifest : DbXmlEnabledProviderManifest
 #if EF6 || NET
 	public override bool SupportsInExpression()
 	{
-		Diag.Dug();
+		Diag.Trace();
 		return true;
 	}
 
 	public override bool SupportsParameterOptimizationInSchemaQueries()
 	{
-		Diag.Dug();
+		Diag.Trace();
 		return true;
 	}
 #endif

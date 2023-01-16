@@ -1,5 +1,5 @@
 /*
- *  Visual Studio DDEX Provider for BlackbirdSql DslClient
+ *  Visual Studio DDEX Provider for FirebirdClient (BlackbirdSql)
  * 
  *     The contents of this file are subject to the Initial 
  *     Developer's Public License Version 1.0 (the "License"); 
@@ -26,6 +26,8 @@ using Microsoft.VisualStudio.Data;
 using Microsoft.VisualStudio.Data.AdoDotNet;
 
 using BlackbirdSql.Common;
+using FirebirdSql.Data.FirebirdClient;
+
 
 
 
@@ -44,18 +46,18 @@ internal class ProviderObjectFactory : AdoDotNetProviderObjectFactory, IProvider
 
 	public ProviderObjectFactory() : base()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 
 		// Inline attempt to register factory on machine
-		if (DbProviderFactoriesEx.DbProviderFactoriesRegisterFactory(typeof(Data.DslClient.DslProviderFactory),
-			Data.Properties.Resources.Provider_ShortDisplayName, Data.Properties.Resources.Provider_DisplayName))
+		if (DbProviderFactoriesEx.AddAssemblyToCache(typeof(FirebirdClientFactory),
+			Properties.Resources.Provider_ShortDisplayName, Properties.Resources.Provider_DisplayName))
 		{
-			Diag.Dug("DbProviderFactory registration completed during ProviderObjectFactory instantiation");
+			Diag.Trace("DbProviderFactory registration completed during ProviderObjectFactory instantiation");
 
 			AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
 			{
-				var assembly = typeof(Data.DslClient.DslProviderFactory).Assembly;
+				var assembly = typeof(FirebirdClientFactory).Assembly;
 
 				if (args.Name == assembly.FullName)
 					Diag.Dug(true, "Dsl Provider Factory failed to load: " + assembly.FullName);
@@ -66,7 +68,7 @@ internal class ProviderObjectFactory : AdoDotNetProviderObjectFactory, IProvider
 		}
 		else
 		{
-			Diag.Dug("DbProviderFactory registration not completed during ProviderObjectFactory instantiation. Factory already registered");
+			Diag.Trace("DbProviderFactory registration not completed during ProviderObjectFactory instantiation. Factory already registered");
 		}
 
 	}
@@ -77,7 +79,7 @@ internal class ProviderObjectFactory : AdoDotNetProviderObjectFactory, IProvider
 
 	public override object CreateObject(Type objType)
 	{
-		Diag.Dug("Object type: " + objType.FullName);
+		Diag.Trace("Object type: " + objType.FullName);
 
 		if (objType == typeof(DataConnectionSupport))
 		{

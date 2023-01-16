@@ -4,16 +4,9 @@ namespace BlackbirdSql.Data.Configuration
 {
 	static class PackageData
 	{
-		public const string Invariant = "BlackbirdSql.Data.DslClient";
-
 		public const string AssemblyGuid = "2369BE0C-8690-485E-86FC-6BF56CF4E727";
 		public const string AssemblyGuidNET = "9C91865C-CBB0-4AA3-8984-D3C1DB4854F3";
 		// public const string GuidString = "F37B8373-51FA-4CC6-934E-DF147DFBD9F1"; // FirebirdSql
-
-
-		public const string TechnologyName = "Firebird SQL Server"; // Firebird
-		public const string DataSourceGuid = "2979569E-416D-4DD8-B06B-EBCB70DE7A4E"; // Firebird
-		public const string TechnologyGuid = "77AB9A9D-78B9-4ba7-91AC-873F5338F1D2"; // Firebird
 
 		public const string PublicToken = "e5f4a90eea6a9f33";
 		public const string PublicTokenNET = "d28e5104328561ff";

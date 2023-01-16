@@ -1,0 +1,92 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFrameworks>$(TargetFrameworks)</TargetFrameworks>
+		<AssemblyName>EntityFramework.BlackbirdSql</AssemblyName>
+		<RootNamespace>BlackbirdSql.Data.Entity</RootNamespace>
+		<SignAssembly>true</SignAssembly>
+		<AssemblyOriginatorKeyFile Condition="'$(TargetFramework)'=='net48'">Properties\EntityFramework.Blackbird.snk</AssemblyOriginatorKeyFile>
+		<AssemblyOriginatorKeyFile Condition="'$(TargetFramework)'=='net7.0'">Properties\EntityFramework.Blackbird.snk</AssemblyOriginatorKeyFile>
+		<GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+	<PropertyGroup>
+		<AssemblyTitle>NETProvider - Entity Framework Provider</AssemblyTitle>
+		<Copyright>(c) 2014-2021</Copyright>
+	</PropertyGroup>
+	<PropertyGroup>
+		<PackageId>EntityFramework.BlackbirdSql</PackageId>
+		<Title>BlackbirdSql Entity Framework Provider</Title>
+		<PackageDescription>The Entity Framework provider for .NET applications that connect to the Firebird database using Entity Framework.</PackageDescription>
+		<PackageTags>blackbird;blackbirdsql;dslclient;entityframewor;adonet;database</PackageTags>
+		<RepositoryUrl />
+		<RepositoryType />
+		<PackageIcon>Properties\blackbird-logo.png</PackageIcon>
+		<ApplicationIcon>Properties\Package.ico</ApplicationIcon>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<DefineConstants>EF6;TRACE</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+		<DefineConstants>EF6;DEBUG;TRACE</DefineConstants>
+	</PropertyGroup>
+	<ItemGroup>
+	  <Compile Remove="ProviderServicesEx.cs" />
+	</ItemGroup>
+	<ItemGroup>
+	  <None Remove="Resources\ProviderManifest.xml" />
+	  <None Remove="Resources\StoreSchemaDefinition - Copy.ssdl" />
+	  <None Remove="Resources\StoreSchemaDefinition.ssdl" />
+	  <None Remove="Resources\StoreSchemaDefinitionVersion3 - Copy.ssdl" />
+	  <None Remove="Resources\StoreSchemaDefinitionVersion3.ssdl" />
+	  <None Remove="Resources\StoreSchemaMapping.msl" />
+	  <None Remove="Resources\StoreSchemaMappingVersion3.msl" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Include="Properties\Package.ico" />
+	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Include="Resources\ProviderManifest.xml" />
+	  <EmbeddedResource Include="Resources\StoreSchemaDefinition.ssdl" />
+	  <EmbeddedResource Include="Resources\StoreSchemaDefinitionVersion3.ssdl" />
+	  <EmbeddedResource Include="Resources\StoreSchemaMapping.msl" />
+	  <EmbeddedResource Include="Resources\StoreSchemaMappingVersion3.msl" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="App.config.install.xdt" Pack="true" PackagePath="content" />
+		<None Update="Properties\blackbird-logo.png">
+		  <Pack>True</Pack>
+		  <PackagePath>\</PackagePath>
+		</None>
+		<None Update="Web.config.install.xdt" Pack="true" PackagePath="content" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="EntityFramework" Version="6.4.4" />
+		<PackageReference Include="IndexRange" Version="1.0.2" />
+		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
+		<Reference Include="System.Configuration" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)'=='net7.0'">
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="Properties\Resources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Resources.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+	<ItemGroup>
+	  <EmbeddedResource Update="Properties\Resources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\BlackbirdSql.Common\BlackbirdSql.Common.csproj" />
+	  <ProjectReference Include="..\BlackbirdSql.Data.DslClient\BlackbirdSql.Data.DslClient.csproj" />
+	</ItemGroup>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command=":: *** Update: No longer required&#xD;&#xA;:: copy /v /y /b $(OutDir)\EntityFramework.BlackbirdSql.* &quot;%25ProgramFiles%25\BlackbirdSql\BlackbirdEntityFramework.9.1.0&quot;&#xD;&#xA;&#xD;&#xA;:: *** Update: DestFolder has not been updated so this won't execute. It's easier to close the ide and do it manually &#xD;&#xA;:: The following are so that you don't have to do a reinstall of the vsix after a build&#xD;&#xA;:: NOTE:&#xD;&#xA;:: You will have to replace 17.0_xxx with your version and user id&#xD;&#xA;:: You will have to restart the ide before doing the build if you've used the ddex tool&#xD;&#xA;:: during your session because the dll will be locked&#xD;&#xA;set DestFolder=&quot;%25LocalAppData%25\Microsoft\VisualStudio\17.0_5d5e49fc\Extensions\jicohvxm.5ro\&quot;&#xD;&#xA;if exist %25DestFolder%25 (&#xD;&#xA;copy /v /y /b $(ProjectDir)$(OutDir)*.dll %25DestFolder%25&#xD;&#xA;copy /v /y /b $(ProjectDir)$(OutDir)*.pdb %25DestFolder%25&#xD;&#xA;)" />
+	</Target>
+</Project>

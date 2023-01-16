@@ -38,21 +38,21 @@ namespace EdmxTest.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("character set=UTF8;data source=MMEI-LT01;port number=55504;initial catalog=C:\\Ser" +
-            "ver\\Data\\smartitplus_databases\\MMEI_SI_DB.FDB;user id=SYSDBA;password=masterkey;" +
-            "dialect=3;server type=0")]
-        public string DefaultDataSetConnectionString {
+        public string Setting2 {
             get {
-                return ((string)(this["DefaultDataSetConnectionString"]));
+                return ((string)(this["Setting2"]));
             }
         }
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        public string Setting2 {
+        [global::System.Configuration.DefaultSettingValueAttribute("character set=UTF8;data source=MMEI-LT01;port number=55504;initial catalog=C:\\Ser" +
+            "ver\\Data\\smartitplus_databases\\MMEI_SI_DB.FDB;user id=SYSDBA;password=masterkey;" +
+            "dialect=3;server type=0")]
+        public string DefaultDataSetConnectionString {
             get {
-                return ((string)(this["Setting2"]));
+                return ((string)(this["DefaultDataSetConnectionString"]));
             }
         }
     }

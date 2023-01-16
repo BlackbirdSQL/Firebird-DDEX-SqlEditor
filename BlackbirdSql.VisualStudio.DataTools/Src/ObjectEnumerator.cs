@@ -1,5 +1,5 @@
 /*
- *  Visual Studio DDEX Provider for BlackbirdSql DslClient
+ *  Visual Studio DDEX Provider for FirebirdClient (BlackbirdSql)
  * 
  *     The contents of this file are subject to the Initial 
  *     Developer's Public License Version 1.0 (the "License"); 
@@ -37,7 +37,7 @@ internal class ObjectEnumerator : AdoDotNetObjectEnumerator
 
 	public ObjectEnumerator() : base()
 	{
-		Diag.Dug();
+		Diag.Trace();
 	}
 
 	#endregion
@@ -46,7 +46,7 @@ internal class ObjectEnumerator : AdoDotNetObjectEnumerator
 
 	public override DataReader EnumerateObjects(string typeName, object[] items, object[] restrictions, string sort, object[] parameters)
 	{
-		Diag.Dug("Enumerating: " + typeName);
+		Diag.Trace("Enumerating: " + typeName);
 
 		DbConnection conn = Connection.GetLockedProviderObject() as DbConnection;
 

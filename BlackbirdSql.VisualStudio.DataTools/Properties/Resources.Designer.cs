@@ -70,7 +70,7 @@ namespace BlackbirdSql.VisualStudio.DataTools.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DDEX Provider for DslClient (Blackbird).
+        ///   Looks up a localized string similar to DDEX Provider for FirebirdClient (Blackbird).
         /// </summary>
         internal static string _102 {
             get {
@@ -475,7 +475,7 @@ namespace BlackbirdSql.VisualStudio.DataTools.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use this selection to connect to Firebird using the Legacy DDEX BlackbirdSql Provider.
+        ///   Looks up a localized string similar to Use this selection to connect to Firebird using the Legacy DDEX FirebirdSql Provider.
         /// </summary>
         internal static string DdexProvider_Description {
             get {
@@ -498,6 +498,33 @@ namespace BlackbirdSql.VisualStudio.DataTools.Properties {
         internal static string DdexProvider_ShortDisplayName {
             get {
                 return ResourceManager.GetString("DdexProvider_ShortDisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The .NET Provider for Firebird FirebirdSql.Data.FirebirdClient).
+        /// </summary>
+        internal static string Provider_Description {
+            get {
+                return ResourceManager.GetString("Provider_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .NET Provider for Firebird (BlackbirdSql).
+        /// </summary>
+        internal static string Provider_DisplayName {
+            get {
+                return ResourceManager.GetString("Provider_DisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BlackbirdSql FirebirdClient Provider.
+        /// </summary>
+        internal static string Provider_ShortDisplayName {
+            get {
+                return ResourceManager.GetString("Provider_ShortDisplayName", resourceCulture);
             }
         }
         

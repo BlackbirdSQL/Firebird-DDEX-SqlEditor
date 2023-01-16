@@ -1,5 +1,5 @@
 /*
- *  Visual Studio DDEX Provider for BlackbirdSql DslClient
+ *  Visual Studio DDEX Provider for FirebirdClient (BlackbirdSql)
  * 
  *     The contents of this file are subject to the Initial 
  *     Developer's Public License Version 1.0 (the "License"); 
@@ -39,12 +39,12 @@ internal class SourceInformation : AdoDotNetSourceInformation
 
 	public SourceInformation() : this(default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 	}
 
 	public SourceInformation(IVsDataConnection connection) : base(connection)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		base.AddProperty(CatalogSupported, false);
 		base.AddProperty(CatalogSupportedInDml, false);
@@ -57,11 +57,9 @@ internal class SourceInformation : AdoDotNetSourceInformation
 		base.AddProperty(ProcedureSupported, true);
 		base.AddProperty(QuotedIdentifierPartsCaseSensitive, true);
 		base.AddProperty(SchemaSupported, false);
-		// BlackbirdSql Debug set to true to see if we can get system objects
 		base.AddProperty(SchemaSupportedInDml, true);
 		base.AddProperty(ServerSeparator, ".");
 		base.AddProperty(SupportsAnsi92Sql, true);
-		base.AddProperty(SupportsQuotedIdentifierParts, true);
 		base.AddProperty(SupportsCommandTimeout, false);
 		base.AddProperty(SupportsQuotedIdentifierParts, true);
 		base.AddProperty("DesktopDataSource", true);
@@ -72,7 +70,7 @@ internal class SourceInformation : AdoDotNetSourceInformation
 
 	protected override object RetrieveValue(string propertyName)
 	{
-		Diag.Dug("Property: " + propertyName);
+		Diag.Trace("Property: " + propertyName);
 
 		try
 		{

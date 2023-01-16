@@ -114,9 +114,13 @@
 							<Selection type="TableColumn" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}">
 								<SelectionNode nodeId="Column">
 									<DisplayName>{Column.COLUMN_NAME}</DisplayName>
-									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(elementType)Column.ico" when="NOT {Column.IS_PRIMARY} AND NOT {Column.IS_COMPUTED}" assembly="" />
-									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="NOT {Column.IS_PRIMARY} AND {Column.IS_COMPUTED}" assembly="" />
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(elementType)Column.ico" when="{Column.COMPUTED_SOURCE} IS NULL" assembly="" />
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="NOT {Column.COMPUTED_SOURCE} IS NULL" assembly="" />
+									<!-- TBC
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(elementType)Column.ico" when="NOT {Column.IS_PRIMARY} AND {Column.COMPUTED_SOURCE} IS NULL" assembly="" />
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="NOT {Column.IS_PRIMARY} AND NOT {Column.COMPUTED_SOURCE} IS NULL" assembly="" />
 									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.PrimaryKey.ico" when="{Column.IS_PRIMARY}" assembly="" />
+									-->
 									<Properties>
 										<TypeDisplayName resource="Type_Column" />
 										<Property name="TABLE_CATALOG">
@@ -303,7 +307,8 @@
 							<Selection type="TableIndex" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}">
 								<SelectionNode nodeId="Index">
 									<DisplayName>{Index.INDEX_NAME}</DisplayName>
-									<Icon name="Index" />
+									<Icon name="Index" when="NOT {Index.IS_PRIMARY}" />
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.PrimaryKey.ico" when="{Index.IS_PRIMARY}" assembly="" />
 									<Properties>
 										<TypeDisplayName resource="Type_Index" />
 										<Property name="TABLE_CATALOG">
@@ -848,10 +853,6 @@
 										<Property name="DESCRIPTION">
 											<DisplayName resource="Property_Name_Description" />
 											<Description resource="Property_Desc_Description" />
-										</Property>
-										<Property name="SOURCE">
-											<DisplayName resource="Property_Name_Dsl" />
-											<Description resource="Property_Desc_Dsl" />
 										</Property>
 									</Properties>
 									<Children>

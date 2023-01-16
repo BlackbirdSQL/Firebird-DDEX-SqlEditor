@@ -60,12 +60,12 @@ internal sealed class GdsConnection
 	public GdsConnection(string dataSource, int port, int timeout)
 		: this(null, null, dataSource, port, timeout, 8192, Charset.DefaultCharset, 3, false, Version13.WireCryptOption.Enabled, null)
 	{
-		Diag.Dug();
+		Diag.Trace();
 	}
 
 	public GdsConnection(string user, string password, string dataSource, int portNumber, int timeout, int packetSize, Charset charset, short dialect, bool compression, Version13.WireCryptOption wireCrypt, byte[] cryptKey)
 	{
-		Diag.Dug("Debug trace connection info: " + user + ":" + password + ":" + dataSource + ":" + portNumber);
+		Diag.Trace("Debug trace connection info: " + user + ":" + password + ":" + dataSource + ":" + portNumber);
 
 		User = user;
 		Password = password;
@@ -82,7 +82,7 @@ internal sealed class GdsConnection
 
 	public void Connect()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		try
 		{
@@ -109,7 +109,7 @@ internal sealed class GdsConnection
 	}
 	public async ValueTask ConnectAsync(CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		try
 		{
@@ -148,7 +148,7 @@ internal sealed class GdsConnection
 
 	public void Identify(string database)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		try
 		{
@@ -266,7 +266,7 @@ internal sealed class GdsConnection
 	}
 	public async ValueTask IdentifyAsync(string database, CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		try
 		{
@@ -384,7 +384,7 @@ internal sealed class GdsConnection
 
 	public void Disconnect()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (_networkStream != null)
 		{
@@ -398,7 +398,7 @@ internal sealed class GdsConnection
 	}
 	public async ValueTask DisconnectAsync(CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (_networkStream != null)
 		{
@@ -414,7 +414,7 @@ internal sealed class GdsConnection
 
 	internal IResponse ProcessOperation(int operation)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		switch (operation)
 		{
@@ -500,7 +500,7 @@ internal sealed class GdsConnection
 	}
 	internal async ValueTask<IResponse> ProcessOperationAsync(int operation, CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		switch (operation)
 		{
@@ -587,21 +587,21 @@ internal sealed class GdsConnection
 
 	internal void StartCompression()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		_blackbirdNetworkHandlingWrapper.StartCompression();
 	}
 
 	internal void StartEncryption()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		_blackbirdNetworkHandlingWrapper.StartEncryption(AuthBlock.SessionKey);
 	}
 
 	private static IPAddress GetIPAddress(string dataSource)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (IPAddress.TryParse(dataSource, out var ipaddress))
 		{
@@ -621,7 +621,7 @@ internal sealed class GdsConnection
 	}
 	private static async ValueTask<IPAddress> GetIPAddressAsync(string dataSource, CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (IPAddress.TryParse(dataSource, out var ipaddress))
 		{

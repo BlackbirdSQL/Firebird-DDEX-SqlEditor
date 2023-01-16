@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="a052f4a460aa4c0d927fa75292a42da2" Name="Diagram1" ZoomLevel="95">
+      <Diagram DiagramId="a052f4a460aa4c0d927fa75292a42da2" Name="Diagram1" ZoomLevel="94">
         <EntityTypeShape EntityType="SIModel.SH_CONSIGNMENTTYPE" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="SIModel.SH_DOCUMENT" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
       </Diagram>

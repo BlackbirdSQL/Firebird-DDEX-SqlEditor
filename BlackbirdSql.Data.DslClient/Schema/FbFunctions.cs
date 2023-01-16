@@ -28,7 +28,6 @@ internal class FbFunctions : FbSchema
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
-		// BlackbirdSql added function_source
 		var sql = new StringBuilder();
 		var where = new StringBuilder();
 
@@ -43,7 +42,6 @@ internal class FbFunctions : FbSchema
 					rdb$module_name AS FUNCTION_MODULE_NAME,
 					rdb$entrypoint AS FUNCTION_ENTRY_POINT,
 					rdb$return_argument AS RETURN_ARGUMENT,
-					rdb$function_source SOURCE,
 					rdb$description AS DESCRIPTION,
 					{0} AS PACKAGE_NAME
 				FROM rdb$functions",

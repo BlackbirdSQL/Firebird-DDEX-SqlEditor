@@ -38,10 +38,10 @@ public abstract class FbService
 	private const string ServiceName = "service_mgr";
 
 	private ServiceManagerBase _svc;
-	private DbConnectionString _connectionStringOptions;
+	private ConnectionString _connectionStringOptions;
 
 	private protected ServiceManagerBase Service => _svc;
-	private protected DbConnectionString ConnectionStringOptions => _connectionStringOptions;
+	private protected ConnectionString ConnectionStringOptions => _connectionStringOptions;
 
 	public FbServiceState State { get; private set; }
 	public int QueryBufferSize { get; set; }
@@ -58,7 +58,7 @@ public abstract class FbService
 				throw new InvalidOperationException("ConnectionString cannot be modified on open instances.");
 			}
 
-			_connectionStringOptions = new DbConnectionString(value);
+			_connectionStringOptions = new ConnectionString(value);
 
 			if (value == null)
 			{
@@ -73,7 +73,7 @@ public abstract class FbService
 
 	private protected FbService(string connectionString = null)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		State = FbServiceState.Closed;
 		QueryBufferSize = IscCodes.DEFAULT_MAX_BUFFER_SIZE;
@@ -82,7 +82,7 @@ public abstract class FbService
 
 	private ServiceParameterBufferBase BuildSpb()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var spb = Service.CreateServiceParameterBuffer();
 		spb.AppendPreamble();
@@ -118,7 +118,7 @@ public abstract class FbService
 
 	private protected void Open()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (State != FbServiceState.Closed)
 			throw new InvalidOperationException("Service already open.");
@@ -139,7 +139,7 @@ public abstract class FbService
 	}
 	private protected async Task OpenAsync(CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (State != FbServiceState.Closed)
 			throw new InvalidOperationException("Service already open.");
@@ -161,7 +161,7 @@ public abstract class FbService
 
 	private protected void Close()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (State != FbServiceState.Open)
 		{
@@ -173,7 +173,7 @@ public abstract class FbService
 	}
 	private protected async Task CloseAsync(CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 		if (State != FbServiceState.Open)
 		{
 			return;
@@ -185,7 +185,7 @@ public abstract class FbService
 
 	private protected void StartTask(ServiceParameterBufferBase spb)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (State == FbServiceState.Closed)
 			throw new InvalidOperationException("Service is closed.");
@@ -194,7 +194,7 @@ public abstract class FbService
 	}
 	private protected async Task StartTaskAsync(ServiceParameterBufferBase spb, CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (State == FbServiceState.Closed)
 			throw new InvalidOperationException("Service is closed.");
@@ -204,7 +204,7 @@ public abstract class FbService
 
 	private protected List<object> Query(byte[] items, ServiceParameterBufferBase spb)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var result = new List<object>();
 		Query(items, spb, (truncated, item) =>
@@ -245,7 +245,7 @@ public abstract class FbService
 	}
 	private protected async Task<List<object>> QueryAsync(byte[] items, ServiceParameterBufferBase spb, CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var result = new List<object>();
 		await QueryAsync(items, spb, (truncated, item) =>
@@ -289,7 +289,7 @@ public abstract class FbService
 
 	private protected void Query(byte[] items, ServiceParameterBufferBase spb, Action<bool, object> queryResponseAction)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var pos = 0;
 		var truncated = false;
@@ -401,7 +401,7 @@ public abstract class FbService
 	}
 	private protected async Task QueryAsync(byte[] items, ServiceParameterBufferBase spb, Func<bool, object, Task> queryResponseAction, CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var pos = 0;
 		var truncated = false;
@@ -514,7 +514,7 @@ public abstract class FbService
 
 	private protected void ProcessServiceOutput(ServiceParameterBufferBase spb)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		string line;
 		while ((line = GetNextLine(spb)) != null)
@@ -524,7 +524,7 @@ public abstract class FbService
 	}
 	private protected async Task ProcessServiceOutputAsync(ServiceParameterBufferBase spb, CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		string line;
 		while ((line = await GetNextLineAsync(spb, cancellationToken).ConfigureAwait(false)) != null)
@@ -535,7 +535,7 @@ public abstract class FbService
 
 	private protected string GetNextLine(ServiceParameterBufferBase spb)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var info = Query(new byte[] { IscCodes.isc_info_svc_line }, spb);
 		if (info.Count == 0)
@@ -544,7 +544,7 @@ public abstract class FbService
 	}
 	private protected async Task<string> GetNextLineAsync(ServiceParameterBufferBase spb, CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var info = await QueryAsync(new byte[] { IscCodes.isc_info_svc_line }, spb, cancellationToken).ConfigureAwait(false);
 		if (info.Count == 0)
@@ -559,7 +559,7 @@ public abstract class FbService
 
 	private protected void EnsureDatabase()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (string.IsNullOrEmpty(ConnectionStringOptions.Database))
 			throw DslException.Create("Action should be executed against a specific database.");
@@ -567,7 +567,7 @@ public abstract class FbService
 
 	private byte[] QueryService(byte[] items, ServiceParameterBufferBase spb)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var buffer = new byte[QueryBufferSize];
 		Service.Query(spb, items.Length, items, buffer.Length, buffer);
@@ -576,7 +576,7 @@ public abstract class FbService
 	}
 	private async Task<byte[]> QueryServiceAsync(byte[] items, ServiceParameterBufferBase spb, CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var buffer = new byte[QueryBufferSize];
 		await Service.QueryAsync(spb, items.Length, items, buffer.Length, buffer, cancellationToken).ConfigureAwait(false);
@@ -590,7 +590,7 @@ public abstract class FbService
 
 	private static FbServerConfig ParseServerConfig(byte[] buffer, ref int pos, Charset charset)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var config = new FbServerConfig();
 
@@ -691,7 +691,7 @@ public abstract class FbService
 
 	private static FbDatabasesInfo ParseDatabasesInfo(byte[] buffer, ref int pos, Charset charset)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var dbInfo = new FbDatabasesInfo();
 		var type = 0;
@@ -728,7 +728,7 @@ public abstract class FbService
 
 	private static FbUserData[] ParseUserData(byte[] buffer, ref int pos, Charset charset)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var users = new List<FbUserData>();
 		FbUserData currentUser = null;
@@ -791,7 +791,7 @@ public abstract class FbService
 
 	private static int GetLength(byte[] buffer, int size, ref int pos)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		var result = (int)IscHelper.VaxInteger(buffer, pos, size);
 		pos += size;

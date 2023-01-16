@@ -51,7 +51,7 @@ public partial class ConnectionPromptDialog : DataConnectionPromptDialog
 
 	public ConnectionPromptDialog()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		InitializeComponent();
 

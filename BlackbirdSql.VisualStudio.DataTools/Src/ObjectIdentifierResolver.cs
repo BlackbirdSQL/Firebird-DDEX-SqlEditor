@@ -1,5 +1,5 @@
 /*
- *  Visual Studio DDEX Provider for BlackbirdSql DslClient
+ *  Visual Studio DDEX Provider for FirebirdClient (BlackbirdSql)
  * 
  *     The contents of this file are subject to the Initial 
  *     Developer's Public License Version 1.0 (the "License"); 
@@ -40,7 +40,7 @@ internal class ObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	public ObjectIdentifierResolver(DataConnection connection) : base()
 	{
-		// Diag.Dug();
+		// Diag.Trace();
 		this.connection = connection;
 	}
 
@@ -50,7 +50,7 @@ internal class ObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	protected override object[] QuickContractIdentifier(string typeName, object[] fullIdentifier)
 	{
-		// Diag.Dug("Indentifying: " + typeName);
+		// Diag.Trace("Indentifying: " + typeName);
 
 		if (typeName == null)
 		{
@@ -86,7 +86,7 @@ internal class ObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	protected override object[] QuickExpandIdentifier(string typeName, object[] partialIdentifier)
 	{
-		// Diag.Dug("Resolving type: " + typeName);
+		// Diag.Trace("Resolving type: " + typeName);
 
 		if (typeName == null)
 		{
@@ -136,7 +136,7 @@ internal class ObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	private int GetIdentifierLength(string typeName)
 	{
-		// Diag.Dug("Type: " + typeName);
+		// Diag.Trace("Type: " + typeName);
 
 		switch (typeName)
 		{

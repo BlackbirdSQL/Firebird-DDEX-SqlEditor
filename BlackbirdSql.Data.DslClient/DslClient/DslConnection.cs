@@ -40,14 +40,14 @@ public sealed class DslConnection : DbConnection, ICloneable
 
 	public static void ClearAllPools()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		DslConnectionPoolManager.Instance.ClearAllPools();
 	}
 
 	public static void ClearPool(DslConnection connection)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (connection == null)
 			throw new ArgumentNullException(nameof(connection));
@@ -57,12 +57,12 @@ public sealed class DslConnection : DbConnection, ICloneable
 
 	public static void ClearPool(string connectionString)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (connectionString == null)
 			throw new ArgumentNullException(nameof(connectionString));
 
-		DslConnectionPoolManager.Instance.ClearPool(new DbConnectionString(connectionString));
+		DslConnectionPoolManager.Instance.ClearPool(new ConnectionString(connectionString));
 	}
 
 	#endregion
@@ -71,9 +71,9 @@ public sealed class DslConnection : DbConnection, ICloneable
 
 	public static void CreateDatabase(string connectionString, int pageSize = 4096, bool forcedWrites = true, bool overwrite = false)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
-		var options = new DbConnectionString(connectionString);
+		var options = new ConnectionString(connectionString);
 		options.Validate();
 
 		try
@@ -96,7 +96,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 	}
 	public static async Task CreateDatabaseAsync(string connectionString, int pageSize = 4096, bool forcedWrites = true, bool overwrite = false, CancellationToken cancellationToken = default)
 	{
-		var options = new DbConnectionString(connectionString);
+		var options = new ConnectionString(connectionString);
 		options.Validate();
 
 		try
@@ -120,9 +120,9 @@ public sealed class DslConnection : DbConnection, ICloneable
 
 	public static void DropDatabase(string connectionString)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
-		var options = new DbConnectionString(connectionString);
+		var options = new ConnectionString(connectionString);
 		options.Validate();
 
 		try
@@ -145,9 +145,9 @@ public sealed class DslConnection : DbConnection, ICloneable
 	}
 	public static async Task DropDatabaseAsync(string connectionString, CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
-		var options = new DbConnectionString(connectionString);
+		var options = new ConnectionString(connectionString);
 		options.Validate();
 
 		try
@@ -183,7 +183,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 
 	private DslConnectionInternal _innerConnection;
 	private ConnectionState _state;
-	private DbConnectionString _options;
+	private ConnectionString _options;
 	private bool _disposed;
 	private string _connectionString;
 
@@ -200,13 +200,13 @@ public sealed class DslConnection : DbConnection, ICloneable
 		get { return _connectionString; }
 		set
 		{
-			Diag.Dug();
+			Diag.Trace();
 
 			if (_state == ConnectionState.Closed)
 			{
 				value ??= string.Empty;
 
-				_options = new DbConnectionString(value);
+				_options = new ConnectionString(value);
 				_options.Validate();
 				_connectionString = value;
 			}
@@ -280,7 +280,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 		get { return _innerConnection; }
 	}
 
-	internal DbConnectionString ConnectionOptions
+	internal ConnectionString ConnectionOptions
 	{
 		get { return _options; }
 	}
@@ -305,16 +305,16 @@ public sealed class DslConnection : DbConnection, ICloneable
 
 	public DslConnection()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
-		_options = new DbConnectionString();
+		_options = new ConnectionString();
 		_state = ConnectionState.Closed;
 		_connectionString = string.Empty;
 	}
 
 	public DslConnection(string connectionString) : this()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (!string.IsNullOrEmpty(connectionString))
 		{
@@ -328,7 +328,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 
 	protected override void Dispose(bool disposing)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (disposing)
 		{
@@ -346,7 +346,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 #if NET
 	public override async ValueTask DisposeAsync()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (!_disposed)
 		{
@@ -366,7 +366,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 
 	object ICloneable.Clone()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		return new DslConnection(ConnectionString);
 	}
@@ -396,7 +396,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 
 	public DslTransaction BeginTransaction(IsolationLevel level, string transactionName)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		CheckClosed();
 
@@ -404,7 +404,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 	}
 	public Task<DslTransaction> BeginTransactionAsync(IsolationLevel level, string transactionName, CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		CheckClosed();
 
@@ -416,7 +416,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 
 	public DslTransaction BeginTransaction(DslTransactionOptions options, string transactionName)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		CheckClosed();
 
@@ -424,7 +424,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 	}
 	public Task<DslTransaction> BeginTransactionAsync(DslTransactionOptions options, string transactionName, CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		CheckClosed();
 
@@ -442,7 +442,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 
 	public override void EnlistTransaction(System.Transactions.Transaction transaction)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		CheckClosed();
 
@@ -458,7 +458,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 
 	public override DataTable GetSchema()
 	{
-		Diag.Dug("Defaulting to collectionName: MetaDataCollections");
+		Diag.Trace("Defaulting to collectionName: MetaDataCollections");
 
 		return GetSchema("MetaDataCollections");
 	}
@@ -468,14 +468,14 @@ public sealed class DslConnection : DbConnection, ICloneable
 	public override Task<DataTable> GetSchemaAsync(CancellationToken cancellationToken = default)
 #endif
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		return GetSchemaAsync("MetaDataCollections", cancellationToken);
 	}
 
 	public override DataTable GetSchema(string collectionName)
 	{
-		Diag.Dug("collectionName: " + collectionName);
+		Diag.Trace("collectionName: " + collectionName);
 
 		return GetSchema(collectionName, null);
 	}
@@ -485,13 +485,13 @@ public sealed class DslConnection : DbConnection, ICloneable
 	public override Task<DataTable> GetSchemaAsync(string collectionName, CancellationToken cancellationToken = default)
 #endif
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		return GetSchemaAsync(collectionName, null, cancellationToken);
 	}
 	public override DataTable GetSchema(string collectionName, string[] restrictions)
 	{
-		Diag.Dug("collectionName: " + collectionName);
+		Diag.Trace("collectionName: " + collectionName);
 
 		string str = "";
 
@@ -503,7 +503,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 			}
 		}
 
-		Diag.Dug(String.Format("collectionName: {0} restrictions: {1}", collectionName, str));
+		Diag.Trace(String.Format("collectionName: {0} restrictions: {1}", collectionName, str));
 
 		CheckClosed();
 
@@ -515,7 +515,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 	public override Task<DataTable> GetSchemaAsync(string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
 #endif
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		CheckClosed();
 
@@ -528,14 +528,14 @@ public sealed class DslConnection : DbConnection, ICloneable
 
 	public new DslCommand CreateCommand()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		return (DslCommand)CreateDbCommand();
 	}
 
 	protected override DbCommand CreateDbCommand()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		return new DslCommand(null, this);
 	}
@@ -549,7 +549,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 
 	protected override DbBatch CreateDbBatch()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		return CreateBatch();
 	}
@@ -557,14 +557,14 @@ public sealed class DslConnection : DbConnection, ICloneable
 
 	public DslBatchCommand CreateBatchCommand()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		return new DslBatchCommand(null, this);
 	}
 
 	public override void ChangeDatabase(string databaseName)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		CheckClosed();
 
@@ -602,7 +602,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 	public override async Task ChangeDatabaseAsync(string databaseName, CancellationToken cancellationToken = default)
 #endif
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		CheckClosed();
 
@@ -637,7 +637,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 
 	public override void Open()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		LogMessages.ConnectionOpening(Log, this);
 
@@ -739,7 +739,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 	}
 	public override async Task OpenAsync(CancellationToken cancellationToken)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		LogMessages.ConnectionOpening(Log, this);
 
@@ -842,7 +842,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 
 	public override void Close()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		LogMessages.ConnectionClosing(Log, this);
 
@@ -905,7 +905,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 	public override async Task CloseAsync()
 #endif
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		LogMessages.ConnectionClosing(Log, this);
 
@@ -969,7 +969,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 
 	private void CheckClosed()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (IsClosed)
 		{
@@ -984,7 +984,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 
 	private void OnWarningMessage(IscException warning)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		InfoMessage?.Invoke(this, new DslInfoMessageEventArgs(warning));
 	}
@@ -1000,7 +1000,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 	#region Cancelation
 	public void EnableCancel()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		CheckClosed();
 
@@ -1008,7 +1008,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 	}
 	public Task EnableCancelAsync(CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		CheckClosed();
 
@@ -1017,7 +1017,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 
 	public void DisableCancel()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		CheckClosed();
 
@@ -1025,7 +1025,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 	}
 	public Task DisableCancelAsync(CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		CheckClosed();
 
@@ -1034,7 +1034,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 
 	public void CancelCommand()
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		CheckClosed();
 
@@ -1042,7 +1042,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 	}
 	public Task CancelCommandAsync(CancellationToken cancellationToken = default)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		CheckClosed();
 
@@ -1054,7 +1054,7 @@ public sealed class DslConnection : DbConnection, ICloneable
 
 	internal static void EnsureOpen(DslConnection connection)
 	{
-		Diag.Dug();
+		Diag.Trace();
 
 		if (connection == null || connection.State != ConnectionState.Open)
 			throw new InvalidOperationException("Connection must be valid and open.");

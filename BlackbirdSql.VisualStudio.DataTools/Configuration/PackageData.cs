@@ -1,5 +1,5 @@
 ﻿/*
- *  Visual Studio DDEX Provider for BlackbirdSql DslClient
+ *  Visual Studio DDEX Provider for FirebirdClient (BlackbirdSql)
  * 
  *     The contents of this file are subject to the Initial 
  *     Developer's Public License Version 1.0 (the "License"); 
@@ -29,7 +29,6 @@ namespace BlackbirdSql.VisualStudio.DataTools.Configuration;
 static class PackageData
 {
 
-	public const string Invariant = "BlackbirdSql.Data.DslClient";
 	public const string CodeBase = "%ProgramFiles%\\BlackbirdSql\\BlackbirdDDEX.9.1.0\\BlackbirdSql.VisualStudio.DataTools.dll";
 
 	public const string AssemblyGuid = "8e5684ba-78de-43d7-b66e-7f88bc920bf0";

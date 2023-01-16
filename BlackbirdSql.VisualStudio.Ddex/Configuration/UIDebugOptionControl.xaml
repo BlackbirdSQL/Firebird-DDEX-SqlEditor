@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="BlackbirdSql.VisualStudio.Ddex.Configuration.UIDebugOptionControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:BlackbirdSql.VisualStudio.Ddex.Configuration"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+	<Grid>
+		<CheckBox x:Name="CbEnableTrace" Content="Enable trace" HorizontalAlignment="Left"
+				   Margin="30,36,0,0" VerticalAlignment="Top"
+				   IsThreeState="False"
+				   Checked="CbEnableTrace_Checked" Unchecked="CbEnableTrace_Unchecked"/>
+		<CheckBox x:Name="CbEnableDiagnostics" Content="Enable diagnostics" HorizontalAlignment="Left"
+				   Margin="30,72,0,0" VerticalAlignment="Top"
+				   IsThreeState="False"
+				   Checked="CbEnableDiagnostics_Checked" Unchecked="CbEnableDiagnostics_Unchecked"/>
+	</Grid>
+</UserControl>

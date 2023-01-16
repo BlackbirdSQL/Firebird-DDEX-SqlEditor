@@ -40,7 +40,7 @@ internal abstract class FbSchema
 
 	public DataTable GetSchema(DslConnection connection, string collectionName, string[] restrictions)
 	{
-		Diag.Dug("collectionName: " + collectionName);
+		Diag.Trace("collectionName: " + collectionName);
 
 		var dataTable = new DataTable(collectionName);
 		var command = BuildCommand(connection, collectionName, ParseRestrictions(restrictions));
@@ -110,7 +110,7 @@ internal abstract class FbSchema
 
 	protected DslCommand BuildCommand(DslConnection connection, string collectionName, string[] restrictions)
 	{
-		Diag.Dug("collectionName: " + collectionName);
+		Diag.Trace("collectionName: " + collectionName);
 
 		SetMajorVersionNumber(connection);
 		var filter = string.Format("CollectionName='{0}'", collectionName);

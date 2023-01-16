@@ -1,5 +1,5 @@
 /*
- *  Visual Studio DDEX Provider for BlackbirdSql DslClient
+ *  Visual Studio DDEX Provider for FirebirdClient (BlackbirdSql)
  * 
  *     The contents of this file are subject to the Initial 
  *     Developer's Public License Version 1.0 (the "License"); 
@@ -39,7 +39,7 @@ internal class ObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	public ObjectIdentifierResolver(IVsDataConnection connection) : base(connection)
 	{
-		Diag.Dug();
+		Diag.Trace();
 	}
 
 	#endregion
@@ -64,7 +64,7 @@ internal class ObjectIdentifierResolver : DataObjectIdentifierResolver
 			throw new ArgumentNullException("typeName");
 		}
 
-		Diag.Dug(String.Format("typeName: {0} Identifiers: {1}", typeName, str));
+		Diag.Trace(String.Format("typeName: {0} Identifiers: {1}", typeName, str));
 
 		if (typeName == ObjectTypes.Root)
 		{
@@ -97,7 +97,7 @@ internal class ObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	public override object[] ExpandIdentifier(string typeName, object[] partialIdentifier)
 	{
-		Diag.Dug(String.Format("ExpandIdentifier({0},...)", typeName));
+		Diag.Trace(String.Format("ExpandIdentifier({0},...)", typeName));
 
 		if (typeName == null)
 		{
@@ -150,7 +150,7 @@ internal class ObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	private int GetIdentifierLength(string typeName)
 	{
-		Diag.Dug(String.Format("GetIdentifierLength({0})", typeName));
+		Diag.Trace(String.Format("GetIdentifierLength({0})", typeName));
 
 		switch (typeName)
 		{
