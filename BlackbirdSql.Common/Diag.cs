@@ -19,10 +19,37 @@ namespace BlackbirdSql.Common
 	public static class Diag
 	{
 		// Specify your own trace log file and settings here
-		public static bool EnableTrace = true;
-		public static bool EnableDiagnostics = true;
-		public static bool EnableWriteLog = true;
-		public static string LogFile = "C:\\bin\\vsdiag.log";
+		static bool _EnableTrace = true;
+		static bool _EnableDiagnostics = true;
+		static bool _EnableWriteLog = true;
+		static string _LogFile = "C:\\bin\\vsdiag.log";
+
+
+		public static bool EnableTrace
+		{
+			get { return _EnableTrace; }
+			set { _EnableTrace = value; }
+		}
+
+		public static bool EnableDiagnostics
+		{
+			get { return _EnableDiagnostics; }
+			set { _EnableDiagnostics = value; }
+		}
+
+		public static bool EnableWriteLog
+		{
+			get { return _EnableWriteLog; }
+			set { _EnableWriteLog = value; }
+		}
+
+		public static string LogFile
+		{
+			get { return _LogFile; }
+			set { _LogFile = value; }
+		}
+
+
 
 #if DEBUG
 		public static void Dug(bool isException = false, string message = "Debug trace",
@@ -105,27 +132,6 @@ namespace BlackbirdSql.Common
 				memberName, sourceFilePath, sourceLineNumber);
 
 		}
-#if DEBUG
-		public static void Dug(string message,
-			[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-			[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-			[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
-#else
-		public static void Dug(string message,
-			string memberName = "Release:Unavailable",
-			string sourceFilePath = "Release:Unavailable",
-			int sourceLineNumber = 0)
-#endif
-		{
-			if (!EnableDiagnostics)
-				return;
-
-
-			Dug(false, message, memberName, sourceFilePath, sourceLineNumber);
-		}
-
-
-
 
 
 		// Trace methods

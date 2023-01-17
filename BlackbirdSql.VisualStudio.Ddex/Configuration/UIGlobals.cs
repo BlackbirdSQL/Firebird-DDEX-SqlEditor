@@ -54,8 +54,8 @@ internal class UIGlobals
 	const bool G_Persistent = false;
 	const string G_Key = "GlobalBlackbirdTransitory"; // For debug
 #else
-const bool G_Persistent		= true;
-const string G_Key			= "GlobalBlackbirdPersistent";
+	const bool G_Persistent		= true;
+	const string G_Key			= "GlobalBlackbirdPersistent";
 #endif
 
 	/// <summary>
@@ -65,16 +65,16 @@ const string G_Key			= "GlobalBlackbirdPersistent";
 	const int G_Validated = 1;
 	/// <summary>
 	/// For Projects: Validated project is a valid executable C#/VB app. (Once [in]valid always [in]valid)
-	/// Off: Solution has been loaded and is in a validation state. On: Validated
+	/// For Solutions: Off: Solution has been loaded and is in a validation state. On: Validated
 	/// (Only applicable if <see cref="G_Validated"/> is set)
 	/// </summary>	
 	const int G_Valid = 2;
 	/// <summary>
-	/// The app.config has the client DbProvider factory configured and is good to go. (Once successfully configured always configured)
+	/// The app.config has the client system.data/DbProviderFactory configured and is good to go. (Once successfully configured always configured)
 	/// </summary>
 	const int G_DbProviderConfigured = 4;
 	/// <summary>
-	/// The app.config has the EntityFramework provider configured and is good to go. (Once successfully configured always configured)
+	/// The app.config has the EntityFramework provider services and connection factory configured and is good to go. (Once successfully configured always configured)
 	/// </summary>
 	const int G_EFConfigured = 8;
 	/// <summary>
@@ -82,8 +82,9 @@ const string G_Key			= "GlobalBlackbirdPersistent";
 	/// </summary>
 	const int G_EdmxsUpdated = 16;
 	/// <summary>
-	///  If at any point in solution projects validation there was a fail, this is set to true on the solution and the solution Globals
-	///  is reset to zero
+	///  If at any point in solution projects' validation there was a fail, this is set to true on the solution and the solution Globals
+	///  is reset to zero.
+	///  Validation on failed solution entities will resume the next time the solution is loaded.
 	/// </summary>
 	const int G_ValidateFailed = 32;
 
@@ -201,7 +202,7 @@ const string G_Key			= "GlobalBlackbirdPersistent";
 		int value = 0;
 		string str;
 
-		Diag.Dug("Setting IsValid to " + valid.ToString());
+		Diag.Trace("Setting IsValid to " + valid.ToString());
 
 		try
 		{
@@ -435,7 +436,7 @@ const string G_Key			= "GlobalBlackbirdPersistent";
 	/// <returns>True if the operation was successful else False</returns>
 	public bool SetValidateFailedStatus()
 	{
-		Diag.Dug("Setting ValidateFailed");
+		Diag.Trace("Setting ValidateFailed");
 
 		ThreadHelper.ThrowIfNotOnUIThread();
 

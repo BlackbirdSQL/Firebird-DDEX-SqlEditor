@@ -129,6 +129,9 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		_Dte = dte;
 		_Solution = solution;
 
+		// Callers must ensure this can never happen
+		ThreadHelper.ThrowIfNotOnUIThread();
+
 		AdviseSolutionEvents();
 	}
 
