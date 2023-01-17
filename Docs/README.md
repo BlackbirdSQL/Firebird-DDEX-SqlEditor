@@ -5,7 +5,7 @@ This package is still under development.
 The original DDEX 1.0 data tool has been re-implemented as BlackbirdSql.VisualStudio.DataTools. The purpose was only to get DDEX functioning for Firebird before implementing DDEX 2.0, so this tool can be considered obsolete.</br>
 BlackbirdSql.Data.DslClient.dll, EntityFramework.BlackbirdSql.dll and BlackbirdSql.EntityFrameworkCore.dll were for debugging purposes only.</br>
 A new data tool implementing DDEX 2.0, `BlackbirdSql.VisualStudio.Ddex`, has been added.</br>
-The goal is that you don't have to do any configuring of .csproj, app.config, machine.config and any legacy edmx models. The validation features can be disabled in the Visual Studio but the tool has a small footprint and low overhead.
+The goal is that you don't have to do any configuring of .csproj, app.config, machine.config and any legacy edmx models. The validation features can be disabled in the Visual Studio options but the tool has a small footprint and low overhead.
 See [Extended Description](#extended-description) below.
 
 
