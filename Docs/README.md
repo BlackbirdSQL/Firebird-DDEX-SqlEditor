@@ -12,15 +12,6 @@ See [Extended Description](#extended-description) below.
 ## Documentation
 
 * [ADO.NET provider](ado-net.md)
-* [Entity Framework 6 provider](entity-framework-6.md)
-* [Entity Framework Core provider](entity-framework-core.md)
-* [Services - Backup](services-backup.md)
-* [Events](events.md)
-* [ADO.NET - Schema](ado-net-schema.md)
-* [Time zones](time-zones.md)
-* [DECFLOAT datatype](decfloat.md)
-* [INT128 datatype](int128.md)
-* [Batching](batching.md)
 
 ## Packages
 
@@ -43,19 +34,19 @@ TBC
 
 ### Notable supporters
 
-
 ### 3rd party code
-
-* For zlib compression the provider uses pieces from [DotNetZip](http://dotnetzip.codeplex.com/) library.
-* For RC4 encryption the provider uses pieces from [Bouncy Castle](https://www.bouncycastle.org/csharp/index.html) library.
 
 ## Extended Description
 
 Although the original DDEX 1.0 DataTools package was revived, the DDEX 2.0 package, BlackbirdSql.VisualStudio.Ddex is click and go using VSIX and autoload, and requires no additional setup either in the app.config, csproj or machine.config.</br>
+
 Loading is asynchronous so the provider needs time to register and load. A database node in server explorer can simply be refreshed if an attempt was made to access it before it was fully loaded.</br>
-We want to be as unobtrusive as possible so load delays are just a reality if we go the asynchronous route. (*Loading is initiated at the earliest possible, which is as soon as the IDE shell context is available.*)</br>
+We want to be as unobtrusive as possible so load delays are just a reality if we go the asynchronous route. (*Loading is initiated at the earliest possible, which is as soon as the IDE shell context is available.*)
+
 If the option is enabled a solution's projects will be checked for correct configuration of the app.config and edmx models. Legacy edmx models won't work with Firebird's latest EntityFramework version.</br>
-If you add EntityFramework.Firebird to a project it will be validated and the app.config updated correctly.
+This is a once off validation on each `existing` solution the first time it is opened after installing the VSIX. If the app.config is open or any edmx models are open you will need to close them first and then reopen your solution for the once-off validation to complete.
+
+If you add Firebird.Data.FirebirdClient or EntityFramework.Firebird to a project it will be validated and the app.config updated correctly if required.
 
 As it stands right now the code is littered with diagnostics calls with writes to a log file set to c:\bin\vsdiag.log.</br>
 These can all be disabled in Visual Studio's options.
