@@ -33,7 +33,7 @@ internal class UIGlobals
 
 	private readonly DTE _Dte = null;
 
-	
+
 	#endregion
 
 
@@ -46,8 +46,10 @@ internal class UIGlobals
 
 
 
-	// The [Project][Solution].Globals global is set to transitory during debug because there seems no way to delete it for testing
-	// other than programmatically. It's a single int32 using binary bitwise for the different status settings
+	/// <summary>
+	/// The [Project][Solution].Globals global is set to transitory during debug because there seems no way to delete it for testing
+	/// other than programmatically. It's a single int32 using binary bitwise for the different status settings
+	/// </summary>
 #if DEBUG
 	const bool G_Persistent = false;
 	const string G_Key = "GlobalBlackbirdTransitory"; // For debug
@@ -58,21 +60,21 @@ const string G_Key			= "GlobalBlackbirdPersistent";
 
 	/// <summary>
 	/// For Projects: has been validated (Once it's been validated it's always been validated)
-	/// For Solutions: has been loaded and in a validation state if G_ProjectValue is false else validated
+	/// For Solutions: has been loaded and in a validation state if <see cref="G_Valid"/> is false else validated
 	/// </summary>
 	const int G_Validated = 1;
 	/// <summary>
 	/// For Projects: Validated project is a valid executable C#/VB app. (Once [in]valid always [in]valid)
 	/// Off: Solution has been loaded and is in a validation state. On: Validated
-	/// (Only applicable if G_Validated is set)
+	/// (Only applicable if <see cref="G_Validated"/> is set)
 	/// </summary>	
 	const int G_Valid = 2;
 	/// <summary>
-	/// The app.config has the client provider factory configured and is good to go. (Once successfully configured always configured)
+	/// The app.config has the client DbProvider factory configured and is good to go. (Once successfully configured always configured)
 	/// </summary>
 	const int G_DbProviderConfigured = 4;
 	/// <summary>
-	/// Existing legacy edmx's have been updated and are good to go. (Once all successfully updated always updated)
+	/// The app.config has the EntityFramework provider configured and is good to go. (Once successfully configured always configured)
 	/// </summary>
 	const int G_EFConfigured = 8;
 	/// <summary>
@@ -80,8 +82,8 @@ const string G_Key			= "GlobalBlackbirdPersistent";
 	/// </summary>
 	const int G_EdmxsUpdated = 16;
 	/// <summary>
-	///  If at any point in project validation there was a fail, this is set to true on the solution and the solution Globals
-	///  is set to zero
+	///  If at any point in solution projects validation there was a fail, this is set to true on the solution and the solution Globals
+	///  is reset to zero
 	/// </summary>
 	const int G_ValidateFailed = 32;
 
