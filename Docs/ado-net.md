@@ -7,7 +7,8 @@
 * Add the applicable Nuget package if you haven't already.
 * Rebuild your Project. It should now be able to access any existing client connections, xsd datasets and edmx models you have.
 * Create a dataset throught the xsd wizard or an entity data model through the edmx wizard.
-_Warning_ BlackbirdSql.VisualStudio.Ddex.dll is used by the IDE. Do not add a reference to it in your projects.
+
+__Warning__ BlackbirdSql.VisualStudio.Ddex.dll is used by the IDE. Do not add a reference to it in your projects.
 <p style="font-size:1.1em;margin-bottom:-8px">For an xsd dataset:</p>
 
 * Install the Nuget FirebirdSql.Data.FirebirdClient package if you haven't already and `rebuild` your project.
