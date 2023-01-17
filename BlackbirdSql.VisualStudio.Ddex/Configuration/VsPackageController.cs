@@ -363,11 +363,11 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 								if (config != null)
 								{
 									if (!ConfigureEntityFramework(config, false))
-										Uig.SetValidateFailedStatus();
+										Uig.IsValidateFailedStatus = true;
 								}
 								else
 								{
-									Uig.SetValidateFailedStatus();
+									Uig.IsValidateFailedStatus = true;
 								}
 
 								break;
@@ -383,11 +383,11 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 								if (config != null)
 								{
 									if (!ConfigureDbProvider(config, false))
-										Uig.SetValidateFailedStatus();
+										Uig.IsValidateFailedStatus = true;
 								}
 								else
 								{
-									Uig.SetValidateFailedStatus();
+									Uig.IsValidateFailedStatus = true;
 								}
 
 								if (isConfiguredEFStatus)
@@ -430,7 +430,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 					if (success)
 						Uig.SetIsUpdatedEdmxsStatus(project);
 					else
-						Uig.SetValidateFailedStatus();
+						Uig.IsValidateFailedStatus = true;
 
 					Diag.Trace(project.Name + ": Edmxs updates " + (success ? "successful" : "failed"));
 				}
@@ -973,11 +973,11 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 				if (config != null)
 				{
 					if (!ConfigureEntityFramework(config, false))
-						Uig.SetValidateFailedStatus();
+						Uig.IsValidateFailedStatus = true;
 				}
 				else
 				{
-					Uig.SetValidateFailedStatus();
+					Uig.IsValidateFailedStatus = true;
 				}
 			}
 			else if (reference.Name.ToLower() == SystemData.Invariant.ToLower() && !Uig.IsConfiguredDbProviderStatus(reference.ContainingProject))
@@ -987,11 +987,11 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 				if (config != null)
 				{
 					if (!ConfigureDbProvider(config, false))
-						Uig.SetValidateFailedStatus();
+						Uig.IsValidateFailedStatus = true;
 				}
 				else
 				{
-					Uig.SetValidateFailedStatus();
+					Uig.IsValidateFailedStatus = true;
 				}
 			}
 
@@ -1134,7 +1134,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			return S_OK;
 		}
 
-		if (Uig.IsValidateFailedStatus())
+		if (Uig.IsValidateFailedStatus)
 		{
 			Diag.Trace("There was a failed solution validation. Clearing solution status flags");
 			Uig.ClearValidateStatus();

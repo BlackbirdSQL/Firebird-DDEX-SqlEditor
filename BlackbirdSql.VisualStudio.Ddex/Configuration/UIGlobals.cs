@@ -119,6 +119,102 @@ internal class UIGlobals
 	}
 
 
+
+
+
+
+	/// <summary>
+	/// Get's or sets whether at any point a solution validation failed
+	/// </summary>
+	public bool IsValidateFailedStatus
+	{
+		get
+		{
+			ThreadHelper.ThrowIfNotOnUIThread();
+
+			int value;
+			string str;
+
+			try
+			{
+				if (_Dte.Solution.Globals == null)
+				{
+					Diag.Dug(true, _Dte.Solution.FullName + ": Solution.Globals is null");
+					return false;
+				}
+
+				if (_Dte.Solution.Globals.get_VariableExists(G_Key))
+				{
+					str = (string)_Dte.Solution.Globals[G_Key];
+					value = str == "" ? 0 : int.Parse(str);
+
+					return (value & G_ValidateFailed) == G_ValidateFailed;
+				}
+
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				return false;
+			}
+
+			return false;
+		}
+
+		set
+		{
+			Diag.Trace("Setting ValidateFailed");
+
+			ThreadHelper.ThrowIfNotOnUIThread();
+
+			bool exists = false;
+			string str;
+
+			int val = 0;
+
+			try
+			{
+				if (_Dte.Solution.Globals == null)
+				{
+					NullReferenceException ex = new NullReferenceException(_Dte.Solution.FullName + ": Solution.Globals is null");
+					throw ex;
+				}
+
+
+				if (_Dte.Solution.Globals.get_VariableExists(G_Key))
+				{
+					str = (string)_Dte.Solution.Globals[G_Key];
+					val = str == "" ? 0 : int.Parse(str);
+					exists = true;
+				}
+
+				if (exists)
+				{
+					if ((val & G_ValidateFailed) == G_ValidateFailed == value)
+						return;
+				}
+
+
+				if (value)
+					val |= G_ValidateFailed;
+				else
+					val &= (~G_ValidateFailed);
+
+
+				_Dte.Solution.Globals[G_Key] = val.ToString();
+				if (!exists)
+					_Dte.Solution.Globals.set_VariablePersists(G_Key, G_Persistent);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
+
+		}
+	}
+
+
 	#endregion
 
 
@@ -223,7 +319,7 @@ internal class UIGlobals
 
 			if (exists)
 			{
-				if (((value & G_Validated) == G_Validated) == valid)
+				if ((value & G_Validated) == G_Validated == valid)
 					return true;
 			}
 
@@ -457,59 +553,6 @@ internal class UIGlobals
 
 
 
-	/// <summary>
-	/// Sets validation to failed for a solution. Validation will then be reset on solution close
-	/// </summary>
-	/// <param name="solution"></param>
-	/// <returns>True if the operation was successful else False</returns>
-	public bool SetValidateFailedStatus()
-	{
-		Diag.Trace("Setting ValidateFailed");
-
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		bool exists = false;
-		int value = 0;
-		string str;
-
-		try
-		{
-			if (_Dte.Solution.Globals == null)
-			{
-				Diag.Dug(true, _Dte.Solution.FullName + ": Solution.Globals is null");
-				return false;
-			}
-
-
-			if (_Dte.Solution.Globals.get_VariableExists(G_Key))
-			{
-				str = (string)_Dte.Solution.Globals[G_Key];
-				value = str == "" ? 0 : int.Parse(str);
-				exists = true;
-			}
-
-			if (exists)
-			{
-				if ((value & G_ValidateFailed) == G_ValidateFailed == true)
-					return true;
-			}
-
-			value |= G_ValidateFailed;
-
-
-			_Dte.Solution.Globals[G_Key] = value.ToString();
-			if (!exists)
-				_Dte.Solution.Globals.set_VariablePersists(G_Key, G_Persistent);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
-
-
-		return true;
-	}
 
 
 
@@ -583,46 +626,6 @@ internal class UIGlobals
 				value = str == "" ? 0 : int.Parse(str);
 
 				return (value & G_Valid) == G_Valid;
-			}
-
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
-
-		return false;
-	}
-
-
-
-	/// <summary>
-	/// Cheecks whether at any point a solution vqalidation failed
-	/// </summary>
-	/// <param name="solution"></param>
-	/// <returns></returns>
-	public bool IsValidateFailedStatus()
-	{
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		int value;
-		string str;
-
-		try
-		{
-			if (_Dte.Solution.Globals == null)
-			{
-				Diag.Dug(true, _Dte.Solution.FullName + ": Solution.Globals is null");
-				return false;
-			}
-
-			if (_Dte.Solution.Globals.get_VariableExists(G_Key))
-			{
-				str = (string)_Dte.Solution.Globals[G_Key];
-				value = str == "" ? 0 : int.Parse(str);
-
-				return (value & G_ValidateFailed) == G_ValidateFailed;
 			}
 
 		}
