@@ -136,6 +136,7 @@
   </ItemGroup>
   <!-- Includes (Property Resources) -->
   <ItemGroup>
+    <Compile Include="Configuration\UIGlobals.cs" />
     <Compile Include="Configuration\VsPackageController.cs" />
     <Compile Include="Configuration\UIDebugOptionControl.xaml.cs">
       <DependentUpon>UIDebugOptionControl.xaml</DependentUpon>

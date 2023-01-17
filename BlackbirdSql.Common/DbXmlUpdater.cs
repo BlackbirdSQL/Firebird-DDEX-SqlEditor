@@ -530,8 +530,6 @@ internal static class DbXmlUpdater
 			throw;
 		}
 
-
-
 		return true;
 
 	}

@@ -27,12 +27,13 @@ namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 // ---------------------------------------------------------------------------------------------------
 
 
+
 /// <summary>
-/// Controls package events and settings
+/// Manages package events and settings
 /// </summary>
 /// <remarks>
-/// Also updates the app.config for EntityFramework and updates existing .edmx models using a legacy provider
-/// Also ensures we never do validations of app.config and .edmx models twice
+/// Also updates the app.config for DbProvider and EntityFramework and updates existing .edmx models that are using a legacy provider.
+/// Also ensures we never do validations of a solution and project app.config and .edmx models twice.
 /// </remarks>
 internal class VsPackageController : IVsSolutionEvents, IDisposable
 {
@@ -40,15 +41,14 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 	static VsPackageController _Instance = null;
-	static AsyncPackage _Parent = null;
 
-	bool _ValidateConfig = false;
-	bool _ValidateEdmx = false;
 	int _RefCnt = 0;
 
 
-	private DTE _Dte = null;
-	private IVsSolution _Solution = null;
+	private readonly DTE _Dte = null;
+	private readonly IVsSolution _Solution = null;
+	private readonly UIGlobals _Uig;
+
 	private uint _HSolutionEvents = uint.MaxValue;
 
 	ReferencesEvents _CSharpReferencesEvents = null;
@@ -67,46 +67,47 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	//
 	// ---------------------------------------------------------------------------------------------------
 
-	// The [Project][Solution].Globals global is set to transitory during debug because there seems no way to delete it for testing
-	// other than programmatically. It's a single int32 using binary bitwise for the different status settings
-#if DEBUG
-	const bool G_Persistent = false;
-	const string G_Key = "GlobalBlackbirdTransitory"; // For debug
-#else
-	const bool G_Persistent		= true;
-	const string G_Key			= "GlobalBlackbirdPersistent";
-#endif
 
-	/// <summary>
-	/// For Projects: has been validated (Once it's been validated it's always been validated)
-	/// For Solutions: has been loaded and in a validation state if G_ProjectValue is false else validated
-	/// </summary>
-	const int G_Validated = 1;
-	/// <summary>
-	/// For Projects: Validated project is a valid executable C#/VB app. (Once [in]valid always [in]valid)
-	/// Off: Solution has been loaded and is in a validation state. On: Validated
-	/// (Only applicable if G_Validated is set)
-	/// </summary>	
-	const int G_Valid = 2;
-	/// <summary>
-	/// The app.config has the client provider factory configured and is good to go. (Once successfully configured always configured)
-	/// </summary>
-	const int G_DbProviderConfigured = 4;
-	/// <summary>
-	/// Existing legacy edmx's have been updated and are good to go. (Once all successfully updated always updated)
-	/// </summary>
-	const int G_EFConfigured = 8;
-	/// <summary>
-	/// Existing legacy edmx's have been updated and are good to go. (Once all successfully updated always updated)
-	/// </summary>
-	const int G_EdmxsUpdated = 16;
-	/// <summary>
-	///  If at any point in project validation there was a fail, this is set to true on the solution and the solution Globals
-	///  is set to zero
-	/// </summary>
-	const int G_ValidateFailed = 32;
 
 	const int S_OK = VSConstants.S_OK;
+
+
+	#endregion
+
+
+
+	// ---------------------------------------------------------------------------------------------------
+	//
+	#region Property Accessors - VsPackageController
+	//
+	// ---------------------------------------------------------------------------------------------------
+
+
+
+	/// <summary>
+	/// Accessor to the singleton <see cref="UIGlobals"/> instance
+	/// </summary>
+	UIGlobals Uig
+	{
+		get
+		{
+			return _Uig ?? UIGlobals.GetInstance(_Dte);
+		}
+	}
+
+
+	/// <summary>
+	/// Accessor to <see cref="_Solution.Globals"/>
+	/// </summary>
+	Globals SolutionGlobals
+	{
+		get
+		{
+#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
+			return _Dte.Solution.Globals;
+#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
+		}
+	}
 
 
 	#endregion
@@ -121,36 +122,14 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 	/// <summary>
-	/// Private Constructor
+	/// Private singleton .ctor
 	/// </summary>
-	private VsPackageController(AsyncPackage parent = null)
+	private VsPackageController(DTE dte, IVsSolution solution)
 	{
-		_Parent = parent;
+		_Dte = dte;
+		_Solution = solution;
 
-		try
-		{
-			_ValidateConfig = VsGeneralOptionModel.Instance.ValidateConfig;
-			_ValidateEdmx = VsGeneralOptionModel.Instance.ValidateEdmx;
-
-#if DEBUG
-			Diag.EnableTrace = VsDebugOptionModel.Instance.EnableTrace;
-			Diag.EnableDiagnostics = VsDebugOptionModel.Instance.EnableDiagnostics;
-#else
-			Diag.EnableTrace = false;
-			Diag.EnableDiagnostics = false;
-#endif
-			Diag.EnableWriteLog = VsGeneralOptionModel.Instance.EnableWriteLog;
-			Diag.LogFile = VsGeneralOptionModel.Instance.LogFile;
-
-			VsGeneralOptionModel.Saved += OnGeneralSettingsSaved;
-			VsDebugOptionModel.Saved += OnDebugSettingsSaved;
-
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex, "Failed to retrieve Package settings");
-		}
-
+		AdviseSolutionEvents();
 	}
 
 
@@ -158,14 +137,9 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	/// <summary>
 	/// Gets the singleton VsPackageController instance
 	/// </summary>
-	public static VsPackageController GetInstance(AsyncPackage parent = null)
+	public static VsPackageController GetInstance(DTE dte, IVsSolution solution)
 	{
-		_Instance ??= new(parent);
-
-		if (parent != null && _Parent == null)
-			_Parent = parent;
-
-		return _Instance;
+		return _Instance ??= new(dte, solution);
 	}
 
 
@@ -190,17 +164,15 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	// ---------------------------------------------------------------------------------------------------
 
 
+
 	/// <summary>
-	/// Fires onload events for projects already loaded and then hooks onto solution events
+	/// Imitates OnOpen events for projects already loaded and then hooks onto solution events
 	/// </summary>
-	public void AdviseSolutionEvents(DTE dte, IVsSolution solution)
+	public void AdviseSolutionEvents()
 	{
 		// We should already be on UI thread. Callers must ensure this can never happen
 		ThreadHelper.ThrowIfNotOnUIThread();
 
-
-		_Dte = dte;
-		_Solution = solution;
 
 		// Sanity check. Disable events if enabled
 		UnadviseSolutionEvents(false);
@@ -218,17 +190,17 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		// Raise open project event handler for projects that are already loaded
 		// This can happen on IDE startup and a solution was opened with some projects
 		// loaded before we were given access to the IDE context
-		if ((_ValidateConfig || _ValidateEdmx) && _Dte.Solution != null)
+		if ((Uig.ValidateConfig || Uig.ValidateEdmx) && _Dte.Solution != null)
 		{
 			if (_Dte.Solution.Projects != null && _Dte.Solution.Projects.Count > 0)
 			{
 				// We only ever go through this once so if a solution was previously in a validation state
 				// it is now validated
-				if (!IsValidStatus(_Dte.Solution.Globals))
+				if (!Uig.IsValidStatus(SolutionGlobals))
 				{
-					if (IsValidatedStatus(_Dte.Solution.Globals))
+					if (Uig.IsValidatedStatus(SolutionGlobals))
 					{
-						SetIsValidStatus(_Dte.Solution.Globals, true);
+						Uig.SetIsValidStatus(SolutionGlobals, true);
 					}
 					else
 					{
@@ -256,7 +228,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		}
 		else
 		{
-			if (_ValidateConfig || _ValidateEdmx)
+			if (Uig.ValidateConfig || Uig.ValidateEdmx)
 				Diag.Trace("_Dte.Solution is null");
 		}
 
@@ -281,8 +253,6 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			_HSolutionEvents = uint.MaxValue;
 		}
 
-		if (disposing)
-			_Solution = null;
 	}
 
 
@@ -305,7 +275,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 	/// <summary>
 	/// Recursively validates projects already opened before our package was sited
-	/// This list is tertiary level projects from parent projects
+	/// This list is tertiary level projects from parent projects (solution folders)
 	/// </summary>
 	/// <param name="projects"></param>
 	private void RecursiveValidateProject(ProjectItems projectItems)
@@ -329,8 +299,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	/// </summary>
 	/// <param name="projects"></param>
 	/// <remarks>
-	/// If the project is valid and has EntityFramework referenced the app.config is checked.
-	/// If it doesn't an OnReferenceAdded event is attached.
+	/// If the project is valid and has EntityFramework referenced, the app.config is checked.
+	/// If it doesn't an <see cref="OnGlobalReferenceAdded"/> event is attached.
 	/// Updates legacy edmxs in the project
 	/// If it's a folder project is checked for child projects
 	/// </remarks>
@@ -361,10 +331,10 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			if (IsValidExecutableProjectType(project))
 			{
 
-				if (_ValidateConfig)
+				if (Uig.ValidateConfig)
 				{
-					bool isConfiguredEFStatus = IsConfiguredEFStatus(project);
-					bool isConfiguredDbProviderStatus = IsConfiguredDbProviderStatus(project);
+					bool isConfiguredEFStatus = Uig.IsConfiguredEFStatus(project);
+					bool isConfiguredDbProviderStatus = Uig.IsConfiguredDbProviderStatus(project);
 					bool dbSuccess = false, efSuccess = false;
 
 
@@ -390,11 +360,11 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 								if (config != null)
 								{
 									if (!ConfigureEntityFramework(config, false))
-										SetValidateFailedStatus(_Dte.Solution);
+										Uig.SetValidateFailedStatus();
 								}
 								else
 								{
-									SetValidateFailedStatus(_Dte.Solution);
+									Uig.SetValidateFailedStatus();
 								}
 
 								if (isConfiguredDbProviderStatus)
@@ -411,11 +381,11 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 								if (config != null)
 								{
 									if (!ConfigureDbProvider(config, false))
-										SetValidateFailedStatus(_Dte.Solution);
+										Uig.SetValidateFailedStatus();
 								}
 								else
 								{
-									SetValidateFailedStatus(_Dte.Solution);
+									Uig.SetValidateFailedStatus();
 								}
 
 								if (isConfiguredEFStatus)
@@ -435,7 +405,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 
-				if (_ValidateEdmx && !IsValidStatus(_Dte.Solution.Globals) && !IsUpdatedEdmxsStatus(project))
+				if (Uig.ValidateEdmx && !Uig.IsValidStatus(SolutionGlobals) && !Uig.IsUpdatedEdmxsStatus(project))
 				{
 					Diag.Trace(project.Name + ": Updating edmxs");
 
@@ -456,9 +426,9 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 					}
 
 					if (success)
-						SetIsUpdatedEdmxsStatus(project);
+						Uig.SetIsUpdatedEdmxsStatus(project);
 					else
-						SetValidateFailedStatus(_Dte.Solution);
+						Uig.SetValidateFailedStatus();
 
 					Diag.Trace(project.Name + ": Edmxs updates " + (success ? "successful" : "failed"));
 				}
@@ -471,8 +441,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 	/// <summary>
-	/// Checks if a project item is an edmx and calls UpdateEdmx() if it is.
-	/// If it's a project folder recursively calls RecursiveValidateProjectItem()
+	/// Checks if a project item is an edmx and calls <see cref="UpdateEdmx"/> if it is.
+	/// If it's a project folder it recursively calls itself.
 	/// </summary>
 	/// <param name="item"></param>
 	/// <returns>true if completed successfully else false if there were errors.</returns>
@@ -582,14 +552,14 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			return false;
 		}
 
-		if (IsValidatedStatus(project.Globals))
-			return IsValidStatus(project.Globals);
+		if (Uig.IsValidatedStatus(project.Globals))
+			return Uig.IsValidStatus(project.Globals);
 
 		// We're only supporting C# and VB projects for this - a dict list is at the end of this class
 		if (project.Kind != "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
 			&& project.Kind != "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}")
 		{
-			SetIsValidStatus(project.Globals, false);
+			Uig.SetIsValidStatus(project.Globals, false);
 			return false;
 		}
 
@@ -610,7 +580,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		if (outputType < 2)
 			result = true;
 
-		SetIsValidStatus(project.Globals, result);
+		Uig.SetIsValidStatus(project.Globals, result);
 
 		return result;
 
@@ -621,7 +591,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 	/// <summary>
-	/// Checks if a project has Firebird EntityFramework configured in the app.config and configures it if it doesn't
+	/// Gets the app.config <see cref="ProjectItem"/> of a <see cref="Project"/>
 	/// </summary>
 	/// <param name="project"></param>
 	/// <returns>true if app.config was updated else false</returns>
@@ -682,7 +652,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 	/// <summary>
-	/// Checks if a project has Firebird EntityFramework configured in the app.config and configures it if it doesn't
+	/// Checks if a project has FirebirdSql.Data.FirebirdClient configured in the app.config and configures it if it doesn't
 	/// </summary>
 	/// <param name="project"></param>
 	/// <returns>true if completed successfully else false if there were errors.</returns>
@@ -691,7 +661,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 		ThreadHelper.ThrowIfNotOnUIThread();
 
-		if (IsConfiguredDbProviderStatus(config.ContainingProject))
+		if (Uig.IsConfiguredDbProviderStatus(config.ContainingProject))
 			return true;
 
 		bool modified;
@@ -744,7 +714,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			return false;
 		}
 
-		SetIsValidatedDbProviderStatus(config.ContainingProject);
+		Uig.SetIsValidatedDbProviderStatus(config.ContainingProject);
 
 		if (modified)
 			Diag.Trace(config.ContainingProject.Name + ": App.config DbProvider was modified");
@@ -757,7 +727,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 	/// <summary>
-	/// Checks if a project has Firebird EntityFramework configured in the app.config and configures it if it doesn't
+	/// Checks if a project has EntityFramework.Firebird configured in the app.config and configures it if it doesn't
 	/// </summary>
 	/// <param name="project"></param>
 	/// <returns>true if completed successfully else false if there were errors.</returns>
@@ -766,7 +736,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 		ThreadHelper.ThrowIfNotOnUIThread();
 
-		if (IsConfiguredEFStatus(config.ContainingProject))
+		if (Uig.IsConfiguredEFStatus(config.ContainingProject))
 			return true;
 
 		bool modified;
@@ -819,7 +789,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			return false;
 		}
 
-		SetIsValidatedEFStatus(config.ContainingProject);
+		Uig.SetIsValidatedEFStatus(config.ContainingProject);
 
 		if (modified)
 			Diag.Trace(config.ContainingProject.Name + ": App.config EF was modified");
@@ -832,7 +802,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 	/// <summary>
-	/// Checks if an edmx is using the Legacy provider and updates it to the current provider if it is
+	/// Checks if an edmx is using the Legacy provider and updates it to the current provider if it is.
 	/// </summary>
 	/// <param name="project"></param>
 	/// <returns>true if completed successfully else false if there were errors.</returns>
@@ -900,8 +870,10 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 
-
-
+	/// <summary>
+	/// Adds <see cref="OnGlobalReferenceAdded"> event handler to the global Project <see cref="_dispReferencesEvents_Event.ReferenceAdded"/> event
+	/// </summary>
+	/// <param name="dte"></param>
 	void AddReferenceAddedEventHandler(DTE dte)
 	{
 		// We should already be on UI thread. Callers must ensure this can never happen
@@ -935,12 +907,22 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 
+	// ---------------------------------------------------------------------------------------------------
+	//
+	#region Asynchronous event handlers - VsPackageController
+	//
+	// ---------------------------------------------------------------------------------------------------
 
-	#region Asynchronous Event Handlers
 
+
+	/// <summary>
+	/// Performs asynchronous operations on <see cref="OnGlobalReferenceAdded(Reference)"/>
+	/// </summary>
+	/// <param name="reference"></param>
+	/// <returns></returns>
 	async Task HandleReferenceAddedAsync(Reference reference)
 	{
-		if (!_ValidateConfig || reference.Type != prjReferenceType.prjReferenceTypeAssembly
+		if (!Uig.ValidateConfig || reference.Type != prjReferenceType.prjReferenceTypeAssembly
 			|| (reference.Name.ToLower() != SystemData.EFProvider.ToLower()
 			&& reference.Name.ToLower() != SystemData.Invariant.ToLower()))
 		{
@@ -970,8 +952,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		// This condition can only be true if a solution was closed after successfully being validated which means we can sign it off
 		// as valid. That means no more recursive updates on edmx's or app.config. Only adding dll references can trigger an app.config update
 		// if it wasn't previously done.
-		if (!IsValidStatus(_Dte.Solution.Globals) && IsValidatedStatus(_Dte.Solution.Globals))
-			SetIsValidStatus(_Dte.Solution.Globals, true);
+		if (!Uig.IsValidStatus(SolutionGlobals) && Uig.IsValidatedStatus(SolutionGlobals))
+			Uig.SetIsValidStatus(SolutionGlobals, true);
 
 		// If anything gets through things are still happening so we can reset and allow references with incomplete project objects
 		// to continue recycling
@@ -981,32 +963,32 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 		if (IsValidExecutableProjectType(reference.ContainingProject))
 		{
-			if (reference.Name.ToLower() == SystemData.EFProvider.ToLower() && !IsConfiguredEFStatus(reference.ContainingProject))
+			if (reference.Name.ToLower() == SystemData.EFProvider.ToLower() && !Uig.IsConfiguredEFStatus(reference.ContainingProject))
 			{
 				config ??= GetAppConfigProjectItem(reference.ContainingProject);
 
 				if (config != null)
 				{
 					if (!ConfigureEntityFramework(config, false))
-						SetValidateFailedStatus(_Dte.Solution);
+						Uig.SetValidateFailedStatus();
 				}
 				else
 				{
-					SetValidateFailedStatus(_Dte.Solution);
+					Uig.SetValidateFailedStatus();
 				}
 			}
-			else if (reference.Name.ToLower() == SystemData.Invariant.ToLower() && !IsConfiguredDbProviderStatus(reference.ContainingProject))
+			else if (reference.Name.ToLower() == SystemData.Invariant.ToLower() && !Uig.IsConfiguredDbProviderStatus(reference.ContainingProject))
 			{
 				config ??= GetAppConfigProjectItem(reference.ContainingProject);
 
 				if (config != null)
 				{
 					if (!ConfigureDbProvider(config, false))
-						SetValidateFailedStatus(_Dte.Solution);
+						Uig.SetValidateFailedStatus();
 				}
 				else
 				{
-					SetValidateFailedStatus(_Dte.Solution);
+					Uig.SetValidateFailedStatus();
 				}
 			}
 
@@ -1015,8 +997,11 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 
-
-
+	/// <summary>
+	/// Performs asychronous operations on <see cref="IVsSolutionEvents.OnAfterOpenProject"/>
+	/// </summary>
+	/// <param name="project"></param>
+	/// <returns></returns>
 	async Task HandleAfterOpenProjectAsync(Project project)
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -1037,15 +1022,15 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		// This condition can only be true if a solution was closed after successfully being validated which means we can sign it off
 		// as valid. That means no more recursive updates on edmx's or app.config. Only adding dll references can trigger an app.config update
 		// if it wasn't previously done.
-		if (!IsValidStatus(_Dte.Solution.Globals) && IsValidatedStatus(_Dte.Solution.Globals))
-			SetIsValidStatus(_Dte.Solution.Globals, true);
+		if (!Uig.IsValidStatus(SolutionGlobals) && Uig.IsValidatedStatus(SolutionGlobals))
+			Uig.SetIsValidStatus(SolutionGlobals, true);
 
 		// If anything gets through things are still happening so we can reset and allow events with incomplete project objects
 		// to continue recycling
 		_RefCnt = 0;
 
 
-		if (!IsValidExecutableProjectType(project) || (IsConfiguredDbProviderStatus(project) && IsConfiguredEFStatus(project) && IsUpdatedEdmxsStatus(project)))
+		if (!IsValidExecutableProjectType(project) || (Uig.IsConfiguredDbProviderStatus(project) && Uig.IsConfiguredEFStatus(project) && Uig.IsUpdatedEdmxsStatus(project)))
 			return;
 
 
@@ -1058,29 +1043,30 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 
+	// ---------------------------------------------------------------------------------------------------
+	//
+	#region IVsSolutionEvents Implementation and Event handling - VsPackageController
+	//
+	// ---------------------------------------------------------------------------------------------------
 
-	#region IVsSolutionEvents Implementation and Event handling
+
 
 	// Events that we handle are listed first
 
-	void OnDebugSettingsSaved(VsDebugOptionModel e)
-	{
-		Diag.EnableTrace = e.EnableTrace;
-		Diag.EnableDiagnostics = e.EnableDiagnostics;
-	}
-
-	void OnGeneralSettingsSaved(VsGeneralOptionModel e)
-	{
-		Diag.EnableWriteLog = e.EnableWriteLog;
-		Diag.LogFile = e.LogFile;
-
-		_ValidateConfig = e.ValidateConfig;
-		_ValidateEdmx = e.ValidateEdmx;
-	}
-
-
+	/// <summary>
+	/// /// Event handler for the global Project <see cref="_dispReferencesEvents_Event.ReferenceAdded"/> event
+	/// </summary>
+	/// <param name="reference"></param>
 	void OnGlobalReferenceAdded(Reference reference) => _ = HandleReferenceAddedAsync(reference);
 
+
+
+	/// <summary>
+	/// Event handler for <see cref="IVsSolutionEvents"/> AfterOpenProject event
+	/// </summary>
+	/// <param name="pHierarchy"></param>
+	/// <param name="fAdded"></param>
+	/// <returns></returns>
 	int IVsSolutionEvents.OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
 	{
 		try
@@ -1120,6 +1106,13 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	}
 
 
+
+	/// <summary>
+	/// Event handler for the <see cref="IVsSolutionEvents"/> QueryCloseSolution event
+	/// </summary>
+	/// <param name="pUnkReserved"></param>
+	/// <param name="pfCancel"></param>
+	/// <returns></returns>
 	int IVsSolutionEvents.OnQueryCloseSolution(object pUnkReserved, ref int pfCancel)
 	{
 		try
@@ -1138,15 +1131,15 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			return S_OK;
 		}
 
-		if (IsValidateFailedStatus(_Dte.Solution))
+		if (Uig.IsValidateFailedStatus())
 		{
 			Diag.Trace("There was a failed solution validation. Clearing solution status flags");
-			ClearValidateStatus(_Dte.Solution);
+			Uig.ClearValidateStatus();
 		}
-		else if (!IsValidatedStatus(_Dte.Solution.Globals))
+		else if (!Uig.IsValidatedStatus(SolutionGlobals))
 		{
 			Diag.Trace("The solution has no validation status set. Setting validated to on and valid to off");
-			SetIsValidStatus(_Dte.Solution.Globals, false);
+			Uig.SetIsValidStatus(SolutionGlobals, false);
 		}
 		else
 		{
@@ -1156,6 +1149,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 		return S_OK;
 	}
+
 
 
 	// Unhandled events follow
@@ -1174,540 +1168,19 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 
-
-	#region Utility Methods and Dictionaries
-
-
-	/// <summary>
-	/// Sets a status indicator tagging a solution as previously validated or validated and valid or a project as having been validated and if it is
-	/// a valid C#/VB executable
-	/// </summary>
-	/// <param name="global"></param>
-	/// <param name="valid"></param>
-	/// <returns>True if the operation was successful else False</returns>
-	bool SetIsValidStatus(Globals global, bool valid)
-	{
-		// Should never happen
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		bool exists = false;
-		int value = 0;
-		string str;
-
-		Diag.Dug("Setting IsValid to " + valid.ToString());
-
-		try
-		{
-			if (global == null)
-			{
-				Diag.Dug(true, "Globals is null");
-				return false;
-			}
-
-
-			if (global.get_VariableExists(G_Key))
-			{
-				str = (string)global[G_Key];
-				value = str == "" ? 0 : int.Parse(str);
-				exists = true;
-			}
-
-			value |= G_Validated;
-
-			if (valid)
-				value |= G_Valid;
-			else
-				value &= (~G_Valid);
-
-			global[G_Key] = value.ToString();
-			if (!exists)
-				global.set_VariablePersists(G_Key, G_Persistent);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
-
-
-		return true;
-	}
+	// ---------------------------------------------------------------------------------------------------
+	//
+	#region Utility Methods and Dictionaries - VsPackageController
+	//
+	// ---------------------------------------------------------------------------------------------------
 
 
 
 	/// <summary>
-	/// Sets status indicator tagging a project's app.config as having been validated for EF
+	/// Gets the descriptive name for a DTE object Kind guid string
 	/// </summary>
-	/// <param name="project"></param>
-	/// <param name="valid"></param>
-	/// <returns>True if the operation was successful else False</returns>
-	bool SetIsValidatedDbProviderStatus(Project project)
-	{
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		bool exists = false;
-		int value = 0;
-		string str;
-
-		try
-		{
-			if (project.Globals == null)
-			{
-				Diag.Dug(true, project.Name + ": Globals is null");
-				return false;
-			}
-
-
-			if (project.Globals.get_VariableExists(G_Key))
-			{
-				str = (string)project.Globals[G_Key];
-				value = str == "" ? 0 : int.Parse(str);
-				exists = true;
-			}
-
-			value |= G_DbProviderConfigured;
-
-
-			project.Globals[G_Key] = value.ToString();
-			if (!exists)
-				project.Globals.set_VariablePersists(G_Key, G_Persistent);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
-
-
-		return true;
-	}
-
-
-
-	/// <summary>
-	/// Sets status indicator tagging a project's app.config as having been validated for EF
-	/// </summary>
-	/// <param name="project"></param>
-	/// <param name="valid"></param>
-	/// <returns>True if the operation was successful else False</returns>
-	bool SetIsValidatedEFStatus(Project project)
-	{
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		bool exists = false;
-		int value = 0;
-		string str;
-
-		try
-		{
-			if (project.Globals == null)
-			{
-				Diag.Dug(true, project.Name + ": Globals is null");
-				return false;
-			}
-
-
-			if (project.Globals.get_VariableExists(G_Key))
-			{
-				str = (string)project.Globals[G_Key];
-				value = str == "" ? 0 : int.Parse(str);
-				exists = true;
-			}
-
-			value |= G_EFConfigured;
-
-
-			project.Globals[G_Key] = value.ToString();
-			if (!exists)
-				project.Globals.set_VariablePersists(G_Key, G_Persistent);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
-
-
-		return true;
-	}
-
-
-
-	/// <summary>
-	/// Sets non-persistent status indicator tagging a project's existing edmx's as having been validated/upgraded
-	/// from legacy provider settings
-	/// </summary>
-	/// <param name="project"></param>
-	/// <param name="valid"></param>
-	/// <returns>True if the operation was successful else False</returns>
-	bool SetIsUpdatedEdmxsStatus(Project project)
-	{
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		bool exists = false;
-		int value = 0;
-		string str;
-
-		try
-		{
-			if (project.Globals == null)
-			{
-				Diag.Dug(true, project.Name + ": Project.Globals is null");
-				return false;
-			}
-
-
-			if (project.Globals.get_VariableExists(G_Key))
-			{
-				str = (string)project.Globals[G_Key];
-				value = str == "" ? 0 : int.Parse(str);
-				exists = true;
-			}
-
-			value |= G_EdmxsUpdated;
-
-
-			project.Globals[G_Key] = value.ToString();
-			if (!exists)
-				project.Globals.set_VariablePersists(G_Key, G_Persistent);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
-
-
-		return true;
-	}
-
-
-	/// <summary>
-	/// Clears the status indicator of a solution.
-	/// </summary>
-	/// <param name="solution"></param>
-	/// <returns>True if the operation was successful else False</returns>
-	bool ClearValidateStatus(Solution solution)
-	{
-
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		try
-		{
-			if (solution.Globals == null)
-			{
-				Diag.Dug(true, solution.FullName + ": Solution.Globals is null");
-				return false;
-			}
-
-			if (!solution.Globals.get_VariableExists(G_Key))
-			{
-				return true;
-			}
-
-			solution.Globals[G_Key] = 0.ToString();
-			solution.Globals.set_VariablePersists(G_Key, G_Persistent);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
-
-
-		return true;
-	}
-
-
-
-	/// <summary>
-	/// Sets validation to failed for a solution. Validation will then be reset on solution close
-	/// </summary>
-	/// <param name="solution"></param>
-	/// <returns>True if the operation was successful else False</returns>
-	bool SetValidateFailedStatus(Solution solution)
-	{
-		Diag.Dug("Setting ValidateFailed");
-
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		bool exists = false;
-		int value = 0;
-		string str;
-
-		try
-		{
-			if (solution.Globals == null)
-			{
-				Diag.Dug(true, solution.FullName + ": Solution.Globals is null");
-				return false;
-			}
-
-
-			if (solution.Globals.get_VariableExists(G_Key))
-			{
-				str = (string)solution.Globals[G_Key];
-				value = str == "" ? 0 : int.Parse(str);
-				exists = true;
-			}
-
-			value |= G_ValidateFailed;
-
-
-			solution.Globals[G_Key] = value.ToString();
-			if (!exists)
-				solution.Globals.set_VariablePersists(G_Key, G_Persistent);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
-
-
-		return true;
-	}
-
-
-	/// <summary>
-	/// Verifies whether or not a solution is in a validation state (or previously validated) or a project has been validated as being valid or not
-	/// </summary>
-	/// <param name="global"></param>
-	/// <returns></returns>
-	bool IsValidatedStatus(Globals global)
-	{
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		int value;
-		string str;
-
-		try
-		{
-			if (global == null)
-			{
-				Diag.Dug(true, "Globals is null");
-				return false;
-			}
-
-
-			if (global.get_VariableExists(G_Key))
-			{
-				str = (string)global[G_Key];
-				value = str == "" ? 0 : int.Parse(str);
-
-				return (value & G_Validated) == G_Validated;
-			}
-
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
-
-		return false;
-	}
-
-	/// <summary>
-	/// Verifies whether or not a solution has been validated or a project is a valid C#/VB executable. See remarks.
-	/// </summary>
-	/// <param name="global"></param>
-	/// <returns></returns>
-	/// <remarks>
-	/// Callers must call IsValidatedProjectStatus() before checking if a project is valid otherwise this indicator will be meaningless
-	/// </remarks>
-	bool IsValidStatus(Globals global)
-	{
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		int value;
-		string str;
-
-		try
-		{
-			if (global == null)
-			{
-				Diag.Dug(true, "Globals is null");
-				return false;
-			}
-
-			if (global.get_VariableExists(G_Key))
-			{
-				str = (string)global[G_Key];
-				value = str == "" ? 0 : int.Parse(str);
-
-				return (value & G_Valid) == G_Valid;
-			}
-
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
-
-		return false;
-	}
-
-
-
-	/// <summary>
-	/// Cheecks whether at any point a solution vqalidation failed
-	/// </summary>
-	/// <param name="solution"></param>
-	/// <returns></returns>
-	bool IsValidateFailedStatus(Solution solution)
-	{
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		int value;
-		string str;
-
-		try
-		{
-			if (solution.Globals == null)
-			{
-				Diag.Dug(true, solution.FullName + ": Solution.Globals is null");
-				return false;
-			}
-
-			if (solution.Globals.get_VariableExists(G_Key))
-			{
-				str = (string)solution.Globals[G_Key];
-				value = str == "" ? 0 : int.Parse(str);
-
-				return (value & G_ValidateFailed) == G_ValidateFailed;
-			}
-
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
-
-		return false;
-	}
-	/// <summary>
-	/// Verifies whether or not a project's App.config was validated for FirebirdSql.Data.FirebirdClient
-	/// </summary>
-	/// <param name="project"></param>
-	/// <returns></returns>
-	bool IsConfiguredDbProviderStatus(Project project)
-	{
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		int value;
-		string str;
-
-		try
-		{
-			if (project.Globals == null)
-			{
-				Diag.Dug(true, project.Name + ": Project.Globals is null");
-				return false;
-			}
-
-			if (project.Globals.get_VariableExists(G_Key))
-			{
-				str = (string)project.Globals[G_Key];
-				value = str == "" ? 0 : int.Parse(str);
-
-				return (value & G_DbProviderConfigured) == G_DbProviderConfigured;
-			}
-
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
-
-		return false;
-	}
-
-
-	/// <summary>
-	/// Verifies whether or not a project's App.config was validated for EntityFramework.Firebird
-	/// </summary>
-	/// <param name="project"></param>
-	/// <returns></returns>
-	bool IsConfiguredEFStatus(Project project)
-	{
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		int value;
-		string str;
-
-		try
-		{
-			if (project.Globals == null)
-			{
-				Diag.Dug(true, project.Name + ": Project.Globals is null");
-				return false;
-			}
-
-			if (project.Globals.get_VariableExists(G_Key))
-			{
-				str = (string)project.Globals[G_Key];
-				value = str == "" ? 0 : int.Parse(str);
-
-				return (value & G_EFConfigured) == G_EFConfigured;
-			}
-
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
-
-		return false;
-	}
-
-
-
-	/// <summary>
-	/// Verifies whether or not a project's existing edmx models were updated from using legacy data providers to current
-	/// Firebird Client and EntityFramework providers.
-	/// </summary>
-	/// <param name="project"></param>
-	/// <returns></returns>
-	bool IsUpdatedEdmxsStatus(Project project)
-	{
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		int value;
-		string str;
-
-		try
-		{
-			if (project.Globals == null)
-			{
-				Diag.Dug(true, project.Name + ": Project.Globals is null");
-				return false;
-			}
-
-			if (project.Globals.get_VariableExists(G_Key))
-			{
-				str = (string)project.Globals[G_Key];
-				value = str == "" ? 0 : int.Parse(str);
-
-				return (value & G_EdmxsUpdated) == G_EdmxsUpdated;
-			}
-
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
-
-		return false;
-	}
-
-
-
+	/// <param name="kind"></param>
+	/// <returns>The descriptive name from <see cref="ProjectGuids"/></returns>
 	protected string GetKindName(string kind)
 	{
 		if (!ProjectGuids.TryGetValue(kind, out string name))
@@ -1717,6 +1190,10 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	}
 
 
+
+	/// <summary>
+	/// DTE object Kind guid string descriptive name dictionary
+	/// </summary>
 	readonly Dictionary<string, string> ProjectGuids = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
 	{
 		{ "{06A35CCD-C46D-44D5-987B-CF40FF872267}", "DeploymentMergeModule" },

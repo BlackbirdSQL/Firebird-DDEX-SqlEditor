@@ -1,5 +1,5 @@
 ﻿/*
- *  Visual Studio DDEX Provider for FirebirdClient (BlackbirdSql)
+ *  Visual Studio DDEX 2.0 Provider for FirebirdClient (BlackbirdSql)
  * 
  *     The contents of this file are subject to the Initial 
  *     Developer's Public License Version 1.0 (the "License"); 
@@ -23,12 +23,12 @@
  * 
  * Auto load is time critical with this package. 
  * For example when an edmx is brought into context we can't have registering of the
- * DBProviderFactory (BlackbirdSql.FirebirdClientFactory) lost in a tertiary thread.
+ * DBProviderFactory (FirebirdSql.Data.FirebirdClient.FirebirdClientFactory) lost in a tertiary thread.
  * 
  * We're going to try SwitchToMainThreadAsync here.
  * If it still loads erratically we'll have to go synchronous and comment this whole class out
  * 
- * If the load fails in server explorer it can be refreshed once tloading is complete.
+ * If the load fails in server explorer it can be refreshed once loading is complete.
  * 
  */
 
@@ -45,13 +45,27 @@ using BlackbirdSql.Common;
 using BlackbirdSql.VisualStudio.Ddex.Configuration;
 
 using Task = System.Threading.Tasks.Task;
-using EnvDTE80;
-using System.IO.Packaging;
+
+
 
 namespace BlackbirdSql.VisualStudio.Ddex
 {
 
+
+
+	// ---------------------------------------------------------------------------------------------------
+	//
+	//								BlackbirdSqlDdexPackage Class
+	//
+	// ---------------------------------------------------------------------------------------------------
+
+
+
+
 	/// <summary>
+	/// BlackbirdSql.Data.Ddex DDEX 2.0 package class
+	/// </summary>
+	/// <remarks>
 	/// This is the class that implements the package exposed by this assembly.
 	///
 	/// The minimum requirement for a class to be considered a valid package for Visual Studio
@@ -60,7 +74,18 @@ namespace BlackbirdSql.VisualStudio.Ddex
 	/// to do it: it derives from the Package class that provides the implementation of the 
 	/// IVsPackage interface and uses the registration attributes defined in the framework to 
 	/// register itself and its components with the shell.
-	/// </summary>
+	/// </remarks>
+
+
+
+
+	// ---------------------------------------------------------------------------------------------------
+	//
+	#region Package attributes - BlackbirdSqlDdexPackage
+	//
+	// ---------------------------------------------------------------------------------------------------
+
+
 
 	[Guid(PackageData.PackageGuid)]
 
@@ -99,23 +124,64 @@ namespace BlackbirdSql.VisualStudio.Ddex
 #endif
 
 
+	#endregion
+
+
+
+	// ---------------------------------------------------------------------------------------------------
+	//
+	#region Class declaration - BlackbirdSqlDdexPackage
+	//
+	// ---------------------------------------------------------------------------------------------------
+
+
+
 
 	public sealed class BlackbirdSqlDdexPackage : AsyncPackage
 	{
 		private DTE _Dte = null;
 		private IVsSolution _Solution = null;
-		readonly VsPackageController _Controller;
+		private VsPackageController _Controller;
 
 
 
-		#region · Constructors / Destructors ·
+		// ---------------------------------------------------------------------------------------------------
+		//
+		#region Property accessors - BlackbirdSqlDdexPackage
+		//
+		// ---------------------------------------------------------------------------------------------------
+
+
 
 		/// <summary>
-		/// Package constructor
+		/// Accessor to the <see cref="VsPackageController"/> singleton instance
+		/// </summary>
+		VsPackageController Controller
+		{
+			get
+			{
+				return _Controller ??= VsPackageController.GetInstance(_Dte, _Solution);
+			}
+		}
+
+
+		#endregion
+
+
+
+		// ---------------------------------------------------------------------------------------------------
+		//
+		#region Constructors / Destructors - BlackbirdSqlDdexPackage
+		//
+		// ---------------------------------------------------------------------------------------------------
+
+
+
+		/// <summary>
+		/// BlackbirdSqlDdexPackage package .ctor
 		/// </summary>
 		public BlackbirdSqlDdexPackage()
 		{
-			_Controller = VsPackageController.GetInstance(this);
 		}
 
 
@@ -125,7 +191,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			try
 			{
 				ThreadHelper.ThrowIfNotOnUIThread();
-				_Controller.Dispose();
+				_Controller?.Dispose();
 			}
 			catch (Exception ex)
 			{
@@ -139,7 +205,13 @@ namespace BlackbirdSql.VisualStudio.Ddex
 
 
 
-		#region · Package Methods ·
+
+		// ---------------------------------------------------------------------------------------------------
+		//
+		#region Package methods - BlackbirdSqlDdexPackage
+		//
+		// ---------------------------------------------------------------------------------------------------
+
 
 
 		/// <summary>
@@ -182,7 +254,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 
 
 		/// <summary>
-		/// Fires onload events for projects already loaded and then hooks onto solution events
+		/// Enables solution and project event handling
 		/// </summary>
 		private async Task AdviseSolutionEventsAsync()
 		{
@@ -218,11 +290,14 @@ namespace BlackbirdSql.VisualStudio.Ddex
 				return;
 			}
 
-			_Controller?.AdviseSolutionEvents(_Dte, _Solution);
+			Controller.AdviseSolutionEvents();
 		}
 
 
 		#endregion
 
 	}
+
+
+	#endregion Class Declaration
 }

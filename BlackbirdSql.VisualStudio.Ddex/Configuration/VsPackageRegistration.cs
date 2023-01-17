@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-// using System.ComponentModel;
 using System.Diagnostics;
-// using System.EnterpriseServices.Internal;
 using System.Runtime.InteropServices;
 using System.Threading;
+
 using Microsoft.VisualStudio.Shell;
 
 using BlackbirdSql.Common;
@@ -143,7 +142,6 @@ internal sealed class VsPackageRegistration: RegistrationAttribute
 	/// <summary>
 	/// Deregisters the package in the local user's VS private registry
 	/// </summary>
-
 	public override void Unregister(RegistrationContext context)
 	{
 		// Diag.Trace();

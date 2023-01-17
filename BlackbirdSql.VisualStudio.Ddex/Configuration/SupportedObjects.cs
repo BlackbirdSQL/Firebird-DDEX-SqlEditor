@@ -6,18 +6,42 @@ using System.Collections.Generic;
 namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 
 
+
+// ---------------------------------------------------------------------------------------------------
+//
+//								SupportedObjects Class
+//
+// ---------------------------------------------------------------------------------------------------
+
+
+
+/// <summary>
+/// This class is used by <see cref="VsPackageRegistration.Register"/> and lists all the interfaces supported by this provider (<see cref="Implementations"/>) and their implementation classes (<see cref="Values"/>)
+/// </summary>
 internal static class SupportedObjects
 {
 
-	/*
-	 * _useProviderObjectFactory
+	 /* _useProviderObjectFactory
 	 * Setting this to false inserts registry values against implementations
 	 * Setting this to true only creates the key for each implementation
 	 * It seems there's a way for VS to manage implementations instead of the ProviderObjectFactory service.
 	 * Set to false if you want to test this. (It currently does not work. We may be missing a trick)
 	*/
+	/// <summary>
+	/// This preset defines whether implementations are defined in the private registry or handled in <see cref="ProviderObjectFactory.CreateObject"/>
+	/// </summary>
 	const bool _useProviderObjectFactory = true;
 
+
+
+	/// <summary>
+	/// Dictionary of all supported provider interfaces with the <see cref="_useProviderObjectFactory"/> defining where their implementations are defined or handled.
+	/// </summary>
+	/// <remarks>
+	/// The dictionary key is the interface name (aka registry key) and value is the number (qty) of registry values under the key.
+	/// For example if IVsDataViewSupport has 3 values they will be listed as IVsDataViewSupport:0, IVsDataViewSupport:1 and IVsDataViewSupport:2 in the <see cref="Values"/> dictionary.
+	/// If the number of registry values is zero, the implementation is handled in <see cref="ProviderObjectFactory.CreateObject"/>.
+	/// </remarks>
 	public static readonly IDictionary<string, int> Implementations = new Dictionary<string, int>()
 	{
 		{ "IVsDataConnectionEquivalencyComparer", _useProviderObjectFactory ? 0 : 1 },
@@ -37,6 +61,15 @@ internal static class SupportedObjects
 	};
 
 
+
+	/// <summary>
+	/// Lists the values to be registered under an interface implementation's registry key if <see cref="_useProviderObjectFactory"/> is set to false.
+	/// </summary>
+	/// <remarks>
+	/// The dictionary key is the interface (aka registry key) followed by the registry value's unique index (:index).
+	/// The dictionary value is the <see cref="RegistryValue"/> for that registry value entry.
+	/// Note: Microsoft uses null as the name of the default value of a registry key.
+	/// </remarks>
 	public static readonly IDictionary<string, RegistryValue> Values = new Dictionary<string, RegistryValue>()
 	{
 		{ "IVsDataConnectionEquivalencyComparer:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.DataConnectionEquivalencyComparer") },
@@ -60,6 +93,10 @@ internal static class SupportedObjects
 		{ "IVsDataViewSupport:4", new("XmlResource",  "BlackbirdSql.VisualStudio.Ddex.ViewSupport.xml") }
 	};
 
+
+	/// <summary>
+	/// A container class for a registry value consisting of the value's name and value.
+	/// </summary>
 	public class RegistryValue
 	{
 		public readonly string Name;
