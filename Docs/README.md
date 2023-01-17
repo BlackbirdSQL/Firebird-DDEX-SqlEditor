@@ -1,6 +1,6 @@
 # BlackbirdSQL DDEX 2.0 .NET Data Provider
 
-This package is still under developemnt.
+This package is still under development.
 
 The original DDEX 1.0 data tool has been re-implemented as BlackbirdSql.VisualStudio.DataTools. The purpose was only to get DDEX functioning for Firebird before implementing DDEX 2.0, so this tool can be considered obsolete.</br>
 BlackbirdSql.Data.DslClient.dll, EntityFramework.BlackbirdSql.dll and BlackbirdSql.EntityFrameworkCore.dll were for debugging purposes only.</br>
