@@ -47,7 +47,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 	private readonly DTE _Dte = null;
 	private readonly IVsSolution _Solution = null;
-	private readonly UIGlobals _Uig;
+	private UIGlobals _Uig;
 
 	private uint _HSolutionEvents = uint.MaxValue;
 
@@ -91,7 +91,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	{
 		get
 		{
-			return _Uig ?? UIGlobals.GetInstance(_Dte);
+			return _Uig ??= UIGlobals.GetInstance(_Dte);
 		}
 	}
 
