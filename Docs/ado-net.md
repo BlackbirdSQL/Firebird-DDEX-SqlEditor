@@ -7,8 +7,6 @@
 * Add the applicable Nuget package if you haven't already.
 * Rebuild your Project. It should now be able to access any existing client connections, xsd datasets and edmx models you have.
 * Create a dataset throught the xsd wizard or an entity data model through the edmx wizard.
-
-__Warning__ BlackbirdSql.VisualStudio.Ddex.dll is used by the IDE. Do not add a reference to it in your projects.
 <p style="font-size:1.1em;margin-bottom:-8px">For an xsd dataset:</p>
 
 * Install the Nuget FirebirdSql.Data.FirebirdClient package if you haven't already and `rebuild` your project.
@@ -20,6 +18,6 @@ __Warning__ BlackbirdSql.VisualStudio.Ddex.dll is used by the IDE. Do not add a 
 * Open an existing edmx model. It should work right off the bat, or add a new edmx model through the wizard using the `EF designer from database` option as you normally would, again connecting through the `BlackbirdSql DDEX 2.0` provider.
 * With your new edmx open select `Project > Add new data source > Object` to complete the setup of your model.
 
-__Warning__ Operations within the edmx UI can take some time. Even a Cancel request can lock up the IDE. Be patient.
-
+__Warning__ Operations within the edmx UI can take some time. Even a Cancel request can lock up the IDE. Be patient.</br>
+__Warning__ BlackbirdSql.VisualStudio.Ddex.dll is used by the IDE. Do not add a reference to it in your projects.</br>
 __Note__ Rebuild your projects after installing the VSIX. This will ensure any legacy edmx models that were updated and any modifications to the app.config are activated.
