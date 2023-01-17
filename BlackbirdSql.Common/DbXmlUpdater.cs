@@ -105,10 +105,13 @@ internal static class DbXmlUpdater
 	/// <exception cref="Exception">
 	/// Throws an exception if the app.config could not be successfully verified/updated
 	/// </exception>
+	/// <param name="configureDbProvider">
+	///	If set to true then the client DBProvider factory will also be configured
+	/// </param>
 	/// <returns>true if app,config was modified else false.</returns>
-	public static bool ConfigureEntityFramework(string xmlPath)
+	public static bool ConfigureEntityFramework(string xmlPath, bool configureDbProvider)
 	{
-		bool modified;
+		bool modified = false;
 
 
 		try
@@ -136,8 +139,10 @@ internal static class DbXmlUpdater
 				xmlNs.AddNamespace("confBlackbird", xmlRoot.NamespaceURI);
 			}
 
+			if (configureDbProvider)
+				modified = ConfigureDbProviderFactory(xmlDoc, xmlNs, xmlRoot);
 
-			modified = ConfigureEntityFrameworkProviderServices(xmlDoc, xmlNs, xmlRoot);
+			modified |= ConfigureEntityFrameworkProviderServices(xmlDoc, xmlNs, xmlRoot);
 
 
 			if (modified)

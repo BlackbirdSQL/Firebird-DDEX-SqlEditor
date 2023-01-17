@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.Shell;
 
 
 using BlackbirdSql.Common;
+using static Microsoft.VisualStudio.VSConstants;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
@@ -220,6 +221,12 @@ internal class UIGlobals
 				exists = true;
 			}
 
+			if (exists)
+			{
+				if (((value & G_Validated) == G_Validated) == valid)
+					return true;
+			}
+
 			value |= G_Validated;
 
 			if (valid)
@@ -244,7 +251,7 @@ internal class UIGlobals
 
 
 	/// <summary>
-	/// Sets status indicator tagging a project's app.config as having been validated for EF
+	/// Sets status indicator tagging a project's app.config as having been validated for the DBProvider
 	/// </summary>
 	/// <param name="project"></param>
 	/// <param name="valid"></param>
@@ -273,6 +280,12 @@ internal class UIGlobals
 				exists = true;
 			}
 
+			if (exists)
+			{
+				if ((value & G_DbProviderConfigured) == G_DbProviderConfigured == true)
+					return true;
+			}
+
 			value |= G_DbProviderConfigured;
 
 
@@ -293,7 +306,8 @@ internal class UIGlobals
 
 
 	/// <summary>
-	/// Sets status indicator tagging a project's app.config as having been validated for EF
+	/// Sets status indicator tagging a project's app.config as having been validated for EF.
+	/// By definition the app.config will also have been validated for 
 	/// </summary>
 	/// <param name="project"></param>
 	/// <param name="valid"></param>
@@ -322,7 +336,15 @@ internal class UIGlobals
 				exists = true;
 			}
 
+			if (exists
+				&& (value & G_EFConfigured) == G_EFConfigured == true
+				&& (value & G_DbProviderConfigured) == G_DbProviderConfigured == true)
+			{ 
+				return true;
+			}
+
 			value |= G_EFConfigured;
+			value |= G_DbProviderConfigured;
 
 
 			project.Globals[G_Key] = value.ToString();
@@ -370,6 +392,12 @@ internal class UIGlobals
 				str = (string)project.Globals[G_Key];
 				value = str == "" ? 0 : int.Parse(str);
 				exists = true;
+			}
+
+			if (exists)
+			{
+				if ((value & G_EdmxsUpdated) == G_EdmxsUpdated == true)
+					return true;
 			}
 
 			value |= G_EdmxsUpdated;
@@ -458,6 +486,12 @@ internal class UIGlobals
 				str = (string)_Dte.Solution.Globals[G_Key];
 				value = str == "" ? 0 : int.Parse(str);
 				exists = true;
+			}
+
+			if (exists)
+			{
+				if ((value & G_ValidateFailed) == G_ValidateFailed == true)
+					return true;
 			}
 
 			value |= G_ValidateFailed;

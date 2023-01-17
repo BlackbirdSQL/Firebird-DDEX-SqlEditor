@@ -370,8 +370,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 									Uig.SetValidateFailedStatus();
 								}
 
-								if (isConfiguredDbProviderStatus)
-									break;
+								break;
 							}
 							else if (!isConfiguredDbProviderStatus && reference.Name.ToLower() == SystemData.Invariant.ToLower())
 							{
@@ -766,7 +765,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 			try
 			{
-				modified = DbXmlUpdater.ConfigureEntityFramework(path);
+				// If Entity framework must be configured then so must the client
+				modified = DbXmlUpdater.ConfigureEntityFramework(path, !Uig.IsConfiguredDbProviderStatus(config.ContainingProject));
 			}
 			catch (Exception ex)
 			{
@@ -955,7 +955,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		// This condition can only be true if a solution was closed after successfully being validated which means we can sign it off
 		// as valid. That means no more recursive updates on edmx's or app.config. Only adding dll references can trigger an app.config update
 		// if it wasn't previously done.
-		if (!Uig.IsValidStatus(SolutionGlobals) && Uig.IsValidatedStatus(SolutionGlobals))
+		if (Uig.IsValidatedStatus(SolutionGlobals))
 			Uig.SetIsValidStatus(SolutionGlobals, true);
 
 		// If anything gets through things are still happening so we can reset and allow references with incomplete project objects
@@ -1025,7 +1025,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		// This condition can only be true if a solution was closed after successfully being validated which means we can sign it off
 		// as valid. That means no more recursive updates on edmx's or app.config. Only adding dll references can trigger an app.config update
 		// if it wasn't previously done.
-		if (!Uig.IsValidStatus(SolutionGlobals) && Uig.IsValidatedStatus(SolutionGlobals))
+		if (Uig.IsValidatedStatus(SolutionGlobals))
 			Uig.SetIsValidStatus(SolutionGlobals, true);
 
 		// If anything gets through things are still happening so we can reset and allow events with incomplete project objects
