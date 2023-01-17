@@ -36,9 +36,9 @@ internal static class DbXmlUpdater
 	/// Throws an exception if the app.config could not be successfully verified/updated
 	/// </exception>
 	/// <returns>true if app,config was modified else false.</returns>
-	public static bool ConfigureEntityFramework(string xmlPath)
+	public static bool ConfigureDbProvider(string xmlPath)
 	{
-		bool modified = false;
+		bool modified;
 
 
 		try
@@ -67,8 +67,77 @@ internal static class DbXmlUpdater
 			}
 
 
-			modified |= ConfigureEntityFrameworkProviderFactory(xmlDoc, xmlNs, xmlRoot);
-			modified |= ConfigureEntityFrameworkProviderServices(xmlDoc, xmlNs, xmlRoot);
+			modified = ConfigureDbProviderFactory(xmlDoc, xmlNs, xmlRoot);
+
+
+			if (modified)
+			{
+				try
+				{
+					xmlDoc.Save(xmlPath);
+					Diag.Trace("app.config save: " + xmlPath);
+				}
+				catch (Exception ex)
+				{
+					modified = false;
+					Diag.Dug(ex);
+					return false;
+				}
+
+			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+
+		return modified;
+
+	}
+
+
+
+	/// <summary>
+	/// Checks if a project has Firebird EntityFramework configured in the app.config and configures it if it doesn't
+	/// </summary>
+	/// <param name="project"></param>
+	/// <exception cref="Exception">
+	/// Throws an exception if the app.config could not be successfully verified/updated
+	/// </exception>
+	/// <returns>true if app,config was modified else false.</returns>
+	public static bool ConfigureEntityFramework(string xmlPath)
+	{
+		bool modified;
+
+
+		try
+		{
+			Diag.Trace("Config file path: " + xmlPath);
+
+			XmlDocument xmlDoc = new XmlDocument();
+
+			try
+			{
+				xmlDoc.Load(xmlPath);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				return false;
+			}
+
+
+			XmlNode xmlRoot = xmlDoc.DocumentElement;
+			XmlNamespaceManager xmlNs = new XmlNamespaceManager(xmlDoc.NameTable);
+
+			if (!xmlNs.HasNamespace("confBlackbird"))
+			{
+				xmlNs.AddNamespace("confBlackbird", xmlRoot.NamespaceURI);
+			}
+
+
+			modified = ConfigureEntityFrameworkProviderServices(xmlDoc, xmlNs, xmlRoot);
 
 
 			if (modified)
@@ -239,7 +308,7 @@ internal static class DbXmlUpdater
 	/// Throws an exception if the app.config could not be successfully verified/updated
 	/// </exception>
 	/// <returns>true if xml was modified else false</returns>
-	private static bool ConfigureEntityFrameworkProviderFactory(XmlDocument xmlDoc, XmlNamespaceManager xmlNs, XmlNode xmlRoot)
+	private static bool ConfigureDbProviderFactory(XmlDocument xmlDoc, XmlNamespaceManager xmlNs, XmlNode xmlRoot)
 	{
 		bool modified = false;
 
