@@ -5,7 +5,8 @@ This package is still under development.
 The original DDEX 1.0 data tool has been re-implemented as BlackbirdSql.VisualStudio.DataTools. The purpose was only to get DDEX functioning for Firebird before implementing DDEX 2.0, so this tool can be considered obsolete.</br>
 BlackbirdSql.Data.DslClient.dll, EntityFramework.BlackbirdSql.dll and BlackbirdSql.EntityFrameworkCore.dll were for debugging purposes only.</br>
 A new data tool implementing DDEX 2.0, `BlackbirdSql.VisualStudio.Ddex`, has been added.</br>
-The goal is that you don't have to do any configuring of .csproj, app.config, machine.config and any legacy edmx models. The validation features can be disabled in the Visual Studio options but the tool has a small footprint and low overhead.
+The goal is that you don't have to do any configuring of .csproj, app.config, machine.config and any legacy edmx models.</br>
+The validation features can be disabled in the Visual Studio options but the package has a small footprint and low overhead.
 See [Extended Description](#extended-description) below.
 
 
@@ -40,8 +41,10 @@ TBC
 
 Although the original DDEX 1.0 DataTools package was revived, the DDEX 2.0 package, BlackbirdSql.VisualStudio.Ddex is click and go using VSIX and autoload, and requires no additional setup either in the app.config, csproj or machine.config.</br>
 
-Loading is asynchronous so the provider needs time to register and load. A database node in server explorer can simply be refreshed if an attempt was made to access it before it was fully loaded.</br>
+Loading is asynchronous, so the provider needs time to register and load. A database node in server explorer can simply be refreshed if an attempt was made to access it before the package was fully loaded.</br>
 We want to be as unobtrusive as possible so load delays are just a reality if we go the asynchronous route. (*Loading is initiated at the earliest possible, which is as soon as the IDE shell context is available.*)
+
+*If you're noticing a degradation in performance in the IDE after installing an extension then it's advantages are lost, so the first tenet of this package is `small footprint, low overhead`*
 
 If the option is enabled a solution's projects will be checked for correct configuration of the app.config and edmx models. Legacy edmx models won't work with Firebird's latest EntityFramework version.</br>
 This is a once off validation on each `existing` solution the first time it is opened after installing the VSIX. If the app.config is open or any edmx models are open you will need to close them first and then reopen your solution for the once-off validation to complete.
