@@ -19,5 +19,4 @@
 * With your new edmx open select `Project > Add new data source > Object` to complete the setup of your model.
 
 __Warning__ Operations within the edmx UI can take some time. Even a Cancel request can lock up the IDE. Be patient.</br>
-__Warning__ BlackbirdSql.VisualStudio.Ddex.dll is used by the IDE. Do not add a reference to it in your projects.</br>
-__Note__ Rebuild your projects after installing the VSIX. This will ensure any legacy edmx models that were updated and any modifications to the app.config are activated.
+__Note__ BlackbirdSql.VisualStudio.Ddex.dll is used by the IDE. Do not add a reference to it in your projects.</br>
