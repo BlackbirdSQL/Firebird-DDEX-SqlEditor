@@ -1,13 +1,23 @@
-﻿using System;
+﻿
+// Only applicable to DEBUG
+// Uncomment this line to use persistent globals during debug
+// Comment out this line to use non-persistent globals and to clear any persistent globals in your test solution(s)
+
+// #define __PERSISTENTGLOBALS__
+
+
+using System;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 
-
 using BlackbirdSql.Common;
-using static Microsoft.VisualStudio.VSConstants;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
+
+
+// Warning suppression
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "UI thread ensured in code logic.")]
 
 
 
@@ -48,46 +58,55 @@ internal class UIGlobals
 
 
 	/// <summary>
-	/// The [Project][Solution].Globals global is set to transitory during debug because there seems no way to delete it for testing
+	/// The [Project][Solution].Globals globals is set to transitory during debug because there seems no way to delete it for testing
 	/// other than programmatically. It's a single int32 using binary bitwise for the different status settings
 	/// </summary>
-#if DEBUG
+#if DEBUG && !__PERSISTENTGLOBALS__
 	const bool G_Persistent = false;
 	const string G_Key = "GlobalBlackbirdTransitory"; // For debug
+	/// <summary>
+	/// This key is the release version persistent key. When running in debug mode
+	/// with __PERSISTENTGLOBALS__ commented out any test solutions opened will have their persistent keys cleared
+	/// </summary>
+	const string G_PersistentKey = "GlobalBlackbirdPersistent";
 #else
-	const bool G_Persistent		= true;
-	const string G_Key			= "GlobalBlackbirdPersistent";
+	const bool G_Persistent = true;
+	const string G_Key = "GlobalBlackbirdPersistent";
 #endif
 
 	/// <summary>
-	/// For Projects: has been validated (Once it's been validated it's always been validated)
+	/// For Projects: has been validated as a valid project type (Once it's been validated it's always been validated)
 	/// For Solutions: has been loaded and in a validation state if <see cref="G_Valid"/> is false else validated
 	/// </summary>
 	const int G_Validated = 1;
 	/// <summary>
-	/// For Projects: Validated project is a valid executable C#/VB app. (Once [in]valid always [in]valid)
+	/// For Projects: Validated project is a valid executable C#/VB app (Project type). (Once [in]valid always [in]valid)
 	/// For Solutions: Off: Solution has been loaded and is in a validation state. On: Validated
 	/// (Only applicable if <see cref="G_Validated"/> is set)
 	/// </summary>	
 	const int G_Valid = 2;
 	/// <summary>
+	/// The app.config and all edmxs for a project have been scanned and configured if required. (Once successfully scanned always scanned)
+	/// </summary>
+	const int G_Scanned = 4;
+	/// <summary>
 	/// The app.config has the client system.data/DbProviderFactory configured and is good to go. (Once successfully configured always configured)
 	/// </summary>
-	const int G_DbProviderConfigured = 4;
+	const int G_DbProviderConfigured = 8;
 	/// <summary>
 	/// The app.config has the EntityFramework provider services and connection factory configured and is good to go. (Once successfully configured always configured)
 	/// </summary>
-	const int G_EFConfigured = 8;
+	const int G_EFConfigured = 16;
 	/// <summary>
 	/// Existing legacy edmx's have been updated and are good to go. (Once all successfully updated always updated)
 	/// </summary>
-	const int G_EdmxsUpdated = 16;
+	const int G_EdmxsUpdated = 32;
 	/// <summary>
 	///  If at any point in solution projects' validation there was a fail, this is set to true on the solution and the solution Globals
 	///  is reset to zero.
 	///  Validation on failed solution entities will resume the next time the solution is loaded.
 	/// </summary>
-	const int G_ValidateFailed = 32;
+	const int G_ValidateFailed = 64;
 
 
 	#endregion
@@ -130,87 +149,12 @@ internal class UIGlobals
 	{
 		get
 		{
-			ThreadHelper.ThrowIfNotOnUIThread();
-
-			int value;
-			string str;
-
-			try
-			{
-				if (_Dte.Solution.Globals == null)
-				{
-					Diag.Dug(true, _Dte.Solution.FullName + ": Solution.Globals is null");
-					return false;
-				}
-
-				if (_Dte.Solution.Globals.get_VariableExists(G_Key))
-				{
-					str = (string)_Dte.Solution.Globals[G_Key];
-					value = str == "" ? 0 : int.Parse(str);
-
-					return (value & G_ValidateFailed) == G_ValidateFailed;
-				}
-
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-				return false;
-			}
-
-			return false;
+			return GetFlagStatus(_Dte.Solution.Globals, G_ValidateFailed);
 		}
 
 		set
 		{
-			Diag.Trace("Setting ValidateFailed");
-
-			ThreadHelper.ThrowIfNotOnUIThread();
-
-			bool exists = false;
-			string str;
-
-			int val = 0;
-
-			try
-			{
-				if (_Dte.Solution.Globals == null)
-				{
-					NullReferenceException ex = new NullReferenceException(_Dte.Solution.FullName + ": Solution.Globals is null");
-					throw ex;
-				}
-
-
-				if (_Dte.Solution.Globals.get_VariableExists(G_Key))
-				{
-					str = (string)_Dte.Solution.Globals[G_Key];
-					val = str == "" ? 0 : int.Parse(str);
-					exists = true;
-				}
-
-				if (exists)
-				{
-					if ((val & G_ValidateFailed) == G_ValidateFailed == value)
-						return;
-				}
-
-
-				if (value)
-					val |= G_ValidateFailed;
-				else
-					val &= (~G_ValidateFailed);
-
-
-				_Dte.Solution.Globals[G_Key] = val.ToString();
-				if (!exists)
-					_Dte.Solution.Globals.set_VariablePersists(G_Key, G_Persistent);
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-				throw;
-			}
-
+			SetFlagStatus(_Dte.Solution.Globals, G_ValidateFailed, value);
 		}
 	}
 
@@ -284,55 +228,30 @@ internal class UIGlobals
 
 
 	/// <summary>
-	/// Sets a status indicator tagging a solution as previously validated or validated and valid or a project as having been validated and if it is
-	/// a valid C#/VB executable
+	/// For solutions: Sets a status indicator tagging it as previously validated or validated and valid.
+	/// For projects: Sets a status indicator tagging it as previously validated for it's validity as a
+	/// valid C#/VB executable.
 	/// </summary>
-	/// <param name="global"></param>
+	/// <param name="globals"></param>
 	/// <param name="valid"></param>
 	/// <returns>True if the operation was successful else False</returns>
-	public bool SetIsValidStatus(Globals global, bool valid)
+	public bool SetIsValidStatus(Globals globals, bool valid)
 	{
-		// Should never happen
-		ThreadHelper.ThrowIfNotOnUIThread();
+		return SetFlagStatus(globals, G_Validated, true, G_Valid, valid);
+	}
 
-		bool exists = false;
-		int value = 0;
-		string str;
 
-		Diag.Trace("Setting IsValid to " + valid.ToString());
 
+	/// <summary>
+	/// Sets a status indicator tagging a project as having been scanned and it's app.config and edmxs validated.
+	/// </summary>
+	/// <param name="project"></param>
+	/// <returns>True if the operation was successful else False</returns>
+	public bool SetIsScannedStatus(Project project)
+	{
 		try
 		{
-			if (global == null)
-			{
-				Diag.Dug(true, "Globals is null");
-				return false;
-			}
-
-
-			if (global.get_VariableExists(G_Key))
-			{
-				str = (string)global[G_Key];
-				value = str == "" ? 0 : int.Parse(str);
-				exists = true;
-			}
-
-			if (exists)
-			{
-				if ((value & G_Validated) == G_Validated == valid)
-					return true;
-			}
-
-			value |= G_Validated;
-
-			if (valid)
-				value |= G_Valid;
-			else
-				value &= (~G_Valid);
-
-			global[G_Key] = value.ToString();
-			if (!exists)
-				global.set_VariablePersists(G_Key, G_Persistent);
+			ThreadHelper.ThrowIfNotOnUIThread();
 		}
 		catch (Exception ex)
 		{
@@ -340,8 +259,7 @@ internal class UIGlobals
 			return false;
 		}
 
-
-		return true;
+		return SetFlagStatus(project.Globals, G_Scanned, true);
 	}
 
 
@@ -354,40 +272,9 @@ internal class UIGlobals
 	/// <returns>True if the operation was successful else False</returns>
 	public bool SetIsValidatedDbProviderStatus(Project project)
 	{
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		bool exists = false;
-		int value = 0;
-		string str;
-
 		try
 		{
-			if (project.Globals == null)
-			{
-				Diag.Dug(true, project.Name + ": Globals is null");
-				return false;
-			}
-
-
-			if (project.Globals.get_VariableExists(G_Key))
-			{
-				str = (string)project.Globals[G_Key];
-				value = str == "" ? 0 : int.Parse(str);
-				exists = true;
-			}
-
-			if (exists)
-			{
-				if ((value & G_DbProviderConfigured) == G_DbProviderConfigured == true)
-					return true;
-			}
-
-			value |= G_DbProviderConfigured;
-
-
-			project.Globals[G_Key] = value.ToString();
-			if (!exists)
-				project.Globals.set_VariablePersists(G_Key, G_Persistent);
+			ThreadHelper.ThrowIfNotOnUIThread();
 		}
 		catch (Exception ex)
 		{
@@ -395,8 +282,7 @@ internal class UIGlobals
 			return false;
 		}
 
-
-		return true;
+		return SetFlagStatus(project.Globals, G_DbProviderConfigured, true);
 	}
 
 
@@ -410,42 +296,9 @@ internal class UIGlobals
 	/// <returns>True if the operation was successful else False</returns>
 	public bool SetIsValidatedEFStatus(Project project)
 	{
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		bool exists = false;
-		int value = 0;
-		string str;
-
 		try
 		{
-			if (project.Globals == null)
-			{
-				Diag.Dug(true, project.Name + ": Globals is null");
-				return false;
-			}
-
-
-			if (project.Globals.get_VariableExists(G_Key))
-			{
-				str = (string)project.Globals[G_Key];
-				value = str == "" ? 0 : int.Parse(str);
-				exists = true;
-			}
-
-			if (exists
-				&& (value & G_EFConfigured) == G_EFConfigured == true
-				&& (value & G_DbProviderConfigured) == G_DbProviderConfigured == true)
-			{ 
-				return true;
-			}
-
-			value |= G_EFConfigured;
-			value |= G_DbProviderConfigured;
-
-
-			project.Globals[G_Key] = value.ToString();
-			if (!exists)
-				project.Globals.set_VariablePersists(G_Key, G_Persistent);
+			ThreadHelper.ThrowIfNotOnUIThread();
 		}
 		catch (Exception ex)
 		{
@@ -453,8 +306,7 @@ internal class UIGlobals
 			return false;
 		}
 
-
-		return true;
+		return SetFlagStatus(project.Globals, G_EFConfigured, true, G_DbProviderConfigured, true);
 	}
 
 
@@ -468,40 +320,9 @@ internal class UIGlobals
 	/// <returns>True if the operation was successful else False</returns>
 	public bool SetIsUpdatedEdmxsStatus(Project project)
 	{
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		bool exists = false;
-		int value = 0;
-		string str;
-
 		try
 		{
-			if (project.Globals == null)
-			{
-				Diag.Dug(true, project.Name + ": Project.Globals is null");
-				return false;
-			}
-
-
-			if (project.Globals.get_VariableExists(G_Key))
-			{
-				str = (string)project.Globals[G_Key];
-				value = str == "" ? 0 : int.Parse(str);
-				exists = true;
-			}
-
-			if (exists)
-			{
-				if ((value & G_EdmxsUpdated) == G_EdmxsUpdated == true)
-					return true;
-			}
-
-			value |= G_EdmxsUpdated;
-
-
-			project.Globals[G_Key] = value.ToString();
-			if (!exists)
-				project.Globals.set_VariablePersists(G_Key, G_Persistent);
+			ThreadHelper.ThrowIfNotOnUIThread();
 		}
 		catch (Exception ex)
 		{
@@ -509,8 +330,7 @@ internal class UIGlobals
 			return false;
 		}
 
-
-		return true;
+		return SetFlagStatus(project.Globals, G_EdmxsUpdated, true);
 	}
 
 
@@ -522,11 +342,10 @@ internal class UIGlobals
 	/// <returns>True if the operation was successful else False</returns>
 	public bool ClearValidateStatus()
 	{
-
-		ThreadHelper.ThrowIfNotOnUIThread();
-
 		try
 		{
+			ThreadHelper.ThrowIfNotOnUIThread();
+
 			if (_Dte.Solution.Globals == null)
 			{
 				Diag.Dug(true, _Dte.Solution.FullName + ": Solution.Globals is null");
@@ -553,38 +372,22 @@ internal class UIGlobals
 
 
 
-
-
-
 	/// <summary>
-	/// Verifies whether or not a solution is in a validation state (or previously validated) or a project has been validated as being valid or not
+	/// Clears the the persistent flag of a globals.
 	/// </summary>
-	/// <param name="global"></param>
-	/// <returns></returns>
-	public bool IsValidatedStatus(Globals global)
+	/// <param name="globals"></param>
+	/// <param name="key"></param>
+	/// <returns>True if the operation was successful else False</returns>
+	public bool ClearPersistentFlag(Globals globals, string key)
 	{
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		int value;
-		string str;
-
 		try
 		{
-			if (global == null)
-			{
-				Diag.Dug(true, "Globals is null");
-				return false;
-			}
+			ThreadHelper.ThrowIfNotOnUIThread();
 
+			if (!globals.get_VariableExists(key))
+				return true;
 
-			if (global.get_VariableExists(G_Key))
-			{
-				str = (string)global[G_Key];
-				value = str == "" ? 0 : int.Parse(str);
-
-				return (value & G_Validated) == G_Validated;
-			}
-
+			globals.set_VariablePersists(key, false);
 		}
 		catch (Exception ex)
 		{
@@ -592,7 +395,23 @@ internal class UIGlobals
 			return false;
 		}
 
-		return false;
+
+		return true;
+	}
+
+
+
+	/// <summary>
+	/// Verifies whether or not a solution is in a validation state (or previously validated) or a project has been validated as being valid or not
+	/// </summary>
+	/// <param name="globals"></param>
+	/// <returns></returns>
+	public bool IsValidatedStatus(Globals globals)
+	{
+#if DEBUG && !__PERSISTENTGLOBALS__
+		ClearPersistentFlag(globals, G_PersistentKey);
+#endif
+		return GetFlagStatus(globals, G_Validated);
 	}
 
 
@@ -600,44 +419,27 @@ internal class UIGlobals
 	/// <summary>
 	/// Verifies whether or not a solution has been validated or a project is a valid C#/VB executable. See remarks.
 	/// </summary>
-	/// <param name="global"></param>
+	/// <param name="globals"></param>
 	/// <returns></returns>
 	/// <remarks>
 	/// Callers must call IsValidatedProjectStatus() before checking if a project is valid otherwise this indicator will be meaningless
 	/// </remarks>
-	public bool IsValidStatus(Globals global)
+	public bool IsValidStatus(Globals globals)
 	{
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		int value;
-		string str;
-
-		try
-		{
-			if (global == null)
-			{
-				Diag.Dug(true, "Globals is null");
-				return false;
-			}
-
-			if (global.get_VariableExists(G_Key))
-			{
-				str = (string)global[G_Key];
-				value = str == "" ? 0 : int.Parse(str);
-
-				return (value & G_Valid) == G_Valid;
-			}
-
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
-
-		return false;
+		return GetFlagStatus(globals, G_Valid);
 	}
 
+
+
+	/// <summary>
+	/// Verifies whether or not a project has been scanned and it's app.config and edmxs validated.
+	/// </summary>
+	/// <param name="project"></param>
+	/// <returns></returns>
+	public bool IsScannedStatus(Project project)
+	{
+		return GetFlagStatus(project.Globals, G_Scanned);
+	}
 
 
 
@@ -648,35 +450,7 @@ internal class UIGlobals
 	/// <returns></returns>
 	public bool IsConfiguredDbProviderStatus(Project project)
 	{
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		int value;
-		string str;
-
-		try
-		{
-			if (project.Globals == null)
-			{
-				Diag.Dug(true, project.Name + ": Project.Globals is null");
-				return false;
-			}
-
-			if (project.Globals.get_VariableExists(G_Key))
-			{
-				str = (string)project.Globals[G_Key];
-				value = str == "" ? 0 : int.Parse(str);
-
-				return (value & G_DbProviderConfigured) == G_DbProviderConfigured;
-			}
-
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
-
-		return false;
+		return GetFlagStatus(project.Globals, G_DbProviderConfigured);
 	}
 
 
@@ -688,35 +462,7 @@ internal class UIGlobals
 	/// <returns></returns>
 	public bool IsConfiguredEFStatus(Project project)
 	{
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		int value;
-		string str;
-
-		try
-		{
-			if (project.Globals == null)
-			{
-				Diag.Dug(true, project.Name + ": Project.Globals is null");
-				return false;
-			}
-
-			if (project.Globals.get_VariableExists(G_Key))
-			{
-				str = (string)project.Globals[G_Key];
-				value = str == "" ? 0 : int.Parse(str);
-
-				return (value & G_EFConfigured) == G_EFConfigured;
-			}
-
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
-
-		return false;
+		return GetFlagStatus(project.Globals, G_EFConfigured);
 	}
 
 
@@ -729,25 +475,104 @@ internal class UIGlobals
 	/// <returns></returns>
 	public bool IsUpdatedEdmxsStatus(Project project)
 	{
-		ThreadHelper.ThrowIfNotOnUIThread();
+		return GetFlagStatus(project.Globals, G_EdmxsUpdated);
+	}
 
+	/// <summary>
+	/// Sets a Globals indicator flag.
+	/// </summary>
+	/// <param name="globals"></param>
+	/// <param name="flag"></param>
+	/// <param name="enabled"></param>
+	/// <param name="flag2"></param>
+	/// <param name="enabled2"></param>
+	/// <returns>True if the operation was successful else False</returns>
+	public bool SetFlagStatus(Globals globals, int flag, bool enabled, int flag2 = 0, bool enabled2 = false)
+	{
+		bool exists = false;
+		int value = 0;
+		string str;
+
+		try
+		{
+			ThreadHelper.ThrowIfNotOnUIThread();
+
+			if (globals == null)
+				throw new ArgumentNullException("Globals is null");
+
+
+			if (globals.get_VariableExists(G_Key))
+			{
+				str = (string)globals[G_Key];
+				value = str == "" ? 0 : int.Parse(str);
+				exists = true;
+			}
+
+			if (exists && (value & flag) == flag == enabled)
+			{
+				if (flag2 == 0 || (value & flag2) == flag2 == enabled2)
+				{
+					return true;
+				}
+			}
+
+			if (enabled)
+				value |= flag;
+			else
+				value &= ~flag;
+
+			if (flag2 != 0)
+			{
+				if (enabled2)
+					value |= flag2;
+				else
+					value &= ~flag2;
+			}
+
+
+			globals[G_Key] = value.ToString();
+
+			if (!exists && G_Persistent)
+				globals.set_VariablePersists(G_Key, G_Persistent);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			return false;
+		}
+
+
+		return true;
+	}
+
+
+
+	/// <summary>
+	/// Retrieves an indicator flag's status
+	/// </summary>
+	/// <param name="globals"></param>
+	/// <param name="flag"></param>
+	/// <returns></returns>
+	protected bool GetFlagStatus(Globals globals, int flag)
+	{
 		int value;
 		string str;
 
 		try
 		{
-			if (project.Globals == null)
+			ThreadHelper.ThrowIfNotOnUIThread();
+
+			if (globals == null)
 			{
-				Diag.Dug(true, project.Name + ": Project.Globals is null");
-				return false;
+				throw new ArgumentNullException("Globals is null");
 			}
 
-			if (project.Globals.get_VariableExists(G_Key))
+			if (globals.get_VariableExists(G_Key))
 			{
-				str = (string)project.Globals[G_Key];
+				str = (string)globals[G_Key];
 				value = str == "" ? 0 : int.Parse(str);
 
-				return (value & G_EdmxsUpdated) == G_EdmxsUpdated;
+				return (value & flag) == flag;
 			}
 
 		}

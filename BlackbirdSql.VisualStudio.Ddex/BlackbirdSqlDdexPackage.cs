@@ -36,10 +36,10 @@ using System;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-using EnvDTE;
-
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+
+using EnvDTE;
 
 using BlackbirdSql.Common;
 using BlackbirdSql.VisualStudio.Ddex.Configuration;

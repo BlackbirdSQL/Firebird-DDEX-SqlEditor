@@ -10,11 +10,11 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Threading;
 
 using EnvDTE;
-using EnvDTE80;
 using VSLangProj;
+using VSLangProj150;
+
 
 using BlackbirdSql.Common;
-
 
 namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 
@@ -51,10 +51,10 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 	private uint _HSolutionEvents = uint.MaxValue;
 
-	ReferencesEvents _CSharpReferencesEvents = null;
-	ReferencesEvents _VBReferencesEvents = null;
+	// ReferencesEvents _CSharpReferencesEvents = null;
+	// ReferencesEvents _VBReferencesEvents = null;
 
-	private _dispReferencesEvents_ReferenceAddedEventHandler _GlobalReferenceAddedEventHandler = null;
+	private _dispReferencesEvents_ReferenceAddedEventHandler _ReferenceAddedEventHandler = null;
 
 
 	#endregion
@@ -128,11 +128,6 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	{
 		_Dte = dte;
 		_Solution = solution;
-
-		// Callers must ensure this can never happen
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		AdviseSolutionEvents();
 	}
 
 
@@ -173,6 +168,9 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	/// </summary>
 	public void AdviseSolutionEvents()
 	{
+		if (_ReferenceAddedEventHandler != null)
+			return;
+
 		// We should already be on UI thread. Callers must ensure this can never happen
 		ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -236,10 +234,9 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		}
 
 		// Add ReferencesEvents event handling to C# and VB projects
-		AddReferenceAddedEventHandler(_Dte);
+		/// AddReferenceAddedEventHandler(_Dte);
 
 	}
-
 
 
 	public void UnadviseSolutionEvents(bool disposing)
@@ -271,7 +268,10 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		ThreadHelper.ThrowIfNotOnUIThread();
 
 		foreach (Project project in projects)
-			RecursiveValidateProject(project);
+		{
+			if (!Uig.IsScannedStatus(project))
+				RecursiveValidateProject(project);
+		}
 	}
 
 
@@ -289,9 +289,14 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		foreach (ProjectItem projectItem in projectItems)
 		{
 			if (projectItem.SubProject != null)
-				RecursiveValidateProject(projectItem.SubProject);
+			{
+				if (!Uig.IsScannedStatus(projectItem.SubProject))
+					RecursiveValidateProject(projectItem.SubProject);
+			}
 			else
+			{
 				Diag.Trace(projectItem.Name + " projectItem.SubProject is null (Possible Unloaded project or document)");
+			}
 		}
 	}
 
@@ -312,131 +317,187 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		// We should already be on UI thread. Callers must ensure this can never happen
 		ThreadHelper.ThrowIfNotOnUIThread();
 
-		ProjectItem config = null;
-
-		if (project.Kind == "{66A26720-8FB5-11D2-AA7E-00C04F688DDE}")
+		try
 		{
-			if (project.ProjectItems != null && project.ProjectItems.Count > 0)
+
+			ProjectItem config = null;
+
+			if (project.Kind == "{66A26720-8FB5-11D2-AA7E-00C04F688DDE}")
 			{
-				Diag.Trace("Recursing SolutionFolder: " + project.Name);
-				RecursiveValidateProject(project.ProjectItems);
+				if (project.ProjectItems != null && project.ProjectItems.Count > 0)
+				{
+					Diag.Trace("Recursing SolutionFolder: " + project.Name);
+					RecursiveValidateProject(project.ProjectItems);
+				}
+				else
+				{
+					Diag.Trace("No items in SolutionFolder: " + project.Name);
+				}
 			}
 			else
 			{
-				Diag.Trace("No items in SolutionFolder: " + project.Name);
+				Diag.Trace("Recursive validate project: " + project.Name);
+
+				bool failed = false;
+
+				if (IsValidExecutableProjectType(project))
+				{
+
+					if (Uig.ValidateConfig)
+					{
+						bool isConfiguredEFStatus = Uig.IsConfiguredEFStatus(project);
+						bool isConfiguredDbProviderStatus = Uig.IsConfiguredDbProviderStatus(project);
+
+
+						if (!isConfiguredEFStatus || !isConfiguredDbProviderStatus)
+						{
+
+							VSProject projectObject = project.Object as VSProject;
+							VSProject4 projectObject4 = null;
+
+							if (!isConfiguredEFStatus)
+							{
+								Diag.Trace(project.Name + ": Checking for " + SystemData.EFProvider + " and " + SystemData.Invariant);
+
+								if (projectObject.References.Find(SystemData.EFProvider) != null)
+								{
+									Diag.Trace(project.Name + ": FOUND " + SystemData.EFProvider + " REFERENCE");
+
+									isConfiguredEFStatus = true;
+									isConfiguredDbProviderStatus = true;
+
+									config ??= GetAppConfigProjectItem(project);
+									if (config != null)
+									{
+										failed |= !ConfigureEntityFramework(config, false);
+									}
+									else
+									{
+										failed = true;
+									}
+								}
+								else if ((projectObject4 ??= project.Object as VSProject4) != null && projectObject4.PackageReferences != null)
+								{
+									Diag.Trace(project.Name + " Checking for packages (" + projectObject4.PackageReferences.InstalledPackages.Length + ")");
+
+									if (projectObject4.PackageReferences.TryGetReference(SystemData.EFProvider, null,
+										out string pkgVersion, out _, out _))
+									{
+										// A legacy CSProj must cast to VSProject4 to manipulate package references
+
+										Diag.Trace(project.Name + ": FOUND " + SystemData.EFProvider + " REFERENCE PackageVersion: " + pkgVersion);
+
+										isConfiguredEFStatus = true;
+										isConfiguredDbProviderStatus = true;
+
+										config ??= GetAppConfigProjectItem(project);
+										if (config != null)
+										{
+											failed |= !ConfigureEntityFramework(config, false);
+										}
+										else
+										{
+											failed = true;
+										}
+									}
+								}
+							}
+
+							if (!isConfiguredDbProviderStatus)
+							{
+								if (projectObject.References.Find(SystemData.Invariant) != null)
+								{
+									Diag.Trace(project.Name + ": FOUND " + SystemData.Invariant + " REFERENCE");
+
+									isConfiguredDbProviderStatus = true;
+
+									config ??= GetAppConfigProjectItem(project);
+									if (config != null)
+									{
+										failed |= !ConfigureDbProvider(config, false);
+									}
+									else
+									{
+										failed = true;
+									}
+								}
+								else if ((projectObject4 ??= project.Object as VSProject4) != null && projectObject4.PackageReferences != null)
+								{
+
+									Diag.Trace(project.Name + " Checking for packages (" + projectObject4.PackageReferences.InstalledPackages.Length + ")");
+
+									if (projectObject4.PackageReferences.TryGetReference(SystemData.Invariant, null,
+										out string pkgVersion, out _, out _))
+									{
+										Diag.Trace(project.Name + ": FOUND " + SystemData.Invariant + " REFERENCE PackageVersion: " + pkgVersion);
+
+										isConfiguredDbProviderStatus = true;
+
+										config ??= GetAppConfigProjectItem(project);
+										if (config != null)
+										{
+											failed |= !ConfigureDbProvider(config, false);
+										}
+										else
+										{
+											failed = true;
+										}
+									}
+								}
+							}
+
+							if (!isConfiguredEFStatus || !isConfiguredDbProviderStatus)
+							{
+								AddReferenceAddedEventHandler(projectObject4 != null ? projectObject4.Events : projectObject.Events);
+							}
+
+
+						}
+					}
+
+
+
+					if (Uig.ValidateEdmx && !Uig.IsValidStatus(SolutionGlobals) && !Uig.IsUpdatedEdmxsStatus(project))
+					{
+						Diag.Trace(project.Name + ": Updating edmxs");
+
+						bool success = true;
+
+						try
+						{
+							foreach (ProjectItem item in project.ProjectItems)
+							{
+								if (!RecursiveValidateProjectItem(item))
+									success = false;
+							}
+						}
+						catch (Exception ex)
+						{
+							success = false;
+							Diag.Dug(ex);
+						}
+
+						if (success)
+							Uig.SetIsUpdatedEdmxsStatus(project);
+						else
+							Uig.IsValidateFailedStatus = true;
+
+						Diag.Trace(project.Name + ": Edmxs update check " + (success ? "successful" : "failed"));
+					}
+
+				}
+
+				if (failed)
+					Uig.IsValidateFailedStatus = true;
+				else
+					Uig.SetIsScannedStatus(project);
+
+
 			}
 		}
-		else
+		catch (Exception ex)
 		{
-			Diag.Trace("Recursive validate project: " + project.Name);
-
-
-			if (IsValidExecutableProjectType(project))
-			{
-
-				if (Uig.ValidateConfig)
-				{
-					bool isConfiguredEFStatus = Uig.IsConfiguredEFStatus(project);
-					bool isConfiguredDbProviderStatus = Uig.IsConfiguredDbProviderStatus(project);
-					bool dbSuccess = false, efSuccess = false;
-
-
-					if (!isConfiguredEFStatus || !isConfiguredDbProviderStatus)
-					{
-						Diag.Trace(project.Name + ": Checking for " + SystemData.EFProvider + " and " + SystemData.Invariant + " references");
-
-						VSProject projectObject = project.Object as VSProject;
-
-						foreach (Reference reference in projectObject.References)
-						{
-							if (reference.Type != prjReferenceType.prjReferenceTypeAssembly)
-								continue;
-
-							if (!isConfiguredEFStatus && reference.Name.ToLower() == SystemData.EFProvider.ToLower())
-							{
-								isConfiguredEFStatus = true;
-
-								Diag.Trace(project.Name + ": FOUND " + SystemData.EFProvider + " REFERENCE");
-								efSuccess = true;
-
-								config ??= GetAppConfigProjectItem(project);
-								if (config != null)
-								{
-									if (!ConfigureEntityFramework(config, false))
-										Uig.IsValidateFailedStatus = true;
-								}
-								else
-								{
-									Uig.IsValidateFailedStatus = true;
-								}
-
-								break;
-							}
-							else if (!isConfiguredDbProviderStatus && reference.Name.ToLower() == SystemData.Invariant.ToLower())
-							{
-								isConfiguredDbProviderStatus = true;
-
-								Diag.Trace(project.Name + ": FOUND " + SystemData.Invariant + " REFERENCE");
-								dbSuccess = true;
-
-								config ??= GetAppConfigProjectItem(project);
-								if (config != null)
-								{
-									if (!ConfigureDbProvider(config, false))
-										Uig.IsValidateFailedStatus = true;
-								}
-								else
-								{
-									Uig.IsValidateFailedStatus = true;
-								}
-
-								if (isConfiguredEFStatus)
-									break;
-							}
-						}
-					}
-
-					string str = "";
-					if (!efSuccess)
-						str = project.Name + ": " + SystemData.EFProvider + " not found";
-					if (!dbSuccess)
-						str += (str != "" ? " and " : project.Name + ": ") + SystemData.Invariant + " not found";
-					if (str != "")
-						Diag.Trace(str);
-				}
-
-
-
-				if (Uig.ValidateEdmx && !Uig.IsValidStatus(SolutionGlobals) && !Uig.IsUpdatedEdmxsStatus(project))
-				{
-					Diag.Trace(project.Name + ": Updating edmxs");
-
-					bool success = true;
-
-					try
-					{
-						foreach (ProjectItem item in project.ProjectItems)
-						{
-							if (!RecursiveValidateProjectItem(item))
-								success = false;
-						}
-					}
-					catch (Exception ex)
-					{
-						success = false;
-						Diag.Dug(ex);
-					}
-
-					if (success)
-						Uig.SetIsUpdatedEdmxsStatus(project);
-					else
-						Uig.IsValidateFailedStatus = true;
-
-					Diag.Trace(project.Name + ": Edmxs updates " + (success ? "successful" : "failed"));
-				}
-
-			}
-
+			Diag.Dug(ex);
 		}
 	}
 
@@ -466,7 +527,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			return success;
 		}
 
-		Diag.Trace(item.ContainingProject.Name + " checking projectitem: " + item.Name + ":" + item.Kind);
+		// Diag.Trace(item.ContainingProject.Name + " checking projectitem: " + item.Name + ":" + item.Kind);
 
 		try
 		{
@@ -501,8 +562,6 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			Diag.Dug(ex, item.ContainingProject.Name + ":" + item.Name);
 			return false;
 		}
-
-
 
 		try
 		{
@@ -840,7 +899,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			}
 
 			string path = edmx.FileNames[0];
-			Diag.Trace(edmx.ContainingProject.Name + "." + edmx.Name + ": config file path: " + path);
+			// Diag.Trace(edmx.ContainingProject.Name + "." + edmx.Name + ": config file path: " + path);
 
 			if (!DbXmlUpdater.UpdateEdmx(path))
 				return true;
@@ -872,9 +931,9 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	}
 
 
-
+	/*
 	/// <summary>
-	/// Adds <see cref="OnGlobalReferenceAdded"> event handler to the global Project <see cref="_dispReferencesEvents_Event.ReferenceAdded"/> event
+	/// Adds <see cref="OnReferenceAdded"> event handler to the global Project <see cref="_dispReferencesEvents_Event.ReferenceAdded"/> event
 	/// </summary>
 	/// <param name="dte"></param>
 	void AddReferenceAddedEventHandler(DTE dte)
@@ -885,7 +944,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		try
 		{
 
-			_GlobalReferenceAddedEventHandler ??= new _dispReferencesEvents_ReferenceAddedEventHandler(OnGlobalReferenceAdded);
+			_ReferenceAddedEventHandler ??= new _dispReferencesEvents_ReferenceAddedEventHandler(OnReferenceAdded);
 
 
 			Events2 dteEvents = dte.Events as Events2;
@@ -893,10 +952,37 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			_CSharpReferencesEvents ??= (ReferencesEvents)dteEvents.GetObject("CSharpReferencesEvents");
 			_VBReferencesEvents ??= (ReferencesEvents)dteEvents.GetObject("VBReferencesEvents");
 
-			_CSharpReferencesEvents.ReferenceAdded += _GlobalReferenceAddedEventHandler;
-			_VBReferencesEvents.ReferenceAdded += _GlobalReferenceAddedEventHandler;
+			_CSharpReferencesEvents.ReferenceAdded += _ReferenceAddedEventHandler;
+			_VBReferencesEvents.ReferenceAdded += _ReferenceAddedEventHandler;
 
-			Diag.Trace("Added _GlobalReferenceAddedEventHandler");
+			Diag.Trace("Added _ReferenceAddedEventHandler for DTE");
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+	}
+	*/
+
+
+
+	/// <summary>
+	/// Adds <see cref="OnReferenceAdded"> event handler to the Project <see cref="_dispReferencesEvents_Event.ReferenceAdded"/> event
+	/// </summary>
+	/// <param name="dte"></param>
+	void AddReferenceAddedEventHandler(VSProjectEvents events)
+	{
+		// We should already be on UI thread. Callers must ensure this can never happen
+		ThreadHelper.ThrowIfNotOnUIThread();
+
+		try
+		{
+			_ReferenceAddedEventHandler ??= new _dispReferencesEvents_ReferenceAddedEventHandler(OnReferenceAdded);
+
+			events.ReferencesEvents.ReferenceAdded += _ReferenceAddedEventHandler;
+
+			// Diag.Trace("Added _ReferenceAddedEventHandler");
 		}
 		catch (Exception ex)
 		{
@@ -925,6 +1011,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	/// <returns></returns>
 	async Task HandleReferenceAddedAsync(Reference reference)
 	{
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(); // Debug
+
 		if (!Uig.ValidateConfig || reference.Type != prjReferenceType.prjReferenceTypeAssembly
 			|| (reference.Name.ToLower() != SystemData.EFProvider.ToLower()
 			&& reference.Name.ToLower() != SystemData.Invariant.ToLower()))
@@ -932,7 +1020,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			return;
 		}
 
-		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+		// await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 		// There simply is no other event that is fired when a project object is complete so we're recycling
 		// the referenceadded event to the back of the UI thread queue until it's available.
@@ -943,14 +1031,13 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		{
 			if (++_RefCnt < 1000)
 			{
-				Diag.Trace("RECYCLING HandleReferenceAddedAsync for Project: " + reference.ContainingProject.Name + " for GlobalReference: " + reference.Name);
+				Diag.Trace("RECYCLING HandleReferenceAddedAsync for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
 
-				_ = Task.Delay(100).ContinueWith(_ => HandleReferenceAddedAsync(reference), TaskScheduler.Current);
+				_ = Task.Delay(200).ContinueWith(_ => HandleReferenceAddedAsync(reference), TaskScheduler.Current);
 			}
 			return;
 		}
 
-		Diag.Trace("HandleReferenceAddedAsync is through for Project: " + reference.ContainingProject.Name + " for GlobalReference: " + reference.Name);
 
 		// This condition can only be true if a solution was closed after successfully being validated which means we can sign it off
 		// as valid. That means no more recursive updates on edmx's or app.config. Only adding dll references can trigger an app.config update
@@ -964,37 +1051,37 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 		ProjectItem config = null;
 
-		if (IsValidExecutableProjectType(reference.ContainingProject))
+		if (reference.Name.ToLower() == SystemData.EFProvider.ToLower() && !Uig.IsConfiguredEFStatus(reference.ContainingProject))
 		{
-			if (reference.Name.ToLower() == SystemData.EFProvider.ToLower() && !Uig.IsConfiguredEFStatus(reference.ContainingProject))
+			Diag.Trace("HandleReferenceAddedAsync is through for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
+
+			config ??= GetAppConfigProjectItem(reference.ContainingProject);
+
+			if (config != null)
 			{
-				config ??= GetAppConfigProjectItem(reference.ContainingProject);
-
-				if (config != null)
-				{
-					if (!ConfigureEntityFramework(config, false))
-						Uig.IsValidateFailedStatus = true;
-				}
-				else
-				{
+				if (!ConfigureEntityFramework(config, false))
 					Uig.IsValidateFailedStatus = true;
-				}
 			}
-			else if (reference.Name.ToLower() == SystemData.Invariant.ToLower() && !Uig.IsConfiguredDbProviderStatus(reference.ContainingProject))
+			else
 			{
-				config ??= GetAppConfigProjectItem(reference.ContainingProject);
-
-				if (config != null)
-				{
-					if (!ConfigureDbProvider(config, false))
-						Uig.IsValidateFailedStatus = true;
-				}
-				else
-				{
-					Uig.IsValidateFailedStatus = true;
-				}
+				Uig.IsValidateFailedStatus = true;
 			}
+		}
+		else if (reference.Name.ToLower() == SystemData.Invariant.ToLower() && !Uig.IsConfiguredDbProviderStatus(reference.ContainingProject))
+		{
+			Diag.Trace("HandleReferenceAddedAsync is through for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
 
+			config ??= GetAppConfigProjectItem(reference.ContainingProject);
+
+			if (config != null)
+			{
+				if (!ConfigureDbProvider(config, false))
+					Uig.IsValidateFailedStatus = true;
+			}
+			else
+			{
+				Uig.IsValidateFailedStatus = true;
+			}
 		}
 	}
 
@@ -1009,7 +1096,6 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-
 		// Recycle until project object is complete if necessary
 		if (project.Properties == null)
 		{
@@ -1017,7 +1103,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			{
 				Diag.Trace("RECYCLING Project: " + project.Name + " for AfterOpenProject");
 
-				_ = Task.Delay(100).ContinueWith(_ => HandleAfterOpenProjectAsync(project), TaskScheduler.Current);
+				_ = Task.Delay(200).ContinueWith(_ => HandleAfterOpenProjectAsync(project), TaskScheduler.Current);
 			}
 			return;
 		}
@@ -1032,9 +1118,11 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		// to continue recycling
 		_RefCnt = 0;
 
-
-		if (!IsValidExecutableProjectType(project) || (Uig.IsConfiguredDbProviderStatus(project) && Uig.IsConfiguredEFStatus(project) && Uig.IsUpdatedEdmxsStatus(project)))
+		if (Uig.IsScannedStatus(project) || !IsValidExecutableProjectType(project)
+			|| (Uig.IsConfiguredDbProviderStatus(project) && Uig.IsConfiguredEFStatus(project) && Uig.IsUpdatedEdmxsStatus(project)))
+		{
 			return;
+		}
 
 
 		RecursiveValidateProject(project);
@@ -1057,10 +1145,10 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	// Events that we handle are listed first
 
 	/// <summary>
-	/// /// Event handler for the global Project <see cref="_dispReferencesEvents_Event.ReferenceAdded"/> event
+	/// /// Event handler for the Project <see cref="_dispReferencesEvents_Event.ReferenceAdded"/> event
 	/// </summary>
 	/// <param name="reference"></param>
-	void OnGlobalReferenceAdded(Reference reference) => _ = HandleReferenceAddedAsync(reference);
+	void OnReferenceAdded(Reference reference) => _ = HandleReferenceAddedAsync(reference);
 
 
 
