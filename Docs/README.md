@@ -64,7 +64,7 @@ The BlackbirdSql new query command simply filters the table selection list (base
 Refreshing the table selection list will include both System and User tables.
 
 If you're planning on using EF Core and/or .NET, VS does not have wizard support for edmx which makes no sense to me.
-This roadblock is easily overcome by creating a separate project using .NET Framework for your data models and then linking your .NET / EF Core projects to those datasets.
+This roadblock is easily overcome by creating a separate project using .NET Framework for your data models and then linking your .NET / EF Core projects to those edmx models.
 
 The intention with this package is to maintain a small footprint. We're not going to start altering VS menus and taking over the Visual Studio IDE. It is a data source UI provider for Firebird and the benchmark is the SqlServer provider, so whatever UI functionality is available for SqlServer is on the ToDo list for Firebird.
 
