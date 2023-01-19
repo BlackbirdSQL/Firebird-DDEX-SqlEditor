@@ -51,8 +51,6 @@ public partial class ConnectionPromptDialog : DataConnectionPromptDialog
 
 	public ConnectionPromptDialog()
 	{
-		Diag.Trace();
-
 		InitializeComponent();
 
 		int width = savePasswordCheckBox.PreferredSize.Width;

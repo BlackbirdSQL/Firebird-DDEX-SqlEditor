@@ -35,13 +35,10 @@ public class MappedObjectConverter : AdoDotNetMappedObjectConverter
 {
 	public MappedObjectConverter(IVsDataConnection connection) : base(connection)
 	{
-		Diag.Trace();
 	}
 
 	protected override DbType GetDbTypeFromNativeType(string nativeType)
 	{
-		Diag.Trace();
-
 		DataRow[] rows = this.DataTypes.Select(String.Format("TypeName = '{0}'", nativeType));
 
 		if (rows != null && rows.Length > 0)
@@ -54,8 +51,6 @@ public class MappedObjectConverter : AdoDotNetMappedObjectConverter
 
 	protected override int GetProviderTypeFromNativeType(string nativeType)
 	{
-		Diag.Trace();
-
 		DataRow[] rows = this.DataTypes.Select(String.Format("TypeName = '{0}'", nativeType));
 
 		if (rows != null && rows.Length > 0)
@@ -68,8 +63,6 @@ public class MappedObjectConverter : AdoDotNetMappedObjectConverter
 
 	protected override Type GetFrameworkTypeFromNativeType(string nativeType)
 	{
-		Diag.Trace();
-
 		DataRow[] rows = this.DataTypes.Select(String.Format("TypeName = '{0}'", nativeType));
 
 		if (rows != null && rows.Length > 0)

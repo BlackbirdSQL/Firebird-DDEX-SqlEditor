@@ -35,12 +35,10 @@ class ObjectSelector : AdoDotNetObjectSelector
 
 	public ObjectSelector()
 	{
-		Diag.Trace();
 	}
 
 	public ObjectSelector(IVsDataConnection connection) : base(connection)
 	{
-		Diag.Trace();
 	}
 
 
@@ -51,20 +49,6 @@ class ObjectSelector : AdoDotNetObjectSelector
 	   string[] properties,
 	   object[] parameters)
 	{
-		string str = "Type: " + typeName + " Parameters: ";
-
-		if (parameters != null)
-		{
-			foreach (object o in parameters)
-			{
-				if (o == null)
-					str += "null,";
-				else
-					str += o.ToString() + ",";
-			}
-
-		}
-
 
 		try
 		{
@@ -103,8 +87,6 @@ class ObjectSelector : AdoDotNetObjectSelector
 					throw new NotImplementedException();
 				}
 
-				str += " Restrictions: ";
-
 				if (DataToolsCommands.ObjectType != DataToolsCommands.DataObjectType.None
 					&& typeName == "Table" && parameters != null && parameters.Length > 0 && (string)parameters[0] == "Tables"
 					&& restrictions != null && restrictions.Length > 3 && restrictions[3] == null)
@@ -113,18 +95,35 @@ class ObjectSelector : AdoDotNetObjectSelector
 				}
 				DataToolsCommands.ObjectType = DataToolsCommands.DataObjectType.None;
 
+				/*
+				string str = "Type: " + typeName + " Parameters: ";
+
+				if (parameters != null)
+				{
+					foreach (object o in parameters)
+					{
+						if (o == null)
+							str += "null,";
+						else
+							str += o.ToString() + ",";
+					}
+
+				}
+				str += " Restrictions: ";
+				*/
+
 				string[] array = null;
 				if (restrictions != null)
 				{
 					array = new string[restrictions.Length];
 					for (int i = 0; i < array.Length; i++)
 					{
-						str += (restrictions[i] != null) ? restrictions[i].ToString() : "null,";
+						// str += (restrictions[i] != null) ? restrictions[i].ToString() : "null,";
 						array[i] = (restrictions[i] != null) ? restrictions[i].ToString() : null;
 					}
 				}
 
-				Diag.Trace(str);
+				// Diag.Trace(str);
 
 				base.Site.EnsureConnected();
 				DataTable schema = dbConnection.GetSchema(parameters[0].ToString(), array);
@@ -145,7 +144,6 @@ class ObjectSelector : AdoDotNetObjectSelector
 			finally
 			{
 				base.Site.UnlockProviderObject();
-				Diag.Trace(typeName);
 			}
 		}
 		catch (Exception ex)
@@ -158,20 +156,6 @@ class ObjectSelector : AdoDotNetObjectSelector
 
 	protected override IList<string> GetSupportedRestrictions(string typeName, object[] parameters)
 	{
-		string str = "Type: " + typeName + " Parameters: ";
-
-		if (parameters != null)
-		{
-			foreach (object o in parameters)
-			{
-				if (o == null)
-					str += "null,";
-				else
-					str += o.ToString() + ",";
-			}
-
-		}
-
 
 		IList<string> list;
 
@@ -185,6 +169,19 @@ class ObjectSelector : AdoDotNetObjectSelector
 			throw;
 		}
 
+		/*
+		string str = "Type: " + typeName + " Parameters: ";
+		if (parameters != null)
+		{
+			foreach (object o in parameters)
+			{
+				if (o == null)
+					str += "null,";
+				else
+					str += o.ToString() + ",";
+			}
+
+		}
 		str += " Restrictions: ";
 		if (list != null)
 		{
@@ -192,8 +189,8 @@ class ObjectSelector : AdoDotNetObjectSelector
 				str += list[i] + ",";
 		}
 
-
 		Diag.Trace(str);
+		*/
 
 		// Table type hack
 		if (typeName == "Table" || typeName == "SystemTable")
@@ -217,19 +214,6 @@ class ObjectSelector : AdoDotNetObjectSelector
 	
 	protected override IList<string> GetRequiredRestrictions(string typeName, object[] parameters)
 	{
-		string str = "Type: " + typeName + " Parameters: ";
-		if (parameters != null)
-		{
-			foreach (object o in parameters)
-			{
-				if (o == null)
-					str += "null,";
-				else
-					str += o.ToString() + ",";
-			}
-
-		}
-
 
 		IList<string> list;
 
@@ -243,6 +227,19 @@ class ObjectSelector : AdoDotNetObjectSelector
 			throw;
 		}
 
+		/*
+		string str = "Type: " + typeName + " Parameters: ";
+		if (parameters != null)
+		{
+			foreach (object o in parameters)
+			{
+				if (o == null)
+					str += "null,";
+				else
+					str += o.ToString() + ",";
+			}
+
+		}
 		str += " Restrictions: ";
 		if (list != null)
 		{
@@ -250,8 +247,8 @@ class ObjectSelector : AdoDotNetObjectSelector
 				str += list[i] + ",";
 		}
 
-
 		Diag.Trace(str);
+		*/
 
 		return list;
 	}
@@ -267,7 +264,6 @@ class ObjectSelector : AdoDotNetObjectSelector
 	string[] properties,
 	object[] parameters)
 	{
-		Diag.Trace();
 
 		IVsDataReader dataReader;
 
@@ -304,7 +300,6 @@ class ObjectSelector : AdoDotNetObjectSelector
 
 	static DataTable SelectTables(FbConnection connection, object[] restrictions)
 	{
-		Diag.Trace();
 
 		var command = connection.CreateCommand();
 		command.CommandText =
@@ -327,7 +322,6 @@ class ObjectSelector : AdoDotNetObjectSelector
 
 	static DataTable SelectTableColumns(FbConnection connection, object[] restrictions)
 	{
-		Diag.Trace();
 
 		var command = connection.CreateCommand();
 		command.CommandText =
@@ -374,8 +368,6 @@ class ObjectSelector : AdoDotNetObjectSelector
 
 	static DataTable SelectTableTriggers(FbConnection connection, object[] restrictions)
 	{
-		Diag.Trace();
-
 		var command = connection.CreateCommand();
 		command.CommandText =
 		@"
@@ -401,8 +393,6 @@ class ObjectSelector : AdoDotNetObjectSelector
 
 	static DataTable SelectViews(FbConnection connection, object[] restrictions)
 	{
-		Diag.Trace();
-
 		var command = connection.CreateCommand();
 		command.CommandText =
 		@"
@@ -424,8 +414,6 @@ class ObjectSelector : AdoDotNetObjectSelector
 
 	static DataTable SelectViewColumns(FbConnection connection, object[] restrictions)
 	{
-		Diag.Trace();
-
 		var command = connection.CreateCommand();
 		command.CommandText =
 		@"
@@ -450,8 +438,6 @@ class ObjectSelector : AdoDotNetObjectSelector
 
 	static DataTable SelectViewTriggers(FbConnection connection, object[] restrictions)
 	{
-		Diag.Trace();
-
 		var command = connection.CreateCommand();
 		command.CommandText =
 		@"

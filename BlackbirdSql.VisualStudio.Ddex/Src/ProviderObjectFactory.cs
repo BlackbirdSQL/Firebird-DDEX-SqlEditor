@@ -43,13 +43,11 @@ public sealed class ProviderObjectFactory : DataProviderObjectFactory, IProvider
 
 	public ProviderObjectFactory()
 	{
-		Diag.Trace();
-
 		// Adding FirebirdClient to assembly cache asynchronously
 		if (DbProviderFactoriesEx.AddAssemblyToCache(typeof(FirebirdClientFactory),
 			Properties.Resources.Provider_ShortDisplayName, Properties.Resources.Provider_DisplayName))
 		{
-			Diag.Trace("DbProviderFactory added to assembly cache");
+			// Diag.Trace("DbProviderFactory added to assembly cache");
 
 			AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
 			{
@@ -70,8 +68,6 @@ public sealed class ProviderObjectFactory : DataProviderObjectFactory, IProvider
 			// is dead
 			// _ = new Data.ServiceHub.DbConfigurationEx();
 
-			Diag.Trace("DbConfigurationEx EF Service Provider added");
-
 		}
 		else
 		{
@@ -88,7 +84,7 @@ public sealed class ProviderObjectFactory : DataProviderObjectFactory, IProvider
 
 	public override object CreateObject(Type objType)
 	{
-		Diag.Trace("CreateObject: " + objType.FullName);
+		// Diag.Trace("CreateObject: " + objType.FullName);
 
 
 		if (objType == typeof(IVsDataConnectionSupport))

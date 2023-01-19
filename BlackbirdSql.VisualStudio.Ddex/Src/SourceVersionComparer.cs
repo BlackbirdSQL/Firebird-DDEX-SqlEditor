@@ -13,14 +13,11 @@ internal class SourceVersionComparer : DataSourceVersionComparer, IComparer<stri
 {
 	public SourceVersionComparer()
 	{
-		Diag.Trace();
 		base.Comparer = this;
 	}
 
 	public int Compare(string x, string y)
 	{
-		Diag.Trace();
-
 		if (x == null && y == null)
 		{
 			return 0;

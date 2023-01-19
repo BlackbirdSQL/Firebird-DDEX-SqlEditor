@@ -43,8 +43,6 @@ internal static class DbXmlUpdater
 
 		try
 		{
-			Diag.Trace("Config file path: " + xmlPath);
-
 			XmlDocument xmlDoc = new XmlDocument();
 
 			try
@@ -116,8 +114,6 @@ internal static class DbXmlUpdater
 
 		try
 		{
-			Diag.Trace("Config file path: " + xmlPath);
-
 			XmlDocument xmlDoc = new XmlDocument();
 
 			try
@@ -198,8 +194,6 @@ internal static class DbXmlUpdater
 
 			if (xmlNode == null)
 			{
-				Diag.Trace("No EF section found");
-
 				modified = true;
 
 				xmlNode = xmlDoc.CreateNode(XmlNodeType.Element, "entityFramework", "");
@@ -215,8 +209,6 @@ internal static class DbXmlUpdater
 
 			if (xmlNode == null)
 			{
-				Diag.Trace("No defaultConnectionFactory node found");
-
 				modified = true;
 
 				xmlNode = xmlDoc.CreateNode(XmlNodeType.Element, "defaultConnectionFactory", "");
@@ -231,8 +223,6 @@ internal static class DbXmlUpdater
 
 			if (xmlNode == null)
 			{
-				Diag.Trace("No EF providers section found");
-
 				modified = true;
 
 				xmlNode = xmlDoc.CreateNode(XmlNodeType.Element, "providers", "");
@@ -247,8 +237,6 @@ internal static class DbXmlUpdater
 
 			if (xmlNode == null)
 			{
-				Diag.Trace("No provider node found");
-
 				modified = true;
 
 				xmlNode = xmlDoc.CreateNode(XmlNodeType.Element, "provider", "");
@@ -330,8 +318,6 @@ internal static class DbXmlUpdater
 
 			if (xmlNode == null)
 			{
-				Diag.Trace("No system.data section found");
-
 				modified = true;
 
 				xmlNode = xmlDoc.CreateNode(XmlNodeType.Element, "system.data", "");
@@ -347,8 +333,6 @@ internal static class DbXmlUpdater
 
 			if (xmlNode == null)
 			{
-				Diag.Trace("No DbProviderFactories section found");
-
 				modified = true;
 
 				xmlNode = xmlDoc.CreateNode(XmlNodeType.Element, "DbProviderFactories", "");
@@ -367,8 +351,6 @@ internal static class DbXmlUpdater
 
 			if (xmlNode == null)
 			{
-				Diag.Trace("No 'add' node found");
-
 				modified = true;
 
 				xmlNode = xmlDoc.CreateNode(XmlNodeType.Element, "add", "");
@@ -442,8 +424,6 @@ internal static class DbXmlUpdater
 
 		try
 		{
-			Diag.Trace(".edmx file path: " + xmlPath);
-
 			XmlDocument xmlDoc = new XmlDocument();
 
 			try
@@ -483,29 +463,19 @@ internal static class DbXmlUpdater
 			}
 
 			if (xmlNode == null)
-			{
-				Diag.Trace("NO ssdlBlackbird:Schema[@Provider= Schema found");
 				return false;
-			}
 
-			Diag.Trace("ssdlBlackbird:Schema[@Provider='" + SystemData.Invariant + "'] Schema found");
 
 			xmlNode = xmlRoot.SelectSingleNode("//edmxBlackbird:Designer/edmxBlackbird:Options/edmxBlackbird:DesignerInfoPropertySet/edmxBlackbird:DesignerProperty[@Name='UseLegacyProvider']", xmlNs);
 
 			if (xmlNode == null)
-			{
-				Diag.Trace("No UseLegacyProvider node found");
 				return false;
-			}
 
 
 			xmlAttr = (XmlAttribute)xmlNode.Attributes.GetNamedItem("Value");
 
 			if (xmlAttr != null && xmlAttr.Value == "false")
-			{
-				Diag.Trace("UseLegacyProvider.Value attribute is ok and false: " + xmlAttr.Value);
 				return false;
-			}
 
 			if (xmlAttr == null)
 			{

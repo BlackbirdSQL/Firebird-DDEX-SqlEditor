@@ -41,7 +41,6 @@ internal class ObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 
 	public ObjectIdentifierConverter(IVsDataConnection connection) : base(connection)
 	{
-		Diag.Trace();
 	}
 
 	#endregion
@@ -52,11 +51,9 @@ internal class ObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 	{
 		if (identifierPart is null or DBNull)
 		{
-			Diag.Trace("Identifier is null");
+			Diag.Dug(true, "Identifier is null");
 			return null;
 		}
-
-		Diag.Trace();
 
 		IVsDataSourceInformation sourceInformation;
 		string openQuote;
@@ -74,8 +71,8 @@ internal class ObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 			identifierPartString = openQuote + identifierPartString + closeQuote;
 		}
 
-		Diag.Trace("Converted identifier: " + identifierPartString);
-		// return ((identifier != null) ? identifier : String.Empty);
+		// Diag.Trace("Converted identifier: " + identifierPartString);
+
 		return identifierPartString;
 	}
 

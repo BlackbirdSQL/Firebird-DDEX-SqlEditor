@@ -38,7 +38,6 @@ namespace BlackbirdSql.VisualStudio.Ddex
 
 		public ConnectionUIControl()
 		{
-			Diag.Trace();
 			InitializeComponent();
 		}
 
@@ -48,8 +47,6 @@ namespace BlackbirdSql.VisualStudio.Ddex
 
 		public override void LoadProperties()
 		{
-			Diag.Trace();
-
 			if (Site != null && Site.TryGetValue("Data Source", out object value))
 				txtDataSource.Text = (string)value;
 			else
@@ -151,8 +148,6 @@ namespace BlackbirdSql.VisualStudio.Ddex
 
 		private void CmdGetFile_Click(object sender, EventArgs e)
 		{
-			Diag.Trace();
-
 			if (openFileDialog.ShowDialog() == DialogResult.OK)
 			{
 				txtDatabase.Text = openFileDialog.FileName;

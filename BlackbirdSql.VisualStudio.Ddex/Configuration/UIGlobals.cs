@@ -417,6 +417,61 @@ internal class UIGlobals
 
 
 	/// <summary>
+	/// Checks wether the project is a valid executable output type that requires configuration of the app.config
+	/// </summary>
+	/// <param name="project"></param>
+	/// <returns>true if the project is a valid C#/VB executable project else false</returns>
+	/// <remarks>
+	/// We're not going to worry about anything but C# and VB projects
+	/// </remarks>
+	public bool IsValidExecutableProjectType(Project project)
+	{
+		// We should already be on UI thread. Callers must ensure this can never happen
+		try
+		{
+			ThreadHelper.ThrowIfNotOnUIThread();
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			return false;
+		}
+
+		if (IsValidatedStatus(project.Globals))
+			return IsValidStatus(project.Globals);
+
+		// We're only supporting C# and VB projects for this - a dict list is at the end of this class
+		if (project.Kind != "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
+			&& project.Kind != "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}")
+		{
+			SetIsValidStatus(project.Globals, false);
+			return false;
+		}
+
+		int outputType = int.MaxValue;
+
+		if (project.Properties != null && project.Properties.Count > 0)
+		{
+			Property property = project.Properties.Item("OutputType");
+			if (property != null)
+				outputType = (int)property.Value;
+		}
+
+
+		bool result = false;
+
+		if (outputType < 2)
+			result = true;
+
+		SetIsValidStatus(project.Globals, result);
+
+		return result;
+
+	}
+
+
+
+	/// <summary>
 	/// Verifies whether or not a solution has been validated or a project is a valid C#/VB executable. See remarks.
 	/// </summary>
 	/// <param name="globals"></param>

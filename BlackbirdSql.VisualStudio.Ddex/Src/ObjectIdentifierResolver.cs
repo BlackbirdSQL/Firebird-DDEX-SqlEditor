@@ -39,7 +39,6 @@ internal class ObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	public ObjectIdentifierResolver(IVsDataConnection connection) : base(connection)
 	{
-		Diag.Trace();
 	}
 
 	#endregion
@@ -48,23 +47,24 @@ internal class ObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	public override object[] ContractIdentifier(string typeName, object[] fullIdentifier)
 	{
-		string str = "";
-
-		if (fullIdentifier != null)
-		{
-			foreach(object item in fullIdentifier)
-			{
-				str += (item != null ? item.ToString() : "null") + ", ";
-			}
-		}
-
 		if (typeName == null)
 		{
 			Diag.Dug(true, "Null argument: typeName");
 			throw new ArgumentNullException("typeName");
 		}
 
+		/*
+		string str = "";
+
+		if (fullIdentifier != null)
+		{
+			foreach (object item in fullIdentifier)
+			{
+				str += (item != null ? item.ToString() : "null") + ", ";
+			}
+		}
 		Diag.Trace(String.Format("typeName: {0} Identifiers: {1}", typeName, str));
+		*/
 
 		if (typeName == ObjectTypes.Root)
 		{
@@ -97,7 +97,7 @@ internal class ObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	public override object[] ExpandIdentifier(string typeName, object[] partialIdentifier)
 	{
-		Diag.Trace(String.Format("ExpandIdentifier({0},...)", typeName));
+		// Diag.Trace(String.Format("ExpandIdentifier({0},...)", typeName));
 
 		if (typeName == null)
 		{
@@ -150,7 +150,7 @@ internal class ObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	private int GetIdentifierLength(string typeName)
 	{
-		Diag.Trace(String.Format("GetIdentifierLength({0})", typeName));
+		// Diag.Trace(String.Format("GetIdentifierLength({0})", typeName));
 
 		switch (typeName)
 		{

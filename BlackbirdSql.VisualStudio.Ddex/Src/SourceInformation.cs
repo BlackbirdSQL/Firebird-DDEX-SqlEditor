@@ -39,13 +39,10 @@ internal class SourceInformation : AdoDotNetSourceInformation
 
 	public SourceInformation() : this(default)
 	{
-		Diag.Trace();
 	}
 
 	public SourceInformation(IVsDataConnection connection) : base(connection)
 	{
-		Diag.Trace();
-
 		base.AddProperty(CatalogSupported, false);
 		base.AddProperty(CatalogSupportedInDml, false);
 		base.AddProperty(DefaultCatalog, null);
@@ -70,8 +67,6 @@ internal class SourceInformation : AdoDotNetSourceInformation
 
 	protected override object RetrieveValue(string propertyName)
 	{
-		Diag.Trace("Property: " + propertyName);
-
 		try
 		{
 			switch (propertyName)

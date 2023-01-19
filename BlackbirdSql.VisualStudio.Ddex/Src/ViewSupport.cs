@@ -33,9 +33,7 @@ internal class ViewSupport : DataViewSupport
 	#region · Constructors ·
 
 	public ViewSupport(string resourceName, Assembly assembly) : base(resourceName, assembly)
-//	public ViewSupport() : base("BlackbirdSql.VisualStudio.Ddex.ViewSupport", typeof(ViewSupport).Assembly)
 	{
-		Diag.Trace();
 	}
 
 	#endregion

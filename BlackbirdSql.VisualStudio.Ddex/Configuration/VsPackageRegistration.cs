@@ -24,8 +24,6 @@ internal sealed class VsPackageRegistration: RegistrationAttribute
 	/// </remarks>
 	public override void Register(RegistrationContext context)
 	{
-		// Diag.Trace();
-
 		if (context == null)
 		{
 			Diag.Dug(true, "Null argument: context");
@@ -144,8 +142,6 @@ internal sealed class VsPackageRegistration: RegistrationAttribute
 	/// </summary>
 	public override void Unregister(RegistrationContext context)
 	{
-		// Diag.Trace();
-
 		if (context == null)
 		{
 			Diag.Dug(true, "Null argument: context");

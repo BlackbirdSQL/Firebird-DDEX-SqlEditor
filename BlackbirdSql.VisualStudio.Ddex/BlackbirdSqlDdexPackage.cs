@@ -222,8 +222,6 @@ namespace BlackbirdSql.VisualStudio.Ddex
 		{
 			await base.InitializeAsync(cancellationToken, progress);
 
-			Diag.Trace();
-
 
 			AddService
 			(
@@ -232,22 +230,8 @@ namespace BlackbirdSql.VisualStudio.Ddex
 				promote: true
 			);
 
-			Diag.Trace("IProviderObjectFactory service added");
-
-			// Taken DbProviderFactoriesEx.AddAssemblyToCache() out of here and into ProviderObjectFactory()
-
-
-			// We're switching to main thread because this is loading too slowly and unavailable in the server
-			// explorer while background tasks are still loading
-			// We'll see  if it helps (Nope... if anything seems to be worse)
-
 			
-			// await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-
 			_ = AdviseSolutionEventsAsync();
-
-
-			Diag.Trace("Package initialization complete");
 
 		}
 
@@ -277,7 +261,6 @@ namespace BlackbirdSql.VisualStudio.Ddex
 				return;
 			}
 
-			Diag.Trace("DTE is loaded");
 
 			// Get the solution service
 			_Solution = await GetServiceAsync(typeof(SVsSolution)).ConfigureAwait(false) as IVsSolution;

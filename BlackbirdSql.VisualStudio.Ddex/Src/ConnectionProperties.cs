@@ -63,7 +63,6 @@ internal class ConnectionProperties : AdoDotNetConnectionProperties
 
 	public ConnectionProperties()
 	{
-		Diag.Trace();
 	}
 
 	#endregion

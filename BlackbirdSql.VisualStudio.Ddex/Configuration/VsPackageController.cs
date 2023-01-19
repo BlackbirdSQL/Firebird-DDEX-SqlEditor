@@ -179,20 +179,38 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		UnadviseSolutionEvents(false);
 
 
+		// This is a once off procedure for solutions and their projects. (ie. Once validated always validated)
 		// We're going to check each project that gets loaded (or has a reference added) if it
-		// references EntityFramework.Firebird.dll.
-		// If it is we'll check the app.config EntityFramework/providers section for EntityFramework.Firebird
-		// and hook into the resolver if it's not there as well as configure the app.config if the VS Option is set
+		// references EntityFramework.Firebird.dll else FirebirdSql.Data.FirebirdClient.dll.
+		// If it is we'll check the app.config DbProvider and EntityFramework sections and update if necessary.
+		// We also check (once and only once) within a project for any Firebird edmxs with legacy settings and update
+		// those, because they cannot work with newer versions of EntityFramework.Firebird.
+		// (This validation can be disabled in Visual Studio's options.)
 
 
 		// Enable solution event capture
 		_Solution.AdviseSolutionEvents(this, out _HSolutionEvents);
 
+
 		// Raise open project event handler for projects that are already loaded
 		// This can happen on IDE startup and a solution was opened with some projects
-		// loaded before we were given access to the IDE context
+		// loaded before our package was sited.
 		if ((Uig.ValidateConfig || Uig.ValidateEdmx) && _Dte.Solution != null)
 		{
+			// Everything is synchronous within this particular call stack.
+			// We cannot have projects being loaded while we're checking for any projects that may have been loaded.
+			//
+			// Also this condition is for a very particular set of circumstances:
+			//		1. The developer started up a fresh IDE instance and went straight into opening a solution before
+			//			the IDE shell was fully loaded.
+			//			ie. Our package had been given the ide context but was not yet sited.
+			//		2. Subsequent to installing our vsix, this particular solution had never before been opened.
+			//			ie. it's a first for this solution since installing our extension.
+			//		3. At least one of this solution's projects had been loaded before we were sited.
+			//			iow. Any projects whose OnAfterOpen events have already been fired.
+
+
+			// No projects loaded yet if null
 			if (_Dte.Solution.Projects != null && _Dte.Solution.Projects.Count > 0)
 			{
 				// We only ever go through this once so if a solution was previously in a validation state
@@ -209,9 +227,11 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 						{
 							// Projects may have already been opened. They may be irrelevant eg. unloaded
 							// project items or other non-project files, but we have to check anyway.
-							// Performance is a priority here, not compact code, because we're on the main
+							// Performance is a priority here, not compact code, because we're synchronous on the main
 							// thread, so we stay within the: 
-							// Projects > Project > ProjectItems > SubProject > ProjectItems... structure
+							// Projects > Project > ProjectItems > SubProject > ProjectItems... structure.
+							// We want to be in and out of here as fast as possible so every possible low overhead check
+							// is done first to ensure that.
 							RecursiveValidateProject(_Dte.Solution.Projects);
 						}
 						catch (Exception ex)
@@ -222,10 +242,6 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 					}
 				}
 			}
-			else
-			{
-				Diag.Trace("_Dte.Solution.Projects is null - No projects loaded yet.");
-			}
 		}
 		else
 		{
@@ -235,6 +251,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 		// Add ReferencesEvents event handling to C# and VB projects
 		/// AddReferenceAddedEventHandler(_Dte);
+
+		Diag.Trace("Package Controller is ready");
 
 	}
 
@@ -297,207 +315,6 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			{
 				Diag.Trace(projectItem.Name + " projectItem.SubProject is null (Possible Unloaded project or document)");
 			}
-		}
-	}
-
-
-
-	/// <summary>
-	/// Recursively validates a project already opened before our package was sited
-	/// </summary>
-	/// <param name="projects"></param>
-	/// <remarks>
-	/// If the project is valid and has EntityFramework referenced, the app.config is checked.
-	/// If it doesn't an <see cref="OnGlobalReferenceAdded"/> event is attached.
-	/// Updates legacy edmxs in the project
-	/// If it's a folder project is checked for child projects
-	/// </remarks>
-	private void RecursiveValidateProject(Project project)
-	{
-		// We should already be on UI thread. Callers must ensure this can never happen
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		try
-		{
-
-			ProjectItem config = null;
-
-			if (project.Kind == "{66A26720-8FB5-11D2-AA7E-00C04F688DDE}")
-			{
-				if (project.ProjectItems != null && project.ProjectItems.Count > 0)
-				{
-					Diag.Trace("Recursing SolutionFolder: " + project.Name);
-					RecursiveValidateProject(project.ProjectItems);
-				}
-				else
-				{
-					Diag.Trace("No items in SolutionFolder: " + project.Name);
-				}
-			}
-			else
-			{
-				Diag.Trace("Recursive validate project: " + project.Name);
-
-				bool failed = false;
-
-				if (IsValidExecutableProjectType(project))
-				{
-
-					if (Uig.ValidateConfig)
-					{
-						bool isConfiguredEFStatus = Uig.IsConfiguredEFStatus(project);
-						bool isConfiguredDbProviderStatus = Uig.IsConfiguredDbProviderStatus(project);
-
-
-						if (!isConfiguredEFStatus || !isConfiguredDbProviderStatus)
-						{
-
-							VSProject projectObject = project.Object as VSProject;
-							VSProject4 projectObject4 = null;
-
-							if (!isConfiguredEFStatus)
-							{
-								Diag.Trace(project.Name + ": Checking for " + SystemData.EFProvider + " and " + SystemData.Invariant);
-
-								if (projectObject.References.Find(SystemData.EFProvider) != null)
-								{
-									Diag.Trace(project.Name + ": FOUND " + SystemData.EFProvider + " REFERENCE");
-
-									isConfiguredEFStatus = true;
-									isConfiguredDbProviderStatus = true;
-
-									config ??= GetAppConfigProjectItem(project);
-									if (config != null)
-									{
-										failed |= !ConfigureEntityFramework(config, false);
-									}
-									else
-									{
-										failed = true;
-									}
-								}
-								else if ((projectObject4 ??= project.Object as VSProject4) != null && projectObject4.PackageReferences != null)
-								{
-									Diag.Trace(project.Name + " Checking for packages (" + projectObject4.PackageReferences.InstalledPackages.Length + ")");
-
-									if (projectObject4.PackageReferences.TryGetReference(SystemData.EFProvider, null,
-										out string pkgVersion, out _, out _))
-									{
-										// A legacy CSProj must cast to VSProject4 to manipulate package references
-
-										Diag.Trace(project.Name + ": FOUND " + SystemData.EFProvider + " REFERENCE PackageVersion: " + pkgVersion);
-
-										isConfiguredEFStatus = true;
-										isConfiguredDbProviderStatus = true;
-
-										config ??= GetAppConfigProjectItem(project);
-										if (config != null)
-										{
-											failed |= !ConfigureEntityFramework(config, false);
-										}
-										else
-										{
-											failed = true;
-										}
-									}
-								}
-							}
-
-							if (!isConfiguredDbProviderStatus)
-							{
-								if (projectObject.References.Find(SystemData.Invariant) != null)
-								{
-									Diag.Trace(project.Name + ": FOUND " + SystemData.Invariant + " REFERENCE");
-
-									isConfiguredDbProviderStatus = true;
-
-									config ??= GetAppConfigProjectItem(project);
-									if (config != null)
-									{
-										failed |= !ConfigureDbProvider(config, false);
-									}
-									else
-									{
-										failed = true;
-									}
-								}
-								else if ((projectObject4 ??= project.Object as VSProject4) != null && projectObject4.PackageReferences != null)
-								{
-
-									Diag.Trace(project.Name + " Checking for packages (" + projectObject4.PackageReferences.InstalledPackages.Length + ")");
-
-									if (projectObject4.PackageReferences.TryGetReference(SystemData.Invariant, null,
-										out string pkgVersion, out _, out _))
-									{
-										Diag.Trace(project.Name + ": FOUND " + SystemData.Invariant + " REFERENCE PackageVersion: " + pkgVersion);
-
-										isConfiguredDbProviderStatus = true;
-
-										config ??= GetAppConfigProjectItem(project);
-										if (config != null)
-										{
-											failed |= !ConfigureDbProvider(config, false);
-										}
-										else
-										{
-											failed = true;
-										}
-									}
-								}
-							}
-
-							if (!isConfiguredEFStatus || !isConfiguredDbProviderStatus)
-							{
-								AddReferenceAddedEventHandler(projectObject4 != null ? projectObject4.Events : projectObject.Events);
-							}
-
-
-						}
-					}
-
-
-
-					if (Uig.ValidateEdmx && !Uig.IsValidStatus(SolutionGlobals) && !Uig.IsUpdatedEdmxsStatus(project))
-					{
-						Diag.Trace(project.Name + ": Updating edmxs");
-
-						bool success = true;
-
-						try
-						{
-							foreach (ProjectItem item in project.ProjectItems)
-							{
-								if (!RecursiveValidateProjectItem(item))
-									success = false;
-							}
-						}
-						catch (Exception ex)
-						{
-							success = false;
-							Diag.Dug(ex);
-						}
-
-						if (success)
-							Uig.SetIsUpdatedEdmxsStatus(project);
-						else
-							Uig.IsValidateFailedStatus = true;
-
-						Diag.Trace(project.Name + ": Edmxs update check " + (success ? "successful" : "failed"));
-					}
-
-				}
-
-				if (failed)
-					Uig.IsValidateFailedStatus = true;
-				else
-					Uig.SetIsScannedStatus(project);
-
-
-			}
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
 		}
 	}
 
@@ -593,58 +410,196 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 	/// <summary>
-	/// Checks wether the project is a valid executable output type that requires configuration of the app.config
+	/// Recursively validates a project already opened before our package was sited
 	/// </summary>
-	/// <param name="project"></param>
-	/// <returns>true if the project is a valid C#/VB executable project else false</returns>
+	/// <param name="projects"></param>
 	/// <remarks>
-	/// We're not going to worry about anything but C# and VB projects
+	/// If the project is valid and has EntityFramework referenced, the app.config is checked.
+	/// If it doesn't an <see cref="OnGlobalReferenceAdded"/> event is attached.
+	/// Updates legacy edmxs in the project
+	/// If it's a folder project is checked for child projects
 	/// </remarks>
-	bool IsValidExecutableProjectType(Project project)
+	private void RecursiveValidateProject(Project project)
 	{
 		// We should already be on UI thread. Callers must ensure this can never happen
+		ThreadHelper.ThrowIfNotOnUIThread();
+
 		try
 		{
-			ThreadHelper.ThrowIfNotOnUIThread();
+
+			ProjectItem config = null;
+
+			// There's a dict list of these at the end of the class
+			if (project.Kind == "{66A26720-8FB5-11D2-AA7E-00C04F688DDE}")
+			{
+				if (project.ProjectItems != null && project.ProjectItems.Count > 0)
+				{
+					Diag.Trace("Recursing SolutionFolder: " + project.Name);
+					RecursiveValidateProject(project.ProjectItems);
+				}
+				else
+				{
+					Diag.Trace("No items in SolutionFolder: " + project.Name);
+				}
+			}
+			else
+			{
+				Diag.Trace("Recursive validate project: " + project.Name);
+
+				bool failed = false;
+
+				if (Uig.IsValidExecutableProjectType(project))
+				{
+
+					if (Uig.ValidateConfig)
+					{
+						bool isConfiguredEFStatus = Uig.IsConfiguredEFStatus(project);
+						bool isConfiguredDbProviderStatus = Uig.IsConfiguredDbProviderStatus(project);
+
+
+						if (!isConfiguredEFStatus || !isConfiguredDbProviderStatus)
+						{
+
+							VSProject projectObject = project.Object as VSProject;
+							VSProject4 projectObject4 = null;
+
+							if (!isConfiguredEFStatus)
+							{
+								if (projectObject.References.Find(SystemData.EFProvider) != null)
+								{
+									Diag.Trace(project.Name + " FOUND REFERENCE:" + SystemData.EFProvider);
+
+									isConfiguredEFStatus = true;
+									isConfiguredDbProviderStatus = true;
+
+									config ??= GetAppConfigProjectItem(project);
+									if (config != null)
+									{
+										failed |= !ConfigureEntityFramework(config, false);
+									}
+									else
+									{
+										failed = true;
+									}
+								}
+								else if ((projectObject4 ??= project.Object as VSProject4) != null && projectObject4.PackageReferences != null)
+								{
+									if (projectObject4.PackageReferences.TryGetReference(SystemData.EFProvider, null,
+										out string pkgVersion, out _, out _))
+									{
+										// A legacy CSProj must cast to VSProject4 to manipulate package references
+
+										Diag.Trace(project.Name + " FOUND PACKAGE REFERENCE:" + SystemData.EFProvider);
+
+										isConfiguredEFStatus = true;
+										isConfiguredDbProviderStatus = true;
+
+										config ??= GetAppConfigProjectItem(project);
+										if (config != null)
+										{
+											failed |= !ConfigureEntityFramework(config, false);
+										}
+										else
+										{
+											failed = true;
+										}
+									}
+								}
+							}
+
+							if (!isConfiguredDbProviderStatus)
+							{
+								if (projectObject.References.Find(SystemData.Invariant) != null)
+								{
+									Diag.Trace(project.Name + " FOUND REFERENCE:" + SystemData.Invariant);
+
+									isConfiguredDbProviderStatus = true;
+
+									config ??= GetAppConfigProjectItem(project);
+									if (config != null)
+									{
+										failed |= !ConfigureDbProvider(config, false);
+									}
+									else
+									{
+										failed = true;
+									}
+								}
+								else if ((projectObject4 ??= project.Object as VSProject4) != null && projectObject4.PackageReferences != null)
+								{
+
+									if (projectObject4.PackageReferences.TryGetReference(SystemData.Invariant, null,
+										out string pkgVersion, out _, out _))
+									{
+										Diag.Trace(project.Name + " FOUND PACKAGE REFERENCE:" + SystemData.Invariant);
+
+										isConfiguredDbProviderStatus = true;
+
+										config ??= GetAppConfigProjectItem(project);
+										if (config != null)
+										{
+											failed |= !ConfigureDbProvider(config, false);
+										}
+										else
+										{
+											failed = true;
+										}
+									}
+								}
+							}
+
+							if (!isConfiguredEFStatus || !isConfiguredDbProviderStatus)
+							{
+								AddReferenceAddedEventHandler(projectObject4 != null ? projectObject4.Events : projectObject.Events);
+							}
+
+
+						}
+					}
+
+
+
+					if (Uig.ValidateEdmx && !Uig.IsValidStatus(SolutionGlobals) && !Uig.IsUpdatedEdmxsStatus(project))
+					{
+						bool success = true;
+
+						try
+						{
+							foreach (ProjectItem item in project.ProjectItems)
+							{
+								if (!RecursiveValidateProjectItem(item))
+									success = false;
+							}
+						}
+						catch (Exception ex)
+						{
+							success = false;
+							Diag.Dug(ex);
+						}
+
+						if (success)
+							Uig.SetIsUpdatedEdmxsStatus(project);
+						else
+							Uig.IsValidateFailedStatus = true;
+
+					}
+
+				}
+
+
+
+				if (failed)
+					Uig.IsValidateFailedStatus = true;
+				else
+					Uig.SetIsScannedStatus(project);
+
+
+			}
 		}
 		catch (Exception ex)
 		{
 			Diag.Dug(ex);
-			return false;
 		}
-
-		if (Uig.IsValidatedStatus(project.Globals))
-			return Uig.IsValidStatus(project.Globals);
-
-		// We're only supporting C# and VB projects for this - a dict list is at the end of this class
-		if (project.Kind != "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
-			&& project.Kind != "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}")
-		{
-			Uig.SetIsValidStatus(project.Globals, false);
-			return false;
-		}
-
-		int outputType = int.MaxValue;
-
-		if (project.Properties != null && project.Properties.Count > 0)
-		{
-			Property property = project.Properties.Item("OutputType");
-			if (property != null)
-				outputType = (int)property.Value;
-		}
-
-		Diag.Trace(project.Name + " output type is " + outputType);
-
-
-		bool result = false;
-
-		if (outputType < 2)
-			result = true;
-
-		Uig.SetIsValidStatus(project.Globals, result);
-
-		return result;
-
 	}
 
 
@@ -673,37 +628,23 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 		try
 		{
-			Diag.Trace(project.Name + ": Getting app.config");
-
-			try
+			foreach (ProjectItem item in project.ProjectItems)
 			{
-				foreach (ProjectItem item in project.ProjectItems)
+				if (item.Name.ToLower() == "app.config")
 				{
-					if (item.Name.ToLower() == "app.config")
-					{
-						config = item;
-						break;
-					}
+					config = item;
+					break;
 				}
 			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-				return null;
-			}
-
-			if (config == null)
-			{
-				Diag.Dug(true, project.Name + ": app.config is null");
-				return null;
-			}
-
 		}
 		catch (Exception ex)
 		{
 			Diag.Dug(ex);
 			return null;
 		}
+
+		if (config == null)
+			Diag.Dug(true, project.Name + ": app.config is null");
 
 		return config;
 
@@ -730,8 +671,6 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 		try
 		{
-			Diag.Trace(config.ContainingProject.Name + " Checking app.config DbProvider: Config IsOpen: " + config.IsOpen + " - IsDirty: " + config.IsDirty);
-
 			if (config.IsOpen)
 			{
 				System.IO.IOException ex = new System.IO.IOException(config.ContainingProject.Name + " File is open: app.config");
@@ -740,10 +679,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			}
 
 			if (config.FileCount == 0)
-			{
-				Diag.Dug(true, config.ContainingProject.Name + ": No app.config files exist");
 				return false;
-			}
 
 			string path = config.FileNames[0];
 
@@ -805,8 +741,6 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 		try
 		{
-			Diag.Trace(config.ContainingProject.Name + " Checking app.config EF: Config IsOpen: " + config.IsOpen + " - IsDirty: " + config.IsDirty);
-
 			if (config.IsOpen)
 			{
 				System.IO.IOException ex = new System.IO.IOException(config.ContainingProject.Name + " File is open: app.config");
@@ -815,10 +749,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			}
 
 			if (config.FileCount == 0)
-			{
-				Diag.Dug(true, config.ContainingProject.Name + ": No app.config files exist");
 				return false;
-			}
 
 			string path = config.FileNames[0];
 
@@ -883,8 +814,6 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 		try
 		{
-			Diag.Trace(edmx.ContainingProject.Name + "." + edmx.Name + ": Checking edmx: Edmx IsOpen: " + edmx.IsOpen + " - IsDirty: " + edmx.IsDirty);
-
 			if (edmx.IsOpen)
 			{
 				System.IO.IOException ex = new System.IO.IOException(edmx.ContainingProject.Name + "." + edmx.Name + ": File is open");
@@ -893,13 +822,9 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			}
 
 			if (edmx.FileCount == 0)
-			{
-				Diag.Dug(true, edmx.ContainingProject.Name + "." + edmx.Name + ": No files found");
 				return true;
-			}
 
 			string path = edmx.FileNames[0];
-			// Diag.Trace(edmx.ContainingProject.Name + "." + edmx.Name + ": config file path: " + path);
 
 			if (!DbXmlUpdater.UpdateEdmx(path))
 				return true;
@@ -921,9 +846,6 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			Diag.Dug(ex);
 			return false;
 		}
-
-
-		Diag.Trace(edmx.ContainingProject.Name + "." + edmx.Name + ": was checked");
 
 
 		return true;
@@ -1025,8 +947,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		// There simply is no other event that is fired when a project object is complete so we're recycling
 		// the referenceadded event to the back of the UI thread queue until it's available.
 		// The solution object adopts a fire and forget stragedy when opening projects so it also doesn't keep track.
-		// This issue only occurs when a project is opened and our package has already been sited and given
-		// the ide context. It's a single digit recycle count so it's low overhead.
+		// This issue only occurs when a project was opened and our package was given the ide context but not yet sited.
+		// It's a single digit recycle count so it's low overhead.
 		if (reference.ContainingProject.Properties == null)
 		{
 			if (++_RefCnt < 1000)
@@ -1118,7 +1040,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		// to continue recycling
 		_RefCnt = 0;
 
-		if (Uig.IsScannedStatus(project) || !IsValidExecutableProjectType(project)
+		if (Uig.IsScannedStatus(project) || !Uig.IsValidExecutableProjectType(project)
 			|| (Uig.IsConfiguredDbProviderStatus(project) && Uig.IsConfiguredEFStatus(project) && Uig.IsUpdatedEdmxsStatus(project)))
 		{
 			return;

@@ -15,12 +15,11 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 
 	public ConnectionEquivalencyComparer()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 	}
 
 	protected override bool AreEquivalent(IVsDataConnectionProperties connectionProperties1, IVsDataConnectionProperties connectionProperties2)
 	{
-		Diag.Trace();
 
 		// Reset the connection if we're doing a localized server explorer node query
 		// It's the only way to get the built in query provider to reread the table list
@@ -111,7 +110,7 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 			return false;
 		}
 
-		Diag.Trace("Connections are equivalent");
+		// Diag.Trace("Connections are equivalent");
 
 		return true;
 	}
@@ -164,7 +163,6 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 
 	private static string StandardizeDataSource(string dataSource)
 	{
-		Diag.Trace();
 
 		dataSource = dataSource.ToUpperInvariant();
 		string[] array = new string[2] { ".", "(LOCAL)" };
