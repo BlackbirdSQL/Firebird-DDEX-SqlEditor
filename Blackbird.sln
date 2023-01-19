@@ -8,7 +8,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{776680E2-D740-4CD8-9567-AB0C6C2FE94F}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		Docs\ado-net.md = Docs\ado-net.md
 		Resources\blackbird-logo.png = Resources\blackbird-logo.png
 		Resources\blackbirdsql.ico = Resources\blackbirdsql.ico
 		Directory.Build.props = Directory.Build.props
@@ -53,6 +52,12 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "FirebirdSql.Data.External", "Firebird\FirebirdSql.Data.External\FirebirdSql.Data.External.shproj", "{884EE120-B22E-4940-8C1C-626F13028376}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlackbirdSql.VisualStudio.DataTools", "BlackbirdSql.VisualStudio.DataTools\BlackbirdSql.VisualStudio.DataTools.csproj", "{8E5684BA-78DE-43D7-B66E-7F88BC920BF0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{9F1EA025-EE31-4979-8035-754DC564A764}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\ado-net.md = Docs\ado-net.md
+		Docs\edmx-NET.md = Docs\edmx-NET.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
