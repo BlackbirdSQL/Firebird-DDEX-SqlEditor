@@ -9,6 +9,6 @@ Name your project something appropriate, like `DataAccessHub`, because this is w
 * For edmx you should complete the linking of your `DataAccessHub` models to your .NET projects before adding any objects.
 * Go to each of your .NET \[Core\] projects and add links to the required edmx's, as well as distinct links to their associate tt files (eg. MyEdmxModel.tt and MyEdmxModel.Context.tt), located in `DataAccessHub`.</br>
 __Warning__ Any previously existing data entity objects will have their namespaces prefixed with something like `MyDotNetApp....DataAccessHub`. You will have to go to each of these .cs classes, located within `MyEdmxModel.tt`, and remove this prefix.
-* Once you have added all links and fixed any corrupted namespaces you can continue configuring your model within `DataAccessHub` as and when required.
-* Any modifications or additions you make to your model will now automatically be updated in your projects.
+* Once you have added all links and fixed any corrupted namespaces you can continue configuring your models within `DataAccessHub` as and when required.
+* Any modifications or additions you make to your models will now automatically be updated in your client projects.
 * You can also link your data access entities to the main form in `DataAccessHub` if you need to perform any testing on them.
