@@ -19,4 +19,7 @@
 * With your new edmx open select `Project > Add new data source > Object` to complete the setup of your model.
 
 __Warning__ Operations within the edmx UI can take some time. Even a Cancel request can lock up the IDE. Be patient.</br>
-__Note__ BlackbirdSql.VisualStudio.Ddex.dll is used by the IDE. Do not add a reference to it in your projects.</br>
+
+__Note__ 
+* BlackbirdSql.VisualStudio.Ddex.dll is used by the IDE. Do not add a reference to it in your projects.
+* If you add a reference or package for Firebird.Data.FirebirdClient or EntityFramework.Firebird to a project and the app.config is open it will not be configured.</br>You will need to reopen your solution for it to be updated.
