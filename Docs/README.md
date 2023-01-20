@@ -53,6 +53,8 @@ This is a once off validation on each `existing` solution the first time it is o
 
 If the option is enabled and you add Firebird.Data.FirebirdClient or EntityFramework.Firebird to a project it will be validated and the app.config updated correctly if required. If the app.config is open the update will be skipped and you will need to reopen your solution for the validation to complete.
 
+The intention with this package is to maintain a small footprint. We're not going to start altering VS menus and taking over the Visual Studio IDE. It is a data source UI provider for Firebird and the benchmark is the SqlServer provider, so whatever UI functionality is available for SqlServer is on the todo list for Firebird provided it does not directly interfere with the developer's active UI.
+
 As it stands right now the code is littered with diagnostics calls with writes to a log file set to c:\bin\vsdiag.log.</br>
 These can all be disabled or the log file output path changed in Visual Studio's options.
 
@@ -66,8 +68,6 @@ Refreshing the table selection list will include both System and User tables.
 If you're planning on using EF Core and/or .NET, VS does not have wizard support for edmx which makes no sense to me.
 This roadblock is easily overcome by creating a separate project using .NET Framework for your data models and then linking your .NET / EF Core projects to those edmx models.
 
-The intention with this package is to maintain a small footprint. We're not going to start altering VS menus and taking over the Visual Studio IDE. It is a data source UI provider for Firebird and the benchmark is the SqlServer provider, so whatever UI functionality is available for SqlServer is on the ToDo list for Firebird.
-
 If there's any magic you feel should be included here, pop me a mail.</br>
-Scanning for preset FlameRobin databases and including them in a dropdown in the VS connection dialog is on the priority ToDo list. That's a simple enumeration of the FlameRobin db xml file, if installed.</br>
+Scanning for preset FlameRobin databases and including them in a dropdown in the VS connection dialog is on the priority todo list. That's a simple enumeration of the FlameRobin db xml file, if installed.</br>
 Also on the priority list are DML commands... Create, Alter etc.
