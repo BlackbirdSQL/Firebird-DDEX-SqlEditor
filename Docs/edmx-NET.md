@@ -13,3 +13,5 @@ __Warning:__ Any previously existing data entity objects will have their namespa
 * Once you have added all links and fixed any corrupted namespaces you can continue configuring your models within `DataAccessHub` as and when required.
 * Any modifications or additions you make to your models will now automatically be updated in your client projects.
 * You can also link your data access entities to the main form in `DataAccessHub` if you need to perform any testing on them.
+
+__Important:__ You still have to have references added or packages installed for `FirebirdSql.Data.Firebird` or `EntityFramework.Firebird` (if you're using entities) in your .NET [Core] projects.
