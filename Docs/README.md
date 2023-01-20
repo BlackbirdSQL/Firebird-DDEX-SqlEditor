@@ -48,10 +48,10 @@ We want to be as unobtrusive as possible so load delays are just a reality if we
 
 *If you're noticing a degradation in performance in the IDE after installing an extension then it's advantages are lost, so the first tenet of this package is `small footprint, low overhead`*
 
-If the option is enabled a solution's projects will be checked for correct configuration of the app.config and edmx models. Legacy edmx models won't work with Firebird's latest EntityFramework version.</br>
+If the option is enabled there will be a once-off validation of a solution's projects  correct configuration of the app.config and edmx models. Legacy edmx models won't work with Firebird's latest EntityFramework version.</br>
 This is a once off validation on each `existing` solution the first time it is opened after installing the VSIX. If the app.config is open or any edmx models are open you will need to close them first and then reopen your solution for the once-off validation to complete.
 
-If you add Firebird.Data.FirebirdClient or EntityFramework.Firebird to a project it will be validated and the app.config updated correctly if required.
+If the option is enabled and you add Firebird.Data.FirebirdClient or EntityFramework.Firebird to a project it will be validated and the app.config updated correctly if required. If the app.config is open the update will be skipped and you will need to reopen your solution for the validation to complete.
 
 As it stands right now the code is littered with diagnostics calls with writes to a log file set to c:\bin\vsdiag.log.</br>
 These can all be disabled or the log file output path changed in Visual Studio's options.
