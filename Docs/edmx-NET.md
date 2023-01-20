@@ -1,6 +1,6 @@
 # Using ADO.NET edmx with .NET
 
-As of this writing Visual Studio does not suport edmx wizards within .NET/.NET Core projects.<br>This is probably a blessing in disguise because it forces you to take a more structured approach to setting up your data access by having your datasets and models in a seperate project.
+As of this writing Visual Studio does not suport edmx wizards within .NET/.NET Core projects.<br>This obstacle is easily overcome and is probably a blessing in disguise because it forces you to take a more structured approach to setting up your data access by having your datasets and models in a separate project.
 
 ### Setup procedure
 
