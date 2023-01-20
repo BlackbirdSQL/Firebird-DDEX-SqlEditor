@@ -11,13 +11,11 @@ The goal is that you don't have to do any configuring of the .csproj, app.config
 The validation features can be disabled in the Visual Studio options but the package has a small footprint and low overhead.
 See [Extended Description](#extended-description) below.
 
-If you're planning on testing this solution (Blackbird.sln) preferably DO NOT use test projects within Blackbird.sln. Rather fire up the experimental instance of Visual Studio with Blackbird.sln remaining open and test within the experimental instance. If you have successfully built Blackbird.sln you won't need to install the vsix. VS will automatically detect it in the experimental instance.</br>
-To fire up an experimental instance of Visual Studio create a shortcut of Visual Studio with the experimental suffix. `eg. "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\devenv.exe" /RootSuffix Exp`
-
 
 ## Documentation
 
 * [ADO.NET provider](ado-net.md)
+* [Using ADO.NET edmx with .NET](edmx-NET.md)
 
 ## Packages
 
@@ -34,7 +32,9 @@ To fire up an experimental instance of Visual Studio create a shortcut of Visual
 
 ## Builds
 
-TBC
+If you're planning on testing this solution (Blackbird.sln) preferably DO NOT use test projects within Blackbird.sln.</br>
+Rather fire up the experimental instance of Visual Studio with Blackbird.sln remaining open and test within the experimental instance. If you have successfully built Blackbird.sln you won't need to install the vsix. VS will automatically detect it in the experimental instance.</br>
+To fire up an experimental instance of Visual Studio create a shortcut of Visual Studio with the experimental suffix. eg. `"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\devenv.exe" /RootSuffix Exp`
 
 ## Misc
 
