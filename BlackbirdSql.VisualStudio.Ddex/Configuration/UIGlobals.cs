@@ -7,11 +7,14 @@
 
 
 using System;
-using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 
-using BlackbirdSql.Common;
+using EnvDTE;
+using VSLangProj150;
 
+using BlackbirdSql.Common;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 
@@ -422,9 +425,9 @@ internal class UIGlobals
 	/// <param name="project"></param>
 	/// <returns>true if the project is a valid C#/VB executable project else false</returns>
 	/// <remarks>
-	/// We're not going to worry about anything but C# and VB projects
+	/// We're not going to worry about anything but C# and VB non=CSP projects
 	/// </remarks>
-	public bool IsValidExecutableProjectType(Project project)
+	public bool IsValidExecutableProjectType(IVsSolution solution, Project project)
 	{
 		// We should already be on UI thread. Callers must ensure this can never happen
 		try
@@ -448,20 +451,28 @@ internal class UIGlobals
 			return false;
 		}
 
-		int outputType = int.MaxValue;
-
-		if (project.Properties != null && project.Properties.Count > 0)
-		{
-			Property property = project.Properties.Item("OutputType");
-			if (property != null)
-				outputType = (int)property.Value;
-		}
-
-
 		bool result = false;
 
-		if (outputType < 2)
-			result = true;
+
+		// Don't process CPS projects
+		solution.GetProjectOfUniqueName(project.UniqueName, out IVsHierarchy hierarchy);
+
+
+		if (!IsCpsProject(hierarchy))
+		{
+			int outputType = int.MaxValue;
+
+			if (project.Properties != null && project.Properties.Count > 0)
+			{
+				Property property = project.Properties.Item("OutputType");
+				if (property != null)
+					outputType = (int)property.Value;
+			}
+
+
+			if (outputType < 2)
+				result = true;
+		}
 
 		SetIsValidStatus(project.Globals, result);
 
@@ -469,6 +480,12 @@ internal class UIGlobals
 
 	}
 
+
+	internal static bool IsCpsProject(IVsHierarchy hierarchy)
+	{
+		Requires.NotNull(hierarchy, "hierarchy");
+		return hierarchy.IsCapabilityMatch("CPS");
+	}
 
 
 	/// <summary>

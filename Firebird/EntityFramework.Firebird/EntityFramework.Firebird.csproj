@@ -17,7 +17,6 @@
 		<Title>Firebird Entity Framework Provider</Title>
 		<PackageDescription>The Entity Framework provider for Firebird enables you to develop .NET applications that connect to the Firebird database using Entity Framework.</PackageDescription>
 		<PackageTags>firebird;firebirsql;firebirdclient;entityframewor;adonet;database</PackageTags>
-		<PackageIcon>firebird-logo.png</PackageIcon>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
 		<DefineConstants>EF6;TRACE</DefineConstants>
@@ -44,6 +43,7 @@
 		<None Update="Web.config.install.xdt" Pack="true" PackagePath="content" />
 		<None Include="..\license.txt" Pack="true" PackagePath="" />
 		<None Include="..\firebird-logo.png" Pack="true" PackagePath="" />
+		<None Include="..\..\Resources\blackbird-logo.png" Pack="true" PackagePath="" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="EntityFramework" Version="6.4.4" />

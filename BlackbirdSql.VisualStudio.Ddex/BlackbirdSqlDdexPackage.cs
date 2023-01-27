@@ -45,8 +45,8 @@ using BlackbirdSql.Common;
 using BlackbirdSql.VisualStudio.Ddex.Configuration;
 
 using Task = System.Threading.Tasks.Task;
-
-
+using System.Data.Common.BlackbirdSql;
+using FirebirdSql.Data.FirebirdClient;
 
 namespace BlackbirdSql.VisualStudio.Ddex
 {
@@ -232,6 +232,31 @@ namespace BlackbirdSql.VisualStudio.Ddex
 
 			
 			_ = AdviseSolutionEventsAsync();
+
+
+			// Adding FirebirdClient to assembly cache asynchronously
+			if (DbProviderFactoriesEx.AddAssemblyToCache(typeof(FirebirdClientFactory),
+				Properties.Resources.Provider_ShortDisplayName, Properties.Resources.Provider_DisplayName))
+			{
+				// Diag.Trace("DbProviderFactory added to assembly cache");
+
+				AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
+				{
+					var assembly = typeof(FirebirdClientFactory).Assembly;
+
+					if (args.Name == assembly.FullName)
+						Diag.Dug(true, "Dsl Provider Factory failed to load: " + assembly.FullName);
+
+					return args.Name == assembly.FullName ? assembly : null;
+				};
+
+			}
+			else
+			{
+				Diag.Trace("DbProviderFactory not added to assembly cache during package registration. Factory already cached");
+			}
+
+
 
 		}
 

@@ -19,7 +19,6 @@
 		<PackageDescription>Firebird ADO.NET data provider</PackageDescription>
 		<PackageTags>firebird;firebirsql;firebirdclient;adonet;database</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageIcon>firebird-logo.png</PackageIcon>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
 		<DefineConstants>TRACE</DefineConstants>
@@ -37,6 +36,7 @@
 		<None Include="..\README.md" Pack="true" PackagePath="" />
 		<None Include="..\license.txt" Pack="true" PackagePath="" />
 		<None Include="..\firebird-logo.png" Pack="true" PackagePath="" />
+		<None Include="..\..\Resources\blackbird-logo.png" Pack="true" PackagePath="" />
 	</ItemGroup>
 	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
 		<Reference Include="System.Transactions" />

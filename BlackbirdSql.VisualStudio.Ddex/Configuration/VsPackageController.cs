@@ -448,7 +448,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 				bool failed = false;
 
-				if (Uig.IsValidExecutableProjectType(project))
+				if (Uig.IsValidExecutableProjectType(_Solution, project))
 				{
 
 					if (Uig.ValidateConfig)
@@ -461,7 +461,6 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 						{
 
 							VSProject projectObject = project.Object as VSProject;
-							VSProject4 projectObject4 = null;
 
 							if (!isConfiguredEFStatus)
 							{
@@ -482,7 +481,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 										failed = true;
 									}
 								}
-								else if ((projectObject4 ??= project.Object as VSProject4) != null && projectObject4.PackageReferences != null)
+								/* else if ((projectObject4 ??= project.Object as VSProject4) != null && projectObject4.PackageReferences != null)
 								{
 									if (projectObject4.PackageReferences.TryGetReference(SystemData.EFProvider, null,
 										out string pkgVersion, out _, out _))
@@ -504,7 +503,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 											failed = true;
 										}
 									}
-								}
+								}*/
 							}
 
 							if (!isConfiguredDbProviderStatus)
@@ -525,7 +524,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 										failed = true;
 									}
 								}
-								else if ((projectObject4 ??= project.Object as VSProject4) != null && projectObject4.PackageReferences != null)
+								/* else if ((projectObject4 ??= project.Object as VSProject4) != null && projectObject4.PackageReferences != null)
 								{
 
 									if (projectObject4.PackageReferences.TryGetReference(SystemData.Invariant, null,
@@ -545,12 +544,12 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 											failed = true;
 										}
 									}
-								}
+								} */
 							}
 
 							if (!isConfiguredEFStatus || !isConfiguredDbProviderStatus)
 							{
-								AddReferenceAddedEventHandler(projectObject4 != null ? projectObject4.Events : projectObject.Events);
+								AddReferenceAddedEventHandler(/*projectObject4 != null ? projectObject4.Events :*/ projectObject.Events);
 							}
 
 
@@ -611,7 +610,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	/// </summary>
 	/// <param name="project"></param>
 	/// <returns>true if app.config was updated else false</returns>
-	private ProjectItem GetAppConfigProjectItem(Project project)
+	private ProjectItem GetAppConfigProjectItem(Project project, bool createIfNotFound = false)
 	{
 		// We should already be on UI thread. Callers must ensure this can never happen
 		try
@@ -641,6 +640,24 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		{
 			Diag.Dug(ex);
 			return null;
+		}
+
+		if (createIfNotFound && config == null)
+		{
+			FileInfo info = new FileInfo(project.FullName);
+			string filename = info.Directory.FullName + "\\App.config";
+			StreamWriter sw = File.CreateText(filename);
+
+			string xml = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<configuration>
+</configuration>";
+
+			sw.Write(xml);
+			sw.Close();
+
+			config = project.ProjectItems.AddFromFile(filename);
+
+			Diag.Trace("App.config is null. Added: " + filename);
 		}
 
 		if (config == null)
@@ -927,7 +944,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 	/// <summary>
-	/// Performs asynchronous operations on <see cref="OnGlobalReferenceAdded(Reference)"/>
+	/// Performs asynchronous operations on <see cref="OnReferenceAdded(Reference)"/>
 	/// </summary>
 	/// <param name="reference"></param>
 	/// <returns></returns>
@@ -1040,7 +1057,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		// to continue recycling
 		_RefCnt = 0;
 
-		if (Uig.IsScannedStatus(project) || !Uig.IsValidExecutableProjectType(project)
+		if (Uig.IsScannedStatus(project) || !Uig.IsValidExecutableProjectType(_Solution, project)
 			|| (Uig.IsConfiguredDbProviderStatus(project) && Uig.IsConfiguredEFStatus(project) && Uig.IsUpdatedEdmxsStatus(project)))
 		{
 			return;

@@ -43,39 +43,6 @@ public sealed class ProviderObjectFactory : DataProviderObjectFactory, IProvider
 
 	public ProviderObjectFactory()
 	{
-		// Adding FirebirdClient to assembly cache asynchronously
-		if (DbProviderFactoriesEx.AddAssemblyToCache(typeof(FirebirdClientFactory),
-			Properties.Resources.Provider_ShortDisplayName, Properties.Resources.Provider_DisplayName))
-		{
-			// Diag.Trace("DbProviderFactory added to assembly cache");
-
-			AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
-			{
-				var assembly = typeof(FirebirdClientFactory).Assembly;
-
-				if (args.Name == assembly.FullName)
-					Diag.Dug(true, "Dsl Provider Factory failed to load: " + assembly.FullName);
-
-				return args.Name == assembly.FullName ? assembly : null;
-			};
-
-			// Instantiate ServiceHub for edmx EntityFramework hook and update app.config if the service is requested
-			// This is not in any project's scope so it's not working - TBC
-			// _ = Data.ServiceHub.ServiceProvider.Instance;
-
-			// This is also a nice try. According to documentation the class has to be declared in a project's
-			// assembly for this to work. Messing with a developers code is not a great idea so prob this option
-			// is dead
-			// _ = new Data.ServiceHub.DbConfigurationEx();
-
-		}
-		else
-		{
-			Diag.Trace("DbProviderFactory not added to assembly cache during package registration. Factory already cached");
-		}
-
-
-
 	}
 
 	#endregion

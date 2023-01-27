@@ -147,9 +147,6 @@
   <data name="Property_Name_Column_FrameworkDataType" xml:space="preserve">
     <value>.NET Data Type</value>
   </data>
-  <data name="Type_SystemTable" xml:space="preserve">
-    <value>System Table</value>
-  </data>
   <data name="Property_Desc_ForeignKey_ReferencedCatalog" xml:space="preserve">
     <value>Catalog of the table referenced by the foreign key.</value>
   </data>
@@ -390,9 +387,6 @@
   <data name="Property_Name_Column_Ordinal" xml:space="preserve">
     <value>Ordinal</value>
   </data>
-  <data name="Type_SystemView" xml:space="preserve">
-    <value>System View</value>
-  </data>
   <data name="Type_ForeignKeyColumn" xml:space="preserve">
     <value>Foreign Key Column</value>
   </data>
@@ -514,7 +508,7 @@
     <value>Is Primary</value>
   </data>
   <data name="Node_Name_Domains" xml:space="preserve">
-    <value>Domains(Debug:008)</value>
+    <value>Domains(Debug:009)</value>
   </data>
   <data name="Type_Domain" xml:space="preserve">
     <value>Domain</value>
@@ -543,10 +537,70 @@
   <data name="Property_Value_Direction_Return" xml:space="preserve">
     <value>Return value</value>
   </data>
-  <data name="Property_Value_TableType_SystemTable" xml:space="preserve">
+  <data name="Property_Value_TableType_System" xml:space="preserve">
     <value>System Table</value>
   </data>
-  <data name="Property_Value_TableType_Table" xml:space="preserve">
-    <value>Table</value>
+  <data name="Property_Value_TableType_User" xml:space="preserve">
+    <value>User Table</value>
+  </data>
+  <data name="Property_Desc_Column_CharacterSet" xml:space="preserve">
+    <value>Character set of the column</value>
+  </data>
+  <data name="Property_Desc_Column_Collation" xml:space="preserve">
+    <value>Collation rules of the column</value>
+  </data>
+  <data name="Property_Desc_Column_Computed" xml:space="preserve">
+    <value>Column is a computed value</value>
+  </data>
+  <data name="Property_Desc_Column_InPrimaryKey" xml:space="preserve">
+    <value>Column is in the primary key</value>
+  </data>
+  <data name="Property_Desc_Column_IsUnique" xml:space="preserve">
+    <value>Column is a unique pimary key</value>
+  </data>
+  <data name="Property_Name_Column_Computed" xml:space="preserve">
+    <value>Computed</value>
+  </data>
+  <data name="Property_Name_Column_InPrimaryKey" xml:space="preserve">
+    <value>In Primary key</value>
+  </data>
+  <data name="Property_Name_Column_IsUnique" xml:space="preserve">
+    <value>Unique Key</value>
+  </data>
+  <data name="Property_Value_IndexType_User" xml:space="preserve">
+    <value>User Index</value>
+  </data>
+  <data name="Property_Value_IndexType_System" xml:space="preserve">
+    <value>System Index</value>
+  </data>
+  <data name="Property_Value_ViewType_System" xml:space="preserve">
+    <value>System View</value>
+  </data>
+  <data name="Property_Value_ViewType_User" xml:space="preserve">
+    <value>User View</value>
+  </data>
+  <data name="Property_Value_Boolean_False" xml:space="preserve">
+    <value>False</value>
+  </data>
+  <data name="Property_Value_Boolean_True" xml:space="preserve">
+    <value>True</value>
+  </data>
+  <data name="Property_Value_FunctionType_System" xml:space="preserve">
+    <value>System Function</value>
+  </data>
+  <data name="Property_Value_FunctionType_User" xml:space="preserve">
+    <value>User Function</value>
+  </data>
+  <data name="Property_Value_ProcedureType_System" xml:space="preserve">
+    <value>System Procedure</value>
+  </data>
+  <data name="Property_Value_ProcedureType_User" xml:space="preserve">
+    <value>User Procedure</value>
+  </data>
+  <data name="Property_Desc_Column_Expression" xml:space="preserve">
+    <value>Computed column expression</value>
+  </data>
+  <data name="Property_Name_Column_Expression" xml:space="preserve">
+    <value>Expression</value>
   </data>
 </root>

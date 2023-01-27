@@ -16,6 +16,11 @@ using BlackbirdSql.VisualStudio.Ddex.Properties;
 using System.Data.Common;
 using Microsoft.VisualStudio.Data.Framework;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
+using Microsoft.VisualStudio.LanguageServer.Client;
+using System.Globalization;
+using System.Reflection;
+using System.Threading;
+using BlackbirdSql.VisualStudio.Ddex.Schema;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -57,7 +62,7 @@ class ObjectSelector : AdoDotNetObjectSelector
 				throw new ArgumentNullException("typeName");
 			}
 
-			if (parameters == null || parameters.Length < 1 || parameters.Length > 2 || !(parameters[0] is string))
+			if (parameters == null || parameters.Length < 1 || parameters.Length > 2 || parameters[0] is not string)
 			{
 				throw new ArgumentNullException("Parameters are invalid");
 			}
@@ -79,10 +84,7 @@ class ObjectSelector : AdoDotNetObjectSelector
 
 			try
 			{
-				DbConnection dbConnection = lockedProviderObject as DbConnection;
-
-
-				if (dbConnection == null)
+				if (lockedProviderObject is not DbConnection dbConnection)
 				{
 					throw new NotImplementedException();
 				}
@@ -119,19 +121,30 @@ class ObjectSelector : AdoDotNetObjectSelector
 					for (int i = 0; i < array.Length; i++)
 					{
 						// str += (restrictions[i] != null) ? restrictions[i].ToString() : "null,";
-						array[i] = (restrictions[i] != null) ? restrictions[i].ToString() : null;
+						array[i] = restrictions[i]?.ToString();
 					}
 				}
 
 				// Diag.Trace(str);
 
 				base.Site.EnsureConnected();
-				DataTable schema = dbConnection.GetSchema(parameters[0].ToString(), array);
 
-				if (parameters.Length == 2 && parameters[1] is DictionaryEntry)
+
+				DataTable schema;
+
+				try
 				{
-					object[] array2 = ((DictionaryEntry)parameters[1]).Value as object[];
-					if (array2 != null)
+					schema = DslSchemaFactory.GetSchema((FbConnection)dbConnection, parameters[0].ToString(), array);
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex);
+					throw;
+				}
+
+				if (parameters.Length == 2 && parameters[1] is DictionaryEntry entry)
+				{
+					if (entry.Value is object[] array2)
 					{
 						IDictionary<string, object> mappings = DataObjectSelector.GetMappings(array2);
 						ApplyMappings(schema, mappings);
@@ -153,6 +166,9 @@ class ObjectSelector : AdoDotNetObjectSelector
 		}
 
 	}
+
+
+
 
 	protected override IList<string> GetSupportedRestrictions(string typeName, object[] parameters)
 	{
@@ -211,7 +227,7 @@ class ObjectSelector : AdoDotNetObjectSelector
 
 
 
-	
+
 	protected override IList<string> GetRequiredRestrictions(string typeName, object[] parameters)
 	{
 

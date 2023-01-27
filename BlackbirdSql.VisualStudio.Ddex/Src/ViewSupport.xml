@@ -97,8 +97,8 @@
 							<Property name="IS_SYSTEM_TABLE">
 								<DisplayName resource="Property_Name_Type" />
 								<StandardValues>
-									<StandardValue value="false" resource="Property_Value_TableType_Table" />
-									<StandardValue value="true" resource="Property_Value_TableType_SystemTable" />
+									<StandardValue value="0" resource="Property_Value_TableType_User" />
+									<StandardValue value="1" resource="Property_Value_TableType_System" />
 								</StandardValues>
 							</Property>
 							<Property name="DESCRIPTION">
@@ -114,13 +114,10 @@
 							<Selection type="TableColumn" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}">
 								<SelectionNode nodeId="Column">
 									<DisplayName>{Column.COLUMN_NAME}</DisplayName>
-									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(elementType)Column.ico" when="{Column.COMPUTED_SOURCE} IS NULL" assembly="" />
-									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="NOT {Column.COMPUTED_SOURCE} IS NULL" assembly="" />
-									<!-- TBC
-									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(elementType)Column.ico" when="NOT {Column.IS_PRIMARY} AND {Column.COMPUTED_SOURCE} IS NULL" assembly="" />
-									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="NOT {Column.IS_PRIMARY} AND NOT {Column.COMPUTED_SOURCE} IS NULL" assembly="" />
-									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.PrimaryKey.ico" when="{Column.IS_PRIMARY}" assembly="" />
-									-->
+									<Icon name="ComputedColumn" when="{Column.COMPUTED}" />
+									<Icon name="PrimaryKey" when="{Column.IS_UNIQUE}" />
+									<Icon name="UniqueKey" when="{Column.IN_PRIMARYKEY}" />
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(elementType)Column.ico" assembly="" />
 									<Properties>
 										<TypeDisplayName resource="Type_Column" />
 										<Property name="TABLE_CATALOG">
@@ -172,10 +169,12 @@
 										<Property name="CHARACTER_SET_NAME">
 											<DisplayName resource="Property_Name_Column_CharacterSet" />
 											<Category resource="Category_DataType" />
+											<Description resource="Property_Desc_Column_CharacterSet" />
 										</Property>
 										<Property name="COLLATION_NAME">
 											<DisplayName resource="Property_Name_Column_Collation" />
 											<Category resource="Category_DataType" />
+											<Description resource="Property_Desc_Column_Collation" />
 										</Property>
 										<Property name="DESCRIPTION">
 											<DisplayName resource="Property_Name_Description" />
@@ -188,6 +187,22 @@
 										<Property name="COLUMN_DEFAULT">
 											<DisplayName resource="Property_Name_Column_Default" />
 											<Description resource="Property_Desc_Column_Default" />
+										</Property>
+										<Property name="IN_PRIMARYKEY">
+											<DisplayName resource="Property_Name_Column_InPrimaryKey" />
+											<Description resource="Property_Desc_Column_InPrimaryKey" />
+										</Property>
+										<Property name="IS_UNIQUE">
+											<DisplayName resource="Property_Name_Column_IsUnique" />
+											<Description resource="Property_Desc_Column_IsUnique" />
+										</Property>
+										<Property name="COMPUTED">
+											<DisplayName resource="Property_Name_Column_Computed" />
+											<Description resource="Property_Desc_Column_Computed" />
+										</Property>
+										<Property name="EXPRESSION">
+											<DisplayName resource="Property_Name_Column_Expression" />
+											<Description resource="Property_Desc_Column_Expression" />
 										</Property>
 									</Properties>
 								</SelectionNode>
@@ -307,14 +322,20 @@
 							<Selection type="TableIndex" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}">
 								<SelectionNode nodeId="Index">
 									<DisplayName>{Index.INDEX_NAME}</DisplayName>
-									<Icon name="Index" when="NOT {Index.IS_PRIMARY}" />
-									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.PrimaryKey.ico" when="{Index.IS_PRIMARY}" assembly="" />
+									<Icon name="PrimaryKey" when="{Index.IS_PRIMARY}" />
+									<Icon name="UniqueKey" when="{Index.IS_UNIQUE} = 1" />
+									<Icon name="Index" />
 									<Properties>
 										<TypeDisplayName resource="Type_Index" />
 										<Property name="TABLE_CATALOG">
 											<DisplayName resource="Identifier_Name_Catalog" />
 											<Category resource="Category_Identifier" />
 											<Description resource="Identifier_Desc_Catalog" />
+										</Property>
+										<Property name="TABLE_SCHEMA">
+											<DisplayName resource="Identifier_Name_Schema" />
+											<Category resource="Category_Identifier" />
+											<Description resource="Identifier_Desc_Schema" />
 										</Property>
 										<Property name="TABLE_NAME">
 											<DisplayName resource="Identifier_Name_Table" />
@@ -333,12 +354,24 @@
 										<Property name="IS_UNIQUE">
 											<DisplayName resource="Property_Name_Index_IsUnique" />
 											<Description resource="Property_Desc_Index_IsUnique" />
+											<StandardValues>
+												<StandardValue value="0" resource="Property_Value_Boolean_False" />
+												<StandardValue value="1" resource="Property_Value_Boolean_True" />
+											</StandardValues>
+										</Property>
+										<Property name="IS_SYSTEM_INDEX">
+											<DisplayName resource="Property_Name_Type" />
+											<StandardValues>
+												<StandardValue value="0" resource="Property_Value_IndexType_User" />
+												<StandardValue value="1" resource="Property_Value_IndexType_System" />
+											</StandardValues>
 										</Property>
 									</Properties>
 									<Children>
-										<Selection type="TableIndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_CATALOG},{Index.SCHEMA_NAME},{Index.INDEX_NAME}">
+										<Selection type="TableIndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
 											<SelectionNode nodeId="IndexColumn">
 												<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
+												<Icon name="ComputedColumn" when="{IndexColumn.COMPUTED}" />
 												<Icon name="Column" />
 												<Properties>
 													<TypeDisplayName resource="Type_IndexColumn" />
@@ -381,6 +414,14 @@
 																			</StandardValues>
 																		</Property>
 																		-->
+													<Property name="COMPUTED">
+														<DisplayName resource="Property_Name_Column_Computed" />
+														<Description resource="Property_Desc_Column_Computed" />
+													</Property>
+													<Property name="EXPRESSION">
+														<DisplayName resource="Property_Name_Column_Expression" />
+														<Description resource="Property_Desc_Column_Expression" />
+													</Property>
 												</Properties>
 											</SelectionNode>
 										</Selection>
@@ -511,8 +552,8 @@
 										<Property name="IS_SYSTEM_VIEW">
 											<DisplayName resource="Property_Name_Type" />
 											<StandardValues>
-												<StandardValue value="false" resource="Type_View" />
-												<StandardValue value="true" resource="Type_SystemView" />
+												<StandardValue value="0" resource="Property_Value_ViewType_User" />
+												<StandardValue value="1" resource="Property_Value_ViewType_System" />
 											</StandardValues>
 										</Property>
 										<Property name="DESCRIPTION">
@@ -527,6 +568,9 @@
 										<Selection type="ViewColumn" restrictions="{View.VIEW_CATALOG},{View.VIEW_SCHEMA},{View.VIEW_NAME}">
 											<SelectionNode nodeId="Column">
 												<DisplayName>{Column.COLUMN_NAME}</DisplayName>
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{Column.COMPUTED}" assembly="" />
+												<Icon name="PrimaryKey" when="{Index.IS_UNIQUE} = 1" />
+												<Icon name="UniqueKey" when="{Column.IN_PRIMARYKEY}" />
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ViewColumn.ico" assembly="" />
 												<Properties>
 													<TypeDisplayName resource="Type_Column" />
@@ -583,6 +627,22 @@
 														<Category resource="Category_DataType" />
 														<Description resource="Property_Desc_Column_Nullable" />
 													</Property>
+													<Property name="IN_PRIMARYKEY">
+														<DisplayName resource="Property_Name_Column_InPrimaryKey" />
+														<Description resource="Property_Desc_Column_InPrimaryKey" />
+													</Property>
+													<Property name="IS_UNIQUE">
+														<DisplayName resource="Property_Name_Column_IsUnique" />
+														<Description resource="Property_Desc_Column_IsUnique" />
+													</Property>
+													<Property name="COMPUTED">
+														<DisplayName resource="Property_Name_Column_Computed" />
+														<Description resource="Property_Desc_Column_Computed" />
+													</Property>
+													<Property name="EXPRESSION">
+														<DisplayName resource="Property_Name_Column_Expression" />
+														<Description resource="Property_Desc_Column_Expression" />
+													</Property>
 													<Property name="CHARACTER_SET_NAME">
 														<DisplayName resource="Property_Name_Column_CharacterSet" />
 														<Category resource="Category_DataType" />
@@ -634,6 +694,13 @@
 											<DisplayName resource="Identifier_Name_Name" />
 											<Category resource="Category_Identifier" />
 											<Description resource="Identifier_Desc_Name" />
+										</Property>
+										<Property name="IS_SYSTEM_PROCEDURE">
+											<DisplayName resource="Property_Name_Type" />
+											<StandardValues>
+												<StandardValue value="0" resource="Property_Value_ProcedureType_User" />
+												<StandardValue value="1" resource="Property_Value_ProcedureType_System" />
+											</StandardValues>
 										</Property>
 										<Property name="DESCRIPTION">
 											<DisplayName resource="Property_Name_Description" />
@@ -832,7 +899,7 @@
 							<Selection type="ScalarFunction" restrictions="null,null">
 								<SelectionNode nodeId="ScalarFunction">
 									<DisplayName>{ScalarFunction.FUNCTION_NAME}</DisplayName>
-									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ScalarFunction.ico" assembly="" />
+									<Icon name="ScalarValuedFunction" />
 									<Properties>
 										<TypeDisplayName resource="Type_ScalarFunction" />
 										<Property name="FUNCTION_CATALOG">
@@ -849,6 +916,13 @@
 											<DisplayName resource="Identifier_Name_Name" />
 											<Category resource="Category_Identifier" />
 											<Description resource="Identifier_Desc_Name" />
+										</Property>
+										<Property name="IS_SYSTEM_FUNTION">
+											<DisplayName resource="Property_Name_Type" />
+											<StandardValues>
+												<StandardValue value="0" resource="Property_Value_FunctionType_User" />
+												<StandardValue value="1" resource="Property_Value_FunctionType_System" />
+											</StandardValues>
 										</Property>
 										<Property name="DESCRIPTION">
 											<DisplayName resource="Property_Name_Description" />

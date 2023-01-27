@@ -18,7 +18,7 @@
 				<Property name="TABLE_NAME" type="System.String" isIdentifierPart="true" />
 				<Property name="TABLE_TYPE" type="System.String" />
 				<Property name="DESCRIPTION" type="System.String" />
-				<Property name="IS_SYSTEM_TABLE" type="System.Boolean" />
+				<Property name="IS_SYSTEM_TABLE" type="System.Int16" />
 			</Properties>
 			<Services>
 				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
@@ -65,7 +65,11 @@
 			<Properties>
 				<Property name="Name" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
 				<Property name="Type" underlyingMember="TABLE_TYPE"/>
-				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_TABLE"/>
+				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_TABLE" >
+					<Conversion>
+						<Calculate expr="IIF({0} = 1, true, false)" exprType="System.Boolean" />
+					</Conversion>
+				</Property>
 			</Properties>
 		</MappedType>
 	</Define>
@@ -152,8 +156,10 @@
 				<Property name="NUMERIC_PRECISION" type="System.Byte" />
 				<Property name="NUMERIC_SCALE" type="System.Int32" />
 				<Property name="IS_NULLABLE" type="System.Boolean" />
-				<Property name="COMPUTED_SOURCE" type="System.Array" />
-				<!--<Property name="IS_PRIMARY" type="System.Boolean" />-->
+				<Property name="EXPRESSION" type="System.Array" />
+				<Property name="IN_PRIMARYKEY" type="System.Boolean" />
+				<Property name="IS_UNIQUE" type="System.Boolean" />
+				<Property name="COMPUTED" type="System.Boolean" />
 			</Properties>
 			<Services>
 				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
@@ -207,7 +213,8 @@
 				<Property name="TABLE_NAME" type="System.String" isIdentifierPart="true" />
 				<Property name="INDEX_NAME" type="System.String" isIdentifierPart="true" />
 				<Property name="IS_PRIMARY" type="System.Boolean" />
-				<Property name="IS_UNIQUE" type="System.Boolean" />
+				<Property name="IS_UNIQUE" type="System.Int16" />
+				<Property name="IS_SYSTEM_INDEX" type="System.Int16" />
 			</Properties>
 			<Services>
 				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
@@ -263,6 +270,8 @@
 				<Property name="INDEX_NAME" type="System.String" isIdentifierPart="true" />
 				<Property name="COLUMN_NAME" type="System.String" isIdentifierPart="true" />
 				<Property name="ORDINAL_POSITION" type="System.Int16" />
+				<Property name="COMPUTED" type="System.Boolean" />
+				<Property name="EXPRESSION" type="System.Array" />
 			</Properties>
 			<Services>
 				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
@@ -331,6 +340,7 @@
 				<Property name="REFERENCED_TABLE_CATALOG" type="System.String" />
 				<Property name="REFERENCED_TABLE_SCHEMA" type="System.String" />
 				<Property name="REFERENCED_TABLE_NAME" type="System.String" />
+				<Property name="INDEX_NAME" type="System.String" />
 				<Property name="UPDATE_RULE" type="System.String" />
 				<Property name="DELETE_RULE" type="System.String" />
 			</Properties>
@@ -380,7 +390,7 @@
 			</Identifier>
 			<Properties>
 				<Property name="VIEW_NAME" type="System.String" isIdentifierPart="true" />
-				<Property name="IS_SYSTEM_VIEW" type="System.Boolean" />
+				<Property name="IS_SYSTEM_VIEW" type="System.Int16" />
 				<Property name="DESCRIPTION" type="System.String" />
 				<Property name="DEFINITION" type="System.String" />
 			</Properties>
@@ -429,6 +439,10 @@
 				<Property name="NUMERIC_PRECISION" type="System.Byte" />
 				<Property name="NUMERIC_SCALE" type="System.Int32" />
 				<Property name="COLUMN_DATA_TYPE" type="System.String" />
+				<Property name="EXPRESSION" type="System.Array" />
+				<Property name="IN_PRIMARYKEY" type="System.Boolean" />
+				<Property name="IS_UNIQUE" type="System.Boolean" />
+				<Property name="COMPUTED" type="System.Boolean" />
 			</Properties>
 			<Services>
 				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
@@ -482,7 +496,7 @@
 				<Property name="PROCEDURE_NAME" type="System.String" isIdentifierPart="true" />
 				<Property name="DESCRIPTION" type="System.String" />
 				<Property name="SOURCE" type="System.Array" />
-				<Property name="IS_SYSTEM_PROCEDURE" type="System.Boolean" />
+				<Property name="IS_SYSTEM_PROCEDURE" type="System.Int16" />
 			</Properties>
 			<Services>
 				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
@@ -689,7 +703,6 @@
 				<Property name="NUMERIC_SCALE" type="System.Int32" />
 				<Property name="IS_NULLABLE" type="System.Boolean" />
 				<Property name="DESCRIPTION" type="System.String" />
-				<Property name="PARAMETER_DIRECTION" type="System.Int32" />
 			</Properties>
 			<Services>
 				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
@@ -791,6 +804,8 @@
 						<ChangeType type="System.Int32" />
 					</Conversion>
 				</Property>
+				<Property name="InPrimaryKey" underlyingMember="IN_PRIMARYKEY" />
+				<Property name="IsUnique" underlyingMember="IS_UNIQUE" />
 				<Property name="IsNullable" underlyingMember="IS_NULLABLE" />
 				<Property name="Length" underlyingMember="COLUMN_SIZE" />
 				<Property name="Precision" underlyingMember="NUMERIC_PRECISION" />
@@ -811,11 +826,8 @@
 						<CallMapper />
 					</Conversion>
 				</Property>
-				<Property name="IsComputed" underlyingMember="COMPUTED_SOURCE">
-					<Conversion>
-						<Calculate expr="IIF({0} IS NULL, false, true)" exprType="System.Boolean" />
-					</Conversion>
-				</Property>
+				<Property name="Computed" underlyingMember="COMPUTED" />
+				<Property name="Expression" underlyingMember="EXPRESSION" />
 			</Properties>
 		</MappedType>
 
@@ -832,7 +844,16 @@
 				<Property name="Table" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
 				<Property name="Name" underlyingMember="INDEX_NAME" isIdentifierPart="true" />
 				<Property name="IsPrimary" underlyingMember="IS_PRIMARY" />
-				<Property name="IsUnique" underlyingMember="IS_UNIQUE" />
+				<Property name="IsUnique" underlyingMember="IS_UNIQUE" >
+					<Conversion>
+						<Calculate expr="IIF({0} = 1, true, false)" exprType="System.Boolean" />
+					</Conversion>
+				</Property>
+				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_INDEX" >
+					<Conversion>
+						<Calculate expr="IIF({0} = 1, true, false)" exprType="System.Boolean" />
+					</Conversion>
+				</Property>
 			</Properties>
 		</MappedType>
 
@@ -855,12 +876,14 @@
 						<ChangeType type="System.Int32" />
 					</Conversion>
 				</Property>
+				<Property name="Computed" underlyingMember="COMPUTED" />
+				<Property name="Expression" underlyingMember="EXPRESSION" />
 			</Properties>
 		</MappedType>
 
 		<!-- Completed -->
 		<MappedType name="TableUniqueKey" underlyingType="TableIndex">
-			<Selection restrictions="{Catalog},{Schema},{Table},{Name}" filter="IS_UNIQUE = true" />
+			<Selection restrictions="{Catalog},{Schema},{Table},{Name}" filter="IS_UNIQUE = 1" />
 			<Identifier>
 				<Part name="Catalog" underlyingMember="TABLE_CATALOG" />
 				<Part name="Schema" underlyingMember="TABLE_SCHEMA" />
@@ -871,7 +894,16 @@
 				<Property name="Table" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
 				<Property name="Name" underlyingMember="INDEX_NAME" isIdentifierPart="true" />
 				<Property name="IsPrimary" underlyingMember="IS_PRIMARY" />
-				<Property name="IsUnique" underlyingMember="IS_UNIQUE" />
+				<Property name="IsUnique" underlyingMember="IS_UNIQUE" >
+					<Conversion>
+						<Calculate expr="IIF({0} = 1, true, false)" exprType="System.Boolean" />
+					</Conversion>
+				</Property>
+				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_INDEX" >
+					<Conversion>
+						<Calculate expr="IIF({0} = 1, true, false)" exprType="System.Boolean" />
+					</Conversion>
+				</Property>
 			</Properties>
 		</MappedType>
 
@@ -894,6 +926,8 @@
 						<ChangeType type="System.Int32" />
 					</Conversion>
 				</Property>
+				<Property name="Computed" underlyingMember="COMPUTED" />
+				<Property name="Expression" underlyingMember="EXPRESSION" />
 			</Properties>
 		</MappedType>
 
@@ -912,6 +946,10 @@
 				<Property name="ReferencedTableCatalog" underlyingMember="REFERENCED_TABLE_CATALOG" />
 				<Property name="ReferencedTableSchema" underlyingMember="REFERENCED_TABLE_SCHEMA" />
 				<Property name="ReferencedTableName" underlyingMember="REFERENCED_TABLE_NAME" />
+				<Property name="ReferencedTableUniqueKey" underlyingMember="INDEX_NAME" />
+				<Property name="ReferencedTableId0" underlyingMember="REFERENCED_TABLE_CATALOG" />
+				<Property name="ReferencedTableId1" underlyingMember="REFERENCED_TABLE_SCHEMA" />
+				<Property name="ReferencedTableId2" underlyingMember="REFERENCED_TABLE_NAME" />
 			</Properties>
 		</MappedType>
 
@@ -929,15 +967,15 @@
 				<Property name="TableForeignKey" underlyingMember="CONSTRAINT_NAME" isIdentifierPart="true" />
 				<Property name="Table" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
 				<Property name="Name" underlyingMember="COLUMN_NAME" isIdentifierPart="true" />
-				<Property name="ReferencedTableCatalog" underlyingMember="REFERENCED_TABLE_CATALOG" />
-				<Property name="ReferencedTableSchema" underlyingMember="REFERENCED_TABLE_SCHEMA" />
-				<Property name="ReferencedTableName" underlyingMember="REFERENCED_TABLE_NAME" />
-				<Property name="ReferencedTableColumn" underlyingMember="REFERENCED_COLUMN_NAME" />
 				<Property name="Ordinal" underlyingMember="ORDINAL_POSITION">
 					<Conversion>
 						<ChangeType type="System.Int32" />
 					</Conversion>
 				</Property>
+				<Property name="ReferencedTableCatalog" underlyingMember="REFERENCED_TABLE_CATALOG" />
+				<Property name="ReferencedTableSchema" underlyingMember="REFERENCED_TABLE_SCHEMA" />
+				<Property name="ReferencedTableName" underlyingMember="REFERENCED_TABLE_NAME" />
+				<Property name="ReferencedTableColumn" underlyingMember="REFERENCED_COLUMN_NAME" />
 			</Properties>
 		</MappedType>
 
@@ -951,7 +989,11 @@
 			</Identifier>
 			<Properties>
 				<Property name="Name" underlyingMember="VIEW_NAME" isIdentifierPart="true" />
-				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_VIEW" />
+				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_VIEW" >
+					<Conversion>
+						<Calculate expr="IIF({0} = 1, true, false)" exprType="System.Boolean" />
+					</Conversion>
+				</Property>
 				<Property name="Sql" underlyingMember="DEFINITION" />
 				<Property name="Description" underlyingMember="DESCRIPTION" />
 			</Properties>
@@ -974,6 +1016,8 @@
 						<ChangeType type="System.Int32" />
 					</Conversion>
 				</Property>
+				<Property name="InPrimaryKey" underlyingMember="IN_PRIMARYKEY" />
+				<Property name="IsUnique" underlyingMember="IS_UNIQUE" />
 				<Property name="IsNullable" underlyingMember="IS_NULLABLE" />
 				<Property name="Length" underlyingMember="COLUMN_SIZE" />
 				<Property name="Precision" underlyingMember="NUMERIC_PRECISION" />
@@ -994,6 +1038,8 @@
 						<CallMapper />
 					</Conversion>
 				</Property>
+				<Property name="Computed" underlyingMember="COMPUTED" />
+				<Property name="Expression" underlyingMember="EXPRESSION" />
 			</Properties>
 		</MappedType>
 
@@ -1010,7 +1056,11 @@
 				<Property name="Name" underlyingMember="PROCEDURE_NAME" isIdentifierPart="true" />
 				<Property name="Description" underlyingMember="DESCRIPTION"/>
 				<Property name="Dsl" underlyingMember="SOURCE"/>
-				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_PROCEDURE"/>
+				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_PROCEDURE" >
+					<Conversion>
+						<Calculate expr="IIF({0} = 1, true, false)" exprType="System.Boolean" />
+					</Conversion>
+				</Property>
 			</Properties>
 		</MappedType>
 
@@ -1115,7 +1165,11 @@
 				<Property name="Schema" underlyingMember="FUNCTION_SCHEMA" isIdentifierPart="true" />
 				<Property name="Name" underlyingMember="FUNCTION_NAME" isIdentifierPart="true" />
 				<Property name="Description" underlyingMember="DESCRIPTION"/>
-				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FUNCTION" />
+				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FUNCTION" >
+					<Conversion>
+						<Calculate expr="IIF({0} = 1, true, false)" exprType="System.Boolean" />
+					</Conversion>
+				</Property>
 			</Properties>
 		</MappedType>
 
@@ -1137,7 +1191,6 @@
 						<ChangeType type="System.Int32" />
 					</Conversion>
 				</Property>
-				<Property name="Direction" underlyingMember="PARAMETER_DIRECTION" />
 				<Property name="IsNullable" underlyingMember="IS_NULLABLE" />
 				<Property name="Length" underlyingMember="PARAMETER_SIZE" />
 				<Property name="Precision" underlyingMember="NUMERIC_PRECISION" />
