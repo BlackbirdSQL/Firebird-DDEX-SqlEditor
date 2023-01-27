@@ -61,8 +61,7 @@ The intention with this package is to maintain a small footprint. We're not goin
 As it stands right now the code is littered with diagnostics calls with writes to a log file set to c:\bin\vsdiag.log.</br>
 These can all be disabled or the log file output path changed in Visual Studio's options.
 
-There seems to be an issue with drag and drop on procedures and functions which I haven't looked at. It's likely something trivial but this functionality isn't available to SqlServer so may be another rabbit hole. The same applies to drag and drop from the SE directly into the edmx, also not available on SqlServer but I don't see why it cannot be done.</br>
-Also, Index and Function columns are not appearing in the SE.
+There seems to be an issue with drag and drop on procedures and functions which I haven't looked at. It's likely something trivial but this functionality isn't available to SqlServer so may be another rabbit hole. The same applies to drag and drop from the SE directly into the edmx, also not available on SqlServer but I don't see why it cannot be done.
 
 The enhanced localized new query command is working but has not yet been placed in the views or functions/procedures nodes of the SE.</br>
 The BlackbirdSql new query command simply filters the table selection list (based on whether you initiated it from a System Table node context or User Table node context) and then passes it on to the native Visual Studio command.</br>
