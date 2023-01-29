@@ -18,7 +18,7 @@
 * Open an existing edmx model. It should work right off the bat, or add a new edmx model through the wizard using the `EF designer from database` option as you normally would, again connecting through the `BlackbirdSql DDEX 2.0` provider.
 * Add your Firebird database entities to the model as required.
 * Rebuild your project.
-* For a WPF project follow the Microsoft tutorial <a href="https://learn.microsoft.com/en-us/visualstudio/data-tools/create-a-simple-data-application-with-wpf-and-entity-framework-6?view=vs-2022" target="_blank">WPF and Entity Framework 6</a> to complete the setup of your model entities.
+* For a WPF project follow the Microsoft tutorial [WPF and Entity Framework 6](https://learn.microsoft.com/en-us/visualstudio/data-tools/create-a-simple-data-application-with-wpf-and-entity-framework-6?view=vs-2022) to complete the setup of your model entities.
 
 __Warning__
 * Operations within the edmx UI can take some time. For even a single table the wizard executes over 100 SELECT statements with the primary SELECT statement having 20+ JOINS and 5+ UNIONS. Even a Cancel request can lock up the IDE for some time. Be patient.</br>
