@@ -17,11 +17,10 @@
 * Install the Nuget EntityFramework.Firebird package if you haven't already and `rebuild` your project. (FirebirdSql.Data.FirebirdClient will be auto installed as a dependency if it's not already installed.)
 * Open an existing edmx model. It should work right off the bat, or add a new edmx model through the wizard using the `EF designer from database` option as you normally would, again connecting through the `BlackbirdSql DDEX 2.0` provider.
 * Add your Firebird database entities to the model as required.
-* Rebuild your project. The database entities in your model our now ready to be generated as classes.
-* With your new edmx open select `Project > Add new data source > Object` to complete the setup of your model entities.</br>
-__Note:__ If you add database entities (ie. by right click within the edmx window and selecting "Update Model from Database") remember to perform this procedure again for each of the entities you have added to the edmx model. Failure to do this will result in your projects referencing classes that have not been created yet. 
+* Rebuild your project.
+* For a WPF project follow the Microsoft tutorial <a href="https://learn.microsoft.com/en-us/visualstudio/data-tools/create-a-simple-data-application-with-wpf-and-entity-framework-6?view=vs-2022" target="_blank">WPF and Entity Framework 6</a> to complete the setup of your model entities.
 
 __Warning__
-* Operations within the edmx UI can take some time. Even a Cancel request can lock up the IDE. Be patient.</br>
+* Operations within the edmx UI can take some time. For even a single table the wizard executes over 100 SELECT statements with the primary SELECT statement having 20+ JOINS and 5+ UNIONS. Even a Cancel request can lock up the IDE for some time. Be patient.</br>
 * BlackbirdSql.VisualStudio.Ddex.dll is used by the IDE. Do not add a reference to it in your projects.
 * If you add a reference or package for Firebird.Data.FirebirdClient or EntityFramework.Firebird to a project and the app.config is open it will not be configured.</br>You will need to reopen your solution for it to be updated.
