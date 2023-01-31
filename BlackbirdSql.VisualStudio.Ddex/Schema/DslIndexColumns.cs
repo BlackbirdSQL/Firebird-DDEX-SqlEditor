@@ -21,6 +21,8 @@
 
 using System.Text;
 
+using BlackbirdSql.Common;
+
 
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
@@ -31,6 +33,7 @@ internal class DslIndexColumns : DslSchema
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
+		Diag.Trace();
 		var sql = new StringBuilder();
 		var where = new StringBuilder();
 

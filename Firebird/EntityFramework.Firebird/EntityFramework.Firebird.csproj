@@ -55,6 +55,9 @@
 	<ItemGroup Condition="'$(TargetFramework)'=='netstandard2.1'">
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\FirebirdSql.Data.FirebirdClient\FirebirdSql.Data.FirebirdClient.csproj" />
+		<ProjectReference Include="..\FirebirdSql.Data.FirebirdClient\FirebirdSql.Data.FirebirdClient.csproj">
+		  <Private>True</Private>
+		  <CopyLocalSatelliteAssemblies>True</CopyLocalSatelliteAssemblies>
+		</ProjectReference>
 	</ItemGroup>
 </Project>

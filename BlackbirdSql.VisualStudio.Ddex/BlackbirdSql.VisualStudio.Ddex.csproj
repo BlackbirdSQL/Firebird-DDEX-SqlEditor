@@ -103,6 +103,9 @@
   </ItemGroup>
   <!-- References (Packages) -->
   <ItemGroup>
+    <PackageReference Include="EntityFramework">
+      <Version>6.4.4</Version>
+    </PackageReference>
     <PackageReference Include="IndexRange">
       <Version>1.0.2</Version>
     </PackageReference>
@@ -196,6 +199,7 @@
     <EmbeddedResource Include="Src\ConnectionPromptDialog.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ConnectionPromptDialog.cs</DependentUpon>
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.ConnectionPromptDialog.resx</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Src\ConnectionUIControl.resx">
       <DependentUpon>ConnectionUIControl.cs</DependentUpon>
@@ -214,6 +218,7 @@
     <Compile Include="Configuration\SupportedObjects.cs" />
     <Compile Include="Schema\BinaryEncoding.cs" />
     <Compile Include="Schema\Charset.cs" />
+    <Compile Include="Schema\ConnectionString.cs" />
     <Compile Include="Schema\Encoding2.cs" />
     <Compile Include="Schema\DslDbDataType.cs" />
     <Compile Include="Schema\DslColumns.cs" />
@@ -231,7 +236,8 @@
     <Compile Include="Src\ConnectionPromptDialog.Designer.cs">
       <DependentUpon>ConnectionPromptDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\ConnectionProperties.cs" />
+    <Compile Include="Src\DbConnectionUIProperties.cs" />
+    <Compile Include="Src\DbConnectionProperties.cs" />
     <Compile Include="Src\ConnectionSupport.cs" />
     <Compile Include="Src\ConnectionUIControl.cs">
       <SubType>UserControl</SubType>
@@ -250,7 +256,9 @@
     <Compile Include="Src\ProviderObjectFactory.cs" />
     <Compile Include="Src\SourceInformation.cs" />
     <Compile Include="Src\SourceVersionComparer.cs" />
-    <Compile Include="Src\Transaction.cs" />
+    <Compile Include="Src\ConnectionUIConnector.cs" />
+    <None Include="Src\ViewDocumentProvider.cs" />
+    <None Include="Src\ViewDatabaseCommandProvider.cs" />
     <Compile Include="Src\ViewSupport.cs" />
     <Compile Include="BlackbirdSqlDdexPackage.cs" />
     <Compile Include="GlobalSuppressions.cs" />

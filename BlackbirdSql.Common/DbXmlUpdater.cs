@@ -5,10 +5,6 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Xml;
 
-using FirebirdSql.Data.FirebirdClient;
-
-
-
 
 
 namespace BlackbirdSql.Common;
@@ -36,7 +32,7 @@ internal static class DbXmlUpdater
 	/// Throws an exception if the app.config could not be successfully verified/updated
 	/// </exception>
 	/// <returns>true if app,config was modified else false.</returns>
-	public static bool ConfigureDbProvider(string xmlPath)
+	public static bool ConfigureDbProvider(string xmlPath, Type factoryClass)
 	{
 		bool modified;
 
@@ -65,7 +61,7 @@ internal static class DbXmlUpdater
 			}
 
 
-			modified = ConfigureDbProviderFactory(xmlDoc, xmlNs, xmlRoot);
+			modified = ConfigureDbProviderFactory(xmlDoc, xmlNs, xmlRoot, factoryClass);
 
 
 			if (modified)
@@ -107,7 +103,7 @@ internal static class DbXmlUpdater
 	///	If set to true then the client DBProvider factory will also be configured
 	/// </param>
 	/// <returns>true if app,config was modified else false.</returns>
-	public static bool ConfigureEntityFramework(string xmlPath, bool configureDbProvider)
+	public static bool ConfigureEntityFramework(string xmlPath, bool configureDbProvider, Type factoryClass)
 	{
 		bool modified = false;
 
@@ -136,7 +132,7 @@ internal static class DbXmlUpdater
 			}
 
 			if (configureDbProvider)
-				modified = ConfigureDbProviderFactory(xmlDoc, xmlNs, xmlRoot);
+				modified = ConfigureDbProviderFactory(xmlDoc, xmlNs, xmlRoot, factoryClass);
 
 			modified |= ConfigureEntityFrameworkProviderServices(xmlDoc, xmlNs, xmlRoot);
 
@@ -301,7 +297,7 @@ internal static class DbXmlUpdater
 	/// Throws an exception if the app.config could not be successfully verified/updated
 	/// </exception>
 	/// <returns>true if xml was modified else false</returns>
-	private static bool ConfigureDbProviderFactory(XmlDocument xmlDoc, XmlNamespaceManager xmlNs, XmlNode xmlRoot)
+	private static bool ConfigureDbProviderFactory(XmlDocument xmlDoc, XmlNamespaceManager xmlNs, XmlNode xmlRoot, Type factoryClass)
 	{
 		bool modified = false;
 
@@ -386,7 +382,7 @@ internal static class DbXmlUpdater
 				else if (xmlAttr.Value.Replace(" ", "") != factoryNameType.Replace(" ", ""))
 				{
 					// Check if it's not using the fully qualified name - must be current latest version (build is 9.1.0)
-					factoryQualifiedNameType = SystemData.ProviderFactoryType + ", " + typeof(FirebirdClientFactory).AssemblyQualifiedName;
+					factoryQualifiedNameType = SystemData.ProviderFactoryType + ", " + factoryClass.AssemblyQualifiedName;
 
 					if (xmlAttr.Value.Replace(" ", "") != factoryQualifiedNameType.Replace(" ", ""))
 					{

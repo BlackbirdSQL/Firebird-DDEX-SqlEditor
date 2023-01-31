@@ -43,16 +43,17 @@ public static class DbProviderFactoriesEx
 		 *										PublicKeyToken=3750abcc3150b00c
 		*/
 		DataTable table = DbProviderFactories.GetFactoryClasses();
-		DataRow row;
 
 		string invariantName = factoryClass.Assembly.GetName().Name;
 
-		if ((row = table.Rows.Find(invariantName)) != null)
+		if ((_ = table.Rows.Find(invariantName)) != null)
 		{
+			/*
 			Diag.Trace(
 				String.Format("'DbProviderFactories' section (Columns:{0}) aready contains [{1}:{2}:{3}:{4}] as [{5}:{6}:{7}:{8}]",
 				table.Columns.Count, invariantName, factoryName, factoryDescription, factoryClass.AssemblyQualifiedName,
 				row[2].ToString(), row[0].ToString(), row[1].ToString(), row[3].ToString()));
+			*/
 
 			table.Dispose();
 
@@ -76,11 +77,11 @@ public static class DbProviderFactoriesEx
 
 
 	/// <summary>
-	/// Another way of adding to local assembly cache
+	/// Another way of adding to local assembly cache using ConfigurationManager
 	/// </summary>
-	public static bool AddAssemblyToCacheUsingConfigurationManager(Type factoryClass, string factoryName, string factoryDescription)
+	public static bool AddAssemblyToCache2(Type factoryClass, string factoryName, string factoryDescription)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 
 		/*
 		 * ConfigurationManager.GetSection()
@@ -105,8 +106,9 @@ public static class DbProviderFactoriesEx
 
 		if (ConfigurationManager.GetSection("system.data") is not DataSet dataSet)
 		{
-			Diag.Trace("No \"system.data\" section found in configuration manager!");
-			throw new Exception("No \"system.data\" section found in configuration manager!");
+			Exception ex = new Exception("No \"system.data\" section found in configuration manager!");
+			Diag.Dug(ex);
+			throw ex;
 		}
 
 		int num = dataSet.Tables.IndexOf("DbProviderFactories");
@@ -120,7 +122,6 @@ public static class DbProviderFactoriesEx
 		}
 		else
 		{
-			Diag.Trace(String.Format("\"{0}\" section aready exists", "DbProviderFactories"));
 			table = dataSet.Tables[num];
 			if ((row = table.Rows.Find(invariantName)) != null)
 			{
@@ -137,9 +138,11 @@ public static class DbProviderFactoriesEx
 
 		}
 
+		/*
 		Diag.Trace(
 			String.Format("Adding FirebirdSql in DbProviderFactories section (Columns:{0}) [{1}:{2}:{3}:{4}]",
 			table.Columns.Count, invariantName, factoryName, factoryDescription, factoryClass.AssemblyQualifiedName));
+		*/
 
 		table.Rows.Add(factoryName, factoryDescription, invariantName, factoryClass.AssemblyQualifiedName);
 

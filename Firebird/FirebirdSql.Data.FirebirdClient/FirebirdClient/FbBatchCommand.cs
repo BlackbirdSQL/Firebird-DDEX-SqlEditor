@@ -26,6 +26,8 @@ using System.Threading.Tasks;
 using FirebirdSql.Data.Common;
 using FirebirdSql.Data.Logging;
 
+using BlackbirdSql.Common;
+
 namespace FirebirdSql.Data.FirebirdClient;
 public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDisposable
 #if !(NET48 || NETSTANDARD2_0)
@@ -244,6 +246,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 
 	public FbBatchCommand(string cmdText, FbConnection connection, FbTransaction transaction)
 	{
+		Diag.Trace();
 		_namedParameters = Array.Empty<string>();
 		//_commandTimeout = null;
 		//_fetchSize = 200;
@@ -351,6 +354,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 
 	public void Prepare()
 	{
+		Diag.Trace();
 		CheckCommand();
 
 		using (var explicitCancellation = ExplicitCancellation.Enter(CancellationToken.None, Cancel))
@@ -373,6 +377,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	}
 	public async Task PrepareAsync(CancellationToken cancellationToken = default)
 	{
+		Diag.Trace();
 		CheckCommand();
 
 		using (var explicitCancellation = ExplicitCancellation.Enter(cancellationToken, Cancel))
@@ -396,6 +401,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 
 	public FbBatchNonQueryResult ExecuteNonQuery()
 	{
+		Diag.Trace();
 		CheckCommand();
 
 		FbBatchNonQueryResult result;
@@ -429,6 +435,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	}
 	public async Task<FbBatchNonQueryResult> ExecuteNonQueryAsync(CancellationToken cancellationToken = default)
 	{
+		Diag.Trace();
 		CheckCommand();
 
 		FbBatchNonQueryResult result;
@@ -519,6 +526,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 
 	public string GetCommandPlan()
 	{
+		Diag.Trace();
 		if (_statement == null)
 		{
 			return null;
@@ -527,6 +535,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	}
 	public Task<string> GetCommandPlanAsync(CancellationToken cancellationToken = default)
 	{
+		Diag.Trace();
 		if (_statement == null)
 		{
 			return Task.FromResult<string>(null);
@@ -536,6 +545,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 
 	public string GetCommandExplainedPlan()
 	{
+		Diag.Trace();
 		if (_statement == null)
 		{
 			return null;
@@ -544,6 +554,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	}
 	public Task<string> GetCommandExplainedPlanAsync(CancellationToken cancellationToken = default)
 	{
+		Diag.Trace();
 		if (_statement == null)
 		{
 			return Task.FromResult<string>(null);
@@ -553,6 +564,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 
 	public int ComputeCurrentBatchSize()
 	{
+		Diag.Trace();
 		if (_batch == null)
 		{
 			throw new InvalidOperationException("Batch must be prepared.");
@@ -565,6 +577,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	}
 	public async Task<int> ComputeCurrentBatchSizeAsync(CancellationToken cancellationToken = default)
 	{
+		Diag.Trace();
 		if (_batch == null)
 		{
 			throw new InvalidOperationException("Batch must be prepared.");
@@ -718,6 +731,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 
 	internal void CommitImplicitTransaction()
 	{
+		Diag.Trace();
 		if (HasImplicitTransaction && _transaction != null && _transaction.Transaction != null)
 		{
 			try
@@ -752,6 +766,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	}
 	internal async Task CommitImplicitTransactionAsync(CancellationToken cancellationToken = default)
 	{
+		Diag.Trace();
 		if (HasImplicitTransaction && _transaction != null && _transaction.Transaction != null)
 		{
 			try
@@ -787,6 +802,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 
 	internal void RollbackImplicitTransaction()
 	{
+		Diag.Trace();
 		if (HasImplicitTransaction && _transaction != null && _transaction.Transaction != null)
 		{
 			var transactionCount = Connection.InnerConnection.Database.TransactionCount;
@@ -821,6 +837,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	}
 	internal async Task RollbackImplicitTransactionAsync(CancellationToken cancellationToken = default)
 	{
+		Diag.Trace();
 		if (HasImplicitTransaction && _transaction != null && _transaction.Transaction != null)
 		{
 			var transactionCount = Connection.InnerConnection.Database.TransactionCount;
@@ -863,6 +880,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	}
 	internal Task CloseAsync(CancellationToken cancellationToken = default)
 	{
+		Diag.Trace();
 		if (_statement != null)
 		{
 			return _statement.CloseAsync(cancellationToken).AsTask();
@@ -873,6 +891,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	void IFbPreparedCommand.Release() => Release();
 	internal void Release()
 	{
+		Diag.Trace();
 		RollbackImplicitTransaction();
 
 		//DisposeReader();
@@ -938,6 +957,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	void IDescriptorFiller.Fill(Descriptor descriptor, int index) => UpdateParameterValues(descriptor, index);
 	private void UpdateParameterValues(Descriptor descriptor, int batchIndex)
 	{
+		Diag.Trace();
 		if (!HasParameters)
 			return;
 
@@ -1034,6 +1054,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	ValueTask IDescriptorFiller.FillAsync(Descriptor descriptor, int index, CancellationToken cancellationToken) => UpdateParameterValuesAsync(descriptor, index, cancellationToken);
 	private async ValueTask UpdateParameterValuesAsync(Descriptor descriptor, int batchIndex, CancellationToken cancellationToken = default)
 	{
+		Diag.Trace();
 		if (!HasParameters)
 			return;
 
@@ -1135,6 +1156,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 
 	private void Prepare(bool returnsSet)
 	{
+		Diag.Trace();
 		var innerConn = _connection.InnerConnection;
 
 		// Check if	we have	a valid	transaction
@@ -1201,6 +1223,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	}
 	private async Task PrepareAsync(bool returnsSet, CancellationToken cancellationToken = default)
 	{
+		Diag.Trace();
 		var innerConn = _connection.InnerConnection;
 
 		// Check if	we have	a valid	transaction
@@ -1268,6 +1291,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 
 	private FbBatchNonQueryResult ExecuteCommand(bool returnsSet)
 	{
+		Diag.Trace();
 		LogMessages.CommandExecution(Log, this);
 
 		Prepare(returnsSet);
@@ -1298,6 +1322,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 	}
 	private async Task<FbBatchNonQueryResult> ExecuteCommandAsync(bool returnsSet, CancellationToken cancellationToken = default)
 	{
+		Diag.Trace();
 		LogMessages.CommandExecution(Log, this);
 
 		await PrepareAsync(returnsSet, cancellationToken).ConfigureAwait(false);
@@ -1329,6 +1354,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 
 	private void CheckCommand()
 	{
+		Diag.Trace();
 		if (_transaction != null && _transaction.IsCompleted)
 		{
 			_transaction = null;

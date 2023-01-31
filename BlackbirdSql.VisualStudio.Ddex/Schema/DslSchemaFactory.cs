@@ -60,6 +60,7 @@ internal sealed class DslSchemaFactory
 	// Schema factory to handle custom collections
 	public static DataTable GetSchema(FbConnection connection, string collectionName, string[] restrictions)
 	{
+		Diag.Trace();
 		switch (collectionName)
 		{
 			case "Columns":

@@ -10,13 +10,19 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 internal sealed class ObjectMemberComparer : DataObjectMemberComparer
 {
 
-	public ObjectMemberComparer(IVsDataConnection dataConnection)
+	public ObjectMemberComparer() : base()
 	{
+		Diag.Trace();
 	}
 
-	// This method can come out after debugging
+	public ObjectMemberComparer(IVsDataConnection dataConnection) : base(dataConnection)
+	{
+		Diag.Trace();
+	}
+
 	public override int Compare(string typeName, string propertyName, object value1, object value2)
 	{
+		Diag.Trace();
 		int result;
 
 		if (typeName == "Table" && propertyName == "TABLE_TYPE" && value1 != null && value2 != null
@@ -45,6 +51,7 @@ internal sealed class ObjectMemberComparer : DataObjectMemberComparer
 	public override int Compare(string typeName, object[] identifier, int identifierPart, object value)
 	{
 #nullable enable
+		Diag.Trace();
 
 		int result;
 		string? value1 = null, value2 = null;

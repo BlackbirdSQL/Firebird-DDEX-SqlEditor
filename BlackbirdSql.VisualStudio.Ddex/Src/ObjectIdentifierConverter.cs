@@ -39,8 +39,14 @@ internal class ObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 
 	#region · Constructors ·
 
+	public ObjectIdentifierConverter() : base()
+	{
+		Diag.Trace();
+	}
+
 	public ObjectIdentifierConverter(IVsDataConnection connection) : base(connection)
 	{
+		Diag.Trace();
 	}
 
 	#endregion
@@ -49,6 +55,7 @@ internal class ObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 
 	protected override string FormatPart(string typeName, object identifierPart, DataObjectIdentifierFormat format)
 	{
+		Diag.Trace();
 		if (identifierPart is null or DBNull)
 		{
 			Diag.Dug(true, "Identifier is null");

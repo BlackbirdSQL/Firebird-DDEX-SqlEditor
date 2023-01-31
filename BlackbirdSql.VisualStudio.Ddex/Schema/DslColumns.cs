@@ -26,6 +26,8 @@ using System.Text;
 
 using FirebirdSql.Data.FirebirdClient;
 
+using BlackbirdSql.Common;
+
 
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
@@ -36,6 +38,7 @@ internal class DslColumns : DslSchema
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
+		Diag.Trace();
 		var sql = new StringBuilder();
 		var where = new StringBuilder();
 

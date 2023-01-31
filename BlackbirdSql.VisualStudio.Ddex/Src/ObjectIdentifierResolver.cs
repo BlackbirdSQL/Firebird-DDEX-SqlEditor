@@ -37,8 +37,14 @@ internal class ObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	#region · Constructors ·
 
+	public ObjectIdentifierResolver() : base()
+	{
+		Diag.Trace();
+	}
+
 	public ObjectIdentifierResolver(IVsDataConnection connection) : base(connection)
 	{
+		Diag.Trace();
 	}
 
 	#endregion
@@ -47,6 +53,7 @@ internal class ObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	public override object[] ContractIdentifier(string typeName, object[] fullIdentifier)
 	{
+		Diag.Trace();
 		if (typeName == null)
 		{
 			Diag.Dug(true, "Null argument: typeName");
@@ -97,6 +104,7 @@ internal class ObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	public override object[] ExpandIdentifier(string typeName, object[] partialIdentifier)
 	{
+		Diag.Trace();
 		// Diag.Trace(String.Format("ExpandIdentifier({0},...)", typeName));
 
 		if (typeName == null)
@@ -150,6 +158,7 @@ internal class ObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	private int GetIdentifierLength(string typeName)
 	{
+		Diag.Trace();
 		// Diag.Trace(String.Format("GetIdentifierLength({0})", typeName));
 
 		switch (typeName)

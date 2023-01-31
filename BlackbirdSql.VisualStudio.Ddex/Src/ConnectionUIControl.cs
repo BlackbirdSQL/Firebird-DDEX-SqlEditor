@@ -23,10 +23,8 @@ using System;
 using System.Windows.Forms;
 using Microsoft.VisualStudio.Data.Framework;
 
+using BlackbirdSql.VisualStudio.Ddex.Schema;
 using BlackbirdSql.Common;
-using FirebirdSql.Data.Common;
-
-
 
 namespace BlackbirdSql.VisualStudio.Ddex
 {
@@ -36,8 +34,9 @@ namespace BlackbirdSql.VisualStudio.Ddex
 
 		#region · Constructors ·
 
-		public ConnectionUIControl()
+		public ConnectionUIControl() :base()
 		{
+			Diag.Trace();
 			InitializeComponent();
 		}
 

@@ -31,6 +31,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Configuration
 		{
 			CbEnableTrace.IsChecked = VsDebugOptionModel.Instance.EnableTrace;
 			CbEnableDiagnostics.IsChecked = VsDebugOptionModel.Instance.EnableDiagnostics;
+			CbEnableFbDiagnostics.IsChecked = VsDebugOptionModel.Instance.EnableFbDiagnostics;
 			VsDebugOptionModel.Instance.Save();
 		}
 
@@ -55,6 +56,19 @@ namespace BlackbirdSql.VisualStudio.Ddex.Configuration
 		private void CbEnableDiagnostics_Unchecked(object sender, System.Windows.RoutedEventArgs e)
 		{
 			VsDebugOptionModel.Instance.EnableDiagnostics = (bool)CbEnableDiagnostics.IsChecked;
+			VsDebugOptionModel.Instance.Save();
+		}
+
+
+		private void CbEnableFbDiagnostics_Checked(object sender, System.Windows.RoutedEventArgs e)
+		{
+			VsDebugOptionModel.Instance.EnableFbDiagnostics = (bool)CbEnableFbDiagnostics.IsChecked;
+			VsDebugOptionModel.Instance.Save();
+		}
+
+		private void CbEnableFbDiagnostics_Unchecked(object sender, System.Windows.RoutedEventArgs e)
+		{
+			VsDebugOptionModel.Instance.EnableFbDiagnostics = (bool)CbEnableFbDiagnostics.IsChecked;
 			VsDebugOptionModel.Instance.Save();
 		}
 	}

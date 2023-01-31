@@ -13,6 +13,7 @@ using EnvDTE;
 using VSLangProj;
 using VSLangProj150;
 
+using FirebirdSql.Data.FirebirdClient;
 
 using BlackbirdSql.Common;
 
@@ -174,6 +175,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		// We should already be on UI thread. Callers must ensure this can never happen
 		ThreadHelper.ThrowIfNotOnUIThread();
 
+		Diag.Trace();
+
 
 		// Sanity check. Disable events if enabled
 		UnadviseSolutionEvents(false);
@@ -195,7 +198,11 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		// Raise open project event handler for projects that are already loaded
 		// This can happen on IDE startup and a solution was opened with some projects
 		// loaded before our package was sited.
-		if ((Uig.ValidateConfig || Uig.ValidateEdmx) && _Dte.Solution != null)
+		if (_Dte == null || _Dte.Solution == null || _Dte.Solution.Globals == null)
+		{
+			Diag.Dug(true, "DTE.Solution is invalid");
+		}
+		else if (Uig.ValidateConfig || Uig.ValidateEdmx)
 		{
 			// Everything is synchronous within this particular call stack.
 			// We cannot have projects being loaded while we're checking for any projects that may have been loaded.
@@ -243,11 +250,6 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 				}
 			}
 		}
-		else
-		{
-			if (Uig.ValidateConfig || Uig.ValidateEdmx)
-				Diag.Trace("_Dte.Solution is null");
-		}
 
 		// Add ReferencesEvents event handling to C# and VB projects
 		/// AddReferenceAddedEventHandler(_Dte);
@@ -287,7 +289,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 		foreach (Project project in projects)
 		{
-			if (!Uig.IsScannedStatus(project))
+			if (project.Globals != null && !Uig.IsScannedStatus(project))
 				RecursiveValidateProject(project);
 		}
 	}
@@ -306,7 +308,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 		foreach (ProjectItem projectItem in projectItems)
 		{
-			if (projectItem.SubProject != null)
+			if (projectItem.SubProject != null && projectItem.SubProject.Globals != null)
 			{
 				if (!Uig.IsScannedStatus(projectItem.SubProject))
 					RecursiveValidateProject(projectItem.SubProject);
@@ -702,7 +704,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 			try
 			{
-				modified = DbXmlUpdater.ConfigureDbProvider(path);
+				modified = DbXmlUpdater.ConfigureDbProvider(path, typeof(FirebirdClientFactory));
 			}
 			catch (Exception ex)
 			{
@@ -773,7 +775,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			try
 			{
 				// If Entity framework must be configured then so must the client
-				modified = DbXmlUpdater.ConfigureEntityFramework(path, !Uig.IsConfiguredDbProviderStatus(config.ContainingProject));
+				modified = DbXmlUpdater.ConfigureEntityFramework(path, !Uig.IsConfiguredDbProviderStatus(config.ContainingProject), typeof(FirebirdClientFactory));
 			}
 			catch (Exception ex)
 			{
@@ -1109,6 +1111,11 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			return S_OK;
 		}
 
+		if (_Dte == null || _Dte.Solution == null || _Dte.Solution.Globals == null)
+		{
+			Diag.Dug(true, "DTE.Solution is invalid");
+			return S_OK;
+		}
 
 		// VSITEMID_ROOT gets the current project. 
 		// Alternativly, you might have another item id.
@@ -1121,7 +1128,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 		if (objProj is not Project project)
 		{
-			Diag.Dug(true, "AfterOpenProject: Could not get project object property from hierarchy: " + pHierarchy.ToString());
+			Diag.Dug(true, "AfterOpenProject: Possible VS project. Could not get project object property from hierarchy: " + pHierarchy.ToString());
 			return S_OK;
 		}
 		else if (project.Kind != "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
@@ -1155,9 +1162,9 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			return S_OK;
 		}
 
-		if (_Dte.Solution == null)
+		if (_Dte == null || _Dte.Solution == null || _Dte.Solution.Globals == null)
 		{
-			Diag.Dug(true, "Solution is null");
+			Diag.Dug(true, "DTE.Solution is invalid");
 			return S_OK;
 		}
 

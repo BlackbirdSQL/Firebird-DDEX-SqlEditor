@@ -16,6 +16,7 @@
 //$Authors = Jiri Cincura (jiri@cincura.net)
 
 using System.Data.Entity.Core.Metadata.Edm;
+using BlackbirdSql.Common;
 
 namespace EntityFramework.Firebird;
 
@@ -23,6 +24,7 @@ internal static class TypeHelpers
 {
 	public static bool TryGetPrecision(TypeUsage tu, out byte precision)
 	{
+		// Diag.Trace();
 		precision = 0;
 		if (tu.Facets.TryGetValue("Precision", false, out var f))
 		{
@@ -37,6 +39,7 @@ internal static class TypeHelpers
 
 	public static bool TryGetMaxLength(TypeUsage tu, out int maxLength)
 	{
+		// Diag.Trace();
 		maxLength = 0;
 		if (tu.Facets.TryGetValue("MaxLength", false, out var f))
 		{
@@ -51,6 +54,7 @@ internal static class TypeHelpers
 
 	public static bool TryGetScale(TypeUsage tu, out byte scale)
 	{
+		// Diag.Trace();
 		scale = 0;
 		if (tu.Facets.TryGetValue("Scale", false, out var f))
 		{

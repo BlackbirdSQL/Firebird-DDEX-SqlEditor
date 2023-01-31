@@ -20,11 +20,14 @@ using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
+
+using BlackbirdSql.Common;
+
 using FirebirdSql.Data.FirebirdClient;
 
-namespace BlackbirdSql.Common;
+namespace BlackbirdSql.VisualStudio.Ddex.Schema;
+
 
 internal static class ConnectionString
 {
@@ -198,6 +201,38 @@ internal static class ConnectionString
 			{ DefaultKeyParallelWorkers, DefaultValueParallelWorkers },
 		};
 
+	internal static readonly IList<string> EquivalencyKeys = new List<string>()
+		{
+			{ DefaultKeyDataSource },
+			{ DefaultKeyPortNumber },
+			{ DefaultKeyUserId },
+			{ DefaultKeyRoleName },
+			{ DefaultKeyCatalog },
+			{ DefaultKeyCharacterSet },
+			{ DefaultKeyDialect },
+			{ DefaultKeyServerType },
+			{ DefaultKeyClientLibrary },
+			{ DefaultKeyNoDbTriggers },
+			{ DefaultKeyCryptKey },
+			{ DefaultKeyWireCrypt },
+			{ DefaultKeyApplicationName },
+		};
+
+	internal static readonly string[] MandatoryProperties =
+	{
+		DefaultKeyDataSource,
+		DefaultKeyCatalog,
+		DefaultKeyUserId
+	};
+
+	internal static readonly string[] MandatoryUIProperties =
+	{
+		DefaultKeyDataSource,
+		DefaultKeyCatalog,
+		DefaultKeyUserId,
+		DefaultKeyPassword
+	};
+
 	#endregion
 
 
@@ -208,6 +243,7 @@ internal static class ConnectionString
 
 	internal static short GetInt16(string key, TryGetValueDelegate tryGetValue, short defaultValue = default)
 	{
+		Diag.Trace();
 		return tryGetValue(key, out var value)
 			? Convert.ToInt16(value, CultureInfo.InvariantCulture)
 			: defaultValue;
@@ -215,6 +251,7 @@ internal static class ConnectionString
 
 	internal static int GetInt32(string key, TryGetValueDelegate tryGetValue, int defaultValue = default)
 	{
+		Diag.Trace();
 		return tryGetValue(key, out var value)
 			? Convert.ToInt32(value, CultureInfo.InvariantCulture)
 			: defaultValue;
@@ -222,6 +259,7 @@ internal static class ConnectionString
 
 	internal static long GetInt64(string key, TryGetValueDelegate tryGetValue, long defaultValue = default)
 	{
+		Diag.Trace();
 		return tryGetValue(key, out var value)
 			? Convert.ToInt64(value, CultureInfo.InvariantCulture)
 			: defaultValue;
@@ -229,6 +267,7 @@ internal static class ConnectionString
 
 	internal static string GetString(string key, TryGetValueDelegate tryGetValue, string defaultValue = default)
 	{
+		Diag.Trace();
 		return tryGetValue(key, out var value)
 			? Convert.ToString(value, CultureInfo.InvariantCulture)
 			: defaultValue;
@@ -236,6 +275,7 @@ internal static class ConnectionString
 
 	internal static bool GetBoolean(string key, TryGetValueDelegate tryGetValue, bool defaultValue = default)
 	{
+		Diag.Trace();
 		return tryGetValue(key, out var value)
 			? Convert.ToBoolean(value, CultureInfo.InvariantCulture)
 			: defaultValue;
@@ -243,6 +283,7 @@ internal static class ConnectionString
 
 	internal static byte[] GetBytes(string key, TryGetValueDelegate tryGetValue, byte[] defaultValue = default)
 	{
+		Diag.Trace();
 		return tryGetValue(key, out var value)
 			? (byte[])value
 			: defaultValue;
@@ -250,6 +291,7 @@ internal static class ConnectionString
 
 	internal static FbServerType GetServerType(string key, TryGetValueDelegate tryGetValue, FbServerType defaultValue = default)
 	{
+		Diag.Trace();
 		return tryGetValue(key, out var value)
 			? (FbServerType)value
 			: defaultValue;
@@ -257,6 +299,7 @@ internal static class ConnectionString
 
 	internal static IsolationLevel GetIsolationLevel(string key, TryGetValueDelegate tryGetValue, IsolationLevel defaultValue = default)
 	{
+		Diag.Trace();
 		return tryGetValue(key, out var value)
 			? (IsolationLevel)value
 			: defaultValue;
@@ -264,6 +307,7 @@ internal static class ConnectionString
 
 	internal static FbWireCrypt GetWireCrypt(string key, TryGetValueDelegate tryGetValue, FbWireCrypt defaultValue = default)
 	{
+		Diag.Trace();
 		return tryGetValue(key, out var value)
 			? (FbWireCrypt)value
 			: defaultValue;
@@ -275,6 +319,7 @@ internal static class ConnectionString
 
 	private static string ExpandDataDirectory(string s)
 	{
+		Diag.Trace();
 		const string DataDirectoryKeyword = "|DataDirectory|";
 		if (s == null)
 			return s;
@@ -286,19 +331,19 @@ internal static class ConnectionString
 
 	private static T ParseEnum<T>(string value, string name) where T : struct
 	{
+		Diag.Trace();
 		if (!Enum.TryParse<T>(value, true, out var result))
 			throw NotSupported(name);
 		return result;
 	}
 
-	private static Exception NotSupported(string name) => new NotSupportedException($"Not supported '{name}'.");
-
-	private static string WrapValueIfNeeded(string value)
+	private static Exception NotSupported(string name)
 	{
-		if (value != null && value.Contains(';'))
-			return "'" + value + "'";
-		return value;
+		NotSupportedException ex = new NotSupportedException($"Not supported '{name}'.");
+		Diag.Dug(ex);
+		return ex;
 	}
+
 
 	#endregion
 }

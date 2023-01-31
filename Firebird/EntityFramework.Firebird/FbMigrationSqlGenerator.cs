@@ -34,6 +34,8 @@ using System.Text.RegularExpressions;
 using EntityFramework.Firebird.SqlGen;
 using FirebirdSql.Data.Common;
 
+using BlackbirdSql.Common;
+
 namespace EntityFramework.Firebird;
 
 public class FbMigrationSqlGenerator : MigrationSqlGenerator
@@ -49,6 +51,7 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	public override IEnumerable<MigrationStatement> Generate(IEnumerable<MigrationOperation> migrationOperations, string providerManifestToken)
 	{
+		Diag.Trace();
 		InitializeProviderServices(providerManifestToken);
 
 		var lastOperation = migrationOperations.Last();
@@ -73,6 +76,7 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	void InitializeProviderServices(string providerManifestToken)
 	{
+		Diag.Trace();
 		using (var connection = CreateConnection())
 		{
 			ProviderManifest = DbProviderServices.GetProviderServices(connection).GetProviderManifest(providerManifestToken);
@@ -88,6 +92,7 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	protected virtual IEnumerable<MigrationStatement> Generate(UpdateDatabaseOperation operation)
 	{
+		Diag.Trace();
 		return GenerateStatements(operation.Migrations.SelectMany(x => x.Operations));
 	}
 
@@ -98,6 +103,7 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	protected virtual IEnumerable<MigrationStatement> Generate(AddColumnOperation operation)
 	{
+		Diag.Trace();
 		var tableName = CheckName(ExtractName(operation.Table));
 		var column = operation.Column;
 		if (column.IsNullable != null
@@ -124,6 +130,7 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	protected virtual IEnumerable<MigrationStatement> Generate(AddForeignKeyOperation operation)
 	{
+		Diag.Trace();
 		using (var writer = SqlWriter())
 		{
 			writer.Write("ALTER TABLE ");
@@ -147,6 +154,7 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	protected virtual IEnumerable<MigrationStatement> Generate(AddPrimaryKeyOperation operation)
 	{
+		Diag.Trace();
 		using (var writer = SqlWriter())
 		{
 			writer.Write("ALTER TABLE ");
@@ -162,6 +170,7 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	protected virtual IEnumerable<MigrationStatement> Generate(AlterColumnOperation operation)
 	{
+		Diag.Trace();
 		var column = operation.Column;
 		var tableName = CheckName(ExtractName(operation.Table));
 		var columnName = CheckName(column.Name);
@@ -256,17 +265,20 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	protected virtual IEnumerable<MigrationStatement> Generate(AlterProcedureOperation operation)
 	{
+		Diag.Trace();
 		return Generate(operation, "ALTER");
 	}
 
 	protected virtual IEnumerable<MigrationStatement> Generate(AlterTableOperation operation)
 	{
+		Diag.Trace();
 		// Nothing to do since there is no inherent semantics associated with annotations
 		yield break;
 	}
 
 	protected virtual IEnumerable<MigrationStatement> Generate(CreateIndexOperation operation)
 	{
+		Diag.Trace();
 		using (var writer = SqlWriter())
 		{
 			writer.Write("CREATE ");
@@ -287,11 +299,13 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	protected virtual IEnumerable<MigrationStatement> Generate(CreateProcedureOperation operation)
 	{
+		Diag.Trace();
 		return Generate(operation, "CREATE");
 	}
 
 	protected virtual IEnumerable<MigrationStatement> Generate(CreateTableOperation operation)
 	{
+		Diag.Trace();
 		var tableName = CheckName(ExtractName(operation.Name));
 		var isMigrationsHistoryTable = tableName.Equals(_migrationsHistoryTableName, StringComparison.InvariantCulture);
 		var columnsData = operation.Columns.Select(x => Generate(x, tableName)).ToArray();
@@ -337,6 +351,7 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	protected virtual IEnumerable<MigrationStatement> Generate(DropColumnOperation operation)
 	{
+		Diag.Trace();
 		using (var writer = SqlWriter())
 		{
 			writer.Write("ALTER TABLE ");
@@ -349,6 +364,7 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	protected virtual IEnumerable<MigrationStatement> Generate(DropForeignKeyOperation operation)
 	{
+		Diag.Trace();
 		using (var writer = SqlWriter())
 		{
 			writer.Write("ALTER TABLE ");
@@ -361,6 +377,8 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	protected virtual IEnumerable<MigrationStatement> Generate(DropIndexOperation operation)
 	{
+		Diag.Trace();
+		Diag.Trace();
 		using (var writer = SqlWriter())
 		{
 			writer.Write("DROP INDEX ");
@@ -383,6 +401,7 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	protected virtual IEnumerable<MigrationStatement> Generate(DropProcedureOperation operation)
 	{
+		Diag.Trace();
 		using (var writer = SqlWriter())
 		{
 			writer.Write("DROP PROCEDURE ");
@@ -393,6 +412,7 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	protected virtual IEnumerable<MigrationStatement> Generate(DropTableOperation operation)
 	{
+		Diag.Trace();
 		using (var writer = SqlWriter())
 		{
 			writer.Write("DROP TABLE ");
@@ -408,11 +428,13 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	protected virtual IEnumerable<MigrationStatement> Generate(MoveTableOperation operation)
 	{
+		Diag.Trace();
 		throw new NotSupportedException("Moving table is not supported by Firebird.");
 	}
 
 	protected virtual IEnumerable<MigrationStatement> Generate(RenameColumnOperation operation)
 	{
+		Diag.Trace();
 		using (var writer = SqlWriter())
 		{
 			writer.Write("ALTER TABLE ");
@@ -427,21 +449,25 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	protected virtual IEnumerable<MigrationStatement> Generate(RenameIndexOperation operation)
 	{
+		Diag.Trace();
 		throw new NotSupportedException("Renaming index is not supported by Firebird.");
 	}
 
 	protected virtual IEnumerable<MigrationStatement> Generate(RenameProcedureOperation operation)
 	{
+		Diag.Trace();
 		throw new NotSupportedException("Renaming procedure is not supported by Firebird.");
 	}
 
 	protected virtual IEnumerable<MigrationStatement> Generate(RenameTableOperation operation)
 	{
+		Diag.Trace();
 		throw new NotSupportedException("Renaming table is not supported by Firebird.");
 	}
 
 	protected virtual IEnumerable<MigrationStatement> Generate(HistoryOperation operation)
 	{
+		Diag.Trace();
 		foreach (var commandTree in operation.CommandTrees)
 		{
 			List<DbParameter> _;
@@ -550,6 +576,7 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	protected virtual IEnumerable<MigrationStatement> Generate(ProcedureOperation operation, string action)
 	{
+		Diag.Trace();
 		using (var writer = SqlWriter())
 		{
 			var inputParameters = operation.Parameters.Where(x => !x.IsOutParameter).ToArray();
@@ -591,6 +618,7 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	protected (string, IEnumerable<string>) Generate(ColumnModel column, string tableName)
 	{
+		Diag.Trace();
 		var builder = new StringBuilder();
 		var additionalCommands = new List<string>();
 
@@ -636,6 +664,7 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	protected string Generate(ParameterModel parameter)
 	{
+		Diag.Trace();
 		var builder = new StringBuilder();
 		builder.Append(Quote(CheckName(parameter.Name)));
 		builder.Append(" ");
@@ -649,6 +678,7 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	static MigrationStatement Statement(SqlWriter sqlWriter, bool suppressTransaction = false)
 	{
+		Diag.Trace();
 		return Statement(sqlWriter.ToString(), suppressTransaction);
 	}
 	protected static MigrationStatement Statement(string sql, bool suppressTransaction = false)
@@ -663,46 +693,55 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	protected static string WriteValue(object value)
 	{
+		Diag.Trace();
 		return string.Format(CultureInfo.InvariantCulture, "{0}", value);
 	}
 
 	protected static string WriteValue(DateTime value)
 	{
+		Diag.Trace();
 		return SqlGenerator.FormatDateTime(value);
 	}
 
 	protected static string WriteValue(byte[] value)
 	{
+		Diag.Trace();
 		return SqlGenerator.FormatBinary(value);
 	}
 
 	protected static string WriteValue(bool value)
 	{
+		Diag.Trace();
 		return SqlGenerator.FormatBoolean(value);
 	}
 
 	protected static string WriteValue(Guid value)
 	{
+		Diag.Trace();
 		return SqlGenerator.FormatGuid(value);
 	}
 
 	protected static string WriteValue(string value)
 	{
+		Diag.Trace();
 		return SqlGenerator.FormatString(value, true);
 	}
 
 	protected static string WriteValue(TimeSpan value)
 	{
+		Diag.Trace();
 		return SqlGenerator.FormatTime(value);
 	}
 
 	protected internal static string Quote(string name)
 	{
+		Diag.Trace();
 		return SqlGenerator.QuoteIdentifier(name);
 	}
 
 	internal static SqlWriter SqlWriter()
 	{
+		Diag.Trace();
 		var result = new SqlWriter(new StringBuilder());
 		result.Indent++;
 		return result;
@@ -710,6 +749,7 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	string BuildPropertyType(PropertyModel propertyModel)
 	{
+		Diag.Trace();
 		var storeTypeName = propertyModel.StoreType;
 		var typeUsage = ProviderManifest.GetStoreType(propertyModel.TypeUsage);
 		if (!string.IsNullOrWhiteSpace(storeTypeName))
@@ -721,6 +761,7 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	static string BuildIndexName(IndexOperation indexOperation)
 	{
+		Diag.Trace();
 		return !indexOperation.HasDefaultName
 			? indexOperation.Name
 			: IndexOperation.BuildDefaultName(new[] { ExtractName(indexOperation.Table) }.Concat(indexOperation.Columns));
@@ -728,11 +769,13 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	static string ExtractName(string name)
 	{
+		Diag.Trace();
 		return name.Substring(name.LastIndexOf('.') + 1);
 	}
 
 	static string CreateItemName(string name)
 	{
+		Diag.Trace();
 		while (true)
 		{
 			var match = Regex.Match(name, @"^(?<prefix>.+_)[^.]+\.(?<suffix>.+)$");
@@ -745,6 +788,7 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	static string CheckName(string name)
 	{
+		Diag.Trace();
 		const int LengthLimit = 31;
 		if (name.Length > LengthLimit)
 			throw new ArgumentOutOfRangeException($"The name '{name}' is longer than Firebird's {LengthLimit} characters limit for object names.");
@@ -753,6 +797,7 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	static void WriteColumns(SqlWriter writer, IEnumerable<string> columns, bool separateLines = false)
 	{
+		Diag.Trace();
 		var separator = (string)null;
 		foreach (var column in columns)
 		{
@@ -769,11 +814,13 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	static DbConnection CreateConnection()
 	{
+		Diag.Trace();
 		return DbConfiguration.DependencyResolver.GetService<DbProviderFactory>(FbProviderServices.ProviderInvariantName).CreateConnection();
 	}
 
 	IEnumerable<MigrationStatement> GenerateStatements(IEnumerable<MigrationOperation> operations)
 	{
+		Diag.Trace();
 		return operations.Select<dynamic, IEnumerable<MigrationStatement>>(x => Generate(x)).SelectMany(x => x);
 	}
 

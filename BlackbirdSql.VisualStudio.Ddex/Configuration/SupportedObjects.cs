@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-
-
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 
@@ -30,12 +30,23 @@ internal static class SupportedObjects
 	/// <summary>
 	/// This preset defines whether implementations are defined in the private registry or handled in <see cref="ProviderObjectFactory.CreateObject"/>
 	/// </summary>
-	const bool _useProviderObjectFactory = true;
+	const bool _useFactoryOnly = false;
+
+	static Assembly _Assem = null;
+
+	public static Assembly Assem
+	{
+		get
+		{
+			return _Assem ??= typeof(SupportedObjects).Assembly;
+		}
+
+	}
 
 
 
 	/// <summary>
-	/// Dictionary of all supported provider interfaces with the <see cref="_useProviderObjectFactory"/> defining where their implementations are defined or handled.
+	/// Dictionary of all supported provider interfaces with the <see cref="_useProviderObjectFactoryOnly"/> defining where their implementations are defined or handled.
 	/// </summary>
 	/// <remarks>
 	/// The dictionary key is the interface name (aka registry key) and value is the number (qty) of registry values under the key.
@@ -44,20 +55,25 @@ internal static class SupportedObjects
 	/// </remarks>
 	public static readonly IDictionary<string, int> Implementations = new Dictionary<string, int>()
 	{
-		{ "IVsDataConnectionEquivalencyComparer", _useProviderObjectFactory ? 0 : 1 },
-		{ "IVsDataConnectionProperties", _useProviderObjectFactory ? 0 : 1 },
-		{ "IVsDataConnectionSupport", _useProviderObjectFactory ? 0 : 1 },
-		{ "IVsDataConnectionUIControl", _useProviderObjectFactory ? 0 : 1 },
-		{ "IVsDataConnectionUIProperties", _useProviderObjectFactory ? 0 : 1 },
-		{ "IVsDataMappedObjectConverter", _useProviderObjectFactory ? 0 : 1 },
-		{ "IVsDataObjectIdentifierConverter", _useProviderObjectFactory ? 0 : 1 },
-		{ "IVsDataObjectIdentifierResolver", _useProviderObjectFactory ? 0 : 1 },
-		{ "IVsDataObjectMemberComparer", _useProviderObjectFactory ? 0 : 1 },
-		{ "IVsDataObjectSelector", _useProviderObjectFactory ? 0 : 1 },
-		{ "IVsDataObjectSupport", _useProviderObjectFactory ? 0 : 1 },
-		{ "IVsDataSourceInformation", _useProviderObjectFactory ? 0 : 1 },
-		{ "IVsDataSourceVersionComparer", _useProviderObjectFactory ? 0 : 1 },
-		{ "IVsDataViewSupport", _useProviderObjectFactory ? 0 : 5 },
+		{ "IVsDataAsyncCommand", 0 },
+		{ "IVsDataCommand", 0 },
+		{ "IVsDataConnectionEquivalencyComparer", _useFactoryOnly ? 0 : 1 },
+		{ "IVsDataConnectionPromptDialog", _useFactoryOnly ? 0 : 1 },
+		{ "IVsDataConnectionProperties", _useFactoryOnly ? 0 : 1 },
+		{ "IVsDataConnectionSupport", _useFactoryOnly ? 0 : 1 },
+		{ "IVsDataConnectionUIConnector", _useFactoryOnly ? 0 : 1 },
+		{ "IVsDataConnectionUIControl", _useFactoryOnly ? 0 : 1 },
+		{ "IVsDataConnectionUIProperties", _useFactoryOnly ? 0 : 1 },
+		{ "IVsDataMappedObjectConverter", _useFactoryOnly ? 0 : 1 },
+		{ "IVsDataObjectIdentifierConverter", _useFactoryOnly ? 0 : 1 },
+		{ "IVsDataObjectIdentifierResolver", _useFactoryOnly ? 0 : 1 },
+		{ "IVsDataObjectMemberComparer", _useFactoryOnly ? 0 : 1 },
+		{ "IVsDataObjectSelector", _useFactoryOnly ? 0 : 1 },
+		{ "IVsDataObjectSupport", _useFactoryOnly ? 0 : 2 },
+		{ "IVsDataSourceInformation", _useFactoryOnly ? 0 : 1 },
+		{ "IVsDataSourceVersionComparer", _useFactoryOnly ? 0 : 1 },
+		{ "IVsDataTransaction", 0 },
+		{ "IVsDataViewSupport", _useFactoryOnly ? 0 : 4 },
 	};
 
 
@@ -72,25 +88,32 @@ internal static class SupportedObjects
 	/// </remarks>
 	public static readonly IDictionary<string, RegistryValue> Values = new Dictionary<string, RegistryValue>()
 	{
-		{ "IVsDataConnectionEquivalencyComparer:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.DataConnectionEquivalencyComparer") },
-		{ "IVsDataConnectionProperties:0", new(null, "BlackbirdSql.VisualStudio.Ddex.ConnectionProperties") },
+		{ "IVsDataConnectionEquivalencyComparer:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.ConnectionEquivalencyComparer") },
+		{ "IVsDataConnectionPromptDialog:0", new(null, "BlackbirdSql.VisualStudio.Ddex.ConnectionPromptDialog") },
+		{ "IVsDataConnectionProperties:0", new(null, "BlackbirdSql.VisualStudio.Ddex.DbConnectionProperties") },
 		{ "IVsDataConnectionSupport:0", new (null, "BlackbirdSql.VisualStudio.Ddex.ConnectionSupport") },
+		{ "IVsDataConnectionUIConnector:0", new (null, "BlackbirdSql.VisualStudio.Ddex.ConnectionUIConnector") },
 		{ "IVsDataConnectionUIControl:0", new(null, "BlackbirdSql.VisualStudio.Ddex.ConnectionUIControl") },
-		{ "IVsDataConnectionUIProperties:0", new(null, "BlackbirdSql.VisualStudio.Ddex.ConnectionProperties") },
+		{ "IVsDataConnectionUIProperties:0", new(null, "BlackbirdSql.VisualStudio.Ddex.DbConnectionUIProperties") },
 		{ "IVsDataMappedObjectConverter:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.MappedObjectConverter") },
 		{ "IVsDataObjectIdentifierConverter:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.ObjectIdentifierConverter") },
 		{ "IVsDataObjectIdentifierResolver:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.ObjectIdentifierResolver") },
 		{ "IVsDataObjectMemberComparer:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.ObjectMemberComparer") },
 		{ "IVsDataObjectSelector:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.ObjectSelector") },
+
 		{ "IVsDataObjectSupport:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.ObjectSupport") },
+		// { "IVsDataObjectSupport:1", new("Assembly",  Assem.FullName) },
+		{ "IVsDataObjectSupport:1", new("XmlResource",  "BlackbirdSql.VisualStudio.Ddex.ObjectSupport.xml") },
+
 		{ "IVsDataSourceInformation:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.SourceInformation") },
 		{ "IVsDataSourceVersionComparer:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.SourceVersionComparer") },
 
 		{ "IVsDataViewSupport:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.ViewSupport") },
 		{ "IVsDataViewSupport:1", new("AllowAsynchronousEnumerations",  "true") },
-		{ "IVsDataViewSupport:2", new("HasDocumentProvider",  1) },
-		{ "IVsDataViewSupport:3", new("PersistentCommands",  "501822E1-B5AF-11d0-B4DC-00A0C91506EF,0x3528,3") },
-		{ "IVsDataViewSupport:4", new("XmlResource",  "BlackbirdSql.VisualStudio.Ddex.ViewSupport.xml") }
+		{ "IVsDataViewSupport:2", new("HasDocumentProvider",  0) },
+		// { "IVsDataViewSupport:3", new("Assembly",  Assem.FullName) },
+		// { "IVsDataViewSupport:4", new("PersistentCommands",  "501822E1-B5AF-11d0-B4DC-00A0C91506EF,0x3528,3") },
+		{ "IVsDataViewSupport:3", new("XmlResource",  "BlackbirdSql.VisualStudio.Ddex.ViewSupport.xml") }
 	};
 
 

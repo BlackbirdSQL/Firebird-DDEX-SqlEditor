@@ -30,11 +30,8 @@ using FirebirdSql.Data.Common;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
-internal class ConnectionProperties : AdoDotNetConnectionProperties
+internal class DbConnectionProperties : AdoDotNetConnectionProperties
 {
-
-	private static readonly string[] _mandatoryProperties = { "Data Source", "Initial Catalog", "User ID", "Password" };
-
 
 
 	#region · Properties ·
@@ -43,7 +40,8 @@ internal class ConnectionProperties : AdoDotNetConnectionProperties
 	{
 		get
 		{
-			foreach (string property in _mandatoryProperties)
+			Diag.Trace();
+			foreach (string property in Schema.ConnectionString.MandatoryProperties)
 			{
 				if (!TryGetValue(property, out object value) || string.IsNullOrEmpty((string)value))
 				{
@@ -61,8 +59,9 @@ internal class ConnectionProperties : AdoDotNetConnectionProperties
 
 	#region · Constructors ·
 
-	public ConnectionProperties()
+	public DbConnectionProperties() : base()
 	{
+		Diag.Trace();
 	}
 
 	#endregion

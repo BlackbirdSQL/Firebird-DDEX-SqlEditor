@@ -42,7 +42,6 @@ internal sealed class VsPackageRegistration: RegistrationAttribute
 			string invariantName = providerFactoryClass.Assembly.GetName().Name;
 			string invariantFullName = providerFactoryClass.Assembly.FullName;
 
-
 			Type providerObjectFactoryClass = typeof(IProviderObjectFactory);
 			string nameProviderObjectFactory = providerObjectFactoryClass.Assembly.FullName;
 
@@ -119,6 +118,7 @@ internal sealed class VsPackageRegistration: RegistrationAttribute
 				{
 					registryValue = SupportedObjects.Values[implementation.Key + ":" + i.ToString()];
 
+					// Diag.Trace(implementation.Key + ": " + (registryValue.Name == null ? "null" : registryValue.Name) + ":" + registryValue.Value);
 					key3.SetValue(registryValue.Name, registryValue.Value);
 				}
 

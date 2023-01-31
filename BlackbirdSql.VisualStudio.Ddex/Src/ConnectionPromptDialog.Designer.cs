@@ -58,9 +58,6 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			this.serverTextBox = new System.Windows.Forms.TextBox();
 			this.databaseLabel = new System.Windows.Forms.Label();
 			this.databaseTextBox = new System.Windows.Forms.TextBox();
-			this.authenticationTypeLabel = new System.Windows.Forms.Label();
-			this.authenticationTypeComboBox = new System.Windows.Forms.ComboBox();
-			this.authenticationTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
 			this.loginTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
 			this.userNameLabel = new System.Windows.Forms.Label();
 			this.userNameTextBox = new System.Windows.Forms.TextBox();
@@ -71,12 +68,14 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			this.okButton = new System.Windows.Forms.Button();
 			this.cancelButton = new System.Windows.Forms.Button();
 			this.overarchingTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+			this.authenticationTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+			this.authenticationTypeLabel = new System.Windows.Forms.Label();
 			this.headerPanel.SuspendLayout();
 			this.mainTableLayoutPanel.SuspendLayout();
-			this.authenticationTableLayoutPanel.SuspendLayout();
 			this.loginTableLayoutPanel.SuspendLayout();
 			this.buttonsTableLayoutPanel.SuspendLayout();
 			this.overarchingTableLayoutPanel.SuspendLayout();
+			this.authenticationTableLayoutPanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// headerLabel
@@ -163,43 +162,6 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			this.databaseTextBox.Size = new System.Drawing.Size(216, 20);
 			this.databaseTextBox.TabIndex = 3;
 			// 
-			// authenticationTypeLabel
-			// 
-			this.authenticationTypeLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.authenticationTypeLabel.AutoSize = true;
-			this.authenticationTypeLabel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.authenticationTypeLabel.Location = new System.Drawing.Point(0, 10);
-			this.authenticationTypeLabel.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
-			this.authenticationTypeLabel.Name = "authenticationTypeLabel";
-			this.authenticationTypeLabel.Size = new System.Drawing.Size(78, 13);
-			this.authenticationTypeLabel.TabIndex = 0;
-			this.authenticationTypeLabel.Text = "&Authentication:";
-			// 
-			// authenticationTypeComboBox
-			// 
-			this.authenticationTypeComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-			this.authenticationTypeComboBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.authenticationTypeComboBox.Location = new System.Drawing.Point(84, 8);
-			this.authenticationTypeComboBox.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-			this.authenticationTypeComboBox.Name = "authenticationTypeComboBox";
-			this.authenticationTypeComboBox.Size = new System.Drawing.Size(258, 21);
-			this.authenticationTypeComboBox.TabIndex = 2;
-			this.authenticationTypeComboBox.SelectedIndexChanged += new System.EventHandler(this.SetSecurityOption);
-			// 
-			// authenticationTableLayoutPanel
-			// 
-			this.authenticationTableLayoutPanel.ColumnCount = 2;
-			this.authenticationTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-			this.authenticationTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-			this.authenticationTableLayoutPanel.Controls.Add(this.authenticationTypeLabel, 0, 0);
-			this.authenticationTableLayoutPanel.Controls.Add(this.authenticationTypeComboBox, 1, 0);
-			this.authenticationTableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.authenticationTableLayoutPanel.Location = new System.Drawing.Point(3, 83);
-			this.authenticationTableLayoutPanel.Name = "authenticationTableLayoutPanel";
-			this.authenticationTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-			this.authenticationTableLayoutPanel.Size = new System.Drawing.Size(278, 34);
-			this.authenticationTableLayoutPanel.TabIndex = 2;
-			// 
 			// loginTableLayoutPanel
 			// 
 			this.loginTableLayoutPanel.AutoSize = true;
@@ -272,6 +234,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			// savePasswordCheckBox
 			// 
 			this.savePasswordCheckBox.AutoSize = true;
+			this.savePasswordCheckBox.Enabled = false;
 			this.savePasswordCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.savePasswordCheckBox.Location = new System.Drawing.Point(67, 52);
 			this.savePasswordCheckBox.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
@@ -347,6 +310,31 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			this.overarchingTableLayoutPanel.Size = new System.Drawing.Size(284, 243);
 			this.overarchingTableLayoutPanel.TabIndex = 0;
 			// 
+			// authenticationTableLayoutPanel
+			// 
+			this.authenticationTableLayoutPanel.ColumnCount = 2;
+			this.authenticationTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.authenticationTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+			this.authenticationTableLayoutPanel.Controls.Add(this.authenticationTypeLabel, 0, 0);
+			this.authenticationTableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.authenticationTableLayoutPanel.Location = new System.Drawing.Point(3, 83);
+			this.authenticationTableLayoutPanel.Name = "authenticationTableLayoutPanel";
+			this.authenticationTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+			this.authenticationTableLayoutPanel.Size = new System.Drawing.Size(278, 34);
+			this.authenticationTableLayoutPanel.TabIndex = 2;
+			// 
+			// authenticationTypeLabel
+			// 
+			this.authenticationTypeLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this.authenticationTypeLabel.AutoSize = true;
+			this.authenticationTypeLabel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.authenticationTypeLabel.Location = new System.Drawing.Point(0, 10);
+			this.authenticationTypeLabel.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
+			this.authenticationTypeLabel.Name = "authenticationTypeLabel";
+			this.authenticationTypeLabel.Size = new System.Drawing.Size(75, 13);
+			this.authenticationTypeLabel.TabIndex = 0;
+			this.authenticationTypeLabel.Text = "&Authentication";
+			// 
 			// ConnectionPromptDialog
 			// 
 			this.AcceptButton = this.okButton;
@@ -370,14 +358,14 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			this.headerPanel.PerformLayout();
 			this.mainTableLayoutPanel.ResumeLayout(false);
 			this.mainTableLayoutPanel.PerformLayout();
-			this.authenticationTableLayoutPanel.ResumeLayout(false);
-			this.authenticationTableLayoutPanel.PerformLayout();
 			this.loginTableLayoutPanel.ResumeLayout(false);
 			this.loginTableLayoutPanel.PerformLayout();
 			this.buttonsTableLayoutPanel.ResumeLayout(false);
 			this.buttonsTableLayoutPanel.PerformLayout();
 			this.overarchingTableLayoutPanel.ResumeLayout(false);
 			this.overarchingTableLayoutPanel.PerformLayout();
+			this.authenticationTableLayoutPanel.ResumeLayout(false);
+			this.authenticationTableLayoutPanel.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -392,9 +380,6 @@ namespace BlackbirdSql.VisualStudio.Ddex
 		private TextBox serverTextBox;
 		private Label databaseLabel;
 		private TextBox databaseTextBox;
-		private Label authenticationTypeLabel;
-		private ComboBox authenticationTypeComboBox;
-		private TableLayoutPanel authenticationTableLayoutPanel;
 		private TableLayoutPanel loginTableLayoutPanel;
 		private Label userNameLabel;
 		private TextBox userNameTextBox;
@@ -405,5 +390,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 		private Button okButton;
 		private Button cancelButton;
 		private TableLayoutPanel overarchingTableLayoutPanel;
+		private TableLayoutPanel authenticationTableLayoutPanel;
+		private Label authenticationTypeLabel;
 	}
 }

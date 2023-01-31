@@ -20,13 +20,14 @@
  */
 
 using System;
-using System.Data.Common.BlackbirdSql;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Data.Framework;
+using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Common;
-using FirebirdSql.Data.FirebirdClient;
+
+
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -41,8 +42,9 @@ public sealed class ProviderObjectFactory : DataProviderObjectFactory, IProvider
 {
 	#region · Constructors ·
 
-	public ProviderObjectFactory()
+	public ProviderObjectFactory() : base()
 	{
+		Diag.Trace();
 	}
 
 	#endregion
@@ -51,35 +53,63 @@ public sealed class ProviderObjectFactory : DataProviderObjectFactory, IProvider
 
 	public override object CreateObject(Type objType)
 	{
-		// Diag.Trace("CreateObject: " + objType.FullName);
-
-
+		/* Uncomment this and change SupportedObjects._useFactoryOnly to true to debug implementations
+		 * Don't forget to do the same for ConnectionSupport if you do.
+		 * 
 		if (objType == typeof(IVsDataConnectionSupport))
 		{
+			Diag.Trace();
 			return new ConnectionSupport();
 		}
 		else if (objType == typeof(IVsDataConnectionUIControl))
 		{
+			Diag.Trace();
 			return new ConnectionUIControl();
 		}
-		else if (objType == typeof(IVsDataConnectionProperties) || objType == typeof(IVsDataConnectionUIProperties))
+		else if (objType == typeof(IVsDataConnectionPromptDialog))
 		{
-			return new ConnectionProperties();
+			Diag.Trace();
+			return new ConnectionPromptDialog();
+		}
+		else if (objType == typeof(IVsDataConnectionProperties))
+		{
+			Diag.Trace();
+			return new DbConnectionProperties();
+		}
+		else if (objType == typeof(IVsDataConnectionUIProperties))
+		{
+			Diag.Trace();
+			return new DbConnectionUIProperties();
+		}
+		else if (objType == typeof(IVsDataObjectIdentifierResolver))
+		{
+			Diag.Trace();
+			return new ObjectIdentifierResolver((IVsDataConnection)Site);
+		}
+		else if (objType == typeof(IVsDataObjectSupport))
+		{
+			Diag.Trace();
+			return new ObjectSupport((IVsDataConnection)Site);
 		}
 		else if (objType == typeof(IVsDataSourceInformation))
 		{
+			Diag.Trace();
 			return new SourceInformation();
 		}
 		else if (objType == typeof(IVsDataViewSupport))
 		{
+			Diag.Trace();
 			return new DataViewSupport("BlackbirdSql.VisualStudio.Ddex.ViewSupport", typeof(ProviderObjectFactory).Assembly);
 			// return new ViewSupport();
 		}
 		else if (objType == typeof(IVsDataConnectionEquivalencyComparer))
 		{
+			Diag.Trace();
 			return new ConnectionEquivalencyComparer();
 		}
+		*/
 
+		Diag.Dug(true, objType.FullName + " is not supported");
 		return null;
 	}
 

@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.Common;
 
 namespace FirebirdSql.Data.Client.Managed.Version10;
@@ -377,19 +378,23 @@ internal class GdsStatement : StatementBase
 
 	public override DbValue[] Fetch()
 	{
+		Diag.Trace();
 		EnsureNotDeallocated();
 
 		if (StatementType == DbStatementType.StoredProcedure && !_allRowsFetched)
 		{
+			Diag.Trace();
 			_allRowsFetched = true;
 			return GetOutputParameters();
 		}
 		else if (StatementType == DbStatementType.Insert && _allRowsFetched)
 		{
+			Diag.Trace();
 			return null;
 		}
 		else if (StatementType != DbStatementType.Select && StatementType != DbStatementType.SelectForUpdate)
 		{
+			Diag.Trace();
 			return null;
 		}
 
@@ -397,14 +402,17 @@ internal class GdsStatement : StatementBase
 		{
 			try
 			{
+				Diag.Trace();
 				_database.Xdr.Write(IscCodes.op_fetch);
 				_database.Xdr.Write(_handle);
 				_database.Xdr.WriteBuffer(_fields.ToBlr().Data);
 				_database.Xdr.Write(0); // p_sqldata_message_number
 				_database.Xdr.Write(_fetchSize); // p_sqldata_messages
 				_database.Xdr.Flush();
+				Diag.Trace();
 
 				var operation = _database.ReadOperation();
+				Diag.Trace();
 				if (operation == IscCodes.op_fetch_response)
 				{
 					var hasOperation = true;
@@ -434,24 +442,30 @@ internal class GdsStatement : StatementBase
 							break;
 						}
 					}
+					Diag.Trace();
 				}
 				else
 				{
+					Diag.Trace();
 					_database.ReadResponse(operation);
+					Diag.Trace();
 				}
 			}
 			catch (IOException ex)
 			{
+				Diag.Trace();
 				throw IscException.ForIOException(ex);
 			}
 		}
 
 		if (_rows != null && _rows.Count > 0)
 		{
+			Diag.Trace();
 			return _rows.Dequeue();
 		}
 		else
 		{
+			Diag.Trace();
 			_rows.Clear();
 			return null;
 		}

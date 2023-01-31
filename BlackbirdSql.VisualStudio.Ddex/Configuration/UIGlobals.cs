@@ -190,12 +190,15 @@ internal class UIGlobals
 #if DEBUG
 			Diag.EnableTrace = VsDebugOptionModel.Instance.EnableTrace;
 			Diag.EnableDiagnostics = VsDebugOptionModel.Instance.EnableDiagnostics;
+			Diag.EnableFbDiagnostics = VsDebugOptionModel.Instance.EnableFbDiagnostics;
 #else
 		Diag.EnableTrace = false;
 		Diag.EnableDiagnostics = false;
+		Diag.EnableFbDiagnostics = false;
 #endif
 			Diag.EnableWriteLog = VsGeneralOptionModel.Instance.EnableWriteLog;
 			Diag.LogFile = VsGeneralOptionModel.Instance.LogFile;
+			Diag.FbLogFile = VsGeneralOptionModel.Instance.FbLogFile;
 
 			VsGeneralOptionModel.Saved += OnGeneralSettingsSaved;
 			VsDebugOptionModel.Saved += OnDebugSettingsSaved;
@@ -678,6 +681,7 @@ internal class UIGlobals
 	{
 		Diag.EnableTrace = e.EnableTrace;
 		Diag.EnableDiagnostics = e.EnableDiagnostics;
+		Diag.EnableFbDiagnostics = e.EnableFbDiagnostics;
 	}
 
 
@@ -690,6 +694,7 @@ internal class UIGlobals
 	{
 		Diag.EnableWriteLog = e.EnableWriteLog;
 		Diag.LogFile = e.LogFile;
+		Diag.FbLogFile = e.FbLogFile;
 
 		_ValidateConfig = e.ValidateConfig;
 		_ValidateEdmx = e.ValidateEdmx;

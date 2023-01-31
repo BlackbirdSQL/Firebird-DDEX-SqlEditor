@@ -23,12 +23,15 @@ using System.Linq;
 
 using FirebirdSql.Data.FirebirdClient;
 
+using BlackbirdSql.Common;
+
 namespace EntityFramework.Firebird;
 
 public class FbConnectionFactory : IDbConnectionFactory
 {
 	public DbConnection CreateConnection(string nameOrConnectionString)
 	{
+		Diag.Trace();
 		if (nameOrConnectionString == null)
 			throw new ArgumentNullException(nameof(nameOrConnectionString));
 

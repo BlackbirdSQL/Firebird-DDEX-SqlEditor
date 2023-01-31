@@ -22,6 +22,8 @@ using System.Data.Common;
 using System.Globalization;
 using System.Text;
 
+using BlackbirdSql.Common;
+
 using FirebirdSql.Data.Common;
 
 namespace FirebirdSql.Data.FirebirdClient;
@@ -242,6 +244,7 @@ public sealed class FbCommandBuilder : DbCommandBuilder
 
 	protected override void ApplyParameterInfo(DbParameter p, DataRow row, StatementType statementType, bool whereClause)
 	{
+		Diag.Trace();
 		var parameter = (FbParameter)p;
 
 		parameter.Size = int.Parse(row["ColumnSize"].ToString());

@@ -23,6 +23,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 using System.Xml;
+using BlackbirdSql.Common;
 
 namespace EntityFramework.Firebird;
 
@@ -57,6 +58,7 @@ public class FbProviderManifest : DbXmlEnabledProviderManifest
 
 	internal static XmlReader GetProviderManifest()
 	{
+		Diag.Trace();
 		return GetXmlResource(GetManifestResourceName());
 	}
 
@@ -69,6 +71,7 @@ public class FbProviderManifest : DbXmlEnabledProviderManifest
 	/// <returns>An XmlReader at the begining of the information requested.</returns>
 	protected override XmlReader GetDbInformation(string informationType)
 	{
+		Diag.Trace();
 		if (informationType == StoreSchemaDefinition || informationType == StoreSchemaDefinitionVersion3)
 		{
 			return GetStoreSchemaDescription(informationType);
@@ -87,6 +90,7 @@ public class FbProviderManifest : DbXmlEnabledProviderManifest
 
 	public override System.Collections.ObjectModel.ReadOnlyCollection<PrimitiveType> GetStoreTypes()
 	{
+		Diag.Trace();
 		if (_primitiveTypes == null)
 		{
 			_primitiveTypes = base.GetStoreTypes();
@@ -97,6 +101,7 @@ public class FbProviderManifest : DbXmlEnabledProviderManifest
 
 	public override System.Collections.ObjectModel.ReadOnlyCollection<EdmFunction> GetStoreFunctions()
 	{
+		Diag.Trace();
 		if (_functions == null)
 		{
 			_functions = base.GetStoreFunctions();
@@ -113,6 +118,7 @@ public class FbProviderManifest : DbXmlEnabledProviderManifest
 	/// <returns>A TypeUsage encapsulating an EDM type and a set of facets</returns>
 	public override TypeUsage GetEdmType(TypeUsage storeType)
 	{
+		// Diag.Trace();
 		if (storeType == null)
 		{
 			throw new ArgumentNullException("storeType");
@@ -229,6 +235,7 @@ public class FbProviderManifest : DbXmlEnabledProviderManifest
 	/// <returns>A TypeUsage encapsulating a store type and a set of facets</returns>
 	public override TypeUsage GetStoreType(TypeUsage edmType)
 	{
+		Diag.Trace();
 		if (edmType == null)
 		{
 			throw new ArgumentNullException("edmType");
@@ -387,6 +394,7 @@ public class FbProviderManifest : DbXmlEnabledProviderManifest
 
 	private XmlReader GetStoreSchemaMapping(string mslName)
 	{
+		Diag.Trace();
 		return GetXmlResource(GetStoreSchemaResourceName(mslName, "msl"));
 	}
 
@@ -397,6 +405,7 @@ public class FbProviderManifest : DbXmlEnabledProviderManifest
 
 	private static XmlReader GetXmlResource(string resourceName)
 	{
+		Diag.Trace();
 		var executingAssembly = Assembly.GetExecutingAssembly();
 		var stream = executingAssembly.GetManifestResourceStream(resourceName);
 		return XmlReader.Create(stream);
@@ -404,22 +413,26 @@ public class FbProviderManifest : DbXmlEnabledProviderManifest
 
 	private static string GetManifestResourceName()
 	{
+		Diag.Trace();
 		return "EntityFramework.Firebird.Resources.ProviderManifest.xml";
 	}
 
 	private static string GetStoreSchemaResourceName(string name, string type)
 	{
+		Diag.Trace();
 		return string.Format("EntityFramework.Firebird.Resources.{0}.{1}", name, type);
 	}
 
 	public override bool SupportsEscapingLikeArgument(out char escapeCharacter)
 	{
+		Diag.Trace();
 		escapeCharacter = LikeEscapeCharacter;
 		return true;
 	}
 
 	public override string EscapeLikeArgument(string argument)
 	{
+		Diag.Trace();
 		var sb = new StringBuilder(argument);
 		sb.Replace(LikeEscapeCharacter.ToString(), LikeEscapeCharacter.ToString() + LikeEscapeCharacter.ToString());
 		sb.Replace("%", LikeEscapeCharacter + "%");
@@ -429,11 +442,13 @@ public class FbProviderManifest : DbXmlEnabledProviderManifest
 
 	public override bool SupportsInExpression()
 	{
+		Diag.Trace();
 		return true;
 	}
 
 	public override bool SupportsParameterOptimizationInSchemaQueries()
 	{
+		Diag.Trace();
 		return true;
 	}
 }

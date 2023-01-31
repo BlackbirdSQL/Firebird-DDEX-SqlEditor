@@ -20,14 +20,13 @@
  */
 
 using System;
-using System.Data.SqlClient;
 using System.Drawing;
-using System.Globalization;
+using System.Linq.Expressions;
 using System.Windows.Forms;
+using BlackbirdSql.Common;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
-using BlackbirdSql.Common;
 
 
 
@@ -38,12 +37,27 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 public partial class ConnectionPromptDialog : DataConnectionPromptDialog
 {
 
-	private enum AuthenticationType
+
+	public bool IsComplete
 	{
-		Windows,
-		SQLServer,
-		ActiveDirectoryPassword,
-		ActiveDirectoryIntegrated
+		get
+		{
+			try
+			{
+				foreach (string property in Schema.ConnectionString.MandatoryProperties)
+				{
+					if (!ConnectionUIProperties.ContainsKey(property))
+						return false;
+				}
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
+
+			return true;
+		}
 	}
 
 
@@ -51,21 +65,31 @@ public partial class ConnectionPromptDialog : DataConnectionPromptDialog
 
 	public ConnectionPromptDialog()
 	{
-		InitializeComponent();
+		Diag.Trace();
+
+		try
+		{
+			InitializeComponent();
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
 
 		int width = savePasswordCheckBox.PreferredSize.Width;
 		if (savePasswordCheckBox.Width < width)
 		{
-			base.Width += width - savePasswordCheckBox.Width;
+			Width += width - savePasswordCheckBox.Width;
 		}
 
 		int preferredHeight = headerLabel.PreferredHeight;
 		if (headerLabel.Height > preferredHeight)
 		{
-			base.Height += headerLabel.Height - preferredHeight;
+			Height += headerLabel.Height - preferredHeight;
 		}
 
-		MinimumSize = new Size(base.Width, base.Height);
+		MinimumSize = new Size(Width, Height);
 	}
 
 	#endregion
@@ -74,123 +98,127 @@ public partial class ConnectionPromptDialog : DataConnectionPromptDialog
 
 	public new string ShowDialog(IVsDataConnectionSupport dataConnectionSupport)
 	{
-		ConnectionSupport connectionSupport = (ConnectionSupport)dataConnectionSupport;
-
-
-		authenticationTableLayoutPanel.SuspendLayout();
-		authenticationTypeComboBox.Items.Clear();
-		authenticationTypeComboBox.Items.Add(string.Format(CultureInfo.CurrentCulture, "Windows"));
-		authenticationTypeComboBox.Items.Add(string.Format(CultureInfo.CurrentCulture, "SQLServer"));
-		if (connectionSupport.ProviderObject is SqlConnection)
+		try
 		{
-			authenticationTypeComboBox.Items.Add(string.Format(CultureInfo.CurrentCulture, "ActiveDirectoryPassword"));
-			authenticationTypeComboBox.Items.Add(string.Format(CultureInfo.CurrentCulture, "ActiveDirectoryIntegrated"));
+			return base.ShowDialog(dataConnectionSupport);
 		}
-
-		authenticationTableLayoutPanel.ResumeLayout();
-		return base.ShowDialog((IVsDataConnectionSupport)connectionSupport);
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
 	}
 
 	protected override void LoadProperties()
 	{
-		base.ConnectionUIProperties.Parse(base.ConnectionSupport.ConnectionString);
-		serverTextBox.Text = base.ConnectionUIProperties["Data Source"] as string;
-		databaseTextBox.Text = base.ConnectionUIProperties["Initial Catalog"] as string;
-		if ((bool)base.ConnectionUIProperties["Enlist"])
+		try
 		{
-			authenticationTypeComboBox.SelectedIndex = 0;
+			ConnectionUIProperties.Parse(ConnectionSupport.ConnectionString);
 		}
-		else if (string.Equals(base.ConnectionUIProperties["Role Name"]?.ToString(), "ActiveDirectoryIntegrated", StringComparison.InvariantCultureIgnoreCase))
+		catch (Exception ex)
 		{
-			authenticationTypeComboBox.SelectedIndex = 3;
-		}
-		else
-		{
-			userNameTextBox.Text = base.ConnectionUIProperties["User ID"] as string;
-			passwordTextBox.Text = base.ConnectionUIProperties["Password"] as string;
-			savePasswordCheckBox.Checked = (bool)base.ConnectionUIProperties["No Garbage Collect"];
-			if (string.Equals(base.ConnectionUIProperties["Role Name"]?.ToString(), "ActiveDirectoryPassword", StringComparison.InvariantCultureIgnoreCase))
-			{
-				authenticationTypeComboBox.SelectedIndex = 2;
-			}
-			else
-			{
-				authenticationTypeComboBox.SelectedIndex = 1;
-			}
+			Diag.Dug(ex);
+			throw;
 		}
 
-		if (base.ConnectionUIProperties.IsComplete)
+		try
 		{
-			serverTextBox.ReadOnly = true;
-			databaseTextBox.ReadOnly = true;
-			authenticationTypeComboBox.Enabled = false;
-			userNameTextBox.ReadOnly = true;
+			serverTextBox.Text = ConnectionUIProperties["Data Source"] as string;
+			databaseTextBox.Text = ConnectionUIProperties["Initial Catalog"] as string;
+
+			userNameTextBox.Text = ConnectionUIProperties["User ID"] as string;
+			if (ConnectionUIProperties.TryGetValue("Password", out object value))
+				passwordTextBox.Text = value as string;
+			// if (ConnectionUIProperties.TryGetValue("Persist Security Info", out value))
+			//	savePasswordCheckBox.Checked = Convert.ToBoolean(value);
+
+
+			if (IsComplete)
+			{
+				Diag.Trace("prompt dialog connection is complete");
+				serverTextBox.ReadOnly = true;
+				databaseTextBox.ReadOnly = true;
+				userNameTextBox.ReadOnly = true;
+			}
+			else
+				Diag.Trace("prompt dialog connection is NOT complete");
+
 		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+
 	}
 
 	protected override void SaveProperties()
 	{
-		if (serverTextBox.Enabled)
+		try
 		{
-			base.ConnectionUIProperties["Data Source"] = serverTextBox.Text.Trim();
-		}
-
-		if (databaseTextBox.Enabled)
-		{
-			base.ConnectionUIProperties["Initial Catalog"] = databaseTextBox.Text.Trim();
-		}
-
-		if (authenticationTypeComboBox.Enabled)
-		{
-			switch (authenticationTypeComboBox.SelectedIndex)
+			if (serverTextBox.Enabled)
 			{
-				case 0:
-					base.ConnectionUIProperties["Enlist"] = true;
-					break;
-				case 3:
-					base.ConnectionUIProperties["Enlist"] = false;
-					base.ConnectionUIProperties["Role Name"] = "Active Directory Integrated";
-					break;
-				case 2:
-					base.ConnectionUIProperties["Enlist"] = false;
-					base.ConnectionUIProperties["Role Name"] = "Active Directory Password";
-					break;
-				case 1:
-					base.ConnectionUIProperties["Enlist"] = false;
-					break;
+				ConnectionUIProperties["Data Source"] = serverTextBox.Text.Trim();
 			}
-		}
 
-		if (userNameTextBox.Enabled)
+			if (databaseTextBox.Enabled)
+			{
+				ConnectionUIProperties["Initial Catalog"] = databaseTextBox.Text.Trim();
+			}
+
+			if (userNameTextBox.Enabled)
+			{
+				ConnectionUIProperties["User ID"] = userNameTextBox.Text.Trim();
+			}
+
+			ConnectionUIProperties["Password"] = passwordTextBox.Text;
+			// ConnectionUIProperties["No Garbage Collect"] = savePasswordCheckBox.Checked;
+			ConnectionSupport.ConnectionString = ConnectionUIProperties.ToString();
+		}
+		catch (Exception ex)
 		{
-			base.ConnectionUIProperties["User ID"] = userNameTextBox.Text.Trim();
+			Diag.Dug(ex);
+			throw;
 		}
-
-		base.ConnectionUIProperties["Password"] = passwordTextBox.Text;
-		base.ConnectionUIProperties["No Garbage Collect"] = savePasswordCheckBox.Checked;
-		base.ConnectionSupport.ConnectionString = base.ConnectionUIProperties.ToString();
 	}
 
 	#endregion
 
 	#region · Event Handlers ·
 
+	protected override void OnFormClosing(FormClosingEventArgs e)
+	{
+		if (e.Cancel)
+			return;
+
+		if (DialogResult == DialogResult.OK)
+			base.OnFormClosing(e);
+	}
+
 	protected override void OnFontChanged(EventArgs e)
 	{
 		base.OnFontChanged(e);
 		int num = buttonsTableLayoutPanel.Top - buttonsTableLayoutPanel.Margin.Top - loginTableLayoutPanel.Margin.Bottom - loginTableLayoutPanel.Bottom;
 		MinimumSize = new Size(MinimumSize.Width, MinimumSize.Height - num);
-		base.Height += -num;
+		Height += -num;
 	}
 
 	protected override void OnShown(EventArgs e)
 	{
-		if (base.ConnectionUIProperties.IsComplete)
+		try
 		{
-			passwordTextBox.Focus();
-		}
+			if (IsComplete)
+			{
+				passwordTextBox.Focus();
+			}
 
-		base.OnShown(e);
+			base.OnShown(e);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
 	}
 
 	protected override void OnHelpRequested(HelpEventArgs hevent)
@@ -200,11 +228,6 @@ public partial class ConnectionPromptDialog : DataConnectionPromptDialog
 		base.OnHelpRequested(hevent);
 	}
 
-	private void SetSecurityOption(object sender, EventArgs e)
-	{
-		loginTableLayoutPanel.Enabled = authenticationTypeComboBox.SelectedIndex == 1 || authenticationTypeComboBox.SelectedIndex == 2;
-		SetOkButtonStatus(sender, e);
-	}
 
 	private void TrimControlText(object sender, EventArgs e)
 	{
@@ -220,7 +243,7 @@ public partial class ConnectionPromptDialog : DataConnectionPromptDialog
 
 	private void SetOkButtonStatus(object sender, EventArgs e)
 	{
-		okButton.Enabled = authenticationTypeComboBox.SelectedIndex == 0 || authenticationTypeComboBox.SelectedIndex == 3 || userNameTextBox.Text.Length > 0;
+		okButton.Enabled = userNameTextBox.Text.Length > 0;
 	}
 
 

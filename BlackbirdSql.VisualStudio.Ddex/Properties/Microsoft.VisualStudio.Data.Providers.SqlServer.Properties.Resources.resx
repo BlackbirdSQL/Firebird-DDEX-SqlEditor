@@ -1,0 +1,621 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SqlViewNode_Name_SystemStoredProcedures" xml:space="preserve">
+    <value>System Stored Procedures</value>
+  </data>
+  <data name="SqlViewNode_Property_BaseObjectType_SqlStoredProcedure" xml:space="preserve">
+    <value>SQL Stored Procedure</value>
+  </data>
+  <data name="SqlViewNode_Type_AggregateParameter" xml:space="preserve">
+    <value>Aggregate Parameter</value>
+  </data>
+  <data name="SqlViewNode_Type_Diagram" xml:space="preserve">
+    <value>Database Diagram</value>
+  </data>
+  <data name="SqlViewNode_Name_ScalarValuedFunctions" xml:space="preserve">
+    <value>Scalar-valued Functions</value>
+  </data>
+  <data name="SqlViewNode_Type_SqlAssembly" xml:space="preserve">
+    <value>Assembly</value>
+  </data>
+  <data name="SqlViewNode_Property_DataType" xml:space="preserve">
+    <value>Data Type</value>
+  </data>
+  <data name="SqlViewNode_Property_Database" xml:space="preserve">
+    <value>Database</value>
+  </data>
+  <data name="SqlFileConnectionUIConnector_CreateDatabaseFile" xml:space="preserve">
+    <value>The database file '{0}' does not exist.
+
+Would you like to create it?</value>
+  </data>
+  <data name="SqlViewNode_Type_ForeignKey" xml:space="preserve">
+    <value>Foreign Key</value>
+  </data>
+  <data name="SqlViewNode_Property_BaseObjectType_AggregateFunction" xml:space="preserve">
+    <value>Aggregate Function</value>
+  </data>
+  <data name="SqlViewNode_Name_ObjectWithUnknownOwner" xml:space="preserve">
+    <value>{Name} (Unknown)</value>
+  </data>
+  <data name="SqlViewNode_Type_FunctionColumn" xml:space="preserve">
+    <value>Function Column</value>
+  </data>
+  <data name="AuthenticationTypeSQLServer" xml:space="preserve">
+    <value>SQL Server Authentication</value>
+  </data>
+  <data name="SqlViewNode_Type_Column" xml:space="preserve">
+    <value>Column</value>
+  </data>
+  <data name="SqlViewNode_Property_IsUnique" xml:space="preserve">
+    <value>Unique</value>
+  </data>
+  <data name="SqlViewTextObjectCommandProvider_NoSourceAvailable" xml:space="preserve">
+    <value>No source code is available for this object.</value>
+  </data>
+  <data name="SqlViewNode_Property_IdentityIncrement" xml:space="preserve">
+    <value>Identity Increment</value>
+  </data>
+  <data name="SqlViewNode_Property_IdentitySeed" xml:space="preserve">
+    <value>Identity Seed</value>
+  </data>
+  <data name="SqlConnectionSupport_ProviderObjectNotRecognized" xml:space="preserve">
+    <value>The ADO .NET data provider for SQL Server does not recognize the specified provider object type - it must be of type System.Data.SqlClient.SqlConnection.</value>
+  </data>
+  <data name="SqlViewNode_Property_Culture" xml:space="preserve">
+    <value>Culture</value>
+  </data>
+  <data name="SqlViewTextObjectCommandProvider_AssemblyFileNameTooLong" xml:space="preserve">
+    <value>This SQL assembly file cannot be loaded - its file name is too long for this system.</value>
+  </data>
+  <data name="SqlViewNode_Property_IsDisabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="SqlViewNode_Type_ViewIndex" xml:space="preserve">
+    <value>View Index</value>
+  </data>
+  <data name="SqlViewNode_Property_FunctionType" xml:space="preserve">
+    <value>Function Type</value>
+  </data>
+  <data name="SqlViewNode_Property_BaseObjectType_ReplicationFilterProcedure" xml:space="preserve">
+    <value>Replication Filter Procedure</value>
+  </data>
+  <data name="SqlViewNode_Property_RevisionVersion" xml:space="preserve">
+    <value>Revision Version</value>
+  </data>
+  <data name="SqlViewTextObjectCommandProvider_PromptSaveObject" xml:space="preserve">
+    <value>The {0} '{1}' is open in an editor.  You must save it before execution.  Do you want to continue?</value>
+  </data>
+  <data name="SqlViewNode_Name_UserDefinedDataTypes" xml:space="preserve">
+    <value>User-defined Data Types</value>
+  </data>
+  <data name="SqlViewNode_Property_Nullable" xml:space="preserve">
+    <value>Nullable</value>
+  </data>
+  <data name="SqlViewNode_Property_IsActive" xml:space="preserve">
+    <value>Is Active</value>
+  </data>
+  <data name="SqlViewNode_Property_NumericPrecision" xml:space="preserve">
+    <value>Precision</value>
+  </data>
+  <data name="SqlViewNode_Property_BaseObjectType_ExtendedStoredProcedure" xml:space="preserve">
+    <value>Extended Stored Procedure</value>
+  </data>
+  <data name="SqlViewNode_Property_BaseServer" xml:space="preserve">
+    <value>Base Server</value>
+  </data>
+  <data name="SqlViewNode_Property_BaseSchema" xml:space="preserve">
+    <value>Base Schema</value>
+  </data>
+  <data name="SqlViewNode_Property_BaseObjectType_SqlInlinedTableValuedFunction" xml:space="preserve">
+    <value>SQL Inlined Table Valued Function</value>
+  </data>
+  <data name="SqlViewNode_Property_BaseObjectType_Table" xml:space="preserve">
+    <value>Table</value>
+  </data>
+  <data name="SqlViewNode_Property_SecurityLevel" xml:space="preserve">
+    <value>Permission Level</value>
+  </data>
+  <data name="SqlViewNode_Name_Indexes" xml:space="preserve">
+    <value>Indexes</value>
+  </data>
+  <data name="SqlViewNode_Property_NumericScale" xml:space="preserve">
+    <value>Scale</value>
+  </data>
+  <data name="SqlTextEditorDocument_DdlTriggersNotSupported" xml:space="preserve">
+    <value>This editor does not fully support DDL triggers.  Your trigger has been saved, even though the editor still shows that it has unsaved changes.</value>
+  </data>
+  <data name="SqlViewNode_Property_CaseSensitive" xml:space="preserve">
+    <value>Case Sensitive</value>
+  </data>
+  <data name="SqlViewNode_Type_StoredProcedure" xml:space="preserve">
+    <value>Stored Procedure</value>
+  </data>
+  <data name="SqlViewDatabaseCommandProvider_CannotEnableApplicationDebugging" xml:space="preserve">
+    <value>You must enable app debugging on a connection that
+uses Windows authentication and that connection
+must have sysadmin rights to the server.</value>
+  </data>
+  <data name="SqlViewNode_Property_BaseObjectType_SqlScalarFunction" xml:space="preserve">
+    <value>SQL Scalar Function</value>
+  </data>
+  <data name="SqlViewNode_Property_AssemblyName" xml:space="preserve">
+    <value>Assembly Name</value>
+  </data>
+  <data name="SqlViewNode_Name_UserDefinedTableTypes" xml:space="preserve">
+    <value>User-defined Table Types</value>
+  </data>
+  <data name="SqlViewNode_Property_FunctionType_Table" xml:space="preserve">
+    <value>Table-valued</value>
+  </data>
+  <data name="SqlViewNode_Property_Default" xml:space="preserve">
+    <value>Default</value>
+  </data>
+  <data name="SqlViewNode_Name_AggregateFunctions" xml:space="preserve">
+    <value>Aggregate Functions</value>
+  </data>
+  <data name="SqlViewNode_Name_Triggers" xml:space="preserve">
+    <value>Triggers</value>
+  </data>
+  <data name="SqlViewNode_Property_MaxLength" xml:space="preserve">
+    <value>Maximum Length</value>
+  </data>
+  <data name="SqlViewNode_Property_BaseObjectType_AssemblyScalarFunction" xml:space="preserve">
+    <value>Assembly Scalar Function</value>
+  </data>
+  <data name="SqlTextEditorDocument_UnsupportedStatementType" xml:space="preserve">
+    <value>Unable to save object because the statement type is not supported.  It must begin with CREATE or ALTER.</value>
+  </data>
+  <data name="SqlViewNode_Property_CreateDate" xml:space="preserve">
+    <value>Date Created</value>
+  </data>
+  <data name="SqlViewNode_Property_BaseObjectType_View" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="SqlViewNode_Property_Name" xml:space="preserve">
+    <value>(Name)</value>
+  </data>
+  <data name="SqlViewNode_Property_Rule" xml:space="preserve">
+    <value>Rule</value>
+  </data>
+  <data name="SqlConnectionSupport_UnsupportedFutureVersion" xml:space="preserve">
+    <value>This server version is not supported.  Only servers up to Microsoft SQL Server 2014 are supported.</value>
+  </data>
+  <data name="SqlObjectIdentifierConverter_InvalidType" xml:space="preserve">
+    <value>The type "{0}" was not found.</value>
+  </data>
+  <data name="SqlViewNode_Property_IsXmlIndex" xml:space="preserve">
+    <value>Is XML Index</value>
+  </data>
+  <data name="SqlViewNode_Type_Database" xml:space="preserve">
+    <value>Database</value>
+  </data>
+  <data name="SqlViewNode_Property_BaseObject" xml:space="preserve">
+    <value>Base Object Name</value>
+  </data>
+  <data name="SqlViewNode_Type_Trigger" xml:space="preserve">
+    <value>Trigger</value>
+  </data>
+  <data name="SqlTextEditorDocument_UnsupportedObjectType" xml:space="preserve">
+    <value>Unable to save object because the object type is not supported.  This editor can only manipulate triggers, stored procedures or functions.</value>
+  </data>
+  <data name="SqlDatabaseFileUpgradePrompt" xml:space="preserve">
+    <value>The database file that you are attempting to connect to is not compatible with the current instance of SQL Server.
+
+To continue, you must upgrade this database file, which will make it incompatible with earlier versions of SQL Server.
+
+If you don’t want to upgrade this database file, please see https://go.microsoft.com/fwlink/?LinkId=235986 for more information.
+
+Do you want to upgrade the database file now?</value>
+  </data>
+  <data name="SqlViewTabularObjectCommandProvider_RetrieveDataFromTable" xml:space="preserve">
+    <value>&amp;Show Table Data</value>
+  </data>
+  <data name="SqlViewNode_Property_Id" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="SqlViewNode_Name_Functions" xml:space="preserve">
+    <value>Functions</value>
+  </data>
+  <data name="SqlDataToolsDocument_PromptToOverwriteExisting" xml:space="preserve">
+    <value>The {0} '{1}' already exists. Replace existing {0}?</value>
+  </data>
+  <data name="SqlViewNode_Type_Function" xml:space="preserve">
+    <value>Function</value>
+  </data>
+  <data name="SqlViewNode_Name_FullTextIndex" xml:space="preserve">
+    <value>Full-text Index</value>
+  </data>
+  <data name="SqlViewNode_Name_SystemSuppliedObjects" xml:space="preserve">
+    <value>System-supplied Objects</value>
+  </data>
+  <data name="SqlViewNode_Property_BaseObjectType" xml:space="preserve">
+    <value>Base Object Type</value>
+  </data>
+  <data name="SqlViewTextObjectCommandProvider_CancelExecution" xml:space="preserve">
+    <value>Cancel &amp;Execution</value>
+  </data>
+  <data name="SqlViewNode_Type_ViewColumn" xml:space="preserve">
+    <value>View Column</value>
+  </data>
+  <data name="SqlViewNode_Name_Schemas" xml:space="preserve">
+    <value>Schemas</value>
+  </data>
+  <data name="SqlViewNode_Type_ViewTrigger" xml:space="preserve">
+    <value>View Trigger</value>
+  </data>
+  <data name="SqlDataToolsDocument_PromptToOverwriteChanges" xml:space="preserve">
+    <value>Changes were detected in the {0} '{1}' while you were working on it.  Replace existing {0}?</value>
+  </data>
+  <data name="SqlViewNode_Property_SecurityLevel_Unsafe" xml:space="preserve">
+    <value>Unsafe</value>
+  </data>
+  <data name="SqlViewNode_Category_ReturnValue" xml:space="preserve">
+    <value>Return Value</value>
+  </data>
+  <data name="SqlViewNode_Category_Identity" xml:space="preserve">
+    <value>(Identity)</value>
+  </data>
+  <data name="SqlViewNode_Type_Table" xml:space="preserve">
+    <value>Table</value>
+  </data>
+  <data name="SqlViewNode_Type_UserDefinedDataType" xml:space="preserve">
+    <value>User-defined Data Type</value>
+  </data>
+  <data name="SqlViewNode_Type_Index" xml:space="preserve">
+    <value>Index</value>
+  </data>
+  <data name="SqlView_Classic" xml:space="preserve">
+    <value>&amp;Default</value>
+  </data>
+  <data name="SqlViewNode_Property_Expression" xml:space="preserve">
+    <value>Expression</value>
+  </data>
+  <data name="SqlConnectionSupport_UnsupportedYukonVersion" xml:space="preserve">
+    <value>This server version is not supported.  You must have Microsoft SQL Server 2005 Beta 2 or later.</value>
+  </data>
+  <data name="SqlViewNode_Property_BaseObjectType_AssemblyStoredProcedure" xml:space="preserve">
+    <value>Assembly Stored Procedure</value>
+  </data>
+  <data name="SqlViewNode_Type_FullTextIndex" xml:space="preserve">
+    <value>Full-text Index</value>
+  </data>
+  <data name="SqlViewNode_Property_Owner" xml:space="preserve">
+    <value>Owner</value>
+  </data>
+  <data name="SqlViewNode_Property_Table" xml:space="preserve">
+    <value>Table</value>
+  </data>
+  <data name="SqlViewNode_Name_TableValuedFunctions" xml:space="preserve">
+    <value>Table-valued Functions</value>
+  </data>
+  <data name="SqlViewNode_Name_ReturnedColumns" xml:space="preserve">
+    <value>Returned Columns</value>
+  </data>
+  <data name="SqlConnectionUIConnector_CreateDatabase" xml:space="preserve">
+    <value>The database '{0}' does not exist or you do not have permission to see it.
+
+Would you like to attempt to create it?</value>
+  </data>
+  <data name="SqlViewNode_Property_FunctionType_Inline" xml:space="preserve">
+    <value>Inline</value>
+  </data>
+  <data name="SqlViewNode_Property_SecurityLevel_Safe" xml:space="preserve">
+    <value>Safe</value>
+  </data>
+  <data name="SqlViewNode_Property_ClassName" xml:space="preserve">
+    <value>Assembly Class</value>
+  </data>
+  <data name="SqlViewNode_Property_BaseObjectType_SqlTableValuedFunction" xml:space="preserve">
+    <value>SQL Table Valued Function</value>
+  </data>
+  <data name="SqlViewNode_Name_Diagrams" xml:space="preserve">
+    <value>Database Diagrams</value>
+  </data>
+  <data name="SqlViewNode_Name_SystemViews" xml:space="preserve">
+    <value>System Views</value>
+  </data>
+  <data name="SqlViewNode_Name_UserStoredProcedures" xml:space="preserve">
+    <value>User Stored Procedures</value>
+  </data>
+  <data name="SqlViewNode_Property_MajorVersion" xml:space="preserve">
+    <value>Major Version</value>
+  </data>
+  <data name="SqlViewTextObjectCommandProvider_Open" xml:space="preserve">
+    <value>&amp;Open</value>
+  </data>
+  <data name="SqlConnectionSupport_UnsupportedServerVersion" xml:space="preserve">
+    <value>This server version is not supported.  You must have Microsoft SQL Server 2005 or later.</value>
+  </data>
+  <data name="SqlViewNode_Property_ReferencedKey" xml:space="preserve">
+    <value>Referenced Key</value>
+  </data>
+  <data name="SqlViewDatabaseCommandProvider_WarnBeforeAllowSqlClrDebugging" xml:space="preserve">
+    <value>SQL/CLR debugging will cause all managed threads on the server to stop.  Do you want to continue?</value>
+  </data>
+  <data name="SqlConnectionSupport_TimeoutReasons" xml:space="preserve">
+    <value>Common reasons for this problem include that the server is not installed, the service is not started or the server is upgrading your database.  If an upgrade is in process, you will be able to connect to the database when the upgrade is complete.</value>
+  </data>
+  <data name="SqlTextEditorDocument_NumberedProceduresNotSupported" xml:space="preserve">
+    <value>This editor does not fully support grouped or numbered stored procedures.  Your stored procedure has been saved, even though the editor still shows that it has unsaved changes.</value>
+  </data>
+  <data name="SqlView_BySchema" xml:space="preserve">
+    <value>&amp;Schema</value>
+  </data>
+  <data name="SqlViewNode_Property_MinorVersion" xml:space="preserve">
+    <value>Minor Version</value>
+  </data>
+  <data name="SqlViewNode_Name_Tables" xml:space="preserve">
+    <value>Tables</value>
+  </data>
+  <data name="SqlViewNode_Property_PrimaryFilePath" xml:space="preserve">
+    <value>Primary File Path</value>
+  </data>
+  <data name="AuthenticationTypeActiveDirectoryIntegrated" xml:space="preserve">
+    <value>Active Directory Integrated Authentication</value>
+  </data>
+  <data name="SqlViewTabularObjectCommandProvider_RetrieveDataFromView" xml:space="preserve">
+    <value>&amp;Show Results</value>
+  </data>
+  <data name="SqlViewNode_Type_SqlAssemblyFile" xml:space="preserve">
+    <value>Assembly File</value>
+  </data>
+  <data name="SqlObjectIdentifierConverter_InvalidIdentifier" xml:space="preserve">
+    <value>The specified identifier was in an invalid format.</value>
+  </data>
+  <data name="SqlViewNode_Name_SystemTables" xml:space="preserve">
+    <value>System Tables</value>
+  </data>
+  <data name="SqlViewNode_Property_FunctionType_Scalar" xml:space="preserve">
+    <value>Scalar-valued</value>
+  </data>
+  <data name="SqlViewNode_Name_UserTables" xml:space="preserve">
+    <value>User Tables</value>
+  </data>
+  <data name="SqlViewNode_Type_UserDefinedType" xml:space="preserve">
+    <value>User-defined Object Type</value>
+  </data>
+  <data name="SqlViewNode_Property_Length" xml:space="preserve">
+    <value>Length</value>
+  </data>
+  <data name="AuthenticationTypeActiveDirectoryPassword" xml:space="preserve">
+    <value>Active Directory Password Authentication</value>
+  </data>
+  <data name="SqlViewNode_Name_UserDefinedTypes" xml:space="preserve">
+    <value>User-defined Object Types</value>
+  </data>
+  <data name="SqlViewNode_Property_BaseObjectType_AssemblyTableValuedFunction" xml:space="preserve">
+    <value>Assembly Table Valued Function</value>
+  </data>
+  <data name="SqlViewNode_Property_BaseDatabase" xml:space="preserve">
+    <value>Base Database</value>
+  </data>
+  <data name="SqlViewCommandProvider_ConfirmDelete" xml:space="preserve">
+    <value>Are you sure that you want to permanently delete {0} from the database?</value>
+  </data>
+  <data name="SqlViewNode_Type_View" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="SqlViewNode_Name_Columns" xml:space="preserve">
+    <value>Columns</value>
+  </data>
+  <data name="SqlViewNode_Property_Schema" xml:space="preserve">
+    <value>Schema</value>
+  </data>
+  <data name="SqlViewDiagramCommandProvider_DesignDatabaseDiagram" xml:space="preserve">
+    <value>D&amp;esign Database Diagram</value>
+  </data>
+  <data name="SqlViewNode_Property_ReferencedTable" xml:space="preserve">
+    <value>Referenced Table</value>
+  </data>
+  <data name="SqlViewNode_Property_BuildVersion" xml:space="preserve">
+    <value>Build Version</value>
+  </data>
+  <data name="SqlViewNode_Type_Synonym" xml:space="preserve">
+    <value>Synonym</value>
+  </data>
+  <data name="SqlViewNode_Property_BaseObjectType_Unknown" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="SqlDataToolsDocument_DocumentAlreadyOpen" xml:space="preserve">
+    <value>The {0} '{1}' is currently open in an editor.  Please save using a different name.</value>
+  </data>
+  <data name="SqlViewNode_Property_IsEncrypted" xml:space="preserve">
+    <value>Is Encrypted</value>
+  </data>
+  <data name="SqlViewNode_Name_ConstraintsAndKeys" xml:space="preserve">
+    <value>Constraints and Keys</value>
+  </data>
+  <data name="SqlViewNode_Type_FunctionParameter" xml:space="preserve">
+    <value>Function Parameter</value>
+  </data>
+  <data name="SqlViewNode_Type_StoredProcedureParameter" xml:space="preserve">
+    <value>Stored Procedure Parameter</value>
+  </data>
+  <data name="SqlViewNode_Type_Aggregate" xml:space="preserve">
+    <value>Aggregate</value>
+  </data>
+  <data name="SqlViewNode_Property_IsOutputParameter" xml:space="preserve">
+    <value>Output Parameter</value>
+  </data>
+  <data name="SqlViewNode_Name_Assemblies" xml:space="preserve">
+    <value>Assemblies</value>
+  </data>
+  <data name="SqlConnectionUIConnector_CreateDatabaseError" xml:space="preserve">
+    <value>The database '{0}' does not exist or you do not have permission to see it.</value>
+  </data>
+  <data name="SqlViewNode_Property_IsVisible" xml:space="preserve">
+    <value>IsVisible</value>
+  </data>
+  <data name="AuthenticationTypeWindows" xml:space="preserve">
+    <value>Windows Authentication</value>
+  </data>
+  <data name="SqlViewNode_Property_PublicKey" xml:space="preserve">
+    <value>Public Key</value>
+  </data>
+  <data name="SqlViewTextObjectCommandProvider_StepIntoStoredProcedure" xml:space="preserve">
+    <value>Step &amp;Into Stored Procedure</value>
+  </data>
+  <data name="SqlViewNode_Name_Synonyms" xml:space="preserve">
+    <value>Synonyms</value>
+  </data>
+  <data name="SqlViewTabularObjectCommandProvider_DesignTable" xml:space="preserve">
+    <value>&amp;Open Table Definition</value>
+  </data>
+  <data name="SqlViewNode_Name_StoredProcedures" xml:space="preserve">
+    <value>Stored Procedures</value>
+  </data>
+  <data name="SqlViewNode_Property_SecurityLevel_External" xml:space="preserve">
+    <value>External</value>
+  </data>
+  <data name="SqlView_ByObjectType" xml:space="preserve">
+    <value>&amp;Object Type</value>
+  </data>
+  <data name="SqlViewDiagramCommandProvider_MissingDiagramSupport" xml:space="preserve">
+    <value>Cannot open the diagram because diagramming support has not been setup properly on the database.</value>
+  </data>
+  <data name="SqlViewNode_Name_Types" xml:space="preserve">
+    <value>Types</value>
+  </data>
+  <data name="SqlViewNode_Type_CheckConstraint" xml:space="preserve">
+    <value>Check Constraint</value>
+  </data>
+  <data name="SqlViewNode_Name_UserViews" xml:space="preserve">
+    <value>User Views</value>
+  </data>
+  <data name="SqlViewNode_Name_Parameters" xml:space="preserve">
+    <value>Parameters</value>
+  </data>
+  <data name="SqlViewNode_Name_Views" xml:space="preserve">
+    <value>Views</value>
+  </data>
+  <data name="SqlViewTextObjectCommandProvider_StepIntoFunction" xml:space="preserve">
+    <value>Step &amp;Into Function</value>
+  </data>
+  <data name="SqlViewNode_Property_IsIdentity" xml:space="preserve">
+    <value>Is Identity</value>
+  </data>
+  <data name="SqlViewNode_Type_Schema" xml:space="preserve">
+    <value>Schema</value>
+  </data>
+  <data name="SqlViewTabularObjectCommandProvider_DesignView" xml:space="preserve">
+    <value>&amp;Open View Definition</value>
+  </data>
+</root>

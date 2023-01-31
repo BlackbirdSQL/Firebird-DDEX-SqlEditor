@@ -143,6 +143,8 @@ namespace BlackbirdSql.VisualStudio.Ddex
 		private IVsSolution _Solution = null;
 		private VsPackageController _Controller;
 
+		private System.Reflection.Assembly _InvariantAssembly = null;
+
 
 
 		// ---------------------------------------------------------------------------------------------------
@@ -182,6 +184,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 		/// </summary>
 		public BlackbirdSqlDdexPackage()
 		{
+			Diag.Context = "IDE";
 		}
 
 
@@ -221,6 +224,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 		protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 		{
 			await base.InitializeAsync(cancellationToken, progress);
+			Diag.Trace();
 
 
 			AddService
@@ -230,33 +234,40 @@ namespace BlackbirdSql.VisualStudio.Ddex
 				promote: true
 			);
 
-			
 			_ = AdviseSolutionEventsAsync();
 
 
 			// Adding FirebirdClient to assembly cache asynchronously
-			if (DbProviderFactoriesEx.AddAssemblyToCache(typeof(FirebirdClientFactory),
+			if (_InvariantAssembly == null && DbProviderFactoriesEx.AddAssemblyToCache2(typeof(FirebirdClientFactory),
 				Properties.Resources.Provider_ShortDisplayName, Properties.Resources.Provider_DisplayName))
 			{
-				// Diag.Trace("DbProviderFactory added to assembly cache");
+				Diag.Trace("DbProviderFactory added to assembly cache");
+
+				_InvariantAssembly = typeof(FirebirdClientFactory).Assembly;
 
 				AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
 				{
-					var assembly = typeof(FirebirdClientFactory).Assembly;
+					if (args.Name == _InvariantAssembly.FullName)
+					{
+						Diag.Dug(true, "Dsl Provider Factory failed to load: " + _InvariantAssembly.FullName);
+						return _InvariantAssembly;
+					}
 
-					if (args.Name == assembly.FullName)
-						Diag.Dug(true, "Dsl Provider Factory failed to load: " + assembly.FullName);
-
-					return args.Name == assembly.FullName ? assembly : null;
+					return null;
 				};
+				/*
+				AppDomain.CurrentDomain.AssemblyLoad += (_, args) =>
+				{
+					if (args.LoadedAssembly.FullName == _InvariantAssembly.FullName)
+						Diag.Trace("Dsl Provider Factory loaded: " + _InvariantAssembly.FullName);
+				};
+				*/
 
 			}
 			else
 			{
 				Diag.Trace("DbProviderFactory not added to assembly cache during package registration. Factory already cached");
 			}
-
-
 
 		}
 
@@ -268,6 +279,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 		private async Task AdviseSolutionEventsAsync()
 		{
 			await JoinableTaskFactory.SwitchToMainThreadAsync(DisposalToken);
+			Diag.Trace();
 
 			try
 			{

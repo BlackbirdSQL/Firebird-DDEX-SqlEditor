@@ -25,17 +25,20 @@ using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Common;
-
-
+using Microsoft.VisualStudio.Data.Core;
+using Microsoft.VisualStudio.Data.Services;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
 internal class ConnectionSupport : AdoDotNetConnectionSupport
 {
+
+
 	#region · Constructors ·
 
 	public ConnectionSupport() : base()
 	{
+		Diag.Trace();
 	}
 
 	#endregion
@@ -44,40 +47,66 @@ internal class ConnectionSupport : AdoDotNetConnectionSupport
 
 	protected override object CreateService(IServiceContainer container, Type serviceType)
 	{
-		// Diag.Trace(String.Format("CreateService({0})", serviceType.FullName));
-
-
+		/* Uncomment this and change SupportedObjects._useFactoryOnly to true to debug implementations
+		 * Don't forget to do the same for the ProviderObjectFactory if you do.
+		 * 
 		if (serviceType == typeof(IVsDataSourceInformation))
 		{
+			Diag.Trace();
 			return new SourceInformation(Site);
 		}
-		else if (serviceType == typeof(IVsDataViewSupport))
+		else if (serviceType == typeof(IVsDataObjectSelector))
 		{
-			return new ViewSupport("BlackbirdSql.VisualStudio.Ddex.ViewSupport", typeof(ConnectionSupport).Assembly);
-			// return new ViewSupport();
-		}
-		else if (serviceType == typeof(IVsDataObjectSupport))
-		{
-			return new ObjectSupport(Site);
-		}
-		else if (serviceType == typeof(IVsDataObjectIdentifierConverter))
-		{
-			return new ObjectIdentifierConverter(Site);
+			return new ObjectSelector(Site);
 		}
 		else if (serviceType == typeof(IVsDataObjectMemberComparer))
 		{
+			Diag.Trace();
 			return new ObjectMemberComparer(Site);
 		}
-		else if (serviceType == typeof(IVsDataObjectIdentifierResolver))
+		else if (serviceType == typeof(IVsDataObjectIdentifierConverter))
 		{
-			return new ObjectIdentifierResolver(Site);
+			Diag.Trace();
+			return new ObjectIdentifierConverter(Site);
 		}
 		else if (serviceType == typeof(IVsDataMappedObjectConverter))
 		{
+			Diag.Trace();
 			return new MappedObjectConverter(Site);
 		}
+		*/
+
+		Diag.Dug(true, serviceType.FullName + " is not directly supported");
 
 		return base.CreateService(container, serviceType);
+	}
+
+
+	public override bool Open(bool doPromptCheck)
+	{
+
+		try
+		{
+			Diag.Trace("Prompt: " + doPromptCheck + " IsOpen: " + State + " ConnectionString: " + ConnectionString);
+			if (State == DataConnectionState.Open)
+				return true;
+
+			IVsDataConnectionUIProperties vsDataConnectionUIProperties =
+				((IVsDataSiteableObject<IVsDataProvider>)this).Site.CreateObject<IVsDataConnectionUIProperties>(base.Site.Source);
+
+			vsDataConnectionUIProperties.Parse(ConnectionString);
+
+			if (doPromptCheck && !vsDataConnectionUIProperties.IsComplete)
+			{
+				return false;
+			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+		}
+
+		return base.Open(doPromptCheck);
 	}
 
 	#endregion

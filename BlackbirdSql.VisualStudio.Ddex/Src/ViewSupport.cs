@@ -19,8 +19,10 @@
  *    GA Christos
  */
 
+using System;
 using System.Reflection;
 using Microsoft.VisualStudio.Data.Framework;
+using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Common;
 
@@ -28,12 +30,35 @@ using BlackbirdSql.Common;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
+
 internal class ViewSupport : DataViewSupport
 {
 	#region · Constructors ·
 
+	public ViewSupport(string fileName, string path) : base(fileName, path)
+	{
+		Diag.Trace();
+	}
 	public ViewSupport(string resourceName, Assembly assembly) : base(resourceName, assembly)
 	{
+		Diag.Trace();
+	}
+
+	protected override object CreateService(Type serviceType)
+	{
+		// TBC
+		/*
+		if (serviceType == typeof(IVsDataViewCommandProvider))
+		{
+			return new ViewDatabaseCommandProvider();
+		}
+
+		if (serviceType == typeof(IVsDataViewDocumentProvider))
+		{
+			return new ViewDocumentProvider();
+		}
+		*/
+		return base.CreateService(serviceType);
 	}
 
 	#endregion

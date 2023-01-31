@@ -20,9 +20,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Configuration
 		[DefaultValue("C:\\bin\\vsdiag.log")]
 		public string LogFile { get; set; } = "C:\\bin\\vsdiag.log";
 
+		[Category("General")]
+		[DisplayName("Firebird Log file")]
+		[Description("Location of Firebird diagnostics log file.")]
+		[DefaultValue("C:\\bin\\vsdiagfb.log")]
+		public string FbLogFile { get; set; } = "C:\\bin\\vsdiagfb.log";
+
 		[Category("EntityFramework settings")]
 		[DisplayName("Validate App.config")]
-		[Description("Enable this option to allow BlackbirdSql to ensure that Firebird EntityFramework is configured in your App.config.")]
+		[Description("Enable this option to allow BlackbirdSql to ensure that Firebird EntityFramework is configured in your non-CPS projects' App.config.")]
 		[DefaultValue(true)]
 		public bool ValidateConfig { get; set; } = true;
 

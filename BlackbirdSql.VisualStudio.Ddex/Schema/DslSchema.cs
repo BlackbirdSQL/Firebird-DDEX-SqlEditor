@@ -108,6 +108,7 @@ internal abstract class DslSchema
 
 	protected FbCommand BuildCommand(FbConnection connection, string collectionName, string[] restrictions)
 	{
+		Diag.Trace();
 		SetMajorVersionNumber(connection);
 		var filter = string.Format("CollectionName='{0}'", collectionName);
 		var builder = GetCommandText(restrictions);

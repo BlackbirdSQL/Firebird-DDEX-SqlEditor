@@ -18,11 +18,29 @@ namespace BlackbirdSql.Common
 	 */
 	public static class Diag
 	{
-		// Specify your own trace log file and settings here
+		// Specify your own trace log file and settings here or override in VS options
 		static bool _EnableTrace = true;
 		static bool _EnableDiagnostics = true;
+		static bool _EnableFbDiagnostics = true;
 		static bool _EnableWriteLog = true;
 		static string _LogFile = "C:\\bin\\vsdiag.log";
+		static string _FbLogFile = "C:\\bin\\vsdiagfb.log";
+
+
+
+		static string _Context = "APP";
+
+		public static string Context
+		{
+			get
+			{
+				return _Context;
+			}
+			set
+			{
+				_Context = value;
+			}
+		}
 
 
 		public static bool EnableTrace
@@ -37,6 +55,12 @@ namespace BlackbirdSql.Common
 			set { _EnableDiagnostics = value; }
 		}
 
+		public static bool EnableFbDiagnostics
+		{
+			get { return _EnableFbDiagnostics; }
+			set { _EnableFbDiagnostics = value; }
+		}
+
 		public static bool EnableWriteLog
 		{
 			get { return _EnableWriteLog; }
@@ -49,10 +73,16 @@ namespace BlackbirdSql.Common
 			set { _LogFile = value; }
 		}
 
+		public static string FbLogFile
+		{
+			get { return _FbLogFile; }
+			set { _FbLogFile = value; }
+		}
+
 
 
 #if DEBUG
-		public static void Dug(bool isException = false, string message = "Debug trace",
+		public static void Dug(bool isException = false, string message = "",
 			[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 			[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
 			[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
@@ -63,27 +93,42 @@ namespace BlackbirdSql.Common
 			int sourceLineNumber = 0)
 #endif
 		{
-			if (!isException && !EnableDiagnostics && !EnableTrace)
+			if (!isException && !_EnableDiagnostics && !_EnableTrace)
 				return;
 
+			int pos;
+			string logfile = _LogFile;
 
-			int pos = sourceFilePath.IndexOf("\\BlackbirdSql");
+
+			if ((pos = sourceFilePath.IndexOf("\\BlackbirdSql")) == -1)
+			{
+				if ((pos = sourceFilePath.IndexOf("\\FirebirdSql")) == -1)
+					pos = sourceFilePath.IndexOf("\\EntityFramework.Firebird");
+
+				if (pos != -1)
+				{
+					if (!isException && !_EnableFbDiagnostics)
+						return;
+					logfile = _FbLogFile;
+				}
+			}
+
 
 			if (pos != -1)
-				sourceFilePath = sourceFilePath[(pos+1)..];
+				sourceFilePath = sourceFilePath[(pos + 1)..];
 
-			string str = (isException ? "EXCEPTION: " : "T0005: ") + DateTime.Now.ToString("hh.mm.ss.ffffff") + ":   "
-				+ memberName + " :: " + sourceFilePath + " :: " + sourceLineNumber + Environment.NewLine
-				+ "\t" + message + Environment.NewLine;
+			string str = _Context + ":" + (isException ? ":EXCEPTION: " : " ") + DateTime.Now.ToString("hh.mm.ss.ffffff") + ":   "
+				+ memberName + " :: " + sourceFilePath + " :: " + sourceLineNumber +
+				(message == "" ? "" : Environment.NewLine + "\t" + message) + Environment.NewLine;
 
 #if DEBUG
 			// Remove conditional for a full trace
 			try
 			{
-				if (EnableWriteLog)
+				if (_EnableWriteLog)
 				{
 
-					StreamWriter sw = File.AppendText(LogFile);
+					StreamWriter sw = File.AppendText(logfile);
 
 					sw.WriteLine(str);
 
@@ -108,10 +153,10 @@ namespace BlackbirdSql.Common
 			int sourceLineNumber = 0)
 #endif
 		{
-			if (!isException && !EnableDiagnostics && !EnableTrace)
+			if (!isException && !_EnableDiagnostics && !_EnableTrace)
 				return;
 
-			Dug(isException, ex?.Message + (message != "" ? (" " + message) : "") + ":" + Environment.NewLine + ex?.StackTrace?.ToString(),
+			Dug(isException, ex?.Message + (message != "" ? " " + message : "") + ":" + Environment.NewLine + ex?.StackTrace?.ToString(),
 				memberName, sourceFilePath, sourceLineNumber);
 
 		}
@@ -128,8 +173,19 @@ namespace BlackbirdSql.Common
 			int sourceLineNumber = 0)
 #endif
 		{
-			Dug(true, ex?.Message + (message != "" ? (" " + message) : "") + ":" + Environment.NewLine + ex?.StackTrace?.ToString(),
-				memberName, sourceFilePath, sourceLineNumber);
+			if (message != "")
+				message += ":";
+
+			if (ex.StackTrace != null)
+			{
+				message += Environment.NewLine + "TRACE: " + ex.StackTrace.ToString();
+			}
+			else
+			{
+				message += " NO STACKTRACE";
+			}
+
+			Dug(true, ex.Message + " " + message, memberName, sourceFilePath, sourceLineNumber);
 
 		}
 
@@ -137,7 +193,7 @@ namespace BlackbirdSql.Common
 		// Trace methods
 
 #if DEBUG
-		public static void Trace(string message = "Debug trace",
+		public static void Trace(string message = "",
 			[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 			[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
 			[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
@@ -148,7 +204,7 @@ namespace BlackbirdSql.Common
 			int sourceLineNumber = 0)
 #endif
 		{
-			if (!EnableTrace)
+			if (!_EnableTrace)
 				return;
 
 			Dug(false, message, memberName, sourceFilePath, sourceLineNumber);

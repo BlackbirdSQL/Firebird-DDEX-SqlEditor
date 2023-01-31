@@ -16,10 +16,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Configuration
 
 		// [Category("General")]
 		[DisplayName("Enable diagnostics")]
-		[Description("Enables the execution of Debug.Dug() calls. Note: Does not disable Exceptions.")]
+		[Description("Enables the execution of Debug.Dug()/Debug.Trace() calls. Note: Does not disable Exceptions.")]
 		[DefaultValue(true)]
 		public bool EnableDiagnostics { get; set; } = true;
 
+		// [Category("General")]
+		[DisplayName("Enable Firebird diagnostics")]
+		[Description("Enables the execution of Firebird Debug.Dug()/Debug.Trace() calls. Note: Does not disable Exceptions.")]
+		[DefaultValue(true)]
+		public bool EnableFbDiagnostics { get; set; } = true;
 
 	}
 }

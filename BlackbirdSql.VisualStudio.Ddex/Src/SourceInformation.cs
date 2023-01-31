@@ -37,11 +37,19 @@ internal class SourceInformation : AdoDotNetSourceInformation
 {
 	#region · Constructors ·
 
-	public SourceInformation() : this(default)
+	public SourceInformation() : base()
 	{
+		AddExtendedProperties();
 	}
 
 	public SourceInformation(IVsDataConnection connection) : base(connection)
+	{
+		AddExtendedProperties();
+	}
+
+	#endregion
+
+	private void AddExtendedProperties()
 	{
 		base.AddProperty(CatalogSupported, false);
 		base.AddProperty(CatalogSupportedInDml, false);
@@ -63,10 +71,9 @@ internal class SourceInformation : AdoDotNetSourceInformation
 		base.AddProperty("LocalDatabase", true);
 	}
 
-	#endregion
-
 	protected override object RetrieveValue(string propertyName)
 	{
+		Diag.Trace();
 		try
 		{
 			switch (propertyName)

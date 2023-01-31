@@ -14,6 +14,8 @@
 using System;
 using System.Text;
 
+using BlackbirdSql.Common;
+
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 internal class BinaryEncoding : Encoding
@@ -30,6 +32,7 @@ internal class BinaryEncoding : Encoding
 
 	static void Validate(object data, int dataLength, int index, int count)
 	{
+		Diag.Trace();
 		if (data == null)
 		{
 			throw new ArgumentNullException();

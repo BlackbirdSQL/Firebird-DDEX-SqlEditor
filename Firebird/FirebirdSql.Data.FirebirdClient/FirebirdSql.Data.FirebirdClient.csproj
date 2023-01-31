@@ -59,6 +59,9 @@
 	  </PackageReference>
 	</ItemGroup>
 	<ItemGroup>
+	  <ProjectReference Include="..\..\BlackbirdSql.Common\BlackbirdSql.Common.csproj" />
+	</ItemGroup>
+	<ItemGroup>
 	  <Compile Update="FirebirdClient\FbBatchCommand.cs" />
 	</ItemGroup>
 	<Import Project="..\FirebirdSql.Data.External\FirebirdSql.Data.External.projitems" Label="Shared" />

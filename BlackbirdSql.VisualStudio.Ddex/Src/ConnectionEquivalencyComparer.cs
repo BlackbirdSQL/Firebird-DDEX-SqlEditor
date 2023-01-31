@@ -5,6 +5,8 @@ using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Common;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
+using BlackbirdSql.VisualStudio.Ddex.Schema;
+
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -13,19 +15,20 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 {
 
-	public ConnectionEquivalencyComparer()
+	public ConnectionEquivalencyComparer() : base()
 	{
-		// Diag.Trace();
+		Diag.Trace();
 	}
 
 	protected override bool AreEquivalent(IVsDataConnectionProperties connectionProperties1, IVsDataConnectionProperties connectionProperties2)
 	{
-
 		// Reset the connection if we're doing a localized server explorer node query
 		// It's the only way to get the built in query provider to reread the table list
 		if (DataToolsCommands.ObjectType != DataToolsCommands.DataObjectType.None)
 			return false;
 
+		int equivalencyValueCount = 0;
+		int equivalencyKeyCount = ConnectionString.EquivalencyKeys.Count;
 		object value1, value2;
 
 		try
@@ -35,18 +38,24 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 
 			foreach (KeyValuePair<string, object> param in connectionProperties1)
 			{
+				// If all equivalency keys have been checked, break
+				if (equivalencyValueCount == equivalencyKeyCount)
+					break;
+
 				// Get the correct key for the parameter in connection 1
 				if (!ConnectionString.Synonyms.TryGetValue(param.Key, out string key))
 				{
-					ArgumentException ex = new ArgumentException("Connection parameter '" + param.Key + "' in connection 1 is invalid");
-					Diag.Dug(ex);
-					throw (ex);
-
+					throw new ArgumentException("Connection parameter '" + param.Key + "' in connection 1 is invalid");
 				}
 
-				// We don't do password - not sure if underlying engine may have encrypted it
-				if (string.Equals(key, "Password", StringComparison.OrdinalIgnoreCase))
+				// Exclude non-applicable connection values.
+				// Typically we may require a password and if it's already in, for example, the SE we have rights to it.
+				// There would be no point ignoring that password just because some spurious value differs. For example 'Connection Lifetime'.
+
+				if (!ConnectionString.EquivalencyKeys.Contains(key))
 					continue;
+
+				equivalencyValueCount++;
 
 				// For both connections we set the value to default if it's null or doesn't exist
 				if (param.Value != null)
@@ -57,49 +66,72 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 				// We can't do a straight lookup on the second string because it may be a synonym so we have to loop
 				// through the parameters, find the real key, and use that
 
-				value2 = FindKeyValueInConnection(key, connectionProperties2);
+				try
+				{
+					value2 = FindKeyValueInConnection(key, connectionProperties2);
+				}
+				catch (ArgumentException)
+				{
+					throw new ArgumentException("Parameter '" + param.Key + "' in connection 1 has no matching value in connection 2");
+				}
+
 				value2 ??= ConnectionString.DefaultValues[key];
 
 				if (!AreEquivalent(key, value1, value2))
 				{
-					ArgumentException ex = new ArgumentException("Parameter '" + param.Key + "' in connection 1 has no matching value in connection 2");
-					Diag.Dug(ex);
+					Diag.Trace("Connection parameter '" + key + "' mismatch: '" + (value1 != null ? value1.ToString() : "null") + "' : '" + (value2 != null ? value2.ToString() : "null"));
 					return false;
 				}
 			}
 
-			foreach (KeyValuePair<string, object> param in connectionProperties2)
+			if (equivalencyValueCount < equivalencyKeyCount)
 			{
-				// Get the correct key for the parameter in connection 2
-				if (!ConnectionString.Synonyms.TryGetValue(param.Key, out string key))
+
+				foreach (KeyValuePair<string, object> param in connectionProperties2)
 				{
-					ArgumentException ex = new ArgumentException("Connection parameter '" + param.Key + "' in connection 2 is invalid");
-					Diag.Dug(ex);
-					throw (ex);
+					// If all equivalency keys have been checked, break
+					if (equivalencyValueCount == equivalencyKeyCount)
+						break;
 
-				}
+					// Get the correct key for the parameter in connection 2
+					if (!ConnectionString.Synonyms.TryGetValue(param.Key, out string key))
+					{
+						throw new ArgumentException("Connection parameter '" + param.Key + "' in connection 2 is invalid");
+					}
 
-				if (string.Equals(key, "Password", StringComparison.OrdinalIgnoreCase))
-					continue;
+					// Exclude non-applicable connection values.
+					// Typically we may require a password and if it's already in, for example, the SE we have rights to it.
+					// There would be no point ignoring that password just because some spurious value differs. For example 'Connection Lifetime'. 
 
+					if (!ConnectionString.EquivalencyKeys.Contains(key))
+						continue;
 
-				// For both connections we set the value to default if it's null or doesn't exist
-				if (param.Value != null)
-					value2 = param.Value;
-				else
-					value2 = ConnectionString.DefaultValues[key];
+					equivalencyValueCount++;
 
-				// We can't do a straight lookup on the first connection because it may be a synonym so we have to loop
-				// through the parameters, find the real key, and use that
-				value1 = FindKeyValueInConnection(key, connectionProperties1);
-				value1 ??= ConnectionString.DefaultValues[key];
+					// For both connections we set the value to default if it's null or doesn't exist
+					if (param.Value != null)
+						value2 = param.Value;
+					else
+						value2 = ConnectionString.DefaultValues[key];
 
-				if (!AreEquivalent(key, value2, value1))
-				{
-					ArgumentException ex = new ArgumentException("Parameter '" + param.Key + "' in connection 2 has no matching value in connection 1");
-					Diag.Dug(ex);
+					// We can't do a straight lookup on the first connection because it may be a synonym so we have to loop
+					// through the parameters, find the real key, and use that
+					try
+					{
+						value1 = FindKeyValueInConnection(key, connectionProperties1);
+					}
+					catch (ArgumentException)
+					{
+						throw new ArgumentException("Parameter '" + param.Key + "' in connection 2 has no matching value in connection 1");
+					}
 
-					return false;
+					value1 ??= ConnectionString.DefaultValues[key];
+
+					if (!AreEquivalent(key, value2, value1))
+					{
+						Diag.Trace("Connection2 parameter '" + key + "' mismatch: '" + (value2 != null ? value2.ToString() : "null") + "' : '" + (value1 != null ? value1.ToString() : "null"));
+						return false;
+					}
 				}
 			}
 
@@ -121,6 +153,7 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 		string text1 = value1 as string;
 		string text2 = value2 as string;
 
+		/*
 		if (key == "Data Source")
 		{
 			if (!string.Equals(text1, text2, StringComparison.OrdinalIgnoreCase))
@@ -133,8 +166,9 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 
 			}
 		}
+		*/
 
-		if (!string.Equals(text1, text2, StringComparison.Ordinal))
+		if (!string.Equals(text1, text2, StringComparison.OrdinalIgnoreCase))
 		{
 			return false;
 		}
@@ -146,6 +180,12 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 
 	private object FindKeyValueInConnection(string key, IVsDataConnectionProperties connectionProperties)
 	{
+		// First try for matching keys
+		if (connectionProperties.TryGetValue(key, out object value))
+		{
+			return value;
+		}
+
 		foreach (KeyValuePair<string, object> parameter in connectionProperties)
 		{
 			if (!ConnectionString.Synonyms.TryGetValue(parameter.Key, out string parameterKey))
@@ -155,7 +195,7 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 				return parameter.Value;
 		}
 
-		return null;
+		throw new ArgumentException();
 	}
 
 
@@ -163,7 +203,6 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 
 	private static string StandardizeDataSource(string dataSource)
 	{
-
 		dataSource = dataSource.ToUpperInvariant();
 		string[] array = new string[2] { ".", "(LOCAL)" };
 		foreach (string text in array)

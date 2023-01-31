@@ -15,5 +15,9 @@
 				   Margin="30,72,0,0" VerticalAlignment="Top"
 				   IsThreeState="False"
 				   Checked="CbEnableDiagnostics_Checked" Unchecked="CbEnableDiagnostics_Unchecked"/>
+		<CheckBox x:Name="CbEnableFbDiagnostics" Content="Enable Firebird diagnostics" HorizontalAlignment="Left"
+				   Margin="30,108,0,0" VerticalAlignment="Top"
+				   IsThreeState="False"
+				   Checked="CbEnableFbDiagnostics_Checked" Unchecked="CbEnableFbDiagnostics_Unchecked"/>
 	</Grid>
 </UserControl>

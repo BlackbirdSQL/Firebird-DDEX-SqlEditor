@@ -2,8 +2,7 @@
 using Microsoft.VisualStudio.Data.Services;
 
 using BlackbirdSql.Common;
-
-
+using System.Reflection;
 
 namespace BlackbirdSql.VisualStudio.Ddex
 {
@@ -11,7 +10,13 @@ namespace BlackbirdSql.VisualStudio.Ddex
 	{
 		#region · Constructors ·
 
-		public ObjectSupport() : this(null)
+
+		public ObjectSupport(string fileName, string path) : base(fileName, path)
+		{
+			Diag.Trace();
+		}
+
+		public ObjectSupport(string resourceName, Assembly assembly) : base(resourceName, assembly)
 		{
 			Diag.Trace();
 		}

@@ -54,6 +54,7 @@ class ObjectSelector : AdoDotNetObjectSelector
 	   string[] properties,
 	   object[] parameters)
 	{
+		Diag.Trace();
 
 		try
 		{
@@ -172,6 +173,7 @@ class ObjectSelector : AdoDotNetObjectSelector
 
 	protected override IList<string> GetSupportedRestrictions(string typeName, object[] parameters)
 	{
+		Diag.Trace();
 
 		IList<string> list;
 
