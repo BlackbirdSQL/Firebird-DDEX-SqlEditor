@@ -29,12 +29,12 @@ using BlackbirdSql.Common;
 namespace BlackbirdSql.VisualStudio.Ddex
 {
 
-	public partial class ConnectionUIControl : DataConnectionUIControl
+	public partial class DdexConnectionUIControl : DataConnectionUIControl
 	{
 
 		#region · Constructors ·
 
-		public ConnectionUIControl() :base()
+		public DdexConnectionUIControl() :base()
 		{
 			Diag.Trace();
 			InitializeComponent();
@@ -49,48 +49,48 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			if (Site != null && Site.TryGetValue("Data Source", out object value))
 				txtDataSource.Text = (string)value;
 			else
-				txtDataSource.Text = ConnectionString.DefaultValueDataSource;
+				txtDataSource.Text = DslConnectionString.DefaultValueDataSource;
 
 			if (Site != null && Site.TryGetValue("User ID", out value))
 				txtUserName.Text = (string)value;
 			else
-				txtUserName.Text = ConnectionString.DefaultValueUserId;
+				txtUserName.Text = DslConnectionString.DefaultValueUserId;
 
 			if (Site != null && Site.TryGetValue("Initial Catalog", out value))
 				txtDatabase.Text = (string)value;
 			else
-				txtDatabase.Text = ConnectionString.DefaultValueCatalog;
+				txtDatabase.Text = DslConnectionString.DefaultValueCatalog;
 
 			if (Site != null && Site.TryGetValue("Password", out value))
 				txtPassword.Text = (string)value;
 			else
-				txtPassword.Text = ConnectionString.DefaultValuePassword;
+				txtPassword.Text = DslConnectionString.DefaultValuePassword;
 
 
 			if (Site != null && Site.TryGetValue("Role Name", out value))
 				txtRole.Text = (string)value;
 			else
-				txtRole.Text = ConnectionString.DefaultValueRoleName;
+				txtRole.Text = DslConnectionString.DefaultValueRoleName;
 
 			if (Site != null && Site.TryGetValue("Character Set", out value))
 				cboCharset.Text = (string)value;
 			else
-				cboCharset.Text = ConnectionString.DefaultValueCharacterSet;
+				cboCharset.Text = DslConnectionString.DefaultValueCharacterSet;
 
 			if (Site != null && Site.TryGetValue("Port Number", out value))
 				txtPort.Text = (string)value;
 			else
-				txtPort.Text = ConnectionString.DefaultValuePortNumber.ToString();
+				txtPort.Text = DslConnectionString.DefaultValuePortNumber.ToString();
 
 			if (Site == null || !Site.TryGetValue("Dialect", out value))
-				value = ConnectionString.DefaultValueDialect;
+				value = DslConnectionString.DefaultValueDialect;
 			if (Convert.ToInt32(value) == 1)
 				cboDialect.SelectedIndex = 0;
 			else
 				cboDialect.SelectedIndex = 1;
 
 			if (Site == null || !Site.TryGetValue("Server Type", out value))
-				value = ConnectionString.DefaultValueServerType;
+				value = DslConnectionString.DefaultValueServerType;
 			// Strange bug here. The default on the enum is being returned as the literal. Cannot trace it
 			if (Convert.ToString(value) == "Default" || Convert.ToInt32(value) == 0)
 				cboServerType.SelectedIndex = 0;

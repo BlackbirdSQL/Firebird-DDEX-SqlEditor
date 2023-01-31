@@ -21,7 +21,6 @@
 
 using System;
 using System.Drawing;
-using System.Linq.Expressions;
 using System.Windows.Forms;
 using BlackbirdSql.Common;
 using Microsoft.VisualStudio.Data.Framework;
@@ -34,7 +33,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 
 
 
-public partial class ConnectionPromptDialog : DataConnectionPromptDialog
+public partial class DdexConnectionPromptDialog : DataConnectionPromptDialog
 {
 
 
@@ -44,7 +43,7 @@ public partial class ConnectionPromptDialog : DataConnectionPromptDialog
 		{
 			try
 			{
-				foreach (string property in Schema.ConnectionString.MandatoryProperties)
+				foreach (string property in Schema.DslConnectionString.MandatoryProperties)
 				{
 					if (!ConnectionUIProperties.ContainsKey(property))
 						return false;
@@ -63,7 +62,7 @@ public partial class ConnectionPromptDialog : DataConnectionPromptDialog
 
 	#region · Constructors ·
 
-	public ConnectionPromptDialog()
+	public DdexConnectionPromptDialog()
 	{
 		Diag.Trace();
 

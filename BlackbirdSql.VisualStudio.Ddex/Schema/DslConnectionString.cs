@@ -29,7 +29,7 @@ using FirebirdSql.Data.FirebirdClient;
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 
-internal static class ConnectionString
+internal static class DslConnectionString
 {
 	#region Constants
 	internal const string DefaultValueDataSource = "";

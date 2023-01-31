@@ -12,7 +12,7 @@ using BlackbirdSql.Common;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
-class ObjectSelectorRoot : AdoDotNetRootObjectSelector
+class DdexObjectSelectorRoot : AdoDotNetRootObjectSelector
 {
 	protected override IVsDataReader SelectObjects(string typeName, object[] restrictions, string[] properties, object[] parameters)
 	{

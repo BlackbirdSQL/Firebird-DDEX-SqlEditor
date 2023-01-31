@@ -30,13 +30,13 @@ using Microsoft.VisualStudio.Data.Services;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
-internal class ConnectionSupport : AdoDotNetConnectionSupport
+internal class DdexConnectionSupport : AdoDotNetConnectionSupport
 {
 
 
 	#region · Constructors ·
 
-	public ConnectionSupport() : base()
+	public DdexConnectionSupport() : base()
 	{
 		Diag.Trace();
 	}
@@ -53,26 +53,26 @@ internal class ConnectionSupport : AdoDotNetConnectionSupport
 		if (serviceType == typeof(IVsDataSourceInformation))
 		{
 			Diag.Trace();
-			return new SourceInformation(Site);
+			return new DdexSourceInformation(Site);
 		}
 		else if (serviceType == typeof(IVsDataObjectSelector))
 		{
-			return new ObjectSelector(Site);
+			return new DdexObjectSelector(Site);
 		}
 		else if (serviceType == typeof(IVsDataObjectMemberComparer))
 		{
 			Diag.Trace();
-			return new ObjectMemberComparer(Site);
+			return new DdexObjectMemberComparer(Site);
 		}
 		else if (serviceType == typeof(IVsDataObjectIdentifierConverter))
 		{
 			Diag.Trace();
-			return new ObjectIdentifierConverter(Site);
+			return new DdexObjectIdentifierConverter(Site);
 		}
 		else if (serviceType == typeof(IVsDataMappedObjectConverter))
 		{
 			Diag.Trace();
-			return new MappedObjectConverter(Site);
+			return new DdexMappedObjectConverter(Site);
 		}
 		*/
 

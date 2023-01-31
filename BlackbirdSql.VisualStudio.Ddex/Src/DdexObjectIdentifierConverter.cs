@@ -30,7 +30,7 @@ using BlackbirdSql.Common;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
-internal class ObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
+internal class DdexObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 {
 	#region · Fields ·
 
@@ -39,12 +39,12 @@ internal class ObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 
 	#region · Constructors ·
 
-	public ObjectIdentifierConverter() : base()
+	public DdexObjectIdentifierConverter() : base()
 	{
 		Diag.Trace();
 	}
 
-	public ObjectIdentifierConverter(IVsDataConnection connection) : base(connection)
+	public DdexObjectIdentifierConverter(IVsDataConnection connection) : base(connection)
 	{
 		Diag.Trace();
 	}
@@ -72,8 +72,8 @@ internal class ObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 			&& RequiresQuoting(identifierPartString))
 		{
 			sourceInformation = (IVsDataSourceInformation)Site.GetService(typeof(IVsDataSourceInformation));
-			openQuote = (string)sourceInformation[SourceInformation.IdentifierOpenQuote];
-			closeQuote = (string)sourceInformation[SourceInformation.IdentifierCloseQuote];
+			openQuote = (string)sourceInformation[DdexSourceInformation.IdentifierOpenQuote];
+			closeQuote = (string)sourceInformation[DdexSourceInformation.IdentifierCloseQuote];
 
 			identifierPartString = openQuote + identifierPartString + closeQuote;
 		}

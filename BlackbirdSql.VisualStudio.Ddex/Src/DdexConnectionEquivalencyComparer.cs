@@ -12,10 +12,10 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 
 
 // To be checked
-internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
+internal class DdexConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 {
 
-	public ConnectionEquivalencyComparer() : base()
+	public DdexConnectionEquivalencyComparer() : base()
 	{
 		Diag.Trace();
 	}
@@ -28,7 +28,7 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 			return false;
 
 		int equivalencyValueCount = 0;
-		int equivalencyKeyCount = ConnectionString.EquivalencyKeys.Count;
+		int equivalencyKeyCount = DslConnectionString.EquivalencyKeys.Count;
 		object value1, value2;
 
 		try
@@ -43,7 +43,7 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 					break;
 
 				// Get the correct key for the parameter in connection 1
-				if (!ConnectionString.Synonyms.TryGetValue(param.Key, out string key))
+				if (!DslConnectionString.Synonyms.TryGetValue(param.Key, out string key))
 				{
 					throw new ArgumentException("Connection parameter '" + param.Key + "' in connection 1 is invalid");
 				}
@@ -52,7 +52,7 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 				// Typically we may require a password and if it's already in, for example, the SE we have rights to it.
 				// There would be no point ignoring that password just because some spurious value differs. For example 'Connection Lifetime'.
 
-				if (!ConnectionString.EquivalencyKeys.Contains(key))
+				if (!DslConnectionString.EquivalencyKeys.Contains(key))
 					continue;
 
 				equivalencyValueCount++;
@@ -61,7 +61,7 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 				if (param.Value != null)
 					value1 = param.Value;
 				else
-					value1 = ConnectionString.DefaultValues[key];
+					value1 = DslConnectionString.DefaultValues[key];
 
 				// We can't do a straight lookup on the second string because it may be a synonym so we have to loop
 				// through the parameters, find the real key, and use that
@@ -75,7 +75,7 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 					throw new ArgumentException("Parameter '" + param.Key + "' in connection 1 has no matching value in connection 2");
 				}
 
-				value2 ??= ConnectionString.DefaultValues[key];
+				value2 ??= DslConnectionString.DefaultValues[key];
 
 				if (!AreEquivalent(key, value1, value2))
 				{
@@ -94,7 +94,7 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 						break;
 
 					// Get the correct key for the parameter in connection 2
-					if (!ConnectionString.Synonyms.TryGetValue(param.Key, out string key))
+					if (!DslConnectionString.Synonyms.TryGetValue(param.Key, out string key))
 					{
 						throw new ArgumentException("Connection parameter '" + param.Key + "' in connection 2 is invalid");
 					}
@@ -103,7 +103,7 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 					// Typically we may require a password and if it's already in, for example, the SE we have rights to it.
 					// There would be no point ignoring that password just because some spurious value differs. For example 'Connection Lifetime'. 
 
-					if (!ConnectionString.EquivalencyKeys.Contains(key))
+					if (!DslConnectionString.EquivalencyKeys.Contains(key))
 						continue;
 
 					equivalencyValueCount++;
@@ -112,7 +112,7 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 					if (param.Value != null)
 						value2 = param.Value;
 					else
-						value2 = ConnectionString.DefaultValues[key];
+						value2 = DslConnectionString.DefaultValues[key];
 
 					// We can't do a straight lookup on the first connection because it may be a synonym so we have to loop
 					// through the parameters, find the real key, and use that
@@ -125,7 +125,7 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 						throw new ArgumentException("Parameter '" + param.Key + "' in connection 2 has no matching value in connection 1");
 					}
 
-					value1 ??= ConnectionString.DefaultValues[key];
+					value1 ??= DslConnectionString.DefaultValues[key];
 
 					if (!AreEquivalent(key, value2, value1))
 					{
@@ -188,7 +188,7 @@ internal class ConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 
 		foreach (KeyValuePair<string, object> parameter in connectionProperties)
 		{
-			if (!ConnectionString.Synonyms.TryGetValue(parameter.Key, out string parameterKey))
+			if (!DslConnectionString.Synonyms.TryGetValue(parameter.Key, out string parameterKey))
 				continue;
 
 			if (key == parameterKey)

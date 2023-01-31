@@ -230,7 +230,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			AddService
 			(
 				typeof(IProviderObjectFactory),
-				(_, _, _) => Task.FromResult<object>(new ProviderObjectFactory()),
+				(_, _, _) => Task.FromResult<object>(new DdexProviderObjectFactory()),
 				promote: true
 			);
 

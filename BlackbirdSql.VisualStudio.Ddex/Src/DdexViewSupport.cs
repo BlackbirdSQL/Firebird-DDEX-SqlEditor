@@ -19,52 +19,47 @@
  *    GA Christos
  */
 
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
-using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
+using System;
+using System.Reflection;
+using Microsoft.VisualStudio.Data.Framework;
+using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Common;
-using FirebirdSql.Data.Common;
 
 
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
-internal class DbConnectionUIProperties : AdoDotNetConnectionProperties
+
+internal class DdexViewSupport : DataViewSupport
 {
-
-
-	#region · Properties ·
-
-	public override bool IsComplete
-	{
-		get
-		{
-			Diag.Trace();
-			foreach (string property in Schema.ConnectionString.MandatoryUIProperties)
-			{
-				if (!TryGetValue(property, out object value) || string.IsNullOrEmpty((string)value))
-				{
-					return false;
-				}
-			}
-
-			return true;
-		}
-	}
-
-	#endregion
-
-
-
 	#region · Constructors ·
 
-	public DbConnectionUIProperties() : base()
+	public DdexViewSupport(string fileName, string path) : base(fileName, path)
+	{
+		Diag.Trace();
+	}
+	public DdexViewSupport(string resourceName, Assembly assembly) : base(resourceName, assembly)
 	{
 		Diag.Trace();
 	}
 
+	protected override object CreateService(Type serviceType)
+	{
+		// TBC
+		/*
+		if (serviceType == typeof(IVsDataViewCommandProvider))
+		{
+			return new ViewDatabaseCommandProvider();
+		}
+
+		if (serviceType == typeof(IVsDataViewDocumentProvider))
+		{
+			return new ViewDocumentProvider();
+		}
+		*/
+		return base.CreateService(serviceType);
+	}
+
 	#endregion
-
-
 }

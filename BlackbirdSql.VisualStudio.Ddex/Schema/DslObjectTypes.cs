@@ -21,9 +21,9 @@
 
 using System;
 
-namespace BlackbirdSql.VisualStudio.Ddex;
+namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
-internal static class ObjectTypes
+internal static class DslObjectTypes
 {
 	public const string Root = "";
 	public const string Domain = "Domain";

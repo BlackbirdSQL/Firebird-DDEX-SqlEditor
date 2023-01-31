@@ -24,12 +24,13 @@ using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 
 using BlackbirdSql.Common;
+using BlackbirdSql.VisualStudio.Ddex.Schema;
 
 
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
-internal class ObjectIdentifierResolver : DataObjectIdentifierResolver
+internal class DdexObjectIdentifierResolver : DataObjectIdentifierResolver
 {
 	#region · Private Fields ·
 
@@ -37,12 +38,12 @@ internal class ObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	#region · Constructors ·
 
-	public ObjectIdentifierResolver() : base()
+	public DdexObjectIdentifierResolver() : base()
 	{
 		Diag.Trace();
 	}
 
-	public ObjectIdentifierResolver(IVsDataConnection connection) : base(connection)
+	public DdexObjectIdentifierResolver(IVsDataConnection connection) : base(connection)
 	{
 		Diag.Trace();
 	}
@@ -73,7 +74,7 @@ internal class ObjectIdentifierResolver : DataObjectIdentifierResolver
 		Diag.Trace(String.Format("typeName: {0} Identifiers: {1}", typeName, str));
 		*/
 
-		if (typeName == ObjectTypes.Root)
+		if (typeName == DslObjectTypes.Root)
 		{
 			return base.ContractIdentifier(typeName, fullIdentifier);
 		}
@@ -163,28 +164,28 @@ internal class ObjectIdentifierResolver : DataObjectIdentifierResolver
 
 		switch (typeName)
 		{
-			case ObjectTypes.Root:
+			case DslObjectTypes.Root:
 				return 0;
 
-			case ObjectTypes.Table:
-			case ObjectTypes.View:
-			case ObjectTypes.StoredProcedure:
-			case ObjectTypes.ScalarFunction:
+			case DslObjectTypes.Table:
+			case DslObjectTypes.View:
+			case DslObjectTypes.StoredProcedure:
+			case DslObjectTypes.ScalarFunction:
 				return 3;
 
-			case ObjectTypes.TableColumn:
-			case ObjectTypes.TableIndex:
-			case ObjectTypes.TableUniqueKey:
-			case ObjectTypes.TableForeignKey:
-			case ObjectTypes.ViewColumn:
-			case ObjectTypes.StoredProcedureParameter:
-			case ObjectTypes.StoredProcedureColumn:
-			case ObjectTypes.ScalarFunctionParameter:
+			case DslObjectTypes.TableColumn:
+			case DslObjectTypes.TableIndex:
+			case DslObjectTypes.TableUniqueKey:
+			case DslObjectTypes.TableForeignKey:
+			case DslObjectTypes.ViewColumn:
+			case DslObjectTypes.StoredProcedureParameter:
+			case DslObjectTypes.StoredProcedureColumn:
+			case DslObjectTypes.ScalarFunctionParameter:
 				return 4;
 
-			case ObjectTypes.TableIndexColumn:
-			case ObjectTypes.TableUniqueKeyColumn:
-			case ObjectTypes.TableForeignKeyColumn:
+			case DslObjectTypes.TableIndexColumn:
+			case DslObjectTypes.TableUniqueKeyColumn:
+			case DslObjectTypes.TableForeignKeyColumn:
 				return 5;
 
 			default:

@@ -21,7 +21,7 @@
 				<Property name="IS_SYSTEM_TABLE" type="System.Int16" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.DdexObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="Tables" />
 					</Parameters>
@@ -83,7 +83,7 @@
 				<Property name="Database" type="System.String"/>
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelectorRoot" />
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.DdexObjectSelectorRoot" />
 			</Services>
 		</RootType>
 
@@ -104,7 +104,7 @@
 				<Property name="IS_NULLABLE" type="System.Boolean" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.DdexObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="Domains" />
 					</Parameters>
@@ -162,7 +162,7 @@
 				<Property name="COMPUTED" type="System.Boolean" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.DdexObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="Columns" />
 					</Parameters>
@@ -217,7 +217,7 @@
 				<Property name="IS_SYSTEM_INDEX" type="System.Int16" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.DdexObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="Indexes" />
 					</Parameters>
@@ -274,7 +274,7 @@
 				<Property name="EXPRESSION" type="System.Array" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.DdexObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="IndexColumns" />
 					</Parameters>
@@ -345,7 +345,7 @@
 				<Property name="DELETE_RULE" type="System.String" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.DdexObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="ForeignKeys" />
 					</Parameters>
@@ -373,7 +373,7 @@
 				<Property name="ORDINAL_POSITION" type="System.Int16" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.DdexObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="ForeignKeyColumns" />
 					</Parameters>
@@ -395,7 +395,7 @@
 				<Property name="DEFINITION" type="System.String" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.DdexObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="Views" />
 					</Parameters>
@@ -445,7 +445,7 @@
 				<Property name="COMPUTED" type="System.Boolean" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.DdexObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="ViewColumns" />
 					</Parameters>
@@ -499,7 +499,7 @@
 				<Property name="IS_SYSTEM_PROCEDURE" type="System.Int16" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.DdexObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="Procedures" />
 					</Parameters>
@@ -546,7 +546,7 @@
 				<Property name="PARAMETER_DIRECTION" type="System.Int32" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.DdexObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="ProcedureParameters" />
 					</Parameters>
@@ -605,7 +605,7 @@
 				<Property name="PARAMETER_DIRECTION" type="System.Int32" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.DdexObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="ProcedureParameters" />
 					</Parameters>
@@ -658,7 +658,7 @@
 				<Property name="IS_SYSTEM_FUNCTION" type="System.Boolean" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.DdexObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="Functions" />
 					</Parameters>
@@ -705,7 +705,7 @@
 				<Property name="DESCRIPTION" type="System.String" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.ObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.DdexObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="FunctionArguments" />
 					</Parameters>

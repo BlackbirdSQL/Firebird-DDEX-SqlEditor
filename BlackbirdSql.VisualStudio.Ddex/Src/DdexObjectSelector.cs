@@ -24,7 +24,7 @@ using BlackbirdSql.VisualStudio.Ddex.Schema;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
-class ObjectSelector : AdoDotNetObjectSelector
+class DdexObjectSelector : AdoDotNetObjectSelector
 {
 	// Unused - option to directly enumerate
 	readonly Dictionary<string, Func<FbConnection, object[], DataTable>> _objectSelectors
@@ -38,11 +38,11 @@ class ObjectSelector : AdoDotNetObjectSelector
 			{ "ViewTriggers", SelectViewTriggers }
 		};
 
-	public ObjectSelector()
+	public DdexObjectSelector()
 	{
 	}
 
-	public ObjectSelector(IVsDataConnection connection) : base(connection)
+	public DdexObjectSelector(IVsDataConnection connection) : base(connection)
 	{
 	}
 

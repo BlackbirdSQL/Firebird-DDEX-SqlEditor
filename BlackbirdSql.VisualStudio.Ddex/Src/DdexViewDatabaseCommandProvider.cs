@@ -14,7 +14,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace BlackbirdSql.VisualStudio.Ddex;
 
 
-internal class ViewDatabaseCommandProvider : DataViewCommandProvider
+internal class DdexViewDatabaseCommandProvider : DataViewCommandProvider
 {
 	private class ToggleMenuCommand : DataViewMenuCommand
 	{
