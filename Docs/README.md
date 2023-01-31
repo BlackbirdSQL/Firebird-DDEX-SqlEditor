@@ -12,6 +12,19 @@ The validation features can be disabled in the Visual Studio options but the pac
 See [Extended Description](#extended-description) below.
 
 
+## Known issues
+* If you use a Server Explorer Database Connection as the connection for an EDMX model and choose to exclude sensitive data the password will also be stripped from the SE connection and you will be prompted for a password the next time you access it in the SE.</br>
+This may be by-design in the VS IDE as there seems to be no way of preventing an update of the SE connection string.
+* If an attempt is made to access the DDEX before it has been given the IDE shell context an exception is raised by Visual Studio. This seems to be unavoidable.</br>
+Loading is asynchronous, so the provider needs time to register and load. A database node in server explorer can simply be refreshed if an attempt was made to access it before the package was fully loaded, however if the exception occured on an EDMX the solution will have to be reloaded.</br>
+We want to be as unobtrusive as possible so load delays are just a reality if we go the asynchronous route. (*Loading is initiated at the earliest possible, which is as soon as the IDE shell context is available.*)
+* There seems to be an issue with drag and drop on procedures and functions which I haven't looked at. It's likely something trivial but this functionality isn't available to SqlServer so may be another rabbit hole.</br>
+The same applies to drag and drop from the SE directly into the edmx, also not available on SqlServer but I don't see why it cannot be done.
+* The enhanced localized new query command is working but has not yet been placed in the views or functions/procedures nodes of the SE, which still use the built-in new query command.</br>
+The BlackbirdSql new query command simply filters the table selection list (based on whether you initiated it from a System Table node context or User Table node context) and then passes it on to the native Visual Studio command.</br>
+Refreshing the table selection list will include both System and User tables.
+
+
 ## Documentation
 
 * [ADO.NET provider](ado-net.md)
@@ -46,9 +59,6 @@ To fire up an experimental instance of Visual Studio create a shortcut of Visual
 
 Although the original DDEX 1.0 DataTools package was revived, the DDEX 2.0 package, BlackbirdSql.VisualStudio.Ddex is click and go using VSIX and autoload, and requires no additional setup either in the app.config, csproj or machine.config.</br>
 
-Loading is asynchronous, so the provider needs time to register and load. A database node in server explorer can simply be refreshed if an attempt was made to access it before the package was fully loaded.</br>
-We want to be as unobtrusive as possible so load delays are just a reality if we go the asynchronous route. (*Loading is initiated at the earliest possible, which is as soon as the IDE shell context is available.*)
-
 *If you're noticing a degradation in performance in the IDE after installing an extension then it's advantages are lost, so the first tenet of this package is `small footprint, low overhead`*
 
 If the option is enabled there will be a once-off validation of a solution's projects' app.config's and edmx models. Legacy edmx models won't work with Firebird's latest EntityFramework version so an update is required.</br>
@@ -60,12 +70,6 @@ The intention with this package is to maintain a small footprint. We're not goin
 
 As it stands right now the code is littered with diagnostics calls with writes to a log file set to c:\bin\vsdiag.log.</br>
 These can all be disabled or the log file output path changed in Visual Studio's options.
-
-There seems to be an issue with drag and drop on procedures and functions which I haven't looked at. It's likely something trivial but this functionality isn't available to SqlServer so may be another rabbit hole. The same applies to drag and drop from the SE directly into the edmx, also not available on SqlServer but I don't see why it cannot be done.
-
-The enhanced localized new query command is working but has not yet been placed in the views or functions/procedures nodes of the SE.</br>
-The BlackbirdSql new query command simply filters the table selection list (based on whether you initiated it from a System Table node context or User Table node context) and then passes it on to the native Visual Studio command.</br>
-Refreshing the table selection list will include both System and User tables.
 
 If you're planning on using EF Core and/or .NET, VS does not have wizard support for edmx which makes no sense to me.
 This roadblock is easily overcome by creating a separate project using .NET Framework for your data models and then linking your .NET / EF Core projects to those edmx models.
