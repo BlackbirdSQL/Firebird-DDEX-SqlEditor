@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33103.184
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlackbirdSql.Data.DslClient", "BlackbirdSql.Data.DslClient\BlackbirdSql.Data.DslClient.csproj", "{2E2EABAA-3FCA-4768-9455-A3A8B75EE1DE}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{776680E2-D740-4CD8-9567-AB0C6C2FE94F}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -21,10 +19,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlackbirdSql.VisualStudio.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlackbirdSql.Common", "BlackbirdSql.Common\BlackbirdSql.Common.csproj", "{28D8B582-2320-446E-B286-9B42E65DAE13}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFramework.BlackbirdSql", "BlackbirdSql.EntityFramework\EntityFramework.BlackbirdSql.csproj", "{3F62FD55-3A43-4509-B487-BC4106DDC089}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlackbirdSql.EntityFrameworkCore", "BlackbirdSql.EntityFrameworkCore\BlackbirdSql.EntityFrameworkCore.csproj", "{3058C204-69C1-4E27-8495-8D84B89DB46A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsFormsApp1", "Private\WindowsFormsApp1\WindowsFormsApp1.csproj", "{5D6ACD76-A471-4448-99AF-879899D7ECEA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{07AB63A0-3E7A-4154-84BD-0FEE1F42C870}"
@@ -38,8 +32,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{7C37F2A5-17B9-4E9E-9868-8928FE08BAED}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTest", "Private\ConsoleTest\ConsoleTest.csproj", "{661A1BA1-5E54-4774-8422-C0361FD2BC46}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlackbirdSql.Data.ServiceHub", "BlackbirdSql.Data.ServiceHub\BlackbirdSql.Data.ServiceHub.csproj", "{DA095963-7DFD-4E2B-B830-7046850ADC2C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolutionEventsMonitor", "Private\SolutionEventsMonitor-master\SolutionEventsMonitor.csproj", "{B7E2D2C9-22A0-4D5C-A20A-B1AC290CAB95}"
 EndProject
@@ -71,18 +63,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2E2EABAA-3FCA-4768-9455-A3A8B75EE1DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2E2EABAA-3FCA-4768-9455-A3A8B75EE1DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2E2EABAA-3FCA-4768-9455-A3A8B75EE1DE}.Debug|arm64.ActiveCfg = Debug|Any CPU
-		{2E2EABAA-3FCA-4768-9455-A3A8B75EE1DE}.Debug|arm64.Build.0 = Debug|Any CPU
-		{2E2EABAA-3FCA-4768-9455-A3A8B75EE1DE}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{2E2EABAA-3FCA-4768-9455-A3A8B75EE1DE}.Debug|x86.Build.0 = Debug|Any CPU
-		{2E2EABAA-3FCA-4768-9455-A3A8B75EE1DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2E2EABAA-3FCA-4768-9455-A3A8B75EE1DE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2E2EABAA-3FCA-4768-9455-A3A8B75EE1DE}.Release|arm64.ActiveCfg = Release|Any CPU
-		{2E2EABAA-3FCA-4768-9455-A3A8B75EE1DE}.Release|arm64.Build.0 = Release|Any CPU
-		{2E2EABAA-3FCA-4768-9455-A3A8B75EE1DE}.Release|x86.ActiveCfg = Release|Any CPU
-		{2E2EABAA-3FCA-4768-9455-A3A8B75EE1DE}.Release|x86.Build.0 = Release|Any CPU
 		{4C70D3F2-5333-4E19-BC0D-8184330471D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4C70D3F2-5333-4E19-BC0D-8184330471D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4C70D3F2-5333-4E19-BC0D-8184330471D8}.Debug|arm64.ActiveCfg = Debug|Any CPU
@@ -107,30 +87,6 @@ Global
 		{28D8B582-2320-446E-B286-9B42E65DAE13}.Release|arm64.Build.0 = Release|Any CPU
 		{28D8B582-2320-446E-B286-9B42E65DAE13}.Release|x86.ActiveCfg = Release|Any CPU
 		{28D8B582-2320-446E-B286-9B42E65DAE13}.Release|x86.Build.0 = Release|Any CPU
-		{3F62FD55-3A43-4509-B487-BC4106DDC089}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3F62FD55-3A43-4509-B487-BC4106DDC089}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3F62FD55-3A43-4509-B487-BC4106DDC089}.Debug|arm64.ActiveCfg = Debug|Any CPU
-		{3F62FD55-3A43-4509-B487-BC4106DDC089}.Debug|arm64.Build.0 = Debug|Any CPU
-		{3F62FD55-3A43-4509-B487-BC4106DDC089}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{3F62FD55-3A43-4509-B487-BC4106DDC089}.Debug|x86.Build.0 = Debug|Any CPU
-		{3F62FD55-3A43-4509-B487-BC4106DDC089}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3F62FD55-3A43-4509-B487-BC4106DDC089}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3F62FD55-3A43-4509-B487-BC4106DDC089}.Release|arm64.ActiveCfg = Release|Any CPU
-		{3F62FD55-3A43-4509-B487-BC4106DDC089}.Release|arm64.Build.0 = Release|Any CPU
-		{3F62FD55-3A43-4509-B487-BC4106DDC089}.Release|x86.ActiveCfg = Release|Any CPU
-		{3F62FD55-3A43-4509-B487-BC4106DDC089}.Release|x86.Build.0 = Release|Any CPU
-		{3058C204-69C1-4E27-8495-8D84B89DB46A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3058C204-69C1-4E27-8495-8D84B89DB46A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3058C204-69C1-4E27-8495-8D84B89DB46A}.Debug|arm64.ActiveCfg = Debug|Any CPU
-		{3058C204-69C1-4E27-8495-8D84B89DB46A}.Debug|arm64.Build.0 = Debug|Any CPU
-		{3058C204-69C1-4E27-8495-8D84B89DB46A}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{3058C204-69C1-4E27-8495-8D84B89DB46A}.Debug|x86.Build.0 = Debug|Any CPU
-		{3058C204-69C1-4E27-8495-8D84B89DB46A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3058C204-69C1-4E27-8495-8D84B89DB46A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3058C204-69C1-4E27-8495-8D84B89DB46A}.Release|arm64.ActiveCfg = Release|Any CPU
-		{3058C204-69C1-4E27-8495-8D84B89DB46A}.Release|arm64.Build.0 = Release|Any CPU
-		{3058C204-69C1-4E27-8495-8D84B89DB46A}.Release|x86.ActiveCfg = Release|Any CPU
-		{3058C204-69C1-4E27-8495-8D84B89DB46A}.Release|x86.Build.0 = Release|Any CPU
 		{5D6ACD76-A471-4448-99AF-879899D7ECEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5D6ACD76-A471-4448-99AF-879899D7ECEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D6ACD76-A471-4448-99AF-879899D7ECEA}.Debug|arm64.ActiveCfg = Debug|Any CPU
@@ -179,18 +135,6 @@ Global
 		{661A1BA1-5E54-4774-8422-C0361FD2BC46}.Release|arm64.Build.0 = Release|Any CPU
 		{661A1BA1-5E54-4774-8422-C0361FD2BC46}.Release|x86.ActiveCfg = Release|Any CPU
 		{661A1BA1-5E54-4774-8422-C0361FD2BC46}.Release|x86.Build.0 = Release|Any CPU
-		{DA095963-7DFD-4E2B-B830-7046850ADC2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DA095963-7DFD-4E2B-B830-7046850ADC2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DA095963-7DFD-4E2B-B830-7046850ADC2C}.Debug|arm64.ActiveCfg = Debug|Any CPU
-		{DA095963-7DFD-4E2B-B830-7046850ADC2C}.Debug|arm64.Build.0 = Debug|Any CPU
-		{DA095963-7DFD-4E2B-B830-7046850ADC2C}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{DA095963-7DFD-4E2B-B830-7046850ADC2C}.Debug|x86.Build.0 = Debug|Any CPU
-		{DA095963-7DFD-4E2B-B830-7046850ADC2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DA095963-7DFD-4E2B-B830-7046850ADC2C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DA095963-7DFD-4E2B-B830-7046850ADC2C}.Release|arm64.ActiveCfg = Release|Any CPU
-		{DA095963-7DFD-4E2B-B830-7046850ADC2C}.Release|arm64.Build.0 = Release|Any CPU
-		{DA095963-7DFD-4E2B-B830-7046850ADC2C}.Release|x86.ActiveCfg = Release|Any CPU
-		{DA095963-7DFD-4E2B-B830-7046850ADC2C}.Release|x86.Build.0 = Release|Any CPU
 		{B7E2D2C9-22A0-4D5C-A20A-B1AC290CAB95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B7E2D2C9-22A0-4D5C-A20A-B1AC290CAB95}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7E2D2C9-22A0-4D5C-A20A-B1AC290CAB95}.Debug|arm64.ActiveCfg = Debug|arm64
@@ -271,7 +215,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Firebird\FirebirdSql.Data.External\FirebirdSql.Data.External.projitems*{16f13584-61bc-411c-a146-2fe6b6c26016}*SharedItemsImports = 5
-		Apis\Apis.projitems*{2e2eabaa-3fca-4768-9455-a3a8b75ee1de}*SharedItemsImports = 5
 		Firebird\FirebirdSql.Data.External\FirebirdSql.Data.External.projitems*{884ee120-b22e-4940-8c1c-626f13028376}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal
