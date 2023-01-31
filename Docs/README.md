@@ -2,14 +2,12 @@
 
 This package is still under development.
 
-The original DDEX 1.0 data tool has been re-implemented as BlackbirdSql.VisualStudio.DataTools. The purpose was only to get DDEX functioning for Firebird before implementing DDEX 2.0, so this tool can be considered obsolete.
-
-BlackbirdSql.Data.DslClient.dll, EntityFramework.BlackbirdSql.dll and BlackbirdSql.EntityFrameworkCore.dll were for debugging purposes only.</br>
-
 A new data tool implementing DDEX 2.0, `BlackbirdSql.VisualStudio.Ddex`, has been added.</br>
 The goal is that you don't have to do any configuring of the .csproj, app.config, machine.config or any legacy edmx models, and eliminate using the GAC.</br>
 The validation features can be disabled in the Visual Studio options but the package has a small footprint and low overhead.
 See [Extended Description](#extended-description) below.
+
+The original DDEX 1.0 data tool has been re-implemented as BlackbirdSql.VisualStudio.DataTools. The purpose was only to get DDEX functioning for Firebird before implementing DDEX 2.0, so this tool can be considered obsolete.
 
 
 ## Known issues
@@ -30,6 +28,7 @@ Refreshing the table selection list will include both System and User tables.
 * [ADO.NET provider](ado-net.md)
 * [Using ADO.NET edmx with .NET](edmx-NET.md)
 
+
 ## Packages
 
 | NuGet | Version | Downloads |
@@ -38,10 +37,12 @@ Refreshing the table selection list will include both System and User tables.
 | [EntityFramework.Firebird](https://www.nuget.org/packages/EntityFramework.Firebird) | ![EntityFramework.Firebird](https://img.shields.io/nuget/v/EntityFramework.Firebird.svg) | ![EntityFramework.Firebird](https://img.shields.io/nuget/dt/EntityFramework.Firebird.svg) |
 | [FirebirdSql.EntityFrameworkCore.Firebird](https://www.nuget.org/packages/FirebirdSql.EntityFrameworkCore.Firebird) | ![FirebirdSql.EntityFrameworkCore.Firebird](https://img.shields.io/nuget/v/FirebirdSql.EntityFrameworkCore.Firebird.svg) | ![FirebirdSql.EntityFrameworkCore.Firebird](https://img.shields.io/nuget/dt/FirebirdSql.EntityFrameworkCore.Firebird.svg) |
 
+
 ## Resources
 
 * [Downloads](https://github.com/BlackbirdSQL/NETProvider-DDEX/releases)
 * [Issue tracker](https://github.com/BlackbirdSQL/NETProvider-DDEX/issues)
+
 
 ## Builds
 
@@ -50,6 +51,9 @@ Rather fire up the experimental instance of Visual Studio with Blackbird.sln rem
 To fire up an experimental instance of Visual Studio create a shortcut of Visual Studio with the experimental suffix. eg. `"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\devenv.exe" /RootSuffix Exp`
 
 ## Misc
+
+BlackbirdSql.Data.DslClient.dll, EntityFramework.BlackbirdSql.dll and BlackbirdSql.EntityFrameworkCore.dll (Blackbird[Experimental]) were for initial debugging purposes only in order to have full control over the client and modify it where necessary.
+
 
 ### Notable supporters
 
