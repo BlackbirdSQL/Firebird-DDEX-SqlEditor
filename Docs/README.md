@@ -13,10 +13,10 @@ The original DDEX 1.0 data tool has been re-implemented as `BlackbirdSql.VisualS
 
 
 ## Known issues
-* If you use a Server Explorer Database Connection as the connection for an EDMX model and choose to exclude sensitive data the password will also be stripped from the SE connection and you will be prompted for a password the next time you access it in the SE.</br>
-This may be by-design in the VS IDE as there seems to be no way of preventing an update of the SE connection string.
+* If you use a Server Explorer Database Connection as the connection for an EDMX model and choose to exclude sensitive data the password will also be stripped from the SE connection and you will be prompted for a password through the BlackbirdSql IVsDataConnectionPromptDialog implementation the next time you access it in the SE.</br>
+This may be by-design in the VS IDE as there seems to be no obvious way of preventing an update of the SE connection string.
 * If an attempt is made to access the DDEX before it has been given the IDE shell context an exception is raised by Visual Studio. This seems to be unavoidable.</br>
-Loading is asynchronous, so the provider needs time to register and load. A database node in server explorer can simply be refreshed if an attempt was made to access it before the package was fully loaded, however if the exception occured on an EDMX the solution will have to be reloaded.</br>
+Loading is asynchronous, so the provider needs time to register and load. A database node in server explorer can simply be refreshed if an attempt was made to access it before the package was fully loaded. However, if the exception occured on an EDMX the solution will have to be reloaded.</br>
 We want to be as unobtrusive as possible so load delays are just a reality if we go the asynchronous route. (*Loading is initiated at the earliest possible, which is as soon as the IDE shell context is available.*)
 * There seems to be an issue with drag and drop on procedures and functions which I haven't looked at. It's likely something trivial but this functionality isn't available to SqlServer so may be another rabbit hole.</br>
 The same applies to drag and drop from the SE directly into the edmx, also not available on SqlServer but I don't see why it cannot be done.
