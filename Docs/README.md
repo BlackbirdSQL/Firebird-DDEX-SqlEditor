@@ -2,7 +2,7 @@
 
 This package is still under development.
 
-The BlackbirdSQL DDEX 2.0 .NET Data Provider tool, `BlackbirdSql.VisualStudio.Ddex`, implements all the core DDEX 2.0 interfaces prevalent in the SqlServer DDEX provider.</br>
+The BlackbirdSQL DDEX 2.0 .NET Data Provider tool, `BlackbirdSql.VisualStudio.Ddex`, implements all the core DDEX 2.0 interfaces prevalent in the SqlServer DDEX provider, but currently excluding DDL functionality.</br>
 The goal is that you don't have to do any configuring of the .csproj, app.config, machine.config or any legacy edmx models, and eliminate using the GAC.</br>
 The once-off validation features can be disabled in the Visual Studio options but the package has a small footprint and low overhead.</br>
 See [Extended Description](#extended-description) below.
@@ -13,13 +13,13 @@ The original DDEX 1.0 data tool has been re-implemented as `BlackbirdSql.VisualS
 
 
 ## Known issues
-* If you use a Server Explorer Database Connection as the connection for an EDMX model and choose to exclude sensitive data the password will also be stripped from the SE connection and you will be prompted for a password through the BlackbirdSql IVsDataConnectionPromptDialog implementation the next time you access it in the SE.</br>
-This may be by-design in the VS IDE as there seems to be no obvious way of preventing an update of the SE connection string.
-* If an attempt is made to access the DDEX before it has been given the IDE shell context an exception is raised by Visual Studio. This seems to be unavoidable.</br>
-Loading is asynchronous, so the provider needs time to register and load. A database node in server explorer can simply be refreshed if an attempt was made to access it before the package was fully loaded. However, if the exception occured on an EDMX the solution will have to be reloaded.</br>
+* If an attempt is made to access a ddex model before the prvider has been given the IDE shell context an exception is raised by Visual Studio and the provider is flagged as unavailable for the duration of the session. As it stands Visual Studio will have to be restarted.</br>
+This seems to be unavoidable. Loading is asynchronous, so the provider needs time to register and load.</br>
 We want to be as unobtrusive as possible so load delays are just a reality if we go the asynchronous route. (*Loading is initiated at the earliest possible, which is as soon as the IDE shell context is available.*)
-* There seems to be an issue with drag and drop on procedures and functions which I haven't looked at. It's likely something trivial but this functionality isn't available to SqlServer so may be another rabbit hole.</br>
-The same applies to drag and drop from the SE directly into the edmx, also not available on SqlServer but I don't see why it cannot be done.
+* If you use a Server Explorer Database Connection as the connection for an EDMX model and choose to exclude sensitive data there may be instances where the password will also be stripped from the SE connection and you will be prompted for a password through the BlackbirdSql IVsDataConnectionPromptDialog implementation the next time you access it in the SE.</br>
+I have been unable to replicate this bug for some time now so it may have been resolved since updating the IVsDataConnectionPromptDialog logic.
+* There seems to be an issue with drag and drop on procedures and functions which I haven't looked at. It's likely something trivial but not sure if this functionality is available to SqlServer so may be another rabbit hole.</br>
+The same applies to drag and drop from the SE directly into the edmx, not available on SqlServer but I don't see why it cannot be done.
 * The enhanced localized new query command is working but has not yet been placed in the views or functions/procedures nodes of the SE, which still use the built-in new query command.</br>
 The BlackbirdSql new query command simply filters the table selection list (based on whether you initiated it from a System Table node context or User Table node context) and then passes it on to the native Visual Studio command.</br>
 Refreshing the table selection list will include both System and User tables.
@@ -82,4 +82,4 @@ This roadblock is easily overcome by creating a separate project using .NET Fram
 
 If there's any magic you feel should be included here, pop me a mail.</br>
 Scanning for preset FlameRobin databases and including them in a dropdown in the VS connection dialog is on the priority todo list. That's a simple enumeration of the FlameRobin db xml file, if installed.</br>
-Also on the priority list are DML commands... Create, Alter etc.
+Also on the priority list are DDL commands... Create, Alter etc.
