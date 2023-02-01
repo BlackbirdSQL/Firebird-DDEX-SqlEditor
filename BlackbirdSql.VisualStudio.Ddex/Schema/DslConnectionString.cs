@@ -218,14 +218,22 @@ internal static class DslConnectionString
 			{ DefaultKeyApplicationName },
 		};
 
-	internal static readonly string[] MandatoryProperties =
+
+	/// <summary>
+	/// Mandatory connection properties excluding sensitive information (password)
+	/// </summary>
+	internal static readonly string[] PublicMandatoryProperties =
 	{
 		DefaultKeyDataSource,
 		DefaultKeyCatalog,
 		DefaultKeyUserId
 	};
 
-	internal static readonly string[] MandatoryUIProperties =
+
+	/// <summary>
+	/// Mandatory connection properties including sensitive information (password)
+	/// </summary>
+	internal static readonly string[] ProtectedMandatoryProperties =
 	{
 		DefaultKeyDataSource,
 		DefaultKeyCatalog,
@@ -317,6 +325,7 @@ internal static class DslConnectionString
 
 	#region Private Static Methods
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
 	private static string ExpandDataDirectory(string s)
 	{
 		Diag.Trace();
@@ -329,6 +338,7 @@ internal static class DslConnectionString
 		return Regex.Replace(s, pattern, dataDirectoryLocation + Path.DirectorySeparatorChar, RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 	}
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
 	private static T ParseEnum<T>(string value, string name) where T : struct
 	{
 		Diag.Trace();

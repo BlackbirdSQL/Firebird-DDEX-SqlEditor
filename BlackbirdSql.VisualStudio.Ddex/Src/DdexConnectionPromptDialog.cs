@@ -37,13 +37,13 @@ public partial class DdexConnectionPromptDialog : DataConnectionPromptDialog
 {
 
 
-	public bool IsComplete
+	public bool IsReadOnly
 	{
 		get
 		{
 			try
 			{
-				foreach (string property in Schema.DslConnectionString.MandatoryProperties)
+				foreach (string property in Schema.DslConnectionString.PublicMandatoryProperties)
 				{
 					if (!ConnectionUIProperties.ContainsKey(property))
 						return false;
@@ -93,6 +93,8 @@ public partial class DdexConnectionPromptDialog : DataConnectionPromptDialog
 
 	#endregion
 
+
+
 	#region · Methods ·
 
 	public new string ShowDialog(IVsDataConnectionSupport dataConnectionSupport)
@@ -128,19 +130,18 @@ public partial class DdexConnectionPromptDialog : DataConnectionPromptDialog
 			userNameTextBox.Text = ConnectionUIProperties["User ID"] as string;
 			if (ConnectionUIProperties.TryGetValue("Password", out object value))
 				passwordTextBox.Text = value as string;
+			else
+				okButton.Enabled = false;
 			// if (ConnectionUIProperties.TryGetValue("Persist Security Info", out value))
 			//	savePasswordCheckBox.Checked = Convert.ToBoolean(value);
 
 
-			if (IsComplete)
+			if (IsReadOnly)
 			{
-				Diag.Trace("prompt dialog connection is complete");
 				serverTextBox.ReadOnly = true;
 				databaseTextBox.ReadOnly = true;
 				userNameTextBox.ReadOnly = true;
 			}
-			else
-				Diag.Trace("prompt dialog connection is NOT complete");
 
 		}
 		catch (Exception ex)
@@ -206,7 +207,7 @@ public partial class DdexConnectionPromptDialog : DataConnectionPromptDialog
 	{
 		try
 		{
-			if (IsComplete)
+			if (IsReadOnly)
 			{
 				passwordTextBox.Focus();
 			}
@@ -242,7 +243,7 @@ public partial class DdexConnectionPromptDialog : DataConnectionPromptDialog
 
 	private void SetOkButtonStatus(object sender, EventArgs e)
 	{
-		okButton.Enabled = userNameTextBox.Text.Length > 0;
+		okButton.Enabled = passwordTextBox.Text.Length > 0 && userNameTextBox.Text.Length > 0;
 	}
 
 

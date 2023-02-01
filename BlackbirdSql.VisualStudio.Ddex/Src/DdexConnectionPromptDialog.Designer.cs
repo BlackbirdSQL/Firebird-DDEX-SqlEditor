@@ -229,6 +229,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			this.passwordTextBox.Size = new System.Drawing.Size(190, 20);
 			this.passwordTextBox.TabIndex = 3;
 			this.passwordTextBox.UseSystemPasswordChar = true;
+			this.passwordTextBox.TextChanged += new System.EventHandler(this.SetOkButtonStatus);
 			this.passwordTextBox.Leave += new System.EventHandler(this.ResetControlText);
 			// 
 			// savePasswordCheckBox

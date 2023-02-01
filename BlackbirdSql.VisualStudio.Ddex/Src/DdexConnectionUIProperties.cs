@@ -36,12 +36,16 @@ internal class DdexConnectionUIProperties : AdoDotNetConnectionProperties
 
 	#region · Properties ·
 
+	/// <summary>
+	/// Checks the connection string and activates PromptDialog if incomplete
+	/// </summary>
 	public override bool IsComplete
 	{
 		get
 		{
-			Diag.Trace();
-			foreach (string property in Schema.DslConnectionString.MandatoryUIProperties)
+			Diag.Trace("ProtectedMandatoryProperties required");
+			// This has to be ProtectedMandatoryProperties for password PromptDialog to be activated
+			foreach (string property in Schema.DslConnectionString.ProtectedMandatoryProperties)
 			{
 				if (!TryGetValue(property, out object value) || string.IsNullOrEmpty((string)value))
 				{

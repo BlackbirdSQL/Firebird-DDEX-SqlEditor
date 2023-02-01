@@ -40,8 +40,8 @@ internal class DdexConnectionProperties : AdoDotNetConnectionProperties
 	{
 		get
 		{
-			Diag.Trace();
-			foreach (string property in Schema.DslConnectionString.MandatoryProperties)
+			Diag.Trace("ProtectedMandatoryProperties required");
+			foreach (string property in Schema.DslConnectionString.ProtectedMandatoryProperties)
 			{
 				if (!TryGetValue(property, out object value) || string.IsNullOrEmpty((string)value))
 				{
