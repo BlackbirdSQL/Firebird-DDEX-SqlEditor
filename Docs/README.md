@@ -2,7 +2,7 @@
 
 This package is still under development.
 
-The BlackbirdSQL DDEX 2.0 .NET Data Provider tool, `BlackbirdSql.VisualStudio.Ddex`, implements all the core DDEX 2.0 interfaces prevalent in the SqlServer DDEX provider, but currently excluding DDL functionality.</br>
+The BlackbirdSQL DDEX 2.0 .NET Data Provider tool, `BlackbirdSql.VisualStudio.Ddex`, implements all the core DDEX 2.0 interfaces prevalent in the SqlServer DDEX provider, but currently excludes DDL functionality.</br>
 The goal is that you don't have to do any configuring of the .csproj, app.config, machine.config or any legacy edmx models, and eliminate using the GAC.</br>
 The once-off validation features can be disabled in the Visual Studio options but the package has a small footprint and low overhead.</br>
 See [Extended Description](#extended-description) below.
