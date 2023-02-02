@@ -26,7 +26,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 
 // ---------------------------------------------------------------------------------------------------
 //
-//								UIGlobals Class
+//								VsGlobalsAgent Class
 //
 // ---------------------------------------------------------------------------------------------------
 
@@ -35,12 +35,12 @@ namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 /// <summary>
 /// Manages Globals and Visual Studio Options
 /// </summary>
-internal class UIGlobals
+internal class VsGlobalsAgent
 {
 
 	#region Private Variables
 
-	static UIGlobals _Instance;
+	static VsGlobalsAgent _Instance;
 
 	bool _ValidateConfig = false;
 	bool _ValidateEdmx = false;
@@ -54,7 +54,7 @@ internal class UIGlobals
 
 	// ---------------------------------------------------------------------------------------------------
 	//
-	#region Constants - UIGlobals
+	#region Constants - VsGlobalsAgent
 	//
 	// ---------------------------------------------------------------------------------------------------
 
@@ -118,7 +118,7 @@ internal class UIGlobals
 
 	// ---------------------------------------------------------------------------------------------------
 	//
-	#region Property Accessors - UIGlobals
+	#region Property Accessors - VsGlobalsAgent
 	//
 	// ---------------------------------------------------------------------------------------------------
 
@@ -168,17 +168,17 @@ internal class UIGlobals
 
 	// ---------------------------------------------------------------------------------------------------
 	//
-	#region Constructors / Destructors - UIGlobals
+	#region Constructors / Destructors - VsGlobalsAgent
 	//
 	// ---------------------------------------------------------------------------------------------------
 
 
 
 	/// <summary>
-	/// UIGlobals .ctor
+	/// VsGlobalsAgent .ctor
 	/// </summary>
 	/// <param name="dte"></param>
-	private UIGlobals(DTE dte)
+	private VsGlobalsAgent(DTE dte)
 	{
 		_Dte = dte;
 
@@ -213,9 +213,9 @@ internal class UIGlobals
 
 
 	/// <summary>
-	/// Gets the Singleton UIGlobals instance
+	/// Gets the Singleton VsGlobalsAgent instance
 	/// </summary>
-	public static UIGlobals GetInstance(DTE dte)
+	public static VsGlobalsAgent GetInstance(DTE dte)
 	{
 		return _Instance ??= new(dte);
 	}
@@ -227,7 +227,7 @@ internal class UIGlobals
 
 	// ---------------------------------------------------------------------------------------------------
 	//
-	#region Methods - UIGlobals
+	#region Methods - VsGlobalsAgent
 	//
 	// ---------------------------------------------------------------------------------------------------
 
@@ -667,7 +667,7 @@ internal class UIGlobals
 
 	// ---------------------------------------------------------------------------------------------------
 	//
-	#region Event handlers - UIGlobals
+	#region Event handlers - VsGlobalsAgent
 	//
 	// ---------------------------------------------------------------------------------------------------
 

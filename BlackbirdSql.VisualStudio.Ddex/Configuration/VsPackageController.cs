@@ -16,6 +16,7 @@ using VSLangProj150;
 using FirebirdSql.Data.FirebirdClient;
 
 using BlackbirdSql.Common;
+using BlackbirdSql.Common.Extensions;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 
@@ -48,7 +49,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 	private readonly DTE _Dte = null;
 	private readonly IVsSolution _Solution = null;
-	private UIGlobals _Uig;
+	private VsGlobalsAgent _Uig;
 
 	private uint _HSolutionEvents = uint.MaxValue;
 
@@ -86,13 +87,13 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 	/// <summary>
-	/// Accessor to the singleton <see cref="UIGlobals"/> instance
+	/// Accessor to the singleton <see cref="VsGlobalsAgent"/> instance
 	/// </summary>
-	UIGlobals Uig
+	VsGlobalsAgent Uig
 	{
 		get
 		{
-			return _Uig ??= UIGlobals.GetInstance(_Dte);
+			return _Uig ??= VsGlobalsAgent.GetInstance(_Dte);
 		}
 	}
 

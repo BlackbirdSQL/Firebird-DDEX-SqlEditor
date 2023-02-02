@@ -7,7 +7,7 @@ using System.Xml;
 
 
 
-namespace BlackbirdSql.Common;
+namespace BlackbirdSql.Common.Extensions;
 
 
 
