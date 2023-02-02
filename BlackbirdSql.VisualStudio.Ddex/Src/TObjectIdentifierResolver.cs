@@ -30,7 +30,7 @@ using BlackbirdSql.VisualStudio.Ddex.Schema;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
-internal class DdexObjectIdentifierResolver : DataObjectIdentifierResolver
+internal class TObjectIdentifierResolver : DataObjectIdentifierResolver
 {
 	#region · Private Fields ·
 
@@ -38,12 +38,12 @@ internal class DdexObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	#region · Constructors ·
 
-	public DdexObjectIdentifierResolver() : base()
+	public TObjectIdentifierResolver() : base()
 	{
 		Diag.Trace();
 	}
 
-	public DdexObjectIdentifierResolver(IVsDataConnection connection) : base(connection)
+	public TObjectIdentifierResolver(IVsDataConnection connection) : base(connection)
 	{
 		Diag.Trace();
 	}

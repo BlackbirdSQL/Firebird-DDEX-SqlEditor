@@ -7,15 +7,16 @@ using Microsoft.VisualStudio.Debugger.Interop;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
-internal sealed class DdexObjectMemberComparer : DataObjectMemberComparer
+internal sealed class TObjectMemberComparer : DataObjectMemberComparer
 {
-
-	public DdexObjectMemberComparer() : base()
+	/* For debug trace
+	 * 
+	public TObjectMemberComparer() : base()
 	{
 		Diag.Trace();
 	}
 
-	public DdexObjectMemberComparer(IVsDataConnection dataConnection) : base(dataConnection)
+	public TObjectMemberComparer(IVsDataConnection dataConnection) : base(dataConnection)
 	{
 		Diag.Trace();
 	}
@@ -52,6 +53,7 @@ internal sealed class DdexObjectMemberComparer : DataObjectMemberComparer
 	{
 #nullable enable
 		Diag.Trace();
+		base.Compare(typeName, identifier, identifierPart, value);
 
 		int result;
 		string? value1 = null, value2 = null;
@@ -124,6 +126,6 @@ internal sealed class DdexObjectMemberComparer : DataObjectMemberComparer
 #nullable restore
 	}
 
-
+	*/
 
 }

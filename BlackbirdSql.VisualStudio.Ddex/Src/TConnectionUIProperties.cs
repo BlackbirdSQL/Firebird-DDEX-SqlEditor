@@ -30,7 +30,7 @@ using FirebirdSql.Data.Common;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
-internal class DdexConnectionUIProperties : AdoDotNetConnectionProperties
+internal class TConnectionUIProperties : AdoDotNetConnectionProperties
 {
 
 
@@ -63,7 +63,7 @@ internal class DdexConnectionUIProperties : AdoDotNetConnectionProperties
 
 	#region · Constructors ·
 
-	public DdexConnectionUIProperties() : base()
+	public TConnectionUIProperties() : base()
 	{
 		Diag.Trace();
 	}

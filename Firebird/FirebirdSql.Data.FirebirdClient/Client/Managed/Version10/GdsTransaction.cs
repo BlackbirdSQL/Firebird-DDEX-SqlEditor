@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.Common;
 
 namespace FirebirdSql.Data.Client.Managed.Version10;
@@ -113,6 +114,7 @@ internal class GdsTransaction : TransactionBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -139,6 +141,7 @@ internal class GdsTransaction : TransactionBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -163,6 +166,7 @@ internal class GdsTransaction : TransactionBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -186,6 +190,7 @@ internal class GdsTransaction : TransactionBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -210,6 +215,7 @@ internal class GdsTransaction : TransactionBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -233,6 +239,7 @@ internal class GdsTransaction : TransactionBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -253,6 +260,7 @@ internal class GdsTransaction : TransactionBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -272,6 +280,7 @@ internal class GdsTransaction : TransactionBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -292,6 +301,7 @@ internal class GdsTransaction : TransactionBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -311,6 +321,7 @@ internal class GdsTransaction : TransactionBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -333,6 +344,7 @@ internal class GdsTransaction : TransactionBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -354,6 +366,7 @@ internal class GdsTransaction : TransactionBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -377,6 +390,7 @@ internal class GdsTransaction : TransactionBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -399,6 +413,7 @@ internal class GdsTransaction : TransactionBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -454,6 +469,7 @@ internal class GdsTransaction : TransactionBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -482,6 +498,7 @@ internal class GdsTransaction : TransactionBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}

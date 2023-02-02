@@ -29,12 +29,12 @@ using BlackbirdSql.Common;
 namespace BlackbirdSql.VisualStudio.Ddex
 {
 
-	public partial class DdexConnectionUIControl : DataConnectionUIControl
+	public partial class TConnectionUIControl : DataConnectionUIControl
 	{
 
 		#region · Constructors ·
 
-		public DdexConnectionUIControl() :base()
+		public TConnectionUIControl() :base()
 		{
 			Diag.Trace();
 			InitializeComponent();

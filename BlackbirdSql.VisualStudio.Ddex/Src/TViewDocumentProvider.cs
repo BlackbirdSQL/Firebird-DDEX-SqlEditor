@@ -19,7 +19,7 @@ using BlackbirdSql.Common;
 namespace BlackbirdSql.VisualStudio.Ddex;
 
 
-internal class DdexViewDocumentProvider : DataViewDocumentProvider
+internal class TViewDocumentProvider : DataViewDocumentProvider
 {
 
 	public override int FindNode(string documentMoniker, bool searchUnpopulatedChildren)

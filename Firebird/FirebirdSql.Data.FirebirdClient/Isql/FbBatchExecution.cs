@@ -19,6 +19,7 @@ using System;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.FirebirdClient;
 
 namespace FirebirdSql.Data.Isql;
@@ -92,7 +93,9 @@ public sealed class FbBatchExecution
 	{
 		if ((_statements?.Count ?? 0) == 0)
 		{
-			throw new InvalidOperationException("There are no commands for execution.");
+			InvalidOperationException exbb = new("There are no commands for execution.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 
 		_shouldClose = false;
@@ -320,6 +323,7 @@ public sealed class FbBatchExecution
 			}
 			catch (Exception ex)
 			{
+				Diag.Dug(ex);
 				DisposeCommand();
 				RollbackTransaction();
 				CloseConnection();
@@ -344,7 +348,9 @@ public sealed class FbBatchExecution
 	{
 		if ((_statements?.Count ?? 0) == 0)
 		{
-			throw new InvalidOperationException("There are no commands for execution.");
+			InvalidOperationException exbb = new("There are no commands for execution.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 
 		_shouldClose = false;
@@ -571,6 +577,7 @@ public sealed class FbBatchExecution
 			}
 			catch (Exception ex)
 			{
+				Diag.Dug(ex);
 				await DisposeCommandAsync(cancellationToken).ConfigureAwait(false);
 				await RollbackTransactionAsync(cancellationToken).ConfigureAwait(false);
 				await CloseConnectionAsync(cancellationToken).ConfigureAwait(false);
@@ -607,7 +614,9 @@ public sealed class FbBatchExecution
 			enumerator.MoveNext();
 			if (enumerator.Current.Text.ToUpperInvariant() != "CONNECT")
 			{
-				throw new ArgumentException("Malformed isql CONNECT statement. Expected keyword CONNECT but something else was found.");
+				ArgumentException exbb = new("Malformed isql CONNECT statement. Expected keyword CONNECT but something else was found.");
+				Diag.Dug(exbb);
+				throw exbb;
 			}
 			enumerator.MoveNext();
 			_connectionString.Database = enumerator.Current.Text.Replace("'", string.Empty);
@@ -662,7 +671,9 @@ public sealed class FbBatchExecution
 			enumerator.MoveNext();
 			if (enumerator.Current.Text.ToUpperInvariant() != "CONNECT")
 			{
-				throw new ArgumentException("Malformed isql CONNECT statement. Expected keyword CONNECT but something else was found.");
+				ArgumentException exbb = new("Malformed isql CONNECT statement. Expected keyword CONNECT but something else was found.");
+				Diag.Dug(exbb);
+				throw exbb;
 			}
 			enumerator.MoveNext();
 			_connectionString.Database = enumerator.Current.Text.Replace("'", string.Empty);
@@ -719,7 +730,9 @@ public sealed class FbBatchExecution
 			enumerator.MoveNext();
 			if (enumerator.Current.Text.ToUpperInvariant() != "CREATE")
 			{
-				throw new ArgumentException("Malformed isql CREATE statement. Expected keyword CREATE but something else was found.");
+				ArgumentException exbb = new("Malformed isql CREATE statement. Expected keyword CREATE but something else was found.");
+				Diag.Dug(exbb);
+				throw exbb;
 			}
 			enumerator.MoveNext(); // {DATABASE | SCHEMA}
 			enumerator.MoveNext();
@@ -784,7 +797,9 @@ public sealed class FbBatchExecution
 			enumerator.MoveNext();
 			if (enumerator.Current.Text.ToUpperInvariant() != "CREATE")
 			{
-				throw new ArgumentException("Malformed isql CREATE statement. Expected keyword CREATE but something else was found.");
+				ArgumentException exbb = new("Malformed isql CREATE statement. Expected keyword CREATE but something else was found.");
+				Diag.Dug(exbb);
+				throw exbb;
 			}
 			enumerator.MoveNext(); // {DATABASE | SCHEMA}
 			enumerator.MoveNext();
@@ -844,7 +859,9 @@ public sealed class FbBatchExecution
 			enumerator.MoveNext();
 			if (enumerator.Current.Text.ToUpperInvariant() != "SET")
 			{
-				throw new ArgumentException("Malformed isql SET statement. Expected keyword SET but something else was found.");
+				ArgumentException exbb = new("Malformed isql SET statement. Expected keyword SET but something else was found.");
+				Diag.Dug(exbb);
+				throw exbb;
 			}
 			enumerator.MoveNext(); // AUTO
 			if (enumerator.MoveNext())
@@ -860,7 +877,9 @@ public sealed class FbBatchExecution
 				}
 				else
 				{
-					throw new ArgumentException("Expected the ON or OFF but something else was found.");
+					ArgumentException exbb = new("Expected the ON or OFF but something else was found.");
+					Diag.Dug(exbb);
+					throw exbb;
 				}
 			}
 			else
@@ -884,7 +903,9 @@ public sealed class FbBatchExecution
 			enumerator.MoveNext();
 			if (enumerator.Current.Text.ToUpperInvariant() != "SET")
 			{
-				throw new ArgumentException("Malformed isql SET statement. Expected keyword SET but something else was found.");
+				ArgumentException exbb = new("Malformed isql SET statement. Expected keyword SET but something else was found.");
+				Diag.Dug(exbb);
+				throw exbb;
 			}
 			enumerator.MoveNext(); // NAMES
 			enumerator.MoveNext();
@@ -906,7 +927,9 @@ public sealed class FbBatchExecution
 			enumerator.MoveNext();
 			if (enumerator.Current.Text.ToUpperInvariant() != "SET")
 			{
-				throw new ArgumentException("Malformed isql SET statement. Expected keyword SET but something else was found.");
+				ArgumentException exbb = new("Malformed isql SET statement. Expected keyword SET but something else was found.");
+				Diag.Dug(exbb);
+				throw exbb;
 			}
 			enumerator.MoveNext(); // SQL
 			enumerator.MoveNext(); // DIALECT

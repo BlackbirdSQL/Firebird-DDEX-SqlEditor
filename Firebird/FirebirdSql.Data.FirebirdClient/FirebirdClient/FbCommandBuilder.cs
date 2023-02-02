@@ -36,7 +36,9 @@ public sealed class FbCommandBuilder : DbCommandBuilder
 	{
 		if (command.CommandType != CommandType.StoredProcedure)
 		{
-			throw new InvalidOperationException("DeriveParameters only supports CommandType.StoredProcedure.");
+			InvalidOperationException exbb = new("DeriveParameters only supports CommandType.StoredProcedure.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 
 		var spName = command.CommandText.Trim();
@@ -211,7 +213,9 @@ public sealed class FbCommandBuilder : DbCommandBuilder
 	{
 		if (unquotedIdentifier == null)
 		{
-			throw new ArgumentNullException("Unquoted identifier parameter cannot be null");
+			ArgumentNullException exbb = new("Unquoted identifier parameter cannot be null");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 
 		return string.Format("{0}{1}{2}", QuotePrefix, unquotedIdentifier, QuoteSuffix);
@@ -221,7 +225,9 @@ public sealed class FbCommandBuilder : DbCommandBuilder
 	{
 		if (quotedIdentifier == null)
 		{
-			throw new ArgumentNullException("Quoted identifier parameter cannot be null");
+			ArgumentNullException exbb = new("Quoted identifier parameter cannot be null");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 
 		var unquotedIdentifier = quotedIdentifier.Trim();
@@ -278,7 +284,9 @@ public sealed class FbCommandBuilder : DbCommandBuilder
 	{
 		if (!(adapter is FbDataAdapter))
 		{
-			throw new ArgumentException($"Argument needs to be a {nameof(FbDataAdapter)}.", nameof(adapter));
+			ArgumentException exbb = new($"Argument needs to be a {nameof(FbDataAdapter)}.", nameof(adapter));
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 
 		_rowUpdatingHandler = new EventHandler<FbRowUpdatingEventArgs>(RowUpdatingHandler);

@@ -18,6 +18,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using BlackbirdSql.Common;
 
 namespace FirebirdSql.Data.Isql;
 
@@ -103,11 +104,15 @@ public class FbScript
 				}
 				else if (unknownStatementEventArgs.Handled && unknownStatementEventArgs.Ignore)
 				{
-					throw new InvalidOperationException($"Both {nameof(UnknownStatementEventArgs.Handled)} and {nameof(UnknownStatementEventArgs.Ignore)} should not be set.");
+					InvalidOperationException exbb = new($"Both {nameof(UnknownStatementEventArgs.Handled)} and {nameof(UnknownStatementEventArgs.Ignore)} should not be set.");
+					Diag.Dug(exbb);
+					throw exbb;
 				}
 				else
 				{
-					throw new ArgumentException($"The type of the SQL statement could not be determined. See also {nameof(UnknownStatement)} event.{Environment.NewLine}Statement: {statement.Text}.");
+					ArgumentException exbb = new($"The type of the SQL statement could not be determined. See also {nameof(UnknownStatement)} event.{Environment.NewLine}Statement: {statement.Text}.");
+					Diag.Dug(exbb);
+					throw exbb;
 				}
 			}
 		}

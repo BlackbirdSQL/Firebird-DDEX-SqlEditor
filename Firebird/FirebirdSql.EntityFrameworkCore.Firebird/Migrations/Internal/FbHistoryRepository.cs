@@ -16,6 +16,7 @@
 //$Authors = Jiri Cincura (jiri@cincura.net), Jean Ressouche, Rafael Almeida (ralms@ralms.net)
 
 using System;
+using BlackbirdSql.Common;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 
@@ -42,16 +43,22 @@ public class FbHistoryRepository : HistoryRepository
 
 	public override string GetBeginIfExistsScript(string migrationId)
 	{
-		throw new NotSupportedException("Generating idempotent scripts is currently not supported.");
+		NotSupportedException exbb = new("Generating idempotent scripts is currently not supported.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 
 	public override string GetBeginIfNotExistsScript(string migrationId)
 	{
-		throw new NotSupportedException("Generating idempotent scripts is currently not supported.");
+		NotSupportedException exbb = new("Generating idempotent scripts is currently not supported.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 
 	public override string GetEndIfScript()
 	{
-		throw new NotSupportedException("Generating idempotent scripts is currently not supported.");
+		NotSupportedException exbb = new("Generating idempotent scripts is currently not supported.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 }

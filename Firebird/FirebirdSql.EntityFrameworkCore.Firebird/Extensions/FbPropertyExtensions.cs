@@ -149,11 +149,15 @@ public static class FbPropertyExtensions
 		{
 			if (value == FbValueGenerationStrategy.IdentityColumn && !IsCompatibleIdentityColumn(property))
 			{
-				throw new ArgumentException($"Incompatible data type for {nameof(FbValueGenerationStrategy.IdentityColumn)} for '{property.Name}'.");
+				ArgumentException exbb = new($"Incompatible data type for {nameof(FbValueGenerationStrategy.IdentityColumn)} for '{property.Name}'.");
+				Diag.Dug(exbb);
+				throw exbb;
 			}
 			if (value == FbValueGenerationStrategy.SequenceTrigger && !IsCompatibleSequenceTrigger(property))
 			{
-				throw new ArgumentException($"Incompatible data type for {nameof(FbValueGenerationStrategy.SequenceTrigger)} for '{property.Name}'.");
+				ArgumentException exbb = new($"Incompatible data type for {nameof(FbValueGenerationStrategy.SequenceTrigger)} for '{property.Name}'.");
+				Diag.Dug(exbb);
+				throw exbb;
 			}
 		}
 	}

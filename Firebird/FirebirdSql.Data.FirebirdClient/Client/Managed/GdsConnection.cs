@@ -23,6 +23,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.Common;
 
 namespace FirebirdSql.Data.Client.Managed;
@@ -94,6 +95,7 @@ internal sealed class GdsConnection
 		}
 		catch (SocketException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForTypeErrorCodeStrParam(IscCodes.isc_arg_gds, IscCodes.isc_network_error, DataSource, ex);
 		}
 	}
@@ -129,6 +131,7 @@ internal sealed class GdsConnection
 		}
 		catch (SocketException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForTypeErrorCodeStrParam(IscCodes.isc_arg_gds, IscCodes.isc_network_error, DataSource, ex);
 		}
 	}
@@ -244,6 +247,7 @@ internal sealed class GdsConnection
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -358,6 +362,7 @@ internal sealed class GdsConnection
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}

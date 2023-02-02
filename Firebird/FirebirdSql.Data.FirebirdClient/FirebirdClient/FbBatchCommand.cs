@@ -283,6 +283,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 			}
 			catch (IscException ex)
 			{
+				Diag.Dug(ex);
 				throw FbException.Create(ex);
 			}
 			_batchBufferSize = DefaultBatchBufferSize;
@@ -312,6 +313,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 			}
 			catch (IscException ex)
 			{
+				Diag.Dug(ex);
 				throw FbException.Create(ex);
 			}
 			_batchBufferSize = DefaultBatchBufferSize;
@@ -365,6 +367,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 			}
 			catch (IscException ex)
 			{
+				Diag.Dug(ex);
 				RollbackImplicitTransaction();
 				throw FbException.Create(ex);
 			}
@@ -388,6 +391,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 			}
 			catch (IscException ex)
 			{
+				Diag.Dug(ex);
 				await RollbackImplicitTransactionAsync(explicitCancellation.CancellationToken).ConfigureAwait(false);
 				throw FbException.Create(ex);
 			}
@@ -421,6 +425,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 			}
 			catch (IscException ex)
 			{
+				Diag.Dug(ex);
 				RollbackImplicitTransaction();
 				throw FbException.Create(ex);
 			}
@@ -455,6 +460,7 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 			}
 			catch (IscException ex)
 			{
+				Diag.Dug(ex);
 				await RollbackImplicitTransactionAsync(explicitCancellation.CancellationToken).ConfigureAwait(false);
 				throw FbException.Create(ex);
 			}
@@ -567,7 +573,9 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 		Diag.Trace();
 		if (_batch == null)
 		{
-			throw new InvalidOperationException("Batch must be prepared.");
+			InvalidOperationException exbb = new("Batch must be prepared.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 		if (!HasParameters)
 		{
@@ -580,7 +588,9 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 		Diag.Trace();
 		if (_batch == null)
 		{
-			throw new InvalidOperationException("Batch must be prepared.");
+			InvalidOperationException exbb = new("Batch must be prepared.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 		if (!HasParameters)
 		{
@@ -1038,7 +1048,9 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 						case DbDataType.Guid:
 							if (!(commandParameter.InternalValue is Guid) && !(commandParameter.InternalValue is byte[]))
 							{
-								throw new InvalidOperationException("Incorrect Guid value.");
+								InvalidOperationException exbb = new("Incorrect Guid value.");
+								Diag.Dug(exbb);
+								throw exbb;
 							}
 							parameter.DbValue.SetValue(commandParameter.InternalValue);
 							break;
@@ -1136,7 +1148,9 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 						case DbDataType.Guid:
 							if (!(commandParameter.InternalValue is Guid) && !(commandParameter.InternalValue is byte[]))
 							{
-								throw new InvalidOperationException("Incorrect Guid value.");
+								InvalidOperationException exbb = new("Incorrect Guid value.");
+								Diag.Dug(exbb);
+								throw exbb;
 							}
 							batchParameter.DbValue.SetValue(commandParameter.InternalValue);
 							break;
@@ -1371,18 +1385,24 @@ public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDis
 			_connection.InnerConnection.HasActiveTransaction &&
 			!_connection.InnerConnection.IsEnlisted)
 		{
-			throw new InvalidOperationException("Execute requires the Command object to have a Transaction object when the Connection object assigned to the command is in a pending local transaction. The Transaction property of the Command has not been initialized.");
+			InvalidOperationException exbb = new("Execute requires the Command object to have a Transaction object when the Connection object assigned to the command is in a pending local transaction. The Transaction property of the Command has not been initialized.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 
 		if (_transaction != null && !_transaction.IsCompleted &&
 			!_connection.Equals(_transaction.Connection))
 		{
-			throw new InvalidOperationException("Command Connection is not equal to Transaction Connection.");
+			InvalidOperationException exbb = new("Command Connection is not equal to Transaction Connection.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 
 		if (_commandText == null || _commandText.Length == 0)
 		{
-			throw new InvalidOperationException("The command text for this Command has not been set.");
+			InvalidOperationException exbb = new("The command text for this Command has not been set.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 	}
 

@@ -224,13 +224,13 @@ namespace BlackbirdSql.VisualStudio.Ddex
 		protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 		{
 			await base.InitializeAsync(cancellationToken, progress);
-			Diag.Trace();
 
+			// Diag.Trace();
 
 			AddService
 			(
 				typeof(IProviderObjectFactory),
-				(_, _, _) => Task.FromResult<object>(new DdexProviderObjectFactory()),
+				(_, _, _) => Task.FromResult<object>(new TProviderObjectFactory()),
 				promote: true
 			);
 
@@ -241,7 +241,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			if (_InvariantAssembly == null && DbProviderFactoriesEx.AddAssemblyToCache2(typeof(FirebirdClientFactory),
 				Properties.Resources.Provider_ShortDisplayName, Properties.Resources.Provider_DisplayName))
 			{
-				Diag.Trace("DbProviderFactory added to assembly cache");
+				// Diag.Trace("DbProviderFactory added to assembly cache");
 
 				_InvariantAssembly = typeof(FirebirdClientFactory).Assembly;
 
@@ -249,7 +249,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 				{
 					if (args.Name == _InvariantAssembly.FullName)
 					{
-						Diag.Dug(true, "Dsl Provider Factory failed to load: " + _InvariantAssembly.FullName);
+						// Diag.Dug(true, "Dsl Provider Factory failed to load: " + _InvariantAssembly.FullName);
 						return _InvariantAssembly;
 					}
 
@@ -279,7 +279,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 		private async Task AdviseSolutionEventsAsync()
 		{
 			await JoinableTaskFactory.SwitchToMainThreadAsync(DisposalToken);
-			Diag.Trace();
+			// Diag.Trace();
 
 			try
 			{

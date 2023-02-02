@@ -87,7 +87,9 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	protected IEnumerable<MigrationStatement> Generate(MigrationOperation operation)
 	{
-		throw new NotSupportedException(string.Format("Unknown operation '{0}'.", operation.GetType().FullName));
+		NotSupportedException exbb = new(string.Format("Unknown operation '{0}'.", operation.GetType().FullName));
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 
 	protected virtual IEnumerable<MigrationStatement> Generate(UpdateDatabaseOperation operation)
@@ -423,7 +425,9 @@ public class FbMigrationSqlGenerator : MigrationSqlGenerator
 
 	protected virtual IEnumerable<MigrationStatement> Generate(MoveProcedureOperation operation)
 	{
-		throw new NotSupportedException("Moving procedure is not supported by Firebird.");
+		NotSupportedException exbb = new("Moving procedure is not supported by Firebird.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 
 	protected virtual IEnumerable<MigrationStatement> Generate(MoveTableOperation operation)

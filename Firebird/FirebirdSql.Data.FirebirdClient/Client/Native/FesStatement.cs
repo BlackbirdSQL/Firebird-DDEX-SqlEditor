@@ -216,12 +216,16 @@ internal sealed class FesStatement : StatementBase
 
 	public override BatchBase CreateBatch()
 	{
-		throw new NotSupportedException("Batching isn't, yet, supported on Firebird Embedded.");
+		NotSupportedException exbb = new("Batching isn't, yet, supported on Firebird Embedded.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 
 	public override BatchParameterBuffer CreateBatchParameterBuffer()
 	{
-		throw new NotSupportedException("Batching isn't, yet, supported on Firebird Embedded.");
+		NotSupportedException exbb = new("Batching isn't, yet, supported on Firebird Embedded.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 
 	#endregion

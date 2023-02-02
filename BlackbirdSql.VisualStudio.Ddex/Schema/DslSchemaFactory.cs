@@ -151,7 +151,12 @@ internal sealed class DslSchemaFactory
 			"VIEWCOLUMNS" => new DslViewColumns(),
 			"INDEXCOLUMNS" => new DslIndexColumns(),
 			"FUNCTIONARGUMENTS" => new DslFunctionArguments(),
-			_ => throw new NotSupportedException("The specified metadata collection is not supported."),
+			_ => ((Func<DslSchema>)(() =>
+				{
+					NotSupportedException exbb = new("The specified metadata collection is not supported.");
+					Diag.Dug(exbb);
+					throw exbb;
+				}))(),
 		};
 		return returnSchema.GetSchema(connection, collectionName, restrictions);
 	}
@@ -166,7 +171,12 @@ internal sealed class DslSchemaFactory
 			"VIEWCOLUMNS" => new DslViewColumns(),
 			"INDEXCOLUMNS" => new DslIndexColumns(),
 			"FUNCTIONARGUMENTS" => new DslFunctionArguments(),
-			_ => throw new NotSupportedException("The specified metadata collection is not supported."),
+			_ => ((Func<DslSchema>)(() =>
+				{
+					NotSupportedException exbb = new("The specified metadata collection is not supported.");
+					Diag.Dug(exbb);
+					throw exbb;
+				}))(),
 		};
 		return returnSchema.GetSchemaAsync(connection, collectionName, restrictions, cancellationToken);
 	}

@@ -21,7 +21,7 @@
 
 namespace BlackbirdSql.VisualStudio.Ddex
 {
-    partial class DdexConnectionUIControl
+    partial class TConnectionUIControl
     {
         /// <summary> 
         /// Required designer variable.
@@ -322,7 +322,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			this.openFileDialog.DefaultExt = "FDB";
 			this.openFileDialog.Filter = "Firebird Databases|*.fdb|Interbase Databases|*.gdb|All files|*.*";
 			// 
-			// DdexConnectionUIControl
+			// TConnectionUIControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -342,7 +342,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			this.Controls.Add(this.cmdTest);
 			this.Margin = new System.Windows.Forms.Padding(0);
 			this.MinimumSize = new System.Drawing.Size(457, 198);
-			this.Name = "DdexConnectionUIControl";
+			this.Name = "TConnectionUIControl";
 			this.Size = new System.Drawing.Size(457, 198);
 			this.grbSettings.ResumeLayout(false);
 			this.grbLogin.ResumeLayout(false);

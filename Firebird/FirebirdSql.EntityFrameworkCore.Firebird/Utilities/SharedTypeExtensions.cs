@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using BlackbirdSql.Common;
 
 #nullable enable
 
@@ -212,7 +213,9 @@ internal static class SharedTypeExtensions
 		var sequenceType = TryGetSequenceType(type);
 		if (sequenceType == null)
 		{
-			throw new ArgumentException($"The type {type.Name} does not represent a sequence");
+			ArgumentException exbb = new($"The type {type.Name} does not represent a sequence");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 
 		return sequenceType;
@@ -471,6 +474,7 @@ internal static class SharedTypeExtensions
 		}
 		catch (ReflectionTypeLoadException ex)
 		{
+			Diag.Dug(ex);
 			return ex.Types.Where(t => t != null).Select(IntrospectionExtensions.GetTypeInfo!);
 		}
 	}

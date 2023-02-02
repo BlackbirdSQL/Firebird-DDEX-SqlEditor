@@ -33,16 +33,16 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 /// Provides information about an ADO.NET data source in the form of 
 /// properties passed as name/value pairs.
 /// </summary>
-internal class DdexSourceInformation : AdoDotNetSourceInformation
+internal class TSourceInformation : AdoDotNetSourceInformation
 {
 	#region · Constructors ·
 
-	public DdexSourceInformation() : base()
+	public TSourceInformation() : base()
 	{
 		AddExtendedProperties();
 	}
 
-	public DdexSourceInformation(IVsDataConnection connection) : base(connection)
+	public TSourceInformation(IVsDataConnection connection) : base(connection)
 	{
 		AddExtendedProperties();
 	}

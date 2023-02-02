@@ -226,12 +226,16 @@ internal class GdsStatement : StatementBase
 
 	public override BatchBase CreateBatch()
 	{
-		throw new NotSupportedException("Batching is not supported on this Firebird version.");
+		NotSupportedException exbb = new("Batching is not supported on this Firebird version.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 
 	public override BatchParameterBuffer CreateBatchParameterBuffer()
 	{
-		throw new NotSupportedException("Batching is not supported on this Firebird version.");
+		NotSupportedException exbb = new("Batching is not supported on this Firebird version.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 
 	#endregion
@@ -263,6 +267,7 @@ internal class GdsStatement : StatementBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			State = State == StatementState.Allocated ? StatementState.Error : State;
 			throw IscException.ForIOException(ex);
 		}
@@ -292,6 +297,7 @@ internal class GdsStatement : StatementBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			State = State == StatementState.Allocated ? StatementState.Error : State;
 			throw IscException.ForIOException(ex);
 		}
@@ -332,6 +338,7 @@ internal class GdsStatement : StatementBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			State = StatementState.Error;
 			throw IscException.ForIOException(ex);
 		}
@@ -371,6 +378,7 @@ internal class GdsStatement : StatementBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			State = StatementState.Error;
 			throw IscException.ForIOException(ex);
 		}
@@ -453,6 +461,7 @@ internal class GdsStatement : StatementBase
 			}
 			catch (IOException ex)
 			{
+				Diag.Dug(ex);
 				Diag.Trace();
 				throw IscException.ForIOException(ex);
 			}
@@ -537,6 +546,7 @@ internal class GdsStatement : StatementBase
 			}
 			catch (IOException ex)
 			{
+				Diag.Dug(ex);
 				throw IscException.ForIOException(ex);
 			}
 		}
@@ -614,6 +624,7 @@ internal class GdsStatement : StatementBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -625,6 +636,7 @@ internal class GdsStatement : StatementBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -710,6 +722,7 @@ internal class GdsStatement : StatementBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			State = StatementState.Error;
 			throw IscException.ForIOException(ex);
 		}
@@ -733,6 +746,7 @@ internal class GdsStatement : StatementBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			State = StatementState.Error;
 			throw IscException.ForIOException(ex);
 		}
@@ -869,6 +883,7 @@ internal class GdsStatement : StatementBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -883,6 +898,7 @@ internal class GdsStatement : StatementBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -1202,6 +1218,7 @@ internal class GdsStatement : StatementBase
 				}
 				catch (IOException ex)
 				{
+					Diag.Dug(ex);
 					throw IscException.ForIOException(ex);
 				}
 			}
@@ -1227,6 +1244,7 @@ internal class GdsStatement : StatementBase
 				}
 				catch (IOException ex)
 				{
+					Diag.Dug(ex);
 					throw IscException.ForIOException(ex);
 				}
 			}
@@ -1774,6 +1792,7 @@ internal class GdsStatement : StatementBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 		return row;
@@ -1803,6 +1822,7 @@ internal class GdsStatement : StatementBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 		return row;

@@ -20,6 +20,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 using System.Collections.Generic;
+using BlackbirdSql.Common;
 
 namespace FirebirdSql.Data.FirebirdClient;
 
@@ -281,6 +282,7 @@ public sealed class FbDataAdapter : DbDataAdapter, ICloneable
 					}
 					catch (Exception ex)
 					{
+						Diag.Dug(ex);
 						updatingArgs.Errors = ex;
 						updatingArgs.Status = UpdateStatus.ErrorsOccurred;
 					}
@@ -297,7 +299,9 @@ public sealed class FbDataAdapter : DbDataAdapter, ICloneable
 				{
 					if (updatingArgs.Errors == null)
 					{
-						throw new InvalidOperationException("RowUpdatingEvent: Errors occurred; no additional information is available.");
+						InvalidOperationException exbb = new("RowUpdatingEvent: Errors occurred; no additional information is available.");
+						Diag.Dug(exbb);
+						throw exbb;
 					}
 					throw updatingArgs.Errors;
 				}
@@ -334,7 +338,9 @@ public sealed class FbDataAdapter : DbDataAdapter, ICloneable
 					var rowsAffected = command.ExecuteNonQuery();
 					if (rowsAffected == 0)
 					{
-						throw new DBConcurrencyException(new DBConcurrencyException().Message, null, new DataRow[] { row });
+						DBConcurrencyException exbb = new(new DBConcurrencyException().Message, null, new DataRow[] { row });
+						Diag.Dug(exbb);
+						throw exbb;
 					}
 
 					updated++;
@@ -393,6 +399,7 @@ public sealed class FbDataAdapter : DbDataAdapter, ICloneable
 			}
 			catch (Exception ex)
 			{
+				Diag.Dug(ex);
 				row.RowError = ex.Message;
 				updateException = ex;
 			}
@@ -411,7 +418,9 @@ public sealed class FbDataAdapter : DbDataAdapter, ICloneable
 				{
 					if (updatingArgs.Errors == null)
 					{
-						throw new InvalidOperationException("RowUpdatedEvent: Errors occurred; no additional information available.");
+						InvalidOperationException exbb = new("RowUpdatedEvent: Errors occurred; no additional information available.");
+						Diag.Dug(exbb);
+						throw exbb;
 					}
 					throw updatedArgs.Errors;
 				}

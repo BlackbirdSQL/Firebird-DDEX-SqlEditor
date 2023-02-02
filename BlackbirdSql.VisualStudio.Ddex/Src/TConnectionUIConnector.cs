@@ -10,13 +10,13 @@ using BlackbirdSql.Common;
 namespace BlackbirdSql.VisualStudio.Ddex;
 
 
-internal class DdexConnectionUIConnector : DataConnectionUIConnector
+internal class TConnectionUIConnector : DataConnectionUIConnector
 {
 	//
 	// Summary:
-	//     Initializes a new instance of the DdexConnectionUIConnector
+	//     Initializes a new instance of the TConnectionUIConnector
 	//     class.
-	public DdexConnectionUIConnector() :base()
+	public TConnectionUIConnector() :base()
 	{
 		Diag.Trace();
 	}

@@ -19,6 +19,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.Client.Managed.Version10;
 using FirebirdSql.Data.Common;
 
@@ -93,6 +94,7 @@ internal class GdsStatement : Version10.GdsStatement
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			State = State == StatementState.Allocated ? StatementState.Error : State;
 			throw IscException.ForIOException(ex);
 		}
@@ -150,6 +152,7 @@ internal class GdsStatement : Version10.GdsStatement
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			State = State == StatementState.Allocated ? StatementState.Error : State;
 			throw IscException.ForIOException(ex);
 		}
@@ -213,6 +216,7 @@ internal class GdsStatement : Version10.GdsStatement
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			State = StatementState.Error;
 			throw IscException.ForIOException(ex);
 		}
@@ -275,6 +279,7 @@ internal class GdsStatement : Version10.GdsStatement
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			State = StatementState.Error;
 			throw IscException.ForIOException(ex);
 		}

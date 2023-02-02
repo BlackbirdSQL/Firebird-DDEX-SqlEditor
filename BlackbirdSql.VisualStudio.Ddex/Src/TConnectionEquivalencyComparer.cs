@@ -12,10 +12,10 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 
 
 // To be checked
-internal class DdexConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
+internal class TConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 {
 
-	public DdexConnectionEquivalencyComparer() : base()
+	public TConnectionEquivalencyComparer() : base()
 	{
 		Diag.Trace();
 	}

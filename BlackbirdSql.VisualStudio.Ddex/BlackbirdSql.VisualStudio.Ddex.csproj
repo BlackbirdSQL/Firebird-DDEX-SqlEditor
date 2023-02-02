@@ -196,21 +196,21 @@
   </ItemGroup>
   <!-- Includes (Source Resources) -->
   <ItemGroup>
-    <EmbeddedResource Include="Src\DdexConnectionPromptDialog.resx">
+    <EmbeddedResource Include="Src\TConnectionPromptDialog.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>DdexConnectionPromptDialog.cs</DependentUpon>
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.DdexConnectionPromptDialog.resx</LogicalName>
+      <DependentUpon>TConnectionPromptDialog.cs</DependentUpon>
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TConnectionPromptDialog.resx</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\DdexConnectionUIControl.resx">
-      <DependentUpon>DdexConnectionUIControl.cs</DependentUpon>
+    <EmbeddedResource Include="Src\TConnectionUIControl.resx">
+      <DependentUpon>TConnectionUIControl.cs</DependentUpon>
       <SubType>Designer</SubType>
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.DdexConnectionUIControl.resx</LogicalName>
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TConnectionUIControl.resx</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\DdexObjectSupport.xml">
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.DdexObjectSupport.xml</LogicalName>
+    <EmbeddedResource Include="Src\TObjectSupport.xml">
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupport.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\DdexViewSupport.xml">
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.DdexViewSupport.xml</LogicalName>
+    <EmbeddedResource Include="Src\TViewSupport.xml">
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TViewSupport.xml</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
   <!-- Includes (Source files) -->
@@ -229,37 +229,37 @@
     <Compile Include="Schema\DslFunctionArguments.cs" />
     <Compile Include="Schema\DslIndexColumns.cs" />
     <Compile Include="Schema\IscCodes.cs" />
-    <Compile Include="Src\DdexConnectionEquivalencyComparer.cs" />
-    <Compile Include="Src\DdexConnectionPromptDialog.cs">
+    <Compile Include="Src\TConnectionEquivalencyComparer.cs" />
+    <Compile Include="Src\TConnectionPromptDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\DdexConnectionPromptDialog.Designer.cs">
-      <DependentUpon>DdexConnectionPromptDialog.cs</DependentUpon>
+    <Compile Include="Src\TConnectionPromptDialog.Designer.cs">
+      <DependentUpon>TConnectionPromptDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\DdexConnectionUIProperties.cs" />
-    <Compile Include="Src\DdexConnectionProperties.cs" />
-    <Compile Include="Src\DdexConnectionSupport.cs" />
-    <Compile Include="Src\DdexConnectionUIControl.cs">
+    <Compile Include="Src\TConnectionUIProperties.cs" />
+    <Compile Include="Src\TConnectionProperties.cs" />
+    <Compile Include="Src\TConnectionSupport.cs" />
+    <Compile Include="Src\TConnectionUIControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\DdexConnectionUIControl.Designer.cs">
-      <DependentUpon>DdexConnectionUIControl.cs</DependentUpon>
+    <Compile Include="Src\TConnectionUIControl.Designer.cs">
+      <DependentUpon>TConnectionUIControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\DdexMappedObjectConverter.cs" />
-    <Compile Include="Src\DdexObjectIdentifierConverter.cs" />
-    <Compile Include="Src\DdexObjectIdentifierResolver.cs" />
-    <Compile Include="Src\DdexObjectMemberComparer.cs" />
-    <Compile Include="Src\DdexObjectSelector.cs" />
-    <Compile Include="Src\DdexObjectSupport.cs" />
-    <Compile Include="Src\DdexObjectSelectorRoot.cs" />
+    <Compile Include="Src\TMappedObjectConverter.cs" />
+    <Compile Include="Src\TObjectIdentifierConverter.cs" />
+    <Compile Include="Src\TObjectIdentifierResolver.cs" />
+    <Compile Include="Src\TObjectMemberComparer.cs" />
+    <Compile Include="Src\TObjectSelector.cs" />
+    <Compile Include="Src\TObjectSupport.cs" />
+    <Compile Include="Src\TObjectSelectorRoot.cs" />
     <Compile Include="Schema\DslObjectTypes.cs" />
-    <Compile Include="Src\DdexProviderObjectFactory.cs" />
-    <Compile Include="Src\DdexSourceInformation.cs" />
-    <Compile Include="Src\DdexSourceVersionComparer.cs" />
-    <Compile Include="Src\DdexConnectionUIConnector.cs" />
-    <None Include="Src\DdexViewDocumentProvider.cs" />
-    <None Include="Src\DdexViewDatabaseCommandProvider.cs" />
-    <Compile Include="Src\DdexViewSupport.cs" />
+    <Compile Include="Src\TProviderObjectFactory.cs" />
+    <Compile Include="Src\TSourceInformation.cs" />
+    <Compile Include="Src\TSourceVersionComparer.cs" />
+    <Compile Include="Src\TConnectionUIConnector.cs" />
+    <None Include="Src\TViewDocumentProvider.cs" />
+    <None Include="Src\TViewDatabaseCommandProvider.cs" />
+    <Compile Include="Src\TViewSupport.cs" />
     <Compile Include="BlackbirdSqlDdexPackage.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Configuration\PackageData.cs" />

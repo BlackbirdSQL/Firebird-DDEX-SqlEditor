@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.EntityFrameworkCore.Firebird.Infrastructure.Internal;
 using FirebirdSql.EntityFrameworkCore.Firebird.Metadata;
@@ -69,7 +70,11 @@ public class FbMigrationsSqlGenerator : MigrationsSqlGenerator
 	}
 
 	protected override void Generate(RenameTableOperation operation, IModel model, MigrationCommandListBuilder builder)
-		=> throw new NotSupportedException("Renaming table is not supported by Firebird.");
+		{
+			NotSupportedException exbb = new("Renaming table is not supported by Firebird.");
+			Diag.Dug(exbb);
+			throw exbb;
+		}
 
 	protected override void Generate(DropTableOperation operation, IModel model, MigrationCommandListBuilder builder, bool terminate = true)
 		=> base.Generate(operation, model, builder, terminate);
@@ -230,7 +235,11 @@ public class FbMigrationsSqlGenerator : MigrationsSqlGenerator
 			TerminateStatement(builder);
 	}
 	protected override void Generate(RenameIndexOperation operation, IModel model, MigrationCommandListBuilder builder)
-		=> throw new NotSupportedException("Renaming index is not supported by Firebird.");
+		{
+			NotSupportedException exbb = new("Renaming index is not supported by Firebird.");
+			Diag.Dug(exbb);
+			throw exbb;
+		}
 
 
 	protected override void Generate(CreateSequenceOperation operation, IModel model, MigrationCommandListBuilder builder)
@@ -263,7 +272,11 @@ public class FbMigrationsSqlGenerator : MigrationsSqlGenerator
 	}
 
 	protected override void Generate(RenameSequenceOperation operation, IModel model, MigrationCommandListBuilder builder)
-		=> throw new NotSupportedException("Renaming sequence is not supported by Firebird.");
+		{
+			NotSupportedException exbb = new("Renaming sequence is not supported by Firebird.");
+			Diag.Dug(exbb);
+			throw exbb;
+		}
 
 	protected override void Generate(DropSequenceOperation operation, IModel model, MigrationCommandListBuilder builder)
 		=> base.Generate(operation, model, builder);
@@ -298,10 +311,18 @@ public class FbMigrationsSqlGenerator : MigrationsSqlGenerator
 
 
 	protected override void Generate(DropSchemaOperation operation, IModel model, MigrationCommandListBuilder builder)
-		=> throw new NotSupportedException("Schemas are not supported by Firebird.");
+		{
+			NotSupportedException exbb = new("Schemas are not supported by Firebird.");
+			Diag.Dug(exbb);
+			throw exbb;
+		}
 
 	protected override void Generate(EnsureSchemaOperation operation, IModel model, MigrationCommandListBuilder builder)
-		=> throw new NotSupportedException("Schemas are not supported by Firebird.");
+		{
+			NotSupportedException exbb = new("Schemas are not supported by Firebird.");
+			Diag.Dug(exbb);
+			throw exbb;
+		}
 
 
 	protected override void ColumnDefinition(string schema, string table, string name, ColumnOperation operation, IModel model, MigrationCommandListBuilder builder)

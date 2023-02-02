@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.Client.Native.Handles;
 using FirebirdSql.Data.Common;
 
@@ -107,11 +108,15 @@ internal sealed class FesDatabase : DatabaseBase
 
 	public override void CreateDatabaseWithTrustedAuth(DatabaseParameterBufferBase dpb, string database, byte[] cryptKey)
 	{
-		throw new NotSupportedException("Trusted Auth isn't supported on Firebird Embedded.");
+		NotSupportedException exbb = new("Trusted Auth isn't supported on Firebird Embedded.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 	public override ValueTask CreateDatabaseWithTrustedAuthAsync(DatabaseParameterBufferBase dpb, string database, byte[] cryptKey, CancellationToken cancellationToken = default)
 	{
-		throw new NotSupportedException("Trusted Auth isn't supported on Firebird Embedded.");
+		NotSupportedException exbb = new("Trusted Auth isn't supported on Firebird Embedded.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 
 	public override void DropDatabase()
@@ -215,11 +220,15 @@ internal sealed class FesDatabase : DatabaseBase
 
 	public override void AttachWithTrustedAuth(DatabaseParameterBufferBase dpb, string database, byte[] cryptKey)
 	{
-		throw new NotSupportedException("Trusted Auth isn't supported on Firebird Embedded.");
+		NotSupportedException exbb = new("Trusted Auth isn't supported on Firebird Embedded.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 	public override ValueTask AttachWithTrustedAuthAsync(DatabaseParameterBufferBase dpb, string database, byte[] cryptKey, CancellationToken cancellationToken = default)
 	{
-		throw new NotSupportedException("Trusted Auth isn't supported on Firebird Embedded.");
+		NotSupportedException exbb = new("Trusted Auth isn't supported on Firebird Embedded.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 
 	public override void Detach()

@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.Common;
 using FirebirdSql.Data.FirebirdClient;
 
@@ -61,6 +62,7 @@ public sealed class FbNRestore : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -91,6 +93,7 @@ public sealed class FbNRestore : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}

@@ -22,6 +22,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.FirebirdClient;
 
 namespace FirebirdSql.Data.Common;
@@ -272,35 +273,51 @@ internal sealed class ConnectionString
 			(string.IsNullOrEmpty(Charset))
 		   )
 		{
-			throw new ArgumentException("An invalid connection string argument has been supplied or a required connection string argument has not been supplied.");
+			ArgumentException exbb = new("An invalid connection string argument has been supplied or a required connection string argument has not been supplied.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 		if (Port <= 0 || Port > 65535)
 		{
-			throw new ArgumentException("Incorrect port.");
+			ArgumentException exbb = new("Incorrect port.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 		if (MinPoolSize > MaxPoolSize)
 		{
-			throw new ArgumentException("Incorrect pool size.");
+			ArgumentException exbb = new("Incorrect pool size.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 		if (Dialect < 1 || Dialect > 3)
 		{
-			throw new ArgumentException("Incorrect database dialect it should be 1, 2, or 3.");
+			ArgumentException exbb = new("Incorrect database dialect it should be 1, 2, or 3.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 		if (PacketSize < 512 || PacketSize > 32767)
 		{
-			throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "'Packet Size' value of {0} is not valid.{1}The value should be an integer >= 512 and <= 32767.", PacketSize, Environment.NewLine));
+			ArgumentException exbb = new(string.Format(CultureInfo.CurrentCulture, "'Packet Size' value of {0} is not valid.{1}The value should be an integer >= 512 and <= 32767.", PacketSize, Environment.NewLine));
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 		if (DbCachePages < 0)
 		{
-			throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "'Cache Pages' value of {0} is not valid.{1}The value should be an integer >= 0.", DbCachePages, Environment.NewLine));
+			ArgumentException exbb = new(string.Format(CultureInfo.CurrentCulture, "'Cache Pages' value of {0} is not valid.{1}The value should be an integer >= 0.", DbCachePages, Environment.NewLine));
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 		if (Pooling && NoDatabaseTriggers)
 		{
-			throw new ArgumentException("Cannot use Pooling and NoDatabaseTriggers together.");
+			ArgumentException exbb = new("Cannot use Pooling and NoDatabaseTriggers together.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 		if (ParallelWorkers < 0)
 		{
-			throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "'Parallel Workers' value of {0} is not valid.{1}The value should be an integer >= 0.", ParallelWorkers, Environment.NewLine));
+			ArgumentException exbb = new(string.Format(CultureInfo.CurrentCulture, "'Parallel Workers' value of {0} is not valid.{1}The value should be an integer >= 0.", ParallelWorkers, Environment.NewLine));
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 	}
 

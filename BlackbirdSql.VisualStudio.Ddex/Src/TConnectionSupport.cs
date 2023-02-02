@@ -30,13 +30,13 @@ using Microsoft.VisualStudio.Data.Services;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
-internal class DdexConnectionSupport : AdoDotNetConnectionSupport
+internal class TConnectionSupport : AdoDotNetConnectionSupport
 {
 
 
 	#region · Constructors ·
 
-	public DdexConnectionSupport() : base()
+	public TConnectionSupport() : base()
 	{
 		Diag.Trace();
 	}
@@ -47,32 +47,32 @@ internal class DdexConnectionSupport : AdoDotNetConnectionSupport
 
 	protected override object CreateService(IServiceContainer container, Type serviceType)
 	{
-		/* Uncomment this and change SupportedObjects._useFactoryOnly to true to debug implementations
+		/* Uncomment this and change PackageSupportedObjects._UseFactoryOnly to true to debug implementations
 		 * Don't forget to do the same for the ProviderObjectFactory if you do.
 		 * 
 		if (serviceType == typeof(IVsDataSourceInformation))
 		{
 			Diag.Trace();
-			return new DdexSourceInformation(Site);
+			return new TSourceInformation(Site);
 		}
 		else if (serviceType == typeof(IVsDataObjectSelector))
 		{
-			return new DdexObjectSelector(Site);
+			return new TObjectSelector(Site);
 		}
 		else if (serviceType == typeof(IVsDataObjectMemberComparer))
 		{
 			Diag.Trace();
-			return new DdexObjectMemberComparer(Site);
+			return new TObjectMemberComparer(Site);
 		}
 		else if (serviceType == typeof(IVsDataObjectIdentifierConverter))
 		{
 			Diag.Trace();
-			return new DdexObjectIdentifierConverter(Site);
+			return new TObjectIdentifierConverter(Site);
 		}
 		else if (serviceType == typeof(IVsDataMappedObjectConverter))
 		{
 			Diag.Trace();
-			return new DdexMappedObjectConverter(Site);
+			return new TMappedObjectConverter(Site);
 		}
 		*/
 

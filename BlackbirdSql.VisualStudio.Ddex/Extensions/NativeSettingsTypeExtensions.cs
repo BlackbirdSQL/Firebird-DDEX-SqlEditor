@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.IO;
+using BlackbirdSql.Common;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Extensions
 {
@@ -34,7 +35,12 @@ namespace BlackbirdSql.VisualStudio.Ddex.Extensions
 				NativeSettingsType.Binary => typeof(MemoryStream),
 				NativeSettingsType.UInt32 => typeof(uint),
 				NativeSettingsType.UInt64 => typeof(ulong),
-				_ => throw new ArgumentOutOfRangeException("nativeSettingsType", nativeSettingsType, null),
+				_ => ((Func<Type>)(() =>
+					{
+						ArgumentOutOfRangeException exbb = new("nativeSettingsType", nativeSettingsType, null);
+						Diag.Dug(exbb);
+						throw exbb;
+					}))(),
 			};
 		}
 	}

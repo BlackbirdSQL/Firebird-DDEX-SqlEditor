@@ -2334,7 +2334,9 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 		var isNiladicFunction = MetadataHelpers.TryGetValueForMetadataProperty<bool>(e.Function, "NiladicFunctionAttribute");
 		if (isNiladicFunction && e.Arguments.Count > 0)
 		{
-			throw new InvalidOperationException("Niladic functions cannot have parameters");
+			InvalidOperationException exbb = new("Niladic functions cannot have parameters");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 
 		if (!isNiladicFunction)
@@ -2563,7 +2565,9 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 
 	private static ISqlFragment HandleCanonicalFunctionBitwiseNot(SqlGenerator sqlgen, DbFunctionExpression e)
 	{
-		throw new NotSupportedException("BitwiseNot is not supported by Firebird.");
+		NotSupportedException exbb = new("BitwiseNot is not supported by Firebird.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 
 	private static ISqlFragment HandleCanonicalFunctionBitwiseOr(SqlGenerator sqlgen, DbFunctionExpression e)
@@ -2580,17 +2584,23 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	#region Date and Time Canonical Functions
 	private static ISqlFragment HandleCanonicalFunctionCurrentUtcDateTime(SqlGenerator sqlgen, DbFunctionExpression e)
 	{
-		throw new NotSupportedException("CurrentUtcDateTime is not supported by Firebird.");
+		NotSupportedException exbb = new("CurrentUtcDateTime is not supported by Firebird.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 
 	private static ISqlFragment HandleCanonicalFunctionCurrentDateTimeOffset(SqlGenerator sqlgen, DbFunctionExpression e)
 	{
-		throw new NotSupportedException("CurrentDateTimeOffset is not supported by Firebird.");
+		NotSupportedException exbb = new("CurrentDateTimeOffset is not supported by Firebird.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 
 	private static ISqlFragment HandleCanonicalFunctionGetTotalOffsetMinutes(SqlGenerator sqlgen, DbFunctionExpression e)
 	{
-		throw new NotSupportedException("GetTotalOffsetMinutes is not supported by Firebird.");
+		NotSupportedException exbb = new("GetTotalOffsetMinutes is not supported by Firebird.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 
 	private static ISqlFragment HandleCanonicalFunctionCurrentDateTime(SqlGenerator sqlgen, DbFunctionExpression e)
@@ -2716,7 +2726,9 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 
 	private static ISqlFragment HandleCanonicalFunctionCreateDateTimeOffset(SqlGenerator sqlgen, DbFunctionExpression e)
 	{
-		throw new NotSupportedException("CreateDateTimeOffset is not supported by Firebird.");
+		NotSupportedException exbb = new("CreateDateTimeOffset is not supported by Firebird.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 
 	/// <summary>

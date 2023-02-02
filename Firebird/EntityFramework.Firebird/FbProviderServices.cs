@@ -106,7 +106,9 @@ public class FbProviderServices : DbProviderServices
 				!(commandTree is DbUpdateCommandTree) &&
 				!(commandTree is DbDeleteCommandTree))
 			{
-				throw new InvalidOperationException("SqlGenParametersNotPermitted");
+				InvalidOperationException exbb = new("SqlGenParametersNotPermitted");
+				Diag.Dug(exbb);
+				throw exbb;
 			}
 
 			foreach (var parameter in parameters)
@@ -136,7 +138,9 @@ public class FbProviderServices : DbProviderServices
 		}
 		catch (Exception ex)
 		{
-			throw new InvalidOperationException("Could not retrieve storage version.", ex);
+			InvalidOperationException exbb = new("Could not retrieve storage version.", ex);
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 	}
 
@@ -145,7 +149,9 @@ public class FbProviderServices : DbProviderServices
 		Diag.Trace();
 		if (string.IsNullOrEmpty(versionHint))
 		{
-			throw new ArgumentException("Could not determine store version; a valid store connection or a version hint is required.");
+			ArgumentException exbb = new("Could not determine store version; a valid store connection or a version hint is required.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 		return new FbProviderManifest(versionHint);
 	}

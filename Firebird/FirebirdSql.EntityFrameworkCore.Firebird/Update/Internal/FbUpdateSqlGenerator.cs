@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BlackbirdSql.Common;
 using FirebirdSql.EntityFrameworkCore.Firebird.Storage.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -33,10 +34,18 @@ public class FbUpdateSqlGenerator : UpdateSqlGenerator, IFbUpdateSqlGenerator
 	{ }
 
 	protected override void AppendIdentityWhereCondition(StringBuilder commandStringBuilder, IColumnModification columnModification)
-		=> throw new InvalidOperationException();
+		{
+			InvalidOperationException exbb = new();
+			Diag.Dug(exbb);
+			throw exbb;
+		}
 
 	protected override void AppendRowsAffectedWhereCondition(StringBuilder commandStringBuilder, int expectedRowsAffected)
-		=> throw new InvalidOperationException();
+		{
+			InvalidOperationException exbb = new();
+			Diag.Dug(exbb);
+			throw exbb;
+		}
 
 	public override ResultSetMapping AppendInsertOperation(StringBuilder commandStringBuilder, IReadOnlyModificationCommand command, int commandPosition)
 	{

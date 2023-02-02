@@ -33,7 +33,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 
 
 
-public partial class DdexConnectionPromptDialog : DataConnectionPromptDialog
+public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 {
 
 
@@ -62,7 +62,7 @@ public partial class DdexConnectionPromptDialog : DataConnectionPromptDialog
 
 	#region · Constructors ·
 
-	public DdexConnectionPromptDialog()
+	public TConnectionPromptDialog()
 	{
 		Diag.Trace();
 

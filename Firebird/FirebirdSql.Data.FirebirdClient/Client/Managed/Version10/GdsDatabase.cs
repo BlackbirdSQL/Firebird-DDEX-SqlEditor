@@ -22,6 +22,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.Common;
 
 namespace FirebirdSql.Data.Client.Managed.Version10;
@@ -101,6 +102,7 @@ internal class GdsDatabase : DatabaseBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			SafelyDetach();
 			throw IscException.ForIOException(ex);
 		}
@@ -122,6 +124,7 @@ internal class GdsDatabase : DatabaseBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			await SafelyDetachAsync(cancellationToken).ConfigureAwait(false);
 			throw IscException.ForIOException(ex);
 		}
@@ -173,11 +176,15 @@ internal class GdsDatabase : DatabaseBase
 
 	public override void AttachWithTrustedAuth(DatabaseParameterBufferBase dpb, string database, byte[] cryptKey)
 	{
-		throw new NotSupportedException("Trusted Auth isn't supported on < FB2.1.");
+		NotSupportedException exbb = new("Trusted Auth isn't supported on < FB2.1.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 	public override ValueTask AttachWithTrustedAuthAsync(DatabaseParameterBufferBase dpb, string database, byte[] cryptKey, CancellationToken cancellationToken = default)
 	{
-		throw new NotSupportedException("Trusted Auth isn't supported on < FB2.1.");
+		NotSupportedException exbb = new("Trusted Auth isn't supported on < FB2.1.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 
 	public override void Detach()
@@ -208,6 +215,7 @@ internal class GdsDatabase : DatabaseBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			try
 			{
 				CloseConnection();
@@ -254,6 +262,7 @@ internal class GdsDatabase : DatabaseBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			try
 			{
 				await CloseConnectionAsync(cancellationToken).ConfigureAwait(false);
@@ -306,6 +315,7 @@ internal class GdsDatabase : DatabaseBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -319,6 +329,7 @@ internal class GdsDatabase : DatabaseBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -358,11 +369,15 @@ internal class GdsDatabase : DatabaseBase
 
 	public override void CreateDatabaseWithTrustedAuth(DatabaseParameterBufferBase dpb, string database, byte[] cryptKey)
 	{
-		throw new NotSupportedException("Trusted Auth isn't supported on < FB2.1.");
+		NotSupportedException exbb = new("Trusted Auth isn't supported on < FB2.1.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 	public override ValueTask CreateDatabaseWithTrustedAuthAsync(DatabaseParameterBufferBase dpb, string database, byte[] cryptKey, CancellationToken cancellationToken = default)
 	{
-		throw new NotSupportedException("Trusted Auth isn't supported on < FB2.1.");
+		NotSupportedException exbb = new("Trusted Auth isn't supported on < FB2.1.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 
 	public override void DropDatabase()
@@ -379,6 +394,7 @@ internal class GdsDatabase : DatabaseBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -396,6 +412,7 @@ internal class GdsDatabase : DatabaseBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -451,6 +468,7 @@ internal class GdsDatabase : DatabaseBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -501,6 +519,7 @@ internal class GdsDatabase : DatabaseBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -571,6 +590,7 @@ internal class GdsDatabase : DatabaseBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -606,6 +626,7 @@ internal class GdsDatabase : DatabaseBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -624,6 +645,7 @@ internal class GdsDatabase : DatabaseBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -641,6 +663,7 @@ internal class GdsDatabase : DatabaseBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -672,11 +695,15 @@ internal class GdsDatabase : DatabaseBase
 
 	public override void CancelOperation(short kind)
 	{
-		throw new NotSupportedException("Cancel Operation isn't supported on < FB2.5.");
+		NotSupportedException exbb = new("Cancel Operation isn't supported on < FB2.5.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 	public override ValueTask CancelOperationAsync(short kind, CancellationToken cancellationToken = default)
 	{
-		throw new NotSupportedException("Cancel Operation isn't supported on < FB2.5.");
+		NotSupportedException exbb = new("Cancel Operation isn't supported on < FB2.5.");
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 
 	#endregion
@@ -752,6 +779,7 @@ internal class GdsDatabase : DatabaseBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -765,6 +793,7 @@ internal class GdsDatabase : DatabaseBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -908,6 +937,7 @@ internal class GdsDatabase : DatabaseBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -936,6 +966,7 @@ internal class GdsDatabase : DatabaseBase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}

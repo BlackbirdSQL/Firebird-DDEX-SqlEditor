@@ -23,7 +23,7 @@ using System.Windows.Forms;
 
 namespace BlackbirdSql.VisualStudio.Ddex
 {
-    partial class DdexConnectionPromptDialog
+    partial class TConnectionPromptDialog
     {
         /// <summary> 
         /// Required designer variable.
@@ -336,7 +336,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			this.authenticationTypeLabel.TabIndex = 0;
 			this.authenticationTypeLabel.Text = "&Authentication";
 			// 
-			// DdexConnectionPromptDialog
+			// TConnectionPromptDialog
 			// 
 			this.AcceptButton = this.okButton;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -349,7 +349,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.MinimumSize = new System.Drawing.Size(318, 283);
-			this.Name = "DdexConnectionPromptDialog";
+			this.Name = "TConnectionPromptDialog";
 			this.Padding = new System.Windows.Forms.Padding(9);
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;

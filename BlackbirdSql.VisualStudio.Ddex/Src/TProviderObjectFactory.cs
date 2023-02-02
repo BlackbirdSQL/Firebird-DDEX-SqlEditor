@@ -38,11 +38,11 @@ public interface IProviderObjectFactory
 {
 }
 
-public sealed class DdexProviderObjectFactory : DataProviderObjectFactory, IProviderObjectFactory
+public sealed class TProviderObjectFactory : DataProviderObjectFactory, IProviderObjectFactory
 {
 	#region · Constructors ·
 
-	public DdexProviderObjectFactory() : base()
+	public TProviderObjectFactory() : base()
 	{
 		Diag.Trace();
 	}
@@ -53,59 +53,59 @@ public sealed class DdexProviderObjectFactory : DataProviderObjectFactory, IProv
 
 	public override object CreateObject(Type objType)
 	{
-		/* Uncomment this and change SupportedObjects._useFactoryOnly to true to debug implementations
-		 * Don't forget to do the same for DdexConnectionSupport if you do.
+		/* Uncomment this and change PackageSupportedObjects._UseFactoryOnly to true to debug implementations
+		 * Don't forget to do the same for TConnectionSupport if you do.
 		 * 
 		if (objType == typeof(IVsDataConnectionSupport))
 		{
 			Diag.Trace();
-			return new DdexConnectionSupport();
+			return new TConnectionSupport();
 		}
 		else if (objType == typeof(IVsDataConnectionUIControl))
 		{
 			Diag.Trace();
-			return new DdexConnectionUIControl();
+			return new TConnectionUIControl();
 		}
 		else if (objType == typeof(IVsDataConnectionPromptDialog))
 		{
 			Diag.Trace();
-			return new DdexConnectionPromptDialog();
+			return new TConnectionPromptDialog();
 		}
 		else if (objType == typeof(IVsDataConnectionProperties))
 		{
 			Diag.Trace();
-			return new DdexConnectionProperties();
+			return new TConnectionProperties();
 		}
 		else if (objType == typeof(IVsDataConnectionUIProperties))
 		{
 			Diag.Trace();
-			return new DdexConnectionUIProperties();
+			return new TConnectionUIProperties();
 		}
 		else if (objType == typeof(IVsDataObjectIdentifierResolver))
 		{
 			Diag.Trace();
-			return new DdexObjectIdentifierResolver((IVsDataConnection)Site);
+			return new TObjectIdentifierResolver((IVsDataConnection)Site);
 		}
 		else if (objType == typeof(IVsDataObjectSupport))
 		{
 			Diag.Trace();
-			return new DdexObjectSupport((IVsDataConnection)Site);
+			return new TObjectSupport((IVsDataConnection)Site);
 		}
 		else if (objType == typeof(IVsDataSourceInformation))
 		{
 			Diag.Trace();
-			return new DdexSourceInformation();
+			return new TSourceInformation();
 		}
 		else if (objType == typeof(IVsDataViewSupport))
 		{
 			Diag.Trace();
-			return new DataViewSupport("BlackbirdSql.VisualStudio.Ddex.DdexViewSupport", typeof(ProviderObjectFactory).Assembly);
-			// return new DdexViewSupport();
+			return new DataViewSupport("BlackbirdSql.VisualStudio.Ddex.TViewSupport", typeof(ProviderObjectFactory).Assembly);
+			// return new TViewSupport();
 		}
 		else if (objType == typeof(IVsDataConnectionEquivalencyComparer))
 		{
 			Diag.Trace();
-			return new DdexConnectionEquivalencyComparer();
+			return new TConnectionEquivalencyComparer();
 		}
 		*/
 

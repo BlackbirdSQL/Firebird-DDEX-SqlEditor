@@ -26,6 +26,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.Common;
 using FirebirdSql.Data.Types;
 
@@ -719,6 +720,7 @@ public sealed class FbDataReader : DbDataReader
 		}
 		catch (IscException ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -824,6 +826,7 @@ public sealed class FbDataReader : DbDataReader
 		}
 		catch (IscException ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -1022,7 +1025,11 @@ public sealed class FbDataReader : DbDataReader
 	private void CheckState()
 	{
 		if (IsClosed)
-			throw new InvalidOperationException("Invalid attempt of read when the reader is closed.");
+		{
+			InvalidOperationException exbb = new("Invalid attempt of read when the reader is closed.");
+			Diag.Dug(exbb);
+			throw exbb;
+		}
 	}
 
 	private void CheckIndex(int i)
@@ -1167,6 +1174,7 @@ public sealed class FbDataReader : DbDataReader
 		}
 		catch (IscException ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}

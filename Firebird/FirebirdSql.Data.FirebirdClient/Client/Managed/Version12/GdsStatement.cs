@@ -19,6 +19,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.Common;
 
 namespace FirebirdSql.Data.Client.Managed.Version12;
@@ -98,6 +99,7 @@ internal class GdsStatement : Version11.GdsStatement
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			State = StatementState.Error;
 			throw IscException.ForIOException(ex);
 		}
@@ -161,6 +163,7 @@ internal class GdsStatement : Version11.GdsStatement
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			State = StatementState.Error;
 			throw IscException.ForIOException(ex);
 		}

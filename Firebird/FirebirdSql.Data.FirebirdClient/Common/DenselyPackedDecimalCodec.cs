@@ -18,6 +18,7 @@
 using System;
 using System.Diagnostics;
 using System.Numerics;
+using BlackbirdSql.Common;
 using static FirebirdSql.Data.Common.BitHelpers;
 
 namespace FirebirdSql.Data.Common;
@@ -364,11 +365,15 @@ class DenselyPackedDecimalCodec
 	{
 		if (lsbIndex < 0 || lsbIndex >= decBytesLength)
 		{
-			throw new IndexOutOfRangeException($"{nameof(lsbIndex)} must be within array {nameof(decBytesLength)} with length of {decBytesLength}, was {lsbIndex}.");
+			IndexOutOfRangeException exbb = new($"{nameof(lsbIndex)} must be within array {nameof(decBytesLength)} with length of {decBytesLength}, was {lsbIndex}.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 		if ((lsbIndex + 1) * BitPerByte < BitsPerGroup * _digitGroups)
 		{
-			throw new ArgumentException($"Need at least {(BitsPerGroup * _digitGroups + 7) / BitPerByte} bytes for value, have {lsbIndex + 1} (lsbIndex = {lsbIndex})");
+			ArgumentException exbb = new($"Need at least {(BitsPerGroup * _digitGroups + 7) / BitPerByte} bytes for value, have {lsbIndex + 1} (lsbIndex = {lsbIndex})");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 	}
 

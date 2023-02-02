@@ -21,6 +21,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.Client.Managed.Srp;
 using FirebirdSql.Data.Client.Managed.Sspi;
 using FirebirdSql.Data.Common;
@@ -166,7 +167,9 @@ sealed class AuthBlock
 		}
 		else
 		{
-			throw new InvalidOperationException($"Unexpected response ({operation}).");
+			InvalidOperationException exbb = new($"Unexpected response ({operation}).");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 		return response;
 	}
@@ -190,7 +193,9 @@ sealed class AuthBlock
 		}
 		else
 		{
-			throw new InvalidOperationException($"Unexpected response ({operation}).");
+			InvalidOperationException exbb = new($"Unexpected response ({operation}).");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 		return response;
 	}
@@ -291,7 +296,9 @@ sealed class AuthBlock
 		}
 		else
 		{
-			throw new NotSupportedException($"Not supported plugin '{AcceptPluginName}'.");
+			NotSupportedException exbb = new($"Not supported plugin '{AcceptPluginName}'.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 	}
 
@@ -331,7 +338,12 @@ sealed class AuthBlock
 			WireCryptOption.Disabled => IscCodes.WIRE_CRYPT_DISABLED,
 			WireCryptOption.Enabled => IscCodes.WIRE_CRYPT_ENABLED,
 			WireCryptOption.Required => IscCodes.WIRE_CRYPT_REQUIRED,
-			_ => throw new ArgumentOutOfRangeException(nameof(wireCrypt), $"{nameof(wireCrypt)}={wireCrypt}"),
+			_ => ((Func<int>)(() =>
+				{
+					ArgumentOutOfRangeException exbb = new(nameof(wireCrypt), $"{nameof(wireCrypt)}={wireCrypt}");
+					Diag.Dug(exbb);
+					throw exbb;
+				}))(),
 		};
 	}
 

@@ -9,9 +9,9 @@ using BlackbirdSql.Common;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
-internal class DdexSourceVersionComparer : DataSourceVersionComparer, IComparer<string>
+internal class TSourceVersionComparer : DataSourceVersionComparer, IComparer<string>
 {
-	public DdexSourceVersionComparer()
+	public TSourceVersionComparer()
 	{
 		base.Comparer = this;
 	}

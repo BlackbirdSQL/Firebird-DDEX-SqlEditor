@@ -18,6 +18,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.Common;
 using FirebirdSql.Data.FirebirdClient;
 
@@ -51,6 +52,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -76,6 +78,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -102,6 +105,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -127,6 +131,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -153,6 +158,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -178,6 +184,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -215,6 +222,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -251,6 +259,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -289,6 +298,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -326,6 +336,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -352,6 +363,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -377,6 +389,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -403,6 +416,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -428,6 +442,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -454,6 +469,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -479,6 +495,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -512,6 +529,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -544,6 +562,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -577,6 +596,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -609,6 +629,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -635,6 +656,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -660,6 +682,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -686,6 +709,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -711,6 +735,7 @@ public sealed class FbConfiguration : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -723,7 +748,12 @@ public sealed class FbConfiguration : FbService
 			FbShutdownOnlineMode.Multi => IscCodes.isc_spb_prp_sm_multi,
 			FbShutdownOnlineMode.Single => IscCodes.isc_spb_prp_sm_single,
 			FbShutdownOnlineMode.Full => IscCodes.isc_spb_prp_sm_full,
-			_ => throw new ArgumentOutOfRangeException(nameof(mode)),
+			_ => ((Func<byte>)(() =>
+				{
+					ArgumentOutOfRangeException exbb = new(nameof(mode));
+					Diag.Dug(exbb);
+					throw exbb;
+				}))(),
 		};
 	}
 }

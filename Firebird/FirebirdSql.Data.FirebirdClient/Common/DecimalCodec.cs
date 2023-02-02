@@ -17,6 +17,7 @@
 
 using System;
 using System.Diagnostics;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.Types;
 using static FirebirdSql.Data.Common.BitHelpers;
 
@@ -57,7 +58,9 @@ class DecimalCodec
 		{
 			if (decBytes.Length != FormatByteLength)
 			{
-				throw new ArgumentException(nameof(decBytes), $"{nameof(decBytes)} argument must be {FormatByteLength} bytes.");
+				ArgumentException exbb = new(nameof(decBytes), $"{nameof(decBytes)} argument must be {FormatByteLength} bytes.");
+				Diag.Dug(exbb);
+				throw exbb;
 			}
 		}
 
@@ -240,11 +243,21 @@ class DecimalCodec
 	{
 		return decimalType switch
 		{
-			DecimalType.Finite => throw new InvalidOperationException($"{nameof(DecimalType)} {nameof(DecimalType.Finite)} has no special bits."),
 			DecimalType.Infinity => Infinity0,
 			DecimalType.NaN => NaNQuiet,
 			DecimalType.SignalingNaN => NaNSignal,
-			_ => throw new ArgumentOutOfRangeException(),
+			DecimalType.Finite => ((Func<byte>)(() =>
+			{
+				InvalidOperationException exbb = new($"{nameof(DecimalType)} {nameof(DecimalType.Finite)} has no special bits.");
+				Diag.Dug(exbb);
+				throw exbb;
+			}))(),
+			_ => ((Func<byte>)(() =>
+				{
+					ArgumentOutOfRangeException exbb = new();
+					Diag.Dug(exbb);
+					throw exbb;
+				}))(),
 		};
 	}
 }

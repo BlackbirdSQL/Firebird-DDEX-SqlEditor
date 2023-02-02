@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -122,7 +123,9 @@ public class FbTypeMappingSource : RelationalTypeMappingSource
 		{
 			if (property == null)
 			{
-				throw new ArgumentException($"Data type '{relationalMapping.StoreType}' is not supported in this form. Either specify the length explicitly in the type name or remove the data type and use APIs such as HasMaxLength.");
+				ArgumentException exbb = new($"Data type '{relationalMapping.StoreType}' is not supported in this form. Either specify the length explicitly in the type name or remove the data type and use APIs such as HasMaxLength.");
+				Diag.Dug(exbb);
+				throw exbb;
 			}
 
 			throw new ArgumentException($"Data type '{relationalMapping.StoreType}' for property '{property}' is not supported in this form. Either specify the length explicitly in the type name or remove the data type and use APIs such as HasMaxLength.");

@@ -16,6 +16,7 @@
 //$Authors = Jiri Cincura (jiri@cincura.net)
 
 using System;
+using BlackbirdSql.Common;
 
 namespace FirebirdSql.Data.Logging;
 
@@ -31,7 +32,11 @@ public static class FbLogManager
 		set
 		{
 			if (_providerRetrieved)
-				throw new InvalidOperationException("The logging provider must be set before any action is taken");
+			{
+				InvalidOperationException exbb = new("The logging provider must be set before any action is taken");
+				Diag.Dug(exbb);
+				throw exbb;
+			}
 
 			_provider = value ?? throw new ArgumentNullException(nameof(value));
 		}

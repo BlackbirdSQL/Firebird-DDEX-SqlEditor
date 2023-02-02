@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.Client.Managed.Sspi;
 using FirebirdSql.Data.Common;
 
@@ -68,6 +69,7 @@ internal class GdsDatabase : Version10.GdsDatabase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			SafelyDetach();
 			throw IscException.ForIOException(ex);
 		}
@@ -97,6 +99,7 @@ internal class GdsDatabase : Version10.GdsDatabase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			await SafelyDetachAsync(cancellationToken).ConfigureAwait(false);
 			throw IscException.ForIOException(ex);
 		}
@@ -177,6 +180,7 @@ internal class GdsDatabase : Version10.GdsDatabase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}
@@ -189,6 +193,7 @@ internal class GdsDatabase : Version10.GdsDatabase
 		}
 		catch (IOException ex)
 		{
+			Diag.Dug(ex);
 			throw IscException.ForIOException(ex);
 		}
 	}

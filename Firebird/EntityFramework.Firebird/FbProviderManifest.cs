@@ -121,13 +121,17 @@ public class FbProviderManifest : DbXmlEnabledProviderManifest
 		// Diag.Trace();
 		if (storeType == null)
 		{
-			throw new ArgumentNullException("storeType");
+			ArgumentNullException exbb = new("storeType");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 
 		var storeTypeName = storeType.EdmType.Name.ToLowerInvariant();
 		if (!StoreTypeNameToEdmPrimitiveType.ContainsKey(storeTypeName))
 		{
-			throw new ArgumentException(string.Format("The underlying provider does not support the type '{0}'.", storeTypeName));
+			ArgumentException exbb = new(string.Format("The underlying provider does not support the type '{0}'.", storeTypeName));
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 
 		var edmPrimitiveType = base.StoreTypeNameToEdmPrimitiveType[storeTypeName];
@@ -238,13 +242,17 @@ public class FbProviderManifest : DbXmlEnabledProviderManifest
 		Diag.Trace();
 		if (edmType == null)
 		{
-			throw new ArgumentNullException("edmType");
+			ArgumentNullException exbb = new("edmType");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 		Debug.Assert(edmType.EdmType.BuiltInTypeKind == BuiltInTypeKind.PrimitiveType);
 
 		if (!(edmType.EdmType is PrimitiveType primitiveType))
 		{
-			throw new ArgumentException(string.Format("The underlying provider does not support the type '{0}'.", edmType));
+			ArgumentException exbb = new(string.Format("The underlying provider does not support the type '{0}'.", edmType));
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 
 		var facets = edmType.Facets;

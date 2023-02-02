@@ -23,6 +23,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.Common;
 using FirebirdSql.Data.FirebirdClient;
 
@@ -69,17 +70,23 @@ internal sealed class FbSchemaFactory
 
 		if (collection.Length != 1)
 		{
-			throw new NotSupportedException("Unsupported collection name.");
+			NotSupportedException exbb = new("Unsupported collection name.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 
 		if (restrictions != null && restrictions.Length > (int)collection[0]["NumberOfRestrictions"])
 		{
-			throw new InvalidOperationException("The number of specified restrictions is not valid.");
+			InvalidOperationException exbb = new("The number of specified restrictions is not valid.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 
 		if (ds.Tables[DbMetaDataCollectionNames.Restrictions].Select(filter).Length != (int)collection[0]["NumberOfRestrictions"])
 		{
-			throw new InvalidOperationException("Incorrect restriction definition.");
+			InvalidOperationException exbb = new("Incorrect restriction definition.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 
 		switch (collection[0]["PopulationMechanism"].ToString())
@@ -121,17 +128,23 @@ internal sealed class FbSchemaFactory
 
 		if (collection.Length != 1)
 		{
-			throw new NotSupportedException("Unsupported collection name.");
+			NotSupportedException exbb = new("Unsupported collection name.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 
 		if (restrictions != null && restrictions.Length > (int)collection[0]["NumberOfRestrictions"])
 		{
-			throw new InvalidOperationException("The number of specified restrictions is not valid.");
+			InvalidOperationException exbb = new("The number of specified restrictions is not valid.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 
 		if (ds.Tables[DbMetaDataCollectionNames.Restrictions].Select(filter).Length != (int)collection[0]["NumberOfRestrictions"])
 		{
-			throw new InvalidOperationException("Incorrect restriction definition.");
+			InvalidOperationException exbb = new("Incorrect restriction definition.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 
 		switch (collection[0]["PopulationMechanism"].ToString())
@@ -186,7 +199,12 @@ internal sealed class FbSchemaFactory
 			"VIEWCOLUMNS" => new FbViewColumns(),
 			"VIEWS" => new FbViews(),
 			"VIEWPRIVILEGES" => new FbViewPrivileges(),
-			_ => throw new NotSupportedException("The specified metadata collection is not supported."),
+			_ => ((Func<FbSchema>)(() =>
+				{
+					NotSupportedException exbb = new("The specified metadata collection is not supported.");
+					Diag.Dug(exbb);
+					throw exbb;
+				}))(),
 		};
 		return returnSchema.GetSchema(connection, collectionName, restrictions);
 	}
@@ -222,7 +240,12 @@ internal sealed class FbSchemaFactory
 			"VIEWCOLUMNS" => new FbViewColumns(),
 			"VIEWS" => new FbViews(),
 			"VIEWPRIVILEGES" => new FbViewPrivileges(),
-			_ => throw new NotSupportedException("The specified metadata collection is not supported."),
+			_ => ((Func<FbSchema>)(() =>
+				{
+					NotSupportedException exbb = new("The specified metadata collection is not supported.");
+					Diag.Dug(exbb);
+					throw exbb;
+				}))(),
 		};
 		return returnSchema.GetSchemaAsync(connection, collectionName, restrictions, cancellationToken);
 	}

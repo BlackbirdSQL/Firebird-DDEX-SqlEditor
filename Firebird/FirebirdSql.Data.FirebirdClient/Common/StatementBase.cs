@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Common;
 
 namespace FirebirdSql.Data.Common;
 
@@ -464,7 +465,9 @@ internal abstract class StatementBase
 	{
 		if (State == StatementState.Deallocated)
 		{
-			throw new InvalidOperationException("Statement is not correctly created.");
+			InvalidOperationException exbb = new("Statement is not correctly created.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 	}
 

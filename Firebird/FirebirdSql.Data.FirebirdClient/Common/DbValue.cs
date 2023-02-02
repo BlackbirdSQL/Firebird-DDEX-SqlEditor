@@ -20,6 +20,7 @@ using System.Globalization;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.Types;
 
 namespace FirebirdSql.Data.Common;
@@ -234,7 +235,12 @@ internal sealed class DbValue
 		{
 			Guid guid => guid,
 			byte[] bytes => TypeDecoder.DecodeGuid(bytes),
-			_ => throw new InvalidOperationException($"Incorrect {nameof(Guid)} value."),
+			_ => ((Func<Guid>)(() =>
+				{
+					InvalidOperationException exbb = new($"Incorrect {nameof(Guid)} value.");
+					Diag.Dug(exbb);
+					throw exbb;
+				}))(),
 		};
 	}
 

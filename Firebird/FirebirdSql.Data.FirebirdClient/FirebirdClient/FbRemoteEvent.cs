@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.Common;
 
 namespace FirebirdSql.Data.FirebirdClient;
@@ -88,6 +89,7 @@ public sealed class FbRemoteEvent : IDisposable
 		}
 		catch (IscException ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -102,6 +104,7 @@ public sealed class FbRemoteEvent : IDisposable
 		}
 		catch (IscException ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -114,6 +117,7 @@ public sealed class FbRemoteEvent : IDisposable
 		}
 		catch (IscException ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -125,6 +129,7 @@ public sealed class FbRemoteEvent : IDisposable
 		}
 		catch (IscException ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}

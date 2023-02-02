@@ -22,6 +22,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.Common;
 
 namespace FirebirdSql.Data.FirebirdClient;
@@ -143,7 +144,11 @@ sealed class FbConnectionPoolManager : IDisposable
 		void CheckDisposedImpl()
 		{
 			if (_disposed)
-				throw new ObjectDisposedException(nameof(Pool));
+			{
+				ObjectDisposedException exbb = new(nameof(Pool));
+				Diag.Dug(exbb);
+				throw exbb;
+			}
 		}
 
 		FbConnectionInternal GetOrCreateConnectionImpl(out bool createdNew)

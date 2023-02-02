@@ -19,6 +19,7 @@ using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.Common;
 using FirebirdSql.Data.FirebirdClient;
 
@@ -71,6 +72,7 @@ public sealed class FbNBackup : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}
@@ -100,6 +102,7 @@ public sealed class FbNBackup : FbService
 		}
 		catch (Exception ex)
 		{
+			Diag.Dug(ex);
 			throw FbException.Create(ex);
 		}
 	}

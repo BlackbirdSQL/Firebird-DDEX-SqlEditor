@@ -19,6 +19,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using BlackbirdSql.Common;
 
 namespace FirebirdSql.Data.Client.Managed.Sspi;
 
@@ -444,7 +445,11 @@ internal sealed class SspiHelper : IDisposable
 	private void EnsureDisposed()
 	{
 		if (_disposed)
-			throw new ObjectDisposedException(nameof(SspiHelper));
+		{
+			ObjectDisposedException exbb = new(nameof(SspiHelper));
+			Diag.Dug(exbb);
+			throw exbb;
+		}
 	}
 
 	#endregion

@@ -31,14 +31,14 @@ using BlackbirdSql.Common;
 namespace BlackbirdSql.VisualStudio.Ddex;
 
 
-public class DdexMappedObjectConverter : AdoDotNetMappedObjectConverter
+public class TMappedObjectConverter : AdoDotNetMappedObjectConverter
 {
 
-	public DdexMappedObjectConverter() : base()
+	public TMappedObjectConverter() : base()
 	{
 		Diag.Trace();
 	}
-	public DdexMappedObjectConverter(IVsDataConnection connection) : base(connection)
+	public TMappedObjectConverter(IVsDataConnection connection) : base(connection)
 	{
 		Diag.Trace();
 	}

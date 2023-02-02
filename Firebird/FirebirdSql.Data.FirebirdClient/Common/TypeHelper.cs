@@ -17,6 +17,7 @@
 
 using System;
 using System.Data;
+using BlackbirdSql.Common;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Types;
 
@@ -487,7 +488,9 @@ internal static class TypeHelper
 #endif
 		else
 		{
-			throw new ArgumentException($"Unknown type: {type}.");
+			ArgumentException exbb = new($"Unknown type: {type}.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 	}
 
@@ -799,7 +802,9 @@ internal static class TypeHelper
 	{
 		if (!TimeZoneMapping.TryGetById(tzId, out var tz))
 		{
-			throw new ArgumentException("Unknown time zone ID.");
+			ArgumentException exbb = new("Unknown time zone ID.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 		return new FbZonedDateTime(dateTime, tz, offset != null ? TimeSpan.FromMinutes((short)offset) : (TimeSpan?)null);
 	}
@@ -808,7 +813,9 @@ internal static class TypeHelper
 	{
 		if (!TimeZoneMapping.TryGetById(tzId, out var tz))
 		{
-			throw new ArgumentException("Unknown time zone ID.");
+			ArgumentException exbb = new("Unknown time zone ID.");
+			Diag.Dug(exbb);
+			throw exbb;
 		}
 		return new FbZonedTime(time, tz, offset != null ? TimeSpan.FromMinutes((short)offset) : (TimeSpan?)null);
 	}

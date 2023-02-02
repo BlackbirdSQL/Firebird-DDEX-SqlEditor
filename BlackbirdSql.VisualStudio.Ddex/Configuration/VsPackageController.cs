@@ -254,7 +254,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		// Add ReferencesEvents event handling to C# and VB projects
 		/// AddReferenceAddedEventHandler(_Dte);
 
-		Diag.Trace("Package Controller is ready");
+		// Diag.Trace("Package Controller is ready");
 
 	}
 
@@ -436,17 +436,17 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			{
 				if (project.ProjectItems != null && project.ProjectItems.Count > 0)
 				{
-					Diag.Trace("Recursing SolutionFolder: " + project.Name);
+					// Diag.Trace("Recursing SolutionFolder: " + project.Name);
 					RecursiveValidateProject(project.ProjectItems);
 				}
 				else
 				{
-					Diag.Trace("No items in SolutionFolder: " + project.Name);
+					// Diag.Trace("No items in SolutionFolder: " + project.Name);
 				}
 			}
 			else
 			{
-				Diag.Trace("Recursive validate project: " + project.Name);
+				// Diag.Trace("Recursive validate project: " + project.Name);
 
 				bool failed = false;
 
@@ -468,7 +468,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 							{
 								if (projectObject.References.Find(SystemData.EFProvider) != null)
 								{
-									Diag.Trace(project.Name + " FOUND REFERENCE:" + SystemData.EFProvider);
+									// Diag.Trace(project.Name + " FOUND REFERENCE:" + SystemData.EFProvider);
 
 									isConfiguredEFStatus = true;
 									isConfiguredDbProviderStatus = true;

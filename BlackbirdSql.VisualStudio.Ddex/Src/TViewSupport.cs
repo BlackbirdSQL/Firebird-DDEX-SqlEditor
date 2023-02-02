@@ -31,15 +31,15 @@ using BlackbirdSql.Common;
 namespace BlackbirdSql.VisualStudio.Ddex;
 
 
-internal class DdexViewSupport : DataViewSupport
+internal class TViewSupport : DataViewSupport
 {
 	#region · Constructors ·
 
-	public DdexViewSupport(string fileName, string path) : base(fileName, path)
+	public TViewSupport(string fileName, string path) : base(fileName, path)
 	{
 		Diag.Trace();
 	}
-	public DdexViewSupport(string resourceName, Assembly assembly) : base(resourceName, assembly)
+	public TViewSupport(string resourceName, Assembly assembly) : base(resourceName, assembly)
 	{
 		Diag.Trace();
 	}
