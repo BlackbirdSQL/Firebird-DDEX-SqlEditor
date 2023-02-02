@@ -13,7 +13,7 @@ The original DDEX 1.0 data tool has been re-implemented as `BlackbirdSql.VisualS
 
 
 ## Known issues
-* On startup of the Visual Studio IDE, and only on startup, an attempt is made to access a data object before the ddex provider has been given the IDE shell context an exception is raised by Visual Studio and the provider is flagged as unavailable for the duration of the session. As it stands Visual Studio will have to be restarted.</br>
+* If, on startup of the Visual Studio IDE, and only on startup, an attempt is made to access a data object before the BlackbirdSql ddex provider has been given the IDE shell context, Visual Studio will flag the provider as unavailable for the duration of the session. As it stands Visual Studio will have to be restarted.</br>
 This is true for both the SE and any other data objects in a solution. In particular this issue can consistently be replicated in Server Explorer if a connection node for Firebird is open and the SE is pinned on startup of the IDE within a solution context.</br> 
 Unless we're missing a trick here this seems to be unavoidable. Loading is asynchronous, so the provider needs time to register and load.</br>
 We want to be as unobtrusive as possible so load delays are just a reality if we go the asynchronous route. (*Loading is initiated at the earliest possible, which is as soon as the IDE shell context is available.*)
