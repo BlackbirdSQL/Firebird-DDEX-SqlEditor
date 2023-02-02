@@ -45,8 +45,8 @@ using BlackbirdSql.Common;
 using BlackbirdSql.VisualStudio.Ddex.Configuration;
 
 using Task = System.Threading.Tasks.Task;
-using System.Data.Common.BlackbirdSql;
 using FirebirdSql.Data.FirebirdClient;
+using BlackbirdSql.Common.Extensions;
 
 namespace BlackbirdSql.VisualStudio.Ddex
 {

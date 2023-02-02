@@ -1,47 +1,33 @@
-﻿
-using System;
-using System.IO;
-using BlackbirdSql.Common;
+﻿using System;
 
-namespace BlackbirdSql.VisualStudio.Ddex.Extensions
+namespace BlackbirdSql.Common.Extensions
 {
 	//
 	// Summary:
-	//     Extension methods for Community.VisualStudio.Toolkit.NativeSettingsType.
-	public static class NativeSettingsTypeExtensions
+	//     Apply this attribute on an individual get/set property in your Community.VisualStudio.Toolkit.BaseOptionModel`1
+	//     derived class to use a specific CollectionName to store a given property in the
+	//     Microsoft.VisualStudio.Settings.SettingsStore rather than using the Community.VisualStudio.Toolkit.BaseOptionModel`1.CollectionName.
+	[AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
+	public class OverrideCollectionNameAttribute : Attribute
 	{
 		//
 		// Summary:
-		//     Get the .NET System.Type based on the method signature for the Microsoft.VisualStudio.Settings.SettingsStore
-		//     necessary to retrieve and store data.
+		//     This value is used as the collectionPath parameter when reading and writing using
+		//     the Microsoft.VisualStudio.Settings.SettingsStore.
+		public string CollectionName { get; }
+
+		//
+		// Summary:
+		//     Specifies the CollectionName in the Microsoft.VisualStudio.Settings.SettingsStore
+		//     where this setting is stored rather than using the default.
 		//
 		// Parameters:
-		//   nativeSettingsType:
-		//     The nativeSettingsType to act on.
-		//
-		// Returns:
-		//     The .NET System.Type. Not Null.
-		//
-		// Exceptions:
-		//   T:System.ArgumentOutOfRangeException:
-		//     Thrown when one or more arguments are outside the required range.
-		public static Type GetDotNetType(this NativeSettingsType nativeSettingsType)
+		//   collectionName:
+		//     This value is used as the collectionPath parameter when reading and writing using
+		//     the Microsoft.VisualStudio.Settings.SettingsStore.
+		public OverrideCollectionNameAttribute(string collectionName)
 		{
-			return nativeSettingsType switch
-			{
-				NativeSettingsType.Int32 => typeof(int),
-				NativeSettingsType.Int64 => typeof(long),
-				NativeSettingsType.String => typeof(string),
-				NativeSettingsType.Binary => typeof(MemoryStream),
-				NativeSettingsType.UInt32 => typeof(uint),
-				NativeSettingsType.UInt64 => typeof(ulong),
-				_ => ((Func<Type>)(() =>
-					{
-						ArgumentOutOfRangeException exbb = new("nativeSettingsType", nativeSettingsType, null);
-						Diag.Dug(exbb);
-						throw exbb;
-					}))(),
-			};
+			CollectionName = collectionName;
 		}
 	}
 }

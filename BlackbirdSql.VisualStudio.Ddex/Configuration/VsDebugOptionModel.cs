@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.InteropServices;
 
-using BlackbirdSql.VisualStudio.Ddex.Extensions;
+using BlackbirdSql.Common.Extensions;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Configuration

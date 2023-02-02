@@ -1,5 +1,5 @@
 ﻿
-namespace BlackbirdSql.VisualStudio.Ddex.Extensions
+namespace BlackbirdSql.Common.Extensions
 {
 	//
 	// Summary:

@@ -1,10 +1,10 @@
-﻿using System.Configuration;
+﻿using System;
+using System.Configuration;
+using System.Data;
+using System.Data.Common;
 using System.Reflection;
-using BlackbirdSql.Common;
 
-
-
-namespace System.Data.Common.BlackbirdSql;
+namespace BlackbirdSql.Common.Extensions;
 
 /// <summary>
 /// Static class for adding a FirebirdClient as a DotNet system DBProviderFactory into assembly cache on the fly
@@ -61,7 +61,7 @@ public static class DbProviderFactoriesEx
 		}
 
 		Diag.Trace(
-			String.Format("Adding FirebirdSql in DbProviderFactories section (Columns:{0}) [{1}:{2}:{3}:{4}]",
+			string.Format("Adding FirebirdSql in DbProviderFactories section (Columns:{0}) [{1}:{2}:{3}:{4}]",
 			table.Columns.Count, invariantName, factoryName, factoryDescription, factoryClass.AssemblyQualifiedName));
 
 		table.Rows.Add(factoryName, factoryDescription, invariantName, factoryClass.AssemblyQualifiedName);
@@ -117,7 +117,7 @@ public static class DbProviderFactoriesEx
 		DataTable table;
 		if (num == -1)
 		{
-			Diag.Trace(String.Format("Adding \"{0}\" section to assembly cache", "DbProviderFactories"));
+			Diag.Trace(string.Format("Adding \"{0}\" section to assembly cache", "DbProviderFactories"));
 			table = dataSet.Tables.Add("DbProviderFactories");
 		}
 		else
@@ -126,7 +126,7 @@ public static class DbProviderFactoriesEx
 			if ((row = table.Rows.Find(invariantName)) != null)
 			{
 				Diag.Trace(
-					String.Format("'DbProviderFactories' section (Columns:{0}) aready contains [{1}:{2}:{3}:{4}] as [{5}:{6}:{7}:{8}]",
+					string.Format("'DbProviderFactories' section (Columns:{0}) aready contains [{1}:{2}:{3}:{4}] as [{5}:{6}:{7}:{8}]",
 					table.Columns.Count, invariantName, factoryName, factoryDescription, factoryClass.AssemblyQualifiedName,
 					row[2].ToString(), row[0].ToString(), row[1].ToString(), row[3].ToString()));
 

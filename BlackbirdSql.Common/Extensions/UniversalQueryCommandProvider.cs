@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.Data.Services;
  * We're missing a trick on instantiating the COM object.
 */
 
-namespace BlackbirdSql.VisualStudio.Ddex.Extensions
+namespace BlackbirdSql.Common.Extensions
 {
 	[Guid(DataToolsCommands.UniversalQueryCommandProviderGuid)]
 	internal class UniversalQueryCommandProvider : DataViewCommandProvider

@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
-namespace BlackbirdSql.VisualStudio.Ddex.Extensions
+namespace BlackbirdSql.Common.Extensions
 {
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "<Pending>")]
 	internal abstract class ToolsDocument : IVsPersistDocData2, IVsPersistDocData, IVsFileBackup

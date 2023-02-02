@@ -1,58 +1,47 @@
-﻿#region Assembly Community.VisualStudio.Toolkit, Version=17.0.430.0, Culture=neutral, PublicKeyToken=79441d341a79572c
-// C:\Users\GregChristos\.nuget\packages\community.visualstudio.toolkit.17\17.0.430\lib\net48\Community.VisualStudio.Toolkit.dll
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
-
+﻿
 using System;
+using System.IO;
+using BlackbirdSql.Common;
 
-namespace BlackbirdSql.VisualStudio.Ddex.Extensions
+namespace BlackbirdSql.Common.Extensions
 {
 	//
 	// Summary:
-	//     Apply this attribute on a get/set property in the Community.VisualStudio.Toolkit.BaseOptionModel`1
-	//     class to specify the type and mechanism used to store/retrieve the value of this
-	//     property in the Microsoft.VisualStudio.Settings.SettingsStore. If not specified,
-	//     the default mechanism is used is based on the property type.
-	[AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
-	public class OverrideDataTypeAttribute : Attribute
+	//     Extension methods for Community.VisualStudio.Toolkit.NativeSettingsType.
+	public static class NativeSettingsTypeExtensions
 	{
 		//
 		// Summary:
-		//     Specifies the type and method used to store and retrieve the value of the attributed
-		//     property in the Microsoft.VisualStudio.Settings.SettingsStore.
-		public SettingDataType SettingDataType { get; }
-
-		//
-		// Summary:
-		//     If true, and the type has a System.ComponentModel.TypeConverterAttribute that
-		//     allows for conversion to Community.VisualStudio.Toolkit.OverrideDataTypeAttribute.SettingDataType,
-		//     this will be used to convert and store the property value. If the Community.VisualStudio.Toolkit.OverrideDataTypeAttribute.SettingDataType
-		//     is Legacy or Serialized this has no effect. For other Community.VisualStudio.Toolkit.OverrideDataTypeAttribute.SettingDataType,
-		//     false will use the default conversion mechanism of System.Convert.ChangeType(System.Object,System.Type,System.IFormatProvider),
-		//     using System.Globalization.CultureInfo.InvariantCulture.
-		public bool UseTypeConverter { get; }
-
-		//
-		// Summary:
-		//     Alters the default type and mechanism used to store/retrieve the value of this
-		//     property in the Microsoft.VisualStudio.Settings.SettingsStore.
+		//     Get the .NET System.Type based on the method signature for the Microsoft.VisualStudio.Settings.SettingsStore
+		//     necessary to retrieve and store data.
 		//
 		// Parameters:
-		//   settingDataType:
-		//     Specifies the type and/or method used to store and retrieve the value of the
-		//     attributed property in the Microsoft.VisualStudio.Settings.SettingsStore.
+		//   nativeSettingsType:
+		//     The nativeSettingsType to act on.
 		//
-		//   useTypeConverter:
-		//     (Optional, default false) If true, and the type has a System.ComponentModel.TypeConverterAttribute
-		//     that allows for conversion to settingDataType, this will be used to convert and
-		//     store the property value. If the settingDataType is Legacy or Serialized this
-		//     has no effect. For other Community.VisualStudio.Toolkit.OverrideDataTypeAttribute.SettingDataType
-		//     values, false will use the default conversion mechanism of System.Convert.ChangeType(System.Object,System.Type,System.IFormatProvider),
-		//     using System.Globalization.CultureInfo.InvariantCulture.
-		public OverrideDataTypeAttribute(SettingDataType settingDataType, bool useTypeConverter = false)
+		// Returns:
+		//     The .NET System.Type. Not Null.
+		//
+		// Exceptions:
+		//   T:System.ArgumentOutOfRangeException:
+		//     Thrown when one or more arguments are outside the required range.
+		public static Type GetDotNetType(this NativeSettingsType nativeSettingsType)
 		{
-			SettingDataType = settingDataType;
-			UseTypeConverter = useTypeConverter;
+			return nativeSettingsType switch
+			{
+				NativeSettingsType.Int32 => typeof(int),
+				NativeSettingsType.Int64 => typeof(long),
+				NativeSettingsType.String => typeof(string),
+				NativeSettingsType.Binary => typeof(MemoryStream),
+				NativeSettingsType.UInt32 => typeof(uint),
+				NativeSettingsType.UInt64 => typeof(ulong),
+				_ => ((Func<Type>)(() =>
+					{
+						ArgumentOutOfRangeException exbb = new("nativeSettingsType", nativeSettingsType, null);
+						Diag.Dug(exbb);
+						throw exbb;
+					}))(),
+			};
 		}
 	}
 }

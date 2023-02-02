@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Common;
-using BlackbirdSql.VisualStudio.Ddex.Extensions;
+using BlackbirdSql.Common.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Schema;
 
 

@@ -1,35 +1,58 @@
-﻿using System;
+﻿#region Assembly Community.VisualStudio.Toolkit, Version=17.0.430.0, Culture=neutral, PublicKeyToken=79441d341a79572c
+// C:\Users\GregChristos\.nuget\packages\community.visualstudio.toolkit.17\17.0.430\lib\net48\Community.VisualStudio.Toolkit.dll
+// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
+#endregion
 
-namespace BlackbirdSql.VisualStudio.Ddex.Extensions
+using System;
+
+namespace BlackbirdSql.Common.Extensions
 {
 	//
 	// Summary:
-	//     Apply this attribute on an individual public get/set property in your Community.VisualStudio.Toolkit.BaseOptionModel`1
-	//     derived class to use a specific propertyName to store a given property in the
-	//     Microsoft.VisualStudio.Settings.SettingsStore rather than using the name of the
-	//     property.
+	//     Apply this attribute on a get/set property in the Community.VisualStudio.Toolkit.BaseOptionModel`1
+	//     class to specify the type and mechanism used to store/retrieve the value of this
+	//     property in the Microsoft.VisualStudio.Settings.SettingsStore. If not specified,
+	//     the default mechanism is used is based on the property type.
 	[AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
-	public class OverridePropertyNameAttribute : Attribute
+	public class OverrideDataTypeAttribute : Attribute
 	{
 		//
 		// Summary:
-		//     This value is used as the propertyName parameter when reading and writing to
-		//     the Microsoft.VisualStudio.Settings.SettingsStore.
-		public string PropertyName { get; }
+		//     Specifies the type and method used to store and retrieve the value of the attributed
+		//     property in the Microsoft.VisualStudio.Settings.SettingsStore.
+		public SettingDataType SettingDataType { get; }
 
 		//
 		// Summary:
-		//     Specifies the propertyName in the Microsoft.VisualStudio.Settings.SettingsStore
-		//     where this setting is stored rather than using the default, which is the name
-		//     of the property.
+		//     If true, and the type has a System.ComponentModel.TypeConverterAttribute that
+		//     allows for conversion to Community.VisualStudio.Toolkit.OverrideDataTypeAttribute.SettingDataType,
+		//     this will be used to convert and store the property value. If the Community.VisualStudio.Toolkit.OverrideDataTypeAttribute.SettingDataType
+		//     is Legacy or Serialized this has no effect. For other Community.VisualStudio.Toolkit.OverrideDataTypeAttribute.SettingDataType,
+		//     false will use the default conversion mechanism of System.Convert.ChangeType(System.Object,System.Type,System.IFormatProvider),
+		//     using System.Globalization.CultureInfo.InvariantCulture.
+		public bool UseTypeConverter { get; }
+
+		//
+		// Summary:
+		//     Alters the default type and mechanism used to store/retrieve the value of this
+		//     property in the Microsoft.VisualStudio.Settings.SettingsStore.
 		//
 		// Parameters:
-		//   propertyName:
-		//     This value is used as the propertyName parameter when reading and writing to
-		//     the Microsoft.VisualStudio.Settings.SettingsStore.
-		public OverridePropertyNameAttribute(string propertyName)
+		//   settingDataType:
+		//     Specifies the type and/or method used to store and retrieve the value of the
+		//     attributed property in the Microsoft.VisualStudio.Settings.SettingsStore.
+		//
+		//   useTypeConverter:
+		//     (Optional, default false) If true, and the type has a System.ComponentModel.TypeConverterAttribute
+		//     that allows for conversion to settingDataType, this will be used to convert and
+		//     store the property value. If the settingDataType is Legacy or Serialized this
+		//     has no effect. For other Community.VisualStudio.Toolkit.OverrideDataTypeAttribute.SettingDataType
+		//     values, false will use the default conversion mechanism of System.Convert.ChangeType(System.Object,System.Type,System.IFormatProvider),
+		//     using System.Globalization.CultureInfo.InvariantCulture.
+		public OverrideDataTypeAttribute(SettingDataType settingDataType, bool useTypeConverter = false)
 		{
-			PropertyName = propertyName;
+			SettingDataType = settingDataType;
+			UseTypeConverter = useTypeConverter;
 		}
 	}
 }

@@ -2,7 +2,7 @@
 using System.ComponentModel.Design;
 
 
-namespace BlackbirdSql.VisualStudio.Ddex.Extensions
+namespace BlackbirdSql.Common.Extensions
 {
 	internal static class DataToolsCommands
 	{

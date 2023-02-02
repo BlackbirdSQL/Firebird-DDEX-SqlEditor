@@ -15,7 +15,7 @@ using FirebirdSql.Data.FirebirdClient;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using System.Data.Common;
 using Microsoft.VisualStudio.Data.Framework;
-using BlackbirdSql.VisualStudio.Ddex.Extensions;
+using BlackbirdSql.Common.Extensions;
 using Microsoft.VisualStudio.LanguageServer.Client;
 using System.Globalization;
 using System.Reflection;

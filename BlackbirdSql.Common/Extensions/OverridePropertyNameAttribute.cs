@@ -1,33 +1,35 @@
 ﻿using System;
 
-namespace BlackbirdSql.VisualStudio.Ddex.Extensions
+namespace BlackbirdSql.Common.Extensions
 {
 	//
 	// Summary:
-	//     Apply this attribute on an individual get/set property in your Community.VisualStudio.Toolkit.BaseOptionModel`1
-	//     derived class to use a specific CollectionName to store a given property in the
-	//     Microsoft.VisualStudio.Settings.SettingsStore rather than using the Community.VisualStudio.Toolkit.BaseOptionModel`1.CollectionName.
+	//     Apply this attribute on an individual public get/set property in your Community.VisualStudio.Toolkit.BaseOptionModel`1
+	//     derived class to use a specific propertyName to store a given property in the
+	//     Microsoft.VisualStudio.Settings.SettingsStore rather than using the name of the
+	//     property.
 	[AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
-	public class OverrideCollectionNameAttribute : Attribute
+	public class OverridePropertyNameAttribute : Attribute
 	{
 		//
 		// Summary:
-		//     This value is used as the collectionPath parameter when reading and writing using
+		//     This value is used as the propertyName parameter when reading and writing to
 		//     the Microsoft.VisualStudio.Settings.SettingsStore.
-		public string CollectionName { get; }
+		public string PropertyName { get; }
 
 		//
 		// Summary:
-		//     Specifies the CollectionName in the Microsoft.VisualStudio.Settings.SettingsStore
-		//     where this setting is stored rather than using the default.
+		//     Specifies the propertyName in the Microsoft.VisualStudio.Settings.SettingsStore
+		//     where this setting is stored rather than using the default, which is the name
+		//     of the property.
 		//
 		// Parameters:
-		//   collectionName:
-		//     This value is used as the collectionPath parameter when reading and writing using
+		//   propertyName:
+		//     This value is used as the propertyName parameter when reading and writing to
 		//     the Microsoft.VisualStudio.Settings.SettingsStore.
-		public OverrideCollectionNameAttribute(string collectionName)
+		public OverridePropertyNameAttribute(string propertyName)
 		{
-			CollectionName = collectionName;
+			PropertyName = propertyName;
 		}
 	}
 }

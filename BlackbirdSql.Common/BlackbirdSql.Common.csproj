@@ -1,37 +1,66 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <Nullable>disable</Nullable>
-    <TargetFrameworks>$(TargetFrameworks)</TargetFrameworks>
-    <RootNamespace>BlackbirdSql.Common</RootNamespace>
-    <SignAssembly>True</SignAssembly>
-    <AssemblyOriginatorKeyFile>Properties\BlackbirdSql.Common.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
+	<PropertyGroup>
+		<Nullable>disable</Nullable>
+		<TargetFrameworks>$(TargetFrameworks)</TargetFrameworks>
+		<RootNamespace>BlackbirdSql.Common</RootNamespace>
+		<SignAssembly>True</SignAssembly>
+		<AssemblyOriginatorKeyFile>Properties\BlackbirdSql.Common.snk</AssemblyOriginatorKeyFile>
+	</PropertyGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command=":: *** Update: No longer required&#xD;&#xA;:: copy /v /y /b $(OutDir)\BlackbirdSql.Common.* &quot;%25ProgramFiles%25\BlackbirdSql\BlackbirdCommon.9.1.0&quot;" />
-  </Target>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command=":: *** Update: No longer required&#xD;&#xA;:: copy /v /y /b $(OutDir)\BlackbirdSql.Common.* &quot;%25ProgramFiles%25\BlackbirdSql\BlackbirdCommon.9.1.0&quot;" />
+	</Target>
 
-  <ItemGroup>
-    <PackageReference Include="IndexRange" Version="1.0.2" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="NETStandard.Library" Version="2.0.3" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Extensions\**" />
+		<EmbeddedResource Remove="Extensions\**" />
+		<None Remove="Extensions\**" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Properties\Settings.Designer.cs">
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-  </ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
+		<Compile Include="Extensions\AbstractOptionModel.cs" />
+		<Compile Include="Extensions\AbstractOptionPage.cs" />
+		<Compile Include="Extensions\AbstractQueryCommandProvider.cs" />
+		<Compile Include="Extensions\DataToolsCommands.cs" />
+		<Compile Include="Extensions\DbProviderFactoriesEx.cs" />
+		<Compile Include="Extensions\IOptionModelPropertyWrapper.cs" />
+		<Compile Include="Extensions\NativeSettingsType.cs" />
+		<Compile Include="Extensions\NativeSettingsTypeExtensions.cs" />
+		<Compile Include="Extensions\OptionModelPropertyWrapper.cs" />
+		<Compile Include="Extensions\OverrideCollectionNameAttribute.cs" />
+		<Compile Include="Extensions\OverrideDataTypeAttribute.cs" />
+		<Compile Include="Extensions\OverridePropertyNameAttribute.cs" />
+		<Compile Include="Extensions\SettingDataType.cs" />
+		<Compile Include="Extensions\SystemQueryCommandProvider.cs" />
+		<Compile Include="Extensions\UserQueryCommandProvider.cs" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="IndexRange" Version="1.0.2" />
+		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+		<PackageReference Include="NETStandard.Library" Version="2.0.3" />
+		<PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
+		<PackageReference Include="Microsoft.VisualStudio.Data.Framework" Version="17.4.33103.184" />
+		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.4.33103.184" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Update="Properties\Settings.Designer.cs">
+			<DesignTimeSharedInput>True</DesignTimeSharedInput>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Settings.settings</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="Properties\Settings.settings">
+			<Generator>SettingsSingleFileGenerator</Generator>
+			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
+		</None>
+	</ItemGroup>
 
 </Project>

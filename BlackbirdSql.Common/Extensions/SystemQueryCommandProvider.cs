@@ -3,7 +3,7 @@
 
 
 
-namespace BlackbirdSql.VisualStudio.Ddex.Extensions
+namespace BlackbirdSql.Common.Extensions
 {
 	[Guid(DataToolsCommands.SystemQueryCommandProviderGuid)]
 	internal class SystemQueryCommandProvider : AbstractQueryCommandProvider

@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.Settings;
 
-namespace BlackbirdSql.VisualStudio.Ddex.Extensions
+namespace BlackbirdSql.Common.Extensions
 {
 	public interface IOptionModelPropertyWrapper
 	{

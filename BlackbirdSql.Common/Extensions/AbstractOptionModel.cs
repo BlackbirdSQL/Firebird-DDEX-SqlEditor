@@ -11,9 +11,8 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Settings;
 using Microsoft.VisualStudio.Threading;
 
-using BlackbirdSql.Common;
 
-namespace BlackbirdSql.VisualStudio.Ddex.Extensions
+namespace BlackbirdSql.Common.Extensions
 {
 	public abstract class AbstractOptionModel<T> where T : AbstractOptionModel<T>, new()
 	{

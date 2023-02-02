@@ -10,7 +10,7 @@ using BlackbirdSql.Common;
 using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Threading;
 
-namespace BlackbirdSql.VisualStudio.Ddex.Extensions
+namespace BlackbirdSql.Common.Extensions
 {
 	//
 	// Summary:

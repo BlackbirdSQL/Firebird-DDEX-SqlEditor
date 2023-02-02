@@ -150,22 +150,6 @@
     </Compile>
     <Compile Include="Configuration\VsDebugOptionModel.cs" />
     <Compile Include="Configuration\VsOptionsProvider.cs" />
-    <Compile Include="Extensions\AbstractOptionModel.cs" />
-    <Compile Include="Extensions\AbstractOptionPage.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Extensions\IOptionModelPropertyWrapper.cs" />
-    <Compile Include="Extensions\NativeSettingsType.cs" />
-    <Compile Include="Extensions\NativeSettingsTypeExtensions.cs" />
-    <Compile Include="Extensions\OptionModelPropertyWrapper.cs" />
-    <Compile Include="Extensions\OverrideCollectionNameAttribute.cs" />
-    <Compile Include="Extensions\OverrideDataTypeAttribute.cs" />
-    <Compile Include="Extensions\OverridePropertyNameAttribute.cs" />
-    <Compile Include="Extensions\SettingDataType.cs" />
-    <Compile Include="Extensions\DataToolsCommands.cs" />
-    <Compile Include="Extensions\AbstractQueryCommandProvider.cs" />
-    <Compile Include="Extensions\SystemQueryCommandProvider.cs" />
-    <Compile Include="Extensions\UserQueryCommandProvider.cs" />
     <Compile Include="Configuration\VsGeneralOptionModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

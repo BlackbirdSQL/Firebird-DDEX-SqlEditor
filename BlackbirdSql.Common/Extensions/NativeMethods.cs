@@ -7,7 +7,7 @@ using BlackbirdSql.Common;
 
 
 
-namespace BlackbirdSql.VisualStudio.Ddex.Extensions
+namespace BlackbirdSql.Common.Extensions
 {
 	internal static class NativeMethods
 	{
