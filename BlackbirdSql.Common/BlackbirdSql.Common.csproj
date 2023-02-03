@@ -18,10 +18,15 @@
 		<None Remove="Extensions\**" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<Compile Include="Extensions\XmlParser.cs" />
+	</ItemGroup>
+
 	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
 		<Compile Include="Extensions\AbstractOptionModel.cs" />
 		<Compile Include="Extensions\AbstractOptionPage.cs" />
 		<Compile Include="Extensions\AbstractQueryCommandProvider.cs" />
+		<Compile Include="Extensions\BindingSourceEx.cs" />
 		<Compile Include="Extensions\DataToolsCommands.cs" />
 		<Compile Include="Extensions\DbProviderFactoriesEx.cs" />
 		<Compile Include="Extensions\IOptionModelPropertyWrapper.cs" />
@@ -36,8 +41,9 @@
 		<Compile Include="Extensions\UserQueryCommandProvider.cs" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Compile Include="Extensions\DbXmlUpdater.cs" />
+
+	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
+		<Reference Include="System.Windows.Forms" />
 	</ItemGroup>
 
 	<ItemGroup>

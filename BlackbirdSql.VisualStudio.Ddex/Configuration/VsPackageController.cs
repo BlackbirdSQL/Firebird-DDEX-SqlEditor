@@ -705,7 +705,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 			try
 			{
-				modified = DbXmlUpdater.ConfigureDbProvider(path, typeof(FirebirdClientFactory));
+				modified = XmlParser.ConfigureDbProvider(path, typeof(FirebirdClientFactory));
 			}
 			catch (Exception ex)
 			{
@@ -776,7 +776,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			try
 			{
 				// If Entity framework must be configured then so must the client
-				modified = DbXmlUpdater.ConfigureEntityFramework(path, !Uig.IsConfiguredDbProviderStatus(config.ContainingProject), typeof(FirebirdClientFactory));
+				modified = XmlParser.ConfigureEntityFramework(path, !Uig.IsConfiguredDbProviderStatus(config.ContainingProject), typeof(FirebirdClientFactory));
 			}
 			catch (Exception ex)
 			{
@@ -846,7 +846,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 			string path = edmx.FileNames[0];
 
-			if (!DbXmlUpdater.UpdateEdmx(path))
+			if (!XmlParser.UpdateEdmx(path))
 				return true;
 
 			if (!invalidate)

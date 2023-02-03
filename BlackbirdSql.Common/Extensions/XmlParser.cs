@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Threading.Tasks;
 using System.Xml;
@@ -13,7 +14,7 @@ namespace BlackbirdSql.Common.Extensions;
 
 // ---------------------------------------------------------------------------------------------------
 //
-//										DbXmlUpdater Class
+//										XmlParser Class
 //
 // ---------------------------------------------------------------------------------------------------
 
@@ -21,8 +22,230 @@ namespace BlackbirdSql.Common.Extensions;
 /// <summary>
 /// Updates project db xml items
 /// </summary>
-internal static class DbXmlUpdater
+internal static class XmlParser
 {
+	static DataTable _DataSources = null, _Databases = null;
+
+
+
+	public static DataTable DataSources
+	{
+		get
+		{
+			if (_DataSources != null)
+				return _DataSources;
+
+			_DataSources = Databases.DefaultView.ToTable(true, "Orderer", "DataSourceName", "DataSource", "DataSourceLc", "PortNumber");
+
+
+			return _DataSources;
+		}
+	}
+
+
+
+	public static DataTable Databases
+	{
+		get
+		{
+			if (_Databases != null)
+				return _Databases;
+
+			DataTable databases = new DataTable();
+
+			databases.Columns.Add("Id", typeof(int));
+			databases.Columns.Add("Orderer", typeof(int));
+			databases.Columns.Add("DataSourceName", typeof(string));
+			databases.Columns.Add("DataSource", typeof(string));
+			databases.Columns.Add("DataSourceLc", typeof(string));
+			databases.Columns.Add("Name", typeof(string));
+			databases.Columns.Add("InitialCatalog", typeof(string));
+			databases.Columns.Add("InitialCatalogLc", typeof(string));
+			databases.Columns.Add("PortNumber", typeof(int));
+			databases.Columns.Add("Charset", typeof(string));
+			databases.Columns.Add("UserName", typeof(string));
+			databases.Columns.Add("Password", typeof(string));
+			databases.Columns.Add("RoleName", typeof(string));
+
+
+			bool hasLocal = false;
+			DataRow row;
+
+			string xmlPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\flamerobin\\fr_databases.conf";
+
+			if (File.Exists(xmlPath))
+			{
+				try
+				{
+					XmlDocument xmlDoc = new XmlDocument();
+
+					xmlDoc.Load(xmlPath);
+
+					XmlNode xmlRoot = xmlDoc.DocumentElement;
+					/* XmlNamespaceManager xmlNs = new XmlNamespaceManager(xmlDoc.NameTable);
+
+
+					if (!xmlNs.HasNamespace("confBlackbirdNs"))
+					{
+						xmlNs.AddNamespace("confBlackbirdNs", xmlRoot.NamespaceURI);
+					}
+					*/
+					XmlNodeList xmlServers, xmlDatabases;
+					XmlNode xmlNode = null;
+					uint port;
+					string datasourceName, datasource, authentication;
+
+					xmlServers = xmlRoot.SelectNodes("//server");
+
+
+					foreach (XmlNode xmlServer in xmlServers)
+					{
+						if ((xmlNode = xmlServer.SelectSingleNode("name")) == null)
+							continue;
+						datasourceName = xmlNode.InnerText;
+
+
+						if ((xmlNode = xmlServer.SelectSingleNode("host")) == null)
+							continue;
+						datasource = xmlNode.InnerText;
+
+
+						if ((xmlNode = xmlServer.SelectSingleNode("port")) == null)
+							continue;
+						port = Convert.ToUInt32(xmlNode.InnerText);
+
+						if (port == 0)
+							continue;
+
+						xmlDatabases = xmlServer.SelectNodes("database");
+
+
+
+						foreach (XmlNode xmlDatabase in xmlDatabases)
+						{
+							if ((xmlNode = xmlDatabase.SelectSingleNode("name")) == null)
+							continue;
+
+
+							row = databases.NewRow();
+
+							row["Id"] = databases.Rows.Count;
+							row["DataSourceName"] = datasourceName;
+							row["DataSource"] = datasource;
+							row["DataSourceLc"] = datasource.ToLower();
+							row["Name"] = xmlNode.InnerText;
+							row["PortNumber"] = (int)port;
+
+							if ((xmlNode = xmlDatabase.SelectSingleNode("path")) == null)
+							continue;
+							row["InitialCatalog"] = xmlNode.InnerText;
+							row["InitialCatalogLc"] = xmlNode.InnerText.ToLower();
+
+							if ((xmlNode = xmlDatabase.SelectSingleNode("charset")) == null)
+							continue;
+							row["Charset"] = xmlNode.InnerText;
+
+							row["UserName"] = "";
+							row["Password"] = "";
+
+							if ((xmlNode = xmlDatabase.SelectSingleNode("authentication")) == null)
+								authentication = "trusted";
+							else
+								authentication = xmlNode.InnerText;
+
+							if (authentication != "trusted")
+							{
+								if ((xmlNode = xmlDatabase.SelectSingleNode("username")) != null)
+								{
+									row["UserName"] = xmlNode.InnerText;
+
+									if (authentication == "pwd"
+										&& (xmlNode = xmlDatabase.SelectSingleNode("password")) != null)
+									{
+										row["Password"] = xmlNode.InnerText;
+									}
+								}
+
+							}
+
+							if (datasource == "localhost")
+							{
+								hasLocal = true;
+								row["Orderer"] = 1;
+							}
+							else
+							{
+								row["Orderer"] = 2;
+							}
+
+							databases.Rows.Add(row);
+						}
+					}
+
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex);
+				}
+
+				row = databases.NewRow();
+
+				row["Id"] = databases.Rows.Count;
+				row["Orderer"] = 0;
+				row["DataSourceName"] = "Clear";
+				row["DataSource"] = "";
+				row["DataSourceLc"] = "";
+				row["Name"] = "";
+				row["PortNumber"] = 0;
+				row["InitialCatalog"] = "";
+				row["InitialCatalogLc"] = "";
+				row["Charset"] = "";
+				row["UserName"] = "";
+				row["Password"] = "";
+				databases.Rows.Add(row);
+
+				if (!hasLocal)
+				{
+					row = databases.NewRow();
+
+					row["Id"] = databases.Rows.Count;
+					row["Orderer"] = 1;
+					row["DataSourceName"] = "Localhost";
+					row["DataSource"] = "localhost";
+					row["DataSourceLc"] = "localhost";
+					row["Name"] = "";
+					row["PortNumber"] = 0;
+					row["InitialCatalog"] = "";
+					row["InitialCatalogLc"] = "";
+					row["Charset"] = "";
+					row["UserName"] = "";
+					row["Password"] = "";
+
+					databases.Rows.Add(row);
+				}
+
+				databases.DefaultView.Sort = "Orderer,DataSourceName,Name ASC";
+
+
+			}
+
+			_Databases = databases.DefaultView.ToTable(false);
+
+			try
+			{
+				foreach (DataRow ro in _Databases.Rows)
+					Diag.Trace(ro["Id"].ToString() + " : " + ro["Orderer"].ToString() + " : " + (string)ro["DataSourceName"] + " : " + (string)ro["DataSource"] + " : " + (string)ro["DataSourceLc"] + " : " + (string)ro["Name"] + " : " + ro["PortNumber"].ToString() + " : " + (string)ro["InitialCatalog"] + " : " + (string)ro["InitialCatalogLc"] + " : " + (string)ro["Charset"] + " : " + (string)ro["UserName"] + " : " + (string)ro["Password"]);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+			}
+
+			return _Databases;
+		}
+	}
+
+
 
 	/// <summary>
 	/// Checks if a project has Firebird EntityFramework configured in the app.config and configures it if it doesn't
@@ -55,9 +278,9 @@ internal static class DbXmlUpdater
 			XmlNode xmlRoot = xmlDoc.DocumentElement;
 			XmlNamespaceManager xmlNs = new XmlNamespaceManager(xmlDoc.NameTable);
 
-			if (!xmlNs.HasNamespace("confBlackbird"))
+			if (!xmlNs.HasNamespace("confBlackbirdNs"))
 			{
-				xmlNs.AddNamespace("confBlackbird", xmlRoot.NamespaceURI);
+				xmlNs.AddNamespace("confBlackbirdNs", xmlRoot.NamespaceURI);
 			}
 
 
@@ -126,9 +349,9 @@ internal static class DbXmlUpdater
 			XmlNode xmlRoot = xmlDoc.DocumentElement;
 			XmlNamespaceManager xmlNs = new XmlNamespaceManager(xmlDoc.NameTable);
 
-			if (!xmlNs.HasNamespace("confBlackbird"))
+			if (!xmlNs.HasNamespace("confBlackbirdNs"))
 			{
-				xmlNs.AddNamespace("confBlackbird", xmlRoot.NamespaceURI);
+				xmlNs.AddNamespace("confBlackbirdNs", xmlRoot.NamespaceURI);
 			}
 
 			if (configureDbProvider)
@@ -186,7 +409,7 @@ internal static class DbXmlUpdater
 			XmlNode xmlNode = null, xmlParent;
 			XmlAttribute xmlAttr;
 
-			xmlNode = xmlRoot.SelectSingleNode("//confBlackbird:entityFramework", xmlNs);
+			xmlNode = xmlRoot.SelectSingleNode("//confBlackbirdNs:entityFramework", xmlNs);
 
 			if (xmlNode == null)
 			{
@@ -201,7 +424,7 @@ internal static class DbXmlUpdater
 			}
 
 
-			xmlNode = xmlParent.SelectSingleNode("//confBlackbird:defaultConnectionFactory", xmlNs);
+			xmlNode = xmlParent.SelectSingleNode("confBlackbirdNs:defaultConnectionFactory", xmlNs);
 
 			if (xmlNode == null)
 			{
@@ -215,7 +438,7 @@ internal static class DbXmlUpdater
 			}
 
 
-			xmlNode = xmlParent.SelectSingleNode("//confBlackbird:providers", xmlNs);
+			xmlNode = xmlParent.SelectSingleNode("confBlackbirdNs:providers", xmlNs);
 
 			if (xmlNode == null)
 			{
@@ -229,7 +452,7 @@ internal static class DbXmlUpdater
 				xmlParent = xmlNode;
 			}
 
-			xmlNode = xmlParent.SelectSingleNode("//confBlackbird:provider[@invariantName='" + SystemData.Invariant + "']", xmlNs);
+			xmlNode = xmlParent.SelectSingleNode("confBlackbirdNs:provider[@invariantName='" + SystemData.Invariant + "']", xmlNs);
 
 			if (xmlNode == null)
 			{
@@ -310,7 +533,7 @@ internal static class DbXmlUpdater
 			XmlNode xmlNode = null, xmlParent;
 			XmlAttribute xmlAttr;
 
-			xmlNode = xmlRoot.SelectSingleNode("//confBlackbird:system.data", xmlNs);
+			xmlNode = xmlRoot.SelectSingleNode("//confBlackbirdNs:system.data", xmlNs);
 
 			if (xmlNode == null)
 			{
@@ -325,7 +548,7 @@ internal static class DbXmlUpdater
 			}
 
 
-			xmlNode = xmlParent.SelectSingleNode("//confBlackbird:DbProviderFactories", xmlNs);
+			xmlNode = xmlParent.SelectSingleNode("confBlackbirdNs:DbProviderFactories", xmlNs);
 
 			if (xmlNode == null)
 			{
@@ -339,7 +562,7 @@ internal static class DbXmlUpdater
 				xmlParent = xmlNode;
 			}
 
-			xmlNode = xmlParent.SelectSingleNode("//confBlackbird:add[@invariant='" + SystemData.Invariant + "']", xmlNs);
+			xmlNode = xmlParent.SelectSingleNode("confBlackbirdNs:add[@invariant='" + SystemData.Invariant + "']", xmlNs);
 
 			// We're using the current latest version of the client (on this build it's 9.1.0.0)
 			string factoryQualifiedNameType;
