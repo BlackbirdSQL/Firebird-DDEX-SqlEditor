@@ -53,6 +53,7 @@ internal static class XmlParser
 
 			DataTable databases = new DataTable();
 
+
 			databases.Columns.Add("Id", typeof(int));
 			databases.Columns.Add("Orderer", typeof(int));
 			databases.Columns.Add("DataSourceName", typeof(string));
@@ -102,20 +103,46 @@ internal static class XmlParser
 					{
 						if ((xmlNode = xmlServer.SelectSingleNode("name")) == null)
 							continue;
-						datasourceName = xmlNode.InnerText;
+						datasourceName = xmlNode.InnerText.Trim();
 
 
 						if ((xmlNode = xmlServer.SelectSingleNode("host")) == null)
 							continue;
-						datasource = xmlNode.InnerText;
+						datasource = xmlNode.InnerText.Trim();
 
 
 						if ((xmlNode = xmlServer.SelectSingleNode("port")) == null)
 							continue;
-						port = Convert.ToUInt32(xmlNode.InnerText);
+						port = Convert.ToUInt32(xmlNode.InnerText.Trim());
 
 						if (port == 0)
-							continue;
+							port = 3050;
+
+						if (datasource == "localhost")
+							hasLocal = true;
+
+						row = databases.NewRow();
+
+						row["Id"] = databases.Rows.Count;
+						row["DataSourceName"] = datasourceName;
+						row["DataSource"] = datasource;
+						row["DataSourceLc"] = datasource.ToLower();
+						row["PortNumber"] = (int)port;
+
+						row["Name"] = "";
+						row["InitialCatalog"] = "";
+						row["InitialCatalogLc"] = "";
+						row["Charset"] = "";
+						row["UserName"] = "";
+						row["Password"] = "";
+
+						if (datasource == "localhost")
+							row["Orderer"] = 2;
+						else
+							row["Orderer"] = 3;
+
+						databases.Rows.Add(row);
+
 
 						xmlDatabases = xmlServer.SelectNodes("database");
 
@@ -127,23 +154,27 @@ internal static class XmlParser
 							continue;
 
 
+							// Add a ghost row to each database
+							// A binding source cannot have an invalidated state. ie. Position == -1 and Current == null,
+							// if it's List Count > 0. The ghost row is a placeholder for that state.
 							row = databases.NewRow();
 
 							row["Id"] = databases.Rows.Count;
 							row["DataSourceName"] = datasourceName;
 							row["DataSource"] = datasource;
 							row["DataSourceLc"] = datasource.ToLower();
-							row["Name"] = xmlNode.InnerText;
 							row["PortNumber"] = (int)port;
+
+							row["Name"] = xmlNode.InnerText.Trim();
 
 							if ((xmlNode = xmlDatabase.SelectSingleNode("path")) == null)
 							continue;
-							row["InitialCatalog"] = xmlNode.InnerText;
-							row["InitialCatalogLc"] = xmlNode.InnerText.ToLower();
+							row["InitialCatalog"] = xmlNode.InnerText.Trim();
+							row["InitialCatalogLc"] = xmlNode.InnerText.Trim().ToLower();
 
 							if ((xmlNode = xmlDatabase.SelectSingleNode("charset")) == null)
 							continue;
-							row["Charset"] = xmlNode.InnerText;
+							row["Charset"] = xmlNode.InnerText.Trim();
 
 							row["UserName"] = "";
 							row["Password"] = "";
@@ -151,32 +182,27 @@ internal static class XmlParser
 							if ((xmlNode = xmlDatabase.SelectSingleNode("authentication")) == null)
 								authentication = "trusted";
 							else
-								authentication = xmlNode.InnerText;
+								authentication = xmlNode.InnerText.Trim();
 
 							if (authentication != "trusted")
 							{
 								if ((xmlNode = xmlDatabase.SelectSingleNode("username")) != null)
 								{
-									row["UserName"] = xmlNode.InnerText;
+									row["UserName"] = xmlNode.InnerText.Trim();
 
 									if (authentication == "pwd"
 										&& (xmlNode = xmlDatabase.SelectSingleNode("password")) != null)
 									{
-										row["Password"] = xmlNode.InnerText;
+										row["Password"] = xmlNode.InnerText.Trim();
 									}
 								}
 
 							}
 
 							if (datasource == "localhost")
-							{
-								hasLocal = true;
-								row["Orderer"] = 1;
-							}
-							else
-							{
 								row["Orderer"] = 2;
-							}
+							else
+								row["Orderer"] = 3;
 
 							databases.Rows.Add(row);
 						}
@@ -188,10 +214,36 @@ internal static class XmlParser
 					Diag.Dug(ex);
 				}
 
+
+				// Add a ghost row to the datasources list
+				// This will be the default datasource row so that anything else
+				// selected will generate a CurrentChanged event.
 				row = databases.NewRow();
 
 				row["Id"] = databases.Rows.Count;
+				row["DataSourceName"] = "";
+				row["DataSource"] = "";
+				row["DataSourceLc"] = "";
+				row["PortNumber"] = 0;
+
+				row["Name"] = "";
+				row["InitialCatalog"] = "";
+				row["InitialCatalogLc"] = "";
+				row["Charset"] = "";
+				row["UserName"] = "";
+				row["Password"] = "";
+
 				row["Orderer"] = 0;
+
+				databases.Rows.Add(row);
+
+
+				// Add a Clear/Reset dummy row for the datasources list
+				// If selected will invoke a form reset the move the cursor back to the ghost row.
+				row = databases.NewRow();
+
+				row["Id"] = databases.Rows.Count;
+				row["Orderer"] = 1;
 				row["DataSourceName"] = "Clear";
 				row["DataSource"] = "";
 				row["DataSourceLc"] = "";
@@ -204,17 +256,19 @@ internal static class XmlParser
 				row["Password"] = "";
 				databases.Rows.Add(row);
 
+
+				// Add at least one row, that will be the ghost row, for localhost. 
 				if (!hasLocal)
 				{
 					row = databases.NewRow();
 
 					row["Id"] = databases.Rows.Count;
-					row["Orderer"] = 1;
+					row["Orderer"] = 2;
 					row["DataSourceName"] = "Localhost";
 					row["DataSource"] = "localhost";
 					row["DataSourceLc"] = "localhost";
 					row["Name"] = "";
-					row["PortNumber"] = 0;
+					row["PortNumber"] = 3050;
 					row["InitialCatalog"] = "";
 					row["InitialCatalogLc"] = "";
 					row["Charset"] = "";
@@ -230,16 +284,6 @@ internal static class XmlParser
 			}
 
 			_Databases = databases.DefaultView.ToTable(false);
-
-			try
-			{
-				foreach (DataRow ro in _Databases.Rows)
-					Diag.Trace(ro["Id"].ToString() + " : " + ro["Orderer"].ToString() + " : " + (string)ro["DataSourceName"] + " : " + (string)ro["DataSource"] + " : " + (string)ro["DataSourceLc"] + " : " + (string)ro["Name"] + " : " + ro["PortNumber"].ToString() + " : " + (string)ro["InitialCatalog"] + " : " + (string)ro["InitialCatalogLc"] + " : " + (string)ro["Charset"] + " : " + (string)ro["UserName"] + " : " + (string)ro["Password"]);
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-			}
 
 			return _Databases;
 		}
@@ -292,7 +336,7 @@ internal static class XmlParser
 				try
 				{
 					xmlDoc.Save(xmlPath);
-					Diag.Trace("app.config save: " + xmlPath);
+					// Diag.Trace("app.config save: " + xmlPath);
 				}
 				catch (Exception ex)
 				{
@@ -365,7 +409,7 @@ internal static class XmlParser
 				try
 				{
 					xmlDoc.Save(xmlPath);
-					Diag.Trace("app.config save: " + xmlPath);
+					// Diag.Trace("app.config save: " + xmlPath);
 				}
 				catch (Exception ex)
 				{
@@ -710,7 +754,7 @@ internal static class XmlParser
 			try
 			{
 				xmlDoc.Save(xmlPath);
-				Diag.Trace("edmx Xml saved: " + xmlPath);
+				// Diag.Trace("edmx Xml saved: " + xmlPath);
 			}
 			catch (Exception ex)
 			{

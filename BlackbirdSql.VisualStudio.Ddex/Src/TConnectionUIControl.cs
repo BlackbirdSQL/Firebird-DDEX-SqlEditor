@@ -34,33 +34,36 @@ namespace BlackbirdSql.VisualStudio.Ddex
 
 	public partial class TConnectionUIControl : DataConnectionUIControl
 	{
-		private readonly BindingSourceEx BsDataSources;
-		private readonly BindingSourceEx BsDatabases;
+		private readonly ErmBindingSource DataSources;
 
-		private bool _SelectedIndexChanged = false;
+		private int _EventsDisabled = 0;
 
+		private bool EventsDisabled
+		{
+			get { return _EventsDisabled > 0; }
+		}
 
 
 		#region · Constructors ·
 
 		public TConnectionUIControl() : base()
 		{
-			Diag.Trace();
+			// Diag.Trace();
 			InitializeComponent();
 
-			BsDataSources = new BindingSourceEx
+			// Diag.Trace("Creating erd");
+			DataSources = new()
 			{
-				DataSource = XmlParser.DataSources
+				DataSource = XmlParser.DataSources,
+				DependentSource = XmlParser.Databases,
+				PrimaryKey = "DataSourceLc",
+				ForeignKey = "DataSourceLc"
 			};
-
-			BsDatabases = new BindingSourceEx()
-			{
-				DataSource = XmlParser.Databases
-			};
+			// Diag.Trace("Erd created");
 
 			try
 			{
-				cmbDataSource.DataSource = BsDataSources;
+				cmbDataSource.DataSource = DataSources;
 				cmbDataSource.ValueMember = "DataSourceLc";
 				cmbDataSource.DisplayMember = "DataSourceName";
 			}
@@ -69,9 +72,10 @@ namespace BlackbirdSql.VisualStudio.Ddex
 				Diag.Dug(ex);
 			}
 
+
 			try
 			{
-				cmbDatabase.DataSource = BsDatabases;
+				cmbDatabase.DataSource = DataSources.Dependent;
 				cmbDatabase.ValueMember = "InitialCatalogLc";
 				cmbDatabase.DisplayMember = "Name";
 			}
@@ -86,8 +90,27 @@ namespace BlackbirdSql.VisualStudio.Ddex
 
 		#region · Methods ·
 
+
+		private void EnableEvents()
+		{
+			if (_EventsDisabled == 0)
+				Diag.Dug(new InvalidOperationException("Events already enabled"));
+			else
+				_EventsDisabled--;
+		}
+
+
+		private void DisableEvents()
+		{
+			_EventsDisabled++;
+		}
+
+
 		public override void LoadProperties()
 		{
+			// Diag.Trace("Loading datasource text");
+			DisableEvents();
+
 			if (Site != null && Site.TryGetValue("Data Source", out object value))
 				txtDataSource.Text = (string)value;
 			else
@@ -150,20 +173,19 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			else
 				cboServerType.SelectedIndex = 1;
 
+			EnableEvents();
 
-
+			// Diag.Trace("Positioning erd datasources");
 			if (txtDataSource.Text.Length > 0)
-				BsDataSources.Position = BsDataSources.Find("DataSourceLc", txtDataSource.Text.ToLower());
+				DataSources.Position = DataSources.Find(txtDataSource.Text.ToLower());
 			else
-				BsDataSources.Position = -1;
+				DataSources.Position = -1;
 
-
-			UpdateDatabasesFilter();
-
-
-			BsDataSources.CurrentChanged += DataSourcesCurrentChanged;
-			BsDatabases.CurrentChanged += DatabasesCurrentChanged;
-			BsDatabases.ListChanged += DatabasesListChanged;
+			// Diag.Trace("Adding datasources currentchanged");
+			DataSources.CurrentChanged += DataSourcesCurrentChanged;
+			// Diag.Trace("Adding databases currentchanged");
+			DataSources.DependencyCurrentChanged += DatabasesCurrentChanged;
+			// Diag.Trace("erd setup complete");
 
 
 		}
@@ -174,52 +196,11 @@ namespace BlackbirdSql.VisualStudio.Ddex
 		#region · Private Methods ·
 
 
-		private void UpdateDatabasesFilter()
-		{
-			try
-			{
-				string filter;
-
-				if (BsDataSources.Current != null)
-				{
-					DataRow row = ((DataRowView)BsDataSources.Current).Row;
-					filter = "DataSourceLc = '" + (string)row["DataSourceLc"] + "' AND Name <> ''";
-				}
-				else
-				{
-					filter = "DataSourceLc = '' AND Name <> ''";
-				}
-
-				if (BsDatabases.Filter == filter)
-					return;
-
-				BsDatabases.Filter = filter;
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-				return;
-			}
-		}
-
 		#endregion
 
 		#region · Event Handlers ·
 
 
-		/// <summary>
-		/// Raised when the database list changes of the data source has changed
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="e"></param>
-		/// <remarks>
-		/// Simply invalidates the current row on the dabases binding source so the CurrentChanged event handler ignores
-		/// the change
-		/// </remarks>
-		private void DatabasesListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
-		{
-			BsDatabases.Position = -1;
-		}
 
 
 		/// <summary>
@@ -227,25 +208,29 @@ namespace BlackbirdSql.VisualStudio.Ddex
 		/// </summary>
 		private void DataSourceTextChanged(object sender, EventArgs e)
 		{
+			if (EventsDisabled)
+				return;
+
+			// Diag.Trace("Datasource text changed");
+
 			Site["Data Source"] = txtDataSource.Text.Trim();
+
+			if (!DataSources.IsReady)
+				return;
 
 			string datasource = txtDataSource.Text.Trim().ToLower();
 
 			if (datasource == "")
 				return;
 
-			DataRow row;
-
-			if (BsDataSources.Current != null)
+			if (DataSources.Row != null)
 			{
-				row = ((DataRowView)BsDataSources.Current).Row;
-
-				if (datasource == (string)row["DataSourceLc"])
+				if (datasource == (string)DataSources.CurrentValue)
 					return;
 			}
 
 
-			BsDataSources.Position = BsDataSources.Find("DataSourceLc", datasource);
+			DataSources.Position = DataSources.Find(datasource);
 
 		}
 
@@ -262,41 +247,47 @@ namespace BlackbirdSql.VisualStudio.Ddex
 		/// </remarks>
 		private void DataSourcesCurrentChanged(object sender, EventArgs e)
 		{
-			if (BsDataSources.Current != null)
+			// Diag.Trace("DataSources CurrentChanged");
+
+			if (DataSources.Row == null || (int)DataSources.Row["Orderer"] == 0)
+				return;
+
+			if ((int)DataSources.Row["Orderer"] == 1)
 			{
-				DataRow row = ((DataRowView)BsDataSources.Current).Row;
+				DisableEvents();
 
-				if ((int)row["Orderer"] == 0)
-				{
-					Site["Data Source"] = txtDataSource.Text = "";
-					Site["Port Number"] = txtPort.Text = "3050";
-					Site["Server Type"] = cboServerType.SelectedIndex = 0;
-					Site["Initial Catalog"] = txtDatabase.Text = "";
-					cboDialect.SelectedIndex = 1;
-					Site["Dialect"] = Convert.ToInt32(cboDialect.Text);
-					Site["User ID"] = txtUserName.Text = "";
-					Site["Password"] = txtPassword.Text = "";
-					Site["Role Name"] = txtRole.Text = "";
-					Site["Character Set"] = cboCharset.Text = "UTF8";
+				Site["Data Source"] = txtDataSource.Text = "";
+				Site["Port Number"] = txtPort.Text = "3050";
+				Site["Server Type"] = cboServerType.SelectedIndex = 0;
+				Site["Initial Catalog"] = txtDatabase.Text = "";
+				cboDialect.SelectedIndex = 1;
+				Site["Dialect"] = Convert.ToInt32(cboDialect.Text);
+				Site["User ID"] = txtUserName.Text = "";
+				Site["Password"] = txtPassword.Text = "";
+				Site["Role Name"] = txtRole.Text = "";
+				Site["Character Set"] = cboCharset.Text = "UTF8";
 
-					BsDataSources.Position = -1;
-					return;
-				}
-				else
-				{
-					if (txtDataSource.Text.ToLower() != (string)row["DataSourceLc"])
-						Site["Data Source"] = txtDataSource.Text = (string)row["DataSource"];
+				EnableEvents();
+				DataSources.Position = -1;
+
+				return;
+			}
+			else
+			{
+				DisableEvents();
+
+				if (txtDataSource.Text.ToLower() != (string)DataSources.Row["DataSourceLc"])
+					Site["Data Source"] = txtDataSource.Text = (string)DataSources.Row["DataSource"];
 
 
-					if ((int)row["PortNumber"] != 0 && txtPort.Text != row["PortNumber"].ToString())
-						Site["Port Number"] = txtPort.Text = row["PortNumber"].ToString();
-				}
+				if ((int)DataSources.Row["PortNumber"] != 0 && txtPort.Text != DataSources.Row["PortNumber"].ToString())
+					Site["Port Number"] = txtPort.Text = DataSources.Row["PortNumber"].ToString();
 
+				EnableEvents();
 			}
 
-			_SelectedIndexChanged = false;
+			// _SelectedIndexChanged = false;
 
-			UpdateDatabasesFilter();
 		}
 
 
@@ -306,59 +297,69 @@ namespace BlackbirdSql.VisualStudio.Ddex
 		/// </summary>
 		private void DatabaseTextChanged(object sender, EventArgs e)
 		{
+			if (EventsDisabled)
+				return;
+
+			// Diag.Trace("Database text changed");
 			Site["Initial Catalog"] = txtDatabase.Text.Trim();
+
+			if (!DataSources.IsReady)
+				return;
 
 			string database = txtDatabase.Text.Trim().ToLower();
 
 			if (database == "")
 				return;
 
-			DataRow row;
-
-			if (BsDatabases.Current != null)
+			if (DataSources.DependentRow != null)
 			{
-				row = ((DataRowView)BsDatabases.Current).Row;
-
-				if (database == (string)row["InitialCatalogLc"])
+				if (database == (string)DataSources.DependentRow["InitialCatalogLc"])
 					return;
 			}
 
-			BsDatabases.Position = BsDatabases.Find("InitialCatalogLc", database);
+			DataSources.DependentPosition = DataSources.FindDependent("InitialCatalogLc", database);
 
 			return;
 		}
 
 		private void DatabasesCurrentChanged(object sender, EventArgs e)
 		{
-			if (BsDatabases.Current == null)
+			// Diag.Trace("Databases CurrentChanged");
+
+			if (DataSources.DependentRow == null || (string)DataSources.DependentRow["InitialCatalogLc"] == "")
 				return;
 
-			DataRow row = ((DataRowView)BsDatabases.Current).Row;
+			DisableEvents();
 
-			if (txtDatabase.Text.ToLower() != (string)row["InitialCatalogLc"])
-				Site["Initial Catalog"] = txtDatabase.Text = (string)row["InitialCatalog"];
+			if (txtDatabase.Text.ToLower() != (string)DataSources.DependentRow["InitialCatalogLc"])
+				Site["Initial Catalog"] = txtDatabase.Text = (string)DataSources.DependentRow["InitialCatalog"];
 
 			int selectedIndex = cboCharset.SelectedIndex;
 
-			cboCharset.SelectedValue = (string)row["Charset"];
+			cboCharset.SelectedValue = (string)DataSources.DependentRow["Charset"];
 
 			if (cboCharset.SelectedIndex == -1)
 				cboCharset.SelectedIndex = selectedIndex;
 			else
 				Site["Character Set"] = cboCharset.Text;
 
-			if ((string)row["UserName"] != "")
+			if ((string)DataSources.DependentRow["UserName"] != "")
 			{
-				Site["User ID"] = txtUserName.Text = (string)row["UserName"];
-				Site["Password"] = txtPassword.Text = (string)row["Password"];
-				Site["Role Name"] = txtRole.Text = (string)row["RoleName"];
+				Site["User ID"] = txtUserName.Text = (string)DataSources.DependentRow["UserName"];
+				Site["Password"] = txtPassword.Text = (string)DataSources.DependentRow["Password"];
+				Site["Role Name"] = txtRole.Text = (string)DataSources.DependentRow["RoleName"];
 			}
+
+			EnableEvents();
 		}
 
 
 
 		private void SetProperty(object sender, EventArgs e)
 		{
+			if (EventsDisabled)
+				return;
+
 			if (Site != null)
 			{
 				if (sender.Equals(txtUserName))
@@ -392,12 +393,12 @@ namespace BlackbirdSql.VisualStudio.Ddex
 
 		private void CmbDataSource_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			_SelectedIndexChanged = true;
+			//_SelectedIndexChanged = true;
 		}
 
 		private void CmbDatabase_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			_SelectedIndexChanged = true;
+			// _SelectedIndexChanged = true;
 		}
 
 		private void CmdGetFile_Click(object sender, EventArgs e)

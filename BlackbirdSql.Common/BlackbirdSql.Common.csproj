@@ -26,7 +26,7 @@
 		<Compile Include="Extensions\AbstractOptionModel.cs" />
 		<Compile Include="Extensions\AbstractOptionPage.cs" />
 		<Compile Include="Extensions\AbstractQueryCommandProvider.cs" />
-		<Compile Include="Extensions\BindingSourceEx.cs" />
+		<Compile Include="Extensions\ErmBindingSource.cs" />
 		<Compile Include="Extensions\DataToolsCommands.cs" />
 		<Compile Include="Extensions\DbProviderFactoriesEx.cs" />
 		<Compile Include="Extensions\IOptionModelPropertyWrapper.cs" />
