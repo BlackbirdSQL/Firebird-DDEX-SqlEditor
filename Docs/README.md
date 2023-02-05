@@ -7,6 +7,8 @@ The goal is that you don't have to do any configuring of the .csproj, app.config
 The once-off validation features can be disabled in the Visual Studio options but the package has a small footprint and low overhead.</br>
 See [Extended Description](#extended-description) below.
 
+The connection dialog now lists any FlameRobin Servers(DataSources) and Server(DataSource)  Databases.
+
 __Note:__ For the debug build the once-off validation flags are not persistent between loads of solutions and are repeated.
 
 The original DDEX 1.0 data tool has been re-implemented as `BlackbirdSql.VisualStudio.DataTools`. The purpose was only to get DDEX functioning for Firebird before implementing DDEX 2.0, so this tool can be considered obsolete.
