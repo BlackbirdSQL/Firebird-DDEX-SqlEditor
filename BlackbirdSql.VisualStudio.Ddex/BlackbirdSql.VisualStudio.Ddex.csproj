@@ -80,13 +80,12 @@
     <IncludeDebugSymbolsInVSIXContainer>false</IncludeDebugSymbolsInVSIXContainer>
     <IncludeDebugSymbolsInLocalVSIXDeployment>false</IncludeDebugSymbolsInLocalVSIXDeployment>
   </PropertyGroup>
+  <!-- Includes - Top Level -->
+  <ItemGroup>
+    <Content Include="Package.ico" />
+  </ItemGroup>
   <!-- References (Assemblies) -->
   <ItemGroup>
-    <Reference Include="Microsoft.VisualStudio.DataTools.Interop, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-      <HintPath>..\..\..\..\..\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Microsoft.VisualStudio.DataTools.Interop.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -99,7 +98,6 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <!-- References (Packages) -->
   <ItemGroup>
@@ -128,6 +126,20 @@
     </PackageReference>
   </ItemGroup>
   <!-- References (Projects) -->
+  <ItemGroup>
+    <ProjectReference Include="..\BlackbirdSql.Common\BlackbirdSql.Common.csproj">
+      <Project>{28d8b582-2320-446e-b286-9b42e65dae13}</Project>
+      <Name>BlackbirdSql.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Firebird\EntityFramework.Firebird\EntityFramework.Firebird.csproj">
+      <Project>{57f1210c-d9c7-43de-999a-50cfd7c07ac1}</Project>
+      <Name>EntityFramework.Firebird</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Firebird\FirebirdSql.Data.FirebirdClient\FirebirdSql.Data.FirebirdClient.csproj">
+      <Project>{16f13584-61bc-411c-a146-2fe6b6c26016}</Project>
+      <Name>FirebirdSql.Data.FirebirdClient</Name>
+    </ProjectReference>
+  </ItemGroup>
   <!-- References (Services) -->
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
@@ -138,19 +150,10 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <!-- Includes (Property Resources) -->
+  <!-- Includes (Properties and Properties Resources) -->
   <ItemGroup>
-    <Compile Include="Configuration\VsGlobalsAgent.cs" />
-    <Compile Include="Configuration\VsPackageController.cs" />
-    <Compile Include="Configuration\UIDebugOptionControl.xaml.cs">
-      <DependentUpon>UIDebugOptionControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Configuration\UIDebugOptionDialogPage.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Configuration\VsDebugOptionModel.cs" />
-    <Compile Include="Configuration\VsOptionsProvider.cs" />
-    <Compile Include="Configuration\VsGeneralOptionModel.cs" />
+    <Compile Include="Extensions\SystemQueryCommandProvider.cs" />
+    <Compile Include="Extensions\UserQueryCommandProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -164,19 +167,26 @@
     </EmbeddedResource>
     <None Include="Properties\BlackbirdSql.VisualStudio.Ddex.snk" />
   </ItemGroup>
-  <!-- Includes (General Resources) -->
+  <!-- Includes (VSi Resources) -->
   <ItemGroup>
-    <EmbeddedResource Include="Resources\ViewSupport.SystemTable.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.UserTable.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.UserColumn.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\ViewSupport.ComputedColumn.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.ParamIn.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.ParamInOut.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.ParamOut.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.ParamReturn.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.PrimaryKey.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.Procedure.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.ScalarFunction.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.Server.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.View.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.ViewColumn.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.SystemColumn.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.SystemTable.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.UserTable.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.UserColumn.ico" />
   </ItemGroup>
   <!-- Includes (Source Resources) -->
   <ItemGroup>
@@ -196,22 +206,42 @@
     <EmbeddedResource Include="Src\TViewSupport.xml">
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TViewSupport.xml</LogicalName>
     </EmbeddedResource>
+    <Page Include="Configuration\UIDebugOptionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <!-- Includes (Source files) -->
   <ItemGroup>
+    <Compile Include="BlackbirdSqlDdexPackage.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Configuration\PackageData.cs" />
     <Compile Include="Configuration\PackageSupportedObjects.cs" />
+    <Compile Include="Configuration\UIDebugOptionControl.xaml.cs">
+      <DependentUpon>UIDebugOptionControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\UIDebugOptionDialogPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Configuration\VsDebugOptionModel.cs" />
+    <Compile Include="Configuration\VsGeneralOptionModel.cs" />
+    <Compile Include="Configuration\VsGlobalsAgent.cs" />
+    <Compile Include="Configuration\VsOptionsProvider.cs" />
+    <Compile Include="Configuration\VsPackageController.cs" />
+    <Compile Include="Configuration\VsPackageRegistration.cs" />
     <Compile Include="Schema\BinaryEncoding.cs" />
     <Compile Include="Schema\Charset.cs" />
-    <Compile Include="Schema\DslConnectionString.cs" />
-    <Compile Include="Schema\Encoding2.cs" />
-    <Compile Include="Schema\DslDbDataType.cs" />
     <Compile Include="Schema\DslColumns.cs" />
+    <Compile Include="Schema\DslConnectionString.cs" />
+    <Compile Include="Schema\DslDbDataType.cs" />
+    <Compile Include="Schema\DslFunctionArguments.cs" />
+    <Compile Include="Schema\DslIndexColumns.cs" />
+    <Compile Include="Schema\DslObjectTypes.cs" />
     <Compile Include="Schema\DslSchema.cs" />
     <Compile Include="Schema\DslSchemaFactory.cs" />
     <Compile Include="Schema\DslTypeHelper.cs" />
     <Compile Include="Schema\DslViewColumns.cs" />
-    <Compile Include="Schema\DslFunctionArguments.cs" />
-    <Compile Include="Schema\DslIndexColumns.cs" />
+    <Compile Include="Schema\Encoding2.cs" />
     <Compile Include="Schema\IscCodes.cs" />
     <Compile Include="Src\TConnectionEquivalencyComparer.cs" />
     <Compile Include="Src\TConnectionPromptDialog.cs">
@@ -220,15 +250,16 @@
     <Compile Include="Src\TConnectionPromptDialog.Designer.cs">
       <DependentUpon>TConnectionPromptDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\TConnectionUIProperties.cs" />
     <Compile Include="Src\TConnectionProperties.cs" />
     <Compile Include="Src\TConnectionSupport.cs" />
+    <Compile Include="Src\TConnectionUIConnector.cs" />
     <Compile Include="Src\TConnectionUIControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\TConnectionUIControl.Designer.cs">
       <DependentUpon>TConnectionUIControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Src\TConnectionUIProperties.cs" />
     <Compile Include="Src\TMappedObjectConverter.cs" />
     <Compile Include="Src\TObjectIdentifierConverter.cs" />
     <Compile Include="Src\TObjectIdentifierResolver.cs" />
@@ -236,49 +267,14 @@
     <Compile Include="Src\TObjectSelector.cs" />
     <Compile Include="Src\TObjectSupport.cs" />
     <Compile Include="Src\TObjectSelectorRoot.cs" />
-    <Compile Include="Schema\DslObjectTypes.cs" />
     <Compile Include="Src\TProviderObjectFactory.cs" />
     <Compile Include="Src\TSourceInformation.cs" />
     <Compile Include="Src\TSourceVersionComparer.cs" />
-    <Compile Include="Src\TConnectionUIConnector.cs" />
     <None Include="Src\TViewDocumentProvider.cs" />
     <None Include="Src\TViewDatabaseCommandProvider.cs" />
     <Compile Include="Src\TViewSupport.cs" />
-    <Compile Include="BlackbirdSqlDdexPackage.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Configuration\PackageData.cs" />
-    <Compile Include="Configuration\VsPackageRegistration.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\BlackbirdSql.Common\BlackbirdSql.Common.csproj">
-      <Project>{28d8b582-2320-446e-b286-9b42e65dae13}</Project>
-      <Name>BlackbirdSql.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Firebird\EntityFramework.Firebird\EntityFramework.Firebird.csproj">
-      <Project>{57f1210c-d9c7-43de-999a-50cfd7c07ac1}</Project>
-      <Name>EntityFramework.Firebird</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Firebird\FirebirdSql.Data.FirebirdClient\FirebirdSql.Data.FirebirdClient.csproj">
-      <Project>{16f13584-61bc-411c-a146-2fe6b6c26016}</Project>
-      <Name>FirebirdSql.Data.FirebirdClient</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Package.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.ComputedColumn.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.Procedure.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.ScalarFunction.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.Server.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.View.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.ViewColumn.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.SystemColumn.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="Configuration\UIDebugOptionControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
+  <ItemGroup />
   <!-- Imports -->
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

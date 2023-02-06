@@ -7,34 +7,32 @@
 
 
 using System;
+
+using Microsoft;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 using EnvDTE;
-using VSLangProj150;
 
 using BlackbirdSql.Common;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft;
+
+
 
 namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 
 
 // Warning suppression
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "UI thread ensured in code logic.")]
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "UI thread ensured in code logic.")]
 
 
-
-// ---------------------------------------------------------------------------------------------------
+// =========================================================================================================
+//											VsGlobalsAgent Class
 //
-//								VsGlobalsAgent Class
-//
-// ---------------------------------------------------------------------------------------------------
-
-
-
 /// <summary>
-/// Manages Globals and Visual Studio Options
+/// Manages Globals and Visual Studio Options events
 /// </summary>
+// =========================================================================================================
 internal class VsGlobalsAgent
 {
 
@@ -52,12 +50,11 @@ internal class VsGlobalsAgent
 
 
 
-	// ---------------------------------------------------------------------------------------------------
-	//
-	#region Constants - VsGlobalsAgent
-	//
-	// ---------------------------------------------------------------------------------------------------
 
+
+	// =========================================================================================================
+	#region Constants - VsGlobalsAgent
+	// =========================================================================================================
 
 
 	/// <summary>
@@ -112,18 +109,22 @@ internal class VsGlobalsAgent
 	const int G_ValidateFailed = 64;
 
 
-	#endregion
+	#endregion Constants
 
 
 
-	// ---------------------------------------------------------------------------------------------------
-	//
+
+
+	// =========================================================================================================
 	#region Property Accessors - VsGlobalsAgent
-	//
-	// ---------------------------------------------------------------------------------------------------
+	// =========================================================================================================
 
 
-
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns a boolean indicating whther or not the app.config may be validated
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public bool ValidateConfig
 	{
 		get
@@ -132,6 +133,13 @@ internal class VsGlobalsAgent
 		}
 	}
 
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns a boolean indicating whther or not edmx files may be validated
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public bool ValidateEdmx
 	{
 		get
@@ -142,12 +150,11 @@ internal class VsGlobalsAgent
 
 
 
-
-
-
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Get's or sets whether at any point a solution validation failed
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public bool IsValidateFailedStatus
 	{
 		get
@@ -162,22 +169,23 @@ internal class VsGlobalsAgent
 	}
 
 
-	#endregion
+	#endregion Property accessors
 
 
 
-	// ---------------------------------------------------------------------------------------------------
-	//
+
+
+	// =========================================================================================================
 	#region Constructors / Destructors - VsGlobalsAgent
-	//
-	// ---------------------------------------------------------------------------------------------------
+	// =========================================================================================================
 
 
-
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// VsGlobalsAgent .ctor
 	/// </summary>
 	/// <param name="dte"></param>
+	// ---------------------------------------------------------------------------------
 	private VsGlobalsAgent(DTE dte)
 	{
 		_Dte = dte;
@@ -212,27 +220,30 @@ internal class VsGlobalsAgent
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Gets the Singleton VsGlobalsAgent instance
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static VsGlobalsAgent GetInstance(DTE dte)
 	{
 		return _Instance ??= new(dte);
 	}
 
 
-	#endregion
+	#endregion Constructors / Destructors
 
 
 
-	// ---------------------------------------------------------------------------------------------------
-	//
+
+
+	// =========================================================================================================
 	#region Methods - VsGlobalsAgent
-	//
-	// ---------------------------------------------------------------------------------------------------
+	// =========================================================================================================
 
 
-
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// For solutions: Sets a status indicator tagging it as previously validated or validated and valid.
 	/// For projects: Sets a status indicator tagging it as previously validated for it's validity as a
@@ -241,6 +252,7 @@ internal class VsGlobalsAgent
 	/// <param name="globals"></param>
 	/// <param name="valid"></param>
 	/// <returns>True if the operation was successful else False</returns>
+	// ---------------------------------------------------------------------------------
 	public bool SetIsValidStatus(Globals globals, bool valid)
 	{
 		return SetFlagStatus(globals, G_Validated, true, G_Valid, valid);
@@ -248,11 +260,13 @@ internal class VsGlobalsAgent
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Sets a status indicator tagging a project as having been scanned and it's app.config and edmxs validated.
 	/// </summary>
 	/// <param name="project"></param>
 	/// <returns>True if the operation was successful else False</returns>
+	// ---------------------------------------------------------------------------------
 	public bool SetIsScannedStatus(Project project)
 	{
 		try
@@ -270,12 +284,14 @@ internal class VsGlobalsAgent
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Sets status indicator tagging a project's app.config as having been validated for the DBProvider
 	/// </summary>
 	/// <param name="project"></param>
 	/// <param name="valid"></param>
 	/// <returns>True if the operation was successful else False</returns>
+	// ---------------------------------------------------------------------------------
 	public bool SetIsValidatedDbProviderStatus(Project project)
 	{
 		try
@@ -293,6 +309,7 @@ internal class VsGlobalsAgent
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Sets status indicator tagging a project's app.config as having been validated for EF.
 	/// By definition the app.config will also have been validated for 
@@ -300,6 +317,7 @@ internal class VsGlobalsAgent
 	/// <param name="project"></param>
 	/// <param name="valid"></param>
 	/// <returns>True if the operation was successful else False</returns>
+	// ---------------------------------------------------------------------------------
 	public bool SetIsValidatedEFStatus(Project project)
 	{
 		try
@@ -317,6 +335,7 @@ internal class VsGlobalsAgent
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Sets non-persistent status indicator tagging a project's existing edmx's as having been validated/upgraded
 	/// from legacy provider settings
@@ -324,6 +343,7 @@ internal class VsGlobalsAgent
 	/// <param name="project"></param>
 	/// <param name="valid"></param>
 	/// <returns>True if the operation was successful else False</returns>
+	// ---------------------------------------------------------------------------------
 	public bool SetIsUpdatedEdmxsStatus(Project project)
 	{
 		try
@@ -341,11 +361,13 @@ internal class VsGlobalsAgent
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Clears the status indicator of a solution.
 	/// </summary>
 	/// <param name="solution"></param>
 	/// <returns>True if the operation was successful else False</returns>
+	// ---------------------------------------------------------------------------------
 	public bool ClearValidateStatus()
 	{
 		try
@@ -378,12 +400,14 @@ internal class VsGlobalsAgent
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Clears the the persistent flag of a globals.
 	/// </summary>
 	/// <param name="globals"></param>
 	/// <param name="key"></param>
 	/// <returns>True if the operation was successful else False</returns>
+	// ---------------------------------------------------------------------------------
 	public bool ClearPersistentFlag(Globals globals, string key)
 	{
 		try
@@ -407,11 +431,13 @@ internal class VsGlobalsAgent
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Verifies whether or not a solution is in a validation state (or previously validated) or a project has been validated as being valid or not
 	/// </summary>
 	/// <param name="globals"></param>
 	/// <returns></returns>
+	// ---------------------------------------------------------------------------------
 	public bool IsValidatedStatus(Globals globals)
 	{
 #if DEBUG && !__PERSISTENTGLOBALS__
@@ -422,6 +448,7 @@ internal class VsGlobalsAgent
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Checks wether the project is a valid executable output type that requires configuration of the app.config
 	/// </summary>
@@ -430,6 +457,7 @@ internal class VsGlobalsAgent
 	/// <remarks>
 	/// We're not going to worry about anything but C# and VB non=CSP projects
 	/// </remarks>
+	// ---------------------------------------------------------------------------------
 	public bool IsValidExecutableProjectType(IVsSolution solution, Project project)
 	{
 		// We should already be on UI thread. Callers must ensure this can never happen
@@ -484,6 +512,13 @@ internal class VsGlobalsAgent
 	}
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Identifies whether or not a project is a CPS project
+	/// </summary>
+	/// <param name="hierarchy"></param>
+	/// <returns>true if project is CPS</returns>
+	// ---------------------------------------------------------------------------------
 	internal static bool IsCpsProject(IVsHierarchy hierarchy)
 	{
 		Requires.NotNull(hierarchy, "hierarchy");
@@ -491,6 +526,8 @@ internal class VsGlobalsAgent
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Verifies whether or not a solution has been validated or a project is a valid C#/VB executable. See remarks.
 	/// </summary>
@@ -499,6 +536,7 @@ internal class VsGlobalsAgent
 	/// <remarks>
 	/// Callers must call IsValidatedProjectStatus() before checking if a project is valid otherwise this indicator will be meaningless
 	/// </remarks>
+	// ---------------------------------------------------------------------------------
 	public bool IsValidStatus(Globals globals)
 	{
 		return GetFlagStatus(globals, G_Valid);
@@ -506,11 +544,13 @@ internal class VsGlobalsAgent
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Verifies whether or not a project has been scanned and it's app.config and edmxs validated.
 	/// </summary>
 	/// <param name="project"></param>
 	/// <returns></returns>
+	// ---------------------------------------------------------------------------------
 	public bool IsScannedStatus(Project project)
 	{
 		return GetFlagStatus(project.Globals, G_Scanned);
@@ -518,11 +558,13 @@ internal class VsGlobalsAgent
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Verifies whether or not a project's App.config was validated for FirebirdSql.Data.FirebirdClient
 	/// </summary>
 	/// <param name="project"></param>
 	/// <returns></returns>
+	// ---------------------------------------------------------------------------------
 	public bool IsConfiguredDbProviderStatus(Project project)
 	{
 		return GetFlagStatus(project.Globals, G_DbProviderConfigured);
@@ -530,11 +572,13 @@ internal class VsGlobalsAgent
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Verifies whether or not a project's App.config was validated for EntityFramework.Firebird
 	/// </summary>
 	/// <param name="project"></param>
 	/// <returns></returns>
+	// ---------------------------------------------------------------------------------
 	public bool IsConfiguredEFStatus(Project project)
 	{
 		return GetFlagStatus(project.Globals, G_EFConfigured);
@@ -542,17 +586,22 @@ internal class VsGlobalsAgent
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Verifies whether or not a project's existing edmx models were updated from using legacy data providers to current
 	/// Firebird Client and EntityFramework providers.
 	/// </summary>
 	/// <param name="project"></param>
 	/// <returns></returns>
+	// ---------------------------------------------------------------------------------
 	public bool IsUpdatedEdmxsStatus(Project project)
 	{
 		return GetFlagStatus(project.Globals, G_EdmxsUpdated);
 	}
 
+
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Sets a Globals indicator flag.
 	/// </summary>
@@ -562,6 +611,7 @@ internal class VsGlobalsAgent
 	/// <param name="flag2"></param>
 	/// <param name="enabled2"></param>
 	/// <returns>True if the operation was successful else False</returns>
+	// ---------------------------------------------------------------------------------
 	public bool SetFlagStatus(Globals globals, int flag, bool enabled, int flag2 = 0, bool enabled2 = false)
 	{
 		bool exists = false;
@@ -622,12 +672,14 @@ internal class VsGlobalsAgent
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Retrieves an indicator flag's status
 	/// </summary>
 	/// <param name="globals"></param>
 	/// <param name="flag"></param>
 	/// <returns></returns>
+	// ---------------------------------------------------------------------------------
 	protected bool GetFlagStatus(Globals globals, int flag)
 	{
 		int value;
@@ -661,22 +713,23 @@ internal class VsGlobalsAgent
 	}
 
 
-	#endregion
+	#endregion Methods
 
 
 
-	// ---------------------------------------------------------------------------------------------------
-	//
+
+
+	// =========================================================================================================
 	#region Event handlers - VsGlobalsAgent
-	//
-	// ---------------------------------------------------------------------------------------------------
+	// =========================================================================================================
 
 
-
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Debug options saved event handler 
 	/// </summary>
 	/// <param name="e"></param>
+	// ---------------------------------------------------------------------------------
 	void OnDebugSettingsSaved(VsDebugOptionModel e)
 	{
 		Diag.EnableTrace = e.EnableTrace;
@@ -686,10 +739,12 @@ internal class VsGlobalsAgent
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// General options saved event handler
 	/// </summary>
 	/// <param name="e"></param>
+	// ---------------------------------------------------------------------------------
 	void OnGeneralSettingsSaved(VsGeneralOptionModel e)
 	{
 		Diag.EnableWriteLog = e.EnableWriteLog;
@@ -701,5 +756,6 @@ internal class VsGlobalsAgent
 	}
 
 
-	#endregion
+	#endregion Event handlers
+
 }

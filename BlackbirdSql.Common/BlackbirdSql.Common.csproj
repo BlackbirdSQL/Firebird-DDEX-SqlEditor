@@ -23,23 +23,21 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
-		<Compile Include="Extensions\AbstractOptionModel.cs" />
-		<Compile Include="Extensions\AbstractOptionPage.cs" />
-		<Compile Include="Extensions\AbstractQueryCommandProvider.cs" />
+		<Compile Include="Extensions\Options\AbstractOptionModel.cs" />
+		<Compile Include="Extensions\Options\AbstractOptionPage.cs" />
+		<Compile Include="Extensions\Commands\AbstractQueryCommandProvider.cs" />
 		<Compile Include="Extensions\ErmBindingSource.cs" />
 		<Compile Include="Extensions\ExtensionMethods.cs" />
-		<Compile Include="Extensions\DataToolsCommands.cs" />
+		<Compile Include="Extensions\Commands\DataToolsCommands.cs" />
 		<Compile Include="Extensions\DbProviderFactoriesEx.cs" />
-		<Compile Include="Extensions\IOptionModelPropertyWrapper.cs" />
-		<Compile Include="Extensions\NativeSettingsType.cs" />
-		<Compile Include="Extensions\NativeSettingsTypeExtensions.cs" />
-		<Compile Include="Extensions\OptionModelPropertyWrapper.cs" />
-		<Compile Include="Extensions\OverrideCollectionNameAttribute.cs" />
-		<Compile Include="Extensions\OverrideDataTypeAttribute.cs" />
-		<Compile Include="Extensions\OverridePropertyNameAttribute.cs" />
-		<Compile Include="Extensions\SettingDataType.cs" />
-		<Compile Include="Extensions\SystemQueryCommandProvider.cs" />
-		<Compile Include="Extensions\UserQueryCommandProvider.cs" />
+		<Compile Include="Extensions\Options\IOptionModelPropertyWrapper.cs" />
+		<Compile Include="Extensions\Options\NativeSettingsType.cs" />
+		<Compile Include="Extensions\Options\NativeSettingsTypeExtensions.cs" />
+		<Compile Include="Extensions\Options\OptionModelPropertyWrapper.cs" />
+		<Compile Include="Extensions\Options\OverrideCollectionNameAttribute.cs" />
+		<Compile Include="Extensions\Options\OverrideDataTypeAttribute.cs" />
+		<Compile Include="Extensions\Options\OverridePropertyNameAttribute.cs" />
+		<Compile Include="Extensions\Options\SettingDataType.cs" />
 	</ItemGroup>
 
 

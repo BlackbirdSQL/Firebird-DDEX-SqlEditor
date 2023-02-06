@@ -4,9 +4,8 @@ using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Common;
-using BlackbirdSql.Common.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Schema;
-
+using BlackbirdSql.Common.Extensions.Commands;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 

@@ -1,4 +1,8 @@
-﻿using System;
+﻿//
+// Plagiarized from Community.VisualStudio.Toolkit extension
+//
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -6,11 +10,9 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
-using BlackbirdSql.Common;
 using Microsoft.VisualStudio.Settings;
-using Microsoft.VisualStudio.Threading;
 
-namespace BlackbirdSql.Common.Extensions
+namespace BlackbirdSql.Common.Extensions.Options
 {
 	//
 	// Summary:
@@ -91,7 +93,7 @@ namespace BlackbirdSql.Common.Extensions
 		//     object value, where the type of value must be assignable to the System.Reflection.PropertyInfo.PropertyType
 		//     of the wrapped property.
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-		protected Action<object, object?> WrappedPropertySetMethod { get; }
+		protected Action<object, object> WrappedPropertySetMethod { get; }
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 
 		//
@@ -102,7 +104,7 @@ namespace BlackbirdSql.Common.Extensions
 		//     where the type that is returned will be the System.Reflection.PropertyInfo.PropertyType
 		//     of the wrapped property.
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-		protected Func<object, object?> WrappedPropertyGetMethod { get; }
+		protected Func<object, object> WrappedPropertyGetMethod { get; }
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 
 		//
@@ -112,7 +114,7 @@ namespace BlackbirdSql.Common.Extensions
 		//     on the property. If null, the Community.VisualStudio.Toolkit.AbstractOptionModel`1.CollectionName
 		//     should be used instead.
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-		protected string? OverrideCollectionName { get; }
+		protected string OverrideCollectionName { get; }
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 
 		//
@@ -140,7 +142,7 @@ namespace BlackbirdSql.Common.Extensions
 		//     will be non-null and used to convert the property value to and from the Microsoft.VisualStudio.Settings.SettingsStore
 		//     Community.VisualStudio.Toolkit.OptionModelPropertyWrapper.NativeStorageType.
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-		protected TypeConverter? TypeConverter { get; }
+		protected TypeConverter TypeConverter { get; }
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 
 		//
@@ -265,7 +267,7 @@ namespace BlackbirdSql.Common.Extensions
 		private static Func<SettingsStore, string, string, object> CreateSettingsStoreGetMethod<T>(MethodInfo mi)
 		{
 			Func<SettingsStore, string, string, T> func = (Func<SettingsStore, string, string, T>)Delegate.CreateDelegate(typeof(Func<SettingsStore, string, string, T>), mi, throwOnBindFailure: true);
-			return (SettingsStore settingsStore, string collectionName, string propertyName) => func(settingsStore, collectionName, propertyName);
+			return (settingsStore, collectionName, propertyName) => func(settingsStore, collectionName, propertyName);
 		}
 
 		//
@@ -346,7 +348,7 @@ namespace BlackbirdSql.Common.Extensions
 		// Returns:
 		//     A delegate as described above.
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-		protected static Func<object, object?> CreateWrappedPropertyGetDelegate(PropertyInfo propertyInfo)
+		protected static Func<object, object> CreateWrappedPropertyGetDelegate(PropertyInfo propertyInfo)
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		{
 			MethodInfo method = typeof(OptionModelPropertyWrapper).GetMethod("PropertyGetHelper", BindingFlags.Static | BindingFlags.NonPublic);
@@ -379,11 +381,11 @@ namespace BlackbirdSql.Common.Extensions
 		// Returns:
 		//     A delegate as described above.
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-		private static Func<object, object?> PropertyGetHelper<TTarget, TReturn>(MethodInfo method)
+		private static Func<object, object> PropertyGetHelper<TTarget, TReturn>(MethodInfo method)
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		{
 			Func<TTarget, TReturn> func = (Func<TTarget, TReturn>)Delegate.CreateDelegate(typeof(Func<TTarget, TReturn>), method);
-			return (object target) => func((TTarget)target);
+			return (target) => func((TTarget)target);
 		}
 
 		//
@@ -399,7 +401,7 @@ namespace BlackbirdSql.Common.Extensions
 		// Returns:
 		//     A delegate as described above.
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-		protected static Action<object, object?> CreateWrappedPropertySetDelegate(PropertyInfo propertyInfo)
+		protected static Action<object, object> CreateWrappedPropertySetDelegate(PropertyInfo propertyInfo)
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		{
 			MethodInfo method = typeof(OptionModelPropertyWrapper).GetMethod("PropertySetHelper", BindingFlags.Static | BindingFlags.NonPublic);
@@ -432,14 +434,14 @@ namespace BlackbirdSql.Common.Extensions
 		// Returns:
 		//     A delegate as described above.
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-		private static Action<object, object?> PropertySetHelper<TTarget, TParam>(MethodInfo method)
+		private static Action<object, object> PropertySetHelper<TTarget, TParam>(MethodInfo method)
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		{
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 			Action<TTarget, TParam?> action = (Action<TTarget, TParam>)Delegate.CreateDelegate(typeof(Action<TTarget, TParam>), method);
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-			return delegate (object target, object? value)
+			return delegate (object target, object value)
 			{
 				action((TTarget)target, (TParam)value);
 			};
@@ -456,7 +458,7 @@ namespace BlackbirdSql.Common.Extensions
 		//   value:
 		//     The object that is to be serialized. Can Be Null.
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-		internal static string LegacySerializeValue(object? value)
+		internal static string LegacySerializeValue(object value)
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		{
 			if (value == null)
@@ -482,7 +484,7 @@ namespace BlackbirdSql.Common.Extensions
 		//   conversionType:
 		//     The type to deserialize as.
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-		internal static object? LegacyDeserializeValue(string serializedString, Type conversionType)
+		internal static object LegacyDeserializeValue(string serializedString, Type conversionType)
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		{
 			if (serializedString.Length == 0)
@@ -533,7 +535,7 @@ namespace BlackbirdSql.Common.Extensions
 				obj = ConvertPropertyTypeToStorageType(obj, baseOptionModel);
 				if (obj == null)
 				{
-					Diag.Dug(true, String.Format("Cannot store null in settings store. AbstractOptionModel<{0}>.{1} CollectionName:{2} PropertyName:{3} dataType:{4} PropertyType:{5} Value:{6}", baseOptionModel.GetType().FullName, "Load", text, PropertyName, DataType, PropertyInfo.PropertyType, obj ?? "[NULL]"));
+					Diag.Dug(true, string.Format("Cannot store null in settings store. AbstractOptionModel<{0}>.{1} CollectionName:{2} PropertyName:{3} dataType:{4} PropertyType:{5} Value:{6}", baseOptionModel.GetType().FullName, "Load", text, PropertyName, DataType, PropertyInfo.PropertyType, obj ?? "[NULL]"));
 					return false;
 				}
 
@@ -543,7 +545,7 @@ namespace BlackbirdSql.Common.Extensions
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex, String.Format("AbstractOptionModel<{0}>.{1} CollectionName:{2} PropertyName:{3} dataType:{4} PropertyType:{5} Value:{6}", baseOptionModel.GetType().FullName, "Load", text, PropertyName, DataType, PropertyInfo.PropertyType, obj ?? "[NULL]"));
+				Diag.Dug(ex, string.Format("AbstractOptionModel<{0}>.{1} CollectionName:{2} PropertyName:{3} dataType:{4} PropertyType:{5} Value:{6}", baseOptionModel.GetType().FullName, "Load", text, PropertyName, DataType, PropertyInfo.PropertyType, obj ?? "[NULL]"));
 			}
 
 			return false;
@@ -590,7 +592,7 @@ namespace BlackbirdSql.Common.Extensions
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex, String.Format("AbstractOptionModel<{0}>.{1} CollectionName:{2} PropertyName:{3} dataType:{4} PropertyType:{5} Value:{6}", baseOptionModel.GetType().FullName, "Load", text, PropertyName, DataType, PropertyInfo.PropertyType, obj ?? "[NULL]"));
+				Diag.Dug(ex, string.Format("AbstractOptionModel<{0}>.{1} CollectionName:{2} PropertyName:{3} dataType:{4} PropertyType:{5} Value:{6}", baseOptionModel.GetType().FullName, "Load", text, PropertyName, DataType, PropertyInfo.PropertyType, obj ?? "[NULL]"));
 			}
 
 			return false;
@@ -749,7 +751,7 @@ namespace BlackbirdSql.Common.Extensions
 		//     and Community.VisualStudio.Toolkit.AbstractOptionModel`1.DeserializeValue(System.String,System.Type,System.String)
 		//     and stores it as binary, refer to those overridable methods for details.
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-		protected virtual object ConvertPropertyTypeToStorageType<TOptMdl>(object? propertyValue, AbstractOptionModel<TOptMdl> baseOptionModel) where TOptMdl : AbstractOptionModel<TOptMdl>, new()
+		protected virtual object ConvertPropertyTypeToStorageType<TOptMdl>(object propertyValue, AbstractOptionModel<TOptMdl> baseOptionModel) where TOptMdl : AbstractOptionModel<TOptMdl>, new()
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		{
 			//IL_0244: Unknown result type (might be due to invalid IL or missing references)
@@ -772,7 +774,7 @@ namespace BlackbirdSql.Common.Extensions
 					return LegacySerializeValue(propertyValue);
 				default:
 					{
-						Type type = NativeStorageType.GetDotNetType();
+						Type type = NativeStorageType.GetDotNetTypeX();
 						if (TypeConverter != null)
 						{
 							bool flag = false;
@@ -908,7 +910,7 @@ namespace BlackbirdSql.Common.Extensions
 		// Returns:
 		//     settingsStoreValue, converted to the property type.
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-		protected virtual object? ConvertStorageTypeToPropertyType<TOptMdl>(object settingsStoreValue, AbstractOptionModel<TOptMdl> baseOptionModel) where TOptMdl : AbstractOptionModel<TOptMdl>, new()
+		protected virtual object ConvertStorageTypeToPropertyType<TOptMdl>(object settingsStoreValue, AbstractOptionModel<TOptMdl> baseOptionModel) where TOptMdl : AbstractOptionModel<TOptMdl>, new()
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		{
 			//IL_0259: Unknown result type (might be due to invalid IL or missing references)
@@ -1020,113 +1022,3 @@ namespace BlackbirdSql.Common.Extensions
 		}
 	}
 }
-#if false // Decompilation log
-'213' items in cache
-------------------
-Resolve: 'mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
-Found single assembly: 'mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
-Load from: 'C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\mscorlib.dll'
-------------------
-Resolve: 'Microsoft.VisualStudio.Interop, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.Interop, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.interop\17.0.31902.203\lib\net472\Microsoft.VisualStudio.Interop.dll'
-------------------
-Resolve: 'Microsoft.VisualStudio.Text.UI.Wpf, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.Text.UI.Wpf, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.text.ui.wpf\17.0.487\lib\net472\Microsoft.VisualStudio.Text.UI.Wpf.dll'
-------------------
-Resolve: 'Microsoft.VisualStudio.Threading, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.Threading, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.threading\17.0.64\lib\net472\Microsoft.VisualStudio.Threading.dll'
-------------------
-Resolve: 'Microsoft.VisualStudio.Shell.Framework, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.Shell.Framework, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.shell.framework\17.0.31902.203\lib\net472\Microsoft.VisualStudio.Shell.Framework.dll'
-------------------
-Resolve: 'Microsoft.VisualStudio.Text.Logic, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.Text.Logic, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.text.logic\17.0.487\lib\net472\Microsoft.VisualStudio.Text.Logic.dll'
-------------------
-Resolve: 'Microsoft.VisualStudio.Text.Data, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.Text.Data, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.text.data\17.0.487\lib\net472\Microsoft.VisualStudio.Text.Data.dll'
-------------------
-Resolve: 'Microsoft.VisualStudio.Text.UI, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.Text.UI, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.text.ui\17.0.487\lib\net472\Microsoft.VisualStudio.Text.UI.dll'
-------------------
-Resolve: 'Microsoft.VisualStudio.Shell.15.0, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.Shell.15.0, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.shell.15.0\17.0.31902.203\lib\net472\Microsoft.VisualStudio.Shell.15.0.dll'
-------------------
-Resolve: 'PresentationCore, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35'
-Could not find by name: 'PresentationCore, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35'
-------------------
-Resolve: 'Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.imaging.interop.14.0.designtime\17.0.31902.203\lib\net472\Microsoft.VisualStudio.Imaging.Interop.14.0.DesignTime.dll'
-------------------
-Resolve: 'System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Could not find by name: 'System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-------------------
-Resolve: 'PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35'
-Could not find by name: 'PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35'
-------------------
-Resolve: 'System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
-Found single assembly: 'System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
-Load from: 'C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.dll'
-------------------
-Resolve: 'System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
-Found single assembly: 'System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
-Load from: 'C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Core.dll'
-------------------
-Resolve: 'Microsoft.VisualStudio.Package.LanguageService.15.0, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.Package.LanguageService.15.0, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.package.languageservice.15.0\17.0.31902.203\lib\net45\Microsoft.VisualStudio.Package.LanguageService.15.0.dll'
-------------------
-Resolve: 'System.ComponentModel.Composition, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
-Found single assembly: 'System.ComponentModel.Composition, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
-Load from: 'C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.ComponentModel.Composition.dll'
-------------------
-Resolve: 'Microsoft.VisualStudio.Language, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.Language, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.language\17.0.487\lib\net472\Microsoft.VisualStudio.Language.dll'
-------------------
-Resolve: 'System.Collections.Immutable, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'System.Collections.Immutable, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\system.collections.immutable\5.0.0\lib\net461\System.Collections.Immutable.dll'
-------------------
-Resolve: 'System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
-Could not find by name: 'System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
-------------------
-Resolve: 'Microsoft.VisualStudio.ComponentModelHost, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.ComponentModelHost, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.componentmodelhost\17.0.487\lib\net472\Microsoft.VisualStudio.ComponentModelHost.dll'
-------------------
-Resolve: 'Microsoft.VisualStudio.CoreUtility, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.CoreUtility, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.coreutility\17.0.487\lib\net472\Microsoft.VisualStudio.CoreUtility.dll'
-------------------
-Resolve: 'WindowsBase, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35'
-Could not find by name: 'WindowsBase, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35'
-------------------
-Resolve: 'Microsoft.VisualStudio.Editor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.Editor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.editor\17.0.487\lib\net472\Microsoft.VisualStudio.Editor.dll'
-------------------
-Resolve: 'Microsoft.VisualStudio.Validation, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.Validation, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.validation\17.0.28\lib\netstandard2.0\Microsoft.VisualStudio.Validation.dll'
-------------------
-Resolve: 'Microsoft.VisualStudio.Imaging, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.Imaging, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.imaging\17.0.31902.203\lib\net472\Microsoft.VisualStudio.Imaging.dll'
-------------------
-Resolve: 'Microsoft.VisualStudio.ImageCatalog, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.ImageCatalog, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.imagecatalog\17.0.31902.203\lib\net472\Microsoft.VisualStudio.ImageCatalog.dll'
-------------------
-Resolve: 'Microsoft.VisualStudio.Utilities, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.Utilities, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.utilities\17.0.31902.203\lib\net472\Microsoft.VisualStudio.Utilities.dll'
-#endif

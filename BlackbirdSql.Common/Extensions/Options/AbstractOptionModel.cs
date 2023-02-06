@@ -1,4 +1,7 @@
-﻿
+﻿//
+// Plagiarized from Community.VisualStudio.Toolkit extension
+//
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +15,7 @@ using Microsoft.VisualStudio.Shell.Settings;
 using Microsoft.VisualStudio.Threading;
 
 
-namespace BlackbirdSql.Common.Extensions
+namespace BlackbirdSql.Common.Extensions.Options
 {
 	public abstract class AbstractOptionModel<T> where T : AbstractOptionModel<T>, new()
 	{
@@ -32,7 +35,7 @@ namespace BlackbirdSql.Common.Extensions
 
 
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-		public static event Action<T>? Saved;
+		public static event Action<T> Saved;
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 
 		protected AbstractOptionModel()
@@ -95,11 +98,11 @@ namespace BlackbirdSql.Common.Extensions
 				await liveModel.LoadAsync();
 			}
 
-			AbstractOptionModel<T>.Saved?.Invoke(liveModel);
+			Saved?.Invoke(liveModel);
 		}
 
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-		protected internal virtual string SerializeValue(object? value, Type type, string propertyName)
+		protected internal virtual string SerializeValue(object value, Type type, string propertyName)
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		{
 			if (value == null)
@@ -109,12 +112,12 @@ namespace BlackbirdSql.Common.Extensions
 
 			XmlSerializer val = new XmlSerializer(value!.GetType());
 			using StringWriter stringWriter = new StringWriter();
-			val.Serialize((TextWriter)stringWriter, value);
+			val.Serialize(stringWriter, value);
 			return stringWriter.ToString();
 		}
 
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-		protected internal virtual object? DeserializeValue(string serializedData, Type type, string propertyName)
+		protected internal virtual object DeserializeValue(string serializedData, Type type, string propertyName)
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		{
 			if (serializedData.Length == 0)
@@ -127,7 +130,7 @@ namespace BlackbirdSql.Common.Extensions
 				return null;
 			}
 
-			return new XmlSerializer(type).Deserialize((TextReader)new StringReader(serializedData));
+			return new XmlSerializer(type).Deserialize(new StringReader(serializedData));
 		}
 
 		private static async Task<ShellSettingsManager> GetSettingsManagerAsync()
@@ -143,8 +146,8 @@ namespace BlackbirdSql.Common.Extensions
 		protected virtual IEnumerable<PropertyInfo> GetOptionProperties()
 		{
 			return from p in GetType().GetProperties()
-					 where p.PropertyType.IsPublic && p.CanRead && p.CanWrite
-					 select p;
+				   where p.PropertyType.IsPublic && p.CanRead && p.CanWrite
+				   select p;
 		}
 
 		protected virtual IEnumerable<IOptionModelPropertyWrapper> GetPropertyWrappers()
@@ -171,7 +174,7 @@ namespace BlackbirdSql.Common.Extensions
 					}
 					catch (Exception ex)
 					{
-						Diag.Dug(ex, String.Format("AbstractOptionModel<{0}>.{1} Property:{2} PropertyType:{3} is not a valid property.", typeof(T).FullName, "GetPropertyWrappers", optionProperty.Name, optionProperty.PropertyType));
+						Diag.Dug(ex, string.Format("AbstractOptionModel<{0}>.{1} Property:{2} PropertyType:{3} is not a valid property.", typeof(T).FullName, "GetPropertyWrappers", optionProperty.Name, optionProperty.PropertyType));
 					}
 				}
 

@@ -95,7 +95,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			this.lblDataSource.Location = new System.Drawing.Point(0, 0);
 			this.lblDataSource.Margin = new System.Windows.Forms.Padding(0);
 			this.lblDataSource.Name = "lblDataSource";
-			this.lblDataSource.Size = new System.Drawing.Size(64, 16);
+			this.lblDataSource.Size = new System.Drawing.Size(122, 16);
 			this.lblDataSource.TabIndex = 27;
 			this.lblDataSource.Text = "Server hostname";
 			// 
@@ -286,7 +286,6 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			this.cmbDatabase.Name = "cmbDatabase";
 			this.cmbDatabase.Size = new System.Drawing.Size(384, 21);
 			this.cmbDatabase.TabIndex = 22;
-			this.cmbDatabase.SelectedIndexChanged += new System.EventHandler(this.CmbDatabase_SelectedIndexChanged);
 			// 
 			// lblDatabase
 			// 
@@ -321,7 +320,6 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			this.cmbDataSource.Name = "cmbDataSource";
 			this.cmbDataSource.Size = new System.Drawing.Size(160, 21);
 			this.cmbDataSource.TabIndex = 30;
-			this.cmbDataSource.SelectedIndexChanged += new System.EventHandler(this.CmbDataSource_SelectedIndexChanged);
 			// 
 			// openFileDialog
 			// 

@@ -1,6 +1,10 @@
-﻿using Microsoft.VisualStudio.Settings;
+﻿//
+// Plagiarized from Community.VisualStudio.Toolkit extension
+//
 
-namespace BlackbirdSql.Common.Extensions
+using Microsoft.VisualStudio.Settings;
+
+namespace BlackbirdSql.Common.Extensions.Options
 {
 	public interface IOptionModelPropertyWrapper
 	{

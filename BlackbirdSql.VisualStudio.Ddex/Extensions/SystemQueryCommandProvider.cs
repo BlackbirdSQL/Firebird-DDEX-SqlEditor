@@ -1,9 +1,7 @@
 ﻿using System.Runtime.InteropServices;
+using BlackbirdSql.Common.Extensions.Commands;
 
-
-
-
-namespace BlackbirdSql.Common.Extensions
+namespace BlackbirdSql.VisualStudio.Ddex.Extensions
 {
 	[Guid(DataToolsCommands.SystemQueryCommandProviderGuid)]
 	internal class SystemQueryCommandProvider : AbstractQueryCommandProvider

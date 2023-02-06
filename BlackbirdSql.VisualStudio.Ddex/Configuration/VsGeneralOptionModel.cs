@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.InteropServices;
-
-using BlackbirdSql.Common.Extensions;
-
+using BlackbirdSql.Common.Extensions.Options;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Configuration
 {

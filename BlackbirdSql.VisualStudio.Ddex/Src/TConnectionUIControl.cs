@@ -33,19 +33,58 @@ using BlackbirdSql.VisualStudio.Ddex.Schema;
 namespace BlackbirdSql.VisualStudio.Ddex
 {
 
+
+	// =========================================================================================================
+	//										TConnectionUIControl Class
+	//
+	/// <summary>
+	/// Implementation of IVsDataConnectionUIControl interface
+	/// </summary>
+	// =========================================================================================================
 	public partial class TConnectionUIControl : DataConnectionUIControl
 	{
+		#region Variables - TConnectionUIControl
+
+
 		private readonly ErmBindingSource _DataSources;
 
 		private int _EventsDisabled = 0;
 
+
+		#endregion Variables
+
+
+
+
+
+
+		// =========================================================================================================
+		#region Property Accessors - TConnectionUIControl
+		// =========================================================================================================
+
+
+		// ---------------------------------------------------------------------------------
+		/// <summary>
+		/// Returns true if when execution has enetered an event handler that may cause recursion
+		/// </summary>
+		// ---------------------------------------------------------------------------------
 		private bool EventsDisabled
 		{
 			get { return _EventsDisabled > 0; }
 		}
 
 
-		#region Constructors
+		#endregion Property accessors
+
+
+
+
+
+
+		// =========================================================================================================
+		#region Constructors/Destructors - TConnectionUIControl
+		// =========================================================================================================
+
 
 		public TConnectionUIControl() : base()
 		{
@@ -71,11 +110,38 @@ namespace BlackbirdSql.VisualStudio.Ddex
 
 		}
 
-		#endregion
 
-		#region · Methods ·
+		#endregion Constructors/Destructors
 
 
+
+
+
+
+		// =========================================================================================================
+		#region Methods - TConnectionUIControl
+		// =========================================================================================================
+
+
+		// ---------------------------------------------------------------------------------
+		/// <summary>
+		/// Increments the <see cref="EventsDisabled"/> counter when execution enters an event handler
+		/// to prevent recursion
+		/// </summary>
+		// ---------------------------------------------------------------------------------
+		private void DisableEvents()
+		{
+			_EventsDisabled++;
+		}
+
+
+
+		// ---------------------------------------------------------------------------------
+		/// <summary>
+		/// Decrements the <see cref="EventsDisabled"/> counter that was previously incremented by
+		/// <see cref="DisableEvents"/>.
+		/// </summary>
+		// ---------------------------------------------------------------------------------
 		private void EnableEvents()
 		{
 			if (_EventsDisabled == 0)
@@ -85,12 +151,12 @@ namespace BlackbirdSql.VisualStudio.Ddex
 		}
 
 
-		private void DisableEvents()
-		{
-			_EventsDisabled++;
-		}
 
-
+		// ---------------------------------------------------------------------------------
+		/// <summary>
+		/// Loads a previously saved connection string's properties into the form
+		/// </summary>
+		// ---------------------------------------------------------------------------------
 		public override void LoadProperties()
 		{
 			// Diag.Trace("Loading datasource text");
@@ -166,110 +232,40 @@ namespace BlackbirdSql.VisualStudio.Ddex
 		}
 
 
-		#endregion
+		#endregion Methods
 
 
 
 
 
 
-		#region · Event Handlers ·
+		// =========================================================================================================
+		#region Event handlers - TConnectionUIControl
+		// =========================================================================================================
 
 
+		// ---------------------------------------------------------------------------------
 		/// <summary>
-		/// Checks the database input text and move the binding source cursor if the data source is found
+		/// Open FileDialog button click event handler
 		/// </summary>
-		private void DataSourceTextChanged(object sender, EventArgs e)
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		// ---------------------------------------------------------------------------------
+		private void CmdGetFile_Click(object sender, EventArgs e)
 		{
-			if (EventsDisabled)
-				return;
-
-			// Diag.Trace("Datasource text changed");
-
-			Site["Data Source"] = txtDataSource.Text.Trim();
-
-			if (!_DataSources.IsReady)
-				return;
-
-			string datasource = txtDataSource.Text.Trim().ToLower();
-
-			if (datasource == "")
-				return;
-
-			if (_DataSources.Row != null)
+			if (openFileDialog.ShowDialog() == DialogResult.OK)
 			{
-				if (datasource == (string)_DataSources.CurrentValue)
-					return;
+				cmbDatabase.Text = openFileDialog.FileName;
 			}
-
-
-			_DataSources.Position = _DataSources.Find(datasource);
-
-		}
-
-
-		/// <summary>
-		/// Raised when the _DataSources binding source cursor position changes
-		/// </summary>
-		/// <remarks>
-		/// This is probably the cleanest way of doing this. This event can be raised in one of two ways:
-		///		1. The user selected a datasource from the dropdown.
-		///		2. Yhe user type into the datasource textbox and a match was found in the binding source.
-		///	If it's (1) did it, the input text will not match the binding source row info.
-		///	If it's (2) did it the input text will already match the current row info
-		/// </remarks>
-		private void DataSourcesCurrentChanged(object sender, EventArgs e)
-		{
-			// Diag.Trace("_DataSources CurrentChanged");
-
-			if (_DataSources.Row == null || (int)_DataSources.Row["Orderer"] == 0)
-				return;
-
-			if ((int)_DataSources.Row["Orderer"] == 1)
-			{
-				DisableEvents();
-
-				Site["Data Source"] = txtDataSource.Text = "";
-				Site["Port Number"] = txtPort.Text = DslConnectionString.DefaultValuePortNumber.ToString();
-				Site["Server Type"] = cboServerType.SetSelectedIndexX((int)DslConnectionString.DefaultValueServerType).ToString();
-				Site["Initial Catalog"] = txtDatabase.Text = "";
-				Site["Dialect"] = (string)cboDialect.SetSelectedValueX(DslConnectionString.DefaultValueDialect);
-				Site["User ID"] = txtUserName.Text = "";
-				Site["Password"] = txtPassword.Text = "";
-				Site["Role Name"] = txtRole.Text = "";
-				cboCharset.SelectedValue = DslConnectionString.DefaultValueCharacterSet;
-				Site["Character Set"] = DslConnectionString.DefaultValueCharacterSet;
-				Site["Character Set"] = (string)cboCharset.SetSelectedValueX(DslConnectionString.DefaultValueCharacterSet);
-
-				_DataSources.Position = -1;
-
-				EnableEvents();
-
-				return;
-			}
-			else
-			{
-				DisableEvents();
-
-				if (txtDataSource.Text.ToLower() != (string)_DataSources.Row["DataSourceLc"])
-					Site["Data Source"] = txtDataSource.Text = (string)_DataSources.Row["DataSource"];
-
-
-				if ((int)_DataSources.Row["PortNumber"] != 0 && txtPort.Text != _DataSources.Row["PortNumber"].ToString())
-					Site["Port Number"] = txtPort.Text = _DataSources.Row["PortNumber"].ToString();
-
-				EnableEvents();
-			}
-
-			// _SelectedIndexChanged = false;
-
 		}
 
 
 
+		// ---------------------------------------------------------------------------------
 		/// <summary>
 		/// Checks the database input text and updates form values
 		/// </summary>
+		// ---------------------------------------------------------------------------------
 		private void DatabaseTextChanged(object sender, EventArgs e)
 		{
 			if (EventsDisabled)
@@ -297,6 +293,16 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			return;
 		}
 
+
+
+		// ---------------------------------------------------------------------------------
+		/// <summary>
+		/// Handles changes the underlying <see cref="ErmBindingSource.Dependent"/>'s <see cref="ErmBindingSource.DependentRow"/>
+		/// linked to <see cref="cmbDatabase"/>.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		// ---------------------------------------------------------------------------------
 		private void DatabasesCurrentChanged(object sender, EventArgs e)
 		{
 			// Diag.Trace("Databases CurrentChanged");
@@ -330,6 +336,100 @@ namespace BlackbirdSql.VisualStudio.Ddex
 
 
 
+		// ---------------------------------------------------------------------------------
+		/// <summary>
+		/// Checks the database input text and moves the binding source cursor if the data source is found
+		/// </summary>
+		// ---------------------------------------------------------------------------------
+		private void DataSourceTextChanged(object sender, EventArgs e)
+		{
+			if (EventsDisabled)
+				return;
+
+			// Diag.Trace("Datasource text changed");
+
+			Site["Data Source"] = txtDataSource.Text.Trim();
+
+			if (!_DataSources.IsReady)
+				return;
+
+			string datasource = txtDataSource.Text.Trim().ToLower();
+
+			if (datasource == "")
+				return;
+
+			if (_DataSources.Row != null)
+			{
+				if (datasource == (string)_DataSources.CurrentValue)
+					return;
+			}
+
+
+			_DataSources.Position = _DataSources.Find(datasource);
+
+		}
+
+
+
+		// ---------------------------------------------------------------------------------
+		/// <summary>
+		/// Raised when the <see cref="_DataSources"/> master <see cref="BindingSource"/> cursor position changes
+		/// </summary>
+		/// <remarks>
+		/// This is probably the cleanest way of doing this. This event can be raised in one of two ways:
+		///		1. The user selected a datasource from the dropdown.
+		///		2. The user type into the datasource textbox and a match was found in <see cref="ErmBindingSource"/>.
+		///	If it's (1) did it, the input text will not match the binding source row info.
+		///	If it's (2) did it the input text will already match the current row info
+		/// </remarks>
+		// ---------------------------------------------------------------------------------
+		private void DataSourcesCurrentChanged(object sender, EventArgs e)
+		{
+			// Diag.Trace("_DataSources CurrentChanged");
+
+			if (_DataSources.Row == null || (int)_DataSources.Row["Orderer"] == 0)
+				return;
+
+			DisableEvents();
+
+			if ((int)_DataSources.Row["Orderer"] == 1)
+			{
+				Site["Data Source"] = txtDataSource.Text = "";
+				Site["Port Number"] = txtPort.Text = DslConnectionString.DefaultValuePortNumber.ToString();
+				Site["Server Type"] = cboServerType.SetSelectedIndexX((int)DslConnectionString.DefaultValueServerType).ToString();
+				Site["Initial Catalog"] = txtDatabase.Text = "";
+				Site["Dialect"] = (string)cboDialect.SetSelectedValueX(DslConnectionString.DefaultValueDialect);
+				Site["User ID"] = txtUserName.Text = "";
+				Site["Password"] = txtPassword.Text = "";
+				Site["Role Name"] = txtRole.Text = "";
+				cboCharset.SelectedValue = DslConnectionString.DefaultValueCharacterSet;
+				Site["Character Set"] = DslConnectionString.DefaultValueCharacterSet;
+				Site["Character Set"] = (string)cboCharset.SetSelectedValueX(DslConnectionString.DefaultValueCharacterSet);
+
+				_DataSources.Position = -1;
+			}
+			else
+			{
+				if (txtDataSource.Text.ToLower() != (string)_DataSources.Row["DataSourceLc"])
+					Site["Data Source"] = txtDataSource.Text = (string)_DataSources.Row["DataSource"];
+
+
+				if ((int)_DataSources.Row["PortNumber"] != 0 && txtPort.Text != _DataSources.Row["PortNumber"].ToString())
+					Site["Port Number"] = txtPort.Text = _DataSources.Row["PortNumber"].ToString();
+			}
+
+			EnableEvents();
+		}
+
+
+
+		// ---------------------------------------------------------------------------------
+		/// <summary>
+		/// Event handler for all other input controls
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		// ---------------------------------------------------------------------------------
 		private void SetProperty(object sender, EventArgs e)
 		{
 			if (EventsDisabled)
@@ -365,26 +465,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 		}
 
 
+		#endregion Event handlers
 
-		private void CmbDataSource_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			//_SelectedIndexChanged = true;
-		}
-
-		private void CmbDatabase_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			// _SelectedIndexChanged = true;
-		}
-
-		private void CmdGetFile_Click(object sender, EventArgs e)
-		{
-			if (openFileDialog.ShowDialog() == DialogResult.OK)
-			{
-				cmbDatabase.Text = openFileDialog.FileName;
-			}
-		}
-
-
-		#endregion
 	}
 }

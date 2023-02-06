@@ -2,8 +2,6 @@
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 
-using BlackbirdSql.Common;
-
 
 /*
  * This command provider sets a static indicator to filter the table list dialog presented on a 
@@ -29,7 +27,7 @@ using BlackbirdSql.Common;
 
 
 
-namespace BlackbirdSql.Common.Extensions
+namespace BlackbirdSql.Common.Extensions.Commands
 {
 	internal abstract class AbstractQueryCommandProvider : DataViewCommandProvider
 	{
@@ -70,7 +68,7 @@ namespace BlackbirdSql.Common.Extensions
 		{
 			Diag.Trace();
 
-			IVsDataExplorerNode vsDataExplorerNode = base.Site.ExplorerConnection.FindNode(itemId);
+			IVsDataExplorerNode vsDataExplorerNode = Site.ExplorerConnection.FindNode(itemId);
 
 			Diag.Trace();
 			MenuCommand command = vsDataExplorerNode.GetCommand(DataToolsCommands.GlobalNewQuery);

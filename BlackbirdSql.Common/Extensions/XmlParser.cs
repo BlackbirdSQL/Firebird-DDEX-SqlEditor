@@ -8,22 +8,33 @@ using System.Xml;
 namespace BlackbirdSql.Common.Extensions;
 
 
-
-// ---------------------------------------------------------------------------------------------------
+// =========================================================================================================
+//											XmlParser Class
 //
-//										XmlParser Class
-//
-// ---------------------------------------------------------------------------------------------------
-
-
 /// <summary>
-/// Updates project db xml items
+/// Xml parser utility methods
 /// </summary>
+// =========================================================================================================
 internal static class XmlParser
 {
+	#region Variables
+
+
 	static DataTable _DataSources = null, _Databases = null;
 
 
+	#endregion Variables
+
+
+
+
+
+	// =========================================================================================================
+	#region Methods - XmlParser
+	// =========================================================================================================
+
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Populates a <see cref="DataTable"/> with the distinct Server hostnames (DataSources) of all registered
 	/// servers of the current data provider (in this case FlameRobin for Firebird), using the xml located
@@ -32,6 +43,7 @@ internal static class XmlParser
 	/// <returns>
 	/// The populated <see cref="DataTable"/> that can be used together with <see cref="Databases"/> in an <see cref="ErmBindingSource"/>.
 	/// </returns>
+	// ---------------------------------------------------------------------------------
 	public static DataTable DataSources
 	{
 		get
@@ -48,6 +60,7 @@ internal static class XmlParser
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Populates a <see cref="DataTable"/> with all registered databases of the current data provider (in this case FlameRobin for Firebird)
 	/// using the xml located at <see cref="SystemData.ConfiguredConnectionsPath"/>.
@@ -55,6 +68,7 @@ internal static class XmlParser
 	/// <returns>
 	/// The populated <see cref="DataTable"/> that can be used together with <see cref="DataSources"/> in an <see cref="ErmBindingSource"/>.
 	/// </returns>
+	// ---------------------------------------------------------------------------------
 	public static DataTable Databases
 	{
 		get
@@ -302,6 +316,7 @@ internal static class XmlParser
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Checks if a project has Firebird EntityFramework configured in the app.config and configures it if it doesn't
 	/// </summary>
@@ -310,6 +325,7 @@ internal static class XmlParser
 	/// Throws an exception if the app.config could not be successfully verified/updated
 	/// </exception>
 	/// <returns>true if app,config was modified else false.</returns>
+	// ---------------------------------------------------------------------------------
 	public static bool ConfigureDbProvider(string xmlPath, Type factoryClass)
 	{
 		bool modified;
@@ -370,6 +386,7 @@ internal static class XmlParser
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Checks if a project has Firebird EntityFramework configured in the app.config and configures it if it doesn't
 	/// </summary>
@@ -381,6 +398,7 @@ internal static class XmlParser
 	///	If set to true then the client DBProvider factory will also be configured
 	/// </param>
 	/// <returns>true if app,config was modified else false.</returns>
+	// ---------------------------------------------------------------------------------
 	public static bool ConfigureEntityFramework(string xmlPath, bool configureDbProvider, Type factoryClass)
 	{
 		bool modified = false;
@@ -443,6 +461,7 @@ internal static class XmlParser
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Updates the app.config xml Firebird EntityFramework section
 	/// </summary>
@@ -451,6 +470,7 @@ internal static class XmlParser
 	/// Throws an exception if the app.config could not be successfully verified/updated
 	/// </exception>
 	/// <returns>true if xml was modified else false</returns>
+	// ---------------------------------------------------------------------------------
 	private static bool ConfigureEntityFrameworkProviderServices(XmlDocument xmlDoc, XmlNamespaceManager xmlNs, XmlNode xmlRoot)
 	{
 		bool modified = false;
@@ -567,6 +587,7 @@ internal static class XmlParser
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Updates the app.config xml system.data section
 	/// </summary>
@@ -575,6 +596,7 @@ internal static class XmlParser
 	/// Throws an exception if the app.config could not be successfully verified/updated
 	/// </exception>
 	/// <returns>true if xml was modified else false</returns>
+	// ---------------------------------------------------------------------------------
 	private static bool ConfigureDbProviderFactory(XmlDocument xmlDoc, XmlNamespaceManager xmlNs, XmlNode xmlRoot, Type factoryClass)
 	{
 		bool modified = false;
@@ -684,7 +706,7 @@ internal static class XmlParser
 
 
 
-
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Updates an edmx if it was using the legacy Firebird client.
 	/// </summary>
@@ -693,6 +715,7 @@ internal static class XmlParser
 	/// Throws an exception if there weere errors.
 	/// </exception>
 	/// <returns>true if edmx was modified else false.</returns>
+	// ---------------------------------------------------------------------------------
 	public static bool UpdateEdmx(string xmlPath)
 	{
 
@@ -782,4 +805,7 @@ internal static class XmlParser
 		return true;
 
 	}
+
+	#endregion Methods
+
 }
