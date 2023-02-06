@@ -8,7 +8,7 @@ The goal is that you don't have to do any configuring of the .csproj, app.config
 The once-off validation features can be disabled in the Visual Studio options but the package has a small footprint and low overhead.</br>
 See [Extended Description](#extended-description) below.
 
-The connection dialog now lists any FlameRobin Servers(DataSources) and Server(DataSource)  Databases.
+The connection dialog now lists any FlameRobin Server hosts (DataSources) and Server host Databases.
 
 __Note:__ For the debug build the once-off validation flags are not persistent between loads of solutions and are repeated.
 
