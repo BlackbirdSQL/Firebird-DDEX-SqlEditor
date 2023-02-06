@@ -1,9 +1,6 @@
-﻿
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data;
 using System.IO;
-using System.Threading.Tasks;
 using System.Xml;
 
 
@@ -27,7 +24,14 @@ internal static class XmlParser
 	static DataTable _DataSources = null, _Databases = null;
 
 
-
+	/// <summary>
+	/// Populates a <see cref="DataTable"/> with the distinct Server hostnames (DataSources) of all registered
+	/// servers of the current data provider (in this case FlameRobin for Firebird), using the xml located
+	/// at <see cref="SystemData.ConfiguredConnectionsPath"/>.
+	/// </summary>
+	/// <returns>
+	/// The populated <see cref="DataTable"/> that can be used together with <see cref="Databases"/> in an <see cref="ErmBindingSource"/>.
+	/// </returns>
 	public static DataTable DataSources
 	{
 		get
@@ -44,6 +48,13 @@ internal static class XmlParser
 
 
 
+	/// <summary>
+	/// Populates a <see cref="DataTable"/> with all registered databases of the current data provider (in this case FlameRobin for Firebird)
+	/// using the xml located at <see cref="SystemData.ConfiguredConnectionsPath"/>.
+	/// </summary>
+	/// <returns>
+	/// The populated <see cref="DataTable"/> that can be used together with <see cref="DataSources"/> in an <see cref="ErmBindingSource"/>.
+	/// </returns>
 	public static DataTable Databases
 	{
 		get
@@ -72,7 +83,7 @@ internal static class XmlParser
 			bool hasLocal = false;
 			DataRow row;
 
-			string xmlPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\flamerobin\\fr_databases.conf";
+			string xmlPath = SystemData.ConfiguredConnectionsPath;
 
 			if (File.Exists(xmlPath))
 			{

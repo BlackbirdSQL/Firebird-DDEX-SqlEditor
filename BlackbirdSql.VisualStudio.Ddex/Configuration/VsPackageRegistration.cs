@@ -54,14 +54,14 @@ internal sealed class VsPackageRegistration: RegistrationAttribute
 			// Add the Firebird data source (if not exists???)
 			key = context.CreateKey("DataSources\\" + dataSourceGuid);
 
-			key.SetValue(null, SystemData.TechnologyName);
+			key.SetValue(null, SystemData.DataProviderName);
 			key.SetValue("DefaultProvider", providerGuid);
 
 
 			// Add this package as a provider for the Firebird data source
 			key2 = key.CreateSubkey("SupportingProviders");
 			key3 = key2.CreateSubkey(providerGuid);
-			key3.SetValue("DisplayName", SystemData.TechnologyName);
+			key3.SetValue("DisplayName", SystemData.DataProviderName);
 			key3.SetValue("UsingDescription", "DdexProvider_Description, "
 				+ "BlackbirdSql.VisualStudio.Ddex.Properties.Resources, " + nameProviderObjectFactory);
 			DisposeKey(ref key3);

@@ -14,7 +14,7 @@ namespace BlackbirdSql.Common.Extensions;
 
 
 /// <summary>
-/// Provides a simple erm set for Master and Dependent BindingSources. 
+/// Provides a simple ERM set for Master and Dependent BindingSources. 
 /// </summary>
 /// <remarks>
 /// Important: At a minimum <see cref="PrimaryKey"/>, <see cref="ForeignKey"/>, <see cref="BindingSource.DataSource"/> and <see cref="DependentSource"/> must
@@ -73,8 +73,10 @@ internal class ErmBindingSource : BindingSource
 
 	/// <summary>
 	/// Adds or removes a <see cref="Dependent"/> <see cref="BindingSource.CurrentChanged"/> event handler.
-	/// Do not directly add to the CurrerntChanged delegate of <see cref="Dependent"/>.
 	/// </summary>
+	/// <remarks>
+	/// Do not directly add to the CurrerntChanged delegate of <see cref="Dependent"/>.
+	/// </remarks>
 	public event EventHandler DependencyCurrentChanged
 	{
 		add
@@ -118,8 +120,10 @@ internal class ErmBindingSource : BindingSource
 
 	/// <summary>
 	/// Adds or removes a <see cref="Dependent"/> <see cref="BindingSource.PositionChanged"/> event handler.
-	/// Do not directly add to the PositionChanged delegate of <see cref="Dependent"/>.
 	/// </summary>
+	/// <remarks>
+	/// Do not directly add to the PositionChanged delegate of <see cref="Dependent"/>.
+	/// </remarks>
 	public event EventHandler DependencyPositionChanged
 	{
 		add
@@ -188,8 +192,7 @@ internal class ErmBindingSource : BindingSource
 
 
 	/// <summary>
-	/// Gets ot sets the cursor <see cref="BindingSource.Position"/> of the internal
-	///  dependent <see cref="BindingSource"/>.
+	/// Gets or sets the cursor <see cref="BindingSource.Position"/> of the internal <see cref="Dependent"/> <see cref="BindingSource"/>.
 	/// </summary>
 	public int DependentPosition
 	{
@@ -236,8 +239,7 @@ internal class ErmBindingSource : BindingSource
 
 
 	/// <summary>
-	///  Gets or sets the <see cref="BindingSource.DataSource"/> for the internal
-	///  dependent <see cref="BindingSource"/>.
+	///  Gets or sets the <see cref="BindingSource.DataSource"/> for the internal dependent <see cref="BindingSource"/> <see cref="Dependent"/>.
 	/// </summary>
 	public object DependentSource
 	{
@@ -268,7 +270,7 @@ internal class ErmBindingSource : BindingSource
 
 
 	/// <summary>
-	/// True if <see cref="BindingSource.DataSource"/>, <see cref="DependentSource"/>, <see cref="PrimaryKey"/>, <see cref="ForeignKey"/>
+	/// True if <see cref="BindingSource.DataSource"/>, <see cref="DependentSource"/>, <see cref="PrimaryKey"/> and <see cref="ForeignKey"/>
 	/// have been set.
 	/// </summary>
 	public bool IsReady
@@ -284,7 +286,7 @@ internal class ErmBindingSource : BindingSource
 	/// <summary>
 	/// The null value of the <see cref="ForeignKey"/> if <see cref="BindingSource.Current"/> is invalidated.
 	/// The default 'null' assumes the ForeignKey is nullable else you can use an empty
-	/// string or any other value [and type] that will return an empty set for the <see cref="DependentSource"/>
+	/// string or any other value [and type] that will return an empty set for <see cref="DependentSource"/>
 	/// </summary>
 	public object NullableConstraintValue
 	{
@@ -353,7 +355,7 @@ internal class ErmBindingSource : BindingSource
 
 
 	/// <summary>
-	/// Performs a <see cref="BindingSource.Find"/> on the master BindingSource.
+	/// Performs a <see cref="BindingSource.Find"/> on the master BindingSource's <see cref="PrimaryKey"/> column.
 	/// </summary>
 	/// <param name="key">The <see cref="PrimaryKey"/> value to find</param>
 	/// <returns>The zero-based Position of the row else -1</returns>
@@ -368,7 +370,7 @@ internal class ErmBindingSource : BindingSource
 
 
 	/// <summary>
-	/// Performs a <see cref="BindingSource.Find"/> on <see cref="Dependent"/>.
+	/// Performs a <see cref="BindingSource.Find"/> on the <see cref="Dependent"/>'s <see cref="ForeignKey"/> column.
 	/// </summary>
 	/// <param name="key">The <see cref="ForeignKey"/> value to find</param>
 	/// <returns>The zero-based Position of the row else -1</returns>
@@ -399,7 +401,7 @@ internal class ErmBindingSource : BindingSource
 
 
 	/// <summary>
-	/// Update the <see cref="Dependent"/>'s filter based on the value in <see cref="PrimaryKey"/> filtered on
+	/// Updates the <see cref="Dependent"/>'s filter based on the value in <see cref="PrimaryKey"/> filtered on
 	/// <see cref="ForeignKey"/>.
 	/// </summary>
 	/// <param name="initializing"></param>
