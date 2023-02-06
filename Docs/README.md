@@ -1,4 +1,4 @@
-# BlackbirdSQL DDEX 2.0 .NET Data Provider
+# BlackbirdSQL DDEX 2.0 .NET Data Provider for Firebird
 
 (*This package is still under development. Note that in preparation for release the Release configuration has all Firebird library builds disabled and the stock Firebird libraries have been copied to their respective Release output folders.*)
 
