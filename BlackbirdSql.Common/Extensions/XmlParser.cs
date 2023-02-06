@@ -244,9 +244,9 @@ internal static class XmlParser
 
 				row["Id"] = databases.Rows.Count;
 				row["Orderer"] = 1;
-				row["DataSourceName"] = "Clear";
+				row["DataSourceName"] = "Reset";
 				row["DataSource"] = "";
-				row["DataSourceLc"] = "";
+				row["DataSourceLc"] = "reset";
 				row["Name"] = "";
 				row["PortNumber"] = 0;
 				row["InitialCatalog"] = "";

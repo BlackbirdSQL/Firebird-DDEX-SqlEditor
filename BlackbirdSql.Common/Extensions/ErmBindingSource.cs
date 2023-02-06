@@ -8,11 +8,13 @@ using System.Windows.Forms;
 namespace BlackbirdSql.Common.Extensions;
 
 
+// ---------------------------------------------------------------------------------------------------------
+//											ErmBindingSource Class
+// ---------------------------------------------------------------------------------------------------------
+
 
 /// <summary>
-/// ---------------------------------------------------------------------------------------------------------
 /// Provides a simple erm set for Master and Dependent BindingSources. 
-/// ---------------------------------------------------------------------------------------------------------
 /// </summary>
 /// <remarks>
 /// Important: At a minimum <see cref="PrimaryKey"/>, <see cref="ForeignKey"/>, <see cref="BindingSource.DataSource"/> and <see cref="DependentSource"/> must
@@ -37,7 +39,7 @@ internal class ErmBindingSource : BindingSource
 	private static readonly object EVENT_DEPENDENCYLISTCHANGED = new object();
 
 
-	#endregion
+	#endregion Variables
 
 
 
@@ -49,189 +51,21 @@ internal class ErmBindingSource : BindingSource
 	// ---------------------------------------------------------------------------------------------------------
 
 
-	/// <summary>
-	/// The column in the master <see cref="BindingSource.DataSource"/> that will serve as the primary
-	/// key in the ERM
-	/// </summary>
-	public string PrimaryKey
-	{
-		get { return _PrimaryKey; }
-		set { _PrimaryKey = value.Trim(); }
-	}
-
-
 
 	/// <summary>
-	/// The column in the <see cref="DependentSource"/> DataSource that will serve as the selector for
-	/// the <see cref="Dependent"/> BindingSource
+	/// Gets the value of the <see cref="PrimaryKey"/> for the <see cref="Current"/> object
 	/// </summary>
-	public string ForeignKey
-	{
-		get { return _ForeignKey; }
-		set { _ForeignKey = value.Trim(); }
-	}
-
-
-
-	/// <summary>
-	/// True if <see cref="BindingSource.DataSource"/>, <see cref="DependentSource"/>, <see cref="PrimaryKey"/>, <see cref="ForeignKey"/>
-	/// have been set.
-	/// </summary>
-	public bool IsReady
+	public object CurrentValue
 	{
 		get
 		{
-			return (Dependent != null && DataSource != null && DependentSource != null);
-		}
-	}
-
-
-
-	/// <summary>
-	/// The null value of the <see cref="ForeignKey"/> if <see cref="BindingSource.Current"/> is invalidated.
-	/// The default 'null' assumes the ForeignKey is nullable else you can use an empty
-	/// string or any other value [and type] that will return an empty set for the <see cref="DependentSource"/>
-	/// </summary>
-	public object NullableConstraintValue
-	{
-		get { return _NullableConstraintValue; }
-		set { _NullableConstraintValue = value; }
-	}
-
-
-
-	/// <summary>
-	/// Returns the internal dependent <see cref="BindingSource"/>.
-	/// </summary>
-	public BindingSource Dependent
-	{
-		get
-		{
-			if (_Dependent != null)
-				return _Dependent;
-
-			if (_DependentSource == null || _PrimaryKey == "" || _ForeignKey == "")
+			if (_PrimaryKey == "" || Row == null)
 				return null;
 
-			_Dependent = new()
-			{
-				DataSource = _DependentSource,
-			};
-
-			Dependent.PositionChanged += OnDependencyPositionChanged;
-			Dependent.CurrentChanged += OnDependencyCurrentChanged;
-
-
-			return _Dependent;
-		}
-	}
-
-
-
-	/// <summary>
-	///  Gets or sets the <see cref="BindingSource.DataSource"/> for the internal
-	///  dependent <see cref="BindingSource"/>.
-	/// </summary>
-	public object DependentSource
-	{
-		get { return _DependentSource; }
-		set { _DependentSource = value; }
-	}
-
-
-
-	/// <summary>
-	/// Gets ot sets the cursor <see cref="BindingSource.Position"/> of the internal
-	///  dependent <see cref="BindingSource"/>.
-	/// </summary>
-	public int DependentPosition
-	{
-		get
-		{
-			if (Dependent == null)
-				return -1;
-
-			return Dependent.Position;
-		}
-		set
-		{
-			if (Dependent == null)
-				return;
-			Dependent.Position = value;
-		}
-	}
-
-
-
-	/// <summary>
-	/// Gets the <see cref="BindingSource.Current"/> object as a DataRow else returns null
-	/// </summary>
-	public DataRow Row
-	{
-		get
-		{
-			if (Current == null)
+			if (Row[_PrimaryKey] is string str && str == "")
 				return null;
 
-			try
-			{
-				if (Current is DataRowView view)
-					return view.Row;
-				else
-					return null;
-			}
-			catch { }
-
-			return null;
-		}
-	}
-
-
-
-	/// <summary>
-	/// Gets the <see cref="Dependent.Current"/> object of <see cref="Dependent"/> as a DataRow else returns null
-	/// </summary>
-	public DataRow DependentRow
-	{
-		get
-		{
-			if (Dependent == null || Dependent.Current == null)
-				return null;
-
-			try
-			{
-				if (Dependent.Current is DataRowView view)
-					return view.Row;
-				else
-					return null;
-			}
-			catch { }
-
-			return null;
-		}
-	}
-
-
-
-	/// <summary>
-	/// Adds or removes a <see cref="Dependent"/> <see cref="BindingSource.PositionChanged"/> event handler.
-	/// Do not directly add to the PositionChanged delegate of <see cref="Dependent"/>.
-	/// </summary>
-	public event EventHandler DependencyPositionChanged
-	{
-		add
-		{
-			if (Dependent == null)
-				return;
-
-			base.Events.AddHandler(EVENT_DEPENDENCYPOSITIONCHANGED, value);
-		}
-		remove
-		{
-			if (Dependent == null)
-				return;
-
-			base.Events.RemoveHandler(EVENT_DEPENDENCYPOSITIONCHANGED, value);
+			return Row[_PrimaryKey];
 		}
 	}
 
@@ -283,19 +117,52 @@ internal class ErmBindingSource : BindingSource
 
 
 	/// <summary>
-	/// Gets the value of the <see cref="PrimaryKey"/> for the <see cref="Current"/> object
+	/// Adds or removes a <see cref="Dependent"/> <see cref="BindingSource.PositionChanged"/> event handler.
+	/// Do not directly add to the PositionChanged delegate of <see cref="Dependent"/>.
 	/// </summary>
-	public object CurrentValue
+	public event EventHandler DependencyPositionChanged
+	{
+		add
+		{
+			if (Dependent == null)
+				return;
+
+			base.Events.AddHandler(EVENT_DEPENDENCYPOSITIONCHANGED, value);
+		}
+		remove
+		{
+			if (Dependent == null)
+				return;
+
+			base.Events.RemoveHandler(EVENT_DEPENDENCYPOSITIONCHANGED, value);
+		}
+	}
+
+
+
+	/// <summary>
+	/// Returns the internal dependent <see cref="BindingSource"/>.
+	/// </summary>
+	public BindingSource Dependent
 	{
 		get
 		{
-			if (_PrimaryKey == "" || Row == null)
+			if (_Dependent != null)
+				return _Dependent;
+
+			if (_DependentSource == null || _PrimaryKey == "" || _ForeignKey == "")
 				return null;
 
-			if (Row[_PrimaryKey] is string str && str == "")
-				return null;
+			_Dependent = new()
+			{
+				DataSource = _DependentSource,
+			};
 
-			return Row[_PrimaryKey];
+			Dependent.PositionChanged += OnDependencyPositionChanged;
+			Dependent.CurrentChanged += OnDependencyCurrentChanged;
+
+
+			return _Dependent;
 		}
 	}
 
@@ -319,6 +186,150 @@ internal class ErmBindingSource : BindingSource
 	}
 
 
+
+	/// <summary>
+	/// Gets ot sets the cursor <see cref="BindingSource.Position"/> of the internal
+	///  dependent <see cref="BindingSource"/>.
+	/// </summary>
+	public int DependentPosition
+	{
+		get
+		{
+			if (Dependent == null)
+				return -1;
+
+			return Dependent.Position;
+		}
+		set
+		{
+			if (Dependent == null)
+				return;
+			Dependent.Position = value;
+		}
+	}
+
+
+
+	/// <summary>
+	/// Gets the <see cref="Dependent.Current"/> object of <see cref="Dependent"/> as a DataRow else returns null
+	/// </summary>
+	public DataRow DependentRow
+	{
+		get
+		{
+			if (Dependent == null || Dependent.Current == null)
+				return null;
+
+			try
+			{
+				if (Dependent.Current is DataRowView view)
+					return view.Row;
+				else
+					return null;
+			}
+			catch { }
+
+			return null;
+		}
+	}
+
+
+
+	/// <summary>
+	///  Gets or sets the <see cref="BindingSource.DataSource"/> for the internal
+	///  dependent <see cref="BindingSource"/>.
+	/// </summary>
+	public object DependentSource
+	{
+		get { return _DependentSource; }
+		set { _DependentSource = value; }
+	}
+
+
+
+	/// <summary>
+	/// The column in the <see cref="DependentSource"/> DataSource that will serve as the selector for
+	/// the <see cref="Dependent"/> BindingSource
+	/// </summary>
+	public string ForeignKey
+	{
+		get
+		{
+			return _ForeignKey;
+		}
+		set
+		{
+			_ForeignKey = value.Trim();
+			if (IsReady)
+				Initialize();
+		}
+	}
+
+
+
+	/// <summary>
+	/// True if <see cref="BindingSource.DataSource"/>, <see cref="DependentSource"/>, <see cref="PrimaryKey"/>, <see cref="ForeignKey"/>
+	/// have been set.
+	/// </summary>
+	public bool IsReady
+	{
+		get
+		{
+			return (Dependent != null && DataSource != null);
+		}
+	}
+
+
+
+	/// <summary>
+	/// The null value of the <see cref="ForeignKey"/> if <see cref="BindingSource.Current"/> is invalidated.
+	/// The default 'null' assumes the ForeignKey is nullable else you can use an empty
+	/// string or any other value [and type] that will return an empty set for the <see cref="DependentSource"/>
+	/// </summary>
+	public object NullableConstraintValue
+	{
+		get { return _NullableConstraintValue; }
+		set { _NullableConstraintValue = value; }
+	}
+
+
+
+	/// <summary>
+	/// The column in the master <see cref="BindingSource.DataSource"/> that will serve as the primary
+	/// key in the ERM
+	/// </summary>
+	public string PrimaryKey
+	{
+		get { return _PrimaryKey; }
+		set { _PrimaryKey = value.Trim(); }
+	}
+
+
+
+	/// <summary>
+	/// Gets the <see cref="BindingSource.Current"/> object as a DataRow else returns null
+	/// </summary>
+	public DataRow Row
+	{
+		get
+		{
+			if (Current == null)
+				return null;
+
+			try
+			{
+				if (Current is DataRowView view)
+					return view.Row;
+				else
+					return null;
+			}
+			catch { }
+
+			return null;
+		}
+	}
+
+
 	#endregion Property Accessors
 
 
@@ -329,6 +340,16 @@ internal class ErmBindingSource : BindingSource
 	// ---------------------------------------------------------------------------------------------------------
 	#region Methods - ErmBindingSource
 	// ---------------------------------------------------------------------------------------------------------
+
+
+	private void Initialize()
+	{
+		if (Position > 0)
+			Position = -1;
+		else
+			UpdateDependencyFilter();
+	}
+
 
 
 	/// <summary>
@@ -463,21 +484,6 @@ internal class ErmBindingSource : BindingSource
 
 
 	/// <summary>
-	/// The event handler for <see cref="BindingSource.PositionChanged"/> of <see cref="Dependent"/>.
-	/// </summary>
-	/// <param name="sender"></param>
-	/// <param name="e"></param>
-	private void OnDependencyPositionChanged(object sender, EventArgs e)
-	{
-		if (_FilterChanging)
-			return;
-
-		((EventHandler)Events[EVENT_DEPENDENCYPOSITIONCHANGED])?.Invoke(this, e);
-	}
-
-
-
-	/// <summary>
 	/// The event handler for <see cref="BindingSource.CurrentChanged"/> of <see cref="Dependent"/>.
 	/// </summary>
 	/// <param name="sender"></param>
@@ -495,6 +501,21 @@ internal class ErmBindingSource : BindingSource
 	protected virtual void OnDependencyListChanged(ListChangedEventArgs e)
 	{
 		((ListChangedEventHandler)Events[EVENT_DEPENDENCYLISTCHANGED])?.Invoke(this, e);
+	}
+
+
+
+	/// <summary>
+	/// The event handler for <see cref="BindingSource.PositionChanged"/> of <see cref="Dependent"/>.
+	/// </summary>
+	/// <param name="sender"></param>
+	/// <param name="e"></param>
+	private void OnDependencyPositionChanged(object sender, EventArgs e)
+	{
+		if (_FilterChanging)
+			return;
+
+		((EventHandler)Events[EVENT_DEPENDENCYPOSITIONCHANGED])?.Invoke(this, e);
 	}
 
 

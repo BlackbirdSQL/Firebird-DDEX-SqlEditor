@@ -97,7 +97,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			this.lblDataSource.Name = "lblDataSource";
 			this.lblDataSource.Size = new System.Drawing.Size(64, 16);
 			this.lblDataSource.TabIndex = 27;
-			this.lblDataSource.Text = "Data Source";
+			this.lblDataSource.Text = "Server hostname";
 			// 
 			// cboDialect
 			// 
@@ -123,7 +123,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			this.grbSettings.Size = new System.Drawing.Size(180, 109);
 			this.grbSettings.TabIndex = 25;
 			this.grbSettings.TabStop = false;
-			this.grbSettings.Text = "Database Settings";
+			this.grbSettings.Text = "Database settings";
 			// 
 			// cboCharset
 			// 
@@ -201,7 +201,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			this.lblServerType.Name = "lblServerType";
 			this.lblServerType.Size = new System.Drawing.Size(64, 16);
 			this.lblServerType.TabIndex = 13;
-			this.lblServerType.Text = "Server Type";
+			this.lblServerType.Text = "Server type";
 			// 
 			// grbLogin
 			// 
@@ -313,7 +313,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			this.lblPort.Name = "lblPort";
 			this.lblPort.Size = new System.Drawing.Size(69, 16);
 			this.lblPort.TabIndex = 15;
-			this.lblPort.Text = "Port Number";
+			this.lblPort.Text = "Port number";
 			// 
 			// cmbDataSource
 			// 
