@@ -84,6 +84,6 @@ These can all be disabled or the log file output path changed in Visual Studio's
 If you're planning on using EF Core and/or .NET, VS does not have wizard support for edmx which makes no sense to me.
 This roadblock is easily overcome by creating a separate project using .NET Framework for your data models and then linking your .NET / EF Core projects to those edmx models.
 
-If there's any magic you feel should be included here, pop me a mail.</br>
+If there's any magic you feel should be included here, you're welcome to pop me a mail.</br>
 Scanning for preset FlameRobin databases and including them in a dropdown in the VS connection dialog is on the priority todo list. That's a simple enumeration of the FlameRobin db xml file, if installed.</br>
 Also on the priority list are DDL commands... Create, Alter etc.
