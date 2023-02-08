@@ -1,12 +1,31 @@
-﻿using System;
+﻿//
+// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+// $Authors = GA Christos (greg@blackbirdsql.org)
+//
+
+using System;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
+using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Common;
 using Microsoft.VisualStudio.Debugger.Interop;
 
+
+
 namespace BlackbirdSql.VisualStudio.Ddex;
 
+
+// =========================================================================================================
+//										TObjectMemberComparer Class
+//
+/// <summary>
+/// Implementation of <see cref="IVsDataObjectMemberComparer"/> interface
+/// </summary>
+/// <remarks>
+/// Implementation for debugging
+/// </remarks>
+// =========================================================================================================
 internal sealed class TObjectMemberComparer : DataObjectMemberComparer
 {
 	/* For debug trace

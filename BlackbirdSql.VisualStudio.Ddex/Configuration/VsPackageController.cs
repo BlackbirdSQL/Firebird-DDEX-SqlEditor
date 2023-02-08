@@ -1,4 +1,8 @@
-﻿
+﻿//
+// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+// $Authors = GA Christos (greg@blackbirdsql.org)
+//
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,82 +17,74 @@ using EnvDTE;
 using VSLangProj;
 using VSLangProj150;
 
-using FirebirdSql.Data.FirebirdClient;
-
 using BlackbirdSql.Common;
 using BlackbirdSql.Common.Extensions;
+using FirebirdSql.Data.FirebirdClient;
+
+
 
 namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 
 
-
-// ---------------------------------------------------------------------------------------------------
+// =========================================================================================================
+//										VsPackageController Class
 //
-//								VsPackageController Class
-//
-// ---------------------------------------------------------------------------------------------------
-
-
-
 /// <summary>
 /// Manages package events and settings
 /// </summary>
 /// <remarks>
-/// Also updates the app.config for DbProvider and EntityFramework and updates existing .edmx models that are using a legacy provider.
+/// Also updates the app.config for DbProvider and EntityFramework and updates existing .edmx models that
+/// are using a legacy provider.
 /// Also ensures we never do validations of a solution and project app.config and .edmx models twice.
 /// </remarks>
+// =========================================================================================================
 internal class VsPackageController : IVsSolutionEvents, IDisposable
 {
-	#region Private Variables
+	#region Variables
 
 
 	static VsPackageController _Instance = null;
 
 	int _RefCnt = 0;
 
-
 	private readonly DTE _Dte = null;
 	private readonly IVsSolution _Solution = null;
-	private VsGlobalsAgent _Uig;
-
 	private uint _HSolutionEvents = uint.MaxValue;
-
-	// ReferencesEvents _CSharpReferencesEvents = null;
-	// ReferencesEvents _VBReferencesEvents = null;
+	private VsGlobalsAgent _Uig;
 
 	private _dispReferencesEvents_ReferenceAddedEventHandler _ReferenceAddedEventHandler = null;
 
 
-	#endregion
+	#endregion Variables
 
 
 
-	// ---------------------------------------------------------------------------------------------------
-	//
+
+
+	// =========================================================================================================
 	#region Constants - VsPackageController
-	//
-	// ---------------------------------------------------------------------------------------------------
-
+	// =========================================================================================================
 
 
 	const int S_OK = VSConstants.S_OK;
 
 
-	#endregion
+	#endregion Constants
 
 
 
-	// ---------------------------------------------------------------------------------------------------
-	//
+
+
+	// =========================================================================================================
 	#region Property Accessors - VsPackageController
-	//
-	// ---------------------------------------------------------------------------------------------------
+	// =========================================================================================================
 
 
-
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Accessor to the singleton <see cref="VsGlobalsAgent"/> instance
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	VsGlobalsAgent Uig
 	{
 		get
@@ -98,9 +94,12 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Accessor to <see cref="_Solution.Globals"/>
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	Globals SolutionGlobals
 	{
 		get
@@ -112,20 +111,22 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	}
 
 
-	#endregion
+	#endregion Property Accessors
 
 
 
-	// ---------------------------------------------------------------------------------------------------
-	//
+
+
+	// =========================================================================================================
 	#region Constructors / Destructors - VsPackageController
-	//
-	// ---------------------------------------------------------------------------------------------------
+	// =========================================================================================================
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Private singleton .ctor
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	private VsPackageController(DTE dte, IVsSolution solution)
 	{
 		_Dte = dte;
@@ -134,9 +135,11 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Gets the singleton VsPackageController instance
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static VsPackageController GetInstance(DTE dte, IVsSolution solution)
 	{
 		return _Instance ??= new(dte, solution);
@@ -144,6 +147,11 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// VsPackageController destructor
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public void Dispose()
 	{
 		// We should already be on UI thread. Callers must ensure this can never happen
@@ -153,21 +161,22 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	}
 
 
-	#endregion
+	#endregion Constructors / Destructors
 
 
 
-	// ---------------------------------------------------------------------------------------------------
-	//
+
+
+	// =========================================================================================================
 	#region Methods - VsPackageController
-	//
-	// ---------------------------------------------------------------------------------------------------
+	// =========================================================================================================
 
 
-
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Imitates OnOpen events for projects already loaded and then hooks onto solution events
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public void AdviseSolutionEvents()
 	{
 		if (_ReferenceAddedEventHandler != null)
@@ -260,6 +269,13 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Disables solution event invocation
+	/// </summary>
+	/// <param name="disposing"></param>
+	// ---------------------------------------------------------------------------------
 	public void UnadviseSolutionEvents(bool disposing)
 	{
 		// We should already be on UI thread. Callers must ensure this can never happen
@@ -278,11 +294,13 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Recursively validates projects already opened before our package was sited
+	/// Recursively validates projects already opened before our package was sited.
 	/// This list is the initial top level project list from the parent solution
 	/// </summary>
 	/// <param name="projects"></param>
+	// ---------------------------------------------------------------------------------
 	private void RecursiveValidateProject(Projects projects)
 	{
 		// We should already be on UI thread. Callers must ensure this can never happen
@@ -297,11 +315,13 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Recursively validates projects already opened before our package was sited
 	/// This list is tertiary level projects from parent projects (solution folders)
 	/// </summary>
 	/// <param name="projects"></param>
+	// ---------------------------------------------------------------------------------
 	private void RecursiveValidateProject(ProjectItems projectItems)
 	{
 		// We should already be on UI thread. Callers must ensure this can never happen
@@ -323,12 +343,14 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Checks if a project item is an edmx and calls <see cref="UpdateEdmx"/> if it is.
 	/// If it's a project folder it recursively calls itself.
 	/// </summary>
 	/// <param name="item"></param>
 	/// <returns>true if completed successfully else false if there were errors.</returns>
+	// ---------------------------------------------------------------------------------
 	bool RecursiveValidateProjectItem(ProjectItem item)
 	{
 		ThreadHelper.ThrowIfNotOnUIThread();
@@ -412,6 +434,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Recursively validates a project already opened before our package was sited
 	/// </summary>
@@ -422,6 +445,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	/// Updates legacy edmxs in the project
 	/// If it's a folder project is checked for child projects
 	/// </remarks>
+	// ---------------------------------------------------------------------------------
 	private void RecursiveValidateProject(Project project)
 	{
 		// We should already be on UI thread. Callers must ensure this can never happen
@@ -606,13 +630,13 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 
-
-
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Gets the app.config <see cref="ProjectItem"/> of a <see cref="Project"/>
 	/// </summary>
 	/// <param name="project"></param>
 	/// <returns>true if app.config was updated else false</returns>
+	// ---------------------------------------------------------------------------------
 	private ProjectItem GetAppConfigProjectItem(Project project, bool createIfNotFound = false)
 	{
 		// We should already be on UI thread. Callers must ensure this can never happen
@@ -672,12 +696,13 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 
-
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Checks if a project has FirebirdSql.Data.FirebirdClient configured in the app.config and configures it if it doesn't
 	/// </summary>
 	/// <param name="project"></param>
 	/// <returns>true if completed successfully else false if there were errors.</returns>
+	// ---------------------------------------------------------------------------------
 	bool ConfigureDbProvider(ProjectItem config, bool invalidate)
 	{
 
@@ -742,12 +767,13 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 
-
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Checks if a project has EntityFramework.Firebird configured in the app.config and configures it if it doesn't
 	/// </summary>
 	/// <param name="project"></param>
 	/// <returns>true if completed successfully else false if there were errors.</returns>
+	// ---------------------------------------------------------------------------------
 	bool ConfigureEntityFramework(ProjectItem config, bool invalidate)
 	{
 
@@ -813,12 +839,13 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 
-
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Checks if an edmx is using the Legacy provider and updates it to the current provider if it is.
 	/// </summary>
 	/// <param name="project"></param>
 	/// <returns>true if completed successfully else false if there were errors.</returns>
+	// ---------------------------------------------------------------------------------
 	bool UpdateEdmx(ProjectItem edmx, bool invalidate)
 	{
 		try
@@ -873,6 +900,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	}
 
 
+
 	/*
 	/// <summary>
 	/// Adds <see cref="OnReferenceAdded"> event handler to the global Project <see cref="_dispReferencesEvents_Event.ReferenceAdded"/> event
@@ -909,10 +937,12 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Adds <see cref="OnReferenceAdded"> event handler to the Project <see cref="_dispReferencesEvents_Event.ReferenceAdded"/> event
 	/// </summary>
 	/// <param name="dte"></param>
+	// ---------------------------------------------------------------------------------
 	void AddReferenceAddedEventHandler(VSProjectEvents events)
 	{
 		// We should already be on UI thread. Callers must ensure this can never happen
@@ -934,23 +964,24 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	}
 
 
-	#endregion
+	#endregion Methods
 
 
 
-	// ---------------------------------------------------------------------------------------------------
-	//
+
+
+	// =========================================================================================================
 	#region Asynchronous event handlers - VsPackageController
-	//
-	// ---------------------------------------------------------------------------------------------------
+	// =========================================================================================================
 
 
-
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Performs asynchronous operations on <see cref="OnReferenceAdded(Reference)"/>
 	/// </summary>
 	/// <param name="reference"></param>
 	/// <returns></returns>
+	// ---------------------------------------------------------------------------------
 	async Task HandleReferenceAddedAsync(Reference reference)
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(); // Debug
@@ -1029,11 +1060,13 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Performs asychronous operations on <see cref="IVsSolutionEvents.OnAfterOpenProject"/>
 	/// </summary>
 	/// <param name="project"></param>
 	/// <returns></returns>
+	// ---------------------------------------------------------------------------------
 	async Task HandleAfterOpenProjectAsync(Project project)
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -1072,34 +1105,37 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	}
 
 
-	#endregion
+	#endregion Asynchronous event handlers
 
 
 
-	// ---------------------------------------------------------------------------------------------------
-	//
+
+
+	// =========================================================================================================
 	#region IVsSolutionEvents Implementation and Event handling - VsPackageController
-	//
-	// ---------------------------------------------------------------------------------------------------
-
+	// =========================================================================================================
 
 
 	// Events that we handle are listed first
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// /// Event handler for the Project <see cref="_dispReferencesEvents_Event.ReferenceAdded"/> event
 	/// </summary>
 	/// <param name="reference"></param>
+	// ---------------------------------------------------------------------------------
 	void OnReferenceAdded(Reference reference) => _ = HandleReferenceAddedAsync(reference);
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Event handler for <see cref="IVsSolutionEvents"/> AfterOpenProject event
 	/// </summary>
 	/// <param name="pHierarchy"></param>
 	/// <param name="fAdded"></param>
 	/// <returns></returns>
+	// ---------------------------------------------------------------------------------
 	int IVsSolutionEvents.OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
 	{
 		try
@@ -1145,12 +1181,14 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Event handler for the <see cref="IVsSolutionEvents"/> QueryCloseSolution event
 	/// </summary>
 	/// <param name="pUnkReserved"></param>
 	/// <param name="pfCancel"></param>
 	/// <returns></returns>
+	// ---------------------------------------------------------------------------------
 	int IVsSolutionEvents.OnQueryCloseSolution(object pUnkReserved, ref int pfCancel)
 	{
 		try
@@ -1202,23 +1240,24 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	int IVsSolutionEvents.OnAfterCloseSolution(object pUnkReserved) => S_OK;
 
 
-	#endregion
+	#endregion IVsSolutionEvents Implementation and Event handling
 
 
 
-	// ---------------------------------------------------------------------------------------------------
-	//
+
+
+	// =========================================================================================================
 	#region Utility Methods and Dictionaries - VsPackageController
-	//
-	// ---------------------------------------------------------------------------------------------------
+	// =========================================================================================================
 
 
-
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Gets the descriptive name for a DTE object Kind guid string
 	/// </summary>
 	/// <param name="kind"></param>
 	/// <returns>The descriptive name from <see cref="ProjectGuids"/></returns>
+	// ---------------------------------------------------------------------------------
 	protected string GetKindName(string kind)
 	{
 		if (!ProjectGuids.TryGetValue(kind, out string name))
@@ -1229,9 +1268,11 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// DTE object Kind guid string descriptive name dictionary
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	readonly Dictionary<string, string> ProjectGuids = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
 	{
 		{ "{06A35CCD-C46D-44D5-987B-CF40FF872267}", "DeploymentMergeModule" },
@@ -1305,5 +1346,6 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	};
 
 
-	#endregion
+	#endregion Utility Methods and Dictionaries
+
 }

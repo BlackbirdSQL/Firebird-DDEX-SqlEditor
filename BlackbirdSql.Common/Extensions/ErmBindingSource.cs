@@ -319,9 +319,12 @@ internal class ErmBindingSource : BindingSource
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// True if <see cref="BindingSource.DataSource"/>, <see cref="DependentSource"/>, <see cref="PrimaryKey"/> and <see cref="ForeignKey"/>
+	/// True if <see cref="DataSource"/>, <see cref="DependentSource"/>, <see cref="PrimaryKey"/> and <see cref="ForeignKey"/>
 	/// have been set.
 	/// </summary>
+	/// <remarks>
+	/// Once <see cref="ErmBindingSource"/> is in a ready state
+	/// </remarks>
 	// ---------------------------------------------------------------------------------
 	public bool IsReady
 	{
@@ -461,7 +464,7 @@ internal class ErmBindingSource : BindingSource
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Performs a <see cref="BindingSource.Find"/> on <see cref="Dependent"/>.
+	/// Performs a <see cref="BindingSource.Find"/> on the <see cref="Dependent"/> BindingSource.
 	/// </summary>
 	/// <param name="propertyName">The column/property to search in</param>
 	/// <param name="key">The value to find</param>

@@ -1,27 +1,12 @@
-/*
- *  Visual Studio DDEX Provider for FirebirdClient (BlackbirdSql)
- * 
- *     The contents of this file are subject to the Initial 
- *     Developer's Public License Version 1.0 (the "License"); 
- *     you may not use this file except in compliance with the 
- *     License. You may obtain a copy of the License at 
- *     http://www.blackbirdsql.org/index.php?op=doc&id=idpl
- *
- *     Software distributed under the License is distributed on 
- *     an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
- *     express or implied.  See the License for the specific 
- *     language governing rights and limitations under the License.
- * 
- *  Copyright (c) 2023 GA Christos
- *  All Rights Reserved.
- *   
- *  Contributors:
- *    GA Christos
- */
+//
+// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+// $Authors = GA Christos (greg@blackbirdsql.org)
+//
 
 using System;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
+using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Common;
 
@@ -29,13 +14,21 @@ using BlackbirdSql.Common;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
+
+// =========================================================================================================
+//										TSourceInformation Class
+//
 /// <summary>
-/// Provides information about an ADO.NET data source in the form of 
-/// properties passed as name/value pairs.
+/// Implementation of <see cref="IVsDataSourceInformation"/> interface
 /// </summary>
+// =========================================================================================================
 internal class TSourceInformation : AdoDotNetSourceInformation
 {
-	#region · Constructors ·
+
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - TSourceInformation
+	// ---------------------------------------------------------------------------------
+
 
 	public TSourceInformation() : base()
 	{
@@ -47,8 +40,23 @@ internal class TSourceInformation : AdoDotNetSourceInformation
 		AddExtendedProperties();
 	}
 
-	#endregion
 
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Methods and Implementations - TSourceInformation
+	// =========================================================================================================
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Adds additional properties applicable to this data source type
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	private void AddExtendedProperties()
 	{
 		base.AddProperty(CatalogSupported, false);
@@ -71,6 +79,15 @@ internal class TSourceInformation : AdoDotNetSourceInformation
 		base.AddProperty("LocalDatabase", true);
 	}
 
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Retrieves a value for a specified data source information property.
+	/// </summary>
+	/// <param name="propertyName"></param>
+	/// <returns></returns>
+	// ---------------------------------------------------------------------------------
 	protected override object RetrieveValue(string propertyName)
 	{
 		Diag.Trace();
@@ -92,5 +109,8 @@ internal class TSourceInformation : AdoDotNetSourceInformation
 			return null;
 		}
 	}
+
+
+	#endregion Methods and Implementations
 
 }

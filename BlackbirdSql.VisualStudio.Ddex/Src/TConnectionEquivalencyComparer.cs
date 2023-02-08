@@ -1,4 +1,9 @@
-﻿using System;
+﻿//
+// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+// $Authors = GA Christos (greg@blackbirdsql.org)
+//
+
+using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
@@ -7,18 +12,55 @@ using BlackbirdSql.Common;
 using BlackbirdSql.VisualStudio.Ddex.Schema;
 using BlackbirdSql.Common.Extensions.Commands;
 
+
+
 namespace BlackbirdSql.VisualStudio.Ddex;
 
 
-// To be checked
+// =========================================================================================================
+//									TConnectionEquivalencyComparer Class
+//
+/// <summary>
+/// Implementation of <see cref="IVsDataConnectionEquivalencyComparer"/> interface
+/// </summary>
+// =========================================================================================================
 internal class TConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 {
 
+	// ---------------------------------------------------------------------------------
+	#region Constructors
+	// ---------------------------------------------------------------------------------
+
+
 	public TConnectionEquivalencyComparer() : base()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 	}
 
+
+	#endregion Constructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Method Implementations - TConnectionEquivalencyComparer
+	// =========================================================================================================
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Checks whether or not to connection property object are equivalent
+	/// </summary>
+	/// <param name="connectionProperties1"></param>
+	/// <param name="connectionProperties2"></param>
+	/// <returns>true if equivalent else false</returns>
+	/// <remarks>
+	/// We consider 2 connections equivalent if they will produce the same results. The connection properties
+	/// that determine this equivalency are defiend in <see cref="DslConnectionString.EquivalencyKeys"/>.
+	/// </remarks>
+	// ---------------------------------------------------------------------------------
 	protected override bool AreEquivalent(IVsDataConnectionProperties connectionProperties1, IVsDataConnectionProperties connectionProperties2)
 	{
 		// Reset the connection if we're doing a localized server explorer node query
@@ -147,6 +189,26 @@ internal class TConnectionEquivalencyComparer : DataConnectionEquivalencyCompare
 	}
 
 
+	#endregion Method Implementations
+
+
+
+
+
+	// =========================================================================================================
+	#region Methods - TConnectionEquivalencyComparer
+	// =========================================================================================================
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Performs an equivalency comparison of to values of the connection property 'key'
+	/// </summary>
+	/// <param name="key"></param>
+	/// <param name="value1"></param>
+	/// <param name="value2"></param>
+	/// <returns>true if equivalent else false</returns>
+	// ---------------------------------------------------------------------------------
 	protected bool AreEquivalent(string key, object value1, object value2)
 	{
 		string text1 = value1 as string;
@@ -177,6 +239,16 @@ internal class TConnectionEquivalencyComparer : DataConnectionEquivalencyCompare
 
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Finds the value of the connection property 'key' in a connection properties list
+	/// given that the property key used in the list may be a synonym.
+	/// </summary>
+	/// <param name="key"></param>
+	/// <param name="connectionProperties"></param>
+	/// <returns></returns>
+	/// <exception cref="ArgumentException"></exception>
+	// ---------------------------------------------------------------------------------
 	private object FindKeyValueInConnection(string key, IVsDataConnectionProperties connectionProperties)
 	{
 		// First try for matching keys
@@ -199,11 +271,17 @@ internal class TConnectionEquivalencyComparer : DataConnectionEquivalencyCompare
 
 
 
-
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Standardizes the DataSource (Server hostname) [Deprecated]
+	/// </summary>
+	/// <param name="dataSource"></param>
+	/// <returns>The standardized hostname</returns>
+	// ---------------------------------------------------------------------------------
 	private static string StandardizeDataSource(string dataSource)
 	{
 		dataSource = dataSource.ToUpperInvariant();
-		string[] array = new string[2] { ".", "(LOCAL)" };
+		string[] array = new string[2] { ".", "localhost" };
 		foreach (string text in array)
 		{
 			if (dataSource.Equals(text, StringComparison.Ordinal))
@@ -215,5 +293,9 @@ internal class TConnectionEquivalencyComparer : DataConnectionEquivalencyCompare
 
 		return dataSource;
 	}
+
+
+	#endregion Methods
+
 }
 

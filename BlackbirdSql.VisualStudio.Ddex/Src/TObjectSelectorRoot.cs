@@ -1,4 +1,9 @@
-﻿using System;
+﻿//
+// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+// $Authors = GA Christos (greg@blackbirdsql.org)
+//
+
+using System;
 using System.Collections;
 using System.Data;
 using System.Data.Common;
@@ -12,11 +17,27 @@ using BlackbirdSql.Common;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
+
+// =========================================================================================================
+//										TObjectSelectorRoot Class
+//
+/// <summary>
+/// Implementation of <see cref="IVsDataObjectSelector"/> enumerator interface for the root node
+/// </summary>
+// =========================================================================================================
 class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 {
+
+	/// <summary>
+	/// Enumerates the root object properties
+	/// </summary>
+	/// <param name="typeName"></param>
+	/// <param name="restrictions"></param>
+	/// <param name="properties"></param>
+	/// <param name="parameters"></param>
+	/// <returns>A data reader of the root object</returns>
 	protected override IVsDataReader SelectObjects(string typeName, object[] restrictions, string[] properties, object[] parameters)
 	{
-		Diag.Trace();
 
 		IVsDataReader reader;
 
@@ -61,4 +82,5 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 		return reader;
 	}
+
 }

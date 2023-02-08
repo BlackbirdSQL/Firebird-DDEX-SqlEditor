@@ -1,10 +1,14 @@
-﻿
-// Only applicable to DEBUG
-// Uncomment this line to use persistent globals during debug
-// Comment out this line to use non-persistent globals and to clear any persistent globals in your test solution(s)
+﻿//
+// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+// $Authors = GA Christos (greg@blackbirdsql.org)
+//
 
+/*
+ * The folwoing #define is only applicable to DEBUG
+ * Uncomment this line to use persistent globals during debug
+ * Comment out this line to use non-persistent globals and to clear any persistent globals in your test solution(s)
+*/
 // #define __PERSISTENTGLOBALS__
-
 
 using System;
 
@@ -64,6 +68,7 @@ internal class VsGlobalsAgent
 #if DEBUG && !__PERSISTENTGLOBALS__
 	const bool G_Persistent = false;
 	const string G_Key = "GlobalBlackbirdTransitory"; // For debug
+
 	/// <summary>
 	/// This key is the release version persistent key. When running in debug mode
 	/// with __PERSISTENTGLOBALS__ commented out any test solutions opened will have their persistent keys cleared

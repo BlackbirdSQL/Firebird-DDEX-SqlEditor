@@ -1,46 +1,42 @@
-/*
- *  Visual Studio DDEX Provider for FirebirdClient (BlackbirdSql)
- * 
- *     The contents of this file are subject to the Initial 
- *     Developer's Public License Version 1.0 (the "License"); 
- *     you may not use this file except in compliance with the 
- *     License. You may obtain a copy of the License at 
- *     http://www.blackbirdsql.org/index.php?op=doc&id=idpl
- *
- *     Software distributed under the License is distributed on 
- *     an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
- *     express or implied.  See the License for the specific 
- *     language governing rights and limitations under the License.
- * 
- *  Copyright (c) 2023 GA Christos
- *  All Rights Reserved.
- *   
- *  Contributors:
- *    GA Christos
- */
+//
+// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+// $Authors = GA Christos (greg@blackbirdsql.org)
+//
 
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
+using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Common;
-using FirebirdSql.Data.Common;
 
 
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
+
+// =========================================================================================================
+//										TConnectionProperties Class
+//
+/// <summary>
+/// Implementation of <see cref="IVsDataConnectionProperties"/> interface
+/// </summary>
+// =========================================================================================================
 internal class TConnectionProperties : AdoDotNetConnectionProperties
 {
 
+	// ---------------------------------------------------------------------------------
+	#region Property Accessors - TConnectionProperties
+	// ---------------------------------------------------------------------------------
 
-	#region · Properties ·
 
+	/// <summary>
+	/// Determines if the connection properties object is sufficiently complete (inclusive of password)
+	/// to establish a database connection
+	/// </summary>
 	public override bool IsComplete
 	{
 		get
 		{
-			Diag.Trace("ProtectedMandatoryProperties required");
+			// Diag.Trace("ProtectedMandatoryProperties required");
 			foreach (string property in Schema.DslConnectionString.ProtectedMandatoryProperties)
 			{
 				if (!TryGetValue(property, out object value) || string.IsNullOrEmpty((string)value))
@@ -53,18 +49,27 @@ internal class TConnectionProperties : AdoDotNetConnectionProperties
 		}
 	}
 
-	#endregion
+
+	#endregion Property Accessors
 
 
 
-	#region · Constructors ·
 
+
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - TConnectionProperties
+	// ---------------------------------------------------------------------------------
+
+
+	/// <summary>
+	/// TConnectionProperties .ctor
+	/// </summary>
 	public TConnectionProperties() : base()
 	{
 		Diag.Trace();
 	}
 
-	#endregion
+	#endregion Constructors / Destructors
 
 
 }

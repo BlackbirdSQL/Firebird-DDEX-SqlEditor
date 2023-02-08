@@ -1,56 +1,66 @@
-/*
- *  Visual Studio DDEX Provider for FirebirdClient (BlackbirdSql)
- * 
- *     The contents of this file are subject to the Initial 
- *     Developer's Public License Version 1.0 (the "License"); 
- *     you may not use this file except in compliance with the 
- *     License. You may obtain a copy of the License at 
- *     http://www.blackbirdsql.org/index.php?op=doc&id=idpl
- *
- *     Software distributed under the License is distributed on 
- *     an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
- *     express or implied.  See the License for the specific 
- *     language governing rights and limitations under the License.
- * 
- *  Copyright (c) 2023 GA Christos
- *  All Rights Reserved.
- *   
- *  Contributors:
- *    GA Christos
- */
+//
+// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+// $Authors = GA Christos (greg@blackbirdsql.org)
+//
+
 
 using System;
 using System.Runtime.InteropServices;
+using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
-using Microsoft.VisualStudio.Data.Services;
-using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Common;
+using BlackbirdSql.VisualStudio.Ddex.Configuration;
 
 
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
-[Guid(Configuration.PackageData.ObjectFactoryServiceGuid)]
 
-
-public interface IProviderObjectFactory
-{
-}
-
+// =========================================================================================================
+//										TProviderObjectFactory Class
+//
+/// <summary>
+/// Implementation of <see cref="IVsDataProviderObjectFactory"/> interface
+/// </summary>
+/// <remarks>
+/// For debugging only set <see cref="PackageSupportedObjects._UseFactoryOnly"/> to true to
+/// utilize <see cref="CreateObject"/>
+/// </remarks>
+// =========================================================================================================
 public sealed class TProviderObjectFactory : DataProviderObjectFactory, IProviderObjectFactory
 {
-	#region · Constructors ·
+
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - TProviderObjectFactory
+	// ---------------------------------------------------------------------------------
 
 	public TProviderObjectFactory() : base()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 	}
 
-	#endregion
+	#endregion Constructors / Destructors
 
-	#region · Methods ·
 
+
+
+
+	// =========================================================================================================
+	#region Method Implementations - TProviderObjectFactory
+	// =========================================================================================================
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Creates an instance of the specified DDEX support entity implemented by this DDEX
+	/// provider.
+	/// </summary>
+	/// <param name="objType">A type of DDEX support entity.</param>
+	/// <returns>
+	/// An instance of the specified DDEX support entity implemented by the DDEX provider.
+	/// </returns>
+	// ---------------------------------------------------------------------------------
 	public override object CreateObject(Type objType)
 	{
 		/* Uncomment this and change PackageSupportedObjects._UseFactoryOnly to true to debug implementations
@@ -113,5 +123,7 @@ public sealed class TProviderObjectFactory : DataProviderObjectFactory, IProvide
 		return null;
 	}
 
-	#endregion
+
+	#endregion Method Implementations
+
 }

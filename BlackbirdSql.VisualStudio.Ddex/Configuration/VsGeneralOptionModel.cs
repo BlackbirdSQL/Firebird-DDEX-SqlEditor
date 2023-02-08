@@ -1,9 +1,25 @@
-﻿using System.ComponentModel;
-using System.Runtime.InteropServices;
+﻿//
+// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+// $Authors = GA Christos (greg@blackbirdsql.org)
+//
+
+using System.ComponentModel;
+
 using BlackbirdSql.Common.Extensions.Options;
+
+
 
 namespace BlackbirdSql.VisualStudio.Ddex.Configuration
 {
+
+
+	// =========================================================================================================
+	//										VsGeneralOptionModel Class
+	//
+	/// <summary>
+	/// Option Model for General options
+	/// </summary>
+	// =========================================================================================================
 	public class VsGeneralOptionModel : AbstractOptionModel<VsGeneralOptionModel>
 	{
 		[Category("General")]

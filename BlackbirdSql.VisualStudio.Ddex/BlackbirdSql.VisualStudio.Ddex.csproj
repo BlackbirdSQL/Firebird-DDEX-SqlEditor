@@ -206,7 +206,7 @@
     <EmbeddedResource Include="Src\TViewSupport.xml">
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TViewSupport.xml</LogicalName>
     </EmbeddedResource>
-    <Page Include="Configuration\UIDebugOptionControl.xaml">
+    <Page Include="Configuration\UIDebugOptionsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -217,10 +217,10 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Configuration\PackageData.cs" />
     <Compile Include="Configuration\PackageSupportedObjects.cs" />
-    <Compile Include="Configuration\UIDebugOptionControl.xaml.cs">
-      <DependentUpon>UIDebugOptionControl.xaml</DependentUpon>
+    <Compile Include="Configuration\UIDebugOptionsControl.xaml.cs">
+      <DependentUpon>UIDebugOptionsControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Configuration\UIDebugOptionDialogPage.cs">
+    <Compile Include="Configuration\UIDebugOptionsDialogPage.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Configuration\VsDebugOptionModel.cs" />
@@ -267,6 +267,7 @@
     <Compile Include="Src\TObjectSelector.cs" />
     <Compile Include="Src\TObjectSupport.cs" />
     <Compile Include="Src\TObjectSelectorRoot.cs" />
+    <Compile Include="Src\IProviderObjectFactory.cs" />
     <Compile Include="Src\TProviderObjectFactory.cs" />
     <Compile Include="Src\TSourceInformation.cs" />
     <Compile Include="Src\TSourceVersionComparer.cs" />

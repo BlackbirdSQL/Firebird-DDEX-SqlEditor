@@ -1,7 +1,13 @@
-﻿using System;
+﻿//
+// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+// $Authors = GA Christos (greg@blackbirdsql.org)
+//
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Microsoft.VisualStudio.Data.Framework;
+using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Common;
 
@@ -9,13 +15,45 @@ using BlackbirdSql.Common;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
+
+// =========================================================================================================
+//										TSourceVersionComparer Class
+//
+/// <summary>
+/// Implementation of <see cref="IVsDataSourceVersionComparer"/> and <see cref="IComparer{T}"/> interfaces
+/// </summary>
+// =========================================================================================================
 internal class TSourceVersionComparer : DataSourceVersionComparer, IComparer<string>
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - TSourceVersionComparer
+	// ---------------------------------------------------------------------------------
+
+
 	public TSourceVersionComparer()
 	{
 		base.Comparer = this;
 	}
 
+
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Method Implementations - TSourceVersionComparer
+	// =========================================================================================================
+
+
+	/// <summary>
+	/// IComparer implementation. Compares two version strings.
+	/// </summary>
+	/// <param name="x"></param>
+	/// <param name="y"></param>
+	/// <returns>-1: x < y; 0 x == y and 1: x > y</returns>
 	public int Compare(string x, string y)
 	{
 		Diag.Trace();
@@ -50,5 +88,10 @@ internal class TSourceVersionComparer : DataSourceVersionComparer, IComparer<str
 		}
 
 		return 0;
+
 	}
+
+
+	#endregion Method Implementations
+
 }

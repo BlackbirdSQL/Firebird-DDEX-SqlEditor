@@ -1,40 +1,31 @@
-/*
- *  Visual Studio DDEX Provider for FirebirdClient (BlackbirdSql)
- * 
- *     The contents of this file are subject to the Initial 
- *     Developer's Public License Version 1.0 (the "License"); 
- *     you may not use this file except in compliance with the 
- *     License. You may obtain a copy of the License at 
- *     http://www.blackbirdsql.org/index.php?op=doc&id=idpl
- *
- *     Software distributed under the License is distributed on 
- *     an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
- *     express or implied.  See the License for the specific 
- *     language governing rights and limitations under the License.
- * 
- *  Copyright (c) 2023 GA Christos
- *  All Rights Reserved.
- *   
- *  Contributors:
- *    GA Christos
- */
+//
+// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+// $Authors = GA Christos (greg@blackbirdsql.org)
+//
 
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 
 using BlackbirdSql.Common;
-using FirebirdSql.Data.Common;
 
 
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
+
+// =========================================================================================================
+//										TConnectionUIProperties Class
+//
+/// <summary>
+/// Implementation of IVsDataConnectionProperties interface
+/// </summary>
+// =========================================================================================================
 internal class TConnectionUIProperties : AdoDotNetConnectionProperties
 {
 
+	// ---------------------------------------------------------------------------------
+	#region Properties accessors
+	// ---------------------------------------------------------------------------------
 
-	#region · Properties ·
 
 	/// <summary>
 	/// Checks the connection string and activates PromptDialog if incomplete
@@ -43,7 +34,7 @@ internal class TConnectionUIProperties : AdoDotNetConnectionProperties
 	{
 		get
 		{
-			Diag.Trace("ProtectedMandatoryProperties required");
+			// Diag.Trace("ProtectedMandatoryProperties required");
 			// This has to be ProtectedMandatoryProperties for password PromptDialog to be activated
 			foreach (string property in Schema.DslConnectionString.ProtectedMandatoryProperties)
 			{
@@ -57,18 +48,22 @@ internal class TConnectionUIProperties : AdoDotNetConnectionProperties
 		}
 	}
 
-	#endregion
+
+	#endregion Properties accessors
 
 
 
-	#region · Constructors ·
+	// ---------------------------------------------------------------------------------
+	#region Constructors - TConnectionUIProperties
+	// ---------------------------------------------------------------------------------
+
 
 	public TConnectionUIProperties() : base()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 	}
 
-	#endregion
 
+	#endregion Constructors
 
 }

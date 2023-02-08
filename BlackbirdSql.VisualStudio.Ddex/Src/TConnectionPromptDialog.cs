@@ -1,42 +1,40 @@
-/*
- *  Visual Studio DDEX Provider for FirebirdClient
- * 
- *     The contents of this file are subject to the Initial 
- *     Developer's Public License Version 1.0 (the "License"); 
- *     you may not use this file except in compliance with the 
- *     License. You may obtain a copy of the License at 
- *     http://www.firebirdsql.org/index.php?op=doc&id=idpl
- *
- *     Software distributed under the License is distributed on 
- *     an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
- *     express or implied.  See the License for the specific 
- *     language governing rights and limitations under the License.
- * 
- *  Copyright (c) 2023 GA Christos
- *  All Rights Reserved.
- *   
- *  Contributors:
- *    GA Christos
- */
+//
+// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+// $Authors = GA Christos (greg@blackbirdsql.org)
+//
 
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using BlackbirdSql.Common;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
+using BlackbirdSql.Common;
 
 
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
 
-
+// =========================================================================================================
+//										TConnectionPromptDialog Class
+//
+/// <summary>
+/// Implementation of the password <see cref="IVsDataConnectionPromptDialog"/> interface
+/// </summary>
+// =========================================================================================================
 public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 {
 
+	// ---------------------------------------------------------------------------------
+	#region Property Accessors - TConnectionPromptDialog
+	// ---------------------------------------------------------------------------------
 
+
+	/// <summary>
+	/// Determines if the connection properties for the dialog (exluding password) are
+	/// complete (ReadOnly) and returns true if they are.
+	/// </summary>
 	public bool IsReadOnly
 	{
 		get
@@ -60,7 +58,16 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 	}
 
 
-	#region · Constructors ·
+	#endregion Property Accessors
+
+
+
+
+
+	// =========================================================================================================
+	#region Constructors / Destructors - TConnectionPromptDialog
+	// =========================================================================================================
+
 
 	public TConnectionPromptDialog()
 	{
@@ -91,12 +98,24 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 		MinimumSize = new Size(Width, Height);
 	}
 
-	#endregion
+
+	#endregion Constructors / Destructors
 
 
 
-	#region · Methods ·
 
+
+	// =========================================================================================================
+	#region Method Implementations & Overloads - TConnectionPromptDialog
+	// =========================================================================================================
+
+
+#if DEBUG
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Overloads the password prompt dialog [For debug exception tracking]
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public new string ShowDialog(IVsDataConnectionSupport dataConnectionSupport)
 	{
 		try
@@ -109,7 +128,15 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 			throw;
 		}
 	}
+#endif
 
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Loads the current <see cref="IVsDataConnectionUIProperties"/> connection properties
+	/// into the form data
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	protected override void LoadProperties()
 	{
 		try
@@ -152,6 +179,13 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 
 	}
 
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Assigns the form data to the <see cref="IVsDataConnectionUIProperties"/> connection properties.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	protected override void SaveProperties()
 	{
 		try
@@ -182,9 +216,15 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 		}
 	}
 
-	#endregion
 
-	#region · Event Handlers ·
+	#endregion Method Implementations & Overloads
+
+
+
+	// =========================================================================================================
+	#region Event Handlers & Implementations - TConnectionPromptDiialog
+	// =========================================================================================================
+
 
 	protected override void OnFormClosing(FormClosingEventArgs e)
 	{
@@ -195,6 +235,7 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 			base.OnFormClosing(e);
 	}
 
+
 	protected override void OnFontChanged(EventArgs e)
 	{
 		base.OnFontChanged(e);
@@ -202,6 +243,7 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 		MinimumSize = new Size(MinimumSize.Width, MinimumSize.Height - num);
 		Height += -num;
 	}
+
 
 	protected override void OnShown(EventArgs e)
 	{
@@ -221,6 +263,7 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 		}
 	}
 
+
 	protected override void OnHelpRequested(HelpEventArgs hevent)
 	{
 		// Host.ShowHelp("vs.sqlconnectionpromptdialog");
@@ -235,11 +278,13 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 		control.Text = control.Text.Trim();
 	}
 
+
 	private void ResetControlText(object sender, EventArgs e)
 	{
 		Control control = sender as Control;
 		control.Text = control.Text;
 	}
+
 
 	private void SetOkButtonStatus(object sender, EventArgs e)
 	{
@@ -260,5 +305,8 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 		}
 	}
 	*/
-	#endregion
+
+
+	#endregion Event Handlers & Implementations
+
 }

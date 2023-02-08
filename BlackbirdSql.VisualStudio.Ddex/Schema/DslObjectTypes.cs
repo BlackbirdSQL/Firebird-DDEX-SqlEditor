@@ -1,28 +1,23 @@
-/*
- *  Visual Studio DDEX Provider for FirebirdClient (BlackbirdSql)
- * 
- *     The contents of this file are subject to the Initial 
- *     Developer's Public License Version 1.0 (the "License"); 
- *     you may not use this file except in compliance with the 
- *     License. You may obtain a copy of the License at 
- *     http://www.blackbirdsql.org/index.php?op=doc&id=idpl
- *
- *     Software distributed under the License is distributed on 
- *     an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
- *     express or implied.  See the License for the specific 
- *     language governing rights and limitations under the License.
- * 
- *  Copyright (c) 2023 GA Christos
- *  All Rights Reserved.
- *   
- *  Contributors:
- *    GA Christos
- */
+//
+// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+// $Authors = GA Christos (greg@blackbirdsql.org)
+//
 
-using System;
+using Microsoft.VisualStudio.Data.Services.SupportEntities;
+
+
 
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
+
+// =========================================================================================================
+//										DslObjectTypes Class
+//
+/// <summary>
+/// Identifier utility class and container for all identifier object constants used by the
+/// <see cref="IVsDataObjectIdentifierResolver"/> implementation
+/// </summary>
+// =========================================================================================================
 internal static class DslObjectTypes
 {
 	public const string Root = "";
@@ -42,4 +37,46 @@ internal static class DslObjectTypes
 	public const string StoredProcedureColumn = "StoredProcedureColumn";
 	public const string ScalarFunction = "ScalarFunction";
 	public const string ScalarFunctionParameter = "ScalarFunctionParameter";
+
+
+
+	/// <summary>
+	/// Gets the identifier length used by <see cref="TObjectIdentifierResolver"/>.
+	/// </summary>
+	/// <param name="typeName"></param>
+	/// <returns></returns>
+	public static int GetIdentifierLength(string typeName)
+	{
+		// Diag.Trace();
+
+		switch (typeName)
+		{
+			case DslObjectTypes.Root:
+				return 0;
+
+			case DslObjectTypes.Table:
+			case DslObjectTypes.View:
+			case DslObjectTypes.StoredProcedure:
+			case DslObjectTypes.ScalarFunction:
+				return 3;
+
+			case DslObjectTypes.TableColumn:
+			case DslObjectTypes.TableIndex:
+			case DslObjectTypes.TableUniqueKey:
+			case DslObjectTypes.TableForeignKey:
+			case DslObjectTypes.ViewColumn:
+			case DslObjectTypes.StoredProcedureParameter:
+			case DslObjectTypes.StoredProcedureColumn:
+			case DslObjectTypes.ScalarFunctionParameter:
+				return 4;
+
+			case DslObjectTypes.TableIndexColumn:
+			case DslObjectTypes.TableUniqueKeyColumn:
+			case DslObjectTypes.TableForeignKeyColumn:
+				return 5;
+
+			default:
+				return -1;
+		}
+	}
 }

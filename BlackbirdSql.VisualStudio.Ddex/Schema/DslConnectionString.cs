@@ -1,4 +1,8 @@
 ﻿/*
+ *	This is an override of the FirebirdClient Schema
+ *	We're maintaining the same structure so that it's easy to overload any GetSchema's that may need it.
+ *	We still use the original Firebird metadata manifest pulled from the Firebird assembly
+ *	
  *    The contents of this file are subject to the Initial
  *    Developer's Public License Version 1.0 (the "License");
  *    you may not use this file except in compliance with the

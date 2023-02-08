@@ -2,7 +2,6 @@
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 
-
 using BlackbirdSql.Common;
 
 
@@ -10,30 +9,46 @@ using BlackbirdSql.Common;
 namespace BlackbirdSql.VisualStudio.Ddex;
 
 
+
+// =========================================================================================================
+//									TConnectionUIConnector Class
+//
+/// <summary>
+/// Implementation of <see cref="Microsoft.VisualStudio.Data.Services.SupportEntities.IVsDataConnectionUIConnector"/> interface
+/// </summary>
+// =========================================================================================================
 internal class TConnectionUIConnector : DataConnectionUIConnector
 {
-	//
-	// Summary:
-	//     Initializes a new instance of the TConnectionUIConnector
-	//     class.
+
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - TConnectionUIControl
+	// ---------------------------------------------------------------------------------
+
+
 	public TConnectionUIConnector() :base()
 	{
 		Diag.Trace();
 	}
 
 
-	//
-	// Summary:
-	//     Opens the data connection in the context of a connection UI (for example, the
-	//     data connection dialog box).
-	//
-	// Parameters:
-	//   connection:
-	//     A data connection object representing the connection to the data source.
-	//
-	// Exceptions:
-	//   T:System.ArgumentNullException:
-	//     The connection parameter is null.
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Implementations - TConnectionUIControl
+	// =========================================================================================================
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Opens the data connection in the context of a connection UI (for example, the connection dialog box).
+	/// </summary>
+	/// <param name="connection">
+	/// A data connection object representing the connection to the data source.
+	/// </param>
 	public override void Connect(IVsDataConnection connection)
 	{
 		Diag.Trace();
@@ -50,5 +65,8 @@ internal class TConnectionUIConnector : DataConnectionUIConnector
 			connection.Open();
 		}
 	}
+
+
+	#endregion Implementations
 
 }

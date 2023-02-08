@@ -1,32 +1,45 @@
 ﻿//
-// May be needed to replace enumerator
+// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+// $Authors = GA Christos (greg@blackbirdsql.org)
 //
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
+using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Common;
-using FirebirdSql.Data.FirebirdClient;
-using BlackbirdSql.VisualStudio.Ddex.Properties;
-using System.Data.Common;
-using Microsoft.VisualStudio.Data.Framework;
-using Microsoft.VisualStudio.LanguageServer.Client;
-using System.Globalization;
-using System.Reflection;
-using System.Threading;
-using BlackbirdSql.VisualStudio.Ddex.Schema;
 using BlackbirdSql.Common.Extensions.Commands;
+using BlackbirdSql.VisualStudio.Ddex.Schema;
+using FirebirdSql.Data.FirebirdClient;
+
+
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
+
+// =========================================================================================================
+//											TObjectSelector Class
+//
+/// <summary>
+/// Implementation of <see cref="IVsDataObjectSelector"/> enumerator interface
+/// </summary>
+// =========================================================================================================
 class TObjectSelector : AdoDotNetObjectSelector
 {
-	// Unused - option to directly enumerate
+
+	// ---------------------------------------------------------------------------------
+	#region Variables - TObjectSelector
+	// ---------------------------------------------------------------------------------
+
+
+	// Unused - option to distinctly enumerate
+	/*
 	readonly Dictionary<string, Func<FbConnection, object[], DataTable>> _objectSelectors
 		= new()
 		{
@@ -37,24 +50,54 @@ class TObjectSelector : AdoDotNetObjectSelector
 			{ "ViewColumns", SelectViewColumns },
 			{ "ViewTriggers", SelectViewTriggers }
 		};
+	*/
+
+
+	#endregion Variables
+
+
+
+
+
+	// =========================================================================================================
+	#region Constructors / Destructors - TObjectSelector
+	// =========================================================================================================
+
 
 	public TObjectSelector()
 	{
 	}
+
 
 	public TObjectSelector(IVsDataConnection connection) : base(connection)
 	{
 	}
 
 
-	// This can be deleted after debugging. Only purpose is to catch exceptions
-	protected override IVsDataReader SelectObjects(
-	   string typeName,
-	   object[] restrictions,
-	   string[] properties,
-	   object[] parameters)
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Method Implementations - TObjectSelector
+	// =========================================================================================================
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Data object enumeration
+	/// </summary>
+	/// <remarks>
+	/// Also intercepts enumerations from the SE for <see cref="AbstractQueryCommandProvider"/> and
+	/// sets <see cref="DataToolsCommands.ObjectType"/> to the correct node system object type
+	/// </remarks>
+	// ---------------------------------------------------------------------------------
+	protected override IVsDataReader SelectObjects(string typeName, object[] restrictions,
+		string[] properties, object[] parameters)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 
 		try
 		{
@@ -170,7 +213,14 @@ class TObjectSelector : AdoDotNetObjectSelector
 
 
 
-
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Override included for TABLE_TYPE hack
+	/// </summary>
+	/// <param name="typeName"></param>
+	/// <param name="parameters"></param>
+	/// <returns>The list of supported reestrictions</returns>
+	// ---------------------------------------------------------------------------------
 	protected override IList<string> GetSupportedRestrictions(string typeName, object[] parameters)
 	{
 		Diag.Trace();
@@ -226,10 +276,14 @@ class TObjectSelector : AdoDotNetObjectSelector
 
 
 
-
-
-
-
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Override for debugging
+	/// </summary>
+	/// <param name="typeName"></param>
+	/// <param name="parameters"></param>
+	/// <returns></returns>
+	// ---------------------------------------------------------------------------------
 	protected override IList<string> GetRequiredRestrictions(string typeName, object[] parameters)
 	{
 
@@ -275,8 +329,8 @@ class TObjectSelector : AdoDotNetObjectSelector
 
 	// Everything below from this point is not used - option to enumerate each without using the underlying framework
 
-
-	protected /* override */ IVsDataReader SelectObjectsEx(
+	/*
+	protected override IVsDataReader SelectObjectsEx(
 	string typeName,
 	object[] restrictions,
 	string[] properties,
@@ -478,5 +532,9 @@ class TObjectSelector : AdoDotNetObjectSelector
 
 		return dataTable;
 	}
+	*/
+
+
+	#endregion Method Implementations
 
 }

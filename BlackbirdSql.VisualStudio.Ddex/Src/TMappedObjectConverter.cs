@@ -1,28 +1,13 @@
-/*
- *  Visual Studio DDEX Provider for FirebirdClient (BlackbirdSql)
- * 
- *     The contents of this file are subject to the Initial 
- *     Developer's Public License Version 1.0 (the "License"); 
- *     you may not use this file except in compliance with the 
- *     License. You may obtain a copy of the License at 
- *     http://www.blackbirdsql.org/index.php?op=doc&id=idpl
- *
- *     Software distributed under the License is distributed on 
- *     an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either 
- *     express or implied.  See the License for the specific 
- *     language governing rights and limitations under the License.
- * 
- *  Copyright (c) 2023 GA Christos
- *  All Rights Reserved.
- *   
- *  Contributors:
- *    GA Christos
- */
+//
+// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+// $Authors = GA Christos (greg@blackbirdsql.org)
+//
 
 using System;
 using System.Data;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
+using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Common;
 
@@ -31,18 +16,54 @@ using BlackbirdSql.Common;
 namespace BlackbirdSql.VisualStudio.Ddex;
 
 
+// =========================================================================================================
+//										TMappedObjectConverter Class
+//
+/// <summary>
+/// Implementation of <see cref="IVsDataMappedObjectConverter"/> interface
+/// </summary>
+/// <remarks>
+/// Implements mapping requests initiated by TObjectSupport.xml Property/Conversion/CallMapper
+/// </remarks>
+// =========================================================================================================
 public class TMappedObjectConverter : AdoDotNetMappedObjectConverter
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - TMappedObjectConverter
+	// ---------------------------------------------------------------------------------
+
 
 	public TMappedObjectConverter() : base()
 	{
 		Diag.Trace();
 	}
+
 	public TMappedObjectConverter(IVsDataConnection connection) : base(connection)
 	{
 		Diag.Trace();
 	}
 
+
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Method Implementations - TMappedObjectConverter
+	// =========================================================================================================
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Maps the NativeDataType property to the AdoDotNetDbType property for calls
+	/// initiated by TObjectSupport.xml Property/Conversion/CallMapper
+	/// </summary>
+	/// <param name="nativeType"></param>
+	/// <returns>The <see cref="DbType"/> of the AdoDotNetDbType</returns>
+	// ---------------------------------------------------------------------------------
 	protected override DbType GetDbTypeFromNativeType(string nativeType)
 	{
 		Diag.Trace();
@@ -56,6 +77,16 @@ public class TMappedObjectConverter : AdoDotNetMappedObjectConverter
 		return base.GetDbTypeFromNativeType(nativeType);
 	}
 
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Maps the NativeDataType property to the AdoDotNetDataType property for calls
+	/// initiated by TObjectSupport.xml Property/Conversion/CallMapper
+	/// </summary>
+	/// <param name="nativeType"></param>
+	/// <returns>The integer value of the AdoDotNetDataType</returns>
+	// ---------------------------------------------------------------------------------
 	protected override int GetProviderTypeFromNativeType(string nativeType)
 	{
 		Diag.Trace();
@@ -69,6 +100,16 @@ public class TMappedObjectConverter : AdoDotNetMappedObjectConverter
 		return base.GetProviderTypeFromNativeType(nativeType);
 	}
 
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Maps the NativeDataType property to the FrameworkDataType property for calls
+	/// initiated by TObjectSupport.xml Property/Conversion/CallMapper
+	/// </summary>
+	/// <param name="nativeType"></param>
+	/// <returns>The <see cref="Type"/> of the FrameworkDataType</returns>
+	// ---------------------------------------------------------------------------------
 	protected override Type GetFrameworkTypeFromNativeType(string nativeType)
 	{
 		Diag.Trace();
@@ -81,4 +122,8 @@ public class TMappedObjectConverter : AdoDotNetMappedObjectConverter
 
 		return base.GetFrameworkTypeFromNativeType(nativeType);
 	}
+
+
+	#endregion Method Implementations
+
 }
