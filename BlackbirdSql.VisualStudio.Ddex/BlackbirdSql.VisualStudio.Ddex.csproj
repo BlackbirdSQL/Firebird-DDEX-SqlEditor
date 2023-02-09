@@ -242,6 +242,7 @@
     <Compile Include="Schema\DslTypeHelper.cs" />
     <Compile Include="Schema\DslViewColumns.cs" />
     <Compile Include="Schema\Encoding2.cs" />
+    <Compile Include="Schema\DslIndexes.cs" />
     <Compile Include="Schema\IscCodes.cs" />
     <Compile Include="Src\TConnectionEquivalencyComparer.cs" />
     <Compile Include="Src\TConnectionPromptDialog.cs">

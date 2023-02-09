@@ -603,4 +603,40 @@
   <data name="Property_Name_Column_Expression" xml:space="preserve">
     <value>Expression</value>
   </data>
+  <data name="Node_Name_ForeignKeys" xml:space="preserve">
+    <value>Foreign Keys</value>
+  </data>
+  <data name="Node_Name_Indexes" xml:space="preserve">
+    <value>Indexes</value>
+  </data>
+  <data name="Node_Name_Triggers" xml:space="preserve">
+    <value>Triggers</value>
+  </data>
+  <data name="Property_Desc_Trigger_Sequence" xml:space="preserve">
+    <value>Next sequence number</value>
+  </data>
+  <data name="Property_Desc_Trigger_Type" xml:space="preserve">
+    <value>The event the trigger fires on</value>
+  </data>
+  <data name="Property_Name_Trigger_Sequence" xml:space="preserve">
+    <value>Sequence</value>
+  </data>
+  <data name="Property_Name_Trigger_Type" xml:space="preserve">
+    <value>Trigger Type</value>
+  </data>
+  <data name="Type_Trigger" xml:space="preserve">
+    <value>Trigger</value>
+  </data>
+  <data name="Property_Desc_Index_IsForeignKey" xml:space="preserve">
+    <value>The index is a foreign key constraint</value>
+  </data>
+  <data name="Property_Desc_Trigger_Active" xml:space="preserve">
+    <value>Is trigger active</value>
+  </data>
+  <data name="Property_Name_Index_IsForeignKey" xml:space="preserve">
+    <value>Is Foreign Key</value>
+  </data>
+  <data name="Property_Name_Trigger_Active" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
 </root>

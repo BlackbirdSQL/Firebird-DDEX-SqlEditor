@@ -69,9 +69,6 @@
 	<Define name="ElementStaticNodeTablesTables" parameters="elementName, elementType, tableType" >
 		<StaticNode nodeId="$(elementName)s">
 			<DisplayName resource="Node_Name_$(elementName)s" />
-			<!--<Commands>
-				<CommandRef name="CommandNewQuery" />
-			</Commands>-->
 			<Children>
 				<Selection type="Table" restrictions="null,null,null,$(tableType)" >
 					<SelectionNode nodeId="Table">
@@ -207,204 +204,96 @@
 									</Properties>
 								</SelectionNode>
 							</Selection>
-							<Selection type="TableForeignKey" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}">
-								<SelectionNode nodeId="ForeignKey">
-									<DisplayName>{ForeignKey.CONSTRAINT_NAME}</DisplayName>
-									<Icon name="ForeignKey" />
-									<Properties>
-										<TypeDisplayName resource="Type_ForeignKey" />
-										<Property name="CONSTRAINT_CATALOG">
-											<DisplayName resource="Identifier_Name_Catalog" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Catalog" />
-										</Property>
-										<Property name="CONSTRAINT_SCHEMA">
-											<DisplayName resource="Identifier_Name_Schema" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Schema" />
-										</Property>
-										<Property name="TABLE_NAME">
-											<DisplayName resource="Identifier_Name_Table" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Table" />
-										</Property>
-										<Property name="CONSTRAINT_NAME">
-											<DisplayName resource="Identifier_Name_Name" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Name" />
-										</Property>
-										<Property name="REFERENCED_TABLE_CATALOG">
-											<DisplayName resource="Property_Name_ForeignKey_ReferencedCatalog" />
-											<Category resource="Category_ReferencedTable" />
-											<Description resource="Property_Desc_ForeignKey_ReferencedCatalog" />
-										</Property>
-										<Property name="REFERENCED_TABLE_SCHEMA">
-											<DisplayName resource="Property_Name_ForeignKey_ReferencedSchema" />
-											<Category resource="Category_ReferencedTable" />
-											<Description resource="Property_Desc_ForeignKey_ReferencedSchema" />
-										</Property>
-										<Property name="REFERENCED_TABLE_NAME">
-											<DisplayName resource="Property_Name_ForeignKey_ReferencedTable" />
-											<Category resource="Category_ReferencedTable" />
-											<Description resource="Property_Desc_ForeignKey_ReferencedTable" />
-										</Property>
-										<Property name="UPDATE_RULE">
-											<DisplayName resource="Property_Name_ForeignKey_UpdateRule" />
-											<Description resource="Property_Desc_ForeignKey_UpdateRule" />
-										</Property>
-										<Property name="DELETE_RULE">
-											<DisplayName resource="Property_Name_ForeignKey_DeleteRule" />
-											<Description resource="Property_Desc_ForeignKey_DeleteRule" />
-										</Property>
-									</Properties>
-									<Children>
-										<Selection type="TableForeignKeyColumn" restrictions="{ForeignKey.CONSTRAINT_CATALOG},{ForeignKey.CONSTRAINT_SCHEMA},{ForeignKey.TABLE_NAME},{ForeignKey.CONSTRAINT_NAME}">
-											<SelectionNode nodeId="ForeignKeyColumn">
-												<DisplayName>{ForeignKeyColumn.COLUMN_NAME}</DisplayName>
-												<Icon name="Column" />
-												<Properties>
-													<TypeDisplayName resource="Type_ForeignKeyColumn" />
-													<Property name="CONSTRAINT_CATALOG">
-														<DisplayName resource="Identifier_Name_Catalog" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Catalog" />
-													</Property>
-													<Property name="CONSTRAINT_SCHEMA">
-														<DisplayName resource="Identifier_Name_Schema" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Schema" />
-													</Property>
-													<Property name="TABLE_NAME">
-														<DisplayName resource="Identifier_Name_Table" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Table" />
-													</Property>
-													<Property name="CONSTRAINT_NAME">
-														<DisplayName resource="Identifier_Name_ForeignKey" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_ForeignKey" />
-													</Property>
-													<Property name="COLUMN_NAME">
-														<DisplayName resource="Identifier_Name_Name" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Name" />
-													</Property>
-													<Property name="REFERENCED_TABLE_CATALOG">
-														<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedCatalog" />
-														<Category resource="Category_ReferencedColumn" />
-														<Description resource="Property_Desc_ForeignKeyColumn_ReferencedCatalog" />
-													</Property>
-													<Property name="REFERENCED_TABLE_SCHEMA">
-														<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedSchema" />
-														<Category resource="Category_ReferencedColumn" />
-														<Description resource="Property_Desc_ForeignKeyColumn_ReferencedSchema" />
-													</Property>
-													<Property name="REFERENCED_TABLE_NAME">
-														<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedTable" />
-														<Category resource="Category_ReferencedColumn" />
-														<Description resource="Property_Desc_ForeignKeyColumn_ReferencedTable" />
-													</Property>
-													<Property name="REFERENCED_COLUMN_NAME">
-														<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedColumn" />
-														<Category resource="Category_ReferencedColumn" />
-														<Description resource="Property_Desc_ForeignKeyColumn_ReferencedColumn" />
-													</Property>
-													<Property name="ORDINAL_POSITION">
-														<DisplayName resource="Property_Name_ForeignKeyColumn_Ordinal" />
-														<Description resource="Property_Desc_ForeignKeyColumn_Ordinal" />
-													</Property>
-												</Properties>
-											</SelectionNode>
-										</Selection>
-									</Children>
-								</SelectionNode>
-							</Selection>
-							<Selection type="TableIndex" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}">
-								<SelectionNode nodeId="Index">
-									<DisplayName>{Index.INDEX_NAME}</DisplayName>
-									<Icon name="PrimaryKey" when="{Index.IS_PRIMARY}" />
-									<Icon name="UniqueKey" when="{Index.IS_UNIQUE} = 1" />
-									<Icon name="Index" />
-									<Properties>
-										<TypeDisplayName resource="Type_Index" />
-										<Property name="TABLE_CATALOG">
-											<DisplayName resource="Identifier_Name_Catalog" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Catalog" />
-										</Property>
-										<Property name="TABLE_SCHEMA">
-											<DisplayName resource="Identifier_Name_Schema" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Schema" />
-										</Property>
-										<Property name="TABLE_NAME">
-											<DisplayName resource="Identifier_Name_Table" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Table" />
-										</Property>
-										<Property name="INDEX_NAME">
-											<DisplayName resource="Identifier_Name_Name" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Name" />
-										</Property>
-										<Property name="IS_PRIMARY">
-											<DisplayName resource="Property_Name_Index_IsPrimary" />
-											<Description resource="Property_Desc_Index_IsPrimary" />
-										</Property>
-										<Property name="IS_UNIQUE">
-											<DisplayName resource="Property_Name_Index_IsUnique" />
-											<Description resource="Property_Desc_Index_IsUnique" />
-											<StandardValues>
-												<StandardValue value="0" resource="Property_Value_Boolean_False" />
-												<StandardValue value="1" resource="Property_Value_Boolean_True" />
-											</StandardValues>
-										</Property>
-										<Property name="IS_SYSTEM_INDEX">
-											<DisplayName resource="Property_Name_Type" />
-											<StandardValues>
-												<StandardValue value="0" resource="Property_Value_IndexType_User" />
-												<StandardValue value="1" resource="Property_Value_IndexType_System" />
-											</StandardValues>
-										</Property>
-									</Properties>
-									<Children>
-										<Selection type="TableIndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
-											<SelectionNode nodeId="IndexColumn">
-												<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
-												<Icon name="ComputedColumn" when="{IndexColumn.COMPUTED}" />
-												<Icon name="Column" />
-												<Properties>
-													<TypeDisplayName resource="Type_IndexColumn" />
-													<Property name="TABLE_CATALOG">
-														<DisplayName resource="Identifier_Name_Catalog" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Catalog" />
-													</Property>
-													<Property name="TABLE_SCHEMA">
-														<DisplayName resource="Identifier_Name_Catalog" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Catalog" />
-													</Property>
-													<Property name="TABLE_NAME">
-														<DisplayName resource="Identifier_Name_Table" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Table" />
-													</Property>
-													<Property name="INDEX_NAME">
-														<DisplayName resource="Identifier_Name_Index" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Index" />
-													</Property>
-													<Property name="COLUMN_NAME">
-														<DisplayName resource="Identifier_Name_Name" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Name" />
-													</Property>
-													<Property name="ORDINAL_POSITION">
-														<DisplayName resource="Property_Name_UniqueKeyColumn_Ordinal" />
-														<Description resource="Property_Name_UniqueKeyColumn_Ordinal" />
-													</Property>
-													<!--
+							<StaticNode skipWhen="{Table.IS_SYSTEM_TABLE} = 1" nodeId="Indexes">
+								<DisplayName resource="Node_Name_Indexes" />
+								<Children>
+									<Selection type="TableIndex" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}">
+										<SelectionNode nodeId="Index">
+											<DisplayName>{Index.INDEX_NAME}</DisplayName>
+											<Icon name="PrimaryKey" when="{Index.IS_PRIMARY}" />
+											<Icon name="ForeignKey" when="{Index.IS_FOREIGNKEY}" />
+											<Icon name="UniqueKey" when="{Index.IS_UNIQUE}" />
+											<Icon name="Index" />
+											<Properties>
+												<TypeDisplayName resource="Type_Index" />
+												<Property name="TABLE_CATALOG">
+													<DisplayName resource="Identifier_Name_Catalog" />
+													<Category resource="Category_Identifier" />
+													<Description resource="Identifier_Desc_Catalog" />
+												</Property>
+												<Property name="TABLE_SCHEMA">
+													<DisplayName resource="Identifier_Name_Schema" />
+													<Category resource="Category_Identifier" />
+													<Description resource="Identifier_Desc_Schema" />
+												</Property>
+												<Property name="TABLE_NAME">
+													<DisplayName resource="Identifier_Name_Table" />
+													<Category resource="Category_Identifier" />
+													<Description resource="Identifier_Desc_Table" />
+												</Property>
+												<Property name="INDEX_NAME">
+													<DisplayName resource="Identifier_Name_Name" />
+													<Category resource="Category_Identifier" />
+													<Description resource="Identifier_Desc_Name" />
+												</Property>
+												<Property name="IS_PRIMARY">
+													<DisplayName resource="Property_Name_Index_IsPrimary" />
+													<Description resource="Property_Desc_Index_IsPrimary" />
+												</Property>
+												<Property name="IS_UNIQUE">
+													<DisplayName resource="Property_Name_Index_IsUnique" />
+													<Description resource="Property_Desc_Index_IsUnique" />
+												</Property>
+												<Property name="IS_FOREIGNKEY">
+													<DisplayName resource="Property_Name_Index_IsForeignKey" />
+													<Description resource="Property_Desc_Index_IsForeignKey" />
+												</Property>
+												<Property name="IS_SYSTEM_INDEX">
+													<DisplayName resource="Property_Name_Type" />
+													<StandardValues>
+														<StandardValue value="0" resource="Property_Value_IndexType_User" />
+														<StandardValue value="1" resource="Property_Value_IndexType_System" />
+													</StandardValues>
+												</Property>
+											</Properties>
+											<Children>
+												<Selection type="TableIndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
+													<SelectionNode nodeId="IndexColumn">
+														<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
+														<Icon name="ComputedColumn" when="{IndexColumn.COMPUTED}" />
+														<Icon name="Column" />
+														<Properties>
+															<TypeDisplayName resource="Type_IndexColumn" />
+															<Property name="TABLE_CATALOG">
+																<DisplayName resource="Identifier_Name_Catalog" />
+																<Category resource="Category_Identifier" />
+																<Description resource="Identifier_Desc_Catalog" />
+															</Property>
+															<Property name="TABLE_SCHEMA">
+																<DisplayName resource="Identifier_Name_Catalog" />
+																<Category resource="Category_Identifier" />
+																<Description resource="Identifier_Desc_Catalog" />
+															</Property>
+															<Property name="TABLE_NAME">
+																<DisplayName resource="Identifier_Name_Table" />
+																<Category resource="Category_Identifier" />
+																<Description resource="Identifier_Desc_Table" />
+															</Property>
+															<Property name="INDEX_NAME">
+																<DisplayName resource="Identifier_Name_Index" />
+																<Category resource="Category_Identifier" />
+																<Description resource="Identifier_Desc_Index" />
+															</Property>
+															<Property name="COLUMN_NAME">
+																<DisplayName resource="Identifier_Name_Name" />
+																<Category resource="Category_Identifier" />
+																<Description resource="Identifier_Desc_Name" />
+															</Property>
+															<Property name="ORDINAL_POSITION">
+																<DisplayName resource="Property_Name_UniqueKeyColumn_Ordinal" />
+																<Description resource="Property_Name_UniqueKeyColumn_Ordinal" />
+															</Property>
+															<!--
 																		<Property name="COLLATION">
 																			<DisplayName resource="Property_Name_IndexColumn_Collation" />
 																			<Description resource="Property_Desc_IndexColumn_Collation" />
@@ -414,20 +303,218 @@
 																			</StandardValues>
 																		</Property>
 																		-->
-													<Property name="COMPUTED">
-														<DisplayName resource="Property_Name_Column_Computed" />
-														<Description resource="Property_Desc_Column_Computed" />
-													</Property>
-													<Property name="EXPRESSION">
-														<DisplayName resource="Property_Name_Column_Expression" />
-														<Description resource="Property_Desc_Column_Expression" />
-													</Property>
-												</Properties>
-											</SelectionNode>
-										</Selection>
-									</Children>
-								</SelectionNode>
-							</Selection>
+															<Property name="COMPUTED">
+																<DisplayName resource="Property_Name_Column_Computed" />
+																<Description resource="Property_Desc_Column_Computed" />
+															</Property>
+															<Property name="EXPRESSION">
+																<DisplayName resource="Property_Name_Column_Expression" />
+																<Description resource="Property_Desc_Column_Expression" />
+															</Property>
+														</Properties>
+													</SelectionNode>
+												</Selection>
+											</Children>
+										</SelectionNode>
+									</Selection>
+								</Children>
+							</StaticNode>
+							<StaticNode skipWhen="{Table.IS_SYSTEM_TABLE} = 1" nodeId="ForeignKeys">
+								<DisplayName resource="Node_Name_ForeignKeys" />
+								<Children>
+									<Selection type="TableForeignKey" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}">
+										<SelectionNode nodeId="ForeignKey">
+											<DisplayName>{ForeignKey.CONSTRAINT_NAME}</DisplayName>
+											<Icon name="ForeignKey" />
+											<Properties>
+												<TypeDisplayName resource="Type_ForeignKey" />
+												<Property name="CONSTRAINT_CATALOG">
+													<DisplayName resource="Identifier_Name_Catalog" />
+													<Category resource="Category_Identifier" />
+													<Description resource="Identifier_Desc_Catalog" />
+												</Property>
+												<Property name="CONSTRAINT_SCHEMA">
+													<DisplayName resource="Identifier_Name_Schema" />
+													<Category resource="Category_Identifier" />
+													<Description resource="Identifier_Desc_Schema" />
+												</Property>
+												<Property name="TABLE_NAME">
+													<DisplayName resource="Identifier_Name_Table" />
+													<Category resource="Category_Identifier" />
+													<Description resource="Identifier_Desc_Table" />
+												</Property>
+												<Property name="CONSTRAINT_NAME">
+													<DisplayName resource="Identifier_Name_Name" />
+													<Category resource="Category_Identifier" />
+													<Description resource="Identifier_Desc_Name" />
+												</Property>
+												<Property name="REFERENCED_TABLE_CATALOG">
+													<DisplayName resource="Property_Name_ForeignKey_ReferencedCatalog" />
+													<Category resource="Category_ReferencedTable" />
+													<Description resource="Property_Desc_ForeignKey_ReferencedCatalog" />
+												</Property>
+												<Property name="REFERENCED_TABLE_SCHEMA">
+													<DisplayName resource="Property_Name_ForeignKey_ReferencedSchema" />
+													<Category resource="Category_ReferencedTable" />
+													<Description resource="Property_Desc_ForeignKey_ReferencedSchema" />
+												</Property>
+												<Property name="REFERENCED_TABLE_NAME">
+													<DisplayName resource="Property_Name_ForeignKey_ReferencedTable" />
+													<Category resource="Category_ReferencedTable" />
+													<Description resource="Property_Desc_ForeignKey_ReferencedTable" />
+												</Property>
+												<Property name="UPDATE_RULE">
+													<DisplayName resource="Property_Name_ForeignKey_UpdateRule" />
+													<Description resource="Property_Desc_ForeignKey_UpdateRule" />
+												</Property>
+												<Property name="DELETE_RULE">
+													<DisplayName resource="Property_Name_ForeignKey_DeleteRule" />
+													<Description resource="Property_Desc_ForeignKey_DeleteRule" />
+												</Property>
+											</Properties>
+											<Children>
+												<Selection type="TableForeignKeyColumn" restrictions="{ForeignKey.CONSTRAINT_CATALOG},{ForeignKey.CONSTRAINT_SCHEMA},{ForeignKey.TABLE_NAME},{ForeignKey.CONSTRAINT_NAME}">
+													<SelectionNode nodeId="ForeignKeyColumn">
+														<DisplayName>{ForeignKeyColumn.COLUMN_NAME}</DisplayName>
+														<Icon name="Column" />
+														<Properties>
+															<TypeDisplayName resource="Type_ForeignKeyColumn" />
+															<Property name="CONSTRAINT_CATALOG">
+																<DisplayName resource="Identifier_Name_Catalog" />
+																<Category resource="Category_Identifier" />
+																<Description resource="Identifier_Desc_Catalog" />
+															</Property>
+															<Property name="CONSTRAINT_SCHEMA">
+																<DisplayName resource="Identifier_Name_Schema" />
+																<Category resource="Category_Identifier" />
+																<Description resource="Identifier_Desc_Schema" />
+															</Property>
+															<Property name="TABLE_NAME">
+																<DisplayName resource="Identifier_Name_Table" />
+																<Category resource="Category_Identifier" />
+																<Description resource="Identifier_Desc_Table" />
+															</Property>
+															<Property name="CONSTRAINT_NAME">
+																<DisplayName resource="Identifier_Name_ForeignKey" />
+																<Category resource="Category_Identifier" />
+																<Description resource="Identifier_Desc_ForeignKey" />
+															</Property>
+															<Property name="COLUMN_NAME">
+																<DisplayName resource="Identifier_Name_Name" />
+																<Category resource="Category_Identifier" />
+																<Description resource="Identifier_Desc_Name" />
+															</Property>
+															<Property name="REFERENCED_TABLE_CATALOG">
+																<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedCatalog" />
+																<Category resource="Category_ReferencedColumn" />
+																<Description resource="Property_Desc_ForeignKeyColumn_ReferencedCatalog" />
+															</Property>
+															<Property name="REFERENCED_TABLE_SCHEMA">
+																<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedSchema" />
+																<Category resource="Category_ReferencedColumn" />
+																<Description resource="Property_Desc_ForeignKeyColumn_ReferencedSchema" />
+															</Property>
+															<Property name="REFERENCED_TABLE_NAME">
+																<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedTable" />
+																<Category resource="Category_ReferencedColumn" />
+																<Description resource="Property_Desc_ForeignKeyColumn_ReferencedTable" />
+															</Property>
+															<Property name="REFERENCED_COLUMN_NAME">
+																<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedColumn" />
+																<Category resource="Category_ReferencedColumn" />
+																<Description resource="Property_Desc_ForeignKeyColumn_ReferencedColumn" />
+															</Property>
+															<Property name="ORDINAL_POSITION">
+																<DisplayName resource="Property_Name_ForeignKeyColumn_Ordinal" />
+																<Description resource="Property_Desc_ForeignKeyColumn_Ordinal" />
+															</Property>
+														</Properties>
+													</SelectionNode>
+												</Selection>
+											</Children>
+										</SelectionNode>
+									</Selection>
+								</Children>
+							</StaticNode>
+							<StaticNode skipWhen="{Table.IS_SYSTEM_TABLE} = 1" nodeId="Triggers">
+								<DisplayName resource="Node_Name_Triggers" />
+								<Children>
+									<Selection type="Trigger" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}">
+										<SelectionNode nodeId="Trigger">
+											<DisplayName>{Trigger.TRIGGER_NAME}</DisplayName>
+											<Icon name="Trigger" />
+											<Properties>
+												<TypeDisplayName resource="Type_Trigger" />
+												<Property name="TABLE_CATALOG">
+													<DisplayName resource="Identifier_Name_Catalog" />
+													<Category resource="Category_Identifier" />
+													<Description resource="Identifier_Desc_Catalog" />
+												</Property>
+												<Property name="TABLE_SCHEMA">
+													<DisplayName resource="Identifier_Name_Schema" />
+													<Category resource="Category_Identifier" />
+													<Description resource="Identifier_Desc_Schema" />
+												</Property>
+												<Property name="TABLE_NAME">
+													<DisplayName resource="Identifier_Name_Table" />
+													<Category resource="Category_Identifier" />
+													<Description resource="Identifier_Desc_Table" />
+												</Property>
+												<Property name="TRIGGER_NAME">
+													<DisplayName resource="Identifier_Name_Name" />
+													<Category resource="Category_Identifier" />
+													<Description resource="Identifier_Desc_Name" />
+												</Property>
+												<Property name="TRIGGER_TYPE">
+													<DisplayName resource="Property_Name_Trigger_Type" />
+													<Description resource="Property_Desc_Trigger_Name" />
+													<StandardValues>
+														<StandardValue value="1">Before insert</StandardValue>
+														<StandardValue value="2">After insert</StandardValue>
+														<StandardValue value="3">Before update</StandardValue>
+														<StandardValue value="4">After update</StandardValue>
+														<StandardValue value="5">Before delete</StandardValue>
+														<StandardValue value="6">After delete</StandardValue>
+														<StandardValue value="17">Before insert or update</StandardValue>
+														<StandardValue value="18">After insert or update</StandardValue>
+														<StandardValue value="25">Before insert or delete</StandardValue>
+														<StandardValue value="26">After insert or delete</StandardValue>
+														<StandardValue value="27">Before update or delete</StandardValue>
+														<StandardValue value="28">After update or delete</StandardValue>
+														<StandardValue value="113">Before insert, update or delete</StandardValue>
+														<StandardValue value="114">After insert, update or delete</StandardValue>
+														<StandardValue value="8192">On connect</StandardValue>
+														<StandardValue value="8193">On disconnect</StandardValue>
+														<StandardValue value="8194">On transaction begin</StandardValue>
+														<StandardValue value="8195">On transaction commit</StandardValue>
+														<StandardValue value="8196">On transaction rollback"</StandardValue>
+													</StandardValues>
+												</Property>
+												<Property name="SEQUENCE">
+													<DisplayName resource="Property_Name_Trigger_Sequence" />
+													<Description resource="Property_Desc_Trigger_Sequence" />
+												</Property>
+												<Property name="IS_INACTIVE">
+													<DisplayName resource="Property_Name_Trigger_Active" />
+													<Description resource="Property_Desc_Trigger_Active" />
+													<StandardValues>
+														<StandardValue value="0">True</StandardValue>
+														<StandardValue value="1">False</StandardValue>
+													</StandardValues>
+												</Property>
+												<Property name="DESCRIPTION">
+													<DisplayName resource="Property_Name_Description" />
+													<Description resource="Property_Desc_Description" />
+												</Property>
+												<Property name="SOURCE">
+													<DisplayName resource="Property_Name_Dsl" />
+													<Description resource="Property_Desc_Dsl" />
+												</Property>
+											</Properties>
+										</SelectionNode>
+									</Selection>
+								</Children>
+							</StaticNode>
 						</Children>
 					</SelectionNode>
 				</Selection>
@@ -569,7 +656,8 @@
 											<SelectionNode nodeId="Column">
 												<DisplayName>{Column.COLUMN_NAME}</DisplayName>
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{Column.COMPUTED}" assembly="" />
-												<Icon name="PrimaryKey" when="{Index.IS_UNIQUE} = 1" />
+												<Icon name="ComputedColumn" when="{Column.COMPUTED}" />
+												<Icon name="PrimaryKey" when="{Column.IS_UNIQUE}" />
 												<Icon name="UniqueKey" when="{Column.IN_PRIMARYKEY}" />
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ViewColumn.ico" assembly="" />
 												<Properties>
@@ -917,7 +1005,7 @@
 											<Category resource="Category_Identifier" />
 											<Description resource="Identifier_Desc_Name" />
 										</Property>
-										<Property name="IS_SYSTEM_FUNTION">
+										<Property name="IS_SYSTEM_FUNCTION">
 											<DisplayName resource="Property_Name_Type" />
 											<StandardValues>
 												<StandardValue value="0" resource="Property_Value_FunctionType_User" />

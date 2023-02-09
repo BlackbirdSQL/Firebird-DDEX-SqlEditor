@@ -63,6 +63,7 @@ internal sealed class DslSchemaFactory
 		Diag.Trace();
 		switch (collectionName)
 		{
+			case "Indexes":
 			case "Columns":
 			case "ViewColumns":
 			case "IndexColumns":
@@ -149,6 +150,7 @@ internal sealed class DslSchemaFactory
 		{
 			"COLUMNS" => new DslColumns(),
 			"VIEWCOLUMNS" => new DslViewColumns(),
+			"INDEXES" => new DslIndexes(),
 			"INDEXCOLUMNS" => new DslIndexColumns(),
 			"FUNCTIONARGUMENTS" => new DslFunctionArguments(),
 			_ => ((Func<DslSchema>)(() =>
@@ -169,6 +171,7 @@ internal sealed class DslSchemaFactory
 		{
 			"COLUMNS" => new DslColumns(),
 			"VIEWCOLUMNS" => new DslViewColumns(),
+			"INDEXES" => new DslIndexes(),
 			"INDEXCOLUMNS" => new DslIndexColumns(),
 			"FUNCTIONARGUMENTS" => new DslFunctionArguments(),
 			_ => ((Func<DslSchema>)(() =>

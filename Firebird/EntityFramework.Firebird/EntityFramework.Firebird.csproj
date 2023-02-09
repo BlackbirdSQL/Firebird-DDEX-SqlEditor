@@ -60,4 +60,7 @@
 		  <CopyLocalSatelliteAssemblies>True</CopyLocalSatelliteAssemblies>
 		</ProjectReference>
 	</ItemGroup>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command=":: Use the native builds for Release&#xD;&#xA;if &quot;$(Configuration)&quot; == &quot;Release&quot; (&#xD;&#xA;copy /v /y /b $(SolutionDir)Firebird\NetProvider\FirebirdSql.Data.FirebirdClient\9.1.1\lib\\$(TargetFramework)\FirebirdSql.Data.FirebirdClient.dll $(ProjectDir)$(OutDir)&#xD;&#xA;copy /v /y /b $(SolutionDir)Firebird\NetProvider\EntityFramework.Firebird\9.1.1\lib\\$(TargetFramework)\EntityFramework.Firebird.dll $(ProjectDir)$(OutDir)&#xD;&#xA;)" />
+	</Target>
 </Project>

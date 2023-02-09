@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata minClientVersion="3.6">
+    <id>FirebirdSql.Data.FirebirdClient</id>
+    <version>9.1.1</version>
+    <title>Firebird ADO.NET Data provider</title>
+    <authors>FirebirdSQL</authors>
+    <license type="file">license.txt</license>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+    <icon>firebird-logo.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>http://www.firebirdsql.org/en/net-provider/</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/FirebirdSQL/NETProvider/master/firebird-logo.png</iconUrl>
+    <description>Firebird ADO.NET data provider</description>
+    <copyright>(c) 2002-2021</copyright>
+    <tags>firebird firebirsql firebirdclient adonet database</tags>
+    <repository type="git" url="https://github.com/FirebirdSQL/NETProvider" commit="51b1bbe16ca45c4c55b1dffdf289d0ccfcdd4a03" />
+    <dependencies>
+      <group targetFramework=".NETFramework4.8">
+        <dependency id="System.Threading.Tasks.Extensions" version="4.5.4" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework="net5.0" />
+      <group targetFramework="net6.0" />
+      <group targetFramework=".NETStandard2.0">
+        <dependency id="System.Reflection.Emit" version="4.7.0" exclude="Build,Analyzers" />
+        <dependency id="System.Threading.Tasks.Extensions" version="4.5.4" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETStandard2.1" />
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System.Transactions" targetFramework=".NETFramework4.8" />
+    </frameworkAssemblies>
+  </metadata>
+</package>

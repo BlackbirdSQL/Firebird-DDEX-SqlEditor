@@ -64,7 +64,7 @@ internal class TObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 		Diag.Trace();
 		if (identifierPart is null or DBNull)
 		{
-			Diag.Dug(true, "Identifier is null");
+			Diag.Dug(true, typeName + ": Identifier is null");
 			return null;
 		}
 

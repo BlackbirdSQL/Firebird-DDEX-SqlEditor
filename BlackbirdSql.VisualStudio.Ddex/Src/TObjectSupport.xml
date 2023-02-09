@@ -15,7 +15,7 @@
 				<Part name="TABLE_NAME" type="System.String"  />
 			</Identifier>
 			<Properties>
-				<Property name="TABLE_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="TABLE_NAME" isIdentifierPart="true" />
 				<Property name="TABLE_TYPE" type="System.String" />
 				<Property name="DESCRIPTION" type="System.String" />
 				<Property name="IS_SYSTEM_TABLE" type="System.Int16" />
@@ -87,7 +87,26 @@
 			</Services>
 		</RootType>
 
-		<!-- To be tested -->
+		<Type name="Collation" preferredOrdering="COLLATION_CATALOG,COLLATION_SCHEMA,COLLATION_NAME">
+			<Identifier>
+				<Part name="COLLATION_CATALOG" type="System.String" />
+				<Part name="COLLATION_SCHEMA" type="System.String" />
+				<Part name="COLLATION_NAME" type="System.String" />
+			</Identifier>
+			<Properties>
+				<Property name="COLLATION_NAME" isIdentifierPart="true" />
+				<Property name="CHARACTER_SET_NAME" type="System.String" />
+				<Property name="DESCRIPTION" type="System.String" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="Collation" />
+					</Parameters>
+				</Service>
+			</Services>
+		</Type>
+
 		<Type name="Domain" preferredOrdering="DOMAIN_CATALOG,DOMAIN_SCHEMA,DOMAIN_NAME">
 			<Identifier>
 				<Part name="DOMAIN_CATALOG" type="System.String" />
@@ -95,7 +114,7 @@
 				<Part name="DOMAIN_NAME" type="System.String" />
 			</Identifier>
 			<Properties>
-				<Property name="DOMAIN_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="DOMAIN_NAME" isIdentifierPart="true" />
 				<Property name="DESCRIPTION" type="System.String" />
 				<Property name="DOMAIN_DATA_TYPE" type="System.String" />
 				<Property name="DOMAIN_SIZE" type="System.Int32" />
@@ -134,6 +153,23 @@
 			</Services>
 		</Type>
 
+		<Type name="Role" preferredOrdering="ROLE_NAME">
+			<Identifier>
+				<Part name="ROLE_NAME" type="System.String" />
+			</Identifier>
+			<Properties>
+				<Property name="ROLE_NAME" isIdentifierPart="true" />
+				<Property name="OWNER_NAME" type="System.String" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="Roles" />
+					</Parameters>
+				</Service>
+			</Services>
+		</Type>
+
 		<!-- Completed -->
 		<TypeRef name="ElementTypeTable" arguments="Table" />
 		<!--<TypeRef name="ElementTypeTable" arguments="SystemTable" />-->
@@ -147,8 +183,8 @@
 				<Part name="COLUMN_NAME" type="System.String" />
 			</Identifier>
 			<Properties>
-				<Property name="TABLE_NAME" type="System.String" isIdentifierPart="true" />
-				<Property name="COLUMN_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="TABLE_NAME" isIdentifierPart="true" />
+				<Property name="COLUMN_NAME" isIdentifierPart="true" />
 				<Property name="ORDINAL_POSITION" type="System.Int16" />
 				<Property name="DESCRIPTION" type="System.String" />
 				<Property name="COLUMN_DATA_TYPE" type="System.String" />
@@ -201,6 +237,68 @@
 			</Services>
 		</Type>
 
+
+		<Type name="Trigger" preferredOrdering="TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME,TRIGGER_NAME">
+			<Identifier>
+				<Part name="TABLE_CATALOG" type="System.String" />
+				<Part name="TABLE_SCHEMA" type="System.String" />
+				<Part name="TABLE_NAME" type="System.String" />
+				<Part name="TRIGGER_NAME" type="System.String" />
+			</Identifier>
+			<Properties>
+				<Property name="TABLE_NAME" isIdentifierPart="true" />
+				<Property name="TRIGGER_NAME" isIdentifierPart="true" />
+				<Property name="TRIGGER_TYPE" type="System.Int64" />
+				<Property name="IS_SYSTEM_TRIGGER" type="System.Int16" />
+				<Property name="IS_INACTIVE" type="System.Int16" />
+				<Property name="SEQUENCE" type="System.Int16" />
+				<Property name="SOURCE" type="System.Array" />
+				<Property name="DESCRIPTION" type="System.String" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="Triggers" />
+					</Parameters>
+				</Service>
+				<Service type="IDSRefBuilder">
+					<Parameters method="AppendToDSRef">
+						<Parameter>
+							<Parameter value="{2}" />
+							<Parameter value="{1}" />
+							<Parameter value="Table" />
+							<Parameter />
+							<Parameter>
+								<!-- GUID_daVinciDSRefProperty_Qualifier -->
+								<Parameter value="4656BAEA-F397-11ce-BFE1-00AA0057B34E">
+									<Parameter value="{0}"/>
+								</Parameter>
+								<!-- GUID_daVinciDSRefProperty_PreciseType -->
+								<Parameter value="39A5A7E7-513F-44a4-B79D-7652CD8962D9">
+									<Parameter value="101" type="System.Int32" />
+								</Parameter>
+							</Parameter>
+							<Parameter>
+								<Parameter>
+									<Parameter value="{3}" />
+									<Parameter />
+									<Parameter value="Trigger" />
+									<Parameter />
+									<Parameter>
+										<!-- GUID_daVinciDSRefProperty_PreciseType -->
+										<Parameter value="39A5A7E7-513F-44a4-B79D-7652CD8962D9">
+											<Parameter value="103" type="System.Int32" />
+										</Parameter>
+									</Parameter>
+								</Parameter>
+							</Parameter>
+						</Parameter>
+					</Parameters>
+				</Service>
+			</Services>
+		</Type>
+
+
 		<!-- Completed -->
 		<Type name="TableIndex" preferredOrdering="TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME,INDEX_NAME">
 			<Identifier>
@@ -210,10 +308,11 @@
 				<Part name="INDEX_NAME" type="System.String" />
 			</Identifier>
 			<Properties>
-				<Property name="TABLE_NAME" type="System.String" isIdentifierPart="true" />
-				<Property name="INDEX_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="TABLE_NAME" isIdentifierPart="true" />
+				<Property name="INDEX_NAME" isIdentifierPart="true" />
 				<Property name="IS_PRIMARY" type="System.Boolean" />
-				<Property name="IS_UNIQUE" type="System.Int16" />
+				<Property name="IS_UNIQUE" type="System.Boolean" />
+				<Property name="IS_FOREIGNKEY" type="System.Boolean" />
 				<Property name="IS_SYSTEM_INDEX" type="System.Int16" />
 			</Properties>
 			<Services>
@@ -266,9 +365,9 @@
 				<Part name="COLUMN_NAME" type="System.String" />
 			</Identifier>
 			<Properties>
-				<Property name="TABLE_NAME" type="System.String" isIdentifierPart="true" />
-				<Property name="INDEX_NAME" type="System.String" isIdentifierPart="true" />
-				<Property name="COLUMN_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="TABLE_NAME" isIdentifierPart="true" />
+				<Property name="INDEX_NAME" isIdentifierPart="true" />
+				<Property name="COLUMN_NAME" isIdentifierPart="true" />
 				<Property name="ORDINAL_POSITION" type="System.Int16" />
 				<Property name="COMPUTED" type="System.Boolean" />
 				<Property name="EXPRESSION" type="System.Array" />
@@ -335,8 +434,8 @@
 				<Part name="CONSTRAINT_NAME" type="System.String" />
 			</Identifier>
 			<Properties>
-				<Property name="CONSTRAINT_NAME" type="System.String" isIdentifierPart="true" />
-				<Property name="TABLE_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="CONSTRAINT_NAME" isIdentifierPart="true" />
+				<Property name="TABLE_NAME" isIdentifierPart="true" />
 				<Property name="REFERENCED_TABLE_CATALOG" type="System.String" />
 				<Property name="REFERENCED_TABLE_SCHEMA" type="System.String" />
 				<Property name="REFERENCED_TABLE_NAME" type="System.String" />
@@ -363,9 +462,9 @@
 				<Part name="COLUMN_NAME" type="System.String" />
 			</Identifier>
 			<Properties>
-				<Property name="CONSTRAINT_NAME" type="System.String" isIdentifierPart="true" />
-				<Property name="TABLE_NAME" type="System.String" isIdentifierPart="true" />
-				<Property name="COLUMN_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="CONSTRAINT_NAME" isIdentifierPart="true" />
+				<Property name="TABLE_NAME" isIdentifierPart="true" />
+				<Property name="COLUMN_NAME" isIdentifierPart="true" />
 				<Property name="REFERENCED_TABLE_CATALOG" type="System.String" />
 				<Property name="REFERENCED_TABLE_SCHEMA" type="System.String" />
 				<Property name="REFERENCED_TABLE_NAME" type="System.String" />
@@ -389,7 +488,7 @@
 				<Part name="VIEW_NAME" type="System.String" />
 			</Identifier>
 			<Properties>
-				<Property name="VIEW_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="VIEW_NAME" isIdentifierPart="true" />
 				<Property name="IS_SYSTEM_VIEW" type="System.Int16" />
 				<Property name="DESCRIPTION" type="System.String" />
 				<Property name="DEFINITION" type="System.String" />
@@ -430,8 +529,8 @@
 				<Part name="COLUMN_NAME" type="System.String" />
 			</Identifier>
 			<Properties>
-				<Property name="VIEW_NAME" type="System.String" isIdentifierPart="true" />
-				<Property name="COLUMN_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="VIEW_NAME" isIdentifierPart="true" />
+				<Property name="COLUMN_NAME" isIdentifierPart="true" />
 				<Property name="ORDINAL_POSITION" type="System.Int16" />
 				<Property name="DESCRIPTION" type="System.String" />
 				<Property name="IS_NULLABLE" type="System.Boolean" />
@@ -492,8 +591,8 @@
 				<Part name="PROCEDURE_NAME" type="System.String" />
 			</Identifier>
 			<Properties>
-				<Property name="PROCEDURE_SCHEMA" type="System.String" isIdentifierPart="true" />
-				<Property name="PROCEDURE_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="PROCEDURE_SCHEMA" isIdentifierPart="true" />
+				<Property name="PROCEDURE_NAME" isIdentifierPart="true" />
 				<Property name="DESCRIPTION" type="System.String" />
 				<Property name="SOURCE" type="System.Array" />
 				<Property name="IS_SYSTEM_PROCEDURE" type="System.Int16" />
@@ -534,8 +633,8 @@
 				<Part name="PARAMETER_NAME" type="System.String" />
 			</Identifier>
 			<Properties>
-				<Property name="PROCEDURE_NAME" type="System.String" isIdentifierPart="true" />
-				<Property name="PARAMETER_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="PROCEDURE_NAME" isIdentifierPart="true" />
+				<Property name="PARAMETER_NAME" isIdentifierPart="true" />
 				<Property name="ORDINAL_POSITION" type="System.Int16" />
 				<Property name="PARAMETER_DATA_TYPE" type="System.String" />
 				<Property name="PARAMETER_SIZE" type="System.Int32" />
@@ -593,8 +692,8 @@
 				<Part name="PARAMETER_NAME" type="System.String" />
 			</Identifier>
 			<Properties>
-				<Property name="PROCEDURE_NAME" type="System.String" isIdentifierPart="true" />
-				<Property name="PARAMETER_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="PROCEDURE_NAME" isIdentifierPart="true" />
+				<Property name="PARAMETER_NAME" isIdentifierPart="true" />
 				<Property name="ORDINAL_POSITION" type="System.Int16" />
 				<Property name="PARAMETER_DATA_TYPE" type="System.String" />
 				<Property name="PARAMETER_SIZE" type="System.Int32" />
@@ -652,10 +751,10 @@
 				<Part name="FUNCTION_NAME" type="System.String" />
 			</Identifier>
 			<Properties>
-				<Property name="FUNCTION_SCHEMA" type="System.String" isIdentifierPart="true" />
-				<Property name="FUNCTION_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="FUNCTION_SCHEMA" isIdentifierPart="true" />
+				<Property name="FUNCTION_NAME" isIdentifierPart="true" />
 				<Property name="DESCRIPTION" type="System.String" />
-				<Property name="IS_SYSTEM_FUNCTION" type="System.Boolean" />
+				<Property name="IS_SYSTEM_FUNCTION" type="System.Int16" />
 			</Properties>
 			<Services>
 				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
@@ -693,8 +792,8 @@
 				<Part name="ARGUMENT_NAME" type="System.String" />
 			</Identifier>
 			<Properties>
-				<Property name="FUNCTION_NAME" type="System.String" isIdentifierPart="true" />
-				<Property name="ARGUMENT_NAME" type="System.String" isIdentifierPart="true" />
+				<Property name="FUNCTION_NAME" isIdentifierPart="true" />
+				<Property name="ARGUMENT_NAME" isIdentifierPart="true" />
 				<Property name="ORDINAL_POSITION" type="System.Int16" />
 				<Property name="PSEUDO_NAME" type="System.String" />
 				<Property name="PARAMETER_DATA_TYPE" type="System.String" />
@@ -844,11 +943,8 @@
 				<Property name="Table" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
 				<Property name="Name" underlyingMember="INDEX_NAME" isIdentifierPart="true" />
 				<Property name="IsPrimary" underlyingMember="IS_PRIMARY" />
-				<Property name="IsUnique" underlyingMember="IS_UNIQUE" >
-					<Conversion>
-						<Calculate expr="IIF({0} = 1, true, false)" exprType="System.Boolean" />
-					</Conversion>
-				</Property>
+				<Property name="IsUnique" underlyingMember="IS_UNIQUE" />
+				<Property name="IsForeignKey" underlyingMember="IS_FOREIGNKEY" />
 				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_INDEX" >
 					<Conversion>
 						<Calculate expr="IIF({0} = 1, true, false)" exprType="System.Boolean" />
@@ -894,11 +990,7 @@
 				<Property name="Table" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
 				<Property name="Name" underlyingMember="INDEX_NAME" isIdentifierPart="true" />
 				<Property name="IsPrimary" underlyingMember="IS_PRIMARY" />
-				<Property name="IsUnique" underlyingMember="IS_UNIQUE" >
-					<Conversion>
-						<Calculate expr="IIF({0} = 1, true, false)" exprType="System.Boolean" />
-					</Conversion>
-				</Property>
+				<Property name="IsUnique" underlyingMember="IS_UNIQUE" />
 				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_INDEX" >
 					<Conversion>
 						<Calculate expr="IIF({0} = 1, true, false)" exprType="System.Boolean" />

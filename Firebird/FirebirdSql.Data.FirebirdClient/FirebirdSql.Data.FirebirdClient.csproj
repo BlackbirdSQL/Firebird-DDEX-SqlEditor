@@ -65,4 +65,7 @@
 	  <Compile Update="FirebirdClient\FbBatchCommand.cs" />
 	</ItemGroup>
 	<Import Project="..\FirebirdSql.Data.External\FirebirdSql.Data.External.projitems" Label="Shared" />
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command=":: Use the native builds for Release&#xD;&#xA;if &quot;$(Configuration)&quot; == &quot;Release&quot; (&#xD;&#xA;copy /v /y /b $(SolutionDir)Firebird\NetProvider\FirebirdSql.Data.FirebirdClient\9.1.1\lib\$(TargetFramework)\FirebirdSql.Data.FirebirdClient.dll $(ProjectDir)$(OutDir)&#xD;&#xA;)" />
+	</Target>
 </Project>

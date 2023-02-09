@@ -19,47 +19,41 @@
 
 //$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
+using System;
+using System.Data;
+using System.Globalization;
 using System.Text;
-
-using BlackbirdSql.Common;
-
 
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
-
-internal class DslIndexColumns : DslSchema
+internal class DslIndexes : DslSchema
 {
 	#region Protected Methods
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
-		Diag.Trace();
+		// BlackbirdSql added ForeignKey
+
 		var sql = new StringBuilder();
 		var where = new StringBuilder();
 
 		sql.Append(
 			@"SELECT
-					null AS CONSTRAINT_CATALOG,
-					null AS CONSTRAINT_SCHEMA,
-					idx.rdb$index_name AS CONSTRAINT_NAME,
 					null AS TABLE_CATALOG,
 					null AS TABLE_SCHEMA,
 					idx.rdb$relation_name AS TABLE_NAME,
-					idx.rdb$expression_source AS EXPRESSION,
-					(CASE WHEN seg.rdb$field_name IS NOT NULL OR idx.rdb$expression_source IS NULL THEN
-						seg.rdb$field_name
-					ELSE
-						idx.rdb$index_name
-					END) AS COLUMN_NAME,
-					seg.rdb$field_position AS ORDINAL_POSITION,
 					idx.rdb$index_name AS INDEX_NAME,
-					(CASE WHEN idx.rdb$expression_source IS NULL THEN
-						FALSE
-					ELSE
-						TRUE
-					END) AS COMPUTED
-				FROM rdb$indices idx
-					LEFT JOIN rdb$index_segments seg ON idx.rdb$index_name = seg.rdb$index_name");
+					idx.rdb$foreign_key AS FOREIGN_KEY,
+					idx.rdb$index_inactive AS IS_INACTIVE,
+					idx.rdb$unique_flag AS UNIQUE_FLAG,
+				    (SELECT COUNT(*) FROM rdb$relation_constraints rel
+				    WHERE rel.rdb$constraint_type = 'PRIMARY KEY' AND rel.rdb$index_name = idx.rdb$index_name AND rel.rdb$relation_name = idx.rdb$relation_name) as PRIMARY_KEY,
+					(SELECT COUNT(*) FROM rdb$relation_constraints rel
+					WHERE rel.rdb$constraint_type = 'UNIQUE' AND rel.rdb$index_name = idx.rdb$index_name AND rel.rdb$relation_name = idx.rdb$relation_name) as UNIQUE_KEY,
+					idx.rdb$system_flag AS IS_SYSTEM_INDEX,
+					idx.rdb$index_type AS INDEX_TYPE,
+					idx.rdb$description AS DESCRIPTION
+				FROM rdb$indices idx");
 
 		if (restrictions != null)
 		{
@@ -91,17 +85,6 @@ internal class DslIndexColumns : DslSchema
 
 				where.AppendFormat("idx.rdb$index_name = @p{0}", index++);
 			}
-
-			/* COLUMN_NAME */
-			if (restrictions.Length >= 5 && restrictions[4] != null)
-			{
-				if (where.Length > 0)
-				{
-					where.Append(" AND ");
-				}
-
-				where.AppendFormat("seg.rdb$field_name = @p{0}", index++);
-			}
 		}
 
 		if (where.Length > 0)
@@ -109,9 +92,37 @@ internal class DslIndexColumns : DslSchema
 			sql.AppendFormat(" WHERE {0} ", where.ToString());
 		}
 
-		sql.Append(" ORDER BY TABLE_NAME, INDEX_NAME, ORDINAL_POSITION");
+		sql.Append(" ORDER BY TABLE_NAME, INDEX_NAME");
 
 		return sql;
+	}
+
+	protected override void ProcessResult(DataTable schema)
+	{
+		schema.BeginLoadData();
+		schema.Columns.Add("IS_PRIMARY", typeof(bool));
+		schema.Columns.Add("IS_UNIQUE", typeof(bool));
+		schema.Columns.Add("IS_FOREIGNKEY", typeof(bool));
+
+		foreach (DataRow row in schema.Rows)
+		{
+			row["IS_UNIQUE"] = !(row["UNIQUE_FLAG"] == DBNull.Value || Convert.ToInt32(row["UNIQUE_FLAG"], CultureInfo.InvariantCulture) == 0);
+
+			row["IS_PRIMARY"] = !(row["PRIMARY_KEY"] == DBNull.Value || Convert.ToInt32(row["PRIMARY_KEY"], CultureInfo.InvariantCulture) == 0);
+
+			row["IS_INACTIVE"] = !(row["IS_INACTIVE"] == DBNull.Value || Convert.ToInt32(row["IS_INACTIVE"], CultureInfo.InvariantCulture) == 0);
+
+			row["IS_SYSTEM_INDEX"] = !(row["IS_SYSTEM_INDEX"] == DBNull.Value || Convert.ToInt32(row["IS_SYSTEM_INDEX"], CultureInfo.InvariantCulture) == 0);
+
+			row["IS_FOREIGNKEY"] = (row["FOREIGN_KEY"] != DBNull.Value);
+		}
+
+		schema.EndLoadData();
+		schema.AcceptChanges();
+
+		schema.Columns.Remove("PRIMARY_KEY");
+		schema.Columns.Remove("FOREIGN_KEY");
+		schema.Columns.Remove("UNIQUE_FLAG");
 	}
 
 	#endregion
