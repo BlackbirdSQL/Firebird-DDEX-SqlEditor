@@ -192,10 +192,12 @@
 				<Property name="NUMERIC_PRECISION" type="System.Byte" />
 				<Property name="NUMERIC_SCALE" type="System.Int32" />
 				<Property name="IS_NULLABLE" type="System.Boolean" />
-				<Property name="EXPRESSION" type="System.Array" />
+				<Property name="EXPRESSION" type="System.String" />
 				<Property name="IN_PRIMARYKEY" type="System.Boolean" />
 				<Property name="IS_UNIQUE" type="System.Boolean" />
 				<Property name="COMPUTED" type="System.Boolean" />
+				<Property name="AUTO_INCREMENT" type="System.String" />
+				<Property name="IS_AUTOINCREMENT" type="System.Boolean" />
 			</Properties>
 			<Services>
 				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
@@ -251,9 +253,11 @@
 				<Property name="TRIGGER_TYPE" type="System.Int64" />
 				<Property name="IS_SYSTEM_TRIGGER" type="System.Int16" />
 				<Property name="IS_INACTIVE" type="System.Int16" />
-				<Property name="SEQUENCE" type="System.Int16" />
-				<Property name="SOURCE" type="System.Array" />
+				<Property name="SEQUENCENO" type="System.Int16" />
+				<Property name="EXPRESSION" type="System.String" />
 				<Property name="DESCRIPTION" type="System.String" />
+				<Property name="IS_AUTOINCREMENT" type="System.Boolean" />
+				<Property name="DEPENDENT_FIELDS" type="System.String" />
 			</Properties>
 			<Services>
 				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
@@ -300,7 +304,7 @@
 
 
 		<!-- Completed -->
-		<Type name="TableIndex" preferredOrdering="TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME,INDEX_NAME">
+		<Type name="Index" preferredOrdering="TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME,INDEX_NAME">
 			<Identifier>
 				<Part name="TABLE_CATALOG" type="System.String" />
 				<Part name="TABLE_SCHEMA" type="System.String" />
@@ -356,7 +360,7 @@
 		</Type>
 
 		<!-- Completed -->
-		<Type name="TableIndexColumn" preferredOrdering="TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME,INDEX_NAME,ORDINAL_POSITION">
+		<Type name="IndexColumn" preferredOrdering="TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME,INDEX_NAME,ORDINAL_POSITION">
 			<Identifier>
 				<Part name="TABLE_CATALOG" type="System.String" />
 				<Part name="TABLE_SCHEMA" type="System.String" />
@@ -370,7 +374,7 @@
 				<Property name="COLUMN_NAME" isIdentifierPart="true" />
 				<Property name="ORDINAL_POSITION" type="System.Int16" />
 				<Property name="COMPUTED" type="System.Boolean" />
-				<Property name="EXPRESSION" type="System.Array" />
+				<Property name="EXPRESSION" type="System.String" />
 			</Properties>
 			<Services>
 				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
@@ -538,7 +542,7 @@
 				<Property name="NUMERIC_PRECISION" type="System.Byte" />
 				<Property name="NUMERIC_SCALE" type="System.Int32" />
 				<Property name="COLUMN_DATA_TYPE" type="System.String" />
-				<Property name="EXPRESSION" type="System.Array" />
+				<Property name="EXPRESSION" type="System.String" />
 				<Property name="IN_PRIMARYKEY" type="System.Boolean" />
 				<Property name="IS_UNIQUE" type="System.Boolean" />
 				<Property name="COMPUTED" type="System.Boolean" />
@@ -594,7 +598,7 @@
 				<Property name="PROCEDURE_SCHEMA" isIdentifierPart="true" />
 				<Property name="PROCEDURE_NAME" isIdentifierPart="true" />
 				<Property name="DESCRIPTION" type="System.String" />
-				<Property name="SOURCE" type="System.Array" />
+				<Property name="SOURCE" type="System.String" />
 				<Property name="IS_SYSTEM_PROCEDURE" type="System.Int16" />
 			</Properties>
 			<Services>
@@ -931,7 +935,7 @@
 		</MappedType>
 
 		<!-- Completed -->
-		<MappedType name="TableIndex" underlyingType="TableIndex">
+		<MappedType name="Index" underlyingType="Index">
 			<Selection restrictions="{Catalog},{Schema},{Table},{Name}" />
 			<Identifier>
 				<Part name="Catalog" underlyingMember="TABLE_CATALOG" />
@@ -954,7 +958,7 @@
 		</MappedType>
 
 		<!-- Completed -->
-		<MappedType name="TableIndexColumn" underlyingType="TableIndexColumn">
+		<MappedType name="IndexColumn" underlyingType="IndexColumn">
 			<Selection restrictions="{Catalog},{Schema},{Table},{Index},{Name}" />
 			<Identifier>
 				<Part name="Catalog" underlyingMember="TABLE_CATALOG" />
@@ -978,8 +982,8 @@
 		</MappedType>
 
 		<!-- Completed -->
-		<MappedType name="TableUniqueKey" underlyingType="TableIndex">
-			<Selection restrictions="{Catalog},{Schema},{Table},{Name}" filter="IS_UNIQUE = 1" />
+		<MappedType name="TableUniqueKey" underlyingType="Index">
+			<Selection restrictions="{Catalog},{Schema},{Table},{Name}" filter="IS_UNIQUE = true" />
 			<Identifier>
 				<Part name="Catalog" underlyingMember="TABLE_CATALOG" />
 				<Part name="Schema" underlyingMember="TABLE_SCHEMA" />
@@ -1000,7 +1004,7 @@
 		</MappedType>
 
 		<!-- Completed -->
-		<MappedType name="TableUniqueKeyColumn" underlyingType="TableIndexColumn">
+		<MappedType name="TableUniqueKeyColumn" underlyingType="IndexColumn">
 			<Selection restrictions="{Catalog},{Schema},{Table},{Index},{Name}" />
 			<Identifier>
 				<Part name="Catalog" underlyingMember="TABLE_CATALOG" />

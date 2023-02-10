@@ -45,15 +45,19 @@ internal class DslIndexColumns : DslSchema
 					null AS TABLE_CATALOG,
 					null AS TABLE_SCHEMA,
 					idx.rdb$relation_name AS TABLE_NAME,
-					idx.rdb$expression_source AS EXPRESSION,
-					(CASE WHEN seg.rdb$field_name IS NOT NULL OR idx.rdb$expression_source IS NULL THEN
+					(CASE WHEN idx.rdb$expression_source IS NULL AND idx.rdb$expression_blr IS NOT NULL THEN
+						cast(idx.rdb$expression_blr as blob sub_type 1)
+					ELSE
+						idx.rdb$expression_source
+					END) AS EXPRESSION,
+					(CASE WHEN seg.rdb$field_name IS NOT NULL OR (idx.rdb$expression_source IS NULL AND idx.rdb$expression_blr IS NULL) THEN
 						seg.rdb$field_name
 					ELSE
 						idx.rdb$index_name
 					END) AS COLUMN_NAME,
 					seg.rdb$field_position AS ORDINAL_POSITION,
 					idx.rdb$index_name AS INDEX_NAME,
-					(CASE WHEN idx.rdb$expression_source IS NULL THEN
+					(CASE WHEN idx.rdb$expression_source IS NULL AND idx.rdb$expression_blr IS NULL THEN
 						FALSE
 					ELSE
 						TRUE

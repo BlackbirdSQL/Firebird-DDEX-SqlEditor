@@ -65,6 +65,7 @@ internal sealed class DslSchemaFactory
 		{
 			case "Indexes":
 			case "Columns":
+			case "Triggers":
 			case "ViewColumns":
 			case "IndexColumns":
 			case "FunctionArguments":
@@ -149,6 +150,7 @@ internal sealed class DslSchemaFactory
 		DslSchema returnSchema = collectionName.ToUpperInvariant() switch
 		{
 			"COLUMNS" => new DslColumns(),
+			"TRIGGERS" => new DslTriggers(),
 			"VIEWCOLUMNS" => new DslViewColumns(),
 			"INDEXES" => new DslIndexes(),
 			"INDEXCOLUMNS" => new DslIndexColumns(),
@@ -170,6 +172,7 @@ internal sealed class DslSchemaFactory
 		DslSchema returnSchema = collectionName.ToUpperInvariant() switch
 		{
 			"COLUMNS" => new DslColumns(),
+			"TRIGGERS" => new DslTriggers(),
 			"VIEWCOLUMNS" => new DslViewColumns(),
 			"INDEXES" => new DslIndexes(),
 			"INDEXCOLUMNS" => new DslIndexColumns(),

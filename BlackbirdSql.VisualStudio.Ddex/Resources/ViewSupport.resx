@@ -639,4 +639,28 @@
   <data name="Property_Name_Trigger_Active" xml:space="preserve">
     <value>Enabled</value>
   </data>
+  <data name="Property_Desc_Column_AutoIncrement" xml:space="preserve">
+    <value>The name of the auto increment generator if it exists</value>
+  </data>
+  <data name="Property_Desc_Column_IsAutoIncrement" xml:space="preserve">
+    <value>Is this column auto incremented?</value>
+  </data>
+  <data name="Property_Name_Column_AutoIncrement" xml:space="preserve">
+    <value>AutoIncrement Generator</value>
+  </data>
+  <data name="Property_Name_Column_IsAutoIncrement" xml:space="preserve">
+    <value>Is AutoIncrement</value>
+  </data>
+  <data name="Property_Desc_Trigger_IsAutoIncrement" xml:space="preserve">
+    <value>Is the trigger a filed auto-increment generator?</value>
+  </data>
+  <data name="Property_Name_Trigger_IsAutoIncrement" xml:space="preserve">
+    <value>Auto-increment Generator</value>
+  </data>
+  <data name="Property_Desc_Trigger_Dependencies" xml:space="preserve">
+    <value>Columns driving this trigger</value>
+  </data>
+  <data name="Property_Name_Trigger_Dependencies" xml:space="preserve">
+    <value>Dependency Columns</value>
+  </data>
 </root>

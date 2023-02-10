@@ -44,6 +44,7 @@ internal class DslColumns : DslSchema
 
 
 		// BlackbirdSql added IN_PRIMARYKEY column
+		// BlackbirdSql added AUTO_INCREMENT
 		sql.AppendFormat(
 			@"SELECT
 					null AS TABLE_CATALOG,
@@ -63,7 +64,11 @@ internal class DslColumns : DslSchema
 					rfr.rdb$field_source AS DOMAIN_NAME,
 					null AS SYSTEM_DATA_TYPE,
 					rfr.rdb$default_source AS COLUMN_DEFAULT,
-				    fld.rdb$computed_source AS EXPRESSION,
+					(CASE WHEN fld.rdb$computed_source IS NULL AND fld.rdb$computed_blr IS NOT NULL THEN
+						 cast(fld.rdb$computed_blr as blob sub_type 1)
+					ELSE
+						 fld.rdb$computed_source
+					END) AS EXPRESSION,
 					fld.rdb$dimensions AS COLUMN_ARRAY,
 					coalesce(fld.rdb$null_flag, rfr.rdb$null_flag) AS COLUMN_NULLABLE,
 				    0 AS IS_READONLY,
@@ -75,12 +80,18 @@ internal class DslColumns : DslSchema
 					null AS COLLATION_SCHEMA,
 					coll.rdb$collation_name AS COLLATION_NAME,
 					rfr.rdb$description AS DESCRIPTION,
+					{0} AS IDENTITY_TYPE,
 					(CASE WHEN seg.rdb$field_name IS NULL THEN
 						FALSE
 					ELSE
 						TRUE
 					END) AS IN_PRIMARYKEY,
-					{0} AS IDENTITY_TYPE
+					dep.rdb$dependent_name AS AUTO_INCREMENT,
+					(CASE WHEN dep.rdb$dependent_name IS NOT NULL THEN
+						TRUE
+					ELSE
+						FALSE
+					END) AS IS_AUTOINCREMENT
 				FROM rdb$relation_fields rfr
 				LEFT JOIN rdb$fields fld
 					ON rfr.rdb$field_source = fld.rdb$field_name
@@ -90,8 +101,12 @@ internal class DslColumns : DslSchema
 					ON (coll.rdb$collation_id = fld.rdb$collation_id AND coll.rdb$character_set_id = fld.rdb$character_set_id)
 				LEFT OUTER JOIN rdb$relation_constraints con
 					ON con.rdb$relation_name = rfr.rdb$relation_name AND con.rdb$constraint_type = 'PRIMARY KEY'
-				LEFT OUTER JOIN rdb$index_segments seg 
-					ON seg.rdb$index_name = con.rdb$index_name AND seg.rdb$field_name = rfr.rdb$field_name",
+				LEFT JOIN rdb$index_segments seg 
+					ON seg.rdb$index_name = con.rdb$index_name AND seg.rdb$field_name = rfr.rdb$field_name
+                LEFT JOIN rdb$triggers trig
+                    ON trig.rdb$relation_name = con.rdb$relation_name AND trig.rdb$flags = 1 and trig.rdb$system_flag = 0 and trig.rdb$trigger_type = 1
+				LEFT JOIN rdb$dependencies dep
+					ON dep.rdb$depended_on_name = trig.rdb$relation_name AND dep.rdb$dependent_name = trig.rdb$trigger_name AND dep.rdb$field_name = seg.rdb$field_name",
 			MajorVersionNumber >= 3 ? "rfr.rdb$identity_type" : "null");
 
 		if (restrictions != null)

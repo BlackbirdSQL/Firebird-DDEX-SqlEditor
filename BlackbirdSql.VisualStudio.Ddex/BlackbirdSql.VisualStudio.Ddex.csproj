@@ -83,6 +83,7 @@
   <!-- Includes - Top Level -->
   <ItemGroup>
     <Content Include="Package.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.AutoIncrementColumn.ico" />
   </ItemGroup>
   <!-- References (Assemblies) -->
   <ItemGroup>
@@ -243,6 +244,7 @@
     <Compile Include="Schema\DslViewColumns.cs" />
     <Compile Include="Schema\Encoding2.cs" />
     <Compile Include="Schema\DslIndexes.cs" />
+    <Compile Include="Schema\DslTriggers.cs" />
     <Compile Include="Schema\IscCodes.cs" />
     <Compile Include="Src\TConnectionEquivalencyComparer.cs" />
     <Compile Include="Src\TConnectionPromptDialog.cs">

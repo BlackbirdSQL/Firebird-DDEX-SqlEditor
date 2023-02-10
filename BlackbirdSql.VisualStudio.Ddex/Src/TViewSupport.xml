@@ -66,6 +66,295 @@
 			<StandardValue value="varchar">VarChar</StandardValue>
 		</StandardValues>
 	</Define>
+	<!-- Definition list of standard table column properties -->
+	<Define name="ElementStandardTableColumnPropertiesList" >
+		<Property name="TABLE_CATALOG">
+			<DisplayName resource="Identifier_Name_Catalog" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Catalog" />
+		</Property>
+		<Property name="TABLE_SCHEMA">
+			<DisplayName resource="Identifier_Name_Schema" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Schema" />
+		</Property>
+		<Property name="TABLE_NAME">
+			<DisplayName resource="Identifier_Name_Table" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Table" />
+		</Property>
+		<Property name="COLUMN_NAME">
+			<DisplayName resource="Identifier_Name_Name" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Name" />
+		</Property>
+		<Property name="COLUMN_DATA_TYPE">
+			<DisplayName resource="Property_Name_Column_ProviderDataType" />
+			<Category resource="Category_DataType" />
+			<Description resource="Property_Desc_Column_ProviderDataType" />
+			<StandardValuesRef name="ElementColumnDataTypeStandardValues"/>
+		</Property>
+		<Property name="COLUMN_SIZE">
+			<DisplayName resource="Property_Name_Column_Length" />
+			<Category resource="Category_DataType" />
+			<Description resource="Property_Desc_Column_Length" />
+		</Property>
+		<Property name="NUMERIC_PRECISION">
+			<DisplayName resource="Property_Name_Column_Precision" />
+			<Category resource="Category_DataType" />
+			<Description resource="Property_Desc_Column_Precision" />
+		</Property>
+		<Property name="NUMERIC_SCALE">
+			<DisplayName resource="Property_Name_Column_Scale" />
+			<Category resource="Category_DataType" />
+			<Description resource="Property_Desc_Column_Scale" />
+		</Property>
+		<Property name="IS_NULLABLE">
+			<DisplayName resource="Property_Name_Column_Nullable" />
+			<Category resource="Category_DataType" />
+			<Description resource="Property_Desc_Column_Nullable" />
+		</Property>
+		<Property name="CHARACTER_SET_NAME">
+			<DisplayName resource="Property_Name_Column_CharacterSet" />
+			<Category resource="Category_DataType" />
+			<Description resource="Property_Desc_Column_CharacterSet" />
+		</Property>
+		<Property name="COLLATION_NAME">
+			<DisplayName resource="Property_Name_Column_Collation" />
+			<Category resource="Category_DataType" />
+			<Description resource="Property_Desc_Column_Collation" />
+		</Property>
+		<Property name="DESCRIPTION">
+			<DisplayName resource="Property_Name_Description" />
+			<Description resource="Property_Desc_Description" />
+		</Property>
+		<Property name="ORDINAL_POSITION">
+			<DisplayName resource="Property_Name_Column_Ordinal" />
+			<Description resource="Property_Desc_Column_Ordinal" />
+		</Property>
+		<Property name="COLUMN_DEFAULT">
+			<DisplayName resource="Property_Name_Column_Default" />
+			<Description resource="Property_Desc_Column_Default" />
+		</Property>
+	</Define>
+	<!-- Definition list of user table column properties -->
+	<Define name="ElementUserTableColumnPropertiesList" >
+		<Property name="IN_PRIMARYKEY">
+			<DisplayName resource="Property_Name_Column_InPrimaryKey" />
+			<Description resource="Property_Desc_Column_InPrimaryKey" />
+		</Property>
+		<Property name="IS_UNIQUE">
+			<DisplayName resource="Property_Name_Column_IsUnique" />
+			<Description resource="Property_Desc_Column_IsUnique" />
+		</Property>
+		<Property name="COMPUTED">
+			<DisplayName resource="Property_Name_Column_Computed" />
+			<Description resource="Property_Desc_Column_Computed" />
+		</Property>
+		<Property name="EXPRESSION">
+			<DisplayName resource="Property_Name_Column_Expression" />
+			<Description resource="Property_Desc_Column_Expression" />
+		</Property>
+		<Property name="AUTO_INCREMENT">
+			<DisplayName resource="Property_Name_Column_AutoIncrement" />
+			<Description resource="Property_Desc_Column_AutoIncrement" />
+		</Property>
+		<Property name="IS_AUTOINCREMENT">
+			<DisplayName resource="Property_Name_Column_IsAutoIncrement" />
+			<Description resource="Property_Desc_Column_IsAutoIncrement" />
+		</Property>
+	</Define>
+	<!-- Definition of system table column properties -->
+	<Define name="ElementSystemTableColumnProperties" >
+		<Properties>
+			<TypeDisplayName resource="Type_Column" />
+			<PropertyListRef name="ElementStandardTableColumnPropertiesList" />
+		</Properties>
+	</Define>
+	<!-- Definition of user table column properties -->
+	<Define name="ElementUserTableColumnProperties" >
+		<Properties>
+			<TypeDisplayName resource="Type_Column" />
+			<PropertyListRef name="ElementStandardTableColumnPropertiesList" />
+			<PropertyListRef name="ElementUserTableColumnPropertiesList" />
+		</Properties>
+	</Define>
+	<!-- Definitions of index node properties -->
+	<Define name="ElementIndexProperties" >
+		<Properties>
+			<TypeDisplayName resource="Type_Index" />
+			<Property name="TABLE_CATALOG">
+				<DisplayName resource="Identifier_Name_Catalog" />
+				<Category resource="Category_Identifier" />
+				<Description resource="Identifier_Desc_Catalog" />
+			</Property>
+			<Property name="TABLE_SCHEMA">
+				<DisplayName resource="Identifier_Name_Schema" />
+				<Category resource="Category_Identifier" />
+				<Description resource="Identifier_Desc_Schema" />
+			</Property>
+			<Property name="TABLE_NAME">
+				<DisplayName resource="Identifier_Name_Table" />
+				<Category resource="Category_Identifier" />
+				<Description resource="Identifier_Desc_Table" />
+			</Property>
+			<Property name="INDEX_NAME">
+				<DisplayName resource="Identifier_Name_Name" />
+				<Category resource="Category_Identifier" />
+				<Description resource="Identifier_Desc_Name" />
+			</Property>
+			<Property name="IS_PRIMARY">
+				<DisplayName resource="Property_Name_Index_IsPrimary" />
+				<Description resource="Property_Desc_Index_IsPrimary" />
+			</Property>
+			<Property name="IS_UNIQUE">
+				<DisplayName resource="Property_Name_Index_IsUnique" />
+				<Description resource="Property_Desc_Index_IsUnique" />
+			</Property>
+			<Property name="IS_FOREIGNKEY">
+				<DisplayName resource="Property_Name_Index_IsForeignKey" />
+				<Description resource="Property_Desc_Index_IsForeignKey" />
+			</Property>
+			<Property name="IS_SYSTEM_INDEX">
+				<DisplayName resource="Property_Name_Type" />
+				<StandardValues>
+					<StandardValue value="0" resource="Property_Value_IndexType_User" />
+					<StandardValue value="1" resource="Property_Value_IndexType_System" />
+				</StandardValues>
+			</Property>
+		</Properties>
+	</Define>
+	<Define name="ElementIndexColumnProperties" >
+		<Properties>
+			<TypeDisplayName resource="Type_IndexColumn" />
+			<Property name="TABLE_CATALOG">
+				<DisplayName resource="Identifier_Name_Catalog" />
+				<Category resource="Category_Identifier" />
+				<Description resource="Identifier_Desc_Catalog" />
+			</Property>
+			<Property name="TABLE_SCHEMA">
+				<DisplayName resource="Identifier_Name_Catalog" />
+				<Category resource="Category_Identifier" />
+				<Description resource="Identifier_Desc_Catalog" />
+			</Property>
+			<Property name="TABLE_NAME">
+				<DisplayName resource="Identifier_Name_Table" />
+				<Category resource="Category_Identifier" />
+				<Description resource="Identifier_Desc_Table" />
+			</Property>
+			<Property name="INDEX_NAME">
+				<DisplayName resource="Identifier_Name_Index" />
+				<Category resource="Category_Identifier" />
+				<Description resource="Identifier_Desc_Index" />
+			</Property>
+			<Property name="COLUMN_NAME">
+				<DisplayName resource="Identifier_Name_Name" />
+				<Category resource="Category_Identifier" />
+				<Description resource="Identifier_Desc_Name" />
+			</Property>
+			<Property name="ORDINAL_POSITION">
+				<DisplayName resource="Property_Name_UniqueKeyColumn_Ordinal" />
+				<Description resource="Property_Name_UniqueKeyColumn_Ordinal" />
+			</Property>
+			<!--
+			<Property name="COLLATION">
+				<DisplayName resource="Property_Name_IndexColumn_Collation" />
+				<Description resource="Property_Desc_IndexColumn_Collation" />
+				<StandardValues>
+					<StandardValue value="1">ASC</StandardValue>
+					<StandardValue value="2">DESC</StandardValue>
+				</StandardValues>
+			</Property>
+			-->
+			<Property name="COMPUTED">
+				<DisplayName resource="Property_Name_Column_Computed" />
+				<Description resource="Property_Desc_Column_Computed" />
+			</Property>
+			<Property name="EXPRESSION">
+				<DisplayName resource="Property_Name_Column_Expression" />
+				<Description resource="Property_Desc_Column_Expression" />
+			</Property>
+		</Properties>
+	</Define>
+	<!-- Definitions of trigger node properties -->
+	<Define name="ElementTriggerProperties" >
+		<Properties>
+			<TypeDisplayName resource="Type_Trigger" />
+			<Property name="TABLE_CATALOG">
+				<DisplayName resource="Identifier_Name_Catalog" />
+				<Category resource="Category_Identifier" />
+				<Description resource="Identifier_Desc_Catalog" />
+			</Property>
+			<Property name="TABLE_SCHEMA">
+				<DisplayName resource="Identifier_Name_Schema" />
+				<Category resource="Category_Identifier" />
+				<Description resource="Identifier_Desc_Schema" />
+			</Property>
+			<Property name="TABLE_NAME">
+				<DisplayName resource="Identifier_Name_Table" />
+				<Category resource="Category_Identifier" />
+				<Description resource="Identifier_Desc_Table" />
+			</Property>
+			<Property name="TRIGGER_NAME">
+				<DisplayName resource="Identifier_Name_Name" />
+				<Category resource="Category_Identifier" />
+				<Description resource="Identifier_Desc_Name" />
+			</Property>
+			<Property name="TRIGGER_TYPE">
+				<DisplayName resource="Property_Name_Trigger_Type" />
+				<Description resource="Property_Desc_Trigger_Name" />
+				<StandardValues>
+					<StandardValue value="1">Before insert</StandardValue>
+					<StandardValue value="2">After insert</StandardValue>
+					<StandardValue value="3">Before update</StandardValue>
+					<StandardValue value="4">After update</StandardValue>
+					<StandardValue value="5">Before delete</StandardValue>
+					<StandardValue value="6">After delete</StandardValue>
+					<StandardValue value="17">Before insert or update</StandardValue>
+					<StandardValue value="18">After insert or update</StandardValue>
+					<StandardValue value="25">Before insert or delete</StandardValue>
+					<StandardValue value="26">After insert or delete</StandardValue>
+					<StandardValue value="27">Before update or delete</StandardValue>
+					<StandardValue value="28">After update or delete</StandardValue>
+					<StandardValue value="113">Before insert, update or delete</StandardValue>
+					<StandardValue value="114">After insert, update or delete</StandardValue>
+					<StandardValue value="8192">On connect</StandardValue>
+					<StandardValue value="8193">On disconnect</StandardValue>
+					<StandardValue value="8194">On transaction begin</StandardValue>
+					<StandardValue value="8195">On transaction commit</StandardValue>
+					<StandardValue value="8196">On transaction rollback"</StandardValue>
+				</StandardValues>
+			</Property>
+			<Property name="SEQUENCENO">
+				<DisplayName resource="Property_Name_Trigger_Sequence" />
+				<Description resource="Property_Desc_Trigger_Sequence" />
+			</Property>
+			<Property name="IS_INACTIVE">
+				<DisplayName resource="Property_Name_Trigger_Active" />
+				<Description resource="Property_Desc_Trigger_Active" />
+				<StandardValues>
+					<StandardValue value="0">True</StandardValue>
+					<StandardValue value="1">False</StandardValue>
+				</StandardValues>
+			</Property>
+			<Property name="DESCRIPTION">
+				<DisplayName resource="Property_Name_Description" />
+				<Description resource="Property_Desc_Description" />
+			</Property>
+			<Property name="EXPRESSION">
+				<DisplayName resource="Property_Name_Dsl" />
+				<Description resource="Property_Desc_Dsl" />
+			</Property>
+			<Property name="IS_AUTOINCREMENT">
+				<DisplayName resource="Property_Name_Trigger_IsAutoIncrement" />
+				<Description resource="Property_Desc_Trigger_IsAutoIncrement" />
+			</Property>
+			<Property name="DEPENDENT_FIELDS">
+				<DisplayName resource="Property_Name_Trigger_Dependencies" />
+				<Description resource="Property_Desc_Trigger_Dependencies" />
+			</Property>
+		</Properties>
+	</Define>
 	<Define name="ElementStaticNodeTablesTables" parameters="elementName, elementType, tableType" >
 		<StaticNode nodeId="$(elementName)s">
 			<DisplayName resource="Node_Name_$(elementName)s" />
@@ -112,206 +401,79 @@
 								<SelectionNode nodeId="Column">
 									<DisplayName>{Column.COLUMN_NAME}</DisplayName>
 									<Icon name="ComputedColumn" when="{Column.COMPUTED}" />
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" when="{Column.IS_AUTOINCREMENT} AND {Column.IS_UNIQUE}" assembly="" />
 									<Icon name="PrimaryKey" when="{Column.IS_UNIQUE}" />
 									<Icon name="UniqueKey" when="{Column.IN_PRIMARYKEY}" />
 									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(elementType)Column.ico" assembly="" />
-									<Properties>
-										<TypeDisplayName resource="Type_Column" />
-										<Property name="TABLE_CATALOG">
-											<DisplayName resource="Identifier_Name_Catalog" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Catalog" />
-										</Property>
-										<Property name="TABLE_SCHEMA">
-											<DisplayName resource="Identifier_Name_Schema" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Schema" />
-										</Property>
-										<Property name="TABLE_NAME">
-											<DisplayName resource="Identifier_Name_Table" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Table" />
-										</Property>
-										<Property name="COLUMN_NAME">
-											<DisplayName resource="Identifier_Name_Name" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Name" />
-										</Property>
-										<Property name="COLUMN_DATA_TYPE">
-											<DisplayName resource="Property_Name_Column_ProviderDataType" />
-											<Category resource="Category_DataType" />
-											<Description resource="Property_Desc_Column_ProviderDataType" />
-											<StandardValuesRef name="ElementColumnDataTypeStandardValues"/>
-										</Property>
-										<Property name="COLUMN_SIZE">
-											<DisplayName resource="Property_Name_Column_Length" />
-											<Category resource="Category_DataType" />
-											<Description resource="Property_Desc_Column_Length" />
-										</Property>
-										<Property name="NUMERIC_PRECISION">
-											<DisplayName resource="Property_Name_Column_Precision" />
-											<Category resource="Category_DataType" />
-											<Description resource="Property_Desc_Column_Precision" />
-										</Property>
-										<Property name="NUMERIC_SCALE">
-											<DisplayName resource="Property_Name_Column_Scale" />
-											<Category resource="Category_DataType" />
-											<Description resource="Property_Desc_Column_Scale" />
-										</Property>
-										<Property name="IS_NULLABLE">
-											<DisplayName resource="Property_Name_Column_Nullable" />
-											<Category resource="Category_DataType" />
-											<Description resource="Property_Desc_Column_Nullable" />
-										</Property>
-										<Property name="CHARACTER_SET_NAME">
-											<DisplayName resource="Property_Name_Column_CharacterSet" />
-											<Category resource="Category_DataType" />
-											<Description resource="Property_Desc_Column_CharacterSet" />
-										</Property>
-										<Property name="COLLATION_NAME">
-											<DisplayName resource="Property_Name_Column_Collation" />
-											<Category resource="Category_DataType" />
-											<Description resource="Property_Desc_Column_Collation" />
-										</Property>
-										<Property name="DESCRIPTION">
-											<DisplayName resource="Property_Name_Description" />
-											<Description resource="Property_Desc_Description" />
-										</Property>
-										<Property name="ORDINAL_POSITION">
-											<DisplayName resource="Property_Name_Column_Ordinal" />
-											<Description resource="Property_Desc_Column_Ordinal" />
-										</Property>
-										<Property name="COLUMN_DEFAULT">
-											<DisplayName resource="Property_Name_Column_Default" />
-											<Description resource="Property_Desc_Column_Default" />
-										</Property>
-										<Property name="IN_PRIMARYKEY">
-											<DisplayName resource="Property_Name_Column_InPrimaryKey" />
-											<Description resource="Property_Desc_Column_InPrimaryKey" />
-										</Property>
-										<Property name="IS_UNIQUE">
-											<DisplayName resource="Property_Name_Column_IsUnique" />
-											<Description resource="Property_Desc_Column_IsUnique" />
-										</Property>
-										<Property name="COMPUTED">
-											<DisplayName resource="Property_Name_Column_Computed" />
-											<Description resource="Property_Desc_Column_Computed" />
-										</Property>
-										<Property name="EXPRESSION">
-											<DisplayName resource="Property_Name_Column_Expression" />
-											<Description resource="Property_Desc_Column_Expression" />
-										</Property>
-									</Properties>
+									<PropertiesRef name="Element$(elementType)TableColumnProperties" />
 								</SelectionNode>
 							</Selection>
 							<StaticNode skipWhen="{Table.IS_SYSTEM_TABLE} = 1" nodeId="Indexes">
 								<DisplayName resource="Node_Name_Indexes" />
 								<Children>
-									<Selection type="TableIndex" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}">
+									<Selection type="Index" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}" filter="IS_PRIMARY = true">
 										<SelectionNode nodeId="Index">
 											<DisplayName>{Index.INDEX_NAME}</DisplayName>
-											<Icon name="PrimaryKey" when="{Index.IS_PRIMARY}" />
-											<Icon name="ForeignKey" when="{Index.IS_FOREIGNKEY}" />
-											<Icon name="UniqueKey" when="{Index.IS_UNIQUE}" />
-											<Icon name="Index" />
-											<Properties>
-												<TypeDisplayName resource="Type_Index" />
-												<Property name="TABLE_CATALOG">
-													<DisplayName resource="Identifier_Name_Catalog" />
-													<Category resource="Category_Identifier" />
-													<Description resource="Identifier_Desc_Catalog" />
-												</Property>
-												<Property name="TABLE_SCHEMA">
-													<DisplayName resource="Identifier_Name_Schema" />
-													<Category resource="Category_Identifier" />
-													<Description resource="Identifier_Desc_Schema" />
-												</Property>
-												<Property name="TABLE_NAME">
-													<DisplayName resource="Identifier_Name_Table" />
-													<Category resource="Category_Identifier" />
-													<Description resource="Identifier_Desc_Table" />
-												</Property>
-												<Property name="INDEX_NAME">
-													<DisplayName resource="Identifier_Name_Name" />
-													<Category resource="Category_Identifier" />
-													<Description resource="Identifier_Desc_Name" />
-												</Property>
-												<Property name="IS_PRIMARY">
-													<DisplayName resource="Property_Name_Index_IsPrimary" />
-													<Description resource="Property_Desc_Index_IsPrimary" />
-												</Property>
-												<Property name="IS_UNIQUE">
-													<DisplayName resource="Property_Name_Index_IsUnique" />
-													<Description resource="Property_Desc_Index_IsUnique" />
-												</Property>
-												<Property name="IS_FOREIGNKEY">
-													<DisplayName resource="Property_Name_Index_IsForeignKey" />
-													<Description resource="Property_Desc_Index_IsForeignKey" />
-												</Property>
-												<Property name="IS_SYSTEM_INDEX">
-													<DisplayName resource="Property_Name_Type" />
-													<StandardValues>
-														<StandardValue value="0" resource="Property_Value_IndexType_User" />
-														<StandardValue value="1" resource="Property_Value_IndexType_System" />
-													</StandardValues>
-												</Property>
-											</Properties>
+											<Icon name="PrimaryKey" />
+											<PropertiesRef name="ElementIndexProperties" />
 											<Children>
-												<Selection type="TableIndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
+												<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
 													<SelectionNode nodeId="IndexColumn">
 														<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
 														<Icon name="ComputedColumn" when="{IndexColumn.COMPUTED}" />
 														<Icon name="Column" />
-														<Properties>
-															<TypeDisplayName resource="Type_IndexColumn" />
-															<Property name="TABLE_CATALOG">
-																<DisplayName resource="Identifier_Name_Catalog" />
-																<Category resource="Category_Identifier" />
-																<Description resource="Identifier_Desc_Catalog" />
-															</Property>
-															<Property name="TABLE_SCHEMA">
-																<DisplayName resource="Identifier_Name_Catalog" />
-																<Category resource="Category_Identifier" />
-																<Description resource="Identifier_Desc_Catalog" />
-															</Property>
-															<Property name="TABLE_NAME">
-																<DisplayName resource="Identifier_Name_Table" />
-																<Category resource="Category_Identifier" />
-																<Description resource="Identifier_Desc_Table" />
-															</Property>
-															<Property name="INDEX_NAME">
-																<DisplayName resource="Identifier_Name_Index" />
-																<Category resource="Category_Identifier" />
-																<Description resource="Identifier_Desc_Index" />
-															</Property>
-															<Property name="COLUMN_NAME">
-																<DisplayName resource="Identifier_Name_Name" />
-																<Category resource="Category_Identifier" />
-																<Description resource="Identifier_Desc_Name" />
-															</Property>
-															<Property name="ORDINAL_POSITION">
-																<DisplayName resource="Property_Name_UniqueKeyColumn_Ordinal" />
-																<Description resource="Property_Name_UniqueKeyColumn_Ordinal" />
-															</Property>
-															<!--
-																		<Property name="COLLATION">
-																			<DisplayName resource="Property_Name_IndexColumn_Collation" />
-																			<Description resource="Property_Desc_IndexColumn_Collation" />
-																			<StandardValues>
-																				<StandardValue value="1">ASC</StandardValue>
-																				<StandardValue value="2">DESC</StandardValue>
-																			</StandardValues>
-																		</Property>
-																		-->
-															<Property name="COMPUTED">
-																<DisplayName resource="Property_Name_Column_Computed" />
-																<Description resource="Property_Desc_Column_Computed" />
-															</Property>
-															<Property name="EXPRESSION">
-																<DisplayName resource="Property_Name_Column_Expression" />
-																<Description resource="Property_Desc_Column_Expression" />
-															</Property>
-														</Properties>
+														<PropertiesRef name="ElementIndexColumnProperties" />
+													</SelectionNode>
+												</Selection>
+											</Children>
+										</SelectionNode>
+									</Selection>
+									<Selection type="Index" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}"  filter="IS_PRIMARY = false AND IS_UNIQUE = true">
+										<SelectionNode nodeId="Index">
+											<DisplayName>{Index.INDEX_NAME}</DisplayName>
+											<Icon name="UniqueKey" />
+											<PropertiesRef name="ElementIndexProperties" />
+											<Children>
+												<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
+													<SelectionNode nodeId="IndexColumn">
+														<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
+														<Icon name="ComputedColumn" when="{IndexColumn.COMPUTED}" />
+														<Icon name="Column" />
+														<PropertiesRef name="ElementIndexColumnProperties" />
+													</SelectionNode>
+												</Selection>
+											</Children>
+										</SelectionNode>
+									</Selection>
+									<Selection type="Index" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}"  filter="IS_PRIMARY = false AND IS_UNIQUE = false AND IS_FOREIGNKEY = false">
+										<SelectionNode nodeId="Index">
+											<DisplayName>{Index.INDEX_NAME}</DisplayName>
+											<Icon name="Index" />
+											<PropertiesRef name="ElementIndexProperties" />
+											<Children>
+												<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
+													<SelectionNode nodeId="IndexColumn">
+														<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
+														<Icon name="ComputedColumn" when="{IndexColumn.COMPUTED}" />
+														<Icon name="Column" />
+														<PropertiesRef name="ElementIndexColumnProperties" />
+													</SelectionNode>
+												</Selection>
+											</Children>
+										</SelectionNode>
+									</Selection>
+									<Selection type="Index" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}"  filter="IS_FOREIGNKEY = true">
+										<SelectionNode nodeId="Index">
+											<DisplayName>{Index.INDEX_NAME}</DisplayName>
+											<Icon name="ForeignKey" />
+											<PropertiesRef name="ElementIndexProperties" />
+											<Children>
+												<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
+													<SelectionNode nodeId="IndexColumn">
+														<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
+														<Icon name="ComputedColumn" when="{IndexColumn.COMPUTED}" />
+														<Icon name="Column" />
+														<PropertiesRef name="ElementIndexColumnProperties" />
 													</SelectionNode>
 												</Selection>
 											</Children>
@@ -439,78 +601,18 @@
 							<StaticNode skipWhen="{Table.IS_SYSTEM_TABLE} = 1" nodeId="Triggers">
 								<DisplayName resource="Node_Name_Triggers" />
 								<Children>
-									<Selection type="Trigger" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}">
+									<Selection type="Trigger" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}" filter="IS_AUTOINCREMENT = true">
+										<SelectionNode nodeId="Trigger">
+											<DisplayName>{Trigger.TRIGGER_NAME}</DisplayName>
+											<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" assembly="" />
+											<PropertiesRef name="ElementTriggerProperties" />
+										</SelectionNode>
+									</Selection>
+									<Selection type="Trigger" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}" filter="IS_AUTOINCREMENT = false">
 										<SelectionNode nodeId="Trigger">
 											<DisplayName>{Trigger.TRIGGER_NAME}</DisplayName>
 											<Icon name="Trigger" />
-											<Properties>
-												<TypeDisplayName resource="Type_Trigger" />
-												<Property name="TABLE_CATALOG">
-													<DisplayName resource="Identifier_Name_Catalog" />
-													<Category resource="Category_Identifier" />
-													<Description resource="Identifier_Desc_Catalog" />
-												</Property>
-												<Property name="TABLE_SCHEMA">
-													<DisplayName resource="Identifier_Name_Schema" />
-													<Category resource="Category_Identifier" />
-													<Description resource="Identifier_Desc_Schema" />
-												</Property>
-												<Property name="TABLE_NAME">
-													<DisplayName resource="Identifier_Name_Table" />
-													<Category resource="Category_Identifier" />
-													<Description resource="Identifier_Desc_Table" />
-												</Property>
-												<Property name="TRIGGER_NAME">
-													<DisplayName resource="Identifier_Name_Name" />
-													<Category resource="Category_Identifier" />
-													<Description resource="Identifier_Desc_Name" />
-												</Property>
-												<Property name="TRIGGER_TYPE">
-													<DisplayName resource="Property_Name_Trigger_Type" />
-													<Description resource="Property_Desc_Trigger_Name" />
-													<StandardValues>
-														<StandardValue value="1">Before insert</StandardValue>
-														<StandardValue value="2">After insert</StandardValue>
-														<StandardValue value="3">Before update</StandardValue>
-														<StandardValue value="4">After update</StandardValue>
-														<StandardValue value="5">Before delete</StandardValue>
-														<StandardValue value="6">After delete</StandardValue>
-														<StandardValue value="17">Before insert or update</StandardValue>
-														<StandardValue value="18">After insert or update</StandardValue>
-														<StandardValue value="25">Before insert or delete</StandardValue>
-														<StandardValue value="26">After insert or delete</StandardValue>
-														<StandardValue value="27">Before update or delete</StandardValue>
-														<StandardValue value="28">After update or delete</StandardValue>
-														<StandardValue value="113">Before insert, update or delete</StandardValue>
-														<StandardValue value="114">After insert, update or delete</StandardValue>
-														<StandardValue value="8192">On connect</StandardValue>
-														<StandardValue value="8193">On disconnect</StandardValue>
-														<StandardValue value="8194">On transaction begin</StandardValue>
-														<StandardValue value="8195">On transaction commit</StandardValue>
-														<StandardValue value="8196">On transaction rollback"</StandardValue>
-													</StandardValues>
-												</Property>
-												<Property name="SEQUENCE">
-													<DisplayName resource="Property_Name_Trigger_Sequence" />
-													<Description resource="Property_Desc_Trigger_Sequence" />
-												</Property>
-												<Property name="IS_INACTIVE">
-													<DisplayName resource="Property_Name_Trigger_Active" />
-													<Description resource="Property_Desc_Trigger_Active" />
-													<StandardValues>
-														<StandardValue value="0">True</StandardValue>
-														<StandardValue value="1">False</StandardValue>
-													</StandardValues>
-												</Property>
-												<Property name="DESCRIPTION">
-													<DisplayName resource="Property_Name_Description" />
-													<Description resource="Property_Desc_Description" />
-												</Property>
-												<Property name="SOURCE">
-													<DisplayName resource="Property_Name_Dsl" />
-													<Description resource="Property_Desc_Dsl" />
-												</Property>
-											</Properties>
+											<PropertiesRef name="ElementTriggerProperties" />
 										</SelectionNode>
 									</Selection>
 								</Children>
@@ -657,6 +759,7 @@
 												<DisplayName>{Column.COLUMN_NAME}</DisplayName>
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{Column.COMPUTED}" assembly="" />
 												<Icon name="ComputedColumn" when="{Column.COMPUTED}" />
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" when="{Column.IS_AUTOINCREMENT}" assembly="" />
 												<Icon name="PrimaryKey" when="{Column.IS_UNIQUE}" />
 												<Icon name="UniqueKey" when="{Column.IN_PRIMARYKEY}" />
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ViewColumn.ico" assembly="" />
@@ -687,6 +790,14 @@
 														<Category resource="Category_DataType" />
 														<Description resource="Property_Desc_Column_ProviderDataType" />
 														<StandardValuesRef name="ElementColumnDataTypeStandardValues"/>
+													</Property>
+													<Property name="AUTO_INCREMENT">
+														<DisplayName resource="Property_Name_Column_AutoIncrement" />
+														<Description resource="Property_Desc_Column_AutoIncrement" />
+													</Property>
+													<Property name="IS_AUTOINCREMENT">
+														<DisplayName resource="Property_Name_Column_IsAutoIncrement" />
+														<Description resource="Property_Desc_Column_IsAutoIncrement" />
 													</Property>
 													<!--
 													<Property name="FW_DATA_TYPE">
