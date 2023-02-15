@@ -28,32 +28,48 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 // =========================================================================================================
 internal sealed class TObjectMemberComparer : DataObjectMemberComparer
 {
-	/* For debug trace
-	 * 
+	/* For debug trace */
 	public TObjectMemberComparer() : base()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 	}
 
 	public TObjectMemberComparer(IVsDataConnection dataConnection) : base(dataConnection)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 	}
 
 	public override int Compare(string typeName, string propertyName, object value1, object value2)
 	{
-		Diag.Trace();
 		int result;
 
-		if (typeName == "Table" && propertyName == "TABLE_TYPE" && value1 != null && value2 != null
-			&& (string)value1 == "SYSTEM_TABLE" && (string)value2 == "SYSTEM TABLE")
+		// Diag.Trace();
+
+		// Table type hack
+		if (typeName == "Table" && propertyName == "TABLE_TYPE")
 		{
-			value2 = "SYSTEM_TABLE";
+			// null means all tables
+			if (value1 == null || value2 == null)
+			{
+				return 0;
+			}
+
+			if ((string)value1 == "SYSTEM_TABLE")
+			{
+				Diag.Trace("RENAMING value1 SYSTEM TABLE");
+				value1 = "SYSTEM TABLE";
+			}
+			if ((string)value2 == "SYSTEM_TABLE")
+			{
+				Diag.Trace("RENAMING value2 SYSTEM TABLE");
+				value2 = "SYSTEM TABLE";
+			}
 		}
 
 		try
 		{
 			result = base.Compare(typeName, propertyName, value1, value2);
+			Diag.Trace("typeName: " + typeName + " propertyName: " + propertyName + " value1: " + (value1 == null ? "null" : value1.ToString()) + " value2: " + (value2 == null ? "null" : value2.ToString()) + " result: " + result);
 		}
 		catch (Exception e)
 		{
@@ -62,7 +78,6 @@ internal sealed class TObjectMemberComparer : DataObjectMemberComparer
 			throw;
 		}
 
-		// Diag.Trace("typeName: " + typeName + " propertyName: " + propertyName + " values: " + value1 + ":" + value2 + " result: " + result);
 
 		return result;
 	}
@@ -71,8 +86,7 @@ internal sealed class TObjectMemberComparer : DataObjectMemberComparer
 	public override int Compare(string typeName, object[] identifier, int identifierPart, object value)
 	{
 #nullable enable
-		Diag.Trace();
-		base.Compare(typeName, identifier, identifierPart, value);
+		// base.Compare(typeName, identifier, identifierPart, value);
 
 		int result;
 		string? value1 = null, value2 = null;
@@ -112,6 +126,7 @@ internal sealed class TObjectMemberComparer : DataObjectMemberComparer
 				}
 			}
 
+
 			if (value1 == value2)
 			{
 				result = 0;
@@ -129,6 +144,7 @@ internal sealed class TObjectMemberComparer : DataObjectMemberComparer
 				result = StringComparer.Ordinal.Compare(value1, value2);
 			}
 
+			Diag.Trace("typeName: " + typeName + " identifierPart: " + identifierPart + " value1: " + (value1 == null ? "null" : value1.ToString()) + " value2: " + (value2 == null ? "null" : value2.ToString()) + " result: " + result);
 
 		}
 		catch (Exception e)
@@ -138,13 +154,10 @@ internal sealed class TObjectMemberComparer : DataObjectMemberComparer
 			throw;
 		}
 
-		// Diag.Trace(typeName + ":" + value1 + ":" + value2 + " result: " + result);
 
 		return result > 0 ? 1 : (result < 0 ? -1 : 0);
 
 #nullable restore
 	}
-
-	*/
 
 }

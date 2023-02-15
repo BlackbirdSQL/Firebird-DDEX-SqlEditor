@@ -33,12 +33,12 @@ internal class TObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	public TObjectIdentifierResolver() : base()
 	{
-		// Diag.Trace();
+		Diag.Trace();
 	}
 
 	public TObjectIdentifierResolver(IVsDataConnection connection) : base(connection)
 	{
-		// Diag.Trace();
+		Diag.Trace();
 	}
 
 
@@ -61,7 +61,6 @@ internal class TObjectIdentifierResolver : DataObjectIdentifierResolver
 	// ---------------------------------------------------------------------------------
 	public override object[] ContractIdentifier(string typeName, object[] fullIdentifier)
 	{
-		Diag.Trace();
 		if (typeName == null)
 		{
 			Diag.Dug(true, "Null argument: typeName");
@@ -107,6 +106,7 @@ internal class TObjectIdentifierResolver : DataObjectIdentifierResolver
 			identifier[1] = null;
 		}
 
+		Diag.Trace("typeName: " + typeName + " Dsl length: " + length + " Supplied length: " + fullIdentifier.Length + " Copy length:" + (length - fullIdentifier.Length));
 		return identifier;
 	}
 

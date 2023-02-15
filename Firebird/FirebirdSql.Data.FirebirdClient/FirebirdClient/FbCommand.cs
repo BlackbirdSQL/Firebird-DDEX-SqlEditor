@@ -843,7 +843,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	internal DbValue[] Fetch()
 	{
-		Diag.Trace("Command: " + CommandText);
+		// Diag.Trace("Command: " + CommandText);
 		if (HasParameters)
 		{
 			string str = "Parameters: ";
@@ -860,7 +860,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 			try
 			{
 				DbValue[] dbValue = _statement.Fetch();
-				Diag.Trace();
+				// Diag.Trace();
 				return dbValue;
 			}
 			catch (IscException ex)
@@ -970,7 +970,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	internal void CommitImplicitTransaction()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		if (HasImplicitTransaction && _transaction != null && _transaction.Transaction != null)
 		{
 			try
@@ -1041,7 +1041,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	internal void RollbackImplicitTransaction()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		if (HasImplicitTransaction && _transaction != null && _transaction.Transaction != null)
 		{
 			var transactionCount = Connection.InnerConnection.Database.TransactionCount;

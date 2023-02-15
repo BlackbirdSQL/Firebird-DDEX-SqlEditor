@@ -68,6 +68,7 @@
 	</Define>
 	<!-- Definition list of standard table column properties -->
 	<Define name="ElementStandardTableColumnPropertiesList" >
+		<!--
 		<Property name="TABLE_CATALOG">
 			<DisplayName resource="Identifier_Name_Catalog" />
 			<Category resource="Category_Identifier" />
@@ -78,6 +79,7 @@
 			<Category resource="Category_Identifier" />
 			<Description resource="Identifier_Desc_Schema" />
 		</Property>
+		-->
 		<Property name="TABLE_NAME">
 			<DisplayName resource="Identifier_Name_Table" />
 			<Category resource="Category_Identifier" />
@@ -183,6 +185,7 @@
 	<Define name="ElementIndexProperties" >
 		<Properties>
 			<TypeDisplayName resource="Type_Index" />
+			<!--
 			<Property name="TABLE_CATALOG">
 				<DisplayName resource="Identifier_Name_Catalog" />
 				<Category resource="Category_Identifier" />
@@ -193,6 +196,7 @@
 				<Category resource="Category_Identifier" />
 				<Description resource="Identifier_Desc_Schema" />
 			</Property>
+			-->
 			<Property name="TABLE_NAME">
 				<DisplayName resource="Identifier_Name_Table" />
 				<Category resource="Category_Identifier" />
@@ -227,6 +231,7 @@
 	<Define name="ElementIndexColumnProperties" >
 		<Properties>
 			<TypeDisplayName resource="Type_IndexColumn" />
+			<!--
 			<Property name="TABLE_CATALOG">
 				<DisplayName resource="Identifier_Name_Catalog" />
 				<Category resource="Category_Identifier" />
@@ -237,6 +242,7 @@
 				<Category resource="Category_Identifier" />
 				<Description resource="Identifier_Desc_Catalog" />
 			</Property>
+			-->
 			<Property name="TABLE_NAME">
 				<DisplayName resource="Identifier_Name_Table" />
 				<Category resource="Category_Identifier" />
@@ -280,6 +286,7 @@
 	<Define name="ElementTriggerProperties" >
 		<Properties>
 			<TypeDisplayName resource="Type_Trigger" />
+			<!--
 			<Property name="TABLE_CATALOG">
 				<DisplayName resource="Identifier_Name_Catalog" />
 				<Category resource="Category_Identifier" />
@@ -290,6 +297,7 @@
 				<Category resource="Category_Identifier" />
 				<Description resource="Identifier_Desc_Schema" />
 			</Property>
+			-->
 			<Property name="TABLE_NAME">
 				<DisplayName resource="Identifier_Name_Table" />
 				<Category resource="Category_Identifier" />
@@ -355,274 +363,281 @@
 			</Property>
 		</Properties>
 	</Define>
-	<Define name="ElementSelectionTables" parameters="elementType, subType, isSystemObject" >
-		<Selection type="$(elementType)" restrictions="null,null,null" filter="IS_SYSTEM_TABLE = $(isSystemObject)">
-			<SelectionNode nodeId="Table">
-				<DisplayName>{Table.TABLE_NAME}</DisplayName>
-				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(subType)Table.ico" assembly="" />
-				<Properties>
-					<TypeDisplayName resource="Type_Table" />
-					<Property name="TABLE_CATALOG">
-						<DisplayName resource="Identifier_Name_Catalog" />
-						<Category resource="Category_Identifier" />
-						<Description resource="Identifier_Desc_Catalog" />
-					</Property>
-					<Property name="TABLE_SCHEMA">
-						<DisplayName resource="Identifier_Name_Schema" />
-						<Category resource="Category_Identifier" />
-						<Description resource="Identifier_Desc_Schema" />
-					</Property>
-					<Property name="TABLE_NAME">
-						<DisplayName resource="Identifier_Name_Name" />
-						<Category resource="Category_Identifier" />
-						<Description resource="Identifier_Desc_Name" />
-					</Property>
-					<Property name="IS_SYSTEM_TABLE">
-						<DisplayName resource="Property_Name_Type" />
-						<StandardValues>
-							<StandardValue value="0" resource="Property_Value_TableType_User" />
-							<StandardValue value="1" resource="Property_Value_TableType_System" />
-						</StandardValues>
-					</Property>
-					<Property name="DESCRIPTION">
-						<DisplayName resource="Property_Name_Description" />
-						<Description resource="Property_Desc_Description" />
-					</Property>
-				</Properties>
-				<Commands>
-					<CommandRef name="CommandRetrieveData" />
-					<CommandRef name="Command$(subType)NewQuery" />
-				</Commands>
-				<Children>
-					<Selection type="TableColumn" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}">
-						<SelectionNode nodeId="Column">
-							<DisplayName>{Column.COLUMN_NAME}</DisplayName>
-							<Icon name="ComputedColumn" when="{Column.COMPUTED}" />
-							<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" when="{Column.IS_AUTOINCREMENT} AND {Column.IS_UNIQUE}" assembly="" />
-							<Icon name="PrimaryKey" when="{Column.IS_UNIQUE}" />
-							<Icon name="UniqueKey" when="{Column.IN_PRIMARYKEY}" />
-							<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(subType)Column.ico" assembly="" />
-							<PropertiesRef name="Element$(subType)TableColumnProperties" />
-						</SelectionNode>
-					</Selection>
-					<StaticNode skipWhen="{Table.IS_SYSTEM_TABLE} = 1" nodeId="Indexes">
-						<DisplayName resource="Node_Name_Indexes" />
-						<Children>
-							<Selection type="Index" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}" filter="IS_PRIMARY = true">
-								<SelectionNode nodeId="Index">
-									<DisplayName>{Index.INDEX_NAME}</DisplayName>
-									<Icon name="PrimaryKey" />
-									<PropertiesRef name="ElementIndexProperties" />
-									<Children>
-										<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
-											<SelectionNode nodeId="IndexColumn">
-												<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
-												<Icon name="ComputedColumn" when="{IndexColumn.COMPUTED}" />
-												<Icon name="Column" />
-												<PropertiesRef name="ElementIndexColumnProperties" />
-											</SelectionNode>
-										</Selection>
-									</Children>
-								</SelectionNode>
-							</Selection>
-							<Selection type="Index" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}"  filter="IS_PRIMARY = false AND IS_UNIQUE = true">
-								<SelectionNode nodeId="Index">
-									<DisplayName>{Index.INDEX_NAME}</DisplayName>
-									<Icon name="UniqueKey" />
-									<PropertiesRef name="ElementIndexProperties" />
-									<Children>
-										<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
-											<SelectionNode nodeId="IndexColumn">
-												<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
-												<Icon name="ComputedColumn" when="{IndexColumn.COMPUTED}" />
-												<Icon name="Column" />
-												<PropertiesRef name="ElementIndexColumnProperties" />
-											</SelectionNode>
-										</Selection>
-									</Children>
-								</SelectionNode>
-							</Selection>
-							<Selection type="Index" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}"  filter="IS_PRIMARY = false AND IS_UNIQUE = false AND IS_FOREIGNKEY = false">
-								<SelectionNode nodeId="Index">
-									<DisplayName>{Index.INDEX_NAME}</DisplayName>
-									<Icon name="Index" />
-									<PropertiesRef name="ElementIndexProperties" />
-									<Children>
-										<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
-											<SelectionNode nodeId="IndexColumn">
-												<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
-												<Icon name="ComputedColumn" when="{IndexColumn.COMPUTED}" />
-												<Icon name="Column" />
-												<PropertiesRef name="ElementIndexColumnProperties" />
-											</SelectionNode>
-										</Selection>
-									</Children>
-								</SelectionNode>
-							</Selection>
-							<Selection type="Index" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}"  filter="IS_FOREIGNKEY = true">
-								<SelectionNode nodeId="Index">
-									<DisplayName>{Index.INDEX_NAME}</DisplayName>
-									<Icon name="ForeignKey" />
-									<PropertiesRef name="ElementIndexProperties" />
-									<Children>
-										<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
-											<SelectionNode nodeId="IndexColumn">
-												<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
-												<Icon name="ComputedColumn" when="{IndexColumn.COMPUTED}" />
-												<Icon name="Column" />
-												<PropertiesRef name="ElementIndexColumnProperties" />
-											</SelectionNode>
-										</Selection>
-									</Children>
-								</SelectionNode>
-							</Selection>
-						</Children>
-					</StaticNode>
-					<StaticNode skipWhen="{Table.IS_SYSTEM_TABLE} = 1" nodeId="ForeignKeys">
-						<DisplayName resource="Node_Name_ForeignKeys" />
-						<Children>
-							<Selection type="TableForeignKey" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}">
-								<SelectionNode nodeId="ForeignKey">
-									<DisplayName>{ForeignKey.CONSTRAINT_NAME}</DisplayName>
-									<Icon name="ForeignKey" />
-									<Properties>
-										<TypeDisplayName resource="Type_ForeignKey" />
-										<Property name="CONSTRAINT_CATALOG">
-											<DisplayName resource="Identifier_Name_Catalog" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Catalog" />
-										</Property>
-										<Property name="CONSTRAINT_SCHEMA">
-											<DisplayName resource="Identifier_Name_Schema" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Schema" />
-										</Property>
-										<Property name="TABLE_NAME">
-											<DisplayName resource="Identifier_Name_Table" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Table" />
-										</Property>
-										<Property name="CONSTRAINT_NAME">
-											<DisplayName resource="Identifier_Name_Name" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Name" />
-										</Property>
-										<Property name="REFERENCED_TABLE_CATALOG">
-											<DisplayName resource="Property_Name_ForeignKey_ReferencedCatalog" />
-											<Category resource="Category_ReferencedTable" />
-											<Description resource="Property_Desc_ForeignKey_ReferencedCatalog" />
-										</Property>
-										<Property name="REFERENCED_TABLE_SCHEMA">
-											<DisplayName resource="Property_Name_ForeignKey_ReferencedSchema" />
-											<Category resource="Category_ReferencedTable" />
-											<Description resource="Property_Desc_ForeignKey_ReferencedSchema" />
-										</Property>
-										<Property name="REFERENCED_TABLE_NAME">
-											<DisplayName resource="Property_Name_ForeignKey_ReferencedTable" />
-											<Category resource="Category_ReferencedTable" />
-											<Description resource="Property_Desc_ForeignKey_ReferencedTable" />
-										</Property>
-										<Property name="UPDATE_RULE">
-											<DisplayName resource="Property_Name_ForeignKey_UpdateRule" />
-											<Description resource="Property_Desc_ForeignKey_UpdateRule" />
-										</Property>
-										<Property name="DELETE_RULE">
-											<DisplayName resource="Property_Name_ForeignKey_DeleteRule" />
-											<Description resource="Property_Desc_ForeignKey_DeleteRule" />
-										</Property>
-									</Properties>
-									<Children>
-										<Selection type="TableForeignKeyColumn" restrictions="{ForeignKey.CONSTRAINT_CATALOG},{ForeignKey.CONSTRAINT_SCHEMA},{ForeignKey.TABLE_NAME},{ForeignKey.CONSTRAINT_NAME}">
-											<SelectionNode nodeId="ForeignKeyColumn">
-												<DisplayName>{ForeignKeyColumn.COLUMN_NAME}</DisplayName>
-												<Icon name="Column" />
-												<Properties>
-													<TypeDisplayName resource="Type_ForeignKeyColumn" />
-													<Property name="CONSTRAINT_CATALOG">
-														<DisplayName resource="Identifier_Name_Catalog" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Catalog" />
-													</Property>
-													<Property name="CONSTRAINT_SCHEMA">
-														<DisplayName resource="Identifier_Name_Schema" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Schema" />
-													</Property>
-													<Property name="TABLE_NAME">
-														<DisplayName resource="Identifier_Name_Table" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Table" />
-													</Property>
-													<Property name="CONSTRAINT_NAME">
-														<DisplayName resource="Identifier_Name_ForeignKey" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_ForeignKey" />
-													</Property>
-													<Property name="COLUMN_NAME">
-														<DisplayName resource="Identifier_Name_Name" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Name" />
-													</Property>
-													<Property name="REFERENCED_TABLE_CATALOG">
-														<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedCatalog" />
-														<Category resource="Category_ReferencedColumn" />
-														<Description resource="Property_Desc_ForeignKeyColumn_ReferencedCatalog" />
-													</Property>
-													<Property name="REFERENCED_TABLE_SCHEMA">
-														<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedSchema" />
-														<Category resource="Category_ReferencedColumn" />
-														<Description resource="Property_Desc_ForeignKeyColumn_ReferencedSchema" />
-													</Property>
-													<Property name="REFERENCED_TABLE_NAME">
-														<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedTable" />
-														<Category resource="Category_ReferencedColumn" />
-														<Description resource="Property_Desc_ForeignKeyColumn_ReferencedTable" />
-													</Property>
-													<Property name="REFERENCED_COLUMN_NAME">
-														<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedColumn" />
-														<Category resource="Category_ReferencedColumn" />
-														<Description resource="Property_Desc_ForeignKeyColumn_ReferencedColumn" />
-													</Property>
-													<Property name="ORDINAL_POSITION">
-														<DisplayName resource="Property_Name_ForeignKeyColumn_Ordinal" />
-														<Description resource="Property_Desc_ForeignKeyColumn_Ordinal" />
-													</Property>
-												</Properties>
-											</SelectionNode>
-										</Selection>
-									</Children>
-								</SelectionNode>
-							</Selection>
-						</Children>
-					</StaticNode>
-					<StaticNode skipWhen="{Table.IS_SYSTEM_TABLE} = 1" nodeId="Triggers">
-						<DisplayName resource="Node_Name_Triggers" />
-						<Children>
-							<Selection type="Trigger" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}" filter="IS_AUTOINCREMENT = true">
-								<SelectionNode nodeId="Trigger">
-									<DisplayName>{Trigger.TRIGGER_NAME}</DisplayName>
-									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" assembly="" />
-									<PropertiesRef name="ElementTriggerProperties" />
-								</SelectionNode>
-							</Selection>
-							<Selection type="Trigger" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}" filter="IS_AUTOINCREMENT = false">
-								<SelectionNode nodeId="Trigger">
-									<DisplayName>{Trigger.TRIGGER_NAME}</DisplayName>
-									<Icon name="Trigger" />
-									<PropertiesRef name="ElementTriggerProperties" />
-								</SelectionNode>
-							</Selection>
-						</Children>
-					</StaticNode>
-				</Children>
-			</SelectionNode>
-		</Selection>
-	</Define>
-	<Define name="ElementStaticNodeTablesTables" parameters="elementType, subType, isSystemObject" >
-		<StaticNode nodeId="$(subType)$(elementType)s">
-			<DisplayName resource="Node_Name_$(subType)$(elementType)s" />
+	<Define name="ElementStaticNodeTablesTables" parameters="elementName, elementType, systemType" >
+		<StaticNode nodeId="$(elementType)$(elementName)s">
+			<DisplayName resource="Node_Name_$(elementType)$(elementName)s" />
 			<Children>
-				<SelectionRef name="ElementSelectionTables" arguments="$(elementType), $(subType), $(isSystemObject)"/>
+				<Selection type="$(elementName)" restrictions="null,null" filter="IS_SYSTEM_TABLE = $(systemType)">
+					<SelectionNode nodeId="$(elementName)">
+						<DisplayName>{Table.TABLE_NAME}</DisplayName>
+						<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(elementType)$(elementName).ico" assembly="" />
+						<Properties>
+							<TypeDisplayName resource="Type_Table" />
+							<!--
+							<Property name="TABLE_CATALOG">
+								<DisplayName resource="Identifier_Name_Catalog" />
+								<Category resource="Category_Identifier" />
+								<Description resource="Identifier_Desc_Catalog" />
+							</Property>
+							<Property name="TABLE_SCHEMA">
+								<DisplayName resource="Identifier_Name_Schema" />
+								<Category resource="Category_Identifier" />
+								<Description resource="Identifier_Desc_Schema" />
+							</Property>
+							-->
+							<Property name="TABLE_NAME">
+								<DisplayName resource="Identifier_Name_Name" />
+								<Category resource="Category_Identifier" />
+								<Description resource="Identifier_Desc_Name" />
+							</Property>
+							<Property name="IS_SYSTEM_TABLE">
+								<DisplayName resource="Property_Name_Type" />
+								<StandardValues>
+									<StandardValue value="0" resource="Property_Value_TableType_User" />
+									<StandardValue value="1" resource="Property_Value_TableType_System" />
+								</StandardValues>
+							</Property>
+							<Property name="DESCRIPTION">
+								<DisplayName resource="Property_Name_Description" />
+								<Description resource="Property_Desc_Description" />
+							</Property>
+						</Properties>
+						<Commands>
+							<CommandRef name="CommandRetrieveData" />
+							<CommandRef name="Command$(elementType)NewQuery" />
+						</Commands>
+						<Children>
+							<Selection type="TableColumn" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}">
+								<SelectionNode nodeId="Column">
+									<DisplayName>{Column.COLUMN_NAME}</DisplayName>
+									<Icon name="ComputedColumn" when="{Column.COMPUTED}" />
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" when="{Column.IS_AUTOINCREMENT} AND {Column.IS_UNIQUE}" assembly="" />
+									<Icon name="PrimaryKey" when="{Column.IS_UNIQUE}" />
+									<Icon name="UniqueKey" when="{Column.IN_PRIMARYKEY}" />
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(elementType)Column.ico" assembly="" />
+									<PropertiesRef name="Element$(elementType)TableColumnProperties" />
+								</SelectionNode>
+							</Selection>
+							<StaticNode skipWhen="{Table.IS_SYSTEM_TABLE} = 1" nodeId="Indexes">
+								<DisplayName resource="Node_Name_Indexes" />
+								<Children>
+									<Selection type="Index" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}" filter="IS_PRIMARY = true">
+										<SelectionNode nodeId="Index">
+											<DisplayName>{Index.INDEX_NAME}</DisplayName>
+											<Icon name="PrimaryKey" />
+											<PropertiesRef name="ElementIndexProperties" />
+											<Children>
+												<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
+													<SelectionNode nodeId="IndexColumn">
+														<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
+														<Icon name="ComputedColumn" when="{IndexColumn.COMPUTED}" />
+														<Icon name="Column" />
+														<PropertiesRef name="ElementIndexColumnProperties" />
+													</SelectionNode>
+												</Selection>
+											</Children>
+										</SelectionNode>
+									</Selection>
+									<Selection type="Index" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}"  filter="IS_PRIMARY = false AND IS_UNIQUE = true">
+										<SelectionNode nodeId="Index">
+											<DisplayName>{Index.INDEX_NAME}</DisplayName>
+											<Icon name="UniqueKey" />
+											<PropertiesRef name="ElementIndexProperties" />
+											<Children>
+												<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
+													<SelectionNode nodeId="IndexColumn">
+														<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
+														<Icon name="ComputedColumn" when="{IndexColumn.COMPUTED}" />
+														<Icon name="Column" />
+														<PropertiesRef name="ElementIndexColumnProperties" />
+													</SelectionNode>
+												</Selection>
+											</Children>
+										</SelectionNode>
+									</Selection>
+									<Selection type="Index" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}"  filter="IS_PRIMARY = false AND IS_UNIQUE = false AND IS_FOREIGNKEY = false">
+										<SelectionNode nodeId="Index">
+											<DisplayName>{Index.INDEX_NAME}</DisplayName>
+											<Icon name="Index" />
+											<PropertiesRef name="ElementIndexProperties" />
+											<Children>
+												<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
+													<SelectionNode nodeId="IndexColumn">
+														<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
+														<Icon name="ComputedColumn" when="{IndexColumn.COMPUTED}" />
+														<Icon name="Column" />
+														<PropertiesRef name="ElementIndexColumnProperties" />
+													</SelectionNode>
+												</Selection>
+											</Children>
+										</SelectionNode>
+									</Selection>
+									<Selection type="Index" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}"  filter="IS_FOREIGNKEY = true">
+										<SelectionNode nodeId="Index">
+											<DisplayName>{Index.INDEX_NAME}</DisplayName>
+											<Icon name="ForeignKey" />
+											<PropertiesRef name="ElementIndexProperties" />
+											<Children>
+												<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
+													<SelectionNode nodeId="IndexColumn">
+														<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
+														<Icon name="ComputedColumn" when="{IndexColumn.COMPUTED}" />
+														<Icon name="Column" />
+														<PropertiesRef name="ElementIndexColumnProperties" />
+													</SelectionNode>
+												</Selection>
+											</Children>
+										</SelectionNode>
+									</Selection>
+								</Children>
+							</StaticNode>
+							<StaticNode skipWhen="{Table.IS_SYSTEM_TABLE} = 1" nodeId="ForeignKeys">
+								<DisplayName resource="Node_Name_ForeignKeys" />
+								<Children>
+									<Selection type="TableForeignKey" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}">
+										<SelectionNode nodeId="ForeignKey">
+											<DisplayName>{ForeignKey.CONSTRAINT_NAME}</DisplayName>
+											<Icon name="ForeignKey" />
+											<Properties>
+												<TypeDisplayName resource="Type_ForeignKey" />
+												<!--
+												<Property name="CONSTRAINT_CATALOG">
+													<DisplayName resource="Identifier_Name_Catalog" />
+													<Category resource="Category_Identifier" />
+													<Description resource="Identifier_Desc_Catalog" />
+												</Property>
+												<Property name="CONSTRAINT_SCHEMA">
+													<DisplayName resource="Identifier_Name_Schema" />
+													<Category resource="Category_Identifier" />
+													<Description resource="Identifier_Desc_Schema" />
+												</Property>
+												-->
+												<Property name="TABLE_NAME">
+													<DisplayName resource="Identifier_Name_Table" />
+													<Category resource="Category_Identifier" />
+													<Description resource="Identifier_Desc_Table" />
+												</Property>
+												<Property name="CONSTRAINT_NAME">
+													<DisplayName resource="Identifier_Name_Name" />
+													<Category resource="Category_Identifier" />
+													<Description resource="Identifier_Desc_Name" />
+												</Property>
+												<!--
+												<Property name="REFERENCED_TABLE_CATALOG">
+													<DisplayName resource="Property_Name_ForeignKey_ReferencedCatalog" />
+													<Category resource="Category_ReferencedTable" />
+													<Description resource="Property_Desc_ForeignKey_ReferencedCatalog" />
+												</Property>
+												<Property name="REFERENCED_TABLE_SCHEMA">
+													<DisplayName resource="Property_Name_ForeignKey_ReferencedSchema" />
+													<Category resource="Category_ReferencedTable" />
+													<Description resource="Property_Desc_ForeignKey_ReferencedSchema" />
+												</Property>
+												-->
+												<Property name="REFERENCED_TABLE_NAME">
+													<DisplayName resource="Property_Name_ForeignKey_ReferencedTable" />
+													<Category resource="Category_ReferencedTable" />
+													<Description resource="Property_Desc_ForeignKey_ReferencedTable" />
+												</Property>
+												<Property name="UPDATE_RULE">
+													<DisplayName resource="Property_Name_ForeignKey_UpdateRule" />
+													<Description resource="Property_Desc_ForeignKey_UpdateRule" />
+												</Property>
+												<Property name="DELETE_RULE">
+													<DisplayName resource="Property_Name_ForeignKey_DeleteRule" />
+													<Description resource="Property_Desc_ForeignKey_DeleteRule" />
+												</Property>
+											</Properties>
+											<Children>
+												<Selection type="TableForeignKeyColumn" restrictions="{ForeignKey.CONSTRAINT_CATALOG},{ForeignKey.CONSTRAINT_SCHEMA},{ForeignKey.TABLE_NAME},{ForeignKey.CONSTRAINT_NAME}">
+													<SelectionNode nodeId="ForeignKeyColumn">
+														<DisplayName>{ForeignKeyColumn.COLUMN_NAME}</DisplayName>
+														<Icon name="Column" />
+														<Properties>
+															<TypeDisplayName resource="Type_ForeignKeyColumn" />
+															<!--
+															<Property name="CONSTRAINT_CATALOG">
+																<DisplayName resource="Identifier_Name_Catalog" />
+																<Category resource="Category_Identifier" />
+																<Description resource="Identifier_Desc_Catalog" />
+															</Property>
+															<Property name="CONSTRAINT_SCHEMA">
+																<DisplayName resource="Identifier_Name_Schema" />
+																<Category resource="Category_Identifier" />
+																<Description resource="Identifier_Desc_Schema" />
+															</Property>
+															-->
+															<Property name="TABLE_NAME">
+																<DisplayName resource="Identifier_Name_Table" />
+																<Category resource="Category_Identifier" />
+																<Description resource="Identifier_Desc_Table" />
+															</Property>
+															<Property name="CONSTRAINT_NAME">
+																<DisplayName resource="Identifier_Name_ForeignKey" />
+																<Category resource="Category_Identifier" />
+																<Description resource="Identifier_Desc_ForeignKey" />
+															</Property>
+															<Property name="COLUMN_NAME">
+																<DisplayName resource="Identifier_Name_Name" />
+																<Category resource="Category_Identifier" />
+																<Description resource="Identifier_Desc_Name" />
+															</Property>
+															<!--
+															<Property name="REFERENCED_TABLE_CATALOG">
+																<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedCatalog" />
+																<Category resource="Category_ReferencedColumn" />
+																<Description resource="Property_Desc_ForeignKeyColumn_ReferencedCatalog" />
+															</Property>
+															<Property name="REFERENCED_TABLE_SCHEMA">
+																<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedSchema" />
+																<Category resource="Category_ReferencedColumn" />
+																<Description resource="Property_Desc_ForeignKeyColumn_ReferencedSchema" />
+															</Property>
+															-->
+															<Property name="REFERENCED_TABLE_NAME">
+																<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedTable" />
+																<Category resource="Category_ReferencedColumn" />
+																<Description resource="Property_Desc_ForeignKeyColumn_ReferencedTable" />
+															</Property>
+															<Property name="REFERENCED_COLUMN_NAME">
+																<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedColumn" />
+																<Category resource="Category_ReferencedColumn" />
+																<Description resource="Property_Desc_ForeignKeyColumn_ReferencedColumn" />
+															</Property>
+															<Property name="ORDINAL_POSITION">
+																<DisplayName resource="Property_Name_ForeignKeyColumn_Ordinal" />
+																<Description resource="Property_Desc_ForeignKeyColumn_Ordinal" />
+															</Property>
+														</Properties>
+													</SelectionNode>
+												</Selection>
+											</Children>
+										</SelectionNode>
+									</Selection>
+								</Children>
+							</StaticNode>
+							<StaticNode skipWhen="{Table.IS_SYSTEM_TABLE} = 1" nodeId="Triggers">
+								<DisplayName resource="Node_Name_Triggers" />
+								<Children>
+									<Selection type="Trigger" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}" filter="IS_AUTOINCREMENT = true">
+										<SelectionNode nodeId="Trigger">
+											<DisplayName>{Trigger.TRIGGER_NAME}</DisplayName>
+											<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" assembly="" />
+											<PropertiesRef name="ElementTriggerProperties" />
+										</SelectionNode>
+									</Selection>
+									<Selection type="Trigger" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}" filter="IS_AUTOINCREMENT = false">
+										<SelectionNode nodeId="Trigger">
+											<DisplayName>{Trigger.TRIGGER_NAME}</DisplayName>
+											<Icon name="Trigger" />
+											<PropertiesRef name="ElementTriggerProperties" />
+										</SelectionNode>
+									</Selection>
+								</Children>
+							</StaticNode>
+						</Children>
+					</SelectionNode>
+				</Selection>
 			</Children>
 		</StaticNode>
 	</Define>
@@ -651,6 +666,7 @@
 									<Icon name="Domain" />
 									<Properties>
 										<TypeDisplayName resource="Type_Domain" />
+										<!--
 										<Property name="DOMAIN_CATALOG">
 											<DisplayName resource="Identifier_Name_Catalog" />
 											<Category resource="Category_Identifier" />
@@ -661,6 +677,7 @@
 											<Category resource="Category_Identifier" />
 											<Description resource="Identifier_Desc_Schema" />
 										</Property>
+										-->
 										<Property name="DOMAIN_NAME">
 											<DisplayName resource="Identifier_Name_Name" />
 											<Category resource="Category_Identifier" />
@@ -719,7 +736,7 @@
 						</Commands>-->
 						<Children>
 							<StaticNodeRef name="ElementStaticNodeTablesTables" arguments="Table,System,1"/>
-							<SelectionRef name="ElementSelectionTables" arguments="Table,User,0"/>
+							<StaticNodeRef name="ElementStaticNodeTablesTables" arguments="Table,User,0"/>
 						</Children>
 					</StaticNode>
 					<StaticNode nodeId="Views">
@@ -731,16 +748,24 @@
 									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.View.ico" assembly="" />
 									<Properties>
 										<TypeDisplayName resource="Type_View" />
+										<!--
 										<Property name="VIEW_CATALOG">
 											<DisplayName resource="Identifier_Name_Catalog" />
 											<Category resource="Category_Identifier" />
 											<Description resource="Identifier_Desc_Catalog" />
 										</Property>
+										<Property name="VIEW_SCHEMA">
+											<DisplayName resource="Identifier_Name_Schema" />
+											<Category resource="Category_Identifier" />
+											<Description resource="Identifier_Desc_Schema" />
+										</Property>
+										-->
 										<Property name="VIEW_NAME">
 											<DisplayName resource="Identifier_Name_Name" />
 											<Category resource="Category_Identifier" />
 											<Description resource="Identifier_Desc_Name" />
 										</Property>
+
 										<Property name="IS_SYSTEM_VIEW">
 											<DisplayName resource="Property_Name_Type" />
 											<StandardValues>
@@ -752,6 +777,10 @@
 											<DisplayName resource="Property_Name_Description" />
 											<Description resource="Property_Desc_Description" />
 										</Property>
+										<Property name="DEFINITION">
+											<DisplayName resource="Property_Name_View_Definition" />
+											<Description resource="Property_Desc_View_Definition" />
+										</Property>
 									</Properties>
 									<Commands>
 										<CommandRef name="CommandRetrieveData" />
@@ -760,14 +789,14 @@
 										<Selection type="ViewColumn" restrictions="{View.VIEW_CATALOG},{View.VIEW_SCHEMA},{View.VIEW_NAME}">
 											<SelectionNode nodeId="Column">
 												<DisplayName>{Column.COLUMN_NAME}</DisplayName>
-												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{Column.COMPUTED}" assembly="" />
 												<Icon name="ComputedColumn" when="{Column.COMPUTED}" />
-												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" when="{Column.IS_AUTOINCREMENT}" assembly="" />
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" when="{Column.IS_AUTOINCREMENT} AND {Column.IS_UNIQUE}" assembly="" />
 												<Icon name="PrimaryKey" when="{Column.IS_UNIQUE}" />
 												<Icon name="UniqueKey" when="{Column.IN_PRIMARYKEY}" />
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ViewColumn.ico" assembly="" />
 												<Properties>
 													<TypeDisplayName resource="Type_Column" />
+													<!--
 													<Property name="VIEW_CATALOG">
 														<DisplayName resource="Identifier_Name_Catalog" />
 														<Category resource="Category_Identifier" />
@@ -778,6 +807,7 @@
 														<Category resource="Category_Identifier" />
 														<Description resource="Identifier_Desc_Schema" />
 													</Property>
+													-->
 													<Property name="VIEW_NAME">
 														<DisplayName resource="Identifier_Name_View" />
 														<Category resource="Category_Identifier" />
@@ -882,6 +912,7 @@
 									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Procedure.ico" assembly="" />
 									<Properties>
 										<TypeDisplayName resource="Type_StoredProcedure" />
+										<!--
 										<Property name="PROCEDURE_CATALOG">
 											<DisplayName resource="Identifier_Name_Catalog" />
 											<Category resource="Category_Identifier" />
@@ -892,6 +923,7 @@
 											<Category resource="Category_Identifier" />
 											<Description resource="Identifier_Desc_Schema" />
 										</Property>
+										-->
 										<Property name="PROCEDURE_NAME">
 											<DisplayName resource="Identifier_Name_Name" />
 											<Category resource="Category_Identifier" />
@@ -920,19 +952,21 @@
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamIn.ico" when="{Parameter.PARAMETER_DIRECTION} = 1" assembly="" />
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamOut.ico" when="{Parameter.PARAMETER_DIRECTION} = 2" assembly="" />
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamInOut.ico" when="{Parameter.PARAMETER_DIRECTION} = 3" assembly="" />
-												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamReturn.ico" assembly="" />
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamReturn.ico" when="{Parameter.PARAMETER_DIRECTION} > 3" assembly="" />
 												<Properties>
 													<TypeDisplayName resource="Type_StoredProcedureParameter" />
-													<Property name="PROCEDURE_CATALOG">
-														<DisplayName resource="Identifier_Name_Catalog" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Catalog" />
-													</Property>
-													<Property name="PROCEDURE_SCHEMA">
-														<DisplayName resource="Identifier_Name_Schema" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Schema" />
-													</Property>
+													<!--
+															<Property name="PROCEDURE_CATALOG">
+																<DisplayName resource="Identifier_Name_Catalog" />
+																<Category resource="Category_Identifier" />
+																<Description resource="Identifier_Desc_Catalog" />
+															</Property>
+															<Property name="PROCEDURE_SCHEMA">
+																<DisplayName resource="Identifier_Name_Schema" />
+																<Category resource="Category_Identifier" />
+																<Description resource="Identifier_Desc_Schema" />
+															</Property>
+															-->
 													<Property name="PROCEDURE_NAME">
 														<DisplayName resource="Identifier_Name_StoredProcedure" />
 														<Category resource="Category_Identifier" />
@@ -1010,9 +1044,10 @@
 													<SelectionNode nodeId="Column">
 														<DisplayName>{Column.PARAMETER_NAME}</DisplayName>
 														<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamOut.ico" when="{Column.PARAMETER_DIRECTION} = 2" assembly="" />
-														<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamInOut.ico" assembly="" />
+														<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamInOut.ico" when="{Column.PARAMETER_DIRECTION} = 3" assembly="" />
 														<Properties>
 															<TypeDisplayName resource="Type_StoredProcedureParameter" />
+															<!--
 															<Property name="PROCEDURE_CATALOG">
 																<DisplayName resource="Identifier_Name_Catalog" />
 																<Category resource="Category_Identifier" />
@@ -1023,6 +1058,7 @@
 																<Category resource="Category_Identifier" />
 																<Description resource="Identifier_Desc_Schema" />
 															</Property>
+															-->
 															<Property name="PROCEDURE_NAME">
 																<DisplayName resource="Identifier_Name_StoredProcedure" />
 																<Category resource="Category_Identifier" />
@@ -1093,12 +1129,13 @@
 					<StaticNode nodeId="ScalarFunctions">
 						<DisplayName resource="Node_Name_ScalarFunctions" />
 						<Children>
-							<Selection type="Function" restrictions="null,null">
-								<SelectionNode nodeId="Function">
-									<DisplayName>{Function.FUNCTION_NAME}</DisplayName>
+							<Selection type="ScalarFunction" restrictions="null,null">
+								<SelectionNode nodeId="ScalarFunction">
+									<DisplayName>{ScalarFunction.FUNCTION_NAME}</DisplayName>
 									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Function.ico" assembly="" />
 									<Properties>
 										<TypeDisplayName resource="Type_ScalarFunction" />
+										<!--
 										<Property name="FUNCTION_CATALOG">
 											<DisplayName resource="Identifier_Name_Catalog" />
 											<Category resource="Category_Identifier" />
@@ -1109,6 +1146,7 @@
 											<Category resource="Category_Identifier" />
 											<Description resource="Identifier_Desc_Schema" />
 										</Property>
+										-->
 										<Property name="FUNCTION_NAME">
 											<DisplayName resource="Identifier_Name_Name" />
 											<Category resource="Category_Identifier" />
@@ -1127,13 +1165,14 @@
 										</Property>
 									</Properties>
 									<Children>
-										<Selection type="FunctionParameter" restrictions="{Function.FUNCTION_CATALOG},{Function.FUNCTION_SCHEMA},{Function.FUNCTION_NAME}">
+										<Selection type="ScalarFunctionParameter" restrictions="{ScalarFunction.FUNCTION_CATALOG},{ScalarFunction.FUNCTION_SCHEMA},{ScalarFunction.FUNCTION_NAME}">
 											<SelectionNode nodeId="Parameter">
 												<DisplayName>{Parameter.PSEUDO_NAME}</DisplayName>
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamIn.ico" when="{Parameter.ORDINAL_POSITION}>0" assembly="" />
-												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamReturn.ico" assembly="" />
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamReturn.ico" when="{Parameter.ORDINAL_POSITION}=0" assembly="" />
 												<Properties>
 													<TypeDisplayName resource="Type_FunctionParameter" />
+													<!--
 													<Property name="FUNCTION_CATALOG">
 														<DisplayName resource="Identifier_Name_Catalog" />
 														<Category resource="Category_Identifier" />
@@ -1144,6 +1183,7 @@
 														<Category resource="Category_Identifier" />
 														<Description resource="Identifier_Desc_Schema" />
 													</Property>
+													-->
 													<Property name="FUNCTION_NAME">
 														<DisplayName resource="Identifier_Name_ScalarFunction" />
 														<Category resource="Category_Identifier" />

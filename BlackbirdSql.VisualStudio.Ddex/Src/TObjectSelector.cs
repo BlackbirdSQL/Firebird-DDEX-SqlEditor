@@ -66,11 +66,13 @@ class TObjectSelector : AdoDotNetObjectSelector
 
 	public TObjectSelector()
 	{
+		// Diag.Trace();
 	}
 
 
 	public TObjectSelector(IVsDataConnection connection) : base(connection)
 	{
+		// Diag.Trace();
 	}
 
 
@@ -91,7 +93,7 @@ class TObjectSelector : AdoDotNetObjectSelector
 	/// </summary>
 	/// <remarks>
 	/// Also intercepts enumerations from the SE for <see cref="AbstractQueryCommandProvider"/> and
-	/// sets <see cref="DataToolsCommands.ObjectType"/> to the correct node system object type
+	/// sets <see cref="DataToolsCommands.CommandObjectType"/> to the correct node system object type
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
 	protected override IVsDataReader SelectObjects(string typeName, object[] restrictions,
@@ -133,13 +135,23 @@ class TObjectSelector : AdoDotNetObjectSelector
 					throw new NotImplementedException();
 				}
 
-				if (DataToolsCommands.ObjectType != DataToolsCommands.DataObjectType.None
+
+				if (DataToolsCommands.CommandObjectType != DataToolsCommands.DataObjectType.None
 					&& typeName == "Table" && parameters != null && parameters.Length > 0 && (string)parameters[0] == "Tables"
-					&& restrictions != null && restrictions.Length > 3 && restrictions[3] == null)
+					&& (restrictions == null || restrictions.Length < 3 || (restrictions.Length > 2 && restrictions[2] == null)))
 				{
-					restrictions[3] = DataToolsCommands.ObjectType == DataToolsCommands.DataObjectType.User ? "TABLE" : "SYSTEM TABLE";
+					if (restrictions == null || restrictions.Length < 4)
+					{
+						object[] objs = new object[4];
+
+						for (int i = 0; restrictions != null && i < restrictions.Length; i++)
+							objs[i] = restrictions[i];
+
+						restrictions = objs;
+					}
+					restrictions[3] = DataToolsCommands.CommandObjectType == DataToolsCommands.DataObjectType.User ? "TABLE" : "SYSTEM TABLE";
 				}
-				DataToolsCommands.ObjectType = DataToolsCommands.DataObjectType.None;
+				DataToolsCommands.CommandObjectType = DataToolsCommands.DataObjectType.None;
 
 				/*
 				string str = "Type: " + typeName + " Parameters: ";
@@ -190,13 +202,13 @@ class TObjectSelector : AdoDotNetObjectSelector
 				{
 					if (entry.Value is object[] array2)
 					{
-						IDictionary<string, object> mappings = DataObjectSelector.GetMappings(array2);
+						IDictionary<string, object> mappings = GetMappings(array2);
 						ApplyMappings(schema, mappings);
 					}
 				}
 
-
 				return new AdoDotNetTableReader(schema);
+
 			}
 			finally
 			{
@@ -223,7 +235,7 @@ class TObjectSelector : AdoDotNetObjectSelector
 	// ---------------------------------------------------------------------------------
 	protected override IList<string> GetSupportedRestrictions(string typeName, object[] parameters)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 
 		IList<string> list;
 
@@ -287,6 +299,7 @@ class TObjectSelector : AdoDotNetObjectSelector
 	protected override IList<string> GetRequiredRestrictions(string typeName, object[] parameters)
 	{
 
+		// Diag.Trace();
 		IList<string> list;
 
 		try

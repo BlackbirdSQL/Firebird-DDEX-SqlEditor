@@ -32,11 +32,13 @@ internal class TSourceInformation : AdoDotNetSourceInformation
 
 	public TSourceInformation() : base()
 	{
+		Diag.Trace();
 		AddExtendedProperties();
 	}
 
 	public TSourceInformation(IVsDataConnection connection) : base(connection)
 	{
+		Diag.Trace();
 		AddExtendedProperties();
 	}
 

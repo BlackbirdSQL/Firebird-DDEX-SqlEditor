@@ -56,9 +56,9 @@ internal static class DslObjectTypes
 				return 0;
 
 			case DslObjectTypes.Table:
-			case DslObjectTypes.View:
-			case DslObjectTypes.StoredProcedure:
 			case DslObjectTypes.ScalarFunction:
+			case DslObjectTypes.StoredProcedure:
+			case DslObjectTypes.View:
 				return 3;
 
 			case DslObjectTypes.TableColumn:

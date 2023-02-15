@@ -37,7 +37,7 @@ public sealed class TProviderObjectFactory : DataProviderObjectFactory, IProvide
 
 	public TProviderObjectFactory() : base()
 	{
-		// Diag.Trace();
+		Diag.Trace();
 	}
 
 	#endregion Constructors / Destructors

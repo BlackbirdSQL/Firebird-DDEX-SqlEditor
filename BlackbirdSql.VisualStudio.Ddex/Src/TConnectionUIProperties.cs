@@ -60,7 +60,7 @@ internal class TConnectionUIProperties : AdoDotNetConnectionProperties
 
 	public TConnectionUIProperties() : base()
 	{
-		// Diag.Trace();
+		Diag.Trace();
 	}
 
 

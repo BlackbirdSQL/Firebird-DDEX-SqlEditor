@@ -83,6 +83,7 @@
   <!-- Includes - Top Level -->
   <ItemGroup>
     <Content Include="Package.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.Function.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.AutoIncrementColumn.ico" />
   </ItemGroup>
   <!-- References (Assemblies) -->
@@ -147,6 +148,8 @@
   </ItemGroup>
   <!-- Includes (VSIX Manifest) -->
   <ItemGroup>
+    <None Include="Resources\ViewSupport.Function.psd" />
+    <None Include="Resources\ViewSupport.Procedure.psd" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -245,6 +248,7 @@
     <Compile Include="Schema\Encoding2.cs" />
     <Compile Include="Schema\DslIndexes.cs" />
     <Compile Include="Schema\DslTriggers.cs" />
+    <None Include="Schema\DslTables.cs" />
     <Compile Include="Schema\IscCodes.cs" />
     <Compile Include="Src\TConnectionEquivalencyComparer.cs" />
     <Compile Include="Src\TConnectionPromptDialog.cs">

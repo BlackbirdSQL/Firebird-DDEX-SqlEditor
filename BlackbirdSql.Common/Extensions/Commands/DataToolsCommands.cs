@@ -21,8 +21,12 @@ public static class DataToolsCommands
 	/// <summary>
 	/// The package-wide flag indicating whether or not the current node in the SE is a 'IsSystemObject'
 	/// </summary>
-	public static DataObjectType ObjectType = DataObjectType.None;
+	public static DataObjectType CommandObjectType = DataObjectType.None;
 
+	/// <summary>
+	/// The package-wide flag indicating the last command type
+	/// </summary>
+	public static DataObjectType CommandLastObjectType = DataObjectType.None;
 
 	#endregion Statics
 

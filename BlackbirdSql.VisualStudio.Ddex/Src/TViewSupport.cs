@@ -32,11 +32,11 @@ internal class TViewSupport : DataViewSupport
 
 	public TViewSupport(string fileName, string path) : base(fileName, path)
 	{
-		// Diag.Trace();
+		Diag.Trace();
 	}
 	public TViewSupport(string resourceName, Assembly assembly) : base(resourceName, assembly)
 	{
-		// Diag.Trace();
+		Diag.Trace();
 	}
 
 
@@ -58,6 +58,7 @@ internal class TViewSupport : DataViewSupport
 	// ---------------------------------------------------------------------------------
 	protected override object CreateService(Type serviceType)
 	{
+		Diag.Trace();
 		// TBC
 		/*
 		if (serviceType == typeof(IVsDataViewCommandProvider))
@@ -70,6 +71,9 @@ internal class TViewSupport : DataViewSupport
 			return new ViewDocumentProvider();
 		}
 		*/
+
+		Diag.Dug(true, serviceType.FullName + " is not directly supported");
+
 		return base.CreateService(serviceType);
 	}
 

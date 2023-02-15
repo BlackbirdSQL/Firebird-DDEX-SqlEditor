@@ -63,12 +63,13 @@ internal sealed class DslSchemaFactory
 		Diag.Trace();
 		switch (collectionName)
 		{
-			case "Indexes":
 			case "Columns":
+			case "FunctionArguments":
+			case "IndexColumns":
+			case "Indexes":
+			// case "Tables":
 			case "Triggers":
 			case "ViewColumns":
-			case "IndexColumns":
-			case "FunctionArguments":
 				break;
 			default:
 				return connection.GetSchema(collectionName, restrictions);
@@ -150,11 +151,12 @@ internal sealed class DslSchemaFactory
 		DslSchema returnSchema = collectionName.ToUpperInvariant() switch
 		{
 			"COLUMNS" => new DslColumns(),
+			"FUNCTIONARGUMENTS" => new DslFunctionArguments(),
+			"INDEXCOLUMNS" => new DslIndexColumns(),
+			"INDEXES" => new DslIndexes(),
+			// "TABLES" => new DslTables(),
 			"TRIGGERS" => new DslTriggers(),
 			"VIEWCOLUMNS" => new DslViewColumns(),
-			"INDEXES" => new DslIndexes(),
-			"INDEXCOLUMNS" => new DslIndexColumns(),
-			"FUNCTIONARGUMENTS" => new DslFunctionArguments(),
 			_ => ((Func<DslSchema>)(() =>
 				{
 					NotSupportedException exbb = new("The specified metadata collection is not supported.");
@@ -172,11 +174,12 @@ internal sealed class DslSchemaFactory
 		DslSchema returnSchema = collectionName.ToUpperInvariant() switch
 		{
 			"COLUMNS" => new DslColumns(),
+			"FUNCTIONARGUMENTS" => new DslFunctionArguments(),
+			"INDEXCOLUMNS" => new DslIndexColumns(),
+			"INDEXES" => new DslIndexes(),
+			// "TABLES" => new DslTables(),
 			"TRIGGERS" => new DslTriggers(),
 			"VIEWCOLUMNS" => new DslViewColumns(),
-			"INDEXES" => new DslIndexes(),
-			"INDEXCOLUMNS" => new DslIndexColumns(),
-			"FUNCTIONARGUMENTS" => new DslFunctionArguments(),
 			_ => ((Func<DslSchema>)(() =>
 				{
 					NotSupportedException exbb = new("The specified metadata collection is not supported.");

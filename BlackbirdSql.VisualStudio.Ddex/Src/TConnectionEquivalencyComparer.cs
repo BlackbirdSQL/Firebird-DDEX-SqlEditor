@@ -65,8 +65,13 @@ internal class TConnectionEquivalencyComparer : DataConnectionEquivalencyCompare
 	{
 		// Reset the connection if we're doing a localized server explorer node query
 		// It's the only way to get the built in query provider to reread the table list
-		if (DataToolsCommands.ObjectType != DataToolsCommands.DataObjectType.None)
+		if (DataToolsCommands.CommandObjectType != DataToolsCommands.DataObjectType.None)
+		{
+			Diag.Trace("RESETTNG CONNECTION - COMMANDTYPE CURRENT:LAST: " + DataToolsCommands.CommandObjectType + ":" + DataToolsCommands.CommandLastObjectType);
 			return false;
+		}
+
+		// Diag.Trace();
 
 		int equivalencyValueCount = 0;
 		int equivalencyKeyCount = DslConnectionString.EquivalencyKeys.Count;
@@ -211,6 +216,7 @@ internal class TConnectionEquivalencyComparer : DataConnectionEquivalencyCompare
 	// ---------------------------------------------------------------------------------
 	protected bool AreEquivalent(string key, object value1, object value2)
 	{
+		// Diag.Trace();
 		string text1 = value1 as string;
 		string text2 = value2 as string;
 

@@ -7,13 +7,12 @@ using System;
 using System.ComponentModel.Design;
 
 using Microsoft.VisualStudio.Data.Core;
+using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Common;
-
-
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -27,6 +26,70 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 // =========================================================================================================
 internal class TConnectionSupport : AdoDotNetConnectionSupport
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Internal classes - TConnectionSupport
+	// ---------------------------------------------------------------------------------
+
+
+	private class TCommand : DataCommand
+	{
+		private TConnectionSupport ConnectionSupport => base.Site.GetService(typeof(IVsDataConnectionSupport)) as TConnectionSupport;
+
+		public TCommand()
+			: base()
+		{
+			Diag.Trace();
+		}
+
+		public TCommand(IVsDataConnection connection)
+			: base(connection)
+		{
+			Diag.Trace();
+		}
+
+		public override IVsDataParameter CreateParameter()
+		{
+			Diag.Trace();
+			return ConnectionSupport.CreateParameterCore();
+		}
+
+		public override IVsDataParameter[] DeriveParameters(string command, DataCommandType commandType, int commandTimeout)
+		{
+			Diag.Trace(command);
+			return ConnectionSupport.DeriveParametersCore(command, commandType, commandTimeout);
+		}
+
+		public override string Prepare(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
+		{
+			Diag.Trace(command);
+			return ConnectionSupport.PrepareCore(command, commandType, parameters, commandTimeout);
+		}
+
+		public override IVsDataReader DeriveSchema(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
+		{
+			Diag.Trace(command);
+			return ConnectionSupport.DeriveSchemaCore(command, commandType, parameters, commandTimeout);
+		}
+
+		public override IVsDataReader Execute(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
+		{
+			Diag.Trace(command);
+			return ConnectionSupport.ExecuteCore(command, commandType, parameters, commandTimeout);
+		}
+
+		public override int ExecuteWithoutResults(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
+		{
+			Diag.Trace(command);
+			return ConnectionSupport.ExecuteWithoutResultsCore(command, commandType, parameters, commandTimeout);
+		}
+	}
+
+
+	#endregion Internal classes
+
+
+
 
 	// ---------------------------------------------------------------------------------
 	#region Constructors / Destructors - TConnectionSupport
@@ -88,6 +151,12 @@ internal class TConnectionSupport : AdoDotNetConnectionSupport
 			return new TMappedObjectConverter(Site);
 		}
 		*/
+		if (serviceType == typeof(IVsDataCommand))
+		{
+			return new TCommand(base.Site);
+		}
+
+
 
 		Diag.Dug(true, serviceType.FullName + " is not directly supported");
 

@@ -460,10 +460,25 @@ public sealed class FbConnection : DbConnection, ICloneable
 	}
 	public override DataTable GetSchema(string collectionName, string[] restrictions)
 	{
-		Diag.Trace();
+
 		CheckClosed();
 
-		return _innerConnection.GetSchema(collectionName, restrictions);
+		DataTable table = _innerConnection.GetSchema(collectionName, restrictions);
+
+		string str = collectionName + " count: " + table.Rows.Count + " restrictions: ";
+		if (restrictions != null)
+		{
+			foreach (var restriction in restrictions)
+			{
+				if (restriction == null)
+					str += "null, ";
+				else
+					str += restriction + ", ";
+			}
+		}
+		Diag.Trace(str);
+
+		return table;
 	}
 #if NET48 || NETSTANDARD2_0 || NETSTANDARD2_1
 	public Task<DataTable> GetSchemaAsync(string collectionName, string[] restrictions, CancellationToken cancellationToken = default)

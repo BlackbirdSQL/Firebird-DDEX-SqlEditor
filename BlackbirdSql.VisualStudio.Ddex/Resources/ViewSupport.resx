@@ -414,8 +414,8 @@
   <data name="Property_Name_ProcedureColumn_RowsetNumber" xml:space="preserve">
     <value>Rowset Number</value>
   </data>
-  <data name="Node_Name_Tables" xml:space="preserve">
-    <value>Tables</value>
+  <data name="Node_Name_UserTables" xml:space="preserve">
+    <value>User Tables</value>
   </data>
   <data name="Property_Desc_Parameter_Scale" xml:space="preserve">
     <value>If the parameter's type indicator is DBTYPE_DECIMAL, DBTYPE_NUMERIC, or DBTYPE_VARNUMERIC, this is the number of digits to the right of the decimal point.</value>
@@ -662,5 +662,17 @@
   </data>
   <data name="Property_Name_Trigger_Dependencies" xml:space="preserve">
     <value>Dependency Columns</value>
+  </data>
+  <data name="Property_Desc_View_Definition" xml:space="preserve">
+    <value>The view definition dml source</value>
+  </data>
+  <data name="Property_Name_View_Definition" xml:space="preserve">
+    <value>Definition Source</value>
+  </data>
+  <data name="Node_Desc_ProcedureColumns" xml:space="preserve">
+    <value>Procedure parameters that are output only</value>
+  </data>
+  <data name="Node_Name_Tables" xml:space="preserve">
+    <value>Tables</value>
   </data>
 </root>

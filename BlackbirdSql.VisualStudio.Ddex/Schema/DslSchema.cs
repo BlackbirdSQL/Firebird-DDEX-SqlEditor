@@ -46,6 +46,7 @@ internal abstract class DslSchema
 
 	public DataTable GetSchema(FbConnection connection, string collectionName, string[] restrictions)
 	{
+		Diag.Trace();
 		var dataTable = new DataTable(collectionName);
 		var command = BuildCommand(connection, collectionName, ParseRestrictions(restrictions));
 		try
@@ -146,6 +147,7 @@ internal abstract class DslSchema
 
 	protected virtual string[] ParseRestrictions(string[] restrictions)
 	{
+		Diag.Trace();
 		return restrictions;
 	}
 

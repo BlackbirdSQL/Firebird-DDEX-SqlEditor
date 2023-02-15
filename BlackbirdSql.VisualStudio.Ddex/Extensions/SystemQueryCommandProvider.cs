@@ -25,7 +25,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Extensions
 		/// <summary>
 		/// Identifies this <see cref="AbstractQueryCommandProvider"/> as spawned off of a System Object SE node
 		/// </summary>
-		protected override DataToolsCommands.DataObjectType ObjectType
+		protected override DataToolsCommands.DataObjectType CommandObjectType
 		{
 			get { return DataToolsCommands.DataObjectType.System; }
 		}

@@ -386,7 +386,7 @@ internal class GdsStatement : StatementBase
 
 	public override DbValue[] Fetch()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		EnsureNotDeallocated();
 
 		if (StatementType == DbStatementType.StoredProcedure && !_allRowsFetched)
@@ -410,17 +410,17 @@ internal class GdsStatement : StatementBase
 		{
 			try
 			{
-				Diag.Trace();
+				// Diag.Trace();
 				_database.Xdr.Write(IscCodes.op_fetch);
 				_database.Xdr.Write(_handle);
 				_database.Xdr.WriteBuffer(_fields.ToBlr().Data);
 				_database.Xdr.Write(0); // p_sqldata_message_number
 				_database.Xdr.Write(_fetchSize); // p_sqldata_messages
 				_database.Xdr.Flush();
-				Diag.Trace();
+				// Diag.Trace();
 
 				var operation = _database.ReadOperation();
-				Diag.Trace();
+				// Diag.Trace();
 				if (operation == IscCodes.op_fetch_response)
 				{
 					var hasOperation = true;
@@ -450,7 +450,7 @@ internal class GdsStatement : StatementBase
 							break;
 						}
 					}
-					Diag.Trace();
+					// Diag.Trace();
 				}
 				else
 				{
@@ -469,12 +469,12 @@ internal class GdsStatement : StatementBase
 
 		if (_rows != null && _rows.Count > 0)
 		{
-			Diag.Trace();
+			// Diag.Trace();
 			return _rows.Dequeue();
 		}
 		else
 		{
-			Diag.Trace();
+			//Diag.Trace();
 			_rows.Clear();
 			return null;
 		}

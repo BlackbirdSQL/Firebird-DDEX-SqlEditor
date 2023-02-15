@@ -95,9 +95,11 @@ internal sealed class FbSchemaFactory
 				return PrepareCollection(connection, collectionName, restrictions);
 
 			case "DataTable":
+				Diag.Trace(string.Format("CollectionName = '{0}'", collectionName));
 				return ds.Tables[collection[0]["PopulationString"].ToString()].Copy();
 
 			case "SQLCommand":
+				Diag.Trace(string.Format("CollectionName = '{0}'", collectionName));
 				return SqlCommandSchema(connection, collectionName, restrictions);
 
 			default:
@@ -153,9 +155,11 @@ internal sealed class FbSchemaFactory
 				return PrepareCollectionAsync(connection, collectionName, restrictions, cancellationToken);
 
 			case "DataTable":
+				Diag.Trace(string.Format("CollectionName = '{0}'", collectionName));
 				return Task.FromResult(ds.Tables[collection[0]["PopulationString"].ToString()].Copy());
 
 			case "SQLCommand":
+				Diag.Trace(string.Format("CollectionName = '{0}'", collectionName));
 				return SqlCommandSchemaAsync(connection, collectionName, restrictions, cancellationToken);
 
 			default:
@@ -169,6 +173,7 @@ internal sealed class FbSchemaFactory
 
 	private static DataTable PrepareCollection(FbConnection connection, string collectionName, string[] restrictions)
 	{
+		Diag.Trace(string.Format("CollectionName = '{0}'", collectionName));
 		FbSchema returnSchema = collectionName.ToUpperInvariant() switch
 		{
 			"CHARACTERSETS" => new FbCharacterSets(),
@@ -210,6 +215,7 @@ internal sealed class FbSchemaFactory
 	}
 	private static Task<DataTable> PrepareCollectionAsync(FbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
 	{
+		Diag.Trace(string.Format("CollectionName = '{0}'", collectionName));
 		FbSchema returnSchema = collectionName.ToUpperInvariant() switch
 		{
 			"CHARACTERSETS" => new FbCharacterSets(),

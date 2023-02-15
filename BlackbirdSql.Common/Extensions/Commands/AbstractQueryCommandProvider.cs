@@ -13,13 +13,13 @@ using Microsoft.VisualStudio.Data.Services;
  * At the top of the explorer tree we specify the global command using id 0x3513 on the built-in
  * command provider with guid 884DD964-5327-461f-9F06-6484DD540F8F
  * 
- * When invoked we simply set the static DataToolsCommands.ObjectType to DataObjectType.System or
+ * When invoked we simply set the static DataToolsCommands.CommandObjectType to DataObjectType.System or
  * DataObjectType.User then invoke the global command using id 0x3513 which will revert to the built-in provider.
- * Once the built-in command has been invoked and objects enumerated we set the static DataToolsCommands.ObjectType
+ * Once the built-in command has been invoked and objects enumerated we set the static DataToolsCommands.CommandObjectType
  * back to DataObjectType.None.
  * 
  * When the datatable list dialog is instantiated by VSs DataQueryDesignerDocument and it requests a table list
- * our ddex services can then examine the DataToolsCommands.ObjectType indicator to determine if any filtering 
+ * our ddex services can then examine the DataToolsCommands.CommandObjectType indicator to determine if any filtering 
  * should occur.
  * If the VS user does a refresh he/she will get a full list irrelevant of the node type because the association with the
  * node is lost. 
@@ -32,7 +32,7 @@ namespace BlackbirdSql.Common.Extensions.Commands
 	internal abstract class AbstractQueryCommandProvider : DataViewCommandProvider
 	{
 
-		protected abstract DataToolsCommands.DataObjectType ObjectType
+		protected abstract DataToolsCommands.DataObjectType CommandObjectType
 		{
 			get;
 		}
@@ -53,7 +53,7 @@ namespace BlackbirdSql.Common.Extensions.Commands
 
 				command = new DataViewMenuCommand(itemId, commandId, delegate
 				{
-					OnNewQuery(itemId, ObjectType, qualityMetric);
+					OnNewQuery(itemId, CommandObjectType, qualityMetric);
 				});
 			}
 			else
@@ -66,20 +66,21 @@ namespace BlackbirdSql.Common.Extensions.Commands
 
 		private void OnNewQuery(int itemId, DataToolsCommands.DataObjectType objectType, int qualityMetricProvider)
 		{
-			Diag.Trace();
+			// Diag.Trace();
 
 			IVsDataExplorerNode vsDataExplorerNode = Site.ExplorerConnection.FindNode(itemId);
 
-			Diag.Trace();
 			MenuCommand command = vsDataExplorerNode.GetCommand(DataToolsCommands.GlobalNewQuery);
-			Diag.Trace();
 
 			// This should be locked
-			DataToolsCommands.ObjectType = objectType;
+			Diag.Trace("SETTNG CONNECTION COMMANDTYPE TO: " + objectType + " for command in assembly: " + command.GetType().AssemblyQualifiedName);
+			DataToolsCommands.CommandObjectType = objectType;
+			
 			command.Invoke();
 
 
-			Diag.Trace();
+			Diag.Trace("COMMAND INVOKED");
+
 		}
 
 	}

@@ -7,8 +7,8 @@
 			so we're going to keep definitions limited and simple
 			otherwise it's just going to become a pita
 	-->
-	<Define name="ElementTypeTable" parameters="elementType" >
-		<Type name="$(elementType)" preferredOrdering="TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME" >
+	<Define name="ElementTypeTable" parameters="elementName, elementType, systemType" >
+		<Type name="$(elementName)" preferredOrdering="TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME" >
 			<Identifier>
 				<Part name="TABLE_CATALOG" type="System.String" />
 				<Part name="TABLE_SCHEMA" type="System.String" />
@@ -23,7 +23,7 @@
 			<Services>
 				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
 					<Parameters method="SelectObjects">
-						<Parameter value="Tables" />
+						<Parameter value="$(elementName)s" />
 					</Parameters>
 				</Service>
 				<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
@@ -34,7 +34,7 @@
 							<!-- Owner -->
 							<Parameter value="{1}" />
 							<!-- Type -->
-							<Parameter value="Table" />
+							<Parameter value="$(elementName)" />
 							<!-- ExtendedType -->
 							<Parameter />
 							<!-- Properties -->
@@ -54,9 +54,9 @@
 			</Services>
 		</Type>
 	</Define>
-	<Define name="ElementMappedTypeTable" parameters="elementType" >
-		<MappedType name="$(elementType)" underlyingType="$(elementType)">
-			<Selection restrictions="{Catalog},{Schema},{Name}"  />
+	<Define name="ElementMappedTypeTable" parameters="elementName, elementType, systemType" >
+		<MappedType name="$(elementType)$(elementName)" underlyingType="$(elementName)">
+			<Selection restrictions="{Catalog},{Schema},{Name}"  filter="IS_SYSTEM_TABLE = $(systemType)"/>
 			<Identifier>
 				<Part name="Catalog" underlyingMember="TABLE_CATALOG" />
 				<Part name="Schema" underlyingMember="TABLE_SCHEMA" />
@@ -67,8 +67,7 @@
 				<Property name="Type" underlyingMember="TABLE_TYPE"/>
 				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_TABLE" >
 					<Conversion>
-						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
-						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
+						<Calculate expr="IIF({0} = 1, true, false)" exprType="System.Boolean" />
 					</Conversion>
 				</Property>
 			</Properties>
@@ -172,7 +171,8 @@
 		</Type>
 
 		<!-- Completed -->
-		<TypeRef name="ElementTypeTable" arguments="Table" />
+		<TypeRef name="ElementTypeTable" arguments="Table,User,0" />
+		<!--<TypeRef name="ElementTypeTable" arguments="Table,System,1" />-->
 
 		<!-- Completed -->
 		<Type name="TableColumn" preferredOrdering="TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME,ORDINAL_POSITION">
@@ -748,7 +748,7 @@
 		</Type>
 
 		<!-- Completed -->
-		<Type name="Function" preferredOrdering="FUNCTION_CATALOG,FUNCTION_SCHEMA,FUNCTION_NAME">
+		<Type name="ScalarFunction" preferredOrdering="FUNCTION_CATALOG,FUNCTION_SCHEMA,FUNCTION_NAME">
 			<Identifier>
 				<Part name="FUNCTION_CATALOG" type="System.String" />
 				<Part name="FUNCTION_SCHEMA" type="System.String" />
@@ -788,7 +788,7 @@
 		</Type>
 
 		<!-- Completed -->
-		<Type name="FunctionParameter" preferredOrdering="FUNCTION_CATALOG,FUNCTION_SCHEMA,FUNCTION_NAME,ORDINAL_POSITION">
+		<Type name="ScalarFunctionParameter" preferredOrdering="FUNCTION_CATALOG,FUNCTION_SCHEMA,FUNCTION_NAME,ORDINAL_POSITION">
 			<Identifier>
 				<Part name="FUNCTION_CATALOG" type="System.String" />
 				<Part name="FUNCTION_SCHEMA" type="System.String" />
@@ -849,9 +849,7 @@
 	</Types>
 
 
-	<!-- Mapped object types used by the IDE built-in commands -->
-	<!-- TBC when we have a list of all valid properties used by VS commands -->
-	<!-- Important: Set IsSystemObject to false to have built-in commands include system database objects -->
+	<!-- Mapped object types -->
 	<MappedTypes>
 
 		<!-- To be tested -->
@@ -889,7 +887,8 @@
 		<!-- -->
 
 		<!-- Completed -->
-		<MappedTypeRef name="ElementMappedTypeTable" arguments="Table" />
+		<MappedTypeRef name="ElementMappedTypeTable" arguments="Table,User,0" />
+		<MappedTypeRef name="ElementMappedTypeTable" arguments="Table,System,1" />
 
 		<!-- Completed -->
 		<MappedType name="TableColumn" underlyingType="TableColumn">
@@ -952,7 +951,7 @@
 				<Property name="IsForeignKey" underlyingMember="IS_FOREIGNKEY" />
 				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_INDEX" >
 					<Conversion>
-						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
+						<Calculate expr="IIF({0} = 1, true, false)" exprType="System.Boolean" />
 					</Conversion>
 				</Property>
 			</Properties>
@@ -998,7 +997,7 @@
 				<Property name="IsUnique" underlyingMember="IS_UNIQUE" />
 				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_INDEX" >
 					<Conversion>
-						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
+						<Calculate expr="IIF({0} = 1, true, false)" exprType="System.Boolean" />
 					</Conversion>
 				</Property>
 			</Properties>
@@ -1088,7 +1087,7 @@
 				<Property name="Name" underlyingMember="VIEW_NAME" isIdentifierPart="true" />
 				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_VIEW" >
 					<Conversion>
-						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
+						<Calculate expr="IIF({0} = 1, true, false)" exprType="System.Boolean" />
 					</Conversion>
 				</Property>
 				<Property name="Sql" underlyingMember="DEFINITION" />
@@ -1155,7 +1154,7 @@
 				<Property name="Dsl" underlyingMember="SOURCE"/>
 				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_PROCEDURE" >
 					<Conversion>
-						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
+						<Calculate expr="IIF({0} = 1, true, false)" exprType="System.Boolean" />
 					</Conversion>
 				</Property>
 			</Properties>
@@ -1251,7 +1250,7 @@
 		</MappedType>
 
 		<!-- Completed -->
-		<MappedType name="ScalarFunction" underlyingType="Function">
+		<MappedType name="ScalarFunction" underlyingType="ScalarFunction">
 			<Selection restrictions="{Catalog},{Schema},{Name}" />
 			<Identifier>
 				<Part name="Catalog" underlyingMember="FUNCTION_CATALOG" />
@@ -1264,14 +1263,14 @@
 				<Property name="Description" underlyingMember="DESCRIPTION"/>
 				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FUNCTION" >
 					<Conversion>
-						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
+						<Calculate expr="IIF({0} = 1, true, false)" exprType="System.Boolean" />
 					</Conversion>
 				</Property>
 			</Properties>
 		</MappedType>
 
 		<!-- Completed -->
-		<MappedType name="ScalarFunctionParameter" underlyingType="FunctionParameter">
+		<MappedType name="ScalarFunctionParameter" underlyingType="ScalarFunctionParameter">
 			<Selection restrictions="{Catalog},{Schema},{ScalarFunction},{Name}" />
 			<Identifier>
 				<Part name="Catalog" underlyingMember="FUNCTION_CATALOG" />
