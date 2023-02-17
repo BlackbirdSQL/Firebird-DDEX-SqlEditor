@@ -19,11 +19,11 @@ namespace BlackbirdSql.VisualStudio.Ddex.Extensions
 	/// Implements the new query command on User Object SE nodes
 	/// </summary>
 	// =========================================================================================================
-	internal class UserQueryCommandProvider : AbstractQueryCommandProvider
+	internal class UserQueryCommandProvider : AbstractCommandProvider
 	{
 
 		/// <summary>
-		/// Identifies this <see cref="AbstractQueryCommandProvider"/> as spawned off of a User Object SE node
+		/// Identifies this <see cref="AbstractCommandProvider"/> as spawned off of a User Object SE node
 		/// </summary>
 		protected override DataToolsCommands.DataObjectType CommandObjectType
 		{

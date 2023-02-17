@@ -36,12 +36,12 @@ public class TMappedObjectConverter : AdoDotNetMappedObjectConverter
 
 	public TMappedObjectConverter() : base()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 	}
 
 	public TMappedObjectConverter(IVsDataConnection connection) : base(connection)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 	}
 
 
@@ -66,7 +66,7 @@ public class TMappedObjectConverter : AdoDotNetMappedObjectConverter
 	// ---------------------------------------------------------------------------------
 	protected override DbType GetDbTypeFromNativeType(string nativeType)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		DataRow[] rows = this.DataTypes.Select(String.Format("TypeName = '{0}'", nativeType));
 
 		if (rows != null && rows.Length > 0)
@@ -89,7 +89,7 @@ public class TMappedObjectConverter : AdoDotNetMappedObjectConverter
 	// ---------------------------------------------------------------------------------
 	protected override int GetProviderTypeFromNativeType(string nativeType)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		DataRow[] rows = this.DataTypes.Select(String.Format("TypeName = '{0}'", nativeType));
 
 		if (rows != null && rows.Length > 0)
@@ -112,7 +112,7 @@ public class TMappedObjectConverter : AdoDotNetMappedObjectConverter
 	// ---------------------------------------------------------------------------------
 	protected override Type GetFrameworkTypeFromNativeType(string nativeType)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		DataRow[] rows = this.DataTypes.Select(String.Format("TypeName = '{0}'", nativeType));
 
 		if (rows != null && rows.Length > 0)

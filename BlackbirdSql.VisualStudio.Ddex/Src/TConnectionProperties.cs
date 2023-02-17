@@ -66,7 +66,7 @@ internal class TConnectionProperties : AdoDotNetConnectionProperties
 	/// </summary>
 	public TConnectionProperties() : base()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 	}
 
 	#endregion Constructors / Destructors

@@ -165,7 +165,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			cboServerType.SelectedIndex = Convert.ToInt32((string)value);
 		else
 			cboServerType.SelectedIndex = (int)DslConnectionString.DefaultValueServerType;
-		Diag.Trace("Default ServerType: " + (int)DslConnectionString.DefaultValueServerType);
+		// Diag.Trace("Default ServerType: " + (int)DslConnectionString.DefaultValueServerType);
 		// Strange bug here. The default on the enum is being returned as the literal. Cannot trace it
 
 		EnableEvents();

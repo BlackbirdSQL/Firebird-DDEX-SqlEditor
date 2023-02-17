@@ -106,6 +106,7 @@ internal static class PackageSupportedObjects
 		{ "IVsDataSourceInformation:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.TSourceInformation") },
 		{ "IVsDataSourceVersionComparer:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.TSourceVersionComparer") },
 
+
 		{ "IVsDataViewSupport:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.TViewSupport") },
 		{ "IVsDataViewSupport:1", new("AllowAsynchronousEnumerations",  "true") },
 		{ "IVsDataViewSupport:2", new("HasDocumentProvider",  0) },

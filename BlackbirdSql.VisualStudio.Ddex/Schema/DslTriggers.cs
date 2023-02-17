@@ -27,7 +27,6 @@ using System.Text;
 using FirebirdSql.Data.FirebirdClient;
 
 using BlackbirdSql.Common;
-using Nerdbank.Streams;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;

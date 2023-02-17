@@ -68,7 +68,7 @@ internal class DslTables : DslSchema
 		if (DataToolsCommands.CommandObjectType != DataToolsCommands.DataObjectType.None
 			&& (restrictions == null || restrictions.Length < 3 || (restrictions.Length > 2 && restrictions[2] == null)))
 		{
-			Diag.Trace("FILTERING TABLE LIST TO SYSTEM_FLAG: " + DataToolsCommands.CommandObjectType);
+			// Diag.Trace("FILTERING TABLE LIST TO SYSTEM_FLAG: " + DataToolsCommands.CommandObjectType);
 			if (DataToolsCommands.CommandObjectType == DataToolsCommands.DataObjectType.User)
 				sql.Append(" AND rdb$system_flag = 0");
 			else
@@ -133,7 +133,7 @@ internal class DslTables : DslSchema
 
 		sql.Append(" ORDER BY IS_SYSTEM_TABLE, OWNER_NAME, TABLE_NAME");
 
-		Diag.Trace(sql.ToString());
+		// Diag.Trace(sql.ToString());
 
 		return sql;
 	}

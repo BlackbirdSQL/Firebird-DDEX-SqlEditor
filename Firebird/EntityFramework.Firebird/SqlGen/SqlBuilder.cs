@@ -89,7 +89,7 @@ internal sealed class SqlBuilder : ISqlFragment
 	/// <param name="sqlGenerator"></param>
 	public void WriteSql(SqlWriter writer, SqlGenerator sqlGenerator)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		if (null != _sqlFragments)
 		{
 			foreach (var o in _sqlFragments)

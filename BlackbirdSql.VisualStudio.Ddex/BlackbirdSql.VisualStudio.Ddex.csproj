@@ -83,8 +83,18 @@
   <!-- Includes - Top Level -->
   <ItemGroup>
     <Content Include="Package.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.Function.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.AutoIncrementColumn.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.Database.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DotDotDot.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.ArrowDownLarge.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.LabelOpenFolder.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.ArrowRightDown.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.Domain.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DatabaseDomains.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DatabaseFunctions.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DatabaseProcedures.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DatabaseSequences.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DatabaseTables.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DatabaseViews.ico" />
   </ItemGroup>
   <!-- References (Assemblies) -->
   <ItemGroup>
@@ -148,16 +158,23 @@
   </ItemGroup>
   <!-- Includes (VSIX Manifest) -->
   <ItemGroup>
-    <None Include="Resources\ViewSupport.Function.psd" />
-    <None Include="Resources\ViewSupport.Procedure.psd" />
+    <None Include="Resources\ViewSupport.ArrowDownLarge.psd" />
+    <None Include="Resources\ViewSupport.AutoIncrementColumn.psd" />
+    <None Include="Resources\ViewSupport.Database.psd" />
+    <None Include="Resources\ViewSupport.DatabaseDomains.psd" />
+    <None Include="Resources\ViewSupport.DatabaseFunctions.psd" />
+    <None Include="Resources\ViewSupport.DatabaseProcedures.psd" />
+    <None Include="Resources\ViewSupport.DatabaseSequences.psd" />
+    <None Include="Resources\ViewSupport.DatabaseViews.psd" />
+    <None Include="Resources\ViewSupport.Domain.psd" />
+    <None Include="Resources\ViewSupport.DotDotDot.psd" />
+    <None Include="Resources\ViewSupport.LabelOpenFolder.psd" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <!-- Includes (Properties and Properties Resources) -->
   <ItemGroup>
-    <Compile Include="Extensions\SystemQueryCommandProvider.cs" />
-    <Compile Include="Extensions\UserQueryCommandProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -176,7 +193,14 @@
     <EmbeddedResource Include="Resources\ViewSupport.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\ViewSupport.AutoIncrementColumn.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.ComputedColumn.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderForeignKeys.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderIndexes.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderSystemTables.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderTriggers.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderUserColumns.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.Function.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.ParamIn.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.ParamInOut.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.ParamOut.ico" />
@@ -185,12 +209,14 @@
     <EmbeddedResource Include="Resources\ViewSupport.Procedure.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.ScalarFunction.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.Server.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.View.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.ViewColumn.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.SystemColumn.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.SystemTable.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.UserTable.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.UserColumn.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.UserTable.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.View.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.ViewColumn.ico" />
+    <None Include="Resources\ViewSupport.Function.psd" />
+    <None Include="Resources\ViewSupport.Procedure.psd" />
   </ItemGroup>
   <!-- Includes (Source Resources) -->
   <ItemGroup>
@@ -209,6 +235,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Src\TViewSupport.xml">
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TViewSupport.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Src\TViewSupportCommands.xml">
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TViewSupportCommands.xml</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Src\TViewSupportElements.xml">
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TViewSupportElements.xml</LogicalName>
     </EmbeddedResource>
     <Page Include="Configuration\UIDebugOptionsControl.xaml">
       <SubType>Designer</SubType>
@@ -233,6 +265,9 @@
     <Compile Include="Configuration\VsOptionsProvider.cs" />
     <Compile Include="Configuration\VsPackageController.cs" />
     <Compile Include="Configuration\VsPackageRegistration.cs" />
+    <Compile Include="Extensions\UniversalCommandProvider.cs" />
+    <Compile Include="Extensions\SystemQueryCommandProvider.cs" />
+    <Compile Include="Extensions\UserQueryCommandProvider.cs" />
     <Compile Include="Schema\BinaryEncoding.cs" />
     <Compile Include="Schema\Charset.cs" />
     <Compile Include="Schema\DslColumns.cs" />
@@ -249,6 +284,7 @@
     <Compile Include="Schema\DslIndexes.cs" />
     <Compile Include="Schema\DslTriggers.cs" />
     <None Include="Schema\DslTables.cs" />
+    <Compile Include="Schema\DslGenerators.cs" />
     <Compile Include="Schema\IscCodes.cs" />
     <Compile Include="Src\TConnectionEquivalencyComparer.cs" />
     <Compile Include="Src\TConnectionPromptDialog.cs">

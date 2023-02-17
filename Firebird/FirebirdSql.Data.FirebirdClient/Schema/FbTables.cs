@@ -97,7 +97,7 @@ internal class FbTables : FbSchema
 
 		sql.Append(" ORDER BY IS_SYSTEM_TABLE, OWNER_NAME, TABLE_NAME");
 
-		Diag.Trace(sql.ToString());
+		// Diag.Trace(sql.ToString());
 		return sql;
 	}
 

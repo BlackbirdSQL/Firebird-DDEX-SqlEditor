@@ -112,7 +112,7 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// <returns></returns>
 	private static Dictionary<string, FunctionHandler> InitializeBuiltInFunctionHandlers()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		var functionHandlers = new Dictionary<string, FunctionHandler>(0, StringComparer.Ordinal);
 		return functionHandlers;
 	}
@@ -123,7 +123,7 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// <returns></returns>
 	private static Dictionary<string, FunctionHandler> InitializeCanonicalFunctionHandlers()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		var functionHandlers = new Dictionary<string, FunctionHandler>(StringComparer.Ordinal);
 
 		#region Other Canonical Functions
@@ -212,7 +212,7 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// <returns></returns>
 	private static Dictionary<string, string> InitializeFunctionNameToOperatorDictionary()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return new Dictionary<string, string>(StringComparer.Ordinal)
 			{
 				{ nameof(string.Concat), "||" },
@@ -243,7 +243,7 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// <returns>The string representing the SQL to be executed.</returns>
 	internal static string GenerateSql(DbCommandTree tree, out List<DbParameter> parameters, out CommandType commandType)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		commandType = CommandType.Text;
 
 		//Handle Query
@@ -301,7 +301,7 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// <returns>The string representing the SQL to be executed.</returns>
 	private string GenerateSql(DbQueryCommandTree tree)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		_selectStatementStack = new Stack<SqlSelectStatement>();
 		_isParentAJoinStack = new Stack<bool>();
 
@@ -346,7 +346,7 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// </summary>
 	private string GenerateFunctionSql(DbFunctionCommandTree tree, out CommandType commandType)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		var function = tree.EdmFunction;
 
 		// We expect function to always have these properties
@@ -400,7 +400,7 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// <returns>A string representing the SQL to be executed.</returns>
 	string WriteSql(ISqlFragment sqlStatement)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		var builder = new StringBuilder(1024);
 		using (var writer = new SqlWriter(builder))
 		{
@@ -412,7 +412,7 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 
 	internal SqlWriter WriteSql(SqlWriter writer, ISqlFragment sqlStatement)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		sqlStatement.WriteSql(writer, this);
 		return writer;
 	}
@@ -815,7 +815,7 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// <returns></returns>
 	internal static string GetTargetSql(EntitySetBase entitySetBase)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		// construct escaped SQL referencing entity set
 		var builder = new StringBuilder();
 		var definingQuery = MetadataHelpers.TryGetValueForMetadataProperty<string>(entitySetBase, "DefiningQuery");
@@ -2103,7 +2103,7 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	void ProcessJoinInputResult(ISqlFragment fromExtentFragment, SqlSelectStatement result,
 		DbExpressionBinding input, int fromSymbolStart)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		Symbol fromSymbol = null;
 		var varName = GetShortenedName(input.VariableName);
 
@@ -2837,7 +2837,7 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	void AddColumns(SqlSelectStatement selectStatement, Symbol symbol,
 		List<Symbol> columnList, Dictionary<string, Symbol> columnDictionary, ref string separator)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		if (symbol is JoinSymbol joinSymbol)
 		{
 			if (!joinSymbol.IsNestedJoin)
@@ -2968,7 +2968,7 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// <returns></returns>
 	List<Symbol> AddDefaultColumns(SqlSelectStatement selectStatement)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		// This is the list of columns added in this select statement
 		// This forms the "type" of the Select statement, if it has to
 		// be expanded in another SELECT *
@@ -3101,7 +3101,7 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	SqlSelectStatement CreateNewSelectStatement(SqlSelectStatement oldStatement,
 		string inputVarName, TypeUsage inputVarType, out Symbol fromSymbol)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return CreateNewSelectStatement(oldStatement, inputVarName, inputVarType, true, out fromSymbol);
 	}
 
@@ -3130,7 +3130,7 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	SqlSelectStatement CreateNewSelectStatement(SqlSelectStatement oldStatement,
 		string inputVarName, TypeUsage inputVarType, bool finalizeOldStatement, out Symbol fromSymbol)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		fromSymbol = null;
 
 		// Finalize the old statement
@@ -3514,7 +3514,7 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// <returns></returns>
 	SqlSelectStatement VisitExpressionEnsureSqlStatement(DbExpression e, bool addDefaultColumns)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		Debug.Assert(MetadataHelpers.IsCollectionType(e.ResultType));
 
 		SqlSelectStatement result;
@@ -3645,7 +3645,7 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// <returns></returns>
 	private static bool IsBuiltInFunction(EdmFunction function)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return MetadataHelpers.TryGetValueForMetadataProperty<bool>(function, "BuiltInAttribute");
 	}
 
@@ -3704,7 +3704,7 @@ internal sealed class SqlGenerator : DbExpressionVisitor<ISqlFragment>
 	/// <returns></returns>
 	static bool NeedsInnerQuery(IList<DbAggregate> aggregates)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		foreach (var aggregate in aggregates)
 		{
 			Debug.Assert(aggregate.Arguments.Count == 1);

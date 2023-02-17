@@ -512,7 +512,7 @@ internal sealed class FesStatement : StatementBase
 
 	public override DbValue[] Fetch()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		EnsureNotDeallocated();
 
 		if (StatementType == DbStatementType.StoredProcedure && !_allRowsFetched)

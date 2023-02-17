@@ -67,7 +67,7 @@ internal class TConnectionEquivalencyComparer : DataConnectionEquivalencyCompare
 		// It's the only way to get the built in query provider to reread the table list
 		if (DataToolsCommands.CommandObjectType != DataToolsCommands.DataObjectType.None)
 		{
-			Diag.Trace("RESETTNG CONNECTION - COMMANDTYPE CURRENT:LAST: " + DataToolsCommands.CommandObjectType + ":" + DataToolsCommands.CommandLastObjectType);
+			// Diag.Trace("RESETTNG CONNECTION - COMMANDTYPE CURRENT:LAST: " + DataToolsCommands.CommandObjectType + ":" + DataToolsCommands.CommandLastObjectType);
 			return false;
 		}
 
@@ -125,7 +125,7 @@ internal class TConnectionEquivalencyComparer : DataConnectionEquivalencyCompare
 
 				if (!AreEquivalent(key, value1, value2))
 				{
-					Diag.Trace("Connection parameter '" + key + "' mismatch: '" + (value1 != null ? value1.ToString() : "null") + "' : '" + (value2 != null ? value2.ToString() : "null"));
+					// Diag.Trace("Connection parameter '" + key + "' mismatch: '" + (value1 != null ? value1.ToString() : "null") + "' : '" + (value2 != null ? value2.ToString() : "null"));
 					return false;
 				}
 			}
@@ -175,7 +175,7 @@ internal class TConnectionEquivalencyComparer : DataConnectionEquivalencyCompare
 
 					if (!AreEquivalent(key, value2, value1))
 					{
-						Diag.Trace("Connection2 parameter '" + key + "' mismatch: '" + (value2 != null ? value2.ToString() : "null") + "' : '" + (value1 != null ? value1.ToString() : "null"));
+						// Diag.Trace("Connection2 parameter '" + key + "' mismatch: '" + (value2 != null ? value2.ToString() : "null") + "' : '" + (value1 != null ? value1.ToString() : "null"));
 						return false;
 					}
 				}

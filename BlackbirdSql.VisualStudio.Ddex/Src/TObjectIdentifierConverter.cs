@@ -30,13 +30,13 @@ internal class TObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 
 	public TObjectIdentifierConverter() : base()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 	}
 
 
 	public TObjectIdentifierConverter(IVsDataConnection connection) : base(connection)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 	}
 
 
@@ -58,7 +58,7 @@ internal class TObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 	// ---------------------------------------------------------------------------------
 	protected override string FormatPart(string typeName, object identifierPart, DataObjectIdentifierFormat format)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 
 		if (identifierPart is null or DBNull)
 		{
@@ -81,7 +81,7 @@ internal class TObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 			identifierPartString = openQuote + identifierPartString + closeQuote;
 		}
 
-		Diag.Trace("typeName: " + typeName + " DataObjectIdentifierFormat: " + format + " Converted identifier: " + identifierPartString);
+		// Diag.Trace("typeName: " + typeName + " DataObjectIdentifierFormat: " + format + " Converted identifier: " + identifierPartString);
 
 		return identifierPartString;
 	}
@@ -105,7 +105,7 @@ internal class TObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 	//     input string.
 	protected override string[] SplitIntoParts(string typeName, string identifier)
 	{
-		Diag.Trace("typeName: " + typeName + " identifier: " + identifier);
+		// Diag.Trace("typeName: " + typeName + " identifier: " + identifier);
 		return base.SplitIntoParts(typeName, identifier);
 	}
 
@@ -125,7 +125,7 @@ internal class TObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 	//     The new identifier part, without its formatting.
 	protected override object UnformatPart(string typeName, string identifierPart)
 	{
-		Diag.Trace("typeName: " + typeName + " identifier: " + identifierPart);
+		// Diag.Trace("typeName: " + typeName + " identifier: " + identifierPart);
 		return base.UnformatPart(typeName, identifierPart);
 	}
 
@@ -171,7 +171,7 @@ internal class TObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 	{
 		string str = base.BuildString(typeName, identifierParts, format);
 
-		Diag.Trace("typeName: " + typeName + " DataObjectIdentifierFormat: " + format + " Result: " + str);
+		// Diag.Trace("typeName: " + typeName + " DataObjectIdentifierFormat: " + format + " Result: " + str);
 		return str;
 	}
 
@@ -185,7 +185,7 @@ internal class TObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 	//     An System.EventArgs object containing the event data.
 	protected override void OnSiteChanged(EventArgs e)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		base.OnSiteChanged(e);
 	}
 

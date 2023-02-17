@@ -69,7 +69,7 @@ internal class SqlWriter : StringWriter
 	/// <param name="value"></param>
 	public override void Write(string value)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		if (value == Environment.NewLine)
 		{
 			base.WriteLine();
@@ -91,14 +91,14 @@ internal class SqlWriter : StringWriter
 
 	public override void WriteLine()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		base.WriteLine();
 		_atBeginningOfLine = true;
 	}
 
 	public override void WriteLine(string value)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		Write(value);
 		WriteLine();
 	}

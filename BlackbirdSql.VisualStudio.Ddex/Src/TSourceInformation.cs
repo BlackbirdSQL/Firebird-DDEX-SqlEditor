@@ -32,13 +32,13 @@ internal class TSourceInformation : AdoDotNetSourceInformation
 
 	public TSourceInformation() : base()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		AddExtendedProperties();
 	}
 
 	public TSourceInformation(IVsDataConnection connection) : base(connection)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		AddExtendedProperties();
 	}
 
@@ -92,7 +92,7 @@ internal class TSourceInformation : AdoDotNetSourceInformation
 	// ---------------------------------------------------------------------------------
 	protected override object RetrieveValue(string propertyName)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		try
 		{
 			switch (propertyName)

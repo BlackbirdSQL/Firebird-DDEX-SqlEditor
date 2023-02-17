@@ -199,7 +199,7 @@
     <value>Number of the rowset containing the column. This is greater than one only if the procedure returns multiple rowsets.</value>
   </data>
   <data name="Node_Name_Procedures" xml:space="preserve">
-    <value>Procedures</value>
+    <value>Stored Procedures</value>
   </data>
   <data name="Identifier_Name_Table" xml:space="preserve">
     <value>Table</value>
@@ -508,7 +508,7 @@
     <value>Is Primary</value>
   </data>
   <data name="Node_Name_Domains" xml:space="preserve">
-    <value>Domains(Debug:009)</value>
+    <value>Domains</value>
   </data>
   <data name="Type_Domain" xml:space="preserve">
     <value>Domain</value>
@@ -674,5 +674,32 @@
   </data>
   <data name="Node_Name_Tables" xml:space="preserve">
     <value>Tables</value>
+  </data>
+  <data name="Node_Name_Columns" xml:space="preserve">
+    <value>Columns</value>
+  </data>
+  <data name="Node_Name_Sequences" xml:space="preserve">
+    <value>Sequences</value>
+  </data>
+  <data name="Property_Desc_Sequence_Increment" xml:space="preserve">
+    <value>Integer increment of the sequence generator</value>
+  </data>
+  <data name="Property_Desc_Sequence_InitialValue" xml:space="preserve">
+    <value>Initial value of the sequence number generator at the time it is created.</value>
+  </data>
+  <data name="Property_Desc_Sequence_NextValue" xml:space="preserve">
+    <value>Next sequence number of the generator</value>
+  </data>
+  <data name="Property_Name_Sequence_Increment" xml:space="preserve">
+    <value>Increment</value>
+  </data>
+  <data name="Property_Name_Sequence_InitialValue" xml:space="preserve">
+    <value>Initial Value</value>
+  </data>
+  <data name="Property_Name_Sequence_NextValue" xml:space="preserve">
+    <value>Next Sequence Number</value>
+  </data>
+  <data name="Type_Sequence" xml:space="preserve">
+    <value>Sequence</value>
   </data>
 </root>

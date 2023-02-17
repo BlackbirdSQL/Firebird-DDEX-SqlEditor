@@ -33,7 +33,7 @@ internal class TSourceVersionComparer : DataSourceVersionComparer, IComparer<str
 
 	public TSourceVersionComparer()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		base.Comparer = this;
 	}
 
@@ -57,7 +57,7 @@ internal class TSourceVersionComparer : DataSourceVersionComparer, IComparer<str
 	/// <returns>-1: x < y; 0 x == y and 1: x > y</returns>
 	public int Compare(string x, string y)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		if (x == null && y == null)
 		{
 			return 0;

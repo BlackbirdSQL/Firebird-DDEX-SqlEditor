@@ -185,7 +185,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		// We should already be on UI thread. Callers must ensure this can never happen
 		ThreadHelper.ThrowIfNotOnUIThread();
 
-		Diag.Trace();
+		// Diag.Trace();
 
 
 		// Sanity check. Disable events if enabled
@@ -336,7 +336,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			}
 			else
 			{
-				Diag.Trace(projectItem.Name + " projectItem.SubProject is null (Possible Unloaded project or document)");
+				// Diag.Trace(projectItem.Name + " projectItem.SubProject is null (Possible Unloaded project or document)");
 			}
 		}
 	}
@@ -515,7 +515,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 									{
 										// A legacy CSProj must cast to VSProject4 to manipulate package references
 
-										Diag.Trace(project.Name + " FOUND PACKAGE REFERENCE:" + SystemData.EFProvider);
+										// Diag.Trace(project.Name + " FOUND PACKAGE REFERENCE:" + SystemData.EFProvider);
 
 										isConfiguredEFStatus = true;
 										isConfiguredDbProviderStatus = true;
@@ -537,7 +537,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 							{
 								if (projectObject.References.Find(SystemData.Invariant) != null)
 								{
-									Diag.Trace(project.Name + " FOUND REFERENCE:" + SystemData.Invariant);
+									// Diag.Trace(project.Name + " FOUND REFERENCE:" + SystemData.Invariant);
 
 									isConfiguredDbProviderStatus = true;
 
@@ -557,7 +557,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 									if (projectObject4.PackageReferences.TryGetReference(SystemData.Invariant, null,
 										out string pkgVersion, out _, out _))
 									{
-										Diag.Trace(project.Name + " FOUND PACKAGE REFERENCE:" + SystemData.Invariant);
+										// Diag.Trace(project.Name + " FOUND PACKAGE REFERENCE:" + SystemData.Invariant);
 
 										isConfiguredDbProviderStatus = true;
 
@@ -684,7 +684,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 			config = project.ProjectItems.AddFromFile(filename);
 
-			Diag.Trace("App.config is null. Added: " + filename);
+			// Diag.Trace("App.config is null. Added: " + filename);
 		}
 
 		if (config == null)
@@ -758,8 +758,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 		Uig.SetIsValidatedDbProviderStatus(config.ContainingProject);
 
-		if (modified)
-			Diag.Trace(config.ContainingProject.Name + ": App.config DbProvider was modified");
+		// if (modified)
+			// Diag.Trace(config.ContainingProject.Name + ": App.config DbProvider was modified");
 
 
 		return true;
@@ -830,8 +830,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 		Uig.SetIsValidatedEFStatus(config.ContainingProject);
 
-		if (modified)
-			Diag.Trace(config.ContainingProject.Name + ": App.config EF was modified");
+		// if (modified)
+			// Diag.Trace(config.ContainingProject.Name + ": App.config EF was modified");
 
 
 		return true;
@@ -925,7 +925,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			_CSharpReferencesEvents.ReferenceAdded += _ReferenceAddedEventHandler;
 			_VBReferencesEvents.ReferenceAdded += _ReferenceAddedEventHandler;
 
-			Diag.Trace("Added _ReferenceAddedEventHandler for DTE");
+			// Diag.Trace("Added _ReferenceAddedEventHandler for DTE");
 		}
 		catch (Exception ex)
 		{
@@ -1004,7 +1004,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		{
 			if (++_RefCnt < 1000)
 			{
-				Diag.Trace("RECYCLING HandleReferenceAddedAsync for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
+				// Diag.Trace("RECYCLING HandleReferenceAddedAsync for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
 
 				_ = Task.Delay(200).ContinueWith(_ => HandleReferenceAddedAsync(reference), TaskScheduler.Current);
 			}
@@ -1026,7 +1026,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 		if (reference.Name.ToLower() == SystemData.EFProvider.ToLower() && !Uig.IsConfiguredEFStatus(reference.ContainingProject))
 		{
-			Diag.Trace("HandleReferenceAddedAsync is through for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
+			// Diag.Trace("HandleReferenceAddedAsync is through for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
 
 			config ??= GetAppConfigProjectItem(reference.ContainingProject);
 
@@ -1042,7 +1042,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		}
 		else if (reference.Name.ToLower() == SystemData.Invariant.ToLower() && !Uig.IsConfiguredDbProviderStatus(reference.ContainingProject))
 		{
-			Diag.Trace("HandleReferenceAddedAsync is through for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
+			// Diag.Trace("HandleReferenceAddedAsync is through for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
 
 			config ??= GetAppConfigProjectItem(reference.ContainingProject);
 
@@ -1076,7 +1076,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		{
 			if (++_RefCnt < 1000)
 			{
-				Diag.Trace("RECYCLING Project: " + project.Name + " for AfterOpenProject");
+				// Diag.Trace("RECYCLING Project: " + project.Name + " for AfterOpenProject");
 
 				_ = Task.Delay(200).ContinueWith(_ => HandleAfterOpenProjectAsync(project), TaskScheduler.Current);
 			}
@@ -1209,17 +1209,17 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 		if (Uig.IsValidateFailedStatus)
 		{
-			Diag.Trace("There was a failed solution validation. Clearing solution status flags");
+			// Diag.Trace("There was a failed solution validation. Clearing solution status flags");
 			Uig.ClearValidateStatus();
 		}
 		else if (!Uig.IsValidatedStatus(SolutionGlobals))
 		{
-			Diag.Trace("The solution has no validation status set. Setting validated to on and valid to off");
+			// Diag.Trace("The solution has no validation status set. Setting validated to on and valid to off");
 			Uig.SetIsValidStatus(SolutionGlobals, false);
 		}
 		else
 		{
-			Diag.Trace("The solution has it's validated flag set. Doing nothing.");
+			// Diag.Trace("The solution has it's validated flag set. Doing nothing.");
 		}
 
 

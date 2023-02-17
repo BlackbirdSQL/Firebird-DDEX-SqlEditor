@@ -236,15 +236,15 @@ namespace BlackbirdSql.VisualStudio.Ddex
 				/*
 				AppDomain.CurrentDomain.AssemblyLoad += (_, args) =>
 				{
-					if (args.LoadedAssembly.FullName == _InvariantAssembly.FullName)
-						Diag.Trace("Dsl Provider Factory loaded: " + _InvariantAssembly.FullName);
+					// if (args.LoadedAssembly.FullName == _InvariantAssembly.FullName)
+						// Diag.Trace("Dsl Provider Factory loaded: " + _InvariantAssembly.FullName);
 				};
 				*/
 
 			}
 			else
 			{
-				Diag.Trace("DbProviderFactory not added to assembly cache during package registration. Factory already cached");
+				// Diag.Trace("DbProviderFactory not added to assembly cache during package registration. Factory already cached");
 			}
 
 		}

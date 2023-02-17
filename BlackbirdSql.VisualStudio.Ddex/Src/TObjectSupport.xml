@@ -1,8 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <DataObjectSupport xmlns="http://schemas.microsoft.com/VisualStudio/2007/07/Data/DataObjectSupport">
-	<!-- Data source specific object types -->
 
-	<!-- Definitions
+	<!-- Import object support element and mapping definitions -->
+	<!--
+	Cannot get Import to work for ObjectSupport.
+	It is defined in xsd but seems it was never implemented. 
+	<Import name="ObjectElementDefinitions" />
+	<Import name="ObjectMappingDefinitions" />
+	-->
+
+	
+	<!-- Element Definitions
 			xs:sequence is specified so this has to come first
 			so we're going to keep definitions limited and simple
 			otherwise it's just going to become a pita
@@ -76,6 +84,7 @@
 	</Define>
 
 
+	<!-- Types -->
 	<Types>
 		<!-- Completed -->
 		<RootType>
@@ -129,26 +138,29 @@
 						<Parameter value="Domains" />
 					</Parameters>
 				</Service>
-				<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
-					<Parameters method="AppendToDSRef">
-						<Parameter>
-							<!-- Name -->
-							<Parameter value="{2}" />
-							<!-- Owner -->
-							<Parameter value="{1}" />
-							<!-- Type -->
-							<Parameter value="Domain" />
-							<!-- ExtendedType -->
-							<Parameter />
-							<!-- Properties -->
-							<Parameter>
-								<!-- GUID_DSRefProperty_PreciseType -->
-								<Parameter value="39A5A7E7-513F-44a4-B79D-7652CD8962D9">
-									<!-- Table -->
-									<Parameter value="101" type="System.Int32" />
-								</Parameter>
-							</Parameter>
-						</Parameter>
+			</Services>
+		</Type>
+
+		
+
+		<Type name="Sequence" preferredOrdering="GENERATOR_CATALOG,GENERATOR_SCHEMA,GENERATOR_NAME">
+			<Identifier>
+				<Part name="GENERATOR_CATALOG" type="System.String" />
+				<Part name="GENERATOR_SCHEMA" type="System.String" />
+				<Part name="GENERATOR_NAME" type="System.String" />
+			</Identifier>
+			<Properties>
+				<Property name="GENERATOR_NAME" isIdentifierPart="true" />
+				<Property name="GENERATOR_ID" type="System.Int16" />
+				<Property name="IS_SYSTEM_GENERATOR" type="System.Int16" />
+				<Property name="INITIAL_VALUE" type="System.Int64" />
+				<Property name="GENERATOR_INCREMENT" type="System.Int32" />
+				<Property name="NEXT_VALUE" type="System.Int64" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="Generators" />
 					</Parameters>
 				</Service>
 			</Services>
@@ -849,9 +861,11 @@
 	</Types>
 
 
+
 	<!-- Mapped object types used by the IDE built-in commands -->
 	<!-- TBC when we have a list of all valid properties used by VS commands -->
 	<!-- Important: Set IsSystemObject to false to have built-in commands include system database objects -->
+
 	<MappedTypes>
 
 		<!-- To be tested -->
@@ -886,7 +900,22 @@
 				</Property>
 			</Properties>
 		</MappedType>
-		<!-- -->
+
+		<MappedType name="Sequence" underlyingType="Sequence">
+			<Selection restrictions="{Catalog},{Schema},{Name},null" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="GENERATOR_CATALOG" />
+				<Part name="Schema" underlyingMember="GENERATOR_SCHEMA" />
+				<Part name="Name" underlyingMember="GENERATOR_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="Name" underlyingMember="GENERATOR_NAME" isIdentifierPart="true" />
+				<Property name="InitialValue" underlyingMember="INITIAL_VALUE" />
+				<Property name="Increment" underlyingMember="GENERATOR_INCREMENT" />
+				<Property name="NextValue" underlyingMember="NEXT_VALUE" />
+			</Properties>
+		</MappedType>
+
 
 		<!-- Completed -->
 		<MappedTypeRef name="ElementMappedTypeTable" arguments="Table" />
@@ -1312,7 +1341,5 @@
 		</MappedType>
 
 	</MappedTypes>
-
-
 
 </DataObjectSupport>

@@ -92,7 +92,7 @@ class TObjectSelector : AdoDotNetObjectSelector
 	/// Data object enumeration
 	/// </summary>
 	/// <remarks>
-	/// Also intercepts enumerations from the SE for <see cref="AbstractQueryCommandProvider"/> and
+	/// Also intercepts enumerations from the SE for <see cref="AbstractCommandProvider"/> and
 	/// sets <see cref="DataToolsCommands.CommandObjectType"/> to the correct node system object type
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
@@ -269,7 +269,7 @@ class TObjectSelector : AdoDotNetObjectSelector
 				str += list[i] + ",";
 		}
 
-		Diag.Trace(str);
+		// Diag.Trace(str);
 		*/
 
 		// Table type hack
@@ -332,7 +332,7 @@ class TObjectSelector : AdoDotNetObjectSelector
 				str += list[i] + ",";
 		}
 
-		Diag.Trace(str);
+		// Diag.Trace(str);
 		*/
 
 		return list;

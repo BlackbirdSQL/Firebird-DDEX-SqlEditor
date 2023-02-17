@@ -5,14 +5,11 @@
 
 
 using System;
-using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
 
 using BlackbirdSql.Common;
 using BlackbirdSql.VisualStudio.Ddex.Configuration;
-
-
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -37,7 +34,7 @@ public sealed class TProviderObjectFactory : DataProviderObjectFactory, IProvide
 
 	public TProviderObjectFactory() : base()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 	}
 
 	#endregion Constructors / Destructors
@@ -68,53 +65,53 @@ public sealed class TProviderObjectFactory : DataProviderObjectFactory, IProvide
 		 * 
 		if (objType == typeof(IVsDataConnectionSupport))
 		{
-			Diag.Trace();
+			// Diag.Trace();
 			return new TConnectionSupport();
 		}
 		else if (objType == typeof(IVsDataConnectionUIControl))
 		{
-			Diag.Trace();
+			// Diag.Trace();
 			return new TConnectionUIControl();
 		}
 		else if (objType == typeof(IVsDataConnectionPromptDialog))
 		{
-			Diag.Trace();
+			// Diag.Trace();
 			return new TConnectionPromptDialog();
 		}
 		else if (objType == typeof(IVsDataConnectionProperties))
 		{
-			Diag.Trace();
+			// Diag.Trace();
 			return new TConnectionProperties();
 		}
 		else if (objType == typeof(IVsDataConnectionUIProperties))
 		{
-			Diag.Trace();
+			// Diag.Trace();
 			return new TConnectionUIProperties();
 		}
 		else if (objType == typeof(IVsDataObjectIdentifierResolver))
 		{
-			Diag.Trace();
+			// Diag.Trace();
 			return new TObjectIdentifierResolver((IVsDataConnection)Site);
 		}
 		else if (objType == typeof(IVsDataObjectSupport))
 		{
-			Diag.Trace();
+			// Diag.Trace();
 			return new TObjectSupport((IVsDataConnection)Site);
 		}
 		else if (objType == typeof(IVsDataSourceInformation))
 		{
-			Diag.Trace();
+			// Diag.Trace();
 			return new TSourceInformation();
 		}
 		else if (objType == typeof(IVsDataViewSupport))
 		{
-			Diag.Trace();
+			// Diag.Trace();
 			return new DataViewSupport("BlackbirdSql.VisualStudio.Ddex.TViewSupport", typeof(ProviderObjectFactory).Assembly);
 			// return new TViewSupport();
 		}
 		else if (objType == typeof(IVsDataConnectionEquivalencyComparer))
 		{
-			Diag.Trace();
+			// Diag.Trace();
 			return new TConnectionEquivalencyComparer();
 		}
 		*/

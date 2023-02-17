@@ -42,7 +42,7 @@ public sealed class FbBatchNonQueryResult : IEnumerable<FbBatchNonQueryResultIte
 
 	internal FbBatchNonQueryResult(ExecuteResultItem[] result)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		_items = result.Select(x => new FbBatchNonQueryResultItem()
 		{
 			RecordsAffected = x.RecordsAffected,
@@ -55,7 +55,7 @@ public sealed class FbBatchNonQueryResult : IEnumerable<FbBatchNonQueryResultIte
 
 	public void EnsureSuccess()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		var indexes = _items.Select((e, i) => new { Element = e, Index = i }).Where(x => !x.Element.IsSuccess).Select(x => x.Index).ToList();
 		if (indexes.Count == 0)
 			return;

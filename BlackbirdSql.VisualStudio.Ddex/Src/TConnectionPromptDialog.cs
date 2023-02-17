@@ -71,7 +71,7 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 
 	public TConnectionPromptDialog()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 
 		try
 		{

@@ -323,7 +323,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	public FbCommand(string cmdText, FbConnection connection, FbTransaction transaction)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		_namedParameters = Array.Empty<string>();
 		_updatedRowSource = UpdateRowSource.Both;
 		_commandType = CommandType.Text;
@@ -423,7 +423,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	object ICloneable.Clone()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		var command = new FbCommand();
 
 		command.CommandText = CommandText;
@@ -464,7 +464,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	public override void Prepare()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		CheckCommand();
 
 		using (var explicitCancellation = ExplicitCancellation.Enter(CancellationToken.None, Cancel))
@@ -492,7 +492,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	public override async Task PrepareAsync(CancellationToken cancellationToken = default)
 #endif
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		CheckCommand();
 
 		using (var explicitCancellation = ExplicitCancellation.Enter(cancellationToken, Cancel))
@@ -517,7 +517,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	public override int ExecuteNonQuery()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		CheckCommand();
 
 		using (var explicitCancellation = ExplicitCancellation.Enter(CancellationToken.None, Cancel))
@@ -556,7 +556,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	}
 	public override async Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		CheckCommand();
 
 		using (var explicitCancellation = ExplicitCancellation.Enter(cancellationToken, Cancel))
@@ -600,7 +600,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	public new FbDataReader ExecuteReader(CommandBehavior behavior)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		CheckCommand();
 
 		using (var explicitCancellation = ExplicitCancellation.Enter(CancellationToken.None, Cancel))
@@ -628,7 +628,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	public new Task<FbDataReader> ExecuteReaderAsync(CommandBehavior behavior) => ExecuteReaderAsync(behavior, CancellationToken.None);
 	public new async Task<FbDataReader> ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		CheckCommand();
 
 		using (var explicitCancellation = ExplicitCancellation.Enter(cancellationToken, Cancel))
@@ -656,7 +656,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	public override object ExecuteScalar()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		DbValue[] values = null;
 		object val = null;
 
@@ -705,7 +705,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	}
 	public override async Task<object> ExecuteScalarAsync(CancellationToken cancellationToken)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		DbValue[] values = null;
 		object val = null;
 
@@ -755,7 +755,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	public string GetCommandPlan()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		if (_statement == null)
 		{
 			return null;
@@ -764,7 +764,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	}
 	public Task<string> GetCommandPlanAsync(CancellationToken cancellationToken = default)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		if (_statement == null)
 		{
 			return Task.FromResult<string>(null);
@@ -774,7 +774,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	public string GetCommandExplainedPlan()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		if (_statement == null)
 		{
 			return null;
@@ -783,7 +783,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	}
 	public Task<string> GetCommandExplainedPlanAsync(CancellationToken cancellationToken = default)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		if (_statement == null)
 		{
 			return Task.FromResult<string>(null);
@@ -802,12 +802,12 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	protected override DbDataReader ExecuteDbDataReader(CommandBehavior behavior)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return ExecuteReader(behavior);
 	}
 	protected override async Task<DbDataReader> ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return await ExecuteReaderAsync(behavior, cancellationToken).ConfigureAwait(false);
 	}
 
@@ -852,7 +852,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 			{
 				str += param.ParameterName + ":" + (param.Value == null ? "null" : param.Value.ToString()) + ",";
 			}
-			Diag.Trace(str);
+			// Diag.Trace(str);
 		}
 
 		if (_statement != null)
@@ -873,7 +873,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	}
 	internal async Task<DbValue[]> FetchAsync(CancellationToken cancellationToken = default)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		if (_statement != null)
 		{
 			try
@@ -1005,7 +1005,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	}
 	internal async Task CommitImplicitTransactionAsync(CancellationToken cancellationToken = default)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		if (HasImplicitTransaction && _transaction != null && _transaction.Transaction != null)
 		{
 			try
@@ -1076,7 +1076,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	}
 	internal async Task RollbackImplicitTransactionAsync(CancellationToken cancellationToken = default)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		if (HasImplicitTransaction && _transaction != null && _transaction.Transaction != null)
 		{
 			var transactionCount = Connection.InnerConnection.Database.TransactionCount;
@@ -1189,7 +1189,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	void IDescriptorFiller.Fill(Descriptor descriptor, int index) => UpdateParameterValues(descriptor);
 	private void UpdateParameterValues(Descriptor descriptor)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		if (!HasParameters)
 			return;
 
@@ -1288,7 +1288,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	ValueTask IDescriptorFiller.FillAsync(Descriptor descriptor, int index, CancellationToken cancellationToken) => UpdateParameterValuesAsync(descriptor, cancellationToken);
 	private async ValueTask UpdateParameterValuesAsync(Descriptor descriptor, CancellationToken cancellationToken = default)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		if (!HasParameters)
 			return;
 
@@ -1391,7 +1391,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	private void Prepare(bool returnsSet)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		var innerConn = _connection.InnerConnection;
 
 		// Check if	we have	a valid	transaction
@@ -1461,7 +1461,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	}
 	private async Task PrepareAsync(bool returnsSet, CancellationToken cancellationToken = default)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		var innerConn = _connection.InnerConnection;
 
 		// Check if	we have	a valid	transaction
@@ -1532,7 +1532,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	private void ExecuteCommand(CommandBehavior behavior, bool returnsSet)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		LogMessages.CommandExecution(Log, this);
 
 		Prepare(returnsSet);
@@ -1558,11 +1558,11 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 			// Execute
 			_statement.Execute(CommandTimeout * 1000, this);
 		}
-		Diag.Trace();
+		// Diag.Trace();
 	}
 	private async Task ExecuteCommandAsync(CommandBehavior behavior, bool returnsSet, CancellationToken cancellationToken = default)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		LogMessages.CommandExecution(Log, this);
 
 		await PrepareAsync(returnsSet, cancellationToken).ConfigureAwait(false);
@@ -1588,12 +1588,12 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 			// Execute
 			await _statement.ExecuteAsync(CommandTimeout * 1000, this, cancellationToken).ConfigureAwait(false);
 		}
-		Diag.Trace();
+		// Diag.Trace();
 	}
 
 	private string BuildStoredProcedureSql(string spName, bool returnsSet)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		var sql = spName == null ? string.Empty : spName.Trim();
 
 		if (sql.Length > 0 &&
@@ -1634,14 +1634,14 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 				sql = "execute procedure " + paramsText.ToString();
 			}
 		}
-		Diag.Trace();
+		// Diag.Trace();
 
 		return sql;
 	}
 
 	private void CheckCommand()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		if (_transaction != null && _transaction.IsCompleted)
 		{
 			_transaction = null;

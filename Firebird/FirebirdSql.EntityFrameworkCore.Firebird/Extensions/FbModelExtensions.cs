@@ -27,31 +27,31 @@ public static class FbModelExtensions
 {
 	public static void SetValueGenerationStrategy(this IMutableModel model, FbValueGenerationStrategy? value)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		model.SetOrRemoveAnnotation(FbAnnotationNames.ValueGenerationStrategy, value);
 	}
 
 	public static void SetValueGenerationStrategy(this IConventionModel model, FbValueGenerationStrategy? value, bool fromDataAnnotation = false)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		model.SetOrRemoveAnnotation(FbAnnotationNames.ValueGenerationStrategy, value, fromDataAnnotation);
 	}
 
 	public static FbValueGenerationStrategy? GetValueGenerationStrategy(this IModel model)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return (FbValueGenerationStrategy?)model[FbAnnotationNames.ValueGenerationStrategy];
 	}
 
 	public static FbValueGenerationStrategy? GetValueGenerationStrategy(this IMutableModel model)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return (FbValueGenerationStrategy?)model[FbAnnotationNames.ValueGenerationStrategy];
 	}
 
 	public static FbValueGenerationStrategy? GetValueGenerationStrategy(this IConventionModel model)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return (FbValueGenerationStrategy?)model[FbAnnotationNames.ValueGenerationStrategy];
 	}
 }

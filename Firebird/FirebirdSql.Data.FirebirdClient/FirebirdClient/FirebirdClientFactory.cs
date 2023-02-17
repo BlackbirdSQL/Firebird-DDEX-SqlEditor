@@ -60,37 +60,37 @@ public class FirebirdClientFactory : DbProviderFactory, IServiceProvider
 
 	public override DbCommand CreateCommand()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return new FbCommand();
 	}
 
 	public override DbCommandBuilder CreateCommandBuilder()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return new FbCommandBuilder();
 	}
 
 	public override DbConnection CreateConnection()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return new FbConnection();
 	}
 
 	public override DbConnectionStringBuilder CreateConnectionStringBuilder()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return new FbConnectionStringBuilder();
 	}
 
 	public override DbDataAdapter CreateDataAdapter()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return new FbDataAdapter();
 	}
 
 	public override DbParameter CreateParameter()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return new FbParameter();
 	}
 

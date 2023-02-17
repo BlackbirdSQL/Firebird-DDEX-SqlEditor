@@ -25,7 +25,7 @@
 	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
 		<Compile Include="Extensions\Options\AbstractOptionModel.cs" />
 		<Compile Include="Extensions\Options\AbstractOptionPage.cs" />
-		<Compile Include="Extensions\Commands\AbstractQueryCommandProvider.cs" />
+		<Compile Include="Extensions\Commands\AbstractCommandProvider.cs" />
 		<Compile Include="Extensions\ErmBindingSource.cs" />
 		<Compile Include="Extensions\ExtensionMethods.cs" />
 		<Compile Include="Extensions\Commands\DataToolsCommands.cs" />

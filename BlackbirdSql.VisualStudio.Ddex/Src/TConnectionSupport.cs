@@ -39,48 +39,48 @@ internal class TConnectionSupport : AdoDotNetConnectionSupport
 		public TCommand()
 			: base()
 		{
-			Diag.Trace();
+			// Diag.Trace();
 		}
 
 		public TCommand(IVsDataConnection connection)
 			: base(connection)
 		{
-			Diag.Trace();
+			// Diag.Trace();
 		}
 
 		public override IVsDataParameter CreateParameter()
 		{
-			Diag.Trace();
+			// Diag.Trace();
 			return ConnectionSupport.CreateParameterCore();
 		}
 
 		public override IVsDataParameter[] DeriveParameters(string command, DataCommandType commandType, int commandTimeout)
 		{
-			Diag.Trace(command);
+			// Diag.Trace(command);
 			return ConnectionSupport.DeriveParametersCore(command, commandType, commandTimeout);
 		}
 
 		public override string Prepare(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
 		{
-			Diag.Trace(command);
+			// Diag.Trace(command);
 			return ConnectionSupport.PrepareCore(command, commandType, parameters, commandTimeout);
 		}
 
 		public override IVsDataReader DeriveSchema(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
 		{
-			Diag.Trace(command);
+			// Diag.Trace(command);
 			return ConnectionSupport.DeriveSchemaCore(command, commandType, parameters, commandTimeout);
 		}
 
 		public override IVsDataReader Execute(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
 		{
-			Diag.Trace(command);
+			// Diag.Trace(command);
 			return ConnectionSupport.ExecuteCore(command, commandType, parameters, commandTimeout);
 		}
 
 		public override int ExecuteWithoutResults(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
 		{
-			Diag.Trace(command);
+			// Diag.Trace(command);
 			return ConnectionSupport.ExecuteWithoutResultsCore(command, commandType, parameters, commandTimeout);
 		}
 	}
@@ -98,7 +98,7 @@ internal class TConnectionSupport : AdoDotNetConnectionSupport
 
 	public TConnectionSupport() : base()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 	}
 
 
@@ -128,7 +128,7 @@ internal class TConnectionSupport : AdoDotNetConnectionSupport
 		 * 
 		if (serviceType == typeof(IVsDataSourceInformation))
 		{
-			Diag.Trace();
+			// Diag.Trace();
 			return new TSourceInformation(Site);
 		}
 		else if (serviceType == typeof(IVsDataObjectSelector))
@@ -137,17 +137,17 @@ internal class TConnectionSupport : AdoDotNetConnectionSupport
 		}
 		else if (serviceType == typeof(IVsDataObjectMemberComparer))
 		{
-			Diag.Trace();
+			// Diag.Trace();
 			return new TObjectMemberComparer(Site);
 		}
 		else if (serviceType == typeof(IVsDataObjectIdentifierConverter))
 		{
-			Diag.Trace();
+			// Diag.Trace();
 			return new TObjectIdentifierConverter(Site);
 		}
 		else if (serviceType == typeof(IVsDataMappedObjectConverter))
 		{
-			Diag.Trace();
+			// Diag.Trace();
 			return new TMappedObjectConverter(Site);
 		}
 		*/
@@ -184,7 +184,7 @@ internal class TConnectionSupport : AdoDotNetConnectionSupport
 
 		try
 		{
-			Diag.Trace("Prompt: " + doPromptCheck + " IsOpen: " + State + " ConnectionString: " + ConnectionString);
+			// Diag.Trace("Prompt: " + doPromptCheck + " IsOpen: " + State + " ConnectionString: " + ConnectionString);
 			if (State == DataConnectionState.Open)
 				return true;
 

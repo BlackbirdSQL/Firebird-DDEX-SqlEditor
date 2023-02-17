@@ -255,7 +255,7 @@ internal static class DslConnectionString
 
 	internal static short GetInt16(string key, TryGetValueDelegate tryGetValue, short defaultValue = default)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return tryGetValue(key, out var value)
 			? Convert.ToInt16(value, CultureInfo.InvariantCulture)
 			: defaultValue;
@@ -263,7 +263,7 @@ internal static class DslConnectionString
 
 	internal static int GetInt32(string key, TryGetValueDelegate tryGetValue, int defaultValue = default)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return tryGetValue(key, out var value)
 			? Convert.ToInt32(value, CultureInfo.InvariantCulture)
 			: defaultValue;
@@ -271,7 +271,7 @@ internal static class DslConnectionString
 
 	internal static long GetInt64(string key, TryGetValueDelegate tryGetValue, long defaultValue = default)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return tryGetValue(key, out var value)
 			? Convert.ToInt64(value, CultureInfo.InvariantCulture)
 			: defaultValue;
@@ -279,7 +279,7 @@ internal static class DslConnectionString
 
 	internal static string GetString(string key, TryGetValueDelegate tryGetValue, string defaultValue = default)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return tryGetValue(key, out var value)
 			? Convert.ToString(value, CultureInfo.InvariantCulture)
 			: defaultValue;
@@ -287,7 +287,7 @@ internal static class DslConnectionString
 
 	internal static bool GetBoolean(string key, TryGetValueDelegate tryGetValue, bool defaultValue = default)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return tryGetValue(key, out var value)
 			? Convert.ToBoolean(value, CultureInfo.InvariantCulture)
 			: defaultValue;
@@ -295,7 +295,7 @@ internal static class DslConnectionString
 
 	internal static byte[] GetBytes(string key, TryGetValueDelegate tryGetValue, byte[] defaultValue = default)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return tryGetValue(key, out var value)
 			? (byte[])value
 			: defaultValue;
@@ -303,7 +303,7 @@ internal static class DslConnectionString
 
 	internal static FbServerType GetServerType(string key, TryGetValueDelegate tryGetValue, FbServerType defaultValue = default)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return tryGetValue(key, out var value)
 			? (FbServerType)value
 			: defaultValue;
@@ -311,7 +311,7 @@ internal static class DslConnectionString
 
 	internal static IsolationLevel GetIsolationLevel(string key, TryGetValueDelegate tryGetValue, IsolationLevel defaultValue = default)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return tryGetValue(key, out var value)
 			? (IsolationLevel)value
 			: defaultValue;
@@ -319,7 +319,7 @@ internal static class DslConnectionString
 
 	internal static FbWireCrypt GetWireCrypt(string key, TryGetValueDelegate tryGetValue, FbWireCrypt defaultValue = default)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return tryGetValue(key, out var value)
 			? (FbWireCrypt)value
 			: defaultValue;
@@ -332,7 +332,7 @@ internal static class DslConnectionString
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
 	private static string ExpandDataDirectory(string s)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		const string DataDirectoryKeyword = "|DataDirectory|";
 		if (s == null)
 			return s;
@@ -345,7 +345,7 @@ internal static class DslConnectionString
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
 	private static T ParseEnum<T>(string value, string name) where T : struct
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		if (!Enum.TryParse<T>(value, true, out var result))
 			throw NotSupported(name);
 		return result;

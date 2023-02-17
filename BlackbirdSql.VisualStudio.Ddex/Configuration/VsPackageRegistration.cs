@@ -203,7 +203,7 @@ internal sealed class VsPackageRegistration: RegistrationAttribute
 		Type providerFactoryClass = typeof(FirebirdClientFactory);
 
 
-		Diag.Trace("GAC Install: " + providerFactoryClass.Assembly.Location);
+		// Diag.Trace("GAC Install: " + providerFactoryClass.Assembly.Location);
 
 		Publish publisher = new Publish();
 		publisher.GacInstall(factoryClass.Assembly.Location);
@@ -213,7 +213,7 @@ internal sealed class VsPackageRegistration: RegistrationAttribute
 	{
 		Type providerFactoryClass = typeof(FirebirdClientFactory);
 
-		Diag.Trace("GAC Uninstall: " + providerFactoryClass.Assembly.Location);
+		// Diag.Trace("GAC Uninstall: " + providerFactoryClass.Assembly.Location);
 		Publish publisher = new Publish();
 
 		try

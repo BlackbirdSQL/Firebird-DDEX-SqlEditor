@@ -64,7 +64,7 @@ public sealed class FbConnection : DbConnection, ICloneable
 
 	public static void CreateDatabase(string connectionString, int pageSize = 4096, bool forcedWrites = true, bool overwrite = false)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		var options = new ConnectionString(connectionString);
 		options.Validate();
 
@@ -88,7 +88,7 @@ public sealed class FbConnection : DbConnection, ICloneable
 	}
 	public static async Task CreateDatabaseAsync(string connectionString, int pageSize = 4096, bool forcedWrites = true, bool overwrite = false, CancellationToken cancellationToken = default)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		var options = new ConnectionString(connectionString);
 		options.Validate();
 
@@ -378,14 +378,14 @@ public sealed class FbConnection : DbConnection, ICloneable
 
 	public FbTransaction BeginTransaction(IsolationLevel level, string transactionName)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		CheckClosed();
 
 		return _innerConnection.BeginTransaction(level, transactionName);
 	}
 	public Task<FbTransaction> BeginTransactionAsync(IsolationLevel level, string transactionName, CancellationToken cancellationToken = default)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		CheckClosed();
 
 		return _innerConnection.BeginTransactionAsync(level, transactionName, cancellationToken);
@@ -396,14 +396,14 @@ public sealed class FbConnection : DbConnection, ICloneable
 
 	public FbTransaction BeginTransaction(FbTransactionOptions options, string transactionName)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		CheckClosed();
 
 		return _innerConnection.BeginTransaction(options, transactionName);
 	}
 	public Task<FbTransaction> BeginTransactionAsync(FbTransactionOptions options, string transactionName, CancellationToken cancellationToken = default)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		CheckClosed();
 
 		return _innerConnection.BeginTransactionAsync(options, transactionName, cancellationToken);
@@ -420,7 +420,7 @@ public sealed class FbConnection : DbConnection, ICloneable
 
 	public override void EnlistTransaction(System.Transactions.Transaction transaction)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		CheckClosed();
 
 		if (transaction == null)
@@ -476,7 +476,7 @@ public sealed class FbConnection : DbConnection, ICloneable
 					str += restriction + ", ";
 			}
 		}
-		Diag.Trace(str);
+		// Diag.Trace(str);
 
 		return table;
 	}
@@ -486,7 +486,7 @@ public sealed class FbConnection : DbConnection, ICloneable
 	public override Task<DataTable> GetSchemaAsync(string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
 #endif
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		CheckClosed();
 
 		return _innerConnection.GetSchemaAsync(collectionName, restrictions, cancellationToken);
@@ -527,7 +527,7 @@ public sealed class FbConnection : DbConnection, ICloneable
 
 	public override void ChangeDatabase(string databaseName)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		CheckClosed();
 
 		if (string.IsNullOrEmpty(databaseName))
@@ -565,7 +565,7 @@ public sealed class FbConnection : DbConnection, ICloneable
 	public override async Task ChangeDatabaseAsync(string databaseName, CancellationToken cancellationToken = default)
 #endif
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		CheckClosed();
 
 		if (string.IsNullOrEmpty(databaseName))
@@ -600,7 +600,7 @@ public sealed class FbConnection : DbConnection, ICloneable
 
 	public override void Open()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		LogMessages.ConnectionOpening(Log, this);
 
 		if (string.IsNullOrEmpty(_connectionString))
@@ -700,11 +700,11 @@ public sealed class FbConnection : DbConnection, ICloneable
 		}
 
 		LogMessages.ConnectionOpened(Log, this);
-		Diag.Trace();
+		// Diag.Trace();
 	}
 	public override async Task OpenAsync(CancellationToken cancellationToken)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		LogMessages.ConnectionOpening(Log, this);
 
 		if (string.IsNullOrEmpty(_connectionString))
@@ -804,7 +804,7 @@ public sealed class FbConnection : DbConnection, ICloneable
 		}
 
 		LogMessages.ConnectionOpened(Log, this);
-		Diag.Trace();
+		// Diag.Trace();
 	}
 
 	public override void Close()

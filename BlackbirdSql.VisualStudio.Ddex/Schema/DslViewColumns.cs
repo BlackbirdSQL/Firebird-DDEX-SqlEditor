@@ -38,7 +38,7 @@ internal class DslViewColumns : DslSchema
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		var sql = new StringBuilder();
 		var where = new StringBuilder();
 

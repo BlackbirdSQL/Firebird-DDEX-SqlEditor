@@ -3,14 +3,18 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 //
 
+using System;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Common;
+using System.Runtime.InteropServices;
+using System.Windows.Shapes;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -32,19 +36,19 @@ internal class TObjectSupport : DataObjectSupport
 
 	public TObjectSupport(string fileName, string path) : base(fileName, path)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 	}
 
 
 	public TObjectSupport(string resourceName, Assembly assembly) : base(resourceName, assembly)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 	}
 
 
 	public TObjectSupport(IVsDataConnection connection) : base(typeof(TObjectSupport).FullName, typeof(TObjectSupport).Assembly)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 	}
 
 
@@ -69,7 +73,7 @@ internal class TObjectSupport : DataObjectSupport
 	// ---------------------------------------------------------------------------------
 	public override Stream OpenSupportStream()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return base.OpenSupportStream();
 	}
 
@@ -88,7 +92,7 @@ internal class TObjectSupport : DataObjectSupport
 	// ---------------------------------------------------------------------------------
 	protected override Stream OpenSupportStream(CultureInfo culture)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return base.OpenSupportStream(culture);
 	}
 

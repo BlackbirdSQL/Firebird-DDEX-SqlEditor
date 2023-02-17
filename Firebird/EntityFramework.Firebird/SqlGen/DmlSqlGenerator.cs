@@ -38,7 +38,7 @@ internal static class DmlSqlGenerator
 
 	internal static string GenerateUpdateSql(DbUpdateCommandTree tree, out List<DbParameter> parameters, bool generateParameters = true)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		var commandText = new StringBuilder(CommandTextBuilderInitialCapacity);
 		var translator = new ExpressionTranslator(commandText, tree, null != tree.Returning, generateParameters);
 		var first = true;
@@ -96,7 +96,7 @@ internal static class DmlSqlGenerator
 
 	internal static string GenerateDeleteSql(DbDeleteCommandTree tree, out List<DbParameter> parameters, bool generateParameters = true)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		var commandText = new StringBuilder(CommandTextBuilderInitialCapacity);
 		var translator = new ExpressionTranslator(commandText, tree, false, generateParameters);
 
@@ -114,7 +114,7 @@ internal static class DmlSqlGenerator
 
 	internal static string GenerateInsertSql(DbInsertCommandTree tree, out List<DbParameter> parameters, bool generateParameters = true)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		var commandText = new StringBuilder(CommandTextBuilderInitialCapacity);
 		var translator = new ExpressionTranslator(commandText, tree, null != tree.Returning, generateParameters);
 		var first = true;
@@ -177,7 +177,7 @@ internal static class DmlSqlGenerator
 	// SQL gen, where we only access table columns)
 	internal static string GenerateMemberSql(EdmMember member)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return SqlGenerator.QuoteIdentifier(member.Name);
 	}
 
@@ -187,7 +187,7 @@ internal static class DmlSqlGenerator
 		ExpressionTranslator translator,
 		DbExpression returning)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		// Nothing to do if there is no Returning expression
 		if (returning == null)
 		{
@@ -272,7 +272,7 @@ internal static class DmlSqlGenerator
 
 	private static string ChangeParamsToPSQLParams(string commandText, string[] parametersUsed)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		var command = new StringBuilder(commandText);
 		foreach (var param in parametersUsed)
 		{

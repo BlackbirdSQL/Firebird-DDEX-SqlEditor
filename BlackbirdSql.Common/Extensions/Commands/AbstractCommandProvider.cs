@@ -29,7 +29,7 @@ using Microsoft.VisualStudio.Data.Services;
 
 namespace BlackbirdSql.Common.Extensions.Commands
 {
-	internal abstract class AbstractQueryCommandProvider : DataViewCommandProvider
+	internal abstract class AbstractCommandProvider : DataViewCommandProvider
 	{
 
 		protected abstract DataToolsCommands.DataObjectType CommandObjectType
@@ -39,21 +39,15 @@ namespace BlackbirdSql.Common.Extensions.Commands
 
 		protected override MenuCommand CreateCommand(int itemId, CommandID commandId, object[] parameters)
 		{
-			Diag.Trace();
+			// Diag.Trace();
 
 			MenuCommand command = null;
 
 			if (commandId.Equals(DataToolsCommands.NewQuery))
 			{
-				int qualityMetric = 262144;
-				if (parameters != null && parameters[0] is int)
-				{
-					qualityMetric = (int)parameters[0];
-				}
-
 				command = new DataViewMenuCommand(itemId, commandId, delegate
 				{
-					OnNewQuery(itemId, CommandObjectType, qualityMetric);
+					OnNewQuery(itemId, CommandObjectType);
 				});
 			}
 			else
@@ -64,7 +58,7 @@ namespace BlackbirdSql.Common.Extensions.Commands
 			return command;
 		}
 
-		private void OnNewQuery(int itemId, DataToolsCommands.DataObjectType objectType, int qualityMetricProvider)
+		private void OnNewQuery(int itemId, DataToolsCommands.DataObjectType objectType)
 		{
 			// Diag.Trace();
 
@@ -73,15 +67,15 @@ namespace BlackbirdSql.Common.Extensions.Commands
 			MenuCommand command = vsDataExplorerNode.GetCommand(DataToolsCommands.GlobalNewQuery);
 
 			// This should be locked
-			Diag.Trace("SETTNG CONNECTION COMMANDTYPE TO: " + objectType + " for command in assembly: " + command.GetType().AssemblyQualifiedName);
+			// Diag.Trace("SETTNG CONNECTION COMMANDTYPE TO: " + objectType + " for command in assembly: " + command.GetType().AssemblyQualifiedName);
 			DataToolsCommands.CommandObjectType = objectType;
 			
 			command.Invoke();
 
-
-			Diag.Trace("COMMAND INVOKED");
-
+			// Diag.Trace("COMMAND INVOKED");
 		}
+
+
 
 	}
 }

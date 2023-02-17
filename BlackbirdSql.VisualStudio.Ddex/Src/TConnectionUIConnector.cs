@@ -27,7 +27,7 @@ internal class TConnectionUIConnector : DataConnectionUIConnector
 
 	public TConnectionUIConnector() :base()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 	}
 
 
@@ -51,7 +51,7 @@ internal class TConnectionUIConnector : DataConnectionUIConnector
 	/// </param>
 	public override void Connect(IVsDataConnection connection)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 
 		if (connection == null)
 		{

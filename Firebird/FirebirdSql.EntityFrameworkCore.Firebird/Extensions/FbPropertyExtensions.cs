@@ -28,7 +28,7 @@ public static class FbPropertyExtensions
 {
 	public static FbValueGenerationStrategy GetValueGenerationStrategy(this IProperty property)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		var annotation = property[FbAnnotationNames.ValueGenerationStrategy];
 		if (annotation != null)
 		{
@@ -60,7 +60,7 @@ public static class FbPropertyExtensions
 
 	public static FbValueGenerationStrategy GetValueGenerationStrategy(this IMutableProperty property)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		var annotation = property[FbAnnotationNames.ValueGenerationStrategy];
 		if (annotation != null)
 		{
@@ -92,7 +92,7 @@ public static class FbPropertyExtensions
 
 	public static FbValueGenerationStrategy GetValueGenerationStrategy(this IConventionProperty property)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		var annotation = property[FbAnnotationNames.ValueGenerationStrategy];
 		if (annotation != null)
 		{
@@ -124,27 +124,27 @@ public static class FbPropertyExtensions
 
 	public static ConfigurationSource? GetValueGenerationStrategyConfigurationSource(this IConventionProperty property)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		return property.FindAnnotation(FbAnnotationNames.ValueGenerationStrategy)?.GetConfigurationSource();
 	}
 
 	public static void SetValueGenerationStrategy(this IMutableProperty property, FbValueGenerationStrategy? value)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		CheckValueGenerationStrategy(property, value);
 		property.SetOrRemoveAnnotation(FbAnnotationNames.ValueGenerationStrategy, value);
 	}
 
 	public static void SetValueGenerationStrategy(this IConventionProperty property, FbValueGenerationStrategy? value, bool fromDataAnnotation = false)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		CheckValueGenerationStrategy(property, value);
 		property.SetOrRemoveAnnotation(FbAnnotationNames.ValueGenerationStrategy, value, fromDataAnnotation);
 	}
 
 	static void CheckValueGenerationStrategy(IReadOnlyPropertyBase property, FbValueGenerationStrategy? value)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		if (value != null)
 		{
 			if (value == FbValueGenerationStrategy.IdentityColumn && !IsCompatibleIdentityColumn(property))

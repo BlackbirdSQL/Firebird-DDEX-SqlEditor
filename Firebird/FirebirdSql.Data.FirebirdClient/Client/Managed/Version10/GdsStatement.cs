@@ -391,18 +391,18 @@ internal class GdsStatement : StatementBase
 
 		if (StatementType == DbStatementType.StoredProcedure && !_allRowsFetched)
 		{
-			Diag.Trace();
+			// Diag.Trace();
 			_allRowsFetched = true;
 			return GetOutputParameters();
 		}
 		else if (StatementType == DbStatementType.Insert && _allRowsFetched)
 		{
-			Diag.Trace();
+			// Diag.Trace();
 			return null;
 		}
 		else if (StatementType != DbStatementType.Select && StatementType != DbStatementType.SelectForUpdate)
 		{
-			Diag.Trace();
+			// Diag.Trace();
 			return null;
 		}
 
@@ -454,15 +454,15 @@ internal class GdsStatement : StatementBase
 				}
 				else
 				{
-					Diag.Trace();
+					// Diag.Trace();
 					_database.ReadResponse(operation);
-					Diag.Trace();
+					// Diag.Trace();
 				}
 			}
 			catch (IOException ex)
 			{
 				Diag.Dug(ex);
-				Diag.Trace();
+				// Diag.Trace();
 				throw IscException.ForIOException(ex);
 			}
 		}
@@ -474,7 +474,7 @@ internal class GdsStatement : StatementBase
 		}
 		else
 		{
-			//Diag.Trace();
+			//// Diag.Trace();
 			_rows.Clear();
 			return null;
 		}

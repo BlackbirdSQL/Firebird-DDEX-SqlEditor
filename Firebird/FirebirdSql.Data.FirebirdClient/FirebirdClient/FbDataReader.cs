@@ -282,7 +282,7 @@ public sealed class FbDataReader : DbDataReader
 
 	public override DataTable GetSchemaTable()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 
 		CheckState();
 
@@ -410,7 +410,7 @@ public sealed class FbDataReader : DbDataReader
 	public override async Task<DataTable> GetSchemaTableAsync(CancellationToken cancellationToken = default)
 #endif
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		CheckState();
 
 		if (_schemaTable != null)

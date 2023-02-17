@@ -60,11 +60,12 @@ internal sealed class DslSchemaFactory
 	// Schema factory to handle custom collections
 	public static DataTable GetSchema(FbConnection connection, string collectionName, string[] restrictions)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		switch (collectionName)
 		{
 			case "Columns":
 			case "FunctionArguments":
+			case "Generators":
 			case "IndexColumns":
 			case "Indexes":
 			// case "Tables":
@@ -152,6 +153,7 @@ internal sealed class DslSchemaFactory
 		{
 			"COLUMNS" => new DslColumns(),
 			"FUNCTIONARGUMENTS" => new DslFunctionArguments(),
+			"GENERATORS" => new DslGenerators(),
 			"INDEXCOLUMNS" => new DslIndexColumns(),
 			"INDEXES" => new DslIndexes(),
 			// "TABLES" => new DslTables(),
@@ -175,6 +177,7 @@ internal sealed class DslSchemaFactory
 		{
 			"COLUMNS" => new DslColumns(),
 			"FUNCTIONARGUMENTS" => new DslFunctionArguments(),
+			"GENERATORS" => new DslGenerators(),
 			"INDEXCOLUMNS" => new DslIndexColumns(),
 			"INDEXES" => new DslIndexes(),
 			// "TABLES" => new DslTables(),

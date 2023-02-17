@@ -31,7 +31,7 @@ public class FbConnectionFactory : IDbConnectionFactory
 {
 	public DbConnection CreateConnection(string nameOrConnectionString)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		if (nameOrConnectionString == null)
 			throw new ArgumentNullException(nameof(nameOrConnectionString));
 

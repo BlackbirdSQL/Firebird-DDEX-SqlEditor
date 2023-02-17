@@ -39,9 +39,10 @@ public static class DataToolsCommands
 	// =========================================================================================================
 
 
+	public const string DetachCommandProviderGuid = "8C591813-BB90-4B5C-BD7B-5A286D130D2E";
 	public const string SystemQueryCommandProviderGuid = "C253F0FC-D24B-4BE4-A2DE-57502D677A09";
 	public const string UserQueryCommandProviderGuid = "B07EDD71-7F1E-4A14-8BB0-38A30C72251D";
-	public const string UniversalQueryCommandProviderGuid = "CD332A3B-B404-45B7-988F-587672086727";
+	public const string UniversalCommandProviderGuid = "CD332A3B-B404-45B7-988F-587672086727";
 	public const string NativeMethodsGuid = "6E7A99C4-ED01-4EAC-972E-AEC9080638E6";
 
 	public const string MenuGroupGuid = "501822E1-B5AF-11d0-B4DC-00A0C91506EF";
@@ -58,12 +59,13 @@ public static class DataToolsCommands
 	// =========================================================================================================
 
 
-	private const int icmdSENewQuery = 13587;
-	private const int icmdSELocalNewQuery = 13608;
-	private const int cmdidAddTableViewForQRY = 39;
-	private const int icmdSEEditTextObject = 12385;
-	private const int icmdSERetrieveData = 12384;
-	private const int icmdSERun = 12386;
+	private const int icmdSENewQuery = 13587;		// 0x3513
+	private const int icmdSELocalNewQuery = 13608;	// 0x3528
+	private const int cmdidAddTableViewForQRY = 39;	// 0x0027
+	private const int icmdSEEditTextObject = 12385;	// 0x3061
+	private const int icmdSERetrieveData = 12384;	// 0x3060
+	private const int icmdSERun = 12386;			// 0x3062
+	private const int icmdSEDetachDatabase = 13591;	// 0x3517
 
 
 	#endregion IDs
@@ -77,6 +79,7 @@ public static class DataToolsCommands
 	// =========================================================================================================
 
 
+	public static CommandID DetachDatabase = new CommandID(new Guid(MenuGroupGuid), icmdSEDetachDatabase);
 	public static CommandID GlobalNewQuery = new CommandID(new Guid(MenuGroupGuid), icmdSENewQuery);
 	public static CommandID NewQuery = new CommandID(new Guid(MenuGroupGuid), icmdSELocalNewQuery);
 	public static CommandID ShowAddTableDialog = new CommandID(new Guid(MenuGroupDavGuid), cmdidAddTableViewForQRY);

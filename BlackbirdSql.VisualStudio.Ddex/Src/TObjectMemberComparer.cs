@@ -56,12 +56,12 @@ internal sealed class TObjectMemberComparer : DataObjectMemberComparer
 
 			if ((string)value1 == "SYSTEM_TABLE")
 			{
-				Diag.Trace("RENAMING value1 SYSTEM TABLE");
+				// Diag.Trace("RENAMING value1 SYSTEM TABLE");
 				value1 = "SYSTEM TABLE";
 			}
 			if ((string)value2 == "SYSTEM_TABLE")
 			{
-				Diag.Trace("RENAMING value2 SYSTEM TABLE");
+				// Diag.Trace("RENAMING value2 SYSTEM TABLE");
 				value2 = "SYSTEM TABLE";
 			}
 		}
@@ -69,7 +69,7 @@ internal sealed class TObjectMemberComparer : DataObjectMemberComparer
 		try
 		{
 			result = base.Compare(typeName, propertyName, value1, value2);
-			Diag.Trace("typeName: " + typeName + " propertyName: " + propertyName + " value1: " + (value1 == null ? "null" : value1.ToString()) + " value2: " + (value2 == null ? "null" : value2.ToString()) + " result: " + result);
+			// Diag.Trace("typeName: " + typeName + " propertyName: " + propertyName + " value1: " + (value1 == null ? "null" : value1.ToString()) + " value2: " + (value2 == null ? "null" : value2.ToString()) + " result: " + result);
 		}
 		catch (Exception e)
 		{
@@ -144,7 +144,7 @@ internal sealed class TObjectMemberComparer : DataObjectMemberComparer
 				result = StringComparer.Ordinal.Compare(value1, value2);
 			}
 
-			Diag.Trace("typeName: " + typeName + " identifierPart: " + identifierPart + " value1: " + (value1 == null ? "null" : value1.ToString()) + " value2: " + (value2 == null ? "null" : value2.ToString()) + " result: " + result);
+			// Diag.Trace("typeName: " + typeName + " identifierPart: " + identifierPart + " value1: " + (value1 == null ? "null" : value1.ToString()) + " value2: " + (value2 == null ? "null" : value2.ToString()) + " result: " + result);
 
 		}
 		catch (Exception e)

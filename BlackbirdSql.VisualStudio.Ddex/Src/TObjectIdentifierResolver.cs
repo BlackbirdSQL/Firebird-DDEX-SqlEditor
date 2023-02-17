@@ -33,12 +33,12 @@ internal class TObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	public TObjectIdentifierResolver() : base()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 	}
 
 	public TObjectIdentifierResolver(IVsDataConnection connection) : base(connection)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 	}
 
 
@@ -77,7 +77,7 @@ internal class TObjectIdentifierResolver : DataObjectIdentifierResolver
 				str += (item != null ? item.ToString() : "null") + ", ";
 			}
 		}
-		Diag.Trace(String.Format("typeName: {0} Identifiers: {1}", typeName, str));
+		// Diag.Trace(String.Format("typeName: {0} Identifiers: {1}", typeName, str));
 		*/
 
 		if (typeName == DslObjectTypes.Root)
@@ -106,7 +106,7 @@ internal class TObjectIdentifierResolver : DataObjectIdentifierResolver
 			identifier[1] = null;
 		}
 
-		Diag.Trace("typeName: " + typeName + " Dsl length: " + length + " Supplied length: " + fullIdentifier.Length + " Copy length:" + (length - fullIdentifier.Length));
+		// Diag.Trace("typeName: " + typeName + " Dsl length: " + length + " Supplied length: " + fullIdentifier.Length + " Copy length:" + (length - fullIdentifier.Length));
 		return identifier;
 	}
 
@@ -125,7 +125,7 @@ internal class TObjectIdentifierResolver : DataObjectIdentifierResolver
 	// ---------------------------------------------------------------------------------
 	public override object[] ExpandIdentifier(string typeName, object[] partialIdentifier)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		// Diag.Trace(String.Format("ExpandIdentifier({0},...)", typeName));
 
 		if (typeName == null)

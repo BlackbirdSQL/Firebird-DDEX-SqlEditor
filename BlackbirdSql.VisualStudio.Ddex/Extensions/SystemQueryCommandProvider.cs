@@ -19,11 +19,11 @@ namespace BlackbirdSql.VisualStudio.Ddex.Extensions
 	/// Implements the new query command on System Object nodes
 	/// </summary>
 	// =========================================================================================================
-	internal class SystemQueryCommandProvider : AbstractQueryCommandProvider
+	internal class SystemQueryCommandProvider : AbstractCommandProvider
 	{
 
 		/// <summary>
-		/// Identifies this <see cref="AbstractQueryCommandProvider"/> as spawned off of a System Object SE node
+		/// Identifies this <see cref="AbstractCommandProvider"/> as spawned off of a System Object SE node
 		/// </summary>
 		protected override DataToolsCommands.DataObjectType CommandObjectType
 		{

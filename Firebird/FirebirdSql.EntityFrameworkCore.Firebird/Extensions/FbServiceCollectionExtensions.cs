@@ -48,7 +48,7 @@ public static class FbServiceCollectionExtensions
 	public static IServiceCollection AddFirebird<TContext>(this IServiceCollection serviceCollection, string connectionString, Action<FbDbContextOptionsBuilder> fbOptionsAction = null, Action<DbContextOptionsBuilder> optionsAction = null)
 		where TContext : DbContext
 	{
-		Diag.Trace();
+		// Diag.Trace();
 
 		return serviceCollection.AddDbContext<TContext>(
 			(serviceProvider, options) =>
@@ -60,7 +60,7 @@ public static class FbServiceCollectionExtensions
 
 	public static IServiceCollection AddEntityFrameworkFirebird(this IServiceCollection serviceCollection)
 	{
-		Diag.Trace();
+		// Diag.Trace();
 		var builder = new EntityFrameworkRelationalServicesBuilder(serviceCollection)
 			.TryAdd<LoggingDefinitions, FbLoggingDefinitions>()
 			.TryAdd<IDatabaseProvider, DatabaseProvider<FbOptionsExtension>>()
