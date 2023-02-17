@@ -613,13 +613,13 @@
     <value>Triggers</value>
   </data>
   <data name="Property_Desc_Trigger_Sequence" xml:space="preserve">
-    <value>Next sequence number</value>
+    <value>Priority sequence this trigger is fired on. Triggers are fired in ascending order of magnitude.</value>
   </data>
   <data name="Property_Desc_Trigger_Type" xml:space="preserve">
     <value>The event the trigger fires on</value>
   </data>
   <data name="Property_Name_Trigger_Sequence" xml:space="preserve">
-    <value>Sequence</value>
+    <value>Priority Sequence</value>
   </data>
   <data name="Property_Name_Trigger_Type" xml:space="preserve">
     <value>Trigger Type</value>
