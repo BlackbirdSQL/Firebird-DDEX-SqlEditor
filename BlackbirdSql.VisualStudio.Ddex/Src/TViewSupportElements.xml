@@ -377,7 +377,7 @@
 										<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
 											<SelectionNode nodeId="IndexColumn">
 												<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
-												<Icon name="ComputedColumn" when="{IndexColumn.COMPUTED}" />
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{IndexColumn.COMPUTED}" assembly="" />
 												<Icon name="Column" />
 												<PropertiesRef name="ElementIndexColumnProperties" />
 											</SelectionNode>
@@ -394,7 +394,7 @@
 										<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
 											<SelectionNode nodeId="IndexColumn">
 												<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
-												<Icon name="ComputedColumn" when="{IndexColumn.COMPUTED}" />
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{IndexColumn.COMPUTED}" assembly="" />
 												<Icon name="Column" />
 												<PropertiesRef name="ElementIndexColumnProperties" />
 											</SelectionNode>
@@ -411,7 +411,7 @@
 										<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
 											<SelectionNode nodeId="IndexColumn">
 												<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
-												<Icon name="ComputedColumn" when="{IndexColumn.COMPUTED}" />
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{IndexColumn.COMPUTED}" assembly="" />
 												<Icon name="Column" />
 												<PropertiesRef name="ElementIndexColumnProperties" />
 											</SelectionNode>
@@ -428,7 +428,7 @@
 										<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
 											<SelectionNode nodeId="IndexColumn">
 												<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
-												<Icon name="ComputedColumn" when="{IndexColumn.COMPUTED}" />
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{IndexColumn.COMPUTED}" assembly="" />
 												<Icon name="Column" />
 												<PropertiesRef name="ElementIndexColumnProperties" />
 											</SelectionNode>
@@ -585,7 +585,7 @@
 					<Selection type="TableColumn" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}">
 						<SelectionNode nodeId="Column">
 							<DisplayName>{Column.COLUMN_NAME}</DisplayName>
-							<Icon name="ComputedColumn" when="{Column.COMPUTED}" />
+							<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{Column.COMPUTED}" assembly="" />
 							<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" when="{Column.IS_AUTOINCREMENT} AND {Column.IS_UNIQUE}" assembly="" />
 							<Icon name="PrimaryKey" when="{Column.IS_UNIQUE}" />
 							<Icon name="UniqueKey" when="{Column.IN_PRIMARYKEY}" />

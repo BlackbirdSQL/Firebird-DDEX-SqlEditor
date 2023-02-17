@@ -73,7 +73,6 @@
 											<SelectionNode nodeId="Column">
 												<DisplayName>{Column.COLUMN_NAME}</DisplayName>
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{Column.COMPUTED}" assembly="" />
-												<Icon name="ComputedColumn" when="{Column.COMPUTED}" />
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" when="{Column.IS_AUTOINCREMENT}" assembly="" />
 												<Icon name="PrimaryKey" when="{Column.IS_UNIQUE}" />
 												<Icon name="UniqueKey" when="{Column.IN_PRIMARYKEY}" />
