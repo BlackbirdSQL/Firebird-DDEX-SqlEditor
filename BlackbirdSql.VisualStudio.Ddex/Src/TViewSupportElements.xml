@@ -326,7 +326,7 @@
 
 	<!-- Definition of table selection node properties -->
 	<Define name="ElementSelectionTables" parameters="elementType, subType, isSystemObject" >
-		<Selection type="$(elementType)" restrictions="null,null,null" filter="IS_SYSTEM_TABLE = $(isSystemObject)">
+		<Selection type="$(elementType)" restrictions="null,null,null" filter="IS_SYSTEM_TABLE = $(isSystemObject) AND NOT TABLE_TYPE = 'VIEW'">
 			<SelectionNode nodeId="Table">
 				<DisplayName>{Table.TABLE_NAME}</DisplayName>
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(subType)Table.ico" assembly="" />
