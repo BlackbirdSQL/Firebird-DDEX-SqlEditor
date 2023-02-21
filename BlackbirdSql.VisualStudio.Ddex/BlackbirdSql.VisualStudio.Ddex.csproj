@@ -83,6 +83,20 @@
   <!-- Includes - Top Level -->
   <ItemGroup>
     <Content Include="Package.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderSystemTriggers.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.AutoIncrementTriggerColumn.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.SystemTrigger.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.AutoIncrementSystemTrigger.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.UserTrigger.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.AutoIncrementUserTrigger.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.SystemTriggerColumn.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.UniqueKeyTrigger.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.PrimaryKeyTrigger.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.ComputedTriggerColumn.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.UserTriggerColumn.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.UniqueKeyTable.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderSystem.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DatabaseTriggers.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.Database.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.DotDotDot.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.ArrowDownLarge.ico" />
@@ -159,16 +173,34 @@
   <!-- Includes (VSIX Manifest) -->
   <ItemGroup>
     <None Include="Resources\ViewSupport.ArrowDownLarge.psd" />
-    <None Include="Resources\ViewSupport.AutoIncrementColumn.psd" />
+    <None Include="Resources\ViewSupport.AutoIncrementSystemTrigger.psd" />
+    <None Include="Resources\ViewSupport.AutoIncrementTableColumn.psd" />
+    <None Include="Resources\ViewSupport.AutoIncrementTriggerColumn.psd" />
+    <None Include="Resources\ViewSupport.AutoIncrementUserTrigger.psd" />
+    <None Include="Resources\ViewSupport.ComputedTriggerColumn.psd" />
     <None Include="Resources\ViewSupport.Database.psd" />
     <None Include="Resources\ViewSupport.DatabaseDomains.psd" />
     <None Include="Resources\ViewSupport.DatabaseFunctions.psd" />
     <None Include="Resources\ViewSupport.DatabaseProcedures.psd" />
     <None Include="Resources\ViewSupport.DatabaseSequences.psd" />
+    <None Include="Resources\ViewSupport.DatabaseTables.psd" />
+    <None Include="Resources\ViewSupport.DatabaseTriggers.psd" />
     <None Include="Resources\ViewSupport.DatabaseViews.psd" />
     <None Include="Resources\ViewSupport.Domain.psd" />
     <None Include="Resources\ViewSupport.DotDotDot.psd" />
+    <None Include="Resources\ViewSupport.FolderSystem.psd" />
+    <None Include="Resources\ViewSupport.FolderSystemTables.psd" />
+    <None Include="Resources\ViewSupport.FolderSystemTriggers.psd" />
     <None Include="Resources\ViewSupport.LabelOpenFolder.psd" />
+    <None Include="Resources\ViewSupport.PrimaryKeyTable.psd" />
+    <None Include="Resources\ViewSupport.PrimaryKeyTrigger.psd" />
+    <None Include="Resources\ViewSupport.SystemTableColumn.psd" />
+    <None Include="Resources\ViewSupport.SystemTrigger.psd" />
+    <None Include="Resources\ViewSupport.SystemTriggerColumn.psd" />
+    <None Include="Resources\ViewSupport.UniqueKeyTable.psd" />
+    <None Include="Resources\ViewSupport.UniqueKeyTrigger.psd" />
+    <None Include="Resources\ViewSupport.UserTrigger.psd" />
+    <None Include="Resources\ViewSupport.UserTriggerColumn.psd" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -193,8 +225,8 @@
     <EmbeddedResource Include="Resources\ViewSupport.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\ViewSupport.AutoIncrementColumn.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.ComputedColumn.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.AutoIncrementTableColumn.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.ComputedTableColumn.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.FolderForeignKeys.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.FolderIndexes.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.FolderSystemTables.ico" />
@@ -205,13 +237,13 @@
     <EmbeddedResource Include="Resources\ViewSupport.ParamInOut.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.ParamOut.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.ParamReturn.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.PrimaryKey.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.PrimaryKeyTable.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.Procedure.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.ScalarFunction.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.Server.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.SystemColumn.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.SystemTableColumn.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.SystemTable.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.UserColumn.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.UserTableColumn.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.UserTable.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.View.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.ViewColumn.ico" />
@@ -278,6 +310,7 @@
     <Compile Include="Schema\DslObjectTypes.cs" />
     <Compile Include="Schema\DslSchema.cs" />
     <Compile Include="Schema\DslSchemaFactory.cs" />
+    <Compile Include="Schema\DslTriggerColumns.cs" />
     <Compile Include="Schema\DslTypeHelper.cs" />
     <Compile Include="Schema\DslViewColumns.cs" />
     <Compile Include="Schema\Encoding2.cs" />

@@ -43,14 +43,45 @@ internal class DslColumns : DslSchema
 		var where = new StringBuilder();
 
 
-		// BlackbirdSql added IN_PRIMARYKEY column
-		// BlackbirdSql added AUTO_INCREMENT
+		// BlackbirdSql added IN_PRIMARYKEY
+		// BlackbirdSql added TRIGGER_NAME
+		// BlackbirdSql added IS_AUTOINCREMENT
+		/*
+		 * What this does in addition to FbColumns() (all on a LEFT OUTER JOIN)...
+		 * 
+		 * For the Primary Key...
+		 * Selects the constraint that is 'PRIMARY KEY' then
+		 * Selects the segment that matches the field as IN_PRIMARYKEY then
+		 * In ProcessResult() checks if it is the only IN_PRIMARYKEY and
+		 *	sets IS_UNIQUE to false if it is not.
+		 *	
+		 *	For Auto Increment...
+		 *	Selects the Trigger that implies an Auto incremement on the 'PRIMARY KEY' 
+		 *		constraint/segment for the current field then
+		 *	Selects the dependent on that trigger matching the current field
+		 * In ProcessResult() checks if it is the only IN_PRIMARYKEY and
+		 *	sets IS_UNIQUE and IS_AUTOINCREMENT to false if it is not.
+		 *	
+		 *	All this establishes if the field is a singular primary key and only
+		 *	then establishes if it's auto-increment.
+		 *	
+		 *	We don't care for cases where an IN_PRIMARYKEY is in a multi-part
+		 *	index and also a multi-part auto increment, which is possible but violates
+		 *	acceptable relation db design.
+		 *	So you can have multiple primary key fields but not multiple 
+		 *	auto-increment fields
+		 *	
+		 *	Because triggers have a subset of DslColumns, DslTriggerColumns inherits from 
+		 *	this class but overrides this function
+		 *	
+		*/
 		sql.AppendFormat(
 			@"SELECT
 					null AS TABLE_CATALOG,
 					null AS TABLE_SCHEMA,
 					rfr.rdb$relation_name AS TABLE_NAME,
 					rfr.rdb$field_name AS COLUMN_NAME,
+					dep.rdb$dependent_name AS TRIGGER_NAME,
 				    null AS COLUMN_DATA_TYPE,
 				    fld.rdb$field_sub_type AS COLUMN_SUB_TYPE,
 					CAST(fld.rdb$field_length AS integer) AS COLUMN_SIZE,
@@ -86,27 +117,32 @@ internal class DslColumns : DslSchema
 					ELSE
 						TRUE
 					END) AS IN_PRIMARYKEY,
-					dep.rdb$dependent_name AS AUTO_INCREMENT,
-					(CASE WHEN dep.rdb$dependent_name IS NOT NULL THEN
-						TRUE
+					(CASE WHEN dep.rdb$dependent_name IS NOT NULL AND trg.rdb$trigger_name IS NOT NULL AND trg.rdb$trigger_sequence = 1 AND trg.rdb$flags = 1 and trg.rdb$trigger_type = 1 THEN
+						1
 					ELSE
-						FALSE
-					END) AS IS_AUTOINCREMENT
+						0
+					END) AS IS_AUTOINCREMENT,
+					(SELECT COUNT(*)
+                        FROM rdb$dependencies fd
+                        WHERE fd.rdb$field_name IS NOT NULL AND fd.rdb$dependent_name = trg.rdb$trigger_name AND fd.rdb$depended_on_name = trg.rdb$relation_name
+						GROUP BY fd.rdb$dependent_name, fd.rdb$depended_on_name)
+                    AS TRIGGER_DEPENDENCYCOUNT
 				FROM rdb$relation_fields rfr
-				LEFT JOIN rdb$fields fld
+				JOIN rdb$fields fld
 					ON rfr.rdb$field_source = fld.rdb$field_name
 				LEFT JOIN rdb$character_sets cs
 					ON cs.rdb$character_set_id = fld.rdb$character_set_id
 				LEFT JOIN rdb$collations coll
 					ON (coll.rdb$collation_id = fld.rdb$collation_id AND coll.rdb$character_set_id = fld.rdb$character_set_id)
-				LEFT OUTER JOIN rdb$relation_constraints con
+				LEFT JOIN rdb$relation_constraints con
 					ON con.rdb$relation_name = rfr.rdb$relation_name AND con.rdb$constraint_type = 'PRIMARY KEY'
 				LEFT JOIN rdb$index_segments seg 
 					ON seg.rdb$index_name = con.rdb$index_name AND seg.rdb$field_name = rfr.rdb$field_name
-                LEFT JOIN rdb$triggers trig
-                    ON trig.rdb$relation_name = con.rdb$relation_name AND trig.rdb$flags = 1 and trig.rdb$system_flag = 0 and trig.rdb$trigger_type = 1
+                LEFT JOIN rdb$triggers trg
+                    ON trg.rdb$relation_name = con.rdb$relation_name AND trg.rdb$trigger_sequence = 1 AND trg.rdb$flags = 1 and trg.rdb$trigger_type = 1
+                        AND seg.rdb$index_name = con.rdb$index_name AND seg.rdb$field_name = rfr.rdb$field_name
 				LEFT JOIN rdb$dependencies dep
-					ON dep.rdb$depended_on_name = trig.rdb$relation_name AND dep.rdb$dependent_name = trig.rdb$trigger_name AND dep.rdb$field_name = seg.rdb$field_name",
+					ON dep.rdb$field_name IS NOT NULL AND dep.rdb$depended_on_name = trg.rdb$relation_name AND dep.rdb$dependent_name = trg.rdb$trigger_name AND dep.rdb$field_name = seg.rdb$field_name",
 			MajorVersionNumber >= 3 ? "rfr.rdb$identity_type" : "null");
 
 		if (restrictions != null)
@@ -147,6 +183,7 @@ internal class DslColumns : DslSchema
 		}
 
 		sql.Append(" ORDER BY TABLE_NAME, ORDINAL_POSITION");
+
 
 		return sql;
 	}
@@ -235,6 +272,18 @@ internal class DslColumns : DslSchema
 
 			row["COMPUTED"] = row["EXPRESSION"] != DBNull.Value;
 
+
+			if (row["TRIGGER_DEPENDENCYCOUNT"] == DBNull.Value)
+			{
+				row["TRIGGER_DEPENDENCYCOUNT"] = 0;
+				row["IS_AUTOINCREMENT"] = false;
+			}
+			else if (Convert.ToInt32(row["TRIGGER_DEPENDENCYCOUNT"]) != 1)
+			{
+				row["IS_AUTOINCREMENT"] = false;
+			}
+
+
 		}
 
 		if (keyCount > 1)
@@ -242,7 +291,10 @@ internal class DslColumns : DslSchema
 			foreach (DataRow row in schema.Rows)
 			{
 				if ((bool)row["IN_PRIMARYKEY"])
+				{
 					row["IS_UNIQUE"] = false;
+					row["IS_AUTOINCREMENT"] = false;
+				}
 			}
 		}
 
@@ -255,6 +307,7 @@ internal class DslColumns : DslSchema
 		schema.Columns.Remove("FIELD_TYPE");
 		schema.Columns.Remove("CHARACTER_MAX_LENGTH");
 		schema.Columns.Remove("IDENTITY_TYPE");
+		schema.Columns.Remove("TRIGGER_DEPENDENCYCOUNT");
 	}
 
 	#endregion

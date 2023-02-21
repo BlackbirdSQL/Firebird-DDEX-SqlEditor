@@ -17,8 +17,7 @@ using BlackbirdSql.Common;
 using BlackbirdSql.Common.Extensions.Commands;
 using BlackbirdSql.VisualStudio.Ddex.Schema;
 using FirebirdSql.Data.FirebirdClient;
-
-
+using System.Linq.Expressions;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -101,41 +100,51 @@ class TObjectSelector : AdoDotNetObjectSelector
 	{
 		// Diag.Trace();
 
+		if (typeName == null)
+		{
+			ArgumentNullException ex = new("typeName");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		if (parameters == null || parameters.Length < 1 || parameters.Length > 2 || parameters[0] is not string)
+		{
+			ArgumentNullException ex = new("Parameters are invalid");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		if (base.Site == null)
+		{
+			InvalidOperationException ex = new();
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+
+		object lockedProviderObject = base.Site.GetLockedProviderObject();
+
+
+		if (lockedProviderObject == null)
+		{
+			NotImplementedException ex = new();
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+
 		try
 		{
-			if (typeName == null)
+			if (lockedProviderObject is not DbConnection dbConnection)
 			{
-				throw new ArgumentNullException("typeName");
-			}
-
-			if (parameters == null || parameters.Length < 1 || parameters.Length > 2 || parameters[0] is not string)
-			{
-				throw new ArgumentNullException("Parameters are invalid");
-			}
-
-			if (base.Site == null)
-			{
-				throw new InvalidOperationException();
-			}
-
-
-			object lockedProviderObject = base.Site.GetLockedProviderObject();
-
-
-			if (lockedProviderObject == null)
-			{
-				throw new NotImplementedException();
+				NotImplementedException ex = new();
+				Diag.Dug(ex);
+				throw ex;
 			}
 
 
 			try
 			{
-				if (lockedProviderObject is not DbConnection dbConnection)
-				{
-					throw new NotImplementedException();
-				}
-
-
 				if (DataToolsCommands.CommandObjectType != DataToolsCommands.DataObjectType.None
 					&& typeName == "Table" && parameters != null && parameters.Length > 0 && (string)parameters[0] == "Tables"
 					&& (restrictions == null || restrictions.Length < 3 || (restrictions.Length > 2 && restrictions[2] == null)))
@@ -151,26 +160,36 @@ class TObjectSelector : AdoDotNetObjectSelector
 					}
 					restrictions[3] = DataToolsCommands.CommandObjectType == DataToolsCommands.DataObjectType.User ? "TABLE" : "SYSTEM TABLE";
 				}
-				DataToolsCommands.CommandObjectType = DataToolsCommands.DataObjectType.None;
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw ex;
+			}
 
-				/*
-				string str = "Type: " + typeName + " Parameters: ";
+			DataToolsCommands.CommandObjectType = DataToolsCommands.DataObjectType.None;
 
-				if (parameters != null)
+			/*
+			string str = "Type: " + typeName + " Parameters: ";
+
+			if (parameters != null)
+			{
+				foreach (object o in parameters)
 				{
-					foreach (object o in parameters)
-					{
-						if (o == null)
-							str += "null,";
-						else
-							str += o.ToString() + ",";
-					}
-
+					if (o == null)
+						str += "null,";
+					else
+						str += o.ToString() + ",";
 				}
-				str += " Restrictions: ";
-				*/
 
-				string[] array = null;
+			}
+			str += " Restrictions: ";
+			*/
+
+			string[] array = null;
+
+			try
+			{
 				if (restrictions != null)
 				{
 					array = new string[restrictions.Length];
@@ -180,24 +199,31 @@ class TObjectSelector : AdoDotNetObjectSelector
 						array[i] = restrictions[i]?.ToString();
 					}
 				}
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw ex;
+			}
 
-				// Diag.Trace(str);
 
-				base.Site.EnsureConnected();
+			base.Site.EnsureConnected();
 
 
-				DataTable schema;
+			DataTable schema;
 
-				try
-				{
-					schema = DslSchemaFactory.GetSchema((FbConnection)dbConnection, parameters[0].ToString(), array);
-				}
-				catch (Exception ex)
-				{
-					Diag.Dug(ex);
-					throw;
-				}
+			try
+			{
+				schema = DslSchemaFactory.GetSchema((FbConnection)dbConnection, parameters[0].ToString(), array);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
 
+			try
+			{
 				if (parameters.Length == 2 && parameters[1] is DictionaryEntry entry)
 				{
 					if (entry.Value is object[] array2)
@@ -206,19 +232,27 @@ class TObjectSelector : AdoDotNetObjectSelector
 						ApplyMappings(schema, mappings);
 					}
 				}
-
-				return new AdoDotNetTableReader(schema);
-
 			}
-			finally
+			catch (Exception ex)
 			{
-				base.Site.UnlockProviderObject();
+				Diag.Dug(ex);
+				throw;
 			}
+
+			try
+			{
+				return new AdoDotNetTableReader(schema);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
+
 		}
-		catch (Exception ex)
+		finally
 		{
-			Diag.Dug(ex);
-			throw;
+			base.Site.UnlockProviderObject();
 		}
 
 	}

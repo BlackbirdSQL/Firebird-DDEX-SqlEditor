@@ -111,7 +111,7 @@ internal abstract class DslSchema
 	{
 		// Diag.Trace();
 		SetMajorVersionNumber(connection);
-		var filter = string.Format("CollectionName='{0}'", collectionName);
+		var filter = string.Format("CollectionName='{0}'", collectionName == "TriggerColumns" ? "Columns" : collectionName);
 		var builder = GetCommandText(restrictions);
 		var restriction = connection.GetSchema(DbMetaDataCollectionNames.Restrictions).Select(filter);
 		// var transaction = connection.InnerConnection.ActiveTransaction;

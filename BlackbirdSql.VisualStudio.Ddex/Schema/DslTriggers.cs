@@ -47,7 +47,11 @@ internal class DslTriggers : DslSchema
 					null AS TABLE_SCHEMA,
 					rfr.rdb$relation_name AS TABLE_NAME,
 					rfr.rdb$trigger_name AS TRIGGER_NAME,
-					rfr.rdb$system_flag AS IS_SYSTEM_TRIGGER,
+					(CASE WHEN rfr.rdb$system_flag = 1 THEN
+						1
+					ELSE
+						0
+					END) AS IS_SYSTEM_TRIGGER,
 					rfr.rdb$trigger_type AS TRIGGER_TYPE,
 					rfr.rdb$trigger_inactive AS IS_INACTIVE,
 					rfr.rdb$trigger_sequence AS SEQUENCENO,
@@ -57,15 +61,18 @@ internal class DslTriggers : DslSchema
                         rfr.rdb$trigger_source
 					END) AS EXPRESSION,
 					(rfr.rdb$description) AS DESCRIPTION,
-					(CASE WHEN rfr.rdb$flags = 1 and rfr.rdb$system_flag = 0 and rfr.rdb$trigger_type = 1 THEN
-						TRUE
+					(CASE WHEN rfr.rdb$flags = 1 and rfr.rdb$trigger_type = 1 THEN
+						1
 					ELSE
-						FALSE
+						0
 					END) AS IS_AUTOINCREMENT,
-					LIST(TRIM(dep.rdb$field_name), ', ') AS DEPENDENT_FIELDS
-				FROM rdb$triggers rfr
-				LEFT OUTER JOIN rdb$dependencies dep
-					ON dep.rdb$depended_on_name = rfr.rdb$relation_name AND dep.rdb$dependent_name = rfr.rdb$trigger_name");
+					(SELECT LIST(TRIM(fd.rdb$field_name), ', ')
+                        FROM rdb$dependencies fd
+                        WHERE fd.rdb$dependent_name = rfr.rdb$trigger_name AND fd.rdb$depended_on_name = rfr.rdb$relation_name
+						GROUP BY fd.rdb$dependent_name, fd.rdb$depended_on_name)
+                    AS DEPENDENCY_FIELDS,
+					0 AS TRIGGER_DEPENDENCYCOUNT
+				FROM rdb$triggers rfr");
 
 		if (restrictions != null)
 		{
@@ -104,8 +111,7 @@ internal class DslTriggers : DslSchema
 			sql.AppendFormat(" WHERE {0} ", where.ToString());
 		}
 
-		sql.Append(" GROUP BY TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, TRIGGER_NAME, IS_SYSTEM_TRIGGER, TRIGGER_TYPE, IS_INACTIVE, SEQUENCENO, EXPRESSION, DESCRIPTION, IS_AUTOINCREMENT");
-		sql.Append(" ORDER BY TABLE_NAME, TRIGGER_NAME");
+		sql.Append(" ORDER BY TRIGGER_NAME");
 
 		return sql;
 	}
@@ -114,18 +120,29 @@ internal class DslTriggers : DslSchema
 	{
 		schema.BeginLoadData();
 
+		int len;
+
 		foreach (DataRow row in schema.Rows)
 		{
 			if (row["IS_SYSTEM_TRIGGER"] == DBNull.Value ||
 				Convert.ToInt32(row["IS_SYSTEM_TRIGGER"], CultureInfo.InvariantCulture) == 0)
 			{
-				row["IS_SYSTEM_TRIGGER"] = false;
+				row["IS_SYSTEM_TRIGGER"] = 0;
+			}
+
+			if (row["DEPENDENCY_FIELDS"] != DBNull.Value)
+			{
+				len = (row["DEPENDENCY_FIELDS"].ToString()).Split(',').Length;
+				row["TRIGGER_DEPENDENCYCOUNT"] = len;
 			}
 			else
 			{
-				row["IS_SYSTEM_TRIGGER"] = true;
+				len = 0;
 			}
-		}	
+
+			if (len != 1)
+				row["IS_AUTOINCREMENT"] = false;
+		}
 
 		schema.EndLoadData();
 		schema.AcceptChanges();

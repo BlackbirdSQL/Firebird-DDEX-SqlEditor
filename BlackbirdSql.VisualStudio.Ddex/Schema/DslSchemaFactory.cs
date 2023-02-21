@@ -61,6 +61,9 @@ internal sealed class DslSchemaFactory
 	public static DataTable GetSchema(FbConnection connection, string collectionName, string[] restrictions)
 	{
 		// Diag.Trace();
+
+		string schemaCollection;
+
 		switch (collectionName)
 		{
 			case "Columns":
@@ -68,16 +71,19 @@ internal sealed class DslSchemaFactory
 			case "Generators":
 			case "IndexColumns":
 			case "Indexes":
-			// case "Tables":
 			case "Triggers":
 			case "ViewColumns":
+				schemaCollection = collectionName;
+				break;
+			case "TriggerColumns":
+				schemaCollection = "Columns";
 				break;
 			default:
 				return connection.GetSchema(collectionName, restrictions);
 		}
 
 
-		var filter = string.Format("CollectionName = '{0}'", collectionName);
+		var filter = string.Format("CollectionName = '{0}'", schemaCollection);
 		var ds = new DataSet();
 
 		Assembly assembly = typeof(FirebirdClientFactory).Assembly;
@@ -91,7 +97,7 @@ internal sealed class DslSchemaFactory
 		var xmlStream = assembly.GetManifestResourceStream(ResourceName);
 		if (xmlStream == null)
 		{
-			NullReferenceException ex = new NullReferenceException("Resource not found: " + ResourceName);
+			NullReferenceException ex = new("Resource not found: " + ResourceName);
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -114,23 +120,29 @@ internal sealed class DslSchemaFactory
 
 		if (collection.Length != 1)
 		{
-			throw new NotSupportedException("Unsupported collection name.");
+			NotSupportedException ex = new("Unsupported collection name " + schemaCollection);
+			Diag.Dug(ex);
+			throw ex;
 		}
 
 		if (restrictions != null && restrictions.Length > (int)collection[0]["NumberOfRestrictions"])
 		{
-			throw new InvalidOperationException("The number of specified restrictions is not valid.");
+			InvalidOperationException ex = new("The number of specified restrictions is not valid.");
+			Diag.Dug(ex);
+			throw ex;
 		}
 
 		if (ds.Tables[DbMetaDataCollectionNames.Restrictions].Select(filter).Length != (int)collection[0]["NumberOfRestrictions"])
 		{
-			throw new InvalidOperationException("Incorrect restriction definition.");
+			InvalidOperationException ex = new("Incorrect restriction definition.");
+			Diag.Dug(ex);
+			throw ex;
 		}
 
 		switch (collection[0]["PopulationMechanism"].ToString())
 		{
 			case "PrepareCollection":
-				return PrepareCollection(connection, collectionName, restrictions);
+				return PrepareCollection(connection, collectionName, schemaCollection, restrictions);
 
 			case "DataTable":
 				return ds.Tables[collection[0]["PopulationString"].ToString()].Copy();
@@ -139,7 +151,9 @@ internal sealed class DslSchemaFactory
 				return SqlCommandSchema(connection, collectionName, restrictions);
 
 			default:
-				throw new NotSupportedException("Unsupported population mechanism");
+				NotSupportedException ex = new("Unsupported population mechanism");
+				Diag.Dug(ex);
+				throw ex;
 		}
 	}
 
@@ -147,7 +161,7 @@ internal sealed class DslSchemaFactory
 
 	#region Private Methods
 
-	private static DataTable PrepareCollection(FbConnection connection, string collectionName, string[] restrictions)
+	private static DataTable PrepareCollection(FbConnection connection, string collectionName, string schemaCollection, string[] restrictions)
 	{
 		DslSchema returnSchema = collectionName.ToUpperInvariant() switch
 		{
@@ -156,22 +170,22 @@ internal sealed class DslSchemaFactory
 			"GENERATORS" => new DslGenerators(),
 			"INDEXCOLUMNS" => new DslIndexColumns(),
 			"INDEXES" => new DslIndexes(),
-			// "TABLES" => new DslTables(),
 			"TRIGGERS" => new DslTriggers(),
+			"TRIGGERCOLUMNS" => new DslTriggerColumns(),
 			"VIEWCOLUMNS" => new DslViewColumns(),
 			_ => ((Func<DslSchema>)(() =>
 				{
-					NotSupportedException exbb = new("The specified metadata collection is not supported.");
+					NotSupportedException exbb = new(string.Format("The metadata collection {0} is not supported.", collectionName));
 					Diag.Dug(exbb);
 					throw exbb;
 				}))(),
 		};
-		return returnSchema.GetSchema(connection, collectionName, restrictions);
+		return returnSchema.GetSchema(connection, schemaCollection, restrictions);
 	}
 
 
 
-	private static Task<DataTable> PrepareCollectionAsync(FbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
+	private static Task<DataTable> PrepareCollectionAsync(FbConnection connection, string collectionName, string schemaCollection, string[] restrictions, CancellationToken cancellationToken = default)
 	{
 		DslSchema returnSchema = collectionName.ToUpperInvariant() switch
 		{
@@ -180,26 +194,30 @@ internal sealed class DslSchemaFactory
 			"GENERATORS" => new DslGenerators(),
 			"INDEXCOLUMNS" => new DslIndexColumns(),
 			"INDEXES" => new DslIndexes(),
-			// "TABLES" => new DslTables(),
 			"TRIGGERS" => new DslTriggers(),
+			"TRIGGERCOLUMNS" => new DslTriggerColumns(),
 			"VIEWCOLUMNS" => new DslViewColumns(),
 			_ => ((Func<DslSchema>)(() =>
 				{
-					NotSupportedException exbb = new("The specified metadata collection is not supported.");
+					NotSupportedException exbb = new(string.Format("The metadata collection {0} is not supported.", collectionName));
 					Diag.Dug(exbb);
 					throw exbb;
 				}))(),
 		};
-		return returnSchema.GetSchemaAsync(connection, collectionName, restrictions, cancellationToken);
+		return returnSchema.GetSchemaAsync(connection, schemaCollection, restrictions, cancellationToken);
 	}
 
 	private static DataTable SqlCommandSchema(FbConnection connection, string collectionName, string[] restrictions)
 	{
-		throw new NotImplementedException();
+		NotImplementedException exbb = new();
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 	private static Task<DataTable> SqlCommandSchemaAsync(FbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
 	{
-		throw new NotImplementedException();
+		NotImplementedException exbb = new();
+		Diag.Dug(exbb);
+		throw exbb;
 	}
 
 	#endregion

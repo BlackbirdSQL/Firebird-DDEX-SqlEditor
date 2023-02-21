@@ -3,7 +3,7 @@
 
 	<!-- Element definitions -->
 
-	<Define name="ElementColumnDataTypeStandardValues" >
+	<Define name="TplStandardValuesColumnDataType" >
 		<StandardValues>
 			<StandardValue value="array">Array</StandardValue>
 			<StandardValue value="bigint">BigInt</StandardValue>
@@ -28,8 +28,9 @@
 		</StandardValues>
 	</Define>
 
+
 	<!-- Definition list of standard table column properties -->
-	<Define name="ElementStandardTableColumnPropertiesList" >
+	<Define name="TplPropertiesListStandardTableColumn" >
 		<Property name="TABLE_CATALOG">
 			<DisplayName resource="Identifier_Name_Catalog" />
 			<Category resource="Category_Identifier" />
@@ -54,7 +55,7 @@
 			<DisplayName resource="Property_Name_Column_ProviderDataType" />
 			<Category resource="Category_DataType" />
 			<Description resource="Property_Desc_Column_ProviderDataType" />
-			<StandardValuesRef name="ElementColumnDataTypeStandardValues"/>
+			<StandardValuesRef name="TplStandardValuesColumnDataType"/>
 		</Property>
 		<Property name="COLUMN_SIZE">
 			<DisplayName resource="Property_Name_Column_Length" />
@@ -99,8 +100,8 @@
 			<Description resource="Property_Desc_Column_Default" />
 		</Property>
 	</Define>
-	<!-- Definition list of user table column properties -->
-	<Define name="ElementUserTableColumnPropertiesList" >
+	<!-- Definition list of user table unique column properties -->
+	<Define name="TplPropertiesListUserTableColumn" >
 		<Property name="IN_PRIMARYKEY">
 			<DisplayName resource="Property_Name_Column_InPrimaryKey" />
 			<Description resource="Property_Desc_Column_InPrimaryKey" />
@@ -117,35 +118,70 @@
 			<DisplayName resource="Property_Name_Column_Expression" />
 			<Description resource="Property_Desc_Column_Expression" />
 		</Property>
-		<Property name="AUTO_INCREMENT">
-			<DisplayName resource="Property_Name_Column_AutoIncrement" />
-			<Description resource="Property_Desc_Column_AutoIncrement" />
-		</Property>
 		<Property name="IS_AUTOINCREMENT">
 			<DisplayName resource="Property_Name_Column_IsAutoIncrement" />
 			<Description resource="Property_Desc_Column_IsAutoIncrement" />
+			<StandardValues>
+				<StandardValue value="1">True</StandardValue>
+				<StandardValue value="0">False</StandardValue>
+			</StandardValues>
 		</Property>
 	</Define>
 
-	<!-- Definition of system table column properties -->
-	<Define name="ElementSystemTableColumnProperties" >
+	<!-- Dummy definition list of system table unique column properties -->
+	<Define name="TplPropertiesListSystemTableColumn" />
+
+	<!-- Dummy definition list of table table unique column properties -->
+	<Define name="TplPropertiesListTableTableColumn" >
+		<Property name="TRIGGER_NAME">
+			<DisplayName resource="Property_Name_Column_AutoIncrement" />
+			<Description resource="Property_Desc_Column_AutoIncrement" />
+		</Property>
+	</Define>
+
+
+	<!-- Definition list of additional trigger table unique column properties -->
+	<Define name="TplPropertiesListTriggerTableColumn" >
+		<Property name="TRIGGER_NAME">
+			<DisplayName resource="Identifier_Name_Trigger" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Trigger" />
+		</Property>
+	</Define>
+
+	<!-- Definition of table column properties -->
+	<Define name="TplPropertiesTableColumn" parameters="parentType, systemType">
 		<Properties>
 			<TypeDisplayName resource="Type_Column" />
-			<PropertyListRef name="ElementStandardTableColumnPropertiesList" />
+			<PropertyListRef name="TplPropertiesListStandardTableColumn" />
+			<PropertyListRef name="TplPropertiesList$(parentType)TableColumn" />
+			<PropertyListRef name="TplPropertiesList$(systemType)TableColumn" />
 		</Properties>
 	</Define>
 
-	<!-- Definition of user table column properties -->
-	<Define name="ElementUserTableColumnProperties" >
-		<Properties>
-			<TypeDisplayName resource="Type_Column" />
-			<PropertyListRef name="ElementStandardTableColumnPropertiesList" />
-			<PropertyListRef name="ElementUserTableColumnPropertiesList" />
-		</Properties>
+
+	<!-- Definition of column selection -->
+	<Define name="TplSelectionRefColumn" parameters="selectionEmpty, parentType, systemType, catalogColumn, schemaColumn, ownerColumn">
+		<SelectionRef name="TplSelectionColumn$(selectionEmpty)" arguments="$(parentType),$(systemType),$(catalogColumn), $(schemaColumn), $(ownerColumn)" />
+	</Define>
+
+	<!-- Definition of column selection nodes -->
+	<Define name="TplSelectionColumn" parameters="parentType, systemType, catalogColumn, schemaColumn, ownerColumn">
+		<Selection type="$(parentType)Column" restrictions="$(catalogColumn), $(schemaColumn), $(ownerColumn)">
+			<SelectionNode nodeId="Column">
+				<DisplayName>{Column.COLUMN_NAME}</DisplayName>
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Computed$(parentType)Column.ico" when="{Column.COMPUTED}" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrement$(parentType)Column.ico" when="{Column.IS_AUTOINCREMENT} = 1 AND {Column.IS_UNIQUE}" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.PrimaryKey$(parentType).ico" when="{Column.IS_UNIQUE}" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.UniqueKey$(parentType).ico" when="{Column.IN_PRIMARYKEY}" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)$(parentType)Column.ico" assembly="" />
+				<PropertiesRef name="TplPropertiesTableColumn" arguments="$(parentType),$(systemType)"/>
+			</SelectionNode>
+		</Selection>
 	</Define>
 
 	<!-- Definition of index node properties -->
-	<Define name="ElementIndexProperties" >
+	<Define name="TplPropertiesIndex" >
 		<Properties>
 			<TypeDisplayName resource="Type_Index" />
 			<Property name="TABLE_CATALOG">
@@ -191,7 +227,7 @@
 	</Define>
 
 	<!-- Definition of index node column properties -->
-	<Define name="ElementIndexColumnProperties" >
+	<Define name="TplPropertiesIndexColumn" >
 		<Properties>
 			<TypeDisplayName resource="Type_IndexColumn" />
 			<Property name="TABLE_CATALOG">
@@ -245,7 +281,7 @@
 	</Define>
 
 	<!-- Definitions of trigger node properties -->
-	<Define name="ElementTriggerProperties" >
+	<Define name="TplPropertiesTrigger" >
 		<Properties>
 			<TypeDisplayName resource="Type_Trigger" />
 			<Property name="TABLE_CATALOG">
@@ -316,20 +352,67 @@
 			<Property name="IS_AUTOINCREMENT">
 				<DisplayName resource="Property_Name_Trigger_IsAutoIncrement" />
 				<Description resource="Property_Desc_Trigger_IsAutoIncrement" />
+				<StandardValues>
+					<StandardValue value="1">True</StandardValue>
+					<StandardValue value="0">False</StandardValue>
+				</StandardValues>
 			</Property>
-			<Property name="DEPENDENT_FIELDS">
+			<Property name="DEPENDENCY_FIELDS">
 				<DisplayName resource="Property_Name_Trigger_Dependencies" />
 				<Description resource="Property_Desc_Trigger_Dependencies" />
 			</Property>
 		</Properties>
 	</Define>
 
+	<!-- Definition of trigger selection node -->
+	<!-- If IS_AUTOINCREMENT + autoIncrementFlag > 2 then it means 'all' -->
+	<!-- We set it to '9' for 'all' -->
+	<Define name="TplSelectionTriggers" parameters="systemType, systemObjectFlag, autoIncrementFlag, catalogColumn, schemaColumn, ownerColumn" >
+		<Selection type="Trigger" restrictions="$(catalogColumn), $(schemaColumn), $(ownerColumn)" filter="IS_SYSTEM_TRIGGER = $(systemObjectFlag) AND (IS_AUTOINCREMENT = $(autoIncrementFlag) OR (IS_AUTOINCREMENT + $(autoIncrementFlag)) > 2)" >
+			<SelectionNode nodeId="Trigger">
+				<DisplayName>{Trigger.TRIGGER_NAME}</DisplayName>
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrement$(systemType)Trigger.ico" when="{Trigger.IS_AUTOINCREMENT} = 1" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Trigger.ico" assembly="" />
+				<PropertiesRef name="TplPropertiesTrigger" />
+				<Children>
+					<SelectionRef name="TplSelectionColumn" arguments="Trigger,$(systemType),{Trigger.TABLE_CATALOG},{Trigger.TABLE_SCHEMA},{Trigger.TRIGGER_NAME}" />
+				</Children>
+			</SelectionNode>
+		</Selection>
+	</Define>
+
+	<Define name="TplSelectionTriggersNoChildren" parameters="systemType, systemObjectFlag, autoIncrementFlag, catalogColumn, schemaColumn, ownerColumn" >
+		<Selection type="Trigger" restrictions="$(catalogColumn), $(schemaColumn), $(ownerColumn)" filter="IS_SYSTEM_TRIGGER = $(systemObjectFlag) AND (IS_AUTOINCREMENT = $(autoIncrementFlag) OR (IS_AUTOINCREMENT + $(autoIncrementFlag)) > 2)" >
+			<SelectionNode nodeId="Trigger">
+				<DisplayName>{Trigger.TRIGGER_NAME}</DisplayName>
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrement$(systemType)Trigger.ico" when="{Trigger.IS_AUTOINCREMENT} = 1" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Trigger.ico" assembly="" />
+				<PropertiesRef name="TplPropertiesTrigger" />
+			</SelectionNode>
+		</Selection>
+	</Define>
+
+
+	<!-- Definition of trigger static node properties -->
+	<!-- Set up for use with System triggers only ATM, which have no children -->
+	<Define name="TplStaticNodeTriggers" parameters="systemType, systemObjectFlag, autoIncrementFlag" >
+		<StaticNode nodeId="$(systemType)Triggers">
+			<DisplayName resource="Node_Name_$(systemType)Triggers" />
+			<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Folder$(systemType)Triggers.ico" assembly="" />
+			<Children>
+				<SelectionRef name="TplSelectionTriggersNoChildren" arguments="$(systemType),$(systemObjectFlag),$(autoIncrementFlag),null,null,null"/>
+			</Children>
+		</StaticNode>
+	</Define>
+
+
+
 	<!-- Definition of table selection node properties -->
-	<Define name="ElementSelectionTables" parameters="elementType, subType, isSystemObject" >
-		<Selection type="$(elementType)" restrictions="null,null,null" filter="IS_SYSTEM_TABLE = $(isSystemObject) AND NOT TABLE_TYPE = 'VIEW'">
+	<Define name="TplSelectionTables" parameters="systemType, systemObjectFlag" >
+		<Selection type="Table" restrictions="null,null" filter="IS_SYSTEM_TABLE = $(systemObjectFlag) AND NOT (TABLE_TYPE = 'VIEW')">
 			<SelectionNode nodeId="Table">
 				<DisplayName>{Table.TABLE_NAME}</DisplayName>
-				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(subType)Table.ico" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Table.ico" assembly="" />
 				<Properties>
 					<TypeDisplayName resource="Type_Table" />
 					<Property name="TABLE_CATALOG">
@@ -361,7 +444,7 @@
 				</Properties>
 				<Commands>
 					<CommandRef name="CommandRetrieveData" />
-					<CommandRef name="Command$(subType)NewQuery" />
+					<CommandRef name="Command$(systemType)NewQuery" />
 				</Commands>
 				<Children>
 					<StaticNode skipWhen="{Table.IS_SYSTEM_TABLE} = 1" nodeId="Indexes">
@@ -372,14 +455,14 @@
 								<SelectionNode nodeId="Index">
 									<DisplayName>{Index.INDEX_NAME}</DisplayName>
 									<Icon name="PrimaryKey" />
-									<PropertiesRef name="ElementIndexProperties" />
+									<PropertiesRef name="TplPropertiesIndex" />
 									<Children>
 										<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
 											<SelectionNode nodeId="IndexColumn">
 												<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{IndexColumn.COMPUTED}" assembly="" />
 												<Icon name="Column" />
-												<PropertiesRef name="ElementIndexColumnProperties" />
+												<PropertiesRef name="TplPropertiesIndexColumn" />
 											</SelectionNode>
 										</Selection>
 									</Children>
@@ -389,14 +472,14 @@
 								<SelectionNode nodeId="Index">
 									<DisplayName>{Index.INDEX_NAME}</DisplayName>
 									<Icon name="UniqueKey" />
-									<PropertiesRef name="ElementIndexProperties" />
+									<PropertiesRef name="TplPropertiesIndex" />
 									<Children>
 										<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
 											<SelectionNode nodeId="IndexColumn">
 												<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{IndexColumn.COMPUTED}" assembly="" />
 												<Icon name="Column" />
-												<PropertiesRef name="ElementIndexColumnProperties" />
+												<PropertiesRef name="TplPropertiesIndexColumn" />
 											</SelectionNode>
 										</Selection>
 									</Children>
@@ -406,14 +489,14 @@
 								<SelectionNode nodeId="Index">
 									<DisplayName>{Index.INDEX_NAME}</DisplayName>
 									<Icon name="Index" />
-									<PropertiesRef name="ElementIndexProperties" />
+									<PropertiesRef name="TplPropertiesIndex" />
 									<Children>
 										<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
 											<SelectionNode nodeId="IndexColumn">
 												<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{IndexColumn.COMPUTED}" assembly="" />
 												<Icon name="Column" />
-												<PropertiesRef name="ElementIndexColumnProperties" />
+												<PropertiesRef name="TplPropertiesIndexColumn" />
 											</SelectionNode>
 										</Selection>
 									</Children>
@@ -423,14 +506,14 @@
 								<SelectionNode nodeId="Index">
 									<DisplayName>{Index.INDEX_NAME}</DisplayName>
 									<Icon name="ForeignKey" />
-									<PropertiesRef name="ElementIndexProperties" />
+									<PropertiesRef name="TplPropertiesIndex" />
 									<Children>
 										<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
 											<SelectionNode nodeId="IndexColumn">
 												<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{IndexColumn.COMPUTED}" assembly="" />
 												<Icon name="Column" />
-												<PropertiesRef name="ElementIndexColumnProperties" />
+												<PropertiesRef name="TplPropertiesIndexColumn" />
 											</SelectionNode>
 										</Selection>
 									</Children>
@@ -556,24 +639,12 @@
 							</Selection>
 						</Children>
 					</StaticNode>
-					<StaticNode skipWhen="{Table.IS_SYSTEM_TABLE} = 1" nodeId="Triggers">
+					<StaticNode nodeId="Triggers">
 						<DisplayName resource="Node_Name_Triggers" />
 						<!-- <Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.FolderTriggers.ico" assembly="" /> -->
 						<Children>
-							<Selection type="Trigger" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}" filter="IS_AUTOINCREMENT = true">
-								<SelectionNode nodeId="Trigger">
-									<DisplayName>{Trigger.TRIGGER_NAME}</DisplayName>
-									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" assembly="" />
-									<PropertiesRef name="ElementTriggerProperties" />
-								</SelectionNode>
-							</Selection>
-							<Selection type="Trigger" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}" filter="IS_AUTOINCREMENT = false">
-								<SelectionNode nodeId="Trigger">
-									<DisplayName>{Trigger.TRIGGER_NAME}</DisplayName>
-									<Icon name="Trigger" />
-									<PropertiesRef name="ElementTriggerProperties" />
-								</SelectionNode>
-							</Selection>
+							<SelectionRef name="TplSelectionTriggers" arguments="$(systemType),$(systemObjectFlag),1,{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}"/>
+							<SelectionRef name="TplSelectionTriggers" arguments="$(systemType),$(systemObjectFlag),0,{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}"/>
 						</Children>
 					</StaticNode>
 					<!--
@@ -582,29 +653,19 @@
 						<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.DotDotDot.ico" assembly="" />
 					</StaticNode>
 					-->
-					<Selection type="TableColumn" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}">
-						<SelectionNode nodeId="Column">
-							<DisplayName>{Column.COLUMN_NAME}</DisplayName>
-							<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{Column.COMPUTED}" assembly="" />
-							<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" when="{Column.IS_AUTOINCREMENT} AND {Column.IS_UNIQUE}" assembly="" />
-							<Icon name="PrimaryKey" when="{Column.IS_UNIQUE}" />
-							<Icon name="UniqueKey" when="{Column.IN_PRIMARYKEY}" />
-							<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(subType)Column.ico" assembly="" />
-							<PropertiesRef name="Element$(subType)TableColumnProperties" />
-						</SelectionNode>
-					</Selection>
+					<SelectionRef name="TplSelectionColumn" arguments="Table,$(systemType),{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}" />
 				</Children>
 			</SelectionNode>
 		</Selection>
 	</Define>
 
 	<!-- Definition of table static node properties -->
-	<Define name="ElementStaticNodeTablesTables" parameters="elementType, subType, isSystemObject" >
-		<StaticNode nodeId="$(subType)$(elementType)s">
-			<DisplayName resource="Node_Name_$(subType)$(elementType)s" />
-			<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Folder$(subType)Tables.ico" assembly="" />
+	<Define name="TplStaticNodeTablesTables" parameters="systemType,systemObjectFlag" >
+		<StaticNode nodeId="$(systemType)Tables">
+			<DisplayName resource="Node_Name_$(systemType)Tables" />
+			<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Folder$(systemType)Tables.ico" assembly="" />
 			<Children>
-				<SelectionRef name="ElementSelectionTables" arguments="$(elementType), $(subType), $(isSystemObject)"/>
+				<SelectionRef name="TplSelectionTables" arguments="$(systemType),$(systemObjectFlag)"/>
 			</Children>
 		</StaticNode>
 	</Define>

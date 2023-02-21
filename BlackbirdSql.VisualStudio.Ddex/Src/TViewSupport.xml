@@ -29,8 +29,8 @@
 							<CommandRef name="CommandNewQuery" />
 						</Commands>-->
 						<Children>
-							<StaticNodeRef name="ElementStaticNodeTablesTables" arguments="Table,System,1"/>
-							<SelectionRef name="ElementSelectionTables" arguments="Table,User,0"/>
+							<StaticNodeRef name="TplStaticNodeTablesTables" arguments="System,1"/>
+							<SelectionRef name="TplSelectionTables" arguments="User,0"/>
 						</Children>
 					</StaticNode>
 					<StaticNode nodeId="Views">
@@ -73,7 +73,7 @@
 											<SelectionNode nodeId="Column">
 												<DisplayName>{Column.COLUMN_NAME}</DisplayName>
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{Column.COMPUTED}" assembly="" />
-												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" when="{Column.IS_AUTOINCREMENT}" assembly="" />
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" when="{Column.IS_AUTOINCREMENT} = 1" assembly="" />
 												<Icon name="PrimaryKey" when="{Column.IS_UNIQUE}" />
 												<Icon name="UniqueKey" when="{Column.IN_PRIMARYKEY}" />
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ViewColumn.ico" assembly="" />
@@ -103,15 +103,7 @@
 														<DisplayName resource="Property_Name_Column_ProviderDataType" />
 														<Category resource="Category_DataType" />
 														<Description resource="Property_Desc_Column_ProviderDataType" />
-														<StandardValuesRef name="ElementColumnDataTypeStandardValues"/>
-													</Property>
-													<Property name="AUTO_INCREMENT">
-														<DisplayName resource="Property_Name_Column_AutoIncrement" />
-														<Description resource="Property_Desc_Column_AutoIncrement" />
-													</Property>
-													<Property name="IS_AUTOINCREMENT">
-														<DisplayName resource="Property_Name_Column_IsAutoIncrement" />
-														<Description resource="Property_Desc_Column_IsAutoIncrement" />
+														<StandardValuesRef name="TplStandardValuesColumnDataType"/>
 													</Property>
 													<!--
 													<Property name="FW_DATA_TYPE">
@@ -260,7 +252,7 @@
 																<DisplayName resource="Property_Name_Column_ProviderDataType" />
 																<Category resource="Category_DataType" />
 																<Description resource="Property_Desc_Column_ProviderDataType" />
-																<StandardValuesRef name="ElementColumnDataTypeStandardValues"/>
+																<StandardValuesRef name="TplStandardValuesColumnDataType"/>
 															</Property>
 															<!--
 													<Property name="FW_DATA_TYPE">
@@ -341,7 +333,7 @@
 														<DisplayName resource="Property_Name_Parameter_ProviderDataType" />
 														<Category resource="Category_DataType" />
 														<Description resource="Property_Desc_Parameter_ProviderDataType" />
-														<StandardValuesRef name="ElementColumnDataTypeStandardValues"/>
+														<StandardValuesRef name="TplStandardValuesColumnDataType"/>
 													</Property>
 													<!--
 													<Property name="FW_DATA_TYPE">
@@ -443,7 +435,7 @@
 										<Selection type="FunctionParameter" restrictions="{Function.FUNCTION_CATALOG},{Function.FUNCTION_SCHEMA},{Function.FUNCTION_NAME}">
 											<SelectionNode nodeId="Parameter">
 												<DisplayName>{Parameter.PSEUDO_NAME}</DisplayName>
-												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamIn.ico" when="{Parameter.ORDINAL_POSITION}>0" assembly="" />
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamIn.ico" when="{Parameter.ORDINAL_POSITION} > 0" assembly="" />
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamReturn.ico" assembly="" />
 												<Properties>
 													<TypeDisplayName resource="Type_FunctionParameter" />
@@ -471,7 +463,7 @@
 														<DisplayName resource="Property_Name_Parameter_ProviderDataType" />
 														<Category resource="Category_DataType" />
 														<Description resource="Property_Desc_Parameter_ProviderDataType" />
-														<StandardValuesRef name="ElementColumnDataTypeStandardValues"/>
+														<StandardValuesRef name="TplStandardValuesColumnDataType"/>
 													</Property>
 													<!--
 													<Property name="FW_DATA_TYPE">
@@ -571,6 +563,14 @@
 							</Selection>
 						</Children>
 					</StaticNode>
+					<StaticNode nodeId="Triggers">
+						<DisplayName resource="Node_Name_Triggers" />
+						<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.DatabaseTriggers.ico" assembly="" />
+						<Children>
+							<StaticNodeRef name="TplStaticNodeTriggers" arguments="System,1,9"/>
+							<SelectionRef name="TplSelectionTriggers" arguments="User,0,9,null,null,null"/>
+						</Children>
+					</StaticNode>
 					<StaticNode nodeId="Domains">
 						<DisplayName resource="Node_Name_Domains" />
 						<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.DatabaseDomains.ico" assembly="" />
@@ -604,7 +604,7 @@
 											<DisplayName resource="Property_Name_Column_ProviderDataType" />
 											<Category resource="Category_DataType" />
 											<Description resource="Property_Desc_Column_ProviderDataType" />
-											<StandardValuesRef name="ElementColumnDataTypeStandardValues"/>
+											<StandardValuesRef name="TplStandardValuesColumnDataType"/>
 										</Property>
 										<Property name="DOMAIN_SIZE">
 											<DisplayName resource="Property_Name_Column_Length" />
