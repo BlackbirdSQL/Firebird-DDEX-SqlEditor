@@ -17,7 +17,7 @@ The connection dialog now lists any `FlameRobin` Server hosts (DataSources) and 
 
 ### A Note on AutoIncrement
 The logic for auto-increment detection of a trigger (which avoids interrogating the ddl) appears to work correctly. There is no documentation to show otherwise, but there is info on the web implying it cannot be done. If you have a case where this logic fails, please pop us a mail.</br>
-(We assert a trigger with TRIGGER_TYPE == 1, SEQUENCENO == 1 and FLAGS == 1 with a single dependency column and with a unique single index segment on a 'PRIMARY KEY' index constitutes an auto-increment trigger. You can create an auto-increment without meeting these conditions but then it won't fall into the scope of a SqlServer PrimaryKey with AutoIncrement, and that's what we're after.)
+(Without examining the ddl source code we assert a trigger with TRIGGER_TYPE == 1, SEQUENCENO == 1 and FLAGS == 1 with a single dependency column and with a unique single index segment on a 'PRIMARY KEY' index constitutes an auto-increment trigger. You can create an auto-increment without meeting these conditions but then it won't fall into the scope of a SqlServer PrimaryKey with AutoIncrement, and that's what we're after.)
 
 
 ## Known issues
