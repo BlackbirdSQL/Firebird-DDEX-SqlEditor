@@ -525,7 +525,7 @@
 							<Selection type="Sequence" restrictions="null,null">
 								<SelectionNode nodeId="Sequence">
 									<DisplayName>{Sequence.GENERATOR_NAME}</DisplayName>
-									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" assembly="" />
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementTableColumn.ico" assembly="" />
 									<Properties>
 										<TypeDisplayName resource="Type_Sequence" />
 										<Property name="GENERATOR_CATALOG">
