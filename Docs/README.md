@@ -1,6 +1,6 @@
 # BlackbirdSQL DDEX 2.0 .NET Data Provider for Firebird
 
-(*This package is still under development. Note that in preparation for release the stock Firebird libraries have been copied to their respective Release output folders and the Release configuration has all Firebird library builds disabled.*)
+(*This package is in pre-release. Note that in preparation for release the stock Firebird libraries have been copied to their respective Release output folders and the Release configuration has all Firebird library builds disabled.*)
 
 The BlackbirdSQL DDEX 2.0 .NET Data Provider tool, `BlackbirdSql.VisualStudio.Ddex`, implements all the core DDEX 2.0 interfaces prevalent in the SqlServer DDEX provider, but currently excludes DDL functionality.
 
@@ -14,6 +14,10 @@ See [Extended Description](#extended-description) below.
 
 ### FlameRobin
 The connection dialog now lists any `FlameRobin` Server hosts (DataSources) and Server host Databases. As everyone familiar with Firebird will know, this makes a huge difference when entering remote Firebird server database paths.
+
+### A Note on AutoIncrement
+The logic for auto-increment detection of a trigger (which avoids interrogating the dml) appears to work correctly. There is no documentation to show otherwise, but there is info on the web implying it cannot be done. If you have a case where this logic fails, please pop us a mail.</br>
+(We assert a trigger with TRIGGER_TYPE == 1, SEQUENCENO == 1 and FLAGS == 1 with a single dependency column and with a unique single index segment on a 'PRIMARY KEY' index constitutes an auto-increment trigger. You can create an auto-increment without meeting these conditions but then it won't fall into the scope of a SqlServer PrimaryKey with AutoIncrement, and that's what we're after.)
 
 
 ## Known issues
