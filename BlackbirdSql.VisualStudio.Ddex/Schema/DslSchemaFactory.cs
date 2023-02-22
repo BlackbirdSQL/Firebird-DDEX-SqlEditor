@@ -78,6 +78,11 @@ internal sealed class DslSchemaFactory
 			case "TriggerColumns":
 				schemaCollection = "Columns";
 				break;
+			case "SystemTriggers":
+			case "AutoIncrementTriggers":
+			case "StandardTriggers":
+				schemaCollection = "Triggers";
+				break;
 			default:
 				return connection.GetSchema(collectionName, restrictions);
 		}
@@ -171,6 +176,9 @@ internal sealed class DslSchemaFactory
 			"INDEXCOLUMNS" => new DslIndexColumns(),
 			"INDEXES" => new DslIndexes(),
 			"TRIGGERS" => new DslTriggers(),
+			"SYSTEMTRIGGERS" => new DslSystemTriggers(),
+			"AUTOINCREMENTTRIGGERS" => new DslAutoIncrementTriggers(),
+			"STANDARDTRIGGERS" => new DslStandardTriggers(),
 			"TRIGGERCOLUMNS" => new DslTriggerColumns(),
 			"VIEWCOLUMNS" => new DslViewColumns(),
 			_ => ((Func<DslSchema>)(() =>
@@ -195,6 +203,9 @@ internal sealed class DslSchemaFactory
 			"INDEXCOLUMNS" => new DslIndexColumns(),
 			"INDEXES" => new DslIndexes(),
 			"TRIGGERS" => new DslTriggers(),
+			"SYSTEMTRIGGERS" => new DslSystemTriggers(),
+			"AUTOINCREMENTTRIGGERS" => new DslAutoIncrementTriggers(),
+			"STANDARDTRIGGERS" => new DslStandardTriggers(),
 			"TRIGGERCOLUMNS" => new DslTriggerColumns(),
 			"VIEWCOLUMNS" => new DslViewColumns(),
 			_ => ((Func<DslSchema>)(() =>

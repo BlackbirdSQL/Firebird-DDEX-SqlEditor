@@ -83,7 +83,9 @@
   <!-- Includes - Top Level -->
   <ItemGroup>
     <Content Include="Package.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.FolderSystemTriggers.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderUserAutoIncrementTriggers.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderUserStandardTriggers.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderSystemSystemTriggers.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.AutoIncrementTriggerColumn.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.SystemTrigger.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.AutoIncrementSystemTrigger.ico" />
@@ -190,7 +192,9 @@
     <None Include="Resources\ViewSupport.DotDotDot.psd" />
     <None Include="Resources\ViewSupport.FolderSystem.psd" />
     <None Include="Resources\ViewSupport.FolderSystemTables.psd" />
-    <None Include="Resources\ViewSupport.FolderSystemTriggers.psd" />
+    <None Include="Resources\ViewSupport.FolderSystemSystemTriggers.psd" />
+    <None Include="Resources\ViewSupport.FolderUserAutoIncrementTriggers.psd" />
+    <None Include="Resources\ViewSupport.FolderUserStandardTriggers.psd" />
     <None Include="Resources\ViewSupport.LabelOpenFolder.psd" />
     <None Include="Resources\ViewSupport.PrimaryKeyTable.psd" />
     <None Include="Resources\ViewSupport.PrimaryKeyTrigger.psd" />
@@ -310,8 +314,10 @@
     <Compile Include="Schema\DslObjectTypes.cs" />
     <Compile Include="Schema\DslSchema.cs" />
     <Compile Include="Schema\DslSchemaFactory.cs" />
+    <Compile Include="Schema\DslStandardTriggers.cs" />
+    <Compile Include="Schema\DslAutoIncrementTriggers.cs" />
     <Compile Include="Schema\DslTriggerColumns.cs" />
-    <None Include="Schema\DslTriggers - Copy.cs" />
+    <Compile Include="Schema\DslSystemTriggers.cs" />
     <Compile Include="Schema\DslTypeHelper.cs" />
     <Compile Include="Schema\DslViewColumns.cs" />
     <Compile Include="Schema\Encoding2.cs" />

@@ -78,7 +78,7 @@
 												<Icon name="UniqueKey" when="{Column.IN_PRIMARYKEY}" />
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ViewColumn.ico" assembly="" />
 												<Properties>
-													<TypeDisplayName resource="Type_Column" />
+													<TypeDisplayName resource="Type_ViewColumn" />
 													<Property name="VIEW_CATALOG">
 														<DisplayName resource="Identifier_Name_Catalog" />
 														<Category resource="Category_Identifier" />
@@ -567,8 +567,9 @@
 						<DisplayName resource="Node_Name_Triggers" />
 						<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.DatabaseTriggers.ico" assembly="" />
 						<Children>
-							<StaticNodeRef name="TplStaticNodeTriggers" arguments="System,1,9"/>
-							<SelectionRef name="TplSelectionTriggers" arguments="User,0,9,null,null,null"/>
+							<StaticNodeRef name="TplStaticNodeTriggers" arguments="SystemTrigger,NoChildren,System,1"/>
+							<StaticNodeRef name="TplStaticNodeTriggers" arguments="AutoIncrementTrigger,WithChildren,User,0"/>
+							<StaticNodeRef name="TplStaticNodeTriggers" arguments="StandardTrigger,WithChildren,User,0"/>
 						</Children>
 					</StaticNode>
 					<StaticNode nodeId="Domains">

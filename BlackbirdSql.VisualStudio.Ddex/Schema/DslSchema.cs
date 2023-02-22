@@ -36,6 +36,10 @@ namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 internal abstract class DslSchema
 {
+	public DslSchema()
+	{
+	}
+
 	#region Abstract Methods
 
 	protected abstract StringBuilder GetCommandText(string[] restrictions);
@@ -111,7 +115,25 @@ internal abstract class DslSchema
 	{
 		// Diag.Trace();
 		SetMajorVersionNumber(connection);
-		var filter = string.Format("CollectionName='{0}'", collectionName == "TriggerColumns" ? "Columns" : collectionName);
+
+		string schemaCollection;
+
+		switch (collectionName)
+		{
+			case "TriggerColumns":
+				schemaCollection = "Columns";
+				break;
+			case "SystemTriggers":
+			case "AutoIncrementTriggers":
+			case "StandardTriggers":
+				schemaCollection = "Triggers";
+				break;
+			default:
+				schemaCollection = collectionName;
+				break;
+		}
+
+		var filter = string.Format("CollectionName='{0}'", schemaCollection);
 		var builder = GetCommandText(restrictions);
 		var restriction = connection.GetSchema(DbMetaDataCollectionNames.Restrictions).Select(filter);
 		// var transaction = connection.InnerConnection.ActiveTransaction;

@@ -1535,7 +1535,15 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 		// Diag.Trace();
 		LogMessages.CommandExecution(Log, this);
 
-		Prepare(returnsSet);
+		try
+		{
+			Prepare(returnsSet);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex, CommandText);
+			throw;
+		}
 
 		if ((behavior & CommandBehavior.SequentialAccess) == CommandBehavior.SequentialAccess ||
 			(behavior & CommandBehavior.SingleResult) == CommandBehavior.SingleResult ||
@@ -1552,11 +1560,22 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 			// Validate input parameter count
 			if (_namedParameters.Count > 0 && !HasParameters)
 			{
-				throw FbException.Create("Must declare command parameters.");
+
+				Exception ex = FbException.Create("Must declare command parameters.");
+				Diag.Dug(ex);
+				throw ex;
 			}
 
 			// Execute
-			_statement.Execute(CommandTimeout * 1000, this);
+			try
+			{
+				_statement.Execute(CommandTimeout * 1000, this);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex, _statement.GetType().FullName);
+				throw;
+			}
 		}
 		// Diag.Trace();
 	}

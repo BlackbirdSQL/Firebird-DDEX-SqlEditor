@@ -105,7 +105,8 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver
 		Type type = GetType();
 		string resource = name[..^11] + "s.xml";
 
-		Diag.Trace(type.Namespace + "." + resource);
+		// Diag.Trace(type.Namespace + "." + resource);
+
 		return type.Assembly.GetManifestResourceStream(type.FullName + resource);
 	}
 

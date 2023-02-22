@@ -152,7 +152,7 @@
 	<!-- Definition of table column properties -->
 	<Define name="TplPropertiesTableColumn" parameters="parentType, systemType">
 		<Properties>
-			<TypeDisplayName resource="Type_Column" />
+			<TypeDisplayName resource="Type_$(parentType)Column" />
 			<PropertyListRef name="TplPropertiesListStandardTableColumn" />
 			<PropertyListRef name="TplPropertiesList$(parentType)TableColumn" />
 			<PropertyListRef name="TplPropertiesList$(systemType)TableColumn" />
@@ -365,10 +365,9 @@
 	</Define>
 
 	<!-- Definition of trigger selection node -->
-	<!-- If IS_AUTOINCREMENT + autoIncrementFlag > 2 then it means 'all' -->
-	<!-- We set it to '9' for 'all' -->
-	<Define name="TplSelectionTriggers" parameters="systemType, systemObjectFlag, autoIncrementFlag, catalogColumn, schemaColumn, ownerColumn" >
-		<Selection type="Trigger" restrictions="$(catalogColumn), $(schemaColumn), $(ownerColumn)" filter="IS_SYSTEM_TRIGGER = $(systemObjectFlag) AND (IS_AUTOINCREMENT = $(autoIncrementFlag) OR (IS_AUTOINCREMENT + $(autoIncrementFlag)) > 2)" >
+	<Define name="TplSelectionTriggersWithChildren" parameters="triggerType, systemType, systemObjectFlag, catalogColumn, schemaColumn, tableColumn, triggerColumn" >
+		<Selection type="$(triggerType)" restrictions="$(catalogColumn),$(schemaColumn),$(tableColumn),$(triggerColumn)" >
+			<!-- filter="IS_SYSTEM_TRIGGER = $(systemObjectFlag)" > -->
 			<SelectionNode nodeId="Trigger">
 				<DisplayName>{Trigger.TRIGGER_NAME}</DisplayName>
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrement$(systemType)Trigger.ico" when="{Trigger.IS_AUTOINCREMENT} = 1" assembly="" />
@@ -381,8 +380,9 @@
 		</Selection>
 	</Define>
 
-	<Define name="TplSelectionTriggersNoChildren" parameters="systemType, systemObjectFlag, autoIncrementFlag, catalogColumn, schemaColumn, ownerColumn" >
-		<Selection type="Trigger" restrictions="$(catalogColumn), $(schemaColumn), $(ownerColumn)" filter="IS_SYSTEM_TRIGGER = $(systemObjectFlag) AND (IS_AUTOINCREMENT = $(autoIncrementFlag) OR (IS_AUTOINCREMENT + $(autoIncrementFlag)) > 2)" >
+	<Define name="TplSelectionTriggersNoChildren" parameters="triggerType, systemType, systemObjectFlag, catalogColumn, schemaColumn, tableColumn, triggerColumn" >
+		<Selection type="$(triggerType)" restrictions="$(catalogColumn),$(schemaColumn),$(tableColumn),$(triggerColumn)" >
+			<!-- filter="IS_SYSTEM_TRIGGER = $(systemObjectFlag)" > -->
 			<SelectionNode nodeId="Trigger">
 				<DisplayName>{Trigger.TRIGGER_NAME}</DisplayName>
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrement$(systemType)Trigger.ico" when="{Trigger.IS_AUTOINCREMENT} = 1" assembly="" />
@@ -394,13 +394,12 @@
 
 
 	<!-- Definition of trigger static node properties -->
-	<!-- Set up for use with System triggers only ATM, which have no children -->
-	<Define name="TplStaticNodeTriggers" parameters="systemType, systemObjectFlag, autoIncrementFlag" >
-		<StaticNode nodeId="$(systemType)Triggers">
-			<DisplayName resource="Node_Name_$(systemType)Triggers" />
-			<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Folder$(systemType)Triggers.ico" assembly="" />
+	<Define name="TplStaticNodeTriggers" parameters="triggerType, childrenType, systemType, systemObjectFlag" >
+		<StaticNode nodeId="$(systemType)$(triggerType)s">
+			<DisplayName resource="Node_Name_$(systemType)$(triggerType)s" />
+			<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Folder$(systemType)$(triggerType)s.ico" assembly="" />
 			<Children>
-				<SelectionRef name="TplSelectionTriggersNoChildren" arguments="$(systemType),$(systemObjectFlag),$(autoIncrementFlag),null,null,null"/>
+				<SelectionRef name="TplSelectionTriggers$(childrenType)" arguments="$(triggerType),$(systemType),$(systemObjectFlag),null,null,null,null"/>
 			</Children>
 		</StaticNode>
 	</Define>
@@ -643,8 +642,8 @@
 						<DisplayName resource="Node_Name_Triggers" />
 						<!-- <Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.FolderTriggers.ico" assembly="" /> -->
 						<Children>
-							<SelectionRef name="TplSelectionTriggers" arguments="$(systemType),$(systemObjectFlag),1,{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}"/>
-							<SelectionRef name="TplSelectionTriggers" arguments="$(systemType),$(systemObjectFlag),0,{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}"/>
+							<SelectionRef name="TplSelectionTriggersWithChildren" arguments="AutoIncrementTrigger,$(systemType),$(systemObjectFlag),{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME},null"/>
+							<SelectionRef name="TplSelectionTriggersWithChildren" arguments="StandardTrigger,$(systemType),$(systemObjectFlag),{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME},null"/>
 						</Children>
 					</StaticNode>
 					<!--

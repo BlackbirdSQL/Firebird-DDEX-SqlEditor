@@ -444,7 +444,7 @@
   <data name="Property_Name_Column_Precision" xml:space="preserve">
     <value>Precision</value>
   </data>
-  <data name="Type_Column" xml:space="preserve">
+  <data name="Type_TableColumn" xml:space="preserve">
     <value>Column</value>
   </data>
   <data name="Node_Name_ScalarFunctions" xml:space="preserve">
@@ -708,7 +708,19 @@
   <data name="Identifier_Name_Trigger" xml:space="preserve">
     <value>Trigger</value>
   </data>
-  <data name="Node_Name_SystemTriggers" xml:space="preserve">
+  <data name="Node_Name_SystemSystemTriggers" xml:space="preserve">
     <value>System Triggers</value>
+  </data>
+  <data name="Node_Name_UserAutoIncrementTriggers" xml:space="preserve">
+    <value>Auto-increment Triggers</value>
+  </data>
+  <data name="Node_Name_UserStandardTriggers" xml:space="preserve">
+    <value>Standard Triggers</value>
+  </data>
+  <data name="Type_TriggerColumn" xml:space="preserve">
+    <value>Trigger Dependency Column</value>
+  </data>
+  <data name="Type_ViewColumn" xml:space="preserve">
+    <value>View Column</value>
   </data>
 </root>

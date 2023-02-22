@@ -31,6 +31,9 @@ internal static class DslObjectTypes
 	public const string TableForeignKey = "TableForeignKey";
 	public const string TableForeignKeyColumn = "TableForeignKeyColumn";
 	public const string Trigger = "Trigger";
+	public const string SystemTrigger = "SystemTrigger";
+	public const string AutoIncrementTrigger = "AutoIncrementTrigger";
+	public const string StandardTrigger = "StandardTrigger";
 	public const string TriggerColumn = "TriggerColumn";
 	public const string View = "View";
 	public const string ViewColumn = "ViewColumn";
@@ -66,7 +69,9 @@ internal static class DslObjectTypes
 			case DslObjectTypes.TableIndex:
 			case DslObjectTypes.TableUniqueKey:
 			case DslObjectTypes.TableForeignKey:
-			case DslObjectTypes.Trigger:
+			case DslObjectTypes.SystemTrigger:
+			case DslObjectTypes.AutoIncrementTrigger:
+			case DslObjectTypes.StandardTrigger:
 			case DslObjectTypes.TriggerColumn:
 			case DslObjectTypes.ViewColumn:
 			case DslObjectTypes.StoredProcedureParameter:

@@ -1165,7 +1165,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 		if (objProj is not Project project)
 		{
-			Diag.Dug(true, "AfterOpenProject: Possible VS project. Could not get project object property from hierarchy: " + pHierarchy.ToString());
+			// Diag.Dug(true, "AfterOpenProject: Possible VS project. Could not get project object property from hierarchy: " + pHierarchy.ToString());
 			return S_OK;
 		}
 		else if (project.Kind != "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
