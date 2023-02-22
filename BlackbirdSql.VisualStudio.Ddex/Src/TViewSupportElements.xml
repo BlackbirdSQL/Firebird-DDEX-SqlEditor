@@ -394,12 +394,12 @@
 
 
 	<!-- Definition of trigger static node properties -->
-	<Define name="TplStaticNodeTriggers" parameters="triggerType, childrenType, systemType, systemObjectFlag" >
+	<Define name="TplStaticNodeTriggers" parameters="triggerType, triggerChildrenType, systemType, systemObjectFlag" >
 		<StaticNode nodeId="$(systemType)$(triggerType)s">
 			<DisplayName resource="Node_Name_$(systemType)$(triggerType)s" />
 			<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Folder$(systemType)$(triggerType)s.ico" assembly="" />
 			<Children>
-				<SelectionRef name="TplSelectionTriggers$(childrenType)" arguments="$(triggerType),$(systemType),$(systemObjectFlag),null,null,null,null"/>
+				<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="$(triggerType),$(systemType),$(systemObjectFlag),null,null,null,null"/>
 			</Children>
 		</StaticNode>
 	</Define>
@@ -407,7 +407,7 @@
 
 
 	<!-- Definition of table selection node properties -->
-	<Define name="TplSelectionTables" parameters="systemType, systemObjectFlag" >
+	<Define name="TplSelectionTables" parameters="systemType, systemObjectFlag, triggerChildrenType" >
 		<Selection type="Table" restrictions="null,null" filter="IS_SYSTEM_TABLE = $(systemObjectFlag) AND NOT (TABLE_TYPE = 'VIEW')">
 			<SelectionNode nodeId="Table">
 				<DisplayName>{Table.TABLE_NAME}</DisplayName>
@@ -638,12 +638,19 @@
 							</Selection>
 						</Children>
 					</StaticNode>
-					<StaticNode nodeId="Triggers">
+					<StaticNode  skipWhen="{Table.IS_SYSTEM_TABLE} = 1" nodeId="Triggers">
 						<DisplayName resource="Node_Name_Triggers" />
 						<!-- <Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.FolderTriggers.ico" assembly="" /> -->
 						<Children>
-							<SelectionRef name="TplSelectionTriggersWithChildren" arguments="AutoIncrementTrigger,$(systemType),$(systemObjectFlag),{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME},null"/>
-							<SelectionRef name="TplSelectionTriggersWithChildren" arguments="StandardTrigger,$(systemType),$(systemObjectFlag),{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME},null"/>
+							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="AutoIncrementTrigger,$(systemType),$(systemObjectFlag),{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME},null"/>
+							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="StandardTrigger,$(systemType),$(systemObjectFlag),{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME},null"/>
+						</Children>
+					</StaticNode>
+					<StaticNode  skipWhen="{Table.IS_SYSTEM_TABLE} = 0" nodeId="Triggers">
+						<DisplayName resource="Node_Name_Triggers" />
+						<!-- <Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.FolderTriggers.ico" assembly="" /> -->
+						<Children>
+							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="SystemTrigger,$(systemType),$(systemObjectFlag),{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME},null"/>
 						</Children>
 					</StaticNode>
 					<!--
@@ -659,12 +666,12 @@
 	</Define>
 
 	<!-- Definition of table static node properties -->
-	<Define name="TplStaticNodeTablesTables" parameters="systemType,systemObjectFlag" >
+	<Define name="TplStaticNodeTablesTables" parameters="systemType, systemObjectFlag, triggerChildrenType" >
 		<StaticNode nodeId="$(systemType)Tables">
 			<DisplayName resource="Node_Name_$(systemType)Tables" />
 			<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Folder$(systemType)Tables.ico" assembly="" />
 			<Children>
-				<SelectionRef name="TplSelectionTables" arguments="$(systemType),$(systemObjectFlag)"/>
+				<SelectionRef name="TplSelectionTables" arguments="$(systemType),$(systemObjectFlag),$(triggerChildrenType)"/>
 			</Children>
 		</StaticNode>
 	</Define>

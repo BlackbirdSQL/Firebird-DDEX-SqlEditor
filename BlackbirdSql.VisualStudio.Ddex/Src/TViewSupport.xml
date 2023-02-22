@@ -29,8 +29,8 @@
 							<CommandRef name="CommandNewQuery" />
 						</Commands>-->
 						<Children>
-							<StaticNodeRef name="TplStaticNodeTablesTables" arguments="System,1"/>
-							<SelectionRef name="TplSelectionTables" arguments="User,0"/>
+							<StaticNodeRef name="TplStaticNodeTablesTables" arguments="System,1,NoChildren"/>
+							<SelectionRef name="TplSelectionTables" arguments="User,0,WithChildren"/>
 						</Children>
 					</StaticNode>
 					<StaticNode nodeId="Views">

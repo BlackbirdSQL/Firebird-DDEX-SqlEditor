@@ -1053,6 +1053,7 @@
 				<Property name="IsForeignKey" underlyingMember="IS_FOREIGNKEY" />
 				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_INDEX" >
 					<Conversion>
+						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
 						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
 					</Conversion>
 				</Property>
@@ -1099,6 +1100,7 @@
 				<Property name="IsUnique" underlyingMember="IS_UNIQUE" />
 				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_INDEX" >
 					<Conversion>
+						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
 						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
 					</Conversion>
 				</Property>
@@ -1189,6 +1191,7 @@
 				<Property name="Name" underlyingMember="VIEW_NAME" isIdentifierPart="true" />
 				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_VIEW" >
 					<Conversion>
+						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
 						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
 					</Conversion>
 				</Property>
@@ -1256,6 +1259,7 @@
 				<Property name="Dsl" underlyingMember="SOURCE"/>
 				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_PROCEDURE" >
 					<Conversion>
+						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
 						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
 					</Conversion>
 				</Property>
@@ -1365,6 +1369,7 @@
 				<Property name="Description" underlyingMember="DESCRIPTION"/>
 				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FUNCTION" >
 					<Conversion>
+						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
 						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
 					</Conversion>
 				</Property>
