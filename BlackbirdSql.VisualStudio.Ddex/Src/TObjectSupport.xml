@@ -338,7 +338,8 @@
 		<TypeRef name="TplTypeColumn" arguments="Table,TABLE_NAME,Trigger,TRIGGER_NAME,Columns,TplServiceRefColumnIdsRef" />
 
 
-		<Type name="Trigger" preferredOrdering="TABLE_CATALOG,TABLE_SCHEMA,TRIGGER_NAME">
+		<Type name="Trigger" >
+			<!-- preferredOrdering="TABLE_CATALOG,TABLE_SCHEMA,TRIGGER_NAME"> -->
 			<Identifier>
 				<Part name="TABLE_CATALOG" type="System.String" />
 				<Part name="TABLE_SCHEMA" type="System.String" />
