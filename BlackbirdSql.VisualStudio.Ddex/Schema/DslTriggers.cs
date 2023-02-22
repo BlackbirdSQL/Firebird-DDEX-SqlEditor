@@ -207,7 +207,7 @@ BEGIN
 	END
 END");
 
-		Diag.Trace(sql.ToString());
+		// Diag.Trace(sql.ToString());
 
 		return sql;
 	}
