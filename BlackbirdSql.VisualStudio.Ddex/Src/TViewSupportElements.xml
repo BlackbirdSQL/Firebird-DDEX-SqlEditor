@@ -440,13 +440,25 @@
 						<DisplayName resource="Property_Name_Description" />
 						<Description resource="Property_Desc_Description" />
 					</Property>
+					<Property name="INDEX_COUNT">
+						<DisplayName resource="Property_Name_IndexCount" />
+						<Description resource="Property_Desc_IndexCount" />
+					</Property>
+					<Property name="FOREIGNKEY_COUNT">
+						<DisplayName resource="Property_Name_ForeignKeyCount" />
+						<Description resource="Property_Desc_ForeignKeyCount" />
+					</Property>
+					<Property name="TRIGGER_COUNT">
+						<DisplayName resource="Property_Name_TriggerCount" />
+						<Description resource="Property_Desc_TriggrCount" />
+					</Property>
 				</Properties>
 				<Commands>
 					<CommandRef name="CommandRetrieveData" />
 					<CommandRef name="Command$(systemType)NewQuery" />
 				</Commands>
 				<Children>
-					<StaticNode skipWhen="{Table.IS_SYSTEM_TABLE} = 1" nodeId="Indexes">
+					<StaticNode skipWhen="{Table.INDEX_COUNT} = 0" nodeId="Indexes">
 						<DisplayName resource="Node_Name_Indexes" />
 						<!-- <Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.FolderIndexes.ico" assembly="" /> -->
 						<Children>
@@ -459,7 +471,7 @@
 										<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
 											<SelectionNode nodeId="IndexColumn">
 												<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
-												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{IndexColumn.COMPUTED}" assembly="" />
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedTableColumn.ico" when="{IndexColumn.COMPUTED}" assembly="" />
 												<Icon name="Column" />
 												<PropertiesRef name="TplPropertiesIndexColumn" />
 											</SelectionNode>
@@ -476,7 +488,7 @@
 										<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
 											<SelectionNode nodeId="IndexColumn">
 												<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
-												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{IndexColumn.COMPUTED}" assembly="" />
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedTableColumn.ico" when="{IndexColumn.COMPUTED}" assembly="" />
 												<Icon name="Column" />
 												<PropertiesRef name="TplPropertiesIndexColumn" />
 											</SelectionNode>
@@ -493,7 +505,7 @@
 										<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
 											<SelectionNode nodeId="IndexColumn">
 												<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
-												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{IndexColumn.COMPUTED}" assembly="" />
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedTableColumn.ico" when="{IndexColumn.COMPUTED}" assembly="" />
 												<Icon name="Column" />
 												<PropertiesRef name="TplPropertiesIndexColumn" />
 											</SelectionNode>
@@ -510,7 +522,7 @@
 										<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
 											<SelectionNode nodeId="IndexColumn">
 												<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
-												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{IndexColumn.COMPUTED}" assembly="" />
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedTableColumn.ico" when="{IndexColumn.COMPUTED}" assembly="" />
 												<Icon name="Column" />
 												<PropertiesRef name="TplPropertiesIndexColumn" />
 											</SelectionNode>
@@ -520,7 +532,10 @@
 							</Selection>
 						</Children>
 					</StaticNode>
-					<StaticNode skipWhen="{Table.IS_SYSTEM_TABLE} = 1" nodeId="ForeignKeys">
+					<StaticNode skipWhen="{Table.INDEX_COUNT} > 0" nodeId="IndexesEmpty">
+						<DisplayName resource="Node_Name_Indexes" />
+					</StaticNode>
+					<StaticNode skipWhen="{Table.IS_SYSTEM_TABLE} = 1 OR {Table.FOREIGNKEY_COUNT} = 0" nodeId="ForeignKeys">
 						<DisplayName resource="Node_Name_ForeignKeys" />
 						<!-- <Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.FolderForeignKeys.ico" assembly="" /> -->
 						<Children>
@@ -638,7 +653,10 @@
 							</Selection>
 						</Children>
 					</StaticNode>
-					<StaticNode  skipWhen="{Table.IS_SYSTEM_TABLE} = 1" nodeId="Triggers">
+					<StaticNode skipWhen="{Table.IS_SYSTEM_TABLE} = 1 OR {Table.FOREIGNKEY_COUNT} > 0" nodeId="ForeignKeysEmpty">
+						<DisplayName resource="Node_Name_ForeignKeys" />
+					</StaticNode>
+					<StaticNode  skipWhen="{Table.IS_SYSTEM_TABLE} = 1 OR {Table.TRIGGER_COUNT} = 0" nodeId="Triggers">
 						<DisplayName resource="Node_Name_Triggers" />
 						<!-- <Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.FolderTriggers.ico" assembly="" /> -->
 						<Children>
@@ -646,19 +664,16 @@
 							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="StandardTrigger,$(systemType),$(systemObjectFlag),{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME},null"/>
 						</Children>
 					</StaticNode>
-					<StaticNode  skipWhen="{Table.IS_SYSTEM_TABLE} = 0" nodeId="Triggers">
+					<StaticNode  skipWhen="{Table.IS_SYSTEM_TABLE} = 0 OR {Table.TRIGGER_COUNT} = 0" nodeId="Triggers">
 						<DisplayName resource="Node_Name_Triggers" />
 						<!-- <Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.FolderTriggers.ico" assembly="" /> -->
 						<Children>
 							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="SystemTrigger,$(systemType),$(systemObjectFlag),{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME},null"/>
 						</Children>
 					</StaticNode>
-					<!--
-					<StaticNode skipWhen="{Table.IS_SYSTEM_TABLE} = 1" nodeId="Columns">
-						<DisplayName resource="Node_Name_Columns" />
-						<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.DotDotDot.ico" assembly="" />
+					<StaticNode  skipWhen="{Table.TRIGGER_COUNT} > 0" nodeId="TriggersEmpty">
+						<DisplayName resource="Node_Name_Triggers" />
 					</StaticNode>
-					-->
 					<SelectionRef name="TplSelectionColumn" arguments="Table,$(systemType),{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}" />
 				</Children>
 			</SelectionNode>

@@ -72,7 +72,7 @@
 										<Selection type="ViewColumn" restrictions="{View.VIEW_CATALOG},{View.VIEW_SCHEMA},{View.VIEW_NAME}">
 											<SelectionNode nodeId="Column">
 												<DisplayName>{Column.COLUMN_NAME}</DisplayName>
-												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{Column.COMPUTED}" assembly="" />
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedTableColumn.ico" when="{Column.COMPUTED}" assembly="" />
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" when="{Column.IS_AUTOINCREMENT} = 1" assembly="" />
 												<Icon name="PrimaryKey" when="{Column.IS_UNIQUE}" />
 												<Icon name="UniqueKey" when="{Column.IN_PRIMARYKEY}" />
@@ -394,7 +394,7 @@
 							</Selection>
 						</Children>
 					</StaticNode>
-					<StaticNode nodeId="ScalarFunctions">
+					<StaticNode nodeId="Functions">
 						<DisplayName resource="Node_Name_ScalarFunctions" />
 						<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.DatabaseFunctions.ico" assembly="" />
 						<Children>

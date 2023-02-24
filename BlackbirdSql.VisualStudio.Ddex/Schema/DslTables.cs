@@ -41,42 +41,32 @@ internal class DslTables : DslSchema
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
 		var sql = new StringBuilder();
-		// var where = new StringBuilder();
+		var where = new StringBuilder();
 
-		// BlackbirdSql remove "SYSTEM TABLE" restriction. It's working against the ddex structures and
-		// is making things difficult. Also we don't need VIEW_SOURCE here
+		// BlackbirdSql added index, foreign key and trigger counts
 		sql.Append(
 			@"SELECT
 					null AS TABLE_CATALOG,
 					null AS TABLE_SCHEMA,
-					rdb$relation_name AS TABLE_NAME,
+					rfr.rdb$relation_name AS TABLE_NAME,
 					null AS TABLE_TYPE,
-					(CASE WHEN rdb$system_flag IS NULL THEN
+					(CASE WHEN rfr.rdb$system_flag IS NULL THEN
                         0
 					ELSE
-                        rdb$system_flag
+                        rfr.rdb$system_flag
 					END) IS_SYSTEM_TABLE,
-					rdb$owner_name AS OWNER_NAME,
-					rdb$description AS DESCRIPTION,
-					rdb$view_source AS VIEW_SOURCE
-				FROM rdb$relations
-				WHERE rdb$view_source IS NULL");
-
-		// Intercept request from new query
-		DataToolsCommands.CommandLastObjectType = DataToolsCommands.CommandObjectType;
-		/*
-		if (DataToolsCommands.CommandObjectType != DataToolsCommands.DataObjectType.None
-			&& (restrictions == null || restrictions.Length < 3 || (restrictions.Length > 2 && restrictions[2] == null)))
-		{
-			// Diag.Trace("FILTERING TABLE LIST TO SYSTEM_FLAG: " + DataToolsCommands.CommandObjectType);
-			if (DataToolsCommands.CommandObjectType == DataToolsCommands.DataObjectType.User)
-				sql.Append(" AND rdb$system_flag = 0");
-			else
-				sql.Append(" AND rdb$system_flag = 1");
-
-			DataToolsCommands.CommandObjectType = DataToolsCommands.DataObjectType.None;
-		}
-		*/
+					rfr.rdb$owner_name AS OWNER_NAME,
+					rfr.rdb$description AS DESCRIPTION,
+					rfr.rdb$view_source AS VIEW_SOURCE,
+					(SELECT COUNT(*) FROM rdb$triggers trg WHERE trg.rdb$relation_name = rfr.rdb$relation_name) AS TRIGGER_COUNT,
+					(SELECT COUNT(*) FROM rdb$indices idx WHERE idx.rdb$relation_name = rfr.rdb$relation_name) AS INDEX_COUNT,
+					(SELECT COUNT(*) FROM rdb$relation_constraints con
+						INNER JOIN rdb$ref_constraints ref ON ref.rdb$constraint_name = con.rdb$constraint_name
+						INNER JOIN rdb$indices tempidx ON tempidx.rdb$index_name = con.rdb$index_name
+						INNER JOIN rdb$indices refidx ON refidx.rdb$index_name = tempidx.rdb$foreign_key
+						WHERE con.rdb$relation_name = rfr.rdb$relation_name) AS FOREIGNKEY_COUNT
+				FROM rdb$relations rfr
+				WHERE rfr.rdb$view_source IS NULL");
 
 		if (restrictions != null)
 		{
@@ -95,46 +85,38 @@ internal class DslTables : DslSchema
 			/* TABLE_NAME */
 			if (restrictions.Length >= 3 && restrictions[2] != null)
 			{
-				sql.AppendFormat(" AND rdb$relation_name = @p{0}", index++);
+				where.Append(" AND ");
+
+				where.AppendFormat("rdb$relation_name = @p{0}", index++);
 			}
 
-			/* TABLE_TYPE 
+			/* TABLE_TYPE */
 			if (restrictions.Length >= 4 && restrictions[3] != null)
 			{
-				if (where.Length > 0)
-				{
-					where.Append(" AND ");
-				}
+				where.Append(" AND ");
 
 				switch (restrictions[3].ToString())
 				{
-					case "VIEW":
-						where.Append("rdb$view_source IS NOT NULL");
-						break;
-
 					case "SYSTEM TABLE":
-						where.Append("rdb$view_source IS NULL and rdb$system_flag = 1");
+						where.Append("rdb$system_flag = 1");
 						break;
 
 					case "TABLE":
 					default:
-						where.Append("rdb$view_source IS NULL and rdb$system_flag = 0");
+						where.Append("rdb$system_flag = 0");
 						break;
 				}
 			}
-			*/
 		}
 
-		/* if (where.Length > 0)
+		if (where.Length > 0)
 		{
-			sql.AppendFormat(" WHERE {0} ", where.ToString());
+			sql.Append(where.ToString());
 		}
-		*/
 
 		sql.Append(" ORDER BY IS_SYSTEM_TABLE, OWNER_NAME, TABLE_NAME");
 
 		// Diag.Trace(sql.ToString());
-
 		return sql;
 	}
 
@@ -144,29 +126,28 @@ internal class DslTables : DslSchema
 
 		foreach (DataRow row in schema.Rows)
 		{
-			// Setting to true/false is pointless as the underlying column is already an int16 so we'll handle in sql.
-			// You cannot summarily change the column type through assignment.
-			if (Convert.ToInt32(row["IS_SYSTEM_TABLE"], CultureInfo.InvariantCulture) == 0)
+			row["TABLE_TYPE"] = "TABLE";
+			if (row["IS_SYSTEM_TABLE"] == DBNull.Value ||
+				Convert.ToInt32(row["IS_SYSTEM_TABLE"], CultureInfo.InvariantCulture) == 0)
 			{
-				// row["IS_SYSTEM_TABLE"] = false;
-				row["TABLE_TYPE"] = "TABLE";
+				row["IS_SYSTEM_TABLE"] = false;
 			}
 			else
 			{
-				// row["IS_SYSTEM_TABLE"] = true;
+				row["IS_SYSTEM_TABLE"] = true;
 				row["TABLE_TYPE"] = "SYSTEM_TABLE";
 			}
-			/* if (row["VIEW_SOURCE"] != null &&
+			if (row["VIEW_SOURCE"] != null &&
 				row["VIEW_SOURCE"].ToString().Length > 0)
 			{
 				row["TABLE_TYPE"] = "VIEW";
-			} */
+			}
 		}
 
 		schema.EndLoadData();
 		schema.AcceptChanges();
 
-		// schema.Columns.Remove("VIEW_SOURCE");
+		schema.Columns.Remove("VIEW_SOURCE");
 	}
 
 	#endregion

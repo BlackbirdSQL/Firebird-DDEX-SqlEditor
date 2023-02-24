@@ -723,4 +723,22 @@
   <data name="Type_ViewColumn" xml:space="preserve">
     <value>View Column</value>
   </data>
+  <data name="Property_Desc_ForeignKeyCount" xml:space="preserve">
+    <value>Number of foreign key constriants configured for this relation</value>
+  </data>
+  <data name="Property_Desc_IndexCount" xml:space="preserve">
+    <value>Number of indexes configured for this table</value>
+  </data>
+  <data name="Property_Desc_TriggerCount" xml:space="preserve">
+    <value>Number of triggers dependent on this relation</value>
+  </data>
+  <data name="Property_Name_ForeignKeyCount" xml:space="preserve">
+    <value>Foreign keys</value>
+  </data>
+  <data name="Property_Name_IndexCount" xml:space="preserve">
+    <value>Indexes</value>
+  </data>
+  <data name="Property_Name_TriggerCount" xml:space="preserve">
+    <value>Triggers</value>
+  </data>
 </root>

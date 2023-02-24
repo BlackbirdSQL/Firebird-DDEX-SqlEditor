@@ -364,6 +364,9 @@
 				<Property name="TABLE_TYPE" type="System.String" />
 				<Property name="DESCRIPTION" type="System.String" />
 				<Property name="IS_SYSTEM_TABLE" type="System.Int16" />
+				<Property name="INDEX_COUNT" type="System.Int32" />
+				<Property name="FOREIGNKEY_COUNT" type="System.Int32" />
+				<Property name="TRIGGER_COUNT" type="System.Int32" />
 			</Properties>
 			<Services>
 				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">

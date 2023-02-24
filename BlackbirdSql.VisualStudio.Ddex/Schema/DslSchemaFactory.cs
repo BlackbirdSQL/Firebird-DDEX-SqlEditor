@@ -71,6 +71,7 @@ internal sealed class DslSchemaFactory
 			case "Generators":
 			case "IndexColumns":
 			case "Indexes":
+			case "Tables":
 			case "Triggers":
 			case "ViewColumns":
 				schemaCollection = collectionName;
@@ -175,6 +176,7 @@ internal sealed class DslSchemaFactory
 			"GENERATORS" => new DslGenerators(),
 			"INDEXCOLUMNS" => new DslIndexColumns(),
 			"INDEXES" => new DslIndexes(),
+			"TABLES" => new DslTables(),
 			"TRIGGERS" => new DslTriggers(),
 			"SYSTEMTRIGGERS" => new DslSystemTriggers(),
 			"AUTOINCREMENTTRIGGERS" => new DslAutoIncrementTriggers(),
@@ -206,6 +208,7 @@ internal sealed class DslSchemaFactory
 			"SYSTEMTRIGGERS" => new DslSystemTriggers(),
 			"AUTOINCREMENTTRIGGERS" => new DslAutoIncrementTriggers(),
 			"STANDARDTRIGGERS" => new DslStandardTriggers(),
+			"TABLES" => new DslTables(),
 			"TRIGGERCOLUMNS" => new DslTriggerColumns(),
 			"VIEWCOLUMNS" => new DslViewColumns(),
 			_ => ((Func<DslSchema>)(() =>
