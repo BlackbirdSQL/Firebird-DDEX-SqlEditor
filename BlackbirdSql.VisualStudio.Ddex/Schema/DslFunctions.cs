@@ -1,8 +1,4 @@
 ﻿/*
- *	This is an override of the FirebirdClient Schema
- *	We're maintaining the same structure so that it's easy to overload any GetSchema's that may need it.
- *	We still use the original Firebird metadata manifest pulled from the Firebird assembly
- *	
  *    The contents of this file are subject to the Initial
  *    Developer's Public License Version 1.0 (the "License");
  *    you may not use this file except in compliance with the
@@ -29,8 +25,7 @@ using BlackbirdSql.Common;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
-
-internal class DslGenerators : DslSchema
+internal class DslFunctions : DslSchema
 {
 	#region Protected Methods
 
@@ -39,45 +34,52 @@ internal class DslGenerators : DslSchema
 		var sql = new StringBuilder();
 		var where = new StringBuilder();
 
-		sql.Append(
-@"EXECUTE BLOCK
-	RETURNS (
-		GENERATOR_CATALOG varchar(50),
-		GENERATOR_SCHEMA varchar(50),
-		GENERATOR_NAME varchar(100),
-		IS_SYSTEM_OBJECT boolean,
-		GENERATOR_ID smallint,
-		INITIAL_VALUE bigint,
-		GENERATOR_INCREMENT int,
-		NEXT_VALUE bigint)
-AS
-BEGIN
-	FOR SELECT
-		null, null, rdb$generator_name, (CASE WHEN rdb$system_flag <> 1 THEN false ELSE true END),
-		rdb$generator_id, rdb$initial_value, rdb$generator_increment 
-	FROM rdb$generators");
+		sql.AppendFormat(
+			@"SELECT
+					null AS FUNCTION_CATALOG,
+					null AS FUNCTION_SCHEMA,
+					rdb$function_name AS FUNCTION_NAME,
+					(CASE WHEN rdb$system_flag <> 1 THEN
+						 false
+					ELSE
+						 true
+					END) AS IS_SYSTEM_OBJECT,
+					rdb$function_type AS FUNCTION_TYPE,
+					rdb$query_name AS QUERY_NAME,
+					rdb$module_name AS FUNCTION_MODULE_NAME,
+					rdb$entrypoint AS FUNCTION_ENTRY_POINT,
+					rdb$return_argument AS RETURN_ARGUMENT,
+					rdb$description AS DESCRIPTION,
+					(CASE WHEN rdb$function_source IS NULL AND rdb$function_blr IS NOT NULL THEN
+						 cast(rdb$function_blr as blob sub_type 1)
+					ELSE
+						 rdb$function_source
+					END) AS SOURCE,
+					{0} AS PACKAGE_NAME
+				FROM rdb$functions",
+			MajorVersionNumber >= 3 ? "rdb$package_name" : "null");
 
 		if (restrictions != null)
 		{
 			var index = 0;
 
-			/* GENERATOR_CATALOG */
+			/* FUNCTION_CATALOG	*/
 			if (restrictions.Length >= 1 && restrictions[0] != null)
 			{
 			}
 
-			/* GENERATOR_SCHEMA	*/
+			/* FUNCTION_SCHEMA */
 			if (restrictions.Length >= 2 && restrictions[1] != null)
 			{
 			}
 
-			/* GENERATOR_NAME */
+			/* FUNCTION_NAME */
 			if (restrictions.Length >= 3 && restrictions[2] != null)
 			{
-				where.AppendFormat("rdb$generator_name = @p{0}", index++);
+				where.AppendFormat("rdb$function_name = @p{0}", index++);
 			}
 
-			/* IS_SYSTEM_GENERATOR	*/
+			/* IS_SYSTEM_FUNCTION */
 			if (restrictions.Length >= 4 && restrictions[3] != null)
 			{
 				if (where.Length > 0)
@@ -94,16 +96,7 @@ BEGIN
 			sql.AppendFormat(" WHERE {0} ", where.ToString());
 		}
 
-		sql.Append(" ORDER BY rdb$generator_name");
-
-		sql.Append(
-@" INTO :GENERATOR_CATALOG, :GENERATOR_SCHEMA, :GENERATOR_NAME, :IS_SYSTEM_OBJECT, :GENERATOR_ID, :INITIAL_VALUE, :GENERATOR_INCREMENT
-	DO BEGIN
-		EXECUTE STATEMENT 'SELECT gen_id(' || GENERATOR_NAME || ', 0) FROM rdb$database' INTO :NEXT_VALUE;
-        SUSPEND;
-    END
-END");
-
+		sql.Append(" ORDER BY PACKAGE_NAME, FUNCTION_NAME");
 
 		return sql;
 	}

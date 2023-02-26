@@ -85,18 +85,19 @@ internal class DslTriggers : DslSchema
 		sql.Append(@"EXECUTE BLOCK
 	RETURNS (
 		TABLE_CATALOG varchar(50), TABLE_SCHEMA varchar(50), TABLE_NAME varchar(100), TRIGGER_NAME varchar(100),
-		IS_SYSTEM_TRIGGER smallint, TRIGGER_TYPE bigint, IS_INACTIVE smallint, SEQUENCENO smallint,
-		EXPRESSION blob sub_type 1, DESCRIPTION blob sub_type 1, IS_AUTOINCREMENT smallint,
+		IS_SYSTEM_OBJECT boolean, TRIGGER_TYPE bigint, IS_INACTIVE smallint, SEQUENCENO smallint,
+		EXPRESSION blob sub_type 1, DESCRIPTION blob sub_type 1, IS_AUTOINCREMENT boolean,
 		DEPENDENCY_FIELDS blob sub_type 1, TRIGGER_DEPENDENCYCOUNT int)
 AS
 DECLARE DEPENDENCY_FIELD varchar(50);
 DECLARE CONSTRAINT_TYPE varchar(20);
 DECLARE SEGMENT_FIELD varchar(50);
+DECLARE AUTOINCREMENT_FLAG int;
 BEGIN
 	FOR
 		SELECT
 			null, null, trg.rdb$relation_name, trg.rdb$trigger_name,
-			(CASE WHEN trg.rdb$system_flag = 1 THEN 1 ELSE 0 END),
+			(CASE WHEN trg.rdb$system_flag <> 1 THEN false ELSE true END),
 			trg.rdb$trigger_type, trg.rdb$trigger_inactive, trg.rdb$trigger_sequence,
 			(CASE WHEN trg.rdb$trigger_source IS NULL AND trg.rdb$trigger_blr IS NOT NULL THEN
 				cast(trg.rdb$trigger_blr as blob sub_type 1)
@@ -161,8 +162,8 @@ BEGIN
 
 		sql.Append(@"
 		ORDER BY trg.rdb$trigger_name
-		INTO :TABLE_CATALOG, :TABLE_SCHEMA, :TABLE_NAME, :TRIGGER_NAME, :IS_SYSTEM_TRIGGER, :TRIGGER_TYPE, :IS_INACTIVE,
-			:SEQUENCENO, :EXPRESSION, :DESCRIPTION, :IS_AUTOINCREMENT, :DEPENDENCY_FIELDS, :TRIGGER_DEPENDENCYCOUNT
+		INTO :TABLE_CATALOG, :TABLE_SCHEMA, :TABLE_NAME, :TRIGGER_NAME, :IS_SYSTEM_OBJECT, :TRIGGER_TYPE, :IS_INACTIVE,
+			:SEQUENCENO, :EXPRESSION, :DESCRIPTION, :AUTOINCREMENT_FLAG, :DEPENDENCY_FIELDS, :TRIGGER_DEPENDENCYCOUNT
 	DO BEGIN
 		FOR
 			SELECT
@@ -177,7 +178,7 @@ BEGIN
 		DO BEGIN
 			IF (:SEGMENT_FIELD IS NULL) THEN
 			BEGIN
-				:IS_AUTOINCREMENT = 0;
+				:AUTOINCREMENT_FLAG = 0;
 			END
 			:TRIGGER_DEPENDENCYCOUNT = :TRIGGER_DEPENDENCYCOUNT + 1;
 			IF (DEPENDENCY_FIELDS <> '') THEN
@@ -188,12 +189,19 @@ BEGIN
 		END
 		IF (:TRIGGER_DEPENDENCYCOUNT <> 1) THEN
 		BEGIN
-			:IS_AUTOINCREMENT = 0;
+			:AUTOINCREMENT_FLAG = 0;
+		END
+		IF (:AUTOINCREMENT_FLAG = 1) THEN
+		BEGIN
+			:IS_AUTOINCREMENT = true;
+        END ELSE BEGIN
+			:IS_AUTOINCREMENT = false;
 		END");
+		 
 		if (_autoIncrement != -1)
 		{
 			sql.AppendFormat(@"
-		IF(:IS_AUTOINCREMENT = {0}) THEN
+		IF(:AUTOINCREMENT_FLAG = {0}) THEN
 		BEGIN
 			SUSPEND;
 		END", _autoIncrement);
@@ -212,41 +220,6 @@ END");
 		return sql;
 	}
 
-	protected override void ProcessResult(DataTable schema)
-	{
-		/*
-		schema.BeginLoadData();
-
-		int len;
-
-		foreach (DataRow row in schema.Rows)
-		{
-			if (row["IS_SYSTEM_TRIGGER"] == DBNull.Value ||
-				Convert.ToInt32(row["IS_SYSTEM_TRIGGER"], CultureInfo.InvariantCulture) == 0)
-			{
-				row["IS_SYSTEM_TRIGGER"] = 0;
-			}
-
-			if (row["DEPENDENCY_FIELDS"] != DBNull.Value)
-			{
-				len = (row["DEPENDENCY_FIELDS"].ToString()).Split(',').Length;
-				row["TRIGGER_DEPENDENCYCOUNT"] = len;
-			}
-			else
-			{
-				len = 0;
-			}
-
-			if (len != 1)
-				row["IS_AUTOINCREMENT"] = false;
-		}
-
-		schema.EndLoadData();
-		schema.AcceptChanges();
-
-		 */
-
-	}
 
 	#endregion
 }

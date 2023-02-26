@@ -447,7 +447,7 @@ class TObjectSelector : AdoDotNetObjectSelector
 		@"
             SELECT t.name AS ""table"", cid, c.name, c.type, ""notnull"", dflt_value, pk, hidden
             FROM system_columns AS t
-            JOIN pragma_table_xinfo(t.name) AS c
+            INNER JOIN pragma_table_xinfo(t.name) AS c
             WHERE t.type = 'table'
                 AND ($table IS NULL OR t.name = $table)
                 AND ($name IS NULL OR c.name = $name)
@@ -492,7 +492,7 @@ class TObjectSelector : AdoDotNetObjectSelector
 		@"
             SELECT t.name AS ""table"", r.name, r.sql
             FROM system_triggers AS t
-            JOIN system_triggers AS r ON r.tbl_name = t.name
+            INNER JOIN system_triggers AS r ON r.tbl_name = t.name
             WHERE t.type = 'table'
                 AND r.type == 'trigger'
                 AND ($table IS NULL OR t.name = $table)
@@ -538,7 +538,7 @@ class TObjectSelector : AdoDotNetObjectSelector
 		@"
             SELECT v.name AS ""view"", cid, c.name, c.type
             FROM system_viewcolumns AS v
-            JOIN pragma_table_xinfo(v.name) AS c
+            INNER JOIN pragma_table_xinfo(v.name) AS c
             WHERE v.type = 'view'
                 AND ($view IS NULL OR v.name = $view)
                 AND ($name IS NULL OR c.name = $name)
@@ -562,7 +562,7 @@ class TObjectSelector : AdoDotNetObjectSelector
 		@"
             SELECT v.name AS ""view"", r.name, r.sql
             FROM system_viewtriggers AS v
-            JOIN system_viewtriggers AS r ON r.tbl_name = v.name
+            INNER JOIN system_viewtriggers AS r ON r.tbl_name = v.name
             WHERE v.type = 'view'
                 AND r.type == 'trigger'
                 AND ($view IS NULL OR v.name = $view)

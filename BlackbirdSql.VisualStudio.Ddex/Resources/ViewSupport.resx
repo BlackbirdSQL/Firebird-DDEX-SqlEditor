@@ -741,4 +741,16 @@
   <data name="Property_Name_TriggerCount" xml:space="preserve">
     <value>Triggers</value>
   </data>
+  <data name="Property_Desc_Index_Expression" xml:space="preserve">
+    <value>The index expression if the index is derived from an expression</value>
+  </data>
+  <data name="Property_Desc_Index_IsComputed" xml:space="preserve">
+    <value>True is the index is derived from an expression else false</value>
+  </data>
+  <data name="Property_Name_Index_Expression" xml:space="preserve">
+    <value>Expression</value>
+  </data>
+  <data name="Property_Name_Index_IsComputed" xml:space="preserve">
+    <value>Computed</value>
+  </data>
 </root>

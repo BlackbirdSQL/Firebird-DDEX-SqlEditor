@@ -50,9 +50,23 @@ internal class DslIndexes : DslSchema
 				    WHERE rel.rdb$constraint_type = 'PRIMARY KEY' AND rel.rdb$index_name = idx.rdb$index_name AND rel.rdb$relation_name = idx.rdb$relation_name) as PRIMARY_KEY,
 					(SELECT COUNT(*) FROM rdb$relation_constraints rel
 					WHERE rel.rdb$constraint_type = 'UNIQUE' AND rel.rdb$index_name = idx.rdb$index_name AND rel.rdb$relation_name = idx.rdb$relation_name) as UNIQUE_KEY,
-					idx.rdb$system_flag AS IS_SYSTEM_INDEX,
+					(CASE WHEN idx.rdb$system_flag <> 1 THEN
+						 false
+					ELSE
+						 true
+					END) AS IS_SYSTEM_OBJECT,
 					idx.rdb$index_type AS INDEX_TYPE,
-					idx.rdb$description AS DESCRIPTION
+					idx.rdb$description AS DESCRIPTION,
+					(CASE WHEN idx.rdb$expression_source IS NULL AND idx.rdb$expression_blr IS NOT NULL THEN
+						cast(idx.rdb$expression_blr as blob sub_type 1)
+					ELSE
+						idx.rdb$expression_source
+					END) AS EXPRESSION,
+					(CASE WHEN idx.rdb$expression_source IS NULL AND idx.rdb$expression_blr IS NULL THEN
+						false
+					ELSE
+						true
+					END) AS IS_COMPUTED
 				FROM rdb$indices idx");
 
 		if (restrictions != null)
@@ -111,8 +125,6 @@ internal class DslIndexes : DslSchema
 			row["IS_PRIMARY"] = !(row["PRIMARY_KEY"] == DBNull.Value || Convert.ToInt32(row["PRIMARY_KEY"], CultureInfo.InvariantCulture) == 0);
 
 			row["IS_INACTIVE"] = !(row["IS_INACTIVE"] == DBNull.Value || Convert.ToInt32(row["IS_INACTIVE"], CultureInfo.InvariantCulture) == 0);
-
-			row["IS_SYSTEM_INDEX"] = !(row["IS_SYSTEM_INDEX"] == DBNull.Value || Convert.ToInt32(row["IS_SYSTEM_INDEX"], CultureInfo.InvariantCulture) == 0);
 
 			row["IS_FOREIGNKEY"] = (row["FOREIGN_KEY"] != DBNull.Value);
 		}

@@ -29,8 +29,8 @@
 							<CommandRef name="CommandNewQuery" />
 						</Commands>-->
 						<Children>
-							<StaticNodeRef name="TplStaticNodeTablesTables" arguments="System,1,NoChildren"/>
-							<SelectionRef name="TplSelectionTables" arguments="User,0,WithChildren"/>
+							<StaticNodeRef name="TplStaticNodeTablesTables" arguments="System,true,NoChildren"/>
+							<SelectionRef name="TplSelectionTables" arguments="User,false,WithChildren"/>
 						</Children>
 					</StaticNode>
 					<StaticNode nodeId="Views">
@@ -69,108 +69,7 @@
 										<CommandRef name="CommandRetrieveData" />
 									</Commands>
 									<Children>
-										<Selection type="ViewColumn" restrictions="{View.VIEW_CATALOG},{View.VIEW_SCHEMA},{View.VIEW_NAME}">
-											<SelectionNode nodeId="Column">
-												<DisplayName>{Column.COLUMN_NAME}</DisplayName>
-												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedTableColumn.ico" when="{Column.COMPUTED}" assembly="" />
-												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" when="{Column.IS_AUTOINCREMENT} = 1" assembly="" />
-												<Icon name="PrimaryKey" when="{Column.IS_UNIQUE}" />
-												<Icon name="UniqueKey" when="{Column.IN_PRIMARYKEY}" />
-												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ViewColumn.ico" assembly="" />
-												<Properties>
-													<TypeDisplayName resource="Type_ViewColumn" />
-													<Property name="VIEW_CATALOG">
-														<DisplayName resource="Identifier_Name_Catalog" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Catalog" />
-													</Property>
-													<Property name="VIEW_SCHEMA">
-														<DisplayName resource="Identifier_Name_Schema" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Schema" />
-													</Property>
-													<Property name="VIEW_NAME">
-														<DisplayName resource="Identifier_Name_View" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_View" />
-													</Property>
-													<Property name="COLUMN_NAME">
-														<DisplayName resource="Identifier_Name_Name" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Name" />
-													</Property>
-													<Property name="COLUMN_DATA_TYPE">
-														<DisplayName resource="Property_Name_Column_ProviderDataType" />
-														<Category resource="Category_DataType" />
-														<Description resource="Property_Desc_Column_ProviderDataType" />
-														<StandardValuesRef name="TplStandardValuesColumnDataType"/>
-													</Property>
-													<!--
-													<Property name="FW_DATA_TYPE">
-														<DisplayName resource="Property_Name_Column_FrameworkDataType" />
-														<Category resource="Category_DataType" />
-														<Description resource="Property_Desc_Column_FrameworkDataType" />
-													</Property>
-													-->
-													<Property name="COLUMN_SIZE">
-														<DisplayName resource="Property_Name_Column_Length" />
-														<Category resource="Category_DataType" />
-														<Description resource="Property_Desc_Column_Length" />
-													</Property>
-													<Property name="NUMERIC_PRECISION">
-														<DisplayName resource="Property_Name_Column_Precision" />
-														<Category resource="Category_DataType" />
-														<Description resource="Property_Desc_Column_Precision" />
-													</Property>
-													<Property name="NUMERIC_SCALE">
-														<DisplayName resource="Property_Name_Column_Scale" />
-														<Category resource="Category_DataType" />
-														<Description resource="Property_Desc_Column_Scale" />
-													</Property>
-													<Property name="IS_NULLABLE">
-														<DisplayName resource="Property_Name_Column_Nullable" />
-														<Category resource="Category_DataType" />
-														<Description resource="Property_Desc_Column_Nullable" />
-													</Property>
-													<Property name="IN_PRIMARYKEY">
-														<DisplayName resource="Property_Name_Column_InPrimaryKey" />
-														<Description resource="Property_Desc_Column_InPrimaryKey" />
-													</Property>
-													<Property name="IS_UNIQUE">
-														<DisplayName resource="Property_Name_Column_IsUnique" />
-														<Description resource="Property_Desc_Column_IsUnique" />
-													</Property>
-													<Property name="COMPUTED">
-														<DisplayName resource="Property_Name_Column_Computed" />
-														<Description resource="Property_Desc_Column_Computed" />
-													</Property>
-													<Property name="EXPRESSION">
-														<DisplayName resource="Property_Name_Column_Expression" />
-														<Description resource="Property_Desc_Column_Expression" />
-													</Property>
-													<Property name="CHARACTER_SET_NAME">
-														<DisplayName resource="Property_Name_Column_CharacterSet" />
-														<Category resource="Category_DataType" />
-													</Property>
-													<Property name="COLLATION_NAME">
-														<DisplayName resource="Property_Name_Column_Collation" />
-														<Category resource="Category_DataType" />
-													</Property>
-													<Property name="DESCRIPTION">
-														<DisplayName resource="Property_Name_Description" />
-														<Description resource="Property_Desc_Description" />
-													</Property>
-													<Property name="ORDINAL_POSITION">
-														<DisplayName resource="Property_Name_Column_Ordinal" />
-														<Description resource="Property_Desc_Column_Ordinal" />
-													</Property>
-													<Property name="COLUMN_DEFAULT">
-														<DisplayName resource="Property_Name_Column_Default" />
-														<Description resource="Property_Desc_Column_Default" />
-													</Property>
-												</Properties>
-											</SelectionNode>
-										</Selection>
+										<SelectionRef name="TplSelectionColumn" arguments="View,User,{View.VIEW_CATALOG},,{View.VIEW_SCHEMA},,{View.VIEW_NAME}" />
 									</Children>
 								</SelectionNode>
 							</Selection>
@@ -201,11 +100,11 @@
 											<Category resource="Category_Identifier" />
 											<Description resource="Identifier_Desc_Name" />
 										</Property>
-										<Property name="IS_SYSTEM_PROCEDURE">
+										<Property name="IS_SYSTEM_OBJECT">
 											<DisplayName resource="Property_Name_Type" />
 											<StandardValues>
-												<StandardValue value="0" resource="Property_Value_ProcedureType_User" />
-												<StandardValue value="1" resource="Property_Value_ProcedureType_System" />
+												<StandardValue value="false" resource="Property_Value_ProcedureType_User" />
+												<StandardValue value="true" resource="Property_Value_ProcedureType_System" />
 											</StandardValues>
 										</Property>
 										<Property name="DESCRIPTION">
@@ -419,16 +318,20 @@
 											<Category resource="Category_Identifier" />
 											<Description resource="Identifier_Desc_Name" />
 										</Property>
-										<Property name="IS_SYSTEM_FUNCTION">
+										<Property name="IS_SYSTEM_OBJECT">
 											<DisplayName resource="Property_Name_Type" />
 											<StandardValues>
-												<StandardValue value="0" resource="Property_Value_FunctionType_User" />
-												<StandardValue value="1" resource="Property_Value_FunctionType_System" />
+												<StandardValue value="false" resource="Property_Value_FunctionType_User" />
+												<StandardValue value="true" resource="Property_Value_FunctionType_System" />
 											</StandardValues>
 										</Property>
 										<Property name="DESCRIPTION">
 											<DisplayName resource="Property_Name_Description" />
 											<Description resource="Property_Desc_Description" />
+										</Property>
+										<Property name="SOURCE">
+											<DisplayName resource="Property_Name_Dsl" />
+											<Description resource="Property_Desc_Dsl" />
 										</Property>
 									</Properties>
 									<Children>
@@ -525,7 +428,7 @@
 							<Selection type="Sequence" restrictions="null,null">
 								<SelectionNode nodeId="Sequence">
 									<DisplayName>{Sequence.GENERATOR_NAME}</DisplayName>
-									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementTableColumn.ico" assembly="" />
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" assembly="" />
 									<Properties>
 										<TypeDisplayName resource="Type_Sequence" />
 										<Property name="GENERATOR_CATALOG">
@@ -567,9 +470,9 @@
 						<DisplayName resource="Node_Name_Triggers" />
 						<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.DatabaseTriggers.ico" assembly="" />
 						<Children>
-							<StaticNodeRef name="TplStaticNodeTriggers" arguments="SystemTrigger,NoChildren,System,1"/>
-							<StaticNodeRef name="TplStaticNodeTriggers" arguments="AutoIncrementTrigger,WithChildren,User,0"/>
-							<StaticNodeRef name="TplStaticNodeTriggers" arguments="StandardTrigger,WithChildren,User,0"/>
+							<StaticNodeRef name="TplStaticNodeTriggers" arguments="SystemTrigger,NoChildren,System,true"/>
+							<StaticNodeRef name="TplStaticNodeTriggers" arguments="AutoIncrementTrigger,WithChildren,User,false"/>
+							<StaticNodeRef name="TplStaticNodeTriggers" arguments="StandardTrigger,WithChildren,User,false"/>
 						</Children>
 					</StaticNode>
 					<StaticNode nodeId="Domains">

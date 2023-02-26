@@ -11,8 +11,7 @@ using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using BlackbirdSql.Common;
 using BlackbirdSql.Common.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Schema;
-
-
+using System.Linq.Expressions;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -69,6 +68,8 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 	public TConnectionUIControl() : base()
 	{
+		try
+		{ 
 		// Diag.Trace();
 		InitializeComponent();
 
@@ -88,6 +89,11 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		cmbDatabase.DataSource = _DataSources.Dependent;
 		cmbDatabase.ValueMember = "InitialCatalogLc";
 		cmbDatabase.DisplayMember = "Name";
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+		}
 
 	}
 
@@ -110,75 +116,83 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	// ---------------------------------------------------------------------------------
 	public override void LoadProperties()
 	{
-		// Diag.Trace("Loading datasource text");
-		DisableEvents();
-
-		if (Site != null && Site.TryGetValue("Data Source", out object value))
-			txtDataSource.Text = (string)value;
-		else
-			txtDataSource.Text = DslConnectionString.DefaultValueDataSource;
-
-		if (txtDataSource.Text != "")
-			cmbDataSource.SelectedValue = txtDataSource.Text.ToLower();
-		else
-			cmbDataSource.SelectedIndex = -1;
+		try
+		{
+			// Diag.Trace("Loading datasource text");
+			DisableEvents();
 
 
-		if (Site != null && Site.TryGetValue("User ID", out value))
-			txtUserName.Text = (string)value;
-		else
-			txtUserName.Text = DslConnectionString.DefaultValueUserId;
+			if (Site != null && Site.TryGetValue("Data Source", out object value))
+				txtDataSource.Text = (string)value;
+			else
+				txtDataSource.Text = DslConnectionString.DefaultValueDataSource;
 
-		if (Site != null && Site.TryGetValue("Initial Catalog", out value))
-			txtDatabase.Text = (string)value;
-		else
-			txtDatabase.Text = DslConnectionString.DefaultValueCatalog;
-
-
-		if (Site != null && Site.TryGetValue("Password", out value))
-			txtPassword.Text = (string)value;
-		else
-			txtPassword.Text = DslConnectionString.DefaultValuePassword;
+			if (txtDataSource.Text != "")
+				cmbDataSource.SelectedValue = txtDataSource.Text.ToLower();
+			else
+				cmbDataSource.SelectedIndex = -1;
 
 
-		if (Site != null && Site.TryGetValue("Role Name", out value))
-			txtRole.Text = (string)value;
-		else
-			txtRole.Text = DslConnectionString.DefaultValueRoleName;
+			if (Site != null && Site.TryGetValue("User ID", out value))
+				txtUserName.Text = (string)value;
+			else
+				txtUserName.Text = DslConnectionString.DefaultValueUserId;
 
-		if (Site != null && Site.TryGetValue("Character Set", out value))
-			cboCharset.SetSelectedValueX(value);
-		else
-			cboCharset.SetSelectedValueX(DslConnectionString.DefaultValueCharacterSet);
+			if (Site != null && Site.TryGetValue("Initial Catalog", out value))
+				txtDatabase.Text = (string)value;
+			else
+				txtDatabase.Text = DslConnectionString.DefaultValueCatalog;
 
-		if (Site != null && Site.TryGetValue("Port Number", out value))
-			txtPort.Text = (string)value;
-		else
-			txtPort.Text = DslConnectionString.DefaultValuePortNumber.ToString();
 
-		if (Site != null && Site.TryGetValue("Dialect", out value))
-			cboDialect.SetSelectedValueX(value);
-		else
-			cboDialect.SetSelectedValueX(DslConnectionString.DefaultValueDialect);
+			if (Site != null && Site.TryGetValue("Password", out value))
+				txtPassword.Text = (string)value;
+			else
+				txtPassword.Text = DslConnectionString.DefaultValuePassword;
 
-		if (Site != null && Site.TryGetValue("Server Type", out value))
-			cboServerType.SelectedIndex = Convert.ToInt32((string)value);
-		else
-			cboServerType.SelectedIndex = (int)DslConnectionString.DefaultValueServerType;
-		// Diag.Trace("Default ServerType: " + (int)DslConnectionString.DefaultValueServerType);
-		// Strange bug here. The default on the enum is being returned as the literal. Cannot trace it
 
-		EnableEvents();
+			if (Site != null && Site.TryGetValue("Role Name", out value))
+				txtRole.Text = (string)value;
+			else
+				txtRole.Text = DslConnectionString.DefaultValueRoleName;
 
-		// Diag.Trace("Positioning erd datasources");
-		if (txtDataSource.Text.Length > 0)
-			_DataSources.Position = _DataSources.Find(txtDataSource.Text.ToLower());
-		else
-			_DataSources.Position = -1;
+			if (Site != null && Site.TryGetValue("Character Set", out value))
+				cboCharset.SetSelectedValueX(value);
+			else
+				cboCharset.SetSelectedValueX(DslConnectionString.DefaultValueCharacterSet);
 
-		_DataSources.CurrentChanged += DataSourcesCurrentChanged;
-		_DataSources.DependencyCurrentChanged += DatabasesCurrentChanged;
+			if (Site != null && Site.TryGetValue("Port Number", out value))
+				txtPort.Text = (string)value;
+			else
+				txtPort.Text = DslConnectionString.DefaultValuePortNumber.ToString();
 
+			if (Site != null && Site.TryGetValue("Dialect", out value))
+				cboDialect.SetSelectedValueX(value);
+			else
+				cboDialect.SetSelectedValueX(DslConnectionString.DefaultValueDialect);
+
+			if (Site != null && Site.TryGetValue("Server Type", out value))
+				cboServerType.SelectedIndex = Convert.ToInt32((string)value);
+			else
+				cboServerType.SelectedIndex = (int)DslConnectionString.DefaultValueServerType;
+			// Diag.Trace("Default ServerType: " + (int)DslConnectionString.DefaultValueServerType);
+			// Strange bug here. The default on the enum is being returned as the literal. Cannot trace it
+
+
+			EnableEvents();
+
+			// Diag.Trace("Positioning erd datasources");
+			if (txtDataSource.Text.Length > 0)
+				_DataSources.Position = _DataSources.Find(txtDataSource.Text.ToLower());
+			else
+				_DataSources.Position = -1;
+
+			_DataSources.CurrentChanged += DataSourcesCurrentChanged;
+			_DataSources.DependencyCurrentChanged += DatabasesCurrentChanged;
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+		}
 
 	}
 
@@ -257,29 +271,35 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	// ---------------------------------------------------------------------------------
 	private void DatabaseTextChanged(object sender, EventArgs e)
 	{
-		if (EventsDisabled)
-			return;
-
-		// Diag.Trace("Database text changed");
-		Site["Initial Catalog"] = txtDatabase.Text.Trim();
-
-		if (!_DataSources.IsReady)
-			return;
-
-		string database = txtDatabase.Text.Trim().ToLower();
-
-		if (database == "")
-			return;
-
-		if (_DataSources.DependentRow != null)
+		try
 		{
-			if (database == (string)_DataSources.DependentRow["InitialCatalogLc"])
+			if (EventsDisabled)
 				return;
+
+			// Diag.Trace("Database text changed");
+			Site["Initial Catalog"] = txtDatabase.Text.Trim();
+
+			if (!_DataSources.IsReady)
+				return;
+
+			string database = txtDatabase.Text.Trim().ToLower();
+
+			if (database == "")
+				return;
+
+			if (_DataSources.DependentRow != null)
+			{
+				if (database == (string)_DataSources.DependentRow["InitialCatalogLc"])
+					return;
+			}
+
+			_DataSources.DependentPosition = _DataSources.FindDependent("InitialCatalogLc", database);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
 		}
 
-		_DataSources.DependentPosition = _DataSources.FindDependent("InitialCatalogLc", database);
-
-		return;
 	}
 
 
@@ -296,31 +316,40 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	{
 		// Diag.Trace("Databases CurrentChanged");
 
-		if (_DataSources.DependentRow == null || (string)_DataSources.DependentRow["InitialCatalogLc"] == "")
-			return;
-
-		DisableEvents();
-
-		if (txtDatabase.Text.ToLower() != (string)_DataSources.DependentRow["InitialCatalogLc"])
-			Site["Initial Catalog"] = txtDatabase.Text = (string)_DataSources.DependentRow["InitialCatalog"];
-
-		int selectedIndex = cboCharset.SelectedIndex;
-
-		cboCharset.SelectedValue = (string)_DataSources.DependentRow["Charset"];
-
-		if (cboCharset.SelectedIndex == -1)
-			cboCharset.SelectedIndex = selectedIndex;
-		else
-			Site["Character Set"] = cboCharset.Text;
-
-		if ((string)_DataSources.DependentRow["UserName"] != "")
+		try
 		{
-			Site["User ID"] = txtUserName.Text = (string)_DataSources.DependentRow["UserName"];
-			Site["Password"] = txtPassword.Text = (string)_DataSources.DependentRow["Password"];
-			Site["Role Name"] = txtRole.Text = (string)_DataSources.DependentRow["RoleName"];
+			if (_DataSources.DependentRow == null || (string)_DataSources.DependentRow["InitialCatalogLc"] == "")
+				return;
+
+			DisableEvents();
+
+			if (txtDatabase.Text.ToLower() != (string)_DataSources.DependentRow["InitialCatalogLc"])
+				Site["Initial Catalog"] = txtDatabase.Text = (string)_DataSources.DependentRow["InitialCatalog"];
+
+			int selectedIndex = cboCharset.SelectedIndex;
+
+			cboCharset.SelectedValue = (string)_DataSources.DependentRow["Charset"];
+
+			if (cboCharset.SelectedIndex == -1)
+				cboCharset.SelectedIndex = selectedIndex;
+			else
+				Site["Character Set"] = cboCharset.Text;
+
+			if ((string)_DataSources.DependentRow["UserName"] != "")
+			{
+				Site["User ID"] = txtUserName.Text = (string)_DataSources.DependentRow["UserName"];
+				Site["Password"] = txtPassword.Text = (string)_DataSources.DependentRow["Password"];
+				Site["Role Name"] = txtRole.Text = (string)_DataSources.DependentRow["RoleName"];
+			}
+
+			EnableEvents();
+
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
 		}
 
-		EnableEvents();
 	}
 
 
@@ -332,29 +361,37 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	// ---------------------------------------------------------------------------------
 	private void DataSourceTextChanged(object sender, EventArgs e)
 	{
-		if (EventsDisabled)
-			return;
-
-		// Diag.Trace("Datasource text changed");
-
-		Site["Data Source"] = txtDataSource.Text.Trim();
-
-		if (!_DataSources.IsReady)
-			return;
-
-		string datasource = txtDataSource.Text.Trim().ToLower();
-
-		if (datasource == "")
-			return;
-
-		if (_DataSources.Row != null)
+		try
 		{
-			if (datasource == (string)_DataSources.CurrentValue)
+			if (EventsDisabled)
 				return;
+
+			// Diag.Trace("Datasource text changed");
+
+			Site["Data Source"] = txtDataSource.Text.Trim();
+
+			if (!_DataSources.IsReady)
+				return;
+
+			string datasource = txtDataSource.Text.Trim().ToLower();
+
+			if (datasource == "")
+				return;
+
+			if (_DataSources.Row != null)
+			{
+				if (datasource == (string)_DataSources.CurrentValue)
+					return;
+			}
+
+
+			_DataSources.Position = _DataSources.Find(datasource);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
 		}
 
-
-		_DataSources.Position = _DataSources.Find(datasource);
 
 	}
 
@@ -376,38 +413,45 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	{
 		// Diag.Trace("_DataSources CurrentChanged");
 
-		if (_DataSources.Row == null || (int)_DataSources.Row["Orderer"] == 0)
-			return;
-
-		DisableEvents();
-
-		if ((int)_DataSources.Row["Orderer"] == 1)
+		try
 		{
-			Site["Data Source"] = txtDataSource.Text = "";
-			Site["Port Number"] = txtPort.Text = DslConnectionString.DefaultValuePortNumber.ToString();
-			Site["Server Type"] = cboServerType.SetSelectedIndexX((int)DslConnectionString.DefaultValueServerType).ToString();
-			Site["Initial Catalog"] = txtDatabase.Text = "";
-			Site["Dialect"] = (string)cboDialect.SetSelectedValueX(DslConnectionString.DefaultValueDialect);
-			Site["User ID"] = txtUserName.Text = "";
-			Site["Password"] = txtPassword.Text = "";
-			Site["Role Name"] = txtRole.Text = "";
-			cboCharset.SelectedValue = DslConnectionString.DefaultValueCharacterSet;
-			Site["Character Set"] = DslConnectionString.DefaultValueCharacterSet;
-			Site["Character Set"] = (string)cboCharset.SetSelectedValueX(DslConnectionString.DefaultValueCharacterSet);
+			if (_DataSources.Row == null || (int)_DataSources.Row["Orderer"] == 0)
+				return;
 
-			_DataSources.Position = -1;
+			DisableEvents();
+
+			if ((int)_DataSources.Row["Orderer"] == 1)
+			{
+				Site["Data Source"] = txtDataSource.Text = "";
+				Site["Port Number"] = txtPort.Text = DslConnectionString.DefaultValuePortNumber.ToString();
+				Site["Server Type"] = cboServerType.SetSelectedIndexX((int)DslConnectionString.DefaultValueServerType).ToString();
+				Site["Initial Catalog"] = txtDatabase.Text = "";
+				Site["Dialect"] = (string)cboDialect.SetSelectedValueX(DslConnectionString.DefaultValueDialect);
+				Site["User ID"] = txtUserName.Text = "";
+				Site["Password"] = txtPassword.Text = "";
+				Site["Role Name"] = txtRole.Text = "";
+				cboCharset.SelectedValue = DslConnectionString.DefaultValueCharacterSet;
+				Site["Character Set"] = DslConnectionString.DefaultValueCharacterSet;
+				Site["Character Set"] = (string)cboCharset.SetSelectedValueX(DslConnectionString.DefaultValueCharacterSet);
+
+				_DataSources.Position = -1;
+			}
+			else
+			{
+				if (txtDataSource.Text.ToLower() != (string)_DataSources.Row["DataSourceLc"])
+					Site["Data Source"] = txtDataSource.Text = (string)_DataSources.Row["DataSource"];
+
+
+				if ((int)_DataSources.Row["PortNumber"] != 0 && txtPort.Text != _DataSources.Row["PortNumber"].ToString())
+					Site["Port Number"] = txtPort.Text = _DataSources.Row["PortNumber"].ToString();
+			}
+
+			EnableEvents();
 		}
-		else
+		catch (Exception ex)
 		{
-			if (txtDataSource.Text.ToLower() != (string)_DataSources.Row["DataSourceLc"])
-				Site["Data Source"] = txtDataSource.Text = (string)_DataSources.Row["DataSource"];
-
-
-			if ((int)_DataSources.Row["PortNumber"] != 0 && txtPort.Text != _DataSources.Row["PortNumber"].ToString())
-				Site["Port Number"] = txtPort.Text = _DataSources.Row["PortNumber"].ToString();
+			Diag.Dug(ex);
 		}
-
-		EnableEvents();
 	}
 
 
@@ -421,34 +465,41 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	// ---------------------------------------------------------------------------------
 	private void SetProperty(object sender, EventArgs e)
 	{
-		if (EventsDisabled)
-			return;
-
-		if (Site != null)
+		try
 		{
-			if (sender.Equals(txtUserName))
-				Site["User ID"] = txtUserName.Text;
-			else if (sender.Equals(txtPassword))
-				Site["Password"] = txtPassword.Text;
-			else if (sender.Equals(txtRole))
-				Site["Role Name"] = txtRole.Text;
-			else if (sender.Equals(cboCharset))
-				Site["Character Set"] = cboCharset.Text;
-			else if (sender.Equals(txtPort))
+			if (EventsDisabled)
+				return;
+
+			if (Site != null)
 			{
-				if (!String.IsNullOrEmpty(txtPort.Text))
-					Site["Port Number"] = Convert.ToInt32(txtPort.Text);
+				if (sender.Equals(txtUserName))
+					Site["User ID"] = txtUserName.Text;
+				else if (sender.Equals(txtPassword))
+					Site["Password"] = txtPassword.Text;
+				else if (sender.Equals(txtRole))
+					Site["Role Name"] = txtRole.Text;
+				else if (sender.Equals(cboCharset))
+					Site["Character Set"] = cboCharset.Text;
+				else if (sender.Equals(txtPort))
+				{
+					if (!String.IsNullOrEmpty(txtPort.Text))
+						Site["Port Number"] = Convert.ToInt32(txtPort.Text);
+				}
+				else if (sender.Equals(cboDialect))
+				{
+					if (!String.IsNullOrEmpty(cboDialect.Text))
+						Site["Dialect"] = Convert.ToInt32(cboDialect.Text);
+				}
+				else if (sender.Equals(cboServerType))
+				{
+					if (cboServerType.SelectedIndex != -1)
+						Site["Server Type"] = cboServerType.SelectedIndex;
+				}
 			}
-			else if (sender.Equals(cboDialect))
-			{
-				if (!String.IsNullOrEmpty(cboDialect.Text))
-					Site["Dialect"] = Convert.ToInt32(cboDialect.Text);
-			}
-			else if (sender.Equals(cboServerType))
-			{
-				if (cboServerType.SelectedIndex != -1)
-					Site["Server Type"] = cboServerType.SelectedIndex;
-			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
 		}
 
 	}

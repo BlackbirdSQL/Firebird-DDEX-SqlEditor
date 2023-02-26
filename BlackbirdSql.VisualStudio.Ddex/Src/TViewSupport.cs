@@ -23,7 +23,8 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 //										TViewSupport Class
 //
 /// <summary>
-/// Implementation of <see cref="IVsDataViewSupport"/> and <see cref="IVsDataSupportImportResolver"/> interfaces
+/// Implementation of <see cref="IVsDataViewSupport"/> and <see cref="IVsDataSupportImportResolver"/>
+/// and <see cref="IVsDataViewIconProvider"/>interfaces.
 /// </summary>
 // =========================================================================================================
 internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDataViewIconProvider
@@ -58,6 +59,7 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 	{
 		// Diag.Trace();
 	}
+
 	public TViewSupport(string resourceName, Assembly assembly) : base(resourceName, assembly)
 	{
 		// Diag.Trace();
@@ -133,9 +135,9 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 		object service = base.CreateService(serviceType);
 
 		if (service == null)
-			Diag.Dug(true, serviceType.FullName + " is not directly supported");
+			Diag.Trace(serviceType.FullName + " is not supported");
 		else
-			Diag.Dug(true, serviceType.FullName + " is indirectly supported");
+			Diag.Trace(serviceType.FullName + " is indirectly supported");
 
 		return service;
 	}
@@ -163,14 +165,18 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 		}
 
 		if (!name.EndsWith("Definitions"))
+		{
+			Diag.Dug(true, "Import resource not found: " + name);
 			return null;
+		}
+
 
 		Type type = GetType();
-		string resource = name[..^11] + "s.xml";
+		string resource = type.FullName + name[..^11] + "s.xml";
 
-		// Diag.Trace(type.Namespace + "." + resource);
+		// Diag.Trace(resource);
 
-		return type.Assembly.GetManifestResourceStream(type.FullName + resource);
+		return type.Assembly.GetManifestResourceStream(resource);
 	}
 
 

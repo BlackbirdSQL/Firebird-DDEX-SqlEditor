@@ -18,9 +18,6 @@
 		<None Remove="Extensions\**" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Compile Include="Extensions\XmlParser.cs" />
-	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
 		<Compile Include="Extensions\Options\AbstractOptionModel.cs" />
@@ -38,6 +35,7 @@
 		<Compile Include="Extensions\Options\OverrideDataTypeAttribute.cs" />
 		<Compile Include="Extensions\Options\OverridePropertyNameAttribute.cs" />
 		<Compile Include="Extensions\Options\SettingDataType.cs" />
+		<Compile Include="Extensions\XmlParser.cs" />
 	</ItemGroup>
 
 
@@ -53,6 +51,7 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
+		<PackageReference Include="Microsoft.VisualStudio.Data" Version="17.4.33103.184" />
 		<PackageReference Include="Microsoft.VisualStudio.Data.Framework" Version="17.4.33103.184" />
 		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.4.33103.184" />
 	</ItemGroup>

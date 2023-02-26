@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataObjectSupport xmlns="http://schemas.microsoft.com/VisualStudio/2007/07/Data/DataObjectSupport">
+
+	<Define name="TplServiceRefColumnIdsRef" >
+		<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
+			<Parameters method="AppendToDSRef">
+				<Parameter>
+					<Parameter value="{2}" />
+					<Parameter value="{1}" />
+					<Parameter value="Table" />
+					<Parameter />
+					<Parameter>
+						<Parameter value="4656BAEA-F397-11CE-BFE1-00AA0057B34E">
+							<Parameter value="{0}" />
+						</Parameter>
+						<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
+							<Parameter value="101" type="System.Int32" />
+						</Parameter>
+					</Parameter>
+					<Parameter>
+						<Parameter>
+							<Parameter value="{3}" />
+							<Parameter />
+							<Parameter value="Field" />
+							<Parameter />
+							<Parameter>
+								<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
+									<Parameter value="102" type="System.Int32" />
+								</Parameter>
+							</Parameter>
+						</Parameter>
+					</Parameter>
+				</Parameter>
+			</Parameters>
+		</Service>
+	</Define>
+
+
+</DataObjectSupport>

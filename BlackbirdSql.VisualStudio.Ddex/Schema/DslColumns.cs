@@ -29,19 +29,81 @@ using FirebirdSql.Data.FirebirdClient;
 using BlackbirdSql.Common;
 
 
+
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 
 internal class DslColumns : DslSchema
 {
+	/// <summary>
+	/// The parent DslSchema this column collection belongs to
+	/// </summary>
+	protected string _ParentType = "Table";
+
+	/// <summary>
+	/// The column to be used in the where clause parent restriction.
+	/// </summary>
+	/// <remarks>
+	/// If the parent column does not match r.rdb$relation_name then...
+	///		1. If the number of restrictions for this column type is the same as for
+	///			TableColumn it will replace the r.rdb$relation_name restriction.
+	///		2. If the number of restrictions for this column type is the equal to
+	///			the TableColumn restrictions + 1 it will be added as an additional parent
+	///			restriction.
+	/// </remarks>
+	protected string _ParentRestriction = "r.rdb$relation_name";
+
+	/// <summary>
+	/// The column to be used for ORDINAL_POSITION
+	/// </summary>
+	protected string _OrdinalPosition = "r.rdb$field_position";
+
+	/// <summary>
+	/// The column alias to be used for the owner or parent order
+	/// </summary>
+	protected string _OrderingAlias = "TABLE_NAME";
+
+	/// <summary>
+	/// The FROM expression clause that returns the rdb$relation_fields
+	/// row set using the alias 'r'
+	/// </summary>
+	protected string _FromClause = @"FROM rdb$relation_fields r";
+
+	/// <summary>
+	/// Clause for additional columns to be added to the SELECT returned columns
+	/// </summary>
+	protected string _ColumnsClause = "";
+	/*
+	 * Example
+	 * 
+	   protected string _ColumnsClause = @"null AS VIEW_CATALOG,
+					null AS VIEW_SCHEMA,
+					r.rdb$relation_name AS VIEW_NAME";
+	*/
+
+
+
+	public DslColumns() : base()
+	{
+	}
+
 	#region Protected Methods
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
+
 		// Diag.Trace();
 		var sql = new StringBuilder();
 		var where = new StringBuilder();
+		string identityType = MajorVersionNumber >= 3 ? "r.rdb$identity_type" : "null";
 
+		if (_ColumnsClause != "")
+			_ColumnsClause = @",
+					" + _ColumnsClause;
+
+
+		int defaultRestrictionsLen = DslObjectTypes.GetIdentifierLength("TableColumn");
+		int derivedRestrictionsLen = DslObjectTypes.GetIdentifierLength(_ParentType + "Column");
 
 		// BlackbirdSql added IN_PRIMARYKEY
 		// BlackbirdSql added TRIGGER_NAME
@@ -75,75 +137,83 @@ internal class DslColumns : DslSchema
 		 *	this class but overrides this function
 		 *	
 		*/
+
 		sql.AppendFormat(
 			@"SELECT
 					null AS TABLE_CATALOG,
 					null AS TABLE_SCHEMA,
-					rfr.rdb$relation_name AS TABLE_NAME,
-					rfr.rdb$field_name AS COLUMN_NAME,
-					dep.rdb$dependent_name AS TRIGGER_NAME,
+					r.rdb$relation_name AS TABLE_NAME,
+					r.rdb$field_name AS COLUMN_NAME,
+					r_dep.rdb$dependent_name AS TRIGGER_NAME,
 				    null AS COLUMN_DATA_TYPE,
-				    fld.rdb$field_sub_type AS COLUMN_SUB_TYPE,
-					CAST(fld.rdb$field_length AS integer) AS COLUMN_SIZE,
-					CAST(fld.rdb$field_precision AS integer) AS NUMERIC_PRECISION,
-					CAST(fld.rdb$field_scale AS integer) AS NUMERIC_SCALE,
-					CAST(fld.rdb$character_length AS integer) AS CHARACTER_MAX_LENGTH,
-					CAST(fld.rdb$field_length AS integer) AS CHARACTER_OCTET_LENGTH,
-					rfr.rdb$field_position AS ORDINAL_POSITION,
+				    r_fld.rdb$field_sub_type AS COLUMN_SUB_TYPE,
+					CAST(r_fld.rdb$field_length AS integer) AS COLUMN_SIZE,
+					CAST(r_fld.rdb$field_precision AS integer) AS NUMERIC_PRECISION,
+					CAST(r_fld.rdb$field_scale AS integer) AS NUMERIC_SCALE,
+					CAST(r_fld.rdb$character_length AS integer) AS CHARACTER_MAX_LENGTH,
+					CAST(r_fld.rdb$field_length AS integer) AS CHARACTER_OCTET_LENGTH,
+					{0} AS ORDINAL_POSITION,
 					null AS DOMAIN_CATALOG,
 					null AS DOMAIN_SCHEMA,
-					rfr.rdb$field_source AS DOMAIN_NAME,
+					r.rdb$field_source AS DOMAIN_NAME,
 					null AS SYSTEM_DATA_TYPE,
-					rfr.rdb$default_source AS COLUMN_DEFAULT,
-					(CASE WHEN fld.rdb$computed_source IS NULL AND fld.rdb$computed_blr IS NOT NULL THEN
-						 cast(fld.rdb$computed_blr as blob sub_type 1)
+					r.rdb$default_source AS COLUMN_DEFAULT,
+					(CASE WHEN r_fld.rdb$computed_source IS NULL AND r_fld.rdb$computed_blr IS NOT NULL THEN
+						 cast(r_fld.rdb$computed_blr as blob sub_type 1)
 					ELSE
-						 fld.rdb$computed_source
+						 r_fld.rdb$computed_source
 					END) AS EXPRESSION,
-					fld.rdb$dimensions AS COLUMN_ARRAY,
-					coalesce(fld.rdb$null_flag, rfr.rdb$null_flag) AS COLUMN_NULLABLE,
+					(CASE WHEN r_fld.rdb$computed_source IS NULL AND r_fld.rdb$computed_blr IS NULL THEN
+						 FALSE
+					ELSE
+						 TRUE
+					END) AS IS_COMPUTED,
+					r_fld.rdb$dimensions AS COLUMN_ARRAY,
+					coalesce(r_fld.rdb$null_flag, r.rdb$null_flag) AS COLUMN_NULLABLE,
 				    0 AS IS_READONLY,
-					fld.rdb$field_type AS FIELD_TYPE,
+					r_fld.rdb$field_type AS FIELD_TYPE,
 					null AS CHARACTER_SET_CATALOG,
 					null AS CHARACTER_SET_SCHEMA,
-					cs.rdb$character_set_name AS CHARACTER_SET_NAME,
+					r_cs.rdb$character_set_name AS CHARACTER_SET_NAME,
 					null AS COLLATION_CATALOG,
 					null AS COLLATION_SCHEMA,
-					coll.rdb$collation_name AS COLLATION_NAME,
-					rfr.rdb$description AS DESCRIPTION,
-					{0} AS IDENTITY_TYPE,
-					(CASE WHEN seg.rdb$field_name IS NULL THEN
+					r_coll.rdb$collation_name AS COLLATION_NAME,
+					r.rdb$description AS DESCRIPTION,
+					{1} AS IDENTITY_TYPE,
+					(CASE WHEN r_seg.rdb$field_name IS NULL THEN
 						FALSE
 					ELSE
 						TRUE
 					END) AS IN_PRIMARYKEY,
-					(CASE WHEN dep.rdb$dependent_name IS NOT NULL AND trg.rdb$trigger_name IS NOT NULL AND trg.rdb$trigger_sequence = 1 AND trg.rdb$flags = 1 and trg.rdb$trigger_type = 1 THEN
-						1
+					(CASE WHEN r_dep.rdb$dependent_name IS NOT NULL AND r_trg.rdb$trigger_name IS NOT NULL AND r_trg.rdb$trigger_sequence = 1 AND r_trg.rdb$flags = 1 and r_trg.rdb$trigger_type = 1 THEN
+						true
 					ELSE
-						0
+						false
 					END) AS IS_AUTOINCREMENT,
 					(SELECT COUNT(*)
-                        FROM rdb$dependencies fd
-                        WHERE fd.rdb$field_name IS NOT NULL AND fd.rdb$dependent_name = trg.rdb$trigger_name AND fd.rdb$depended_on_name = trg.rdb$relation_name
-						GROUP BY fd.rdb$dependent_name, fd.rdb$depended_on_name)
-                    AS TRIGGER_DEPENDENCYCOUNT
-				FROM rdb$relation_fields rfr
-				JOIN rdb$fields fld
-					ON rfr.rdb$field_source = fld.rdb$field_name
-				LEFT JOIN rdb$character_sets cs
-					ON cs.rdb$character_set_id = fld.rdb$character_set_id
-				LEFT JOIN rdb$collations coll
-					ON (coll.rdb$collation_id = fld.rdb$collation_id AND coll.rdb$character_set_id = fld.rdb$character_set_id)
-				LEFT JOIN rdb$relation_constraints con
-					ON con.rdb$relation_name = rfr.rdb$relation_name AND con.rdb$constraint_type = 'PRIMARY KEY'
-				LEFT JOIN rdb$index_segments seg 
-					ON seg.rdb$index_name = con.rdb$index_name AND seg.rdb$field_name = rfr.rdb$field_name
-                LEFT JOIN rdb$triggers trg
-                    ON trg.rdb$relation_name = con.rdb$relation_name AND trg.rdb$trigger_sequence = 1 AND trg.rdb$flags = 1 and trg.rdb$trigger_type = 1
-                        AND seg.rdb$index_name = con.rdb$index_name AND seg.rdb$field_name = rfr.rdb$field_name
-				LEFT JOIN rdb$dependencies dep
-					ON dep.rdb$field_name IS NOT NULL AND dep.rdb$depended_on_name = trg.rdb$relation_name AND dep.rdb$dependent_name = trg.rdb$trigger_name AND dep.rdb$field_name = seg.rdb$field_name",
-			MajorVersionNumber >= 3 ? "rfr.rdb$identity_type" : "null");
+                        FROM rdb$dependencies r_fd
+                        WHERE r_fd.rdb$field_name IS NOT NULL AND r_fd.rdb$dependent_name = r_trg.rdb$trigger_name AND r_fd.rdb$depended_on_name = r_trg.rdb$relation_name
+						GROUP BY r_fd.rdb$dependent_name, r_fd.rdb$depended_on_name)
+                    AS TRIGGER_DEPENDENCYCOUNT,
+					'{2}' AS PARENT_TYPE{3}
+				{4}
+				INNER JOIN rdb$fields r_fld
+					ON r_fld.rdb$field_name = r.rdb$field_source
+				LEFT OUTER JOIN rdb$character_sets r_cs
+					ON r_cs.rdb$character_set_id = r_fld.rdb$character_set_id
+				LEFT OUTER JOIN rdb$collations r_coll
+					ON (r_coll.rdb$collation_id = r_fld.rdb$collation_id AND r_coll.rdb$character_set_id = r_fld.rdb$character_set_id)
+				LEFT OUTER JOIN rdb$relation_constraints r_con
+					ON r_con.rdb$relation_name = r.rdb$relation_name AND r_con.rdb$constraint_type = 'PRIMARY KEY'
+				LEFT OUTER JOIN rdb$index_segments r_seg 
+					ON r_seg.rdb$index_name = r_con.rdb$index_name AND r_seg.rdb$field_name = r.rdb$field_name
+                LEFT OUTER JOIN rdb$triggers r_trg
+                    ON r_trg.rdb$relation_name = r_con.rdb$relation_name AND r_trg.rdb$trigger_sequence = 1 AND r_trg.rdb$flags = 1 and r_trg.rdb$trigger_type = 1
+                        AND r_seg.rdb$index_name = r_con.rdb$index_name AND r_seg.rdb$field_name = r.rdb$field_name
+				LEFT OUTER JOIN rdb$dependencies r_dep
+					ON r_dep.rdb$field_name IS NOT NULL AND r_dep.rdb$depended_on_name = r_trg.rdb$relation_name AND r_dep.rdb$dependent_name = r_trg.rdb$trigger_name AND r_dep.rdb$field_name = r_seg.rdb$field_name",
+			_OrdinalPosition, identityType, _ParentType, _ColumnsClause, _FromClause);
+
 
 		if (restrictions != null)
 		{
@@ -159,21 +229,35 @@ internal class DslColumns : DslSchema
 			{
 			}
 
-			/* TABLE_NAME */
+			/* Owner / Parent */
 			if (restrictions.Length >= 3 && restrictions[2] != null)
 			{
-				where.AppendFormat("rfr.rdb$relation_name = @p{0}", index++);
+				if (derivedRestrictionsLen > defaultRestrictionsLen)
+					where.AppendFormat("r.rdb$relation_name = @p{0}", index++);
+				else
+					where.AppendFormat("{0} = @p{1}", _ParentRestriction, index++);
 			}
 
+			/* CONSTRAINT_NAME */
+			if (derivedRestrictionsLen > defaultRestrictionsLen)
+			{
+				if (restrictions.Length >= 4 && restrictions[3] != null)
+				{
+					if (where.Length > 0)
+						where.Append(" AND ");
+
+					where.AppendFormat(" AND {0} = @p{1}", _ParentRestriction, index++);
+				}
+			}
+
+
 			/* COLUMN_NAME */
-			if (restrictions.Length >= 4 && restrictions[3] != null)
+			if (restrictions.Length >= derivedRestrictionsLen && restrictions[derivedRestrictionsLen = 1] != null)
 			{
 				if (where.Length > 0)
-				{
 					where.Append(" AND ");
-				}
 
-				where.AppendFormat("rfr.rdb$field_name = @p{0}", index++);
+				where.AppendFormat(" AND r.rdb$field_name = @p{0}", index++);
 			}
 		}
 
@@ -182,11 +266,15 @@ internal class DslColumns : DslSchema
 			sql.AppendFormat(" WHERE {0} ", where.ToString());
 		}
 
-		sql.Append(" ORDER BY TABLE_NAME, ORDINAL_POSITION");
+		sql.AppendFormat(" ORDER BY {0}, ORDINAL_POSITION", _OrderingAlias);
+
+		// Diag.Trace(sql.ToString());
 
 
 		return sql;
 	}
+
+
 
 	protected override void ProcessResult(DataTable schema)
 	{
@@ -196,7 +284,6 @@ internal class DslColumns : DslSchema
 		schema.Columns.Add("IS_IDENTITY", typeof(bool));
 		// BackbirdSql added
 		schema.Columns.Add("IS_UNIQUE", typeof(bool));
-		schema.Columns.Add("COMPUTED", typeof(bool));
 
 		int keyCount = 0;
 
@@ -270,8 +357,6 @@ internal class DslColumns : DslSchema
 				row["IS_UNIQUE"] = false;
 			}
 
-			row["COMPUTED"] = row["EXPRESSION"] != DBNull.Value;
-
 
 			if (row["TRIGGER_DEPENDENCYCOUNT"] == DBNull.Value)
 			{
@@ -308,6 +393,7 @@ internal class DslColumns : DslSchema
 		schema.Columns.Remove("CHARACTER_MAX_LENGTH");
 		schema.Columns.Remove("IDENTITY_TYPE");
 		schema.Columns.Remove("TRIGGER_DEPENDENCYCOUNT");
+
 	}
 
 	#endregion

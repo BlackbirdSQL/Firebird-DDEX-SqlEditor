@@ -116,7 +116,8 @@ public sealed class TProviderObjectFactory : DataProviderObjectFactory, IProvide
 		}
 		*/
 
-		Diag.Dug(true, objType.FullName + " is not supported");
+		Diag.Trace(objType.FullName + " is not supported");
+
 		return null;
 	}
 

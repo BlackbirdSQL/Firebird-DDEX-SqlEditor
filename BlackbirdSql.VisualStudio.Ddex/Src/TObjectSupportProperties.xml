@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataObjectSupport xmlns="http://schemas.microsoft.com/VisualStudio/2007/07/Data/DataObjectSupport">
+
+	<!-- Element Definitions
+			xs:sequence is specified so this has to come first
+			so we're going to keep definitions limited and simple
+			otherwise it's just going to become a pita
+	-->
+
+	<!--
+	A little messy here.
+		Firstly we want to list triggers at the top level within a database;
+			IOW the trigger is the hierarchy root.
+		But we also want to list triggers within each table;
+			In this case the table is the hierarchy root.
+		Whichever is the case, we want to list any dependency columns of the trigger,
+			those being a subset of the table's columns.
+		Further we want to differentiate between system & user...
+			tables, triggers, sequences(generators) and possibly others.
+
+		All of these situations create a commonality of nodes so it seems we're progressively
+		heading towards what MS has done with SqlServer where evrything is parameterized, which
+		we wanted to avoid simply because the readability is awful.
+
+		TBC: Other column types will be included in these defines
+	-->
+
+	<!-- The empty node [set] reference -->
+	<Define name="TplEmpty" />
+
+	<!-- The identifier and property lists Columns -->
+	<Define name="TplIdentifierListTableColumn" >
+		<IdentifierPart name="TABLE_CATALOG" type="System.String" />
+		<IdentifierPart name="TABLE_SCHEMA" type="System.String" />
+		<IdentifierPart name="TABLE_NAME" type="System.String" />
+	</Define>
+
+	<Define name="TplIdentifierListViewColumn" >
+		<IdentifierPart name="VIEW_CATALOG" type="System.String" />
+		<IdentifierPart name="VIEW_SCHEMA" type="System.String" />
+		<IdentifierPart name="VIEW_NAME" type="System.String" />
+	</Define>
+
+	<Define name="TplIdentifierListIndexColumn" >
+		<IdentifierPart name="TABLE_CATALOG" type="System.String" />
+		<IdentifierPart name="TABLE_SCHEMA" type="System.String" />
+		<IdentifierPart name="TABLE_NAME" type="System.String" />
+		<IdentifierPart name="INDEX_NAME" type="System.String" />
+	</Define>
+	
+
+	<Define name="TplIdentifierListTableForeignKeyColumn" >
+		<IdentifierPart name="CONSTRAINT_CATALOG" type="System.String" />
+		<IdentifierPart name="CONSTRAINT_SCHEMA" type="System.String" />
+		<IdentifierPart name="TABLE_NAME" type="System.String" />
+		<IdentifierPart name="CONSTRAINT_NAME" type="System.String" />
+	</Define>
+
+	<Define name="TplIdentifierListTriggerColumn" >
+		<IdentifierPart name="TABLE_CATALOG" type="System.String" />
+		<IdentifierPart name="TABLE_SCHEMA" type="System.String" />
+		<IdentifierPart name="TRIGGER_NAME" type="System.String" />
+	</Define>
+
+
+	<Define name="TplPropertyListTableColumn" >
+		<Property name="TABLE_NAME" isIdentifierPart="true" />
+		<Property name="COLUMN_NAME" isIdentifierPart="true" />
+		<Property name="TRIGGER_NAME" type="System.String" />
+	</Define>
+
+	<Define name="TplPropertyListViewColumn" >
+		<Property name="VIEW_NAME" isIdentifierPart="true" />
+		<Property name="COLUMN_NAME" isIdentifierPart="true" />
+		<Property name="TABLE_NAME" type="System.String" />
+		<Property name="TRIGGER_NAME" type="System.String" />
+	</Define>
+
+	<Define name="TplPropertyListIndexColumn" >
+		<Property name="TABLE_NAME" isIdentifierPart="true" />
+		<Property name="INDEX_NAME" isIdentifierPart="true" />
+		<Property name="COLUMN_NAME" isIdentifierPart="true" />
+		<Property name="TRIGGER_NAME" type="System.String" />
+		<Property name="CONSTRAINT_CATALOG" type="System.String" />
+		<Property name="CONSTRAINT_SCHEMA" type="System.String" />
+	</Define>
+
+	<Define name="TplPropertyListTableForeignKeyColumn" >
+		<Property name="TABLE_NAME" isIdentifierPart="true" />
+		<Property name="CONSTRAINT_NAME" isIdentifierPart="true" />
+		<Property name="COLUMN_NAME" isIdentifierPart="true" />
+		<Property name="TRIGGER_NAME" type="System.String" />
+		<Property name="INDEX_NAME" type="System.String" />
+		<Property name="REFERENCED_TABLE_CATALOG" type="System.String" />
+		<Property name="REFERENCED_TABLE_SCHEMA" type="System.String" />
+		<Property name="REFERENCED_TABLE_NAME" type="System.String" />
+		<Property name="REFERENCED_COLUMN_NAME" type="System.String" />
+	</Define>
+
+
+	<Define name="TplPropertyListTriggerColumn" >
+		<Property name="TRIGGER_NAME" isIdentifierPart="true" />
+		<Property name="COLUMN_NAME" isIdentifierPart="true" />
+		<Property name="TABLE_NAME" type="System.String" />
+	</Define>
+
+</DataObjectSupport>

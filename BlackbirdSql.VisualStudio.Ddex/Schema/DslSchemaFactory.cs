@@ -67,10 +67,13 @@ internal sealed class DslSchemaFactory
 		switch (collectionName)
 		{
 			case "Columns":
+			case "ForeignKeyColumns":
 			case "FunctionArguments":
+			case "Functions":
 			case "Generators":
 			case "IndexColumns":
 			case "Indexes":
+			case "Procedures":
 			case "Tables":
 			case "Triggers":
 			case "ViewColumns":
@@ -172,10 +175,13 @@ internal sealed class DslSchemaFactory
 		DslSchema returnSchema = collectionName.ToUpperInvariant() switch
 		{
 			"COLUMNS" => new DslColumns(),
+			"FOREIGNKEYCOLUMNS" => new DslForeignKeyColumns(),
 			"FUNCTIONARGUMENTS" => new DslFunctionArguments(),
+			"FUNCTIONS" => new DslFunctions(),
 			"GENERATORS" => new DslGenerators(),
 			"INDEXCOLUMNS" => new DslIndexColumns(),
 			"INDEXES" => new DslIndexes(),
+			"PROCEDURES" => new DslProcedures(),
 			"TABLES" => new DslTables(),
 			"TRIGGERS" => new DslTriggers(),
 			"SYSTEMTRIGGERS" => new DslSystemTriggers(),
@@ -200,15 +206,18 @@ internal sealed class DslSchemaFactory
 		DslSchema returnSchema = collectionName.ToUpperInvariant() switch
 		{
 			"COLUMNS" => new DslColumns(),
+			"FOREIGNKEYCOLUMNS" => new DslForeignKeyColumns(),
 			"FUNCTIONARGUMENTS" => new DslFunctionArguments(),
+			"FUNCTIONS" => new DslFunctions(),
 			"GENERATORS" => new DslGenerators(),
 			"INDEXCOLUMNS" => new DslIndexColumns(),
 			"INDEXES" => new DslIndexes(),
+			"PROCEDURES" => new DslProcedures(),
+			"TABLES" => new DslTables(),
 			"TRIGGERS" => new DslTriggers(),
 			"SYSTEMTRIGGERS" => new DslSystemTriggers(),
 			"AUTOINCREMENTTRIGGERS" => new DslAutoIncrementTriggers(),
 			"STANDARDTRIGGERS" => new DslStandardTriggers(),
-			"TABLES" => new DslTables(),
 			"TRIGGERCOLUMNS" => new DslTriggerColumns(),
 			"VIEWCOLUMNS" => new DslViewColumns(),
 			_ => ((Func<DslSchema>)(() =>

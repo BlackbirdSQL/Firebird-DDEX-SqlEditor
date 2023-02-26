@@ -13,8 +13,7 @@ using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Common;
-using System.Runtime.InteropServices;
-using System.Windows.Shapes;
+using BlackbirdSql.Common.Extensions;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -23,10 +22,10 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 //										TObjectSupport Class
 //
 /// <summary>
-/// Implementation of <see cref="IVsDataObjectSupport"/> interface
+/// Implementation of <see cref="IVsDataObjectSupport"/> and <see cref="IVsDataSupportImportResolver"/> interfaces.
 /// </summary>
 // =========================================================================================================
-internal class TObjectSupport : DataObjectSupport
+internal class TObjectSupport : DataObjectSupport, IVsDataSupportImportResolver
 {
 
 	// ---------------------------------------------------------------------------------
@@ -70,11 +69,14 @@ internal class TObjectSupport : DataObjectSupport
 	/// <returns>
 	/// Returns a System.IO.Stream object.
 	/// </returns>
+	/// <remarks>
+	/// According to xsd 
+	/// </remarks>
 	// ---------------------------------------------------------------------------------
 	public override Stream OpenSupportStream()
 	{
-		// Diag.Trace();
-		return base.OpenSupportStream();
+		// Diag.Stack();
+		return OpenSupportStream(CultureInfo.InvariantCulture);
 	}
 
 
@@ -92,8 +94,68 @@ internal class TObjectSupport : DataObjectSupport
 	// ---------------------------------------------------------------------------------
 	protected override Stream OpenSupportStream(CultureInfo culture)
 	{
-		// Diag.Trace();
-		return base.OpenSupportStream(culture);
+		// Diag.Stack();
+		Stream stream = base.OpenSupportStream(culture);
+
+		return XmlParser.ExtrapolateXmlImports(stream, this);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Imports and returns a stream of data support XML that is identified with a specified
+	/// pseudo name.
+	/// </summary>
+	/// <param name="name">The pseudo name of a stream to import.</param>
+	/// <returns>
+	/// An open stream containing the data support XML to be imported, or null if there
+	/// is no stream found with this pseudo name.
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	public Stream ImportSupportStream(string name)
+	{
+		if (name == null)
+		{
+			ArgumentNullException ex = new("name");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		int suffixLen = -1;
+
+		if (name.EndsWith("Definitions"))
+			suffixLen = 11;
+		else if (name.EndsWith("Node"))
+			suffixLen = 0;
+
+
+		if (suffixLen == -1)
+		{
+			Diag.Dug(true, "Import resource not found: " + name);
+			return null;
+		}
+
+		Type type = GetType();
+		string resource = name[..^suffixLen];
+
+		// English
+		if (suffixLen != 0)
+		{
+			if (resource.EndsWith("y"))
+				resource = type.FullName + resource[..^1] + "ies.xml";
+			else
+				resource = type.FullName + resource + "s.xml";
+		}
+		else
+		{
+			resource = type.FullName + resource + ".xml";
+		}
+
+		// Diag.Trace("Importing resource: " + resource);
+
+
+		return type.Assembly.GetManifestResourceStream(resource);
 	}
 
 

@@ -50,11 +50,11 @@ internal class DslTables : DslSchema
 					null AS TABLE_SCHEMA,
 					rfr.rdb$relation_name AS TABLE_NAME,
 					null AS TABLE_TYPE,
-					(CASE WHEN rfr.rdb$system_flag IS NULL THEN
-                        0
+					(CASE WHEN rfr.rdb$system_flag <> 1 THEN
+                        false
 					ELSE
-                        rfr.rdb$system_flag
-					END) IS_SYSTEM_TABLE,
+                        true
+					END) IS_SYSTEM_OBJECT,
 					rfr.rdb$owner_name AS OWNER_NAME,
 					rfr.rdb$description AS DESCRIPTION,
 					rfr.rdb$view_source AS VIEW_SOURCE,
@@ -114,7 +114,7 @@ internal class DslTables : DslSchema
 			sql.Append(where.ToString());
 		}
 
-		sql.Append(" ORDER BY IS_SYSTEM_TABLE, OWNER_NAME, TABLE_NAME");
+		sql.Append(" ORDER BY IS_SYSTEM_OBJECT, OWNER_NAME, TABLE_NAME");
 
 		// Diag.Trace(sql.ToString());
 		return sql;
@@ -127,14 +127,8 @@ internal class DslTables : DslSchema
 		foreach (DataRow row in schema.Rows)
 		{
 			row["TABLE_TYPE"] = "TABLE";
-			if (row["IS_SYSTEM_TABLE"] == DBNull.Value ||
-				Convert.ToInt32(row["IS_SYSTEM_TABLE"], CultureInfo.InvariantCulture) == 0)
+			if ((bool)row["IS_SYSTEM_OBJECT"] == true)
 			{
-				row["IS_SYSTEM_TABLE"] = false;
-			}
-			else
-			{
-				row["IS_SYSTEM_TABLE"] = true;
 				row["TABLE_TYPE"] = "SYSTEM_TABLE";
 			}
 			if (row["VIEW_SOURCE"] != null &&

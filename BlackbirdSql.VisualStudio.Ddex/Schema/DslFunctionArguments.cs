@@ -69,9 +69,9 @@ internal class DslFunctionArguments : DslSchema
 					fld.rdb$field_type AS FIELD_TYPE,
 					{0} AS PACKAGE_NAME
 				FROM rdb$function_arguments fa
-					LEFT JOIN rdb$fields fld ON fa.rdb$field_source = fld.rdb$field_name
-					LEFT JOIN rdb$character_sets cs ON cs.rdb$character_set_id = fld.rdb$character_set_id
-					LEFT JOIN rdb$collations coll ON (coll.rdb$collation_id = fld.rdb$collation_id AND coll.rdb$character_set_id = fld.rdb$character_set_id)",
+					LEFT OUTER JOIN rdb$fields fld ON fa.rdb$field_source = fld.rdb$field_name
+					LEFT OUTER JOIN rdb$character_sets cs ON cs.rdb$character_set_id = fld.rdb$character_set_id
+					LEFT OUTER JOIN rdb$collations coll ON (coll.rdb$collation_id = fld.rdb$collation_id AND coll.rdb$character_set_id = fld.rdb$character_set_id)",
 			MajorVersionNumber >= 3 ? "fa.rdb$package_name" : "null");
 
 		if (restrictions != null)

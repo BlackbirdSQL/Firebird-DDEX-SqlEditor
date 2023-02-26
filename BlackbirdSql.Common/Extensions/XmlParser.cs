@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Data;
 using System.IO;
+using System.Windows.Controls;
 using System.Xml;
-
-
+using Microsoft.VisualStudio.Data.Core;
 
 namespace BlackbirdSql.Common.Extensions;
 
@@ -32,6 +32,135 @@ internal static class XmlParser
 	// =========================================================================================================
 	#region Methods - XmlParser
 	// =========================================================================================================
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Single-level extrapolation of an xml stream with imports into a single stream.
+	/// </summary>
+	/// <returns>
+	/// Returns a System.IO.Stream object of the extrapolated xml.
+	/// </returns>
+	/// <remarks>
+	/// For whatever reason <see cref="Microsoft.VisualStudio.Data.Package.DataObjectSupportBuilder"/>
+	/// is failing to utilize our implementation of <see cref="IVsDataSupportImportResolver"/> even though
+	/// decompiling shows it is utilized in the builder and that <see cref="ImportSupportStream"/> is
+	/// called, yet it never is. Works fine in <see cref="TViewSupport"/>.
+	/// <see cref="Microsoft.VisualStudio.Data.Package.DataViewSupportBuilder"/> uses the exact same code in the ancestor
+	/// <see cref="Microsoft.VisualStudio.Data.Package.DataSupportBuilder"/> and it works for <see cref="TViewSupport"/>
+	/// so yeah... dunno.
+	/// It's a glitch in DataObjectSupportBuilder.
+	/// </remarks>
+	// ---------------------------------------------------------------------------------
+	public static Stream ExtrapolateXmlImports(Stream stream, IVsDataSupportImportResolver resolver)
+	{
+		/*
+		 * DataSupportBuilder recursively enumerates imported nodes and simply inserts them into it's reference dict.
+		 * We're going to have to insert them into the parent xml and then stream the extrapolated xml
+		 * back to Microsoft.VisualStudio.Data.Package.DataConnection.
+		*/
+
+		bool updated = false;
+
+		XmlDocument xmlDoc = new XmlDocument();
+		XmlDocument xmlImportDoc;
+
+		XmlNode xmlRoot, xmlImportRoot, xmlPrev, xmlNode, xmlImportNode;
+
+		XmlNamespaceManager xmlNs;
+		XmlNamespaceManager xmlImportNs;
+
+		XmlNodeList xmlImports, xmlDefinitions;
+
+		Stream importStream;
+
+
+		try
+		{
+			xmlDoc.Load(stream);
+			xmlNs = new XmlNamespaceManager(xmlDoc.NameTable);
+
+			xmlRoot = xmlDoc.DocumentElement;
+
+			if (!xmlNs.HasNamespace("confBlackbirdNs"))
+				xmlNs.AddNamespace("confBlackbirdNs", xmlRoot.NamespaceURI);
+
+
+			xmlImports = xmlRoot.SelectNodes("//confBlackbirdNs:Import", xmlNs);
+
+
+			foreach (XmlNode xmlImport in xmlImports)
+			{
+				string name = xmlImport.Attributes["name"].Value;
+
+				importStream = resolver.ImportSupportStream(name);
+
+				if (importStream == null)
+					continue;
+
+				xmlImportDoc = new XmlDocument();
+				xmlImportDoc.Load(importStream);
+				xmlImportNs = new XmlNamespaceManager(xmlImportDoc.NameTable);
+				xmlImportRoot = xmlImportDoc.DocumentElement;
+
+				if (!xmlImportNs.HasNamespace("confBlackbirdNs"))
+					xmlImportNs.AddNamespace("confBlackbirdNs", xmlImportRoot.NamespaceURI);
+
+				xmlDefinitions = xmlImportRoot.SelectNodes("//confBlackbirdNs:Define", xmlImportNs);
+
+				xmlPrev = xmlImport;
+
+				foreach (XmlNode xmlDefinition in xmlDefinitions)
+				{
+					xmlNode = xmlDoc.ImportNode(xmlDefinition, true);
+					xmlPrev = xmlRoot.InsertAfter(xmlNode, xmlPrev);
+				}
+
+				xmlImportNode = xmlImportRoot.SelectSingleNode("//confBlackbirdNs:Types", xmlImportNs);
+
+				if (xmlImportNode != null)
+				{
+					xmlNode = xmlDoc.ImportNode(xmlImportNode, true);
+					xmlPrev = xmlRoot.InsertAfter(xmlNode, xmlPrev);
+				}
+
+				xmlImportNode = xmlImportRoot.SelectSingleNode("//confBlackbirdNs:MappedTypes", xmlImportNs);
+
+				if (xmlImportNode != null)
+				{
+					xmlNode = xmlDoc.ImportNode(xmlImportNode, true);
+					xmlPrev = xmlRoot.InsertAfter(xmlNode, xmlPrev);
+				}
+
+
+				xmlRoot.RemoveChild(xmlImport);
+
+				updated = true;
+			}
+
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+		}
+
+
+		if (updated)
+		{
+			MemoryStream xmlStream = new MemoryStream();
+
+			xmlDoc.Save(xmlStream);
+			xmlStream.Position = 0;
+			return xmlStream;
+		}
+
+		stream.Position = 0;
+		return stream;
+
+	}
+
 
 
 	// ---------------------------------------------------------------------------------

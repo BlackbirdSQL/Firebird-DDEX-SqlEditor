@@ -299,6 +299,34 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Diagnostics method for full stack trace
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+#if DEBUG
+	public static void Stack(string message = "",
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
+#else
+	public static void Dug(string message = "",
+		string memberName = "Release:Unavailable",
+		string sourceFilePath = "Release:Unavailable",
+		int sourceLineNumber = 0)
+#endif
+	{
+		if (message != "")
+			message += ":";
+
+		message += Environment.NewLine + "TRACE: " + Environment.StackTrace.ToString();
+
+		Dug(true, message, memberName, sourceFilePath, sourceLineNumber);
+
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Trace method for trace breadcrumbs during debug
 	/// </summary>
 	// ---------------------------------------------------------------------------------

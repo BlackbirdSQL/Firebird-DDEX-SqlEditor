@@ -1,8 +1,4 @@
 ﻿/*
- *	This is an override of the FirebirdClient Schema
- *	We're maintaining the same structure so that it's easy to overload any GetSchema's that may need it.
- *	We still use the original Firebird metadata manifest pulled from the Firebird assembly
- *	
  *    The contents of this file are subject to the Initial
  *    Developer's Public License Version 1.0 (the "License");
  *    you may not use this file except in compliance with the
@@ -17,22 +13,19 @@
  *    All Rights Reserved.
  */
 
-//$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
+//$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 using System.Text;
-
-using BlackbirdSql.Common;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 
-internal class DslIndexColumns : DslColumns
+internal class DslForeignKeyColumns : DslColumns
 {
 	#region Protected Methods
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
-		// Diag.Trace();
 		var sql = new StringBuilder();
 		var where = new StringBuilder();
 
@@ -40,8 +33,8 @@ internal class DslIndexColumns : DslColumns
 			@"SELECT
 					null AS TABLE_CATALOG,
 					null AS TABLE_SCHEMA,
-					idx.rdb$relation_name AS TABLE_NAME,
-					idxseg.rdb$field_name AS COLUMN_NAME,
+					co.rdb$relation_name AS TABLE_NAME,
+					coidxseg.rdb$field_name AS COLUMN_NAME,
 					dep.rdb$dependent_name AS TRIGGER_NAME,
 				    null AS COLUMN_DATA_TYPE,
 				    fld.rdb$field_sub_type AS COLUMN_SUB_TYPE,
@@ -50,7 +43,7 @@ internal class DslIndexColumns : DslColumns
 					CAST(fld.rdb$field_scale AS integer) AS NUMERIC_SCALE,
 					CAST(fld.rdb$character_length AS integer) AS CHARACTER_MAX_LENGTH,
 					CAST(fld.rdb$field_length AS integer) AS CHARACTER_OCTET_LENGTH,
-					idxseg.rdb$field_position AS ORDINAL_POSITION,
+					coidxseg.rdb$field_position as ORDINAL_POSITION,
 					null AS DOMAIN_CATALOG,
 					null AS DOMAIN_SCHEMA,
 					rfr.rdb$field_source AS DOMAIN_NAME,
@@ -93,30 +86,42 @@ internal class DslIndexColumns : DslColumns
                         WHERE fd.rdb$field_name IS NOT NULL AND fd.rdb$dependent_name = trg.rdb$trigger_name AND fd.rdb$depended_on_name = trg.rdb$relation_name
 						GROUP BY fd.rdb$dependent_name, fd.rdb$depended_on_name)
                     AS TRIGGER_DEPENDENCYCOUNT,
-					'Index' AS PARENT_TYPE,
-					idx.rdb$index_name AS INDEX_NAME,
+					'ForeignKey' AS PARENT_TYPE,
 					null AS CONSTRAINT_CATALOG,
 					null AS CONSTRAINT_SCHEMA,
-					idx.rdb$index_name AS CONSTRAINT_NAME
-				FROM rdb$index_segments idxseg
-				INNER JOIN rdb$indices idx
-					ON idxseg.rdb$index_name = idx.rdb$index_name
-                INNER JOIN rdb$relation_fields rfr
-                    ON rfr.rdb$relation_name = idx.rdb$relation_name AND rfr.rdb$field_name = idxseg.rdb$field_name
+					co.rdb$constraint_name AS CONSTRAINT_NAME,
+					null as REFERENCED_TABLE_CATALOG,
+					null as REFERENCED_TABLE_SCHEMA,
+					refidx.rdb$relation_name as REFERENCED_TABLE_NAME,
+					refidxseg.rdb$field_name AS REFERENCED_COLUMN_NAME,
+					co.rdb$index_name AS INDEX_NAME
+				FROM rdb$relation_constraints co
+				INNER JOIN rdb$ref_constraints ref 
+                    ON co.rdb$constraint_type = 'FOREIGN KEY' AND co.rdb$constraint_name = ref.rdb$constraint_name
+				INNER JOIN rdb$indices tempidx 
+                    ON co.rdb$index_name = tempidx.rdb$index_name
+				INNER JOIN rdb$index_segments coidxseg 
+                    ON co.rdb$index_name = coidxseg.rdb$index_name
+				INNER JOIN rdb$indices refidx 
+                    ON refidx.rdb$index_name = tempidx.rdb$foreign_key
+				INNER JOIN rdb$index_segments refidxseg 
+                    ON refidxseg.rdb$index_name = refidx.rdb$index_name AND refidxseg.rdb$field_position = coidxseg.rdb$field_position
+				INNER JOIN rdb$relation_fields rfr
+                    ON rfr.rdb$relation_name = co.rdb$relation_name AND rfr.rdb$field_name = coidxseg.rdb$field_name
 				INNER JOIN rdb$fields fld
-					ON fld.rdb$field_name = rfr.rdb$field_source
-				LEFT OUTER JOIN rdb$character_sets cs
+					ON rfr.rdb$field_source = fld.rdb$field_name
+				LEFT JOIN rdb$character_sets cs
 					ON cs.rdb$character_set_id = fld.rdb$character_set_id
-				LEFT OUTER JOIN rdb$collations coll
+				LEFT JOIN rdb$collations coll
 					ON (coll.rdb$collation_id = fld.rdb$collation_id AND coll.rdb$character_set_id = fld.rdb$character_set_id)
-				LEFT OUTER JOIN rdb$relation_constraints con
+				LEFT JOIN rdb$relation_constraints con
 					ON con.rdb$relation_name = rfr.rdb$relation_name AND con.rdb$constraint_type = 'PRIMARY KEY'
-				LEFT OUTER JOIN rdb$index_segments seg 
+				LEFT JOIN rdb$index_segments seg 
 					ON seg.rdb$index_name = con.rdb$index_name AND seg.rdb$field_name = rfr.rdb$field_name
-                LEFT OUTER JOIN rdb$triggers trg
+                LEFT JOIN rdb$triggers trg
                     ON trg.rdb$relation_name = con.rdb$relation_name AND trg.rdb$trigger_sequence = 1 AND trg.rdb$flags = 1 and trg.rdb$trigger_type = 1
                         AND seg.rdb$index_name = con.rdb$index_name AND seg.rdb$field_name = rfr.rdb$field_name
-				LEFT OUTER JOIN rdb$dependencies dep
+				LEFT JOIN rdb$dependencies dep
 					ON dep.rdb$field_name IS NOT NULL AND dep.rdb$depended_on_name = trg.rdb$relation_name AND dep.rdb$dependent_name = trg.rdb$trigger_name AND dep.rdb$field_name = seg.rdb$field_name",
 			MajorVersionNumber >= 3 ? "rfr.rdb$identity_type" : "null");
 
@@ -124,12 +129,12 @@ internal class DslIndexColumns : DslColumns
 		{
 			var index = 0;
 
-			/* TABLE_CATALOG */
+			/* TABLE_CATALOG	*/
 			if (restrictions.Length >= 1 && restrictions[0] != null)
 			{
 			}
 
-			/* TABLE_SCHEMA	*/
+			/* TABLE_SCHEMA */
 			if (restrictions.Length >= 2 && restrictions[1] != null)
 			{
 			}
@@ -137,27 +142,25 @@ internal class DslIndexColumns : DslColumns
 			/* TABLE_NAME */
 			if (restrictions.Length >= 3 && restrictions[2] != null)
 			{
-				where.AppendFormat("idx.rdb$relation_name = @p{0}", index++);
+				where.AppendFormat("co.rdb$relation_name = @p{0}", index++);
 			}
 
-			/* INDEX_NAME */
+			/* CONSTRAINT_NAME */
 			if (restrictions.Length >= 4 && restrictions[3] != null)
 			{
 				if (where.Length > 0)
 					where.Append(" AND ");
 
-				where.AppendFormat("idx.rdb$index_name = @p{0}", index++);
+				where.AppendFormat("co.rdb$constraint_name = @p{0}", index++);
 			}
 
 			/* COLUMN_NAME */
 			if (restrictions.Length >= 5 && restrictions[4] != null)
 			{
 				if (where.Length > 0)
-				{
 					where.Append(" AND ");
-				}
 
-				where.AppendFormat("idxseg.rdb$field_name = @p{0}", index++);
+				where.AppendFormat("coidxseg.rdb$field_name = @p{0}", index++);
 			}
 		}
 
@@ -166,11 +169,10 @@ internal class DslIndexColumns : DslColumns
 			sql.AppendFormat(" WHERE {0} ", where.ToString());
 		}
 
-		sql.Append(" ORDER BY TABLE_NAME, INDEX_NAME, ORDINAL_POSITION");
+		sql.Append(" ORDER BY CONSTRAINT_NAME, ORDINAL_POSITION");
 
 		return sql;
 	}
-
 
 	#endregion
 }

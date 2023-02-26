@@ -73,21 +73,22 @@ internal class DslTriggerColumns : DslColumns
 						TRUE
 					END) AS IN_PRIMARYKEY,
 					(CASE WHEN trg.rdb$trigger_sequence = 1 AND trg.rdb$flags = 1 and trg.rdb$trigger_type = 1 THEN
-						1
+						true
 					ELSE
-						0
+						false
 					END) AS IS_AUTOINCREMENT,
 					(SELECT COUNT(*)
                         FROM rdb$dependencies fd
                         WHERE fd.rdb$field_name IS NOT NULL AND fd.rdb$dependent_name = dep.rdb$dependent_name AND fd.rdb$depended_on_name = dep.rdb$depended_on_name
 						GROUP BY fd.rdb$dependent_name, fd.rdb$depended_on_name)
-                    AS TRIGGER_DEPENDENCYCOUNT
+                    AS TRIGGER_DEPENDENCYCOUNT,
+					'Trigger' AS PARENT_TYPE
 				FROM rdb$dependencies dep
-                JOIN rdb$triggers trg
+                INNER JOIN rdb$triggers trg
                     ON trg.rdb$trigger_name = dep.rdb$dependent_name AND trg.rdb$relation_name = dep.rdb$depended_on_name
-				JOIN rdb$relation_fields rfr
+				INNER JOIN rdb$relation_fields rfr
 					ON rfr.rdb$relation_name = dep.rdb$depended_on_name AND rfr.rdb$field_name = dep.rdb$field_name
-				JOIN rdb$fields fld
+				INNER JOIN rdb$fields fld
 					ON rfr.rdb$field_source = fld.rdb$field_name
 				LEFT OUTER JOIN rdb$character_sets cs
 					ON cs.rdb$character_set_id = fld.rdb$character_set_id

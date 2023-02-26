@@ -3,6 +3,7 @@
 
 	<!-- Element definitions -->
 
+	<!-- Data type standard values list -->
 	<Define name="TplStandardValuesColumnDataType" >
 		<StandardValues>
 			<StandardValue value="array">Array</StandardValue>
@@ -28,24 +29,10 @@
 		</StandardValues>
 	</Define>
 
+	
 
-	<!-- Definition list of standard table column properties -->
-	<Define name="TplPropertiesListStandardTableColumn" >
-		<Property name="TABLE_CATALOG">
-			<DisplayName resource="Identifier_Name_Catalog" />
-			<Category resource="Category_Identifier" />
-			<Description resource="Identifier_Desc_Catalog" />
-		</Property>
-		<Property name="TABLE_SCHEMA">
-			<DisplayName resource="Identifier_Name_Schema" />
-			<Category resource="Category_Identifier" />
-			<Description resource="Identifier_Desc_Schema" />
-		</Property>
-		<Property name="TABLE_NAME">
-			<DisplayName resource="Identifier_Name_Table" />
-			<Category resource="Category_Identifier" />
-			<Description resource="Identifier_Desc_Table" />
-		</Property>
+	<!-- Definition list of common column properties -->
+	<Define name="TplPropertiesListStandardColumn" >
 		<Property name="COLUMN_NAME">
 			<DisplayName resource="Identifier_Name_Name" />
 			<Category resource="Category_Identifier" />
@@ -99,9 +86,6 @@
 			<DisplayName resource="Property_Name_Column_Default" />
 			<Description resource="Property_Desc_Column_Default" />
 		</Property>
-	</Define>
-	<!-- Definition list of user table unique column properties -->
-	<Define name="TplPropertiesListUserTableColumn" >
 		<Property name="IN_PRIMARYKEY">
 			<DisplayName resource="Property_Name_Column_InPrimaryKey" />
 			<Description resource="Property_Desc_Column_InPrimaryKey" />
@@ -110,7 +94,7 @@
 			<DisplayName resource="Property_Name_Column_IsUnique" />
 			<Description resource="Property_Desc_Column_IsUnique" />
 		</Property>
-		<Property name="COMPUTED">
+		<Property name="IS_COMPUTED">
 			<DisplayName resource="Property_Name_Column_Computed" />
 			<Description resource="Property_Desc_Column_Computed" />
 		</Property>
@@ -121,18 +105,51 @@
 		<Property name="IS_AUTOINCREMENT">
 			<DisplayName resource="Property_Name_Column_IsAutoIncrement" />
 			<Description resource="Property_Desc_Column_IsAutoIncrement" />
-			<StandardValues>
-				<StandardValue value="1">True</StandardValue>
-				<StandardValue value="0">False</StandardValue>
-			</StandardValues>
 		</Property>
 	</Define>
 
-	<!-- Dummy definition list of system table unique column properties -->
-	<Define name="TplPropertiesListSystemTableColumn" />
 
-	<!-- Dummy definition list of table table unique column properties -->
-	<Define name="TplPropertiesListTableTableColumn" >
+	<!-- Definition list of table specific column properties -->
+	<Define name="TplPropertiesListTableColumn" >
+		<Property name="TABLE_CATALOG">
+			<DisplayName resource="Identifier_Name_Catalog" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Catalog" />
+		</Property>
+		<Property name="TABLE_SCHEMA">
+			<DisplayName resource="Identifier_Name_Schema" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Schema" />
+		</Property>
+		<Property name="TABLE_NAME">
+			<DisplayName resource="Identifier_Name_Table" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Table" />
+		</Property>
+		<Property name="TRIGGER_NAME">
+			<DisplayName resource="Property_Name_Column_AutoIncrement" />
+			<Description resource="Property_Desc_Column_AutoIncrement" />
+		</Property>
+	</Define>
+
+	
+	<!-- Definition list of view specific column properties -->
+	<Define name="TplPropertiesListViewColumn" >
+		<Property name="VIEW_CATALOG">
+			<DisplayName resource="Identifier_Name_Catalog" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Catalog" />
+		</Property>
+		<Property name="VIEW_SCHEMA">
+			<DisplayName resource="Identifier_Name_Schema" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Schema" />
+		</Property>
+		<Property name="VIEW_NAME">
+			<DisplayName resource="Identifier_Name_View" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_View" />
+		</Property>
 		<Property name="TRIGGER_NAME">
 			<DisplayName resource="Property_Name_Column_AutoIncrement" />
 			<Description resource="Property_Desc_Column_AutoIncrement" />
@@ -140,46 +157,141 @@
 	</Define>
 
 
-	<!-- Definition list of additional trigger table unique column properties -->
-	<Define name="TplPropertiesListTriggerTableColumn" >
+	<!-- Definition list of trigger specific column -->
+	<Define name="TplPropertiesListTriggerColumn" >
+		<Property name="TABLE_CATALOG">
+			<DisplayName resource="Identifier_Name_Catalog" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Catalog" />
+		</Property>
+		<Property name="TABLE_SCHEMA">
+			<DisplayName resource="Identifier_Name_Schema" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Schema" />
+		</Property>
 		<Property name="TRIGGER_NAME">
 			<DisplayName resource="Identifier_Name_Trigger" />
 			<Category resource="Category_Identifier" />
 			<Description resource="Identifier_Desc_Trigger" />
 		</Property>
+		<Property name="TABLE_NAME">
+			<DisplayName resource="Property_Name_Column_Table" />
+			<Description resource="Property_Desc_Column_Table" />
+		</Property>
 	</Define>
 
-	<!-- Definition of table column properties -->
-	<Define name="TplPropertiesTableColumn" parameters="parentType, systemType">
+	
+	<!-- Definition list of index specific column properties -->
+	<Define name="TplPropertiesListIndexColumn" >
+		<Property name="TABLE_CATALOG">
+			<DisplayName resource="Identifier_Name_Catalog" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Catalog" />
+		</Property>
+		<Property name="TABLE_SCHEMA">
+			<DisplayName resource="Identifier_Name_Catalog" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Catalog" />
+		</Property>
+		<Property name="TABLE_NAME">
+			<DisplayName resource="Identifier_Name_Table" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Table" />
+		</Property>
+		<Property name="INDEX_NAME">
+			<DisplayName resource="Identifier_Name_Index" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Index" />
+		</Property>
+		<Property name="TRIGGER_NAME">
+			<DisplayName resource="Property_Name_Column_AutoIncrement" />
+			<Description resource="Property_Desc_Column_AutoIncrement" />
+		</Property>
+	</Define>
+
+
+	<!-- Definition list of foreign key specific column properties -->
+	<Define name="TplPropertiesListTableForeignKeyColumn" >
+		<Property name="CONSTRAINT_CATALOG">
+			<DisplayName resource="Identifier_Name_Catalog" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Catalog" />
+		</Property>
+		<Property name="CONSTRAINT_SCHEMA">
+			<DisplayName resource="Identifier_Name_Schema" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Schema" />
+		</Property>
+		<Property name="TABLE_NAME">
+			<DisplayName resource="Identifier_Name_Table" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Table" />
+		</Property>
+		<Property name="CONSTRAINT_NAME">
+			<DisplayName resource="Identifier_Name_ForeignKey" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_ForeignKey" />
+		</Property>
+		<Property name="REFERENCED_TABLE_CATALOG">
+			<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedCatalog" />
+			<Category resource="Category_ReferencedColumn" />
+			<Description resource="Property_Desc_ForeignKeyColumn_ReferencedCatalog" />
+		</Property>
+		<Property name="REFERENCED_TABLE_SCHEMA">
+			<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedSchema" />
+			<Category resource="Category_ReferencedColumn" />
+			<Description resource="Property_Desc_ForeignKeyColumn_ReferencedSchema" />
+		</Property>
+		<Property name="REFERENCED_TABLE_NAME">
+			<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedTable" />
+			<Category resource="Category_ReferencedColumn" />
+			<Description resource="Property_Desc_ForeignKeyColumn_ReferencedTable" />
+		</Property>
+		<Property name="REFERENCED_COLUMN_NAME">
+			<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedColumn" />
+			<Category resource="Category_ReferencedColumn" />
+			<Description resource="Property_Desc_ForeignKeyColumn_ReferencedColumn" />
+		</Property>
+		<Property name="TRIGGER_NAME">
+			<DisplayName resource="Property_Name_Column_AutoIncrement" />
+			<Description resource="Property_Desc_Column_AutoIncrement" />
+		</Property>
+	</Define>
+
+
+	
+	<!-- Definition of column properties -->
+	<Define name="TplPropertiesColumn" parameters="parentType">
 		<Properties>
 			<TypeDisplayName resource="Type_$(parentType)Column" />
-			<PropertyListRef name="TplPropertiesListStandardTableColumn" />
-			<PropertyListRef name="TplPropertiesList$(parentType)TableColumn" />
-			<PropertyListRef name="TplPropertiesList$(systemType)TableColumn" />
+			<PropertyListRef name="TplPropertiesListStandardColumn" />
+			<PropertyListRef name="TplPropertiesList$(parentType)Column" />
 		</Properties>
 	</Define>
 
 
-	<!-- Definition of column selection -->
-	<Define name="TplSelectionRefColumn" parameters="selectionEmpty, parentType, systemType, catalogColumn, schemaColumn, ownerColumn">
-		<SelectionRef name="TplSelectionColumn$(selectionEmpty)" arguments="$(parentType),$(systemType),$(catalogColumn), $(schemaColumn), $(ownerColumn)" />
-	</Define>
-
-	<!-- Definition of column selection nodes -->
-	<Define name="TplSelectionColumn" parameters="parentType, systemType, catalogColumn, schemaColumn, ownerColumn">
-		<Selection type="$(parentType)Column" restrictions="$(catalogColumn), $(schemaColumn), $(ownerColumn)">
+	
+	<!-- Definition of column selection node -->
+	<Define name="TplSelectionColumn" parameters="parentType, systemType, restrictions">
+		<Selection type="$(parentType)Column" restrictions="$(restrictions)">
 			<SelectionNode nodeId="Column">
 				<DisplayName>{Column.COLUMN_NAME}</DisplayName>
-				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Computed$(parentType)Column.ico" when="{Column.COMPUTED}" assembly="" />
-				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrement$(parentType)Column.ico" when="{Column.IS_AUTOINCREMENT} = 1 AND {Column.IS_UNIQUE}" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{Column.IS_COMPUTED} AND NOT {Column.PARENT_TYPE} = 'Trigger'" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Computed$(parentType)Column.ico" when="{Column.IS_COMPUTED}" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" when="{Column.IS_AUTOINCREMENT} AND {Column.IS_UNIQUE} AND NOT {Column.PARENT_TYPE} = 'Trigger'" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.PrimaryKey.ico" when="{Column.IS_UNIQUE} AND NOT {Column.PARENT_TYPE} = 'Trigger'" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.PrimaryKey$(parentType).ico" when="{Column.IS_UNIQUE}" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.UniqueKey.ico" when="{Column.IN_PRIMARYKEY} AND NOT {Column.PARENT_TYPE} = 'Trigger'" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.UniqueKey$(parentType).ico" when="{Column.IN_PRIMARYKEY}" assembly="" />
-				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)$(parentType)Column.ico" assembly="" />
-				<PropertiesRef name="TplPropertiesTableColumn" arguments="$(parentType),$(systemType)"/>
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)$(parentType)Column.ico" when="{Column.PARENT_TYPE} = 'Trigger' OR {Column.PARENT_TYPE} = 'View'" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Column.ico" assembly="" />
+				<PropertiesRef name="TplPropertiesColumn" arguments="$(parentType)"/>
 			</SelectionNode>
 		</Selection>
 	</Define>
 
+
+	
 	<!-- Definition of index node properties -->
 	<Define name="TplPropertiesIndex" >
 		<Properties>
@@ -216,69 +328,24 @@
 				<DisplayName resource="Property_Name_Index_IsForeignKey" />
 				<Description resource="Property_Desc_Index_IsForeignKey" />
 			</Property>
-			<Property name="IS_SYSTEM_INDEX">
+			<Property name="IS_SYSTEM_OBJECT">
 				<DisplayName resource="Property_Name_Type" />
 				<StandardValues>
-					<StandardValue value="0" resource="Property_Value_IndexType_User" />
-					<StandardValue value="1" resource="Property_Value_IndexType_System" />
+					<StandardValue value="false" resource="Property_Value_IndexType_User" />
+					<StandardValue value="true" resource="Property_Value_IndexType_System" />
 				</StandardValues>
+			</Property>
+			<Property name="EXPRESSION">
+				<DisplayName resource="Property_Name_Index_Expression" />
+				<Description resource="Property_Desc_Index_Expression" />
+			</Property>
+			<Property name="IS_COMPUTED">
+				<DisplayName resource="Property_Name_Index_IsComputed" />
+				<Description resource="Property_Desc_Index_IsComputed" />
 			</Property>
 		</Properties>
 	</Define>
 
-	<!-- Definition of index node column properties -->
-	<Define name="TplPropertiesIndexColumn" >
-		<Properties>
-			<TypeDisplayName resource="Type_IndexColumn" />
-			<Property name="TABLE_CATALOG">
-				<DisplayName resource="Identifier_Name_Catalog" />
-				<Category resource="Category_Identifier" />
-				<Description resource="Identifier_Desc_Catalog" />
-			</Property>
-			<Property name="TABLE_SCHEMA">
-				<DisplayName resource="Identifier_Name_Catalog" />
-				<Category resource="Category_Identifier" />
-				<Description resource="Identifier_Desc_Catalog" />
-			</Property>
-			<Property name="TABLE_NAME">
-				<DisplayName resource="Identifier_Name_Table" />
-				<Category resource="Category_Identifier" />
-				<Description resource="Identifier_Desc_Table" />
-			</Property>
-			<Property name="INDEX_NAME">
-				<DisplayName resource="Identifier_Name_Index" />
-				<Category resource="Category_Identifier" />
-				<Description resource="Identifier_Desc_Index" />
-			</Property>
-			<Property name="COLUMN_NAME">
-				<DisplayName resource="Identifier_Name_Name" />
-				<Category resource="Category_Identifier" />
-				<Description resource="Identifier_Desc_Name" />
-			</Property>
-			<Property name="ORDINAL_POSITION">
-				<DisplayName resource="Property_Name_UniqueKeyColumn_Ordinal" />
-				<Description resource="Property_Name_UniqueKeyColumn_Ordinal" />
-			</Property>
-			<!--
-			<Property name="COLLATION">
-				<DisplayName resource="Property_Name_IndexColumn_Collation" />
-				<Description resource="Property_Desc_IndexColumn_Collation" />
-				<StandardValues>
-					<StandardValue value="1">ASC</StandardValue>
-					<StandardValue value="2">DESC</StandardValue>
-				</StandardValues>
-			</Property>
-			-->
-			<Property name="COMPUTED">
-				<DisplayName resource="Property_Name_Column_Computed" />
-				<Description resource="Property_Desc_Column_Computed" />
-			</Property>
-			<Property name="EXPRESSION">
-				<DisplayName resource="Property_Name_Column_Expression" />
-				<Description resource="Property_Desc_Column_Expression" />
-			</Property>
-		</Properties>
-	</Define>
 
 	<!-- Definitions of trigger node properties -->
 	<Define name="TplPropertiesTrigger" >
@@ -352,10 +419,6 @@
 			<Property name="IS_AUTOINCREMENT">
 				<DisplayName resource="Property_Name_Trigger_IsAutoIncrement" />
 				<Description resource="Property_Desc_Trigger_IsAutoIncrement" />
-				<StandardValues>
-					<StandardValue value="1">True</StandardValue>
-					<StandardValue value="0">False</StandardValue>
-				</StandardValues>
 			</Property>
 			<Property name="DEPENDENCY_FIELDS">
 				<DisplayName resource="Property_Name_Trigger_Dependencies" />
@@ -364,51 +427,55 @@
 		</Properties>
 	</Define>
 
-	<!-- Definition of trigger selection node -->
-	<Define name="TplSelectionTriggersWithChildren" parameters="triggerType, systemType, systemObjectFlag, catalogColumn, schemaColumn, tableColumn, triggerColumn" >
+	
+	
+	<!-- Definition of trigger selection node without columns -->
+	<Define name="TplSelectionTriggersWithChildren" parameters="triggerType, systemType, isSystemObject, catalogColumn, schemaColumn, tableColumn, triggerColumn" >
 		<Selection type="$(triggerType)" restrictions="$(catalogColumn),$(schemaColumn),$(tableColumn),$(triggerColumn)" >
-			<!-- filter="IS_SYSTEM_TRIGGER = $(systemObjectFlag)" > -->
+			<!-- filter="IS_SYSTEM_OBJECT = $(isSystemObject)" > -->
 			<SelectionNode nodeId="Trigger">
 				<DisplayName>{Trigger.TRIGGER_NAME}</DisplayName>
-				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrement$(systemType)Trigger.ico" when="{Trigger.IS_AUTOINCREMENT} = 1" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrement$(systemType)Trigger.ico" when="{Trigger.IS_AUTOINCREMENT}" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Trigger.ico" assembly="" />
 				<PropertiesRef name="TplPropertiesTrigger" />
 				<Children>
-					<SelectionRef name="TplSelectionColumn" arguments="Trigger,$(systemType),{Trigger.TABLE_CATALOG},{Trigger.TABLE_SCHEMA},{Trigger.TRIGGER_NAME}" />
+					<SelectionRef name="TplSelectionColumn" arguments="Trigger,$(systemType),{Trigger.TABLE_CATALOG},,{Trigger.TABLE_SCHEMA},,{Trigger.TRIGGER_NAME}" />
 				</Children>
 			</SelectionNode>
 		</Selection>
 	</Define>
 
-	<Define name="TplSelectionTriggersNoChildren" parameters="triggerType, systemType, systemObjectFlag, catalogColumn, schemaColumn, tableColumn, triggerColumn" >
+	
+	<!-- Definition of trigger selection node with columns -->
+	<Define name="TplSelectionTriggersNoChildren" parameters="triggerType, systemType, isSystemObject, catalogColumn, schemaColumn, tableColumn, triggerColumn" >
 		<Selection type="$(triggerType)" restrictions="$(catalogColumn),$(schemaColumn),$(tableColumn),$(triggerColumn)" >
-			<!-- filter="IS_SYSTEM_TRIGGER = $(systemObjectFlag)" > -->
+			<!-- filter="IS_SYSTEM_OBJECT = $(isSystemObject)" > -->
 			<SelectionNode nodeId="Trigger">
 				<DisplayName>{Trigger.TRIGGER_NAME}</DisplayName>
-				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrement$(systemType)Trigger.ico" when="{Trigger.IS_AUTOINCREMENT} = 1" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrement$(systemType)Trigger.ico" when="{Trigger.IS_AUTOINCREMENT}" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Trigger.ico" assembly="" />
 				<PropertiesRef name="TplPropertiesTrigger" />
 			</SelectionNode>
 		</Selection>
 	</Define>
 
-
-	<!-- Definition of trigger static node properties -->
-	<Define name="TplStaticNodeTriggers" parameters="triggerType, triggerChildrenType, systemType, systemObjectFlag" >
+	
+	<!-- Definition of trigger static node -->
+	<Define name="TplStaticNodeTriggers" parameters="triggerType, triggerChildrenType, systemType, isSystemObject" >
 		<StaticNode nodeId="$(systemType)$(triggerType)s">
 			<DisplayName resource="Node_Name_$(systemType)$(triggerType)s" />
 			<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Folder$(systemType)$(triggerType)s.ico" assembly="" />
 			<Children>
-				<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="$(triggerType),$(systemType),$(systemObjectFlag),null,null,null,null"/>
+				<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="$(triggerType),$(systemType),$(isSystemObject),null,null,null,null"/>
 			</Children>
 		</StaticNode>
 	</Define>
 
+	
 
-
-	<!-- Definition of table selection node properties -->
-	<Define name="TplSelectionTables" parameters="systemType, systemObjectFlag, triggerChildrenType" >
-		<Selection type="Table" restrictions="null,null" filter="IS_SYSTEM_TABLE = $(systemObjectFlag) AND NOT (TABLE_TYPE = 'VIEW')">
+	<!-- Definition of table selection node -->
+	<Define name="TplSelectionTables" parameters="systemType, isSystemObject, triggerChildrenType" >
+		<Selection type="Table" restrictions="null,null" filter="IS_SYSTEM_OBJECT = $(isSystemObject)">
 			<SelectionNode nodeId="Table">
 				<DisplayName>{Table.TABLE_NAME}</DisplayName>
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Table.ico" assembly="" />
@@ -429,11 +496,11 @@
 						<Category resource="Category_Identifier" />
 						<Description resource="Identifier_Desc_Name" />
 					</Property>
-					<Property name="IS_SYSTEM_TABLE">
+					<Property name="IS_SYSTEM_OBJECT">
 						<DisplayName resource="Property_Name_Type" />
 						<StandardValues>
-							<StandardValue value="0" resource="Property_Value_TableType_User" />
-							<StandardValue value="1" resource="Property_Value_TableType_System" />
+							<StandardValue value="false" resource="Property_Value_TableType_User" />
+							<StandardValue value="true" resource="Property_Value_TableType_System" />
 						</StandardValues>
 					</Property>
 					<Property name="DESCRIPTION">
@@ -468,14 +535,7 @@
 									<Icon name="PrimaryKey" />
 									<PropertiesRef name="TplPropertiesIndex" />
 									<Children>
-										<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
-											<SelectionNode nodeId="IndexColumn">
-												<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
-												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedTableColumn.ico" when="{IndexColumn.COMPUTED}" assembly="" />
-												<Icon name="Column" />
-												<PropertiesRef name="TplPropertiesIndexColumn" />
-											</SelectionNode>
-										</Selection>
+										<SelectionRef name="TplSelectionColumn" arguments="Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
 									</Children>
 								</SelectionNode>
 							</Selection>
@@ -485,14 +545,7 @@
 									<Icon name="UniqueKey" />
 									<PropertiesRef name="TplPropertiesIndex" />
 									<Children>
-										<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
-											<SelectionNode nodeId="IndexColumn">
-												<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
-												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedTableColumn.ico" when="{IndexColumn.COMPUTED}" assembly="" />
-												<Icon name="Column" />
-												<PropertiesRef name="TplPropertiesIndexColumn" />
-											</SelectionNode>
-										</Selection>
+										<SelectionRef name="TplSelectionColumn" arguments="Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
 									</Children>
 								</SelectionNode>
 							</Selection>
@@ -502,14 +555,7 @@
 									<Icon name="Index" />
 									<PropertiesRef name="TplPropertiesIndex" />
 									<Children>
-										<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
-											<SelectionNode nodeId="IndexColumn">
-												<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
-												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedTableColumn.ico" when="{IndexColumn.COMPUTED}" assembly="" />
-												<Icon name="Column" />
-												<PropertiesRef name="TplPropertiesIndexColumn" />
-											</SelectionNode>
-										</Selection>
+										<SelectionRef name="TplSelectionColumn" arguments="Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
 									</Children>
 								</SelectionNode>
 							</Selection>
@@ -519,14 +565,7 @@
 									<Icon name="ForeignKey" />
 									<PropertiesRef name="TplPropertiesIndex" />
 									<Children>
-										<Selection type="IndexColumn" restrictions="{Index.TABLE_CATALOG},{Index.TABLE_SCHEMA},{Index.TABLE_NAME},{Index.INDEX_NAME}">
-											<SelectionNode nodeId="IndexColumn">
-												<DisplayName>{IndexColumn.COLUMN_NAME}</DisplayName>
-												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedTableColumn.ico" when="{IndexColumn.COMPUTED}" assembly="" />
-												<Icon name="Column" />
-												<PropertiesRef name="TplPropertiesIndexColumn" />
-											</SelectionNode>
-										</Selection>
+										<SelectionRef name="TplSelectionColumn" arguments="Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
 									</Children>
 								</SelectionNode>
 							</Selection>
@@ -535,7 +574,7 @@
 					<StaticNode skipWhen="{Table.INDEX_COUNT} > 0" nodeId="IndexesEmpty">
 						<DisplayName resource="Node_Name_Indexes" />
 					</StaticNode>
-					<StaticNode skipWhen="{Table.IS_SYSTEM_TABLE} = 1 OR {Table.FOREIGNKEY_COUNT} = 0" nodeId="ForeignKeys">
+					<StaticNode skipWhen="{Table.IS_SYSTEM_OBJECT} OR {Table.FOREIGNKEY_COUNT} = 0" nodeId="ForeignKeys">
 						<DisplayName resource="Node_Name_ForeignKeys" />
 						<!-- <Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.FolderForeignKeys.ico" assembly="" /> -->
 						<Children>
@@ -590,103 +629,47 @@
 										</Property>
 									</Properties>
 									<Children>
-										<Selection type="TableForeignKeyColumn" restrictions="{ForeignKey.CONSTRAINT_CATALOG},{ForeignKey.CONSTRAINT_SCHEMA},{ForeignKey.TABLE_NAME},{ForeignKey.CONSTRAINT_NAME}">
-											<SelectionNode nodeId="ForeignKeyColumn">
-												<DisplayName>{ForeignKeyColumn.COLUMN_NAME}</DisplayName>
-												<Icon name="Column" />
-												<Properties>
-													<TypeDisplayName resource="Type_ForeignKeyColumn" />
-													<Property name="CONSTRAINT_CATALOG">
-														<DisplayName resource="Identifier_Name_Catalog" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Catalog" />
-													</Property>
-													<Property name="CONSTRAINT_SCHEMA">
-														<DisplayName resource="Identifier_Name_Schema" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Schema" />
-													</Property>
-													<Property name="TABLE_NAME">
-														<DisplayName resource="Identifier_Name_Table" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Table" />
-													</Property>
-													<Property name="CONSTRAINT_NAME">
-														<DisplayName resource="Identifier_Name_ForeignKey" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_ForeignKey" />
-													</Property>
-													<Property name="COLUMN_NAME">
-														<DisplayName resource="Identifier_Name_Name" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Name" />
-													</Property>
-													<Property name="REFERENCED_TABLE_CATALOG">
-														<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedCatalog" />
-														<Category resource="Category_ReferencedColumn" />
-														<Description resource="Property_Desc_ForeignKeyColumn_ReferencedCatalog" />
-													</Property>
-													<Property name="REFERENCED_TABLE_SCHEMA">
-														<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedSchema" />
-														<Category resource="Category_ReferencedColumn" />
-														<Description resource="Property_Desc_ForeignKeyColumn_ReferencedSchema" />
-													</Property>
-													<Property name="REFERENCED_TABLE_NAME">
-														<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedTable" />
-														<Category resource="Category_ReferencedColumn" />
-														<Description resource="Property_Desc_ForeignKeyColumn_ReferencedTable" />
-													</Property>
-													<Property name="REFERENCED_COLUMN_NAME">
-														<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedColumn" />
-														<Category resource="Category_ReferencedColumn" />
-														<Description resource="Property_Desc_ForeignKeyColumn_ReferencedColumn" />
-													</Property>
-													<Property name="ORDINAL_POSITION">
-														<DisplayName resource="Property_Name_ForeignKeyColumn_Ordinal" />
-														<Description resource="Property_Desc_ForeignKeyColumn_Ordinal" />
-													</Property>
-												</Properties>
-											</SelectionNode>
-										</Selection>
+										<SelectionRef name="TplSelectionColumn" arguments="TableForeignKey,$(systemType),{ForeignKey.CONSTRAINT_CATALOG},,{ForeignKey.CONSTRAINT_SCHEMA},,{ForeignKey.TABLE_NAME},,{ForeignKey.CONSTRAINT_NAME}" />
 									</Children>
 								</SelectionNode>
 							</Selection>
 						</Children>
 					</StaticNode>
-					<StaticNode skipWhen="{Table.IS_SYSTEM_TABLE} = 1 OR {Table.FOREIGNKEY_COUNT} > 0" nodeId="ForeignKeysEmpty">
+					<StaticNode skipWhen="{Table.IS_SYSTEM_OBJECT} OR {Table.FOREIGNKEY_COUNT} > 0" nodeId="ForeignKeysEmpty">
 						<DisplayName resource="Node_Name_ForeignKeys" />
 					</StaticNode>
-					<StaticNode  skipWhen="{Table.IS_SYSTEM_TABLE} = 1 OR {Table.TRIGGER_COUNT} = 0" nodeId="Triggers">
+					<StaticNode  skipWhen="{Table.IS_SYSTEM_OBJECT} OR {Table.TRIGGER_COUNT} = 0" nodeId="Triggers">
 						<DisplayName resource="Node_Name_Triggers" />
 						<!-- <Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.FolderTriggers.ico" assembly="" /> -->
 						<Children>
-							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="AutoIncrementTrigger,$(systemType),$(systemObjectFlag),{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME},null"/>
-							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="StandardTrigger,$(systemType),$(systemObjectFlag),{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME},null"/>
+							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="AutoIncrementTrigger,$(systemType),$(isSystemObject),{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME},null"/>
+							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="StandardTrigger,$(systemType),$(isSystemObject),{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME},null"/>
 						</Children>
 					</StaticNode>
-					<StaticNode  skipWhen="{Table.IS_SYSTEM_TABLE} = 0 OR {Table.TRIGGER_COUNT} = 0" nodeId="Triggers">
+					<StaticNode  skipWhen="{Table.IS_SYSTEM_OBJECT} = false OR {Table.TRIGGER_COUNT} = 0" nodeId="Triggers">
 						<DisplayName resource="Node_Name_Triggers" />
 						<!-- <Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.FolderTriggers.ico" assembly="" /> -->
 						<Children>
-							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="SystemTrigger,$(systemType),$(systemObjectFlag),{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME},null"/>
+							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="SystemTrigger,$(systemType),$(isSystemObject),{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME},null"/>
 						</Children>
 					</StaticNode>
 					<StaticNode  skipWhen="{Table.TRIGGER_COUNT} > 0" nodeId="TriggersEmpty">
 						<DisplayName resource="Node_Name_Triggers" />
 					</StaticNode>
-					<SelectionRef name="TplSelectionColumn" arguments="Table,$(systemType),{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}" />
+					<SelectionRef name="TplSelectionColumn" arguments="Table,$(systemType),{Table.TABLE_CATALOG},,{Table.TABLE_SCHEMA},,{Table.TABLE_NAME}" />
 				</Children>
 			</SelectionNode>
 		</Selection>
 	</Define>
 
-	<!-- Definition of table static node properties -->
-	<Define name="TplStaticNodeTablesTables" parameters="systemType, systemObjectFlag, triggerChildrenType" >
+	
+	<!-- Definition of table static node -->
+	<Define name="TplStaticNodeTablesTables" parameters="systemType, isSystemObject, triggerChildrenType" >
 		<StaticNode nodeId="$(systemType)Tables">
 			<DisplayName resource="Node_Name_$(systemType)Tables" />
 			<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Folder$(systemType)Tables.ico" assembly="" />
 			<Children>
-				<SelectionRef name="TplSelectionTables" arguments="$(systemType),$(systemObjectFlag),$(triggerChildrenType)"/>
+				<SelectionRef name="TplSelectionTables" arguments="$(systemType),$(isSystemObject),$(triggerChildrenType)"/>
 			</Children>
 		</StaticNode>
 	</Define>

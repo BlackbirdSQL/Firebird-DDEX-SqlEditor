@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataObjectSupport xmlns="http://schemas.microsoft.com/VisualStudio/2007/07/Data/DataObjectSupport">
+
+
+	<Define name="TplMappedTypeColumn" parameters="parentType, underlyingType, restrictions" >
+		<MappedType name="$(parentType)Column" underlyingType="$(underlyingType)Column">
+			<Selection restrictions="$(restrictions)" />
+			<Identifier>
+				<PartListRef name="TplMappedIdentifierList$(underlyingType)Column" />
+				<Part name="Name" underlyingMember="COLUMN_NAME" />
+			</Identifier>
+			<Properties>
+				<PropertyListRef name="TplMappedPropertyList$(underlyingType)Column" />
+				<Property name="Ordinal" underlyingMember="ORDINAL_POSITION">
+					<Conversion>
+						<ChangeType type="System.Int32" />
+					</Conversion>
+				</Property>
+				<Property name="InPrimaryKey" underlyingMember="IN_PRIMARYKEY" />
+				<Property name="IsUnique" underlyingMember="IS_UNIQUE" />
+				<Property name="IsNullable" underlyingMember="IS_NULLABLE" />
+				<Property name="Length" underlyingMember="COLUMN_SIZE" />
+				<Property name="Precision" underlyingMember="NUMERIC_PRECISION" />
+				<Property name="Scale" underlyingMember="NUMERIC_SCALE" />
+				<Property name="NativeDataType" underlyingMember="COLUMN_DATA_TYPE" />
+				<Property name="AdoDotNetDataType" underlyingMember="COLUMN_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+				<Property name="AdoDotNetDbType" underlyingMember="COLUMN_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+				<Property name="FrameworkDataType" underlyingMember="COLUMN_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+				<Property name="Computed" underlyingMember="IS_COMPUTED" />
+				<Property name="Expression" underlyingMember="EXPRESSION" />
+				<Property name="IsAutoIncrement" underlyingMember="IS_AUTOINCREMENT" />
+			</Properties>
+		</MappedType>
+	</Define>
+
+	<Define name="TplMappedTypeIndex" parameters="indexType, filter" >
+		<MappedType name="$(indexType)" underlyingType="Index">
+			<Selection restrictions="{Catalog},{Schema},{Table},{Name}" filter="$(filter)" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="TABLE_CATALOG" />
+				<Part name="Schema" underlyingMember="TABLE_SCHEMA" />
+				<Part name="Table" underlyingMember="TABLE_NAME" />
+				<Part name="Name" underlyingMember="INDEX_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="Table" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
+				<Property name="Name" underlyingMember="INDEX_NAME" isIdentifierPart="true" />
+				<Property name="IsPrimary" underlyingMember="IS_PRIMARY" />
+				<Property name="IsUnique" underlyingMember="IS_UNIQUE" />
+				<Property name="IsForeignKey" underlyingMember="IS_FOREIGNKEY" />
+				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_OBJECT" >
+					<Conversion>
+						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
+						<Calculate expr="IIF({0} = true, false, false)" exprType="System.Boolean" />
+					</Conversion>
+				</Property>
+			</Properties>
+		</MappedType>
+	</Define>
+
+
+
+</DataObjectSupport>

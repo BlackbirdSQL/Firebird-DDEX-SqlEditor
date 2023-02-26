@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataObjectSupport xmlns="http://schemas.microsoft.com/VisualStudio/2007/07/Data/DataObjectSupport">
+
+
+	<!-- The underlying type for table columns is either TableColumn, ViewColumn, IndexColumn, ForeignKeyColumn or TriggerColumn. -->
+	<!-- The selector uses either DslColumns(FbColumns), DslViewColumns(new), DslIndexColumns(new), DslForeignKeyColumns(new), DslTriggerColumns(new) -->
+	<!-- parentType: Table, View, Index, ForeignKey or Trigger -->
+	<!-- parentColumn: TABLE_NAME, VIEW_NAME, INDEX_NAME, CONSTRAINT_NAME  or TRIGGER_NAME -->
+	<!-- collectionName: Columns, ViewColumns, IndexColumns, ForeignKeyColumns or TriggerColumns -->
+	<!-- tplServiceIdsRef:  TplServiceRefColumnIdsRef or Empty -->
+	<Define name="TplTypeColumn" parameters="parentType, parentColumn, collectionName, tplServiceIdsRef" >
+		<Type name="$(parentType)Column" preferredOrdering="ORDINAL_POSITION">
+			<Identifier>
+				<PartListRef name="TplIdentifierList$(parentType)Column" />
+				<Part name="COLUMN_NAME" type="System.String" />
+			</Identifier>
+			<Properties>
+				<PropertyListRef name="TplPropertyList$(parentType)Column" />
+				<Property name="ORDINAL_POSITION" type="System.Int16" />
+				<Property name="DESCRIPTION" type="System.String" />
+				<Property name="COLUMN_DATA_TYPE" type="System.String" />
+				<Property name="COLUMN_SIZE" type="System.Int32" />
+				<Property name="NUMERIC_PRECISION" type="System.Byte" />
+				<Property name="NUMERIC_SCALE" type="System.Int32" />
+				<Property name="IS_NULLABLE" type="System.Boolean" />
+				<Property name="EXPRESSION" type="System.String" />
+				<Property name="IN_PRIMARYKEY" type="System.Boolean" />
+				<Property name="IS_UNIQUE" type="System.Boolean" />
+				<Property name="IS_COMPUTED" type="System.Boolean" />
+				<Property name="IS_AUTOINCREMENT" type="System.Boolean" />
+				<Property name="COLUMN_DEFAULT" type="System.String" />
+				<Property name="COLLATION_NAME" type="System.String" />
+				<Property name="PARENT_TYPE" type="System.String" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="$(collectionName)" />
+					</Parameters>
+				</Service>
+				<ServiceRef name="$(tplServiceIdsRef)" />
+			</Services>
+		</Type>
+	</Define>
+
+
+
+
+
+	<Define name="TplTypeTrigger" parameters="triggerType" >
+		<Type name="$(triggerType)" preferredOrdering="TRIGGER_NAME">
+			<Identifier>
+				<Part name="TABLE_CATALOG" type="System.String" />
+				<Part name="TABLE_SCHEMA" type="System.String" />
+				<Part name="TABLE_NAME" type="System.String" />
+				<Part name="TRIGGER_NAME" type="System.String" />
+			</Identifier>
+			<Properties>
+				<Property name="TABLE_NAME" isIdentifierPart="true" />
+				<Property name="TRIGGER_NAME" isIdentifierPart="true" />
+				<Property name="TRIGGER_TYPE" type="System.Int64" />
+				<Property name="IS_SYSTEM_OBJECT" type="System.Boolean" />
+				<Property name="IS_INACTIVE" type="System.Int16" />
+				<Property name="SEQUENCENO" type="System.Int16" />
+				<Property name="EXPRESSION" type="System.String" />
+				<Property name="DESCRIPTION" type="System.String" />
+				<Property name="IS_AUTOINCREMENT" type="System.Boolean" />
+				<Property name="DEPENDENCY_FIELDS" type="System.String" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="$(triggerType)s" />
+					</Parameters>
+				</Service>
+				<Service type="IDSRefBuilder">
+					<Parameters method="AppendToDSRef">
+						<Parameter>
+							<Parameter value="{2}" />
+							<Parameter value="{1}" />
+							<Parameter value="Table" />
+							<Parameter />
+							<Parameter>
+								<!-- GUID_daVinciDSRefProperty_Qualifier -->
+								<Parameter value="4656BAEA-F397-11ce-BFE1-00AA0057B34E">
+									<Parameter value="{0}"/>
+								</Parameter>
+								<!-- GUID_daVinciDSRefProperty_PreciseType -->
+								<Parameter value="39A5A7E7-513F-44a4-B79D-7652CD8962D9">
+									<Parameter value="101" type="System.Int32" />
+								</Parameter>
+							</Parameter>
+							<Parameter>
+								<Parameter>
+									<Parameter value="{3}" />
+									<Parameter />
+									<Parameter value="Trigger" />
+									<Parameter />
+									<Parameter>
+										<!-- GUID_daVinciDSRefProperty_PreciseType -->
+										<Parameter value="39A5A7E7-513F-44a4-B79D-7652CD8962D9">
+											<Parameter value="103" type="System.Int32" />
+										</Parameter>
+									</Parameter>
+								</Parameter>
+							</Parameter>
+						</Parameter>
+					</Parameters>
+				</Service>
+			</Services>
+		</Type>
+	</Define>
+
+</DataObjectSupport>

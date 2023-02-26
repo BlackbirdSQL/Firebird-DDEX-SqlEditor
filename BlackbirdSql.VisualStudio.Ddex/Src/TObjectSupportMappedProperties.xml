@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataObjectSupport xmlns="http://schemas.microsoft.com/VisualStudio/2007/07/Data/DataObjectSupport">
+
+	<!-- Element Definitions
+			xs:sequence is specified so this has to come first
+			so we're going to keep definitions limited and simple
+			otherwise it's just going to become a pita
+	-->
+
+	<!--
+	A little messy here.
+		Firstly we want to list triggers at the top level within a database;
+			IOW the trigger is the hierarchy root.
+		But we also want to list triggers within each table;
+			In this case the table is the hierarchy root.
+		Whichever is the case, we want to list any dependency columns of the trigger,
+			those being a subset of the table's columns.
+		Further we want to differentiate between system & user...
+			tables, triggers, sequences(generators) and possibly others.
+
+		All of these situations create a commonality of nodes so it seems we're progressively
+		heading towards what MS has done with SqlServer where evrything is parameterized, which
+		we wanted to avoid simply because the readability is awful.
+
+		TBC: Other column types will be included in these defines
+	-->
+
+	<!-- The identifier and property lists Columns -->
+	<Define name="TplMappedIdentifierListTableColumn" >
+		<MappedIdentifierPart name="Catalog" underlyingMember="TABLE_CATALOG" />
+		<MappedIdentifierPart name="Schema" underlyingMember="TABLE_SCHEMA" />
+		<MappedIdentifierPart name="Table" underlyingMember="TABLE_NAME" />
+	</Define>
+
+	<Define name="TplMappedIdentifierListViewColumn" >
+		<MappedIdentifierPart name="Catalog" underlyingMember="VIEW_CATALOG" />
+		<MappedIdentifierPart name="Schema" underlyingMember="VIEW_SCHEMA" />
+		<MappedIdentifierPart name="View" underlyingMember="VIEW_NAME" />
+	</Define>
+
+	<Define name="TplMappedIdentifierListIndexColumn" >
+		<MappedIdentifierPart name="Catalog" underlyingMember="TABLE_CATALOG" />
+		<MappedIdentifierPart name="Schema" underlyingMember="TABLE_SCHEMA" />
+		<MappedIdentifierPart name="Table" underlyingMember="TABLE_NAME" />
+		<MappedIdentifierPart name="Index" underlyingMember="INDEX_NAME" />
+	</Define>
+	
+
+	<Define name="TplMappedIdentifierListTableForeignKeyColumn" >
+		<MappedIdentifierPart name="Catalog" underlyingMember="CONSTRAINT_CATALOG" />
+		<MappedIdentifierPart name="Schema" underlyingMember="CONSTRAINT_SCHEMA" />
+		<MappedIdentifierPart name="Table" underlyingMember="TABLE_NAME" />
+		<MappedIdentifierPart name="TableForeignKey" underlyingMember="CONSTRAINT_NAME" />
+	</Define>
+
+	<Define name="TplMappedIdentifierListTriggerColumn" >
+		<MappedIdentifierPart name="Catalog" underlyingMember="TABLE_CATALOG" />
+		<MappedIdentifierPart name="Schema" underlyingMember="TABLE_SCHEMA" />
+		<MappedIdentifierPart name="Trigger" underlyingMember="TRIGGER_NAME" />
+	</Define>
+
+
+	<Define name="TplMappedPropertyListTableColumn" >
+		<MappedProperty name="Table" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
+		<MappedProperty name="Name" underlyingMember="COLUMN_NAME" isIdentifierPart="true" />
+		<MappedProperty name="Trigger" underlyingMember="TRIGGER_NAME" />
+	</Define>
+
+	<Define name="TplMappedPropertyListViewColumn" >
+		<MappedProperty name="View" underlyingMember="VIEW_NAME" isIdentifierPart="true" />
+		<MappedProperty name="Name" underlyingMember="COLUMN_NAME" isIdentifierPart="true" />
+		<MappedProperty name="Trigger" underlyingMember="TRIGGER_NAME" />
+	</Define>
+
+	<Define name="TplMappedPropertyListIndexColumn" >
+		<MappedProperty name="Table" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
+		<MappedProperty name="Index" underlyingMember="INDEX_NAME" isIdentifierPart="true" />
+		<MappedProperty name="Name" underlyingMember="COLUMN_NAME" isIdentifierPart="true" />
+		<MappedProperty name="Trigger" underlyingMember="TRIGGER_NAME" />
+	</Define>
+
+	<Define name="TplMappedPropertyListTableForeignKeyColumn" >
+		<MappedProperty name="Table" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
+		<MappedProperty name="TableForeignKey" underlyingMember="CONSTRAINT_NAME" isIdentifierPart="true" />
+		<MappedProperty name="Name" underlyingMember="COLUMN_NAME" isIdentifierPart="true" />
+		<MappedProperty name="Trigger" underlyingMember="TRIGGER_NAME" />
+		<MappedProperty name="ReferencedTableCatalog" underlyingMember="REFERENCED_TABLE_CATALOG" />
+		<MappedProperty name="ReferencedTableSchema" underlyingMember="REFERENCED_TABLE_SCHEMA" />
+		<MappedProperty name="ReferencedTableName" underlyingMember="REFERENCED_TABLE_NAME" />
+		<MappedProperty name="ReferencedTableColumn" underlyingMember="REFERENCED_COLUMN_NAME" />
+	</Define>
+
+
+	<Define name="TplMappedPropertyListTriggerColumn" >
+		<MappedProperty name="Trigger" underlyingMember="TRIGGER_NAME"  isIdentifierPart="true" />
+		<MappedProperty name="Name" underlyingMember="COLUMN_NAME" isIdentifierPart="true" />
+		<MappedProperty name="Table" underlyingMember="TABLE_NAME" />
+	</Define>
+
+
+</DataObjectSupport>

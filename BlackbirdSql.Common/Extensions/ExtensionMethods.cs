@@ -39,7 +39,7 @@ static class ExtensionMethods
 		if (value is string str)
 			result = comboBox.FindStringExact(str);
 		else
-			result = comboBox.FindStringExact((string)value);
+			result = comboBox.FindStringExact(value.ToString());
 
 		comboBox.SelectedIndex = result;
 
