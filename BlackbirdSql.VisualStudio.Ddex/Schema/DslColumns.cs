@@ -33,12 +33,23 @@ using BlackbirdSql.Common;
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 
+/// <summary>
+/// The base class for all column based types.
+/// Refer to <see cref="DslForeignKeyColumns"/> to see an example of a more complex
+/// derived type.
+/// </summary>
 internal class DslColumns : DslSchema
 {
 	/// <summary>
-	/// The parent DslSchema this column collection belongs to
+	/// The parent DslSchema this column collection belongs to.
+	/// (Not it's <see cref="DslObjectTypes"/> type.)
 	/// </summary>
 	protected string _ParentType = "Table";
+
+	/// <summary>
+	/// The <see cref="DslObjectTypes"/> type of this column.
+	/// </summary>
+	protected string _ObjectType = "TableColumn";
 
 	/// <summary>
 	/// The column to be used in the where clause parent restriction.
@@ -70,9 +81,9 @@ internal class DslColumns : DslSchema
 	protected string _FromClause = @"FROM rdb$relation_fields r";
 
 	/// <summary>
-	/// Clause for additional columns to be added to the SELECT returned columns
+	/// Clause for additional columns to be added to the SELECT columns
 	/// </summary>
-	protected string _ColumnsClause = "";
+	protected string _ColumnsClause = "r_dep.rdb$dependent_name AS TRIGGER_NAME";
 	/*
 	 * Example
 	 * 
@@ -80,6 +91,12 @@ internal class DslColumns : DslSchema
 					null AS VIEW_SCHEMA,
 					r.rdb$relation_name AS VIEW_NAME";
 	*/
+
+	/// <summary>
+	/// Any additional conditions to be inserted into the WHERE clause.
+	/// </summary>
+	protected string _ConditionClause = "";
+
 
 
 
@@ -103,13 +120,18 @@ internal class DslColumns : DslSchema
 
 
 		int defaultRestrictionsLen = DslObjectTypes.GetIdentifierLength("TableColumn");
-		int derivedRestrictionsLen = DslObjectTypes.GetIdentifierLength(_ParentType + "Column");
+		int derivedRestrictionsLen = DslObjectTypes.GetIdentifierLength(_ObjectType);
 
 		// BlackbirdSql added IN_PRIMARYKEY
 		// BlackbirdSql added TRIGGER_NAME
 		// BlackbirdSql added IS_AUTOINCREMENT
 		/*
-		 * What this does in addition to FbColumns() (all on a LEFT OUTER JOIN)...
+		 * What this does in addition to FbColumns()
+		 * 
+		 * Firstly gets the FROM clause result set for rdb$relation_fields using alias 'r'.
+		 * Joins in this section of the from clause should all be INNER JOINs.
+		 * 
+		 * Then gets the following (all on a LEFT OUTER JOIN)...
 		 * 
 		 * For the Primary Key...
 		 * Selects the constraint that is 'PRIMARY KEY' then
@@ -133,9 +155,7 @@ internal class DslColumns : DslSchema
 		 *	So you can have multiple primary key fields but not multiple 
 		 *	auto-increment fields
 		 *	
-		 *	Because triggers have a subset of DslColumns, DslTriggerColumns inherits from 
-		 *	this class but overrides this function
-		 *	
+		 *			 *	
 		*/
 
 		sql.AppendFormat(
@@ -144,8 +164,7 @@ internal class DslColumns : DslSchema
 					null AS TABLE_SCHEMA,
 					r.rdb$relation_name AS TABLE_NAME,
 					r.rdb$field_name AS COLUMN_NAME,
-					r_dep.rdb$dependent_name AS TRIGGER_NAME,
-				    null AS COLUMN_DATA_TYPE,
+					null AS COLUMN_DATA_TYPE,
 				    r_fld.rdb$field_sub_type AS COLUMN_SUB_TYPE,
 					CAST(r_fld.rdb$field_length AS integer) AS COLUMN_SIZE,
 					CAST(r_fld.rdb$field_precision AS integer) AS NUMERIC_PRECISION,
@@ -246,27 +265,37 @@ internal class DslColumns : DslSchema
 					if (where.Length > 0)
 						where.Append(" AND ");
 
-					where.AppendFormat(" AND {0} = @p{1}", _ParentRestriction, index++);
+					where.AppendFormat("{0} = @p{1}", _ParentRestriction, index++);
 				}
 			}
 
 
 			/* COLUMN_NAME */
-			if (restrictions.Length >= derivedRestrictionsLen && restrictions[derivedRestrictionsLen = 1] != null)
+			if (restrictions.Length >= derivedRestrictionsLen && restrictions[derivedRestrictionsLen - 1] != null)
 			{
 				if (where.Length > 0)
 					where.Append(" AND ");
 
-				where.AppendFormat(" AND r.rdb$field_name = @p{0}", index++);
+				where.AppendFormat("r.rdb$field_name = @p{0}", index++);
 			}
+		}
+
+		if (_ConditionClause != "")
+		{
+			if (where.Length > 0)
+				where.Append(" AND ");
+
+			where.Append(_ConditionClause);
 		}
 
 		if (where.Length > 0)
 		{
-			sql.AppendFormat(" WHERE {0} ", where.ToString());
+			sql.AppendFormat(@"
+				WHERE {0} ", where.ToString());
 		}
 
-		sql.AppendFormat(" ORDER BY {0}, ORDINAL_POSITION", _OrderingAlias);
+		sql.AppendFormat(@"
+				ORDER BY {0}, ORDINAL_POSITION", _OrderingAlias);
 
 		// Diag.Trace(sql.ToString());
 
@@ -393,6 +422,8 @@ internal class DslColumns : DslSchema
 		schema.Columns.Remove("CHARACTER_MAX_LENGTH");
 		schema.Columns.Remove("IDENTITY_TYPE");
 		schema.Columns.Remove("TRIGGER_DEPENDENCYCOUNT");
+
+		// Diag.Trace("Rows returned: " + schema.Rows.Count);
 
 	}
 

@@ -211,7 +211,7 @@
 
 
 	<!-- Definition list of foreign key specific column properties -->
-	<Define name="TplPropertiesListTableForeignKeyColumn" >
+	<Define name="TplPropertiesListForeignKeyColumn" >
 		<Property name="CONSTRAINT_CATALOG">
 			<DisplayName resource="Identifier_Name_Catalog" />
 			<Category resource="Category_Identifier" />
@@ -272,16 +272,16 @@
 
 	
 	<!-- Definition of column selection node -->
-	<Define name="TplSelectionColumn" parameters="parentType, systemType, restrictions">
-		<Selection type="$(parentType)Column" restrictions="$(restrictions)">
+	<Define name="TplSelectionColumn" parameters="type, parentType, systemType, restrictions">
+		<Selection type="$(type)" restrictions="$(restrictions)">
 			<SelectionNode nodeId="Column">
 				<DisplayName>{Column.COLUMN_NAME}</DisplayName>
-				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{Column.IS_COMPUTED} AND NOT {Column.PARENT_TYPE} = 'Trigger'" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{Column.IS_COMPUTED} AND NOT ({Column.PARENT_TYPE} = 'Trigger')" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Computed$(parentType)Column.ico" when="{Column.IS_COMPUTED}" assembly="" />
-				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" when="{Column.IS_AUTOINCREMENT} AND {Column.IS_UNIQUE} AND NOT {Column.PARENT_TYPE} = 'Trigger'" assembly="" />
-				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.PrimaryKey.ico" when="{Column.IS_UNIQUE} AND NOT {Column.PARENT_TYPE} = 'Trigger'" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" when="{Column.IS_AUTOINCREMENT} AND {Column.IS_UNIQUE} AND NOT ({Column.PARENT_TYPE} = 'Trigger')" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.PrimaryKey.ico" when="{Column.IS_UNIQUE} AND NOT ({Column.PARENT_TYPE} = 'Trigger')" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.PrimaryKey$(parentType).ico" when="{Column.IS_UNIQUE}" assembly="" />
-				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.UniqueKey.ico" when="{Column.IN_PRIMARYKEY} AND NOT {Column.PARENT_TYPE} = 'Trigger'" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.UniqueKey.ico" when="{Column.IN_PRIMARYKEY} AND NOT ({Column.PARENT_TYPE} = 'Trigger')" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.UniqueKey$(parentType).ico" when="{Column.IN_PRIMARYKEY}" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)$(parentType)Column.ico" when="{Column.PARENT_TYPE} = 'Trigger' OR {Column.PARENT_TYPE} = 'View'" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Column.ico" assembly="" />
@@ -430,8 +430,8 @@
 	
 	
 	<!-- Definition of trigger selection node without columns -->
-	<Define name="TplSelectionTriggersWithChildren" parameters="triggerType, systemType, isSystemObject, catalogColumn, schemaColumn, tableColumn, triggerColumn" >
-		<Selection type="$(triggerType)" restrictions="$(catalogColumn),$(schemaColumn),$(tableColumn),$(triggerColumn)" >
+	<Define name="TplSelectionTriggersWithChildren" parameters="triggerType, systemType, isSystemObject, restrictions" >
+		<Selection type="$(triggerType)" restrictions="$(restrictions)" >
 			<!-- filter="IS_SYSTEM_OBJECT = $(isSystemObject)" > -->
 			<SelectionNode nodeId="Trigger">
 				<DisplayName>{Trigger.TRIGGER_NAME}</DisplayName>
@@ -439,7 +439,7 @@
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Trigger.ico" assembly="" />
 				<PropertiesRef name="TplPropertiesTrigger" />
 				<Children>
-					<SelectionRef name="TplSelectionColumn" arguments="Trigger,$(systemType),{Trigger.TABLE_CATALOG},,{Trigger.TABLE_SCHEMA},,{Trigger.TRIGGER_NAME}" />
+					<SelectionRef name="TplSelectionColumn" arguments="TriggerColumn,Trigger,$(systemType),{Trigger.TABLE_CATALOG},,{Trigger.TABLE_SCHEMA},,{Trigger.TRIGGER_NAME}" />
 				</Children>
 			</SelectionNode>
 		</Selection>
@@ -447,8 +447,8 @@
 
 	
 	<!-- Definition of trigger selection node with columns -->
-	<Define name="TplSelectionTriggersNoChildren" parameters="triggerType, systemType, isSystemObject, catalogColumn, schemaColumn, tableColumn, triggerColumn" >
-		<Selection type="$(triggerType)" restrictions="$(catalogColumn),$(schemaColumn),$(tableColumn),$(triggerColumn)" >
+	<Define name="TplSelectionTriggersNoChildren" parameters="triggerType, systemType, isSystemObject, restrictions" >
+		<Selection type="$(triggerType)" restrictions="$(restrictions)" >
 			<!-- filter="IS_SYSTEM_OBJECT = $(isSystemObject)" > -->
 			<SelectionNode nodeId="Trigger">
 				<DisplayName>{Trigger.TRIGGER_NAME}</DisplayName>
@@ -466,7 +466,7 @@
 			<DisplayName resource="Node_Name_$(systemType)$(triggerType)s" />
 			<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Folder$(systemType)$(triggerType)s.ico" assembly="" />
 			<Children>
-				<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="$(triggerType),$(systemType),$(isSystemObject),null,null,null,null"/>
+				<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="$(triggerType),$(systemType),$(isSystemObject),null,,null"/>
 			</Children>
 		</StaticNode>
 	</Define>
@@ -535,7 +535,7 @@
 									<Icon name="PrimaryKey" />
 									<PropertiesRef name="TplPropertiesIndex" />
 									<Children>
-										<SelectionRef name="TplSelectionColumn" arguments="Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
+										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
 									</Children>
 								</SelectionNode>
 							</Selection>
@@ -545,7 +545,7 @@
 									<Icon name="UniqueKey" />
 									<PropertiesRef name="TplPropertiesIndex" />
 									<Children>
-										<SelectionRef name="TplSelectionColumn" arguments="Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
+										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
 									</Children>
 								</SelectionNode>
 							</Selection>
@@ -555,7 +555,7 @@
 									<Icon name="Index" />
 									<PropertiesRef name="TplPropertiesIndex" />
 									<Children>
-										<SelectionRef name="TplSelectionColumn" arguments="Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
+										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
 									</Children>
 								</SelectionNode>
 							</Selection>
@@ -565,7 +565,7 @@
 									<Icon name="ForeignKey" />
 									<PropertiesRef name="TplPropertiesIndex" />
 									<Children>
-										<SelectionRef name="TplSelectionColumn" arguments="Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
+										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
 									</Children>
 								</SelectionNode>
 							</Selection>
@@ -578,7 +578,7 @@
 						<DisplayName resource="Node_Name_ForeignKeys" />
 						<!-- <Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.FolderForeignKeys.ico" assembly="" /> -->
 						<Children>
-							<Selection type="TableForeignKey" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}">
+							<Selection type="ForeignKey" restrictions="{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME}">
 								<SelectionNode nodeId="ForeignKey">
 									<DisplayName>{ForeignKey.CONSTRAINT_NAME}</DisplayName>
 									<Icon name="ForeignKey" />
@@ -629,7 +629,7 @@
 										</Property>
 									</Properties>
 									<Children>
-										<SelectionRef name="TplSelectionColumn" arguments="TableForeignKey,$(systemType),{ForeignKey.CONSTRAINT_CATALOG},,{ForeignKey.CONSTRAINT_SCHEMA},,{ForeignKey.TABLE_NAME},,{ForeignKey.CONSTRAINT_NAME}" />
+										<SelectionRef name="TplSelectionColumn" arguments="ForeignKeyColumn,ForeignKey,$(systemType),{ForeignKey.CONSTRAINT_CATALOG},,{ForeignKey.CONSTRAINT_SCHEMA},,{ForeignKey.TABLE_NAME},,{ForeignKey.CONSTRAINT_NAME}" />
 									</Children>
 								</SelectionNode>
 							</Selection>
@@ -642,21 +642,21 @@
 						<DisplayName resource="Node_Name_Triggers" />
 						<!-- <Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.FolderTriggers.ico" assembly="" /> -->
 						<Children>
-							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="AutoIncrementTrigger,$(systemType),$(isSystemObject),{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME},null"/>
-							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="StandardTrigger,$(systemType),$(isSystemObject),{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME},null"/>
+							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="AutoIncrementTrigger,$(systemType),$(isSystemObject),{Table.TABLE_CATALOG},,{Table.TABLE_SCHEMA},,{Table.TABLE_NAME}"/>
+							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="StandardTrigger,$(systemType),$(isSystemObject),{Table.TABLE_CATALOG},,{Table.TABLE_SCHEMA},,{Table.TABLE_NAME}"/>
 						</Children>
 					</StaticNode>
 					<StaticNode  skipWhen="{Table.IS_SYSTEM_OBJECT} = false OR {Table.TRIGGER_COUNT} = 0" nodeId="Triggers">
 						<DisplayName resource="Node_Name_Triggers" />
 						<!-- <Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.FolderTriggers.ico" assembly="" /> -->
 						<Children>
-							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="SystemTrigger,$(systemType),$(isSystemObject),{Table.TABLE_CATALOG},{Table.TABLE_SCHEMA},{Table.TABLE_NAME},null"/>
+							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="SystemTrigger,$(systemType),$(isSystemObject),{Table.TABLE_CATALOG},,{Table.TABLE_SCHEMA},,{Table.TABLE_NAME}"/>
 						</Children>
 					</StaticNode>
 					<StaticNode  skipWhen="{Table.TRIGGER_COUNT} > 0" nodeId="TriggersEmpty">
 						<DisplayName resource="Node_Name_Triggers" />
 					</StaticNode>
-					<SelectionRef name="TplSelectionColumn" arguments="Table,$(systemType),{Table.TABLE_CATALOG},,{Table.TABLE_SCHEMA},,{Table.TABLE_NAME}" />
+					<SelectionRef name="TplSelectionColumn" arguments="Column,Table,$(systemType),{Table.TABLE_CATALOG},,{Table.TABLE_SCHEMA},,{Table.TABLE_NAME}" />
 				</Children>
 			</SelectionNode>
 		</Selection>

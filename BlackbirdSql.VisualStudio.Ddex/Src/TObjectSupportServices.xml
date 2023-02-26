@@ -1,31 +1,44 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <DataObjectSupport xmlns="http://schemas.microsoft.com/VisualStudio/2007/07/Data/DataObjectSupport">
 
-	<Define name="TplServiceRefColumnIdsRef" >
+	<Define name="TplSchemaObjectTypeDSRefBuilderService0" parameters="parentRefDummy, parentPreciseDummy, subParentRefDummy, subParentPreciseDummy, refDummy, preciseDummy"/>
+
+	<Define name="TplSchemaObjectTypeDSRefBuilderService3" parameters="parentRefDummy, parentPreciseDummy, subParentRefDummy, subParentPreciseDummy, refType, preciseType">
 		<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
 			<Parameters method="AppendToDSRef">
 				<Parameter>
-					<Parameter value="{2}" />
-					<Parameter value="{1}" />
-					<Parameter value="Table" />
-					<Parameter />
-					<Parameter>
-						<Parameter value="4656BAEA-F397-11CE-BFE1-00AA0057B34E">
-							<Parameter value="{0}" />
-						</Parameter>
-						<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
-							<Parameter value="101" type="System.Int32" />
-						</Parameter>
-					</Parameter>
+					<ParameterListRef name="TplAppendToDSRefBaseParameters" arguments="$(refType), $(preciseType)" />
+				</Parameter>
+			</Parameters>
+		</Service>
+	</Define>
+
+	<Define name="TplSchemaObjectTypeDSRefBuilderService4" parameters="parentRefType, parentPreciseType, subParentRefDummy, subParentPreciseDummy, refType, preciseType">
+		<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
+			<Parameters method="AppendToDSRef">
+				<Parameter>
+					<ParameterListRef name="TplAppendToDSRefBaseParameters" arguments="$(parentRefType), $(parentPreciseType)" />
 					<Parameter>
 						<Parameter>
-							<Parameter value="{3}" />
-							<Parameter />
-							<Parameter value="Field" />
-							<Parameter />
+							<ParameterListRef name="TplAppendToDSRefSubParameters" arguments="$(refType), $(preciseType)" />
+						</Parameter>
+					</Parameter>
+				</Parameter>
+			</Parameters>
+		</Service>
+	</Define>
+
+	<Define name="TplSchemaObjectTypeDSRefBuilderService5" parameters="parentRefType, parentPreciseType, subParentRefType, subParentPreciseType, refType, preciseType">
+		<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
+			<Parameters method="AppendToDSRef">
+				<Parameter>
+					<ParameterListRef name="TplAppendToDSRefBaseParameters" arguments="$(parentRefType), $(parentPreciseType)" />
+					<Parameter>
+						<Parameter>
+							<ParameterListRef name="TplAppendToDSRefSubParameters" arguments="$(subParentRefType), $(subParentPreciseType)" />
 							<Parameter>
-								<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
-									<Parameter value="102" type="System.Int32" />
+								<Parameter>
+									<ParameterListRef name="TplAppendToDSRefSubSubParameters" arguments="$(refType), $(preciseType)" />
 								</Parameter>
 							</Parameter>
 						</Parameter>
@@ -35,5 +48,57 @@
 		</Service>
 	</Define>
 
+	<Define name="TplFunctionDSRefBuilderService4" parameters="parentRefType, parentPreciseType, subParentRefDummy, subParentPreciseDummy, refType, preciseType">
+		<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
+			<Parameters method="AppendToDSRef">
+				<Parameter>
+					<ParameterListRef name="TplAppendToDSRefBaseParameters" arguments="$(parentRefType), $(parentPreciseType)" />
+					<Parameter>
+						<Parameter>
+							<ParameterListRef name="TplAppendToDSRefSubParameters" arguments="$(refType), $(preciseType)" />
+						</Parameter>
+					</Parameter>
+				</Parameter>
+			</Parameters>
+		</Service>
+	</Define>
+
+	<Define name="TplAppendToDSRefBaseParameters" parameters="refType, preciseType">
+		<Parameter value="{2}" />
+		<Parameter value="{1}" />
+		<Parameter value="$(refType)" />
+		<Parameter />
+		<Parameter>
+			<!-- DSRefProperty_Qualifier -->
+			<Parameter value="4656BAEA-F397-11ce-BFE1-00AA0057B34E">
+				<Parameter value="{0}"/>
+			</Parameter>
+			<!-- DSRefProperty_PreciseType -->
+			<Parameter value="39A5A7E7-513F-44a4-B79D-7652CD8962D9">
+				<Parameter value="$(preciseType)" type="System.Int32" />
+			</Parameter>
+		</Parameter>
+	</Define>
+
+	<Define name="TplAppendToDSRefSubParameters" parameters="refType, preciseType">
+		<ParameterListRef name="TplAppendToDSRefChildParameters" arguments="3, $(refType), $(preciseType)" />
+	</Define>
+
+	<Define name="TplAppendToDSRefSubSubParameters" parameters="refType, preciseType">
+		<ParameterListRef name="TplAppendToDSRefChildParameters" arguments="4, $(refType), $(preciseType)" />
+	</Define>
+
+	<Define name="TplAppendToDSRefChildParameters" parameters="n, refType, preciseType">
+		<Parameter value="{$(n)}" />
+		<Parameter />
+		<Parameter value="$(refType)" />
+		<Parameter />
+		<Parameter>
+			<!-- DSRefProperty_PreciseType -->
+			<Parameter value="39A5A7E7-513F-44a4-B79D-7652CD8962D9">
+				<Parameter value="$(preciseType)" type="System.Int32" />
+			</Parameter>
+		</Parameter>
+	</Define>
 
 </DataObjectSupport>

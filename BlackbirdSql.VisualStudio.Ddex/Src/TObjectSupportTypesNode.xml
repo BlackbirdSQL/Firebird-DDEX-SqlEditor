@@ -122,36 +122,12 @@
 						<Parameter value="Tables" />
 					</Parameters>
 				</Service>
-				<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
-					<Parameters method="AppendToDSRef">
-						<Parameter>
-							<!-- Name -->
-							<Parameter value="{2}" />
-							<!-- Owner -->
-							<Parameter value="{1}" />
-							<!-- Type -->
-							<Parameter value="Table" />
-							<!-- ExtendedType -->
-							<Parameter />
-							<!-- Properties -->
-							<Parameter>
-								<Parameter value="4656BAEA-F397-11CE-BFE1-00AA0057B34E">
-									<Parameter value="{0}" />
-								</Parameter>
-								<!-- GUID_DSRefProperty_PreciseType -->
-								<Parameter value="39A5A7E7-513F-44a4-B79D-7652CD8962D9">
-									<!-- Table -->
-									<Parameter value="101" type="System.Int32" />
-								</Parameter>
-							</Parameter>
-						</Parameter>
-					</Parameters>
-				</Service>
+				<ServiceRef name="TplSchemaObjectTypeDSRefBuilderService3" arguments="null,0,null,0,Table,101" />
 			</Services>
 		</Type>
 
 		<!-- Completed -->
-		<TypeRef name="TplTypeColumn" arguments="Table,TABLE_NAME,Columns,TplServiceRefColumnIdsRef" />
+		<TypeRef name="TplTypeColumn" arguments="Column,Table,TABLE_NAME,Columns,4,Table,101,null,0,Field,102" />
 
 
 		<TypeRef name="TplTypeTrigger" arguments="Trigger" />
@@ -159,7 +135,7 @@
 		<TypeRef name="TplTypeTrigger" arguments="AutoIncrementTrigger" />
 		<TypeRef name="TplTypeTrigger" arguments="StandardTrigger" />
 
-		<TypeRef name="TplTypeColumn" arguments="Trigger,TRIGGER_NAME,TriggerColumns,TplEmpty" />
+		<TypeRef name="TplTypeColumn" arguments="TriggerColumn,Trigger,TRIGGER_NAME,TriggerColumns,0,null,0,null,0,null,0" />
 
 
 		<!-- Completed -->
@@ -186,48 +162,18 @@
 						<Parameter value="Indexes" />
 					</Parameters>
 				</Service>
-				<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
-					<Parameters method="AppendToDSRef">
-						<Parameter>
-							<Parameter value="{2}" />
-							<Parameter value="{1}" />
-							<Parameter value="Table" />
-							<Parameter />
-							<Parameter>
-								<Parameter value="4656BAEA-F397-11CE-BFE1-00AA0057B34E">
-									<Parameter value="{0}" />
-								</Parameter>
-								<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
-									<Parameter value="101" type="System.Int32" />
-								</Parameter>
-							</Parameter>
-							<Parameter>
-								<Parameter>
-									<Parameter value="{3}" />
-									<Parameter />
-									<Parameter value="Index" />
-									<Parameter />
-									<Parameter>
-										<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
-											<Parameter value="104" type="System.Int32" />
-										</Parameter>
-									</Parameter>
-								</Parameter>
-							</Parameter>
-						</Parameter>
-					</Parameters>
-				</Service>
+				<ServiceRef name="TplSchemaObjectTypeDSRefBuilderService4" arguments="Table,101,null,0,Index,104" />
 			</Services>
 		</Type>
 
 		<!-- Completed -->
 
-		<TypeRef name="TplTypeColumn" arguments="Index,CONSTRAINT_NAME,IndexColumns,TplEmpty" />
+		<TypeRef name="TplTypeColumn" arguments="IndexColumn,Index,CONSTRAINT_NAME,IndexColumns,5,Table,101,Index,104,Field,105" />
 
 
 
 		<!-- Completed -->
-		<Type name="TableForeignKey" preferredOrdering="CONSTRAINT_NAME">
+		<Type name="ForeignKey" preferredOrdering="CONSTRAINT_NAME">
 			<Identifier>
 				<Part name="CONSTRAINT_CATALOG" type="System.String" />
 				<Part name="CONSTRAINT_SCHEMA" type="System.String" />
@@ -253,7 +199,7 @@
 			</Services>
 		</Type>
 
-		<TypeRef name="TplTypeColumn" arguments="TableForeignKey,CONSTRAINT_NAME,ForeignKeyColumns,TplEmpty" />
+		<TypeRef name="TplTypeColumn" arguments="ForeignKeyColumn,ForeignKey,CONSTRAINT_NAME,ForeignKeyColumns,0,null,0,null,0,null,0" />
 
 
 		<!-- Completed -->
@@ -275,28 +221,11 @@
 						<Parameter value="Views" />
 					</Parameters>
 				</Service>
-				<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
-					<Parameters method="AppendToDSRef">
-						<Parameter>
-							<Parameter value="{2}" />
-							<Parameter value="{1}" />
-							<Parameter value="View" />
-							<Parameter />
-							<Parameter>
-								<Parameter value="4656BAEA-F397-11CE-BFE1-00AA0057B34E">
-									<Parameter value="{0}" />
-								</Parameter>
-								<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
-									<Parameter value="301" type="System.Int32" />
-								</Parameter>
-							</Parameter>
-						</Parameter>
-					</Parameters>
-				</Service>
+				<ServiceRef name="TplSchemaObjectTypeDSRefBuilderService3" arguments="null,0,null,0,View,301" />
 			</Services>
 		</Type>
 
-		<TypeRef name="TplTypeColumn" arguments="View,VIEW_NAME,ViewColumns,TplServiceRefColumnIdsRef" />
+		<TypeRef name="TplTypeColumn" arguments="ViewColumn,View,VIEW_NAME,ViewColumns,4,View,301,null,0,Field,302" />
 
 		<!-- Completed -->
 		<Type name="StoredProcedure" preferredOrdering="PROCEDURE_NAME">
@@ -318,24 +247,7 @@
 						<Parameter value="Procedures" />
 					</Parameters>
 				</Service>
-				<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
-					<Parameters method="AppendToDSRef">
-						<Parameter>
-							<Parameter value="{2}" />
-							<Parameter value="{1}" />
-							<Parameter value="Procedure" />
-							<Parameter />
-							<Parameter>
-								<Parameter value="4656BAEA-F397-11CE-BFE1-00AA0057B34E">
-									<Parameter value="{0}" />
-								</Parameter>
-								<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
-									<Parameter value="401" type="System.Int32" />
-								</Parameter>
-							</Parameter>
-						</Parameter>
-					</Parameters>
-				</Service>
+				<ServiceRef name="TplSchemaObjectTypeDSRefBuilderService3" arguments="null,0,null,0,StoredProcedure,401" />
 			</Services>
 		</Type>
 
@@ -365,37 +277,7 @@
 						<Parameter value="ProcedureParameters" />
 					</Parameters>
 				</Service>
-				<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
-					<Parameters method="AppendToDSRef">
-						<Parameter>
-							<Parameter value="{2}" />
-							<Parameter value="{1}" />
-							<Parameter value="StoredProcedure" />
-							<Parameter />
-							<Parameter>
-								<Parameter value="4656BAEA-F397-11CE-BFE1-00AA0057B34E">
-									<Parameter value="{0}" />
-								</Parameter>
-								<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
-									<Parameter value="401" type="System.Int32" />
-								</Parameter>
-							</Parameter>
-							<Parameter>
-								<Parameter>
-									<Parameter value="{3}" />
-									<Parameter />
-									<Parameter value="Field" />
-									<Parameter />
-									<Parameter>
-										<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
-											<Parameter value="402" type="System.Int32" />
-										</Parameter>
-									</Parameter>
-								</Parameter>
-							</Parameter>
-						</Parameter>
-					</Parameters>
-				</Service>
+				<ServiceRef name="TplSchemaObjectTypeDSRefBuilderService4" arguments="StoredProcedure,401,null,0,Field,402" />
 			</Services>
 		</Type>
 
@@ -424,37 +306,7 @@
 						<Parameter value="ProcedureParameters" />
 					</Parameters>
 				</Service>
-				<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
-					<Parameters method="AppendToDSRef">
-						<Parameter>
-							<Parameter value="{2}" />
-							<Parameter value="{1}" />
-							<Parameter value="StoredProcedure" />
-							<Parameter />
-							<Parameter>
-								<Parameter value="4656BAEA-F397-11CE-BFE1-00AA0057B34E">
-									<Parameter value="{0}" />
-								</Parameter>
-								<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
-									<Parameter value="401" type="System.Int32" />
-								</Parameter>
-							</Parameter>
-							<Parameter>
-								<Parameter>
-									<Parameter value="{3}" />
-									<Parameter />
-									<Parameter value="Field" />
-									<Parameter />
-									<Parameter>
-										<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
-											<Parameter value="402" type="System.Int32" />
-										</Parameter>
-									</Parameter>
-								</Parameter>
-							</Parameter>
-						</Parameter>
-					</Parameters>
-				</Service>
+				<ServiceRef name="TplSchemaObjectTypeDSRefBuilderService4" arguments="StoredProcedure,401,null,0,Field,404" />
 			</Services>
 		</Type>
 
@@ -478,24 +330,7 @@
 						<Parameter value="Functions" />
 					</Parameters>
 				</Service>
-				<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
-					<Parameters method="AppendToDSRef">
-						<Parameter>
-							<Parameter value="{2}" />
-							<Parameter value="{1}" />
-							<Parameter value="Function" />
-							<Parameter />
-							<Parameter>
-								<Parameter value="4656BAEA-F397-11CE-BFE1-00AA0057B34E">
-									<Parameter value="{0}" />
-								</Parameter>
-								<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
-									<Parameter value="501" type="System.Int32" />
-								</Parameter>
-							</Parameter>
-						</Parameter>
-					</Parameters>
-				</Service>
+				<ServiceRef name="TplSchemaObjectTypeDSRefBuilderService3" arguments="null,0,null,0,Funtion,501" />
 			</Services>
 		</Type>
 
@@ -525,37 +360,7 @@
 						<Parameter value="FunctionArguments" />
 					</Parameters>
 				</Service>
-				<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
-					<Parameters method="AppendToDSRef">
-						<Parameter>
-							<Parameter value="{2}" />
-							<Parameter value="{1}" />
-							<Parameter value="Function" />
-							<Parameter />
-							<Parameter>
-								<Parameter value="4656BAEA-F397-11CE-BFE1-00AA0057B34E">
-									<Parameter value="{0}" />
-								</Parameter>
-								<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
-									<Parameter value="501" type="System.Int32" />
-								</Parameter>
-							</Parameter>
-							<Parameter>
-								<Parameter>
-									<Parameter value="{3}" />
-									<Parameter />
-									<Parameter value="Field" />
-									<Parameter />
-									<Parameter>
-										<Parameter value="39A5A7E7-513F-44A4-B79D-7652CD8962D9">
-											<Parameter value="502" type="System.Int32" />
-										</Parameter>
-									</Parameter>
-								</Parameter>
-							</Parameter>
-						</Parameter>
-					</Parameters>
-				</Service>
+				<ServiceRef name="TplFunctionDSRefBuilderService4" arguments="Funtion,501,null,0,Field,502" />
 			</Services>
 		</Type>
 	</Types>

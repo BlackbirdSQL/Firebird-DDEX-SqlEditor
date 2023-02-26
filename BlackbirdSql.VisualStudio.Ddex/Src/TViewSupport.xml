@@ -69,7 +69,7 @@
 										<CommandRef name="CommandRetrieveData" />
 									</Commands>
 									<Children>
-										<SelectionRef name="TplSelectionColumn" arguments="View,User,{View.VIEW_CATALOG},,{View.VIEW_SCHEMA},,{View.VIEW_NAME}" />
+										<SelectionRef name="TplSelectionColumn" arguments="ViewColumn,View,User,{View.VIEW_CATALOG},,{View.VIEW_SCHEMA},,{View.VIEW_NAME}" />
 									</Children>
 								</SelectionNode>
 							</Selection>

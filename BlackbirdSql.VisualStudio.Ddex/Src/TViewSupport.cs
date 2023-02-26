@@ -136,8 +136,8 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 
 		if (service == null)
 			Diag.Trace(serviceType.FullName + " is not supported");
-		else
-			Diag.Trace(serviceType.FullName + " is indirectly supported");
+		// else
+		//	Diag.Trace(serviceType.FullName + " is indirectly supported");
 
 		return service;
 	}

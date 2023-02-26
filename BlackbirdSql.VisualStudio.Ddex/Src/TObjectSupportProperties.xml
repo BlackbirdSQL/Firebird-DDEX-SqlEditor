@@ -49,7 +49,7 @@
 	</Define>
 	
 
-	<Define name="TplIdentifierListTableForeignKeyColumn" >
+	<Define name="TplIdentifierListForeignKeyColumn" >
 		<IdentifierPart name="CONSTRAINT_CATALOG" type="System.String" />
 		<IdentifierPart name="CONSTRAINT_SCHEMA" type="System.String" />
 		<IdentifierPart name="TABLE_NAME" type="System.String" />
@@ -85,7 +85,7 @@
 		<Property name="CONSTRAINT_SCHEMA" type="System.String" />
 	</Define>
 
-	<Define name="TplPropertyListTableForeignKeyColumn" >
+	<Define name="TplPropertyListForeignKeyColumn" >
 		<Property name="TABLE_NAME" isIdentifierPart="true" />
 		<Property name="CONSTRAINT_NAME" isIdentifierPart="true" />
 		<Property name="COLUMN_NAME" isIdentifierPart="true" />

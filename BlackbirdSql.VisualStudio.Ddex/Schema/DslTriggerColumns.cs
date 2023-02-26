@@ -12,9 +12,24 @@ namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 internal class DslTriggerColumns : DslColumns
 {
+	public DslTriggerColumns() : base()
+	{
+		_ParentType = "Trigger";
+		_ObjectType = "TriggerColumn";
+		_ParentRestriction = "dep.rdb$dependent_name";
+		_OrderingAlias = "TRIGGER_NAME";
+		_FromClause = @"FROM rdb$dependencies dep
+                INNER JOIN rdb$triggers trg
+                    ON trg.rdb$trigger_name = dep.rdb$dependent_name AND trg.rdb$relation_name = dep.rdb$depended_on_name
+				INNER JOIN rdb$relation_fields r
+					ON r.rdb$relation_name = dep.rdb$depended_on_name AND r.rdb$field_name = dep.rdb$field_name";
+		_ColumnsClause = "dep.rdb$dependent_name AS TRIGGER_NAME";
+		_ConditionClause = "dep.rdb$field_name IS NOT NULL";
+	}
+
 	#region Protected Methods
 
-	protected override StringBuilder GetCommandText(string[] restrictions)
+	protected StringBuilder GetCommandTextEx(string[] restrictions)
 	{
 		var sql = new StringBuilder();
 		var where = new StringBuilder();

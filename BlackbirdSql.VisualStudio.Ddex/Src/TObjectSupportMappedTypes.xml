@@ -2,15 +2,15 @@
 <DataObjectSupport xmlns="http://schemas.microsoft.com/VisualStudio/2007/07/Data/DataObjectSupport">
 
 
-	<Define name="TplMappedTypeColumn" parameters="parentType, underlyingType, restrictions" >
-		<MappedType name="$(parentType)Column" underlyingType="$(underlyingType)Column">
+	<Define name="TplMappedTypeColumn" parameters="mappedId, type, underlyingType, restrictions" >
+		<MappedType name="$(type)" underlyingType="$(underlyingType)">
 			<Selection restrictions="$(restrictions)" />
 			<Identifier>
-				<PartListRef name="TplMappedIdentifierList$(underlyingType)Column" />
+				<PartListRef name="TplMappedIdentifierList$(mappedId)" />
 				<Part name="Name" underlyingMember="COLUMN_NAME" />
 			</Identifier>
 			<Properties>
-				<PropertyListRef name="TplMappedPropertyList$(underlyingType)Column" />
+				<PropertyListRef name="TplMappedPropertyList$(mappedId)" />
 				<Property name="Ordinal" underlyingMember="ORDINAL_POSITION">
 					<Conversion>
 						<ChangeType type="System.Int32" />

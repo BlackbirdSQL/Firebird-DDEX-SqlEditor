@@ -30,10 +30,12 @@ internal class DslViewColumns : DslColumns
 	public DslViewColumns() : base()
 	{
 		_ParentType = "View";
+		_ObjectType = "ViewColumn";
 		_OrderingAlias = "VIEW_NAME";
 		_ColumnsClause = @"null AS VIEW_CATALOG,
 					null AS VIEW_SCHEMA,
-					r.rdb$relation_name AS VIEW_NAME";
+					r.rdb$relation_name AS VIEW_NAME,
+					r_dep.rdb$dependent_name AS TRIGGER_NAME";
 	}
 
 }

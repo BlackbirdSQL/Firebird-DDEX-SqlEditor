@@ -8,8 +8,8 @@
 	<!-- parentColumn: TABLE_NAME, VIEW_NAME, INDEX_NAME, CONSTRAINT_NAME  or TRIGGER_NAME -->
 	<!-- collectionName: Columns, ViewColumns, IndexColumns, ForeignKeyColumns or TriggerColumns -->
 	<!-- tplServiceIdsRef:  TplServiceRefColumnIdsRef or Empty -->
-	<Define name="TplTypeColumn" parameters="parentType, parentColumn, collectionName, tplServiceIdsRef" >
-		<Type name="$(parentType)Column" preferredOrdering="ORDINAL_POSITION">
+	<Define name="TplTypeColumn" parameters="type, parentType, parentColumn, collectionName, dsLevel, parentRefType, parentPreciseType, subParentRefType, subParentPreciseType, refType, preciseType" >
+		<Type name="$(type)" preferredOrdering="ORDINAL_POSITION">
 			<Identifier>
 				<PartListRef name="TplIdentifierList$(parentType)Column" />
 				<Part name="COLUMN_NAME" type="System.String" />
@@ -38,7 +38,7 @@
 						<Parameter value="$(collectionName)" />
 					</Parameters>
 				</Service>
-				<ServiceRef name="$(tplServiceIdsRef)" />
+				<ServiceRef name="TplSchemaObjectTypeDSRefBuilderService$(dsLevel)" arguments="$(parentRefType),$(parentPreciseType),$(subParentRefType),$(subParentPreciseType),$(refType),$(preciseType)" />
 			</Services>
 		</Type>
 	</Define>
@@ -73,40 +73,7 @@
 						<Parameter value="$(triggerType)s" />
 					</Parameters>
 				</Service>
-				<Service type="IDSRefBuilder">
-					<Parameters method="AppendToDSRef">
-						<Parameter>
-							<Parameter value="{2}" />
-							<Parameter value="{1}" />
-							<Parameter value="Table" />
-							<Parameter />
-							<Parameter>
-								<!-- GUID_daVinciDSRefProperty_Qualifier -->
-								<Parameter value="4656BAEA-F397-11ce-BFE1-00AA0057B34E">
-									<Parameter value="{0}"/>
-								</Parameter>
-								<!-- GUID_daVinciDSRefProperty_PreciseType -->
-								<Parameter value="39A5A7E7-513F-44a4-B79D-7652CD8962D9">
-									<Parameter value="101" type="System.Int32" />
-								</Parameter>
-							</Parameter>
-							<Parameter>
-								<Parameter>
-									<Parameter value="{3}" />
-									<Parameter />
-									<Parameter value="Trigger" />
-									<Parameter />
-									<Parameter>
-										<!-- GUID_daVinciDSRefProperty_PreciseType -->
-										<Parameter value="39A5A7E7-513F-44a4-B79D-7652CD8962D9">
-											<Parameter value="103" type="System.Int32" />
-										</Parameter>
-									</Parameter>
-								</Parameter>
-							</Parameter>
-						</Parameter>
-					</Parameters>
-				</Service>
+				<ServiceRef name="TplSchemaObjectTypeDSRefBuilderService4" arguments="Table,101,null,0,Trigger,103" />
 			</Services>
 		</Type>
 	</Define>

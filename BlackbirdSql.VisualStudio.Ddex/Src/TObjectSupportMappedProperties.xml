@@ -46,11 +46,11 @@
 	</Define>
 	
 
-	<Define name="TplMappedIdentifierListTableForeignKeyColumn" >
+	<Define name="TplMappedIdentifierListForeignKeyColumn" >
 		<MappedIdentifierPart name="Catalog" underlyingMember="CONSTRAINT_CATALOG" />
 		<MappedIdentifierPart name="Schema" underlyingMember="CONSTRAINT_SCHEMA" />
 		<MappedIdentifierPart name="Table" underlyingMember="TABLE_NAME" />
-		<MappedIdentifierPart name="TableForeignKey" underlyingMember="CONSTRAINT_NAME" />
+		<MappedIdentifierPart name="ForeignKey" underlyingMember="CONSTRAINT_NAME" />
 	</Define>
 
 	<Define name="TplMappedIdentifierListTriggerColumn" >
@@ -79,9 +79,9 @@
 		<MappedProperty name="Trigger" underlyingMember="TRIGGER_NAME" />
 	</Define>
 
-	<Define name="TplMappedPropertyListTableForeignKeyColumn" >
+	<Define name="TplMappedPropertyListForeignKeyColumn" >
 		<MappedProperty name="Table" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
-		<MappedProperty name="TableForeignKey" underlyingMember="CONSTRAINT_NAME" isIdentifierPart="true" />
+		<MappedProperty name="ForeignKey" underlyingMember="CONSTRAINT_NAME" isIdentifierPart="true" />
 		<MappedProperty name="Name" underlyingMember="COLUMN_NAME" isIdentifierPart="true" />
 		<MappedProperty name="Trigger" underlyingMember="TRIGGER_NAME" />
 		<MappedProperty name="ReferencedTableCatalog" underlyingMember="REFERENCED_TABLE_CATALOG" />
