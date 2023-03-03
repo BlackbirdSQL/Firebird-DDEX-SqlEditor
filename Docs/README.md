@@ -5,15 +5,16 @@
 The BlackbirdSQL DDEX 2.0 .NET Data Provider tool, `BlackbirdSql.VisualStudio.Ddex`, implements all the core DDEX 2.0 interfaces prevalent in the SqlServer DDEX provider, but currently excludes DDL functionality.
 
 *If you're noticing a degradation in performance in the IDE after installing an extension then it's advantages are lost, so the first tenet of this package is `small footprint, low overhead`.*
-
-The intention is to maintain a small footprint. We're not going to start altering VS menus and taking over your Visual Studio IDE workspace. It is a data source UI provider for Firebird and the benchmark is the SqlServer provider, so whatever UI functionality is available for SqlServer is on the todo list for Firebird provided it does not directly interfere with the developer's active UI.
-
-The goal is that you don't have to do any configuring of the .csproj, app.config, machine.config or any legacy edmx models, and eliminate using the GAC.</br>
-The once-off validation features can be disabled in the Visual Studio options but each individual task in the validation process is spawned asynchronously so the overhead is miniscual.</br>
 See [Extended Description](#extended-description) below.
 
-### FlameRobin
-The connection dialog now lists any `FlameRobin` Server hosts (DataSources) and Server host Databases. As everyone familiar with Firebird will know, this makes a huge difference when entering remote Firebird server database paths.
+### Features
+* Firebird DDEX provider support for most of the DDEX 2.0 IVs DML interfaces.
+* FlameRobin host and database selection within connection dialogs.
+* Within Server Explorer, top level folders for Tables, Views, Stored procedures, Functions, Sequence Generators, Triggers and Domains.
+* Within tables drilldowns for indexes, foreign keys and triggers, and table columns, index columns, foreign key columns and trigger columns.
+* Identification of Identity fields, Primary keys, Unique keys and Computed columns.
+* System table, system index and system trigger enumeration within the SE and support for system tables within the xsd and edmx models.
+* Edmx foreign key support.
 
 ### A Note on AutoIncrement
 The logic for auto-increment detection of a trigger (which avoids interrogating the ddl) appears to work correctly. There is no documentation to show otherwise, but there is info on the web implying it cannot be done. If you have a case where this logic fails, please pop us a mail.</br>
@@ -80,8 +81,10 @@ If the option is enabled and you add Firebird.Data.FirebirdClient or EntityFrame
 
 __Note:__ For the debug build the once-off validation flags are not persistent between loads of solutions and are repeated.
 
-As it stands right now the code is littered with diagnostics calls with writes to a log file set to c:\bin\vsdiag.log.</br>
-These can all be disabled or the log file output path changed in Visual Studio's options.
+The intention is to maintain a small footprint. We're not going to start altering VS menus and taking over your Visual Studio IDE workspace. It is a data source UI provider for Firebird and the benchmark is the SqlServer provider, so whatever UI functionality is available for SqlServer is on the todo list for Firebird provided it does not directly interfere with the developer's active UI.
+
+The goal is that you don't have to do any configuring of the .csproj, app.config, machine.config or any legacy edmx models, and eliminate using the GAC.</br>
+The once-off validation features can be disabled in the Visual Studio options but each individual task in the validation process is spawned asynchronously so the overhead is miniscual.
 
 If you're planning on using EF Core and/or .NET, VS does not have wizard support for edmx which makes no sense to me.
 This roadblock is easily overcome by creating a separate project using .NET Framework for your data models and then linking your .NET / EF Core projects to those edmx models.
