@@ -45,21 +45,22 @@ internal class DslGenerators : DslSchema
 		GENERATOR_CATALOG varchar(50),
 		GENERATOR_SCHEMA varchar(50),
 		GENERATOR_NAME varchar(100),
-		IS_SYSTEM_OBJECT boolean,
+		IS_SYSTEM_FLAG int,
 		GENERATOR_ID smallint,
-		INITIAL_VALUE bigint,
-		GENERATOR_INCREMENT int,
-		NEXT_VALUE bigint)
+		GENERATOR_IDENTITY int,
+		IDENTITY_SEED bigint,
+		IDENTITY_INCREMENT int,
+		IDENTITY_CURRENT bigint)
 AS
 BEGIN
 	FOR SELECT
-		null, null, rdb$generator_name, (CASE WHEN rdb$system_flag <> 1 THEN false ELSE true END),
+		null, null, rdb$generator_name, (CASE WHEN rdb$system_flag <> 1 THEN 0 ELSE 1 END),
 		rdb$generator_id, rdb$initial_value, rdb$generator_increment 
 	FROM rdb$generators");
 
 		if (restrictions != null)
 		{
-			var index = 0;
+			// var index = 0;
 
 			/* GENERATOR_CATALOG */
 			if (restrictions.Length >= 1 && restrictions[0] != null)
@@ -74,7 +75,9 @@ BEGIN
 			/* GENERATOR_NAME */
 			if (restrictions.Length >= 3 && restrictions[2] != null)
 			{
-				where.AppendFormat("rdb$generator_name = @p{0}", index++);
+				// Cannot pass params to execute block
+				// where.AppendFormat("rdb$generator_name = @p{0}", index++);
+				where.AppendFormat("rdb$generator_name = '{0}'", restrictions[2].ToString());
 			}
 
 			/* IS_SYSTEM_GENERATOR	*/
@@ -85,21 +88,30 @@ BEGIN
 					where.Append(" AND ");
 				}
 
-				where.AppendFormat("rdb$system_flag = @p{0}", index++);
+				// Cannot pass params to execute block
+				// where.AppendFormat("rdb$system_flag = @p{0}", index++);
+				where.AppendFormat("rdb$system_flag = '{0}'", restrictions[3].ToString());
 			}
 		}
 
 		if (where.Length > 0)
 		{
-			sql.AppendFormat(" WHERE {0} ", where.ToString());
+			sql.AppendFormat(@"
+	WHERE {0} ", where.ToString());
 		}
 
-		sql.Append(" ORDER BY rdb$generator_name");
+		sql.Append(@"
+	ORDER BY rdb$generator_name");
 
-		sql.Append(
-@" INTO :GENERATOR_CATALOG, :GENERATOR_SCHEMA, :GENERATOR_NAME, :IS_SYSTEM_OBJECT, :GENERATOR_ID, :INITIAL_VALUE, :GENERATOR_INCREMENT
+		sql.Append(@"
+	INTO :GENERATOR_CATALOG, :GENERATOR_SCHEMA, :GENERATOR_NAME, :IS_SYSTEM_FLAG, :GENERATOR_ID, :IDENTITY_SEED, :IDENTITY_INCREMENT
 	DO BEGIN
-		EXECUTE STATEMENT 'SELECT gen_id(' || GENERATOR_NAME || ', 0) FROM rdb$database' INTO :NEXT_VALUE;
+		EXECUTE STATEMENT 'SELECT gen_id(' || GENERATOR_NAME || ', 0) FROM rdb$database' INTO :IDENTITY_CURRENT;
+		:IDENTITY_CURRENT = :IDENTITY_CURRENT - :IDENTITY_INCREMENT;
+		IF (:IDENTITY_CURRENT < :IDENTITY_SEED) THEN
+		BEGIN
+			:IDENTITY_CURRENT = :IDENTITY_SEED;
+		END
         SUSPEND;
     END
 END");

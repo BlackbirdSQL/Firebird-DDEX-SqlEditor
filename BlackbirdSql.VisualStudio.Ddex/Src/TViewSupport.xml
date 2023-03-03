@@ -4,8 +4,8 @@
 	<!-- As per DataViewSupport.xsd xs:sequence applied so imports then definitions come first -->
 
 	<!-- Import data view support command and element definitions -->
-	<Import name="CommandDefinitions" />
-	<Import name="ElementDefinitions" />
+	<Import name="CommandsDefinitions" />
+	<Import name="ElementsDefinitions" />
 
 	<!-- Views -->
 	<Views>
@@ -29,8 +29,8 @@
 							<CommandRef name="CommandNewQuery" />
 						</Commands>-->
 						<Children>
-							<StaticNodeRef name="TplStaticNodeTablesTables" arguments="System,true,NoChildren"/>
-							<SelectionRef name="TplSelectionTables" arguments="User,false,WithChildren"/>
+							<StaticNodeRef name="TplStaticNodeTablesTables" arguments="System,1,NoChildren"/>
+							<SelectionRef name="TplSelectionTables" arguments="User,0,WithChildren"/>
 						</Children>
 					</StaticNode>
 					<StaticNode nodeId="Views">
@@ -54,7 +54,9 @@
 											<Description resource="Identifier_Desc_Name" />
 										</Property>
 										<Property name="IS_SYSTEM_VIEW">
-											<DisplayName resource="Property_Name_Type" />
+											<DisplayName resource="Property_Name_ObjectSystemType" />
+											<Category resource="Category_Identifier" />
+											<Description resource="Property_Desc_ObjectSystemType" />
 											<StandardValues>
 												<StandardValue value="0" resource="Property_Value_ViewType_User" />
 												<StandardValue value="1" resource="Property_Value_ViewType_System" />
@@ -62,6 +64,7 @@
 										</Property>
 										<Property name="DESCRIPTION">
 											<DisplayName resource="Property_Name_Description" />
+											<Category resource="Category_Identifier" />
 											<Description resource="Property_Desc_Description" />
 										</Property>
 									</Properties>
@@ -100,15 +103,18 @@
 											<Category resource="Category_Identifier" />
 											<Description resource="Identifier_Desc_Name" />
 										</Property>
-										<Property name="IS_SYSTEM_OBJECT">
-											<DisplayName resource="Property_Name_Type" />
+										<Property name="IS_SYSTEM_FLAG">
+											<DisplayName resource="Property_Name_ObjectSystemType" />
+											<Category resource="Category_Identifier" />
+											<Description resource="Property_Desc_ObjectSystemType" />
 											<StandardValues>
-												<StandardValue value="false" resource="Property_Value_ProcedureType_User" />
-												<StandardValue value="true" resource="Property_Value_ProcedureType_System" />
+												<StandardValue value="0" resource="Property_Value_ProcedureType_User" />
+												<StandardValue value="1" resource="Property_Value_ProcedureType_System" />
 											</StandardValues>
 										</Property>
 										<Property name="DESCRIPTION">
 											<DisplayName resource="Property_Name_Description" />
+											<Category resource="Category_Identifier" />
 											<Description resource="Property_Desc_Description" />
 										</Property>
 										<Property name="SOURCE">
@@ -182,6 +188,7 @@
 															</Property>
 															<Property name="DESCRIPTION">
 																<DisplayName resource="Property_Name_Description" />
+																<Category resource="Category_Identifier" />
 																<Description resource="Property_Desc_Description" />
 															</Property>
 															<Property name="ORDINAL_POSITION">
@@ -263,6 +270,7 @@
 													</Property>
 													<Property name="DESCRIPTION">
 														<DisplayName resource="Property_Name_Description" />
+														<Category resource="Category_Identifier" />
 														<Description resource="Property_Desc_Description" />
 													</Property>
 													<Property name="ORDINAL_POSITION">
@@ -318,15 +326,18 @@
 											<Category resource="Category_Identifier" />
 											<Description resource="Identifier_Desc_Name" />
 										</Property>
-										<Property name="IS_SYSTEM_OBJECT">
-											<DisplayName resource="Property_Name_Type" />
+										<Property name="IS_SYSTEM_FLAG">
+											<DisplayName resource="Property_Name_ObjectSystemType" />
+											<Category resource="Category_Identifier" />
+											<Description resource="Property_Desc_ObjectSystemType" />
 											<StandardValues>
-												<StandardValue value="false" resource="Property_Value_FunctionType_User" />
-												<StandardValue value="true" resource="Property_Value_FunctionType_System" />
+												<StandardValue value="0" resource="Property_Value_FunctionType_User" />
+												<StandardValue value="1" resource="Property_Value_FunctionType_System" />
 											</StandardValues>
 										</Property>
 										<Property name="DESCRIPTION">
 											<DisplayName resource="Property_Name_Description" />
+											<Category resource="Category_Identifier" />
 											<Description resource="Property_Desc_Description" />
 										</Property>
 										<Property name="SOURCE">
@@ -397,6 +408,7 @@
 													</Property>
 													<Property name="DESCRIPTION">
 														<DisplayName resource="Property_Name_Description" />
+														<Category resource="Category_Identifier" />
 														<Description resource="Property_Desc_Description" />
 													</Property>
 													<Property name="ORDINAL_POSITION">
@@ -428,7 +440,7 @@
 							<Selection type="Sequence" restrictions="null,null">
 								<SelectionNode nodeId="Sequence">
 									<DisplayName>{Sequence.GENERATOR_NAME}</DisplayName>
-									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" assembly="" />
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.IdentityColumn.ico" assembly="" />
 									<Properties>
 										<TypeDisplayName resource="Type_Sequence" />
 										<Property name="GENERATOR_CATALOG">
@@ -446,15 +458,15 @@
 											<Category resource="Category_Identifier" />
 											<Description resource="Identifier_Desc_Name" />
 										</Property>
-										<Property name="INITIAL_VALUE">
+										<Property name="IDENTITY_SEED">
 											<DisplayName resource="Property_Name_Sequence_InitialValue" />
 											<Description resource="Property_Desc_Sequence_InitialValue" />
 										</Property>
-										<Property name="GENERATOR_INCREMENT">
+										<Property name="IDENTITY_INCREMENT">
 											<DisplayName resource="Property_Name_Sequence_Increment" />
 											<Description resource="Property_Desc_Sequence_Increment" />
 										</Property>
-										<Property name="NEXT_VALUE">
+										<Property name="IDENTITY_CURRENT">
 											<DisplayName resource="Property_Name_Sequence_NextValue" />
 											<Description resource="Property_Desc_Sequence_NextValue" />
 										</Property>
@@ -470,9 +482,9 @@
 						<DisplayName resource="Node_Name_Triggers" />
 						<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.DatabaseTriggers.ico" assembly="" />
 						<Children>
-							<StaticNodeRef name="TplStaticNodeTriggers" arguments="SystemTrigger,NoChildren,System,true"/>
-							<StaticNodeRef name="TplStaticNodeTriggers" arguments="AutoIncrementTrigger,WithChildren,User,false"/>
-							<StaticNodeRef name="TplStaticNodeTriggers" arguments="StandardTrigger,WithChildren,User,false"/>
+							<StaticNodeRef name="TplStaticNodeTriggers" arguments="SystemTrigger,NoChildren,System,1"/>
+							<StaticNodeRef name="TplStaticNodeTriggers" arguments="IdentityTrigger,WithChildren,User,0"/>
+							<StaticNodeRef name="TplStaticNodeTriggers" arguments="StandardTrigger,WithChildren,User,0"/>
 						</Children>
 					</StaticNode>
 					<StaticNode nodeId="Domains">
@@ -502,6 +514,7 @@
 										</Property>
 										<Property name="DESCRIPTION">
 											<DisplayName resource="Property_Name_Description" />
+											<Category resource="Category_Identifier" />
 											<Description resource="Property_Desc_Description" />
 										</Property>
 										<Property name="DOMAIN_DATA_TYPE">

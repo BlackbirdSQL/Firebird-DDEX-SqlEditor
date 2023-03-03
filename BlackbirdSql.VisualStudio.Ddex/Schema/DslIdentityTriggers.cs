@@ -32,11 +32,11 @@ using BlackbirdSql.Common;
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 
-internal class DslAutoIncrementTriggers : DslTriggers
+internal class DslIdentityTriggers : DslTriggers
 {
-	public DslAutoIncrementTriggers() : base()
+	public DslIdentityTriggers() : base()
 	{
 		_systemFlag = 0;
-		_autoIncrement = 1;
+		_identityFlag = 1;
 	}
 }

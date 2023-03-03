@@ -123,9 +123,9 @@ internal abstract class DslSchema
 			case "TriggerColumns":
 				schemaCollection = "Columns";
 				break;
-			case "SystemTriggers":
-			case "AutoIncrementTriggers":
+			case "IdentityTriggers":
 			case "StandardTriggers":
+			case "SystemTriggers":
 				schemaCollection = "Triggers";
 				break;
 			default:

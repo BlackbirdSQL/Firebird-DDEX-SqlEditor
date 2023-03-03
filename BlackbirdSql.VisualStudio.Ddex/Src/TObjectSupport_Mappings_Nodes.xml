@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataObjectSupport xmlns="http://schemas.microsoft.com/VisualStudio/2007/07/Data/DataObjectSupport">
+
+
+	<Define name="TplMappedTypeColumn" parameters="mappedType, underlyingType, restrictions" >
+		<MappedType name="$(mappedType)" underlyingType="$(underlyingType)">
+			<Selection restrictions="$(restrictions)" />
+			<Identifier>
+				<PartListRef name="TplMappedIdentifierList$(mappedType)" />
+				<Part name="Name" underlyingMember="COLUMN_NAME" />
+			</Identifier>
+			<Properties>
+				<PropertyListRef name="TplMappedPropertyList$(mappedType)" />
+				<Property name="Ordinal" underlyingMember="ORDINAL_POSITION">
+					<Conversion>
+						<ChangeType type="System.Int32" />
+					</Conversion>
+				</Property>
+				<Property name="Description" underlyingMember="DESCRIPTION" />
+				<Property name="Nullable" underlyingMember="IS_NULLABLE" />
+				<Property name="Collation" underlyingMember="COLLATION_NAME" />
+				<Property name="CharacterSet" underlyingMember="CHARACTER_SET_NAME" />
+				<Property name="Domain" underlyingMember="DOMAIN_NAME" />
+				<Property name="IsNullable" underlyingMember="IS_NULLABLE" />
+				<Property name="IsComputed" underlyingMember="IS_COMPUTED" />
+				<Property name="Expression" underlyingMember="EXPRESSION" />
+				<Property name="IsIdentity" underlyingMember="IS_IDENTITY" />
+				<Property name="IsUnique" underlyingMember="IS_UNIQUE" />
+				<Property name="InPrimaryKey" underlyingMember="IN_PRIMARYKEY" />
+				<Property name="Sequence" underlyingMember="SEQUENCE_GENERATOR" />
+				<Property name="IdentitySeed" underlyingMember="IDENTITY_SEED" >
+					<Conversion>
+						<ChangeType type="System.Int32" />
+					</Conversion>
+				</Property>
+				<Property name="IdentityIncrement" underlyingMember="IDENTITY_INCREMENT" />
+				<Property name="IdentityCurrent" underlyingMember="IDENTITY_CURRENT" >
+					<Conversion>
+						<ChangeType type="System.Int32" />
+					</Conversion>
+				</Property>
+				<Property name="NativeDataType" underlyingMember="COLUMN_DATA_TYPE" />
+				<Property name="AdoDotNetDataType" underlyingMember="COLUMN_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+				<Property name="AdoDotNetDbType" underlyingMember="COLUMN_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+				<Property name="FrameworkDataType" underlyingMember="COLUMN_DATA_TYPE">
+					<Conversion>
+						<CallMapper />
+					</Conversion>
+				</Property>
+				<Property name="Length" underlyingMember="COLUMN_SIZE" />
+				<Property name="Precision" underlyingMember="NUMERIC_PRECISION" />
+				<Property name="Scale" underlyingMember="NUMERIC_SCALE" />
+			</Properties>
+		</MappedType>
+	</Define>
+
+	<Define name="TplMappedTypeIndex" parameters="mappedType, filter" >
+		<MappedType name="$(mappedType)" underlyingType="Index">
+			<Selection restrictions="{Catalog},{Schema},{Table},{Name}" filter="$(filter)" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="TABLE_CATALOG" />
+				<Part name="Schema" underlyingMember="TABLE_SCHEMA" />
+				<Part name="Table" underlyingMember="TABLE_NAME" />
+				<Part name="Name" underlyingMember="INDEX_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="Table" isIdentifierPart="true" />
+				<Property name="Name" isIdentifierPart="true" />
+				<Property name="IsPrimary" underlyingMember="IS_PRIMARY" />
+				<Property name="IsUnique" underlyingMember="IS_UNIQUE" />
+				<Property name="IsForeignKey" underlyingMember="IS_FOREIGNKEY" />
+				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FLAG" >
+					<Conversion>
+						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
+						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
+					</Conversion>
+				</Property>
+			</Properties>
+		</MappedType>
+	</Define>
+
+
+
+</DataObjectSupport>

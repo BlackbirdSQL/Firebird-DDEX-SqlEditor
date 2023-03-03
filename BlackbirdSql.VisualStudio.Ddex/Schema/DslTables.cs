@@ -51,10 +51,10 @@ internal class DslTables : DslSchema
 					rfr.rdb$relation_name AS TABLE_NAME,
 					null AS TABLE_TYPE,
 					(CASE WHEN rfr.rdb$system_flag <> 1 THEN
-                        false
+                        0
 					ELSE
-                        true
-					END) IS_SYSTEM_OBJECT,
+                        1
+					END) IS_SYSTEM_FLAG,
 					rfr.rdb$owner_name AS OWNER_NAME,
 					rfr.rdb$description AS DESCRIPTION,
 					rfr.rdb$view_source AS VIEW_SOURCE,
@@ -114,7 +114,7 @@ internal class DslTables : DslSchema
 			sql.Append(where.ToString());
 		}
 
-		sql.Append(" ORDER BY IS_SYSTEM_OBJECT, OWNER_NAME, TABLE_NAME");
+		sql.Append(" ORDER BY IS_SYSTEM_FLAG, OWNER_NAME, TABLE_NAME");
 
 		// Diag.Trace(sql.ToString());
 		return sql;
@@ -127,7 +127,7 @@ internal class DslTables : DslSchema
 		foreach (DataRow row in schema.Rows)
 		{
 			row["TABLE_TYPE"] = "TABLE";
-			if ((bool)row["IS_SYSTEM_OBJECT"] == true)
+			if ((int)row["IS_SYSTEM_FLAG"] == 1)
 			{
 				row["TABLE_TYPE"] = "SYSTEM_TABLE";
 			}

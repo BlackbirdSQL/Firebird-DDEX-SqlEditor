@@ -16,7 +16,7 @@
 				<Part name="Name" underlyingMember="DOMAIN_NAME" />
 			</Identifier>
 			<Properties>
-				<Property name="Name" underlyingMember="DOMAIN_NAME" isIdentifierPart="true" />
+				<Property name="Name" isIdentifierPart="true" />
 				<Property name="IsNullable" underlyingMember="IS_NULLABLE" />
 				<Property name="Length" underlyingMember="DOMAIN_SIZE" />
 				<Property name="Precision" underlyingMember="NUMERIC_PRECISION" />
@@ -48,10 +48,10 @@
 				<Part name="Name" underlyingMember="GENERATOR_NAME" />
 			</Identifier>
 			<Properties>
-				<Property name="Name" underlyingMember="GENERATOR_NAME" isIdentifierPart="true" />
-				<Property name="InitialValue" underlyingMember="INITIAL_VALUE" />
-				<Property name="Increment" underlyingMember="GENERATOR_INCREMENT" />
-				<Property name="NextValue" underlyingMember="NEXT_VALUE" />
+				<Property name="Name" isIdentifierPart="true" />
+				<Property name="InitialValue" underlyingMember="IDENTITY_SEED" />
+				<Property name="Increment" underlyingMember="IDENTITY_INCREMENT" />
+				<Property name="NextValue" underlyingMember="IDENTITY_CURRENT" />
 			</Properties>
 		</MappedType>
 
@@ -65,19 +65,19 @@
 				<Part name="Name" underlyingMember="TABLE_NAME" />
 			</Identifier>
 			<Properties>
-				<Property name="Name" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
-				<Property name="Type" underlyingMember="TABLE_TYPE"/>
-				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_OBJECT" >
+				<Property name="Name" isIdentifierPart="true" />
+				<Property name="Schema" isIdentifierPart="true" />
+				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FLAG" >
 					<Conversion>
 						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
-						<Calculate expr="IIF({0} = true, false, false)" exprType="System.Boolean" />
+						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
 					</Conversion>
 				</Property>
 			</Properties>
 		</MappedType>
 
 		<!-- Completed -->
-		<MappedTypeRef name="TplMappedTypeColumn" arguments="TableColumn,Column,Column,{Catalog},,{Schema},,{Table},,{Name}" />
+		<MappedTypeRef name="TplMappedTypeColumn" arguments="TableColumn,Column,{Catalog},,{Schema},,{Table},,{Name}" />
 
 		<!-- Completed -->
 		<MappedType name="Index" underlyingType="Index">
@@ -89,29 +89,53 @@
 				<Part name="Name" underlyingMember="INDEX_NAME" />
 			</Identifier>
 			<Properties>
-				<Property name="Table" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
-				<Property name="Name" underlyingMember="INDEX_NAME" isIdentifierPart="true" />
+				<Property name="Table" isIdentifierPart="true" />
+				<Property name="Name" isIdentifierPart="true" />
 				<Property name="IsPrimary" underlyingMember="IS_PRIMARY" />
 				<Property name="IsUnique" underlyingMember="IS_UNIQUE" />
 				<Property name="IsForeignKey" underlyingMember="IS_FOREIGNKEY" />
-				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_OBJECT" >
+				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FLAG" >
 					<Conversion>
 						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
-						<Calculate expr="IIF({0} = true, false, false)" exprType="System.Boolean" />
+						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
+					</Conversion>
+				</Property>
+				<Property name="IsDisabled" underlyingMember="IS_INACTIVE" />
+			</Properties>
+		</MappedType>
+
+		<!-- Completed -->
+		<MappedTypeRef name="TplMappedTypeColumn" arguments="IndexColumn,IndexColumn,{Catalog},,{Schema},,{Table},,{Index},,{Name}" />
+
+
+		<MappedType name="TableUniqueKey" underlyingType="Index">
+			<Selection restrictions="{Catalog},{Schema},{Table},{Name}" filter="IS_UNIQUE = true"/>
+			<Identifier>
+				<Part name="Catalog" underlyingMember="TABLE_CATALOG" />
+				<Part name="Schema" underlyingMember="TABLE_SCHEMA" />
+				<Part name="Table" underlyingMember="TABLE_NAME" />
+				<Part name="Name" underlyingMember="INDEX_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="Table" isIdentifierPart="true" />
+				<Property name="Name" isIdentifierPart="true" />
+				<Property name="IsPrimary" underlyingMember="IS_PRIMARY" />
+				<Property name="IsUnique" underlyingMember="IS_UNIQUE" />
+				<Property name="IsForeignKey" underlyingMember="IS_FOREIGNKEY" />
+				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FLAG" >
+					<Conversion>
+						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
+						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
 					</Conversion>
 				</Property>
 			</Properties>
 		</MappedType>
 
 		<!-- Completed -->
-		<MappedTypeRef name="TplMappedTypeColumn" arguments="IndexColumn,IndexColumn,IndexColumn,{Catalog},,{Schema},,{Table},,{Index},,{Name}" />
-
-
-		<!-- Completed -->
-		<MappedTypeRef name="TplMappedTypeColumn" arguments="IndexColumn,TableUniqueKey,IndexColumn,{Catalog},,{Schema},,{Table},,{Index},,{Name}" />
+		<MappedTypeRef name="TplMappedTypeColumn" arguments="TableUniqueKeyColumn,IndexColumn,{Catalog},,{Schema},,{Table},,{Index},,{Name}" />
 
 		<!-- Completed -->
-		<MappedType name="ForeignKey" underlyingType="ForeignKey">
+		<MappedType name="TableForeignKey" underlyingType="ForeignKey">
 			<Selection restrictions="{Catalog},{Schema},{Table},{Name}" />
 			<Identifier>
 				<Part name="Catalog" underlyingMember="CONSTRAINT_CATALOG" />
@@ -120,20 +144,22 @@
 				<Part name="Name" underlyingMember="CONSTRAINT_NAME" />
 			</Identifier>
 			<Properties>
-				<Property name="Name" underlyingMember="CONSTRAINT_NAME" isIdentifierPart="true" />
-				<Property name="Table" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
+				<Property name="Name" isIdentifierPart="true" />
+				<Property name="Table" isIdentifierPart="true" />
 				<Property name="ReferencedTableCatalog" underlyingMember="REFERENCED_TABLE_CATALOG" />
 				<Property name="ReferencedTableSchema" underlyingMember="REFERENCED_TABLE_SCHEMA" />
 				<Property name="ReferencedTableName" underlyingMember="REFERENCED_TABLE_NAME" />
-				<Property name="ReferencedTableUniqueKey" underlyingMember="INDEX_NAME" />
+				<Property name="ReferencedTableUniqueKey" underlyingMember="REFERENCED_INDEX_NAME" />
 				<Property name="ReferencedTableId0" underlyingMember="REFERENCED_TABLE_CATALOG" />
 				<Property name="ReferencedTableId1" underlyingMember="REFERENCED_TABLE_SCHEMA" />
 				<Property name="ReferencedTableId2" underlyingMember="REFERENCED_TABLE_NAME" />
+				<Property name="UpdateAction" underlyingMember="UPDATE_ACTION" />
+				<Property name="DeleteAction" underlyingMember="DELETE_ACTION" />
 			</Properties>
 		</MappedType>
 
 		<!-- Completed -->
-		<MappedTypeRef name="TplMappedTypeColumn" arguments="ForeignKeyColumn,ForeignKeyColumn,ForeignKeyColumn,{Catalog},,{Schema},,{Table},,{TableForeignKey},,{Name}" />
+		<MappedTypeRef name="TplMappedTypeColumn" arguments="ForeignKeyColumn,ForeignKeyColumn,{Catalog},,{Schema},,{Table},,{TableForeignKey},,{Name}" />
 
 
 		<!-- Completed -->
@@ -145,7 +171,7 @@
 				<Part name="Name" underlyingMember="VIEW_NAME" />
 			</Identifier>
 			<Properties>
-				<Property name="Name" underlyingMember="VIEW_NAME" isIdentifierPart="true" />
+				<Property name="Name" isIdentifierPart="true" />
 				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_VIEW" >
 					<Conversion>
 						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
@@ -158,7 +184,7 @@
 		</MappedType>
 
 		<!-- Completed -->
-		<MappedTypeRef name="TplMappedTypeColumn" arguments="ViewColumn,ViewColumn,ViewColumn,{Catalog},,{Schema},,{View},,{Name}" />
+		<MappedTypeRef name="TplMappedTypeColumn" arguments="ViewColumn,ViewColumn,{Catalog},,{Schema},,{View},,{Name}" />
 
 		<!-- Completed -->
 		<MappedType name="StoredProcedure" underlyingType="StoredProcedure">
@@ -169,14 +195,14 @@
 				<Part name="Name" underlyingMember="PROCEDURE_NAME" />
 			</Identifier>
 			<Properties>
-				<Property name="Schema" underlyingMember="PROCEDURE_SCHEMA" isIdentifierPart="true" />
-				<Property name="Name" underlyingMember="PROCEDURE_NAME" isIdentifierPart="true" />
+				<Property name="Schema" isIdentifierPart="true" />
+				<Property name="Name" isIdentifierPart="true" />
 				<Property name="Description" underlyingMember="DESCRIPTION"/>
 				<Property name="Dsl" underlyingMember="SOURCE"/>
-				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_OBJECT" >
+				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FLAG" >
 					<Conversion>
 						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
-						<Calculate expr="IIF({0} = true, false, false)" exprType="System.Boolean" />
+						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
 					</Conversion>
 				</Property>
 			</Properties>
@@ -192,8 +218,8 @@
 				<Part name="Name" underlyingMember="PARAMETER_NAME" />
 			</Identifier>
 			<Properties>
-				<Property name="StoredProcedure" underlyingMember="PROCEDURE_NAME" isIdentifierPart="true" />
-				<Property name="Name" underlyingMember="PARAMETER_NAME" isIdentifierPart="true" />
+				<Property name="StoredProcedure" isIdentifierPart="true" />
+				<Property name="Name" isIdentifierPart="true" />
 				<Property name="Ordinal" underlyingMember="ORDINAL_POSITION">
 					<Conversion>
 						<ChangeType type="System.Int32" />
@@ -237,8 +263,8 @@
 				<Part name="Name" underlyingMember="PARAMETER_NAME" />
 			</Identifier>
 			<Properties>
-				<Property name="StoredProcedure" underlyingMember="PROCEDURE_NAME" isIdentifierPart="true" />
-				<Property name="Name" underlyingMember="PARAMETER_NAME" isIdentifierPart="true" />
+				<Property name="StoredProcedure" isIdentifierPart="true" />
+				<Property name="Name" isIdentifierPart="true" />
 				<Property name="Ordinal" underlyingMember="ORDINAL_POSITION">
 					<Conversion>
 						<ChangeType type="System.Int32" />
@@ -280,14 +306,14 @@
 				<Part name="Name" underlyingMember="FUNCTION_NAME" />
 			</Identifier>
 			<Properties>
-				<Property name="Schema" underlyingMember="FUNCTION_SCHEMA" isIdentifierPart="true" />
-				<Property name="Name" underlyingMember="FUNCTION_NAME" isIdentifierPart="true" />
+				<Property name="Schema" isIdentifierPart="true" />
+				<Property name="Name" isIdentifierPart="true" />
 				<Property name="Description" underlyingMember="DESCRIPTION"/>
 				<Property name="Dsl" underlyingMember="SOURCE"/>
-				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_OBJECT" >
+				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FLAG" >
 					<Conversion>
 						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
-						<Calculate expr="IIF({0} = true, false, false)" exprType="System.Boolean" />
+						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
 					</Conversion>
 				</Property>
 			</Properties>
@@ -303,9 +329,9 @@
 				<Part name="Name" underlyingMember="ARGUMENT_NAME" />
 			</Identifier>
 			<Properties>
-				<Property name="ScalarFunction" underlyingMember="FUNCTION_NAME" isIdentifierPart="true" />
-				<Property name="Name" underlyingMember="ARGUMENT_NAME" isIdentifierPart="true" />
-				<Property name="PseudoName" underlyingMembers="PSEUDO_NAME" />
+				<Property name="ScalarFunction" isIdentifierPart="true" />
+				<Property name="Name" isIdentifierPart="true" />
+				<Property name="PseudoName" underlyingMember="PSEUDO_NAME" />
 				<Property name="Ordinal" underlyingMember="ORDINAL_POSITION">
 					<Conversion>
 						<ChangeType type="System.Int32" />
@@ -334,8 +360,38 @@
 			</Properties>
 		</MappedType>
 
-		<!-- Completed -->
-		<MappedTypeRef name="TplMappedTypeColumn" arguments="TriggerColumn,TriggerColumn,TriggerColumn,{Catalog},,{Schema},,{Trigger},,{Name}" />
+		<!-- Future? -->
+		<MappedType name="Trigger" underlyingType="Trigger">
+			<Selection restrictions="{Catalog},{Schema},{Table},{Name}" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="TABLE_CATALOG" />
+				<Part name="Schema" underlyingMember="TABLE_SCHEMA" />
+				<Part name="Table" underlyingMember="TABLE_NAME" />
+				<Part name="name" underlyingMember="TRIGGER_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="Table" isIdentifierPart="true" />
+				<Property name="Name" isIdentifierPart="true" />
+				<Property name="EventType" underlyingMember="TRIGGER_TYPE" />
+				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FLAG" >
+					<Conversion>
+						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
+						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
+					</Conversion>
+				</Property>
+				<Property name="IsDisabled" underlyingMember="IS_INACTIVE" />
+				<Property name="Priority" underlyingMember="PRIORITY" />
+				<Property name="Expression" underlyingMember="EXPRESSION" />
+				<Property name="Description" underlyingMember="DESCRIPTION" />
+				<Property name="IsIdentity" underlyingMember="IS_IDENTITY" />
+				<Property name="SequenceGenerator" underlyingMember="SEQUENCE_GENERATOR" />
+				<Property name="Dependencies" underlyingMember="DEPENDENCY_COUNT" />
+				<Property name="DependencyFields" underlyingMember="DEPENDENCY_FIELDS" />
+			</Properties>
+		</MappedType>
+
+		<!-- Future? -->
+		<MappedTypeRef name="TplMappedTypeColumn" arguments="TriggerColumn,TriggerColumn,{Catalog},,{Schema},,{Trigger},,{Name}" />
 
 
 	</MappedTypes>

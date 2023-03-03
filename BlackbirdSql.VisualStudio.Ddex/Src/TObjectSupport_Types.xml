@@ -69,10 +69,10 @@
 			<Properties>
 				<Property name="GENERATOR_NAME" isIdentifierPart="true" />
 				<Property name="GENERATOR_ID" type="System.Int16" />
-				<Property name="IS_SYSTEM_OBJECT" type="System.Boolean" />
-				<Property name="INITIAL_VALUE" type="System.Int64" />
-				<Property name="GENERATOR_INCREMENT" type="System.Int32" />
-				<Property name="NEXT_VALUE" type="System.Int64" />
+				<Property name="IS_SYSTEM_FLAG" type="System.Int32" />
+				<Property name="IDENTITY_SEED" type="System.Int64" />
+				<Property name="IDENTITY_INCREMENT" type="System.Int32" />
+				<Property name="IDENTITY_CURRENT" type="System.Int64" />
 			</Properties>
 			<Services>
 				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
@@ -111,7 +111,7 @@
 				<Property name="TABLE_NAME" isIdentifierPart="true" />
 				<Property name="TABLE_TYPE" type="System.String" />
 				<Property name="DESCRIPTION" type="System.String" />
-				<Property name="IS_SYSTEM_OBJECT" type="System.Boolean" />
+				<Property name="IS_SYSTEM_FLAG" type="System.Int32" />
 				<Property name="INDEX_COUNT" type="System.Int32" />
 				<Property name="FOREIGNKEY_COUNT" type="System.Int32" />
 				<Property name="TRIGGER_COUNT" type="System.Int32" />
@@ -132,7 +132,7 @@
 
 		<TypeRef name="TplTypeTrigger" arguments="Trigger" />
 		<TypeRef name="TplTypeTrigger" arguments="SystemTrigger" />
-		<TypeRef name="TplTypeTrigger" arguments="AutoIncrementTrigger" />
+		<TypeRef name="TplTypeTrigger" arguments="IdentityTrigger" />
 		<TypeRef name="TplTypeTrigger" arguments="StandardTrigger" />
 
 		<TypeRef name="TplTypeColumn" arguments="TriggerColumn,Trigger,TRIGGER_NAME,TriggerColumns,0,null,0,null,0,null,0" />
@@ -152,7 +152,8 @@
 				<Property name="IS_PRIMARY" type="System.Boolean" />
 				<Property name="IS_UNIQUE" type="System.Boolean" />
 				<Property name="IS_FOREIGNKEY" type="System.Boolean" />
-				<Property name="IS_SYSTEM_OBJECT" type="System.Boolean" />
+				<Property name="IS_SYSTEM_FLAG" type="System.Int32" />
+				<Property name="IS_INACTIVE" type="System.Boolean" />
 				<Property name="EXPRESSION" type="System.String" />
 				<Property name="IS_COMPUTED" type="System.Boolean" />
 			</Properties>
@@ -183,12 +184,19 @@
 			<Properties>
 				<Property name="TABLE_NAME" isIdentifierPart="true" />
 				<Property name="CONSTRAINT_NAME" isIdentifierPart="true" />
+				<Property name="IS_PRIMARY" type="System.Boolean" />
+				<Property name="IS_UNIQUE" type="System.Boolean" />
+				<Property name="IS_FOREIGNKEY" type="System.Boolean" />
+				<Property name="IS_SYSTEM_FLAG" type="System.Int32" />
+				<Property name="EXPRESSION" type="System.String" />
+				<Property name="IS_COMPUTED" type="System.Boolean" />
 				<Property name="REFERENCED_TABLE_CATALOG" type="System.String" />
 				<Property name="REFERENCED_TABLE_SCHEMA" type="System.String" />
 				<Property name="REFERENCED_TABLE_NAME" type="System.String" />
+				<Property name="REFERENCED_INDEX_NAME" type="System.String" />
 				<Property name="INDEX_NAME" type="System.String" />
-				<Property name="UPDATE_RULE" type="System.String" />
-				<Property name="DELETE_RULE" type="System.String" />
+				<Property name="UPDATE_ACTION"  type="System.Int32" />
+				<Property name="DELETE_ACTION" type="System.Int32" />
 			</Properties>
 			<Services>
 				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
@@ -239,7 +247,7 @@
 				<Property name="PROCEDURE_NAME" isIdentifierPart="true" />
 				<Property name="DESCRIPTION" type="System.String" />
 				<Property name="SOURCE" type="System.String" />
-				<Property name="IS_SYSTEM_OBJECT" type="System.Boolean" />
+				<Property name="IS_SYSTEM_FLAG" type="System.Int32" />
 			</Properties>
 			<Services>
 				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
@@ -322,7 +330,7 @@
 				<Property name="FUNCTION_NAME" isIdentifierPart="true" />
 				<Property name="DESCRIPTION" type="System.String" />
 				<Property name="SOURCE" type="System.String" />
-				<Property name="IS_SYSTEM_OBJECT" type="System.Boolean" />
+				<Property name="IS_SYSTEM_FLAG" type="System.Int32" />
 			</Properties>
 			<Services>
 				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
@@ -330,7 +338,7 @@
 						<Parameter value="Functions" />
 					</Parameters>
 				</Service>
-				<ServiceRef name="TplSchemaObjectTypeDSRefBuilderService3" arguments="null,0,null,0,Funtion,501" />
+				<ServiceRef name="TplSchemaObjectTypeDSRefBuilderService3" arguments="null,0,null,0,Function,501" />
 			</Services>
 		</Type>
 

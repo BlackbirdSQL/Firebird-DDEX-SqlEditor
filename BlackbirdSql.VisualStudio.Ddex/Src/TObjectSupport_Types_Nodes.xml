@@ -12,24 +12,29 @@
 		<Type name="$(type)" preferredOrdering="ORDINAL_POSITION">
 			<Identifier>
 				<PartListRef name="TplIdentifierList$(parentType)Column" />
-				<Part name="COLUMN_NAME" type="System.String" />
 			</Identifier>
 			<Properties>
 				<PropertyListRef name="TplPropertyList$(parentType)Column" />
 				<Property name="ORDINAL_POSITION" type="System.Int16" />
 				<Property name="DESCRIPTION" type="System.String" />
+				<Property name="IS_NULLABLE" type="System.Boolean" />
 				<Property name="COLUMN_DATA_TYPE" type="System.String" />
 				<Property name="COLUMN_SIZE" type="System.Int32" />
 				<Property name="NUMERIC_PRECISION" type="System.Byte" />
 				<Property name="NUMERIC_SCALE" type="System.Int32" />
-				<Property name="IS_NULLABLE" type="System.Boolean" />
-				<Property name="EXPRESSION" type="System.String" />
-				<Property name="IN_PRIMARYKEY" type="System.Boolean" />
-				<Property name="IS_UNIQUE" type="System.Boolean" />
-				<Property name="IS_COMPUTED" type="System.Boolean" />
-				<Property name="IS_AUTOINCREMENT" type="System.Boolean" />
 				<Property name="COLUMN_DEFAULT" type="System.String" />
 				<Property name="COLLATION_NAME" type="System.String" />
+				<Property name="CHARACTER_SET_NAME" type="System.String" />
+				<Property name="DOMAIN_NAME" type="System.String" />
+				<Property name="IS_COMPUTED" type="System.Boolean" />
+				<Property name="EXPRESSION" type="System.String" />
+				<Property name="IS_IDENTITY" type="System.Boolean" />
+				<Property name="IS_UNIQUE" type="System.Boolean" />
+				<Property name="IN_PRIMARYKEY" type="System.Boolean" />
+				<Property name="SEQUENCE_GENERATOR" type="System.String" />
+				<Property name="IDENTITY_SEED" type="System.Int64" />
+				<Property name="IDENTITY_INCREMENT" type="System.Int32" />
+				<Property name="IDENTITY_CURRENT" type="System.Int64" />
 				<Property name="PARENT_TYPE" type="System.String" />
 			</Properties>
 			<Services>
@@ -45,8 +50,6 @@
 
 
 
-
-
 	<Define name="TplTypeTrigger" parameters="triggerType" >
 		<Type name="$(triggerType)" preferredOrdering="TRIGGER_NAME">
 			<Identifier>
@@ -59,12 +62,17 @@
 				<Property name="TABLE_NAME" isIdentifierPart="true" />
 				<Property name="TRIGGER_NAME" isIdentifierPart="true" />
 				<Property name="TRIGGER_TYPE" type="System.Int64" />
-				<Property name="IS_SYSTEM_OBJECT" type="System.Boolean" />
-				<Property name="IS_INACTIVE" type="System.Int16" />
-				<Property name="SEQUENCENO" type="System.Int16" />
+				<Property name="IS_SYSTEM_FLAG" type="System.Int32" />
+				<Property name="IS_INACTIVE" type="System.Boolean" />
+				<Property name="PRIORITY" type="System.Int16" />
 				<Property name="EXPRESSION" type="System.String" />
 				<Property name="DESCRIPTION" type="System.String" />
-				<Property name="IS_AUTOINCREMENT" type="System.Boolean" />
+				<Property name="IS_IDENTITY" type="System.Boolean" />
+				<Property name="SEQUENCE_GENERATOR" type="System.String" />
+				<Property name="IDENTITY_SEED" type="System.Int64" />
+				<Property name="IDENTITY_INCREMENT" type="System.Int32" />
+				<Property name="IDENTITY_CURRENT" type="System.Int32" />
+				<Property name="DEPENDENCY_COUNT" type="System.Int32" />
 				<Property name="DEPENDENCY_FIELDS" type="System.String" />
 			</Properties>
 			<Services>

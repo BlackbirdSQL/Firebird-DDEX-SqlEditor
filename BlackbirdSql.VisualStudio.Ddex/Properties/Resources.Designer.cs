@@ -187,6 +187,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unidentifiable.
+        /// </summary>
+        internal static string UnknownSequence {
+            get {
+                return ResourceManager.GetString("UnknownSequence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 0.
         /// </summary>
         internal static string Value_No {

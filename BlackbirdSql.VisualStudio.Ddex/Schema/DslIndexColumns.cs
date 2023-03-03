@@ -32,17 +32,13 @@ internal class DslIndexColumns : DslColumns
 		_ObjectType = "TableIndexColumn";
 		_ParentRestriction = "idx.rdb$index_name";
 		_OrdinalPosition = "idxseg.rdb$field_position";
-		_OrderingAlias = "INDEX_NAME";
-		_FromClause = @"FROM rdb$index_segments idxseg
+		_OrderingField = "idx.rdb$index_name";
+		_FromClause = @"rdb$index_segments idxseg
 				INNER JOIN rdb$indices idx
 					ON idxseg.rdb$index_name = idx.rdb$index_name
                 INNER JOIN rdb$relation_fields r
                     ON r.rdb$relation_name = idx.rdb$relation_name AND r.rdb$field_name = idxseg.rdb$field_name";
-		_ColumnsClause = @"idx.rdb$index_name AS INDEX_NAME,
-					null AS CONSTRAINT_CATALOG,
-					null AS CONSTRAINT_SCHEMA,
-					idx.rdb$index_name AS CONSTRAINT_NAME,
-					r_dep.rdb$dependent_name AS TRIGGER_NAME";
+		_AdditionalColumns.Add("INDEX_NAME", new("idx.rdb$index_name", "varchar(50)"));
 	}
 
 }

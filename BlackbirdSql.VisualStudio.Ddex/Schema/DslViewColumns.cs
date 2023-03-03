@@ -31,11 +31,10 @@ internal class DslViewColumns : DslColumns
 	{
 		_ParentType = "View";
 		_ObjectType = "ViewColumn";
-		_OrderingAlias = "VIEW_NAME";
-		_ColumnsClause = @"null AS VIEW_CATALOG,
-					null AS VIEW_SCHEMA,
-					r.rdb$relation_name AS VIEW_NAME,
-					r_dep.rdb$dependent_name AS TRIGGER_NAME";
+
+		_AdditionalColumns.Add("VIEW_CATALOG", new(null, "varchar(10)"));
+		_AdditionalColumns.Add("VIEW_SCHEMA", new(null, "varchar(10)"));
+		_AdditionalColumns.Add("VIEW_NAME", new("r.rdb$relation_name", "varchar(50)"));
 	}
 
 }

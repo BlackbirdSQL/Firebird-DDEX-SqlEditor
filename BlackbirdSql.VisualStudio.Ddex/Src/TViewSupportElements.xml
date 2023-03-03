@@ -3,7 +3,35 @@
 
 	<!-- Element definitions -->
 
+	<!-- Standard values lists -->
+	<!-- These must still be defined in .resx for multilingual -->
+
 	<!-- Data type standard values list -->
+
+	<Define name="TplStandardValuesInverseBoolean" >
+		<StandardValues>
+			<StandardValue value="false">True</StandardValue>
+			<StandardValue value="true">False</StandardValue>
+		</StandardValues>
+	</Define>
+
+	<Define name="TplStandardValuesOrdinalBoolean" >
+		<StandardValues>
+			<StandardValue value="0">False</StandardValue>
+			<StandardValue value="1">True</StandardValue>
+		</StandardValues>
+	</Define>
+
+	<Define name="TplStandardValuesInverseOrdinalBoolean" >
+		<StandardValues>
+			<StandardValue value="0">True</StandardValue>
+			<StandardValue value="1">False</StandardValue>
+		</StandardValues>
+	</Define>
+
+
+
+
 	<Define name="TplStandardValuesColumnDataType" >
 		<StandardValues>
 			<StandardValue value="array">Array</StandardValue>
@@ -29,7 +57,40 @@
 		</StandardValues>
 	</Define>
 
-	
+	<Define name="TplStandardValuesTriggerEventType" >
+		<StandardValues>
+			<StandardValue value="1">Before insert</StandardValue>
+			<StandardValue value="2">After insert</StandardValue>
+			<StandardValue value="3">Before update</StandardValue>
+			<StandardValue value="4">After update</StandardValue>
+			<StandardValue value="5">Before delete</StandardValue>
+			<StandardValue value="6">After delete</StandardValue>
+			<StandardValue value="17">Before insert or update</StandardValue>
+			<StandardValue value="18">After insert or update</StandardValue>
+			<StandardValue value="25">Before insert or delete</StandardValue>
+			<StandardValue value="26">After insert or delete</StandardValue>
+			<StandardValue value="27">Before update or delete</StandardValue>
+			<StandardValue value="28">After update or delete</StandardValue>
+			<StandardValue value="113">Before insert, update or delete</StandardValue>
+			<StandardValue value="114">After insert, update or delete</StandardValue>
+			<StandardValue value="8192">On connect</StandardValue>
+			<StandardValue value="8193">On disconnect</StandardValue>
+			<StandardValue value="8194">On transaction begin</StandardValue>
+			<StandardValue value="8195">On transaction commit</StandardValue>
+			<StandardValue value="8196">On transaction rollback"</StandardValue>
+		</StandardValues>
+	</Define>
+
+	<Define name="TplStandardValuesForeignKeyRule" >
+		<StandardValues>
+			<StandardValue value="0">No Action</StandardValue>
+			<StandardValue value="1">Cascade</StandardValue>
+			<StandardValue value="2">Set Null</StandardValue>
+			<StandardValue value="3">Set Default</StandardValue>
+		</StandardValues>
+	</Define>
+
+
 
 	<!-- Definition list of common column properties -->
 	<Define name="TplPropertiesListStandardColumn" >
@@ -74,37 +135,70 @@
 			<Category resource="Category_DataType" />
 			<Description resource="Property_Desc_Column_Collation" />
 		</Property>
+		<Property name="DOMAIN_NAME">
+			<DisplayName resource="Property_Name_Column_Domain" />
+			<Category resource="Category_DataType" />
+			<Description resource="Property_Desc_Column_Domain" />
+		</Property>
 		<Property name="DESCRIPTION">
 			<DisplayName resource="Property_Name_Description" />
+			<Category resource="Category_Identifier" />
 			<Description resource="Property_Desc_Description" />
 		</Property>
 		<Property name="ORDINAL_POSITION">
 			<DisplayName resource="Property_Name_Column_Ordinal" />
+			<Category resource="Category_Identifier" />
 			<Description resource="Property_Desc_Column_Ordinal" />
 		</Property>
 		<Property name="COLUMN_DEFAULT">
 			<DisplayName resource="Property_Name_Column_Default" />
+			<Category resource="Category_DataType" />
 			<Description resource="Property_Desc_Column_Default" />
 		</Property>
 		<Property name="IN_PRIMARYKEY">
 			<DisplayName resource="Property_Name_Column_InPrimaryKey" />
+			<Category resource="Category_Constraints" />
 			<Description resource="Property_Desc_Column_InPrimaryKey" />
 		</Property>
 		<Property name="IS_UNIQUE">
 			<DisplayName resource="Property_Name_Column_IsUnique" />
+			<Category resource="Category_Constraints" />
 			<Description resource="Property_Desc_Column_IsUnique" />
 		</Property>
 		<Property name="IS_COMPUTED">
 			<DisplayName resource="Property_Name_Column_Computed" />
+			<Category resource="Category_Initialization" />
 			<Description resource="Property_Desc_Column_Computed" />
 		</Property>
 		<Property name="EXPRESSION">
 			<DisplayName resource="Property_Name_Column_Expression" />
+			<Category resource="Category_Initialization" />
 			<Description resource="Property_Desc_Column_Expression" />
 		</Property>
-		<Property name="IS_AUTOINCREMENT">
-			<DisplayName resource="Property_Name_Column_IsAutoIncrement" />
-			<Description resource="Property_Desc_Column_IsAutoIncrement" />
+		<Property name="IS_IDENTITY">
+			<DisplayName resource="Property_Name_Column_IsIdentity" />
+			<Category resource="Category_Constraints" />
+			<Description resource="Property_Desc_Column_IsIdentity" />
+		</Property>
+		<Property name="SEQUENCE_GENERATOR">
+			<DisplayName resource="Property_Name_Column_SequenceGenerator" />
+			<Category resource="Category_Initialization" />
+			<Description resource="Property_Desc_Column_SequenceGenerator" />
+		</Property>
+		<Property name="IDENTITY_SEED">
+			<DisplayName resource="Property_Name_Column_IdentitySeed" />
+			<Category resource="Category_Initialization" />
+			<Description resource="Property_Desc_Column_IdentitySeed" />
+		</Property>
+		<Property name="IDENTITY_INCREMENT">
+			<DisplayName resource="Property_Name_Column_IdentityIncrement" />
+			<Category resource="Category_Initialization" />
+			<Description resource="Property_Desc_Column_IdentityIncrement" />
+		</Property>
+		<Property name="IDENTITY_CURRENT">
+			<DisplayName resource="Property_Name_Column_IdentityCurrent" />
+			<Category resource="Category_Initialization" />
+			<Description resource="Property_Desc_Column_IdentityCurrent" />
 		</Property>
 	</Define>
 
@@ -127,8 +221,9 @@
 			<Description resource="Identifier_Desc_Table" />
 		</Property>
 		<Property name="TRIGGER_NAME">
-			<DisplayName resource="Property_Name_Column_AutoIncrement" />
-			<Description resource="Property_Desc_Column_AutoIncrement" />
+			<DisplayName resource="Property_Name_Column_IdentityTrigger" />
+			<Category resource="Category_Initialization" />
+			<Description resource="Property_Desc_Column_IdentityTrigger" />
 		</Property>
 	</Define>
 
@@ -151,8 +246,9 @@
 			<Description resource="Identifier_Desc_View" />
 		</Property>
 		<Property name="TRIGGER_NAME">
-			<DisplayName resource="Property_Name_Column_AutoIncrement" />
-			<Description resource="Property_Desc_Column_AutoIncrement" />
+			<DisplayName resource="Property_Name_Column_IdentityTrigger" />
+			<Category resource="Category_Initialization" />
+			<Description resource="Property_Desc_Column_IdentityTrigger" />
 		</Property>
 	</Define>
 
@@ -176,6 +272,7 @@
 		</Property>
 		<Property name="TABLE_NAME">
 			<DisplayName resource="Property_Name_Column_Table" />
+			<Category resource="Category_Identifier" />
 			<Description resource="Property_Desc_Column_Table" />
 		</Property>
 	</Define>
@@ -204,8 +301,9 @@
 			<Description resource="Identifier_Desc_Index" />
 		</Property>
 		<Property name="TRIGGER_NAME">
-			<DisplayName resource="Property_Name_Column_AutoIncrement" />
-			<Description resource="Property_Desc_Column_AutoIncrement" />
+			<DisplayName resource="Property_Name_Column_IdentityTrigger" />
+			<Category resource="Category_Initialization" />
+			<Description resource="Property_Desc_Column_IdentityTrigger" />
 		</Property>
 	</Define>
 
@@ -234,27 +332,28 @@
 		</Property>
 		<Property name="REFERENCED_TABLE_CATALOG">
 			<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedCatalog" />
-			<Category resource="Category_ReferencedColumn" />
+			<Category resource="Category_ReferencedObject" />
 			<Description resource="Property_Desc_ForeignKeyColumn_ReferencedCatalog" />
 		</Property>
 		<Property name="REFERENCED_TABLE_SCHEMA">
 			<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedSchema" />
-			<Category resource="Category_ReferencedColumn" />
+			<Category resource="Category_ReferencedObject" />
 			<Description resource="Property_Desc_ForeignKeyColumn_ReferencedSchema" />
 		</Property>
 		<Property name="REFERENCED_TABLE_NAME">
 			<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedTable" />
-			<Category resource="Category_ReferencedColumn" />
+			<Category resource="Category_ReferencedObject" />
 			<Description resource="Property_Desc_ForeignKeyColumn_ReferencedTable" />
 		</Property>
 		<Property name="REFERENCED_COLUMN_NAME">
 			<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedColumn" />
-			<Category resource="Category_ReferencedColumn" />
+			<Category resource="Category_ReferencedObject" />
 			<Description resource="Property_Desc_ForeignKeyColumn_ReferencedColumn" />
 		</Property>
 		<Property name="TRIGGER_NAME">
-			<DisplayName resource="Property_Name_Column_AutoIncrement" />
-			<Description resource="Property_Desc_Column_AutoIncrement" />
+			<DisplayName resource="Property_Name_Column_IdentityTrigger" />
+			<Category resource="Category_Initialization" />
+			<Description resource="Property_Desc_Column_IdentityTrigger" />
 		</Property>
 	</Define>
 
@@ -278,7 +377,7 @@
 				<DisplayName>{Column.COLUMN_NAME}</DisplayName>
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ComputedColumn.ico" when="{Column.IS_COMPUTED} AND NOT ({Column.PARENT_TYPE} = 'Trigger')" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Computed$(parentType)Column.ico" when="{Column.IS_COMPUTED}" assembly="" />
-				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrementColumn.ico" when="{Column.IS_AUTOINCREMENT} AND {Column.IS_UNIQUE} AND NOT ({Column.PARENT_TYPE} = 'Trigger')" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.IdentityColumn.ico" when="{Column.IS_IDENTITY} AND {Column.IS_UNIQUE} AND NOT ({Column.PARENT_TYPE} = 'Trigger')" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.PrimaryKey.ico" when="{Column.IS_UNIQUE} AND NOT ({Column.PARENT_TYPE} = 'Trigger')" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.PrimaryKey$(parentType).ico" when="{Column.IS_UNIQUE}" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.UniqueKey.ico" when="{Column.IN_PRIMARYKEY} AND NOT ({Column.PARENT_TYPE} = 'Trigger')" assembly="" />
@@ -328,12 +427,19 @@
 				<DisplayName resource="Property_Name_Index_IsForeignKey" />
 				<Description resource="Property_Desc_Index_IsForeignKey" />
 			</Property>
-			<Property name="IS_SYSTEM_OBJECT">
-				<DisplayName resource="Property_Name_Type" />
+			<Property name="IS_SYSTEM_FLAG">
+				<DisplayName resource="Property_Name_ObjectSystemType" />
+				<Category resource="Category_Identifier" />
+				<Description resource="Property_Desc_ObjectSystemType" />
 				<StandardValues>
-					<StandardValue value="false" resource="Property_Value_IndexType_User" />
-					<StandardValue value="true" resource="Property_Value_IndexType_System" />
+					<StandardValue value="0" resource="Property_Value_IndexType_User" />
+					<StandardValue value="1" resource="Property_Value_IndexType_System" />
 				</StandardValues>
+			</Property>
+			<Property name="IS_INACTIVE">
+				<DisplayName resource="Property_Name_Disabled" />
+				<Description resource="Property_Desc_Disabled" />
+				<!-- <StandardValuesRef name="TplStandardValuesInverseBoolean" /> -->
 			</Property>
 			<Property name="EXPRESSION">
 				<DisplayName resource="Property_Name_Index_Expression" />
@@ -374,51 +480,37 @@
 			<Property name="TRIGGER_TYPE">
 				<DisplayName resource="Property_Name_Trigger_Type" />
 				<Description resource="Property_Desc_Trigger_Name" />
-				<StandardValues>
-					<StandardValue value="1">Before insert</StandardValue>
-					<StandardValue value="2">After insert</StandardValue>
-					<StandardValue value="3">Before update</StandardValue>
-					<StandardValue value="4">After update</StandardValue>
-					<StandardValue value="5">Before delete</StandardValue>
-					<StandardValue value="6">After delete</StandardValue>
-					<StandardValue value="17">Before insert or update</StandardValue>
-					<StandardValue value="18">After insert or update</StandardValue>
-					<StandardValue value="25">Before insert or delete</StandardValue>
-					<StandardValue value="26">After insert or delete</StandardValue>
-					<StandardValue value="27">Before update or delete</StandardValue>
-					<StandardValue value="28">After update or delete</StandardValue>
-					<StandardValue value="113">Before insert, update or delete</StandardValue>
-					<StandardValue value="114">After insert, update or delete</StandardValue>
-					<StandardValue value="8192">On connect</StandardValue>
-					<StandardValue value="8193">On disconnect</StandardValue>
-					<StandardValue value="8194">On transaction begin</StandardValue>
-					<StandardValue value="8195">On transaction commit</StandardValue>
-					<StandardValue value="8196">On transaction rollback"</StandardValue>
-				</StandardValues>
+				<StandardValuesRef name="TplStandardValuesTriggerEventType" />
 			</Property>
-			<Property name="SEQUENCENO">
-				<DisplayName resource="Property_Name_Trigger_Sequence" />
-				<Description resource="Property_Desc_Trigger_Sequence" />
+			<Property name="PRIORITY">
+				<DisplayName resource="Property_Name_Trigger_Priority" />
+				<Description resource="Property_Desc_Trigger_Priority" />
 			</Property>
 			<Property name="IS_INACTIVE">
-				<DisplayName resource="Property_Name_Trigger_Active" />
-				<Description resource="Property_Desc_Trigger_Active" />
-				<StandardValues>
-					<StandardValue value="0">True</StandardValue>
-					<StandardValue value="1">False</StandardValue>
-				</StandardValues>
+				<DisplayName resource="Property_Name_Disabled" />
+				<Description resource="Property_Desc_Disabled" />
+				<!-- <StandardValuesRef name="TplStandardValuesInverseBoolean" /> -->
 			</Property>
 			<Property name="DESCRIPTION">
 				<DisplayName resource="Property_Name_Description" />
+				<Category resource="Category_Identifier" />
 				<Description resource="Property_Desc_Description" />
 			</Property>
 			<Property name="EXPRESSION">
 				<DisplayName resource="Property_Name_Dsl" />
 				<Description resource="Property_Desc_Dsl" />
 			</Property>
-			<Property name="IS_AUTOINCREMENT">
-				<DisplayName resource="Property_Name_Trigger_IsAutoIncrement" />
-				<Description resource="Property_Desc_Trigger_IsAutoIncrement" />
+			<Property name="IS_IDENTITY">
+				<DisplayName resource="Property_Name_Trigger_IsIdentity" />
+				<Description resource="Property_Desc_Trigger_IsIdentity" />
+			</Property>
+			<Property name="SEQUENCE_GENERATOR">
+				<DisplayName resource="Property_Name_Trigger_SequenceGenerator" />
+				<Description resource="Property_Desc_Trigger_SequenceGenerator" />
+			</Property>
+			<Property name="DEPENDENCY_COUNT">
+				<DisplayName resource="Property_Name_Trigger_DependencyCount" />
+				<Description resource="Property_Desc_Trigger_DependencyCount" />
 			</Property>
 			<Property name="DEPENDENCY_FIELDS">
 				<DisplayName resource="Property_Name_Trigger_Dependencies" />
@@ -430,12 +522,12 @@
 	
 	
 	<!-- Definition of trigger selection node without columns -->
-	<Define name="TplSelectionTriggersWithChildren" parameters="triggerType, systemType, isSystemObject, restrictions" >
+	<Define name="TplSelectionTriggersWithChildren" parameters="triggerType, systemType, systemObjectFlag, restrictions" >
 		<Selection type="$(triggerType)" restrictions="$(restrictions)" >
-			<!-- filter="IS_SYSTEM_OBJECT = $(isSystemObject)" > -->
+			<!-- filter="IS_SYSTEM_FLAG = $(systemObjectFlag)" > -->
 			<SelectionNode nodeId="Trigger">
 				<DisplayName>{Trigger.TRIGGER_NAME}</DisplayName>
-				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrement$(systemType)Trigger.ico" when="{Trigger.IS_AUTOINCREMENT}" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Identity$(systemType)Trigger.ico" when="{Trigger.IS_IDENTITY}" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Trigger.ico" assembly="" />
 				<PropertiesRef name="TplPropertiesTrigger" />
 				<Children>
@@ -447,12 +539,12 @@
 
 	
 	<!-- Definition of trigger selection node with columns -->
-	<Define name="TplSelectionTriggersNoChildren" parameters="triggerType, systemType, isSystemObject, restrictions" >
+	<Define name="TplSelectionTriggersNoChildren" parameters="triggerType, systemType, systemObjectFlag, restrictions" >
 		<Selection type="$(triggerType)" restrictions="$(restrictions)" >
-			<!-- filter="IS_SYSTEM_OBJECT = $(isSystemObject)" > -->
+			<!-- filter="IS_SYSTEM_FLAG = $(systemObjectFlag)" > -->
 			<SelectionNode nodeId="Trigger">
 				<DisplayName>{Trigger.TRIGGER_NAME}</DisplayName>
-				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.AutoIncrement$(systemType)Trigger.ico" when="{Trigger.IS_AUTOINCREMENT}" assembly="" />
+				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Identity$(systemType)Trigger.ico" when="{Trigger.IS_IDENTITY}" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Trigger.ico" assembly="" />
 				<PropertiesRef name="TplPropertiesTrigger" />
 			</SelectionNode>
@@ -461,12 +553,12 @@
 
 	
 	<!-- Definition of trigger static node -->
-	<Define name="TplStaticNodeTriggers" parameters="triggerType, triggerChildrenType, systemType, isSystemObject" >
+	<Define name="TplStaticNodeTriggers" parameters="triggerType, triggerChildrenType, systemType, systemObjectFlag" >
 		<StaticNode nodeId="$(systemType)$(triggerType)s">
 			<DisplayName resource="Node_Name_$(systemType)$(triggerType)s" />
 			<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Folder$(systemType)$(triggerType)s.ico" assembly="" />
 			<Children>
-				<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="$(triggerType),$(systemType),$(isSystemObject),null,,null"/>
+				<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="$(triggerType),$(systemType),$(systemObjectFlag),null,,null"/>
 			</Children>
 		</StaticNode>
 	</Define>
@@ -474,8 +566,8 @@
 	
 
 	<!-- Definition of table selection node -->
-	<Define name="TplSelectionTables" parameters="systemType, isSystemObject, triggerChildrenType" >
-		<Selection type="Table" restrictions="null,null" filter="IS_SYSTEM_OBJECT = $(isSystemObject)">
+	<Define name="TplSelectionTables" parameters="systemType, systemObjectFlag, triggerChildrenType" >
+		<Selection type="Table" restrictions="null,null" filter="IS_SYSTEM_FLAG = $(systemObjectFlag)">
 			<SelectionNode nodeId="Table">
 				<DisplayName>{Table.TABLE_NAME}</DisplayName>
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Table.ico" assembly="" />
@@ -496,15 +588,18 @@
 						<Category resource="Category_Identifier" />
 						<Description resource="Identifier_Desc_Name" />
 					</Property>
-					<Property name="IS_SYSTEM_OBJECT">
-						<DisplayName resource="Property_Name_Type" />
+					<Property name="IS_SYSTEM_FLAG">
+						<DisplayName resource="Property_Name_ObjectSystemType" />
+						<Category resource="Category_Identifier" />
+						<Description resource="Property_Desc_ObjectSystemType" />
 						<StandardValues>
-							<StandardValue value="false" resource="Property_Value_TableType_User" />
-							<StandardValue value="true" resource="Property_Value_TableType_System" />
+							<StandardValue value="0" resource="Property_Value_TableType_User" />
+							<StandardValue value="1" resource="Property_Value_TableType_System" />
 						</StandardValues>
 					</Property>
 					<Property name="DESCRIPTION">
 						<DisplayName resource="Property_Name_Description" />
+						<Category resource="Category_Identifier" />
 						<Description resource="Property_Desc_Description" />
 					</Property>
 					<Property name="INDEX_COUNT">
@@ -574,7 +669,7 @@
 					<StaticNode skipWhen="{Table.INDEX_COUNT} > 0" nodeId="IndexesEmpty">
 						<DisplayName resource="Node_Name_Indexes" />
 					</StaticNode>
-					<StaticNode skipWhen="{Table.IS_SYSTEM_OBJECT} OR {Table.FOREIGNKEY_COUNT} = 0" nodeId="ForeignKeys">
+					<StaticNode skipWhen="{Table.IS_SYSTEM_FLAG} = 1 OR {Table.FOREIGNKEY_COUNT} = 0" nodeId="ForeignKeys">
 						<DisplayName resource="Node_Name_ForeignKeys" />
 						<!-- <Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.FolderForeignKeys.ico" assembly="" /> -->
 						<Children>
@@ -606,26 +701,30 @@
 										</Property>
 										<Property name="REFERENCED_TABLE_CATALOG">
 											<DisplayName resource="Property_Name_ForeignKey_ReferencedCatalog" />
-											<Category resource="Category_ReferencedTable" />
+											<Category resource="Category_ReferencedObject" />
 											<Description resource="Property_Desc_ForeignKey_ReferencedCatalog" />
 										</Property>
 										<Property name="REFERENCED_TABLE_SCHEMA">
 											<DisplayName resource="Property_Name_ForeignKey_ReferencedSchema" />
-											<Category resource="Category_ReferencedTable" />
+											<Category resource="Category_ReferencedObject" />
 											<Description resource="Property_Desc_ForeignKey_ReferencedSchema" />
 										</Property>
 										<Property name="REFERENCED_TABLE_NAME">
 											<DisplayName resource="Property_Name_ForeignKey_ReferencedTable" />
-											<Category resource="Category_ReferencedTable" />
+											<Category resource="Category_ReferencedObject" />
 											<Description resource="Property_Desc_ForeignKey_ReferencedTable" />
 										</Property>
 										<Property name="UPDATE_RULE">
 											<DisplayName resource="Property_Name_ForeignKey_UpdateRule" />
+											<Category resource="Category_Constraints" />
 											<Description resource="Property_Desc_ForeignKey_UpdateRule" />
+											<StandardValuesRef name="TplStandardValuesForeignKeyRule" />
 										</Property>
 										<Property name="DELETE_RULE">
 											<DisplayName resource="Property_Name_ForeignKey_DeleteRule" />
+											<Category resource="Category_Constraints" />
 											<Description resource="Property_Desc_ForeignKey_DeleteRule" />
+											<StandardValuesRef name="TplStandardValuesForeignKeyRule" />
 										</Property>
 									</Properties>
 									<Children>
@@ -635,22 +734,22 @@
 							</Selection>
 						</Children>
 					</StaticNode>
-					<StaticNode skipWhen="{Table.IS_SYSTEM_OBJECT} OR {Table.FOREIGNKEY_COUNT} > 0" nodeId="ForeignKeysEmpty">
+					<StaticNode skipWhen="{Table.IS_SYSTEM_FLAG} = 1 OR {Table.FOREIGNKEY_COUNT} > 0" nodeId="ForeignKeysEmpty">
 						<DisplayName resource="Node_Name_ForeignKeys" />
 					</StaticNode>
-					<StaticNode  skipWhen="{Table.IS_SYSTEM_OBJECT} OR {Table.TRIGGER_COUNT} = 0" nodeId="Triggers">
+					<StaticNode  skipWhen="{Table.IS_SYSTEM_FLAG} = 1 OR {Table.TRIGGER_COUNT} = 0" nodeId="Triggers">
 						<DisplayName resource="Node_Name_Triggers" />
 						<!-- <Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.FolderTriggers.ico" assembly="" /> -->
 						<Children>
-							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="AutoIncrementTrigger,$(systemType),$(isSystemObject),{Table.TABLE_CATALOG},,{Table.TABLE_SCHEMA},,{Table.TABLE_NAME}"/>
-							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="StandardTrigger,$(systemType),$(isSystemObject),{Table.TABLE_CATALOG},,{Table.TABLE_SCHEMA},,{Table.TABLE_NAME}"/>
+							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="IdentityTrigger,$(systemType),$(systemObjectFlag),{Table.TABLE_CATALOG},,{Table.TABLE_SCHEMA},,{Table.TABLE_NAME}"/>
+							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="StandardTrigger,$(systemType),$(systemObjectFlag),{Table.TABLE_CATALOG},,{Table.TABLE_SCHEMA},,{Table.TABLE_NAME}"/>
 						</Children>
 					</StaticNode>
-					<StaticNode  skipWhen="{Table.IS_SYSTEM_OBJECT} = false OR {Table.TRIGGER_COUNT} = 0" nodeId="Triggers">
+					<StaticNode  skipWhen="{Table.IS_SYSTEM_FLAG} = 0 OR {Table.TRIGGER_COUNT} = 0" nodeId="Triggers">
 						<DisplayName resource="Node_Name_Triggers" />
 						<!-- <Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.FolderTriggers.ico" assembly="" /> -->
 						<Children>
-							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="SystemTrigger,$(systemType),$(isSystemObject),{Table.TABLE_CATALOG},,{Table.TABLE_SCHEMA},,{Table.TABLE_NAME}"/>
+							<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="SystemTrigger,$(systemType),$(systemObjectFlag),{Table.TABLE_CATALOG},,{Table.TABLE_SCHEMA},,{Table.TABLE_NAME}"/>
 						</Children>
 					</StaticNode>
 					<StaticNode  skipWhen="{Table.TRIGGER_COUNT} > 0" nodeId="TriggersEmpty">
@@ -664,12 +763,12 @@
 
 	
 	<!-- Definition of table static node -->
-	<Define name="TplStaticNodeTablesTables" parameters="systemType, isSystemObject, triggerChildrenType" >
+	<Define name="TplStaticNodeTablesTables" parameters="systemType, systemObjectFlag, triggerChildrenType" >
 		<StaticNode nodeId="$(systemType)Tables">
 			<DisplayName resource="Node_Name_$(systemType)Tables" />
 			<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Folder$(systemType)Tables.ico" assembly="" />
 			<Children>
-				<SelectionRef name="TplSelectionTables" arguments="$(systemType),$(isSystemObject),$(triggerChildrenType)"/>
+				<SelectionRef name="TplSelectionTables" arguments="$(systemType),$(systemObjectFlag),$(triggerChildrenType)"/>
 			</Children>
 		</StaticNode>
 	</Define>

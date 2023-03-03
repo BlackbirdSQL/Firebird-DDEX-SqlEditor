@@ -26,15 +26,15 @@
 	-->
 
 	<!-- Import data object support element and mapping definitions -->
-	<Import name="PropertyDefinitions" />
-	<Import name="MappedPropertyDefinitions" />
-	<Import name="ServiceDefinitions" />
-	<Import name="TypeDefinitions" />
-	<Import name="MappedTypeDefinitions" />
+	<Import name="_Types_Nodes_PropertiesDefinitions" />
+	<Import name="_Mappings_Nodes_PropertiesDefinitions" />
+	<Import name="ServicesDefinitions" />
+	<Import name="_Types_NodesDefinitions" />
+	<Import name="_Mappings_NodesDefinitions" />
 
 	<!-- Import Nodes -->
-	<Import name="TypesNode" />
-	<Import name="MappedTypesNode" />
+	<Import name="_TypesDefinitions" />
+	<Import name="_MappingsDefinitions" />
 
 
 </DataObjectSupport>

@@ -44,17 +44,17 @@ internal class DslIndexes : DslSchema
 					idx.rdb$relation_name AS TABLE_NAME,
 					idx.rdb$index_name AS INDEX_NAME,
 					idx.rdb$foreign_key AS FOREIGN_KEY,
-					idx.rdb$index_inactive AS IS_INACTIVE,
+					(CASE WHEN idx.rdb$index_inactive <> 1 THEN false ELSE true END) AS IS_INACTIVE,
 					idx.rdb$unique_flag AS UNIQUE_FLAG,
 				    (SELECT COUNT(*) FROM rdb$relation_constraints rel
 				    WHERE rel.rdb$constraint_type = 'PRIMARY KEY' AND rel.rdb$index_name = idx.rdb$index_name AND rel.rdb$relation_name = idx.rdb$relation_name) as PRIMARY_KEY,
 					(SELECT COUNT(*) FROM rdb$relation_constraints rel
 					WHERE rel.rdb$constraint_type = 'UNIQUE' AND rel.rdb$index_name = idx.rdb$index_name AND rel.rdb$relation_name = idx.rdb$relation_name) as UNIQUE_KEY,
 					(CASE WHEN idx.rdb$system_flag <> 1 THEN
-						 false
+						 0
 					ELSE
-						 true
-					END) AS IS_SYSTEM_OBJECT,
+						 1
+					END) AS IS_SYSTEM_FLAG,
 					idx.rdb$index_type AS INDEX_TYPE,
 					idx.rdb$description AS DESCRIPTION,
 					(CASE WHEN idx.rdb$expression_source IS NULL AND idx.rdb$expression_blr IS NOT NULL THEN
@@ -123,8 +123,6 @@ internal class DslIndexes : DslSchema
 			row["IS_UNIQUE"] = !(row["UNIQUE_FLAG"] == DBNull.Value || Convert.ToInt32(row["UNIQUE_FLAG"], CultureInfo.InvariantCulture) == 0);
 
 			row["IS_PRIMARY"] = !(row["PRIMARY_KEY"] == DBNull.Value || Convert.ToInt32(row["PRIMARY_KEY"], CultureInfo.InvariantCulture) == 0);
-
-			row["IS_INACTIVE"] = !(row["IS_INACTIVE"] == DBNull.Value || Convert.ToInt32(row["IS_INACTIVE"], CultureInfo.InvariantCulture) == 0);
 
 			row["IS_FOREIGNKEY"] = (row["FOREIGN_KEY"] != DBNull.Value);
 		}

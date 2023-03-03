@@ -26,17 +26,33 @@
 	-->
 
 	<!-- The identifier and property lists Columns -->
+	<!-- Include column name in property list but not identifier list -->
 	<Define name="TplMappedIdentifierListTableColumn" >
 		<MappedIdentifierPart name="Catalog" underlyingMember="TABLE_CATALOG" />
 		<MappedIdentifierPart name="Schema" underlyingMember="TABLE_SCHEMA" />
 		<MappedIdentifierPart name="Table" underlyingMember="TABLE_NAME" />
 	</Define>
 
+	<Define name="TplMappedPropertyListTableColumn" >
+		<MappedProperty name="Table" isIdentifierPart="true" />
+		<MappedProperty name="Name" isIdentifierPart="true" />
+		<MappedProperty name="Trigger" underlyingMember="TRIGGER_NAME" />
+	</Define>
+
+
+
 	<Define name="TplMappedIdentifierListViewColumn" >
 		<MappedIdentifierPart name="Catalog" underlyingMember="VIEW_CATALOG" />
 		<MappedIdentifierPart name="Schema" underlyingMember="VIEW_SCHEMA" />
 		<MappedIdentifierPart name="View" underlyingMember="VIEW_NAME" />
 	</Define>
+	<Define name="TplMappedPropertyListViewColumn" >
+		<MappedProperty name="View" isIdentifierPart="true" />
+		<MappedProperty name="Name" isIdentifierPart="true" />
+		<MappedProperty name="Trigger" underlyingMember="TRIGGER_NAME" />
+	</Define>
+
+
 
 	<Define name="TplMappedIdentifierListIndexColumn" >
 		<MappedIdentifierPart name="Catalog" underlyingMember="TABLE_CATALOG" />
@@ -44,7 +60,15 @@
 		<MappedIdentifierPart name="Table" underlyingMember="TABLE_NAME" />
 		<MappedIdentifierPart name="Index" underlyingMember="INDEX_NAME" />
 	</Define>
-	
+
+	<Define name="TplMappedPropertyListIndexColumn" >
+		<MappedProperty name="Table" isIdentifierPart="true" />
+		<MappedProperty name="Index" isIdentifierPart="true" />
+		<MappedProperty name="Name" isIdentifierPart="true" />
+		<MappedProperty name="Trigger" underlyingMember="TRIGGER_NAME" />
+	</Define>
+
+
 
 	<Define name="TplMappedIdentifierListForeignKeyColumn" >
 		<MappedIdentifierPart name="Catalog" underlyingMember="CONSTRAINT_CATALOG" />
@@ -53,36 +77,10 @@
 		<MappedIdentifierPart name="ForeignKey" underlyingMember="CONSTRAINT_NAME" />
 	</Define>
 
-	<Define name="TplMappedIdentifierListTriggerColumn" >
-		<MappedIdentifierPart name="Catalog" underlyingMember="TABLE_CATALOG" />
-		<MappedIdentifierPart name="Schema" underlyingMember="TABLE_SCHEMA" />
-		<MappedIdentifierPart name="Trigger" underlyingMember="TRIGGER_NAME" />
-	</Define>
-
-
-	<Define name="TplMappedPropertyListTableColumn" >
-		<MappedProperty name="Table" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
-		<MappedProperty name="Name" underlyingMember="COLUMN_NAME" isIdentifierPart="true" />
-		<MappedProperty name="Trigger" underlyingMember="TRIGGER_NAME" />
-	</Define>
-
-	<Define name="TplMappedPropertyListViewColumn" >
-		<MappedProperty name="View" underlyingMember="VIEW_NAME" isIdentifierPart="true" />
-		<MappedProperty name="Name" underlyingMember="COLUMN_NAME" isIdentifierPart="true" />
-		<MappedProperty name="Trigger" underlyingMember="TRIGGER_NAME" />
-	</Define>
-
-	<Define name="TplMappedPropertyListIndexColumn" >
-		<MappedProperty name="Table" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
-		<MappedProperty name="Index" underlyingMember="INDEX_NAME" isIdentifierPart="true" />
-		<MappedProperty name="Name" underlyingMember="COLUMN_NAME" isIdentifierPart="true" />
-		<MappedProperty name="Trigger" underlyingMember="TRIGGER_NAME" />
-	</Define>
-
 	<Define name="TplMappedPropertyListForeignKeyColumn" >
-		<MappedProperty name="Table" underlyingMember="TABLE_NAME" isIdentifierPart="true" />
-		<MappedProperty name="ForeignKey" underlyingMember="CONSTRAINT_NAME" isIdentifierPart="true" />
-		<MappedProperty name="Name" underlyingMember="COLUMN_NAME" isIdentifierPart="true" />
+		<MappedProperty name="Table" isIdentifierPart="true" />
+		<MappedProperty name="ForeignKey" isIdentifierPart="true" />
+		<MappedProperty name="Name" isIdentifierPart="true" />
 		<MappedProperty name="Trigger" underlyingMember="TRIGGER_NAME" />
 		<MappedProperty name="ReferencedTableCatalog" underlyingMember="REFERENCED_TABLE_CATALOG" />
 		<MappedProperty name="ReferencedTableSchema" underlyingMember="REFERENCED_TABLE_SCHEMA" />
@@ -91,11 +89,33 @@
 	</Define>
 
 
-	<Define name="TplMappedPropertyListTriggerColumn" >
-		<MappedProperty name="Trigger" underlyingMember="TRIGGER_NAME"  isIdentifierPart="true" />
-		<MappedProperty name="Name" underlyingMember="COLUMN_NAME" isIdentifierPart="true" />
-		<MappedProperty name="Table" underlyingMember="TABLE_NAME" />
+	
+	<Define name="TplMappedIdentifierListTableUniqueKeyColumn" >
+		<MappedIdentifierPart name="Catalog" underlyingMember="TABLE_CATALOG" />
+		<MappedIdentifierPart name="Schema" underlyingMember="TABLE_SCHEMA" />
+		<MappedIdentifierPart name="Table" underlyingMember="TABLE_NAME" />
+		<MappedIdentifierPart name="TableUniqueKey" underlyingMember="INDEX_NAME" />
 	</Define>
 
+	<Define name="TplMappedPropertyListTableUniqueKeyColumn" >
+		<MappedProperty name="Table" isIdentifierPart="true" />
+		<MappedProperty name="TableUniqueKey" isIdentifierPart="true" />
+		<MappedProperty name="Name" isIdentifierPart="true" />
+		<MappedProperty name="Trigger" underlyingMember="TRIGGER_NAME" />
+	</Define>
+
+
+	
+	<Define name="TplMappedIdentifierListTriggerColumn" >
+		<MappedIdentifierPart name="Catalog" underlyingMember="TABLE_CATALOG" />
+		<MappedIdentifierPart name="Schema" underlyingMember="TABLE_SCHEMA" />
+		<MappedIdentifierPart name="Trigger" underlyingMember="TRIGGER_NAME" />
+	</Define>
+
+	<Define name="TplMappedPropertyListTriggerColumn" >
+		<MappedProperty name="Trigger" isIdentifierPart="true" />
+		<MappedProperty name="Name" isIdentifierPart="true" />
+		<MappedProperty name="Table" underlyingMember="TABLE_NAME" />
+	</Define>
 
 </DataObjectSupport>

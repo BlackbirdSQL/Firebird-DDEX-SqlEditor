@@ -83,21 +83,32 @@ internal class TObjectSupport : DataObjectSupport, IVsDataSupportImportResolver
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Opens a stream of bytes representing the XML content for a specified culture.
+	/// Opens a stream of bytes representing the XML content TObnjectSupportfor a specified culture.
 	/// </summary>
 	/// <param name="culture">
 	/// The geographical culture (as System.Globalization.CultureInfo object) for which
 	/// to retrieve the Stream object instance.</param>
 	/// <returns>
-	/// Returns a System.IO.Stream object for the specified culture.
+	/// Returns the extrapolated stream for TObjectSupport.xml.
 	/// </returns>
+	/// <remarks>
+	/// For whatever reason Microsoft.VisualStudio.Data.Package.DataObjectSupportBuilder
+	/// is failing to utilize our implementation of <see cref="IVsDataSupportImportResolver"/>,
+	/// even though decompiling shows it is utilized in the builder and that
+	/// <see cref="ImportSupportStream"/> is called, yet it never is.
+	/// Works fine in <see cref="TViewSupport"/>.
+	/// Microsoft.VisualStudio.Data.Package.DataViewSupportBuilder uses the exact same code in
+	/// the ancestor Microsoft.VisualStudio.Data.Package.DataSupportBuilder and it works for
+	/// <see cref="TViewSupport"/>, so yeah... dunno.
+	/// It's a glitch in DataObjectSupportBuilder.
+	/// </remarks>
 	// ---------------------------------------------------------------------------------
 	protected override Stream OpenSupportStream(CultureInfo culture)
 	{
 		// Diag.Stack();
 		Stream stream = base.OpenSupportStream(culture);
 
-		return XmlParser.ExtrapolateXmlImports(stream, this);
+		return XmlParser.ExtrapolateXmlImports(GetType().Name, stream, this);
 	}
 
 
@@ -122,35 +133,15 @@ internal class TObjectSupport : DataObjectSupport, IVsDataSupportImportResolver
 			throw ex;
 		}
 
-		int suffixLen = -1;
-
-		if (name.EndsWith("Definitions"))
-			suffixLen = 11;
-		else if (name.EndsWith("Node"))
-			suffixLen = 0;
-
-
-		if (suffixLen == -1)
+		if (!name.EndsWith("Definitions"))
 		{
 			Diag.Dug(true, "Import resource not found: " + name);
 			return null;
 		}
 
-		Type type = GetType();
-		string resource = name[..^suffixLen];
 
-		// English
-		if (suffixLen != 0)
-		{
-			if (resource.EndsWith("y"))
-				resource = type.FullName + resource[..^1] + "ies.xml";
-			else
-				resource = type.FullName + resource + "s.xml";
-		}
-		else
-		{
-			resource = type.FullName + resource + ".xml";
-		}
+		Type type = GetType();
+		string resource = type.FullName + name[..^11] + ".xml";
 
 		// Diag.Trace("Importing resource: " + resource);
 

@@ -42,10 +42,10 @@ internal class DslProcedures : DslSchema
 					rdb$procedure_inputs AS INPUTS,
 					rdb$procedure_outputs AS OUTPUTS,
 					(CASE WHEN rdb$system_flag <> 1 THEN
-						 false
+						 0
 					ELSE
-						 true
-					END) AS IS_SYSTEM_OBJECT,
+						 1
+					END) AS IS_SYSTEM_FLAG,
 					(CASE WHEN rdb$procedure_source IS NULL AND rdb$procedure_blr IS NOT NULL THEN
 						 cast(rdb$procedure_blr as blob sub_type 1)
 					ELSE

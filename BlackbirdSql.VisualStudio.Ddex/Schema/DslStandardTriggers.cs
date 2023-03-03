@@ -37,6 +37,6 @@ internal class DslStandardTriggers : DslTriggers
 	public DslStandardTriggers() : base()
 	{
 		_systemFlag = 0;
-		_autoIncrement = 0;
+		_identityFlag = 0;
 	}
 }

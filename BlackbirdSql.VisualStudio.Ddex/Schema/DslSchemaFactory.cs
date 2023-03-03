@@ -68,6 +68,7 @@ internal sealed class DslSchemaFactory
 		{
 			case "Columns":
 			case "ForeignKeyColumns":
+			case "ForeignKeys":
 			case "FunctionArguments":
 			case "Functions":
 			case "Generators":
@@ -82,9 +83,9 @@ internal sealed class DslSchemaFactory
 			case "TriggerColumns":
 				schemaCollection = "Columns";
 				break;
-			case "SystemTriggers":
-			case "AutoIncrementTriggers":
+			case "IdentityTriggers":
 			case "StandardTriggers":
+			case "SystemTriggers":
 				schemaCollection = "Triggers";
 				break;
 			default:
@@ -176,6 +177,7 @@ internal sealed class DslSchemaFactory
 		{
 			"COLUMNS" => new DslColumns(),
 			"FOREIGNKEYCOLUMNS" => new DslForeignKeyColumns(),
+			"FOREIGNKEYS" => new DslForeignKeys(),
 			"FUNCTIONARGUMENTS" => new DslFunctionArguments(),
 			"FUNCTIONS" => new DslFunctions(),
 			"GENERATORS" => new DslGenerators(),
@@ -184,9 +186,9 @@ internal sealed class DslSchemaFactory
 			"PROCEDURES" => new DslProcedures(),
 			"TABLES" => new DslTables(),
 			"TRIGGERS" => new DslTriggers(),
-			"SYSTEMTRIGGERS" => new DslSystemTriggers(),
-			"AUTOINCREMENTTRIGGERS" => new DslAutoIncrementTriggers(),
+			"IDENTITYTRIGGERS" => new DslIdentityTriggers(),
 			"STANDARDTRIGGERS" => new DslStandardTriggers(),
+			"SYSTEMTRIGGERS" => new DslSystemTriggers(),
 			"TRIGGERCOLUMNS" => new DslTriggerColumns(),
 			"VIEWCOLUMNS" => new DslViewColumns(),
 			_ => ((Func<DslSchema>)(() =>
@@ -207,6 +209,7 @@ internal sealed class DslSchemaFactory
 		{
 			"COLUMNS" => new DslColumns(),
 			"FOREIGNKEYCOLUMNS" => new DslForeignKeyColumns(),
+			"FOREIGNKEYS" => new DslForeignKeys(),
 			"FUNCTIONARGUMENTS" => new DslFunctionArguments(),
 			"FUNCTIONS" => new DslFunctions(),
 			"GENERATORS" => new DslGenerators(),
@@ -215,9 +218,9 @@ internal sealed class DslSchemaFactory
 			"PROCEDURES" => new DslProcedures(),
 			"TABLES" => new DslTables(),
 			"TRIGGERS" => new DslTriggers(),
-			"SYSTEMTRIGGERS" => new DslSystemTriggers(),
-			"AUTOINCREMENTTRIGGERS" => new DslAutoIncrementTriggers(),
+			"IDENTITYTRIGGERS" => new DslIdentityTriggers(),
 			"STANDARDTRIGGERS" => new DslStandardTriggers(),
+			"SYSTEMTRIGGERS" => new DslSystemTriggers(),
 			"TRIGGERCOLUMNS" => new DslTriggerColumns(),
 			"VIEWCOLUMNS" => new DslViewColumns(),
 			_ => ((Func<DslSchema>)(() =>

@@ -17,13 +17,13 @@ internal class DslTriggerColumns : DslColumns
 		_ParentType = "Trigger";
 		_ObjectType = "TriggerColumn";
 		_ParentRestriction = "dep.rdb$dependent_name";
-		_OrderingAlias = "TRIGGER_NAME";
-		_FromClause = @"FROM rdb$dependencies dep
+		_OrderingField = "dep.rdb$dependent_name";
+		_FromClause = @"rdb$dependencies dep
                 INNER JOIN rdb$triggers trg
                     ON trg.rdb$trigger_name = dep.rdb$dependent_name AND trg.rdb$relation_name = dep.rdb$depended_on_name
 				INNER JOIN rdb$relation_fields r
 					ON r.rdb$relation_name = dep.rdb$depended_on_name AND r.rdb$field_name = dep.rdb$field_name";
-		_ColumnsClause = "dep.rdb$dependent_name AS TRIGGER_NAME";
+		_RequiredColumns["TRIGGER_NAME"] = "dep.rdb$dependent_name";
 		_ConditionClause = "dep.rdb$field_name IS NOT NULL";
 	}
 
@@ -72,7 +72,7 @@ internal class DslTriggerColumns : DslColumns
 					END) AS EXPRESSION,
 					fld.rdb$dimensions AS COLUMN_ARRAY,
 					coalesce(fld.rdb$null_flag, rfr.rdb$null_flag) AS COLUMN_NULLABLE,
-				    0 AS IS_READONLY,
+				    0 AS READONLY_FLAG,
 					fld.rdb$field_type AS FIELD_TYPE,
 					null AS CHARACTER_SET_CATALOG,
 					null AS CHARACTER_SET_SCHEMA,
@@ -91,7 +91,7 @@ internal class DslTriggerColumns : DslColumns
 						true
 					ELSE
 						false
-					END) AS IS_AUTOINCREMENT,
+					END) AS IS_IDENTITY,
 					(SELECT COUNT(*)
                         FROM rdb$dependencies fd
                         WHERE fd.rdb$field_name IS NOT NULL AND fd.rdb$dependent_name = dep.rdb$dependent_name AND fd.rdb$depended_on_name = dep.rdb$depended_on_name

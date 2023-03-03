@@ -3,6 +3,7 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 //
 
+using BlackbirdSql.Common;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
@@ -31,9 +32,9 @@ internal static class DslObjectTypes
 	public const string TableForeignKey = "TableForeignKey";
 	public const string TableForeignKeyColumn = "TableForeignKeyColumn";
 	public const string Trigger = "Trigger";
-	public const string SystemTrigger = "SystemTrigger";
-	public const string AutoIncrementTrigger = "AutoIncrementTrigger";
+	public const string IdentityTrigger = "IdentityTrigger";
 	public const string StandardTrigger = "StandardTrigger";
+	public const string SystemTrigger = "SystemTrigger";
 	public const string TriggerColumn = "TriggerColumn";
 	public const string View = "View";
 	public const string ViewColumn = "ViewColumn";
@@ -69,9 +70,9 @@ internal static class DslObjectTypes
 			case DslObjectTypes.TableIndex:
 			case DslObjectTypes.TableUniqueKey:
 			case DslObjectTypes.TableForeignKey:
-			case DslObjectTypes.SystemTrigger:
-			case DslObjectTypes.AutoIncrementTrigger:
+			case DslObjectTypes.IdentityTrigger:
 			case DslObjectTypes.StandardTrigger:
+			case DslObjectTypes.SystemTrigger:
 			case DslObjectTypes.TriggerColumn:
 			case DslObjectTypes.ViewColumn:
 			case DslObjectTypes.StoredProcedureParameter:
@@ -85,6 +86,7 @@ internal static class DslObjectTypes
 				return 5;
 
 			default:
+				Diag.Dug(true, "DslObjectType not found: " + typeName);
 				return -1;
 		}
 	}

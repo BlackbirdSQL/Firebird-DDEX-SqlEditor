@@ -40,10 +40,10 @@ internal class DslFunctions : DslSchema
 					null AS FUNCTION_SCHEMA,
 					rdb$function_name AS FUNCTION_NAME,
 					(CASE WHEN rdb$system_flag <> 1 THEN
-						 false
+						 0
 					ELSE
-						 true
-					END) AS IS_SYSTEM_OBJECT,
+						 1
+					END) AS IS_SYSTEM_FLAG,
 					rdb$function_type AS FUNCTION_TYPE,
 					rdb$query_name AS QUERY_NAME,
 					rdb$module_name AS FUNCTION_MODULE_NAME,

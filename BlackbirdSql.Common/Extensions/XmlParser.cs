@@ -39,22 +39,15 @@ internal static class XmlParser
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Single-level extrapolation of an xml stream with imports into a single stream.
+	/// Also, in DEBUG and if <see cref="Diag.EnableWriteLog"/> is set, writes a copy of the
+	/// extrapolation to <paramref name="xmlName"/>.Extapolated.xml in the
+	/// <see cref="Diag.LogFile"/> folder.
 	/// </summary>
 	/// <returns>
 	/// Returns a System.IO.Stream object of the extrapolated xml.
 	/// </returns>
-	/// <remarks>
-	/// For whatever reason <see cref="Microsoft.VisualStudio.Data.Package.DataObjectSupportBuilder"/>
-	/// is failing to utilize our implementation of <see cref="IVsDataSupportImportResolver"/> even though
-	/// decompiling shows it is utilized in the builder and that <see cref="ImportSupportStream"/> is
-	/// called, yet it never is. Works fine in <see cref="TViewSupport"/>.
-	/// <see cref="Microsoft.VisualStudio.Data.Package.DataViewSupportBuilder"/> uses the exact same code in the ancestor
-	/// <see cref="Microsoft.VisualStudio.Data.Package.DataSupportBuilder"/> and it works for <see cref="TViewSupport"/>
-	/// so yeah... dunno.
-	/// It's a glitch in DataObjectSupportBuilder.
-	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public static Stream ExtrapolateXmlImports(Stream stream, IVsDataSupportImportResolver resolver)
+	public static Stream ExtrapolateXmlImports(string xmlName, Stream stream, IVsDataSupportImportResolver resolver)
 	{
 		/*
 		 * DataSupportBuilder recursively enumerates imported nodes and simply inserts them into it's reference dict.
@@ -149,6 +142,13 @@ internal static class XmlParser
 
 		if (updated)
 		{
+#if DEBUG
+			if (Diag.EnableWriteLog)
+			{
+				FileInfo info = new FileInfo(Diag.LogFile);
+				xmlDoc.Save(info.DirectoryName + "\\" + xmlName + ".Extrapolated.xml");
+			}
+#endif
 			MemoryStream xmlStream = new MemoryStream();
 
 			xmlDoc.Save(xmlStream);

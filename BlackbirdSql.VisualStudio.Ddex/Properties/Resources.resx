@@ -165,4 +165,7 @@
   <data name="Provider_ShortDisplayName" xml:space="preserve">
     <value>BlackbirdSql FirebirdClient Provider</value>
   </data>
+  <data name="UnknownSequence" xml:space="preserve">
+    <value>Unidentifiable</value>
+  </data>
 </root>

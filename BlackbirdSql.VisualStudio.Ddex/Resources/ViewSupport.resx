@@ -288,9 +288,6 @@
   <data name="Property_Name_UniqueKey_ConstraintType" xml:space="preserve">
     <value>Constraint Type</value>
   </data>
-  <data name="Category_TableProperties" xml:space="preserve">
-    <value>Structure</value>
-  </data>
   <data name="Property_Name_IndexColumn_Collation" xml:space="preserve">
     <value>Sort</value>
   </data>
@@ -309,8 +306,8 @@
   <data name="Type_IndexColumn" xml:space="preserve">
     <value>Index Column</value>
   </data>
-  <data name="Property_Name_Type" xml:space="preserve">
-    <value>Type</value>
+  <data name="Property_Name_ObjectSystemType" xml:space="preserve">
+    <value>System Type</value>
   </data>
   <data name="Property_Desc_Parameter_Direction" xml:space="preserve">
     <value>The direction of a parameter's data.</value>
@@ -345,8 +342,8 @@
   <data name="Identifier_Desc_Catalog" xml:space="preserve">
     <value>The catalog that owns this database object.</value>
   </data>
-  <data name="Category_ReferencedColumn" xml:space="preserve">
-    <value>Referenced Column</value>
+  <data name="Category_ReferencedObject" xml:space="preserve">
+    <value>Referenced Object</value>
   </data>
   <data name="Property_Desc_Parameter_FrameworkDataType" xml:space="preserve">
     <value>Parameter's data type in OleDbParameter.</value>
@@ -377,9 +374,6 @@
   </data>
   <data name="Property_Desc_Parameter_Precision" xml:space="preserve">
     <value>If the parameter's data type is of a numeric data type other than VARNUMERIC, this is the maximum precision of the parameter.</value>
-  </data>
-  <data name="Category_ReferencedTable" xml:space="preserve">
-    <value>Referenced Table</value>
   </data>
   <data name="Type_StoredProcedure" xml:space="preserve">
     <value>Stored Procedure</value>
@@ -612,17 +606,17 @@
   <data name="Node_Name_Triggers" xml:space="preserve">
     <value>Triggers</value>
   </data>
-  <data name="Property_Desc_Trigger_Sequence" xml:space="preserve">
+  <data name="Property_Desc_Trigger_Priority" xml:space="preserve">
     <value>Priority sequence this trigger is fired on. Triggers are fired in ascending order of magnitude.</value>
   </data>
   <data name="Property_Desc_Trigger_Type" xml:space="preserve">
     <value>The event the trigger fires on</value>
   </data>
-  <data name="Property_Name_Trigger_Sequence" xml:space="preserve">
+  <data name="Property_Name_Trigger_Priority" xml:space="preserve">
     <value>Priority Sequence</value>
   </data>
   <data name="Property_Name_Trigger_Type" xml:space="preserve">
-    <value>Trigger Type</value>
+    <value>Trigger Event Type</value>
   </data>
   <data name="Type_Trigger" xml:space="preserve">
     <value>Trigger</value>
@@ -630,32 +624,32 @@
   <data name="Property_Desc_Index_IsForeignKey" xml:space="preserve">
     <value>The index is a foreign key constraint</value>
   </data>
-  <data name="Property_Desc_Trigger_Active" xml:space="preserve">
-    <value>Is trigger active</value>
+  <data name="Property_Desc_Enabled" xml:space="preserve">
+    <value>Is object enabled / active?</value>
   </data>
   <data name="Property_Name_Index_IsForeignKey" xml:space="preserve">
     <value>Is Foreign Key</value>
   </data>
-  <data name="Property_Name_Trigger_Active" xml:space="preserve">
+  <data name="Property_Name_Enabled" xml:space="preserve">
     <value>Enabled</value>
   </data>
-  <data name="Property_Desc_Column_AutoIncrement" xml:space="preserve">
-    <value>The name of the auto increment generator if it exists</value>
+  <data name="Property_Desc_Column_IdentityTrigger" xml:space="preserve">
+    <value>The name of the auto increment identity trigger if it exists</value>
   </data>
-  <data name="Property_Desc_Column_IsAutoIncrement" xml:space="preserve">
-    <value>Is this column auto incremented?</value>
+  <data name="Property_Desc_Column_IsIdentity" xml:space="preserve">
+    <value>Is this an identity column (auto incremented)?</value>
   </data>
-  <data name="Property_Name_Column_AutoIncrement" xml:space="preserve">
-    <value>AutoIncrement Generator</value>
+  <data name="Property_Name_Column_IdentityTrigger" xml:space="preserve">
+    <value>AutoIncrement Trigger</value>
   </data>
-  <data name="Property_Name_Column_IsAutoIncrement" xml:space="preserve">
-    <value>Is AutoIncrement</value>
+  <data name="Property_Name_Column_IsIdentity" xml:space="preserve">
+    <value>Is Identity</value>
   </data>
-  <data name="Property_Desc_Trigger_IsAutoIncrement" xml:space="preserve">
-    <value>Is the trigger a filed auto-increment generator?</value>
+  <data name="Property_Desc_Trigger_IsIdentity" xml:space="preserve">
+    <value>Is the trigger an auto-increment generator?</value>
   </data>
-  <data name="Property_Name_Trigger_IsAutoIncrement" xml:space="preserve">
-    <value>Auto-increment Generator</value>
+  <data name="Property_Name_Trigger_IsIdentity" xml:space="preserve">
+    <value>Is Auto-increment trigger</value>
   </data>
   <data name="Property_Desc_Trigger_Dependencies" xml:space="preserve">
     <value>Columns driving this trigger</value>
@@ -711,7 +705,7 @@
   <data name="Node_Name_SystemSystemTriggers" xml:space="preserve">
     <value>System Triggers</value>
   </data>
-  <data name="Node_Name_UserAutoIncrementTriggers" xml:space="preserve">
+  <data name="Node_Name_UserIdentityTriggers" xml:space="preserve">
     <value>Auto-increment Triggers</value>
   </data>
   <data name="Node_Name_UserStandardTriggers" xml:space="preserve">
@@ -752,5 +746,62 @@
   </data>
   <data name="Property_Name_Index_IsComputed" xml:space="preserve">
     <value>Computed</value>
+  </data>
+  <data name="Property_Desc_Trigger_SequenceGenerator" xml:space="preserve">
+    <value>The name of the sequence generator if this trigger is for an identity (auto-increment) field</value>
+  </data>
+  <data name="Property_Name_Trigger_SequenceGenerator" xml:space="preserve">
+    <value>Sequence Generator</value>
+  </data>
+  <data name="Property_Desc_Trigger_DependencyCount" xml:space="preserve">
+    <value>Number of dependency columns for this trigger</value>
+  </data>
+  <data name="Property_Name_Trigger_DependencyCount" xml:space="preserve">
+    <value>Column Dependency Count</value>
+  </data>
+  <data name="Property_Desc_Column_Domain" xml:space="preserve">
+    <value>The data type domain this column belong to, if defined</value>
+  </data>
+  <data name="Property_Name_Column_Domain" xml:space="preserve">
+    <value>Domain</value>
+  </data>
+  <data name="Category_Constraints" xml:space="preserve">
+    <value>Constraints</value>
+  </data>
+  <data name="Category_Initialization" xml:space="preserve">
+    <value>Initialization</value>
+  </data>
+  <data name="Property_Desc_Column_IdentityCurrent" xml:space="preserve">
+    <value>The current value if the field is an auto-increment identity field. The next value will be the current value plus the increment. If the current value exists but cannot be obtained -1 is returned.</value>
+  </data>
+  <data name="Property_Desc_Column_IdentityIncrement" xml:space="preserve">
+    <value>The increment if the field is an auto-increment identity field. If the increment exists but cannot be obtained -1 is returned.</value>
+  </data>
+  <data name="Property_Desc_Column_IdentitySeed" xml:space="preserve">
+    <value>The starting value if the field is an identity field. If the seed exists but cannot be obtained -1 is returned.</value>
+  </data>
+  <data name="Property_Desc_Column_SequenceGenerator" xml:space="preserve">
+    <value>The name of the sequence generator if this field is an auto-increment identity column.</value>
+  </data>
+  <data name="Property_Name_Column_IdentityCurrent" xml:space="preserve">
+    <value>Identity Current</value>
+  </data>
+  <data name="Property_Name_Column_IdentityIncrement" xml:space="preserve">
+    <value>Identity Increment</value>
+  </data>
+  <data name="Property_Name_Column_IdentitySeed" xml:space="preserve">
+    <value>Identity Seed</value>
+  </data>
+  <data name="Property_Name_Column_SequenceGenerator" xml:space="preserve">
+    <value>Sequence Generator</value>
+  </data>
+  <data name="Property_Desc_ObjectSystemType" xml:space="preserve">
+    <value>Identifies if this object is an internal system object or user defined</value>
+  </data>
+  <data name="Property_Desc_Disabled" xml:space="preserve">
+    <value>Is object disabled / inactive?</value>
+  </data>
+  <data name="Property_Name_Disabled" xml:space="preserve">
+    <value>Disabled</value>
   </data>
 </root>
