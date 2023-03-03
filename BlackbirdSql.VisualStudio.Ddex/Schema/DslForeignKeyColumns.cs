@@ -16,7 +16,6 @@
 //$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 
-using System.Collections.Generic;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
@@ -53,6 +52,11 @@ internal class DslForeignKeyColumns : DslColumns
 		_AdditionalColumns.Add("REFERENCED_TABLE_NAME", new("refidx.rdb$relation_name", "varchar(50)"));
 		_AdditionalColumns.Add("REFERENCED_INDEX_NAME", new("refidx.rdb$index_name", "varchar(50)"));
 		_AdditionalColumns.Add("REFERENCED_COLUMN_NAME", new("refidxseg.rdb$field_name", "varchar(50)"));
+		_AdditionalColumns.Add("UPDATE_ACTION",
+			new("CASE(ref.rdb$update_rule) WHEN 'CASCADE' THEN 1 WHEN 'SET NULL' THEN 2 WHEN 'SET_DEFAULT' THEN 3 ELSE 0 END", "int"));
+		_AdditionalColumns.Add("DELETE_ACTION",
+			new("CASE(ref.rdb$delete_rule) WHEN 'CASCADE' THEN 1 WHEN 'SET NULL' THEN 2 WHEN 'SET_DEFAULT' THEN 3 ELSE 0 END", "int"));
+
 	}
 
 

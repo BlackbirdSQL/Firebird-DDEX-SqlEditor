@@ -473,6 +473,7 @@ END",
 					returnClause, _FromClause, where.ToString(), _OrdinalPosition, identityType, _ParentType,
 					columnsClause, generatorSelector, _OrderingField, intoClause, unknownSequence);
 
+
 		// Diag.Trace(sql.ToString());
 
 		return sql;

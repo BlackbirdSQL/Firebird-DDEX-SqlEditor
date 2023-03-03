@@ -355,6 +355,18 @@
 			<Category resource="Category_Initialization" />
 			<Description resource="Property_Desc_Column_IdentityTrigger" />
 		</Property>
+		<Property name="UPDATE_ACTION">
+			<DisplayName resource="Property_Name_ForeignKey_UpdateRule" />
+			<Category resource="Category_Constraints" />
+			<Description resource="Property_Desc_ForeignKey_UpdateRule" />
+			<StandardValuesRef name="TplStandardValuesForeignKeyRule" />
+		</Property>
+		<Property name="DELETE_ACTION">
+			<DisplayName resource="Property_Name_ForeignKey_DeleteRule" />
+			<Category resource="Category_Constraints" />
+			<Description resource="Property_Desc_ForeignKey_DeleteRule" />
+			<StandardValuesRef name="TplStandardValuesForeignKeyRule" />
+		</Property>
 	</Define>
 
 
@@ -714,13 +726,13 @@
 											<Category resource="Category_ReferencedObject" />
 											<Description resource="Property_Desc_ForeignKey_ReferencedTable" />
 										</Property>
-										<Property name="UPDATE_RULE">
+										<Property name="UPDATE_ACTION">
 											<DisplayName resource="Property_Name_ForeignKey_UpdateRule" />
 											<Category resource="Category_Constraints" />
 											<Description resource="Property_Desc_ForeignKey_UpdateRule" />
 											<StandardValuesRef name="TplStandardValuesForeignKeyRule" />
 										</Property>
-										<Property name="DELETE_RULE">
+										<Property name="DELETE_ACTION">
 											<DisplayName resource="Property_Name_ForeignKey_DeleteRule" />
 											<Category resource="Category_Constraints" />
 											<Description resource="Property_Desc_ForeignKey_DeleteRule" />

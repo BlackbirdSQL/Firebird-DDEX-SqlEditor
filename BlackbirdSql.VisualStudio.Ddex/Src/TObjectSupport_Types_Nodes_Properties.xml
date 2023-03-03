@@ -123,6 +123,8 @@
 		<Property name="REFERENCED_TABLE_NAME" type="System.String" />
 		<Property name="REFERENCED_INDEX_NAME" type="System.String" />
 		<Property name="REFERENCED_COLUMN_NAME" type="System.String" />
+		<Property name="UPDATE_ACTION"  type="System.Int32" />
+		<Property name="DELETE_ACTION" type="System.Int32" />
 	</Define>
 
 

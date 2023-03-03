@@ -1,71 +1,40 @@
-SELECT
-					null AS CONSTRAINT_CATALOG,
-					null AS CONSTRAINT_SCHEMA,
-					co.rdb$constraint_name AS CONSTRAINT_NAME,
-					null AS TABLE_CATALOG,
-					null AS TABLE_SCHEMA,
-					co.rdb$relation_name AS TABLE_NAME,
-					coidxseg.rdb$field_name AS COLUMN_NAME,
-					null as REFERENCED_TABLE_CATALOG,
-					null as REFERENCED_TABLE_SCHEMA,
-					refidx.rdb$relation_name as REFERENCED_TABLE_NAME,
-					refidxseg.rdb$field_name AS REFERENCED_COLUMN_NAME,
-					
-					
-					dep.rdb$dependent_name AS TRIGGER_NAME,
-				    null AS COLUMN_DATA_TYPE,
-				    fld.rdb$field_sub_type AS COLUMN_SUB_TYPE,
-					CAST(fld.rdb$field_length AS integer) AS COLUMN_SIZE,
-					CAST(fld.rdb$field_precision AS integer) AS NUMERIC_PRECISION,
-					CAST(fld.rdb$field_scale AS integer) AS NUMERIC_SCALE,
-					CAST(fld.rdb$character_length AS integer) AS CHARACTER_MAX_LENGTH,
-					CAST(fld.rdb$field_length AS integer) AS CHARACTER_OCTET_LENGTH,
-					coidxseg.rdb$field_position as ORDINAL_POSITION,
-					null AS DOMAIN_CATALOG,
-					null AS DOMAIN_SCHEMA,
-					rfr.rdb$field_source AS DOMAIN_NAME,
-					null AS SYSTEM_DATA_TYPE,
-					rfr.rdb$default_source AS COLUMN_DEFAULT,
-					(CASE WHEN fld.rdb$computed_source IS NULL AND fld.rdb$computed_blr IS NOT NULL THEN
-						 cast(fld.rdb$computed_blr as blob sub_type 1)
-					ELSE
-						 fld.rdb$computed_source
-					END) AS EXPRESSION,
-					(CASE WHEN fld.rdb$computed_source IS NULL AND fld.rdb$computed_blr IS NULL THEN
-						 FALSE
-					ELSE
-						 TRUE
-					END) AS IS_COMPUTED,
-					fld.rdb$dimensions AS COLUMN_ARRAY,
-					coalesce(fld.rdb$null_flag, rfr.rdb$null_flag) AS COLUMN_NULLABLE,
-				    0 AS READONLY_FLAG,
-					fld.rdb$field_type AS FIELD_TYPE,
-					null AS CHARACTER_SET_CATALOG,
-					null AS CHARACTER_SET_SCHEMA,
-					cs.rdb$character_set_name AS CHARACTER_SET_NAME,
-					null AS COLLATION_CATALOG,
-					null AS COLLATION_SCHEMA,
-					coll.rdb$collation_name AS COLLATION_NAME,
-					rfr.rdb$description AS DESCRIPTION,
-					0 AS IDENTITY_TYPE,
-					(CASE WHEN seg.rdb$field_name IS NULL THEN
-						FALSE
-					ELSE
-						TRUE
-					END) AS IN_PRIMARYKEY,
-					(CASE WHEN dep.rdb$dependent_name IS NOT NULL AND trg.rdb$trigger_name IS NOT NULL AND trg.rdb$trigger_sequence = 1 AND trg.rdb$flags = 1 and trg.rdb$trigger_type = 1 THEN
-						1
-					ELSE
-						0
-					END) AS IS_AUTOINCREMENT,
-					(SELECT COUNT(*)
-                        FROM rdb$dependencies fd
-                        WHERE fd.rdb$field_name IS NOT NULL AND fd.rdb$dependent_name = trg.rdb$trigger_name AND fd.rdb$depended_on_name = trg.rdb$relation_name
-						GROUP BY fd.rdb$dependent_name, fd.rdb$depended_on_name)
-                    AS TRIGGER_DEPENDENCYCOUNT
-				FROM rdb$relation_constraints co
+SET TERM ^ ;
+EXECUTE BLOCK
+	RETURNS (
+        TABLE_CATALOG varchar(10), TABLE_SCHEMA varchar(10), TABLE_NAME varchar(50), COLUMN_NAME varchar(50),
+		COLUMN_SUB_TYPE smallint,
+        COLUMN_SIZE integer, NUMERIC_PRECISION integer, NUMERIC_SCALE integer, CHARACTER_MAX_LENGTH integer, CHARACTER_OCTET_LENGTH integer,
+        ORDINAL_POSITION smallint, DOMAIN_CATALOG varchar(10), DOMAIN_SCHEMA varchar(1), DOMAIN_NAME varchar(50), COLUMN_DEFAULT blob sub_type 1,
+        EXPRESSION blob sub_type 1, IS_COMPUTED boolean, IS_ARRAY boolean, IS_NULLABLE boolean, READONLY_FLAG smallint, FIELD_TYPE smallint,
+        CHARACTER_SET_CATALOG varchar(10), CHARACTER_SET_SCHEMA varchar(10), CHARACTER_SET_NAME varchar(50), 
+        COLLATION_CATALOG varchar(10), COLLATION_SCHEMA varchar(10), COLLATION_NAME varchar(50),
+        DESCRIPTION varchar(50), IN_PRIMARYKEY boolean, IS_UNIQUE boolean, IS_IDENTITY boolean, SEQUENCE_GENERATOR varchar(50),
+        -- [returnClause]~0~ directly after TRIGGER_NAME varchar(50)
+		IDENTITY_SEED bigint, IDENTITY_INCREMENT int, IDENTITY_CURRENT bigint, PARENT_TYPE varchar(15), TRIGGER_NAME varchar(50),
+		CONSTRAINT_CATALOG varchar(10),
+		CONSTRAINT_SCHEMA varchar(10),
+		CONSTRAINT_NAME varchar(50),
+		INDEX_NAME varchar(50),
+		REFERENCED_TABLE_CATALOG varchar(10),
+		REFERENCED_TABLE_SCHEMA varchar(10),
+		REFERENCED_TABLE_NAME varchar(50),
+		REFERENCED_INDEX_NAME varchar(50),
+		REFERENCED_COLUMN_NAME varchar(50),
+		UPDATE_ACTION int,
+		DELETE_ACTION int)
+AS
+DECLARE PRIMARY_DEPENDENCYCOUNT int;
+DECLARE TRIGGER_DEPENDENCYCOUNT int;
+DECLARE IDENTITY_TYPE smallint;
+DECLARE SEGMENT_FIELD varchar(50);
+BEGIN
+    :TRIGGER_DEPENDENCYCOUNT = 0;
+
+	SELECT COUNT(*)
+	-- [rdb$relation_fields r]~1~
+	FROM rdb$relation_constraints co
 				INNER JOIN rdb$ref_constraints ref 
-                    ON co.rdb$constraint_name = ref.rdb$constraint_name
+                    ON co.rdb$constraint_type = 'FOREIGN KEY' AND co.rdb$constraint_name = ref.rdb$constraint_name
 				INNER JOIN rdb$indices tempidx 
                     ON co.rdb$index_name = tempidx.rdb$index_name
 				INNER JOIN rdb$index_segments coidxseg 
@@ -74,20 +43,212 @@ SELECT
                     ON refidx.rdb$index_name = tempidx.rdb$foreign_key
 				INNER JOIN rdb$index_segments refidxseg 
                     ON refidxseg.rdb$index_name = refidx.rdb$index_name AND refidxseg.rdb$field_position = coidxseg.rdb$field_position
-				INNER JOIN rdb$relation_fields rfr
-                    ON rfr.rdb$relation_name = co.rdb$relation_name AND rfr.rdb$field_name = coidxseg.rdb$field_name
-				INNER JOIN rdb$fields fld
-					ON rfr.rdb$field_source = fld.rdb$field_name
-				LEFT JOIN rdb$character_sets cs
-					ON cs.rdb$character_set_id = fld.rdb$character_set_id
-				LEFT JOIN rdb$collations coll
-					ON (coll.rdb$collation_id = fld.rdb$collation_id AND coll.rdb$character_set_id = fld.rdb$character_set_id)
-				LEFT JOIN rdb$relation_constraints con
-					ON con.rdb$relation_name = rfr.rdb$relation_name AND con.rdb$constraint_type = 'PRIMARY KEY'
-				LEFT JOIN rdb$index_segments seg 
-					ON seg.rdb$index_name = con.rdb$index_name AND seg.rdb$field_name = rfr.rdb$field_name
-                LEFT JOIN rdb$triggers trg
-                    ON trg.rdb$relation_name = con.rdb$relation_name AND trg.rdb$trigger_sequence = 1 AND trg.rdb$flags = 1 and trg.rdb$trigger_type = 1
-                        AND seg.rdb$index_name = con.rdb$index_name AND seg.rdb$field_name = rfr.rdb$field_name
-				LEFT JOIN rdb$dependencies dep
-					ON dep.rdb$field_name IS NOT NULL AND dep.rdb$depended_on_name = trg.rdb$relation_name AND dep.rdb$dependent_name = trg.rdb$trigger_name AND dep.rdb$field_name = seg.rdb$field_name
+				INNER JOIN rdb$relation_fields r
+                    ON r.rdb$relation_name = co.rdb$relation_name AND r.rdb$field_name = coidxseg.rdb$field_name
+	INNER JOIN rdb$relation_constraints r_con
+		ON r_con.rdb$relation_name = r.rdb$relation_name AND r_con.rdb$constraint_type = 'PRIMARY KEY'
+	INNER JOIN rdb$index_segments r_seg 
+		ON r_seg.rdb$index_name = r_con.rdb$index_name AND r_seg.rdb$field_name = r.rdb$field_name
+	INNER JOIN rdb$triggers r_trg
+		ON r_seg.rdb$field_name IS NOT NULL AND r_trg.rdb$relation_name = r_con.rdb$relation_name
+			AND r_trg.rdb$trigger_sequence = 1 AND r_trg.rdb$flags = 1 AND r_trg.rdb$trigger_type = 1
+	INNER JOIN rdb$dependencies r_dep
+		ON r_dep.rdb$dependent_name = r_trg.rdb$trigger_name
+			AND r_dep.rdb$depended_on_name = r_trg.rdb$relation_name AND r_dep.rdb$field_name = r.rdb$field_name
+		WHERE r.rdb$relation_name = 'CRMASTER' AND co.rdb$constraint_name = 'FK_6D5BAC4602_C_BUSINESSFORMF8'
+	-- [crlfWHERE r.rdb$relation_name = '...']~2~ directly after ' = r.rdb$field_name'
+
+	INTO :PRIMARY_DEPENDENCYCOUNT;
+
+	IF (:PRIMARY_DEPENDENCYCOUNT IS NULL) THEN
+		:PRIMARY_DEPENDENCYCOUNT = 0;
+
+	FOR
+		SELECT
+			-- :TABLE_CATALOG, :TABLE_SCHEMA, :TABLE_NAME, :COLUMN_NAME, :COLUMN_SUB_TYPE
+			null, null, r.rdb$relation_name, r.rdb$field_name, r_fld.rdb$field_sub_type,
+			-- :COLUMN_SIZE
+			CAST(r_fld.rdb$field_length AS integer),
+			-- :NUMERIC_PRECISION
+			CAST(r_fld.rdb$field_precision AS integer),
+			-- :NUMERIC_SCALE
+			CAST(r_fld.rdb$field_scale AS integer),
+			-- CHARACTER_MAX_LENGTH
+			CAST(r_fld.rdb$character_length AS integer),
+			-- :CHARACTER_OCTET_LENGTH
+			CAST(r_fld.rdb$field_length AS integer),
+			-- ORDINAL_POSITION - [r.rdb$field_position]~3~
+			coidxseg.rdb$field_position,
+			-- :DOMAIN_CATALOG, :DOMAIN_SCHEMA, :DOMAIN_NAME
+			null, null, r.rdb$field_source,
+			-- :COLUMN_DEFAULT
+			r.rdb$default_source,
+			-- :EXPRESSION
+			(CASE WHEN r_fld.rdb$computed_source IS NULL AND r_fld.rdb$computed_blr IS NOT NULL THEN
+					cast(r_fld.rdb$computed_blr as blob sub_type 1)
+			ELSE
+					r_fld.rdb$computed_source
+			END),
+			-- :IS_COMPUTED
+			(CASE WHEN r_fld.rdb$computed_source IS NULL AND r_fld.rdb$computed_blr IS NULL THEN
+					false
+			ELSE
+					true
+			END),
+			-- :IS_ARRAY
+			(CASE WHEN r_fld.rdb$dimensions IS NULL THEN false ELSE true END),
+			-- :IS_NULLABLE
+			(CASE WHEN coalesce(r_fld.rdb$null_flag, r.rdb$null_flag) IS NULL THEN true ELSE false END),
+			-- :READONLY_FLAG
+			0,
+			-- :FIELD_TYPE
+			r_fld.rdb$field_type,
+			-- :CHARACTER_SET_CATALOG, :CHARACTER_SET_SCHEMA, :CHARACTER_SET_NAME
+			null, null, r_cs.rdb$character_set_name,
+			-- :COLLATION_CATALOG, :COLLATION_SCHEMA, :COLLATION_NAME
+			null, null, r_coll.rdb$collation_name,
+			-- :DESCRIPTION
+			r.rdb$description,
+			-- :IN_PRIMARYKEY
+			(CASE WHEN r_seg.rdb$field_name IS NULL THEN false ELSE true END),
+			-- :IS_IDENTITY
+			(CASE WHEN r_dep.rdb$dependent_name IS NOT NULL AND r_trg.rdb$trigger_name IS NOT NULL AND r_trg.rdb$trigger_sequence = 1 AND r_trg.rdb$flags = 1 and r_trg.rdb$trigger_type = 1 THEN
+				true
+			ELSE
+				false
+			END),
+			-- :SEGMENT_FIELD
+			r_seg.rdb$field_name,
+			-- :IDENTITY_TYPE - [r.rdb$identity_type|null]~4~
+			r.rdb$identity_type,
+			-- :SEQUENCE_GENERATOR, :IDENTITY_SEED, :IDENTITY_INCREMENT
+			r_gen.rdb$generator_name, r_gen.rdb$initial_value, r_gen.rdb$generator_increment,
+			-- :PARENT_TYPE - [Table|'ParentType']~5~
+			-- [, r_dep.rdb$dependent_name]~6~ (for additional columns)
+			'ForeignKey',
+			r_dep.rdb$dependent_name,
+			null,
+			null,
+			co.rdb$constraint_name,
+			co.rdb$index_name,
+			null,
+			null,
+			refidx.rdb$relation_name,
+			refidx.rdb$index_name,
+			refidxseg.rdb$field_name,
+			CASE(ref.rdb$update_rule) WHEN 'CASCADE' THEN 1 WHEN 'SET NULL' THEN 2 WHEN 'SET_DEFAULT' THEN 3 ELSE 0 END,
+			CASE(ref.rdb$delete_rule) WHEN 'CASCADE' THEN 1 WHEN 'SET NULL' THEN 2 WHEN 'SET_DEFAULT' THEN 3 ELSE 0 END
+		-- [rdb$relation_fields r]~1~
+		FROM rdb$relation_constraints co
+				INNER JOIN rdb$ref_constraints ref 
+                    ON co.rdb$constraint_type = 'FOREIGN KEY' AND co.rdb$constraint_name = ref.rdb$constraint_name
+				INNER JOIN rdb$indices tempidx 
+                    ON co.rdb$index_name = tempidx.rdb$index_name
+				INNER JOIN rdb$index_segments coidxseg 
+                    ON co.rdb$index_name = coidxseg.rdb$index_name
+				INNER JOIN rdb$indices refidx 
+                    ON refidx.rdb$index_name = tempidx.rdb$foreign_key
+				INNER JOIN rdb$index_segments refidxseg 
+                    ON refidxseg.rdb$index_name = refidx.rdb$index_name AND refidxseg.rdb$field_position = coidxseg.rdb$field_position
+				INNER JOIN rdb$relation_fields r
+                    ON r.rdb$relation_name = co.rdb$relation_name AND r.rdb$field_name = coidxseg.rdb$field_name
+		INNER JOIN rdb$fields r_fld
+			ON r_fld.rdb$field_name = r.rdb$field_source
+		LEFT OUTER JOIN rdb$character_sets r_cs
+			ON r_cs.rdb$character_set_id = r_fld.rdb$character_set_id
+		LEFT OUTER JOIN rdb$collations r_coll
+			ON (r_coll.rdb$collation_id = r_fld.rdb$collation_id AND r_coll.rdb$character_set_id = r_fld.rdb$character_set_id)
+        LEFT OUTER JOIN rdb$relation_constraints r_con
+			ON r_con.rdb$relation_name = r.rdb$relation_name AND r_con.rdb$constraint_type = 'PRIMARY KEY'
+        LEFT OUTER JOIN rdb$index_segments r_seg 
+            ON r_seg.rdb$index_name = r_con.rdb$index_name AND r_seg.rdb$field_name = r.rdb$field_name
+        LEFT OUTER JOIN rdb$triggers r_trg
+            ON r_trg.rdb$relation_name = r_con.rdb$relation_name AND r_trg.rdb$trigger_sequence = 1 AND r_trg.rdb$flags = 1 AND r_trg.rdb$trigger_type = 1
+        LEFT OUTER JOIN rdb$dependencies r_dep
+            ON r_dep.rdb$depended_on_name = r_trg.rdb$relation_name AND r_dep.rdb$field_name = r_seg.rdb$field_name
+                AND r_dep.rdb$dependent_name = r_trg.rdb$trigger_name
+        LEFT OUTER JOIN rdb$generators r_gen
+			-- [= r.rdb$generator_name|IS NULL]~7~
+		-- [crlfWHERE r.rdb$relation_name = '...']~2~
+            ON r_gen.rdb$generator_name= r.rdb$generator_name
+		WHERE r.rdb$relation_name = 'CRMASTER' AND co.rdb$constraint_name = 'FK_6D5BAC4602_C_BUSINESSFORMF8'
+		-- [r.rdb$relation_name]~8~ [r.rdb$field_position]~3~
+		ORDER BY co.rdb$constraint_name, coidxseg.rdb$field_position
+
+        INTO :TABLE_CATALOG, :TABLE_SCHEMA, :TABLE_NAME, :COLUMN_NAME, :COLUMN_SUB_TYPE,
+        :COLUMN_SIZE, :NUMERIC_PRECISION, :NUMERIC_SCALE, :CHARACTER_MAX_LENGTH, :CHARACTER_OCTET_LENGTH,
+        :ORDINAL_POSITION, :DOMAIN_CATALOG, :DOMAIN_SCHEMA, :DOMAIN_NAME, :COLUMN_DEFAULT,
+        :EXPRESSION, :IS_COMPUTED, :IS_ARRAY, :IS_NULLABLE, :READONLY_FLAG, :FIELD_TYPE,
+        :CHARACTER_SET_CATALOG, :CHARACTER_SET_SCHEMA, :CHARACTER_SET_NAME, :COLLATION_CATALOG, :COLLATION_SCHEMA,
+        :COLLATION_NAME, :DESCRIPTION,
+		:IN_PRIMARYKEY, :IS_IDENTITY, :SEGMENT_FIELD,
+		-- [,crlfTRIGGER_NAME]~9~ directly after :PARENT_TYPE
+		:IDENTITY_TYPE, :SEQUENCE_GENERATOR, :IDENTITY_SEED, :IDENTITY_INCREMENT, :PARENT_TYPE,
+			:TRIGGER_NAME,
+			:CONSTRAINT_CATALOG,
+			:CONSTRAINT_SCHEMA,
+			:CONSTRAINT_NAME,
+			:INDEX_NAME,
+			:REFERENCED_TABLE_CATALOG,
+			:REFERENCED_TABLE_SCHEMA,
+			:REFERENCED_TABLE_NAME,
+			:REFERENCED_INDEX_NAME,
+			:REFERENCED_COLUMN_NAME,
+			:UPDATE_ACTION,
+			:DELETE_ACTION
+	DO BEGIN
+		IF (:SEGMENT_FIELD IS NULL OR :PRIMARY_DEPENDENCYCOUNT <> 1) THEN
+			:IS_IDENTITY = false;
+
+		IF (:SEQUENCE_GENERATOR IS NOT NULL) THEN
+		BEGIN
+			EXECUTE STATEMENT 'SELECT gen_id(' || SEQUENCE_GENERATOR || ', 0) FROM rdb$database' INTO :IDENTITY_CURRENT;
+			:IDENTITY_CURRENT = :IDENTITY_CURRENT - :IDENTITY_INCREMENT;
+			IF (:IDENTITY_CURRENT < :IDENTITY_SEED) THEN
+			BEGIN
+				:IDENTITY_CURRENT = :IDENTITY_SEED;
+			END
+
+			IF (:IS_IDENTITY) THEN
+			BEGIN
+				-- There is a generator so :IDENTITY_TYPE determines if is-identity still holds true
+				IF (:IDENTITY_TYPE IS NULL OR :IDENTITY_TYPE = 0) THEN
+					:IS_IDENTITY = false;
+			END
+		END
+        if (:IS_IDENTITY AND :SEQUENCE_GENERATOR IS NULL) THEN
+		BEGIN
+            -- [Unidentifiable]~10~
+            :SEQUENCE_GENERATOR = 'Unidentifiable';
+			:IDENTITY_SEED = -1;
+			:IDENTITY_INCREMENT = -1;
+			:IDENTITY_CURRENT = -1;
+        END
+		IF (NOT :IS_IDENTITY  AND :SEQUENCE_GENERATOR IS NULL) THEN
+		BEGIN
+			:SEQUENCE_GENERATOR = NULL;
+			:IDENTITY_SEED = 0;
+			:IDENTITY_INCREMENT = 0;
+			:IDENTITY_CURRENT = 0;
+		END
+
+		IF (:IN_PRIMARYKEY AND :PRIMARY_DEPENDENCYCOUNT = 1) THEN
+			:IS_UNIQUE = true;
+		ELSE
+			:IS_UNIQUE = false;
+		
+
+-- End section 2 
+
+-- Begin section 3 - Column row complete
+
+        SUSPEND;            
+
+-- End section 3
+
+-- Finalize
+
+	END
+END
+^
+SET TERM ; ^
