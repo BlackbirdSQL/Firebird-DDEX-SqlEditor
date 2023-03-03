@@ -9,12 +9,16 @@ See [Extended Description](#extended-description) below.
 
 ### Features
 * Firebird DDEX provider support for most of the DDEX 2.0 IVs DML interfaces.
+* Plug and play. No configuration of the .csproj, app.config or machine.config files and no GAC registration.
 * FlameRobin host and database selection within connection dialogs.
 * Within Server Explorer, top level folders for Tables, Views, Stored procedures, Functions, Sequence Generators, Triggers and Domains.
 * Within tables, drilldowns for indexes, foreign keys and triggers, and table columns, index columns, foreign key columns and trigger columns.
 * Identification of Identity fields, Primary keys, Unique keys and Computed columns.
 * System table, system index and system trigger enumeration within the SE and support for system tables within the xsd and edmx models.
-* Edmx foreign key support.
+* Edmx identity (auto-increment primary key) column and foreign key support.
+* Procedures, functions, views, triggers and computed columns display the decoded blr if no source exists.
+* Display of initial value (seed), increment and next value within sequence generator display.
+* New query and data retrieval for both user and system tables.
 
 ### A Note on AutoIncrement
 The logic for auto-increment detection of a trigger (which avoids interrogating the ddl) appears to work correctly. There is no documentation to show otherwise, but there is info on the web implying it cannot be done. If you have a case where this logic fails, please pop us a mail.</br>
