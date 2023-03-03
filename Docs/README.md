@@ -11,7 +11,7 @@ See [Extended Description](#extended-description) below.
 * Firebird DDEX provider support for most of the DDEX 2.0 IVs DML interfaces.
 * FlameRobin host and database selection within connection dialogs.
 * Within Server Explorer, top level folders for Tables, Views, Stored procedures, Functions, Sequence Generators, Triggers and Domains.
-* Within tables drilldowns for indexes, foreign keys and triggers, and table columns, index columns, foreign key columns and trigger columns.
+* Within tables, drilldowns for indexes, foreign keys and triggers, and table columns, index columns, foreign key columns and trigger columns.
 * Identification of Identity fields, Primary keys, Unique keys and Computed columns.
 * System table, system index and system trigger enumeration within the SE and support for system tables within the xsd and edmx models.
 * Edmx foreign key support.
