@@ -88,6 +88,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Firebird SQL Server.
+        /// </summary>
+        internal static string DataSource_Product {
+            get {
+                return ResourceManager.GetString("DataSource_Product", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Use this selection to connect to Firebird using the DDEX 2.0 BlackbirdSql Provider.
         /// </summary>
         internal static string DdexProvider_Description {

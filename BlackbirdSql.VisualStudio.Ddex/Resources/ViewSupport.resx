@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Property_Desc_Parameter_Nullable" xml:space="preserve">
-    <value>True, if the parameter can contain the NULL value.</value>
+    <value>True, if the parameter can contain a NULL value.</value>
   </data>
   <data name="Property_Desc_Column_Precision" xml:space="preserve">
     <value>If the column's data type is of a numeric data type other than VARNUMERIC, this is the maximum precision of the column.</value>
@@ -235,7 +235,7 @@
     <value>Catalog of the table referenced by the foreign key of the current column.</value>
   </data>
   <data name="Property_Name_Column_CharacterSet" xml:space="preserve">
-    <value>Charset</value>
+    <value>CharSet</value>
   </data>
   <data name="Property_Name_ForeignKey_ReferencedSchema" xml:space="preserve">
     <value>Schema</value>
@@ -259,7 +259,7 @@
     <value>The ordinal of the column in foreign key. Columns are numbered starting from one.</value>
   </data>
   <data name="Property_Name_Index_IsUnique" xml:space="preserve">
-    <value>Is Unique</value>
+    <value>Unique Index</value>
   </data>
   <data name="Type_ForeignKey" xml:space="preserve">
     <value>Foreign Key</value>
@@ -448,10 +448,10 @@
     <value>Date Created</value>
   </data>
   <data name="Property_Name_Parameter_Nullable" xml:space="preserve">
-    <value>Is Nullable</value>
+    <value>Nullable</value>
   </data>
   <data name="Property_Desc_Column_Nullable" xml:space="preserve">
-    <value>True, if the column can contain the NULL value.</value>
+    <value>True, if the column can contain a NULL value.</value>
   </data>
   <data name="Property_Name_Index_ColumnNames" xml:space="preserve">
     <value>Index Columns</value>
@@ -478,7 +478,7 @@
     <value>Unique Key Column</value>
   </data>
   <data name="Property_Name_Column_Nullable" xml:space="preserve">
-    <value>Is Nullable</value>
+    <value>Nullable</value>
   </data>
   <data name="Property_Name_IndexColumn_Ordinal" xml:space="preserve">
     <value>Ordinal</value>
@@ -499,7 +499,7 @@
     <value>The foreign key that owns this column.</value>
   </data>
   <data name="Property_Name_Index_IsPrimary" xml:space="preserve">
-    <value>Is Primary</value>
+    <value>Primary Key Index</value>
   </data>
   <data name="Node_Name_Domains" xml:space="preserve">
     <value>Domains</value>
@@ -538,10 +538,10 @@
     <value>User Table</value>
   </data>
   <data name="Property_Desc_Column_CharacterSet" xml:space="preserve">
-    <value>Character set of the column</value>
+    <value>Character set of the column or parameter</value>
   </data>
   <data name="Property_Desc_Column_Collation" xml:space="preserve">
-    <value>Collation rules of the column</value>
+    <value>Collation rules of the column or parameter</value>
   </data>
   <data name="Property_Desc_Column_Computed" xml:space="preserve">
     <value>Column is a computed value</value>
@@ -556,7 +556,7 @@
     <value>Computed</value>
   </data>
   <data name="Property_Name_Column_InPrimaryKey" xml:space="preserve">
-    <value>In Primary key</value>
+    <value>In Primary Key</value>
   </data>
   <data name="Property_Name_Column_IsUnique" xml:space="preserve">
     <value>Unique Key</value>
@@ -628,7 +628,7 @@
     <value>Is object enabled / active?</value>
   </data>
   <data name="Property_Name_Index_IsForeignKey" xml:space="preserve">
-    <value>Is Foreign Key</value>
+    <value>Foreign Key</value>
   </data>
   <data name="Property_Name_Enabled" xml:space="preserve">
     <value>Enabled</value>
@@ -643,7 +643,7 @@
     <value>AutoIncrement Trigger</value>
   </data>
   <data name="Property_Name_Column_IsIdentity" xml:space="preserve">
-    <value>Is Identity</value>
+    <value>Identity Field</value>
   </data>
   <data name="Property_Desc_Trigger_IsIdentity" xml:space="preserve">
     <value>Is the trigger an auto-increment generator?</value>
@@ -803,5 +803,140 @@
   </data>
   <data name="Property_Name_Disabled" xml:space="preserve">
     <value>Disabled</value>
+  </data>
+  <data name="Property_Desc_Package" xml:space="preserve">
+    <value>The external package this object belongs to else 'SYSTEM' if created by the db system or 'USER' if it is a user defined object</value>
+  </data>
+  <data name="Property_Name_Package" xml:space="preserve">
+    <value>Package</value>
+  </data>
+  <data name="Property_Value_ServerType_Default" xml:space="preserve">
+    <value>Server</value>
+  </data>
+  <data name="Property_Value_ServerType_Embedded" xml:space="preserve">
+    <value>Embedded</value>
+  </data>
+  <data name="Property_Value_ForeignKeyRule_Cascade" xml:space="preserve">
+    <value>Cascade</value>
+  </data>
+  <data name="Property_Value_ForeignKeyRule_NoAction" xml:space="preserve">
+    <value>No Action</value>
+  </data>
+  <data name="Property_Value_ForeignKeyRule_SetDefault" xml:space="preserve">
+    <value>Set Default</value>
+  </data>
+  <data name="Property_Value_ForeignKeyRule_SetNull" xml:space="preserve">
+    <value>Set Null</value>
+  </data>
+  <data name="Property_Value_TriggerEventType_AfterDelete" xml:space="preserve">
+    <value>After delete</value>
+  </data>
+  <data name="Property_Value_TriggerEventType_AfterInsert" xml:space="preserve">
+    <value>After insert</value>
+  </data>
+  <data name="Property_Value_TriggerEventType_AfterInsertDelete" xml:space="preserve">
+    <value>After insert or delete</value>
+  </data>
+  <data name="Property_Value_TriggerEventType_AfterInsertUpdate" xml:space="preserve">
+    <value>After insert or update</value>
+  </data>
+  <data name="Property_Value_TriggerEventType_AfterInsertUpdateDelete" xml:space="preserve">
+    <value>After insert, update or delete</value>
+  </data>
+  <data name="Property_Value_TriggerEventType_AfterUpdate" xml:space="preserve">
+    <value>After update</value>
+  </data>
+  <data name="Property_Value_TriggerEventType_AfterUpdateDelete" xml:space="preserve">
+    <value>After update or delete</value>
+  </data>
+  <data name="Property_Value_TriggerEventType_BeforeDelete" xml:space="preserve">
+    <value>Before delete</value>
+  </data>
+  <data name="Property_Value_TriggerEventType_BeforeInsert" xml:space="preserve">
+    <value>Before insert</value>
+  </data>
+  <data name="Property_Value_TriggerEventType_BeforeInsertDelete" xml:space="preserve">
+    <value>Before insert or delete</value>
+  </data>
+  <data name="Property_Value_TriggerEventType_BeforeInsertUpdate" xml:space="preserve">
+    <value>Before insert or update</value>
+  </data>
+  <data name="Property_Value_TriggerEventType_BeforeInsertUpdateDelete" xml:space="preserve">
+    <value>Before insert, update or delete</value>
+  </data>
+  <data name="Property_Value_TriggerEventType_BeforeUpdate" xml:space="preserve">
+    <value>Before update</value>
+  </data>
+  <data name="Property_Value_TriggerEventType_BeforeUpdateDelete" xml:space="preserve">
+    <value>Before update or delete</value>
+  </data>
+  <data name="Property_Value_TriggerEventType_OnConnect" xml:space="preserve">
+    <value>On connect</value>
+  </data>
+  <data name="Property_Value_TriggerEventType_OnDisconnect" xml:space="preserve">
+    <value>On disconnect</value>
+  </data>
+  <data name="Property_Value_TriggerEventType_OnTransactionBegin" xml:space="preserve">
+    <value>On transaction begin</value>
+  </data>
+  <data name="Property_Value_TriggerEventType_OnTransactionCommit" xml:space="preserve">
+    <value>On transaction commit</value>
+  </data>
+  <data name="Property_Value_TriggerEventType_OnTransactionRollback" xml:space="preserve">
+    <value>On transaction rollback</value>
+  </data>
+  <data name="Identifier_Desc_DatabasePath" xml:space="preserve">
+    <value>The path to the file containing the database</value>
+  </data>
+  <data name="Identifier_Name_DatabasePath" xml:space="preserve">
+    <value>Database path</value>
+  </data>
+  <data name="Category_Connection" xml:space="preserve">
+    <value>Connection</value>
+  </data>
+  <data name="Identifier_Desc_ServerVersion" xml:space="preserve">
+    <value>The version of the database engine</value>
+  </data>
+  <data name="Identifier_Name_ServerVersion" xml:space="preserve">
+    <value>Server Version</value>
+  </data>
+  <data name="Category_DataSourceInformation" xml:space="preserve">
+    <value>Server Information</value>
+  </data>
+  <data name="Identifier_Desc_ActiveUsers" xml:space="preserve">
+    <value>The number of active users connected to this database. Note that active users may be reported as 1 if the server is not a SuperServer.</value>
+  </data>
+  <data name="Identifier_Desc_MemoryUsage" xml:space="preserve">
+    <value>The current server memory usage for this database</value>
+  </data>
+  <data name="Identifier_Desc_ServerPort" xml:space="preserve">
+    <value>The server Tcp Port</value>
+  </data>
+  <data name="Identifier_Desc_ServerType" xml:space="preserve">
+    <value>The physical underlying server object type</value>
+  </data>
+  <data name="Identifier_Desc_UserId" xml:space="preserve">
+    <value>The database user for this connection</value>
+  </data>
+  <data name="Identifier_Name_ActiveUsers" xml:space="preserve">
+    <value>Active Users</value>
+  </data>
+  <data name="Identifier_Name_MemoryUsage" xml:space="preserve">
+    <value>Memory Usage</value>
+  </data>
+  <data name="Identifier_Name_ServerPort" xml:space="preserve">
+    <value>Server Port</value>
+  </data>
+  <data name="Identifier_Name_ServerType" xml:space="preserve">
+    <value>Physical server type</value>
+  </data>
+  <data name="Identifier_Name_UserId" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="Identifier_Desc_PseudoName" xml:space="preserve">
+    <value>The implied name where no name identifier property value exists. For example the return parameter of as function has only an implied name.</value>
+  </data>
+  <data name="Identifier_Name_PseudoName" xml:space="preserve">
+    <value>Pseudo Name</value>
   </data>
 </root>

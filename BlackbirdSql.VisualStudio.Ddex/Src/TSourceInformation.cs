@@ -4,13 +4,20 @@
 //
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
+using FirebirdSql.Data.FirebirdClient;
+using FirebirdSql.Data.Services;
 using BlackbirdSql.Common;
-
-
+using BlackbirdSql.Common.Extensions;
+using BlackbirdSql.VisualStudio.Ddex.Schema;
+using BlackbirdSql.VisualStudio.Ddex.Extensions;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -22,8 +29,9 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 /// Implementation of <see cref="IVsDataSourceInformation"/> interface
 /// </summary>
 // =========================================================================================================
-internal class TSourceInformation : AdoDotNetSourceInformation
+internal class TSourceInformation : AdoDotNetSourceInformation, IVsDataSourceInformation
 {
+
 
 	// ---------------------------------------------------------------------------------
 	#region Constructors / Destructors - TSourceInformation
@@ -50,35 +58,64 @@ internal class TSourceInformation : AdoDotNetSourceInformation
 
 
 	// =========================================================================================================
-	#region Methods and Implementations - TSourceInformation
+	#region Implementations - TSourceInformation
 	// =========================================================================================================
 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Adds additional properties applicable to this data source type
+	/// Gets a data source information property with the specified name.
 	/// </summary>
+	/// <param name="propertyName">
+	/// The name of the data source information property to retrieve.
+	/// </param>
+	/// <returns>
+	/// The data source information property with the specified name.
+	/// </returns>
 	// ---------------------------------------------------------------------------------
-	private void AddExtendedProperties()
+	object IVsDataSourceInformation.this[string propertyName]
 	{
-		base.AddProperty(CatalogSupported, false);
-		base.AddProperty(CatalogSupportedInDml, false);
-		base.AddProperty(DefaultCatalog, null);
-		base.AddProperty(DefaultSchema, null);
-		base.AddProperty(IdentifierOpenQuote, "\"");
-		base.AddProperty(IdentifierCloseQuote, "\"");
-		base.AddProperty(ParameterPrefix, "@");
-		base.AddProperty(ParameterPrefixInName, true);
-		base.AddProperty(ProcedureSupported, true);
-		base.AddProperty(QuotedIdentifierPartsCaseSensitive, true);
-		base.AddProperty(SchemaSupported, false);
-		base.AddProperty(SchemaSupportedInDml, true);
-		base.AddProperty(ServerSeparator, ".");
-		base.AddProperty(SupportsAnsi92Sql, true);
-		base.AddProperty(SupportsCommandTimeout, false);
-		base.AddProperty(SupportsQuotedIdentifierParts, true);
-		base.AddProperty("DesktopDataSource", true);
-		base.AddProperty("LocalDatabase", true);
+		get
+		{
+			// Diag.Trace(propertyName);
+			object obj = base[propertyName];
+
+			if (obj == null && SourceInformation != null && SourceInformation.Columns.Contains(propertyName))
+			{
+				obj = SourceInformation.Rows[0][propertyName];
+			}
+
+			return obj;
+		}
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Retrieves a Boolean value indicating whether the specified property is contained
+	/// in the data source information instance.
+	/// </summary>
+	/// <param name="propertyName">
+	/// The name of a data source information property.
+	/// </param>
+	/// <returns>
+	/// true if the specified property is contained in the data source information instance;
+	/// otherwise, false.
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	bool IVsDataSourceInformation.Contains(string propertyName)
+	{
+		// Diag.Trace(propertyName);
+		if (!Contains(propertyName))
+		{
+			if (SourceInformation != null)
+				return SourceInformation.Columns.Contains(propertyName);
+
+			return false;
+		}
+
+		return true;
 	}
 
 
@@ -92,17 +129,76 @@ internal class TSourceInformation : AdoDotNetSourceInformation
 	// ---------------------------------------------------------------------------------
 	protected override object RetrieveValue(string propertyName)
 	{
-		// Diag.Trace();
+		// Diag.Trace(propertyName);
+
+		object retval = null;
+
+		PropertyDescriptor descriptor;
+		IVsDataConnectionProperties connectionProperties;
+
+		if (!DslConnectionString.Synonyms.TryGetValue(propertyName, out string param))
+			return base.RetrieveValue(propertyName);
+
 		try
 		{
-			switch (propertyName)
+			switch (param)
 			{
-				case DataSourceProduct:
-					return "Firebird";
-				case DataSourceVersion:
-					return Connection.ServerVersion;
+				case DslConnectionString.DefaultKeyDataSourceProduct:
+					retval = Properties.Resources.DataSource_Product;
+					break;
+				case DslConnectionString.DefaultKeyServerVersion:
+					if (Connection != null && Connection.ServerVersion != null)
+					{
+						retval = "Firebird " + FbServerProperties.ParseServerVersion(Connection.ServerVersion).ToString();
+					}
+					break;
+				case DslConnectionString.DefaultKeyPortNumber:
+					retval = DslConnectionString.DefaultValuePortNumber;
+					if ((descriptor = FindDescriptor(param)) == null)
+						break;
+					connectionProperties = GetConnectionProperties();
+					if ((retval = descriptor.GetValueX(connectionProperties)) == null)
+						retval = DslConnectionString.DefaultValuePortNumber;
+					break;
+				case DslConnectionString.DefaultKeyServerType:
+					retval = DslConnectionString.DefaultValueServerType;
+					if ((descriptor = FindDescriptor(param)) == null)
+						break;
+					connectionProperties = GetConnectionProperties();
+					if ((retval = descriptor.GetValueX(connectionProperties)) == null)
+						retval = DslConnectionString.DefaultValueServerType;
+					break;
+				case DslConnectionString.DefaultKeyCatalog:
+					if ((descriptor = FindDescriptor(param)) == null)
+						break;
+					connectionProperties = GetConnectionProperties();
+					retval = descriptor.GetValueX(connectionProperties);
+					break;
+				case DslConnectionString.DefaultKeyUserId:
+					if ((descriptor = FindDescriptor(param)) == null)
+						break;
+					connectionProperties = GetConnectionProperties();
+					retval = descriptor.GetValueX(connectionProperties);
+					break;
+				case DslConnectionString.DefaultKeyMemoryUsage:
+					retval = -1;
+					if (Connection != null && Connection.State != ConnectionState.Closed && Connection.State != ConnectionState.Broken)
+					{
+						FbDatabaseInfo info = new((FbConnection)Connection);
+						retval = info.GetCurrentMemory();
+					}
+					break;
+				case DslConnectionString.DefaultKeyActiveUsers:
+					retval = -1;
+					if (Connection != null && Connection.State != ConnectionState.Closed && Connection.State != ConnectionState.Broken)
+					{
+						FbDatabaseInfo info = new((FbConnection)Connection);
+						retval = info.GetActiveUsers();
+					}
+					break;
 				default:
-					return base.RetrieveValue(propertyName);
+					retval = base.RetrieveValue(propertyName);
+					break;
 			}
 		}
 		catch (Exception ex)
@@ -110,9 +206,185 @@ internal class TSourceInformation : AdoDotNetSourceInformation
 			Diag.Dug(ex);
 			return null;
 		}
+
+		return retval;
 	}
 
 
-	#endregion Methods and Implementations
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Finds the connection string descriptor for a given connection string
+	/// parameter or data source information property, if it exists.
+	/// </summary>
+	/// <param name="paramName">
+	/// The connection string parameter or data source information property
+	/// name.
+	/// </param>
+	/// <returns>
+	/// The connection string parameter or data source information property
+	/// connection descriptor, or null if it does not exist.
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	protected PropertyDescriptor FindDescriptor(string paramName)
+	{
+		PropertyDescriptorCollection descriptors = GetDescriptors();
+
+		if (descriptors == null)
+			return null;
+
+		PropertyDescriptor descriptor;
+
+		if (!DslConnectionString.Synonyms.TryGetValue(paramName, out string propertyName))
+			return null;
+
+		if ((descriptor = descriptors.Find(paramName, true)) != null)
+			return descriptor;
+
+		foreach (string key in DslConnectionString.Synonyms.Values)
+		{
+			if ((descriptor = descriptors.Find(key, true)) != null)
+				return descriptor;
+		}
+
+		return null;
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Retrieves the System.Type value indicating the type of a specified property,
+	/// thus enabling appropriate conversion of a retrieved value to the correct type.
+	/// </summary>
+	/// <param name="propertyName">
+	/// The name of the property for which to get the type.
+	/// </param>
+	/// <returns>
+	/// A System.Type value indicating the type of a specified property.
+	/// </returns>
+	/// <exception cref="ArgumentNullException"></exception>
+	// ---------------------------------------------------------------------------------
+	protected override Type GetType(string propertyName)
+	{
+		// Diag.Trace(propertyName);
+
+		if (propertyName == null)
+			throw new ArgumentNullException("propertyName");
+
+
+		if (!DslConnectionString.Synonyms.TryGetValue(propertyName, out string param))
+			return base.GetType(propertyName);
+
+		if (DslConnectionString.RootTypes.TryGetValue(param, out Type retval))
+			return retval;
+
+		if (DslConnectionString.SystemTypes.TryGetValue(param, out retval))
+			return retval;
+
+		return base.GetType(propertyName);
+	}
+
+
+	#endregion Implementations
+
+
+
+
+
+	// =========================================================================================================
+	#region Methods - TSourceInformation
+	// =========================================================================================================
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Adds additional properties applicable to this data source type
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private void AddExtendedProperties()
+	{
+		try
+		{
+			AddProperty(CatalogSupported, false);
+			AddProperty(CatalogSupportedInDml, false);
+			AddProperty(DefaultCatalog, null);
+			AddProperty(DefaultSchema, null);
+			AddProperty(IdentifierOpenQuote, "\"");
+			AddProperty(IdentifierCloseQuote, "\"");
+			AddProperty(ParameterPrefix, "@");
+			AddProperty(ParameterPrefixInName, true);
+			AddProperty(ProcedureSupported, true);
+			AddProperty(QuotedIdentifierPartsCaseSensitive, true);
+			AddProperty(SchemaSupported, false);
+			AddProperty(SchemaSupportedInDml, true);
+			AddProperty(ServerSeparator, ".");
+			AddProperty(SupportsAnsi92Sql, true);
+			AddProperty(SupportsCommandTimeout, false);
+			AddProperty(SupportsQuotedIdentifierParts, true);
+
+			foreach (KeyValuePair<string, Type> pair in DslConnectionString.RootTypes)
+			{
+				AddProperty(pair.Key.DescriptorCase());
+			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the property descriptor collection for the current connection string.
+	/// </summary>
+	/// <returns>The property descriptor collection.</returns>
+	// ---------------------------------------------------------------------------------
+	protected PropertyDescriptorCollection GetDescriptors()
+	{
+		PropertyDescriptorCollection descriptors = null;
+		IVsDataConnectionProperties connectionProperties = GetConnectionProperties();
+
+		if (connectionProperties != null)
+		{
+			connectionProperties.Parse(Site.SafeConnectionString);
+
+			descriptors = TypeDescriptor.GetProperties(connectionProperties);
+		}
+
+		return descriptors;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the connection properties object of the current connection string.
+	/// </summary>
+	/// <returns>
+	/// The <see cref="IVsDataConnectionProperties"/> object associated with this root node.
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	protected IVsDataConnectionProperties GetConnectionProperties()
+	{
+		IVsDataConnectionProperties connectionProperties;
+
+		IServiceProvider serviceProvider = Site.GetService(typeof(IServiceProvider)) as IServiceProvider;
+
+
+		using (Hostess host = new(serviceProvider))
+		{
+			connectionProperties = host.GetService<IVsDataProviderManager>().Providers[Site.Provider].TryCreateObject<IVsDataConnectionUIProperties>(Site.Source);
+			connectionProperties ??= host.GetService<IVsDataProviderManager>().Providers[Site.Provider].TryCreateObject<IVsDataConnectionProperties>(Site.Source);
+		}
+
+		return connectionProperties;
+	}
+
+
+	#endregion Methods
 
 }

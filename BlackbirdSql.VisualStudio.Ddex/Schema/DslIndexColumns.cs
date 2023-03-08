@@ -30,15 +30,19 @@ internal class DslIndexColumns : DslColumns
 	{
 		_ParentType = "Index";
 		_ObjectType = "TableIndexColumn";
-		_ParentRestriction = "idx.rdb$index_name";
-		_OrdinalPosition = "idxseg.rdb$field_position";
+		_ParentColumn = "idx.rdb$index_name";
 		_OrderingField = "idx.rdb$index_name";
 		_FromClause = @"rdb$index_segments idxseg
 				INNER JOIN rdb$indices idx
 					ON idxseg.rdb$index_name = idx.rdb$index_name
                 INNER JOIN rdb$relation_fields r
                     ON r.rdb$relation_name = idx.rdb$relation_name AND r.rdb$field_name = idxseg.rdb$field_name";
+
+		_RequiredColumns["ORDINAL_POSITION"] = "idxseg.rdb$field_position";
+
 		_AdditionalColumns.Add("INDEX_NAME", new("idx.rdb$index_name", "varchar(50)"));
+		_AdditionalColumns.Add("IS_DESCENDING", new("(CASE WHEN idx.rdb$index_type <> 1 THEN false ELSE true END)", "boolean"));
+		_AdditionalColumns.Add("IS_INCLUDED", new("true", "boolean"));
 	}
 
 }

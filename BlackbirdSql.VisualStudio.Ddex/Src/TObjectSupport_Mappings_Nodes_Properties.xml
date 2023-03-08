@@ -1,6 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <DataObjectSupport xmlns="http://schemas.microsoft.com/VisualStudio/2007/07/Data/DataObjectSupport">
 
+	<!--
+	Mapped object types used by the IDE built-in commands
+	_____________________________________________________
+	Unable to locate any documentation re required mappings so we're placing every conceivable
+	mapping property in here including all SqlServer object types' properties or their respectve
+	mapping types' properties
+	-->
+
 	<!-- Element Definitions
 			xs:sequence is specified so this has to come first
 			so we're going to keep definitions limited and simple
@@ -9,6 +17,7 @@
 
 	<!--
 	A little messy here.
+	
 		Firstly we want to list triggers at the top level within a database;
 			IOW the trigger is the hierarchy root.
 		But we also want to list triggers within each table;
@@ -26,11 +35,36 @@
 	-->
 
 	<!-- The identifier and property lists Columns -->
-	<!-- Include column name in property list but not identifier list -->
-	<Define name="TplMappedIdentifierListTableColumn" >
+
+	<Define name="TplMappedPropertyListEmptyColumn" />
+
+	<Define name="TplMappedPropertyListAdvancedColumn" >
+		<MappedProperty name="IsIdentity" underlyingMember="IS_IDENTITY" />
+		<MappedProperty name="IsUnique" underlyingMember="IS_UNIQUE" />
+		<MappedProperty name="InPrimaryKey" underlyingMember="IN_PRIMARYKEY" />
+		<MappedProperty name="Sequence" underlyingMember="SEQUENCE_GENERATOR" />
+		<MappedProperty name="IdentitySeed" underlyingMember="IDENTITY_SEED" >
+			<Conversion>
+				<Calculate expr="IIF({0} > 0, {0}, 0)" exprType="System.Int32" />
+			</Conversion>
+		</MappedProperty>
+		<MappedProperty name="IdentityIncrement" underlyingMember="IDENTITY_INCREMENT" >
+			<Conversion>
+				<Calculate expr="IIF({0} > 0, {0}, 1)" exprType="System.Int32" />
+			</Conversion>
+		</MappedProperty>
+		<MappedProperty name="IdentityCurrent" underlyingMember="IDENTITY_CURRENT, IDENTITY_SEED" >
+			<Conversion>
+				<Calculate expr="IIF({0} > 0, {0}, IIF({1} > 0, {1}, 0))" exprType="System.Int32" />
+			</Conversion>
+		</MappedProperty>
+	</Define>
+
+	<Define name="TplMappedIdentifierListTableColumn" parameters="filter" >
 		<MappedIdentifierPart name="Catalog" underlyingMember="TABLE_CATALOG" />
 		<MappedIdentifierPart name="Schema" underlyingMember="TABLE_SCHEMA" />
 		<MappedIdentifierPart name="Table" underlyingMember="TABLE_NAME" />
+		<MappedIdentifierPart name="Name" underlyingMember="COLUMN_NAME" />
 	</Define>
 
 	<Define name="TplMappedPropertyListTableColumn" >
@@ -41,10 +75,11 @@
 
 
 
-	<Define name="TplMappedIdentifierListViewColumn" >
+	<Define name="TplMappedIdentifierListViewColumn" parameters="filter" >
 		<MappedIdentifierPart name="Catalog" underlyingMember="VIEW_CATALOG" />
 		<MappedIdentifierPart name="Schema" underlyingMember="VIEW_SCHEMA" />
 		<MappedIdentifierPart name="View" underlyingMember="VIEW_NAME" />
+		<MappedIdentifierPart name="Name" underlyingMember="COLUMN_NAME" />
 	</Define>
 	<Define name="TplMappedPropertyListViewColumn" >
 		<MappedProperty name="View" isIdentifierPart="true" />
@@ -54,11 +89,12 @@
 
 
 
-	<Define name="TplMappedIdentifierListIndexColumn" >
+	<Define name="TplMappedIdentifierListIndexColumn" parameters="filter" >
 		<MappedIdentifierPart name="Catalog" underlyingMember="TABLE_CATALOG" />
 		<MappedIdentifierPart name="Schema" underlyingMember="TABLE_SCHEMA" />
 		<MappedIdentifierPart name="Table" underlyingMember="TABLE_NAME" />
 		<MappedIdentifierPart name="Index" underlyingMember="INDEX_NAME" />
+		<MappedIdentifierPart name="Name" underlyingMember="COLUMN_NAME" />
 	</Define>
 
 	<Define name="TplMappedPropertyListIndexColumn" >
@@ -66,35 +102,45 @@
 		<MappedProperty name="Index" isIdentifierPart="true" />
 		<MappedProperty name="Name" isIdentifierPart="true" />
 		<MappedProperty name="Trigger" underlyingMember="TRIGGER_NAME" />
+		<MappedProperty name="IsDescending" underlyingMember="IS_DESCENDING" />
+		<MappedProperty name="IsIncluded" underlyingMember="IS_INCLUDED" />
 	</Define>
 
 
 
-	<Define name="TplMappedIdentifierListForeignKeyColumn" >
+	<Define name="TplMappedIdentifierListForeignKeyColumn" parameters="filter" >
 		<MappedIdentifierPart name="Catalog" underlyingMember="CONSTRAINT_CATALOG" />
 		<MappedIdentifierPart name="Schema" underlyingMember="CONSTRAINT_SCHEMA" />
 		<MappedIdentifierPart name="Table" underlyingMember="TABLE_NAME" />
-		<MappedIdentifierPart name="ForeignKey" underlyingMember="CONSTRAINT_NAME" />
+		<MappedIdentifierPart name="TableForeignKey" underlyingMember="CONSTRAINT_NAME" />
+		<MappedIdentifierPart name="Name" underlyingMember="COLUMN_NAME" />
 	</Define>
 
 	<Define name="TplMappedPropertyListForeignKeyColumn" >
 		<MappedProperty name="Table" isIdentifierPart="true" />
-		<MappedProperty name="ForeignKey" isIdentifierPart="true" />
+		<MappedProperty name="TableForeignKey" isIdentifierPart="true" />
 		<MappedProperty name="Name" isIdentifierPart="true" />
 		<MappedProperty name="Trigger" underlyingMember="TRIGGER_NAME" />
 		<MappedProperty name="ReferencedTableCatalog" underlyingMember="REFERENCED_TABLE_CATALOG" />
 		<MappedProperty name="ReferencedTableSchema" underlyingMember="REFERENCED_TABLE_SCHEMA" />
 		<MappedProperty name="ReferencedTableName" underlyingMember="REFERENCED_TABLE_NAME" />
+		<MappedProperty name="ReferencedTableUniqueKey" underlyingMember="REFERENCED_INDEX_NAME" />
 		<MappedProperty name="ReferencedTableColumn" underlyingMember="REFERENCED_COLUMN_NAME" />
+		<MappedProperty name="ReferencedTableId0" underlyingMember="REFERENCED_TABLE_CATALOG" />
+		<MappedProperty name="ReferencedTableId1" underlyingMember="REFERENCED_TABLE_SCHEMA" />
+		<MappedProperty name="ReferencedTableId2" underlyingMember="REFERENCED_TABLE_NAME" />
+		<MappedProperty name="ReferencedTableId3" underlyingMember="REFERENCED_INDEX_NAME" />
+		<MappedProperty name="ReferencedTableId4" underlyingMember="REFERENCED_COLUMN_NAME" />
 	</Define>
 
 
-	
-	<Define name="TplMappedIdentifierListTableUniqueKeyColumn" >
+
+	<Define name="TplMappedIdentifierListTableUniqueKeyColumn" parameters="filter" >
 		<MappedIdentifierPart name="Catalog" underlyingMember="TABLE_CATALOG" />
 		<MappedIdentifierPart name="Schema" underlyingMember="TABLE_SCHEMA" />
 		<MappedIdentifierPart name="Table" underlyingMember="TABLE_NAME" />
 		<MappedIdentifierPart name="TableUniqueKey" underlyingMember="INDEX_NAME" />
+		<MappedIdentifierPart name="Name" underlyingMember="COLUMN_NAME" />
 	</Define>
 
 	<Define name="TplMappedPropertyListTableUniqueKeyColumn" >
@@ -105,11 +151,12 @@
 	</Define>
 
 
-	
-	<Define name="TplMappedIdentifierListTriggerColumn" >
+
+	<Define name="TplMappedIdentifierListTriggerColumn" parameters="filter" >
 		<MappedIdentifierPart name="Catalog" underlyingMember="TABLE_CATALOG" />
 		<MappedIdentifierPart name="Schema" underlyingMember="TABLE_SCHEMA" />
 		<MappedIdentifierPart name="Trigger" underlyingMember="TRIGGER_NAME" />
+		<MappedIdentifierPart name="Name" underlyingMember="COLUMN_NAME" />
 	</Define>
 
 	<Define name="TplMappedPropertyListTriggerColumn" >
@@ -117,5 +164,77 @@
 		<MappedProperty name="Name" isIdentifierPart="true" />
 		<MappedProperty name="Table" underlyingMember="TABLE_NAME" />
 	</Define>
+
+
+
+	<Define name="TplMappedIdentifierListStoredProcedureParameter" parameters="filter" >
+		<MappedIdentifierPart name="Catalog" underlyingMember="PROCEDURE_CATALOG" />
+		<MappedIdentifierPart name="Schema" underlyingMember="PROCEDURE_SCHEMA" />
+		<MappedIdentifierPart name="StoredProcedure" underlyingMember="PROCEDURE_NAME" />
+		<MappedIdentifierPart name="Name" underlyingMember="PARAMETER_NAME" />
+	</Define>
+
+	<Define name="TplMappedPropertyListStoredProcedureParameter" >
+		<MappedProperty name="StoredProcedure" isIdentifierPart="true" />
+		<MappedProperty name="Name" isIdentifierPart="true" />
+		<MappedProperty name="Table" underlyingMember="TABLE_NAME" />
+		<MappedProperty name="Column" underlyingMember="COLUMN_NAME" />
+		<MappedProperty name="Direction" underlyingMembers="PARAMETER_DIRECTION">
+			<Conversion>
+				<Calculate expr="IIF({0} = 1, 'IN', IIF({0} = 2, 'OUT', IIF({0} = 3, 'IN/OUT', 'RETVAL')))" exprType="System.String" />
+			</Conversion>
+		</MappedProperty>
+		<MappedProperty name="Package" underlyingMember="PACKAGE_NAME" />
+	</Define>
+
+
+	
+	<Define name="TplMappedIdentifierListStoredProcedureColumn" parameters="filter" >
+		<MappedIdentifierPart name="Catalog" underlyingMember="PROCEDURE_CATALOG" />
+		<MappedIdentifierPart name="Schema" underlyingMember="PROCEDURE_SCHEMA" />
+		<MappedIdentifierPart name="ScalarFunction" underlyingMember="PROCEDURE_NAME" />
+		<MappedIdentifierPart name="Name" underlyingMember="PARAMETER_NAME" />
+	</Define>
+
+	<Define name="TplMappedPropertyListStoredProcedureColumn" >
+		<MappedProperty name="ScalarFunction" isIdentifierPart="true" />
+		<MappedProperty name="Name" isIdentifierPart="true" />
+		<MappedProperty name="Table" underlyingMember="TABLE_NAME" />
+		<MappedProperty name="Column" underlyingMember="COLUMN_NAME" />
+		<MappedProperty name="Direction" underlyingMembers="PARAMETER_DIRECTION">
+			<Conversion>
+				<Calculate expr="IIF({0} = 1, 'IN', IIF({0} = 2, 'OUT', IIF({0} = 3, 'IN/OUT', 'RETVAL')))" exprType="System.String" />
+			</Conversion>
+		</MappedProperty>
+		<MappedProperty name="Package" underlyingMember="PACKAGE_NAME" />
+	</Define>
+
+
+
+	<Define name="TplMappedIdentifierListScalarFunctionParameter" parameters="filter">
+		<MappedIdentifierPart name="Catalog" underlyingMember="FUNCTION_CATALOG" />
+		<MappedIdentifierPart name="Schema" underlyingMember="FUNCTION_SCHEMA" />
+		<MappedIdentifierPart name="ScalarFunction" underlyingMember="FUNCTION_NAME" />
+		<MappedIdentifierPart name="Name" underlyingMember="ARGUMENT_NAME" >
+			<Conversion>
+				<Calculate expr="IIF({0} IS NOT NULL OR '$(filter)' = 'true', {0}, '@RETURN_VALUE'" exprType="System.String" />
+			</Conversion>
+		</MappedIdentifierPart>
+	</Define>
+
+	<Define name="TplMappedPropertyListScalarFunctionParameter" >
+		<MappedProperty name="ScalarFunction" isIdentifierPart="true" />
+		<MappedProperty name="Name" isIdentifierPart="true" />
+		<MappedProperty name="Table" underlyingMember="TABLE_NAME" />
+		<MappedProperty name="Column" underlyingMember="COLUMN_NAME" />
+		<MappedProperty name="Direction" underlyingMembers="PSEUDO_NAME">
+			<Conversion>
+				<Calculate expr="IIF({0} = '@RETURN_VALUE', 'RETVAL', 'IN')" exprType="System.String" />
+			</Conversion>
+		</MappedProperty>
+		<MappedProperty name="Package" underlyingMember="PACKAGE_NAME" />
+	</Define>
+
+
 
 </DataObjectSupport>

@@ -10,29 +10,27 @@
 
 	<Define name="TplStandardValuesInverseBoolean" >
 		<StandardValues>
-			<StandardValue value="false">True</StandardValue>
-			<StandardValue value="true">False</StandardValue>
+			<StandardValue value="false" resource="Property_Value_Boolean_False" />
+			<StandardValue value="true" resource="Property_Value_Boolean_True" />
 		</StandardValues>
 	</Define>
 
 	<Define name="TplStandardValuesOrdinalBoolean" >
 		<StandardValues>
-			<StandardValue value="0">False</StandardValue>
-			<StandardValue value="1">True</StandardValue>
+			<StandardValue value="0" resource="Property_Value_Boolean_False" />
+			<StandardValue value="1" resource="Property_Value_Boolean_True" />
 		</StandardValues>
 	</Define>
 
 	<Define name="TplStandardValuesInverseOrdinalBoolean" >
 		<StandardValues>
-			<StandardValue value="0">True</StandardValue>
-			<StandardValue value="1">False</StandardValue>
+			<StandardValue value="0" resource="Property_Value_Boolean_True" />
+			<StandardValue value="1" resource="Property_Value_Boolean_False" />
 		</StandardValues>
 	</Define>
 
-
-
-
 	<Define name="TplStandardValuesColumnDataType" >
+		<!-- Mostly c based. c is in English -->
 		<StandardValues>
 			<StandardValue value="array">Array</StandardValue>
 			<StandardValue value="bigint">BigInt</StandardValue>
@@ -57,55 +55,65 @@
 		</StandardValues>
 	</Define>
 
+	<Define name="TplStandardValuesServerType" >
+		<StandardValues>
+			<StandardValue value="0" resource="Property_Value_ServerType_Default" />
+			<StandardValue value="1" resource="Property_Value_ServerType_Embedded" />
+		</StandardValues>
+	</Define>
+
 	<Define name="TplStandardValuesTriggerEventType" >
 		<StandardValues>
-			<StandardValue value="1">Before insert</StandardValue>
-			<StandardValue value="2">After insert</StandardValue>
-			<StandardValue value="3">Before update</StandardValue>
-			<StandardValue value="4">After update</StandardValue>
-			<StandardValue value="5">Before delete</StandardValue>
-			<StandardValue value="6">After delete</StandardValue>
-			<StandardValue value="17">Before insert or update</StandardValue>
-			<StandardValue value="18">After insert or update</StandardValue>
-			<StandardValue value="25">Before insert or delete</StandardValue>
-			<StandardValue value="26">After insert or delete</StandardValue>
-			<StandardValue value="27">Before update or delete</StandardValue>
-			<StandardValue value="28">After update or delete</StandardValue>
-			<StandardValue value="113">Before insert, update or delete</StandardValue>
-			<StandardValue value="114">After insert, update or delete</StandardValue>
-			<StandardValue value="8192">On connect</StandardValue>
-			<StandardValue value="8193">On disconnect</StandardValue>
-			<StandardValue value="8194">On transaction begin</StandardValue>
-			<StandardValue value="8195">On transaction commit</StandardValue>
-			<StandardValue value="8196">On transaction rollback"</StandardValue>
+			<StandardValue value="1" resource="Property_Value_TriggerEventType_BeforeInsert" />
+			<StandardValue value="2" resource="Property_Value_TriggerEventType_AfterInsert" />
+			<StandardValue value="3" resource="Property_Value_TriggerEventType_BeforeUpdate" />
+			<StandardValue value="4" resource="Property_Value_TriggerEventType_AfterUpdate" />
+			<StandardValue value="5" resource="Property_Value_TriggerEventType_BeforeDelete" />
+			<StandardValue value="6" resource="Property_Value_TriggerEventType_AfterDelete" />
+			<StandardValue value="17" resource="Property_Value_TriggerEventType_BeforeInsertUpdate" />
+			<StandardValue value="18" resource="Property_Value_TriggerEventType_AfterInsertUpdate" />
+			<StandardValue value="25" resource="Property_Value_TriggerEventType_BeforeInsertDelete" />
+			<StandardValue value="26" resource="Property_Value_TriggerEventType_AfterInsertDelete" />
+			<StandardValue value="27" resource="Property_Value_TriggerEventType_BeforeUpdateDelete" />
+			<StandardValue value="28" resource="Property_Value_TriggerEventType_AfterUpdateDelete" />
+			<StandardValue value="113" resource="Property_Value_TriggerEventType_BeforeInsertUpdateDelete" />
+			<StandardValue value="114" resource="Property_Value_TriggerEventType_AfterInsertUpdateDelete" />
+			<StandardValue value="8192" resource="Property_Value_TriggerEventType_OnConnect" />
+			<StandardValue value="8193" resource="Property_Value_TriggerEventType_OnDisconnect" />
+			<StandardValue value="8194" resource="Property_Value_TriggerEventType_OnTransactionBegin" />
+			<StandardValue value="8195" resource="Property_Value_TriggerEventType_OnTransactionCommit" />
+			<StandardValue value="8196" resource="Property_Value_TriggerEventType_OnTransactionRollback" />
 		</StandardValues>
 	</Define>
 
 	<Define name="TplStandardValuesForeignKeyRule" >
 		<StandardValues>
-			<StandardValue value="0">No Action</StandardValue>
-			<StandardValue value="1">Cascade</StandardValue>
-			<StandardValue value="2">Set Null</StandardValue>
-			<StandardValue value="3">Set Default</StandardValue>
+			<StandardValue value="0" resource="Property_Value_ForeignKeyRule_NoAction" />
+			<StandardValue value="1" resource="Property_Value_ForeignKeyRule_Cascade" />
+			<StandardValue value="2" resource="Property_Value_ForeignKeyRule_SetNull" />
+			<StandardValue value="3" resource="Property_Value_ForeignKeyRule_SetDefault" />
 		</StandardValues>
 	</Define>
 
 
+	<!-- Definition list of empty column properties -->
+	<Define name="TplPropertiesListEmptyColumn" />
 
-	<!-- Definition list of common column properties -->
-	<Define name="TplPropertiesListStandardColumn" >
-		<Property name="COLUMN_NAME">
+
+		<!-- Definition list of common column properties -->
+	<Define name="TplPropertiesListStandardColumn" parameters="identifierColumn">
+		<Property name="$(identifierColumn)">
 			<DisplayName resource="Identifier_Name_Name" />
 			<Category resource="Category_Identifier" />
 			<Description resource="Identifier_Desc_Name" />
 		</Property>
-		<Property name="COLUMN_DATA_TYPE">
+		<Property name="FIELD_DATA_TYPE">
 			<DisplayName resource="Property_Name_Column_ProviderDataType" />
 			<Category resource="Category_DataType" />
 			<Description resource="Property_Desc_Column_ProviderDataType" />
 			<StandardValuesRef name="TplStandardValuesColumnDataType"/>
 		</Property>
-		<Property name="COLUMN_SIZE">
+		<Property name="FIELD_SIZE">
 			<DisplayName resource="Property_Name_Column_Length" />
 			<Category resource="Category_DataType" />
 			<Description resource="Property_Desc_Column_Length" />
@@ -150,20 +158,10 @@
 			<Category resource="Category_Identifier" />
 			<Description resource="Property_Desc_Column_Ordinal" />
 		</Property>
-		<Property name="COLUMN_DEFAULT">
+		<Property name="FIELD_DEFAULT">
 			<DisplayName resource="Property_Name_Column_Default" />
 			<Category resource="Category_DataType" />
 			<Description resource="Property_Desc_Column_Default" />
-		</Property>
-		<Property name="IN_PRIMARYKEY">
-			<DisplayName resource="Property_Name_Column_InPrimaryKey" />
-			<Category resource="Category_Constraints" />
-			<Description resource="Property_Desc_Column_InPrimaryKey" />
-		</Property>
-		<Property name="IS_UNIQUE">
-			<DisplayName resource="Property_Name_Column_IsUnique" />
-			<Category resource="Category_Constraints" />
-			<Description resource="Property_Desc_Column_IsUnique" />
 		</Property>
 		<Property name="IS_COMPUTED">
 			<DisplayName resource="Property_Name_Column_Computed" />
@@ -174,6 +172,20 @@
 			<DisplayName resource="Property_Name_Column_Expression" />
 			<Category resource="Category_Initialization" />
 			<Description resource="Property_Desc_Column_Expression" />
+		</Property>
+	</Define>
+	
+	<!-- Definition list of advanced column properties -->
+	<Define name="TplPropertiesListAdvancedColumn" >
+		<Property name="IN_PRIMARYKEY">
+			<DisplayName resource="Property_Name_Column_InPrimaryKey" />
+			<Category resource="Category_Constraints" />
+			<Description resource="Property_Desc_Column_InPrimaryKey" />
+		</Property>
+		<Property name="IS_UNIQUE">
+			<DisplayName resource="Property_Name_Column_IsUnique" />
+			<Category resource="Category_Constraints" />
+			<Description resource="Property_Desc_Column_IsUnique" />
 		</Property>
 		<Property name="IS_IDENTITY">
 			<DisplayName resource="Property_Name_Column_IsIdentity" />
@@ -370,12 +382,78 @@
 	</Define>
 
 
-	
+	<!-- Definition list of stored procedure specific column properties -->
+	<Define name="TplPropertiesListStoredProcedureColumn" >
+		<Property name="PROCEDURE_CATALOG">
+			<DisplayName resource="Identifier_Name_Catalog" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Catalog" />
+		</Property>
+		<Property name="PROCEDURE_SCHEMA">
+			<DisplayName resource="Identifier_Name_Schema" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Schema" />
+		</Property>
+		<Property name="PROCEDURE_NAME">
+			<DisplayName resource="Identifier_Name_StoredProcedure" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_StoredProcedure" />
+		</Property>
+		<Property name="PACKAGE_NAME">
+			<DisplayName resource="Property_Name_Package" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Property_Desc_Package" />
+		</Property>
+		<Property name="PARAMETER_DIRECTION">
+			<DisplayName resource="Property_Name_Parameter_Direction" />
+			<Description resource="Property_Desc_Parameter_Direction" />
+			<StandardValues>
+				<StandardValue value="1" resource="Property_Value_Direction_In" />
+				<StandardValue value="2" resource="Property_Value_Direction_Out" />
+				<StandardValue value="3" resource="Property_Value_Direction_InOut" />
+				<StandardValue value="6" resource="Property_Value_Direction_Return" />
+			</StandardValues>
+		</Property>
+	</Define>
+
+
+	<!-- Definition list of function specific column properties -->
+	<Define name="TplPropertiesListFunctionColumn" >
+		<Property name="FUNCTION_CATALOG">
+			<DisplayName resource="Identifier_Name_Catalog" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Catalog" />
+		</Property>
+		<Property name="FUNCTION_SCHEMA">
+			<DisplayName resource="Identifier_Name_Schema" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_Schema" />
+		</Property>
+		<Property name="FUNCTION_NAME">
+			<DisplayName resource="Identifier_Name_ScalarFunction" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_ScalarFunction" />
+		</Property>
+		<Property name="PSEUDO_NAME">
+			<DisplayName resource="Identifier_Name_PseudoName" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Identifier_Desc_PseudoName" />
+		</Property>
+		<Property name="PACKAGE_NAME">
+			<DisplayName resource="Property_Name_Package" />
+			<Category resource="Category_Identifier" />
+			<Description resource="Property_Desc_Package" />
+		</Property>
+	</Define>
+
+
+
 	<!-- Definition of column properties -->
-	<Define name="TplPropertiesColumn" parameters="parentType">
+	<Define name="TplPropertiesColumn" parameters="parentType,type,identifierColumn,advanced">
 		<Properties>
-			<TypeDisplayName resource="Type_$(parentType)Column" />
-			<PropertyListRef name="TplPropertiesListStandardColumn" />
+			<TypeDisplayName resource="Type_$(parentType)$(type)" />
+			<PropertyListRef name="TplPropertiesListStandardColumn" arguments="$(identifierColumn)" />
+			<PropertyListRef name="TplPropertiesList$(advanced)Column" />
 			<PropertyListRef name="TplPropertiesList$(parentType)Column" />
 		</Properties>
 	</Define>
@@ -396,7 +474,7 @@
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.UniqueKey$(parentType).ico" when="{Column.IN_PRIMARYKEY}" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)$(parentType)Column.ico" when="{Column.PARENT_TYPE} = 'Trigger' OR {Column.PARENT_TYPE} = 'View'" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Column.ico" assembly="" />
-				<PropertiesRef name="TplPropertiesColumn" arguments="$(parentType)"/>
+				<PropertiesRef name="TplPropertiesColumn" arguments="$(parentType),Column,COLUMN_NAME,Advanced"/>
 			</SelectionNode>
 		</Selection>
 	</Define>

@@ -2,7 +2,7 @@ SET TERM ^ ;
 EXECUTE BLOCK
 	RETURNS (
         TABLE_CATALOG varchar(10), TABLE_SCHEMA varchar(10), TABLE_NAME varchar(50), COLUMN_NAME varchar(50),
-		ORDINAL_POSITION smallint, IS_SYSTEM_FLAG int, FIELD_SUB_TYPE smallint,
+		IS_SYSTEM_FLAG int, FIELD_SUB_TYPE smallint,
         FIELD_SIZE int, NUMERIC_PRECISION int, NUMERIC_SCALE int, CHARACTER_MAX_LENGTH int, CHARACTER_OCTET_LENGTH int,
         DOMAIN_CATALOG varchar(10), DOMAIN_SCHEMA varchar(1), DOMAIN_NAME varchar(50), FIELD_DEFAULT blob sub_type 1,
         EXPRESSION blob sub_type 1, IS_COMPUTED boolean, IS_ARRAY boolean, IS_NULLABLE boolean, READONLY_FLAG smallint, FIELD_TYPE smallint,
@@ -10,7 +10,14 @@ EXECUTE BLOCK
         COLLATION_CATALOG varchar(10), COLLATION_SCHEMA varchar(10), COLLATION_NAME varchar(50),
         DESCRIPTION varchar(50), IN_PRIMARYKEY boolean, IS_UNIQUE boolean, IS_IDENTITY boolean, SEQUENCE_GENERATOR varchar(50),
         -- [returnClause]~0~ directly after TRIGGER_NAME varchar(50)
-		IDENTITY_SEED bigint, IDENTITY_INCREMENT int, IDENTITY_CURRENT bigint, PARENT_TYPE varchar(15), TRIGGER_NAME varchar(50))
+		IDENTITY_SEED bigint, IDENTITY_INCREMENT int, IDENTITY_CURRENT bigint, PARENT_TYPE varchar(15),
+		ORDINAL_POSITION smallint, TRIGGER_NAME varchar(50),
+		FUNCTION_CATALOG varchar(10),
+		FUNCTION_SCHEMA varchar(10),
+		FUNCTION_NAME varchar(50),
+		ARGUMENT_NAME varchar(50),
+		PSEUDO_NAME varchar(50),
+		PACKAGE_NAME varchar(10))
 AS
 DECLARE PRIMARY_DEPENDENCYCOUNT int;
 DECLARE TRIGGER_DEPENDENCYCOUNT int;
@@ -21,7 +28,7 @@ BEGIN
 
 	SELECT COUNT(*)
 	-- [rdb$relation_fields r]~1~
-	FROM rdb$relation_fields r
+	FROM rdb$function_arguments r
 	INNER JOIN rdb$relation_constraints r_con
 		ON r_con.rdb$relation_name = r.rdb$relation_name AND r_con.rdb$constraint_type = 'PRIMARY KEY'
 	INNER JOIN rdb$index_segments r_seg 
@@ -32,7 +39,7 @@ BEGIN
 	INNER JOIN rdb$dependencies r_dep
 		ON r_dep.rdb$dependent_name = r_trg.rdb$trigger_name
 			AND r_dep.rdb$depended_on_name = r_trg.rdb$relation_name AND r_dep.rdb$field_name = r.rdb$field_name
-		WHERE r.rdb$relation_name = 'CRMASTER'
+		WHERE r.rdb$function_name = 'MYFUNC'
 	-- [crlfWHERE r.rdb$relation_name = '...']~2~ directly after ' = r.rdb$field_name'
 
 	INTO :PRIMARY_DEPENDENCYCOUNT;
@@ -44,6 +51,7 @@ BEGIN
 		SELECT
 			-- :TABLE_CATALOG, :TABLE_SCHEMA, :TABLE_NAME, :COLUMN_NAME
 			null, null, r.rdb$relation_name, r.rdb$field_name,
+			-- :IS_SYSTEM_FLAG,
 			(CASE WHEN r.rdb$system_flag <> 1 THEN 0 ELSE 1 END),
 			-- :FIELD_SUB_TYPE
 			r_fld.rdb$field_sub_type,
@@ -98,16 +106,22 @@ BEGIN
 			-- :SEGMENT_FIELD
 			r_seg.rdb$field_name,
 			-- :IDENTITY_TYPE - [r.rdb$identity_type|null]~3~
-			r.rdb$identity_type,
+			null,
 			-- :SEQUENCE_GENERATOR, :IDENTITY_SEED, :IDENTITY_INCREMENT
 			r_gen.rdb$generator_name, r_gen.rdb$initial_value, r_gen.rdb$generator_increment,
 			-- :PARENT_TYPE - [Table|'ParentType']~4~
 			-- [, r_dep.rdb$dependent_name]~5~ (for additional columns)
-			'Table',
-			r.rdb$field_position,
-			r_dep.rdb$dependent_name
+			'Function',
+			r.rdb$argument_position,
+			r_dep.rdb$dependent_name,
+			null,
+			null,
+			r.rdb$function_name,
+			r.rdb$argument_name,
+			(CASE WHEN r.rdb$argument_name IS NULL THEN '@RETURN_VALUE' ELSE r.rdb$argument_name END),
+			(CASE WHEN r.rdb$system_flag <> 1 THEN 'USER' ELSE 'SYSTEM' END)
 		-- [rdb$relation_fields r]~1~
-		FROM rdb$relation_fields r
+		FROM rdb$function_arguments r
 		INNER JOIN rdb$fields r_fld
 			ON r_fld.rdb$field_name = r.rdb$field_source
 		LEFT OUTER JOIN rdb$character_sets r_cs
@@ -126,10 +140,10 @@ BEGIN
         LEFT OUTER JOIN rdb$generators r_gen
 			-- [= r.rdb$generator_name|IS NULL]~6~
 		-- [crlfWHERE r.rdb$relation_name = '...']~2~
-            ON r_gen.rdb$generator_name = r.rdb$generator_name
-		WHERE r.rdb$relation_name = 'CRMASTER'
+            ON r_gen.rdb$generator_name IS NULL
+		WHERE r.rdb$function_name = 'MYFUNC'
 		-- [r.rdb$relation_name]~7~ [r.rdb$field_position]~8~
-		ORDER BY r.rdb$relation_name, r.rdb$field_position
+		ORDER BY r.rdb$function_name, r.rdb$argument_position
 
         INTO :TABLE_CATALOG, :TABLE_SCHEMA, :TABLE_NAME, :COLUMN_NAME, :IS_SYSTEM_FLAG,
 		:FIELD_SUB_TYPE, :FIELD_SIZE, :NUMERIC_PRECISION, :NUMERIC_SCALE,
@@ -141,8 +155,14 @@ BEGIN
 		:IN_PRIMARYKEY, :IS_IDENTITY, :SEGMENT_FIELD,
 		-- [,crlfTRIGGER_NAME]~9~ directly after :PARENT_TYPE
 		:IDENTITY_TYPE, :SEQUENCE_GENERATOR, :IDENTITY_SEED, :IDENTITY_INCREMENT, :PARENT_TYPE,
-			:ORDINAL_POSITION,
-			:TRIGGER_NAME
+		:ORDINAL_POSITION,
+		:TRIGGER_NAME,
+			:FUNCTION_CATALOG,
+			:FUNCTION_SCHEMA,
+			:FUNCTION_NAME,
+			:ARGUMENT_NAME,
+			:PSEUDO_NAME,
+			:PACKAGE_NAME
 	DO BEGIN
 		IF (:SEGMENT_FIELD IS NULL OR :PRIMARY_DEPENDENCYCOUNT <> 1) THEN
 			:IS_IDENTITY = false;

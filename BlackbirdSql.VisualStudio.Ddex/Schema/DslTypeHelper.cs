@@ -18,7 +18,6 @@
 //$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 using System;
-using System.Data;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Types;
 
@@ -26,157 +25,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 internal static class DslTypeHelper
 {
-	public static bool IsDBNull(object value)
-	{
-		return value == null || value == DBNull.Value;
-	}
-
-	public static short? GetSize(DslDbDataType type)
-	{
-		switch (type)
-		{
-			case DslDbDataType.Array:
-			case DslDbDataType.Binary:
-			case DslDbDataType.Text:
-				return 8;
-
-			case DslDbDataType.SmallInt:
-				return 2;
-
-			case DslDbDataType.Integer:
-			case DslDbDataType.Float:
-			case DslDbDataType.Date:
-			case DslDbDataType.Time:
-				return 4;
-
-			case DslDbDataType.BigInt:
-			case DslDbDataType.Double:
-			case DslDbDataType.TimeStamp:
-			case DslDbDataType.Dec16:
-			case DslDbDataType.TimeTZ:
-				return 8;
-
-			case DslDbDataType.Guid:
-			case DslDbDataType.TimeStampTZEx:
-			case DslDbDataType.Dec34:
-			case DslDbDataType.Int128:
-				return 16;
-
-			case DslDbDataType.Boolean:
-				return 1;
-
-			case DslDbDataType.TimeStampTZ:
-			case DslDbDataType.TimeTZEx:
-				return 12;
-
-			default:
-				return null;
-		}
-	}
-
-	public static int GetSqlTypeFromDbDataType(DslDbDataType type, bool isNullable)
-	{
-		int sqltype;
-
-		switch (type)
-		{
-			case DslDbDataType.Array:
-				sqltype = IscCodes.SQL_ARRAY;
-				break;
-
-			case DslDbDataType.Binary:
-			case DslDbDataType.Text:
-				sqltype = IscCodes.SQL_BLOB;
-				break;
-
-			case DslDbDataType.Char:
-				sqltype = IscCodes.SQL_TEXT;
-				break;
-
-			case DslDbDataType.VarChar:
-				sqltype = IscCodes.SQL_VARYING;
-				break;
-
-			case DslDbDataType.SmallInt:
-				sqltype = IscCodes.SQL_SHORT;
-				break;
-
-			case DslDbDataType.Integer:
-				sqltype = IscCodes.SQL_LONG;
-				break;
-
-			case DslDbDataType.BigInt:
-				sqltype = IscCodes.SQL_INT64;
-				break;
-
-			case DslDbDataType.Float:
-				sqltype = IscCodes.SQL_FLOAT;
-				break;
-
-			case DslDbDataType.Guid:
-				sqltype = IscCodes.SQL_TEXT;
-				break;
-
-			case DslDbDataType.Double:
-				sqltype = IscCodes.SQL_DOUBLE;
-				break;
-
-			case DslDbDataType.Date:
-				sqltype = IscCodes.SQL_TYPE_DATE;
-				break;
-
-			case DslDbDataType.Time:
-				sqltype = IscCodes.SQL_TYPE_TIME;
-				break;
-
-			case DslDbDataType.TimeStamp:
-				sqltype = IscCodes.SQL_TIMESTAMP;
-				break;
-
-			case DslDbDataType.Boolean:
-				sqltype = IscCodes.SQL_BOOLEAN;
-				break;
-
-			case DslDbDataType.TimeStampTZ:
-				sqltype = IscCodes.SQL_TIMESTAMP_TZ;
-				break;
-
-			case DslDbDataType.TimeStampTZEx:
-				sqltype = IscCodes.SQL_TIMESTAMP_TZ_EX;
-				break;
-
-			case DslDbDataType.TimeTZ:
-				sqltype = IscCodes.SQL_TIME_TZ;
-				break;
-
-			case DslDbDataType.TimeTZEx:
-				sqltype = IscCodes.SQL_TIME_TZ_EX;
-				break;
-
-			case DslDbDataType.Dec16:
-				sqltype = IscCodes.SQL_DEC16;
-				break;
-
-			case DslDbDataType.Dec34:
-				sqltype = IscCodes.SQL_DEC34;
-				break;
-
-			case DslDbDataType.Int128:
-				sqltype = IscCodes.SQL_INT128;
-				break;
-
-
-			default:
-				throw InvalidDataType((int)type);
-		}
-
-		if (isNullable)
-		{
-			sqltype++;
-		}
-
-		return sqltype;
-	}
 
 	public static int GetSqlTypeFromBlrType(int type)
 	{
@@ -493,131 +341,7 @@ internal static class DslTypeHelper
 		}
 	}
 
-	public static Type GetTypeFromBlrType(int type, int subType, int scale)
-	{
-		return GetTypeFromDbDataType(GetDbDataTypeFromBlrType(type, subType, scale));
-	}
 
-	public static DbType GetDbTypeFromDbDataType(DslDbDataType type)
-	{
-		switch (type)
-		{
-			case DslDbDataType.Array:
-			case DslDbDataType.Binary:
-				return DbType.Binary;
-
-			case DslDbDataType.Text:
-			case DslDbDataType.VarChar:
-			case DslDbDataType.Char:
-				return DbType.String;
-
-			case DslDbDataType.SmallInt:
-				return DbType.Int16;
-
-			case DslDbDataType.Integer:
-				return DbType.Int32;
-
-			case DslDbDataType.BigInt:
-				return DbType.Int64;
-
-			case DslDbDataType.Date:
-				return DbType.Date;
-
-			case DslDbDataType.Time:
-				return DbType.Time;
-
-			case DslDbDataType.TimeStamp:
-				return DbType.DateTime;
-
-			case DslDbDataType.Numeric:
-			case DslDbDataType.Decimal:
-				return DbType.Decimal;
-
-			case DslDbDataType.Float:
-				return DbType.Single;
-
-			case DslDbDataType.Double:
-				return DbType.Double;
-
-			case DslDbDataType.Guid:
-				return DbType.Guid;
-
-			case DslDbDataType.Boolean:
-				return DbType.Boolean;
-
-			case DslDbDataType.TimeStampTZ:
-			case DslDbDataType.TimeStampTZEx:
-			case DslDbDataType.TimeTZ:
-			case DslDbDataType.TimeTZEx:
-			case DslDbDataType.Dec16:
-			case DslDbDataType.Dec34:
-			case DslDbDataType.Int128:
-				// nothing better at the moment
-				return DbType.Object;
-
-			default:
-				throw InvalidDataType((int)type);
-		}
-	}
-
-	public static DslDbDataType GetDbDataTypeFromDbType(DbType type)
-	{
-		switch (type)
-		{
-			case DbType.String:
-			case DbType.AnsiString:
-				return DslDbDataType.VarChar;
-
-			case DbType.StringFixedLength:
-			case DbType.AnsiStringFixedLength:
-				return DslDbDataType.Char;
-
-			case DbType.Byte:
-			case DbType.SByte:
-			case DbType.Int16:
-			case DbType.UInt16:
-				return DslDbDataType.SmallInt;
-
-			case DbType.Int32:
-			case DbType.UInt32:
-				return DslDbDataType.Integer;
-
-			case DbType.Int64:
-			case DbType.UInt64:
-				return DslDbDataType.BigInt;
-
-			case DbType.Date:
-				return DslDbDataType.Date;
-
-			case DbType.Time:
-				return DslDbDataType.Time;
-
-			case DbType.DateTime:
-				return DslDbDataType.TimeStamp;
-
-			case DbType.Object:
-			case DbType.Binary:
-				return DslDbDataType.Binary;
-
-			case DbType.Decimal:
-				return DslDbDataType.Decimal;
-
-			case DbType.Double:
-				return DslDbDataType.Double;
-
-			case DbType.Single:
-				return DslDbDataType.Float;
-
-			case DbType.Guid:
-				return DslDbDataType.Guid;
-
-			case DbType.Boolean:
-				return DslDbDataType.Boolean;
-
-			default:
-				throw InvalidDataType((int)type);
-		}
-	}
 
 	public static DslDbDataType GetDbDataTypeFromBlrType(int type, int subType, int scale)
 	{
@@ -786,46 +510,14 @@ internal static class DslTypeHelper
 		}
 	}
 
-	public static DslDbDataType GetDbDataTypeFromFbDbType(FbDbType type)
-	{
-		// these are aligned for this conversion
-		return (DslDbDataType)type;
-	}
 
-	public static TimeSpan DateTimeTimeToTimeSpan(DateTime d)
-	{
-		return TimeSpan.FromTicks(d.Subtract(d.Date).Ticks);
-	}
 
-	/*
-	 * We don't need these ATM
-	 * 
-	public static FbZonedDateTime CreateZonedDateTime(DateTime dateTime, ushort tzId, short? offset)
-	{
-		if (!TimeZoneMapping.TryGetById(tzId, out var tz))
-		{
-			throw new ArgumentException("Unknown time zone ID.");
-		}
-		return new FbZonedDateTime(dateTime, tz, offset != null ? TimeSpan.FromMinutes((short)offset) : (TimeSpan?)null);
-	}
 
-	public static FbZonedTime CreateZonedTime(TimeSpan time, ushort tzId, short? offset)
-	{
-		if (!TimeZoneMapping.TryGetById(tzId, out var tz))
-		{
-			throw new ArgumentException("Unknown time zone ID.");
-		}
-		return new FbZonedTime(time, tz, offset != null ? TimeSpan.FromMinutes((short)offset) : (TimeSpan?)null);
-	}
-	*/
 
 	public static Exception InvalidDataType(int type)
 	{
 		return new ArgumentException($"Invalid data type: {type}.");
 	}
 
-	public static int BlrAlign(int current, int alignment)
-	{
-		return (current + alignment - 1) & ~(alignment - 1);
-	}
+
 }

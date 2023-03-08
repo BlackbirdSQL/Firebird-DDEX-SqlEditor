@@ -1,6 +1,7 @@
-﻿using System.Windows.Forms;
-
-
+﻿using System.ComponentModel;
+using System.Globalization;
+using System.Windows.Forms;
+using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 namespace BlackbirdSql.Common.Extensions;
 
@@ -14,6 +15,50 @@ namespace BlackbirdSql.Common.Extensions;
 // =========================================================================================================
 static class ExtensionMethods
 {
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Converts a string to title case and strips out spaces. This provides a
+	/// readable/usable column name format for connection property descriptors.
+	/// </summary>
+	/// <param name="value"></param>
+	/// <returns>
+	/// The title case string without spaces else returns the original if the string
+	/// is null
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	public static string DescriptorCase(this string value)
+	{
+		if (string.IsNullOrEmpty(value))
+			return value;
+
+		return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(value).Replace(" ", "");
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Performs an extended get of a connection descriptor's value
+	/// if it's underlying connection properties object implements the dynamic
+	/// <see cref="ICustomTypeDescriptor"/> interface.
+	/// </summary>
+	/// <param name="descriptor"></param>
+	/// <param name="connectionProperties"></param>
+	/// <returns>The descriptor's current value</returns>
+	// ---------------------------------------------------------------------------------
+	public static object GetValueX(this PropertyDescriptor descriptor, IVsDataConnectionProperties connectionProperties)
+	{
+		object component = connectionProperties;
+
+		if (connectionProperties is ICustomTypeDescriptor customTypeDescriptor)
+		{
+			component = customTypeDescriptor.GetPropertyOwner(descriptor);
+		}
+
+		return descriptor.GetValue(component);
+	}
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>

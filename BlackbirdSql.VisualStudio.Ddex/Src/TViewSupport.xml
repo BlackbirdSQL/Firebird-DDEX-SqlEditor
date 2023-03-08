@@ -15,8 +15,41 @@
 				<CommandRef name="CommandUniversalNewQuery" />
 				<CommandRef name="CommandGlobalNewQuery" />
 			</GlobalCommands>
-			<ConnectionNode>
+			<ConnectionNode nodeId="Root" type="">
 				<InitialDisplayName>{Root.Server} ({Root.Database})</InitialDisplayName>
+				<Properties>
+					<Property name="InitialCatalog">
+						<DisplayName resource="Identifier_Name_DatabasePath" />
+						<Category resource="Category_Connection" />
+						<Description resource="Identifier_Desc_DatabasePath" />
+					</Property>
+					<Property name="UserId">
+						<DisplayName resource="Identifier_Name_UserId" />
+						<Category resource="Category_Connection" />
+						<Description resource="Identifier_Desc_UserId" />
+					</Property>
+					<Property name="ServerType">
+						<DisplayName resource="Identifier_Name_ServerType" />
+						<Category resource="Category_DataSourceInformation" />
+						<Description resource="Identifier_Desc_ServerType" />
+						<StandardValuesRef name="TplStandardValuesServerType" />
+					</Property>
+					<Property name="PortNumber">
+						<DisplayName resource="Identifier_Name_ServerPort" />
+						<Category resource="Category_DataSourceInformation" />
+						<Description resource="Identifier_Desc_ServerPort" />
+					</Property>
+					<Property name="MemoryUsage">
+						<DisplayName resource="Identifier_Name_MemoryUsage" />
+						<Category resource="Category_DataSourceInformation" />
+						<Description resource="Identifier_Desc_MemoryUsage" />
+					</Property>
+					<Property name="ActiveUsers">
+						<DisplayName resource="Identifier_Name_ActiveUsers" />
+						<Category resource="Category_DataSourceInformation" />
+						<Description resource="Identifier_Desc_ActiveUsers" />
+					</Property>
+				</Properties>
 				<Commands>
 					<!--<CommandRef name="CommandNewQuery" />-->
 					<!--<CommandRef name="CommandUniversalDetachDatabase" />-->
@@ -122,6 +155,9 @@
 											<Description resource="Property_Desc_Dsl" />
 										</Property>
 									</Properties>
+									<Commands>
+										<CommandRef name="CommandUniversalOpenText" />
+									</Commands>
 									<Children>
 										<StaticNode nodeId="StoredProcedureColumns">
 											<DisplayName resource="Node_Name_ProcedureColumns" />
@@ -131,77 +167,7 @@
 														<DisplayName>{Column.PARAMETER_NAME}</DisplayName>
 														<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamOut.ico" when="{Column.PARAMETER_DIRECTION} = 2" assembly="" />
 														<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamInOut.ico" assembly="" />
-														<Properties>
-															<TypeDisplayName resource="Type_StoredProcedureParameter" />
-															<Property name="PROCEDURE_CATALOG">
-																<DisplayName resource="Identifier_Name_Catalog" />
-																<Category resource="Category_Identifier" />
-																<Description resource="Identifier_Desc_Catalog" />
-															</Property>
-															<Property name="PROCEDURE_SCHEMA">
-																<DisplayName resource="Identifier_Name_Schema" />
-																<Category resource="Category_Identifier" />
-																<Description resource="Identifier_Desc_Schema" />
-															</Property>
-															<Property name="PROCEDURE_NAME">
-																<DisplayName resource="Identifier_Name_StoredProcedure" />
-																<Category resource="Category_Identifier" />
-																<Description resource="Identifier_Desc_StoredProcedure" />
-															</Property>
-															<Property name="PARAMETER_NAME">
-																<DisplayName resource="Identifier_Name_Name" />
-																<Category resource="Category_Identifier" />
-																<Description resource="Identifier_Desc_Name" />
-															</Property>
-															<Property name="PARAMETER_DATA_TYPE">
-																<DisplayName resource="Property_Name_Column_ProviderDataType" />
-																<Category resource="Category_DataType" />
-																<Description resource="Property_Desc_Column_ProviderDataType" />
-																<StandardValuesRef name="TplStandardValuesColumnDataType"/>
-															</Property>
-															<!--
-													<Property name="FW_DATA_TYPE">
-														<DisplayName resource="Property_Name_Column_FrameworkDataType" />
-														<Category resource="Category_DataType" />
-														<Description resource="Property_Desc_Column_FrameworkDataType" />
-													</Property>
-													-->
-															<Property name="PARAMETER_SIZE">
-																<DisplayName resource="Property_Name_Column_Length" />
-																<Category resource="Category_DataType" />
-																<Description resource="Property_Desc_Column_Length" />
-															</Property>
-															<Property name="NUMERIC_PRECISION">
-																<DisplayName resource="Property_Name_Column_Precision" />
-																<Category resource="Category_DataType" />
-																<Description resource="Property_Desc_Column_Precision" />
-															</Property>
-															<Property name="NUMERIC_SCALE">
-																<DisplayName resource="Property_Name_Column_Scale" />
-																<Category resource="Category_DataType" />
-																<Description resource="Property_Desc_Column_Scale" />
-															</Property>
-															<Property name="IS_NULLABLE">
-																<DisplayName resource="Property_Name_Column_Nullable" />
-																<Category resource="Category_DataType" />
-																<Description resource="Property_Desc_Column_Nullable" />
-															</Property>
-															<Property name="DESCRIPTION">
-																<DisplayName resource="Property_Name_Description" />
-																<Category resource="Category_Identifier" />
-																<Description resource="Property_Desc_Description" />
-															</Property>
-															<Property name="ORDINAL_POSITION">
-																<DisplayName resource="Property_Name_ProcedureColumn_Ordinal" />
-																<Description resource="Property_Desc_ProcedureColumn_Ordinal" />
-															</Property>
-															<!--
-													<Property name="ROWSET_NUMBER">
-														<DisplayName resource="Property_Name_ProcedureColumn_RowsetNumber" />
-														<Description resource="Property_Desc_ProcedureColumn_RowsetNumber" />
-													</Property>
-													-->
-														</Properties>
+														<PropertiesRef name="TplPropertiesColumn" arguments="StoredProcedure,Column,PARAMETER_NAME,Empty"/>
 													</SelectionNode>
 												</Selection>
 											</Children>
@@ -213,87 +179,7 @@
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamOut.ico" when="{Parameter.PARAMETER_DIRECTION} = 2" assembly="" />
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamInOut.ico" when="{Parameter.PARAMETER_DIRECTION} = 3" assembly="" />
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamReturn.ico" assembly="" />
-												<Properties>
-													<TypeDisplayName resource="Type_StoredProcedureParameter" />
-													<Property name="PROCEDURE_CATALOG">
-														<DisplayName resource="Identifier_Name_Catalog" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Catalog" />
-													</Property>
-													<Property name="PROCEDURE_SCHEMA">
-														<DisplayName resource="Identifier_Name_Schema" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Schema" />
-													</Property>
-													<Property name="PROCEDURE_NAME">
-														<DisplayName resource="Identifier_Name_StoredProcedure" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_StoredProcedure" />
-													</Property>
-													<Property name="PARAMETER_NAME">
-														<DisplayName resource="Identifier_Name_Name" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Name" />
-													</Property>
-													<Property name="PARAMETER_DATA_TYPE">
-														<DisplayName resource="Property_Name_Parameter_ProviderDataType" />
-														<Category resource="Category_DataType" />
-														<Description resource="Property_Desc_Parameter_ProviderDataType" />
-														<StandardValuesRef name="TplStandardValuesColumnDataType"/>
-													</Property>
-													<!--
-													<Property name="FW_DATA_TYPE">
-														<DisplayName resource="Property_Name_Parameter_FrameworkDataType" />
-														<Category resource="Category_DataType" />
-														<Description resource="Property_Desc_Parameter_FrameworkDataType" />
-													</Property>
-													-->
-													<Property name="PARAMETER_SIZE">
-														<DisplayName resource="Property_Name_Parameter_Length" />
-														<Category resource="Category_DataType" />
-														<Description resource="Property_Desc_Parameter_Length" />
-													</Property>
-													<Property name="NUMERIC_PRECISION">
-														<DisplayName resource="Property_Name_Parameter_Precision" />
-														<Category resource="Category_DataType" />
-														<Description resource="Property_Desc_Parameter_Precision" />
-													</Property>
-													<Property name="NUMERIC_SCALE">
-														<DisplayName resource="Property_Name_Parameter_Scale" />
-														<Category resource="Category_DataType" />
-														<Description resource="Property_Desc_Parameter_Scale" />
-													</Property>
-													<Property name="IS_NULLABLE">
-														<DisplayName resource="Property_Name_Parameter_Nullable" />
-														<Category resource="Category_DataType" />
-														<Description resource="Property_Desc_Parameter_Nullable" />
-													</Property>
-													<Property name="DESCRIPTION">
-														<DisplayName resource="Property_Name_Description" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Property_Desc_Description" />
-													</Property>
-													<Property name="ORDINAL_POSITION">
-														<DisplayName resource="Property_Name_Parameter_Ordinal" />
-														<Description resource="Property_Desc_Parameter_Ordinal" />
-													</Property>
-													<!--
-													<Property name="PARAMETER_DEFAULT">
-														<DisplayName resource="Property_Name_Parameter_Default" />
-														<Description resource="Property_Desc_Parameter_Default" />
-													</Property>
-													-->
-													<Property name="PARAMETER_DIRECTION">
-														<DisplayName resource="Property_Name_Parameter_Direction" />
-														<Description resource="Property_Desc_Parameter_Direction" />
-														<StandardValues>
-															<StandardValue value="1" resource="Property_Value_Direction_In" />
-															<StandardValue value="2" resource="Property_Value_Direction_Out" />
-															<StandardValue value="3" resource="Property_Value_Direction_InOut" />
-															<StandardValue value="6" resource="Property_Value_Direction_Return" />
-														</StandardValues>
-													</Property>
-												</Properties>
+												<PropertiesRef name="TplPropertiesColumn" arguments="StoredProcedure,Parameter,PARAMETER_NAME,Empty"/>
 											</SelectionNode>
 										</Selection>
 									</Children>
@@ -345,87 +231,16 @@
 											<Description resource="Property_Desc_Dsl" />
 										</Property>
 									</Properties>
+									<Commands>
+										<CommandRef name="CommandUniversalOpenText" />
+									</Commands>
 									<Children>
 										<Selection type="FunctionParameter" restrictions="{Function.FUNCTION_CATALOG},{Function.FUNCTION_SCHEMA},{Function.FUNCTION_NAME}">
 											<SelectionNode nodeId="Parameter">
 												<DisplayName>{Parameter.PSEUDO_NAME}</DisplayName>
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamIn.ico" when="{Parameter.ORDINAL_POSITION} > 0" assembly="" />
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamReturn.ico" assembly="" />
-												<Properties>
-													<TypeDisplayName resource="Type_FunctionParameter" />
-													<Property name="FUNCTION_CATALOG">
-														<DisplayName resource="Identifier_Name_Catalog" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Catalog" />
-													</Property>
-													<Property name="FUNCTION_SCHEMA">
-														<DisplayName resource="Identifier_Name_Schema" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Schema" />
-													</Property>
-													<Property name="FUNCTION_NAME">
-														<DisplayName resource="Identifier_Name_ScalarFunction" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_ScalarFunction" />
-													</Property>
-													<Property name="PSEUDO_NAME">
-														<DisplayName resource="Identifier_Name_Name" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Identifier_Desc_Name" />
-													</Property>
-													<Property name="PARAMETER_DATA_TYPE">
-														<DisplayName resource="Property_Name_Parameter_ProviderDataType" />
-														<Category resource="Category_DataType" />
-														<Description resource="Property_Desc_Parameter_ProviderDataType" />
-														<StandardValuesRef name="TplStandardValuesColumnDataType"/>
-													</Property>
-													<!--
-													<Property name="FW_DATA_TYPE">
-														<DisplayName resource="Property_Name_Parameter_FrameworkDataType" />
-														<Category resource="Category_DataType" />
-														<Description resource="Property_Desc_Parameter_FrameworkDataType" />
-													</Property>
-													-->
-													<Property name="PARAMETER_SIZE">
-														<DisplayName resource="Property_Name_Parameter_Length" />
-														<Category resource="Category_DataType" />
-														<Description resource="Property_Desc_Parameter_Length" />
-													</Property>
-													<Property name="NUMERIC_PRECISION">
-														<DisplayName resource="Property_Name_Parameter_Precision" />
-														<Category resource="Category_DataType" />
-														<Description resource="Property_Desc_Parameter_Precision" />
-													</Property>
-													<Property name="NUMERIC_SCALE">
-														<DisplayName resource="Property_Name_Parameter_Scale" />
-														<Category resource="Category_DataType" />
-														<Description resource="Property_Desc_Parameter_Scale" />
-													</Property>
-													<Property name="IS_NULLABLE">
-														<DisplayName resource="Property_Name_Parameter_Nullable" />
-														<Category resource="Category_DataType" />
-														<Description resource="Property_Desc_Parameter_Nullable" />
-													</Property>
-													<Property name="DESCRIPTION">
-														<DisplayName resource="Property_Name_Description" />
-														<Category resource="Category_Identifier" />
-														<Description resource="Property_Desc_Description" />
-													</Property>
-													<Property name="ORDINAL_POSITION">
-														<DisplayName resource="Property_Name_Parameter_Ordinal" />
-														<Description resource="Property_Desc_Parameter_Ordinal" />
-													</Property>
-													<!--
-													<Property name="PARAMETER_DEFAULT">
-														<DisplayName resource="Property_Name_Parameter_Default" />
-														<Description resource="Property_Desc_Parameter_Default" />
-													</Property>
-													<Property name="PARAMETER_DIRECTION">
-														<DisplayName resource="Property_Name_Parameter_Direction" />
-														<Description resource="Property_Desc_Parameter_Direction" />
-													</Property>
-													-->
-												</Properties>
+												<PropertiesRef name="TplPropertiesColumn" arguments="Function,Parameter,ARGUMENT_NAME,Empty"/>
 											</SelectionNode>
 										</Selection>
 									</Children>

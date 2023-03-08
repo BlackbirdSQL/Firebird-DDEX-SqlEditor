@@ -1,15 +1,37 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <DataObjectSupport xmlns="http://schemas.microsoft.com/VisualStudio/2007/07/Data/DataObjectSupport">
 
-	<!-- Mapped object types used by the IDE built-in commands -->
+	<!--
+	Mapped object types used by the IDE built-in commands
+	_____________________________________________________
+	Unable to locate any documentation re required mappings so we're placing every conceivable
+	mapping property in here including all SqlServer object types' properties or their respectve
+	mapping types' properties
+	-->
+
 	<!-- TBC when we have a list of all valid properties used by VS commands -->
 	<!-- Important: Set IsSystemObject to false to have built-in commands include system database objects -->
 
 	<MappedTypes>
 
-		<!-- To be tested -->
+		<!-- Collation -->
+		<MappedType name="Collation" underlyingType="Collation">
+			<Selection restrictions="{Catalog},{Schema},{Name}" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="COLLATION_CATALOG" />
+				<Part name="Schema" underlyingMember="COLLATION_SCHEMA" />
+				<Part name="Name" underlyingMember="COLLATION_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="Name" isIdentifierPart="true" />
+				<Property name="CharacterSet" underlyingMember="CHARACTER_SET_NAME" />
+				<Property name="Description" underlyingMember="DESCRIPTION" />
+			</Properties>
+		</MappedType>
+
+		<!-- Domain -->
 		<MappedType name="Domain" underlyingType="Domain">
-			<Selection restrictions="{Catalog},{Schema},{Name},null" />
+			<Selection restrictions="{Catalog},{Schema},{Name}" />
 			<Identifier>
 				<Part name="Catalog" underlyingMember="DOMAIN_CATALOG" />
 				<Part name="Schema" underlyingMember="DOMAIN_SCHEMA" />
@@ -40,23 +62,20 @@
 			</Properties>
 		</MappedType>
 
-		<MappedType name="Sequence" underlyingType="Sequence">
-			<Selection restrictions="{Catalog},{Schema},{Name},null" />
+		<!-- Role -->
+		<MappedType name="Role" underlyingType="Role">
+			<Selection restrictions="{Name}" />
 			<Identifier>
-				<Part name="Catalog" underlyingMember="GENERATOR_CATALOG" />
-				<Part name="Schema" underlyingMember="GENERATOR_SCHEMA" />
-				<Part name="Name" underlyingMember="GENERATOR_NAME" />
+				<Part name="Name" underlyingMember="ROLE_NAME" />
 			</Identifier>
 			<Properties>
 				<Property name="Name" isIdentifierPart="true" />
-				<Property name="InitialValue" underlyingMember="IDENTITY_SEED" />
-				<Property name="Increment" underlyingMember="IDENTITY_INCREMENT" />
-				<Property name="NextValue" underlyingMember="IDENTITY_CURRENT" />
+				<Property name="Owner" underlyingMember="OWNER_NAME" />
 			</Properties>
 		</MappedType>
 
 
-		<!-- Completed -->
+		<!-- Table -->
 		<MappedType name="Table" underlyingType="Table">
 			<Selection restrictions="{Catalog},{Schema},{Name}"  />
 			<Identifier>
@@ -67,74 +86,35 @@
 			<Properties>
 				<Property name="Name" isIdentifierPart="true" />
 				<Property name="Schema" isIdentifierPart="true" />
+				<Property name="Description" underlyingMember="DESCRIPTION" />
 				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FLAG" >
 					<Conversion>
 						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
-						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
+						<Calculate expr="false" exprType="System.Boolean" />
 					</Conversion>
 				</Property>
 			</Properties>
 		</MappedType>
 
-		<!-- Completed -->
-		<MappedTypeRef name="TplMappedTypeColumn" arguments="TableColumn,Column,{Catalog},,{Schema},,{Table},,{Name}" />
-
-		<!-- Completed -->
-		<MappedType name="Index" underlyingType="Index">
-			<Selection restrictions="{Catalog},{Schema},{Table},{Name}" />
-			<Identifier>
-				<Part name="Catalog" underlyingMember="TABLE_CATALOG" />
-				<Part name="Schema" underlyingMember="TABLE_SCHEMA" />
-				<Part name="Table" underlyingMember="TABLE_NAME" />
-				<Part name="Name" underlyingMember="INDEX_NAME" />
-			</Identifier>
-			<Properties>
-				<Property name="Table" isIdentifierPart="true" />
-				<Property name="Name" isIdentifierPart="true" />
-				<Property name="IsPrimary" underlyingMember="IS_PRIMARY" />
-				<Property name="IsUnique" underlyingMember="IS_UNIQUE" />
-				<Property name="IsForeignKey" underlyingMember="IS_FOREIGNKEY" />
-				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FLAG" >
-					<Conversion>
-						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
-						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
-					</Conversion>
-				</Property>
-				<Property name="IsDisabled" underlyingMember="IS_INACTIVE" />
-			</Properties>
-		</MappedType>
-
-		<!-- Completed -->
-		<MappedTypeRef name="TplMappedTypeColumn" arguments="IndexColumn,IndexColumn,{Catalog},,{Schema},,{Table},,{Index},,{Name}" />
+		<!-- TableColumn -->
+		<MappedTypeRef name="TplMappedTypeColumn" arguments="TableColumn,Column,Advanced,{Catalog},,{Schema},,{Table},,{Name},true" />
 
 
-		<MappedType name="TableUniqueKey" underlyingType="Index">
-			<Selection restrictions="{Catalog},{Schema},{Table},{Name}" filter="IS_UNIQUE = true"/>
-			<Identifier>
-				<Part name="Catalog" underlyingMember="TABLE_CATALOG" />
-				<Part name="Schema" underlyingMember="TABLE_SCHEMA" />
-				<Part name="Table" underlyingMember="TABLE_NAME" />
-				<Part name="Name" underlyingMember="INDEX_NAME" />
-			</Identifier>
-			<Properties>
-				<Property name="Table" isIdentifierPart="true" />
-				<Property name="Name" isIdentifierPart="true" />
-				<Property name="IsPrimary" underlyingMember="IS_PRIMARY" />
-				<Property name="IsUnique" underlyingMember="IS_UNIQUE" />
-				<Property name="IsForeignKey" underlyingMember="IS_FOREIGNKEY" />
-				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FLAG" >
-					<Conversion>
-						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
-						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
-					</Conversion>
-				</Property>
-			</Properties>
-		</MappedType>
+		<!-- Index -->
+		<MappedTypeRef name="TplMappedTypeIndex" arguments="Index,true" />
 
-		<!-- Completed -->
-		<MappedTypeRef name="TplMappedTypeColumn" arguments="TableUniqueKeyColumn,IndexColumn,{Catalog},,{Schema},,{Table},,{Index},,{Name}" />
+		<!-- IndexColumn -->
+		<MappedTypeRef name="TplMappedTypeColumn" arguments="IndexColumn,IndexColumn,Advanced,{Catalog},,{Schema},,{Table},,{Index},,{Name},true" />
 
-		<!-- Completed -->
+
+		<!-- TableUniqueKey -->
+		<MappedTypeRef name="TplMappedTypeIndex" arguments="TableUniqueKey,IS_UNIQUE = true" />
+
+		<!-- TableUniqueKeyColumn -->
+		<MappedTypeRef name="TplMappedTypeColumn" arguments="TableUniqueKeyColumn,IndexColumn,Advanced,{Catalog},,{Schema},,{Table},,{Index},,{Name},true" />
+
+		
+		<!-- TableForeignKey -->
 		<MappedType name="TableForeignKey" underlyingType="ForeignKey">
 			<Selection restrictions="{Catalog},{Schema},{Table},{Name}" />
 			<Identifier>
@@ -153,214 +133,34 @@
 				<Property name="ReferencedTableId0" underlyingMember="REFERENCED_TABLE_CATALOG" />
 				<Property name="ReferencedTableId1" underlyingMember="REFERENCED_TABLE_SCHEMA" />
 				<Property name="ReferencedTableId2" underlyingMember="REFERENCED_TABLE_NAME" />
+				<Property name="ReferencedTableId3" underlyingMember="REFERENCED_INDEX_NAME" />
 				<Property name="UpdateAction" underlyingMember="UPDATE_ACTION" />
 				<Property name="DeleteAction" underlyingMember="DELETE_ACTION" />
 			</Properties>
 		</MappedType>
 
-		<!-- Completed -->
-		<MappedTypeRef name="TplMappedTypeColumn" arguments="ForeignKeyColumn,ForeignKeyColumn,{Catalog},,{Schema},,{Table},,{TableForeignKey},,{Name}" />
+		<!-- ForeignKeyColumn -->
+		<MappedTypeRef name="TplMappedTypeColumn" arguments="ForeignKeyColumn,ForeignKeyColumn,Advanced,{Catalog},,{Schema},,{Table},,{TableForeignKey},,{Name},true" />
 
-
-		<!-- Completed -->
-		<MappedType name="View" underlyingType="View">
-			<Selection restrictions="{Catalog},{Schema},{Name}" />
+		
+		<!-- Sequence -->
+		<MappedType name="Sequence" underlyingType="Sequence">
+			<Selection restrictions="{Catalog},{Schema},{Name},null" />
 			<Identifier>
-				<Part name="Catalog" underlyingMember="VIEW_CATALOG" />
-				<Part name="Schema" underlyingMember="VIEW_SCHEMA" />
-				<Part name="Name" underlyingMember="VIEW_NAME" />
+				<Part name="Catalog" underlyingMember="GENERATOR_CATALOG" />
+				<Part name="Schema" underlyingMember="GENERATOR_SCHEMA" />
+				<Part name="Name" underlyingMember="GENERATOR_NAME" />
 			</Identifier>
 			<Properties>
 				<Property name="Name" isIdentifierPart="true" />
-				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_VIEW" >
-					<Conversion>
-						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
-						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
-					</Conversion>
-				</Property>
-				<Property name="Sql" underlyingMember="DEFINITION" />
-				<Property name="Description" underlyingMember="DESCRIPTION" />
+				<Property name="InitialValue" underlyingMember="IDENTITY_SEED" />
+				<Property name="Increment" underlyingMember="IDENTITY_INCREMENT" />
+				<Property name="NextValue" underlyingMember="IDENTITY_CURRENT" />
 			</Properties>
 		</MappedType>
 
-		<!-- Completed -->
-		<MappedTypeRef name="TplMappedTypeColumn" arguments="ViewColumn,ViewColumn,{Catalog},,{Schema},,{View},,{Name}" />
 
-		<!-- Completed -->
-		<MappedType name="StoredProcedure" underlyingType="StoredProcedure">
-			<Selection restrictions="{Catalog},{Schema},{Name}" />
-			<Identifier>
-				<Part name="Catalog" underlyingMember="PROCEDURE_CATALOG" />
-				<Part name="Schema" underlyingMember="PROCEDURE_SCHEMA" />
-				<Part name="Name" underlyingMember="PROCEDURE_NAME" />
-			</Identifier>
-			<Properties>
-				<Property name="Schema" isIdentifierPart="true" />
-				<Property name="Name" isIdentifierPart="true" />
-				<Property name="Description" underlyingMember="DESCRIPTION"/>
-				<Property name="Dsl" underlyingMember="SOURCE"/>
-				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FLAG" >
-					<Conversion>
-						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
-						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
-					</Conversion>
-				</Property>
-			</Properties>
-		</MappedType>
-
-		<!-- Completed -->
-		<MappedType name="StoredProcedureParameter" underlyingType="StoredProcedureParameter">
-			<Selection restrictions="{Catalog},{Schema},{StoredProcedure},{Name}" />
-			<Identifier>
-				<Part name="Catalog" underlyingMember="PROCEDURE_CATALOG" />
-				<Part name="Schema" underlyingMember="PROCEDURE_SCHEMA" />
-				<Part name="StoredProcedure" underlyingMember="PROCEDURE_NAME" />
-				<Part name="Name" underlyingMember="PARAMETER_NAME" />
-			</Identifier>
-			<Properties>
-				<Property name="StoredProcedure" isIdentifierPart="true" />
-				<Property name="Name" isIdentifierPart="true" />
-				<Property name="Ordinal" underlyingMember="ORDINAL_POSITION">
-					<Conversion>
-						<ChangeType type="System.Int32" />
-					</Conversion>
-				</Property>
-				<Property name="Direction" underlyingMember="PARAMETER_DIRECTION" />
-				<Property name="IsNullable" underlyingMember="IS_NULLABLE" />
-				<Property name="Length" underlyingMember="PARAMETER_SIZE">
-					<Conversion>
-						<ChangeType type="System.Int32" />
-					</Conversion>
-				</Property>
-				<Property name="Precision" underlyingMember="NUMERIC_PRECISION" />
-				<Property name="Scale" underlyingMember="NUMERIC_SCALE" />
-				<Property name="NativeDataType" underlyingMember="PARAMETER_DATA_TYPE" />
-				<Property name="AdoDotNetDataType" underlyingMember="PARAMETER_DATA_TYPE">
-					<Conversion>
-						<CallMapper />
-					</Conversion>
-				</Property>
-				<Property name="AdoDotNetDbType" underlyingMember="PARAMETER_DATA_TYPE">
-					<Conversion>
-						<CallMapper />
-					</Conversion>
-				</Property>
-				<Property name="FrameworkDataType" underlyingMember="PARAMETER_DATA_TYPE">
-					<Conversion>
-						<CallMapper />
-					</Conversion>
-				</Property>
-			</Properties>
-		</MappedType>
-
-		<!-- Completed -->
-		<MappedType name="StoredProcedureColumn" underlyingType="StoredProcedureColumn">
-			<Selection restrictions="{Catalog},{Schema},{StoredProcedure},{Name}" filter="PARAMETER_DIRECTION = 1 OR PARAMETER_DIRECTION = 3" />
-			<Identifier>
-				<Part name="Catalog" underlyingMember="PROCEDURE_CATALOG" />
-				<Part name="Schema" underlyingMember="PROCEDURE_SCHEMA" />
-				<Part name="StoredProcedure" underlyingMember="PROCEDURE_NAME" />
-				<Part name="Name" underlyingMember="PARAMETER_NAME" />
-			</Identifier>
-			<Properties>
-				<Property name="StoredProcedure" isIdentifierPart="true" />
-				<Property name="Name" isIdentifierPart="true" />
-				<Property name="Ordinal" underlyingMember="ORDINAL_POSITION">
-					<Conversion>
-						<ChangeType type="System.Int32" />
-					</Conversion>
-				</Property>
-				<Property name="IsNullable" underlyingMember="IS_NULLABLE" />
-				<Property name="Length" underlyingMember="PARAMETER_SIZE">
-					<Conversion>
-						<ChangeType type="System.Int32" />
-					</Conversion>
-				</Property>
-				<Property name="Precision" underlyingMember="NUMERIC_PRECISION" />
-				<Property name="Scale" underlyingMember="NUMERIC_SCALE" />
-				<Property name="NativeDataType" underlyingMember="PARAMETER_DATA_TYPE" />
-				<Property name="AdoDotNetDataType" underlyingMember="PARAMETER_DATA_TYPE">
-					<Conversion>
-						<CallMapper />
-					</Conversion>
-				</Property>
-				<Property name="AdoDotNetDbType" underlyingMember="PARAMETER_DATA_TYPE">
-					<Conversion>
-						<CallMapper />
-					</Conversion>
-				</Property>
-				<Property name="FrameworkDataType" underlyingMember="PARAMETER_DATA_TYPE">
-					<Conversion>
-						<CallMapper />
-					</Conversion>
-				</Property>
-			</Properties>
-		</MappedType>
-
-		<!-- Completed -->
-		<MappedType name="ScalarFunction" underlyingType="Function">
-			<Selection restrictions="{Catalog},{Schema},{Name}" />
-			<Identifier>
-				<Part name="Catalog" underlyingMember="FUNCTION_CATALOG" />
-				<Part name="Schema" underlyingMember="FUNCTION_SCHEMA" />
-				<Part name="Name" underlyingMember="FUNCTION_NAME" />
-			</Identifier>
-			<Properties>
-				<Property name="Schema" isIdentifierPart="true" />
-				<Property name="Name" isIdentifierPart="true" />
-				<Property name="Description" underlyingMember="DESCRIPTION"/>
-				<Property name="Dsl" underlyingMember="SOURCE"/>
-				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FLAG" >
-					<Conversion>
-						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
-						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
-					</Conversion>
-				</Property>
-			</Properties>
-		</MappedType>
-
-		<!-- Completed -->
-		<MappedType name="ScalarFunctionParameter" underlyingType="FunctionParameter">
-			<Selection restrictions="{Catalog},{Schema},{ScalarFunction},{Name}" />
-			<Identifier>
-				<Part name="Catalog" underlyingMember="FUNCTION_CATALOG" />
-				<Part name="Schema" underlyingMember="FUNCTION_SCHEMA" />
-				<Part name="ScalarFunction" underlyingMember="FUNCTION_NAME" />
-				<Part name="Name" underlyingMember="ARGUMENT_NAME" />
-			</Identifier>
-			<Properties>
-				<Property name="ScalarFunction" isIdentifierPart="true" />
-				<Property name="Name" isIdentifierPart="true" />
-				<Property name="PseudoName" underlyingMember="PSEUDO_NAME" />
-				<Property name="Ordinal" underlyingMember="ORDINAL_POSITION">
-					<Conversion>
-						<ChangeType type="System.Int32" />
-					</Conversion>
-				</Property>
-				<Property name="IsNullable" underlyingMember="IS_NULLABLE" />
-				<Property name="Length" underlyingMember="PARAMETER_SIZE" />
-				<Property name="Precision" underlyingMember="NUMERIC_PRECISION" />
-				<Property name="Scale" underlyingMember="NUMERIC_SCALE" />
-				<Property name="NativeDataType" underlyingMember="PARAMETER_DATA_TYPE" />
-				<Property name="AdoDotNetDataType" underlyingMember="PARAMETER_DATA_TYPE">
-					<Conversion>
-						<CallMapper />
-					</Conversion>
-				</Property>
-				<Property name="AdoDotNetDbType" underlyingMember="PARAMETER_DATA_TYPE">
-					<Conversion>
-						<CallMapper />
-					</Conversion>
-				</Property>
-				<Property name="FrameworkDataType" underlyingMember="PARAMETER_DATA_TYPE">
-					<Conversion>
-						<CallMapper />
-					</Conversion>
-				</Property>
-			</Properties>
-		</MappedType>
-
-		<!-- Future? -->
+		<!-- Trigger -->
 		<MappedType name="Trigger" underlyingType="Trigger">
 			<Selection restrictions="{Catalog},{Schema},{Table},{Name}" />
 			<Identifier>
@@ -376,7 +176,7 @@
 				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FLAG" >
 					<Conversion>
 						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
-						<Calculate expr="IIF({0} = 1, false, false)" exprType="System.Boolean" />
+						<Calculate expr="false" exprType="System.Boolean" />
 					</Conversion>
 				</Property>
 				<Property name="IsDisabled" underlyingMember="IS_INACTIVE" />
@@ -390,8 +190,93 @@
 			</Properties>
 		</MappedType>
 
-		<!-- Future? -->
-		<MappedTypeRef name="TplMappedTypeColumn" arguments="TriggerColumn,TriggerColumn,{Catalog},,{Schema},,{Trigger},,{Name}" />
+		<!-- TriggerColumn -->
+		<MappedTypeRef name="TplMappedTypeColumn" arguments="TriggerColumn,TriggerColumn,Advanced,{Catalog},,{Schema},,{Trigger},,{Name},true" />
+
+
+		<!-- View -->
+		<MappedType name="View" underlyingType="View">
+			<Selection restrictions="{Catalog},{Schema},{Name}" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="VIEW_CATALOG" />
+				<Part name="Schema" underlyingMember="VIEW_SCHEMA" />
+				<Part name="Name" underlyingMember="VIEW_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="Name" isIdentifierPart="true" />
+				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_VIEW" >
+					<Conversion>
+						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
+						<Calculate expr="false" exprType="System.Boolean" />
+					</Conversion>
+				</Property>
+				<Property name="Sql" underlyingMember="DEFINITION" />
+				<Property name="Description" underlyingMember="DESCRIPTION" />
+			</Properties>
+		</MappedType>
+
+		<!-- ViewColumn -->
+		<MappedTypeRef name="TplMappedTypeColumn" arguments="ViewColumn,ViewColumn,Advanced,{Catalog},,{Schema},,{View},,{Name},true" />
+
+		
+		<!-- StoredProcedure -->
+		<MappedType name="StoredProcedure" underlyingType="StoredProcedure">
+			<Selection restrictions="{Catalog},{Schema},{Name}" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="PROCEDURE_CATALOG" />
+				<Part name="Schema" underlyingMember="PROCEDURE_SCHEMA" />
+				<Part name="Name" underlyingMember="PROCEDURE_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="Schema" isIdentifierPart="true" />
+				<Property name="Name" isIdentifierPart="true" />
+				<Property name="Description" underlyingMember="DESCRIPTION"/>
+				<Property name="Dsl" underlyingMember="SOURCE"/>
+				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FLAG" >
+					<Conversion>
+						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
+						<Calculate expr="false" exprType="System.Boolean" />
+					</Conversion>
+				</Property>
+			</Properties>
+		</MappedType>
+
+		<!-- StoredProcedureParameter -->
+		<MappedTypeRef name="TplMappedTypeColumn" arguments="StoredProcedureParameter,StoredProcedureParameter,Empty,{Catalog},,{Schema},,{StoredProcedure},,{Name},true" />
+		<!-- StoredProcedureColumn -->
+		<MappedTypeRef name="TplMappedTypeColumn" arguments="StoredProcedureColumn,StoredProcedureColumn,Empty,{Catalog},,{Schema},,{StoredProcedure},,{Name},PARAMETER_DIRECTION = 1 OR PARAMETER_DIRECTION = 3" />
+
+		
+		<!-- ScalarFunction -->
+		<MappedType name="ScalarFunction" underlyingType="Function">
+			<Selection restrictions="{Catalog},{Schema},{Name}" />
+			<Identifier>
+				<Part name="Catalog" underlyingMember="FUNCTION_CATALOG" />
+				<Part name="Schema" underlyingMember="FUNCTION_SCHEMA" />
+				<Part name="Name" underlyingMember="FUNCTION_NAME" />
+			</Identifier>
+			<Properties>
+				<Property name="Schema" isIdentifierPart="true" />
+				<Property name="Name" isIdentifierPart="true" />
+				<Property name="Description" underlyingMember="DESCRIPTION"/>
+				<Property name="Dsl" underlyingMember="SOURCE"/>
+				<Property name="FunctionType" underlyingMember="IS_SYSTEM_FLAG" >
+					<Conversion>
+						<Calculate expr="1" exprType="System.Int32" />
+					</Conversion>
+				</Property>
+				<Property name="IsSystemObject" underlyingMember="IS_SYSTEM_FLAG" >
+					<Conversion>
+						<!-- Set to always false. System objects will not appear in IDE dialogs. -->
+						<Calculate expr="false" exprType="System.Boolean" />
+					</Conversion>
+				</Property>
+			</Properties>
+		</MappedType>
+
+		<!-- Completed -->
+		<MappedTypeRef name="TplMappedTypeColumn" arguments="ScalarFunctionParameter,FunctionReturnValue,Empty,{Catalog},,{Schema},,{ScalarFunction},,{Name},ARGUMENT_NAME IS NULL" />
+		<MappedTypeRef name="TplMappedTypeColumn" arguments="ScalarFunctionParameter,FunctionParameter,Empty,{Catalog},,{Schema},,{ScalarFunction},,{Name},true" />
 
 
 	</MappedTypes>

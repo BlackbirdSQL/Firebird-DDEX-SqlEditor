@@ -65,7 +65,7 @@ internal static class PackageSupportedObjects
 		{ "IVsDataObjectIdentifierConverter", _UseFactoryOnly ? 0 : 1 },
 		{ "IVsDataObjectIdentifierResolver", _UseFactoryOnly ? 0 : 1 },
 		{ "IVsDataObjectMemberComparer", _UseFactoryOnly ? 0 : 1 },
-		{ "IVsDataObjectSelector", _UseFactoryOnly ? 0 : 1 },
+		// { "IVsDataObjectSelector", _UseFactoryOnly ? 0 : 1 },
 		{ "IVsDataObjectSupport", _UseFactoryOnly ? 0 : 2 },
 		{ "IVsDataSourceInformation", _UseFactoryOnly ? 0 : 1 },
 		{ "IVsDataSourceVersionComparer", _UseFactoryOnly ? 0 : 1 },
@@ -87,31 +87,31 @@ internal static class PackageSupportedObjects
 	// ---------------------------------------------------------------------------------
 	public static readonly IDictionary<string, RegistryValue> Values = new Dictionary<string, RegistryValue>()
 	{
-		{ "IVsDataConnectionEquivalencyComparer:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.TConnectionEquivalencyComparer") },
+		{ "IVsDataConnectionEquivalencyComparer:0", new(null, "BlackbirdSql.VisualStudio.Ddex.TConnectionEquivalencyComparer") },
 		{ "IVsDataConnectionPromptDialog:0", new(null, "BlackbirdSql.VisualStudio.Ddex.TConnectionPromptDialog") },
 		{ "IVsDataConnectionProperties:0", new(null, "BlackbirdSql.VisualStudio.Ddex.TConnectionProperties") },
 		{ "IVsDataConnectionSupport:0", new (null, "BlackbirdSql.VisualStudio.Ddex.TConnectionSupport") },
 		{ "IVsDataConnectionUIConnector:0", new (null, "BlackbirdSql.VisualStudio.Ddex.TConnectionUIConnector") },
 		{ "IVsDataConnectionUIControl:0", new(null, "BlackbirdSql.VisualStudio.Ddex.TConnectionUIControl") },
 		{ "IVsDataConnectionUIProperties:0", new(null, "BlackbirdSql.VisualStudio.Ddex.TConnectionUIProperties") },
-		{ "IVsDataMappedObjectConverter:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.TMappedObjectConverter") },
-		{ "IVsDataObjectIdentifierConverter:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.TObjectIdentifierConverter") },
-		{ "IVsDataObjectIdentifierResolver:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.TObjectIdentifierResolver") },
-		{ "IVsDataObjectMemberComparer:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.TObjectMemberComparer") },
-		{ "IVsDataObjectSelector:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.TObjectSelector") },
+		{ "IVsDataMappedObjectConverter:0", new(null, "BlackbirdSql.VisualStudio.Ddex.TMappedObjectConverter") },
+		{ "IVsDataObjectIdentifierConverter:0", new(null, "BlackbirdSql.VisualStudio.Ddex.TObjectIdentifierConverter") },
+		{ "IVsDataObjectIdentifierResolver:0", new(null, "BlackbirdSql.VisualStudio.Ddex.TObjectIdentifierResolver") },
+		{ "IVsDataObjectMemberComparer:0", new(null, "BlackbirdSql.VisualStudio.Ddex.TObjectMemberComparer") },
+		// { "IVsDataObjectSelector:0", new(null, "BlackbirdSql.VisualStudio.Ddex.TObjectSelector") },
 
-		{ "IVsDataObjectSupport:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.TObjectSupport") },
-		{ "IVsDataObjectSupport:1", new("XmlResource",  "BlackbirdSql.VisualStudio.Ddex.TObjectSupport.xml") },
+		{ "IVsDataObjectSupport:0", new(null, "BlackbirdSql.VisualStudio.Ddex.TObjectSupport") },
+		{ "IVsDataObjectSupport:1", new("XmlResource", "BlackbirdSql.VisualStudio.Ddex.TObjectSupport.xml") },
 
-		{ "IVsDataSourceInformation:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.TSourceInformation") },
-		{ "IVsDataSourceVersionComparer:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.TSourceVersionComparer") },
+		{ "IVsDataSourceInformation:0", new(null, "BlackbirdSql.VisualStudio.Ddex.TSourceInformation") },
+		{ "IVsDataSourceVersionComparer:0", new(null, "BlackbirdSql.VisualStudio.Ddex.TSourceVersionComparer") },
 
 
-		{ "IVsDataViewSupport:0", new(null,  "BlackbirdSql.VisualStudio.Ddex.TViewSupport") },
-		{ "IVsDataViewSupport:1", new("AllowAsynchronousEnumerations",  "true") },
+		{ "IVsDataViewSupport:0", new(null, "BlackbirdSql.VisualStudio.Ddex.TViewSupport") },
+		{ "IVsDataViewSupport:1", new("AllowAsynchronousEnumerations", "true") },
 		{ "IVsDataViewSupport:2", new("HasDocumentProvider",  0) },
-		// { "IVsDataViewSupport:3", new("PersistentCommands",  "501822E1-B5AF-11d0-B4DC-00A0C91506EF,0x3528,3") },
-		{ "IVsDataViewSupport:3", new("XmlResource",  "BlackbirdSql.VisualStudio.Ddex.TViewSupport.xml") }
+		// { "IVsDataViewSupport:3", new("PersistentCommands", "501822E1-B5AF-11d0-B4DC-00A0C91506EF,0x3528,3") },
+		{ "IVsDataViewSupport:3", new("XmlResource", "BlackbirdSql.VisualStudio.Ddex.TViewSupport.xml") }
 	};
 
 

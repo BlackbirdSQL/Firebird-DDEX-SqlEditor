@@ -117,58 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="100" xml:space="preserve">
-    <value>IVs provider for Firebird (BlackbirdSql)</value>
-  </data>
-  <data name="102" xml:space="preserve">
-    <value>IVs Provider for FirebirdClient (BlackbirdSql)</value>
-  </data>
-  <data name="106" xml:space="preserve">
-    <value>RJDTMPQPE2PMCIRHDZM8APRHIJIEQDM8ZPZREQCTR1ETREI2JDHTDHHPPHJRC2HRK2JHPCZEM2H3E1AQA2QQIEJJR1AIDPZZDEZCZPRCH0HZJMPEQPETA3M3ERI8JTJJ</value>
-  </data>
-  <data name="Value_No" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="Value_Yes" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="UnknownCollection" xml:space="preserve">
-    <value>The requested collection ({0}) is not defined.</value>
-  </data>
-  <data name="DdexProvider_Description" xml:space="preserve">
-    <value>Use this selection to connect to Firebird using the DDEX 2.0 BlackbirdSql Provider</value>
-  </data>
-  <data name="DdexProvider_DisplayName" xml:space="preserve">
-    <value>.NET Framework DDEX 2.0 Provider for Firebird (BlackbirdSql)</value>
-  </data>
-  <data name="DdexProvider_ShortDisplayName" xml:space="preserve">
-    <value>BlackbirdSql DDEX 2.0 Provider</value>
-  </data>
-  <data name="QueryDesignerDocument_NewQueryCaption" xml:space="preserve">
-    <value>BlackbirdSql Query{1}: Query{0}</value>
-  </data>
-  <data name="QueryDesignerDocument_RetrieveDataCaption" xml:space="preserve">
-    <value>BlackbirdSql {1}: Query{0}</value>
-  </data>
-  <data name="ToolsDocument_Caption" xml:space="preserve">
-    <value>BlackbirdSql {2}: {1}{0}</value>
-  </data>
-  <data name="TextEditorDocument_FailedToLoadText" xml:space="preserve">
-    <value>BlackbirdSql: Failed to load the text from the object.</value>
-  </data>
-  <data name="Provider_Description" xml:space="preserve">
-    <value>The .NET Provider for Firebird (FirebirdSql.Data.FirebirdClient)</value>
-  </data>
-  <data name="Provider_DisplayName" xml:space="preserve">
-    <value>.NET Provider for Firebird (BlackbirdSql)</value>
-  </data>
-  <data name="Provider_ShortDisplayName" xml:space="preserve">
-    <value>BlackbirdSql FirebirdClient Provider</value>
-  </data>
-  <data name="UnknownSequence" xml:space="preserve">
-    <value>Unidentifiable</value>
-  </data>
-  <data name="DataSource_Product" xml:space="preserve">
-    <value>Firebird SQL Server</value>
+  <data name="TextObjectCommandProvider_Open" xml:space="preserve">
+    <value>&amp;Open Script</value>
   </data>
 </root>

@@ -19,7 +19,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Extensions
 	/// Implements the new query command on User Object SE nodes
 	/// </summary>
 	// =========================================================================================================
-	internal class UserQueryCommandProvider : AbstractCommandProvider
+	internal class UserCommandProvider : AbstractCommandProvider
 	{
 
 		/// <summary>

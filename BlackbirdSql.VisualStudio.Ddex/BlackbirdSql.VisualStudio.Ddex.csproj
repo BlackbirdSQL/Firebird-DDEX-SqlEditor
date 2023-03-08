@@ -194,6 +194,8 @@
   </ItemGroup>
   <!-- Includes (Properties and Properties Resources) -->
   <ItemGroup>
+    <Compile Include="Extensions\Hostess.cs" />
+    <Compile Include="Schema\DslProcedureParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -351,14 +353,15 @@
     <Compile Include="Configuration\VsPackageController.cs" />
     <Compile Include="Configuration\VsPackageRegistration.cs" />
     <Compile Include="Extensions\UniversalCommandProvider.cs" />
-    <Compile Include="Extensions\SystemQueryCommandProvider.cs" />
-    <Compile Include="Extensions\UserQueryCommandProvider.cs" />
+    <Compile Include="Extensions\SystemCommandProvider.cs" />
+    <Compile Include="Extensions\UserCommandProvider.cs" />
     <Compile Include="Schema\BinaryEncoding.cs" />
     <Compile Include="Schema\Charset.cs" />
     <Compile Include="Schema\DslColumns.cs" />
     <Compile Include="Schema\DslConnectionString.cs" />
     <Compile Include="Schema\DslDbDataType.cs" />
     <Compile Include="Schema\DslFunctionArguments.cs" />
+    <Compile Include="Schema\DslFunctionArgumentsLegacy.cs" />
     <Compile Include="Schema\DslIndexColumns.cs" />
     <Compile Include="Schema\DslObjectTypes.cs" />
     <Compile Include="Schema\DslSchema.cs" />

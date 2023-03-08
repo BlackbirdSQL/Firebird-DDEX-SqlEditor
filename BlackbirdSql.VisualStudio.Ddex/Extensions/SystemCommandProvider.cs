@@ -19,7 +19,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Extensions
 	/// Implements the new query command on System Object nodes
 	/// </summary>
 	// =========================================================================================================
-	internal class SystemQueryCommandProvider : AbstractCommandProvider
+	internal class SystemCommandProvider : AbstractCommandProvider
 	{
 
 		/// <summary>

@@ -75,6 +75,7 @@ internal sealed class DslSchemaFactory
 			case "IndexColumns":
 			case "Indexes":
 			case "Procedures":
+			case "ProcedureColumns":
 			case "Tables":
 			case "Triggers":
 			case "ViewColumns":
@@ -184,6 +185,7 @@ internal sealed class DslSchemaFactory
 			"INDEXCOLUMNS" => new DslIndexColumns(),
 			"INDEXES" => new DslIndexes(),
 			"PROCEDURES" => new DslProcedures(),
+			"PROCEDUREPARAMETERS" => new DslProcedureParameters(),
 			"TABLES" => new DslTables(),
 			"TRIGGERS" => new DslTriggers(),
 			"IDENTITYTRIGGERS" => new DslIdentityTriggers(),
@@ -216,6 +218,7 @@ internal sealed class DslSchemaFactory
 			"INDEXCOLUMNS" => new DslIndexColumns(),
 			"INDEXES" => new DslIndexes(),
 			"PROCEDURES" => new DslProcedures(),
+			"PROCEDUREPARAMETERS" => new DslProcedureParameters(),
 			"TABLES" => new DslTables(),
 			"TRIGGERS" => new DslTriggers(),
 			"IDENTITYTRIGGERS" => new DslIdentityTriggers(),

@@ -28,6 +28,9 @@
 	<Define name="CommandUniversalNewQuery">
 		<CommandRef name="CommandHookDataToolsUniversal" arguments="0x3528" />
 	</Define>
+	<Define name="CommandUniversalOpenText">
+		<CommandRef name="CommandHookDataToolsUniversal" arguments="0x3061" />
+	</Define>
 
 	<!-- Built-in DataTools commands hook -->
 	<Define name="CommandHookDataTools" parameters="cmdid">
@@ -39,12 +42,12 @@
 	<!-- Yes we could establish this distinction by examining the node within -->
 	<!-- the code, but this just seems a whole lot more readable -->
 	<Define name="CommandHookDataToolsUser" parameters="cmdid">
-		<Command guid="501822E1-B5AF-11d0-B4DC-00A0C91506EF" cmdid="$(cmdid)" provider="BlackbirdSql.VisualStudio.Ddex.Extensions.UserQueryCommandProvider" />
+		<Command guid="501822E1-B5AF-11d0-B4DC-00A0C91506EF" cmdid="$(cmdid)" provider="BlackbirdSql.VisualStudio.Ddex.Extensions.UserCommandProvider" />
 	</Define>
 	<Define name="CommandHookDataToolsSystem" parameters="cmdid">
-		<Command guid="501822E1-B5AF-11d0-B4DC-00A0C91506EF" cmdid="$(cmdid)" provider="BlackbirdSql.VisualStudio.Ddex.Extensions.SystemQueryCommandProvider" />
+		<Command guid="501822E1-B5AF-11d0-B4DC-00A0C91506EF" cmdid="$(cmdid)" provider="BlackbirdSql.VisualStudio.Ddex.Extensions.SystemCommandProvider" />
 	</Define>
 	<Define name="CommandHookDataToolsUniversal" parameters="cmdid">
-		<Command guid="501822E1-B5AF-11d0-B4DC-00A0C91506EF" cmdid="$(cmdid)" provider="BlackbirdSql.VisualStudio.Ddex.Extensions.UniversalQueryCommandProvider"  isDefault="true" />
+		<Command guid="501822E1-B5AF-11d0-B4DC-00A0C91506EF" cmdid="$(cmdid)" provider="BlackbirdSql.VisualStudio.Ddex.Extensions.UniversalCommandProvider"  isDefault="true" />
 	</Define>
 </DataViewSupport>

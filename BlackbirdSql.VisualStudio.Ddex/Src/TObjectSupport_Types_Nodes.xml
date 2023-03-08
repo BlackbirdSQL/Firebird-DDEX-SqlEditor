@@ -18,11 +18,11 @@
 				<Property name="ORDINAL_POSITION" type="System.Int16" />
 				<Property name="DESCRIPTION" type="System.String" />
 				<Property name="IS_NULLABLE" type="System.Boolean" />
-				<Property name="COLUMN_DATA_TYPE" type="System.String" />
-				<Property name="COLUMN_SIZE" type="System.Int32" />
-				<Property name="NUMERIC_PRECISION" type="System.Byte" />
+				<Property name="FIELD_DATA_TYPE" type="System.String" />
+				<Property name="FIELD_SIZE" type="System.Int32" />
+				<Property name="NUMERIC_PRECISION" type="System.Int32" />
 				<Property name="NUMERIC_SCALE" type="System.Int32" />
-				<Property name="COLUMN_DEFAULT" type="System.String" />
+				<Property name="FIELD_DEFAULT" type="System.String" />
 				<Property name="COLLATION_NAME" type="System.String" />
 				<Property name="CHARACTER_SET_NAME" type="System.String" />
 				<Property name="DOMAIN_NAME" type="System.String" />
@@ -47,6 +47,7 @@
 			</Services>
 		</Type>
 	</Define>
+
 
 
 

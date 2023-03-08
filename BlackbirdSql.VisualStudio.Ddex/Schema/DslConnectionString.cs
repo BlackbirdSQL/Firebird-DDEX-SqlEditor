@@ -66,6 +66,18 @@ internal static class DslConnectionString
 	internal const int DefaultValueCommandTimeout = 0;
 	internal const int DefaultValueParallelWorkers = 0;
 
+
+	// Additional root default values
+	internal const string DefaultValueDesktopDataSource = null;
+	internal const string DefaultValueLocalDatabase = null;
+	internal const string DefaultValueDataSourceProduct = SystemData.ProviderFactoryDescription;
+	internal const string DefaultValueServerVersion = "Firebird Unknown Version";
+	internal const int DefaultValueMemoryUsage = -1;
+	internal const int DefaultValueActiveUsers = -1;
+
+
+
+	// Default descriptor keys
 	internal const string DefaultKeyUserId = "user id";
 	internal const string DefaultKeyPortNumber = "port number";
 	internal const string DefaultKeyDataSource = "data source";
@@ -95,9 +107,19 @@ internal static class DslConnectionString
 	internal const string DefaultKeyApplicationName = "application name";
 	internal const string DefaultKeyCommandTimeout = "command timeout";
 	internal const string DefaultKeyParallelWorkers = "parallel workers";
+
+	// Additional root default descriptor keys
+	internal const string DefaultKeyDesktopDataSource = "desktop data source";
+	internal const string DefaultKeyLocalDatabase = "local database";
+	internal const string DefaultKeyDataSourceProduct = "data source product";
+	internal const string DefaultKeyServerVersion = "server version";
+	internal const string DefaultKeyMemoryUsage = "memory usage";
+	internal const string DefaultKeyActiveUsers = "active users";
+
 	#endregion
 
-	#region Static Fields
+
+	#region Synonyms lookup
 
 	internal static readonly IDictionary<string, string> Synonyms = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
 		{
@@ -170,8 +192,29 @@ internal static class DslConnectionString
 			{ DefaultKeyParallelWorkers, DefaultKeyParallelWorkers },
 			{ "parallelworkers", DefaultKeyParallelWorkers },
 			{ "parallel", DefaultKeyParallelWorkers },
+
+			// Additional root synonyms
+			{ DefaultKeyDesktopDataSource, DefaultKeyDesktopDataSource },
+			{ "desktopdatasource", DefaultKeyDesktopDataSource },
+			{ DefaultKeyLocalDatabase, DefaultKeyLocalDatabase },
+			{ "localdatabase", DefaultKeyLocalDatabase },
+			{ DefaultKeyDataSourceProduct, DefaultKeyDataSourceProduct },
+			{ "datasourceproduct", DefaultKeyDataSourceProduct },
+			{ "datasourceproductname", DefaultKeyDataSourceProduct },
+			{ DefaultKeyServerVersion, DefaultKeyServerVersion },
+			{ "datasourceversion", DefaultKeyServerVersion },
+			{ "datasourceproductversion", DefaultKeyServerVersion },
+			{ "data source version", DefaultKeyServerVersion },
+			{ "data source product version", DefaultKeyServerVersion },
+			{ DefaultKeyMemoryUsage, DefaultKeyMemoryUsage },
+			{ "memoryusage", DefaultKeyMemoryUsage },
+			{ DefaultKeyActiveUsers, DefaultKeyActiveUsers },
+			{ "activeusers", DefaultKeyActiveUsers }
 		};
 
+
+
+	// Default values lookup
 	internal static readonly IDictionary<string, object> DefaultValues = new Dictionary<string, object>(StringComparer.Ordinal)
 		{
 			{ DefaultKeyDataSource, DefaultValueDataSource },
@@ -203,7 +246,68 @@ internal static class DslConnectionString
 			{ DefaultKeyApplicationName, DefaultValueApplicationName },
 			{ DefaultKeyCommandTimeout, DefaultValueCommandTimeout },
 			{ DefaultKeyParallelWorkers, DefaultValueParallelWorkers },
+
+				// Additional root default values lookup
+			{ DefaultKeyDesktopDataSource, DefaultValueDesktopDataSource },
+			{ DefaultKeyLocalDatabase, DefaultValueLocalDatabase },
+			{ DefaultKeyDataSourceProduct, DefaultValueDataSourceProduct },
+			{ DefaultKeyServerVersion, DefaultValueServerVersion },
+			{ DefaultKeyMemoryUsage, DefaultValueMemoryUsage },
+			{ DefaultKeyActiveUsers, DefaultValueActiveUsers }
 		};
+
+
+
+	// Types lookup
+	internal static readonly IDictionary<string, Type> SystemTypes = new Dictionary<string, Type>(StringComparer.Ordinal)
+		{
+			{ DefaultKeyDataSource, typeof(string) },
+			{ DefaultKeyPortNumber, typeof(int) },
+			{ DefaultKeyUserId, typeof(string) },
+			{ DefaultKeyPassword, typeof(string) },
+			{ DefaultKeyRoleName, typeof(string) },
+			{ DefaultKeyCatalog, typeof(string) },
+			{ DefaultKeyCharacterSet, typeof(string) },
+			{ DefaultKeyDialect, typeof(int) },
+			{ DefaultKeyPacketSize, typeof(int) },
+			{ DefaultKeyPooling, typeof(bool) },
+			{ DefaultKeyConnectionLifetime, typeof(int) },
+			{ DefaultKeyMinPoolSize, typeof(int) },
+			{ DefaultKeyMaxPoolSize, typeof(int) },
+			{ DefaultKeyConnectionTimeout, typeof(int) },
+			{ DefaultKeyFetchSize, typeof(int) },
+			{ DefaultKeyServerType, typeof(int) },
+			{ DefaultKeyIsolationLevel, typeof(int) },
+			{ DefaultKeyRecordsAffected, typeof(int) },
+			{ DefaultKeyEnlist, typeof(bool) },
+			{ DefaultKeyClientLibrary, typeof(string) },
+			{ DefaultKeyDbCachePages, typeof(int) },
+			{ DefaultKeyNoDbTriggers, typeof(bool) },
+			{ DefaultKeyNoGarbageCollect, typeof(bool) },
+			{ DefaultKeyCompression, typeof(bool) },
+			{ DefaultKeyCryptKey, typeof(string) },
+			{ DefaultKeyWireCrypt, typeof(int) },
+			{ DefaultKeyApplicationName, typeof(string) },
+			{ DefaultKeyCommandTimeout, typeof(int) },
+			{ DefaultKeyParallelWorkers, typeof(int) }
+		};
+
+	// Root types lookup
+	internal static readonly IDictionary<string, Type> RootTypes = new Dictionary<string, Type>(StringComparer.Ordinal)
+		{
+			{ DefaultKeyPortNumber, typeof(int) },
+			{ DefaultKeyServerType, typeof(int) },
+			{ DefaultKeyCatalog, typeof(string) },
+			{ DefaultKeyUserId, typeof(string) },
+			{ DefaultKeyDesktopDataSource, typeof(string) },
+			{ DefaultKeyLocalDatabase, typeof(string) },
+			{ DefaultKeyDataSourceProduct, typeof(string) },
+			{ DefaultKeyServerVersion, typeof(string) },
+			{ DefaultKeyMemoryUsage, typeof(int) },
+			{ DefaultKeyActiveUsers, typeof(int) }
+		};
+
+
 
 	internal static readonly IList<string> EquivalencyKeys = new List<string>()
 		{

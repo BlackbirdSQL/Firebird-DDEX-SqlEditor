@@ -35,16 +35,17 @@ internal class DslForeignKeys : DslSchema
 			@"SELECT
 	null AS CONSTRAINT_CATALOG,
 	null AS CONSTRAINT_SCHEMA,
-	co.rdb$constraint_name AS CONSTRAINT_NAME,
+	r.rdb$constraint_name AS CONSTRAINT_NAME,
 	null AS TABLE_CATALOG,
 	null AS TABLE_SCHEMA,
-	co.rdb$relation_name AS TABLE_NAME,
+	r.rdb$relation_name AS TABLE_NAME,
+	r.rdb$index_name as INDEX_NAME,
 	null as REFERENCED_TABLE_CATALOG,
 	null as REFERENCED_TABLE_SCHEMA,
 	refidx.rdb$relation_name as REFERENCED_TABLE_NAME,
 	refidx.rdb$index_name as REFERENCED_INDEX_NAME,
-	co.rdb$deferrable AS IS_DEFERRABLE,
-	co.rdb$initially_deferred AS INITIALLY_DEFERRED,
+	r.rdb$deferrable AS IS_DEFERRABLE,
+	r.rdb$initially_deferred AS INITIALLY_DEFERRED,
 	ref.rdb$match_option AS MATCH_OPTION,
 	CASE (ref.rdb$update_rule)
         WHEN 'CASCADE' THEN 1
@@ -57,17 +58,16 @@ internal class DslForeignKeys : DslSchema
         WHEN 'SET NULL' THEN 2
         WHEN 'SET_DEFAULT' THEN 3
         ELSE 0
-    END AS DELETE_ACTION,
-	co.rdb$index_name as INDEX_NAME
-FROM rdb$relation_constraints co
+    END AS DELETE_ACTION
+FROM rdb$relation_constraints r
 INNER JOIN rdb$ref_constraints ref
-	ON co.rdb$constraint_name = ref.rdb$constraint_name
-INNER JOIN rdb$indices tempidx
-	ON co.rdb$index_name = tempidx.rdb$index_name
+	ON ref.rdb$constraint_name = r.rdb$constraint_name
+INNER JOIN rdb$indices idx
+	ON idx.rdb$index_name = r.rdb$index_name
 INNER JOIN rdb$indices refidx
-	ON refidx.rdb$index_name = tempidx.rdb$foreign_key");
+	ON refidx.rdb$index_name = idx.rdb$foreign_key");
 
-		where.Append("co.rdb$constraint_type = 'FOREIGN KEY'");
+		where.Append("r.rdb$constraint_type = 'FOREIGN KEY'");
 
 		if (restrictions != null)
 		{
@@ -86,7 +86,7 @@ INNER JOIN rdb$indices refidx
 			/* TABLE_NAME */
 			if (restrictions.Length >= 3 && restrictions[2] != null)
 			{
-				where.AppendFormat(" AND co.rdb$relation_name = @p{0}", index++);
+				where.AppendFormat(" AND r.rdb$relation_name = @p{0}", index++);
 			}
 
 			/* CONSTRAINT_NAME */

@@ -62,12 +62,30 @@ internal class DslColumns : DslSchema
 	///			the TableColumn restrictions + 1 it will be added as an additional parent
 	///			restriction.
 	/// </remarks>
-	protected string _ParentRestriction = "r.rdb$relation_name";
+	protected string _ParentColumn = "r.rdb$relation_name";
+	protected string _ChildColumn = "r.rdb$field_name";
 
 	/// <summary>
-	/// The column to be used for ORDINAL_POSITION
+	/// The identity type column for >= v3 Firebird.
+	/// If the rdb$relations alias is not 'r' then replace r with the correct alias
+	/// else null if it cannot be derived.
 	/// </summary>
-	protected string _OrdinalPosition = "r.rdb$field_position";
+	/// <remarks>
+	/// If <see cref="_GeneratorSelector"/> is set to null, then _IdentityType will
+	/// be assumed to be null;
+	/// </remarks>
+	protected string _IdentityType = "r.rdb$identity_type";
+
+	/// <summary>
+	/// The identity generator selector for >= v3 Firebird.
+	/// If the rdb$relations alias is not 'r' then replace r with the correct alias
+	/// </summary>
+	/// <remarks>
+	/// If the sequence generator name cannot be derived, as for example on procedures
+	/// and functions, set the selector variable null.
+	/// </remarks>
+	protected string _GeneratorSelector = "r.rdb$generator_name";
+
 
 	/// <summary>
 	/// The column alias to be used for the owner or parent order
@@ -75,8 +93,8 @@ internal class DslColumns : DslSchema
 	protected string _OrderingField = "r.rdb$relation_name";
 
 	/// <summary>
-	/// The FROM expression clause that returns the rdb$relation_fields
-	/// row set using the alias 'r'
+	/// The FROM expression clause that returns the row set using the alias 'r'.
+	/// r will be used to interrogate the rbd$fields table.
 	/// </summary>
 	protected string _FromClause = "rdb$relation_fields r";
 
@@ -86,11 +104,13 @@ internal class DslColumns : DslSchema
 	/// null values are permitted.
 	/// </summary>
 	/// <remarks>
-	/// Example
+	/// Examples
+	///  _RequiredColumns["COLUMN_NAME"] = "null";
 	///  _RequiredColumns["TRIGGER_NAME"] = "dep.rdb$dependent_name";
 	/// </remarks>
 	protected readonly IDictionary<string, object> _RequiredColumns = new Dictionary<string, object>()
 	{
+		{ "ORDINAL_POSITION", "r.rdb$field_position" },
 		{ "TRIGGER_NAME", "r_dep.rdb$dependent_name" }
 	};
 
@@ -122,15 +142,19 @@ internal class DslColumns : DslSchema
 		var sql = new StringBuilder();
 		var where = new StringBuilder();
 
-		string identityType = "null";
-		string generatorSelector = " IS NULL";
 		string unknownSequence = Properties.Resources.UnknownSequence;
 
-		if (MajorVersionNumber >= 3)
+		if (MajorVersionNumber < 3 || _GeneratorSelector == null)
 		{
-			identityType = "r.rdb$identity_type";
-			generatorSelector = "= r.rdb$generator_name";
+			_GeneratorSelector = " IS NULL";
+			_IdentityType = "null";
 		}
+		else
+		{
+			_GeneratorSelector = " = " + _GeneratorSelector;
+		}
+
+		_IdentityType ??= "null";
 
 		string returnClause = "";
 
@@ -148,7 +172,7 @@ internal class DslColumns : DslSchema
 			columnsClause += @",
 			" + (clause.Value == null ? "null" : clause.Value.ToString());
 			intoClause += @",
-			:" + clause.Key;
+		:" + clause.Key;
 		}
 
 		foreach(KeyValuePair<string, ColumnType> clause in _AdditionalColumns)
@@ -167,12 +191,12 @@ internal class DslColumns : DslSchema
 		{
 			// int index = 0;
 
-			/* TABLE_CATALOG */
+			/* CATALOG */
 			if (restrictions.Length >= 1 && restrictions[0] != null)
 			{
 			}
 
-			/* TABLE_SCHEMA */
+			/* SCHEMA */
 			if (restrictions.Length >= 2 && restrictions[1] != null)
 			{
 			}
@@ -186,10 +210,10 @@ internal class DslColumns : DslSchema
 					where.AppendFormat("r.rdb$relation_name = '{0}'", restrictions[2].ToString());
 				else
 					// where.AppendFormat("{0} = @p{1}", _ParentRestriction, index++);
-					where.AppendFormat("{0} = '{1}'", _ParentRestriction, restrictions[2].ToString());
+					where.AppendFormat("{0} = '{1}'", _ParentColumn, restrictions[2].ToString());
 			}
 
-			/* CONSTRAINT_NAME */
+			/* PARENT */
 			if (derivedRestrictionsLen > defaultRestrictionsLen)
 			{
 				if (restrictions.Length >= 4 && restrictions[3] != null)
@@ -199,12 +223,12 @@ internal class DslColumns : DslSchema
 
 					// Cannot pass params to execute block
 					// where.AppendFormat("{0} = @p{1}", _ParentRestriction, index++);
-					where.AppendFormat("{0} = '{1}'", _ParentRestriction, restrictions[3].ToString());
+					where.AppendFormat("{0} = '{1}'", _ParentColumn, restrictions[3].ToString());
 				}
 			}
 
 
-			/* COLUMN_NAME */
+			/* CHILD OBJECT NAME */
 			if (restrictions.Length >= derivedRestrictionsLen && restrictions[derivedRestrictionsLen - 1] != null)
 			{
 				if (where.Length > 0)
@@ -212,7 +236,7 @@ internal class DslColumns : DslSchema
 
 				// Cannot pass params to execute block
 				// where.AppendFormat("r.rdb$field_name = @p{0}", index++);
-				where.AppendFormat("r.rdb$field_name = '{0}'", restrictions[derivedRestrictionsLen - 1].ToString());
+				where.AppendFormat("{0} = '{1}'", _ChildColumn, restrictions[derivedRestrictionsLen - 1].ToString());
 			}
 		}
 
@@ -267,14 +291,14 @@ internal class DslColumns : DslSchema
 		 * Legend:
 		 * 
 		 * {0} returnClause
-		 * {1} _FromClause - default: 'rdb$relation_fields r' (alias must always be r for rdb$relation_fields)
+		 * {1} _FromClause - default: 'rdb$relation_fields r' (ensure r aliases for r dependents are  r_..)
 		 * {2} WHERE clause prefixed with "cflfWHERE " and preceded by _ConditionClause.
-		 * {3} Ordinal position field - default: 'r.rdb$field_position'
-		 * {4} identityType
-		 * {5} _ParentType
-		 * {6} columnsClause
-		 * {7} generatorSelector
-		 * {8} _OrderingField
+		 * {3} identityType
+		 * {4} _ParentType
+		 * {5} columnsClause - _RequiredColumns and _AdditionalColumns
+		 * {6} generatorSelector
+		 * {7} _OrderingField
+		 * {8} _RequiredColumns["ORDINAL_POSITION"]: - default: 'r.rdb$field_position'
 		 * {9} intoClause
 		 * {10} unknownSequence
 		*/
@@ -283,15 +307,16 @@ internal class DslColumns : DslSchema
 					@"EXECUTE BLOCK
 	RETURNS (
         TABLE_CATALOG varchar(10), TABLE_SCHEMA varchar(10), TABLE_NAME varchar(50), COLUMN_NAME varchar(50),
-		COLUMN_SUB_TYPE smallint,
-        COLUMN_SIZE integer, NUMERIC_PRECISION integer, NUMERIC_SCALE integer, CHARACTER_MAX_LENGTH integer, CHARACTER_OCTET_LENGTH integer,
-        ORDINAL_POSITION smallint, DOMAIN_CATALOG varchar(10), DOMAIN_SCHEMA varchar(1), DOMAIN_NAME varchar(50), COLUMN_DEFAULT blob sub_type 1,
+		IS_SYSTEM_FLAG int, FIELD_SUB_TYPE smallint,
+        FIELD_SIZE int, NUMERIC_PRECISION int, NUMERIC_SCALE int, CHARACTER_MAX_LENGTH int, CHARACTER_OCTET_LENGTH int,
+        DOMAIN_CATALOG varchar(10), DOMAIN_SCHEMA varchar(1), DOMAIN_NAME varchar(50), FIELD_DEFAULT blob sub_type 1,
         EXPRESSION blob sub_type 1, IS_COMPUTED boolean, IS_ARRAY boolean, IS_NULLABLE boolean, READONLY_FLAG smallint, FIELD_TYPE smallint,
         CHARACTER_SET_CATALOG varchar(10), CHARACTER_SET_SCHEMA varchar(10), CHARACTER_SET_NAME varchar(50), 
         COLLATION_CATALOG varchar(10), COLLATION_SCHEMA varchar(10), COLLATION_NAME varchar(50),
         DESCRIPTION varchar(50), IN_PRIMARYKEY boolean, IS_UNIQUE boolean, IS_IDENTITY boolean, SEQUENCE_GENERATOR varchar(50),
         -- [returnClause]~0~ directly after TRIGGER_NAME varchar(50)
-		IDENTITY_SEED bigint, IDENTITY_INCREMENT int, IDENTITY_CURRENT bigint, PARENT_TYPE varchar(15), TRIGGER_NAME varchar(50){0})
+		IDENTITY_SEED bigint, IDENTITY_INCREMENT int, IDENTITY_CURRENT bigint, PARENT_TYPE varchar(15),
+		ORDINAL_POSITION smallint, TRIGGER_NAME varchar(50){0})
 AS
 DECLARE PRIMARY_DEPENDENCYCOUNT int;
 DECLARE TRIGGER_DEPENDENCYCOUNT int;
@@ -322,9 +347,13 @@ BEGIN
 
 	FOR
 		SELECT
-			-- :TABLE_CATALOG, :TABLE_SCHEMA, :TABLE_NAME, :COLUMN_NAME, :COLUMN_SUB_TYPE
-			null, null, r.rdb$relation_name, r.rdb$field_name, r_fld.rdb$field_sub_type,
-			-- :COLUMN_SIZE
+			-- :TABLE_CATALOG, :TABLE_SCHEMA, :TABLE_NAME, :COLUMN_NAME
+			null, null, r.rdb$relation_name, r.rdb$field_name,
+			-- :IS_SYSTEM_FLAG,
+			(CASE WHEN r.rdb$system_flag <> 1 THEN 0 ELSE 1 END),
+			-- :FIELD_SUB_TYPE
+			r_fld.rdb$field_sub_type,
+			-- :FIELD_SIZE
 			CAST(r_fld.rdb$field_length AS integer),
 			-- :NUMERIC_PRECISION
 			CAST(r_fld.rdb$field_precision AS integer),
@@ -334,11 +363,9 @@ BEGIN
 			CAST(r_fld.rdb$character_length AS integer),
 			-- :CHARACTER_OCTET_LENGTH
 			CAST(r_fld.rdb$field_length AS integer),
-			-- ORDINAL_POSITION - [r.rdb$field_position]~3~
-			{3},
 			-- :DOMAIN_CATALOG, :DOMAIN_SCHEMA, :DOMAIN_NAME
-			null, null, r.rdb$field_source,
-			-- :COLUMN_DEFAULT
+			null, null, r_fld.rdb$field_name,
+			-- :FIELD_DEFAULT
 			r.rdb$default_source,
 			-- :EXPRESSION
 			(CASE WHEN r_fld.rdb$computed_source IS NULL AND r_fld.rdb$computed_blr IS NOT NULL THEN
@@ -376,13 +403,13 @@ BEGIN
 			END),
 			-- :SEGMENT_FIELD
 			r_seg.rdb$field_name,
-			-- :IDENTITY_TYPE - [r.rdb$identity_type|null]~4~
-			{4},
+			-- :IDENTITY_TYPE - [r.rdb$identity_type|null]~3~
+			{3},
 			-- :SEQUENCE_GENERATOR, :IDENTITY_SEED, :IDENTITY_INCREMENT
 			r_gen.rdb$generator_name, r_gen.rdb$initial_value, r_gen.rdb$generator_increment,
-			-- :PARENT_TYPE - [Table|'ParentType']~5~
-			-- [, r_dep.rdb$dependent_name]~6~ (for additional columns)
-			'{5}'{6}
+			-- :PARENT_TYPE - [Table|'ParentType']~4~
+			-- [, r_dep.rdb$dependent_name]~5~ (for additional columns)
+			'{4}'{5}
 		-- [rdb$relation_fields r]~1~
 		FROM {1}
 		INNER JOIN rdb$fields r_fld
@@ -401,15 +428,16 @@ BEGIN
             ON r_dep.rdb$depended_on_name = r_trg.rdb$relation_name AND r_dep.rdb$field_name = r_seg.rdb$field_name
                 AND r_dep.rdb$dependent_name = r_trg.rdb$trigger_name
         LEFT OUTER JOIN rdb$generators r_gen
-			-- [= r.rdb$generator_name|IS NULL]~7~
+			-- [= r.rdb$generator_name|IS NULL]~6~
 		-- [crlfWHERE r.rdb$relation_name = '...']~2~
-            ON r_gen.rdb$generator_name{7}{2}
-		-- [r.rdb$relation_name]~8~ [r.rdb$field_position]~3~
-		ORDER BY {8}, {3}
+            ON r_gen.rdb$generator_name{6}{2}
+		-- [r.rdb$relation_name]~7~ [r.rdb$field_position]~8~
+		ORDER BY {7}, {8}
 
-        INTO :TABLE_CATALOG, :TABLE_SCHEMA, :TABLE_NAME, :COLUMN_NAME, :COLUMN_SUB_TYPE,
-        :COLUMN_SIZE, :NUMERIC_PRECISION, :NUMERIC_SCALE, :CHARACTER_MAX_LENGTH, :CHARACTER_OCTET_LENGTH,
-        :ORDINAL_POSITION, :DOMAIN_CATALOG, :DOMAIN_SCHEMA, :DOMAIN_NAME, :COLUMN_DEFAULT,
+        INTO :TABLE_CATALOG, :TABLE_SCHEMA, :TABLE_NAME, :COLUMN_NAME, :IS_SYSTEM_FLAG,
+		:FIELD_SUB_TYPE, :FIELD_SIZE, :NUMERIC_PRECISION, :NUMERIC_SCALE,
+		:CHARACTER_MAX_LENGTH, :CHARACTER_OCTET_LENGTH,
+        :DOMAIN_CATALOG, :DOMAIN_SCHEMA, :DOMAIN_NAME, :FIELD_DEFAULT,
         :EXPRESSION, :IS_COMPUTED, :IS_ARRAY, :IS_NULLABLE, :READONLY_FLAG, :FIELD_TYPE,
         :CHARACTER_SET_CATALOG, :CHARACTER_SET_SCHEMA, :CHARACTER_SET_NAME, :COLLATION_CATALOG, :COLLATION_SCHEMA,
         :COLLATION_NAME, :DESCRIPTION,
@@ -470,8 +498,11 @@ BEGIN
 
 	END
 END",
-					returnClause, _FromClause, where.ToString(), _OrdinalPosition, identityType, _ParentType,
-					columnsClause, generatorSelector, _OrderingField, intoClause, unknownSequence);
+					returnClause, _FromClause, where.ToString(),
+					_IdentityType, _ParentType, columnsClause,
+					_GeneratorSelector, _OrderingField,
+					_RequiredColumns["ORDINAL_POSITION"].ToString(),
+					intoClause, unknownSequence);
 
 
 		// Diag.Trace(sql.ToString());
@@ -483,9 +514,13 @@ END",
 
 	protected override void ProcessResult(DataTable schema)
 	{
+		// schema.Columns[6].ColumnName = "NumericPrecision";
+		// schema.Columns[18].ColumnName = "Nullable";
+
+
 		schema.BeginLoadData();
 
-		schema.Columns.Add("COLUMN_DATA_TYPE", typeof(string));
+		schema.Columns.Add("FIELD_DATA_TYPE", typeof(string));
 
 
 		foreach (DataRow row in schema.Rows)
@@ -493,9 +528,9 @@ END",
 			var blrType = Convert.ToInt32(row["FIELD_TYPE"], CultureInfo.InvariantCulture);
 
 			var subType = 0;
-			if (row["COLUMN_SUB_TYPE"] != DBNull.Value)
+			if (row["FIELD_SUB_TYPE"] != DBNull.Value)
 			{
-				subType = Convert.ToInt32(row["COLUMN_SUB_TYPE"], CultureInfo.InvariantCulture);
+				subType = Convert.ToInt32(row["FIELD_SUB_TYPE"], CultureInfo.InvariantCulture);
 			}
 
 			var scale = 0;
@@ -505,18 +540,18 @@ END",
 			}
 
 			var dbType = (FbDbType)DslTypeHelper.GetDbDataTypeFromBlrType(blrType, subType, scale);
-			row["COLUMN_DATA_TYPE"] = DslTypeHelper.GetDataTypeName((DslDbDataType)dbType).ToLowerInvariant();
+			row["FIELD_DATA_TYPE"] = DslTypeHelper.GetDataTypeName((DslDbDataType)dbType).ToLowerInvariant();
 
 			if (dbType == FbDbType.Binary || dbType == FbDbType.Text)
 			{
-				row["COLUMN_SIZE"] = Int32.MaxValue;
+				row["FIELD_SIZE"] = Int32.MaxValue;
 			}
 
 			if (dbType == FbDbType.Char || dbType == FbDbType.VarChar)
 			{
 				if (!row.IsNull("CHARACTER_MAX_LENGTH"))
 				{
-					row["COLUMN_SIZE"] = row["CHARACTER_MAX_LENGTH"];
+					row["FIELD_SIZE"] = row["CHARACTER_MAX_LENGTH"];
 				}
 			}
 			else
@@ -532,7 +567,7 @@ END",
 			if ((dbType == FbDbType.Decimal || dbType == FbDbType.Numeric) &&
 				(row["NUMERIC_PRECISION"] == DBNull.Value || Convert.ToInt32(row["NUMERIC_PRECISION"]) == 0))
 			{
-				row["NUMERIC_PRECISION"] = row["COLUMN_SIZE"];
+				row["NUMERIC_PRECISION"] = row["FIELD_SIZE"];
 			}
 
 			row["NUMERIC_SCALE"] = (-1) * scale;

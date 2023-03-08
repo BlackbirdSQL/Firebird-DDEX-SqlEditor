@@ -39,11 +39,7 @@ internal class DslFunctions : DslSchema
 					null AS FUNCTION_CATALOG,
 					null AS FUNCTION_SCHEMA,
 					rdb$function_name AS FUNCTION_NAME,
-					(CASE WHEN rdb$system_flag <> 1 THEN
-						 0
-					ELSE
-						 1
-					END) AS IS_SYSTEM_FLAG,
+					(CASE WHEN rdb$system_flag <> 1 THEN 0 ELSE 1 END) AS IS_SYSTEM_FLAG,
 					rdb$function_type AS FUNCTION_TYPE,
 					rdb$query_name AS QUERY_NAME,
 					rdb$module_name AS FUNCTION_MODULE_NAME,
@@ -57,7 +53,7 @@ internal class DslFunctions : DslSchema
 					END) AS SOURCE,
 					{0} AS PACKAGE_NAME
 				FROM rdb$functions",
-			MajorVersionNumber >= 3 ? "rdb$package_name" : "null");
+			MajorVersionNumber >= 3 ? "rdb$package_name" : "(CASE WHEN rdb$system_flag <> 1 THEN 'USER' ELSE 'SYSTEM' END)");
 
 		if (restrictions != null)
 		{
@@ -79,7 +75,7 @@ internal class DslFunctions : DslSchema
 				where.AppendFormat("rdb$function_name = @p{0}", index++);
 			}
 
-			/* IS_SYSTEM_FUNCTION */
+			/* IS_SYSTEM_FLAG */
 			if (restrictions.Length >= 4 && restrictions[3] != null)
 			{
 				if (where.Length > 0)

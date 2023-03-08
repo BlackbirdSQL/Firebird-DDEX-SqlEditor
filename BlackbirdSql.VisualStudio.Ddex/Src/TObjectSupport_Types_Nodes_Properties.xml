@@ -81,6 +81,8 @@
 		<Property name="INDEX_NAME" isIdentifierPart="true" />
 		<Property name="COLUMN_NAME" isIdentifierPart="true" />
 		<Property name="TRIGGER_NAME" type="System.String" />
+		<Property name="IS_DESCENDING" type="System.Boolean" />
+		<Property name="IS_INCLUDED" type="System.Boolean" />
 	</Define>
 
 
@@ -125,6 +127,46 @@
 		<Property name="REFERENCED_COLUMN_NAME" type="System.String" />
 		<Property name="UPDATE_ACTION"  type="System.Int32" />
 		<Property name="DELETE_ACTION" type="System.Int32" />
+	</Define>
+
+
+	<!-- StoredProcedure column property lists -->
+
+	<Define name="TplIdentifierListStoredProcedureColumn" >
+		<IdentifierPart name="PROCEDURE_CATALOG" type="System.String" />
+		<IdentifierPart name="PROCEDURE_SCHEMA" type="System.String" />
+		<IdentifierPart name="PROCEDURE_NAME" type="System.String" />
+		<IdentifierPart name="PARAMETER_NAME" type="System.String" />
+	</Define>
+
+	<Define name="TplPropertyListStoredProcedureColumn" >
+		<Property name="PROCEDURE_NAME" isIdentifierPart="true" />
+		<Property name="PARAMETER_NAME" isIdentifierPart="true" />
+		<Property name="TRIGGER_NAME" type="System.String" />
+		<Property name="TABLE_NAME" type="System.String" />
+		<Property name="COLUMN_NAME" type="System.String" />
+		<Property name="PARAMETER_DIRECTION" type="System.Int32" />
+		<Property name="PACKAGE_NAME" type="System.String" />
+	</Define>
+
+
+	<!-- Function column property lists -->
+
+	<Define name="TplIdentifierListFunctionColumn" >
+		<IdentifierPart name="FUNCTION_CATALOG" type="System.String" />
+		<IdentifierPart name="FUNCTION_SCHEMA" type="System.String" />
+		<IdentifierPart name="FUNCTION_NAME" type="System.String" />
+		<IdentifierPart name="ARGUMENT_NAME" type="System.String" />
+	</Define>
+
+	<Define name="TplPropertyListFunctionColumn" >
+		<Property name="FUNCTION_NAME" isIdentifierPart="true" />
+		<Property name="ARGUMENT_NAME" isIdentifierPart="true" />
+		<Property name="PSEUDO_NAME" type="System.String" />
+		<Property name="TRIGGER_NAME" type="System.String" />
+		<Property name="TABLE_NAME" type="System.String" />
+		<Property name="COLUMN_NAME" type="System.String" />
+		<Property name="PACKAGE_NAME" type="System.String" />
 	</Define>
 
 

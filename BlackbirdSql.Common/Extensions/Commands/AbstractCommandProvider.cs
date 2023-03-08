@@ -1,6 +1,10 @@
-﻿using System.ComponentModel.Design;
+﻿using System;
+using System.ComponentModel.Design;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Telemetry;
 
 
 /*
@@ -50,6 +54,22 @@ namespace BlackbirdSql.Common.Extensions.Commands
 					OnNewQuery(itemId, CommandObjectType);
 				});
 			}
+			else if (commandId.Equals(DataToolsCommands.OpenTextObject))
+			{
+				command = new DataViewMenuCommand(itemId, commandId, delegate
+				{
+					command.Enabled = true;
+					command.Visible = true;
+					if (command.Visible)
+					{
+						command.Properties["Text"] = Properties.Resources.TextObjectCommandProvider_Open;
+					}
+
+				}, delegate
+				{
+					OnOpen(itemId, CommandObjectType);
+				});
+			}
 			else
 			{
 				command = base.CreateCommand(itemId, commandId, parameters);
@@ -75,6 +95,19 @@ namespace BlackbirdSql.Common.Extensions.Commands
 			// Diag.Trace("COMMAND INVOKED");
 		}
 
+		private void OnOpen(int itemId, DataToolsCommands.DataObjectType objectType)
+		{
+			IVsDataExplorerNode vsDataExplorerNode = Site.ExplorerConnection.FindNode(itemId);
+
+			MenuCommand command = vsDataExplorerNode.GetCommand(DataToolsCommands.OpenTextObject);
+
+			// This should be locked
+			// Diag.Trace("SETTNG CONNECTION COMMANDTYPE TO: " + objectType + " for command in assembly: " + command.GetType().AssemblyQualifiedName);
+			// DataToolsCommands.CommandObjectType = objectType;
+
+			command.Invoke();
+
+		}
 
 
 	}

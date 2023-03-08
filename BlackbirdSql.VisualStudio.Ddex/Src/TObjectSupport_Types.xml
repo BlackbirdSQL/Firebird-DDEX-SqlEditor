@@ -3,17 +3,24 @@
 
 	<!-- Types -->
 	<Types>
-		<!-- Completed -->
+		<!-- Root -->
 		<RootType>
 			<Properties>
-				<Property name="Server" type="System.String"/>
-				<Property name="Database" type="System.String"/>
+				<Property name="ServerType" type="System.Int32"/>
+				<Property name="InitialCatalog" type="System.String"/>
+				<Property name="PortNumber" type="System.Int32"/>
+				<Property name="UserId" type="System.String"/>
+				<Property name="MemoryUsage" type="System.Int32"/>
+				<Property name="ActiveUsers" type="System.Int32"/>
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelectorRoot" />
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelectorRoot" >
+					<Parameters method="SelectObjects" />
+				</Service>
 			</Services>
 		</RootType>
 
+		<!-- Collation -->
 		<Type name="Collation" preferredOrdering="COLLATION_NAME">
 			<Identifier>
 				<Part name="COLLATION_CATALOG" type="System.String" />
@@ -34,6 +41,7 @@
 			</Services>
 		</Type>
 
+		<!-- Domain -->
 		<Type name="Domain" preferredOrdering="DOMAIN_NAME">
 			<Identifier>
 				<Part name="DOMAIN_CATALOG" type="System.String" />
@@ -45,9 +53,12 @@
 				<Property name="DESCRIPTION" type="System.String" />
 				<Property name="DOMAIN_DATA_TYPE" type="System.String" />
 				<Property name="DOMAIN_SIZE" type="System.Int32" />
-				<Property name="NUMERIC_PRECISION" type="System.Byte" />
+				<Property name="COLLATION_NAME" type="System.String" />
+				<Property name="CHARACTER_SET_NAME" type="System.String" />
+				<Property name="NUMERIC_PRECISION" type="System.Int32" />
 				<Property name="NUMERIC_SCALE" type="System.Int32" />
 				<Property name="IS_NULLABLE" type="System.Boolean" />
+				<Property name="IS_ARRAY" type="System.Boolean" />
 			</Properties>
 			<Services>
 				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
@@ -58,31 +69,7 @@
 			</Services>
 		</Type>
 
-
-
-		<Type name="Sequence" preferredOrdering="GENERATOR_NAME">
-			<Identifier>
-				<Part name="GENERATOR_CATALOG" type="System.String" />
-				<Part name="GENERATOR_SCHEMA" type="System.String" />
-				<Part name="GENERATOR_NAME" type="System.String" />
-			</Identifier>
-			<Properties>
-				<Property name="GENERATOR_NAME" isIdentifierPart="true" />
-				<Property name="GENERATOR_ID" type="System.Int16" />
-				<Property name="IS_SYSTEM_FLAG" type="System.Int32" />
-				<Property name="IDENTITY_SEED" type="System.Int64" />
-				<Property name="IDENTITY_INCREMENT" type="System.Int32" />
-				<Property name="IDENTITY_CURRENT" type="System.Int64" />
-			</Properties>
-			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
-					<Parameters method="SelectObjects">
-						<Parameter value="Generators" />
-					</Parameters>
-				</Service>
-			</Services>
-		</Type>
-
+		<!-- Role -->
 		<Type name="Role" preferredOrdering="ROLE_NAME">
 			<Identifier>
 				<Part name="ROLE_NAME" type="System.String" />
@@ -100,7 +87,8 @@
 			</Services>
 		</Type>
 
-		<!-- Completed -->
+
+		<!-- Table -->
 		<Type name="Table" preferredOrdering="TABLE_NAME" >
 			<Identifier>
 				<Part name="TABLE_CATALOG" type="System.String" />
@@ -126,19 +114,10 @@
 			</Services>
 		</Type>
 
-		<!-- Completed -->
 		<TypeRef name="TplTypeColumn" arguments="Column,Table,TABLE_NAME,Columns,4,Table,101,null,0,Field,102" />
 
 
-		<TypeRef name="TplTypeTrigger" arguments="Trigger" />
-		<TypeRef name="TplTypeTrigger" arguments="SystemTrigger" />
-		<TypeRef name="TplTypeTrigger" arguments="IdentityTrigger" />
-		<TypeRef name="TplTypeTrigger" arguments="StandardTrigger" />
-
-		<TypeRef name="TplTypeColumn" arguments="TriggerColumn,Trigger,TRIGGER_NAME,TriggerColumns,0,null,0,null,0,null,0" />
-
-
-		<!-- Completed -->
+		<!-- Index -->
 		<Type name="Index" preferredOrdering="INDEX_NAME">
 			<Identifier>
 				<Part name="TABLE_CATALOG" type="System.String" />
@@ -153,6 +132,7 @@
 				<Property name="IS_UNIQUE" type="System.Boolean" />
 				<Property name="IS_FOREIGNKEY" type="System.Boolean" />
 				<Property name="IS_SYSTEM_FLAG" type="System.Int32" />
+				<Property name="IS_DESCENDING" type="System.Boolean" />
 				<Property name="IS_INACTIVE" type="System.Boolean" />
 				<Property name="EXPRESSION" type="System.String" />
 				<Property name="IS_COMPUTED" type="System.Boolean" />
@@ -167,13 +147,10 @@
 			</Services>
 		</Type>
 
-		<!-- Completed -->
-
 		<TypeRef name="TplTypeColumn" arguments="IndexColumn,Index,CONSTRAINT_NAME,IndexColumns,5,Table,101,Index,104,Field,105" />
 
 
-
-		<!-- Completed -->
+		<!-- ForeignKey -->
 		<Type name="ForeignKey" preferredOrdering="CONSTRAINT_NAME">
 			<Identifier>
 				<Part name="CONSTRAINT_CATALOG" type="System.String" />
@@ -184,6 +161,7 @@
 			<Properties>
 				<Property name="TABLE_NAME" isIdentifierPart="true" />
 				<Property name="CONSTRAINT_NAME" isIdentifierPart="true" />
+				<Property name="INDEX_NAME" type="System.String" />
 				<Property name="IS_PRIMARY" type="System.Boolean" />
 				<Property name="IS_UNIQUE" type="System.Boolean" />
 				<Property name="IS_FOREIGNKEY" type="System.Boolean" />
@@ -194,7 +172,6 @@
 				<Property name="REFERENCED_TABLE_SCHEMA" type="System.String" />
 				<Property name="REFERENCED_TABLE_NAME" type="System.String" />
 				<Property name="REFERENCED_INDEX_NAME" type="System.String" />
-				<Property name="INDEX_NAME" type="System.String" />
 				<Property name="UPDATE_ACTION"  type="System.Int32" />
 				<Property name="DELETE_ACTION" type="System.Int32" />
 			</Properties>
@@ -210,7 +187,41 @@
 		<TypeRef name="TplTypeColumn" arguments="ForeignKeyColumn,ForeignKey,CONSTRAINT_NAME,ForeignKeyColumns,0,null,0,null,0,null,0" />
 
 
-		<!-- Completed -->
+		<!-- Sequence -->
+		<Type name="Sequence" preferredOrdering="GENERATOR_NAME">
+			<Identifier>
+				<Part name="GENERATOR_CATALOG" type="System.String" />
+				<Part name="GENERATOR_SCHEMA" type="System.String" />
+				<Part name="GENERATOR_NAME" type="System.String" />
+			</Identifier>
+			<Properties>
+				<Property name="GENERATOR_NAME" isIdentifierPart="true" />
+				<Property name="GENERATOR_ID" type="System.Int16" />
+				<Property name="IS_SYSTEM_FLAG" type="System.Int32" />
+				<Property name="IDENTITY_SEED" type="System.Int64" />
+				<Property name="IDENTITY_INCREMENT" type="System.Int32" />
+				<Property name="IDENTITY_CURRENT" type="System.Int64" />
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
+					<Parameters method="SelectObjects">
+						<Parameter value="Generators" />
+					</Parameters>
+				</Service>
+			</Services>
+		</Type>
+
+
+		<!-- Trigger -->
+		<TypeRef name="TplTypeTrigger" arguments="Trigger" />
+		<TypeRef name="TplTypeTrigger" arguments="SystemTrigger" />
+		<TypeRef name="TplTypeTrigger" arguments="IdentityTrigger" />
+		<TypeRef name="TplTypeTrigger" arguments="StandardTrigger" />
+
+		<TypeRef name="TplTypeColumn" arguments="TriggerColumn,Trigger,TRIGGER_NAME,TriggerColumns,0,null,0,null,0,null,0" />
+
+
+		<!-- View -->
 		<Type name="View" preferredOrdering="VIEW_NAME">
 			<Identifier>
 				<Part name="VIEW_CATALOG" type="System.String" />
@@ -235,7 +246,8 @@
 
 		<TypeRef name="TplTypeColumn" arguments="ViewColumn,View,VIEW_NAME,ViewColumns,4,View,301,null,0,Field,302" />
 
-		<!-- Completed -->
+
+		<!-- StoredProcedure -->
 		<Type name="StoredProcedure" preferredOrdering="PROCEDURE_NAME">
 			<Identifier>
 				<Part name="PROCEDURE_CATALOG" type="System.String" />
@@ -259,66 +271,11 @@
 			</Services>
 		</Type>
 
-		<!-- Completed -->
-		<Type name="StoredProcedureParameter" preferredOrdering="PARAMETER_DIRECTION,ORDINAL_POSITION">
-			<Identifier>
-				<Part name="PROCEDURE_CATALOG" type="System.String" />
-				<Part name="PROCEDURE_SCHEMA" type="System.String" />
-				<Part name="PROCEDURE_NAME" type="System.String" />
-				<Part name="PARAMETER_NAME" type="System.String" />
-			</Identifier>
-			<Properties>
-				<Property name="PROCEDURE_NAME" isIdentifierPart="true" />
-				<Property name="PARAMETER_NAME" isIdentifierPart="true" />
-				<Property name="ORDINAL_POSITION" type="System.Int16" />
-				<Property name="PARAMETER_DATA_TYPE" type="System.String" />
-				<Property name="PARAMETER_SIZE" type="System.Int32" />
-				<Property name="NUMERIC_PRECISION" type="System.Byte" />
-				<Property name="NUMERIC_SCALE" type="System.Int32" />
-				<Property name="IS_NULLABLE" type="System.Boolean" />
-				<Property name="DESCRIPTION" type="System.String" />
-				<Property name="PARAMETER_DIRECTION" type="System.Int32" />
-			</Properties>
-			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
-					<Parameters method="SelectObjects">
-						<Parameter value="ProcedureParameters" />
-					</Parameters>
-				</Service>
-				<ServiceRef name="TplSchemaObjectTypeDSRefBuilderService4" arguments="StoredProcedure,401,null,0,Field,402" />
-			</Services>
-		</Type>
+		<TypeRef name="TplTypeColumn" arguments="StoredProcedureParameter,StoredProcedure,PROCEDURE_NAME,ProcedureParameters,4,StoredProcedure,401,null,0,Field,402" />
+		<TypeRef name="TplTypeColumn" arguments="StoredProcedureColumn,StoredProcedure,PROCEDURE_NAME,ProcedureParameters,4,StoredProcedure,401,null,0,Field,404" />
 
-		<Type name="StoredProcedureColumn" preferredOrdering="PARAMETER_DIRECTION,ORDINAL_POSITION">
-			<Identifier>
-				<Part name="PROCEDURE_CATALOG" type="System.String" />
-				<Part name="PROCEDURE_SCHEMA" type="System.String" />
-				<Part name="PROCEDURE_NAME" type="System.String" />
-				<Part name="PARAMETER_NAME" type="System.String" />
-			</Identifier>
-			<Properties>
-				<Property name="PROCEDURE_NAME" isIdentifierPart="true" />
-				<Property name="PARAMETER_NAME" isIdentifierPart="true" />
-				<Property name="ORDINAL_POSITION" type="System.Int16" />
-				<Property name="PARAMETER_DATA_TYPE" type="System.String" />
-				<Property name="PARAMETER_SIZE" type="System.Int32" />
-				<Property name="NUMERIC_PRECISION" type="System.Byte" />
-				<Property name="NUMERIC_SCALE" type="System.Int32" />
-				<Property name="IS_NULLABLE" type="System.Boolean" />
-				<Property name="DESCRIPTION" type="System.String" />
-				<Property name="PARAMETER_DIRECTION" type="System.Int32" />
-			</Properties>
-			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
-					<Parameters method="SelectObjects">
-						<Parameter value="ProcedureParameters" />
-					</Parameters>
-				</Service>
-				<ServiceRef name="TplSchemaObjectTypeDSRefBuilderService4" arguments="StoredProcedure,401,null,0,Field,404" />
-			</Services>
-		</Type>
 
-		<!-- Completed -->
+		<!-- Function -->
 		<Type name="Function" preferredOrdering="FUNCTION_NAME">
 			<Identifier>
 				<Part name="FUNCTION_CATALOG" type="System.String" />
@@ -342,36 +299,9 @@
 			</Services>
 		</Type>
 
-		<!-- Completed -->
-		<Type name="FunctionParameter" preferredOrdering="ORDINAL_POSITION">
-			<Identifier>
-				<Part name="FUNCTION_CATALOG" type="System.String" />
-				<Part name="FUNCTION_SCHEMA" type="System.String" />
-				<Part name="FUNCTION_NAME" type="System.String" />
-				<Part name="ARGUMENT_NAME" type="System.String" />
-			</Identifier>
-			<Properties>
-				<Property name="FUNCTION_NAME" isIdentifierPart="true" />
-				<Property name="ARGUMENT_NAME" isIdentifierPart="true" />
-				<Property name="ORDINAL_POSITION" type="System.Int16" />
-				<Property name="PSEUDO_NAME" type="System.String" />
-				<Property name="PARAMETER_DATA_TYPE" type="System.String" />
-				<Property name="PARAMETER_SIZE" type="System.Int32" />
-				<Property name="NUMERIC_PRECISION" type="System.Int32" />
-				<Property name="NUMERIC_SCALE" type="System.Int32" />
-				<Property name="IS_NULLABLE" type="System.Boolean" />
-				<Property name="DESCRIPTION" type="System.String" />
-			</Properties>
-			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
-					<Parameters method="SelectObjects">
-						<Parameter value="FunctionArguments" />
-					</Parameters>
-				</Service>
-				<ServiceRef name="TplFunctionDSRefBuilderService4" arguments="Funtion,501,null,0,Field,502" />
-			</Services>
-		</Type>
-	</Types>
+		<TypeRef name="TplTypeColumn" arguments="FunctionReturnValue,Function,FUNCTION_NAME,FunctionArguments,4,Function,401,null,0,Field,404" />
+		<TypeRef name="TplTypeColumn" arguments="FunctionParameter,Function,FUNCTION_NAME,FunctionArguments,4,Function,401,null,0,Field,404" />
 
+	</Types>
 
 </DataObjectSupport>

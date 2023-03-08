@@ -26,8 +26,7 @@ internal class DslForeignKeyColumns : DslColumns
 	{
 		_ParentType = "ForeignKey";
 		_ObjectType = "TableForeignKeyColumn";
-		_ParentRestriction = "co.rdb$constraint_name";
-		_OrdinalPosition = "coidxseg.rdb$field_position";
+		_ParentColumn = "co.rdb$constraint_name";
 		_OrderingField = "co.rdb$constraint_name";
 		_FromClause = @"rdb$relation_constraints co
 				INNER JOIN rdb$ref_constraints ref 
@@ -42,6 +41,8 @@ internal class DslForeignKeyColumns : DslColumns
                     ON refidxseg.rdb$index_name = refidx.rdb$index_name AND refidxseg.rdb$field_position = coidxseg.rdb$field_position
 				INNER JOIN rdb$relation_fields r
                     ON r.rdb$relation_name = co.rdb$relation_name AND r.rdb$field_name = coidxseg.rdb$field_name";
+
+		_RequiredColumns["ORDINAL_POSITION"] = "coidxseg.rdb$field_position";
 
 		_AdditionalColumns.Add("CONSTRAINT_CATALOG", new(null, "varchar(10)"));
 		_AdditionalColumns.Add("CONSTRAINT_SCHEMA", new(null, "varchar(10)"));

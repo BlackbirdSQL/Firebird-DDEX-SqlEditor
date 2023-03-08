@@ -43,6 +43,7 @@ public static class DataToolsCommands
 	public const string SystemQueryCommandProviderGuid = "C253F0FC-D24B-4BE4-A2DE-57502D677A09";
 	public const string UserQueryCommandProviderGuid = "B07EDD71-7F1E-4A14-8BB0-38A30C72251D";
 	public const string UniversalCommandProviderGuid = "CD332A3B-B404-45B7-988F-587672086727";
+	public const string UniversalOpenTextCommandProviderGuid = "CC8C9523-2143-4CDA-B2BC-129A8B2D0809";
 	public const string NativeMethodsGuid = "6E7A99C4-ED01-4EAC-972E-AEC9080638E6";
 
 	public const string MenuGroupGuid = "501822E1-B5AF-11d0-B4DC-00A0C91506EF";

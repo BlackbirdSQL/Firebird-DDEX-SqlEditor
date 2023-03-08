@@ -20,9 +20,9 @@
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 
-internal class DslFunctionArguments : DslColumns
+internal class DslProcedureParameters : DslColumns
 {
-	public DslFunctionArguments() : base()
+	public DslProcedureParameters() : base()
 	{
 		string packageName;
 
@@ -40,22 +40,21 @@ internal class DslFunctionArguments : DslColumns
 			packageName = "(CASE WHEN r.rdb$system_flag <> 1 THEN 'USER' ELSE 'SYSTEM' END)";
 		}
 
-		_ParentType = "Function";
-		_ObjectType = "ScalarFunctionParameter";
-		_ParentColumn = "r.rdb$function_name";
-		_ChildColumn = "r.rdb$argument_name";
+		_ParentType = "StoredProcedure";
+		_ObjectType = "StoredProcedureParameter";
+		_ParentColumn = "r.rdb$procedure_name";
+		_ChildColumn = "r.rdb$parameter_name";
 		_GeneratorSelector = null;
-		_OrderingField = "r.rdb$function_name";
-		_FromClause = "rdb$function_arguments r";
+		_OrderingField = "r.rdb$parameter_type";
+		_FromClause = "rdb$procedure_parameters r";
 
-		_RequiredColumns["ORDINAL_POSITION"] = "r.rdb$argument_position";
+		_RequiredColumns["ORDINAL_POSITION"] = "r.rdb$parameter_number";
 
-		_AdditionalColumns.Add("FUNCTION_CATALOG", new(null, "varchar(10)"));
-		_AdditionalColumns.Add("FUNCTION_SCHEMA", new(null, "varchar(10)"));
-		_AdditionalColumns.Add("FUNCTION_NAME", new("r.rdb$function_name", "varchar(50)"));
-		_AdditionalColumns.Add("ARGUMENT_NAME", new("r.rdb$argument_name", "varchar(50)"));
-		_AdditionalColumns.Add("PSEUDO_NAME",
-			new("(CASE WHEN r.rdb$argument_name IS NULL THEN '@RETURN_VALUE' ELSE r.rdb$argument_name END)", "varchar(50)"));
+		_AdditionalColumns.Add("PROCEDURE_CATALOG", new(null, "varchar(10)"));
+		_AdditionalColumns.Add("PROCEDURE_SCHEMA", new(null, "varchar(10)"));
+		_AdditionalColumns.Add("PROCEDURE_NAME", new("r.rdb$procedure_name", "varchar(50)"));
+		_AdditionalColumns.Add("PARAMETER_NAME", new("r.rdb$parameter_name", "varchar(50)"));
+		_AdditionalColumns.Add("PARAMETER_DIRECTION", new("CAST(r.rdb$parameter_type AS integer)", "int"));
 		_AdditionalColumns.Add("PACKAGE_NAME", new(packageName, "varchar(10)"));
 
 	}

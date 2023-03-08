@@ -55,7 +55,7 @@ internal class DslIndexes : DslSchema
 					ELSE
 						 1
 					END) AS IS_SYSTEM_FLAG,
-					idx.rdb$index_type AS INDEX_TYPE,
+					(CASE WHEN idx.rdb$index_type <> 1 THEN false ELSE true END) AS IS_DESCENDING,
 					idx.rdb$description AS DESCRIPTION,
 					(CASE WHEN idx.rdb$expression_source IS NULL AND idx.rdb$expression_blr IS NOT NULL THEN
 						cast(idx.rdb$expression_blr as blob sub_type 1)
