@@ -2,7 +2,7 @@
 
 (*This package is in pre-release. Note that in preparation for release the stock Firebird libraries have been copied to their respective Release output folders and the Release configuration has all Firebird library builds disabled.*)
 
-The BlackbirdSQL DDEX 2.0 .NET Data Provider tool, `BlackbirdSql.VisualStudio.Ddex`, implements all the core DDEX 2.0 interfaces prevalent in the SqlServer DDEX provider, but currently excludes DDL functionality.
+The BlackbirdSQL DDEX 2.0 .NET Data Provider tool, `BlackbirdSql.VisualStudio.Ddex`, implements all the core DDEX 2.0 interfaces prevalent in the SqlServer DDEX provider and more, but currently excludes DDL functionality. 
 
 *If you're noticing a degradation in performance in the IDE after installing an extension then it's advantages are lost, so the first tenet of this package is `small footprint, low overhead`.*
 See [Extended Description](#extended-description) below.
@@ -27,6 +27,7 @@ Trigger selection is performed using an EXECUTE BLOCK so it is reasonably fast. 
 
 
 ## Known issues
+* The 'Open Script' command on Server Explorer nodes with an expression or dsl/sql source code is still in development and not functional yet. If you select the command from the SE context menu the IDE will shut down.
 * If on startup of the Visual Studio IDE, and only on startup, an attempt is made to access a data object before the BlackbirdSql DDEX provider has been given the IDE shell context, Visual Studio will flag the provider as unavailable for the duration of the session. As it stands Visual Studio will have to be restarted to clear the flag.</br>
 This is true for both the SE and any other data objects in a solution. In particular this issue can consistently be replicated in Server Explorer if a connection node for Firebird is open and the SE is pinned on startup of the IDE within a solution context.</br> 
 Unless we're missing a trick here this seems to be unavoidable. Loading is asynchronous, so the provider needs time to register and load.</br>
