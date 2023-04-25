@@ -1186,7 +1186,7 @@ public:
 
 	/*
 	// ---------------------------------------------------------------------------------
-	/// Implements the defualt KeyValueEnumerator Dictionary enumerator object for (#define)
+	/// Implements the defualt KeyValueEnumerator Dictionary enumerator object for (#define CellClass)
 	// ---------------------------------------------------------------------------------
 	virtual IEnumerator<KeyValuePair<SysStr^, CellClass^>>^ GetEnumerator() new = IEnumerable<KeyValuePair<SysStr^, CellClass^>>::GetEnumerator
 	{
@@ -1194,7 +1194,7 @@ public:
 	};
 
 	// ---------------------------------------------------------------------------------
-	/// Implements the ReplicaKey Dictionary enumerator object for (#define)
+	/// Implements the ReplicaKey Dictionary enumerator object for (#define CellClass)
 	/// ReplicaKeyPair(T) = KeyValuePair&lt;ReplicaKey, T&gt;.
 	// ---------------------------------------------------------------------------------
 	virtual property IEnumerable<KeyValuePair<SysStr^, CellClass^>>^ KeyValueEnumerator
@@ -1206,7 +1206,7 @@ public:
 	};
 
 	// ---------------------------------------------------------------------------------
-	/// Implements the ReplicaKey Dictionary enumerator object for (#define)
+	/// Implements the ReplicaKey Dictionary enumerator object for (#define CellClass)
 	/// ReplicaKeyPair(T) = KeyValuePair&lt;ReplicaKey, T&gt;.
 	// ---------------------------------------------------------------------------------
 	virtual IEnumerator<ReplicaKeyPair(CellClass^)>^ GetReplicaStringCellEnumerator() = IEnumerable<ReplicaKeyPair(CellClass^)>::GetEnumerator
@@ -1216,7 +1216,7 @@ public:
 	*/
 
 	// ---------------------------------------------------------------------------------
-	/// Implements the ReplicaKey Dictionary enumerator object for (#define)
+	/// Implements the ReplicaKey Dictionary enumerator object for (#define CellClass)
 	/// ReplicaKeyPair(T) = KeyValuePair&lt;ReplicaKey, T&gt;.
 	// ---------------------------------------------------------------------------------
 	virtual property IEnumerable<ReplicaKeyPair(CellClass^)>^ ReplicaKeyEnumerator

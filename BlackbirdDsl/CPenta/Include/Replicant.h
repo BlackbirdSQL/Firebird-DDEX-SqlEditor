@@ -283,7 +283,7 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
-	/// Implements the ReplicaKey Dictionary enumerator object for (#define)
+	/// Implements the ReplicaKey Dictionary enumerator object for Replicant.
 	/// ReplicaKeyPair(T) = KeyValuePair<ReplicaKey, T>
 	// ---------------------------------------------------------------------------------
 	virtual property IEnumerable<ReplicaKeyPair(T)>^ ReplicaKeyEnumerator
