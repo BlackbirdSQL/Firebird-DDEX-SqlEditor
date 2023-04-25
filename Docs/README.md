@@ -22,9 +22,7 @@ See [Extended Description](#extended-description) below.
 * New query and data retrieval for both user and system tables.
 
 ### A Note on AutoIncrement
-The logic for auto-increment detection of a trigger (which avoids interrogating the ddl) appears to work correctly. There is no documentation to show otherwise, but there is info on the web implying it cannot be done. If you have a case where this logic fails, please pop us a mail.</br>
-(Without examining the ddl source code we assert a trigger with TRIGGER_TYPE:1 (Before insert), TRIGGER_SEQUENCE:1 (Priority) and FLAGS:1 (SqlGen without global permissions), with a single dependency column and with a unique single index segment on a 'PRIMARY KEY' index pretty much constitutes an auto-increment trigger. You can create an auto-increment without meeting these conditions but then it won't fall into the scope of a SqlServer PrimaryKey with AutoIncrement, and that's what we're after.)</br>
-Trigger selection is performed using an EXECUTE BLOCK so it is reasonably fast. We have sub-second response on 1500 triggers where all the trigger source for the returned SOURCE column is converted from the blr.
+There is a simple parser coded in C++/Cli which parses the Trigger source for linkage to the auto-increment sequence generator. The original parser code was ported from the [greenlion/PHP-SQL-Parser](https://github.com/greenlion/PHP-SQL-Parser) PHP parser which meant writing a class library, the Cell class, which could imitate PHP style arrays. The parser itself is reasonable fast but SELECT commands for a large number of triggers and generators may take some time, so building of the linkage tables for a connection is initiated as soon as the connection is established.
 
 
 ## Known issues
