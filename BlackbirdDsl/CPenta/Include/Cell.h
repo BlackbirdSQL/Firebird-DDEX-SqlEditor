@@ -32,7 +32,7 @@ namespace C5 {
 * A Cell is loosely based on the LISP con-cell, List, Node structure because the original intention
 * was to do a port from the pgsql parser.
 * A cell either holds a T (Tvalue) value or it is a collection of elements of its own type. 
-* Tvalue must be a reference managed type, SysStr^, SysObj^ etc., so for primitives use type^, eg int^.
+* Tvalue must be a reference managed type, String^, Object^ etc., so for primitives use type^, eg int^.
 * If a Cell is a collection, it's Cell elements can be in an unnamed or named list. The ordinal index of
 * unnamed elements in a named list is tracked.
 * If there is only a single element, it's key, if it exists, and value are stored in unary variables to
@@ -83,11 +83,11 @@ namespace C5 {
 * Cell<Tvalue>
 * ------------
 * Implements the abstract members declared in AbstractCell with Tvalue being the actual physical
-* value type that will be stored as an SysObj^.
+* value type that will be stored as an Object^.
 *
 * In short Cell<Tvalue> pretty much functionally emulates a PHP array while still adhering to
 * the principle of strong typing.
-* As it stands a Cell is strongly typed around Tvalue and SysStr^. It cannot mutate to
+* As it stands a Cell is strongly typed around Tvalue and String^. It cannot mutate to
 * another Tvalue type within it's Cell tree /chain hierarchy.
 *
 * A note on the storage location of a Cell's value:
@@ -109,7 +109,7 @@ namespace C5 {
 //												Cell Class
 //
 /// Cell property and operator definitions.
-/// A Cell<Tvalue> can be a Tvalue value, held as an SysObj^ in _Value or a collection of child Cells in
+/// A Cell<Tvalue> can be a Tvalue value, held as an Object^ in _Value or a collection of child Cells in
 /// in the Replicant parent class AdvancedReplicant<Cell<Tvalue>>.
 /// This class exposes the abstract members declared in AbstractCell<Cell<Tvalue>, Tvalue>.
 /// Tvalue: The type of the member stored in a Cell when the Cell is a value container.
