@@ -22,7 +22,7 @@ See [Extended Description](#extended-description) below.
 * New query and data retrieval for both user and system tables.
 
 ### A Note on AutoIncrement
-There is a simple parser coded in C++/Cli which parses the Trigger source for linkage to the auto-increment sequence generator. The original parser code was ported from the [greenlion/PHP-SQL-Parser](https://github.com/greenlion/PHP-SQL-Parser) PHP parser which meant writing a class library, the Cell class, which could imitate PHP style arrays. The parser itself is reasonable fast but SELECT commands for a large number of triggers and generators may take some time, so building of the linkage tables for a connection is initiated as soon as the connection is established.
+There is a simple parser coded in C++/Cli which parses the Trigger source for linkage to the auto-increment sequence generator. The original parser code was ported from the [greenlion/PHP-SQL-Parser](https://github.com/greenlion/PHP-SQL-Parser) PHP parser which meant writing a class library, the Cell class, which could imitate PHP style arrays. The parser itself is reasonable fast but SELECT commands for a large number of triggers and generators may take some time, so building of the linkage tables for a connection is initiated asynchronously as soon as the connection is established.
 
 
 ## Known issues
