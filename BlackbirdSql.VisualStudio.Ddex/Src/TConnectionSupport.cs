@@ -123,6 +123,8 @@ internal class TConnectionSupport : AdoDotNetConnectionSupport
 	// ---------------------------------------------------------------------------------
 	protected override object CreateService(IServiceContainer container, Type serviceType)
 	{
+		// Diag.Trace();
+
 		/* Uncomment this and change PackageSupportedObjects._UseFactoryOnly to true to debug implementations
 		 * Don't forget to do the same for the ProviderObjectFactory if you do.
 		 * 

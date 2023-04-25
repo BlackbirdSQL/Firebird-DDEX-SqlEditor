@@ -117,7 +117,7 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 	// ---------------------------------------------------------------------------------
 	protected override object CreateService(Type serviceType)
 	{
-		// Diag.Trace();
+		// Diag.Trace(serviceType.FullName);
 		// TBC
 		/*
 		if (serviceType == typeof(IVsDataViewCommandProvider))
@@ -134,8 +134,8 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 
 		object service = base.CreateService(serviceType);
 
-		if (service == null)
-			Diag.Trace(serviceType.FullName + " is not supported");
+		// if (service == null)
+		//	Diag.Trace(serviceType.FullName + " is not supported");
 		// else
 		//	Diag.Trace(serviceType.FullName + " is indirectly supported");
 

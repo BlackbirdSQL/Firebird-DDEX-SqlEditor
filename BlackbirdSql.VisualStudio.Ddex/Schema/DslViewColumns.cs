@@ -21,13 +21,15 @@
 
 
 
+using BlackbirdSql.Common.Extensions;
+
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 
 internal class DslViewColumns : DslColumns
 {
 
-	public DslViewColumns() : base()
+	public DslViewColumns(ExpressionParser parser) : base(parser)
 	{
 		_ParentType = "View";
 		_ObjectType = "ViewColumn";

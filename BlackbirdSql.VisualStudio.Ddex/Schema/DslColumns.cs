@@ -29,6 +29,7 @@ using FirebirdSql.Data.FirebirdClient;
 using BlackbirdSql.Common;
 using System.Collections.Generic;
 using System.CodeDom;
+using BlackbirdSql.Common.Extensions;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
@@ -40,6 +41,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 /// </summary>
 internal class DslColumns : DslSchema
 {
+	ExpressionParser _ExpressionParser = null;
 	/// <summary>
 	/// The parent DslSchema this column collection belongs to.
 	/// (Not it's <see cref="DslObjectTypes"/> type.)
@@ -129,8 +131,9 @@ internal class DslColumns : DslSchema
 
 
 
-	public DslColumns() : base()
+	public DslColumns(ExpressionParser parser) : base()
 	{
+		_ExpressionParser = parser;
 	}
 
 	#region Protected Methods
@@ -142,16 +145,10 @@ internal class DslColumns : DslSchema
 		var sql = new StringBuilder();
 		var where = new StringBuilder();
 
-		string unknownSequence = Properties.Resources.UnknownSequence;
-
 		if (MajorVersionNumber < 3 || _GeneratorSelector == null)
 		{
-			_GeneratorSelector = " IS NULL";
+			_GeneratorSelector = "null";
 			_IdentityType = "null";
-		}
-		else
-		{
-			_GeneratorSelector = " = " + _GeneratorSelector;
 		}
 
 		_IdentityType ??= "null";
@@ -293,14 +290,12 @@ internal class DslColumns : DslSchema
 		 * {0} returnClause
 		 * {1} _FromClause - default: 'rdb$relation_fields r' (ensure r aliases for r dependents are  r_..)
 		 * {2} WHERE clause prefixed with "cflfWHERE " and preceded by _ConditionClause.
-		 * {3} identityType
+		 * {3} generatorColumn
 		 * {4} _ParentType
 		 * {5} columnsClause - _RequiredColumns and _AdditionalColumns
-		 * {6} generatorSelector
-		 * {7} _OrderingField
-		 * {8} _RequiredColumns["ORDINAL_POSITION"]: - default: 'r.rdb$field_position'
-		 * {9} intoClause
-		 * {10} unknownSequence
+		 * {6} _OrderingField
+		 * {7} _RequiredColumns["ORDINAL_POSITION"]: - default: 'r.rdb$field_position'
+		 * {8} intoClause
 		*/
 
 		sql.AppendFormat(
@@ -315,16 +310,11 @@ internal class DslColumns : DslSchema
         COLLATION_CATALOG varchar(10), COLLATION_SCHEMA varchar(10), COLLATION_NAME varchar(50),
         DESCRIPTION varchar(50), IN_PRIMARYKEY boolean, IS_UNIQUE boolean, IS_IDENTITY boolean, SEQUENCE_GENERATOR varchar(50),
         -- [returnClause]~0~ directly after TRIGGER_NAME varchar(50)
-		IDENTITY_SEED bigint, IDENTITY_INCREMENT int, IDENTITY_CURRENT bigint, PARENT_TYPE varchar(15),
-		ORDINAL_POSITION smallint, TRIGGER_NAME varchar(50){0})
+		PARENT_TYPE varchar(15), ORDINAL_POSITION smallint, TRIGGER_NAME varchar(50){0})
 AS
 DECLARE PRIMARY_DEPENDENCYCOUNT int;
-DECLARE TRIGGER_DEPENDENCYCOUNT int;
-DECLARE IDENTITY_TYPE smallint;
 DECLARE SEGMENT_FIELD varchar(50);
 BEGIN
-    :TRIGGER_DEPENDENCYCOUNT = 0;
-
 	SELECT COUNT(*)
 	-- [rdb$relation_fields r]~1~
 	FROM {1}
@@ -334,7 +324,7 @@ BEGIN
 		ON r_seg.rdb$index_name = r_con.rdb$index_name AND r_seg.rdb$field_name = r.rdb$field_name
 	INNER JOIN rdb$triggers r_trg
 		ON r_seg.rdb$field_name IS NOT NULL AND r_trg.rdb$relation_name = r_con.rdb$relation_name
-			AND r_trg.rdb$trigger_sequence = 1 AND r_trg.rdb$flags = 1 AND r_trg.rdb$trigger_type = 1
+			AND r_trg.rdb$trigger_sequence = 1 AND r_trg.rdb$trigger_type = 1
 	INNER JOIN rdb$dependencies r_dep
 		ON r_dep.rdb$dependent_name = r_trg.rdb$trigger_name
 			AND r_dep.rdb$depended_on_name = r_trg.rdb$relation_name AND r_dep.rdb$field_name = r.rdb$field_name{2}
@@ -396,17 +386,15 @@ BEGIN
 			-- :IN_PRIMARYKEY
 			(CASE WHEN r_seg.rdb$field_name IS NULL THEN false ELSE true END),
 			-- :IS_IDENTITY
-			(CASE WHEN r_dep.rdb$dependent_name IS NOT NULL AND r_trg.rdb$trigger_name IS NOT NULL AND r_trg.rdb$trigger_sequence = 1 AND r_trg.rdb$flags = 1 and r_trg.rdb$trigger_type = 1 THEN
+			(CASE WHEN r_dep.rdb$dependent_name IS NOT NULL AND r_trg.rdb$trigger_name IS NOT NULL AND r_trg.rdb$trigger_sequence = 1 and r_trg.rdb$trigger_type = 1 THEN
 				true
 			ELSE
 				false
 			END),
 			-- :SEGMENT_FIELD
 			r_seg.rdb$field_name,
-			-- :IDENTITY_TYPE - [r.rdb$identity_type|null]~3~
+			-- :SEQUENCE_GENERATOR,
 			{3},
-			-- :SEQUENCE_GENERATOR, :IDENTITY_SEED, :IDENTITY_INCREMENT
-			r_gen.rdb$generator_name, r_gen.rdb$initial_value, r_gen.rdb$generator_increment,
 			-- :PARENT_TYPE - [Table|'ParentType']~4~
 			-- [, r_dep.rdb$dependent_name]~5~ (for additional columns)
 			'{4}'{5}
@@ -423,16 +411,13 @@ BEGIN
         LEFT OUTER JOIN rdb$index_segments r_seg 
             ON r_seg.rdb$index_name = r_con.rdb$index_name AND r_seg.rdb$field_name = r.rdb$field_name
         LEFT OUTER JOIN rdb$triggers r_trg
-            ON r_trg.rdb$relation_name = r_con.rdb$relation_name AND r_trg.rdb$trigger_sequence = 1 AND r_trg.rdb$flags = 1 AND r_trg.rdb$trigger_type = 1
+            ON r_trg.rdb$relation_name = r_con.rdb$relation_name AND r_trg.rdb$trigger_sequence = 1 AND r_trg.rdb$trigger_type = 1
         LEFT OUTER JOIN rdb$dependencies r_dep
             ON r_dep.rdb$depended_on_name = r_trg.rdb$relation_name AND r_dep.rdb$field_name = r_seg.rdb$field_name
-                AND r_dep.rdb$dependent_name = r_trg.rdb$trigger_name
-        LEFT OUTER JOIN rdb$generators r_gen
-			-- [= r.rdb$generator_name|IS NULL]~6~
 		-- [crlfWHERE r.rdb$relation_name = '...']~2~
-            ON r_gen.rdb$generator_name{6}{2}
-		-- [r.rdb$relation_name]~7~ [r.rdb$field_position]~8~
-		ORDER BY {7}, {8}
+                AND r_dep.rdb$dependent_name = r_trg.rdb$trigger_name{2}
+		-- [r.rdb$relation_name]~6~ [r.rdb$field_position]~8~
+		ORDER BY {6}, {7}
 
         INTO :TABLE_CATALOG, :TABLE_SCHEMA, :TABLE_NAME, :COLUMN_NAME, :IS_SYSTEM_FLAG,
 		:FIELD_SUB_TYPE, :FIELD_SIZE, :NUMERIC_PRECISION, :NUMERIC_SCALE,
@@ -442,43 +427,11 @@ BEGIN
         :CHARACTER_SET_CATALOG, :CHARACTER_SET_SCHEMA, :CHARACTER_SET_NAME, :COLLATION_CATALOG, :COLLATION_SCHEMA,
         :COLLATION_NAME, :DESCRIPTION,
 		:IN_PRIMARYKEY, :IS_IDENTITY, :SEGMENT_FIELD,
-		-- [,crlfTRIGGER_NAME]~9~ directly after :PARENT_TYPE
-		:IDENTITY_TYPE, :SEQUENCE_GENERATOR, :IDENTITY_SEED, :IDENTITY_INCREMENT, :PARENT_TYPE{9}
+		-- [,crlfTRIGGER_NAME]~8~ directly after :PARENT_TYPE
+		:SEQUENCE_GENERATOR, :PARENT_TYPE{8}
 	DO BEGIN
 		IF (:SEGMENT_FIELD IS NULL OR :PRIMARY_DEPENDENCYCOUNT <> 1) THEN
 			:IS_IDENTITY = false;
-
-		IF (:SEQUENCE_GENERATOR IS NOT NULL) THEN
-		BEGIN
-			EXECUTE STATEMENT 'SELECT gen_id(' || SEQUENCE_GENERATOR || ', 0) FROM rdb$database' INTO :IDENTITY_CURRENT;
-			:IDENTITY_CURRENT = :IDENTITY_CURRENT - :IDENTITY_INCREMENT;
-			IF (:IDENTITY_CURRENT < :IDENTITY_SEED) THEN
-			BEGIN
-				:IDENTITY_CURRENT = :IDENTITY_SEED;
-			END
-
-			IF (:IS_IDENTITY) THEN
-			BEGIN
-				-- There is a generator so :IDENTITY_TYPE determines if is-identity still holds true
-				IF (:IDENTITY_TYPE IS NULL OR :IDENTITY_TYPE = 0) THEN
-					:IS_IDENTITY = false;
-			END
-		END
-        if (:IS_IDENTITY AND :SEQUENCE_GENERATOR IS NULL) THEN
-		BEGIN
-            -- [Unidentifiable]~10~
-            :SEQUENCE_GENERATOR = '{10}';
-			:IDENTITY_SEED = -1;
-			:IDENTITY_INCREMENT = -1;
-			:IDENTITY_CURRENT = -1;
-        END
-		IF (NOT :IS_IDENTITY  AND :SEQUENCE_GENERATOR IS NULL) THEN
-		BEGIN
-			:SEQUENCE_GENERATOR = NULL;
-			:IDENTITY_SEED = 0;
-			:IDENTITY_INCREMENT = 0;
-			:IDENTITY_CURRENT = 0;
-		END
 
 		IF (:IN_PRIMARYKEY AND :PRIMARY_DEPENDENCYCOUNT = 1) THEN
 			:IS_UNIQUE = true;
@@ -499,10 +452,10 @@ BEGIN
 	END
 END",
 					returnClause, _FromClause, where.ToString(),
-					_IdentityType, _ParentType, columnsClause,
-					_GeneratorSelector, _OrderingField,
+					_GeneratorSelector, _ParentType, columnsClause,
+					_OrderingField,
 					_RequiredColumns["ORDINAL_POSITION"].ToString(),
-					intoClause, unknownSequence);
+					intoClause);
 
 
 		// Diag.Trace(sql.ToString());
@@ -517,11 +470,16 @@ END",
 		// schema.Columns[6].ColumnName = "NumericPrecision";
 		// schema.Columns[18].ColumnName = "Nullable";
 
+		schema.Columns.Add("FIELD_DATA_TYPE", typeof(string));
+		schema.Columns.Add("IDENTITY_SEED", typeof(long));
+		schema.Columns.Add("IDENTITY_INCREMENT", typeof(int));
+		schema.Columns.Add("IDENTITY_CURRENT", typeof(long));
+
+		schema.AcceptChanges();
+
+		DataRow trig;
 
 		schema.BeginLoadData();
-
-		schema.Columns.Add("FIELD_DATA_TYPE", typeof(string));
-
 
 		foreach (DataRow row in schema.Rows)
 		{
@@ -578,16 +536,40 @@ END",
 				row["DOMAIN_NAME"] = null;
 			}
 
+			trig = null;
+
+			if (Convert.ToBoolean(row["IS_IDENTITY"]) == true)
+			{
+				trig = _ExpressionParser.Triggers.Rows.Find(row["TRIGGER_NAME"]);
+			}
+
+			if (trig != null)
+			{
+				row["SEQUENCE_GENERATOR"] = trig["SEQUENCE_GENERATOR"];
+				row["IDENTITY_SEED"] = trig["IDENTITY_SEED"];
+				row["IDENTITY_INCREMENT"] = trig["IDENTITY_INCREMENT"];
+				row["IDENTITY_CURRENT"] = trig["IDENTITY_CURRENT"];
+				row["IS_IDENTITY"] = trig["IS_IDENTITY"];
+			}
+			else
+			{
+				row["SEQUENCE_GENERATOR"] = DBNull.Value;
+				row["IDENTITY_SEED"] = 0;
+				row["IDENTITY_INCREMENT"] = 0;
+				row["IDENTITY_CURRENT"] = 0;
+				row["IS_IDENTITY"] = false;
+			}
+
 		}
 
 
 		schema.EndLoadData();
-		schema.AcceptChanges();
 
 		// Remove not more needed columns
 		schema.Columns.Remove("FIELD_TYPE");
 		schema.Columns.Remove("CHARACTER_MAX_LENGTH");
 
+		_ExpressionParser = null;
 		// Diag.Trace("Rows returned: " + schema.Rows.Count);
 
 	}

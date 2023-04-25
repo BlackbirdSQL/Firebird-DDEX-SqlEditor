@@ -188,19 +188,20 @@
 
 
 		<!-- Sequence -->
-		<Type name="Sequence" preferredOrdering="GENERATOR_NAME">
+		<Type name="Sequence" preferredOrdering="SEQUENCE_GENERATOR">
 			<Identifier>
 				<Part name="GENERATOR_CATALOG" type="System.String" />
 				<Part name="GENERATOR_SCHEMA" type="System.String" />
-				<Part name="GENERATOR_NAME" type="System.String" />
+				<Part name="SEQUENCE_GENERATOR" type="System.String" />
 			</Identifier>
 			<Properties>
-				<Property name="GENERATOR_NAME" isIdentifierPart="true" />
+				<Property name="SEQUENCE_GENERATOR" isIdentifierPart="true" />
 				<Property name="GENERATOR_ID" type="System.Int16" />
 				<Property name="IS_SYSTEM_FLAG" type="System.Int32" />
 				<Property name="IDENTITY_SEED" type="System.Int64" />
 				<Property name="IDENTITY_INCREMENT" type="System.Int32" />
 				<Property name="IDENTITY_CURRENT" type="System.Int64" />
+				<Property name="TRIGGER_NAME" type="System.String" />
 			</Properties>
 			<Services>
 				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">

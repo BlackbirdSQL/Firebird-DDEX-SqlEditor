@@ -30,14 +30,13 @@ using System.Threading.Tasks;
 using FirebirdSql.Data.FirebirdClient;
 
 using BlackbirdSql.Common;
-
-
+using BlackbirdSql.Common.Extensions;
+using System.Net.Security;
+using BlackbirdDsl;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 
-// Error suppression
-[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
 
 
 internal sealed class DslSchemaFactory
@@ -62,6 +61,13 @@ internal sealed class DslSchemaFactory
 	{
 		// Diag.Trace();
 
+		ExpressionParser parser = ExpressionParser.Instance(connection);
+
+		if (parser.ClearToLoadAsync && RequiresTriggers(collectionName))
+		{
+			parser.AsyncLoad();
+		}
+
 		string schemaCollection;
 
 		switch (collectionName)
@@ -84,6 +90,7 @@ internal sealed class DslSchemaFactory
 			case "TriggerColumns":
 				schemaCollection = "Columns";
 				break;
+			case "TriggerGenerators":
 			case "IdentityTriggers":
 			case "StandardTriggers":
 			case "SystemTriggers":
@@ -91,6 +98,26 @@ internal sealed class DslSchemaFactory
 				break;
 			default:
 				return connection.GetSchema(collectionName, restrictions);
+		}
+
+
+		if (parser.ClearToLoad && RequiresTriggers(schemaCollection))
+		{
+			parser.Load();
+		}
+
+		if (!parser.Requesting)
+		{
+			if (collectionName == "Generators")
+				return parser.GetSequenceSchema(restrictions);
+			else if (collectionName == "Triggers")
+				return parser.GetTriggerSchema(restrictions, -1, -1);
+			else if (collectionName == "StandardTriggers")
+				return parser.GetTriggerSchema(restrictions, 0, 0);
+			else if (collectionName == "IdentityTriggers")
+				return parser.GetTriggerSchema(restrictions, 0, 1);
+			else if (collectionName == "SystemTriggers")
+				return parser.GetTriggerSchema(restrictions, 1, -1);
 		}
 
 
@@ -168,6 +195,140 @@ internal sealed class DslSchemaFactory
 		}
 	}
 
+
+	public static Task<DataTable> GetSchemaAsync(FbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
+	{
+		string schemaCollection;
+
+		switch (collectionName)
+		{
+			case "Columns":
+			case "ForeignKeyColumns":
+			case "ForeignKeys":
+			case "FunctionArguments":
+			case "Functions":
+			case "Generators":
+			case "IndexColumns":
+			case "Indexes":
+			case "Procedures":
+			case "ProcedureColumns":
+			case "Tables":
+			case "Triggers":
+			case "ViewColumns":
+				schemaCollection = collectionName;
+				break;
+			case "TriggerColumns":
+				schemaCollection = "Columns";
+				break;
+			case "TriggerGenerators":
+			case "IdentityTriggers":
+			case "StandardTriggers":
+			case "SystemTriggers":
+				schemaCollection = "Triggers";
+				break;
+			default:
+				return connection.GetSchemaAsync(collectionName, restrictions);
+		}
+
+		/*
+		ExpressionParser parser = ExpressionParser.Instance(connection);
+
+		if (!parser.Requesting)
+		{
+			if (collectionName == "Generators")
+				return parser.GetSequenceSchemaAsync(restrictions);
+			else if (collectionName == "Triggers")
+				return parser.GetTriggerSchemaAsync(restrictions, -1, -1);
+			else if (collectionName == "StandardTriggers")
+				return parser.GetTriggerSchemaAsync(restrictions, 0, 0);
+			else if (collectionName == "IdentityTriggers")
+				return parser.GetTriggerSchemaAsync(restrictions, 0, 1);
+			else if (collectionName == "SystemTriggers")
+				return parser.GetTriggerSchemaAsync(restrictions, 1, -1);
+		}
+		*/
+
+		var filter = string.Format("CollectionName = '{0}'", schemaCollection);
+		var ds = new DataSet();
+
+		Assembly assembly = typeof(FirebirdClientFactory).Assembly;
+		if (assembly == null)
+		{
+			DllNotFoundException ex = new(typeof(FirebirdClientFactory).Name + " class assembly not found");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		var xmlStream = assembly.GetManifestResourceStream(ResourceName);
+		if (xmlStream == null)
+		{
+			NullReferenceException ex = new("Resource not found: " + ResourceName);
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		var oldCulture = Thread.CurrentThread.CurrentCulture;
+
+		try
+		{
+			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+			// ReadXml contains error: http://connect.microsoft.com/VisualStudio/feedback/Validation.aspx?FeedbackID=95116
+			// that's the reason for temporarily changing culture
+			ds.ReadXml(xmlStream);
+		}
+		finally
+		{
+			Thread.CurrentThread.CurrentCulture = oldCulture;
+		}
+
+		DataRow[] collection;
+		try
+		{
+			collection = ds.Tables[DbMetaDataCollectionNames.MetaDataCollections].Select(filter);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+
+		if (collection.Length != 1)
+		{
+			NotSupportedException ex = new("Unsupported collection name " + schemaCollection);
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		if (restrictions != null && restrictions.Length > (int)collection[0]["NumberOfRestrictions"])
+		{
+			InvalidOperationException exbb = new("The number of specified restrictions is not valid.");
+			Diag.Dug(exbb);
+			throw exbb;
+		}
+
+		if (ds.Tables[DbMetaDataCollectionNames.Restrictions].Select(filter).Length != (int)collection[0]["NumberOfRestrictions"])
+		{
+			InvalidOperationException exbb = new("Incorrect restriction definition.");
+			Diag.Dug(exbb);
+			throw exbb;
+		}
+
+		switch (collection[0]["PopulationMechanism"].ToString())
+		{
+			case "PrepareCollection":
+				return PrepareCollectionAsync(connection, collectionName, schemaCollection, restrictions, cancellationToken);
+
+			case "DataTable":
+				return Task.FromResult(ds.Tables[collection[0]["PopulationString"].ToString()].Copy());
+
+			case "SQLCommand":
+				return SqlCommandSchemaAsync(connection, collectionName, restrictions, cancellationToken);
+
+			default:
+				throw new NotSupportedException("Unsupported population mechanism");
+		}
+	}
+
 	#endregion
 
 	#region Private Methods
@@ -176,23 +337,24 @@ internal sealed class DslSchemaFactory
 	{
 		DslSchema returnSchema = collectionName.ToUpperInvariant() switch
 		{
-			"COLUMNS" => new DslColumns(),
-			"FOREIGNKEYCOLUMNS" => new DslForeignKeyColumns(),
+			"COLUMNS" => new DslColumns(ExpressionParser.Instance(connection)),
+			"FOREIGNKEYCOLUMNS" => new DslForeignKeyColumns(ExpressionParser.Instance(connection)),
 			"FOREIGNKEYS" => new DslForeignKeys(),
-			"FUNCTIONARGUMENTS" => new DslFunctionArguments(),
+			"FUNCTIONARGUMENTS" => new DslFunctionArguments(ExpressionParser.Instance(connection)),
 			"FUNCTIONS" => new DslFunctions(),
-			"GENERATORS" => new DslGenerators(),
-			"INDEXCOLUMNS" => new DslIndexColumns(),
+			"GENERATORS" => new DslRawGenerators(ExpressionParser.Instance(connection)),
+			"INDEXCOLUMNS" => new DslIndexColumns(ExpressionParser.Instance(connection)),
 			"INDEXES" => new DslIndexes(),
 			"PROCEDURES" => new DslProcedures(),
-			"PROCEDUREPARAMETERS" => new DslProcedureParameters(),
+			"PROCEDUREPARAMETERS" => new DslProcedureParameters(ExpressionParser.Instance(connection)),
 			"TABLES" => new DslTables(),
-			"TRIGGERS" => new DslTriggers(),
-			"IDENTITYTRIGGERS" => new DslIdentityTriggers(),
-			"STANDARDTRIGGERS" => new DslStandardTriggers(),
-			"SYSTEMTRIGGERS" => new DslSystemTriggers(),
-			"TRIGGERCOLUMNS" => new DslTriggerColumns(),
-			"VIEWCOLUMNS" => new DslViewColumns(),
+			"TRIGGERS" => new DslRawTriggers(ExpressionParser.Instance(connection)),
+			"TRIGGERGENERATORS" => new DslRawTriggerGenerators(ExpressionParser.Instance(connection)),
+			"IDENTITYTRIGGERS" => new DslIdentityTriggers(ExpressionParser.Instance(connection)),
+			"STANDARDTRIGGERS" => new DslStandardTriggers(ExpressionParser.Instance(connection)),
+			"SYSTEMTRIGGERS" => new DslSystemTriggers(ExpressionParser.Instance(connection)),
+			"TRIGGERCOLUMNS" => new DslTriggerColumns(ExpressionParser.Instance(connection)),
+			"VIEWCOLUMNS" => new DslViewColumns(ExpressionParser.Instance(connection)),
 			_ => ((Func<DslSchema>)(() =>
 				{
 					NotSupportedException exbb = new(string.Format("The metadata collection {0} is not supported.", collectionName));
@@ -209,23 +371,24 @@ internal sealed class DslSchemaFactory
 	{
 		DslSchema returnSchema = collectionName.ToUpperInvariant() switch
 		{
-			"COLUMNS" => new DslColumns(),
-			"FOREIGNKEYCOLUMNS" => new DslForeignKeyColumns(),
+			"COLUMNS" => new DslColumns(ExpressionParser.Instance(connection)),
+			"FOREIGNKEYCOLUMNS" => new DslForeignKeyColumns(ExpressionParser.Instance(connection)),
 			"FOREIGNKEYS" => new DslForeignKeys(),
-			"FUNCTIONARGUMENTS" => new DslFunctionArguments(),
+			"FUNCTIONARGUMENTS" => new DslFunctionArguments(ExpressionParser.Instance(connection)),
 			"FUNCTIONS" => new DslFunctions(),
-			"GENERATORS" => new DslGenerators(),
-			"INDEXCOLUMNS" => new DslIndexColumns(),
+			"GENERATORS" => new DslRawGenerators(ExpressionParser.Instance(connection)),
+			"INDEXCOLUMNS" => new DslIndexColumns(ExpressionParser.Instance(connection)),
 			"INDEXES" => new DslIndexes(),
 			"PROCEDURES" => new DslProcedures(),
-			"PROCEDUREPARAMETERS" => new DslProcedureParameters(),
+			"PROCEDUREPARAMETERS" => new DslProcedureParameters(ExpressionParser.Instance(connection)),
 			"TABLES" => new DslTables(),
-			"TRIGGERS" => new DslTriggers(),
-			"IDENTITYTRIGGERS" => new DslIdentityTriggers(),
-			"STANDARDTRIGGERS" => new DslStandardTriggers(),
-			"SYSTEMTRIGGERS" => new DslSystemTriggers(),
-			"TRIGGERCOLUMNS" => new DslTriggerColumns(),
-			"VIEWCOLUMNS" => new DslViewColumns(),
+			"TRIGGERS" => new DslRawTriggers(ExpressionParser.Instance(connection)),
+			"TRIGGERGENERATORS" => new DslRawTriggerGenerators(ExpressionParser.Instance(connection)),
+			"IDENTITYTRIGGERS" => new DslIdentityTriggers(ExpressionParser.Instance(connection)),
+			"STANDARDTRIGGERS" => new DslStandardTriggers(ExpressionParser.Instance(connection)),
+			"SYSTEMTRIGGERS" => new DslSystemTriggers(ExpressionParser.Instance(connection)),
+			"TRIGGERCOLUMNS" => new DslTriggerColumns(ExpressionParser.Instance(connection)),
+			"VIEWCOLUMNS" => new DslViewColumns(ExpressionParser.Instance(connection)),
 			_ => ((Func<DslSchema>)(() =>
 				{
 					NotSupportedException exbb = new(string.Format("The metadata collection {0} is not supported.", collectionName));
@@ -233,6 +396,7 @@ internal sealed class DslSchemaFactory
 					throw exbb;
 				}))(),
 		};
+
 		return returnSchema.GetSchemaAsync(connection, schemaCollection, restrictions, cancellationToken);
 	}
 
@@ -247,6 +411,37 @@ internal sealed class DslSchemaFactory
 		NotImplementedException exbb = new();
 		Diag.Dug(exbb);
 		throw exbb;
+	}
+
+
+	static bool RequiresTriggers(string collection)
+	{
+		switch (collection)
+		{
+			case "ForeignKeys":
+			case "Functions":
+			case "Indexes":
+			case "Procedures":
+			case "Tables":
+				return false;
+			case "Columns":
+			case "ForeignKeyColumns":
+			case "FunctionArguments":
+			case "Generators":
+			case "IndexColumns":
+			case "ProcedureColumns":
+			case "Triggers":
+			case "ViewColumns":
+			case "TriggerColumns":
+			case "TriggerGenerators":
+			case "IdentityTriggers":
+			case "StandardTriggers":
+			case "SystemTriggers":
+			default:
+				break;
+		}
+
+		return true;
 	}
 
 	#endregion

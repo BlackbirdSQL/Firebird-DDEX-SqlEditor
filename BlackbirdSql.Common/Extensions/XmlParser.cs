@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data;
 using System.IO;
-using System.Windows.Controls;
 using System.Xml;
 using Microsoft.VisualStudio.Data.Core;
 

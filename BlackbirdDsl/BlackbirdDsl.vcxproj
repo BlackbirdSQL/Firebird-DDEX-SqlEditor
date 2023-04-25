@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{20fa4c6f-3c4e-46f2-b408-089d66d52c1b}</ProjectGuid>
+    <RootNamespace>BlackbirdDsl</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <TargetFrameworkVersion>4.8</TargetFrameworkVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <CLRSupport>true</CLRSupport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <CLRSupport>true</CLRSupport>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <LinkKeyFile>$(ProjectDir)BlackbirdDsl.snk</LinkKeyFile>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;BLACKBIRDDSL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>Default</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir)Include;$(ProjectDir)CPenta\Include;$(ProjectDir)Parser\Include;$(ProjectDir)Parser\Extensions\Include;$(ProjectDir)Parser\Configuration\Include;$(ProjectDir)Parser\Common\Include;$(ProjectDir)Parser\Assemblers\Include;$(ProjectDir)Parser\Parsers\Include</AdditionalIncludeDirectories>
+      <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
+      <XMLDocumentationFileName>$(IntDir)XmlDoc\</XMLDocumentationFileName>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+    <Xdcmake>
+      <DocumentLibraryDependencies>false</DocumentLibraryDependencies>
+    </Xdcmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;BLACKBIRDDSL_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>Default</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir)Include;$(ProjectDir)CPenta\Include;$(ProjectDir)Parser\Include;$(ProjectDir)Parser\Extensions\Include;$(ProjectDir)Parser\Configuration\Include;$(ProjectDir)Parser\Common\Include;$(ProjectDir)Parser\Assemblers\Include;$(ProjectDir)Parser\Parsers\Include</AdditionalIncludeDirectories>
+      <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
+      <XMLDocumentationFileName>$(IntDir)XmlDoc\</XMLDocumentationFileName>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
+    </Link>
+    <Xdcmake>
+      <DocumentLibraryDependencies>false</DocumentLibraryDependencies>
+    </Xdcmake>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="C5Common.h" />
+    <ClInclude Include="CPenta\Include\CellSpecies.h" />
+    <ClInclude Include="CPenta\Include\IReplicant.h" />
+    <ClInclude Include="CPenta\Include\AbstractReplicant.h" />
+    <ClInclude Include="CPenta\Include\AdvancedReplicant.h" />
+    <ClInclude Include="CPenta\Include\AbstractCell.h" />
+    <ClInclude Include="CPenta\Include\Cell.h" />
+    <ClInclude Include="CPenta\Include\CPentaCommon.h" />
+    <ClInclude Include="CPenta\Include\ReplicaEnumerator.h" />
+    <ClInclude Include="CPenta\Include\AbstruseReplicant.h" />
+    <ClInclude Include="CPenta\Include\Diag.h" />
+    <ClInclude Include="CPenta\Include\ReplicaKey.h" />
+    <ClInclude Include="CPenta\Include\Replicant.h" />
+    <ClInclude Include="CPenta\Include\StringCell.h" />
+    <ClInclude Include="Include\framework.h" />
+    <ClInclude Include="Include\pch.h" />
+    <ClInclude Include="BlackbirdParser.h" />
+    <ClInclude Include="Parser\Common\Include\AbstractParser.h" />
+    <ClInclude Include="Parser\Common\Include\ExpressionToken.h" />
+    <ClInclude Include="Parser\Common\Include\IParser.h" />
+    <ClInclude Include="Parser\Common\Include\OffsetCalculator.h" />
+    <ClInclude Include="Parser\Common\Include\RegexLexer.h" />
+    <ClInclude Include="Parser\Configuration\Include\Gram.h" />
+    <ClInclude Include="Parser\Configuration\Include\GramConsts.h" />
+    <ClInclude Include="Parser\Include\DslOptions.h" />
+    <ClInclude Include="Parser\Extensions\Include\ExtensionMethods.h" />
+    <ClInclude Include="Parser\Include\Parser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TBracketParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\ParserManager.h" />
+    <ClInclude Include="Parser\Common\Include\Scanner.h" />
+    <ClInclude Include="Parser\Parsers\Include\SqlParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\WColumnListParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\WCreateDefinitionParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TCreateParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TDeleteParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TDescParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TDescribeParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TDropParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TDuplicateParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TExplainParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\WExpressionListParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TFromParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TGroupByParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\THavingParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\WIndexColumnListParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TIndexParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TInsertParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TIntoParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TLimitParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TOptionsParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TOrderByParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\WPartitionOptionsParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TRenameParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TReplaceParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\WSelectExpressionParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TSelectParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TSetParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TShowParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TTableParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TUpdateParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TUsingParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TValuesParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TWhereParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\TWithParser.h" />
+    <ClInclude Include="Parser\Parsers\Include\UnionParser.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CPenta\AbstractCell.cpp" />
+    <ClCompile Include="CPenta\AbstractReplicant.cpp" />
+    <ClCompile Include="CPenta\AbstruseReplicant.cpp" />
+    <ClCompile Include="CPenta\AdvancedReplicant.cpp" />
+    <ClCompile Include="CPenta\Cell.cpp">
+      <DeploymentContent>false</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="CPenta\CellSpecies.cpp" />
+    <ClCompile Include="CPenta\Diag.cpp" />
+    <ClCompile Include="CPenta\CPentaCommon.cpp" />
+    <ClCompile Include="CPenta\IReplicant.cpp" />
+    <ClCompile Include="CPenta\ReplicaEnumerator.cpp" />
+    <ClCompile Include="CPenta\ReplicaKey.cpp" />
+    <ClCompile Include="CPenta\Replicant.cpp" />
+    <ClCompile Include="CPenta\StringCell.cpp" />
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Parser\Common\AbstractParser.cpp" />
+    <ClCompile Include="Parser\Common\ExpressionToken.cpp" />
+    <ClCompile Include="Parser\Common\IParser.cpp" />
+    <ClCompile Include="Parser\Common\OffsetCalculator.cpp" />
+    <ClCompile Include="Parser\Common\RegexLexer.cpp" />
+    <ClCompile Include="Parser\Configuration\Gram.cpp" />
+    <ClCompile Include="Parser\Configuration\GramConsts.cpp" />
+    <ClCompile Include="Parser\DslOptions.cpp" />
+    <ClCompile Include="Parser\Parser.cpp" />
+    <ClCompile Include="Parser\Extensions\ExtensionMethods.cpp" />
+    <ClCompile Include="Parser\Parsers\TBracketParser.cpp" />
+    <ClCompile Include="Parser\Parsers\ParserManager.cpp" />
+    <ClCompile Include="Parser\Common\Scanner.cpp" />
+    <ClCompile Include="Parser\Parsers\SqlParser.cpp" />
+    <ClCompile Include="Parser\Parsers\WColumnListParser.cpp" />
+    <ClCompile Include="Parser\Parsers\WCreateDefinitionParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TCreateParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TDeleteParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TDescParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TDescribeParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TDropParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TDuplicateParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TExplainParser.cpp" />
+    <ClCompile Include="Parser\Parsers\WExpressionListParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TFromParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TGroupByParser.cpp" />
+    <ClCompile Include="Parser\Parsers\THavingParser.cpp" />
+    <ClCompile Include="Parser\Parsers\WIndexColumnListParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TIndexParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TInsertParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TIntoParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TLimitParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TOptionsParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TOrderByParser.cpp" />
+    <ClCompile Include="Parser\Parsers\WPartitionOptionsParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TRenameParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TReplaceParser.cpp" />
+    <ClCompile Include="Parser\Parsers\WSelectExpressionParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TSelectParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TSetParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TShowParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TTableParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TUpdateParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TUsingParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TValuesParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TWhereParser.cpp" />
+    <ClCompile Include="Parser\Parsers\TWithParser.cpp" />
+    <ClCompile Include="Parser\Parsers\UnionParser.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="BlackbirdDsl.snk" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

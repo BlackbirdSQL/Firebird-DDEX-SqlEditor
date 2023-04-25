@@ -149,13 +149,14 @@
 			<Identifier>
 				<Part name="Catalog" underlyingMember="GENERATOR_CATALOG" />
 				<Part name="Schema" underlyingMember="GENERATOR_SCHEMA" />
-				<Part name="Name" underlyingMember="GENERATOR_NAME" />
+				<Part name="Name" underlyingMember="SEQUENCE_GENERATOR" />
 			</Identifier>
 			<Properties>
 				<Property name="Name" isIdentifierPart="true" />
 				<Property name="InitialValue" underlyingMember="IDENTITY_SEED" />
 				<Property name="Increment" underlyingMember="IDENTITY_INCREMENT" />
 				<Property name="NextValue" underlyingMember="IDENTITY_CURRENT" />
+				<Property name="Trigger" underlyingMember="TRIGGER_NAME" />
 			</Properties>
 		</MappedType>
 

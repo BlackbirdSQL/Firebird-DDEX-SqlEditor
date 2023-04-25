@@ -18,6 +18,8 @@ using BlackbirdSql.Common;
 using BlackbirdSql.Common.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Schema;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
+using System.Data.Common;
+using Microsoft.VisualStudio.LanguageServer.Client;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -40,13 +42,11 @@ internal class TSourceInformation : AdoDotNetSourceInformation, IVsDataSourceInf
 
 	public TSourceInformation() : base()
 	{
-		// Diag.Trace();
 		AddExtendedProperties();
 	}
 
 	public TSourceInformation(IVsDataConnection connection) : base(connection)
 	{
-		// Diag.Trace();
 		AddExtendedProperties();
 	}
 
@@ -235,7 +235,7 @@ internal class TSourceInformation : AdoDotNetSourceInformation, IVsDataSourceInf
 
 		PropertyDescriptor descriptor;
 
-		if (!DslConnectionString.Synonyms.TryGetValue(paramName, out string propertyName))
+		if (!DslConnectionString.Synonyms.ContainsKey(paramName))
 			return null;
 
 		if ((descriptor = descriptors.Find(paramName, true)) != null)
@@ -382,6 +382,24 @@ internal class TSourceInformation : AdoDotNetSourceInformation, IVsDataSourceInf
 		}
 
 		return connectionProperties;
+	}
+
+
+
+	protected override void OnSiteChanged(EventArgs e)
+	{
+		base.OnSiteChanged(e);
+
+		if (Connection != null && (Connection.State & ConnectionState.Open) != 0)
+		{
+			ExpressionParser parser = ExpressionParser.Instance((FbConnection)Connection);
+
+			if (parser.ClearToLoadAsync)
+			{
+				parser.AsyncLoad();
+			}
+		}
+
 	}
 
 

@@ -17,12 +17,14 @@
 
 
 
+using BlackbirdSql.Common.Extensions;
+
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 
 internal class DslProcedureParameters : DslColumns
 {
-	public DslProcedureParameters() : base()
+	public DslProcedureParameters(ExpressionParser parser) : base(parser)
 	{
 		string packageName;
 

@@ -77,10 +77,13 @@ internal abstract class DslSchema
 		ProcessResult(dataTable);
 		return dataTable;
 	}
-	public async Task<DataTable> GetSchemaAsync(FbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
+
+
+	public DataTable GetRawSchema(FbConnection connection, string collectionName)
 	{
+		// Diag.Trace();
 		var dataTable = new DataTable(collectionName);
-		var command = BuildCommand(connection, collectionName, ParseRestrictions(restrictions));
+		var command = BuildRawCommand(connection);
 		try
 		{
 			using (var adapter = new FbDataAdapter(command))
@@ -99,13 +102,80 @@ internal abstract class DslSchema
 		finally
 		{
 			command.Dispose();
-			await Task.CompletedTask.ConfigureAwait(false);
 		}
 
 		TrimStringFields(dataTable);
 		ProcessResult(dataTable);
 		return dataTable;
 	}
+
+
+
+	public async Task<DataTable> GetSchemaAsync(FbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
+	{
+		var dataTable = new DataTable(collectionName);
+		var command = BuildCommand(connection, collectionName, ParseRestrictions(restrictions));
+
+		try
+		{
+			using (var adapter = new FbDataAdapter(command))
+			{
+				try
+				{
+					adapter.Fill(dataTable);
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex, collectionName);
+					throw;
+				}
+			}
+		}
+		finally
+		{
+			command.Dispose();
+			await Task.CompletedTask.ConfigureAwait(false);
+		}
+
+		TrimStringFields(dataTable);
+		ProcessResult(dataTable);
+
+		return dataTable;
+	}
+
+
+	public async Task<DataTable> GetRawSchemaAsync(FbConnection connection, string collectionName, CancellationToken cancellationToken = default)
+	{
+		var dataTable = new DataTable(collectionName);
+		var command = BuildRawCommand(connection);
+
+		try
+		{
+			using (var adapter = new FbDataAdapter(command))
+			{
+				try
+				{
+					adapter.Fill(dataTable);
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex, collectionName);
+					throw;
+				}
+			}
+		}
+		finally
+		{
+			command.Dispose();
+			await Task.CompletedTask.ConfigureAwait(false);
+		}
+
+		TrimStringFields(dataTable);
+		ProcessResult(dataTable);
+
+		return dataTable;
+	}
+
 
 	#endregion
 
@@ -163,6 +233,17 @@ internal abstract class DslSchema
 		return command;
 	}
 
+
+	protected FbCommand BuildRawCommand(FbConnection connection)
+	{
+		// Diag.Trace();
+		SetMajorVersionNumber(connection);
+
+		var builder = GetCommandText(null);
+		var command = new FbCommand(builder.ToString(), connection /*, transaction*/);
+
+		return command;
+	}
 
 	protected virtual void ProcessResult(DataTable schema)
 	{ }

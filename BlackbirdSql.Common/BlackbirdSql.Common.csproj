@@ -6,6 +6,7 @@
 		<RootNamespace>BlackbirdSql.Common</RootNamespace>
 		<SignAssembly>True</SignAssembly>
 		<AssemblyOriginatorKeyFile>Properties\BlackbirdSql.Common.snk</AssemblyOriginatorKeyFile>
+		<PlatformTarget>x64</PlatformTarget>
 	</PropertyGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
@@ -51,9 +52,9 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
-		<PackageReference Include="Microsoft.VisualStudio.Data" Version="17.4.33103.184" />
-		<PackageReference Include="Microsoft.VisualStudio.Data.Framework" Version="17.4.33103.184" />
-		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.4.33103.184" />
+		<PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
+		<PackageReference Include="Microsoft.VisualStudio.Data.Framework" Version="17.5.33428.388" />
+		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.5.33428.388" />
 	</ItemGroup>
 
 	<ItemGroup>

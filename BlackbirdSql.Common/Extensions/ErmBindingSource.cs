@@ -19,7 +19,7 @@ namespace BlackbirdSql.Common.Extensions;
 /// be defined before the class object will be placed into a ready state.
 /// </remarks>
 // =========================================================================================================
-internal class ErmBindingSource : BindingSource
+internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 {
 	#region Variables
 

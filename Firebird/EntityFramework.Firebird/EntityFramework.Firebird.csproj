@@ -17,6 +17,7 @@
 		<Title>Firebird Entity Framework Provider</Title>
 		<PackageDescription>The Entity Framework provider for Firebird enables you to develop .NET applications that connect to the Firebird database using Entity Framework.</PackageDescription>
 		<PackageTags>firebird;firebirsql;firebirdclient;entityframewor;adonet;database</PackageTags>
+		<PlatformTarget>x64</PlatformTarget>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
 		<DefineConstants>EF6;TRACE</DefineConstants>
@@ -24,13 +25,6 @@
 	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
 		<DefineConstants>EF6;DEBUG;TRACE</DefineConstants>
 	</PropertyGroup>
-	<ItemGroup>
-		<None Remove="Resources\ProviderManifest.xml" />
-		<None Remove="Resources\StoreSchemaDefinition.ssdl" />
-		<None Remove="Resources\StoreSchemaDefinitionVersion3.ssdl" />
-		<None Remove="Resources\StoreSchemaMapping.msl" />
-		<None Remove="Resources\StoreSchemaMappingVersion3.msl" />
-	</ItemGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="Resources\ProviderManifest.xml" />
 		<EmbeddedResource Include="Resources\StoreSchemaDefinition.ssdl" />

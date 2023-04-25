@@ -9,7 +9,6 @@ using BlackbirdSql.Common;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Extensions;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "<Pending>")]
 internal class Hostess : IDisposable
 {
 

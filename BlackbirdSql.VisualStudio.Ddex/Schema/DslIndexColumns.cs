@@ -19,14 +19,14 @@
 
 //$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
-using BlackbirdSql.Common;
+using BlackbirdSql.Common.Extensions;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 
 internal class DslIndexColumns : DslColumns
 {
-	public DslIndexColumns() : base()
+	public DslIndexColumns(ExpressionParser parser) : base(parser)
 	{
 		_ParentType = "Index";
 		_ObjectType = "TableIndexColumn";

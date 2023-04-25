@@ -308,7 +308,7 @@ public static class Diag
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
 		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
 #else
-	public static void Dug(string message = "",
+	public static void Stack(string message = "",
 		string memberName = "Release:Unavailable",
 		string sourceFilePath = "Release:Unavailable",
 		int sourceLineNumber = 0)

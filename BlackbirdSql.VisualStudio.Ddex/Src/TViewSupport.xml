@@ -254,7 +254,7 @@
 						<Children>
 							<Selection type="Sequence" restrictions="null,null">
 								<SelectionNode nodeId="Sequence">
-									<DisplayName>{Sequence.GENERATOR_NAME}</DisplayName>
+									<DisplayName>{Sequence.SEQUENCE_GENERATOR}</DisplayName>
 									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.IdentityColumn.ico" assembly="" />
 									<Properties>
 										<TypeDisplayName resource="Type_Sequence" />
@@ -268,7 +268,7 @@
 											<Category resource="Category_Identifier" />
 											<Description resource="Identifier_Desc_Schema" />
 										</Property>
-										<Property name="GENERATOR_NAME">
+										<Property name="SEQUENCE_GENERATOR">
 											<DisplayName resource="Identifier_Name_Name" />
 											<Category resource="Category_Identifier" />
 											<Description resource="Identifier_Desc_Name" />
@@ -284,6 +284,10 @@
 										<Property name="IDENTITY_CURRENT">
 											<DisplayName resource="Property_Name_Sequence_NextValue" />
 											<Description resource="Property_Desc_Sequence_NextValue" />
+										</Property>
+										<Property name="TRIGGER_NAME">
+											<DisplayName resource="Property_Name_Sequence_Trigger" />
+											<Description resource="Property_Desc_Sequence_Trigger" />
 										</Property>
 									</Properties>
 									<Commands>

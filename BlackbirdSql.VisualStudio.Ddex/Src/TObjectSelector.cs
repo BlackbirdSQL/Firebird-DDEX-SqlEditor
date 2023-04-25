@@ -6,21 +6,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
-using System.Globalization;
-using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using FirebirdSql.Data.FirebirdClient;
-using FirebirdSql.Data.Services;
 using BlackbirdSql.Common;
+using BlackbirdSql.Common.Extensions;
 using BlackbirdSql.Common.Extensions.Commands;
 using BlackbirdSql.VisualStudio.Ddex.Schema;
-using BlackbirdSql.VisualStudio.Ddex.Extensions;
 
 
 
@@ -257,6 +253,12 @@ class TObjectSelector : AdoDotNetObjectSelector
 
 		Site.EnsureConnected();
 
+		ExpressionParser parser = ExpressionParser.Instance((FbConnection)connection);
+
+		if (parser.ClearToLoadAsync)
+		{
+			parser.AsyncLoad();
+		}
 
 
 		DataTable schema = DslSchemaFactory.GetSchema((FbConnection)connection, parameters[0].ToString(), array);
@@ -273,17 +275,5 @@ class TObjectSelector : AdoDotNetObjectSelector
 		return schema;
 	}
 
-
-
-
-
-
-	private static object ValueOrDBNull(object value)
-	{
-		if (value == null)
-			return DBNull.Value;
-
-		return value;
-	}
 
 }

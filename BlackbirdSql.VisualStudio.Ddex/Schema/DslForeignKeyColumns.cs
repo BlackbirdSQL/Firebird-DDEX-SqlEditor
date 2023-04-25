@@ -17,12 +17,14 @@
 
 
 
+using BlackbirdSql.Common.Extensions;
+
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 
 internal class DslForeignKeyColumns : DslColumns
 {
-	public DslForeignKeyColumns() : base()
+	public DslForeignKeyColumns(ExpressionParser parser) : base(parser)
 	{
 		_ParentType = "ForeignKey";
 		_ObjectType = "TableForeignKeyColumn";

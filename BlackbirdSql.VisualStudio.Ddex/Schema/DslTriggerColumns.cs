@@ -3,16 +3,14 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 //
 
-using System;
-using System.Text;
-using BlackbirdSql.Common;
+using BlackbirdSql.Common.Extensions;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 
 internal class DslTriggerColumns : DslColumns
 {
-	public DslTriggerColumns() : base()
+	public DslTriggerColumns(ExpressionParser parser) : base(parser)
 	{
 		_ParentType = "Trigger";
 		_ObjectType = "TriggerColumn";

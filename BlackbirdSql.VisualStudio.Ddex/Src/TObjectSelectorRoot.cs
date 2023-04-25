@@ -19,6 +19,7 @@ using BlackbirdSql.Common;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Schema;
 using BlackbirdSql.Common.Extensions;
+using Newtonsoft.Json.Serialization;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -51,7 +52,7 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 	public TObjectSelectorRoot() : base()
 	{
-		// Diag.Trace();
+		Diag.Trace();
 	}
 
 
@@ -78,7 +79,7 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	// ---------------------------------------------------------------------------------
 	protected override IVsDataReader SelectObjects(string typeName, object[] restrictions, string[] properties, object[] parameters)
 	{
-		// Diag.Trace(typeName);
+		Diag.Trace(typeName);
 
 		try
 		{
@@ -154,7 +155,14 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	{
 		object connectionValue;
 
-		// Diag.Trace();
+		Diag.Trace();
+
+		ExpressionParser parser = ExpressionParser.Instance((FbConnection)connection);
+
+		if (parser.ClearToLoadAsync)
+		{
+			parser.AsyncLoad();
+		}
 
 		DataTable schema = DslSchemaFactory.GetSchema((FbConnection)connection, "DataSourceInformation", null);
 		string[] schemaColNames = new string[schema.Columns.Count];

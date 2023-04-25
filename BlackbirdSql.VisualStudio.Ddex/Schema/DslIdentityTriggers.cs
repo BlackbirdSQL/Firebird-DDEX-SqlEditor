@@ -19,24 +19,17 @@
 
 //$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
-using System;
-using System.Data;
-using System.Globalization;
-using System.Text;
-
-using FirebirdSql.Data.FirebirdClient;
-
-using BlackbirdSql.Common;
+using BlackbirdSql.Common.Extensions;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 
-internal class DslIdentityTriggers : DslTriggers
+internal class DslIdentityTriggers : DslRawTriggers
 {
-	public DslIdentityTriggers() : base()
+	public DslIdentityTriggers(ExpressionParser parser) : base(parser)
 	{
-		_systemFlag = 0;
-		_identityFlag = 1;
+		// _systemFlag = 0;
+		// _identityFlag = 1;
 	}
 }
