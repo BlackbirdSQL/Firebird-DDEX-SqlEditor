@@ -172,28 +172,28 @@ public:
 
 	// ---------------------------------------------------------------------------------
 	/// Checks if any containers have a value (not nullptr). No further validation.
-	/// IsNull: Level 1 existance check. Containers don't exist (are all nullptr).
+	/// IsNull: Level 1 existence check. Containers don't exist (are all nullptr).
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNull { virtual bool get() abstract; };
 
 
 	// ---------------------------------------------------------------------------------
 	/// Checks element at index for nullptr if it exists else returns true.
-	/// IsNull: Level 1 existance check. Containers don't exist (are all nullptr).
+	/// IsNull: Level 1 existence check. Containers don't exist (are all nullptr).
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNull[int]{ virtual bool get(int index) abstract; };
 
 
 	// ---------------------------------------------------------------------------------
 	/// Checks if 'key' exists. No further validation.
-	/// IsNull: Level 1 existance check. Containers don't exist (are all nullptr).
+	/// IsNull: Level 1 existence check. Containers don't exist (are all nullptr).
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNull[SysStr^]{ virtual bool get(SysStr ^ key) abstract; };
 
 
 	// ---------------------------------------------------------------------------------
 	/// Returns true if Count == 0.
-	/// IsNullOrEmpty: Level 3 existance check. Value container IsNullOrEmpty and
+	/// IsNullOrEmpty: Level 3 existence check. Value container IsNullOrEmpty and
 	/// collection Count == 0.
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNullOrEmpty { virtual bool get() abstract; };
@@ -202,7 +202,7 @@ public:
 	// ---------------------------------------------------------------------------------
 	/// Performs an IsNullOrEmpty check on the element at index if it exist, else
 	/// returns true.
-	/// IsNullOrEmpty: Level 3 existance check. Value container IsNullOrEmpty and
+	/// IsNullOrEmpty: Level 3 existence check. Value container IsNullOrEmpty and
 	/// collection Count == 0.
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNullOrEmpty[int]{ virtual bool get(int index) abstract; };
@@ -211,14 +211,14 @@ public:
 	// ---------------------------------------------------------------------------------
 	/// Performs an IsNullOrEmpty check on the element for 'key' if it exist, else 
 	/// returns true.
-	/// IsNullOrEmpty: Level 3 existance check. Value container IsNullOrEmpty and
+	/// IsNullOrEmpty: Level 3 existence check. Value container IsNullOrEmpty and
 	/// collection Count == 0.
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNullOrEmpty[SysStr^]{ virtual bool get(SysStr ^ key) abstract; };
 
 	// ---------------------------------------------------------------------------------
 	/// Returns true if Count == 0.
-	/// IsUnpopulated: Level 2 existance check. Containers don't exist or, for a
+	/// IsUnpopulated: Level 2 existence check. Containers don't exist or, for a
 	/// collection, Count == 0.
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsUnpopulated { virtual bool get() abstract; };
@@ -227,7 +227,7 @@ public:
 	// ---------------------------------------------------------------------------------
 	/// Performs an IsUnpopulated check on the element at index if it exist, else
 	/// returns true.
-	/// IsUnpopulated: Level 2 existance check. Containers don't exist or, for a
+	/// IsUnpopulated: Level 2 existence check. Containers don't exist or, for a
 	/// collection, Count == 0.
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsUnpopulated[int]{ virtual bool get(int index) abstract; };
@@ -236,7 +236,7 @@ public:
 	// ---------------------------------------------------------------------------------
 	/// Performs an IsUnpopulated check on the element for 'key' if it exist, else 
 	/// returns true.
-	/// IsUnpopulated: Level 2 existance check. Containers don't exist or, for a
+	/// IsUnpopulated: Level 2 existence check. Containers don't exist or, for a
 	/// collection, Count == 0.
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsUnpopulated[SysStr^]{ virtual bool get(SysStr ^ key) abstract; };

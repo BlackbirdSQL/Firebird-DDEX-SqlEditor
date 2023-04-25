@@ -153,7 +153,7 @@ public:
 	// ---------------------------------------------------------------------------------
 	/// Performs an IsNullPtr check on the element for the nested keys if it exist, else 
 	/// returns true.
-	/// IsNull: Level 1 existance check. Containers don't exist (are all nullptr).
+	/// IsNull: Level 1 existence check. Containers don't exist (are all nullptr).
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNull[SysStr^, SysStr^]
 	{
@@ -167,7 +167,7 @@ public:
 	// ---------------------------------------------------------------------------------
 	/// Performs an IsNullOrEmpty check on the element for the nested keys if it exist,
 	/// else returns true.
-	/// IsNullOrEmpty: Level 3 existance check. Value container IsNullOrEmpty and
+	/// IsNullOrEmpty: Level 3 existence check. Value container IsNullOrEmpty and
 	/// collection Count == 0.
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNullOrEmpty[SysStr^, SysStr^]
@@ -182,7 +182,7 @@ public:
 	// ---------------------------------------------------------------------------------
 	/// Performs an IsNullPtr check on the element for the nested keys, else
 	/// returns true.
-	/// IsUnpopulated: Level 2 existance check. Element doesn't exist or nullptr.
+	/// IsUnpopulated: Level 2 existence check. Element doesn't exist or nullptr.
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsUnpopulated[SysStr^, SysStr^]
 	{

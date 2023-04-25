@@ -222,7 +222,7 @@ public:
 
 	// ---------------------------------------------------------------------------------
 	/// Checks if any containers have a value (not nullptr). No further validation.
-	/// IsNull: Level 1 existance check. Containers don't exist (are all nullptr).
+	/// IsNull: Level 1 existence check. Containers don't exist (are all nullptr).
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNull
 	{
@@ -236,7 +236,7 @@ public:
 	// ---------------------------------------------------------------------------------
 	/// Performs an IsNull check on the element at index if it exist, else
 	/// returns true.
-	/// IsNull: Level 1 existance check. Containers don't exist (are all nullptr).
+	/// IsNull: Level 1 existence check. Containers don't exist (are all nullptr).
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNull[int]
 	{
@@ -256,7 +256,7 @@ public:
 	// ---------------------------------------------------------------------------------
 	/// Performs an IsNull check on the element for 'key' if it exist, else 
 	/// returns true.
-	/// IsNull: Level 1 existance check. Containers don't exist (are all nullptr).
+	/// IsNull: Level 1 existence check. Containers don't exist (are all nullptr).
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNull[SysStr^]
 	{
@@ -275,7 +275,7 @@ public:
 	// ---------------------------------------------------------------------------------
 	/// Performs an IsNull check on the element for the nested keys if it exist, else 
 	/// returns true.
-	/// IsNull: Level 1 existance check. Containers don't exist (are all nullptr).
+	/// IsNull: Level 1 existence check. Containers don't exist (are all nullptr).
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNull[SysStr^, SysStr^]
 	{
@@ -293,7 +293,7 @@ public:
 
 	// ---------------------------------------------------------------------------------
 	/// Checks value container for IsNullOrEmpty and collections for Count == 0.
-	/// IsNullOrEmpty: Level 3 existance check. Value container IsNullOrEmpty and
+	/// IsNullOrEmpty: Level 3 existence check. Value container IsNullOrEmpty and
 	/// collection Count == 0.
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNullOrEmpty
@@ -308,7 +308,7 @@ public:
 	// ---------------------------------------------------------------------------------
 	/// Performs an IsNullOrEmpty check on the element at index if it exist, else
 	/// returns true.
-	/// IsNullOrEmpty: Level 3 existance check. Value container IsNullOrEmpty and
+	/// IsNullOrEmpty: Level 3 existence check. Value container IsNullOrEmpty and
 	/// collection Count == 0.
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNullOrEmpty[int]
@@ -328,7 +328,7 @@ public:
 	// ---------------------------------------------------------------------------------
 	/// Performs an IsNullOrEmpty check on the element for 'key' if it exist, else 
 	/// returns true.
-	/// IsNullOrEmpty: Level 3 existance check. Value container IsNullOrEmpty and
+	/// IsNullOrEmpty: Level 3 existence check. Value container IsNullOrEmpty and
 	/// collection Count == 0.
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNullOrEmpty[SysStr^]
@@ -349,7 +349,7 @@ public:
 	// ---------------------------------------------------------------------------------
 	/// Performs an IsNullOrEmpty check on the element for the nested keys if it exist,
 	/// else returns true.
-	/// IsNullOrEmpty: Level 3 existance check. Value container IsNullOrEmpty and
+	/// IsNullOrEmpty: Level 3 existence check. Value container IsNullOrEmpty and
 	/// collection Count == 0.
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNullOrEmpty[SysStr^, SysStr^]
@@ -368,7 +368,7 @@ public:
 	// ---------------------------------------------------------------------------------
 	/// Returns true if no containers have a value (== nullptr). If there is a
 	///  collection will still return true if Count == 0.
-	/// IsUnpopulated: Level 2 existance check. Containers don't exist or, for a
+	/// IsUnpopulated: Level 2 existence check. Containers don't exist or, for a
 	/// collection, Count == 0.
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsUnpopulated
@@ -382,7 +382,7 @@ public:
 	// ---------------------------------------------------------------------------------
 	/// Performs an IsUnpopulated check on the element at index if it exist, else
 	/// returns true.
-	/// IsUnpopulated: Level 2 existance check. Containers don't exist or, for a
+	/// IsUnpopulated: Level 2 existence check. Containers don't exist or, for a
 	/// collection, Count == 0.
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsUnpopulated[int]
@@ -402,7 +402,7 @@ public:
 	// ---------------------------------------------------------------------------------
 	/// Performs an IsUnpopulated check on the element for 'key' if it exist, else 
 	/// returns true.
-	/// IsUnpopulated: Level 2 existance check. Containers don't exist or, for a
+	/// IsUnpopulated: Level 2 existence check. Containers don't exist or, for a
 	/// collection, Count == 0.
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsUnpopulated[SysStr^]
@@ -422,7 +422,7 @@ public:
 	// ---------------------------------------------------------------------------------
 	/// Performs an IsUnpopulated check on the element for the nested key2 if it exist,
 	/// else  returns true.
-	/// IsUnpopulated: Level 2 existance check. Containers don't exist or, for a
+	/// IsUnpopulated: Level 2 existence check. Containers don't exist or, for a
 	/// collection, Count == 0.
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsUnpopulated[SysStr^, SysStr^]
