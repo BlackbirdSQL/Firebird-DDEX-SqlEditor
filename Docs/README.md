@@ -21,7 +21,7 @@ See [Extended Description](#extended-description) below.
 * Display of initial value (seed), increment and next value within sequence generator display.
 * New query and data retrieval for both user and system tables.
 
-### A Note on AutoIncrement
+### A Note on AutoIncrement Identity Fields
 There is a simple parser coded in C++/Cli which parses the Trigger source for linkage to the auto-increment sequence generator. The original parser code was ported from the pgsql LISP con-cell parser but then scrapped in favor of the [greenlion/PHP-SQL-Parser](https://github.com/greenlion/PHP-SQL-Parser) PHP parser, which meant writing a class library, the Cell class, which could imitate PHP style arrays. The port was not completed because the partial port satisfied the needs for parsing the Trigger DDL. The parser itself is reasonable fast but SELECT commands for a large number of triggers and generators may take some time, so building of the Trigger/Generator linkage tables for a connection is initiated asynchronously as soon as the connection is established.
 
 
