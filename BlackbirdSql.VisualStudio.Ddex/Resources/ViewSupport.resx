@@ -937,7 +937,7 @@
     <value>The implied name where no name identifier property value exists. For example the return parameter of as function has only an implied name.</value>
   </data>
   <data name="Identifier_Name_PseudoName" xml:space="preserve">
-    <value>Pseudo Name</value>
+    <value>Pseudonym</value>
   </data>
   <data name="Property_Desc_Sequence_Trigger" xml:space="preserve">
     <value>Trigger that this generator is dependent on</value>
