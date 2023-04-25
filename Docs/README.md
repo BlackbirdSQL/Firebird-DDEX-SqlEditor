@@ -9,6 +9,7 @@ See [Extended Description](#extended-description) below.
 
 ### Features
 * Firebird DDEX provider support for most of the DDEX 2.0 IVs DML interfaces utilizing FirebirdSql.Data.FirebirdClient and EntityFramework.Firebird versions 9.1.1.
+* Trigger/Generator auto-increment linkage.
 * Plug and play. No configuration of the .csproj, app.config or machine.config files and no GAC registration.
 * FlameRobin host and database selection within connection dialogs.
 * Within Server Explorer, top level folders for Tables, Views, Stored procedures, Functions, Sequence Generators, Triggers and Domains.
