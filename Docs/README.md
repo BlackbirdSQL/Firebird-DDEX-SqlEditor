@@ -77,8 +77,7 @@ BlackbirdSql.Data.DslClient.dll, EntityFramework.BlackbirdSql.dll and BlackbirdS
 
 ## Extended Description
 
-Although the original DDEX 1.0 DataTools package, *BlackbirdSql.VisualStudio.DataTools* was revived, the DDEX 2.0 package, BlackbirdSql.VisualStudio.Ddex is click and go using VSIX and autoload, and requires no additional setup either in the app.config, csproj or machine.config.</br>
-The  prupose of *BlackbirdSql.VisualStudio.DataTools* was only to get DDEX functioning for Firebird before implementing DDEX 2.0, so this tool can be considered obsolete.
+The DDEX 2.0 package, BlackbirdSql.VisualStudio.Ddex is click and go using VSIX and autoload, and requires no additional setup either in the app.config, csproj or machine.config.</br>
 
 If the option is enabled there will be a once-off validation of a solution's projects' app.config's and edmx models. Legacy edmx models won't work with Firebird's latest EntityFramework version so an update is required.</br>
 This is a once off validation on each `existing` solution the first time it is opened after installing the VSIX. If the app.config is open or any edmx models are open you will need to close them first and then reopen your solution for the once-off validation to complete.
