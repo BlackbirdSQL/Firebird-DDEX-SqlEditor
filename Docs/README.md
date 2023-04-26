@@ -1,5 +1,7 @@
 # BlackbirdSQL DDEX 2.0 .NET Data Provider for Firebird
 
+![GitHub02](https://user-images.githubusercontent.com/120905720/234434667-57785c58-f41e-42f9-b0f9-463b8297ead7.jpg)
+
 (*This package is essentially complete but is still in pre-release until fully tested.*)
 
 The BlackbirdSQL DDEX 2.0 .NET Data Provider tool, `BlackbirdSql.VisualStudio.Ddex`, implements all the core DDEX 2.0 interfaces prevalent in the SqlServer DDEX provider and more, but currently excludes DDL functionality. 
