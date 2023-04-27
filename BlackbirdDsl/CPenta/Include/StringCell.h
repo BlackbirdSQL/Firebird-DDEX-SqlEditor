@@ -1186,7 +1186,7 @@ public:
 
 	/*
 	// ---------------------------------------------------------------------------------
-	/// Implements the defualt KeyValueEnumerator Dictionary enumerator object for (#define CellClass)
+	/// Implements the default KeyValueEnumerator Dictionary enumerator object for (#define CellClass)
 	// ---------------------------------------------------------------------------------
 	virtual IEnumerator<KeyValuePair<SysStr^, CellClass^>>^ GetEnumerator() new = IEnumerable<KeyValuePair<SysStr^, CellClass^>>::GetEnumerator
 	{

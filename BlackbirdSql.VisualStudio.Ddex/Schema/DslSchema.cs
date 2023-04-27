@@ -116,6 +116,9 @@ internal abstract class DslSchema
 		var dataTable = new DataTable(collectionName);
 		var command = BuildCommand(connection, collectionName, ParseRestrictions(restrictions));
 
+		if (cancellationToken.IsCancellationRequested)
+			return dataTable;
+
 		try
 		{
 			using (var adapter = new FbDataAdapter(command))
@@ -126,6 +129,8 @@ internal abstract class DslSchema
 				}
 				catch (Exception ex)
 				{
+					if (cancellationToken.IsCancellationRequested)
+						return dataTable;
 					Diag.Dug(ex, collectionName);
 					throw;
 				}
@@ -137,7 +142,12 @@ internal abstract class DslSchema
 			await Task.CompletedTask.ConfigureAwait(false);
 		}
 
+		if (cancellationToken.IsCancellationRequested)
+			return dataTable;
+
 		TrimStringFields(dataTable);
+		if (cancellationToken.IsCancellationRequested)
+			return dataTable;
 		ProcessResult(dataTable);
 
 		return dataTable;
@@ -149,6 +159,9 @@ internal abstract class DslSchema
 		var dataTable = new DataTable(collectionName);
 		var command = BuildRawCommand(connection);
 
+		if (cancellationToken.IsCancellationRequested)
+			return dataTable;
+
 		try
 		{
 			using (var adapter = new FbDataAdapter(command))
@@ -159,6 +172,8 @@ internal abstract class DslSchema
 				}
 				catch (Exception ex)
 				{
+					if (cancellationToken.IsCancellationRequested)
+						return dataTable;
 					Diag.Dug(ex, collectionName);
 					throw;
 				}
@@ -170,7 +185,13 @@ internal abstract class DslSchema
 			await Task.CompletedTask.ConfigureAwait(false);
 		}
 
+		if (cancellationToken.IsCancellationRequested)
+			return dataTable;
+
 		TrimStringFields(dataTable);
+		if (cancellationToken.IsCancellationRequested)
+			return dataTable;
+
 		ProcessResult(dataTable);
 
 		return dataTable;

@@ -63,7 +63,7 @@ internal sealed class DslSchemaFactory
 
 		ExpressionParser parser = ExpressionParser.Instance(connection);
 
-		if (parser.ClearToLoadAsync && RequiresTriggers(collectionName))
+		if (parser.ClearToLoadAsync && !RequiresTriggers(collectionName))
 		{
 			parser.AsyncLoad();
 		}
@@ -227,8 +227,20 @@ internal sealed class DslSchemaFactory
 				schemaCollection = "Triggers";
 				break;
 			default:
-				return connection.GetSchemaAsync(collectionName, restrictions);
+				try
+				{
+					return connection.GetSchemaAsync(collectionName, restrictions, cancellationToken);
+				}
+				catch (Exception)
+				{
+					if (cancellationToken.IsCancellationRequested)
+						return Task.FromResult(new DataTable());
+					throw;
+				}
 		}
+
+		if (cancellationToken.IsCancellationRequested)
+			return Task.FromResult(new DataTable());
 
 		/*
 		ExpressionParser parser = ExpressionParser.Instance(connection);
@@ -236,15 +248,15 @@ internal sealed class DslSchemaFactory
 		if (!parser.Requesting)
 		{
 			if (collectionName == "Generators")
-				return parser.GetSequenceSchemaAsync(restrictions);
+				return parser.GetSequenceSchemaAsync(restrictions, cancellationToken);
 			else if (collectionName == "Triggers")
-				return parser.GetTriggerSchemaAsync(restrictions, -1, -1);
+				return parser.GetTriggerSchemaAsync(restrictions, -1, -1, cancellationToken);
 			else if (collectionName == "StandardTriggers")
-				return parser.GetTriggerSchemaAsync(restrictions, 0, 0);
+				return parser.GetTriggerSchemaAsync(restrictions, 0, 0, cancellationToken);
 			else if (collectionName == "IdentityTriggers")
-				return parser.GetTriggerSchemaAsync(restrictions, 0, 1);
+				return parser.GetTriggerSchemaAsync(restrictions, 0, 1, cancellationToken);
 			else if (collectionName == "SystemTriggers")
-				return parser.GetTriggerSchemaAsync(restrictions, 1, -1);
+				return parser.GetTriggerSchemaAsync(restrictions, 1, -1, cancellationToken);
 		}
 		*/
 
@@ -260,6 +272,10 @@ internal sealed class DslSchemaFactory
 		}
 
 		var xmlStream = assembly.GetManifestResourceStream(ResourceName);
+
+		if (cancellationToken.IsCancellationRequested)
+			return Task.FromResult(new DataTable());
+
 		if (xmlStream == null)
 		{
 			NullReferenceException ex = new("Resource not found: " + ResourceName);
@@ -280,6 +296,9 @@ internal sealed class DslSchemaFactory
 		{
 			Thread.CurrentThread.CurrentCulture = oldCulture;
 		}
+
+		if (cancellationToken.IsCancellationRequested)
+			return Task.FromResult(new DataTable());
 
 		DataRow[] collection;
 		try
@@ -306,12 +325,18 @@ internal sealed class DslSchemaFactory
 			throw exbb;
 		}
 
+		if (cancellationToken.IsCancellationRequested)
+			return Task.FromResult(new DataTable());
+
 		if (ds.Tables[DbMetaDataCollectionNames.Restrictions].Select(filter).Length != (int)collection[0]["NumberOfRestrictions"])
 		{
 			InvalidOperationException exbb = new("Incorrect restriction definition.");
 			Diag.Dug(exbb);
 			throw exbb;
 		}
+
+		if (cancellationToken.IsCancellationRequested)
+			return Task.FromResult(new DataTable());
 
 		switch (collection[0]["PopulationMechanism"].ToString())
 		{

@@ -540,7 +540,7 @@ END",
 
 			if (Convert.ToBoolean(row["IS_IDENTITY"]) == true)
 			{
-				trig = _ExpressionParser.Triggers.Rows.Find(row["TRIGGER_NAME"]);
+				trig = _ExpressionParser.FindTrigger(row["TRIGGER_NAME"]);
 			}
 
 			if (trig != null)
