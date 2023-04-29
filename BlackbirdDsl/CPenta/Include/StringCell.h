@@ -23,9 +23,13 @@ using namespace System::Runtime::InteropServices;
 
 namespace C5 {
 
-/// <summary>
+
+
+// =========================================================================================================
+//										StringCell Class
+//
 /// Exposes a <see cref="Cell"/> with a storage type of <see cref="System::String"/> to C++/Cli and C# projects.
-/// </summary>
+// =========================================================================================================
 public ref class CellClass : public Cell<CellClass, ValueType^>
 {
 	// =========================================================================================================
