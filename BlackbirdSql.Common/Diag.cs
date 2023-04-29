@@ -174,7 +174,7 @@ public static class Diag
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 #if DEBUG
-	public static void Dug(bool isException = false, string message = "",
+	public static void Dug(bool isException, string message = "",
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
 		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)

@@ -586,17 +586,14 @@
 				<Category resource="Category_Identifier" />
 				<Description resource="Property_Desc_Description" />
 			</Property>
+			<Property name="IS_IDENTITY">
+				<DisplayName resource="Property_Name_Trigger_IsIdentity" />
+				<Category resource="Category_Identifier" />
+				<Description resource="Property_Desc_Trigger_IsIdentity" />
+			</Property>
 			<Property name="EXPRESSION">
 				<DisplayName resource="Property_Name_Dsl" />
 				<Description resource="Property_Desc_Dsl" />
-			</Property>
-			<Property name="IS_IDENTITY">
-				<DisplayName resource="Property_Name_Trigger_IsIdentity" />
-				<Description resource="Property_Desc_Trigger_IsIdentity" />
-			</Property>
-			<Property name="SEQUENCE_GENERATOR">
-				<DisplayName resource="Property_Name_Trigger_SequenceGenerator" />
-				<Description resource="Property_Desc_Trigger_SequenceGenerator" />
 			</Property>
 			<Property name="DEPENDENCY_COUNT">
 				<DisplayName resource="Property_Name_Trigger_DependencyCount" />
@@ -605,6 +602,26 @@
 			<Property name="DEPENDENCY_FIELDS">
 				<DisplayName resource="Property_Name_Trigger_Dependencies" />
 				<Description resource="Property_Desc_Trigger_Dependencies" />
+			</Property>
+			<Property name="SEQUENCE_GENERATOR">
+				<DisplayName resource="Property_Name_Trigger_SequenceGenerator" />
+				<Category resource="Category_Generator" />
+				<Description resource="Property_Desc_Trigger_SequenceGenerator" />
+			</Property>
+			<Property name="IDENTITY_SEED">
+				<DisplayName resource="Property_Name_Trigger_IdentitySeed" />
+				<Category resource="Category_Generator" />
+				<Description resource="Property_Desc_Trigger_IdentitySeed" />
+			</Property>
+			<Property name="IDENTITY_INCREMENT">
+				<DisplayName resource="Property_Name_Trigger_IdentityIncrement" />
+				<Category resource="Category_Generator" />
+				<Description resource="Property_Desc_Trigger_IdentityIncrement" />
+			</Property>
+			<Property name="IDENTITY_CURRENT">
+				<DisplayName resource="Property_Name_Trigger_IdentityCurrent" />
+				<Category resource="Category_Generator" />
+				<Description resource="Property_Desc_Trigger_IdentityCurrent" />
 			</Property>
 		</Properties>
 	</Define>

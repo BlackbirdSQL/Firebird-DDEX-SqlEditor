@@ -18,7 +18,7 @@ internal class Hostess : IDisposable
 
 	public Hostess(System.IServiceProvider serviceProvider)
 	{
-		Diag.Dug();
+		// Diag.Trace();
 		_hostService = serviceProvider.GetService(typeof(IVsDataHostService)) as IVsDataHostService;
 		Assumes.Present(_hostService);
 	}
@@ -32,37 +32,37 @@ internal class Hostess : IDisposable
 
 	public T TryGetService<T>()
 	{
-		Diag.Dug();
+		// Diag.Trace();
 		return _hostService.TryGetService<T>();
 	}
 
 	public TInterface TryGetService<TService, TInterface>()
 	{
-		Diag.Dug();
+		// Diag.Trace();
 		return _hostService.TryGetService<TService, TInterface>();
 	}
 
 	public T TryGetService<T>(Guid serviceGuid)
 	{
-		Diag.Dug();
+		// Diag.Trace();
 		return _hostService.TryGetService<T>(serviceGuid);
 	}
 
 	public T GetService<T>()
 	{
-		Diag.Dug();
+		// Diag.Trace();
 		return _hostService.GetService<T>();
 	}
 
 	public TInterface GetService<TService, TInterface>()
 	{
-		Diag.Dug();
+		// Diag.Trace();
 		return _hostService.GetService<TService, TInterface>();
 	}
 
 	public T GetService<T>(Guid serviceGuid)
 	{
-		Diag.Dug();
+		// Diag.Trace();
 		return _hostService.GetService<T>(serviceGuid);
 	}
 

@@ -442,10 +442,12 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 							}
 						}
 						trig["IDENTITY_CURRENT"] = seq["IDENTITY_CURRENT"];
-						// trig["IDENTITY_SEED"] = seed;
+						trig["IDENTITY_SEED"] = seq["IDENTITY_SEED"];
 
-						if (seq["TRIGGER_NAME"] == DBNull.Value)
+						if (seq["TRIGGER_NAME"] == DBNull.Value || seq["TRIGGER_NAME"].ToString() == "")
 							seq["TRIGGER_NAME"] = trig["TRIGGER_NAME"];
+						else
+							seq["TRIGGER_NAME"] = seq["TRIGGER_NAME"].ToString() + ", " + trig["TRIGGER_NAME"].ToString();
 					}
 				}
 

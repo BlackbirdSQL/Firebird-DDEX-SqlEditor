@@ -751,7 +751,7 @@
     <value>The name of the sequence generator if this trigger is for an identity (auto-increment) field</value>
   </data>
   <data name="Property_Name_Trigger_SequenceGenerator" xml:space="preserve">
-    <value>Sequence Generator</value>
+    <value>Auto-increment Generator</value>
   </data>
   <data name="Property_Desc_Trigger_DependencyCount" xml:space="preserve">
     <value>Number of dependency columns for this trigger</value>
@@ -944,5 +944,26 @@
   </data>
   <data name="Property_Name_Sequence_Trigger" xml:space="preserve">
     <value>Dependency Trigger</value>
+  </data>
+  <data name="Category_Generator" xml:space="preserve">
+    <value>Sequence Generator</value>
+  </data>
+  <data name="Property_Desc_Trigger_IdentityCurrent" xml:space="preserve">
+    <value>The SqlServer interpretation of the current identity value if the field is an auto-increment identity field. The next value will be the current value plus the increment. If the current value exists but cannot be obtained or has never been used -1 is returned.</value>
+  </data>
+  <data name="Property_Desc_Trigger_IdentityIncrement" xml:space="preserve">
+    <value>The increment if the field is an auto-increment identity field. If the increment exists but cannot be obtained -1 is returned.</value>
+  </data>
+  <data name="Property_Desc_Trigger_IdentitySeed" xml:space="preserve">
+    <value>The starting value if the field is an identity field. If the seed exists but cannot be obtained -1 is returned.</value>
+  </data>
+  <data name="Property_Name_Trigger_IdentityCurrent" xml:space="preserve">
+    <value>Identity Current</value>
+  </data>
+  <data name="Property_Name_Trigger_IdentityIncrement" xml:space="preserve">
+    <value>Identity Increment</value>
+  </data>
+  <data name="Property_Name_Trigger_IdentitySeed" xml:space="preserve">
+    <value>Identity Seed</value>
   </data>
 </root>

@@ -147,6 +147,9 @@
     <PackageReference Include="EntityFramework">
       <Version>6.4.4</Version>
     </PackageReference>
+    <PackageReference Include="EntityFramework.Firebird">
+      <Version>9.1.1</Version>
+    </PackageReference>
     <PackageReference Include="IndexRange">
       <Version>1.0.2</Version>
     </PackageReference>
@@ -163,7 +166,7 @@
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VSSDK.BuildTools">
-      <Version>17.5.4072</Version>
+      <Version>17.5.4074</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -177,14 +180,6 @@
     <ProjectReference Include="..\BlackbirdSql.Common\BlackbirdSql.Common.csproj">
       <Project>{28d8b582-2320-446e-b286-9b42e65dae13}</Project>
       <Name>BlackbirdSql.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Firebird\EntityFramework.Firebird\EntityFramework.Firebird.csproj">
-      <Project>{57f1210c-d9c7-43de-999a-50cfd7c07ac1}</Project>
-      <Name>EntityFramework.Firebird</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Firebird\FirebirdSql.Data.FirebirdClient\FirebirdSql.Data.FirebirdClient.csproj">
-      <Project>{16f13584-61bc-411c-a146-2fe6b6c26016}</Project>
-      <Name>FirebirdSql.Data.FirebirdClient</Name>
     </ProjectReference>
   </ItemGroup>
   <!-- References (Services) -->

@@ -97,15 +97,19 @@ namespace BlackbirdSql.Common.Extensions.Commands
 
 		private void OnOpen(int itemId, DataToolsCommands.DataObjectType objectType)
 		{
-			IVsDataExplorerNode vsDataExplorerNode = Site.ExplorerConnection.FindNode(itemId);
+			// Disabled until debugged.
+			if (itemId == 123456789)
+			{
+				IVsDataExplorerNode vsDataExplorerNode = Site.ExplorerConnection.FindNode(itemId);
 
-			MenuCommand command = vsDataExplorerNode.GetCommand(DataToolsCommands.OpenTextObject);
+				MenuCommand command = vsDataExplorerNode.GetCommand(DataToolsCommands.OpenTextObject);
 
-			// This should be locked
-			// Diag.Trace("SETTNG CONNECTION COMMANDTYPE TO: " + objectType + " for command in assembly: " + command.GetType().AssemblyQualifiedName);
-			// DataToolsCommands.CommandObjectType = objectType;
+				// This should be locked
+				// Diag.Trace("SETTNG CONNECTION COMMANDTYPE TO: " + objectType + " for command in assembly: " + command.GetType().AssemblyQualifiedName);
+				// DataToolsCommands.CommandObjectType = objectType;
 
-			command.Invoke();
+				command.Invoke();
+			}
 
 		}
 
