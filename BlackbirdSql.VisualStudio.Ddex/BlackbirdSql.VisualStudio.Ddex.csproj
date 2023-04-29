@@ -199,6 +199,8 @@
   </ItemGroup>
   <!-- Includes (Properties and Properties Resources) -->
   <ItemGroup>
+    <Compile Include="Extensions\AbstruseLinkageParser.cs" />
+    <Compile Include="Extensions\AbstractLinkageParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -355,7 +357,7 @@
     <Compile Include="Configuration\VsOptionsProvider.cs" />
     <Compile Include="Configuration\VsPackageController.cs" />
     <Compile Include="Configuration\VsPackageRegistration.cs" />
-    <Compile Include="Extensions\ExpressionParser.cs" />
+    <Compile Include="Extensions\LinkageParser.cs" />
     <Compile Include="Extensions\Hostess.cs" />
     <Compile Include="Extensions\SystemCommandProvider.cs" />
     <Compile Include="Extensions\UniversalCommandProvider.cs" />

@@ -52,7 +52,7 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 	public TObjectSelectorRoot() : base()
 	{
-		Diag.Trace();
+		// Diag.Trace();
 	}
 
 
@@ -79,7 +79,7 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	// ---------------------------------------------------------------------------------
 	protected override IVsDataReader SelectObjects(string typeName, object[] restrictions, string[] properties, object[] parameters)
 	{
-		Diag.Trace(typeName);
+		// Diag.Trace(typeName);
 
 		try
 		{
@@ -155,14 +155,7 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	{
 		object connectionValue;
 
-		Diag.Trace();
-
-		ExpressionParser parser = ExpressionParser.Instance((FbConnection)connection);
-
-		if (parser.ClearToLoadAsync)
-		{
-			parser.AsyncLoad();
-		}
+		// Diag.Trace();
 
 		DataTable schema = DslSchemaFactory.GetSchema((FbConnection)connection, "DataSourceInformation", null);
 		string[] schemaColNames = new string[schema.Columns.Count];

@@ -27,7 +27,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 internal class DslStandardTriggers : DslRawTriggers
 {
-	public DslStandardTriggers(ExpressionParser parser) : base(parser)
+	public DslStandardTriggers(LinkageParser parser) : base(parser)
 	{
 		// _systemFlag = 0;
 		// _identityFlag = 0;

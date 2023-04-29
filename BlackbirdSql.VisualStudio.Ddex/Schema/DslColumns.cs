@@ -41,7 +41,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 /// </summary>
 internal class DslColumns : DslSchema
 {
-	ExpressionParser _ExpressionParser = null;
+	LinkageParser _LinkageParser = null;
 	/// <summary>
 	/// The parent DslSchema this column collection belongs to.
 	/// (Not it's <see cref="DslObjectTypes"/> type.)
@@ -131,9 +131,9 @@ internal class DslColumns : DslSchema
 
 
 
-	public DslColumns(ExpressionParser parser) : base()
+	public DslColumns(LinkageParser parser) : base()
 	{
-		_ExpressionParser = parser;
+		_LinkageParser = parser;
 	}
 
 	#region Protected Methods
@@ -540,7 +540,15 @@ END",
 
 			if (Convert.ToBoolean(row["IS_IDENTITY"]) == true)
 			{
-				trig = _ExpressionParser.FindTrigger(row["TRIGGER_NAME"]);
+				if (row["TRIGGER_NAME"] != DBNull.Value)
+				{
+					trig = _LinkageParser.FindTrigger(row["TRIGGER_NAME"]);
+				}
+
+				if (trig == null || Convert.ToBoolean(trig["IS_IDENTITY"]) == false)
+				{
+					trig = _LinkageParser.LocateIdentityTrigger(row["TABLE_NAME"], row["COLUMN_NAME"]);
+				}
 			}
 
 			if (trig != null)
@@ -569,7 +577,7 @@ END",
 		schema.Columns.Remove("FIELD_TYPE");
 		schema.Columns.Remove("CHARACTER_MAX_LENGTH");
 
-		_ExpressionParser = null;
+		_LinkageParser = null;
 		// Diag.Trace("Rows returned: " + schema.Rows.Count);
 
 	}

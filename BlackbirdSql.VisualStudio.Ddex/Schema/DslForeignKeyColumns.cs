@@ -24,7 +24,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 internal class DslForeignKeyColumns : DslColumns
 {
-	public DslForeignKeyColumns(ExpressionParser parser) : base(parser)
+	public DslForeignKeyColumns(LinkageParser parser) : base(parser)
 	{
 		_ParentType = "ForeignKey";
 		_ObjectType = "TableForeignKeyColumn";

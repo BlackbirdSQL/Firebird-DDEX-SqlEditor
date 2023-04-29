@@ -154,51 +154,9 @@ internal abstract class DslSchema
 	}
 
 
-	public async Task<DataTable> GetRawSchemaAsync(FbConnection connection, string collectionName, CancellationToken cancellationToken = default)
-	{
-		var dataTable = new DataTable(collectionName);
-		var command = BuildRawCommand(connection);
-
-		if (cancellationToken.IsCancellationRequested)
-			return dataTable;
-
-		try
-		{
-			using (var adapter = new FbDataAdapter(command))
-			{
-				try
-				{
-					adapter.Fill(dataTable);
-				}
-				catch (Exception ex)
-				{
-					if (cancellationToken.IsCancellationRequested)
-						return dataTable;
-					Diag.Dug(ex, collectionName);
-					throw;
-				}
-			}
-		}
-		finally
-		{
-			command.Dispose();
-			await Task.CompletedTask.ConfigureAwait(false);
-		}
-
-		if (cancellationToken.IsCancellationRequested)
-			return dataTable;
-
-		TrimStringFields(dataTable);
-		if (cancellationToken.IsCancellationRequested)
-			return dataTable;
-
-		ProcessResult(dataTable);
-
-		return dataTable;
-	}
-
-
 	#endregion
+
+
 
 	#region Protected Methods
 
@@ -265,6 +223,8 @@ internal abstract class DslSchema
 
 		return command;
 	}
+
+
 
 	protected virtual void ProcessResult(DataTable schema)
 	{ }

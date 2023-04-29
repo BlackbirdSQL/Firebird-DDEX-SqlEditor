@@ -46,6 +46,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFramework.Firebird", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlackbirdSql.VisualStudio.Ddex", "BlackbirdSql.VisualStudio.Ddex\BlackbirdSql.VisualStudio.Ddex.csproj", "{4C70D3F2-5333-4E19-BC0D-8184330471D8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsConsoleAppDsl", "Private\CsConsoleAppDsl\CsConsoleAppDsl.csproj", "{CE045B2F-CD19-48EE-8CCC-89A02206BB33}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -113,6 +115,18 @@ Global
 		{4C70D3F2-5333-4E19-BC0D-8184330471D8}.Release|x64.ActiveCfg = Release|Any CPU
 		{4C70D3F2-5333-4E19-BC0D-8184330471D8}.Release|x64.Build.0 = Release|Any CPU
 		{4C70D3F2-5333-4E19-BC0D-8184330471D8}.Release|x86.ActiveCfg = Release|Any CPU
+		{CE045B2F-CD19-48EE-8CCC-89A02206BB33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE045B2F-CD19-48EE-8CCC-89A02206BB33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE045B2F-CD19-48EE-8CCC-89A02206BB33}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CE045B2F-CD19-48EE-8CCC-89A02206BB33}.Debug|x64.Build.0 = Debug|Any CPU
+		{CE045B2F-CD19-48EE-8CCC-89A02206BB33}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CE045B2F-CD19-48EE-8CCC-89A02206BB33}.Debug|x86.Build.0 = Debug|Any CPU
+		{CE045B2F-CD19-48EE-8CCC-89A02206BB33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE045B2F-CD19-48EE-8CCC-89A02206BB33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE045B2F-CD19-48EE-8CCC-89A02206BB33}.Release|x64.ActiveCfg = Release|Any CPU
+		{CE045B2F-CD19-48EE-8CCC-89A02206BB33}.Release|x64.Build.0 = Release|Any CPU
+		{CE045B2F-CD19-48EE-8CCC-89A02206BB33}.Release|x86.ActiveCfg = Release|Any CPU
+		{CE045B2F-CD19-48EE-8CCC-89A02206BB33}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -121,6 +135,7 @@ Global
 		{884EE120-B22E-4940-8C1C-626F13028376} = {2AF853FC-ADFF-4432-8BFB-45093A1969F4}
 		{8071D6D5-491E-4ABA-8202-0ABBE913F129} = {2AF853FC-ADFF-4432-8BFB-45093A1969F4}
 		{764CEC97-8B92-4C38-A138-B6803004912A} = {2AF853FC-ADFF-4432-8BFB-45093A1969F4}
+		{CE045B2F-CD19-48EE-8CCC-89A02206BB33} = {172C8E85-C9A4-4387-8CE7-D9A533F4FA8F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {39854CA8-D6FF-4E02-879D-704FC2E136D4}

@@ -253,15 +253,10 @@ class TObjectSelector : AdoDotNetObjectSelector
 
 		Site.EnsureConnected();
 
-		ExpressionParser parser = ExpressionParser.Instance((FbConnection)connection);
-
-		if (parser.ClearToLoadAsync)
-		{
-			parser.AsyncLoad();
-		}
-
 
 		DataTable schema = DslSchemaFactory.GetSchema((FbConnection)connection, parameters[0].ToString(), array);
+
+
 
 		if (parameters.Length == 2 && parameters[1] is DictionaryEntry entry)
 		{

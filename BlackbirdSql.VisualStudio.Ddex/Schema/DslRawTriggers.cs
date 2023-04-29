@@ -19,17 +19,11 @@
 
 //$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
-using System;
 using System.Data;
-using System.Globalization;
 using System.Text;
 
-using FirebirdSql.Data.FirebirdClient;
-
-using BlackbirdSql.Common;
 using BlackbirdSql.Common.Extensions;
 
-using System.Reflection;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
@@ -37,11 +31,11 @@ namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 internal class DslRawTriggers : DslSchema
 {
-	readonly ExpressionParser _ExpressionParser;
+	readonly AbstractLinkageParser _LinkageParser;
 
-	public DslRawTriggers(ExpressionParser parser) : base()
+	public DslRawTriggers(AbstractLinkageParser parser) : base()
 	{
-		_ExpressionParser = parser;
+		_LinkageParser = parser;
 	}
 
 	#region Protected Methods
@@ -49,15 +43,6 @@ internal class DslRawTriggers : DslSchema
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
 		var sql = new StringBuilder();
-
-		string identityType = "null";
-		string generatorSelector = "IS NULL";
-
-		if (MajorVersionNumber >= 3)
-		{
-			identityType = "fd_rfr.rdb$identity_type";
-			generatorSelector = "= fd_rfr.rdb$generator_name";
-		}
 
 		/*
 		 * 
@@ -96,10 +81,10 @@ internal class DslRawTriggers : DslSchema
 		*/
 
 
-		sql.AppendFormat(@"SELECT
-	-- :TABLE_CATALOG, :TABLE_SCHEMA, :TABLE_NAME, :TRIGGER_NAME
-	null AS TABLE_CATALOG, null AS TABLE_SCHEMA, trg.rdb$relation_name AS TABLE_NAME,
-	trg.rdb$trigger_name AS TRIGGER_NAME, trg.rdb$description AS DESCRIPTION,
+		sql.Append(@"SELECT
+	-- :TRIGGER_NAME, :TABLE_NAME
+	trg.rdb$trigger_name AS TRIGGER_NAME, trg.rdb$relation_name AS TABLE_NAME,
+	trg.rdb$description AS DESCRIPTION,
 	-- :IS_SYSTEM_FLAG
 	(CASE WHEN trg.rdb$system_flag <> 1 THEN 0 ELSE 1 END) AS IS_SYSTEM_FLAG,
 	-- :TRIGGER_TYPE
@@ -110,14 +95,22 @@ internal class DslRawTriggers : DslSchema
 	trg.rdb$trigger_sequence AS PRIORITY,
 	-- :EXPRESSION for parser
 	(CASE WHEN trg.rdb$trigger_source IS NULL AND trg.rdb$trigger_blr IS NOT NULL THEN
-		cast(trg.rdb$trigger_blr as blob sub_type 1)
+
+		REPLACE(REPLACE(REPLACE(REPLACE(
+			REPLACE(REPLACE(REPLACE(
+				REPLACE(REPLACE(TRIM(cast(trg.rdb$trigger_blr as blob sub_type 1)), ', ', ','), ',  ', ','),
+			',   ', ','), ',    ', ','), ',     ', ','),
+		',      ', ','), ',       ', ','), ',        ', ','), ',        ', ',')
+
 	ELSE
-		trg.rdb$trigger_source
+
+		TRIM(trg.rdb$trigger_source)
+
 	END) AS EXPRESSION,
-	-- Initial value of :IS_IDENTITY for parser
+	--Initial value of :IS_IDENTITY for parser
 	(CASE WHEN trg.rdb$trigger_sequence = 1 AND trg.rdb$trigger_type = 1 THEN true ELSE false END) AS IS_IDENTITY
 FROM rdb$triggers trg
-ORDER BY trg.rdb$trigger_name", identityType, generatorSelector);
+ORDER BY trg.rdb$trigger_name");
 
 		// Diag.Trace(sql.ToString());
 
@@ -128,7 +121,7 @@ ORDER BY trg.rdb$trigger_name", identityType, generatorSelector);
 	{
 		// schema.Columns[6].ColumnName = "NumericPrecision";
 		// schema.Columns[18].ColumnName = "Nullable";
-		_ExpressionParser.NotifyTriggersFetched();
+		_LinkageParser.NotifyTriggersFetched();
 	}
 
 

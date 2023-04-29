@@ -274,16 +274,16 @@
 											<Description resource="Identifier_Desc_Name" />
 										</Property>
 										<Property name="IDENTITY_SEED">
-											<DisplayName resource="Property_Name_Sequence_InitialValue" />
-											<Description resource="Property_Desc_Sequence_InitialValue" />
+											<DisplayName resource="Property_Name_Sequence_Seed" />
+											<Description resource="Property_Desc_Sequence_Seed" />
 										</Property>
 										<Property name="IDENTITY_INCREMENT">
 											<DisplayName resource="Property_Name_Sequence_Increment" />
 											<Description resource="Property_Desc_Sequence_Increment" />
 										</Property>
 										<Property name="IDENTITY_CURRENT">
-											<DisplayName resource="Property_Name_Sequence_NextValue" />
-											<Description resource="Property_Desc_Sequence_NextValue" />
+											<DisplayName resource="Property_Name_Sequence_Current" />
+											<Description resource="Property_Desc_Sequence_Current" />
 										</Property>
 										<Property name="TRIGGER_NAME">
 											<DisplayName resource="Property_Name_Sequence_Trigger" />

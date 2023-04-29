@@ -678,20 +678,20 @@
   <data name="Property_Desc_Sequence_Increment" xml:space="preserve">
     <value>Integer increment of the sequence generator</value>
   </data>
-  <data name="Property_Desc_Sequence_InitialValue" xml:space="preserve">
-    <value>Initial value of the sequence number generator at the time it is created.</value>
+  <data name="Property_Desc_Sequence_Seed" xml:space="preserve">
+    <value>Initial value of the sequence number generator at the time it was created.</value>
   </data>
-  <data name="Property_Desc_Sequence_NextValue" xml:space="preserve">
-    <value>Next sequence number of the generator</value>
+  <data name="Property_Desc_Sequence_Current" xml:space="preserve">
+    <value>The last value used or -1 if the sequence has not been used.</value>
   </data>
   <data name="Property_Name_Sequence_Increment" xml:space="preserve">
     <value>Increment</value>
   </data>
-  <data name="Property_Name_Sequence_InitialValue" xml:space="preserve">
-    <value>Initial Value</value>
+  <data name="Property_Name_Sequence_Seed" xml:space="preserve">
+    <value>Seed</value>
   </data>
-  <data name="Property_Name_Sequence_NextValue" xml:space="preserve">
-    <value>Next Sequence Number</value>
+  <data name="Property_Name_Sequence_Current" xml:space="preserve">
+    <value>Current Value</value>
   </data>
   <data name="Type_Sequence" xml:space="preserve">
     <value>Sequence</value>
@@ -772,7 +772,7 @@
     <value>Initialization</value>
   </data>
   <data name="Property_Desc_Column_IdentityCurrent" xml:space="preserve">
-    <value>The current value if the field is an auto-increment identity field. The next value will be the current value plus the increment. If the current value exists but cannot be obtained -1 is returned.</value>
+    <value>The SqlServer interpretation of the current identity value if the field is an auto-increment identity field. The next value will be the current value plus the increment. If the current value exists but cannot be obtained or has never been used -1 is returned.</value>
   </data>
   <data name="Property_Desc_Column_IdentityIncrement" xml:space="preserve">
     <value>The increment if the field is an auto-increment identity field. If the increment exists but cannot be obtained -1 is returned.</value>

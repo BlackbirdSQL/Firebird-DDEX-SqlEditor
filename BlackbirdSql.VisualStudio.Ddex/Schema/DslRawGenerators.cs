@@ -29,12 +29,12 @@ namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 internal class DslRawGenerators : DslSchema
 {
-	protected ExpressionParser _ExpressionParser;
+	protected AbstractLinkageParser _LinkageParser;
 
 
-	public DslRawGenerators(ExpressionParser parser) : base()
+	public DslRawGenerators(AbstractLinkageParser parser) : base()
 	{
-		_ExpressionParser = parser;
+		_LinkageParser = parser;
 	}
 
 
@@ -67,9 +67,9 @@ BEGIN
 	DO BEGIN
 		EXECUTE STATEMENT 'SELECT gen_id(' || SEQUENCE_GENERATOR || ', 0) FROM rdb$database' INTO :IDENTITY_CURRENT;
 		:IDENTITY_CURRENT = :IDENTITY_CURRENT - :IDENTITY_INCREMENT;
-		IF (:IDENTITY_CURRENT < :IDENTITY_SEED) THEN
+		IF (:IDENTITY_CURRENT < :IDENTITY_SEED - 1) THEN
 		BEGIN
-			:IDENTITY_CURRENT = :IDENTITY_SEED;
+			:IDENTITY_CURRENT = :IDENTITY_SEED - 1;
 		END
         SUSPEND;
     END
@@ -82,7 +82,7 @@ END");
 
 	protected override void ProcessResult(DataTable schema)
 	{
-		_ExpressionParser.NotifyGeneratorsFetched();
+		_LinkageParser.NotifyGeneratorsFetched();
 	}
 
 

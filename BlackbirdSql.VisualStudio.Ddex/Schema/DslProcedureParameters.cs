@@ -24,7 +24,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 internal class DslProcedureParameters : DslColumns
 {
-	public DslProcedureParameters(ExpressionParser parser) : base(parser)
+	public DslProcedureParameters(LinkageParser parser) : base(parser)
 	{
 		string packageName;
 

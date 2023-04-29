@@ -29,7 +29,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 internal class DslViewColumns : DslColumns
 {
 
-	public DslViewColumns(ExpressionParser parser) : base(parser)
+	public DslViewColumns(LinkageParser parser) : base(parser)
 	{
 		_ParentType = "View";
 		_ObjectType = "ViewColumn";

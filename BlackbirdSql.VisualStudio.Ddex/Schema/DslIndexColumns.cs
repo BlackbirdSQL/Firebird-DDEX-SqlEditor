@@ -26,7 +26,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 internal class DslIndexColumns : DslColumns
 {
-	public DslIndexColumns(ExpressionParser parser) : base(parser)
+	public DslIndexColumns(LinkageParser parser) : base(parser)
 	{
 		_ParentType = "Index";
 		_ObjectType = "TableIndexColumn";

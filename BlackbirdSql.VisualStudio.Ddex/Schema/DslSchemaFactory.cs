@@ -31,8 +31,8 @@ using FirebirdSql.Data.FirebirdClient;
 
 using BlackbirdSql.Common;
 using BlackbirdSql.Common.Extensions;
-using System.Net.Security;
-using BlackbirdDsl;
+
+
 
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
@@ -61,143 +61,8 @@ internal sealed class DslSchemaFactory
 	{
 		// Diag.Trace();
 
-		ExpressionParser parser = ExpressionParser.Instance(connection);
+		LinkageParser parser = LinkageParser.Instance(connection);
 
-		if (parser.ClearToLoadAsync && !RequiresTriggers(collectionName))
-		{
-			parser.AsyncLoad();
-		}
-
-		string schemaCollection;
-
-		switch (collectionName)
-		{
-			case "Columns":
-			case "ForeignKeyColumns":
-			case "ForeignKeys":
-			case "FunctionArguments":
-			case "Functions":
-			case "Generators":
-			case "IndexColumns":
-			case "Indexes":
-			case "Procedures":
-			case "ProcedureColumns":
-			case "Tables":
-			case "Triggers":
-			case "ViewColumns":
-				schemaCollection = collectionName;
-				break;
-			case "TriggerColumns":
-				schemaCollection = "Columns";
-				break;
-			case "TriggerGenerators":
-			case "IdentityTriggers":
-			case "StandardTriggers":
-			case "SystemTriggers":
-				schemaCollection = "Triggers";
-				break;
-			default:
-				return connection.GetSchema(collectionName, restrictions);
-		}
-
-
-		if (parser.ClearToLoad && RequiresTriggers(schemaCollection))
-		{
-			parser.Load();
-		}
-
-		if (!parser.Requesting)
-		{
-			if (collectionName == "Generators")
-				return parser.GetSequenceSchema(restrictions);
-			else if (collectionName == "Triggers")
-				return parser.GetTriggerSchema(restrictions, -1, -1);
-			else if (collectionName == "StandardTriggers")
-				return parser.GetTriggerSchema(restrictions, 0, 0);
-			else if (collectionName == "IdentityTriggers")
-				return parser.GetTriggerSchema(restrictions, 0, 1);
-			else if (collectionName == "SystemTriggers")
-				return parser.GetTriggerSchema(restrictions, 1, -1);
-		}
-
-
-		var filter = string.Format("CollectionName = '{0}'", schemaCollection);
-		var ds = new DataSet();
-
-		Assembly assembly = typeof(FirebirdClientFactory).Assembly;
-		if (assembly == null)
-		{
-			DllNotFoundException ex = new(typeof(FirebirdClientFactory).Name + " class assembly not found");
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		var xmlStream = assembly.GetManifestResourceStream(ResourceName);
-		if (xmlStream == null)
-		{
-			NullReferenceException ex = new("Resource not found: " + ResourceName);
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		var oldCulture = Thread.CurrentThread.CurrentCulture;
-
-		try
-		{
-			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-			// ReadXml contains error: http://connect.microsoft.com/VisualStudio/feedback/Validation.aspx?FeedbackID=95116
-			// that's the reason for temporarily changing culture
-			ds.ReadXml(xmlStream);
-		}
-		finally
-		{
-			Thread.CurrentThread.CurrentCulture = oldCulture;
-		}
-
-		var collection = ds.Tables[DbMetaDataCollectionNames.MetaDataCollections].Select(filter);
-
-		if (collection.Length != 1)
-		{
-			NotSupportedException ex = new("Unsupported collection name " + schemaCollection);
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		if (restrictions != null && restrictions.Length > (int)collection[0]["NumberOfRestrictions"])
-		{
-			InvalidOperationException ex = new("The number of specified restrictions is not valid.");
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		if (ds.Tables[DbMetaDataCollectionNames.Restrictions].Select(filter).Length != (int)collection[0]["NumberOfRestrictions"])
-		{
-			InvalidOperationException ex = new("Incorrect restriction definition.");
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		switch (collection[0]["PopulationMechanism"].ToString())
-		{
-			case "PrepareCollection":
-				return PrepareCollection(connection, collectionName, schemaCollection, restrictions);
-
-			case "DataTable":
-				return ds.Tables[collection[0]["PopulationString"].ToString()].Copy();
-
-			case "SQLCommand":
-				return SqlCommandSchema(connection, collectionName, restrictions);
-
-			default:
-				NotSupportedException ex = new("Unsupported population mechanism");
-				Diag.Dug(ex);
-				throw ex;
-		}
-	}
-
-
-	public static Task<DataTable> GetSchemaAsync(FbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
-	{
 		string schemaCollection;
 
 		switch (collectionName)
@@ -229,6 +94,162 @@ internal sealed class DslSchemaFactory
 			default:
 				try
 				{
+					parser.EnterSync();
+					return connection.GetSchema(collectionName, restrictions);
+				}
+				finally
+				{
+					parser.ExitSync();
+				}
+		}
+
+
+		if (parser.ClearToLoad && RequiresTriggers(schemaCollection))
+		{
+			parser.Execute();
+		}
+
+
+		if (collectionName == "Generators")
+			return parser.GetSequenceSchema(restrictions);
+		else if (collectionName == "Triggers")
+			return parser.GetTriggerSchema(restrictions, -1, -1);
+		else if (collectionName == "StandardTriggers")
+			return parser.GetTriggerSchema(restrictions, 0, 0);
+		else if (collectionName == "IdentityTriggers")
+			return parser.GetTriggerSchema(restrictions, 0, 1);
+		else if (collectionName == "SystemTriggers")
+			return parser.GetTriggerSchema(restrictions, 1, -1);
+
+
+		var filter = string.Format("CollectionName = '{0}'", schemaCollection);
+		var ds = new DataSet();
+
+		Assembly assembly = typeof(FirebirdClientFactory).Assembly;
+		if (assembly == null)
+		{
+			DllNotFoundException ex = new(typeof(FirebirdClientFactory).Name + " class assembly not found");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		parser.EnterSync();
+
+		var xmlStream = assembly.GetManifestResourceStream(ResourceName);
+		if (xmlStream == null)
+		{
+			parser.ExitSync();
+			NullReferenceException ex = new("Resource not found: " + ResourceName);
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		var oldCulture = Thread.CurrentThread.CurrentCulture;
+
+		try
+		{
+			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+			// ReadXml contains error: http://connect.microsoft.com/VisualStudio/feedback/Validation.aspx?FeedbackID=95116
+			// that's the reason for temporarily changing culture
+			ds.ReadXml(xmlStream);
+		}
+		catch
+		{
+			parser.ExitSync();
+			throw;
+		}
+		finally
+		{
+			Thread.CurrentThread.CurrentCulture = oldCulture;
+		}
+
+		var collection = ds.Tables[DbMetaDataCollectionNames.MetaDataCollections].Select(filter);
+
+		if (collection.Length != 1)
+		{
+			parser.ExitSync();
+			NotSupportedException ex = new("Unsupported collection name " + schemaCollection);
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		if (restrictions != null && restrictions.Length > (int)collection[0]["NumberOfRestrictions"])
+		{
+			parser.ExitSync();
+			InvalidOperationException ex = new("The number of specified restrictions is not valid.");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		if (ds.Tables[DbMetaDataCollectionNames.Restrictions].Select(filter).Length != (int)collection[0]["NumberOfRestrictions"])
+		{
+			parser.ExitSync();
+			InvalidOperationException ex = new("Incorrect restriction definition.");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		DataTable schema;
+
+		switch (collection[0]["PopulationMechanism"].ToString())
+		{
+			case "PrepareCollection":
+				schema = PrepareCollection(connection, collectionName, schemaCollection, restrictions);
+				break;
+			case "DataTable":
+				schema = ds.Tables[collection[0]["PopulationString"].ToString()].Copy();
+				break;
+			case "SQLCommand":
+				schema = SqlCommandSchema(connection, collectionName, restrictions);
+				break;
+			default:
+				parser.ExitSync();
+				NotSupportedException ex = new("Unsupported population mechanism");
+				Diag.Dug(ex);
+				throw ex;
+		}
+
+		parser.ExitSync();
+		return schema;
+	}
+
+
+	public static Task<DataTable> GetSchemaAsync(FbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
+	{
+		LinkageParser parser = LinkageParser.Instance(connection);
+
+		string schemaCollection;
+
+		switch (collectionName)
+		{
+			case "Columns":
+			case "ForeignKeyColumns":
+			case "ForeignKeys":
+			case "FunctionArguments":
+			case "Functions":
+			case "Generators":
+			case "IndexColumns":
+			case "Indexes":
+			case "Procedures":
+			case "ProcedureColumns":
+			case "Tables":
+			case "Triggers":
+			case "ViewColumns":
+				schemaCollection = collectionName;
+				break;
+			case "TriggerColumns":
+				schemaCollection = "Columns";
+				break;
+			case "TriggerGenerators":
+			case "IdentityTriggers":
+			case "StandardTriggers":
+			case "SystemTriggers":
+				schemaCollection = "Triggers";
+				break;
+			default:
+				try
+				{
+					parser.EnterSync();
 					return connection.GetSchemaAsync(collectionName, restrictions, cancellationToken);
 				}
 				catch (Exception)
@@ -237,28 +258,32 @@ internal sealed class DslSchemaFactory
 						return Task.FromResult(new DataTable());
 					throw;
 				}
+				finally
+				{
+					parser.ExitSync();
+				}
 		}
 
 		if (cancellationToken.IsCancellationRequested)
 			return Task.FromResult(new DataTable());
 
-		/*
-		ExpressionParser parser = ExpressionParser.Instance(connection);
 
-		if (!parser.Requesting)
+		if (parser.ClearToLoad && RequiresTriggers(schemaCollection))
 		{
-			if (collectionName == "Generators")
-				return parser.GetSequenceSchemaAsync(restrictions, cancellationToken);
-			else if (collectionName == "Triggers")
-				return parser.GetTriggerSchemaAsync(restrictions, -1, -1, cancellationToken);
-			else if (collectionName == "StandardTriggers")
-				return parser.GetTriggerSchemaAsync(restrictions, 0, 0, cancellationToken);
-			else if (collectionName == "IdentityTriggers")
-				return parser.GetTriggerSchemaAsync(restrictions, 0, 1, cancellationToken);
-			else if (collectionName == "SystemTriggers")
-				return parser.GetTriggerSchemaAsync(restrictions, 1, -1, cancellationToken);
+			parser.Execute();
 		}
-		*/
+
+
+		if (collectionName == "Generators")
+			return Task.FromResult(parser.GetSequenceSchema(restrictions));
+		else if (collectionName == "Triggers")
+			return Task.FromResult(parser.GetTriggerSchema(restrictions, -1, -1));
+		else if (collectionName == "StandardTriggers")
+			return Task.FromResult(parser.GetTriggerSchema(restrictions, 0, 0));
+		else if (collectionName == "IdentityTriggers")
+			return Task.FromResult(parser.GetTriggerSchema(restrictions, 0, 1));
+		else if (collectionName == "SystemTriggers")
+			return Task.FromResult(parser.GetTriggerSchema(restrictions, 1, -1));
 
 		var filter = string.Format("CollectionName = '{0}'", schemaCollection);
 		var ds = new DataSet();
@@ -285,6 +310,8 @@ internal sealed class DslSchemaFactory
 
 		var oldCulture = Thread.CurrentThread.CurrentCulture;
 
+		parser.EnterSync();
+
 		try
 		{
 			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
@@ -292,13 +319,21 @@ internal sealed class DslSchemaFactory
 			// that's the reason for temporarily changing culture
 			ds.ReadXml(xmlStream);
 		}
+		catch
+		{
+			parser.ExitSync();
+			throw;
+		}
 		finally
 		{
 			Thread.CurrentThread.CurrentCulture = oldCulture;
 		}
 
 		if (cancellationToken.IsCancellationRequested)
+		{
+			parser.ExitSync();
 			return Task.FromResult(new DataTable());
+		}
 
 		DataRow[] collection;
 		try
@@ -307,12 +342,14 @@ internal sealed class DslSchemaFactory
 		}
 		catch (Exception ex)
 		{
+			parser.ExitSync();
 			Diag.Dug(ex);
 			throw;
 		}
 
 		if (collection.Length != 1)
 		{
+			parser.ExitSync();
 			NotSupportedException ex = new("Unsupported collection name " + schemaCollection);
 			Diag.Dug(ex);
 			throw ex;
@@ -320,38 +357,52 @@ internal sealed class DslSchemaFactory
 
 		if (restrictions != null && restrictions.Length > (int)collection[0]["NumberOfRestrictions"])
 		{
+			parser.ExitSync();
 			InvalidOperationException exbb = new("The number of specified restrictions is not valid.");
 			Diag.Dug(exbb);
 			throw exbb;
 		}
 
 		if (cancellationToken.IsCancellationRequested)
+		{
+			parser.ExitSync();
 			return Task.FromResult(new DataTable());
+		}
 
 		if (ds.Tables[DbMetaDataCollectionNames.Restrictions].Select(filter).Length != (int)collection[0]["NumberOfRestrictions"])
 		{
+			parser.ExitSync();
 			InvalidOperationException exbb = new("Incorrect restriction definition.");
 			Diag.Dug(exbb);
 			throw exbb;
 		}
 
 		if (cancellationToken.IsCancellationRequested)
+		{
+			parser.ExitSync();
 			return Task.FromResult(new DataTable());
+		}
+
+		Task<DataTable> task;
 
 		switch (collection[0]["PopulationMechanism"].ToString())
 		{
 			case "PrepareCollection":
-				return PrepareCollectionAsync(connection, collectionName, schemaCollection, restrictions, cancellationToken);
-
+				task = PrepareCollectionAsync(connection, collectionName, schemaCollection, restrictions, cancellationToken);
+				break;
 			case "DataTable":
-				return Task.FromResult(ds.Tables[collection[0]["PopulationString"].ToString()].Copy());
-
+				task = Task.FromResult(ds.Tables[collection[0]["PopulationString"].ToString()].Copy());
+				break;
 			case "SQLCommand":
-				return SqlCommandSchemaAsync(connection, collectionName, restrictions, cancellationToken);
-
+				task = SqlCommandSchemaAsync(connection, collectionName, restrictions, cancellationToken);
+				break;
 			default:
+				parser.ExitSync();
 				throw new NotSupportedException("Unsupported population mechanism");
 		}
+
+		parser.ExitSync();
+		return task;
 	}
 
 	#endregion
@@ -360,69 +411,138 @@ internal sealed class DslSchemaFactory
 
 	private static DataTable PrepareCollection(FbConnection connection, string collectionName, string schemaCollection, string[] restrictions)
 	{
-		DslSchema returnSchema = collectionName.ToUpperInvariant() switch
+		DslSchema dslSchema;
+
+		switch (collectionName.ToUpperInvariant())
 		{
-			"COLUMNS" => new DslColumns(ExpressionParser.Instance(connection)),
-			"FOREIGNKEYCOLUMNS" => new DslForeignKeyColumns(ExpressionParser.Instance(connection)),
-			"FOREIGNKEYS" => new DslForeignKeys(),
-			"FUNCTIONARGUMENTS" => new DslFunctionArguments(ExpressionParser.Instance(connection)),
-			"FUNCTIONS" => new DslFunctions(),
-			"GENERATORS" => new DslRawGenerators(ExpressionParser.Instance(connection)),
-			"INDEXCOLUMNS" => new DslIndexColumns(ExpressionParser.Instance(connection)),
-			"INDEXES" => new DslIndexes(),
-			"PROCEDURES" => new DslProcedures(),
-			"PROCEDUREPARAMETERS" => new DslProcedureParameters(ExpressionParser.Instance(connection)),
-			"TABLES" => new DslTables(),
-			"TRIGGERS" => new DslRawTriggers(ExpressionParser.Instance(connection)),
-			"TRIGGERGENERATORS" => new DslRawTriggerGenerators(ExpressionParser.Instance(connection)),
-			"IDENTITYTRIGGERS" => new DslIdentityTriggers(ExpressionParser.Instance(connection)),
-			"STANDARDTRIGGERS" => new DslStandardTriggers(ExpressionParser.Instance(connection)),
-			"SYSTEMTRIGGERS" => new DslSystemTriggers(ExpressionParser.Instance(connection)),
-			"TRIGGERCOLUMNS" => new DslTriggerColumns(ExpressionParser.Instance(connection)),
-			"VIEWCOLUMNS" => new DslViewColumns(ExpressionParser.Instance(connection)),
-			_ => ((Func<DslSchema>)(() =>
-				{
-					NotSupportedException exbb = new(string.Format("The metadata collection {0} is not supported.", collectionName));
-					Diag.Dug(exbb);
-					throw exbb;
-				}))(),
-		};
-		return returnSchema.GetSchema(connection, schemaCollection, restrictions);
+			case "COLUMNS":
+				dslSchema = new DslColumns(LinkageParser.Instance(connection));
+				break;
+			case "FOREIGNKEYCOLUMNS":
+				dslSchema = new DslForeignKeyColumns(LinkageParser.Instance(connection));
+				break;
+			case "FOREIGNKEYS":
+				dslSchema = new DslForeignKeys();
+				break;
+
+			case "FUNCTIONARGUMENTS":
+				dslSchema = new DslFunctionArguments(LinkageParser.Instance(connection));
+				break;
+			case "FUNCTIONS":
+				dslSchema = new DslFunctions();
+				break;
+			case "INDEXCOLUMNS":
+				dslSchema = new DslIndexColumns(LinkageParser.Instance(connection));
+				break;
+			case "INDEXES":
+				dslSchema = new DslIndexes();
+				break;
+			case "PROCEDURES":
+				dslSchema = new DslProcedures();
+				break;
+			case "PROCEDUREPARAMETERS":
+				dslSchema = new DslProcedureParameters(LinkageParser.Instance(connection));
+				break;
+			case "TABLES":
+				dslSchema = new DslTables();
+				break;
+			case "IDENTITYTRIGGERS":
+				dslSchema = new DslIdentityTriggers(LinkageParser.Instance(connection));
+				break;
+			case "STANDARDTRIGGERS":
+				dslSchema = new DslStandardTriggers(LinkageParser.Instance(connection));
+				break;
+			case "SYSTEMTRIGGERS":
+				dslSchema = new DslSystemTriggers(LinkageParser.Instance(connection));
+				break;
+			case "TRIGGERCOLUMNS":
+				dslSchema = new DslTriggerColumns(LinkageParser.Instance(connection));
+				break;
+			case "VIEWCOLUMNS":
+				dslSchema = new DslViewColumns(LinkageParser.Instance(connection));
+				break;
+			case "GENERATORS":
+			case "TRIGGERS":
+			case "TRIGGERGENERATORS":
+				NotSupportedException ex = new(string.Format("The raw metadata collection {0} may not be called from here.", collectionName));
+				Diag.Dug(ex);
+				throw ex;
+			default:
+				NotSupportedException exb = new(string.Format("The metadata collection {0} is not supported.", collectionName));
+				Diag.Dug(exb);
+				throw exb;
+		}
+
+		return dslSchema.GetSchema(connection, schemaCollection, restrictions);
 	}
 
 
 
 	private static Task<DataTable> PrepareCollectionAsync(FbConnection connection, string collectionName, string schemaCollection, string[] restrictions, CancellationToken cancellationToken = default)
 	{
-		DslSchema returnSchema = collectionName.ToUpperInvariant() switch
-		{
-			"COLUMNS" => new DslColumns(ExpressionParser.Instance(connection)),
-			"FOREIGNKEYCOLUMNS" => new DslForeignKeyColumns(ExpressionParser.Instance(connection)),
-			"FOREIGNKEYS" => new DslForeignKeys(),
-			"FUNCTIONARGUMENTS" => new DslFunctionArguments(ExpressionParser.Instance(connection)),
-			"FUNCTIONS" => new DslFunctions(),
-			"GENERATORS" => new DslRawGenerators(ExpressionParser.Instance(connection)),
-			"INDEXCOLUMNS" => new DslIndexColumns(ExpressionParser.Instance(connection)),
-			"INDEXES" => new DslIndexes(),
-			"PROCEDURES" => new DslProcedures(),
-			"PROCEDUREPARAMETERS" => new DslProcedureParameters(ExpressionParser.Instance(connection)),
-			"TABLES" => new DslTables(),
-			"TRIGGERS" => new DslRawTriggers(ExpressionParser.Instance(connection)),
-			"TRIGGERGENERATORS" => new DslRawTriggerGenerators(ExpressionParser.Instance(connection)),
-			"IDENTITYTRIGGERS" => new DslIdentityTriggers(ExpressionParser.Instance(connection)),
-			"STANDARDTRIGGERS" => new DslStandardTriggers(ExpressionParser.Instance(connection)),
-			"SYSTEMTRIGGERS" => new DslSystemTriggers(ExpressionParser.Instance(connection)),
-			"TRIGGERCOLUMNS" => new DslTriggerColumns(ExpressionParser.Instance(connection)),
-			"VIEWCOLUMNS" => new DslViewColumns(ExpressionParser.Instance(connection)),
-			_ => ((Func<DslSchema>)(() =>
-				{
-					NotSupportedException exbb = new(string.Format("The metadata collection {0} is not supported.", collectionName));
-					Diag.Dug(exbb);
-					throw exbb;
-				}))(),
-		};
 
-		return returnSchema.GetSchemaAsync(connection, schemaCollection, restrictions, cancellationToken);
+		DslSchema dslSchema;
+
+		switch (collectionName.ToUpperInvariant())
+		{
+			case "COLUMNS":
+				dslSchema = new DslColumns(LinkageParser.Instance(connection));
+				break;
+			case "FOREIGNKEYCOLUMNS":
+				dslSchema = new DslForeignKeyColumns(LinkageParser.Instance(connection));
+				break;
+			case "FOREIGNKEYS":
+				dslSchema = new DslForeignKeys();
+				break;
+			case "FUNCTIONARGUMENTS":
+				dslSchema = new DslFunctionArguments(LinkageParser.Instance(connection));
+				break;
+			case "FUNCTIONS":
+				dslSchema = new DslFunctions();
+				break;
+			case "INDEXCOLUMNS":
+				dslSchema = new DslIndexColumns(LinkageParser.Instance(connection));
+				break;
+			case "INDEXES":
+				dslSchema = new DslIndexes();
+				break;
+			case "PROCEDURES":
+				dslSchema = new DslProcedures();
+				break;
+			case "PROCEDUREPARAMETERS":
+				dslSchema = new DslProcedureParameters(LinkageParser.Instance(connection));
+				break;
+			case "TABLES":
+				dslSchema = new DslTables();
+				break;
+			case "IDENTITYTRIGGERS":
+				dslSchema = new DslIdentityTriggers(LinkageParser.Instance(connection));
+				break;
+			case "STANDARDTRIGGERS":
+				dslSchema = new DslStandardTriggers(LinkageParser.Instance(connection));
+				break;
+			case "SYSTEMTRIGGERS":
+				dslSchema = new DslSystemTriggers(LinkageParser.Instance(connection));
+				break;
+			case "TRIGGERCOLUMNS":
+				dslSchema = new DslTriggerColumns(LinkageParser.Instance(connection));
+				break;
+			case "VIEWCOLUMNS":
+				dslSchema = new DslViewColumns(LinkageParser.Instance(connection));
+				break;
+			case "GENERATORS":
+			case "TRIGGERS":
+			case "TRIGGERGENERATORS":
+				NotSupportedException ex = new(string.Format("The raw metadata collection {0} may not be called from here.", collectionName));
+				Diag.Dug(ex);
+				throw ex;
+			default:
+				NotSupportedException exb = new(string.Format("The metadata collection {0} is not supported.", collectionName));
+				Diag.Dug(exb);
+				throw exb;
+		}
+
+		return dslSchema.GetSchemaAsync(connection, schemaCollection, restrictions, cancellationToken);
 	}
 
 	private static DataTable SqlCommandSchema(FbConnection connection, string collectionName, string[] restrictions)

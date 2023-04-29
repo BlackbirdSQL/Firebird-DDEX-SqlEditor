@@ -10,7 +10,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 internal class DslTriggerColumns : DslColumns
 {
-	public DslTriggerColumns(ExpressionParser parser) : base(parser)
+	public DslTriggerColumns(LinkageParser parser) : base(parser)
 	{
 		_ParentType = "Trigger";
 		_ObjectType = "TriggerColumn";

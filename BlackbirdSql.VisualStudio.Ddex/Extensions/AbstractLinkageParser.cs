@@ -6,32 +6,30 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Microsoft.VisualStudio.Threading;
+
 using FirebirdSql.Data.FirebirdClient;
 
 using C5;
 using BlackbirdDsl;
 using BlackbirdSql.VisualStudio.Ddex.Schema;
-using Microsoft.VisualStudio.LanguageServer.Client;
-using System.Collections;
 
 namespace BlackbirdSql.Common.Extensions;
 
-internal class ExpressionParser
+/// <summary>
+/// Handles Trigger / Generator linkage building tasks.
+/// </summary>
+internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 {
-	protected static Dictionary<FbConnection, ExpressionParser> _Instances = null;
+	protected static Dictionary<FbConnection, object> _Instances = null;
 
-	protected Parser _DslParser = null;
 
-	protected FbConnection _Connection = null;
 	protected DataTable _Sequences = null;
 	protected DataTable _Triggers = null;
 
 	protected DataTable _RawGenerators = null;
 	protected DataTable _RawTriggerGenerators = null;
 	protected DataTable _RawTriggers = null;
-
-
-	protected Task<bool> _ExternalAsyncTask;
 
 
 	protected bool _RawGeneratorsLoaded = false;
@@ -43,57 +41,23 @@ internal class ExpressionParser
 	// Triggers and Trigger generators are loaded
 	protected bool _Loaded = false;
 	// An async call is active
-	protected bool _SyncActive = false;
+	protected int _SyncActive = 0;
 	// Sync is making a call to GetSchema. GetSchema must allow it through.
 	protected bool _Requesting = false;
 
 	// An async call is active
 	protected bool _AsyncActive = false;
 	// A sync call has taken over. Async is locked out or abort at the first opportunity.
+	protected CancellationTokenSource _SyncLockedTokenSource;
 	protected CancellationTokenSource _AsyncLockedTokenSource;
-	CancellationToken _AsyncLockedToken;
-
-	protected System.Diagnostics.Stopwatch _Stopwatch = null;
-
+	protected CancellationToken _SyncLockedToken;
+	protected CancellationToken _AsyncLockedToken;
 
 
+	protected Task<bool> _ExternalAsyncTask;
 
 
-	public static ExpressionParser Instance(FbConnection connection)
-	{
-		ExpressionParser parser;
 
-		if (connection == null)
-		{
-			ArgumentNullException ex = new ArgumentNullException("Attempt to add a null connection");
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		if (_Instances == null)
-		{
-			Diag.Trace("Instances null. Adding new parser");
-			_Instances = new();
-			parser = new(connection);
-			_Instances.Add(connection, parser);
-
-		}
-		else
-		{
-			if (!_Instances.TryGetValue(connection, out parser))
-			{
-				Diag.Trace("Parser instances not found. Adding new parser");
-				parser = new(connection);
-				_Instances.Add(connection, parser);
-			}
-			else
-			{
-				Diag.Trace("Parser instances found. Using existing parser");
-			}
-		}
-
-		return parser;
-	}
 
 
 
@@ -130,47 +94,29 @@ internal class ExpressionParser
 
 	public bool ClearToLoad
 	{
-		get { return (!_SyncActive && !Loaded); }
+		get { return (_SyncActive == 0 && !Loaded); }
 	}
 
 	public bool ClearToLoadAsync
 	{
 		get
 		{
-			return false; // (!_AsyncLockedToken.IsCancellationRequested && !_AsyncActive && ClearToLoad);
+			return (!_AsyncLockedToken.IsCancellationRequested && !_AsyncActive && ClearToLoad);
 		}
 	}
 
 
 
-	public System.Diagnostics.Stopwatch Stopwatch
+
+	protected AbstractLinkageParser(FbConnection connection) : base(connection)
 	{
-		get
-		{
-			_Stopwatch ??= new();
-
-			return _Stopwatch;
-		}
-	}
-
-
-	public Parser DslParser
-	{
-		get
-		{
-			_DslParser ??= new Parser();
-			return _DslParser;
-		}
-
-	}
-
-
-	protected ExpressionParser(FbConnection connection)
-	{
-		_Connection = connection;
+		_Instances.Add(connection, this);
 
 		_Connection.StateChange += ConnectionStateChanged;
 		_Connection.Disposed += ConnectionDisposed;
+
+		_SyncLockedTokenSource = new();
+		_SyncLockedToken = _SyncLockedTokenSource.Token;
 
 		_AsyncLockedTokenSource = new();
 		_AsyncLockedToken = _AsyncLockedTokenSource.Token;
@@ -200,8 +146,8 @@ internal class ExpressionParser
 
 		_Triggers.Columns.Add("TABLE_CATALOG", typeof(string));
 		_Triggers.Columns.Add("TABLE_SCHEMA", typeof(string));
-		_Triggers.Columns.Add("TABLE_NAME", typeof(string));
 		_Triggers.Columns.Add("TRIGGER_NAME", typeof(string));
+		_Triggers.Columns.Add("TABLE_NAME", typeof(string));
 		_Triggers.Columns.Add("DESCRIPTION", typeof(string));
 		_Triggers.Columns.Add("IS_SYSTEM_FLAG", typeof(int));
 		_Triggers.Columns.Add("TRIGGER_TYPE", typeof(long));
@@ -223,316 +169,59 @@ internal class ExpressionParser
 		_Triggers.AcceptChanges();
 	}
 
-	~ExpressionParser()
+
+
+
+	protected static AbstractLinkageParser Instance(FbConnection connection)
+	{
+		AbstractLinkageParser parser = null;
+
+		if (connection == null)
+		{
+			ArgumentNullException ex = new ArgumentNullException("Attempt to add a null connection");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		if (_Instances == null)
+		{
+			_Instances = new();
+		}
+		else
+		{
+			if (_Instances.TryGetValue(connection, out object parserObject))
+			{
+				parser = (AbstractLinkageParser)parserObject;
+			}
+		}
+
+		return parser;
+	}
+
+
+	~AbstractLinkageParser()
 	{
 		_AsyncLockedTokenSource.Cancel();
 		_AsyncLockedTokenSource?.Dispose();
 	}
 
-	public (string, int) ParseGeneratorInfo(string sql)
-	{
-		return ParseGeneratorInfo(sql, null, null, null);
-	}
 
+	public abstract bool ClearAsyncQueue();
 
-	public (string, int) ParseGeneratorInfo(string sql, string trigger)
-	{
-		return ParseGeneratorInfo(sql, trigger, null, null);
-	}
+	public abstract bool EnterSync();
 
+	public abstract void ExitSync();
 
-	public (string, int) ParseGeneratorInfo(string sql, string trigger, string table)
-	{
-		return ParseGeneratorInfo(sql, trigger, table, null);
-	}
 
-	public (string, int) ParseGeneratorInfo(string sql, string trigger, string table, string column)
-	{
-		int stage;
-		int increment = -1;
-		string generator = null;
-		string value;
-		string arguments = null;
+	public abstract bool Execute(CancellationToken asyncLockedToken = default);
 
-		string[][] _Stages =
-		{
-			new string[] { "CREATE", "TRIGGER", "_TRIGGER_", "FOR", "_TABLE_",
-				"AS", "BEGIN", "_COLUMN_", "=", "GEN_ID", "_PARAM_" },
-			new string[] { "CREATE", "TRIGGER", "_TRIGGER_", "FOR", "_TABLE_",
-				"AS", "BEGIN", "_COLUMN_", "=", "NEXT", "VALUE", "FOR", "_PARAM_" }
-		};
 
+	public abstract bool AsyncExecute();
 
-		_Stages[0][2] = _Stages[1][2] = trigger?.ToUpper();
-		_Stages[0][4] = _Stages[1][4] = table?.ToUpper();
-		_Stages[0][7] = _Stages[1][7] = (column != null ? ("NEW." + column.ToUpper()) : null);
 
+	protected abstract void AsyncExited();
 
-		StringCell tokens = DslParser.Execute(sql.ToUpper());
-
-		// { "CREATE", "TRIGGER", "_TRIGGER_", "FOR", "_TABLE_", "AS", "BEGIN", "_COLUMN_", "=", "GEN_ID", "_PARAM_" }
-
-		int version;
-
-		for (version = 0; version < _Stages.Length && arguments == null; version++)
-		{
-			stage = 0;
-
-			foreach (StringCell token in tokens.Enumerator)
-			{
-				value = token.ToString().Trim();
-
-				if (String.IsNullOrEmpty(value))
-					continue;
-
-				if (stage == _Stages[version].Length - 1)
-				{
-					arguments = value;
-					break;
-				}
-
-				if (stage < 6)
-				{
-					for (int i = stage; i < 6; i++)
-					{
-						if (value == _Stages[version][i])
-						{
-							for (stage = i + 1; stage < 5 && _Stages[version][stage] == null; stage++) ;
-							break;
-						}
-					}
-					continue;
-				}
-
-				if (value == _Stages[version][stage])
-				{
-					for (stage++; stage < _Stages[version].Length && _Stages[version][stage] == null; stage++) ;
-					if (stage == _Stages[version].Length) // Should never  happen
-						break;
-				}
-			}
-		}
-
-		if (arguments == null)
-			return (null, -1);
-
-		if (version < _Stages.Length)
-		{
-			char[] chrs = { '(', ')', ' ' };
-
-			string[] parameters = arguments.Trim(chrs).Split(',');
-
-			if (parameters.Length > 0)
-				generator = parameters[0].Trim();
-
-			if (parameters.Length > 1)
-				increment = Convert.ToInt32(parameters[1].Trim());
-		}
-		else
-		{
-			generator = arguments.Trim();
-			increment = 1;
-		}
-
-		return (generator, increment);
-	}
-
-
-
-
-
-	public void Load()
-	{
-		if (!ClearToLoad)
-			return;
-
-		if (_Connection == null)
-		{
-			ObjectDisposedException ex = new("Connection is null");
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		if (!ConnectionActive)
-		{
-			DataException ex = new("Connection closed");
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-
-		_SyncActive = true;
-
-		Diag.Trace("Entering Load");
-
-		if (_ExternalAsyncTask != null)
-		{
-			Diag.Trace("Waiting for external task");
-			_AsyncLockedTokenSource.Cancel();
-			_ExternalAsyncTask.Wait();
-			Diag.Trace("Waiting over for external task");
-		}
-		else
-		{
-			Diag.Trace("Commencing load. No external async task.");
-		}
-
-
-		if (!ConnectionActive)
-			return;
-
-		if (!_RawGeneratorsLoaded)
-		{
-			Diag.Trace("Getting RawGeneratorSchema");
-			if (GetRawGeneratorSchema() != null)
-				_RawGeneratorsLoaded = true;
-		}
-
-		if (!ConnectionActive)
-			return;
-
-
-		if (!_RawTriggerGeneratorsLoaded)
-		{
-			Diag.Trace("Getting RawTriggerGeneratorSchema");
-			if (GetRawTriggerGeneratorSchema() != null)
-				_RawTriggerGeneratorsLoaded = true;
-		}
-
-		if (!ConnectionActive)
-			return;
-
-		if (!_RawTriggersLoaded)
-		{
-			Diag.Trace("Getting RawTriggerSchema");
-			if (GetRawTriggerSchema() != null)
-				_RawTriggersLoaded = true;
-		}
-
-		if (!ConnectionActive)
-			return;
-
-		if (!SequencesLoaded)
-		{
-			BuildSequenceTable();
-		}
-
-		if (!ConnectionActive)
-			return;
-
-		if (!_Loaded)
-		{
-			BuildTriggerTable();
-		}
-
-		_SyncActive = false;
-	}
-
-
-	public void AsyncLoad()
-	{
-		if (!ClearToLoadAsync)
-			return;
-
-		_AsyncActive = true;
-
-		Diag.Trace("Initiating LoadAsync");
-
-		var thread = Task.Run(() => { _ = LoadAsync(_AsyncLockedToken); });
-	}
-
-
-	// Must only be called by AsyncLoad to maintain syncronization integrity with sync calls.
-	protected Task<bool> LoadAsync(CancellationToken asyncLockedToken)
-	{
-		_AsyncActive = true;
-
-		Diag.Trace("Calling PerformLoadAsync");
-		_ExternalAsyncTask = PerformLoadAsync(asyncLockedToken);
-
-		_ExternalAsyncTask.Wait();
-
-		_AsyncActive = false;
-
-		Diag.Trace("Wait over for PerformLoadAsync");
-
-		return _ExternalAsyncTask;
-
-	}
-
-
-	// Must only be called by AwaitLoadAsync to maintain syncronization integrity with sync calls.
-	protected async Task<bool> PerformLoadAsync(CancellationToken asyncLockedToken)
-	{
-		DataTable schema;
-
-		if (!_RawGeneratorsLoaded)
-		{
-			if (asyncLockedToken.IsCancellationRequested)
-				return false;
-
-			Diag.Trace("External start GetRawGeneratorSchemaAsync");
-			schema = await GetRawGeneratorSchemaAsync(); //.ConfigureAwait(false);
-
-
-			if (schema == null)
-			{
-				Diag.Trace("GetRawGeneratorSchemaAsync failed");
-				return false;
-			}
-
-			_RawGeneratorsLoaded = true;
-			Diag.Trace("External wait over GetRawGeneratorSchemaAsync");
-		}
-
-
-		if (!_RawTriggerGeneratorsLoaded)
-		{
-			if (asyncLockedToken.IsCancellationRequested)
-				return false;
-
-			Diag.Trace("External start GetRawTriggerGeneratorSchemaAsync");
-
-			schema = await GetRawTriggerGeneratorSchemaAsync(); //.ConfigureAwait(false);
-
-
-			if (schema == null)
-			{
-				Diag.Trace("GetRawTriggerGeneratorSchemaAsync failed");
-				return false;
-			}
-
-			_RawTriggerGeneratorsLoaded = true;
-			Diag.Trace("External wait over GetRawTriggerGeneratorSchemaAsync");
-		}
-
-
-		if (!_RawTriggersLoaded)
-		{
-			if (asyncLockedToken.IsCancellationRequested)
-				return false;
-			Diag.Trace("External start GetRawTriggerSchemaAsync");
-			schema = await GetRawTriggerSchemaAsync(); // .ConfigureAwait(false);
-
-			if (schema == null)
-			{
-				Diag.Trace("GetRawTriggerSchemaAsync failed");
-				return false;
-			}
-
-			_RawTriggersLoaded = true;
-			Diag.Trace("External wait over GetRawTriggerSchemaAsync");
-		}
-
-
-		if (!SequencesLoaded)
-			BuildSequenceTable();
-
-		if (!_Loaded)
-			BuildTriggerTable();
-
-		return true;
-	}
+	
 
 
 	protected DataTable GetRawGeneratorSchema()
@@ -541,19 +230,6 @@ internal class ExpressionParser
 
 		Requesting = true;
 		_RawGenerators = schema.GetRawSchema(_Connection, "Generators");
-		Diag.Trace("Out Generators GetRawSchema");
-		Requesting = false;
-
-		return _RawGenerators;
-	}
-
-	protected async Task<DataTable> GetRawGeneratorSchemaAsync()
-	{
-		DslRawGenerators schema = new(this);
-
-		Requesting = true;
-		_RawGenerators = await schema.GetRawSchemaAsync(_Connection, "Generators").ConfigureAwait(false);
-		Diag.Trace("Out Generators GetRawSchemaAsync");
 		Requesting = false;
 
 		return _RawGenerators;
@@ -566,19 +242,6 @@ internal class ExpressionParser
 
 		Requesting = true;
 		_RawTriggers = schema.GetRawSchema(_Connection, "Triggers");
-		Diag.Trace("Out Triggers GetRawSchema");
-		Requesting = false;
-
-		return _RawTriggers;
-	}
-
-	protected async Task<DataTable> GetRawTriggerSchemaAsync()
-	{
-		DslRawTriggers schema = new(this);
-
-		Requesting = true;
-		_RawTriggers = await schema.GetRawSchemaAsync(_Connection, "Triggers").ConfigureAwait(false);
-		Diag.Trace("Out Triggers GetRawSchemaAsync");
 		Requesting = false;
 
 		return _RawTriggers;
@@ -591,25 +254,10 @@ internal class ExpressionParser
 
 		Requesting = true;
 		_RawTriggerGenerators = schema.GetRawSchema(_Connection, "TriggerGenerators");
-		Diag.Trace("Out TriggerGenerators GetRawSchema");
 		Requesting = false;
 
 		return _RawTriggerGenerators;
 	}
-
-	protected async Task<DataTable> GetRawTriggerGeneratorSchemaAsync()
-	{
-		DslRawTriggerGenerators schema = new(this);
-
-		Requesting = true;
-		_RawTriggerGenerators = await schema.GetRawSchemaAsync(_Connection, "TriggerGenerators").ConfigureAwait(false);
-		Diag.Trace("Out TriggerGenerators GetRawSchemaAsync");
-		Requesting = false;
-
-		return _RawTriggerGenerators;
-	}
-
-
 
 
 
@@ -640,7 +288,7 @@ internal class ExpressionParser
 		_SequencesLoaded = true;
 
 		Stopwatch.Stop();
-		Diag.Trace("Sequences loaded time :" + Stopwatch.ElapsedMilliseconds);
+		// Diag.Trace("Sequences loaded time :" + Stopwatch.ElapsedMilliseconds);
 		Stopwatch.Reset();
 		Stopwatch.Start();
 	}
@@ -648,19 +296,19 @@ internal class ExpressionParser
 	public void NotifyGeneratorsFetched()
 	{
 		Stopwatch.Stop();
-		Diag.Trace("Generators fetch time :" + Stopwatch.ElapsedMilliseconds);
+		// Diag.Trace("Generators fetch time :" + Stopwatch.ElapsedMilliseconds);
 	}
 
 	public void NotifyTriggerGeneratorsFetched()
 	{
 		Stopwatch.Stop();
-		Diag.Trace("TriggerGenerators fetch time :" + Stopwatch.ElapsedMilliseconds);
+		// Diag.Trace("TriggerGenerators fetch time :" + Stopwatch.ElapsedMilliseconds);
 	}
 
 	public void NotifyTriggersFetched()
 	{
 		Stopwatch.Stop();
-		Diag.Trace("Triggers fetch time :" + Stopwatch.ElapsedMilliseconds);
+		// Diag.Trace("Triggers fetch time :" + Stopwatch.ElapsedMilliseconds);
 	}
 
 
@@ -674,47 +322,61 @@ internal class ExpressionParser
 
 		bool isIdentity;
 		int increment;
+		int seed;
 		int dependencyCount;
-		int result;
+		int result = 1;
 		int i, j;
 		string genId;
-		string trigKey, trigGenKey;
+		string trigKey;
+		string trigGenKey = null;
 
 		DataRow seq;
 		DataRow trig;
-		DataRow trigGenRow;
+		DataRow trigGenRow = null;
 		object[] key;
 
 
 		System.Collections.IEnumerator enumerator = _RawTriggerGenerators.Rows.GetEnumerator();
 
+		if (enumerator.MoveNext())
+		{
+			trigGenRow = enumerator.Current as DataRow;
+			trigGenKey = trigGenRow["TRIGGER_NAME"].ToString();
+		}
 
 		foreach (DataRow row in _RawTriggers.Rows)
 		{
-			if (!enumerator.MoveNext())
-				break;
-
-			trigGenRow = enumerator.Current as DataRow;
-
 			trigKey = row["TRIGGER_NAME"].ToString();
 
-			while ((result = trigKey.CompareTo((trigGenKey = trigGenRow["TRIGGER_NAME"].ToString()))) > 0)
+			// We do a staggered enumeration of the two raw trigger tables to avoid doing a find on each trigger.
+			while (trigGenRow != null && (result = string.Compare(trigKey, trigGenKey, StringComparison.OrdinalIgnoreCase)) > 0)
 			{
-				if (!enumerator.MoveNext())
+				if (enumerator.MoveNext())
+				{
+					trigGenRow = enumerator.Current as DataRow;
+					trigGenKey = trigGenRow["TRIGGER_NAME"].ToString();
+				}
+				else
+				{
+					trigGenRow = null;
+					result = 1;
 					break;
-				trigGenRow = enumerator.Current as DataRow;
+				}
 			}
 
-			if (result < 0)
-				continue;
+			// if (result < 0)
+			//	continue;
 
 			trig = _Triggers.NewRow();
 
-			for (i = 0; i < _RawTriggers.Columns.Count; i++)
+			for (i = -2; i < _RawTriggers.Columns.Count; i++)
 			{
 				try
 				{
-					trig[i] = row[i];
+					if (i < 0)
+						trig[i+2] = DBNull.Value;
+					else
+						trig[i+2] = row[i];
 				}
 				catch (Exception ex)
 				{
@@ -722,8 +384,14 @@ internal class ExpressionParser
 				}
 			}
 
-			for (j = 1; j < _RawTriggerGenerators.Columns.Count; j++, i++)
+			for (j = 1, i += 2; j < _RawTriggerGenerators.Columns.Count; j++, i++)
 			{
+				if (result != 0)
+				{
+					trig[i] = DBNull.Value;
+				 	continue;
+				}
+
 				try
 				{
 					trig[i] = trigGenRow[j];
@@ -750,7 +418,7 @@ internal class ExpressionParser
 
 			if (isIdentity)
 			{
-				(genId, increment) = ParseGeneratorInfo(trig["EXPRESSION"].ToString(), trig["TRIGGER_NAME"].ToString(),
+				(genId, increment, seed) = ParseGeneratorInfo(trig["EXPRESSION"].ToString(), trig["TRIGGER_NAME"].ToString(),
 					trig["TABLE_NAME"].ToString(), trig["DEPENDENCY_FIELDS"].ToString());
 
 				if (genId != null)
@@ -764,7 +432,6 @@ internal class ExpressionParser
 						{
 							trig["SEQUENCE_GENERATOR"] = genId;
 							trig["IDENTITY_INCREMENT"] = increment;
-							trig["IDENTITY_SEED"] = seq["IDENTITY_SEED"];
 						}
 						else if (isIdentity)
 						{
@@ -775,6 +442,7 @@ internal class ExpressionParser
 							}
 						}
 						trig["IDENTITY_CURRENT"] = seq["IDENTITY_CURRENT"];
+						// trig["IDENTITY_SEED"] = seed;
 
 						if (seq["TRIGGER_NAME"] == DBNull.Value)
 							seq["TRIGGER_NAME"] = trig["TRIGGER_NAME"];
@@ -799,7 +467,7 @@ internal class ExpressionParser
 		_RawTriggerGenerators = null;
 
 		Stopwatch.Stop();
-		Diag.Trace("Triggers evaluation time :" + Stopwatch.ElapsedMilliseconds);
+		// Diag.Trace("Triggers evaluation time :" + Stopwatch.ElapsedMilliseconds);
 
 		_Stopwatch = null;
 	}
@@ -826,7 +494,7 @@ internal class ExpressionParser
 	public DataTable GetTriggerSchema(string[] restrictions, int systemFlag, int identityFlag)
 	{
 		if (!Loaded)
-			Load();
+			Execute();
 
 		var where = new StringBuilder();
 
@@ -896,6 +564,7 @@ internal class ExpressionParser
 			return _Triggers.DefaultView.ToTable();
 		}
 
+
 		_Triggers.DefaultView.RowFilter = null;
 
 		return _Triggers;
@@ -911,7 +580,7 @@ internal class ExpressionParser
 	public DataTable GetSequenceSchema(string[] restrictions)
 	{
 		if (!Loaded)
-			Load();
+			Execute();
 
 		var where = new StringBuilder();
 
@@ -976,21 +645,32 @@ internal class ExpressionParser
 		return _Triggers.Rows.Find(name);
 	}
 
+	public DataRow LocateIdentityTrigger(object objTable, object objField)
+	{
+		string table = objTable.ToString();
+		string field = objField.ToString();
+
+		foreach (DataRow row in _Triggers.Rows)
+		{
+			if (row["TABLE_NAME"].ToString() == table && row["DEPENDENCY_FIELD"].ToString() == field && Convert.ToBoolean(row["IS_IDENTITY"]) == true)
+				return row;
+		}
+
+		return null;
+	}
+
 	void ConnectionStateChanged(object sender, StateChangeEventArgs e)
 	{
 		if ((e.CurrentState & (ConnectionState.Closed | ConnectionState.Broken)) != 0)
 		{
-			Diag.Trace("Connection closing. Cancelling async load");
 			_AsyncLockedTokenSource.Cancel();
 		}
 		else if ((e.OriginalState & (ConnectionState.Closed | ConnectionState.Broken)) != 0
 			&& (e.CurrentState & (ConnectionState.Closed | ConnectionState.Broken)) == 0)
 		{
-			Diag.Trace("Connection reopening. Calling async load");
-
 			_Connection = (FbConnection)sender;
 			if (ClearToLoadAsync)
-				AsyncLoad();
+				AsyncExecute();
 		}
 	}
 
@@ -1000,16 +680,14 @@ internal class ExpressionParser
 	{
 		if (sender is not FbConnection connection)
 		{
-			Diag.Trace("Connection disposed but sender is not an FbConnection");
 			return;
 		}
 
 
-		if (_Instances.TryGetValue(connection, out ExpressionParser parser))
+		if (_Instances.TryGetValue(connection, out object parser))
 		{
-			Diag.Trace("Connection disposed");
 			_Instances.Remove(connection);
-			parser._Connection = null;
+			((AbstractLinkageParser)parser)._Connection = null;
 
 		}
 	}

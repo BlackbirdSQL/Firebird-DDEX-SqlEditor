@@ -392,12 +392,11 @@ internal class TSourceInformation : AdoDotNetSourceInformation, IVsDataSourceInf
 
 		if (Connection != null && (Connection.State & ConnectionState.Open) != 0)
 		{
-			ExpressionParser parser = ExpressionParser.Instance((FbConnection)Connection);
+
+			LinkageParser parser = LinkageParser.Instance((FbConnection)Connection);
 
 			if (parser.ClearToLoadAsync)
-			{
-				parser.AsyncLoad();
-			}
+				parser.AsyncExecute();
 		}
 
 	}

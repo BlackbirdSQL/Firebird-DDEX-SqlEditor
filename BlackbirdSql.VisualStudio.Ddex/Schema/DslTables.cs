@@ -127,11 +127,11 @@ internal class DslTables : DslSchema
 		foreach (DataRow row in schema.Rows)
 		{
 			row["TABLE_TYPE"] = "TABLE";
-			if ((int)row["IS_SYSTEM_FLAG"] == 1)
+			if (Convert.ToInt32(row["IS_SYSTEM_FLAG"]) == 1)
 			{
 				row["TABLE_TYPE"] = "SYSTEM_TABLE";
 			}
-			if (row["VIEW_SOURCE"] != null &&
+			if (row["VIEW_SOURCE"] != DBNull.Value &&
 				row["VIEW_SOURCE"].ToString().Length > 0)
 			{
 				row["TABLE_TYPE"] = "VIEW";
