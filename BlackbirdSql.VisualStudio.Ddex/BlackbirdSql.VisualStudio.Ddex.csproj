@@ -304,34 +304,34 @@
     <EmbeddedResource Include="Src\TObjectSupport.xml">
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupport.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\TObjectSupport_Types.xml">
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupport_Types.xml</LogicalName>
+    <EmbeddedResource Include="Src\Import\TObjectSupportTypes.xml">
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupportTypes.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\TObjectSupport_Mappings.xml">
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupport_Mappings.xml</LogicalName>
+    <EmbeddedResource Include="Src\Import\TObjectSupportMappings.xml">
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupportMappings.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\TObjectSupport_Mappings_Nodes.xml">
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupport_Mappings_Nodes.xml</LogicalName>
+    <EmbeddedResource Include="Src\Import\TObjectSupportMappings_Nodes.xml">
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupportMappings_Nodes.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\TObjectSupport_Types_Nodes.xml">
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupport_Types_Nodes.xml</LogicalName>
+    <EmbeddedResource Include="Src\Import\TObjectSupportTypes_Nodes.xml">
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupportTypes_Nodes.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\TObjectSupport_Mappings_Nodes_Properties.xml">
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupport_Mappings_Nodes_Properties.xml</LogicalName>
+    <EmbeddedResource Include="Src\Import\TObjectSupportMappings_Nodes_Properties.xml">
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupportMappings_Nodes_Properties.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\TObjectSupport_Types_Nodes_Properties.xml">
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupport_Types_Nodes_Properties.xml</LogicalName>
+    <EmbeddedResource Include="Src\Import\TObjectSupportTypes_Nodes_Properties.xml">
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupportTypes_Nodes_Properties.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\TObjectSupportServices.xml">
+    <EmbeddedResource Include="Src\Import\TObjectSupportServices.xml">
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupportServices.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Src\TViewSupport.xml">
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TViewSupport.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\TViewSupportCommands.xml">
+    <EmbeddedResource Include="Src\Import\TViewSupportCommands.xml">
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TViewSupportCommands.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\TViewSupportElements.xml">
+    <EmbeddedResource Include="Src\Import\TViewSupportElements.xml">
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TViewSupportElements.xml</LogicalName>
     </EmbeddedResource>
     <Page Include="Configuration\UIDebugOptionsControl.xaml">

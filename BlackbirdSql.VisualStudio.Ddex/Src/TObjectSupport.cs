@@ -83,7 +83,8 @@ internal class TObjectSupport : DataObjectSupport, IVsDataSupportImportResolver
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Opens a stream of bytes representing the XML content TObnjectSupportfor a specified culture.
+	/// Opens a stream of bytes representing the XML content TObjectSupport for a
+	/// specified culture.
 	/// </summary>
 	/// <param name="culture">
 	/// The geographical culture (as System.Globalization.CultureInfo object) for which
