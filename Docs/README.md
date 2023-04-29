@@ -50,6 +50,7 @@ Refreshing the table selection list will include both System and User tables.
 
 
 ## FirebirdSQL Packages
+BlackbirdSql utilizes the [FirebirdSQL/NETProvider](https://github.com/FirebirdSQL/NETProvider) FirebirdSql.Data.FirebirdClient and EntityFramework.Firebird packages for client access to Firebird. The package source is included in the BlackbirdSql source for debug and tracing purposes, however BlackbirdSql is not associated with FirebirdSql in any form and the Firebird source will be replaced with the FirebirdSql packages once testing is complete. If you wish to replace the FirebirdSql source with the packages, links to the nuget packages are provided below.
 
 | NuGet | Version | Downloads |
 |-------|---------|-----------|
