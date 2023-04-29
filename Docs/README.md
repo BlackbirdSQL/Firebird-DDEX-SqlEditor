@@ -23,14 +23,14 @@ See [Extended Description](#extended-description) below.
 * Display of initial value (seed), increment and next value within sequence generator display.
 * New query and data retrieval for both user and system tables.
 
-### A Note on AutoIncrement Identity Fields
-There is a simple parser coded in C++/Cli which parses the Trigger source for linkage to the auto-increment sequence generator. The original parser code was ported from the pgsql LISP con-cell parser but then scrapped in favor of the [greenlion/PHP-SQL-Parser](https://github.com/greenlion/PHP-SQL-Parser) PHP parser, which meant writing a class library, the Cell class, which could imitate PHP style arrays. This library is fully functional but the port of the parser itself was not completed because the partial port satisfied the needs for parsing the Trigger DDL. The parser itself is reasonable fast but SELECT commands for a large number of triggers and generators may take some time, so building of the Trigger/Generator linkage tables for a connection is initiated asynchronously as soon as the connection is established.
+### AutoIncrement Identity Fields
+There is a simple parser coded in C++/Cli which parses the Trigger source for linkage to the auto-increment sequence generator. The original parser code was ported from the pgsql LISP con-cell parser but then scrapped in favor of the [greenlion/PHP-SQL-Parser](https://github.com/greenlion/PHP-SQL-Parser) PHP parser, which meant writing a class library, the Cell class, which could imitate PHP style arrays/variables. This library is fully functional but the port of the parser itself was not completed because the partial port satisfied the needs for parsing the Trigger DDL. The parser itself is reasonable fast but SELECT commands for a large number of triggers and generators may take some time, so building of the Trigger/Generator linkage tables for a connection is initiated asynchronously as soon as the connection is established.
 
 
 ## Known issues
-* The 'Open Script' command on Server Explorer nodes with an expression or dsl/sql source code is still in development and not functional yet. If you select the command from the SE context menu the IDE will shut down.
+* The 'Open Script' command on Server Explorer nodes with an expression or dsl/sql source code is still in development and not functional yet. Selecting the command from the SE context menu results in the IDE shutting down, so it has been temporarily disabled.
 * If on startup of the Visual Studio IDE, and only on startup, an attempt is made to access a data object before the BlackbirdSql DDEX provider has been given the IDE shell context, Visual Studio will flag the provider as unavailable for the duration of the session. As it stands Visual Studio will have to be restarted to clear the flag.</br>
-This is true for both the SE and any other data objects in a solution. In particular this issue can consistently be replicated in Server Explorer if a connection node for Firebird is open and the SE is pinned on startup of the IDE within a solution context.</br> 
+This is true for both the SE and any other data objects in a solution. In particular this issue can consistently be replicated in Server Explorer if a connection node for Firebird is open and the SE is pinned on startup of the IDE within a solution context, or any other window requiring the provider.</br> 
 Unless we're missing a trick here this seems to be unavoidable. Loading is asynchronous, so the provider needs time to register and load.</br>
 We want to be as unobtrusive as possible so load delays are just a reality if we go the asynchronous route. (*Loading is initiated at the earliest possible, which is as soon as the IDE shell context is available.*)
 * If you have a huge number of triggers then rendering of the triggers in the SE, or any other collection for that matter, may take some time. To minimize the effect of this, Trigger/Generator linkage is built asynchronously as soon as a connection is established.
@@ -50,7 +50,7 @@ Refreshing the table selection list will include both System and User tables.
 
 
 ## FirebirdSQL Packages
-BlackbirdSql utilizes the [FirebirdSQL/NETProvider](https://github.com/FirebirdSQL/NETProvider) FirebirdSql.Data.FirebirdClient and EntityFramework.Firebird packages for client access to Firebird. The package source is included in the BlackbirdSql source for debug and tracing purposes, however BlackbirdSql is not associated with FirebirdSql in any form and the Firebird source will be replaced with the FirebirdSql packages once testing is complete. If you wish to replace the FirebirdSql source with the packages, links to the nuget packages are provided below.
+BlackbirdSql utilizes the [FirebirdSQL/NETProvider](https://github.com/FirebirdSQL/NETProvider) FirebirdSql.Data.FirebirdClient and EntityFramework.Firebird packages for client access to Firebird. The package source is included in the BlackbirdSql source for debug and tracing purposes, however BlackbirdSql is not associated with FirebirdSql in any form and the Firebird source will be removed once testing is complete. Links to the FirebirdSql nuget packages are provided below.
 
 | NuGet | Version | Downloads |
 |-------|---------|-----------|
@@ -71,21 +71,16 @@ If you're planning on testing this solution (Blackbird.sln) preferably DO NOT us
 Rather fire up the experimental instance of Visual Studio with Blackbird.sln remaining open and test within the experimental instance. If you have successfully built Blackbird.sln you won't need to install the vsix. VS will automatically detect it in the experimental instance.</br>
 To fire up an experimental instance of Visual Studio create a shortcut of Visual Studio with the experimental suffix. eg. `"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\devenv.exe" /RootSuffix Exp`
 
-## Misc
-
-BlackbirdSql.Data.DslClient.dll, EntityFramework.BlackbirdSql.dll and BlackbirdSql.EntityFrameworkCore.dll (Blackbird[Experimental]) were for initial debugging purposes only in order to have full control over the client and modify it where necessary.
-
-
 ## Extended Description
 
-The DDEX 2.0 package, BlackbirdSql.VisualStudio.Ddex is click and go using VSIX and autoload, and requires no additional setup either in the app.config, csproj or machine.config.</br>
+BlackbirdSql.VisualStudio.Ddex is DDEX 2.0 compliant and is click and go using VSIX and autoload, and requires no additional setup either in the app.config, csproj or machine.config.</br>
 
 If the option is enabled there will be a once-off validation of a solution's projects' app.config's and edmx models. Legacy edmx models won't work with Firebird's latest EntityFramework version so an update is required.</br>
 This is a once off validation on each `existing` solution the first time it is opened after installing the VSIX. If the app.config is open or any edmx models are open you will need to close them first and then reopen your solution for the once-off validation to complete.
 
 If the option is enabled and you add Firebird.Data.FirebirdClient or EntityFramework.Firebird to a project it will be validated and the app.config updated correctly if required. If the app.config is open the update will be skipped and you will need to reopen your solution for the validation to complete.
 
-__Note:__ For the debug build the once-off validation flags are not persistent between loads of solutions and are repeated.
+__Note:__ For the debug build the once-off validation flags are not persistent between loads of solutions and are repeated, which will place the solution into and unsaved state. You can disable the validation process in Visual Studio's options.
 
 The intention is to maintain a small footprint. We're not going to start altering VS menus and taking over your Visual Studio IDE workspace. It is a data source UI provider for Firebird and the benchmark is the SqlServer provider, so whatever UI functionality is available for SqlServer is on the todo list for Firebird provided it does not directly interfere with the developer's active UI.
 
