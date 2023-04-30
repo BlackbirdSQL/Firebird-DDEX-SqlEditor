@@ -42,11 +42,13 @@ internal class TSourceInformation : AdoDotNetSourceInformation, IVsDataSourceInf
 
 	public TSourceInformation() : base()
 	{
+		// Diag.Trace();
 		AddExtendedProperties();
 	}
 
 	public TSourceInformation(IVsDataConnection connection) : base(connection)
 	{
+		// Diag.Trace();
 		AddExtendedProperties();
 	}
 
@@ -77,7 +79,6 @@ internal class TSourceInformation : AdoDotNetSourceInformation, IVsDataSourceInf
 	{
 		get
 		{
-			// Diag.Trace(propertyName);
 			object obj = base[propertyName];
 
 			if (obj == null && SourceInformation != null && SourceInformation.Columns.Contains(propertyName))
@@ -106,7 +107,6 @@ internal class TSourceInformation : AdoDotNetSourceInformation, IVsDataSourceInf
 	// ---------------------------------------------------------------------------------
 	bool IVsDataSourceInformation.Contains(string propertyName)
 	{
-		// Diag.Trace(propertyName);
 		if (!Contains(propertyName))
 		{
 			if (SourceInformation != null)
@@ -266,8 +266,6 @@ internal class TSourceInformation : AdoDotNetSourceInformation, IVsDataSourceInf
 	// ---------------------------------------------------------------------------------
 	protected override Type GetType(string propertyName)
 	{
-		// Diag.Trace(propertyName);
-
 		if (propertyName == null)
 			throw new ArgumentNullException("propertyName");
 
@@ -392,11 +390,11 @@ internal class TSourceInformation : AdoDotNetSourceInformation, IVsDataSourceInf
 
 		if (Connection != null && (Connection.State & ConnectionState.Open) != 0)
 		{
+			// Bad place
+			// LinkageParser parser = LinkageParser.Instance((FbConnection)Connection);
 
-			LinkageParser parser = LinkageParser.Instance((FbConnection)Connection);
-
-			if (parser.ClearToLoadAsync)
-				parser.AsyncExecute();
+			// if (parser.ClearToLoadAsync)
+			//	parser.AsyncExecute();
 		}
 
 	}

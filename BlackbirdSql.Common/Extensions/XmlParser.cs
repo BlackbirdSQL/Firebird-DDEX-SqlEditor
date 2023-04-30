@@ -288,6 +288,7 @@ internal static class XmlParser
 						row["Charset"] = "";
 						row["UserName"] = "";
 						row["Password"] = "";
+						row["RoleName"] = "";
 
 						if (datasource == "localhost")
 							row["Orderer"] = 2;
@@ -331,6 +332,7 @@ internal static class XmlParser
 
 							row["UserName"] = "";
 							row["Password"] = "";
+							row["RoleName"] = "";
 
 							if ((xmlNode = xmlDatabase.SelectSingleNode("authentication")) == null)
 								authentication = "trusted";
@@ -385,6 +387,7 @@ internal static class XmlParser
 				row["Charset"] = "";
 				row["UserName"] = "";
 				row["Password"] = "";
+				row["RoleName"] = "";
 
 				row["Orderer"] = 0;
 
@@ -407,6 +410,7 @@ internal static class XmlParser
 				row["Charset"] = "";
 				row["UserName"] = "";
 				row["Password"] = "";
+				row["RoleName"] = "";
 				databases.Rows.Add(row);
 
 
@@ -427,6 +431,7 @@ internal static class XmlParser
 					row["Charset"] = "";
 					row["UserName"] = "";
 					row["Password"] = "";
+					row["RoleName"] = "";
 
 					databases.Rows.Add(row);
 				}

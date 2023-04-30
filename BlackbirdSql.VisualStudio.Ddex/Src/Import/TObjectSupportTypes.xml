@@ -6,6 +6,8 @@
 		<!-- Root -->
 		<RootType>
 			<Properties>
+				<Property name="Server" type="System.String"/>
+				<Property name="Database" type="System.String"/>
 				<Property name="ServerType" type="System.Int32"/>
 				<Property name="InitialCatalog" type="System.String"/>
 				<Property name="PortNumber" type="System.Int32"/>

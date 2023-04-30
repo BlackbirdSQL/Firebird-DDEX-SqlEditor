@@ -20,6 +20,8 @@ using BlackbirdSql.VisualStudio.Ddex.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Schema;
 using BlackbirdSql.Common.Extensions;
 using Newtonsoft.Json.Serialization;
+using Microsoft.VisualStudio.LanguageServer.Client;
+using System.IO;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -114,6 +116,12 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			schema = GetRootSchema(connection, parameters);
 
 			reader = new AdoDotNetTableReader(schema);
+
+			LinkageParser parser = LinkageParser.Instance((FbConnection)connection);
+
+			if (parser.ClearToLoadAsync)
+				parser.AsyncExecute();
+
 		}
 		catch (Exception ex)
 		{
@@ -238,6 +246,9 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 		FbDatabaseInfo info = new((FbConnection)connection);
 
+		row[DslConnectionString.DefaultKeyRootServer] = connection.DataSource;
+		row[DslConnectionString.DefaultKeyRootDatabase] = Path.GetFileNameWithoutExtension(connection.Database);
+
 		row[DslConnectionString.DefaultKeyDataSourceProduct] = Properties.Resources.DataSource_Product;
 		row[DslConnectionString.DefaultKeyServerVersion] = "Firebird " + FbServerProperties.ParseServerVersion(connection.ServerVersion).ToString();
 		row[DslConnectionString.DefaultKeyMemoryUsage] = info.GetCurrentMemory();
@@ -248,7 +259,6 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		schema.AcceptChanges();
 
 
-		string txt = "";
 		// Finally for each column set default if null and
 		// titlecase it's column name
 		foreach (DataColumn col in schema.Columns)
@@ -269,10 +279,8 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 			if (col.ColumnName != key)
 				col.ColumnName = key;
-
-
-			txt += key + ":" + (row[col.Ordinal] == DBNull.Value ? "DBNull" : row[col.Ordinal].ToString()) + ", ";
 		}
+
 
 		schema.AcceptChanges();
 
@@ -287,6 +295,15 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			}
 		}
 
+		/*
+		string txt = "";
+		foreach (DataColumn col in schema.Columns)
+		{
+			txt += col.ColumnName + ":" + (schema.Rows[0][col.Ordinal] == DBNull.Value ? "DBNull" : schema.Rows[0][col.Ordinal].ToString()) + ", ";
+		}
+
+		Diag.Trace(txt);
+		*/
 
 		return schema;
 	}

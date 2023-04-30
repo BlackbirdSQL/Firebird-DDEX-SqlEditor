@@ -78,6 +78,8 @@ internal static class DslConnectionString
 
 
 	// Default descriptor keys
+	internal const string DefaultKeyRootServer = "Server";
+	internal const string DefaultKeyRootDatabase = "Database";
 	internal const string DefaultKeyUserId = "user id";
 	internal const string DefaultKeyPortNumber = "port number";
 	internal const string DefaultKeyDataSource = "data source";
@@ -295,6 +297,8 @@ internal static class DslConnectionString
 	// Root types lookup
 	internal static readonly IDictionary<string, Type> RootTypes = new Dictionary<string, Type>(StringComparer.Ordinal)
 		{
+			{ DefaultKeyRootServer, typeof(string) },
+			{ DefaultKeyRootDatabase, typeof(string) },
 			{ DefaultKeyPortNumber, typeof(int) },
 			{ DefaultKeyServerType, typeof(int) },
 			{ DefaultKeyCatalog, typeof(string) },

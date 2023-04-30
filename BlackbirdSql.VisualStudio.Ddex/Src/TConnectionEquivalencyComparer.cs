@@ -112,14 +112,7 @@ internal class TConnectionEquivalencyComparer : DataConnectionEquivalencyCompare
 				// We can't do a straight lookup on the second string because it may be a synonym so we have to loop
 				// through the parameters, find the real key, and use that
 
-				try
-				{
-					value2 = FindKeyValueInConnection(key, connectionProperties2);
-				}
-				catch (ArgumentException)
-				{
-					throw new ArgumentException("Parameter '" + param.Key + "' in connection 1 has no matching value in connection 2");
-				}
+				value2 = FindKeyValueInConnection(key, connectionProperties2);
 
 				value2 ??= DslConnectionString.DefaultValues[key];
 
@@ -128,6 +121,7 @@ internal class TConnectionEquivalencyComparer : DataConnectionEquivalencyCompare
 					// Diag.Trace("Connection parameter '" + key + "' mismatch: '" + (value1 != null ? value1.ToString() : "null") + "' : '" + (value2 != null ? value2.ToString() : "null"));
 					return false;
 				}
+				// Diag.Trace("Connection parameter '" + key + "' equivalent: '" + (value1 != null ? value1.ToString() : "null") + "' : '" + (value2 != null ? value2.ToString() : "null"));
 			}
 
 			if (equivalencyValueCount < equivalencyKeyCount)
@@ -162,14 +156,7 @@ internal class TConnectionEquivalencyComparer : DataConnectionEquivalencyCompare
 
 					// We can't do a straight lookup on the first connection because it may be a synonym so we have to loop
 					// through the parameters, find the real key, and use that
-					try
-					{
-						value1 = FindKeyValueInConnection(key, connectionProperties1);
-					}
-					catch (ArgumentException)
-					{
-						throw new ArgumentException("Parameter '" + param.Key + "' in connection 2 has no matching value in connection 1");
-					}
+					value1 = FindKeyValueInConnection(key, connectionProperties1);
 
 					value1 ??= DslConnectionString.DefaultValues[key];
 
@@ -178,6 +165,7 @@ internal class TConnectionEquivalencyComparer : DataConnectionEquivalencyCompare
 						// Diag.Trace("Connection2 parameter '" + key + "' mismatch: '" + (value2 != null ? value2.ToString() : "null") + "' : '" + (value1 != null ? value1.ToString() : "null"));
 						return false;
 					}
+					// Diag.Trace("Connection2 parameter '" + key + "' equivalent: '" + (value2 != null ? value2.ToString() : "null") + "' : '" + (value1 != null ? value1.ToString() : "null"));
 				}
 			}
 
@@ -272,7 +260,7 @@ internal class TConnectionEquivalencyComparer : DataConnectionEquivalencyCompare
 				return parameter.Value;
 		}
 
-		throw new ArgumentException();
+		return null;
 	}
 
 

@@ -318,8 +318,11 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 		try
 		{
-			if (_DataSources.DependentRow == null || (string)_DataSources.DependentRow["InitialCatalogLc"] == "")
+			if (_DataSources.DependentRow == null || _DataSources.DependentRow["InitialCatalogLc"] == DBNull.Value
+				|| (string)_DataSources.DependentRow["InitialCatalogLc"] == "")
+			{
 				return;
+			}
 
 			DisableEvents();
 
