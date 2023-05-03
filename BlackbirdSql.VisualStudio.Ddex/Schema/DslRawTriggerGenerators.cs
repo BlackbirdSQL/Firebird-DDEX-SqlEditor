@@ -30,12 +30,8 @@ namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 internal class DslRawTriggerGenerators : DslSchema
 {
-	protected AbstractLinkageParser _LinkageParser;
-
-
-	public DslRawTriggerGenerators(AbstractLinkageParser parser) : base()
+	public DslRawTriggerGenerators() : base()
 	{
-		_LinkageParser = parser;
 	}
 
 	#region Protected Methods
@@ -89,11 +85,6 @@ ORDER BY trg.rdb$trigger_name", identityType, generatorSelector);
 		return sql;
 	}
 
-
-	protected override void ProcessResult(DataTable schema)
-	{
-		_LinkageParser.NotifyTriggerGeneratorsFetched();
-	}
 
 
 

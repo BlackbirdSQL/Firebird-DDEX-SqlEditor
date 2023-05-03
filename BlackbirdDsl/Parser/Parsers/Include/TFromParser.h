@@ -22,7 +22,7 @@ public:
 		_Key = "FROM";
 	};
 
-	TFromParser(FlagsOptions options) : AbstractParser(options)
+	TFromParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "FROM";
 	};

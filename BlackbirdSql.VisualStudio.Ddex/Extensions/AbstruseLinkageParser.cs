@@ -1,23 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+// $Authors = GA Christos (greg@blackbirdsql.org)
 
-using Microsoft.VisualStudio.Threading;
+using System;
 
 using FirebirdSql.Data.FirebirdClient;
 
 using C5;
 using BlackbirdDsl;
-using BlackbirdSql.VisualStudio.Ddex.Schema;
-using Nerdbank.Streams;
-using System.Windows;
-using System.Reflection.Emit;
-using System.Diagnostics.Metrics;
-using Microsoft.Build.Framework.XamlTypes;
 
 namespace BlackbirdSql.Common.Extensions;
 
@@ -49,7 +38,7 @@ internal abstract class AbstruseLinkageParser
 	{
 		get
 		{
-			_DslParser ??= new Parser();
+			_DslParser ??= new Parser(DslOptions.TOKENIZE_ONLY);
 			return _DslParser;
 		}
 

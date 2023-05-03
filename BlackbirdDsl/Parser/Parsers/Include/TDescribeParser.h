@@ -22,7 +22,7 @@ public:
 		_Key = "DESCRIBE";
 	};
 
-	TDescribeParser(FlagsOptions options) : TExplainParser(options)
+	TDescribeParser(DslOptions options) : TExplainParser(options)
 	{
 		_Key = "DESCRIBE";
 	};

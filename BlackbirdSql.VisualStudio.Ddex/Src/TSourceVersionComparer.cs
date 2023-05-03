@@ -1,11 +1,11 @@
-﻿//
-// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
-//
+
 
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 

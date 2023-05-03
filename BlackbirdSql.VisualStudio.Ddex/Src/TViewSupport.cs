@@ -1,20 +1,20 @@
-//
 // $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
-//
+
 
 using System;
+using System.Drawing;
 using System.IO;
 using System.Reflection;
+
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
+using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Common;
-using System.Drawing;
-using Microsoft.VisualStudio.Data.Services;
-using System.Collections.Generic;
-using System.Windows.Media.Imaging;
+
+
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 

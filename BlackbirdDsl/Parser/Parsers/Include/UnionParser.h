@@ -24,7 +24,7 @@ public:
 	{
 	};
 
-	UnionParser(FlagsOptions options) : AbstractParser(options)
+	UnionParser(DslOptions options) : AbstractParser(options)
 	{
 	};
 

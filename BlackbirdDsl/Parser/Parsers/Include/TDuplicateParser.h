@@ -22,7 +22,7 @@ public:
 		_Key = "DUPLICATE";
 	};
 
-	TDuplicateParser(FlagsOptions options) : AbstractParser(options)
+	TDuplicateParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "DUPLICATE";
 	};

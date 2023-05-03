@@ -334,7 +334,7 @@ StringCell^ WExpressionListParser::Parse(StringCell^ root)
 				}
 				else if (token == "\"")
 				{
-					if ((Options & FlagsOptions::ANSI_QUOTES) == FlagsOptions::NONE)
+					if ((Options & DslOptions::ANSI_QUOTES) == DslOptions::NONE)
 					{
 						// If we"re not using ANSI quotes, this is a string literal.
 						curr->TokenType = Expressions::CONSTANT;

@@ -22,7 +22,7 @@ public:
 		_Key = "OPTIONS";
 	};
 
-	TOptionsParser(FlagsOptions options) : AbstractParser(options)
+	TOptionsParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "OPTIONS";
 	};

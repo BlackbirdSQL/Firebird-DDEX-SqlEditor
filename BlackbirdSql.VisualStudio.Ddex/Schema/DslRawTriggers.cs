@@ -31,11 +31,8 @@ namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 internal class DslRawTriggers : DslSchema
 {
-	readonly AbstractLinkageParser _LinkageParser;
-
-	public DslRawTriggers(AbstractLinkageParser parser) : base()
+	public DslRawTriggers() : base()
 	{
-		_LinkageParser = parser;
 	}
 
 	#region Protected Methods
@@ -115,13 +112,6 @@ ORDER BY trg.rdb$trigger_name");
 		// Diag.Trace(sql.ToString());
 
 		return sql;
-	}
-
-	protected override void ProcessResult(DataTable schema)
-	{
-		// schema.Columns[6].ColumnName = "NumericPrecision";
-		// schema.Columns[18].ColumnName = "Nullable";
-		_LinkageParser.NotifyTriggersFetched();
 	}
 
 

@@ -22,7 +22,7 @@ public:
 		_Key = "ORDER";
 	};
 
-	TOrderByParser(FlagsOptions options) : AbstractParser(options)
+	TOrderByParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "ORDER";
 	};

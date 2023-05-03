@@ -22,7 +22,7 @@ public:
 		_Key = "INTO";
 	};
 
-	TIntoParser(FlagsOptions options) : AbstractParser(options)
+	TIntoParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "INTO";
 	};

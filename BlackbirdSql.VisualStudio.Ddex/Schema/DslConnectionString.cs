@@ -78,8 +78,6 @@ internal static class DslConnectionString
 
 
 	// Default descriptor keys
-	internal const string DefaultKeyRootServer = "Server";
-	internal const string DefaultKeyRootDatabase = "Database";
 	internal const string DefaultKeyUserId = "user id";
 	internal const string DefaultKeyPortNumber = "port number";
 	internal const string DefaultKeyDataSource = "data source";
@@ -111,6 +109,8 @@ internal static class DslConnectionString
 	internal const string DefaultKeyParallelWorkers = "parallel workers";
 
 	// Additional root default descriptor keys
+	internal const string DefaultKeyRootServer = "Server";
+	internal const string DefaultKeyRootDatabase = "Database";
 	internal const string DefaultKeyDesktopDataSource = "desktop data source";
 	internal const string DefaultKeyLocalDatabase = "local database";
 	internal const string DefaultKeyDataSourceProduct = "data source product";

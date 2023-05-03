@@ -22,7 +22,7 @@ public:
 		_Key = "REPLACE";
 	};
 
-	TReplaceParser(FlagsOptions options) : AbstractParser(options)
+	TReplaceParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "REPLACE";
 	};

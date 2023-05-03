@@ -23,7 +23,7 @@ public:
 		_Key = "BRACKET";
 	};
 
-	TBracketParser(FlagsOptions options) : AbstractParser(options)
+	TBracketParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "BRACKET";
 	};

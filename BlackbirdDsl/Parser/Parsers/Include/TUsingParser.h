@@ -22,7 +22,7 @@ public:
 		_Key = "USING";
 	};
 
-	TUsingParser(FlagsOptions options) : AbstractParser(options)
+	TUsingParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "USING";
 	};

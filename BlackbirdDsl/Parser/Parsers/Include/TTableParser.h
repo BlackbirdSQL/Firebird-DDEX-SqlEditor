@@ -35,7 +35,7 @@ public:
 		_Key = "TABLE";
 	};
 
-	TTableParser(FlagsOptions options) : AbstractParser(options)
+	TTableParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "TABLE";
 	};

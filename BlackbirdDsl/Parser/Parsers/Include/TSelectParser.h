@@ -22,7 +22,7 @@ public:
 		_Key = "SELECT";
 	};
 
-	TSelectParser(FlagsOptions options) : WSelectExpressionParser(options)
+	TSelectParser(DslOptions options) : WSelectExpressionParser(options)
 	{
 		_Key = "SELECT";
 	};

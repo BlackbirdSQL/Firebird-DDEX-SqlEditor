@@ -22,7 +22,7 @@ public:
 		_Key = "HAVING";
 	};
 
-	THavingParser(FlagsOptions options) : AbstractParser(options)
+	THavingParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "HAVING";
 	};

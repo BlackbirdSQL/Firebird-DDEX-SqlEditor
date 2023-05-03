@@ -21,7 +21,7 @@ public:
 	{
 	};
 
-	WSelectExpressionParser(FlagsOptions options) : AbstractParser(options)
+	WSelectExpressionParser(DslOptions options) : AbstractParser(options)
 	{
 	};
 

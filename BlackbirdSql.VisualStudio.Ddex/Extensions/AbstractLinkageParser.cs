@@ -1,4 +1,7 @@
-﻿using System;
+﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+// $Authors = GA Christos (greg@blackbirdsql.org)
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -6,13 +9,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Microsoft.VisualStudio.Threading;
-
 using FirebirdSql.Data.FirebirdClient;
 
-using C5;
-using BlackbirdDsl;
 using BlackbirdSql.VisualStudio.Ddex.Schema;
+using Microsoft.VisualStudio.Data.Services;
+using Microsoft.VisualStudio.TaskStatusCenter;
+using System.Security.Cryptography;
 
 namespace BlackbirdSql.Common.Extensions;
 
@@ -21,6 +23,17 @@ namespace BlackbirdSql.Common.Extensions;
 /// </summary>
 internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 {
+	protected enum EnumLinkStage
+	{
+		Start = 0,
+		TriggerGeneratorsLoaded = 1,
+		GeneratorsLoaded = 2,
+		TriggersLoaded = 3,
+		SequencesLoaded = 4,
+		Completed = 5
+	}
+
+
 	protected static Dictionary<FbConnection, object> _Instances = null;
 
 
@@ -32,18 +45,17 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	protected DataTable _RawTriggers = null;
 
 
-	protected bool _RawGeneratorsLoaded = false;
-	protected bool _RawTriggerGeneratorsLoaded = false;
-	protected bool _RawTriggersLoaded = false;
+	protected EnumLinkStage _LinkStage = EnumLinkStage.Start;
 
-
-	protected bool _SequencesLoaded = false;
-	// Triggers and Trigger generators are loaded
-	protected bool _Loaded = false;
 	// An async call is active
 	protected int _SyncActive = 0;
 	// Sync is making a call to GetSchema. GetSchema must allow it through.
 	protected bool _Requesting = false;
+
+	protected bool _ClearStatusBar = false;
+	protected TaskProgressData _ProgressData = default;
+	protected ITaskHandler _TaskHandler = null;
+
 
 	// An async call is active
 	protected bool _AsyncActive = false;
@@ -61,7 +73,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 
 
-	public bool SequencesLoaded { get { return _SequencesLoaded; } }
+	public bool SequencesLoaded { get { return _LinkStage >= EnumLinkStage.SequencesLoaded; } }
 
 
 	public bool ConnectionActive
@@ -72,7 +84,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 		}
 	}
 
-	public bool Loaded { get { return _Loaded; } }
+	public bool Loaded { get { return _LinkStage == EnumLinkStage.Completed; } }
 
 	public bool Requesting
 	{
@@ -86,6 +98,10 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 			{
 				Stopwatch.Reset();
 				Stopwatch.Start();
+			}
+			else
+			{
+				Stopwatch.Stop();
 			}
 			_Requesting = value;
 		}
@@ -101,7 +117,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	{
 		get
 		{
-			return (!_AsyncLockedToken.IsCancellationRequested && !_AsyncActive && ClearToLoad);
+			return (!_AsyncLockedToken.IsCancellationRequested && !_SyncLockedToken.IsCancellationRequested && !_AsyncActive && ClearToLoad);
 		}
 	}
 
@@ -203,6 +219,8 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	{
 		_AsyncLockedTokenSource.Cancel();
 		_AsyncLockedTokenSource?.Dispose();
+		_SyncLockedTokenSource.Cancel();
+		_SyncLockedTokenSource?.Dispose();
 	}
 
 
@@ -212,25 +230,32 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 	public abstract void ExitSync();
 
-
-	public abstract bool Execute(CancellationToken asyncLockedToken = default);
-
-
-	public abstract bool AsyncExecute();
+	public abstract bool Execute();
 
 
-	protected abstract void AsyncExited();
+	public abstract bool PerformExecute(CancellationTokenSource asyncTokenSource = default,
+		CancellationTokenSource syncTokenSource = default, int delay = 0);
 
-	
+
+	public abstract bool AsyncExecute(int delay = 0);
+
+
+	protected abstract bool AsyncExited();
+
+	protected abstract void TaskHandlerProgress(string stage, int progress, TimeSpan elapsed);
+
+
 
 
 	protected DataTable GetRawGeneratorSchema()
 	{
-		DslRawGenerators schema = new(this);
+		DslRawGenerators schema = new();
 
 		Requesting = true;
 		_RawGenerators = schema.GetRawSchema(_Connection, "Generators");
 		Requesting = false;
+
+		TaskHandlerProgress("SELECT Generators", 53, Stopwatch.Elapsed);
 
 		return _RawGenerators;
 	}
@@ -238,11 +263,13 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 	protected DataTable GetRawTriggerSchema()
 	{
-		DslRawTriggers schema = new(this);
+		DslRawTriggers schema = new();
 
 		Requesting = true;
 		_RawTriggers = schema.GetRawSchema(_Connection, "Triggers");
 		Requesting = false;
+
+		TaskHandlerProgress("SELECT Triggers", 88, Stopwatch.Elapsed);
 
 		return _RawTriggers;
 	}
@@ -250,11 +277,13 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 	protected DataTable GetRawTriggerGeneratorSchema()
 	{
-		DslRawTriggerGenerators schema = new(this);
+		DslRawTriggerGenerators schema = new();
 
 		Requesting = true;
 		_RawTriggerGenerators = schema.GetRawSchema(_Connection, "TriggerGenerators");
 		Requesting = false;
+
+		TaskHandlerProgress("SELECT TriggerGenerators", 40, Stopwatch.Elapsed);
 
 		return _RawTriggerGenerators;
 	}
@@ -265,7 +294,6 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	{
 		Stopwatch.Reset();
 		Stopwatch.Start();
-
 
 		_Sequences.BeginLoadData();
 
@@ -285,32 +313,13 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 		_Sequences.AcceptChanges();
 
 		_RawGenerators = null;
-		_SequencesLoaded = true;
+		_LinkStage = EnumLinkStage.SequencesLoaded;
 
 		Stopwatch.Stop();
-		// Diag.Trace("Sequences loaded time :" + Stopwatch.ElapsedMilliseconds);
-		Stopwatch.Reset();
-		Stopwatch.Start();
+		TaskHandlerProgress("Build Sequence Table", 94, Stopwatch.Elapsed);
 	}
 
-	public void NotifyGeneratorsFetched()
-	{
-		Stopwatch.Stop();
-		// Diag.Trace("Generators fetch time :" + Stopwatch.ElapsedMilliseconds);
-	}
-
-	public void NotifyTriggerGeneratorsFetched()
-	{
-		Stopwatch.Stop();
-		// Diag.Trace("TriggerGenerators fetch time :" + Stopwatch.ElapsedMilliseconds);
-	}
-
-	public void NotifyTriggersFetched()
-	{
-		Stopwatch.Stop();
-		// Diag.Trace("Triggers fetch time :" + Stopwatch.ElapsedMilliseconds);
-	}
-
+	
 
 	public void BuildTriggerTable()
 	{
@@ -464,12 +473,12 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 		_Triggers.EndLoadData();
 		_Triggers.AcceptChanges();
 
-		_Loaded = true;
+		_LinkStage = EnumLinkStage.Completed;
 		_RawTriggers = null;
 		_RawTriggerGenerators = null;
 
 		Stopwatch.Stop();
-		// Diag.Trace("Triggers evaluation time :" + Stopwatch.ElapsedMilliseconds);
+		TaskHandlerProgress("Build Trigger Table", 100, Stopwatch.Elapsed);
 
 		_Stopwatch = null;
 	}
@@ -571,12 +580,6 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 		return _Triggers;
 
-	}
-
-	public async Task<DataTable> GetTriggerSchemaAsync(string[] restrictions, int systemFlag, int identityFlag, CancellationToken asyncLockedToken)
-	{
-		await Task.CompletedTask.ConfigureAwait(false);
-		return GetTriggerSchema(restrictions, systemFlag, identityFlag);
 	}
 
 	public DataTable GetSequenceSchema(string[] restrictions)

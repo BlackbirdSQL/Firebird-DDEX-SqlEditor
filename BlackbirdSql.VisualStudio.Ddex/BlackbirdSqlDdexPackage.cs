@@ -1,7 +1,6 @@
-﻿//
-// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
-//
+
 
 using System;
 using System.Data.Common;
@@ -13,10 +12,11 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 using EnvDTE;
 
+using FirebirdSql.Data.FirebirdClient;
+
 using BlackbirdSql.Common;
 using BlackbirdSql.Common.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Configuration;
-using FirebirdSql.Data.FirebirdClient;
 
 using Task = System.Threading.Tasks.Task;
 

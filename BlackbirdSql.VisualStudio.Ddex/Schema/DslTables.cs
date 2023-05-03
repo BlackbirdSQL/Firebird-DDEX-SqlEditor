@@ -21,15 +21,9 @@
 
 using System;
 using System.Data;
-using System.Globalization;
 using System.Text;
 
-using FirebirdSql.Data.FirebirdClient;
-
 using BlackbirdSql.Common;
-using System.Windows.Media;
-using BlackbirdSql.Common.Extensions.Commands;
-using System.Reflection;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 

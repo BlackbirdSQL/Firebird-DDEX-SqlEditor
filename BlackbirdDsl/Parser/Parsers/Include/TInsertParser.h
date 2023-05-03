@@ -22,7 +22,7 @@ public:
 		_Key = "INSERT";
 	};
 
-	TInsertParser(FlagsOptions options) : AbstractParser(options)
+	TInsertParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "INSERT";
 	};

@@ -1,7 +1,6 @@
-﻿//
-// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
-//
+
 
 using System;
 using System.Collections;
@@ -9,19 +8,20 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
+using System.IO;
+
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Services;
+
 using BlackbirdSql.Common;
+using BlackbirdSql.Common.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Schema;
-using BlackbirdSql.Common.Extensions;
-using Newtonsoft.Json.Serialization;
-using Microsoft.VisualStudio.LanguageServer.Client;
-using System.IO;
+using static Microsoft.ServiceHub.Framework.ServiceBrokerClient;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -98,6 +98,8 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		}
 
 
+		LinkageParser parser = LinkageParser.Instance(Site);
+
 		object lockedProviderObject = Site.GetLockedProviderObject();
 
 
@@ -111,16 +113,15 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		IVsDataReader reader;
 		DataTable schema;
 
+
 		try
 		{
+			parser.EnterSync();
+
 			schema = GetRootSchema(connection, parameters);
 
 			reader = new AdoDotNetTableReader(schema);
 
-			LinkageParser parser = LinkageParser.Instance((FbConnection)connection);
-
-			if (parser.ClearToLoadAsync)
-				parser.AsyncExecute();
 
 		}
 		catch (Exception ex)
@@ -132,7 +133,10 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		finally
 		{
 			Site.UnlockProviderObject();
+			parser.ExitSync();
 		}
+
+
 
 		return reader;
 	}
@@ -254,6 +258,9 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		row[DslConnectionString.DefaultKeyMemoryUsage] = info.GetCurrentMemory();
 		row[DslConnectionString.DefaultKeyActiveUsers] = info.GetActiveUsers().Count;
 
+		if (row[DslConnectionString.DefaultKeyServerType] == DBNull.Value)
+			row[DslConnectionString.DefaultKeyServerType] = DslConnectionString.DefaultValueServerType;
+
 
 		schema.EndLoadData();
 		schema.AcceptChanges();
@@ -304,6 +311,7 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 		Diag.Trace(txt);
 		*/
+
 
 		return schema;
 	}

@@ -22,7 +22,7 @@ public:
 		_Key = "INDEX";
 	};
 
-	TIndexParser(FlagsOptions options) : AbstractParser(options)
+	TIndexParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "INDEX";
 	};

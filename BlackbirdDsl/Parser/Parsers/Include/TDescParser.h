@@ -22,7 +22,7 @@ public:
 		_Key = "DESC";
 	};
 
-	TDescParser(FlagsOptions options) : TExplainParser(options)
+	TDescParser(DslOptions options) : TExplainParser(options)
 	{
 		_Key = "DESC";
 	};

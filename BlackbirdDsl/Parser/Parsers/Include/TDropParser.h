@@ -22,7 +22,7 @@ public:
 		_Key = "DROP";
 	};
 
-	TDropParser(FlagsOptions options) : AbstractParser(options)
+	TDropParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "DROP";
 	};

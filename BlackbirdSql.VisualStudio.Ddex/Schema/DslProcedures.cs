@@ -17,7 +17,6 @@
 
 using System;
 using System.Data;
-using System.Globalization;
 using System.Text;
 
 using BlackbirdSql.Common;

@@ -29,12 +29,9 @@ namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 internal class DslRawGenerators : DslSchema
 {
-	protected AbstractLinkageParser _LinkageParser;
 
-
-	public DslRawGenerators(AbstractLinkageParser parser) : base()
+	public DslRawGenerators() : base()
 	{
-		_LinkageParser = parser;
 	}
 
 
@@ -79,11 +76,6 @@ END");
 		return sql;
 	}
 
-
-	protected override void ProcessResult(DataTable schema)
-	{
-		_LinkageParser.NotifyGeneratorsFetched();
-	}
 
 
 	#endregion

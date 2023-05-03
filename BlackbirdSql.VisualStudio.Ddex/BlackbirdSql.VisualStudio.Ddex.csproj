@@ -369,10 +369,7 @@
     <Compile Include="Schema\DslProcedureParameters.cs" />
     <Compile Include="Schema\DslSchema.cs" />
     <Compile Include="Schema\DslSchemaFactory.cs" />
-    <Compile Include="Schema\DslStandardTriggers.cs" />
-    <Compile Include="Schema\DslIdentityTriggers.cs" />
     <Compile Include="Schema\DslTriggerColumns.cs" />
-    <Compile Include="Schema\DslSystemTriggers.cs" />
     <Compile Include="Schema\DslRawTriggerGenerators.cs" />
     <Compile Include="Schema\DslTypeHelper.cs" />
     <Compile Include="Schema\DslViewColumns.cs" />

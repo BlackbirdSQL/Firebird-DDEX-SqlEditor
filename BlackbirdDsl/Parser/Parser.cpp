@@ -1,6 +1,10 @@
 #include "pch.h"
 #include "Parser.h"
 
+// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+// $Authors = GA Christos (greg@blackbirdsql.org)
+
+
 #include "Scanner.h"
 #include "UnionParser.h"
 #include "SqlParser.h"
@@ -33,6 +37,10 @@ StringCell^ Parser::Execute(SysStr^ sql)
 	* tokens for the SQL processor
 	*/
 	StringCell^ tokens = Scanner::Split(sql);
+
+	if (TokenizeOnly)
+		return tokens;
+
 
 	StringCell^ output = Parse(tokens);
 

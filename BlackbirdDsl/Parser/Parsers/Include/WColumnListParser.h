@@ -21,7 +21,7 @@ public:
 	{
 	};
 
-	WColumnListParser(FlagsOptions options) : AbstractParser(options)
+	WColumnListParser(DslOptions options) : AbstractParser(options)
 	{
 	};
 

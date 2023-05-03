@@ -21,7 +21,7 @@ public:
 	{
 	};
 
-	WExpressionListParser(FlagsOptions options) : AbstractParser(options)
+	WExpressionListParser(DslOptions options) : AbstractParser(options)
 	{
 	};
 

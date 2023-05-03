@@ -40,7 +40,7 @@ namespace BlackbirdDsl {
 
 
 
-IParser^ ParserManager::GetParser(SysStr^ parserType, FlagsOptions options)
+IParser^ ParserManager::GetParser(SysStr^ parserType, DslOptions options)
 {
 	int tag = DslParsers::Tag[parserType];
 
@@ -109,7 +109,7 @@ IParser^ ParserManager::GetParser(SysStr^ parserType, FlagsOptions options)
 }
 
 
-StringCell^ ParserManager::Parse(StringCell^ root, FlagsOptions options)
+StringCell^ ParserManager::Parse(StringCell^ root, DslOptions options)
 {
 	return root;
 	if (IsNullPtr(root))

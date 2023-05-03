@@ -21,7 +21,7 @@ public:
 	{
 	};
 
-	WIndexColumnListParser(FlagsOptions options) : AbstractParser(options)
+	WIndexColumnListParser(DslOptions options) : AbstractParser(options)
 	{
 	};
 

@@ -21,7 +21,7 @@ public:
 		_Key = "EXPLAIN";
 	};
 
-	TExplainParser(FlagsOptions options) : AbstractParser(options)
+	TExplainParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "EXPLAIN";
 	};

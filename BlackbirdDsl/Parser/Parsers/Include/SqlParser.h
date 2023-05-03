@@ -18,7 +18,7 @@ public:
 	{
 	};
 
-	SqlParser(FlagsOptions options) : AbstractParser(options)
+	SqlParser(DslOptions options) : AbstractParser(options)
 	{
 	};
 

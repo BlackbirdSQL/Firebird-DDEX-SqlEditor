@@ -110,16 +110,21 @@ internal sealed class DslSchemaFactory
 		}
 
 
-		if (collectionName == "Generators")
-			return parser.GetSequenceSchema(restrictions);
-		else if (collectionName == "Triggers")
-			return parser.GetTriggerSchema(restrictions, -1, -1);
-		else if (collectionName == "StandardTriggers")
-			return parser.GetTriggerSchema(restrictions, 0, 0);
-		else if (collectionName == "IdentityTriggers")
-			return parser.GetTriggerSchema(restrictions, 0, 1);
-		else if (collectionName == "SystemTriggers")
-			return parser.GetTriggerSchema(restrictions, 1, -1);
+		switch (collectionName)
+		{
+			case "Generators":
+				return parser.GetSequenceSchema(restrictions);
+			case "Triggers":
+				return parser.GetTriggerSchema(restrictions, -1, -1);
+			case "StandardTriggers":
+				return parser.GetTriggerSchema(restrictions, 0, 0);
+			case "IdentityTriggers":
+				return parser.GetTriggerSchema(restrictions, 0, 1);
+			case "SystemTriggers":
+				return parser.GetTriggerSchema(restrictions, 1, -1);
+			default:
+				break;
+		}
 
 
 		var filter = string.Format("CollectionName = '{0}'", schemaCollection);
@@ -274,16 +279,22 @@ internal sealed class DslSchemaFactory
 		}
 
 
-		if (collectionName == "Generators")
-			return Task.FromResult(parser.GetSequenceSchema(restrictions));
-		else if (collectionName == "Triggers")
-			return Task.FromResult(parser.GetTriggerSchema(restrictions, -1, -1));
-		else if (collectionName == "StandardTriggers")
-			return Task.FromResult(parser.GetTriggerSchema(restrictions, 0, 0));
-		else if (collectionName == "IdentityTriggers")
-			return Task.FromResult(parser.GetTriggerSchema(restrictions, 0, 1));
-		else if (collectionName == "SystemTriggers")
-			return Task.FromResult(parser.GetTriggerSchema(restrictions, 1, -1));
+		switch (collectionName)
+		{
+			case "Generators":
+				return Task.FromResult(parser.GetSequenceSchema(restrictions));
+			case "Triggers":
+				return Task.FromResult(parser.GetTriggerSchema(restrictions, -1, -1));
+			case "StandardTriggers":
+				return Task.FromResult(parser.GetTriggerSchema(restrictions, 0, 0));
+			case "IdentityTriggers":
+				return Task.FromResult(parser.GetTriggerSchema(restrictions, 0, 1));
+			case "SystemTriggers":
+				return Task.FromResult(parser.GetTriggerSchema(restrictions, 1, -1));
+			default:
+				break;
+		}
+
 
 		var filter = string.Format("CollectionName = '{0}'", schemaCollection);
 		var ds = new DataSet();
@@ -412,6 +423,7 @@ internal sealed class DslSchemaFactory
 	private static DataTable PrepareCollection(FbConnection connection, string collectionName, string schemaCollection, string[] restrictions)
 	{
 		DslSchema dslSchema;
+		NotSupportedException ex;
 
 		switch (collectionName.ToUpperInvariant())
 		{
@@ -446,15 +458,6 @@ internal sealed class DslSchemaFactory
 			case "TABLES":
 				dslSchema = new DslTables();
 				break;
-			case "IDENTITYTRIGGERS":
-				dslSchema = new DslIdentityTriggers(LinkageParser.Instance(connection));
-				break;
-			case "STANDARDTRIGGERS":
-				dslSchema = new DslStandardTriggers(LinkageParser.Instance(connection));
-				break;
-			case "SYSTEMTRIGGERS":
-				dslSchema = new DslSystemTriggers(LinkageParser.Instance(connection));
-				break;
 			case "TRIGGERCOLUMNS":
 				dslSchema = new DslTriggerColumns(LinkageParser.Instance(connection));
 				break;
@@ -464,13 +467,19 @@ internal sealed class DslSchemaFactory
 			case "GENERATORS":
 			case "TRIGGERS":
 			case "TRIGGERGENERATORS":
-				NotSupportedException ex = new(string.Format("The raw metadata collection {0} may not be called from here.", collectionName));
+				ex = new(string.Format("The raw metadata collection {0} may not be called from here.", collectionName));
+				Diag.Dug(ex);
+				throw ex;
+			case "IDENTITYTRIGGERS":
+			case "STANDARDTRIGGERS":
+			case "SYSTEMTRIGGERS":
+				ex = new(string.Format("The metadata collection {0} is pre-built and may not be called from here.", collectionName));
 				Diag.Dug(ex);
 				throw ex;
 			default:
-				NotSupportedException exb = new(string.Format("The metadata collection {0} is not supported.", collectionName));
-				Diag.Dug(exb);
-				throw exb;
+				ex = new(string.Format("The metadata collection {0} is not supported.", collectionName));
+				Diag.Dug(ex);
+				throw ex;
 		}
 
 		return dslSchema.GetSchema(connection, schemaCollection, restrictions);
@@ -482,6 +491,7 @@ internal sealed class DslSchemaFactory
 	{
 
 		DslSchema dslSchema;
+		NotSupportedException ex;
 
 		switch (collectionName.ToUpperInvariant())
 		{
@@ -515,15 +525,6 @@ internal sealed class DslSchemaFactory
 			case "TABLES":
 				dslSchema = new DslTables();
 				break;
-			case "IDENTITYTRIGGERS":
-				dslSchema = new DslIdentityTriggers(LinkageParser.Instance(connection));
-				break;
-			case "STANDARDTRIGGERS":
-				dslSchema = new DslStandardTriggers(LinkageParser.Instance(connection));
-				break;
-			case "SYSTEMTRIGGERS":
-				dslSchema = new DslSystemTriggers(LinkageParser.Instance(connection));
-				break;
 			case "TRIGGERCOLUMNS":
 				dslSchema = new DslTriggerColumns(LinkageParser.Instance(connection));
 				break;
@@ -533,13 +534,19 @@ internal sealed class DslSchemaFactory
 			case "GENERATORS":
 			case "TRIGGERS":
 			case "TRIGGERGENERATORS":
-				NotSupportedException ex = new(string.Format("The raw metadata collection {0} may not be called from here.", collectionName));
+				ex = new(string.Format("The raw metadata collection {0} may not be called from here.", collectionName));
+				Diag.Dug(ex);
+				throw ex;
+			case "IDENTITYTRIGGERS":
+			case "STANDARDTRIGGERS":
+			case "SYSTEMTRIGGERS":
+				ex = new(string.Format("The metadata collection {0} is pre-built and may not be called from here.", collectionName));
 				Diag.Dug(ex);
 				throw ex;
 			default:
-				NotSupportedException exb = new(string.Format("The metadata collection {0} is not supported.", collectionName));
-				Diag.Dug(exb);
-				throw exb;
+				ex = new(string.Format("The metadata collection {0} is not supported.", collectionName));
+				Diag.Dug(ex);
+				throw ex;
 		}
 
 		return dslSchema.GetSchemaAsync(connection, schemaCollection, restrictions, cancellationToken);

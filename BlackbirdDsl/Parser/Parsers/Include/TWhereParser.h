@@ -22,7 +22,7 @@ public:
 		_Key = "WHERE";
 	};
 
-	TWhereParser(FlagsOptions options) : AbstractParser(options)
+	TWhereParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "WHERE";
 	};

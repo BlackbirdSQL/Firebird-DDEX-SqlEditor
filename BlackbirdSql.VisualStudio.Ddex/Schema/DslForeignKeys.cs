@@ -15,9 +15,6 @@
 
 //$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
-using System;
-using System.Data;
-using System.Globalization;
 using System.Text;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;

@@ -1,12 +1,12 @@
-//
 // $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
-//
+
 
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
@@ -14,12 +14,13 @@ using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Services;
+
 using BlackbirdSql.Common;
 using BlackbirdSql.Common.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Schema;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
-using System.Data.Common;
-using Microsoft.VisualStudio.LanguageServer.Client;
+
+
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -33,6 +34,15 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 // =========================================================================================================
 internal class TSourceInformation : AdoDotNetSourceInformation, IVsDataSourceInformation
 {
+
+	protected new DataTable SourceInformation
+	{
+		get
+		{
+			// Diag.Trace();
+			return base.SourceInformation;
+		}
+	}
 
 
 	// ---------------------------------------------------------------------------------
@@ -390,11 +400,10 @@ internal class TSourceInformation : AdoDotNetSourceInformation, IVsDataSourceInf
 
 		if (Connection != null && (Connection.State & ConnectionState.Open) != 0)
 		{
-			// Bad place
-			// LinkageParser parser = LinkageParser.Instance((FbConnection)Connection);
+			LinkageParser parser = LinkageParser.Instance((FbConnection)Connection);
 
-			// if (parser.ClearToLoadAsync)
-			//	parser.AsyncExecute();
+			if (parser.ClearToLoadAsync)
+				parser.AsyncExecute(500);
 		}
 
 	}

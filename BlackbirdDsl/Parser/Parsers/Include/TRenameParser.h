@@ -22,7 +22,7 @@ public:
 		_Key = "RENAME";
 	};
 
-	TRenameParser(FlagsOptions options) : AbstractParser(options)
+	TRenameParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "RENAME";
 	};

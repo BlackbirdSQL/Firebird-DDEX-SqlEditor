@@ -22,7 +22,7 @@ public:
 		_Key = "GROUP";
 	};
 
-	TGroupByParser(FlagsOptions options) : AbstractParser(options)
+	TGroupByParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "GROUP";
 	};

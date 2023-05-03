@@ -22,7 +22,7 @@ public:
 		_Key = "SET";
 	};
 
-	TSetParser(FlagsOptions options) : AbstractParser(options)
+	TSetParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "SET";
 	};

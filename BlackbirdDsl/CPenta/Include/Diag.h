@@ -2,6 +2,10 @@
 #include "pch.h"
 #include "CPentaCommon.h"
 
+// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+// $Authors = GA Christos (greg@blackbirdsql.org)
+
+
 #ifdef _DEBUG
 using namespace System::Diagnostics;
 using namespace System::IO;

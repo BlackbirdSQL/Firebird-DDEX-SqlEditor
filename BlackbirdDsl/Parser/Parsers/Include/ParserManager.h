@@ -18,10 +18,10 @@ protected:
 
 public:
 
-	static StringCell^ Parse(StringCell^ root, FlagsOptions options);
+	static StringCell^ Parse(StringCell^ root, DslOptions options);
 
 
-	static IParser^ GetParser(SysStr^ parserType, FlagsOptions options);
+	static IParser^ GetParser(SysStr^ parserType, DslOptions options);
 };
 
 }

@@ -16,15 +16,40 @@ namespace BlackbirdDsl {
 #define ParserInstance(__PARSER__) (gcnew __PARSER__(Options))
 
 
+
 public ref class AbstractParser abstract : public IParser
 {
 
 protected:
 
-	FlagsOptions _Options;
+	DslOptions _Options;
 
 	SysStr^ _Sql;
 	SysStr^ _Key = nullptr;
+
+
+public:
+
+	property bool ConsistentSubtrees
+	{
+		bool get() { return (((int)_Options & (int)DslOptions::CONSISTENT_SUBTREES) > 0); }
+	};
+
+	property bool AnsiQuotes
+	{
+		bool get() { return (((int)_Options & (int)DslOptions::ANSI_QUOTES) > 0); }
+	};
+
+	property bool OffsetCapture
+	{
+		bool get() { return (((int)_Options & (int)DslOptions::OFFSET_CAPTURE) > 0); }
+	};
+
+
+	property bool TokenizeOnly
+	{
+		bool get() { return (((int)_Options & (int)DslOptions::TOKENIZE_ONLY) > 0); }
+	};
 
 
 
@@ -37,9 +62,9 @@ public:
 		void set(SysStr^ value) { _Sql = value; }
 	};
 
-	property FlagsOptions Options
+	property DslOptions Options
 	{
-		FlagsOptions get() { return _Options; }
+		DslOptions get() { return _Options; }
 	};
 
 	static StringCell^ ExtractQuotesPairs(SysStr^ sql);
@@ -48,10 +73,10 @@ public:
 
 	AbstractParser()
 	{
-		_Options = FlagsOptions::NONE;
+		_Options = DslOptions::NONE;
 	};
 
-	AbstractParser(FlagsOptions options)
+	AbstractParser(DslOptions options)
 	{
 		_Options = options;
 	};

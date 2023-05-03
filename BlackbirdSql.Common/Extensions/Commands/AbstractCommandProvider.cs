@@ -1,10 +1,10 @@
-﻿using System;
+﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+// $Authors = GA Christos (greg@blackbirdsql.org)
+
 using System.ComponentModel.Design;
-using Microsoft.VisualStudio;
+
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Telemetry;
 
 
 /*

@@ -21,7 +21,7 @@ public:
 	{
 	};
 
-	WCreateDefinitionParser(FlagsOptions options) : AbstractParser(options)
+	WCreateDefinitionParser(DslOptions options) : AbstractParser(options)
 	{
 	};
 

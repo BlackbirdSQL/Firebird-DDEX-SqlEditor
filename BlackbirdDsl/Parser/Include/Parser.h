@@ -3,6 +3,10 @@
 #include "DslOptions.h"
 #include "AbstractParser.h"
 
+// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+// $Authors = GA Christos (greg@blackbirdsql.org)
+
+
 
 using namespace C5;
 
@@ -15,26 +19,11 @@ public ref class Parser : public AbstractParser
 
 public:
 
-	property bool ConsistentSubtrees
-	{
-		bool get() { return DslOptions::ConsistentSubtrees(_Options); }
-	};
-
-	property bool AnsiQuotes
-	{
-		bool get() { return DslOptions::AnsiQuotes(_Options); }
-	};
-
-	property bool OffsetCapture
-	{
-		bool get() { return DslOptions::OffsetCapture(_Options); }
-	};
-
 	Parser() : AbstractParser()
 	{
 	};
 
-	Parser(FlagsOptions options) : AbstractParser(options)
+	Parser(DslOptions options) : AbstractParser(options)
 	{
 	};
 

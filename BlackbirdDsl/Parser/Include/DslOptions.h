@@ -7,38 +7,18 @@ namespace BlackbirdDsl {
 
 
 /// <summary>
-/// FlagsOptions
+/// DslOptions
 /// </summary>
 [System::Flags]
-public enum struct FlagsOptions
+public enum struct DslOptions
 {
 	NONE = 0,
 	CONSISTENT_SUBTREES = 1,
 	ANSI_QUOTES = 2,
-	OFFSET_CAPTURE = 4
+	OFFSET_CAPTURE = 4,
+	TOKENIZE_ONLY = 8
 };
 
 
-ref class DslOptions abstract sealed
-{
-
-public:
-
-	static bool ConsistentSubtrees(FlagsOptions options)
-	{
-		return ((int)options & (int)FlagsOptions::CONSISTENT_SUBTREES) > 0;
-	}
-
-	static bool AnsiQuotes(FlagsOptions options)
-	{
-		return ((int)options & (int)FlagsOptions::ANSI_QUOTES) > 0;
-	}
-
-	static bool OffsetCapture(FlagsOptions options)
-	{
-		return ((int)options & (int)FlagsOptions::OFFSET_CAPTURE) > 0;
-	}
-
-};
 
 }

@@ -22,7 +22,7 @@ public:
 		_Key = "LIMIT";
 	};
 
-	TLimitParser(FlagsOptions options) : AbstractParser(options)
+	TLimitParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "LIMIT";
 	};

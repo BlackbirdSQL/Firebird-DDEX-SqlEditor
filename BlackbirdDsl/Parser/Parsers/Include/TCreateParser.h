@@ -22,7 +22,7 @@ public:
 		_Key = "CREATE";
 	};
 
-	TCreateParser(FlagsOptions options) : AbstractParser(options)
+	TCreateParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "CREATE";
 	};

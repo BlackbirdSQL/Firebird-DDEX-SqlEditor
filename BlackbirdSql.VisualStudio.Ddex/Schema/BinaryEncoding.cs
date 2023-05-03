@@ -14,7 +14,6 @@
 using System;
 using System.Text;
 
-using BlackbirdSql.Common;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 

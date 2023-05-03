@@ -22,7 +22,7 @@ public:
 		_Key = "UPDATE";
 	};
 
-	TUpdateParser(FlagsOptions options) : AbstractParser(options)
+	TUpdateParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "UPDATE";
 	};

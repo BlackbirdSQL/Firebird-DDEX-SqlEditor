@@ -26,8 +26,6 @@ using System.Text;
 
 using FirebirdSql.Data.FirebirdClient;
 
-using BlackbirdSql.Common;
-
 
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 

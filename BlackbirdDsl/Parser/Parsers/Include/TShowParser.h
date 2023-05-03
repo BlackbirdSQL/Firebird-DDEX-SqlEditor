@@ -22,7 +22,7 @@ public:
 		_Key = "SHOW";
 	};
 
-	TShowParser(FlagsOptions options) : AbstractParser(options)
+	TShowParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "SHOW";
 	};

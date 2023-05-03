@@ -21,7 +21,7 @@ public:
 	{
 	};
 
-	WPartitionOptionsParser(FlagsOptions options) : AbstractParser(options)
+	WPartitionOptionsParser(DslOptions options) : AbstractParser(options)
 	{
 	};
 

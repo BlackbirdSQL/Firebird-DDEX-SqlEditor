@@ -1,7 +1,6 @@
-﻿//
-// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
-//
+
 
 using System;
 using System.Collections.Generic;
@@ -272,7 +271,7 @@ internal class TConnectionEquivalencyComparer : DataConnectionEquivalencyCompare
 	/// <param name="dataSource"></param>
 	/// <returns>The standardized hostname</returns>
 	// ---------------------------------------------------------------------------------
-	private static string StandardizeDataSource(string dataSource)
+	protected static string StandardizeDataSource(string dataSource)
 	{
 		dataSource = dataSource.ToUpperInvariant();
 		string[] array = new string[2] { ".", "localhost" };

@@ -22,7 +22,7 @@ public:
 		_Key = "DELETE";
 	};
 
-	TDeleteParser(FlagsOptions options) : AbstractParser(options)
+	TDeleteParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "DELETE";
 	};

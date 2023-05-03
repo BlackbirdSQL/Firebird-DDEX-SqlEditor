@@ -22,7 +22,7 @@ public:
 		_Key = "WITH";
 	};
 
-	TWithParser(FlagsOptions options) : AbstractParser(options)
+	TWithParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "WITH";
 	};

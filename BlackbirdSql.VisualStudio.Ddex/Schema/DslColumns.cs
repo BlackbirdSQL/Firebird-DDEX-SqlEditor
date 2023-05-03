@@ -20,15 +20,13 @@
 //$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Text;
 
 using FirebirdSql.Data.FirebirdClient;
 
-using BlackbirdSql.Common;
-using System.Collections.Generic;
-using System.CodeDom;
 using BlackbirdSql.Common.Extensions;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;

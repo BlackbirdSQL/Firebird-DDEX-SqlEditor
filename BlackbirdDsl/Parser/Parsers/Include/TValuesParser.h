@@ -22,7 +22,7 @@ public:
 		_Key = "VALUES";
 	};
 
-	TValuesParser(FlagsOptions options) : AbstractParser(options)
+	TValuesParser(DslOptions options) : AbstractParser(options)
 	{
 		_Key = "VALUES";
 	};

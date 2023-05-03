@@ -1,9 +1,10 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
+﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
+// $Authors = GA Christos (greg@blackbirdsql.org)
+
+using System;
 using Microsoft;
 using Microsoft.VisualStudio.Data.Core;
 
-using BlackbirdSql.Common;
 
 
 
