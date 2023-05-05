@@ -4,7 +4,7 @@
 
 The BlackbirdSQL DDEX 2.0 .NET Data Provider tool, `BlackbirdSql.VisualStudio.Ddex`, implements all the core DDEX 2.0 interfaces prevalent in the SqlServer DDEX provider and more, but currently excludes DDL functionality. 
 
-[Download BlackbirdSql DDEX Extension (Pre-release)](https://github.com/BlackbirdSQL/Firebird-NETProvider-DDEX/releases/download/v0.1.0-alpha/BlackbirdSql.VisualStudio.Ddex.vsix)
+[Download BlackbirdSql DDEX Extension (Pre-release)](https://github.com/BlackbirdSQL/Firebird-NETProvider-DDEX/releases/download/v0.1.02-alpha/BlackbirdSql.VisualStudio.Ddex.vsix)
 
 *If you're noticing a degradation in performance in the IDE after installing an extension then it's advantages are lost, so the first tenet of this package is `small footprint, low overhead`.*
 See [Extended Description](#extended-description) below.
