@@ -83,6 +83,10 @@
   </PropertyGroup>
   <!-- Includes - Top Level -->
   <ItemGroup>
+    <Content Include="blackbird-vsix-icon.png">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Package.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.FolderEmpty.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.FolderSystemOpen.ico" />

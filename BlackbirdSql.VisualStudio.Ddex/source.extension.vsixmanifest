@@ -4,6 +4,10 @@
         <Identity Id="BlackbirdSql.VisualStudio.Ddex.bb045ad5-6038-4963-aa12-e4a5262eecaa" Version="1.0" Language="en-US" Publisher="BlackbirdSql" />
         <DisplayName>BlackbirdSql.VisualStudio.Ddex</DisplayName>
         <Description xml:space="preserve">BlackbirdSql DDEX Data Tools</Description>
+        <Icon>blackbird-vsix-icon.png</Icon>
+        <PreviewImage>blackbird-vsix-icon.png</PreviewImage>
+        <Tags>DDEX;Firebird</Tags>
+        <Preview>true</Preview>
     </Metadata>
     <Installation>
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">

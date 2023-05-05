@@ -7,7 +7,7 @@
  * Uncomment this line to use persistent globals during debug
  * Comment out this line to use non-persistent globals and to clear any persistent globals in your test solution(s)
 */
-// #define __PERSISTENTGLOBALS__
+#define __PERSISTENTGLOBALS__
 
 using System;
 

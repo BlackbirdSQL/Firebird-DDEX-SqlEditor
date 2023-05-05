@@ -26,7 +26,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 
 
 // Deadlock warning message suppression
-// [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits", Justification = "<Pending>")]
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits", Justification = "<Pending>")]
 
 
 // =========================================================================================================
@@ -255,12 +255,20 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 			// We only ever go through this once so if a solution was previously in a validation state
 			// it is now validated
+			/*
 			if (Uig.IsValidatedStatus(SolutionGlobals))
 			{
 				Uig.SetIsValidStatus(SolutionGlobals, true);
 			}
 			else
 			{
+				int projectCount = _Dte.Solution.Projects.Count;
+				_ = Task.Run(() => ValidateSolutionAsync(projectCount));
+			}
+			*/
+			if (!Uig.IsValidatedStatus(SolutionGlobals))
+			{
+				// Diag.Trace("Validating solution");
 				int projectCount = _Dte.Solution.Projects.Count;
 				_ = Task.Run(() => ValidateSolutionAsync(projectCount));
 			}
@@ -338,21 +346,21 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		_ValidationTask = Task.Factory.StartNew(() =>
 			{
 				System.Diagnostics.Stopwatch stopwatch = new();
-				stopwatch.Start();
 
 				for (int i = 0; i < projectCount; i++)
 				{
 					if (_TaskHandler.UserCancellation.IsCancellationRequested)
 						_TaskHandlerTokenSource.Cancel();
 					if (_ValidationToken.IsCancellationRequested || _TaskHandlerToken.IsCancellationRequested)
+					{
+						_ = TaskHandlerProgressAsync(100, stopwatch.Elapsed);
 						break;
+					}
 
 
-					if (RecursiveValidateProjectAsync(i).Result)
-						_ = TaskHandlerProgressAsync(i * 100 / projectCount, stopwatch.Elapsed).Result;
+					_ = RecursiveValidateProjectAsync(i, stopwatch).Result;
+					_ = TaskHandlerProgressAsync(i * 100 / projectCount, stopwatch.Elapsed);
 				}
-
-				stopwatch.Stop();
 
 
 				if (_TaskHandler.UserCancellation.IsCancellationRequested)
@@ -386,11 +394,12 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	/// </summary>
 	/// <param name="projects"></param>
 	// ---------------------------------------------------------------------------------
-	protected async Task<bool> RecursiveValidateProjectAsync(int index)
+	protected async Task<bool> RecursiveValidateProjectAsync(int index, System.Diagnostics.Stopwatch stopwatch)
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 		int i = 0;
 		Project project = null;
+
 
 		foreach (Project proj in _Dte.Solution.Projects)
 		{
@@ -404,9 +413,14 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		if (project == null)
 			return false;
 
+
 		if (project.Globals != null && !Uig.IsScannedStatus(project))
 		{
+			stopwatch.Start();
+
 			RecursiveValidateProject(project);
+
+			stopwatch.Stop();
 
 			return true;
 		}
@@ -1175,8 +1189,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		// This condition can only be true if a solution was closed after successfully being validated which means we can sign it off
 		// as valid. That means no more recursive updates on edmx's or app.config. Only adding dll references can trigger an app.config update
 		// if it wasn't previously done.
-		if (Uig.IsValidatedStatus(SolutionGlobals))
-			Uig.SetIsValidStatus(SolutionGlobals, true);
+		// if (Uig.IsValidatedStatus(SolutionGlobals))
+		//	Uig.SetIsValidStatus(SolutionGlobals, true);
 
 		// If anything gets through things are still happening so we can reset and allow references with incomplete project objects
 		// to continue recycling
@@ -1250,8 +1264,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		// This condition can only be true if a solution was closed after successfully being validated which means we can sign it off
 		// as valid. That means no more recursive updates on edmx's or app.config. Only adding dll references can trigger an app.config update
 		// if it wasn't previously done.
-		if (Uig.IsValidatedStatus(SolutionGlobals))
-			Uig.SetIsValidStatus(SolutionGlobals, true);
+		// if (Uig.IsValidatedStatus(SolutionGlobals))
+		//	Uig.SetIsValidStatus(SolutionGlobals, true);
 
 		ClearValidationQueue();
 
@@ -1382,8 +1396,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		}
 		else if (!Uig.IsValidatedStatus(SolutionGlobals))
 		{
-			// Diag.Trace("The solution has no validation status set. Setting validated to on and valid to off");
-			Uig.SetIsValidStatus(SolutionGlobals, false);
+			// No -> Diag.Trace("The solution has no validation status set. Setting validated to on and valid to off");
+			Uig.SetIsValidStatus(SolutionGlobals, true);
 		}
 		else
 		{
