@@ -5,11 +5,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.TaskStatusCenter;
 using Microsoft.VisualStudio.Threading;
 
 using EnvDTE;
@@ -20,8 +22,11 @@ using BlackbirdSql.Common.Extensions;
 using FirebirdSql.Data.FirebirdClient;
 
 
-
 namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
+
+
+// Deadlock warning message suppression
+// [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits", Justification = "<Pending>")]
 
 
 // =========================================================================================================
@@ -52,6 +57,20 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 	private _dispReferencesEvents_ReferenceAddedEventHandler _ReferenceAddedEventHandler = null;
 
+	protected TaskProgressData _ProgressData = default;
+	protected ITaskHandler _TaskHandler = null;
+
+
+	// Startup validation is active
+	protected bool _ValidationActive = false;
+	// A sync call has taken over. Async is locked out or abort at the first opportunity.
+	protected CancellationTokenSource _TaskHandlerTokenSource = null;
+	protected CancellationTokenSource _ValidationTokenSource = null;
+	protected CancellationToken _TaskHandlerToken;
+	protected CancellationToken _ValidationToken;
+
+
+	protected Task<bool> _ValidationTask;
 
 	#endregion Variables
 
@@ -129,6 +148,12 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	{
 		_Dte = dte;
 		_Solution = solution;
+
+		_TaskHandlerTokenSource = new();
+		_TaskHandlerToken = _TaskHandlerTokenSource.Token;
+
+		_ValidationTask = null;
+
 	}
 
 
@@ -210,8 +235,11 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		{
 			Diag.Dug(true, "DTE.Solution is invalid");
 		}
-		else if (Uig.ValidateConfig || Uig.ValidateEdmx)
+		else if ((Uig.ValidateConfig || Uig.ValidateEdmx) && _Dte.Solution.Projects != null
+			&& _Dte.Solution.Projects.Count > 0)
 		{
+			// No projects loaded yet if Solution.Projects is null
+
 			// Everything is synchronous within this particular call stack.
 			// We cannot have projects being loaded while we're checking for any projects that may have been loaded.
 			//
@@ -225,37 +253,16 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			//			iow. Any projects whose OnAfterOpen events have already been fired.
 
 
-			// No projects loaded yet if null
-			if (_Dte.Solution.Projects != null && _Dte.Solution.Projects.Count > 0)
+			// We only ever go through this once so if a solution was previously in a validation state
+			// it is now validated
+			if (Uig.IsValidatedStatus(SolutionGlobals))
 			{
-				// We only ever go through this once so if a solution was previously in a validation state
-				// it is now validated
-				if (!Uig.IsValidStatus(SolutionGlobals))
-				{
-					if (Uig.IsValidatedStatus(SolutionGlobals))
-					{
-						Uig.SetIsValidStatus(SolutionGlobals, true);
-					}
-					else
-					{
-						try
-						{
-							// Projects may have already been opened. They may be irrelevant eg. unloaded
-							// project items or other non-project files, but we have to check anyway.
-							// Performance is a priority here, not compact code, because we're synchronous on the main
-							// thread, so we stay within the: 
-							// Projects > Project > ProjectItems > SubProject > ProjectItems... structure.
-							// We want to be in and out of here as fast as possible so every possible low overhead check
-							// is done first to ensure that.
-							RecursiveValidateProject(_Dte.Solution.Projects);
-						}
-						catch (Exception ex)
-						{
-							Diag.Dug(ex);
-							throw;
-						}
-					}
-				}
+				Uig.SetIsValidStatus(SolutionGlobals, true);
+			}
+			else
+			{
+				int projectCount = _Dte.Solution.Projects.Count;
+				_ = Task.Run(() => ValidateSolutionAsync(projectCount));
 			}
 		}
 
@@ -292,6 +299,86 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 
+	// [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "<Pending>")]
+	protected async Task<bool> ValidateSolutionAsync(int projectCount)
+	{
+		if (projectCount == 0)
+			return true;
+
+		_ValidationActive = true;
+
+		_ = UpdateStatusBarAsync("BlackbirdSql validating solution");
+
+
+		IVsTaskStatusCenterService tsc = await ServiceProvider.GetGlobalServiceAsync<SVsTaskStatusCenterService,
+			IVsTaskStatusCenterService>(swallowExceptions: false);
+
+		TaskHandlerOptions options = default;
+		options.Title = "BlackbirdSql Solution Validaton";
+		options.ActionsAfterCompletion = CompletionActions.None;
+
+		_ProgressData = default;
+		_ProgressData.CanBeCanceled = true;
+
+		_TaskHandler = tsc.PreRegister(options, _ProgressData);
+
+		_ValidationTokenSource?.Dispose();
+		_ValidationTokenSource = new();
+		_ValidationToken = _ValidationTokenSource.Token;
+
+
+		// Projects may have already been opened. They may be irrelevant eg. unloaded
+		// project items or other non-project files, but we have to check anyway.
+		// Performance is a priority here, not compact code, because we're synchronous on the main
+		// thread, so we stay within the: 
+		// Projects > Project > ProjectItems > SubProject > ProjectItems... structure.
+		// We want to be in and out of here as fast as possible so every possible low overhead check
+		// is done first to ensure that.
+		// Go to back of UI thread.
+		_ValidationTask = Task.Factory.StartNew(() =>
+			{
+				System.Diagnostics.Stopwatch stopwatch = new();
+				stopwatch.Start();
+
+				for (int i = 0; i < projectCount; i++)
+				{
+					if (_TaskHandler.UserCancellation.IsCancellationRequested)
+						_TaskHandlerTokenSource.Cancel();
+					if (_ValidationToken.IsCancellationRequested || _TaskHandlerToken.IsCancellationRequested)
+						break;
+
+
+					if (RecursiveValidateProjectAsync(i).Result)
+						_ = TaskHandlerProgressAsync(i * 100 / projectCount, stopwatch.Elapsed).Result;
+				}
+
+				stopwatch.Stop();
+
+
+				if (_TaskHandler.UserCancellation.IsCancellationRequested)
+				{
+					_ = UpdateStatusBarAsync("Cancelled BlackbirdSql solution validation", true);
+					return false;
+				}
+
+				_ = UpdateStatusBarAsync($"Completed BlackbirdSql solution validation in {stopwatch.ElapsedMilliseconds}ms", true);
+
+
+				_ValidationActive = false;
+				_TaskHandler = null;
+				_ProgressData = default;
+
+				return true;
+			},
+			default, TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent, TaskScheduler.Default);
+
+
+		_TaskHandler.RegisterTask(_ValidationTask);
+
+		return true;
+	}
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Recursively validates projects already opened before our package was sited.
@@ -299,16 +386,32 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	/// </summary>
 	/// <param name="projects"></param>
 	// ---------------------------------------------------------------------------------
-	private void RecursiveValidateProject(Projects projects)
+	protected async Task<bool> RecursiveValidateProjectAsync(int index)
 	{
-		// We should already be on UI thread. Callers must ensure this can never happen
-		ThreadHelper.ThrowIfNotOnUIThread();
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+		int i = 0;
+		Project project = null;
 
-		foreach (Project project in projects)
+		foreach (Project proj in _Dte.Solution.Projects)
 		{
-			if (project.Globals != null && !Uig.IsScannedStatus(project))
-				RecursiveValidateProject(project);
+			if (i == index)
+			{
+				project = proj;
+				break;
+			}
+			i++;
 		}
+		if (project == null)
+			return false;
+
+		if (project.Globals != null && !Uig.IsScannedStatus(project))
+		{
+			RecursiveValidateProject(project);
+
+			return true;
+		}
+
+		return false;
 	}
 
 
@@ -320,13 +423,16 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	/// </summary>
 	/// <param name="projects"></param>
 	// ---------------------------------------------------------------------------------
-	private void RecursiveValidateProject(ProjectItems projectItems)
+	protected void RecursiveValidateProject(ProjectItems projectItems)
 	{
 		// We should already be on UI thread. Callers must ensure this can never happen
 		ThreadHelper.ThrowIfNotOnUIThread();
 
 		foreach (ProjectItem projectItem in projectItems)
 		{
+			if (_TaskHandler != null && _TaskHandler.UserCancellation.IsCancellationRequested)
+				break;
+
 			if (projectItem.SubProject != null && projectItem.SubProject.Globals != null)
 			{
 				if (!Uig.IsScannedStatus(projectItem.SubProject))
@@ -351,6 +457,9 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	// ---------------------------------------------------------------------------------
 	bool RecursiveValidateProjectItem(ProjectItem item)
 	{
+		if (_TaskHandler != null && _TaskHandler.UserCancellation.IsCancellationRequested)
+			return false;
+
 		ThreadHelper.ThrowIfNotOnUIThread();
 
 
@@ -360,6 +469,17 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 			foreach (ProjectItem subitem in item.ProjectItems)
 			{
+				if (_ValidationActive)
+				{
+					if (_TaskHandler.UserCancellation.IsCancellationRequested)
+						_TaskHandlerTokenSource.Cancel();
+					if (_ValidationToken.IsCancellationRequested || _TaskHandlerToken.IsCancellationRequested)
+					{
+						success = false;
+						break;
+					}
+				}
+
 				if (!RecursiveValidateProjectItem(subitem))
 					success = false;
 			}
@@ -368,6 +488,14 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		}
 
 		// Diag.Trace(item.ContainingProject.Name + " checking projectitem: " + item.Name + ":" + item.Kind);
+
+		if (_ValidationActive)
+		{
+			if (_TaskHandler.UserCancellation.IsCancellationRequested)
+				_TaskHandlerTokenSource.Cancel();
+			if (_ValidationToken.IsCancellationRequested || _TaskHandlerToken.IsCancellationRequested)
+				return false;
+		}
 
 		try
 		{
@@ -446,52 +574,80 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	// ---------------------------------------------------------------------------------
 	private void RecursiveValidateProject(Project project)
 	{
+		if (_ValidationActive)
+		{
+			if (_TaskHandler.UserCancellation.IsCancellationRequested)
+				_TaskHandlerTokenSource.Cancel();
+			if (_ValidationToken.IsCancellationRequested || _TaskHandlerToken.IsCancellationRequested)
+				return;
+		}
+
 		// We should already be on UI thread. Callers must ensure this can never happen
 		ThreadHelper.ThrowIfNotOnUIThread();
 
-		try
+
+		ProjectItem config = null;
+
+		// There's a dict list of these at the end of the class
+		if (project.Kind == "{66A26720-8FB5-11D2-AA7E-00C04F688DDE}")
 		{
-
-			ProjectItem config = null;
-
-			// There's a dict list of these at the end of the class
-			if (project.Kind == "{66A26720-8FB5-11D2-AA7E-00C04F688DDE}")
+			if (project.ProjectItems != null && project.ProjectItems.Count > 0)
 			{
-				if (project.ProjectItems != null && project.ProjectItems.Count > 0)
-				{
-					// Diag.Trace("Recursing SolutionFolder: " + project.Name);
-					RecursiveValidateProject(project.ProjectItems);
-				}
-				else
-				{
-					// Diag.Trace("No items in SolutionFolder: " + project.Name);
-				}
+				// Diag.Trace("Recursing SolutionFolder: " + project.Name);
+				RecursiveValidateProject(project.ProjectItems);
 			}
 			else
 			{
-				// Diag.Trace("Recursive validate project: " + project.Name);
+				// Diag.Trace("No items in SolutionFolder: " + project.Name);
+			}
+		}
+		else
+		{
+			// Diag.Trace("Recursive validate project: " + project.Name);
 
-				bool failed = false;
+			bool failed = false;
 
-				if (Uig.IsValidExecutableProjectType(_Solution, project))
+			if (Uig.IsValidExecutableProjectType(_Solution, project))
+			{
+
+				if (Uig.ValidateConfig)
 				{
+					bool isConfiguredEFStatus = Uig.IsConfiguredEFStatus(project);
+					bool isConfiguredDbProviderStatus = Uig.IsConfiguredDbProviderStatus(project);
 
-					if (Uig.ValidateConfig)
+
+					if (!isConfiguredEFStatus || !isConfiguredDbProviderStatus)
 					{
-						bool isConfiguredEFStatus = Uig.IsConfiguredEFStatus(project);
-						bool isConfiguredDbProviderStatus = Uig.IsConfiguredDbProviderStatus(project);
 
+						VSProject projectObject = project.Object as VSProject;
 
-						if (!isConfiguredEFStatus || !isConfiguredDbProviderStatus)
+						if (!isConfiguredEFStatus)
 						{
-
-							VSProject projectObject = project.Object as VSProject;
-
-							if (!isConfiguredEFStatus)
+							if (projectObject.References.Find(SystemData.EFProvider) != null)
 							{
-								if (projectObject.References.Find(SystemData.EFProvider) != null)
+								// Diag.Trace(project.Name + " FOUND REFERENCE:" + SystemData.EFProvider);
+
+								isConfiguredEFStatus = true;
+								isConfiguredDbProviderStatus = true;
+
+								config ??= GetAppConfigProjectItem(project);
+								if (config != null)
 								{
-									// Diag.Trace(project.Name + " FOUND REFERENCE:" + SystemData.EFProvider);
+									failed |= !ConfigureEntityFramework(config, false);
+								}
+								else
+								{
+									failed = true;
+								}
+							}
+							/* else if ((projectObject4 ??= project.Object as VSProject4) != null && projectObject4.PackageReferences != null)
+							{
+								if (projectObject4.PackageReferences.TryGetReference(SystemData.EFProvider, null,
+									out string pkgVersion, out _, out _))
+								{
+									// A legacy CSProj must cast to VSProject4 to manipulate package references
+
+									// Diag.Trace(project.Name + " FOUND PACKAGE REFERENCE:" + SystemData.EFProvider);
 
 									isConfiguredEFStatus = true;
 									isConfiguredDbProviderStatus = true;
@@ -506,36 +662,34 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 										failed = true;
 									}
 								}
-								/* else if ((projectObject4 ??= project.Object as VSProject4) != null && projectObject4.PackageReferences != null)
-								{
-									if (projectObject4.PackageReferences.TryGetReference(SystemData.EFProvider, null,
-										out string pkgVersion, out _, out _))
-									{
-										// A legacy CSProj must cast to VSProject4 to manipulate package references
+							}*/
+						}
 
-										// Diag.Trace(project.Name + " FOUND PACKAGE REFERENCE:" + SystemData.EFProvider);
-
-										isConfiguredEFStatus = true;
-										isConfiguredDbProviderStatus = true;
-
-										config ??= GetAppConfigProjectItem(project);
-										if (config != null)
-										{
-											failed |= !ConfigureEntityFramework(config, false);
-										}
-										else
-										{
-											failed = true;
-										}
-									}
-								}*/
-							}
-
-							if (!isConfiguredDbProviderStatus)
+						if (!isConfiguredDbProviderStatus)
+						{
+							if (projectObject.References.Find(SystemData.Invariant) != null)
 							{
-								if (projectObject.References.Find(SystemData.Invariant) != null)
+								// Diag.Trace(project.Name + " FOUND REFERENCE:" + SystemData.Invariant);
+
+								isConfiguredDbProviderStatus = true;
+
+								config ??= GetAppConfigProjectItem(project);
+								if (config != null)
 								{
-									// Diag.Trace(project.Name + " FOUND REFERENCE:" + SystemData.Invariant);
+									failed |= !ConfigureDbProvider(config, false);
+								}
+								else
+								{
+									failed = true;
+								}
+							}
+							/* else if ((projectObject4 ??= project.Object as VSProject4) != null && projectObject4.PackageReferences != null)
+							{
+
+								if (projectObject4.PackageReferences.TryGetReference(SystemData.Invariant, null,
+									out string pkgVersion, out _, out _))
+								{
+									// Diag.Trace(project.Name + " FOUND PACKAGE REFERENCE:" + SystemData.Invariant);
 
 									isConfiguredDbProviderStatus = true;
 
@@ -549,80 +703,66 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 										failed = true;
 									}
 								}
-								/* else if ((projectObject4 ??= project.Object as VSProject4) != null && projectObject4.PackageReferences != null)
-								{
-
-									if (projectObject4.PackageReferences.TryGetReference(SystemData.Invariant, null,
-										out string pkgVersion, out _, out _))
-									{
-										// Diag.Trace(project.Name + " FOUND PACKAGE REFERENCE:" + SystemData.Invariant);
-
-										isConfiguredDbProviderStatus = true;
-
-										config ??= GetAppConfigProjectItem(project);
-										if (config != null)
-										{
-											failed |= !ConfigureDbProvider(config, false);
-										}
-										else
-										{
-											failed = true;
-										}
-									}
-								} */
-							}
-
-							if (!isConfiguredEFStatus || !isConfiguredDbProviderStatus)
-							{
-								AddReferenceAddedEventHandler(/*projectObject4 != null ? projectObject4.Events :*/ projectObject.Events);
-							}
-
-
+							} */
 						}
-					}
 
-
-
-					if (Uig.ValidateEdmx && !Uig.IsValidStatus(SolutionGlobals) && !Uig.IsUpdatedEdmxsStatus(project))
-					{
-						bool success = true;
-
-						try
+						if (!isConfiguredEFStatus || !isConfiguredDbProviderStatus)
 						{
-							foreach (ProjectItem item in project.ProjectItems)
-							{
-								if (!RecursiveValidateProjectItem(item))
-									success = false;
-							}
-						}
-						catch (Exception ex)
-						{
-							success = false;
-							Diag.Dug(ex);
+							AddReferenceAddedEventHandler(/*projectObject4 != null ? projectObject4.Events :*/ projectObject.Events);
 						}
 
-						if (success)
-							Uig.SetIsUpdatedEdmxsStatus(project);
-						else
-							Uig.IsValidateFailedStatus = true;
 
 					}
-
 				}
 
 
 
-				if (failed)
-					Uig.IsValidateFailedStatus = true;
-				else
-					Uig.SetIsScannedStatus(project);
+				if (Uig.ValidateEdmx && !Uig.IsValidStatus(SolutionGlobals) && !Uig.IsUpdatedEdmxsStatus(project))
+				{
+					bool success = true;
 
+					try
+					{
+						foreach (ProjectItem item in project.ProjectItems)
+						{
+							if (_ValidationActive)
+							{
+								if (_TaskHandler.UserCancellation.IsCancellationRequested)
+									_TaskHandlerTokenSource.Cancel();
+								if (_ValidationToken.IsCancellationRequested || _TaskHandlerToken.IsCancellationRequested)
+								{
+									success = false;
+									break;
+								}
+							}
+
+							if (!RecursiveValidateProjectItem(item))
+								success = false;
+						}
+					}
+					catch (Exception ex)
+					{
+						success = false;
+						Diag.Dug(ex);
+					}
+
+					if (success)
+						Uig.SetIsUpdatedEdmxsStatus(project);
+					else
+						Uig.IsValidateFailedStatus = true;
+
+				}
 
 			}
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
+
+
+
+			if (failed)
+				Uig.IsValidateFailedStatus = true;
+			else
+				Uig.SetIsScannedStatus(project);
+
+
 		}
 	}
 
@@ -703,6 +843,13 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	// ---------------------------------------------------------------------------------
 	bool ConfigureDbProvider(ProjectItem config, bool invalidate)
 	{
+		if (_ValidationActive)
+		{
+			if (_TaskHandler.UserCancellation.IsCancellationRequested)
+				_TaskHandlerTokenSource.Cancel();
+			if (_ValidationToken.IsCancellationRequested || _TaskHandlerToken.IsCancellationRequested)
+				return false;
+		}
 
 		ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -757,7 +904,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		Uig.SetIsValidatedDbProviderStatus(config.ContainingProject);
 
 		// if (modified)
-			// Diag.Trace(config.ContainingProject.Name + ": App.config DbProvider was modified");
+		// Diag.Trace(config.ContainingProject.Name + ": App.config DbProvider was modified");
 
 
 		return true;
@@ -774,6 +921,13 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	// ---------------------------------------------------------------------------------
 	bool ConfigureEntityFramework(ProjectItem config, bool invalidate)
 	{
+		if (_ValidationActive)
+		{
+			if (_TaskHandler.UserCancellation.IsCancellationRequested)
+				_TaskHandlerTokenSource.Cancel();
+			if (_ValidationToken.IsCancellationRequested || _TaskHandlerToken.IsCancellationRequested)
+				return false;
+		}
 
 		ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -829,7 +983,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		Uig.SetIsValidatedEFStatus(config.ContainingProject);
 
 		// if (modified)
-			// Diag.Trace(config.ContainingProject.Name + ": App.config EF was modified");
+		// Diag.Trace(config.ContainingProject.Name + ": App.config EF was modified");
 
 
 		return true;
@@ -846,6 +1000,14 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	// ---------------------------------------------------------------------------------
 	bool UpdateEdmx(ProjectItem edmx, bool invalidate)
 	{
+		if (_ValidationActive)
+		{
+			if (_TaskHandler.UserCancellation.IsCancellationRequested)
+				_TaskHandlerTokenSource.Cancel();
+			if (_ValidationToken.IsCancellationRequested || _TaskHandlerToken.IsCancellationRequested)
+				return false;
+		}
+
 		try
 		{
 			ThreadHelper.ThrowIfNotOnUIThread();
@@ -1026,6 +1188,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		{
 			// Diag.Trace("HandleReferenceAddedAsync is through for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
 
+			ClearValidationQueue();
+
 			config ??= GetAppConfigProjectItem(reference.ContainingProject);
 
 			if (config != null)
@@ -1041,6 +1205,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		else if (reference.Name.ToLower() == SystemData.Invariant.ToLower() && !Uig.IsConfiguredDbProviderStatus(reference.ContainingProject))
 		{
 			// Diag.Trace("HandleReferenceAddedAsync is through for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
+
+			ClearValidationQueue();
 
 			config ??= GetAppConfigProjectItem(reference.ContainingProject);
 
@@ -1087,6 +1253,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		if (Uig.IsValidatedStatus(SolutionGlobals))
 			Uig.SetIsValidStatus(SolutionGlobals, true);
 
+		ClearValidationQueue();
+
 		// If anything gets through things are still happening so we can reset and allow events with incomplete project objects
 		// to continue recycling
 		_RefCnt = 0;
@@ -1096,7 +1264,6 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		{
 			return;
 		}
-
 
 		RecursiveValidateProject(project);
 
@@ -1189,6 +1356,9 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	// ---------------------------------------------------------------------------------
 	int IVsSolutionEvents.OnQueryCloseSolution(object pUnkReserved, ref int pfCancel)
 	{
+		if (_ValidationActive)
+			_ValidationTokenSource.Cancel();
+
 		try
 		{
 			ThreadHelper.ThrowIfNotOnUIThread();
@@ -1247,6 +1417,103 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	// =========================================================================================================
 	#region Utility Methods and Dictionaries - VsPackageController
 	// =========================================================================================================
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Ensures the validation queue is cleared out before passing control back to any
+	/// event handler request.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public bool ClearValidationQueue()
+	{
+		if (_ValidationTask == null || _ValidationTask.IsCompleted)
+		{
+			return true;
+		}
+
+		// Notwithstanding that the validation process is pretty fast, unless the user
+		// requested it, it makes no sense to cancel the validation process because it
+		// is most likely the ClearValidationQueue() call has come from a project or
+		// reference load that was late and should have been included in the validation
+		// process anyway. So we're taking out the auto token cancel here.
+		// Just Wait()...
+		// _ValidationTokenSource.Cancel();
+		_ValidationTask.Wait();
+
+		return true;
+	}
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Updates the IDE status bar
+	/// </summary>
+	/// <remarks>
+	/// The bar is only updated at the start of an Execute and end of an Execute. 
+	/// </remarks>
+	// ---------------------------------------------------------------------------------
+	// [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD102:Implement internal logic asynchronously", Justification = "<Pending>")]
+	protected async Task<bool> UpdateStatusBarAsync(string message, bool complete = false)
+	{
+		// Switch to main thread
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		IVsStatusbar statusBar = await ServiceProvider.GetGlobalServiceAsync<SVsStatusbar, IVsStatusbar>(swallowExceptions: false);
+
+		if (message == null)
+			statusBar.Clear();
+		else
+			statusBar.SetText(message);
+
+		if (complete)
+		{
+			_ = Task.Run(async delegate
+			{
+				await Task.Delay(4000);
+				_ = UpdateStatusBarAsync(null);
+			});
+		}
+
+		return true;
+	}
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Update the IDE task handler progress bar.
+	/// </summary>
+	/// <param name="progress">The % completion of the linkage build.</param>
+	/// <param name="elapsed">The time taken to complete the stage.</param>
+	// ---------------------------------------------------------------------------------
+	protected async Task<bool> TaskHandlerProgressAsync(int progress, TimeSpan elapsed)
+	{
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		_ProgressData.PercentComplete = progress;
+
+		if (progress == 100)
+		{
+			_ProgressData.ProgressText = $"Completed. Validation took {elapsed.Milliseconds}ms.";
+		}
+		else if (_TaskHandler.UserCancellation.IsCancellationRequested)
+		{
+			_ProgressData.ProgressText = $"Cancelled. {progress}% completed. Validation took {elapsed.Milliseconds}ms.";
+		}
+		else
+		{
+			_ProgressData.ProgressText = $"{progress}% completed after {elapsed.Milliseconds}ms.";
+		}
+
+
+		_TaskHandler.Progress.Report(_ProgressData);
+
+		return true;
+
+	}
+
 
 
 	// ---------------------------------------------------------------------------------

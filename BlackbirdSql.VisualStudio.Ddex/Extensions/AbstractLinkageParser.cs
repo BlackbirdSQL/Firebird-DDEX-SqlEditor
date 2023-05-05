@@ -30,7 +30,8 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 		GeneratorsLoaded = 2,
 		TriggersLoaded = 3,
 		SequencesLoaded = 4,
-		Completed = 5
+		Completed = 5,
+		Clear = 6
 	}
 
 
@@ -52,7 +53,6 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// Sync is making a call to GetSchema. GetSchema must allow it through.
 	protected bool _Requesting = false;
 
-	protected bool _ClearStatusBar = false;
 	protected TaskProgressData _ProgressData = default;
 	protected ITaskHandler _TaskHandler = null;
 
@@ -60,16 +60,13 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// An async call is active
 	protected bool _AsyncActive = false;
 	// A sync call has taken over. Async is locked out or abort at the first opportunity.
-	protected CancellationTokenSource _SyncLockedTokenSource;
-	protected CancellationTokenSource _AsyncLockedTokenSource;
+	protected CancellationTokenSource _SyncLockedTokenSource = null;
+	protected CancellationTokenSource _AsyncLockedTokenSource = null;
 	protected CancellationToken _SyncLockedToken;
 	protected CancellationToken _AsyncLockedToken;
 
 
-	protected Task<bool> _ExternalAsyncTask;
-
-
-
+	protected Task<bool> _AsyncTask;
 
 
 
@@ -84,7 +81,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 		}
 	}
 
-	public bool Loaded { get { return _LinkStage == EnumLinkStage.Completed; } }
+	public bool Loaded { get { return _LinkStage >= EnumLinkStage.Completed; } }
 
 	public bool Requesting
 	{
@@ -134,10 +131,8 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 		_SyncLockedTokenSource = new();
 		_SyncLockedToken = _SyncLockedTokenSource.Token;
 
-		_AsyncLockedTokenSource = new();
-		_AsyncLockedToken = _AsyncLockedTokenSource.Token;
 
-		_ExternalAsyncTask = null; 
+		_AsyncTask = null; 
 
 
 		_Sequences = new ();
@@ -242,9 +237,14 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 	protected abstract bool AsyncExited();
 
-	protected abstract void TaskHandlerProgress(string stage, int progress, TimeSpan elapsed);
 
+	protected abstract bool TaskHandlerProgress(string stage, int progress, TimeSpan elapsed);
 
+	protected abstract Task<bool> TaskHandlerProgressAsync(string stage, int progress, TimeSpan elapsed);
+
+	protected abstract bool UpdateStatusBar(EnumLinkStage stage, bool isAsync);
+
+	protected abstract Task<bool> UpdateStatusBarAsync(EnumLinkStage stage, bool isAsync);
 
 
 	protected DataTable GetRawGeneratorSchema()
@@ -261,7 +261,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	}
 
 
-	protected DataTable GetRawTriggerSchema()
+protected DataTable GetRawTriggerSchema()
 	{
 		DslRawTriggers schema = new();
 

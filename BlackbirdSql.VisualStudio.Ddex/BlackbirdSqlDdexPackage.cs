@@ -242,11 +242,12 @@ namespace BlackbirdSql.VisualStudio.Ddex
 				*/
 
 			}
+			/*
 			else
 			{
-				// Diag.Trace("DbProviderFactory not added to assembly cache during package registration. Factory already cached");
+				Diag.Trace("DbProviderFactory not added to assembly cache during package registration. Factory already cached");
 			}
-
+			*/
 		}
 
 

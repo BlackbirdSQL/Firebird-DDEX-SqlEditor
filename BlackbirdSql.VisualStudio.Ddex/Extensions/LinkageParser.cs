@@ -30,6 +30,8 @@ namespace BlackbirdSql.Common.Extensions;
 //
 /// <summary>
 /// Builds the Trigger / Generator linkage tables.
+/// </summary>
+/// <remarks>
 /// The class is split into 3 separate classes. 1. AbstruseLinkageParser handles the parsing,
 /// 2. AbstractLinkageParser handles the actual data table building, and 3. LinkageParser
 /// manages the sync/async build tasks.
@@ -38,7 +40,7 @@ namespace BlackbirdSql.Common.Extensions;
 /// and then resumed once the request is completed.
 /// If a UI request requires the completed Trigger / Generator linkage tables the UI thread takes over
 /// from the async thread to complete the build.
-/// </summary>
+/// </remarks>
 // =========================================================================================================
 internal class LinkageParser : AbstractLinkageParser
 {
@@ -112,13 +114,13 @@ internal class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public override bool ClearAsyncQueue()
 	{
-		if (_ExternalAsyncTask == null || _ExternalAsyncTask.IsCompleted)
+		if (_AsyncTask == null || _AsyncTask.IsCompleted)
 		{
 			return true;
 		}
 
 		_AsyncLockedTokenSource.Cancel();
-		_ExternalAsyncTask.Wait();
+		_AsyncTask.Wait();
 
 		return true;
 	}
@@ -156,7 +158,7 @@ internal class LinkageParser : AbstractLinkageParser
 		_TaskHandler = null;
 		_ProgressData = default;
 
-		if (_SyncActive == 0 && _LinkStage != EnumLinkStage.Completed && !_SyncLockedToken.IsCancellationRequested)
+		if (_SyncActive == 0 && _LinkStage < EnumLinkStage.Completed && !_SyncLockedToken.IsCancellationRequested)
 		{
 			if (_AsyncLockedToken.IsCancellationRequested)
 			{
@@ -192,7 +194,7 @@ internal class LinkageParser : AbstractLinkageParser
 
 		IVsTaskStatusCenterService tsc = ServiceProvider.GetGlobalServiceAsync<SVsTaskStatusCenterService, IVsTaskStatusCenterService>(swallowExceptions: false).Result;
 
-		var options = default(TaskHandlerOptions);
+		TaskHandlerOptions options = default;
 		options.Title = $"{_Connection.DataSource} ({Path.GetFileNameWithoutExtension(_Connection.Database)}) trigger sequence linkage";
 		options.ActionsAfterCompletion = CompletionActions.None;
 
@@ -210,6 +212,7 @@ internal class LinkageParser : AbstractLinkageParser
 		task.Wait();
 
 		ExitSync();
+
 
 		return true;
 	}
@@ -230,22 +233,28 @@ internal class LinkageParser : AbstractLinkageParser
 
 		UpdateStatusBar(_LinkStage, _AsyncActive);
 
-		IVsTaskStatusCenterService tsc = ServiceProvider.GetGlobalServiceAsync<SVsTaskStatusCenterService, IVsTaskStatusCenterService>(swallowExceptions: false).Result;
+		IVsTaskStatusCenterService tsc = ServiceProvider.GetGlobalServiceAsync<SVsTaskStatusCenterService,
+			IVsTaskStatusCenterService>(swallowExceptions: false).Result;
 
-		var options = default(TaskHandlerOptions);
+		TaskHandlerOptions options = default;
 		options.Title = $"{_Connection.DataSource} ({Path.GetFileNameWithoutExtension(_Connection.Database)}) async trigger sequence linkage";
 		options.ActionsAfterCompletion = CompletionActions.None;
+
 		_ProgressData = default;
 		_ProgressData.CanBeCanceled = true;
 
-
 		_TaskHandler = tsc.PreRegister(options, _ProgressData);
 
-		_ExternalAsyncTask = Task.Factory.StartNew(() => { PerformExecute(_AsyncLockedTokenSource, _SyncLockedTokenSource, delay); return AsyncExited(); },
+		_AsyncLockedTokenSource?.Dispose();
+		_AsyncLockedTokenSource = new();
+		_AsyncLockedToken = _AsyncLockedTokenSource.Token;
+
+		_AsyncTask = Task.Factory.StartNew(() =>
+			{ PerformExecute(_AsyncLockedTokenSource, _SyncLockedTokenSource, delay); return AsyncExited(); },
 			default, TaskCreationOptions.LongRunning | TaskCreationOptions.AttachedToParent, TaskScheduler.Default);
 
 
-		_TaskHandler.RegisterTask(_ExternalAsyncTask);
+		_TaskHandler.RegisterTask(_AsyncTask);
 
 		return true;
 	}
@@ -336,7 +345,7 @@ internal class LinkageParser : AbstractLinkageParser
 		if (asyncToken.IsCancellationRequested || syncToken.IsCancellationRequested)
 			return false;
 
-		if (_LinkStage != EnumLinkStage.Completed)
+		if (_LinkStage < EnumLinkStage.Completed)
 			BuildTriggerTable();
 
 
@@ -369,6 +378,20 @@ internal class LinkageParser : AbstractLinkageParser
 
 
 
+	protected override bool UpdateStatusBar(EnumLinkStage stage, bool isAsync)
+	{
+		_ = Task.Factory.StartNew(() =>
+		{
+			_ = UpdateStatusBarAsync(stage, isAsync).Result;
+		},
+		default, TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent,
+		TaskScheduler.Default);
+
+		return true;
+	}
+
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Updates the IDE status bar
@@ -377,77 +400,87 @@ internal class LinkageParser : AbstractLinkageParser
 	/// The bar is only updated at the start of an Execute and end of an Execute. 
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD102:Implement internal logic asynchronously", Justification = "<Pending>")]
-	protected bool UpdateStatusBar(EnumLinkStage stage, bool isAsync)
+	// [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD102:Implement internal logic asynchronously", Justification = "<Pending>")]
+	protected override async Task<bool> UpdateStatusBarAsync(EnumLinkStage stage, bool isAsync)
 	{
-		ThreadHelper.JoinableTaskFactory.Run(async delegate
+		// Switch to main thread
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+		try
 		{
-			// Switch to main thread
-			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-			try
+			string async;
+			string catalog = $"{_Connection.DataSource}({Path.GetFileNameWithoutExtension(_Connection.Database)})";
+
+			IVsStatusbar statusBar = await ServiceProvider.GetGlobalServiceAsync<SVsStatusbar, IVsStatusbar>(swallowExceptions: false);
+
+			// statusBar.FreezeOutput(0);
+
+			if (stage == EnumLinkStage.Clear)
 			{
-				string async;
-				string catalog = $"{_Connection.DataSource}({Path.GetFileNameWithoutExtension(_Connection.Database)})";
+				statusBar.Clear();
+			}
+			else if (stage == EnumLinkStage.Start)
+			{
+				async = isAsync ? "(async)" : "";
 
-				IVsStatusbar statusBar = await ServiceProvider.GetGlobalServiceAsync<SVsStatusbar, IVsStatusbar>(swallowExceptions: false);
+				statusBar.SetText($"Updating{async} {catalog} trigger sequence linkage.");
+			}
+			else if (stage == EnumLinkStage.Completed)
+			{
+				async = isAsync ? "(async)" : "";
 
-				// statusBar.FreezeOutput(0);
-
-				if (_ClearStatusBar)
+				statusBar.SetText($"Completed{async} {catalog} trigger sequence linkage.");
+			}
+			else
+			{
+				if (isAsync)
 				{
-					statusBar.Clear();
-				}
-				else if (stage == EnumLinkStage.Start)
-				{
-					async = isAsync ? "(async)" : "";
-
-					statusBar.SetText($"Updating{async} {catalog} trigger sequence linkage.");
-				}
-				else if (stage == EnumLinkStage.Completed)
-				{
-					async = isAsync ? "(async)" : "";
-
-					statusBar.SetText($"Completed{async} {catalog} trigger sequence linkage.");
-				}
-				else 
-				{
-					if (isAsync)
-					{
-						// If it's a user cancel request.
-						if (_SyncLockedToken.IsCancellationRequested)
-							statusBar.SetText($"Cancelled(async) {catalog} trigger sequence linkage.");
-						else
-							statusBar.SetText($"Resuming(async) {catalog} trigger sequence linkage.");
-					}
+					// If it's a user cancel request.
+					if (_SyncLockedToken.IsCancellationRequested)
+						statusBar.SetText($"Cancelled(async) {catalog} trigger sequence linkage.");
 					else
-					{
-						if (_SyncLockedToken.IsCancellationRequested)
-							statusBar.SetText($"Resuming {catalog} trigger sequence linkage.");
-						else
-							statusBar.SetText($"Switched(async) {catalog} trigger sequence linkage to UI thread.");
-					}
+						statusBar.SetText($"Resuming(async) {catalog} trigger sequence linkage.");
 				}
-
-				if (stage == EnumLinkStage.Completed && !_ClearStatusBar)
+				else
 				{
-					_ = Task.Run(async delegate
-					{
-						_ClearStatusBar = true;
-						await Task.Delay(4000);
-						UpdateStatusBar(stage, isAsync);
-					});
+					if (_SyncLockedToken.IsCancellationRequested)
+						statusBar.SetText($"Resuming {catalog} trigger sequence linkage.");
+					else
+						statusBar.SetText($"Switched(async) {catalog} trigger sequence linkage to UI thread.");
 				}
 			}
-			catch (Exception ex)
+
+			if (stage == EnumLinkStage.Completed || (isAsync && _SyncLockedToken.IsCancellationRequested))
 			{
-				Diag.Dug(ex);
+				_ = Task.Run(async delegate
+				{
+					stage = EnumLinkStage.Clear;
+					await Task.Delay(4000);
+					_ = UpdateStatusBarAsync(stage, isAsync);
+				});
 			}
-		});
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+		}
 
 		return true;
 	}
 
 
+
+
+	protected override bool TaskHandlerProgress(string stage, int progress, TimeSpan elapsed)
+	{
+		_ = Task.Factory.StartNew(() =>
+			{
+				_ = TaskHandlerProgressAsync(stage, progress, elapsed).Result;
+			},
+			default, TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent,
+			TaskScheduler.Default);
+
+		return true;
+	}
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -457,10 +490,13 @@ internal class LinkageParser : AbstractLinkageParser
 	/// <param name="progress">The % completion of the linkage build.</param>
 	/// <param name="elapsed">The time taken to complete the stage.</param>
 	// ---------------------------------------------------------------------------------
-	protected override void TaskHandlerProgress(string stage, int progress, TimeSpan elapsed)
+	protected async override Task<bool> TaskHandlerProgressAsync(string stage, int progress, TimeSpan elapsed)
 	{
 		if (_TaskHandler == null)
-			return;
+			return false;
+
+		// Switch to main thread
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 		_ProgressData.PercentComplete = progress;
 
@@ -477,8 +513,10 @@ internal class LinkageParser : AbstractLinkageParser
 			_ProgressData.ProgressText = $"{progress}% completed. {stage} took {elapsed.Milliseconds}ms.";
 		}
 
-		
+
 		_TaskHandler.Progress.Report(_ProgressData);
+
+		return true;
 	}
 
 
