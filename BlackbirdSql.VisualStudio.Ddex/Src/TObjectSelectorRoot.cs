@@ -116,7 +116,7 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 		try
 		{
-			parser.EnterSync();
+			parser.SyncEnter();
 
 			schema = GetRootSchema(connection, parameters);
 
@@ -133,7 +133,7 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		finally
 		{
 			Site.UnlockProviderObject();
-			parser.ExitSync();
+			parser.SyncExit();
 		}
 
 

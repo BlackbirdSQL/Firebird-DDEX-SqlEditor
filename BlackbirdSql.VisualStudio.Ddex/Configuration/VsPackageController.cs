@@ -406,6 +406,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	protected async Task<bool> RecursiveValidateProjectAsync(int index, System.Diagnostics.Stopwatch stopwatch)
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
 		int i = 0;
 		Project project = null;
 
@@ -1468,7 +1469,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Updates the IDE status bar
+	/// Moves back onto the UI thread and updates the IDE status bar.
 	/// </summary>
 	/// <remarks>
 	/// The bar is only updated at the start of an Execute and end of an Execute. 
@@ -1504,14 +1505,21 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Update the IDE task handler progress bar.
+	/// Moves back onto the UI thread and updates the IDE task handler progress bar.
 	/// </summary>
 	/// <param name="progress">The % completion of the linkage build.</param>
 	/// <param name="elapsed">The time taken to complete the stage.</param>
 	// ---------------------------------------------------------------------------------
 	protected async Task<bool> TaskHandlerProgressAsync(int progress, TimeSpan elapsed)
 	{
+		if (_TaskHandler == null)
+			return false;
+
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		// Check again since joining UI thread.
+		if (_TaskHandler == null)
+			return false;
 
 		_ProgressData.PercentComplete = progress;
 

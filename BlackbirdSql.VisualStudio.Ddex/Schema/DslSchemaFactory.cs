@@ -94,12 +94,12 @@ internal sealed class DslSchemaFactory
 			default:
 				try
 				{
-					parser.EnterSync();
+					parser.SyncEnter();
 					return connection.GetSchema(collectionName, restrictions);
 				}
 				finally
 				{
-					parser.ExitSync();
+					parser.SyncExit();
 				}
 		}
 
@@ -138,12 +138,12 @@ internal sealed class DslSchemaFactory
 			throw ex;
 		}
 
-		parser.EnterSync();
+		parser.SyncEnter();
 
 		var xmlStream = assembly.GetManifestResourceStream(ResourceName);
 		if (xmlStream == null)
 		{
-			parser.ExitSync();
+			parser.SyncExit();
 			NullReferenceException ex = new("Resource not found: " + ResourceName);
 			Diag.Dug(ex);
 			throw ex;
@@ -160,7 +160,7 @@ internal sealed class DslSchemaFactory
 		}
 		catch
 		{
-			parser.ExitSync();
+			parser.SyncExit();
 			throw;
 		}
 		finally
@@ -172,7 +172,7 @@ internal sealed class DslSchemaFactory
 
 		if (collection.Length != 1)
 		{
-			parser.ExitSync();
+			parser.SyncExit();
 			NotSupportedException ex = new("Unsupported collection name " + schemaCollection);
 			Diag.Dug(ex);
 			throw ex;
@@ -180,7 +180,7 @@ internal sealed class DslSchemaFactory
 
 		if (restrictions != null && restrictions.Length > (int)collection[0]["NumberOfRestrictions"])
 		{
-			parser.ExitSync();
+			parser.SyncExit();
 			InvalidOperationException ex = new("The number of specified restrictions is not valid.");
 			Diag.Dug(ex);
 			throw ex;
@@ -188,7 +188,7 @@ internal sealed class DslSchemaFactory
 
 		if (ds.Tables[DbMetaDataCollectionNames.Restrictions].Select(filter).Length != (int)collection[0]["NumberOfRestrictions"])
 		{
-			parser.ExitSync();
+			parser.SyncExit();
 			InvalidOperationException ex = new("Incorrect restriction definition.");
 			Diag.Dug(ex);
 			throw ex;
@@ -208,13 +208,13 @@ internal sealed class DslSchemaFactory
 				schema = SqlCommandSchema(connection, collectionName, restrictions);
 				break;
 			default:
-				parser.ExitSync();
+				parser.SyncExit();
 				NotSupportedException ex = new("Unsupported population mechanism");
 				Diag.Dug(ex);
 				throw ex;
 		}
 
-		parser.ExitSync();
+		parser.SyncExit();
 		return schema;
 	}
 
@@ -254,7 +254,7 @@ internal sealed class DslSchemaFactory
 			default:
 				try
 				{
-					parser.EnterSync();
+					parser.SyncEnter();
 					return connection.GetSchemaAsync(collectionName, restrictions, cancellationToken);
 				}
 				catch (Exception)
@@ -265,7 +265,7 @@ internal sealed class DslSchemaFactory
 				}
 				finally
 				{
-					parser.ExitSync();
+					parser.SyncExit();
 				}
 		}
 
@@ -321,7 +321,7 @@ internal sealed class DslSchemaFactory
 
 		var oldCulture = Thread.CurrentThread.CurrentCulture;
 
-		parser.EnterSync();
+		parser.SyncEnter();
 
 		try
 		{
@@ -332,7 +332,7 @@ internal sealed class DslSchemaFactory
 		}
 		catch
 		{
-			parser.ExitSync();
+			parser.SyncExit();
 			throw;
 		}
 		finally
@@ -342,7 +342,7 @@ internal sealed class DslSchemaFactory
 
 		if (cancellationToken.IsCancellationRequested)
 		{
-			parser.ExitSync();
+			parser.SyncExit();
 			return Task.FromResult(new DataTable());
 		}
 
@@ -353,14 +353,14 @@ internal sealed class DslSchemaFactory
 		}
 		catch (Exception ex)
 		{
-			parser.ExitSync();
+			parser.SyncExit();
 			Diag.Dug(ex);
 			throw;
 		}
 
 		if (collection.Length != 1)
 		{
-			parser.ExitSync();
+			parser.SyncExit();
 			NotSupportedException ex = new("Unsupported collection name " + schemaCollection);
 			Diag.Dug(ex);
 			throw ex;
@@ -368,7 +368,7 @@ internal sealed class DslSchemaFactory
 
 		if (restrictions != null && restrictions.Length > (int)collection[0]["NumberOfRestrictions"])
 		{
-			parser.ExitSync();
+			parser.SyncExit();
 			InvalidOperationException exbb = new("The number of specified restrictions is not valid.");
 			Diag.Dug(exbb);
 			throw exbb;
@@ -376,13 +376,13 @@ internal sealed class DslSchemaFactory
 
 		if (cancellationToken.IsCancellationRequested)
 		{
-			parser.ExitSync();
+			parser.SyncExit();
 			return Task.FromResult(new DataTable());
 		}
 
 		if (ds.Tables[DbMetaDataCollectionNames.Restrictions].Select(filter).Length != (int)collection[0]["NumberOfRestrictions"])
 		{
-			parser.ExitSync();
+			parser.SyncExit();
 			InvalidOperationException exbb = new("Incorrect restriction definition.");
 			Diag.Dug(exbb);
 			throw exbb;
@@ -390,7 +390,7 @@ internal sealed class DslSchemaFactory
 
 		if (cancellationToken.IsCancellationRequested)
 		{
-			parser.ExitSync();
+			parser.SyncExit();
 			return Task.FromResult(new DataTable());
 		}
 
@@ -408,11 +408,11 @@ internal sealed class DslSchemaFactory
 				task = SqlCommandSchemaAsync(connection, collectionName, restrictions, cancellationToken);
 				break;
 			default:
-				parser.ExitSync();
+				parser.SyncExit();
 				throw new NotSupportedException("Unsupported population mechanism");
 		}
 
-		parser.ExitSync();
+		parser.SyncExit();
 		return task;
 	}
 

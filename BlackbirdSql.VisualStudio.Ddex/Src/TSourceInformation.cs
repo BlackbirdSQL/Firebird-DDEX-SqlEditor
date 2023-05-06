@@ -403,7 +403,7 @@ internal class TSourceInformation : AdoDotNetSourceInformation, IVsDataSourceInf
 			LinkageParser parser = LinkageParser.Instance((FbConnection)Connection);
 
 			if (parser.ClearToLoadAsync)
-				parser.AsyncExecute(500);
+				parser.AsyncExecute(50, 10);
 		}
 
 	}
