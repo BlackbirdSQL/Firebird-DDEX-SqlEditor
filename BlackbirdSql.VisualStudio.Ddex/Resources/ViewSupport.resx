@@ -966,4 +966,19 @@
   <data name="Property_Name_Trigger_IdentitySeed" xml:space="preserve">
     <value>Identity Seed</value>
   </data>
+  <data name="Category_Dependencies" xml:space="preserve">
+    <value>Dependencies</value>
+  </data>
+  <data name="Property_Desc_Sequence_Field" xml:space="preserve">
+    <value>The column that utilizes this generator</value>
+  </data>
+  <data name="Property_Desc_Sequence_Table" xml:space="preserve">
+    <value>The table that utilizes this generator</value>
+  </data>
+  <data name="Property_Name_Sequence_Field" xml:space="preserve">
+    <value>Dependency Column</value>
+  </data>
+  <data name="Property_Name_Sequence_Table" xml:space="preserve">
+    <value>Dependency Table</value>
+  </data>
 </root>

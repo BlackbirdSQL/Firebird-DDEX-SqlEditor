@@ -269,6 +269,9 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			if (!Uig.IsValidatedStatus(SolutionGlobals))
 			{
 				// Diag.Trace("Validating solution");
+				// To keep the UI thread free and to allow it to perform status
+				// updates we move off of the UI thread and then make calls back
+				// to the UI thread for each top-level project validation.
 				int projectCount = _Dte.Solution.Projects.Count;
 				_ = Task.Run(() => ValidateSolutionAsync(projectCount));
 			}
@@ -306,8 +309,14 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	}
 
 
-
-	// [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "<Pending>")]
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Recursively makes calls to <see cref="RecursiveValidateProjectAsync"/>, which is
+	/// on the UI thread, from a thread in the thread pool. This is to ensure the UI
+	/// thread is not locked up processing validations.
+	/// </summary>
+	/// <param name="projectCount"></param>
+	// ---------------------------------------------------------------------------------
 	protected async Task<bool> ValidateSolutionAsync(int projectCount)
 	{
 		if (projectCount == 0)
@@ -342,7 +351,6 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		// Projects > Project > ProjectItems > SubProject > ProjectItems... structure.
 		// We want to be in and out of here as fast as possible so every possible low overhead check
 		// is done first to ensure that.
-		// Go to back of UI thread.
 		_ValidationTask = Task.Factory.StartNew(() =>
 			{
 				System.Diagnostics.Stopwatch stopwatch = new();
@@ -358,8 +366,10 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 					}
 
 
-					_ = RecursiveValidateProjectAsync(i, stopwatch).Result;
-					_ = TaskHandlerProgressAsync(i * 100 / projectCount, stopwatch.Elapsed);
+					// Go to back of UI thread.
+					if (!RecursiveValidateProjectAsync(i, stopwatch).Result)
+						i = projectCount - 1;
+					_ = TaskHandlerProgressAsync((i+1) * 100 / projectCount, stopwatch.Elapsed);
 				}
 
 
@@ -389,10 +399,9 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Recursively validates projects already opened before our package was sited.
-	/// This list is the initial top level project list from the parent solution
+	/// Moves back onto the UI thread and validates the next top-level project.
 	/// </summary>
-	/// <param name="projects"></param>
+	/// <param name="index">Index of the next project</param>
 	// ---------------------------------------------------------------------------------
 	protected async Task<bool> RecursiveValidateProjectAsync(int index, System.Diagnostics.Stopwatch stopwatch)
 	{
@@ -400,7 +409,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		int i = 0;
 		Project project = null;
 
-
+		// The enumerator is not accessable thru GetEnumerator()
 		foreach (Project proj in _Dte.Solution.Projects)
 		{
 			if (i == index)
@@ -421,11 +430,9 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 			RecursiveValidateProject(project);
 
 			stopwatch.Stop();
-
-			return true;
 		}
 
-		return false;
+		return true;
 	}
 
 

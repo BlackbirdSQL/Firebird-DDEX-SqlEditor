@@ -203,7 +203,9 @@
 				<Property name="IDENTITY_SEED" type="System.Int64" />
 				<Property name="IDENTITY_INCREMENT" type="System.Int32" />
 				<Property name="IDENTITY_CURRENT" type="System.Int64" />
-				<Property name="TRIGGER_NAME" type="System.String" />
+				<Property name="DEPENDENCY_TRIGGER" type="System.String" />
+				<Property name="DEPENDENCY_TABLE" type="System.String" />
+				<Property name="DEPENDENCY_FIELD" type="System.String" />
 			</Properties>
 			<Services>
 				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">

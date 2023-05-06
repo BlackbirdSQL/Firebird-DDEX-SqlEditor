@@ -285,9 +285,20 @@
 											<DisplayName resource="Property_Name_Sequence_Current" />
 											<Description resource="Property_Desc_Sequence_Current" />
 										</Property>
-										<Property name="TRIGGER_NAME">
+										<Property name="DEPENDENCY_TRIGGER">
 											<DisplayName resource="Property_Name_Sequence_Trigger" />
+											<Category resource="Category_Dependencies" />
 											<Description resource="Property_Desc_Sequence_Trigger" />
+										</Property>
+										<Property name="DEPENDENCY_TABLE">
+											<DisplayName resource="Property_Name_Sequence_Table" />
+											<Category resource="Category_Dependencies" />
+											<Description resource="Property_Desc_Sequence_Table" />
+										</Property>
+										<Property name="DEPENDENCY_FIELD">
+											<DisplayName resource="Property_Name_Sequence_Field" />
+											<Category resource="Category_Dependencies" />
+											<Description resource="Property_Desc_Sequence_Field" />
 										</Property>
 									</Properties>
 									<Commands>

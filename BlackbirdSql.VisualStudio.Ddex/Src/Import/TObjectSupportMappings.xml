@@ -156,7 +156,9 @@
 				<Property name="InitialValue" underlyingMember="IDENTITY_SEED" />
 				<Property name="Increment" underlyingMember="IDENTITY_INCREMENT" />
 				<Property name="NextValue" underlyingMember="IDENTITY_CURRENT" />
-				<Property name="Trigger" underlyingMember="TRIGGER_NAME" />
+				<Property name="Trigger" underlyingMember="DEPENDENCY_TRIGGER" />
+				<Property name="Table" underlyingMember="DEPENDENCY_TABLE" />
+				<Property name="Column" underlyingMember="DEPENDENCY_FIELD" />
 			</Properties>
 		</MappedType>
 

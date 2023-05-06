@@ -146,7 +146,9 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 		_Sequences.Columns.Add("IDENTITY_SEED", typeof(long));
 		_Sequences.Columns.Add("IDENTITY_INCREMENT", typeof(int));
 		_Sequences.Columns.Add("IDENTITY_CURRENT", typeof(long));
-		_Sequences.Columns.Add("TRIGGER_NAME", typeof(string));
+		_Sequences.Columns.Add("DEPENDENCY_TRIGGER", typeof(string));
+		_Sequences.Columns.Add("DEPENDENCY_TABLE", typeof(string));
+		_Sequences.Columns.Add("DEPENDENCY_FIELD", typeof(string));
 
 		_Sequences.PrimaryKey = new DataColumn[] { _Sequences.Columns["SEQUENCE_GENERATOR"] };
 
@@ -304,7 +306,9 @@ protected DataTable GetRawTriggerSchema()
 			seq = _Sequences.NewRow();
 
 			seq.ItemArray = row.ItemArray;
-			seq["TRIGGER_NAME"] = DBNull.Value;
+			seq["DEPENDENCY_TRIGGER"] = DBNull.Value;
+			seq["DEPENDENCY_TABLE"] = DBNull.Value;
+			seq["DEPENDENCY_FIELD"] = DBNull.Value;
 
 			_Sequences.Rows.Add(seq);
 		}
@@ -453,10 +457,13 @@ protected DataTable GetRawTriggerSchema()
 						trig["IDENTITY_CURRENT"] = seq["IDENTITY_CURRENT"];
 						trig["IDENTITY_SEED"] = seq["IDENTITY_SEED"];
 
-						if (seq["TRIGGER_NAME"] == DBNull.Value || seq["TRIGGER_NAME"].ToString() == "")
-							seq["TRIGGER_NAME"] = trig["TRIGGER_NAME"];
+						if (seq["DEPENDENCY_TRIGGER"] == DBNull.Value || seq["DEPENDENCY_TRIGGER"].ToString() == "")
+							seq["DEPENDENCY_TRIGGER"] = trig["TRIGGER_NAME"];
 						else
-							seq["TRIGGER_NAME"] = seq["TRIGGER_NAME"].ToString() + ", " + trig["TRIGGER_NAME"].ToString();
+							seq["DEPENDENCY_TRIGGER"] = seq["DEPENDENCY_TRIGGER"].ToString() + ", " + trig["TRIGGER_NAME"].ToString();
+
+						seq["DEPENDENCY_TABLE"] = trig["TABLE_NAME"];
+						seq["DEPENDENCY_FIELD"] = trig["DEPENDENCY_FIELD"];
 					}
 				}
 
