@@ -7,8 +7,10 @@
 namespace BlackbirdDsl {
 
 
+/// <summary>
 /// This function breaks up the SQL statement into logical sections.
 /// Some sections are delegated to specialized processors.
+/// </summary>
 StringCell^ SqlParser::Parse(StringCell^ root)
 {
 	return root;

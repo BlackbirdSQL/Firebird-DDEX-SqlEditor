@@ -8,21 +8,68 @@ using FirebirdSql.Data.FirebirdClient;
 using C5;
 using BlackbirdDsl;
 
+
+
+
 namespace BlackbirdSql.Common.Extensions;
 
+
+
+// =========================================================================================================
+//										AbstruseLinkageParser Class
+//
 /// <summary>
-/// Handles <see cref="DslParser"/> parsing specific tasks.
+/// Handles Trigger / Generator linkage parsing specific tasks utilizing BlackbirdDsl.<see cref="Parser"/>.
 /// </summary>
+// =========================================================================================================
 internal abstract class AbstruseLinkageParser
 {
+
+
+	// -----------------------------------------------------------------------------------------------------
+	#region Variables - AbstruseLinkageParser
+	// -----------------------------------------------------------------------------------------------------
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Instance of the BlackbirdDsl.<see cref="Parser"/>.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	protected Parser _DslParser = null;
 
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// The db connection asociated with this LinkageParser
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	protected FbConnection _Connection = null;
 
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Stopwatch instance used to report total time and times taken to complete
+	/// individual tasks to the IDE task handler and status bar.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	protected System.Diagnostics.Stopwatch _Stopwatch;
 
 
+	#endregion Variables
 
+
+
+
+
+	// =========================================================================================================
+	#region Property accessors - AbstruseLinkageParser
+	// =========================================================================================================
+
+
+	/// <summary>
+	/// Getter indicating wether or not the UI thread can and should resume linkage operations.
+	/// </summary>
 	public System.Diagnostics.Stopwatch Stopwatch
 	{
 		get
@@ -34,6 +81,9 @@ internal abstract class AbstruseLinkageParser
 	}
 
 
+	/// <summary>
+	/// Getter to retrieve or create an instance of the BlackbirdDsl.<see cref="Parser"/>.
+	/// </summary>
 	public Parser DslParser
 	{
 		get
@@ -45,31 +95,79 @@ internal abstract class AbstruseLinkageParser
 	}
 
 
+	#endregion Property accessors
 
+
+
+
+
+	// =========================================================================================================
+	#region Constructors / Destructors - AbstruseLinkageParser
+	// =========================================================================================================
+
+
+	/// <summary>
+	/// Protected default .ctor for creating an instance for a db connection.
+	/// </summary>
+	/// <param name="connection"></param>
 	protected AbstruseLinkageParser(FbConnection connection)
 	{
 		_Connection = connection;
 	}
 
 
-	public (string, int, int) ParseGeneratorInfo(string sql)
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Methods - AbstruseLinkageParser
+	// =========================================================================================================
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Parses a trigger DSL statement.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public (string, int, int) ParseTriggerDSL(string sql)
 	{
-		return ParseGeneratorInfo(sql, null, null, null);
+		return ParseTriggerDSL(sql, null, null, null);
 	}
 
 
-	public (string, int, int) ParseGeneratorInfo(string sql, string trigger)
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Parses a trigger DSL statement given a trigger name.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public (string, int, int) ParseTriggerDSL(string sql, string trigger)
 	{
-		return ParseGeneratorInfo(sql, trigger, null, null);
+		return ParseTriggerDSL(sql, trigger, null, null);
 	}
 
 
-	public (string, int, int) ParseGeneratorInfo(string sql, string trigger, string table)
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Parses a trigger DSL statement givern a trigger and table name.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public (string, int, int) ParseTriggerDSL(string sql, string trigger, string table)
 	{
-		return ParseGeneratorInfo(sql, trigger, table, null);
+		return ParseTriggerDSL(sql, trigger, table, null);
 	}
 
-	public (string, int, int) ParseGeneratorInfo(string sql, string trigger, string table, string column)
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Parses a trigger DSL statement givern a trigger, table name and column name.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public (string, int, int) ParseTriggerDSL(string sql, string trigger, string table, string column)
 	{
 		int increment = -1;
 		int seed = -1;
@@ -227,6 +325,13 @@ internal abstract class AbstruseLinkageParser
 		return (generator, increment, seed);
 	}
 
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Splits the legacy GEN_ID function arguments into generator name and increment. 
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	protected (string, int) GetGenIdParams(string param)
 	{
 		int increment = -1;
@@ -246,5 +351,8 @@ internal abstract class AbstruseLinkageParser
 
 		return (generator, increment);
 	}
+
+
+	#endregion Methods
 
 }

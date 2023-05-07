@@ -25,8 +25,6 @@ using FirebirdSql.Data.FirebirdClient;
 namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 
 
-// Deadlock warning message suppression
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits", Justification = "<Pending>")]
 
 
 // =========================================================================================================
@@ -1442,6 +1440,9 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 
 
+	// Deadlock warning message suppression
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
+		Justification = "Code logic ensures a deadlock cannot occur")]
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Ensures the validation queue is cleared out before passing control back to any
@@ -1475,7 +1476,6 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	/// The bar is only updated at the start of an Execute and end of an Execute. 
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	// [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD102:Implement internal logic asynchronously", Justification = "<Pending>")]
 	protected async Task<bool> UpdateStatusBarAsync(string message, bool complete = false)
 	{
 		// Switch to main thread

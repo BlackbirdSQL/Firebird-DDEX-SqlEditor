@@ -19,9 +19,11 @@ namespace C5 {
 // =========================================================================================================
 //											AdvancedReplicant Class
 //
+/// <summary>
 /// Implements nested subscripting for classes that support IDictionary and IList subscripting.
 /// T: The type of the value stored in the array. In descendant Cell classes this would by the descendant
 /// Replicant itself, ie. Cell<Cell<T>>.
+/// </summary>
 // =========================================================================================================
 template<typename T> public ref class AdvancedReplicant : public Replicant<T>
 {
@@ -32,7 +34,9 @@ template<typename T> public ref class AdvancedReplicant : public Replicant<T>
 public:
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// The nested indexed element of an indexed element.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property T default[int, int]
 	{
@@ -63,7 +67,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// The nested named element of a named element.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property T default[SysStr^, SysStr^]
 	{
@@ -94,7 +100,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// The nested named element of an indexed element.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property T default[int, SysStr^]
 	{
@@ -125,7 +133,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// The nested indexed element of a named element.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property T default[SysStr^, int]
 	{
@@ -155,9 +165,11 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an IsNullPtr check on the element for the nested keys if it exist, else 
 	/// returns true.
 	/// IsNull: Level 1 existence check. Containers don't exist (are all nullptr).
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNull[SysStr^, SysStr^]
 	{
@@ -169,10 +181,12 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an IsNullOrEmpty check on the element for the nested keys if it exist,
 	/// else returns true.
 	/// IsNullOrEmpty: Level 3 existence check. Value container IsNullOrEmpty and
 	/// collection Count == 0.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNullOrEmpty[SysStr^, SysStr^]
 	{
@@ -184,9 +198,11 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an IsNullPtr check on the element for the nested keys, else
 	/// returns true.
 	/// IsUnpopulated: Level 2 existence check. Element doesn't exist or nullptr.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsUnpopulated[SysStr^, SysStr^]
 	{
@@ -206,7 +222,9 @@ public:
 public:
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Default .ctor
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	AdvancedReplicant() : Replicant()
 	{
@@ -242,7 +260,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor initialized with an unnamed element collection.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	AdvancedReplicant(ICollection<T>^ collection) : Replicant(collection)
 	{
@@ -250,7 +270,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor initialized with a key and value element.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	AdvancedReplicant(SysStr^ key, T element) : Replicant(key, element)
 	{
@@ -258,7 +280,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor initialized with a named element collection.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	AdvancedReplicant(ICollection<KeyValuePair<SysStr^, T>>^ collection) : Replicant(collection)
 	{
@@ -266,7 +290,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor shallow copy constructor.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	AdvancedReplicant(AdvancedReplicant^ collection) : Replicant(collection)
 	{
@@ -276,7 +302,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Creates an instance of the current type.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual SysObj^ CreateInstance() override
 	{

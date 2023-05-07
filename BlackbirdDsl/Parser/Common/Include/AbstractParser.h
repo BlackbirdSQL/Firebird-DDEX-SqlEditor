@@ -32,23 +32,23 @@ public:
 
 	property bool ConsistentSubtrees
 	{
-		bool get() { return (((int)_Options & (int)DslOptions::CONSISTENT_SUBTREES) > 0); }
+		bool get() { return ((_Options & DslOptions::CONSISTENT_SUBTREES) != DslOptions::NONE); }
 	};
 
 	property bool AnsiQuotes
 	{
-		bool get() { return (((int)_Options & (int)DslOptions::ANSI_QUOTES) > 0); }
+		bool get() { return ((_Options & DslOptions::ANSI_QUOTES) != DslOptions::NONE); }
 	};
 
 	property bool OffsetCapture
 	{
-		bool get() { return (((int)_Options & (int)DslOptions::OFFSET_CAPTURE) > 0); }
+		bool get() { return ((_Options & DslOptions::OFFSET_CAPTURE) != DslOptions::NONE); }
 	};
 
 
 	property bool TokenizeOnly
 	{
-		bool get() { return (((int)_Options & (int)DslOptions::TOKENIZE_ONLY) > 0); }
+		bool get() { return ((_Options & DslOptions::TOKENIZE_ONLY) != DslOptions::NONE); }
 	};
 
 

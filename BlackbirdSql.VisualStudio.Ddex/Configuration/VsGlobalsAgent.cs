@@ -24,10 +24,6 @@ using BlackbirdSql.Common;
 namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 
 
-// Warning suppression
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "UI thread ensured in code logic.")]
-
 
 // =========================================================================================================
 //											VsGlobalsAgent Class
@@ -61,8 +57,9 @@ internal class VsGlobalsAgent
 
 
 	/// <summary>
-	/// The [Project][Solution].Globals globals is set to transitory during debug because there seems no way to delete it for testing
-	/// other than programmatically. It's a single int32 using binary bitwise for the different status settings
+	/// The [Project][Solution].Globals globals is set to transitory during debug because there seems no way to
+	/// delete it for testing other than programmatically. It's a single int32 using binary bitwise for the
+	/// different status settings
 	/// </summary>
 #if DEBUG && !__PERSISTENTGLOBALS__
 	const bool G_Persistent = false;
@@ -79,35 +76,42 @@ internal class VsGlobalsAgent
 #endif
 
 	/// <summary>
-	/// For Projects: has been validated as a valid project type (Once it's been validated it's always been validated)
-	/// For Solutions: has been loaded and in a validation state if <see cref="G_Valid"/> is false else validated
+	/// For Projects: has been validated as a valid project type (Once it's been validated it's always been
+	/// validated)
+	/// For Solutions: has been loaded and in a validation state if <see cref="G_Valid"/> is false else
+	/// validated
 	/// </summary>
 	const int G_Validated = 1;
 	/// <summary>
-	/// For Projects: Validated project is a valid executable C#/VB app (Project type). (Once [in]valid always [in]valid)
+	/// For Projects: Validated project is a valid executable C#/VB app (Project type). (Once [in]valid always
+	/// [in]valid)
 	/// For Solutions: Off: Solution has been loaded and is in a validation state. On: Validated
 	/// (Only applicable if <see cref="G_Validated"/> is set)
 	/// </summary>	
 	const int G_Valid = 2;
 	/// <summary>
-	/// The app.config and all edmxs for a project have been scanned and configured if required. (Once successfully scanned always scanned)
+	/// The app.config and all edmxs for a project have been scanned and configured if required. (Once
+	/// successfully scanned always scanned)
 	/// </summary>
 	const int G_Scanned = 4;
 	/// <summary>
-	/// The app.config has the client system.data/DbProviderFactory configured and is good to go. (Once successfully configured always configured)
+	/// The app.config has the client system.data/DbProviderFactory configured and is good to go. (Once
+	/// successfully configured always configured)
 	/// </summary>
 	const int G_DbProviderConfigured = 8;
 	/// <summary>
-	/// The app.config has the EntityFramework provider services and connection factory configured and is good to go. (Once successfully configured always configured)
+	/// The app.config has the EntityFramework provider services and connection factory configured and is
+	/// good to go. (Once successfully configured always configured)
 	/// </summary>
 	const int G_EFConfigured = 16;
 	/// <summary>
-	/// Existing legacy edmx's have been updated and are good to go. (Once all successfully updated always updated)
+	/// Existing legacy edmx's have been updated and are good to go. (Once all successfully updated always
+	/// updated)
 	/// </summary>
 	const int G_EdmxsUpdated = 32;
 	/// <summary>
-	///  If at any point in solution projects' validation there was a fail, this is set to true on the solution and the solution Globals
-	///  is reset to zero.
+	///  If at any point in solution projects' validation there was a fail, this is set to true on the
+	///  solution and the solution Globals is reset to zero.
 	///  Validation on failed solution entities will resume the next time the solution is loaded.
 	/// </summary>
 	const int G_ValidateFailed = 64;
@@ -154,6 +158,9 @@ internal class VsGlobalsAgent
 
 
 
+	// UI thread warning message suppression
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+		Justification = "UI thread ensured in code logic.")]
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Get's or sets whether at any point a solution validation failed
@@ -247,11 +254,15 @@ internal class VsGlobalsAgent
 	// =========================================================================================================
 
 
+	// UI thread warning message suppression
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "UI thread ensured in code logic.")]
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// For solutions: Sets a status indicator tagging it as previously validated or validated and valid.
-	/// For projects: Sets a status indicator tagging it as previously validated for it's validity as a
-	/// valid C#/VB executable.
+	/// For solutions: Sets a status indicator tagging it as previously validated or
+	/// validated and valid.
+	/// For projects: Sets a status indicator tagging it as previously validated for
+	/// it's validity as a valid C#/VB executable.
 	/// </summary>
 	/// <param name="globals"></param>
 	/// <param name="valid"></param>
@@ -266,7 +277,8 @@ internal class VsGlobalsAgent
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Sets a status indicator tagging a project as having been scanned and it's app.config and edmxs validated.
+	/// Sets a status indicator tagging a project as having been scanned and it's
+	/// app.config and edmxs validated.
 	/// </summary>
 	/// <param name="project"></param>
 	/// <returns>True if the operation was successful else False</returns>
@@ -290,7 +302,8 @@ internal class VsGlobalsAgent
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Sets status indicator tagging a project's app.config as having been validated for the DBProvider
+	/// Sets status indicator tagging a project's app.config as having been validated
+	/// for the DBProvider
 	/// </summary>
 	/// <param name="project"></param>
 	/// <param name="valid"></param>
@@ -315,7 +328,8 @@ internal class VsGlobalsAgent
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Sets status indicator tagging a project's app.config as having been validated for EF.
+	/// Sets status indicator tagging a project's app.config as having been validated
+	/// for EF.
 	/// By definition the app.config will also have been validated for 
 	/// </summary>
 	/// <param name="project"></param>
@@ -341,8 +355,8 @@ internal class VsGlobalsAgent
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Sets non-persistent status indicator tagging a project's existing edmx's as having been validated/upgraded
-	/// from legacy provider settings
+	/// Sets non-persistent status indicator tagging a project's existing edmx's as
+	/// having been validated/upgraded from legacy provider settings.
 	/// </summary>
 	/// <param name="project"></param>
 	/// <param name="valid"></param>
@@ -435,9 +449,13 @@ internal class VsGlobalsAgent
 
 
 
+	// UI thread warning message suppression
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+		Justification = "UI thread ensured in code logic.")]
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Verifies whether or not a solution is in a validation state (or previously validated) or a project has been validated as being valid or not
+	/// Verifies whether or not a solution is in a validation state (or previously
+	/// validated) or a project has been validated as being valid or not.
 	/// </summary>
 	/// <param name="globals"></param>
 	/// <returns></returns>
@@ -454,10 +472,13 @@ internal class VsGlobalsAgent
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Checks wether the project is a valid executable output type that requires configuration of the app.config
+	/// Checks wether the project is a valid executable output type that requires
+	/// configuration of the app.config
 	/// </summary>
 	/// <param name="project"></param>
-	/// <returns>true if the project is a valid C#/VB executable project else false</returns>
+	/// <returns>
+	/// True if the project is a valid C#/VB executable project else false.
+	/// </returns>
 	/// <remarks>
 	/// We're not going to worry about anything but C# and VB non=CSP projects
 	/// </remarks>
@@ -531,14 +552,19 @@ internal class VsGlobalsAgent
 
 
 
+	// UI thread warning message suppression
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+		Justification = "UI thread ensured in code logic.")]
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Verifies whether or not a solution has been validated or a project is a valid C#/VB executable. See remarks.
+	/// Verifies whether or not a solution has been validated or a project is a valid
+	/// C#/VB executable. See remarks.
 	/// </summary>
 	/// <param name="globals"></param>
 	/// <returns></returns>
 	/// <remarks>
-	/// Callers must call IsValidatedProjectStatus() before checking if a project is valid otherwise this indicator will be meaningless
+	/// Callers must call IsValidatedProjectStatus() before checking if a project is
+	/// valid otherwise this indicator will be meaningless
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
 	public bool IsValidStatus(Globals globals)
@@ -548,9 +574,13 @@ internal class VsGlobalsAgent
 
 
 
+	// UI thread warning message suppression
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+		Justification = "UI thread ensured in code logic.")]
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Verifies whether or not a project has been scanned and it's app.config and edmxs validated.
+	/// Verifies whether or not a project has been scanned and it's app.config and edmxs
+	/// validated.
 	/// </summary>
 	/// <param name="project"></param>
 	/// <returns></returns>
@@ -562,9 +592,13 @@ internal class VsGlobalsAgent
 
 
 
+	// UI thread warning message suppression
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+		Justification = "UI thread ensured in code logic.")]
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Verifies whether or not a project's App.config was validated for FirebirdSql.Data.FirebirdClient
+	/// Verifies whether or not a project's App.config was validated for
+	/// FirebirdSql.Data.FirebirdClient
 	/// </summary>
 	/// <param name="project"></param>
 	/// <returns></returns>
@@ -576,9 +610,13 @@ internal class VsGlobalsAgent
 
 
 
+	// UI thread warning message suppression
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+		Justification = "UI thread ensured in code logic.")]
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Verifies whether or not a project's App.config was validated for EntityFramework.Firebird
+	/// Verifies whether or not a project's App.config was validated for
+	/// EntityFramework.Firebird
 	/// </summary>
 	/// <param name="project"></param>
 	/// <returns></returns>
@@ -590,9 +628,13 @@ internal class VsGlobalsAgent
 
 
 
+	// UI thread warning message suppression
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+		Justification = "UI thread ensured in code logic.")]
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Verifies whether or not a project's existing edmx models were updated from using legacy data providers to current
+	/// Verifies whether or not a project's existing edmx models were updated from
+	/// using legacy data providers to current.
 	/// Firebird Client and EntityFramework providers.
 	/// </summary>
 	/// <param name="project"></param>
@@ -637,9 +679,9 @@ internal class VsGlobalsAgent
 				exists = true;
 			}
 
-			if (exists && (value & flag) == flag == enabled)
+			if (exists && (value & flag) != 0 == enabled)
 			{
-				if (flag2 == 0 || (value & flag2) == flag2 == enabled2)
+				if (flag2 == 0 || (value & flag2) != 0 == enabled2)
 				{
 					return true;
 				}
@@ -703,7 +745,7 @@ internal class VsGlobalsAgent
 				str = (string)globals[G_Key];
 				value = str == "" ? 0 : int.Parse(str);
 
-				return (value & flag) == flag;
+				return (value & flag) != 0;
 			}
 
 		}

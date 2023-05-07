@@ -14,8 +14,7 @@ namespace BlackbirdDsl {
 /// <summary>
 /// FlagsTokenCategory
 /// </summary>
-[System::Flags]
-enum struct FlagsTokenCategory
+enum FlagsTokenCategory
 {
 	UNRESERVED = 0,
 	RESERVED = 1,
@@ -98,7 +97,7 @@ public:
 		if (!Tokens->TryGetValue(key, token))
 			return false;
 
-		return (((int)token->Category & (int)FlagsTokenCategory::RESERVED) > 0);
+		return ((token->Category & FlagsTokenCategory::RESERVED) != 0);
 	}
 
 	static bool IsFunction(SysStr^ key)
@@ -108,7 +107,7 @@ public:
 		if (!Tokens->TryGetValue(key, token))
 			return false;
 
-		return (((int)token->Category & (int)FlagsTokenCategory::FUNCTION) > 0);
+		return ((token->Category & FlagsTokenCategory::FUNCTION) != 0);
 	}
 
 	static bool IsParameterizedFunction(SysStr^ key)
@@ -118,7 +117,7 @@ public:
 		if (!Tokens->TryGetValue(key, token))
 			return false;
 
-		return (((int)token->Category & (int)FlagsTokenCategory::PARAM_FUNCTION) > 0);
+		return ((token->Category & FlagsTokenCategory::PARAM_FUNCTION) != 0);
 	}
 
 	static bool IsAggregateFunction(SysStr^ key)
@@ -128,7 +127,7 @@ public:
 		if (!Tokens->TryGetValue(key, token))
 			return false;
 
-		return (((int)token->Category & (int)FlagsTokenCategory::AGGR_FUNCTION) > 0);
+		return ((token->Category & FlagsTokenCategory::AGGR_FUNCTION) != 0);
 	}
 
 	static bool IsCustomFunction(SysStr^ key)
@@ -138,7 +137,7 @@ public:
 		if (!Tokens->TryGetValue(key, token))
 			return false;
 
-		return (((int)token->Category & (int)FlagsTokenCategory::CUSTOM_FUNCTION) > 0);
+		return ((token->Category & FlagsTokenCategory::CUSTOM_FUNCTION) != 0);
 	}
 
 

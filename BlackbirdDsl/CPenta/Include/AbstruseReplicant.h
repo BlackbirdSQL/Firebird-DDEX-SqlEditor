@@ -19,11 +19,13 @@ namespace C5 {
 // =========================================================================================================
 //										AbstruseReplicant Class
 //
+/// <summary>
 /// The root class of the Replicant/Cell classes.
 /// Declares all interface methods required by IDictionary, IList, IEnumerable<ReplicaKey> and ICloneable
 /// and defines interface members as abstract.
 /// T: The type of the value stored in the array. In descendant Cell classes this would by the descendant
 /// Replicant itself, ie. Cell<Cell<Tvalue>>.
+/// </summary>
 // =========================================================================================================
 template<typename T> public ref class AbstruseReplicant abstract : IReplicant<T>
 {
@@ -32,37 +34,55 @@ template<typename T> public ref class AbstruseReplicant abstract : IReplicant<T>
 
 protected:
 
+	/// <summary>
 	/// The signed item count. This value is -1 when contents is being held in the unary variables _UnaryKey and/or
 	/// _UnaryValue.
+	/// </summary>
 	int _CountFlag = 0;
 
+	/// <summary>
 	/// Initial capacity of collections.
+	/// </summary>
 	int _InitialCapacity = 10;
 
+	/// <summary>
 	/// The next index position in the natural order of the dictionary that an unnamed item will be placed.
 	/// Because this class can hold a mixed collection of named pairs and unnamed elements, the unnamed elements
 	/// will be placed in their natural order at the beginning of the dict if the collection is mixed so that they can still
 	/// use an indexer. 
+	/// </summary>
 	int _CurrentSeed = 0;
 
+	/// <summary>
 	/// The next viable seed value that can be used to create the key for unnamed elements that are added to a mixed collection.
 	/// _KeySeed may not match _CurrentSeed if an unnamed element was inserted amongst named elements. In that case _KeySeed will
 	/// become the insertion index + 1.
+	/// </summary>
 	int _KeySeed = 0;
 
+	/// <summary>
 	/// The Dictionary container if there is more than a single named element.
+	/// </summary>
 	Dictionary<SysStr^, T>^ _Dict = nullptr;
 
+	/// <summary>
 	/// The Dictionary Xref container if there is more than a single named element.
+	/// </summary>
 	List<SysStr^>^ _Xref = nullptr;
 
+	/// <summary>
 	/// The one-dimensional array container if there is more than a single unnamed element.
+	/// </summary>
 	List<T>^ _Items = nullptr;
 
+	/// <summary>
 	///  The Dictionary key if there is a single named element.
+	/// </summary>
 	SysStr^ _UnaryKey = nullptr;
 
+	/// <summary>
 	/// The element container if there is only a single element.
+	/// </summary>
 	T _UnaryValue = nullptr;
 
 
@@ -78,7 +98,9 @@ protected:
 public:
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Gets or sets the element located at index.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property T default[int]
 	{
@@ -100,7 +122,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Gets or sets the named element for key, or key cast to int for unnamed elements.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property T default[SysStr^]
 	{
@@ -133,14 +157,18 @@ public:
 public:
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Returns true if Count == 0, else performs a single level traversal of each
 	/// element in the collecton for a unanimous logical AND IsNullOrEmpty.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool ArrayNullOrEmpty { virtual bool get() abstract; };
 
 
 	// ***********----------------------------------------------------------------------
+	/// <summary>
 	/// Implements the Count getter which is Abs(_CountFlag).
+	/// </summary>
 	// ***********----------------------------------------------------------------------
 	virtual property int Count
 	{
@@ -149,104 +177,132 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// True if the object has a unary or physical collections initialized else false.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsCollection { virtual bool get() abstract; };
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// The object has named elements / is in a Dictionary state
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsDictionary { virtual bool get() abstract; }
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// True if the object has physical collections initialized else false. It may still
 	/// be IsUnary.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsICollection { virtual bool get() abstract; };
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// The object has unnamed elements / is in a one-dimensional list state
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsList { virtual bool get() abstract; };
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Checks if any containers have a value (not nullptr). No further validation.
 	/// IsNull: Level 1 existence check. Containers don't exist (are all nullptr).
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNull { virtual bool get() abstract; };
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Checks element at index for nullptr if it exists else returns true.
 	/// IsNull: Level 1 existence check. Containers don't exist (are all nullptr).
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNull[int]{ virtual bool get(int index) abstract; };
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Checks if 'key' exists. No further validation.
 	/// IsNull: Level 1 existence check. Containers don't exist (are all nullptr).
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNull[SysStr^]{ virtual bool get(SysStr ^ key) abstract; };
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Returns true if Count == 0.
 	/// IsNullOrEmpty: Level 3 existence check. Value container IsNullOrEmpty and
 	/// collection Count == 0.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNullOrEmpty { virtual bool get() abstract; };
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an IsNullOrEmpty check on the element at index if it exist, else
 	/// returns true.
 	/// IsNullOrEmpty: Level 3 existence check. Value container IsNullOrEmpty and
 	/// collection Count == 0.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNullOrEmpty[int]{ virtual bool get(int index) abstract; };
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an IsNullOrEmpty check on the element for 'key' if it exist, else 
 	/// returns true.
 	/// IsNullOrEmpty: Level 3 existence check. Value container IsNullOrEmpty and
 	/// collection Count == 0.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNullOrEmpty[SysStr^]{ virtual bool get(SysStr ^ key) abstract; };
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Returns true if Count == 0.
 	/// IsUnpopulated: Level 2 existence check. Containers don't exist or, for a
 	/// collection, Count == 0.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsUnpopulated { virtual bool get() abstract; };
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an IsUnpopulated check on the element at index if it exist, else
 	/// returns true.
 	/// IsUnpopulated: Level 2 existence check. Containers don't exist or, for a
 	/// collection, Count == 0.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsUnpopulated[int]{ virtual bool get(int index) abstract; };
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an IsUnpopulated check on the element for 'key' if it exist, else 
 	/// returns true.
 	/// IsUnpopulated: Level 2 existence check. Containers don't exist or, for a
 	/// collection, Count == 0.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsUnpopulated[SysStr^]{ virtual bool get(SysStr ^ key) abstract; };
 
 
 	// ***********----------------------------------------------------------------------
+	/// <summary>
 	/// Implements IsReadOnly getter. Underlying containers are read only.
+	/// </summary>
 	// ***********----------------------------------------------------------------------
 	virtual property bool IsReadOnly
 	{
@@ -255,21 +311,27 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Checks if the object contains a single named or unnamed element stored in 
 	/// _UnaryKey and/or _UnaryValue.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsUnary { virtual bool get() abstract; };
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Returns the key at index. If IsList (!IsDictionary), returns index.ToString()
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property SysStr^ Key[int]{ virtual SysStr ^ get(int index) abstract; };
 
 
 	// ***********----------------------------------------------------------------------
+	/// <summary>
 	/// Implements the Keys collection getter. If IsList (!IsDictionay) will convert
 	/// index range to list of Strings^.
+	/// </summary>
 	// ***********----------------------------------------------------------------------
 	virtual property ICollection<SysStr^>^ Keys
 	{
@@ -296,14 +358,18 @@ public:
 
 
 	// ***********----------------------------------------------------------------------
+	/// <summary>
 	/// Implements the List enumerator object for IList<T> as abstract.
+	/// </summary>
 	// ***********----------------------------------------------------------------------
 	virtual property IList<T>^ Enumerator { virtual IList<T>^ get() abstract; };
 
 
 	// ***********----------------------------------------------------------------------
+	/// <summary>
 	/// Implements the ReplicaKey Dictionary enumerator object for #define
 	/// ReplicaKeyPair(T) = KeyValuePair<ReplicaKey, T> as abstract.
+	/// </summary>
 	// ***********----------------------------------------------------------------------
 	virtual property IEnumerable<ReplicaKeyPair(T)>^ ReplicaKeyEnumerator
 	{
@@ -312,9 +378,11 @@ public:
 
 
 	// ***********----------------------------------------------------------------------
+	/// <summary>
 	/// Implements Values getter. Returns list of elements. If IsUnary returns wrapped
 	/// _UnaryElement else if IsList (!IsDictionay) returns _Items else if IsDictionary
 	/// will return _Dict Values.
+	/// </summary>
 	// ***********----------------------------------------------------------------------
 	virtual property ICollection<T>^ Values
 	{
@@ -346,26 +414,34 @@ public:
 public:
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Adds an unnamed element to the collection returning the updated collection.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual IReplicant<T>^ operator+= (const T element) abstract;
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Adds a named element to the collection returning the updated collection.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual IReplicant<T>^ operator+= (const KeyValuePair<SysStr^, T> pair) abstract;
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Adds an unnamed element to the collection returning a new collection. Static.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	// static AbstruseReplicant^ operator+ (AbstruseReplicant^ lhs, T element);
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Adds a named element (KeyValuePair) to the collection returning a new
 	/// collection. Static.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	// virtual AbstruseReplicant operator+ (AbstruseReplicant^ lhs, KeyValuePair<SysStr^, T> pair);
 
@@ -382,7 +458,9 @@ public:
 public:
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Default .ctor
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	AbstruseReplicant()
 	{
@@ -424,7 +502,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor initialized with an unnamed element collection.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	AbstruseReplicant(ICollection<T>^ collection)
 	{
@@ -441,7 +521,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor initialized with a key and value element.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	AbstruseReplicant(SysStr^ key, T element)
 	{
@@ -450,7 +532,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor initialized with a named element collection.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	AbstruseReplicant(ICollection<KeyValuePair<SysStr^, T>>^ collection)
 	{
@@ -468,7 +552,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor shallow copy constructor.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	AbstruseReplicant(AbstruseReplicant^ collection)
 	{
@@ -488,23 +574,29 @@ public:
 protected:
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Creates the next valid dictionary key for elements without a key when the
 	/// object is in a IsDictionary state. The hint index to convert to a string should
 	/// be _CurrentSeed++.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual SysStr^ CreateDictKey(int hint) abstract;
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Determines if a T value is null or empty.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual bool GetIsNullOrEmpty(T value) abstract;
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Given a string value, determines if it can be converted to a valid integer
 	/// in the range of the current element collection or plus one to add it to
 	/// the end of the collection.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual int GetValidIndex(SysStr^ value) abstract;
 
@@ -547,8 +639,10 @@ protected:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an element insert and assumes that all parameters passed are valid to
 	/// perform an insert without any validation,
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual T UnsafeDictionaryInsert(int index, int previous, SysStr^ key, T value) abstract;
 
@@ -556,24 +650,30 @@ protected:
 public:
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs a shallow (non-destructive) copy of a Replicant into a new Replicant.
 	/// A shallow copy creates a mirror image of the source Replicant, preserving object
 	/// refrences.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual SysObj^ Clone() abstract;
 
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs a shallow (non-destructive) copy of a Replicant into a clone.
 	/// A shallow copy creates a mirror image of the source Replicant, preserving object
 	/// references.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual void Clone(SysObj^ cloneObject) abstract;
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Creates an instance of the current type.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual SysObj^ CreateInstance() abstract;
 
@@ -582,74 +682,92 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an insert of the key value pair at the provided index.
 	/// If the key already exists it is replaced if the index is the same or plus one,
 	/// else it is removed.
 	/// This object is migrated to a dictionary if required.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual void Insert(int index, SysStr^ key, T value) abstract;
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Searches the string value of the T elements and inserts the new value
 	/// at the correct ignore-case position. If the status is IsDictionary
 	/// will call InsertAfter for a dictionary element with a nullptr key.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual T InsertAfter(SysStr^ search, T value) abstract;
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Searches the string value of the T elements and inserts the new pair
 	/// at the correct ignore-case position. If the status is not IsDictionary will
 	/// migrate to a dictionary first.
 	/// If the element is unnamed the value of 'key' will be nullptr and a key will be
 	/// created based on _CurrentSeed and _KeySeed.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual T InsertAfter(SysStr^ search, SysStr^ key, T value) abstract;
 
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Returns the ordinal index of the key else nullptr. If the list is unnamed
 	/// converts the key to an integer. If the converted key is within the index range
 	/// of the list returns it else returns nullptr.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual int KeyIndexOf(SysStr^ key) abstract;
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Returns the key of the value else nullptr.
 	/// If the list is an unnamed list returns the index cast to SysStr.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual SysStr^ KeyOf(SysStr^ value) abstract;
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs a php array merge.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual void Merge(IReplicant<T>^ value) abstract;
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Removes the value of the key and or index and returns true if successful.
 	/// Either index must not be -1 or key must not be nullptr or both may be specified.
 	/// If the list is unnamed converts the key to an integer if it's not nullptr.
 	/// If the converted key is within the index range of the list
 	/// removes the value at that index and returns true.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual bool Remove(int index, SysStr^ key) abstract;
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Tries to get the value at 'index' and places it in 'value' returning true else
 	/// returns false.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual bool TryGetIndexedValue(int index, T% value) abstract;
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Tries to convert a string segment to an unsigned integer then tries to get the
 	/// indexed value.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual bool TryGetIndexedValue(SysStr^ segment, T% value) abstract;
 
@@ -666,7 +784,9 @@ public:
 public:
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Adds value as an element.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual void Add(T value)
 	{
@@ -700,7 +820,9 @@ public:
 	};
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Adds a KeyValuePair dictionary element.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual void Add(SysStr^ key, T value)
 	{
@@ -708,7 +830,9 @@ public:
 	};
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Adds a KeyValuePair dictionary element.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual void Additty(SysStr^ key, SysObj^ value)
 	{
@@ -716,7 +840,9 @@ public:
 	};
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Adds a KeyValuePair dictionary element.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual void Add(KeyValuePair<SysStr^, T> pair)
 	{
@@ -807,7 +933,7 @@ public:
 	};
 
 	/// <summary>
-	/// 
+	/// Searches for 'value' returning true if found.
 	/// </summary>
 	/// <param name="value"></param>
 	/// <returns></returns>
@@ -1008,6 +1134,7 @@ public:
 	};
 
 
+	/// <summary>
 	/// Removes the first occurrence of a specific object.
 	virtual bool RemoveValue(T element) = IList<T>::Remove
 	{

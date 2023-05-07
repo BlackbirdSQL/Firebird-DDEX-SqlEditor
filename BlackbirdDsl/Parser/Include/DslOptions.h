@@ -9,7 +9,6 @@ namespace BlackbirdDsl {
 /// <summary>
 /// DslOptions
 /// </summary>
-[System::Flags]
 public enum struct DslOptions
 {
 	NONE = 0,

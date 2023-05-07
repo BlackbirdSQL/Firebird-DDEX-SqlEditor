@@ -374,7 +374,7 @@
     <Compile Include="Schema\DslSchema.cs" />
     <Compile Include="Schema\DslSchemaFactory.cs" />
     <Compile Include="Schema\DslTriggerColumns.cs" />
-    <Compile Include="Schema\DslRawTriggerGenerators.cs" />
+    <Compile Include="Schema\DslRawTriggerDependencies.cs" />
     <Compile Include="Schema\DslTypeHelper.cs" />
     <Compile Include="Schema\DslViewColumns.cs" />
     <Compile Include="Schema\Encoding2.cs" />

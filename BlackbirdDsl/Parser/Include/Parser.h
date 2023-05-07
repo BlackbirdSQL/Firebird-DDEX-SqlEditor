@@ -14,6 +14,14 @@ using namespace C5;
 namespace BlackbirdDsl {
 
 
+
+// =========================================================================================================
+//											Parser Class
+//
+/// <summary>
+/// BlackbirdSql C++/Cli generic SQL/DDL parser.
+/// </summary>
+// =========================================================================================================
 public ref class Parser : public AbstractParser
 {
 

@@ -5,84 +5,231 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.TaskStatusCenter;
 
 using FirebirdSql.Data.FirebirdClient;
 
 using BlackbirdSql.VisualStudio.Ddex.Schema;
 
+
+
 namespace BlackbirdSql.Common.Extensions;
 
+
+
+// =========================================================================================================
+//										AbstractLinkageParser Class
+//
 /// <summary>
-/// Handles Trigger / Generator linkage building tasks.
+/// Handles Trigger / Generator linkage building tasks of the LinkageParser class.
 /// </summary>
+// =========================================================================================================
 internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 {
+
+
+	// -----------------------------------------------------------------------------------------------------
+	#region Internal types - AbstractLinkageParser
+	// -----------------------------------------------------------------------------------------------------
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Enum of the linkage build stages. After each stage cancellation tokens are
+	/// checked.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	protected enum EnumLinkStage
 	{
 		Start = 0,
 		GeneratorsLoaded = 1,
-		TriggerGeneratorsLoaded = 2,
+		TriggerDependenciesLoaded = 2,
 		TriggersLoaded = 3,
 		SequencesLoaded = 4,
 		Completed = 5,
 		Clear = 6
 	}
 
-	protected bool _Enabled = true;
+
+	#endregion Internal types
+
+
+
+
+
+	// =========================================================================================================
+	#region Variables - AbstractLinkageParser
+	// =========================================================================================================
+
+
+	/// <summary>
+	/// True when async operations are active else false.
+	/// </summary>
+	protected bool _AsyncActive = false;
+
+	/// <summary>
+	/// Handle to the async task if it exists.
+	/// </summary>
+	protected Task<bool> _AsyncTask;
+
+	/// <summary>
+	/// Cancellation token for async operations. 
+	/// </summary>
+	protected CancellationToken _AsyncToken;
+
+	/// <summary>
+	/// Cancellation token source for async operations. 
+	/// </summary>
+	protected CancellationTokenSource _AsyncTokenSource = null;
+
+	/// <summary>
+	/// The total elapsed time in milliseconds that the parser was actively
+	/// building the linkage tables. 
+	/// </summary>
 	protected long _Elapsed = 0;
 
+	/// <summary>
+	/// Parser status inidicator that is set to false if the user cancels async
+	/// operations in the IDE task handler.
+	/// </summary>
+	protected bool _Enabled = true;
+
+	/// <summary>
+	/// Per connection LinkageParser instances xref.
+	/// </summary>
 	protected static Dictionary<FbConnection, object> _Instances = null;
 
 
-	protected DataTable _Sequences = null;
-	protected DataTable _Triggers = null;
-
-	protected DataTable _RawGenerators = null;
-	protected DataTable _RawTriggerGenerators = null;
-	protected DataTable _RawTriggers = null;
-
-
+	/// <summary>
+	/// The tracked linkage build process stage.
+	/// </summary>
+	/// <remarks>
+	/// The async linkage process can be interrupted by either a user TaskHandler
+	/// cancellation or when the UI thread requires the trigger or sequence tables,
+	/// in which case the UI thread takes over the linkage process.
+	/// </remarks>
 	protected EnumLinkStage _LinkStage = EnumLinkStage.Start;
 
-	// An async call is active
-	protected int _SyncActive = 0;
-	// Sync is making a call to GetSchema. GetSchema must allow it through.
+	/// <summary>
+	/// Handle to the ITaskHandler ProgressData.
+	/// </summary>
+	protected TaskProgressData _ProgressData = default;
+
+	/// <summary>
+	/// The intermediate full SELECT of the system generator table.
+	/// </summary>
+	protected DataTable _RawGenerators = null;
+
+	/// <summary>
+	/// The intermediate full SELECT of the system trigger table.
+	/// </summary>
+	protected DataTable _RawTriggers = null;
+
+	/// <summary>
+	/// The intermediate full SELECT of the system trigger table dependencies.
+	/// </summary>
+	/// <remarks>
+	/// Dependent on network speed, splitting the trigger and trigger dependencies
+	/// SELECT statements is up to +- 80% faster than a combined statement.
+	/// </remarks>
+	protected DataTable _RawTriggerDependencies = null;
+
+	/// <summary>
+	/// Set to true when the parser is making an external database request and then back
+	/// to false once the request is completed.
+	/// </summary>
 	protected bool _Requesting = false;
 
-	protected TaskProgressData _ProgressData = default;
+	/// <summary>
+	/// The final populated generator table with trigger linkage.
+	/// </summary>
+	protected DataTable _Sequences = null;
+
+	/// <summary>
+	/// Increment of UI thread calls. Once _SyncActive is back down to zero, async
+	/// operations will continue provided 'Enabled' is still true.
+	/// </summary>
+	protected int _SyncActive = 0;
+
+	/// <summary>
+	/// Handle to the IDE ITaskHandler.
+	/// </summary>
 	protected ITaskHandler _TaskHandler = null;
 
-
-	// An async call is active
-	protected bool _AsyncActive = false;
-	// A sync call has taken over. Async is locked out or abort at the first opportunity.
-	protected CancellationTokenSource _AsyncTokenSource = null;
-	protected CancellationToken _AsyncToken;
+	/// <summary>
+	/// The final populated trigger table with generator linkage.
+	/// </summary>
+	protected DataTable _Triggers = null;
 
 
-	protected Task<bool> _AsyncTask;
+	#endregion Variables
 
 
-	public bool Enabled { get { return _Enabled; } }
-
-	public bool SequencesLoaded { get { return _LinkStage >= EnumLinkStage.SequencesLoaded; } }
 
 
+
+	// =========================================================================================================
+	#region Property accessors - AbstractLinkageParser
+	// =========================================================================================================
+
+
+	/// <summary>
+	/// Getter indicating wether or not the UI thread can and should resume linkage operations.
+	/// </summary>
+	public bool ClearToLoad
+	{
+		get { return (_SyncActive == 0 && !Loaded); }
+	}
+
+
+	/// <summary>
+	/// Getter inidicating whether or not async linkage can and should begin or resume operations.
+	/// </summary>
+	public bool ClearToLoadAsync
+	{
+		get
+		{
+			return (_Enabled && !_AsyncActive && !_AsyncToken.IsCancellationRequested && ClearToLoad);
+		}
+	}
+
+
+	/// <summary>
+	/// Getter inidicating whther or not the parser's db connection is active and open.
+	/// </summary>
 	public bool ConnectionActive
 	{
 		get
 		{
-			return (_Connection != null && (_Connection.State & (ConnectionState.Closed | ConnectionState.Broken)) == 0);
+			return (_Connection != null
+				&& (_Connection.State & (ConnectionState.Closed | ConnectionState.Broken)) == 0);
 		}
 	}
 
+
+	/// <summary>
+	/// Getter to the parser status indicator. Returns false if the user has cancelled async
+	/// operations through the IDE task handler.
+	/// </summary>
+	public bool Enabled { get { return _Enabled; } }
+
+
+	/// <summary>
+	/// Getter indicating whether or not linkage has completed.
+	/// </summary>
 	public bool Loaded { get { return _LinkStage >= EnumLinkStage.Completed; } }
 
+
+	/// <summary>
+	/// Sets the start and end of an external db request.
+	/// </summary>
 	public bool Requesting
 	{
 		get
@@ -106,22 +253,29 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	}
 
 
-	public bool ClearToLoad
-	{
-		get { return (_SyncActive == 0 && !Loaded); }
-	}
+	/// <summary>
+	/// Getter indicating whether or not the parser has fetched the generators.
+	/// </summary>
+	public bool SequencesLoaded { get { return _LinkStage >= EnumLinkStage.SequencesLoaded; } }
 
-	public bool ClearToLoadAsync
-	{
-		get
-		{
-			return (_Enabled && !_AsyncActive && !_AsyncToken.IsCancellationRequested && ClearToLoad);
-		}
-	}
+
+	#endregion Property accessors
 
 
 
 
+
+	// =========================================================================================================
+	#region Constructors / Destructors - AbstractLinkageParser
+	// =========================================================================================================
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Protected default .ctor for creating an instance for a db connection.
+	/// </summary>
+	/// <param name="connection"></param>
+	// ---------------------------------------------------------------------------------
 	protected AbstractLinkageParser(FbConnection connection) : base(connection)
 	{
 		_Instances.Add(connection, this);
@@ -181,8 +335,17 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	}
 
 
-
-
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns an instance of the LinkageParser for a connection or creates one if it
+	/// doesn't exist.
+	/// </summary>
+	/// <param name="connection">
+	/// The db connection uniquely and distinctly associated with the parser
+	/// instance.
+	/// </param>
+	/// <returns>The distinctly unique parser associated with the db connection.</returns>
+	// ---------------------------------------------------------------------------------
 	protected static AbstractLinkageParser Instance(FbConnection connection)
 	{
 		AbstractLinkageParser parser = null;
@@ -210,6 +373,11 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	}
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Destructor.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	~AbstractLinkageParser()
 	{
 		_AsyncTokenSource.Cancel();
@@ -217,99 +385,73 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	}
 
 
-	public abstract bool SyncEnter();
-
-	public abstract void SyncExit();
-
-	public abstract bool Execute();
+	#endregion Constructors / Destructors
 
 
-	public abstract bool PopulateLinkageTables(CancellationToken asyncToken = default, CancellationToken userToken = default);
 
 
+
+	// =========================================================================================================
+	#region Abstract method declarations - AbstractLinkageParser
+	// =========================================================================================================
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Begins or resumes asynchronous linkage build operations.
+	/// </summary>
+	/// <param name="delay">
+	/// The delay in milliseconds before beginning operations if an async build was
+	/// initiated through the creation of a new data connection in the SE. A delay is
+	/// required to allow the SE time to render the initial root node.
+	/// </param>
+	/// <param name="multiplier">
+	/// A multiplier to split the delay into smaller timeslices and allow checking of
+	/// cancellation tokens during the total delay time of 'delay * multiplier'.
+	/// </param>
+	/// <returns>True if the linkage was successfully completed, else false.</returns>
 	public abstract bool AsyncExecute(int delay = 0, int multiplier = 1);
 
 
-	protected abstract bool AsyncExit();
 
-
-	protected abstract bool TaskHandlerProgress(string stage, int progress, long elapsed);
-
-	protected abstract Task<bool> TaskHandlerProgressAsync(string stage, int progress, long elapsed);
-
-	protected abstract bool UpdateStatusBar(EnumLinkStage stage, bool isAsync);
-
-	protected abstract Task<bool> UpdateStatusBarAsync(EnumLinkStage stage, bool isAsync);
-
-
-	protected DataTable GetRawGeneratorSchema()
-	{
-		DslRawGenerators schema = new();
-
-		try
-		{
-			Requesting = true;
-			_RawGenerators = schema.GetRawSchema(_Connection, "Generators");
-			Requesting = false;
-		}
-		catch (Exception ex) 
-		{
-			Diag.Dug(ex);
-			throw;
-		}
-
-		TaskHandlerProgress("SELECT Generators", 13, Stopwatch.ElapsedMilliseconds);
-
-		return _RawGenerators;
-	}
-
-
-protected DataTable GetRawTriggerSchema()
-	{
-		DslRawTriggers schema = new();
-
-		try
-		{ 
-			Requesting = true;
-			_RawTriggers = schema.GetRawSchema(_Connection, "Triggers");
-			Requesting = false;
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw;
-		}
-
-		TaskHandlerProgress("SELECT Triggers", 88, Stopwatch.ElapsedMilliseconds);
-
-		return _RawTriggers;
-	}
-
-
-	protected DataTable GetRawTriggerGeneratorSchema()
-	{
-		DslRawTriggerGenerators schema = new();
-
-		try
-		{ 
-			Requesting = true;
-			_RawTriggerGenerators = schema.GetRawSchema(_Connection, "TriggerGenerators");
-			Requesting = false;
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw;
-		}
-
-		TaskHandlerProgress("SELECT TriggerGenerators", 43, Stopwatch.ElapsedMilliseconds);
-
-		return _RawTriggerGenerators;
-	}
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Resumes or begins linkage operations on the UI thread. If an async build is
+	/// active, waits for it to complete it's currently active task, before taking over
+	/// and completing any remaining tasks.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public abstract bool Execute();
 
 
 
-	public void BuildSequenceTable()
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Performs the actual linkage build operations.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected abstract bool PopulateLinkageTables(CancellationToken asyncToken = default,
+		CancellationToken userToken = default);
+
+
+	#endregion Abstract method declarations
+
+
+
+
+
+	// =========================================================================================================
+	#region Internal Methods - AbstractLinkageParser
+	// =========================================================================================================
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Populates the internal generator table (with linkage) that will be used in
+	/// future schema requests for the generators.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected void BuildSequenceTable()
 	{
 		Stopwatch.Reset();
 		Stopwatch.Start();
@@ -342,15 +484,22 @@ protected DataTable GetRawTriggerSchema()
 		TaskHandlerProgress("Build Sequence Table", 94, Stopwatch.ElapsedMilliseconds);
 	}
 
-	
 
-	public void BuildTriggerTable()
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Populates the internal trigger table (with linkage) that will be used in future
+	/// schema requests for triggers.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected void BuildTriggerTable()
 	{
 		Stopwatch.Reset();
 		Stopwatch.Start();
 
 
 		_Triggers.BeginLoadData();
+		_Sequences.BeginLoadData();
 
 		bool isIdentity;
 		int increment;
@@ -368,7 +517,7 @@ protected DataTable GetRawTriggerSchema()
 		object[] key;
 
 
-		System.Collections.IEnumerator enumerator = _RawTriggerGenerators.Rows.GetEnumerator();
+		System.Collections.IEnumerator enumerator = _RawTriggerDependencies.Rows.GetEnumerator();
 
 		if (enumerator.MoveNext())
 		{
@@ -406,9 +555,9 @@ protected DataTable GetRawTriggerSchema()
 				try
 				{
 					if (i < 0)
-						trig[i+2] = DBNull.Value;
+						trig[i + 2] = DBNull.Value;
 					else
-						trig[i+2] = row[i];
+						trig[i + 2] = row[i];
 				}
 				catch (Exception ex)
 				{
@@ -416,12 +565,12 @@ protected DataTable GetRawTriggerSchema()
 				}
 			}
 
-			for (j = 1, i += 2; j < _RawTriggerGenerators.Columns.Count; j++, i++)
+			for (j = 1, i += 2; j < _RawTriggerDependencies.Columns.Count; j++, i++)
 			{
 				if (result != 0)
 				{
 					trig[i] = DBNull.Value;
-				 	continue;
+					continue;
 				}
 
 				try
@@ -450,7 +599,7 @@ protected DataTable GetRawTriggerSchema()
 
 			if (isIdentity)
 			{
-				(genId, increment, seed) = ParseGeneratorInfo(trig["EXPRESSION"].ToString(), trig["TRIGGER_NAME"].ToString(),
+				(genId, increment, seed) = ParseTriggerDSL(trig["EXPRESSION"].ToString(), trig["TRIGGER_NAME"].ToString(),
 					trig["TABLE_NAME"].ToString(), trig["DEPENDENCY_FIELDS"].ToString());
 
 				if (genId != null)
@@ -499,9 +648,13 @@ protected DataTable GetRawTriggerSchema()
 		_Triggers.EndLoadData();
 		_Triggers.AcceptChanges();
 
+		_Sequences.EndLoadData();
+		_Sequences.AcceptChanges();
+
 		_LinkStage = EnumLinkStage.Completed;
 		_RawTriggers = null;
-		_RawTriggerGenerators = null;
+		_RawTriggerDependencies = null;
+		_DslParser = null;
 
 		Stopwatch.Stop();
 		_Elapsed += Stopwatch.ElapsedMilliseconds;
@@ -511,6 +664,99 @@ protected DataTable GetRawTriggerSchema()
 		_Stopwatch = null;
 	}
 
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Performs an external full SELECT of the database system generator table.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected DataTable GetRawGeneratorSchema()
+	{
+		DslRawGenerators schema = new();
+
+		try
+		{
+			Requesting = true;
+			_RawGenerators = schema.GetRawSchema(_Connection, "Generators");
+			Requesting = false;
+		}
+		catch (Exception ex) 
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+
+		TaskHandlerProgress("SELECT Generators", 13, Stopwatch.ElapsedMilliseconds);
+
+		return _RawGenerators;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Performs an external full SELECT of the database trigger dependencies.
+	/// Splitting the dependency fetch from <see cref="GetRawTriggerSchema"/> improves
+	/// the overall fetch time by +-80%.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected DataTable GetRawTriggerDependenciesSchema()
+	{
+		DslRawTriggerDependencies schema = new();
+
+		try
+		{
+			Requesting = true;
+			_RawTriggerDependencies = schema.GetRawSchema(_Connection, "TriggerDependencies");
+			Requesting = false;
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+
+		TaskHandlerProgress("SELECT TriggerDependencies", 43, Stopwatch.ElapsedMilliseconds);
+
+		return _RawTriggerDependencies;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Performs an external full SELECT of the database system trigger table.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected DataTable GetRawTriggerSchema()
+	{
+		DslRawTriggers schema = new();
+
+		try
+		{ 
+			Requesting = true;
+			_RawTriggers = schema.GetRawSchema(_Connection, "Triggers");
+			Requesting = false;
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+
+		TaskHandlerProgress("SELECT Triggers", 88, Stopwatch.ElapsedMilliseconds);
+
+		return _RawTriggers;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Updates a row of the internal trigger table with identity linkage information.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	protected void UpdateTriggerData(DataRow trig, string genId, bool isIdentity, int dependencyCount)
 	{
 
@@ -530,6 +776,101 @@ protected DataTable GetRawTriggerSchema()
 		trig["IS_IDENTITY"] = isIdentity;
 	}
 
+
+	#endregion Internal Methods
+
+
+
+
+
+	// =========================================================================================================
+	#region Public Methods - AbstractLinkageParser
+	// =========================================================================================================
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Finds a trigger in the internal linked trigger table and returns it's row else
+	/// return null.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public DataRow FindTrigger(object name)
+	{
+		return _Triggers.Rows.Find(name);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Performs a generator table GetSchema() request using the internal linked sequence
+	/// table.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public DataTable GetSequenceSchema(string[] restrictions)
+	{
+		if (!Loaded)
+			Execute();
+
+		var where = new StringBuilder();
+
+		if (restrictions != null)
+		{
+			// var index = 0;
+
+			/* GENERATOR_CATALOG */
+			if (restrictions.Length >= 1 && restrictions[0] != null)
+			{
+			}
+
+			/* GENERATOR_SCHEMA	*/
+			if (restrictions.Length >= 2 && restrictions[1] != null)
+			{
+			}
+
+			/* SEQUENCE_GENERATOR */
+			if (restrictions.Length >= 3 && restrictions[2] != null)
+			{
+				// Cannot pass params to execute block
+				// where.AppendFormat("rdb$generator_name = @p{0}", index++);
+				where.AppendFormat("SEQUENCE_GENERATOR = '{0}'", restrictions[2].ToString());
+			}
+
+			/* IS_SYSTEM_GENERATOR	*/
+			if (restrictions.Length >= 4 && restrictions[3] != null)
+			{
+				if (where.Length > 0)
+				{
+					where.Append(" AND ");
+				}
+
+				// Cannot pass params to execute block
+				// where.AppendFormat("rdb$system_flag = @p{0}", index++);
+				where.AppendFormat("IS_SYSTEM_FLAG = '{0}'", restrictions[3].ToString());
+			}
+		}
+
+
+		if (where.Length > 0)
+		{
+			_Sequences.DefaultView.RowFilter = where.ToString();
+			return _Sequences.DefaultView.ToTable();
+		}
+
+		_Sequences.DefaultView.RowFilter = null;
+
+		return _Sequences;
+
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Performs a trigger table GetSchema() request using the internal linked trigger
+	/// table.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public DataTable GetTriggerSchema(string[] restrictions, int systemFlag, int identityFlag)
 	{
 		if (!Loaded)
@@ -610,74 +951,14 @@ protected DataTable GetRawTriggerSchema()
 
 	}
 
-	public DataTable GetSequenceSchema(string[] restrictions)
-	{
-		if (!Loaded)
-			Execute();
-
-		var where = new StringBuilder();
-
-		if (restrictions != null)
-		{
-			// var index = 0;
-
-			/* GENERATOR_CATALOG */
-			if (restrictions.Length >= 1 && restrictions[0] != null)
-			{
-			}
-
-			/* GENERATOR_SCHEMA	*/
-			if (restrictions.Length >= 2 && restrictions[1] != null)
-			{
-			}
-
-			/* SEQUENCE_GENERATOR */
-			if (restrictions.Length >= 3 && restrictions[2] != null)
-			{
-				// Cannot pass params to execute block
-				// where.AppendFormat("rdb$generator_name = @p{0}", index++);
-				where.AppendFormat("SEQUENCE_GENERATOR = '{0}'", restrictions[2].ToString());
-			}
-
-			/* IS_SYSTEM_GENERATOR	*/
-			if (restrictions.Length >= 4 && restrictions[3] != null)
-			{
-				if (where.Length > 0)
-				{
-					where.Append(" AND ");
-				}
-
-				// Cannot pass params to execute block
-				// where.AppendFormat("rdb$system_flag = @p{0}", index++);
-				where.AppendFormat("IS_SYSTEM_FLAG = '{0}'", restrictions[3].ToString());
-			}
-		}
 
 
-		if (where.Length > 0)
-		{
-			_Sequences.DefaultView.RowFilter = where.ToString();
-			return _Sequences.DefaultView.ToTable();
-		}
-
-		_Sequences.DefaultView.RowFilter = null;
-
-		return _Sequences;
-
-	}
-
-
-	public async Task<DataTable> GetSequenceSchemaAsync(string[] restrictions, CancellationToken asyncLockedToken)
-	{
-		await Task.CompletedTask.ConfigureAwait(false);
-		return GetSequenceSchema(restrictions);
-	}
-
-	public DataRow FindTrigger(object name)
-	{
-		return _Triggers.Rows.Find(name);
-	}
-
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Locates and returns the internal linked trigger table row for an identity
+	/// column else returns null.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public DataRow LocateIdentityTrigger(object objTable, object objField)
 	{
 		string table = objTable.ToString();
@@ -692,9 +973,203 @@ protected DataTable GetRawTriggerSchema()
 		return null;
 	}
 
+
+	#endregion Public Methods
+
+
+
+
+
+	// =========================================================================================================
+	#region Utility Methods - AbstractLinkageParser
+	// =========================================================================================================
+
+
+	// Deadlock warning message suppression
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
+		Justification = "Code logic ensures a deadlock cannot occur")]
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Launches TaskHandlerProgressAsync from a thread in the thread pool so that it
+	/// can switch to the UI thread and be clear to update the IDE task handler progress
+	/// bar.
+	/// </summary>
+	/// <param name="stage">The descriptive name of the completed stage</param>
+	/// <param name="progress">The % completion of the linkage build.</param>
+	/// <param name="elapsed">The time taken to complete the stage.</param>
+	// ---------------------------------------------------------------------------------
+	protected bool TaskHandlerProgress(string stage, int progress, long elapsed)
+	{
+		_ = Task.Factory.StartNew(() => TaskHandlerProgressAsync(stage, progress, elapsed).Result,
+				default, TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent,
+				TaskScheduler.Default);
+
+		return true;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Moves back onto the UI thread and updates the IDE task handler progress bar.
+	/// </summary>
+	/// <param name="stage">The descriptive name of the completed stage</param>
+	/// <param name="progress">The % completion of the linkage build.</param>
+	/// <param name="elapsed">The time taken to complete the stage.</param>
+	// ---------------------------------------------------------------------------------
+	protected async Task<bool> TaskHandlerProgressAsync(string stage, int progress, long elapsed)
+	{
+		if (_TaskHandler == null)
+			return false;
+
+		// Switch to main thread
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		// Check again since joining UI thread.
+		if (_TaskHandler == null)
+			return false;
+
+		_ProgressData.PercentComplete = progress;
+
+		if (progress == 100)
+		{
+			_ProgressData.ProgressText = $"Completed. {stage} {elapsed}ms.";
+		}
+		else if (_AsyncToken.IsCancellationRequested || !_Enabled)
+		{
+			_ProgressData.ProgressText = $"Cancelled. {progress}% completed. {stage} took {elapsed}ms.";
+		}
+		else
+		{
+			_ProgressData.ProgressText = $"{progress}% completed. {stage} took {elapsed}ms.";
+		}
+
+
+		_TaskHandler.Progress.Report(_ProgressData);
+
+		return true;
+	}
+
+
+
+	// Deadlock warning message suppression
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
+		Justification = "Code logic ensures a deadlock cannot occur")]
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Launches UpdateStatusBarAsync from a thread in the thread pool so that it can
+	/// switch to the UI thread and be clear to update the IDE status bar.
+	/// </summary>
+	/// <param name="stage"></param>
+	/// <param name="isAsync"></param>
+	/// <returns></returns>
+	// ---------------------------------------------------------------------------------
+	protected bool UpdateStatusBar(EnumLinkStage stage, bool isAsync)
+	{
+		_ = Task.Factory.StartNew(() => UpdateStatusBarAsync(stage, isAsync).Result, default,
+				TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent,
+				TaskScheduler.Default);
+
+		return true;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Moves back onto the UI thread and updates the IDE status bar.
+	/// </summary>
+	/// <remarks>
+	/// The bar is only updated at the start of and end of an Execute or AsyncExecute. 
+	/// </remarks>
+	// ---------------------------------------------------------------------------------
+	protected async Task<bool> UpdateStatusBarAsync(EnumLinkStage stage, bool isAsync)
+	{
+		// Switch to main thread
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		try
+		{
+			string async;
+			string catalog = $"{_Connection.DataSource} ({Path.GetFileNameWithoutExtension(_Connection.Database)})";
+
+			IVsStatusbar statusBar = await ServiceProvider.GetGlobalServiceAsync<SVsStatusbar, IVsStatusbar>(swallowExceptions: false);
+
+			// statusBar.FreezeOutput(0);
+
+			if (stage == EnumLinkStage.Clear)
+			{
+				statusBar.Clear();
+			}
+			else if (stage == EnumLinkStage.Start)
+			{
+				async = isAsync ? " (async)" : "";
+
+				statusBar.SetText($"Updating {catalog} sequence linkage.");
+			}
+			else if (stage == EnumLinkStage.Completed)
+			{
+				async = isAsync ? " (async)" : "";
+
+				statusBar.SetText($"Completed {catalog} sequence linkage in {_Elapsed}ms.");
+			}
+			else
+			{
+				if (isAsync)
+				{
+					// If it's a user cancel request.
+					if (!_Enabled)
+						statusBar.SetText($"Cancelled {catalog} sequence linkage.");
+					else
+						statusBar.SetText($"Resuming {catalog} sequence linkage.");
+				}
+				else
+				{
+					if (!_Enabled)
+						statusBar.SetText($"Resuming {catalog} sequence linkage.");
+					else
+						statusBar.SetText($"Switched {catalog} sequence linkage to UI thread.");
+				}
+			}
+
+			if (stage == EnumLinkStage.Completed || (isAsync && !_Enabled))
+			{
+				_ = Task.Run(async delegate
+				{
+					stage = EnumLinkStage.Clear;
+					await Task.Delay(4000);
+					_ = UpdateStatusBarAsync(stage, isAsync);
+				});
+			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+		}
+
+		return true;
+	}
+
+
+	#endregion Utility methods
+
+
+
+
+
+	// =========================================================================================================
+	#region Event handlers - AbstractLinkageParser
+	// =========================================================================================================
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Event handler for a LinkageParser's db connection state change.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	void ConnectionStateChanged(object sender, StateChangeEventArgs e)
 	{
-		if ((e.CurrentState & (ConnectionState.Closed | ConnectionState.Broken)) != 0)
+		if (_AsyncTokenSource != null && (e.CurrentState & (ConnectionState.Closed | ConnectionState.Broken)) != 0)
 		{
 			_AsyncTokenSource.Cancel();
 		}
@@ -709,6 +1184,12 @@ protected DataTable GetRawTriggerSchema()
 
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Event handler for handling the Disposed event of a connection, removing the xref
+	/// in the <see cref="_Instances"/> dictionary.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	protected static void ConnectionDisposed(object sender, EventArgs e)
 	{
 		if (sender is not FbConnection connection)
@@ -724,4 +1205,9 @@ protected DataTable GetRawTriggerSchema()
 
 		}
 	}
+
+
+	#endregion Event handlers
+
+
 }

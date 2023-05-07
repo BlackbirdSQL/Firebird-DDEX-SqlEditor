@@ -17,19 +17,13 @@ namespace BlackbirdDsl {
 
 
 
-/**
- * It parses the given SQL statement and generates a detailled
- * output array for every part of the statement. The method can
- * also generate [position] fields within the output, which hold
- * the character position for every statement part. The calculation
- * of the positions needs some time, if you don't need positions in
- * your application, set the parameter to false.
- *
- * @param SysStr  $sql           The SQL statement.
- * @param boolean $calcPositions True, if the output should contain [position], false otherwise.
- *
- * @return array An associative array with all meta information about the SQL statement.
- */
+// ----------------------------------------------------------------------------------
+/// <summary>
+/// Parses the given SQL statement and generates a nested StringCell output array of
+/// the statement and optional offsets. 
+/// </summary>
+/// <returns>StringCell object</returns>
+// ----------------------------------------------------------------------------------
 StringCell^ Parser::Execute(SysStr^ sql)
 {
 	/*

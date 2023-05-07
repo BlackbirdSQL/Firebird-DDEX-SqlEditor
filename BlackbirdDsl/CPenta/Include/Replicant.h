@@ -18,11 +18,13 @@ namespace C5 {
 // =========================================================================================================
 //											Replicant Class
 //
+/// <summary>
 /// Property and operator definitions for the Replicant class.
 /// Defines utility and worker methods utilized by AbstruseReplicant in implementing IDictionary
 /// and IList interface methods.
 /// T: The type of the value stored in the array. In descendant Cell classes this would by the descendant
 /// Replicant itself, ie. Cell<Cell<T>>.
+/// </summary>
 // =========================================================================================================
 template<typename T> public ref class Replicant : public AbstractReplicant<T>
 {
@@ -74,8 +76,10 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// True if the object has physical collections initialized else false. It may still
 	/// be IsUnary
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsCollection
 	{
@@ -84,7 +88,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// The object has named elements or is in a Dictionary state
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsDictionary
 	{
@@ -93,8 +99,10 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// True if the object has physical collections initialized else false. It may still
 	/// be IsUnary
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsICollection
 	{
@@ -103,7 +111,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// The object has unnamed elements or is in a one-dimensional list state
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsList
 	{
@@ -112,8 +122,10 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Checks if any containers have a value (not nullptr). No further validation.
 	/// IsNull: Level 1 existence check. Containers don't exist (are all nullptr).
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNull
 	{
@@ -125,8 +137,10 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Checks element at index for nullptr if it exists else returns true.
 	/// IsNull: Level 1 existence check. Containers don't exist (are all nullptr).
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNull[int]
 	{
@@ -138,8 +152,10 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Checks element of 'key' for nullptr if it exists else returns true.
 	/// IsNull: Level 1 existence check. Containers don't exist (are all nullptr).
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNull[SysStr^]
 	{
@@ -155,9 +171,11 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Returns true if Count == 0.
 	/// IsNullOrEmpty: Level 3 existence check. Value container IsNullOrEmpty and
 	/// collection Count == 0.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNullOrEmpty
 	{
@@ -169,10 +187,12 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an IsNullOrEmpty check on the element at index if it exist, else
 	/// returns true.
 	/// IsNullOrEmpty: Level 3 existence check. Value container IsNullOrEmpty and
 	/// collection Count == 0.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNullOrEmpty[int]
 	{
@@ -184,7 +204,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Checks that key does not exist else checks if element of key is null or empty.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNullOrEmpty[SysStr^]
 	{
@@ -198,8 +220,10 @@ public:
 	};
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Returns true if Count == 0.
 	/// IsUnpopulated: Level 2 existence check. Containers don't exist or Count == 0.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsUnpopulated
 	{
@@ -210,9 +234,11 @@ public:
 	};
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an IsNullPtr check on the element at index if it exist, else
 	/// returns true.
 	/// IsUnpopulated: Level 2 existence check. Element doesn't exist or nullptr.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsUnpopulated[int]
 	{
@@ -224,9 +250,11 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an IsNullPtr check on the element for 'key', else
 	/// returns true.
 	/// IsUnpopulated: Level 2 existence check. Element doesn't exist or nullptr.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsUnpopulated[SysStr^]
 	{
@@ -241,8 +269,10 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Checks if the object contains a single named or unnamed element stored in 
 	/// _UnaryKey and/or _UnaryValue.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsUnary
 	{
@@ -251,7 +281,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Returns the key at index. If IsList (!IsDictionary), returns index.ToString()
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property SysStr^ Key[int]
 	{
@@ -275,7 +307,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Implements the List enumerator object for IList<T>.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property IList<T>^ Enumerator
 	{
@@ -287,8 +321,10 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Implements the ReplicaKey Dictionary enumerator object for Replicant.
 	/// ReplicaKeyPair(T) = KeyValuePair<ReplicaKey, T>
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property IEnumerable<ReplicaKeyPair(T)>^ ReplicaKeyEnumerator
 	{
@@ -311,7 +347,9 @@ public:
 public:
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Adds an unnamed element to the collection returning the updated collection.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual IReplicant<T>^ operator+= (const T element) override
 	{
@@ -321,7 +359,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Adds a named element to the collection returning the updated collection.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual IReplicant<T>^ operator+= (const KeyValuePair<SysStr^, T> pair) override
 	{
@@ -331,7 +371,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Adds an unnamed element to the collection returning a new collection. 
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	static Replicant^ operator+ (Replicant^ lhs, T element)
 	{
@@ -380,7 +422,9 @@ public:
 public:
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Default .ctor
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	Replicant() : AbstractReplicant()
 	{
@@ -417,7 +461,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor initialized with an unnamed element collection.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	Replicant(ICollection<T>^ collection) : AbstractReplicant(collection)
 	{
@@ -425,7 +471,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor initialized with a key and value element.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	Replicant(SysStr^ key, T element) : AbstractReplicant(key, element)
 	{
@@ -433,7 +481,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor initialized with a named element collection.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	Replicant(ICollection<KeyValuePair<SysStr^, T>>^ collection) : AbstractReplicant(collection)
 	{
@@ -441,7 +491,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor shallow copy constructor.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	Replicant(Replicant^ collection) : AbstractReplicant(collection)
 	{
@@ -450,7 +502,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Creates an instance of the current type.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual SysObj^ CreateInstance() override
 	{
@@ -459,9 +513,11 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs a shallow (non-destructive) copy of a Replicant into clone.
 	/// A shallow copy creates a mirror image of the source Replicant, preserving object
 	/// references.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual void Clone(SysObj^ cloneObject) override
 	{

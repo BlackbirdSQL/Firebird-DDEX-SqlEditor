@@ -19,7 +19,6 @@
 
 //$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
-using System.Data;
 using System.Text;
 
 using BlackbirdSql.Common.Extensions;
@@ -28,9 +27,9 @@ using BlackbirdSql.Common.Extensions;
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 
-internal class DslRawTriggerGenerators : DslSchema
+internal class DslRawTriggerDependencies : DslSchema
 {
-	public DslRawTriggerGenerators() : base()
+	public DslRawTriggerDependencies() : base()
 	{
 	}
 

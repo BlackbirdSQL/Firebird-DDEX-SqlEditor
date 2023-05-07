@@ -18,11 +18,13 @@ namespace C5 {
 // =========================================================================================================
 //										AbstractReplicant Class
 //
+/// <summary>
 /// Method definitions class for Replicant.
 /// Declares additional properties and operators as abtract not defined by AbstruseReplicant.
 /// Defines utility and worker methods utilized by AbstruseReplicant.
 /// T: The type of the value stored in the array. In descendant Cell classes this would by the descendant
 /// Replicant itself, ie. Cell<Cell<T>>.
+/// </summary>
 // =========================================================================================================
 template<typename T> public ref class AbstractReplicant abstract : public AbstruseReplicant<T>
 {
@@ -36,7 +38,9 @@ template<typename T> public ref class AbstractReplicant abstract : public Abstru
 public:
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Default .ctor
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	AbstractReplicant() : AbstruseReplicant()
 	{
@@ -73,7 +77,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor initialized with an unnamed element collection.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	AbstractReplicant(ICollection<T>^ collection) : AbstruseReplicant(collection)
 	{
@@ -81,7 +87,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor initialized with a key and value element.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	AbstractReplicant(SysStr^ key, T element) : AbstruseReplicant(key, element)
 	{
@@ -89,14 +97,18 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor initialized with a named element collection.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	AbstractReplicant(ICollection<KeyValuePair<SysStr^, T>>^ collection) : AbstruseReplicant(collection)
 	{
 	};
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor shallow copy constructor.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	AbstractReplicant(AbstractReplicant^ collection) : AbstruseReplicant(collection)
 	{
@@ -117,9 +129,11 @@ protected:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Creates the next valid dictionary key for elements without a key when the
 	/// object is in a IsDictionary state. The hint index to convert to a string should
 	/// be _CurrentSeed++.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual SysStr^ CreateDictKey(int hint) override
 	{
@@ -150,7 +164,9 @@ protected:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Determines if a T value is null or empty.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual bool GetIsNullOrEmpty(T value) override
 	{
@@ -160,9 +176,11 @@ protected:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Given a string value, determines if it can be converted to a valid integer
 	/// in the range of the current element collection or plus one to add it to
 	/// the end of the collection.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual int GetValidIndex(SysStr^ value) override
 	{
@@ -351,8 +369,10 @@ protected:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an element insert and assumes that all parameters passed are valid to
 	/// perform an insert without any validation,
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual T UnsafeDictionaryInsert(int index, int previous, SysStr^ key, T value) override
 	{
@@ -434,9 +454,11 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs a shallow (non-destructive) copy of a Replicant into a new Replicant.
 	/// A shallow copy creates a mirror image of the source Replicant, preserving object
 	/// references.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual SysObj^ Clone() override
 	{
@@ -448,10 +470,12 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an insert of the key value pair at the provided index.
 	/// If the key already exists it is replaced if the index is the same or plus one,
 	/// else it is removed.
 	/// This object is migrated to a dictionary if required.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual void Insert(int index, SysStr^ key, T value) override
 	{
@@ -540,9 +564,11 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Searches the string value of the T elements and inserts the new value
 	/// at the correct ignore-case position. If the status is IsDictionary
 	/// will call InsertAfter for a dictionary element with a nullptr key.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual T InsertAfter(SysStr^ search, T value) override
 	{
@@ -590,11 +616,13 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Searches the string value of the T elements and inserts the new pair
 	/// at the correct ignore-case position. If the status is not IsDictionary will
 	/// migrate to a dictionary first.
 	/// If the element is unnamed the value of 'key' will be nullptr and a key will be
 	/// created based on _CurrentSeed and _KeySeed.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual T InsertAfter(SysStr^ search, SysStr^ key, T value) override
 	{
@@ -668,9 +696,11 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Returns the ordinal index of the key else -1. If the list is unnamed
 	/// converts the key to an integer. If the converted key is within the index range
 	/// of the list returns it else returns -1.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual int KeyIndexOf(SysStr^ key) override
 	{
@@ -706,8 +736,10 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Returns the key of the value else nullptr.
 	/// If the list is an unnamed list returns the index cast to SysStr.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual SysStr^ KeyOf(SysStr^ value) override
 	{
@@ -739,7 +771,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs a php array merge.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual void Merge(IReplicant<T>^ value) override
 	{
@@ -760,11 +794,13 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Removes the value of the key and or index and returns true if successful.
 	/// Either index must not be -1 or key must not be nullptr or both may be specified.
 	/// If the list is unnamed converts the key to an integer if it's not nullptr.
 	/// If the converted key is within the index range of the list
 	/// removes the value at that index and returns true.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual bool Remove(int index, SysStr^ key) override
 	{
@@ -818,8 +854,10 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Tries to get the value at "index" and places it in "value" returning true else
 	/// returns false.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual bool TryGetIndexedValue(int index, T% value) override
 	{
@@ -839,8 +877,10 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Tries to convert a string segment to an unsigned integer then tries to get the
 	/// indexed value.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual bool TryGetIndexedValue(SysStr^ segment, T% value) override
 	{

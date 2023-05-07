@@ -111,6 +111,7 @@ namespace C5 {
 // =========================================================================================================
 //												Cell Class
 //
+/// <summary>
 /// Cell property and operator definitions.
 /// A Cell<Tvalue> can be a Tvalue value, held as an Object^ in _Value or a collection of child Cells in
 /// in the Replicant parent class AdvancedReplicant<Cell<Tvalue>>.
@@ -129,7 +130,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Gets or sets the element located at index.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property T^ default[int]
 	{
@@ -145,7 +148,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Gets or sets the named element for key or key cast to int for unnamed elements.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property T^ default[SysStr^]
 	{
@@ -160,7 +165,9 @@ public:
 	};
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// The nested indexed element of an indexed element.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property T^ default[int, int]
 	{
@@ -176,7 +183,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// The nested named element of a named element.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property T^ default[SysStr^, SysStr^]
 	{
@@ -192,7 +201,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// The nested named element of an indexed element.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property T^ default[SysStr^, int]
 	{
@@ -208,7 +219,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// The nested indexed element of a named element.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property T^ default[int, SysStr^]
 	{
@@ -224,8 +237,10 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Checks if any containers have a value (not nullptr). No further validation.
 	/// IsNull: Level 1 existence check. Containers don't exist (are all nullptr).
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNull
 	{
@@ -237,9 +252,11 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an IsNull check on the element at index if it exist, else
 	/// returns true.
 	/// IsNull: Level 1 existence check. Containers don't exist (are all nullptr).
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNull[int]
 	{
@@ -257,9 +274,11 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an IsNull check on the element for 'key' if it exist, else 
 	/// returns true.
 	/// IsNull: Level 1 existence check. Containers don't exist (are all nullptr).
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNull[SysStr^]
 	{
@@ -276,9 +295,11 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an IsNull check on the element for the nested keys if it exist, else 
 	/// returns true.
 	/// IsNull: Level 1 existence check. Containers don't exist (are all nullptr).
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNull[SysStr^, SysStr^]
 	{
@@ -295,9 +316,11 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Checks value container for IsNullOrEmpty and collections for Count == 0.
 	/// IsNullOrEmpty: Level 3 existence check. Value container IsNullOrEmpty and
 	/// collection Count == 0.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNullOrEmpty
 	{
@@ -309,10 +332,12 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an IsNullOrEmpty check on the element at index if it exist, else
 	/// returns true.
 	/// IsNullOrEmpty: Level 3 existence check. Value container IsNullOrEmpty and
 	/// collection Count == 0.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNullOrEmpty[int]
 	{
@@ -329,10 +354,12 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an IsNullOrEmpty check on the element for 'key' if it exist, else 
 	/// returns true.
 	/// IsNullOrEmpty: Level 3 existence check. Value container IsNullOrEmpty and
 	/// collection Count == 0.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNullOrEmpty[SysStr^]
 	{
@@ -350,10 +377,12 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an IsNullOrEmpty check on the element for the nested keys if it exist,
 	/// else returns true.
 	/// IsNullOrEmpty: Level 3 existence check. Value container IsNullOrEmpty and
 	/// collection Count == 0.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsNullOrEmpty[SysStr^, SysStr^]
 	{
@@ -369,10 +398,12 @@ public:
 	};
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Returns true if no containers have a value (== nullptr). If there is a
 	///  collection will still return true if Count == 0.
 	/// IsUnpopulated: Level 2 existence check. Containers don't exist or, for a
 	/// collection, Count == 0.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsUnpopulated
 	{
@@ -383,10 +414,12 @@ public:
 	};
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an IsUnpopulated check on the element at index if it exist, else
 	/// returns true.
 	/// IsUnpopulated: Level 2 existence check. Containers don't exist or, for a
 	/// collection, Count == 0.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsUnpopulated[int]
 	{
@@ -403,10 +436,12 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an IsUnpopulated check on the element for 'key' if it exist, else 
 	/// returns true.
 	/// IsUnpopulated: Level 2 existence check. Containers don't exist or, for a
 	/// collection, Count == 0.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsUnpopulated[SysStr^]
 	{
@@ -423,10 +458,12 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs an IsUnpopulated check on the element for the nested key2 if it exist,
 	/// else  returns true.
 	/// IsUnpopulated: Level 2 existence check. Containers don't exist or, for a
 	/// collection, Count == 0.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool IsUnpopulated[SysStr^, SysStr^]
 	{
@@ -454,8 +491,10 @@ public:
 public:
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Returns the length of the stored value if it exists else -1 if this object
 	/// IsCollection else 0.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property int Length
 	{
@@ -477,9 +516,11 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Gets or sets the physical locally stored object. To get the latest real object
 	/// if it exists use StorageObject and TransientObject instead.
 	/// Setting the local object will clear the node chain / tree.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property SysObj^ LocalObject
 	{
@@ -497,9 +538,11 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Gets or sets the physical locally stored object cast as Tvalue. To get the latest
 	/// real value if it exists use StorageValue and TransientValue instead.
 	/// Setting the local value will clear the node chain / tree.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property Tvalue LocalValue
 	{
@@ -520,9 +563,11 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Gets or sets the physical locally stored object cast as SysStr^. To get the
 	/// latest real value if it exists use StorageString and TransientString instead.
 	/// Setting the local value will clear the node chain / tree.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property SysStr^ LocalString
 	{
@@ -547,7 +592,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Enables / disables recursive storage
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property bool RecursiveStorage
 	{
@@ -563,9 +610,11 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Gets the cell in the chain that holds the unique Cell _Value for this cell if it
 	/// exists. It exists if this cell's _Value is not null or, if it has a single
 	/// element in it's collections then that cell will be recursively inspected.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property T^ StorageCell
 	{
@@ -585,9 +634,11 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Gets or Sets the stored object of the Cell if it exists. 
 	/// ie. StorageCell != nullptr. For the Setter if StorageCell == nullptr, clears all
 	/// containers for garbage collect and sets the LocalValue.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property SysObj^ StorageObject
 	{
@@ -606,9 +657,11 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Gets or Sets the stored value of the Cell if it exists.
 	/// ie. StorageCell != nullptr. For the Setter if StorageCell == nullptr, clears all
 	/// containers for garbage collect and sets the LocalValue.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property Tvalue StorageValue
 	{
@@ -630,9 +683,11 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Gets or Sets the stored value of the Cell cast to SysStr^ if it exists.
 	/// ie. StorageCell != nullptr. For the Setter if StorageCell == nullptr, clears all
 	/// containers for garbage collect and sets the LocalString.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property SysStr^ StorageString
 	{
@@ -658,8 +713,10 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Converts the stored value of the Cell to SysStr^ upprcase, if it exists.
 	/// else returns "". 
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property SysStr^ ToUpper
 	{
@@ -681,8 +738,10 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Returns the cell that was stored in the last get or set of the StorageCell
 	/// property. See <see ref="TransientValue"/> for further information.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property T^ TransientCell
 	{
@@ -695,6 +754,7 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Gets the last value known since a call to StorageValue, StorageObject or
 	/// StorageCell. To guarantee you are getting the latest stored object use
 	/// StorageObject instead, which inspects the cell tree.
@@ -702,6 +762,7 @@ public:
 	/// myVariable = (StorageObject == nullptr ? "SysObj is null" : TransientObject);
 	/// In the above example StorageObject is used first which guarantees TransientObject
 	/// or TransientValue will be accessing the latest StorageCell.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property SysObj^ TransientObject
 	{
@@ -721,6 +782,7 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Gets the last value known since a call to StorageValue, StorageObject or
 	/// StorageCell. To guarantee you are getting the latest stored value use
 	/// StorageValue instead, which inspects the cell tree.
@@ -728,6 +790,7 @@ public:
 	/// myVariable = (StorageValue == "Me" ? "Value is Mine" : TransientValue);
 	/// In the above example StorageValue is used first which guarantees TransientValue
 	/// or TransientObject will be accessing the latest StorageCell.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property Tvalue TransientValue
 	{
@@ -749,6 +812,7 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Gets the last object (as SysStr^) known since a call to StorageValue,
 	/// StorageString, StorageObject or StorageCell. To guarantee you are getting the
 	/// latest stored object use StorageString instead, which inspects the cell tree.
@@ -756,6 +820,7 @@ public:
 	/// myVariable = (StorageString == nullptr ? "SysStr is null" : TransientString);
 	/// In the above example StorageString is used first which guarantees
 	/// TransientString or Transient... will be accessing the latest StorageCell.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	property SysStr^ TransientString
 	{
@@ -784,12 +849,14 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Gets or Sets the char located at the index/offset of the (SysStr^) cast stored
 	/// value of the cell. If the StorageValue is nullptr (and IsCollection for Get) or the
 	/// offset is out of the bounds 0 to Length an exception is thrown. On Set if the
 	/// offset is equal to the Length the char will be appended.
 	/// If offset is zero and this object IsCollection, collections will be garbage collected
 	/// and the Local value set to (SysStr^)value; 
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual property XCHAR Value[int]
 	{
@@ -862,9 +929,11 @@ public:
 
 
 	// ***********----------------------------------------------------------------------
+	/// <summary>
 	/// Implements Values getter. Returns list of elements. If IsUnary returns wrapped
 	/// _UnaryElement else if IsList (!IsDictionay) returns _Items else if IsDictionary
 	/// will return _Dict Values.
+	/// </summary>
 	// ***********----------------------------------------------------------------------
 	virtual property ICollection<T^>^ Values
 	{
@@ -873,8 +942,10 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Casts the stored object to SysStr^ else returns nullptr if the stored value does
 	/// not exist.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual operator SysStr ^ () override
 	{
@@ -883,7 +954,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Returns false when IsNull else true for all other cases.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual operator bool () override
 	{
@@ -894,8 +967,10 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Returns 0 when IsNull else ToInt32 if StorageObject is set else 1 for all other
 	/// cases.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual operator int() override
 	{
@@ -908,8 +983,10 @@ public:
 	};
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Casts the stored object to wchar_t* else returns nullptr if the stored value does
 	/// not exist.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	/*
 	virtual operator PCXSTR() override
@@ -926,8 +1003,10 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Casts the stored object to char* else returns nullptr if the stored value does
 	/// not exist.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	/*
 	virtual operator PYSTR() override
@@ -944,8 +1023,10 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Sets the LocalObject to (SysObj^)value where value is type SysStr^ and returns the
 	/// updated Cell<Tvalue>^.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual T% operator=(const SysStr^ rhs) override
 	{
@@ -955,8 +1036,10 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Sets the LocalObject to 1 for true or calls Clear() for false and returns the
 	/// updated Cell<Tvalue>^.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual T% operator=(const bool rhs) override
 	{
@@ -970,8 +1053,10 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Sets the LocalObject to value for != 0 or calls Clear() for 0 and returns the
 	/// updated Cell<Tvalue>^.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual T% operator=(const int rhs) override
 	{
@@ -984,8 +1069,10 @@ public:
 	};
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Sets the LocalObject to (SysObj^)value where value is a null terminated type
 	/// wchar_t* and returns the updated Cell<Tvalue>^.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual T% operator=(PCXSTR rhs) override
 	{
@@ -994,8 +1081,10 @@ public:
 	};
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Sets the LocalObject to (SysObj^)value where value is a null terminated type
 	/// char* and returns the updated Cell<Tvalue>^.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual T% operator=(PCYSTR rhs) override
 	{
@@ -1004,9 +1093,11 @@ public:
 	};
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Clears this and then performs a shallow (non-destructive) copy of Cell value
 	/// into this returning the updated Cell<Tvalue>^. To perform a deep copy use the
 	/// copy constructor.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual T% operator=(const T^ rhs) override
 	{
@@ -1016,9 +1107,11 @@ public:
 	};
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Clears this and then performs a shallow (non-destructive) copy of Cell value
 	/// into this returning the updated Cell<Tvalue>^. To perform a deep copy use the
 	/// copy constructor.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual T^ operator=(const T% rhs) override
 	{
@@ -1028,8 +1121,10 @@ public:
 	};
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// If lhs is a collection rhs will be added as an element otherwise it will be
 	/// concatenated, returning the updated Cell<Tvalue>^.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual T^ operator+= (const SysStr^ rhs) override
 	{
@@ -1051,8 +1146,10 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// If lhs is a collection rhs will be added as an element otherwise it will be
 	/// concatenated, returning the updated Cell<Tvalue>^.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual T^ operator+=(PCXSTR rhs) override
 	{
@@ -1061,9 +1158,11 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// If either lhs or rhs is a collection both will be treated as collections and
 	/// returning the updated collection. If neither are collections they will be
 	/// concatenated returning the updated Cell<Tvalue>^.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual T^ operator+=(const T^ rhs) override
 	{
@@ -1096,7 +1195,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Adds lhs String to rhs Cell^ returning a new String.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	static SysStr^ operator+(SysStr^ lhs, Cell^ rhs)
 	{
@@ -1109,7 +1210,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Adds lhs wchar_t* to rhs Cell^ returning a new wchar_t*.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	static PXSTR operator+(PXSTR lhs, Cell^ rhs)
 	{
@@ -1124,7 +1227,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Adds lhs char* to rhs Cell^ returning a new char*.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	static PYSTR operator+(PYSTR lhs, Cell^ rhs)
 	{
@@ -1139,10 +1244,12 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Adds lhs to rhs returning a new Cell.
 	/// If lhs is a collection both will be treated as collections and a new collection
 	/// returned else they will be concatenated. The new cell will be created using
 	/// a shallow copy, preserving Cell references.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	static T^ operator+ (Cell^ lhs, SysStr^ rhs)
 	{
@@ -1166,9 +1273,11 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// If lhs is a collection both will be treated as collections and a new collection
 	/// returned else they will be concatenated. The new cell will be created using
 	/// a shallow copy, preserving Cell references.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	static T^ operator+(Cell^ lhs, PXSTR rhs)
 	{
@@ -1177,9 +1286,11 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// If lhs is a collection both will be treated as collections and a new collection
 	/// returned else they will be concatenated. The new cell will be created using
 	/// a shallow copy, preserving Cell references.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	static T^ operator+(Cell^ lhs, PYSTR rhs)
 	{
@@ -1188,7 +1299,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Converts lhs to Int32 and subtracts rhs returning result.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	static int operator-(Cell^ lhs, int rhs)
 	{
@@ -1202,7 +1315,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Concatenates rhs to lhs.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	/*
 	static PXSTR operator+(PXSTR lhs, Cell^ rhs)
@@ -1213,7 +1328,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Concatenates rhs to lhs.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	/*
 	static PYSTR operator+(PYSTR lhs, Cell^ rhs)
@@ -1224,10 +1341,12 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// If either lhs or rhs is a collection both will be treated as collections and
 	/// a new collection returned. If neither are collections they will be concatenated
 	/// a new Cell<Tvalue>^ object. The new cell will be created using a shallow Clone()
 	/// copy, preserving Cell references.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	static T^ operator+(Cell^ lhs, T^ rhs)
 	{
@@ -1254,11 +1373,13 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Strictly not-equal deep negative equivalancy - Considers nullptr's to be equal
 	/// and objects to be equal if their values are equal, even if they are
 	/// referentially different objects.
 	/// To consider nullptr's unequal and equal values unequal if they are referentially
 	/// different objects use operator==.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual bool operator!= (SysStr^ rhs) override
 	{
@@ -1280,11 +1401,13 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Strictly not-equal deep negative equivalancy - Considers nullptr's to be equal
 	/// and objects to be equal if their values are equal, even if they are
 	/// referentially different objects.
 	/// To consider nullptr's unequal and equal values unequal if they are referentially
 	/// different objects use operator==.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual bool operator!= (PXSTR rhs) override
 	{
@@ -1296,11 +1419,13 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs a full tree strictly not-equal deep negative equivalancy check.
 	/// Considers objects to be equal if their values are equal, even if they are
 	/// referentially different objects.
 	/// To consider equal values unequal if they are referentially different objects
 	/// use operator==.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	static bool operator!=(Cell^ lhs, Cell^ rhs)
 	{
@@ -1402,10 +1527,12 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Strictly equal shallow equivalancy - Considers nullptr's unequal and objects
 	/// with equal values to be unequal if they are referentially different objects.
 	/// To consider nullptr's equal and equal values to be equal even if they are
 	/// referentially different objects use operator!=.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual bool operator== (SysStr^ value) override
 	{
@@ -1421,10 +1548,12 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Strictly equal shallow equivalancy - Considers nullptr's unequal and objects
 	/// with equal values to be unequal if they are referentially different objects.
 	/// To consider nullptr's equal and equal values to be equal even if they are
 	/// referentially different objects use operator!=.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual bool operator==(PXSTR value) override
 	{
@@ -1436,11 +1565,13 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs a strictly equal shallow equivalancy check.
 	/// Considers with equal values to be unequal if they are referentially different
 	/// objects.
 	/// To consider equal values to be equal even if they are referentially different
 	/// objects use operator!=.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	static bool operator==(Cell^ lhs, T^ rhsT)
 	{
@@ -1517,7 +1648,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Default .ctor
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	Cell() : AbstractCell()
 	{
@@ -1525,7 +1658,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor with initial and growth capacity.
+	/// </summary>
 	/// <param name="capacity">
 	/// Sets the initial and growth capacity. If capacity is less than one, the default
 	/// _InitialCapacity will be used.
@@ -1537,7 +1672,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor with an initial Cell element.
+	/// </summary>
 	/// <param name="capacity">
 	/// Sets the initial and growth capacity. If capacity is less than one, the default
 	/// _InitialCapacity will be used.
@@ -1549,7 +1686,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor initialized with an unnamed element collection.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	Cell(ICollection<T^>^ collection) : AbstractCell(collection)
 	{
@@ -1557,7 +1696,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor initialized with an string collection.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	Cell(ICollection<SysStr^>^ collection) : AbstractCell(collection)
 	{
@@ -1565,7 +1706,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor initialized with a key and Cell^ element.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	Cell(SysStr^ key, T^ element) : AbstractCell(key, element)
 	{
@@ -1573,7 +1716,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor initialized with a named element collection.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	Cell(ICollection<KeyValuePair<SysStr^, T^>>^ collection) : AbstractCell(collection)
 	{
@@ -1582,8 +1727,10 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor deep (destructive) copy constructor. To perform a shallow copy use the
 	/// assignment (operator=) operator.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	Cell(T^ cell) : AbstractCell(cell)
 	{
@@ -1591,7 +1738,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor with unary string value initializer.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	Cell(SysStr^ value) : AbstractCell(value)
 	{
@@ -1599,14 +1748,18 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor with unary PCXSTR value initializer.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	Cell(PCXSTR value) : AbstractCell(value)
 	{
 	};
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor with unary PXSTR value initializer.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	Cell(PCYSTR value) : AbstractCell(value)
 	{
@@ -1614,7 +1767,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// .ctor with unary SysObj^ value initializer. Reference is preserved.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	Cell(SysObj^ value) : AbstractCell(value)
 	{
@@ -1623,7 +1778,9 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Creates an instance of the current type.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual SysObj^ CreateInstance() override
 	{
@@ -1633,10 +1790,12 @@ public:
 
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Performs a shallow (non-destructive) copy of this into into clone. A shallow
 	/// copy creates a mirror image of the source Cell, preserving object refrences.
 	/// To create an entirely new set of objects use the deep copy CopyTo() method or
 	/// the copy constructor.
+	/// </summary>
 	// ---------------------------------------------------------------------------------
 	virtual void Clone(SysObj^ cloneObject) override
 	{

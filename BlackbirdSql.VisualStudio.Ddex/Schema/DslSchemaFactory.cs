@@ -85,7 +85,7 @@ internal sealed class DslSchemaFactory
 			case "TriggerColumns":
 				schemaCollection = "Columns";
 				break;
-			case "TriggerGenerators":
+			case "TriggerDependencies":
 			case "IdentityTriggers":
 			case "StandardTriggers":
 			case "SystemTriggers":
@@ -245,7 +245,7 @@ internal sealed class DslSchemaFactory
 			case "TriggerColumns":
 				schemaCollection = "Columns";
 				break;
-			case "TriggerGenerators":
+			case "TriggerDependencies":
 			case "IdentityTriggers":
 			case "StandardTriggers":
 			case "SystemTriggers":
@@ -466,7 +466,7 @@ internal sealed class DslSchemaFactory
 				break;
 			case "GENERATORS":
 			case "TRIGGERS":
-			case "TRIGGERGENERATORS":
+			case "TRIGGERDEPENDENCIES":
 				ex = new(string.Format("The raw metadata collection {0} may not be called from here.", collectionName));
 				Diag.Dug(ex);
 				throw ex;
@@ -533,7 +533,7 @@ internal sealed class DslSchemaFactory
 				break;
 			case "GENERATORS":
 			case "TRIGGERS":
-			case "TRIGGERGENERATORS":
+			case "TRIGGERDEPENDENCIES":
 				ex = new(string.Format("The raw metadata collection {0} may not be called from here.", collectionName));
 				Diag.Dug(ex);
 				throw ex;
@@ -585,7 +585,7 @@ internal sealed class DslSchemaFactory
 			case "Triggers":
 			case "ViewColumns":
 			case "TriggerColumns":
-			case "TriggerGenerators":
+			case "TriggerDependencies":
 			case "IdentityTriggers":
 			case "StandardTriggers":
 			case "SystemTriggers":
