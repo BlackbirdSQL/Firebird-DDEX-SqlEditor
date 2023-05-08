@@ -208,8 +208,8 @@ internal class LinkageParser : AbstractLinkageParser
 
 		_AsyncActive = false;
 
-		_TaskHandler = null;
-		_ProgressData = default;
+		// _TaskHandler = null;
+		// _ProgressData = default;
 
 		return true;
 	}
@@ -296,11 +296,11 @@ internal class LinkageParser : AbstractLinkageParser
 		if (!ConnectionActive)
 			return false;
 
+		TaskHandlerProgress(null, GetPercentageComplete(_LinkStage),
+			_LinkStage == EnumLinkStage.Start ? 0 : -1);
+
 		if (_LinkStage < EnumLinkStage.GeneratorsLoaded)
-		{
-			if (GetRawGeneratorSchema() != null)
-				_LinkStage = EnumLinkStage.GeneratorsLoaded;
-		}
+			GetRawGeneratorSchema();
 
 
 		if (_AsyncActive && userToken.IsCancellationRequested)
@@ -313,10 +313,7 @@ internal class LinkageParser : AbstractLinkageParser
 
 
 		if (_LinkStage < EnumLinkStage.TriggerDependenciesLoaded)
-		{
-			if (GetRawTriggerDependenciesSchema() != null)
-				_LinkStage = EnumLinkStage.TriggerDependenciesLoaded;
-		}
+			GetRawTriggerDependenciesSchema();
 
 
 		if (_AsyncActive && userToken.IsCancellationRequested)
@@ -328,10 +325,7 @@ internal class LinkageParser : AbstractLinkageParser
 			return false;
 
 		if (_LinkStage < EnumLinkStage.TriggersLoaded)
-		{
-			if (GetRawTriggerSchema() != null)
-				_LinkStage = EnumLinkStage.TriggersLoaded;
-		}
+			GetRawTriggerSchema();
 
 		if (_AsyncActive && userToken.IsCancellationRequested)
 			_Enabled = false;
@@ -339,7 +333,7 @@ internal class LinkageParser : AbstractLinkageParser
 			return false;
 
 
-		if (!SequencesLoaded)
+		if (!SequencesPopulated)
 			BuildSequenceTable();
 
 

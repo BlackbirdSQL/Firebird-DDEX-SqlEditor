@@ -22,10 +22,16 @@ namespace BlackbirdSql.VisualStudio.Ddex.Configuration
 	public class VsGeneralOptionModel : AbstractOptionModel<VsGeneralOptionModel>
 	{
 		[Category("General")]
-		[DisplayName("Enable logging")]
-		[Description("Enables diagnostics logging to a log file. Note: For release version only exceptions will be logged.")]
+		[DisplayName("Enable task logging")]
+		[Description("Enables logging of tasks to the output window pane.")]
 		[DefaultValue(true)]
-		public bool EnableWriteLog { get; set; } = true;
+		public bool EnableTaskLog { get; set; } = true;
+
+		[Category("General")]
+		[DisplayName("Enable diagnostics logging")]
+		[Description("Enables diagnostics logging to a log file. Note: For release version only exceptions will be logged.")]
+		[DefaultValue(false)]
+		public bool EnableDiagnosticsLog { get; set; } = false;
 
 		[Category("General")]
 		[DisplayName("Log file")]

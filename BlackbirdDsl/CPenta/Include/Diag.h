@@ -72,7 +72,7 @@ public:
 	/// Only applies to the Debug configuration. Debug Exceptions are always logged.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	static bool EnableWriteLog = true;
+	static bool EnableDiagnosticsLog = true;
 
 
 	// ---------------------------------------------------------------------------------
@@ -173,7 +173,7 @@ private:
 		// Remove conditional for a full trace
 		try
 		{
-			if (EnableWriteLog)
+			if (EnableDiagnosticsLog)
 			{
 
 				StreamWriter^ sw = File::AppendText(logfile);

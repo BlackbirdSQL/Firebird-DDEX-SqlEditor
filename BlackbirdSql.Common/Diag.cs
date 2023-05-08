@@ -3,10 +3,16 @@
 
 using System;
 using System.IO;
-
-
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft;
+using Microsoft.VisualStudio.RpcContracts;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.TaskStatusCenter;
 
 namespace BlackbirdSql.Common;
+
 
 
 // =========================================================================================================
@@ -33,16 +39,22 @@ public static class Diag
 {
 	#region Variables
 
+	static bool _EnableTaskLog = true;
 
 	// Specify your own trace log file and settings here or override in VS options
 	static bool _EnableTrace = true;
 	static bool _EnableDiagnostics = true;
 	static bool _EnableFbDiagnostics = true;
-	static bool _EnableWriteLog = true;
+	static bool _EnableDiagnosticsLog = false;
 	static string _LogFile = "C:\\bin\\vsdiag.log";
 	static string _FbLogFile = "C:\\bin\\vsdiagfb.log";
 
 	static string _Context = "APP";
+
+	static IVsOutputWindowPane _OutputPane = null;
+	static readonly string _OutputPaneName = "BlackbirdSql";
+	static Guid _OutputPaneGuid = default;
+
 
 	#endregion Variables
 
@@ -53,6 +65,9 @@ public static class Diag
 	// =========================================================================================================
 	#region Property Accessors - Diag
 	// =========================================================================================================
+
+
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -70,6 +85,17 @@ public static class Diag
 		{
 			_Context = value;
 		}
+	}
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns a boolean indicating whether or not task results can be written to the
+	/// output window.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool EnableTaskLog
+	{
+		get { return _EnableTaskLog; }
+		set { _EnableTaskLog = value; }
 	}
 
 
@@ -127,10 +153,10 @@ public static class Diag
 	/// Only applies to the Debug configuration. Debug Exceptions are always logged.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public static bool EnableWriteLog
+	public static bool EnableDiagnosticsLog
 	{
-		get { return _EnableWriteLog; }
-		set { _EnableWriteLog = value; }
+		get { return _EnableDiagnosticsLog; }
+		set { _EnableDiagnosticsLog = value; }
 	}
 
 
@@ -220,7 +246,7 @@ public static class Diag
 		// Remove conditional for a full trace
 		try
 		{
-			if (_EnableWriteLog)
+			if (_EnableDiagnosticsLog)
 			{
 
 				StreamWriter sw = File.AppendText(logfile);
@@ -229,6 +255,13 @@ public static class Diag
 
 				sw.Close();
 			}
+		}
+		catch (Exception) { }
+
+		try
+		{
+			if (_EnableTaskLog)
+				OutputPaneWriteLine(str);
 		}
 		catch (Exception) { }
 #endif
@@ -351,6 +384,281 @@ public static class Diag
 		Dug(false, message, memberName, sourceFilePath, sourceLineNumber);
 	}
 
+
+
+	// Deadlock warning message suppression
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
+		Justification = "Code logic ensures a deadlock cannot occur")]
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Launches TaskHandlerProgressAsync from a thread in the thread pool so that it
+	/// can switch to the UI thread and be clear to update the IDE task handler progress
+	/// bar.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool TaskHandlerProgress(ITaskHandlerClient client, string text, int progress)
+	{
+		_ = Task.Factory.StartNew(() => TaskHandlerProgressAsync(client, text, progress).Result,
+				default, TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent,
+				TaskScheduler.Default);
+
+		return true;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Moves back onto the UI thread and updates the IDE task handler progress bar.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static async Task<bool> TaskHandlerProgressAsync(ITaskHandlerClient client, string text, int progress)
+	{
+		ITaskHandler taskHandler = client.GetTaskHandler();
+
+		if (taskHandler == null)
+			return false;
+
+		// Switch to main thread
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		// Check again since joining UI thread.
+		taskHandler = client.GetTaskHandler();
+
+		if (taskHandler == null)
+			return false;
+
+		TaskProgressData progressData = client.GetProgressData();
+
+		progressData.PercentComplete = progress;
+
+		string[] arr = text.Split('\n');
+
+		string title = "";
+
+		if (EnableTaskLog)
+			title = taskHandler.Options.Title.Replace("BlackbirdSql", "").Trim();
+
+		for (int i = 0; i < arr.Length; i++)
+		{
+			progressData.ProgressText = arr[i];
+			taskHandler.Progress.Report(progressData);
+
+			if (EnableTaskLog)
+				arr[i] = title + ": " + arr[i];
+		}
+
+
+		if (EnableTaskLog)
+		{
+			text = string.Join("\n", arr);
+
+			if (progress == 100)
+			{
+				StringBuilder sb = new(arr[^1].Length);
+
+				sb.Append('=', (arr[^1].Length - 10) / 2);
+				sb.Append(" Finished ");
+				sb.Append('=', arr[^1].Length - sb.Length);
+
+				text += "\n" + sb + "\n";
+			}
+
+			_ = OutputPaneWriteLineAsync(text);
+		}
+
+		return true;
+	}
+
+
+
+	// Deadlock warning message suppression
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
+		Justification = "Code logic ensures a deadlock cannot occur")]
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Launches UpdateStatusBarAsync from a thread in the thread pool so that it can
+	/// switch to the UI thread and be clear to update the IDE status bar.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool UpdateStatusBar(string value, bool clear)
+	{
+		_ = Task.Factory.StartNew(() => UpdateStatusBarAsync(value, clear).Result, default,
+				TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent,
+				TaskScheduler.Default);
+
+		return true;
+	}
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Moves back onto the UI thread and updates the IDE status bar.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static async Task<bool> UpdateStatusBarAsync(string value, bool clear)
+	{
+		// Switch to main thread
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		try
+		{
+			IVsStatusbar statusBar = await ServiceProvider.GetGlobalServiceAsync<SVsStatusbar, IVsStatusbar>(swallowExceptions: false);
+
+			// statusBar.FreezeOutput(0);
+
+			if (clear && value == null)
+			{
+				statusBar.Clear();
+			}
+			else
+			{ 
+				statusBar.SetText(value);
+
+				if (clear)
+				{
+					_ = Task.Run(async delegate
+					{
+						await Task.Delay(4000);
+						_ = UpdateStatusBarAsync(null, true);
+					});
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+		}
+
+		return true;
+	}
+
+
+
+	/// <summary>
+	/// Writes the given text followed by a new line to the Output window pane.
+	/// </summary>
+	/// <param name="value">The text value to write.</param>
+	public static void OutputPaneWriteLine(string value)
+	{
+		ThreadHelper.JoinableTaskFactory.Run(async () =>
+		{
+			await OutputPaneWriteLineAsync(value);
+		});
+	}
+
+
+
+	/// <summary>
+	/// Writes the given text followed by a new line to the Output window pane.
+	/// </summary>
+	/// <param name="value">The text value to write. May be an empty string, in which case a newline is written.</param>
+	public static async Task OutputPaneWriteLineAsync(string value = null)
+	{
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		await EnsureOutputPaneAsync();
+
+		if (_OutputPane == null)
+		{
+			NullReferenceException ex = new("OutputWindowPane is null");
+
+			bool enableTaskLog = _EnableTaskLog;
+			_EnableTaskLog = false;
+			Dug(ex);
+			_EnableTaskLog = enableTaskLog;
+
+			throw ex;
+		}
+
+		value ??= string.Empty;
+
+
+		if (_OutputPane is IVsOutputWindowPaneNoPump noPump)
+		{
+			try
+			{
+				noPump.OutputStringNoPump(value + Environment.NewLine);
+			}
+			catch (Exception ex)
+			{
+				bool enableTaskLog = _EnableTaskLog;
+				_EnableTaskLog = false;
+				Dug(ex);
+				_EnableTaskLog = enableTaskLog;
+
+				throw ex;
+			}
+		}
+		else
+		{
+			try
+			{
+				_OutputPane.OutputStringThreadSafe(value + Environment.NewLine);
+			}
+			catch (Exception ex)
+			{
+				bool enableTaskLog = _EnableTaskLog;
+				_EnableTaskLog = false;
+				Dug(ex);
+				_EnableTaskLog = enableTaskLog;
+
+				throw ex;
+			}
+		}
+	}
+
+
+
+
+
+	static async Task EnsureOutputPaneAsync()
+	{
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		if (_OutputPane == null)
+		{
+			IVsOutputWindow outputWindow;
+
+			try
+			{
+				outputWindow = await ServiceProvider.GetGlobalServiceAsync<SVsOutputWindow, IVsOutputWindow>(swallowExceptions: false);
+				Assumes.Present(outputWindow);
+			}
+			catch (Exception ex)
+			{
+				Dug(ex);
+				throw;
+			}
+
+			_OutputPaneGuid = Guid.NewGuid();
+
+			const int visible = 1;
+			const int clearWithSolution = 1;
+
+			try
+			{
+				outputWindow.CreatePane(ref _OutputPaneGuid, _OutputPaneName, visible, clearWithSolution);
+			}
+			catch (Exception ex)
+			{
+				Dug(ex);
+				throw;
+			}
+
+			try
+			{ 
+				outputWindow.GetPane(ref _OutputPaneGuid, out _OutputPane);
+			}
+			catch (Exception ex)
+			{
+				Dug(ex);
+				throw;
+			}
+		}
+	}
 
 	#endregion Methods
 

@@ -285,7 +285,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 
 			if (_Dte == null)
 			{
-				NullReferenceException ex = new NullReferenceException("DTE is null");
+				NullReferenceException ex = new("DTE is null");
 				Diag.Dug(ex);
 				return;
 			}
@@ -297,7 +297,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			// If it's null there's an issue. Possibly we've come in too early
 			if (_Solution == null)
 			{
-				NullReferenceException ex = new NullReferenceException("SVsSolution is null");
+				NullReferenceException ex = new("SVsSolution is null");
 				Diag.Dug(ex);
 				return;
 			}

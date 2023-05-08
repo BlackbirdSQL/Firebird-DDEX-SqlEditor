@@ -1,0 +1,50 @@
+#ifdef APSTUDIO_INVOKED
+#error this file is not editable by Microsoft Visual C++
+#endif //APSTUDIO_INVOKED
+
+/////////////////////////////////////////////////////////////////////////////
+// Neutral resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION 9, 1, 0, 3
+PRODUCTVERSION 9, 1, 0, 3
+FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+FILEFLAGS 0x1L
+#else
+FILEFLAGS 0x0L
+#endif
+FILEOS 0x40004L
+FILETYPE 0x2L
+FILESUBTYPE 0x0L
+BEGIN
+BLOCK "StringFileInfo"
+BEGIN
+BLOCK "1c0904b0"
+BEGIN
+VALUE "CompanyName", "BlackbirdSql"
+VALUE "FileDescription", "Blackbird Dsl Parser"
+VALUE "FileVersion", "9.1.0.4"
+VALUE "InternalName", "BlackbirdDsl.dll"
+VALUE "LegalCopyright", "Copyright (C) 2023"
+VALUE "OriginalFilename", "BlackbirdDsl.dll"
+VALUE "ProductName", "BlackbirdDsl"
+VALUE "ProductVersion", "9.1.0.4"
+END
+END
+BLOCK "VarFileInfo"
+BEGIN
+VALUE "Translation", 0x1c09, 1200
+END
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////

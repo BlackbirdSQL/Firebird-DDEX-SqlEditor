@@ -17,8 +17,8 @@ using Microsoft.VisualStudio.TaskStatusCenter;
 using FirebirdSql.Data.FirebirdClient;
 
 using BlackbirdSql.VisualStudio.Ddex.Schema;
-
-
+using BlackbirdSql.VisualStudio.Ddex.Configuration;
+using Microsoft.VisualStudio.RpcContracts;
 
 namespace BlackbirdSql.Common.Extensions;
 
@@ -31,7 +31,7 @@ namespace BlackbirdSql.Common.Extensions;
 /// Handles Trigger / Generator linkage building tasks of the LinkageParser class.
 /// </summary>
 // =========================================================================================================
-internal abstract class AbstractLinkageParser : AbstruseLinkageParser
+internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHandlerClient
 {
 
 
@@ -52,9 +52,8 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 		GeneratorsLoaded = 1,
 		TriggerDependenciesLoaded = 2,
 		TriggersLoaded = 3,
-		SequencesLoaded = 4,
-		Completed = 5,
-		Clear = 6
+		SequencesPopulated = 4,
+		Completed = 5
 	}
 
 
@@ -256,7 +255,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// <summary>
 	/// Getter indicating whether or not the parser has fetched the generators.
 	/// </summary>
-	public bool SequencesLoaded { get { return _LinkStage >= EnumLinkStage.SequencesLoaded; } }
+	public bool SequencesPopulated { get { return _LinkStage >= EnumLinkStage.SequencesPopulated; } }
 
 
 	#endregion Property accessors
@@ -476,12 +475,12 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 		_Sequences.AcceptChanges();
 
 		_RawGenerators = null;
-		_LinkStage = EnumLinkStage.SequencesLoaded;
+		_LinkStage = EnumLinkStage.SequencesPopulated;
 
 		Stopwatch.Stop();
 		_Elapsed += Stopwatch.ElapsedMilliseconds;
 
-		TaskHandlerProgress("Build Sequence Table", 94, Stopwatch.ElapsedMilliseconds);
+		TaskHandlerProgress("Populating Sequence Table", GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
 	}
 
 
@@ -659,7 +658,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 		Stopwatch.Stop();
 		_Elapsed += Stopwatch.ElapsedMilliseconds;
 
-		TaskHandlerProgress("Total processing time was", 100, _Elapsed);
+		TaskHandlerProgress($"Parsing and linking of {_Triggers.Rows.Count} Triggers", GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
 
 		_Stopwatch = null;
 	}
@@ -687,7 +686,10 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 			throw;
 		}
 
-		TaskHandlerProgress("SELECT Generators", 13, Stopwatch.ElapsedMilliseconds);
+		if (_RawGenerators != null)
+			_LinkStage = EnumLinkStage.GeneratorsLoaded;
+
+		TaskHandlerProgress("SELECT Generators", GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
 
 		return _RawGenerators;
 	}
@@ -717,7 +719,10 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 			throw;
 		}
 
-		TaskHandlerProgress("SELECT TriggerDependencies", 43, Stopwatch.ElapsedMilliseconds);
+		if (_RawTriggerDependencies != null)
+			_LinkStage = EnumLinkStage.TriggerDependenciesLoaded;
+		
+		TaskHandlerProgress("SELECT TriggerDependencies", GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
 
 		return _RawTriggerDependencies;
 	}
@@ -745,7 +750,11 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 			throw;
 		}
 
-		TaskHandlerProgress("SELECT Triggers", 88, Stopwatch.ElapsedMilliseconds);
+		if (_RawTriggers != null)
+			_LinkStage = EnumLinkStage.TriggersLoaded;
+
+
+		TaskHandlerProgress("SELECT Triggers", GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
 
 		return _RawTriggers;
 	}
@@ -985,14 +994,23 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// =========================================================================================================
 
 
-	// Deadlock warning message suppression
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
-		Justification = "Code logic ensures a deadlock cannot occur")]
+
+	public ITaskHandler GetTaskHandler()
+	{
+		return _TaskHandler;
+	}
+
+
+	public TaskProgressData GetProgressData()
+	{
+		return _ProgressData;
+	}
+
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Launches TaskHandlerProgressAsync from a thread in the thread pool so that it
-	/// can switch to the UI thread and be clear to update the IDE task handler progress
-	/// bar.
+	/// Updates the IDE task handler progress bar and possibly the output pane.
 	/// </summary>
 	/// <param name="stage">The descriptive name of the completed stage</param>
 	/// <param name="progress">The % completion of the linkage build.</param>
@@ -1000,156 +1018,120 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// ---------------------------------------------------------------------------------
 	protected bool TaskHandlerProgress(string stage, int progress, long elapsed)
 	{
-		_ = Task.Factory.StartNew(() => TaskHandlerProgressAsync(stage, progress, elapsed).Result,
-				default, TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent,
-				TaskScheduler.Default);
+		string text;
 
-		return true;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Moves back onto the UI thread and updates the IDE task handler progress bar.
-	/// </summary>
-	/// <param name="stage">The descriptive name of the completed stage</param>
-	/// <param name="progress">The % completion of the linkage build.</param>
-	/// <param name="elapsed">The time taken to complete the stage.</param>
-	// ---------------------------------------------------------------------------------
-	protected async Task<bool> TaskHandlerProgressAsync(string stage, int progress, long elapsed)
-	{
-		if (_TaskHandler == null)
-			return false;
-
-		// Switch to main thread
-		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-		// Check again since joining UI thread.
-		if (_TaskHandler == null)
-			return false;
-
-		_ProgressData.PercentComplete = progress;
-
-		if (progress == 100)
+		if (progress == 0)
 		{
-			_ProgressData.ProgressText = $"Completed. {stage} {elapsed}ms.";
+			text = $"Updating sequence linkage.";
 		}
-		else if (_AsyncToken.IsCancellationRequested || !_Enabled)
+		else if (progress == 100)
 		{
-			_ProgressData.ProgressText = $"Cancelled. {progress}% completed. {stage} took {elapsed}ms.";
+			text = $"{progress}% completed. {stage} took {elapsed}ms.\nLinkage completed in {_Elapsed}ms.";
 		}
 		else
 		{
-			_ProgressData.ProgressText = $"{progress}% completed. {stage} took {elapsed}ms.";
-		}
-
-
-		_TaskHandler.Progress.Report(_ProgressData);
-
-		return true;
-	}
-
-
-
-	// Deadlock warning message suppression
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
-		Justification = "Code logic ensures a deadlock cannot occur")]
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Launches UpdateStatusBarAsync from a thread in the thread pool so that it can
-	/// switch to the UI thread and be clear to update the IDE status bar.
-	/// </summary>
-	/// <param name="stage"></param>
-	/// <param name="isAsync"></param>
-	/// <returns></returns>
-	// ---------------------------------------------------------------------------------
-	protected bool UpdateStatusBar(EnumLinkStage stage, bool isAsync)
-	{
-		_ = Task.Factory.StartNew(() => UpdateStatusBarAsync(stage, isAsync).Result, default,
-				TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent,
-				TaskScheduler.Default);
-
-		return true;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Moves back onto the UI thread and updates the IDE status bar.
-	/// </summary>
-	/// <remarks>
-	/// The bar is only updated at the start of and end of an Execute or AsyncExecute. 
-	/// </remarks>
-	// ---------------------------------------------------------------------------------
-	protected async Task<bool> UpdateStatusBarAsync(EnumLinkStage stage, bool isAsync)
-	{
-		// Switch to main thread
-		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-		try
-		{
-			string async;
-			string catalog = $"{_Connection.DataSource} ({Path.GetFileNameWithoutExtension(_Connection.Database)})";
-
-			IVsStatusbar statusBar = await ServiceProvider.GetGlobalServiceAsync<SVsStatusbar, IVsStatusbar>(swallowExceptions: false);
-
-			// statusBar.FreezeOutput(0);
-
-			if (stage == EnumLinkStage.Clear)
+			if (_AsyncActive)
 			{
-				statusBar.Clear();
-			}
-			else if (stage == EnumLinkStage.Start)
-			{
-				async = isAsync ? " (async)" : "";
-
-				statusBar.SetText($"Updating {catalog} sequence linkage.");
-			}
-			else if (stage == EnumLinkStage.Completed)
-			{
-				async = isAsync ? " (async)" : "";
-
-				statusBar.SetText($"Completed {catalog} sequence linkage in {_Elapsed}ms.");
-			}
-			else
-			{
-				if (isAsync)
+				// If it's a user cancel request.
+				if (!_Enabled)
 				{
-					// If it's a user cancel request.
-					if (!_Enabled)
-						statusBar.SetText($"Cancelled {catalog} sequence linkage.");
-					else
-						statusBar.SetText($"Resuming {catalog} sequence linkage.");
+					text = $"Cancelled. {progress}% completed. {stage} took {elapsed}ms.";
 				}
 				else
 				{
-					if (!_Enabled)
-						statusBar.SetText($"Resuming {catalog} sequence linkage.");
+					if (elapsed == -1)
+						text = $"Resuming async sequence linkage.";
 					else
-						statusBar.SetText($"Switched {catalog} sequence linkage to UI thread.");
+						text = $"{progress}% completed. {stage} took {elapsed}ms.";
+
 				}
 			}
-
-			if (stage == EnumLinkStage.Completed || (isAsync && !_Enabled))
+			else
 			{
-				_ = Task.Run(async delegate
-				{
-					stage = EnumLinkStage.Clear;
-					await Task.Delay(4000);
-					_ = UpdateStatusBarAsync(stage, isAsync);
-				});
+				if (elapsed == -1)
+					text = $"Switched sequence linkage to UI thread.";
+				else
+					text = $"{progress}% completed. {stage} took {elapsed}ms.";
 			}
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
+
 		}
 
-		return true;
+		return Diag.TaskHandlerProgress(this, text, progress);
+
 	}
 
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Updates the status bar.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected bool UpdateStatusBar(EnumLinkStage stage, bool isAsync)
+	{
+		// string async;
+		string catalog = $"{_Connection.DataSource} ({Path.GetFileNameWithoutExtension(_Connection.Database)})";
+
+		bool clear = false;
+		string text;
+
+		if (stage == EnumLinkStage.Start)
+		{
+			// async = isAsync ? " (async)" : "";
+			text = $"Updating {catalog} sequence linkage.";
+		}
+		else if (stage == EnumLinkStage.Completed)
+		{
+			// async = isAsync ? " (async)" : "";
+			text = $"Completed {catalog} sequence linkage in {_Elapsed}ms.";
+		}
+		else
+		{
+			if (isAsync)
+			{
+				// If it's a user cancel request.
+				if (!_Enabled)
+					text = $"Cancelled {catalog} sequence linkage.";
+				else
+					text = $"Resuming {catalog} sequence linkage.";
+			}
+			else
+			{
+				if (!_Enabled)
+					text = $"Resuming {catalog} sequence linkage.";
+				else
+					text = $"Switched {catalog} sequence linkage to UI thread.";
+			}
+		}
+
+		if (stage == EnumLinkStage.Completed || (isAsync && !_Enabled))
+		{
+			clear = true;
+		}
+
+		return Diag.UpdateStatusBar(text, clear);
+	}
+
+
+
+	protected int GetPercentageComplete(EnumLinkStage stage)
+	{
+		switch (stage)
+		{
+			case EnumLinkStage.Start:
+				return 0;
+			case EnumLinkStage.GeneratorsLoaded:
+				return 13;
+			case EnumLinkStage.TriggerDependenciesLoaded:
+				return 43;
+			case EnumLinkStage.TriggersLoaded:
+				return 88;
+			case EnumLinkStage.SequencesPopulated:
+				return 94;
+			default:
+				return 100;
+		}
+	}
 
 	#endregion Utility methods
 

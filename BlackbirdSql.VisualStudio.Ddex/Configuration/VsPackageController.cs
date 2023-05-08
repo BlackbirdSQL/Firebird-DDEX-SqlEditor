@@ -17,10 +17,10 @@ using Microsoft.VisualStudio.Threading;
 using EnvDTE;
 using VSLangProj;
 
-using BlackbirdSql.Common;
-using BlackbirdSql.Common.Extensions;
 using FirebirdSql.Data.FirebirdClient;
 
+using BlackbirdSql.Common;
+using BlackbirdSql.Common.Extensions;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 
@@ -39,7 +39,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 /// Also ensures we never do validations of a solution and project app.config and .edmx models twice.
 /// </remarks>
 // =========================================================================================================
-internal class VsPackageController : IVsSolutionEvents, IDisposable
+internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDisposable
 {
 	#region Variables
 
@@ -62,9 +62,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	// Startup validation is active
 	protected bool _ValidationActive = false;
 	// A sync call has taken over. Async is locked out or abort at the first opportunity.
-	protected CancellationTokenSource _TaskHandlerTokenSource = null;
 	protected CancellationTokenSource _ValidationTokenSource = null;
-	protected CancellationToken _TaskHandlerToken;
 	protected CancellationToken _ValidationToken;
 
 
@@ -146,9 +144,6 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	{
 		_Dte = dte;
 		_Solution = solution;
-
-		_TaskHandlerTokenSource = new();
-		_TaskHandlerToken = _TaskHandlerTokenSource.Token;
 
 		_ValidationTask = null;
 
@@ -322,7 +317,7 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 		_ValidationActive = true;
 
-		_ = UpdateStatusBarAsync("BlackbirdSql validating solution");
+		UpdateStatusBar("BlackbirdSql validating solution");
 
 
 		IVsTaskStatusCenterService tsc = await ServiceProvider.GetGlobalServiceAsync<SVsTaskStatusCenterService,
@@ -356,10 +351,10 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 				for (int i = 0; i < projectCount; i++)
 				{
 					if (_TaskHandler.UserCancellation.IsCancellationRequested)
-						_TaskHandlerTokenSource.Cancel();
-					if (_ValidationToken.IsCancellationRequested || _TaskHandlerToken.IsCancellationRequested)
+						_ValidationTokenSource.Cancel();
+					if (_ValidationToken.IsCancellationRequested)
 					{
-						_ = TaskHandlerProgressAsync(100, stopwatch.Elapsed);
+						TaskHandlerProgress(100, stopwatch.Elapsed);
 						break;
 					}
 
@@ -367,22 +362,23 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 					// Go to back of UI thread.
 					if (!RecursiveValidateProjectAsync(i, stopwatch).Result)
 						i = projectCount - 1;
-					_ = TaskHandlerProgressAsync((i+1) * 100 / projectCount, stopwatch.Elapsed);
+					TaskHandlerProgress((i+1) * 100 / projectCount, stopwatch.Elapsed);
 				}
 
 
 				if (_TaskHandler.UserCancellation.IsCancellationRequested)
 				{
-					_ = UpdateStatusBarAsync("Cancelled BlackbirdSql solution validation", true);
+					UpdateStatusBar("Cancelled BlackbirdSql solution validation", true);
 					return false;
 				}
 
-				_ = UpdateStatusBarAsync($"Completed BlackbirdSql solution validation in {stopwatch.ElapsedMilliseconds}ms", true);
+				UpdateStatusBar($"Completed BlackbirdSql solution validation in {stopwatch.ElapsedMilliseconds}ms", true);
 
 
 				_ValidationActive = false;
-				_TaskHandler = null;
-				_ProgressData = default;
+
+				// _TaskHandler = null;
+				// _ProgressData = default;
 
 				return true;
 			},
@@ -492,8 +488,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 				if (_ValidationActive)
 				{
 					if (_TaskHandler.UserCancellation.IsCancellationRequested)
-						_TaskHandlerTokenSource.Cancel();
-					if (_ValidationToken.IsCancellationRequested || _TaskHandlerToken.IsCancellationRequested)
+						_ValidationTokenSource.Cancel();
+					if (_ValidationToken.IsCancellationRequested)
 					{
 						success = false;
 						break;
@@ -512,8 +508,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		if (_ValidationActive)
 		{
 			if (_TaskHandler.UserCancellation.IsCancellationRequested)
-				_TaskHandlerTokenSource.Cancel();
-			if (_ValidationToken.IsCancellationRequested || _TaskHandlerToken.IsCancellationRequested)
+				_ValidationTokenSource.Cancel();
+			if (_ValidationToken.IsCancellationRequested)
 				return false;
 		}
 
@@ -597,8 +593,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		if (_ValidationActive)
 		{
 			if (_TaskHandler.UserCancellation.IsCancellationRequested)
-				_TaskHandlerTokenSource.Cancel();
-			if (_ValidationToken.IsCancellationRequested || _TaskHandlerToken.IsCancellationRequested)
+				_ValidationTokenSource.Cancel();
+			if (_ValidationToken.IsCancellationRequested)
 				return;
 		}
 
@@ -748,8 +744,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 							if (_ValidationActive)
 							{
 								if (_TaskHandler.UserCancellation.IsCancellationRequested)
-									_TaskHandlerTokenSource.Cancel();
-								if (_ValidationToken.IsCancellationRequested || _TaskHandlerToken.IsCancellationRequested)
+									_ValidationTokenSource.Cancel();
+								if (_ValidationToken.IsCancellationRequested)
 								{
 									success = false;
 									break;
@@ -866,8 +862,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		if (_ValidationActive)
 		{
 			if (_TaskHandler.UserCancellation.IsCancellationRequested)
-				_TaskHandlerTokenSource.Cancel();
-			if (_ValidationToken.IsCancellationRequested || _TaskHandlerToken.IsCancellationRequested)
+				_ValidationTokenSource.Cancel();
+			if (_ValidationToken.IsCancellationRequested)
 				return false;
 		}
 
@@ -944,8 +940,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		if (_ValidationActive)
 		{
 			if (_TaskHandler.UserCancellation.IsCancellationRequested)
-				_TaskHandlerTokenSource.Cancel();
-			if (_ValidationToken.IsCancellationRequested || _TaskHandlerToken.IsCancellationRequested)
+				_ValidationTokenSource.Cancel();
+			if (_ValidationToken.IsCancellationRequested)
 				return false;
 		}
 
@@ -1023,8 +1019,8 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 		if (_ValidationActive)
 		{
 			if (_TaskHandler.UserCancellation.IsCancellationRequested)
-				_TaskHandlerTokenSource.Cancel();
-			if (_ValidationToken.IsCancellationRequested || _TaskHandlerToken.IsCancellationRequested)
+				_ValidationTokenSource.Cancel();
+			if (_ValidationToken.IsCancellationRequested)
 				return false;
 		}
 
@@ -1470,38 +1466,28 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Moves back onto the UI thread and updates the IDE status bar.
+	/// Updates the IDE status bar.
 	/// </summary>
 	/// <remarks>
 	/// The bar is only updated at the start of an Execute and end of an Execute. 
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	protected async Task<bool> UpdateStatusBarAsync(string message, bool complete = false)
+	protected bool UpdateStatusBar(string message, bool complete = false)
 	{
-		// Switch to main thread
-		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-		IVsStatusbar statusBar = await ServiceProvider.GetGlobalServiceAsync<SVsStatusbar, IVsStatusbar>(swallowExceptions: false);
-
-		if (message == null)
-			statusBar.Clear();
-		else
-			statusBar.SetText(message);
-
-		if (complete)
-		{
-			_ = Task.Run(async delegate
-			{
-				await Task.Delay(4000);
-				_ = UpdateStatusBarAsync(null);
-			});
-		}
-
-		return true;
+		return Diag.UpdateStatusBar(message, complete);
 	}
 
 
 
+	public ITaskHandler GetTaskHandler()
+	{
+		return _TaskHandler;
+	}
+
+	public TaskProgressData GetProgressData()
+	{
+		return _ProgressData;
+	}
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -1510,34 +1496,26 @@ internal class VsPackageController : IVsSolutionEvents, IDisposable
 	/// <param name="progress">The % completion of the linkage build.</param>
 	/// <param name="elapsed">The time taken to complete the stage.</param>
 	// ---------------------------------------------------------------------------------
-	protected async Task<bool> TaskHandlerProgressAsync(int progress, TimeSpan elapsed)
+	protected bool TaskHandlerProgress(int progress, TimeSpan elapsed)
 	{
-		if (_TaskHandler == null)
-			return false;
 
-		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-		// Check again since joining UI thread.
-		if (_TaskHandler == null)
-			return false;
-
-		_ProgressData.PercentComplete = progress;
+		string text;
 
 		if (progress == 100)
 		{
-			_ProgressData.ProgressText = $"Completed. Validation took {elapsed.Milliseconds}ms.";
+			text = $"Completed. Validation took {elapsed.Milliseconds}ms.";
 		}
 		else if (_TaskHandler.UserCancellation.IsCancellationRequested)
 		{
-			_ProgressData.ProgressText = $"Cancelled. {progress}% completed. Validation took {elapsed.Milliseconds}ms.";
+			text = $"Cancelled. {progress}% completed. Validation took {elapsed.Milliseconds}ms.";
 		}
 		else
 		{
-			_ProgressData.ProgressText = $"{progress}% completed after {elapsed.Milliseconds}ms.";
+			text = $"{progress}% completed after {elapsed.Milliseconds}ms.";
 		}
 
 
-		_TaskHandler.Progress.Report(_ProgressData);
+		Diag.TaskHandlerProgress(this, text, progress);
 
 		return true;
 

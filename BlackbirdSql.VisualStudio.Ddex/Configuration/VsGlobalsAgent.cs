@@ -3,7 +3,7 @@
 
 
 /*
- * The folwoing #define is only applicable to DEBUG
+ * The following #define is only applicable to DEBUG
  * Uncomment this line to use persistent globals during debug
  * Comment out this line to use non-persistent globals and to clear any persistent globals in your test solution(s)
 */
@@ -128,6 +128,8 @@ internal class VsGlobalsAgent
 	// =========================================================================================================
 
 
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Returns a boolean indicating whther or not the app.config may be validated
@@ -215,7 +217,8 @@ internal class VsGlobalsAgent
 		Diag.EnableDiagnostics = false;
 		Diag.EnableFbDiagnostics = false;
 #endif
-			Diag.EnableWriteLog = VsGeneralOptionModel.Instance.EnableWriteLog;
+			Diag.EnableTaskLog = VsGeneralOptionModel.Instance.EnableTaskLog;
+			Diag.EnableDiagnosticsLog = VsGeneralOptionModel.Instance.EnableDiagnosticsLog;
 			Diag.LogFile = VsGeneralOptionModel.Instance.LogFile;
 			Diag.FbLogFile = VsGeneralOptionModel.Instance.FbLogFile;
 
@@ -243,6 +246,25 @@ internal class VsGlobalsAgent
 	}
 
 
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the existing Singleton VsGlobalsAgent instance
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static VsGlobalsAgent GetInstance()
+	{
+		if (_Instance == null)
+		{
+			NullReferenceException ex = new("Attempt to access uninitialized VsGlobalAgent instance");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		return _Instance;
+	}
 	#endregion Constructors / Destructors
 
 
@@ -793,7 +815,8 @@ internal class VsGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	void OnGeneralSettingsSaved(VsGeneralOptionModel e)
 	{
-		Diag.EnableWriteLog = e.EnableWriteLog;
+		Diag.EnableTaskLog = e.EnableTaskLog;
+		Diag.EnableDiagnosticsLog = e.EnableDiagnosticsLog;
 		Diag.LogFile = e.LogFile;
 		Diag.FbLogFile = e.FbLogFile;
 

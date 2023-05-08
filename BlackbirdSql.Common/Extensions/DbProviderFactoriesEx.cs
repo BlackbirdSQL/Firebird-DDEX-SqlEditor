@@ -42,7 +42,7 @@ public static class DbProviderFactoriesEx
 		 * 3		AssemblyQualifiedName	Fully qualified name of the factory class, which contains enough
 		 *									information to instantiate the object.
 		 *									eg. FirebirdSql.Data.FirebirdClient.FirebirdClientFactory,
-		 *										FirebirdSql.Data.FirebirdClient, Version=9.1.0.0, Culture=neutral,
+		 *										FirebirdSql.Data.FirebirdClient, Version=9.1.1.0, Culture=neutral,
 		 *										PublicKeyToken=3750abcc3150b00c
 		*/
 		DataTable table = DbProviderFactories.GetFactoryClasses();
@@ -101,7 +101,7 @@ public static class DbProviderFactoriesEx
 		 * 3		AssemblyQualifiedName	Fully qualified name of the factory class, which contains enough
 		 *									information to instantiate the object.
 		 *									eg. FirebirdSql.Data.FirebirdClient.FirebirdClientFactory,
-		 *										FirebirdSql.Data.FirebirdClient, Version=9.1.0.0, Culture=neutral,
+		 *										FirebirdSql.Data.FirebirdClient, Version=9.1.1.0, Culture=neutral,
 		 *										PublicKeyToken=3750abcc3150b00c
 		*/
 

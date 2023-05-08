@@ -41,7 +41,7 @@ internal static class XmlParser
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Single-level extrapolation of an xml stream with imports into a single stream.
-	/// Also, in DEBUG and if <see cref="Diag.EnableWriteLog"/> is set, writes a copy of the
+	/// Also, in DEBUG and if <see cref="Diag.EnableDiagnosticsLog"/> is set, writes a copy of the
 	/// extrapolation to <paramref name="xmlName"/>.Extapolated.xml in the
 	/// <see cref="Diag.LogFile"/> folder.
 	/// </summary>
@@ -145,7 +145,7 @@ internal static class XmlParser
 		if (updated)
 		{
 #if DEBUG
-			if (Diag.EnableWriteLog)
+			if (Diag.EnableDiagnosticsLog)
 			{
 				FileInfo info = new FileInfo(Diag.LogFile);
 				xmlDoc.Save(info.DirectoryName + "\\" + xmlName + ".Extrapolated.xml");
@@ -777,7 +777,7 @@ internal static class XmlParser
 
 			xmlNode = xmlParent.SelectSingleNode("confBlackbirdNs:add[@invariant='" + SystemData.Invariant + "']", xmlNs);
 
-			// We're using the current latest version of the client (on this build it's 9.1.0.0)
+			// We're using the current latest version of the client (on this build it's 9.1.1.0)
 			string factoryQualifiedNameType;
 			string factoryNameType = SystemData.ProviderFactoryType + ", " + SystemData.Invariant;
 
@@ -817,7 +817,7 @@ internal static class XmlParser
 				}
 				else if (xmlAttr.Value.Replace(" ", "") != factoryNameType.Replace(" ", ""))
 				{
-					// Check if it's not using the fully qualified name - must be current latest version (build is 9.1.0)
+					// Check if it's not using the fully qualified name - must be current latest version (build is 9.1.1)
 					factoryQualifiedNameType = SystemData.ProviderFactoryType + ", " + factoryClass.AssemblyQualifiedName;
 
 					if (xmlAttr.Value.Replace(" ", "") != factoryQualifiedNameType.Replace(" ", ""))

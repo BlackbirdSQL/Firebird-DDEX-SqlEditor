@@ -52,6 +52,8 @@ public static class DataToolsCommands
 	public const string MenuGroupGuid = "501822E1-B5AF-11d0-B4DC-00A0C91506EF";
 	public const string MenuGroupDavGuid = "732ABE75-CD80-11d0-A2DB-00AA00A3EFFF";
 
+	public const string SqlEditorGuid = "cc5d8df0-88f4-4bb2-9dbb-b48cee65c30a";
+
 	#endregion GUIDs
 
 

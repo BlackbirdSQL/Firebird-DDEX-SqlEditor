@@ -67,6 +67,8 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <Version>
+      </Version>
     </Link>
     <Xdcmake>
       <DocumentLibraryDependencies>false</DocumentLibraryDependencies>
@@ -112,6 +114,7 @@
     <ClInclude Include="CPenta\Include\ReplicaKey.h" />
     <ClInclude Include="CPenta\Include\Replicant.h" />
     <ClInclude Include="CPenta\Include\StringCell.h" />
+    <ClInclude Include="Include\AssemblyInfo.h" />
     <ClInclude Include="Include\framework.h" />
     <ClInclude Include="Include\pch.h" />
     <ClInclude Include="BlackbirdParser.h" />
@@ -163,8 +166,10 @@
     <ClInclude Include="Parser\Parsers\Include\TWhereParser.h" />
     <ClInclude Include="Parser\Parsers\Include\TWithParser.h" />
     <ClInclude Include="Parser\Parsers\Include\UnionParser.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="CPenta\AbstractCell.cpp" />
     <ClCompile Include="CPenta\AbstractReplicant.cpp" />
     <ClCompile Include="CPenta\AbstruseReplicant.cpp" />
@@ -235,7 +240,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="BlackbirdDsl.rc2" />
     <None Include="BlackbirdDsl.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="BlackbirdDsl.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

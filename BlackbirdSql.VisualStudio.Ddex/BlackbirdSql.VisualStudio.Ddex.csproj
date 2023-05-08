@@ -87,6 +87,10 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="license.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Package.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.FolderEmpty.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.FolderSystemOpen.ico" />
