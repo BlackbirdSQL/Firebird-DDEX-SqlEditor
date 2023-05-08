@@ -2,11 +2,11 @@
 
 ![ReadMe](https://user-images.githubusercontent.com/120905720/236587392-73a74f86-58f6-4362-8640-7f03b3532391.jpg)
 
-The BlackbirdSQL DDEX 2.0 .NET Data Provider tool, `BlackbirdSql.VisualStudio.Ddex`, implements all the core DDEX 2.0 interfaces prevalent in the SqlServer DDEX provider and more, but currently excludes DDL functionality. 
+The BlackbirdSQL DDEX 2.0 .NET Data Provider extension, `BlackbirdSql.VisualStudio.Ddex`, implements all the core DDEX 2.0 interfaces prevalent in the SqlServer DDEX provider and more, but currently excludes DDL functionality. 
 
-[Download BlackbirdSql DDEX Extension (Pre-release)](https://github.com/BlackbirdSQL/Firebird-NETProvider-DDEX/releases/download/v0.1.03-alpha/BlackbirdSql.VisualStudio.Ddex.vsix)
+[Download BlackbirdSql DDEX Extension (Pre-release)](https://github.com/BlackbirdSQL/Firebird-NETProvider-DDEX/releases/download/v9.1.0.4-alpha/BlackbirdSql.VisualStudio.Ddex.vsix)
 
-*The first tenet of this package is `small footprint, low overhead`, and to be as unobtrusive as possible. It is installed as a standard VSIX extension. If you uninstall it is is gone. It does not leave it's fingerprints all over the show.*
+*The first tenet of this package is `small footprint, low overhead`, and to be as unobtrusive as possible. It is installed as a standard VSIX extension. If you uninstall it is is gone. It does not leave it's fingerprints in either your computer system or your Visual Studio installation.*
 
 ### Features
 * Firebird DDEX provider support for most of the DDEX 2.0 IVs DML interfaces utilizing FirebirdSql.Data.FirebirdClient and EntityFramework.Firebird versions 9.1.1.
@@ -23,18 +23,17 @@ The BlackbirdSQL DDEX 2.0 .NET Data Provider tool, `BlackbirdSql.VisualStudio.Dd
 * New query and data retrieval for both user and system tables.
 
 ### AutoIncrement Identity Fields
-There is a simple parser coded in C++/Cli which parses the Trigger source for linkage to the auto-increment sequence generator. The original parser code was ported from the pgsql LISP con-cell parser but then scrapped in favor of the [greenlion/PHP-SQL-Parser](https://github.com/greenlion/PHP-SQL-Parser) PHP parser, which meant writing a class library, the Cell class, which could imitate PHP style arrays/variables. This library is fully functional but the port of the parser itself was not completed because the partial port satisfied the needs for parsing the Trigger DDL. The parser itself is reasonably fast, but SQL SELECT commands on a large number of rows, in this case for triggers and generators, may take some time, so building of the Trigger/Generator linkage tables for a connection is initiated asynchronously as soon as the connection is established.
+There is a simple parser coded in C++/Cli which parses the Trigger source for linkage to the auto-increment sequence generator. The original parser code was ported from the pgsql LISP con-cell parser but then scrapped in favor of the [greenlion/PHP-SQL-Parser](https://github.com/greenlion/PHP-SQL-Parser) PHP parser, which meant writing a class library, the Cell class, which could imitate PHP style arrays/variables. This library is fully functional but the port of the parser itself was not completed because the partial port satisfied the needs for parsing the Trigger DDL.</br>
+The parser itself is reasonably fast (+- 0.1 milliseconds per trigger), but SQL SELECT commands on a large number of rows, in this case for triggers and generators, may take some time, so building of the Trigger/Generator linkage tables for a connection is initiated asynchronously as soon as the connection is established.
 
 
 ## Known issues
 * The 'Open Script' command on Server Explorer nodes with an expression or dsl/sql source code is still in development and not functional yet. Selecting the command from the SE context menu results in the IDE shutting down, so it has been temporarily disabled.
-* If on startup of the Visual Studio IDE, and only on startup, an attempt is made to access a data object before the BlackbirdSql DDEX provider has been given the IDE shell context, Visual Studio will flag the provider as unavailable for the duration of the session. As it stands Visual Studio will have to be restarted to clear the flag.</br>
-This is true for both the SE and any other data objects in a solution. In particular this issue can consistently be replicated in Server Explorer if a connection node for Firebird is open and the SE is pinned on startup of the IDE within a solution context, or any other window requiring the provider.</br> 
+* If on startup of the Visual Studio IDE, and only on startup, an attempt is made to access an EDMX model before the associated DDEX provider has been given the IDE shell context, Visual Studio will flag the provider as unavailable for the duration of the session. This is true for both the SqlServer and BlackbirdSql providers, and is likely the case for any other DDEX provider that loads asynchronously.</br>
+* As it stands Visual Studio will have to be restarted to clear the flag.</br>
 Unless we're missing a trick here this seems to be unavoidable. Loading is asynchronous, so the provider needs time to register and load.</br>
 We want to be as unobtrusive as possible so load delays are just a reality if we go the asynchronous route. (*Loading is initiated at the earliest possible, which is as soon as the IDE shell context is available.*)
 * If you have a huge number of triggers then rendering of the triggers in the SE, or any other collection for that matter, may take some time. This has nothing to do with the parser but is simply down to network and database server performance. To minimize the effect of this, Trigger/Generator linkage is built asynchronously as soon as a connection is established.
-* If you use a Server Explorer Database Connection as the connection for an EDMX model and choose to exclude sensitive data there may be instances where the password will also be stripped from the SE connection and you will be prompted for a password through the BlackbirdSql IVsDataConnectionPromptDialog implementation the next time you access it in the SE.</br>
-I have been unable to replicate this bug for some time now so it may have been resolved since updating the IVsDataConnectionPromptDialog logic.
 * There seems to be an issue with drag and drop on procedures and functions which I haven't looked at. It's likely something trivial but not sure if this functionality is available to SqlServer so may be another rabbit hole.</br>
 The same applies to drag and drop from the SE directly into the edmx, not available on SqlServer but I don't see why it cannot be done.
 * The enhanced localized new query command is working but has not yet been placed in the views or functions/procedures nodes of the SE, which still use the built-in new query command.</br>
@@ -74,17 +73,21 @@ To fire up an experimental instance of Visual Studio create a shortcut of Visual
 
 BlackbirdSql.VisualStudio.Ddex is DDEX 2.0 compliant and is click and go using VSIX and autoload, and requires no additional setup either in the app.config, csproj or machine.config.</br>
 
-If the option is enabled there will be a once-off validation of a solution's projects' app.config's and edmx models. Legacy edmx models won't work with Firebird's latest EntityFramework version so an update is required.</br>
-This is a once off validation on each `existing` solution the first time it is opened after installing the VSIX. If the app.config is open or any edmx models are open you will need to close them first and then reopen your solution for the once-off validation to complete.
+If enabled, there will be a once-off validation of a solution's projects' app.config's and edmx models. Legacy edmx models won't work with Firebird's latest EntityFramework version so an update is required.</br>
+This is a once off validation on each `existing` solution the first time it is opened after installing the VSIX.
+The goal is that you don't have to do any configuring of the .csproj, app.config, machine.config or any legacy edmx models, and eliminate using the GAC.</br>
+This feature can be disabled in the Visual Studio options, but each individual task in the validation process is spawned asynchronously so the overhead is miniscual.</br>
 
-If the option is enabled and you add Firebird.Data.FirebirdClient or EntityFramework.Firebird to a project it will be validated and the app.config updated correctly if required. If the app.config is open the update will be skipped and you will need to reopen your solution for the validation to complete.
+`In performance tests on a 64-bit Windows 10 I7-4500U (1.80GHz) machine with 16GB RAM and a 1TB SSD, a solution with 40MB of source code, and that included 6 projects with 3 EDMX models and 3 XSD models validated in under 500ms on a low-priority background task.`
 
-__Note:__ For the debug build the once-off validation flags are not persistent between loads of solutions and are repeated, which will place the solution into and unsaved state. You can disable the validation process in Visual Studio's options.
+The validation process will not validate any open app.config or edmx models. You will need to close them first and then reopen your solution for the once-off validation to complete.</br>
+
+If the validation option is enabled and you add Firebird.Data.FirebirdClient or EntityFramework.Firebird to a project, the project will be validated and the app.config updated correctly if required. If the app.config is open the update will be skipped and you will need to reopen your solution for the validation to complete.
+
+__Note:__ For the debug build the once-off validation flags are not persistent between loads of solutions and are repeated, which will place the solution into and unsaved state. The pre-release downloadable binary does have it's persistent flag set.
 
 The intention is to maintain a small footprint. We're not going to start altering VS menus and taking over your Visual Studio IDE workspace. It is a data source UI provider for Firebird and the benchmark is the SqlServer provider, so whatever UI functionality is available for SqlServer is on the todo list for Firebird provided it does not directly interfere with the developer's active UI.
 
-The goal is that you don't have to do any configuring of the .csproj, app.config, machine.config or any legacy edmx models, and eliminate using the GAC.</br>
-The once-off validation features can be disabled in the Visual Studio options but each individual task in the validation process is spawned asynchronously so the overhead is miniscual.
 
 If you're planning on using EF Core and/or .NET, VS does not have wizard support for edmx which makes no sense to me.
 This roadblock is easily overcome by creating a separate project using .NET Framework for your data models and then linking your .NET / EF Core projects to those edmx models.
