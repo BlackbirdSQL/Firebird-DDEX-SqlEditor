@@ -29,7 +29,7 @@ The parser itself is reasonably fast (+- 0.1 milliseconds per trigger), but SQL 
 
 ## Known issues
 * The 'Open Script' command on Server Explorer nodes with an expression or dsl/sql source code is still in development and not functional yet. Selecting the command from the SE context menu results in the IDE shutting down, so it has been temporarily disabled.
-* If on startup of the Visual Studio IDE, and only on startup, an attempt is made to access an EDMX model before the associated DDEX provider has been given the IDE shell context, Visual Studio will flag the provider as unavailable for the duration of the session. This is true for both the SqlServer and BlackbirdSql providers, and is likely the case for any other DDEX provider that loads asynchronously.</br>
+* If on startup of the Visual Studio IDE, and only on startup, an attempt is made to access an EDMX model or a Database in the SE before the associated DDEX provider has been given the IDE shell context, Visual Studio will flag the provider as unavailable for the duration of the session. This is true for both the SqlServer and BlackbirdSql providers, and is likely the case for any other DDEX provider that loads asynchronously.</br>
 * As it stands Visual Studio will have to be restarted to clear the flag.</br>
 Unless we're missing a trick here this seems to be unavoidable. Loading is asynchronous, so the provider needs time to register and load.</br>
 We want to be as unobtrusive as possible so load delays are just a reality if we go the asynchronous route. (*Loading is initiated at the earliest possible, which is as soon as the IDE shell context is available.*)
