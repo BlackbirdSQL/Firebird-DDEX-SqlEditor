@@ -25,6 +25,9 @@ The BlackbirdSQL DDEX 2.0 .NET Data Provider extension, `BlackbirdSql.VisualStud
 * Procedures, functions, views, triggers and computed columns display the decoded blr if no source exists.
 * Display of initial value (seed), increment and next value within sequence generator display.
 * New query and data retrieval for both user and system tables.
+* BlackbirdSql background and UI thread tasks compliant with the IDE TaskHandler and implement the user cancel feature for background tasks from the TaskHandler window.
+* All exception, task progress and task status reporting logged to the output window accessible under *BlackbirdSql* in the dropdown (Enabled by default under Options).
+* The connection node `Refresh` command option in the SE will successfully recover from a connection timeout shutdown exception, to the node's previous state
 
 ### AutoIncrement Identity Fields
 There is a simple parser coded in C++/Cli which parses the Trigger source for linkage to the auto-increment sequence generator. The original parser code was ported from the pgsql LISP con-cell parser but then scrapped in favor of the [greenlion/PHP-SQL-Parser](https://github.com/greenlion/PHP-SQL-Parser) PHP parser, which meant writing a class library, the Cell class, which could imitate PHP style arrays/variables. This library is fully functional but the port of the parser itself was not completed because the partial port satisfied the needs for parsing the Trigger DDL.</br>
@@ -77,7 +80,7 @@ To fire up an experimental instance of Visual Studio create a shortcut of Visual
 
 BlackbirdSql.VisualStudio.Ddex is DDEX 2.0 compliant and is click and go using VSIX and autoload, and requires no additional setup either in the app.config, csproj or machine.config.</br>
 
-If enabled, there will be a once-off validation of a solution's projects' app.config's and edmx models. Legacy edmx models won't work with Firebird's latest EntityFramework version so an update is required.</br>
+If enabled (the default), there will be a once-off validation of a solution's projects' app.config's and edmx models. Legacy edmx models won't work with Firebird's latest EntityFramework version so an update is required.</br>
 This is a once off validation on each `existing` solution the first time it is opened after installing the VSIX.
 The goal is that you don't have to do any configuring of the .csproj, app.config, machine.config or any legacy edmx models, and eliminate using the GAC.</br>
 This feature can be disabled in the Visual Studio options, but each individual task in the validation process is spawned asynchronously so the overhead is miniscual.</br>
@@ -86,7 +89,7 @@ This feature can be disabled in the Visual Studio options, but each individual t
 
 The validation process will not validate any open app.config or edmx models. You will need to close them first and then reopen your solution for the once-off validation to complete.</br>
 
-If the validation option is enabled and you add Firebird.Data.FirebirdClient or EntityFramework.Firebird to a project, the project will be validated and the app.config updated correctly if required. If the app.config is open the update will be skipped and you will need to reopen your solution for the validation to complete.
+If the validation option is enabled (the default) and you add Firebird.Data.FirebirdClient or EntityFramework.Firebird to a project, the project will be validated and the app.config updated correctly if required. If the app.config is open the update will be skipped and you will need to reopen your solution for the validation to complete.
 
 __Note:__ For the debug build the once-off validation flags are not persistent between loads of solutions and are repeated, which will place the solution into and unsaved state. The pre-release downloadable binary does have it's persistent flag set.
 
