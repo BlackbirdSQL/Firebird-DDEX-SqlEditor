@@ -14,8 +14,6 @@ using Microsoft.VisualStudio.TaskStatusCenter;
 
 using FirebirdSql.Data.FirebirdClient;
 
-
-
 namespace BlackbirdSql.Common.Extensions;
 
 
@@ -123,7 +121,7 @@ internal class LinkageParser : AbstractLinkageParser
 			if (userToken.IsCancellationRequested)
 				_Enabled = false;
 
-			if (!_Enabled || asyncToken.IsCancellationRequested)
+			if (!_Enabled || asyncToken.IsCancellationRequested || !ConnectionActive)
 				return false;
 		}
 
@@ -226,8 +224,23 @@ internal class LinkageParser : AbstractLinkageParser
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits", Justification = "<Pending>")]
 	public override bool Execute()
 	{
-		if (!ClearToLoad || !ConnectionActive)
+		if (!ClearToLoad)
 			return false;
+
+
+		if (_Connection == null)
+		{
+            Microsoft.VisualStudio.Data.DataProviderException ex = new("Connection disposed");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		if (!ConnectionActive)
+		{
+			Microsoft.VisualStudio.Data.DataProviderException ex = new("Connection closed");
+			Diag.Dug(ex);
+			throw ex;
+		}
 
 		SyncEnter();
 
@@ -300,12 +313,17 @@ internal class LinkageParser : AbstractLinkageParser
 			_LinkStage == EnumLinkStage.Start ? 0 : -1);
 
 		if (_LinkStage < EnumLinkStage.GeneratorsLoaded)
+		{
 			GetRawGeneratorSchema();
 
+			if (_AsyncActive && userToken.IsCancellationRequested)
+				_Enabled = false;
 
-		if (_AsyncActive && userToken.IsCancellationRequested)
-			_Enabled = false;
-		if (!_Enabled || asyncToken.IsCancellationRequested)
+			TaskHandlerProgress("SELECT Generators", GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
+		}
+
+
+		if (_AsyncActive && (!_Enabled || asyncToken.IsCancellationRequested))
 			return false;
 
 		if (!ConnectionActive)
@@ -313,38 +331,55 @@ internal class LinkageParser : AbstractLinkageParser
 
 
 		if (_LinkStage < EnumLinkStage.TriggerDependenciesLoaded)
+		{
 			GetRawTriggerDependenciesSchema();
 
+			if (_AsyncActive && userToken.IsCancellationRequested)
+				_Enabled = false;
 
-		if (_AsyncActive && userToken.IsCancellationRequested)
-			_Enabled = false;
-		if (!_Enabled || asyncToken.IsCancellationRequested)
+			TaskHandlerProgress("SELECT TriggerDependencies", GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
+		}
+
+		if (_AsyncActive && (!_Enabled || asyncToken.IsCancellationRequested))
 			return false;
 
 		if (!ConnectionActive)
 			return false;
 
 		if (_LinkStage < EnumLinkStage.TriggersLoaded)
+		{
 			GetRawTriggerSchema();
 
-		if (_AsyncActive && userToken.IsCancellationRequested)
-			_Enabled = false;
-		if (!_Enabled || asyncToken.IsCancellationRequested)
+			if (_AsyncActive && userToken.IsCancellationRequested)
+				_Enabled = false;
+
+			TaskHandlerProgress("SELECT Triggers", GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
+		}
+
+		if (_AsyncActive && (!_Enabled || asyncToken.IsCancellationRequested))
 			return false;
 
 
 		if (!SequencesPopulated)
+		{
 			BuildSequenceTable();
 
+			if (_AsyncActive && userToken.IsCancellationRequested)
+				_Enabled = false;
 
-		if (_AsyncActive && userToken.IsCancellationRequested)
-			_Enabled = false;
-		if (!_Enabled || asyncToken.IsCancellationRequested)
+			TaskHandlerProgress("Populating Sequence Table", GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
+		}
+
+
+		if (_AsyncActive && (!_Enabled || asyncToken.IsCancellationRequested))
 			return false;
 
 		if (_LinkStage < EnumLinkStage.Completed)
 			BuildTriggerTable();
 
+		TaskHandlerProgress($"Parsing and linking of {_Triggers.Rows.Count} Triggers", GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
+
+		_Stopwatch = null;
 
 		UpdateStatusBar(_LinkStage, _AsyncActive);
 

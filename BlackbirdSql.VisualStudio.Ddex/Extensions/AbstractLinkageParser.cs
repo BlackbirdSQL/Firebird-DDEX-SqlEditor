@@ -19,6 +19,7 @@ using FirebirdSql.Data.FirebirdClient;
 using BlackbirdSql.VisualStudio.Ddex.Schema;
 using BlackbirdSql.VisualStudio.Ddex.Configuration;
 using Microsoft.VisualStudio.RpcContracts;
+using Extensibility;
 
 namespace BlackbirdSql.Common.Extensions;
 
@@ -195,7 +196,8 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 	{
 		get
 		{
-			return (_Enabled && !_AsyncActive && !_AsyncToken.IsCancellationRequested && ClearToLoad);
+			return (_Enabled && !_AsyncActive && !Loaded && _SyncActive == 0
+				&& !_AsyncToken.IsCancellationRequested && ConnectionActive );
 		}
 	}
 
@@ -277,6 +279,8 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 	// ---------------------------------------------------------------------------------
 	protected AbstractLinkageParser(FbConnection connection) : base(connection)
 	{
+		Diag.Trace("new connection");
+
 		_Instances.Add(connection, this);
 
 		_Connection.StateChange += ConnectionStateChanged;
@@ -480,7 +484,6 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 		Stopwatch.Stop();
 		_Elapsed += Stopwatch.ElapsedMilliseconds;
 
-		TaskHandlerProgress("Populating Sequence Table", GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
 	}
 
 
@@ -658,9 +661,6 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 		Stopwatch.Stop();
 		_Elapsed += Stopwatch.ElapsedMilliseconds;
 
-		TaskHandlerProgress($"Parsing and linking of {_Triggers.Rows.Count} Triggers", GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
-
-		_Stopwatch = null;
 	}
 
 
@@ -688,8 +688,6 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 
 		if (_RawGenerators != null)
 			_LinkStage = EnumLinkStage.GeneratorsLoaded;
-
-		TaskHandlerProgress("SELECT Generators", GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
 
 		return _RawGenerators;
 	}
@@ -722,8 +720,6 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 		if (_RawTriggerDependencies != null)
 			_LinkStage = EnumLinkStage.TriggerDependenciesLoaded;
 		
-		TaskHandlerProgress("SELECT TriggerDependencies", GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
-
 		return _RawTriggerDependencies;
 	}
 
@@ -753,8 +749,6 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 		if (_RawTriggers != null)
 			_LinkStage = EnumLinkStage.TriggersLoaded;
 
-
-		TaskHandlerProgress("SELECT Triggers", GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
 
 		return _RawTriggers;
 	}
@@ -1018,14 +1012,16 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 	// ---------------------------------------------------------------------------------
 	protected bool TaskHandlerProgress(string stage, int progress, long elapsed)
 	{
+		bool completed = false;
 		string text;
 
 		if (progress == 0)
 		{
-			text = $"Updating sequence linkage.";
+			text = "Updating sequence linkage.";
 		}
 		else if (progress == 100)
 		{
+			completed = true;
 			text = $"{progress}% completed. {stage} took {elapsed}ms.\nLinkage completed in {_Elapsed}ms.";
 		}
 		else
@@ -1035,12 +1031,13 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 				// If it's a user cancel request.
 				if (!_Enabled)
 				{
-					text = $"Cancelled. {progress}% completed. {stage} took {elapsed}ms.";
+					completed = true;
+					text = $">  Cancelled. {progress}% completed. {stage} took {elapsed}ms.";
 				}
 				else
 				{
 					if (elapsed == -1)
-						text = $"Resuming async sequence linkage.";
+						text = ">  Resuming async sequence linkage.";
 					else
 						text = $"{progress}% completed. {stage} took {elapsed}ms.";
 
@@ -1049,14 +1046,14 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 			else
 			{
 				if (elapsed == -1)
-					text = $"Switched sequence linkage to UI thread.";
+					text = ">  Switched sequence linkage to UI thread.";
 				else
 					text = $"{progress}% completed. {stage} took {elapsed}ms.";
 			}
 
 		}
 
-		return Diag.TaskHandlerProgress(this, text, progress);
+		return Diag.TaskHandlerProgress(this, text, progress, completed);
 
 	}
 
@@ -1091,7 +1088,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 			{
 				// If it's a user cancel request.
 				if (!_Enabled)
-					text = $"Cancelled {catalog} sequence linkage.";
+					text = $">  Cancelled {catalog} sequence linkage.";
 				else
 					text = $"Resuming {catalog} sequence linkage.";
 			}
@@ -1172,20 +1169,15 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 	/// in the <see cref="_Instances"/> dictionary.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected static void ConnectionDisposed(object sender, EventArgs e)
+	protected void ConnectionDisposed(object sender, EventArgs e)
 	{
-		if (sender is not FbConnection connection)
-		{
+		if (_Connection == null)
 			return;
-		}
 
+		Diag.Trace();
 
-		if (_Instances.TryGetValue(connection, out object parser))
-		{
-			_Instances.Remove(connection);
-			((AbstractLinkageParser)parser)._Connection = null;
-
-		}
+		_Instances.Remove(_Connection);
+		_Connection = null;
 	}
 
 

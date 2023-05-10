@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="BlackbirdSql.VisualStudio.Ddex.bb045ad5-6038-4963-aa12-e4a5262eecaa" Version="9.1.0.4" Language="en-US" Publisher="BlackbirdSql" />
+        <Identity Id="BlackbirdSql.VisualStudio.Ddex.bb045ad5-6038-4963-aa12-e4a5262eecaa" Version="9.1.0.5" Language="en-US" Publisher="BlackbirdSql" />
         <DisplayName>BlackbirdSql.VisualStudio.Ddex</DisplayName>
         <Description xml:space="preserve">BlackbirdSql DDEX Data Tools</Description>
         <License>license.txt</License>

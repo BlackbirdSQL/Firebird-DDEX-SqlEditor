@@ -21,6 +21,9 @@ using FirebirdSql.Data.FirebirdClient;
 
 using BlackbirdSql.Common;
 using BlackbirdSql.Common.Extensions;
+using static System.Net.Mime.MediaTypeNames;
+using System.Diagnostics;
+using Microsoft.VisualStudio.RpcContracts;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 
@@ -332,6 +335,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 
 		_TaskHandler = tsc.PreRegister(options, _ProgressData);
 
+
 		_ValidationTokenSource?.Dispose();
 		_ValidationTokenSource = new();
 		_ValidationToken = _ValidationTokenSource.Token;
@@ -346,7 +350,9 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 		// is done first to ensure that.
 		_ValidationTask = Task.Factory.StartNew(() =>
 			{
-				System.Diagnostics.Stopwatch stopwatch = new();
+				Stopwatch stopwatch = new();
+
+				TaskHandlerProgress(0, 0);
 
 				for (int i = 0; i < projectCount; i++)
 				{
@@ -354,7 +360,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 						_ValidationTokenSource.Cancel();
 					if (_ValidationToken.IsCancellationRequested)
 					{
-						TaskHandlerProgress(100, stopwatch.Elapsed);
+						// TaskHandlerProgress(100, stopwatch.Elapsed.Milliseconds);
 						break;
 					}
 
@@ -362,7 +368,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 					// Go to back of UI thread.
 					if (!RecursiveValidateProjectAsync(i, stopwatch).Result)
 						i = projectCount - 1;
-					TaskHandlerProgress((i+1) * 100 / projectCount, stopwatch.Elapsed);
+					TaskHandlerProgress((i+1) * 100 / projectCount, stopwatch.Elapsed.Milliseconds);
 				}
 
 
@@ -919,9 +925,10 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 
 		Uig.SetIsValidatedDbProviderStatus(config.ContainingProject);
 
-		// if (modified)
-		// Diag.Trace(config.ContainingProject.Name + ": App.config DbProvider was modified");
-
+		if (modified)
+		{
+			TaskHandlerProgress($">  {config.ContainingProject.Name} -> Updated App.config: DbProvider");
+		}
 
 		return true;
 	}
@@ -998,8 +1005,10 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 
 		Uig.SetIsValidatedEFStatus(config.ContainingProject);
 
-		// if (modified)
-		// Diag.Trace(config.ContainingProject.Name + ": App.config EF was modified");
+		if (modified)
+		{
+			TaskHandlerProgress($">  {config.ContainingProject.Name} -> Updated App.config: DbProvider and EntityFramework");
+		}
 
 
 		return true;
@@ -1051,6 +1060,9 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 
 			if (!XmlParser.UpdateEdmx(path))
 				return true;
+			else
+				TaskHandlerProgress($">  {edmx.ContainingProject.Name} -> Updated {edmx.Name}: Legacy flag");
+
 
 			if (!invalidate)
 				return true;
@@ -1489,33 +1501,61 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 		return _ProgressData;
 	}
 
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Moves back onto the UI thread and updates the IDE task handler progress bar.
+	/// Moves back onto the UI thread and updates the IDE task handler progress bar
+	/// with project update information.
 	/// </summary>
-	/// <param name="progress">The % completion of the linkage build.</param>
-	/// <param name="elapsed">The time taken to complete the stage.</param>
 	// ---------------------------------------------------------------------------------
-	protected bool TaskHandlerProgress(int progress, TimeSpan elapsed)
+	protected bool TaskHandlerProgress(string text)
 	{
+		if (_ProgressData.PercentComplete == null)
+		{
+			_ProgressData.PercentComplete = 0;
+			Diag.TaskHandlerProgress(this, "Started", 0);
+		}
 
+		Diag.TaskHandlerProgress(this, text, (int)_ProgressData.PercentComplete);
+
+		return true;
+	}
+
+
+		// ---------------------------------------------------------------------------------
+		/// <summary>
+		/// Moves back onto the UI thread and updates the IDE task handler progress bar.
+		/// </summary>
+		/// <param name="progress">The % completion of the linkage build.</param>
+		/// <param name="elapsed">The time taken to complete the stage.</param>
+		// ---------------------------------------------------------------------------------
+		protected bool TaskHandlerProgress(int progress, int elapsed)
+	{
+		bool completed = false;
 		string text;
 
-		if (progress == 100)
+		if (progress == 0)
 		{
-			text = $"Completed. Validation took {elapsed.Milliseconds}ms.";
+			text = "Started";
+		}
+		else if (progress == 100)
+		{
+			completed = true;
+			text = $"Completed. Validation took {elapsed}ms.";
 		}
 		else if (_TaskHandler.UserCancellation.IsCancellationRequested)
 		{
-			text = $"Cancelled. {progress}% completed. Validation took {elapsed.Milliseconds}ms.";
+			completed = true;
+			text = $"Cancelled. {progress}% completed. Validation took {elapsed}ms.";
 		}
 		else
 		{
-			text = $"{progress}% completed after {elapsed.Milliseconds}ms.";
+			text = $"{progress}% completed after {elapsed}ms.";
 		}
 
 
-		Diag.TaskHandlerProgress(this, text, progress);
+		Diag.TaskHandlerProgress(this, text, progress, completed);
 
 		return true;
 

@@ -10,7 +10,7 @@
 	</PropertyGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command=":: *** Update: No longer required&#xD;&#xA;:: copy /v /y /b $(OutDir)\BlackbirdSql.Common.* &quot;%25ProgramFiles%25\BlackbirdSql\BlackbirdCommon.9.1.0&quot;" />
+		<Exec Command=":: *** Update: No longer required&#xD;&#xA;:: copy /v /y /b $(OutDir)\BlackbirdSql.Common.* &quot;%25ProgramFiles%25\BlackbirdSql\BlackbirdCommon&quot;" />
 	</Target>
 
 	<ItemGroup>

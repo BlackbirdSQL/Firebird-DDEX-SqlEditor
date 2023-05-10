@@ -23,7 +23,6 @@ static class PackageData
 
 	public const string ServiceName = "BlackbirdSql DDEX 2.0 Provider Object Factory";
 
-	// public const string CodeBase = "%ProgramFiles%\\BlackbirdSql\\BlackbirdDDEX.9.1.0\\BlackbirdSql.VisualStudio.Ddex.dll";
 
 
 	#endregion Constants

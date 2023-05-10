@@ -45,7 +45,7 @@ public static class Diag
 	static bool _EnableTrace = true;
 	static bool _EnableDiagnostics = true;
 	static bool _EnableFbDiagnostics = true;
-	static bool _EnableDiagnosticsLog = false;
+	static bool _EnableDiagnosticsLog = true;
 	static string _LogFile = "C:\\bin\\vsdiag.log";
 	static string _FbLogFile = "C:\\bin\\vsdiagfb.log";
 
@@ -396,9 +396,9 @@ public static class Diag
 	/// bar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool TaskHandlerProgress(ITaskHandlerClient client, string text, int progress)
+	public static bool TaskHandlerProgress(ITaskHandlerClient client, string text, int progress, bool completed = false)
 	{
-		_ = Task.Factory.StartNew(() => TaskHandlerProgressAsync(client, text, progress).Result,
+		_ = Task.Factory.StartNew(() => TaskHandlerProgressAsync(client, text, progress, completed).Result,
 				default, TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent,
 				TaskScheduler.Default);
 
@@ -412,59 +412,80 @@ public static class Diag
 	/// Moves back onto the UI thread and updates the IDE task handler progress bar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static async Task<bool> TaskHandlerProgressAsync(ITaskHandlerClient client, string text, int progress)
+	public static async Task<bool> TaskHandlerProgressAsync(ITaskHandlerClient client, string text, int progress, bool completed = false)
 	{
-		ITaskHandler taskHandler = client.GetTaskHandler();
-
-		if (taskHandler == null)
-			return false;
-
-		// Switch to main thread
-		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-		// Check again since joining UI thread.
-		taskHandler = client.GetTaskHandler();
-
-		if (taskHandler == null)
-			return false;
-
-		TaskProgressData progressData = client.GetProgressData();
-
-		progressData.PercentComplete = progress;
-
-		string[] arr = text.Split('\n');
-
-		string title = "";
-
-		if (EnableTaskLog)
-			title = taskHandler.Options.Title.Replace("BlackbirdSql", "").Trim();
-
-		for (int i = 0; i < arr.Length; i++)
+		try
 		{
-			progressData.ProgressText = arr[i];
-			taskHandler.Progress.Report(progressData);
+			ITaskHandler taskHandler = client.GetTaskHandler();
 
-			if (EnableTaskLog)
-				arr[i] = title + ": " + arr[i];
-		}
+			if (taskHandler == null)
+				return false;
+
+			TaskProgressData progressData = client.GetProgressData();
+
+			bool updateTaskHandler = (progressData.PercentComplete == null || progressData.PercentComplete != progress);
+
+			string title = EnableTaskLog ? taskHandler.Options.Title.Replace("BlackbirdSql", "").Trim() : "";
+
+			// Switch to main thread
+			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+			// Check again since joining UI thread.
+			if (updateTaskHandler)
+				taskHandler = client.GetTaskHandler();
+
+			updateTaskHandler &= taskHandler != null;
+
+			if (!EnableTaskLog && !updateTaskHandler)
+				return false;
 
 
-		if (EnableTaskLog)
-		{
-			text = string.Join("\n", arr);
+			if (updateTaskHandler)
+				progressData.PercentComplete = progress;
 
-			if (progress == 100)
+
+			string[] arr = text.Split('\n');
+
+
+			for (int i = 0; i < arr.Length; i++)
 			{
-				StringBuilder sb = new(arr[^1].Length);
+				if (updateTaskHandler)
+				{
+					progressData.ProgressText = arr[i];
+					taskHandler.Progress.Report(progressData);
+				}
 
-				sb.Append('=', (arr[^1].Length - 10) / 2);
-				sb.Append(" Finished ");
-				sb.Append('=', arr[^1].Length - sb.Length);
-
-				text += "\n" + sb + "\n";
+				if (EnableTaskLog)
+					arr[i] = title + ": " + arr[i];
 			}
 
-			_ = OutputPaneWriteLineAsync(text);
+
+			if (EnableTaskLog)
+			{
+				text = string.Join("\n", arr);
+
+				if (completed)
+				{
+					StringBuilder sb = new(arr[^1].Length);
+
+					sb.Append('=', (arr[^1].Length - 10) / 2);
+					sb.Append(" Finished ");
+					sb.Append('=', arr[^1].Length - sb.Length);
+
+					text += "\n" + sb + "\n";
+				}
+
+				_ = OutputPaneWriteLineAsync(text);
+			}
+		}
+		catch (Exception ex)
+		{
+			bool enableTaskLog = _EnableTaskLog;
+			_EnableTaskLog = false;
+			Dug(ex);
+			_EnableTaskLog = enableTaskLog;
+
+			throw ex;
 		}
 
 		return true;
@@ -529,7 +550,12 @@ public static class Diag
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
+			bool enableTaskLog = _EnableTaskLog;
+			_EnableTaskLog = false;
+			Dug(ex);
+			_EnableTaskLog = enableTaskLog;
+
+			throw ex;
 		}
 
 		return true;

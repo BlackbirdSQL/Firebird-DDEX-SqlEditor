@@ -30,8 +30,8 @@ namespace BlackbirdSql.VisualStudio.Ddex.Configuration
 		[Category("General")]
 		[DisplayName("Enable diagnostics logging")]
 		[Description("Enables diagnostics logging to a log file. Note: For release version only exceptions will be logged.")]
-		[DefaultValue(false)]
-		public bool EnableDiagnosticsLog { get; set; } = false;
+		[DefaultValue(true)]
+		public bool EnableDiagnosticsLog { get; set; } = true;
 
 		[Category("General")]
 		[DisplayName("Log file")]
