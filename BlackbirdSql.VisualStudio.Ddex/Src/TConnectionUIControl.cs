@@ -68,26 +68,26 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	public TConnectionUIControl() : base()
 	{
 		try
-		{ 
-		// Diag.Trace();
-		InitializeComponent();
-
-		// Diag.Trace("Creating erd");
-		_DataSources = new()
 		{
-			DataSource = XmlParser.DataSources,
-			DependentSource = XmlParser.Databases,
-			PrimaryKey = "DataSourceLc",
-			ForeignKey = "DataSourceLc"
-		};
+			// Diag.Trace();
+			InitializeComponent();
 
-		cmbDataSource.DataSource = _DataSources;
-		cmbDataSource.ValueMember = "DataSourceLc";
-		cmbDataSource.DisplayMember = "DataSourceName";
+			// Diag.Trace("Creating erd");
+			_DataSources = new()
+			{
+				DataSource = XmlParser.DataSources,
+				DependentSource = XmlParser.Databases,
+				PrimaryKey = "DataSourceLc",
+				ForeignKey = "DataSourceLc"
+			};
 
-		cmbDatabase.DataSource = _DataSources.Dependent;
-		cmbDatabase.ValueMember = "InitialCatalogLc";
-		cmbDatabase.DisplayMember = "Name";
+			cmbDataSource.DataSource = _DataSources;
+			cmbDataSource.ValueMember = "DataSourceLc";
+			cmbDataSource.DisplayMember = "DataSourceName";
+
+			cmbDatabase.DataSource = _DataSources.Dependent;
+			cmbDatabase.ValueMember = "InitialCatalogLc";
+			cmbDatabase.DisplayMember = "Name";
 		}
 		catch (Exception ex)
 		{
@@ -276,7 +276,8 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				return;
 
 			// Diag.Trace("Database text changed");
-			Site["Initial Catalog"] = txtDatabase.Text.Trim();
+			if (Site != null)
+				Site["Initial Catalog"] = txtDatabase.Text.Trim();
 
 			if (!_DataSources.IsReady)
 				return;
@@ -326,7 +327,11 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			DisableEvents();
 
 			if (txtDatabase.Text.ToLower() != (string)_DataSources.DependentRow["InitialCatalogLc"])
-				Site["Initial Catalog"] = txtDatabase.Text = (string)_DataSources.DependentRow["InitialCatalog"];
+			{
+				txtDatabase.Text = (string)_DataSources.DependentRow["InitialCatalog"];
+				if (Site != null)
+					Site["Initial Catalog"] = txtDatabase.Text;
+			}
 
 			int selectedIndex = cboCharset.SelectedIndex;
 
@@ -334,14 +339,21 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 			if (cboCharset.SelectedIndex == -1)
 				cboCharset.SelectedIndex = selectedIndex;
-			else
+			else if (Site != null)
 				Site["Character Set"] = cboCharset.Text;
 
 			if ((string)_DataSources.DependentRow["UserName"] != "")
 			{
-				Site["User ID"] = txtUserName.Text = (string)_DataSources.DependentRow["UserName"];
-				Site["Password"] = txtPassword.Text = (string)_DataSources.DependentRow["Password"];
-				Site["Role Name"] = txtRole.Text = (string)_DataSources.DependentRow["RoleName"];
+				txtUserName.Text = (string)_DataSources.DependentRow["UserName"];
+				txtPassword.Text = (string)_DataSources.DependentRow["Password"];
+				txtRole.Text = (string)_DataSources.DependentRow["RoleName"];
+
+				if (Site != null)
+				{
+					Site["User ID"] = txtUserName.Text;
+					Site["Password"] = txtPassword.Text;
+					Site["Role Name"] = txtRole.Text;
+				}
 			}
 
 			EnableEvents();
@@ -370,7 +382,8 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 			// Diag.Trace("Datasource text changed");
 
-			Site["Data Source"] = txtDataSource.Text.Trim();
+			if (Site != null)
+				Site["Data Source"] = txtDataSource.Text.Trim();
 
 			if (!_DataSources.IsReady)
 				return;
@@ -417,35 +430,63 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 		try
 		{
-			if (_DataSources.Row == null || (int)_DataSources.Row["Orderer"] == 0)
+
+			try
+			{
+				if (_DataSources.Row == null || (int)_DataSources.Row["Orderer"] == 0)
+					return;
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
 				return;
+			}
 
 			DisableEvents();
 
 			if ((int)_DataSources.Row["Orderer"] == 1)
 			{
-				Site["Data Source"] = txtDataSource.Text = "";
-				Site["Port Number"] = txtPort.Text = DslConnectionString.DefaultValuePortNumber.ToString();
-				Site["Server Type"] = cboServerType.SetSelectedIndexX((int)DslConnectionString.DefaultValueServerType).ToString();
-				Site["Initial Catalog"] = txtDatabase.Text = "";
-				Site["Dialect"] = (string)cboDialect.SetSelectedValueX(DslConnectionString.DefaultValueDialect);
-				Site["User ID"] = txtUserName.Text = "";
-				Site["Password"] = txtPassword.Text = "";
-				Site["Role Name"] = txtRole.Text = "";
-				cboCharset.SelectedValue = DslConnectionString.DefaultValueCharacterSet;
-				Site["Character Set"] = DslConnectionString.DefaultValueCharacterSet;
-				Site["Character Set"] = (string)cboCharset.SetSelectedValueX(DslConnectionString.DefaultValueCharacterSet);
+				txtDataSource.Text = "";
+				txtPort.Text = DslConnectionString.DefaultValuePortNumber.ToString();
+				cboServerType.SetSelectedIndexX((int)DslConnectionString.DefaultValueServerType).ToString();
+				txtDatabase.Text = "";
+				cboDialect.SetSelectedValueX(DslConnectionString.DefaultValueDialect);
+				txtUserName.Text = "";
+				txtPassword.Text = "";
+				txtRole.Text = "";
+				cboCharset.SetSelectedValueX(DslConnectionString.DefaultValueCharacterSet);
+
+				if (Site != null)
+				{
+					Site["Data Source"] = "";
+					Site["Port Number"] = DslConnectionString.DefaultValuePortNumber.ToString();
+					Site["Server Type"] = cboServerType.SelectedIndex;
+					Site["Initial Catalog"] = "";
+					Site["Dialect"] = DslConnectionString.DefaultValueDialect;
+					Site["User ID"] = txtUserName.Text = "";
+					Site["Password"] = txtPassword.Text = "";
+					Site["Role Name"] = txtRole.Text = "";
+					Site["Character Set"] = DslConnectionString.DefaultValueCharacterSet;
+				}
 
 				_DataSources.Position = -1;
 			}
 			else
 			{
 				if (txtDataSource.Text.ToLower() != (string)_DataSources.Row["DataSourceLc"])
-					Site["Data Source"] = txtDataSource.Text = (string)_DataSources.Row["DataSource"];
+				{
+					txtDataSource.Text = (string)_DataSources.Row["DataSource"];
+					if (Site != null)
+						Site["Data Source"] = txtDataSource.Text;
+				}
 
 
 				if ((int)_DataSources.Row["PortNumber"] != 0 && txtPort.Text != _DataSources.Row["PortNumber"].ToString())
-					Site["Port Number"] = txtPort.Text = _DataSources.Row["PortNumber"].ToString();
+				{
+					txtPort.Text = _DataSources.Row["PortNumber"].ToString();
+					if (Site != null)
+						Site["Port Number"] = txtPort.Text;
+				}
 			}
 
 			EnableEvents();

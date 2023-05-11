@@ -210,6 +210,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 		get
 		{
 			return (_Connection != null
+				&& (_Connection.State & ConnectionState.Open) != 0
 				&& (_Connection.State & (ConnectionState.Closed | ConnectionState.Broken)) == 0);
 		}
 	}
@@ -279,7 +280,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 	// ---------------------------------------------------------------------------------
 	protected AbstractLinkageParser(FbConnection connection) : base(connection)
 	{
-		Diag.Trace("new connection");
+		// Diag.Trace("new connection");
 
 		_Instances.Add(connection, this);
 
@@ -674,17 +675,39 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 	{
 		DslRawGenerators schema = new();
 
+		Requesting = true;
+
 		try
 		{
-			Requesting = true;
 			_RawGenerators = schema.GetRawSchema(_Connection, "Generators");
+		}
+		catch
+		{
+			try
+			{
+				// Try reset
+				_Connection.Close();
+				_Connection.Open();
+
+				if (!ConnectionActive)
+				{
+					Microsoft.VisualStudio.Data.DataProviderException ex = new("Connection closed");
+					throw ex;
+				}
+
+				_RawGenerators = schema.GetRawSchema(_Connection, "Generators");
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
+		}
+		finally
+		{
 			Requesting = false;
 		}
-		catch (Exception ex) 
-		{
-			Diag.Dug(ex);
-			throw;
-		}
+
 
 		if (_RawGenerators != null)
 			_LinkStage = EnumLinkStage.GeneratorsLoaded;
@@ -705,17 +728,40 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 	{
 		DslRawTriggerDependencies schema = new();
 
+
+		Requesting = true;
+
 		try
 		{
-			Requesting = true;
 			_RawTriggerDependencies = schema.GetRawSchema(_Connection, "TriggerDependencies");
+		}
+		catch
+		{
+			try
+			{
+				// Try reset
+				_Connection.Close();
+				_Connection.Open();
+
+				if (!ConnectionActive)
+				{
+					Microsoft.VisualStudio.Data.DataProviderException ex = new("Connection closed");
+					throw ex;
+				}
+
+				_RawTriggerDependencies = schema.GetRawSchema(_Connection, "TriggerDependencies");
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
+		}
+		finally
+		{
 			Requesting = false;
 		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw;
-		}
+
 
 		if (_RawTriggerDependencies != null)
 			_LinkStage = EnumLinkStage.TriggerDependenciesLoaded;
@@ -734,16 +780,37 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 	{
 		DslRawTriggers schema = new();
 
+		Requesting = true;
+
 		try
-		{ 
-			Requesting = true;
-			_RawTriggers = schema.GetRawSchema(_Connection, "Triggers");
-			Requesting = false;
-		}
-		catch (Exception ex)
 		{
-			Diag.Dug(ex);
-			throw;
+			_RawTriggers = schema.GetRawSchema(_Connection, "Triggers");
+		}
+		catch
+		{
+			try
+			{
+				// Try reset
+				_Connection.Close();
+				_Connection.Open();
+
+				if (!ConnectionActive)
+				{
+					Microsoft.VisualStudio.Data.DataProviderException ex = new("Connection closed");
+					throw ex;
+				}
+
+				_RawTriggers = schema.GetRawSchema(_Connection, "Triggers");
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
+		}
+		finally
+		{
+			Requesting = false;
 		}
 
 		if (_RawTriggers != null)

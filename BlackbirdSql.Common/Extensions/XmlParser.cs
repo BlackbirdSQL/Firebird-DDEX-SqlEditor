@@ -148,7 +148,7 @@ internal static class XmlParser
 			if (Diag.EnableDiagnosticsLog)
 			{
 				FileInfo info = new FileInfo(Diag.LogFile);
-				xmlDoc.Save(info.DirectoryName + "\\" + xmlName + ".Extrapolated.xml");
+				xmlDoc.Save(info.DirectoryName + "/" + xmlName + ".Extrapolated.xml");
 			}
 #endif
 			MemoryStream xmlStream = new MemoryStream();

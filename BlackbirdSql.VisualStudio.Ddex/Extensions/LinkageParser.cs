@@ -230,16 +230,31 @@ internal class LinkageParser : AbstractLinkageParser
 
 		if (_Connection == null)
 		{
-            Microsoft.VisualStudio.Data.DataProviderException ex = new("Connection disposed");
+			Microsoft.VisualStudio.Data.DataProviderException ex = new("Connection disposed");
 			Diag.Dug(ex);
 			throw ex;
 		}
 
 		if (!ConnectionActive)
 		{
-			Microsoft.VisualStudio.Data.DataProviderException ex = new("Connection closed");
-			Diag.Dug(ex);
-			throw ex;
+			// Try reset
+			try
+			{
+				_Connection.Close();
+				_Connection.Open();
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
+
+			if (!ConnectionActive)
+			{
+				Microsoft.VisualStudio.Data.DataProviderException ex = new("Connection closed");
+				Diag.Dug(ex);
+				throw ex;
+			}
 		}
 
 		SyncEnter();

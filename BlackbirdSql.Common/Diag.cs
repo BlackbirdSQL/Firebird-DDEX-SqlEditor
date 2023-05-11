@@ -45,9 +45,9 @@ public static class Diag
 	static bool _EnableTrace = true;
 	static bool _EnableDiagnostics = true;
 	static bool _EnableFbDiagnostics = true;
-	static bool _EnableDiagnosticsLog = true;
-	static string _LogFile = "C:\\bin\\vsdiag.log";
-	static string _FbLogFile = "C:\\bin\\vsdiagfb.log";
+	static bool _EnableDiagnosticsLog = false;
+	static string _LogFile = "/temp/vsdiag.log";
+	static string _FbLogFile = "/temp/vsdiagfb.log";
 
 	static string _Context = "APP";
 

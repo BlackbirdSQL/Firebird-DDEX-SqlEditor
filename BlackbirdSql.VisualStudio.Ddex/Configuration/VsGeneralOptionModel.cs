@@ -31,19 +31,19 @@ namespace BlackbirdSql.VisualStudio.Ddex.Configuration
 		[DisplayName("Enable diagnostics logging")]
 		[Description("Enables diagnostics logging to a log file. Note: For release version only exceptions will be logged.")]
 		[DefaultValue(true)]
-		public bool EnableDiagnosticsLog { get; set; } = true;
+		public bool EnableDiagnosticsLog { get; set; } = false;
 
 		[Category("General")]
 		[DisplayName("Log file")]
 		[Description("Location of diagnostics log file.")]
-		[DefaultValue("C:\\bin\\vsdiag.log")]
-		public string LogFile { get; set; } = "C:\\bin\\vsdiag.log";
+		[DefaultValue("/temp/vsdiag.log")]
+		public string LogFile { get; set; } = "/temp/vsdiag.log";
 
 		[Category("General")]
 		[DisplayName("Firebird Log file")]
 		[Description("Location of Firebird diagnostics log file.")]
-		[DefaultValue("C:\\bin\\vsdiagfb.log")]
-		public string FbLogFile { get; set; } = "C:\\bin\\vsdiagfb.log";
+		[DefaultValue("/temp/vsdiagfb.log")]
+		public string FbLogFile { get; set; } = "/temp/vsdiagfb.log";
 
 		[Category("EntityFramework settings")]
 		[DisplayName("Validate App.config")]
