@@ -18,6 +18,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Configuration
 		public void Initialize()
 		{
 			CbEnableTrace.IsChecked = VsDebugOptionModel.Instance.EnableTrace;
+			CbPersistentValidation.IsChecked = VsDebugOptionModel.Instance.PersistentValidation;
 			CbEnableDiagnosticsLog.IsChecked = VsDebugOptionModel.Instance.EnableDiagnosticsLog;
 			TxtLogFile.Text = VsDebugOptionModel.Instance.LogFile;
 			CbEnableFbDiagnostics.IsChecked = VsDebugOptionModel.Instance.EnableFbDiagnostics;
@@ -34,6 +35,19 @@ namespace BlackbirdSql.VisualStudio.Ddex.Configuration
 		private void CbEnableTrace_Unchecked(object sender, System.Windows.RoutedEventArgs e)
 		{
 			VsDebugOptionModel.Instance.EnableTrace = (bool)CbEnableTrace.IsChecked;
+			VsDebugOptionModel.Instance.Save();
+		}
+
+
+		private void CbPersistentValidation_Checked(object sender, System.Windows.RoutedEventArgs e)
+		{
+			VsDebugOptionModel.Instance.PersistentValidation = (bool)CbPersistentValidation.IsChecked;
+			VsDebugOptionModel.Instance.Save();
+		}
+
+		private void CbPersistentValidation_Unchecked(object sender, System.Windows.RoutedEventArgs e)
+		{
+			VsDebugOptionModel.Instance.PersistentValidation = (bool)CbPersistentValidation.IsChecked;
 			VsDebugOptionModel.Instance.Save();
 		}
 

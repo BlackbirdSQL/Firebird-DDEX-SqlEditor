@@ -2,12 +2,6 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 
-/*
- * The following #define is only applicable to DEBUG
- * Uncomment this line to use persistent globals during debug
- * Comment out this line to use non-persistent globals and to clear any persistent globals in your test solution(s)
-*/
-#define __PERSISTENTGLOBALS__
 
 using System;
 
@@ -35,21 +29,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 internal class VsGlobalsAgent
 {
 
-	#region Private Variables
-
-	static VsGlobalsAgent _Instance;
-
-	bool _ValidateConfig = false;
-	bool _ValidateEdmx = false;
-
-	private readonly DTE _Dte = null;
-
-
-	#endregion
-
-
-
-
 
 	// =========================================================================================================
 	#region Constants - VsGlobalsAgent
@@ -57,23 +36,15 @@ internal class VsGlobalsAgent
 
 
 	/// <summary>
-	/// The [Project][Solution].Globals globals is set to transitory during debug because there seems no way to
-	/// delete it for testing other than programmatically. It's a single int32 using binary bitwise for the
-	/// different status settings
-	/// </summary>
-#if DEBUG && !__PERSISTENTGLOBALS__
-	const bool G_Persistent = false;
-	const string G_Key = "GlobalBlackbirdTransitory"; // For debug
-
-	/// <summary>
-	/// This key is the release version persistent key. When running in debug mode
-	/// with __PERSISTENTGLOBALS__ commented out any test solutions opened will have their persistent keys cleared
+	/// This key is the globals persistent key. When running in debug mode
+	/// with PersistentValidation set to false any test solutions opened will have their persistent keys cleared
 	/// </summary>
 	const string G_PersistentKey = "GlobalBlackbirdPersistent";
-#else
-	const bool G_Persistent = true;
-	const string G_Key = "GlobalBlackbirdPersistent";
-#endif
+
+	/// <summary>
+	/// This key is the globals non-persistent key.
+	/// </summary>
+	const string G_TransitoryKey = "GlobalBlackbirdTransitory";
 
 	/// <summary>
 	/// For Projects: has been validated as a valid project type (Once it's been validated it's always been
@@ -124,15 +95,46 @@ internal class VsGlobalsAgent
 
 
 	// =========================================================================================================
+	#region Private Variables
+	// =========================================================================================================
+
+	static VsGlobalsAgent _Instance;
+
+	bool _ValidateConfig = false;
+	bool _ValidateEdmx = false;
+
+	bool _PersistentValidation = true;
+
+	bool G_Persistent = true;
+
+	/// <summary>
+	/// The project and solution globals validation key. A single int32 using binary bitwise for the
+	/// different status settings.
+	/// If the PersistentValidation is true the persistent key will be used.
+	/// </summary>
+#if DEBUG
+	string G_Key = G_TransitoryKey; // For non-persistent
+#else
+	G_Key = G_PersistentKey; // For persistent
+#endif
+
+	private readonly DTE _Dte = null;
+
+
+	#endregion
+
+
+
+
+
+	// =========================================================================================================
 	#region Property Accessors - VsGlobalsAgent
 	// =========================================================================================================
 
 
-
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Returns a boolean indicating whther or not the app.config may be validated
+	/// Returns a boolean indicating whether or not the app.config may be validated
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public bool ValidateConfig
@@ -144,10 +146,24 @@ internal class VsGlobalsAgent
 	}
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns a boolean indicating whether or not validation flags are persistent.
+	/// Vlaidation flags are always persistent in Release builds.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public bool PeristentValidation
+	{
+		get
+		{
+			return _PersistentValidation;
+		}
+	}
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Returns a boolean indicating whther or not edmx files may be validated
+	/// Returns a boolean indicating whether or not edmx files may be validated
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public bool ValidateEdmx
@@ -208,18 +224,28 @@ internal class VsGlobalsAgent
 			_ValidateConfig = VsGeneralOptionModel.Instance.ValidateConfig;
 			_ValidateEdmx = VsGeneralOptionModel.Instance.ValidateEdmx;
 
+			_PersistentValidation = VsDebugOptionModel.Instance.PersistentValidation;
+
+
+#if DEBUG
+			G_Persistent = _PersistentValidation;
+
+			if (!_PersistentValidation)
+				G_Key = G_TransitoryKey;
+			else
+				G_Key = G_PersistentKey;
+
+#else
+			G_Persistent = true;
+			G_Key = G_PersistentKey;
+#endif
+
 			Diag.EnableDiagnostics = VsGeneralOptionModel.Instance.EnableDiagnostics;
 			Diag.EnableTaskLog = VsGeneralOptionModel.Instance.EnableTaskLog;
 
-#if DEBUG
 			Diag.EnableTrace = VsDebugOptionModel.Instance.EnableTrace;
 			Diag.EnableDiagnosticsLog = VsDebugOptionModel.Instance.EnableDiagnosticsLog;
 			Diag.EnableFbDiagnostics = VsDebugOptionModel.Instance.EnableFbDiagnostics;
-#else
-			Diag.EnableTrace = false;
-			Diag.EnableDiagnostics = false;
-			Diag.EnableFbDiagnostics = false;
-#endif
 
 			Diag.LogFile = VsDebugOptionModel.Instance.LogFile;
 			Diag.FbLogFile = VsDebugOptionModel.Instance.FbLogFile;
@@ -486,8 +512,9 @@ internal class VsGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	public bool IsValidatedStatus(Globals globals)
 	{
-#if DEBUG && !__PERSISTENTGLOBALS__
-		ClearPersistentFlag(globals, G_PersistentKey);
+#if DEBUG
+		if (!_PersistentValidation)
+			ClearPersistentFlag(globals, G_PersistentKey);
 #endif
 		return GetFlagStatus(globals, G_Validated);
 	}
@@ -598,9 +625,6 @@ internal class VsGlobalsAgent
 
 
 
-	// UI thread warning message suppression
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-		Justification = "UI thread ensured in code logic.")]
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Verifies whether or not a project has been scanned and it's app.config and edmxs
@@ -611,14 +635,13 @@ internal class VsGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	public bool IsScannedStatus(Project project)
 	{
+#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
 		return GetFlagStatus(project.Globals, G_Scanned);
+#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 	}
 
 
 
-	// UI thread warning message suppression
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-		Justification = "UI thread ensured in code logic.")]
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Verifies whether or not a project's App.config was validated for
@@ -629,14 +652,13 @@ internal class VsGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	public bool IsConfiguredDbProviderStatus(Project project)
 	{
+#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
 		return GetFlagStatus(project.Globals, G_DbProviderConfigured);
+#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 	}
 
 
 
-	// UI thread warning message suppression
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-		Justification = "UI thread ensured in code logic.")]
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Verifies whether or not a project's App.config was validated for
@@ -647,14 +669,13 @@ internal class VsGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	public bool IsConfiguredEFStatus(Project project)
 	{
+#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
 		return GetFlagStatus(project.Globals, G_EFConfigured);
+#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 	}
 
 
 
-	// UI thread warning message suppression
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-		Justification = "UI thread ensured in code logic.")]
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Verifies whether or not a project's existing edmx models were updated from
@@ -666,7 +687,9 @@ internal class VsGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	public bool IsUpdatedEdmxsStatus(Project project)
 	{
+#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
 		return GetFlagStatus(project.Globals, G_EdmxsUpdated);
+#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 	}
 
 
@@ -802,11 +825,29 @@ internal class VsGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	void OnDebugSettingsSaved(VsDebugOptionModel e)
 	{
+		_PersistentValidation = e.PersistentValidation;
+
+
+#if DEBUG
+		G_Persistent = _PersistentValidation;
+
+		if (!_PersistentValidation)
+			G_Key = G_TransitoryKey;
+		else
+			G_Key = G_PersistentKey;
+#else
+		G_Persistent = true;
+		G_Key = G_PersistentKey;
+#endif
+
+
 		Diag.EnableTrace = e.EnableTrace;
 		Diag.EnableDiagnosticsLog = e.EnableDiagnosticsLog;
 		Diag.LogFile = e.LogFile;
 		Diag.EnableFbDiagnostics = e.EnableFbDiagnostics;
 		Diag.FbLogFile = e.FbLogFile;
+
+
 	}
 
 
@@ -819,11 +860,11 @@ internal class VsGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	void OnGeneralSettingsSaved(VsGeneralOptionModel e)
 	{
-		Diag.EnableTaskLog = e.EnableTaskLog;
-		Diag.EnableDiagnostics = e.EnableDiagnostics;
-
 		_ValidateConfig = e.ValidateConfig;
 		_ValidateEdmx = e.ValidateEdmx;
+
+		Diag.EnableTaskLog = e.EnableTaskLog;
+		Diag.EnableDiagnostics = e.EnableDiagnostics;
 	}
 
 

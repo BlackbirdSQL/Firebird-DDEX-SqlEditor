@@ -231,6 +231,9 @@ public static class Diag
 				if (!isException && !_EnableFbDiagnostics)
 					return;
 				logfile = _FbLogFile;
+#if !DEBUG
+				return;
+#endif
 			}
 		}
 
@@ -243,7 +246,6 @@ public static class Diag
 			(message == "" ? "" : Environment.NewLine + "\t" + message) + Environment.NewLine;
 
 #if DEBUG
-		// Remove conditional for a full trace
 		try
 		{
 			if (_EnableDiagnosticsLog)
@@ -288,8 +290,14 @@ public static class Diag
 		int sourceLineNumber = 0)
 #endif
 	{
+
+#if DEBUG
 		if (!isException && !_EnableDiagnostics && !_EnableTrace)
 			return;
+#else
+		if (!isException && !_EnableDiagnostics)
+			return;
+#endif
 
 		Dug(isException, ex?.Message + (message != "" ? " " + message : "") + ":" + Environment.NewLine + ex?.StackTrace?.ToString(),
 			memberName, sourceFilePath, sourceLineNumber);
@@ -381,7 +389,9 @@ public static class Diag
 		if (!_EnableTrace)
 			return;
 
+#if DEBUG
 		Dug(false, message, memberName, sourceFilePath, sourceLineNumber);
+#endif
 	}
 
 
@@ -397,9 +407,9 @@ public static class Diag
 	/// bar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool TaskHandlerProgress(ITaskHandlerClient client, string text, int progress, bool completed = false)
+	public static bool TaskHandlerProgress(ITaskHandlerClient client, string text, bool completed = false)
 	{
-		_ = Task.Factory.StartNew(() => TaskHandlerProgressAsync(client, text, progress, completed).Result,
+		_ = Task.Factory.StartNew(() => TaskHandlerProgressAsync(client, text, completed).Result,
 				default, TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent,
 				TaskScheduler.Default);
 
@@ -413,36 +423,28 @@ public static class Diag
 	/// Moves back onto the UI thread and updates the IDE task handler progress bar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static async Task<bool> TaskHandlerProgressAsync(ITaskHandlerClient client, string text, int progress, bool completed = false)
+	public static async Task<bool> TaskHandlerProgressAsync(ITaskHandlerClient client, string text, bool completed = false)
 	{
 		try
 		{
 			ITaskHandler taskHandler = client.GetTaskHandler();
 
-			if (taskHandler == null)
-				return false;
+			bool updateTaskHandler = taskHandler != null;
 
 			TaskProgressData progressData = client.GetProgressData();
 
-			bool updateTaskHandler = (progressData.PercentComplete == null || progressData.PercentComplete != progress);
-
-			string title = EnableTaskLog ? taskHandler.Options.Title.Replace("BlackbirdSql", "").Trim() : "";
+			string title = EnableTaskLog && updateTaskHandler ? taskHandler.Options.Title.Replace("BlackbirdSql", "").Trim() + ": " : "";
 
 			// Switch to main thread
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 			// Check again since joining UI thread.
-			if (updateTaskHandler)
-				taskHandler = client.GetTaskHandler();
+			taskHandler = client.GetTaskHandler();
 
-			updateTaskHandler &= taskHandler != null;
+			updateTaskHandler = taskHandler != null;
 
 			if (!EnableTaskLog && !updateTaskHandler)
 				return false;
-
-
-			if (updateTaskHandler)
-				progressData.PercentComplete = progress;
 
 
 			string[] arr = text.Split('\n');
@@ -457,7 +459,7 @@ public static class Diag
 				}
 
 				if (EnableTaskLog)
-					arr[i] = title + ": " + arr[i];
+					arr[i] = title + arr[i];
 			}
 
 
@@ -688,6 +690,6 @@ public static class Diag
 		}
 	}
 
-	#endregion Methods
+#endregion Methods
 
 }

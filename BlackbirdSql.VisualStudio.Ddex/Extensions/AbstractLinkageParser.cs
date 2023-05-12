@@ -203,7 +203,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 
 
 	/// <summary>
-	/// Getter inidicating whther or not the parser's db connection is active and open.
+	/// Getter inidicating whether or not the parser's db connection is active and open.
 	/// </summary>
 	public bool ConnectionActive
 	{
@@ -1110,8 +1110,9 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 
 		}
 
-		return Diag.TaskHandlerProgress(this, text, progress, completed);
+		_ProgressData.PercentComplete = progress;
 
+		return Diag.TaskHandlerProgress(this, text, completed);
 	}
 
 

@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,9 +22,6 @@ using FirebirdSql.Data.FirebirdClient;
 
 using BlackbirdSql.Common;
 using BlackbirdSql.Common.Extensions;
-using static System.Net.Mime.MediaTypeNames;
-using System.Diagnostics;
-using Microsoft.VisualStudio.RpcContracts;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 
@@ -62,8 +60,6 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 	protected ITaskHandler _TaskHandler = null;
 
 
-	// Startup validation is active
-	protected bool _ValidationActive = false;
 	// A sync call has taken over. Async is locked out or abort at the first opportunity.
 	protected CancellationTokenSource _ValidationTokenSource = null;
 	protected CancellationToken _ValidationToken;
@@ -318,7 +314,6 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 		if (projectCount == 0)
 			return true;
 
-		_ValidationActive = true;
 
 		UpdateStatusBar("BlackbirdSql validating solution");
 
@@ -366,9 +361,9 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 
 
 					// Go to back of UI thread.
-					if (!RecursiveValidateProjectAsync(i, stopwatch).Result)
+					if (!RecursiveValidateSolutionProjectAsync(i, stopwatch).Result)
 						i = projectCount - 1;
-					TaskHandlerProgress((i+1) * 100 / projectCount, stopwatch.Elapsed.Milliseconds);
+					TaskHandlerProgress((i + 1) * 100 / projectCount, stopwatch.Elapsed.Milliseconds);
 				}
 
 
@@ -381,7 +376,6 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 				UpdateStatusBar($"Completed BlackbirdSql solution validation in {stopwatch.ElapsedMilliseconds}ms", true);
 
 
-				_ValidationActive = false;
 
 				// _TaskHandler = null;
 				// _ProgressData = default;
@@ -403,7 +397,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 	/// </summary>
 	/// <param name="index">Index of the next project</param>
 	// ---------------------------------------------------------------------------------
-	protected async Task<bool> RecursiveValidateProjectAsync(int index, System.Diagnostics.Stopwatch stopwatch)
+	protected async Task<bool> RecursiveValidateSolutionProjectAsync(int index, System.Diagnostics.Stopwatch stopwatch)
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -428,7 +422,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 		{
 			stopwatch.Start();
 
-			RecursiveValidateProject(project);
+			RecursiveValidateProject(project, true);
 
 			stopwatch.Stop();
 		}
@@ -445,7 +439,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 	/// </summary>
 	/// <param name="projects"></param>
 	// ---------------------------------------------------------------------------------
-	protected void RecursiveValidateProject(ProjectItems projectItems)
+	protected void RecursiveValidateProject(ProjectItems projectItems, bool validatingSolution)
 	{
 		// We should already be on UI thread. Callers must ensure this can never happen
 		ThreadHelper.ThrowIfNotOnUIThread();
@@ -458,7 +452,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 			if (projectItem.SubProject != null && projectItem.SubProject.Globals != null)
 			{
 				if (!Uig.IsScannedStatus(projectItem.SubProject))
-					RecursiveValidateProject(projectItem.SubProject);
+					RecursiveValidateProject(projectItem.SubProject, validatingSolution);
 			}
 			else
 			{
@@ -477,7 +471,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 	/// <param name="item"></param>
 	/// <returns>true if completed successfully else false if there were errors.</returns>
 	// ---------------------------------------------------------------------------------
-	bool RecursiveValidateProjectItem(ProjectItem item)
+	bool RecursiveValidateProjectItem(ProjectItem item, bool validatingSolution)
 	{
 		if (_TaskHandler != null && _TaskHandler.UserCancellation.IsCancellationRequested)
 			return false;
@@ -485,13 +479,13 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 		ThreadHelper.ThrowIfNotOnUIThread();
 
 
-		if (item.Kind == "{6BB5F8EF-4483-11D3-8BCF-00C04F8EC28C}")
+		if (Kind(item.Kind) == "PhysicalFolder")
 		{
 			bool success = true;
 
 			foreach (ProjectItem subitem in item.ProjectItems)
 			{
-				if (_ValidationActive)
+				if (validatingSolution)
 				{
 					if (_TaskHandler.UserCancellation.IsCancellationRequested)
 						_ValidationTokenSource.Cancel();
@@ -502,7 +496,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 					}
 				}
 
-				if (!RecursiveValidateProjectItem(subitem))
+				if (!RecursiveValidateProjectItem(subitem, validatingSolution))
 					success = false;
 			}
 
@@ -511,7 +505,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 
 		// Diag.Trace(item.ContainingProject.Name + " checking projectitem: " + item.Name + ":" + item.Kind);
 
-		if (_ValidationActive)
+		if (validatingSolution)
 		{
 			if (_TaskHandler.UserCancellation.IsCancellationRequested)
 				_ValidationTokenSource.Cancel();
@@ -567,7 +561,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 
 		try
 		{
-			if (!UpdateEdmx(item, false))
+			if (!UpdateEdmx(item, validatingSolution, false))
 				return false;
 		}
 		catch (Exception ex)
@@ -594,9 +588,9 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 	/// If it's a folder project is checked for child projects
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	private void RecursiveValidateProject(Project project)
+	private void RecursiveValidateProject(Project project, bool validatingSolution)
 	{
-		if (_ValidationActive)
+		if (validatingSolution)
 		{
 			if (_TaskHandler.UserCancellation.IsCancellationRequested)
 				_ValidationTokenSource.Cancel();
@@ -605,23 +599,33 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 		}
 
 		// We should already be on UI thread. Callers must ensure this can never happen
-		ThreadHelper.ThrowIfNotOnUIThread();
+		try
+		{
+			ThreadHelper.ThrowIfNotOnUIThread();
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
 
 
 		ProjectItem config = null;
 
 		// There's a dict list of these at the end of the class
-		if (project.Kind == "{66A26720-8FB5-11D2-AA7E-00C04F688DDE}")
+		if (Kind(project.Kind) == "ProjectFolder")
 		{
 			if (project.ProjectItems != null && project.ProjectItems.Count > 0)
 			{
-				// Diag.Trace("Recursing SolutionFolder: " + project.Name);
-				RecursiveValidateProject(project.ProjectItems);
+				// Diag.Trace("Recursing ProjectFolder: " + project.Name);
+				RecursiveValidateProject(project.ProjectItems, validatingSolution);
 			}
+			/*
 			else
 			{
-				// Diag.Trace("No items in SolutionFolder: " + project.Name);
+				Diag.Trace("No items in ProjectFolder: " + project.Name);
 			}
+			*/
 		}
 		else
 		{
@@ -631,7 +635,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 
 			if (Uig.IsValidExecutableProjectType(_Solution, project))
 			{
-
+				// Diag.Trace("ValidExecutable");
 				if (Uig.ValidateConfig)
 				{
 					bool isConfiguredEFStatus = Uig.IsConfiguredEFStatus(project);
@@ -655,7 +659,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 								config ??= GetAppConfigProjectItem(project);
 								if (config != null)
 								{
-									failed |= !ConfigureEntityFramework(config, false);
+									failed |= !ConfigureEntityFramework(config, validatingSolution, false);
 								}
 								else
 								{
@@ -698,7 +702,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 								config ??= GetAppConfigProjectItem(project);
 								if (config != null)
 								{
-									failed |= !ConfigureDbProvider(config, false);
+									failed |= !ConfigureDbProvider(config, validatingSolution, false);
 								}
 								else
 								{
@@ -747,7 +751,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 					{
 						foreach (ProjectItem item in project.ProjectItems)
 						{
-							if (_ValidationActive)
+							if (validatingSolution)
 							{
 								if (_TaskHandler.UserCancellation.IsCancellationRequested)
 									_ValidationTokenSource.Cancel();
@@ -758,7 +762,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 								}
 							}
 
-							if (!RecursiveValidateProjectItem(item))
+							if (!RecursiveValidateProjectItem(item, validatingSolution))
 								success = false;
 						}
 					}
@@ -863,9 +867,9 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 	/// <param name="project"></param>
 	/// <returns>true if completed successfully else false if there were errors.</returns>
 	// ---------------------------------------------------------------------------------
-	bool ConfigureDbProvider(ProjectItem config, bool invalidate)
+	bool ConfigureDbProvider(ProjectItem config, bool validatingSolution, bool invalidate)
 	{
-		if (_ValidationActive)
+		if (validatingSolution)
 		{
 			if (_TaskHandler.UserCancellation.IsCancellationRequested)
 				_ValidationTokenSource.Cancel();
@@ -942,9 +946,9 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 	/// <param name="project"></param>
 	/// <returns>true if completed successfully else false if there were errors.</returns>
 	// ---------------------------------------------------------------------------------
-	bool ConfigureEntityFramework(ProjectItem config, bool invalidate)
+	bool ConfigureEntityFramework(ProjectItem config, bool validatingSolution, bool invalidate)
 	{
-		if (_ValidationActive)
+		if (validatingSolution)
 		{
 			if (_TaskHandler.UserCancellation.IsCancellationRequested)
 				_ValidationTokenSource.Cancel();
@@ -1023,9 +1027,9 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 	/// <param name="project"></param>
 	/// <returns>true if completed successfully else false if there were errors.</returns>
 	// ---------------------------------------------------------------------------------
-	bool UpdateEdmx(ProjectItem edmx, bool invalidate)
+	bool UpdateEdmx(ProjectItem edmx, bool validatingSolution, bool invalidate)
 	{
-		if (_ValidationActive)
+		if (validatingSolution)
 		{
 			if (_TaskHandler.UserCancellation.IsCancellationRequested)
 				_ValidationTokenSource.Cancel();
@@ -1216,36 +1220,40 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 		{
 			// Diag.Trace("HandleReferenceAddedAsync is through for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
 
-			ClearValidationQueue();
-
-			config ??= GetAppConfigProjectItem(reference.ContainingProject);
-
-			if (config != null)
+			// Check if is configured again if queue was not clear and there was a Wait()
+			if (ClearValidationQueue() || !Uig.IsConfiguredEFStatus(reference.ContainingProject))
 			{
-				if (!ConfigureEntityFramework(config, false))
+				config ??= GetAppConfigProjectItem(reference.ContainingProject);
+
+				if (config != null)
+				{
+					if (!ConfigureEntityFramework(config, false, false))
+						Uig.IsValidateFailedStatus = true;
+				}
+				else
+				{
 					Uig.IsValidateFailedStatus = true;
-			}
-			else
-			{
-				Uig.IsValidateFailedStatus = true;
+				}
 			}
 		}
 		else if (reference.Name.ToLower() == SystemData.Invariant.ToLower() && !Uig.IsConfiguredDbProviderStatus(reference.ContainingProject))
 		{
 			// Diag.Trace("HandleReferenceAddedAsync is through for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
 
-			ClearValidationQueue();
-
-			config ??= GetAppConfigProjectItem(reference.ContainingProject);
-
-			if (config != null)
+			// Check if is configured again if queue was not clear and there was a Wait()
+			if (ClearValidationQueue() || !Uig.IsConfiguredDbProviderStatus(reference.ContainingProject))
 			{
-				if (!ConfigureDbProvider(config, false))
+				config ??= GetAppConfigProjectItem(reference.ContainingProject);
+
+				if (config != null)
+				{
+					if (!ConfigureDbProvider(config, false, false))
+						Uig.IsValidateFailedStatus = true;
+				}
+				else
+				{
 					Uig.IsValidateFailedStatus = true;
-			}
-			else
-			{
-				Uig.IsValidateFailedStatus = true;
+				}
 			}
 		}
 	}
@@ -1283,6 +1291,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 
 		ClearValidationQueue();
 
+		// Diag.Trace("Project opened");
 		// If anything gets through things are still happening so we can reset and allow events with incomplete project objects
 		// to continue recycling
 		_RefCnt = 0;
@@ -1290,10 +1299,11 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 		if (Uig.IsScannedStatus(project) || !Uig.IsValidExecutableProjectType(_Solution, project)
 			|| (Uig.IsConfiguredDbProviderStatus(project) && Uig.IsConfiguredEFStatus(project) && Uig.IsUpdatedEdmxsStatus(project)))
 		{
+			// Diag.Trace("Project no validation required");
 			return;
 		}
 
-		RecursiveValidateProject(project);
+		RecursiveValidateProject(project, false);
 
 	}
 
@@ -1361,8 +1371,8 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 			// Diag.Dug(true, "AfterOpenProject: Possible VS project. Could not get project object property from hierarchy: " + pHierarchy.ToString());
 			return S_OK;
 		}
-		else if (project.Kind != "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
-			&& project.Kind != "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}")
+		else if (Kind(project.Kind) != "VbProject"
+			&& Kind(project.Kind) != "C#Project")
 		{
 			return S_OK;
 		}
@@ -1384,8 +1394,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 	// ---------------------------------------------------------------------------------
 	int IVsSolutionEvents.OnQueryCloseSolution(object pUnkReserved, ref int pfCancel)
 	{
-		if (_ValidationActive)
-			_ValidationTokenSource.Cancel();
+		_ValidationTokenSource?.Cancel();
 
 		try
 		{
@@ -1457,6 +1466,10 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 	/// Ensures the validation queue is cleared out before passing control back to any
 	/// event handler request.
 	/// </summary>
+	/// <returns>
+	/// True if the queue was clear else false if there was a Wait() for the queue to
+	/// clear
+	/// </returns>
 	// ---------------------------------------------------------------------------------
 	public bool ClearValidationQueue()
 	{
@@ -1473,7 +1486,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 		// _ValidationTokenSource.Cancel();
 		_ValidationTask.Wait();
 
-		return true;
+		return false;
 	}
 
 	// ---------------------------------------------------------------------------------
@@ -1503,6 +1516,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 
 
 
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Moves back onto the UI thread and updates the IDE task handler progress bar
@@ -1514,23 +1528,24 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 		if (_ProgressData.PercentComplete == null)
 		{
 			_ProgressData.PercentComplete = 0;
-			Diag.TaskHandlerProgress(this, "Started", 0);
+			if (_TaskHandler != null)
+				Diag.TaskHandlerProgress(this, "Started");
 		}
 
-		Diag.TaskHandlerProgress(this, text, (int)_ProgressData.PercentComplete);
+		Diag.TaskHandlerProgress(this, text);
 
 		return true;
 	}
 
 
-		// ---------------------------------------------------------------------------------
-		/// <summary>
-		/// Moves back onto the UI thread and updates the IDE task handler progress bar.
-		/// </summary>
-		/// <param name="progress">The % completion of the linkage build.</param>
-		/// <param name="elapsed">The time taken to complete the stage.</param>
-		// ---------------------------------------------------------------------------------
-		protected bool TaskHandlerProgress(int progress, int elapsed)
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Moves back onto the UI thread and updates the IDE task handler progress bar.
+	/// </summary>
+	/// <param name="progress">The % completion of the linkage build.</param>
+	/// <param name="elapsed">The time taken to complete the stage.</param>
+	// ---------------------------------------------------------------------------------
+	protected bool TaskHandlerProgress(int progress, int elapsed)
 	{
 		bool completed = false;
 		string text;
@@ -1554,8 +1569,9 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 			text = $"{progress}% completed after {elapsed}ms.";
 		}
 
+		_ProgressData.PercentComplete = progress;
 
-		Diag.TaskHandlerProgress(this, text, progress, completed);
+		Diag.TaskHandlerProgress(this, text, completed);
 
 		return true;
 
@@ -1570,7 +1586,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 	/// <param name="kind"></param>
 	/// <returns>The descriptive name from <see cref="ProjectGuids"/></returns>
 	// ---------------------------------------------------------------------------------
-	protected string GetKindName(string kind)
+	protected string Kind(string kind)
 	{
 		if (!ProjectGuids.TryGetValue(kind, out string name))
 			name = kind;
@@ -1587,10 +1603,15 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 	// ---------------------------------------------------------------------------------
 	readonly Dictionary<string, string> ProjectGuids = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
 	{
+		{ "{2150E333-8FDC-42A3-9474-1A3956D46DE8}", "SolutionFolder" },
+		{ "{66A26720-8FB5-11D2-AA7E-00C04F688DDE}", "ProjectFolder" },
+		{ "{6BB5F8EF-4483-11D3-8BCF-00C04F8EC28C}", "PhysicalFolder" },
+		{ "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}", "VbProject" },
+		{ "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", "C#Project" }
+		/* The above the only one's we care about ATM
 		{ "{06A35CCD-C46D-44D5-987B-CF40FF872267}", "DeploymentMergeModule" },
 		{ "{14822709-B5A1-4724-98CA-57A101D1B079}", "Workflow(C#)" },
 		{ "{20D4826A-C6FA-45DB-90F4-C717570B9F32}", "Legacy(2003)SmartDevice(C#)" },
-		{ "{2150E333-8FDC-42A3-9474-1A3956D46DE8}", "SolutionFolder" },
 		{ "{262852C6-CD72-467D-83FE-5EEB1973A190}", "JsProject" },
 		{ "{2DF5C3F4-5A5F-47a9-8E94-23B4456F55E2}", "XNA(XBox)" },
 		{ "{32F31D43-81CC-4C15-9DE6-3FC5453562B6}", "WorkflowFoundation" },
@@ -1609,11 +1630,9 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 		{ "{68B1623D-7FB9-47D8-8664-7ECEA3297D4F}", "SmartDevice(VB.NET)" },
 		{ "{66A2671D-8FB5-11D2-AA7E-00C04F688DDE}", "MiscProject" },
 		{ "{66A2671F-8FB5-11D2-AA7E-00C04F688DDE}", "MiscItem" },
-		{ "{66A26720-8FB5-11D2-AA7E-00C04F688DDE}", "SolutionFolder" },
 		{ "{66A26722-8FB5-11D2-AA7E-00C04F688DDE}", "SolutionItem" },
 		{ "{67294A52-A4F0-11D2-AA88-00C04F688DDE}", "UnloadedProject" },
 		{ "{6BB5F8EE-4483-11D3-8BCF-00C04F8EC28C}", "ProjectFile" },
-		{ "{6BB5F8EF-4483-11D3-8BCF-00C04F8EC28C}", "ProjectFolder" },
 		{ "{6BC8ED88-2882-458C-8E55-DFD12B67127B}", "MonoTouch" },
 		{ "{6D335F3A-9D43-41b4-9D22-F6F17C4BE596}", "XNA(Win)" },
 		{ "{76F1466A-8B6D-4E39-A767-685A06062A39}", "WinPhone8/8.1(Blank/Hub/Webview)" },
@@ -1647,14 +1666,13 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 		{ "{edcc3b85-0bad-11db-bc1a-00112fde8b61}", "NemerleProject" },
 		{ "{EFBA0AD7-5A72-4C68-AF49-83D382785DCF}", "Xamarin.Android/MonoAndroid" },
 		{ "{F135691A-BF7E-435D-8960-F99683D2D49C}", "DistributedSystem" },
-		{ "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}", "VbProject" },
 		{ "{F2A71F9B-5D33-465A-A702-920D77279786}", "F#Project" },
 		{ "{F5B4F3BC-B597-4E2B-B552-EF5D8A32436F}", "MonoTouchBinding" },
 		{ "{F85E285D-A4E0-4152-9332-AB1D724D3325}", "ASP.NET(MVC2.0)" },
 		{ "{F8810EC1-6754-47FC-A15F-DFABD2E3FA90}", "SharePointWorkflow" },
-		{ "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", "C#Project" },
 		{ "{FBB4BD86-BF63-432a-A6FB-6CF3A1288F83}", "InstallShieldLimitedEdition" },
 		{ ".nuget", "SettingsNuget" }
+		*/
 	};
 
 
