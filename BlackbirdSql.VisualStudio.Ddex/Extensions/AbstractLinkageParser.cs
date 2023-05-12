@@ -420,22 +420,12 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Resumes or begins linkage operations on the UI thread. If an async build is
-	/// active, waits for it to complete it's currently active task, before taking over
-	/// and completing any remaining tasks.
+	/// Launches the UI thread build of the linkage tables if the UI requires them. If
+	/// an async build is in progress, waits for the active operation to complete and
+	/// then switches over to a UI thread build for the remaining tasks.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public abstract bool Execute();
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Performs the actual linkage build operations.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected abstract bool PopulateLinkageTables(CancellationToken asyncToken = default,
-		CancellationToken userToken = default);
 
 
 	#endregion Abstract method declarations
@@ -1241,7 +1231,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 		if (_Connection == null)
 			return;
 
-		Diag.Trace();
+		// Diag.Trace();
 
 		_Instances.Remove(_Connection);
 		_Connection = null;

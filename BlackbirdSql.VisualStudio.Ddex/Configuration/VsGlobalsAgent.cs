@@ -208,19 +208,21 @@ internal class VsGlobalsAgent
 			_ValidateConfig = VsGeneralOptionModel.Instance.ValidateConfig;
 			_ValidateEdmx = VsGeneralOptionModel.Instance.ValidateEdmx;
 
+			Diag.EnableDiagnostics = VsGeneralOptionModel.Instance.EnableDiagnostics;
+			Diag.EnableTaskLog = VsGeneralOptionModel.Instance.EnableTaskLog;
+
 #if DEBUG
 			Diag.EnableTrace = VsDebugOptionModel.Instance.EnableTrace;
-			Diag.EnableDiagnostics = VsDebugOptionModel.Instance.EnableDiagnostics;
+			Diag.EnableDiagnosticsLog = VsDebugOptionModel.Instance.EnableDiagnosticsLog;
 			Diag.EnableFbDiagnostics = VsDebugOptionModel.Instance.EnableFbDiagnostics;
 #else
-		Diag.EnableTrace = false;
-		Diag.EnableDiagnostics = false;
-		Diag.EnableFbDiagnostics = false;
+			Diag.EnableTrace = false;
+			Diag.EnableDiagnostics = false;
+			Diag.EnableFbDiagnostics = false;
 #endif
-			Diag.EnableTaskLog = VsGeneralOptionModel.Instance.EnableTaskLog;
-			Diag.EnableDiagnosticsLog = VsGeneralOptionModel.Instance.EnableDiagnosticsLog;
-			Diag.LogFile = VsGeneralOptionModel.Instance.LogFile;
-			Diag.FbLogFile = VsGeneralOptionModel.Instance.FbLogFile;
+
+			Diag.LogFile = VsDebugOptionModel.Instance.LogFile;
+			Diag.FbLogFile = VsDebugOptionModel.Instance.FbLogFile;
 
 			VsGeneralOptionModel.Saved += OnGeneralSettingsSaved;
 			VsDebugOptionModel.Saved += OnDebugSettingsSaved;
@@ -801,8 +803,10 @@ internal class VsGlobalsAgent
 	void OnDebugSettingsSaved(VsDebugOptionModel e)
 	{
 		Diag.EnableTrace = e.EnableTrace;
-		Diag.EnableDiagnostics = e.EnableDiagnostics;
+		Diag.EnableDiagnosticsLog = e.EnableDiagnosticsLog;
+		Diag.LogFile = e.LogFile;
 		Diag.EnableFbDiagnostics = e.EnableFbDiagnostics;
+		Diag.FbLogFile = e.FbLogFile;
 	}
 
 
@@ -816,9 +820,7 @@ internal class VsGlobalsAgent
 	void OnGeneralSettingsSaved(VsGeneralOptionModel e)
 	{
 		Diag.EnableTaskLog = e.EnableTaskLog;
-		Diag.EnableDiagnosticsLog = e.EnableDiagnosticsLog;
-		Diag.LogFile = e.LogFile;
-		Diag.FbLogFile = e.FbLogFile;
+		Diag.EnableDiagnostics = e.EnableDiagnostics;
 
 		_ValidateConfig = e.ValidateConfig;
 		_ValidateEdmx = e.ValidateEdmx;

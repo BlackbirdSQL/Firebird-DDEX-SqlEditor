@@ -5,8 +5,8 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+
 using Microsoft;
-using Microsoft.VisualStudio.RpcContracts;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TaskStatusCenter;
@@ -257,6 +257,7 @@ public static class Diag
 			}
 		}
 		catch (Exception) { }
+#endif
 
 		try
 		{
@@ -264,7 +265,6 @@ public static class Diag
 				OutputPaneWriteLine(str);
 		}
 		catch (Exception) { }
-#endif
 
 		System.Diagnostics.Debug.WriteLine(str, "BlackbirSql");
 	}
@@ -389,6 +389,7 @@ public static class Diag
 	// Deadlock warning message suppression
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
 		Justification = "Code logic ensures a deadlock cannot occur")]
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Launches TaskHandlerProgressAsync from a thread in the thread pool so that it
@@ -496,6 +497,7 @@ public static class Diag
 	// Deadlock warning message suppression
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
 		Justification = "Code logic ensures a deadlock cannot occur")]
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Launches UpdateStatusBarAsync from a thread in the thread pool so that it can

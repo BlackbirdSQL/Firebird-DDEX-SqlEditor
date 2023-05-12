@@ -22,6 +22,7 @@ using BlackbirdSql.Common.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Schema;
 using static Microsoft.ServiceHub.Framework.ServiceBrokerClient;
+using Microsoft.VisualStudio.Debugger.Interop;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -116,7 +117,7 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 		try
 		{
-			parser.SyncEnter();
+			parser?.SyncEnter();
 
 			schema = GetRootSchema(connection, parameters);
 
@@ -133,7 +134,7 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		finally
 		{
 			Site.UnlockProviderObject();
-			parser.SyncExit();
+			parser?.SyncExit();
 		}
 
 
@@ -284,7 +285,7 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			else
 				key = col.ColumnName.DescriptorCase();
 
-			if (col.ColumnName != key)
+			if (col.ColumnName != key && !schema.Columns.Contains(key))
 				col.ColumnName = key;
 		}
 

@@ -18,8 +18,10 @@ namespace BlackbirdSql.VisualStudio.Ddex.Configuration
 		public void Initialize()
 		{
 			CbEnableTrace.IsChecked = VsDebugOptionModel.Instance.EnableTrace;
-			CbEnableDiagnostics.IsChecked = VsDebugOptionModel.Instance.EnableDiagnostics;
+			CbEnableDiagnosticsLog.IsChecked = VsDebugOptionModel.Instance.EnableDiagnosticsLog;
+			TxtLogFile.Text = VsDebugOptionModel.Instance.LogFile;
 			CbEnableFbDiagnostics.IsChecked = VsDebugOptionModel.Instance.EnableFbDiagnostics;
+			TxtFbLogFile.Text = VsDebugOptionModel.Instance.FbLogFile;
 			VsDebugOptionModel.Instance.Save();
 		}
 
@@ -35,18 +37,23 @@ namespace BlackbirdSql.VisualStudio.Ddex.Configuration
 			VsDebugOptionModel.Instance.Save();
 		}
 
-		private void CbEnableDiagnostics_Checked(object sender, System.Windows.RoutedEventArgs e)
+		private void CbEnableDiagnosticsLog_Checked(object sender, System.Windows.RoutedEventArgs e)
 		{
-			VsDebugOptionModel.Instance.EnableDiagnostics = (bool)CbEnableDiagnostics.IsChecked;
+			VsDebugOptionModel.Instance.EnableDiagnosticsLog = (bool)CbEnableDiagnosticsLog.IsChecked;
 			VsDebugOptionModel.Instance.Save();
 		}
 
-		private void CbEnableDiagnostics_Unchecked(object sender, System.Windows.RoutedEventArgs e)
+		private void CbEnableDiagnosticsLog_Unchecked(object sender, System.Windows.RoutedEventArgs e)
 		{
-			VsDebugOptionModel.Instance.EnableDiagnostics = (bool)CbEnableDiagnostics.IsChecked;
+			VsDebugOptionModel.Instance.EnableDiagnosticsLog = (bool)CbEnableDiagnosticsLog.IsChecked;
 			VsDebugOptionModel.Instance.Save();
 		}
 
+		private void TxtLogFile_TextChanged(object sender, System.Windows.RoutedEventArgs e)
+		{
+			VsDebugOptionModel.Instance.LogFile = TxtLogFile.Text;
+			VsDebugOptionModel.Instance.Save();
+		}
 
 		private void CbEnableFbDiagnostics_Checked(object sender, System.Windows.RoutedEventArgs e)
 		{
@@ -57,6 +64,12 @@ namespace BlackbirdSql.VisualStudio.Ddex.Configuration
 		private void CbEnableFbDiagnostics_Unchecked(object sender, System.Windows.RoutedEventArgs e)
 		{
 			VsDebugOptionModel.Instance.EnableFbDiagnostics = (bool)CbEnableFbDiagnostics.IsChecked;
+			VsDebugOptionModel.Instance.Save();
+		}
+
+		private void TxtFbLogFile_TextChanged(object sender, System.Windows.RoutedEventArgs e)
+		{
+			VsDebugOptionModel.Instance.FbLogFile = TxtFbLogFile.Text;
 			VsDebugOptionModel.Instance.Save();
 		}
 	}

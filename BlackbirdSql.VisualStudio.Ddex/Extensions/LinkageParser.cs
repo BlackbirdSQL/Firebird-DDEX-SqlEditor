@@ -28,7 +28,7 @@ namespace BlackbirdSql.Common.Extensions;
 /// <remarks>
 /// The class is split into 3 separate classes:
 /// 1. AbstruseLinkageParser - handles the parsing,
-/// 2. AbstractLinkageParser - handles the actual data table building, and
+/// 2. AbstractLinkageParser - handles the actual data table building and progess reporting, and
 /// 3. LinkageParser - manages the sync/async build tasks.
 /// The building task is executed async as <see cref="TaskCreationOptions.LongRunning"/> and
 /// suspended whenever any UI main thread database tasks are requested for a particular connection,
@@ -49,7 +49,7 @@ internal class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Protected .ctor. LinkageParser's are uniquely distinct to a connection. Use the
-	/// Instance() static to create or retrieve a parser for a connection.
+	/// Instance() static to create or retrieve a parser for a connection or Site.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	protected LinkageParser(FbConnection connection) : base(connection)
@@ -61,7 +61,7 @@ internal class LinkageParser : AbstractLinkageParser
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Retrieves or creates the parser instance of a connection derived from the Site
+	/// Retrieves or creates the parser instance of a connection derived from Site
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static LinkageParser Instance(IVsDataConnection site)
@@ -130,18 +130,25 @@ internal class LinkageParser : AbstractLinkageParser
 
 
 
+	// Deadlock warning message suppression
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
+		Justification = "Code logic ensures a deadlock cannot occur")]
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Initiates or resumes an async build of the linkage tables.
+	/// Begins or resumes asynchronous linkage build operations.
 	/// </summary>
-	/// <param name="delay">Milliseconds async task must sleep before proceding</param>
-	/// <param name="multiplier">Number of times to execute delay.</param>
-	/// <remarks>
-	/// Keep delay short and use 'multiplier' to extend the delay so that any
-	/// cancellation can be honoured sooner.
-	/// </remarks>
+	/// <param name="delay">
+	/// The delay in milliseconds before beginning operations if an async build was
+	/// initiated through the creation of a new data connection in the SE. A delay is
+	/// required to allow the SE time to render the initial root node.
+	/// </param>
+	/// <param name="multiplier">
+	/// A multiplier to split the delay into smaller timeslices and allow checking of
+	/// cancellation tokens during the total delay time of 'delay * multiplier'.
+	/// </param>
+	/// <returns>True if the linkage was successfully completed, else false.</returns>
 	// ---------------------------------------------------------------------------------
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits", Justification = "<Pending>")]
 	public override bool AsyncExecute(int delay = 0, int multiplier = 1)
 	{
 		if (!ClearToLoadAsync)
@@ -214,6 +221,10 @@ internal class LinkageParser : AbstractLinkageParser
 
 
 
+	// Deadlock warning message suppression
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
+		Justification = "Code logic ensures a deadlock cannot occur")]
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Launches the UI thread build of the linkage tables if the UI requires them. If
@@ -221,7 +232,6 @@ internal class LinkageParser : AbstractLinkageParser
 	/// then switches over to a UI thread build for the remaining tasks.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits", Justification = "<Pending>")]
 	public override bool Execute()
 	{
 		if (!ClearToLoad)
@@ -310,7 +320,7 @@ internal class LinkageParser : AbstractLinkageParser
 	/// True if the method ran it's course else false.
 	/// </returns>
 	// ----------------------------------------------------------------------------------
-	protected override bool PopulateLinkageTables(CancellationToken asyncToken = default,
+	protected bool PopulateLinkageTables(CancellationToken asyncToken = default,
 		CancellationToken userToken = default)
 	{
 
@@ -403,13 +413,16 @@ internal class LinkageParser : AbstractLinkageParser
 
 
 
+	// Deadlock warning message suppression
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
+		Justification = "Code logic ensures a deadlock cannot occur")]
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Increments the sync call counter and suspends any async tasks. This should be
 	/// called on every occasion that a UI thread db call is made in the package.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits", Justification = "<Pending>")]
 	public bool SyncEnter()
 	{
 		_SyncActive++;

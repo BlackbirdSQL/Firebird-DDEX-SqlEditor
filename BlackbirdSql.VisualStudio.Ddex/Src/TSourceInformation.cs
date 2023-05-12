@@ -383,11 +383,10 @@ internal class TSourceInformation : AdoDotNetSourceInformation, IVsDataSourceInf
 		IServiceProvider serviceProvider = Site.GetService(typeof(IServiceProvider)) as IServiceProvider;
 
 
-		using (Hostess host = new(serviceProvider))
-		{
-			connectionProperties = host.GetService<IVsDataProviderManager>().Providers[Site.Provider].TryCreateObject<IVsDataConnectionUIProperties>(Site.Source);
-			connectionProperties ??= host.GetService<IVsDataProviderManager>().Providers[Site.Provider].TryCreateObject<IVsDataConnectionProperties>(Site.Source);
-		}
+		Hostess host = new(serviceProvider);
+
+		connectionProperties = host.GetService<IVsDataProviderManager>().Providers[Site.Provider].TryCreateObject<IVsDataConnectionUIProperties>(Site.Source);
+		connectionProperties ??= host.GetService<IVsDataProviderManager>().Providers[Site.Provider].TryCreateObject<IVsDataConnectionProperties>(Site.Source);
 
 		return connectionProperties;
 	}

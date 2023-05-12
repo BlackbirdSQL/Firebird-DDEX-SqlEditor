@@ -1451,6 +1451,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 	// Deadlock warning message suppression
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
 		Justification = "Code logic ensures a deadlock cannot occur")]
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Ensures the validation queue is cleared out before passing control back to any
@@ -1460,9 +1461,8 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 	public bool ClearValidationQueue()
 	{
 		if (_ValidationTask == null || _ValidationTask.IsCompleted)
-		{
 			return true;
-		}
+
 
 		// Notwithstanding that the validation process is pretty fast, unless the user
 		// requested it, it makes no sense to cancel the validation process because it

@@ -21,29 +21,18 @@ namespace BlackbirdSql.VisualStudio.Ddex.Configuration
 	// =========================================================================================================
 	public class VsGeneralOptionModel : AbstractOptionModel<VsGeneralOptionModel>
 	{
-		[Category("General")]
+
+		[Category("Diagnostics")]
+		[DisplayName("Enable diagnostics")]
+		[Description("Enables the execution of Diagnostics calls. This option should remain enabled. Disabling does not disable Exceptions.")]
+		[DefaultValue(true)]
+		public bool EnableDiagnostics { get; set; } = true;
+
+		[Category("Diagnostics")]
 		[DisplayName("Enable task logging")]
-		[Description("Enables logging of tasks to the output window pane.")]
+		[Description("Enables logging of tasks to the output window pane. This option should remain enabled.")]
 		[DefaultValue(true)]
 		public bool EnableTaskLog { get; set; } = true;
-
-		[Category("General")]
-		[DisplayName("Enable diagnostics logging")]
-		[Description("Enables diagnostics logging to a log file. Note: For release version only exceptions will be logged.")]
-		[DefaultValue(true)]
-		public bool EnableDiagnosticsLog { get; set; } = false;
-
-		[Category("General")]
-		[DisplayName("Log file")]
-		[Description("Location of diagnostics log file.")]
-		[DefaultValue("/temp/vsdiag.log")]
-		public string LogFile { get; set; } = "/temp/vsdiag.log";
-
-		[Category("General")]
-		[DisplayName("Firebird Log file")]
-		[Description("Location of Firebird diagnostics log file.")]
-		[DefaultValue("/temp/vsdiagfb.log")]
-		public string FbLogFile { get; set; } = "/temp/vsdiagfb.log";
 
 		[Category("EntityFramework settings")]
 		[DisplayName("Validate App.config")]

@@ -72,7 +72,11 @@ public:
 	/// Only applies to the Debug configuration. Debug Exceptions are always logged.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
+#ifdef _DEBUG
+	static bool EnableDiagnosticsLog = true;
+#else
 	static bool EnableDiagnosticsLog = false;
+#endif // _DEBUG
 
 
 	// ---------------------------------------------------------------------------------
@@ -88,7 +92,7 @@ public:
 	/// The Firebird log file path
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	static SysStr^ FbLogFile = "/bin/vsdiagfb.log";
+	static SysStr^ FbLogFile = "/temp/vsdiagfb.log";
 
 
 	#pragma endregion Variables
