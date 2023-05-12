@@ -25,7 +25,7 @@ The BlackbirdSQL DDEX 2.0 .NET Data Provider extension, `BlackbirdSql.VisualStud
 * Display of initial value (seed), increment and next value within sequence generator display.
 * New query and data retrieval for both user and system tables.
 * Plug and play. No configuration of the .csproj, app.config or machine.config files and no GAC registration.
-* BlackbirdSql background and UI thread tasks compliant with the IDE TaskHandler and implement the user cancel feature for background tasks from the TaskHandler window.
+* BlackbirdSql background and UI thread tasks compliant with the IDE TaskHandler and implements the user cancel feature for background tasks from the TaskHandler window.
 * All exception, task progress and task status reporting logged to the output window accessible under *BlackbirdSql* in the dropdown (Enabled by default under Options).
 * The connection node `Refresh` command option in the SE will successfully recover from a connection timeout shutdown exception, to the node's previous state
 
