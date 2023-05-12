@@ -8,14 +8,13 @@
 
 The BlackbirdSQL DDEX 2.0 .NET Data Provider extension, `BlackbirdSql.VisualStudio.Ddex`, implements all the core DDEX 2.0 interfaces prevalent in the SqlServer DDEX provider and more, but currently excludes DDL functionality. 
 
-[Download BlackbirdSql DDEX Extension (Pre-release v9.1.0.5-alpha)](https://github.com/BlackbirdSQL/Firebird-NETProvider-DDEX/releases/download/v9.1.0.5-alpha/BlackbirdSql.VisualStudio.Ddex.vsix)
+[Download BlackbirdSql DDEX Extension (Pre-release v9.1.0.6-beta)](https://github.com/BlackbirdSQL/Firebird-NETProvider-DDEX/releases/download/v9.1.0.6-beta/BlackbirdSql.VisualStudio.Ddex.vsix)
 
 *The first tenet of this package is `small footprint, low overhead`, and to be as unobtrusive as possible. It is installed as a standard VSIX extension. If you uninstall it is is gone. It does not leave it's fingerprints in either your computer system or your Visual Studio installation.*
 
 ### Features
 * Firebird DDEX provider support for most of the DDEX 2.0 IVs DML interfaces utilizing FirebirdSql.Data.FirebirdClient and EntityFramework.Firebird versions 9.1.1.
 * Trigger/Generator auto-increment linkage.
-* Plug and play. No configuration of the .csproj, app.config or machine.config files and no GAC registration.
 * FlameRobin host and database selection within connection dialogs.
 * Within Server Explorer, top level folders for Tables, Views, Stored procedures, Functions, Sequence Generators, Triggers and Domains.
 * Within tables, drilldowns for indexes, foreign keys and triggers, and table columns, index columns, foreign key columns and trigger columns.
@@ -25,12 +24,13 @@ The BlackbirdSQL DDEX 2.0 .NET Data Provider extension, `BlackbirdSql.VisualStud
 * Procedures, functions, views, triggers and computed columns display the decoded blr if no source exists.
 * Display of initial value (seed), increment and next value within sequence generator display.
 * New query and data retrieval for both user and system tables.
+* Plug and play. No configuration of the .csproj, app.config or machine.config files and no GAC registration.
 * BlackbirdSql background and UI thread tasks compliant with the IDE TaskHandler and implement the user cancel feature for background tasks from the TaskHandler window.
 * All exception, task progress and task status reporting logged to the output window accessible under *BlackbirdSql* in the dropdown (Enabled by default under Options).
 * The connection node `Refresh` command option in the SE will successfully recover from a connection timeout shutdown exception, to the node's previous state
 
 ### AutoIncrement Identity Fields
-There is a simple parser coded in C++/Cli which parses the Trigger source for linkage to the auto-increment sequence generator. The original parser code was ported from the pgsql LISP con-cell parser but then scrapped in favor of the [greenlion/PHP-SQL-Parser](https://github.com/greenlion/PHP-SQL-Parser) PHP parser, which meant writing a class library, the Cell class, which could imitate PHP style arrays/variables. This library is fully functional but the port of the parser itself was not completed because the partial port satisfied the needs for parsing the Trigger DDL.</br>
+There is a simple parser coded in C++/Cli which parses the Trigger source for linkage to the auto-increment sequence generator. The original parser code was ported from the pgsql LISP con-cell parser but then scrapped in favor of the [greenlion/PHP-SQL-Parser](https://github.com/greenlion/PHP-SQL-Parser) PHP parser, which meant adapting the BlackbirdSql Cell class library so that it could imitate PHP style arrays/variables. This library is fully functional but the port of the parser itself was not completed because the partial port satisfied the needs for parsing the Trigger DDL.</br>
 The parser itself is reasonably fast (+- 0.1 milliseconds per trigger), but SQL SELECT commands on a large number of rows, in this case for triggers and generators, may take some time, so building of the Trigger/Generator linkage tables for a connection is initiated asynchronously as soon as the connection is established.
 
 
@@ -85,13 +85,13 @@ This is a once off validation on each `existing` solution the first time it is o
 The goal is that you don't have to do any configuring of the .csproj, app.config, machine.config or any legacy edmx models, and eliminate using the GAC.</br>
 This feature can be disabled in the Visual Studio options, but each individual task in the validation process is spawned asynchronously so the overhead is miniscual.</br>
 
-`In performance tests on a 64-bit Windows 10 I7-4500U (1.80GHz) machine with 16GB RAM and a 1TB SSD, a solution with 40MB of source code, and that included 6 projects with 3 EDMX models and 3 XSD models validated in under 500ms on a low-priority background task.`
+`In performance tests on a 64-bit Windows 10 I7-4500U (1.80GHz) machine with 16GB RAM and a 1TB SSD, a solution with 40MB of source code, and that included 6 projects with 3 EDMX models and 3 XSD models, validated in under 300ms on a low-priority background task.`
 
 The validation process will not validate any open app.config or edmx models. You will need to close them first and then reopen your solution for the once-off validation to complete.</br>
 
 If the validation option is enabled (the default) and you add Firebird.Data.FirebirdClient or EntityFramework.Firebird to a project, the project will be validated and the app.config updated correctly if required. If the app.config is open the update will be skipped and you will need to reopen your solution for the validation to complete.
 
-__Note:__ For the debug build the once-off validation flags are not persistent between loads of solutions and are repeated, which will place the solution into and unsaved state. The pre-release downloadable binary does have it's persistent flag set.
+__Note:__ If you wish to clear the peristent flag for a solution, you can comment out the \_\_PERSISTENTGLOBALS\_\_ #define in VsGlobalsAgent.cs. This #define only applies to DEBUG builds.
 
 The intention is to maintain a small footprint. We're not going to start altering VS menus and taking over your Visual Studio IDE workspace. It is a data source UI provider for Firebird and the benchmark is the SqlServer provider, so whatever UI functionality is available for SqlServer is on the todo list for Firebird provided it does not directly interfere with the developer's active UI.
 
