@@ -13,8 +13,9 @@ using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Common;
-
-
+using Microsoft.VisualStudio.Shell;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -63,6 +64,7 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 	public TViewSupport(string resourceName, Assembly assembly) : base(resourceName, assembly)
 	{
 		// Diag.Trace();
+
 	}
 
 
@@ -251,9 +253,6 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 	// =========================================================================================================
 
 
-
-
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Retrieves the icon displayed.
@@ -331,6 +330,12 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 
 		if (_IconName != null && name == _IconName)
 		{
+			// Expand columns folder on first expand of table folder
+			if (expanded && node.Name == "ColumnFolder")
+			{
+				_ = Task.Run(() => ExpandNodeAsync(itemId));
+			}
+
 			// OnIconsChanged(new DataViewNodeEventArgs(itemId));
 			// return (Icon)_Icon.Clone();
 
@@ -356,6 +361,13 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 
 				// OnIconsChanged(new DataViewNodeEventArgs(itemId));
 
+				// Expand columns folder on first expand of table folder
+				if (expanded && node.Name == "ColumnFolder")
+				{
+					_ = Task.Run(() => ExpandNodeAsync(itemId));
+				}
+
+
 				return icon;
 			}
 			else
@@ -371,6 +383,26 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 		return null;
 	}
 
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Expands an SE node asynchronously
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected async Task<bool> ExpandNodeAsync(int itemId)
+	{
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		IVsDataExplorerNode node = ViewHierarchy.ExplorerConnection.FindNode(itemId);
+
+		if (node == null)
+			return false;
+
+		node.Expand();
+
+		return true;
+	}
 
 	#endregion Methods
 

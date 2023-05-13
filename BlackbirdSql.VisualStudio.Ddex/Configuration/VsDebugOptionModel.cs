@@ -34,7 +34,7 @@ public class VsDebugOptionModel : AbstractOptionModel<VsDebugOptionModel>
 
 	[Category("Debug")]
 	[DisplayName("Enable diagnostics logging")]
-	[Description("Enables diagnostics logging to a log file. Only applicable to DEBUG builds.")]
+	[Description("Enables diagnostics logging to a log file. This option also saves the extrapolated TObjectSupport.xml imports to the logfile folder. Only applicable to DEBUG builds.")]
 	[DefaultValue(true)]
 	public bool EnableDiagnosticsLog { get; set; } = false;
 

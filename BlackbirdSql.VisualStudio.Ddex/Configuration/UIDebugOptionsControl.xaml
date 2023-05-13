@@ -39,7 +39,7 @@
 						IsThreeState="False"
 						Checked="CbEnableDiagnosticsLog_Checked" Unchecked="CbEnableDiagnosticsLog_Unchecked"/>
 					<TextBox  x:Name="LblEnableDiagnosticsLog"
-						Text="Enables diagnostics logging to a log file."
+						Text="Enables diagnostics logging to a log file. This option also saves the extrapolated TObjectSupport.xml imports to the logfile folder."
 						Margin="11,0,5,0" IsReadOnly="True" IsEnabled="False" TextWrapping="Wrap" BorderBrush="{x:Null}"
 						Background="{x:Null}" HorizontalAlignment="Stretch" Padding="0" VerticalAlignment="Top" />
 					<GroupBox x:Name="PnlLogFile" Header="Log file" Margin="6,10,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" >

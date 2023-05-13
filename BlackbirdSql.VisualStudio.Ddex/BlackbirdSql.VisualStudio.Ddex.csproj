@@ -92,6 +92,8 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Package.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.ArrowNodeOpen.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderSystemColumns.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.FolderEmpty.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.FolderSystemOpen.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.FolderUser.ico" />
@@ -196,6 +198,7 @@
   </ItemGroup>
   <!-- Includes (VSIX Manifest) -->
   <ItemGroup>
+    <None Include="Resources\ViewSupport.ArrowNodeOpen.psd" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -268,12 +271,14 @@
     <None Include="Resources\ViewSupport.DotDotDot.psd" />
     <None Include="Resources\ViewSupport.FolderEmpty.psd" />
     <None Include="Resources\ViewSupport.FolderSystem.psd" />
+    <None Include="Resources\ViewSupport.FolderSystemColumns.psd" />
     <None Include="Resources\ViewSupport.FolderSystemOpen.psd" />
     <None Include="Resources\ViewSupport.FolderSystemSystemTriggersOpen.psd" />
     <None Include="Resources\ViewSupport.FolderSystemTables.psd" />
     <None Include="Resources\ViewSupport.FolderSystemSystemTriggers.psd" />
     <None Include="Resources\ViewSupport.FolderSystemTablesOpen.psd" />
     <None Include="Resources\ViewSupport.FolderUser.psd" />
+    <None Include="Resources\ViewSupport.FolderUserColumns.psd" />
     <None Include="Resources\ViewSupport.FolderUserIdentityTriggers.psd" />
     <None Include="Resources\ViewSupport.FolderUserIdentityTriggersOpen.psd" />
     <None Include="Resources\ViewSupport.FolderUserOpen.psd" />

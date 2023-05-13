@@ -862,7 +862,13 @@
 					<StaticNode  skipWhen="{Table.TRIGGER_COUNT} > 0" nodeId="TriggersEmpty">
 						<DisplayName resource="Node_Name_Triggers" />
 					</StaticNode>
-					<SelectionRef name="TplSelectionColumn" arguments="Column,Table,$(systemType),{Table.TABLE_CATALOG},,{Table.TABLE_SCHEMA},,{Table.TABLE_NAME}" />
+					<StaticNode  nodeId="ColumnFolder">
+						<DisplayName resource="Node_Name_Columns" />
+						<!-- <Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.FolderTriggers.ico" assembly="" /> -->
+						<Children>
+							<SelectionRef name="TplSelectionColumn" arguments="Column,Table,$(systemType),{Table.TABLE_CATALOG},,{Table.TABLE_SCHEMA},,{Table.TABLE_NAME}" />
+						</Children>
+					</StaticNode>
 				</Children>
 			</SelectionNode>
 		</Selection>

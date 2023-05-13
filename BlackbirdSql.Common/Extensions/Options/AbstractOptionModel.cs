@@ -29,14 +29,13 @@ namespace BlackbirdSql.Common.Extensions.Options
 
 		private static bool _propertyWrappersLoaded;
 
+#pragma warning disable VSTHRD104 // Offer async methods
 		public static T Instance => ThreadHelper.JoinableTaskFactory.Run(new Func<Task<T>>(GetLiveInstanceAsync));
+#pragma warning restore VSTHRD104 // Offer async methods
 
 		protected internal virtual string CollectionName { get; } = typeof(T).FullName;
 
-
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		public static event Action<T> Saved;
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 
 		protected AbstractOptionModel()
 		{
@@ -101,9 +100,7 @@ namespace BlackbirdSql.Common.Extensions.Options
 			Saved?.Invoke(liveModel);
 		}
 
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		protected internal virtual string SerializeValue(object value, Type type, string propertyName)
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		{
 			if (value == null)
 			{
@@ -116,9 +113,7 @@ namespace BlackbirdSql.Common.Extensions.Options
 			return stringWriter.ToString();
 		}
 
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		protected internal virtual object DeserializeValue(string serializedData, Type type, string propertyName)
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		{
 			if (serializedData.Length == 0)
 			{
