@@ -1,7 +1,7 @@
 # BlackbirdSQL DDEX 2.0 .NET Data Provider for Firebird
 
-#### Sample screenshots
-![ReadMe](https://user-images.githubusercontent.com/120905720/236587392-73a74f86-58f6-4362-8640-7f03b3532391.jpg)
+#### Screenshots
+![ReadMe](https://github.com/BlackbirdSQL/Firebird-NETProvider-DDEX/blob/master/Resources/ReadMe.jpg)
 </br>`Click on image to view fullscreen`
 </br></br>
 
