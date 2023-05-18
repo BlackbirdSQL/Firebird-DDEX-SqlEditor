@@ -16,9 +16,9 @@
 				<CommandRef name="CommandGlobalNewQuery" />
 			</GlobalCommands>
 			<ConnectionNode nodeId="Root" type="">
-				<InitialDisplayName>{Root.Server} ({Root.Database})</InitialDisplayName>
+				<InitialDisplayName>{Root.DataSourceName} ({Root.Dataset})</InitialDisplayName>
 				<Properties>
-					<Property name="InitialCatalog">
+					<Property name="DefaultCatalog">
 						<DisplayName resource="Identifier_Name_DatabasePath" />
 						<Category resource="Category_Connection" />
 						<Description resource="Identifier_Desc_DatabasePath" />
@@ -156,7 +156,7 @@
 										</Property>
 									</Properties>
 									<Commands>
-										<CommandRef name="CommandUniversalOpenText" />
+										<CommandRef name="CommandTextOpenScript" />
 									</Commands>
 									<Children>
 										<StaticNode nodeId="StoredProcedureColumns">
@@ -232,7 +232,7 @@
 										</Property>
 									</Properties>
 									<Commands>
-										<CommandRef name="CommandUniversalOpenText" />
+										<CommandRef name="CommandTextOpenScript" />
 									</Commands>
 									<Children>
 										<Selection type="FunctionParameter" restrictions="{Function.FUNCTION_CATALOG},{Function.FUNCTION_SCHEMA},{Function.FUNCTION_NAME}">

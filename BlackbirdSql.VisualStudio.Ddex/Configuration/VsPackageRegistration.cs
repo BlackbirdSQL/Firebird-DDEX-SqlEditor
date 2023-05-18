@@ -29,9 +29,9 @@ internal sealed class VsPackageRegistration: RegistrationAttribute
 	{
 		if (context == null)
 		{
-			Diag.Dug(true, "Null argument: context");
-
-			throw new ArgumentNullException("context");
+			ArgumentNullException ex = new("context");
+			Diag.Dug(ex);
+			throw ex;
 		}
 
 		Key key = null;
@@ -92,19 +92,19 @@ internal sealed class VsPackageRegistration: RegistrationAttribute
 			Attribute customAttribute = Attribute.GetCustomAttribute(providerObjectFactoryClass, typeof(GuidAttribute));
 			if (customAttribute == null)
 			{
-				Diag.Dug(true, "IProviderObjectFactory doesn't have Guid attribute");
-
 				Debug.Assert(condition: false);
-				throw new ApplicationException("IProviderObjectFactory doesn't have Guid attribute.");
+				ApplicationException ex = new("IProviderObjectFactory doesn't have Guid attribute.");
+				Diag.Dug(ex);
+				throw ex;
 			}
 
 
 			if (customAttribute is not GuidAttribute guidAttribute)
 			{
-				Diag.Dug(true, "IProviderObjectFactory's Guid attribute has the incorrect type");
-
 				Debug.Assert(condition: false);
-				throw new ApplicationException("IProviderObjectFactory's Guid attribute has the incorrect type.");
+				ApplicationException ex = new("IProviderObjectFactory's Guid attribute has the incorrect type.");
+				Diag.Dug(ex);
+				throw ex;
 			}
 			Debug.Assert(guidAttribute.Value == PackageData.ObjectFactoryServiceGuid);
 
@@ -147,9 +147,9 @@ internal sealed class VsPackageRegistration: RegistrationAttribute
 	{
 		if (context == null)
 		{
-			Diag.Dug(true, "Null argument: context");
-
-			throw new ArgumentNullException("context");
+			ArgumentNullException ex = new("context");
+			Diag.Dug(ex);
+			throw ex;
 		}
 
 		string dataSourceGuid = "{" + SystemData.DataSourceGuid + "}";
@@ -159,18 +159,18 @@ internal sealed class VsPackageRegistration: RegistrationAttribute
 
 		if (customAttribute == null)
 		{
-			Diag.Dug(true, "IProviderObjectFactory doesn't have Guid attribute");
-
 			Debug.Assert(condition: false);
-			throw new ApplicationException("[BUG CHECK] IProviderObjectFactory doesn't have Guid attribute.");
+			ApplicationException ex = new("[BUG CHECK] IProviderObjectFactory doesn't have Guid attribute.");
+			Diag.Dug(ex);
+			throw ex;
 		}
 
 		if (customAttribute is not GuidAttribute guidAttribute)
 		{
-			Diag.Dug(true, "IProviderObjectFactory's Guid attribute has the incorrect type");
-
 			Debug.Assert(condition: false);
-			throw new ApplicationException("[BUG CHECK] IProviderObjectFactory's Guid attribute has the incorrect type.");
+			ApplicationException ex = new("[BUG CHECK] IProviderObjectFactory's Guid attribute has the incorrect type.");
+			Diag.Dug(ex);
+			throw ex;
 		}
 		Debug.Assert(guidAttribute.Value == PackageData.ObjectFactoryServiceGuid);
 

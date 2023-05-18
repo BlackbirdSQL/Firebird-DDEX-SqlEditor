@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-
+using BlackbirdSql.Common.Extensions;
 using Microsoft;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;

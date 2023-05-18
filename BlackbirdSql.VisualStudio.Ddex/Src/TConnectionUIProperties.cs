@@ -2,11 +2,10 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 
+using System;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 
 using BlackbirdSql.Common;
-
-
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -35,12 +34,29 @@ internal class TConnectionUIProperties : AdoDotNetConnectionProperties
 		{
 			// Diag.Trace("ProtectedMandatoryProperties required");
 			// This has to be ProtectedMandatoryProperties for password PromptDialog to be activated
-			foreach (string property in Schema.DslConnectionString.ProtectedMandatoryProperties)
+			try
 			{
-				if (!TryGetValue(property, out object value) || string.IsNullOrEmpty((string)value))
+				foreach (string property in Schema.ConnectionResources.ProtectedMandatoryProperties)
 				{
-					return false;
+					try
+					{
+						if (!TryGetValue(property, out object value) || string.IsNullOrEmpty((string)value))
+						{
+							return false;
+						}
+					}
+					catch (Exception ex)
+					{
+						Diag.Dug(ex, $"Property: {property}");
+						throw;
+					}
+
 				}
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
 			}
 
 			return true;

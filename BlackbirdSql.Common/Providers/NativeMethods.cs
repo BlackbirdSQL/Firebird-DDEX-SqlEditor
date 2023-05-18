@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.OLE.Interop;
 
-using BlackbirdSql.Common;
+
+using BlackbirdSql.Common.Commands;
 
 
-
-namespace BlackbirdSql.Common.Extensions
+namespace BlackbirdSql.Common.Providers
 {
 	internal static class NativeMethods
 	{
@@ -113,10 +114,12 @@ namespace BlackbirdSql.Common.Extensions
 
 		public static int WrapComCall(int hr)
 		{
-			Diag.Dug();
 			if (FAILED(hr))
 			{
-				throw Marshal.GetExceptionForHR(hr);
+				Exception ex = Marshal.GetExceptionForHR(hr);
+				Diag.Dug(ex);
+
+				throw ex;
 			}
 
 			return hr;
@@ -124,20 +127,17 @@ namespace BlackbirdSql.Common.Extensions
 
 		public static bool FAILED(int Status)
 		{
-			Diag.Dug();
 			return Status < 0;
 		}
 
 		public static short LOWORD(uint dwValue)
 		{
-			Diag.Dug();
 			return (short)(dwValue & 0xFFFF);
 		}
 
 		public static short HIWORD(uint dwValue)
 		{
-			Diag.Dug();
-			return (short)((dwValue >> 16) & 0xFFFF);
+			return (short)(dwValue >> 16 & 0xFFFF);
 		}
 
 		[DllImport("ole32.dll", PreserveSig = false)]

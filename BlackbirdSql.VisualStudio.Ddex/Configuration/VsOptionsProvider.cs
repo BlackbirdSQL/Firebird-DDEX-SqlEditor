@@ -4,8 +4,7 @@
 
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Shell;
-using BlackbirdSql.Common.Extensions.Options;
-
+using BlackbirdSql.Common.Options;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 

@@ -36,7 +36,7 @@ internal class TConnectionProperties : AdoDotNetConnectionProperties
 		get
 		{
 			// Diag.Trace("ProtectedMandatoryProperties required");
-			foreach (string property in Schema.DslConnectionString.ProtectedMandatoryProperties)
+			foreach (string property in Schema.ConnectionResources.ProtectedMandatoryProperties)
 			{
 				if (!TryGetValue(property, out object value) || string.IsNullOrEmpty((string)value))
 				{

@@ -41,7 +41,7 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 		{
 			try
 			{
-				foreach (string property in Schema.DslConnectionString.PublicMandatoryProperties)
+				foreach (string property in Schema.ConnectionResources.PublicMandatoryProperties)
 				{
 					if (!ConnectionUIProperties.ContainsKey(property))
 						return false;

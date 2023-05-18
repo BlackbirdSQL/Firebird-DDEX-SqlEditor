@@ -3,9 +3,12 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 //
 
-using BlackbirdSql.Common.Extensions;
+using BlackbirdSql.VisualStudio.Ddex.Extensions;
+
+
 
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
+
 
 
 internal class DslTriggerColumns : DslColumns

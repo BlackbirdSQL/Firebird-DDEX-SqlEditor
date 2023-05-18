@@ -23,8 +23,9 @@ using FirebirdSql.Data.FirebirdClient;
 using BlackbirdSql.Common;
 using BlackbirdSql.Common.Extensions;
 
-namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 
+
+namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 
 
 
@@ -42,7 +43,10 @@ namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 // =========================================================================================================
 internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDisposable
 {
+
+	// ---------------------------------------------------------------------------------
 	#region Variables
+	// ---------------------------------------------------------------------------------
 
 
 	static VsPackageController _Instance = null;

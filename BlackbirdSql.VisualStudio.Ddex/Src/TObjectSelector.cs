@@ -13,10 +13,8 @@ using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using FirebirdSql.Data.FirebirdClient;
 using BlackbirdSql.Common;
-using BlackbirdSql.Common.Extensions.Commands;
 using BlackbirdSql.VisualStudio.Ddex.Schema;
-
-
+using BlackbirdSql.Common.Commands;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -217,7 +215,7 @@ class TObjectSelector : AdoDotNetObjectSelector
 
 	private DataTable GetSchema(DbConnection connection, string typeName, object[] restrictions, object[] parameters)
 	{
-		if (DataToolsCommands.CommandObjectType != DataToolsCommands.DataObjectType.None
+		if (DataToolsCommands.CommandObjectType != DataToolsCommands.DataObjectType.Global
 			&& typeName == "Table" && parameters != null && parameters.Length > 0 && (string)parameters[0] == "Tables"
 			&& (restrictions == null || restrictions.Length < 3 || (restrictions.Length > 2 && restrictions[2] == null)))
 		{
@@ -233,7 +231,7 @@ class TObjectSelector : AdoDotNetObjectSelector
 			restrictions[3] = DataToolsCommands.CommandObjectType == DataToolsCommands.DataObjectType.User ? "TABLE" : "SYSTEM TABLE";
 		}
 
-		DataToolsCommands.CommandObjectType = DataToolsCommands.DataObjectType.None;
+		DataToolsCommands.CommandObjectType = DataToolsCommands.DataObjectType.Global;
 
 
 

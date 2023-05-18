@@ -171,4 +171,43 @@
   <data name="DataSource_Product" xml:space="preserve">
     <value>Firebird SQL Server</value>
   </data>
+  <data name="SqlViewNode_Caption_Column" xml:space="preserve">
+    <value>Column Expression</value>
+  </data>
+  <data name="SqlViewNode_Caption_ForeignKey" xml:space="preserve">
+    <value>Foreign Key Expression</value>
+  </data>
+  <data name="SqlViewNode_Caption_ForeignKeyColumn" xml:space="preserve">
+    <value>Foreign Key Column Expression</value>
+  </data>
+  <data name="SqlViewNode_Caption_Function" xml:space="preserve">
+    <value>Function Source</value>
+  </data>
+  <data name="SqlViewNode_Caption_FunctionParameter" xml:space="preserve">
+    <value>Function Parameter Expression</value>
+  </data>
+  <data name="SqlViewNode_Caption_Index" xml:space="preserve">
+    <value>Index Expression</value>
+  </data>
+  <data name="SqlViewNode_Caption_IndexColumn" xml:space="preserve">
+    <value>Index Column Expression</value>
+  </data>
+  <data name="SqlViewNode_Caption_StoredProcedure" xml:space="preserve">
+    <value>Procedure Source</value>
+  </data>
+  <data name="SqlViewNode_Caption_StoredProcedureColumn" xml:space="preserve">
+    <value>Procedure Parameter Expression</value>
+  </data>
+  <data name="SqlViewNode_Caption_StoredProcedureParameter" xml:space="preserve">
+    <value>Procedure Parameter Expression</value>
+  </data>
+  <data name="SqlViewNode_Caption_Trigger" xml:space="preserve">
+    <value>Trigger Expression</value>
+  </data>
+  <data name="SqlViewNode_Caption_TriggerColumn" xml:space="preserve">
+    <value>TriggerColumn Expression</value>
+  </data>
+  <data name="SqlViewNode_Caption_View" xml:space="preserve">
+    <value>View Definition</value>
+  </data>
 </root>

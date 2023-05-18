@@ -117,7 +117,67 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="QueryDesignerDocument_NewQueryCaption" xml:space="preserve">
+    <value>QueryDesignerDocument_NewQueryCaption</value>
+  </data>
+  <data name="QueryDesignerDocument_RetrieveDataCaption" xml:space="preserve">
+    <value>QueryDesignerDocument_RetrieveDataCaption</value>
+  </data>
+  <data name="SqlConnectionSupport_UnsupportedFutureVersion" xml:space="preserve">
+    <value>SqlConnectionSupport_UnsupportedFutureVersion</value>
+  </data>
+  <data name="SqlTextEditorDocument_DdlTriggersNotSupported" xml:space="preserve">
+    <value>SqlTextEditorDocument_DdlTriggersNotSupported</value>
+  </data>
+  <data name="SqlTextEditorDocument_NumberedProceduresNotSupported" xml:space="preserve">
+    <value>SqlTextEditorDocument_NumberedProceduresNotSupported</value>
+  </data>
+  <data name="SqlTextEditorDocument_UnsupportedObjectType" xml:space="preserve">
+    <value>SqlTextEditorDocument_UnsupportedObjectType</value>
+  </data>
+  <data name="SqlTextEditorDocument_UnsupportedStatementType" xml:space="preserve">
+    <value>SqlTextEditorDocument_UnsupportedStatementType</value>
+  </data>
+  <data name="SqlViewNode_Type_Function" xml:space="preserve">
+    <value>SqlViewNode_Type_Function</value>
+  </data>
+  <data name="SqlViewNode_Type_StoredProcedure" xml:space="preserve">
+    <value>SqlViewNode_Type_StoredProcedure</value>
+  </data>
+  <data name="SqlViewNode_Type_Trigger" xml:space="preserve">
+    <value>SqlViewNode_Type_Trigger</value>
+  </data>
+  <data name="SqlViewNode_Type_ViewTrigger" xml:space="preserve">
+    <value>SqlViewNode_Type_ViewTrigger</value>
+  </data>
+  <data name="SqlViewTextObjectCommandProvider_CancelExecution" xml:space="preserve">
+    <value>SqlViewTextObjectCommandProvider_CancelExecution</value>
+  </data>
+  <data name="SqlViewTextObjectCommandProvider_NoSourceAvailable" xml:space="preserve">
+    <value>SqlViewTextObjectCommandProvider_NoSourceAvailable</value>
+  </data>
+  <data name="SqlViewTextObjectCommandProvider_Open" xml:space="preserve">
+    <value>SqlViewTextObjectCommandProvider_Open</value>
+  </data>
+  <data name="SqlViewTextObjectCommandProvider_PathTooLong" xml:space="preserve">
+    <value>The document moniker path name is too long</value>
+  </data>
+  <data name="SqlViewTextObjectCommandProvider_PromptSaveObject" xml:space="preserve">
+    <value>SqlViewTextObjectCommandProvider_PromptSaveObject</value>
+  </data>
+  <data name="SqlViewTextObjectCommandProvider_StepIntoFunction" xml:space="preserve">
+    <value>SqlViewTextObjectCommandProvider_StepIntoFunction</value>
+  </data>
+  <data name="SqlViewTextObjectCommandProvider_StepIntoStoredProcedure" xml:space="preserve">
+    <value>SqlViewTextObjectCommandProvider_StepIntoStoredProcedure</value>
+  </data>
+  <data name="TextEditorDocument_FailedToLoadText" xml:space="preserve">
+    <value>TextEditorDocument_FailedToLoadText</value>
+  </data>
   <data name="TextObjectCommandProvider_Open" xml:space="preserve">
     <value>&amp;Open Script</value>
+  </data>
+  <data name="ToolsDocument_Caption" xml:space="preserve">
+    <value>DataToolsDocument_Caption</value>
   </data>
 </root>

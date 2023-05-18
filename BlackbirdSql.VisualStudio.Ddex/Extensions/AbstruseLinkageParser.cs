@@ -11,7 +11,7 @@ using BlackbirdDsl;
 
 
 
-namespace BlackbirdSql.Common.Extensions;
+namespace BlackbirdSql.VisualStudio.Ddex.Extensions;
 
 
 

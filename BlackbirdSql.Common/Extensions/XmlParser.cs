@@ -182,7 +182,7 @@ internal static class XmlParser
 			if (_DataSources != null)
 				return _DataSources;
 
-			_DataSources = Databases.DefaultView.ToTable(true, "Orderer", "DataSourceName", "DataSource", "DataSourceLc", "PortNumber");
+			_DataSources = Databases.DefaultView.ToTable(true, "Orderer", "DatasetName", "DataSource", "DataSourceLc", "PortNumber");
 
 
 			return _DataSources;
@@ -212,7 +212,7 @@ internal static class XmlParser
 
 			databases.Columns.Add("Id", typeof(int));
 			databases.Columns.Add("Orderer", typeof(int));
-			databases.Columns.Add("DataSourceName", typeof(string));
+			databases.Columns.Add("DatasetName", typeof(string));
 			databases.Columns.Add("DataSource", typeof(string));
 			databases.Columns.Add("DataSourceLc", typeof(string));
 			databases.Columns.Add("Name", typeof(string));
@@ -250,7 +250,7 @@ internal static class XmlParser
 					XmlNodeList xmlServers, xmlDatabases;
 					XmlNode xmlNode = null;
 					uint port;
-					string datasourceName, datasource, authentication;
+					string datasetName, datasource, authentication;
 
 					xmlServers = xmlRoot.SelectNodes("//server");
 
@@ -259,7 +259,7 @@ internal static class XmlParser
 					{
 						if ((xmlNode = xmlServer.SelectSingleNode("name")) == null)
 							continue;
-						datasourceName = xmlNode.InnerText.Trim();
+						datasetName = xmlNode.InnerText.Trim();
 
 
 						if ((xmlNode = xmlServer.SelectSingleNode("host")) == null)
@@ -280,7 +280,7 @@ internal static class XmlParser
 						row = databases.NewRow();
 
 						row["Id"] = databases.Rows.Count;
-						row["DataSourceName"] = datasourceName;
+						row["DatasetName"] = datasetName;
 						row["DataSource"] = datasource;
 						row["DataSourceLc"] = datasource.ToLower();
 						row["PortNumber"] = (int)port;
@@ -317,7 +317,7 @@ internal static class XmlParser
 							row = databases.NewRow();
 
 							row["Id"] = databases.Rows.Count;
-							row["DataSourceName"] = datasourceName;
+							row["DatasetName"] = datasetName;
 							row["DataSource"] = datasource;
 							row["DataSourceLc"] = datasource.ToLower();
 							row["PortNumber"] = (int)port;
@@ -379,7 +379,7 @@ internal static class XmlParser
 				row = databases.NewRow();
 
 				row["Id"] = databases.Rows.Count;
-				row["DataSourceName"] = "";
+				row["DatasetName"] = "";
 				row["DataSource"] = "";
 				row["DataSourceLc"] = "";
 				row["PortNumber"] = 0;
@@ -403,7 +403,7 @@ internal static class XmlParser
 
 				row["Id"] = databases.Rows.Count;
 				row["Orderer"] = 1;
-				row["DataSourceName"] = "Reset";
+				row["DatasetName"] = "Reset";
 				row["DataSource"] = "";
 				row["DataSourceLc"] = "reset";
 				row["Name"] = "";
@@ -424,7 +424,7 @@ internal static class XmlParser
 
 					row["Id"] = databases.Rows.Count;
 					row["Orderer"] = 2;
-					row["DataSourceName"] = "Localhost";
+					row["DatasetName"] = "Localhost";
 					row["DataSource"] = "localhost";
 					row["DataSourceLc"] = "localhost";
 					row["Name"] = "";
@@ -439,7 +439,7 @@ internal static class XmlParser
 					databases.Rows.Add(row);
 				}
 
-				databases.DefaultView.Sort = "Orderer,DataSourceName,Name ASC";
+				databases.DefaultView.Sort = "Orderer,DatasetName,Name ASC";
 
 
 			}

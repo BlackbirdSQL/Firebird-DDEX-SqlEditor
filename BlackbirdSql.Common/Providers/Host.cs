@@ -8,16 +8,12 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using Microsoft;
 using Microsoft.VisualStudio.Data.Core;
-using Microsoft.VisualStudio.DataTools.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Telemetry;
 using Microsoft.Win32;
 
-using BlackbirdSql.Common;
 
-
-
-namespace BlackbirdSql.Common.Extensions
+namespace BlackbirdSql.Common.Provider
 {
 	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "<Pending>")]
 	internal class Host
@@ -90,7 +86,7 @@ namespace BlackbirdSql.Common.Extensions
 
 			public static void QueryDesignerProviderEventProperty(UserTaskEvent userTaskEvent, int provider)
 			{
-				Diag.Dug();
+				Diag.Trace();
 
 				int[] array = new int[6] { 1, 2, 4, 8, 16, 262144 };
 				string[] array2 = new string[6] { "VS.VSData.DataViewQueryCommandProvider.Provider.SqlServer", "VS.VSData.DataViewQueryCommandProvider.Provider.Oracle", "VS.VSData.DataViewQueryCommandProvider.Provider.OleDB", "VS.VSData.DataViewQueryCommandProvider.Provider.Odbc", "VS.VSData.DataViewQueryCommandProvider.Provider.SqlLocalDB", "VS.VSData.DataViewQueryCommandProvider.Provider.Unknown" };
@@ -108,7 +104,7 @@ namespace BlackbirdSql.Common.Extensions
 		{
 			get
 			{
-				Diag.Dug();
+				Diag.Trace();
 				object pvar = null;
 				IVsShell service = _hostService.GetService<IVsShell>();
 				NativeMethods.WrapComCall(service.GetProperty(-9021, out pvar));
@@ -120,14 +116,14 @@ namespace BlackbirdSql.Common.Extensions
 
 		public Host(System.IServiceProvider serviceProvider)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			_hostService = serviceProvider.GetService(typeof(IVsDataHostService)) as IVsDataHostService;
 			Assumes.Present(_hostService);
 		}
 
 		public object CreateLocalInstance(Guid classId)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			if (Thread.CurrentThread == _hostService.UIThread)
 			{
 				return CreateLocalInstanceImpl(classId);
@@ -138,7 +134,7 @@ namespace BlackbirdSql.Common.Extensions
 
 		private object CreateLocalInstanceImpl(Guid classId)
 		{
-			Diag.Dug();
+			Diag.Trace();
 
 			IntPtr ppvObj = IntPtr.Zero;
 			ILocalRegistry2 service = _hostService.GetService<SLocalRegistry, ILocalRegistry2>();
@@ -155,7 +151,7 @@ namespace BlackbirdSql.Common.Extensions
 
 		public bool IsCommandUIContextActive(Guid commandUIGuid)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			IVsMonitorSelection service = _hostService.GetService<IVsMonitorSelection>();
 			uint pdwCmdUICookie = 0u;
 			NativeMethods.WrapComCall(service.GetCmdUIContextCookie(ref commandUIGuid, out pdwCmdUICookie));
@@ -166,7 +162,7 @@ namespace BlackbirdSql.Common.Extensions
 
 		public object GetDBToolsOption(DBToolsOption option)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			//IL_001c: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0022: Expected I4, but got Unknown
 			object result = null;
@@ -185,7 +181,7 @@ namespace BlackbirdSql.Common.Extensions
 
 		public DialogResult ShowDialog(Form form)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			IUIService uiService = _hostService.GetService<IUIService>();
 			UserPreferenceChangedEventHandler value = delegate
 			{
@@ -205,7 +201,7 @@ namespace BlackbirdSql.Common.Extensions
 		[SuppressMessage("Microsoft.Performance", "CA1822:MarkMethodsAsStatic")]
 		public bool TranslateContextHelpMessage(Form form, ref Message m)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			if (m.Msg != 274 || m.WParam != (IntPtr)61824)
 			{
 				return false;
@@ -239,25 +235,25 @@ namespace BlackbirdSql.Common.Extensions
 
 		public DialogResult ShowQuestion(string question, MessageBoxDefaultButton defaultButton)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			return ShowQuestion(question, defaultButton, null);
 		}
 
 		public DialogResult ShowQuestion(string question, string helpId)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			return ShowQuestion(question, MessageBoxDefaultButton.Button2, helpId);
 		}
 
 		public DialogResult ShowQuestion(string question, MessageBoxDefaultButton defaultButton, string helpId)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			return ShowQuestion(question, MessageBoxButtons.YesNo, defaultButton, helpId);
 		}
 
 		public DialogResult ShowQuestion(string question, MessageBoxButtons buttons, MessageBoxDefaultButton defaultButton, string helpId)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			if (Thread.CurrentThread == _hostService.UIThread)
 			{
 				return ShowQuestionImpl(question, buttons, defaultButton, helpId);
@@ -268,7 +264,7 @@ namespace BlackbirdSql.Common.Extensions
 
 		private DialogResult ShowQuestionImpl(string question, MessageBoxButtons buttons, MessageBoxDefaultButton defaultButton, string helpId)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			IVsUIShell service = GetService<SVsUIShell, IVsUIShell>();
 			Guid rclsidComp = Guid.Empty;
 			OLEMSGDEFBUTTON msgdefbtn = OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST;
@@ -284,7 +280,7 @@ namespace BlackbirdSql.Common.Extensions
 
 		public void ShowError(string error)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			if (Thread.CurrentThread == HostService.UIThread)
 			{
 				ShowErrorImpl(error);
@@ -296,14 +292,14 @@ namespace BlackbirdSql.Common.Extensions
 
 		private void ShowErrorImpl(string error)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			IUIService service = _hostService.GetService<IUIService>();
 			service.ShowError(error);
 		}
 
 		public void ShowMessage(string message)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			if (Thread.CurrentThread == HostService.UIThread)
 			{
 				ShowMessageImpl(message);
@@ -315,7 +311,7 @@ namespace BlackbirdSql.Common.Extensions
 
 		private void ShowMessageImpl(string message)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			IUIService service = _hostService.GetService<IUIService>();
 			service.ShowMessage(message);
 		}
@@ -323,7 +319,7 @@ namespace BlackbirdSql.Common.Extensions
 		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public void ShowHelp(string keyword)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			try
 			{
 				Microsoft.VisualStudio.VSHelp.Help service = _hostService.GetService<Microsoft.VisualStudio.VSHelp.Help, Microsoft.VisualStudio.VSHelp.Help>();
@@ -336,7 +332,7 @@ namespace BlackbirdSql.Common.Extensions
 
 		public bool IsDocumentInAProject(string documentMoniker)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			IVsUIShellOpenDocument service = _hostService.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
 			uint pitemid = 0u;
 			Microsoft.VisualStudio.OLE.Interop.IServiceProvider ppSP = null;
@@ -347,13 +343,13 @@ namespace BlackbirdSql.Common.Extensions
 
 		public bool ActivateDocumentIfOpen(string documentMoniker)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			return ActivateDocumentIfOpen(documentMoniker, doNotShowWindowFrame: false) != null;
 		}
 
 		public IVsWindowFrame ActivateDocumentIfOpen(string documentMoniker, bool doNotShowWindowFrame)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			IVsUIShellOpenDocument service = _hostService.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
 			Guid rguidLogicalView = Guid.Empty;
 			uint grfIDO = 1u;
@@ -371,7 +367,7 @@ namespace BlackbirdSql.Common.Extensions
 
 		public IVsWindowFrame OpenDocumentViaProject(string documentMoniker)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			IVsUIShellOpenDocument service = _hostService.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
 			Guid rguidLogicalView = Guid.Empty;
 			Microsoft.VisualStudio.OLE.Interop.IServiceProvider ppSP = null;
@@ -384,20 +380,20 @@ namespace BlackbirdSql.Common.Extensions
 
 		public void RenameDocument(string oldDocumentMoniker, string newDocumentMoniker)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			RenameDocument(oldDocumentMoniker, -1, newDocumentMoniker);
 		}
 
 		public void RenameDocument(string oldDocumentMoniker, int newItemId, string newDocumentMoniker)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			IVsRunningDocumentTable service = _hostService.GetService<SVsRunningDocumentTable, IVsRunningDocumentTable>();
 			NativeMethods.WrapComCall(service.RenameDocument(oldDocumentMoniker, newDocumentMoniker, NativeMethods.HIERARCHY_DONTCHANGE, (uint)newItemId));
 		}
 
 		public IVsWindowFrame CreateDocumentWindow(int attributes, string documentMoniker, string ownerCaption, string editorCaption, Guid editorType, string physicalView, Guid commandUIGuid, object documentView, object documentData, int owningItemId, IVsUIHierarchy owningHierarchy, Microsoft.VisualStudio.OLE.Interop.IServiceProvider serviceProvider)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			IntPtr iUnknownForObject = Marshal.GetIUnknownForObject(documentView);
 			IntPtr iUnknownForObject2 = Marshal.GetIUnknownForObject(documentData);
 			IVsWindowFrame ppWindowFrame = null;
@@ -416,7 +412,7 @@ namespace BlackbirdSql.Common.Extensions
 
 		public void PostExecuteCommand(CommandID command)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			if (Thread.CurrentThread == _hostService.UIThread)
 			{
 				PostExecuteCommandImpl(command);
@@ -436,7 +432,7 @@ namespace BlackbirdSql.Common.Extensions
 
 		private void PostExecuteCommandImpl(CommandID command)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			try
 			{
 				IVsUIShell service = _hostService.GetService<SVsUIShell, IVsUIShell>();
@@ -454,7 +450,7 @@ namespace BlackbirdSql.Common.Extensions
 
 		public void QueryDesignerProviderTelemetry(int provider)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			if (Thread.CurrentThread == _hostService.UIThread)
 			{
 				QueryDesignerProviderTelemetryImpl(provider);
@@ -466,7 +462,7 @@ namespace BlackbirdSql.Common.Extensions
 
 		private void QueryDesignerProviderTelemetryImpl(int provider)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			try
 			{
 				UserTaskEvent userTaskEvent = new UserTaskEvent("VS/VSData/DataViewQueryCommandProvider/Create-Query", TelemetryResult.Success);
@@ -480,19 +476,19 @@ namespace BlackbirdSql.Common.Extensions
 
 		public void SqlObjectSelectorTelemetry(string metric, int count)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			ServerExplorerTelemetry(metric, "VS.VSData.SqlObjectSelector.ObjectCount", count);
 		}
 
 		public void SqlSynonymSelectorTelemetry(string metric, int count)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			ServerExplorerTelemetry(metric, "VS.VSData.SqlSynonymSelector.ObjectCount", count);
 		}
 
 		public void ServerExplorerTelemetry(string metric, string property, int count)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			if (Thread.CurrentThread == _hostService.UIThread)
 			{
 				ServerExplorerTelemetryImpl(metric, property, count);
@@ -504,7 +500,7 @@ namespace BlackbirdSql.Common.Extensions
 
 		private void ServerExplorerTelemetryImpl(string metric, string property, int count)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			try
 			{
 				OperationEvent operationEvent = new OperationEvent(metric, TelemetryResult.Success);
@@ -518,37 +514,37 @@ namespace BlackbirdSql.Common.Extensions
 
 		public T TryGetService<T>()
 		{
-			Diag.Dug();
+			Diag.Trace();
 			return _hostService.TryGetService<T>();
 		}
 
 		public TInterface TryGetService<TService, TInterface>()
 		{
-			Diag.Dug();
+			Diag.Trace();
 			return _hostService.TryGetService<TService, TInterface>();
 		}
 
 		public T TryGetService<T>(Guid serviceGuid)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			return _hostService.TryGetService<T>(serviceGuid);
 		}
 
 		public T GetService<T>()
 		{
-			Diag.Dug();
+			Diag.Trace();
 			return _hostService.GetService<T>();
 		}
 
 		public TInterface GetService<TService, TInterface>()
 		{
-			Diag.Dug();
+			Diag.Trace();
 			return _hostService.GetService<TService, TInterface>();
 		}
 
 		public T GetService<T>(Guid serviceGuid)
 		{
-			Diag.Dug();
+			Diag.Trace();
 			return _hostService.GetService<T>(serviceGuid);
 		}
 

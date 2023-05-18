@@ -12,7 +12,7 @@ using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using Microsoft.VisualStudio.Settings;
 
-namespace BlackbirdSql.Common.Extensions.Options
+namespace BlackbirdSql.Common.Options
 {
 	//
 	// Summary:
@@ -92,9 +92,7 @@ namespace BlackbirdSql.Common.Extensions.Options
 		//     proper types when they are called. The signature is AbstractOptionModel{T} targetObject,
 		//     object value, where the type of value must be assignable to the System.Reflection.PropertyInfo.PropertyType
 		//     of the wrapped property.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		protected Action<object, object> WrappedPropertySetMethod { get; }
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 
 		//
 		// Summary:
@@ -103,9 +101,7 @@ namespace BlackbirdSql.Common.Extensions.Options
 		//     proper types when they are called. The signature is AbstractOptionModel{T} targetObject,
 		//     where the type that is returned will be the System.Reflection.PropertyInfo.PropertyType
 		//     of the wrapped property.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		protected Func<object, object> WrappedPropertyGetMethod { get; }
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 
 		//
 		// Summary:
@@ -113,9 +109,7 @@ namespace BlackbirdSql.Common.Extensions.Options
 		//     be loaded/saved to, which is set via the optional Community.VisualStudio.Toolkit.OverrideCollectionNameAttribute
 		//     on the property. If null, the Community.VisualStudio.Toolkit.AbstractOptionModel`1.CollectionName
 		//     should be used instead.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		protected string OverrideCollectionName { get; }
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 
 		//
 		// Summary:
@@ -141,9 +135,7 @@ namespace BlackbirdSql.Common.Extensions.Options
 		//     is compatible with its declared storage data type, this System.ComponentModel.TypeConverter
 		//     will be non-null and used to convert the property value to and from the Microsoft.VisualStudio.Settings.SettingsStore
 		//     Community.VisualStudio.Toolkit.OptionModelPropertyWrapper.NativeStorageType.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		protected TypeConverter TypeConverter { get; }
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 
 		//
 		// Summary:
@@ -286,8 +278,7 @@ namespace BlackbirdSql.Common.Extensions.Options
 			OverrideDataTypeAttribute overrideDataTypeAttribute = null;
 			foreach (Attribute customAttribute in propertyInfo.GetCustomAttributes())
 			{
-				OverrideCollectionNameAttribute overrideCollectionNameAttribute = customAttribute as OverrideCollectionNameAttribute;
-				if (overrideCollectionNameAttribute != null)
+				if (customAttribute is OverrideCollectionNameAttribute overrideCollectionNameAttribute)
 				{
 					string text = overrideCollectionNameAttribute.CollectionName.Trim();
 					if (text.Length > 0)
@@ -298,8 +289,7 @@ namespace BlackbirdSql.Common.Extensions.Options
 					continue;
 				}
 
-				OverridePropertyNameAttribute overridePropertyNameAttribute = customAttribute as OverridePropertyNameAttribute;
-				if (overridePropertyNameAttribute != null)
+				if (customAttribute is OverridePropertyNameAttribute overridePropertyNameAttribute)
 				{
 					string text2 = overridePropertyNameAttribute.PropertyName.Trim();
 					if (text2.Length > 0)
@@ -309,8 +299,7 @@ namespace BlackbirdSql.Common.Extensions.Options
 				}
 				else
 				{
-					OverrideDataTypeAttribute overrideDataTypeAttribute2 = customAttribute as OverrideDataTypeAttribute;
-					if (overrideDataTypeAttribute2 != null)
+					if (customAttribute is OverrideDataTypeAttribute overrideDataTypeAttribute2)
 					{
 						overrideDataTypeAttribute = overrideDataTypeAttribute2;
 					}
@@ -347,18 +336,22 @@ namespace BlackbirdSql.Common.Extensions.Options
 		//
 		// Returns:
 		//     A delegate as described above.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		protected static Func<object, object> CreateWrappedPropertyGetDelegate(PropertyInfo propertyInfo)
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		{
 			MethodInfo method = typeof(OptionModelPropertyWrapper).GetMethod("PropertyGetHelper", BindingFlags.Static | BindingFlags.NonPublic);
+
 			if (method == null)
 			{
-				throw new InvalidOperationException("Could not get method PropertyGetHelper");
+				InvalidOperationException ex = new("Could not get method PropertyGetHelper");
+				Diag.Dug(ex);
+				throw ex;
 			}
 
 			return (Func<object, object>)method.MakeGenericMethod(propertyInfo.DeclaringType, propertyInfo.PropertyType).Invoke(null, new object[1] { propertyInfo.GetGetMethod(nonPublic: false) });
 		}
+
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
 
 		//
 		// Summary:
@@ -380,9 +373,7 @@ namespace BlackbirdSql.Common.Extensions.Options
 		//
 		// Returns:
 		//     A delegate as described above.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		private static Func<object, object> PropertyGetHelper<TTarget, TReturn>(MethodInfo method)
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		{
 			Func<TTarget, TReturn> func = (Func<TTarget, TReturn>)Delegate.CreateDelegate(typeof(Func<TTarget, TReturn>), method);
 			return (target) => func((TTarget)target);
@@ -400,18 +391,22 @@ namespace BlackbirdSql.Common.Extensions.Options
 		//
 		// Returns:
 		//     A delegate as described above.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		protected static Action<object, object> CreateWrappedPropertySetDelegate(PropertyInfo propertyInfo)
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		{
 			MethodInfo method = typeof(OptionModelPropertyWrapper).GetMethod("PropertySetHelper", BindingFlags.Static | BindingFlags.NonPublic);
+
 			if (method == null)
 			{
-				throw new InvalidOperationException("Could not get method PropertySetHelper");
+				InvalidOperationException ex = new("Could not get method PropertySetHelper for " + propertyInfo.Name);
+				Diag.Dug(ex);
+				throw ex;
 			}
 
 			return (Action<object, object>)method.MakeGenericMethod(propertyInfo.DeclaringType, propertyInfo.PropertyType).Invoke(null, new object[1] { propertyInfo.GetSetMethod(nonPublic: false) });
 		}
+
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
 
 		//
 		// Summary:
@@ -433,19 +428,13 @@ namespace BlackbirdSql.Common.Extensions.Options
 		//
 		// Returns:
 		//     A delegate as described above.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		private static Action<object, object> PropertySetHelper<TTarget, TParam>(MethodInfo method)
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		{
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-			Action<TTarget, TParam?> action = (Action<TTarget, TParam>)Delegate.CreateDelegate(typeof(Action<TTarget, TParam>), method);
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+			Action<TTarget, TParam> action = (Action<TTarget, TParam>)Delegate.CreateDelegate(typeof(Action<TTarget, TParam>), method);
 			return delegate (object target, object value)
 			{
 				action((TTarget)target, (TParam)value);
 			};
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		}
 
 		//
@@ -457,9 +446,7 @@ namespace BlackbirdSql.Common.Extensions.Options
 		// Parameters:
 		//   value:
 		//     The object that is to be serialized. Can Be Null.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		internal static string LegacySerializeValue(object value)
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		{
 			if (value == null)
 			{
@@ -483,9 +470,7 @@ namespace BlackbirdSql.Common.Extensions.Options
 		//
 		//   conversionType:
 		//     The type to deserialize as.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		internal static object LegacyDeserializeValue(string serializedString, Type conversionType)
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		{
 			if (serializedString.Length == 0)
 			{
@@ -627,7 +612,9 @@ namespace BlackbirdSql.Common.Extensions.Options
 				case SettingDataType.Binary:
 					return NativeSettingsType.Binary;
 				default:
-					throw new InvalidOperationException($"GetNativeDataType for SettingDataType {settingDataType} is not supported.");
+					InvalidOperationException ex = new($"GetNativeDataType for SettingDataType {settingDataType} is not supported.");
+					Diag.Dug(ex);
+					throw ex;
 			}
 		}
 
@@ -681,6 +668,10 @@ namespace BlackbirdSql.Common.Extensions.Options
 
 			return SettingDataType.Serialized;
 		}
+
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0038:Use pattern matching", Justification = "<Pending>")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0019:Use pattern matching", Justification = "<Pending>")]
 
 		//
 		// Summary:
@@ -750,25 +741,34 @@ namespace BlackbirdSql.Common.Extensions.Options
 		//     uses Community.VisualStudio.Toolkit.AbstractOptionModel`1.SerializeValue(System.Object,System.Type,System.String)
 		//     and Community.VisualStudio.Toolkit.AbstractOptionModel`1.DeserializeValue(System.String,System.Type,System.String)
 		//     and stores it as binary, refer to those overridable methods for details.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		protected virtual object ConvertPropertyTypeToStorageType<TOptMdl>(object propertyValue, AbstractOptionModel<TOptMdl> baseOptionModel) where TOptMdl : AbstractOptionModel<TOptMdl>, new()
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		{
-			//IL_0244: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0249: Unknown result type (might be due to invalid IL or missing references)
 			switch (DataType)
 			{
 				case SettingDataType.Serialized:
 					if (NativeStorageType != NativeSettingsType.String)
 					{
-						throw new InvalidOperationException($"The SettingDataType of Serialized is not capable of supporting native storage type {NativeStorageType}");
+						InvalidOperationException ex = new($"The SettingDataType of Serialized is not capable of supporting native storage type {NativeStorageType}");
+						Diag.Dug(ex);
+						throw ex;
 					}
 
-					return baseOptionModel.SerializeValue(propertyValue, PropertyInfo.PropertyType, PropertyName) ?? throw new InvalidOperationException("The SerializeValue method of " + baseOptionModel.GetType().FullName + " returned  a null value. This method cannot return null.");
+					string serialized = baseOptionModel.SerializeValue(propertyValue, PropertyInfo.PropertyType, PropertyName);
+
+					if (serialized == null)
+					{
+						InvalidOperationException ex = new("The SerializeValue method of " + baseOptionModel.GetType().FullName + " returned  a null value. This method cannot return null.");
+						Diag.Dug(ex);
+						throw ex;
+					}
+
+					return serialized;
 				case SettingDataType.Legacy:
 					if (NativeStorageType != NativeSettingsType.String)
 					{
-						throw new InvalidOperationException($"The SettingDataType of Legacy is not capable of supporting native storage type {NativeStorageType}");
+						InvalidOperationException ex = new($"The SettingDataType of Legacy is not capable of supporting native storage type {NativeStorageType}");
+						Diag.Dug(ex);
+						throw ex;	
 					}
 
 					return LegacySerializeValue(propertyValue);
@@ -786,18 +786,24 @@ namespace BlackbirdSql.Common.Extensions.Options
 
 							if (!TypeConverter!.CanConvertTo(type))
 							{
-								throw new InvalidOperationException($"TypeConverter {TypeConverter!.GetType().FullName} can not convert {PropertyInfo.PropertyType.FullName} to {NativeStorageType} ({type.Name})");
+								InvalidOperationException ex = new($"TypeConverter {TypeConverter!.GetType().FullName} can not convert {PropertyInfo.PropertyType.FullName} to {NativeStorageType} ({type.Name})");
+								Diag.Dug(ex);
+								throw ex;
 							}
 
 							object obj = TypeConverter!.ConvertTo(null, CultureInfo.InvariantCulture, propertyValue, type);
 							if (obj == null)
 							{
-								throw new InvalidOperationException($"TypeConverter {TypeConverter!.GetType().FullName} returned null converting from {PropertyInfo.PropertyType.FullName} to {NativeStorageType} ({type.Name}), which is not supported.");
+								InvalidOperationException ex = new($"TypeConverter {TypeConverter!.GetType().FullName} returned null converting from {PropertyInfo.PropertyType.FullName} to {NativeStorageType} ({type.Name}), which is not supported.");
+								Diag.Dug(ex);
+								throw ex;
 							}
 
 							if (!type.IsInstanceOfType(obj))
 							{
-								throw new InvalidOperationException($"TypeConverter {TypeConverter!.GetType().FullName} returned type {obj.GetType().FullName} when converting from {PropertyInfo.PropertyType.FullName} to {NativeStorageType} ({type.Name}).");
+								InvalidOperationException ex = new($"TypeConverter {TypeConverter!.GetType().FullName} returned type {obj.GetType().FullName} when converting from {PropertyInfo.PropertyType.FullName} to {NativeStorageType} ({type.Name}).");
+								Diag.Dug(ex);
+								throw ex;
 							}
 
 							if (flag)
@@ -813,8 +819,7 @@ namespace BlackbirdSql.Common.Extensions.Options
 							case NativeSettingsType.Int32:
 								if (propertyValue is Color)
 								{
-									Color val = (Color)propertyValue;
-									return val.ToArgb();
+									return ((Color)propertyValue).ToArgb();
 								}
 
 								break;
@@ -871,13 +876,17 @@ namespace BlackbirdSql.Common.Extensions.Options
 										return new MemoryStream();
 									}
 
-									throw new InvalidOperationException("Can not convert NativeStorageType of Binary to " + propertyValue!.GetType().FullName + " - property type must be byte[] or MemoryStream.");
+									InvalidOperationException ex = new("Can not convert NativeStorageType of Binary to " + propertyValue!.GetType().FullName + " - property type must be byte[] or MemoryStream.");
+									Diag.Dug(ex);
+									throw ex;
 								}
 						}
 
 						if (propertyValue == null)
 						{
-							throw new InvalidOperationException($"A null property value with SettingDataType of {DataType} is not supported.");
+							InvalidOperationException ex = new($"A null property value with SettingDataType of {DataType} is not supported.");
+							Diag.Dug(ex);
+							throw ex;
 						}
 
 						if (type.IsInstanceOfType(propertyValue))
@@ -909,9 +918,7 @@ namespace BlackbirdSql.Common.Extensions.Options
 		//
 		// Returns:
 		//     settingsStoreValue, converted to the property type.
-#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		protected virtual object ConvertStorageTypeToPropertyType<TOptMdl>(object settingsStoreValue, AbstractOptionModel<TOptMdl> baseOptionModel) where TOptMdl : AbstractOptionModel<TOptMdl>, new()
-#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
 		{
 			//IL_0259: Unknown result type (might be due to invalid IL or missing references)
 			Type type = PropertyInfo.PropertyType;
@@ -925,14 +932,18 @@ namespace BlackbirdSql.Common.Extensions.Options
 				case SettingDataType.Serialized:
 					if (NativeStorageType != NativeSettingsType.String)
 					{
-						throw new InvalidOperationException($"The SettingDataType of Serialized must be SettingsType.String. Was: {NativeStorageType}");
+						InvalidOperationException ex = new($"The SettingDataType of Serialized must be SettingsType.String. Was: {NativeStorageType}");
+						Diag.Dug(ex);
+						throw ex;
 					}
 
 					return baseOptionModel.DeserializeValue((string)settingsStoreValue, type, PropertyName);
 				case SettingDataType.Legacy:
 					if (NativeStorageType != NativeSettingsType.String)
 					{
-						throw new InvalidOperationException($"The SettingDataType of Legacy must be SettingsType.String. Was: {NativeStorageType}");
+						InvalidOperationException ex = new($"The SettingDataType of Legacy must be SettingsType.String. Was: {NativeStorageType}");
+						Diag.Dug(ex);
+						throw ex;
 					}
 
 					return LegacyDeserializeValue((string)settingsStoreValue, type);
@@ -948,7 +959,9 @@ namespace BlackbirdSql.Common.Extensions.Options
 
 						if (!TypeConverter!.CanConvertFrom(type2))
 						{
-							throw new InvalidOperationException("TypeConverter " + TypeConverter!.GetType().FullName + " can not convert from " + type2.Name + " to " + type.FullName + ".");
+							InvalidOperationException ex = new("TypeConverter " + TypeConverter!.GetType().FullName + " can not convert from " + type2.Name + " to " + type.FullName + ".");
+							Diag.Dug(ex);
+							throw ex;
 						}
 
 						object obj = TypeConverter!.ConvertFrom(null, CultureInfo.InvariantCulture, settingsStoreValue);
@@ -956,7 +969,9 @@ namespace BlackbirdSql.Common.Extensions.Options
 						{
 							if (type.IsValueType)
 							{
-								throw new InvalidOperationException("TypeConverter " + TypeConverter!.GetType().FullName + " attempt to convert from " + type2.Name + " to " + type.FullName + " returned null for a value type.");
+								InvalidOperationException ex = new("TypeConverter " + TypeConverter!.GetType().FullName + " attempt to convert from " + type2.Name + " to " + type.FullName + " returned null for a value type.");
+								Diag.Dug(ex);
+								throw ex;
 							}
 
 							return obj;
@@ -964,7 +979,9 @@ namespace BlackbirdSql.Common.Extensions.Options
 
 						if (!type.IsInstanceOfType(obj))
 						{
-							throw new InvalidOperationException("TypeConverter " + TypeConverter!.GetType().FullName + " attempt to convert from " + type2.Name + " to " + type.FullName + " returned incompatible type " + obj.GetType().FullName + ".");
+							InvalidOperationException ex = new("TypeConverter " + TypeConverter!.GetType().FullName + " attempt to convert from " + type2.Name + " to " + type.FullName + " returned incompatible type " + obj.GetType().FullName + ".");
+							Diag.Dug(ex);
+							throw ex;
 						}
 
 						return obj;
@@ -1009,7 +1026,9 @@ namespace BlackbirdSql.Common.Extensions.Options
 								return ((MemoryStream)settingsStoreValue).ToArray();
 							}
 
-							throw new InvalidCastException("Can not convert SettingsType.Binary to " + type.FullName + " - property type must be byte[] or MemoryStream.");
+							InvalidCastException ex = new("Can not convert SettingsType.Binary to " + type.FullName + " - property type must be byte[] or MemoryStream.");
+							Diag.Dug(ex);
+							throw ex;
 					}
 
 					if (type.IsInstanceOfType(settingsStoreValue))

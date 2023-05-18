@@ -5,7 +5,7 @@
 using System;
 using System.IO;
 
-namespace BlackbirdSql.Common.Extensions.Options
+namespace BlackbirdSql.Common.Options
 {
 	//
 	// Summary:

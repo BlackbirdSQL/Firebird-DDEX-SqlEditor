@@ -15,6 +15,8 @@ using System;
 using System.Text;
 
 
+using BlackbirdSql.Common;
+
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 internal class BinaryEncoding : Encoding
@@ -34,12 +36,16 @@ internal class BinaryEncoding : Encoding
 		// Diag.Trace();
 		if (data == null)
 		{
-			throw new ArgumentNullException();
+			ArgumentNullException ex = new();
+			Diag.Dug(ex);
+			throw ex;
 		}
 
 		if (index < 0 || count < 0 || dataLength - index < count)
 		{
-			throw new ArgumentOutOfRangeException();
+			ArgumentOutOfRangeException ex = new();
+			Diag.Dug(ex);
+			throw ex;
 		}
 	}
 
@@ -61,11 +67,15 @@ internal class BinaryEncoding : Encoding
 
 		if (index < 0 || index > bytes.Length)
 		{
-			throw new ArgumentOutOfRangeException();
+			ArgumentOutOfRangeException ex = new();
+			Diag.Dug(ex);
+			throw ex;
 		}
 		if (bytes.Length - index < charCount)
 		{
-			throw new ArgumentException();
+			ArgumentException ex = new();
+			Diag.Dug(ex);
+			throw ex;
 		}
 
 		var charEnd = charIndex + charCount;
@@ -83,11 +93,15 @@ internal class BinaryEncoding : Encoding
 
 		if (index < 0 || index > bytes.Length)
 		{
-			throw new ArgumentOutOfRangeException();
+			ArgumentOutOfRangeException ex = new();
+			Diag.Dug(ex);
+			throw ex;
 		}
 		if (bytes.Length - index < charCount)
 		{
-			throw new ArgumentException();
+			ArgumentException ex = new();
+			Diag.Dug(ex);
+			throw ex;
 		}
 
 		var charEnd = charIndex + charCount;
@@ -112,11 +126,15 @@ internal class BinaryEncoding : Encoding
 
 		if (charIndex < 0 || charIndex > chars.Length)
 		{
-			throw new ArgumentOutOfRangeException();
+			ArgumentOutOfRangeException ex = new();
+			Diag.Dug(ex);
+			throw ex;
 		}
 		if (chars.Length - charIndex < count)
 		{
-			throw new ArgumentException();
+			ArgumentException ex = new();
+			Diag.Dug(ex);
+			throw ex;
 		}
 
 		var byteEnd = index + count;

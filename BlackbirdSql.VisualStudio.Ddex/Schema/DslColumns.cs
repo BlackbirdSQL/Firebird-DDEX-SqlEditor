@@ -27,7 +27,9 @@ using System.Text;
 
 using FirebirdSql.Data.FirebirdClient;
 
-using BlackbirdSql.Common.Extensions;
+using BlackbirdSql.VisualStudio.Ddex.Extensions;
+
+
 
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 

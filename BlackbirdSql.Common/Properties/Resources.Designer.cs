@@ -61,11 +61,191 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to QueryDesignerDocument_NewQueryCaption.
+        /// </summary>
+        internal static string QueryDesignerDocument_NewQueryCaption {
+            get {
+                return ResourceManager.GetString("QueryDesignerDocument_NewQueryCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to QueryDesignerDocument_RetrieveDataCaption.
+        /// </summary>
+        internal static string QueryDesignerDocument_RetrieveDataCaption {
+            get {
+                return ResourceManager.GetString("QueryDesignerDocument_RetrieveDataCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SqlConnectionSupport_UnsupportedFutureVersion.
+        /// </summary>
+        internal static string SqlConnectionSupport_UnsupportedFutureVersion {
+            get {
+                return ResourceManager.GetString("SqlConnectionSupport_UnsupportedFutureVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SqlTextEditorDocument_DdlTriggersNotSupported.
+        /// </summary>
+        internal static string SqlTextEditorDocument_DdlTriggersNotSupported {
+            get {
+                return ResourceManager.GetString("SqlTextEditorDocument_DdlTriggersNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SqlTextEditorDocument_NumberedProceduresNotSupported.
+        /// </summary>
+        internal static string SqlTextEditorDocument_NumberedProceduresNotSupported {
+            get {
+                return ResourceManager.GetString("SqlTextEditorDocument_NumberedProceduresNotSupported", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SqlTextEditorDocument_UnsupportedObjectType.
+        /// </summary>
+        internal static string SqlTextEditorDocument_UnsupportedObjectType {
+            get {
+                return ResourceManager.GetString("SqlTextEditorDocument_UnsupportedObjectType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SqlTextEditorDocument_UnsupportedStatementType.
+        /// </summary>
+        internal static string SqlTextEditorDocument_UnsupportedStatementType {
+            get {
+                return ResourceManager.GetString("SqlTextEditorDocument_UnsupportedStatementType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SqlViewNode_Type_Function.
+        /// </summary>
+        internal static string SqlViewNode_Type_Function {
+            get {
+                return ResourceManager.GetString("SqlViewNode_Type_Function", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SqlViewNode_Type_StoredProcedure.
+        /// </summary>
+        internal static string SqlViewNode_Type_StoredProcedure {
+            get {
+                return ResourceManager.GetString("SqlViewNode_Type_StoredProcedure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SqlViewNode_Type_Trigger.
+        /// </summary>
+        internal static string SqlViewNode_Type_Trigger {
+            get {
+                return ResourceManager.GetString("SqlViewNode_Type_Trigger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SqlViewNode_Type_ViewTrigger.
+        /// </summary>
+        internal static string SqlViewNode_Type_ViewTrigger {
+            get {
+                return ResourceManager.GetString("SqlViewNode_Type_ViewTrigger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SqlViewTextObjectCommandProvider_CancelExecution.
+        /// </summary>
+        internal static string SqlViewTextObjectCommandProvider_CancelExecution {
+            get {
+                return ResourceManager.GetString("SqlViewTextObjectCommandProvider_CancelExecution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SqlViewTextObjectCommandProvider_NoSourceAvailable.
+        /// </summary>
+        internal static string SqlViewTextObjectCommandProvider_NoSourceAvailable {
+            get {
+                return ResourceManager.GetString("SqlViewTextObjectCommandProvider_NoSourceAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SqlViewTextObjectCommandProvider_Open.
+        /// </summary>
+        internal static string SqlViewTextObjectCommandProvider_Open {
+            get {
+                return ResourceManager.GetString("SqlViewTextObjectCommandProvider_Open", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The document moniker path name is too long.
+        /// </summary>
+        internal static string SqlViewTextObjectCommandProvider_PathTooLong {
+            get {
+                return ResourceManager.GetString("SqlViewTextObjectCommandProvider_PathTooLong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SqlViewTextObjectCommandProvider_PromptSaveObject.
+        /// </summary>
+        internal static string SqlViewTextObjectCommandProvider_PromptSaveObject {
+            get {
+                return ResourceManager.GetString("SqlViewTextObjectCommandProvider_PromptSaveObject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SqlViewTextObjectCommandProvider_StepIntoFunction.
+        /// </summary>
+        internal static string SqlViewTextObjectCommandProvider_StepIntoFunction {
+            get {
+                return ResourceManager.GetString("SqlViewTextObjectCommandProvider_StepIntoFunction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SqlViewTextObjectCommandProvider_StepIntoStoredProcedure.
+        /// </summary>
+        internal static string SqlViewTextObjectCommandProvider_StepIntoStoredProcedure {
+            get {
+                return ResourceManager.GetString("SqlViewTextObjectCommandProvider_StepIntoStoredProcedure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TextEditorDocument_FailedToLoadText.
+        /// </summary>
+        internal static string TextEditorDocument_FailedToLoadText {
+            get {
+                return ResourceManager.GetString("TextEditorDocument_FailedToLoadText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &amp;Open Script.
         /// </summary>
         internal static string TextObjectCommandProvider_Open {
             get {
                 return ResourceManager.GetString("TextObjectCommandProvider_Open", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DataToolsDocument_Caption.
+        /// </summary>
+        internal static string ToolsDocument_Caption {
+            get {
+                return ResourceManager.GetString("ToolsDocument_Caption", resourceCulture);
             }
         }
     }

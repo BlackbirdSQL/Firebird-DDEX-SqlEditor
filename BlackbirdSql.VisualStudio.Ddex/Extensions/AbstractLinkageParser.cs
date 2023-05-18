@@ -10,18 +10,18 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.TaskStatusCenter;
 
 using FirebirdSql.Data.FirebirdClient;
 
+using BlackbirdSql.Common;
+using BlackbirdSql.Common.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Schema;
-using BlackbirdSql.VisualStudio.Ddex.Configuration;
-using Microsoft.VisualStudio.RpcContracts;
-using Extensibility;
 
-namespace BlackbirdSql.Common.Extensions;
+
+
+
+namespace BlackbirdSql.VisualStudio.Ddex.Extensions;
 
 
 
@@ -72,7 +72,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 	/// <summary>
 	/// True when async operations are active else false.
 	/// </summary>
-	protected bool _AsyncActive = false;
+	protected int _AsyncCardinal = 0;
 
 	/// <summary>
 	/// Handle to the async task if it exists.
@@ -156,7 +156,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 	/// Increment of UI thread calls. Once _SyncActive is back down to zero, async
 	/// operations will continue provided 'Enabled' is still true.
 	/// </summary>
-	protected int _SyncActive = 0;
+	protected int _SyncCardinal = 0;
 
 	/// <summary>
 	/// Handle to the IDE ITaskHandler.
@@ -180,12 +180,15 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 	// =========================================================================================================
 
 
+	public bool AsyncActive { get { return _AsyncCardinal != 0; } }
+
+
 	/// <summary>
 	/// Getter indicating wether or not the UI thread can and should resume linkage operations.
 	/// </summary>
 	public bool ClearToLoad
 	{
-		get { return (_SyncActive == 0 && !Loaded); }
+		get { return (!SyncActive && !Loaded); }
 	}
 
 
@@ -196,7 +199,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 	{
 		get
 		{
-			return (_Enabled && !_AsyncActive && !Loaded && _SyncActive == 0
+			return (_Enabled && !AsyncActive && !Loaded && !SyncActive
 				&& !_AsyncToken.IsCancellationRequested && ConnectionActive );
 		}
 	}
@@ -259,6 +262,9 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 	/// Getter indicating whether or not the parser has fetched the generators.
 	/// </summary>
 	public bool SequencesPopulated { get { return _LinkStage >= EnumLinkStage.SequencesPopulated; } }
+
+
+	public bool SyncActive { get { return _SyncCardinal != 0; } }
 
 
 	#endregion Property accessors
@@ -1083,7 +1089,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 		}
 		else
 		{
-			if (_AsyncActive)
+			if (AsyncActive)
 			{
 				// If it's a user cancel request.
 				if (!_Enabled)

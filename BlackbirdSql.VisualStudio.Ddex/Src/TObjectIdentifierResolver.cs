@@ -63,7 +63,9 @@ internal class TObjectIdentifierResolver : DataObjectIdentifierResolver
 		if (typeName == null)
 		{
 			Diag.Dug(true, "Null argument: typeName");
-			throw new ArgumentNullException("typeName");
+			ArgumentNullException ex = new("typeName");
+			Diag.Dug(ex);
+			throw ex;
 		}
 
 		/*
@@ -88,8 +90,9 @@ internal class TObjectIdentifierResolver : DataObjectIdentifierResolver
 		int length = DslObjectTypes.GetIdentifierLength(typeName);
 		if (length == -1)
 		{
-			Diag.Dug(true, "Not supported");
-			throw new NotSupportedException();
+			NotSupportedException ex = new();
+			Diag.Dug(ex);
+			throw ex;
 		}
 		object[] identifier = new object[length];
 
@@ -129,15 +132,17 @@ internal class TObjectIdentifierResolver : DataObjectIdentifierResolver
 
 		if (typeName == null)
 		{
-			Diag.Dug(true, "Null argument: typeName");
-			throw new ArgumentNullException("typeName");
+			ArgumentNullException ex = new("typeName");
+			Diag.Dug(ex);
+			throw ex;
 		}
 
 		int length = DslObjectTypes.GetIdentifierLength(typeName);
 		if (length == -1)
 		{
-			Diag.Dug(true, "Not supported");
-			throw new NotSupportedException();
+			NotSupportedException ex = new();
+			Diag.Dug(ex);
+			throw ex;
 		}
 		// Create an identifier array of the correct full length based on
 		// the object type
@@ -152,8 +157,9 @@ internal class TObjectIdentifierResolver : DataObjectIdentifierResolver
 		{
 			if (partialIdentifier.Length > length)
 			{
-				Diag.Dug(true, "Invalid operation");
-				throw new InvalidOperationException();
+				InvalidOperationException ex = new();
+				Diag.Dug(ex);
+				throw ex;
 			}
 
 			partialIdentifier.CopyTo(identifier, length - partialIdentifier.Length);

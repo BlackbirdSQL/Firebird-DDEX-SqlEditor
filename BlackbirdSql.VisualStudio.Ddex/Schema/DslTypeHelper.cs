@@ -21,6 +21,10 @@ using System;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Types;
 
+using BlackbirdSql.Common;
+
+
+
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 internal static class DslTypeHelper
@@ -337,7 +341,9 @@ internal static class DslTypeHelper
 #endif
 		else
 		{
-			throw new ArgumentException($"Unknown type: {type}.");
+			ArgumentException ex = new($"Unknown type: {type}.");
+			Diag.Dug(ex);
+			throw ex;
 		}
 	}
 

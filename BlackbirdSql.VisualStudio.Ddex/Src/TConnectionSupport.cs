@@ -33,7 +33,7 @@ internal class TConnectionSupport : AdoDotNetConnectionSupport
 
 	private class TCommand : DataCommand
 	{
-		private TConnectionSupport ConnectionSupport => base.Site.GetService(typeof(IVsDataConnectionSupport)) as TConnectionSupport;
+		private TConnectionSupport ConnectionSupport => Site.GetService(typeof(IVsDataConnectionSupport)) as TConnectionSupport;
 
 		public TCommand()
 			: base()
@@ -154,7 +154,7 @@ internal class TConnectionSupport : AdoDotNetConnectionSupport
 		*/
 		if (serviceType == typeof(IVsDataCommand))
 		{
-			return new TCommand(base.Site);
+			return new TCommand(Site);
 		}
 
 
@@ -190,7 +190,7 @@ internal class TConnectionSupport : AdoDotNetConnectionSupport
 				return true;
 
 			IVsDataConnectionUIProperties vsDataConnectionUIProperties =
-				((IVsDataSiteableObject<IVsDataProvider>)this).Site.CreateObject<IVsDataConnectionUIProperties>(base.Site.Source);
+				((IVsDataSiteableObject<IVsDataProvider>)this).Site.CreateObject<IVsDataConnectionUIProperties>(Site.Source);
 
 			vsDataConnectionUIProperties.Parse(ConnectionString);
 

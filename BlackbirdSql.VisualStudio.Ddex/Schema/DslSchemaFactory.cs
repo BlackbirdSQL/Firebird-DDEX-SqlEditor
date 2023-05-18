@@ -30,7 +30,7 @@ using System.Threading.Tasks;
 using FirebirdSql.Data.FirebirdClient;
 
 using BlackbirdSql.Common;
-using BlackbirdSql.Common.Extensions;
+using BlackbirdSql.VisualStudio.Ddex.Extensions;
 
 
 
@@ -409,7 +409,9 @@ internal sealed class DslSchemaFactory
 				break;
 			default:
 				parser.SyncExit();
-				throw new NotSupportedException("Unsupported population mechanism");
+				NotSupportedException ex = new("Unsupported population mechanism");
+				Diag.Dug(ex);
+				throw ex;
 		}
 
 		parser.SyncExit();

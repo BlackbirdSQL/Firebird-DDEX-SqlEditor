@@ -3,31 +3,27 @@
 
 using System.Runtime.InteropServices;
 
-using BlackbirdSql.Common.Extensions.Commands;
-
-
-
-namespace BlackbirdSql.VisualStudio.Ddex.Extensions
+namespace BlackbirdSql.Common.Commands
 {
-	[Guid(DataToolsCommands.UniversalCommandProviderGuid)]
+	[Guid(DataToolsCommands.SystemQueryCommandProviderGuid)]
 
 
 	// =========================================================================================================
-	//										UniversalQueryCommandProvider Class
+	//										SystemQueryCommandProvider Class
 	//
 	/// <summary>
 	/// Implements the new query command on System Object nodes
 	/// </summary>
 	// =========================================================================================================
-	internal class UniversalCommandProvider : AbstractCommandProvider
+	internal class SystemCommandProvider : AbstractCommandProvider
 	{
 
 		/// <summary>
-		/// Identifies this <see cref="AbstractCommandProvider"/> as spawned off of a General Object SE node
+		/// Identifies this <see cref="AbstractCommandProvider"/> as spawned off of a System Object SE node
 		/// </summary>
 		protected override DataToolsCommands.DataObjectType CommandObjectType
 		{
-			get { return DataToolsCommands.DataObjectType.None; }
+			get { return DataToolsCommands.DataObjectType.System; }
 		}
 
 	}

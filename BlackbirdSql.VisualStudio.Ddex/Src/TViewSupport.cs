@@ -15,7 +15,7 @@ using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using BlackbirdSql.Common;
 using Microsoft.VisualStudio.Shell;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using BlackbirdSql.Common.Providers;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -26,13 +26,16 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 /// <summary>
 /// Implementation of <see cref="IVsDataViewSupport"/> and <see cref="IVsDataSupportImportResolver"/>
 /// and <see cref="IVsDataViewIconProvider"/>interfaces.
+/// Partly plagiarized off of Microsoft.VisualStudio.Data.Providers.SqlServer.SqlViewSupport.
 /// </summary>
 // =========================================================================================================
 internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDataViewIconProvider
 {
-	string _IconName = null;
-	string _IconPrefix = null;
-	Icon _Icon = null;
+	private static int _ViewCount;
+
+	private static string _IconName = null;
+	private static string _IconPrefix = null;
+	private static Icon _Icon = null;
 
 
 	string IconPrefix
@@ -112,6 +115,18 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 	// =========================================================================================================
 
 
+	public override void Close()
+	{
+		_ViewCount--;
+		_ = _ViewCount;
+
+		IVsDataConnection connection = ViewHierarchy.ExplorerConnection.Connection;
+
+		if (connection != null)
+			connection.StateChanged -= InitializeProperties;
+	}
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Creates a service for the specified type.
@@ -120,19 +135,18 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 	protected override object CreateService(Type serviceType)
 	{
 		// Diag.Trace(serviceType.FullName);
-		// TBC
+
 		/*
 		if (serviceType == typeof(IVsDataViewCommandProvider))
 		{
-			return new ViewDatabaseCommandProvider();
+			return new TViewCommandProvider();
 		}
 
 		if (serviceType == typeof(IVsDataViewDocumentProvider))
 		{
-			return new ViewDocumentProvider();
+			return new TViewDocumentProvider();
 		}
 		*/
-
 
 		object service = base.CreateService(serviceType);
 
@@ -180,6 +194,35 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 
 		return type.Assembly.GetManifestResourceStream(resource);
 	}
+
+
+
+	public override void Initialize()
+	{
+		IVsDataConnection connection = ViewHierarchy.ExplorerConnection.Connection;
+		if (connection.State == DataConnectionState.Open)
+		{
+			InitializeProperties();
+		}
+		else
+		{
+			connection.StateChanged += InitializeProperties;
+		}
+
+		_ViewCount++;
+	}
+
+
+	#endregion Method Implementations
+
+
+
+
+
+	// =========================================================================================================
+	#region Methods - TViewSupport
+	// =========================================================================================================
+
 
 
 
@@ -241,16 +284,6 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 		return icon;
 	}
 
-
-	#endregion Method Implementations
-
-
-
-
-
-	// =========================================================================================================
-	#region Methods - TViewSupport
-	// =========================================================================================================
 
 
 	// ---------------------------------------------------------------------------------
@@ -402,6 +435,34 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 		node.Expand();
 
 		return true;
+	}
+
+
+	private void InitializeProperties(object sender, DataConnectionStateChangedEventArgs e)
+	{
+		if (e.NewState == DataConnectionState.Open)
+		{
+			ViewHierarchy.ExplorerConnection.Connection.StateChanged -= InitializeProperties;
+			InitializeProperties();
+		}
+	}
+
+	private void InitializeProperties()
+	{
+		IVsDataConnection connection = ViewHierarchy.ExplorerConnection.Connection;
+		if (connection.State == DataConnectionState.Open)
+		{
+			IVsDataSourceInformation vsDataSourceInformation = connection.GetService(typeof(IVsDataSourceInformation)) as IVsDataSourceInformation;
+			// ViewHierarchy.PersistentProperties["BackendType"] = vsDataSourceInformation["BackendType"];
+			SqlMonikerHelper sqlMoniker = new()
+			{
+				Server = vsDataSourceInformation["DataSourceName"] as string,
+				Database = Path.GetFileNameWithoutExtension(vsDataSourceInformation["DefaultCatalog"] as string),
+				User = vsDataSourceInformation["UserId"] as string
+			};
+			ViewHierarchy.PersistentProperties["MkDocumentPrefix"] = sqlMoniker.ToString();
+
+		}
 	}
 
 	#endregion Methods

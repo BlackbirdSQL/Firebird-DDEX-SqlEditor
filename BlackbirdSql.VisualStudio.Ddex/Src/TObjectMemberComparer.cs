@@ -93,15 +93,21 @@ internal sealed class TObjectMemberComparer : DataObjectMemberComparer
 		{
 			if (typeName == null)
 			{
-				throw new ArgumentNullException(nameof(typeName), "Compare(string typeName, object[] identifier, int identifierPart, object value)");
+				ArgumentNullException ex = new(nameof(typeName), "Compare(string typeName, object[] identifier, int identifierPart, object value)");
+				Diag.Dug(ex);
+				throw ex;
 			}
 			if (identifier == null)
 			{
-				throw new ArgumentNullException(nameof(identifier), "Compare(string typeName, object[] identifier, int identifierPart, object value)");
+				ArgumentNullException ex = new(nameof(identifier), "Compare(string typeName, object[] identifier, int identifierPart, object value)");
+				Diag.Dug(ex);
+				throw ex;
 			}
 			if (identifierPart < 0 || identifierPart >= identifier.Length)
 			{
-				throw new ArgumentOutOfRangeException(nameof(identifierPart), "Compare(string typeName, object[] identifier, int identifierPart, object value)");
+				ArgumentOutOfRangeException ex = new(nameof(identifierPart), "Compare(string typeName, object[] identifier, int identifierPart, object value)");
+				Diag.Dug(ex);
+				throw ex;
 			}
 
 
@@ -111,7 +117,9 @@ internal sealed class TObjectMemberComparer : DataObjectMemberComparer
 
 				if (value1 == null)
 				{
-					throw new ArgumentException("Compare(string typeName, object[] identifier, int identifierPart, object value)", "identifier[" + identifierPart.ToString() + "]");
+					ArgumentException ex = new("Compare(string typeName, object[] identifier, int identifierPart, object value)", "identifier[" + identifierPart.ToString() + "]");
+					Diag.Dug(ex);
+					throw ex;
 				}
 			}
 			if (value != null && !DBNull.Value.Equals(value))
@@ -120,7 +128,9 @@ internal sealed class TObjectMemberComparer : DataObjectMemberComparer
 
 				if (value2 == null)
 				{
-					throw new ArgumentException("Compare(string typeName, object[] identifier, int identifierPart, object value)", nameof(value));
+					ArgumentException ex = new("Compare(string typeName, object[] identifier, int identifierPart, object value)", nameof(value));
+					Diag.Dug(ex);
+					throw ex;
 				}
 			}
 

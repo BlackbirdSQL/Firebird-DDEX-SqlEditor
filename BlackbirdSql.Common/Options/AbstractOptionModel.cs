@@ -9,13 +9,14 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+
 using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Settings;
 using Microsoft.VisualStudio.Threading;
 
 
-namespace BlackbirdSql.Common.Extensions.Options
+namespace BlackbirdSql.Common.Options
 {
 	public abstract class AbstractOptionModel<T> where T : AbstractOptionModel<T>, new()
 	{

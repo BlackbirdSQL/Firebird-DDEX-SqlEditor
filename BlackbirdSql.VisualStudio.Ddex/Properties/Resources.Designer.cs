@@ -169,6 +169,123 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Column Expression.
+        /// </summary>
+        internal static string SqlViewNode_Caption_Column {
+            get {
+                return ResourceManager.GetString("SqlViewNode_Caption_Column", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Foreign Key Expression.
+        /// </summary>
+        internal static string SqlViewNode_Caption_ForeignKey {
+            get {
+                return ResourceManager.GetString("SqlViewNode_Caption_ForeignKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Foreign Key Column Expression.
+        /// </summary>
+        internal static string SqlViewNode_Caption_ForeignKeyColumn {
+            get {
+                return ResourceManager.GetString("SqlViewNode_Caption_ForeignKeyColumn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Function Source.
+        /// </summary>
+        internal static string SqlViewNode_Caption_Function {
+            get {
+                return ResourceManager.GetString("SqlViewNode_Caption_Function", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Function Parameter Expression.
+        /// </summary>
+        internal static string SqlViewNode_Caption_FunctionParameter {
+            get {
+                return ResourceManager.GetString("SqlViewNode_Caption_FunctionParameter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Index Expression.
+        /// </summary>
+        internal static string SqlViewNode_Caption_Index {
+            get {
+                return ResourceManager.GetString("SqlViewNode_Caption_Index", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Index Column Expression.
+        /// </summary>
+        internal static string SqlViewNode_Caption_IndexColumn {
+            get {
+                return ResourceManager.GetString("SqlViewNode_Caption_IndexColumn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Procedure Source.
+        /// </summary>
+        internal static string SqlViewNode_Caption_StoredProcedure {
+            get {
+                return ResourceManager.GetString("SqlViewNode_Caption_StoredProcedure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Procedure Parameter Expression.
+        /// </summary>
+        internal static string SqlViewNode_Caption_StoredProcedureColumn {
+            get {
+                return ResourceManager.GetString("SqlViewNode_Caption_StoredProcedureColumn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Procedure Parameter Expression.
+        /// </summary>
+        internal static string SqlViewNode_Caption_StoredProcedureParameter {
+            get {
+                return ResourceManager.GetString("SqlViewNode_Caption_StoredProcedureParameter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trigger Expression.
+        /// </summary>
+        internal static string SqlViewNode_Caption_Trigger {
+            get {
+                return ResourceManager.GetString("SqlViewNode_Caption_Trigger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to TriggerColumn Expression.
+        /// </summary>
+        internal static string SqlViewNode_Caption_TriggerColumn {
+            get {
+                return ResourceManager.GetString("SqlViewNode_Caption_TriggerColumn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to View Definition.
+        /// </summary>
+        internal static string SqlViewNode_Caption_View {
+            get {
+                return ResourceManager.GetString("SqlViewNode_Caption_View", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to BlackbirdSql: Failed to load the text from the object..
         /// </summary>
         internal static string TextEditorDocument_FailedToLoadText {

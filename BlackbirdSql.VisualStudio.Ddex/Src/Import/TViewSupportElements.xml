@@ -637,6 +637,9 @@
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Identity$(systemType)Trigger.ico" when="{Trigger.IS_IDENTITY}" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Trigger.ico" assembly="" />
 				<PropertiesRef name="TplPropertiesTrigger" />
+				<Commands>
+					<CommandRef name="CommandTextOpenScript" />
+				</Commands>
 				<Children>
 					<SelectionRef name="TplSelectionColumn" arguments="TriggerColumn,Trigger,$(systemType),{Trigger.TABLE_CATALOG},,{Trigger.TABLE_SCHEMA},,{Trigger.TRIGGER_NAME}" />
 				</Children>

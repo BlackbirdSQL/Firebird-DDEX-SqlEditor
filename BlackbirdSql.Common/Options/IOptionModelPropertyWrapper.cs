@@ -4,7 +4,7 @@
 
 using Microsoft.VisualStudio.Settings;
 
-namespace BlackbirdSql.Common.Extensions.Options
+namespace BlackbirdSql.Common.Options
 {
 	public interface IOptionModelPropertyWrapper
 	{

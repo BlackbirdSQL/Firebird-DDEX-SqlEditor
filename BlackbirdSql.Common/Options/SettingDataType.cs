@@ -2,7 +2,7 @@
 // Plagiarized from Community.VisualStudio.Toolkit extension
 //
 
-namespace BlackbirdSql.Common.Extensions.Options
+namespace BlackbirdSql.Common.Options
 {
 	//
 	// Summary:

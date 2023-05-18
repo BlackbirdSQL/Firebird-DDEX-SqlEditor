@@ -4,7 +4,7 @@
 
 using System;
 
-namespace BlackbirdSql.Common.Extensions.Options
+namespace BlackbirdSql.Common.Options
 {
 	//
 	// Summary:

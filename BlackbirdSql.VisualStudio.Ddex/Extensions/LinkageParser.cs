@@ -14,7 +14,12 @@ using Microsoft.VisualStudio.TaskStatusCenter;
 
 using FirebirdSql.Data.FirebirdClient;
 
-namespace BlackbirdSql.Common.Extensions;
+using BlackbirdSql.Common;
+
+
+
+
+namespace BlackbirdSql.VisualStudio.Ddex.Extensions;
 
 
 
@@ -114,6 +119,7 @@ internal class LinkageParser : AbstractLinkageParser
 		if (delay == 0 || multiplier == 0)
 			return true;
 
+
 		for (int i = 0; i < multiplier; i++)
 		{
 			Thread.Sleep(delay);
@@ -122,7 +128,9 @@ internal class LinkageParser : AbstractLinkageParser
 				_Enabled = false;
 
 			if (!_Enabled || asyncToken.IsCancellationRequested || !ConnectionActive)
+			{
 				return false;
+			}
 		}
 
 		return true;
@@ -154,9 +162,9 @@ internal class LinkageParser : AbstractLinkageParser
 		if (!ClearToLoadAsync)
 			return false;
 
-		_AsyncActive = true;
+		_AsyncCardinal = 1;
 
-		UpdateStatusBar(_LinkStage, _AsyncActive);
+		UpdateStatusBar(_LinkStage, AsyncActive);
 
 		IVsTaskStatusCenterService tsc = ServiceProvider.GetGlobalServiceAsync<SVsTaskStatusCenterService,
 			IVsTaskStatusCenterService>(swallowExceptions: false).Result;
@@ -174,25 +182,31 @@ internal class LinkageParser : AbstractLinkageParser
 		_AsyncTokenSource = new();
 		_AsyncToken = _AsyncTokenSource.Token;
 
+
 		_AsyncTask = Task.Factory.StartNew(() =>
 		{
-			try
+			if (!_AsyncTokenSource.IsCancellationRequested)
 			{
-				if (AsyncDelay(delay, multiplier, _AsyncToken, _TaskHandler.UserCancellation))
-					PopulateLinkageTables(_AsyncToken, _TaskHandler.UserCancellation);
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-				throw;
+				try
+				{
+					_AsyncCardinal++;
+					if (AsyncDelay(delay, multiplier, _AsyncToken, _TaskHandler.UserCancellation))
+						PopulateLinkageTables(_AsyncToken, _TaskHandler.UserCancellation);
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex);
+					throw;
+				}
 			}
 
 			return AsyncExit();
 		},
-			default, TaskCreationOptions.LongRunning | TaskCreationOptions.AttachedToParent, TaskScheduler.Default);
+		default, TaskCreationOptions.LongRunning | TaskCreationOptions.AttachedToParent, TaskScheduler.Default);
 
 
 		_TaskHandler.RegisterTask(_AsyncTask);
+
 
 		return true;
 	}
@@ -209,12 +223,41 @@ internal class LinkageParser : AbstractLinkageParser
 		// User requested this cancellation so UpdateStatusBar will be placed on UI thread
 		// queue, but as fire and forget so we're okay here.
 		if (!_Enabled)
-			UpdateStatusBar(_LinkStage, _AsyncActive);
+			UpdateStatusBar(_LinkStage, AsyncActive);
 
-		_AsyncActive = false;
+		_AsyncCardinal = 0;
 
 		// _TaskHandler = null;
 		// _ProgressData = default;
+
+
+		// Ok so a little nasty here. Even though we (the async task) are run on a thread in the pool,
+		// the actual thread manager process that carries us as a payload and launches us, does so on
+		// the UI thread. So if a sync operation is executed it may wait for an async operation (us)
+		// that has not yet launched, and the thread manager 'launcher' carrying us as a payload may be
+		// behind the sync op on the UI thread.
+		// So we may have been cancelled before we were actually launched and running and in the interim
+		// a sync operation entered, cancelled us, executed and then on the way out should have restarted
+		// us.
+		// But on the way out the completed sync op could not relaunch us asynchronously because we were
+		// a payload waiting to be launched by the thread manager on the ui thread.
+		// So we were already cancelled before we were launched, and the sync op may be done and dusted.
+		// In that case in reality we were a go to run. So in this case we'll launch ourselves again if
+		// it's an all clear.
+		// This scenario can easily be reproduced when we perform a GetCurrentMemory() or
+		// GetActiveUsers() db sync request.
+
+		if (!SyncActive && _LinkStage < EnumLinkStage.Completed && _Enabled)
+		{
+			if (_AsyncToken.IsCancellationRequested)
+			{
+				_AsyncTokenSource.Dispose();
+				_AsyncTokenSource = new();
+				_AsyncToken = _AsyncTokenSource.Token;
+			}
+			AsyncExecute();
+		}
+
 
 		return true;
 	}
@@ -269,7 +312,7 @@ internal class LinkageParser : AbstractLinkageParser
 
 		SyncEnter();
 
-		UpdateStatusBar(_LinkStage, _AsyncActive);
+		UpdateStatusBar(_LinkStage, AsyncActive);
 
 		IVsTaskStatusCenterService tsc = ServiceProvider.GetGlobalServiceAsync<SVsTaskStatusCenterService, IVsTaskStatusCenterService>(swallowExceptions: false).Result;
 
@@ -323,7 +366,6 @@ internal class LinkageParser : AbstractLinkageParser
 	protected bool PopulateLinkageTables(CancellationToken asyncToken = default,
 		CancellationToken userToken = default)
 	{
-
 		if (_Connection == null)
 		{
 			ObjectDisposedException ex = new("Connection is null");
@@ -341,14 +383,14 @@ internal class LinkageParser : AbstractLinkageParser
 		{
 			GetRawGeneratorSchema();
 
-			if (_AsyncActive && userToken.IsCancellationRequested)
+			if (AsyncActive && userToken.IsCancellationRequested)
 				_Enabled = false;
 
 			TaskHandlerProgress("SELECT Generators", GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
 		}
 
 
-		if (_AsyncActive && (!_Enabled || asyncToken.IsCancellationRequested))
+		if (AsyncActive && (!_Enabled || asyncToken.IsCancellationRequested))
 			return false;
 
 		if (!ConnectionActive)
@@ -359,13 +401,13 @@ internal class LinkageParser : AbstractLinkageParser
 		{
 			GetRawTriggerDependenciesSchema();
 
-			if (_AsyncActive && userToken.IsCancellationRequested)
+			if (AsyncActive && userToken.IsCancellationRequested)
 				_Enabled = false;
 
 			TaskHandlerProgress("SELECT TriggerDependencies", GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
 		}
 
-		if (_AsyncActive && (!_Enabled || asyncToken.IsCancellationRequested))
+		if (AsyncActive && (!_Enabled || asyncToken.IsCancellationRequested))
 			return false;
 
 		if (!ConnectionActive)
@@ -375,13 +417,13 @@ internal class LinkageParser : AbstractLinkageParser
 		{
 			GetRawTriggerSchema();
 
-			if (_AsyncActive && userToken.IsCancellationRequested)
+			if (AsyncActive && userToken.IsCancellationRequested)
 				_Enabled = false;
 
 			TaskHandlerProgress("SELECT Triggers", GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
 		}
 
-		if (_AsyncActive && (!_Enabled || asyncToken.IsCancellationRequested))
+		if (AsyncActive && (!_Enabled || asyncToken.IsCancellationRequested))
 			return false;
 
 
@@ -389,14 +431,14 @@ internal class LinkageParser : AbstractLinkageParser
 		{
 			BuildSequenceTable();
 
-			if (_AsyncActive && userToken.IsCancellationRequested)
+			if (AsyncActive && userToken.IsCancellationRequested)
 				_Enabled = false;
 
 			TaskHandlerProgress("Populating Sequence Table", GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
 		}
 
 
-		if (_AsyncActive && (!_Enabled || asyncToken.IsCancellationRequested))
+		if (AsyncActive && (!_Enabled || asyncToken.IsCancellationRequested))
 			return false;
 
 		if (_LinkStage < EnumLinkStage.Completed)
@@ -406,7 +448,7 @@ internal class LinkageParser : AbstractLinkageParser
 
 		_Stopwatch = null;
 
-		UpdateStatusBar(_LinkStage, _AsyncActive);
+		UpdateStatusBar(_LinkStage, AsyncActive);
 
 		return true;
 	}
@@ -425,15 +467,29 @@ internal class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public bool SyncEnter()
 	{
-		_SyncActive++;
+		_SyncCardinal++;
 
-		if (_AsyncTask == null || _AsyncTask.IsCompleted)
+		try
 		{
-			return true;
-		}
+			if (_AsyncTask == null || _AsyncTask.IsCompleted)
+				return true;
 
-		_AsyncTokenSource.Cancel();
-		_AsyncTask.Wait();
+
+			_AsyncTokenSource.Cancel();
+
+			// _AsyncCardinal < 2: Async is still waiting in thread queue managed by UI thread so we flag
+			// it to cancel and leave.
+			// If we wait we'll deadlock because the launch is behind us.
+			if (_AsyncCardinal < 2)
+				return true;
+
+			_AsyncTask.Wait();
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
 
 		return true;
 	}
@@ -449,21 +505,22 @@ internal class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public void SyncExit()
 	{
-		_SyncActive--;
-		if (_SyncActive < 0)
+		_SyncCardinal--;
+
+		if (_SyncCardinal < 0)
 		{
 			InvalidOperationException ex = new("Attempt to exit a synchronous state when the object was not in a synchronous state");
 			Diag.Dug(ex);
 			throw ex;
 		}
 
-		if (_SyncActive > 0)
+		if (_SyncCardinal > 0)
 			return;
 
 		_TaskHandler = null;
 		_ProgressData = default;
 
-		if (_LinkStage < EnumLinkStage.Completed && _Enabled)
+		if (!AsyncActive && _LinkStage < EnumLinkStage.Completed && _Enabled)
 		{
 			if (_AsyncToken.IsCancellationRequested)
 			{
