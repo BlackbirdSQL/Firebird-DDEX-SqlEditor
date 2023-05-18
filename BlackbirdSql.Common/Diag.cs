@@ -371,6 +371,37 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Trace method for trace breadcrumbs during debug WITHOUT tasklog
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+#if DEBUG
+	public static void DebugTrace(string message = "",
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
+#else
+	public static void Trace(string message = "Debug trace",
+		string memberName = "Release:Unavailable",
+		string sourceFilePath = "Release:Unavailable",
+		int sourceLineNumber = 0)
+#endif
+	{
+		if (!_EnableTrace)
+			return;
+
+#if DEBUG
+		bool enableTaskLog = _EnableTaskLog;
+		_EnableTaskLog = false;
+		Dug(false, message, memberName, sourceFilePath, sourceLineNumber);
+		_EnableTaskLog = enableTaskLog;
+
+#endif
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Trace method for trace breadcrumbs during debug
 	/// </summary>
 	// ---------------------------------------------------------------------------------

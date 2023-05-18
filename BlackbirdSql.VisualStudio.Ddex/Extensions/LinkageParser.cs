@@ -258,6 +258,7 @@ internal class LinkageParser : AbstractLinkageParser
 			AsyncExecute();
 		}
 
+		_SyncTokenSource?.Cancel();
 
 		return true;
 	}
@@ -474,7 +475,6 @@ internal class LinkageParser : AbstractLinkageParser
 			if (_AsyncTask == null || _AsyncTask.IsCompleted)
 				return true;
 
-
 			_AsyncTokenSource.Cancel();
 
 			// _AsyncCardinal < 2: Async is still waiting in thread queue managed by UI thread so we flag
@@ -483,7 +483,19 @@ internal class LinkageParser : AbstractLinkageParser
 			if (_AsyncCardinal < 2)
 				return true;
 
-			_AsyncTask.Wait();
+			_SyncTokenSource = new();
+			_SyncToken = _SyncTokenSource.Token;
+
+			try
+			{
+				_AsyncTask.Wait(_SyncToken);
+			}
+			catch (Exception) {}
+
+			_SyncTokenSource.Dispose();
+			_SyncTokenSource = null;
+			_SyncToken = default;
+
 		}
 		catch (Exception ex)
 		{
@@ -520,6 +532,7 @@ internal class LinkageParser : AbstractLinkageParser
 		_TaskHandler = null;
 		_ProgressData = default;
 
+
 		if (!AsyncActive && _LinkStage < EnumLinkStage.Completed && _Enabled)
 		{
 			if (_AsyncToken.IsCancellationRequested)
@@ -528,8 +541,10 @@ internal class LinkageParser : AbstractLinkageParser
 				_AsyncTokenSource = new();
 				_AsyncToken = _AsyncTokenSource.Token;
 			}
+
 			AsyncExecute();
 		}
+
 	}
 
 

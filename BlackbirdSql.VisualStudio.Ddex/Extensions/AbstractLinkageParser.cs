@@ -84,10 +84,14 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 	/// </summary>
 	protected CancellationToken _AsyncToken;
 
+	protected CancellationToken _SyncToken;
+
 	/// <summary>
 	/// Cancellation token source for async operations. 
 	/// </summary>
 	protected CancellationTokenSource _AsyncTokenSource = null;
+
+	protected CancellationTokenSource _SyncTokenSource = null;
 
 	/// <summary>
 	/// The total elapsed time in milliseconds that the parser was actively

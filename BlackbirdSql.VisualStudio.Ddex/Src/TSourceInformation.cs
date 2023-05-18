@@ -24,8 +24,7 @@ using BlackbirdSql.Common.Extensions;
 using BlackbirdSql.Common.Providers;
 using BlackbirdSql.VisualStudio.Ddex.Schema;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
-
-
+using EnvDTE;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -293,6 +292,8 @@ internal class TSourceInformation : DataSourceInformation, IVsDataSourceInformat
 		PropertyDescriptor descriptor;
 		string descriptorName;
 
+
+
 		// Update the row values for each descriptor
 		if (descriptors != null)
 		{
@@ -301,7 +302,6 @@ internal class TSourceInformation : DataSourceInformation, IVsDataSourceInformat
 				if (ConnectionResources.Synonyms.TryGetValue(col.ColumnName, out string key)
 					&& (descriptorName = ConnectionResources.Descriptor(key)) != null)
 				{
-
 					descriptor = descriptors.Find(descriptorName, true);
 
 					if (descriptor != null)
@@ -316,48 +316,6 @@ internal class TSourceInformation : DataSourceInformation, IVsDataSourceInformat
 			}
 		}
 
-
-
-		// FbDatabaseInfo info = new((FbConnection)connection);
-
-		// row[ConnectionResources.DefaultKeyRootDataSourceName] = connection.DataSource;
-		// row[ConnectionResources.DefaultKeyRootDataset] = Path.GetFileNameWithoutExtension(connection.Database);
-
-		// if (row[ConnectionResources.DefaultKeyRootServerType] == DBNull.Value)
-		//	row[ConnectionResources.DefaultKeyRootServerType] = ConnectionResources.DefaultValueServerType;
-
-		/*
-		if ((connection.State & ConnectionState.Open) != 0)
-		{
-			row[ConnectionResources.DefaultKeyRootDataSourceVersion] =
-				"Firebird " + FbServerProperties.ParseServerVersion(connection.ServerVersion).ToString();
-
-			row[ConnectionResources.DefaultKeyRootDataSourceProductVersion] = connection.ServerVersion;
-			row[ConnectionResources.DefaultKeyRootMemoryUsage] = info.GetCurrentMemory();
-			row[ConnectionResources.DefaultKeyRootActiveUsers] = info.GetActiveUsers().Count;
-		}
-		*/
-
-
-
-		// Finally for each column set default if null.
-		foreach (DataColumn col in schema.Columns)
-		{
-			value = row[col.ColumnName];
-
-			if (value == DBNull.Value)
-			{
-
-				KeyValuePair<string, object> pair = Array.Find(ConnectionResources.RootDefaultValues,
-					(KeyValuePair<string, object> obj) => obj.Key.Equals(col.ColumnName, StringComparison.OrdinalIgnoreCase));
-
-				if (pair.Key != null)
-				{
-					if (pair.Value != null || ConnectionResources.TypeOf(pair.Key) != typeof(int))
-						row[col.ColumnName] = pair.Value;
-				}
-			}
-		}
 
 
 		schema.EndLoadData();

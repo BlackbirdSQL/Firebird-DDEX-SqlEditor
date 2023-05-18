@@ -73,11 +73,11 @@ internal static class ConnectionResources
 	internal const int DefaultValueParallelWorkers = 0;
 
 	internal const string DefaultValueRootDataSourceName = null;
-	internal const int DefaultValueRootPortNumber = 3050;
+	internal const int DefaultValueRootPortNumber = int.MinValue;
 	internal const string DefaultValueRootDefaultCatalog = null;
 
 	// Existing roots title-cased
-	internal const int DefaultValueRootServerType = (int)FbServerType.Default;
+	internal const int DefaultValueRootServerType = int.MinValue;
 	internal const string DefaultValueRootUserId = null;
 
 
@@ -172,7 +172,7 @@ internal static class ConnectionResources
 		StringPair( DefaultKeyMaxPoolSize, "MaxPoolSize" ),
 		StringPair( DefaultKeyWireCrypt, "WireCrypt" ),
 		StringPair( DefaultKeyConnectionTimeout, "ConnectionTimeout" ),
-		StringPair( DefaultKeyPortNumber, "Port" ),
+		StringPair( DefaultKeyPortNumber, "port number" ),
 		StringPair( DefaultKeyConnectionLifetime, "ConnectionLifeTime" ),
 		StringPair( DefaultKeyCompression, "Compression" ),
 		StringPair( DefaultKeyMinPoolSize, "MinPoolSize" ),
@@ -676,6 +676,14 @@ internal static class ConnectionResources
 		}
 
 		return pair.Value;
+	}
+
+	public static bool RootType(string name)
+	{
+		KeyValuePair<string, Type> pair = Array.Find(ConnectionResources.RootTypes,
+			(KeyValuePair<string, Type> obj) => obj.Key.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+		return (pair.Key != null);
 	}
 
 	public static string Descriptor(string name)
