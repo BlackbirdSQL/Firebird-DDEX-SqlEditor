@@ -7,7 +7,7 @@
 		<RootType>
 			<Properties>
 				<Property name="Dataset" type="System.String"/>
-				<Property name="Server" type="System.String"/>
+				<Property name="DataSourceName" type="System.String"/>
 				<Property name="PortNumber" type="System.Int32"/>
 				<Property name="DefaultCatalog" type="System.String"/>
 				<Property name="ServerType" type="System.Int32"/>

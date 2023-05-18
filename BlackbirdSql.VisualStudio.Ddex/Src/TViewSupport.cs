@@ -457,11 +457,10 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 			SqlMonikerHelper sqlMoniker = new()
 			{
 				Server = vsDataSourceInformation["DataSourceName"] as string,
-				Database = Path.GetFileNameWithoutExtension(vsDataSourceInformation["DefaultCatalog"] as string),
+				Database = vsDataSourceInformation["Dataset"] as string,
 				User = vsDataSourceInformation["UserId"] as string
 			};
 			ViewHierarchy.PersistentProperties["MkDocumentPrefix"] = sqlMoniker.ToString();
-
 		}
 	}
 

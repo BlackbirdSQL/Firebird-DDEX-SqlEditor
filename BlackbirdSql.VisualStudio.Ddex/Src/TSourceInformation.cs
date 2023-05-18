@@ -292,7 +292,9 @@ internal class TSourceInformation : DataSourceInformation, IVsDataSourceInformat
 		PropertyDescriptor descriptor;
 		string descriptorName;
 
-
+		/* Descriptor dump
+			ParallelWorkers[], IsolationLevel[], Password[], ApplicationName[], FetchSize[], DbCachePages[], Charset[UTF8], ReturnRecordsAffected[], Values[], IsFixedSize[], Role[], initial catalog[C:\Server\Data\smartitplus_databases\MMEINT_SI_DB.FDB], NoGarbageCollect[], Dialect[], DataSource[], MaxPoolSize[], BrowsableConnectionString[], WireCrypt[], port number[55504], ConnectionTimeout[], Port[], ConnectionLifeTime[], Compression[], MinPoolSize[], Keys[], Pooling[], UserID[sysdba], CryptKey[], ClientLibrary[], PacketSize[], CommandTimeout[], Database[], NoDatabaseTriggers[], Count[], Enlist[], ServerType[], IsReadOnly[], data source[MMEI-LT01], ConnectionString[data source=MMEI-LT01;port number=55504;initial catalog=C:\Server\Data\smartitplus_databases\MMEINT_SI_DB.FDB;character set=UTF8;user id=sysdba]
+		*/
 
 		// Update the row values for each descriptor
 		if (descriptors != null)
@@ -307,7 +309,6 @@ internal class TSourceInformation : DataSourceInformation, IVsDataSourceInformat
 					if (descriptor != null)
 					{
 						value = descriptor.GetValueX(connectionProperties);
-
 
 						if (value != null)
 							row[col.ColumnName] = value;
@@ -369,7 +370,7 @@ internal class TSourceInformation : DataSourceInformation, IVsDataSourceInformat
 		if (ConnectionResources.Synonyms.TryGetValue(paramName, out string key)
 			&& (descriptorName = ConnectionResources.Descriptor(key)) != null)
 		{
-			descriptor = descriptors.Find(paramName, true);
+			descriptor = descriptors.Find(descriptorName, true);
 		}
 
 		if (descriptor == null)
@@ -543,8 +544,6 @@ internal class TSourceInformation : DataSourceInformation, IVsDataSourceInformat
 	// ---------------------------------------------------------------------------------
 	public static object RetrieveValue(IVsDataConnection site, DataTable sourceInformation, string propertyName)
 	{
-		// Diag.Trace(propertyName);
-
 		string str;
 		object retval = null;
 
@@ -587,17 +586,13 @@ internal class TSourceInformation : DataSourceInformation, IVsDataSourceInformat
 					retval = descriptor.GetValueX(connectionProperties);
 					break;
 				case ConnectionResources.DefaultKeyRootDataset:
-					descriptor = FindDescriptor(site, ConnectionResources.DefaultKeyCatalog);
-					connectionProperties = GetConnectionProperties(site);
-					str = (string)descriptor.GetValueX(connectionProperties);
+					str = (string)sourceInformation.Rows[0][ConnectionResources.DefaultKeyRootDefaultCatalog];
 					retval = Path.GetFileNameWithoutExtension(str);
 					break;
 				case ConnectionResources.DefaultKeyRootDataSourceVersion:
 					connection = GetConnection(site);
 					if (connection != null && (connection.State & ConnectionState.Open) != 0)
-					{
 						retval = "Firebird " + FbServerProperties.ParseServerVersion(connection.ServerVersion).ToString();
-					}
 					break;
 				case ConnectionResources.DefaultKeyRootDataSourceProductVersion:
 					connection = GetConnection(site);

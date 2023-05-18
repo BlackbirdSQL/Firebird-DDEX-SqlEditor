@@ -155,7 +155,7 @@ internal static class ConnectionResources
 
 	#region Descriptors lookup
 
-	internal static readonly KeyValuePair<string, string>[] Descriptors = new KeyValuePair<string, string>[29]
+	internal static readonly KeyValuePair<string, string>[] Descriptors = new KeyValuePair<string, string>[28]
 	{
 		StringPair( DefaultKeyParallelWorkers, "ParallelWorkers" ),
 		StringPair( DefaultKeyIsolationLevel, "IsolationLevel" ),
@@ -182,7 +182,6 @@ internal static class ConnectionResources
 		StringPair( DefaultKeyClientLibrary, "ClientLibrary" ),
 		StringPair( DefaultKeyPacketSize, "PacketSize" ),
 		StringPair( DefaultKeyCommandTimeout, "CommandTimeout" ),
-		StringPair( DefaultKeyCatalog, "Database" ),
 		StringPair( DefaultKeyNoDbTriggers, "NoDatabaseTriggers" ),
 		StringPair( DefaultKeyEnlist, "Enlist" ),
 		StringPair( DefaultKeyServerType, "ServerType" )
@@ -293,6 +292,7 @@ internal static class ConnectionResources
 			// Additional root descriptor key synonyms
 			{ DefaultKeyRootDataSourceName, DefaultKeyRootDataSourceName },
 			{ DefaultKeyDataSource, DefaultKeyRootDataSourceName },
+			{ "DataSource", DefaultKeyRootDataSourceName },
 			{ DefaultKeyRootPortNumber, DefaultKeyRootPortNumber },
 			{ DefaultKeyPortNumber, DefaultKeyRootPortNumber },
 			{ DefaultKeyRootDefaultCatalog, DefaultKeyRootDefaultCatalog},
