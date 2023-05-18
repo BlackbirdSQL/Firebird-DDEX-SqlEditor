@@ -91,7 +91,7 @@ The validation process will not validate any open app.config or edmx models. You
 
 If the validation option is enabled (the default) and you add Firebird.Data.FirebirdClient or EntityFramework.Firebird to a project, the project will be validated and the app.config updated correctly if required. If the app.config is open the update will be skipped and you will need to reopen your solution for the validation to complete.
 
-__Note:__ If you wish to clear the peristent flag for a solution, you can comment out the \_\_PERSISTENTGLOBALS\_\_ #define in VsGlobalsAgent.cs. This #define only applies to DEBUG builds.
+__Note:__ If you wish to clear the peristent flag for a solution, you can set `Persistent Flags` to false under the IDE BlackbirdSql Debug options.
 
 The intention is to maintain a small footprint. We're not going to start altering VS menus and taking over your Visual Studio IDE workspace. It is a data source UI provider for Firebird and the benchmark is the SqlServer provider, so whatever UI functionality is available for SqlServer is on the todo list for Firebird provided it does not directly interfere with the developer's active UI.
 
