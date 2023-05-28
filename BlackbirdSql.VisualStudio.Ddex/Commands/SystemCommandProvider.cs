@@ -3,9 +3,16 @@
 
 using System.Runtime.InteropServices;
 
-namespace BlackbirdSql.Common.Commands
+using Microsoft.VisualStudio.Shell;
+
+using BlackbirdSql.Common.Commands;
+using BlackbirdSql.VisualStudio.Ddex.Configuration;
+
+
+
+namespace BlackbirdSql.VisualStudio.Ddex.Commands
 {
-	[Guid(DataToolsCommands.SystemQueryCommandProviderGuid)]
+	[Guid(CommandProperties.SystemQueryCommandProviderGuid)]
 
 
 	// =========================================================================================================
@@ -18,12 +25,15 @@ namespace BlackbirdSql.Common.Commands
 	internal class SystemCommandProvider : AbstractCommandProvider
 	{
 
+		protected override Package DdexPackage => PackageController.Instance().DdexPackage;
+
+
 		/// <summary>
 		/// Identifies this <see cref="AbstractCommandProvider"/> as spawned off of a System Object SE node
 		/// </summary>
-		protected override DataToolsCommands.DataObjectType CommandObjectType
+		protected override CommandProperties.DataObjectType CommandObjectType
 		{
-			get { return DataToolsCommands.DataObjectType.System; }
+			get { return CommandProperties.DataObjectType.System; }
 		}
 
 	}

@@ -23,7 +23,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 /// Implementation of <see cref="IVsDataSourceVersionComparer"/> and <see cref="IComparer{T}"/> interfaces
 /// </summary>
 // =========================================================================================================
-internal class TSourceVersionComparer : DataSourceVersionComparer, IComparer<string>
+public class TSourceVersionComparer : DataSourceVersionComparer, IComparer<string>
 {
 
 	// ---------------------------------------------------------------------------------
@@ -58,34 +58,42 @@ internal class TSourceVersionComparer : DataSourceVersionComparer, IComparer<str
 	public int Compare(string x, string y)
 	{
 		// Diag.Trace();
-		if (x == null && y == null)
+		try
 		{
-			return 0;
-		}
-
-		if (x == null)
-		{
-			return -1;
-		}
-
-		if (y == null)
-		{
-			return 1;
-		}
-
-		string[] array = x.Split('.');
-		string[] array2 = y.Split('.');
-		int num = Math.Min(array.Length, array2.Length);
-
-		for (int i = 0; i < num; i++)
-		{
-			int num2 = int.Parse(array[i], CultureInfo.InvariantCulture);
-			int value = int.Parse(array2[i], CultureInfo.InvariantCulture);
-			int num3 = num2.CompareTo(value);
-			if (num3 != 0)
+			if (x == null && y == null)
 			{
-				return num3;
+				return 0;
 			}
+
+			if (x == null)
+			{
+				return -1;
+			}
+
+			if (y == null)
+			{
+				return 1;
+			}
+
+			string[] array = x.Split('.');
+			string[] array2 = y.Split('.');
+			int num = Math.Min(array.Length, array2.Length);
+
+			for (int i = 0; i < num; i++)
+			{
+				int num2 = int.Parse(array[i], CultureInfo.InvariantCulture);
+				int value = int.Parse(array2[i], CultureInfo.InvariantCulture);
+				int num3 = num2.CompareTo(value);
+				if (num3 != 0)
+				{
+					return num3;
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
 		}
 
 		return 0;

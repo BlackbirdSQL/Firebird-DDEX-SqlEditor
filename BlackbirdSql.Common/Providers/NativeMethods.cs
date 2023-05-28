@@ -13,7 +13,7 @@ namespace BlackbirdSql.Common.Providers
 	internal static class NativeMethods
 	{
 		[ComImport]
-		[Guid(DataToolsCommands.NativeMethodsGuid)]
+		[Guid(CommandProperties.NativeMethodsGuid)]
 		[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 		internal interface IDTInternalRunManager
 		{
@@ -46,8 +46,16 @@ namespace BlackbirdSql.Common.Providers
 			public POINT MousePos;
 		}
 
+
 		public static Guid IID_IUnknown = new Guid("00000000-0000-0000-c000-000000000046");
 
+		public static Guid CLSID_DSRef = new Guid("E09EE6AC-FEF0-41ae-9F77-3C394DA49849");
+
+		public static Guid CMDUIGUID_TextEditor = new Guid("8B382828-6202-11d1-8870-0000F87579D2");
+
+		public static Guid SID_SDTInternalRunManager = new Guid("7884CCA5-4B77-427b-8124-9D1C3CA7A0C0");
+
+		/*
 		public static Guid SID_SVsLog = new Guid("4AAEA0BD-4327-44E0-B958-365EBCBEF679");
 
 		public static Guid GUID_MicrosoftSqlServerDataSource = new Guid("067EA0D9-BA62-43f7-9106-34930C60C528");
@@ -56,13 +64,12 @@ namespace BlackbirdSql.Common.Providers
 
 		public static Guid GUID_SqlServerDataProvider = new Guid("91510608-8809-4020-8897-FBA057E22D54");
 
-		public static Guid CLSID_DSRef = new Guid("E09EE6AC-FEF0-41ae-9F77-3C394DA49849");
 
 		public static Guid GUID_Mode_QueryDesigner = new Guid("B2C40B32-3A37-4ca9-97B9-FA44248B69FF");
+		*/
 
-		public static Guid CMDUIGUID_TextEditor = new Guid("8B382828-6202-11d1-8870-0000F87579D2");
 
-		public static Guid SID_SDTInternalRunManager = new Guid("7884CCA5-4B77-427b-8124-9D1C3CA7A0C0");
+		public const string PackageControllerGuid = "CF77D510-C1DB-44EA-85F5-8201089D6FAF";
 
 		public const int S_OK = 0;
 
@@ -116,10 +123,7 @@ namespace BlackbirdSql.Common.Providers
 		{
 			if (FAILED(hr))
 			{
-				Exception ex = Marshal.GetExceptionForHR(hr);
-				Diag.Dug(ex);
-
-				throw ex;
+				throw Marshal.GetExceptionForHR(hr);
 			}
 
 			return hr;
@@ -140,7 +144,7 @@ namespace BlackbirdSql.Common.Providers
 			return (short)(dwValue >> 16 & 0xFFFF);
 		}
 
-		[DllImport("ole32.dll", PreserveSig = false)]
-		public static extern IStream CreateStreamOnHGlobal(IntPtr hGlobal, [MarshalAs(UnmanagedType.Bool)] bool fDeleteOnRelease);
+		// [DllImport("ole32.dll", PreserveSig = false)]
+		// public static extern IStream CreateStreamOnHGlobal(IntPtr hGlobal, [MarshalAs(UnmanagedType.Bool)] bool fDeleteOnRelease);
 	}
 }

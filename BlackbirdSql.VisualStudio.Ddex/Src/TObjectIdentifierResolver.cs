@@ -22,7 +22,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 /// Implementation of <see cref="IVsDataObjectIdentifierResolver"/> interface
 /// </summary>
 // =========================================================================================================
-internal class TObjectIdentifierResolver : DataObjectIdentifierResolver
+public class TObjectIdentifierResolver : DataObjectIdentifierResolver
 {
 
 	// ---------------------------------------------------------------------------------
@@ -60,6 +60,8 @@ internal class TObjectIdentifierResolver : DataObjectIdentifierResolver
 	// ---------------------------------------------------------------------------------
 	public override object[] ContractIdentifier(string typeName, object[] fullIdentifier)
 	{
+		// Diag.Trace();
+
 		if (typeName == null)
 		{
 			Diag.Dug(true, "Null argument: typeName");

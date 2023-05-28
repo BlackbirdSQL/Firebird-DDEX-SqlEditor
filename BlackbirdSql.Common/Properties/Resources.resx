@@ -117,6 +117,66 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AdoDotNetProvider_MissingInvariantName" xml:space="preserve">
+    <value>AdoDotNet missing invariant name</value>
+  </data>
+  <data name="AdoDotNetProvider_NotRegistered" xml:space="preserve">
+    <value>AdoDotNet provider {0} not registered</value>
+  </data>
+  <data name="AdoDotNetProvider_ObjectNotImplemented" xml:space="preserve">
+    <value>AdoDotNet provider {0} object {1} not implemented</value>
+  </data>
+  <data name="CommandProvider_CancelExecution" xml:space="preserve">
+    <value>SqlViewTextObjectCommandProvider_CancelExecution</value>
+  </data>
+  <data name="CommandProvider_NewQuery" xml:space="preserve">
+    <value>&amp;New Global Query</value>
+  </data>
+  <data name="CommandProvider_NewSystemQuery" xml:space="preserve">
+    <value>&amp;New System Query</value>
+  </data>
+  <data name="CommandProvider_NewUserQuery" xml:space="preserve">
+    <value>&amp;New User Query</value>
+  </data>
+  <data name="CommandProvider_NoSourceAvailable" xml:space="preserve">
+    <value>No source available</value>
+  </data>
+  <data name="CommandProvider_OpenColumnScript" xml:space="preserve">
+    <value>&amp;Open Column Expression</value>
+  </data>
+  <data name="CommandProvider_OpenForeignKeyScript" xml:space="preserve">
+    <value>&amp;Open Foreign Key Expression</value>
+  </data>
+  <data name="CommandProvider_OpenFunctionScript" xml:space="preserve">
+    <value>&amp;Open Function Source</value>
+  </data>
+  <data name="CommandProvider_OpenIndexScript" xml:space="preserve">
+    <value>&amp;Open Index Expression</value>
+  </data>
+  <data name="CommandProvider_OpenScript" xml:space="preserve">
+    <value>&amp;Open Script</value>
+  </data>
+  <data name="CommandProvider_OpenStoredProcedureScript" xml:space="preserve">
+    <value>&amp;Open Procedure Source</value>
+  </data>
+  <data name="CommandProvider_OpenSystemScript" xml:space="preserve">
+    <value>&amp;Open System Script</value>
+  </data>
+  <data name="CommandProvider_OpenTriggerScript" xml:space="preserve">
+    <value>&amp;Open Trigger Expression</value>
+  </data>
+  <data name="CommandProvider_OpenUserScript" xml:space="preserve">
+    <value>&amp;Open User Script</value>
+  </data>
+  <data name="CommandProvider_OpenViewScript" xml:space="preserve">
+    <value>&amp;Open View Definition</value>
+  </data>
+  <data name="CommandProvider_PathTooLong" xml:space="preserve">
+    <value>The document moniker path name is too long</value>
+  </data>
+  <data name="CommandProvider_PromptSaveObject" xml:space="preserve">
+    <value>SqlViewTextObjectCommandProvider_PromptSaveObject</value>
+  </data>
   <data name="QueryDesignerDocument_NewQueryCaption" xml:space="preserve">
     <value>QueryDesignerDocument_NewQueryCaption</value>
   </data>
@@ -150,34 +210,10 @@
   <data name="SqlViewNode_Type_ViewTrigger" xml:space="preserve">
     <value>SqlViewNode_Type_ViewTrigger</value>
   </data>
-  <data name="SqlViewTextObjectCommandProvider_CancelExecution" xml:space="preserve">
-    <value>SqlViewTextObjectCommandProvider_CancelExecution</value>
-  </data>
-  <data name="SqlViewTextObjectCommandProvider_NoSourceAvailable" xml:space="preserve">
-    <value>SqlViewTextObjectCommandProvider_NoSourceAvailable</value>
-  </data>
-  <data name="SqlViewTextObjectCommandProvider_Open" xml:space="preserve">
-    <value>SqlViewTextObjectCommandProvider_Open</value>
-  </data>
-  <data name="SqlViewTextObjectCommandProvider_PathTooLong" xml:space="preserve">
-    <value>The document moniker path name is too long</value>
-  </data>
-  <data name="SqlViewTextObjectCommandProvider_PromptSaveObject" xml:space="preserve">
-    <value>SqlViewTextObjectCommandProvider_PromptSaveObject</value>
-  </data>
-  <data name="SqlViewTextObjectCommandProvider_StepIntoFunction" xml:space="preserve">
-    <value>SqlViewTextObjectCommandProvider_StepIntoFunction</value>
-  </data>
-  <data name="SqlViewTextObjectCommandProvider_StepIntoStoredProcedure" xml:space="preserve">
-    <value>SqlViewTextObjectCommandProvider_StepIntoStoredProcedure</value>
-  </data>
   <data name="TextEditorDocument_FailedToLoadText" xml:space="preserve">
     <value>TextEditorDocument_FailedToLoadText</value>
   </data>
-  <data name="TextObjectCommandProvider_Open" xml:space="preserve">
-    <value>&amp;Open Script</value>
-  </data>
   <data name="ToolsDocument_Caption" xml:space="preserve">
-    <value>DataToolsDocument_Caption</value>
+    <value>{0} - {1}</value>
   </data>
 </root>

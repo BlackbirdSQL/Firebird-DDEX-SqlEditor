@@ -23,7 +23,7 @@ namespace BlackbirdSql.Common.Providers;
 /// <summary>
 /// Plagiarized off of Microsoft.VisualStudio.Data.Providers.Common.TextEditorDocument
 /// </summary>
-internal abstract class AbstractTextEditorDocument : AbstractDataToolsDocument
+public abstract class AbstractTextEditorDocument : AbstractDataToolsDocument
 {
 	private string _Text;
 
@@ -87,14 +87,30 @@ internal abstract class AbstractTextEditorDocument : AbstractDataToolsDocument
 			IVsTextLines ppTextBuffer = null;
 			if (UnderlyingDocument.DocData is IVsTextBufferProvider vsTextBufferProvider)
 			{
-				NativeMethods.WrapComCall(vsTextBufferProvider.GetTextBuffer(out ppTextBuffer));
+				try
+				{
+					NativeMethods.WrapComCall(vsTextBufferProvider.GetTextBuffer(out ppTextBuffer));
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex);
+					throw ex;
+				}
 			}
 
 			if (ppTextBuffer != null)
 			{
-				NativeMethods.WrapComCall(ppTextBuffer.GetStateFlags(out uint pdwReadOnlyFlags));
-				pdwReadOnlyFlags |= 1u;
-				NativeMethods.WrapComCall(ppTextBuffer.SetStateFlags(pdwReadOnlyFlags));
+				try
+				{
+					NativeMethods.WrapComCall(ppTextBuffer.GetStateFlags(out uint pdwReadOnlyFlags));
+					pdwReadOnlyFlags |= 1u;
+					NativeMethods.WrapComCall(ppTextBuffer.SetStateFlags(pdwReadOnlyFlags));
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex);
+					throw ex;
+				}
 			}
 		}
 

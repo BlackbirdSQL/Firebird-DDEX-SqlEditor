@@ -15,11 +15,8 @@ using Microsoft.VisualStudio.TaskStatusCenter;
 using FirebirdSql.Data.FirebirdClient;
 
 using BlackbirdSql.Common;
-using BlackbirdSql.Common.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Schema;
-
-
-
+using BlackbirdSql.Common.Providers;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Extensions;
 
@@ -360,7 +357,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 	/// </param>
 	/// <returns>The distinctly unique parser associated with the db connection.</returns>
 	// ---------------------------------------------------------------------------------
-	protected static AbstractLinkageParser Instance(FbConnection connection)
+	protected static AbstractLinkageParser Instance(FbConnection connection, bool canCreate = true)
 	{
 		AbstractLinkageParser parser = null;
 
@@ -373,6 +370,9 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 
 		if (_Instances == null)
 		{
+			if (!canCreate)
+				return null;
+
 			_Instances = new();
 		}
 		else

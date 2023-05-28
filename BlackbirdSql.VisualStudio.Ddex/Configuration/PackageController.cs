@@ -22,6 +22,7 @@ using FirebirdSql.Data.FirebirdClient;
 
 using BlackbirdSql.Common;
 using BlackbirdSql.Common.Extensions;
+using BlackbirdSql.Common.Providers;
 
 
 
@@ -41,7 +42,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Configuration;
 /// Also ensures we never do validations of a solution and project app.config and .edmx models twice.
 /// </remarks>
 // =========================================================================================================
-internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDisposable
+internal class PackageController : IVsSolutionEvents, IPackageController, ITaskHandlerClient, IDisposable
 {
 
 	// ---------------------------------------------------------------------------------
@@ -49,14 +50,19 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 	// ---------------------------------------------------------------------------------
 
 
-	static VsPackageController _Instance = null;
+	private static PackageController _Instance = null;
+	private static IVsUIHierarchy _MiscHierarchy = null;
 
 	int _RefCnt = 0;
 
+	private readonly Package _DdexPackage;
 	private readonly DTE _Dte = null;
 	private readonly IVsSolution _Solution = null;
 	private uint _HSolutionEvents = uint.MaxValue;
 	private VsGlobalsAgent _Uig;
+
+	private string _ApplicationDataDirectory = null;
+
 
 	private _dispReferencesEvents_ReferenceAddedEventHandler _ReferenceAddedEventHandler = null;
 
@@ -95,6 +101,48 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 	#region Property Accessors - VsPackageController
 	// =========================================================================================================
 
+
+
+	public string ApplicationDataDirectory
+	{
+		get
+		{
+			ThreadHelper.ThrowIfNotOnUIThread();
+			if (_ApplicationDataDirectory == null)
+			{
+				try
+				{
+					IVsShell service = DdexPackage.GetService<SVsShell, IVsShell>();
+					if (service == null)
+					{
+						ArgumentException ex = new("Could not get service <SVsShell, IVsShell>");
+						Diag.Dug(ex);
+						throw ex;
+					}
+
+					NativeMethods.WrapComCall(service.GetProperty((int)__VSSPROPID.VSSPROPID_AppDataDir, out object pvar));
+					_ApplicationDataDirectory = pvar as string;
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex);
+					throw ex;
+				}
+			}
+
+			return _ApplicationDataDirectory;
+		}
+	}
+
+
+
+	public Package DdexPackage
+	{
+		get
+		{
+			return _DdexPackage;
+		}
+	}
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -143,8 +191,9 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 	/// Private singleton .ctor
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private VsPackageController(DTE dte, IVsSolution solution)
+	private PackageController(Package package, DTE dte, IVsSolution solution)
 	{
+		_DdexPackage = package;
 		_Dte = dte;
 		_Solution = solution;
 
@@ -159,9 +208,21 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 	/// Gets the singleton VsPackageController instance
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static VsPackageController GetInstance(DTE dte, IVsSolution solution)
+	public static PackageController Instance()
 	{
-		return _Instance ??= new(dte, solution);
+		return _Instance;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets or creates the singleton VsPackageController instance
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static PackageController Instance(Package package, DTE dte, IVsSolution solution)
+	{
+		return _Instance ??= new(package, dte, solution);
 	}
 
 
@@ -627,7 +688,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 			/*
 			else
 			{
-				Diag.Trace("No items in ProjectFolder: " + project.Name);
+				// Diag.Trace("No items in ProjectFolder: " + project.Name);
 			}
 			*/
 		}
@@ -1325,6 +1386,110 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 
 	// Events that we handle are listed first
 
+	int HandleTemporarySqlItems(IVsHierarchy pHierarchy, int fRemoving)
+	{
+		ThreadHelper.ThrowIfNotOnUIThread();
+
+		if (_MiscHierarchy == null || !_MiscHierarchy.Equals(pHierarchy))
+			return S_OK;
+
+		IVsUIHierarchy miscHierarchy = _MiscHierarchy;
+		_MiscHierarchy = null;
+
+		string path;
+		var itemid = VSConstants.VSITEMID_ROOT;
+		object objProj;
+
+
+		try
+		{
+			miscHierarchy.GetProperty(itemid, (int)__VSHPROPID.VSHPROPID_ExtObject, out objProj);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		if (objProj == null || objProj is not Project project)
+		{
+			ArgumentException ex = new($"Could not get hierarchy root for {miscHierarchy}");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+
+		if (project.ProjectItems == null || project.ProjectItems.Count == 0)
+			return S_OK;
+
+		string sqlDataDirectory = null;
+
+		foreach (ProjectItem projectItem in project.ProjectItems)
+		{
+			// Diag.Trace("Validating project item: " + projectItem.Name + ":  Kind: " + Kind(projectItem.Kind) + " FileCount: "
+			//	+ projectItem.FileCount);
+
+
+
+			if (projectItem.FileCount == 0 || Kind(projectItem.Kind) != "MiscItem")
+			{
+				continue;
+			}
+
+			// FileNames is 1 based indexing - How/Why???
+			path = projectItem.FileNames[1];
+
+			sqlDataDirectory ??= SqlMonikerHelper.GetTemporaryDataDirectory(ApplicationDataDirectory);
+
+
+
+			if (path.StartsWith(sqlDataDirectory + Path.DirectorySeparatorChar,
+				StringComparison.InvariantCultureIgnoreCase))
+			{
+				try
+				{
+					projectItem.Remove();
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex);
+					try
+					{
+						projectItem.Delete();
+					}
+					catch (Exception exd)
+					{
+						Diag.Dug(exd);
+					}
+				}
+				try
+				{
+					File.Delete(path);
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex);
+				}
+			}
+		}
+
+
+		if (sqlDataDirectory != null)
+		{
+			try
+			{
+
+				DirectoryInfo dir = new DirectoryInfo(sqlDataDirectory);
+				if (dir.GetFiles("*.*", SearchOption.AllDirectories).Length == 0)
+					dir.Delete(true);
+			}
+			catch { }
+		}
+		// Diag.Trace();
+
+		return S_OK;
+	}
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// /// Event handler for the Project <see cref="_dispReferencesEvents_Event.ReferenceAdded"/> event
@@ -1400,15 +1565,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 	{
 		_ValidationTokenSource?.Cancel();
 
-		try
-		{
-			ThreadHelper.ThrowIfNotOnUIThread();
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return S_OK;
-		}
+		ThreadHelper.ThrowIfNotOnUIThread();
 
 		if (_Dte == null || _Dte.Solution == null || _Dte.Solution.Globals == null)
 		{
@@ -1431,9 +1588,18 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 			// Diag.Trace("The solution has it's validated flag set. Doing nothing.");
 		}
 
-
 		return S_OK;
+
 	}
+
+
+	int IVsSolutionEvents.OnQueryCloseProject(IVsHierarchy pHierarchy, int fRemoving, ref int pfCancel)
+	{
+		ThreadHelper.ThrowIfNotOnUIThread();
+		return HandleTemporarySqlItems(pHierarchy, fRemoving);
+	}
+
+
 
 
 
@@ -1441,12 +1607,11 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 
 	int IVsSolutionEvents.OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy) => S_OK;
 	int IVsSolutionEvents.OnAfterOpenSolution(object pUnkReserved, int fNewSolution) => S_OK;
-	int IVsSolutionEvents.OnQueryCloseProject(IVsHierarchy pHierarchy, int fRemoving, ref int pfCancel) => S_OK;
-	int IVsSolutionEvents.OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved) => S_OK;
-	int IVsSolutionEvents.OnQueryUnloadProject(IVsHierarchy pRealHierarchy, ref int pfCancel) => S_OK;
-	int IVsSolutionEvents.OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy) => S_OK;
-	int IVsSolutionEvents.OnBeforeCloseSolution(object pUnkReserved) => S_OK;
 	int IVsSolutionEvents.OnAfterCloseSolution(object pUnkReserved) => S_OK;
+	int IVsSolutionEvents.OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved) => S_OK;
+	int IVsSolutionEvents.OnBeforeCloseSolution(object pUnkReserved) => S_OK;
+	int IVsSolutionEvents.OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy) => S_OK;
+	int IVsSolutionEvents.OnQueryUnloadProject(IVsHierarchy pRealHierarchy, ref int pfCancel) => S_OK;
 
 
 	#endregion IVsSolutionEvents Implementation and Event handling
@@ -1506,14 +1671,17 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 		return Diag.UpdateStatusBar(message, complete);
 	}
 
+	public virtual void RegisterMiscHierarchy(IVsUIHierarchy hierarchy)
+	{
+		_MiscHierarchy = hierarchy;
+	}
 
-
-	public ITaskHandler GetTaskHandler()
+	public virtual ITaskHandler GetTaskHandler()
 	{
 		return _TaskHandler;
 	}
 
-	public TaskProgressData GetProgressData()
+	public virtual TaskProgressData GetProgressData()
 	{
 		return _ProgressData;
 	}
@@ -1610,6 +1778,7 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 		{ "{2150E333-8FDC-42A3-9474-1A3956D46DE8}", "SolutionFolder" },
 		{ "{66A26720-8FB5-11D2-AA7E-00C04F688DDE}", "ProjectFolder" },
 		{ "{6BB5F8EF-4483-11D3-8BCF-00C04F8EC28C}", "PhysicalFolder" },
+		{ "{66A2671F-8FB5-11D2-AA7E-00C04F688DDE}", "MiscItem" },
 		{ "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}", "VbProject" },
 		{ "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", "C#Project" }
 		/* The above the only one's we care about ATM
@@ -1633,7 +1802,6 @@ internal class VsPackageController : IVsSolutionEvents, ITaskHandlerClient, IDis
 		{ "{60DC8134-EBA5-43B8-BCC9-BB4BC16C2548}", "WPF" },
 		{ "{68B1623D-7FB9-47D8-8664-7ECEA3297D4F}", "SmartDevice(VB.NET)" },
 		{ "{66A2671D-8FB5-11D2-AA7E-00C04F688DDE}", "MiscProject" },
-		{ "{66A2671F-8FB5-11D2-AA7E-00C04F688DDE}", "MiscItem" },
 		{ "{66A26722-8FB5-11D2-AA7E-00C04F688DDE}", "SolutionItem" },
 		{ "{67294A52-A4F0-11D2-AA88-00C04F688DDE}", "UnloadedProject" },
 		{ "{6BB5F8EE-4483-11D3-8BCF-00C04F8EC28C}", "ProjectFile" },

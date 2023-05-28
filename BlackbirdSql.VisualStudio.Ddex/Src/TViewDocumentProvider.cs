@@ -14,6 +14,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using BlackbirdSql.Common;
 using BlackbirdSql.Common.Commands;
 using BlackbirdSql.Common.Providers;
+using BlackbirdSql.VisualStudio.Ddex.Commands;
 
 
 

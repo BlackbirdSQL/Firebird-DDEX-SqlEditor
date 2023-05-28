@@ -1,25 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.IO;
 using System.Runtime.InteropServices;
-using System.Security.Policy;
 using System.Windows.Forms;
 
 using Microsoft;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Data.Services.SupportEntities.Interop;
 using Microsoft.VisualStudio.DataTools.Interop;
-using Microsoft.VisualStudio.LanguageServer.Client;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
+using BlackbirdSql.Common.Commands;
 
 
 
@@ -38,7 +36,7 @@ namespace BlackbirdSql.Common.Providers;
 /// <summary>
 /// Partly Plagiarized from <see cref="Microsoft.VisualStudio.Data.Providers.Common.DataToolsDocument"/>.
 /// </summary>
-internal abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersistDocData, IVsFileBackup
+public abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersistDocData, IVsFileBackup
 {
 	private string _Moniker;
 
@@ -72,6 +70,8 @@ internal abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersi
 
 	private Hostess _Host;
 
+	protected object _Source = null;
+
 	public string Moniker
 	{
 		get
@@ -90,8 +90,19 @@ internal abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersi
 		{
 			if (UnderlyingDocument.DocData is IVsPersistDocData vsPersistDocData)
 			{
-				NativeMethods.WrapComCall(vsPersistDocData.GetGuidEditorType(out _EditorType));
+				try
+				{
+					NativeMethods.WrapComCall(vsPersistDocData.GetGuidEditorType(out _EditorType));
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex);
+					throw ex;
+				}
 			}
+
+			if (_EditorType == null)
+				_EditorType = new(CommandProperties.SqlEditorGuid);
 
 			return _EditorType;
 		}
@@ -104,7 +115,15 @@ internal abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersi
 			_Caption = value;
 			if (_WindowFrame != null)
 			{
-				NativeMethods.WrapComCall(_WindowFrame.SetProperty(-4001, value));
+				try
+				{
+					NativeMethods.WrapComCall(_WindowFrame.SetProperty(-4001, value));
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex);
+					throw ex;
+				}
 			}
 		}
 	}
@@ -115,9 +134,16 @@ internal abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersi
 		{
 			if (_WindowFrame != null)
 			{
-				NativeMethods.WrapComCall(_WindowFrame.GetGuidProperty(-4007, out _CommandUIGuid));
+				try
+				{
+					NativeMethods.WrapComCall(_WindowFrame.GetGuidProperty(-4007, out _CommandUIGuid));
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex);
+					throw ex;
+				}
 			}
-
 			return _CommandUIGuid;
 		}
 	}
@@ -153,8 +179,16 @@ internal abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersi
 		{
 			if (UnderlyingDocument.DocData is IVsPersistDocData vsPersistDocData)
 			{
-				NativeMethods.WrapComCall(vsPersistDocData.IsDocDataReloadable(out int pfReloadable));
-				_IsReloadable = pfReloadable != 0;
+				try
+				{
+					NativeMethods.WrapComCall(vsPersistDocData.IsDocDataReloadable(out int pfReloadable));
+					_IsReloadable = pfReloadable != 0;
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex);
+					throw ex;
+				}
 			}
 
 			return _IsReloadable;
@@ -243,16 +277,16 @@ internal abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersi
 
 	protected AbstractDataToolsDocument(IVsDataObject obj, Guid editorType, Guid commandUIGuid, Guid toolFactoryGuid,
 		int owningItemId, IVsDataViewHierarchy owningHierarchy)
-		: this(string.Format(null, SqlMonikerHelper.PrefixFormat, owningHierarchy.ExplorerConnection.DisplayName,
+		: this(string.Format(null, SqlMonikerHelper.DisplayFormat, owningHierarchy.ExplorerConnection.DisplayName,
 			obj.Type.Name, obj.Identifier.ToString()), editorType, commandUIGuid, toolFactoryGuid, owningItemId, owningHierarchy)
 	{
-		// Diag.Trace();
+		// Diag.Trace(); "{0} - {1} [{2}"
 		Caption = string.Format(null, Properties.Resources.ToolsDocument_Caption, BuildConnectionName(owningHierarchy.ExplorerConnection.Connection), GetObjectTypeDisplayName(obj, owningItemId, owningHierarchy), obj.Identifier.ToString(DataObjectIdentifierFormat.ForDisplay));
 	}
 
 	public static bool ActivateIfOpen(Hostess host, IVsDataExplorerNode node)
 	{
-		return host.ActivateDocumentIfOpen(string.Format(null, SqlMonikerHelper.PrefixFormat, node.ExplorerConnection.DisplayName,
+		return host.ActivateDocumentIfOpen(string.Format(null, SqlMonikerHelper.DisplayFormat, node.ExplorerConnection.DisplayName,
 			node.Object.Type.Name, node.Object.Identifier.ToString()));
 	}
 
@@ -261,8 +295,16 @@ internal abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersi
 
 		if (UnderlyingDocument.DocData is IVsPersistDocData vsPersistDocData)
 		{
-			NativeMethods.WrapComCall(vsPersistDocData.OnRegisterDocData((uint)documentCookie,
-				_OwningHierarchy.ExplorerConnection as IVsHierarchy, (uint)_OwningItemId));
+			try
+			{
+				NativeMethods.WrapComCall(vsPersistDocData.OnRegisterDocData((uint)documentCookie,
+					_OwningHierarchy.ExplorerConnection as IVsHierarchy, (uint)_OwningItemId));
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw ex;
+			}
 		}
 
 		_DocumentCookie = documentCookie;
@@ -277,10 +319,18 @@ internal abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersi
 			throw ex;
 		}
 
-		NativeMethods.WrapComCall(vsPersistDocData.SetUntitledDocPath(untitledMoniker));
+		try
+		{
+			NativeMethods.WrapComCall(vsPersistDocData.SetUntitledDocPath(untitledMoniker));
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
 	}
 
-	public virtual void Load(string moniker)
+	public virtual void Load(string moniker, object source = null)
 	{
 		if (UnderlyingDocument.DocData is not IVsPersistDocData vsPersistDocData)
 		{
@@ -289,15 +339,31 @@ internal abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersi
 			throw ex;
 		}
 
-		NativeMethods.WrapComCall(vsPersistDocData.LoadDocData(moniker));
+		try
+		{
+			NativeMethods.WrapComCall(vsPersistDocData.LoadDocData(moniker));
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
 	}
 
 	public virtual void Show()
 	{
 		using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
 		{
-			Diag.Trace("Calling window frame show");
-			NativeMethods.WrapComCall(WindowFrame.Show());
+			// Diag.Trace("Calling window frame show");
+			try
+			{
+				NativeMethods.WrapComCall(WindowFrame.Show());
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw ex;
+			}
 		}
 	}
 
@@ -310,14 +376,30 @@ internal abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersi
 			throw ex;
 		}
 
-		NativeMethods.WrapComCall(vsPersistDocData.ReloadDocData((uint)flags));
+		try
+		{
+			NativeMethods.WrapComCall(vsPersistDocData.ReloadDocData((uint)flags));
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
 	}
 
 	public virtual void Rename(string newMoniker, int attributes)
 	{
 		if (UnderlyingDocument.DocData is IVsPersistDocData vsPersistDocData)
 		{
-			NativeMethods.WrapComCall(vsPersistDocData.RenameDocData((uint)attributes, _OwningHierarchy.ExplorerConnection as IVsHierarchy, (uint)_OwningItemId, newMoniker));
+			try
+			{
+				NativeMethods.WrapComCall(vsPersistDocData.RenameDocData((uint)attributes, _OwningHierarchy.ExplorerConnection as IVsHierarchy, (uint)_OwningItemId, newMoniker));
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw ex;
+			}
 		}
 
 		_Moniker = newMoniker;
@@ -325,16 +407,24 @@ internal abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersi
 
 	public virtual bool Save(VSSAVEFLAGS saveFlags)
 	{
-		Diag.Trace("Saving");
+		// Diag.Trace("Saving");
 		if (UnderlyingDocument.DocData is IVsPersistDocData vsPersistDocData)
 		{
-			NativeMethods.WrapComCall(vsPersistDocData.SaveDocData(saveFlags, out string pbstrMkDocumentNew, out int pfSaveCanceled));
-			if (pbstrMkDocumentNew != null)
+			try
 			{
-				_Moniker = pbstrMkDocumentNew;
-			}
+				NativeMethods.WrapComCall(vsPersistDocData.SaveDocData(saveFlags, out string pbstrMkDocumentNew, out int pfSaveCanceled));
+				if (pbstrMkDocumentNew != null)
+				{
+					_Moniker = pbstrMkDocumentNew;
+				}
 
-			return pfSaveCanceled == 0;
+				return pfSaveCanceled == 0;
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw ex;
+			}
 		}
 
 		bool flag = false;
@@ -717,21 +807,52 @@ internal abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersi
 	{
 		IVsWindowFrame vsWindowFrame;
 
-		vsWindowFrame = Host.CreateDocumentWindow(WindowFrameAttributes, _Moniker, _Caption, null, EditorType, null, CommandUIGuid, UnderlyingDocument.DocView, this, _OwningItemId, _OwningHierarchy.ExplorerConnection as IVsUIHierarchy, _ServiceProvider as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
+		try
+		{
+			vsWindowFrame = Host.CreateDocumentWindow(WindowFrameAttributes, _Moniker, _Caption, null, EditorType, null, CommandUIGuid, UnderlyingDocument.DocView, this, _OwningItemId, _OwningHierarchy.ExplorerConnection as IVsUIHierarchy, _ServiceProvider as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
 
 		IVsTrackSelectionEx vsTrackSelectionEx = null;
 		IServiceProvider serviceProvider = null;
 
-		NativeMethods.WrapComCall(vsWindowFrame.GetProperty(-3002, out object pvar));
+		object pvar;
+
+		try
+		{
+			NativeMethods.WrapComCall(vsWindowFrame.GetProperty(-3002, out pvar));
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
 
 		if (pvar is Microsoft.VisualStudio.OLE.Interop.IServiceProvider serviceProvider2)
 		{
-			serviceProvider = new ServiceProvider(serviceProvider2);
+			try
+			{
+				serviceProvider = new ServiceProvider(serviceProvider2);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw ex;
+			}
 		}
 
 		if (serviceProvider != null)
 		{
-			vsTrackSelectionEx = serviceProvider.GetService(typeof(SVsTrackSelectionEx)) as IVsTrackSelectionEx;
+
+			try
+			{
+				vsTrackSelectionEx = serviceProvider.GetService(typeof(SVsTrackSelectionEx)) as IVsTrackSelectionEx;
+			}
+			catch (Exception ex) { Diag.Dug(ex); throw ex; }
 		}
 
 		if (vsTrackSelectionEx != null)
@@ -744,7 +865,15 @@ internal abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersi
 
 				intPtr = Marshal.GetComInterfaceForObject(_OwningHierarchy.ExplorerConnection, typeof(IVsHierarchy));
 
-				NativeMethods.WrapComCall(vsTrackSelectionEx.OnSelectChangeEx(intPtr, (uint)_OwningItemId, null, ppSC));
+				try
+				{
+					NativeMethods.WrapComCall(vsTrackSelectionEx.OnSelectChangeEx(intPtr, (uint)_OwningItemId, null, ppSC));
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex);
+					throw ex;
+				}
 			}
 			finally
 			{
@@ -755,7 +884,15 @@ internal abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersi
 			}
 		}
 
-		UnderlyingDocument.OnPostCreateFrame((object)vsWindowFrame);
+		try
+		{
+			UnderlyingDocument.OnPostCreateFrame((object)vsWindowFrame);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
 
 		return vsWindowFrame;
 	}
@@ -767,7 +904,7 @@ internal abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersi
 
 		_OwningHierarchy.ExplorerConnection.Connection.EnsureConnected();
 
-		// IDTDocToolFactoryProvider toolFactoryProvider = Host.GetService<IDTDocToolFactoryProvider>();
+		IDTDocToolFactoryProvider toolFactoryProvider = Host.GetService<IDTDocToolFactoryProvider>();
 		IVsDataConnectionManager connectionManager = Host.GetService<IVsDataConnectionManager>();
 
 
@@ -778,7 +915,7 @@ internal abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersi
 
 
 		// Type queryDesigner = typeof(IDTQueryDesignerFactory);
-
+		Guid guid = VSConstants.GUID_TextEditorFactory;
 
 		object factory;
 		try
@@ -786,8 +923,9 @@ internal abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersi
 			// ************** This is where it all falls flat.
 			// ************** The COM object simply will not instantiate
 
+			factory = toolFactoryProvider.CreateToolFactory((object)connection, ref guid);
 			// factory = toolFactoryProvider.CreateToolFactory((object)connection, ref _ToolFactoryGuid);
-			factory = Activator.CreateInstance(typeof(IDTQueryDesignerFactory), new object[] { connection });
+			// factory = Activator.CreateInstance(typeof(IDTQueryDesignerFactory), new object[] { connection });
 		}
 		catch (Exception ex)
 		{
@@ -907,8 +1045,16 @@ internal abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersi
 	{
 		if (UnderlyingDocument.DocData is IVsPersistDocData vsPersistDocData)
 		{
-			NativeMethods.WrapComCall(vsPersistDocData.IsDocDataDirty(out int pfDirty));
-			_IsDirty = pfDirty != 0;
+			try
+			{
+				NativeMethods.WrapComCall(vsPersistDocData.IsDocDataDirty(out int pfDirty));
+				_IsDirty = pfDirty != 0;
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw ex;
+			}
 		}
 		else
 		{

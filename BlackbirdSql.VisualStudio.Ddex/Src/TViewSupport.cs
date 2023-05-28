@@ -16,6 +16,8 @@ using BlackbirdSql.Common;
 using Microsoft.VisualStudio.Shell;
 using System.Threading.Tasks;
 using BlackbirdSql.Common.Providers;
+using BlackbirdSql.VisualStudio.Ddex.Extensions;
+using FirebirdSql.Data.FirebirdClient;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -29,10 +31,8 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 /// Partly plagiarized off of Microsoft.VisualStudio.Data.Providers.SqlServer.SqlViewSupport.
 /// </summary>
 // =========================================================================================================
-internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDataViewIconProvider
+public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDataViewIconProvider
 {
-	private static int _ViewCount;
-
 	private static string _IconName = null;
 	private static string _IconPrefix = null;
 	private static Icon _Icon = null;
@@ -117,13 +117,13 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 
 	public override void Close()
 	{
-		_ViewCount--;
-		_ = _ViewCount;
+		/*
 
 		IVsDataConnection connection = ViewHierarchy.ExplorerConnection.Connection;
 
 		if (connection != null)
 			connection.StateChanged -= InitializeProperties;
+		*/
 	}
 
 
@@ -147,6 +147,8 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 			return new TViewDocumentProvider();
 		}
 		*/
+
+		// Diag.Trace(serviceType.FullName + " is not supported");
 
 		object service = base.CreateService(serviceType);
 
@@ -199,6 +201,8 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 
 	public override void Initialize()
 	{
+		base.Initialize();
+
 		IVsDataConnection connection = ViewHierarchy.ExplorerConnection.Connection;
 		if (connection.State == DataConnectionState.Open)
 		{
@@ -208,8 +212,6 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 		{
 			connection.StateChanged += InitializeProperties;
 		}
-
-		_ViewCount++;
 	}
 
 
@@ -364,10 +366,12 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 		if (_IconName != null && name == _IconName)
 		{
 			// Expand columns folder on first expand of table folder
+
 			if (expanded && node.Name == "ColumnFolder")
 			{
 				_ = Task.Run(() => ExpandNodeAsync(itemId));
 			}
+
 
 			// OnIconsChanged(new DataViewNodeEventArgs(itemId));
 			// return (Icon)_Icon.Clone();
@@ -395,10 +399,12 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 				// OnIconsChanged(new DataViewNodeEventArgs(itemId));
 
 				// Expand columns folder on first expand of table folder
+
 				if (expanded && node.Name == "ColumnFolder")
 				{
 					_ = Task.Run(() => ExpandNodeAsync(itemId));
 				}
+
 
 
 				return icon;
@@ -449,18 +455,31 @@ internal class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVs
 
 	private void InitializeProperties()
 	{
-		IVsDataConnection connection = ViewHierarchy.ExplorerConnection.Connection;
-		if (connection.State == DataConnectionState.Open)
+		try
 		{
-			IVsDataSourceInformation vsDataSourceInformation = connection.GetService(typeof(IVsDataSourceInformation)) as IVsDataSourceInformation;
-			// ViewHierarchy.PersistentProperties["BackendType"] = vsDataSourceInformation["BackendType"];
-			SqlMonikerHelper sqlMoniker = new()
+			IVsDataConnection connection = ViewHierarchy.ExplorerConnection.Connection;
+			if (connection.State == DataConnectionState.Open)
 			{
-				Server = vsDataSourceInformation["DataSourceName"] as string,
-				Database = vsDataSourceInformation["Dataset"] as string,
-				User = vsDataSourceInformation["UserId"] as string
-			};
-			ViewHierarchy.PersistentProperties["MkDocumentPrefix"] = sqlMoniker.ToString();
+				IVsDataSourceInformation vsDataSourceInformation = connection.GetService(typeof(IVsDataSourceInformation)) as IVsDataSourceInformation;
+				// ViewHierarchy.PersistentProperties["BackendType"] = vsDataSourceInformation["BackendType"];
+				SqlMonikerHelper sqlMoniker = new()
+				{
+					Server = vsDataSourceInformation["DataSourceName"] as string,
+					Database = vsDataSourceInformation["Dataset"] as string,
+					User = vsDataSourceInformation["UserId"] as string
+				};
+				ViewHierarchy.PersistentProperties["MkDocumentPrefix"] = sqlMoniker.ToString();
+
+				LinkageParser parser = LinkageParser.Instance(connection);
+
+				if (parser.ClearToLoadAsync)
+					parser.AsyncExecute(10, 5);
+			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
 		}
 	}
 

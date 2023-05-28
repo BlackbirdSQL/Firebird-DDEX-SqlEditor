@@ -2,268 +2,424 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Windows.Forms;
-using System.Windows.Forms.Design;
-using Microsoft;
-using Microsoft.VisualStudio.Data.Core;
+using System.Text;
+
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Data.Services;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.TextManager.Interop;
+
+using BlackbirdSql.Common.Commands;
+
+using IServiceProvider = System.IServiceProvider;
+using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+using IObjectWithSite = Microsoft.VisualStudio.OLE.Interop.IObjectWithSite;
 
 namespace BlackbirdSql.Common.Providers;
 
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "<Pending>")]
 
-internal class Hostess : IDisposable
+/// <summary>
+/// Editor related Host services.
+/// </summary>
+public class Hostess : AbstractHostess
 {
 
-	private IVsDataHostService _HostService;
-
-	private string _ApplicationDataDirectory = null;
-
-	protected IVsDataHostService HostService => _HostService;
-
-	private delegate object CreateLocalInstanceDelegate(Guid classId);
-	private delegate void ShowMessageDelegate(string message);
-	private delegate DialogResult ShowQuestionDelegate(string question, MessageBoxButtons buttons, MessageBoxDefaultButton defaultButton, string helpId);
-
-
-	public string ApplicationDataDirectory
+	public Hostess(IServiceProvider serviceProvider) : base(serviceProvider)
 	{
-		get
+	}
+
+
+	/// <summary>
+	/// Activates or opens a physical file for editing
+	/// </summary>
+	/// <param name="fileIdentifier"></param>
+	/// <param name="doNotShowWindowFrame"></param>
+	/// <returns></returns>
+	internal IVsWindowFrame ActivateOrOpenDocument(IVsDataExplorerNode node, bool doNotShowWindowFrame)
+	{
+		ThreadHelper.ThrowIfNotOnUIThread();
+
+		int result;
+
+		SqlMonikerHelper moniker = new(node);
+		string source = moniker.GetDecoratedDdlSource(node.Object);
+		string mkDocument = moniker.ToString();
+		string path = moniker.ToPath(ApplicationDataDirectory);
+		uint grfIDO = 0; // 1u;
+
+		IVsWindowFrame vsWindowFrame;
+
+		Guid langGuid = new(CommandProperties.LangUSql);
+		Guid editorGuid = new(CommandProperties.SqlEditorGuid);
+		Guid logicalViewGuid = VSConstants.LOGVIEWID_TextView;
+		string physicalView = null;
+
+		IVsUIHierarchy hierarchy;
+
+		/*
+		if (path.Length > 260)
 		{
-			if (_ApplicationDataDirectory == null)
-			{
-				IVsShell service = _HostService.GetService<IVsShell>();
-				NativeMethods.WrapComCall(service.GetProperty(-9021, out object pvar));
-				_ApplicationDataDirectory = pvar as string;
-			}
-
-			return _ApplicationDataDirectory;
+			NotSupportedException ex = new(Resources.SqlViewTextObjectCommandProvider_PathTooLong);
+			Diag.Dug(ex);
+			throw ex;
 		}
-	}
-
-	public Hostess(IServiceProvider serviceProvider)
-	{
-		// Diag.Trace();
-		_HostService = serviceProvider.GetService(typeof(IVsDataHostService)) as IVsDataHostService;
-
-		try { Assumes.Present(_HostService); }
-		catch (Exception ex) { Diag.Dug(ex); throw; }
-	}
-
-	~Hostess()
-	{
-		Dispose(disposing: false);
-	}
-
-
-	public object CreateLocalInstance(Guid classId)
-	{
-		if (Thread.CurrentThread == _HostService.UIThread)
-			return CreateLocalInstanceImpl(classId);
-
-		return _HostService.InvokeOnUIThread(new CreateLocalInstanceDelegate(CreateLocalInstanceImpl), classId);
-	}
-
-
-
-	private object CreateLocalInstanceImpl(Guid classId)
-	{
-		ILocalRegistry2 service = _HostService.GetService<SLocalRegistry, ILocalRegistry2>();
-
-		NativeMethods.WrapComCall(service.CreateInstance(classId, null, ref NativeMethods.IID_IUnknown, 1u, out IntPtr ppvObj));
-		object result = null;
-		if (ppvObj != IntPtr.Zero)
-		{
-			result = Marshal.GetObjectForIUnknown(ppvObj);
-			Marshal.Release(ppvObj);
-		}
-
-		return result;
-	}
-
-	public bool IsDocumentInAProject(string documentMoniker)
-	{
-		IVsUIShellOpenDocument service = _HostService.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
-		_ = NativeMethods.WrapComCall(service.IsDocumentInAProject(documentMoniker, out _, out _, out _, out int pDocInProj));
-		return pDocInProj != 0;
-	}
-
-
-	public IVsWindowFrame OpenDocumentViaProject(string documentMoniker, Guid rguidLogicalView = default)
-	{
-		IVsUIShellOpenDocument service = _HostService.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
-		_ = NativeMethods.WrapComCall(service.OpenDocumentViaProject(documentMoniker, ref rguidLogicalView, out _, out _, out _, out IVsWindowFrame ppWindowFrame));
-		return ppWindowFrame;
-	}
-
-
-
-	public void RenameDocument(string oldDocumentMoniker, string newDocumentMoniker)
-	{
-		RenameDocument(oldDocumentMoniker, -1, newDocumentMoniker);
-	}
-
-	public void RenameDocument(string oldDocumentMoniker, int newItemId, string newDocumentMoniker)
-	{
-		IVsRunningDocumentTable service = _HostService.GetService<SVsRunningDocumentTable, IVsRunningDocumentTable>();
-		NativeMethods.WrapComCall(service.RenameDocument(oldDocumentMoniker, newDocumentMoniker, NativeMethods.HIERARCHY_DONTCHANGE, (uint)newItemId));
-	}
-
-	public void ShowMessage(string message)
-	{
-		if (Thread.CurrentThread == HostService.UIThread)
-		{
-			ShowMessageImpl(message);
-			return;
-		}
-
-		_HostService.InvokeOnUIThread(new ShowMessageDelegate(ShowMessageImpl), message);
-	}
-
-	private void ShowMessageImpl(string message)
-	{
-		IUIService service = _HostService.GetService<IUIService>();
-		service.ShowMessage(message);
-	}
-
-
-	public DialogResult ShowQuestion(string question, MessageBoxDefaultButton defaultButton)
-	{
-		return ShowQuestion(question, defaultButton, null);
-	}
-
-	public DialogResult ShowQuestion(string question, string helpId)
-	{
-		return ShowQuestion(question, MessageBoxDefaultButton.Button2, helpId);
-	}
-
-	public DialogResult ShowQuestion(string question, MessageBoxDefaultButton defaultButton, string helpId)
-	{
-		return ShowQuestion(question, MessageBoxButtons.YesNo, defaultButton, helpId);
-	}
-
-	public DialogResult ShowQuestion(string question, MessageBoxButtons buttons, MessageBoxDefaultButton defaultButton, string helpId)
-	{
-		if (Thread.CurrentThread == _HostService.UIThread)
-		{
-			return ShowQuestionImpl(question, buttons, defaultButton, helpId);
-		}
-
-		return (DialogResult)_HostService.InvokeOnUIThread(new ShowQuestionDelegate(ShowQuestionImpl), question, buttons, defaultButton, helpId);
-	}
-	private DialogResult ShowQuestionImpl(string question, MessageBoxButtons buttons, MessageBoxDefaultButton defaultButton, string helpId)
-	{
-		IVsUIShell service = GetService<SVsUIShell, IVsUIShell>();
-		Guid rclsidComp = Guid.Empty;
-		OLEMSGDEFBUTTON msgdefbtn = OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST;
-		if (defaultButton == MessageBoxDefaultButton.Button2)
-		{
-			msgdefbtn = OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND;
-		}
-
-		NativeMethods.WrapComCall(service.ShowMessageBox(0u, ref rclsidComp, null, question, helpId, 0u, (OLEMSGBUTTON)buttons, msgdefbtn, OLEMSGICON.OLEMSGICON_QUERY, 0, out int pnResult));
-		return (DialogResult)pnResult;
-	}
-
-	public T TryGetService<T>()
-	{
-		return _HostService.TryGetService<T>();
-	}
-
-	public TInterface TryGetService<TService, TInterface>()
-	{
-		return _HostService.TryGetService<TService, TInterface>();
-	}
-
-	public T TryGetService<T>(Guid serviceGuid)
-	{
-		return _HostService.TryGetService<T>(serviceGuid);
-	}
-
-	public T GetService<T>()
-	{
-		return _HostService.GetService<T>();
-	}
-
-	public TInterface GetService<TService, TInterface>()
-	{
-		return _HostService.GetService<TService, TInterface>();
-	}
-
-	public T GetService<T>(Guid serviceGuid)
-	{
-		return _HostService.GetService<T>(serviceGuid);
-	}
-
-	void IDisposable.Dispose()
-	{
-		Dispose(disposing: true);
-		GC.SuppressFinalize(this);
-	}
-
-	private void Dispose(bool disposing)
-	{
-		if (disposing && _HostService != null)
-		{
-			/*
-			if (_environment != null)
-			{
-				((IDisposable)_environment).Dispose();
-				_environment = null;
-			}
-			*/
-
-			_HostService = null;
-			// _serviceProvider = null;
-		}
-	}
-
-
-	public bool ActivateDocumentIfOpen(string documentMoniker)
-	{
-		return ActivateDocumentIfOpen(documentMoniker, doNotShowWindowFrame: false) != null;
-	}
-
-	public IVsWindowFrame ActivateDocumentIfOpen(string documentMoniker, bool doNotShowWindowFrame)
-	{
-		IVsUIShellOpenDocument service = _HostService.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
-		Guid rguidLogicalView = Guid.Empty;
-		uint grfIDO = 1u;
+		*/
 		if (doNotShowWindowFrame)
-		{
 			grfIDO = 0u;
+
+		IVsUIShellOpenDocument service;
+		try
+		{ 
+			service = HostService.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
 		}
 
-		_ = NativeMethods.WrapComCall(service.IsDocumentOpen(null, uint.MaxValue, documentMoniker, ref rguidLogicalView, grfIDO, out _, null, out IVsWindowFrame ppWindowFrame, out _));
-		return ppWindowFrame;
+		if (service == null)
+		{
+			ArgumentNullException ex = new("Service for <SVsUIShellOpenDocument, IVsUIShellOpenDocument> returned null");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		// Check if the document is already open.
+		try
+		{
+			_ = NativeMethods.WrapComCall(service.IsDocumentOpen(null, uint.MaxValue, mkDocument, ref logicalViewGuid,
+				grfIDO, out hierarchy, null, out vsWindowFrame, out _));
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		if (vsWindowFrame != null)
+		{
+			RegisterHierarchy(hierarchy);
+			return vsWindowFrame;
+		}
+
+		if (!Directory.Exists(Path.GetDirectoryName(path)))
+			Directory.CreateDirectory(Path.GetDirectoryName(path));
+
+
+		if (File.Exists(path))
+			File.SetAttributes(path, FileAttributes.Normal);
+
+		FileStream fileStream = File.Open(path, FileMode.Create);
+		using (fileStream)
+		{
+			byte[] bytes = Encoding.ASCII.GetBytes((string)source);
+			fileStream.Write(bytes, 0, bytes.Length);
+		}
+
+		File.SetAttributes(path, FileAttributes.Normal);
+
+
+		try
+		{
+			// This will return the IOleServiceProvider, the hierarchy, it's itemid and window frame
+			result = service.OpenDocumentViaProjectWithSpecific(path,
+				(uint)(__VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_DoOpen | __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_UseEditor),
+				editorGuid, physicalView, logicalViewGuid, out IOleServiceProvider ppSP, out hierarchy, out uint itemId,
+				out vsWindowFrame);
+
+			if (result != VSConstants.S_OK)
+				throw new InvalidOperationException($"OpenDocumentViaProjectWithSpecific [{result}]");
+
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			File.Delete(path);
+			throw ex;
+		}
+
+		if (vsWindowFrame == null)
+		{
+			InvalidOperationException ex = new($"OpenDocumentViaProjectWithSpecific returned a null window frame [{result}].");
+			Diag.Dug(ex);
+			File.Delete(path);
+			throw ex;
+		}
+
+		RegisterHierarchy(hierarchy);
+
+
+		object pvar;
+
+		try
+		{
+			NativeMethods.WrapComCall(vsWindowFrame.GetProperty(-4004, out pvar));
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			File.Delete(path);
+			throw ex;
+		}
+
+		IVsTextLines vsTextLines = pvar as IVsTextLines;
+		if (vsTextLines == null)
+		{
+			(pvar as IVsTextBufferProvider)?.GetTextBuffer(out vsTextLines);
+		}
+
+		if (vsTextLines != null)
+		{
+			try
+			{
+				NativeMethods.WrapComCall(vsTextLines.GetStateFlags(out uint pdwReadOnlyFlags));
+				// pdwReadOnlyFlags |= 1u;
+				NativeMethods.WrapComCall(vsTextLines.SetStateFlags(pdwReadOnlyFlags));
+				if (langGuid != Guid.Empty)
+					vsTextLines.SetLanguageServiceID(langGuid);
+
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				File.Delete(path);
+				throw ex;
+			}
+		}
+
+		if (vsWindowFrame != null && !doNotShowWindowFrame)
+		{
+			try
+			{
+				NativeMethods.WrapComCall(vsWindowFrame.Show());
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				File.Delete(path);
+				throw ex;
+			}
+		}
+
+		File.Delete(path);
+
+		return vsWindowFrame;
 	}
 
-	public IVsWindowFrame CreateDocumentWindow(int attributes, string documentMoniker, string ownerCaption, string editorCaption, Guid editorType, string physicalView, Guid commandUIGuid, object documentView, object documentData, int owningItemId, IVsUIHierarchy owningHierarchy, Microsoft.VisualStudio.OLE.Interop.IServiceProvider serviceProvider)
+
+
+	internal void RegisterHierarchy(IVsUIHierarchy hierarchy)
 	{
+		IPackageController controller;
+
+		try
+		{
+			controller = GetService<IPackageController>();
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		if (controller == null)
+		{
+			ServiceUnavailableException ex = new(typeof(IPackageController));
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		controller.RegisterMiscHierarchy(hierarchy);
+	}
+
+
+	/// <summary>
+	/// Activates or opens a database expression for editing. Not operational. Do not use
+	/// </summary>
+	/// <param name="fileIdentifier"></param>
+	/// <param name="doNotShowWindowFrame"></param>
+	/// <returns></returns>
+	internal IVsWindowFrame ActivateOrOpenVirtualDocument(Package package, IVsDataExplorerNode node, bool doNotShowWindowFrame)
+	{
+		ThreadHelper.ThrowIfNotOnUIThread();
+
+		int result;
+
+		SqlMonikerHelper moniker = new(node);
+		string prop = SqlMonikerHelper.GetNodeScriptProperty(node.Object).ToUpper();
+		string source = (string)node.Object.Properties[prop];
+		string mkDocument = moniker.ToString();
+
+		// Diag.Trace($"Moniker: {node.DocumentMoniker}");
+
+		// Check if the document is already open.
+		IVsWindowFrame vsWindowFrame = ActivateDocumentIfOpen(mkDocument, doNotShowWindowFrame);
+
+		if (vsWindowFrame != null)
+			return vsWindowFrame;
+
+
+
+		IVsUIShellOpenDocument service = HostService.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
+		if (service == null)
+		{
+			ArgumentNullException ex = new("Service for <SVsUIShellOpenDocument, IVsUIShellOpenDocument> returned null");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		Guid langGuid = new(CommandProperties.LangUSql);
+		Guid editorGuid = new(CommandProperties.SqlEditorGuid);
+		Guid logicalViewGuid = VSConstants.LOGVIEWID_TextView;
+		string physicalView = null;
+		IOleServiceProvider ppSP;
+		uint itemId;
+		IVsUIHierarchy hierarchy;
+
+
+		try
+		{
+			// This will return the IOleServiceProvider, the hierarchy, it's itemid and window frame
+			result = service.OpenDocumentViaProjectWithSpecific(mkDocument, 0, editorGuid, physicalView, logicalViewGuid,
+				out ppSP, out hierarchy, out itemId, out vsWindowFrame);
+
+			if (result != VSConstants.S_OK)
+				throw new InvalidOperationException($"OpenDocumentViaProjectWithSpecific [{result}]");
+
+			Diag.Trace("Hierarchy is " + (hierarchy == null ? "null" : hierarchy.ToString()) + " itemid: " + itemId + "  and windowFrame is " + (vsWindowFrame == null ? "NULL" : "NOT NULL") + "  and ppSP is " + (ppSP == null ? "NULL" : "NOT NULL"));
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+
+		ppSP = package;
+
+		string editorCaption;
+		IntPtr docData;
+
+		try
+		{
+			result = CreateDocDataFromText(package, langGuid, source, out docData);
+
+			if (docData == null)
+			{
+				throw new ArgumentNullException("CreateDocDataFromText returned null");
+			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+
+		try
+		{
+			editorCaption = "My Editor Caption";
+			result = service.OpenSpecificEditor(0, mkDocument, editorGuid, null, logicalViewGuid, editorCaption,
+				hierarchy, itemId, docData, ppSP, out vsWindowFrame);
+			// service.OpenSpecificEditor(0, mkDocument, ref editorGuid, null, VSConstants.LOGVIEWID.TextView_guid,
+			//	editorCaption, hierarchy, itemId, docData, ppSP, out vsWindowFrame);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		if (vsWindowFrame == null)
+		{
+			InvalidOperationException ex = new($"OpenSpecificEditor returned a null window frame [{result}].");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		if (!doNotShowWindowFrame)
+		{
+			try
+			{
+				NativeMethods.WrapComCall(vsWindowFrame.Show());
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw ex;
+			}
+		}
+
+		return vsWindowFrame;
+	}
+
+
+
+	/// <summary>
+	/// Loads a string into a docData text buffer.
+	/// </summary>
+	protected int CreateDocDataFromText(Package package, Guid langGuid, string text, out IntPtr docData)
+	{
+		ThreadHelper.ThrowIfNotOnUIThread();
+
+		// Create a new IVsTextLines buffer.
+		Type persistDocDataType = typeof(IVsPersistDocData);
+		Guid riid = persistDocDataType.GUID;
+		Guid clsid = typeof(VsTextBufferClass).GUID;
+
+		// Create the text buffer
+		IVsPersistDocData docDataObject = package.CreateInstance(ref clsid, ref riid, persistDocDataType) as IVsPersistDocData;
+
+		// Site the buffer
+		IObjectWithSite objectWithSite = (IObjectWithSite)docDataObject!;
+		objectWithSite.SetSite(package);
+		// objectWithSite.SetSite(ServiceProvider.GetService(typeof(IOleServiceProvider)));
+
+		// Cast the buffer to a textlines buffer to load the text.
+		IVsTextLines textLines = (IVsTextLines)docDataObject;
+		textLines.InitializeContent(text, text.Length);
+
+		if (langGuid != Guid.Empty)
+			textLines.SetLanguageServiceID(langGuid);
+
+		docData = Marshal.GetIUnknownForObject(docDataObject);
+
+		return VSConstants.S_OK;
+
+	}
+
+	/// <summary>
+	/// Not operational. Do not use
+	/// </summary>
+	public IVsWindowFrame CreateDocumentWindow(int attributes, string documentMoniker, string ownerCaption,
+		string editorCaption, Guid editorType, string physicalView, Guid commandUIGuid, object documentView,
+		object documentData, int owningItemId, IVsUIHierarchy owningHierarchy, IOleServiceProvider serviceProvider)
+	{
+		ThreadHelper.ThrowIfNotOnUIThread();
+
 		IntPtr iUnknownForObject = Marshal.GetIUnknownForObject(documentView);
 		IntPtr iUnknownForObject2 = Marshal.GetIUnknownForObject(documentData);
 		try
 		{
-			IVsUIShell service = _HostService.GetService<SVsUIShell, IVsUIShell>();
+			IVsUIShell service = HostService.GetService<SVsUIShell, IVsUIShell>();
 			NativeMethods.WrapComCall(service.CreateDocumentWindow((uint)attributes, documentMoniker, owningHierarchy, (uint)owningItemId, iUnknownForObject, iUnknownForObject2, ref editorType, physicalView, ref commandUIGuid, serviceProvider, ownerCaption, editorCaption, null, out IVsWindowFrame ppWindowFrame));
 			return ppWindowFrame;
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
 		}
 		finally
 		{
 			Marshal.Release(iUnknownForObject2);
 			Marshal.Release(iUnknownForObject);
 		}
-	}
-
-	public bool IsCommandUIContextActive(Guid commandUIGuid)
-	{
-		IVsMonitorSelection service = _HostService.GetService<IVsMonitorSelection>();
-		NativeMethods.WrapComCall(service.GetCmdUIContextCookie(ref commandUIGuid, out uint pdwCmdUICookie));
-		NativeMethods.WrapComCall(service.IsCmdUIContextActive(pdwCmdUICookie, out int pfActive));
-		return pfActive != 0;
 	}
 
 }

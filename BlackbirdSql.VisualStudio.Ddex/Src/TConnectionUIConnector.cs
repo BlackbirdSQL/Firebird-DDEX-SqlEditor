@@ -20,7 +20,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 /// Implementation of <see cref="Microsoft.VisualStudio.Data.Services.SupportEntities.IVsDataConnectionUIConnector"/> interface
 /// </summary>
 // =========================================================================================================
-internal class TConnectionUIConnector : DataConnectionUIConnector
+public class TConnectionUIConnector : DataConnectionUIConnector
 {
 
 	// ---------------------------------------------------------------------------------

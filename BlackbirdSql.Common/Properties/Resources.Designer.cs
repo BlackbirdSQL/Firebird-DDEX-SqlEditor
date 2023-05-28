@@ -61,6 +61,186 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to AdoDotNet missing invariant name.
+        /// </summary>
+        internal static string AdoDotNetProvider_MissingInvariantName {
+            get {
+                return ResourceManager.GetString("AdoDotNetProvider_MissingInvariantName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to AdoDotNet provider {0} not registered.
+        /// </summary>
+        internal static string AdoDotNetProvider_NotRegistered {
+            get {
+                return ResourceManager.GetString("AdoDotNetProvider_NotRegistered", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to AdoDotNet provider {0} object {1} not implemented.
+        /// </summary>
+        internal static string AdoDotNetProvider_ObjectNotImplemented {
+            get {
+                return ResourceManager.GetString("AdoDotNetProvider_ObjectNotImplemented", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SqlViewTextObjectCommandProvider_CancelExecution.
+        /// </summary>
+        internal static string CommandProvider_CancelExecution {
+            get {
+                return ResourceManager.GetString("CommandProvider_CancelExecution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;New Global Query.
+        /// </summary>
+        internal static string CommandProvider_NewQuery {
+            get {
+                return ResourceManager.GetString("CommandProvider_NewQuery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;New System Query.
+        /// </summary>
+        internal static string CommandProvider_NewSystemQuery {
+            get {
+                return ResourceManager.GetString("CommandProvider_NewSystemQuery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;New User Query.
+        /// </summary>
+        internal static string CommandProvider_NewUserQuery {
+            get {
+                return ResourceManager.GetString("CommandProvider_NewUserQuery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No source available.
+        /// </summary>
+        internal static string CommandProvider_NoSourceAvailable {
+            get {
+                return ResourceManager.GetString("CommandProvider_NoSourceAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Open Column Expression.
+        /// </summary>
+        internal static string CommandProvider_OpenColumnScript {
+            get {
+                return ResourceManager.GetString("CommandProvider_OpenColumnScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Open Foreign Key Expression.
+        /// </summary>
+        internal static string CommandProvider_OpenForeignKeyScript {
+            get {
+                return ResourceManager.GetString("CommandProvider_OpenForeignKeyScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Open Function Source.
+        /// </summary>
+        internal static string CommandProvider_OpenFunctionScript {
+            get {
+                return ResourceManager.GetString("CommandProvider_OpenFunctionScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Open Index Expression.
+        /// </summary>
+        internal static string CommandProvider_OpenIndexScript {
+            get {
+                return ResourceManager.GetString("CommandProvider_OpenIndexScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Open Script.
+        /// </summary>
+        internal static string CommandProvider_OpenScript {
+            get {
+                return ResourceManager.GetString("CommandProvider_OpenScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Open Procedure Source.
+        /// </summary>
+        internal static string CommandProvider_OpenStoredProcedureScript {
+            get {
+                return ResourceManager.GetString("CommandProvider_OpenStoredProcedureScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Open System Script.
+        /// </summary>
+        internal static string CommandProvider_OpenSystemScript {
+            get {
+                return ResourceManager.GetString("CommandProvider_OpenSystemScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Open Trigger Expression.
+        /// </summary>
+        internal static string CommandProvider_OpenTriggerScript {
+            get {
+                return ResourceManager.GetString("CommandProvider_OpenTriggerScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Open User Script.
+        /// </summary>
+        internal static string CommandProvider_OpenUserScript {
+            get {
+                return ResourceManager.GetString("CommandProvider_OpenUserScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Open View Definition.
+        /// </summary>
+        internal static string CommandProvider_OpenViewScript {
+            get {
+                return ResourceManager.GetString("CommandProvider_OpenViewScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The document moniker path name is too long.
+        /// </summary>
+        internal static string CommandProvider_PathTooLong {
+            get {
+                return ResourceManager.GetString("CommandProvider_PathTooLong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SqlViewTextObjectCommandProvider_PromptSaveObject.
+        /// </summary>
+        internal static string CommandProvider_PromptSaveObject {
+            get {
+                return ResourceManager.GetString("CommandProvider_PromptSaveObject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to QueryDesignerDocument_NewQueryCaption.
         /// </summary>
         internal static string QueryDesignerDocument_NewQueryCaption {
@@ -160,69 +340,6 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SqlViewTextObjectCommandProvider_CancelExecution.
-        /// </summary>
-        internal static string SqlViewTextObjectCommandProvider_CancelExecution {
-            get {
-                return ResourceManager.GetString("SqlViewTextObjectCommandProvider_CancelExecution", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SqlViewTextObjectCommandProvider_NoSourceAvailable.
-        /// </summary>
-        internal static string SqlViewTextObjectCommandProvider_NoSourceAvailable {
-            get {
-                return ResourceManager.GetString("SqlViewTextObjectCommandProvider_NoSourceAvailable", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SqlViewTextObjectCommandProvider_Open.
-        /// </summary>
-        internal static string SqlViewTextObjectCommandProvider_Open {
-            get {
-                return ResourceManager.GetString("SqlViewTextObjectCommandProvider_Open", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The document moniker path name is too long.
-        /// </summary>
-        internal static string SqlViewTextObjectCommandProvider_PathTooLong {
-            get {
-                return ResourceManager.GetString("SqlViewTextObjectCommandProvider_PathTooLong", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SqlViewTextObjectCommandProvider_PromptSaveObject.
-        /// </summary>
-        internal static string SqlViewTextObjectCommandProvider_PromptSaveObject {
-            get {
-                return ResourceManager.GetString("SqlViewTextObjectCommandProvider_PromptSaveObject", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SqlViewTextObjectCommandProvider_StepIntoFunction.
-        /// </summary>
-        internal static string SqlViewTextObjectCommandProvider_StepIntoFunction {
-            get {
-                return ResourceManager.GetString("SqlViewTextObjectCommandProvider_StepIntoFunction", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SqlViewTextObjectCommandProvider_StepIntoStoredProcedure.
-        /// </summary>
-        internal static string SqlViewTextObjectCommandProvider_StepIntoStoredProcedure {
-            get {
-                return ResourceManager.GetString("SqlViewTextObjectCommandProvider_StepIntoStoredProcedure", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to TextEditorDocument_FailedToLoadText.
         /// </summary>
         internal static string TextEditorDocument_FailedToLoadText {
@@ -232,16 +349,7 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &amp;Open Script.
-        /// </summary>
-        internal static string TextObjectCommandProvider_Open {
-            get {
-                return ResourceManager.GetString("TextObjectCommandProvider_Open", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to DataToolsDocument_Caption.
+        ///   Looks up a localized string similar to {0} - {1}.
         /// </summary>
         internal static string ToolsDocument_Caption {
             get {

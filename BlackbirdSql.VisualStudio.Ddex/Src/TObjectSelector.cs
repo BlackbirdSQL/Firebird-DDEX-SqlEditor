@@ -26,7 +26,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 /// Implementation of <see cref="IVsDataObjectSelector"/> enumerator interface
 /// </summary>
 // =========================================================================================================
-class TObjectSelector : AdoDotNetObjectSelector
+public class TObjectSelector : AdoDotNetObjectSelector
 {
 
 	// ---------------------------------------------------------------------------------
@@ -74,7 +74,7 @@ class TObjectSelector : AdoDotNetObjectSelector
 	/// </summary>
 	/// <remarks>
 	/// Also intercepts enumerations from the SE for <see cref="AbstractCommandProvider"/> and
-	/// sets <see cref="DataToolsCommands.CommandObjectType"/> to the correct node system object type
+	/// sets <see cref="CommandProperties.CommandObjectType"/> to the correct node system object type
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
 	protected override IVsDataReader SelectObjects(string typeName, object[] restrictions,
@@ -215,7 +215,8 @@ class TObjectSelector : AdoDotNetObjectSelector
 
 	private DataTable GetSchema(DbConnection connection, string typeName, object[] restrictions, object[] parameters)
 	{
-		if (DataToolsCommands.CommandObjectType != DataToolsCommands.DataObjectType.Global
+		// Diag.Trace();
+		if (CommandProperties.CommandObjectType != CommandProperties.DataObjectType.None
 			&& typeName == "Table" && parameters != null && parameters.Length > 0 && (string)parameters[0] == "Tables"
 			&& (restrictions == null || restrictions.Length < 3 || (restrictions.Length > 2 && restrictions[2] == null)))
 		{
@@ -228,10 +229,21 @@ class TObjectSelector : AdoDotNetObjectSelector
 
 				restrictions = objs;
 			}
-			restrictions[3] = DataToolsCommands.CommandObjectType == DataToolsCommands.DataObjectType.User ? "TABLE" : "SYSTEM TABLE";
+			switch (CommandProperties.CommandObjectType)
+			{
+				case CommandProperties.DataObjectType.User:
+					restrictions[3] = "TABLE";
+					break;
+				case CommandProperties.DataObjectType.System:
+					restrictions[3] = "SYSTEM TABLE";
+					break;
+				default:
+					restrictions[3] = null;
+					break;
+			}
 		}
-
-		DataToolsCommands.CommandObjectType = DataToolsCommands.DataObjectType.Global;
+		
+		CommandProperties.CommandObjectType = CommandProperties.DataObjectType.None;
 
 
 
@@ -258,6 +270,7 @@ class TObjectSelector : AdoDotNetObjectSelector
 		{
 			if (entry.Value is object[] array2)
 			{
+				// Diag.Trace();
 				IDictionary<string, object> mappings = GetMappings(array2);
 				ApplyMappings(schema, mappings);
 			}

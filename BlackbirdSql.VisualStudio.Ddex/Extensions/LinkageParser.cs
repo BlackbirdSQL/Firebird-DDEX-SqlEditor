@@ -15,9 +15,7 @@ using Microsoft.VisualStudio.TaskStatusCenter;
 using FirebirdSql.Data.FirebirdClient;
 
 using BlackbirdSql.Common;
-
-
-
+using System.Diagnostics;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Extensions;
 
@@ -59,7 +57,6 @@ internal class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	protected LinkageParser(FbConnection connection) : base(connection)
 	{
-		// Diag.Trace("Creating new connection parser");
 	}
 
 
@@ -69,13 +66,18 @@ internal class LinkageParser : AbstractLinkageParser
 	/// Retrieves or creates the parser instance of a connection derived from Site
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static LinkageParser Instance(IVsDataConnection site)
+	public static LinkageParser Instance(IVsDataConnection site, bool canCreate = true)
 	{
+		if (site == null)
+			return null;
+
 		if (site.GetService(typeof(IVsDataConnectionSupport)) is not IVsDataConnectionSupport vsDataConnectionSupport)
 			return null;
-		FbConnection connection = vsDataConnectionSupport.ProviderObject as FbConnection;
 
-		return Instance(connection);
+		if (vsDataConnectionSupport.ProviderObject is not FbConnection connection)
+			return null;
+
+		return Instance(connection, canCreate);
 	}
 
 
@@ -85,11 +87,12 @@ internal class LinkageParser : AbstractLinkageParser
 	/// Retrieves or creates a distinct unique parser for a connection.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static new LinkageParser Instance(FbConnection connection)
+	public static new LinkageParser Instance(FbConnection connection, bool canCreate = true)
 	{
 		LinkageParser parser = (LinkageParser)AbstractLinkageParser.Instance(connection);
 
-		parser ??= new(connection);
+		if (canCreate)
+			parser ??= new(connection);
 
 		return parser;
 	}
@@ -259,6 +262,55 @@ internal class LinkageParser : AbstractLinkageParser
 		}
 
 		_SyncTokenSource?.Cancel();
+
+		return true;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Disable future async operations and suspends any current async tasks.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public bool Disable()
+	{
+		_Enabled = false;
+
+		try
+		{
+			if (_AsyncTask == null || _AsyncTask.IsCompleted)
+				return true;
+
+			_AsyncTokenSource.Cancel();
+
+			// _AsyncCardinal < 2: Async is still waiting in thread queue managed by UI thread so we flag
+			// it to cancel and leave.
+			// If we wait we'll deadlock because the launch is behind us.
+			if (_AsyncCardinal < 2)
+				return true;
+
+			_SyncTokenSource = new();
+			_SyncToken = _SyncTokenSource.Token;
+
+			try
+			{
+#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
+				_AsyncTask.Wait(_SyncToken);
+#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
+			}
+			catch (Exception) { }
+
+			_SyncTokenSource.Dispose();
+			_SyncTokenSource = null;
+			_SyncToken = default;
+
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
 
 		return true;
 	}

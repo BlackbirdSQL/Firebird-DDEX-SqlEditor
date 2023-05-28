@@ -716,7 +716,11 @@ internal class VsGlobalsAgent
 			ThreadHelper.ThrowIfNotOnUIThread();
 
 			if (globals == null)
-				throw new ArgumentNullException("Globals is null");
+			{
+				ArgumentNullException ex = new("Globals is null");
+				Diag.Dug(ex);
+				throw ex;
+			}
 
 
 			if (globals.get_VariableExists(G_Key))
@@ -784,7 +788,9 @@ internal class VsGlobalsAgent
 
 			if (globals == null)
 			{
-				throw new ArgumentNullException("Globals is null");
+				ArgumentNullException ex = new("Globals is null");
+				Diag.Dug(ex);
+				throw ex;
 			}
 
 			if (globals.get_VariableExists(G_Key))

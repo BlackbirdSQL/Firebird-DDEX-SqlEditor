@@ -124,7 +124,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			if (Site != null && Site.TryGetValue("Data Source", out object value))
 				txtDataSource.Text = (string)value;
 			else
-				txtDataSource.Text = ConnectionResources.DefaultValueDataSource;
+				txtDataSource.Text = DslProperties.DefaultValueDataSource;
 
 			if (txtDataSource.Text != "")
 				cmbDataSource.SelectedValue = txtDataSource.Text.ToLower();
@@ -135,45 +135,45 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			if (Site != null && Site.TryGetValue("User ID", out value))
 				txtUserName.Text = (string)value;
 			else
-				txtUserName.Text = ConnectionResources.DefaultValueUserId;
+				txtUserName.Text = DslProperties.DefaultValueUserId;
 
 			if (Site != null && Site.TryGetValue("Initial Catalog", out value))
 				txtDatabase.Text = (string)value;
 			else
-				txtDatabase.Text = ConnectionResources.DefaultValueCatalog;
+				txtDatabase.Text = DslProperties.DefaultValueCatalog;
 
 
 			if (Site != null && Site.TryGetValue("Password", out value))
 				txtPassword.Text = (string)value;
 			else
-				txtPassword.Text = ConnectionResources.DefaultValuePassword;
+				txtPassword.Text = DslProperties.DefaultValuePassword;
 
 
 			if (Site != null && Site.TryGetValue("Role Name", out value))
 				txtRole.Text = (string)value;
 			else
-				txtRole.Text = ConnectionResources.DefaultValueRoleName;
+				txtRole.Text = DslProperties.DefaultValueRoleName;
 
 			if (Site != null && Site.TryGetValue("Character Set", out value))
 				cboCharset.SetSelectedValueX(value);
 			else
-				cboCharset.SetSelectedValueX(ConnectionResources.DefaultValueCharacterSet);
+				cboCharset.SetSelectedValueX(DslProperties.DefaultValueCharacterSet);
 
 			if (Site != null && Site.TryGetValue("Port Number", out value))
 				txtPort.Text = (string)value;
 			else
-				txtPort.Text = ConnectionResources.DefaultValuePortNumber.ToString();
+				txtPort.Text = DslProperties.DefaultValuePortNumber.ToString();
 
 			if (Site != null && Site.TryGetValue("Dialect", out value))
 				cboDialect.SetSelectedValueX(value);
 			else
-				cboDialect.SetSelectedValueX(ConnectionResources.DefaultValueDialect);
+				cboDialect.SetSelectedValueX(DslProperties.DefaultValueDialect);
 
 			if (Site != null && Site.TryGetValue("Server Type", out value))
 				cboServerType.SelectedIndex = Convert.ToInt32((string)value);
 			else
-				cboServerType.SelectedIndex = (int)ConnectionResources.DefaultValueServerType;
-			// Diag.Trace("Default ServerType: " + (int)ConnectionResources.DefaultValueServerType);
+				cboServerType.SelectedIndex = (int)DslProperties.DefaultValueServerType;
+			// Diag.Trace("Default ServerType: " + (int)DslProperties.DefaultValueServerType);
 			// Strange bug here. The default on the enum is being returned as the literal. Cannot trace it
 
 
@@ -447,26 +447,26 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			if ((int)_DataSources.Row["Orderer"] == 1)
 			{
 				txtDataSource.Text = "";
-				txtPort.Text = ConnectionResources.DefaultValuePortNumber.ToString();
-				cboServerType.SetSelectedIndexX((int)ConnectionResources.DefaultValueServerType).ToString();
+				txtPort.Text = DslProperties.DefaultValuePortNumber.ToString();
+				cboServerType.SetSelectedIndexX((int)DslProperties.DefaultValueServerType).ToString();
 				txtDatabase.Text = "";
-				cboDialect.SetSelectedValueX(ConnectionResources.DefaultValueDialect);
+				cboDialect.SetSelectedValueX(DslProperties.DefaultValueDialect);
 				txtUserName.Text = "";
 				txtPassword.Text = "";
 				txtRole.Text = "";
-				cboCharset.SetSelectedValueX(ConnectionResources.DefaultValueCharacterSet);
+				cboCharset.SetSelectedValueX(DslProperties.DefaultValueCharacterSet);
 
 				if (Site != null)
 				{
 					Site["Data Source"] = "";
-					Site["Port Number"] = ConnectionResources.DefaultValuePortNumber.ToString();
+					Site["Port Number"] = DslProperties.DefaultValuePortNumber.ToString();
 					Site["Server Type"] = cboServerType.SelectedIndex;
 					Site["Initial Catalog"] = "";
-					Site["Dialect"] = ConnectionResources.DefaultValueDialect;
+					Site["Dialect"] = DslProperties.DefaultValueDialect;
 					Site["User ID"] = txtUserName.Text = "";
 					Site["Password"] = txtPassword.Text = "";
 					Site["Role Name"] = txtRole.Text = "";
-					Site["Character Set"] = ConnectionResources.DefaultValueCharacterSet;
+					Site["Character Set"] = DslProperties.DefaultValueCharacterSet;
 				}
 
 				_DataSources.Position = -1;

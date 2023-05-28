@@ -36,20 +36,46 @@
 	<ItemGroup>
 	  <Compile Remove="Commands\Host.cs" />
 	  <Compile Remove="Commands\TemplateTextCommandProvider.cs" />
+	  <Compile Remove="Commands\WIP\TemplateTextCommandProvider.cs" />
+	  <Compile Remove="Providers\AbstractDataToolsDocument.cs" />
+	  <Compile Remove="Providers\AbstractEditorFactory.cs" />
+	  <Compile Remove="Providers\AbstractTextEditorDocument.cs" />
+	  <Compile Remove="Providers\AdoDotNetProvider.cs" />
 	  <Compile Remove="Providers\DocumentManager.cs" />
+	  <Compile Remove="Providers\DocumentView.cs" />
+	  <Compile Remove="Providers\EditorFactory.cs" />
 	  <Compile Remove="Providers\Host.cs" />
 	  <Compile Remove="Providers\QueryDesignerDocument.cs" />
+	  <Compile Remove="Providers\SqlOperationValidator.cs" />
+	  <Compile Remove="Providers\SqlTextEditorDocument.cs" />
+	  <Compile Remove="Providers\SqlViewNodeLocator.cs" />
+	  <Compile Remove="Providers\WIP\AbstractDataToolsDocument.cs" />
+	  <Compile Remove="Providers\WIP\AbstractEditorFactory.cs" />
+	  <Compile Remove="Providers\WIP\AbstractTextEditorDocument.cs" />
+	  <Compile Remove="Providers\WIP\AdoDotNetProvider.cs" />
+	  <Compile Remove="Providers\WIP\EditorFactory.cs" />
+	  <Compile Remove="Providers\WIP\QueryDesignerDocument.cs" />
+	  <Compile Remove="Providers\WIP\SqlOperationValidator.cs" />
+	  <Compile Remove="Providers\WIP\SqlTextEditorDocument.cs" />
+	  <Compile Remove="Providers\WIP\SqlViewNodeLocator.cs" />
 	</ItemGroup>
 
 
 	<ItemGroup>
-	  <Compile Include="Extensions\ITaskHandlerClient.cs" />
+	  <None Include="Commands\WIP\TemplateTextCommandProvider.cs" />
+	  <None Include="Providers\WIP\AbstractDataToolsDocument.cs" />
+	  <None Include="Providers\WIP\AbstractEditorFactory.cs" />
+	  <None Include="Providers\WIP\AbstractTextEditorDocument.cs" />
+	  <None Include="Providers\WIP\AdoDotNetProvider.cs" />
 	</ItemGroup>
 
 
 	<ItemGroup>
-	  <None Include="Commands\TemplateTextCommandProvider.cs" />
-	  <None Include="Providers\QueryDesignerDocument.cs" />
+	  <None Include="Providers\WIP\EditorFactory.cs" />
+	  <None Include="Providers\WIP\QueryDesignerDocument.cs" />
+	  <None Include="Providers\WIP\SqlOperationValidator.cs" />
+	  <None Include="Providers\WIP\SqlTextEditorDocument.cs" />
+	  <None Include="Providers\WIP\SqlViewNodeLocator.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

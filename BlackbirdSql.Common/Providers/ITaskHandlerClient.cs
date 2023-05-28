@@ -1,8 +1,7 @@
-﻿
-using Microsoft.VisualStudio.TaskStatusCenter;
+﻿using Microsoft.VisualStudio.TaskStatusCenter;
 
 
-namespace BlackbirdSql.Common.Extensions;
+namespace BlackbirdSql.Common.Providers;
 
 
 public interface ITaskHandlerClient

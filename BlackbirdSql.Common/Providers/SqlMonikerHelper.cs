@@ -2,16 +2,38 @@
 using System;
 using System.Globalization;
 using System.Text;
+
 using Microsoft.VisualStudio.Data.Services;
+
+using BlackbirdSql.Common.Properties;
+
+using DataObjectType = BlackbirdSql.Common.Commands.CommandProperties.DataObjectType;
+using System.IO;
+using System.Text.RegularExpressions;
+using Microsoft.VisualStudio.DataTools.Interop;
+using System.Xml.Linq;
+using Microsoft.VisualStudio.GraphModel.CodeSchema;
+using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.ServiceHub.Resources;
+using Newtonsoft.Json.Linq;
 
 namespace BlackbirdSql.Common.Providers;
 
 
 internal class SqlMonikerHelper
 {
-	public const string Prefix = "fbsql:://";
+	private const string _ServiceFolder = "ServerExplorer";
+	private const string _TempSqlFolder = "SqlTemporaryFiles";
 
-	public const string PrefixFormat = "fbsql:://{0}/{1}/{2}";
+	public const string Protocol = "fbsql";
+
+	public const string ProtocolPrefix = "fbsql://";
+
+	public const string NamePrefix = "{0}@{1}({2})";
+
+	public const string UrlPrefix = "fbsql://{0}@{1}({2})";
+
+	public const string DisplayFormat = "{0} - {1} [{2}]";
 
 	private const char _CompositeIdentifierSeparator = '.';
 
@@ -107,6 +129,28 @@ internal class SqlMonikerHelper
 	}
 
 
+
+
+	internal string GetDecoratedDdlSource(IVsDataObject obj)
+	{
+		string prop = GetNodeScriptProperty(obj).ToUpper();
+		string src = ((string)obj.Properties[prop]).Replace("\r\n", "\n").Replace("\r", "\n");
+
+		switch (GetNodeBaseType(obj))
+		{
+			case "Trigger":
+				string active = (bool)obj.Properties["IS_INACTIVE"] ? "INACTIVE" : "ACTIVE";
+				src = $"CREATE TRIGGER {obj.Properties["TRIGGER_NAME"]} FOR {obj.Properties["TABLE_NAME"]} {active}\n"
+					+ $"{GetTriggerEvent((long)obj.Properties["TRIGGER_TYPE"])} POSITION {(short)obj.Properties["PRIORITY"]}\n"
+					+ src;
+				return src;
+			default:
+				return src;
+		}
+	}
+
+
+
 	public void Extract(IVsDataExplorerNode node)
 	{
 		IVsDataObject @rootObj = node.ExplorerConnection.ConnectionNode.Object;
@@ -134,7 +178,7 @@ internal class SqlMonikerHelper
 		identifier[0] = identifier[1] = null;
 
 		for (int i = 0; i < keys.Length; i++)
-			identifier[i+2] = keys[i];
+			identifier[i + 2] = keys[i];
 
 		return identifier;
 
@@ -149,44 +193,241 @@ internal class SqlMonikerHelper
 	// ---------------------------------------------------------------------------------
 	public static string GetNodeScriptProperty(IVsDataObject obj)
 	{
-		if (obj.Type.Name.EndsWith("Column") || obj.Type.Name.EndsWith("Trigger")
-			 || obj.Type.Name == "Index" || obj.Type.Name == "ForeignKey")
-		{
-			return "EXPRESSION";
-		}
-		else if (obj.Type.Name == "View")
-		{
-			return "DEFINITION";
-		}
-		else if (obj.Type.Name == "StoredProcedure" || obj.Type.Name == "Function")
-		{
-			return "SOURCE";
-		}
+		if (obj != null)
+			return GetNodeScriptProperty(obj.Type.Name);
 
 		return null;
 	}
 
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the Source script of a node if it exists else null.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static string GetNodeScriptProperty(string type)
+	{
+		if (type.EndsWith("Column") || type.EndsWith("Trigger")
+			 || type == "Index" || type == "ForeignKey")
+		{
+			return "Expression";
+		}
+		else if (type == "View")
+		{
+			return "Definition";
+		}
+		else if (type == "StoredProcedure" || type == "Function")
+		{
+			return "Source";
+		}
+
+		return type;
+	}
+
+
+	internal static string GetNodeBaseType(IVsDataExplorerNode node)
+	{
+		if (node != null && node.Object != null)
+		{
+			return GetNodeBaseType(node.Object);
+		}
+
+		return "";
+	}
+
+
+	internal static string GetNodeBaseType(IVsDataObject @object)
+	{
+		if (TypeNameIn(@object.Type.Name, "Index", "ForeignKey", "View", "StoredProcedure", "Function"))
+		{
+			return @object.Type.Name;
+		}
+		else if (@object.Type.Name.EndsWith("Column"))
+		{
+			return "Column";
+		}
+		else if (@object.Type.Name.EndsWith("Parameter"))
+		{
+			return "Parameter";
+		}
+		else if (@object.Type.Name.EndsWith("Trigger"))
+		{
+			return "Trigger";
+		}
+
+		return "";
+	}
+
+	internal static string GetNodePathType(string type)
+	{
+		if (type == "Index")
+		{
+			return "Index";
+		}
+		else if (TypeNameIn(type, "ForeignKey", "View", "StoredProcedure", "Function"))
+		{
+			return type;
+		}
+		else if (type.EndsWith("IndexColumn"))
+		{
+			return "IndexColumn";
+		}
+		else if (type.EndsWith("ForeignKeyColumn"))
+		{
+			return "ForeignKeyColumn";
+		}
+		else if (type.EndsWith("ViewColumn"))
+		{
+			return "ViewColumn";
+		}
+		else if (type.EndsWith("TriggerColumn"))
+		{
+			return "TriggerColumn";
+		}
+		else if (type.EndsWith("IndexColumn"))
+		{
+			return "IndexColumn";
+		}
+		else if (type.EndsWith("Column"))
+		{
+			return "Column";
+		}
+		else if (type.EndsWith("ProcedureParameter"))
+		{
+			return "ProcedureParameter";
+		}
+		else if (type.EndsWith("FunctionParameter"))
+		{
+			return "FunctionParameter";
+		}
+		else if (type.EndsWith("Parameter"))
+		{
+			return "Parameter";
+		}
+		else if (type.EndsWith("Trigger"))
+		{
+			return "Trigger";
+		}
+		else
+		{
+			return type;
+		}
+	}
+
+	internal static string GetNodeAlterExpression(IVsDataExplorerNode node)
+	{
+		if (node != null && node.Object != null)
+		{
+			IVsDataObject @object = node.Object;
+
+			if (TypeNameIn(@object.Type.Name, "Index", "ForeignKey", "View", "StoredProcedure", "Function"))
+			{
+				return @object.Type.Name;
+			}
+			else if (@object.Type.Name.EndsWith("Column"))
+			{
+				return "Column";
+			}
+			else if (@object.Type.Name.EndsWith("Parameter"))
+			{
+				return "Parameter";
+			}
+			else if (@object.Type.Name.EndsWith("Trigger"))
+			{
+				return "Trigger";
+			}
+
+		}
+
+		return "";
+	}
+
+
+
+
+	internal static string GetString(string resource)
+	{
+		return Resources.ResourceManager.GetString(resource);
+	}
+
+
+
+	internal static string GetNodeObjectType(DataObjectType objectType)
+	{
+		if (objectType == DataObjectType.System)
+			return "System";
+		else if (objectType == DataObjectType.User)
+			return "User";
+
+		return "";
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns true if typeName exists in the values array else false.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	internal static bool TypeNameIn(string typeName, params string[] values)
+	{
+		foreach (string value in values)
+		{
+			if (typeName.Equals(value, StringComparison.Ordinal))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+
+
 	public void Parse(string fbSqlUrl)
 	{
-		if (fbSqlUrl.StartsWith(Prefix, StringComparison.OrdinalIgnoreCase))
+		// fbsql://username@server(dataset)/type/id0.id2.id3
+		// SqlFiles/Firebird/Type/user.server(dataset).id0.id1.id2
+
+		if (fbSqlUrl.StartsWith(ProtocolPrefix, StringComparison.OrdinalIgnoreCase))
 		{
-			string[] array = fbSqlUrl[Prefix.Length..].Split('/');
-			_Server = array[0];
-			_Database = array[1];
-			_User = array[2];
+			/* TBC
+			string protocol = Regex.Escape(ProtocolPrefix);
+			string user = "[^@]+";
+			Regex regex = new($"{protocol}({user})");
+			*/
+
+			string[] arr = fbSqlUrl[ProtocolPrefix.Length..].Split('/');
+
+			int pos = arr[0].IndexOf('@');
+
+			if (pos != -1)
+				_User = arr[0][..pos];
+			else
+				_User = "";
+
+			pos++;
+
+			string str = arr[0][pos..];
+			pos = str.IndexOf("(");
+
+			_Server = str[..pos];
+			pos++;
+			_Database = str[pos..^1];
 			_ObjectType = null;
 			_ObjectName = null;
 
-			if (array.Length > 3)
+			if (arr.Length > 1)
 			{
-				_ObjectType = UrlTypeToObjectType(array[3]);
+				_ObjectType = UrlTypeToObjectType(arr[1]);
 			}
 
-			if (array.Length > 4)
+			if (arr.Length > 2)
 			{
-				_ObjectName = array[4];
+				_ObjectName = arr[2];
+				for (int i = 3; i < arr.Length; i++)
+					_ObjectName += _CompositeIdentifierSeparator + arr[i];
 			}
 		}
 	}
@@ -194,7 +435,9 @@ internal class SqlMonikerHelper
 
 	public override string ToString()
 	{
-		StringBuilder stringBuilder = new(string.Format(CultureInfo.InvariantCulture, "{0}{1}/{2}/{3}", Prefix, _Server, _Database, _User));
+		// 	public const string UrlPrefix = "fbsql://{0}@{1}({2})";
+
+		StringBuilder stringBuilder = new(string.Format(CultureInfo.InvariantCulture, UrlPrefix, _User, _Server, _Database));
 
 		if (_ObjectType != null)
 		{
@@ -208,6 +451,41 @@ internal class SqlMonikerHelper
 
 		return stringBuilder.ToString();
 	}
+
+
+	public string ToPath(string appDataPath)
+	{
+		string moniker = string.Format(CultureInfo.InvariantCulture, NamePrefix, _User, _Server, _Database);
+
+		moniker = moniker.Replace("\\", "."); // "{backslash}");
+		moniker = moniker.Replace("/", "."); // "{slash}");
+		moniker = moniker.Replace(":", "{colon}");
+		moniker = moniker.Replace("*", "{asterisk}");
+		moniker = moniker.Replace("?", "{questionmark}");
+		moniker = moniker.Replace("\"", "{quote}");
+		moniker = moniker.Replace("<", "{openbracket}");
+		moniker = moniker.Replace(">", "{closebracket}");
+		moniker = moniker.Replace("|", "{bar}");
+
+		moniker = $"{_ObjectName}[{moniker}.{GetNodePathType(_ObjectType)}].sql";
+
+		string path = GetTemporaryDataDirectory(appDataPath);
+		// path = Path.Combine(path, $"{GetNodePathType(_ObjectType)} ({GetNodeScriptProperty(_ObjectType)}s)");
+		path = Path.Combine(path, moniker);
+
+		return path;
+	}
+
+	public static string GetTemporaryDataDirectory(string appDataPath)
+	{
+		string path = appDataPath;
+
+		path = Path.Combine(path, _ServiceFolder);
+		path = Path.Combine(path, _TempSqlFolder);
+
+		return path;
+	}
+
 
 
 	/// <summary>
@@ -303,6 +581,33 @@ internal class SqlMonikerHelper
 			"STOREDPROCEDURECOLUMN" => "Stored Procedure Parameter",
 			"FUNCTIONPARAMETER" => "Function Parameter",
 			_ => null
+		};
+	}
+
+	public static string GetTriggerEvent(long eventType)
+	{
+		return eventType switch
+		{
+			1 => "BEFORE INSERT",
+			2 => "AFTER INSERT",
+			3 => "BEFORE UPDATE",
+			4 => "AFTER UPDATE",
+			5 => "BEFORE DELETE",
+			6 => "AFTER DELETE",
+			17 => "BEFORE INSERT OR UPDATE",
+			18 => "AFTER INSERT OR UPDATE",
+			25 => "BEFORE INSERT OR DELETE",
+			26 => "AFTER INSERT OR DELETE",
+			27 => "BEFORE UPDATE OR DELETE",
+			28 => "AFTER UPDATE OR DELETE",
+			113 => "BEFORE INSERT OR UPDATE OR DELETE",
+			114 => "AFTER INSERT OR UPDATE OR DELETE",
+			8192 => "ON CONNECT",
+			8193 => "ON DISCONNECT",
+			8194 => "ON TRANSACTION BEGIN",
+			8195 => "ON TRANSACTION COMMIT",
+			8196 => "ON TRANSACTION ROLLBACK",
+			_ => "",
 		};
 	}
 }

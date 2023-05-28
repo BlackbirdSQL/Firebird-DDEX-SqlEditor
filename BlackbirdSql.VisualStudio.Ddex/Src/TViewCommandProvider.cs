@@ -6,7 +6,7 @@ using System.ComponentModel.Design;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 
-using BlackbirdSql.Common.Commands;
+using BlackbirdSql.VisualStudio.Ddex.Commands;
 
 
 

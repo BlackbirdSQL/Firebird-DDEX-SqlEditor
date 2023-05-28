@@ -14,7 +14,8 @@ using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using BlackbirdSql.Common;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Schema;
-using Microsoft.VisualStudio.OLE.Interop;
+
+
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -26,7 +27,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 /// Implementation of <see cref="IVsDataObjectSelector"/> enumerator interface for the root node
 /// </summary>
 // =========================================================================================================
-class TObjectSelectorRoot : AdoDotNetRootObjectSelector
+public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 {
 
 	// ---------------------------------------------------------------------------------
@@ -112,7 +113,7 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 			try
 			{
-				parser?.SyncEnter();
+				parser.SyncEnter();
 
 				schema = GetRootSchema(connection, parameters);
 
@@ -128,7 +129,7 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			}
 			finally
 			{
-				parser?.SyncExit();
+				parser.SyncExit();
 			}
 		}
 		catch (Exception ex)
@@ -161,7 +162,7 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	/// <summary>
 	/// Reads in the data source information schema and adds connection property descriptor
 	/// columns to it as well as additional root node properties defined in
-	/// <see cref="ConnectionResources.RootTypes"/>.
+	/// <see cref="DslProperties.DslTypes"/>.
 	/// </summary>
 	/// <param name="connection"></param>
 	/// <param name="parameters"></param>
@@ -173,40 +174,67 @@ class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 		// Diag.Trace();
 
-		DataTable schema = TSourceInformation.CreateSourceInformationSchema(Site);
+
+		// We use TSourceInformation for the dual purpose of the Root IVsDataObjectSelector
+		// schema and IVsDataSourceInformation.
+		// We're counting on Source info for a Site being required first otherwise could bomb.
+		TSourceInformation sourceInformation = TSourceInformation.Instance(Site);
+		DataTable schema = sourceInformation.SourceInformation;
 
 		DataRow row = schema.Rows[0];
 		object value;
+
+		schema.BeginLoadData();
 
 		foreach (DataColumn column in schema.Columns)
 		{
 			value = row[column.Ordinal];
 
-			if (value != null && value != DBNull.Value && (column.GetType() != typeof(int) || (int)value != int.MinValue))
+			if (value != DBNull.Value && (column.GetType() != typeof(int) || (int)value != int.MinValue))
 			{
 				continue;
 			}
 
-			if (!ConnectionResources.RootSynonyms.TryGetValue(column.ColumnName, out string param))
-				continue;
+			value = sourceInformation.RetrieveSourceInformationValue(column.ColumnName);
 
-			value = TSourceInformation.RetrieveValue(Site, schema, param);
-			value ??= DBNull.Value;
+			if (value == null || value == DBNull.Value)
+				continue;
 
 			row[column.Ordinal] = value;
 		}
+
+		schema.EndLoadData();
+
+
+		DataTable rootSchema = schema.Copy();
+
+		// Convert SourceInformation columns to root columns
+		foreach (KeyValuePair<string, string> pair in DslProperties.RootSynonyms)
+			rootSchema.Columns[pair.Key].ColumnName = pair.Value;
+
+		rootSchema.AcceptChanges();
+
+		string txt = "Metadata: ";
+		foreach (DataColumn col in rootSchema.Columns)
+		{
+			txt += col.ColumnName + ":" + (rootSchema.Rows[0][col.Ordinal] == null ? "null" : (rootSchema.Rows[0][col.Ordinal] == DBNull.Value ? "DBNull" : rootSchema.Rows[0][col.Ordinal].ToString())) + ", ";
+		}
+
+		// Diag.Trace(txt);
 
 		if (parameters != null && parameters.Length == 1 && parameters[0] is DictionaryEntry entry)
 		{
 			if (entry.Value is object[] array)
 			{
 				IDictionary<string, object> mappings = GetMappings(array);
-				ApplyMappings(schema, mappings);
+				ApplyMappings(rootSchema, mappings);
 			}
 		}
 
 
-		return schema;
+
+
+		return rootSchema;
 	}
 
 

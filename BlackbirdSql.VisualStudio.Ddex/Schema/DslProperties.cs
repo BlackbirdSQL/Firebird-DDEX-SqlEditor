@@ -34,7 +34,7 @@ using FirebirdSql.Data.FirebirdClient;
 namespace BlackbirdSql.VisualStudio.Ddex.Schema;
 
 
-internal static class ConnectionResources
+internal static class DslProperties
 {
 	#region Constants
 
@@ -72,28 +72,28 @@ internal static class ConnectionResources
 	internal const int DefaultValueCommandTimeout = 0;
 	internal const int DefaultValueParallelWorkers = 0;
 
-	internal const string DefaultValueRootDataSourceName = null;
-	internal const int DefaultValueRootPortNumber = int.MinValue;
-	internal const string DefaultValueRootDefaultCatalog = null;
-
-	// Existing roots title-cased
-	internal const int DefaultValueRootServerType = int.MinValue;
-	internal const string DefaultValueRootUserId = null;
 
 
-	// New derived root descriptor keys - default values
-	internal const string DefaultValueRootDataset = null;
-	internal const string DefaultValueRootDataSourceVersion = null;
+	// SourceInformation properties
+	internal const string DefaultValueDslDataSourceName = null;
+	internal const string DefaultValueDslDataSourceProduct = null;
+	internal const string DefaultValueDslDataSourceVersion = null;
 
-	// New root descriptor keys with existing Metadata synonyms - default values
-	internal const string DefaultValueRootDataSourceProductVersion = null;
-	internal const string DefaultValueRootDataSourceProduct = null;
 
-	// New root descriptor keys - default values
-	internal const string DefaultValueRootDesktopDataSource = null;
-	internal const string DefaultValueRootLocalDatabase = null;
-	internal const int DefaultValueRootMemoryUsage = int.MinValue;
-	internal const int DefaultValueRootActiveUsers = int.MinValue;
+	// SourceInformation additional titlecased connection properties for Root
+	internal const string DefaultValueDslCatalog = null;
+	internal const int DefaultValueDslPortNumber = int.MinValue;
+	internal const int DefaultValueDslServerType = int.MinValue;
+	internal const string DefaultValueDslUserId = null;
+
+	// SourceInformation additional connection derived properties for Root
+	internal const string DefaultValueDslDataset = null;
+
+	// SourceInformation additional new properties for root
+	internal const int DefaultValueDslMemoryUsage = int.MinValue;
+	internal const int DefaultValueDslActiveUsers = int.MinValue;
+
+
 
 
 
@@ -128,30 +128,31 @@ internal static class ConnectionResources
 	internal const string DefaultKeyCommandTimeout = "command timeout";
 	internal const string DefaultKeyParallelWorkers = "parallel workers";
 
-	// Additional root descriptor key synonyms
-	internal const string DefaultKeyRootDataSourceName = "DataSourceName"; // Synonym for DefaultKeyDataSource
-	internal const string DefaultKeyRootPortNumber = "PortNumber"; // Synonym for DefaultKeyPortNumber
-	internal const string DefaultKeyRootDefaultCatalog = "DefaultCatalog"; // Synonym for DefaultKeyCatalog
 
-	// Existing roots title-cased
-	internal const string DefaultKeyRootServerType = "ServerType"; // Titelcased DefaultKeyServerType
-	internal const string DefaultKeyRootUserId = "UserId"; // Titlecased DefaultKeyUserId
 
-	// New derived root descriptor keys
-	internal const string DefaultKeyRootDataset = "Dataset"; // New abbreviated 
-	internal const string DefaultKeyRootDataSourceVersion = "DataSourceVersion"; // New Abbreviated
+	// SourceInformation properties
+	internal const string DefaultKeyDslDataSourceName = "DataSourceName"; 
+	internal const string DefaultKeyDslDataSourceProduct = "DataSourceProduct"; 
+	internal const string DefaultKeyDslDataSourceVersion = "DataSourceVersion"; 
 
-	// New root descriptor keys with existing Metadata synonyms
-	internal const string DefaultKeyRootDataSourceProductVersion = "DataSourceProductVersion"; //  Metadata synonym DataSourceProductVersion
-	internal const string DefaultKeyRootDataSourceProduct = "DataSourceProduct"; //  Metadata synonym DataSourceProductName
 
-	// New root descriptor keys
-	internal const string DefaultKeyRootDesktopDataSource = "DesktopDataSource"; // New
-	internal const string DefaultKeyRootLocalDatabase = "LocalDatabase"; // New
-	internal const string DefaultKeyRootMemoryUsage = "MemoryUsage"; // New
-	internal const string DefaultKeyRootActiveUsers = "ActiveUsers"; // New
+	// SourceInformation additional titlecased connection properties for Root
+	internal const string DefaultKeyDslCatalog = "InitialCatalog";
+	internal const string DefaultKeyDslPortNumber = "PortNumber"; // Titelcased Synonym for DefaultKeyPortNumber
+	internal const string DefaultKeyDslServerType = "ServerType"; // Titelcased DefaultKeyServerType
+	internal const string DefaultKeyDslUserId = "UserId"; // Titlecased DefaultKeyUserId
+
+	// SourceInformation additional connection derived properties for Root
+	internal const string DefaultKeyDslDataset = "Dataset"; // New abbreviated InitialCatalog
+
+	// SourceInformation additional new properties for root
+	internal const string DefaultKeyDslMemoryUsage = "MemoryUsage"; // New
+	internal const string DefaultKeyDslActiveUsers = "ActiveUsers"; // New
+
 
 	#endregion
+
+
 
 	#region Descriptors lookup
 
@@ -197,8 +198,8 @@ internal static class ConnectionResources
 			{ "datasource", DefaultKeyDataSource },
 			{ "server", DefaultKeyDataSource },
 			{ "host", DefaultKeyDataSource },
-			{ "port", DefaultKeyPortNumber },
 			{ DefaultKeyPortNumber, DefaultKeyPortNumber },
+			{ "port", DefaultKeyPortNumber },
 			{ DefaultKeyCatalog, DefaultKeyCatalog },
 			{ "database", DefaultKeyCatalog },
 			{ DefaultKeyUserId, DefaultKeyUserId },
@@ -263,62 +264,62 @@ internal static class ConnectionResources
 			{ "parallelworkers", DefaultKeyParallelWorkers },
 			{ "parallel", DefaultKeyParallelWorkers },
 
-			// Additional root descriptor key synonyms
-			{ DefaultKeyRootDataSourceName.ToLower(), DefaultKeyDataSource.ToLower() },
-			{ DefaultKeyRootPortNumber.ToLower(), DefaultKeyPortNumber.ToLower() },
-			{ DefaultKeyRootDefaultCatalog.ToLower(), DefaultKeyCatalog.ToLower() },
-
-			// New derived root descriptor keys
-			{ DefaultKeyRootDataset.ToLower(), DefaultKeyRootDataset.ToLower() },
-			{ "datasetname", DefaultKeyRootDataset.ToLower() },
-			{ DefaultKeyRootDataSourceVersion.ToLower(), DefaultKeyRootDataSourceVersion.ToLower() },
-
-			// New root descriptor keys with existing Metadata synonyms
-			{ DefaultKeyRootDataSourceProductVersion.ToLower(), DefaultKeyRootDataSourceProductVersion.ToLower() },
-			{ DefaultKeyRootDataSourceProduct.ToLower(), DefaultKeyRootDataSourceProduct.ToLower() },
-			{ "datasourceproductname", DefaultKeyRootDataSourceProduct.ToLower() },
-
-			// New root descriptor keys
-			{ DefaultKeyRootDesktopDataSource.ToLower(), DefaultKeyRootDesktopDataSource.ToLower() },
-			{ DefaultKeyRootLocalDatabase.ToLower(), DefaultKeyRootLocalDatabase.ToLower() },
-			{ DefaultKeyRootMemoryUsage.ToLower(), DefaultKeyRootMemoryUsage.ToLower() },
-			{ DefaultKeyRootActiveUsers.ToLower(), DefaultKeyRootActiveUsers.ToLower() }
+			// Additional SourceInformation property synonyms
+			{ DefaultKeyDslDataSourceName.ToLower(), DefaultKeyDataSource },
+			{ DefaultKeyDslCatalog.ToLower(), DefaultKeyCatalog },
+			{ DefaultKeyDslPortNumber.ToLower(), DefaultKeyPortNumber },
 		};
 
 
-	// Root descriptor key synonyms
-	internal static readonly IDictionary<string, string> RootSynonyms = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+	// SourceInformation descriptor key synonyms
+	internal static readonly IDictionary<string, string> DslSynonyms = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
 		{
-			// Additional root descriptor key synonyms
-			{ DefaultKeyRootDataSourceName, DefaultKeyRootDataSourceName },
-			{ DefaultKeyDataSource, DefaultKeyRootDataSourceName },
-			{ "DataSource", DefaultKeyRootDataSourceName },
-			{ DefaultKeyRootPortNumber, DefaultKeyRootPortNumber },
-			{ DefaultKeyPortNumber, DefaultKeyRootPortNumber },
-			{ DefaultKeyRootDefaultCatalog, DefaultKeyRootDefaultCatalog},
-			{ DefaultKeyCatalog, DefaultKeyRootDefaultCatalog},
+			// Additional SourceInformation descriptor key synonyms
+			{ DefaultKeyDslDataSourceName, DefaultKeyDslDataSourceName },
+			{ DefaultKeyDataSource, DefaultKeyDslDataSourceName },
+			{ "DataSource", DefaultKeyDslDataSourceName },
+			{ "Server", DefaultKeyDslDataSourceName },
+			{ "Host", DefaultKeyDslDataSourceName },
 
-			// Existing roots title-cased
-			{ DefaultKeyRootServerType, DefaultKeyRootServerType },
-			{ DefaultKeyServerType, DefaultKeyRootServerType },
-			{ DefaultKeyRootUserId, DefaultKeyRootUserId },
-			{ DefaultKeyUserId, DefaultKeyRootUserId },
+			{ DefaultKeyDslDataSourceProduct, DefaultKeyDslDataSourceProduct },
+			{ "DataSourceProductName", DefaultKeyDslDataSourceProduct }, // FbMetaData
 
-			// New derived root descriptor keys
-			{ DefaultKeyRootDataset, DefaultKeyRootDataset },
-			{ "DatasetName", DefaultKeyRootDataset },
-			{ DefaultKeyRootDataSourceVersion, DefaultKeyRootDataSourceVersion },
+			{ DefaultKeyDslDataSourceVersion, DefaultKeyDslDataSourceVersion },
+			{ "DataSourceProductVersion", DefaultKeyDslDataSourceVersion }, // FbMetaData
 
-			// New root descriptor keys with existing Metadata synonyms
-			{ DefaultKeyRootDataSourceProductVersion, DefaultKeyRootDataSourceProductVersion },
-			{ DefaultKeyRootDataSourceProduct, DefaultKeyRootDataSourceProduct },
-			{ "DataSourceProductName", DefaultKeyRootDataSourceProduct },
+			// SourceInformation additional titlecased connection properties for Root
+			{ DefaultKeyDslCatalog, DefaultKeyDslCatalog},
+			{ DefaultKeyCatalog, DefaultKeyDslCatalog},
+			{ "Database", DefaultKeyDslCatalog},
 
-			// New root descriptor keys
-			{ DefaultKeyRootDesktopDataSource, DefaultKeyRootDesktopDataSource },
-			{ DefaultKeyRootLocalDatabase, DefaultKeyRootLocalDatabase },
-			{ DefaultKeyRootMemoryUsage, DefaultKeyRootMemoryUsage },
-			{ DefaultKeyRootActiveUsers, DefaultKeyRootActiveUsers }
+			{ DefaultKeyDslPortNumber, DefaultKeyDslPortNumber },
+			{ DefaultKeyPortNumber, DefaultKeyDslPortNumber },
+			{ "port", DefaultKeyDslPortNumber },
+
+			{ DefaultKeyDslServerType, DefaultKeyDslServerType },
+			{ DefaultKeyServerType, DefaultKeyDslServerType },
+
+			{ DefaultKeyDslUserId, DefaultKeyDslUserId },
+			{ DefaultKeyUserId, DefaultKeyDslUserId },
+			{ "uid", DefaultKeyDslUserId },
+			{ "user", DefaultKeyDslUserId },
+			{ "user name", DefaultKeyDslUserId },
+			{ "username", DefaultKeyDslUserId },
+
+			// SourceInformation additional connection derived properties for Root
+			{ DefaultKeyDslDataset, DefaultKeyDslDataset }, 
+
+			// SourceInformation additional new properties for root
+			{ DefaultKeyDslMemoryUsage, DefaultKeyDslMemoryUsage },
+			{ DefaultKeyDslActiveUsers, DefaultKeyDslActiveUsers }
+		};
+
+
+	// Root synonyms conversion from DataSourceInformation
+	internal static readonly KeyValuePair<string, string>[] RootSynonyms = new KeyValuePair<string, string>[2]
+		{
+			StringPair( DefaultKeyDslDataSourceName, "Server" ),
+			StringPair( DefaultKeyDslDataset, "Database" )
 		};
 
 
@@ -356,53 +357,51 @@ internal static class ConnectionResources
 			{ DefaultKeyCommandTimeout, DefaultValueCommandTimeout },
 			{ DefaultKeyParallelWorkers, DefaultValueParallelWorkers },
 
-			// New derived root descriptor keys - default values lookup
-			{ DefaultKeyRootDataset.ToLower(), DefaultValueRootDataset},
-			{ DefaultKeyRootDataSourceVersion.ToLower(), DefaultValueRootDataSourceVersion },
 
-			// New root descriptor keys with existing Metadata synonyms - default values lookup
-			{ DefaultKeyRootDataSourceProductVersion.ToLower(), DefaultValueRootDataSourceProductVersion },
-			{ DefaultKeyRootDataSourceProduct.ToLower(), DefaultValueRootDataSourceProduct },
+			// SourceInformation properties
+			{ DefaultKeyDslDataSourceName, DefaultValueDslDataSourceName },
+			{ DefaultKeyDslDataSourceProduct, DefaultValueDslDataSourceProduct },
+			{ DefaultKeyDslDataSourceVersion, DefaultValueDslDataSourceVersion },
 
-			// New root descriptor keys - default values lookup
-			{ DefaultKeyRootDesktopDataSource.ToLower(), DBNull.Value },
-			{ DefaultKeyRootLocalDatabase.ToLower(), DBNull.Value },
-			{ DefaultKeyRootMemoryUsage.ToLower(), null },
-			{ DefaultKeyRootActiveUsers.ToLower(), null }
+			// SourceInformation additional titlecased connection properties for Root
+			{ DefaultKeyDslCatalog, DefaultValueDslCatalog },
+			{ DefaultKeyDslPortNumber, DefaultValueDslPortNumber },
+			{ DefaultKeyDslServerType, DefaultValueDslServerType },
+			{ DefaultKeyDslUserId, DefaultValueDslUserId },
+
+			// SourceInformation additional connection derived properties for Root
+			{ DefaultKeyDslDataset, DefaultValueDslDataset },
+
+			{ DefaultKeyDslMemoryUsage, DefaultValueDslMemoryUsage },
+			{ DefaultKeyDslActiveUsers, DefaultValueDslActiveUsers }
 		};
 
 
-	// Root Types defaults
-	internal static readonly KeyValuePair<string, object>[] RootDefaultValues = new KeyValuePair<string, object>[13]
+	// SourceInformation Types defaults
+	internal static readonly KeyValuePair<string, object>[] DslDefaultValues = new KeyValuePair<string, object>[10]
 		{
-			// Additional root descriptor key synonyms - default values
-			ValuePair( DefaultKeyRootDataSourceName, DefaultValueRootDataSourceName ),
-			ValuePair( DefaultKeyRootPortNumber, DefaultValueRootPortNumber ),
-			ValuePair( DefaultKeyRootDefaultCatalog, DefaultValueRootDefaultCatalog ),
+			// SourceInformation properties
+			ValuePair( DefaultKeyDslDataSourceName, DefaultValueDslDataSourceName ),
+			ValuePair( DefaultKeyDslDataSourceProduct, DefaultValueDslDataSourceProduct ),
+			ValuePair( DefaultKeyDslDataSourceVersion, DefaultValueDslDataSourceVersion ), 
 
-			// Existing roots title-cased - default values
-			ValuePair( DefaultKeyRootServerType, DefaultValueRootServerType ),
-			ValuePair( DefaultKeyRootUserId, DefaultValueRootUserId),
+			// SourceInformation additional titlecased connection properties for Root
+			ValuePair( DefaultKeyDslCatalog, DefaultValueDslCatalog ),
+			ValuePair( DefaultKeyDslPortNumber, DefaultValueDslPortNumber ),
+			ValuePair( DefaultKeyDslServerType, DefaultValueDslServerType ),
+			ValuePair( DefaultKeyDslUserId, DefaultValueDslUserId),
 
-			// New derived root descriptor keys - default values
-			ValuePair( DefaultKeyRootDataset, DefaultValueRootDataset ),
-			ValuePair( DefaultKeyRootDataSourceVersion, DefaultValueRootDataSourceVersion),
+			// SourceInformation additional connection derived properties for Root
+			ValuePair( DefaultKeyDslDataset, DefaultValueDslDataset ),
 
-			// New root descriptor keys with existing Metadata synonyms - default values
-			ValuePair( DefaultKeyRootDataSourceProductVersion, DefaultValueRootDataSourceProductVersion ),
-			ValuePair( DefaultKeyRootDataSourceProduct, DefaultValueRootDataSourceProduct ),
-
-			// New root descriptor keys - default values
-			ValuePair( DefaultKeyRootDesktopDataSource, DBNull.Value ),
-			ValuePair( DefaultKeyRootLocalDatabase, DBNull.Value ),
-			ValuePair( DefaultKeyRootMemoryUsage, null ),
-			ValuePair( DefaultKeyRootActiveUsers, null )
+			ValuePair( DefaultKeyDslMemoryUsage, DefaultValueDslMemoryUsage ),
+			ValuePair( DefaultKeyDslActiveUsers, DefaultValueDslActiveUsers )
 		};
 
 
 
 	// Types lookup
-	internal static readonly KeyValuePair<string, Type>[] SystemTypes = new KeyValuePair<string, Type>[41]
+	internal static readonly KeyValuePair<string, Type>[] SystemTypes = new KeyValuePair<string, Type>[39]
 		{
 			TypePair( DefaultKeyDataSource, typeof(string) ),
 			TypePair( DefaultKeyPortNumber, typeof(int) ),
@@ -433,45 +432,47 @@ internal static class ConnectionResources
 			TypePair( DefaultKeyApplicationName, typeof(string) ),
 			TypePair( DefaultKeyCommandTimeout, typeof(int) ),
 			TypePair( DefaultKeyParallelWorkers, typeof(int) ),
-			TypePair( DefaultKeyRootDataSourceName.ToLower(), typeof(string) ),
-			TypePair( DefaultKeyRootPortNumber.ToLower(), typeof(int) ),
-			TypePair( DefaultKeyRootDefaultCatalog.ToLower(), typeof(string) ),
-			TypePair( DefaultKeyRootUserId.ToLower(), typeof(string) ),
-			TypePair( DefaultKeyRootDataset.ToLower(), typeof(string) ),
-			TypePair( DefaultKeyRootDataSourceVersion.ToLower(), typeof(string) ),
-			TypePair( DefaultKeyRootDataSourceProduct.ToLower(), typeof(string) ),
-			TypePair( DefaultKeyRootDataSourceProductVersion.ToLower(), typeof(string) ),
-			TypePair( DefaultKeyRootDesktopDataSource.ToLower(), typeof(string) ),
-			TypePair( DefaultKeyRootLocalDatabase.ToLower(), typeof(string) ),
-			TypePair( DefaultKeyRootMemoryUsage.ToLower(), typeof(int) ),
-			TypePair( DefaultKeyRootActiveUsers.ToLower(), typeof(int) )
+
+
+			// SourceInformation properties
+			TypePair( DefaultKeyDslDataSourceName, typeof(string) ),
+			TypePair( DefaultKeyDslDataSourceProduct, typeof(string) ),
+			TypePair( DefaultKeyDslDataSourceVersion, typeof(string) ),
+
+			// SourceInformation additional titlecased connection properties for Root
+			TypePair( DefaultKeyDslCatalog, typeof(string) ),
+			TypePair( DefaultKeyDslPortNumber, typeof(int) ),
+			TypePair( DefaultKeyDslServerType, typeof(int) ),
+			TypePair( DefaultKeyDslUserId, typeof(string) ),
+
+			// SourceInformation additional connection derived properties for Root
+			TypePair( DefaultKeyDslDataset, typeof(string) ),
+
+			// SourceInformation additional new properties for root
+			TypePair( DefaultKeyDslMemoryUsage, typeof(int) ),
+			TypePair( DefaultKeyDslActiveUsers, typeof(int) )
 		};
 
-	// Root types lookup
-	internal static readonly KeyValuePair<string, Type>[] RootTypes = new KeyValuePair<string, Type>[13]
+	// SourceInformation types lookup
+	internal static readonly KeyValuePair<string, Type>[] DslTypes = new KeyValuePair<string, Type>[10]
 		{
-			// Additional root descriptor key synonyms - Types
-			TypePair( DefaultKeyRootDataSourceName, typeof(string) ),
-			TypePair( DefaultKeyRootPortNumber, typeof(int) ),
-			TypePair( DefaultKeyRootDefaultCatalog, typeof(string) ),
+			// SourceInformation properties
+			TypePair( DefaultKeyDslDataSourceName, typeof(string) ),
+			TypePair( DefaultKeyDslDataSourceProduct, typeof(string) ),
+			TypePair( DefaultKeyDslDataSourceVersion, typeof(string) ),
 
-			// Existing roots title-cased - Types
-			TypePair( DefaultKeyRootServerType, typeof(int) ),
-			TypePair( DefaultKeyRootUserId, typeof(string) ),
+			// SourceInformation additional titlecased connection properties for Root
+			TypePair( DefaultKeyDslCatalog, typeof(string) ),
+			TypePair( DefaultKeyDslPortNumber, typeof(int) ),
+			TypePair( DefaultKeyDslServerType, typeof(int) ),
+			TypePair( DefaultKeyDslUserId, typeof(string) ),
 
-			// New derived root descriptor keys - Types
-			TypePair( DefaultKeyRootDataset, typeof(string) ),
-			TypePair( DefaultKeyRootDataSourceVersion, typeof(string) ),
+			// SourceInformation additional connection derived properties for Root
+			TypePair( DefaultKeyDslDataset, typeof(string) ),
 
-			// New root descriptor keys with existing Metadata synonyms - Types
-			TypePair( DefaultKeyRootDataSourceProduct, typeof(string) ),
-			TypePair( DefaultKeyRootDataSourceProductVersion, typeof(string) ),
-
-			// New root descriptor keys - Types
-			TypePair( DefaultKeyRootDesktopDataSource, typeof(string) ),
-			TypePair( DefaultKeyRootLocalDatabase, typeof(string) ),
-			TypePair( DefaultKeyRootMemoryUsage, typeof(int) ),
-			TypePair( DefaultKeyRootActiveUsers, typeof(int) )
+			// SourceInformation additional new properties for root
+			TypePair( DefaultKeyDslMemoryUsage, typeof(int) ),
+			TypePair( DefaultKeyDslActiveUsers, typeof(int) )
 		};
 
 
@@ -648,39 +649,31 @@ internal static class ConnectionResources
 		return new KeyValuePair<string, string>(key, value);
 	}
 
-	public static Type TypeOf(string name)
+	public static Type GetType(string name)
 	{
-		KeyValuePair<string, Type> pair = Array.Find(ConnectionResources.SystemTypes,
+		KeyValuePair<string, Type> pair = Array.Find(SystemTypes,
 			(KeyValuePair<string, Type> obj) => obj.Key.Equals(name, StringComparison.OrdinalIgnoreCase));
 
 		if (pair.Key == null)
-		{
-			ArgumentException ex = new($"TypeOf for property {name} not found");
-			Diag.Dug(ex);
-			throw ex;
-		}
+			return null;
 
 		return pair.Value;
 	}
 
-	public static Type RootTypeOf(string name)
+	public static Type GetDslType(string name)
 	{
-		KeyValuePair<string, Type> pair = Array.Find(ConnectionResources.RootTypes,
+		KeyValuePair<string, Type> pair = Array.Find(DslTypes,
 			(KeyValuePair<string, Type> obj) => obj.Key.Equals(name, StringComparison.OrdinalIgnoreCase));
 
 		if (pair.Key == null)
-		{
-			ArgumentException ex = new($"TypeOf for root property {name} not found");
-			Diag.Dug(ex);
-			throw ex;
-		}
+			return null;
 
 		return pair.Value;
 	}
 
-	public static bool RootType(string name)
+	public static bool DslType(string name)
 	{
-		KeyValuePair<string, Type> pair = Array.Find(ConnectionResources.RootTypes,
+		KeyValuePair<string, Type> pair = Array.Find(DslTypes,
 			(KeyValuePair<string, Type> obj) => obj.Key.Equals(name, StringComparison.OrdinalIgnoreCase));
 
 		return (pair.Key != null);
@@ -688,7 +681,7 @@ internal static class ConnectionResources
 
 	public static string Descriptor(string name)
 	{
-		KeyValuePair<string, string> pair = Array.Find(ConnectionResources.Descriptors,
+		KeyValuePair<string, string> pair = Array.Find(Descriptors,
 			(KeyValuePair<string, string> obj) => obj.Key.Equals(name, StringComparison.OrdinalIgnoreCase));
 
 		return pair.Value;

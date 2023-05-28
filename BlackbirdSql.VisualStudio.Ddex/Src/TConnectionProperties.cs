@@ -19,7 +19,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 /// Implementation of <see cref="IVsDataConnectionProperties"/> interface
 /// </summary>
 // =========================================================================================================
-internal class TConnectionProperties : AdoDotNetConnectionProperties
+public class TConnectionProperties : AdoDotNetConnectionProperties
 {
 
 	// ---------------------------------------------------------------------------------
@@ -36,7 +36,7 @@ internal class TConnectionProperties : AdoDotNetConnectionProperties
 		get
 		{
 			// Diag.Trace("ProtectedMandatoryProperties required");
-			foreach (string property in Schema.ConnectionResources.ProtectedMandatoryProperties)
+			foreach (string property in Schema.DslProperties.ProtectedMandatoryProperties)
 			{
 				if (!TryGetValue(property, out object value) || string.IsNullOrEmpty((string)value))
 				{

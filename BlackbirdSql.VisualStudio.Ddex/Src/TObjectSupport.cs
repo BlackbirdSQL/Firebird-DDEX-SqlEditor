@@ -22,10 +22,11 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 //										TObjectSupport Class
 //
 /// <summary>
-/// Implementation of <see cref="IVsDataObjectSupport"/> and <see cref="IVsDataSupportImportResolver"/> interfaces.
+/// Implementation of <see cref="IVsDataObjectSupport"/> and <see cref="IVsDataSupportImportResolver"/>
+/// interfaces.
 /// </summary>
 // =========================================================================================================
-internal class TObjectSupport : DataObjectSupport, IVsDataSupportImportResolver
+public class TObjectSupport : DataObjectSupport, IVsDataSupportImportResolver
 {
 
 	// ---------------------------------------------------------------------------------

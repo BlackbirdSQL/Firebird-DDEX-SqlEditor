@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using BlackbirdSql.Common.Extensions;
+using BlackbirdSql.Common.Providers;
 using Microsoft;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -343,6 +343,47 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Diagnostics method for Exceptions only during debug WITHOUT tasklog to prevent
+	/// recursion or when package is not sited yet
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+#if DEBUG
+	public static void DebugDug(Exception ex, string message = "",
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
+#else
+	public static void Dug(Exception ex, string message = "",
+		string memberName = "Release:Unavailable",
+		string sourceFilePath = "Release:Unavailable",
+		int sourceLineNumber = 0)
+#endif
+	{
+		if (message != "")
+			message += ":";
+
+		if (ex.StackTrace != null)
+		{
+			message += Environment.NewLine + "TRACE: " + ex.StackTrace.ToString();
+		}
+		else
+		{
+			message += " NO STACKTRACE";
+		}
+
+		bool enableLog = _EnableDiagnosticsLog;
+		_EnableDiagnosticsLog = true;
+		bool enableTaskLog = _EnableTaskLog;
+		_EnableTaskLog = false;
+		Dug(true, ex.Message + " " + message, memberName, sourceFilePath, sourceLineNumber);
+		_EnableTaskLog = enableTaskLog;
+		_EnableDiagnosticsLog = enableLog;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Diagnostics method for full stack trace
 	/// </summary>
 	// ---------------------------------------------------------------------------------
@@ -371,7 +412,8 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Trace method for trace breadcrumbs during debug WITHOUT tasklog
+	/// Trace method for trace breadcrumbs during debug WITHOUT tasklog to prevent
+	/// recursion or when package is not sited yet
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 #if DEBUG
@@ -390,10 +432,13 @@ public static class Diag
 			return;
 
 #if DEBUG
+		bool enableLog = _EnableDiagnosticsLog;
+		_EnableDiagnosticsLog = true;
 		bool enableTaskLog = _EnableTaskLog;
 		_EnableTaskLog = false;
 		Dug(false, message, memberName, sourceFilePath, sourceLineNumber);
 		_EnableTaskLog = enableTaskLog;
+		_EnableDiagnosticsLog = enableLog;
 
 #endif
 	}

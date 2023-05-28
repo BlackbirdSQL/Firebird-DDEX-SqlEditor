@@ -24,7 +24,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 /// Implementation for debugging
 /// </remarks>
 // =========================================================================================================
-internal sealed class TObjectMemberComparer : DataObjectMemberComparer
+public class TObjectMemberComparer : DataObjectMemberComparer
 {
 	/* For debug trace */
 	public TObjectMemberComparer() : base()
@@ -43,29 +43,29 @@ internal sealed class TObjectMemberComparer : DataObjectMemberComparer
 
 		// Diag.Trace();
 
-		// Table type hack
-		if (typeName == "Table" && propertyName == "TABLE_TYPE")
-		{
-			// null means all tables
-			if (value1 == null || value2 == null)
-			{
-				return 0;
-			}
-
-			if ((string)value1 == "SYSTEM_TABLE")
-			{
-				// Diag.Trace("RENAMING value1 SYSTEM TABLE");
-				value1 = "SYSTEM TABLE";
-			}
-			if ((string)value2 == "SYSTEM_TABLE")
-			{
-				// Diag.Trace("RENAMING value2 SYSTEM TABLE");
-				value2 = "SYSTEM TABLE";
-			}
-		}
-
 		try
 		{
+			// Table type hack
+			if (typeName == "Table" && propertyName == "TABLE_TYPE")
+			{
+				// null means all tables
+				if (value1 == null || value2 == null)
+				{
+					return 0;
+				}
+
+				if ((string)value1 == "SYSTEM_TABLE")
+				{
+					// Diag.Trace("RENAMING value1 SYSTEM TABLE");
+					value1 = "SYSTEM TABLE";
+				}
+				if ((string)value2 == "SYSTEM_TABLE")
+				{
+					// Diag.Trace("RENAMING value2 SYSTEM TABLE");
+					value2 = "SYSTEM TABLE";
+				}
+			}
+
 			result = base.Compare(typeName, propertyName, value1, value2);
 			// Diag.Trace("typeName: " + typeName + " propertyName: " + propertyName + " value1: " + (value1 == null ? "null" : value1.ToString()) + " value2: " + (value2 == null ? "null" : value2.ToString()) + " result: " + result);
 		}

@@ -26,7 +26,7 @@ namespace BlackbirdSql.Common.Providers
 	/// <summary>
 	/// Pagiarized off of Microsoft.VisualStudio.Data.Providers.SqlServer.SqlTextEditorDocument.
 	/// </summary>
-	internal class SqlTextEditorDocument : AbstractTextEditorDocument, IVsTextBufferProvider
+	public class SqlTextEditorDocument : AbstractTextEditorDocument, IVsTextBufferProvider
 	{
 
 		private bool _IsNew;
@@ -60,29 +60,46 @@ namespace BlackbirdSql.Common.Providers
 			owningHierarchy.SetNewItemSaveName(OwningItemId, _NewIdentifier[2] as string);
 		}
 
-		public SqlTextEditorDocument(IVsDataObject obj, int owningItemId, IVsDataViewHierarchy owningHierarchy)
+		public SqlTextEditorDocument(IVsDataExplorerNode node, int owningItemId, IVsDataViewHierarchy owningHierarchy)
 			: base(owningItemId, owningHierarchy)
 		{
-			string name = obj.Type.Name;
+			SqlMonikerHelper sqlMoniker = new(node);
+
+			string prop = SqlMonikerHelper.GetNodeScriptProperty(node.Object).ToUpper();
+
+			_Source = node.Object.Properties[prop];
 
 
-			object[] array = obj.Identifier.ToArray();
-			if (name.Equals("Trigger", StringComparison.Ordinal) || name.Equals("ViewTrigger", StringComparison.Ordinal))
+			object[] arr = node.Object.Identifier.ToArray();
+
+			int len = 0;
+
+			for (int i = 0; i < arr.Length; i++)
 			{
-				array = new object[3]
-				{
-					array[0],
-					array[1],
-					array[3]
-				};
+				if (arr[i] != null)
+					len++;
 			}
 
-			Moniker = AbstractDataToolsDocument.BuildObjectMoniker(name, array, owningHierarchy);
-			Caption = BuildCaption(base.OwningHierarchy.GetViewCommonNodeInfo(owningItemId).TypeDisplayName, array, owningHierarchy);
+			object[] identifier = new object[len];
+
+			for (int i = 0, j = 0; i < arr.Length; i++)
+			{
+				if (arr[i] != null)
+				{
+					identifier[j] = arr[i];
+					j++;
+				}
+			}
+
+			// Moniker = BuildObjectMoniker(name, array, owningHierarchy);
+			Moniker = sqlMoniker.ToString();
+
+			Caption = BuildCaption(OwningHierarchy.GetViewCommonNodeInfo(owningItemId).TypeDisplayName, identifier, owningHierarchy);
 		}
 
 		public static string LoadText(IVsDataConnection connection, string typeName, object[] identifier)
 		{
+
 			string result = null;
 			IVsDataCommand vsDataCommand = connection.GetService(typeof(IVsDataCommand)) as IVsDataCommand;
 
@@ -175,11 +192,22 @@ namespace BlackbirdSql.Common.Providers
 		public override bool Save(VSSAVEFLAGS saveFlags)
 		{
 			Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
-			NativeMethods.WrapComCall(((IVsTextBufferProvider)this).GetTextBuffer(out IVsTextLines ppTextBuffer));
-			NativeMethods.WrapComCall(ppTextBuffer.GetLineCount(out var piLineCount));
-			piLineCount--;
-			NativeMethods.WrapComCall(ppTextBuffer.GetLengthOfLine(piLineCount, out var piLength));
-			NativeMethods.WrapComCall(ppTextBuffer.GetLineText(0, 0, piLineCount, piLength, out string pbstrBuf));
+			string pbstrBuf;
+			IVsTextLines ppTextBuffer;
+
+			try
+			{
+				NativeMethods.WrapComCall(((IVsTextBufferProvider)this).GetTextBuffer(out ppTextBuffer));
+				NativeMethods.WrapComCall(ppTextBuffer.GetLineCount(out var piLineCount));
+				piLineCount--;
+				NativeMethods.WrapComCall(ppTextBuffer.GetLengthOfLine(piLineCount, out var piLength));
+				NativeMethods.WrapComCall(ppTextBuffer.GetLineText(0, 0, piLineCount, piLength, out pbstrBuf));
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw ex;
+			}
 			bool flag = false;
 			string text = null;
 			int index = 0;
@@ -422,11 +450,18 @@ namespace BlackbirdSql.Common.Providers
 				vsDataObjectChangeEventsBroker.RaiseObjectAdded(text, array);
 			else
 				vsDataObjectChangeEventsBroker.RaiseObjectChanged(text, array);
-		
-			NativeMethods.WrapComCall(ppTextBuffer.GetStateFlags(out uint pdwReadOnlyFlags));
-			pdwReadOnlyFlags &= 0xFFFFFFFBu;
-			NativeMethods.WrapComCall(ppTextBuffer.SetStateFlags(pdwReadOnlyFlags));
 
+			try
+			{
+				NativeMethods.WrapComCall(ppTextBuffer.GetStateFlags(out uint pdwReadOnlyFlags));
+				pdwReadOnlyFlags &= 0xFFFFFFFBu;
+				NativeMethods.WrapComCall(ppTextBuffer.SetStateFlags(pdwReadOnlyFlags));
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw ex;
+			}
 			_IsNew = false;
 			_NewTriggerTableOrView = null;
 			_NewObjectType = null;
@@ -471,6 +506,10 @@ namespace BlackbirdSql.Common.Providers
 
 		protected override string LoadText()
 		{
+			if (_Source != null)
+				return (string)_Source;
+
+
 			string text = null;
 			if (_IsNew)
 			{
@@ -585,7 +624,16 @@ namespace BlackbirdSql.Common.Providers
 
 		private static string BuildCaption(string typeDisplayName, object[] identifier, IVsDataViewHierarchy owningHierarchy)
 		{
-			return string.Format(null, Resources.ToolsDocument_Caption, AbstractDataToolsDocument.BuildConnectionName(owningHierarchy.ExplorerConnection.Connection), typeDisplayName, identifier[1]?.ToString() + "." + identifier[2]);
+			string caption = "";
+
+			for (int i =0; i < identifier.Length; i++)
+			{
+				if (caption != "")
+					caption += ".";
+				caption += identifier[i];
+			}
+
+			return string.Format(null, Resources.ToolsDocument_Caption, BuildConnectionName(owningHierarchy.ExplorerConnection.Connection), typeDisplayName, caption);
 		}
 
 		private string MaybeUpdateTriggerText(string text, int index, IVsDataObject obj)
@@ -808,77 +856,3 @@ namespace BlackbirdSql.Common.Providers
 		}
 	}
 }
-#if false // Decompilation log
-'244' items in cache
-------------------
-Resolve: 'mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
-Found single assembly: 'mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
-Load from: 'C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\mscorlib.dll'
-------------------
-Resolve: 'Microsoft.VisualStudio.Interop, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.Interop, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.interop\17.4.33103.184\lib\net472\Microsoft.VisualStudio.Interop.dll'
-------------------
-Resolve: 'Microsoft.VisualStudio.Data.Framework, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.Data.Framework, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.data.framework\17.4.33103.184\lib\net45\Microsoft.VisualStudio.Data.Framework.dll'
-------------------
-Resolve: 'Microsoft.VisualStudio.Data.Services, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.Data.Services, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.data.services\17.4.33103.184\lib\net472\Microsoft.VisualStudio.Data.Services.dll'
-------------------
-Resolve: 'Microsoft.VisualStudio.Data.Providers.Common, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.Data.Providers.Common, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Microsoft.VisualStudio.Data.Providers.Common.dll'
-------------------
-Resolve: 'System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
-Found single assembly: 'System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
-Load from: 'C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.dll'
-------------------
-Resolve: 'System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
-Found single assembly: 'System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
-Load from: 'C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Windows.Forms.dll'
-------------------
-Resolve: 'System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Drawing.dll'
-------------------
-Resolve: 'Microsoft.Data.SqlClient, Version=3.0.0.0, Culture=neutral, PublicKeyToken=23ec7fc2d6eaa4a5'
-Could not find by name: 'Microsoft.Data.SqlClient, Version=3.0.0.0, Culture=neutral, PublicKeyToken=23ec7fc2d6eaa4a5'
-------------------
-Resolve: 'Microsoft.Data.ConnectionUI.Dialog, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.Data.ConnectionUI.Dialog, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Microsoft.Data.ConnectionUI.Dialog.dll'
-------------------
-Resolve: 'System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
-Found single assembly: 'System.Data, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
-Load from: 'C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Data.dll'
-------------------
-Resolve: 'Microsoft.VisualStudio.DataDesign.Interfaces, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Could not find by name: 'Microsoft.VisualStudio.DataDesign.Interfaces, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-------------------
-Resolve: 'Microsoft.VisualStudio.Data.Core, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.Data.Core, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.data.core\17.4.33103.184\lib\net472\Microsoft.VisualStudio.Data.Core.dll'
-------------------
-Resolve: 'Microsoft.VisualStudio.CommonIDE, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Could not find by name: 'Microsoft.VisualStudio.CommonIDE, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-------------------
-Resolve: 'Microsoft.VisualStudio.Data.Interop, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Could not find by name: 'Microsoft.VisualStudio.Data.Interop, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-------------------
-Resolve: 'Microsoft.VisualStudio.DataTools.Interop, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.DataTools.Interop, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Microsoft.VisualStudio.DataTools.Interop.dll'
-------------------
-Resolve: 'System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
-Found single assembly: 'System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089'
-Load from: 'C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.8\System.Xml.dll'
-------------------
-Resolve: 'Microsoft.Data.ConnectionUI, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Could not find by name: 'Microsoft.Data.ConnectionUI, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-------------------
-Resolve: 'Microsoft.VisualStudio.Shell.Framework, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Found single assembly: 'Microsoft.VisualStudio.Shell.Framework, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a'
-Load from: 'C:\Users\GregChristos\.nuget\packages\microsoft.visualstudio.shell.framework\17.4.33103.184\lib\net472\Microsoft.VisualStudio.Shell.Framework.dll'
-#endif

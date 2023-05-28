@@ -72,7 +72,7 @@ namespace BlackbirdSql.Common.Commands
 		protected override MenuCommand CreateCommand(int itemId, CommandID commandId, object[] parameters)
 		{
 			MenuCommand command = null;
-			if (commandId.Equals(DataToolsCommands.GlobalNewTrigger) || commandId.Equals(DataToolsCommands.NewTrigger))
+			if (commandId.Equals(CommandProperties.GlobalNewTrigger) || commandId.Equals(CommandProperties.NewTrigger))
 			{
 				command = new DataViewMenuCommand(itemId, commandId, delegate
 				{
@@ -86,7 +86,7 @@ namespace BlackbirdSql.Common.Commands
 				});
 			}
 
-			if (commandId.Equals(DataToolsCommands.GlobalNewStoredProcedure) || commandId.Equals(DataToolsCommands.NewStoredProcedure))
+			if (commandId.Equals(CommandProperties.GlobalNewStoredProcedure) || commandId.Equals(CommandProperties.NewStoredProcedure))
 			{
 				command = new DataViewMenuCommand(itemId, commandId, delegate
 				{
@@ -96,7 +96,7 @@ namespace BlackbirdSql.Common.Commands
 					menuCommand12.Visible = visible8;
 				}, delegate
 				{
-					if (commandId.Equals(DataToolsCommands.GlobalNewStoredProcedure))
+					if (commandId.Equals(CommandProperties.GlobalNewStoredProcedure))
 					{
 						OnNewStoredProcedure(null);
 					}
@@ -107,7 +107,7 @@ namespace BlackbirdSql.Common.Commands
 				});
 			}
 
-			if (commandId.Equals(DataToolsCommands.GlobalNewScalarFunction) || commandId.Equals(DataToolsCommands.NewScalarFunction))
+			if (commandId.Equals(CommandProperties.GlobalNewScalarFunction) || commandId.Equals(CommandProperties.NewScalarFunction))
 			{
 				command = new DataViewMenuCommand(itemId, commandId, delegate
 				{
@@ -117,7 +117,7 @@ namespace BlackbirdSql.Common.Commands
 					menuCommand11.Visible = visible7;
 				}, delegate
 				{
-					if (commandId.Equals(DataToolsCommands.GlobalNewScalarFunction))
+					if (commandId.Equals(CommandProperties.GlobalNewScalarFunction))
 					{
 						OnNewScalarFunction(null);
 					}
@@ -128,7 +128,7 @@ namespace BlackbirdSql.Common.Commands
 				});
 			}
 
-			if (commandId.Equals(DataToolsCommands.GlobalNewTableValuedFunction) || commandId.Equals(DataToolsCommands.NewTableValuedFunction))
+			if (commandId.Equals(CommandProperties.GlobalNewTableValuedFunction) || commandId.Equals(CommandProperties.NewTableValuedFunction))
 			{
 				command = new DataViewMenuCommand(itemId, commandId, delegate
 				{
@@ -138,7 +138,7 @@ namespace BlackbirdSql.Common.Commands
 					menuCommand10.Visible = visible6;
 				}, delegate
 				{
-					if (commandId.Equals(DataToolsCommands.GlobalNewTableValuedFunction))
+					if (commandId.Equals(CommandProperties.GlobalNewTableValuedFunction))
 					{
 						OnNewTableValuedFunction(null);
 					}
@@ -149,7 +149,7 @@ namespace BlackbirdSql.Common.Commands
 				});
 			}
 
-			if (commandId.Equals(DataToolsCommands.GlobalNewInlineTableValuedFunction) || commandId.Equals(DataToolsCommands.NewInlineTableValuedFunction))
+			if (commandId.Equals(CommandProperties.GlobalNewInlineTableValuedFunction) || commandId.Equals(CommandProperties.NewInlineTableValuedFunction))
 			{
 				command = new DataViewMenuCommand(itemId, commandId, delegate
 				{
@@ -159,7 +159,7 @@ namespace BlackbirdSql.Common.Commands
 					menuCommand9.Visible = visible5;
 				}, delegate
 				{
-					if (commandId.Equals(DataToolsCommands.NewInlineTableValuedFunction))
+					if (commandId.Equals(CommandProperties.NewInlineTableValuedFunction))
 					{
 						OnNewInlineFunction(null);
 					}
@@ -170,7 +170,7 @@ namespace BlackbirdSql.Common.Commands
 				});
 			}
 
-			if (commandId.Equals(DataToolsCommands.OpenTextObject))
+			if (commandId.Equals(CommandProperties.OpenTextObject))
 			{
 				command = new DataViewMenuCommand(itemId, commandId, delegate
 				{
@@ -192,7 +192,7 @@ namespace BlackbirdSql.Common.Commands
 				});
 			}
 
-			if (commandId.Equals(DataToolsCommands.ExecuteTextObject))
+			if (commandId.Equals(CommandProperties.ExecuteTextObject))
 			{
 				command = new DataViewMenuCommand(itemId, commandId, delegate
 				{
@@ -223,7 +223,7 @@ namespace BlackbirdSql.Common.Commands
 				});
 			}
 
-			if (commandId.Equals(DataToolsCommands.DebugTextObject) && IsDebuggingSupported)
+			if (commandId.Equals(CommandProperties.DebugTextObject) && IsDebuggingSupported)
 			{
 				command = new DataViewMenuCommand(itemId, commandId, delegate
 				{
@@ -580,7 +580,7 @@ namespace BlackbirdSql.Common.Commands
 				IVsDataObject @object = node.Object;
 				if (ImplementationIsSqlClr(@object))
 				{
-					int num = Site.PersistentCommands[DataToolsCommands.AllowSqlClrDebugging];
+					int num = Site.PersistentCommands[CommandProperties.AllowSqlClrDebugging];
 					if ((num & 4) == 0)
 					{
 						return false;

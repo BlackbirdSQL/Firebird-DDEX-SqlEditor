@@ -55,14 +55,21 @@ public class TMappedObjectConverter : AdoDotNetMappedObjectConverter
 	// =========================================================================================================
 
 
+	protected override object ConvertToMappedMember(string typeName, string mappedMemberName, object[] underlyingValues, object[] parameters)
+	{
+		// Diag.Trace();
+		return base.ConvertToMappedMember(typeName, mappedMemberName, underlyingValues, parameters);
+	}
+
+
 	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Maps the NativeDataType property to the AdoDotNetDbType property for calls
-	/// initiated by TObjectSupport.xml Property/Conversion/CallMapper
-	/// </summary>
-	/// <param name="nativeType"></param>
-	/// <returns>The <see cref="DbType"/> of the AdoDotNetDbType</returns>
-	// ---------------------------------------------------------------------------------
+		/// <summary>
+		/// Maps the NativeDataType property to the AdoDotNetDbType property for calls
+		/// initiated by TObjectSupport.xml Property/Conversion/CallMapper
+		/// </summary>
+		/// <param name="nativeType"></param>
+		/// <returns>The <see cref="DbType"/> of the AdoDotNetDbType</returns>
+		// ---------------------------------------------------------------------------------
 	protected override DbType GetDbTypeFromNativeType(string nativeType)
 	{
 		// Diag.Trace();

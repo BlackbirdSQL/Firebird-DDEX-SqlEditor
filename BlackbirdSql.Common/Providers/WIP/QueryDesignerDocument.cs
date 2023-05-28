@@ -50,7 +50,7 @@ namespace BlackbirdSql.Common.Providers
 			Diag.Dug();
 			if (UnderlyingDocument is IDTQueryDesigner)
 			{
-				Host.PostExecuteCommand(DataToolsCommands.ShowAddTableDialog);
+				Host.PostExecuteCommand(CommandProperties.ShowAddTableDialog);
 			}
 			Diag.Dug();
 		}

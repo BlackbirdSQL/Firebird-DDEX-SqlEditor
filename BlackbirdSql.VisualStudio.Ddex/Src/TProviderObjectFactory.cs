@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.Data.Framework;
 
 using BlackbirdSql.Common;
 using BlackbirdSql.VisualStudio.Ddex.Configuration;
+using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -114,6 +115,7 @@ public sealed class TProviderObjectFactory : DataProviderObjectFactory, IProvide
 			return new TConnectionEquivalencyComparer();
 		}
 		*/
+
 
 		// Diag.Trace(objType.FullName + " is not supported");
 

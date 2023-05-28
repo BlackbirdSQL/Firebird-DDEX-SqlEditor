@@ -19,8 +19,7 @@ using BlackbirdSql.Common.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Configuration;
 
 using Task = System.Threading.Tasks.Task;
-
-
+using BlackbirdSql.Common.Providers;
 
 namespace BlackbirdSql.VisualStudio.Ddex
 {
@@ -66,8 +65,9 @@ namespace BlackbirdSql.VisualStudio.Ddex
 	// Not used
 	// [ProvideMenuResource(1000, 1)] TBC
 
-	// Register the service under the Services registry key
+	// Register services
 	[ProvideService(typeof(IProviderObjectFactory), IsAsyncQueryable = true, ServiceName = PackageData.ServiceName)]
+	[ProvideService(typeof(IPackageController), IsAsyncQueryable = true)]
 
 	// Register the DDEX as a data provider
 	[VsPackageRegistration]
@@ -99,8 +99,8 @@ namespace BlackbirdSql.VisualStudio.Ddex
 
 
 		private DTE _Dte = null;
-		private IVsSolution _Solution = null;
-		private VsPackageController _Controller;
+		private IVsSolution _DteSolution = null;
+		private PackageController _Controller;
 
 		private System.Reflection.Assembly _InvariantAssembly = null;
 
@@ -118,17 +118,57 @@ namespace BlackbirdSql.VisualStudio.Ddex
 
 		// ---------------------------------------------------------------------------------
 		/// <summary>
-		/// Accessor to the <see cref="VsPackageController"/> singleton instance
+		/// Accessor to the <see cref="PackageController"/> singleton instance
 		/// </summary>
 		// ---------------------------------------------------------------------------------
-		VsPackageController Controller
+		internal PackageController Controller
 		{
 			get
 			{
-				return _Controller ??= VsPackageController.GetInstance(_Dte, _Solution);
+#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread - We're safe here
+				return _Controller ??= PackageController.Instance(this, Dte, DteSolution);
+#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 			}
 		}
 
+		internal DTE Dte
+		{
+			get
+			{
+#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread - We're safe here
+				_Dte ??= GetDte();
+#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
+
+				// If it's null there's an issue. Possibly we've come in too early
+				if (_Dte == null)
+				{
+					NullReferenceException ex = new("DTE is null");
+					Diag.DebugDug(ex);
+				}
+
+				return _Dte;
+			}
+		}
+
+		internal IVsSolution DteSolution
+		{
+			get
+			{
+#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread - We're safe here
+				_DteSolution ??= GetSolution();
+#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
+
+				// If it's null there's an issue. Possibly we've come in too early
+				if (_DteSolution == null)
+				{
+					NullReferenceException ex = new("SVsSolution is null");
+					Diag.DebugDug(ex);
+				}
+
+				return _DteSolution;
+
+			}
+		}
 
 		#endregion Property accessors
 
@@ -168,7 +208,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.DebugDug(ex);
 			}
 
 			base.Dispose(disposing);
@@ -203,7 +243,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 		{
 			await base.InitializeAsync(cancellationToken, progress);
 
-			// Diag.Trace();
+			// Diag.DebugTrace();
 
 			AddService
 			(
@@ -212,14 +252,12 @@ namespace BlackbirdSql.VisualStudio.Ddex
 				promote: true
 			);
 
-			_ = AdviseSolutionEventsAsync();
-
 
 			// Add FirebirdClient to assembly cache asynchronously
 			if (_InvariantAssembly == null && DbProviderFactoriesEx.AddAssemblyToCache2(typeof(FirebirdClientFactory),
 				Properties.Resources.Provider_ShortDisplayName, Properties.Resources.Provider_DisplayName))
 			{
-				// Diag.Trace("DbProviderFactory added to assembly cache");
+				// Diag.DebugTrace("DbProviderFactory added to assembly cache");
 
 				_InvariantAssembly = typeof(FirebirdClientFactory).Assembly;
 
@@ -227,7 +265,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 				{
 					if (args.Name == _InvariantAssembly.FullName)
 					{
-						// Diag.Dug(true, "Dsl Provider Factory failed to load: " + _InvariantAssembly.FullName);
+						// Diag.DebugDug(true, "Dsl Provider Factory failed to load: " + _InvariantAssembly.FullName);
 						return _InvariantAssembly;
 					}
 
@@ -237,7 +275,7 @@ namespace BlackbirdSql.VisualStudio.Ddex
 				AppDomain.CurrentDomain.AssemblyLoad += (_, args) =>
 				{
 					// if (args.LoadedAssembly.FullName == _InvariantAssembly.FullName)
-						// Diag.Trace("Dsl Provider Factory loaded: " + _InvariantAssembly.FullName);
+						// Diag.DebugTrace("Dsl Provider Factory loaded: " + _InvariantAssembly.FullName);
 				};
 				*/
 
@@ -245,9 +283,22 @@ namespace BlackbirdSql.VisualStudio.Ddex
 			/*
 			else
 			{
-				Diag.Trace("DbProviderFactory not added to assembly cache during package registration. Factory already cached");
+				// Diag.DebugTrace("DbProviderFactory not added to assembly cache during package registration. Factory already cached");
 			}
 			*/
+
+
+			await JoinableTaskFactory.SwitchToMainThreadAsync(DisposalToken);
+
+			AddService
+			(
+				typeof(IPackageController),
+				(_, _, _) => Task.FromResult<object>(Controller),
+				promote: true
+			);
+
+			_ = AdviseSolutionEventsAsync();
+
 		}
 
 
@@ -271,38 +322,70 @@ namespace BlackbirdSql.VisualStudio.Ddex
 		private async Task AdviseSolutionEventsAsync()
 		{
 			await JoinableTaskFactory.SwitchToMainThreadAsync(DisposalToken);
-			// Diag.Trace();
+			// Diag.DebugTrace();
 
+			/*
 			try
 			{
 				_Dte = await GetServiceAsync(typeof(DTE)).ConfigureAwait(false) as DTE;
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex);
+				Diag.DebugDug(ex);
 				return;
 			}
+			*/
 
-			if (_Dte == null)
+			if (Dte == null)
 			{
 				NullReferenceException ex = new("DTE is null");
-				Diag.Dug(ex);
+				Diag.DebugDug(ex);
 				return;
 			}
 
 
-			// Get the solution service
-			_Solution = await GetServiceAsync(typeof(SVsSolution)).ConfigureAwait(false) as IVsSolution;
-
 			// If it's null there's an issue. Possibly we've come in too early
-			if (_Solution == null)
+			if (DteSolution == null)
 			{
 				NullReferenceException ex = new("SVsSolution is null");
-				Diag.Dug(ex);
+				Diag.DebugDug(ex);
 				return;
 			}
 
 			Controller.AdviseSolutionEvents();
+		}
+
+
+
+		private IVsSolution GetSolution()
+		{
+			ThreadHelper.ThrowIfNotOnUIThread();
+			try
+			{
+				return GetService(typeof(SVsSolution)) as IVsSolution;
+			}
+			catch (Exception ex)
+			{
+				Diag.DebugDug(ex);
+				return null;
+			}
+
+		}
+
+
+
+		private DTE GetDte()
+		{
+			ThreadHelper.ThrowIfNotOnUIThread();
+			try
+			{
+				return GetService(typeof(DTE)) as DTE;
+			}
+			catch (Exception ex)
+			{
+				Diag.DebugDug(ex);
+				return null;
+			}
 		}
 
 

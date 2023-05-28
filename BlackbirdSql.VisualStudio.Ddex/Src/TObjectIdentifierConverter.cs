@@ -19,7 +19,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 /// Implementation of <see cref="IVsDataObjectIdentifierConverter"/> interface
 /// </summary>
 // =========================================================================================================
-internal class TObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
+public class TObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 {
 
 	// ---------------------------------------------------------------------------------

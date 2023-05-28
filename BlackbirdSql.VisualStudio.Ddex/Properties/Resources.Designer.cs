@@ -88,6 +88,51 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot begin transaction because already in transaction..
+        /// </summary>
+        internal static string AdoDotNetConnectionSupport_AlreadyInTransaction {
+            get {
+                return ResourceManager.GetString("AdoDotNetConnectionSupport_AlreadyInTransaction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot prepare AdoDotNet prepared command..
+        /// </summary>
+        internal static string AdoDotNetConnectionSupport_CannotPreparePreparedCommand {
+            get {
+                return ResourceManager.GetString("AdoDotNetConnectionSupport_CannotPreparePreparedCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid AdoDotNet prepared command..
+        /// </summary>
+        internal static string AdoDotNetConnectionSupport_InvalidPreparedCommand {
+            get {
+                return ResourceManager.GetString("AdoDotNetConnectionSupport_InvalidPreparedCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot commit transaction because not in transaction.
+        /// </summary>
+        internal static string AdoDotNetConnectionSupport_NotInTransaction {
+            get {
+                return ResourceManager.GetString("AdoDotNetConnectionSupport_NotInTransaction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to AdoDotNet Connection Support provider object {0} not recognized..
+        /// </summary>
+        internal static string AdoDotNetConnectionSupport_ProviderObjectNotRecognized {
+            get {
+                return ResourceManager.GetString("AdoDotNetConnectionSupport_ProviderObjectNotRecognized", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Firebird SQL Server.
         /// </summary>
         internal static string DataSource_Product {

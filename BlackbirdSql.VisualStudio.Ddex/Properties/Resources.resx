@@ -210,4 +210,19 @@
   <data name="SqlViewNode_Caption_View" xml:space="preserve">
     <value>View Definition</value>
   </data>
+  <data name="AdoDotNetConnectionSupport_ProviderObjectNotRecognized" xml:space="preserve">
+    <value>AdoDotNet Connection Support provider object {0} not recognized.</value>
+  </data>
+  <data name="AdoDotNetConnectionSupport_CannotPreparePreparedCommand" xml:space="preserve">
+    <value>Cannot prepare AdoDotNet prepared command.</value>
+  </data>
+  <data name="AdoDotNetConnectionSupport_InvalidPreparedCommand" xml:space="preserve">
+    <value>Invalid AdoDotNet prepared command.</value>
+  </data>
+  <data name="AdoDotNetConnectionSupport_AlreadyInTransaction" xml:space="preserve">
+    <value>Cannot begin transaction because already in transaction.</value>
+  </data>
+  <data name="AdoDotNetConnectionSupport_NotInTransaction" xml:space="preserve">
+    <value>Cannot commit transaction because not in transaction</value>
+  </data>
 </root>

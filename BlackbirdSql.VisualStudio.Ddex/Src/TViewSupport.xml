@@ -16,9 +16,9 @@
 				<CommandRef name="CommandGlobalNewQuery" />
 			</GlobalCommands>
 			<ConnectionNode nodeId="Root" type="">
-				<InitialDisplayName>{Root.DataSourceName} ({Root.Dataset})</InitialDisplayName>
+				<InitialDisplayName>{Root.Server} ({Root.Database})</InitialDisplayName>
 				<Properties>
-					<Property name="DefaultCatalog">
+					<Property name="InitialCatalog">
 						<DisplayName resource="Identifier_Name_DatabasePath" />
 						<Category resource="Category_Connection" />
 						<Description resource="Identifier_Desc_DatabasePath" />
@@ -103,6 +103,8 @@
 									</Properties>
 									<Commands>
 										<CommandRef name="CommandRetrieveData" />
+										<CommandRef name="CommandUserNewQuery" />
+										<CommandRef name="CommandTextOpenScript" />
 									</Commands>
 									<Children>
 										<SelectionRef name="TplSelectionColumn" arguments="ViewColumn,View,User,{View.VIEW_CATALOG},,{View.VIEW_SCHEMA},,{View.VIEW_NAME}" />

@@ -17,7 +17,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 /// Implementation of IVsDataConnectionProperties interface
 /// </summary>
 // =========================================================================================================
-internal class TConnectionUIProperties : AdoDotNetConnectionProperties
+public class TConnectionUIProperties : AdoDotNetConnectionProperties
 {
 
 	// ---------------------------------------------------------------------------------
@@ -36,7 +36,7 @@ internal class TConnectionUIProperties : AdoDotNetConnectionProperties
 			// This has to be ProtectedMandatoryProperties for password PromptDialog to be activated
 			try
 			{
-				foreach (string property in Schema.ConnectionResources.ProtectedMandatoryProperties)
+				foreach (string property in Schema.DslProperties.ProtectedMandatoryProperties)
 				{
 					try
 					{

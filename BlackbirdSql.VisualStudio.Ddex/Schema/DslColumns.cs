@@ -542,12 +542,12 @@ END",
 			{
 				if (row["TRIGGER_NAME"] != DBNull.Value)
 				{
-					trig = _LinkageParser.FindTrigger(row["TRIGGER_NAME"]);
+					trig = _LinkageParser?.FindTrigger(row["TRIGGER_NAME"]);
 				}
 
 				if (trig == null || Convert.ToBoolean(trig["IS_IDENTITY"]) == false)
 				{
-					trig = _LinkageParser.LocateIdentityTrigger(row["TABLE_NAME"], row["COLUMN_NAME"]);
+					trig = _LinkageParser?.LocateIdentityTrigger(row["TABLE_NAME"], row["COLUMN_NAME"]);
 				}
 			}
 
