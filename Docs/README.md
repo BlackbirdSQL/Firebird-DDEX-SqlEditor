@@ -37,8 +37,9 @@ The parser itself is reasonably fast (+- 0.1 milliseconds per trigger), but SQL 
 
 ## Known issues
 * The 'Open Script' command on Server Explorer nodes with an expression, definition or source script implements the Azure Unified editor factory. The port to Firebird is only partially completed. As a result Intellisense will display a connection retry counter to a non-existent Azure provider for each SQL script window that is active. Besides being a distraction it should not affect IDE performance.
+* As it stands, the Azure Unified SQL Editor Connect, Execute and various other database command buttons are not functional yet.
 * If on startup of the Visual Studio IDE, and only on startup, an attempt is made to access an EDMX model or a Database in the SE before the associated DDEX provider has been given the IDE shell context, Visual Studio will flag the provider as unavailable for the duration of the session. This is true for both the SqlServer and BlackbirdSql providers, and is likely the case for any other DDEX provider that loads asynchronously.</br>
-* As it stands Visual Studio will have to be restarted to clear the flag.</br>
+As it stands Visual Studio will have to be restarted to clear the flag.</br>
 Unless we're missing a trick here this seems to be unavoidable. Loading is asynchronous, so the provider needs time to register and load.</br>
 We want to be as unobtrusive as possible so load delays are just a reality if we go the asynchronous route. (*Loading is initiated at the earliest possible, which is as soon as the IDE shell context is available.*)
 * If you have a huge number of triggers then rendering of the triggers in the SE, or any other collection for that matter, may take some time. This has nothing to do with the parser but is simply down to network and database server performance. To minimize the effect of this, Trigger/Generator linkage is built asynchronously as soon as a connection is established.
