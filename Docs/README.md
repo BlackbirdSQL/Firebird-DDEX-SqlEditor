@@ -6,7 +6,7 @@
 </br></br>
 
 
-The BlackbirdSQL DDEX 2.0 .NET Data and SqlEditor Provider extension, `BlackbirdSql.VisualStudio.Ddex`, implements all the core DDEX 2.0 interfaces prevalent in the SqlServer DDEX and SqlEditor providers and more, but currently excludes DDL functionality. 
+The BlackbirdSQL DDEX 2.0 .NET Data with SqlEditor Provider extension, `BlackbirdSql.VisualStudio.Ddex`, implements all the core DDEX 2.0 interfaces prevalent in the SqlServer DDEX and SqlEditor extensions and more, but currently excludes the SqlServer designer logical views functionality. 
 
 [Download BlackbirdSql DDEX Extension (Pre-release v9.1.0.77-beta)](https://github.com/BlackbirdSQL/Firebird-NETProvider-DDEX/releases/download/v9.0.1.77-beta/BlackbirdSql.VisualStudio.Ddex.vsix)
 
@@ -36,7 +36,8 @@ The parser itself is reasonably fast (+- 0.1 milliseconds per trigger), but SQL 
 
 
 ## Known issues
-* The 'Open Script' command on Server Explorer nodes with an expression or dsl/sql source code is still in development and not functional yet. Selecting the command from the SE context menu results in the IDE shutting down, so it has been temporarily disabled.
+* The Language service for the SqlEditor service is still under development and has not been linked into the extension. When opening scripts for Triggers, Views, Procedures Computed columns or SQL statements, the SqlEditor uses the Visual Studio built-in T-SQL Language service. This means that Intellisense may mark incompatible SQL and DDL as errors. The scripts will still successfully execute.
+* The SqlEditor does not currently support the designer logical view or script parameter loading.
 * If on startup of the Visual Studio IDE, and only on startup, an attempt is made to access an EDMX model or a Database in the SE before the associated DDEX provider has been given the IDE shell context, Visual Studio will flag the provider as unavailable for the duration of the session. This is true for both the SqlServer and BlackbirdSql providers, and is likely the case for any other DDEX provider that loads asynchronously.</br>
 * As it stands Visual Studio will have to be restarted to clear the flag.</br>
 Unless we're missing a trick here this seems to be unavoidable. Loading is asynchronous, so the provider needs time to register and load.</br>
