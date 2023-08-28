@@ -1,0 +1,1048 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ActionFailure" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="ActionStarted" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="ActionSuccess" xml:space="preserve">
+    <value>Complete</value>
+  </data>
+  <data name="AlterCertificate" xml:space="preserve">
+    <value>Alter certificate</value>
+  </data>
+  <data name="AlterColumnEncryptionKey" xml:space="preserve">
+    <value>Alter Column Encryption Key</value>
+  </data>
+  <data name="AlterTrigger" xml:space="preserve">
+    <value>Alter trigger</value>
+  </data>
+  <data name="Assembly" xml:space="preserve">
+    <value>Assembly</value>
+  </data>
+  <data name="AssemblyCorrupt" xml:space="preserve">
+    <value>This assembly is corrupt or not valid.</value>
+  </data>
+  <data name="AssemblyLoadingError" xml:space="preserve">
+    <value>The reference could not be added to assembly {0}.</value>
+  </data>
+  <data name="AutoGridTessellationScheme" xml:space="preserve">
+    <value>Auto grid tessellation scheme</value>
+  </data>
+  <data name="Bacpac250IsNotSupported" xml:space="preserve">
+    <value>BACPAC version 2.5 is not supported.</value>
+  </data>
+  <data name="BacpacImportFailedException" xml:space="preserve">
+    <value>Unable to import bacpac. Inner exception may have more details.</value>
+  </data>
+  <data name="BacpacIOError" xml:space="preserve">
+    <value>Bacpac file stream must be writeable, have proper permissions, and enough free space for the operation to complete. A file IO exception has occurred.</value>
+  </data>
+  <data name="BacpacIOError1" xml:space="preserve">
+    <value>30001: Bacpac file stream must be writeable, have proper permissions, and enough free space for the operation to complete. A file IO exception has occurred.</value>
+  </data>
+  <data name="BacpacPackageError" xml:space="preserve">
+    <value>Bacpac file format corrupt or null.  See inner exception for more details.</value>
+  </data>
+  <data name="BacpacPackagePartExists" xml:space="preserve">
+    <value>Bacpac package part already exists for binary file '{0}'.</value>
+  </data>
+  <data name="BacpacPackagePartExists1" xml:space="preserve">
+    <value>10013: Bacpac package part already exists for binary file '{0}'.</value>
+  </data>
+  <data name="BacpacPackagePartMissing" xml:space="preserve">
+    <value>Bacpac package part missing for binary file '{0}'.</value>
+  </data>
+  <data name="BacpacPackagePartMissing1" xml:space="preserve">
+    <value>10014: Bacpac package part missing for binary file '{0}'.</value>
+  </data>
+  <data name="BacpacUnsupportedColumnType" xml:space="preserve">
+    <value>Column type '{0}' unsupported from table '{1}'.</value>
+  </data>
+  <data name="BacpacVersion250IsNotSupported" xml:space="preserve">
+    <value>The BACPAC file "{0}" is of version 2.5. BACPAC version 2.5 is not supported.</value>
+  </data>
+  <data name="BatchCommandSqlError" xml:space="preserve">
+    <value>Batch Command during reverse engineer failed with Error Code: {0} Line Number: {1} Error Message: {2}.</value>
+  </data>
+  <data name="BatchParser_CircularReference" xml:space="preserve">
+    <value>File '{0}' recursively included.</value>
+  </data>
+  <data name="BatchParser_CommentNotTerminated" xml:space="preserve">
+    <value>Missing end comment mark '*/'.</value>
+  </data>
+  <data name="BatchParser_IncorrectSyntax" xml:space="preserve">
+    <value>Incorrect syntax was encountered while parsing '{0}'.</value>
+  </data>
+  <data name="BatchParser_ParserError" xml:space="preserve">
+    <value>Fatal scripting error: {0}</value>
+  </data>
+  <data name="BatchParser_StringNotTerminated" xml:space="preserve">
+    <value>Unclosed quotation mark after the character string.</value>
+  </data>
+  <data name="BatchParser_VariableNotDefined" xml:space="preserve">
+    <value>Variable {0} is not defined.</value>
+  </data>
+  <data name="CannotValidateImportRowCount" xml:space="preserve">
+    <value>Unable to validate the number of rows that were imported to table {0} ({1} rows expected).</value>
+  </data>
+  <data name="ClassNumber" xml:space="preserve">
+    <value>Class: {0} Number: {1} </value>
+  </data>
+  <data name="ClrType" xml:space="preserve">
+    <value>CLR Type</value>
+  </data>
+  <data name="CLRType_NotSupported_NetCore" xml:space="preserve">
+    <value>CLR types are not supported on .NET Core.</value>
+  </data>
+  <data name="ColumnConversionError" xml:space="preserve">
+    <value>A conversion error occurred while converting a column from sqlType '{0}' to clrType '{1}'.</value>
+  </data>
+  <data name="ColumnTooLarge" xml:space="preserve">
+    <value>The column '{0}' value is too large.  '{1}' &gt; '{2}'</value>
+  </data>
+  <data name="CommandRetryMessage" xml:space="preserve">
+    <value>Retry number {0} to server {1}. Delaying {2} ms before retry. Exception: {3}</value>
+  </data>
+  <data name="CommandRetryMessage1" xml:space="preserve">
+    <value>Command retry number {0}. Delaying {1} ms before retry. Exception: {2}</value>
+  </data>
+  <data name="ConnectionError" xml:space="preserve">
+    <value>An error occurred while attempting to connect to the server: {0}.</value>
+  </data>
+  <data name="ConnectionPropertyNotSet" xml:space="preserve">
+    <value>Command Connection Property not set</value>
+  </data>
+  <data name="ConnectionRetryMessage" xml:space="preserve">
+    <value>Connection retry number {0}. Delaying {1} ms before retry. Exception: {2}</value>
+  </data>
+  <data name="ContainedDatabaseUser" xml:space="preserve">
+    <value>Contained database user</value>
+  </data>
+  <data name="CorruptedStream" xml:space="preserve">
+    <value>Stream {0} in the package {1} is corrupted.</value>
+  </data>
+  <data name="CreateAssembly" xml:space="preserve">
+    <value>Create Assembly</value>
+  </data>
+  <data name="CreateCertificate" xml:space="preserve">
+    <value>Create certificate</value>
+  </data>
+  <data name="CreateColumnEncryptionKey" xml:space="preserve">
+    <value>Create Column Encryption Key</value>
+  </data>
+  <data name="CreateColumnMasterKey" xml:space="preserve">
+    <value>Create Column Master Key</value>
+  </data>
+  <data name="CreateExternalLanguage" xml:space="preserve">
+    <value>Create external language</value>
+  </data>
+  <data name="CreateExternalStream" xml:space="preserve">
+    <value>Create external stream</value>
+  </data>
+  <data name="CreateIndex" xml:space="preserve">
+    <value>Create index</value>
+  </data>
+  <data name="CreateSelectiveXmlIndex" xml:space="preserve">
+    <value>Create Selective XML Index</value>
+  </data>
+  <data name="CreateSequence" xml:space="preserve">
+    <value>Create sequence</value>
+  </data>
+  <data name="CreateSpatialIndex" xml:space="preserve">
+    <value>Create Spatial Index</value>
+  </data>
+  <data name="CreateTable" xml:space="preserve">
+    <value>Create table</value>
+  </data>
+  <data name="CreateTrigger" xml:space="preserve">
+    <value>Create trigger</value>
+  </data>
+  <data name="CreateXmlIndex" xml:space="preserve">
+    <value>Create XML Index</value>
+  </data>
+  <data name="Dacpac250IsNotSupported" xml:space="preserve">
+    <value>DACPAC version 2.5 is not supported.</value>
+  </data>
+  <data name="DacpacVersion250IsNotSupported" xml:space="preserve">
+    <value>The DACPAC file "{0}" is of version 2.5. DACPAC version 2.5 is not supported.</value>
+  </data>
+  <data name="DACSchemaNotAvailable" xml:space="preserve">
+    <value>Unable to proceed with DAC operations on the target instance because it does not support DACs. Specify another instance, or upgrade to a version that supports DACs.</value>
+  </data>
+  <data name="DbTypeException" xml:space="preserve">
+    <value>Error the database type '{0}' is not understood by the data reader.</value>
+  </data>
+  <data name="DbTypeException1" xml:space="preserve">
+    <value>50006: Error the database type '{0}' is not understood by the data reader.</value>
+  </data>
+  <data name="DeployContributor_DuplicateContributorId" xml:space="preserve">
+    <value>The DAC package contains duplicate entries for the deployment contributor id {0}.</value>
+  </data>
+  <data name="DeployContributor_InvalidContributorIndentifier" xml:space="preserve">
+    <value>Invalid contributor identifier '{0}'.</value>
+  </data>
+  <data name="DeployContributor_UnsupportedStreamVersion" xml:space="preserve">
+    <value>Unsupported deployment contributor stream version {0}.</value>
+  </data>
+  <data name="Deployment_MissingTableDefinitionAttribute" xml:space="preserve">
+    <value>A TableDefinition Attribute must be provided in order to generate DDL for the SQL CLR function {0} in class {1}, because its return type is IEnumerable.</value>
+  </data>
+  <data name="DeprecatedFeatureNotSupportedOnAzure" xml:space="preserve">
+    <value>Deprecated feature '{0}' is not supported on Microsoft Azure SQL Database.</value>
+  </data>
+  <data name="DeprecatedFeature_StringLiteralsAsColumnAliases" xml:space="preserve">
+    <value>String literals as column aliases</value>
+  </data>
+  <data name="DeprecatedFeature_TableHintWithoutWith" xml:space="preserve">
+    <value>Table hint without WITH</value>
+  </data>
+  <data name="DeserializationError" xml:space="preserve">
+    <value>Unable to deserialize row from JSON provider.  File may be corrupt or in non supported format.</value>
+  </data>
+  <data name="DeserializationError1" xml:space="preserve">
+    <value>10019: Unable to deserialize row from JSON provider.  File may be corrupt or in non supported format.</value>
+  </data>
+  <data name="DeserializationUnexpectedXmlContent" xml:space="preserve">
+    <value>Unexpected XML content.</value>
+  </data>
+  <data name="DisablingIndexesMessage" xml:space="preserve">
+    <value>Disabling indexes.</value>
+  </data>
+  <data name="DisablingIndexMessage" xml:space="preserve">
+    <value>Disabling index '{0}'.</value>
+  </data>
+  <data name="DropCertificate" xml:space="preserve">
+    <value>Drop Certificate</value>
+  </data>
+  <data name="DropTrigger" xml:space="preserve">
+    <value>Drop trigger</value>
+  </data>
+  <data name="ElementMissingOrCorrupted" xml:space="preserve">
+    <value>The element '{0}' is missing or corrupted.</value>
+  </data>
+  <data name="ElementMissingOrCorruptedFrom" xml:space="preserve">
+    <value>The element '{0}' is missing or corrupted from the package content '{1}'.</value>
+  </data>
+  <data name="EnablingIndexesMessage" xml:space="preserve">
+    <value>Enabling indexes.</value>
+  </data>
+  <data name="EnablingIndexMessage" xml:space="preserve">
+    <value>Enabling index '{0}'.</value>
+  </data>
+  <data name="ErrorAddingRefactorLogToPackage" xml:space="preserve">
+    <value>Could not add refactor log file '{0}' to package.</value>
+  </data>
+  <data name="ErrorUnableToDetermineDatabaseCompatibilityLevel" xml:space="preserve">
+    <value>Unable to determine the database compatibility level.</value>
+  </data>
+  <data name="ErrorWithDetailInformation" xml:space="preserve">
+    <value>{0}
+{1}</value>
+  </data>
+  <data name="ExportFailedLog" xml:space="preserve">
+    <value>Table {0} has reported an exception. Last processed row was {1}. Exception: {2}</value>
+  </data>
+  <data name="ExportHeartBeat" xml:space="preserve">
+    <value>Export still processing...</value>
+  </data>
+  <data name="ExportStatusUpdate" xml:space="preserve">
+    <value>Table {0} has exported {1} rows.</value>
+  </data>
+  <data name="ExportTableElapsed" xml:space="preserve">
+    <value>Exported table '{0}' in {1} milliseconds.</value>
+  </data>
+  <data name="ExportTablePartCount" xml:space="preserve">
+    <value>Table '{0}' has a part count of {1}.</value>
+  </data>
+  <data name="ExportTablePartRange" xml:space="preserve">
+    <value>Table '{0}'. Export table part range ({1} - {2})</value>
+  </data>
+  <data name="ExternalLanguage" xml:space="preserve">
+    <value>External Language</value>
+  </data>
+  <data name="ExternalStream" xml:space="preserve">
+    <value>External Stream</value>
+  </data>
+  <data name="ExternalStreamingJob" xml:space="preserve">
+    <value>External Streaming Job</value>
+  </data>
+  <data name="ExtractData" xml:space="preserve">
+    <value>Extract Data</value>
+  </data>
+  <data name="FailedToSetDefaultFilegroup" xml:space="preserve">
+    <value>Failed to set Default Filegroup: '{0}'</value>
+  </data>
+  <data name="FailedToSetDefaultFilestreamFilegroup" xml:space="preserve">
+    <value>Failed to set Default Filestream Filegroup: '{0}'</value>
+  </data>
+  <data name="File" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="Filegroup" xml:space="preserve">
+    <value>Filegroup</value>
+  </data>
+  <data name="FilegroupReferenceAndPartitioningScheme" xml:space="preserve">
+    <value>Filegroup reference and partitioning scheme</value>
+  </data>
+  <data name="FileTable" xml:space="preserve">
+    <value>FileTable</value>
+  </data>
+  <data name="Function" xml:space="preserve">
+    <value>function</value>
+  </data>
+  <data name="GatherTableStatistics" xml:space="preserve">
+    <value>Found estimated size of table {0}: {1} KB </value>
+  </data>
+  <data name="GlobalTemporaryTable" xml:space="preserve">
+    <value>Global Temporary Table</value>
+  </data>
+  <data name="IgnoreIndexesStatisticsOnEnclaveEnabledColumnsError" xml:space="preserve">
+    <value>Element {0} is an unsupported index or statistic on an encrypted column using randomized encryption and an enclave-enabled column encryption key. Such objects are not allowed when used as part of a data package (bacpac file). Drop the object in the source database and retry the operation, or use sqlpackage.exe with the /p:IgnoreIndexesStatisticsOnEnclaveEnabledColumns=True option. For more information see https://go.microsoft.com/fwlink/?linkid=2124580.</value>
+  </data>
+  <data name="IgnoreIndexesStatisticsOnEnclaveEnabledColumnsWarnings" xml:space="preserve">
+    <value>Element {0} is an unsupported index or statistic on an encrypted column using randomized encryption and an enclave-enabled column encryption key. The index or the statistic will not be included the resulting data package (bapcac file . For more information see https://go.microsoft.com/fwlink/?linkid=2124580.) </value>
+  </data>
+  <data name="IgnoreOnException" xml:space="preserve">
+    <value>Retry number {0}. Ignoring Exception: {1}</value>
+  </data>
+  <data name="ImportFormatException" xml:space="preserve">
+    <value>Bacpac header error: '{0}'.  The header may be corrupt.</value>
+  </data>
+  <data name="ImportFormatException1" xml:space="preserve">
+    <value>50002: Bacpac header error: the header may be corrupt.</value>
+  </data>
+  <data name="ImportIncorrectFormat" xml:space="preserve">
+    <value>Bacpac header contains invalid or unknown format '{0}'.</value>
+  </data>
+  <data name="ImportIncorrectFormat1" xml:space="preserve">
+    <value>50004: Bacpac header contains invalid or unknown format '{0}'.</value>
+  </data>
+  <data name="ImportStatusUpdate" xml:space="preserve">
+    <value>Table {0} has copied {1} rows.</value>
+  </data>
+  <data name="ImportTableElapsed" xml:space="preserve">
+    <value>Imported table '{0}' in {1} milliseconds.</value>
+  </data>
+  <data name="ImportTableHeaderMismatch" xml:space="preserve">
+    <value>Bacpac Table header does not match. '{0}' does not match '{1}'.</value>
+  </data>
+  <data name="ImportTableHeaderMismatch1" xml:space="preserve">
+    <value>50003: Bacpac Table header does not match. '{0}' does not match '{1}'.</value>
+  </data>
+  <data name="InterfaceNotFound" xml:space="preserve">
+    <value>No interface type with name {0} was found.</value>
+  </data>
+  <data name="InterpretationError_AlterTableAddColumn" xml:space="preserve">
+    <value>In this context, you must specify columns by using a CREATE TABLE statement instead of by using an ALTER TABLE statement.</value>
+  </data>
+  <data name="InterpretationError_CannotBindSchema" xml:space="preserve">
+    <value>Cannot schema bind {0} '{1}' because name '{2}' is invalid for schema binding. Names must be in two-part format and an object cannot reference itself.</value>
+  </data>
+  <data name="InterpretationError_CannotCreateTemporalTableWithoutHistoryTableName" xml:space="preserve">
+    <value>System-versioned temporal table must have history table name explicitly provided.</value>
+  </data>
+  <data name="InterpretationError_CannotCreateTempProcedure" xml:space="preserve">
+    <value>Temporary procedures are not supported in the targeted platform.</value>
+  </data>
+  <data name="InterpretationError_CannotCreateTempTable" xml:space="preserve">
+    <value>A temporary table can only be created inside a procedure, or a trigger.</value>
+  </data>
+  <data name="InterpretationError_CanNotCtasAsDdl" xml:space="preserve">
+    <value>CTAS cannot be used as a DDL statement.</value>
+  </data>
+  <data name="InterpretationError_CannotDetermineSecurableFromPermission" xml:space="preserve">
+    <value>Cannot determine securable object class from permission {0}.</value>
+  </data>
+  <data name="InterpretationError_CannotSpecifyBoundingBoxForGeography" xml:space="preserve">
+    <value>Bounding-box coordinates apply only when using a geometry grid tesselation.</value>
+  </data>
+  <data name="InterpretationError_CannotSpecifyGridParameterForAutoGridSpatialIndex" xml:space="preserve">
+    <value>GRIDS option for a spatial index cannot be specified when using an auto grid tessellation scheme (GEOMETRY_AUTO_GRID or GEOGRAPHY_AUTO_GRID). </value>
+  </data>
+  <data name="InterpretationError_CannotSpecifyPartitionNumber" xml:space="preserve">
+    <value>You cannot specify a partition number because the target is not partitioned.</value>
+  </data>
+  <data name="InterpretationError_CanNotUseLocationOption" xml:space="preserve">
+    <value>LOCATION option cannot be used with a user table.</value>
+  </data>
+  <data name="InterpretationError_ClearAndBasicAreNotAllowed" xml:space="preserve">
+    <value>The 'CLEAR' and 'BASIC' options are not allowed on the same statement.</value>
+  </data>
+  <data name="InterpretationError_ColumnIsntAllowedForAssemblySource" xml:space="preserve">
+    <value>Columns cannot be used to construct an assembly source expression.</value>
+  </data>
+  <data name="InterpretationError_ColumnNotAllowed" xml:space="preserve">
+    <value>The name "{0}" is not permitted in this context. Valid expressions are constants, constant expressions, and (in some contexts) variables. Column names are not permitted.</value>
+  </data>
+  <data name="InterpretationError_ConstraintEnforcementIsIgnored" xml:space="preserve">
+    <value>WITH CHECK | NOCHECK option for existing data check enforcement is ignored.</value>
+  </data>
+  <data name="InterpretationError_CreateColumnEncryptionKeyNotSupported" xml:space="preserve">
+    <value>The statement CREATE COLUMN ENCRYPTION KEY is not supported because the Always Encrypted feature is not supported</value>
+  </data>
+  <data name="InterpretationError_CreateColumnMasterKeyNotSupported" xml:space="preserve">
+    <value>The statement CREATE COLUMN MASTER KEY is not supported because the Always Encrypted feature is not supported</value>
+  </data>
+  <data name="InterpretationError_DontCreateAssemblyFileFromAlterAssembly" xml:space="preserve">
+    <value>Creating assembly files via ALTER ASSEMBLY statement is not supported.</value>
+  </data>
+  <data name="InterpretationError_DuplicatedPartitionNumber" xml:space="preserve">
+    <value>The COMPRESSION option was specified more than once for the target, or for at least one of its partitions if the target is partitioned.</value>
+  </data>
+  <data name="InterpretationError_DynamicQuery" xml:space="preserve">
+    <value>The column definition from this {0} function cannot be verified, and the operations involved with it might not be understood correctly.</value>
+  </data>
+  <data name="InterpretationError_FewerAliasesThanColumns" xml:space="preserve">
+    <value>'{0}' has fewer columns than were specified in the column list.</value>
+  </data>
+  <data name="InterpretationError_ForReplicationIsNotSupported" xml:space="preserve">
+    <value>Usage of FOR REPLICATION with CREATE PROCEDURE is not supported. The procedure will be published with FOR REPLICATION, but may result in errors. Use of FOR REPLICATION with CREATE PROCEDURE is discouraged.</value>
+  </data>
+  <data name="InterpretationError_FromPartitionGreaterThanToPartition" xml:space="preserve">
+    <value>Invalid partition range: {0} TO {1}. The lower bound must not be greater than upper bound.</value>
+  </data>
+  <data name="InterpretationError_HttpForSoapOnly" xml:space="preserve">
+    <value>"HTTP" endpoints can only be of the "FOR SOAP" type.</value>
+  </data>
+  <data name="InterpretationError_IncompleteBoundingBoxCoordinates" xml:space="preserve">
+    <value>The BOUNDING_BOX parameter of the CREATE SPATIAL INDEX statement is incompletely defined. If the parameter has more than one part, all the parts must be defined.</value>
+  </data>
+  <data name="InterpretationError_InvalidAssemblySource" xml:space="preserve">
+    <value>The assembly source is not valid. Only binary literals are allowed.</value>
+  </data>
+  <data name="InterpretationError_InvalidColumnList" xml:space="preserve">
+    <value>In the GRANT or REVOKE statement, the column list after the object name is not valid.</value>
+  </data>
+  <data name="InterpretationError_InvalidColumnListForSecurableType" xml:space="preserve">
+    <value>Column list cannot be specified for this class of securable.</value>
+  </data>
+  <data name="InterpretationError_InvalidCoordinate" xml:space="preserve">
+    <value>The coordinate value ({0}) is not valid.</value>
+  </data>
+  <data name="InterpretationError_InvalidIdentityValue" xml:space="preserve">
+    <value>The identity increment or seed is not valid. Only positive, zero, or negative numbers are allowed.</value>
+  </data>
+  <data name="InterpretationError_InvalidLanguageNameOrAlias" xml:space="preserve">
+    <value>'{0}' is not a valid official language name or alias. This statement might lead to a deployment failure.</value>
+  </data>
+  <data name="InterpretationError_InvalidLanguageTerm" xml:space="preserve">
+    <value>You have specified a language for the full-text index that is not valid. You must specify one of the following: a string that corresponds to the language alias; an integer value that corresponds to the locale identifier (LCID) or a hexadecimal value that corresponds to the LCID.</value>
+  </data>
+  <data name="InterpretationError_InvalidLoginName" xml:space="preserve">
+    <value>'{0}' is not a valid name because it contains characters that are not valid.</value>
+  </data>
+  <data name="InterpretationError_InvalidMaskingFunctionFormat" xml:space="preserve">
+    <value>The data masking function provided for column {0} is invalid.</value>
+  </data>
+  <data name="InterpretationError_InvalidParameterOrOption" xml:space="preserve">
+    <value>A parameter or option that is not valid was specified for procedure '{0}'.</value>
+  </data>
+  <data name="InterpretationError_InvalidPartitionFunctionDataType" xml:space="preserve">
+    <value>The specified partition function input parameter type is not allowed. The input parameter type cannot be text, ntext, image, xml, timestamp, varchar(max), nvarchar(max), varbinary(max), an alias data type, or a CLR user-defined data type.</value>
+  </data>
+  <data name="InterpretationError_InvalidPermissionObjectType" xml:space="preserve">
+    <value>The object type {0} specified in the permission statement is not supported on the current SQL platform.</value>
+  </data>
+  <data name="InterpretationError_InvalidPermissionTypeAgainstObject" xml:space="preserve">
+    <value>The permission {0} is not valid for object type {1} in the targeted platform.</value>
+  </data>
+  <data name="InterpretationError_InvalidPrimaryKeyConstraint" xml:space="preserve">
+    <value>PRIMARY KEY is only supported when NONCLUSTERED and NOT ENFORCED are both used.</value>
+  </data>
+  <data name="InterpretationError_InvalidPriorityLevel" xml:space="preserve">
+    <value>The PRIORITY_LEVEL that is specified for conversation priority '{0}' is not valid. The value must be between 1 and 10.</value>
+  </data>
+  <data name="InterpretationError_InvalidSearchPropertyId" xml:space="preserve">
+    <value>The value specified for the PROPERTY_INT_ID of the Search Property is not valid.  You must specify an integer value for the property identifier.</value>
+  </data>
+  <data name="InterpretationError_InvalidTimestampReturnType" xml:space="preserve">
+    <value>The timestamp data type is not valid for return values.</value>
+  </data>
+  <data name="InterpretationError_InvalidTopLevelStatement" xml:space="preserve">
+    <value>The statement cannot be a top-level statement.</value>
+  </data>
+  <data name="InterpretationError_InvalidTypeForCollateClause" xml:space="preserve">
+    <value>Expression type {0} is invalid for COLLATE clause.</value>
+  </data>
+  <data name="InterpretationError_InvalidUniqueKeyConstraint" xml:space="preserve">
+    <value>UNIQUE constraint is only supported with NOT ENFORCED is used.</value>
+  </data>
+  <data name="InterpretationError_InvalidUserDefaultLanguage" xml:space="preserve">
+    <value>The value specified for the default language is not valid. You must specify one of the following: NONE; a value that corresponds to the language name or alias; an integer value that corresponds to the locale identifier (LCID).</value>
+  </data>
+  <data name="InterpretationError_InvalidUserName" xml:space="preserve">
+    <value>'{0}' is not a valid name because it contains characters that are not valid.</value>
+  </data>
+  <data name="InterpretationError_InvalidUserSid" xml:space="preserve">
+    <value>The specified SID option is not valid. The value should be a hexadecimal number 32 characters in length (like 0x0123456789ABCDEF0123456789ABCDEF).</value>
+  </data>
+  <data name="InterpretationError_InvalidUserType" xml:space="preserve">
+    <value>The specified TYPE option is not valid. Allowed values are E (for external users) and X (for external groups).</value>
+  </data>
+  <data name="InterpretationError_InvalidWindowsLogin" xml:space="preserve">
+    <value>'{0}' is not a valid Windows NT name. You must specify the complete name: &lt;domain\username&gt;.</value>
+  </data>
+  <data name="InterpretationError_MaskingFunctionIsEmpty" xml:space="preserve">
+    <value>The data masking function provided for column {0} must not be empty.</value>
+  </data>
+  <data name="InterpretationError_MissingColumnName" xml:space="preserve">
+    <value>A column name is required.</value>
+  </data>
+  <data name="InterpretationError_MoreAliasesThanColumns" xml:space="preserve">
+    <value>'{0}' has more columns than were specified in the column list.</value>
+  </data>
+  <data name="InterpretationError_NameCannotBeNull" xml:space="preserve">
+    <value>Name cannot be NULL.</value>
+  </data>
+  <data name="InterpretationError_NoGlobalTemporarySymmetricKey" xml:space="preserve">
+    <value>Global temporary keys are not allowed. You can only use local temporary keys.</value>
+  </data>
+  <data name="InterpretationError_NumberOfColumnsMismatchForCTAS" xml:space="preserve">
+    <value>The number of values in the SELECT clause must match the number of columns specified in the CREATE TABLE statement.</value>
+  </data>
+  <data name="InterpretationError_OnlyLcidAllowed" xml:space="preserve">
+    <value>You must use the locale identifier (LCID) in an integer or hexadecimal format to specify the language when you create a full-text index.</value>
+  </data>
+  <data name="InterpretationError_OnlyTwoPartNameAllowed" xml:space="preserve">
+    <value>Only a one-part name or a two-part name is allowed.</value>
+  </data>
+  <data name="InterpretationError_OwnerRequiredForEndpoint" xml:space="preserve">
+    <value>You must specify the owner of the endpoint with an AUTHORIZATION clause.</value>
+  </data>
+  <data name="InterpretationError_PartitionNumberMustBeInteger" xml:space="preserve">
+    <value>You must specify the partition number as a positive integer constant.</value>
+  </data>
+  <data name="InterpretationError_SqlCmdVariableInObjectName" xml:space="preserve">
+    <value>SqlCmd variable reference is not allowed in object names ({0}).</value>
+  </data>
+  <data name="InterpretationError_SubqueriesNotAllowed" xml:space="preserve">
+    <value>Subqueries are not allowed in this context. Only scalar expressions are allowed.</value>
+  </data>
+  <data name="InterpretationError_TableTypeNotAllowFunctionCall" xml:space="preserve">
+    <value>User-defined functions, user-defined aggregates, CLR types, and methods on CLR types are not allowed in expressions in this context.</value>
+  </data>
+  <data name="InterpretationError_TemporalPeriodColumnMustNotBeNullable" xml:space="preserve">
+    <value>Temporal period column '{0}' must not be nullable.</value>
+  </data>
+  <data name="InterpretationError_TooLongIdentifier" xml:space="preserve">
+    <value>Identifier {0} is too long. Maximum length is 128.</value>
+  </data>
+  <data name="InterpretationError_TooManyPartsForCteOrAlias" xml:space="preserve">
+    <value>Names with two or more parts are not valid when you reference a common table expression (CTE) or an alias.</value>
+  </data>
+  <data name="InterpretationError_TriggerIsNotForEvent" xml:space="preserve">
+    <value>'{0}' is not a trigger for '{1}'</value>
+  </data>
+  <data name="InterpretationError_TypeAndSIDMustBeUsedTogether" xml:space="preserve">
+    <value>The TYPE and SID options must be used together.</value>
+  </data>
+  <data name="InterpretationError_TypeCannotBeUsedWithLoginOption" xml:space="preserve">
+    <value>The TYPE option cannot be used with FOR/FROM LOGIN, CERTIFICATE, ASYMMETRIC KEY, EXTERNAL PROVIDER, WITHOUT LOGIN or WITH PASSWORD.</value>
+  </data>
+  <data name="InterpretationError_UddtFromUddt" xml:space="preserve">
+    <value>The base type is not a valid base type for the user-defined type.</value>
+  </data>
+  <data name="InterpretationError_UddtFromXml" xml:space="preserve">
+    <value>You cannot create user-defined types from an XML datatype.</value>
+  </data>
+  <data name="InterpretationError_UndeclaredVariableParameter" xml:space="preserve">
+    <value>Must declare the variable or parameter "{0}"</value>
+  </data>
+  <data name="InterpretationError_UnknownTableSource" xml:space="preserve">
+    <value>The table source '{0}' was referenced, but it is not defined in the FROM clause or its definition has one or more errors.</value>
+  </data>
+  <data name="InterpretationError_UnsupportedAlgorithm" xml:space="preserve">
+    <value>This algorithm is not allowed to create an asymmetric key.</value>
+  </data>
+  <data name="InterpretationError_UnsupportedAll" xml:space="preserve">
+    <value>The ALL clause is not supported.</value>
+  </data>
+  <data name="InterpretationError_UnsupportedAlterCryptographicProvider" xml:space="preserve">
+    <value>Changing the file for a cryptographic provider via an ALTER CRYPTOGRAPHIC PROVIDER statement is not supported.</value>
+  </data>
+  <data name="InterpretationError_UnsupportedNoPopulationChangeTrackingOption" xml:space="preserve">
+    <value>The NO POPULATION change tracking option for spatial indexes is not modeled.</value>
+  </data>
+  <data name="InterpretationError_UnsupportedPintable" xml:space="preserve">
+    <value>The table option PINTABLE has been deprecated and is no longer supported.</value>
+  </data>
+  <data name="InterpretationError_UnsupportedRevoke" xml:space="preserve">
+    <value>REVOKE statements are only supported for columns.</value>
+  </data>
+  <data name="InterpretationError_UnsupportedSpatialTessellationScheme" xml:space="preserve">
+    <value>The specified grid tessellation scheme is not supported on the current SQL platform.</value>
+  </data>
+  <data name="InterpretationError_WildCardNotAllowed" xml:space="preserve">
+    <value>Syntax '*' is not allowed in schema-bound objects.</value>
+  </data>
+  <data name="InterpretationError_WrongEventType" xml:space="preserve">
+    <value>The specified event type or types are not valid on the specified target object.</value>
+  </data>
+  <data name="InterpretationError_XMaxLessThanXMin" xml:space="preserve">
+    <value>The value of parameter 'xmax' of CREATE SPATIAL INDEX must be greater than the value of parameter 'xmin'.</value>
+  </data>
+  <data name="InterpretationError_YMaxLessThanYMin" xml:space="preserve">
+    <value>The value of parameter 'ymax' of CREATE SPATIAL INDEX must be greater than the value of parameter 'ymin'.</value>
+  </data>
+  <data name="InterpretationWarning_OldSensitivitySyntaxForNewTarget" xml:space="preserve">
+    <value>The script contains old Add Sensitivity syntax which is valid only for 2017 or older and will not take effect on a database project targeting SQL 2019 or higher. Please convert the Sensitivity syntax to new syntax.</value>
+  </data>
+  <data name="InvalidAzureVersion" xml:space="preserve">
+    <value>Unsupported SQL Server version error: Invalid Azure SQL Database version {0}.</value>
+  </data>
+  <data name="InvalidChecksum" xml:space="preserve">
+    <value>An invalid Checksum element is found from {0}.</value>
+  </data>
+  <data name="InvalidDateTimeString" xml:space="preserve">
+    <value>An invalid date time string is found from {0}.</value>
+  </data>
+  <data name="InvalidExportRowCount" xml:space="preserve">
+    <value>Table {0} has exported {1} rows ({2} rows expected).</value>
+  </data>
+  <data name="InvalidExportRowOrByteCount" xml:space="preserve">
+    <value>Table {0} has exported {1} rows ({2} rows expected) and {3} bytes of blob column data ({4} bytes expected).</value>
+  </data>
+  <data name="InvalidImportDeserializationLength" xml:space="preserve">
+    <value>Incomplete read from package importing data to Table {0} ({1} bytes read, {2} bytes expected).</value>
+  </data>
+  <data name="InvalidImportRowCount" xml:space="preserve">
+    <value>Table {0} has imported {1} rows (estimated {2} rows, expected {3} rows).</value>
+  </data>
+  <data name="InvalidIntegerFromXmlFile" xml:space="preserve">
+    <value>An invalid integer is found from {0}.</value>
+  </data>
+  <data name="InvalidLengthForDataTypeErrorMessage" xml:space="preserve">
+    <value>The number "{0}" is not valid. Length for data type "{1}" should be a number between {2} and {3}.</value>
+  </data>
+  <data name="InvalidLengthStringForDataTypeErrorMessage" xml:space="preserve">
+    <value>The value "{0}" is not a valid length.</value>
+  </data>
+  <data name="InvalidPrecisionForDataTypeErrorMessage" xml:space="preserve">
+    <value>The value "{0}" is not valid. Precision for data type "{1}" must be an integer between {2} and {3}.</value>
+  </data>
+  <data name="InvalidPrecisionForDataTypeWithScaleErrorMessage" xml:space="preserve">
+    <value>The value "{0}" is not valid. Precision for data type "{1}" with scale {2} must be an integer between {3} and {4}.</value>
+  </data>
+  <data name="InvalidScaleForDataTypeErrorMessage" xml:space="preserve">
+    <value>The value "{0}" is not valid. Scale for data type "{1}" must be an integer between {2} and {3}.</value>
+  </data>
+  <data name="InvalidScaleForDataTypeWithPrecisionErrorMessage" xml:space="preserve">
+    <value>The value "{0}" is not valid. Scale for data type "{1}" with precision {2} must be an integer between {3} and {4}.</value>
+  </data>
+  <data name="InvalidSqlVersion" xml:space="preserve">
+    <value>Unsupported SQL Server version error: Invalid SQL Server version {0}.</value>
+  </data>
+  <data name="LedgerAppendOnlyTableExtractWithDataError" xml:space="preserve">
+    <value>Element [{0}].[{1}] is an append-only ledger table. Extract with data is not supported for this table since the target database append-only ledger table data cannot be deleted.</value>
+  </data>
+  <data name="LedgerGeneratedAlwaysColumnWarning" xml:space="preserve">
+    <value>Element [{0}].[{1}].[{2}] is a column with system-generated values (a GENERATED ALWAYS column) in a ledger table. The data stored in the column will not be captured in the resulting bacpac file or the dacpac file. For more information see https://go.microsoft.com/fwlink/?linkid=2166135.</value>
+  </data>
+  <data name="LedgerHistoryTableWarning" xml:space="preserve">
+    <value>Element [{0}].[{1}] is a history table for the [{2}].[{3}] updatable ledger table. Migrating data in history tables is not supported. The data will not be included in the resulting bacpac file or the dacpac file. For more information see https://go.microsoft.com/fwlink/?linkid=2165963.</value>
+  </data>
+  <data name="LedgerViewDataWarning" xml:space="preserve">
+    <value>The ledger data in system views will not be captured in the resulting bacpac file or the dacpac file. For more information see https://go.microsoft.com/fwlink/?linkid=2165963.</value>
+  </data>
+  <data name="LengthNotSupportedForDataTypeErrorMessage" xml:space="preserve">
+    <value>Length is not supported for the data type: "{0}".</value>
+  </data>
+  <data name="LogEntryTitleAndMessage" xml:space="preserve">
+    <value>{0} {1}</value>
+  </data>
+  <data name="LoggerProgressMessageFormat" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
+  <data name="MaxLengthNotSupportedForDataTypeErrorMessage" xml:space="preserve">
+    <value>"MAX" is not a supported length for data type: "{0}".</value>
+  </data>
+  <data name="MismatchingChecksum" xml:space="preserve">
+    <value>The calculated checksum for {0} in the package {1} is different from the saved checksum.</value>
+  </data>
+  <data name="MissingCollation" xml:space="preserve">
+    <value>Cannot find collation from the package.</value>
+  </data>
+  <data name="MissingCustomDataForAssemblyReference" xml:space="preserve">
+    <value>Missing or empty FileName or Name metadata for CLR assembly reference.</value>
+  </data>
+  <data name="MissingOrCorrupted" xml:space="preserve">
+    <value>'{0}' is missing or corrupted.</value>
+  </data>
+  <data name="MissingOrCorruptedChecksum" xml:space="preserve">
+    <value>Checksum for {0} is missing or corrupted in the package {1}.</value>
+  </data>
+  <data name="MissingOrCorruptedFrom" xml:space="preserve">
+    <value>'{0}' is missing or corrupted from the package content '{1}'.</value>
+  </data>
+  <data name="MissingOrUnknownFileFormatError" xml:space="preserve">
+    <value>{0} attribute is missing or has unknown value.</value>
+  </data>
+  <data name="MissingStream" xml:space="preserve">
+    <value>Stream "{0}" does not exist in the package {1}.</value>
+  </data>
+  <data name="ModelBuilderError_CannotFindColumnSourceGrantForColumnRevoke" xml:space="preserve">
+    <value>Cannot find GRANT permission statement for column source referenced by supporting column REVOKE statement.</value>
+  </data>
+  <data name="ModelBuilderError_CannotFindMainElement" xml:space="preserve">
+    <value>Cannot find element referenced by the supporting statement.</value>
+  </data>
+  <data name="ModelCapabilitiesEdit" xml:space="preserve">
+    <value>ModelCapabilities custom schema data can not be added or removed.</value>
+  </data>
+  <data name="MoreThanOneStatementPerBatchError" xml:space="preserve">
+    <value>Only one statement is allowed per batch. A batch separator, such as 'GO', might be required between statements.</value>
+  </data>
+  <data name="NoSourceForColumn" xml:space="preserve">
+    <value>The reference to the column {0} could not be resolved.</value>
+  </data>
+  <data name="NullOrEmptyStringParameter" xml:space="preserve">
+    <value>The string parameter is null or empty.</value>
+  </data>
+  <data name="ObsoleteCulture" xml:space="preserve">
+    <value>A deprecated LCID was encountered in the database.  The operation cannot continue.  The LCIDs 0x20C04 (zh-HK_stroke), 0x10411 (ja-JP_unicod), and 0x10412 (ko-KR_unicod) are deprecated in .NET 4.0, and can no longer be used.  Consider using the alternate-sort forms of these cultures instead (zh_HK, ja-JP, and ko-KR, respectively).</value>
+  </data>
+  <data name="OnlyReliableConnectionSupported" xml:space="preserve">
+    <value>Only ReliableSqlConnection db connections supported</value>
+  </data>
+  <data name="PackageReadError" xml:space="preserve">
+    <value>Unable to read a file from package.  Package may be corrupt. File = '{0}'.</value>
+  </data>
+  <data name="ParserError_SqlDWStatisticNotSupportedOption" xml:space="preserve">
+    <value>PAGECOUNT is not a valid option for CREATE STATISTICS.</value>
+  </data>
+  <data name="ParserError_SqlDWViewNotSupportedOption" xml:space="preserve">
+    <value>EXPAND is not a recognized table or a view hint.</value>
+  </data>
+  <data name="PrecisionNotSupportedForDataTypeErrorMessage" xml:space="preserve">
+    <value>Precision is not supported for the data type: "{0}".</value>
+  </data>
+  <data name="ProgressPercentCompleted" xml:space="preserve">
+    <value>{0:P} done.</value>
+  </data>
+  <data name="ProgressTable" xml:space="preserve">
+    <value>Processing Table '{0}'.</value>
+  </data>
+  <data name="ProgressTask" xml:space="preserve">
+    <value>Processing {0}.</value>
+  </data>
+  <data name="PublishData" xml:space="preserve">
+    <value>Publish Data</value>
+  </data>
+  <data name="ReadOnlyScriptCache" xml:space="preserve">
+    <value>The script cache for this model is read-only. Updates on external property are not allowed.</value>
+  </data>
+  <data name="RegistrationFailedOnInsufficientPermissions" xml:space="preserve">
+    <value>The current user does not have sufficient permissions on the instance of SQL Server to upgrade the data-tier application. The user must be the database owner of the database associated with the data-tier application.</value>
+  </data>
+  <data name="RetryOnException" xml:space="preserve">
+    <value>Retry number {0}. Delaying {1} ms before next retry. Exception: {2}</value>
+  </data>
+  <data name="RetryOperationLimitExceeded" xml:space="preserve">
+    <value>A Sql operation has exceeded a defined limit for retry operations or retry timing.</value>
+  </data>
+  <data name="RetryOperationLimitExceeded1" xml:space="preserve">
+    <value>100007: A Sql operation has exceeded a defined limit for retry operations or retry timing.</value>
+  </data>
+  <data name="ScaleNotSupportedForDataTypeErrorMessage" xml:space="preserve">
+    <value>Scale is not supported for the data type: "{0}".</value>
+  </data>
+  <data name="ScriptHandle_SizeExceeded" xml:space="preserve">
+    <value>This T-SQL script exceeds the maximum allowed size. Adjust this setting in the SQL Server Tools page by selecting Options from the Tools menu.</value>
+  </data>
+  <data name="ServerScopedTriggers" xml:space="preserve">
+    <value>Server-scoped Triggers</value>
+  </data>
+  <data name="SqlAuthenication_NotSupported" xml:space="preserve">
+    <value>Authentication property cannot be found in current .Net version.</value>
+  </data>
+  <data name="SqlAuthenication_UnknownAuthentication" xml:space="preserve">
+    <value>Unknown SQL Authentication: {0}</value>
+  </data>
+  <data name="SqlConnectionStringBuilderProperty_InvalidEnumValue" xml:space="preserve">
+    <value>An attempt was made to set a property named '{0}' on an object of type SqlConnectionStringBuilder to the value '{1}', but '{1}' is not a valid value for '{0}'.</value>
+  </data>
+  <data name="SqlConnectionStringBuilderProperty_NotSupported" xml:space="preserve">
+    <value>An attempt was made to access a property named '{0}' on an object of type SqlConnectionStringBuilder, but this property does not exist in the current version of the FbConnectionStringBuilder type.</value>
+  </data>
+  <data name="SqlInterpretationError_OnlineSpatialIndex" xml:space="preserve">
+    <value>Invalid usage of the option online in the CREATE SPATIAL INDEX statement.</value>
+  </data>
+  <data name="SqlVariantDatetime2DataLossWarning" xml:space="preserve">
+    <value>There will be data loss when a value in a sql_variant DATETIME2 column with scale greater than 3 is deployed by the DAC Framework. The DATETIME2 value is limited to a scale equal to 3 during deployment.</value>
+  </data>
+  <data name="SqlVariantDecimalPrecisionNotSupportedWarning" xml:space="preserve">
+    <value>The DAC Framework is unable to deploy a DAC package containing a data value of type DECIMAL or NUMERIC within a sql_variant column that has precision greater than 28.</value>
+  </data>
+  <data name="SqlVariantLimitationsDetailWarningOnExport" xml:space="preserve">
+    <value>These limitations do not affect the fidelity of the data types and values stored in the DAC package created by the DAC Framework; they only apply to the data types and values resulting from deploying a DAC package to a database.</value>
+  </data>
+  <data name="SqlVariantLimitationsErrorOnImport" xml:space="preserve">
+    <value>Operation failed due to data limitations in the DAC Framework. View the deployment log for details or go to {0} for more information.</value>
+  </data>
+  <data name="SqlVariantLimitationsInformationLink" xml:space="preserve">
+    <value>For complete detail about the data that is affected and instructions for how to work around this for data deployment, please go to {0}.</value>
+  </data>
+  <data name="SqlVariantLimitationsWarningOnExport" xml:space="preserve">
+    <value>This DAC package contains one or more data types or values to which these limitations apply.</value>
+  </data>
+  <data name="SqlVariantTypeFidelityLossWarning" xml:space="preserve">
+    <value>Certain properties on certain data types used within a sql_variant column are not preserved when deployed by the DAC Framework.</value>
+  </data>
+  <data name="StatementFilter_AlterAssembly" xml:space="preserve">
+    <value>In this context, only VISIBILITY with option is valid for an ALTER ASSEMBLY statement.</value>
+  </data>
+  <data name="StatementFilter_AlterTableAddConstraint" xml:space="preserve">
+    <value>You can only specify one constraint for an ALTER TABLE statement.</value>
+  </data>
+  <data name="StatementFilter_AtMostTwoPartName" xml:space="preserve">
+    <value>When you create an object of this type in a database project, the object's name must contain no more than two parts.</value>
+  </data>
+  <data name="StatementFilter_BackslashNotSupportedInUserOrLoginName" xml:space="preserve">
+    <value>A USER or LOGIN name cannot contain a backslash character in the targeted platform.</value>
+  </data>
+  <data name="StatementFilter_ConstraintAll" xml:space="preserve">
+    <value>The ALL option cannot be used to modify constraints. You must use individual constraint names instead.</value>
+  </data>
+  <data name="StatementFilter_CreateSchemaElements" xml:space="preserve">
+    <value>In this CREATE SCHEMA statement, you have specified a table definition, a view definition, a GRANT statement, a REVOKE statement, or a DENY statement. This syntax is not supported in this context.</value>
+  </data>
+  <data name="StatementFilter_CreateSchemaWithoutName" xml:space="preserve">
+    <value>Statements that contain CREATE SCHEMA AUTHORIZATION but do not specify a name are permitted for backward compatibility only. They are not supported.</value>
+  </data>
+  <data name="StatementFilter_CreateStoplist" xml:space="preserve">
+    <value>A FROM clause is not supported for CREATE FULLTEXT STOPLIST statement</value>
+  </data>
+  <data name="StatementFilter_DeprecatedSyntax" xml:space="preserve">
+    <value>This statement contains deprecated language syntax. Please consult MSDN documentation for further help.</value>
+  </data>
+  <data name="StatementFilter_KeywordNotSupportedForTargetPlatform" xml:space="preserve">
+    <value>Keyword or statement option '{0}' is not supported for the targeted platform.</value>
+  </data>
+  <data name="StatementFilter_LedgerFilestreamColumnTypeNotSupported" xml:space="preserve">
+    <value>FILESTREAM column type cannot be specified with LEDGER = ON.</value>
+  </data>
+  <data name="StatementFilter_LedgerFileTableNotSupported" xml:space="preserve">
+    <value>AS FILETABLE cannot be specified with LEDGER = ON.</value>
+  </data>
+  <data name="StatementFilter_LedgerGraphNotSupported" xml:space="preserve">
+    <value>AS NODE cannot be specified with LEDGER = ON.</value>
+  </data>
+  <data name="StatementFilter_LedgerMemoryOptimizedNotSupported" xml:space="preserve">
+    <value>MEMORY_OPTIMIZED = ON cannot be specified with LEDGER = ON.</value>
+  </data>
+  <data name="StatementFilter_LedgerSparseColumnSetNotSupported" xml:space="preserve">
+    <value>Sparse column sets cannot be specified with LEDGER = ON.</value>
+  </data>
+  <data name="StatementFilter_LedgerSqlVariantColumnTypeNotSupported" xml:space="preserve">
+    <value>SQL_VARIANT column type cannot be specified with LEDGER = ON.</value>
+  </data>
+  <data name="StatementFilter_LedgerViewInvalidTwoPartName" xml:space="preserve">
+    <value>Setting LEDGER to ON failed because ledger view '{0}' is not specified in two-part name format.</value>
+  </data>
+  <data name="StatementFilter_LedgerViewNotSpecified" xml:space="preserve">
+    <value>LEDGER = ON must be specified with LEDGER_VIEW.</value>
+  </data>
+  <data name="StatementFilter_LedgerXmlColumnTypeNotSupported" xml:space="preserve">
+    <value>XML column type cannot be specified with LEDGER = ON.</value>
+  </data>
+  <data name="StatementFilter_NotSupportedForTargetPlatform" xml:space="preserve">
+    <value>'{0}' is not supported for the targeted platform.</value>
+  </data>
+  <data name="StatementFilter_ServerPermissionsNotAllowed" xml:space="preserve">
+    <value>Server level permissions are not allowed.</value>
+  </data>
+  <data name="StatementFilter_SetRemoteData" xml:space="preserve">
+    <value>In this context, it is not allowed to specify a SET REMOTE_DATA_ARCHIVE statement.</value>
+  </data>
+  <data name="StatementFilter_StatementNotSupportedForCurrentRelease" xml:space="preserve">
+    <value>This statement is not yet supported in this CTP.</value>
+  </data>
+  <data name="StatementFilter_StatementNotSupportedForTargetPlatform" xml:space="preserve">
+    <value>Statement '{0}' is not supported for the targeted platform.</value>
+  </data>
+  <data name="StatementFilter_StoredProcedureNotSupportedForTargetPlatform" xml:space="preserve">
+    <value>Stored procedure '{0}' is not supported for the targeted platform.</value>
+  </data>
+  <data name="StatementFilter_SystemVersioningHistoryTableInvalidTwoPartName" xml:space="preserve">
+    <value>Setting SYSTEM_VERSIONING to ON failed because history table '{0}' is not specified in two-part name format.</value>
+  </data>
+  <data name="StatementFilter_SystemVersioningHistoryTableNotSpecified" xml:space="preserve">
+    <value>SYSTEM_VERSIONING = ON must be specified with HISTORY_TABLE.</value>
+  </data>
+  <data name="StatementFilter_TopLevelExecuteWithResultSets" xml:space="preserve">
+    <value>References to objects specified in the WITH RESULT SETS clause for this EXECUTE statement are not modeled.</value>
+  </data>
+  <data name="StatementFilter_TriggerAll" xml:space="preserve">
+    <value>The ALL option cannot be used to modify triggers. You must use individual trigger names instead.</value>
+  </data>
+  <data name="StatementFilter_UnsupportedPermission" xml:space="preserve">
+    <value>The permission {0} is not supported in this context.</value>
+  </data>
+  <data name="StatementFilter_UnsupportedSecurityObjectKind" xml:space="preserve">
+    <value>The security object kind '{0}' is not supported in this context.</value>
+  </data>
+  <data name="ThreePartNamesNotSupportedByPlatform" xml:space="preserve">
+    <value>External references are not supported when creating a package from this platform.</value>
+  </data>
+  <data name="TopLevelDmlStatementError" xml:space="preserve">
+    <value>DML statements cannot be modeled.</value>
+  </data>
+  <data name="UnexpectedElementError" xml:space="preserve">
+    <value>The file contains the XML node type {0}. This type is unsupported or in an unsupported location.</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>An unexpected error occurred. Contact product support for assistance.</value>
+  </data>
+  <data name="UnidentifiedBooleanMetadataOption" xml:space="preserve">
+    <value>The value {0} is not a valid option.</value>
+  </data>
+  <data name="UnidentifiedMetadata" xml:space="preserve">
+    <value>The metadata {0} is not valid.</value>
+  </data>
+  <data name="UnknownCollation" xml:space="preserve">
+    <value>Unknown collation is found: {0}</value>
+  </data>
+  <data name="UnknownPlatform" xml:space="preserve">
+    <value>Unknown SQL platform: {0}</value>
+  </data>
+  <data name="UnrecognizedStatement" xml:space="preserve">
+    <value>This statement is not recognized in this context.</value>
+  </data>
+  <data name="UnsupportedCompatibilityLevel" xml:space="preserve">
+    <value>The database compatibility level '{0}' is not within the supported range of {1} to {2}.</value>
+  </data>
+  <data name="UnsupportedModelVersion" xml:space="preserve">
+    <value>The model version '{0}' is not supported.</value>
+  </data>
+  <data name="UnsupportedOperationForBacpac" xml:space="preserve">
+    <value>The operation {0} is not supported for the {1} package.</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>view</value>
+  </data>
+  <data name="XmlSchemaCollection" xml:space="preserve">
+    <value>XML Schema Collection</value>
+  </data>
+  <data name="XsltNotFound" xml:space="preserve">
+    <value>Unable to obtain xslt for the given package</value>
+  </data>
+</root>

@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader><resheader name="version"><value>1.3</value></resheader><resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><data name="FirstScrollableColumnShouldBeValid"><value>First scrollable column index should be greater than or equal to zero and less than the number of columns.</value></data>
+  <data name="FirstScrollableRowShouldBeValid"><value>First scrollable row index should be greater than or equal to zero and less than the number of rows.</value></data>
+  <data name="InvalidColIndexForMergedResizeProp"><value>MergedHeaderResizeProportion property can be set only for columns that have merged header</value></data>
+  <data name="AutoScrollMoreThanZero"><value>Auto scroll interval should be greater than zero.</value></data>
+  <data name="ColumnIsNotCheckBox"><value>Column # {0} is not of checkbox type.</value></data>
+  <data name="CannotPrintEmptyGrid"><value>Cannot print empty grid.</value></data>
+  <data name="InvalidCurrentSelBlockForClicpboard"><value>Cannot create clipboard data object for currently selected block of cells because nothing is selected</value></data>
+  <data name="InvalidThreadForMethod"><value>This method should be called from the UI thread where the grid was created.</value></data>
+  <data name="NoIGridEmbeddedControl"><value>embeddedControl must implement IGridEmbeddedControl.</value></data>
+  <data name="OnlySolidBrush"><value>Only SolidBrush can be specified as parameter</value></data>
+  <data name="ShouldSetHeaderStateForRegualrCol"><value>column # {0} does not have check box on its header. Use overloaded HeaderInfo method for such columns.</value></data>
+  <data name="FirstScrollableWillBeBad"><value>The first scrollable index will not be valid after deletion.</value></data>
+  <data name="ShouldBeNoDataForMergedColumHeader"><value>Text and bitmap for the header item that is merged with the one to its right cannot be specified.</value></data>
+  <data name="InvalidGridStateForClipboard"><value>Clipboard operation cannot be performed in current grid state.</value></data>
+  <data name="ScrollPosShouldBeMoreOrEqualZero"><value>Parameter should be greater than or equal to zero.</value></data>
+  <data name="InvalidCustomColType"><value>Custom ColumnType should be greater than or equal to GridColumnType.FirstCustomColumnType.</value></data>
+  <data name="InvalidCellType"><value>EditableCellType should be greater than or equal to EditableCellType.FirstCustomEditableCellType.</value></data>
+  <data name="ShouldSetHeaderStateForCheckBox"><value>column # {0} has check box on its header. Use overloaded HeaderInfo method for such columns.</value></data>
+  <data name="NoMultiBlockSelInSingleSelMode"><value>Cannot set multiple selection blocks while in single selection mode.</value></data>
+  <data name="InvalidSelStringInEmbeddedCombo"><value>EmbeddedComboBox.SetCurSelectionAsString: item that must be selected does not exist.</value></data>
+  <data name="HorizScrollUnitShouldBeGreaterThanZero"><value>Horizontal scroll unit should be greater than zero.</value></data>
+  <data name="CannotSetMergeItemState"><value>state of the header item that is merged with the one to its right cannot be specified.</value></data>
+  <data name="InvalidMergedHeaderResizeProportion"><value>MergedHeaderResizeProportion property should be between 0f and 1f.</value></data>
+  <data name="NonExistingGridSelectionBlock"><value>Cannot select non-existing cell ({0}, {1}, {2}, {3}).</value></data>
+  <data name="LastNonScrollCannotBeMerged"><value>Last non-scrollable column cannot have merged header.</value></data>
+  <data name="NoIGridEmbeddedControlManagement"><value>embeddedControl MUST implement IGridEmbeddedControlManagement</value></data>
+  <data name="ColumnWidthShouldBeGreaterThanZero"><value>Column width should be greater than zero.</value></data>
+  <data name="ColumnWidthShouldBeLessThanMax"><value>Column width in pixels should be less than or equal to {0}.</value></data>
+  <data name="CellHeightShouldBeGreaterThanZero"><value>Cell height must be greater than zero.</value></data>
+  <data name="DeriveToImplementCustomColumn"><value>Use class derived from the grid control to implement custom columns.</value></data>
+  <data name="NumOfRowsShouldBeGreaterThanZero"><value>Number of rows should be greater than or equal to zero.</value></data>
+  <data name="InvalidSelIndexInEmbeddedCombo"><value>EmbeddedComboBox.SetCurSelectionIndex: invalid index.</value></data>
+  <data name="GridColumnNumberShouldBeAboveZero"><value>Grid column number should be greater than zero.</value></data>
+  <data name="RowIndexShouldBeInRange"><value>Row index must be greater than or equal to zero and less than the number of rows.</value></data>
+  <data name="CurControlIsNotIGridEmbedded"><value>Unrecoverable error; current control is not IGridEmbeddedControl.</value></data>
+  <data name="GridColumnInfoCollectionIsReadOnly"><value>GridColumnInfoCollection is read-only, and its items cannot be modified.</value></data>
+  <data name="ColumnIndexShouldBeInRange"><value>Column index must be greater than or equal to zero and less than the number of columns.</value></data>
+  </root>

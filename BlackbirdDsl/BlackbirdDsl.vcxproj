@@ -126,7 +126,7 @@
     <ClInclude Include="Parser\Configuration\Include\Gram.h" />
     <ClInclude Include="Parser\Configuration\Include\GramConsts.h" />
     <ClInclude Include="Parser\Include\DslOptions.h" />
-    <ClInclude Include="Parser\Extensions\Include\ExtensionMethods.h" />
+    <ClInclude Include="Parser\Extensions\Include\ExtensionMembers.h" />
     <ClInclude Include="Parser\Include\Parser.h" />
     <ClInclude Include="Parser\Parsers\Include\TBracketParser.h" />
     <ClInclude Include="Parser\Parsers\Include\ParserManager.h" />
@@ -195,7 +195,7 @@
     <ClCompile Include="Parser\Configuration\GramConsts.cpp" />
     <ClCompile Include="Parser\DslOptions.cpp" />
     <ClCompile Include="Parser\Parser.cpp" />
-    <ClCompile Include="Parser\Extensions\ExtensionMethods.cpp" />
+    <ClCompile Include="Parser\Extensions\ExtensionMembers.cpp" />
     <ClCompile Include="Parser\Parsers\TBracketParser.cpp" />
     <ClCompile Include="Parser\Parsers\ParserManager.cpp" />
     <ClCompile Include="Parser\Common\Scanner.cpp" />

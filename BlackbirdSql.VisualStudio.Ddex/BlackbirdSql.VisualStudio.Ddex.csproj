@@ -2,36 +2,46 @@
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Project Properties -->
   <PropertyGroup>
-    <MinimumVisualStudioVersion>17.0</MinimumVisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <!-- Project Properties (Application) -->
-  <PropertyGroup>
     <ApplicationIcon>Package.ico</ApplicationIcon>
+    <MinimumVisualStudioVersion>17.0</MinimumVisualStudioVersion>
+    <OutputType>Library</OutputType>
+    <RootNamespace>BlackbirdSql.VisualStudio.Ddex</RootNamespace>
+    <AssemblyName>BlackbirdSql.VisualStudio.Ddex</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <LangVersion>latest</LangVersion>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EnableDefaultPageItems>false</EnableDefaultPageItems>
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+  </PropertyGroup>
+  <!-- Project Properties (Signing) -->
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>Properties\BlackbirdSql.VisualStudio.Ddex.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <!-- Project Properties (VSIX) -->
+  <PropertyGroup>
+    <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
+    <IncludeDebugSymbolsInVSIXContainer>true</IncludeDebugSymbolsInVSIXContainer>
+    <IncludeDebugSymbolsInLocalVSIXDeployment>false</IncludeDebugSymbolsInLocalVSIXDeployment>
   </PropertyGroup>
   <!-- Project Properties (Build) -->
   <PropertyGroup>
+    <GeneratePkgDefFile>true</GeneratePkgDefFile>
+    <UseCodebase>true</UseCodebase>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <CopyBuildOutputToOutputDirectory>true</CopyBuildOutputToOutputDirectory>
+    <CopyOutputSymbolsToOutputDirectory>true</CopyOutputSymbolsToOutputDirectory>
+    <StartAction>Program</StartAction>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <StartProgram Condition="'$(DevEnvDir)' != ''">$(DevEnvDir)devenv.exe</StartProgram>
+    <StartArguments>/rootsuffix Exp</StartArguments>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectTypeGuids>{82b43b9b-a64c-4715-b499-d71e9ca2bd60};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProjectGuid>{4C70D3F2-5333-4E19-BC0D-8184330471D8}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BlackbirdSql.VisualStudio.Ddex</RootNamespace>
-    <AssemblyName>BlackbirdSql.VisualStudio.Ddex</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <GeneratePkgDefFile>true</GeneratePkgDefFile>
-    <UseCodebase>true</UseCodebase>
-    <CopyBuildOutputToOutputDirectory>true</CopyBuildOutputToOutputDirectory>
-    <CopyOutputSymbolsToOutputDirectory>true</CopyOutputSymbolsToOutputDirectory>
-    <StartAction>Program</StartAction>
-    <StartProgram Condition="'$(DevEnvDir)' != ''">$(DevEnvDir)devenv.exe</StartProgram>
-    <StartArguments>/rootsuffix Exp</StartArguments>
-    <LangVersion>latest</LangVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -51,36 +61,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <!-- Project Properties (Build Events) -->
-  <PropertyGroup>
-    <PostBuildEvent>
-			:: *** Update: No longer required
-			:: copy /v /y /b $(ProjectDir)$(OutDir)BlackbirdSql.VisualStudio.Ddex.* "%25ProgramFiles%25\BlackbirdSql\BlackbirdDDEX.9.1.0"
-
-			:: *** Update: DestFolder has not been updated so this won't execute. It's easier to close the ide and do it manually
-			:: The following are so that you don't have to do a reinstall of the vsix after a build
-			:: NOTE:
-			:: You will have to replace 17.0_xxx with your version and user id
-			:: You will have to restart the ide before doing the build if you've used the ddex tool
-			:: during your session because the dll will be locked
-			set DestFolder="%25LocalAppData%25\Microsoft\VisualStudio\17.0_5d5e49fc\Extensions\d4sem1lb.ehh\"
-			if exist %25DestFolder%25 (
-			copy /v /y /b $(ProjectDir)$(OutDir)*.dll %25DestFolder%25
-			copy /v /y /b $(ProjectDir)$(OutDir)*.pdb %25DestFolder%25
-			)
-		</PostBuildEvent>
-  </PropertyGroup>
-  <!-- Project Properties (Signing) -->
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>Properties\BlackbirdSql.VisualStudio.Ddex.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <!-- Project Properties (VSIX) -->
-  <PropertyGroup>
-    <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
-    <IncludeDebugSymbolsInVSIXContainer>false</IncludeDebugSymbolsInVSIXContainer>
-    <IncludeDebugSymbolsInLocalVSIXDeployment>false</IncludeDebugSymbolsInLocalVSIXDeployment>
-  </PropertyGroup>
   <!-- Includes - Top Level -->
   <ItemGroup>
     <Content Include="blackbird-vsix-icon.png">
@@ -92,71 +72,35 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Package.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.ArrowNodeOpen.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.FolderSystemColumns.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.FolderEmpty.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.FolderSystemOpen.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.FolderUser.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.FolderUserOpen.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.FolderSystemTablesOpen.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.FolderSystemSystemTriggersOpen.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.FolderUserIdentityTriggersOpen.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.FolderUserStandardTriggersOpen.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.DatabaseDomainsOpen.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.DatabaseFunctionsOpen.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.DatabaseProceduresOpen.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.DatabaseSequencesOpen.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.DatabaseTablesOpen.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.DatabaseTriggersOpen.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.DatabaseViewsOpen.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.FolderUserIdentityTriggers.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.FolderUserStandardTriggers.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.FolderSystemSystemTriggers.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.SystemTrigger.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.IdentitySystemTrigger.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.UserTrigger.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.IdentityUserTrigger.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.SystemTriggerColumn.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.UniqueKeyTrigger.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.PrimaryKeyTrigger.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.ComputedTriggerColumn.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.UserTriggerColumn.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.UniqueKeyTable.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.FolderSystem.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.DatabaseTriggers.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.Database.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.DotDotDot.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.ArrowDownLarge.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.LabelOpenFolder.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.ArrowRightDown.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.Domain.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.DatabaseDomains.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.DatabaseFunctions.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.DatabaseProcedures.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.DatabaseSequences.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.DatabaseTables.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.DatabaseViews.ico" />
+    <Content Include="Resources\Package.ico" />
+    <Content Include="Resources\SqlEditorScriptToolbar.png" />
+    <None Include="Resources\ViewSupport.FolderTables.ico" />
+    <None Include="Properties\BlackbirdSql.VisualStudio.Ddex.NET.snk" />
+    <None Include="Resources\ViewSupport.FolderForeignKeys.psd" />
+    <None Include="Resources\ViewSupport.FolderIndexes.psd" />
+    <None Include="Resources\ViewSupport.FolderLarge.psd" />
+    <None Include="Resources\ViewSupport.FolderTables.psd" />
+    <None Include="Resources\ViewSupport.FolderTriggers.psd" />
+    <None Include="source.extension.vsixmanifest">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <!-- References (Assemblies) -->
   <ItemGroup>
-    <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <!-- References (Packages) -->
   <ItemGroup>
-    <PackageReference Include="EntityFramework">
-      <Version>6.4.4</Version>
-    </PackageReference>
     <PackageReference Include="EntityFramework.Firebird">
       <Version>9.1.1</Version>
     </PackageReference>
@@ -172,11 +116,11 @@
     <PackageReference Include="Microsoft.VisualStudio.Data.Framework">
       <Version>17.5.33428.388</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.5.33428.388" ExcludeAssets="runtime">
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.6.36389" ExcludeAssets="runtime">
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VSSDK.BuildTools">
-      <Version>17.5.4074</Version>
+      <Version>17.6.2164</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -187,76 +131,119 @@
       <Project>{20fa4c6f-3c4e-46f2-b408-089d66d52c1b}</Project>
       <Name>BlackbirdDsl</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BlackbirdSql.Common\BlackbirdSql.Common.csproj">
-      <Project>{28d8b582-2320-446e-b286-9b42e65dae13}</Project>
-      <Name>BlackbirdSql.Common</Name>
+    <ProjectReference Include="..\BlackbirdSql.Controller\BlackbirdSql.Controller.csproj">
+      <Project>{866da724-0a9b-48fc-be41-03161a61a105}</Project>
+      <Name>BlackbirdSql.Controller</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BlackbirdSql.Core\BlackbirdSql.Core.csproj">
+      <Project>{4ec9471d-8823-4651-92c1-b9b2b49428ad}</Project>
+      <Name>BlackbirdSql.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BlackbirdSql.EditorExtension\BlackbirdSql.EditorExtension.csproj">
+      <Project>{fb5dd543-3c21-4829-869d-abb2cd0360a5}</Project>
+      <Name>BlackbirdSql.EditorExtension</Name>
     </ProjectReference>
   </ItemGroup>
-  <!-- References (Services) -->
   <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <!-- Includes (VSIX Manifest) -->
-  <ItemGroup>
-    <None Include="Resources\ViewSupport.ArrowNodeOpen.psd" />
-    <None Include="source.extension.vsixmanifest">
-      <SubType>Designer</SubType>
-    </None>
-    <Compile Include="Commands\SystemCommandProvider.cs" />
-    <Compile Include="Commands\UniversalCommandProvider.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="Properties\BlackbirdSql.VisualStudio.Ddex.snk" />
   </ItemGroup>
   <!-- Includes (Properties and Properties Resources) -->
   <ItemGroup>
-    <Compile Include="Commands\UserCommandProvider.cs" />
-    <Compile Include="Configuration\PackageController.cs" />
-    <Compile Include="Configuration\VsGlobalsAgent.cs" />
-    <Compile Include="Extensions\AbstractLinkageParser.cs" />
-    <Compile Include="Extensions\AbstruseLinkageParser.cs" />
-    <Compile Include="Extensions\LinkageParser.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <None Include="Properties\BlackbirdSql.VisualStudio.Ddex.snk" />
+    <EmbeddedResource Include="VSPackage.resx">
+      <MergeWithCTO>true</MergeWithCTO>
+      <ManifestResourceName>VSPackage</ManifestResourceName>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <!-- Includes (VSi Resources) -->
+  <ItemGroup>
+    <VSCTCompile Include="BlackbirdSqlDdexExtension.vsct">
+      <ResourceName>Menus.ctmenu</ResourceName>
+    </VSCTCompile>
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\ViewSupport.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\ViewSupport.IdentityColumn.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.ArrowDownLarge.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.ArrowNodeOpen.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.ArrowRightDown.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.ComputedColumn.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.ComputedTriggerColumn.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.Database.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DatabaseDomains.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DatabaseDomainsOpen.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DatabaseFunctions.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DatabaseFunctionsOpen.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DatabaseProcedures.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DatabaseProceduresOpen.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DatabaseSequences.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DatabaseSequencesOpen.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DatabaseTables.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DatabaseTablesOpen.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DatabaseTriggers.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DatabaseTriggersOpen.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DatabaseViews.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DatabaseViewsOpen.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.Domain.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.DotDotDot.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderEmpty.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.FolderForeignKeys.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.FolderIndexes.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderSystemOpen.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderUser.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderUserOpen.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderSystem.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderSystemColumns.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderSystemSystemTriggersOpen.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.FolderSystemTables.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderSystemTablesOpen.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.FolderTriggers.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.FolderUserColumns.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderUserIdentityTriggersOpen.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderUserStandardTriggersOpen.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderUserIdentityTriggers.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderUserStandardTriggers.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.FolderSystemSystemTriggers.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.Function.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.IdentityColumn.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.IdentitySystemTrigger.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.IdentityUserTrigger.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.LabelOpenFolder.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.ParamIn.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.ParamInOut.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.ParamOut.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.ParamReturn.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.PrimaryKey.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.PrimaryKeyTrigger.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.Procedure.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.ScalarFunction.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.Server.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.SystemColumn.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.SystemTable.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.SystemTrigger.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.SystemTriggerColumn.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.UniqueKeyTrigger.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.UserColumn.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.UserTable.ico" />
-    <EmbeddedResource Include="Resources\ViewSupport.View.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.UserTrigger.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.UserTriggerColumn.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.UserViewColumn.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.UniqueKeyTable.ico" />
+    <EmbeddedResource Include="Resources\ViewSupport.View.ico" />
     <None Include="Resources\ViewSupport.ArrowDownLarge.psd" />
-    <None Include="Resources\ViewSupport.IdentitySystemTrigger.psd" />
-    <None Include="Resources\ViewSupport.IdentityColumn.psd" />
-    <None Include="Resources\ViewSupport.IdentityUserTrigger.psd" />
+    <None Include="Resources\ViewSupport.ArrowNodeOpen.psd" />
     <None Include="Resources\ViewSupport.ComputedTriggerColumn.psd" />
     <None Include="Resources\ViewSupport.Database.psd" />
     <None Include="Resources\ViewSupport.DatabaseDomains.psd" />
@@ -291,6 +278,9 @@
     <None Include="Resources\ViewSupport.FolderUserStandardTriggers.psd" />
     <None Include="Resources\ViewSupport.FolderUserStandardTriggersOpen.psd" />
     <None Include="Resources\ViewSupport.Function.psd" />
+    <None Include="Resources\ViewSupport.IdentitySystemTrigger.psd" />
+    <None Include="Resources\ViewSupport.IdentityColumn.psd" />
+    <None Include="Resources\ViewSupport.IdentityUserTrigger.psd" />
     <None Include="Resources\ViewSupport.LabelOpenFolder.psd" />
     <None Include="Resources\ViewSupport.PrimaryKey.psd" />
     <None Include="Resources\ViewSupport.PrimaryKeyTrigger.psd" />
@@ -305,126 +295,210 @@
   </ItemGroup>
   <!-- Includes (Source Resources) -->
   <ItemGroup>
-    <EmbeddedResource Include="Src\TConnectionPromptDialog.resx">
+    <EmbeddedResource Include="Ctl\TConnectionPromptDialog.resx">
       <SubType>Designer</SubType>
       <DependentUpon>TConnectionPromptDialog.cs</DependentUpon>
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TConnectionPromptDialog.resx</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\TConnectionUIControl.resx">
+    <EmbeddedResource Include="Ctl\TConnectionUIControl.resx">
       <DependentUpon>TConnectionUIControl.cs</DependentUpon>
       <SubType>Designer</SubType>
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TConnectionUIControl.resx</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\TObjectSupport.xml">
+    <EmbeddedResource Include="Ctl\TObjectSupport.xml">
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupport.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\Import\TObjectSupportTypes.xml">
+    <EmbeddedResource Include="Ctl\Import\TObjectSupportTypes.xml">
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupportTypes.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\Import\TObjectSupportMappings.xml">
+    <EmbeddedResource Include="Ctl\Import\TObjectSupportMappings.xml">
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupportMappings.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\Import\TObjectSupportMappings_Nodes.xml">
+    <EmbeddedResource Include="Ctl\Import\TObjectSupportMappings_Nodes.xml">
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupportMappings_Nodes.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\Import\TObjectSupportTypes_Nodes.xml">
+    <EmbeddedResource Include="Ctl\Import\TObjectSupportTypes_Nodes.xml">
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupportTypes_Nodes.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\Import\TObjectSupportMappings_Nodes_Properties.xml">
+    <EmbeddedResource Include="Ctl\Import\TObjectSupportMappings_Nodes_Properties.xml">
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupportMappings_Nodes_Properties.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\Import\TObjectSupportTypes_Nodes_Properties.xml">
+    <EmbeddedResource Include="Ctl\Import\TObjectSupportTypes_Nodes_Properties.xml">
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupportTypes_Nodes_Properties.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\Import\TObjectSupportServices.xml">
+    <EmbeddedResource Include="Ctl\Import\TObjectSupportServices.xml">
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupportServices.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\TViewSupport.xml">
+    <EmbeddedResource Include="Ctl\TViewSupport.xml">
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TViewSupport.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\Import\TViewSupportCommands.xml">
+    <EmbeddedResource Include="Ctl\Import\TViewSupportCommands.xml">
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TViewSupportCommands.xml</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Src\Import\TViewSupportElements.xml">
+    <EmbeddedResource Include="Ctl\Import\TViewSupportElements.xml">
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TViewSupportElements.xml</LogicalName>
     </EmbeddedResource>
-    <Page Include="Configuration\UIDebugOptionsControl.xaml">
+    <Page Include="Config\UIDebugOptionsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <!-- Includes (Source files) -->
   <ItemGroup>
-    <Compile Include="BlackbirdSqlDdexPackage.cs" />
+    <Compile Include="BlackbirdSqlDdexExtension.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Configuration\PackageData.cs" />
-    <Compile Include="Configuration\PackageSupportedObjects.cs" />
-    <Compile Include="Configuration\UIDebugOptionsControl.xaml.cs">
+    <Compile Include="CommandProviders\SystemCommandProvider.cs" />
+    <Compile Include="CommandProviders\UniversalCommandProvider.cs" />
+    <Compile Include="CommandProviders\UserCommandProvider.cs" />
+    <Compile Include="Config\PackageData.cs" />
+    <Compile Include="Config\PackageSupportedObjects.cs" />
+    <Compile Include="Config\UIDebugOptionsControl.xaml.cs">
       <DependentUpon>UIDebugOptionsControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Configuration\UIDebugOptionsDialogPage.cs">
+    <Compile Include="Config\UIDebugOptionsDialogPage.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Configuration\VsDebugOptionModel.cs" />
-    <Compile Include="Configuration\VsGeneralOptionModel.cs" />
-    <Compile Include="Configuration\VsOptionsProvider.cs" />
-    <Compile Include="Configuration\VsPackageRegistration.cs" />
-    <Compile Include="Schema\BinaryEncoding.cs" />
-    <Compile Include="Schema\Charset.cs" />
-    <Compile Include="Schema\DslColumns.cs" />
-    <Compile Include="Schema\DslProperties.cs" />
-    <Compile Include="Schema\DslDbDataType.cs" />
-    <Compile Include="Schema\DslFunctionArguments.cs" />
-    <Compile Include="Schema\DslFunctionArgumentsLegacy.cs" />
-    <Compile Include="Schema\DslIndexColumns.cs" />
-    <Compile Include="Schema\DslObjectTypes.cs" />
-    <Compile Include="Schema\DslProcedureParameters.cs" />
-    <Compile Include="Schema\DslSchema.cs" />
-    <Compile Include="Schema\DslSchemaFactory.cs" />
-    <Compile Include="Schema\DslTriggerColumns.cs" />
-    <Compile Include="Schema\DslRawTriggerDependencies.cs" />
-    <Compile Include="Schema\DslTypeHelper.cs" />
-    <Compile Include="Schema\DslViewColumns.cs" />
-    <Compile Include="Schema\Encoding2.cs" />
-    <Compile Include="Schema\DslIndexes.cs" />
-    <Compile Include="Schema\DslRawTriggers.cs" />
-    <Compile Include="Schema\DslTables.cs" />
-    <Compile Include="Schema\DslRawGenerators.cs" />
-    <Compile Include="Schema\DslForeignKeyColumns.cs" />
-    <Compile Include="Schema\DslFunctions.cs" />
-    <Compile Include="Schema\DslProcedures.cs" />
-    <Compile Include="Schema\DslForeignKeys.cs" />
-    <Compile Include="Schema\IscCodes.cs" />
-    <Compile Include="Src\TConnectionEquivalencyComparer.cs" />
-    <Compile Include="Src\TConnectionPromptDialog.cs">
+    <Compile Include="Config\VsDebugOptionModel.cs" />
+    <Compile Include="Config\VsGeneralOptionModel.cs" />
+    <Compile Include="Config\VsOptionsProvider.cs" />
+    <Compile Include="Config\VsPackageRegistration.cs" />
+    <Compile Include="Extensions\AbstractLinkageParser.cs" />
+    <Compile Include="Extensions\AbstruseLinkageParser.cs" />
+    <Compile Include="Extensions\LinkageParser.cs" />
+    <Compile Include="Interfaces\IBProviderObjectFactory.cs" />
+    <Compile Include="Model\BinaryEncoding.cs" />
+    <Compile Include="Model\Charset.cs" />
+    <Compile Include="Model\DslColumns.cs" />
+    <Compile Include="Model\DslDbDataType.cs" />
+    <Compile Include="Model\DslFunctionArguments.cs" />
+    <Compile Include="Model\DslFunctionArgumentsLegacy.cs" />
+    <Compile Include="Model\DslIndexColumns.cs" />
+    <Compile Include="Model\DslObjectTypes.cs" />
+    <Compile Include="Model\DslProcedureParameters.cs" />
+    <Compile Include="Model\DslSchema.cs" />
+    <Compile Include="Model\DslSchemaFactory.cs" />
+    <Compile Include="Model\DslTriggerColumns.cs" />
+    <Compile Include="Model\DslRawTriggerDependencies.cs" />
+    <Compile Include="Model\DslTypeHelper.cs" />
+    <Compile Include="Model\DslViewColumns.cs" />
+    <Compile Include="Model\Encoding2.cs" />
+    <Compile Include="Model\DslIndexes.cs" />
+    <Compile Include="Model\DslRawTriggers.cs" />
+    <Compile Include="Model\DslTables.cs" />
+    <Compile Include="Model\DslRawGenerators.cs" />
+    <Compile Include="Model\DslForeignKeyColumns.cs" />
+    <Compile Include="Model\DslFunctions.cs" />
+    <Compile Include="Model\DslProcedures.cs" />
+    <Compile Include="Model\DslForeignKeys.cs" />
+    <Compile Include="Model\IscCodes.cs" />
+    <Compile Include="Ctl\TConnectionEquivalencyComparer.cs" />
+    <Compile Include="Ctl\TConnectionPromptDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\TConnectionPromptDialog.Designer.cs">
+    <Compile Include="Ctl\TConnectionPromptDialog.Designer.cs">
       <DependentUpon>TConnectionPromptDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\TConnectionProperties.cs" />
-    <Compile Include="Src\TConnectionSupport.cs" />
-    <Compile Include="Src\TConnectionUIConnector.cs" />
-    <Compile Include="Src\TConnectionUIControl.cs">
+    <Compile Include="Ctl\TConnectionProperties.cs" />
+    <Compile Include="Ctl\TConnectionSupport.cs" />
+    <Compile Include="Ctl\TConnectionUIConnector.cs" />
+    <Compile Include="Ctl\TConnectionUIControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\TConnectionUIControl.Designer.cs">
+    <Compile Include="Ctl\TConnectionUIControl.Designer.cs">
       <DependentUpon>TConnectionUIControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="Src\TConnectionUIProperties.cs" />
-    <Compile Include="Src\TMappedObjectConverter.cs" />
-    <Compile Include="Src\TObjectIdentifierConverter.cs" />
-    <Compile Include="Src\TObjectIdentifierResolver.cs" />
-    <Compile Include="Src\TObjectMemberComparer.cs" />
-    <Compile Include="Src\TObjectSelector.cs" />
-    <Compile Include="Src\TObjectSupport.cs" />
-    <Compile Include="Src\TObjectSelectorRoot.cs" />
-    <Compile Include="Src\IProviderObjectFactory.cs" />
-    <Compile Include="Src\TProviderObjectFactory.cs" />
-    <Compile Include="Src\AbstractSourceInformation.cs" />
-    <Compile Include="Src\TSourceInformation.cs" />
-    <Compile Include="Src\TSourceVersionComparer.cs" />
-    <Compile Include="Src\TViewSupport.cs" />
+    <Compile Include="Ctl\TConnectionUIProperties.cs" />
+    <Compile Include="Ctl\TMappedObjectConverter.cs" />
+    <Compile Include="Ctl\TObjectIdentifierConverter.cs" />
+    <Compile Include="Ctl\TObjectIdentifierResolver.cs" />
+    <Compile Include="Ctl\TObjectMemberComparer.cs" />
+    <Compile Include="Ctl\TObjectSelector.cs" />
+    <Compile Include="Ctl\TObjectSupport.cs" />
+    <Compile Include="Ctl\TObjectSelectorRoot.cs" />
+    <Compile Include="Ctl\TProviderObjectFactory.cs" />
+    <Compile Include="Ctl\AbstractSourceInformation.cs" />
+    <Compile Include="Ctl\TSourceInformation.cs" />
+    <Compile Include="Ctl\TSourceVersionComparer.cs" />
+    <Compile Include="Ctl\TViewSupport.cs" />
+  </ItemGroup>
+  <!-- Includes (VSIX Manifest) -->
+  <ItemGroup>
+    <None Include="..\BlackbirdSql.Common\Snippets\FbSqlSnippetsIndex.xml">
+      <Link>Snippets\FbSqlSnippetsIndex.xml</Link>
+      <VSIXSubPath>Snippets</VSIXSubPath>
+    </None>
+    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\COMBINE.snippet">
+      <Link>Snippets\FB-SQL\COMBINE.snippet</Link>
+      <VSIXSubPath>Snippets</VSIXSubPath>
+    </None>
+    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\CREATEASSEMBLY.snippet">
+      <Link>Snippets\FB-SQL\CREATEASSEMBLY.snippet</Link>
+      <VSIXSubPath>Snippets</VSIXSubPath>
+    </None>
+    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\CREATEDATABASE.snippet">
+      <Link>Snippets\FB-SQL\CREATEDATABASE.snippet</Link>
+      <VSIXSubPath>Snippets</VSIXSubPath>
+    </None>
+    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\CREATESCHEMA.snippet">
+      <Link>Snippets\FB-SQL\CREATESCHEMA.snippet</Link>
+      <VSIXSubPath>Snippets</VSIXSubPath>
+    </None>
+    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\CREATETABLE.snippet">
+      <Link>Snippets\FB-SQL\CREATETABLE.snippet</Link>
+      <VSIXSubPath>Snippets</VSIXSubPath>
+    </None>
+    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\CREATE_CREDENTIAL.snippet">
+      <Link>Snippets\FB-SQL\CREATE_CREDENTIAL.snippet</Link>
+      <VSIXSubPath>Snippets</VSIXSubPath>
+    </None>
+    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\CREATE_VIEW.snippet">
+      <Link>Snippets\FB-SQL\CREATE_VIEW.snippet</Link>
+      <VSIXSubPath>Snippets</VSIXSubPath>
+    </None>
+    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\DATA_SOURCE.snippet">
+      <Link>Snippets\FB-SQL\DATA_SOURCE.snippet</Link>
+      <VSIXSubPath>Snippets</VSIXSubPath>
+    </None>
+    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\DECLARE.snippet">
+      <Link>Snippets\FB-SQL\DECLARE.snippet</Link>
+      <VSIXSubPath>Snippets</VSIXSubPath>
+    </None>
+    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\EXTERNAL_TABLE.snippet">
+      <Link>Snippets\FB-SQL\EXTERNAL_TABLE.snippet</Link>
+      <VSIXSubPath>Snippets</VSIXSubPath>
+    </None>
+    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\EXTRACT.snippet">
+      <Link>Snippets\FB-SQL\EXTRACT.snippet</Link>
+      <VSIXSubPath>Snippets</VSIXSubPath>
+    </None>
+    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\EXTRACT_FROM_FILE_SET.snippet">
+      <Link>Snippets\FB-SQL\EXTRACT_FROM_FILE_SET.snippet</Link>
+      <VSIXSubPath>Snippets</VSIXSubPath>
+    </None>
+    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\INSERT_SELECT.snippet">
+      <Link>Snippets\FB-SQL\INSERT_SELECT.snippet</Link>
+      <VSIXSubPath>Snippets</VSIXSubPath>
+    </None>
+    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\OUTPUT.snippet">
+      <Link>Snippets\FB-SQL\OUTPUT.snippet</Link>
+      <VSIXSubPath>Snippets</VSIXSubPath>
+    </None>
+    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\PROCESS.snippet">
+      <Link>Snippets\FB-SQL\PROCESS.snippet</Link>
+      <VSIXSubPath>Snippets</VSIXSubPath>
+    </None>
+    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\REDUCE.snippet">
+      <Link>Snippets\FB-SQL\REDUCE.snippet</Link>
+      <VSIXSubPath>Snippets</VSIXSubPath>
+    </None>
+    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\SELECT.snippet">
+      <Link>Snippets\FB-SQL\SELECT.snippet</Link>
+      <VSIXSubPath>Snippets</VSIXSubPath>
+    </None>
+    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\TableValuedFunction.snippet">
+      <Link>Snippets\FB-SQL\TableValuedFunction.snippet</Link>
+      <VSIXSubPath>Snippets</VSIXSubPath>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <!-- Imports -->

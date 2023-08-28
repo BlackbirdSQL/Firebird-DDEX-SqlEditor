@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader><resheader name="version"><value>1.3</value></resheader><resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><data name="UnknownCursorPlanOperation"><value>Unknown cursor plan operation '{0}'.</value></data>
+  <data name="LevelIsNotSet"><value>Level is not set.</value></data>
+  <data name="ViewShouldBeILaunchFormHostedControl"><value>ViewInfo ctor: user control must implement ViewInfo ctor: user control must implement ILaunchFormHostedControl.</value></data>
+  <data name="EndTimeEqualToStartTime"><value>The job schedule ending time must be after the starting time.</value></data>
+  <data name="BadServiceProvider"><value>Service provider must support ILaunchForm service.</value></data>
+  <data name="ScheduleNameAlreadyExists"><value>There is already a schedule named '{0}' for this job.  You must specify a different name.</value></data>
+  <data name="BadDialogHost"><value>Host service provider MUST implement ILaunchFormHost.</value></data>
+  <data name="MessageBoxCaption"><value>SQL Server</value></data>
+  <data name="UnexpectedRunType"><value>Unexpected run type.</value></data>
+  <data name="UnknownServerType"><value>Unknown server type '{0}'.</value></data>
+  <data name="CannotScriptToJob"><value>Unable to script action to SQL Server Agent job.</value></data>
+  <data name="DeadlockObjectCannotBeNull"><value>A deadlock object cannot be null.</value></data>
+  <data name="InvalidStartDate"><value>Start date must be on or after January 1, 1990.</value></data>
+  <data name="CannotFindProcessVictimInAProcessList"><value>Cannot find process victim in a process list.</value></data>
+  <data name="PermissionsSetFailed"><value>The {0} '{1}' was created, but an error occurred setting permissions.  Use the object properties dialog to set permissions on the object.</value></data>
+  <data name="ErrExtendedPropNameTooBig"><value>The name of an extended property cannot exceed 128 characters.</value></data>
+  <data name="CannotShowDialog"><value>Cannot show requested dialog.</value></data>
+  <data name="ExtendedPropertiesSetFailed"><value>The object '{0}' was created, but an error occurred setting extended properties.  Use the object properties dialog to set extended properties on the object.</value></data>
+  <data name="UnknownShowPlanSource"><value>Execution plan source type can not be recognized.</value></data>
+  <data name="ErrExtendedPropNameEmpty"><value>The name of an extended property cannot be empty.</value></data>
+  <data name="UnknownStatementType"><value>Statement type is not recognized.</value></data>
+  <data name="UnknownAssignType"><value>Unknown assign type.</value></data>
+  <data name="DialogShouldBeIObjectWithSite"><value>Main dialog class must implement IObjectWithSite.</value></data>
+  <data name="XmlDataStringCannotBeEmpty"><value>XML data string cannot be empty.</value></data>
+  <data name="ErrExtendedPropValueTooBig"><value>The value of an extended property cannot exceed 3750 characters.</value></data>
+  <data name="InvalidWeeklySchedule"><value>Select at least one day to be part of this weekly schedule.</value></data>
+  <data name="CannotDoScriptToWindow"><value>Cannot perform script to window operation.</value></data>
+  <data name="InvalidScheduleTitle"><value>Invalid Schedule</value></data>
+  <data name="CannotShowHelpTopic"><value>Cannot show help topic.</value></data>
+  <data name="StartDateGreaterThanEndDate"><value>The job schedule starting date cannot be greater than the ending date.</value></data>
+  <data name="JobAlreadyExists"><value>A job named '{0}' already exists.  Enter a unique name for the job.</value></data>
+  <data name="CannotWorkWithoutNodes"><value>Cannot work without at least one node.</value></data>
+  <data name="ViewShouldBeIPanelForm"><value>ViewInfo ctor: user control must implement IPanelForm.</value></data>
+  <data name="DialogIsWrongType"><value>Dialog class should either implement ISqlControlCollection or be a UserControl.</value></data>
+  <data name="EmptyNameError"><value>You must enter a name. </value></data>
+  <data name="StartTimeGreaterThanEndTime"><value>The job schedule starting time cannot be after the ending time.</value></data>
+  <data name="CannotInit"><value>Cannot initialize.</value></data>
+  <data name="ZoomLevelShouldBeBetween"><value>Zoom level must be an integer value between {0} and {1}.</value></data>
+  <data name="UnknownNodeType"><value>Unknown node type.</value></data>
+  <data name="UnableToExecute"><value>Unable to execute.</value></data>
+  <data name="FailedToInitializeControl"><value>Failed to initialize deadlock control.</value></data>
+  <data name="ErrExtendedPropertyExists"><value>An extended property with this name already exists.</value></data>
+  <data name="CannotRefresh"><value>Unable to perform refresh operation</value></data>
+  </root>

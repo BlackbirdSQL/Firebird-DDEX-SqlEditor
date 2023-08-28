@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>SELECT - snippet</Title>
+      <Author>Microsoft Corporation</Author>
+      <Description>Code snippet for SELECT command</Description>
+      <HelpUrl>http://go.microsoft.com/fwlink/?LinkID=627262&amp;clcid=0x409</HelpUrl>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+      <Shortcut>select_snippet</Shortcut>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal Editable="true">
+          <ID>processname</ID>
+          <Type></Type>
+          <ToolTip>Process Name</ToolTip>
+          <Default>@j</Default>
+          <Function></Function>
+        </Literal>
+        <Literal Editable="true">
+          <ID>columnlist</ID>
+          <Type></Type>
+          <ToolTip>Column list</ToolTip>
+          <Default>A, SUM(B) AS Sum_B, MAX(C) AS Max_C</Default>
+          <Function></Function>
+        </Literal>
+        <Literal Editable="true">
+          <ID>from</ID>
+          <Type></Type>
+          <ToolTip>from</ToolTip>
+          <Default>@i</Default>
+          <Function></Function>
+        </Literal>
+        <Literal Editable="true">
+          <ID>whereexpression</ID>
+          <Type></Type>
+          <ToolTip>A predict expression</ToolTip>
+          <Default>A &gt; B</Default>
+          <Function></Function>
+        </Literal>
+        <Literal Editable="true">
+          <ID>groupby</ID>
+          <Type></Type>
+          <ToolTip>gropu by expression</ToolTip>
+          <Default>A</Default>
+          <Function></Function>
+        </Literal>
+        <Literal Editable="true">
+          <ID>number</ID>
+          <Type></Type>
+          <ToolTip></ToolTip>
+          <Default>10</Default>
+          <Function></Function>
+        </Literal>
+      </Declarations>
+      <Code Language="FB-SQL" Kind="" Delimiter="$"><![CDATA[
+$processname$ = SELECT $columnlist$ FROM $from$ WHERE $whereexpression$ GROUP BY $groupby$ ORDER BY $groupby$ FETCH FIRST $number$ ROWS;
+$end$]]></Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

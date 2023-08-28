@@ -84,7 +84,7 @@
     <ClInclude Include="Parser\Configuration\Include\GramConsts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser\Extensions\Include\ExtensionMethods.h">
+    <ClInclude Include="Parser\Extensions\Include\ExtensionMembers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Parser\Common\Include\Scanner.h">
@@ -281,7 +281,7 @@
     <ClCompile Include="Parser\Configuration\GramConsts.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser\Extensions\ExtensionMethods.cpp">
+    <ClCompile Include="Parser\Extensions\ExtensionMembers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Parser\Common\Scanner.cpp">

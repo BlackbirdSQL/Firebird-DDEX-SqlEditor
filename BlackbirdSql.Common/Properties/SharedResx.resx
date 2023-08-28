@@ -1,0 +1,784 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AlreadyStoringData" xml:space="preserve">
+    <value>Invalid calling sequence: already storing data.</value>
+  </data>
+  <data name="Average" xml:space="preserve">
+    <value>Average</value>
+  </data>
+  <data name="BaseEditorFactory_FailedToCreateEditor" xml:space="preserve">
+    <value>Failed to create an editor.</value>
+  </data>
+  <data name="BatchError" xml:space="preserve">
+    <value>An error occurred while executing batch. Error message is: {0}</value>
+  </data>
+  <data name="BatchExecCompleted" xml:space="preserve">
+    <value>Batch execution completed {0} times.</value>
+  </data>
+  <data name="BeginningBatchExec" xml:space="preserve">
+    <value>Beginning execution loop</value>
+  </data>
+  <data name="BrowseTab" xml:space="preserve">
+    <value>Browse</value>
+  </data>
+  <data name="BufferSizeShouldBePositive" xml:space="preserve">
+    <value>Invalid argument: buffer size should be a positive number.</value>
+  </data>
+  <data name="BuffersReceivedStat" xml:space="preserve">
+    <value>TDS packets received from server</value>
+  </data>
+  <data name="BuffersSentStat" xml:space="preserve">
+    <value>TDS packets sent from client</value>
+  </data>
+  <data name="BytesReceivedStat" xml:space="preserve">
+    <value>Bytes received from server</value>
+  </data>
+  <data name="BytesSentStat" xml:space="preserve">
+    <value>Bytes sent from client</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="CanDisplayOnlyNExecutionPlanControls" xml:space="preserve">
+    <value>The query has exceeded the maximum number of execution plans that can be displayed. Only the first {0} execution plans are displayed.</value>
+  </data>
+  <data name="CanDisplayOnlyNGridResults" xml:space="preserve">
+    <value>The query has exceeded the maximum number of result sets that can be displayed in the results grid. Only the first {0} result sets are displayed in the grid.</value>
+  </data>
+  <data name="CannotAddReaderWhenStoringData" xml:space="preserve">
+    <value>A new reader cannot be added while storage is storing data.</value>
+  </data>
+  <data name="CannotDebugConnectionType" xml:space="preserve">
+    <value>Debugging is not supported on this connection type.</value>
+  </data>
+  <data name="CannotFindDataForExecutionPlan" xml:space="preserve">
+    <value>Cannot find data for execution plan.</value>
+  </data>
+  <data name="ClientExecutionTime" xml:space="preserve">
+    <value>Client Execution Time</value>
+  </data>
+  <data name="ClientProcessingTime" xml:space="preserve">
+    <value>Client processing time</value>
+  </data>
+  <data name="ClientStatsTrial" xml:space="preserve">
+    <value>Trial  {0}</value>
+  </data>
+  <data name="ClusteredMode" xml:space="preserve">
+    <value>System Configuration: Clustered</value>
+  </data>
+  <data name="ColumnDelimiterCannotBeEmpty" xml:space="preserve">
+    <value>You must specify a column delimiter.</value>
+  </data>
+  <data name="ColumnsCountDoesNotMatch" xml:space="preserve">
+    <value>Number of columns in the new reader does not match storage.</value>
+  </data>
+  <data name="ColumnsDoNotMatch" xml:space="preserve">
+    <value>Column definitions do not match those in the storage.</value>
+  </data>
+  <data name="CommonMessageLoopAttemptingToConnect" xml:space="preserve">
+    <value>Attempting to connect to database server {0}.</value>
+  </data>
+  <data name="CommonMessageLoopConnecting" xml:space="preserve">
+    <value>Connecting...</value>
+  </data>
+  <data name="CommonMessageLoopErrorMessage" xml:space="preserve">
+    <value>The connection error is:  {0}.</value>
+  </data>
+  <data name="CommonMessageLoopFailedToOpenConnection" xml:space="preserve">
+    <value>Failed to open a database connection to the server {0}.</value>
+  </data>
+  <data name="Connect" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="ConnectedText" xml:space="preserve">
+    <value>Connected</value>
+  </data>
+  <data name="ConnectingText" xml:space="preserve">
+    <value>Connecting...</value>
+  </data>
+  <data name="ConnectionDialogTitle" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="ConnectionPropertyToggleToolTip" xml:space="preserve">
+    <value>Expand/Collapse Property Section</value>
+  </data>
+  <data name="ConnectionStringParser_InvalidConnectionString" xml:space="preserve">
+    <value>The connection string could not be parsed.</value>
+  </data>
+  <data name="Connection_AdvancedProperties" xml:space="preserve">
+    <value>Advanced...</value>
+  </data>
+  <data name="Connection_Authentication" xml:space="preserve">
+    <value>Authentication:</value>
+  </data>
+  <data name="Connection_Database" xml:space="preserve">
+    <value>Database:</value>
+  </data>
+  <data name="Connection_Dataset" xml:space="preserve">
+    <value>Database dataset name:</value>
+  </data>
+  <data name="Connection_DataSource" xml:space="preserve">
+    <value>Data Source:</value>
+  </data>
+  <data name="Connection_DataSourceOption" xml:space="preserve">
+    <value>...</value>
+  </data>
+  <data name="Connection_Password" xml:space="preserve">
+    <value>Password:</value>
+  </data>
+  <data name="Connection_RememberPassword" xml:space="preserve">
+    <value>Remember Password</value>
+  </data>
+  <data name="Connection_ServerName" xml:space="preserve">
+    <value>Server Name:</value>
+  </data>
+  <data name="Connection_UserName" xml:space="preserve">
+    <value>User Name:</value>
+  </data>
+  <data name="ConnectToServer" xml:space="preserve">
+    <value>Connect to Server</value>
+  </data>
+  <data name="DataConnectionAdvancedDialog_Description" xml:space="preserve">
+    <value>&amp;Description</value>
+  </data>
+  <data name="DataConnectionAdvancedDialog_Remove" xml:space="preserve">
+    <value>Remo&amp;ve</value>
+  </data>
+  <data name="DataConnectionAdvancedDialog_Reset" xml:space="preserve">
+    <value>&amp;Reset</value>
+  </data>
+  <data name="DefaultDatabaseName" xml:space="preserve">
+    <value>&lt;default&gt;</value>
+  </data>
+  <data name="DisplayUserNameAndSPID" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
+  <data name="ErrBatchExecutionFailedExiting" xml:space="preserve">
+    <value>** An error was encountered during execution of batch. Exiting.</value>
+  </data>
+  <data name="ErrBatchExecutionFailedIgnoring" xml:space="preserve">
+    <value>** An error was encountered during execution of batch. Continuing.</value>
+  </data>
+  <data name="ErrCannotCreateTempFile" xml:space="preserve">
+    <value>Failed to create temporary XML file.</value>
+  </data>
+  <data name="ErrCannotGetExternalFilesManager" xml:space="preserve">
+    <value>Failed to get external files manager.</value>
+  </data>
+  <data name="ErrCannotInitNewEditorInst" xml:space="preserve">
+    <value>Cannot initialize new instance of editor.</value>
+  </data>
+  <data name="ErrDatabaseNotAccessible" xml:space="preserve">
+    <value>Database not accessible</value>
+  </data>
+  <data name="ErrDirWasnotFoundForRCmd" xml:space="preserve">
+    <value>Cannot find directory in the path specified for ":r" command.</value>
+  </data>
+  <data name="ErrFatalScriptingErrorNoParam" xml:space="preserve">
+    <value>A fatal scripting error occurred.</value>
+  </data>
+  <data name="ErrFileWasnotFoundForRCmd" xml:space="preserve">
+    <value>The file specified for :r command was not found.</value>
+  </data>
+  <data name="ErrGenericRCmdError" xml:space="preserve">
+    <value>Cannot process the file specified in :r command. Message: {0}.</value>
+  </data>
+  <data name="ErrInvalidExecutionTimeout" xml:space="preserve">
+    <value>Execution time-out value should be an integer between {0} and {1}.</value>
+  </data>
+  <data name="ErrInvalidMaxCharsPerCell" xml:space="preserve">
+    <value>Maximum characters displayed in each cell should be an integer between {0} and {1}.</value>
+  </data>
+  <data name="ErrInvalidMaxCharsPerColumn" xml:space="preserve">
+    <value>Maximum characters per column should be an integer between {0} and {1}.</value>
+  </data>
+  <data name="ErrInvalidPathInRCmd" xml:space="preserve">
+    <value>An invalid path was specified to the :r command.</value>
+  </data>
+  <data name="ErrInvalidSetLockTimeout" xml:space="preserve">
+    <value>LOCK_TIMEOUT value should be an integer between {0} and {1}.</value>
+  </data>
+  <data name="ErrInvalidSetQueryGov" xml:space="preserve">
+    <value>QUERY_GOVERNOR_COST_LIMIT value should be an integer between {0} and {1}.</value>
+  </data>
+  <data name="ErrInvalidSetRowcount" xml:space="preserve">
+    <value>ROWCOUNT value should be an integer between {0} and {1}.</value>
+  </data>
+  <data name="ErrInvalidSetTextsize" xml:space="preserve">
+    <value>TEXTSIZE value should be an integer between {0} and {1}.</value>
+  </data>
+  <data name="ErrNotSupportedSqlCmdCommand" xml:space="preserve">
+    <value>Command {0} is not supported. String was not processed.</value>
+  </data>
+  <data name="ErrOLESQLVarNotDefined" xml:space="preserve">
+    <value>Variable {0} is not defined.</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="ErrorMarkerDescription" xml:space="preserve">
+    <value>FB-SQL editor error message marker</value>
+  </data>
+  <data name="ErrorMarkerDisplayName" xml:space="preserve">
+    <value>Error Message</value>
+  </data>
+  <data name="ErrorWhileSavingExecutionPlan" xml:space="preserve">
+    <value>An error occurred while saving execution plan.</value>
+  </data>
+  <data name="Error_MissingSomeConnectionProperties" xml:space="preserve">
+    <value>Please fill in all required fields.</value>
+  </data>
+  <data name="Error_ReachMaximumNumberOfFavoriteConnection" xml:space="preserve">
+    <value>The maximum number of favorite connections has reached. Please unpin some connection before pining again.</value>
+  </data>
+  <data name="ErrPathIsTooLongForRCmd" xml:space="preserve">
+    <value>The path specified to the :r command is too long.</value>
+  </data>
+  <data name="ErrScriptingErrorNoParam" xml:space="preserve">
+    <value>A scripting error occurred.</value>
+  </data>
+  <data name="ErrScriptingIncorrectSyntax" xml:space="preserve">
+    <value>Incorrect syntax was encountered while parsing {0}.</value>
+  </data>
+  <data name="ErrScriptingWarningNoParam" xml:space="preserve">
+    <value>Scripting warning.</value>
+  </data>
+  <data name="ErrTextWriterNull" xml:space="preserve">
+    <value>Text writer is null.</value>
+  </data>
+  <data name="ErrUnableToCloseCon" xml:space="preserve">
+    <value>Unable to close connection specified in the SQLCMD script.</value>
+  </data>
+  <data name="ErrUnableToConnect" xml:space="preserve">
+    <value>Fatal scripting error. Cannot open connection specified in the SQLCMD script.</value>
+  </data>
+  <data name="ErrUnableToExecProcess" xml:space="preserve">
+    <value>Cannot execute {0} {1}.</value>
+  </data>
+  <data name="ErrUnableToLaunchProcesss" xml:space="preserve">
+    <value>Cannot launch {0} {1}.</value>
+  </data>
+  <data name="ErrUnableToPageSetup" xml:space="preserve">
+    <value>Unable to set up page.</value>
+  </data>
+  <data name="ErrUnableToPrintPreview" xml:space="preserve">
+    <value>Unable to preview page.</value>
+  </data>
+  <data name="ErrUnableToPrintResults" xml:space="preserve">
+    <value>Unable to print results.</value>
+  </data>
+  <data name="ErrUnableToProcessRCmd" xml:space="preserve">
+    <value>Unable to process :r command.</value>
+  </data>
+  <data name="ErrUnableToRedirOutput" xml:space="preserve">
+    <value>Unable to redirect output to {0}.</value>
+  </data>
+  <data name="ErrWhileSavingResults" xml:space="preserve">
+    <value>An error occurred while saving results.</value>
+  </data>
+  <data name="Exception_FailedToSaveFile" xml:space="preserve">
+    <value>Failed to save file: {0}</value>
+  </data>
+  <data name="ExecutionNotCompleted" xml:space="preserve">
+    <value>Previous execution is not yet complete.</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="ExecutionPlan" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        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
+        I+kBr3YJguZUoXcAAAAASUVORK5CYII=
+</value>
+  </data>
+  <data name="ExecutionPlanFilter" xml:space="preserve">
+    <value>Execution Plan Files (*.sqlplan)|*.sqlplan|All Files (*.*)|*.*</value>
+  </data>
+  <data name="ExecutionTimeStat" xml:space="preserve">
+    <value>Total execution time</value>
+  </data>
+  <data name="FailedToGetTempFileName" xml:space="preserve">
+    <value>Failed to get temporary file name.</value>
+  </data>
+  <data name="FailedToLoadExecutionPlanFile" xml:space="preserve">
+    <value>Error loading execution plan XML file {0}.</value>
+  </data>
+  <data name="FailedToReadExecutionPlan" xml:space="preserve">
+    <value>Error processing execution plan results. The error message is:
+{0}</value>
+  </data>
+  <data name="FavoriteConnectionTitle" xml:space="preserve">
+    <value>Favorites</value>
+  </data>
+  <data name="FileStreamAlreadyInitialized" xml:space="preserve">
+    <value>Invalid calling sequence: file stream already initialized.</value>
+  </data>
+  <data name="FileStreamNeedsToBeInitializedFirst" xml:space="preserve">
+    <value>Invalid calling sequence: file stream must be initialized first.</value>
+  </data>
+  <data name="FilterTextBoxToolTip" xml:space="preserve">
+    <value>Type here to filter the list</value>
+  </data>
+  <data name="FontAndColorCategorySqlResultsExecutionPlan" xml:space="preserve">
+    <value>SQL Results - Execution Plan</value>
+  </data>
+  <data name="FontAndColorCategorySqlResultsGrid" xml:space="preserve">
+    <value>SQL Results - Grid</value>
+  </data>
+  <data name="FontAndColorCategorySqlResultsText" xml:space="preserve">
+    <value>SQL Results - Text</value>
+  </data>
+  <data name="FontAndColorGridCellDescription" xml:space="preserve">
+    <value>Text inside grid cells.</value>
+  </data>
+  <data name="FontAndColorGridInactiveSelectedCellDescription" xml:space="preserve">
+    <value>Selected cell color when inactive</value>
+  </data>
+  <data name="FontAndColorGridSelectedCellDescription" xml:space="preserve">
+    <value>Selected cell color when active</value>
+  </data>
+  <data name="FontAndColorItemGridHeaderRowCellDescription" xml:space="preserve">
+    <value>Header row color</value>
+  </data>
+  <data name="FontAndColorItemGridHeaderRowCellName" xml:space="preserve">
+    <value>Header Row</value>
+  </data>
+  <data name="FontAndColorItemGridNullValueCellName" xml:space="preserve">
+    <value>NULL Value Cell</value>
+  </data>
+  <data name="FontAndColorItemNameGridCell" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="FontAndColorItemNameGridInactiveSelectedCell" xml:space="preserve">
+    <value>Inactive Selected Cell</value>
+  </data>
+  <data name="FontAndColorItemNameGridSelectedCell" xml:space="preserve">
+    <value>Selected Cell</value>
+  </data>
+  <data name="FontAndColorItemNameResultsPlainText" xml:space="preserve">
+    <value>Plain Text</value>
+  </data>
+  <data name="FontAndColorShowplanDescription" xml:space="preserve">
+    <value>Text inside execution plan.</value>
+  </data>
+  <data name="FontAndColorTextResultsDescription" xml:space="preserve">
+    <value>Text inside text results or messages.</value>
+  </data>
+  <data name="FontAndGridItemGridNullValueCellDescription" xml:space="preserve">
+    <value>NULL value cell color</value>
+  </data>
+  <data name="HideConnectionProperty" xml:space="preserve">
+    <value>Hide Connection Properties</value>
+  </data>
+  <data name="HistoryTab" xml:space="preserve">
+    <value>Blackbird History</value>
+  </data>
+  <data name="IduCountStat" xml:space="preserve">
+    <value>Number of INSERT, DELETE and UPDATE statements</value>
+  </data>
+  <data name="IduRowsStat" xml:space="preserve">
+    <value>Rows affected by INSERT, DELETE, or UPDATE statements</value>
+  </data>
+  <data name="IncorrectGroupNumber" xml:space="preserve">
+    <value>The supplied group number is incorrect.</value>
+  </data>
+  <data name="IncorrectRowNumber" xml:space="preserve">
+    <value>Row number is incorrect.</value>
+  </data>
+  <data name="InfoConnectingToSvr" xml:space="preserve">
+    <value>Connecting to {0}...</value>
+  </data>
+  <data name="InfoConnectingToSvrAsUser" xml:space="preserve">
+    <value>Connecting to {0} as {1}...</value>
+  </data>
+  <data name="InfoDisconnectingFromSvr" xml:space="preserve">
+    <value>Disconnecting connection from {0}...</value>
+  </data>
+  <data name="InfoDisconnectingFromSvrAsUser" xml:space="preserve">
+    <value>Disconnecting connection from {0} as {1}...</value>
+  </data>
+  <data name="InvalidArgument" xml:space="preserve">
+    <value>Argument is not valid.</value>
+  </data>
+  <data name="InvalidCommandType" xml:space="preserve">
+    <value>Unsupported command object.  Use SqlCommand or ReliableSqlCommand.</value>
+  </data>
+  <data name="InvalidConnectionType" xml:space="preserve">
+    <value>Invalid connection type</value>
+  </data>
+  <data name="ListViewItemAutomationProperty" xml:space="preserve">
+    <value>{0} database under {1} server</value>
+  </data>
+  <data name="LoadingText" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="MissingIndexDetailsTitle" xml:space="preserve">
+    <value>/*
+Missing Index Details from {0}
+The Query Processor estimates that implementing the following index could improve the query cost by {1}%.
+*/</value>
+  </data>
+  <data name="MissingIndexFormat" xml:space="preserve">
+    <value>Missing Index (Impact {0}): {1}</value>
+  </data>
+  <data name="MsgCommandSuccess" xml:space="preserve">
+    <value>Command(s) completed successfully.</value>
+  </data>
+  <data name="MsgQueryCancelled" xml:space="preserve">
+    <value>Query was cancelled by user.</value>
+  </data>
+  <data name="NetworkServerTimeStat" xml:space="preserve">
+    <value>Wait time on server replies</value>
+  </data>
+  <data name="NetworkStatistics" xml:space="preserve">
+    <value>Network Statistics</value>
+  </data>
+  <data name="NoConnectionListDescription" xml:space="preserve">
+    <value>No connection history to display.</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="OpenOnlineEditorException" xml:space="preserve">
+    <value>An error was encountered while trying to open the editor for the template.</value>
+  </data>
+  <data name="PinMenuAction" xml:space="preserve">
+    <value>Pin</value>
+  </data>
+  <data name="PinToolTip" xml:space="preserve">
+    <value>Click to pin</value>
+  </data>
+  <data name="PleaseSelectDirectory" xml:space="preserve">
+    <value>Please select directory</value>
+  </data>
+  <data name="PowerBuffer_ModelDisposed" xml:space="preserve">
+    <value>Could not retrieve the object from the server explorer.  Try closing the window and editing the object again.</value>
+  </data>
+  <data name="PowerBuffer_RetrievingDefinitionFromServer" xml:space="preserve">
+    <value>Retrieving updated definition from server</value>
+  </data>
+  <data name="PropertyWindowCurrentConnectionParameters" xml:space="preserve">
+    <value>Current connection parameters</value>
+  </data>
+  <data name="QEGridResultsNoColumnTitle" xml:space="preserve">
+    <value>(No column name)</value>
+  </data>
+  <data name="QueryCostFormat" xml:space="preserve">
+    <value>Query {0}: Query cost (relative to the batch): {1}%</value>
+  </data>
+  <data name="QueryProfileStatistics" xml:space="preserve">
+    <value>Query Profile Statistics</value>
+  </data>
+  <data name="ReaderCannotBeNull" xml:space="preserve">
+    <value>Invalid argument: reader cannot be null.</value>
+  </data>
+  <data name="RecentConnectionTitle" xml:space="preserve">
+    <value>Recent Connections</value>
+  </data>
+  <data name="Reg_NotifyEditorFactory" xml:space="preserve">
+    <value>Editor Factory:   {0}</value>
+  </data>
+  <data name="Reg_NotifyEditorView" xml:space="preserve">
+    <value>Logical View:     {0}</value>
+  </data>
+  <data name="RemoveMenuAction" xml:space="preserve">
+    <value>Remove from History</value>
+  </data>
+  <data name="RowsAffectedMessage" xml:space="preserve">
+    <value>
+    ({0} row(s) affected)
+    </value>
+  </data>
+  <data name="SaveAsXmlaFilterString" xml:space="preserve">
+    <value>XMLA files (*.xmla)
+*.xmla
+All files (*.*)
+*.*
+    </value>
+  </data>
+  <data name="SaveGridResults" xml:space="preserve">
+    <value>Save Grid Results</value>
+  </data>
+  <data name="SaveResults" xml:space="preserve">
+    <value>Save Results</value>
+  </data>
+  <data name="ScriptIsStillBeingExecuted" xml:space="preserve">
+    <value>The query is currently executing. Do you want to cancel the query?</value>
+  </data>
+  <data name="SelectCountStat" xml:space="preserve">
+    <value>Number of SELECT statements </value>
+  </data>
+  <data name="SelectRowsStat" xml:space="preserve">
+    <value>Rows returned by SELECT statements</value>
+  </data>
+  <data name="ServerRoundtripsStat" xml:space="preserve">
+    <value>Number of server roundtrips</value>
+  </data>
+  <data name="ShowConnectionProperty" xml:space="preserve">
+    <value>Show Connection Properties</value>
+  </data>
+  <data name="SqlDataSource" xml:space="preserve">
+    <value>Microsoft SQL Server (SqlClient)</value>
+  </data>
+  <data name="SqlEditorTabbedEditorPane_Execution_Button_Text" xml:space="preserve">
+    <value>Execution plan</value>
+  </data>
+  <data name="SqlEditorTabbedEditorPane_Message_Button_Text" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="SqlEditorTabbedEditorPane_Results_Button_Text" xml:space="preserve">
+    <value>Results</value>
+  </data>
+  <data name="SqlEditorTabbedEditorPane_Sql_Button_Text" xml:space="preserve">
+    <value>FB-SQL</value>
+  </data>
+  <data name="SqlEditorTabbedEditorPane_Statistics_Button_Text" xml:space="preserve">
+    <value>Statistics</value>
+  </data>
+  <data name="SQLErrorFormat4" xml:space="preserve">
+    <value>{0}: Msg {1}, Level {2}, State {3}</value>
+  </data>
+  <data name="SQLErrorFormat4_NoSource" xml:space="preserve">
+    <value>Msg {0}, Level {1}, State {2}</value>
+  </data>
+  <data name="SQLErrorFormatFirebird" xml:space="preserve">
+    <value>{0}: Msg {1}, Level {2}, Line {3}</value>
+  </data>
+  <data name="SqlExecutionModeChangeFailed" xml:space="preserve">
+    <value>Execution mode cannot be changed when query is executing</value>
+  </data>
+  <data name="SqlExportFromGridFilterAllFiles" xml:space="preserve">
+    <value>All files (*.*)|*.*</value>
+  </data>
+  <data name="SqlExportFromGridFilterCSV" xml:space="preserve">
+    <value>CSV (Comma delimited) (*.csv) | *.csv</value>
+  </data>
+  <data name="SqlExportFromGridFilterTabDelimitted" xml:space="preserve">
+    <value>Text (Tab delimited) (*.txt) | *.txt</value>
+  </data>
+  <data name="SqlResultsEditorFactory_Caption" xml:space="preserve">
+    <value>SSDT Results Window</value>
+  </data>
+  <data name="SqlXMLFileFilter" xml:space="preserve">
+    <value>XML files (*.xml)|*.xml|All files (*.*)|*.*</value>
+  </data>
+  <data name="StorageNotInitialized" xml:space="preserve">
+    <value>Invalid calling sequence: storage must be initialized first.</value>
+  </data>
+  <data name="StorageViewDefaultConstructorCannotBeUsed" xml:space="preserve">
+    <value>StorageView default constructor cannot be used.</value>
+  </data>
+  <data name="TestConnection" xml:space="preserve">
+    <value>Test Connection</value>
+  </data>
+  <data name="TestConnection_databaseDoesNotExist" xml:space="preserve">
+    <value>This connection cannot be tested because the specified database does not exist or is not visible to the specified user.</value>
+  </data>
+  <data name="TestConnection_succeeded" xml:space="preserve">
+    <value>Test connection succeeded.</value>
+  </data>
+  <data name="ThisCommandIsNotSupported" xml:space="preserve">
+    <value>This command is not supported.</value>
+  </data>
+  <data name="TimeStatistics" xml:space="preserve">
+    <value>Time Statistics</value>
+  </data>
+  <data name="TransactionsStat" xml:space="preserve">
+    <value>Number of transactions </value>
+  </data>
+  <data name="UnableToApplyConnectionSettings" xml:space="preserve">
+    <value>Unable to apply connection settings</value>
+  </data>
+  <data name="UncommittedTransactionsWarning" xml:space="preserve">
+    <value>There are uncommitted transactions. Do you wish to commit these transactions before closing the window?</value>
+  </data>
+  <data name="UnPinMenuAction" xml:space="preserve">
+    <value>Unpin</value>
+  </data>
+  <data name="UnpinToolTip" xml:space="preserve">
+    <value>Click to unpin</value>
+  </data>
+  <data name="ViewHaveToBeSetBeforeExecutingDoubleClickEvent" xml:space="preserve">
+    <value>View has to be set before executing double click event.</value>
+  </data>
+  <data name="WarnSqlAdvancedQueryChanges" xml:space="preserve">
+    <value>SQL Server Advanced Query Execution option changes will only be applied to new SQL Server Query Editor windows. </value>
+  </data>
+  <data name="WarnSqlAnsiQueryChanges" xml:space="preserve">
+    <value>SQL Server ANSI Query Execution option changes will only be applied to new SQL Server Query Editor windows. </value>
+  </data>
+  <data name="WarnSqlGeneralQueryChanges" xml:space="preserve">
+    <value>SQL Server General Query Execution option changes will only be applied to new SQL Server Query Editor windows. </value>
+  </data>
+  <data name="WarnSqlGeneralResultsChanges" xml:space="preserve">
+    <value>SQL Server General option changes will only be applied to new SQL Server Query Editor windows. </value>
+  </data>
+  <data name="WarnSqlResultsToGridChanges" xml:space="preserve">
+    <value>SQL Server Results to Grid option changes will only be applied to new SQL Server Query Editor windows. </value>
+  </data>
+  <data name="WarnSqlResultsToTextChanges" xml:space="preserve">
+    <value>SQL Server Results to Text option changes will only be applied to new SQL Server Query Editor windows. </value>
+  </data>
+</root>

@@ -8,12 +8,13 @@
 
 The BlackbirdSQL DDEX 2.0 .NET Data Provider extension, `BlackbirdSql.VisualStudio.Ddex`, implements all the core DDEX 2.0 interfaces prevalent in the SqlServer DDEX provider and more, but currently excludes DDL functionality. 
 
-[Download BlackbirdSql DDEX Extension (Pre-release v9.1.0.76-beta)](https://github.com/BlackbirdSQL/Firebird-NETProvider-DDEX/releases/download/v9.1.0.76-beta/BlackbirdSql.VisualStudio.Ddex.vsix)
+[Download BlackbirdSql DDEX Extension (Pre-release v9.1.0.77-beta)](https://github.com/BlackbirdSQL/Firebird-NETProvider-DDEX/releases/download/v9.0.1.77-beta/BlackbirdSql.VisualStudio.Ddex.vsix)
 
 *The first tenet of this package is `small footprint, low overhead`, and to be as unobtrusive as possible. It is installed as a standard VSIX extension. If you uninstall it is is gone. It does not leave it's fingerprints in either your computer system or your Visual Studio installation.*
 
 ### Features
 * Firebird DDEX provider support for most of the DDEX 2.0 IVs DML interfaces utilizing FirebirdSql.Data.FirebirdClient and EntityFramework.Firebird versions 9.1.1.
+* SqlServer SqlEditor port for Firebird for editing Computed columns, Triggers, Views, Procedures and Functons and SQL scripts. (NOTE: The editor service designer logical view is not currently functional.)
 * Trigger/Generator auto-increment linkage.
 * FlameRobin host and database selection within connection dialogs.
 * Within Server Explorer, top level folders for Tables, Views, Stored procedures, Functions, Sequence Generators, Triggers and Domains.
@@ -24,7 +25,6 @@ The BlackbirdSQL DDEX 2.0 .NET Data Provider extension, `BlackbirdSql.VisualStud
 * Procedures, functions, views, triggers and computed columns display the decoded blr if no source exists.
 * Display of initial value (seed), increment and next value within sequence generator display.
 * New query and data retrieval for both user and system tables.
-* SQL Editor for Expressions, Definitions and Source scripts.
 * Plug and play. No configuration of the .csproj, app.config or machine.config files and no GAC registration.
 * BlackbirdSql background and UI thread tasks compliant with the IDE TaskHandler and implements the user cancel feature for background tasks from the TaskHandler window.
 * All exception, task progress and task status reporting logged to the output window accessible under *BlackbirdSql* in the dropdown (Enabled by default under Options).
@@ -36,10 +36,9 @@ The parser itself is reasonably fast (+- 0.1 milliseconds per trigger), but SQL 
 
 
 ## Known issues
-* The 'Open Script' command on Server Explorer nodes with an expression, definition or source script implements the Azure Unified editor factory. The port to Firebird is only partially completed. As a result Intellisense will display a connection retry counter to a non-existent Azure provider for each SQL script window that is active. Besides being a distraction it should not affect IDE performance.
-* As it stands, the Azure Unified SQL Editor Connect, Execute and various other database command buttons are not functional yet.
+* The 'Open Script' command on Server Explorer nodes with an expression or dsl/sql source code is still in development and not functional yet. Selecting the command from the SE context menu results in the IDE shutting down, so it has been temporarily disabled.
 * If on startup of the Visual Studio IDE, and only on startup, an attempt is made to access an EDMX model or a Database in the SE before the associated DDEX provider has been given the IDE shell context, Visual Studio will flag the provider as unavailable for the duration of the session. This is true for both the SqlServer and BlackbirdSql providers, and is likely the case for any other DDEX provider that loads asynchronously.</br>
-As it stands Visual Studio will have to be restarted to clear the flag.</br>
+* As it stands Visual Studio will have to be restarted to clear the flag.</br>
 Unless we're missing a trick here this seems to be unavoidable. Loading is asynchronous, so the provider needs time to register and load.</br>
 We want to be as unobtrusive as possible so load delays are just a reality if we go the asynchronous route. (*Loading is initiated at the earliest possible, which is as soon as the IDE shell context is available.*)
 * If you have a huge number of triggers then rendering of the triggers in the SE, or any other collection for that matter, may take some time. This has nothing to do with the parser but is simply down to network and database server performance. To minimize the effect of this, Trigger/Generator linkage is built asynchronously as soon as a connection is established.

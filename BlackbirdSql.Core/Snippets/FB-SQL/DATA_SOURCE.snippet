@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>DATA SOURCE - snippet</Title>
+      <Author>Microsoft Corporation</Author>
+      <Description>Code snippet for DATA SOURCE command</Description>
+      <HelpUrl>http://go.microsoft.com/fwlink/?LinkID=627262&amp;clcid=0x409</HelpUrl>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+      <Shortcut>data_source_snippet</Shortcut>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal Editable="true">
+          <ID>datasourcename</ID>
+          <Type></Type>
+          <ToolTip>Data Source Name</ToolTip>
+          <Default>datasourcename</Default>
+          <Function></Function>
+        </Literal>
+        <Literal Editable="true">
+          <ID>credname</ID>
+          <Type></Type>
+          <ToolTip></ToolTip>
+          <Default>credname</Default>
+          <Function></Function>
+        </Literal>
+        <Literal Editable="true">
+          <ID>AZURESQLDB</ID>
+          <Type></Type>
+          <ToolTip></ToolTip>
+          <Default>AZURESQLDB</Default>
+          <Function></Function>
+        </Literal>
+      </Declarations>
+      <Code Language="FB-SQL" Kind="" Delimiter="$"><![CDATA[
+CREATE DATA SOURCE $datasourcename$ FROM $AZURESQLDB$ WITH 
+        ( PROVIDER_STRING = "Database=DataBaseName;Trusted_Connection=False;Encrypt=True" 
+        , CREDENTIAL = $credname$ 
+        , REMOTABLE_TYPES = (bool, byte, sbyte, short, ushort, int, uint, long, ulong, decimal, float, double, string, DateTime)  
+        );
+ $end$]]></Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

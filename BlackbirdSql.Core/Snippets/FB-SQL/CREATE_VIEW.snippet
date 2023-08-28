@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>CREATE VIEW - snippet</Title>
+      <Author>Microsoft Corporation</Author>
+      <Description>Code snippet for CREATE VIEW command</Description>
+      <HelpUrl>http://go.microsoft.com/fwlink/?LinkID=627262&amp;clcid=0x409</HelpUrl>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+      <Shortcut>create_view_snippet</Shortcut>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal Editable="true">
+          <ID>viewname</ID>
+          <Type></Type>
+          <ToolTip>View Name</ToolTip>
+          <Default>view1</Default>
+          <Function></Function>
+        </Literal>
+        <Literal Editable="true">
+          <ID>id</ID>
+          <Type></Type>
+          <ToolTip></ToolTip>
+          <Default>id</Default>
+          <Function></Function>
+        </Literal>
+        <Literal Editable="true">
+          <ID>col1</ID>
+          <Type></Type>
+          <ToolTip></ToolTip>
+          <Default>col1</Default>
+          <Function></Function>
+        </Literal>
+        <Literal Editable="true">
+          <ID>inputpath</ID>
+          <Type></Type>
+          <ToolTip></ToolTip>
+          <Default>"inputpath"</Default>
+          <Function></Function>
+        </Literal>
+      </Declarations>
+      <Code Language="FB-SQL" Kind="" Delimiter="$"><![CDATA[
+CREATE VIEW $viewname$
+AS
+EXTRACT 
+      $id$ int
+    , $col1$ long?
+FROM
+$inputpath$
+USING Extractors.Tsv();
+ $end$]]></Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

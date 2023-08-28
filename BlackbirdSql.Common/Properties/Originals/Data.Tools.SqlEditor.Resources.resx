@@ -1,0 +1,1533 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ConnectionStateOpen" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="StatusBar_offline" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhEAAQAIIAAAAAAP////Dv8UJDQ/b29v///wAAAAAAACH/C05FVFNDQVBFMi4wAwEBAAAh+QQB
+        AAAFACwAAAAAEAAQAAAIVwALCBxIkIDBgwQTFiAwoOEAAgoLDhAg4GHEgQwdHtzIcWJFgw5DPszYEKTI
+        kiRHnkTZ8GPKkCZZrtw48qVGgQwhdtyI06JEiAUNJsyJ8OJCmEYXclQYEAA7
+</value>
+  </data>
+  <data name="MissingIndexDetailsTitle" xml:space="preserve">
+    <value>/*
+Missing Index Details from {0}
+The Query Processor estimates that implementing the following index could improve the query cost by {1}%.
+*/</value>
+  </data>
+  <data name="SelectCountStat" xml:space="preserve">
+    <value>Number of SELECT statements </value>
+  </data>
+  <data name="SqlEditorTabbedEditorPane_Spatial_Button_Text" xml:space="preserve">
+    <value>Spatial</value>
+  </data>
+  <data name="StatusBarConnected" xml:space="preserve">
+    <value>Connected.</value>
+  </data>
+  <data name="SqlCeErrorFormat_NoSource" xml:space="preserve">
+    <value>Major Error {0}, Minor Error {1}</value>
+  </data>
+  <data name="MissingIndexFormat" xml:space="preserve">
+    <value>Missing Index (Impact {0}): {1}</value>
+  </data>
+  <data name="QeQueryOptionsExecution" xml:space="preserve">
+    <value>Execution</value>
+  </data>
+  <data name="ErrDatabaseNotAccessible" xml:space="preserve">
+    <value>The database {0} is not accessible.</value>
+  </data>
+  <data name="ErrTextWriterNull" xml:space="preserve">
+    <value>Text writer is null.</value>
+  </data>
+  <data name="QueryWindowDisconnected" xml:space="preserve">
+    <value>Disconnected</value>
+  </data>
+  <data name="SqlEditorQueryErrorExecution" xml:space="preserve">
+    <value>An error occurred executing the query</value>
+  </data>
+  <data name="WarnSqlAnsiQueryChanges" xml:space="preserve">
+    <value>SQL Server ANSI Query Execution option changes will only be applied to new SQL Server Query Editor windows. </value>
+  </data>
+  <data name="MsgQueryCancelled" xml:space="preserve">
+    <value>Query was cancelled by user.</value>
+  </data>
+  <data name="PropertyWindowStatusDescription" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="InfoDisconnectingFromSvrAsUser" xml:space="preserve">
+    <value>Disconnecting connection from {0} as {1}...</value>
+  </data>
+  <data name="BatchError" xml:space="preserve">
+    <value>An error occurred while executing batch. Error message is: {0}</value>
+  </data>
+  <data name="ErrInvalidSetQueryGov" xml:space="preserve">
+    <value>QUERY_GOVERNOR_COST_LIMIT value should be an integer between {0} and {1}.</value>
+  </data>
+  <data name="ToolOptionTabTextIncludeDatabaseNameDescription" xml:space="preserve">
+    <value>Include the name of the current connected database in the tab text.</value>
+  </data>
+  <data name="SqlExportFromGridFilterCSV" xml:space="preserve">
+    <value>CSV (Comma delimited) (*.csv) | *.csv</value>
+  </data>
+  <data name="SqlEditorNoAvailableDatabase" xml:space="preserve">
+    <value>Unable to load available databases.</value>
+  </data>
+  <data name="ThisCommandIsNotSupported" xml:space="preserve">
+    <value>This command is not supported.</value>
+  </data>
+  <data name="ErrInvalidPathInRCmd" xml:space="preserve">
+    <value>An invalid path was specified to the :r command.</value>
+  </data>
+  <data name="GridSelectWholeRowTooltip" xml:space="preserve">
+    <value>Click to select the whole row</value>
+  </data>
+  <data name="FontAndColorTextResultsDescription" xml:space="preserve">
+    <value>Text inside text results or messages.</value>
+  </data>
+  <data name="PropertyWindowTotalRowsReturnedDisplayName" xml:space="preserve">
+    <value>Rows returned</value>
+  </data>
+  <data name="FileEncodingDialog" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAMAEBAQAAEABAAoAQAANgAAABAQAAABAAgAaAUAAF4BAAAQEAAAAQAgAGgEAADGBgAAKAAAABAA
+        AAAgAAAAAQAEAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAIAAAACAgACAAAAAgACAAICA
+        AACAgIAAwMDAAAAA/wAA/wAAAP//AP8AAAD/AP8A//8AAP///wD/////8AAAAPd3d3f/////93d3d/d3
+        d3/3d3d393d3f/d3d3f///d/93//d/d393/3f393///3f/d/f393d/d/////j///938AAPd/d3f3fwAA
+        93////d/AAD3f3f3d38AAPd///d38AAA93d3d38AAAD3d3d38AAAAP////8AAAB/AAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAPAAAADwAAAA8AAAAPABAADwAwAA8AcAAPAPAAAoAAAAEAAAACAA
+        AAABAAgAAAAAAAABAAAAAAAAAAAAAAABAAAAAQAAAAAAAEJCQgCGhoYAs7OzAPHv8AD08/QA9vb2AAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////AAYGBgYGBgYGBgAAAAAAAAAGAQEBAQEBAQYG
+        BgYGBgYGBgEBAQEBAQEGAQEBAQEBBgYBAQEBAQEBBgEBAQEBAQYGAQEBAQEBAQYEBAQEAQEGBgEBBAQE
+        AQEGAQEBBAEBBgYBAQQBBAECBgQEBAQBAQYGAQEEAQQCBgEBAQEEAQEGBgYGBgYGAwQEBAQEBAEBBgAA
+        AAAGAQEEAQEBAQQBAQYAAAAABgEBBAQEBAQEAQEGAAAAAAYBAQQBAQQBAQECBgAAAAAGAQEEBAQEAQEC
+        BgAAAAAABgEBAQEBAQECBgAAAAAAAAYBAQEBAQECBgAAAAAAAAAGBgYGBgYGBgAAAAAAfwAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwAAAA8AAAAPAAAADwAQAA8AMAAPAHAADwDwAAKAAAABAA
+        AAAgAAAAAQAgAAAAAABABAAAAAAAAAAAAAAAAAAAAAAAAPb29v/29vb/9vb2//b29v/29vb/9vb2//b2
+        9v/29vb/9vb2/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD29vb/QkJC/0JCQv9CQkL/QkJC/0JC
+        Qv9CQkL/QkJC//b29v/29vb/9vb2//b29v/29vb/9vb2//b29v/29vb/9vb2/0JCQv9CQkL/QkJC/0JC
+        Qv9CQkL/QkJC/0JCQv/29vb/QkJC/0JCQv9CQkL/QkJC/0JCQv9CQkL/9vb2//b29v9CQkL/QkJC/0JC
+        Qv9CQkL/QkJC/0JCQv9CQkL/9vb2/0JCQv9CQkL/QkJC/0JCQv9CQkL/QkJC//b29v/29vb/QkJC/0JC
+        Qv9CQkL/QkJC/0JCQv9CQkL/QkJC//b29v/x7/D/8e/w//Hv8P/x7/D/QkJC/0JCQv/29vb/9vb2/0JC
+        Qv9CQkL/8e/w//Hv8P/x7/D/QkJC/0JCQv/29vb/QkJC/0JCQv9CQkL/8e/w/0JCQv9CQkL/9vb2//b2
+        9v9CQkL/QkJC//Hv8P9CQkL/8e/w/0JCQv+Ghob/9PP0//Hv8P/x7/D/8e/w//Hv8P9CQkL/QkJC//b2
+        9v/29vb/QkJC/0JCQv/x7/D/QkJC//Hv8P+Ghob/9PP0/0JCQv9CQkL/QkJC/0JCQv/x7/D/QkJC/0JC
+        Qv/29vb/9vb2//b29v/29vb/9vb2//b29v/29vb/s7Oz//Hv8P/x7/D/8e/w//Hv8P/x7/D/8e/w/0JC
+        Qv9CQkL/9vb2/wAAAAAAAAAAAAAAAAAAAAD29vb/QkJC/0JCQv/x7/D/QkJC/0JCQv9CQkL/QkJC//Hv
+        8P9CQkL/QkJC//b29v8AAAAAAAAAAAAAAAAAAAAA9vb2/0JCQv9CQkL/8e/w//Hv8P/x7/D/8e/w//Hv
+        8P/x7/D/QkJC/0JCQv/29vb/AAAAAAAAAAAAAAAAAAAAAPb29v9CQkL/QkJC//Hv8P9CQkL/QkJC//Hv
+        8P9CQkL/QkJC/0JCQv+Ghob/9vb27wAAAAAAAAAAAAAAAAAAAAD29vb/QkJC/0JCQv/x7/D/8e/w//Hv
+        8P/x7/D/QkJC/0JCQv+Ghob/9vb27/b29jAAAAAAAAAAAAAAAAAAAAAA9vb2/0JCQv9CQkL/QkJC/0JC
+        Qv9CQkL/QkJC/0JCQv+Ghob/9vb27/b29jAAAAAAAAAAAAAAAAAAAAAAAAAAAPb29v9CQkL/QkJC/0JC
+        Qv9CQkL/QkJC/0JCQv+Ghob/9vb27/b29jAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD29vb/9vb2//b2
+        9v/29vb/9vb2//b29v/29vb/9vb27/b29jAAAAAAAAAAAAAAAAAAfwAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAADwAAAA8AAAAPAAAADwAAAA8AEAAPADAADwBwAA
+</value>
+  </data>
+  <data name="FontAndColorItemNameResultsPlainText" xml:space="preserve">
+    <value>Plain Text</value>
+  </data>
+  <data name="ViewHaveToBeSetBeforeExecutingDoubleClickEvent" xml:space="preserve">
+    <value>View has to be set before executing double click event.</value>
+  </data>
+  <data name="PropertyWindowServerVersionDisplayName" xml:space="preserve">
+    <value>Server version</value>
+  </data>
+  <data name="InfoConnectingToSvr" xml:space="preserve">
+    <value>Connecting to {0}...</value>
+  </data>
+  <data name="ErrWhileSavingResults" xml:space="preserve">
+    <value>An error occurred while saving results.</value>
+  </data>
+  <data name="ErrUnableToPrintResults" xml:space="preserve">
+    <value>Unable to print results.</value>
+  </data>
+  <data name="ColumnDelimiterCannotBeEmpty" xml:space="preserve">
+    <value>You must specify a column delimiter.</value>
+  </data>
+  <data name="StatusBarQueryTimedOut" xml:space="preserve">
+    <value>Query batch timed out.</value>
+  </data>
+  <data name="ErrInvalidMaxCharsPerColumn" xml:space="preserve">
+    <value>Maximum characters per column should be an integer between {0} and {1}.</value>
+  </data>
+  <data name="UncommittedTransactionsWarning" xml:space="preserve">
+    <value>There are uncommitted transactions. Do you wish to commit these transactions before closing the window?</value>
+  </data>
+  <data name="ErrLiveConnectionCannotBeNonNull" xml:space="preserve">
+    <value>IDbConnection can be non-null only when UIConnectionInfo is also non-null.</value>
+  </data>
+  <data name="ErrFatalScriptingErrorNoParam" xml:space="preserve">
+    <value>A fatal scripting error occurred.</value>
+  </data>
+  <data name="SQLErrorFormat4_NoSource" xml:space="preserve">
+    <value>Msg {0}, Level {1}, State {2}</value>
+  </data>
+  <data name="SqlExportFromGridFilterTabDelimitted" xml:space="preserve">
+    <value>Text (Tab delimited) (*.txt) | *.txt</value>
+  </data>
+  <data name="PropertyWindowLoginNameDescription" xml:space="preserve">
+    <value>The login name of the connection</value>
+  </data>
+  <data name="ErrInvalidSetRowcount" xml:space="preserve">
+    <value>ROWCOUNT value should be an integer between {0} and {1}.</value>
+  </data>
+  <data name="SQLErrorFormat4" xml:space="preserve">
+    <value>{0}: Msg {1}, Level {2}, State {3}</value>
+  </data>
+  <data name="SQLErrorFormat5" xml:space="preserve">
+    <value>{0}: Msg {1}, Level {2}, State {3}, Line {4}</value>
+  </data>
+  <data name="SQLErrorFormat6" xml:space="preserve">
+    <value>{0}: Msg {1}, Level {2}, State {3}, Procedure {4}, Line {5}</value>
+  </data>
+  <data name="PropertyWindowConnInfoDisplayName" xml:space="preserve">
+    <value>Connection name</value>
+  </data>
+  <data name="ErrNotSupportedSqlCmdCommand" xml:space="preserve">
+    <value>Command {0} is not supported. String was not processed.</value>
+  </data>
+  <data name="SQLErrorFormat5WithContext" xml:space="preserve">
+    <value>{0}({1}): {2}: Msg {3}, Level {4}, State {5}, Line {6}</value>
+  </data>
+  <data name="ConnectionStateExecuting" xml:space="preserve">
+    <value>Executing</value>
+  </data>
+  <data name="ErrDirWasnotFoundForRCmd" xml:space="preserve">
+    <value>Cannot find directory in the path specified for ":r" command.</value>
+  </data>
+  <data name="ClientExecutionTime" xml:space="preserve">
+    <value>Client Execution Time</value>
+  </data>
+  <data name="SQLErrorFormat6_NoSource" xml:space="preserve">
+    <value>Msg {0}, Level {1}, State {2}, Procedure {3}, Line {4}</value>
+  </data>
+  <data name="ClientStatsTrial" xml:space="preserve">
+    <value>Trial  {0}</value>
+  </data>
+  <data name="SqlEditorTabbedEditorPane_Statistics_Button_Text" xml:space="preserve">
+    <value>Statistics</value>
+  </data>
+  <data name="ConnectionStateNotConnected" xml:space="preserve">
+    <value>not connected</value>
+  </data>
+  <data name="UnableToApplyConnectionSettings" xml:space="preserve">
+    <value>Unable to apply connection settings. The detailed error message is: {0}</value>
+  </data>
+  <data name="XMLResults" xml:space="preserve">
+    <value>XML Results</value>
+  </data>
+  <data name="PropertyWindowServerNameDisplayName" xml:space="preserve">
+    <value>Server name</value>
+  </data>
+  <data name="PropertyWindowNameDescription" xml:space="preserve">
+    <value>The display name of the connection</value>
+  </data>
+  <data name="ToolOptionTabTextCategory" xml:space="preserve">
+    <value>Tab Text</value>
+  </data>
+  <data name="SaveAsXmlaFilterString" xml:space="preserve">
+    <value>XMLA files (*.xmla)
+*.xmla
+All files (*.*)
+*.*
+    </value>
+  </data>
+  <data name="ErrPathIsTooLongForRCmd" xml:space="preserve">
+    <value>The path specified to the :r command is too long.</value>
+  </data>
+  <data name="ClusteredMode" xml:space="preserve">
+    <value>System Configuration: Clustered</value>
+  </data>
+  <data name="PropertyWindowSessionIDDescription" xml:space="preserve">
+    <value>The Tracing ID for the current session (Microsoft Azure SQL Database only)</value>
+  </data>
+  <data name="PropertyWindowTotalRowsReturnedDescription" xml:space="preserve">
+    <value>The total number of rows that are returned from the server</value>
+  </data>
+  <data name="CommonMessageLoopErrorMessage" xml:space="preserve">
+    <value>The connection error is:  {0}.</value>
+  </data>
+  <data name="SqlExportFromGridFilterAllFiles" xml:space="preserve">
+    <value>All files (*.*)|*.*</value>
+  </data>
+  <data name="ErrQEStorageNoReader" xml:space="preserve">
+    <value>Object is not initialized with the reader.</value>
+  </data>
+  <data name="ToolOptionIncludeFileNameDisplayName" xml:space="preserve">
+    <value>Include file name</value>
+  </data>
+  <data name="ToolOptionIncludeServerNameDisplayName" xml:space="preserve">
+    <value>Include server name</value>
+  </data>
+  <data name="ErrUnableToRedirOutput" xml:space="preserve">
+    <value>Unable to redirect output to {0}.</value>
+  </data>
+  <data name="FontAndColorItemNameGridCell" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="ErrUnableToProcessRCmd" xml:space="preserve">
+    <value>Unable to process :r command.</value>
+  </data>
+  <data name="MsgCommandSuccess" xml:space="preserve">
+    <value>Command(s) completed successfully.</value>
+  </data>
+  <data name="CanDisplayOnlyNExecutionPlanControls" xml:space="preserve">
+    <value>The query has exceeded the maximum number of execution plans that can be displayed. Only the first {0} execution plans are displayed.</value>
+  </data>
+  <data name="InfoConnectingToSvrAsUser" xml:space="preserve">
+    <value>Connecting to {0} as {1}...</value>
+  </data>
+  <data name="IduRowsStat" xml:space="preserve">
+    <value>Rows affected by INSERT, DELETE, or UPDATE statements</value>
+  </data>
+  <data name="ExecutionNotCompleted" xml:space="preserve">
+    <value>Previous execution is not yet complete.</value>
+  </data>
+  <data name="ServerNameAndBuildAndProduct" xml:space="preserve">
+    <value>{0} ({1}.{2} {3})</value>
+  </data>
+  <data name="FontAndColorShowplanDescription" xml:space="preserve">
+    <value>Text inside execution plan.</value>
+  </data>
+  <data name="BytesReceivedStat" xml:space="preserve">
+    <value>Bytes received from server</value>
+  </data>
+  <data name="ErrUnableToExecProcess" xml:space="preserve">
+    <value>Cannot execute {0} {1}.</value>
+  </data>
+  <data name="arrowDown" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        Qk3WAAAAAAAAAHYAAAAoAAAADAAAAAwAAAABAAQAAAAAAAAAAAAAAAAAAAAAABAAAAAQAAAAAAAA/wAA
+        gP8AgAD/AICA/4AAAP+AAID/gIAA/8DAwP+AgID/AAD//wD/AP8A/////wAA//8A/////wD/////////
+        /////wAA///yL///AAD//yIi//8AAP/yIiIv/wAA/yLyLyL/AAD///Iv//8AAP//8i///wAA///yL///
+        AAD///Iv//8AAP//8i///wAA///yL///AAD///////8AAA==
+</value>
+  </data>
+  <data name="arrowFlat" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        Qk3WAAAAAAAAAHYAAAAoAAAADAAAAAwAAAABAAQAAAAAAAAAAAAAAAAAAAAAABAAAAAQAAAAAAAA/wAA
+        gP8AgAD/AICA/4AAAP+AAID/gIAA/8DAwP+AgID/AAD//wD/AP8A/////wAA//8A/////wD/////////
+        /////wAA////////AAD///8P//8AAP///wD//wAA////8A//AADwAAAAAP8AAPAAAAAA/wAA////8A//
+        AAD///8A//8AAP///w///wAA////////AAD///////8AAA==
+</value>
+  </data>
+  <data name="ErrUnableToShowXML" xml:space="preserve">
+    <value>Unable to show XML. The following error happened:
+{0}
+
+One solution is to increase the number of characters retrieved from the server for XML data. To change this setting, on the Tools menu, click Options.</value>
+  </data>
+  <data name="ToolOptionExecutionTimeDescription" xml:space="preserve">
+    <value>Select type of time display to include on the status bar.</value>
+  </data>
+  <data name="Statistics" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        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
+        QmCC
+</value>
+  </data>
+  <data name="PropertyWindowSpidDescription" xml:space="preserve">
+    <value>The SQL process identifier for the connection</value>
+  </data>
+  <data name="PropertyWindowStateDisplayName" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="FailedToReadExecutionPlan" xml:space="preserve">
+    <value>Error processing execution plan results. The error message is:
+{0}</value>
+  </data>
+  <data name="QeQueryOptionsGrid" xml:space="preserve">
+    <value>Grid</value>
+  </data>
+  <data name="QeQueryOptionsAnsi" xml:space="preserve">
+    <value>ANSI</value>
+  </data>
+  <data name="QeQueryOptionsText" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="SqlEditorTabbedEditorPane_Sql_Button_Text" xml:space="preserve">
+    <value>T-SQL</value>
+  </data>
+  <data name="SqlXMLFileFilter" xml:space="preserve">
+    <value>XML files (*.xml)|*.xml|All files (*.*)|*.*</value>
+  </data>
+  <data name="ExecutionPlan" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        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
+        I+kBr3YJguZUoXcAAAAASUVORK5CYII=
+</value>
+  </data>
+  <data name="GlobalizedLiteralTrue" xml:space="preserve">
+    <value>True</value>
+  </data>
+  <data name="SaveResults" xml:space="preserve">
+    <value>Save Results</value>
+  </data>
+  <data name="QEGridResultsNoColumnTitle" xml:space="preserve">
+    <value>(No column name)</value>
+  </data>
+  <data name="PropertyWindowConnInfoDescription" xml:space="preserve">
+    <value>Name of the connection containing server name and login</value>
+  </data>
+  <data name="QeQueryOptionsResults" xml:space="preserve">
+    <value>Results</value>
+  </data>
+  <data name="PropertyWindowServerNameDescription" xml:space="preserve">
+    <value>The server name of the connection</value>
+  </data>
+  <data name="BatchSeparatorCannotBeEmpty" xml:space="preserve">
+    <value>Specify a batch separator.</value>
+  </data>
+  <data name="PropertyWindowStartTimeDisplayName" xml:space="preserve">
+    <value>Start time</value>
+  </data>
+  <data name="ErrGenericRCmdError" xml:space="preserve">
+    <value>Cannot process the file specified in :r command. Message: {0}.</value>
+  </data>
+  <data name="SqlCeErrorFormat" xml:space="preserve">
+    <value>{0}: Major Error {1}, Minor Error {2}</value>
+  </data>
+  <data name="ErrBufferNull" xml:space="preserve">
+    <value>buffer is null.</value>
+  </data>
+  <data name="ToolOptionStatusBarIncludeRowCountDescription" xml:space="preserve">
+    <value>Include count of returned rows on the status bar.</value>
+  </data>
+  <data name="ErrScriptingErrorNoParam" xml:space="preserve">
+    <value>A scripting error occurred.</value>
+  </data>
+  <data name="QeQueryOptionsAdvanced" xml:space="preserve">
+    <value>Advanced</value>
+  </data>
+  <data name="ErrUnableToPageSetup" xml:space="preserve">
+    <value>Unable to set up page.</value>
+  </data>
+  <data name="StatusBarQueryCompletedWithErrors" xml:space="preserve">
+    <value>Query completed with errors.</value>
+  </data>
+  <data name="ErrScriptingIncorrectSyntax" xml:space="preserve">
+    <value>Incorrect syntax was encountered while parsing {0}.</value>
+  </data>
+  <data name="ErrQEResultSetAlreadyStoring" xml:space="preserve">
+    <value>Storage is already storing the data.</value>
+  </data>
+  <data name="PropertyWindowServerVersionDescription" xml:space="preserve">
+    <value>The server version of the connection</value>
+  </data>
+  <data name="ToolOptionStatusBarIncludeLoginNameDescription" xml:space="preserve">
+    <value>Include login name on the status bar.</value>
+  </data>
+  <data name="GridSelectWholeColumnTooltip" xml:space="preserve">
+    <value>Click to select the whole column</value>
+  </data>
+  <data name="ConnectionStateFetching" xml:space="preserve">
+    <value>Fetching</value>
+  </data>
+  <data name="TimeStatistics" xml:space="preserve">
+    <value>Time Statistics</value>
+  </data>
+  <data name="PropertyWindowQueryWindowOptions" xml:space="preserve">
+    <value>Current query window options</value>
+  </data>
+  <data name="WarnSqlResultsToTextChanges" xml:space="preserve">
+    <value>SQL Server Results to Text option changes will only be applied to new SQL Server Query Editor windows. </value>
+  </data>
+  <data name="GlobalizedLiteralFalse" xml:space="preserve">
+    <value>False</value>
+  </data>
+  <data name="ToolOptionStatusBarDefaultColorDisplayName" xml:space="preserve">
+    <value>Background color</value>
+  </data>
+  <data name="StatusBarNewConnectionOpened" xml:space="preserve">
+    <value>New Connection Opened</value>
+  </data>
+  <data name="PropertyWindowStartTimeDescription" xml:space="preserve">
+    <value>The date and time when the command was started</value>
+  </data>
+  <data name="WarnSqlGeneralQueryChanges" xml:space="preserve">
+    <value>SQL Server General Query Execution option changes will only be applied to new SQL Server Query Editor windows. </value>
+  </data>
+  <data name="FontAndColorItemNameGridSelectedCell" xml:space="preserve">
+    <value>Selected Cell</value>
+  </data>
+  <data name="CommonMessageLoopFailedToOpenConnection" xml:space="preserve">
+    <value>Failed to open a database connection to the server {0}.</value>
+  </data>
+  <data name="StatusBar_connect" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhEAAQAIIAAAAAAP////Dv8fb29kJCQv///wAAAAAAACH/C05FVFNDQVBFMi4wAwEBAAAh+QQB
+        AAAFACwAAAAAEAAQAAAIVgALCBxIcIDBgwQTFhhAoCGBAQoLEhAg4GHEgQwdHtzIcWJFgw5DPszYEKTI
+        kiRHnkTZ8GPKkCZZrtw48qVGgQwhdtyI06JEiD8T5uSYU+jKkkKJ8gwIADs=
+</value>
+  </data>
+  <data name="StatusBar_spin9" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhEAAQAIZ1AHzEexCID0WsQ7nguabYpYvEiiWaIgyECt7v3u337B2UG3q9eEylStbt1YS+g5XQ
+        k/P88/79/cvpy6nUqIbKheHy4bPUsm22bEqtR7XftP/9//v6+7DesLjXt+Hx3/r5+eXt5SGVH9/l3ozL
+        i/H18Xy2e87Zzi6ZLDmoN4C9fobDhRyUGXu3er3bvX/EfaPTouvx68fix5DFj5HMkJzSm/D37/z7+8/Z
+        zpzIm5jMl47DjVatVLTVs3e8deHx4M/Yz0akRHK6cIfIherr6lGqT1CpTkutSO/479Xp1TuoOZXNlJPK
+        kk2sS8bRxeDn4N7m3kCePsDgv8vTy+f15yCSHpHFkPDy7x6UHMTQxBWKExqPF3ezdzahNOXz5FS1Us/n
+        z9ri2vf398nhydHX0M7gzuz17Mjlx4O6gszmy/j5+G7AbTqiOGS7YzSlMuHp4Vy3W2S0YsjgyMPiwvr6
+        +v37/P///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEBAAAh+QQB
+        AAB1ACwAAAAAEAAQAAAI3wDrCKxDh44GDw2szKEzsCEdGz5GGHlwAwyJhQ4JABDCZAUFLCZEOEnDkCCB
+        Nld29Cgy4ceTMU1y1Ch4xAUKKksgFAwzRAoLGUgKPlAzo0pJgRtAWOiAo8yUNwYYQGgo8AOZElvioPGS
+        5MLRgRHc6DjDo4ESChO+CowAo4UFMV8ERJ1DlaCEEAEWzGFjAE4FtXQycDkgh84AFQCIIChZkAAGBwsS
+        1JkDQIsCAAMQJJAwAMiBLGYY0qkgYE0BBQJOQ1kQoABdgXS6cGAQ4MSFAwFSRAFMBwENBy+CxEhwNCAA
+        Ow==
+</value>
+  </data>
+  <data name="StatusBar_spin8" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhEAAQAIZkABCID0WsQ/r6+h2UG3zEeyWaIrnguQyECkylSovEiqbYpe337Nbt1TahNPP885HM
+        kKnUqIS+gyGVH8vpy5XQk/v6++Xz5IbKhef15+Hy4VGqT222bKPToqrLqebx5hyUGcPbwqDEoCeVJZPK
+        kpXNlMLZwenx6B6UHGS0YkqtR0utSIfIhZHFkDuoOSCSHsneyVatVIbDhUCePrzgu6/ProvKivT483/E
+        fW7AbYzLi3e8dZ7OnRWKE+/471S1UrDKrzqiOMfix5/CnlCpTrHNsMjlx7DesJzSm+Hx3+fs50akRIC9
+        fk2sS1y3WzSlMr3RveHx4LXftMzmy8Dgv8/nz//9/y6ZLMrfykCqPnK6cPj4+Pz7+7XctRqPFzmoN2S7
+        Y8Piwnq9eN7v3v37/P///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEBAAAh+QQB
+        AABkACwAAAAAEAAQAAAI1wDJCCQzZkwVJAxMVBgzsOGYLVByqKBAo4SHhQ4VEFjB5MMFIR1eXLHBkKAC
+        Jydg6BgCgQiIJyECWCjY44YXFyMcFNSS5MeABlwKUsDxgEVJgWPEhKmhQQyGJgUQOGiIdIYEADuk+Gix
+        4WhDMVhEhGFA4gIErwMxPAjDgUqAqAKoEpxwNYyALwVQZEA7JkqDA2DGGIhBoGnJggpSRAizgIwAAl0G
+        EDAgZsEEA0oO8CjCcEyGAEASDAggWkYYAAniIrVgBAEAKxsOAFgyhW/SIxE4ZAmy4GhAADs=
+</value>
+  </data>
+  <data name="StatusBar_spin3" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhEAAQAIYAAP37/PLt8url6vfz9+Lf4tza3NfW1+3o7ubj57Xcta7Trrveu8/nz9ru2t7v3hCI
+        Dx2UGyGVHySRIiqbJzahNECqPkCePkqtR0akRFGqT2S0Ymy7anq9eH/EfY7NjIvKip7OnbXftMDgv9Xq
+        1Njs10XMO2PdWm7mZJvolpTdj6nqpdDrzuD73uXz5Nr21+337Pr6+vn5+fj4+Pf39/X19fPz8/Ly8vHx
+        8fDw8O/v7+7u7u3t7evr6+np6ebm5uTk5OLi4uDg4N7e3tvb29ra2tnZ2djY2NfX19bW1v///wAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEBAAAh+QQB
+        AABJACwAAAAAEAAQAAAI3QCTCEwCAEaNACQYwAAwsCGMGT6ECABRYYMIAAwHwuDRIwgSBB4gTOjAoUXG
+        jUaI8BByQAEGDRwgXOCBkUaPIkZ4zMAYw0EGCBQSwIDh4wcPHjAaAnDA4UMGBzaEIAkyo6FAAAsiPACx
+        Q8iQHxmtNrAggUMOjjrCNrShIkUIHUKOCElqFQCLEyVQyAhy5AcNtUlguDBRYgWAHTx8AKmRsWAPAiNQ
+        vEgiwweSIz122KCBI0cQAwUGMARQI4gQHkaCoFZdpAddgpyBIBHi44iRHjdeX4VhIzGPHzn+DgwIADs=
+</value>
+  </data>
+  <data name="StatusBar_spin2" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhEAAQAIUAAP37/PLt8url6vr2+tza3O3o7ubj567Trs/nz97v3h2UGyWaIkCqPkakRF2xW2y7
+        ao7NjJHMkJ7OncDgv9bt1djs113eVGbiXW7mZHnscIXqfar0pKnqpcz2yeXz5O337Pr6+vn5+fj4+Pf3
+        9/X19fPz8/Ly8vHx8fDw8O/v7+7u7u3t7evr6+np6ebm5uTk5OLi4uDg4N7e3tvb29ra2tnZ2djY2NfX
+        19bW1v///wAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEBAAAh+QQBAAA5ACwAAAAAEAAQ
+        AAAI1gBzCMwBAESJABUQgAAwsCGIES5kCJDA4MGEAQwHgmDRIgYOAxEULICw4UPGjTZosJBR4EADBxsu
+        ZDAJgESLGjZYjAAAIEQCDRYwdAABwsULFixANATggQMFAydMyMARY0RDgQACELjBYoWMGS8yXj3x9UUK
+        jirENiTBkYUKGTdkKL0KIAXOFyJi3HhBQm0OEG9tpACwgoULGCUyFmQRAymJHCJc4LjRYoUJEihSeKxx
+        giGAEjFksLDRmDSLGi3mEsQMA4cMFzdstDihGisIE4ZZmO07MCAAOw==
+</value>
+  </data>
+  <data name="StatusBar_spin1" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhEAAQAIUAAP37/Orl6vr2+uLf4u/u79fW1+3o7uHy4cLlwXLqaXXcboz5g5LqjKr0pLP9rrzv
+        ucTzweXz5NL0z/r6+vj4+Pf39/X19fPz8/Ly8vHx8fDw8O/v7+7u7u3t7evr6+np6ebm5uTk5OLi4uDg
+        4N7e3tvb29ra2tnZ2djY2NfX19bW1v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEBAAAh+QQBAAArACwAAAAAEAAQ
+        AAAI0gBXCFwBYMIFAhEOCAAwsOGECiBIDICwoIEECgwHTvDwYUSBAQ4SJHhgwELGjShMeCARAIECBiBS
+        jDAJwMKHEyg8VJhQMIOIFCUyTJgAIoQHDxMa1vzgQQQGDCRUjKjQUCAADihSeOhAokSIjFUzdA2xgSMH
+        sA0tcPTAgUQKEkmrAtiAMwSFESlCmKw6oS2KDQA6eAAh4kLGgh2PWlhBAYSKFB86YLCwYcMIFScyMARw
+        YQQJDyhGgBZ94kNcghY0iFBBIiaKD0LlTsAw2APZvQIDAgA7
+</value>
+  </data>
+  <data name="StatusBar_spin7" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhEAAQAIYAAP37/LDesLXctbngucvpy8fix8/nz97v3uHy4ef15/P88+/47wyEChCIDxWKExqP
+        Fx2UGyCSHiGVHyWaIieVJSqbJy6ZLDSlMjahNDmoNzuoOTqiOD2pO0CqPkWsQ0CePkqtR0akREylSlS1
+        UlGqT1y3W2S7Y2S0Ym7AbWy7am22bHK6cHzEe3q9eH/EfYbKhY7NjIvKiobDhYS+g5HMkIvEipXNlJPK
+        kpHFkJzSm6bYpZ7OnaPToqnUqLXftL7jvbzgu8Dgv4C9fpXQk8Piwsjlx8zmy9bt1YT2e3XcbpH7iZv5
+        lJLqjKT6naDknNDrzuD73uXz5O357Lv7te337Pr6+v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEBAAAh+QQB
+        AABWACwAAAAAEAAQAAAI1gCtCLQCAIAUKEeeFBzIEICCKUuaDOmQ4sfCgQB0wGiCRMkLCBVcsIgCQGDG
+        CxycJGHSI8SJFhA8kASwwEWGCDcUFKxygAQEDAIKDkFBA0dJjAdaxCBxIEGJCSIUMDQJREKDHUZGaFBx
+        dOqBDhRaHLHxokdXhglotOBhwAPUKlMJErDaooqJCScQnCXoAwMDIgAGyGDB9GhBHSBmtKBipQqLBxBY
+        DDhAhcCAEAwcFCkJAIGHDTVihv7QokENuCajBBDRwIIKBg2EBNlb8ECOGTxWFKDSNSAAOw==
+</value>
+  </data>
+  <data name="StatusBar_spin6" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhEAAQAIYAAP37/PLt8url6tza3O3o7ubj57Xctbveu8fix8/nz9ru2t7v3uHy4fP38wyEChCI
+        DxWKExqPFx2UGyCSHiGVHyWaIiiZJSeVJSqbJy6ZLDahNDqiOECqPkWsQ0CePkqtR0akREylSlGqT2S0
+        Ymy7am22bHzEe3q9eH/EfYbKhY7NjIvKioS+g4jCh4vEiqbYpZ7OnarTqbXftLLYsbjet8Dgv5jflIC9
+        fpXQk9Lp0W7mZIT2e4z5g4vjhaT6nar0pOXz5Lv7tdr21+337Pr6+vn5+fj4+PX19fHx8fDw8Ovr6+np
+        6ebm5uLi4t7e3tra2tjY2NbW1v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEBAAAh+QQB
+        AABSACwAAAAAEAAQAAAI1wClCJQCgMiRAAtyAAAwsCEAI0ucCIDBgUSNhQ2JKFHSJEoBFRIwoDABhCFB
+        JVCeKHFCYAaIESckfCgJoAGTAVCUGFlIZIEICRoMLAzyQ8ESIg4XnFghYsEQHzt0NGgoEEANCg9gCPHB
+        o4dJqgtAXDixwAaOGV8bDllxIkaCDhVApK2aAOuJIiQsjGAwFwANDQ4QADiQ4kRTkwtfiGBxIgnBExEk
+        mDjgNIEMEA4gCCbI4MMGFxI6pJjg4cSDFl8BAJkR4kGGEg4e3LhIdeECGCxgnECA5GtAADs=
+</value>
+  </data>
+  <data name="StatusBar_spin5" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhEAAQAIYAAP37/Pn0+erl6vr2+uLf4vDr8e3o7ubj567Trrveu8fix8/nz9ru2t7v3uf15wyE
+        ChCIDxWKExqPFx2UGyGVHyWaIieVJS6ZLDahNECqPkWsQ0CePkqtR0akREylSlGqT2S0Ymy7am22bHK6
+        cHq9eIbKhY7NjIbDhYS+g4jCh5HMkKbYpZ7OnarTqbLYsbjet7bbtcDgv4C9fszmy9js113eVGbiXXns
+        cJv5lKnqpcTzweXz5O337Pr6+vn5+ff39/X19fPz8/Ly8vHx8fDw8O7u7u3t7evr6+np6ebm5uTk5OLi
+        4uDg4N7e3tvb29ra2tnZ2djY2NfX19bW1v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEBAAAh+QQB
+        AABUACwAAAAAEAAQAAAI3wCpCKQCoEeQAjQW+AAwsGEPIEmaCGCRIUQCAAwH9jiCZMmUAyomVChBYkfG
+        jVGeHGliAEEHECQmeDAJAAgSKFGO/MA4oMGHCRhg9OiRRAnHHg0BMCCh4gMDIU2mMPnRUCCABBQgsDjC
+        xIkSpFWpMOhggUQRjkXAVi1igkQLI02kNPERFsCMrCN+EICSZEhGjS8wQIjRw0iDHDdMWgWw4gMKEkSo
+        BMBho0YOFw14zHih4UEEBQwBOLhxw4QEDicmbCABIYVaADx0dIBwQcQDCDJi/LXaowELGSxGKCDyNyAA
+        Ow==
+</value>
+  </data>
+  <data name="StatusBar_spin4" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhEAAQAIYAAP37/PLt8url6uLf4tfW1+3o7ubj57Xcta7Trrveu8fix8/nz97v3vP38wyEChCI
+        DxWKEx2UGyGVHyeVJSqbJzahNECqPkqtR0akRFGqT2S0Ymy7anq9eH/EfY7NjIvKiobDhYS+g4vEiqbY
+        pZ7OnarTqbjet8LlwcDgv5ffk8Piwszmy9js1+X35D7INUXMO2biXW7mZIvjhaDknLjutOXz5NL0z/r6
+        +vn5+fj4+Pf39/X19fPz8/Ly8vDw8O/v7+7u7u3t7evr6+np6ebm5uTk5OLi4uDg4N7e3tvb29ra2tnZ
+        2djY2NfX19bW1v///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEBAAAh+QQB
+        AABPACwAAAAAEAAQAAAI3wCfCHwC4AaPACwW3AAwsOENHUSQCCBhYQMKAAwH3hAixIgTAx4iUOjAoUbG
+        jUyUCEFSAAEGDRwiXBCCcQeRJUyE6MCIg0GGCBUO3LhBpAjHGw0BMODwIQODHkicHNHRUCCABBIekAhy
+        JEmRjFUZYJjA4YeQIUDANvzxgUMJIEiaIEFaFcCKrBxyHGlSZIfaJzdMVHCgAkAQIUSM8MiIcUSGEBx8
+        PMlBxEmTIUF6NGhhA4MDCAoYAuBxBIkQJgZowIgBwoEIsAB2+DhCYMAMFy9SJPhbsIeQAidk2Fg8MCAA
+        Ow==
+</value>
+  </data>
+  <data name="SqlEditorTabbedEditorPane_Message_Button_Text" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="StatusBar_error" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhEAAQAIIAAAAAAP/////MAPrOG+jVif///wAAAAAAACH/C05FVFNDQVBFMi4wAwEBAAAh+QQB
+        AAAFACwAAAAAEAAQAAAIVQALCBxIsKBBgQMGHDRIQIAAAgsJDnCoMGKBhg4fWpwIAICAigcxdnQI8eBE
+        ASM/hsyYUmPBkyg9UiyIMaNNlwhttlQpsKbDnS5h3rRZ0edQkhYPBgQAOw==
+</value>
+  </data>
+  <data name="IduCountStat" xml:space="preserve">
+    <value>Number of INSERT, DELETE and UPDATE statements</value>
+  </data>
+  <data name="FontAndColorGridCellDescription" xml:space="preserve">
+    <value>Text inside grid cells.</value>
+  </data>
+  <data name="OnlySQL" xml:space="preserve">
+    <value>Currently only SqlConnection is supported.</value>
+  </data>
+  <data name="ErrBatchExecutionFailedIgnoring" xml:space="preserve">
+    <value>** An error was encountered during execution of batch. Continuing.</value>
+  </data>
+  <data name="SQLErrorFormat6WithContext_NoSource" xml:space="preserve">
+    <value>{0}({1}): Msg {2}, Level {3}, State {4}, Procedure {5}, Line {6}</value>
+  </data>
+  <data name="FontAndColorCategorySqlResultsExecutionPlan" xml:space="preserve">
+    <value>SQL Results - Execution Plan</value>
+  </data>
+  <data name="BatchWarningPrefix" xml:space="preserve">
+    <value>{0}({1}):</value>
+  </data>
+  <data name="ErrUnableToConnect" xml:space="preserve">
+    <value>Fatal scripting error. Cannot open connection specified in the SQLCMD script.</value>
+  </data>
+  <data name="ToolOptionShowTimeOptionElapsed" xml:space="preserve">
+    <value>Elapsed</value>
+  </data>
+  <data name="ClientProcessingTime" xml:space="preserve">
+    <value>Client processing time</value>
+  </data>
+  <data name="PropertyWindowConnectionInfo" xml:space="preserve">
+    <value>{0}  ({1})</value>
+  </data>
+  <data name="FontAndColorGridSelectedCellDescription" xml:space="preserve">
+    <value>Selected cell color when active</value>
+  </data>
+  <data name="SqlEditorTabbedEditorPane_Execution_Button_Text" xml:space="preserve">
+    <value>Execution plan</value>
+  </data>
+  <data name="ToolOptionStatusBarIncludeServerNameDescription" xml:space="preserve">
+    <value>Include server name on the status bar.</value>
+  </data>
+  <data name="ConnectionStateConnecting" xml:space="preserve">
+    <value>connecting</value>
+  </data>
+  <data name="StatusBar_spin12" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhEAAQAIZnAODg4N7e3tnZ2fX19eTk5NbW1vf39+bm5u7x7vHx8e7u7tHf0ePq4/j4+Pv6+8HW
+        wfLy8rnWuEutSPv6+uPs4+3t7dvb2yCSHsjhx6bYpdfj18XXxeHx4NfX1/P887LKsfz8/JjFl+Hx38TZ
+        w7PLs97r3YzLi53LneDl4LXMtKnUqMTWxOrx6pLJkaLLorvPutPi05XQk7rWua7SraDQn6/RrvPz8+/y
+        73e8dfH08erv6vz7/IfIhZPKkvn4+IbKhfj7+M7gzv/9/8rayh6UHK7GroC7f9Le0uLu4lCpTu/z7/L1
+        8rPKsvf2902sS9vm29ra2sTexNbt1cfZx7rXuVatVIe/hnzEexyUGf79/bDIsL3SvbvQutjj2LLUsfz7
+        +5LKkdjY2O/v7+np6fr6+uvr6/37/P///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEBAAAh+QQB
+        AABnACwAAAAAEAAQAAAI3wDPCDxjxowQEVJskDEzsKGZLxxMSIgR4ICBhQNBmMlwhYcTLD8KABhTBmMW
+        HxisEKmCI4mKAGWghClpxoEOL2Au9PBQ0ECZMALGDDDThIqLCFEYDiRTpgyBA2RYnDASAkhDgQYAFAgA
+        oQSNFjOUOiRgIUAFJDJqjHBwlaACkmJQvEgRZEdbM2IEhCHQYAqJITnECiSjIEAYMWYYaFiw4YZSM2TG
+        AGg64EyDBVo+wGCAYIAYMVoFJGBoRsmDLV2YPPg5OSiZgWaWUFhRhMuBDmHGJHjtcAKCJ0ecihk6MCAA
+        Ow==
+</value>
+  </data>
+  <data name="StatusBar_spin13" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhEAAQAIZKAPv6+9bW1tnZ2e3t7dfX1/f39/Ly8vPz8+7u7vv6+uLi4s/bz/j4+PHx8UutSLPX
+        ss3gzKHMoMTWxNDez/v7+tra2vX59cjUyOjq6Nbt1RyUGfT09NTj1KvNqrTUs5XQk5LBkXy1e8bcxuTr
+        4+jv58niyNPc09Dc0Pf29sfUx/v7++jt6FCpTv38/cHSwdvb27/bv7fOtuPo4ny3e8bXxezx7KnUqMfe
+        x4bKhfDw8LXVtfn4+enu6fn5+ezv7OTk5PX19ebm5t7e3u/v7+np6djY2ODg4Pr6+uvr6/37/P///wAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEBAAAh+QQB
+        AABKACwAAAAAEAAQAAAI2wCVCFSSBMAOEhkOHEkysCGAHiN0OPggJEiBhQNVACjxwAMIDTgCGCGCBGML
+        FDIuzIjQgYUNIUgqFCmZJAGGCTdCwLAAIEkBJEUEEAGSZMMCFydqAGh4BAmSH0GO+JAQgwaFhgILGAkg
+        xMAKCCI4MMSa5McLIQN4LEhhIgFWgghIDvkRdMjYhkmGCCjyg4ERAj+IYj2CQEgRuwOQBFFwYGySI0SM
+        OAWihEGQAASIDDAAZMiQrQIaMExywAjMIpJRIxF6ZGASIDkUcA1CoAiRBq3xHjGg+OkQwQIDAgA7
+</value>
+  </data>
+  <data name="StatusBar_spin10" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhEAAQAIZ7AHzEe/v6++vr697v3iWaIkWsQ/H28UylSrnguXSwdKnUqNbt1bPUsobKhff399Ti
+        1N3s3R2UG97e3v38/fP885XQk9jY2OHy4XKucabYparOqfPz8+Hx4Onp6UutSLzRvJXNlJPKkpXHlFy3
+        W5HMkFGqT1S1UtTo1NLf0sjayIzLi323fBqPF93r3OXz5HGtcPv6+ubm5nu2erXTtNng2fj4+ODg4Mzm
+        y+Pm49Ln0Xe8df/9/+Hx3222bFatVJC/j9fj19ra2sreyfb59sXbxR6UHOHr4YvEiorAieDp4LDesC6Z
+        LLrXuofIhdbW1pHFkHWxdDqiOE2sS2S7Y7jVt+js6Pz7+4bDhWS0YpzSmxCID+f159vp23eydu/478ff
+        x7PLsxyUGbLJsSCSHm7AbZPCkq/RrjmoN7XNtTSlMjuoOc/nz3/EfavPqu3v7cjhx7nPuYS+g9np2dnp
+        2Nbj1ujw6LvYu/T49FCpTvr6+v37/P///wAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEBAAAh+QQB
+        AAB7ACwAAAAAEAAQAAAI4wD3CNyjR88OHgs25NEzsKEeKxxUeKggIYaDhQ4zAGgiJUwDJzY6CMBIMEOa
+        Ij504FEgQUAQC0KGFPTC5syYEBQKOhBgAQyROgUrkCHxhOFAGFUeoEhxZ8sIAgcoNBRYg4YYNEZumFDT
+        w2jDCTg+wKGzAEQDBV4HTnAD5EGSNQWg5plKEMKKBGbyTCGA5ULaPQFyIMEgRw+CKwBKDDCqJ8AbEVQY
+        GNiTBwCLCAAQDDAA4USZF11aMNRzoUCUIxEK2JHxgwEUJnMF6nGh5ICWJRowJJgxJ8DUggOyxPnShosB
+        rwEBADs=
+</value>
+  </data>
+  <data name="StatusBar_spin11" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhEAAQAIZ3AN7e3vf39+np6fv6+vP186bYpdbi1ujx6OTk5Obm5pPGkrDIsLHVsdTi1Nbt1djY
+        2IbKhfP88+Dg4Pz7+6nUqNPn09bW1uju6Pn5+ZXQk/Ly8u3t7dDn0MDTwIfIhenx6bnXuCWaIuHx30yl
+        SvX19XzEe+bs5ly3W4a8he/471S1UtTg1J7KncTfw87czpXNlG22bO7u7uHx4Ofs59rl2q/Hr7TLtI/C
+        jrLJsePr4s3czbvYu3q2ec/czqTMo+nv6U2sS3u2esLWwX/EfdnZ2f/9/9ra2kutSOfu53e8dd3m3Orz
+        6jmoN5HFkK7GrjSlMpPKkszmy+/v73+6ftzm27PXsuv065fElm7AbX65faLOorXStdvb27HJsbPKsu30
+        7ef155HMkB6UHIzLiyCSHvv6+4zAi5rGma7GrcHUwVCpTvPz89jj2LzSvHizdxyUGTuoOeTs5HOvc1at
+        VOvr6/r6+v37/P///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEBAAAh+QQB
+        AAB3ACwAAAAAEAAQAAAI4ADvCLxjx04REQ7W1LEzsKGdCTLGHMkAIEGAhQ4LlPAA5A0ECxIE0MFIsMAT
+        MXOSqKEAgI6RByMLphjChAyUCAUD0HlARACJghmwhGnCcGAdOnQQJKgD5kSIEREaCgwgwQIADVFUwIFR
+        1CECLgA2OHgBgULXgXZiiJRC48YUFhOkErxgY0EPDFqy+LBy9s6AHG1qmLBTAQSDMx+K2hlARYiBBgTu
+        YGDghkeVCgcIXIiTBg2OHwztLFFgZkcQBWy8dGjQxUAdtF84XJGDwoWTBSuQDJBqp8yBFluU6JhBoGtA
+        ADs=
+</value>
+  </data>
+  <data name="StatusBar_spin14" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhEAAQAIUiANfX1+7u7vLy8vPz8+3t7fHx8fj4+Nvb2+Li4tra2hyUGfDw8EutSFCpTpXQk4bK
+        hanUqNbt1dfW1+/u79nZ2dbW1vf39/X19eTk5O/v7+bm5tjY2Onp6eDg4N7e3vr6+uvr6/37/P///wAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEBAAAh+QQBAAAiACwAAAAAEAAQ
+        AAAIzgBFCBQR4sOACREGfAgxsOEHCxo8MHDgQYOFhQM/fADBoYMEBQ8qdOAAAmOICxwoJADhoQEEDyAS
+        bChZUAMGEDMvhrCAkwKHCyEEeBB50SEIEBg0fCDg4QAGhg1FWOhQwYOADBwDQG0YAsMBDwQCeADg4UNU
+        ggFIZsCwgUKGrQNDZKCwAYOBDgAwAI36QeyGtwRAaEAwAGrBjkcviDCgoQIADgQEXMiQgSqFAgxDDOgA
+        c0MHnJ99mhV4cgGCqhoAbOBQYHTcDwIEI82wV2BAADs=
+</value>
+  </data>
+  <data name="StatusBarQueryCanceled" xml:space="preserve">
+    <value>Query canceled.</value>
+  </data>
+  <data name="BatchErrorWithContext" xml:space="preserve">
+    <value>{0}({1}): An error occurred while executing batch. Error message is: {2}</value>
+  </data>
+  <data name="SqlEditorQueryCancelled" xml:space="preserve">
+    <value>Query was cancelled by user.</value>
+  </data>
+  <data name="CannotDebugConnectionType" xml:space="preserve">
+    <value>Debugging is not supported on this connection type.</value>
+  </data>
+  <data name="SQLErrorFormat4WithContext_NoSource" xml:space="preserve">
+    <value>{0}({1}): Msg {2}, Level {3}, State {4}</value>
+  </data>
+  <data name="ToolOptionShowTimeOptionEnd" xml:space="preserve">
+    <value>End</value>
+  </data>
+  <data name="ErrCannotCreateTempFile" xml:space="preserve">
+    <value>Failed to create temporary XML file.</value>
+  </data>
+  <data name="ToolOptionShowTimeOptionNone" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="WarnSqlGeneralResultsChanges" xml:space="preserve">
+    <value>SQL Server General option changes will only be applied to new SQL Server Query Editor windows. </value>
+  </data>
+  <data name="DisplayUserNameAndSPID" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
+  <data name="SqlExecutionModeChangeFailed" xml:space="preserve">
+    <value>Execution mode cannot be changed when query is executing</value>
+  </data>
+  <data name="CanDisplayOnlyNGridResults" xml:space="preserve">
+    <value>The query has exceeded the maximum number of result sets that can be displayed in the results grid. Only the first {0} result sets are displayed in the grid.</value>
+  </data>
+  <data name="ErrFileWasnotFoundForRCmd" xml:space="preserve">
+    <value>The file specified for :r command was not found.</value>
+  </data>
+  <data name="BatchSeparatorIsSemiColon" xml:space="preserve">
+    <value>Specifying a semi-colon as a batch separator may cause unexpected results because it is a statement terminator. Do you wish to continue?</value>
+  </data>
+  <data name="ErrInvalidMaxCharsPerCell" xml:space="preserve">
+    <value>Maximum characters displayed in each cell should be an integer between {0} and {1}.</value>
+  </data>
+  <data name="ErrorMarkerDescription" xml:space="preserve">
+    <value>T-SQL editor error message marker</value>
+  </data>
+  <data name="ConnectionStateDebugging" xml:space="preserve">
+    <value>Debugging</value>
+  </data>
+  <data name="ErrOLESQLVarNotDefined" xml:space="preserve">
+    <value>Variable {0} is not defined.</value>
+  </data>
+  <data name="ToolOptionIncludeRowCountDisplayName" xml:space="preserve">
+    <value>Include row count</value>
+  </data>
+  <data name="SqlResultsEditorFactory_Caption" xml:space="preserve">
+    <value>SSDT Results Window</value>
+  </data>
+  <data name="PropertyWindowConnection" xml:space="preserve">
+    <value>Connection</value>
+  </data>
+  <data name="CommonMessageLoopConnecting" xml:space="preserve">
+    <value>Connecting...</value>
+  </data>
+  <data name="ServerRoundtripsStat" xml:space="preserve">
+    <value>Number of server roundtrips</value>
+  </data>
+  <data name="ScriptIsStillBeingExecuted" xml:space="preserve">
+    <value>The query is currently executing. Do you want to cancel the query?</value>
+  </data>
+  <data name="ToolOptionTabTextIncludeLoginNameDescription" xml:space="preserve">
+    <value>Include the name of the login for the connection in the tab text.</value>
+  </data>
+  <data name="PropertyWindowConnectionDetails" xml:space="preserve">
+    <value>Connection Details</value>
+  </data>
+  <data name="PropertyWindowFinishTimeDescription" xml:space="preserve">
+    <value>The date and time when the last result was returned</value>
+  </data>
+  <data name="ErrCannotGetExternalFilesManager" xml:space="preserve">
+    <value>Failed to get external files manager.</value>
+  </data>
+  <data name="ToolOptionStatusBarColorCategory" xml:space="preserve">
+    <value>Status Bar Color</value>
+  </data>
+  <data name="SQLErrorFormat5WithContext_NoSource" xml:space="preserve">
+    <value>{0}({1}): Msg {2}, Level {3}, State {4}, Line {5}</value>
+  </data>
+  <data name="TransactionsStat" xml:space="preserve">
+    <value>Number of transactions </value>
+  </data>
+  <data name="RowsAffectedMessage" xml:space="preserve">
+    <value>
+    ({0} row(s) affected)
+    </value>
+  </data>
+  <data name="ErrUnableToPrintPreview" xml:space="preserve">
+    <value>Unable to preview page.</value>
+  </data>
+  <data name="ToolOptionStatusBarCategory" xml:space="preserve">
+    <value>Status Bar Content</value>
+  </data>
+  <data name="QueryCostFormat" xml:space="preserve">
+    <value>Query {0}: Query cost (relative to the batch): {1}%</value>
+  </data>
+  <data name="BatchExecCompleted" xml:space="preserve">
+    <value>Batch execution completed {0} times.</value>
+  </data>
+  <data name="SaveGridResults" xml:space="preserve">
+    <value>Save Grid Results</value>
+  </data>
+  <data name="arrowUp" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        Qk3WAAAAAAAAAHYAAAAoAAAADAAAAAwAAAABAAQAAAAAAAAAAAAAAAAAAAAAABAAAAAQAAAAAAAA/wAA
+        gP8AgAD/AICA/4AAAP+AAID/gIAA/8DAwP+AgID/AAD//wD/AP8A/////wAA//8A/////wD/////////
+        /////wAA///5n///AAD///mf//8AAP//+Z///wAA///5n///AAD///mf//8AAP//+Z///wAA/5n5n5n/
+        AAD/+ZmZn/8AAP//mZn//wAA///5n///AAD///////8AAA==
+</value>
+  </data>
+  <data name="ErrQEStorageAlreadyStoring" xml:space="preserve">
+    <value>Invalid calling sequence: already storing data.</value>
+  </data>
+  <data name="ErrInvalidSetTextsize" xml:space="preserve">
+    <value>TEXTSIZE value should be an integer between {0} and {1}.</value>
+  </data>
+  <data name="StatusBar_cancel" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhEAAQAIMAAAAAAP///+UUAOlAL+JSROFfUuBrYP3w7////wAAAAAAAAAAAAAAAAAAAAAAAAAA
+        ACH/C05FVFNDQVBFMi4wAwEBAAAh+QQBAAAIACwAAAAAEAAQAAAIcQARCBxIsGDBAgQEKBRAoIBBBAUW
+        ShRgoKABAQMGSMxIcWDEAQcOaMQYUqNDBAlBBhCpUiRDgQtbHlg5UgDMmDNpSrypUKXOhTxl/rSJkiTN
+        lhoJCPxYsmfTkxAx1pTakeDFiQorGjSQcCEBrQ/DDgwIADs=
+</value>
+  </data>
+  <data name="PropertyWindowNameDisplayName" xml:space="preserve">
+    <value>Display name</value>
+  </data>
+  <data name="FontAndColorGridInactiveSelectedCellDescription" xml:space="preserve">
+    <value>Selected cell color when inactive</value>
+  </data>
+  <data name="Properties_16x" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAIAEBAQAAEABAAoAQAAJgAAABAQAAABAAgAaAUAAE4BAAAoAAAAEAAAACAAAAABAAQAAAAAAIAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAgAAAAICAAIAAAACAAIAAgIAAAICAgADAwMAAAAD/AAD/
+        AAAA//8A/wAAAP8A/wD//wAA////AAAAAAAAAAAAAA/wAAAAAAAA948AAAAAAA+Hd/AAAAAAD4d3fwAA
+        AAAA93d3///wAAAPd3d3d48AAAD3d3d3ePAAAA93d3d38AAAD3d3d3fwAAAPd3f/d/AAAA93d/D38AAA
+        D4d3fw/wAAAA+Hd38AAAAAAP///wAAAAAAAAAAAA//8AAOf/AADD/wAAgf8AAID/AADABwAA4AMAAPAB
+        AAD4AQAA+AEAAPgBAAD4EQAA+AkAAPwHAAD+BwAA//8AACgAAAAQAAAAIAAAAAEACAAAAAAAAAEAAAAA
+        AAAAAAAAAAEAAAABAAAAAAAAQkJCAE1NTQBZWVkAZGRkAIaGhgCcnJwAp6enAL6+vgDr6+sA9vb2APr6
+        +gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAsLAAAAAAAAAAAAAAAAAAoGBwoAAAAA
+        AAAAAAAAAAsHAQEFCgAAAAAAAAAAAAALBwEBAQUKAAAAAAAAAAAAAAoEAQEBBQoKCgoLAAAAAAAACQQB
+        AQECAQEDCAoAAAAAAAAJBAEBAQEBAQEICwAAAAAAAAkBAQEBAQEBAwoAAAAAAAAKAQEBAQUFAQEKAAAA
+        AAAACgEBAQUKCgUBCgAAAAAAAAoDAQEFCgAKBgoAAAAAAAALCAEBAQUKAAoLAAAAAAAAAAoIAwEBBgoA
+        AAAAAAAAAAAACwoKCgoLAAAAAAAAAAAAAAAAAAAAAAAAAP//AADn/wAAw/8AAIH/AACA/wAAwAcAAOAD
+        AADwAQAA+AEAAPgBAAD4AQAA+BEAAPgJAAD8BwAA/gcAAP//AAA=
+</value>
+  </data>
+  <data name="FailedToExecutionExecutionPlanFile" xml:space="preserve">
+    <value>Error loading execution plan XML file {0}.</value>
+  </data>
+  <data name="QeQueryOptionsGeneral" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="Average" xml:space="preserve">
+    <value>Average</value>
+  </data>
+  <data name="ToolOptionStatusBarDefaultColorDescription" xml:space="preserve">
+    <value>The background color of the status bar for single server connections</value>
+  </data>
+  <data name="StatusBarNumberOfReturnedRows" xml:space="preserve">
+    <value>{0} rows</value>
+  </data>
+  <data name="PropertyWindowCurrentConnectionParameters" xml:space="preserve">
+    <value>Current connection parameters</value>
+  </data>
+  <data name="BeginningBatchExec" xml:space="preserve">
+    <value>Beginning execution loop</value>
+  </data>
+  <data name="SQLErrorFormat5_NoSource" xml:space="preserve">
+    <value>Msg {0}, Level {1}, State {2}, Line {3}</value>
+  </data>
+  <data name="MultiPanelGridContainerIsNotAvailable" xml:space="preserve">
+    <value>Multipanel grid container is not available.</value>
+  </data>
+  <data name="ErrTextViewNull" xml:space="preserve">
+    <value>text view is null.</value>
+  </data>
+  <data name="ErrScriptingWarningNoParam" xml:space="preserve">
+    <value>Scripting warning.</value>
+  </data>
+  <data name="ErrInvalidSetLockTimeout" xml:space="preserve">
+    <value>LOCK_TIMEOUT value should be an integer between {0} and {1}.</value>
+  </data>
+  <data name="StatusBarCancellingQuery" xml:space="preserve">
+    <value>Canceling query...</value>
+  </data>
+  <data name="ErrUnableToLaunchProcesss" xml:space="preserve">
+    <value>Cannot launch {0} {1}.</value>
+  </data>
+  <data name="StatusBarConnectionReady" xml:space="preserve">
+    <value>Connection Ready</value>
+  </data>
+  <data name="StatusBarExecutingQuery" xml:space="preserve">
+    <value>Executing query...</value>
+  </data>
+  <data name="QueryProfileStatistics" xml:space="preserve">
+    <value>Query Profile Statistics</value>
+  </data>
+  <data name="ErrQEPdwNotSupported" xml:space="preserve">
+    <value>Connecting to a SQL Server Parallel Data Warehouse (PDW) appliance is not supported from the standard SQL editor.
+
+To connect to a PDW appliance, please use the Add SQL Server command from SQL Server Object Explorer.
+
+To open a PDW query editor, please use the New Query command while a PDW object is selected in SQL Server Object Explorer.</value>
+  </data>
+  <data name="ErrorMarkerDisplayName" xml:space="preserve">
+    <value>Error Message</value>
+  </data>
+  <data name="PropertyWindowFinishTimeDisplayName" xml:space="preserve">
+    <value>Finish time</value>
+  </data>
+  <data name="InfoDisconnectingFromSvr" xml:space="preserve">
+    <value>Disconnecting connection from {0}...</value>
+  </data>
+  <data name="ToolTipCodeTag" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="ToolOptionIncludeLoginNameDisplayName" xml:space="preserve">
+    <value>Include login name</value>
+  </data>
+  <data name="GridSelectAllCellsTooltip" xml:space="preserve">
+    <value>Click to select all grid cells</value>
+  </data>
+  <data name="SqlEditorResultsTab_DocumentMonikerSuffix" xml:space="preserve">
+    <value>[Results]</value>
+  </data>
+  <data name="ToolOptionTabTextIncludeFileNameDescription" xml:space="preserve">
+    <value>Include the name of the script file in the tab text.</value>
+  </data>
+  <data name="FontAndColorItemNameGridInactiveSelectedCell" xml:space="preserve">
+    <value>Inactive Selected Cell</value>
+  </data>
+  <data name="WarnSqlResultsToGridChanges" xml:space="preserve">
+    <value>SQL Server Results to Grid option changes will only be applied to new SQL Server Query Editor windows. </value>
+  </data>
+  <data name="BaseEditorFactory_FailedToCreateEditor" xml:space="preserve">
+    <value>Failed to create an editor.</value>
+  </data>
+  <data name="Results" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        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
+        fQAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="PropertyWindowSpidDisplayName" xml:space="preserve">
+    <value>SPID</value>
+  </data>
+  <data name="ErrBatchExecutionFailedExiting" xml:space="preserve">
+    <value>** An error was encountered during execution of batch. Exiting.</value>
+  </data>
+  <data name="WarnSqlAdvancedQueryChanges" xml:space="preserve">
+    <value>SQL Server Advanced Query Execution option changes will only be applied to new SQL Server Query Editor windows. </value>
+  </data>
+  <data name="StatusBarAccessibleName" xml:space="preserve">
+    <value>Status bar</value>
+  </data>
+  <data name="FontAndColorItemGridHeaderRowCellDescription" xml:space="preserve">
+    <value>Header row color</value>
+  </data>
+  <data name="CannotFindDataForExecutionPlan" xml:space="preserve">
+    <value>Cannot find data for execution plan.</value>
+  </data>
+  <data name="ErrQEResultSetNotInited" xml:space="preserve">
+    <value>Initialize should be called before.</value>
+  </data>
+  <data name="PropertyWindowLoginNameDisplayName" xml:space="preserve">
+    <value>Login name</value>
+  </data>
+  <data name="ToolOptionTabTextIncludeServerNameDescription" xml:space="preserve">
+    <value>Include the name of the connected server in the tab text.</value>
+  </data>
+  <data name="FontAndColorItemGridNullValueCellName" xml:space="preserve">
+    <value>NULL Value Cell</value>
+  </data>
+  <data name="BuffersReceivedStat" xml:space="preserve">
+    <value>TDS packets received from server</value>
+  </data>
+  <data name="FontAndGridItemGridNullValueCellDescription" xml:space="preserve">
+    <value>NULL value cell color</value>
+  </data>
+  <data name="GridXMLCellTooltip" xml:space="preserve">
+    <value>Click to show in XML Editor
+      Click and hold to select this cell</value>
+  </data>
+  <data name="ErrUnableToCloseCon" xml:space="preserve">
+    <value>Unable to close connection specified in the SQLCMD script.</value>
+  </data>
+  <data name="ErrInvalidExecutionTimeout" xml:space="preserve">
+    <value>Execution time-out value should be an integer between {0} and {1}.</value>
+  </data>
+  <data name="ConnectionStateBroken" xml:space="preserve">
+    <value>Broken</value>
+  </data>
+  <data name="StatusBar_success" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhEAAQAIMAAAAAAP///zOZM3C2cHy8fIC/gIjCiMXfxeby5vb29v///wAAAAAAAAAAAAAAAAAA
+        ACH/C05FVFNDQVBFMi4wAwEBAAAh+QQBAAAKACwAAAAAEAAQAAAIcwAVCFSQoKDBggMHFjwwQIBDAQMO
+        IBRYkMDDiwIMTExgACNGjQQPeBRQIAAChxITNPSIIEABhwMKjix58qFMli4v3hTQsgBNjDtp9gSq8mFL
+        kxhjJhDpsGTOixIJWhzpECRBjlQ1JlC4dCXMlAkpHjSYMCAAOw==
+</value>
+  </data>
+  <data name="BuffersSentStat" xml:space="preserve">
+    <value>TDS packets sent from client</value>
+  </data>
+  <data name="ErrQEResultSetAlreadyInited" xml:space="preserve">
+    <value>Initialize has already been called.</value>
+  </data>
+  <data name="PropertyWindowQueryExecutionDetailsCategory" xml:space="preserve">
+    <value>Query Execution Details</value>
+  </data>
+  <data name="DatabaseInaccessible" xml:space="preserve">
+    <value>The database {0} is not accessible.</value>
+  </data>
+  <data name="PropertyWindowSessionIDDisplayName" xml:space="preserve">
+    <value>Session Tracing ID</value>
+  </data>
+  <data name="SQLErrorFormat6WithContext" xml:space="preserve">
+    <value>{0}({1}): {2}: Msg {3}, Level {4}, State {5}, Procedure {6}, Line {7}</value>
+  </data>
+  <data name="FontAndColorCategorySqlResultsGrid" xml:space="preserve">
+    <value>SQL Results - Grid</value>
+  </data>
+  <data name="FontAndColorCategorySqlResultsText" xml:space="preserve">
+    <value>SQL Results - Text</value>
+  </data>
+  <data name="ToolOptionStatusBarIncludeDBNameDescription" xml:space="preserve">
+    <value>Include the database name on the status bar.</value>
+  </data>
+  <data name="InvalidBatchSeparator" xml:space="preserve">
+    <value>Invalid Transact-SQL Batch Separator.</value>
+  </data>
+  <data name="NetworkServerTimeStat" xml:space="preserve">
+    <value>Wait time on server replies</value>
+  </data>
+  <data name="SqlEditorTabbedEditorPane_Results_Button_Text" xml:space="preserve">
+    <value>Results</value>
+  </data>
+  <data name="CommonMessageLoopAttemptingToConnect" xml:space="preserve">
+    <value>Attempting to connect to database server {0}.</value>
+  </data>
+  <data name="PropertyWindowStateDescription" xml:space="preserve">
+    <value>The state of the connection</value>
+  </data>
+  <data name="Messages" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        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
+        CQcILTd56wAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="StatusBarParsingQueryBatch" xml:space="preserve">
+    <value>Parsing query batch...</value>
+  </data>
+  <data name="ExecutionPlanFilter" xml:space="preserve">
+    <value>Execution Plan Files (*.sqlplan)|*.sqlplan|All Files (*.*)|*.*</value>
+  </data>
+  <data name="SelectRowsStat" xml:space="preserve">
+    <value>Rows returned by SELECT statements</value>
+  </data>
+  <data name="PropertyWindowStatusDisplayName" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="StatusBarDebuggingQuery" xml:space="preserve">
+    <value>Debugging query...</value>
+  </data>
+  <data name="ConnectionStateClosed" xml:space="preserve">
+    <value>closed</value>
+  </data>
+  <data name="BytesSentStat" xml:space="preserve">
+    <value>Bytes sent from client</value>
+  </data>
+  <data name="ErrorWhileSavingExecutionPlan" xml:space="preserve">
+    <value>An error occurred while saving execution plan.</value>
+  </data>
+  <data name="ErrCannotInitNewEditorInst" xml:space="preserve">
+    <value>Cannot initialize new instance of editor.</value>
+  </data>
+  <data name="ToolOptionIncludeDBNameDisplayName" xml:space="preserve">
+    <value>Include database name</value>
+  </data>
+  <data name="PropertyWindowElapsedTimeDescription" xml:space="preserve">
+    <value>The amount of time it took for the command to execute and process result from the server</value>
+  </data>
+  <data name="StatusBarConnecting" xml:space="preserve">
+    <value>Connecting.</value>
+  </data>
+  <data name="NetworkStatistics" xml:space="preserve">
+    <value>Network Statistics</value>
+  </data>
+  <data name="ExecutionTimeStat" xml:space="preserve">
+    <value>Total execution time</value>
+  </data>
+  <data name="PropertyWindowElapsedTimeDisplayName" xml:space="preserve">
+    <value>Elapsed time</value>
+  </data>
+  <data name="StatusBarDisconnected" xml:space="preserve">
+    <value>Disconnected.</value>
+  </data>
+  <data name="FontAndColorItemGridHeaderRowCellName" xml:space="preserve">
+    <value>Header Row</value>
+  </data>
+  <data name="PleaseSelectDirectory" xml:space="preserve">
+    <value>Please select directory</value>
+  </data>
+  <data name="TSQL" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        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
+</value>
+  </data>
+  <data name="StatusBarQueryCompletedSuccessfully" xml:space="preserve">
+    <value>Query executed successfully at {0:T}</value>
+  </data>
+  <data name="ToolOptionExecutionTimeDisplayName" xml:space="preserve">
+    <value>Display Execution Time</value>
+  </data>
+</root>

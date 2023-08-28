@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Scanner.h"
 
-#include "ExtensionMethods.h"
+#include "ExtensionMembers.h"
 #include "RegexLexer.h"
 
 

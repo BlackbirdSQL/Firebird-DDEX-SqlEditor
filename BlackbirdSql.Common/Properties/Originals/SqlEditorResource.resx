@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader><resheader name="version"><value>1.3</value></resheader><resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><data name="StorageException_FailedToGetTempFileName"><value>Failed to get temporary file.</value></data>
+  <data name="StorageException_FileStreamAlreadyInitialized"><value>The calling sequence is invalid. The file stream has already been initialized.</value></data>
+  <data name="InvalidSetLockTimeout"><value>You must specify an integer between {0} and {1} for the LOCK_TIMEOUT value.</value></data>
+  <data name="SqlEditor_Message" mimetype="application/x-microsoft.net.object.binary.base64"><value>AAEAAAD/////AQAAAAAAAAAMAgAAAFFTeXN0ZW0uRHJhd2luZywgVmVyc2lvbj00LjAuMC4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWIwM2Y1ZjdmMTFkNTBhM2EFAQAAABVTeXN0ZW0uRHJhd2luZy5CaXRtYXABAAAABERhdGEHAgIAAAAJAwAAAA8DAAAANgMAAAJCTTYDAAAAAAAANgAAACgAAAAQAAAAEAAAAAEAGAAAAAAAAAAAAMMOAADDDgAAAAAAAAAAAAD/AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP/19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX/AP//AP/19fVCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkL19fX/AP//AP/19fVCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkL19fX/AP//AP/19fVCQkJCQkLq6enq6enq6enq6enq6enq6enq6enq6elCQkJCQkL19fX/AP//AP/19fVCQkJCQkLq6enq6emamppCQkJCQkKamprq6enq6elCQkJCQkL19fX/AP//AP/19fVCQkJCQkLq6emamppCQkK1tbW1tbVCQkKamprq6elCQkJCQkL19fX/AP//AP/19fVCQkJCQkKamppCQkK1tbXq6enq6em1tbVCQkKamppCQkJCQkL19fX/AP//AP/19fVCQkJCQkJCQkK1tbXq6enq6enq6enq6em1tbVCQkJCQkJCQkL19fX/AP//AP/19fVCQkJCQkK1tbXq6enq6enq6enq6enq6enq6em1tbVCQkJCQkL19fX/AP//AP/19fVCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkL19fX/AP//AP/19fVCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkL19fX/AP//AP/19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX/AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP8L</value></data><data name="PropertyCategory_Connection"><value>Connection</value></data>
+  <data name="SqlEditor_StatisticsTabPage_SelectCount"><value>Number of SELECT statements</value></data>
+  <data name="PropertySPIDDescription"><value>Thread ID on the server</value></data>
+  <data name="SqlEditor_ClientStatisticsTab" mimetype="application/x-microsoft.net.object.binary.base64"><value>AAEAAAD/////AQAAAAAAAAAMAgAAAFFTeXN0ZW0uRHJhd2luZywgVmVyc2lvbj00LjAuMC4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWIwM2Y1ZjdmMTFkNTBhM2EFAQAAABVTeXN0ZW0uRHJhd2luZy5CaXRtYXABAAAABERhdGEHAgIAAAAJAwAAAA8DAAAANgMAAAJCTTYDAAAAAAAANgAAACgAAAAQAAAAEAAAAAEAGAAAAAAAAAAAAMMOAADDDgAAAAAAAAAAAADw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PD/AP//AP//AP//AP//AP//AP//AP/w8PBCQkJCQkJCQkJCQkJCQkJDQ0NCQkLw8PD/AP//AP//AP//AP//AP//AP//AP/w8PBCQkJCQkJCQkJCQkJCQkLq6OlCQkLw8PD/AP//AP//AP//AP//AP//AP//AP/w8PBCQkJCQkJCQkJCQkJCQkJCQkJCQkLw8PD/AP//AP//AP//AP//AP//AP//AP/w8PBCQkJCQkJCQkJCQkJCQkJCQkJCQkLw8PD/AP//AP//AP//AP//AP//AP//AP/w8PBCQkJCQkJCQkJCQkJCQkJCQkJCQkLw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PBCQkJCQkJCQkJCQkJCQkJCQkJCQkLw8PBCQkJCQkJCQkJCQkJCQkJCQkLw8PDw8PBCQkJCQkJCQkJCQkJCQkJCQkJCQkLw8PDq6elCQkLq6elDQ0Pq6elDQ0Pw8PDw8PBCQkLq6enq6enq6enq6enq6elCQkLw8PDq6elCQkLq6elDQ0Pq6elDQ0Pw8PDw8PBCQkJCQkJCQkJCQkJCQkJCQkJCQkLw8PDq6elCQkLq6elDQ0Pq6elDQ0Pw8PDw8PBCQkLq6enq6enq6enq6enq6elCQkLw8PDq6elCQkLq6elDQ0Pq6elDQ0Pw8PDw8PBCQkJCQkJCQkJCQkJCQkJCQkJCQkLw8PDq6elCQkLq6enq6enq6elDQ0Pw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDq6elCQkLq6enq6enq6elDQ0Pw8PD/AP//AP//AP//AP//AP/w8PBCQkLq6enq6enq6enq6enq6enq6enq6elDQ0Pw8PD/AP//AP//AP//AP//AP/w8PBCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkLw8PD/AP//AP//AP//AP//AP/w8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PAL</value></data><data name="SqlEditor_Message_CompletedSuccessfully"><value>The command(s) completed successfully.</value></data>
+  <data name="Disconnected"><value>disconnected</value></data>
+  <data name="SqlEditor_Status_Parsing"><value>Validating query...</value></data>
+  <data name="StorageException_ColumnsDoNotMatch"><value>The column definitions do not match those in the storage.</value></data>
+  <data name="SqlEditor_StatisticsTabPage_Transactions"><value>Number of transactions</value></data>
+  <data name="SqlEditor_CannotNavigate"><value>Cannot navigate to definition.</value></data>
+  <data name="PropertyDatabaseName"><value>Database</value></data>
+  <data name="PropertyConnectionStringDescription"><value>Parameters that identify the database against which queries would be executed.</value></data>
+  <data name="SqlEditor_ToolsOptions_QueryExecutionAnsi"><value>Query Execution ANSI</value></data>
+  <data name="Error_CannotDisplayXML"><value>XML content cannot be displayed. {0}</value></data>
+  <data name="SqlEditor_BrowseDirectory"><value>Select a directory</value></data>
+  <data name="SqlEditor_CompoundAction_Comment"><value>Comment block</value></data>
+  <data name="SqlEditor_Message_CompletedParseSuccessfully"><value>The SQL syntax is valid.</value></data>
+  <data name="SqlEditor_ClientStatisticsTabPage_GridAAName"><value>Client Statistics grid</value></data>
+  <data name="SqlEditor_StatisticsTabPage_Network_ServerRoundtrips"><value>Number of server roundtrips</value></data>
+  <data name="StorageException_FileStreamNeedsToBeInitializedFirst"><value>The calling sequence is invalid. The file stream must be initialized first.</value></data>
+  <data name="SqlEditor_Status_ReadOnlyMode"><value>Schema editor</value></data>
+  <data name="SqlEditor_Statistics" mimetype="application/x-microsoft.net.object.binary.base64"><value>AAEAAAD/////AQAAAAAAAAAMAgAAAFFTeXN0ZW0uRHJhd2luZywgVmVyc2lvbj00LjAuMC4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWIwM2Y1ZjdmMTFkNTBhM2EFAQAAABVTeXN0ZW0uRHJhd2luZy5CaXRtYXABAAAABERhdGEHAgIAAAAJAwAAAA8DAAAANgQAAAJCTTYEAAAAAAAANgAAACgAAAAQAAAAEAAAAAEAIAAAAAAAAAAAAMMOAADDDgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8PDw//Dw8P/w8PD/8PDw//Dw8P/w8PD/8PDw//Dw8P/w8PD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPDw8P9CQkL/QkJC/0JCQv9CQkL/QkJC/0NDQ/9CQkL/8PDw/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADw8PD/QkJC/0JCQv9CQkL/QkJC/0JCQv/q6On/QkJC//Dw8P8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8PDw/0JCQv9CQkL/QkJC/0JCQv9CQkL/QkJC/0JCQv/w8PD/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPDw8P9CQkL/QkJC/0JCQv9CQkL/QkJC/0JCQv9CQkL/8PDw//Dw8P/w8PD/8PDw//Dw8P/w8PD/8PDw//Dw8P/w8PD/QkJC/0JCQv9CQkL/QkJC/0JCQv9CQkL/QkJC//Dw8P9CQkL/QkJC/0JCQv9CQkL/QkJC/0JCQv/w8PD/8PDw/0JCQv9CQkL/QkJC/0JCQv9CQkL/QkJC/0JCQv/w8PD/6unp/0JCQv/q6en/Q0ND/+rp6f9DQ0P/8PDw//Dw8P9CQkL/QkJC/0JCQv9CQkL/QkJC/0JCQv9CQkL/8PDw/+rp6f9CQkL/6unp/0NDQ//q6en/Q0ND//Dw8P/w8PD/QkJC/+rp6f/q6en/6unp/+rp6f/q6en/QkJC//Dw8P/q6en/QkJC/+rp6f9DQ0P/6unp/0NDQ//w8PD/8PDw/0JCQv9CQkL/QkJC/0JCQv9CQkL/QkJC/0JCQv/w8PD/6unp/0JCQv/q6en/Q0ND/+rp6f9DQ0P/8PDw//Dw8P9CQkL/6unp/+rp6f/q6en/6unp/+rp6f9CQkL/8PDw/+rp6f9CQkL/6unp/+rp6f/q6en/Q0ND//Dw8P/w8PD/QkJC/0JCQv9CQkL/QkJC/0JCQv9CQkL/QkJC//Dw8P/q6en/QkJC/+rp6f/q6en/6unp/0NDQ//w8PD/8PDw//Dw8P/w8PD/8PDw//Dw8P/w8PD/8PDw//Dw8P/w8PD/6unp/+rp6f/q6en/6unp/+rp6f9DQ0P/8PDw/wAAAAAAAAAAAAAAAAAAAAAAAAAA8PDw/0JCQv9CQkL/QkJC/0JCQv9CQkL/QkJC/0JCQv9CQkL/QkJC//Dw8P8AAAAAAAAAAAAAAAAAAAAAAAAAAPDw8P/w8PD/8PDw//Dw8P/w8PD/8PDw//Dw8P/w8PD/8PDw//Dw8P/w8PD/Cw==</value></data><data name="SqlEditor_Message_ScriptStillExecuting"><value>The script is still executing. Are you sure that you want to cancel?</value></data>
+  <data name="SqlEditor_ToolsOptions_SettingsChanged"><value>{0} option changes will be applied only to new T-SQL editor sessions.</value></data>
+  <data name="InvalidTextSize"><value>You must specify an integer between {0} and {1} for the TEXTSIZE value.</value></data>
+  <data name="SqlEditor_StatisticsTabPage_up_AA"><value>Up arrow</value></data>
+  <data name="SqlEditor_Status_Failure"><value>Query completed with errors</value></data>
+  <data name="PropertyFullPath"><value>Full Path</value></data>
+  <data name="SqlEditor_ToolsOptions_QueryExecutionGeneral"><value>Query Execution General</value></data>
+  <data name="SqlEditor_CellTooltip"><value>Click and hold to select the cell.</value></data>
+  <data name="PropertyServer"><value>Server</value></data>
+  <data name="SqlEditor_ScriptError"><value>Unable to perform operation due to error in script.</value></data>
+  <data name="SqlEditor_FileExtension_TextFiles"><value>Text</value></data>
+  <data name="SqlEditor_NoColumnName"><value>(No column name)</value></data>
+  <data name="StorageException_AlreadyStoringDataAlreadyStoringData"><value>The calling sequence is invalid. Already storing data.</value></data>
+  <data name="SqlEditor_stats_up" mimetype="application/x-microsoft.net.object.binary.base64"><value>AAEAAAD/////AQAAAAAAAAAMAgAAAFFTeXN0ZW0uRHJhd2luZywgVmVyc2lvbj00LjAuMC4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWIwM2Y1ZjdmMTFkNTBhM2EFAQAAABVTeXN0ZW0uRHJhd2luZy5CaXRtYXABAAAABERhdGEHAgIAAAAJAwAAAA8DAAAANgMAAAJCTTYDAAAAAAAANgAAACgAAAAQAAAAEAAAAAEAGAAAAAAAAAAAAMMOAADDDgAAAAAAAAAAAAD/AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP/29vb29vb29vb29vb/AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP/29vYAFOUAFOX29vb/AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP/29vYAFOUAFOX29vb/AP//AP//AP//AP//AP//AP//AP//AP//AP/29vb29vb29vb29vYAFOUAFOX29vb29vb29vb29vb/AP//AP//AP//AP//AP//AP/29vZcaev29vb29vYAFOUAFOX29vb29vZcaev29vb/AP//AP//AP//AP//AP//AP/29vYAFOVcaev29vYAFOUAFOX29vZcaesAFOX29vb/AP//AP//AP//AP//AP//AP/29vYAFOUAFOVcaesAFOUAFOVcaesAFOUAFOX29vb/AP//AP//AP//AP//AP//AP/29vZcaesAFOUAFOUAFOUAFOUAFOUAFOVcaev29vb/AP//AP//AP//AP//AP//AP/29vb29vZcaesAFOUAFOUAFOUAFOVcaev29vb29vb/AP//AP//AP//AP//AP//AP//AP/29vb29vZcaesAFOUAFOVcaev29vb29vb/AP//AP//AP//AP//AP//AP//AP//AP//AP/29vb29vZcaetcaev29vb29vb/AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP/29vb29vb29vb29vb/AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP/29vb29vb/AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP8L</value></data><data name="SqlEditor_StatisticsTabPage_Network_BytesReceived"><value>TDS packets sent from the server</value></data>
+  <data name="SqlEditor_StatisticsTabPage_Network_BuffersReceived"><value>Buffers received from the server</value></data>
+  <data name="NoSqlCmdVarFile"><value>None</value></data>
+  <data name="SqlEditor_StatisticsTabPage_IduCount"><value>Rows affected by INSERT, DELETE, and UPDATE statements</value></data>
+  <data name="SqlEditor_StatisticsTabPage_SelectRows"><value>Rows returned by SELECT statements</value></data>
+  <data name="SqlEditor_Grid" mimetype="application/x-microsoft.net.object.binary.base64"><value>AAEAAAD/////AQAAAAAAAAAMAgAAAFFTeXN0ZW0uRHJhd2luZywgVmVyc2lvbj00LjAuMC4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWIwM2Y1ZjdmMTFkNTBhM2EFAQAAABVTeXN0ZW0uRHJhd2luZy5CaXRtYXABAAAABERhdGEHAgIAAAAJAwAAAA8DAAAANgMAAAJCTTYDAAAAAAAANgAAACgAAAAQAAAAEAAAAAEAGAAAAAAAAAAAAMMOAADDDgAAAAAAAAAAAAD/AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP/w8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PD/AP//AP//AP/w8PBCQkJCQkJCQkLs6+xCQkJCQkJCQkLs6+xCQkJCQkJCQkLw8PD/AP//AP//AP/w8PBCQkJCQkJCQkLs6+xCQkJCQkJCQkLs6+xCQkJCQkJCQkLw8PD/AP//AP//AP/w8PBCQkJCQkJCQkLs6+xCQkJCQkJCQkLs6+xCQkJCQkJCQkLw8PD/AP//AP//AP/w8PDs6+zs6+zs6+zs6+zs6+zs6+zs6+zs6+zs6+zs6+zs6+zw8PD/AP//AP//AP/w8PBCQkJCQkJCQkLs6+xCQkJCQkJCQkLs6+xCQkJCQkJCQkLw8PD/AP//AP//AP/w8PBCQkJCQkJCQkLs6+xCQkJCQkJCQkLs6+xCQkJCQkJCQkLw8PD/AP//AP//AP/w8PBCQkJCQkJCQkLs6+xCQkJCQkJCQkLs6+xCQkJCQkJCQkLw8PD/AP//AP//AP/w8PDs6+zs6+zs6+zs6+zs6+zs6+zs6+zs6+zs6+zs6+zs6+zw8PD/AP//AP//AP/w8PBCQkJCQkJCQkLs6+xCQkJCQkJCQkLs6+xCQkJCQkJCQkLw8PD/AP//AP//AP/w8PBCQkJCQkJCQkLs6+xCQkJCQkJCQkLs6+xCQkJCQkJCQkLw8PD/AP//AP//AP/w8PBCQkJCQkJCQkLs6+xCQkJCQkJCQkLs6+xCQkJCQkJCQkLw8PD/AP//AP//AP/w8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PD/AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP8L</value></data><data name="SqlEditor_ChangeProjectDebugConnectionPrescription"><value>To change the database connection this file uses, open the Project's Properties page, and change the Target Connection String value on the Debug Tab.</value></data>
+  <data name="PropertyRowsReturnedDescription"><value>Number of rows returned</value></data>
+  <data name="SqlEditor_CompoundAction_Uncomment"><value>Uncomment block</value></data>
+  <data name="SqlEditor_Status_Disconnected"><value>Disconnected</value></data>
+  <data name="BatchSeparatorCannotBeEmpty"><value>You must specify a batch separator.</value></data>
+  <data name="StorageException_CannotAddReaderWhenStoringData"><value>You cannot add a reader while the storage is storing data.</value></data>
+  <data name="SqlEditor_CannotNavigateToX"><value>Cannot navigate to '{0}'.</value></data>
+  <data name="SqlEditor_Status_Executing"><value>Executing query...</value></data>
+  <data name="SqlEditor_DelimitedCharValue_SpaceDelimited"><value>Space-delimited</value></data>
+  <data name="SqlEditor_FindReferences_Heading"><value>Looking for reference(s)</value></data>
+  <data name="SqlEditor_stats_down" mimetype="application/x-microsoft.net.object.binary.base64"><value>AAEAAAD/////AQAAAAAAAAAMAgAAAFFTeXN0ZW0uRHJhd2luZywgVmVyc2lvbj00LjAuMC4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWIwM2Y1ZjdmMTFkNTBhM2EFAQAAABVTeXN0ZW0uRHJhd2luZy5CaXRtYXABAAAABERhdGEHAgIAAAAJAwAAAA8DAAAANgMAAAJCTTYDAAAAAAAANgAAACgAAAAQAAAAEAAAAAEAGAAAAAAAAAAAAMMOAADDDgAAAAAAAAAAAAD/AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP/29vb29vb/AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP/29vb29vb29vb29vb/AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP/29vb29vZ8vHx8vHz29vb29vb/AP//AP//AP//AP//AP//AP//AP//AP//AP/29vb29vZ8vHwzmTMzmTN8vHz29vb29vb/AP//AP//AP//AP//AP//AP//AP/29vb29vZ8vHwzmTMzmTMzmTMzmTN8vHz29vb29vb/AP//AP//AP//AP//AP//AP/29vZ8vHwzmTMzmTMzmTMzmTMzmTMzmTN8vHz29vb/AP//AP//AP//AP//AP//AP/29vYzmTMzmTN8vHwzmTMzmTN8vHwzmTMzmTP29vb/AP//AP//AP//AP//AP//AP/29vYzmTN8vHz29vYzmTMzmTP29vZ8vHwzmTP29vb/AP//AP//AP//AP//AP//AP/29vZ8vHz29vb29vYzmTMzmTP29vb29vZ8vHz29vb/AP//AP//AP//AP//AP//AP/29vb29vb29vb29vYzmTMzmTP29vb29vb29vb29vb/AP//AP//AP//AP//AP//AP/29vb29vb/AP/29vYzmTMzmTP29vb29vb29vb29vb/AP//AP//AP//AP//AP//AP//AP//AP//AP/29vYzmTMzmTP29vb/AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP/29vb29vb29vb29vb/AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP8L</value></data><data name="SqlEditor_stats_flat" mimetype="application/x-microsoft.net.object.binary.base64"><value>AAEAAAD/////AQAAAAAAAAAMAgAAAFFTeXN0ZW0uRHJhd2luZywgVmVyc2lvbj00LjAuMC4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWIwM2Y1ZjdmMTFkNTBhM2EFAQAAABVTeXN0ZW0uRHJhd2luZy5CaXRtYXABAAAABERhdGEHAgIAAAAJAwAAAA8DAAAANgMAAAJCTTYDAAAAAAAANgAAACgAAAAQAAAAEAAAAAEAGAAAAAAAAAAAAMMOAADDDgAAAAAAAAAAAAD/AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP/29vb29vb29vb29vb29vb29vb/AP//AP//AP//AP//AP//AP//AP//AP//AP//AP/29vbqwW3ioRvioRvqwW329vb29vb/AP//AP//AP//AP//AP//AP//AP//AP//AP/29vb29vbqwW3ioRvioRvqwW329vb29vb/AP//AP//AP//AP//AP/29vb29vb29vb29vb29vb29vbqwW3ioRvioRvqwW329vb29vb/AP//AP//AP//AP/29vbioRvioRvioRvioRvioRvioRvioRvioRvioRvqwW329vb29vb/AP//AP//AP/29vbioRvioRvioRvioRvioRvioRvioRvioRvioRvqwW329vb29vb/AP//AP//AP/29vb29vb29vb29vb29vb29vbqwW3ioRvioRvqwW329vb29vb/AP//AP//AP//AP//AP//AP//AP/29vb29vbqwW3ioRvioRvqwW329vb29vb/AP//AP//AP//AP//AP//AP//AP//AP/29vbqwW3ioRvioRvqwW329vb29vb/AP//AP//AP//AP//AP//AP//AP//AP//AP/29vb29vb29vb29vb29vb29vb/AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP//AP8L</value></data><data name="PropertySPID"><value>SPID</value></data>
+  <data name="PropertyUser"><value>User</value></data>
+  <data name="StorageException_WriteAlreadyOpened"><value>The file used by the Writer object is already open.</value></data>
+  <data name="InvalidColumnDelimiter"><value>You must specify a column delimiter.</value></data>
+  <data name="Error_CannotDisplayBinary"><value>Binary content cannot be displayed. {0}</value></data>
+  <data name="SqlEditor_DelimitedCharValue_TabDelimited"><value>Tab-delimited</value></data>
+  <data name="SqlEditor_StatisticsTabPage_IduRows"><value>Rows retrieved by INSERT, DELETE, and UPDATE statements</value></data>
+  <data name="InvalidExecutionTimeout"><value>You must specify an integer between {0} and {1} for the execution timeout value.</value></data>
+  <data name="ConnectionDialog_Caption"><value>Connect to Database</value></data>
+  <data name="InvalidRowCount"><value>You must specify an integer between {0} and {1} for the ROWCOUNT value.</value></data>
+  <data name="SqlEditor_CsvDescription"><value>CSV</value></data>
+  <data name="SqlEditor_Status_Success"><value>Query executed successfully</value></data>
+  <data name="StorageException_ReadAlreadyOpened"><value>The file used by the Reader object is already open.</value></data>
+  <data name="SqlEditor_StatisticsTabPage_Name"><value>Client Statistics</value></data>
+  <data name="SqlEditor_StatisticsTabPage_Time_TimeStat"><value>Wait time on server replies (ms)</value></data>
+  <data name="SqlEditor_StatisticsTabPage_Time_Execution"><value>Total execution time (ms)</value></data>
+  <data name="SqlEditor_StatisticsTabPage_down_AA"><value>Down arrow</value></data>
+  <data name="StorageException_ColumnsCountDoesNotMatch"><value>The number of columns in the new reader does not match those in the storage.</value></data>
+  <data name="SqlEditor_ResultsMode_Text"><value>Results as Text</value></data>
+  <data name="SqlEditor_ResultsMode_File"><value>Results to File</value></data>
+  <data name="SqlEditor_ResultsMode_Grid"><value>Results as Grid</value></data>
+  <data name="PropertyCategory_Misc"><value>Miscellaneous</value></data>
+  <data name="PropertyRowsReturned"><value>Rows Returned</value></data>
+  <data name="BatchSeparatorIsSemiColon"><value>You might encounter unexpected results if you specify a semi-colon as a batch separator because the semi-colon is a statement terminator. Do you want to continue?</value></data>
+  <data name="InvalidOddTextSize"><value>The specified TEXTSIZE value should be an even number.</value></data>
+  <data name="PropertyExecutionTime"><value>Execution Time</value></data>
+  <data name="PropertyDatabaseNameDescription"><value>Name of the database to which you are connected.</value></data>
+  <data name="SqlEditor_ToolsOptions_QueryResultsToText"><value>Query Results as Text</value></data>
+  <data name="SqlEditor_ToolsOptions_QueryResultsToGrid"><value>Query Results as Grid</value></data>
+  <data name="PropertyCurrentStatusDescription"><value>Status of the query execution.</value></data>
+  <data name="SqlEditor_GridTabPage_GridAAName"><value>Result Set {0}</value></data>
+  <data name="SqlEditor_DelimitedCharValue_CommaDelimited"><value>Comma-delimited</value></data>
+  <data name="SqlEditor_MaxNumErrorsExceeded"><value>The query has exceeded the maximum number of result sets that can appear in the Results grid. Only the first {0} result sets appear in the grid.</value></data>
+  <data name="PropertyUserDescription"><value>User name that is used for server connection</value></data>
+  <data name="SqlEditor_ResultsXmlValues_1MB"><value>1 MB</value></data>
+  <data name="SqlEditor_ResultsXmlValues_2GB"><value>Unlimited</value></data>
+  <data name="SqlEditor_ResultsXmlValues_2MB"><value>2 MB</value></data>
+  <data name="SqlEditor_ResultsXmlValues_5MB"><value>5 MB</value></data>
+  <data name="PropertyCategory_Execution"><value>Execution</value></data>
+  <data name="PropertyConnectionString"><value>Connection String</value></data>
+  <data name="SqlEditor_Status_Connected"><value>Connected</value></data>
+  <data name="PropertyExecutionTimeDescription"><value>Time that has elapsed since query execution began.</value></data>
+  <data name="PropertyFileNameDescription"><value>Name of the file</value></data>
+  <data name="SqlEditor_Symbol"><value>Symbol</value></data>
+  <data name="SqlEditor_ToolsOptions_QueryResultsGeneral"><value>Query Results General</value></data>
+  <data name="SqlEditor_StatisticsTabPage_Network_BuffersSent"><value>TDS packets sent from the client</value></data>
+  <data name="StorageException_BufferSizeShouldBePositive"><value>Invalid argument: You must specify a positive number for the buffer size.</value></data>
+  <data name="SqlEditor_Status_Cancel"><value>Query canceled</value></data>
+  <data name="PropertyFullPathDescription"><value>Location of the file</value></data>
+  <data name="SqlEditor_StatisticsTabPage_Description"><value>Statistic</value></data>
+  <data name="PropertyServerDescription"><value>Name of the server</value></data>
+  <data name="SqlEditor_ResultsAndMessagesTabPage"><value>Results and Messages</value></data>
+  <data name="SqlEditor_ToolsOptions_QueryExecutionAdvanced"><value>Query Execution Advanced</value></data>
+  <data name="PropertyVersionDescription"><value>Version of the server</value></data>
+  <data name="PropertyClassName"><value>Query Properties</value></data>
+  <data name="ConnectionDialog_Label"><value>C&amp;onnection:</value></data>
+  <data name="PropertyVersion"><value>SQL Server Version</value></data>
+  <data name="SqlEditor_StatisticsTabPage_flat_AA"><value>Right arrow</value></data>
+  <data name="SqlEditor_StatisticsTabPage_Time_ClientProcessing"><value>Client processing time (ms)</value></data>
+  <data name="SqlEditor_FileExtension_AllFiles"><value>All Files</value></data>
+  <data name="PropertyFileName"><value>File Name</value></data>
+  <data name="SqlEditor_SaveResultsAs"><value>Save Results As</value></data>
+  <data name="SqlEditor_FindReferences_Progress_Format"><value>Processing project '{0}'</value></data>
+  <data name="StorageException_StorageNotInitialized"><value>The calling sequence is invalid. The storage must be initialized first.
+</value></data>
+  <data name="SqlEditor_ShowPlan" mimetype="application/x-microsoft.net.object.binary.base64"><value>AAEAAAD/////AQAAAAAAAAAMAgAAAFFTeXN0ZW0uRHJhd2luZywgVmVyc2lvbj00LjAuMC4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWIwM2Y1ZjdmMTFkNTBhM2EFAQAAABVTeXN0ZW0uRHJhd2luZy5CaXRtYXABAAAABERhdGEHAgIAAAAJAwAAAA8DAAAANgMAAAJCTTYDAAAAAAAANgAAACgAAAAQAAAAEAAAAAEAGAAAAAAAAAAAAMMOAADDDgAAAAAAAAAAAAD/AP//AP/7/fze2tRrSzNrSzNrSzNrSzNrSzNrSzNrSzNrSzNrSzNrSzNrSzPj3Nj/AP/i8Oc1mFBMeUyhjHufiHichnWagnKXf2+TfWyReWiPd2WMdGKJcV+GblxrSzPC3stAkFZLglabgG767ebz1cby0sPx0MHxzr7wzLzvy7rvybjux7XuxrOLc2JrSzMMhDVktHZIeFSfhXP78ez67uf56uP35t7349r139X03M/z2Mvy1MbvyLeQeGdrSzMPkjxktHZUhluOgm/89fLj3tdOZ1L47un57OX46OHbbDPRZi7GXyvwzLuVfm1rSzMQlT5luHtfoWNQcFTEysBOZ1JOZ1L88+/78Ov57eb56eL35t334tnwz7+ag3NrSzNruYWT16lmt3lanmJQcFRgo2VOZ1L99/QAM//78ezbbDPRZi7GXyvy08OfiHhrSzP1+vYtqVeT16lnu39jq2hjq2hOZ1L6+fXy9e789fH78u367+n56+Xy1smkjn5rSzP/AP/t9e8mpVGT16lnu39jq2hOZ1L5+vgEQPP9+fbaazPRZS/FXyzz2s6pk4RrSzPv+PImpVGT16mT16mT16mT16lOZ1L1/Pfu+vH++/r9+ff89vT78+/23tOtmIlrSzOBw5gtqVctqVctqVctqVctqVcjjkb1/Pju/PP+/f3bbDTRZS/GXyv24tiynY5rSzP/AP//AP//AP/Nua/////////////////////+/f3+/Pv9+fj99/T35962opNrSzP/AP//AP//AP/Twbn//////////////////////////v7//Pv++vn56uO6pphrSzP/AP//AP//AP/g1M3T6PEZhrf////T6PEZhrf////T6PEZhrf////T5vAZhrdrSzP/AP//AP//AP/69/UAp+rv5t/bxrYAp+rt4tvYwbEAp+ro2tDWvq0Ap+rh0MTw7er/AP//AP//AP//AP/T6PEZhrcAp+rT6PEZhrcAp+rT6PEZhrcAp+rT6PEZhrf/AP8L</value></data><data name="SqlEditor_GridTabPage_Name"><value>Results</value></data>
+  <data name="InvalidBatchSeparator"><value>You must specify a valid batch separator.</value></data>
+  <data name="SqlEditor_DelimitedCharValue_CustomDelimited"><value>Custom-delimiter</value></data>
+  <data name="SqlEditor_ShowPlanTabPage_Name"><value>Execution Plan</value></data>
+  <data name="SqlEditor_DelimitedCharValue_ColumnAligned"><value>Column-aligned</value></data>
+  <data name="SqlEditor_FindReferences_Caption"><value>Find references</value></data>
+  <data name="SqlEditor_StatisticsTabPage_SnapshotTitle"><value>{0}</value></data>
+  <data name="InvalidSetQueryGovernorCost"><value>You must specify an integer between {0} and {1} for the QUERY_GOVERNOR_COST_LIMIT value.</value></data>
+  <data name="SqlEditor_StatisticsTabPage_Average"><value>Average</value></data>
+  <data name="SqlEditor_StatisticsTabPage_Network_BytesSent"><value>Bytes sent from the client</value></data>
+  <data name="SqlEditor_MessagesTabPage_Name"><value>Messages</value></data>
+  <data name="SqlEditor_FileExtension_SQLEditor"><value>SQL Editor</value></data>
+  <data name="PropertyCurrentStatus"><value>Status</value></data>
+  </root>

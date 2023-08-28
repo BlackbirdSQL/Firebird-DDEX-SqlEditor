@@ -117,24 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="100" xml:space="preserve">
-    <value>IVs provider for Firebird (BlackbirdSql)</value>
-  </data>
-  <data name="102" xml:space="preserve">
-    <value>IVs Provider for FirebirdClient (BlackbirdSql)</value>
-  </data>
-  <data name="106" xml:space="preserve">
-    <value>RJDTMPQPE2PMCIRHDZM8APRHIJIEQDM8ZPZREQCTR1ETREI2JDHTDHHPPHJRC2HRK2JHPCZEM2H3E1AQA2QQIEJJR1AIDPZZDEZCZPRCH0HZJMPEQPETA3M3ERI8JTJJ</value>
-  </data>
-  <data name="Value_No" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="Value_Yes" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="UnknownCollection" xml:space="preserve">
-    <value>The requested collection ({0}) is not defined.</value>
-  </data>
   <data name="DdexProvider_Description" xml:space="preserve">
     <value>Use this selection to connect to Firebird using the DDEX 2.0 BlackbirdSql Provider</value>
   </data>
@@ -144,85 +126,10 @@
   <data name="DdexProvider_ShortDisplayName" xml:space="preserve">
     <value>BlackbirdSql DDEX 2.0 Provider</value>
   </data>
-  <data name="QueryDesignerDocument_NewQueryCaption" xml:space="preserve">
-    <value>BlackbirdSql Query{1}: Query{0}</value>
-  </data>
-  <data name="QueryDesignerDocument_RetrieveDataCaption" xml:space="preserve">
-    <value>BlackbirdSql {1}: Query{0}</value>
-  </data>
-  <data name="ToolsDocument_Caption" xml:space="preserve">
-    <value>BlackbirdSql {2}: {1}{0}</value>
-  </data>
-  <data name="TextEditorDocument_FailedToLoadText" xml:space="preserve">
-    <value>BlackbirdSql: Failed to load the text from the object.</value>
-  </data>
-  <data name="Provider_Description" xml:space="preserve">
-    <value>The .NET Provider for Firebird (FirebirdSql.Data.FirebirdClient)</value>
-  </data>
   <data name="Provider_DisplayName" xml:space="preserve">
-    <value>.NET Provider for Firebird (BlackbirdSql)</value>
+    <value>.NET Provider for Firebird (FirebirdClient)</value>
   </data>
   <data name="Provider_ShortDisplayName" xml:space="preserve">
-    <value>BlackbirdSql FirebirdClient Provider</value>
-  </data>
-  <data name="UnknownSequence" xml:space="preserve">
-    <value>Unidentifiable</value>
-  </data>
-  <data name="DataSource_Product" xml:space="preserve">
-    <value>Firebird SQL Server</value>
-  </data>
-  <data name="SqlViewNode_Caption_Column" xml:space="preserve">
-    <value>Column Expression</value>
-  </data>
-  <data name="SqlViewNode_Caption_ForeignKey" xml:space="preserve">
-    <value>Foreign Key Expression</value>
-  </data>
-  <data name="SqlViewNode_Caption_ForeignKeyColumn" xml:space="preserve">
-    <value>Foreign Key Column Expression</value>
-  </data>
-  <data name="SqlViewNode_Caption_Function" xml:space="preserve">
-    <value>Function Source</value>
-  </data>
-  <data name="SqlViewNode_Caption_FunctionParameter" xml:space="preserve">
-    <value>Function Parameter Expression</value>
-  </data>
-  <data name="SqlViewNode_Caption_Index" xml:space="preserve">
-    <value>Index Expression</value>
-  </data>
-  <data name="SqlViewNode_Caption_IndexColumn" xml:space="preserve">
-    <value>Index Column Expression</value>
-  </data>
-  <data name="SqlViewNode_Caption_StoredProcedure" xml:space="preserve">
-    <value>Procedure Source</value>
-  </data>
-  <data name="SqlViewNode_Caption_StoredProcedureColumn" xml:space="preserve">
-    <value>Procedure Parameter Expression</value>
-  </data>
-  <data name="SqlViewNode_Caption_StoredProcedureParameter" xml:space="preserve">
-    <value>Procedure Parameter Expression</value>
-  </data>
-  <data name="SqlViewNode_Caption_Trigger" xml:space="preserve">
-    <value>Trigger Expression</value>
-  </data>
-  <data name="SqlViewNode_Caption_TriggerColumn" xml:space="preserve">
-    <value>TriggerColumn Expression</value>
-  </data>
-  <data name="SqlViewNode_Caption_View" xml:space="preserve">
-    <value>View Definition</value>
-  </data>
-  <data name="AdoDotNetConnectionSupport_ProviderObjectNotRecognized" xml:space="preserve">
-    <value>AdoDotNet Connection Support provider object {0} not recognized.</value>
-  </data>
-  <data name="AdoDotNetConnectionSupport_CannotPreparePreparedCommand" xml:space="preserve">
-    <value>Cannot prepare AdoDotNet prepared command.</value>
-  </data>
-  <data name="AdoDotNetConnectionSupport_InvalidPreparedCommand" xml:space="preserve">
-    <value>Invalid AdoDotNet prepared command.</value>
-  </data>
-  <data name="AdoDotNetConnectionSupport_AlreadyInTransaction" xml:space="preserve">
-    <value>Cannot begin transaction because already in transaction.</value>
-  </data>
-  <data name="AdoDotNetConnectionSupport_NotInTransaction" xml:space="preserve">
-    <value>Cannot commit transaction because not in transaction</value>
+    <value>FirebirdClient Provider</value>
   </data>
 </root>

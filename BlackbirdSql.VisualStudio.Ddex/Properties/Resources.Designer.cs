@@ -22,7 +22,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BlackbirdSql.VisualStudio.Ddex.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,90 +61,9 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to IVs provider for Firebird (BlackbirdSql).
-        /// </summary>
-        internal static string _100 {
-            get {
-                return ResourceManager.GetString("100", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to IVs Provider for FirebirdClient (BlackbirdSql).
-        /// </summary>
-        internal static string _102 {
-            get {
-                return ResourceManager.GetString("102", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to RJDTMPQPE2PMCIRHDZM8APRHIJIEQDM8ZPZREQCTR1ETREI2JDHTDHHPPHJRC2HRK2JHPCZEM2H3E1AQA2QQIEJJR1AIDPZZDEZCZPRCH0HZJMPEQPETA3M3ERI8JTJJ.
-        /// </summary>
-        internal static string _106 {
-            get {
-                return ResourceManager.GetString("106", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot begin transaction because already in transaction..
-        /// </summary>
-        internal static string AdoDotNetConnectionSupport_AlreadyInTransaction {
-            get {
-                return ResourceManager.GetString("AdoDotNetConnectionSupport_AlreadyInTransaction", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot prepare AdoDotNet prepared command..
-        /// </summary>
-        internal static string AdoDotNetConnectionSupport_CannotPreparePreparedCommand {
-            get {
-                return ResourceManager.GetString("AdoDotNetConnectionSupport_CannotPreparePreparedCommand", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid AdoDotNet prepared command..
-        /// </summary>
-        internal static string AdoDotNetConnectionSupport_InvalidPreparedCommand {
-            get {
-                return ResourceManager.GetString("AdoDotNetConnectionSupport_InvalidPreparedCommand", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot commit transaction because not in transaction.
-        /// </summary>
-        internal static string AdoDotNetConnectionSupport_NotInTransaction {
-            get {
-                return ResourceManager.GetString("AdoDotNetConnectionSupport_NotInTransaction", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to AdoDotNet Connection Support provider object {0} not recognized..
-        /// </summary>
-        internal static string AdoDotNetConnectionSupport_ProviderObjectNotRecognized {
-            get {
-                return ResourceManager.GetString("AdoDotNetConnectionSupport_ProviderObjectNotRecognized", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Firebird SQL Server.
-        /// </summary>
-        internal static string DataSource_Product {
-            get {
-                return ResourceManager.GetString("DataSource_Product", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Use this selection to connect to Firebird using the DDEX 2.0 BlackbirdSql Provider.
         /// </summary>
-        internal static string DdexProvider_Description {
+        public static string DdexProvider_Description {
             get {
                 return ResourceManager.GetString("DdexProvider_Description", resourceCulture);
             }
@@ -153,7 +72,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         /// <summary>
         ///   Looks up a localized string similar to .NET Framework DDEX 2.0 Provider for Firebird (BlackbirdSql).
         /// </summary>
-        internal static string DdexProvider_DisplayName {
+        public static string DdexProvider_DisplayName {
             get {
                 return ResourceManager.GetString("DdexProvider_DisplayName", resourceCulture);
             }
@@ -162,225 +81,27 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         /// <summary>
         ///   Looks up a localized string similar to BlackbirdSql DDEX 2.0 Provider.
         /// </summary>
-        internal static string DdexProvider_ShortDisplayName {
+        public static string DdexProvider_ShortDisplayName {
             get {
                 return ResourceManager.GetString("DdexProvider_ShortDisplayName", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The .NET Provider for Firebird (FirebirdSql.Data.FirebirdClient).
+        ///   Looks up a localized string similar to .NET Provider for Firebird (FirebirdClient).
         /// </summary>
-        internal static string Provider_Description {
-            get {
-                return ResourceManager.GetString("Provider_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .NET Provider for Firebird (BlackbirdSql).
-        /// </summary>
-        internal static string Provider_DisplayName {
+        public static string Provider_DisplayName {
             get {
                 return ResourceManager.GetString("Provider_DisplayName", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BlackbirdSql FirebirdClient Provider.
+        ///   Looks up a localized string similar to FirebirdClient Provider.
         /// </summary>
-        internal static string Provider_ShortDisplayName {
+        public static string Provider_ShortDisplayName {
             get {
                 return ResourceManager.GetString("Provider_ShortDisplayName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to BlackbirdSql Query{1}: Query{0}.
-        /// </summary>
-        internal static string QueryDesignerDocument_NewQueryCaption {
-            get {
-                return ResourceManager.GetString("QueryDesignerDocument_NewQueryCaption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to BlackbirdSql {1}: Query{0}.
-        /// </summary>
-        internal static string QueryDesignerDocument_RetrieveDataCaption {
-            get {
-                return ResourceManager.GetString("QueryDesignerDocument_RetrieveDataCaption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Column Expression.
-        /// </summary>
-        internal static string SqlViewNode_Caption_Column {
-            get {
-                return ResourceManager.GetString("SqlViewNode_Caption_Column", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Foreign Key Expression.
-        /// </summary>
-        internal static string SqlViewNode_Caption_ForeignKey {
-            get {
-                return ResourceManager.GetString("SqlViewNode_Caption_ForeignKey", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Foreign Key Column Expression.
-        /// </summary>
-        internal static string SqlViewNode_Caption_ForeignKeyColumn {
-            get {
-                return ResourceManager.GetString("SqlViewNode_Caption_ForeignKeyColumn", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Function Source.
-        /// </summary>
-        internal static string SqlViewNode_Caption_Function {
-            get {
-                return ResourceManager.GetString("SqlViewNode_Caption_Function", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Function Parameter Expression.
-        /// </summary>
-        internal static string SqlViewNode_Caption_FunctionParameter {
-            get {
-                return ResourceManager.GetString("SqlViewNode_Caption_FunctionParameter", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Index Expression.
-        /// </summary>
-        internal static string SqlViewNode_Caption_Index {
-            get {
-                return ResourceManager.GetString("SqlViewNode_Caption_Index", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Index Column Expression.
-        /// </summary>
-        internal static string SqlViewNode_Caption_IndexColumn {
-            get {
-                return ResourceManager.GetString("SqlViewNode_Caption_IndexColumn", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Procedure Source.
-        /// </summary>
-        internal static string SqlViewNode_Caption_StoredProcedure {
-            get {
-                return ResourceManager.GetString("SqlViewNode_Caption_StoredProcedure", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Procedure Parameter Expression.
-        /// </summary>
-        internal static string SqlViewNode_Caption_StoredProcedureColumn {
-            get {
-                return ResourceManager.GetString("SqlViewNode_Caption_StoredProcedureColumn", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Procedure Parameter Expression.
-        /// </summary>
-        internal static string SqlViewNode_Caption_StoredProcedureParameter {
-            get {
-                return ResourceManager.GetString("SqlViewNode_Caption_StoredProcedureParameter", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Trigger Expression.
-        /// </summary>
-        internal static string SqlViewNode_Caption_Trigger {
-            get {
-                return ResourceManager.GetString("SqlViewNode_Caption_Trigger", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to TriggerColumn Expression.
-        /// </summary>
-        internal static string SqlViewNode_Caption_TriggerColumn {
-            get {
-                return ResourceManager.GetString("SqlViewNode_Caption_TriggerColumn", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to View Definition.
-        /// </summary>
-        internal static string SqlViewNode_Caption_View {
-            get {
-                return ResourceManager.GetString("SqlViewNode_Caption_View", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to BlackbirdSql: Failed to load the text from the object..
-        /// </summary>
-        internal static string TextEditorDocument_FailedToLoadText {
-            get {
-                return ResourceManager.GetString("TextEditorDocument_FailedToLoadText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to BlackbirdSql {2}: {1}{0}.
-        /// </summary>
-        internal static string ToolsDocument_Caption {
-            get {
-                return ResourceManager.GetString("ToolsDocument_Caption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The requested collection ({0}) is not defined..
-        /// </summary>
-        internal static string UnknownCollection {
-            get {
-                return ResourceManager.GetString("UnknownCollection", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unidentifiable.
-        /// </summary>
-        internal static string UnknownSequence {
-            get {
-                return ResourceManager.GetString("UnknownSequence", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 0.
-        /// </summary>
-        internal static string Value_No {
-            get {
-                return ResourceManager.GetString("Value_No", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 1.
-        /// </summary>
-        internal static string Value_Yes {
-            get {
-                return ResourceManager.GetString("Value_Yes", resourceCulture);
             }
         }
     }

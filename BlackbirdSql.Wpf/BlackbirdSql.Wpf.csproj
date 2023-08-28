@@ -1,0 +1,158 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<Nullable>disable</Nullable>
+		<TargetFrameworks>$(TargetFrameworks)</TargetFrameworks>
+		<RootNamespace>BlackbirdSql.Wpf</RootNamespace>
+		<PlatformTarget>x64</PlatformTarget>
+		<UseWPF>true</UseWPF>
+		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+		<EnableDefaultPageItems>false</EnableDefaultPageItems>
+		<EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+		<SignAssembly>True</SignAssembly>
+		<AssemblyOriginatorKeyFile>Properties\BlackbirdSql.Wpf.snk</AssemblyOriginatorKeyFile>
+		<ApplicationIcon>Package.ico</ApplicationIcon>
+		<Product>Core Wpf</Product>
+		<Description>Core Wpf Controls for Extensions</Description>
+		<Version>$(VersionPrefix)-$(VersionSuffix)</Version>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
+		<NoWarn>1701;1702;VSTHRD104</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
+		<NoWarn>1701;1702;VSTHRD104</NoWarn>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+		<Reference Include="System" />
+		<Reference Include="System.Data" />
+		<Reference Include="System.Transactions" />
+		<Reference Include="System.Xml" />
+		<Reference Include="Microsoft.CSharp" />
+		<Reference Include="System.Core" />
+		<Reference Include="System.Xml.Linq" />
+		<Reference Include="System.Data.DataSetExtensions" />
+		<Reference Include="System.Net.Http" />
+		<Reference Include="System.Xaml" />
+		<Reference Include="UIAutomationTypes" />
+		<Reference Include="WindowsBase" />
+		<Reference Include="PresentationCore" />
+		<Reference Include="PresentationFramework" />
+	</ItemGroup>
+
+	
+	<ItemGroup>
+		<Compile Include="Controls\BrowsePageView.xaml.cs" />
+		<Compile Include="Controls\ConnectionPropertySectionView.xaml.cs" />
+		<Compile Include="Controls\ConnectionDialogFrame.xaml.cs">
+		  <DependentUpon>ConnectionDialogFrame.xaml</DependentUpon>
+		</Compile>
+		<Compile Include="GlobalSuppressions.cs" />
+		<Compile Include="Controls\HistoryPageView.xaml.cs" />
+		<Compile Include="Model\BrowsePageViewModel.cs" />
+		<Compile Include="Model\ConnectionDialogTelemetryContext.cs" />
+		<Compile Include="Model\ConnectionDialogViewModel.cs" />
+		<Compile Include="Model\ConnectionEventTelemetryContext.cs" />
+		<Compile Include="Model\ConnectionPropertySectionViewModel.cs" />
+		<Compile Include="Model\HistoryPageViewModel.cs" />
+		<Compile Include="Themes\Themes.cs" />
+		<Compile Include="Widgets\LoadingControl.xaml.cs">
+			<DependentUpon>LoadingControl.xaml</DependentUpon>
+		</Compile>
+		<Compile Include="Widgets\ProgressStrip.xaml.cs">
+			<DependentUpon>ProgressStrip.xaml</DependentUpon>
+		</Compile>
+		<Compile Include="Widgets\SectionControl.xaml.cs">
+			<DependentUpon>SectionControl.xaml</DependentUpon>
+		</Compile>
+		<Compile Include="Widgets\Spinner.xaml.cs">
+			<DependentUpon>Spinner.xaml</DependentUpon>
+		</Compile>
+		<Page Include="Controls\BrowsePageView.xaml">
+		  <Generator>XamlIntelliSenseFileGenerator</Generator>
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Page>
+		<Page Include="Controls\ConnectionDialogFrame.xaml">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		  <SubType>Designer</SubType>
+		  <Generator>XamlIntelliSenseFileGenerator</Generator>
+		</Page>
+		<Page Include="Controls\ConnectionPropertySectionView.xaml">
+		  <Generator>XamlIntelliSenseFileGenerator</Generator>
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Page>
+		<Page Include="Controls\HistoryPageView.xaml">
+		  <Generator>XamlIntelliSenseFileGenerator</Generator>
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Page>
+		<Page Include="Themes\Default.xaml">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		  <SubType>Designer</SubType>
+		  <Generator>XamlIntelliSenseFileGenerator</Generator>
+		</Page>
+		<Page Include="Widgets\LoadingControl.xaml">
+			<SubType>Designer</SubType>
+			<Generator>XamlIntelliSenseFileGenerator</Generator>
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Page>
+		<Page Include="Widgets\ProgressStrip.xaml">
+			<SubType>Designer</SubType>
+			<Generator>XamlIntelliSenseFileGenerator</Generator>
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Page>
+		<Page Include="Widgets\SectionControl.xaml">
+			<SubType>Designer</SubType>
+			<Generator>XamlIntelliSenseFileGenerator</Generator>
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Page>
+		<Page Include="Widgets\Spinner.xaml">
+			<SubType>Designer</SubType>
+			<Generator>XamlIntelliSenseFileGenerator</Generator>
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Page>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="Properties\Resources.Designer.cs">
+			<AutoGen>True</AutoGen>
+			<DesignTime>True</DesignTime>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+		<Compile Include="Properties\Settings.Designer.cs">
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Settings.settings</DependentUpon>
+			<DesignTimeSharedInput>True</DesignTimeSharedInput>
+		</Compile>
+		<EmbeddedResource Include="Properties\Resources.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<None Include="Properties\BlackbirdSql.CoreWpf.snk" />
+		<None Include="Properties\Settings.settings">
+			<Generator>SettingsSingleFileGenerator</Generator>
+			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="9.1.1" />
+	  <PackageReference Include="IndexRange" Version="1.0.2" />
+	  <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+	  <PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
+	  <PackageReference Include="Microsoft.VisualStudio.Data.Framework" Version="17.5.33428.388" />
+	  <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.6.36389" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\BlackbirdSql.Common\BlackbirdSql.Common.csproj" />
+	  <ProjectReference Include="..\BlackbirdSql.Core\BlackbirdSql.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="Package.ico" />
+	</ItemGroup>
+
+</Project>

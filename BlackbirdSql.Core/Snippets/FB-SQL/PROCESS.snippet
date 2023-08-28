@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>PROCESS - snippet</Title>
+      <Author>Microsoft Corporation</Author>
+      <Description>Code snippet for PROCESS command</Description>
+      <HelpUrl>http://go.microsoft.com/fwlink/?LinkID=627262&amp;clcid=0x409</HelpUrl>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+      <Shortcut>process_snippet</Shortcut>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal Editable="true">
+          <ID>ProcessorName</ID>
+          <Type></Type>
+          <ToolTip>Name of your Processor</ToolTip>
+          <Default>@p</Default>
+          <Function></Function>
+        </Literal>
+        <Literal Editable="true">
+          <ID>MyProcessor</ID>
+          <Type></Type>
+          <ToolTip></ToolTip>
+          <Default>@s</Default>
+          <Function></Function>
+        </Literal>
+        <Literal Editable="true">
+          <ID>x</ID>
+          <Type></Type>
+          <ToolTip></ToolTip>
+          <Default>x</Default>
+          <Function></Function>
+        </Literal>
+        <Literal Editable="true">
+          <ID>Processor</ID>
+          <Type></Type>
+          <ToolTip></ToolTip>
+          <Default>MyProcessor()</Default>
+          <Function></Function>
+        </Literal>
+      </Declarations>
+      <Code Language="FB-SQL" Kind="" Delimiter="$"><![CDATA[
+$ProcessorName$ = PROCESS $MyProcessor$ PRODUCE $x$ int USING new $Processor$;
+$end$]]></Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

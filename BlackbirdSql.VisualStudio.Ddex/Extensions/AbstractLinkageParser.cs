@@ -14,9 +14,9 @@ using Microsoft.VisualStudio.TaskStatusCenter;
 
 using FirebirdSql.Data.FirebirdClient;
 
-using BlackbirdSql.Common;
-using BlackbirdSql.VisualStudio.Ddex.Schema;
-using BlackbirdSql.Common.Providers;
+using BlackbirdSql.Core;
+using BlackbirdSql.VisualStudio.Ddex.Model;
+using BlackbirdSql.Core.Interfaces;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Extensions;
 
@@ -29,7 +29,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Extensions;
 /// Handles Trigger / Generator linkage building tasks of the LinkageParser class.
 /// </summary>
 // =========================================================================================================
-internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHandlerClient
+internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHandlerClient
 {
 
 
@@ -44,7 +44,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 	/// checked.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected enum EnumLinkStage
+	public enum EnumLinkStage
 	{
 		Start = 0,
 		GeneratorsLoaded = 1,
@@ -159,6 +159,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 	/// </summary>
 	protected int _SyncCardinal = 0;
 
+	protected string _TaskHandlerTaskName = "Parsing";
 	/// <summary>
 	/// Handle to the IDE ITaskHandler.
 	/// </summary>
@@ -201,7 +202,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 		get
 		{
 			return (_Enabled && !AsyncActive && !Loaded && !SyncActive
-				&& !_AsyncToken.IsCancellationRequested && ConnectionActive );
+				&& !_AsyncToken.IsCancellationRequested && ConnectionActive);
 		}
 	}
 
@@ -267,6 +268,11 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 
 	public bool SyncActive { get { return _SyncCardinal != 0; } }
 
+	/// <summary>
+	/// The name of the running task if the object is currently using the task handler.
+	/// </summary>
+	public string TaskHandlerTaskName => _TaskHandlerTaskName;
+
 
 	#endregion Property accessors
 
@@ -295,10 +301,10 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 		_Connection.Disposed += ConnectionDisposed;
 
 
-		_AsyncTask = null; 
+		_AsyncTask = null;
 
 
-		_Sequences = new ();
+		_Sequences = new();
 
 		_Sequences.Columns.Add("GENERATOR_CATALOG", typeof(string));
 		_Sequences.Columns.Add("GENERATOR_SCHEMA", typeof(string));
@@ -765,7 +771,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 
 		if (_RawTriggerDependencies != null)
 			_LinkStage = EnumLinkStage.TriggerDependenciesLoaded;
-		
+
 		return _RawTriggerDependencies;
 	}
 
@@ -1071,13 +1077,52 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Moves back onto the UI thread and updates the IDE task handler progress bar
+	/// with project update information.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public virtual bool TaskHandlerProgress(string text)
+	{
+		if (_ProgressData.PercentComplete == null)
+		{
+			_ProgressData.PercentComplete = 0;
+			if (_TaskHandler != null)
+				Diag.TaskHandlerProgress(this, "Started");
+		}
+
+		Diag.TaskHandlerProgress(this, text);
+
+		return true;
+	}
+
+
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Moves back onto the UI thread and updates the IDE task handler progress bar.
+	/// </summary>
+	/// <param name="progress">The % completion of TaskHandlerTaskName.</param>
+	/// <param name="elapsed">The time taken to complete the stage.</param>
+	// ---------------------------------------------------------------------------------
+	public virtual bool TaskHandlerProgress(int progress, int elapsed)
+	{
+		return TaskHandlerProgress(null, progress, elapsed);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Updates the IDE task handler progress bar and possibly the output pane.
 	/// </summary>
 	/// <param name="stage">The descriptive name of the completed stage</param>
 	/// <param name="progress">The % completion of the linkage build.</param>
 	/// <param name="elapsed">The time taken to complete the stage.</param>
 	// ---------------------------------------------------------------------------------
-	protected bool TaskHandlerProgress(string stage, int progress, long elapsed)
+	public bool TaskHandlerProgress(string stage, int progress, long elapsed)
 	{
 		bool completed = false;
 		string text;
@@ -1174,9 +1219,21 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, ITaskHand
 			clear = true;
 		}
 
-		return Diag.UpdateStatusBar(text, clear);
+		return UpdateStatusBar(text, clear);
 	}
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Updates the VisualStudio status bar.
+	/// </summary>
+	/// <param name="message">Thye status bar display text.</param>
+	/// <param name="complete">Tags this message as a completion message.</param>
+	/// <returns></returns>
+	// ---------------------------------------------------------------------------------
+	public virtual bool UpdateStatusBar(string message, bool complete = false)
+	{
+		return Diag.UpdateStatusBar(message, complete);
+	}
 
 
 	protected int GetPercentageComplete(EnumLinkStage stage)

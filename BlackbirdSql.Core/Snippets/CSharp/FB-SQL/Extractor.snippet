@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Operator - extractor</Title>
+      <Author>Microsoft Corporation</Author>
+      <Description>Code snippet for Extractor </Description>
+      <HelpUrl>https://msdn.microsoft.com/library/azure/mt621320.aspx</HelpUrl>
+      <SnippetTypes>
+        <SnippetType>Expansion</SnippetType>
+      </SnippetTypes>
+      <Shortcut>Extractor</Shortcut>
+    </Header>
+    <Snippet>
+      <Declarations>
+        <Literal Editable="true">
+          <ID>classname</ID>
+          <Type></Type>
+          <ToolTip>Name of your Extractor</ToolTip>
+          <Default>MyExtractor</Default>
+          <Function></Function>
+        </Literal>
+      </Declarations>
+      <Code Language="csharp" Kind="" Delimiter="$">
+          <![CDATA[        /// <summary> 
+
+    /// For more information about writing UDOs, please refer to http://go.microsoft.com/fwlink/?LinkID=623598&clcid=0x409 
+    /// </summary> 
+    [SqlUserDefinedExtractor] 
+    public class $classname$ : IExtractor 
+    { 
+        /// <summary> 
+        ///  
+        /// </summary> 
+        /// <param name="input"></param> 
+        /// <param name="outputrow"></param> 
+        /// <returns></returns> 
+        public override IEnumerable<IRow> Extract(IUnstructuredReader input, IUpdatableRow outputrow) 
+        { 
+            char column_delimiter = '\t'; 
+            string line; 
+            var reader = new StreamReader(input.BaseStream); 
+            while ((line = reader.ReadLine()) != null) 
+            { 
+                var tokens = line.Split(column_delimiter); 
+                outputrow.Set("Name", tokens[0]); 
+                outputrow.Set("Company", tokens[1]); 
+                outputrow.Set("Salary", Convert.ToInt64(tokens[2])); 
+                yield return outputrow.AsReadOnly(); 
+            } 
+        } 
+    } 
+
+]]></Code>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>

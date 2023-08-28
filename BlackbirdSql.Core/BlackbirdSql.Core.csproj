@@ -1,0 +1,268 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<Nullable>disable</Nullable>
+		<TargetFrameworks>$(TargetFrameworks)</TargetFrameworks>
+		<RootNamespace>BlackbirdSql.Core</RootNamespace>
+		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+		<EnableDefaultPageItems>false</EnableDefaultPageItems>
+		<EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+		<SignAssembly>True</SignAssembly>
+		<AssemblyOriginatorKeyFile>Properties\BlackbirdSql.Core.snk</AssemblyOriginatorKeyFile>
+		<PlatformTarget>x64</PlatformTarget>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<ApplicationIcon>Package.ico</ApplicationIcon>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
+	  <NoWarn>1701;1702</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
+	  <NoWarn>1701;1702</NoWarn>
+	</PropertyGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command=":: *** Update: No longer required&#xD;&#xA;:: copy /v /y /b $(OutDir)\BlackbirdSql.Core.* &quot;%25ProgramFiles%25\BlackbirdSql\BlackbirdCommon&quot;" />
+	</Target>
+
+	<ItemGroup>
+	  <Compile Remove="Properties\Originals\InvalidResources.Designer.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Remove="Properties\Originals\InvalidResources.resx" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Include="CommandProviders\AbstractCommandProvider.cs" />
+	  <Compile Include="CommandProviders\CommandProperties.cs" />
+	  <Compile Include="Controller.cs" />
+	  <Compile Include="Core\AbstractDescribersEnumerator.cs" />
+	  <Compile Include="Core\AbstractIconsCollection.cs" />
+	  <Compile Include="Core\AbstractPropertyAgentAccessors.cs" />
+	  <Compile Include="Core\AbstractPropertyAgentEvents.cs" />
+	  <Compile Include="Core\AbstractPropertyAgentMethods.cs" />
+	  <Compile Include="Core\AdvancedDescribersEnumerator.cs" />
+	  <Compile Include="Core\CoreConstants.cs" />
+	  <Compile Include="Core\CoreIconsCollection.cs" />
+	  <Compile Include="Core\CorePropertySet.cs" />
+	  <Compile Include="Core\CoreResources.Designer.cs" />
+	  <Compile Include="Core\DependsOnPropertyAttribute.cs" />
+	  <Compile Include="Core\Describer.cs" />
+	  <Compile Include="Core\DescriberDictionary.cs" />
+	  <Compile Include="Core\EquivalencyDescribersEnumerator.cs" />
+	  <Compile Include="Core\ExportableAttribute.cs" />
+	  <Compile Include="Core\IconType.cs" />
+	  <Compile Include="Core\MandatoryDescribersEnumerator.cs" />
+	  <Compile Include="Core\PropertySet.cs" />
+	  <Compile Include="Core\ServerDefinition.cs" />
+	  <Compile Include="Core\ValueDependsOnCollectionAttribute.cs" />
+	  <Compile Include="Core\ValueDependsOnExternalPropertyAttribute.cs" />
+	  <Compile Include="Diagnostics\Enums\EnLogComplianceLevel.cs" />
+	  <Compile Include="Diagnostics\Enums\EnSqlTraceId.cs" />
+	  <Compile Include="Diagnostics\Enums\EnUiTraceId.cs" />
+	  <Compile Include="Diagnostics\Enums\EnWinEventTracingLevel.cs" />
+	  <Compile Include="Diagnostics\EtwProvider.cs" />
+	  <Compile Include="Diagnostics\EventProviderVersionTwo.cs" />
+	  <Compile Include="Diagnostics\Interfaces\IBTrace.cs" />
+	  <Compile Include="Diagnostics\Interfaces\IBSqlTraceTelemetryProvider.cs" />
+	  <Compile Include="Diagnostics\LogObject.cs" />
+	  <Compile Include="Diagnostics\SqlEtwProvider.cs" />
+	  <Compile Include="Diagnostics\SqlEventProvider.cs" />
+	  <Compile Include="Diagnostics\SqlTracer.cs" />
+	  <Compile Include="Diagnostics\Traceable.cs" />
+	  <Compile Include="Diagnostics\AbstractTraceableBase.cs" />
+	  <Compile Include="Diagnostics\Tracer.cs" />
+	  <Compile Include="Diagnostics\UiTracer.cs" />
+	  <Compile Include="Enums\EnDbServerType.cs" />
+	  <Compile Include="Enums\EnEngineType.cs" />
+	  <Compile Include="Enums\EnModelObjectType.cs" />
+	  <Compile Include="Enums\EnNullEquality.cs" />
+	  <Compile Include="Events\AdvancedPropertiesRequestedEventArgs.cs" />
+	  <Compile Include="Events\CloseWindowEventArgs.cs" />
+	  <Compile Include="Events\ConnectionsLoadedEventArgs.cs" />
+	  <Compile Include="Events\CopyToClipboardEventArgs.cs" />
+	  <Compile Include="Events\CopyToClipboardEventHandler.cs" />
+	  <Compile Include="Events\ExceptionOccurredEventArgs.cs" />
+	  <Compile Include="Events\MakeConnectionCompletedEventArgs.cs" />
+	  <Compile Include="Events\MessageEventArgs.cs" />
+	  <Compile Include="Events\SelectedConnectionChangedEventArgs.cs" />
+	  <Compile Include="Extensions\DbProviderFactoriesEx.cs" />
+	  <Compile Include="Extensions\ErmBindingSource.cs" />
+	  <Compile Include="Extensions\ExtensionMembers.cs" />
+	  <Compile Include="Extensions\MutablePair.cs" />
+	  <Compile Include="Extensions\PublicDictionary.cs" />
+	  <Compile Include="Extensions\PublicKeyCollection.cs" />
+	  <Compile Include="Extensions\PublicValueCollection.cs" />
+	  <Compile Include="Extensions\XmlParser.cs" />
+	  <Compile Include="GlobalSuppressions.cs" />
+	  <Compile Include="Interfaces\IBAsyncPackage.cs" />
+	  <Compile Include="Interfaces\IBConnectionPropertiesProvider.cs" />
+	  <Compile Include="Interfaces\IBDependencyManager.cs" />
+	  <Compile Include="Interfaces\IBDesignerExplorerServices.cs" />
+	  <Compile Include="Interfaces\IBDesignerOnlineServices.cs" />
+	  <Compile Include="Interfaces\IBEventsChannel.cs" />
+	  <Compile Include="Interfaces\IBEventsManager.cs" />
+	  <Compile Include="Interfaces\IBExportable.cs" />
+	  <Compile Include="Interfaces\IBExportableMetadata.cs" />
+	  <Compile Include="Interfaces\IBGlobalsAgent.cs" />
+	  <Compile Include="Interfaces\IBIconsCollection.cs" />
+	  <Compile Include="Interfaces\IBIconType.cs" />
+	  <Compile Include="Interfaces\IBOptionModel.cs" />
+	  <Compile Include="Interfaces\IBOptionModelPropertyWrapper.cs" />
+	  <Compile Include="Interfaces\IBPackageController.cs" />
+	  <Compile Include="Interfaces\IBPropertyAgent.cs" />
+	  <Compile Include="Interfaces\IBServerDefinition.cs" />
+	  <Compile Include="Interfaces\IBStandardMetadata.cs" />
+	  <Compile Include="Interfaces\IBTaskHandlerClient.cs" />
+	  <Compile Include="Interfaces\IBWindowPane.cs" />
+	  <Compile Include="Interfaces\IEnumerableAdvancedDescriptors.cs" />
+	  <Compile Include="Interfaces\IEnumerableEquivalencyDescriptors.cs" />
+	  <Compile Include="Interfaces\IEnumerableMandatoryDescriptors.cs" />
+	  <Compile Include="Model\AbstractModelPropertyAgent.cs" />
+	  <Compile Include="Model\ExportableDescriptor.cs" />
+	  <Compile Include="Model\ExportableStatus.cs" />
+	  <Compile Include="Model\ExtensionDescriptor.cs" />
+	  <Compile Include="Model\ModelConstants.cs" />
+	  <Compile Include="Model\ModelIconsCollection.cs" />
+	  <Compile Include="Model\ModelPropertySet.cs" />
+	  <Compile Include="Model\ModelResources.Designer.cs" />
+	  <Compile Include="Model\MonikerAgent.cs" />
+	  <Compile Include="Model\UIConnectionInfo.cs" />
+	  <Compile Include="Options\AbstractOptionModel.cs" />
+	  <Compile Include="Options\AbstractOptionPage.cs" />
+	  <Compile Include="Options\NativeSettingsType.cs" />
+	  <Compile Include="Options\NativeSettingsTypeExtensions.cs" />
+	  <Compile Include="Options\OptionModelPropertyWrapper.cs" />
+	  <Compile Include="Options\OverrideCollectionNameAttribute.cs" />
+	  <Compile Include="Options\OverrideDataTypeAttribute.cs" />
+	  <Compile Include="Options\OverridePropertyNameAttribute.cs" />
+	  <Compile Include="Options\SettingDataType.cs" />
+	  <Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
+	  <Compile Include="Properties\Resources.Designer.cs" />
+	  <Compile Include="Providers\AbstractAsyncPackage.cs" />
+	  <Compile Include="Providers\AbstractEventsManager.cs" />
+	  <Compile Include="Providers\AbstractGlobalsAgent.cs" />
+	  <Compile Include="Providers\AbstractHostess.cs" />
+	  <Compile Include="Providers\AbstractPackageController.cs" />
+	  <Compile Include="Providers\GlobalEventArgs.cs" />
+	  <Compile Include="Providers\HashLog.cs" />
+	  <Compile Include="Providers\Hostess.cs" />
+	  <Compile Include="Src\Cmd.cs" />
+	  <Compile Include="Src\Diag.cs" />
+	  <Compile Include="Src\HashHelpersEx.cs" />
+	  <Compile Include="Src\Native.cs" />
+	  <Compile Include="Src\StringUtils.cs" />
+	  <Compile Include="Src\VS.cs" />
+	  <Compile Include="Structs\PublicDictionaryEnumerator.cs" />
+	  <Compile Include="SystemData.cs" />
+	</ItemGroup>
+
+
+
+
+	<ItemGroup>
+	  <Content Include="Package.ico" />
+	  <Content Include="Snippets\FB-SQL\COMBINE.snippet" />
+	  <Content Include="Snippets\FB-SQL\CREATEASSEMBLY.snippet" />
+	  <Content Include="Snippets\FB-SQL\CREATEDATABASE.snippet" />
+	  <Content Include="Snippets\FB-SQL\CREATESCHEMA.snippet" />
+	  <Content Include="Snippets\FB-SQL\CREATETABLE.snippet" />
+	  <Content Include="Snippets\FB-SQL\CREATE_CREDENTIAL.snippet" />
+	  <Content Include="Snippets\FB-SQL\CREATE_VIEW.snippet" />
+	  <Content Include="Snippets\FB-SQL\DATA_SOURCE.snippet" />
+	  <Content Include="Snippets\FB-SQL\DECLARE.snippet" />
+	  <Content Include="Snippets\FB-SQL\EXTERNAL_TABLE.snippet" />
+	  <Content Include="Snippets\FB-SQL\EXTRACT.snippet" />
+	  <Content Include="Snippets\FB-SQL\EXTRACT_FROM_FILE_SET.snippet" />
+	  <Content Include="Snippets\FB-SQL\INSERT_SELECT.snippet" />
+	  <Content Include="Snippets\FB-SQL\OUTPUT.snippet" />
+	  <Content Include="Snippets\FB-SQL\PROCESS.snippet" />
+	  <Content Include="Snippets\FB-SQL\REDUCE.snippet" />
+	  <Content Include="Snippets\FB-SQL\SELECT.snippet" />
+	  <Content Include="Snippets\FB-SQL\TableValuedFunction.snippet" />
+	  <Content Include="Snippets\FbSqlSnippetsIndex.xml">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	</ItemGroup>
+
+
+
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Core\CoreResources.resx" />
+	  <EmbeddedResource Include="Model\ModelResources.resx" />
+	  <EmbeddedResource Include="Properties\Resources.resx" />
+	</ItemGroup>
+
+
+
+
+	<ItemGroup>
+	  <None Include="Properties\Originals\InvalidResources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>InvalidResources.resx</DependentUpon>
+	  </None>
+	  <None Include="Properties\Originals\InvalidResources.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>InvalidResources.Designer.cs</LastGenOutput>
+	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="9.1.1" />
+		<PackageReference Include="IndexRange" Version="1.0.2" />
+		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+		<PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
+		<PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
+		<PackageReference Include="Microsoft.VisualStudio.Data.Framework" Version="17.5.33428.388" />
+		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.6.36389" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="PresentationFramework" />
+	  <Reference Include="System.Runtime.Caching" />
+	  <Reference Include="UIAutomationProvider" />
+	  <Reference Include="UIAutomationTypes" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Update="Core\CoreResources.Designer.cs">
+		  <DependentUpon>CoreResources.resx</DependentUpon>
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		</Compile>
+		<Compile Update="Properties\Resources.Designer.cs">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Model\ModelResources.Designer.cs">
+		  <DependentUpon>ModelResources.resx</DependentUpon>
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Core\CoreResources.resx">
+	    <LastGenOutput>CoreResources.Designer.cs</LastGenOutput>
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Properties\Resources.resx">
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Update="Model\ModelResources.resx">
+	    <LastGenOutput>ModelResources.Designer.cs</LastGenOutput>
+	    <Generator>PublicResXFileCodeGenerator</Generator>
+	  </EmbeddedResource>
+	</ItemGroup>
+
+
+</Project>

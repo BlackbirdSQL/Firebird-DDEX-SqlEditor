@@ -14,7 +14,7 @@ using Microsoft.VisualStudio.TaskStatusCenter;
 
 using FirebirdSql.Data.FirebirdClient;
 
-using BlackbirdSql.Common;
+using BlackbirdSql.Core;
 using System.Diagnostics;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Extensions;
@@ -429,8 +429,7 @@ internal class LinkageParser : AbstractLinkageParser
 		if (!ConnectionActive)
 			return false;
 
-		TaskHandlerProgress(null, GetPercentageComplete(_LinkStage),
-			_LinkStage == EnumLinkStage.Start ? 0 : -1);
+		TaskHandlerProgress(GetPercentageComplete(_LinkStage), _LinkStage == EnumLinkStage.Start ? 0 : -1);
 
 		if (_LinkStage < EnumLinkStage.GeneratorsLoaded)
 		{
