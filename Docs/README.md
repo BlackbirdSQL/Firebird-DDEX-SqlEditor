@@ -8,7 +8,7 @@
 
 The BlackbirdSQL DDEX 2.0 .NET Data with SqlEditor Provider extension, `BlackbirdSql.VisualStudio.Ddex`, implements all the core DDEX 2.0 interfaces prevalent in the SqlServer DDEX and SqlEditor extensions and more, but currently excludes the SqlServer designer logical views functionality. 
 
-[Download BlackbirdSql DDEX Extension (Pre-release v9.1.0.77-beta)](https://github.com/BlackbirdSQL/Firebird-NETProvider-DDEX/releases/download/v9.0.1.77-beta/BlackbirdSql.VisualStudio.Ddex.vsix)
+[Download BlackbirdSql DDEX with SqlEditor Extension (Pre-release v9.1.0.77-beta)](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v9.1.0.77-beta/BlackbirdSql.VisualStudio.Ddex.vsix)
 
 *The first tenet of this package is `small footprint, low overhead`, and to be as unobtrusive as possible. It is installed as a standard VSIX extension. If you uninstall it is is gone. It does not leave it's fingerprints in either your computer system or your Visual Studio installation.*
 
