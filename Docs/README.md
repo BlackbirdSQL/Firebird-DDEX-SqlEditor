@@ -14,7 +14,7 @@ The BlackbirdSQL DDEX 2.0 .NET Data with SqlEditor Provider extension, `Blackbir
 
 ### Features
 * Firebird DDEX provider support for most of the DDEX 2.0 IVs DML interfaces utilizing FirebirdSql.Data.FirebirdClient and EntityFramework.Firebird versions 9.1.1.
-* SqlServer SqlEditor port for Firebird for editing Computed columns, Triggers, Views, Procedures and Functons and SQL scripts. (NOTE: The editor service designer logical view is not currently functional.)
+* SqlServer SqlEditor port for Firebird for editing Computed columns, Triggers, Views, Procedures, Functions and SQL scripts. (NOTE: The editor service designer logical view is not currently functional.)
 * Trigger/Generator auto-increment linkage.
 * FlameRobin host and database selection within connection dialogs.
 * Within Server Explorer, top level folders for Tables, Views, Stored procedures, Functions, Sequence Generators, Triggers and Domains.
@@ -36,8 +36,8 @@ The parser itself is reasonably fast (+- 0.1 milliseconds per trigger), but SQL 
 
 
 ## Known issues
-* The Language service for the SqlEditor service is still under development and has not been linked into the extension. When opening scripts for Triggers, Views, Procedures Computed columns or SQL statements, the SqlEditor uses the Visual Studio built-in T-SQL Language service. This means that Intellisense may mark incompatible SQL and DDL as errors. The scripts will still successfully execute.
-* The SqlEditor does not currently support the designer logical view or script parameter loading.
+* The Language service for the SqlEditor service is still under development and has not been linked into the extension. When opening scripts for Triggers, Views, Procedures, Funtions, Computed columns or SQL statements, the SqlEditor uses the Visual Studio built-in T-SQL Language service. This means that Intellisense may mark incompatible SQL and DDL as errors. The scripts will still successfully execute.
+* The SqlEditor does not currently support the designer logical view and execution plan tabs or script parameter loading.
 * If on startup of the Visual Studio IDE, and only on startup, an attempt is made to access an EDMX model or a Database in the SE before the associated DDEX provider has been given the IDE shell context, Visual Studio will flag the provider as unavailable for the duration of the session. This is true for both the SqlServer and BlackbirdSql providers, and is likely the case for any other DDEX provider that loads asynchronously.</br>
 * As it stands Visual Studio will have to be restarted to clear the flag.</br>
 Unless we're missing a trick here this seems to be unavoidable. Loading is asynchronous, so the provider needs time to register and load.</br>
