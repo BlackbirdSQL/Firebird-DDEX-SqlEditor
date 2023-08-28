@@ -1,4 +1,4 @@
-# BlackbirdSQL DDEX 2.0 .NET Data Provider for Firebird
+# BlackbirdSQL DDEX 2.0 with SqlEditor Provider for Firebird
 
 #### Screenshots
 ![ReadMe](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/assets/120905720/0b52cc20-c957-451d-93c0-31255abb0ada)
