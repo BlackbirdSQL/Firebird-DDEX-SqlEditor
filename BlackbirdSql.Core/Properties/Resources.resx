@@ -123,6 +123,18 @@
   <data name="ClassNumber" xml:space="preserve">
     <value>Class: {0} Number: {1} </value>
   </data>
+  <data name="CommandProvider_AlterFunctionScript" xml:space="preserve">
+    <value>Open &amp;Alter Function Source</value>
+  </data>
+  <data name="CommandProvider_AlterStoredProcedureScript" xml:space="preserve">
+    <value>Open &amp;Alter Procedure Source</value>
+  </data>
+  <data name="CommandProvider_AlterTriggerScript" xml:space="preserve">
+    <value>Open &amp;Alter Trigger Expression</value>
+  </data>
+  <data name="CommandProvider_AlterViewScript" xml:space="preserve">
+    <value>Open &amp;Alter View Definition</value>
+  </data>
   <data name="CommandProvider_CancelExecution" xml:space="preserve">
     <value>SqlViewTextObjectCommandProvider_CancelExecution</value>
   </data>
@@ -145,7 +157,7 @@
     <value>&amp;Open Foreign Key Expression</value>
   </data>
   <data name="CommandProvider_OpenFunctionScript" xml:space="preserve">
-    <value>&amp;Open Function Source</value>
+    <value>&amp;Open Create Function Source</value>
   </data>
   <data name="CommandProvider_OpenIndexScript" xml:space="preserve">
     <value>&amp;Open Index Expression</value>
@@ -154,13 +166,13 @@
     <value>&amp;Open Script</value>
   </data>
   <data name="CommandProvider_OpenStoredProcedureScript" xml:space="preserve">
-    <value>&amp;Open Procedure Source</value>
+    <value>&amp;Open Executable Procedure Source</value>
   </data>
   <data name="CommandProvider_OpenSystemScript" xml:space="preserve">
     <value>&amp;Open System Script</value>
   </data>
   <data name="CommandProvider_OpenTriggerScript" xml:space="preserve">
-    <value>&amp;Open Trigger Expression</value>
+    <value>&amp;Open Create Trigger Expression</value>
   </data>
   <data name="CommandProvider_OpenUserScript" xml:space="preserve">
     <value>&amp;Open User Script</value>

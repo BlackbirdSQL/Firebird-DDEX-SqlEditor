@@ -9,14 +9,15 @@ using System.Data.Common;
 
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 
 using Microsoft.VisualStudio.TextManager.Interop;
+using BlackbirdSql.Common.Config.Interfaces;
+using BlackbirdSql.Common.Enums;
+
 namespace BlackbirdSql.Common.Model;
 
 

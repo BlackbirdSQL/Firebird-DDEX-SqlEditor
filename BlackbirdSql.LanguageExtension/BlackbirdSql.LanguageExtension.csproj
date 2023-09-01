@@ -25,11 +25,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Include="ColorService\AbstractColorService.cs" />
-	  <Compile Include="ColorService\ColorConfiguration.cs" />
-	  <Compile Include="ColorService\ColorService.cs" />
-	  <Compile Include="ColorService\DslColorableItem.cs" />
-	  <Compile Include="ColorService\Enums\ScopeStudioTokenColor.cs" />
+	  <Compile Include="Root\ColorService\AbstractColorService.cs" />
+	  <Compile Include="Root\ColorService\ColorConfiguration.cs" />
+	  <Compile Include="Root\ColorService\ColorService.cs" />
+	  <Compile Include="Root\ColorService\DslColorableItem.cs" />
+	  <Compile Include="Root\ColorService\Enums\ScopeStudioTokenColor.cs" />
 	  <Compile Include="Ctl\AbstractLanguageService.cs" />
 	  <Compile Include="Ctl\AuthoringScope.cs" />
 	  <Compile Include="Ctl\Declarations.cs" />
@@ -42,7 +42,7 @@
 	  <Compile Include="Ctl\SourceAgent.cs" />
 	  <Compile Include="Ctl\SqlCompletionSet.cs" />
 	  <Compile Include="GlobalSuppressions.cs" />
-	  <Compile Include="Interfaces\IBColorService.cs" />
+	  <Compile Include="Root\Interfaces\IBColorService.cs" />
 	  <Compile Include="LanguageExtensionAsyncPackage.cs" />
 	  <Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
 	  <Compile Include="Properties\Resources.Designer.cs" />

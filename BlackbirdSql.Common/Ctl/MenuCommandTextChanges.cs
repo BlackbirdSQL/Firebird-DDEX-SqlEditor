@@ -6,11 +6,7 @@
 using System;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
-
 using BlackbirdSql.Common.Interfaces;
-
-
-
 
 namespace BlackbirdSql.Common.Ctl;
 

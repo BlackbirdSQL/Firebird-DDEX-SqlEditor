@@ -4,17 +4,18 @@
 #endregion
 
 using System;
-using BlackbirdSql.Core;
-using BlackbirdSql.Common.Ctl.Commands;
+
+using BlackbirdSql.Common.Commands;
 using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Model;
+using BlackbirdSql.Core;
+using BlackbirdSql.Core.Enums;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-using BlackbirdSql.Common.Enums;
+
 
 namespace BlackbirdSql.Common.Ctl;
-
 
 public class SqlEditorViewFilter : AbstractViewFilter
 {
@@ -29,66 +30,66 @@ public class SqlEditorViewFilter : AbstractViewFilter
 	{
 		AbstractSqlEditorCommand sqlEditorCommand = null;
 
-		SqlEditorCmdSet cmd = (SqlEditorCmdSet)cmdId;
+		EnCommandSet cmd = (EnCommandSet)cmdId;
 		if (pguidCmdGroup == LibraryData.CLSID_SqlEditorCommandSet)
 		{
 			switch (cmd)
 			{
-				case SqlEditorCmdSet.CmdIdConnect:
+				case EnCommandSet.CmdIdConnect:
 					sqlEditorCommand = new SqlEditorConnectCommand(Editor);
 					break;
-				case SqlEditorCmdSet.CmdIdDisconnect:
+				case EnCommandSet.CmdIdDisconnect:
 					sqlEditorCommand = new SqlEditorDisconnectCommand(Editor);
 					break;
-				case SqlEditorCmdSet.CmdIdDisconnectAllQueries:
+				case EnCommandSet.CmdIdDisconnectAllQueries:
 					sqlEditorCommand = new SqlEditorDisconnectAllQueriesCommand(Editor);
 					break;
-				case SqlEditorCmdSet.CmdIdChangeConnection:
+				case EnCommandSet.CmdIdChangeConnection:
 					sqlEditorCommand = new SqlEditorChangeConnectionCommand(Editor);
 					break;
-				case SqlEditorCmdSet.CmdIdExecuteQuery:
+				case EnCommandSet.CmdIdExecuteQuery:
 					sqlEditorCommand = new SqlEditorExecuteQueryCommand(Editor);
 					break;
-				case SqlEditorCmdSet.CmdIdParseQuery:
+				case EnCommandSet.CmdIdParseQuery:
 					sqlEditorCommand = new SqlEditorParseQueryCommand(Editor);
 					break;
-				case SqlEditorCmdSet.CmdIdCancelQuery:
+				case EnCommandSet.CmdIdCancelQuery:
 					sqlEditorCommand = new SqlEditorCancelQueryCommand(Editor);
 					break;
-				case SqlEditorCmdSet.CmdIdShowEstimatedPlan:
+				case EnCommandSet.CmdIdShowEstimatedPlan:
 					sqlEditorCommand = new SqlEditorShowEstimatedPlanCommand(Editor);
 					break;
-				case SqlEditorCmdSet.CmdIdToggleClientStatistics:
+				case EnCommandSet.CmdIdToggleClientStatistics:
 					sqlEditorCommand = new SqlEditorToggleClientStatisticsCommand(Editor);
 					break;
-				case SqlEditorCmdSet.CmdIdToggleExecutionPlan:
+				case EnCommandSet.CmdIdToggleExecutionPlan:
 					sqlEditorCommand = new SqlEditorToggleExecutionPlanCommand(Editor);
 					break;
-				case SqlEditorCmdSet.CmdIdToggleIntellisense:
+				case EnCommandSet.CmdIdToggleIntellisense:
 					sqlEditorCommand = new SqlEditorToggleIntellisenseCommand(Editor);
 					break;
-				case SqlEditorCmdSet.CmdIdToggleSQLCMDMode:
+				case EnCommandSet.CmdIdToggleSQLCMDMode:
 					sqlEditorCommand = new SqlEditorToggleSqlCmdModeCommand(Editor);
 					break;
-				case SqlEditorCmdSet.CmdIdQueryOptions:
+				case EnCommandSet.CmdIdQueryOptions:
 					sqlEditorCommand = new SqlEditorQueryOptionsCommand(Editor);
 					break;
-				case SqlEditorCmdSet.CmdIdResultsAsText:
+				case EnCommandSet.CmdIdResultsAsText:
 					sqlEditorCommand = new SqlEditorResultsAsTextCommand(Editor);
 					break;
-				case SqlEditorCmdSet.CmdIdResultsAsGrid:
+				case EnCommandSet.CmdIdResultsAsGrid:
 					sqlEditorCommand = new SqlEditorResultsAsGridCommand(Editor);
 					break;
-				case SqlEditorCmdSet.CmdIdResultsAsFile:
+				case EnCommandSet.CmdIdResultsAsFile:
 					sqlEditorCommand = new SqlEditorResultsAsFileCommand(Editor);
 					break;
-				case SqlEditorCmdSet.CmdIdToggleResultsPane:
+				case EnCommandSet.CmdIdToggleResultsPane:
 					sqlEditorCommand = new SqlEditorToggleResultsPaneCommand(Editor);
 					break;
-				case SqlEditorCmdSet.CmbIdSQLDatabases:
+				case EnCommandSet.CmbIdSqlDatabases:
 					sqlEditorCommand = new SqlEditorSqlDatabaseCommand(Editor);
 					break;
-				case SqlEditorCmdSet.CmbIdSQLDatabasesGetList:
+				case EnCommandSet.CmbIdSqlDatabasesGetList:
 					sqlEditorCommand = new SqlEditorSqlDatabaseListCommand(Editor);
 					break;
 			}
@@ -107,70 +108,70 @@ public class SqlEditorViewFilter : AbstractViewFilter
 		int num = (int)Constants.MSOCMDERR_E_NOTSUPPORTED;
 		for (int i = 0; i < cCmds; i++)
 		{
-			SqlEditorCmdSet cmdID = (SqlEditorCmdSet)prgCmds[i].cmdID;
+			EnCommandSet cmdID = (EnCommandSet)prgCmds[i].cmdID;
 			if (pguidCmdGroup == LibraryData.CLSID_SqlEditorCommandSet)
 			{
 				AbstractSqlEditorCommand sqlEditorCommand = null;
 				switch (cmdID)
 				{
-					case SqlEditorCmdSet.CmdIdConnect:
+					case EnCommandSet.CmdIdConnect:
 						sqlEditorCommand = new SqlEditorConnectCommand(Editor);
 						break;
-					case SqlEditorCmdSet.CmdIdDisconnect:
+					case EnCommandSet.CmdIdDisconnect:
 						sqlEditorCommand = new SqlEditorDisconnectCommand(Editor);
 						break;
-					case SqlEditorCmdSet.CmdIdDisconnectAllQueries:
+					case EnCommandSet.CmdIdDisconnectAllQueries:
 						sqlEditorCommand = new SqlEditorDisconnectAllQueriesCommand(Editor);
 						break;
-					case SqlEditorCmdSet.CmdIdChangeConnection:
+					case EnCommandSet.CmdIdChangeConnection:
 						sqlEditorCommand = new SqlEditorChangeConnectionCommand(Editor);
 						break;
-					case SqlEditorCmdSet.CmdIdExecuteQuery:
+					case EnCommandSet.CmdIdExecuteQuery:
 						sqlEditorCommand = new SqlEditorExecuteQueryCommand(Editor);
 						break;
-					case SqlEditorCmdSet.CmdIdParseQuery:
+					case EnCommandSet.CmdIdParseQuery:
 						sqlEditorCommand = new SqlEditorParseQueryCommand(Editor);
 						break;
-					case SqlEditorCmdSet.CmdIdCancelQuery:
+					case EnCommandSet.CmdIdCancelQuery:
 						sqlEditorCommand = new SqlEditorCancelQueryCommand(Editor);
 						break;
-					case SqlEditorCmdSet.CmdIdShowEstimatedPlan:
+					case EnCommandSet.CmdIdShowEstimatedPlan:
 						sqlEditorCommand = new SqlEditorShowEstimatedPlanCommand(Editor);
 						break;
-					case SqlEditorCmdSet.CmdIdToggleClientStatistics:
+					case EnCommandSet.CmdIdToggleClientStatistics:
 						sqlEditorCommand = new SqlEditorToggleClientStatisticsCommand(Editor);
 						break;
-					case SqlEditorCmdSet.CmdIdToggleExecutionPlan:
+					case EnCommandSet.CmdIdToggleExecutionPlan:
 						sqlEditorCommand = new SqlEditorToggleExecutionPlanCommand(Editor);
 						break;
-					case SqlEditorCmdSet.CmdIdToggleIntellisense:
+					case EnCommandSet.CmdIdToggleIntellisense:
 						sqlEditorCommand = new SqlEditorToggleIntellisenseCommand(Editor);
 						break;
-					case SqlEditorCmdSet.CmdIdToggleSQLCMDMode:
+					case EnCommandSet.CmdIdToggleSQLCMDMode:
 						sqlEditorCommand = new SqlEditorToggleSqlCmdModeCommand(Editor);
 						break;
-					case SqlEditorCmdSet.CmdIdQueryOptions:
+					case EnCommandSet.CmdIdQueryOptions:
 						sqlEditorCommand = new SqlEditorQueryOptionsCommand(Editor);
 						break;
-					case SqlEditorCmdSet.CmdIdResultsAsText:
+					case EnCommandSet.CmdIdResultsAsText:
 						sqlEditorCommand = new SqlEditorResultsAsTextCommand(Editor);
 						break;
-					case SqlEditorCmdSet.CmdIdResultsAsGrid:
+					case EnCommandSet.CmdIdResultsAsGrid:
 						sqlEditorCommand = new SqlEditorResultsAsGridCommand(Editor);
 						break;
-					case SqlEditorCmdSet.CmdIdResultsAsFile:
+					case EnCommandSet.CmdIdResultsAsFile:
 						sqlEditorCommand = new SqlEditorResultsAsFileCommand(Editor);
 						break;
-					case SqlEditorCmdSet.CmdIdToggleResultsPane:
+					case EnCommandSet.CmdIdToggleResultsPane:
 						sqlEditorCommand = new SqlEditorToggleResultsPaneCommand(Editor);
 						break;
-					case SqlEditorCmdSet.CmbIdSQLDatabases:
+					case EnCommandSet.CmbIdSqlDatabases:
 						sqlEditorCommand = new SqlEditorSqlDatabaseCommand(Editor);
 						break;
-					case SqlEditorCmdSet.CmbIdSQLDatabasesGetList:
+					case EnCommandSet.CmbIdSqlDatabasesGetList:
 						sqlEditorCommand = new SqlEditorSqlDatabaseListCommand(Editor);
 						break;
-					case SqlEditorCmdSet.CmdIdCloneQuery:
+					case EnCommandSet.CmdIdCloneQuery:
 						sqlEditorCommand = new SqlEditorCloneQueryWindowCommand(Editor);
 						break;
 				}

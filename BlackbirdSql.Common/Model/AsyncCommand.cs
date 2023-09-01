@@ -8,8 +8,6 @@ using System.Windows.Input;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Common.Interfaces;
 
-
-
 namespace BlackbirdSql.Common.Model;
 
 

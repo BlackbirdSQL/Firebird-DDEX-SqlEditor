@@ -8,11 +8,12 @@
 
 // namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.PropertyWindow
 
+using BlackbirdSql.Common.ComponentModel;
 using BlackbirdSql.Common.Properties;
 
 namespace BlackbirdSql.Common.Controls.PropertiesWindow
 {
-	public class PropertiesWindowWithoutConnection : SqlEditorPropertiesBase
+	public class PropertiesWindowWithoutConnection : AbstractPropertiesBase
 	{
 		private static readonly string _NoConnection = ControlsResources.QueryWindowDisconnected;
 

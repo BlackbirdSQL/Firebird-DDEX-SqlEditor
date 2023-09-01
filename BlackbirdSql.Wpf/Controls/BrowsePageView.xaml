@@ -4,25 +4,25 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:BlackbirdSql.Wpf.Controls"
 	xmlns:widgets="clr-namespace:BlackbirdSql.Wpf.Widgets"
-	xmlns:CoreCtl="clr-namespace:BlackbirdSql.Common.Ctl;assembly=BlackbirdSql.Common"
-	xmlns:CoreCtls="clr-namespace:BlackbirdSql.Common.Controls;assembly=BlackbirdSql.Common"
-	xmlns:CoreCvtrs="clr-namespace:BlackbirdSql.Common.Ctl.Converters;assembly=BlackbirdSql.Common"
-	xmlns:CoreModel="clr-namespace:BlackbirdSql.Common.Model;assembly=BlackbirdSql.Common"
-	xmlns:CoreRes="clr-namespace:BlackbirdSql.Common.Properties;assembly=BlackbirdSql.Common"
+	xmlns:ComCtl="clr-namespace:BlackbirdSql.Common.Ctl;assembly=BlackbirdSql.Common"
+	xmlns:ComCtls="clr-namespace:BlackbirdSql.Common.Controls;assembly=BlackbirdSql.Common"
+	xmlns:ComCvtrs="clr-namespace:BlackbirdSql.Common.Converters;assembly=BlackbirdSql.Common"
+	xmlns:ComModel="clr-namespace:BlackbirdSql.Common.Model;assembly=BlackbirdSql.Common"
+	xmlns:ComRes="clr-namespace:BlackbirdSql.Common.Properties;assembly=BlackbirdSql.Common"
 	x:Name="projectSectionView" x:Uid="projectSectionView">
 	<FrameworkElement.Resources>
 		<ResourceDictionary x:Uid="ResourceDictionary_1">
 			<ResourceDictionary.MergedDictionaries>
-				<CoreCtl:CachedResourceDictionary
+				<ComCtl:CachedResourceDictionary
 					x:Uid="ResourceDictionary_2"
 					Source="pack://application:,,,/BlackbirdSql.Wpf;component/Themes/Default.xaml" />
 			</ResourceDictionary.MergedDictionaries>
-			<CoreCvtrs:TrueToVisibleConverter x:Key="TrueToVisibleConverter" x:Uid="CoreCvtrs:TrueToVisibleConverter_1" />
-			<CoreCvtrs:ImageToImageSourceConverter x:Key="ImageToImageSourceConverter" x:Uid="CoreCvtrs:ImageToImageSourceConverter_1" />
-			<CoreCvtrs:NonEmptyStringToVisibleConverter x:Key="NonEmptyStringToVisibleConverter" x:Uid="CoreCvtrs:NonEmptyStringToVisibleConverter_1" />
-			<CoreCvtrs:NullToVisibleConverter x:Key="NullToVisibleConverter" x:Uid="CoreCvtrs:NullToVisibleConverter_1" />
-			<CoreCvtrs:AllTrueToVisibleConverter x:Key="AllTrueToVisibleConverter" x:Uid="CoreCvtrs:AllTrueToVisibleConverter_1" />
-			<CoreCvtrs:AnyTrueToVisibleConverter x:Key="AnyTrueToVisibleConverter" x:Uid="CoreCvtrs:AnyTrueToVisibleConverter_1" />
+			<ComCvtrs:TrueToVisibleConverter x:Key="TrueToVisibleConverter" x:Uid="ComCvtrs:TrueToVisibleConverter_1" />
+			<ComCvtrs:ImageToImageSourceConverter x:Key="ImageToImageSourceConverter" x:Uid="ComCvtrs:ImageToImageSourceConverter_1" />
+			<ComCvtrs:NonEmptyStringToVisibleConverter x:Key="NonEmptyStringToVisibleConverter" x:Uid="ComCvtrs:NonEmptyStringToVisibleConverter_1" />
+			<ComCvtrs:NullToVisibleConverter x:Key="NullToVisibleConverter" x:Uid="ComCvtrs:NullToVisibleConverter_1" />
+			<ComCvtrs:AllTrueToVisibleConverter x:Key="AllTrueToVisibleConverter" x:Uid="ComCvtrs:AllTrueToVisibleConverter_1" />
+			<ComCvtrs:AnyTrueToVisibleConverter x:Key="AnyTrueToVisibleConverter" x:Uid="ComCvtrs:AnyTrueToVisibleConverter_1" />
 			<Style x:Key="ThemedScrollViewer" x:Uid="ThemedScrollViewer" TargetType="{x:Type ScrollViewer}">
 				<Setter x:Uid="ThemedScrollViewer_Setter_1" Property="Template">
 					<Setter.Value>
@@ -57,7 +57,7 @@
 			<RowDefinition x:Uid="RowDefinition_BottomLine" Height="Auto" />
 		</Grid.RowDefinitions>
 		<Grid Name="topLineGrid" Row="0" Height="1" Margin="0,0,0,6" Background="{StaticResource SubduedTextBrushKey}" />
-		<TextBox Grid.Row="1" Style="{StaticResource FilterTextBox}" Margin="6,0,0,3" BorderThickness="1" BorderBrush="#FF808080" Text="{Binding Path=(CoreCtl:ListViewHelper.MultiFilterText), ElementName=sectionsPanel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=400}" />
+		<TextBox Grid.Row="1" Style="{StaticResource FilterTextBox}" Margin="6,0,0,3" BorderThickness="1" BorderBrush="#FF808080" Text="{Binding Path=(ComCtl:ListViewHelper.MultiFilterText), ElementName=sectionsPanel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, Delay=400}" />
 		<ScrollViewer Name="contentViewer" x:Uid="contentViewer" Focusable="False" Grid.Row="2" Style="{StaticResource ThemedScrollViewer}" PanningMode="VerticalFirst" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
 			<StackPanel Name="sectionsPanel" x:Uid="sectionsPanel" Margin="0,0,0,0" />
 		</ScrollViewer>

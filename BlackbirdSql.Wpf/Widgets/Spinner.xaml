@@ -5,16 +5,16 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 	xmlns:local="clr-namespace:BlackbirdSql.Wpf.Widgets"
-	xmlns:CoreCtl="clr-namespace:BlackbirdSql.Common.Ctl;assembly=BlackbirdSql.Common"
-	xmlns:CoreCtls="clr-namespace:BlackbirdSql.Common.Controls;assembly=BlackbirdSql.Common"
-	xmlns:CoreCvtrs="clr-namespace:BlackbirdSql.Common.Ctl.Converters;assembly=BlackbirdSql.Common"
-	xmlns:CoreModel="clr-namespace:BlackbirdSql.Common.Model;assembly=BlackbirdSql.Common"
-	xmlns:CoreRes="clr-namespace:BlackbirdSql.Common.Properties;assembly=BlackbirdSql.Common"
+	xmlns:ComCtl="clr-namespace:BlackbirdSql.Common.Ctl;assembly=BlackbirdSql.Common"
+	xmlns:ComCtls="clr-namespace:BlackbirdSql.Common.Controls;assembly=BlackbirdSql.Common"
+	xmlns:ComCvtrs="clr-namespace:BlackbirdSql.Common.Converters;assembly=BlackbirdSql.Common"
+	xmlns:ComModel="clr-namespace:BlackbirdSql.Common.Model;assembly=BlackbirdSql.Common"
+	xmlns:ComRes="clr-namespace:BlackbirdSql.Common.Properties;assembly=BlackbirdSql.Common"
     mc:Ignorable="d" 
 	Height="128" Width="128">
 	<FrameworkElement.Resources>
 		<ResourceDictionary>
-			<CoreCvtrs:CanvasScaleConverter x:Key="canvasScaleConverter" x:Uid="canvasScaleConverter" />
+			<ComCvtrs:CanvasScaleConverter x:Key="canvasScaleConverter" x:Uid="canvasScaleConverter" />
 			<Storyboard x:Key="storyboardRotate" x:Uid="storyboardRotate">
 				<DoubleAnimation Name="animation1" x:Uid="animation1" Storyboard.TargetProperty="(RotateTransform.Angle)" From="0" To="360" Duration="0:0:01" RepeatBehavior="Forever" />
 			</Storyboard>

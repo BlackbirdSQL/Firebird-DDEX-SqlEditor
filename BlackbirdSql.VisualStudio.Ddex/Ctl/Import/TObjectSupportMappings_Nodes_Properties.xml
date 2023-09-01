@@ -181,7 +181,7 @@
 		<MappedProperty name="Column" underlyingMember="COLUMN_NAME" />
 		<MappedProperty name="Direction" underlyingMembers="PARAMETER_DIRECTION">
 			<Conversion>
-				<Calculate expr="IIF({0} = 1, 'IN', IIF({0} = 2, 'OUT', IIF({0} = 3, 'IN/OUT', 'RETVAL')))" exprType="System.String" />
+				<Calculate expr="IIF({0} = 0, 'IN', IIF({0} = 1, 'OUT', IIF({0} = 3, 'IN/OUT', 'RETVAL')))" exprType="System.String" />
 			</Conversion>
 		</MappedProperty>
 		<MappedProperty name="Package" underlyingMember="PACKAGE_NAME" />
@@ -203,7 +203,7 @@
 		<MappedProperty name="Column" underlyingMember="COLUMN_NAME" />
 		<MappedProperty name="Direction" underlyingMembers="PARAMETER_DIRECTION">
 			<Conversion>
-				<Calculate expr="IIF({0} = 1, 'IN', IIF({0} = 2, 'OUT', IIF({0} = 3, 'IN/OUT', 'RETVAL')))" exprType="System.String" />
+				<Calculate expr="IIF({0} = 0, 'IN', IIF({0} = 1, 'OUT', IIF({0} = 3, 'IN/OUT', 'RETVAL')))" exprType="System.String" />
 			</Conversion>
 		</MappedProperty>
 		<MappedProperty name="Package" underlyingMember="PACKAGE_NAME" />

@@ -32,16 +32,15 @@
 
 	<ItemGroup>
 		<None Include="Properties\BlackbirdSql.EditorExtension.snk" />
-		<Compile Include="Config\SqlEditorGeneralSettingsDialogPage.cs" />
-		<Compile Include="Config\SqlEditorGeneralSettingsUserControl.cs" />
-		<Compile Include="Config\SqlEditorTabAndStatusBarSettingsDialogPage.cs" />
-		<Compile Include="Config\SqlExecutionAdvancedOptionsPage.cs" />
-		<Compile Include="Config\SqlExecutionAnsiOptionsPage.cs" />
-		<Compile Include="Config\SqlExecutionGeneralOptionsPage.cs" />
-		<Compile Include="Config\SqlResultsGeneralOptionsPage.cs" />
-		<Compile Include="Config\SqlResultsToGridOptionsPage.cs" />
-		<Compile Include="Config\SqlResultsToTextOptionsPage.cs" />
-		<Compile Include="Config\AbstractToolsOptionsDialogPage.cs" />
+		<Compile Include="Root\Config\SqlEditorGeneralSettingsDialogPage.cs" />
+		<Compile Include="Root\Config\SqlEditorTabAndStatusBarSettingsDialogPage.cs" />
+		<Compile Include="Root\Config\SqlExecutionAdvancedOptionsPage.cs" />
+		<Compile Include="Root\Config\SqlExecutionAnsiOptionsPage.cs" />
+		<Compile Include="Root\Config\SqlExecutionGeneralOptionsPage.cs" />
+		<Compile Include="Root\Config\SqlResultsGeneralOptionsPage.cs" />
+		<Compile Include="Root\Config\SqlResultsToGridOptionsPage.cs" />
+		<Compile Include="Root\Config\SqlResultsToTextOptionsPage.cs" />
+		<Compile Include="Root\Config\AbstractToolsOptionsDialogPage.cs" />
 		<Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
 	</ItemGroup>
 
@@ -51,7 +50,6 @@
 			<DesignTime>True</DesignTime>
 			<DependentUpon>Resources.resx</DependentUpon>
 		</Compile>
-		<EmbeddedResource Include="Config\SqlEditorGeneralSettingsUserControl.resx" />
 		<EmbeddedResource Include="Properties\Resources.resx">
 			<Generator>PublicResXFileCodeGenerator</Generator>
 			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -108,8 +106,8 @@
 		<Compile Include="Ctl\EditorFactoryWithoutEncoding.cs" />
 		<Compile Include="Ctl\SqlEditorToolbarCommandHandler.cs" />
 		<Compile Include="Ctl\SqlResultsEditorFactory.cs" />
-		<Compile Include="Events\MonitorSelectionEventArgs.cs" />
-		<Compile Include="Interfaces\ISqlEditorStrategyProvider.cs" />
+		<Compile Include="Root\Events\MonitorSelectionEventArgs.cs" />
+		<Compile Include="Root\Interfaces\ISqlEditorStrategyProvider.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

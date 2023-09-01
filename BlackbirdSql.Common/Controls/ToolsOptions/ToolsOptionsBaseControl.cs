@@ -5,9 +5,8 @@
 
 using System.Globalization;
 using System.Windows.Forms;
-
-using BlackbirdSql.Common.Config;
 using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Config;
 
 namespace BlackbirdSql.Common.Controls.ToolsOptions
 {

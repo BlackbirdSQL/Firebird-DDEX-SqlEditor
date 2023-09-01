@@ -8,21 +8,21 @@ using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
 
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Controls.Enums;
 using BlackbirdSql.Common.Controls.Events;
 using BlackbirdSql.Common.Controls.Grid;
+using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core.Diagnostics;
+using BlackbirdSql.Core.Enums;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 
 using OleConstants = Microsoft.VisualStudio.OLE.Interop.Constants;
-using BlackbirdSql.Common.Enums;
+
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
-
 
 public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 {
@@ -131,7 +131,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		{
 			if (FocusedGrid != null && CommonUtils.GetCoordinatesForPopupMenuFromWM_Context(ref m, out var xPos, out var yPos, FocusedGrid))
 			{
-				CommonUtils.ShowContextMenu((int)SqlEditorCmdSet.ContextIdResultsWindow, xPos, yPos, this);
+				CommonUtils.ShowContextMenu((int)EnCommandSet.ContextIdResultsWindow, xPos, yPos, this);
 			}
 		}
 		else

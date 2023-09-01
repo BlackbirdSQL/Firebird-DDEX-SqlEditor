@@ -9,7 +9,6 @@ using System.Data.Common;
 
 using BlackbirdSql.Core;
 using BlackbirdSql.Common.Config;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Properties;
 
 using Microsoft.VisualStudio.Utilities;
@@ -19,6 +18,7 @@ using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.Enums;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
+using BlackbirdSql.Common.Interfaces;
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 

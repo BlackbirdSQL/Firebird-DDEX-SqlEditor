@@ -7,12 +7,12 @@ using System;
 
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Model.Interfaces;
 
 using FirebirdSql.Data.FirebirdClient;
 using System.Data.Common;
+using BlackbirdSql.Common.Enums;
+using BlackbirdSql.Common.Interfaces;
 
 namespace BlackbirdSql.Common.Model;
 

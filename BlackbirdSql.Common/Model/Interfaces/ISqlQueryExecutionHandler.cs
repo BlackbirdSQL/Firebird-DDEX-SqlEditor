@@ -5,6 +5,7 @@
 
 using BlackbirdSql.Common.Enums;
 using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Config.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
 
 // using Microsoft.SqlServer.Management.QueryExecution;

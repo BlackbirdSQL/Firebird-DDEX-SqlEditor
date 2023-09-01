@@ -247,7 +247,7 @@
 		<!-- StoredProcedureParameter -->
 		<MappedTypeRef name="TplMappedTypeColumn" arguments="StoredProcedureParameter,StoredProcedureParameter,Empty,{Catalog},,{Schema},,{StoredProcedure},,{Name},true" />
 		<!-- StoredProcedureColumn -->
-		<MappedTypeRef name="TplMappedTypeColumn" arguments="StoredProcedureColumn,StoredProcedureColumn,Empty,{Catalog},,{Schema},,{StoredProcedure},,{Name},PARAMETER_DIRECTION = 1 OR PARAMETER_DIRECTION = 3" />
+		<MappedTypeRef name="TplMappedTypeColumn" arguments="StoredProcedureColumn,StoredProcedureColumn,Empty,{Catalog},,{Schema},,{StoredProcedure},,{Name},PARAMETER_DIRECTION = 1 OR PARAMETER_DIRECTION = 3 OR PARAMETER_DIRECTION = 6" />
 
 		
 		<!-- ScalarFunction -->

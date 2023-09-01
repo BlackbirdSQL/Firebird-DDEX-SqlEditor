@@ -12,8 +12,8 @@ using System.Windows.Media.Imaging;
 
 using BlackbirdSql.Core;
 using BlackbirdSql.Common;
-using BlackbirdSql.Common.Interfaces;
 using Cmd = BlackbirdSql.Common.Cmd;
+using BlackbirdSql.Common.Interfaces;
 
 namespace BlackbirdSql.Wpf.Widgets
 {

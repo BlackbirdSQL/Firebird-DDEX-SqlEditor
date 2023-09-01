@@ -5,8 +5,8 @@ using System.Data;
 using System.Data.SqlTypes;
 using System.Globalization;
 using System.Threading;
-using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
 

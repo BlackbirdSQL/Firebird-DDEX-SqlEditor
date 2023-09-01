@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Enums;
 using BlackbirdSql.Common.Events;
 using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -21,7 +21,7 @@ using OleConstants = Microsoft.VisualStudio.OLE.Interop.Constants;
 
 namespace BlackbirdSql.Common.Controls;
 
-public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IOleCommandTarget, IVsWindowFrameNotify3, IVsMultiViewDocumentView, IVsHasRelatedSaveItems, IVsDocumentLockHolder, IVsSelectionEvents, IVsBroadcastMessageEvents, IDesignerDocumentService, ITabbedEditorService, IVsDocOutlineProvider, IVsDocOutlineProvider2, IVsToolboxActiveUserHook, IVsToolboxUser, IVsToolboxPageChooser, IVsDefaultToolboxTabState, IVsCodeWindow, IVsExtensibleObject
+public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IOleCommandTarget, IVsWindowFrameNotify3, IVsMultiViewDocumentView, IVsHasRelatedSaveItems, IVsDocumentLockHolder, IVsBroadcastMessageEvents, IDesignerDocumentService, ITabbedEditorService, IVsDocOutlineProvider, IVsDocOutlineProvider2, IVsToolboxActiveUserHook, IVsToolboxUser, IVsToolboxPageChooser, IVsDefaultToolboxTabState, IVsCodeWindow, IVsExtensibleObject
 {
 	private static TabbedEditorToolbarHandlerManager _ToolbarManager;
 
@@ -31,9 +31,9 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	private Guid _requestedView;
 
-	private uint _selectionMonitorCookie;
+	// private uint _selectionMonitorCookie;
 
-	private IVsMonitorSelection _SelectionMonitor;
+	// private IVsMonitorSelection _SelectionMonitor;
 
 	private bool _isAppActivated = true;
 
@@ -44,8 +44,6 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 	private bool _isClosing;
 
 	private bool _isInUpdateCmdUIContext;
-
-	private uint _ToolboxCmdUICookie;
 
 	private uint _lockHolderCookie;
 
@@ -70,44 +68,15 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		}
 	}
 
-	private IVsMonitorSelection SelectionMonitor
-	{
-		get
-		{
-			_SelectionMonitor ??= GetService(typeof(IVsMonitorSelection)) as IVsMonitorSelection;
-			return _SelectionMonitor;
-		}
-	}
-
-	private uint ToolboxCmdUICookie
-	{
-		get
-		{
-			if (_ToolboxCmdUICookie == 0 && SelectionMonitor != null)
-			{
-				Guid rguidCmdUI = new Guid(VSConstants.UICONTEXT.ToolboxInitialized_string);
-				SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _ToolboxCmdUICookie);
-			}
-			return _ToolboxCmdUICookie;
-		}
-	}
-
-	private bool IsToolboxInitialized
-	{
-		get
-		{
-			if (SelectionMonitor != null)
-			{
-				Native.ThrowOnFailure(SelectionMonitor.IsCmdUIContextActive(ToolboxCmdUICookie, out int pfActive));
-				return pfActive != 0;
-			}
-			return true;
-		}
-	}
 
 	public bool IsDisposed { get; private set; }
 
 	public virtual IVsTextLines DocData => _docData;
+
+	public bool IsToolboxInitialized => Controller.Instance.IsToolboxInitialized;
+
+	protected IVsMonitorSelection SelectionMonitor => Controller.SelectionMonitor;
+
 
 	ITextEditor ITabbedEditorService.TextEditor
 	{
@@ -176,12 +145,15 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 			_TabbedEditorUI = CreateTabbedEditorUI(toolbarGuid, toolbarID);
 			_TabbedEditorUI.CreateControl();
 		}
-		SelectionMonitor?.AdviseSelectionEvents(this, out _selectionMonitorCookie);
+		// SelectionMonitor?.AdviseSelectionEvents(this, out _selectionMonitorCookie);
 	}
 
 	protected override void Initialize()
 	{
 		base.Initialize();
+
+		Controller.Instance.OnElementValueChangedEvent += OnElementValueChanged;
+
 		if (GetService(typeof(SVsTrackSelectionEx)) is IVsTrackSelectionEx vsTrackSelectionEx)
 		{
 			vsTrackSelectionEx.OnElementValueChange((uint)VSConstants.VSSELELEMID.SEID_PropertyBrowserSID, 1, null);
@@ -218,12 +190,17 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 					(GetService(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable).UnregisterDocumentLockHolder(_lockHolderCookie);
 					_lockHolderCookie = 0u;
 				}
+
+				Controller.Instance.OnElementValueChangedEvent -= OnElementValueChanged;
+				/*
 				if (_selectionMonitorCookie != 0 && _SelectionMonitor != null)
 				{
 					_SelectionMonitor.UnadviseSelectionEvents(_selectionMonitorCookie);
 				}
 				_selectionMonitorCookie = 0u;
 				_SelectionMonitor = null;
+				*/
+
 				if (_TabbedEditorUI != null)
 				{
 					_TabbedEditorUI.Dispose();
@@ -597,7 +574,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 				selectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_WindowFrame, out var pvarValue);
 				if (pvarValue == service)
 				{
-					selectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out var pdwCmdUICookie);
+					selectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out uint pdwCmdUICookie);
 					selectionMonitor.SetCmdUIContext(pdwCmdUICookie, 1);
 					activeTab.Activate();
 				}
@@ -894,12 +871,8 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		return 0;
 	}
 
-	int IVsSelectionEvents.OnCmdUIContextChanged(uint dwCmdUICookie, int fActive)
-	{
-		return 0;
-	}
 
-	int IVsSelectionEvents.OnElementValueChanged(uint elementid, object varValueOld, object varValueNew)
+	int OnElementValueChanged(uint elementid, object varValueOld, object varValueNew)
 	{
 		if (_isLoading || _isInUpdateCmdUIContext || !_isAppActivated)
 		{
@@ -950,10 +923,6 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		return 0;
 	}
 
-	int IVsSelectionEvents.OnSelectionChanged(IVsHierarchy pHierOld, uint itemidOld, IVsMultiItemSelect pMISOld, ISelectionContainer pSCOld, IVsHierarchy pHierNew, uint itemidNew, IVsMultiItemSelect pMISNew, ISelectionContainer pSCNew)
-	{
-		return 0;
-	}
 
 	int IVsBroadcastMessageEvents.OnBroadcastMessage(uint msg, IntPtr wParam, IntPtr lParam)
 	{

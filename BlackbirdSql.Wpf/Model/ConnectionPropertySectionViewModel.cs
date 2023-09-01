@@ -21,10 +21,10 @@ using BlackbirdSql.Common.Properties;
 
 using FirebirdSql.Data.FirebirdClient;
 using BlackbirdSql.Common.Model;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Common.Ctl;
 using MonikerAgent = BlackbirdSql.Common.Model.MonikerAgent;
+using BlackbirdSql.Common.Interfaces;
 
 namespace BlackbirdSql.Wpf.Model;
 

@@ -2,17 +2,17 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:BlackbirdSql.Wpf.Themes"
-	xmlns:CoreCtl="clr-namespace:BlackbirdSql.Common.Ctl;assembly=BlackbirdSql.Common"
-	xmlns:CoreCtls="clr-namespace:BlackbirdSql.Common.Controls;assembly=BlackbirdSql.Common"
-	xmlns:CoreCvtrs="clr-namespace:BlackbirdSql.Common.Ctl.Converters;assembly=BlackbirdSql.Common"
-	xmlns:CoreModel="clr-namespace:BlackbirdSql.Common.Model;assembly=BlackbirdSql.Common"
-	xmlns:CoreRes="clr-namespace:BlackbirdSql.Common.Properties;assembly=BlackbirdSql.Common">
-	<CoreCvtrs:IsNullConverter x:Key="IsNullConverter" />
-	<CoreCvtrs:IsParentConverter x:Key="isListBoxItemConverter" TypeOfParent="{x:Type ListBoxItem}" />
-	<CoreCvtrs:IsParentConverter x:Key="isTreeViewItemConverter" TypeOfParent="{x:Type TreeViewItem}" />
-	<CoreCvtrs:ToggleButtonFillBrushConverter x:Key="ToggleButtonFillBrushConverter" />
-	<CoreCvtrs:ToggleButtonBorderBrushConverter x:Key="ToggleButtonBorderBrushConverter" />
-	<CoreCvtrs:ArithmeticConverter x:Key="IndentIncrementConverter" Operator="Addition" Operand="15" />
+	xmlns:ComCtl="clr-namespace:BlackbirdSql.Common.Ctl;assembly=BlackbirdSql.Common"
+	xmlns:ComCtls="clr-namespace:BlackbirdSql.Common.Controls;assembly=BlackbirdSql.Common"
+	xmlns:ComCvtrs="clr-namespace:BlackbirdSql.Common.Converters;assembly=BlackbirdSql.Common"
+	xmlns:ComModel="clr-namespace:BlackbirdSql.Common.Model;assembly=BlackbirdSql.Common"
+	xmlns:ComRes="clr-namespace:BlackbirdSql.Common.Properties;assembly=BlackbirdSql.Common">
+	<ComCvtrs:IsNullConverter x:Key="IsNullConverter" />
+	<ComCvtrs:IsParentConverter x:Key="isListBoxItemConverter" TypeOfParent="{x:Type ListBoxItem}" />
+	<ComCvtrs:IsParentConverter x:Key="isTreeViewItemConverter" TypeOfParent="{x:Type TreeViewItem}" />
+	<ComCvtrs:ToggleButtonFillBrushConverter x:Key="ToggleButtonFillBrushConverter" />
+	<ComCvtrs:ToggleButtonBorderBrushConverter x:Key="ToggleButtonBorderBrushConverter" />
+	<ComCvtrs:ArithmeticConverter x:Key="IndentIncrementConverter" Operator="Addition" Operand="15" />
 	<PathGeometry x:Key="ArrowExpanded">
 		<PathGeometry.Figures>
 			<PathFigureCollection>
@@ -41,154 +41,154 @@
 			</PathFigureCollection>
 		</PathGeometry.Figures>
 	</PathGeometry>
-	<SolidColorBrush x:Key="ArrowBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ArrowGlyphColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ArrowHighlightBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ArrowGlyphMouseOverColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ButtonBackgroundBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ButtonBackgroundColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ButtonBorderBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ButtonBorderColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ButtonForegroundBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ButtonForegroundColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ButtonDisabledBackgroundBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ButtonDisabledBackgroundColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ButtonDisabledBorderBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ButtonDisabledBorderColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ButtonDisabledForegroundBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ButtonDisabledForegroundColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ButtonHoverBackgroundBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ButtonHoverBackgroundColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ButtonHoverBorderBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ButtonHoverBorderColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ButtonHoverForegroundBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ButtonHoverForegroundColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ButtonPressedBackgroundBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ButtonPressedBackgroundColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ButtonPressedBorderBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ButtonPressedBorderColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ButtonPressedForegroundBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ButtonPressedForegroundColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ConnDlgSelectedTabUnderLineBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ConnDlgSelectedTabUnderLineColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ItemBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ItemColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="InnerTabActiveBackgroundBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=InnerTabActiveBackgroundColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ItemTextBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ItemTextColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ItemBorderBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ItemBorderColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ItemSelectedBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ItemSelectedColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ItemSelectedTextBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ItemSelectedTextColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ItemSelectedBorderBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ItemSelectedBorderColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ItemSelectedNotFocusedBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ItemSelectedNotFocusedColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ItemSelectedTextNotFocusedBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ItemSelectedTextNotFocusedColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ItemSelectedBorderNotFocusedBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ItemSelectedBorderNotFocusedColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ItemHoverBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ItemHoverColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ItemHoverTextBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ItemHoverTextColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ItemHoverBorderBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ItemHoverBorderColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TitleBarInactiveBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TitleBarInactiveColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TitleBarInactiveTextBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TitleBarInactiveTextColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TitleTextBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TitleTextColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TextBoxBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TextBoxColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TextBoxHintTextBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TextBoxHintTextColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TextBoxTextBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TextBoxTextColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TextBoxBorderBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TextBoxBorderColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ArrowBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ArrowGlyphColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ArrowHighlightBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ArrowGlyphMouseOverColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ButtonBackgroundBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ButtonBackgroundColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ButtonBorderBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ButtonBorderColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ButtonForegroundBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ButtonForegroundColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ButtonDisabledBackgroundBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ButtonDisabledBackgroundColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ButtonDisabledBorderBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ButtonDisabledBorderColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ButtonDisabledForegroundBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ButtonDisabledForegroundColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ButtonHoverBackgroundBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ButtonHoverBackgroundColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ButtonHoverBorderBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ButtonHoverBorderColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ButtonHoverForegroundBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ButtonHoverForegroundColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ButtonPressedBackgroundBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ButtonPressedBackgroundColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ButtonPressedBorderBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ButtonPressedBorderColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ButtonPressedForegroundBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ButtonPressedForegroundColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ConnDlgSelectedTabUnderLineBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ConnDlgSelectedTabUnderLineColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ItemBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ItemColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="InnerTabActiveBackgroundBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=InnerTabActiveBackgroundColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ItemTextBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ItemTextColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ItemBorderBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ItemBorderColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ItemSelectedBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ItemSelectedColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ItemSelectedTextBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ItemSelectedTextColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ItemSelectedBorderBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ItemSelectedBorderColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ItemSelectedNotFocusedBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ItemSelectedNotFocusedColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ItemSelectedTextNotFocusedBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ItemSelectedTextNotFocusedColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ItemSelectedBorderNotFocusedBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ItemSelectedBorderNotFocusedColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ItemHoverBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ItemHoverColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ItemHoverTextBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ItemHoverTextColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ItemHoverBorderBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ItemHoverBorderColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TitleBarInactiveBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TitleBarInactiveColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TitleBarInactiveTextBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TitleBarInactiveTextColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TitleTextBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TitleTextColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TextBoxBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TextBoxColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TextBoxHintTextBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TextBoxHintTextColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TextBoxTextBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TextBoxTextColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TextBoxBorderBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TextBoxBorderColor, Mode=OneWay}" />
 	<SolidColorBrush x:Key="TransparentBrushKey" Color="Transparent" />
-	<SolidColorBrush x:Key="RequiredTextBoxBorderBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=RequiredTextBoxBorderColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="SectionTitleTextBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=SectionTitleTextColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="BodyTextBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=BodyTextColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="EmphasizedTextBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=EmphasizedTextColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="SubduedTextBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=SubduedTextColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="NotificationActionLinkBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=NotificationActionLinkColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="NotificationBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=NotificationColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="NotificationTextBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=NotificationTextColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ActionLinkBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ActionLinkColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ActionLinkDisabledBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ActionLinkDisabledColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="SubduedBorderBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=SubduedBorderColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ToolbarBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ToolbarColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ToolbarTextBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ToolbarTextColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ToolbarSelectedTextBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ToolbarSelectedTextColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ToolbarSelectedBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ToolbarSelectedColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ToolbarSelectedBorderBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ToolbarSelectedBorderColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="SubtitleTextBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=SubtitleTextColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ToolWindowBackgroundBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ToolWindowBackgroundColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ToolWindowBorderBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ToolWindowBorderColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ActionLinkItemBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ActionLinkItemColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ActionLinkItemSelectedBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ActionLinkItemSelectedColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ActionLinkItemSelectedNotFocusedBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ActionLinkItemSelectedNotFocusedColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ActionLinkItemHoverBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ActionLinkItemHoverColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ActionLinkItemDisabledBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ActionLinkItemDisabledColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="EmbeddedDialogBackgroundBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=EmbeddedDialogBackgroundColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ProgressBarBackgroundBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ProgressBarBackgroundColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="ProgressBarForegroundBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ProgressBarForegroundColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="MenuBackgroundBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=MenuBackgroundColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="MenuBorderBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=MenuBorderColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="MenuTextBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=MenuTextColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="MenuSeparatorBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=MenuSeparatorColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="MenuHoverBackgroundBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=MenuHoverBackgroundColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="MenuHoverTextBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=MenuHoverTextColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="CodeReviewDiscussionSelectedItemBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=CodeReviewDiscussionSelectedItemColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="CodeReviewDiscussionSelectedItemTextBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=CodeReviewDiscussionSelectedItemColorTextColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="CodeReviewDiscussionSelectedActionLinkBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=CodeReviewDiscussionSelectedActionLinkColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="CodeReviewDiscussionDisabledActionLinkBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=CodeReviewDiscussionDisabledActionLinkColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemActiveControlBackground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemActiveControlBackground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemActiveControlForeground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemActiveControlForeground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemActiveControlBorder" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemActiveControlBorder, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemDefaultControlBackground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemDefaultControlBackground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemDefaultControlForeground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemDefaultControlForeground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemDefaultControlBorder" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemDefaultControlBorder, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemDropDownHoverBackground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemDropDownHoverBackground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemDropDownHoverForeground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemDropDownHoverForeground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemDropDownPressedBackground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemDropDownPressedBackground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemDropDownPressedForeground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemDropDownPressedForeground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemDropDownInactiveBackground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemDropDownInactiveBackground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemDropDownInactiveForeground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemDropDownInactiveForeground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemErrorControlBackground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemErrorControlBackground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemErrorControlForeground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemErrorControlForeground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemErrorControlBorder" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemErrorControlBorder, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemFormBackground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemFormBackground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemFormForeground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemFormForeground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemInvalidControlBackground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemInvalidControlBackground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemInvalidControlForeground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemInvalidControlForeground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemInvalidControlBorder" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemInvalidControlBorder, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemGroupBoxBackground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemGroupBoxBackground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemGroupBoxForeground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemGroupBoxForeground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemLabelBackground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemLabelBackground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemLabelForeground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemLabelForeground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemPromptText" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemPromptText, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemReadOnlyControlBackground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemReadOnlyControlBackground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemReadOnlyControlForeground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemReadOnlyControlForeground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemReadOnlyControlBorder" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemReadOnlyControlBorder, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTabItemBackground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTabItemBackground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTabItemForeground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTabItemForeground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTabHeaderBackground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTabHeaderBackground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTabHeaderForeground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTabHeaderForeground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTabHeaderActiveForeground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTabHeaderActiveForeground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTabHeaderHoverForeground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTabHeaderHoverForeground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTagForeground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTagForeground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTagBackground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTagBackground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTagActiveForeground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTagActiveForeground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTagActiveBackground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTagActiveBackground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTagHoverForeground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTagHoverForeground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTagHoverBackground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTagHoverBackground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTagActiveGlyphHoverForeground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTagActiveGlyphHoverForeground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTagActiveGlyphHoverBackground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTagActiveGlyphHoverBackground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTagActiveGlyphHoverBorder" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTagActiveGlyphHoverBorder, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTagActiveGlyphPressedForeground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTagActiveGlyphPressedForeground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTagActiveGlyphPressedBackground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTagActiveGlyphPressedBackground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTagActiveGlyphPressedBorder" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTagActiveGlyphPressedBorder, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTagHoverGlyphHoverForeground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTagHoverGlyphHoverForeground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTagHoverGlyphHoverBackground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTagHoverGlyphHoverBackground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTagHoverGlyphHoverBorder" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTagHoverGlyphHoverBorder, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTagHoverGlyphPressedForeground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTagHoverGlyphPressedForeground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTagHoverGlyphPressedBackground" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTagHoverGlyphPressedBackground, Mode=OneWay}" />
-	<SolidColorBrush x:Key="WorkItemTagHoverGlyphPressedBorder" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=WorkItemTagHoverGlyphPressedBorder, Mode=OneWay}" />
-	<SolidColorBrush x:Key="IconActionFillBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=IconActionFillColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="IconGeneralFillBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=IconGeneralFillColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="IconGeneralStrokeBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=IconGeneralStrokeColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="IconBackgroundBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=ToolWindowBackgroundColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="IconForegroundBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=BodyTextColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="VSLogoIconFillBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=VSLogoIconFillColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TeamExplorerHomeDefaultIconFillBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TeamExplorerHomeDefaultIconFillColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TeamExplorerHomeWITFamilyIconFillBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TeamExplorerHomeWITFamilyIconFillColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TeamExplorerHomeSCCFamilyIconFillBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TeamExplorerHomeSCCFamilyIconFillColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TeamExplorerHomeBuildFamilyIconFillBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TeamExplorerHomeBuildFamilyIconFillColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TeamExplorerHomeSCCGitFamilyIconFillBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TeamExplorerHomeSCCGitFamilyIconFillColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TeamExplorerHomeDocumentsFamilyIconFillBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TeamExplorerHomeDocumentsFamilyIconFillColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TeamExplorerHomeReportsFamilyIconFillBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TeamExplorerHomeReportsFamilyIconFillColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TETileIconBackgroundBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TETileIconBackgroundColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TETileIconBackgroundMouseOverBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TETileIconBackgroundMouseOverColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TETileIconBackgroundSelectedBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TETileIconBackgroundSelectedColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TETileListBackgroundBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TETileListBackgroundColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TETileListBackgroundMouseOverBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TETileListBackgroundMouseOverColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TETileListBackgroundSelectedBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TETileListBackgroundSelectedColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TETileListForegroundBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TETileListForegroundColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TETileListForegroundMouseOverBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TETileListForegroundMouseOverColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TETileListForegroundSelectedBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TETileListForegroundSelectedColor, Mode=OneWay}" />
-	<SolidColorBrush x:Key="TETileBorderBrushKey" Color="{Binding Source={x:Static CoreModel:DialogColors.Instance}, Path=TETileBorderColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="RequiredTextBoxBorderBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=RequiredTextBoxBorderColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="SectionTitleTextBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=SectionTitleTextColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="BodyTextBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=BodyTextColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="EmphasizedTextBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=EmphasizedTextColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="SubduedTextBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=SubduedTextColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="NotificationActionLinkBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=NotificationActionLinkColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="NotificationBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=NotificationColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="NotificationTextBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=NotificationTextColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ActionLinkBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ActionLinkColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ActionLinkDisabledBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ActionLinkDisabledColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="SubduedBorderBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=SubduedBorderColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ToolbarBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ToolbarColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ToolbarTextBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ToolbarTextColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ToolbarSelectedTextBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ToolbarSelectedTextColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ToolbarSelectedBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ToolbarSelectedColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ToolbarSelectedBorderBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ToolbarSelectedBorderColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="SubtitleTextBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=SubtitleTextColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ToolWindowBackgroundBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ToolWindowBackgroundColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ToolWindowBorderBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ToolWindowBorderColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ActionLinkItemBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ActionLinkItemColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ActionLinkItemSelectedBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ActionLinkItemSelectedColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ActionLinkItemSelectedNotFocusedBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ActionLinkItemSelectedNotFocusedColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ActionLinkItemHoverBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ActionLinkItemHoverColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ActionLinkItemDisabledBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ActionLinkItemDisabledColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="EmbeddedDialogBackgroundBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=EmbeddedDialogBackgroundColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ProgressBarBackgroundBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ProgressBarBackgroundColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="ProgressBarForegroundBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ProgressBarForegroundColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="MenuBackgroundBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=MenuBackgroundColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="MenuBorderBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=MenuBorderColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="MenuTextBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=MenuTextColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="MenuSeparatorBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=MenuSeparatorColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="MenuHoverBackgroundBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=MenuHoverBackgroundColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="MenuHoverTextBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=MenuHoverTextColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="CodeReviewDiscussionSelectedItemBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=CodeReviewDiscussionSelectedItemColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="CodeReviewDiscussionSelectedItemTextBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=CodeReviewDiscussionSelectedItemColorTextColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="CodeReviewDiscussionSelectedActionLinkBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=CodeReviewDiscussionSelectedActionLinkColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="CodeReviewDiscussionDisabledActionLinkBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=CodeReviewDiscussionDisabledActionLinkColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemActiveControlBackground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemActiveControlBackground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemActiveControlForeground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemActiveControlForeground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemActiveControlBorder" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemActiveControlBorder, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemDefaultControlBackground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemDefaultControlBackground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemDefaultControlForeground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemDefaultControlForeground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemDefaultControlBorder" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemDefaultControlBorder, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemDropDownHoverBackground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemDropDownHoverBackground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemDropDownHoverForeground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemDropDownHoverForeground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemDropDownPressedBackground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemDropDownPressedBackground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemDropDownPressedForeground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemDropDownPressedForeground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemDropDownInactiveBackground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemDropDownInactiveBackground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemDropDownInactiveForeground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemDropDownInactiveForeground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemErrorControlBackground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemErrorControlBackground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemErrorControlForeground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemErrorControlForeground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemErrorControlBorder" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemErrorControlBorder, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemFormBackground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemFormBackground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemFormForeground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemFormForeground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemInvalidControlBackground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemInvalidControlBackground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemInvalidControlForeground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemInvalidControlForeground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemInvalidControlBorder" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemInvalidControlBorder, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemGroupBoxBackground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemGroupBoxBackground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemGroupBoxForeground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemGroupBoxForeground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemLabelBackground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemLabelBackground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemLabelForeground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemLabelForeground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemPromptText" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemPromptText, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemReadOnlyControlBackground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemReadOnlyControlBackground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemReadOnlyControlForeground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemReadOnlyControlForeground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemReadOnlyControlBorder" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemReadOnlyControlBorder, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTabItemBackground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTabItemBackground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTabItemForeground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTabItemForeground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTabHeaderBackground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTabHeaderBackground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTabHeaderForeground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTabHeaderForeground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTabHeaderActiveForeground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTabHeaderActiveForeground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTabHeaderHoverForeground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTabHeaderHoverForeground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTagForeground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTagForeground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTagBackground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTagBackground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTagActiveForeground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTagActiveForeground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTagActiveBackground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTagActiveBackground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTagHoverForeground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTagHoverForeground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTagHoverBackground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTagHoverBackground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTagActiveGlyphHoverForeground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTagActiveGlyphHoverForeground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTagActiveGlyphHoverBackground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTagActiveGlyphHoverBackground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTagActiveGlyphHoverBorder" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTagActiveGlyphHoverBorder, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTagActiveGlyphPressedForeground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTagActiveGlyphPressedForeground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTagActiveGlyphPressedBackground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTagActiveGlyphPressedBackground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTagActiveGlyphPressedBorder" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTagActiveGlyphPressedBorder, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTagHoverGlyphHoverForeground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTagHoverGlyphHoverForeground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTagHoverGlyphHoverBackground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTagHoverGlyphHoverBackground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTagHoverGlyphHoverBorder" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTagHoverGlyphHoverBorder, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTagHoverGlyphPressedForeground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTagHoverGlyphPressedForeground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTagHoverGlyphPressedBackground" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTagHoverGlyphPressedBackground, Mode=OneWay}" />
+	<SolidColorBrush x:Key="WorkItemTagHoverGlyphPressedBorder" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=WorkItemTagHoverGlyphPressedBorder, Mode=OneWay}" />
+	<SolidColorBrush x:Key="IconActionFillBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=IconActionFillColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="IconGeneralFillBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=IconGeneralFillColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="IconGeneralStrokeBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=IconGeneralStrokeColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="IconBackgroundBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=ToolWindowBackgroundColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="IconForegroundBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=BodyTextColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="VSLogoIconFillBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=VSLogoIconFillColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TeamExplorerHomeDefaultIconFillBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TeamExplorerHomeDefaultIconFillColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TeamExplorerHomeWITFamilyIconFillBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TeamExplorerHomeWITFamilyIconFillColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TeamExplorerHomeSCCFamilyIconFillBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TeamExplorerHomeSCCFamilyIconFillColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TeamExplorerHomeBuildFamilyIconFillBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TeamExplorerHomeBuildFamilyIconFillColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TeamExplorerHomeSCCGitFamilyIconFillBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TeamExplorerHomeSCCGitFamilyIconFillColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TeamExplorerHomeDocumentsFamilyIconFillBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TeamExplorerHomeDocumentsFamilyIconFillColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TeamExplorerHomeReportsFamilyIconFillBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TeamExplorerHomeReportsFamilyIconFillColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TETileIconBackgroundBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TETileIconBackgroundColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TETileIconBackgroundMouseOverBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TETileIconBackgroundMouseOverColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TETileIconBackgroundSelectedBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TETileIconBackgroundSelectedColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TETileListBackgroundBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TETileListBackgroundColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TETileListBackgroundMouseOverBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TETileListBackgroundMouseOverColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TETileListBackgroundSelectedBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TETileListBackgroundSelectedColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TETileListForegroundBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TETileListForegroundColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TETileListForegroundMouseOverBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TETileListForegroundMouseOverColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TETileListForegroundSelectedBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TETileListForegroundSelectedColor, Mode=OneWay}" />
+	<SolidColorBrush x:Key="TETileBorderBrushKey" Color="{Binding Source={x:Static ComModel:DialogColors.Instance}, Path=TETileBorderColor, Mode=OneWay}" />
 	<SolidColorBrush x:Key="IconErrorFillBrushKey" Color="#FFAA2900" />
 	<SolidColorBrush x:Key="IconErrorStrokeBrushKey" Color="#FFFFFFFF" />
 	<SolidColorBrush x:Key="IconInformationFillBrushKey" Color="#FF18A2E7" />
@@ -304,7 +304,7 @@
 		<Setter Property="VerticalContentAlignment" Value="Center" />
 		<Setter Property="Foreground" Value="{StaticResource BodyTextBrushKey}" />
 		<Setter Property="Background" Value="{StaticResource ToolWindowBackgroundBrushKey}" />
-		<Setter Property="FontSize" Value="{Binding Source={x:Static CoreModel:DialogFonts.Instance}, Path=SectionTitleFontSize}" />
+		<Setter Property="FontSize" Value="{Binding Source={x:Static ComModel:DialogFonts.Instance}, Path=SectionTitleFontSize}" />
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
@@ -357,7 +357,7 @@
 	<Style x:Key="TreeViewItemStyle" TargetType="{x:Type TreeViewItem}">
 		<Style.Resources>
 			<ResourceDictionary>
-				<CoreCvtrs:ArithmeticConverter x:Key="IndentIncrementConverter2" Operator="Addition" Operand="15" />
+				<ComCvtrs:ArithmeticConverter x:Key="IndentIncrementConverter2" Operator="Addition" Operand="15" />
 			</ResourceDictionary>
 		</Style.Resources>
 		<Setter Property="Background" Value="{DynamicResource ItemBrushKey}" />
@@ -368,18 +368,18 @@
 		<Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
 		<Setter Property="HorizontalAlignment" Value="Stretch" />
 		<Setter Property="Padding" Value="0,0,0,0" />
-		<Setter Property="CoreCtl:TreeViewItemBehaviors.SelectAndFocusOnRightClick" Value="True" />
+		<Setter Property="ComCtl:TreeViewItemBehaviors.SelectAndFocusOnRightClick" Value="True" />
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type TreeViewItem}">
 					<StackPanel>
 						<Border Name="Bd" BorderBrush="{TemplateBinding Control.BorderBrush}" BorderThickness="{TemplateBinding Control.BorderThickness}" Background="{TemplateBinding Control.Background}" Padding="{TemplateBinding Control.Padding}" SnapsToDevicePixels="true" Style="{DynamicResource TreeViewItemBorderStyle}">
-							<DockPanel Style="{DynamicResource TreeViewItemDockPanelStyle}" Margin="{Binding Path=(CoreCtl:TreeViewItemExtensions.IndentWidth), Converter={x:Static CoreCvtrs:IndentWidthToMarginConverter.Default}, RelativeSource={RelativeSource TemplatedParent}}">
+							<DockPanel Style="{DynamicResource TreeViewItemDockPanelStyle}" Margin="{Binding Path=(ComCtl:TreeViewItemExtensions.IndentWidth), Converter={x:Static ComCvtrs:IndentWidthToMarginConverter.Default}, RelativeSource={RelativeSource TemplatedParent}}">
 								<ToggleButton Name="Expander" DockPanel.Dock="Left" Width="16" ClickMode="Press" Style="{DynamicResource ExpandCollapseToggleStyle}" Padding="0" IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}" />
 								<ContentPresenter Name="PART_Header" ContentSource="Header" HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" Style="{DynamicResource TreeViewItemContentPresenterStyle}" />
 							</DockPanel>
 						</Border>
-						<ItemsPresenter Name="ItemsHost" Grid.Row="1" Style="{DynamicResource TreeViewItemItemsPresenterStyle}" CoreCtl:TreeViewItemExtensions.IndentWidth="{Binding Path=(CoreCtl:TreeViewItemExtensions.IndentWidth), RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource IndentIncrementConverter}}" />
+						<ItemsPresenter Name="ItemsHost" Grid.Row="1" Style="{DynamicResource TreeViewItemItemsPresenterStyle}" ComCtl:TreeViewItemExtensions.IndentWidth="{Binding Path=(ComCtl:TreeViewItemExtensions.IndentWidth), RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource IndentIncrementConverter}}" />
 					</StackPanel>
 					<ControlTemplate.Triggers>
 						<Trigger Property="TreeViewItem.IsExpanded" Value="false">
@@ -1059,35 +1059,35 @@
 		</Style.Triggers>
 	</Style>
 	<Style x:Key="TitleText" x:Uid="TitleText" TargetType="{x:Type TextBlock}">
-		<Setter x:Uid="TitleText_Setter1" Property="FontSize" Value="{Binding Source={x:Static CoreModel:DialogFonts.Instance}, Path=TitleFontSize}" />
+		<Setter x:Uid="TitleText_Setter1" Property="FontSize" Value="{Binding Source={x:Static ComModel:DialogFonts.Instance}, Path=TitleFontSize}" />
 		<Setter x:Uid="TitleText_Setter2" Property="FontWeight" Value="SemiBold" />
 		<Setter x:Uid="TitleText_Setter3" Property="Foreground" Value="{StaticResource TitleTextBrushKey}" />
 		<Setter x:Uid="TitleText_Setter4" Property="TextWrapping" Value="Wrap" />
 	</Style>
 	<Style x:Key="SectionTitleText" x:Uid="SectionTitleText" TargetType="{x:Type TextBlock}">
-		<Setter x:Uid="SectionTitleText_Setter1" Property="FontSize" Value="{Binding Source={x:Static CoreModel:DialogFonts.Instance}, Path=SectionTitleFontSize}" />
+		<Setter x:Uid="SectionTitleText_Setter1" Property="FontSize" Value="{Binding Source={x:Static ComModel:DialogFonts.Instance}, Path=SectionTitleFontSize}" />
 		<Setter x:Uid="SectionTitleText_Setter2" Property="FontWeight" Value="SemiBold" />
 		<Setter x:Uid="SectionTitleText_Setter3" Property="Foreground" Value="{StaticResource SectionTitleTextBrushKey}" />
 	</Style>
 	<Style x:Key="BodyText" x:Uid="BodyText" TargetType="{x:Type TextBlock}">
-		<Setter x:Uid="BodyText_Setter1" Property="FontSize" Value="{Binding Source={x:Static CoreModel:DialogFonts.Instance}, Path=BodyFontSize}" />
+		<Setter x:Uid="BodyText_Setter1" Property="FontSize" Value="{Binding Source={x:Static ComModel:DialogFonts.Instance}, Path=BodyFontSize}" />
 		<Setter x:Uid="BodyText_Setter2" Property="FontWeight" Value="Normal" />
 		<Setter x:Uid="BodyText_Setter4" Property="TextWrapping" Value="Wrap" />
 	</Style>
 	<Style x:Key="BodyTextRun" x:Uid="BodyTextRun" TargetType="{x:Type Run}">
-		<Setter x:Uid="BodyTextRun_Setter1" Property="FontSize" Value="{Binding Source={x:Static CoreModel:DialogFonts.Instance}, Path=BodyFontSize}" />
+		<Setter x:Uid="BodyTextRun_Setter1" Property="FontSize" Value="{Binding Source={x:Static ComModel:DialogFonts.Instance}, Path=BodyFontSize}" />
 		<Setter x:Uid="BodyTextRun_Setter2" Property="FontWeight" Value="Normal" />
 	</Style>
 	<Style x:Key="EmphasizedText" x:Uid="EmphasizedText" TargetType="{x:Type TextBlock}">
-		<Setter x:Uid="EmphasizedText_Setter1" Property="FontSize" Value="{Binding Source={x:Static CoreModel:DialogFonts.Instance}, Path=EmphasizedFontSize}" />
+		<Setter x:Uid="EmphasizedText_Setter1" Property="FontSize" Value="{Binding Source={x:Static ComModel:DialogFonts.Instance}, Path=EmphasizedFontSize}" />
 		<Setter x:Uid="EmphasizedText_Setter2" Property="FontWeight" Value="SemiBold" />
 	</Style>
 	<Style x:Key="EmphasizedTextRun" x:Uid="EmphasizedTextRun" TargetType="{x:Type Run}">
-		<Setter x:Uid="EmphasizedTextRun_Setter1" Property="FontSize" Value="{Binding Source={x:Static CoreModel:DialogFonts.Instance}, Path=EmphasizedFontSize}" />
+		<Setter x:Uid="EmphasizedTextRun_Setter1" Property="FontSize" Value="{Binding Source={x:Static ComModel:DialogFonts.Instance}, Path=EmphasizedFontSize}" />
 		<Setter x:Uid="EmphasizedTextRun_Setter2" Property="FontWeight" Value="SemiBold" />
 	</Style>
 	<Style x:Key="SubduedText" x:Uid="SubduedText" TargetType="{x:Type TextBlock}">
-		<Setter x:Uid="SubduedText_Setter1" Property="FontSize" Value="{Binding Source={x:Static CoreModel:DialogFonts.Instance}, Path=SubduedFontSize}" />
+		<Setter x:Uid="SubduedText_Setter1" Property="FontSize" Value="{Binding Source={x:Static ComModel:DialogFonts.Instance}, Path=SubduedFontSize}" />
 		<Setter x:Uid="SubduedText_Setter2" Property="FontWeight" Value="Normal" />
 		<Setter x:Uid="SubduedText_Setter3" Property="Foreground" Value="{StaticResource SubduedTextBrushKey}" />
 		<Style.Triggers>
@@ -1108,7 +1108,7 @@
 		</Style.Triggers>
 	</Style>
 	<Style x:Key="SubduedTextRun" x:Uid="SubduedTextRun" TargetType="{x:Type Run}">
-		<Setter x:Uid="SubduedTextRun_Setter1" Property="FontSize" Value="{Binding Source={x:Static CoreModel:DialogFonts.Instance}, Path=SubduedFontSize}" />
+		<Setter x:Uid="SubduedTextRun_Setter1" Property="FontSize" Value="{Binding Source={x:Static ComModel:DialogFonts.Instance}, Path=SubduedFontSize}" />
 		<Setter x:Uid="SubduedTextRun_Setter2" Property="FontWeight" Value="Normal" />
 		<Setter x:Uid="SubduedTextRun_Setter3" Property="Foreground" Value="{StaticResource SubduedTextBrushKey}" />
 		<Style.Triggers>
@@ -1129,7 +1129,7 @@
 		</Style.Triggers>
 	</Style>
 	<Style x:Key="NotificationText" x:Uid="NotificationText" TargetType="{x:Type TextBlock}">
-		<Setter x:Uid="NotificationText_Setter1" Property="FontSize" Value="{Binding Source={x:Static CoreModel:DialogFonts.Instance}, Path=NotificationFontSize}" />
+		<Setter x:Uid="NotificationText_Setter1" Property="FontSize" Value="{Binding Source={x:Static ComModel:DialogFonts.Instance}, Path=NotificationFontSize}" />
 		<Setter x:Uid="NotificationText_Setter2" Property="FontWeight" Value="Normal" />
 		<Setter x:Uid="NotificationText_Setter3" Property="Foreground" Value="{StaticResource NotificationTextBrushKey}" />
 	</Style>
@@ -1157,19 +1157,19 @@
 	<Style x:Key="FilterTextBox" x:Uid="FilterTextBox" TargetType="{x:Type TextBox}" BasedOn="{StaticResource PlainTextBox}">
 		<Setter x:Uid="FilterTextBox_Setter1" Property="Margin" Value="6,6,6,4" />
 		<Setter x:Uid="FilterTextBox_Setter2" Property="Padding" Value="2" />
-		<Setter x:Uid="FilterTextBox_Setter3" Property="CoreCtls:Watermark.HintText" Value="{x:Static CoreRes:SharedResx.FilterTextBoxToolTip}" Localization.Attributes="Text (Unmodifiable Readable Text)" />
-		<Setter x:Uid="FilterTextBox_Setter4" Property="CoreCtls:Watermark.Image" Value="{DynamicResource SearchIconBrush}" />
-		<Setter x:Uid="FilterTextBox_Setter5" Property="CoreCtls:Watermark.ShowImageOnRight" Value="false" />
-		<Setter x:Uid="FilterTextBox_Setter6" Property="AutomationProperties.Name" Value="{x:Static  CoreRes:SharedResx.FilterTextBoxToolTip}" Localization.Attributes="Text (Unmodifiable Readable Text)" />
+		<Setter x:Uid="FilterTextBox_Setter3" Property="ComCtls:Watermark.HintText" Value="{x:Static ComRes:SharedResx.FilterTextBoxToolTip}" Localization.Attributes="Text (Unmodifiable Readable Text)" />
+		<Setter x:Uid="FilterTextBox_Setter4" Property="ComCtls:Watermark.Image" Value="{DynamicResource SearchIconBrush}" />
+		<Setter x:Uid="FilterTextBox_Setter5" Property="ComCtls:Watermark.ShowImageOnRight" Value="false" />
+		<Setter x:Uid="FilterTextBox_Setter6" Property="AutomationProperties.Name" Value="{x:Static  ComRes:SharedResx.FilterTextBoxToolTip}" Localization.Attributes="Text (Unmodifiable Readable Text)" />
 		<Style.Triggers>
 			<Trigger x:Uid="PlainTextBox_Trigger1" Property="UIElement.IsKeyboardFocused" Value="True">
-				<Setter x:Uid="PlainTextBox_Setter11" Property="CoreCtls:Watermark.HintText" Value="" />
+				<Setter x:Uid="PlainTextBox_Setter11" Property="ComCtls:Watermark.HintText" Value="" />
 			</Trigger>
 		</Style.Triggers>
 	</Style>
 	<Style x:Key="ActionLinkBase" x:Uid="ActionLinkBase" TargetType="{x:Type Hyperlink}">
 		<Setter x:Uid="ActionLink_Setter0" Property="FrameworkContentElement.FocusVisualStyle" Value="{StaticResource DashedRectangleFocusVisualStyle}" />
-		<Setter x:Uid="ActionLink_Setter1" Property="FontSize" Value="{Binding Source={x:Static CoreModel:DialogFonts.Instance}, Path=ActionLinkFontSize}" />
+		<Setter x:Uid="ActionLink_Setter1" Property="FontSize" Value="{Binding Source={x:Static ComModel:DialogFonts.Instance}, Path=ActionLinkFontSize}" />
 		<Setter x:Uid="ActionLink_Setter2" Property="FontWeight" Value="Normal" />
 		<Setter x:Uid="ActionLink_Setter3" Property="Foreground" Value="{StaticResource ActionLinkBrushKey}" />
 		<Setter x:Uid="ActionLink_Setter4" Property="Inline.TextDecorations" Value="{x:Null}" />

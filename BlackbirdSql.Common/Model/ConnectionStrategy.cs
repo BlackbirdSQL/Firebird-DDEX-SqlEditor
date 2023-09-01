@@ -21,7 +21,6 @@ using BlackbirdSql.Core;
 using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Common.Config;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
@@ -31,6 +30,7 @@ using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Shell;
 using BlackbirdSql.Core.Extensions;
 using Microsoft.VisualStudio.LanguageServer.Client;
+using BlackbirdSql.Common.Config.Interfaces;
 
 namespace BlackbirdSql.Common.Model;
 

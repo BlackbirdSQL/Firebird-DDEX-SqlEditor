@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 
-using BlackbirdSql.Core;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Interfaces;
 using FirebirdSql.Data.FirebirdClient;
@@ -33,9 +32,11 @@ public class MonikerAgent
 	protected const string C_PathPrefix = "{0}({1})";
 	protected const char C_CompositeIdentifierSeparator = '.';
 
-	protected readonly bool _IsUnique = true;
+	protected readonly bool _IsUnique = false;
 
-	protected bool _LowerCaseDatabase = false;
+	protected bool _LowerCaseDatabase = true;
+
+	protected string _TypeSuffix = "";
 
 	protected string _Explorer = "";
 
@@ -134,42 +135,43 @@ public class MonikerAgent
 	public string Moniker => ToString();
 
 
-	public MonikerAgent(bool isUnique = true, bool lowercaseDatabase = false)
+	public MonikerAgent(bool isUnique = false, bool lowercaseDatabase = true, string typeSuffix = "")
 	{
 		_IsUnique = isUnique;
 		_LowerCaseDatabase = lowercaseDatabase;
+		_TypeSuffix = typeSuffix;
 	}
 
 
-	public MonikerAgent(string fbSqlUrl, bool isUnique = true, bool lowercaseDatabase = false)
-		: this(isUnique, lowercaseDatabase)
+	public MonikerAgent(string fbSqlUrl, bool isUnique = false, bool lowercaseDatabase = true, string typeSuffix = "")
+		: this(isUnique, lowercaseDatabase, typeSuffix)
 	{
 		Parse(fbSqlUrl);
 	}
 
-	public MonikerAgent(IBPropertyAgent ci, bool isUnique = true, bool lowercaseDatabase = false)
-		: this(isUnique, lowercaseDatabase)
+	public MonikerAgent(IBPropertyAgent ci, bool isUnique = false, bool lowercaseDatabase = true, string typeSuffix = "")
+		: this(isUnique, lowercaseDatabase, typeSuffix)
 	{
 		Parse(ci);
 	}
 
 
-	public MonikerAgent(IVsDataExplorerNode node, bool isUnique = true, bool lowercaseDatabase = false)
-		: this(isUnique, lowercaseDatabase)
+	public MonikerAgent(IVsDataExplorerNode node, bool isUnique = false, bool lowercaseDatabase = true, string typeSuffix = "")
+		: this(isUnique, lowercaseDatabase, typeSuffix)
 	{
 		Extract(node);
 	}
 
 	public MonikerAgent(string server, string database, string user, EnModelObjectType objectType,
-		IList<string> identifierList, bool isUnique = true, bool lowercaseDatabase = false)
-		: this(server, database, user, objectType, (object[])identifierList.ToArray(), isUnique, lowercaseDatabase)
+		IList<string> identifierList, bool isUnique = false, bool lowercaseDatabase = true, string typeSuffix = "")
+		: this(server, database, user, objectType, (object[])identifierList.ToArray(), isUnique, lowercaseDatabase, typeSuffix)
 	{
 	}
 
 
 	public MonikerAgent(string server, string database, string user, EnModelObjectType objectType,
-		object[] identifier, bool isUnique = true, bool lowercaseDatabase = false)
-		: this(isUnique, lowercaseDatabase)
+		object[] identifier, bool isUnique = false, bool lowercaseDatabase = true, string typeSuffix = "")
+		: this(isUnique, lowercaseDatabase, typeSuffix)
 	{
 		_Server = server;
 		_Database = database;
@@ -190,18 +192,134 @@ public class MonikerAgent
 
 
 
-	public static string GetDecoratedDdlSource(IVsDataObject obj)
+	public static string GetDecoratedDdlSource(IVsDataExplorerNode node, bool alternate)
 	{
+		IVsDataObject obj = node.Object;
+		IVsDataExplorerChildNodeCollection nodes;
+
+		if (obj == null)
+			return "Node has no object";
+
+		int direction;
 		string prop = GetNodeScriptProperty(obj).ToUpper();
 		string src = ((string)obj.Properties[prop]).Replace("\r\n", "\n").Replace("\r", "\n");
+		string str = "";
+		string strout = "";
+		string flddef;
+
+		string dirtysrc = "";
+		while (src != dirtysrc)
+		{
+			dirtysrc = src;
+			src = dirtysrc.Replace("\n\n\n", "\n\n");
+		}
+
 
 		switch (GetNodeBaseType(obj))
 		{
 			case "Trigger":
 				string active = (bool)obj.Properties["IS_INACTIVE"] ? "INACTIVE" : "ACTIVE";
-				src = $"CREATE TRIGGER {obj.Properties["TRIGGER_NAME"]} FOR {obj.Properties["TABLE_NAME"]} {active}\n"
+				if (alternate)
+					str = $"ALTER TRIGGER {obj.Properties["TRIGGER_NAME"]}";
+				else
+					str = $"CREATE TRIGGER {obj.Properties["TRIGGER_NAME"]} FOR {obj.Properties["TABLE_NAME"]}";
+
+				src = $"{str} {active}\n"
 					+ $"{GetTriggerEvent((long)obj.Properties["TRIGGER_TYPE"])} POSITION {(short)obj.Properties["PRIORITY"]}\n"
 					+ src;
+				return src;
+			case "View":
+				if (!alternate)
+					return src;
+
+				nodes = node.GetChildren(false);
+				foreach (IVsDataExplorerNode child in nodes)
+					str += (str != "" ? ",\n\t" : "\n\t(") + child.Object.Properties["COLUMN_NAME"];
+
+				if (str != "")
+					str += ")";
+				src = $"ALTER VIEW {obj.Properties["VIEW_NAME"]}{str}\nAS\n{src}";
+				return src;
+			case "StoredProcedure":
+				nodes = node.GetChildren(false);
+
+				foreach (IVsDataExplorerNode child in nodes)
+				{
+					if (child.Object == null || child.Object.Type.Name != "StoredProcedureParameter")
+						continue;
+					direction = (int)child.Object.Properties["PARAMETER_DIRECTION"];
+
+					flddef = child.Object.Properties["PARAMETER_NAME"] + " "
+							+ TypeHelper.ConvertDataTypeToSql(child.Object.Properties["FIELD_DATA_TYPE"],
+							child.Object.Properties["FIELD_SIZE"], child.Object.Properties["NUMERIC_PRECISION"],
+							child.Object.Properties["NUMERIC_SCALE"]);
+
+					if (direction == 0 || direction == 3) // In
+					{
+						if (alternate)
+							str += (str != "" ? ",\n\t" : "\n\t(") + flddef;
+						else
+							str += (str != "" ? "\n" : "\n-- The following input parameters need to be initialized after the BEGIN statement\n")
+								+ "DECLARE VARIABLE " + flddef + ";";
+					}
+					if (direction > 0) // Out
+						strout += (strout != "" ? ",\n\t" : "\n\t(") + flddef;
+				}
+				if (str != "" && alternate)
+					str += ")";
+				if (strout != "")
+					strout = $"\nRETURNS{strout})";
+
+				if (strout != "" && alternate)
+					str += strout;
+
+				if (alternate)
+					str = $"ALTER PROCEDURE {obj.Properties["PROCEDURE_NAME"]}{str}\n";
+				else
+					strout = $"EXECUTE BLOCK{strout}\n";
+
+				if (alternate)
+					src = $"{str}AS\n{src}";
+				else
+					src = $"{strout}AS{str}\n-- End of parameter declarations\n{src}";
+
+				return src;
+			case "Function":
+				nodes = node.GetChildren(false);
+
+				foreach (IVsDataExplorerNode child in nodes)
+				{
+					if (child.Object == null)
+						continue;
+					if (child.Object.Type.Name != "FunctionParameter" && child.Object.Type.Name != "FunctionReturnValue")
+						continue;
+					direction = (short)child.Object.Properties["ORDINAL_POSITION"] == 0 ? 1 : 0;
+
+					flddef = (direction == 0 ? child.Object.Properties["ARGUMENT_NAME"] + " " : "")
+							+ TypeHelper.ConvertDataTypeToSql(child.Object.Properties["FIELD_DATA_TYPE"],
+							child.Object.Properties["FIELD_SIZE"], child.Object.Properties["NUMERIC_PRECISION"],
+							child.Object.Properties["NUMERIC_SCALE"]);
+
+					if (direction == 0) // In
+						str += (str != "" ? ",\n\t" : "\n\t(") + flddef;
+					if (direction > 0) // Out
+						strout += (strout != "" ? ",\n\t" : "") + flddef;
+				}
+				if (str != "")
+					str += ")";
+				if (strout != "")
+					strout = $"\nRETURNS {strout}";
+
+				if (strout != "")
+					str += strout;
+
+				if (alternate)
+					str = $"ALTER FUNCTION {obj.Properties["FUNCTION_NAME"]}{str}\n";
+				else
+					str = $"CREATE FUNCTION {obj.Properties["FUNCTION_NAME"]}{str}\n";
+
+				src = $"{str}AS\n{src}";
+
 				return src;
 			default:
 				return src;
@@ -228,7 +346,7 @@ public class MonikerAgent
 			_Password = (string)@rootObj.Properties[ModelConstants.C_KeySIPassword];
 
 			_ObjectType = nodeObj.Type.ToModelObjectType();
-			_ObjectName = @nodeObj.Identifier.ToString(DataObjectIdentifierFormat.Default);
+			_ObjectName = @nodeObj.Identifier.ToString(DataObjectIdentifierFormat.None);
 		}
 	}
 
@@ -514,8 +632,6 @@ public class MonikerAgent
 
 		string str = string.IsNullOrEmpty(_Database) ? "" : JsonSerializer.Serialize(_Database, typeof(string));
 
-		if (_LowerCaseDatabase)
-			str = str.ToLower();
 
 		stringBuilder.Append(str);
 
@@ -560,9 +676,9 @@ public class MonikerAgent
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.AppendFormat(CultureInfo.CurrentCulture, "{0}/", Server);
-		stringBuilder.AppendFormat(CultureInfo.CurrentCulture, "{0}/", Database);
+		stringBuilder.AppendFormat(CultureInfo.CurrentCulture, "{0}/", _LowerCaseDatabase ? Database.ToLower() : Database);
 		stringBuilder.AppendFormat(CultureInfo.CurrentCulture, "{0}/", User);
-		stringBuilder.AppendFormat(CultureInfo.CurrentCulture, "{0}/", ObjectType.ToString());
+		stringBuilder.AppendFormat(CultureInfo.CurrentCulture, "{0}/", ObjectType.ToString() + _TypeSuffix);
 
 		int len;
 
@@ -633,7 +749,7 @@ public class MonikerAgent
 	/// <summary>
 	/// Converts an identifier string array to a moniker string - not used
 	/// </summary>
-	public static string ToString(string[] identifierParts, DataObjectIdentifierFormat format = DataObjectIdentifierFormat.Default)
+	public static string ToString(string[] identifierParts, DataObjectIdentifierFormat format = DataObjectIdentifierFormat.None)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 

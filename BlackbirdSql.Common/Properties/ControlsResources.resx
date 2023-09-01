@@ -117,12 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AlreadySortingData" xml:space="preserve">
-    <value>Invalid calling sequence: already sorting data</value>
-  </data>
-  <data name="AlreadyStoringData" xml:space="preserve">
-    <value>Invalid calling sequence: already storing data.</value>
-  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="arrowDown" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -332,7 +326,7 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
         XTesb3QPLh88M+QwdP6m681Lt7xuXbu94vbgcOjwnZHokdE77DtTd1PuvriXeW/h/sYH6AdFD6UeVjxS
         fNTws+7PbaOWo6fHXMf6Hwc/vj/OGn/2S8Yv7ycKnpCfVEyqTDZPmU2dmnafvvF05dOJZ+nPFmYKf5X+
         tfa5zvMffnP8rX82YnbiBf/Fp99LXsq/PPRq2aueuYC5R69TXy/MF72Rf3P4LeNt37vwd5MLWe+x7ys/
-        6H7o/ujz8cGn1E+f/gUDmPP8usTo0wAAAAlwSFlzAAAOvwAADr8BOAVTJAAAAIhJREFUOE/FkEsOgCAM
+        6H7o/ujz8cGn1E+f/gUDmPP8usTo0wAAAAlwSFlzAAAOvAAADrwBlbxySQAAAIhJREFUOE/FkEsOgCAM
         RDkb97+LuulWGcI0pRRwY1w8Y5h54yeJyL0BnWmvBjnnkFZSOcp14DyuDha87PPtAEXfYf79G5T7d/8g
         ggN2xDMNCAc8JavoDcr+qSvoqQw4ACLJ0rw6oLL9dhCJBDKoAxRL0I14yTIMlEPlnwEPzllagQvLEYPQ
         I+kBr3YJguZUoXcAAAAASUVORK5CYII=
@@ -665,7 +659,7 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
         RudN65tdA8sHzg46DF645Xrr8m2v29fvrLwzMBQydHc4cnjkLvvu5L2key/vZ9yff7DpIfph4SOpR+WP
         lR7X/aj3Y+uI5ciZUdfRvidBTx6Mscae/5T+04fx/Kfkp+UTqhONk2aTp6fcp24+W/1s/Hnq8/npgp+l
         f65+ofviu18cf+mbWTUz/pL/cuHX4lfyr468Xva6e9Z/9vGb5Dfzc4Vv5d8efcd41/s+7P3EfOYH7IeK
-        j3ofuz55f3q4kLyw8Bv3hPP74uYdwgAAAAlwSFlzAAALDgAACw4BQL7hQQAAAEhJREFUKFOlilEOACAI
+        j3ofuz55f3q4kLyw8Bv3hPP74uYdwgAAAAlwSFlzAAALDAAACwwBP0AiyAAAAEhJREFUKFOlilEOACAI
         Qr3/pSnddGSyPmoj8IEBsP38mxR9qsYMk3VeBUNm3F1FzwfLwl1pHLurHM6H0jh2VzmcD6W/8UsAbAHL
         CQcILTd56wAAAABJRU5ErkJggg==
 </value>
@@ -894,7 +888,7 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
         RudN65tdA8sHzg46DF645Xrr8m2v29fvrLwzMBQydHc4cnjkLvvu5L2key/vZ9yff7DpIfph4SOpR+WP
         lR7X/aj3Y+uI5ciZUdfRvidBTx6Mscae/5T+04fx/Kfkp+UTqhONk2aTp6fcp24+W/1s/Hnq8/npgp+l
         f65+ofviu18cf+mbWTUz/pL/cuHX4lfyr468Xva6e9Z/9vGb5Dfzc4Vv5d8efcd41/s+7P3EfOYH7IeK
-        j3ofuz55f3q4kLyw8Bv3hPP74uYdwgAAAAlwSFlzAAALDgAACw4BQL7hQQAAAEJJREFUKFONi0EKADAM
+        j3ofuz55f3q4kLyw8Bv3hPP74uYdwgAAAAlwSFlzAAALDAAACwwBP0AiyAAAAEJJREFUKFONi0EKADAM
         wvb/TztysFB7saAkBZ+kOhzdhtEsh9Ph8zCnw642e21Oh8/DnA672uy1OR0+D3M67Cry9AF8FeIegANg
         fQAAAABJRU5ErkJggg==
 </value>
@@ -976,7 +970,7 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
         RudN65tdA8sHzg46DF645Xrr8m2v29fvrLwzMBQydHc4cnjkLvvu5L2key/vZ9yff7DpIfph4SOpR+WP
         lR7X/aj3Y+uI5ciZUdfRvidBTx6Mscae/5T+04fx/Kfkp+UTqhONk2aTp6fcp24+W/1s/Hnq8/npgp+l
         f65+ofviu18cf+mbWTUz/pL/cuHX4lfyr468Xva6e9Z/9vGb5Dfzc4Vv5d8efcd41/s+7P3EfOYH7IeK
-        j3ofuz55f3q4kLyw8Bv3hPP74uYdwgAAAAlwSFlzAAAOvQAADr0BR/uQrQAAAE5JREFUKFOVkIEJACAI
+        j3ofuz55f3q4kLyw8Bv3hPP74uYdwgAAAAlwSFlzAAAOvAAADrwBlbxySQAAAE5JREFUKFOVkIEJACAI
         BH//pRzN+EAzLawD0fQwEPrBlEVEAVyDc5fZyMSe1a3MXGT7KpKX+CsPyJdM2LcZuktMaeXzRlLkbjNj
         u/MbqgPjxmYkTEFmtQAAAABJRU5ErkJggg==
 </value>
@@ -1028,7 +1022,7 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
         RudN65tdA8sHzg46DF645Xrr8m2v29fvrLwzMBQydHc4cnjkLvvu5L2key/vZ9yff7DpIfph4SOpR+WP
         lR7X/aj3Y+uI5ciZUdfRvidBTx6Mscae/5T+04fx/Kfkp+UTqhONk2aTp6fcp24+W/1s/Hnq8/npgp+l
         f65+ofviu18cf+mbWTUz/pL/cuHX4lfyr468Xva6e9Z/9vGb5Dfzc4Vv5d8efcd41/s+7P3EfOYH7IeK
-        j3ofuz55f3q4kLyw8Bv3hPP74uYdwgAAAAlwSFlzAAALDgAACw4BQL7hQQAAADhJREFUKFNj+P//P9EY
+        j3ofuz55f3q4kLyw8Bv3hPP74uYdwgAAAAlwSFlzAAALDAAACwwBP0AiyAAAADhJREFUKFNj+P//P9EY
         qyAyBgIQAWTSXTGKAooVowjiYoMIDEFcbBCBIYiLDSIwBHGxQQRx+D8DAI5cHfFxIlInAAAAAElFTkSu
         QmCC
 </value>
@@ -1371,6 +1365,9 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   <data name="ToolOptionExecutionTimeDisplayName" xml:space="preserve">
     <value>Display Execution Time</value>
   </data>
+  <data name="ToolOptionGeneralCategory" xml:space="preserve">
+    <value>General</value>
+  </data>
   <data name="ToolOptionIncludeDBNameDisplayName" xml:space="preserve">
     <value>Include database name</value>
   </data>
@@ -1385,6 +1382,12 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   </data>
   <data name="ToolOptionIncludeServerNameDisplayName" xml:space="preserve">
     <value>Include server name</value>
+  </data>
+  <data name="ToolOptionPromptToSaveDescription" xml:space="preserve">
+    <value>Prompt to save unsaved SQL query windows on close.</value>
+  </data>
+  <data name="ToolOptionPromptToSaveDisplayName" xml:space="preserve">
+    <value>Prompt to save</value>
   </data>
   <data name="ToolOptionShowTimeOptionElapsed" xml:space="preserve">
     <value>Elapsed</value>
@@ -1481,7 +1484,7 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
         RudN65tdA8sHzg46DF645Xrr8m2v29fvrLwzMBQydHc4cnjkLvvu5L2key/vZ9yff7DpIfph4SOpR+WP
         lR7X/aj3Y+uI5ciZUdfRvidBTx6Mscae/5T+04fx/Kfkp+UTqhONk2aTp6fcp24+W/1s/Hnq8/npgp+l
         f65+ofviu18cf+mbWTUz/pL/cuHX4lfyr468Xva6e9Z/9vGb5Dfzc4Vv5d8efcd41/s+7P3EfOYH7IeK
-        j3ofuz55f3q4kLyw8Bv3hPP74uYdwgAAAAlwSFlzAAALDgAACw4BQL7hQQAAAFRJREFUKFONkG0OABAM
+        j3ofuz55f3q4kLyw8Bv3hPP74uYdwgAAAAlwSFlzAAALDAAACwwBP0AiyAAAAFRJREFUKFONkG0OABAM
         Q3f/S+1oo2gzX+HHs2qLhEXEN21x96rsCnKVYWBmske9BUSFOqVp8KkMS9pLLMHJuwYEPrPnT/DAmF2c
         SKU+XzeD6Z//CCvF1BtvkaArBQAAAABJRU5ErkJggg==
 </value>

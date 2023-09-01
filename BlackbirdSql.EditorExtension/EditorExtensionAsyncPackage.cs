@@ -11,11 +11,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using BlackbirdSql.Common;
-using BlackbirdSql.Common.Config;
+using BlackbirdSql.Common.Commands;
+using BlackbirdSql.Common.Config.ComponentModel;
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Ctl.Commands;
-using BlackbirdSql.Common.Enums;
 using BlackbirdSql.Common.Events;
 using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Model;
@@ -23,6 +22,7 @@ using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Providers;
@@ -43,7 +43,6 @@ using MonikerAgent = BlackbirdSql.Core.Model.MonikerAgent;
 
 
 namespace BlackbirdSql.EditorExtension;
-
 
 // =========================================================================================================
 //										EditorExtensionAsyncPackage Class 
@@ -80,7 +79,7 @@ namespace BlackbirdSql.EditorExtension;
 [ProvideEditorLogicalView(typeof(EditorFactoryWithoutEncoding), VSConstants.LOGVIEWID.Code_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithoutEncoding), VSConstants.LOGVIEWID.Designer_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithoutEncoding), VSConstants.LOGVIEWID.TextView_string)]
-[VsProvideFileExtensionMapping(typeof(EditorFactoryWithoutEncoding), "BlackbirdSql Editor", 111, 100)]
+[VsProvideFileExtensionMappingAttribute(typeof(EditorFactoryWithoutEncoding), "BlackbirdSql Editor", 111, 100)]
 
 [VsProvideEditorFactory(typeof(EditorFactoryWithEncoding), 112, false, DefaultName = "BlackbirdSql Editor with Encoding",
 	CommonPhysicalViewAttributes = (int)__VSPHYSICALVIEWATTRIBUTES.PVA_SupportsPreview,
@@ -91,7 +90,7 @@ namespace BlackbirdSql.EditorExtension;
 [ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.Code_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.Designer_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.TextView_string)]
-[VsProvideFileExtensionMapping(typeof(EditorFactoryWithEncoding), "BlackbirdSql Editor with Encoding", 112, 96)]
+[VsProvideFileExtensionMappingAttribute(typeof(EditorFactoryWithEncoding), "BlackbirdSql Editor with Encoding", 112, 96)]
 
 [VsProvideEditorFactory(typeof(SqlResultsEditorFactory), 113, false, DefaultName = "BlackbirdSql Results", CommonPhysicalViewAttributes = 0)]
 [ProvideEditorLogicalView(typeof(SqlResultsEditorFactory), VSConstants.LOGVIEWID.Debugging_string)]
@@ -443,31 +442,31 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 			Guid clsid = LibraryData.CLSID_SqlEditorCommandSet;
 
 			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
-				new SqlEditorToolbarCommandHandler<SqlEditorSqlDatabaseCommand>(clsid, (uint)SqlEditorCmdSet.CmbIdSQLDatabases));
+				new SqlEditorToolbarCommandHandler<SqlEditorSqlDatabaseCommand>(clsid, (uint)EnCommandSet.CmbIdSqlDatabases));
 			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
-				new SqlEditorToolbarCommandHandler<SqlEditorSqlDatabaseListCommand>(clsid, (uint)SqlEditorCmdSet.CmbIdSQLDatabasesGetList));
+				new SqlEditorToolbarCommandHandler<SqlEditorSqlDatabaseListCommand>(clsid, (uint)EnCommandSet.CmbIdSqlDatabasesGetList));
 			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
-				new SqlEditorToolbarCommandHandler<SqlEditorExecuteQueryCommand>(clsid, (uint)SqlEditorCmdSet.CmdIdExecuteQuery));
+				new SqlEditorToolbarCommandHandler<SqlEditorExecuteQueryCommand>(clsid, (uint)EnCommandSet.CmdIdExecuteQuery));
 			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
-				new SqlEditorToolbarCommandHandler<SqlEditorParseQueryCommand>(clsid, (uint)SqlEditorCmdSet.CmdIdParseQuery));
+				new SqlEditorToolbarCommandHandler<SqlEditorParseQueryCommand>(clsid, (uint)EnCommandSet.CmdIdParseQuery));
 			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
-				new SqlEditorToolbarCommandHandler<SqlEditorCancelQueryCommand>(clsid, (uint)SqlEditorCmdSet.CmdIdCancelQuery));
+				new SqlEditorToolbarCommandHandler<SqlEditorCancelQueryCommand>(clsid, (uint)EnCommandSet.CmdIdCancelQuery));
 			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
-				new SqlEditorToolbarCommandHandler<SqlEditorConnectCommand>(clsid, (uint)SqlEditorCmdSet.CmdIdConnect));
+				new SqlEditorToolbarCommandHandler<SqlEditorConnectCommand>(clsid, (uint)EnCommandSet.CmdIdConnect));
 			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
-				new SqlEditorToolbarCommandHandler<SqlEditorDisconnectCommand>(clsid, (uint)SqlEditorCmdSet.CmdIdDisconnect));
+				new SqlEditorToolbarCommandHandler<SqlEditorDisconnectCommand>(clsid, (uint)EnCommandSet.CmdIdDisconnect));
 			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
-				new SqlEditorToolbarCommandHandler<SqlEditorDisconnectAllQueriesCommand>(clsid, (uint)SqlEditorCmdSet.CmdIdDisconnectAllQueries));
+				new SqlEditorToolbarCommandHandler<SqlEditorDisconnectAllQueriesCommand>(clsid, (uint)EnCommandSet.CmdIdDisconnectAllQueries));
 			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
-				new SqlEditorToolbarCommandHandler<SqlEditorChangeConnectionCommand>(clsid, (uint)SqlEditorCmdSet.CmdIdChangeConnection));
+				new SqlEditorToolbarCommandHandler<SqlEditorChangeConnectionCommand>(clsid, (uint)EnCommandSet.CmdIdChangeConnection));
 			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
-				new SqlEditorToolbarCommandHandler<SqlEditorShowEstimatedPlanCommand>(clsid, (uint)SqlEditorCmdSet.CmdIdShowEstimatedPlan));
+				new SqlEditorToolbarCommandHandler<SqlEditorShowEstimatedPlanCommand>(clsid, (uint)EnCommandSet.CmdIdShowEstimatedPlan));
 			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
-				new SqlEditorToolbarCommandHandler<SqlEditorCloneQueryWindowCommand>(clsid, (uint)SqlEditorCmdSet.CmdIdCloneQuery));
+				new SqlEditorToolbarCommandHandler<SqlEditorCloneQueryWindowCommand>(clsid, (uint)EnCommandSet.CmdIdCloneQuery));
 			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
-				new SqlEditorToolbarCommandHandler<SqlEditorToggleSqlCmdModeCommand>(clsid, (uint)SqlEditorCmdSet.CmdIdToggleSQLCMDMode));
+				new SqlEditorToolbarCommandHandler<SqlEditorToggleSqlCmdModeCommand>(clsid, (uint)EnCommandSet.CmdIdToggleSQLCMDMode));
 			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
-				new SqlEditorToolbarCommandHandler<SqlEditorToggleExecutionPlanCommand>(clsid, (uint)SqlEditorCmdSet.CmdIdToggleExecutionPlan));
+				new SqlEditorToolbarCommandHandler<SqlEditorToggleExecutionPlanCommand>(clsid, (uint)EnCommandSet.CmdIdToggleExecutionPlan));
 		}
 	}
 
@@ -481,18 +480,25 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 		{
 			Guid clsid = LibraryData.CLSID_SqlEditorCommandSet;
 
-			CommandID id = new CommandID(clsid, (int)SqlEditorCmdSet.CmdIdNewQueryConnection);
+			CommandID id = new CommandID(clsid, (int)EnCommandSet.CmdIdNewQueryConnection);
 			OleMenuCommand oleMenuCommand = new OleMenuCommand(OnNewQueryConnection, id);
 			oleMenuCommand.BeforeQueryStatus += EnableCommand;
 			oleMenuCommandService.AddCommand(oleMenuCommand);
-			CommandID id2 = new CommandID(clsid, (int)SqlEditorCmdSet.CmdidCycleToNextTab);
+			CommandID id2 = new CommandID(clsid, (int)EnCommandSet.CmdidCycleToNextTab);
 			OleMenuCommand oleMenuCommand2 = new OleMenuCommand(CycleToNextEditorTab, id2);
 			oleMenuCommand2.BeforeQueryStatus += EnableCommand;
 			oleMenuCommandService.AddCommand(oleMenuCommand2);
-			CommandID id3 = new CommandID(clsid, (int)SqlEditorCmdSet.CmdidCycleToPrevious);
+			CommandID id3 = new CommandID(clsid, (int)EnCommandSet.CmdidCycleToPrevious);
 			OleMenuCommand oleMenuCommand3 = new OleMenuCommand(CycleToPreviousEditorTab, id3);
 			oleMenuCommand3.BeforeQueryStatus += EnableCommand;
 			oleMenuCommandService.AddCommand(oleMenuCommand3);
+			/*
+			CommandID id4 = new CommandID(clsid, (int)EnCommandSet.CmdIdOpenAlterTextObject);
+			OleMenuCommand oleMenuCommand4 = new OleMenuCommand(OnNewQueryConnection, id4);
+			oleMenuCommand4.BeforeQueryStatus += EnableCommand;
+			oleMenuCommandService.AddCommand(oleMenuCommand4);
+			*/
+
 		}
 		else
 		{

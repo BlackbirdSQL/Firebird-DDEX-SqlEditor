@@ -73,7 +73,8 @@
     </Content>
     <Content Include="Package.ico" />
     <Content Include="Resources\Package.ico" />
-    <Content Include="Resources\SqlEditorScriptToolbar.png" />
+    <Content Include="Resources\ToolbarImageStrip.png" />
+    <None Include="Resources\ToolbarImageStrip.psd" />
     <None Include="Resources\ViewSupport.FolderTables.ico" />
     <None Include="Properties\BlackbirdSql.VisualStudio.Ddex.NET.snk" />
     <None Include="Resources\ViewSupport.FolderForeignKeys.psd" />
@@ -145,16 +146,28 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Root\Config\ComponentModel\GlobalizedCategoryAttribute.cs" />
+    <Compile Include="Root\Config\ComponentModel\GlobalizedDescriptionAttribute.cs" />
+    <Compile Include="Root\Config\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Properties\BlackbirdSql.VisualStudio.Ddex.snk" />
   </ItemGroup>
   <!-- Includes (Properties and Properties Resources) -->
   <ItemGroup>
+    <Compile Include="Properties\ControlsResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ControlsResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Properties\ControlsResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ControlsResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -338,7 +351,7 @@
     <EmbeddedResource Include="Ctl\Import\TViewSupportElements.xml">
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TViewSupportElements.xml</LogicalName>
     </EmbeddedResource>
-    <Page Include="Config\UIDebugOptionsControl.xaml">
+    <Page Include="Root\Config\DebugOptionsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -347,29 +360,26 @@
   <ItemGroup>
     <Compile Include="BlackbirdSqlDdexExtension.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="CommandProviders\SystemCommandProvider.cs" />
-    <Compile Include="CommandProviders\UniversalCommandProvider.cs" />
-    <Compile Include="CommandProviders\UserCommandProvider.cs" />
-    <Compile Include="Config\PackageData.cs" />
-    <Compile Include="Config\PackageSupportedObjects.cs" />
-    <Compile Include="Config\UIDebugOptionsControl.xaml.cs">
-      <DependentUpon>UIDebugOptionsControl.xaml</DependentUpon>
+    <Compile Include="Root\CommandProviders\SystemCommandProvider.cs" />
+    <Compile Include="Root\CommandProviders\UniversalCommandProvider.cs" />
+    <Compile Include="Root\CommandProviders\UserCommandProvider.cs" />
+    <Compile Include="Root\Config\PackageData.cs" />
+    <Compile Include="Root\Config\PackageSupportedObjects.cs" />
+    <Compile Include="Root\Config\DebugOptionsControl.xaml.cs">
+      <DependentUpon>DebugOptionsControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Config\UIDebugOptionsDialogPage.cs">
+    <Compile Include="Root\Config\DebugOptionsDialogPage.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Config\VsDebugOptionModel.cs" />
-    <Compile Include="Config\VsGeneralOptionModel.cs" />
-    <Compile Include="Config\VsOptionsProvider.cs" />
-    <Compile Include="Config\VsPackageRegistration.cs" />
-    <Compile Include="Extensions\AbstractLinkageParser.cs" />
-    <Compile Include="Extensions\AbstruseLinkageParser.cs" />
-    <Compile Include="Extensions\LinkageParser.cs" />
-    <Compile Include="Interfaces\IBProviderObjectFactory.cs" />
-    <Compile Include="Model\BinaryEncoding.cs" />
-    <Compile Include="Model\Charset.cs" />
+    <Compile Include="Root\Config\DebugOptionModel.cs" />
+    <Compile Include="Root\Config\GeneralOptionModel.cs" />
+    <Compile Include="Root\Config\OptionsProvider.cs" />
+    <Compile Include="Root\Config\VsPackageRegistration.cs" />
+    <Compile Include="Root\Extensions\AbstractLinkageParser.cs" />
+    <Compile Include="Root\Extensions\AbstruseLinkageParser.cs" />
+    <Compile Include="Root\Extensions\LinkageParser.cs" />
+    <Compile Include="Root\Interfaces\IBProviderObjectFactory.cs" />
     <Compile Include="Model\DslColumns.cs" />
-    <Compile Include="Model\DslDbDataType.cs" />
     <Compile Include="Model\DslFunctionArguments.cs" />
     <Compile Include="Model\DslFunctionArgumentsLegacy.cs" />
     <Compile Include="Model\DslIndexColumns.cs" />
@@ -379,9 +389,7 @@
     <Compile Include="Model\DslSchemaFactory.cs" />
     <Compile Include="Model\DslTriggerColumns.cs" />
     <Compile Include="Model\DslRawTriggerDependencies.cs" />
-    <Compile Include="Model\DslTypeHelper.cs" />
     <Compile Include="Model\DslViewColumns.cs" />
-    <Compile Include="Model\Encoding2.cs" />
     <Compile Include="Model\DslIndexes.cs" />
     <Compile Include="Model\DslRawTriggers.cs" />
     <Compile Include="Model\DslTables.cs" />
@@ -390,7 +398,6 @@
     <Compile Include="Model\DslFunctions.cs" />
     <Compile Include="Model\DslProcedures.cs" />
     <Compile Include="Model\DslForeignKeys.cs" />
-    <Compile Include="Model\IscCodes.cs" />
     <Compile Include="Ctl\TConnectionEquivalencyComparer.cs" />
     <Compile Include="Ctl\TConnectionPromptDialog.cs">
       <SubType>Form</SubType>

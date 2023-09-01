@@ -12,7 +12,6 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
-
 using BlackbirdSql.Common.Events;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
@@ -408,7 +407,6 @@ public abstract class AbstractDesignerServices
 	protected static void PopulateEditorWithObject(bool isNewObject, string mkDocument, uint docCookie,
 		string script, HashSet<NodeElementDescriptor> originalObjects = null, bool updateBufferText = true)
 	{
-		//IL_001b: Unknown result type (might be due to invalid IL or missing references)
 		try
 		{
 			if (RdtManager.Instance.GetRdtCookie(mkDocument) == docCookie && docCookie != 0)

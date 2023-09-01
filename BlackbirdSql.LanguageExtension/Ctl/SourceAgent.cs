@@ -11,7 +11,6 @@ using Babel;
 
 using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.LanguageExtension.ColorService;
 
 using Microsoft.SqlServer.Management.SqlParser.Binder;
@@ -23,9 +22,7 @@ using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 using Cmd = BlackbirdSql.Common.Cmd;
-
-
-
+using BlackbirdSql.Common.Interfaces;
 
 namespace BlackbirdSql.LanguageExtension;
 

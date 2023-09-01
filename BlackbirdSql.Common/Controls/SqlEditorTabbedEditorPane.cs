@@ -6,11 +6,11 @@ using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
 
+using BlackbirdSql.Common.Commands;
 using BlackbirdSql.Common.Config;
 using BlackbirdSql.Common.Controls.PropertiesWindow;
 using BlackbirdSql.Common.Controls.ResultsPane;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Ctl.Commands;
 using BlackbirdSql.Common.Enums;
 using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Model;
@@ -18,6 +18,7 @@ using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Diagnostics;
+using BlackbirdSql.Core.Enums;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -32,10 +33,7 @@ using Microsoft.VisualStudio.Utilities;
 using Tracer = BlackbirdSql.Core.Diagnostics.Tracer;
 
 
-
-
 namespace BlackbirdSql.Common.Controls;
-
 
 public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, ISqlEditorWindowPane, IVsFindTarget, IVsFindTarget2, IVsFindTarget3
 {
@@ -527,19 +525,19 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, ISqlEditorWin
 		{
 			AbstractSqlEditorCommand sqlEditorCommand = null;
 
-			SqlEditorCmdSet cmd = (SqlEditorCmdSet)nCmdID;
+			EnCommandSet cmd = (EnCommandSet)nCmdID;
 			switch (cmd)
 			{
-				case SqlEditorCmdSet.CmdIdResultsAsText:
+				case EnCommandSet.CmdIdResultsAsText:
 					sqlEditorCommand = new SqlEditorResultsAsTextCommand(this);
 					break;
-				case SqlEditorCmdSet.CmdIdResultsAsGrid:
+				case EnCommandSet.CmdIdResultsAsGrid:
 					sqlEditorCommand = new SqlEditorResultsAsGridCommand(this);
 					break;
-				case SqlEditorCmdSet.CmdIdResultsAsFile:
+				case EnCommandSet.CmdIdResultsAsFile:
 					sqlEditorCommand = new SqlEditorResultsAsFileCommand(this);
 					break;
-				case SqlEditorCmdSet.CmdIdToggleResultsPane:
+				case EnCommandSet.CmdIdToggleResultsPane:
 					sqlEditorCommand = new SqlEditorToggleResultsPaneCommand(this);
 					break;
 			}
@@ -571,20 +569,20 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, ISqlEditorWin
 			if (pguidCmdGroup == LibraryData.CLSID_SqlEditorCommandSet)
 			{
 				AbstractSqlEditorCommand sqlEditorCommand = null;
-				SqlEditorCmdSet cmd = (SqlEditorCmdSet)cmdID;
+				EnCommandSet cmd = (EnCommandSet)cmdID;
 
 				switch (cmd)
 				{
-					case SqlEditorCmdSet.CmdIdResultsAsText:
+					case EnCommandSet.CmdIdResultsAsText:
 						sqlEditorCommand = new SqlEditorResultsAsTextCommand(this);
 						break;
-					case SqlEditorCmdSet.CmdIdResultsAsGrid:
+					case EnCommandSet.CmdIdResultsAsGrid:
 						sqlEditorCommand = new SqlEditorResultsAsGridCommand(this);
 						break;
-					case SqlEditorCmdSet.CmdIdResultsAsFile:
+					case EnCommandSet.CmdIdResultsAsFile:
 						sqlEditorCommand = new SqlEditorResultsAsFileCommand(this);
 						break;
-					case SqlEditorCmdSet.CmdIdToggleResultsPane:
+					case EnCommandSet.CmdIdToggleResultsPane:
 						sqlEditorCommand = new SqlEditorToggleResultsPaneCommand(this);
 						break;
 				}
@@ -972,12 +970,11 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, ISqlEditorWin
 			switch (auxillaryDocData.Strategy.Mode)
 			{
 				case EnEditorMode.CustomOnline:
-					menuId = (uint)SqlEditorCmdSet.MenuIdOnlineToolbar;
+					menuId = (uint)EnCommandSet.MenuIdOnlineToolbar;
 					TabbedEditorUI.InitializeToolbarHost(this, clsidCmdSet, menuId);
 					break;
 				case EnEditorMode.Standard:
-					menuId = (uint)SqlEditorCmdSet.MenuIdScriptToolbar;
-					// menuId = (uint)SqlEditorCmdSet.MenuIdOnlineToolbar;
+					menuId = (uint)EnCommandSet.MenuIdScriptToolbar;
 					TabbedEditorUI.InitializeToolbarHost(this, clsidCmdSet, menuId);
 					break;
 				default:

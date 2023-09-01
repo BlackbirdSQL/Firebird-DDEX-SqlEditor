@@ -13,15 +13,15 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 
-using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Controls.Enums;
 using BlackbirdSql.Common.Controls.Events;
 using BlackbirdSql.Common.Controls.Grid;
-using BlackbirdSql.Common.Enums;
+using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core.Diagnostics;
+using BlackbirdSql.Core.Enums;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -88,7 +88,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 				new CommandID(VSConstants.CMDSETID.StandardCommandSet97_guid,
 				(int)VSConstants.VSStd97CmdID.Copy));
 			MenuCommand menuCommand3 = new MenuCommand(OnSaveAs,
-				new CommandID(clsid, (int)SqlEditorCmdSet.CmdidSaveResultsAs));
+				new CommandID(clsid, (int)EnCommandSet.CmdidSaveResultsAs));
 			MenuCommand menuCommand4 = new MenuCommand(OnPrint,
 				new CommandID(VSConstants.CMDSETID.StandardCommandSet97_guid,
 				(int)VSConstants.VSStd97CmdID.Print));
@@ -96,7 +96,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 				new CommandID(VSConstants.CMDSETID.StandardCommandSet97_guid,
 				(int)VSConstants.VSStd97CmdID.PageSetup));
 			MenuCommand menuCommand6 = new MenuCommand(OnCopyWithHeaders,
-				new CommandID(clsid, (int)SqlEditorCmdSet.CmdidCopyWithHeaders));
+				new CommandID(clsid, (int)EnCommandSet.CmdidCopyWithHeaders));
 			MenuService.AddRange(new MenuCommand[6] { menuCommand, menuCommand2, menuCommand3,
 				menuCommand4, menuCommand5, menuCommand6 });
 		}
@@ -107,7 +107,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			{
 				if (FocusedGrid != null && CommonUtils.GetCoordinatesForPopupMenuFromWM_Context(ref m, out var x, out var y, (Control)(object)FocusedGrid))
 				{
-					CommonUtils.ShowContextMenu((int)SqlEditorCmdSet.ContextIdResultsWindow, x, y, this);
+					CommonUtils.ShowContextMenu((int)EnCommandSet.ContextIdResultsWindow, x, y, this);
 				}
 			}
 			else
@@ -873,13 +873,13 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			{
 				bool visible = menuCommand.Supported = true;
 				menuCommand.Visible = visible;
-				switch ((SqlEditorCmdSet)commandID.ID)
+				switch ((EnCommandSet)commandID.ID)
 				{
-					case SqlEditorCmdSet.CmdidSaveResultsAs:
+					case EnCommandSet.CmdidSaveResultsAs:
 						visible = menuCommand.Visible = IsCurrentControlSaveable;
 						menuCommand.Enabled = visible;
 						break;
-					case SqlEditorCmdSet.CmdidCopyWithHeaders:
+					case EnCommandSet.CmdidCopyWithHeaders:
 						menuCommand.Enabled = IsCurrentControlSaveable;
 						break;
 				}

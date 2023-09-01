@@ -109,7 +109,7 @@ public abstract class AbstractSourceInformation : DataSourceInformation, IVsData
 			if (_SourceInformation == null && Connection != null)
 			{
 				LinkageParser parser = LinkageParser.Instance((FbConnection)Connection, false);
-				parser?.SyncEnter();
+				parser?.SyncEnter(true);
 
 				try
 				{

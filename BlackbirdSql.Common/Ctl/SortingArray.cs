@@ -7,8 +7,8 @@ using System;
 using System.Collections;
 using System.Threading;
 using BlackbirdSql.Core;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Common.Interfaces;
 
 namespace BlackbirdSql.Common.Ctl;
 

@@ -10,8 +10,8 @@ using System.Windows.Forms;
 using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Common;
 using BlackbirdSql.Common.Controls;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Common.Interfaces;
 
 namespace BlackbirdSql.Common.Controls.ToolsOptions
 {

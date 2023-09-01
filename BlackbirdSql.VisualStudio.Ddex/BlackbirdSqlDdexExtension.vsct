@@ -22,7 +22,7 @@
 
 	<!--The Commands section is where commands, menus, and menu groups are defined.
       This section uses a Guid to identify the package that provides the command defined inside it. -->
-	<Commands package="guidEditorExtensionAsyncPackage">
+	<Commands package="PackageGuid">
 		<!-- Inside this section we have different sub-sections: one for the menus, another
     for the menu groups, one for the buttons (the actual commands), one for the combos
     and the last one for the bitmaps used. Each element is identified by a command id that
@@ -31,23 +31,22 @@
     group; your package should define its own command set in order to avoid collisions
     with command ids defined by other packages. -->
 		<Menus>
-			<Menu guid="guidSqlEditorCmdSet" id="menuIdScriptToolbar" type="Toolbar">
+			<Menu guid="CommandSetGuid" id="MenuIdScriptToolbar" type="Toolbar">
 				<CommandFlag>DefaultDocked</CommandFlag>
 				<Strings>
 					<ButtonText>Script Toolbar</ButtonText>
 					<CommandName>ScriptToolbar</CommandName>
 				</Strings>
 			</Menu>
-			<!-- 
-			<Menu guid="guidSqlEditorCmdSet" id="menuCtlrIdDatabases" priority="0x0120" type="MenuController">
-				<Parent guid="guidSqlEditorCmdSet" id="menuIdScriptToolbarGroup" />
+			<Menu guid="CommandSetGuid" id="MenuIdOnlineToolbar" type="Toolbar">
+				<CommandFlag>DefaultDocked</CommandFlag>
 				<Strings>
-					<ButtonText></ButtonText>
+					<ButtonText>Online Toolbar</ButtonText>
+					<CommandName>OnlineToolbar</CommandName>
 				</Strings>
 			</Menu>
-			-->
-			<Menu guid="guidSqlEditorCmdSet" id="ctlrIdResultsTo" priority="0x0140" type="MenuController">
-				<Parent guid="guidSqlEditorCmdSet" id="menuIdScriptToolbarGroup" />
+			<Menu guid="CommandSetGuid" id="MenuIdResultsTo" priority="0x0140" type="MenuController">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>TextIsAnchorCommand</CommandFlag>
 				<Strings>
@@ -55,20 +54,11 @@
 					<CommandName>ResultsToMenuController</CommandName>
 				</Strings>
 			</Menu>
-			<!--
-			<Menu guid="guidSqlEditorCmdSet" id="menuIdOnlineToolbar" type="Toolbar">
-				<CommandFlag>DefaultDocked</CommandFlag>
-				<Strings>
-					<ButtonText>Script Toolbar</ButtonText>
-					<CommandName>ScriptToolbar</CommandName>
-				</Strings>
-			</Menu>
-			-->
 		</Menus>
 
 		<Combos>
-			<Combo guid="guidSqlEditorCmdSet" id="cmbIdSQLDatabases" priority="0x0100" type="DropDownCombo" defaultWidth="240" idCommandList="cmbIdSQLDatabasesGetList">
-				<Parent guid="guidSqlEditorCmdSet" id="menuIdScriptToolbarGroup"/>
+			<Combo guid="CommandSetGuid" id="CmbIdSqlDatabases" priority="0x0100" type="DropDownCombo" defaultWidth="240" idCommandList="CmbIdSqlDatabasesGetList">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup"/>
 				<CommandFlag>IconAndText</CommandFlag>
 				<CommandFlag>CommandWellOnly</CommandFlag>
 				<Strings>
@@ -87,22 +77,28 @@
          group as the part of a menu contained between two lines. The parent of a group
          must be a menu. -->
 		<Groups>
-			<Group guid="guidSqlEditorCmdSet" id="menuIdScriptToolbarGroup" priority="0x0600">
-				<Parent guid="guidSqlEditorCmdSet" id="menuIdScriptToolbar"/>
+			<!-- Table scope -->
+			<Group guid="CommandSetGuid" id="MenuIdSeNodeGroup" priority="0x0600">
+				<!--<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />-->
+				<Parent guid="ServerExplorerObjectNodesGuid" id="IDMX_DV_OBJECT_NODE" />
 			</Group>
-			<!-- 
-			<Group guid="guidSqlEditorCmdSet" id="groupIdDatabases" priority="0x0220">
-				<Parent guid="guidSqlEditorCmdSet" id="menuCtlrIdDatabases" />
+
+			<!-- Database scope -->
+			<Group guid="CommandSetGuid" id="MenuIdSeRootGroup" priority="0x0600">
+				<!--<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />-->
+				<Parent guid="ServerExplorerObjectNodesGuid" id="IDMX_DV_STATIC_NODE" />
 			</Group>
-			-->
-			<Group guid="guidSqlEditorCmdSet" id="ctlrIdResultsToGroup" priority="0x0220">
-				<Parent guid="guidSqlEditorCmdSet" id="ctlrIdResultsTo" />
+
+
+			<Group guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" priority="0x0600">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbar"/>
 			</Group>
-			<!--
-			<Group guid="guidSqlEditorCmdSet" id="menuIdOnlineToolbarGroup" priority="0x0600">
-				<Parent guid="guidSqlEditorCmdSet" id="menuIdOnlineToolbar"/>
+			<Group guid="CommandSetGuid" id="MenuIdOnlineToolbarGroup" priority="0x0600">
+				<Parent guid="CommandSetGuid" id="MenuIdOnlineToolbar"/>
 			</Group>
-			-->
+			<Group guid="CommandSetGuid" id="CtlrIdResultsToGroup" priority="0x0220">
+				<Parent guid="CommandSetGuid" id="MenuIdResultsTo" />
+			</Group>
 		</Groups>
 
 		<!--Buttons section. -->
@@ -116,109 +112,97 @@
               <CommandFlag>DefaultInvisible</CommandFlag>
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
-			<Button guid="guidSqlEditorCmdSet" id="cmdIdExecuteQuery" priority="0x0000" type="Button">
-				<Parent guid="guidSqlEditorCmdSet" id="menuIdScriptToolbarGroup" />
-				<Icon guid="guidImages" id="imgExecuteQuery" />
+			<Button guid="CommandSetGuid" id="CmdIdExecuteQuery" priority="0x0000" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
+				<Icon guid="ImagesGuid" id="ImgExecuteQuery" />
 				<Strings>
 					<ButtonText>Execute Query</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="guidSqlEditorCmdSet" id="cmdIdCancelQuery" priority="0x0020" type="Button">
-				<Parent guid="guidSqlEditorCmdSet" id="menuIdScriptToolbarGroup" />
-				<Icon guid="guidImages" id="imgCancelQuery" />
+			<Button guid="CommandSetGuid" id="CmdIdCancelQuery" priority="0x0020" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
+				<Icon guid="ImagesGuid" id="ImgCancelQuery" />
 				<Strings>
 					<ButtonText>Cancel Query</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="guidSqlEditorCmdSet" id="cmdIdConnect" priority="0x0040" type="Button">
-				<Parent guid="guidSqlEditorCmdSet" id="menuIdScriptToolbarGroup" />
-				<Icon guid="guidImages" id="imgConnect" />
+			<Button guid="CommandSetGuid" id="CmdIdConnect" priority="0x0040" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
+				<Icon guid="ImagesGuid" id="ImgConnect" />
 				<Strings>
 					<ButtonText>Connect</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="guidSqlEditorCmdSet" id="cmdIdDisconnect" priority="0x0060" type="Button">
-				<Parent guid="guidSqlEditorCmdSet" id="menuIdScriptToolbarGroup" />
-				<Icon guid="guidImages" id="imgDisconnect" />
+			<Button guid="CommandSetGuid" id="CmdIdDisconnect" priority="0x0060" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
+				<Icon guid="ImagesGuid" id="ImgDisconnect" />
 				<Strings>
 					<ButtonText>Disconnect</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="guidSqlEditorCmdSet" id="cmdIdChangeConnection" priority="0x0080" type="Button">
-				<Parent guid="guidSqlEditorCmdSet" id="menuIdScriptToolbarGroup" />
-				<Icon guid="guidImages" id="imgConnect" />
+			<Button guid="CommandSetGuid" id="CmdIdChangeConnection" priority="0x0080" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
+				<Icon guid="ImagesGuid" id="ImgConnect" />
 				<Strings>
 					<ButtonText>Change Connection</ButtonText>
 				</Strings>
 			</Button>
 
-			<!-- The placeholder for the dynamic items that expand to N items at run time. -->
-			<!-- 
-			<Button guid="guidSqlEditorCmdSet" id="seedIdDatabases" priority="0x1000" >
-				<Parent guid="guidSqlEditorCmdSet" id="groupIdDatabases" />
-				<CommandFlag>DynamicItemStart</CommandFlag>
-				<CommandFlag>DynamicVisibility</CommandFlag>
+			<Button guid="CommandSetGuid" id="CmdIdOpenTextObject" priority="0x0120" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdSeNodeGroup" />
+				<Icon guid="ImagesGuid" id="ImgOpenScript" />
 				<CommandFlag>TextChanges</CommandFlag>
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
 				<Strings>
-					<ButtonText></ButtonText>
+					<ButtonText>Open Expression</ButtonText>
+					<CommandName>CommandTextOpenScript</CommandName>
 				</Strings>
 			</Button>
-			-->
-
-			<!-- The anchor item to supply the icon/tooltip for the MenuController -->
-			<!--
-			<Button guid="guidSqlEditorCmdSet" id="anchorIdDatabases" priority="0x0000" >
-				<Parent guid="guidSqlEditorCmdSet" id="groupIdDatabases" />
-				<Icon guid="guidImages" id="imgDownGlygh"/>
-				<CommandFlag>NoShowOnMenuController</CommandFlag>
-				<CommandFlag>FixMenuController</CommandFlag>
+			<Button guid="CommandSetGuid" id="CmdIdOpenAlterTextObject" priority="0x0120" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdSeNodeGroup" />
+				<Icon guid="ImagesGuid" id="ImgOpenScript" />
+				<CommandFlag>TextChanges</CommandFlag>
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
 				<Strings>
-					<ButtonText>Database List</ButtonText>
+					<ButtonText>Open Alter Expression</ButtonText>
+					<CommandName>CommandTextOpenAlterScript</CommandName>
 				</Strings>
 			</Button>
-			-->
 
 
-			<Button guid="guidSqlEditorCmdSet" id="cmdIdNewQueryConnection" priority="0x0120" type="Button">
-				<Parent guid="guidSqlEditorCmdSet" id="menuIdScriptToolbarGroup" />
-				<Icon guid="guidImages" id="imgNewQueryConnection" />
+			<Button guid="CommandSetGuid" id="CmdIdNewQueryConnection" priority="0x0120" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
+				<Icon guid="ImagesGuid" id="ImgNewQueryConnection" />
 				<Strings>
 					<ButtonText>New Query</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="guidSqlEditorCmdSet" id="cmdIdResultsAsGrid" priority="0x0000" type="Button">
-				<Parent guid="guidSqlEditorCmdSet" id="ctlrIdResultsToGroup" />
-				<Icon guid="guidImages" id="imgResultsAsGrid" />
+			<Button guid="CommandSetGuid" id="CmdIdResultsAsGrid" priority="0x0000" type="Button">
+				<Parent guid="CommandSetGuid" id="CtlrIdResultsToGroup" />
+				<Icon guid="ImagesGuid" id="ImgResultsAsGrid" />
 				<Strings>
 					<ButtonText>Results As Grid</ButtonText>
 					<CommandName>ResultsAsGrid</CommandName>
 				</Strings>
 			</Button>
-			<Button guid="guidSqlEditorCmdSet" id="cmdIdResultsAsText" priority="0x0020" type="Button">
-				<Parent guid="guidSqlEditorCmdSet" id="ctlrIdResultsToGroup" />
-				<Icon guid="guidImages" id="imgResultsAsText" />
+			<Button guid="CommandSetGuid" id="CmdIdResultsAsText" priority="0x0020" type="Button">
+				<Parent guid="CommandSetGuid" id="CtlrIdResultsToGroup" />
+				<Icon guid="ImagesGuid" id="ImgResultsAsText" />
 				<Strings>
 					<ButtonText>Results As Text</ButtonText>
 					<CommandName>ResultsAsText</CommandName>
 				</Strings>
 			</Button>
-			<Button guid="guidSqlEditorCmdSet" id="cmdIdResultsAsFile" priority="0x0040" type="Button">
-				<Parent guid="guidSqlEditorCmdSet" id="ctlrIdResultsToGroup" />
-				<Icon guid="guidImages" id="imgResultsAsText" />
+			<Button guid="CommandSetGuid" id="CmdIdResultsAsFile" priority="0x0040" type="Button">
+				<Parent guid="CommandSetGuid" id="CtlrIdResultsToGroup" />
+				<Icon guid="ImagesGuid" id="ImgResultsAsText" />
 				<Strings>
 					<ButtonText>Results As File</ButtonText>
 					<CommandName>ResultsAsFile</CommandName>
 				</Strings>
 			</Button>
-			<!-- 
-			<Button guid="guidSqlEditorCmdSet" id="cmdIdExecuteQuery" priority="0x0100" type="Button">
-				<Parent guid="guidSqlEditorCmdSet" id="menuIdOnlineToolbarGroup" />
-				<Icon guid="guidImages" id="imgExecuteQuery" />
-				<Strings>
-					<ButtonText>Execute</ButtonText>
-				</Strings>
-			</Button>
-			-->
 		</Buttons>
 
 		<!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
@@ -228,80 +212,97 @@
             bitmap strip containing the bitmaps and then there are the numeric ids of the elements used
             inside a button definition. An important aspect of this declaration is that the element id
             must be the actual index (1-based) of the bitmap inside the bitmap strip. -->
-			<Bitmap guid="guidImages" href="Resources\SqlEditorScriptToolbar.png" usedList="imgExecuteQuery, imgRunQuery, imgCancelQuery, imgConnect, imgDisconnect, imgNewQueryConnection, imgResultsAsGrid, imgResultsAsText, imgDownGlygh"/>
+			<Bitmap guid="ImagesGuid" href="Resources\ToolbarImageStrip.png" usedList="ImgExecuteQuery, ImgRunQuery, ImgCancelQuery, ImgConnect, ImgDisconnect, ImgNewQueryConnection, ImgResultsAsGrid, ImgResultsAsText, ImgDownGlygh, ImgOpenScript"/>
 		</Bitmaps>
 	</Commands>
 
 	<Symbols>
 		<!-- This is the package guid. -->
-		<GuidSymbol name="guidEditorExtensionAsyncPackage" value="{0B100D64-7249-4208-8748-2810B511E90C}" />
+		<GuidSymbol name="PackageGuid" value="{0B100D64-7249-4208-8748-2810B511E90C}" />
 
-		<!-- This is the guid used to group the menu commands together -->
-		<GuidSymbol name="guidSqlEditorCmdSet" value="{13CD7876-FC84-4DDA-91BF-4CDBF893B134}">
-			<IDSymbol name="menuIdScriptToolbar" value="0x2000" />
-			<IDSymbol name="menuIdOnlineToolbar" value="0x2001" />
-
-			<IDSymbol name="ctlrIdResultsTo" value="0x2101" />
-
-			<IDSymbol name="menuIdScriptToolbarGroup" value="0x1000" />
-			<IDSymbol name="menuIdOnlineToolbarGroup" value="0x1001" />
-
-			<IDSymbol name="ctlrIdResultsToGroup" value="0x1101" />
-
-			<IDSymbol name="contextIdExecutionSettings" value="0x0100" /> 
-			<IDSymbol name="contextIdConnection" value="0x0102" />
-			<IDSymbol name="contextIdResultsTo" value="0x0103" />
-			<IDSymbol name="contextIdResultsWindow" value="0x0104" />
-			<IDSymbol name="contextIdMessageWindow" value="0x0105" />
-			<IDSymbol name="contextIdShowPlanWindow" value="0x0106" />
-
-
-			<IDSymbol name="cmbIdSQLDatabases" value="0x4000" />
-			<IDSymbol name="cmbIdSQLDatabasesGetList" value="0x4001" />
-
-			<IDSymbol name="cmdIdConnect" value="0x0300" /> 
-			<IDSymbol name="cmdIdDisconnect" value="0x0301" />
-			<IDSymbol name="cmdIdCloneQuery" value="0x0302" />
-			<IDSymbol name="cmdIdExecuteQuery" value="0x0303" />
-			<IDSymbol name="cmdIdCancelQuery" value="0x0304" />
-			<IDSymbol name="cmdIdShowEstimatedPlan" value="0x0305" />
-			<IDSymbol name="cmdIdToggleIntellisense" value="0x0306" />
-			<IDSymbol name="cmdIdToggleSQLCMDMode" value="0x0307" />
-			<IDSymbol name="cmdIdToggleClientStatistics" value="0x0308" />
-			<IDSymbol name="cmdIdToggleExecutionPlan" value="0x0309" />
-			<IDSymbol name="cmdIdResultsAsText" value="0x0310" />
-			<IDSymbol name="cmdIdResultsAsGrid" value="0x0311" />
-			<IDSymbol name="cmdIdResultsAsFile" value="0x0312" />
-			<IDSymbol name="cmdIdQueryOptions" value="0x0313" />
-			<IDSymbol name="cmdIdToggleResultsPane" value="0x0314" />
-			<IDSymbol name="cmdIdNewQueryConnection" value="0x0315" />
-			<IDSymbol name="cmdIdSaveResultsAs" value="0x0316" />
-			<IDSymbol name="cmdIdShowPlanXml" value="0x0319" />
-			<IDSymbol name="cmdIdShowPlanMissingIndex" value="0x0320" />
-			<IDSymbol name="cmdIdPrintPreview" value="0x0321" />
-			<IDSymbol name="cmdIdShowPlanSave" value="0x0322" />
-			<IDSymbol name="cmdIdShowPlanZoomIn" value="0x0323" />
-			<IDSymbol name="cmdIdShowPlanZoomOut" value="0x0324" />
-			<IDSymbol name="cmdIdShowPlanZoomCustom" value="0x0325" />
-			<IDSymbol name="cmdIdShowPlanZoomToFit" value="0x0326" />
-			<IDSymbol name="cmdIdCopyWithHeaders" value="0x0327" />
-			<IDSymbol name="cmdIdCycleToNextTab" value="0x0328" />
-			<IDSymbol name="cmdIdCycleToPrevious" value="0x0329" />
-			<IDSymbol name="cmdIdParseQuery" value="0x0330" />
-			<IDSymbol name="cmdIdDisconnectAllQueries" value="0x0331" />
-			<IDSymbol name="cmdIdChangeConnection" value="0x0332" />
+		<!-- Server Explorer guid -->
+		<GuidSymbol name="ServerExplorerGuid" value="{74D21310-2AEE-11D1-8BFB-00A0C90F26F7}">
+			<!-- server explorer - root node -->
+			<IDSymbol name="IDMX_DV_SERVER_NODE" value="0x503" />
 		</GuidSymbol>
 
-		<GuidSymbol name="guidImages" value="{b9096f40-3268-4397-a5ec-8827624c447d}" >
-			<IDSymbol name="imgExecuteQuery" value="1" />
-			<IDSymbol name="imgRunQuery" value="2" />
-			<IDSymbol name="imgCancelQuery" value="3" />
-			<IDSymbol name="imgConnect" value="4" />
-			<IDSymbol name="imgDisconnect" value="5" />
-			<IDSymbol name="imgNewQueryConnection" value="6" />
-			<IDSymbol name="imgResultsAsGrid" value="7" />
-			<IDSymbol name="imgResultsAsText" value="8" />
-			<IDSymbol name="imgDownGlygh" value="9"/>
+		<!-- Server Explorer nodes guid -->
+		<GuidSymbol name="ServerExplorerObjectNodesGuid" value="{d4f02a6a-c5ae-4bf2-938d-f1625bdca0e2}">
+			<!-- server explorer - object node -->
+			<IDSymbol name="IDMX_DV_OBJECT_NODE" value="0x8200" />
+			<IDSymbol name="IDMX_DV_STATIC_NODE" value="0x8100" />
+		</GuidSymbol>
+
+		<!-- This is the guid used to group the menu commands together -->
+		<GuidSymbol name="CommandSetGuid" value="{13CD7876-FC84-4DDA-91BF-4CDBF893B134}">
+			<IDSymbol name="MenuIdScriptToolbar" value="0x2000" />
+			<IDSymbol name="MenuIdOnlineToolbar" value="0x2001" />
+
+			<IDSymbol name="MenuIdScriptToolbarGroup" value="0x3000" />
+			<IDSymbol name="MenuIdOnlineToolbarGroup" value="0x3001" />
+			<IDSymbol name="MenuIdSeNodeGroup"  value="0x3002" />
+			<IDSymbol name="MenuIdSeRootGroup" value="0x3003" />
+			<IDSymbol name="MenuIdResultsTo" value="0x3004" />
+
+			<IDSymbol name="CtlrIdResultsToGroup" value="0x3010" />
+
+			<IDSymbol name="ContextIdExecutionSettings" value="0x3100" /> 
+			<IDSymbol name="ContextIdConnection" value="0x3101" />
+			<IDSymbol name="ContextIdResultsTo" value="0x3102" />
+			<IDSymbol name="ContextIdResultsWindow" value="0x3103" />
+			<IDSymbol name="ContextIdMessageWindow" value="0x3104" />
+			<IDSymbol name="ContextIdShowPlanWindow" value="0x3105" />
+
+			<IDSymbol name="CmbIdSqlDatabases" value="0x3200" />
+			<IDSymbol name="CmbIdSqlDatabasesGetList" value="0x3201" />
+
+			<IDSymbol name="CmdIdConnect" value="0x0300" /> 
+			<IDSymbol name="CmdIdDisconnect" value="0x0301" />
+			<IDSymbol name="CmdIdCloneQuery" value="0x0302" />
+			<IDSymbol name="CmdIdExecuteQuery" value="0x0303" />
+			<IDSymbol name="CmdIdCancelQuery" value="0x0304" />
+			<IDSymbol name="CmdIdShowEstimatedPlan" value="0x0305" />
+			<IDSymbol name="CmdIdToggleIntellisense" value="0x0306" />
+			<IDSymbol name="CmdIdToggleSQLCMDMode" value="0x0307" />
+			<IDSymbol name="CmdIdToggleClientStatistics" value="0x0308" />
+			<IDSymbol name="CmdIdToggleExecutionPlan" value="0x0309" />
+			<IDSymbol name="CmdIdResultsAsText" value="0x0310" />
+			<IDSymbol name="CmdIdResultsAsGrid" value="0x0311" />
+			<IDSymbol name="CmdIdResultsAsFile" value="0x0312" />
+			<IDSymbol name="CmdIdQueryOptions" value="0x0313" />
+			<IDSymbol name="CmdIdToggleResultsPane" value="0x0314" />
+			<IDSymbol name="CmdIdNewQueryConnection" value="0x0315" />
+			<IDSymbol name="CmdIdSaveResultsAs" value="0x0316" />
+			<IDSymbol name="CmdIdShowPlanXml" value="0x0319" />
+			<IDSymbol name="CmdIdShowPlanMissingIndex" value="0x0320" />
+			<IDSymbol name="CmdIdPrintPreview" value="0x0321" />
+			<IDSymbol name="CmdIdShowPlanSave" value="0x0322" />
+			<IDSymbol name="CmdIdShowPlanZoomIn" value="0x0323" />
+			<IDSymbol name="CmdIdShowPlanZoomOut" value="0x0324" />
+			<IDSymbol name="CmdIdShowPlanZoomCustom" value="0x0325" />
+			<IDSymbol name="CmdIdShowPlanZoomToFit" value="0x0326" />
+			<IDSymbol name="CmdIdCopyWithHeaders" value="0x0327" />
+			<IDSymbol name="CmdIdCycleToNextTab" value="0x0328" />
+			<IDSymbol name="CmdIdCycleToPrevious" value="0x0329" />
+			<IDSymbol name="CmdIdParseQuery" value="0x0330" />
+			<IDSymbol name="CmdIdDisconnectAllQueries" value="0x0331" />
+			<IDSymbol name="CmdIdChangeConnection" value="0x0332" />
+
+			<IDSymbol name="CmdIdOpenTextObject" value="0x0333" />
+			<IDSymbol name="CmdIdOpenAlterTextObject" value="0x0334" />
+		</GuidSymbol>
+
+		<GuidSymbol name="ImagesGuid" value="{b9096f40-3268-4397-a5ec-8827624c447d}" >
+			<IDSymbol name="ImgExecuteQuery" value="1" />
+			<IDSymbol name="ImgRunQuery" value="2" />
+			<IDSymbol name="ImgCancelQuery" value="3" />
+			<IDSymbol name="ImgConnect" value="4" />
+			<IDSymbol name="ImgDisconnect" value="5" />
+			<IDSymbol name="ImgNewQueryConnection" value="6" />
+			<IDSymbol name="ImgResultsAsGrid" value="7" />
+			<IDSymbol name="ImgResultsAsText" value="8" />
+			<IDSymbol name="ImgDownGlygh" value="9"/>
+			<IDSymbol name="ImgOpenScript" value="10"/>
 		</GuidSymbol>
 	</Symbols>
 </CommandTable>

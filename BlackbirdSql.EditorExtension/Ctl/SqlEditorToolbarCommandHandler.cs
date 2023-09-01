@@ -2,14 +2,13 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.SqlEditorToolbarCommandHandler<T>
 
 using System;
+
+using BlackbirdSql.Common.Commands;
 using BlackbirdSql.Common.Controls;
+using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Interfaces;
 
-// using Microsoft.VisualStudio.Data.Tools.Design.Core.Controls.TabbedEditor;
-// using Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.TabbedEditor;
 using Microsoft.VisualStudio.OLE.Interop;
-using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Ctl.Commands;
 
 // namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration
 namespace BlackbirdSql.EditorExtension

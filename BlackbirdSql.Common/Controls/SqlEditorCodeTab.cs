@@ -8,14 +8,11 @@ using System.Windows.Forms;
 
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Interfaces;
-using BlackbirdSql.Common.Enums;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 // using Microsoft.VisualStudio.Data.Tools.Design.Core.Controls.TabbedEditor;
 using Microsoft.VisualStudio.Shell.Interop;
-
-
-
+using BlackbirdSql.Common.Enums;
 
 namespace BlackbirdSql.Common.Controls;
 // namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.TabbedEditor

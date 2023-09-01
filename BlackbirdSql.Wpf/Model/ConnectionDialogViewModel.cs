@@ -12,9 +12,6 @@ using System.Windows;
 using System.Windows.Threading;
 
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Events;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Core;
@@ -25,6 +22,9 @@ using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 
 using FirebirdSql.Data.FirebirdClient;
+using BlackbirdSql.Common.Events;
+using BlackbirdSql.Common.Enums;
+using BlackbirdSql.Common.Interfaces;
 
 namespace BlackbirdSql.Wpf.Model;
 

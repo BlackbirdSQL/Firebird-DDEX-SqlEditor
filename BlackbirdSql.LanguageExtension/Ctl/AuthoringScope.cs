@@ -11,7 +11,6 @@ using Babel;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Core.Interfaces;
-using BlackbirdSql.Common.Interfaces;
 
 using Microsoft.SqlServer.Management.SqlParser.Intellisense;
 using Microsoft.SqlServer.Management.SqlParser.MetadataProvider;
@@ -20,9 +19,7 @@ using Microsoft.SqlServer.Management.SqlParser.Parser;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Package;
 using Microsoft.VisualStudio.TextManager.Interop;
-
-
-
+using BlackbirdSql.Common.Interfaces;
 
 namespace BlackbirdSql.LanguageExtension;
 

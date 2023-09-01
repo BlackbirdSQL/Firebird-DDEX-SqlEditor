@@ -233,7 +233,7 @@ public class TSourceInformation : AbstractSourceInformation
 					if ((Connection.State & ConnectionState.Open) != 0)
 					{
 						parser = LinkageParser.Instance(Site, false);
-						parser?.SyncEnter();
+						parser?.SyncEnter(true);
 						FbDatabaseInfo info = new((FbConnection)Connection);
 						retval = info.GetCurrentMemory();
 						parser?.SyncExit();
@@ -244,7 +244,7 @@ public class TSourceInformation : AbstractSourceInformation
 					if ((Connection.State & ConnectionState.Open) != 0)
 					{
 						parser = LinkageParser.Instance(Site, false);
-						parser?.SyncEnter();
+						parser?.SyncEnter(true);
 						FbDatabaseInfo info = new((FbConnection)Connection);
 						retval = info.GetActiveUsers().Count;
 						parser?.SyncExit();

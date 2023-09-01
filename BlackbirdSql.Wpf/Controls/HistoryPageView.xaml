@@ -4,28 +4,28 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:BlackbirdSql.Wpf.Controls"
 	xmlns:widgets="clr-namespace:BlackbirdSql.Wpf.Widgets"
-	xmlns:CoreCtl="clr-namespace:BlackbirdSql.Common.Ctl;assembly=BlackbirdSql.Common"
-	xmlns:CoreCtls="clr-namespace:BlackbirdSql.Common.Controls;assembly=BlackbirdSql.Common"
-	xmlns:CoreCvtrs="clr-namespace:BlackbirdSql.Common.Ctl.Converters;assembly=BlackbirdSql.Common"
-	xmlns:CoreModel="clr-namespace:BlackbirdSql.Common.Model;assembly=BlackbirdSql.Common"
-	xmlns:CoreRes="clr-namespace:BlackbirdSql.Common.Properties;assembly=BlackbirdSql.Common"
+	xmlns:ComCtl="clr-namespace:BlackbirdSql.Common.Ctl;assembly=BlackbirdSql.Common"
+	xmlns:ComCtls="clr-namespace:BlackbirdSql.Common.Controls;assembly=BlackbirdSql.Common"
+	xmlns:ComCvtrs="clr-namespace:BlackbirdSql.Common.Converters;assembly=BlackbirdSql.Common"
+	xmlns:ComModel="clr-namespace:BlackbirdSql.Common.Model;assembly=BlackbirdSql.Common"
+	xmlns:ComRes="clr-namespace:BlackbirdSql.Common.Properties;assembly=BlackbirdSql.Common"
 	x:Name="projectSectionView" x:Uid="projectSectionView">
 	<FrameworkElement.Resources>
 		<ResourceDictionary x:Uid="ResourceDictionary_1">
 			<ResourceDictionary.MergedDictionaries>
-				<CoreCtl:CachedResourceDictionary
+				<ComCtl:CachedResourceDictionary
 					x:Uid="ResourceDictionary_2"
 					Source="pack://application:,,,/BlackbirdSql.Wpf;component/Themes/Default.xaml" />
 			</ResourceDictionary.MergedDictionaries>
-			<CoreCvtrs:TrueToVisibleConverter x:Key="TrueToVisibleConverter" x:Uid="CoreCvtrs:TrueToVisibleConverter_1" />
-			<CoreCvtrs:ImageToImageSourceConverter x:Key="ImageToImageSourceConverter" x:Uid="CoreCvtrs:ImageToImageSourceConverter_1" />
-			<CoreCvtrs:NonEmptyStringToVisibleConverter x:Key="NonEmptyStringToVisibleConverter" x:Uid="CoreCvtrs:NonEmptyStringToVisibleConverter_1" />
-			<CoreCvtrs:NullToVisibleConverter x:Key="NullToVisibleConverter" x:Uid="CoreCvtrs:NullToVisibleConverter_1" />
-			<CoreCvtrs:AllTrueToVisibleConverter x:Key="AllTrueToVisibleConverter" x:Uid="CoreCvtrs:AllTrueToVisibleConverter_1" />
-			<CoreCvtrs:AnyTrueToVisibleConverter x:Key="AnyTrueToVisibleConverter" x:Uid="CoreCvtrs:AnyTrueToVisibleConverter_1" />
-			<CoreCvtrs:ConnectionListItemPinUnPinConverter x:Key="ConnectionListItemPinUnPinConverter" x:Uid="ConnectionListItemPinUnPinConverter" />
-			<CoreCvtrs:ConnectionListItemPinTooltipConverter x:Key="ConnectionListItemPinTooltipConverter" x:Uid="ConnectionListItemPinTooltipConverter" />
-			<CoreCvtrs:ConnectionListItemPinMenuItemConverter x:Key="ConnectionListItemPinMenuItemConverter" x:Uid="ConnectionListItemPinMenuItemConverter" />
+			<ComCvtrs:TrueToVisibleConverter x:Key="TrueToVisibleConverter" x:Uid="ComCvtrs:TrueToVisibleConverter_1" />
+			<ComCvtrs:ImageToImageSourceConverter x:Key="ImageToImageSourceConverter" x:Uid="ComCvtrs:ImageToImageSourceConverter_1" />
+			<ComCvtrs:NonEmptyStringToVisibleConverter x:Key="NonEmptyStringToVisibleConverter" x:Uid="ComCvtrs:NonEmptyStringToVisibleConverter_1" />
+			<ComCvtrs:NullToVisibleConverter x:Key="NullToVisibleConverter" x:Uid="ComCvtrs:NullToVisibleConverter_1" />
+			<ComCvtrs:AllTrueToVisibleConverter x:Key="AllTrueToVisibleConverter" x:Uid="ComCvtrs:AllTrueToVisibleConverter_1" />
+			<ComCvtrs:AnyTrueToVisibleConverter x:Key="AnyTrueToVisibleConverter" x:Uid="ComCvtrs:AnyTrueToVisibleConverter_1" />
+			<ComCvtrs:ConnectionListItemPinUnPinConverter x:Key="ConnectionListItemPinUnPinConverter" x:Uid="ConnectionListItemPinUnPinConverter" />
+			<ComCvtrs:ConnectionListItemPinTooltipConverter x:Key="ConnectionListItemPinTooltipConverter" x:Uid="ConnectionListItemPinTooltipConverter" />
+			<ComCvtrs:ConnectionListItemPinMenuItemConverter x:Key="ConnectionListItemPinMenuItemConverter" x:Uid="ConnectionListItemPinMenuItemConverter" />
 			<Style x:Key="ItemSubTextStyle" x:Uid="styleSubText" TargetType="{x:Type TextBlock}">
 				<Style.Triggers>
 					<MultiDataTrigger>
@@ -144,7 +144,7 @@
 						</PathGeometry>
 					</ResourceDictionary>
 				</Style.Resources>
-				<Setter Property="AutomationProperties.Name" Value="{x:Static CoreRes:SharedResx.HideConnectionProperty}" />
+				<Setter Property="AutomationProperties.Name" Value="{x:Static ComRes:SharedResx.HideConnectionProperty}" />
 				<Setter Property="Template">
 					<Setter.Value>
 						<ControlTemplate TargetType="{x:Type ToggleButton}">
@@ -164,11 +164,11 @@
 				</Setter>
 				<Style.Triggers>
 					<DataTrigger Value="false" Binding="{Binding Path=IsConnectionExpanded}">
-						<Setter Property="AutomationProperties.Name" Value="{x:Static CoreRes:SharedResx.ShowConnectionProperty}" />
+						<Setter Property="AutomationProperties.Name" Value="{x:Static ComRes:SharedResx.ShowConnectionProperty}" />
 					</DataTrigger>
 				</Style.Triggers>
 			</Style>
-			<DataTemplate x:Key="{DataTemplateKey {x:Type CoreModel:ConnectionInfo}}" x:Uid="ConnectionListItemTemplate" DataType="{x:Type CoreModel:ConnectionInfo}">
+			<DataTemplate x:Key="{DataTemplateKey {x:Type ComModel:ConnectionInfo}}" x:Uid="ConnectionListItemTemplate" DataType="{x:Type ComModel:ConnectionInfo}">
 				<Grid x:Uid="infoGrid" ToolTipService.ShowDuration="20000" Margin="0,3" Tag="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}}">
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition x:Uid="iconColumn" Width="Auto" />
@@ -182,11 +182,11 @@
 					<Image x:Uid="connectionIcon" Grid.Column="0" Grid.RowSpan="2" Margin="0,1,6,1" Width="32" Height="32" VerticalAlignment="Center" Stretch="Uniform" SnapsToDevicePixels="True" Source="{Binding Path=ConnectionIcon}" />
 					<TextBlock x:Uid="databaseName" Grid.Row="0" Grid.Column="1" Margin="0,0,3,0" Localization.Attributes="Text (Unmodifiable Readable Text)" FontWeight="Bold" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Style="{StaticResource ItemSubTextStyle}" Text="{Binding Path=UIDatabaseName}" />
 					<TextBlock x:Uid="ServerInfoName" Grid.Row="1" Grid.Column="1" Margin="0,0,3,0" Localization.Attributes="Text (Unmodifiable Readable Text)" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Style="{StaticResource ItemSubTextStyle}" Text="{Binding Path=ServerInfo}" />
-					<Button Name="pinButton" x:Uid="pinUnpinBotton" Grid.Column="1" Grid.RowSpan="2" Margin="0,0,0,0" Width="32" BorderThickness="0" HorizontalAlignment="Right" Style="{StaticResource pinUnpinStyle}" Background="{Binding Path=Background, RelativeSource={RelativeSource AncestorType={x:Type ListViewItem}}}" BorderBrush="{Binding Path=BorderBrush, RelativeSource={RelativeSource AncestorType={x:Type ListViewItem}}}" Height="{Binding Path=Height, RelativeSource={RelativeSource AncestorType={x:Type ListViewItem}}}" Command="{Binding Path=DataContext.PinUnpinCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}" AutomationProperties.Name="{Binding Path=IsFavorite, Converter={x:Static CoreCvtrs:ConnectionListItemPinTooltipConverter.Instance}}">
+					<Button Name="pinButton" x:Uid="pinUnpinBotton" Grid.Column="1" Grid.RowSpan="2" Margin="0,0,0,0" Width="32" BorderThickness="0" HorizontalAlignment="Right" Style="{StaticResource pinUnpinStyle}" Background="{Binding Path=Background, RelativeSource={RelativeSource AncestorType={x:Type ListViewItem}}}" BorderBrush="{Binding Path=BorderBrush, RelativeSource={RelativeSource AncestorType={x:Type ListViewItem}}}" Height="{Binding Path=Height, RelativeSource={RelativeSource AncestorType={x:Type ListViewItem}}}" Command="{Binding Path=DataContext.PinUnpinCommand, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" CommandParameter="{Binding}" AutomationProperties.Name="{Binding Path=IsFavorite, Converter={x:Static ComCvtrs:ConnectionListItemPinTooltipConverter.Instance}}">
 						<FrameworkElement.ToolTip>
-							<TextBlock x:Uid="tooltipPinValue" Localization.Attributes="Text (Unmodifiable Readable Text)" Text="{Binding Path=IsFavorite, Converter={x:Static CoreCvtrs:ConnectionListItemPinTooltipConverter.Instance}}" />
+							<TextBlock x:Uid="tooltipPinValue" Localization.Attributes="Text (Unmodifiable Readable Text)" Text="{Binding Path=IsFavorite, Converter={x:Static ComCvtrs:ConnectionListItemPinTooltipConverter.Instance}}" />
 						</FrameworkElement.ToolTip>
-						<Image x:Uid="pinIcon" Width="16" Height="16" VerticalAlignment="Center" Stretch="Uniform" SnapsToDevicePixels="True" Source="{Binding Path=IsFavorite, Converter={StaticResource ConnectionListItemPinUnPinConverter}}" AutomationProperties.Name="{Binding Path=IsFavorite, Converter={x:Static CoreCvtrs:ConnectionListItemPinTooltipConverter.Instance}}" />
+						<Image x:Uid="pinIcon" Width="16" Height="16" VerticalAlignment="Center" Stretch="Uniform" SnapsToDevicePixels="True" Source="{Binding Path=IsFavorite, Converter={StaticResource ConnectionListItemPinUnPinConverter}}" AutomationProperties.Name="{Binding Path=IsFavorite, Converter={x:Static ComCvtrs:ConnectionListItemPinTooltipConverter.Instance}}" />
 					</Button>
 					<FrameworkElement.ToolTip>
 						<ToolTip x:Uid="connectionToolTip">
@@ -200,7 +200,7 @@
 									<Image x:Uid="pinIcon" VerticalAlignment="Center" Stretch="Uniform" SnapsToDevicePixels="True" Source="{Binding Path=IsFavorite, Converter={StaticResource ConnectionListItemPinUnPinConverter}}" />
 								</MenuItem.Icon>
 							</MenuItem>
-							<MenuItem Header="{x:Static CoreRes:SharedResx.RemoveMenuAction}" Click="Remove_Clicked" />
+							<MenuItem Header="{x:Static ComRes:SharedResx.RemoveMenuAction}" Click="Remove_Clicked" />
 						</ContextMenu>
 					</FrameworkElement.ContextMenu>
 				</Grid>
@@ -250,9 +250,9 @@
 				</Grid.RowDefinitions>
 				<WrapPanel Name="favoriteTitle" Background="#00FFFFFF" Grid.Row="0" Margin="6,0,6,6" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Stretch" Visibility="{Binding Path=HasFavoriteConnections, Converter={StaticResource TrueToVisibleConverter}}">
 					<Path SnapsToDevicePixels="True" HorizontalAlignment="Center" VerticalAlignment="Center" Data="{StaticResource SectionArrow}" Fill="{StaticResource ArrowBrushKey}" Stroke="{StaticResource ArrowBrushKey}" />
-					<TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Margin="6,0,6,0" Text="{x:Static CoreRes:SharedResx.FavoriteConnectionTitle}" />
+					<TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Margin="6,0,6,0" Text="{x:Static ComRes:SharedResx.FavoriteConnectionTitle}" />
 				</WrapPanel>
-				<ListView Name="favoriteConnectionList" x:Uid="favoriteConnectionList" Grid.Row="1" Margin="12,0,6,0" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" AutomationProperties.Name="{x:Static CoreRes:SharedResx.FavoriteConnectionTitle}" ItemsSource="{Binding Path=FavoriteConnectionList}">
+				<ListView Name="favoriteConnectionList" x:Uid="favoriteConnectionList" Grid.Row="1" Margin="12,0,6,0" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" AutomationProperties.Name="{x:Static ComRes:SharedResx.FavoriteConnectionTitle}" ItemsSource="{Binding Path=FavoriteConnectionList}">
 					<ItemsControl.ItemContainerStyle>
 						<Style BasedOn="{StaticResource ListBoxItemNoInactiveSelectionStyle}" TargetType="{x:Type ListViewItem}">
 							<Setter Property="AutomationProperties.Name" Value="{Binding Path=ListItemAutomationName}" />
@@ -279,10 +279,10 @@
 						</MultiBinding>
 					</UIElement.Visibility>
 					<Path SnapsToDevicePixels="True" HorizontalAlignment="Center" VerticalAlignment="Center" Data="{StaticResource SectionArrow}" Fill="{StaticResource ArrowBrushKey}" Stroke="{StaticResource ArrowBrushKey}" />
-					<TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Margin="6,0,6,0" Text="{x:Static CoreRes:SharedResx.RecentConnectionTitle}" />
+					<TextBlock VerticalAlignment="Center" TextWrapping="Wrap" Margin="6,0,6,0" Text="{x:Static ComRes:SharedResx.RecentConnectionTitle}" />
 				</WrapPanel>
-				<TextBlock Name="emptyListDescriptionText" Grid.Row="4" Foreground="{StaticResource SubduedTextBrushKey}" TextWrapping="Wrap" Margin="12,0,6,6" Text="{x:Static CoreRes:SharedResx.NoConnectionListDescription}" Visibility="{Binding Path=IsConnectionListEmpty, Converter={StaticResource TrueToVisibleConverter}}" />
-				<ListView Name="recentConnectionList" x:Uid="recentConnectionList" Grid.Row="5" Margin="12,0,6,0" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" AutomationProperties.Name="{x:Static CoreRes:SharedResx.RecentConnectionTitle}" ItemsSource="{Binding Path=RecentConnectionList}">
+				<TextBlock Name="emptyListDescriptionText" Grid.Row="4" Foreground="{StaticResource SubduedTextBrushKey}" TextWrapping="Wrap" Margin="12,0,6,6" Text="{x:Static ComRes:SharedResx.NoConnectionListDescription}" Visibility="{Binding Path=IsConnectionListEmpty, Converter={StaticResource TrueToVisibleConverter}}" />
+				<ListView Name="recentConnectionList" x:Uid="recentConnectionList" Grid.Row="5" Margin="12,0,6,0" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Stretch" AutomationProperties.Name="{x:Static ComRes:SharedResx.RecentConnectionTitle}" ItemsSource="{Binding Path=RecentConnectionList}">
 					<ItemsControl.ItemContainerStyle>
 						<Style BasedOn="{StaticResource ListBoxItemNoInactiveSelectionStyle}" TargetType="{x:Type ListViewItem}">
 							<Setter Property="AutomationProperties.Name" Value="{Binding Path=ListItemAutomationName}" />
@@ -299,16 +299,16 @@
 				</Grid.ColumnDefinitions>
 				<ToggleButton Name="expanderButton" x:Uid="expanderButton" Focusable="True" Grid.Column="0" Style="{StaticResource ExpandCollapsePropertyStyle}" Click="ExpanderButton_Click">
 					<FrameworkElement.ToolTip>
-						<TextBlock Text="{x:Static CoreRes:SharedResx.ConnectionPropertyToggleToolTip}" Localization.Attributes="Text (Unmodifiable Readable Text)" />
+						<TextBlock Text="{x:Static ComRes:SharedResx.ConnectionPropertyToggleToolTip}" Localization.Attributes="Text (Unmodifiable Readable Text)" />
 					</FrameworkElement.ToolTip>
 				</ToggleButton>
 				<TextBlock Name="headerText" x:Uid="headerText" Focusable="True" Grid.Column="1" Margin="1,0,3,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTip="{Binding ElementName=thisSectionControl, Path=HeaderToolTip}">
 					<FrameworkElement.Style>
 						<Style TargetType="{x:Type TextBlock}">
-							<Setter Property="Text" Value="{x:Static CoreRes:SharedResx.HideConnectionProperty}" />
+							<Setter Property="Text" Value="{x:Static ComRes:SharedResx.HideConnectionProperty}" />
 							<Style.Triggers>
 								<DataTrigger Value="false" Binding="{Binding Path=IsConnectionExpanded}">
-									<Setter Property="Text" Value="{x:Static CoreRes:SharedResx.ShowConnectionProperty}" />
+									<Setter Property="Text" Value="{x:Static ComRes:SharedResx.ShowConnectionProperty}" />
 								</DataTrigger>
 							</Style.Triggers>
 						</Style>

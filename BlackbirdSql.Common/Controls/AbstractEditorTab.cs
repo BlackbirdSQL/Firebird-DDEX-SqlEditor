@@ -7,12 +7,14 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+
+using BlackbirdSql.Common.Ctl;
+using BlackbirdSql.Common.Events;
+using BlackbirdSql.Common.Enums;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Core.Diagnostics.Enums;
-using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Events;
+using BlackbirdSql.Core.Enums;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -22,9 +24,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
 
-
 namespace BlackbirdSql.Common.Controls;
-
 
 public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMultiViewDocumentView, IVsWindowFrameNotify3, IOleCommandTarget, IVsToolboxActiveUserHook, IVsToolboxPageChooser, IVsDefaultToolboxTabState, IVsToolboxUser
 {
@@ -688,7 +688,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		{
 			for (int j = 0; j < cCmds; j++)
 			{
-				if (prgCmds[j].cmdID == (uint)SqlEditorCmdSet.MenuIdOnlineToolbar)
+				if (prgCmds[j].cmdID == (uint)EnCommandSet.MenuIdOnlineToolbar)
 				{
 					prgCmds[j].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);
 					num = 0;

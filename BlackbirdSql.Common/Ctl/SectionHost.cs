@@ -17,9 +17,6 @@ using BlackbirdSql.Core.Model;
 using BlackbirdSql.Common.Events;
 using BlackbirdSql.Common.Interfaces;
 
-
-
-
 namespace BlackbirdSql.Common.Ctl;
 
 

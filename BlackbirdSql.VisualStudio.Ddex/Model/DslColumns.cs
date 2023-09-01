@@ -29,6 +29,7 @@ using FirebirdSql.Data.FirebirdClient;
 
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Model;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
 
@@ -496,8 +497,8 @@ END",
 				scale = Convert.ToInt32(row["NUMERIC_SCALE"], CultureInfo.InvariantCulture);
 			}
 
-			var dbType = (FbDbType)DslTypeHelper.GetDbDataTypeFromBlrType(blrType, subType, scale);
-			row["FIELD_DATA_TYPE"] = DslTypeHelper.GetDataTypeName((DslDbDataType)dbType).ToLowerInvariant();
+			var dbType = (FbDbType)TypeHelper.GetDbDataTypeFromBlrType(blrType, subType, scale);
+			row["FIELD_DATA_TYPE"] = TypeHelper.GetDataTypeName((DbDataType)dbType).ToLowerInvariant();
 
 			if (dbType == FbDbType.Binary || dbType == FbDbType.Text)
 			{

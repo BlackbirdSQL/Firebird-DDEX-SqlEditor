@@ -7,12 +7,11 @@ using System;
 using System.Collections;
 using System.Threading;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-
+using BlackbirdSql.Common.Interfaces;
 
 namespace BlackbirdSql.Common.Model;
 
@@ -72,7 +71,7 @@ public class SortView : ISortView, IDisposable
 	{
 		if (m_bKeepSortingData)
 		{
-			Exception ex = new(ControlsResources.AlreadySortingData);
+			Exception ex = new(SharedResx.AlreadySortingData);
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -84,7 +83,7 @@ public class SortView : ISortView, IDisposable
 	{
 		if (m_bKeepSortingData)
 		{
-			Exception ex = new(ControlsResources.AlreadySortingData);
+			Exception ex = new(SharedResx.AlreadySortingData);
 			Diag.Dug(ex);
 			throw ex;
 		}

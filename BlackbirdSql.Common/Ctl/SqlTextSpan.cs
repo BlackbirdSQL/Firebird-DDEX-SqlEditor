@@ -5,7 +5,6 @@
 
 
 using BlackbirdSql.Common.Interfaces;
-
 using Microsoft.VisualStudio.TextManager.Interop;
 
 

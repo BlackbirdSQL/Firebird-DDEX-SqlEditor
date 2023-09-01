@@ -15,13 +15,9 @@ using BlackbirdSql.Core.Diagnostics.Enums;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Enums;
 using BlackbirdSql.Common.Events;
+using BlackbirdSql.Common.Enums;
 using BlackbirdSql.Common.Interfaces;
-
-
-
-
 
 namespace BlackbirdSql.Common.Model;
 

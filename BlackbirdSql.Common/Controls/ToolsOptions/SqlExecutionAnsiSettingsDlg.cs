@@ -5,7 +5,6 @@
 
 using System;
 using System.Windows.Forms;
-
 using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core.Diagnostics;

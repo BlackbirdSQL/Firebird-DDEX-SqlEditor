@@ -7,15 +7,11 @@ using System;
 using System.Runtime.InteropServices;
 
 using BlackbirdSql.Core;
-using BlackbirdSql.Common.Events;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
-
-
-
-
+using BlackbirdSql.Common.Events;
 
 namespace BlackbirdSql.Common.Controls;
 

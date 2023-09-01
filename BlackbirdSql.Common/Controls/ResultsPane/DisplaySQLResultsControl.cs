@@ -9,9 +9,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Events;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.Enums;
@@ -26,9 +23,10 @@ using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
-
-
-
+using BlackbirdSql.Common.Config.Interfaces;
+using BlackbirdSql.Common.Events;
+using BlackbirdSql.Common.Enums;
+using BlackbirdSql.Common.Interfaces;
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
 

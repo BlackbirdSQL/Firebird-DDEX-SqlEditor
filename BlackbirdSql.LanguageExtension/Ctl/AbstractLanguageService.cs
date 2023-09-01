@@ -16,7 +16,6 @@ using BlackbirdSql.Core;
 using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.LanguageExtension.ColorService;
 using BlackbirdSql.LanguageExtension.Properties;
 
@@ -30,8 +29,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 using Ns = Microsoft.VisualStudio.Data.Tools.SqlLanguageServices;
 using OleConstants = Microsoft.VisualStudio.OLE.Interop.Constants;
-
-
+using BlackbirdSql.Common.Interfaces;
 
 namespace BlackbirdSql.LanguageExtension;
 

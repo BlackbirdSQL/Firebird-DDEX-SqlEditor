@@ -7,21 +7,16 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows.Input;
+using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Common.Model;
+using BlackbirdSql.Common.Ctl;
+using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Core.Diagnostics.Enums;
 using BlackbirdSql.Core.Interfaces;
-using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Common.Model;
-using BlackbirdSql.Common.Interfaces;
-using BlackbirdSql.Common.Ctl;
 
 
-// using Microsoft.SqlServer.ConnectionDlg.Core;
-// using Microsoft.SqlServer.ConnectionDlg.Core.Extensibility;
-// using Microsoft.SqlServer.ConnectionDlg.UI.MVVM;
-
-// namespace Microsoft.SqlServer.ConnectionDlg.UI
 namespace BlackbirdSql.Wpf.Model
 {
 	public class HistoryPageViewModel : ViewModelBase

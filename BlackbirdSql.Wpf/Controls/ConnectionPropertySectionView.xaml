@@ -4,25 +4,25 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:BlackbirdSql.Wpf.Controls"
 	xmlns:widgets="clr-namespace:BlackbirdSql.Wpf.Widgets"
-	xmlns:CoreCtl="clr-namespace:BlackbirdSql.Common.Ctl;assembly=BlackbirdSql.Common"
-	xmlns:CoreCtls="clr-namespace:BlackbirdSql.Common.Controls;assembly=BlackbirdSql.Common"
-	xmlns:CoreCvtrs="clr-namespace:BlackbirdSql.Common.Ctl.Converters;assembly=BlackbirdSql.Common"
-	xmlns:CoreModel="clr-namespace:BlackbirdSql.Common.Model;assembly=BlackbirdSql.Common"
-	xmlns:CoreRes="clr-namespace:BlackbirdSql.Common.Properties;assembly=BlackbirdSql.Common"
+	xmlns:ComCtl="clr-namespace:BlackbirdSql.Common.Ctl;assembly=BlackbirdSql.Common"
+	xmlns:ComCtls="clr-namespace:BlackbirdSql.Common.Controls;assembly=BlackbirdSql.Common"
+	xmlns:ComCvtrs="clr-namespace:BlackbirdSql.Common.Converters;assembly=BlackbirdSql.Common"
+	xmlns:ComModel="clr-namespace:BlackbirdSql.Common.Model;assembly=BlackbirdSql.Common"
+	xmlns:ComRes="clr-namespace:BlackbirdSql.Common.Properties;assembly=BlackbirdSql.Common"
 	x:Name="projectSectionView" x:Uid="projectSectionView" Loaded="ControlLoaded">
 	<FrameworkElement.Resources>
 		<ResourceDictionary x:Uid="ResourceDictionary_1">
 			<ResourceDictionary.MergedDictionaries>
-				<CoreCtl:CachedResourceDictionary
+				<ComCtl:CachedResourceDictionary
 					x:Uid="ResourceDictionary_2"
 					Source="pack://application:,,,/BlackbirdSql.Wpf;component/Themes/Default.xaml" />
 			</ResourceDictionary.MergedDictionaries>
-			<CoreCvtrs:TrueToVisibleConverter x:Key="TrueToVisibleConverter" x:Uid="CoreCvtrs:TrueToVisibleConverter_1" />
-			<CoreCvtrs:ImageToImageSourceConverter x:Key="ImageToImageSourceConverter" x:Uid="CoreCvtrs:ImageToImageSourceConverter_1" />
-			<CoreCvtrs:NonEmptyStringToVisibleConverter x:Key="NonEmptyStringToVisibleConverter" x:Uid="CoreCvtrs:NonEmptyStringToVisibleConverter_1" />
-			<CoreCvtrs:NullToVisibleConverter x:Key="NullToVisibleConverter" x:Uid="CoreCvtrs:NullToVisibleConverter_1" />
-			<CoreCvtrs:AllTrueToVisibleConverter x:Key="AllTrueToVisibleConverter" x:Uid="CoreCvtrs:AllTrueToVisibleConverter_1" />
-			<CoreCvtrs:AnyTrueToVisibleConverter x:Key="AnyTrueToVisibleConverter" x:Uid="CoreCvtrs:AnyTrueToVisibleConverter_1" />
+			<ComCvtrs:TrueToVisibleConverter x:Key="TrueToVisibleConverter" x:Uid="ComCvtrs:TrueToVisibleConverter_1" />
+			<ComCvtrs:ImageToImageSourceConverter x:Key="ImageToImageSourceConverter" x:Uid="ComCvtrs:ImageToImageSourceConverter_1" />
+			<ComCvtrs:NonEmptyStringToVisibleConverter x:Key="NonEmptyStringToVisibleConverter" x:Uid="ComCvtrs:NonEmptyStringToVisibleConverter_1" />
+			<ComCvtrs:NullToVisibleConverter x:Key="NullToVisibleConverter" x:Uid="ComCvtrs:NullToVisibleConverter_1" />
+			<ComCvtrs:AllTrueToVisibleConverter x:Key="AllTrueToVisibleConverter" x:Uid="ComCvtrs:AllTrueToVisibleConverter_1" />
+			<ComCvtrs:AnyTrueToVisibleConverter x:Key="AnyTrueToVisibleConverter" x:Uid="ComCvtrs:AnyTrueToVisibleConverter_1" />
 			<Style x:Key="DataSourceButtonStyle" x:Uid="DataSourceButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
 				<Setter x:Uid="TEButton_Setter" Property="MinWidth" Value="23" />
 			</Style>
@@ -102,31 +102,31 @@
 			<KeyBinding Key="Return" Command="{Binding EnterPressedCommand}" />
 			<KeyBinding Key="Enter" Command="{Binding EnterPressedCommand}" />
 		</UIElement.InputBindings>
-		<Label Name="DataSourceLabel" Content="{x:Static CoreRes:SharedResx.Connection_DataSource}" VerticalAlignment="Top" Grid.Row="0" Padding="0,0,24,0" Margin="0 6 0 0" BorderThickness="0,0,12,0" Target="{Binding ElementName=ServerNameTextBox2}" Visibility="{Binding Path=DataSource, Converter={StaticResource TrueToVisibleConverter}}" />
+		<Label Name="DataSourceLabel" Content="{x:Static ComRes:SharedResx.Connection_DataSource}" VerticalAlignment="Top" Grid.Row="0" Padding="0,0,24,0" Margin="0 6 0 0" BorderThickness="0,0,12,0" Target="{Binding ElementName=ServerNameTextBox2}" Visibility="{Binding Path=DataSource, Converter={StaticResource TrueToVisibleConverter}}" />
 		<Grid Name="dataSourceGrid" Row="0" Column="1" ColumnSpan="2" Visibility="{Binding Path=DataSource, Converter={StaticResource TrueToVisibleConverter}}">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*" />
 				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
-			<TextBox Name="ServerNameTextBox2" Text="{x:Static CoreRes:SharedResx.SqlDataSource}" Grid.Column="0" Margin="0 6 0 0" />
-			<Button Name="DataSourceButtonButton" Content="{x:Static CoreRes:SharedResx.Connection_DataSourceOption}" Grid.Column="1" Margin="6,6,0,0" Style="{StaticResource DataSourceButtonStyle}" />
+			<TextBox Name="ServerNameTextBox2" Text="{x:Static ComRes:SharedResx.SqlDataSource}" Grid.Column="0" Margin="0 6 0 0" />
+			<Button Name="DataSourceButtonButton" Content="{x:Static ComRes:SharedResx.Connection_DataSourceOption}" Grid.Column="1" Margin="6,6,0,0" Style="{StaticResource DataSourceButtonStyle}" />
 		</Grid>
-		<Label Name="ServerNameLabel" Content="{x:Static CoreRes:SharedResx.Connection_ServerName}" VerticalAlignment="Top" Grid.Row="1" Padding="0,0,24,0" Margin="0 6 0 0" Target="{Binding ElementName=ServerNameTextBox}" />
-		<TextBox Name="ServerNameTextBox" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="0 6 0 0" Style="{StaticResource TextBoxStyle}" AutomationProperties.IsRequiredForForm="True" AutomationProperties.HelpText="{x:Static CoreRes:SharedResx.Connection_ServerName}" AutomationProperties.Name="{x:Static CoreRes:SharedResx.Connection_ServerName}" Text="{Binding Connection.ServerName, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" />
-		<Label Name="AuthenticationLabel" Content="{x:Static CoreRes:SharedResx.Connection_Authentication}" Grid.Row="2" Grid.Column="0" Padding="0,0,24,0" Margin="0 6 0 0" Target="{Binding ElementName=AuthenticationComboBox}" />
-		<ComboBox Name="AuthenticationComboBox" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="0 6 0 0" SelectedValuePath="Key" DisplayMemberPath="Value" Style="{StaticResource ComboBoxStyle}" AutomationProperties.Name="{x:Static CoreRes:SharedResx.Connection_Authentication}" ItemsSource="{Binding AuthenticationOptions}" SelectedValue="{Binding Connection.AuthenticationType}" />
-		<Label Name="UserNameLabel" Content="{x:Static CoreRes:SharedResx.Connection_UserName}" Grid.Row="3" Grid.Column="0" Padding="0,0,24,0" Margin="0 6 0 0" Target="{Binding ElementName=UserNameTextBox}" />
-		<TextBox Name="UserNameTextBox" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="0 6 0 0" Style="{StaticResource TextBoxStyle}" AutomationProperties.IsRequiredForForm="True" AutomationProperties.HelpText="{x:Static CoreRes:SharedResx.Connection_UserName}" AutomationProperties.Name="{x:Static CoreRes:SharedResx.Connection_UserName}" IsEnabled="{Binding IsUserNameEnabled}" Text="{Binding Connection.UserName, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" />
-		<Label Name="PasswordLabel" Content="{x:Static CoreRes:SharedResx.Connection_Password}" Grid.Row="4" Grid.Column="0" Padding="0,0,24,0" Margin="0 6 0 0" Target="{Binding ElementName=PasswordBox}" />
-		<PasswordBox Name="PasswordBox" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Margin="0 6 0 0" MinHeight="23" Style="{StaticResource PasswordBoxStyle}" AutomationProperties.Name="{x:Static CoreRes:SharedResx.Connection_Password}" IsEnabled="{Binding IsPasswordEnabled, UpdateSourceTrigger=PropertyChanged}" CoreCtl:PasswordBoxAssistant.Password="{Binding Connection.Password}" />
-		<CheckBox Name="RememberPasswordCheckBox" Content="{x:Static CoreRes:SharedResx.Connection_RememberPassword}" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Margin="0 6 0 0" Style="{StaticResource CheckBoxStyle}" IsEnabled="{Binding IsPasswordEnabled}" IsChecked="{Binding Connection.PersistPassword}" />
-		<Label Name="DatabaseLabel" Content="{x:Static CoreRes:SharedResx.Connection_Database}" Grid.Row="6" Grid.Column="0" Padding="0,0,24,0" Margin="0 6 0 0" Target="{Binding ElementName=DatabaseNameComboBox}" />
-		<ComboBox Name="DatabaseNameComboBox" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Margin="0 6 0 0" IsEditable="True" IsTextSearchEnabled="True" Style="{StaticResource ComboBoxStyle}" AutomationProperties.Name="{x:Static CoreRes:SharedResx.Connection_Dataset}" ItemsSource="{Binding Path=DatabaseList}" SelectedItem="{Binding Path=Connection.Dataset}" Text="{Binding Path=Connection.Dataset}" DropDownOpened="DatabaseNameComboBoxOnDropDownOpened" />
-		<TextBlock Name="AdvancedPropertiesLink" x:Uid="AdvancedPropertiesLink" Grid.Row="7" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="6,6,0,0" AutomationProperties.Name="{x:Static CoreRes:SharedResx.Connection_AdvancedProperties}">
-			<Hyperlink AutomationProperties.Name="{x:Static CoreRes:SharedResx.Connection_AdvancedProperties}" Command="{Binding Path=AdvancedPropertiesCommand}">
-				<TextBlock Text="{x:Static CoreRes:SharedResx.Connection_AdvancedProperties}" />
+		<Label Name="ServerNameLabel" Content="{x:Static ComRes:SharedResx.Connection_ServerName}" VerticalAlignment="Top" Grid.Row="1" Padding="0,0,24,0" Margin="0 6 0 0" Target="{Binding ElementName=ServerNameTextBox}" />
+		<TextBox Name="ServerNameTextBox" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="0 6 0 0" Style="{StaticResource TextBoxStyle}" AutomationProperties.IsRequiredForForm="True" AutomationProperties.HelpText="{x:Static ComRes:SharedResx.Connection_ServerName}" AutomationProperties.Name="{x:Static ComRes:SharedResx.Connection_ServerName}" Text="{Binding Connection.ServerName, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" />
+		<Label Name="AuthenticationLabel" Content="{x:Static ComRes:SharedResx.Connection_Authentication}" Grid.Row="2" Grid.Column="0" Padding="0,0,24,0" Margin="0 6 0 0" Target="{Binding ElementName=AuthenticationComboBox}" />
+		<ComboBox Name="AuthenticationComboBox" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="0 6 0 0" SelectedValuePath="Key" DisplayMemberPath="Value" Style="{StaticResource ComboBoxStyle}" AutomationProperties.Name="{x:Static ComRes:SharedResx.Connection_Authentication}" ItemsSource="{Binding AuthenticationOptions}" SelectedValue="{Binding Connection.AuthenticationType}" />
+		<Label Name="UserNameLabel" Content="{x:Static ComRes:SharedResx.Connection_UserName}" Grid.Row="3" Grid.Column="0" Padding="0,0,24,0" Margin="0 6 0 0" Target="{Binding ElementName=UserNameTextBox}" />
+		<TextBox Name="UserNameTextBox" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="0 6 0 0" Style="{StaticResource TextBoxStyle}" AutomationProperties.IsRequiredForForm="True" AutomationProperties.HelpText="{x:Static ComRes:SharedResx.Connection_UserName}" AutomationProperties.Name="{x:Static ComRes:SharedResx.Connection_UserName}" IsEnabled="{Binding IsUserNameEnabled}" Text="{Binding Connection.UserName, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}" />
+		<Label Name="PasswordLabel" Content="{x:Static ComRes:SharedResx.Connection_Password}" Grid.Row="4" Grid.Column="0" Padding="0,0,24,0" Margin="0 6 0 0" Target="{Binding ElementName=PasswordBox}" />
+		<PasswordBox Name="PasswordBox" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Margin="0 6 0 0" MinHeight="23" Style="{StaticResource PasswordBoxStyle}" AutomationProperties.Name="{x:Static ComRes:SharedResx.Connection_Password}" IsEnabled="{Binding IsPasswordEnabled, UpdateSourceTrigger=PropertyChanged}" ComCtl:PasswordBoxAssistant.Password="{Binding Connection.Password}" />
+		<CheckBox Name="RememberPasswordCheckBox" Content="{x:Static ComRes:SharedResx.Connection_RememberPassword}" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Margin="0 6 0 0" Style="{StaticResource CheckBoxStyle}" IsEnabled="{Binding IsPasswordEnabled}" IsChecked="{Binding Connection.PersistPassword}" />
+		<Label Name="DatabaseLabel" Content="{x:Static ComRes:SharedResx.Connection_Database}" Grid.Row="6" Grid.Column="0" Padding="0,0,24,0" Margin="0 6 0 0" Target="{Binding ElementName=DatabaseNameComboBox}" />
+		<ComboBox Name="DatabaseNameComboBox" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Margin="0 6 0 0" IsEditable="True" IsTextSearchEnabled="True" Style="{StaticResource ComboBoxStyle}" AutomationProperties.Name="{x:Static ComRes:SharedResx.Connection_Dataset}" ItemsSource="{Binding Path=DatabaseList}" SelectedItem="{Binding Path=Connection.Dataset}" Text="{Binding Path=Connection.Dataset}" DropDownOpened="DatabaseNameComboBoxOnDropDownOpened" />
+		<TextBlock Name="AdvancedPropertiesLink" x:Uid="AdvancedPropertiesLink" Grid.Row="7" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="6,6,0,0" AutomationProperties.Name="{x:Static ComRes:SharedResx.Connection_AdvancedProperties}">
+			<Hyperlink AutomationProperties.Name="{x:Static ComRes:SharedResx.Connection_AdvancedProperties}" Command="{Binding Path=AdvancedPropertiesCommand}">
+				<TextBlock Text="{x:Static ComRes:SharedResx.Connection_AdvancedProperties}" />
 			</Hyperlink>
 		</TextBlock>
-		<CoreCtls:NotificationTextBlock x:Name="StatusLiveRegion" Visibility="Hidden" />
+		<ComCtls:NotificationTextBlock x:Name="StatusLiveRegion" Visibility="Hidden" />
 	</Grid>
 </UserControl>

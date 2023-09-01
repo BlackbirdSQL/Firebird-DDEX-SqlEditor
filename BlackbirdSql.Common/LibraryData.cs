@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq.Expressions;
+using BlackbirdSql.Core.CommandProviders;
 using Microsoft.VisualStudio;
 
 namespace BlackbirdSql.Common;
@@ -40,7 +41,6 @@ public static class LibraryData
 	// Private Service and Factory Guids
 	public const string ScriptFactoryGuid = "FEECEF69-3E37-4D46-9C27-84E30B7BC802";
 	public const string SqlResultsEditorFactoryGuid = "31AD6A1B-B7A2-4B16-AADA-28ADEADF7F2E";
-	public const string SqlEditorCommandSetGuid = "13CD7876-FC84-4DDA-91BF-4CDBF893B134";
 
 	/// <summary>
 	/// Unique guid key for saving the DbConnectionStringBuilder object parsed from the
@@ -52,7 +52,7 @@ public static class LibraryData
 
 
 	// Private Proffered Services and Object CLSIDs
-	public static readonly Guid CLSID_SqlEditorCommandSet = new(SqlEditorCommandSetGuid);
+	public static readonly Guid CLSID_SqlEditorCommandSet = new(CommandProperties.CommandSetGuid);
 	public static readonly Guid CLSID_EditorMarkerService = new("984A3634-C7DE-41D9-992E-CE35638B513F");
 	public static readonly Guid CLSID_FontAndColorService = new("2EF6AAA5-7BAE-452B-AA43-6472FB2FFFFB");
 

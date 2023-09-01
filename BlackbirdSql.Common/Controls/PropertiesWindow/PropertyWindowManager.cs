@@ -6,19 +6,19 @@
 using System;
 using System.Collections;
 using System.Threading;
-using System.Threading.Tasks;
 
-using BlackbirdSql.Core;
 using BlackbirdSql.Common.Controls.Events;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Controls.ResultsPane;
 using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
+using BlackbirdSql.Core;
+
 using Microsoft.VisualStudio.Shell;
 
-namespace BlackbirdSql.Common.Controls.PropertiesWindow;
 
+namespace BlackbirdSql.Common.Controls.PropertiesWindow;
 
 public class PropertyWindowManager : IDisposable
 {

@@ -3,8 +3,8 @@
 
 using System;
 using System.Globalization;
-using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Core;
 

@@ -7,10 +7,9 @@ using System.Windows.Forms;
 using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Common.Config;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Events;
 using Microsoft.VisualStudio.Utilities;
-
+using BlackbirdSql.Common.Events;
+using BlackbirdSql.Common.Enums;
 
 namespace BlackbirdSql.Common.Controls;
 

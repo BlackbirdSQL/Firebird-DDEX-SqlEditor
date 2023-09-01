@@ -61,6 +61,15 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid calling sequence: already sorting data.
+        /// </summary>
+        public static string AlreadySortingData {
+            get {
+                return ResourceManager.GetString("AlreadySortingData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid calling sequence: already storing data..
         /// </summary>
         public static string AlreadyStoringData {

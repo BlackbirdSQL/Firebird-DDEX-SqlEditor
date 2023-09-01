@@ -20,8 +20,6 @@ using BlackbirdSql.Core.Model;
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Controls.PropertiesWindow;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Events;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
@@ -32,6 +30,8 @@ using FirebirdSql.Data.Services;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System.Windows.Forms;
+using BlackbirdSql.Common.Config.Interfaces;
+using BlackbirdSql.Common.Events;
 
 namespace BlackbirdSql.Common.Model;
 

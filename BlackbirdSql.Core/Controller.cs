@@ -47,4 +47,7 @@ internal static class Controller
 
 	public static IVsRunningDocumentTable DocTable => Instance.DocTable;
 
+	public static IVsMonitorSelection SelectionMonitor => Instance.SelectionMonitor;
+
+
 }

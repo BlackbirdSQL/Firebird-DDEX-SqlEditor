@@ -3,9 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Enums;
 using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;

@@ -408,8 +408,8 @@
 			<DisplayName resource="Property_Name_Parameter_Direction" />
 			<Description resource="Property_Desc_Parameter_Direction" />
 			<StandardValues>
-				<StandardValue value="1" resource="Property_Value_Direction_In" />
-				<StandardValue value="2" resource="Property_Value_Direction_Out" />
+				<StandardValue value="0" resource="Property_Value_Direction_In" />
+				<StandardValue value="1" resource="Property_Value_Direction_Out" />
 				<StandardValue value="3" resource="Property_Value_Direction_InOut" />
 				<StandardValue value="6" resource="Property_Value_Direction_Return" />
 			</StandardValues>
@@ -475,9 +475,11 @@
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)$(parentType)Column.ico" when="{Column.PARENT_TYPE} = 'Trigger' OR {Column.PARENT_TYPE} = 'View'" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Column.ico" assembly="" />
 				<PropertiesRef name="TplPropertiesColumn" arguments="$(parentType),Column,COLUMN_NAME,Advanced"/>
+				<!--
 				<Commands>
 					<CommandRef name="CommandTextOpenScript" />
 				</Commands>
+				-->
 			</SelectionNode>
 		</Selection>
 	</Define>
@@ -640,9 +642,12 @@
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Identity$(systemType)Trigger.ico" when="{Trigger.IS_IDENTITY}" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Trigger.ico" assembly="" />
 				<PropertiesRef name="TplPropertiesTrigger" />
+				<!--
 				<Commands>
 					<CommandRef name="CommandTextOpenScript" />
+					<CommandRef name="CommandTextOpenAlterScript" />
 				</Commands>
+				-->
 				<Children>
 					<SelectionRef name="TplSelectionColumn" arguments="TriggerColumn,Trigger,$(systemType),{Trigger.TABLE_CATALOG},,{Trigger.TABLE_SCHEMA},,{Trigger.TRIGGER_NAME}" />
 				</Children>
@@ -660,9 +665,12 @@
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Identity$(systemType)Trigger.ico" when="{Trigger.IS_IDENTITY}" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Trigger.ico" assembly="" />
 				<PropertiesRef name="TplPropertiesTrigger" />
+				<!--
 				<Commands>
 					<CommandRef name="CommandTextOpenScript" />
+					<CommandRef name="CommandTextOpenAlterScript" />
 				</Commands>
+				-->
 			</SelectionNode>
 		</Selection>
 	</Define>
@@ -745,9 +753,11 @@
 									<DisplayName>{Index.INDEX_NAME}</DisplayName>
 									<Icon name="PrimaryKey" />
 									<PropertiesRef name="TplPropertiesIndex" />
+									<!--
 									<Commands>
 										<CommandRef name="CommandTextOpenScript" />
 									</Commands>
+									-->
 									<Children>
 										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
 									</Children>
@@ -758,9 +768,11 @@
 									<DisplayName>{Index.INDEX_NAME}</DisplayName>
 									<Icon name="UniqueKey" />
 									<PropertiesRef name="TplPropertiesIndex" />
+									<!--
 									<Commands>
 										<CommandRef name="CommandTextOpenScript" />
 									</Commands>
+									-->
 									<Children>
 										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
 									</Children>
@@ -771,9 +783,11 @@
 									<DisplayName>{Index.INDEX_NAME}</DisplayName>
 									<Icon name="Index" />
 									<PropertiesRef name="TplPropertiesIndex" />
+									<!--
 									<Commands>
 										<CommandRef name="CommandTextOpenScript" />
 									</Commands>
+									-->
 									<Children>
 										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
 									</Children>
@@ -784,9 +798,11 @@
 									<DisplayName>{Index.INDEX_NAME}</DisplayName>
 									<Icon name="ForeignKey" />
 									<PropertiesRef name="TplPropertiesIndex" />
+									<!--
 									<Commands>
 										<CommandRef name="CommandTextOpenScript" />
 									</Commands>
+									-->
 									<Children>
 										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
 									</Children>
@@ -855,9 +871,11 @@
 											<StandardValuesRef name="TplStandardValuesForeignKeyRule" />
 										</Property>
 									</Properties>
+									<!--
 									<Commands>
 										<CommandRef name="CommandTextOpenScript" />
 									</Commands>
+									-->
 									<Children>
 										<SelectionRef name="TplSelectionColumn" arguments="ForeignKeyColumn,ForeignKey,$(systemType),{ForeignKey.CONSTRAINT_CATALOG},,{ForeignKey.CONSTRAINT_SCHEMA},,{ForeignKey.TABLE_NAME},,{ForeignKey.CONSTRAINT_NAME}" />
 									</Children>

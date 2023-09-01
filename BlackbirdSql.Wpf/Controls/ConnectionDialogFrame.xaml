@@ -1,4 +1,4 @@
-﻿<CoreCtls:DialogWindow
+﻿<ComCtls:DialogWindow
 	x:Class="BlackbirdSql.Wpf.Controls.ConnectionDialogFrame" x:ClassModifier="public"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -7,30 +7,30 @@
     xmlns:local="clr-namespace:BlackbirdSql.Wpf.Controls"
 	xmlns:model="clr-namespace:BlackbirdSql.Wpf.Model"
 	xmlns:widgets="clr-namespace:BlackbirdSql.Wpf.Widgets"
-	xmlns:CoreCtl="clr-namespace:BlackbirdSql.Common.Ctl;assembly=BlackbirdSql.Common"
-	xmlns:CoreCtls="clr-namespace:BlackbirdSql.Common.Controls;assembly=BlackbirdSql.Common"
-	xmlns:CoreCvtrs="clr-namespace:BlackbirdSql.Common.Ctl.Converters;assembly=BlackbirdSql.Common"
-	xmlns:CoreModel="clr-namespace:BlackbirdSql.Common.Model;assembly=BlackbirdSql.Common"
-	xmlns:CoreRes="clr-namespace:BlackbirdSql.Common.Properties;assembly=BlackbirdSql.Common"
+	xmlns:ComCtl="clr-namespace:BlackbirdSql.Common.Ctl;assembly=BlackbirdSql.Common"
+	xmlns:ComCtls="clr-namespace:BlackbirdSql.Common.Controls;assembly=BlackbirdSql.Common"
+	xmlns:ComCvtrs="clr-namespace:BlackbirdSql.Common.Converters;assembly=BlackbirdSql.Common"
+	xmlns:ComModel="clr-namespace:BlackbirdSql.Common.Model;assembly=BlackbirdSql.Common"
+	xmlns:ComRes="clr-namespace:BlackbirdSql.Common.Properties;assembly=BlackbirdSql.Common"
 	mc:Ignorable="d" 
 	ResizeMode="CanResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner"
-	Title="{x:Static CoreRes:SharedResx.ConnectionDialogTitle}"
+	Title="{x:Static ComRes:SharedResx.ConnectionDialogTitle}"
 	Height="600" Width="500" MinHeight="500" MinWidth="400">
 	<FrameworkElement.Resources>
 		<ResourceDictionary x:Uid="ResourceDictionary_1">
 			<ResourceDictionary.MergedDictionaries>
-				<CoreCtl:CachedResourceDictionary
+				<ComCtl:CachedResourceDictionary
 					x:Uid="ResourceDictionary_2"
 					Source="pack://application:,,,/BlackbirdSql.Wpf;component/Themes/Default.xaml" />
 			</ResourceDictionary.MergedDictionaries>
-			<CoreCvtrs:TrueToVisibleConverter x:Key="TrueToVisibleConverter" x:Uid="CoreCvtrs:TrueToVisibleConverter_1" />
-			<CoreCvtrs:ImageToImageSourceConverter x:Key="ImageToImageSourceConverter" x:Uid="CoreCvtrs:ImageToImageSourceConverter_1" />
-			<CoreCvtrs:NonEmptyStringToVisibleConverter x:Key="NonEmptyStringToVisibleConverter" x:Uid="CoreCvtrs:NonEmptyStringToVisibleConverter_1" />
-			<CoreCvtrs:NullToVisibleConverter x:Key="NullToVisibleConverter" x:Uid="CoreCvtrs:NullToVisibleConverter_1" />
-			<CoreCvtrs:AllTrueToVisibleConverter x:Key="AllTrueToVisibleConverter" x:Uid="CoreCvtrs:AllTrueToVisibleConverter_1" />
-			<CoreCvtrs:AnyTrueToVisibleConverter x:Key="AnyTrueToVisibleConverter" x:Uid="CoreCvtrs:AnyTrueToVisibleConverter_1" />
-			<CoreCvtrs:IconToImageSourceConverter x:Key="IconToImageSourceConverter" x:Uid="CoreCvtrs:IconToImageSourceConverter_1" />
-			<CoreCvtrs:BoolInvertConverter x:Key="BoolInvertConverter" x:Uid="CoreCvtrs:BoolInvertConverter_1" />
+			<ComCvtrs:TrueToVisibleConverter x:Key="TrueToVisibleConverter" x:Uid="ComCvtrs:TrueToVisibleConverter_1" />
+			<ComCvtrs:ImageToImageSourceConverter x:Key="ImageToImageSourceConverter" x:Uid="ComCvtrs:ImageToImageSourceConverter_1" />
+			<ComCvtrs:NonEmptyStringToVisibleConverter x:Key="NonEmptyStringToVisibleConverter" x:Uid="ComCvtrs:NonEmptyStringToVisibleConverter_1" />
+			<ComCvtrs:NullToVisibleConverter x:Key="NullToVisibleConverter" x:Uid="ComCvtrs:NullToVisibleConverter_1" />
+			<ComCvtrs:AllTrueToVisibleConverter x:Key="AllTrueToVisibleConverter" x:Uid="ComCvtrs:AllTrueToVisibleConverter_1" />
+			<ComCvtrs:AnyTrueToVisibleConverter x:Key="AnyTrueToVisibleConverter" x:Uid="ComCvtrs:AnyTrueToVisibleConverter_1" />
+			<ComCvtrs:IconToImageSourceConverter x:Key="IconToImageSourceConverter" x:Uid="ComCvtrs:IconToImageSourceConverter_1" />
+			<ComCvtrs:BoolInvertConverter x:Key="BoolInvertConverter" x:Uid="ComCvtrs:BoolInvertConverter_1" />
 			<Style x:Key="TabItemStyle" x:Uid="TabItemStyle" TargetType="{x:Type TabItem}">
 				<Setter x:Uid="Setter_1" Property="Background" Value="{DynamicResource ItemBrushKey}" />
 				<Setter x:Uid="Setter_2" Property="Foreground" Value="{DynamicResource ItemTextBrushKey}" />
@@ -99,7 +99,7 @@
 							<RowDefinition Height="Auto" />
 							<RowDefinition Height="Auto" />
 						</Grid.RowDefinitions>
-						<TextBlock Name="historyText" VerticalAlignment="Center" TextWrapping="Wrap" Margin="3,0,3,0" Text="{x:Static CoreRes:SharedResx.HistoryTab}" Style="{StaticResource ItemSubTextStyle}" />
+						<TextBlock Name="historyText" VerticalAlignment="Center" TextWrapping="Wrap" Margin="3,0,3,0" Text="{x:Static ComRes:SharedResx.HistoryTab}" Style="{StaticResource ItemSubTextStyle}" />
 						<Grid Name="historyUnderlineButton" Row="1" Style="{StaticResource UnderLineStyle}" />
 					</Grid>
 				</HeaderedContentControl.Header>
@@ -112,15 +112,15 @@
 							<RowDefinition Height="Auto" />
 							<RowDefinition Height="Auto" />
 						</Grid.RowDefinitions>
-						<TextBlock Name="browseText" VerticalAlignment="Center" TextWrapping="Wrap" Margin="3,0,3,0" Text="{x:Static CoreRes:SharedResx.BrowseTab}" Style="{StaticResource ItemSubTextStyle}" />
+						<TextBlock Name="browseText" VerticalAlignment="Center" TextWrapping="Wrap" Margin="3,0,3,0" Text="{x:Static ComRes:SharedResx.BrowseTab}" Style="{StaticResource ItemSubTextStyle}" />
 						<Grid Name="browsUnderlineButton" Row="1" Style="{StaticResource UnderLineStyle}" />
 					</Grid>
 				</HeaderedContentControl.Header>
 				<local:BrowsePageView x:Name="browsePageView" DataContext="{Binding Path=GetBrowsePageViewModel}" />
 			</TabItem>
 		</TabControl>
-		<Button Name="TestConnectionButton" Content="{x:Static CoreRes:SharedResx.TestConnection}" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Style="{StaticResource ConnectCancelButtonStyle}" Command="{Binding Path=TestConnectionCommand}" Visibility="{Binding Path=DataContext.IsConnectMode, Converter={StaticResource TrueToVisibleConverter}, ConverterParameter=Not, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
-		<widgets:LoadingControl Uid="SpinnerControl" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" LoadingText="{x:Static CoreRes:SharedResx.ConnectingText}" Margin="3,0,3,0">
+		<Button Name="TestConnectionButton" Content="{x:Static ComRes:SharedResx.TestConnection}" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" Style="{StaticResource ConnectCancelButtonStyle}" Command="{Binding Path=TestConnectionCommand}" Visibility="{Binding Path=DataContext.IsConnectMode, Converter={StaticResource TrueToVisibleConverter}, ConverterParameter=Not, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
+		<widgets:LoadingControl Uid="SpinnerControl" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" LoadingText="{x:Static ComRes:SharedResx.ConnectingText}" Margin="3,0,3,0">
 			<UIElement.Visibility>
 				<MultiBinding Converter="{StaticResource AllTrueToVisibleConverter}" ConverterParameter="Hidden">
 					<MultiBinding.Bindings>
@@ -136,7 +136,7 @@
 				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
 			<Button Name="OkButton" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource ConnectCancelButtonStyle}" Content="{Binding Path=OkButtonTitle}" IsEnabled="{Binding Path=CanExecute}" Command="{Binding Path=ConnectCommand}" />
-			<Button Name="CancelButton" Content="{x:Static CoreRes:SharedResx.Cancel}" IsCancel="True" IsDefault="False" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource ConnectCancelButtonStyle}" />
+			<Button Name="CancelButton" Content="{x:Static ComRes:SharedResx.Cancel}" IsCancel="True" IsDefault="False" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{StaticResource ConnectCancelButtonStyle}" />
 		</Grid>
 	</Grid>
-</CoreCtls:DialogWindow>
+</ComCtls:DialogWindow>

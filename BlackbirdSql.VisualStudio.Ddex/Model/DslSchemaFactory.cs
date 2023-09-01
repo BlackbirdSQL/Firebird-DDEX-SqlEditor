@@ -93,7 +93,7 @@ internal sealed class DslSchemaFactory
 				try
 				{
 					parser = LinkageParser.Instance(connection, false);
-					parser?.SyncEnter();
+					parser?.SyncEnter(true);
 					return connection.GetSchema(collectionName, restrictions);
 				}
 				finally
@@ -143,7 +143,7 @@ internal sealed class DslSchemaFactory
 			throw ex;
 		}
 
-		parser?.SyncEnter();
+		parser?.SyncEnter(true);
 
 		var xmlStream = assembly.GetManifestResourceStream(ResourceName);
 		if (xmlStream == null)
@@ -259,7 +259,7 @@ internal sealed class DslSchemaFactory
 				try
 				{
 					parser = LinkageParser.Instance(connection, false);
-					parser?.SyncEnter();
+					parser?.SyncEnter(true);
 					return connection.GetSchemaAsync(collectionName, restrictions, cancellationToken);
 				}
 				catch (Exception)
@@ -332,7 +332,7 @@ internal sealed class DslSchemaFactory
 
 		var oldCulture = Thread.CurrentThread.CurrentCulture;
 
-		parser?.SyncEnter();
+		parser?.SyncEnter(true);
 
 		try
 		{

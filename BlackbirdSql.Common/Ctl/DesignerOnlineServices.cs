@@ -58,7 +58,7 @@ public class DesignerOnlineServices : AbstractDesignerServices, IBDesignerOnline
 	// Microsoft.VisualStudio.Data.Tools.Package, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 	// Microsoft.VisualStudio.Data.Tools.Package.Explorers.SqlServerObjectExplorer.SqlServerObjectExplorerServiceHelper.OpenOnlineEditor
 	// combined with local methods
-	public static void OpenOnlineEditor(DbConnectionStringBuilder csb, EnModelObjectType objectType,
+	public static void OpenOnlineEditor(DbConnectionStringBuilder csb, EnModelObjectType objectType, bool alternate,
 		IList<string> identifierList, string script, Guid editorFactory, Action<IServiceProvider> documentLoadedCallback,
 		string physicalViewName = null)
 	{
@@ -68,8 +68,9 @@ public class DesignerOnlineServices : AbstractDesignerServices, IBDesignerOnline
 			editorFactory = new(SystemData.MandatedSqlEditorFactoryGuid);
 
 		string mkDocument = null;
+		objectType += (alternate ? 20 : 0);
 		EnModelObjectType elementType = objectType;
-		DatabaseLocation dbl = new(csb);
+		DatabaseLocation dbl = new(csb, alternate);
 		HashSet<NodeElementDescriptor> originalObjects = null;
 		bool flag = false;
 		IList<string> identifierArray = null;
@@ -90,7 +91,7 @@ public class DesignerOnlineServices : AbstractDesignerServices, IBDesignerOnline
 		if (string.IsNullOrEmpty(mkDocument))
 		{
 			mkDocument = MonikerAgent.BuildMiscDocumentMoniker(dbl.DataSource, dbl.Database,
-				dbl.UserName, elementType, ref identifierArray, true);
+				dbl.UserName, elementType, ref identifierArray, false, true, "");
 
 
 			flag = true;
@@ -163,13 +164,13 @@ public class DesignerOnlineServices : AbstractDesignerServices, IBDesignerOnline
 
 	// Microsoft.VisualStudio.Data.Tools.Package, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 	// Microsoft.VisualStudio.Data.Tools.Package.Explorers.SqlServerObjectExplorer.SqlServerObjectExplorerService:ViewCode()
-	public void ViewCode(DbConnectionStringBuilder csb, EnModelObjectType objectType, IList<string> identifierList, string script)
+	public void ViewCode(DbConnectionStringBuilder csb, EnModelObjectType objectType, bool alternate, IList<string> identifierList, string script)
 	{
 		EnsureConnectionSpecifiesDatabase(csb);
 
 		Guid clsidEditorFactory = new Guid(SystemData.MandatedSqlEditorFactoryGuid);
 
-		OpenOnlineEditor(csb, objectType, identifierList, script, clsidEditorFactory, null, null);
+		OpenOnlineEditor(csb, objectType, alternate, identifierList, script, clsidEditorFactory, null, null);
 	}
 
 

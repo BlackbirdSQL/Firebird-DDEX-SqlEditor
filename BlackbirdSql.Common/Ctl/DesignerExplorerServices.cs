@@ -39,7 +39,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 	// Microsoft.VisualStudio.Data.Tools.Package, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 	// Microsoft.VisualStudio.Data.Tools.Package.Explorers.SqlServerObjectExplorer.SqlServerObjectExplorerServiceHelper.OpenOnlineEditor
 	// combined with local methods
-	public static void OpenExplorerEditor(IVsDataExplorerNode node, EnModelObjectType objectType,
+	public static void OpenExplorerEditor(IVsDataExplorerNode node, EnModelObjectType objectType, bool alternate,
 		IList<string> identifierList, Guid editorFactory, Action<IServiceProvider> documentLoadedCallback,
 		string physicalViewName = null)
 	{
@@ -49,8 +49,9 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 			editorFactory = new(SystemData.MandatedSqlEditorFactoryGuid);
 
 		string mkDocument = null;
+		objectType += (alternate ? 20 : 0);
 		EnModelObjectType elementType = objectType;
-		DatabaseLocation dbl = new(node);
+		DatabaseLocation dbl = new(node, alternate);
 		HashSet<NodeElementDescriptor> originalObjects = null;
 		bool flag = false;
 		IList<string> identifierArray = null;
@@ -70,7 +71,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		}
 		if (string.IsNullOrEmpty(mkDocument))
 		{
-			mkDocument = MonikerAgent.BuildMiscDocumentMoniker(node, ref identifierArray, true);
+			mkDocument = MonikerAgent.BuildMiscDocumentMoniker(node, ref identifierArray, false, true, alternate ? ".alter" : "");
 
 
 			flag = true;
@@ -85,6 +86,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		OpenMiscDocument(mkDocument, csb, true, false, editorFactory, out uint docCookie, out IVsWindowFrame frame,
 			out bool editorAlreadyOpened, out bool documentAlreadyLoaded, physicalViewName);
 
+		
 		_ = frame; // Suppression
 		result = true;
 		bool flag2 = false;
@@ -112,7 +114,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 			try
 			{
-				string script = MonikerAgent.GetDecoratedDdlSource(node.Object);
+				string script = MonikerAgent.GetDecoratedDdlSource(node, alternate);
 
 				PopulateEditorWithObject(false, mkDocument, docCookie, script, originalObjects);
 				ExecuteDocumentLoadedCallback(documentLoadedCallback, dbl);
@@ -146,7 +148,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 	// Microsoft.VisualStudio.Data.Tools.Package, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 	// Microsoft.VisualStudio.Data.Tools.Package.Explorers.SqlServerObjectExplorer.SqlServerObjectExplorerService:ViewCode()
-	public void ViewCode(IVsDataExplorerNode node)
+	public void ViewCode(IVsDataExplorerNode node, bool alternate)
 	{
 		MonikerAgent moniker = new(node);
 
@@ -154,7 +156,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		EnModelObjectType objectType = moniker.ObjectType;
 		Guid clsidEditorFactory = new Guid(SystemData.DslEditorFactoryGuid);
 
-		OpenExplorerEditor(node, objectType, identifierList, clsidEditorFactory, null, null);
+		OpenExplorerEditor(node, objectType, alternate, identifierList, clsidEditorFactory, null, null);
 	}
 
 

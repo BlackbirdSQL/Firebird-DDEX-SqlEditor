@@ -111,7 +111,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 			try
 			{
-				parser.SyncEnter();
+				parser.SyncEnter(true);
 
 				schema = GetRootSchema(connection, parameters);
 

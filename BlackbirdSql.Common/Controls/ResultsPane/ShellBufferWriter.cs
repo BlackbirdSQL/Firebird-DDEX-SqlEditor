@@ -7,8 +7,8 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Text;
-using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl;
 
 // using Microsoft.SqlServer.Management.QueryExecution;
 // using Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration;

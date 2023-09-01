@@ -311,7 +311,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{8F6367E3-E075-457D-B6F1-0CB3E642A705} = {F13C0BD2-B112-42D0-8B8D-1E26986B0410}
 		{884EE120-B22E-4940-8C1C-626F13028376} = {2AF853FC-ADFF-4432-8BFB-45093A1969F4}
 		{8071D6D5-491E-4ABA-8202-0ABBE913F129} = {2AF853FC-ADFF-4432-8BFB-45093A1969F4}
 		{764CEC97-8B92-4C38-A138-B6803004912A} = {2AF853FC-ADFF-4432-8BFB-45093A1969F4}
@@ -323,7 +322,6 @@ Global
 		SolutionGuid = {39854CA8-D6FF-4E02-879D-704FC2E136D4}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Firebird\FirebirdSql.Data.External\FirebirdSql.Data.External.projitems*{8071d6d5-491e-4aba-8202-0abbe913f129}*SharedItemsImports = 5
 		Firebird\FirebirdSql.Data.External\FirebirdSql.Data.External.projitems*{884ee120-b22e-4940-8c1c-626f13028376}*SharedItemsImports = 13
 	EndGlobalSection
 EndGlobal

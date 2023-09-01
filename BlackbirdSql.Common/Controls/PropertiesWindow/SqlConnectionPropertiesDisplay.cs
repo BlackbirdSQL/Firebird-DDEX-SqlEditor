@@ -7,7 +7,7 @@ using System;
 using System.ComponentModel;
 using System.Data;
 using System.Globalization;
-
+using BlackbirdSql.Common.ComponentModel;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
@@ -20,7 +20,7 @@ using FirebirdSql.Data.Services;
 
 namespace BlackbirdSql.Common.Controls.PropertiesWindow
 {
-	public class SqlConnectionPropertiesDisplay : SqlEditorPropertiesBase, IPropertyWindowQueryExecutorInitialize
+	public class SqlConnectionPropertiesDisplay : AbstractPropertiesBase, IPropertyWindowQueryExecutorInitialize
 	{
 		private bool _isInitialized;
 

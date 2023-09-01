@@ -77,11 +77,11 @@ namespace BlackbirdSql.VisualStudio.Ddex
 
 
 	// Implement Visual studio options/settings
-	[ProvideOptionPage(typeof(VsOptionsProvider.GeneralOptionPage), VsOptionsProvider.OptionPageCategory,
-		VsOptionsProvider.GeneralOptionPageName, 0, 0, true, SupportsProfiles = true)]
+	[ProvideOptionPage(typeof(OptionsProvider.GeneralOptionPage), OptionsProvider.OptionPageCategory,
+		OptionsProvider.GeneralOptionPageName, 0, 0, true, SupportsProfiles = true)]
 #if DEBUG
-	[ProvideOptionPage(typeof(UIDebugOptionsDialogPage), VsOptionsProvider.OptionPageCategory,
-		VsOptionsProvider.DebugOptionPageName, 0, 0, true, SupportsProfiles = true)]
+	[ProvideOptionPage(typeof(DebugOptionsDialogPage), OptionsProvider.OptionPageCategory,
+		OptionsProvider.DebugOptionPageName, 0, 0, true, SupportsProfiles = true)]
 #endif
 
 
@@ -357,8 +357,8 @@ namespace BlackbirdSql.VisualStudio.Ddex
 		{
 			try
 			{
-				VsGeneralOptionModel.Saved += new Action<VsGeneralOptionModel>(onSettingsSavedDelegate);
-				VsDebugOptionModel.Saved += new Action<VsDebugOptionModel>(onSettingsSavedDelegate);
+				GeneralOptionModel.Saved += new Action<GeneralOptionModel>(onSettingsSavedDelegate);
+				DebugOptionModel.Saved += new Action<DebugOptionModel>(onSettingsSavedDelegate);
 			}
 			catch (Exception ex)
 			{
@@ -375,18 +375,18 @@ namespace BlackbirdSql.VisualStudio.Ddex
 				return new GlobalEventArgs(new KeyValuePair<string, object>[]
 					{
 						// General options
-						GlobalEventArgs.ValuePair( "EnableDiagnostics", VsGeneralOptionModel.Instance.EnableDiagnostics ),
-						GlobalEventArgs.ValuePair( "EnableTaskLog", VsGeneralOptionModel.Instance.EnableTaskLog ),
-						GlobalEventArgs.ValuePair( "ValidateConfig", VsGeneralOptionModel.Instance.ValidateConfig ),
-						GlobalEventArgs.ValuePair( "ValidateEdmx", VsGeneralOptionModel.Instance.ValidateEdmx ),
+						GlobalEventArgs.ValuePair( "EnableDiagnostics", GeneralOptionModel.Instance.EnableDiagnostics ),
+						GlobalEventArgs.ValuePair( "EnableTaskLog", GeneralOptionModel.Instance.EnableTaskLog ),
+						GlobalEventArgs.ValuePair( "ValidateConfig", GeneralOptionModel.Instance.ValidateConfig ),
+						GlobalEventArgs.ValuePair( "ValidateEdmx", GeneralOptionModel.Instance.ValidateEdmx ),
 						// Debug options
-						GlobalEventArgs.ValuePair( "PersistentValidation", VsDebugOptionModel.Instance.PersistentValidation ),
-						GlobalEventArgs.ValuePair( "EnableTrace", VsDebugOptionModel.Instance.EnableTrace ),
-						GlobalEventArgs.ValuePair( "EnableTracer", VsDebugOptionModel.Instance.EnableTracer ),
-						GlobalEventArgs.ValuePair( "EnableDiagnosticsLog", VsDebugOptionModel.Instance.EnableDiagnosticsLog ),
-						GlobalEventArgs.ValuePair( "LogFile", VsDebugOptionModel.Instance.LogFile ),
-						GlobalEventArgs.ValuePair( "EnableFbDiagnostics", VsDebugOptionModel.Instance.EnableFbDiagnostics ),
-						GlobalEventArgs.ValuePair( "FbLogFile", VsDebugOptionModel.Instance.FbLogFile )
+						GlobalEventArgs.ValuePair( "PersistentValidation", DebugOptionModel.Instance.PersistentValidation ),
+						GlobalEventArgs.ValuePair( "EnableTrace", DebugOptionModel.Instance.EnableTrace ),
+						GlobalEventArgs.ValuePair( "EnableTracer", DebugOptionModel.Instance.EnableTracer ),
+						GlobalEventArgs.ValuePair( "EnableDiagnosticsLog", DebugOptionModel.Instance.EnableDiagnosticsLog ),
+						GlobalEventArgs.ValuePair( "LogFile", DebugOptionModel.Instance.LogFile ),
+						GlobalEventArgs.ValuePair( "EnableFbDiagnostics", DebugOptionModel.Instance.EnableFbDiagnostics ),
+						GlobalEventArgs.ValuePair( "FbLogFile", DebugOptionModel.Instance.FbLogFile )
 					});
 			}
 			catch (Exception ex)
@@ -406,10 +406,10 @@ namespace BlackbirdSql.VisualStudio.Ddex
 				return new GlobalEventArgs(group, new KeyValuePair<string, object>[]
 					{
 						// General options
-						GlobalEventArgs.ValuePair( "EnableDiagnostics", VsGeneralOptionModel.Instance.EnableDiagnostics ),
-						GlobalEventArgs.ValuePair( "EnableTaskLog", VsGeneralOptionModel.Instance.EnableTaskLog ),
-						GlobalEventArgs.ValuePair( "ValidateConfig", VsGeneralOptionModel.Instance.ValidateConfig ),
-						GlobalEventArgs.ValuePair( "ValidateEdmx", VsGeneralOptionModel.Instance.ValidateEdmx )
+						GlobalEventArgs.ValuePair( "EnableDiagnostics", GeneralOptionModel.Instance.EnableDiagnostics ),
+						GlobalEventArgs.ValuePair( "EnableTaskLog", GeneralOptionModel.Instance.EnableTaskLog ),
+						GlobalEventArgs.ValuePair( "ValidateConfig", GeneralOptionModel.Instance.ValidateConfig ),
+						GlobalEventArgs.ValuePair( "ValidateEdmx", GeneralOptionModel.Instance.ValidateEdmx )
 					});
 			}
 			else if (group == "Debug")
@@ -417,13 +417,13 @@ namespace BlackbirdSql.VisualStudio.Ddex
 				return new GlobalEventArgs(group, new KeyValuePair<string, object>[]
 					{
 						// Debug options
-						GlobalEventArgs.ValuePair( "PersistentValidation", VsDebugOptionModel.Instance.PersistentValidation ),
-						GlobalEventArgs.ValuePair( "EnableTrace", VsDebugOptionModel.Instance.EnableTrace ),
-						GlobalEventArgs.ValuePair( "EnableTracer", VsDebugOptionModel.Instance.EnableTracer ),
-						GlobalEventArgs.ValuePair( "EnableDiagnosticsLog", VsDebugOptionModel.Instance.EnableDiagnosticsLog ),
-						GlobalEventArgs.ValuePair( "LogFile", VsDebugOptionModel.Instance.LogFile ),
-						GlobalEventArgs.ValuePair( "EnableFbDiagnostics", VsDebugOptionModel.Instance.EnableFbDiagnostics ),
-						GlobalEventArgs.ValuePair( "FbLogFile", VsDebugOptionModel.Instance.FbLogFile )
+						GlobalEventArgs.ValuePair( "PersistentValidation", DebugOptionModel.Instance.PersistentValidation ),
+						GlobalEventArgs.ValuePair( "EnableTrace", DebugOptionModel.Instance.EnableTrace ),
+						GlobalEventArgs.ValuePair( "EnableTracer", DebugOptionModel.Instance.EnableTracer ),
+						GlobalEventArgs.ValuePair( "EnableDiagnosticsLog", DebugOptionModel.Instance.EnableDiagnosticsLog ),
+						GlobalEventArgs.ValuePair( "LogFile", DebugOptionModel.Instance.LogFile ),
+						GlobalEventArgs.ValuePair( "EnableFbDiagnostics", DebugOptionModel.Instance.EnableFbDiagnostics ),
+						GlobalEventArgs.ValuePair( "FbLogFile", DebugOptionModel.Instance.FbLogFile )
 					});
 			}
 

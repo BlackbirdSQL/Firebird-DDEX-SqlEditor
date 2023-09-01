@@ -14,9 +14,6 @@ using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Core.Diagnostics.Enums;
 using BlackbirdSql.Common.Interfaces;
 
-
-
-
 namespace BlackbirdSql.Common.Ctl;
 
 

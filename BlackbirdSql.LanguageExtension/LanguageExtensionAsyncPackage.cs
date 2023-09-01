@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Providers;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common;
 
 using Microsoft.VisualStudio;
@@ -24,6 +23,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Operations;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.LanguageExtension.Interfaces;
+using BlackbirdSql.Common.Interfaces;
 
 namespace BlackbirdSql.LanguageExtension;
 

@@ -3,8 +3,6 @@
 
 using BlackbirdSql.Common.Enums;
 
-
-
 namespace BlackbirdSql.Common.Ctl;
 
 

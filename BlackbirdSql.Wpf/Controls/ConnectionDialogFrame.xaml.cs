@@ -25,14 +25,11 @@ using BlackbirdSql.Core.Events;
 using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Common.Controls;
-using BlackbirdSql.Common.Ctl.Converters;
+using BlackbirdSql.Common.Converters;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Events;
 using BlackbirdSql.Wpf.Model;
 using BlackbirdSql.Wpf.Widgets;
-
-
-
+using BlackbirdSql.Common.Events;
 
 namespace BlackbirdSql.Wpf.Controls
 {

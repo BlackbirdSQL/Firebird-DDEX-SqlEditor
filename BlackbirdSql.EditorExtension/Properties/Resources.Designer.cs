@@ -162,69 +162,6 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Advanced.
-        /// </summary>
-        public static string QeQueryOptionsAdvanced {
-            get {
-                return ResourceManager.GetString("QeQueryOptionsAdvanced", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ANSI.
-        /// </summary>
-        public static string QeQueryOptionsAnsi {
-            get {
-                return ResourceManager.GetString("QeQueryOptionsAnsi", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Execution.
-        /// </summary>
-        public static string QeQueryOptionsExecution {
-            get {
-                return ResourceManager.GetString("QeQueryOptionsExecution", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to General.
-        /// </summary>
-        public static string QeQueryOptionsGeneral {
-            get {
-                return ResourceManager.GetString("QeQueryOptionsGeneral", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Grid.
-        /// </summary>
-        public static string QeQueryOptionsGrid {
-            get {
-                return ResourceManager.GetString("QeQueryOptionsGrid", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Results.
-        /// </summary>
-        public static string QeQueryOptionsResults {
-            get {
-                return ResourceManager.GetString("QeQueryOptionsResults", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Text.
-        /// </summary>
-        public static string QeQueryOptionsText {
-            get {
-                return ResourceManager.GetString("QeQueryOptionsText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to SQL Server Advanced Query Execution option changes will only be applied to new SQL Server Query Editor windows. .
         /// </summary>
         public static string WarnSqlAdvancedQueryChanges {

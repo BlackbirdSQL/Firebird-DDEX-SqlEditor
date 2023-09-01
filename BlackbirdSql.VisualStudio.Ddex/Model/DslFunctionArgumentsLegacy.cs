@@ -23,7 +23,7 @@ using System;
 using System.Data;
 using System.Globalization;
 using System.Text;
-
+using BlackbirdSql.Core.Model;
 using FirebirdSql.Data.FirebirdClient;
 
 
@@ -148,8 +148,8 @@ internal class DslFunctionArgumentsLegacy : DslSchema
 
 			row["NULLABLE"] = (row["COLUMN_NULLABLE"] == DBNull.Value);
 
-			var dbType = (FbDbType)DslTypeHelper.GetDbDataTypeFromBlrType(blrType, subType, scale);
-			row["PARAMETER_DATA_TYPE"] = DslTypeHelper.GetDataTypeName((DslDbDataType)dbType).ToLowerInvariant();
+			var dbType = (FbDbType)TypeHelper.GetDbDataTypeFromBlrType(blrType, subType, scale);
+			row["PARAMETER_DATA_TYPE"] = TypeHelper.GetDataTypeName((DbDataType)dbType).ToLowerInvariant();
 
 			if (dbType == FbDbType.Char || dbType == FbDbType.VarChar)
 			{

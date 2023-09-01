@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-
 using BlackbirdSql.Common.Enums;
 using BlackbirdSql.Common.Events;
 using BlackbirdSql.Common.Properties;

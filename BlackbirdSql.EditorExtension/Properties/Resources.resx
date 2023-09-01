@@ -254,27 +254,6 @@
         AADwAQAA+AEAAPgBAAD4AQAA+BEAAPgJAAD8BwAA/gcAAP//AAA=
 </value>
   </data>
-  <data name="QeQueryOptionsAdvanced" xml:space="preserve">
-    <value>Advanced</value>
-  </data>
-  <data name="QeQueryOptionsAnsi" xml:space="preserve">
-    <value>ANSI</value>
-  </data>
-  <data name="QeQueryOptionsExecution" xml:space="preserve">
-    <value>Execution</value>
-  </data>
-  <data name="QeQueryOptionsGeneral" xml:space="preserve">
-    <value>General</value>
-  </data>
-  <data name="QeQueryOptionsGrid" xml:space="preserve">
-    <value>Grid</value>
-  </data>
-  <data name="QeQueryOptionsResults" xml:space="preserve">
-    <value>Results</value>
-  </data>
-  <data name="QeQueryOptionsText" xml:space="preserve">
-    <value>Text</value>
-  </data>
   <data name="WarnSqlAdvancedQueryChanges" xml:space="preserve">
     <value>SQL Server Advanced Query Execution option changes will only be applied to new SQL Server Query Editor windows. </value>
   </data>

@@ -14,7 +14,6 @@ using BlackbirdSql.Core;
 using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Exceptions;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.Enums;
 using BlackbirdSql.Common.Model.Events;
@@ -22,6 +21,7 @@ using BlackbirdSql.Common.Properties;
 
 using FirebirdSql.Data.FirebirdClient;
 using System.CodeDom;
+using BlackbirdSql.Common.Interfaces;
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 

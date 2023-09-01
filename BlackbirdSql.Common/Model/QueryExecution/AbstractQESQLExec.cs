@@ -11,13 +11,13 @@ using System.Threading;
 using System.Windows.Forms;
 
 using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Common.Model.Enums;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Core;
 using FirebirdSql.Data.FirebirdClient;
+using BlackbirdSql.Common.Interfaces;
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 

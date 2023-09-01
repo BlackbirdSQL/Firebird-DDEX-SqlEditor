@@ -6,9 +6,9 @@ using System.Data;
 using System.Data.SqlTypes;
 using System.IO;
 using System.Threading;
+using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
@@ -504,7 +504,7 @@ public abstract class AbstractDiskDataStorage : IDiskDataStorage, IDataStorage, 
 				}
 				else
 				{
-					Diag.Trace("DATA TYPE NOT FOUND: " + type.FullName);
+					Diag.Dug(true, "DATA TYPE NOT FOUND: " + type.FullName);
 					DiskDataEntity.StringValue = array[i].ToString();
 					_CurrentOffset += _FsWriter.WriteString(DiskDataEntity.StringValue);
 				}

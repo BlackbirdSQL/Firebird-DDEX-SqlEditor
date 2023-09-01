@@ -307,7 +307,7 @@ public class EditorEventsManager : AbstractEditorEventsManager
 
 	private bool GetUiContextValue(uint cookie)
 	{
-		MonitorSelection.IsCmdUIContextActive(cookie, out var pfActive);
+		SelectionMonitor.IsCmdUIContextActive(cookie, out var pfActive);
 		if (pfActive != 1)
 		{
 			return false;
@@ -364,16 +364,16 @@ public class EditorEventsManager : AbstractEditorEventsManager
 
 	private void SetUiContextValue(uint cookie, bool value)
 	{
-		MonitorSelection.SetCmdUIContext(cookie, value ? 1 : 0);
+		SelectionMonitor.SetCmdUIContext(cookie, value ? 1 : 0);
 	}
 
 	public bool IsCommandContextActive(Guid commandContext)
 	{
 		int pfActive = 0;
-		if (MonitorSelection != null)
+		if (SelectionMonitor != null)
 		{
-			ErrorHandler.ThrowOnFailure(MonitorSelection.GetCmdUIContextCookie(ref commandContext, out var pdwCmdUICookie));
-			ErrorHandler.ThrowOnFailure(MonitorSelection.IsCmdUIContextActive(pdwCmdUICookie, out pfActive));
+			ErrorHandler.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref commandContext, out var pdwCmdUICookie));
+			ErrorHandler.ThrowOnFailure(SelectionMonitor.IsCmdUIContextActive(pdwCmdUICookie, out pfActive));
 		}
 
 		return pfActive == 1;
@@ -398,41 +398,41 @@ public class EditorEventsManager : AbstractEditorEventsManager
 		Controller.OnSelectionChangedEvent += OnSelectionChanged;
 
 
-		Native.ThrowOnFailure(MonitorSelection.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_DocumentFrame, out var pvarValue));
+		Native.ThrowOnFailure(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_DocumentFrame, out var pvarValue));
 		CurrentDocumentFrame = pvarValue as IVsWindowFrame;
 
-		Native.ThrowOnFailure(MonitorSelection.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_WindowFrame, out pvarValue));
+		Native.ThrowOnFailure(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_WindowFrame, out pvarValue));
 		CurrentWindowFrame = pvarValue as IVsWindowFrame;
 
-		Native.ThrowOnFailure(MonitorSelection.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_UndoManager, out pvarValue));
+		Native.ThrowOnFailure(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_UndoManager, out pvarValue));
 		CurrentUndoManager = pvarValue as IOleUndoManager;
 
 		Guid rguidCmdUI = VSConstants.UICONTEXT_SolutionBuilding;
-		Native.ThrowOnFailure(MonitorSelection.GetCmdUIContextCookie(ref rguidCmdUI, out _SolutionBuildingCookie));
+		Native.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _SolutionBuildingCookie));
 
 		rguidCmdUI =VS.UICONTEXT_DebuggerLaunching;
-		Native.ThrowOnFailure(MonitorSelection.GetCmdUIContextCookie(ref rguidCmdUI, out _DebuggerLaunchingCookie));
+		Native.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _DebuggerLaunchingCookie));
 
 		rguidCmdUI = VS.UICONTEXT_PublishingPreviewCommitOff;
-		Native.ThrowOnFailure(MonitorSelection.GetCmdUIContextCookie(ref rguidCmdUI, out _PublishingPreviewCommitOffCookie));
+		Native.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _PublishingPreviewCommitOffCookie));
 
 		// rguidCmdUI = new(ServiceData.PreviewCommitOffGuid);
 		// Native.ThrowOnFailure(MonitorSelection.GetCmdUIContextCookie(ref rguidCmdUI, out _PreviewCommitOffCookie));
 
 		rguidCmdUI = VSConstants.UICONTEXT.Debugging_guid;
-		Native.ThrowOnFailure(MonitorSelection.GetCmdUIContextCookie(ref rguidCmdUI, out _DebuggingCookie));
+		Native.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _DebuggingCookie));
 
 		rguidCmdUI = VSConstants.StandardToolWindows.ServerExplorer;
-		Native.ThrowOnFailure(MonitorSelection.GetCmdUIContextCookie(ref rguidCmdUI, out _ServerExplorerCookie));
+		Native.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _ServerExplorerCookie));
 
 		rguidCmdUI = VSConstants.UICONTEXT.NotBuildingAndNotDebugging_guid;
-		Native.ThrowOnFailure(MonitorSelection.GetCmdUIContextCookie(ref rguidCmdUI, out _NotBuildingAndNotDebuggingCookie));
+		Native.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _NotBuildingAndNotDebuggingCookie));
 
 		rguidCmdUI = VSConstants.UICONTEXT.SolutionOpening_guid;
-		Native.ThrowOnFailure(MonitorSelection.GetCmdUIContextCookie(ref rguidCmdUI, out _SolutionOpeningCookie));
+		Native.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _SolutionOpeningCookie));
 
 		rguidCmdUI = VSConstants.UICONTEXT.SolutionOrProjectUpgrading_guid;
-		Native.ThrowOnFailure(MonitorSelection.GetCmdUIContextCookie(ref rguidCmdUI, out _SolutionOrProjectUpgradingCookie));
+		Native.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _SolutionOrProjectUpgradingCookie));
 
 	}
 

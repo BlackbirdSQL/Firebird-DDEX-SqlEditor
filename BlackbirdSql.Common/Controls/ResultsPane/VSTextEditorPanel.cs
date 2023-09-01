@@ -7,10 +7,11 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-using BlackbirdSql.Core;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Events;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core;
+using BlackbirdSql.Core.Enums;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -18,7 +19,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
 using Tracer = BlackbirdSql.Core.Diagnostics.Tracer;
-using BlackbirdSql.Common.Enums;
+
 
 namespace BlackbirdSql.Common.Controls.ResultsPane
 {
@@ -146,7 +147,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			ResumeLayout(performLayout: false);
 			MenuCommand menuCommand = new MenuCommand(OnSaveAs,
 				new CommandID(LibraryData.CLSID_SqlEditorCommandSet,
-				(int)SqlEditorCmdSet.CmdidSaveResultsAs));
+				(int)EnCommandSet.CmdidSaveResultsAs));
 			MenuService.AddRange(new MenuCommand[1] { menuCommand });
 		}
 
@@ -236,7 +237,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 		private void OnShowPopupMenu(object sender, SpecialEditorCommandEventArgs a)
 		{
 			_TextView.GetCoordinatesForPopupMenu(a.VariantIn, out var x, out var y);
-			CommonUtils.ShowContextMenu((int)SqlEditorCmdSet.ContextIdMessageWindow, x, y, this);
+			CommonUtils.ShowContextMenu((int)EnCommandSet.ContextIdMessageWindow, x, y, this);
 		}
 
 		private void CreateAndInitVSTextEditor()
@@ -268,7 +269,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			{
 				bool visible = menuCommand.Supported = true;
 				menuCommand.Visible = visible;
-				if (commandID.ID == (int)SqlEditorCmdSet.CmdidSaveResultsAs)
+				if (commandID.ID == (int)EnCommandSet.CmdidSaveResultsAs)
 				{
 					menuCommand.Enabled = true;
 				}

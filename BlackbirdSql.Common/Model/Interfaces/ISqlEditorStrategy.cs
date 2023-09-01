@@ -5,7 +5,6 @@
 
 
 using System;
-
 using BlackbirdSql.Common.Enums;
 using BlackbirdSql.Common.Interfaces;
 

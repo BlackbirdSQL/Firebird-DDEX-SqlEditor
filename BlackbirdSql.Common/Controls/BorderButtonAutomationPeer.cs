@@ -8,11 +8,6 @@ using System.Windows.Automation.Provider;
 using BlackbirdSql.Core;
 using BlackbirdSql.Common.Interfaces;
 
-
-
-
-
-
 namespace BlackbirdSql.Common.Controls;
 
 

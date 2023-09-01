@@ -2,7 +2,6 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.TabbedEditor.SqlEditorMessageTab
 
 using System;
-using BlackbirdSql.Common.Enums;
 
 // using Microsoft.Data.Tools.Schema.Utilities.Sql.Common;
 using Microsoft.VisualStudio;
@@ -14,6 +13,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using BlackbirdSql.Common;
 using BlackbirdSql.Common.Controls.ResultsPane;
 using BlackbirdSql.Core;
+using BlackbirdSql.Common.Enums;
 
 namespace BlackbirdSql.Common.Controls;
 

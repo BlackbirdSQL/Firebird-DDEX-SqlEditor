@@ -14,6 +14,8 @@
 			<GlobalCommands>
 				<CommandRef name="CommandUniversalNewQuery" />
 				<CommandRef name="CommandGlobalNewQuery" />
+				<CommandRef name="CommandTextOpenScript" />
+				<CommandRef name="CommandTextOpenAlterScript" />
 			</GlobalCommands>
 			<ConnectionNode nodeId="Root" type="">
 				<InitialDisplayName>{Root.Server} ({Root.Database})</InitialDisplayName>
@@ -164,10 +166,10 @@
 										<StaticNode nodeId="StoredProcedureColumns">
 											<DisplayName resource="Node_Name_ProcedureColumns" />
 											<Children>
-												<Selection type="StoredProcedureColumn" restrictions="{Procedure.PROCEDURE_CATALOG},{Procedure.PROCEDURE_SCHEMA},{Procedure.PROCEDURE_NAME}" filter="PARAMETER_DIRECTION = 2 OR PARAMETER_DIRECTION = 3">
+												<Selection type="StoredProcedureColumn" restrictions="{Procedure.PROCEDURE_CATALOG},{Procedure.PROCEDURE_SCHEMA},{Procedure.PROCEDURE_NAME}" filter="PARAMETER_DIRECTION = 1 OR PARAMETER_DIRECTION = 3 OR PARAMETER_DIRECTION = 6">
 													<SelectionNode nodeId="Column">
 														<DisplayName>{Column.PARAMETER_NAME}</DisplayName>
-														<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamOut.ico" when="{Column.PARAMETER_DIRECTION} = 2" assembly="" />
+														<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamOut.ico" when="{Column.PARAMETER_DIRECTION} = 1" assembly="" />
 														<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamInOut.ico" assembly="" />
 														<PropertiesRef name="TplPropertiesColumn" arguments="StoredProcedure,Column,PARAMETER_NAME,Empty"/>
 													</SelectionNode>
@@ -177,8 +179,8 @@
 										<Selection type="StoredProcedureParameter" restrictions="{Procedure.PROCEDURE_CATALOG},{Procedure.PROCEDURE_SCHEMA},{Procedure.PROCEDURE_NAME}">
 											<SelectionNode nodeId="Parameter">
 												<DisplayName>{Parameter.PARAMETER_NAME}</DisplayName>
-												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamIn.ico" when="{Parameter.PARAMETER_DIRECTION} = 1" assembly="" />
-												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamOut.ico" when="{Parameter.PARAMETER_DIRECTION} = 2" assembly="" />
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamIn.ico" when="{Parameter.PARAMETER_DIRECTION} = 0" assembly="" />
+												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamOut.ico" when="{Parameter.PARAMETER_DIRECTION} = 1" assembly="" />
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamInOut.ico" when="{Parameter.PARAMETER_DIRECTION} = 3" assembly="" />
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamReturn.ico" assembly="" />
 												<PropertiesRef name="TplPropertiesColumn" arguments="StoredProcedure,Parameter,PARAMETER_NAME,Empty"/>

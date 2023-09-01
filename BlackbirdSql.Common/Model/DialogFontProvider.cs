@@ -4,7 +4,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
-
 using BlackbirdSql.Common.Enums;
 using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Core.Diagnostics.Enums;

@@ -61,24 +61,6 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid calling sequence: already sorting data.
-        /// </summary>
-        public static string AlreadySortingData {
-            get {
-                return ResourceManager.GetString("AlreadySortingData", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid calling sequence: already storing data..
-        /// </summary>
-        public static string AlreadyStoringData {
-            get {
-                return ResourceManager.GetString("AlreadyStoringData", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap arrowDown {
@@ -1655,6 +1637,15 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to General.
+        /// </summary>
+        public static string ToolOptionGeneralCategory {
+            get {
+                return ResourceManager.GetString("ToolOptionGeneralCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Include database name.
         /// </summary>
         public static string ToolOptionIncludeDBNameDisplayName {
@@ -1696,6 +1687,24 @@ namespace BlackbirdSql.Common.Properties {
         public static string ToolOptionIncludeServerNameDisplayName {
             get {
                 return ResourceManager.GetString("ToolOptionIncludeServerNameDisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Prompt to save unsaved SQL query windows on close..
+        /// </summary>
+        public static string ToolOptionPromptToSaveDescription {
+            get {
+                return ResourceManager.GetString("ToolOptionPromptToSaveDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Prompt to save.
+        /// </summary>
+        public static string ToolOptionPromptToSaveDisplayName {
+            get {
+                return ResourceManager.GetString("ToolOptionPromptToSaveDisplayName", resourceCulture);
             }
         }
         

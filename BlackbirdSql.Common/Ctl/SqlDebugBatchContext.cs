@@ -8,10 +8,6 @@ using System.Text;
 using BlackbirdSql.Core;
 using BlackbirdSql.Common.Interfaces;
 
-
-
-
-
 namespace BlackbirdSql.Common.Ctl;
 
 

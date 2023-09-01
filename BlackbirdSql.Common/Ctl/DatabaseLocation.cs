@@ -24,7 +24,8 @@ public readonly struct DatabaseLocation
 			if (x.Empty || y.Empty)
 				return x.Empty == y.Empty;
 
-			if (StringComparer.OrdinalIgnoreCase.Compare(x.Database, y.Database) == 0 && StringComparer.OrdinalIgnoreCase.Compare(x.DataSource, y.DataSource) == 0)
+			if (StringComparer.OrdinalIgnoreCase.Compare(x.Database, y.Database) == 0
+				&& StringComparer.OrdinalIgnoreCase.Compare(x.DataSource, y.DataSource) == 0)
 			{
 				return StringComparer.OrdinalIgnoreCase.Compare(x.UserName, y.UserName) == 0;
 			}
@@ -46,6 +47,8 @@ public readonly struct DatabaseLocation
 
 	private readonly string _UserName;
 
+	private readonly bool _Alternate;
+
 	private readonly int _HashCode;
 
 	// private readonly SqlAuthenticationMethodUtils.AuthenticationMethod _authentication;
@@ -62,7 +65,7 @@ public readonly struct DatabaseLocation
 
 	// public SqlAuthenticationMethodUtils.AuthenticationMethod Authentication => _authentication;
 
-	public DatabaseLocation(DbConnectionStringBuilder csb)
+	public DatabaseLocation(DbConnectionStringBuilder csb, bool alternate)
 	{
 		if (csb == null)
 		{
@@ -88,13 +91,14 @@ public readonly struct DatabaseLocation
 		_DataSource = fbcsb.DataSource;
 		_Database = fbcsb.Database;
 		_UserName = fbcsb.UserID;
+		_Alternate = alternate;
 
-		string text = _Database + _DataSource + _UserName;
+		string text = _Database + _DataSource + _UserName + (_Alternate ? "Alter" : "");
 
 		_HashCode = text.GetHashCode();
 	}
 
-	public DatabaseLocation(IVsDataExplorerNode node)
+	public DatabaseLocation(IVsDataExplorerNode node, bool alternate)
 	{
 		if (node == null)
 		{
@@ -120,8 +124,9 @@ public readonly struct DatabaseLocation
 		_DataSource = moniker.Server;
 		_Database = moniker.Database;
 		_UserName = moniker.User;
+		_Alternate = alternate;
 
-		string text = _Database + _DataSource + _UserName;
+		string text = _Database + _DataSource + _UserName + (_Alternate ? "Alter" : "");
 
 		_HashCode = text.GetHashCode();
 	}
@@ -135,6 +140,7 @@ public readonly struct DatabaseLocation
 	{
 		if (csb is FbConnectionStringBuilder fbcsb
 			&& string.Compare(fbcsb.DataSource, DataSource, StringComparison.Ordinal) == 0
+			&& string.Compare(fbcsb.Database, Database, StringComparison.Ordinal) == 0
 			&& string.Compare(fbcsb.UserID, UserName, StringComparison.OrdinalIgnoreCase) == 0)
 		{
 			return true;

@@ -3,16 +3,13 @@
 
 using BlackbirdSql.Core;
 using BlackbirdSql.Common.Controls;
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Interfaces;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
-
-
-
+using BlackbirdSql.Common.Enums;
+using BlackbirdSql.Common.Interfaces;
 
 namespace BlackbirdSql.Common.Ctl;
 

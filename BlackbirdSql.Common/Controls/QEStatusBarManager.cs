@@ -14,10 +14,7 @@ using System.Timers;
 using System.Windows.Forms;
 
 using BlackbirdSql.Common.Config;
-using BlackbirdSql.Common.Config.Enums;
 using BlackbirdSql.Common.Controls.ResultsPane;
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Model.Enums;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model;
@@ -31,8 +28,8 @@ using Microsoft.Win32;
 
 
 using Tracer = BlackbirdSql.Core.Diagnostics.Tracer;
-
-
+using BlackbirdSql.Common.Enums;
+using BlackbirdSql.Common.Interfaces;
 
 namespace BlackbirdSql.Common.Controls;
 

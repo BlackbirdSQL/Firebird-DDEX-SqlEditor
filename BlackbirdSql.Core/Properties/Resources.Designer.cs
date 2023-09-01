@@ -79,6 +79,42 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open &amp;Alter Function Source.
+        /// </summary>
+        public static string CommandProvider_AlterFunctionScript {
+            get {
+                return ResourceManager.GetString("CommandProvider_AlterFunctionScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open &amp;Alter Procedure Source.
+        /// </summary>
+        public static string CommandProvider_AlterStoredProcedureScript {
+            get {
+                return ResourceManager.GetString("CommandProvider_AlterStoredProcedureScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open &amp;Alter Trigger Expression.
+        /// </summary>
+        public static string CommandProvider_AlterTriggerScript {
+            get {
+                return ResourceManager.GetString("CommandProvider_AlterTriggerScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open &amp;Alter View Definition.
+        /// </summary>
+        public static string CommandProvider_AlterViewScript {
+            get {
+                return ResourceManager.GetString("CommandProvider_AlterViewScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SqlViewTextObjectCommandProvider_CancelExecution.
         /// </summary>
         public static string CommandProvider_CancelExecution {
@@ -142,7 +178,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &amp;Open Function Source.
+        ///   Looks up a localized string similar to &amp;Open Create Function Source.
         /// </summary>
         public static string CommandProvider_OpenFunctionScript {
             get {
@@ -169,7 +205,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &amp;Open Procedure Source.
+        ///   Looks up a localized string similar to &amp;Open Executable Procedure Source.
         /// </summary>
         public static string CommandProvider_OpenStoredProcedureScript {
             get {
@@ -187,7 +223,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &amp;Open Trigger Expression.
+        ///   Looks up a localized string similar to &amp;Open Create Trigger Expression.
         /// </summary>
         public static string CommandProvider_OpenTriggerScript {
             get {

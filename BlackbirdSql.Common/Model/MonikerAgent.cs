@@ -21,37 +21,38 @@ public class MonikerAgent : Core.Model.MonikerAgent
 	public string MiscDocumentMoniker => BuildMiscDocumentMoniker();
 
 
-	public MonikerAgent(bool isUnique = true, bool lowercaseDatabase = false) : base(isUnique, lowercaseDatabase)
+	public MonikerAgent(bool isUnique = false, bool lowercaseDatabase = true, string typeSuffix = "")
+		: base(isUnique, lowercaseDatabase, typeSuffix)
 	{
 	}
 
 
-	public MonikerAgent(string fbSqlUrl, bool isUnique = true, bool lowercaseDatabase = false)
-		: base(fbSqlUrl, isUnique, lowercaseDatabase)
+	public MonikerAgent(string fbSqlUrl, bool isUnique = false, bool lowercaseDatabase = true, string typeSuffix = "")
+		: base(fbSqlUrl, isUnique, lowercaseDatabase, typeSuffix)
 	{
 	}
 
-	public MonikerAgent(IBPropertyAgent ci, bool isUnique = true, bool lowercaseDatabase = false)
-		: base(ci, isUnique, lowercaseDatabase)
+	public MonikerAgent(IBPropertyAgent ci, bool isUnique = false, bool lowercaseDatabase = true, string typeSuffix = "")
+		: base(ci, isUnique, lowercaseDatabase, typeSuffix)
 	{
 	}
 
 
-	public MonikerAgent(IVsDataExplorerNode node, bool isUnique = true, bool lowercaseDatabase = false)
-		: base(node, isUnique, lowercaseDatabase)
+	public MonikerAgent(IVsDataExplorerNode node, bool isUnique = false, bool lowercaseDatabase = true, string typeSuffix = "")
+		: base(node, isUnique, lowercaseDatabase, typeSuffix)
 	{
 	}
 
 	public MonikerAgent(string server, string database, string user, EnModelObjectType objectType,
-		IList<string> identifierList, bool isUnique = true, bool lowercaseDatabase = false)
-		: base(server, database, user, objectType, identifierList, isUnique, lowercaseDatabase)
+		IList<string> identifierList, bool isUnique = false, bool lowercaseDatabase = true, string typeSuffix = "")
+		: base(server, database, user, objectType, identifierList, isUnique, lowercaseDatabase, typeSuffix)
 	{
 	}
 
 
 	public MonikerAgent(string server, string database, string user, EnModelObjectType objectType,
-		object[] identifier, bool isUnique = true, bool lowercaseDatabase = false)
-		: base(server, database, user, objectType, identifier, isUnique, lowercaseDatabase)
+		object[] identifier, bool isUnique = false, bool lowercaseDatabase = false, string typeSuffix = "")
+		: base(server, database, user, objectType, identifier, isUnique, lowercaseDatabase, typeSuffix)
 	{
 	}
 
@@ -84,9 +85,9 @@ public class MonikerAgent : Core.Model.MonikerAgent
 
 
 	public static string BuildMiscDocumentMoniker(IVsDataExplorerNode node,
-		ref IList<string> identifierArray, bool isUnique)
+		ref IList<string> identifierArray, bool isUnique, bool lowercaseDatabase = true, string typeSuffix = "")
 	{
-		MonikerAgent moniker = new(node, isUnique);
+		MonikerAgent moniker = new(node, isUnique, lowercaseDatabase, typeSuffix);
 		identifierArray = moniker.Identifier;
 
 		return moniker.MiscDocumentMoniker;
@@ -95,9 +96,9 @@ public class MonikerAgent : Core.Model.MonikerAgent
 
 
 	public static string BuildMiscDocumentMoniker(string server, string database, string user, EnModelObjectType elementType,
-		ref IList<string> identifierArray, bool isUnique)
+		ref IList<string> identifierArray, bool isUnique, bool lowercaseDatabase = true, string typeSuffix = "")
 	{
-		MonikerAgent moniker = new(server, database, user, elementType, identifierArray, isUnique);
+		MonikerAgent moniker = new(server, database, user, elementType, identifierArray, isUnique, lowercaseDatabase, typeSuffix);
 		identifierArray = moniker.Identifier;
 
 		return moniker.MiscDocumentMoniker;
