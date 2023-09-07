@@ -6,15 +6,15 @@
 </br></br>
 
 
-The BlackbirdSQL DDEX 2.0 .NET Data with SqlEditor Provider extension, `BlackbirdSql.VisualStudio.Ddex`, implements all the core DDEX 2.0 interfaces prevalent in the SqlServer DDEX and SqlEditor extensions and more, but currently excludes the SqlServer designer logical views functionality. 
+The BlackbirdSQL DDEX 2.0 .NET Data with SqlEditor Provider extension, `BlackbirdSql.VisualStudio.Ddex`, implements most DDEX 2.0 interfaces prevalent in the SqlServer DDEX and SqlEditor extensions, but currently excludes the SqlServer designer logical views functionality. 
 
-[Download BlackbirdSql DDEX with SqlEditor Extension (Pre-release v9.1.0.78-beta)](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v9.1.0.78-beta/BlackbirdSql.VisualStudio.Ddex.vsix)
+[Download BlackbirdSql DDEX with SqlEditor Extension (Pre-release v9.1.0.79-beta)](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v9.1.0.79-beta/BlackbirdSql.VisualStudio.Ddex.vsix)
 
 *The first tenet of this package is `small footprint, low overhead`, and to be as unobtrusive as possible. It is installed as a standard VSIX extension. If you uninstall it is is gone. It does not leave it's fingerprints in either your computer system or your Visual Studio installation.*
 
 ### Features
 * Firebird DDEX provider support for most of the DDEX 2.0 IVs DML interfaces utilizing FirebirdSql.Data.FirebirdClient and EntityFramework.Firebird versions 9.1.1.
-* SqlServer SqlEditor port for Firebird for editing Computed columns, Triggers, Views, Procedures, Functions and SQL scripts. (NOTE: The editor service designer logical view is not currently functional.)
+* SqlServer SqlEditor port for Firebird for editing Computed columns, Triggers, Views, Procedures, Functions and SQL scripts.</br>__Note:__ The editor service designer logical view and execution plan vizualizer are not currently functional. Execution plans are text based.
 * Trigger/Generator auto-increment linkage.
 * FlameRobin host and database selection within connection dialogs.
 * Within Server Explorer, top level folders for Tables, Views, Stored procedures, Functions, Sequence Generators, Triggers and Domains.
@@ -37,8 +37,8 @@ The parser itself is reasonably fast (+- 0.1 milliseconds per trigger), but SQL 
 
 ## Known issues
 * The Language service for the SqlEditor service is still under development and has not been linked into the extension. When opening scripts for Triggers, Views, Procedures, Funtions, Computed columns or SQL statements, the SqlEditor uses the Visual Studio built-in T-SQL Language service. This means that Intellisense may mark incompatible SQL and DDL as errors. The scripts will still successfully execute.
-* The SqlEditor does not currently support the designer logical view and execution plan tabs or script parameter loading.
-* The BlackbirdSql Editor settings in Visual Studio Options has been ported as is from the Microsoft SqlServer SqlEditor settings. This means that many of the options are not currently being used.
+* The SqlEditor port does not currently support the designer logical view or script parameter loading feature.
+* The BlackbirdSql Editor settings in Visual Studio Options has been ported as is from the Microsoft SqlServer SqlEditor settings. This means that many of the options are not currently being used or are not applicable.
 * If on startup of the Visual Studio IDE, and only on startup, an attempt is made to access an EDMX model or a Database in the SE before the associated DDEX provider has been given the IDE shell context, Visual Studio will flag the provider as unavailable for the duration of the session. This is true for both the SqlServer and BlackbirdSql providers, and is likely the case for any other DDEX provider that loads asynchronously.</br>
 As it stands Visual Studio will have to be restarted to clear the flag.</br>
 Unless we're missing a trick here this seems to be unavoidable. Loading is asynchronous, so the provider needs time to register and load.</br>
@@ -96,11 +96,11 @@ If the validation option is enabled (the default) and you add Firebird.Data.Fire
 
 __Note:__ If you wish to clear the peristent flag for a solution, you can set `Persistent Flags` to false under the IDE BlackbirdSql Debug options.
 
-The intention is to maintain a small footprint. We're not going to start altering VS menus and taking over your Visual Studio IDE workspace. It is a data source UI provider for Firebird and the benchmark is the SqlServer provider, so whatever UI functionality is available for SqlServer is on the todo list for Firebird provided it does not directly interfere with the developer's active UI.
+The intention is to maintain a small footprint. We're not going to begin altering VS menus and taking over your Visual Studio IDE workspace. It is a data source UI provider for Firebird and the benchmark is the SqlServer provider, so whatever UI functionality is available for SqlServer is on the todo list for Firebird provided it does not directly interfere with the developer's active UI.
 
 
 If you're planning on using EF Core and/or .NET, VS does not have wizard support for edmx which makes no sense to me.
 This roadblock is easily overcome by creating a separate project using .NET Framework for your data models and then linking your .NET / EF Core projects to those edmx models.
 
-If there's any magic you feel should be included here, you're welcome to pop me a mail.</br>
+If there's any magic you feel should be included here, you're welcome to pop me a mail at greg@blackbirdsql.com.</br>
 On the priority list are DDL commands... Create, Alter etc.
