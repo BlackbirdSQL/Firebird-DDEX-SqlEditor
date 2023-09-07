@@ -1,5 +1,5 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.SqlEditorFactory
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.BaseEditorFactory/SqlEditorFactory
 
 using System;
 using System.Data;
@@ -24,7 +24,7 @@ using Tracer = BlackbirdSql.Core.Diagnostics.Tracer;
 
 
 
-namespace BlackbirdSql.EditorExtension;
+namespace BlackbirdSql.EditorExtension.Ctl;
 
 public abstract class AbstractEditorFactory : AbstruseEditorFactory
 {
@@ -42,7 +42,7 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 		{
 			if (_monitorSelection == null)
 			{
-				Microsoft.VisualStudio.OLE.Interop.IServiceProvider oleServiceProvider = base.OleServiceProvider;
+				Microsoft.VisualStudio.OLE.Interop.IServiceProvider oleServiceProvider = OleServiceProvider;
 
 				Guid guidService = typeof(IVsMonitorSelection).GUID;
 				Guid riid = VSConstants.IID_IUnknown;
@@ -88,7 +88,7 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 	{
 		get
 		{
-			if (base.WithEncoding)
+			if (WithEncoding)
 			{
 				return new Guid(SystemData.DslEditorEncodedFactoryGuid);
 			}
@@ -167,7 +167,7 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 				IVsTextLines vsTextLines = null;
 				if (existingDocData != IntPtr.Zero)
 				{
-					if (base.WithEncoding)
+					if (WithEncoding)
 					{
 						// DataException ex = new("Data is not encoding compatible");
 						// Diag.Dug(ex);
@@ -220,14 +220,14 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 					Guid clsid = typeof(VsTextBufferClass).GUID;
 					Guid iid = VSConstants.IID_IUnknown;
 					object obj = ((AsyncPackage)Controller.Instance.DdexPackage).CreateInstance(ref clsid, ref iid, typeof(object));
-					if (base.WithEncoding)
+					if (WithEncoding)
 					{
 						IVsUserData obj2 = obj as IVsUserData;
 						Guid riidKey = VSConstants.VsTextBufferUserDataGuid.VsBufferEncodingPromptOnLoad_guid;
 						obj2.SetData(ref riidKey, 1u);
 					}
 
-					(obj as IObjectWithSite)?.SetSite(base.OleServiceProvider);
+					(obj as IObjectWithSite)?.SetSite(OleServiceProvider);
 					vsTextLines2 = obj as IVsTextLines;
 				}
 				else
@@ -277,7 +277,7 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 
 	protected virtual SqlEditorTabbedEditorPane CreateTabbedEditorPane(IVsTextLines vsTextLines, string moniker)
 	{
-		return new SqlEditorTabbedEditorPane(base.ServiceProvider, EditorExtensionAsyncPackage.Instance, vsTextLines, moniker);
+		return new SqlEditorTabbedEditorPane(ServiceProvider, EditorExtensionAsyncPackage.Instance, vsTextLines, moniker);
 	}
 
 	protected virtual void EnsureAuxilliaryDocData(IVsHierarchy hierarchy, string documentMoniker, object docData)
@@ -308,7 +308,7 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 		Guid clsidSSDTProjectNodeFactory = VS.CLSID_SSDTProjectNode;
 		Guid clsidTsDataProject = VS.CLSID_TSqlDataProjectNode;
 
-		if (base.ServiceProvider.GetService(typeof(IVsSolution)) is not IVsSolution vsSolution)
+		if (ServiceProvider.GetService(typeof(IVsSolution)) is not IVsSolution vsSolution)
 		{
 			return;
 		}

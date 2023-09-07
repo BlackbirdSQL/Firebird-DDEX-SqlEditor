@@ -29,10 +29,10 @@
 		<CommandRef name="CommandHookDataToolsUniversal" arguments="0x3528" />
 	</Define>
 	<Define name="CommandTextOpenScript">
-		<CommandRef name="CommandHookCommandSet" arguments="0x0333" />
+		<CommandRef name="CommandHookCommandSet" arguments="0x0334" />
 	</Define>
 	<Define name="CommandTextOpenAlterScript">
-		<CommandRef name="CommandHookCommandSet" arguments="0x0334" />
+		<CommandRef name="CommandHookCommandSet" arguments="0x0335" />
 	</Define>
 
 	<!-- Built-in DataTools commands hook -->

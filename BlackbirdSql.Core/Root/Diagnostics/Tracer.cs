@@ -141,12 +141,16 @@ internal class Tracer : IBTrace, IBExportable
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "")
 	{
-		Diag.Dug(true, message, memberName, sourceFilePath, sourceLineNumber);
+		Diag.Stack(message, memberName, sourceFilePath, sourceLineNumber);
 		EnSqlTraceId traceIdForType = EnSqlTraceId.SqlEditorAndLanguageServices;
 		SqlTracer.TraceEvent(TraceEventType.Error, traceIdForType, message);
 	}
 
 
+	public static void Trace(Type t, string functionName)
+	{
+		Trace(t, functionName, "");
+	}
 
 
 

@@ -22,8 +22,8 @@ public class SqlEditorDisconnectCommand : AbstractSqlEditorCommand
 	{
 	}
 
-	public SqlEditorDisconnectCommand(ISqlEditorWindowPane editor)
-		: base(editor)
+	public SqlEditorDisconnectCommand(ISqlEditorWindowPane editorWindow)
+		: base(editorWindow)
 	{
 	}
 

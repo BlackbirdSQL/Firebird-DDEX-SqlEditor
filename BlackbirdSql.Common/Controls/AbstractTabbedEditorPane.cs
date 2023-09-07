@@ -25,39 +25,39 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 {
 	private static TabbedEditorToolbarHandlerManager _ToolbarManager;
 
-	private Package _package;
+	private Package _Package;
 
 	private TabbedEditorUI _TabbedEditorUI;
 
-	private Guid _requestedView;
+	private Guid _RequestedView;
 
 	// private uint _selectionMonitorCookie;
 
 	// private IVsMonitorSelection _SelectionMonitor;
 
-	private bool _isAppActivated = true;
+	private bool _IsAppActivated = true;
 
-	private ITextEditor _textEditor;
+	private ITextEditor _TextEditor;
 
-	private bool _isLoading;
+	private bool _IsLoading;
 
-	private bool _isClosing;
+	private bool _IsClosing;
 
-	private bool _isInUpdateCmdUIContext;
+	private bool _IsInUpdateCmdUIContext;
 
-	private uint _lockHolderCookie;
+	private uint _LockHolderCookie;
 
 	// private Guid _toolbarGuid;
 
 	// private readonly uint _toolbarID;
 
-	private IVsTextLines _docData;
+	private IVsTextLines _DocData;
 
-	private IList<uint> _overrideSaveFileList;
+	private IList<uint> _OverrideSaveFileList;
 
-	private bool _firstTimeShowEventHandled;
+	private bool _FirstTimeShowEventHandled;
 
-	private bool isHelpInitialized;
+	private bool _IsHelpInitialized;
 
 	public static TabbedEditorToolbarHandlerManager ToolbarManager
 	{
@@ -71,7 +71,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	public bool IsDisposed { get; private set; }
 
-	public virtual IVsTextLines DocData => _docData;
+	public virtual IVsTextLines DocData => _DocData;
 
 	public bool IsToolboxInitialized => Controller.Instance.IsToolboxInitialized;
 
@@ -82,11 +82,11 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 	{
 		get
 		{
-			return _textEditor;
+			return _TextEditor;
 		}
 		set
 		{
-			_textEditor = value;
+			_TextEditor = value;
 		}
 	}
 
@@ -102,7 +102,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	public TabbedEditorUI TabbedEditorControl => _TabbedEditorUI;
 
-	Guid ITabbedEditorService.InitialLogicalView => _requestedView;
+	Guid ITabbedEditorService.InitialLogicalView => _RequestedView;
 
 	private IVsCodeWindow XamlCodeWindow
 	{
@@ -134,10 +134,10 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 	public AbstractTabbedEditorPane(System.IServiceProvider provider, Package package, object docData, Guid toolbarGuid, uint toolbarID)
 		: base(provider)
 	{
-		_package = package;
-		_ = _package; // Suppression
-		_docData = docData as IVsTextLines;
-		_requestedView = VSConstants.LOGVIEWID_Designer;
+		_Package = package;
+		_ = _Package; // Suppression
+		_DocData = docData as IVsTextLines;
+		_RequestedView = VSConstants.LOGVIEWID_Designer;
 		// _toolbarGuid = toolbarGuid;
 		// _toolbarID = toolbarID;
 		using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
@@ -164,7 +164,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	protected override void OnCreate()
 	{
-		(GetService(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable).RegisterDocumentLockHolder(0u, GetPrimaryDocCookie(), this, out _lockHolderCookie);
+		(GetService(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable).RegisterDocumentLockHolder(0u, GetPrimaryDocCookie(), this, out _LockHolderCookie);
 	}
 
 	bool ITabbedEditorService.IsTabVisible(Guid logicalView)
@@ -185,10 +185,10 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		{
 			if (disposing)
 			{
-				if (_lockHolderCookie != 0)
+				if (_LockHolderCookie != 0)
 				{
-					(GetService(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable).UnregisterDocumentLockHolder(_lockHolderCookie);
-					_lockHolderCookie = 0u;
+					(GetService(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable).UnregisterDocumentLockHolder(_LockHolderCookie);
+					_LockHolderCookie = 0u;
 				}
 
 				Controller.Instance.OnElementValueChangedEvent -= OnElementValueChanged;
@@ -206,9 +206,9 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 					_TabbedEditorUI.Dispose();
 					_TabbedEditorUI = null;
 				}
-				_docData = null;
-				_package = null;
-				_textEditor = null;
+				_DocData = null;
+				_Package = null;
+				_TextEditor = null;
 				IsDisposed = true;
 			}
 		}
@@ -220,7 +220,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	protected override void OnClose()
 	{
-		_isClosing = true;
+		_IsClosing = true;
 		base.OnClose();
 	}
 
@@ -259,66 +259,63 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	public virtual bool EnsureTabs(bool activateTextView)
 	{
-		if (_TabbedEditorUI == null || _TabbedEditorUI.Tabs.Count > 0 || _isLoading || _isClosing)
+		if (_TabbedEditorUI == null || _TabbedEditorUI.Tabs.Count > 0 || _IsLoading || _IsClosing)
 		{
-			if (_TabbedEditorUI == null)
-				Diag.Dug(true, "TabbedEditorUI is null");
 			return false;
 		}
 
 		try
 		{
 			_TabbedEditorUI.DesignerMessage = "";
-			_isLoading = true;
+			_IsLoading = true;
 			GetService(typeof(SVsWindowFrame));
 			IVsUIShell vsUIShell = GetService(typeof(IVsUIShell)) as IVsUIShell;
 			vsUIShell?.SetWaitCursor();
 			Guid guid = PrimaryViewGuid;
-			bool flag = true;
-			int num;
-			if (!activateTextView && !(_requestedView == VSConstants.LOGVIEWID_TextView))
+			bool showSplitter = true;
+
+			bool topIsTextView;
+			if (!activateTextView && !(_RequestedView == VSConstants.LOGVIEWID_TextView))
 			{
-				num = ((_requestedView == VSConstants.LOGVIEWID_Debugging) ? 1 : 0);
-				if (num == 0)
-				{
-					goto IL_00c0;
-				}
+				topIsTextView = (_RequestedView == VSConstants.LOGVIEWID_Debugging);
 			}
 			else
 			{
-				num = 1;
+				topIsTextView = true;
 			}
-			if (!flag && guid != VSConstants.LOGVIEWID_TextView)
+
+			/* Never happens
+			if (topIsTextView && !showSplitter && guid != VSConstants.LOGVIEWID_TextView)
 			{
 				guid = VSConstants.LOGVIEWID_TextView;
 			}
-			goto IL_00c0;
-		IL_00c0:
+			*/
+
 			_TabbedEditorUI.LoadWindowState("");
 			_TabbedEditorUI.Update();
 			EnEditorTabType editorTabType;
 			EnEditorTabType editorTabType2;
-			bool flag2;
+			bool isPrimary;
 			if (guid.Equals(VSConstants.LOGVIEWID_TextView))
 			{
 				editorTabType = EnEditorTabType.BottomDesign;
 				editorTabType2 = EnEditorTabType.TopXaml;
-				flag2 = true;
+				isPrimary = true;
 			}
 			else
 			{
 				editorTabType = EnEditorTabType.TopDesign;
 				editorTabType2 = EnEditorTabType.BottomXaml;
-				flag2 = false;
+				isPrimary = false;
 			}
 			AbstractEditorTab editorTab = CreateEditorTabWithButton(this, VSConstants.LOGVIEWID_Designer, VSConstants.LOGVIEWID_Primary, editorTabType);
 			AbstractEditorTab editorTab2 = CreateEditorTabWithButton(this, VSConstants.LOGVIEWID_TextView, VSConstants.LOGVIEWID_Primary, editorTabType2);
 			_TabbedEditorUI.Tabs.Add(editorTab);
 			_TabbedEditorUI.Tabs.Add(editorTab2);
 			vsUIShell?.SetWaitCursor();
-			LoadXamlPane(editorTab2, flag2, flag);
-			LoadDesignerPane(editorTab, !flag2, flag);
-			if (((uint)num | (flag2 ? 1u : 0u)) != 0)
+			LoadXamlPane(editorTab2, isPrimary, showSplitter);
+			LoadDesignerPane(editorTab, !isPrimary, showSplitter);
+			if (topIsTextView | isPrimary)
 			{
 				editorTab2.Activate(setFocus: false);
 				editorTab.UpdateActive(isActive: false);
@@ -341,7 +338,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		}
 		finally
 		{
-			_isLoading = false;
+			_IsLoading = false;
 			if (_TabbedEditorUI != null)
 			{
 				_TabbedEditorUI.DesignerMessage = null;
@@ -350,9 +347,9 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		return true;
 	}
 
-	public void LoadXamlPane(AbstractEditorTab xamlTab, bool primary, bool showSplitter)
+	public void LoadXamlPane(AbstractEditorTab xamlTab, bool asPrimary, bool showSplitter)
 	{
-		if (primary)
+		if (asPrimary)
 		{
 			if (_TabbedEditorUI.TopEditorTab == null)
 			{
@@ -377,9 +374,9 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		xamlTab.CreateTextEditor();
 	}
 
-	public void LoadDesignerPane(AbstractEditorTab designerTab, bool primary, bool showSplitter)
+	public void LoadDesignerPane(AbstractEditorTab designerTab, bool asPrimary, bool showSplitter)
 	{
-		if (primary)
+		if (asPrimary)
 		{
 			if (_TabbedEditorUI.TopEditorTab == null)
 			{
@@ -450,7 +447,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	private void OnTabActivated(object sender, EventArgs e)
 	{
-		_requestedView = Guid.Empty;
+		_RequestedView = Guid.Empty;
 		if (GetService(typeof(SVsWindowFrame)) is not IVsWindowFrame vsWindowFrame)
 		{
 			return;
@@ -461,11 +458,10 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 			if (editorTab.EditorTabType != EnEditorTabType.TopXaml)
 			{
 				_ = editorTab.EditorTabType;
-				_ = 3;
 			}
 			rguid = editorTab.CommandUIGuid;
 		}
-		vsWindowFrame.SetGuidProperty(-4007, ref rguid);
+		vsWindowFrame.SetGuidProperty((int)__VSFPROPID.VSFPROPID_CmdUIGuid, ref rguid);
 	}
 
 	private void OnToolboxItemPicked(object sender, ToolboxEventArgs e)
@@ -554,7 +550,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	private void UpdateCmdUIContext()
 	{
-		_isInUpdateCmdUIContext = true;
+		_IsInUpdateCmdUIContext = true;
 		try
 		{
 			if (_TabbedEditorUI == null)
@@ -582,7 +578,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		}
 		finally
 		{
-			_isInUpdateCmdUIContext = false;
+			_IsInUpdateCmdUIContext = false;
 		}
 	}
 
@@ -623,7 +619,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	private int ActivateView(ref Guid rguidLogicalView, EnTabViewMode mode)
 	{
-		Guid g = (_requestedView = GetTabLogicalView(rguidLogicalView));
+		Guid g = (_RequestedView = GetTabLogicalView(rguidLogicalView));
 		if (_TabbedEditorUI.Tabs.Count > 0)
 		{
 			foreach (AbstractEditorTab tab in _TabbedEditorUI.Tabs)
@@ -657,7 +653,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		{
 			return commandHandler.HandleExec(this, nCmdexecopt, pvaIn, pvaOut);
 		}
-		if (pguidCmdGroup == VSConstants.GUID_VSStandardCommandSet97 && nCmdID == 289 && _isLoading)
+		if (pguidCmdGroup == VSConstants.GUID_VSStandardCommandSet97 && nCmdID == 289 && _IsLoading)
 		{
 			num = 0;
 		}
@@ -735,7 +731,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		}
 		else
 		{
-			pIsActive = (_requestedView.Equals(tabLogicalView) ? 1 : 0);
+			pIsActive = (_RequestedView.Equals(tabLogicalView) ? 1 : 0);
 		}
 		return 0;
 	}
@@ -785,12 +781,12 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 				{
 					try
 					{
-						_overrideSaveFileList = list;
+						_OverrideSaveFileList = list;
 						num = SaveFiles(ref pgrfSaveOptions);
 					}
 					finally
 					{
-						_overrideSaveFileList = null;
+						_OverrideSaveFileList = null;
 					}
 				}
 			}
@@ -804,7 +800,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 			num = HandleCloseEditorOrDesigner();
 			if (Native.Succeeded(num))
 			{
-				_isClosing = true;
+				_IsClosing = true;
 			}
 		}
 		return num;
@@ -831,7 +827,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 					EnsureToolbarAssociatedWithTabs();
 					OnShow(fShow);
 				}
-				_firstTimeShowEventHandled = true;
+				_FirstTimeShowEventHandled = true;
 				break;
 			case __FRAMESHOW.FRAMESHOW_TabActivated:
 			case __FRAMESHOW.FRAMESHOW_TabDeactivated:
@@ -874,7 +870,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	int OnElementValueChanged(uint elementid, object varValueOld, object varValueNew)
 	{
-		if (_isLoading || _isInUpdateCmdUIContext || !_isAppActivated)
+		if (_IsLoading || _IsInUpdateCmdUIContext || !_IsAppActivated)
 		{
 			return 0;
 		}
@@ -928,8 +924,8 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 	{
 		if (msg == 28)
 		{
-			_isAppActivated = (int)wParam != 0;
-			if (_isAppActivated)
+			_IsAppActivated = (int)wParam != 0;
+			if (_IsAppActivated)
 			{
 				UpdateCmdUIContext();
 			}
@@ -1093,6 +1089,11 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		return 1;
 	}
 
+	/// <summary>
+	/// IVsDesignerInfo.get_DesignerTechnology implementation 
+	/// </summary>
+	/// <param name="pbstrTechnology"></param>
+	/// <returns></returns>
 	public int get_DesignerTechnology(out string pbstrTechnology)
 	{
 		pbstrTechnology = string.Empty;
@@ -1118,7 +1119,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	int IVsHasRelatedSaveItems.GetRelatedSaveTreeItems(VSSAVETREEITEM saveItem, uint celt, VSSAVETREEITEM[] rgSaveTreeItems, out uint pcActual)
 	{
-		if (_overrideSaveFileList == null)
+		if (_OverrideSaveFileList == null)
 		{
 			IEnumerable<uint> enumerable = CommonVsUtilities.EnumerateOpenedDocuments(this, (__VSRDTSAVEOPTIONS)saveItem.grfSave);
 			pcActual = 0u;
@@ -1133,12 +1134,12 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		}
 		else
 		{
-			pcActual = (uint)_overrideSaveFileList.Count;
+			pcActual = (uint)_OverrideSaveFileList.Count;
 			if (rgSaveTreeItems != null)
 			{
-				for (int i = 0; i < _overrideSaveFileList.Count; i++)
+				for (int i = 0; i < _OverrideSaveFileList.Count; i++)
 				{
-					rgSaveTreeItems[i].docCookie = _overrideSaveFileList[i];
+					rgSaveTreeItems[i].docCookie = _OverrideSaveFileList[i];
 				}
 			}
 		}
@@ -1147,9 +1148,9 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	int IVsDocumentLockHolder.CloseDocumentHolder(uint dwSaveOptions)
 	{
-		if (_lockHolderCookie != 0)
+		if (_LockHolderCookie != 0)
 		{
-			(GetService(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable).UnregisterDocumentLockHolder(_lockHolderCookie);
+			(GetService(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable).UnregisterDocumentLockHolder(_LockHolderCookie);
 		}
 		return 0;
 	}
@@ -1174,7 +1175,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 	private void SetupF1Help()
 	{
 		string helpKeywordForCodeWindowTextView = GetHelpKeywordForCodeWindowTextView();
-		if (isHelpInitialized || string.IsNullOrEmpty(helpKeywordForCodeWindowTextView))
+		if (_IsHelpInitialized || string.IsNullOrEmpty(helpKeywordForCodeWindowTextView))
 		{
 			return;
 		}
@@ -1187,7 +1188,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 			{
 				Native.ThrowOnFailure(ppctx.AddSubcontext(vsUserContext, 500, out _));
 			}
-			isHelpInitialized = true;
+			_IsHelpInitialized = true;
 		}
 	}
 
@@ -1196,7 +1197,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 	private void VerifyTabShowFalse()
 #pragma warning restore IDE0051 // Remove unused private members
 	{
-		if (_firstTimeShowEventHandled)
+		if (_FirstTimeShowEventHandled)
 		{
 			return;
 		}

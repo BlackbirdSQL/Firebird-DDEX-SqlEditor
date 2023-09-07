@@ -12,11 +12,17 @@ namespace BlackbirdSql.Common.Model.Enums
 	public enum EnQESQLBatchSpecialAction
 	{
 		None = 0x0,
+		// Execute script then create execution plan reader
 		ExpectActualExecutionPlan = 0x1,
+		// Do not execute script. Create execution plan reader only
 		ExpectEstimatedExecutionPlan = 0x2,
+		// Execute script then create Yukon reader
 		ExpectActualYukonXmlExecutionPlan = 0x4,
+		// Do not execute script. Create Yukon reader only
 		ExpectEstimatedYukonXmlExecutionPlan = 0x8,
+		// Not used
 		ExecuteWithDebugging = 0x10,
+		// The script contains the execution plan results
 		ExpectYukonXmlExecutionPlan = 0xC,
 		ExecutionPlanMask = 0xF
 	}

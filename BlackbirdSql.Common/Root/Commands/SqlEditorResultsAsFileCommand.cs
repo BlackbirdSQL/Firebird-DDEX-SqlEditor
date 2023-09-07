@@ -19,8 +19,8 @@ public class SqlEditorResultsAsFileCommand : AbstractSqlEditorCommand
 	{
 	}
 
-	public SqlEditorResultsAsFileCommand(ISqlEditorWindowPane editor)
-		: base(editor)
+	public SqlEditorResultsAsFileCommand(ISqlEditorWindowPane editorWindow)
+		: base(editorWindow)
 	{
 	}
 

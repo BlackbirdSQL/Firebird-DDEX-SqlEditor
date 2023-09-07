@@ -6,9 +6,7 @@
 using BlackbirdSql.Common.Model.QueryExecution;
 
 
-
 namespace BlackbirdSql.Common.Controls.Interfaces;
-
 
 public interface IPropertyWindowQueryExecutorInitialize
 {

@@ -21,8 +21,8 @@ public class SqlEditorToggleClientStatisticsCommand : AbstractSqlEditorCommand
 	{
 	}
 
-	public SqlEditorToggleClientStatisticsCommand(ISqlEditorWindowPane editor)
-		: base(editor)
+	public SqlEditorToggleClientStatisticsCommand(ISqlEditorWindowPane editorWindow)
+		: base(editorWindow)
 	{
 	}
 

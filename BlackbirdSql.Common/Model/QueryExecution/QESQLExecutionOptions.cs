@@ -5,7 +5,12 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.Remoting.Messaging;
+using System.Text;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 // namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution
 namespace BlackbirdSql.Common.Model.QueryExecution;
@@ -17,31 +22,35 @@ public class QESQLExecutionOptions : ICloneable
 
 	private string _batchSeparator = "GO";
 
-	private int _execTimeout = AbstractQESQLExec.DefaultSqlExecTimeout;
+	private int _ExecTimeout = AbstractQESQLExec.DefaultSqlExecTimeout;
 
-	private static readonly string _on = "ON";
+	private const string C_On = "ON";
+	private const string C_Off = "OFF";
+	private const string C_SetNoExec = "SET PLANONLY {0}"; // "SET NOEXEC {0}";
+	private const string C_SetShowplanText = "SET SHOWPLAN_TEXT {0}";
+	private const string C_SetStatisticsTime = "SET STATISTICS TIME {0}";
+	private const string C_SetStatisticsIO = "SET STATISTICS IO {0}";
+	private const string C_SetStatisticsProfile = "SET STATISTICS PROFILE {0}";
+	private const string C_SetParseOnly = "SET PARSEONLY {0}";
+	private const string C_SetExecutionPlanAll = "SET SHOWPLAN_ALL {0}";
+	private const string C_SetExecutionPlanXml = "SET EXPLAIN {0}"; // "SET SHOWPLAN_XML {0}";
+	private const string C_SetStatisticsXml = "SET STATS {0}"; // "SET STATISTICS XML {0}";
+	private const string C_ResetOptions = "SET NOEXEC, PARSEONLY, FMTONLY OFF";
 
-	private static readonly string _off = "OFF";
+	private static readonly Dictionary<string, bool> _Supported = new()
+	{
+		{ C_SetNoExec, false },
+		{ C_SetShowplanText, false },
+		{ C_SetStatisticsTime, false },
+		{ C_SetStatisticsIO, false },
+		{ C_SetStatisticsProfile, false },
+		{ C_SetParseOnly, false },
+		{ C_SetExecutionPlanAll, false },
+		{ C_SetExecutionPlanXml, false },
+		{ C_SetStatisticsXml, false },
+		{ C_ResetOptions, false }
+	};
 
-	private static readonly string _setNoExec = "SET NOEXEC {0}";
-
-	private static readonly string _setShowplanText = "SET SHOWPLAN_TEXT {0}";
-
-	private static readonly string _setStatisticsTime = "SET STATISTICS TIME {0}";
-
-	private static readonly string _setStatisticsIO = "SET STATISTICS IO {0}";
-
-	private static readonly string _setStatisticsProfile = "SET STATISTICS PROFILE {0}";
-
-	private static readonly string _setParseOnly = "SET PARSEONLY {0}";
-
-	private static readonly string _setExecutionPlanAll = "SET SHOWPLAN_ALL {0}";
-
-	private static readonly string _setExecutionPlanXml = "SET SHOWPLAN_XML {0}";
-
-	private static readonly string _setStatisticsXml = "SET STATISTICS XML {0}";
-
-	private static readonly string _resetOptions = "SET NOEXEC, PARSEONLY, FMTONLY OFF";
 
 	public bool WithExecutionPlan
 	{
@@ -215,11 +224,11 @@ public class QESQLExecutionOptions : ICloneable
 	{
 		get
 		{
-			return _execTimeout;
+			return _ExecTimeout;
 		}
 		set
 		{
-			_execTimeout = value;
+			_ExecTimeout = value;
 		}
 	}
 
@@ -231,7 +240,7 @@ public class QESQLExecutionOptions : ICloneable
 	public QESQLExecutionOptions(QESQLExecutionOptions initSettings)
 	{
 		_ExecOptions = initSettings._ExecOptions.Clone() as BitArray;
-		_execTimeout = initSettings._execTimeout;
+		_ExecTimeout = initSettings._ExecTimeout;
 		_batchSeparator = initSettings._batchSeparator;
 	}
 
@@ -240,53 +249,77 @@ public class QESQLExecutionOptions : ICloneable
 		return new QESQLExecutionOptions(this);
 	}
 
-	public static string GetSetStatisticsXml(bool bOn)
+	public static bool IsSupported(QESQLBatch batch)
 	{
-		return string.Format(CultureInfo.InvariantCulture, _setStatisticsXml, bOn ? _on : _off);
+		return IsSupported(batch.Text);
 	}
 
-	public static string GetSetNoExecString(bool bOn)
+	public static bool IsSupported(string statement)
 	{
-		return string.Format(CultureInfo.InvariantCulture, _setNoExec, bOn ? _on : _off);
+		statement = statement.TrimSuffix(C_On);
+		statement = statement.TrimSuffix(C_Off);
+
+		if (!_Supported.TryGetValue(statement, out bool value))
+			return false;
+
+		return value;
+
+	}
+
+	public static void AppendToStringBuilder(StringBuilder sb, string cmd)
+	{
+		if (!IsSupported(cmd))
+			return;
+		sb.AppendFormat("{0} ", cmd);
+	}
+
+	public static string GetSetStatisticsXml(bool on)
+	{
+		return string.Format(CultureInfo.InvariantCulture, C_SetStatisticsXml, on ? C_On : C_Off);
+	}
+
+	public static string GetSetNoExecString(bool on)
+	{
+		return string.Format(CultureInfo.InvariantCulture, C_SetNoExec, on ? C_On : C_Off);
 	}
 
 	public static string GetResetOptionsString()
 	{
-		return _resetOptions;
+		return C_ResetOptions;
 	}
 
-	public static string GetSetShowplanTextString(bool bOn)
+	public static string GetSetShowplanTextString(bool on)
 	{
-		return string.Format(CultureInfo.InvariantCulture, _setShowplanText, bOn ? _on : _off);
+		return string.Format(CultureInfo.InvariantCulture, C_SetShowplanText, on ? C_On : C_Off);
 	}
 
-	public static string GetSetStatisticsTimeString(bool bOn)
+	public static string GetSetStatisticsTimeString(bool on)
 	{
-		return string.Format(CultureInfo.InvariantCulture, _setStatisticsTime, bOn ? _on : _off);
+		return string.Format(CultureInfo.InvariantCulture, C_SetStatisticsTime, on ? C_On : C_Off);
 	}
 
-	public static string GetSetStatisticsIOString(bool bOn)
+	public static string GetSetStatisticsIOString(bool on)
 	{
-		return string.Format(CultureInfo.InvariantCulture, _setStatisticsIO, bOn ? _on : _off);
+		return string.Format(CultureInfo.InvariantCulture, C_SetStatisticsIO, on ? C_On : C_Off);
 	}
 
-	public static string GetSetStatisticsProfileString(bool bOn)
+	public static string GetSetStatisticsProfileString(bool on)
 	{
-		return string.Format(CultureInfo.InvariantCulture, _setStatisticsProfile, bOn ? _on : _off);
+		return string.Format(CultureInfo.InvariantCulture, C_SetStatisticsProfile, on ? C_On : C_Off);
 	}
 
-	public static string GetSetParseOnlyString(bool bOn)
+	public static string GetSetParseOnlyString(bool on)
 	{
-		return string.Format(CultureInfo.InvariantCulture, _setParseOnly, bOn ? _on : _off);
+		return string.Format(CultureInfo.InvariantCulture, C_SetParseOnly, on ? C_On : C_Off);
 	}
 
 	public static string GetSetExecutionPlanAllString(bool on)
 	{
-		return string.Format(CultureInfo.InvariantCulture, _setExecutionPlanAll, on ? _on : _off);
+		return string.Format(CultureInfo.InvariantCulture, C_SetExecutionPlanAll, on ? C_On : C_Off);
 	}
 
 	public static string GetSetExecutionPlanXmlString(bool on)
 	{
-		return string.Format(CultureInfo.InvariantCulture, _setExecutionPlanXml, on ? _on : _off);
+		return string.Format(CultureInfo.InvariantCulture, C_SetExecutionPlanXml, on ? C_On : C_Off);
 	}
 }

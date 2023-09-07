@@ -1,10 +1,12 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.Interfaces.ISqlEditorWindowPane
 
+using System;
 using BlackbirdSql.Common.Controls.ResultsPane;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Interfaces;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 
@@ -50,6 +52,12 @@ public interface ISqlEditorWindowPane : IBWindowPane
 
 	bool IsExecutionPlanButtonChecked { get; }
 
+	bool IsTextPlanTabVisible { get; }
+
+	bool IsTextPlanButtonVisible { get; }
+
+	bool IsTextPlanButtonChecked { get; }
+
 	bool IsStatisticsTabVisible { get; }
 
 	bool IsStatisticsButtonVisible { get; }
@@ -64,7 +72,6 @@ public interface ISqlEditorWindowPane : IBWindowPane
 
 	GridResultsPanel GridResultsPanel { get; }
 
-	// ExecutionPlanPanel ExecutionPlanPanel { get; }
 
 	void ExecuteQuery();
 
@@ -80,6 +87,8 @@ public interface ISqlEditorWindowPane : IBWindowPane
 
 	void ActivateExecutionPlanTab();
 
+	void ActivateTextPlanTab();
+
 	void ActivateMessageTab();
 
 	void ActivateResultsTab();
@@ -94,6 +103,10 @@ public interface ISqlEditorWindowPane : IBWindowPane
 	SqlTextSpan GetAllCodeEditorTextSpan2();
 
 	IVsTextView GetCodeEditorTextView();
+
+	void ConfigureTextViewForAutonomousFind(IVsWindowFrame frame, IVsTextView textView);
+
+	public T GetSqlEditorTab<T>(Guid guidTab) where T : class;
 
 	void CustomizeTabsForResultsSetting(bool isParseOnly);
 

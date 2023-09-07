@@ -22,8 +22,8 @@ public class SqlEditorToggleSqlCmdModeCommand : AbstractSqlEditorCommand
 	{
 	}
 
-	public SqlEditorToggleSqlCmdModeCommand(ISqlEditorWindowPane editor)
-		: base(editor)
+	public SqlEditorToggleSqlCmdModeCommand(ISqlEditorWindowPane editorWindow)
+		: base(editorWindow)
 	{
 	}
 

@@ -5,6 +5,7 @@ using System;
 using System.Linq.Expressions;
 using BlackbirdSql.Core.CommandProviders;
 using Microsoft.VisualStudio;
+using static System.Net.WebRequestMethods;
 
 namespace BlackbirdSql.Common;
 
@@ -22,6 +23,8 @@ public static class LibraryData
 	public const string ApplicationName = "BlackbirdSql Server Data Tools, FB-SQL Editor";
 	public const string ColorServiceName = "Blackbird SQL Color Service";
 
+	public const string C_ShowPlanNamespace = "http://schemas.microsoft.com/sqlserver/2004/07/showplan";
+	public const string C_YukonXmlExecutionPlanColumn = "Firebird_SQL_Server_XML_Showplan";
 	/// <summary>
 	/// The path to the provider's configured connections xml (in this case FlameRobin for Firebird).
 	/// </summary>
@@ -31,7 +34,6 @@ public static class LibraryData
 	// ---------------------------------------------------------------------------------------------------------
 
 	public const string DslLanguageServiceGuid = "20375AE3-933E-4D15-BF52-833DA09A971F";
-
 	public const string ExceptionMessageBoxParentGuid = "998E39AD-042D-484C-B462-0FB3F6536DE9";
 
 
@@ -52,7 +54,7 @@ public static class LibraryData
 
 
 	// Private Proffered Services and Object CLSIDs
-	public static readonly Guid CLSID_SqlEditorCommandSet = new(CommandProperties.CommandSetGuid);
+	public static readonly Guid CLSID_CommandSet = new(CommandProperties.CommandSetGuid);
 	public static readonly Guid CLSID_EditorMarkerService = new("984A3634-C7DE-41D9-992E-CE35638B513F");
 	public static readonly Guid CLSID_FontAndColorService = new("2EF6AAA5-7BAE-452B-AA43-6472FB2FFFFB");
 
@@ -76,8 +78,10 @@ public static class LibraryData
 	public static readonly Guid CLSID_PropertySqlVersion = new("C856A011-E8D4-4095-AC48-B46814D9FC2F");
 
 
+	// Tabs
 	public const string SqlMessageTabLogicalViewGuid = "32B79718-1118-4BF1-B9DF-4B975328790F";
 	public const string SqlExecutionPlanTabLogicalViewGuid = "E313023B-F451-4A3C-9C34-BB16C5CCDB72";
+	public const string SqlTextPlanTabLogicalViewGuid = "200E716C-607B-4729-8D8C-C857A6F0FDF3";
 	public const string SqlStatisticsTabLogicalViewGuid = "791399A1-6E21-4A73-9AAA-293B6563C77B";
 	public const string SqlTextResultsTabLogicalViewGuid = "04BE2EC0-64F0-4D16-9BD1-5D3C95EC7070";
 

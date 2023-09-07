@@ -186,7 +186,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 
 		if (!name.EndsWith("Definitions"))
 		{
-			Diag.Dug(true, "Import resource not found: " + name);
+			Diag.Stack("Import resource not found: " + name);
 			return null;
 		}
 
@@ -388,7 +388,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 			Stream stream = GetType().Assembly.GetManifestResourceStream(name);
 			if (stream == null)
 			{
-				Diag.Dug(true, "Icon resource not found: " + name);
+				Diag.Stack("Icon resource not found: " + name);
 				return null;
 			}
 
@@ -413,7 +413,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 			}
 			else
 			{
-				Diag.Dug(true, "Icon resource invalid: " + name);
+				Diag.Stack("Icon resource invalid: " + name);
 			}
 		}
 		catch (Exception ex)

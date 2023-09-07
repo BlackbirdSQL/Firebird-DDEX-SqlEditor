@@ -22,8 +22,8 @@ public class SqlEditorConnectCommand : AbstractSqlEditorCommand
 	{
 	}
 
-	public SqlEditorConnectCommand(ISqlEditorWindowPane editor)
-		: base(editor)
+	public SqlEditorConnectCommand(ISqlEditorWindowPane editorWindow)
+		: base(editorWindow)
 	{
 	}
 

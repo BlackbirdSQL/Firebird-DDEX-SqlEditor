@@ -442,7 +442,7 @@ public class EditorEventsManager : AbstractEditorEventsManager
 	{
 		lock (Controller.PackageLock)
 		{
-			return EditorPackage.DocDataToEditorStatus.Count > 0;
+			return EditorPackage.DocDataEditors.Count > 0;
 		}
 	}
 
@@ -524,10 +524,10 @@ public class EditorEventsManager : AbstractEditorEventsManager
 
 		if (documentInfo.IsDocumentInitialized && documentInfo.DocData != null)
 		{
-			AuxiliaryDocData auxillaryDocData = EditorPackage.GetAuxiliaryDocData(documentInfo.DocData);
-			if (auxillaryDocData != null)
+			AuxiliaryDocData auxDocData = EditorPackage.GetAuxiliaryDocData(documentInfo.DocData);
+			if (auxDocData != null)
 			{
-				auxillaryDocData.IsQueryWindow = false;
+				auxDocData.IsQueryWindow = false;
 			}
 		}
 
@@ -571,10 +571,10 @@ public class EditorEventsManager : AbstractEditorEventsManager
 
 			if (documentInfo2.IsDocumentInitialized && EditorPackage.ContainsEditorStatus(documentInfo2.DocData))
 			{
-				AuxiliaryDocData auxillaryDocData = EditorPackage.GetAuxiliaryDocData(documentInfo2.DocData);
+				AuxiliaryDocData auxDocData = EditorPackage.GetAuxiliaryDocData(documentInfo2.DocData);
 
-				if (auxillaryDocData != null)
-					auxillaryDocData.IntellisenseEnabled = null;
+				if (auxDocData != null)
+					auxDocData.IntellisenseEnabled = null;
 			}
 		}
 

@@ -28,7 +28,7 @@ namespace BlackbirdSql.Common.Model.Interfaces
 
 		void OnFinishedProcessingResultSet(object sender, EventArgs args);
 
-		// void OnSpecialAction(object sender, QESQLBatchSpecialActionEventArgs args);
+		void OnSpecialAction(object sender, QESQLBatchSpecialActionEventArgs args);
 
 		void OnStatementCompleted(object sender, QESQLBatchStatementCompletedEventArgs args);
 

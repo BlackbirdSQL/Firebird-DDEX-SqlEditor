@@ -107,7 +107,6 @@
 		<Compile Include="Ctl\SqlEditorToolbarCommandHandler.cs" />
 		<Compile Include="Ctl\SqlResultsEditorFactory.cs" />
 		<Compile Include="Root\Events\MonitorSelectionEventArgs.cs" />
-		<Compile Include="Root\Interfaces\ISqlEditorStrategyProvider.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

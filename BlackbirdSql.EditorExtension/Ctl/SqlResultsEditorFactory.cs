@@ -17,13 +17,13 @@ using Microsoft.VisualStudio.Utilities;
 using Cmd = BlackbirdSql.Common.Cmd;
 using Tracer = BlackbirdSql.Core.Diagnostics.Tracer;
 
-namespace BlackbirdSql.EditorExtension;
+namespace BlackbirdSql.EditorExtension.Ctl;
 
 
 [Guid(LibraryData.SqlResultsEditorFactoryGuid)]
 [ProvideMenuResource("Menus.ctmenu", 1)]
 
-[NameAttribute("BlackbirdSql Results")]
+[Name("BlackbirdSql Results")]
 public sealed class SqlResultsEditorFactory : AbstruseEditorFactory
 {
 	public override Guid ClsidEditorFactory => new(LibraryData.SqlResultsEditorFactoryGuid);

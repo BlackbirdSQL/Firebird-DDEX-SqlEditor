@@ -31,8 +31,8 @@ public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
 		// Diag.Trace();
 	}
 
-	public SqlEditorSqlDatabaseCommand(ISqlEditorWindowPane editor)
-		: base(editor)
+	public SqlEditorSqlDatabaseCommand(ISqlEditorWindowPane editorWindow)
+		: base(editorWindow)
 	{
 		// Diag.Trace();
 	}

@@ -21,8 +21,8 @@ public class SqlEditorToggleExecutionPlanCommand : AbstractSqlEditorCommand
 	{
 	}
 
-	public SqlEditorToggleExecutionPlanCommand(ISqlEditorWindowPane editor)
-		: base(editor)
+	public SqlEditorToggleExecutionPlanCommand(ISqlEditorWindowPane editorWindow)
+		: base(editorWindow)
 	{
 	}
 

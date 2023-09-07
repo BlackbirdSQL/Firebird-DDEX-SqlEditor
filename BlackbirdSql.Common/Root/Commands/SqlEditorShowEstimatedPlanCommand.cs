@@ -7,7 +7,8 @@ using System;
 using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
-
+using BlackbirdSql.Core;
+using BlackbirdSql.Core.Diagnostics;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 
@@ -23,8 +24,8 @@ public class SqlEditorShowEstimatedPlanCommand : AbstractSqlEditorCommand
 	{
 	}
 
-	public SqlEditorShowEstimatedPlanCommand(ISqlEditorWindowPane editor)
-		: base(editor)
+	public SqlEditorShowEstimatedPlanCommand(ISqlEditorWindowPane editorWindow)
+		: base(editorWindow)
 	{
 	}
 
@@ -49,8 +50,9 @@ public class SqlEditorShowEstimatedPlanCommand : AbstractSqlEditorCommand
 			{
 				try
 				{
+					Tracer.Trace(GetType(), Tracer.Level.Verbose, "HandleExec", "calling ISqlEditorWindowPane.HandleExec");
 					auxiliaryDocDataForEditor.EstimatedExecutionPlanEnabled = true;
-					Editor.ExecuteQuery();
+					EditorWindow.ExecuteQuery();
 				}
 				finally
 				{

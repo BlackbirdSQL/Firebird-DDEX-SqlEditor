@@ -523,7 +523,7 @@ namespace BlackbirdSql.Core.Config
 				obj = ConvertPropertyTypeToStorageType(obj, baseOptionModel);
 				if (obj == null)
 				{
-					Diag.Dug(true, string.Format("Cannot store null in settings store. AbstractOptionModel<{0}>.{1} CollectionName:{2} PropertyName:{3} dataType:{4} PropertyType:{5} Value:{6}", baseOptionModel.GetType().FullName, "Load", text, PropertyName, DataType, PropertyInfo.PropertyType, obj ?? "[NULL]"));
+					Diag.Stack(string.Format("Cannot store null in settings store. AbstractOptionModel<{0}>.{1} CollectionName:{2} PropertyName:{3} dataType:{4} PropertyType:{5} Value:{6}", baseOptionModel.GetType().FullName, "Load", text, PropertyName, DataType, PropertyInfo.PropertyType, obj ?? "[NULL]"));
 					return false;
 				}
 

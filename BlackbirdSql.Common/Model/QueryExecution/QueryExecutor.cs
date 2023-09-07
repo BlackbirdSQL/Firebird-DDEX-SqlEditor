@@ -78,15 +78,15 @@ public sealed class QueryExecutor : IDisposable
 
 	private SqlConnectionStrategy _ConnectionStrategy;
 
-	private IUserSettings _queryExecutionSettings;
+	private IUserSettings _QueryExecutionSettings;
 
-	private bool _queryExecutionSettingsApplied;
+	private bool _QueryExecutionSettingsApplied;
 
 	public const string C_TName = "QueryExecutor";
 
 	public static TimeSpan SyncCancelTimeout = new TimeSpan(0, 0, 5);
 
-	private QEOLESQLExec.ResolveSqlCmdVariable _sqlCmdVariableResolver;
+	private QEOLESQLExec.ResolveSqlCmdVariable _SqlCmdVariableResolver;
 
 	private QEOLESQLExec.GetCurrentWorkingDirectoryPath _currentWorkingDirectoryPath;
 
@@ -196,15 +196,15 @@ public sealed class QueryExecutor : IDisposable
 		{
 			lock (_LocalLock)
 			{
-				return _sqlCmdVariableResolver;
+				return _SqlCmdVariableResolver;
 			}
 		}
 		set
 		{
 			lock (_LocalLock)
 			{
-				_sqlCmdVariableResolver = value;
-				_SqlExec.SqlCmdVariableResolver = _sqlCmdVariableResolver;
+				_SqlCmdVariableResolver = value;
+				_SqlExec.SqlCmdVariableResolver = _SqlCmdVariableResolver;
 			}
 		}
 	}
@@ -263,20 +263,20 @@ public sealed class QueryExecutor : IDisposable
 		{
 			lock (_LocalLock)
 			{
-				if (_queryExecutionSettings == null)
+				if (_QueryExecutionSettings == null)
 				{
 					IUserSettings current = UserSettings.Instance.Current;
-					_queryExecutionSettings = current.Clone() as IUserSettings;
+					_QueryExecutionSettings = current.Clone() as IUserSettings;
 				}
 
-				return _queryExecutionSettings;
+				return _QueryExecutionSettings;
 			}
 		}
 		set
 		{
 			lock (_LocalLock)
 			{
-				_queryExecutionSettings = value;
+				_QueryExecutionSettings = value;
 			}
 		}
 	}
@@ -287,14 +287,14 @@ public sealed class QueryExecutor : IDisposable
 		{
 			lock (_LocalLock)
 			{
-				return _queryExecutionSettingsApplied;
+				return _QueryExecutionSettingsApplied;
 			}
 		}
 		set
 		{
 			lock (_LocalLock)
 			{
-				_queryExecutionSettingsApplied = value;
+				_QueryExecutionSettingsApplied = value;
 			}
 		}
 	}
@@ -474,7 +474,7 @@ public sealed class QueryExecutor : IDisposable
 		lock (_LocalLock)
 		{
 			_SqlExec.ExecutionCompleted += OnExecutionCompleted;
-			_SqlExec.BatchExectionCompleted += OnBatchExecutionCompleted;
+			_SqlExec.BatchExecutionCompleted += OnBatchExecutionCompleted;
 			_SqlExec.StartingBatchExecution += OnStartingBatchExecution;
 			_SqlExec.QEOLESQLOutputRedirection += OnOutputRedirection;
 			_SqlExec.QEOLESQLErrorMessage += OnScriptingErrorMessage;
@@ -488,7 +488,7 @@ public sealed class QueryExecutor : IDisposable
 		lock (_LocalLock)
 		{
 			_SqlExec.ExecutionCompleted -= OnExecutionCompleted;
-			_SqlExec.BatchExectionCompleted -= OnBatchExecutionCompleted;
+			_SqlExec.BatchExecutionCompleted -= OnBatchExecutionCompleted;
 			_SqlExec.StartingBatchExecution -= OnStartingBatchExecution;
 			_SqlExec.QEOLESQLOutputRedirection -= OnOutputRedirection;
 			_SqlExec.QEOLESQLErrorMessage -= OnScriptingErrorMessage;
@@ -531,8 +531,12 @@ public sealed class QueryExecutor : IDisposable
 
 	private bool ValidateAndRun(ITextSpan textSpan, int execTimeout, bool bParseOnly, bool withDebugging, bool useCustomExecutionTimeout)
 	{
+		Tracer.Trace(GetType(), Tracer.Level.Verbose, "ValidateAndRun", " Enter. : ExecutionOptions.WithEstimatedExecutionPlan: " + ExecutionOptions.WithEstimatedExecutionPlan);
+		
 		ConnectionStrategy.EnsureConnection(tryOpenConnection: true);
+		Tracer.Trace(GetType(), Tracer.Level.Verbose, "ValidateAndRun", "Ensured connection");
 		IDbConnection connection = ConnectionStrategy.Connection;
+
 		if (connection == null)
 		{
 			DataException ex = new("Connection is null");

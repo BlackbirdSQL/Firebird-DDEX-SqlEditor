@@ -9,7 +9,6 @@
 
 // namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution
 
-namespace BlackbirdSql.Common.Model.Events
-{
-	public delegate void QESQLBatchNewResultSetEventHandler(object sender, QESQLBatchNewResultSetEventArgs args);
-}
+namespace BlackbirdSql.Common.Model.Events;
+
+public delegate void QESQLBatchNewResultSetEventHandler(object sender, QESQLBatchNewResultSetEventArgs args);

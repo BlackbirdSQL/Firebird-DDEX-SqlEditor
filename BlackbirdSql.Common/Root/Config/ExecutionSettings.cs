@@ -114,65 +114,65 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 		public static readonly string SetTransactionIsolationLevelString = "SET TRANSACTION ISOLATION LEVEL {0}";
 	}
 
-	private string _batchSeparator;
+	private string _BatchSeparator;
 
-	private bool? _disconnectAfterQueryExecutes;
+	private bool? _DisconnectAfterQueryExecutes;
 
-	private int? _executionTimeout;
+	private int? _ExecutionTimeout;
 
-	private bool? _oLESQLScriptingByDefault;
+	private bool? _OLESQLScriptingByDefault;
 
-	private bool? _setAnsiNullDefault;
+	private bool? _SetAnsiNullDefault;
 
-	private bool? _setAnsiNulls;
+	private bool? _SetAnsiNulls;
 
-	private bool? _setAnsiPadding;
+	private bool? _SetAnsiPadding;
 
-	private bool? _setAnsiWarnings;
+	private bool? _SetAnsiWarnings;
 
-	private bool? _setArithAbort;
+	private bool? _SetArithAbort;
 
-	private bool? _setConcatenationNull;
+	private bool? _SetConcatenationNull;
 
-	private bool? _setCursorCloseOnCommit;
+	private bool? _SetCursorCloseOnCommit;
 
-	private bool? _setDeadlockPriorityLow;
+	private bool? _SetDeadlockPriorityLow;
 
-	private bool? _setFmtOnly;
+	private bool? _SetFmtOnly;
 
-	private bool? _setForceplan;
+	private bool? _SetForceplan;
 
-	private bool? _setImplicitTransaction;
+	private bool? _SetImplicitTransaction;
 
-	private int? _setLockTimeout;
+	private int? _SetLockTimeout;
 
-	private bool? _setNoCount;
+	private bool? _SetNoCount;
 
-	private bool? _setNoExec;
+	private bool? _SetNoExec;
 
-	private bool? _setNumericAbort;
+	private bool? _SetNumericAbort;
 
-	private bool? _setParseOnly;
+	private bool? _SetParseOnly;
 
-	private int? _setQueryGovernorCost;
+	private int? _SetQueryGovernorCost;
 
-	private bool? _setQuotedIdentifier;
+	private bool? _SetQuotedIdentifier;
 
-	private int? _setRowCount;
+	private int? _SetRowCount;
 
-	private bool? _setShowplanText;
+	private bool? _SetShowplanText;
 
-	private bool? _setStatisticsIO;
+	private bool? _SetStatisticsIO;
 
-	private bool? _setStatisticsProfile;
+	private bool? _SetStatisticsProfile;
 
-	private bool? _setStatisticsTime;
+	private bool? _SetStatisticsTime;
 
-	private int? _setTextSize;
+	private int? _SetTextSize;
 
-	private string _setTransactionIsolationLevel;
+	private string _SetTransactionIsolationLevel;
 
-	private bool? _setXACTAbort;
+	private bool? _SetXACTAbort;
 
 	private bool? _suppressProviderMessageHeaders;
 
@@ -180,16 +180,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (string.IsNullOrEmpty(_batchSeparator))
+			if (string.IsNullOrEmpty(_BatchSeparator))
 			{
 				return Defaults.BatchSeparator;
 			}
 
-			return _batchSeparator;
+			return _BatchSeparator;
 		}
 		set
 		{
-			_batchSeparator = value;
+			_BatchSeparator = value;
 		}
 	}
 
@@ -197,16 +197,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_disconnectAfterQueryExecutes.HasValue)
+			if (!_DisconnectAfterQueryExecutes.HasValue)
 			{
 				return Defaults.DisconnectAfterQueryExecutes;
 			}
 
-			return _disconnectAfterQueryExecutes.Value;
+			return _DisconnectAfterQueryExecutes.Value;
 		}
 		set
 		{
-			_disconnectAfterQueryExecutes = value;
+			_DisconnectAfterQueryExecutes = value;
 		}
 	}
 
@@ -214,16 +214,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_executionTimeout.HasValue)
+			if (!_ExecutionTimeout.HasValue)
 			{
 				return Defaults.ExecutionTimeout;
 			}
 
-			return _executionTimeout.Value;
+			return _ExecutionTimeout.Value;
 		}
 		set
 		{
-			_executionTimeout = value;
+			_ExecutionTimeout = value;
 		}
 	}
 
@@ -231,16 +231,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_oLESQLScriptingByDefault.HasValue)
+			if (!_OLESQLScriptingByDefault.HasValue)
 			{
 				return Defaults.OLESQLScriptingByDefault;
 			}
 
-			return _oLESQLScriptingByDefault.Value;
+			return _OLESQLScriptingByDefault.Value;
 		}
 		set
 		{
-			_oLESQLScriptingByDefault = value;
+			_OLESQLScriptingByDefault = value;
 		}
 	}
 
@@ -248,16 +248,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setAnsiNullDefault.HasValue)
+			if (!_SetAnsiNullDefault.HasValue)
 			{
 				return Defaults.SetAnsiNullDefault;
 			}
 
-			return _setAnsiNullDefault.Value;
+			return _SetAnsiNullDefault.Value;
 		}
 		set
 		{
-			_setAnsiNullDefault = value;
+			_SetAnsiNullDefault = value;
 		}
 	}
 
@@ -267,16 +267,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setAnsiNulls.HasValue)
+			if (!_SetAnsiNulls.HasValue)
 			{
 				return Defaults.SetAnsiNulls;
 			}
 
-			return _setAnsiNulls.Value;
+			return _SetAnsiNulls.Value;
 		}
 		set
 		{
-			_setAnsiNulls = value;
+			_SetAnsiNulls = value;
 		}
 	}
 
@@ -288,16 +288,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setAnsiPadding.HasValue)
+			if (!_SetAnsiPadding.HasValue)
 			{
 				return Defaults.SetAnsiPadding;
 			}
 
-			return _setAnsiPadding.Value;
+			return _SetAnsiPadding.Value;
 		}
 		set
 		{
-			_setAnsiPadding = value;
+			_SetAnsiPadding = value;
 		}
 	}
 
@@ -307,16 +307,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setAnsiWarnings.HasValue)
+			if (!_SetAnsiWarnings.HasValue)
 			{
 				return Defaults.SetAnsiWarnings;
 			}
 
-			return _setAnsiWarnings.Value;
+			return _SetAnsiWarnings.Value;
 		}
 		set
 		{
-			_setAnsiWarnings = value;
+			_SetAnsiWarnings = value;
 		}
 	}
 
@@ -326,16 +326,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setArithAbort.HasValue)
+			if (!_SetArithAbort.HasValue)
 			{
 				return Defaults.SetArithAbort;
 			}
 
-			return _setArithAbort.Value;
+			return _SetArithAbort.Value;
 		}
 		set
 		{
-			_setArithAbort = value;
+			_SetArithAbort = value;
 		}
 	}
 
@@ -345,16 +345,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setConcatenationNull.HasValue)
+			if (!_SetConcatenationNull.HasValue)
 			{
 				return Defaults.SetConcatenationNull;
 			}
 
-			return _setConcatenationNull.Value;
+			return _SetConcatenationNull.Value;
 		}
 		set
 		{
-			_setConcatenationNull = value;
+			_SetConcatenationNull = value;
 		}
 	}
 
@@ -364,16 +364,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setCursorCloseOnCommit.HasValue)
+			if (!_SetCursorCloseOnCommit.HasValue)
 			{
 				return Defaults.SetCursorCloseOnCommit;
 			}
 
-			return _setCursorCloseOnCommit.Value;
+			return _SetCursorCloseOnCommit.Value;
 		}
 		set
 		{
-			_setCursorCloseOnCommit = value;
+			_SetCursorCloseOnCommit = value;
 		}
 	}
 
@@ -383,16 +383,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setDeadlockPriorityLow.HasValue)
+			if (!_SetDeadlockPriorityLow.HasValue)
 			{
 				return Defaults.SetDeadlockPriorityLow;
 			}
 
-			return _setDeadlockPriorityLow.Value;
+			return _SetDeadlockPriorityLow.Value;
 		}
 		set
 		{
-			_setDeadlockPriorityLow = value;
+			_SetDeadlockPriorityLow = value;
 		}
 	}
 
@@ -413,16 +413,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setFmtOnly.HasValue)
+			if (!_SetFmtOnly.HasValue)
 			{
 				return Defaults.SetFmtOnly;
 			}
 
-			return _setFmtOnly.Value;
+			return _SetFmtOnly.Value;
 		}
 		set
 		{
-			_setFmtOnly = value;
+			_SetFmtOnly = value;
 		}
 	}
 
@@ -430,16 +430,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setForceplan.HasValue)
+			if (!_SetForceplan.HasValue)
 			{
 				return Defaults.SetForceplan;
 			}
 
-			return _setForceplan.Value;
+			return _SetForceplan.Value;
 		}
 		set
 		{
-			_setForceplan = value;
+			_SetForceplan = value;
 		}
 	}
 
@@ -447,16 +447,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setImplicitTransaction.HasValue)
+			if (!_SetImplicitTransaction.HasValue)
 			{
 				return Defaults.SetImplicitTransaction;
 			}
 
-			return _setImplicitTransaction.Value;
+			return _SetImplicitTransaction.Value;
 		}
 		set
 		{
-			_setImplicitTransaction = value;
+			_SetImplicitTransaction = value;
 		}
 	}
 
@@ -466,16 +466,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setLockTimeout.HasValue)
+			if (!_SetLockTimeout.HasValue)
 			{
 				return Defaults.SetLockTimeout;
 			}
 
-			return _setLockTimeout.Value;
+			return _SetLockTimeout.Value;
 		}
 		set
 		{
-			_setLockTimeout = value;
+			_SetLockTimeout = value;
 		}
 	}
 
@@ -485,16 +485,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setNoCount.HasValue)
+			if (!_SetNoCount.HasValue)
 			{
 				return Defaults.SetNoCount;
 			}
 
-			return _setNoCount.Value;
+			return _SetNoCount.Value;
 		}
 		set
 		{
-			_setNoCount = value;
+			_SetNoCount = value;
 		}
 	}
 
@@ -504,16 +504,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setNoExec.HasValue)
+			if (!_SetNoExec.HasValue)
 			{
 				return Defaults.SetNoExec;
 			}
 
-			return _setNoExec.Value;
+			return _SetNoExec.Value;
 		}
 		set
 		{
-			_setNoExec = value;
+			_SetNoExec = value;
 		}
 	}
 
@@ -521,16 +521,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setNumericAbort.HasValue)
+			if (!_SetNumericAbort.HasValue)
 			{
 				return Defaults.SetNumericAbort;
 			}
 
-			return _setNumericAbort.Value;
+			return _SetNumericAbort.Value;
 		}
 		set
 		{
-			_setNumericAbort = value;
+			_SetNumericAbort = value;
 		}
 	}
 
@@ -538,16 +538,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setParseOnly.HasValue)
+			if (!_SetParseOnly.HasValue)
 			{
 				return Defaults.SetParseOnly;
 			}
 
-			return _setParseOnly.Value;
+			return _SetParseOnly.Value;
 		}
 		set
 		{
-			_setParseOnly = value;
+			_SetParseOnly = value;
 		}
 	}
 
@@ -555,16 +555,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setQueryGovernorCost.HasValue)
+			if (!_SetQueryGovernorCost.HasValue)
 			{
 				return Defaults.SetQueryGovernorCost;
 			}
 
-			return _setQueryGovernorCost.Value;
+			return _SetQueryGovernorCost.Value;
 		}
 		set
 		{
-			_setQueryGovernorCost = value;
+			_SetQueryGovernorCost = value;
 		}
 	}
 
@@ -574,16 +574,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setQuotedIdentifier.HasValue)
+			if (!_SetQuotedIdentifier.HasValue)
 			{
 				return Defaults.SetQuotedIdentifier;
 			}
 
-			return _setQuotedIdentifier.Value;
+			return _SetQuotedIdentifier.Value;
 		}
 		set
 		{
-			_setQuotedIdentifier = value;
+			_SetQuotedIdentifier = value;
 		}
 	}
 
@@ -593,16 +593,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setRowCount.HasValue)
+			if (!_SetRowCount.HasValue)
 			{
 				return Defaults.SetRowCount;
 			}
 
-			return _setRowCount.Value;
+			return _SetRowCount.Value;
 		}
 		set
 		{
-			_setRowCount = value;
+			_SetRowCount = value;
 		}
 	}
 
@@ -612,16 +612,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setShowplanText.HasValue)
+			if (!_SetShowplanText.HasValue)
 			{
 				return Defaults.SetShowplanText;
 			}
 
-			return _setShowplanText.Value;
+			return _SetShowplanText.Value;
 		}
 		set
 		{
-			_setShowplanText = value;
+			_SetShowplanText = value;
 		}
 	}
 
@@ -629,16 +629,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setStatisticsIO.HasValue)
+			if (!_SetStatisticsIO.HasValue)
 			{
 				return Defaults.SetStatisticsIO;
 			}
 
-			return _setStatisticsIO.Value;
+			return _SetStatisticsIO.Value;
 		}
 		set
 		{
-			_setStatisticsIO = value;
+			_SetStatisticsIO = value;
 		}
 	}
 
@@ -646,16 +646,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setStatisticsProfile.HasValue)
+			if (!_SetStatisticsProfile.HasValue)
 			{
 				return Defaults.SetStatisticsProfile;
 			}
 
-			return _setStatisticsProfile.Value;
+			return _SetStatisticsProfile.Value;
 		}
 		set
 		{
-			_setStatisticsProfile = value;
+			_SetStatisticsProfile = value;
 		}
 	}
 
@@ -663,16 +663,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setStatisticsTime.HasValue)
+			if (!_SetStatisticsTime.HasValue)
 			{
 				return Defaults.SetStatisticsTime;
 			}
 
-			return _setStatisticsTime.Value;
+			return _SetStatisticsTime.Value;
 		}
 		set
 		{
-			_setStatisticsTime = value;
+			_SetStatisticsTime = value;
 		}
 	}
 
@@ -680,16 +680,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setTextSize.HasValue)
+			if (!_SetTextSize.HasValue)
 			{
 				return Defaults.SetTextSize;
 			}
 
-			return _setTextSize.Value;
+			return _SetTextSize.Value;
 		}
 		set
 		{
-			_setTextSize = value;
+			_SetTextSize = value;
 		}
 	}
 
@@ -699,16 +699,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (string.IsNullOrEmpty(_setTransactionIsolationLevel))
+			if (string.IsNullOrEmpty(_SetTransactionIsolationLevel))
 			{
 				return Defaults.SetTransactionIsolationLevel;
 			}
 
-			return _setTransactionIsolationLevel;
+			return _SetTransactionIsolationLevel;
 		}
 		set
 		{
-			_setTransactionIsolationLevel = value;
+			_SetTransactionIsolationLevel = value;
 		}
 	}
 
@@ -718,16 +718,16 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 	{
 		get
 		{
-			if (!_setXACTAbort.HasValue)
+			if (!_SetXACTAbort.HasValue)
 			{
 				return Defaults.SetXACTAbort;
 			}
 
-			return _setXACTAbort.Value;
+			return _SetXACTAbort.Value;
 		}
 		set
 		{
-			_setXACTAbort = value;
+			_SetXACTAbort = value;
 		}
 	}
 
@@ -755,36 +755,36 @@ public sealed class ExecutionSettings : IQueryExecutionSettings, ICloneable
 
 	public void ResetToDefault()
 	{
-		_batchSeparator = Defaults.BatchSeparator;
-		_disconnectAfterQueryExecutes = Defaults.DisconnectAfterQueryExecutes;
-		_executionTimeout = Defaults.ExecutionTimeout;
-		_oLESQLScriptingByDefault = Defaults.OLESQLScriptingByDefault;
-		_setAnsiNullDefault = Defaults.SetAnsiNullDefault;
-		_setAnsiNulls = Defaults.SetAnsiNulls;
-		_setAnsiPadding = Defaults.SetAnsiPadding;
-		_setAnsiWarnings = Defaults.SetAnsiWarnings;
-		_setArithAbort = Defaults.SetArithAbort;
-		_setConcatenationNull = Defaults.SetConcatenationNull;
-		_setCursorCloseOnCommit = Defaults.SetCursorCloseOnCommit;
-		_setDeadlockPriorityLow = Defaults.SetDeadlockPriorityLow;
-		_setFmtOnly = Defaults.SetFmtOnly;
-		_setForceplan = Defaults.SetForceplan;
-		_setImplicitTransaction = Defaults.SetImplicitTransaction;
-		_setLockTimeout = Defaults.SetLockTimeout;
-		_setNoCount = Defaults.SetNoCount;
-		_setNoExec = Defaults.SetNoExec;
-		_setNumericAbort = Defaults.SetNumericAbort;
-		_setParseOnly = Defaults.SetParseOnly;
-		_setQueryGovernorCost = Defaults.SetQueryGovernorCost;
-		_setQuotedIdentifier = Defaults.SetQuotedIdentifier;
-		_setRowCount = Defaults.SetRowCount;
-		_setShowplanText = Defaults.SetShowplanText;
-		_setStatisticsIO = Defaults.SetStatisticsIO;
-		_setStatisticsProfile = Defaults.SetStatisticsProfile;
-		_setStatisticsTime = Defaults.SetStatisticsTime;
-		_setTextSize = Defaults.SetTextSize;
-		_setTransactionIsolationLevel = Defaults.SetTransactionIsolationLevel;
-		_setXACTAbort = Defaults.SetXACTAbort;
+		_BatchSeparator = Defaults.BatchSeparator;
+		_DisconnectAfterQueryExecutes = Defaults.DisconnectAfterQueryExecutes;
+		_ExecutionTimeout = Defaults.ExecutionTimeout;
+		_OLESQLScriptingByDefault = Defaults.OLESQLScriptingByDefault;
+		_SetAnsiNullDefault = Defaults.SetAnsiNullDefault;
+		_SetAnsiNulls = Defaults.SetAnsiNulls;
+		_SetAnsiPadding = Defaults.SetAnsiPadding;
+		_SetAnsiWarnings = Defaults.SetAnsiWarnings;
+		_SetArithAbort = Defaults.SetArithAbort;
+		_SetConcatenationNull = Defaults.SetConcatenationNull;
+		_SetCursorCloseOnCommit = Defaults.SetCursorCloseOnCommit;
+		_SetDeadlockPriorityLow = Defaults.SetDeadlockPriorityLow;
+		_SetFmtOnly = Defaults.SetFmtOnly;
+		_SetForceplan = Defaults.SetForceplan;
+		_SetImplicitTransaction = Defaults.SetImplicitTransaction;
+		_SetLockTimeout = Defaults.SetLockTimeout;
+		_SetNoCount = Defaults.SetNoCount;
+		_SetNoExec = Defaults.SetNoExec;
+		_SetNumericAbort = Defaults.SetNumericAbort;
+		_SetParseOnly = Defaults.SetParseOnly;
+		_SetQueryGovernorCost = Defaults.SetQueryGovernorCost;
+		_SetQuotedIdentifier = Defaults.SetQuotedIdentifier;
+		_SetRowCount = Defaults.SetRowCount;
+		_SetShowplanText = Defaults.SetShowplanText;
+		_SetStatisticsIO = Defaults.SetStatisticsIO;
+		_SetStatisticsProfile = Defaults.SetStatisticsProfile;
+		_SetStatisticsTime = Defaults.SetStatisticsTime;
+		_SetTextSize = Defaults.SetTextSize;
+		_SetTransactionIsolationLevel = Defaults.SetTransactionIsolationLevel;
+		_SetXACTAbort = Defaults.SetXACTAbort;
 		_suppressProviderMessageHeaders = Defaults.SuppressProviderMessageHeaders;
 	}
 

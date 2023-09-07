@@ -10,13 +10,14 @@ using System.Data.Common;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Common.Model.Events;
-using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 
 using Microsoft.VisualStudio.TextManager.Interop;
 using BlackbirdSql.Common.Config.Interfaces;
 using BlackbirdSql.Common.Enums;
+using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Config;
 
 namespace BlackbirdSql.Common.Model;
 
@@ -383,7 +384,7 @@ public sealed class AuxiliaryDocData
 		SqlExecutionMode = EnSqlExecutionMode.ResultsToText;
 	}
 
-	private void SetOLESqlModeOnDocData(bool bOn)
+	private void SetOLESqlModeOnDocData(bool on)
 	{
 		lock (_LocalLock)
 		{
@@ -391,7 +392,7 @@ public sealed class AuxiliaryDocData
 			if (iVsUserData != null)
 			{
 				Guid riidKey = LibraryData.CLSID_PropertyOleSql;
-				Native.ThrowOnFailure(iVsUserData.SetData(ref riidKey, bOn));
+				Native.ThrowOnFailure(iVsUserData.SetData(ref riidKey, on));
 			}
 		}
 	}
@@ -407,7 +408,7 @@ public sealed class AuxiliaryDocData
 		{
 			if (disposing)
 			{
-				Strategy?.Dispose();
+				_Strategy?.Dispose();
 				_QueryExecutor?.Dispose();
 			}
 
@@ -419,7 +420,7 @@ public sealed class AuxiliaryDocData
 	{
 		if (IsQueryWindow)
 		{
-			// return !UserSettings.Instance.Current.General.PromptForSaveWhenClosingQueryWindows;
+			return !UserSettings.Instance.Current.General.PromptForSaveWhenClosingQueryWindows;
 		}
 
 		return false;

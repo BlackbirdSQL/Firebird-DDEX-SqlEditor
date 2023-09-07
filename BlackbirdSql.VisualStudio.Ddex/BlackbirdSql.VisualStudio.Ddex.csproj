@@ -73,7 +73,7 @@
     </Content>
     <Content Include="Package.ico" />
     <Content Include="Resources\Package.ico" />
-    <Content Include="Resources\ToolbarImageStrip.png" />
+    <EmbeddedResource Include="Resources\ToolbarImageStrip.png" />
     <None Include="Resources\ToolbarImageStrip.psd" />
     <None Include="Resources\ViewSupport.FolderTables.ico" />
     <None Include="Properties\BlackbirdSql.VisualStudio.Ddex.NET.snk" />

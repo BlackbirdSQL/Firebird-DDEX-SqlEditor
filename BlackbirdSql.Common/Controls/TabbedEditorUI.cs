@@ -62,7 +62,7 @@ public class TabbedEditorUI : Control, IServiceProvider
 		}
 	}
 
-	private EditorTabCollection _tabs;
+	private EditorTabCollection _Tabs;
 
 	private IServiceProvider _provider;
 
@@ -143,14 +143,9 @@ public class TabbedEditorUI : Control, IServiceProvider
 		}
 	}
 
-	public Collection<AbstractEditorTab> Tabs
-	{
-		get
-		{
-			_tabs ??= new EditorTabCollection(this);
-			return _tabs;
-		}
-	}
+	public Collection<AbstractEditorTab> Tabs => _Tabs ??= new EditorTabCollection(this);
+
+
 
 	public IWin32Window TopPanel
 	{
@@ -323,8 +318,8 @@ public class TabbedEditorUI : Control, IServiceProvider
 		if (disposing)
 		{
 			SuspendLayout();
-			EditorTabCollection tabs = _tabs;
-			_tabs = null;
+			EditorTabCollection tabs = _Tabs;
+			_Tabs = null;
 			tabs?.Clear();
 			_provider = null;
 			_splitContainer.SplitterBar.Dispose();

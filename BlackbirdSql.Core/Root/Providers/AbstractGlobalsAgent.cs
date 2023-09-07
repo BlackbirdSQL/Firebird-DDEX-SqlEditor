@@ -427,7 +427,7 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 
 			if (Dte.Solution.Globals == null)
 			{
-				Diag.Dug(true, Dte.Solution.FullName + ": Solution.Globals is null");
+				Diag.Stack(Dte.Solution.FullName + ": Solution.Globals is null");
 				return false;
 			}
 

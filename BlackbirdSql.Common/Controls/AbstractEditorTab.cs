@@ -22,7 +22,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
-
+using FirebirdSql.Data.FirebirdClient;
 
 namespace BlackbirdSql.Common.Controls;
 
@@ -68,7 +68,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		get
 		{
 			Guid pguid = Guid.Empty;
-			_CurrentFrame?.GetGuidProperty(-4007, out pguid);
+			_CurrentFrame?.GetGuidProperty((int)__VSFPROPID.VSFPROPID_CmdUIGuid, out pguid);
 			return pguid;
 		}
 	}
@@ -452,9 +452,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		{
 			_IsActive = isActive;
 			if (TextEditor != null)
-			{
 				TextEditor.IsActive = _IsActive;
-			}
 			ActiveChanged?.Invoke(this, EventArgs.Empty);
 		}
 	}
@@ -786,6 +784,11 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		return VSConstants.E_NOTIMPL;
 	}
 
+	/// <summary>
+	/// IVsDesignerInfo.get_DesignerTechnology implementation 
+	/// </summary>
+	/// <param name="pbstrTechnology"></param>
+	/// <returns></returns>
 	public int get_DesignerTechnology(out string pbstrTechnology)
 	{
 		pbstrTechnology = "";

@@ -45,7 +45,7 @@ public static class CommonUtils
 	public static void ShowContextMenu(int menuId, int xPos, int yPos, IOleCommandTarget commandTarget)
 	{
 		IVsUIShell obj = Package.GetGlobalService(typeof(IVsUIShell)) as IVsUIShell;
-		Guid rclsidActive = LibraryData.CLSID_SqlEditorCommandSet;
+		Guid rclsidActive = LibraryData.CLSID_CommandSet;
 
 		_ = Control.MousePosition;
 		POINTS pOINTS = new POINTS

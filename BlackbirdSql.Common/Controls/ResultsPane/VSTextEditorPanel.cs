@@ -25,7 +25,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 {
 	public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 	{
-		protected TextResultsViewContol _TextView;
+		protected TextResultsViewContol _TextViewCtl;
 
 		protected ShellBufferWriter _TextWriter;
 
@@ -37,13 +37,13 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 
 
-		public TextResultsViewContol TextView => _TextView;
+		public TextResultsViewContol TextViewCtl => _TextViewCtl;
 
 		public bool HasValidWriter
 		{
 			get
 			{
-				if (_TextView != null && _TextView.TextBuffer != null)
+				if (_TextViewCtl != null && _TextViewCtl.TextBuffer != null)
 				{
 					return _TextWriter != null;
 				}
@@ -83,18 +83,18 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 		{
 			get
 			{
-				if (_TextView != null && _TextView.TextBuffer != null)
+				if (_TextViewCtl != null && _TextViewCtl.TextBuffer != null)
 				{
-					return _TextView.TextBuffer.UndoEnabled;
+					return _TextViewCtl.TextBuffer.UndoEnabled;
 				}
 
 				return false;
 			}
 			set
 			{
-				if (_TextView != null && _TextView.TextBuffer != null)
+				if (_TextViewCtl != null && _TextViewCtl.TextBuffer != null)
 				{
-					_TextView.TextBuffer.UndoEnabled = value;
+					_TextViewCtl.TextBuffer.UndoEnabled = value;
 				}
 			}
 		}
@@ -113,13 +113,13 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 				}
 
 				_shouldBeReadOnly = value;
-				if (_TextView.IsHandleCreated)
+				if (_TextViewCtl.IsHandleCreated)
 				{
-					Native.ThrowOnFailure(_TextView.TextBuffer.TextStream.GetStateFlags(out uint pdwReadOnlyFlags));
+					Native.ThrowOnFailure(_TextViewCtl.TextBuffer.TextStream.GetStateFlags(out uint pdwReadOnlyFlags));
 					uint num = !value ? pdwReadOnlyFlags & 0xFFFFFFFEu : pdwReadOnlyFlags | (uint)BUFFERSTATEFLAGS.BSF_USER_READONLY;
 					if (num != pdwReadOnlyFlags)
 					{
-						Native.ThrowOnFailure(_TextView.TextBuffer.TextStream.SetStateFlags(num));
+						Native.ThrowOnFailure(_TextViewCtl.TextBuffer.TextStream.SetStateFlags(num));
 					}
 				}
 			}
@@ -132,32 +132,32 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			SuspendLayout();
 			using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
 			{
-				_TextView = new TextResultsViewContol();
+				_TextViewCtl = new TextResultsViewContol();
 			}
 
-			_TextView.BorderStyle = BorderStyle.None;
-			_TextView.CodeWindowStyle = false;
-			_TextView.Dock = DockStyle.Fill;
-			_TextView.Text = "shellTextViewControl1";
-			_TextView.WithSelectionMargin = true;
-			_TextView.WithWidgetMargin = false;
-			_TextView.WantCustomPopupMenu = true;
-			_TextView.ShowPopupMenu += OnShowPopupMenu;
-			Controls.Add(_TextView);
+			_TextViewCtl.BorderStyle = BorderStyle.None;
+			_TextViewCtl.CodeWindowStyle = false;
+			_TextViewCtl.Dock = DockStyle.Fill;
+			_TextViewCtl.Text = "shellTextViewControl1";
+			_TextViewCtl.WithSelectionMargin = true;
+			_TextViewCtl.WithWidgetMargin = false;
+			_TextViewCtl.WantCustomPopupMenu = true;
+			_TextViewCtl.ShowPopupMenu += OnShowPopupMenu;
+			Controls.Add(_TextViewCtl);
 			ResumeLayout(performLayout: false);
 			MenuCommand menuCommand = new MenuCommand(OnSaveAs,
-				new CommandID(LibraryData.CLSID_SqlEditorCommandSet,
-				(int)EnCommandSet.CmdidSaveResultsAs));
+				new CommandID(LibraryData.CLSID_CommandSet,
+				(int)EnCommandSet.CmdIdSaveResultsAs));
 			MenuService.AddRange(new MenuCommand[1] { menuCommand });
 		}
 
 		protected override void Dispose(bool bDisposing)
 		{
 			Tracer.Trace(GetType(), "VSTextEditorPanel.Dispose", "", null);
-			if (bDisposing && _TextView != null)
+			if (bDisposing && _TextViewCtl != null)
 			{
-				_TextView.Dispose();
-				_TextView = null;
+				_TextViewCtl.Dispose();
+				_TextViewCtl = null;
 			}
 
 			if (_TextWriter != null)
@@ -174,26 +174,26 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			base.Initialize(sp);
 			if (_ClsidLanguageService != Guid.Empty)
 			{
-				_TextView.ClsidLanguageService = _ClsidLanguageService;
-				TextResultsViewContol textView = _TextView;
+				_TextViewCtl.ClsidLanguageService = _ClsidLanguageService;
+				TextResultsViewContol textView = _TextViewCtl;
 				Guid fontAndColorCategoryStandardTextEditor = VS.CLSID_FontAndColorsTextEditorCategory;
 				textView.ColorCategoryGuid = "{" + fontAndColorCategoryStandardTextEditor.ToString() + "}";
-				TextResultsViewContol textView2 = _TextView;
+				TextResultsViewContol textView2 = _TextViewCtl;
 				fontAndColorCategoryStandardTextEditor = VS.CLSID_FontAndColorsTextEditorCategory;
 				textView2.FontCategoryGuid = "{" + fontAndColorCategoryStandardTextEditor.ToString() + "}";
 			}
 			else
 			{
-				TextResultsViewContol textView3 = _TextView;
+				TextResultsViewContol textView3 = _TextViewCtl;
 				Guid fontAndColorCategoryStandardTextEditor = VS.CLSID_FontAndColorsSqlResultsTextCategory;
 				textView3.ColorCategoryGuid = "{" + fontAndColorCategoryStandardTextEditor.ToString() + "}";
-				TextResultsViewContol textView4 = _TextView;
+				TextResultsViewContol textView4 = _TextViewCtl;
 				fontAndColorCategoryStandardTextEditor = VS.CLSID_FontAndColorsSqlResultsTextCategory;
 				textView4.FontCategoryGuid = "{" + fontAndColorCategoryStandardTextEditor.ToString() + "}";
 			}
 
-			_TextView.CreateAndInitTextBuffer(sp, null);
-			_TextWriter = new ShellBufferWriter(_TextView.TextBuffer);
+			_TextViewCtl.CreateAndInitTextBuffer(sp, null);
+			_TextWriter = new ShellBufferWriter(_TextViewCtl.TextBuffer);
 			CreateAndInitVSTextEditor();
 			if (_serviceProvider.GetService(VS.CLSID_TextManager) is not IVsTextManager vsTextManager)
 			{
@@ -216,7 +216,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 		public override void Clear()
 		{
 			Tracer.Trace(GetType(), "VSTextEditorTabPage.Clear", "", null);
-			_TextView?.TextBuffer.Clear();
+			_TextViewCtl?.TextBuffer.Clear();
 
 			_TextWriter?.Reset();
 		}
@@ -229,31 +229,31 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 				CreateHandle();
 			}
 
-			Native.ThrowOnFailure(_TextView.TextView.GetScrollInfo(1, out var _, out var piMaxUnit, out var piVisibleUnits, out var _));
+			Native.ThrowOnFailure(_TextViewCtl.TextView.GetScrollInfo(1, out var _, out var piMaxUnit, out var piVisibleUnits, out var _));
 			int iFirstVisibleUnit = Math.Max(0, piMaxUnit - piVisibleUnits);
-			Native.ThrowOnFailure(_TextView.TextView.SetScrollPosition(1, iFirstVisibleUnit));
+			Native.ThrowOnFailure(_TextViewCtl.TextView.SetScrollPosition(1, iFirstVisibleUnit));
 		}
 
 		private void OnShowPopupMenu(object sender, SpecialEditorCommandEventArgs a)
 		{
-			_TextView.GetCoordinatesForPopupMenu(a.VariantIn, out var x, out var y);
+			_TextViewCtl.GetCoordinatesForPopupMenu(a.VariantIn, out var x, out var y);
 			CommonUtils.ShowContextMenu((int)EnCommandSet.ContextIdMessageWindow, x, y, this);
 		}
 
 		private void CreateAndInitVSTextEditor()
 		{
 			Tracer.Trace(GetType(), "VSTextEditorTabPage.CreateAndInitVSTextEditor", "", null);
-			_TextView.CreateAndInitEditorWindow(_rawServiceProvider);
+			_TextViewCtl.CreateAndInitEditorWindow(_rawServiceProvider);
 			if (_shouldBeReadOnly)
 			{
-				Native.ThrowOnFailure(_TextView.TextBuffer.TextStream.GetStateFlags(out uint pdwReadOnlyFlags));
-				Native.ThrowOnFailure(_TextView.TextBuffer.TextStream.SetStateFlags(pdwReadOnlyFlags | (uint)BUFFERSTATEFLAGS.BSF_USER_READONLY));
+				Native.ThrowOnFailure(_TextViewCtl.TextBuffer.TextStream.GetStateFlags(out uint pdwReadOnlyFlags));
+				Native.ThrowOnFailure(_TextViewCtl.TextBuffer.TextStream.SetStateFlags(pdwReadOnlyFlags | (uint)BUFFERSTATEFLAGS.BSF_USER_READONLY));
 			}
 		}
 
 		public int QueryStatus(ref Guid guidGroup, uint cmdId, OLECMD[] oleCmd, IntPtr oleText)
 		{
-			int num = TextView.QueryStatus(ref guidGroup, cmdId, oleCmd, oleText);
+			int num = TextViewCtl.QueryStatus(ref guidGroup, cmdId, oleCmd, oleText);
 
 			if (num == 0)
 				return num;
@@ -265,11 +265,11 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 				return (int)Constants.MSOCMDERR_E_UNKNOWNGROUP;
 			}
 
-			if (guidGroup.Equals(LibraryData.CLSID_SqlEditorCommandSet))
+			if (guidGroup.Equals(LibraryData.CLSID_CommandSet))
 			{
 				bool visible = menuCommand.Supported = true;
 				menuCommand.Visible = visible;
-				if (commandID.ID == (int)EnCommandSet.CmdidSaveResultsAs)
+				if (commandID.ID == (int)EnCommandSet.CmdIdSaveResultsAs)
 				{
 					menuCommand.Enabled = true;
 				}
@@ -284,19 +284,19 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 		public int Exec(ref Guid guidGroup, uint nCmdId, uint nCmdExcept, IntPtr variantIn, IntPtr variantOut)
 		{
 			MenuCommand menuCommand = MenuService.FindCommand(new CommandID(guidGroup, (int)nCmdId));
-			if (menuCommand != null && guidGroup.Equals(LibraryData.CLSID_SqlEditorCommandSet))
+			if (menuCommand != null && guidGroup.Equals(LibraryData.CLSID_CommandSet))
 			{
 				menuCommand.Invoke();
 				return VSConstants.S_OK;
 			}
 
-			return _TextView.Exec(ref guidGroup, nCmdId, nCmdExcept, variantIn, variantOut);
+			return _TextViewCtl.Exec(ref guidGroup, nCmdId, nCmdExcept, variantIn, variantOut);
 		}
 
 		private void OnSaveAs(object sender, EventArgs a)
 		{
 			Tracer.Trace(GetType(), "VSTextEditorTabPage.OnSaveAs", "", null);
-			Control textView = _TextView;
+			Control textView = _TextViewCtl;
 			Cursor current = Cursor.Current;
 			try
 			{

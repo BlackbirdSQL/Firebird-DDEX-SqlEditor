@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ShowPlanXML xmlns="http://schemas.microsoft.com/sqlserver/2004/07/showplan" Version="1.571" Build="14.0.100.430">
+	<BatchSequence>
+		<Batch>
+			<Statements>
+				<StmtSimple StatementText="SELECT COUNT(DISTINCT co.Id) FROM Campaign &amp;#xd;&amp;#xa;as ca JOIN KPI_EmailOpened as eo ON eo.CampaignId = ca.Id JOIN Contact&amp;#xd;&amp;#xa; AS co ON co.Id = eo.ContactId &amp;#xd;&amp;#xa;WHERE co.FirstName = &amp;apos;John&amp;apos;" StatementId="1" StatementCompId="1" StatementType="SELECT" RetrievedFromCache="false" StatementSubTreeCost="2.98809" StatementEstRows="1" SecurityPolicyApplied="false" StatementOptmLevel="FULL" QueryHash="0x5E01ED198558D453" QueryPlanHash="0xBD8133A97EEAAC2C" CardinalityEstimationModelVersion="130">
+					<StatementSetOptions QUOTED_IDENTIFIER="true" ARITHABORT="true" CONCAT_NULL_YIELDS_NULL="true" ANSI_NULLS="true" ANSI_PADDING="true" ANSI_WARNINGS="true" NUMERIC_ROUNDABORT="false" />
+					<QueryPlan NonParallelPlanReason="EstimatedDOPIsOne" CachedPlanSize="48" CompileTime="9" CompileCPU="9" CompileMemory="816">
+						<MemoryGrantInfo SerialRequiredMemory="3072" SerialDesiredMemory="3104" />
+						<OptimizerHardwareDependentProperties EstimatedAvailableMemoryGrant="17616030" EstimatedPagesCached="1101001" EstimatedAvailableDegreeOfParallelism="1" MaxCompileMemory="4603408" />
+						<RelOp NodeId="1" PhysicalOp="Compute Scalar" LogicalOp="Compute Scalar" EstimateRows="1" EstimateIO="0" EstimateCPU="1e-007" AvgRowSize="11" EstimatedTotalSubtreeCost="2.98809" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+							<OutputList>
+								<ColumnReference Column="Expr1003" />
+							</OutputList>
+							<ComputeScalar>
+								<DefinedValues>
+									<DefinedValue>
+										<ColumnReference Column="Expr1003" />
+										<ScalarOperator ScalarString="CONVERT_IMPLICIT(int,[globalagg1005],0)">
+											<Convert DataType="int" Style="0" Implicit="1">
+												<ScalarOperator>
+													<Identifier>
+														<ColumnReference Column="globalagg1005" />
+													</Identifier>
+												</ScalarOperator>
+											</Convert>
+										</ScalarOperator>
+									</DefinedValue>
+								</DefinedValues>
+								<RelOp NodeId="2" PhysicalOp="Stream Aggregate" LogicalOp="Aggregate" EstimateRows="1" EstimateIO="0" EstimateCPU="1.1e-006" AvgRowSize="15" EstimatedTotalSubtreeCost="2.98809" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+									<OutputList>
+										<ColumnReference Column="globalagg1005" />
+									</OutputList>
+									<StreamAggregate>
+										<DefinedValues>
+											<DefinedValue>
+												<ColumnReference Column="globalagg1005" />
+												<ScalarOperator ScalarString="SUM([partialagg1004])">
+													<Aggregate Distinct="0" AggType="SUM">
+														<ScalarOperator>
+															<Identifier>
+																<ColumnReference Column="partialagg1004" />
+															</Identifier>
+														</ScalarOperator>
+													</Aggregate>
+												</ScalarOperator>
+											</DefinedValue>
+										</DefinedValues>
+										<RelOp NodeId="3" PhysicalOp="Hash Match" LogicalOp="Aggregate" EstimateRows="1" EstimateIO="0" EstimateCPU="0.00188442" AvgRowSize="15" EstimatedTotalSubtreeCost="2.98809" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Batch">
+											<OutputList>
+												<ColumnReference Column="partialagg1004" />
+											</OutputList>
+											<MemoryFractions Input="1" Output="1" />
+											<Hash>
+												<DefinedValues>
+													<DefinedValue>
+														<ColumnReference Column="partialagg1004" />
+														<ScalarOperator ScalarString="COUNT(*)">
+															<Aggregate Distinct="0" AggType="COUNT*" />
+														</ScalarOperator>
+													</DefinedValue>
+												</DefinedValues>
+												<HashKeysBuild />
+												<RelOp NodeId="5" PhysicalOp="Nested Loops" LogicalOp="Left Semi Join" EstimateRows="10934.3" EstimateIO="0" EstimateCPU="0.0457056" AvgRowSize="9" EstimatedTotalSubtreeCost="2.98609" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+													<OutputList />
+													<NestedLoops Optimized="0" WithUnorderedPrefetch="1">
+														<OuterReferences>
+															<ColumnReference Database="[mydb]" Schema="[dbo]" Table="[Contact]" Alias="[co]" Column="Id" />
+															<ColumnReference Column="Expr1013" />
+														</OuterReferences>
+														<RelOp NodeId="7" PhysicalOp="Index Seek" LogicalOp="Index Seek" EstimateRows="10934.4" EstimatedRowsRead="10934.4" EstimateIO="0.0601111" EstimateCPU="0.0121848" AvgRowSize="19" EstimatedTotalSubtreeCost="0.0722959" TableCardinality="1e+007" Parallel="0" EstimateRebinds="0" EstimateRewinds="0" EstimatedExecutionMode="Row">
+															<OutputList>
+																<ColumnReference Database="[mydb]" Schema="[dbo]" Table="[Contact]" Alias="[co]" Column="Id" />
+															</OutputList>
+															<IndexScan Ordered="1" ScanDirection="FORWARD" ForcedIndex="0" ForceSeek="0" ForceScan="0" NoExpandHint="0" Storage="RowStore">
+																<DefinedValues>
+																	<DefinedValue>
+																		<ColumnReference Database="[mydb]" Schema="[dbo]" Table="[Contact]" Alias="[co]" Column="Id" />
+																	</DefinedValue>
+																</DefinedValues>
+																<Object Database="[mydb]" Schema="[dbo]" Table="[Contact]" Index="[IX_Contact_FirstName]" Alias="[co]" IndexKind="NonClustered" Storage="RowStore" />
+																<SeekPredicates>
+																	<SeekPredicateNew>
+																		<SeekKeys>
+																			<Prefix ScanType="EQ">
+																				<RangeColumns>
+																					<ColumnReference Database="[mydb]" Schema="[dbo]" Table="[Contact]" Alias="[co]" Column="FirstName" />
+																				</RangeColumns>
+																				<RangeExpressions>
+																					<ScalarOperator ScalarString="&amp;apos;John&amp;apos;">
+																						<Const ConstValue="&amp;apos;John&amp;apos;" />
+																					</ScalarOperator>
+																				</RangeExpressions>
+																			</Prefix>
+																		</SeekKeys>
+																	</SeekPredicateNew>
+																</SeekPredicates>
+															</IndexScan>
+														</RelOp>
+														<RelOp NodeId="8" PhysicalOp="Index Seek" LogicalOp="Index Seek" EstimateRows="1" EstimatedRowsRead="30.0011" EstimateIO="0.003125" EstimateCPU="0.000190001" AvgRowSize="9" EstimatedTotalSubtreeCost="2.86809" TableCardinality="2.95e+008" Parallel="0" EstimateRebinds="10933.4" EstimateRewinds="0" EstimatedExecutionMode="Row">
+															<OutputList />
+															<IndexScan Ordered="1" ScanDirection="FORWARD" ForcedIndex="0" ForceSeek="0" ForceScan="0" NoExpandHint="0" Storage="RowStore">
+																<DefinedValues />
+																<Object Database="[mydb]" Schema="[dbo]" Table="[KPI_EmailOpened]" Index="[KPI_EmailOpened_NCIDX_ContactCampaign]" Alias="[eo]" IndexKind="NonClustered" Storage="RowStore" />
+																<SeekPredicates>
+																	<SeekPredicateNew>
+																		<SeekKeys>
+																			<Prefix ScanType="EQ">
+																				<RangeColumns>
+																					<ColumnReference Database="[mydb]" Schema="[dbo]" Table="[KPI_EmailOpened]" Alias="[eo]" Column="ContactId" />
+																				</RangeColumns>
+																				<RangeExpressions>
+																					<ScalarOperator ScalarString="[mydb].[dbo].[Contact].[Id] as [co].[Id]">
+																						<Identifier>
+																							<ColumnReference Database="[mydb]" Schema="[dbo]" Table="[Contact]" Alias="[co]" Column="Id" />
+																						</Identifier>
+																					</ScalarOperator>
+																				</RangeExpressions>
+																			</Prefix>
+																		</SeekKeys>
+																	</SeekPredicateNew>
+																</SeekPredicates>
+															</IndexScan>
+														</RelOp>
+													</NestedLoops>
+												</RelOp>
+											</Hash>
+										</RelOp>
+									</StreamAggregate>
+								</RelOp>
+							</ComputeScalar>
+						</RelOp>
+					</QueryPlan>
+				</StmtSimple>
+			</Statements>
+		</Batch>
+	</BatchSequence>
+</ShowPlanXML>

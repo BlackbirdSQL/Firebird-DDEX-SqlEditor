@@ -44,7 +44,7 @@ public class SqlEditorMessageTab : AbstractSqlEditorTab
 		IVsFindTarget result = null;
 		if (GetView() is ResultWindowPane resultWindowPane && resultWindowPane.CommandTarget is VSTextEditorPanel vSTextEditorPanel)
 		{
-			result = vSTextEditorPanel.TextView.FindTarget;
+			result = vSTextEditorPanel.TextViewCtl.FindTarget;
 		}
 		return result;
 	}

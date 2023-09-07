@@ -7,6 +7,8 @@ using System;
 using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
 using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Model;
+using Microsoft.VisualStudio.OLE.Interop;
 
 // using Microsoft.VisualStudio.Data.Tools.SqlEditor.Interfaces;
 
@@ -24,17 +26,34 @@ public class SqlEditorParseQueryCommand : SqlEditorExecuteQueryCommand
 		// Diag.Trace();
 	}
 
-	public SqlEditorParseQueryCommand(ISqlEditorWindowPane editor)
-		: base(editor)
+	public SqlEditorParseQueryCommand(ISqlEditorWindowPane editorWindow)
+		: base(editorWindow)
 	{
 		// Diag.Trace();
+	}
+
+	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
+	{
+		AuxiliaryDocData auxiliaryDocDataForEditor = GetAuxiliaryDocDataForEditor();
+
+		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
+		if (auxiliaryDocDataForEditor != null)
+		{
+			if (!IsEditorExecutingOrDebugging())
+			{
+				// Diasabled for now
+				// prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
+			}
+		}
+
+		return VSConstants.S_OK;
 	}
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
 		if (ShouldRunCommand())
 		{
-			Editor.ParseQuery();
+			EditorWindow.ParseQuery();
 		}
 
 		return VSConstants.S_OK;

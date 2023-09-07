@@ -420,7 +420,7 @@ public class ControllerEventsManager : AbstractEventsManager
 		}
 		catch
 		{
-			Diag.Dug(true, item.ContainingProject.Name + ":" + item.Name + " has no link property");
+			Diag.Stack(item.ContainingProject.Name + ":" + item.Name + " has no link property");
 			return false;
 		}
 
@@ -739,8 +739,8 @@ public class ControllerEventsManager : AbstractEventsManager
 			// Diag.Trace("App.config is null. Added: " + filename);
 		}
 
-		if (config == null)
-			Diag.Dug(true, project.Name + ": app.config is null");
+		// if (config == null)
+			// Diag.Trace(project.Name + ": app.config is null");
 
 		return config;
 
@@ -1239,7 +1239,7 @@ public class ControllerEventsManager : AbstractEventsManager
 
 		if (objProj is not Project project)
 		{
-			// Diag.Dug(true, "AfterOpenProject: Possible VS project. Could not get project object property from hierarchy: " + pHierarchy.ToString());
+			// Diag.Trace("AfterOpenProject: Possible VS project. Could not get project object property from hierarchy: " + pHierarchy.ToString());
 			return VSConstants.S_OK;
 		}
 		else if (Kind(project.Kind) != "VbProject"

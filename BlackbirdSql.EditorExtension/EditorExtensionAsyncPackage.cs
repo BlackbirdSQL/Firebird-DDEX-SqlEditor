@@ -18,7 +18,6 @@ using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Events;
 using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Model;
-using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
@@ -27,6 +26,7 @@ using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Providers;
 using BlackbirdSql.EditorExtension.Config;
+using BlackbirdSql.EditorExtension.Ctl;
 using BlackbirdSql.Wpf.Controls;
 
 using Microsoft.VisualStudio;
@@ -150,11 +150,11 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 	// =========================================================================================================
 
 
-	public Dictionary<object, AuxiliaryDocData> DocDataToEditorStatus { get; set; }
+	private Dictionary<object, AuxiliaryDocData> _DocDataEditors = null;
 
 	public ISqlEditorWindowPane LastFocusedSqlEditor { get; set; }
 
-	public Dictionary<object, AuxiliaryDocData> DocDataEditors => DocDataToEditorStatus;
+	public Dictionary<object, AuxiliaryDocData> DocDataEditors => _DocDataEditors ??= new();
 
 
 	public bool EnableSpatialResultsTab { get; set; }
@@ -191,7 +191,6 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 	public EditorExtensionAsyncPackage() : base()
 	{
 		Tracer.Trace(GetType(), "ctor()", "", null);
-		DocDataToEditorStatus = new Dictionary<object, AuxiliaryDocData>();
 	}
 
 
@@ -318,6 +317,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 		Services.AddService(typeof(IBDesignerExplorerServices), ServicesCreatorCallbackAsync, promote: true);
 		Services.AddService(typeof(IBDesignerOnlineServices), ServicesCreatorCallbackAsync, promote: true);
+		// Services.AddService(typeof(ISqlEditorStrategyProvider), ServicesCreatorCallbackAsync, promote: true);
 
 		_SqlEditorFactory = new EditorFactoryWithoutEncoding();
 		_SqlEditorFactoryWithEncoding = new EditorFactoryWithEncoding();
@@ -425,8 +425,11 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 	public override async Task<object> ServicesCreatorCallbackAsync(IAsyncServiceContainer container, CancellationToken token, Type serviceType)
 	{
 
-		if (serviceType == typeof(IBDesignerExplorerServices) || serviceType == typeof(IBDesignerOnlineServices))
+		if (serviceType == typeof(IBDesignerExplorerServices)
+			|| serviceType == typeof(IBDesignerOnlineServices))
+		{
 			return await CreateServiceInstanceAsync(serviceType, token);
+		}
 
 
 		return await base.ServicesCreatorCallbackAsync(container, token, serviceType);
@@ -439,7 +442,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 		TabbedEditorToolbarHandlerManager toolbarMgr = AbstractTabbedEditorPane.ToolbarManager;
 		if (toolbarMgr != null)
 		{
-			Guid clsid = LibraryData.CLSID_SqlEditorCommandSet;
+			Guid clsid = LibraryData.CLSID_CommandSet;
 
 			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorSqlDatabaseCommand>(clsid, (uint)EnCommandSet.CmbIdSqlDatabases));
@@ -478,17 +481,17 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 		if (await GetServiceAsync(typeof(IMenuCommandService)) is OleMenuCommandService oleMenuCommandService)
 		{
-			Guid clsid = LibraryData.CLSID_SqlEditorCommandSet;
+			Guid clsid = LibraryData.CLSID_CommandSet;
 
 			CommandID id = new CommandID(clsid, (int)EnCommandSet.CmdIdNewQueryConnection);
 			OleMenuCommand oleMenuCommand = new OleMenuCommand(OnNewQueryConnection, id);
 			oleMenuCommand.BeforeQueryStatus += EnableCommand;
 			oleMenuCommandService.AddCommand(oleMenuCommand);
-			CommandID id2 = new CommandID(clsid, (int)EnCommandSet.CmdidCycleToNextTab);
+			CommandID id2 = new CommandID(clsid, (int)EnCommandSet.CmdIdCycleToNextTab);
 			OleMenuCommand oleMenuCommand2 = new OleMenuCommand(CycleToNextEditorTab, id2);
 			oleMenuCommand2.BeforeQueryStatus += EnableCommand;
 			oleMenuCommandService.AddCommand(oleMenuCommand2);
-			CommandID id3 = new CommandID(clsid, (int)EnCommandSet.CmdidCycleToPrevious);
+			CommandID id3 = new CommandID(clsid, (int)EnCommandSet.CmdIdCycleToPrevious);
 			OleMenuCommand oleMenuCommand3 = new OleMenuCommand(CycleToPreviousEditorTab, id3);
 			oleMenuCommand3.BeforeQueryStatus += EnableCommand;
 			oleMenuCommandService.AddCommand(oleMenuCommand3);
@@ -613,7 +616,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 	{
 		lock (Controller.PackageLock)
 		{
-			return DocDataToEditorStatus.Count > 0;
+			return _DocDataEditors != null && _DocDataEditors.Count > 0;
 		}
 	}
 
@@ -653,12 +656,12 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 	private void OnPowerBroadcast(IntPtr wParam, IntPtr lParam)
 	{
-		if ((int)wParam != 4)
+		if ((int)wParam != 4 || _DocDataEditors == null)
 		{
 			return;
 		}
 
-		foreach (AuxiliaryDocData value in DocDataToEditorStatus.Values)
+		foreach (AuxiliaryDocData value in _DocDataEditors.Values)
 		{
 			QueryExecutor queryExecutor = value.QueryExecutor;
 			if (queryExecutor != null && queryExecutor.IsConnected)
@@ -672,14 +675,14 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 	public AuxiliaryDocData GetAuxiliaryDocData(object docData)
 	{
-		if (docData == null)
-		{
-			return null;
-		}
-
 		lock (Controller.PackageLock)
 		{
-			DocDataToEditorStatus.TryGetValue(docData, out AuxiliaryDocData value);
+			if (docData == null || _DocDataEditors == null)
+			{
+				return null;
+			}
+
+			_DocDataEditors.TryGetValue(docData, out AuxiliaryDocData value);
 			return value;
 		}
 	}
@@ -690,27 +693,26 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 	{
 		lock (Controller.PackageLock)
 		{
-			if (!Instance.DocDataToEditorStatus.TryGetValue(docData, out AuxiliaryDocData value))
+			if (_DocDataEditors == null || !_DocDataEditors.TryGetValue(docData, out AuxiliaryDocData value))
 			{
 				value = new AuxiliaryDocData(docData);
 				// hierarchy.GetSite(out Microsoft.VisualStudio.OLE.Interop.IServiceProvider ppSP);
 
-				/*
-				_ = value.Strategy = new ServiceProvider(ppSP).GetService(typeof(ISqlEditorStrategyProvider))
-					is ISqlEditorStrategyProvider sqlEditorStrategyProvider
-					? sqlEditorStrategyProvider.CreateEditorStrategy(documentMoniker, value)
-					: new DefaultSqlEditorStrategy();
-				*/
+				// Not point looking because This will always be null for us
+				ISqlEditorStrategyProvider sqlEditorStrategyProvider = null;
+				// ISqlEditorStrategyProvider sqlEditorStrategyProvider = new ServiceProvider(ppSP).GetService(typeof(ISqlEditorStrategyProvider)) as ISqlEditorStrategyProvider;
 
-				DbConnectionStringBuilder csb = value.GetUserDataCsb();
-				_ = value.Strategy = new DefaultSqlEditorStrategy(csb);
+				// We always use DefaultSqlEditorStrategy and use the csb passed via userdata that was
+				// contructed from the SE node
+				ISqlEditorStrategy sqlEditorStrategy = (sqlEditorStrategyProvider == null
+					? new DefaultSqlEditorStrategy(value.GetUserDataCsb())
+					: sqlEditorStrategyProvider.CreateEditorStrategy(documentMoniker, value));
 
+				value.Strategy = sqlEditorStrategy;
 				if (value.Strategy.IsDw)
-				{
 					value.IntellisenseEnabled = false;
-				}
 
-				Instance.DocDataToEditorStatus.Add(docData, value);
+				DocDataEditors.Add(docData, value);
 			}
 		}
 	}
@@ -719,17 +721,18 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 	public bool ContainsEditorStatus(object docData)
 	{
-		if (docData == null)
-		{
-			return false;
-		}
-
 		lock (Controller.PackageLock)
 		{
-			if (DocDataToEditorStatus.ContainsKey(docData))
+			if (docData == null || _DocDataEditors == null)
 			{
-				return true;
+				return false;
 			}
+
+			if (_DocDataEditors == null)
+				return false;
+
+			if (_DocDataEditors.ContainsKey(docData))
+				return true;
 		}
 
 		return false;
@@ -741,9 +744,12 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 	{
 		lock (Controller.PackageLock)
 		{
-			if (DocDataToEditorStatus.TryGetValue(docData, out AuxiliaryDocData value))
+			if (_DocDataEditors == null)
+				return;
+
+			if (_DocDataEditors.TryGetValue(docData, out AuxiliaryDocData value))
 			{
-				DocDataToEditorStatus.Remove(docData);
+				_DocDataEditors.Remove(docData);
 				value?.Dispose();
 			}
 		}
@@ -755,7 +761,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 	{
 		lock (Controller.PackageLock)
 		{
-			if (!DocDataToEditorStatus.TryGetValue(docData, out var value))
+			if (_DocDataEditors == null || !_DocDataEditors.TryGetValue(docData, out var value))
 			{
 				ArgumentException ex = new("No auxillary information for DocData");
 				Diag.Dug(ex);
@@ -769,7 +775,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 	public bool? ShowConnectionDialogFrame(IntPtr parent, IBDependencyManager dependencyManager, EventsChannel channel,
 		UIConnectionInfo ci, VerifyConnectionDelegate verifierDelegate, ConnectionDialogConfiguration config,
 		ref UIConnectionInfo uIConnectionInfo)
-	{ 
+	{
 		ConnectionDialogFrame connectionDialogFrame = new ConnectionDialogFrame(dependencyManager, channel, ci, verifierDelegate, config);
 
 		connectionDialogFrame.ShowModal(parent);

@@ -3,15 +3,34 @@
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
-using BlackbirdSql.Core.Diagnostics;
+using Microsoft.VisualStudio.Utilities;
+using Tracer = BlackbirdSql.Core.Diagnostics.Tracer;
 
 namespace BlackbirdSql.Common.Controls;
 
 public static class ControlUtils
 {
 	private static readonly SizeF DefaultScaleFactor = new SizeF(1f, 1f);
+
+	public static double DisplayScalePercentX => DpiAwareness.SystemDpiXScale; // DpiHelper.DpiScalePercentX / 100;
+
+	public static double DisplayScalePercentY => DpiAwareness.SystemDpiYScale; // DpiHelper.DpiScalePercentY / 100;
+
+
+	public static int GetScaledImageSize(int imageSize = 16)
+	{
+		return Convert.ToInt32((float)imageSize * DisplayScalePercentX);
+	}
+
+	public static Icon GetScaledIcon(Icon originalIcon, int iconWidth = 16)
+	{
+		int scaledImageSize = GetScaledImageSize(iconWidth);
+		return new Icon(originalIcon, scaledImageSize, scaledImageSize);
+	}
 
 	public static SizeF GetScaleFactor(Control control)
 	{
@@ -56,6 +75,8 @@ public static class ControlUtils
 			}
 		}
 	}
+
+
 
 	public static Bitmap ScaleImage(Bitmap image, Control control, bool keepSmooth = true)
 	{

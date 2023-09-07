@@ -18,8 +18,8 @@ public class SqlEditorToggleResultsPaneCommand : AbstractSqlEditorCommand
 	{
 	}
 
-	public SqlEditorToggleResultsPaneCommand(ISqlEditorWindowPane editor)
-		: base(editor)
+	public SqlEditorToggleResultsPaneCommand(ISqlEditorWindowPane editorWindow)
+		: base(editorWindow)
 	{
 	}
 
@@ -31,21 +31,21 @@ public class SqlEditorToggleResultsPaneCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (Editor != null)
+		if (EditorWindow != null)
 		{
-			if (((ITabbedEditorService)Editor).ActiveTab is SqlEditorCodeTab)
+			if (((ITabbedEditorService)EditorWindow).ActiveTab is SqlEditorCodeTab)
 			{
-				bool flag = !Editor.IsSplitterVisible;
-				Editor.IsSplitterVisible = flag;
+				bool flag = !EditorWindow.IsSplitterVisible;
+				EditorWindow.IsSplitterVisible = flag;
 				if (flag)
 				{
-					Editor.SplittersVisible = flag;
+					EditorWindow.SplittersVisible = flag;
 				}
 			}
 			else
 			{
-				Editor.IsSplitterVisible = false;
-				Editor.ActivateCodeTab();
+				EditorWindow.IsSplitterVisible = false;
+				EditorWindow.ActivateCodeTab();
 			}
 		}
 

@@ -4,18 +4,16 @@
 #endregion
 
 using System;
-
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Model;
-using BlackbirdSql.Common.Model.Interfaces;
-
-using FirebirdSql.Data.FirebirdClient;
 using System.Data.Common;
+
 using BlackbirdSql.Common.Enums;
 using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Core;
+using BlackbirdSql.Core.Model;
+
+
 
 namespace BlackbirdSql.Common.Model;
-
 
 public sealed class DefaultSqlEditorStrategy : ISqlEditorStrategy, IDisposable
 {
@@ -35,7 +33,7 @@ public sealed class DefaultSqlEditorStrategy : ISqlEditorStrategy, IDisposable
 
 	public bool IsOnline => _isOnline;
 
-	public bool IsDw { get; set; }
+	public bool IsDw => false;
 
 	public IMetadataProviderProvider MetadataProviderProvider => null;
 

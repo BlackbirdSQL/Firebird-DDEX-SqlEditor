@@ -64,7 +64,6 @@ public class TObjectIdentifierResolver : DataObjectIdentifierResolver
 
 		if (typeName == null)
 		{
-			Diag.Dug(true, "Null argument: typeName");
 			ArgumentNullException ex = new("typeName");
 			Diag.Dug(ex);
 			throw ex;

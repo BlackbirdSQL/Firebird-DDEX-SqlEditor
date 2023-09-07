@@ -11,7 +11,7 @@ namespace BlackbirdSql.Core.Enums;
 [Guid(CommandProperties.CommandSetGuid)]
 
 
-public enum EnCommandSet : uint
+public enum EnCommandSet
 {
 	MenuIdToplevelMenu = 0xC201, // 49665
 	MenuIdScriptToolbar = 0x2000, // 8192
@@ -31,46 +31,44 @@ public enum EnCommandSet : uint
 	ContextIdResultsTo = 0x3102,
 	ContextIdResultsWindow = 0x3103,
 	ContextIdMessageWindow = 0x3104,
-	ContextIdShowPlanWindow = 0x3105,
+	ContextIdExecutionPlanWindow = 0x3105,
 
 	CmbIdSqlDatabases = 0x3200,
 	CmbIdSqlDatabasesGetList = 0x3201,
 
 	CmdIdConnect = 0x0300, // 768
-	CmdIdDisconnect = 0x0301,
-	CmdIdCloneQuery = 0x0302,
-	CmdIdExecuteQuery = 0x0303,
-	CmdIdCancelQuery = 0x0304,
-	CmdIdShowEstimatedPlan = 0x0305,
-	CmdIdToggleIntellisense = 0x0306,
-	CmdIdToggleSQLCMDMode = 0x0307,
-	CmdIdToggleClientStatistics = 0x0308,
-	CmdIdToggleExecutionPlan = 0x0309,
-	CmdIdResultsAsText = 0x0310,
-	CmdIdResultsAsGrid = 0x0311,
-	CmdIdResultsAsFile = 0x0312,
-	CmdIdQueryOptions = 0x0313,
-	CmdIdToggleResultsPane = 0x0314,
-	CmdIdNewQueryConnection = 0x0315,
-	CmdidSaveResultsAs = 0x0316,
-	CmdidShowPlanXml = 0x0319,
-	CmdidShowPlanMissingIndex = 0x0320,
-	CmdidPrintPreview = 0x0321,
-	CmdidShowPlanSave = 0x0322,
-	CmdidShowPlanZoomIn = 0x0323,
-	CmdidShowPlanZoomOut = 0x0324,
-	CmdidShowPlanZoomCustom = 0x0325,
-	CmdidShowPlanZoomToFit = 0x0326,
-	CmdidCopyWithHeaders = 0x0327,
-	CmdidCycleToNextTab = 0x0328,
-	CmdidCycleToPrevious = 0x0329,
-	CmdIdParseQuery = 0x0330,
-	CmdIdDisconnectAllQueries = 0x0331,
-	CmdIdChangeConnection = 0x0332,
+	CmdIdDisconnect = 0x0301, // 769
+	CmdIdCloneQuery = 0x0302, // 770
+	CmdIdExecuteQuery = 0x0304, // 772
+	CmdIdCancelQuery = 0x0305, // 773
+	CmdIdShowEstimatedPlan = 0x0306, // 774
+	CmdIdToggleIntellisense = 0x0307, // 775
+	CmdIdToggleSQLCMDMode = 0x0308, // 776
+	CmdIdToggleClientStatistics = 0x0309, // 777
+	CmdIdToggleExecutionPlan = 0x030A, // 778
+	CmdIdResultsAsText = 0x030B, // 779
+	CmdIdResultsAsGrid = 0x030C, // 780
+	CmdIdResultsAsFile = 0x030D, // 781
+	CmdIdQueryOptions = 0x030E, // 782
+	CmdIdToggleResultsPane = 0x030F, // 783
+	CmdIdNewQueryConnection = 0x0310, // 784
+	CmdIdSaveResultsAs = 0x0311, // 785
+	CmdIdExecutionPlanXml = 0x0314, // 788
+	CmdIdExecutionPlanMissingIndex = 0x0315, // 789
+	CmdIdPrintPreview = 0x0316, // 790
+	CmdIdExecutionPlanSave = 0x0317, // 791
+	CmdIdExecutionPlanZoomIn = 0x0318, // 792
+	CmdIdExecutionPlanZoomOut = 0x0319, // 793
+	CmdIdExecutionPlanZoomCustom = 0x0320, // 800
+	CmdIdExecutionPlanZoomToFit = 0x0321, // 801
+	CmdIdCopyWithHeaders = 0x0322, // 802
+	CmdIdCycleToNextTab = 0x0323, // 803
+	CmdIdCycleToPrevious = 0x0324, // 804
+	CmdIdParseQuery = 0x0326, // 806
+	CmdIdDisconnectAllQueries = 0x0327, // 807
+	CmdIdChangeConnection = 0x0328, // 808
 
-
-	CmdIdOpenTextObject = 0x0333, // 819
-	CmdIdOpenAlterTextObject = 0x0334 // 820
-
+	CmdIdOpenTextObject = 0x0334, // *820
+	CmdIdOpenAlterTextObject = 0x0335 // 821
 
 }

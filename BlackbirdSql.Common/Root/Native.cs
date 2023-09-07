@@ -628,6 +628,10 @@ public abstract class Native : BlackbirdSql.Core.Native
 
 
 
+	[DllImport("User32.dll", CharSet = CharSet.Unicode)]
+	public static extern int SetProp(HandleRef hWnd, string propName, HandleRef data);
+
+
 	// SetWindowLong
 	[DllImport("user32.dll", CharSet = CharSet.Unicode)]
 	public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);

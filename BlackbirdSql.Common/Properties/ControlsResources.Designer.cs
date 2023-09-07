@@ -61,6 +61,26 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        public static System.Drawing.Icon Actual_Executionplan {
+            get {
+                object obj = ResourceManager.GetObject("Actual_Executionplan", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} of
+        ///{1} ({2}%).
+        /// </summary>
+        public static string ActualOfEstimated {
+            get {
+                return ResourceManager.GetString("ActualOfEstimated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap arrowDown {
@@ -91,11 +111,29 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ascending.
+        /// </summary>
+        public static string Ascending {
+            get {
+                return ResourceManager.GetString("Ascending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Auto scroll interval should be greater than zero..
         /// </summary>
         public static string AutoScrollMoreThanZero {
             get {
                 return ResourceManager.GetString("AutoScrollMoreThanZero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All Clones.
+        /// </summary>
+        public static string BothClones {
+            get {
+                return ResourceManager.GetString("BothClones", resourceCulture);
             }
         }
         
@@ -145,6 +183,15 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to System Configuration: Clustered.
+        /// </summary>
+        public static string ClusteredMode {
+            get {
+                return ResourceManager.GetString("ClusteredMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Column index must be greater than or equal to zero and less than the number of columns..
         /// </summary>
         public static string ColumnIndexShouldBeInRange {
@@ -177,6 +224,24 @@ namespace BlackbirdSql.Common.Properties {
         public static string ColumnsDoNotMatch {
             get {
                 return ResourceManager.GetString("ColumnsDoNotMatch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Columns With No Statistics.
+        /// </summary>
+        public static string ColumnsWithNoStatistics {
+            get {
+                return ResourceManager.GetString("ColumnsWithNoStatistics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Columns with no statistics warning..
+        /// </summary>
+        public static string ColumnsWithNoStatisticsDescription {
+            get {
+                return ResourceManager.GetString("ColumnsWithNoStatisticsDescription", resourceCulture);
             }
         }
         
@@ -271,6 +336,15 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cost: {0} %.
+        /// </summary>
+        public static string CostFormat {
+            get {
+                return ResourceManager.GetString("CostFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unrecoverable error; current control is not IGridEmbeddedControl..
         /// </summary>
         public static string CurControlIsNotIGridEmbedded {
@@ -285,6 +359,15 @@ namespace BlackbirdSql.Common.Properties {
         public static string DeriveToImplementCustomColumn {
             get {
                 return ResourceManager.GetString("DeriveToImplementCustomColumn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Descending.
+        /// </summary>
+        public static string Descending {
+            get {
+                return ResourceManager.GetString("Descending", resourceCulture);
             }
         }
         
@@ -327,11 +410,38 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edge.
+        /// </summary>
+        public static string Edge {
+            get {
+                return ResourceManager.GetString("Edge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}/{1} from {2} to {3}.
+        /// </summary>
+        public static string EdgeDisplayPropertiesLabel {
+            get {
+                return ResourceManager.GetString("EdgeDisplayPropertiesLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit Query Text from Showplan XML (possibly truncated).
         /// </summary>
         public static string EditQueryText {
             get {
                 return ResourceManager.GetString("EditQueryText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Primary Or Secondary Clones.
+        /// </summary>
+        public static string EitherClones {
+            get {
+                return ResourceManager.GetString("EitherClones", resourceCulture);
             }
         }
         
@@ -354,6 +464,15 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Single Clone Match.
+        /// </summary>
+        public static string ExactMatchClones {
+            get {
+                return ResourceManager.GetString("ExactMatchClones", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap ExecutionPlan {
@@ -364,11 +483,38 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Execution Plan Description.
+        /// </summary>
+        public static string ExecutionPlanDescriptionAAName {
+            get {
+                return ResourceManager.GetString("ExecutionPlanDescriptionAAName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Execution Plan Graph.
+        /// </summary>
+        public static string ExecutionPlanGraphAAName {
+            get {
+                return ResourceManager.GetString("ExecutionPlanGraphAAName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to get temporary file name..
         /// </summary>
         public static string FailedToGetTempFileName {
             get {
                 return ResourceManager.GetString("FailedToGetTempFileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error loading execution plan XML file {0}..
+        /// </summary>
+        public static string FailedToLoadExecutionPlanFile {
+            get {
+                return ResourceManager.GetString("FailedToLoadExecutionPlanFile", resourceCulture);
             }
         }
         
@@ -428,6 +574,15 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A partial update was converted to a full update because of an online index build.
+        /// </summary>
+        public static string FullUpdateForOnlineIndexBuild {
+            get {
+                return ResourceManager.GetString("FullUpdateForOnlineIndexBuild", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to False.
         /// </summary>
         public static string GlobalizedLiteralFalse {
@@ -442,6 +597,15 @@ namespace BlackbirdSql.Common.Properties {
         public static string GlobalizedLiteralTrue {
             get {
                 return ResourceManager.GetString("GlobalizedLiteralTrue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Good Enough Plan Found.
+        /// </summary>
+        public static string GoodEnoughPlanFound {
+            get {
+                return ResourceManager.GetString("GoodEnoughPlanFound", resourceCulture);
             }
         }
         
@@ -497,6 +661,15 @@ namespace BlackbirdSql.Common.Properties {
         public static string GridXMLCellTooltip {
             get {
                 return ResourceManager.GetString("GridXMLCellTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hash wrote {0} pages to and read {1} pages from tempdb with granted memory {2}KB and used memory {3}KB.
+        /// </summary>
+        public static string HashSpillDetails {
+            get {
+                return ResourceManager.GetString("HashSpillDetails", resourceCulture);
             }
         }
         
@@ -621,6 +794,51 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Level.
+        /// </summary>
+        public static string Level {
+            get {
+                return ResourceManager.GetString("Level", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The query memory grant detected &quot;{0}&quot;, which may impact the reliability. Grant size: Initial {1} KB, Final {2} KB, Used {3} KB..
+        /// </summary>
+        public static string MemoryGrantWarning {
+            get {
+                return ResourceManager.GetString("MemoryGrantWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Details on memory grant warning.
+        /// </summary>
+        public static string MemoryGrantWarningDescription {
+            get {
+                return ResourceManager.GetString("MemoryGrantWarningDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Memory Limit Exceeded.
+        /// </summary>
+        public static string MemoryLimitExceeded {
+            get {
+                return ResourceManager.GetString("MemoryLimitExceeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SQL Server.
+        /// </summary>
+        public static string MessageBoxCaption {
+            get {
+                return ResourceManager.GetString("MessageBoxCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap Messages {
@@ -640,6 +858,33 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0}: {1}.
+        /// </summary>
+        public static string NameValuePair {
+            get {
+                return ResourceManager.GetString("NameValuePair", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{0}].
+        /// </summary>
+        public static string NodeDisplayPropertiesName1 {
+            get {
+                return ResourceManager.GetString("NodeDisplayPropertiesName1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}[{1}].
+        /// </summary>
+        public static string NodeDisplayPropertiesName2 {
+            get {
+                return ResourceManager.GetString("NodeDisplayPropertiesName2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to embeddedControl must implement IGridEmbeddedControl..
         /// </summary>
         public static string NoIGridEmbeddedControl {
@@ -654,6 +899,24 @@ namespace BlackbirdSql.Common.Properties {
         public static string NoIGridEmbeddedControlManagement {
             get {
                 return ResourceManager.GetString("NoIGridEmbeddedControlManagement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No Join Predicate.
+        /// </summary>
+        public static string NoJoinPredicate {
+            get {
+                return ResourceManager.GetString("NoJoinPredicate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No Join predicate warning..
+        /// </summary>
+        public static string NoJoinPredicateDescription {
+            get {
+                return ResourceManager.GetString("NoJoinPredicateDescription", resourceCulture);
             }
         }
         
@@ -685,11 +948,128 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Alias.
+        /// </summary>
+        public static string ObjectAlias {
+            get {
+                return ResourceManager.GetString("ObjectAlias", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alias used for the referenced object..
+        /// </summary>
+        public static string ObjectAliasDescription {
+            get {
+                return ResourceManager.GetString("ObjectAliasDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Schema.
+        /// </summary>
+        public static string ObjectSchema {
+            get {
+                return ResourceManager.GetString("ObjectSchema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Schema name for the referenced object..
+        /// </summary>
+        public static string ObjectSchemaDescription {
+            get {
+                return ResourceManager.GetString("ObjectSchemaDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server.
+        /// </summary>
+        public static string ObjectServer {
+            get {
+                return ResourceManager.GetString("ObjectServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Table.
+        /// </summary>
+        public static string ObjectTable {
+            get {
+                return ResourceManager.GetString("ObjectTable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Table name for the referenced object..
+        /// </summary>
+        public static string ObjectTableDescription {
+            get {
+                return ResourceManager.GetString("ObjectTableDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Only SolidBrush can be specified as parameter.
         /// </summary>
         public static string OnlySolidBrush {
             get {
                 return ResourceManager.GetString("OnlySolidBrush", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0:0.#######} ({1}%).
+        /// </summary>
+        public static string OperatorDisplayCost {
+            get {
+                return ResourceManager.GetString("OperatorDisplayCost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ({0}).
+        /// </summary>
+        public static string Parenthesis {
+            get {
+                return ResourceManager.GetString("Parenthesis", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Per-thread counter information..
+        /// </summary>
+        public static string PerThreadCounterDescription {
+            get {
+                return ResourceManager.GetString("PerThreadCounterDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type conversion in expression ({0}) may affect &quot;{1}&quot; in query plan choice.
+        /// </summary>
+        public static string PlanAffectingConvert {
+            get {
+                return ResourceManager.GetString("PlanAffectingConvert", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plan-affecting type conversion warning..
+        /// </summary>
+        public static string PlanAffectingConvertDescription {
+            get {
+                return ResourceManager.GetString("PlanAffectingConvertDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Primary Clones.
+        /// </summary>
+        public static string PrimaryClones {
+            get {
+                return ResourceManager.GetString("PrimaryClones", resourceCulture);
             }
         }
         
@@ -754,6 +1134,24 @@ namespace BlackbirdSql.Common.Properties {
         public static string PropertyWindowCurrentConnectionParameters {
             get {
                 return ResourceManager.GetString("PropertyWindowCurrentConnectionParameters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The database path of the database for the connection.
+        /// </summary>
+        public static string PropertyWindowDatabaseDescription {
+            get {
+                return ResourceManager.GetString("PropertyWindowDatabaseDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database Path.
+        /// </summary>
+        public static string PropertyWindowDatabaseDisplayName {
+            get {
+                return ResourceManager.GetString("PropertyWindowDatabaseDisplayName", resourceCulture);
             }
         }
         
@@ -830,6 +1228,24 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Tcpip port utilized by the Firebird server.
+        /// </summary>
+        public static string PropertyWindowPortDescription {
+            get {
+                return ResourceManager.GetString("PropertyWindowPortDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Server Port.
+        /// </summary>
+        public static string PropertyWindowPortDisplayName {
+            get {
+                return ResourceManager.GetString("PropertyWindowPortDisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Query Execution Details.
         /// </summary>
         public static string PropertyWindowQueryExecutionDetailsCategory {
@@ -898,24 +1314,6 @@ namespace BlackbirdSql.Common.Properties {
         public static string PropertyWindowSessionIDDisplayName {
             get {
                 return ResourceManager.GetString("PropertyWindowSessionIDDisplayName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The SQL process identifier for the connection.
-        /// </summary>
-        public static string PropertyWindowSpidDescription {
-            get {
-                return ResourceManager.GetString("PropertyWindowSpidDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SPID.
-        /// </summary>
-        public static string PropertyWindowSpidDisplayName {
-            get {
-                return ResourceManager.GetString("PropertyWindowSpidDisplayName", resourceCulture);
             }
         }
         
@@ -1055,6 +1453,15 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Query {0}: Query cost (relative to the batch): {1}%.
+        /// </summary>
+        public static string QueryCostFormat {
+            get {
+                return ResourceManager.GetString("QueryCostFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Disconnected.
         /// </summary>
         public static string QueryWindowDisconnected {
@@ -1092,11 +1499,74 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Thread {0}.
+        /// </summary>
+        public static string RuntimeCounterThread {
+            get {
+                return ResourceManager.GetString("RuntimeCounterThread", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All threads.
+        /// </summary>
+        public static string RuntimeCounterThreadAll {
+            get {
+                return ResourceManager.GetString("RuntimeCounterThreadAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Thread {0} on Instance {1}.
+        /// </summary>
+        public static string RuntimeCounterThreadOnInstance {
+            get {
+                return ResourceManager.GetString("RuntimeCounterThreadOnInstance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scalar Operator.
+        /// </summary>
+        public static string ScalarOperator {
+            get {
+                return ResourceManager.GetString("ScalarOperator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Parameter should be greater than or equal to zero..
         /// </summary>
         public static string ScrollPosShouldBeMoreOrEqualZero {
             get {
                 return ResourceManager.GetString("ScrollPosShouldBeMoreOrEqualZero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Secondary Clones.
+        /// </summary>
+        public static string SecondaryClones {
+            get {
+                return ResourceManager.GetString("SecondaryClones", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Seek Keys.
+        /// </summary>
+        public static string SeekKeys {
+            get {
+                return ResourceManager.GetString("SeekKeys", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Keys used by a seek operation..
+        /// </summary>
+        public static string SeekKeysDescription {
+            get {
+                return ResourceManager.GetString("SeekKeysDescription", resourceCulture);
             }
         }
         
@@ -1137,11 +1607,47 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sort wrote {0} pages to and read {1} pages from tempdb with granted memory {2}KB and used memory {3}KB.
+        /// </summary>
+        public static string SortSpillDetails {
+            get {
+                return ResourceManager.GetString("SortSpillDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SortView default constructor cannot be used..
         /// </summary>
         public static string SortViewDefaultConstructorCannotBeUsed {
             get {
                 return ResourceManager.GetString("SortViewDefaultConstructorCannotBeUsed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator used tempdb to spill data during execution.
+        /// </summary>
+        public static string SpillOccurredDisplayString {
+            get {
+                return ResourceManager.GetString("SpillOccurredDisplayString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator used tempdb to spill data during execution with spill level {0} and {1} spilled thread(s).
+        /// </summary>
+        public static string SpillToTempDb {
+            get {
+                return ResourceManager.GetString("SpillToTempDb", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Operator used tempdb to spill data during execution with spill level {0}.
+        /// </summary>
+        public static string SpillToTempDbOld {
+            get {
+                return ResourceManager.GetString("SpillToTempDbOld", resourceCulture);
             }
         }
         
@@ -1179,6 +1685,87 @@ namespace BlackbirdSql.Common.Properties {
             get {
                 object obj = ResourceManager.GetObject("sql", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Execution visualizer (Actual).
+        /// </summary>
+        public static string SqlEditorTabbedEditorPane_ActualPlan_Button_Text {
+            get {
+                return ResourceManager.GetString("SqlEditorTabbedEditorPane_ActualPlan_Button_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Execution plan (Actual).
+        /// </summary>
+        public static string SqlEditorTabbedEditorPane_ActualTextPlan_Button_Text {
+            get {
+                return ResourceManager.GetString("SqlEditorTabbedEditorPane_ActualTextPlan_Button_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Message.
+        /// </summary>
+        public static string SqlEditorTabbedEditorPane_Message_Button_Text {
+            get {
+                return ResourceManager.GetString("SqlEditorTabbedEditorPane_Message_Button_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Execution visualizer (Estimated).
+        /// </summary>
+        public static string SqlEditorTabbedEditorPane_Plan_Button_Text {
+            get {
+                return ResourceManager.GetString("SqlEditorTabbedEditorPane_Plan_Button_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Results.
+        /// </summary>
+        public static string SqlEditorTabbedEditorPane_Results_Button_Text {
+            get {
+                return ResourceManager.GetString("SqlEditorTabbedEditorPane_Results_Button_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FB-SQL.
+        /// </summary>
+        public static string SqlEditorTabbedEditorPane_Sql_Button_Text {
+            get {
+                return ResourceManager.GetString("SqlEditorTabbedEditorPane_Sql_Button_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Statistics.
+        /// </summary>
+        public static string SqlEditorTabbedEditorPane_Statistics_Button_Text {
+            get {
+                return ResourceManager.GetString("SqlEditorTabbedEditorPane_Statistics_Button_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Execution plan (Estimated).
+        /// </summary>
+        public static string SqlEditorTabbedEditorPane_TextPlan_Button_Text {
+            get {
+                return ResourceManager.GetString("SqlEditorTabbedEditorPane_TextPlan_Button_Text", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Startup Expression Predicate.
+        /// </summary>
+        public static string StartupExpressionPredicate {
+            get {
+                return ResourceManager.GetString("StartupExpressionPredicate", resourceCulture);
             }
         }
         
@@ -1610,6 +2197,25 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap TextPlan {
+            get {
+                object obj = ResourceManager.GetObject("TextPlan", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time Out.
+        /// </summary>
+        public static string TimeOut {
+            get {
+                return ResourceManager.GetString("TimeOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Toolbar.
         /// </summary>
         public static string ToolBarHostAccessibleName {
@@ -1863,6 +2469,24 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unexpected run type..
+        /// </summary>
+        public static string UnexpectedRunType {
+            get {
+                return ResourceManager.GetString("UnexpectedRunType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Execution plan source type can not be recognized..
+        /// </summary>
+        public static string UnknownExecutionPlanSource {
+            get {
+                return ResourceManager.GetString("UnknownExecutionPlanSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap vertical_collapse {
@@ -1889,6 +2513,24 @@ namespace BlackbirdSql.Common.Properties {
             get {
                 object obj = ResourceManager.GetObject("vsplit", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The query had to wait {0} seconds for {1} during execution.
+        /// </summary>
+        public static string Wait {
+            get {
+                return ResourceManager.GetString("Wait", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zoom level must be an integer value between {0} and {1}..
+        /// </summary>
+        public static string ZoomLevelShouldBeBetween {
+            get {
+                return ResourceManager.GetString("ZoomLevelShouldBeBetween", resourceCulture);
             }
         }
     }

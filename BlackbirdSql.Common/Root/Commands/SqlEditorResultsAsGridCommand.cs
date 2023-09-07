@@ -19,8 +19,8 @@ public class SqlEditorResultsAsGridCommand : AbstractSqlEditorCommand
 	{
 	}
 
-	public SqlEditorResultsAsGridCommand(ISqlEditorWindowPane editor)
-		: base(editor)
+	public SqlEditorResultsAsGridCommand(ISqlEditorWindowPane editorWindow)
+		: base(editorWindow)
 	{
 	}
 

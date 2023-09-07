@@ -11,7 +11,7 @@ using BlackbirdSql.Common.Interfaces;
 using Microsoft.VisualStudio.OLE.Interop;
 
 // namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration
-namespace BlackbirdSql.EditorExtension
+namespace BlackbirdSql.EditorExtension.Ctl
 {
 	public sealed class SqlEditorToolbarCommandHandler<T> : ITabbedEditorToolbarCommandHandler where T : AbstractSqlEditorCommand, new()
 	{
@@ -30,7 +30,7 @@ namespace BlackbirdSql.EditorExtension
 			{
 				return new T
 				{
-					Editor = sqlEditorTabbedEditorPane
+					EditorWindow = sqlEditorTabbedEditorPane
 				}.QueryStatus(ref prgCmd, pCmdText);
 			}
 
@@ -43,7 +43,7 @@ namespace BlackbirdSql.EditorExtension
 			{
 				return new T
 				{
-					Editor = sqlEditorTabbedEditorPane
+					EditorWindow = sqlEditorTabbedEditorPane
 				}.Exec(nCmdexecopt, pvaIn, pvaOut);
 			}
 

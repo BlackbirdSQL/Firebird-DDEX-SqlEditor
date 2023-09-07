@@ -21,9 +21,9 @@ public class SqlEditorViewFilter : AbstractViewFilter
 {
 	public ISqlEditorWindowPane Editor { get; private set; }
 
-	public SqlEditorViewFilter(ISqlEditorWindowPane editor)
+	public SqlEditorViewFilter(ISqlEditorWindowPane editorWindow)
 	{
-		Editor = editor;
+		Editor = editorWindow;
 	}
 
 	public override int Exec(ref Guid pguidCmdGroup, uint cmdId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
@@ -31,7 +31,7 @@ public class SqlEditorViewFilter : AbstractViewFilter
 		AbstractSqlEditorCommand sqlEditorCommand = null;
 
 		EnCommandSet cmd = (EnCommandSet)cmdId;
-		if (pguidCmdGroup == LibraryData.CLSID_SqlEditorCommandSet)
+		if (pguidCmdGroup == LibraryData.CLSID_CommandSet)
 		{
 			switch (cmd)
 			{
@@ -109,7 +109,7 @@ public class SqlEditorViewFilter : AbstractViewFilter
 		for (int i = 0; i < cCmds; i++)
 		{
 			EnCommandSet cmdID = (EnCommandSet)prgCmds[i].cmdID;
-			if (pguidCmdGroup == LibraryData.CLSID_SqlEditorCommandSet)
+			if (pguidCmdGroup == LibraryData.CLSID_CommandSet)
 			{
 				AbstractSqlEditorCommand sqlEditorCommand = null;
 				switch (cmdID)
@@ -189,8 +189,8 @@ public class SqlEditorViewFilter : AbstractViewFilter
 					case VSConstants.VSStd2KCmdID.INSERTSNIPPET:
 					case VSConstants.VSStd2KCmdID.SURROUNDWITH:
 						{
-							AuxiliaryDocData auxillaryDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(Editor.DocData);
-							if (auxillaryDocData != null && auxillaryDocData.QueryExecutor != null && !auxillaryDocData.QueryExecutor.IsExecuting && !auxillaryDocData.QueryExecutor.IsDebugging)
+							AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(Editor.DocData);
+							if (auxDocData != null && auxDocData.QueryExecutor != null && !auxDocData.QueryExecutor.IsExecuting && !auxDocData.QueryExecutor.IsDebugging)
 							{
 								prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED);
 							}
@@ -249,7 +249,7 @@ public class SqlEditorViewFilter : AbstractViewFilter
 				prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);
 				num = 0;
 			}
-			else if (pguidCmdGroup == SqlGuidList.cmdSetGuidTeamSystemData && cmdID == 49665)
+			else if (pguidCmdGroup == SqlGuidList.cmdSetGuidTeamSystemData && cmdID == EnCommandSet.MenuIdToplevelMenu)
 			{
 				prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED);
 				num = 0;

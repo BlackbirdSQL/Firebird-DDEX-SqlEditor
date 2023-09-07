@@ -183,9 +183,6 @@
   <data name="ClientStatsTrial" xml:space="preserve">
     <value>Trial  {0}</value>
   </data>
-  <data name="ClusteredMode" xml:space="preserve">
-    <value>System Configuration: Clustered</value>
-  </data>
   <data name="ColumnDelimiterCannotBeEmpty" xml:space="preserve">
     <value>You must specify a column delimiter.</value>
   </data>
@@ -269,6 +266,9 @@
   </data>
   <data name="DefaultDatabaseName" xml:space="preserve">
     <value>&lt;default&gt;</value>
+  </data>
+  <data name="DefaultMessageBoxCaption" xml:space="preserve">
+    <value>Microsoft SQL Server Management Studio</value>
   </data>
   <data name="DisplayUserNameAndSPID" xml:space="preserve">
     <value>{0} ({1})</value>
@@ -465,9 +465,6 @@
   <data name="FailedToGetTempFileName" xml:space="preserve">
     <value>Failed to get temporary file name.</value>
   </data>
-  <data name="FailedToLoadExecutionPlanFile" xml:space="preserve">
-    <value>Error loading execution plan XML file {0}.</value>
-  </data>
   <data name="FailedToReadExecutionPlan" xml:space="preserve">
     <value>Error processing execution plan results. The error message is:
 {0}</value>
@@ -628,9 +625,6 @@ The Query Processor estimates that implementing the following index could improv
   <data name="QEGridResultsNoColumnTitle" xml:space="preserve">
     <value>(No column name)</value>
   </data>
-  <data name="QueryCostFormat" xml:space="preserve">
-    <value>Query {0}: Query cost (relative to the batch): {1}%</value>
-  </data>
   <data name="QueryProfileStatistics" xml:space="preserve">
     <value>Query Profile Statistics</value>
   </data>
@@ -684,21 +678,6 @@ All files (*.*)
   </data>
   <data name="SqlDataSource" xml:space="preserve">
     <value>Microsoft SQL Server (SqlClient)</value>
-  </data>
-  <data name="SqlEditorTabbedEditorPane_Execution_Button_Text" xml:space="preserve">
-    <value>Execution plan</value>
-  </data>
-  <data name="SqlEditorTabbedEditorPane_Message_Button_Text" xml:space="preserve">
-    <value>Message</value>
-  </data>
-  <data name="SqlEditorTabbedEditorPane_Results_Button_Text" xml:space="preserve">
-    <value>Results</value>
-  </data>
-  <data name="SqlEditorTabbedEditorPane_Sql_Button_Text" xml:space="preserve">
-    <value>FB-SQL</value>
-  </data>
-  <data name="SqlEditorTabbedEditorPane_Statistics_Button_Text" xml:space="preserve">
-    <value>Statistics</value>
   </data>
   <data name="SQLErrorFormat4" xml:space="preserve">
     <value>{0}: Msg {1}, Level {2}, State {3}</value>

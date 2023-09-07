@@ -12,7 +12,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 
 
-namespace BlackbirdSql.EditorExtension;
+namespace BlackbirdSql.EditorExtension.Ctl;
 
 public abstract class AbstruseEditorFactory : IVsEditorFactory
 {
@@ -40,7 +40,7 @@ public abstract class AbstruseEditorFactory : IVsEditorFactory
 
 	protected Microsoft.VisualStudio.OLE.Interop.IServiceProvider OleServiceProvider { get; private set; }
 
-	protected System.IServiceProvider ServiceProvider { get; private set; }
+	protected IServiceProvider ServiceProvider { get; private set; }
 
 	public AbstruseEditorFactory(bool withEncoding)
 	{
@@ -55,7 +55,7 @@ public abstract class AbstruseEditorFactory : IVsEditorFactory
 		Tracer.Trace(GetType(), "IVsEditorFactory.MapLogicalView", "logicalView = {0}", logicalView.ToString());
 		if (logicalView.Equals(VSConstants.LOGVIEWID_Debugging))
 		{
-			Diag.Dug(true, "Debugging view not supported");
+			Diag.Stack("Debugging view not supported");
 			strLogicalView = null;
 			return VSConstants.S_OK;
 		}
@@ -74,7 +74,6 @@ public abstract class AbstruseEditorFactory : IVsEditorFactory
 			return VSConstants.S_OK;
 		}
 
-		// Diag.Dug(true, "Logical view not implemented: " + logicalView);
 		Tracer.Trace(GetType(), traceName, "IVsEditorFactory.MapLogicalView", "returning E_NOTIMPL");
 		strLogicalView = null;
 

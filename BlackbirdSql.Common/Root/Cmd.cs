@@ -324,7 +324,7 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 
 
 
-	public static void OpenNewMiscellaneousSqlFile(IServiceProvider provider, string intiailContent = "")
+	public static void OpenNewMiscellaneousSqlFile(IServiceProvider provider, string initialContent = "")
 	{
 		IVsProject3 miscellaneousProject = GetMiscellaneousProject(provider);
 		miscellaneousProject.GenerateUniqueItemName(VSConstants.VSITEMID_ROOT, MonikerAgent.C_SqlExtension, "SQLQuery", out string pbstrItemName);
@@ -338,7 +338,7 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 		try
 		{
 			streamWriter = new StreamWriter(tempFileName);
-			streamWriter.Write(intiailContent);
+			streamWriter.Write(initialContent);
 			streamWriter.Flush();
 			streamWriter.Close();
 			streamWriter = null;

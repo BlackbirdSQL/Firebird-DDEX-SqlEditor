@@ -1208,7 +1208,7 @@ internal static class EtwProvider
 
 	public static bool EventWriteLogCritical(uint traceId, string message)
 	{
-		Diag.Dug(true, $"Schema Critical[{traceId}]: {message}");
+		Diag.Stack($"Schema Critical[{traceId}]: {message}");
 		if (!IsEnabled())
 		{
 			return true;
@@ -1219,7 +1219,7 @@ internal static class EtwProvider
 
 	public static bool EventWriteLogError(uint traceId, string message)
 	{
-		Diag.Dug(true, $"Schema Error[{traceId}]: {message}");
+		Diag.Stack($"Schema Error[{traceId}]: {message}");
 		if (!IsEnabled())
 		{
 			return true;

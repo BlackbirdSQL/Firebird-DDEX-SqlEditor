@@ -133,10 +133,10 @@ public sealed class QEStatusBarManager : IDisposable
 		get
 		{
 			QueryExecutor result = null;
-			AuxiliaryDocData auxillaryDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(EditorWindowPane.DocData);
-			if (auxillaryDocData != null)
+			AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(EditorWindowPane.DocData);
+			if (auxDocData != null)
 			{
-				result = auxillaryDocData.QueryExecutor;
+				result = auxDocData.QueryExecutor;
 			}
 
 			return result;
@@ -548,8 +548,8 @@ public sealed class QEStatusBarManager : IDisposable
 				}
 
 				SetRowsAffected(QueryExecutor.RowsAffected);
-				AuxiliaryDocData auxillaryDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(EditorWindowPane.DocData);
-				if (auxillaryDocData != null && auxillaryDocData.ResultsSettings.ProvideFeedbackWithSounds)
+				AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(EditorWindowPane.DocData);
+				if (auxDocData != null && auxDocData.ResultsSettings.ProvideFeedbackWithSounds)
 				{
 					new SoundPlayer().Play();
 				}

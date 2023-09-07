@@ -22,8 +22,8 @@ public class SqlEditorDisconnectAllQueriesCommand : AbstractSqlEditorCommand
 	{
 	}
 
-	public SqlEditorDisconnectAllQueriesCommand(ISqlEditorWindowPane editor)
-		: base(editor)
+	public SqlEditorDisconnectAllQueriesCommand(ISqlEditorWindowPane editorWindow)
+		: base(editorWindow)
 	{
 	}
 

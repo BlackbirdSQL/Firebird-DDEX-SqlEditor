@@ -22,8 +22,8 @@ public class SqlEditorCancelQueryCommand : AbstractSqlEditorCommand
 	{
 	}
 
-	public SqlEditorCancelQueryCommand(ISqlEditorWindowPane editor)
-		: base(editor)
+	public SqlEditorCancelQueryCommand(ISqlEditorWindowPane editorWindow)
+		: base(editorWindow)
 	{
 	}
 

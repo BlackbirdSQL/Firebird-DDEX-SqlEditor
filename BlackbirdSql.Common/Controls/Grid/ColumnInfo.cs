@@ -229,7 +229,7 @@ public class ColumnInfo : IColumnInfo
 			default:
 				if (!_AllServerDataTypes.ContainsKey(text))
 				{
-					Diag.Dug(true, "Invalid text _FieldType: " + text);
+					Diag.Stack("Invalid text _FieldType: " + text);
 					_IsUdtField = true;
 					_IsBytesField = true;
 					_IsBlobField = true;

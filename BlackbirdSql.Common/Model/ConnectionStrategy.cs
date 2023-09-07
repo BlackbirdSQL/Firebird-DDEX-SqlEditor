@@ -157,7 +157,7 @@ public abstract class ConnectionStrategy : IDisposable
 		}
 	}
 
-	public virtual bool IsExecutionPlanAndQueryStatsSupported => false;
+	public virtual bool IsExecutionPlanAndQueryStatsSupported => true;
 
 	public event ConnectionChangedEvent ConnectionChanged;
 
@@ -295,6 +295,7 @@ public abstract class ConnectionStrategy : IDisposable
 		{
 			if (Connection == null || tryOpenConnection && Connection.State != ConnectionState.Open)
 			{
+				Tracer.Trace(GetType(), Tracer.Level.Verbose, "EnsureConnection", "Connection is null or not open");
 				AcquireConnectionInfo(tryOpenConnection, out var uici, out var connection);
 				if (uici != null && connection == null)
 				{

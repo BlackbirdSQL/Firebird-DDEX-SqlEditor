@@ -6,7 +6,7 @@ using BlackbirdSql.Core;
 using Microsoft.VisualStudio.Shell;
 
 
-namespace BlackbirdSql.EditorExtension;
+namespace BlackbirdSql.EditorExtension.Ctl;
 
 [Guid(SystemData.DslEditorEncodedFactoryGuid)]
 [ProvideMenuResource("Menus.ctmenu", 1)]

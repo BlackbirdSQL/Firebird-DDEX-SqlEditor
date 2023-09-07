@@ -7,6 +7,7 @@ using BlackbirdSql.Common.Enums;
 using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Config.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
+using BlackbirdSql.Common.Model.Events;
 
 // using Microsoft.SqlServer.Management.QueryExecution;
 // using Microsoft.VisualStudio.Data.Tools.SqlEditor.Interfaces;
@@ -36,7 +37,7 @@ public interface ISqlQueryExecutionHandler : IQueryExecutionHandler
 
 	void AddStringToErrors(string message, int lineNumber, ITextSpan textSpan, bool flush);
 
-	// void ProcessSpecialActionOnBatch(QESQLBatchSpecialActionEventArgs args);
+	void ProcessSpecialActionOnBatch(QESQLBatchSpecialActionEventArgs args);
 
 	void ProcessNewXml(string xmlString, bool cleanPreviousResults);
 

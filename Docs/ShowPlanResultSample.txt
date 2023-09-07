@@ -1,0 +1,12 @@
+Nested Loop Join (outer)
+        -> Nested Loop Join (inner)
+            -> Table "GLACCOUNT" Full Scan
+            -> Filter
+                -> Table "GLDETAIL" Access By ID
+                    -> Bitmap
+                        -> Index "FK_4DECB0D2EA_GLACCOUNT11" Range Scan (full match)
+        -> Filter
+            -> Table "C_BRANCHES" Access By ID
+                -> Bitmap
+                    -> Index "RDB$PRIMARY12" Unique Scan
+

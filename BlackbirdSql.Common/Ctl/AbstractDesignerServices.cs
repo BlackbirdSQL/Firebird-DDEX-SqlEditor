@@ -270,14 +270,12 @@ public abstract class AbstractDesignerServices
 			return VSConstants.E_FAIL;
 		}
 
-		// Debugging
-		// editorFlags = __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_DoOpen | __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_UseEditor;
-
 		int hr = vsUIShellOpenDocument.OpenDocumentViaProjectWithSpecific(mkDocument, (uint)editorFlags, ref guidEditorType,
 			physicalViewName, ref guidLogicalView, out sp, out hier, out itemid, out frame);
 
 		if (hr < 0 && (editorFlags & __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_UseView) > 0)
 		{
+			// This issue does not seem to be occuring anymore.
 			Diag.Dug(true, "OpenDocumentViaProjectWithSpecific with UseView failed. RETRYING with UseEditor");
 			editorFlags = __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_DoOpen | __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_UseEditor;
 			hr = vsUIShellOpenDocument.OpenDocumentViaProjectWithSpecific(mkDocument, (uint)editorFlags, ref guidEditorType,

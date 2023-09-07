@@ -83,7 +83,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 
 	public const string C_ApplicationName = LibraryData.ApplicationName;
 
-	private SqlConnectionPropertiesDisplay _propertiesWindowObject;
+	private ConnectedPropertiesWindow _propertiesWindowObject;
 
 	// private static readonly string Master = "master";
 
@@ -244,6 +244,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 	{
 		if (uici != null)
 		{
+			Tracer.Trace(GetType(), Tracer.Level.Verbose, "CreateDbConnectionFromConnectionInfo", "UIConnectionInfo is not null");
 			if (openConnection)
 			{
 				CreateAndOpenDbConnectionFromConnectionInfo(uici, out var connection);
@@ -255,11 +256,15 @@ public class SqlConnectionStrategy : ConnectionStrategy
 			return new FbConnection(csb.ToString());
 		}
 
+		Tracer.Trace(GetType(), Tracer.Level.Verbose, "CreateDbConnectionFromConnectionInfo", "ERROR UIConnectionInfois null.");
+
 		return null;
 	}
 
 	protected virtual void CreateAndOpenDbConnectionFromConnectionInfo(UIConnectionInfo uici, out IDbConnection connection)
 	{
+		Tracer.Trace(GetType(), Tracer.Level.Verbose, "CreateAndOpenDbConnectionFromConnectionInfo", "Enter");
+
 		FbConnectionStringBuilder csb = new FbConnectionStringBuilder();
 		PopulateConnectionStringBuilder(csb, uici);
 
@@ -365,11 +370,13 @@ public class SqlConnectionStrategy : ConnectionStrategy
 	{
 		if (UiConnectionInfo != null)
 		{
+			Tracer.Trace(GetType(), Tracer.Level.Verbose, "AcquireConnectionInfo", "UiConnectionInfo is not null");
 			uici = UiConnectionInfo;
 			connection = CreateDbConnectionFromConnectionInfo(uici, tryOpenConnection);
 		}
 		else
 		{
+			Tracer.Trace(GetType(), Tracer.Level.Verbose, "AcquireConnectionInfo", "UiConnectionInfo is null. Prompting");
 			uici = PromptForConnectionForEditor(out connection);
 		}
 	}
@@ -690,10 +697,10 @@ public class SqlConnectionStrategy : ConnectionStrategy
 
 		if (UiConnectionInfo == null)
 		{
-			return PropertiesWindowWithoutConnection.Instance;
+			return DisconnectedPropertiesWindow.Instance;
 		}
 
-		_propertiesWindowObject ??= new SqlConnectionPropertiesDisplay(this);
+		_propertiesWindowObject ??= new ConnectedPropertiesWindow(this);
 
 		return _propertiesWindowObject;
 

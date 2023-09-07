@@ -866,7 +866,7 @@ One solution is to increase the number of characters retrieved from the server f
   <data name="FontAndColorGridSelectedCellDescription" xml:space="preserve">
     <value>Selected cell color when active</value>
   </data>
-  <data name="SqlEditorTabbedEditorPane_Execution_Button_Text" xml:space="preserve">
+  <data name="_SqlEditorTabbedEditorPane_Plan_Button_Text" xml:space="preserve">
     <value>Execution plan</value>
   </data>
   <data name="ToolOptionStatusBarIncludeServerNameDescription" xml:space="preserve">

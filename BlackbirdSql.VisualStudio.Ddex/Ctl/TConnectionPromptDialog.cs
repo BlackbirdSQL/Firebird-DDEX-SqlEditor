@@ -48,7 +48,7 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 						continue;
 					if (!ConnectionUIProperties.ContainsKey(descriptor.DerivedParameter))
 					{
-						Diag.Dug(true, "ConnectionUIProperties public mandatory core property missing: " + descriptor.DerivedParameter);
+						Diag.Stack("ConnectionUIProperties public mandatory core property missing: " + descriptor.DerivedParameter);
 						return false;
 					}
 				}
@@ -59,7 +59,7 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 						continue;
 					if (!ConnectionUIProperties.ContainsKey(descriptor.DerivedParameter))
 					{
-						Diag.Dug(true, "ConnectionUIProperties public mandatory schema property missing: " + descriptor.DerivedParameter);
+						Diag.Stack("ConnectionUIProperties public mandatory schema property missing: " + descriptor.DerivedParameter);
 						return false;
 					}
 				}

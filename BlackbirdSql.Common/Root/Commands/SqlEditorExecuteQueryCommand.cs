@@ -21,8 +21,8 @@ public class SqlEditorExecuteQueryCommand : AbstractSqlEditorCommand
 		// Diag.Trace();
 	}
 
-	public SqlEditorExecuteQueryCommand(ISqlEditorWindowPane editor)
-		: base(editor)
+	public SqlEditorExecuteQueryCommand(ISqlEditorWindowPane editorWindow)
+		: base(editorWindow)
 	{
 		// Diag.Trace();
 	}
@@ -42,7 +42,7 @@ public class SqlEditorExecuteQueryCommand : AbstractSqlEditorCommand
 	{
 		if (ShouldRunCommand())
 		{
-			Editor.ExecuteQuery();
+			EditorWindow.ExecuteQuery();
 		}
 
 		return VSConstants.S_OK;

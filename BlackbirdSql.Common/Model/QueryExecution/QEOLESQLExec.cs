@@ -5,21 +5,18 @@ using System;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Exceptions;
+using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Model.Enums;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Core;
 using BlackbirdSql.Core.Diagnostics;
-
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio;
 
@@ -143,7 +140,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 
 	protected override void DoScriptExecution(ITextSpan textSpan)
 	{
-		Tracer.Trace(GetType(), "QEOLESQLExec.DoScriptExecution", "", null);
+		Tracer.Trace(GetType(), "QEOLESQLExec.DoScriptExecution", " _ExecOptions.WithEstimatedExecutionPlan: " + _ExecOptions.WithEstimatedExecutionPlan);
 		_ErrorAction = EnErrorAction.Ignore;
 		_ExecBatchNumOfTimes = 1;
 		_CurrentConn = _Conn;
@@ -205,10 +202,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 
 	protected override EnScriptExecutionResult DoBatchExecution(QESQLBatch batch)
 	{
-		//IL_00a7: Unknown result type (might be due to invalid IL or missing references)
-		//IL_00ad: Invalid comparison between Unknown and I4
-		//IL_00c0: Unknown result type (might be due to invalid IL or missing references)
-		Tracer.Trace(GetType(), "QEOLESQLExec.DoBatchExecution", "", null);
+		Tracer.Trace(GetType(), "QEOLESQLExec.DoBatchExecution", " _ExecOptions.WithEstimatedExecutionPlan: " + _ExecOptions.WithEstimatedExecutionPlan);
 		if (batch.Text == null || batch.Text != null && batch.Text.Length == 0)
 		{
 			return EnScriptExecutionResult.Success;
@@ -228,6 +222,9 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 				scriptExecutionResult = EnScriptExecutionResult.Failure;
 				try
 				{
+					if (_ExecOptions.WithEstimatedExecutionPlan)
+						_SpecialActions |= EnQESQLBatchSpecialAction.ExpectEstimatedYukonXmlExecutionPlan;
+					// Execution
 					scriptExecutionResult = batch.Execute(_CurrentConn, _SpecialActions);
 				}
 				catch (Exception e)

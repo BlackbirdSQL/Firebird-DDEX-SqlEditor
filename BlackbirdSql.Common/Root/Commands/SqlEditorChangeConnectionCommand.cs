@@ -20,8 +20,8 @@ public class SqlEditorChangeConnectionCommand : AbstractSqlEditorCommand
 	{
 	}
 
-	public SqlEditorChangeConnectionCommand(ISqlEditorWindowPane editor)
-		: base(editor)
+	public SqlEditorChangeConnectionCommand(ISqlEditorWindowPane editorWindow)
+		: base(editorWindow)
 	{
 	}
 

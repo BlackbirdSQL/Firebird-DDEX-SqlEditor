@@ -140,7 +140,7 @@ public class TObjectSupport : DataObjectSupport, IVsDataSupportImportResolver
 
 		if (!name.EndsWith("Definitions"))
 		{
-			Diag.Dug(true, "Import resource not found: " + name);
+			Diag.Stack("Import resource not found: " + name);
 			return null;
 		}
 

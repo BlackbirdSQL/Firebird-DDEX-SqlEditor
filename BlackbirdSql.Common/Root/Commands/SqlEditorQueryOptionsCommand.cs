@@ -18,8 +18,8 @@ namespace BlackbirdSql.Common.Commands;
 
 public class SqlEditorQueryOptionsCommand : AbstractSqlEditorCommand
 {
-	public SqlEditorQueryOptionsCommand(ISqlEditorWindowPane editor)
-		: base(editor)
+	public SqlEditorQueryOptionsCommand(ISqlEditorWindowPane editorWindow)
+		: base(editorWindow)
 	{
 	}
 

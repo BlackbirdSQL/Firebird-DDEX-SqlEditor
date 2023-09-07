@@ -504,7 +504,7 @@ public abstract class AbstractDiskDataStorage : IDiskDataStorage, IDataStorage, 
 				}
 				else
 				{
-					Diag.Dug(true, "DATA TYPE NOT FOUND: " + type.FullName);
+					Diag.Stack("DATA TYPE NOT FOUND: " + type.FullName);
 					DiskDataEntity.StringValue = array[i].ToString();
 					_CurrentOffset += _FsWriter.WriteString(DiskDataEntity.StringValue);
 				}

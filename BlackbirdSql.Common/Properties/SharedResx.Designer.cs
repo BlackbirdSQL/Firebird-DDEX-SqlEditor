@@ -259,15 +259,6 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to System Configuration: Clustered.
-        /// </summary>
-        public static string ClusteredMode {
-            get {
-                return ResourceManager.GetString("ClusteredMode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to You must specify a column delimiter..
         /// </summary>
         public static string ColumnDelimiterCannotBeEmpty {
@@ -516,6 +507,15 @@ namespace BlackbirdSql.Common.Properties {
         public static string DefaultDatabaseName {
             get {
                 return ResourceManager.GetString("DefaultDatabaseName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Microsoft SQL Server Management Studio.
+        /// </summary>
+        public static string DefaultMessageBoxCaption {
+            get {
+                return ResourceManager.GetString("DefaultMessageBoxCaption", resourceCulture);
             }
         }
         
@@ -949,15 +949,6 @@ namespace BlackbirdSql.Common.Properties {
         public static string FailedToGetTempFileName {
             get {
                 return ResourceManager.GetString("FailedToGetTempFileName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Error loading execution plan XML file {0}..
-        /// </summary>
-        public static string FailedToLoadExecutionPlanFile {
-            get {
-                return ResourceManager.GetString("FailedToLoadExecutionPlanFile", resourceCulture);
             }
         }
         
@@ -1434,15 +1425,6 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Query {0}: Query cost (relative to the batch): {1}%.
-        /// </summary>
-        public static string QueryCostFormat {
-            get {
-                return ResourceManager.GetString("QueryCostFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Query Profile Statistics.
         /// </summary>
         public static string QueryProfileStatistics {
@@ -1589,51 +1571,6 @@ namespace BlackbirdSql.Common.Properties {
         public static string SqlDataSource {
             get {
                 return ResourceManager.GetString("SqlDataSource", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Execution plan.
-        /// </summary>
-        public static string SqlEditorTabbedEditorPane_Execution_Button_Text {
-            get {
-                return ResourceManager.GetString("SqlEditorTabbedEditorPane_Execution_Button_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Message.
-        /// </summary>
-        public static string SqlEditorTabbedEditorPane_Message_Button_Text {
-            get {
-                return ResourceManager.GetString("SqlEditorTabbedEditorPane_Message_Button_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Results.
-        /// </summary>
-        public static string SqlEditorTabbedEditorPane_Results_Button_Text {
-            get {
-                return ResourceManager.GetString("SqlEditorTabbedEditorPane_Results_Button_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to FB-SQL.
-        /// </summary>
-        public static string SqlEditorTabbedEditorPane_Sql_Button_Text {
-            get {
-                return ResourceManager.GetString("SqlEditorTabbedEditorPane_Sql_Button_Text", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Statistics.
-        /// </summary>
-        public static string SqlEditorTabbedEditorPane_Statistics_Button_Text {
-            get {
-                return ResourceManager.GetString("SqlEditorTabbedEditorPane_Statistics_Button_Text", resourceCulture);
             }
         }
         

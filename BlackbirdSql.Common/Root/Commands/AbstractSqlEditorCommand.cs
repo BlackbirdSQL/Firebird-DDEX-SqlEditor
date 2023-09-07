@@ -4,23 +4,22 @@
 #endregion
 
 using System;
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Providers;
+
+using BlackbirdSql.Common.Enums;
+using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Model;
-using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
+using BlackbirdSql.Core;
 
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Interfaces;
+
 
 namespace BlackbirdSql.Common.Commands;
 
-
 public abstract class AbstractSqlEditorCommand
 {
-	public ISqlEditorWindowPane Editor { get; set; }
+	public ISqlEditorWindowPane EditorWindow { get; set; }
 
 	public int QueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
@@ -40,17 +39,17 @@ public abstract class AbstractSqlEditorCommand
 	{
 	}
 
-	public AbstractSqlEditorCommand(ISqlEditorWindowPane editor)
+	public AbstractSqlEditorCommand(ISqlEditorWindowPane editorWindow)
 	{
-		Editor = editor;
+		EditorWindow = editorWindow;
 	}
 
 	protected AuxiliaryDocData GetAuxiliaryDocDataForEditor()
 	{
 		AuxiliaryDocData result = null;
-		if (Editor != null)
+		if (EditorWindow != null)
 		{
-			IVsTextView codeEditorTextView = Editor.GetCodeEditorTextView();
+			IVsTextView codeEditorTextView = EditorWindow.GetCodeEditorTextView();
 			if (codeEditorTextView != null)
 			{
 				IVsTextLines textLinesForTextView = GetTextLinesForTextView(codeEditorTextView);
@@ -74,7 +73,7 @@ public abstract class AbstractSqlEditorCommand
 		IVsTextLines ppBuffer = null;
 		if (textView != null)
 		{
-			Core.Native.ThrowOnFailure(textView.GetBuffer(out ppBuffer));
+			Native.ThrowOnFailure(textView.GetBuffer(out ppBuffer));
 		}
 
 		return ppBuffer;
@@ -98,22 +97,22 @@ public abstract class AbstractSqlEditorCommand
 
 	protected bool IsDwEditorConnection()
 	{
-		AuxiliaryDocData auxillaryDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(Editor.DocData);
-		if (auxillaryDocData != null)
+		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(EditorWindow.DocData);
+		if (auxDocData != null)
 		{
-			ISqlEditorStrategy strategy = auxillaryDocData.Strategy;
+			ISqlEditorStrategy strategy = auxDocData.Strategy;
+
+			// Alway EnEditorMode.Standard atm
 			switch (strategy.Mode)
 			{
 				case EnEditorMode.Standard:
+					QueryExecutor queryExecutor = auxDocData.QueryExecutor;
+					if (queryExecutor != null && queryExecutor.ConnectionStrategy != null)
 					{
-						QueryExecutor queryExecutor = auxillaryDocData.QueryExecutor;
-						if (queryExecutor != null && queryExecutor.ConnectionStrategy != null)
-						{
-							return queryExecutor.ConnectionStrategy?.IsDwConnection ?? false;
-						}
-
-						break;
+						return queryExecutor.ConnectionStrategy?.IsDwConnection ?? false;
 					}
+
+					break;
 				case EnEditorMode.CustomProject:
 				case EnEditorMode.CustomOnline:
 					if (strategy != null)

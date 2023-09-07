@@ -147,7 +147,7 @@ public sealed class QEResultSet : IDisposable, IGridStorage
 			{
 				if (_ColumnNames.Count == 1)
 				{
-					return string.Compare(_ColumnNames[0], QESQLBatch.YukonXmlExecutionPlanColumn, StringComparison.Ordinal) == 0;
+					return string.Compare(_ColumnNames[0], LibraryData.C_YukonXmlExecutionPlanColumn, StringComparison.Ordinal) == 0;
 				}
 
 				return false;
@@ -182,7 +182,7 @@ public sealed class QEResultSet : IDisposable, IGridStorage
 	{
 		if (reader == null)
 		{
-			Exception ex = new ArgumentNullException("dr");
+			Exception ex = new ArgumentNullException("reader");
 			Tracer.LogExThrow(GetType(), ex);
 			throw ex;
 		}

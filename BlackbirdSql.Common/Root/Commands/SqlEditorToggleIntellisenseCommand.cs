@@ -21,8 +21,8 @@ public class SqlEditorToggleIntellisenseCommand : AbstractSqlEditorCommand
 	{
 	}
 
-	public SqlEditorToggleIntellisenseCommand(ISqlEditorWindowPane editor)
-		: base(editor)
+	public SqlEditorToggleIntellisenseCommand(ISqlEditorWindowPane editorWindow)
+		: base(editorWindow)
 	{
 	}
 

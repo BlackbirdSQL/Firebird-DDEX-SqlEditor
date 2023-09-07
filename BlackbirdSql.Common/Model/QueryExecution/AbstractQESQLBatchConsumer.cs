@@ -160,13 +160,11 @@ public abstract class AbstractQESQLBatchConsumer : IQESQLBatchConsumer, IDisposa
 		}
 	}
 
-	/*
 	public virtual void OnSpecialAction(object sender, QESQLBatchSpecialActionEventArgs args)
 	{
 		Tracer.Trace(GetType(), "QESQLBatchConsumerBase.OnSpecialAction", "", null);
 		_ResultsControl.ProcessSpecialActionOnBatch(args);
 	}
-	*/
 
 	public virtual void OnStatementCompleted(object sender, QESQLBatchStatementCompletedEventArgs args)
 	{

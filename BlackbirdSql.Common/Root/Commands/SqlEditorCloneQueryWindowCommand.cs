@@ -24,8 +24,8 @@ public class SqlEditorCloneQueryWindowCommand : AbstractSqlEditorCommand
 	{
 	}
 
-	public SqlEditorCloneQueryWindowCommand(ISqlEditorWindowPane editor)
-		: base(editor)
+	public SqlEditorCloneQueryWindowCommand(ISqlEditorWindowPane editorWindow)
+		: base(editorWindow)
 	{
 	}
 
@@ -45,11 +45,11 @@ public class SqlEditorCloneQueryWindowCommand : AbstractSqlEditorCommand
 			ISqlEditorWindowPane lastFocusedSqlEditor = ((IBEditorPackage)Controller.Instance.DdexPackage).LastFocusedSqlEditor;
 			if (lastFocusedSqlEditor != null)
 			{
-				AuxiliaryDocData auxillaryDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(lastFocusedSqlEditor.DocData);
-				if (auxillaryDocData != null)
+				AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(lastFocusedSqlEditor.DocData);
+				if (auxDocData != null)
 				{
 					QueryExecutor queryExecutor = auxiliaryDocDataForEditor.QueryExecutor;
-					ConnectionStrategy connectionStrategy = auxillaryDocData.QueryExecutor.ConnectionStrategy;
+					ConnectionStrategy connectionStrategy = auxDocData.QueryExecutor.ConnectionStrategy;
 					connectionStrategy.SetConnectionInfo(queryExecutor.ConnectionStrategy.UiConnectionInfo);
 					IDbConnection connection = connectionStrategy.Connection;
 					if (queryExecutor.IsConnected && connection.State != ConnectionState.Open)
@@ -57,7 +57,7 @@ public class SqlEditorCloneQueryWindowCommand : AbstractSqlEditorCommand
 						connection.Open();
 					}
 
-					auxillaryDocData.IsQueryWindow = auxiliaryDocDataForEditor.IsQueryWindow;
+					auxDocData.IsQueryWindow = auxiliaryDocDataForEditor.IsQueryWindow;
 				}
 			}
 		}

@@ -85,8 +85,8 @@ public class SqlEditorSqlDatabaseListCommand : AbstractSqlEditorCommand
 		// Diag.Trace();
 	}
 
-	public SqlEditorSqlDatabaseListCommand(ISqlEditorWindowPane editor)
-		: base(editor)
+	public SqlEditorSqlDatabaseListCommand(ISqlEditorWindowPane editorWindow)
+		: base(editorWindow)
 	{
 		// Diag.Trace();
 	}
@@ -104,12 +104,12 @@ public class SqlEditorSqlDatabaseListCommand : AbstractSqlEditorCommand
 		{
 
 
-			if (Editor != null && _Csb == null)
+			if (EditorWindow != null && _Csb == null)
 			{
 				// Load csb derived from the ServerExplorer node if it is still available
 				// in IVsUserData.
 				// The DatabaseList accessor will include it in it's list if there is no duplicate.
-				IVsTextView codeEditorTextView = Editor.GetCodeEditorTextView();
+				IVsTextView codeEditorTextView = EditorWindow.GetCodeEditorTextView();
 				if (codeEditorTextView != null)
 				{
 					IVsUserData userData = (IVsUserData)GetTextLinesForTextView(codeEditorTextView);
