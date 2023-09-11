@@ -14,18 +14,24 @@ namespace BlackbirdSql.Common.Model.Events
 {
 	public sealed class QESQLBatchStatementCompletedEventArgs : EventArgs
 	{
-		private readonly int recordCount;
+		private readonly long _RecordCount;
 
-		private readonly bool isDebugging;
+		private readonly bool _IsDebugging;
 
-		public int RecordCount => recordCount;
+		private readonly bool _IsParseOnly;
 
-		public bool IsDebugging => isDebugging;
+		public bool IsParseOnly => _IsParseOnly;
 
-		public QESQLBatchStatementCompletedEventArgs(int recordCount, bool isDebugging)
+		public long RecordCount => _RecordCount;
+
+		public bool IsDebugging => _IsDebugging;
+
+
+		public QESQLBatchStatementCompletedEventArgs(long recordCount, bool isParseOnly, bool isDebugging)
 		{
-			this.recordCount = recordCount;
-			this.isDebugging = isDebugging;
+			_RecordCount = recordCount;
+			_IsDebugging = isDebugging;
+			_IsParseOnly = isParseOnly;
 		}
 	}
 }

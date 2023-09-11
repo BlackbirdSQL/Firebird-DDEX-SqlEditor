@@ -58,7 +58,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			{
 				if (_TextWriter == null)
 				{
-					Exception ex = new InvalidOperationException(SharedResx.ErrTextWriterNull);
+					Exception ex = new InvalidOperationException(ControlsResources.ErrTextWriterNull);
 					Tracer.LogExThrow(GetType(), ex);
 					throw ex;
 				}
@@ -142,7 +142,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			_TextViewCtl.WithSelectionMargin = true;
 			_TextViewCtl.WithWidgetMargin = false;
 			_TextViewCtl.WantCustomPopupMenu = true;
-			_TextViewCtl.ShowPopupMenu += OnShowPopupMenu;
+			_TextViewCtl.ShowPopupMenuEvent += OnShowPopupMenu;
 			Controls.Add(_TextViewCtl);
 			ResumeLayout(performLayout: false);
 			MenuCommand menuCommand = new MenuCommand(OnSaveAs,
@@ -237,7 +237,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 		private void OnShowPopupMenu(object sender, SpecialEditorCommandEventArgs a)
 		{
 			_TextViewCtl.GetCoordinatesForPopupMenu(a.VariantIn, out var x, out var y);
-			CommonUtils.ShowContextMenu((int)EnCommandSet.ContextIdMessageWindow, x, y, this);
+			CommonUtils.ShowContextMenuEvent((int)EnCommandSet.ContextIdMessageWindow, x, y, this);
 		}
 
 		private void CreateAndInitVSTextEditor()
@@ -320,7 +320,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 					catch (Exception e)
 					{
 						Tracer.LogExCatch(GetType(), e);
-						Cmd.ShowExceptionInDialog(SharedResx.ErrWhileSavingResults, e);
+						Cmd.ShowExceptionInDialog(ControlsResources.ErrWhileSavingResults, e);
 					}
 				}
 			}

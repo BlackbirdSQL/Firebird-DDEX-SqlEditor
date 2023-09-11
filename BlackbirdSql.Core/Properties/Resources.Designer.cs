@@ -268,6 +268,15 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not locate icon for Server Engine Type {0}..
+        /// </summary>
+        public static string EngineTypeIconNotfound {
+            get {
+                return ResourceManager.GetString("EngineTypeIconNotfound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Retry number {0}. Ignoring Exception: {1}.
         /// </summary>
         public static string IgnoreOnException {
@@ -300,6 +309,15 @@ namespace BlackbirdSql.Core.Properties {
         public static string RetryOnException {
             get {
                 return ResourceManager.GetString("RetryOnException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This field cannot be empty.
+        /// </summary>
+        public static string TextBoxRequiredFieldToolTip {
+            get {
+                return ResourceManager.GetString("TextBoxRequiredFieldToolTip", resourceCulture);
             }
         }
     }

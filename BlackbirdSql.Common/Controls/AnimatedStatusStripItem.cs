@@ -76,7 +76,7 @@ public sealed class AnimatedStatusStripItem : ToolStripStatusLabel
 		AutoToolTip = false;
 		_VsFontColorPreferences = new VsFontColorPreferences();
 		Font = VsFontColorPreferences.EnvironmentFont;
-		_VsFontColorPreferences.PreferencesChanged += VsFontColorPreferences_PreferencesChanged;
+		_VsFontColorPreferences.PreferencesChangedEvent += VsFontColorPreferences_PreferencesChanged;
 	}
 
 	public void SetImages(Image[] images)
@@ -152,7 +152,7 @@ public sealed class AnimatedStatusStripItem : ToolStripStatusLabel
 			}
 			if (_VsFontColorPreferences != null)
 			{
-				_VsFontColorPreferences.PreferencesChanged -= VsFontColorPreferences_PreferencesChanged;
+				_VsFontColorPreferences.PreferencesChangedEvent -= VsFontColorPreferences_PreferencesChanged;
 				_VsFontColorPreferences.Dispose();
 			}
 			images = null;

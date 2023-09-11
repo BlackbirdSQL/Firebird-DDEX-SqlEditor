@@ -2,19 +2,14 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ResultPane.StatisticsControl
 
 using System;
-using System.CodeDom.Compiler;
 using System.Collections;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Globalization;
+using System.Data;
 using BlackbirdSql.Common.Model.QueryExecution;
-using FirebirdSql.Data.FirebirdClient;
-using FirebirdSql.Data.Services;
-using Microsoft.VisualStudio.LanguageServer.Client;
-using static Microsoft.ServiceHub.Framework.ServiceBrokerClient;
+using BlackbirdSql.Core;
+
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
-
 
 public class StatisticsControl : CollectionBase
 {
@@ -51,66 +46,58 @@ public class StatisticsControl : CollectionBase
 	{
 	}
 
-	public void RetrieveStatisticsIfNeeded(QueryExecutor executor)
+	public void RetrieveStatisticsIfNeeded(QueryManager qryMgr, IDbCommand command, long recordCount, long recordsAffected, DateTime executionEndTime)
 	{
 		IEnumerator enumerator = GetEnumerator();
 		try
 		{
 			while (enumerator.MoveNext())
 			{
-				StatisticsConnection statisticsConnection = (StatisticsConnection)enumerator.Current;
+				StatisticsConnection conn = (StatisticsConnection)enumerator.Current;
 
-				FbDatabaseInfo info = new(statisticsConnection.InternalConnection);
-				Dictionary<string, object> stats = new(12);
+				// if (!conn.Loaded)
+				conn.Load(qryMgr, command, recordCount, recordsAffected, executionEndTime);
 
 
-				long value = 1L;
-				stats.Add("IduCount", value);
-
-				value = info.GetInsertCount() + info.GetUpdateCount() + info.GetDeleteCount();
-				stats.Add("IduRows", value);
-
-				value = 1L;
-				stats.Add("SelectCount", value);
-
-				value = 0L;
-				stats.Add("SelectRows", value);
-
-				value = info.GetActiveTransactionsCount();
-				stats.Add("Transactions", value);
-
-				value = info.GetFetches();
-				stats.Add("ServerRoundtrips", value);
-
-				long buffers = info.GetNumBuffers();
-
-				value = info.GetWrites() * buffers;
-				stats.Add("BuffersSent", value);
-
-				value *= statisticsConnection.InternalConnection.PacketSize;
-				stats.Add("BytesSent", value);
-
-				value = info.GetReads() * buffers;
-				stats.Add("BuffersReceived", value);
-
-				value *= statisticsConnection.InternalConnection.PacketSize;
-				stats.Add("BytesReceived", value);
-
-				string str = string.Empty;
-
-				if (executor.QueryExecutionStartTime.HasValue && executor.QueryExecutionEndTime.HasValue)
+				Dictionary<string, object> stats = new(25)
 				{
-					str = GetElapsedTime(executor.QueryExecutionStartTime.Value, executor.QueryExecutionEndTime.Value);
-				}
+					{ "IduRowCount", conn.IduRowCount },
+					{ "InsRowCount", conn.InsRowCount },
+					{ "UpdRowCount", conn.UpdRowCount },
+					{ "DelRowCount", conn.DelRowCount },
+					{ "SelectRowCount", conn.SelectRowCount },
+					{ "Transactions", conn.Transactions },
+					{ "ServerRoundtrips", conn.ServerRoundtrips },
+					{ "BufferCount", conn.BufferCount },
+					{ "ReadCount", conn.ReadCount },
+					{ "WriteCount", conn.WriteCount },
+					{ "ReadIdxCount", conn.ReadIdxCount },
+					{ "ReadSeqCount", conn.ReadSeqCount },
+					{ "PurgeCount", conn.PurgeCount },
+					{ "ExpungeCount", conn.ExpungeCount },
+					{ "Marks", conn.Marks },
+					{ "PacketSize", conn.PacketSize },
+					{ "ExecutionStartTimeEpoch", conn.ExecutionStartTimeEpoch },
+					{ "ExecutionEndTimeEpoch", conn.ExecutionEndTimeEpoch },
+					{ "ExecutionTimeTicks", conn.ExecutionTimeTicks },
+					{ "AllocationPages", conn.AllocationPages },
+					{ "CurrentMemory", conn.CurrentMemory },
+					{ "MaxMemory", conn.MaxMemory },
+					{ "DatabaseSizeInPages", conn.DatabaseSizeInPages },
+					{ "PageSize", conn.PageSize },
+					{ "ActiveUserCount", conn.ActiveUserCount }
+				};
 
-				stats.Add("ExecutionTime", str);
 
-				stats.Add("NetworkServerTime", str);
-
-				statisticsConnection.Insert(0, new StatisticsTry(stats));
+				conn.Insert(0, new StatisticsSnapshot(stats));
 
 				// statisticsConnection.InternalConnection.ResetStatistics();
 			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
 		}
 		finally
 		{
@@ -167,25 +154,8 @@ public class StatisticsControl : CollectionBase
 		return List.IndexOf(node);
 	}
 
-	private string GetElapsedTime(DateTime start, DateTime end)
-	{
-		string empty = (end - start).ToString();
-		if (!string.IsNullOrEmpty(empty))
-		{
-			string numberDecimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
-			int num = empty.LastIndexOf(numberDecimalSeparator, StringComparison.Ordinal);
-			if (num != -1)
-			{
-				int num2 = num + 4;
-				if (num2 <= empty.Length)
-				{
-					empty = empty[..num2];
-				}
-			}
-		}
 
-		return empty;
-	}
+
 
 	public void Insert(int index, StatisticsConnection node)
 	{

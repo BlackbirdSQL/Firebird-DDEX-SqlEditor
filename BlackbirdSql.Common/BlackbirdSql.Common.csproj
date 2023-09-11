@@ -21,7 +21,7 @@
 	<ItemGroup>
 	  <Compile Include="Controls\Graphing\ActualPlanDataReaderNodeBuilder.cs" />
 	  <Compile Include="Controls\Graphing\CursorPlanTypeOperation.cs" />
-	  <Compile Include="Controls\Graphing\CustomZoom.cs" />
+	  <Compile Include="Controls\Graphing\CustomZoomDlg.cs" />
 	  <Compile Include="Controls\Graphing\AbstractDataReaderNodeBuilder.cs" />
 	  <Compile Include="Controls\Graphing\DefinedValuesListTypeDefinedValue.cs" />
 	  <Compile Include="Controls\Graphing\DefinedValuesListTypeDefinedValueValueVector.cs" />
@@ -201,7 +201,7 @@
 	  <Compile Include="Controls\Graphing\Parsers\StatementParser.cs" />
 	  <Compile Include="Controls\Graphing\Parsers\XmlPlanHierarchyParser.cs" />
 	  <Compile Include="Controls\Graphing\PropertyFactory.cs" />
-	  <Compile Include="Controls\Graphing\PropertyViewForm.cs" />
+	  <Compile Include="Controls\Graphing\PropertyViewDlg.cs" />
 	  <Compile Include="Controls\Graphing\Gram\QueryExecTimeType.cs" />
 	  <Compile Include="Controls\Graphing\Gram\QueryPlanType.cs" />
 	  <Compile Include="Controls\Graphing\ReceivePlanTypeOperation.cs" />
@@ -236,7 +236,16 @@
 	  <Compile Include="Controls\Graphing\XmlPlanNodeBuilder.cs" />
 	  <Compile Include="Controls\Graphing\Parsers\XmlPlanParser.cs" />
 	  <Compile Include="Controls\Graphing\Parsers\XmlPlanParserFactory.cs" />
+	  <Compile Include="Model\Events\QESQLDataLoadedEventArgs.cs" />
+	  <Compile Include="Model\Events\QESQLDataLoadedEventHandler.cs" />
+	  <Compile Include="Model\Events\QESQLStatementCompletedEventArgs.cs" />
 	  <Compile Include="Model\Events\QESQLBatchSpecialActionEventHandler.cs" />
+	  <Compile Include="Model\Events\QESQLStatementCompletedEventHandler.cs" />
+	  <Compile Include="Properties\AttributeResources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>AttributeResources.resx</DependentUpon>
+	  </Compile>
 	  <Compile Include="Root\Interfaces\IMessageBoxProvider.cs" />
 	  <Compile Include="Controls\Interfaces\IObjectWithSite.cs" />
 	  <Compile Include="Controls\Graphing\Interfaces\IRenderable.cs" />
@@ -274,7 +283,7 @@
 	  <Compile Include="Controls\ConnectionDialogWrapper.cs" />
 	  <Compile Include="Properties\ControlsResources.Designer.cs" />
 	  <Compile Include="Controls\ControlUtils.cs" />
-	  <Compile Include="Controls\DataConnectionAdvancedDialog.cs" />
+	  <Compile Include="Controls\DataConnectionAdvancedDlg.cs" />
 	  <Compile Include="Controls\DialogWindow.cs" />
 	  <Compile Include="Controls\EditorStatusStripRenderer.cs" />
 	  <Compile Include="Controls\Enums\EnButtonCellState.cs" />
@@ -332,7 +341,7 @@
 	  <Compile Include="Model\Events\StorageNotifyDelegate.cs" />
 	  <Compile Include="Controls\Events\TooltipDataNeededEventArgs.cs" />
 	  <Compile Include="Controls\Events\TooltipDataNeededEventHandler.cs" />
-	  <Compile Include="Controls\FileEncodingDialog.cs" />
+	  <Compile Include="Controls\FileEncodingDlg.cs" />
 	  <Compile Include="Controls\FormUtilities.cs" />
 	  <Compile Include="Controls\Grid\BlockOfCells.cs" />
 	  <Compile Include="Controls\Grid\ButtonInfo.cs" />
@@ -375,7 +384,6 @@
 	  <Compile Include="Model\StorageDataReader.cs" />
 	  <Compile Include="Model\StorageDataEntity.cs" />
 	  <Compile Include="Model\AbstractStorageView.cs" />
-	  <Compile Include="Controls\Grid\UIGridResources.Designer.cs" />
 	  <Compile Include="Root\Interfaces\IColumnInfo.cs" />
 	  <Compile Include="Model\Interfaces\IDataStorage.cs" />
 	  <Compile Include="Controls\Interfaces\IDlgGridControl.cs" />
@@ -388,7 +396,7 @@
 	  <Compile Include="Controls\Interfaces\IGridEmbeddedSpinControl.cs" />
 	  <Compile Include="Controls\Interfaces\IGridStorage.cs" />
 	  <Compile Include="Model\Interfaces\IMemDataStorage.cs" />
-	  <Compile Include="Controls\Interfaces\IPropertyWindowQueryExecutorInitialize.cs" />
+	  <Compile Include="Controls\Interfaces\IPropertyWindowQueryManagerInitialize.cs" />
 	  <Compile Include="Model\Interfaces\ISortView.cs" />
 	  <Compile Include="Controls\Interfaces\IStatusBarContributer.cs" />
 	  <Compile Include="Model\Interfaces\IStorageView.cs" />
@@ -419,7 +427,7 @@
 	  <Compile Include="Controls\ResultsPane\StatisticsDlgGridControl.cs" />
 	  <Compile Include="Controls\ResultsPane\StatisticsGridsCollection.cs" />
 	  <Compile Include="Controls\ResultsPane\StatisticsPanel.cs" />
-	  <Compile Include="Controls\ResultsPane\StatisticsTry.cs" />
+	  <Compile Include="Controls\ResultsPane\StatisticsSnapshot.cs" />
 	  <Compile Include="Controls\ResultsPane\TextResultsViewContol.cs" />
 	  <Compile Include="Controls\ResultsPane\VSTextEditorPanel.cs" />
 	  <Compile Include="Controls\ResultWindowPane.cs" />
@@ -437,8 +445,8 @@
 	  <Compile Include="Controls\TextEditor.cs" />
 	  <Compile Include="Controls\TextViewCommandFilter.cs" />
 	  <Compile Include="Controls\ToolbarHost.cs" />
-	  <Compile Include="Controls\ToolsOptions\CurrentWndOptions.cs" />
-	  <Compile Include="Controls\ToolsOptions\CurrentWndSQLOptions.cs" />
+	  <Compile Include="Controls\ToolsOptions\AbstractCurrentWndOptionsDlg.cs" />
+	  <Compile Include="Controls\ToolsOptions\SqlCurrentWndOptionsDlg.cs" />
 	  <Compile Include="Controls\ToolsOptions\Separator.cs" />
 	  <Compile Include="Controls\ToolsOptions\SqlExecutionAdvancedSettingsDlg.cs" />
 	  <Compile Include="Controls\ToolsOptions\SqlExecutionAnsiSettingsDlg.cs" />
@@ -587,15 +595,14 @@
 	  <Compile Include="Root\Events\TabActivationEventArgs.cs" />
 	  <Compile Include="Root\Events\ToolboxEventArgs.cs" />
 	  <Compile Include="Root\Events\VerifyConnectionDelegate.cs" />
-	  <Compile Include="Root\Exceptions\AdvancedInformation.cs" />
+	  <Compile Include="Root\Exceptions\AdvancedInformationDlg.cs" />
 	  <Compile Include="Root\Exceptions\DataSchemaException.cs" />
-	  <Compile Include="Root\Exceptions\ExceptionMessageBox.cs" />
-	  <Compile Include="Root\Exceptions\ExceptionMessageBoxForm.cs" />
+	  <Compile Include="Root\Exceptions\ExceptionMessageBoxCtl.cs" />
+	  <Compile Include="Root\Exceptions\ExceptionMessageBoxDlg.cs" />
 	  <Compile Include="Root\Exceptions\ExceptionMessageBoxParent.cs" />
-	  <Compile Include="Root\Exceptions\ExceptionsResources.Designer.cs" />
-	  <Compile Include="Root\Exceptions\GlobalSuppressions.cs" />
-	  <Compile Include="Root\Exceptions\InvalidConnectionStringException.cs" />
-	  <Compile Include="Root\Exceptions\PrivacyConfirmation.cs" />
+	  <Compile Include="Properties\ExceptionsResources.Designer.cs" />
+	  <Compile Include="GlobalSuppressions.cs" />
+	  <Compile Include="Root\Exceptions\PrivacyConfirmationDlg.cs" />
 	  <Compile Include="Root\Exceptions\PrivateRenderer.cs" />
 	  <Compile Include="Root\Exceptions\SqlError.cs" />
 	  <Compile Include="Root\Exceptions\SqlErrorCollection.cs" />
@@ -640,7 +647,6 @@
 	  <Compile Include="Model\AbstractTelemetryPropertyAgent.cs" />
 	  <Compile Include="Model\AsyncCommand.cs" />
 	  <Compile Include="Model\AuxiliaryDocData.cs" />
-	  <Compile Include="Model\BrowseInfo.cs" />
 	  <Compile Include="Model\ConnectionDialogTelemetryContext.cs" />
 	  <Compile Include="Model\ConnectionInfo.cs" />
 	  <Compile Include="Model\ConnectionStrategy.cs" />
@@ -717,7 +723,7 @@
 	  <Compile Include="Model\QueryExecution\QEDiskDataStorage.cs" />
 	  <Compile Include="Model\QueryExecution\QEOLESQLExec.cs" />
 	  <Compile Include="Model\QueryExecution\QEReaderDataStorage.cs" />
-	  <Compile Include="Model\QueryExecution\QEResources.Designer.cs" />
+	  <Compile Include="Properties\QEResources.Designer.cs" />
 	  <Compile Include="Model\QueryExecution\QEResultSet.cs" />
 	  <Compile Include="Model\QueryExecution\QESQLBatch.cs" />
 	  <Compile Include="Model\QueryExecution\QESQLBatchCollection.cs" />
@@ -726,7 +732,7 @@
 	  <Compile Include="Model\QueryExecution\AbstractQESQLExec.cs" />
 	  <Compile Include="Model\QueryExecution\QESQLExecutionOptions.cs" />
 	  <Compile Include="Model\QueryExecution\QEStorageViewOnReader.cs" />
-	  <Compile Include="Model\QueryExecution\QueryExecutor.cs" />
+	  <Compile Include="Model\QueryExecution\QueryManager.cs" />
 	  <Compile Include="Model\QueryExecution\ResultSetAndGridContainer.cs" />
 	  <Compile Include="Model\QueryExecution\ResultSetAndGridContainerCollection.cs" />
 	  <Compile Include="Model\QueryExecution\ResultsToGridBatchConsumer.cs" />
@@ -753,24 +759,27 @@
 
 
 	<ItemGroup>
-	  <EmbeddedResource Include="Controls\Graphing\CustomZoom.resx" />
-	  <EmbeddedResource Include="Controls\Graphing\PropertyViewForm.resx" />
+	  <EmbeddedResource Include="Controls\Graphing\CustomZoomDlg.resx" />
+	  <EmbeddedResource Include="Controls\Graphing\PropertyViewDlg.resx" />
+	  <EmbeddedResource Include="Properties\AttributeResources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	  <EmbeddedResource Include="Properties\ControlsResources.resx" />
-	  <EmbeddedResource Include="Controls\DataConnectionAdvancedDialog.resx" />
-	  <EmbeddedResource Include="Controls\FileEncodingDialog.resx" />
-	  <EmbeddedResource Include="Controls\Grid\UIGridResources.resx" />
-	  <EmbeddedResource Include="Controls\ToolsOptions\CurrentWndOptions.resx" />
+	  <EmbeddedResource Include="Controls\DataConnectionAdvancedDlg.resx" />
+	  <EmbeddedResource Include="Controls\FileEncodingDlg.resx" />
+	  <EmbeddedResource Include="Controls\ToolsOptions\AbstractCurrentWndOptionsDlg.resx" />
 	  <EmbeddedResource Include="Controls\ToolsOptions\SqlExecutionAdvancedSettingsDlg.resx" />
 	  <EmbeddedResource Include="Controls\ToolsOptions\SqlExecutionAnsiSettingsDlg.resx" />
 	  <EmbeddedResource Include="Controls\ToolsOptions\SqlExecutionGeneralSettingsDlg.resx" />
 	  <EmbeddedResource Include="Controls\ToolsOptions\SqlResultsGeneralSettingsDlg.resx" />
 	  <EmbeddedResource Include="Controls\ToolsOptions\SqlResultsToGridSettingsDlg.resx" />
 	  <EmbeddedResource Include="Controls\ToolsOptions\SqlResultToTextSettingsDlg.resx" />
-	  <EmbeddedResource Include="Root\Exceptions\AdvancedInformation.resx" />
-	  <EmbeddedResource Include="Root\Exceptions\ExceptionMessageBoxForm.resx" />
-	  <EmbeddedResource Include="Root\Exceptions\ExceptionsResources.resx" />
-	  <EmbeddedResource Include="Root\Exceptions\PrivacyConfirmation.resx" />
-	  <EmbeddedResource Include="Model\QueryExecution\QEResources.resx" />
+	  <EmbeddedResource Include="Root\Exceptions\AdvancedInformationDlg.resx" />
+	  <EmbeddedResource Include="Root\Exceptions\ExceptionMessageBoxDlg.resx" />
+	  <EmbeddedResource Include="Properties\ExceptionsResources.resx" />
+	  <EmbeddedResource Include="Root\Exceptions\PrivacyConfirmationDlg.resx" />
+	  <EmbeddedResource Include="Properties\QEResources.resx" />
 	  <None Include="Properties\Originals\TabbedEditorResources.resx" />
 	  <EmbeddedResource Include="Properties\SharedResx.resx" />
 	</ItemGroup>
@@ -787,7 +796,6 @@
 	  <None Include="Properties\Originals\Management.SqlMgmt.SR.resx" />
 	  <None Include="Properties\Originals\Management.SqlMgmt.SRError.resx" />
 	  <None Include="Properties\Originals\Management.UI.Grid.SRError.resx" />
-	  <None Include="Properties\Originals\Management.UI.Grid.SharedResx.resx" />
 	  <None Include="Properties\Originals\SqlEditorResource.resx" />
 	  <None Include="Properties\Originals\SqlPackageResource.resx" />
 	</ItemGroup>
@@ -867,10 +875,10 @@
 	  <Compile Update="Controls\ResultsPane\VSTextEditorPanel.cs">
 	    <SubType>Component</SubType>
 	  </Compile>
-	  <Compile Update="Controls\ToolsOptions\CurrentWndOptions.cs">
+	  <Compile Update="Controls\ToolsOptions\AbstractCurrentWndOptionsDlg.cs">
 	    <SubType>Form</SubType>
 	  </Compile>
-	  <Compile Update="Controls\ToolsOptions\CurrentWndSQLOptions.cs">
+	  <Compile Update="Controls\ToolsOptions\SqlCurrentWndOptionsDlg.cs">
 	    <SubType>Form</SubType>
 	  </Compile>
 	  <Compile Update="Controls\ToolsOptions\Separator.cs">
@@ -896,18 +904,18 @@
 	    <SubType>UserControl</SubType>
 	  </Compile>
 	  <Compile Update="Controls\WrappingCheckBox.cs" />
-	  <Compile Update="Controls\DataConnectionAdvancedDialog.cs">
+	  <Compile Update="Controls\DataConnectionAdvancedDlg.cs">
 	    <SubType>Form</SubType>
 	  </Compile>
-	  <Compile Update="Root\Exceptions\AdvancedInformation.cs" />
-	  <Compile Update="Root\Exceptions\ExceptionMessageBoxForm.cs" />
-	  <Compile Update="Root\Exceptions\ExceptionsResources.Designer.cs">
+	  <Compile Update="Root\Exceptions\AdvancedInformationDlg.cs" />
+	  <Compile Update="Root\Exceptions\ExceptionMessageBoxDlg.cs" />
+	  <Compile Update="Properties\ExceptionsResources.Designer.cs">
 	    <DependentUpon>ExceptionsResources.resx</DependentUpon>
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
 	  </Compile>
-	  <Compile Update="Root\Exceptions\PrivacyConfirmation.cs" />
-	  <Compile Update="Controls\FileEncodingDialog.cs">
+	  <Compile Update="Root\Exceptions\PrivacyConfirmationDlg.cs" />
+	  <Compile Update="Controls\FileEncodingDlg.cs">
 	    <SubType>Form</SubType>
 	  </Compile>
 	  <Compile Update="Controls\QueryExecution\MultiControlPanel.cs">
@@ -916,7 +924,7 @@
 	  <Compile Update="Controls\QueryExecution\QESplitter.cs">
 	    <SubType>Component</SubType>
 	  </Compile>
-	  <Compile Update="Model\QueryExecution\QEResources.Designer.cs">
+	  <Compile Update="Properties\QEResources.Designer.cs">
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>QEResources.resx</DependentUpon>
@@ -947,10 +955,10 @@
 	    <LastGenOutput>ControlsResources.Designer.cs</LastGenOutput>
 	    <Generator>PublicResXFileCodeGenerator</Generator>
 	  </EmbeddedResource>
-	  <EmbeddedResource Update="Controls\DataConnectionAdvancedDialog.resx">
+	  <EmbeddedResource Update="Controls\DataConnectionAdvancedDlg.resx">
 	    <SubType>Designer</SubType>
 	  </EmbeddedResource>
-	  <EmbeddedResource Update="Controls\ToolsOptions\CurrentWndOptions.resx">
+	  <EmbeddedResource Update="Controls\ToolsOptions\AbstractCurrentWndOptionsDlg.resx">
 	    <SubType>Designer</SubType>
 	  </EmbeddedResource>
 	  <EmbeddedResource Update="Controls\ToolsOptions\SqlExecutionAdvancedSettingsDlg.resx">
@@ -971,14 +979,14 @@
 	  <EmbeddedResource Update="Controls\ToolsOptions\SqlResultToTextSettingsDlg.resx">
 	    <SubType>Designer</SubType>
 	  </EmbeddedResource>
-	  <EmbeddedResource Update="Root\Exceptions\ExceptionsResources.resx">
+	  <EmbeddedResource Update="Properties\ExceptionsResources.resx">
 	    <LastGenOutput>ExceptionsResources.Designer.cs</LastGenOutput>
 	    <Generator>PublicResXFileCodeGenerator</Generator>
 	  </EmbeddedResource>
-	  <EmbeddedResource Update="Controls\FileEncodingDialog.resx">
+	  <EmbeddedResource Update="Controls\FileEncodingDlg.resx">
 	    <SubType>Designer</SubType>
 	  </EmbeddedResource>
-	  <EmbeddedResource Update="Model\QueryExecution\QEResources.resx">
+	  <EmbeddedResource Update="Properties\QEResources.resx">
 	    <Generator>PublicResXFileCodeGenerator</Generator>
 	    <LastGenOutput>QEResources.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>

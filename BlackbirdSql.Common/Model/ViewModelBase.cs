@@ -27,8 +27,6 @@ public abstract class ViewModelBase : AbstractDispatcherConnection
 
 	private List<object> _Services;
 
-	private readonly object _ServiceLock = new object();
-
 	private readonly Dictionary<string, List<Lazy<IOwnedCommand>>> _CommandDependencies;
 
 	public override DescriberDictionary Describers
@@ -111,7 +109,7 @@ public abstract class ViewModelBase : AbstractDispatcherConnection
 			throw ex;
 		}
 
-		lock (_ServiceLock)
+		lock (_LockObject)
 		{
 			_Services ??= new List<object>();
 
@@ -145,7 +143,7 @@ public abstract class ViewModelBase : AbstractDispatcherConnection
 
 	public object TryResolveService(Type serviceType)
 	{
-		lock (_ServiceLock)
+		lock (_LockObject)
 		{
 			if (_Services != null)
 			{
@@ -189,7 +187,7 @@ public abstract class ViewModelBase : AbstractDispatcherConnection
 			throw ex;
 		}
 
-		lock (_ServiceLock)
+		lock (_LockObject)
 		{
 			if (_Services == null)
 				return false;

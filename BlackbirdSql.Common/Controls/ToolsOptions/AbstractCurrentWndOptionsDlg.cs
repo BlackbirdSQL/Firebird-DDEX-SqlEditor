@@ -16,7 +16,7 @@ using Microsoft.VisualStudio.VSHelp;
 
 namespace BlackbirdSql.Common.Controls.ToolsOptions
 {
-	public class CurrentWndOptions : Form
+	public class AbstractCurrentWndOptionsDlg : Form
 	{
 		protected class TreeNodeContext
 		{
@@ -63,7 +63,7 @@ namespace BlackbirdSql.Common.Controls.ToolsOptions
 
 		private Button _cancelButton;
 
-		public CurrentWndOptions()
+		public AbstractCurrentWndOptionsDlg()
 		{
 			InitializeComponent();
 			Icon = ControlsResources.Properties_16x;
@@ -112,7 +112,7 @@ namespace BlackbirdSql.Common.Controls.ToolsOptions
 		{
 			//IL_0047: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0051: Expected O, but got Unknown
-			ComponentResourceManager resources = new ComponentResourceManager(typeof(CurrentWndOptions));
+			ComponentResourceManager resources = new ComponentResourceManager(typeof(AbstractCurrentWndOptionsDlg));
 			_okButton = new Button();
 			_cancelButton = new Button();
 			_helpButton = new Button();

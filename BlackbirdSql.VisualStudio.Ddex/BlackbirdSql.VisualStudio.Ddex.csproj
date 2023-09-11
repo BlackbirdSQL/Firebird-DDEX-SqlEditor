@@ -154,20 +154,11 @@
   </ItemGroup>
   <!-- Includes (Properties and Properties Resources) -->
   <ItemGroup>
-    <Compile Include="Properties\ControlsResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ControlsResources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Properties\ControlsResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ControlsResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -429,84 +420,6 @@
     <Compile Include="Ctl\TViewSupport.cs" />
   </ItemGroup>
   <!-- Includes (VSIX Manifest) -->
-  <ItemGroup>
-    <None Include="..\BlackbirdSql.Common\Snippets\FbSqlSnippetsIndex.xml">
-      <Link>Snippets\FbSqlSnippetsIndex.xml</Link>
-      <VSIXSubPath>Snippets</VSIXSubPath>
-    </None>
-    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\COMBINE.snippet">
-      <Link>Snippets\FB-SQL\COMBINE.snippet</Link>
-      <VSIXSubPath>Snippets</VSIXSubPath>
-    </None>
-    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\CREATEASSEMBLY.snippet">
-      <Link>Snippets\FB-SQL\CREATEASSEMBLY.snippet</Link>
-      <VSIXSubPath>Snippets</VSIXSubPath>
-    </None>
-    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\CREATEDATABASE.snippet">
-      <Link>Snippets\FB-SQL\CREATEDATABASE.snippet</Link>
-      <VSIXSubPath>Snippets</VSIXSubPath>
-    </None>
-    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\CREATESCHEMA.snippet">
-      <Link>Snippets\FB-SQL\CREATESCHEMA.snippet</Link>
-      <VSIXSubPath>Snippets</VSIXSubPath>
-    </None>
-    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\CREATETABLE.snippet">
-      <Link>Snippets\FB-SQL\CREATETABLE.snippet</Link>
-      <VSIXSubPath>Snippets</VSIXSubPath>
-    </None>
-    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\CREATE_CREDENTIAL.snippet">
-      <Link>Snippets\FB-SQL\CREATE_CREDENTIAL.snippet</Link>
-      <VSIXSubPath>Snippets</VSIXSubPath>
-    </None>
-    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\CREATE_VIEW.snippet">
-      <Link>Snippets\FB-SQL\CREATE_VIEW.snippet</Link>
-      <VSIXSubPath>Snippets</VSIXSubPath>
-    </None>
-    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\DATA_SOURCE.snippet">
-      <Link>Snippets\FB-SQL\DATA_SOURCE.snippet</Link>
-      <VSIXSubPath>Snippets</VSIXSubPath>
-    </None>
-    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\DECLARE.snippet">
-      <Link>Snippets\FB-SQL\DECLARE.snippet</Link>
-      <VSIXSubPath>Snippets</VSIXSubPath>
-    </None>
-    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\EXTERNAL_TABLE.snippet">
-      <Link>Snippets\FB-SQL\EXTERNAL_TABLE.snippet</Link>
-      <VSIXSubPath>Snippets</VSIXSubPath>
-    </None>
-    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\EXTRACT.snippet">
-      <Link>Snippets\FB-SQL\EXTRACT.snippet</Link>
-      <VSIXSubPath>Snippets</VSIXSubPath>
-    </None>
-    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\EXTRACT_FROM_FILE_SET.snippet">
-      <Link>Snippets\FB-SQL\EXTRACT_FROM_FILE_SET.snippet</Link>
-      <VSIXSubPath>Snippets</VSIXSubPath>
-    </None>
-    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\INSERT_SELECT.snippet">
-      <Link>Snippets\FB-SQL\INSERT_SELECT.snippet</Link>
-      <VSIXSubPath>Snippets</VSIXSubPath>
-    </None>
-    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\OUTPUT.snippet">
-      <Link>Snippets\FB-SQL\OUTPUT.snippet</Link>
-      <VSIXSubPath>Snippets</VSIXSubPath>
-    </None>
-    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\PROCESS.snippet">
-      <Link>Snippets\FB-SQL\PROCESS.snippet</Link>
-      <VSIXSubPath>Snippets</VSIXSubPath>
-    </None>
-    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\REDUCE.snippet">
-      <Link>Snippets\FB-SQL\REDUCE.snippet</Link>
-      <VSIXSubPath>Snippets</VSIXSubPath>
-    </None>
-    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\SELECT.snippet">
-      <Link>Snippets\FB-SQL\SELECT.snippet</Link>
-      <VSIXSubPath>Snippets</VSIXSubPath>
-    </None>
-    <None Include="..\BlackbirdSql.Common\Snippets\FB-SQL\TableValuedFunction.snippet">
-      <Link>Snippets\FB-SQL\TableValuedFunction.snippet</Link>
-      <VSIXSubPath>Snippets</VSIXSubPath>
-    </None>
-  </ItemGroup>
   <ItemGroup />
   <!-- Imports -->
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />

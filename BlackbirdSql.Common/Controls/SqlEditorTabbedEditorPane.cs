@@ -362,11 +362,11 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, ISqlEditorWin
 			splitViewContainer.IsSplitterVisible = false;
 			splitViewContainer.SwapButtons();
 			splitViewContainer.PathStripVisibleInSplitMode = false;
-			TabbedEditorUI.TabActivated += TabActivatedHandler;
+			TabbedEditorUI.TabActivatedEvent += TabActivatedHandler;
 			AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(DocData);
-			if (auxDocData != null && auxDocData.QueryExecutor != null)
+			if (auxDocData != null && auxDocData.QryMgr != null)
 			{
-				auxDocData.QueryExecutor.StatusChanged += OnUpdateTooltipAndWindowCaption;
+				auxDocData.QryMgr.StatusChangedEvent += OnUpdateTooltipAndWindowCaption;
 			}
 
 			UpdateWindowCaption();
@@ -439,9 +439,9 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, ISqlEditorWin
 
 		SplitViewContainer splitViewContainer = TabbedEditorUI.SplitViewContainer;
 		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(DocData);
-		QueryExecutor queryExecutor = auxDocData.QueryExecutor;
+		QueryManager qryMgr = auxDocData.QryMgr;
 
-		bool isActual = queryExecutor.ExecutionOptions.WithExecutionPlan && !queryExecutor.ExecutionOptions.WithEstimatedExecutionPlan;
+		bool isActual = qryMgr.ExecutionOptions.WithExecutionPlan && !qryMgr.ExecutionOptions.WithEstimatedExecutionPlan;
 
 		string btnPlanText = isActual
 			? ControlsResources.SqlEditorTabbedEditorPane_ActualPlan_Button_Text
@@ -489,25 +489,25 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, ISqlEditorWin
 			LoadDesignerPane(editorTab, asPrimary: false, showSplitter: false);
 			editorTab.Hide();
 
-			AbstractEditorTab editorTab2 = CreateEditorTabWithButton(this, new Guid(LibraryData.SqlMessageTabLogicalViewGuid),
+			AbstractEditorTab editorTab2 = CreateEditorTabWithButton(this, new Guid(LibraryData.SqlStatisticsTabLogicalViewGuid),
 				VSConstants.LOGVIEWID_TextView, EnEditorTabType.BottomDesign);
 			TabbedEditorUI.Tabs.Add(editorTab2);
 			LoadDesignerPane(editorTab2, asPrimary: false, showSplitter: false);
 			editorTab2.Hide();
 
-			AbstractEditorTab editorTab3 = CreateEditorTabWithButton(this, new Guid(LibraryData.SqlStatisticsTabLogicalViewGuid),
+			AbstractEditorTab editorTab3 = CreateEditorTabWithButton(this, new Guid(LibraryData.SqlExecutionPlanTabLogicalViewGuid),
 				VSConstants.LOGVIEWID_TextView, EnEditorTabType.BottomDesign);
 			TabbedEditorUI.Tabs.Add(editorTab3);
 			LoadDesignerPane(editorTab3, asPrimary: false, showSplitter: false);
 			editorTab3.Hide();
 
-			AbstractEditorTab editorTab4 = CreateEditorTabWithButton(this, new Guid(LibraryData.SqlExecutionPlanTabLogicalViewGuid),
+			AbstractEditorTab editorTab4 = CreateEditorTabWithButton(this, new Guid(LibraryData.SqlTextPlanTabLogicalViewGuid),
 				VSConstants.LOGVIEWID_TextView, EnEditorTabType.BottomDesign);
 			TabbedEditorUI.Tabs.Add(editorTab4);
 			LoadDesignerPane(editorTab4, asPrimary: false, showSplitter: false);
 			editorTab4.Hide();
 
-			AbstractEditorTab editorTab5 = CreateEditorTabWithButton(this, new Guid(LibraryData.SqlTextPlanTabLogicalViewGuid),
+			AbstractEditorTab editorTab5 = CreateEditorTabWithButton(this, new Guid(LibraryData.SqlMessageTabLogicalViewGuid),
 				VSConstants.LOGVIEWID_TextView, EnEditorTabType.BottomDesign);
 			TabbedEditorUI.Tabs.Add(editorTab5);
 			LoadDesignerPane(editorTab5, asPrimary: false, showSplitter: false);
@@ -542,12 +542,12 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, ISqlEditorWin
 
 			_ProperyWindowManager = new PropertiesWindowManager(this);
 
-			queryExecutor.IsWithOleSQLScripting = auxDocData.QueryExecutor.QueryExecutionSettings.Execution.OLESQLScriptingByDefault;
-			queryExecutor.CurrentWorkingDirectoryPath = GetCurrentWorkingDirectory;
+			qryMgr.IsWithOleSQLScripting = auxDocData.QryMgr.QueryExecutionSettings.Execution.OLESQLScriptingByDefault;
+			qryMgr.CurrentWorkingDirectoryPath = GetCurrentWorkingDirectory;
 
 			ConfigureTextViewForAutonomousFind(GetSqlEditorCodeTab().CurrentFrame, GetCodeEditorTextView());
-			ConfigureTextViewForAutonomousFind(GetSqlEditorMessageTab().CurrentFrame, _ResultsControl.MessagesPaneTextView);
 			ConfigureTextViewForAutonomousFind(GetSqlEditorTextResultsTab().CurrentFrame, _ResultsControl.TextResultsPaneTextView);
+			ConfigureTextViewForAutonomousFind(GetSqlEditorMessageTab().CurrentFrame, _ResultsControl.MessagesPaneTextView);
 
 			if (_ResultsControl.TextPlanPaneTextView != null)
 				ConfigureTextViewForAutonomousFind(GetSqlTextPlanTab().CurrentFrame, _ResultsControl.TextPlanPaneTextView);
@@ -880,14 +880,14 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, ISqlEditorWin
 
 				Tracer.Trace(GetType(), Tracer.Level.Verbose, "ExecuteOrParseQuery", "AuxiliaryDocData.EstimatedExecutionPlanEnabled: " + auxDocData.EstimatedExecutionPlanEnabled);
 
-				QueryExecutor queryExecutor = auxDocData.QueryExecutor;
+				QueryManager qryMgr = auxDocData.QryMgr;
 
-				Tracer.Trace(GetType(), Tracer.Level.Verbose, "ExecuteOrParseQuery", "AuxiliaryDocData.QueryExecutor: " + queryExecutor);
+				Tracer.Trace(GetType(), Tracer.Level.Verbose, "ExecuteOrParseQuery", "AuxiliaryDocData.QryMgr: " + qryMgr);
 
 				if (isExecute)
-					queryExecutor.Run(sqlTextSpan);
+					qryMgr.Run(sqlTextSpan);
 				else
-					queryExecutor.Parse(sqlTextSpan);
+					qryMgr.Parse(sqlTextSpan);
 
 			}
 		}
@@ -901,9 +901,9 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, ISqlEditorWin
 			_ResultsControl?.Dispose();
 
 			AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(DocData);
-			if (auxDocData != null && auxDocData.QueryExecutor != null)
+			if (auxDocData != null && auxDocData.QryMgr != null)
 			{
-				auxDocData.QueryExecutor.StatusChanged -= OnUpdateTooltipAndWindowCaption;
+				auxDocData.QryMgr.StatusChangedEvent -= OnUpdateTooltipAndWindowCaption;
 			}
 
 			_ProperyWindowManager?.Dispose();
@@ -1112,9 +1112,9 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, ISqlEditorWin
 		}
 	}
 
-	public void OnUpdateTooltipAndWindowCaption(object sender, QueryExecutor.StatusChangedEventArgs args)
+	public void OnUpdateTooltipAndWindowCaption(object sender, QueryManager.StatusChangedEventArgs args)
 	{
-		if (args.Change == QueryExecutor.StatusType.Connection || args.Change == QueryExecutor.StatusType.Connected)
+		if (args.Change == QueryManager.StatusType.Connection || args.Change == QueryManager.StatusType.Connected)
 		{
 			UpdateToolTip();
 		}
@@ -1197,18 +1197,18 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, ISqlEditorWin
 	{
 		string text = string.Empty;
 		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(DocData);
-		if (auxDocData != null && auxDocData.QueryExecutor != null)
+		if (auxDocData != null && auxDocData.QryMgr != null)
 		{
-			QueryExecutor queryExecutor = auxDocData.QueryExecutor;
-			text = queryExecutor.ConnectionStrategy.GetEditorCaption(toolTip);
+			QueryManager qryMgr = auxDocData.QryMgr;
+			text = qryMgr.ConnectionStrategy.GetEditorCaption(toolTip);
 			IUserSettings current = UserSettings.Instance.Current;
 			if (!toolTip && (current.StatusBar.TabTextIncludeDatabaseName || current.StatusBar.TabTextIncludeLoginName || current.StatusBar.TabTextIncludeServerName))
 			{
-				if (queryExecutor.IsConnected || queryExecutor.IsConnecting)
+				if (qryMgr.IsConnected || qryMgr.IsConnecting)
 				{
-					if (queryExecutor.IsExecuting)
+					if (qryMgr.IsExecuting)
 					{
-						text = !queryExecutor.IsDebugging ? text + " " + ControlsResources.ConnectionStateExecuting : text + " " + ControlsResources.ConnectionStateDebugging;
+						text = !qryMgr.IsDebugging ? text + " " + ControlsResources.ConnectionStateExecuting : text + " " + ControlsResources.ConnectionStateDebugging;
 					}
 				}
 				else

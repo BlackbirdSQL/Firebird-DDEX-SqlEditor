@@ -1,6 +1,7 @@
 // Microsoft.SqlServer.BatchParser, Version=16.100.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91
 // ManagedBatchParser.Parser
 using System;
+using System.CodeDom.Compiler;
 using System.Runtime.InteropServices;
 using System.Threading;
 using BlackbirdSql.Common.Model.Enums;

@@ -69,15 +69,15 @@ namespace BlackbirdSql.Wpf.Controls
 			{
 				if (m_viewModel != null)
 				{
-					m_viewModel.SectionInitialized -= ViewModel_SectionInitialized;
-					m_viewModel.SectionClosing -= ViewModel_SectionClosing;
+					m_viewModel.SectionInitializedEvent -= ViewModel_SectionInitialized;
+					m_viewModel.SectionClosingEvent -= ViewModel_SectionClosing;
 				}
 
 				m_viewModel = value;
 				if (m_viewModel != null)
 				{
-					m_viewModel.SectionInitialized += ViewModel_SectionInitialized;
-					m_viewModel.SectionClosing += ViewModel_SectionClosing;
+					m_viewModel.SectionInitializedEvent += ViewModel_SectionInitialized;
+					m_viewModel.SectionClosingEvent += ViewModel_SectionClosing;
 				}
 			}
 		}
@@ -106,10 +106,10 @@ namespace BlackbirdSql.Wpf.Controls
 			InitializeComponent();
 			// _DependencyManager = dependencyManager; // Firewall
 			_Channel = channel;
-			channel.ShowMessage += ShowMessage;
-			channel.CloseWindow += CloseWindow;
-			// channel.FirewallRuleDetected += OnFirewallRuleDetected;
-			channel.AdvancedPropertiesRequested += OnAdvancedPropertiesRequested;
+			channel.ShowMessageEvent += ShowMessage;
+			channel.CloseWindowEvent += CloseWindow;
+			// channel.FirewallRuleDetectedEvent += OnFirewallRuleDetected;
+			channel.AdvancedPropertiesRequestedEvent += OnAdvancedPropertiesRequested;
 			UIConnectionInfo = ci;
 			ViewModel = new ConnectionDialogViewModel(dependencyManager, _Channel, ci, verifierDelegate, config);
 			DataContext = ViewModel;
@@ -146,7 +146,7 @@ namespace BlackbirdSql.Wpf.Controls
 				}
 
 				IBPropertyAgent connectionProperties = e.ConnectionProperties;
-				using DataConnectionAdvancedDialog dataConnectionAdvancedDialog = new DataConnectionAdvancedDialog(connectionProperties);
+				using DataConnectionAdvancedDlg dataConnectionAdvancedDialog = new DataConnectionAdvancedDlg(connectionProperties);
 				NativeWindow nativeWindow = new NativeWindow();
 				nativeWindow.AssignHandle(new WindowInteropHelper(this).Handle);
 				if (dataConnectionAdvancedDialog.ShowDialog(nativeWindow) == System.Windows.Forms.DialogResult.OK)
@@ -187,10 +187,10 @@ namespace BlackbirdSql.Wpf.Controls
 			{
 				if (_Channel != null)
 				{
-					_Channel.ShowMessage -= ShowMessage;
-					_Channel.CloseWindow -= CloseWindow;
-					// _Channel.FirewallRuleDetected -= OnFirewallRuleDetected;
-					_Channel.AdvancedPropertiesRequested -= OnAdvancedPropertiesRequested;
+					_Channel.ShowMessageEvent -= ShowMessage;
+					_Channel.CloseWindowEvent -= CloseWindow;
+					// _Channel.FirewallRuleDetectedEvent -= OnFirewallRuleDetected;
+					_Channel.AdvancedPropertiesRequestedEvent -= OnAdvancedPropertiesRequested;
 				}
 
 				ViewModel.Dispose();

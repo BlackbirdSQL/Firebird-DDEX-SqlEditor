@@ -256,11 +256,11 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	protected virtual bool AllowBrowseToFileInExplorer => new Uri(DocumentMoniker, UriKind.Absolute).IsFile;
 
-	public event EventHandler ActiveChanged;
+	public event EventHandler ActiveChangedEvent;
 
-	public event EventHandler Shown;
+	public event EventHandler ShownEvent;
 
-	public event EventHandler<ToolboxEventArgs> ToolboxItemPicked;
+	public event EventHandler<ToolboxEventArgs> ToolboxItemPickedEvent;
 
 	public AbstractEditorTab(AbstractTabbedEditorPane editorPane, Guid logicalView, EnEditorTabType editorTabType)
 	{
@@ -392,7 +392,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 			_TextEditor.Dispose();
 			_TextEditor = null;
 		}
-		Shown = null;
+		ShownEvent = null;
 	}
 
 	public void Hide()
@@ -453,7 +453,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 			_IsActive = isActive;
 			if (TextEditor != null)
 				TextEditor.IsActive = _IsActive;
-			ActiveChanged?.Invoke(this, EventArgs.Empty);
+			ActiveChangedEvent?.Invoke(this, EventArgs.Empty);
 		}
 	}
 
@@ -618,9 +618,9 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	int IVsWindowFrameNotify3.OnShow(int fShow)
 	{
-		if (fShow == 1 && Shown != null)
+		if (fShow == 1 && ShownEvent != null)
 		{
-			Shown(this, EventArgs.Empty);
+			ShownEvent(this, EventArgs.Empty);
 		}
 		int result = 0;
 		if (_CurrentFrame == null)
@@ -763,15 +763,15 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	int IVsToolboxUser.ItemPicked(Microsoft.VisualStudio.OLE.Interop.IDataObject pDO)
 	{
-		if (ToolboxItemPicked != null)
+		if (ToolboxItemPickedEvent != null)
 		{
 			ToolboxEventArgs toolboxEventArgs = new ToolboxEventArgs(pDO);
-			ToolboxItemPicked(this, toolboxEventArgs);
+			ToolboxItemPickedEvent(this, toolboxEventArgs);
+
 			if (toolboxEventArgs.Handled)
-			{
 				return toolboxEventArgs.HResult;
-			}
 		}
+
 		IVsToolboxUser textEditor = TextEditor;
 		if (textEditor != null && textEditor.ItemPicked(pDO) == 0)
 		{

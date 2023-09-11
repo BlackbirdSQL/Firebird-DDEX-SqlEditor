@@ -31,7 +31,7 @@ public class SqlEditorDisconnectAllQueriesCommand : AbstractSqlEditorCommand
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
-		if (GetQueryExecutorForEditor() != null)
+		if (GetQueryManagerForEditor() != null)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 
 		return VSConstants.S_OK;
@@ -41,16 +41,16 @@ public class SqlEditorDisconnectAllQueriesCommand : AbstractSqlEditorCommand
 	{
 		foreach (AuxiliaryDocData value in ((IBEditorPackage)Controller.Instance.DdexPackage).DocDataEditors.Values)
 		{
-			QueryExecutor queryExecutor = value.QueryExecutor;
-			if (queryExecutor != null && queryExecutor.IsConnected)
+			QueryManager qryMgr = value.QryMgr;
+			if (qryMgr != null && qryMgr.IsConnected)
 			{
-				if (queryExecutor.IsExecuting)
+				if (qryMgr.IsExecuting)
 				{
 					AbstractEditorEventsManager.ShouldStopClose(value, GetType());
 				}
 				else
 				{
-					queryExecutor.ConnectionStrategy.ResetConnection();
+					qryMgr.ConnectionStrategy.ResetConnection();
 				}
 			}
 		}

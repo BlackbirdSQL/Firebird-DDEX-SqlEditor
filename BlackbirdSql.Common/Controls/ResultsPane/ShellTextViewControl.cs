@@ -238,7 +238,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		protected override void OnTextBufferCreated(ShellTextBuffer buf)
 		{
-			buf.OnNewLangSvc += OnNewLangSvc;
+			buf.NewLangSvcEvent += OnNewLangSvc;
 		}
 
 		protected override void SinkEventsAndCacheInterfaces()

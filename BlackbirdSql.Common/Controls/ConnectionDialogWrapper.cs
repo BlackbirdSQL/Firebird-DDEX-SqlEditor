@@ -40,7 +40,7 @@ public class ConnectionDialogWrapper : IDisposable
 		Trace = new Traceable(_DependencyManager);
 		_Connection = null;
 		_Channel = new EventsChannel();
-		_Channel.MakeConnectionCompleted += GetConnectionObject;
+		_Channel.MakeConnectionCompletedEvent += GetConnectionObject;
 		// ServiceManager<IConnectionStringManager> serviceManager = new ServiceManager<IConnectionStringManager>(_DependencyManager);
 		// _connectionStringManager = serviceManager.GetService(null);
 		// Trace.AssertTraceEvent(_connectionStringManager != null, TraceEventType.Error, EnUiTraceId.UiInfra, "Cannot load IConnectionStringManager");
@@ -48,7 +48,7 @@ public class ConnectionDialogWrapper : IDisposable
 
 	public void Dispose()
 	{
-		_Channel.MakeConnectionCompleted -= GetConnectionObject;
+		_Channel.MakeConnectionCompletedEvent -= GetConnectionObject;
 		GC.SuppressFinalize(this);
 	}
 

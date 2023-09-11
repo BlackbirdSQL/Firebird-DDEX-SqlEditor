@@ -10,7 +10,7 @@ using BlackbirdSql.Common.Properties;
 
 namespace BlackbirdSql.Common.Controls.Graphing;
 
-public class CustomZoom : Form
+public class CustomZoomDlg : Form
 {
 	private Label zoomLabel;
 
@@ -28,9 +28,9 @@ public class CustomZoom : Form
 
 	public decimal Zoom => zoomNumber.Value;
 
-	public event EventHandler ZoomChanged;
+	public event EventHandler ZoomChangedEvent;
 
-	public CustomZoom(decimal zoom)
+	public CustomZoomDlg(decimal zoom)
 	{
 		InitializeComponent();
 		zoomNumber.Value = zoom;
@@ -50,7 +50,7 @@ public class CustomZoom : Form
 
 	private void InitializeComponent()
 	{
-		System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BlackbirdSql.Common.Controls.Graphing.CustomZoom));
+		System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BlackbirdSql.Common.Controls.Graphing.CustomZoomDlg));
 		this.zoomLabel = new System.Windows.Forms.Label();
 		this.zoomNumber = new System.Windows.Forms.NumericUpDown();
 		this.zoom = new System.Windows.Forms.Button();
@@ -113,7 +113,7 @@ public class CustomZoom : Form
 		{
 			if (ex is OverflowException || ex is InvalidCastException || ex is FormatException)
 			{
-				ExceptionMessageBox exceptionMessageBox = new(new ApplicationException(string.Format(ControlsResources.ZoomLevelShouldBeBetween, (int)zoomNumber.Minimum, (int)zoomNumber.Maximum)))
+				ExceptionMessageBoxCtl exceptionMessageBox = new(new ApplicationException(string.Format(ControlsResources.ZoomLevelShouldBeBetween, (int)zoomNumber.Minimum, (int)zoomNumber.Maximum)))
 				{
 					Caption = ControlsResources.MessageBoxCaption
 				};
@@ -124,7 +124,7 @@ public class CustomZoom : Form
 			}
 			throw;
 		}
-		ZoomChanged?.Invoke(this, EventArgs.Empty);
+		ZoomChangedEvent?.Invoke(this, EventArgs.Empty);
 	}
 
 	private void AdjustFormWidth()

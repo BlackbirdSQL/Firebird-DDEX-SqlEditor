@@ -15,5 +15,5 @@ public enum EnCursorType
 	Dynamic,
 	FastForward,
 	Keyset,
-	SnapShot
+	Snapshot
 }

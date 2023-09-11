@@ -1,7 +1,5 @@
-﻿#region Assembly Microsoft.SqlServer.Data.Tools.ExceptionMessageBox, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\Microsoft\SQLDB\Microsoft.SqlServer.Data.Tools.ExceptionMessageBox.dll
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.SqlServer.Data.Tools.ExceptionMessageBox, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.SqlServer.Data.Tools.ExceptionMessageBox.ExceptionMessageBox
 
 using System;
 using System.Collections;
@@ -10,16 +8,19 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+
+using BlackbirdSql.Common.Enums;
+using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Events;
 
 using Microsoft.Win32;
-using BlackbirdSql.Common.Enums;
+
 
 namespace BlackbirdSql.Common.Exceptions
 {
 	[ComVisible(false)]
-	public class ExceptionMessageBox
+	public class ExceptionMessageBoxCtl
 	{
 		private readonly string[] m_buttonTextArray = new string[5];
 
@@ -360,74 +361,74 @@ namespace BlackbirdSql.Common.Exceptions
 			}
 		}
 
-		public event CopyToClipboardEventHandler OnCopyToClipboard;
+		public event CopyToClipboardEventHandler CopyToClipboardEvent;
 
-		public ExceptionMessageBox()
+		public ExceptionMessageBoxCtl()
 		{
 		}
 
-		public ExceptionMessageBox(Exception exception)
+		public ExceptionMessageBoxCtl(Exception exception)
 		{
 			m_message = exception;
 		}
 
-		public ExceptionMessageBox(string text)
+		public ExceptionMessageBoxCtl(string text)
 		{
 			m_text = text;
 		}
 
-		public ExceptionMessageBox(string text, string caption)
+		public ExceptionMessageBoxCtl(string text, string caption)
 		{
 			m_text = text;
 			m_caption = caption;
 		}
 
-		public ExceptionMessageBox(Exception exception, EnExceptionMessageBoxButtons buttons)
+		public ExceptionMessageBoxCtl(Exception exception, EnExceptionMessageBoxButtons buttons)
 		{
 			m_message = exception;
 			m_buttons = buttons;
 		}
 
-		public ExceptionMessageBox(string text, string caption, EnExceptionMessageBoxButtons buttons)
+		public ExceptionMessageBoxCtl(string text, string caption, EnExceptionMessageBoxButtons buttons)
 		{
 			m_text = text;
 			m_caption = caption;
 			m_buttons = buttons;
 		}
 
-		public ExceptionMessageBox(Exception exception, EnExceptionMessageBoxButtons buttons, EnExceptionMessageBoxSymbol symbol)
-		{
-			m_message = exception;
-			m_buttons = buttons;
-			m_symbol = symbol;
-		}
-
-		public ExceptionMessageBox(string text, string caption, EnExceptionMessageBoxButtons buttons, EnExceptionMessageBoxSymbol symbol)
-		{
-			m_text = text;
-			m_caption = caption;
-			m_buttons = buttons;
-			m_symbol = symbol;
-		}
-
-		public ExceptionMessageBox(Exception exception, EnExceptionMessageBoxButtons buttons, EnExceptionMessageBoxSymbol symbol, EnExceptionMessageBoxDefaultButton defaultButton)
+		public ExceptionMessageBoxCtl(Exception exception, EnExceptionMessageBoxButtons buttons, EnExceptionMessageBoxSymbol symbol)
 		{
 			m_message = exception;
 			m_buttons = buttons;
 			m_symbol = symbol;
-			m_defaultButton = defaultButton;
 		}
 
-		public ExceptionMessageBox(string text, string caption, EnExceptionMessageBoxButtons buttons, EnExceptionMessageBoxSymbol symbol, EnExceptionMessageBoxDefaultButton defaultButton)
+		public ExceptionMessageBoxCtl(string text, string caption, EnExceptionMessageBoxButtons buttons, EnExceptionMessageBoxSymbol symbol)
 		{
 			m_text = text;
 			m_caption = caption;
+			m_buttons = buttons;
+			m_symbol = symbol;
+		}
+
+		public ExceptionMessageBoxCtl(Exception exception, EnExceptionMessageBoxButtons buttons, EnExceptionMessageBoxSymbol symbol, EnExceptionMessageBoxDefaultButton defaultButton)
+		{
+			m_message = exception;
 			m_buttons = buttons;
 			m_symbol = symbol;
 			m_defaultButton = defaultButton;
 		}
 
-		public ExceptionMessageBox(Exception exception, EnExceptionMessageBoxButtons buttons, EnExceptionMessageBoxSymbol symbol, EnExceptionMessageBoxDefaultButton defaultButton, EnExceptionMessageBoxOptions options)
+		public ExceptionMessageBoxCtl(string text, string caption, EnExceptionMessageBoxButtons buttons, EnExceptionMessageBoxSymbol symbol, EnExceptionMessageBoxDefaultButton defaultButton)
+		{
+			m_text = text;
+			m_caption = caption;
+			m_buttons = buttons;
+			m_symbol = symbol;
+			m_defaultButton = defaultButton;
+		}
+
+		public ExceptionMessageBoxCtl(Exception exception, EnExceptionMessageBoxButtons buttons, EnExceptionMessageBoxSymbol symbol, EnExceptionMessageBoxDefaultButton defaultButton, EnExceptionMessageBoxOptions options)
 		{
 			m_message = exception;
 			m_buttons = buttons;
@@ -436,7 +437,7 @@ namespace BlackbirdSql.Common.Exceptions
 			m_options = options;
 		}
 
-		public ExceptionMessageBox(string text, string caption, EnExceptionMessageBoxButtons buttons, EnExceptionMessageBoxSymbol symbol, EnExceptionMessageBoxDefaultButton defaultButton, EnExceptionMessageBoxOptions options)
+		public ExceptionMessageBoxCtl(string text, string caption, EnExceptionMessageBoxButtons buttons, EnExceptionMessageBoxSymbol symbol, EnExceptionMessageBoxDefaultButton defaultButton, EnExceptionMessageBoxOptions options)
 		{
 			m_text = text;
 			m_caption = caption;
@@ -620,7 +621,7 @@ namespace BlackbirdSql.Common.Exceptions
 				m_caption = form.Text;
 			}
 
-			using ExceptionMessageBoxForm exceptionMessageBoxForm = new ExceptionMessageBoxForm();
+			using ExceptionMessageBoxDlg exceptionMessageBoxForm = new ExceptionMessageBoxDlg();
 			exceptionMessageBoxForm.SetButtonText(m_buttonTextArray);
 			exceptionMessageBoxForm.Buttons = m_buttons;
 			exceptionMessageBoxForm.Caption = m_caption;
@@ -634,7 +635,7 @@ namespace BlackbirdSql.Common.Exceptions
 			exceptionMessageBoxForm.ShowCheckBox = m_showCheckBox;
 			exceptionMessageBoxForm.MessageLevelCount = m_messageLevelCount;
 			exceptionMessageBoxForm.ShowHelpButton = m_showHelpButton;
-			exceptionMessageBoxForm.OnCopyToClipboardInternal += OnCopyToClipboardEventInternal;
+			exceptionMessageBoxForm.CopyToClipboardInternalEvent += OnCopyToClipboardEventInternal;
 			if (m_customSymbol != null)
 			{
 				exceptionMessageBoxForm.CustomSymbol = m_customSymbol;
@@ -685,12 +686,12 @@ namespace BlackbirdSql.Common.Exceptions
 
 		private void OnCopyToClipboardEventInternal(object sender, CopyToClipboardEventArgs e)
 		{
-			OnCopyToClipboard?.Invoke(this, e);
+			CopyToClipboardEvent?.Invoke(this, e);
 		}
 
 		public static string GetMessageText(Exception exception)
 		{
-			using ExceptionMessageBoxForm exceptionMessageBoxForm = new ExceptionMessageBoxForm();
+			using ExceptionMessageBoxDlg exceptionMessageBoxForm = new ExceptionMessageBoxDlg();
 			exceptionMessageBoxForm.Message = exception;
 			return exceptionMessageBoxForm.BuildMessageText(isForEmail: false, isInternal: false);
 		}

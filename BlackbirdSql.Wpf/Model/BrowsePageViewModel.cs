@@ -45,8 +45,8 @@ public class BrowsePageViewModel : ViewModelBase
         if (_connectionPropertyViewModel != null && rhs.Channel != null)
         {
             _Channel = rhs.Channel;
-            _Channel.SelectedConnectionChanged -= UpdateSelectedConnection;
-            _Channel.SelectedConnectionChanged += UpdateSelectedConnection;
+            _Channel.SelectedConnectionChangedEvent -= UpdateSelectedConnection;
+            _Channel.SelectedConnectionChangedEvent += UpdateSelectedConnection;
         }
     }
 
@@ -60,8 +60,8 @@ public class BrowsePageViewModel : ViewModelBase
         if (connectionPropertyViewModel != null && channel != null)
         {
             _connectionPropertyViewModel = connectionPropertyViewModel;
-            channel.SelectedConnectionChanged -= UpdateSelectedConnection;
-            channel.SelectedConnectionChanged += UpdateSelectedConnection;
+            channel.SelectedConnectionChangedEvent -= UpdateSelectedConnection;
+            channel.SelectedConnectionChangedEvent += UpdateSelectedConnection;
         }
     }
 

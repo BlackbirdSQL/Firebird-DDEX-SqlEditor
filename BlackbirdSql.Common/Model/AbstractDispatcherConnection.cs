@@ -402,7 +402,7 @@ public class AbstractDispatcherConnection : AbstractModelPropertyAgent
 	{
 		CheckAccessExecute(delegate
 		{
-			_DispatcherPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			_DispatcherPropertyChangedHandler?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
 			if (_InternalPropertyDependencies != null && !string.IsNullOrEmpty(propertyName))
 			{

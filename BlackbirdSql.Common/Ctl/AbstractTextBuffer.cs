@@ -10,21 +10,21 @@ namespace BlackbirdSql.Common.Ctl;
 
 public abstract class AbstractTextBuffer
 {
-	private EventHandler _attributeChangedHandler;
+	private EventHandler _AttributeChangedHandler;
 
-	private EventHandler _textChangedHandler;
+	private EventHandler _TextChangedHandler;
 
-	private bool _lockEvents;
+	private bool _LockEvents;
 
 	public bool LockEvents
 	{
 		get
 		{
-			return _lockEvents;
+			return _LockEvents;
 		}
 		set
 		{
-			_lockEvents = value;
+			_LockEvents = value;
 		}
 	}
 
@@ -36,27 +36,27 @@ public abstract class AbstractTextBuffer
 
 	public abstract int TextLength { get; }
 
-	public event EventHandler AttributeChanged
+	public event EventHandler AttributeChangedEvent
 	{
 		add
 		{
-			_attributeChangedHandler = (EventHandler)Delegate.Combine(_attributeChangedHandler, value);
+			_AttributeChangedHandler = (EventHandler)Delegate.Combine(_AttributeChangedHandler, value);
 		}
 		remove
 		{
-			_attributeChangedHandler = (EventHandler)Delegate.Remove(_attributeChangedHandler, value);
+			_AttributeChangedHandler = (EventHandler)Delegate.Remove(_AttributeChangedHandler, value);
 		}
 	}
 
-	public event EventHandler TextChanged
+	public event EventHandler TextChangedEvent
 	{
 		add
 		{
-			_textChangedHandler = (EventHandler)Delegate.Combine(_textChangedHandler, value);
+			_TextChangedHandler = (EventHandler)Delegate.Combine(_TextChangedHandler, value);
 		}
 		remove
 		{
-			_textChangedHandler = (EventHandler)Delegate.Remove(_textChangedHandler, value);
+			_TextChangedHandler = (EventHandler)Delegate.Remove(_TextChangedHandler, value);
 		}
 	}
 
@@ -76,17 +76,17 @@ public abstract class AbstractTextBuffer
 
 	protected void OnAttributeChanged(EventArgs e)
 	{
-		if (_attributeChangedHandler != null && !_lockEvents)
+		if (_AttributeChangedHandler != null && !_LockEvents)
 		{
-			_attributeChangedHandler(this, e);
+			_AttributeChangedHandler(this, e);
 		}
 	}
 
 	protected void OnTextChanged(EventArgs e)
 	{
-		if (_textChangedHandler != null && !_lockEvents)
+		if (_TextChangedHandler != null && !_LockEvents)
 		{
-			_textChangedHandler(this, e);
+			_TextChangedHandler(this, e);
 		}
 	}
 

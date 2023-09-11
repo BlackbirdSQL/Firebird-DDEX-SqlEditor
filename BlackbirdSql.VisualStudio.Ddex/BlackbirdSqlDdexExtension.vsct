@@ -45,7 +45,7 @@
 					<CommandName>OnlineToolbar</CommandName>
 				</Strings>
 			</Menu>
-			<Menu guid="CommandSetGuid" id="MenuIdResultsTo" priority="0x0140" type="MenuController">
+			<Menu guid="CommandSetGuid" id="MenuIdResultsTo" priority="0x0150" type="MenuController">
 				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>TextIsAnchorCommand</CommandFlag>
@@ -177,6 +177,13 @@
 					<ButtonText>Include Actual Execution Plan</ButtonText>
 				</Strings>
 			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdToggleClientStatistics" priority="0x0150" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
+				<Icon guid="ImagesGuid" id="ImgToggleClientStatistics" />
+				<Strings>
+					<ButtonText>Include Client Statistics on next Query Execution</ButtonText>
+				</Strings>
+			</Button>
 
 			<!-- MenuIdScriptToolbarGroup : CtlrIdResultsToGroup -->
 			<Button guid="CommandSetGuid" id="CmdIdResultsAsGrid" priority="0x0000" type="Button">
@@ -236,7 +243,7 @@
             bitmap strip containing the bitmaps and then there are the numeric ids of the elements used
             inside a button definition. An important aspect of this declaration is that the element id
             must be the actual index (1-based) of the bitmap inside the bitmap strip. -->
-			<Bitmap guid="ImagesGuid" href="Resources\ToolbarImageStrip.png" usedList="ImgExecuteQuery, ImgRunQuery, ImgCancelQuery, ImgConnect, ImgDisconnect, ImgNewQueryConnection, ImgResultsAsGrid, ImgResultsAsText, ImgDownGlygh, ImgOpenScript, ImgParseQuery, ImgToggleExecutionPlan, ImgShowEstimatedPlan" />
+			<Bitmap guid="ImagesGuid" href="Resources\ToolbarImageStrip.png" usedList="ImgExecuteQuery, ImgRunQuery, ImgCancelQuery, ImgConnect, ImgDisconnect, ImgNewQueryConnection, ImgResultsAsGrid, ImgResultsAsText, ImgDownGlygh, ImgOpenScript, ImgParseQuery, ImgToggleExecutionPlan, ImgShowEstimatedPlan, ImgToggleClientStatistics" />
 		</Bitmaps>
 	</Commands>
 
@@ -333,6 +340,7 @@
 			<IDSymbol name="ImgParseQuery" value="11" />
 			<IDSymbol name="ImgToggleExecutionPlan" value="12" />
 			<IDSymbol name="ImgShowEstimatedPlan" value="13" />
+			<IDSymbol name="ImgToggleClientStatistics" value="14" />
 		</GuidSymbol>
 	</Symbols>
 </CommandTable>

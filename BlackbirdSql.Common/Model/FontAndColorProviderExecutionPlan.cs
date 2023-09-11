@@ -38,7 +38,7 @@ public sealed class FontAndColorProviderExecutionPlan : AbstractFontAndColorProv
 
 	private FontAndColorProviderExecutionPlan()
 	{
-		CategoryName = SharedResx.FontAndColorCategorySqlResultsExecutionPlan;
+		CategoryName = ControlsResources.FontAndColorCategorySqlResultsExecutionPlan;
 		Guid = VS.CLSID_FontAndColorsSqlResultsExecutionPlanCategory;
 		FontDefault = new Font("Courier New", 10f);
 		AllColorableItemInfo allColorableItemInfo = new AllColorableItemInfo
@@ -66,7 +66,7 @@ public sealed class FontAndColorProviderExecutionPlan : AbstractFontAndColorProv
 			eLineStyle = LINESTYLE.LI_SOLID,
 			bFlagsValid = 1,
 			fFlags = (uint)__FCITEMFLAGS.FCIF_PLAINTEXT,
-			bstrDescription = SharedResx.FontAndColorShowplanDescription
+			bstrDescription = ControlsResources.FontAndColorShowplanDescription
 		};
 		FontColorDefaults.Add(allColorableItemInfo);
 	}

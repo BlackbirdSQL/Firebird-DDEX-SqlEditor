@@ -401,7 +401,7 @@ public class AbstractDispatcherObject : AbstractPropertyAgent
 	{
 		CheckAccessExecute(delegate
 		{
-			_DispatcherPropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			_DispatcherPropertyChangedHandler?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
 			if (_InternalPropertyDependencies != null && !string.IsNullOrEmpty(propertyName))
 			{

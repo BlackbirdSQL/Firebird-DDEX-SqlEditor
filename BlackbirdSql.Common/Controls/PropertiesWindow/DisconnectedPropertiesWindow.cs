@@ -32,7 +32,7 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 
 		public override string GetClassName()
 		{
-			return ControlsResources.PropertyWindowQueryWindowOptions;
+			return AttributeResources.PropertyWindowQueryWindowOptions;
 		}
 	}
 }

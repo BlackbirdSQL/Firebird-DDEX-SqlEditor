@@ -190,7 +190,7 @@ public class SqlEditorViewFilter : AbstractViewFilter
 					case VSConstants.VSStd2KCmdID.SURROUNDWITH:
 						{
 							AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(Editor.DocData);
-							if (auxDocData != null && auxDocData.QueryExecutor != null && !auxDocData.QueryExecutor.IsExecuting && !auxDocData.QueryExecutor.IsDebugging)
+							if (auxDocData != null && auxDocData.QryMgr != null && !auxDocData.QryMgr.IsExecuting && !auxDocData.QryMgr.IsDebugging)
 							{
 								prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED);
 							}

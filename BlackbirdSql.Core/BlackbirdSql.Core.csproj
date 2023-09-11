@@ -41,6 +41,11 @@
 	  <Compile Include="Model\Encoding2.cs" />
 	  <Compile Include="Model\TypeHelper.cs" />
 	  <Compile Include="Model\IscCodes.cs" />
+	  <Compile Include="Properties\AttributeResources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>AttributeResources.resx</DependentUpon>
+	  </Compile>
 	  <Compile Include="Root\CommandProviders\AbstractCommandProvider.cs" />
 	  <Compile Include="Root\CommandProviders\CommandProperties.cs" />
 	  <Compile Include="Root\ComponentModel\GlobalOnOffConverter.cs" />
@@ -59,7 +64,6 @@
 	  <Compile Include="Root\CoreConstants.cs" />
 	  <Compile Include="Root\CoreIconsCollection.cs" />
 	  <Compile Include="Root\CorePropertySet.cs" />
-	  <Compile Include="Properties\CoreResources.Designer.cs" />
 	  <Compile Include="Root\ComponentModel\DependsOnPropertyAttribute.cs" />
 	  <Compile Include="Root\Describer.cs" />
 	  <Compile Include="Root\DescriberDictionary.cs" />
@@ -140,7 +144,6 @@
 	  <Compile Include="Model\ModelConstants.cs" />
 	  <Compile Include="Model\ModelIconsCollection.cs" />
 	  <Compile Include="Model\ModelPropertySet.cs" />
-	  <Compile Include="Model\ModelResources.Designer.cs" />
 	  <Compile Include="Model\MonikerAgent.cs" />
 	  <Compile Include="Model\UIConnectionInfo.cs" />
 	  <Compile Include="Root\Config\AbstractOptionModel.cs" />
@@ -151,11 +154,6 @@
 	  <Compile Include="Root\ComponentModel\OverrideDataTypeAttribute.cs" />
 	  <Compile Include="Root\ComponentModel\OverridePropertyNameAttribute.cs" />
 	  <Compile Include="Root\Config\Enums\SettingDataType.cs" />
-	  <Compile Include="Properties\ControlsResources.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>ControlsResources.resx</DependentUpon>
-	  </Compile>
 	  <Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
 	  <Compile Include="Properties\Resources.Designer.cs" />
 	  <Compile Include="Root\Providers\AbstractAsyncPackage.cs" />
@@ -187,11 +185,9 @@
 
 
 	<ItemGroup>
-	  <EmbeddedResource Include="Properties\CoreResources.resx" />
-	  <EmbeddedResource Include="Model\ModelResources.resx" />
-	  <EmbeddedResource Include="Properties\ControlsResources.resx">
-	    <LastGenOutput>ControlsResources.Designer.cs</LastGenOutput>
+	  <EmbeddedResource Include="Properties\AttributeResources.resx">
 	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
 	  <EmbeddedResource Include="Properties\Resources.resx" />
 	</ItemGroup>
@@ -232,35 +228,17 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Compile Update="Properties\CoreResources.Designer.cs">
-		  <DependentUpon>CoreResources.resx</DependentUpon>
-		  <DesignTime>True</DesignTime>
-		  <AutoGen>True</AutoGen>
-		</Compile>
 		<Compile Update="Properties\Resources.Designer.cs">
 		  <DesignTime>True</DesignTime>
 		  <AutoGen>True</AutoGen>
 		  <DependentUpon>Resources.resx</DependentUpon>
 		</Compile>
-		<Compile Update="Model\ModelResources.Designer.cs">
-		  <DependentUpon>ModelResources.resx</DependentUpon>
-		  <DesignTime>True</DesignTime>
-		  <AutoGen>True</AutoGen>
-		</Compile>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EmbeddedResource Update="Properties\CoreResources.resx">
-	    <LastGenOutput>CoreResources.Designer.cs</LastGenOutput>
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	  </EmbeddedResource>
 	  <EmbeddedResource Update="Properties\Resources.resx">
 	    <Generator>PublicResXFileCodeGenerator</Generator>
 	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Model\ModelResources.resx">
-	    <LastGenOutput>ModelResources.Designer.cs</LastGenOutput>
-	    <Generator>PublicResXFileCodeGenerator</Generator>
 	  </EmbeddedResource>
 	</ItemGroup>
 

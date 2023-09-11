@@ -29,14 +29,14 @@ public class SplitViewContainer : Control, IServiceProvider
 			SetStyle(ControlStyles.StandardClick | ControlStyles.StandardDoubleClick, value: false);
 			SetBackColor();
 			_VsFontColorPreferences = new VsFontColorPreferences();
-			_VsFontColorPreferences.PreferencesChanged += VsFontColorPreferences_PreferencesChanged;
+			_VsFontColorPreferences.PreferencesChangedEvent += VsFontColorPreferences_PreferencesChanged;
 		}
 
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
 			{
-				_VsFontColorPreferences.PreferencesChanged -= VsFontColorPreferences_PreferencesChanged;
+				_VsFontColorPreferences.PreferencesChangedEvent -= VsFontColorPreferences_PreferencesChanged;
 				_VsFontColorPreferences.Dispose();
 			}
 			base.Dispose(disposing);
@@ -151,7 +151,7 @@ public class SplitViewContainer : Control, IServiceProvider
 				{
 					Guid guid = (Guid)SplitterBar.PrimaryPaneFirstButton.Tag;
 					UpdateActiveTab(guid);
-					this.TabActivationRequest?.Invoke(this, new TabActivationEventArgs(guid, true));
+					TabActivationRequestEvent?.Invoke(this, new TabActivationEventArgs(guid, true));
 				}
 			}
 			if (SplitterBar.ShowSplitter)
@@ -185,7 +185,7 @@ public class SplitViewContainer : Control, IServiceProvider
 				SplitterBar.VSplitButton.Checked = Orientation == Orientation.Vertical && SplitterBar.ShowSplitter;
 				SplitterBar.HSplitButton.Checked = Orientation == Orientation.Horizontal && SplitterBar.ShowSplitter;
 				UpdateLayout();
-				this.OrientationChanged?.Invoke(this, new EventArgs());
+				OrientationChangedEvent?.Invoke(this, new EventArgs());
 			}
 		}
 	}
@@ -294,13 +294,13 @@ public class SplitViewContainer : Control, IServiceProvider
 
 	public SplitViewSplitterStrip SplitterBar => _splitViewStrip;
 
-	public event EventHandler IsSplitterVisibleChanged;
+	public event EventHandler IsSplitterVisibleChangedEvent;
 
-	public event EventHandler OrientationChanged;
+	public event EventHandler OrientationChangedEvent;
 
-	public event EventHandler PanelSwapped;
+	public event EventHandler PanelSwappedEvent;
 
-	public event EventHandler<TabActivationEventArgs> TabActivationRequest;
+	public event EventHandler<TabActivationEventArgs> TabActivationRequestEvent;
 
 	public SplitViewContainer()
 	{
@@ -313,11 +313,11 @@ public class SplitViewContainer : Control, IServiceProvider
 		SplitterBar.HSplitButton.Click += SplitterBar_SplitButtonClicked;
 		SplitterBar.VSplitButton.Click += SplitterBar_SplitButtonClicked;
 		SplitterBar.SwapButton.Click += SwapButton_Click;
-		SplitterBar.DesignerXamlClick += DesignerXamlButton_Click;
-		SplitterBar.DesignerXamlDoubleClick += DesignerXamlButton_DoubleClick;
-		SplitterBar.ShowSplitterChanged += SplitterBar_ShowSplitterChanged;
+		SplitterBar.DesignerXamlClickEvent += DesignerXamlButton_Click;
+		SplitterBar.DesignerXamlDoubleClickEvent += DesignerXamlButton_DoubleClick;
+		SplitterBar.ShowSplitterChangedEvent += SplitterBar_ShowSplitterChanged;
 		Splitter.DoubleClick += Splitter_DoubleClick;
-		Splitter.SplitterMoved += Splitter_SplitterMoved;
+		Splitter.SplitterMovedEvent += Splitter_SplitterMoved;
 		LoadPathItems();
 		UpdateSplitter();
 		_splitContainer.Layout += SplitContainer_Layout;
@@ -423,11 +423,11 @@ public class SplitViewContainer : Control, IServiceProvider
 		}
 		if (!IsSplitterVisible)
 		{
-			this.TabActivationRequest?.Invoke(sender, new TabActivationEventArgs((Guid)toolStripButton.Tag, true));
+			TabActivationRequestEvent?.Invoke(sender, new TabActivationEventArgs((Guid)toolStripButton.Tag, true));
 		}
 		else
 		{
-			this.TabActivationRequest?.Invoke(sender, new TabActivationEventArgs((Guid)toolStripButton.Tag));
+			TabActivationRequestEvent?.Invoke(sender, new TabActivationEventArgs((Guid)toolStripButton.Tag));
 		}
 		SqlEtwProvider.EventWriteTSqlEditorTabSwitch(IsStart: false, toolStripButton.Name ?? string.Empty);
 	}
@@ -701,7 +701,7 @@ public class SplitViewContainer : Control, IServiceProvider
 
 	private void SplitterBar_ShowSplitterChanged(object sender, EventArgs e)
 	{
-		this.IsSplitterVisibleChanged?.Invoke(this, e);
+		IsSplitterVisibleChangedEvent?.Invoke(this, e);
 	}
 
 	private void SplitterBar_SplitButtonClicked(object sender, EventArgs e)
@@ -793,7 +793,7 @@ public class SplitViewContainer : Control, IServiceProvider
 		_panelBottom.ResumeLayout();
 		_splitContainer.ResumeLayout();
 		Update();
-		this.PanelSwapped?.Invoke(this, EventArgs.Empty);
+		PanelSwappedEvent?.Invoke(this, EventArgs.Empty);
 	}
 
 	protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified)

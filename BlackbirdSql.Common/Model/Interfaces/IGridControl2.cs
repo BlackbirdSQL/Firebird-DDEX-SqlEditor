@@ -25,7 +25,7 @@ namespace BlackbirdSql.Common.Model.Interfaces
 
 		bool ContainsFocus { get; }
 
-		event AdjustSelectionForButtonClickEventHandler AdjustSelectionForButtonClick;
+		event AdjustSelectionForButtonClickEventHandler AdjustSelectionForButtonClickEvent;
 
 		void SetSelectedCellsAndCurrentCell(BlockOfCellsCollection cells, long currentRow, int currentColumn);
 

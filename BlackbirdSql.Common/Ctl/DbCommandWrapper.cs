@@ -11,6 +11,7 @@ using BlackbirdSql.Core;
 using BlackbirdSql.Common.Properties;
 
 using FirebirdSql.Data.FirebirdClient;
+using BlackbirdSql.Common.Model.Events;
 
 // using Microsoft.Data.SqlClient;
 
@@ -26,21 +27,7 @@ public sealed class DbCommandWrapper
 {
 	private readonly IDbCommand _Command;
 
-	public event StatementCompletedEventHandler StatementCompleted
-	{
-		add
-		{
-			// NotImplementedException ex = new();
-			// Diag.Dug(ex);
-			/* GetAsSqlCommand().StatementCompleted += value;*/
-		}
-		remove
-		{
-			// NotImplementedException ex = new();
-			// Diag.Dug(ex);
-			/* GetAsSqlCommand().StatementCompleted -= value; */
-		}
-	}
+	public event QESQLStatementCompletedEventHandler StatementCompletedEvent;
 
 	public DbCommandWrapper(IDbCommand command)
 	{
@@ -49,7 +36,7 @@ public sealed class DbCommandWrapper
 			Cmd.CheckForNullReference(command, "command");
 			if (command is not FbCommand)
 			{
-				InvalidOperationException ex = new(SharedResx.InvalidCommandType);
+				InvalidOperationException ex = new(ControlsResources.InvalidCommandType);
 				throw ex;
 			}
 		}
@@ -66,10 +53,14 @@ public sealed class DbCommandWrapper
 	
 	public FbCommand GetAsSqlCommand()
 	{
-
+		
 		return (FbCommand)_Command;
 	}
-	
+
+	public void Dummy()
+	{
+		StatementCompletedEvent?.Invoke(this, new(0, false, false));
+	}
 
 	public static bool IsSupportedCommand(IDbCommand command)
 	{

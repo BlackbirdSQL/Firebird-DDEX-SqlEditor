@@ -81,11 +81,11 @@ public abstract class AbstractEditorEventsManager : AbstractEventsManager
 	{
 		DialogResult dialogResult = DialogResult.Yes;
 		bool flag = Cmd.IsInAutomationFunction();
-		if (add.QueryExecutor.IsExecuting)
+		if (add.QryMgr.IsExecuting)
 		{
 			if (!flag)
 			{
-				dialogResult = Cmd.ShowMessageBoxEx("", SharedResx.ScriptIsStillBeingExecuted, "", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+				dialogResult = Cmd.ShowMessageBoxEx("", ControlsResources.ScriptIsStillBeingExecuted, "", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
 			}
 
 			if (dialogResult == DialogResult.No)
@@ -93,13 +93,13 @@ public abstract class AbstractEditorEventsManager : AbstractEventsManager
 				return true;
 			}
 
-			add.QueryExecutor.Cancel(bSync: true);
+			add.QryMgr.Cancel(bSync: true);
 		}
-		else if (add.QueryExecutor.ConnectionStrategy.IsTransactionOpen())
+		else if (add.QryMgr.ConnectionStrategy.IsTransactionOpen())
 		{
 			if (!flag)
 			{
-				dialogResult = Cmd.ShowMessageBoxEx("", SharedResx.UncommittedTransactionsWarning, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
+				dialogResult = Cmd.ShowMessageBoxEx("", ControlsResources.UncommittedTransactionsWarning, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
 			}
 
 			switch (dialogResult)
@@ -109,7 +109,7 @@ public abstract class AbstractEditorEventsManager : AbstractEventsManager
 				case DialogResult.Yes:
 					try
 					{
-						add.QueryExecutor.ConnectionStrategy.CommitOpenTransactions();
+						add.QryMgr.ConnectionStrategy.CommitOpenTransactions();
 					}
 					catch (Exception ex)
 					{

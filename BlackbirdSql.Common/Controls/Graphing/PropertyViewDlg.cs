@@ -9,7 +9,7 @@ using BlackbirdSql.Common.Properties;
 
 namespace BlackbirdSql.Common.Controls.Graphing;
 
-public class PropertyViewForm : Form
+public class PropertyViewDlg : Form
 {
 	private TextBox viewTextBox;
 
@@ -31,7 +31,7 @@ public class PropertyViewForm : Form
 		}
 	}
 
-	public PropertyViewForm()
+	public PropertyViewDlg()
 	{
 		InitializeComponent();
 		Icon = ControlsResources.Actual_Executionplan;
@@ -48,7 +48,7 @@ public class PropertyViewForm : Form
 
 	private void InitializeComponent()
 	{
-		System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BlackbirdSql.Common.Controls.Graphing.PropertyViewForm));
+		System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BlackbirdSql.Common.Controls.Graphing.PropertyViewDlg));
 		this.viewTextBox = new System.Windows.Forms.TextBox();
 		this.closeButton = new System.Windows.Forms.Button();
 		base.SuspendLayout();

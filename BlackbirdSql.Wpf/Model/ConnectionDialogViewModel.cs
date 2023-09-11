@@ -174,27 +174,27 @@ public class ConnectionDialogViewModel : ViewModelBase
         set { SetProperty(C_KeyIsExecuting, value); }
     }
 
-    public event EventHandler<SectionEventArgs> SectionInitialized
+    public event EventHandler<SectionEventArgs> SectionInitializedEvent
     {
         add
         {
-            Model.SectionInitialized += value;
+            Model.SectionInitializedEvent += value;
         }
         remove
         {
-            Model.SectionInitialized -= value;
+            Model.SectionInitializedEvent -= value;
         }
     }
 
-    public event EventHandler<SectionEventArgs> SectionClosing
-    {
+    public event EventHandler<SectionEventArgs> SectionClosingEvent
+	{
         add
         {
-            Model.SectionClosing += value;
+            Model.SectionClosingEvent += value;
         }
         remove
         {
-            Model.SectionClosing -= value;
+            Model.SectionClosingEvent -= value;
         }
     }
 
@@ -210,16 +210,16 @@ public class ConnectionDialogViewModel : ViewModelBase
         ConnectCommand.CanExecuteChanged += OnCanExecuteChanged;
         TestConnectionCommand.CanExecuteChanged += OnCanExecuteChanged;
         Model = new DialogModel(dependencyManager);
-        Model.DiscoveryCompleted += Model_DiscoveryCompleted;
+        Model.DiscoveryCompletedEvent += Model_DiscoveryCompleted;
         ServiceManager<IConnectionMruManager> serviceManager = new ServiceManager<IConnectionMruManager>(dependencyManager);
         _MruManager = serviceManager.GetService(null);
         Cmd.CheckForNull(_MruManager, "mruManager");
         _ServerConnectionProviderServiceManager = new ServiceManager<IServerConnectionProvider>(dependencyManager);
-        _Channel.MakeConnection += Connect;
-        _Channel.TestConnection += ChannelOnTestConnection;
-        _Channel.ConnectionsLoaded += ChannelOnConnectionsLoaded;
-        _Channel.ExceptionOccurred += ChannelOnExceptionOccurred;
-        // _Channel.FirewallRuleCreated += OnFirewallRuleCreated;
+        _Channel.MakeConnectionEvent += Connect;
+        _Channel.TestConnectionEvent += ChannelOnTestConnection;
+        _Channel.ConnectionsLoadedEvent += ChannelOnConnectionsLoaded;
+        _Channel.ExceptionOccurredEvent += ChannelOnExceptionOccurred;
+        // _Channel.FirewallRuleCreatedEvent += OnFirewallRuleCreated;
         _ConnectionProperty = new ConnectionPropertySectionViewModel(_Channel, dependencyManager, ci);
         _HistoryPageViewModel = new HistoryPageViewModel(dependencyManager, _ConnectionProperty, _Channel, _MruManager, ci.Database != null);
         _BrowsePageViewModel = new BrowsePageViewModel(dependencyManager, _ConnectionProperty, _Channel);
@@ -654,10 +654,11 @@ public class ConnectionDialogViewModel : ViewModelBase
     {
         if (_Channel != null)
         {
-            _Channel.MakeConnection -= Connect;
-            _Channel.TestConnection -= ChannelOnTestConnection;
-            _Channel.ExceptionOccurred -= ChannelOnExceptionOccurred;
-            // _Channel.FirewallRuleCreated -= OnFirewallRuleCreated;
+            _Channel.MakeConnectionEvent -= Connect;
+            _Channel.TestConnectionEvent -= ChannelOnTestConnection;
+			_Channel.ConnectionsLoadedEvent -= ChannelOnConnectionsLoaded;
+			_Channel.ExceptionOccurredEvent -= ChannelOnExceptionOccurred;
+            // _Channel.FirewallRuleCreatedEvent -= OnFirewallRuleCreated;
         }
 
         _CancellationTokenSource.Dispose();

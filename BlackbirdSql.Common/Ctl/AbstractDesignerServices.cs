@@ -1,9 +1,6 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.Package, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.Package.DesignerServices.DatabaseChangesManager
-
-
 using System;
-
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
@@ -12,6 +9,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
+
 using BlackbirdSql.Common.Events;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
@@ -23,7 +21,6 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
@@ -33,28 +30,28 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using IServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 
-
-
 namespace BlackbirdSql.Common.Ctl;
-
 
 public abstract class AbstractDesignerServices
 {
-	protected static event EventHandler<BeforeOpenDocumentEventArgs> EBeforeOpenDocument;
 
 	protected static Guid _DslEditorFactoryClsid = Guid.Empty;
 	protected static Dictionary<DatabaseLocation, Dictionary<NodeElementDescriptor, string>> _InflightOpens = null;
-	protected static object _StateLock;
+	protected static object _LockObject;
 
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
+	protected static event EventHandler<BeforeOpenDocumentEventArgs> S_BeforeOpenDocumentEvent;
 
-	public static event EventHandler<BeforeOpenDocumentEventArgs> BeforeOpenDocument
+
+	public static event EventHandler<BeforeOpenDocumentEventArgs> SBeforeOpenDocumentEvent
 	{
-		add { EBeforeOpenDocument += value; }
-		remove { EBeforeOpenDocument -= value; }
+		add {S_BeforeOpenDocumentEvent += value; }
+		remove { S_BeforeOpenDocumentEvent -= value; }
 	}
 
-	protected static EventHandler<BeforeOpenDocumentEventArgs> BeforeOpenDocumentEvent => EBeforeOpenDocument;
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
+	protected static EventHandler<BeforeOpenDocumentEventArgs> S_BeforeOpenDocumentHandler => S_BeforeOpenDocumentEvent;
 
 
 	public static Guid DslEditorFactoryClsid
@@ -76,12 +73,12 @@ public abstract class AbstractDesignerServices
 
 	public AbstractDesignerServices()
 	{
-		_StateLock ??= new object();
+		_LockObject ??= new object();
 	}
 
 	protected static void AddInflightOpen(DatabaseLocation dbl, NodeElementDescriptor descriptor, string moniker)
 	{
-		lock (_StateLock)
+		lock (_LockObject)
 		{
 			if (!InflightOpens.TryGetValue(dbl, out Dictionary<NodeElementDescriptor, string> value))
 			{
@@ -207,7 +204,7 @@ public abstract class AbstractDesignerServices
 	{
 		string value = null;
 
-		lock (_StateLock)
+		lock (_LockObject)
 		{
 			if (InflightOpens.TryGetValue(dbl, out Dictionary<NodeElementDescriptor, string> value2))
 			{
@@ -511,7 +508,7 @@ public abstract class AbstractDesignerServices
 			throw ExceptionFactory.CreateArgumentNullException("desc");
 		}
 		*/
-		lock (_StateLock)
+		lock (_LockObject)
 		{
 			if (_InflightOpens.TryGetValue(dbl, out var value))
 			{
@@ -672,7 +669,7 @@ public abstract class AbstractDesignerServices
 	protected static void WriteModelDisposedToDocument(string mkDocument)
 	{
 		SqlTracer.TraceEvent(TraceEventType.Information, EnSqlTraceId.CoreServices, "Node disposed of before object definition could be retrieved");
-		string text = string.Format(CultureInfo.CurrentCulture, "/*\n\r{0}\n\r*/", SharedResx.PowerBuffer_ModelDisposed);
+		string text = string.Format(CultureInfo.CurrentCulture, "/*\n\r{0}\n\r*/", ControlsResources.PowerBuffer_ModelDisposed);
 		SetTextIntoTextBuffer(mkDocument, text);
 	}
 }

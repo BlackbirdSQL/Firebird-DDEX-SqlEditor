@@ -126,11 +126,11 @@ public class SectionHost : IDisposable, IServiceProvider
 
 	public bool IsInitialized { get; private set; }
 
-	public event EventHandler<SectionEventArgs> SectionCreated;
+	public event EventHandler<SectionEventArgs> SectionCreatedEvent;
 
-	public event EventHandler<SectionEventArgs> SectionInitialized;
+	public event EventHandler<SectionEventArgs> SectionInitializedEvent;
 
-	public event EventHandler<SectionEventArgs> SectionClosing;
+	public event EventHandler<SectionEventArgs> SectionClosingEvent;
 
 	public SectionHost(SectionRegInfo sectionRegInfo)
 	{
@@ -139,7 +139,7 @@ public class SectionHost : IDisposable, IServiceProvider
 
 	public void RaiseSectionClosing()
 	{
-		SectionClosing?.Invoke(this, new SectionEventArgs(this));
+		SectionClosingEvent?.Invoke(this, new SectionEventArgs(this));
 	}
 
 	private void ReplaceWithErrorSection(Exception ex)
@@ -184,7 +184,7 @@ public class SectionHost : IDisposable, IServiceProvider
 			Trace.TraceError("SectionHost.Create: {0}", ex.Message);
 			ReplaceWithErrorSection(ex);
 		}
-		SectionCreated?.Invoke(this, new SectionEventArgs(this));
+		SectionCreatedEvent?.Invoke(this, new SectionEventArgs(this));
 	}
 
 	public void Initialize(object context)
@@ -203,7 +203,7 @@ public class SectionHost : IDisposable, IServiceProvider
 				ReplaceWithErrorSection(ex);
 			}
 			IsInitialized = true;
-			SectionInitialized?.Invoke(this, new SectionEventArgs(this));
+			SectionInitializedEvent?.Invoke(this, new SectionEventArgs(this));
 		}
 	}
 

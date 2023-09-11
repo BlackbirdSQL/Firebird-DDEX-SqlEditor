@@ -583,7 +583,7 @@ public class Splitter : Control
 		}
 	}
 
-	public event SplitterEventHandler SplitterMoving
+	public event SplitterEventHandler SplitterMovingEvent
 	{
 		add
 		{
@@ -595,7 +595,7 @@ public class Splitter : Control
 		}
 	}
 
-	public event SplitterEventHandler SplitterMoved
+	public event SplitterEventHandler SplitterMovedEvent
 	{
 		add
 		{

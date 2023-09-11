@@ -24,19 +24,19 @@ public class PropertiesWindowManager : IDisposable
 
 	private Semaphore _SingleAsyncUpdate = new Semaphore(1, 1);
 
-	private readonly object _LocalLock = new object();
+	private readonly object _LockObject = new object();
 
 	public SqlEditorTabbedEditorPane EditorPane { get; private set; }
 
 	public SqlEditorTabbedEditorUI EditorUI { get; private set; }
 
-	public QueryExecutor QueryExecutor { get; private set; }
+	public QueryManager QryMgr { get; private set; }
 
 	public PropertiesWindowManager(SqlEditorTabbedEditorPane editorPane)
 	{
 		EditorPane = editorPane;
 		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(editorPane.DocData);
-		QueryExecutor = auxDocData.QueryExecutor;
+		QryMgr = auxDocData.QryMgr;
 		EditorUI = editorPane.TabbedEditorUI;
 		RegistererEventHandlers();
 	}
@@ -44,25 +44,25 @@ public class PropertiesWindowManager : IDisposable
 	private void RegistererEventHandlers()
 	{
 		SqlEditorTabbedEditorUI editorUI = EditorUI;
-		editorUI.OnFocus = (EventHandler)Delegate.Combine(editorUI.OnFocus, new EventHandler(OnFocusReceived));
-		QueryExecutor.ScriptExecutionCompleted += OnScriptExecutionCompleted;
-		QueryExecutor.StatusChanged += OnConnectionChanged;
-		EditorUI.TabActivated += OnTabActivated;
+		editorUI.OnFocusHandler = (EventHandler)Delegate.Combine(editorUI.OnFocusHandler, new EventHandler(OnFocusReceived));
+		QryMgr.ScriptExecutionCompletedEvent += OnScriptExecutionCompleted;
+		QryMgr.StatusChangedEvent += OnConnectionChanged;
+		EditorUI.TabActivatedEvent += OnTabActivated;
 		DisplaySQLResultsControl displaySQLResultsControl = EditorPane.EnsureDisplayResultsControl();
-		displaySQLResultsControl.ExecutionPlanWindowPane.PanelAdded += OnExecutionPlanPanelAdded;
-		displaySQLResultsControl.ExecutionPlanWindowPane.PanelRemoved += OnExecutionPlanPanelRemoved;
+		displaySQLResultsControl.ExecutionPlanWindowPane.PanelAddedEvent += OnExecutionPlanPanelAdded;
+		displaySQLResultsControl.ExecutionPlanWindowPane.PanelRemovedEvent += OnExecutionPlanPanelRemoved;
 	}
 
 	private void UnRegisterEventHandlers()
 	{
 		SqlEditorTabbedEditorUI editorUI = EditorUI;
-		editorUI.OnFocus = (EventHandler)Delegate.Remove(editorUI.OnFocus, new EventHandler(OnFocusReceived));
-		QueryExecutor.ScriptExecutionCompleted -= OnScriptExecutionCompleted;
-		QueryExecutor.StatusChanged -= OnConnectionChanged;
-		EditorUI.TabActivated -= OnTabActivated;
+		editorUI.OnFocusHandler = (EventHandler)Delegate.Remove(editorUI.OnFocusHandler, new EventHandler(OnFocusReceived));
+		QryMgr.ScriptExecutionCompletedEvent -= OnScriptExecutionCompleted;
+		QryMgr.StatusChangedEvent -= OnConnectionChanged;
+		EditorUI.TabActivatedEvent -= OnTabActivated;
 		DisplaySQLResultsControl displaySQLResultsControl = EditorPane.EnsureDisplayResultsControl();
-		displaySQLResultsControl.ExecutionPlanWindowPane.PanelAdded -= OnExecutionPlanPanelAdded;
-		displaySQLResultsControl.ExecutionPlanWindowPane.PanelRemoved -= OnExecutionPlanPanelRemoved;
+		displaySQLResultsControl.ExecutionPlanWindowPane.PanelAddedEvent -= OnExecutionPlanPanelAdded;
+		displaySQLResultsControl.ExecutionPlanWindowPane.PanelRemovedEvent -= OnExecutionPlanPanelRemoved;
 	}
 
 	private void OnTabActivated(object sender, EventArgs args)
@@ -80,9 +80,9 @@ public class PropertiesWindowManager : IDisposable
 		RefreshPropertyWindow();
 	}
 
-	private void OnConnectionChanged(object sender, QueryExecutor.StatusChangedEventArgs args)
+	private void OnConnectionChanged(object sender, QueryManager.StatusChangedEventArgs args)
 	{
-		if (args.Change == QueryExecutor.StatusType.Connection || args.Change == QueryExecutor.StatusType.Connected)
+		if (args.Change == QueryManager.StatusType.Connection || args.Change == QueryManager.StatusType.Connected)
 		{
 			RefreshPropertyWindow();
 		}
@@ -95,7 +95,7 @@ public class PropertiesWindowManager : IDisposable
 		{
 			for (int i = 0; i < executionPlanPanel.ExecutionPlanCtl.GraphPanelCount; i++)
 			{
-				executionPlanPanel.ExecutionPlanCtl.GetGraphPanel(i).SelectionChanged += OnGraphSelectionChanged;
+				executionPlanPanel.ExecutionPlanCtl.GetGraphPanel(i).SelectionChangedEvent += OnGraphSelectionChanged;
 			}
 		}
 	}
@@ -106,7 +106,7 @@ public class PropertiesWindowManager : IDisposable
 		{
 			for (int i = 0; i < executionPlanPanel.ExecutionPlanCtl.GraphPanelCount; i++)
 			{
-				executionPlanPanel.ExecutionPlanCtl.GetGraphPanel(i).SelectionChanged -= OnGraphSelectionChanged;
+				executionPlanPanel.ExecutionPlanCtl.GetGraphPanel(i).SelectionChangedEvent -= OnGraphSelectionChanged;
 			}
 		}
 	}
@@ -130,7 +130,7 @@ public class PropertiesWindowManager : IDisposable
 
 	private void RefreshPropertyWindow()
 	{
-		lock (_LocalLock)
+		lock (_LockObject)
 		{
 			if (_Disposed || _SingleAsyncUpdate == null || !_SingleAsyncUpdate.WaitOne(0))
 			{
@@ -143,7 +143,7 @@ public class PropertiesWindowManager : IDisposable
 #pragma warning disable CS0618 // Type or member is obsolete
 			ThreadHelper.Generic.Invoke(delegate
 			{
-				lock (_LocalLock)
+				lock (_LockObject)
 				{
 					if (_Disposed || _SingleAsyncUpdate == null)
 					{
@@ -165,7 +165,7 @@ public class PropertiesWindowManager : IDisposable
 		{
 			Task task = Task.Factory.StartNew(delegate
 			{
-				lock (_LocalLock)
+				lock (_LockObject)
 				{
 					if (_Disposed || _SingleAsyncUpdate == null)
 					{
@@ -203,13 +203,13 @@ public class PropertiesWindowManager : IDisposable
 	private ArrayList GetPropertyWindowObjects()
 	{
 		ArrayList arrayList = new ArrayList();
-		object propertiesWindowDisplayObject = QueryExecutor.ConnectionStrategy.GetPropertiesWindowDisplayObject();
+		object propertiesWindowDisplayObject = QryMgr.ConnectionStrategy.GetPropertiesWindowDisplayObject();
 		if (propertiesWindowDisplayObject != null)
 		{
-			if (propertiesWindowDisplayObject is IPropertyWindowQueryExecutorInitialize propertyWindowQueryExecutorInitialize
+			if (propertiesWindowDisplayObject is IPropertyWindowQueryManagerInitialize propertyWindowQueryExecutorInitialize
 				&& !propertyWindowQueryExecutorInitialize.IsInitialized())
 			{
-				propertyWindowQueryExecutorInitialize.Initialize(QueryExecutor);
+				propertyWindowQueryExecutorInitialize.Initialize(QryMgr);
 			}
 
 			arrayList.Add(propertiesWindowDisplayObject);
@@ -226,7 +226,7 @@ public class PropertiesWindowManager : IDisposable
 
 	protected virtual void Dispose(bool disposing)
 	{
-		lock (_LocalLock)
+		lock (_LockObject)
 		{
 			if (!_Disposed)
 			{

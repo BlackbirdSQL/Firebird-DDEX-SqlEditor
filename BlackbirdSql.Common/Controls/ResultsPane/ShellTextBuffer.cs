@@ -24,7 +24,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane;
 
 public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, IVsTextBufferDataEvents, IVsChangeClusterEvents, IVsTextBufferEvents
 {
-	private EventHandler loadedHandler;
+	private EventHandler _LoadedHandler;
 
 	private Microsoft.VisualStudio.Shell.ServiceProvider serviceProvider;
 
@@ -193,17 +193,17 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 		}
 	}
 
-	public event NewLangSvcEventHandler OnNewLangSvc;
+	public event NewLangSvcEventHandler NewLangSvcEvent;
 
-	public event EventHandler Loaded
+	public event EventHandler LoadedEvent
 	{
 		add
 		{
-			loadedHandler = (EventHandler)Delegate.Combine(loadedHandler, value);
+			_LoadedHandler = (EventHandler)Delegate.Combine(_LoadedHandler, value);
 		}
 		remove
 		{
-			loadedHandler = (EventHandler)Delegate.Remove(loadedHandler, value);
+			_LoadedHandler = (EventHandler)Delegate.Remove(_LoadedHandler, value);
 		}
 	}
 
@@ -382,7 +382,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 		else
 		{
 			// loaded = true;
-			loadedHandler?.Invoke(this, EventArgs.Empty);
+			_LoadedHandler?.Invoke(this, EventArgs.Empty);
 		}
 
 		return VSConstants.S_OK;
@@ -402,11 +402,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 
 	void IVsTextBufferEvents.OnNewLanguageService(ref Guid sidLangServiceID)
 	{
-		if (OnNewLangSvc != null)
-		{
-			LangServiceEventArgs args = new LangServiceEventArgs(sidLangServiceID);
-			OnNewLangSvc(this, args);
-		}
+		NewLangSvcEvent?.Invoke(this, new(sidLangServiceID));
 	}
 
 	public void Clear()

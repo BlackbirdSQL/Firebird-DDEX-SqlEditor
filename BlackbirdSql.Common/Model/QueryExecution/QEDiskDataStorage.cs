@@ -2,6 +2,7 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution.QEDiskDataStorage
 using System;
 using BlackbirdSql.Common.Model.Interfaces;
+using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core.Diagnostics;
 
 namespace BlackbirdSql.Common.Model.QueryExecution;

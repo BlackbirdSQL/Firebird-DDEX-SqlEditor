@@ -13,7 +13,8 @@ using System.Globalization;
 using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using Microsoft.Win32;
+
+using BlackbirdSql.Common.Properties;
 
 
 
@@ -23,7 +24,7 @@ namespace BlackbirdSql.Common.Exceptions
 	[GeneratedCode("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
 	[DebuggerNonUserCode]
 	[CompilerGenerated]
-	public class PrivacyConfirmation : Form
+	public class PrivacyConfirmationDlg : Form
 	{
 		private IContainer components;
 
@@ -54,7 +55,7 @@ namespace BlackbirdSql.Common.Exceptions
 			{
 				if (resourceMan == null)
 				{
-					resourceMan = new ResourceManager("Microsoft.SqlServer.Data.Tools.ExceptionMessageBox.PrivacyConfirmation", typeof(PrivacyConfirmation).Assembly);
+					resourceMan = new ResourceManager("Microsoft.SqlServer.Data.Tools.ExceptionMessageBox.PrivacyConfirmation", typeof(PrivacyConfirmationDlg).Assembly);
 				}
 
 				return resourceMan;
@@ -136,7 +137,7 @@ namespace BlackbirdSql.Common.Exceptions
 
 		public static string para1_Text => ResourceManager.GetString("para1.Text", resourceCulture);
 
-		public PrivacyConfirmation(string title, string url)
+		public PrivacyConfirmationDlg(string title, string url)
 		{
 			InitializeComponent();
 			Text = title;
@@ -385,7 +386,7 @@ namespace BlackbirdSql.Common.Exceptions
 			*/
 		}
 
-		public PrivacyConfirmation()
+		public PrivacyConfirmationDlg()
 		{
 		}
 	}

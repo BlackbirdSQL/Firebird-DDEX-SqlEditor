@@ -43,7 +43,7 @@ public sealed class DbConnectionWrapper
 		}
 	}
 
-	public event EventHandler<FbInfoMessageEventArgs> InfoMessage
+	public event EventHandler<FbInfoMessageEventArgs> InfoMessageEvent
 	{
 		add
 		{
@@ -60,7 +60,7 @@ public sealed class DbConnectionWrapper
 		Cmd.CheckForNullReference(connection, "connection");
 		if (connection is not FbConnection)
 		{
-			InvalidOperationException ex = new(SharedResx.InvalidConnectionType);
+			InvalidOperationException ex = new(ControlsResources.InvalidConnectionType);
 			Diag.Dug(ex);
 			throw ex;
 		}

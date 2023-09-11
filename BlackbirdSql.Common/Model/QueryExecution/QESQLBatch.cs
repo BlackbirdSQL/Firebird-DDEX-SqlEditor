@@ -84,9 +84,9 @@ public class QESQLBatch : IDisposable
 
 	public IDbCommand Command => _Command;
 
-	private ConnectionStrategy ConnectionStrategy => Executor.ConnectionStrategy;
+	private ConnectionStrategy ConnectionStrategy => QryMgr.ConnectionStrategy;
 
-	private QueryExecutor Executor { get; set; }
+	private QueryManager QryMgr { get; set; }
 
 	public bool ContainsErrors { private get; set; }
 
@@ -169,39 +169,41 @@ public class QESQLBatch : IDisposable
 
 	public long RowsAffected => _RowsAffected;
 
-	public event QESQLBatchErrorMessageEventHandler ErrorMessage;
+	public event QESQLBatchErrorMessageEventHandler ErrorMessageEvent;
 
-	public event QESQLBatchMessageEventHandler Message;
+	public event QESQLBatchMessageEventHandler MessageEvent;
 
-	public event QESQLBatchNewResultSetEventHandler NewResultSet;
+	public event QESQLBatchNewResultSetEventHandler NewResultSetEvent;
 
-	public event QESQLBatchSpecialActionEventHandler SpecialAction;
+	public event QESQLBatchSpecialActionEventHandler SpecialActionEvent;
 
-	public event QESQLBatchStatementCompletedEventHandler StatementCompleted;
+	public event QESQLStatementCompletedEventHandler StatementCompletedEvent;
 
-	public event EventHandler Cancelling;
+	public event QESQLDataLoadedEventHandler DataLoadedEvent;
 
-	public event EventHandler FinishedResultSet;
+	public event EventHandler CancellingEvent;
 
-	public QESQLBatch(QueryExecutor queryExecutor)
+	public event EventHandler FinishedResultSetEvent;
+
+	public QESQLBatch(QueryManager qryMgr)
 	{
-		Executor = queryExecutor;
+		QryMgr = qryMgr;
 		ContainsErrors = false;
 	}
 
-	public QESQLBatch(bool bNoResultsExpected, string sqlText, int execTimeout, QueryExecutor queryExecutor)
-		: this(bNoResultsExpected, sqlText, execTimeout, EnQESQLBatchSpecialAction.None, queryExecutor)
+	public QESQLBatch(bool bNoResultsExpected, string sqlText, int execTimeout, QueryManager qryMgr)
+		: this(bNoResultsExpected, sqlText, execTimeout, EnQESQLBatchSpecialAction.None, qryMgr)
 	{
 	}
 
-	public QESQLBatch(bool bNoResultsExpected, string sqlText, int execTimeout, EnQESQLBatchSpecialAction specialActions, QueryExecutor queryExecutor)
+	public QESQLBatch(bool bNoResultsExpected, string sqlText, int execTimeout, EnQESQLBatchSpecialAction specialActions, QueryManager qryMgr)
 	{
 		Tracer.Trace(GetType(), "QESQLBatch.QESQLBatch", "bNoResultsExpected = {0}, execTimeout = {1}, specialActions = {2}, sqlText = \"{3}\"", bNoResultsExpected, execTimeout, specialActions, sqlText);
 		_noResultsExpected = bNoResultsExpected;
 		_ScriptSQLText = sqlText;
 		_ExecTimeout = execTimeout;
 		_SpecialActions = specialActions;
-		Executor = queryExecutor;
+		QryMgr = qryMgr;
 		ContainsErrors = false;
 	}
 
@@ -251,7 +253,7 @@ public class QESQLBatch : IDisposable
 
 	public EnScriptExecutionResult Execute(IDbConnection conn, EnQESQLBatchSpecialAction specialActions)
 	{
-		Tracer.Trace(GetType(), "QESQLBatch.Execute", " ExecutionOptions.WithEstimatedExecutionPlan: " + Executor.ExecutionOptions.WithEstimatedExecutionPlan);
+		Tracer.Trace(GetType(), "QESQLBatch.Execute", " ExecutionOptions.WithEstimatedExecutionPlan: " + QryMgr.ExecutionOptions.WithEstimatedExecutionPlan);
 		lock (this)
 		{
 			if (_Command != null)
@@ -283,7 +285,7 @@ public class QESQLBatch : IDisposable
 			_State = BatchState.Cancelling;
 			if (_ActiveResultSet != null)
 			{
-				Cancelling?.Invoke(this, new EventArgs());
+				CancellingEvent?.Invoke(this, new EventArgs());
 
 				Tracer.Trace(GetType(), Tracer.Level.Information, "QESQLBatch.Cancel: calling InitiateStopRetrievingData", "", null);
 				_ActiveResultSet.InitiateStopRetrievingData();
@@ -373,7 +375,7 @@ public class QESQLBatch : IDisposable
 	{
 		Tracer.Trace(GetType(), "QESQLBatch.HandleExceptionMessage", "", null);
 		QESQLBatchErrorMessageEventArgs args = new QESQLBatchErrorMessageEventArgs(
-			string.Format(CultureInfo.CurrentCulture, SharedResx.BatchError, ex.Message), "");
+			string.Format(CultureInfo.CurrentCulture, ControlsResources.BatchError, ex.Message), "");
 		RaiseErrorMessage(args);
 	}
 
@@ -404,7 +406,7 @@ public class QESQLBatch : IDisposable
 				if (error.Class > 10)
 				{
 					flag = true;
-					text = string.Format(CultureInfo.CurrentCulture, SharedResx.SQLErrorFormatFirebird, error.Message,
+					text = string.Format(CultureInfo.CurrentCulture, ControlsResources.SQLErrorFormatFirebird, error.Message,
 						error.Number, error.Class, error.LineNumber + num);
 					/*
 					text = ((error.Procedure != null && (error.Procedure == null || error.Procedure.Length != 0))
@@ -419,18 +421,16 @@ public class QESQLBatch : IDisposable
 				else if (error.Class > 0 && error.Number > 0)
 				{
 					flag = false;
-					text = !_suppressProviderMessageHeaders ? string.Format(CultureInfo.CurrentCulture, SharedResx.SQLErrorFormat4, error.Message, error.Number, error.Class, -1) : string.Format(CultureInfo.CurrentCulture, SharedResx.SQLErrorFormat4_NoSource, error.Number, error.Class, -1);
+					text = !_suppressProviderMessageHeaders ? string.Format(CultureInfo.CurrentCulture, ControlsResources.SQLErrorFormat4, error.Message, error.Number, error.Class, -1) : string.Format(CultureInfo.CurrentCulture, ControlsResources.SQLErrorFormat4_NoSource, error.Number, error.Class, -1);
 				}
 
-				if (flag && ErrorMessage != null)
+				if (flag && ErrorMessageEvent != null)
 				{
-					QESQLBatchErrorMessageEventArgs args = new QESQLBatchErrorMessageEventArgs(text, error.Message, error.LineNumber, _TextSpan);
-					RaiseErrorMessage(args);
+					RaiseErrorMessage(new(text, error.Message, error.LineNumber, _TextSpan));
 				}
-				else if (!flag && Message != null)
+				else if (!flag && MessageEvent != null)
 				{
-					QESQLBatchMessageEventArgs args2 = new QESQLBatchMessageEventArgs(text, error.Message);
-					RaiseMessage(args2);
+					RaiseMessage(new(text, error.Message));
 				}
 
 				if (flag)
@@ -459,7 +459,7 @@ public class QESQLBatch : IDisposable
 				if (error.Class > 10)
 				{
 					flag = true;
-					text = string.Format(CultureInfo.CurrentCulture, SharedResx.SQLErrorFormatFirebird, error.Message,
+					text = string.Format(CultureInfo.CurrentCulture, ControlsResources.SQLErrorFormatFirebird, error.Message,
 						error.Number, error.Class, error.LineNumber + num);
 					/*
 					text = ((error.Procedure != null && (error.Procedure == null || error.Procedure.Length != 0))
@@ -474,18 +474,16 @@ public class QESQLBatch : IDisposable
 				else if (error.Class > 0 && error.Number > 0)
 				{
 					flag = false;
-					text = !_suppressProviderMessageHeaders ? string.Format(CultureInfo.CurrentCulture, SharedResx.SQLErrorFormat4, error.Message, error.Number, error.Class, -1) : string.Format(CultureInfo.CurrentCulture, SharedResx.SQLErrorFormat4_NoSource, error.Number, error.Class, -1);
+					text = !_suppressProviderMessageHeaders ? string.Format(CultureInfo.CurrentCulture, ControlsResources.SQLErrorFormat4, error.Message, error.Number, error.Class, -1) : string.Format(CultureInfo.CurrentCulture, ControlsResources.SQLErrorFormat4_NoSource, error.Number, error.Class, -1);
 				}
 
-				if (flag && ErrorMessage != null)
+				if (flag && ErrorMessageEvent != null)
 				{
-					QESQLBatchErrorMessageEventArgs args = new QESQLBatchErrorMessageEventArgs(text, error.Message, error.LineNumber, _TextSpan);
-					RaiseErrorMessage(args);
+					RaiseErrorMessage(new(text, error.Message, error.LineNumber, _TextSpan));
 				}
-				else if (!flag && Message != null)
+				else if (!flag && MessageEvent != null)
 				{
-					QESQLBatchMessageEventArgs args2 = new QESQLBatchMessageEventArgs(text, error.Message);
-					RaiseMessage(args2);
+					RaiseMessage(new(text, error.Message));
 				}
 
 				if (flag)
@@ -502,30 +500,25 @@ public class QESQLBatch : IDisposable
 		HandleSqlMessages(a.Errors);
 	}
 
-	public void OnSqlStatementCompleted(object sender, StatementCompletedEventArgs e)
+	public void OnSqlStatementCompleted(object sender, QESQLStatementCompletedEventArgs e)
 	{
 		Tracer.Trace(GetType(), "QESQLBatch.OnSqlStatementCompleted", "", null);
-		if (StatementCompleted != null)
-		{
-			QESQLBatchStatementCompletedEventArgs args = new QESQLBatchStatementCompletedEventArgs(e.RecordCount, (_SpecialActions & EnQESQLBatchSpecialAction.ExecuteWithDebugging) != 0);
-			StatementCompleted(sender, args);
-		}
+		StatementCompletedEvent?.Invoke(sender, new(e.RecordCount, e.IsParseOnly, (_SpecialActions & EnQESQLBatchSpecialAction.ExecuteWithDebugging) != 0));
 
-		if (Message != null)
+		if (MessageEvent != null)
 		{
-			QESQLBatchMessageEventArgs args2 = new QESQLBatchMessageEventArgs(string.Format(CultureInfo.CurrentCulture, SharedResx.RowsAffectedMessage, e.RecordCount.ToString(CultureInfo.InvariantCulture)));
-			RaiseMessage(args2);
+			RaiseMessage(new (string.Format(CultureInfo.CurrentCulture, ControlsResources.RowsAffectedMessage, e.RecordCount.ToString(CultureInfo.InvariantCulture))));
 		}
 	}
 
 	public void RaiseMessage(QESQLBatchMessageEventArgs args)
 	{
-		Message?.Invoke(this, args);
+		MessageEvent?.Invoke(this, args);
 	}
 
 	public void RaiseErrorMessage(QESQLBatchErrorMessageEventArgs args)
 	{
-		ErrorMessage?.Invoke(this, args);
+		ErrorMessageEvent?.Invoke(this, args);
 	}
 
 	protected EnScriptExecutionResult ProcessResultSetForExecutionPlan(IDataReader dataReader, EnQESQLBatchSpecialAction batchSpecialAction)
@@ -542,7 +535,13 @@ public class QESQLBatch : IDisposable
 		QESQLBatchSpecialActionEventArgs args = new QESQLBatchSpecialActionEventArgs(batchSpecialAction, this, dataReader);
 		try
 		{
-			SpecialAction(this, args);
+			if (SpecialActionEvent == null)
+			{
+				ArgumentNullException ex = new("SpecialActionEvent");
+				throw ex;
+			}
+
+			SpecialActionEvent(this, args);
 			lock (this)
 			{
 				if (_State == BatchState.Cancelling)
@@ -577,14 +576,21 @@ public class QESQLBatch : IDisposable
 		Tracer.Trace(GetType(), "QESQLBatch.ProcessResultSet", "", null);
 
 
-		if ((_SpecialActions & EnQESQLBatchSpecialAction.ExecutionPlanMask) != 0 && SpecialAction != null && IsExecutionPlanResultSet(dataReader, out var batchSpecialAction) && (_SpecialActions & batchSpecialAction) != 0)
+		if ((_SpecialActions & EnQESQLBatchSpecialAction.ExecutionPlanMask) != 0 && SpecialActionEvent != null && IsExecutionPlanResultSet(dataReader, out var batchSpecialAction) && (_SpecialActions & batchSpecialAction) != 0)
 		{
 			return ProcessResultSetForExecutionPlan(dataReader, batchSpecialAction);
 		}
 
+		if (NewResultSetEvent == null)
+		{
+			ArgumentNullException ex = new("NewResultSetEvent");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
 		lock (this)
 		{
-			_ActiveResultSet = new QEResultSet(dataReader, Executor, script);
+			_ActiveResultSet = new QEResultSet(dataReader, QryMgr, script);
 		}
 
 		try
@@ -593,12 +599,21 @@ public class QESQLBatch : IDisposable
 			EnScriptExecutionResult result = EnScriptExecutionResult.Success;
 			QESQLBatchNewResultSetEventArgs args = new QESQLBatchNewResultSetEventArgs(_ActiveResultSet);
 			Tracer.Trace(GetType(), Tracer.Level.Information, "ProcessResultSet", "firing the event!");
-			NewResultSet(this, args);
+
+			// The data reader loads into a mem or disk storage dataset here then notifies
+			// the consumer result set for loading into a grid or text page.
+			// Call sequence: QWSQLBatch.NewResultSetEvent -> IQESQLBatchConsumer.OnNewResultSet
+			// The consumer (AbstractQESQLBatchConsumer DisplaySQLResultsControl.BatchConsumer can be either of:
+			//	ResultsToGridBatchConsumer or ResultsToTextOrFileBatchConsumer
+			NewResultSetEvent(this, args);
+
 			_RowsAffected += _ActiveResultSet.TotalNumberOfRows;
+
+			if (_State != BatchState.Initial && _State != BatchState.Cancelling)
+				DataLoadedEvent?.Invoke(this, new(_Command, _RowsAffected, dataReader.RecordsAffected, DateTime.Now, false, false));
+
 			if (_State != BatchState.Cancelling)
-			{
 				return result;
-			}
 
 			return EnScriptExecutionResult.Cancel;
 		}
@@ -628,13 +643,13 @@ public class QESQLBatch : IDisposable
 			}
 		}
 
-		EnScriptExecutionResult scriptExecutionResult = EnScriptExecutionResult.Success;
+		EnScriptExecutionResult result = EnScriptExecutionResult.Success;
 		string text;
 		if ((_SpecialActions & EnQESQLBatchSpecialAction.ExecuteWithDebugging) != 0)
 		{
 			if (conn == null || conn is not FbConnection)
 			{
-				InvalidOperationException ex = new(SharedResx.CannotDebugConnectionType);
+				InvalidOperationException ex = new(ControlsResources.CannotDebugConnectionType);
 				Diag.Dug(ex);
 				throw ex;
 			}
@@ -683,7 +698,7 @@ public class QESQLBatch : IDisposable
 				Tracer.Trace(GetType(), Tracer.Level.Verbose, "DoBatchExecution", "calling ExecuteNonQuery!");
 				int i = _Command.ExecuteNonQuery();
 
-				StatementCompletedEventArgs args = new(i);
+				QESQLStatementCompletedEventArgs args = new(i, false, false);
 				OnSqlStatementCompleted(_Command, args);
 
 				Tracer.Trace(GetType(), Tracer.Level.Information, "DoBatchExecution", " ExecuteNonQuery returned!");
@@ -691,11 +706,11 @@ public class QESQLBatch : IDisposable
 				{
 					if (_State == BatchState.Cancelling)
 					{
-						scriptExecutionResult = EnScriptExecutionResult.Cancel;
+						result = EnScriptExecutionResult.Cancel;
 					}
 					else
 					{
-						scriptExecutionResult = EnScriptExecutionResult.Success;
+						result = EnScriptExecutionResult.Success;
 						_State = BatchState.Executed;
 					}
 				}
@@ -743,8 +758,7 @@ public class QESQLBatch : IDisposable
 					dataReader = _Command.ExecuteReader(CommandBehavior.SequentialAccess);
 				}
 
-				StatementCompletedEventArgs args = new(dataReader == null ? 0 : dataReader.RecordsAffected);
-				OnSqlStatementCompleted(_Command, args);
+				OnSqlStatementCompleted(_Command, new(dataReader == null ? 0 : dataReader.RecordsAffected, false, false));
 
 
 
@@ -753,7 +767,7 @@ public class QESQLBatch : IDisposable
 				{
 					if (_State == BatchState.Cancelling)
 					{
-						scriptExecutionResult = EnScriptExecutionResult.Cancel;
+						result = EnScriptExecutionResult.Cancel;
 					}
 					else
 					{
@@ -771,43 +785,45 @@ public class QESQLBatch : IDisposable
 					}
 				}
 
-				if (NewResultSet != null && scriptExecutionResult != EnScriptExecutionResult.Cancel)
+				if (NewResultSetEvent != null && result != EnScriptExecutionResult.Cancel)
 				{
-					EnScriptExecutionResult scriptExecutionResult2 = EnScriptExecutionResult.Success;
-					bool flag = false;
+					EnScriptExecutionResult processingResult = EnScriptExecutionResult.Success;
+					bool hasMoreRows = false;
+
 					do
 					{
 						if (dataReader.FieldCount <= 0)
 						{
 							Tracer.Trace(GetType(), Tracer.Level.Warning, "DoBatchExecution", ": result set is empty");
-							flag = dataReader.NextResult();
+							hasMoreRows = dataReader.NextResult();
 							continue;
 						}
 
 						Tracer.Trace(GetType(), Tracer.Level.Information, "DoBatchExecution", ": processing result set");
 
-						scriptExecutionResult2 = ProcessResultSet(dataReader, script);
-						if (scriptExecutionResult2 != EnScriptExecutionResult.Success)
+						processingResult = ProcessResultSet(dataReader, script);
+
+						if (processingResult != EnScriptExecutionResult.Success)
 						{
-							Tracer.Trace(GetType(), Tracer.Level.Verbose, "DoBatchExecution", ": something wrong while processing the result set: {0}", scriptExecutionResult2);
-							scriptExecutionResult = scriptExecutionResult2;
+							Tracer.Trace(GetType(), Tracer.Level.Verbose, "DoBatchExecution", ": something wrong while processing the result set: {0}", processingResult);
+							result = processingResult;
 							break;
 						}
 
 						Tracer.Trace(GetType(), Tracer.Level.Verbose, "DoBatchExecution", ": successfully processed the result set");
-						FinishedResultSet?.Invoke(this, new EventArgs());
+						FinishedResultSetEvent?.Invoke(this, new EventArgs());
 
-						flag = dataReader.NextResult();
+						hasMoreRows = dataReader.NextResult();
 					}
-					while (flag);
+					while (hasMoreRows);
 
 					if (ContainsErrors)
 					{
 						Tracer.Trace(GetType(), Tracer.Level.Warning, "DoBatchExecution", ": successfull processed result set, but there were errors shown to the user");
-						scriptExecutionResult = EnScriptExecutionResult.Failure;
+						result = EnScriptExecutionResult.Failure;
 					}
 
-					if (scriptExecutionResult != EnScriptExecutionResult.Cancel)
+					if (result != EnScriptExecutionResult.Cancel)
 					{
 						lock (this)
 						{
@@ -824,19 +840,19 @@ public class QESQLBatch : IDisposable
 		catch (IOException ex)
 		{
 			Tracer.LogExCatch(GetType(), ex);
-			scriptExecutionResult = EnScriptExecutionResult.Failure;
+			result = EnScriptExecutionResult.Failure;
 			HandleExceptionMessage(ex);
 		}
 		catch (OverflowException ex2)
 		{
 			Tracer.LogExCatch(GetType(), ex2);
-			scriptExecutionResult = EnScriptExecutionResult.Failure;
+			result = EnScriptExecutionResult.Failure;
 			HandleExceptionMessage(ex2);
 		}
 		catch (ThreadAbortException e)
 		{
 			Tracer.LogExCatch(GetType(), e);
-			scriptExecutionResult = EnScriptExecutionResult.Failure;
+			result = EnScriptExecutionResult.Failure;
 		}
 		catch (FbException exf)
 		{
@@ -845,10 +861,10 @@ public class QESQLBatch : IDisposable
 			Tracer.LogExCatch(GetType(), exf);
 			lock (this)
 			{
-				scriptExecutionResult = _State != BatchState.Cancelling ? EnScriptExecutionResult.Failure : EnScriptExecutionResult.Cancel;
+				result = _State != BatchState.Cancelling ? EnScriptExecutionResult.Failure : EnScriptExecutionResult.Cancel;
 			}
 
-			if (scriptExecutionResult != EnScriptExecutionResult.Cancel)
+			if (result != EnScriptExecutionResult.Cancel)
 			{
 				HandleExceptionMessages(exf);
 			}
@@ -858,10 +874,10 @@ public class QESQLBatch : IDisposable
 			Tracer.LogExCatch(GetType(), ex3);
 			lock (this)
 			{
-				scriptExecutionResult = _State != BatchState.Cancelling ? EnScriptExecutionResult.Failure : EnScriptExecutionResult.Cancel;
+				result = _State != BatchState.Cancelling ? EnScriptExecutionResult.Failure : EnScriptExecutionResult.Cancel;
 			}
 
-			if (scriptExecutionResult != EnScriptExecutionResult.Cancel)
+			if (result != EnScriptExecutionResult.Cancel)
 			{
 				Tracer.LogExCatch(GetType(), ex3);
 				HandleExceptionMessage(ex3);
@@ -871,7 +887,7 @@ public class QESQLBatch : IDisposable
 		{
 			Tracer.LogExCatch(GetType(), ex4);
 			HandleExceptionMessage(ex4);
-			scriptExecutionResult = EnScriptExecutionResult.Failure;
+			result = EnScriptExecutionResult.Failure;
 		}
 		finally
 		{
@@ -909,7 +925,7 @@ public class QESQLBatch : IDisposable
 			}
 		}
 
-		Tracer.Trace(GetType(), Tracer.Level.Information, "DoBatchExecution", "returning {0}", scriptExecutionResult);
-		return scriptExecutionResult;
+		Tracer.Trace(GetType(), Tracer.Level.Information, "DoBatchExecution", "returning {0}", result);
+		return result;
 	}
 }

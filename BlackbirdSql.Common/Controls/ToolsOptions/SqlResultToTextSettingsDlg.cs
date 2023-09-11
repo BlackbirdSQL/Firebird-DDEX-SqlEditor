@@ -190,18 +190,18 @@ namespace BlackbirdSql.Common.Controls.ToolsOptions
 			Tracer.Trace(GetType(), "ResultsToTextSettings.ValidateValuesInControls", "", null);
 			if (_outputFormatCombo.SelectedIndex == m_customDelimitedItemIndex && _delimiterEdit.Text.Length == 0)
 			{
-				Cmd.ShowMessageBoxEx(null, SharedResx.ColumnDelimiterCannotBeEmpty, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+				Cmd.ShowMessageBoxEx(null, ControlsResources.ColumnDelimiterCannotBeEmpty, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 				return false;
 			}
 
-			if (!ValidateNumeric(_maxNumOfCharsUpDown, string.Format(CultureInfo.CurrentCulture, SharedResx.ErrInvalidMaxCharsPerColumn, _maxNumOfCharsUpDown.Minimum, _maxNumOfCharsUpDown.Maximum)))
+			if (!ValidateNumeric(_maxNumOfCharsUpDown, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrInvalidMaxCharsPerColumn, _maxNumOfCharsUpDown.Minimum, _maxNumOfCharsUpDown.Maximum)))
 			{
 				return false;
 			}
 
 			if (TrackChanges && !SaveOrCompareCurrentValueOfControls(save: false))
 			{
-				Cmd.ShowMessageBoxEx(null, SharedResx.WarnSqlResultsToTextChanges, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				Cmd.ShowMessageBoxEx(null, ControlsResources.WarnSqlResultsToTextChanges, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				TrackChanges = false;
 			}
 

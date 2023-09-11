@@ -879,29 +879,11 @@
         AAABgAAA
 </value>
   </data>
-  <data name="arrowDown" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        Qk3WAAAAAAAAAHYAAAAoAAAADAAAAAwAAAABAAQAAAAAAAAAAAAAAAAAAAAAABAAAAAQAAAAAAAA/wAA
-        gP8AgAD/AICA/4AAAP+AAID/gIAA/8DAwP+AgID/AAD//wD/AP8A/////wAA//8A/////wD/////////
-        /////wAA///yL///AAD//yIi//8AAP/yIiIv/wAA/yLyLyL/AAD///Iv//8AAP//8i///wAA///yL///
-        AAD///Iv//8AAP//8i///wAA///yL///AAD///////8AAA==
-</value>
+  <data name="AlreadySortingData" xml:space="preserve">
+    <value>Invalid calling sequence: already sorting data</value>
   </data>
-  <data name="arrowFlat" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        Qk3WAAAAAAAAAHYAAAAoAAAADAAAAAwAAAABAAQAAAAAAAAAAAAAAAAAAAAAABAAAAAQAAAAAAAA/wAA
-        gP8AgAD/AICA/4AAAP+AAID/gIAA/8DAwP+AgID/AAD//wD/AP8A/////wAA//8A/////wD/////////
-        /////wAA////////AAD///8P//8AAP///wD//wAA////8A//AADwAAAAAP8AAPAAAAAA/wAA////8A//
-        AAD///8A//8AAP///w///wAA////////AAD///////8AAA==
-</value>
-  </data>
-  <data name="arrowUp" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        Qk3WAAAAAAAAAHYAAAAoAAAADAAAAAwAAAABAAQAAAAAAAAAAAAAAAAAAAAAABAAAAAQAAAAAAAA/wAA
-        gP8AgAD/AICA/4AAAP+AAID/gIAA/8DAwP+AgID/AAD//wD/AP8A/////wAA//8A/////wD/////////
-        /////wAA///5n///AAD///mf//8AAP//+Z///wAA///5n///AAD///mf//8AAP//+Z///wAA/5n5n5n/
-        AAD/+ZmZn/8AAP//mZn//wAA///5n///AAD///////8AAA==
-</value>
+  <data name="AlreadyStoringData" xml:space="preserve">
+    <value>Invalid calling sequence: already storing data.</value>
   </data>
   <data name="Ascending" xml:space="preserve">
     <value>Ascending</value>
@@ -909,14 +891,35 @@
   <data name="AutoScrollMoreThanZero" xml:space="preserve">
     <value>Auto scroll interval should be greater than zero.</value>
   </data>
+  <data name="BatchError" xml:space="preserve">
+    <value>An error occurred while executing batch. Error message is: {0}</value>
+  </data>
+  <data name="BatchExecCompleted" xml:space="preserve">
+    <value>Batch execution completed {0} times.</value>
+  </data>
+  <data name="BeginningBatchExec" xml:space="preserve">
+    <value>Beginning execution loop</value>
+  </data>
   <data name="BothClones" xml:space="preserve">
     <value>All Clones</value>
   </data>
   <data name="BufferSizeShouldBePositive" xml:space="preserve">
     <value>Invalid argument: buffer size should be a positive number.</value>
   </data>
+  <data name="CanDisplayOnlyNExecutionPlanControls" xml:space="preserve">
+    <value>The query has exceeded the maximum number of execution plans that can be displayed. Only the first {0} execution plans are displayed.</value>
+  </data>
+  <data name="CanDisplayOnlyNGridResults" xml:space="preserve">
+    <value>The query has exceeded the maximum number of result sets that can be displayed in the results grid. Only the first {0} result sets are displayed in the grid.</value>
+  </data>
   <data name="CannotAddReaderWhenStoringData" xml:space="preserve">
     <value>A new reader cannot be added while storage is storing data.</value>
+  </data>
+  <data name="CannotDebugConnectionType" xml:space="preserve">
+    <value>Debugging is not supported on this connection type.</value>
+  </data>
+  <data name="CannotFindDataForExecutionPlan" xml:space="preserve">
+    <value>Cannot find data for execution plan.</value>
   </data>
   <data name="CannotPrintEmptyGrid" xml:space="preserve">
     <value>Cannot print empty grid.</value>
@@ -924,17 +927,35 @@
   <data name="CannotSetMergeItemState" xml:space="preserve">
     <value>state of the header item that is merged with the one to its right cannot be specified.</value>
   </data>
+  <data name="CellDefaultAccessibleName" xml:space="preserve">
+    <value>{2} Row {0}</value>
+  </data>
   <data name="CellHeightShouldBeGreaterThanZero" xml:space="preserve">
     <value>Cell height must be greater than zero.</value>
   </data>
+  <data name="ClearSelAndSelectCell" xml:space="preserve">
+    <value>Clear selection, click on the cell, and select it.</value>
+  </data>
   <data name="ClusteredMode" xml:space="preserve">
     <value>System Configuration: Clustered</value>
+  </data>
+  <data name="ColumnDelimiterCannotBeEmpty" xml:space="preserve">
+    <value>You must specify a column delimiter.</value>
+  </data>
+  <data name="ColumnHeaderAADefaultAction" xml:space="preserve">
+    <value>Click on header</value>
+  </data>
+  <data name="ColumnHeaderAAName" xml:space="preserve">
+    <value>{1}</value>
   </data>
   <data name="ColumnIndexShouldBeInRange" xml:space="preserve">
     <value>Column index must be greater than or equal to zero and less than the number of columns.</value>
   </data>
   <data name="ColumnIsNotCheckBox" xml:space="preserve">
     <value>Column # {0} is not of checkbox type.</value>
+  </data>
+  <data name="ColumnNumber" xml:space="preserve">
+    <value>Column # {0}</value>
   </data>
   <data name="ColumnsCountDoesNotMatch" xml:space="preserve">
     <value>Number of columns in the new reader does not match storage.</value>
@@ -953,6 +974,18 @@
   </data>
   <data name="ColumnWidthShouldBeLessThanMax" xml:space="preserve">
     <value>Column width in pixels should be less than or equal to {0}.</value>
+  </data>
+  <data name="CommonMessageLoopAttemptingToConnect" xml:space="preserve">
+    <value>Attempting to connect to database server {0}.</value>
+  </data>
+  <data name="CommonMessageLoopConnecting" xml:space="preserve">
+    <value>Connecting...</value>
+  </data>
+  <data name="CommonMessageLoopErrorMessage" xml:space="preserve">
+    <value>The connection error is:  {0}.</value>
+  </data>
+  <data name="CommonMessageLoopFailedToOpenConnection" xml:space="preserve">
+    <value>Failed to open a database connection to the server {0}.</value>
   </data>
   <data name="ConnectionStateBroken" xml:space="preserve">
     <value>Broken</value>
@@ -978,11 +1011,20 @@
   <data name="ConnectionStateOpen" xml:space="preserve">
     <value>Open</value>
   </data>
+  <data name="ConnectToServer" xml:space="preserve">
+    <value>Connect to Server</value>
+  </data>
   <data name="CostFormat" xml:space="preserve">
     <value>Cost: {0} %</value>
   </data>
   <data name="CurControlIsNotIGridEmbedded" xml:space="preserve">
     <value>Unrecoverable error; current control is not IGridEmbeddedControl.</value>
+  </data>
+  <data name="DefaultDatabaseName" xml:space="preserve">
+    <value>&lt;default&gt;</value>
+  </data>
+  <data name="DefaultMessageBoxCaption" xml:space="preserve">
+    <value>Microsoft SQL Server Management Studio</value>
   </data>
   <data name="DeriveToImplementCustomColumn" xml:space="preserve">
     <value>Use class derived from the grid control to implement custom columns.</value>
@@ -1042,6 +1084,9 @@
         y1j+FgO1pRF/xgAAAABJRU5ErkJggg==
 </value>
   </data>
+  <data name="DisplayUserNameAndSPID" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
   <data name="DpiAwarenessIssue_Fix_Result_Message" xml:space="preserve">
     <value>The setting 'Optimize rendering for screens with different pixel densities' has been disabled. Restart Visual Studio to take effect.</value>
   </data>
@@ -1064,14 +1109,137 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   <data name="EitherClones" xml:space="preserve">
     <value>Primary Or Secondary Clones</value>
   </data>
+  <data name="EmbeddedEditCancelAAName" xml:space="preserve">
+    <value>Cancel editing</value>
+  </data>
+  <data name="EmbeddedEditCancelDefaultAction" xml:space="preserve">
+    <value>Cancel editing without committing changes into storage</value>
+  </data>
+  <data name="EmbeddedEditCommitAAName" xml:space="preserve">
+    <value>Commit editing</value>
+  </data>
+  <data name="EmbeddedEditCommitDefaultAction" xml:space="preserve">
+    <value>Commit changes into storage and stop editing</value>
+  </data>
+  <data name="ErrBatchExecutionFailedExiting" xml:space="preserve">
+    <value>** An error was encountered during execution of batch. Exiting.</value>
+  </data>
+  <data name="ErrBatchExecutionFailedIgnoring" xml:space="preserve">
+    <value>** An error was encountered during execution of batch. Continuing.</value>
+  </data>
+  <data name="ErrCannotCreateTempFile" xml:space="preserve">
+    <value>Failed to create temporary XML file.</value>
+  </data>
+  <data name="ErrCannotGetExternalFilesManager" xml:space="preserve">
+    <value>Failed to get external files manager.</value>
+  </data>
+  <data name="ErrCannotInitNewEditorInst" xml:space="preserve">
+    <value>Cannot initialize new instance of editor.</value>
+  </data>
+  <data name="ErrDatabaseNotAccessible" xml:space="preserve">
+    <value>Database not accessible</value>
+  </data>
+  <data name="ErrDirWasnotFoundForRCmd" xml:space="preserve">
+    <value>Cannot find directory in the path specified for ":r" command.</value>
+  </data>
+  <data name="ErrFatalScriptingErrorNoParam" xml:space="preserve">
+    <value>A fatal scripting error occurred.</value>
+  </data>
+  <data name="ErrFileWasnotFoundForRCmd" xml:space="preserve">
+    <value>The file specified for :r command was not found.</value>
+  </data>
+  <data name="ErrGenericRCmdError" xml:space="preserve">
+    <value>Cannot process the file specified in :r command. Message: {0}.</value>
+  </data>
+  <data name="ErrInvalidExecutionTimeout" xml:space="preserve">
+    <value>Execution time-out value should be an integer between {0} and {1}.</value>
+  </data>
+  <data name="ErrInvalidMaxCharsPerCell" xml:space="preserve">
+    <value>Maximum characters displayed in each cell should be an integer between {0} and {1}.</value>
+  </data>
+  <data name="ErrInvalidMaxCharsPerColumn" xml:space="preserve">
+    <value>Maximum characters per column should be an integer between {0} and {1}.</value>
+  </data>
+  <data name="ErrInvalidPathInRCmd" xml:space="preserve">
+    <value>An invalid path was specified to the :r command.</value>
+  </data>
+  <data name="ErrInvalidSetLockTimeout" xml:space="preserve">
+    <value>LOCK_TIMEOUT value should be an integer between {0} and {1}.</value>
+  </data>
+  <data name="ErrInvalidSetQueryGov" xml:space="preserve">
+    <value>QUERY_GOVERNOR_COST_LIMIT value should be an integer between {0} and {1}.</value>
+  </data>
+  <data name="ErrInvalidSetRowcount" xml:space="preserve">
+    <value>ROWCOUNT value should be an integer between {0} and {1}.</value>
+  </data>
+  <data name="ErrInvalidSetTextsize" xml:space="preserve">
+    <value>TEXTSIZE value should be an integer between {0} and {1}.</value>
+  </data>
+  <data name="ErrNotSupportedSqlCmdCommand" xml:space="preserve">
+    <value>Command {0} is not supported. String was not processed.</value>
+  </data>
+  <data name="ErrOLESQLVarNotDefined" xml:space="preserve">
+    <value>Variable {0} is not defined.</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="ErrorWhileSavingExecutionPlan" xml:space="preserve">
+    <value>An error occurred while saving execution plan.</value>
+  </data>
+  <data name="ErrPathIsTooLongForRCmd" xml:space="preserve">
+    <value>The path specified to the :r command is too long.</value>
+  </data>
+  <data name="ErrScriptingErrorNoParam" xml:space="preserve">
+    <value>A scripting error occurred.</value>
+  </data>
+  <data name="ErrScriptingIncorrectSyntax" xml:space="preserve">
+    <value>Incorrect syntax was encountered while parsing {0}.</value>
+  </data>
+  <data name="ErrScriptingWarningNoParam" xml:space="preserve">
+    <value>Scripting warning.</value>
+  </data>
+  <data name="ErrTextWriterNull" xml:space="preserve">
+    <value>Text writer is null.</value>
+  </data>
+  <data name="ErrUnableToCloseCon" xml:space="preserve">
+    <value>Unable to close connection specified in the SQLCMD script.</value>
+  </data>
+  <data name="ErrUnableToConnect" xml:space="preserve">
+    <value>Fatal scripting error. Cannot open connection specified in the SQLCMD script.</value>
+  </data>
+  <data name="ErrUnableToExecProcess" xml:space="preserve">
+    <value>Cannot execute {0} {1}.</value>
+  </data>
+  <data name="ErrUnableToLaunchProcesss" xml:space="preserve">
+    <value>Cannot launch {0} {1}.</value>
+  </data>
   <data name="ErrUnableToPageSetup" xml:space="preserve">
     <value>Unable to set up page.</value>
+  </data>
+  <data name="ErrUnableToPrintPreview" xml:space="preserve">
+    <value>Unable to preview page.</value>
   </data>
   <data name="ErrUnableToPrintResults" xml:space="preserve">
     <value>Unable to print results.</value>
   </data>
+  <data name="ErrUnableToProcessRCmd" xml:space="preserve">
+    <value>Unable to process :r command.</value>
+  </data>
+  <data name="ErrUnableToRedirOutput" xml:space="preserve">
+    <value>Unable to redirect output to {0}.</value>
+  </data>
+  <data name="ErrWhileSavingResults" xml:space="preserve">
+    <value>An error occurred while saving results.</value>
+  </data>
   <data name="ExactMatchClones" xml:space="preserve">
     <value>Single Clone Match</value>
+  </data>
+  <data name="Exception_FailedToSaveFile" xml:space="preserve">
+    <value>Failed to save file: {0}</value>
+  </data>
+  <data name="ExecutionNotCompleted" xml:space="preserve">
+    <value>Previous execution is not yet complete.</value>
   </data>
   <data name="ExecutionPlan" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -1120,13 +1288,16 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
         XTesb3QPLh88M+QwdP6m681Lt7xuXbu94vbgcOjwnZHokdE77DtTd1PuvriXeW/h/sYH6AdFD6UeVjxS
         fNTws+7PbaOWo6fHXMf6Hwc/vj/OGn/2S8Yv7ycKnpCfVEyqTDZPmU2dmnafvvF05dOJZ+nPFmYKf5X+
         tfa5zvMffnP8rX82YnbiBf/Fp99LXsq/PPRq2aueuYC5R69TXy/MF72Rf3P4LeNt37vwd5MLWe+x7ys/
-        6H7o/ujz8cGn1E+f/gUDmPP8usTo0wAAAAlwSFlzAAAOwAAADsABataJCQAAAG1JREFUOE+1kVEOwCAI
+        6H7o/ujz8cGn1E+f/gUDmPP8usTo0wAAAAlwSFlzAAAOvAAADrwBlbxySQAAAG1JREFUOE+1kVEOwCAI
         Qz0b97/LthOwSFKDpjKJ7uMRbSkaLaq6BRUzWBERZfjGmdfM+3o6fBNCzPscMIa9V/n/BgBDAHRqAjRF
         UDFDt1k91dMW2asDKwji8TJDrCA8+4EIK0cGjPimCCquo+UF2S7T6wV7E/YAAAAASUVORK5CYII=
 </value>
   </data>
   <data name="ExecutionPlanDescriptionAAName" xml:space="preserve">
     <value>Execution Plan Description</value>
+  </data>
+  <data name="ExecutionPlanFilter" xml:space="preserve">
+    <value>Execution Plan Files (*.sqlplan)|*.sqlplan|All Files (*.*)|*.*</value>
   </data>
   <data name="ExecutionPlanGraphAAName" xml:space="preserve">
     <value>Execution Plan Graph</value>
@@ -1137,57 +1308,9 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   <data name="FailedToLoadExecutionPlanFile" xml:space="preserve">
     <value>Error loading execution plan XML file {0}.</value>
   </data>
-  <data name="FileEncodingDialog" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        AAABAAMAEBAQAAEABAAoAQAANgAAABAQAAABAAgAaAUAAF4BAAAQEAAAAQAgAGgEAADGBgAAKAAAABAA
-        AAAgAAAAAQAEAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAIAAAACAgACAAAAAgACAAICA
-        AACAgIAAwMDAAAAA/wAA/wAAAP//AP8AAAD/AP8A//8AAP///wD/////8AAAAPd3d3f/////93d3d/d3
-        d3/3d3d393d3f/d3d3f///d/93//d/d393/3f393///3f/d/f393d/d/////j///938AAPd/d3f3fwAA
-        93////d/AAD3f3f3d38AAPd///d38AAA93d3d38AAAD3d3d38AAAAP////8AAAB/AAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAPAAAADwAAAA8AAAAPABAADwAwAA8AcAAPAPAAAoAAAAEAAAACAA
-        AAABAAgAAAAAAAABAAAAAAAAAAAAAAABAAAAAQAAAAAAAEJCQgCGhoYAs7OzAPHv8AD08/QA9vb2AAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////AAYGBgYGBgYGBgAAAAAAAAAGAQEBAQEBAQYG
-        BgYGBgYGBgEBAQEBAQEGAQEBAQEBBgYBAQEBAQEBBgEBAQEBAQYGAQEBAQEBAQYEBAQEAQEGBgEBBAQE
-        AQEGAQEBBAEBBgYBAQQBBAECBgQEBAQBAQYGAQEEAQQCBgEBAQEEAQEGBgYGBgYGAwQEBAQEBAEBBgAA
-        AAAGAQEEAQEBAQQBAQYAAAAABgEBBAQEBAQEAQEGAAAAAAYBAQQBAQQBAQECBgAAAAAGAQEEBAQEAQEC
-        BgAAAAAABgEBAQEBAQECBgAAAAAAAAYBAQEBAQECBgAAAAAAAAAGBgYGBgYGBgAAAAAAfwAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwAAAA8AAAAPAAAADwAQAA8AMAAPAHAADwDwAAKAAAABAA
-        AAAgAAAAAQAgAAAAAABABAAAAAAAAAAAAAAAAAAAAAAAAPb29v/29vb/9vb2//b29v/29vb/9vb2//b2
-        9v/29vb/9vb2/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD29vb/QkJC/0JCQv9CQkL/QkJC/0JC
-        Qv9CQkL/QkJC//b29v/29vb/9vb2//b29v/29vb/9vb2//b29v/29vb/9vb2/0JCQv9CQkL/QkJC/0JC
-        Qv9CQkL/QkJC/0JCQv/29vb/QkJC/0JCQv9CQkL/QkJC/0JCQv9CQkL/9vb2//b29v9CQkL/QkJC/0JC
-        Qv9CQkL/QkJC/0JCQv9CQkL/9vb2/0JCQv9CQkL/QkJC/0JCQv9CQkL/QkJC//b29v/29vb/QkJC/0JC
-        Qv9CQkL/QkJC/0JCQv9CQkL/QkJC//b29v/x7/D/8e/w//Hv8P/x7/D/QkJC/0JCQv/29vb/9vb2/0JC
-        Qv9CQkL/8e/w//Hv8P/x7/D/QkJC/0JCQv/29vb/QkJC/0JCQv9CQkL/8e/w/0JCQv9CQkL/9vb2//b2
-        9v9CQkL/QkJC//Hv8P9CQkL/8e/w/0JCQv+Ghob/9PP0//Hv8P/x7/D/8e/w//Hv8P9CQkL/QkJC//b2
-        9v/29vb/QkJC/0JCQv/x7/D/QkJC//Hv8P+Ghob/9PP0/0JCQv9CQkL/QkJC/0JCQv/x7/D/QkJC/0JC
-        Qv/29vb/9vb2//b29v/29vb/9vb2//b29v/29vb/s7Oz//Hv8P/x7/D/8e/w//Hv8P/x7/D/8e/w/0JC
-        Qv9CQkL/9vb2/wAAAAAAAAAAAAAAAAAAAAD29vb/QkJC/0JCQv/x7/D/QkJC/0JCQv9CQkL/QkJC//Hv
-        8P9CQkL/QkJC//b29v8AAAAAAAAAAAAAAAAAAAAA9vb2/0JCQv9CQkL/8e/w//Hv8P/x7/D/8e/w//Hv
-        8P/x7/D/QkJC/0JCQv/29vb/AAAAAAAAAAAAAAAAAAAAAPb29v9CQkL/QkJC//Hv8P9CQkL/QkJC//Hv
-        8P9CQkL/QkJC/0JCQv+Ghob/9vb27wAAAAAAAAAAAAAAAAAAAAD29vb/QkJC/0JCQv/x7/D/8e/w//Hv
-        8P/x7/D/QkJC/0JCQv+Ghob/9vb27/b29jAAAAAAAAAAAAAAAAAAAAAA9vb2/0JCQv9CQkL/QkJC/0JC
-        Qv9CQkL/QkJC/0JCQv+Ghob/9vb27/b29jAAAAAAAAAAAAAAAAAAAAAAAAAAAPb29v9CQkL/QkJC/0JC
-        Qv9CQkL/QkJC/0JCQv+Ghob/9vb27/b29jAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD29vb/9vb2//b2
-        9v/29vb/9vb2//b29v/29vb/9vb27/b29jAAAAAAAAAAAAAAAAAAfwAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAADwAAAA8AAAAPAAAADwAAAA8AEAAPADAADwBwAA
-</value>
+  <data name="FailedToReadExecutionPlan" xml:space="preserve">
+    <value>Error processing execution plan results. The error message is:
+{0}</value>
   </data>
   <data name="FileStreamAlreadyInitialized" xml:space="preserve">
     <value>Invalid calling sequence: file stream already initialized.</value>
@@ -1204,14 +1327,56 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   <data name="FirstScrollableWillBeBad" xml:space="preserve">
     <value>The first scrollable index will not be valid after deletion.</value>
   </data>
+  <data name="FontAndColorCategorySqlResultsExecutionPlan" xml:space="preserve">
+    <value>SQL Results - Execution Plan</value>
+  </data>
+  <data name="FontAndColorCategorySqlResultsGrid" xml:space="preserve">
+    <value>SQL Results - Grid</value>
+  </data>
+  <data name="FontAndColorCategorySqlResultsText" xml:space="preserve">
+    <value>SQL Results - Text</value>
+  </data>
+  <data name="FontAndColorGridCellDescription" xml:space="preserve">
+    <value>Text inside grid cells.</value>
+  </data>
+  <data name="FontAndColorGridInactiveSelectedCellDescription" xml:space="preserve">
+    <value>Selected cell color when inactive</value>
+  </data>
+  <data name="FontAndColorGridSelectedCellDescription" xml:space="preserve">
+    <value>Selected cell color when active</value>
+  </data>
+  <data name="FontAndColorItemGridHeaderRowCellDescription" xml:space="preserve">
+    <value>Header row color</value>
+  </data>
+  <data name="FontAndColorItemGridHeaderRowCellName" xml:space="preserve">
+    <value>Header Row</value>
+  </data>
+  <data name="FontAndColorItemGridNullValueCellName" xml:space="preserve">
+    <value>NULL Value Cell</value>
+  </data>
+  <data name="FontAndColorItemNameGridCell" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="FontAndColorItemNameGridInactiveSelectedCell" xml:space="preserve">
+    <value>Inactive Selected Cell</value>
+  </data>
+  <data name="FontAndColorItemNameGridSelectedCell" xml:space="preserve">
+    <value>Selected Cell</value>
+  </data>
+  <data name="FontAndColorItemNameResultsPlainText" xml:space="preserve">
+    <value>Plain Text</value>
+  </data>
+  <data name="FontAndColorShowplanDescription" xml:space="preserve">
+    <value>Text inside execution plan.</value>
+  </data>
+  <data name="FontAndColorTextResultsDescription" xml:space="preserve">
+    <value>Text inside text results or messages.</value>
+  </data>
+  <data name="FontAndGridItemGridNullValueCellDescription" xml:space="preserve">
+    <value>NULL value cell color</value>
+  </data>
   <data name="FullUpdateForOnlineIndexBuild" xml:space="preserve">
     <value>A partial update was converted to a full update because of an online index build</value>
-  </data>
-  <data name="GlobalizedLiteralFalse" xml:space="preserve">
-    <value>False</value>
-  </data>
-  <data name="GlobalizedLiteralTrue" xml:space="preserve">
-    <value>True</value>
   </data>
   <data name="GoodEnoughPlanFound" xml:space="preserve">
     <value>Good Enough Plan Found</value>
@@ -1221,6 +1386,9 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   </data>
   <data name="GridColumnNumberShouldBeAboveZero" xml:space="preserve">
     <value>Grid column number should be greater than zero.</value>
+  </data>
+  <data name="GridControlAaName" xml:space="preserve">
+    <value>GridControl</value>
   </data>
   <data name="GridSelectAllCellsTooltip" xml:space="preserve">
     <value>Click to select all grid cells</value>
@@ -1393,11 +1561,38 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
         QQTArvj/f6z66aQYROPCIACmYRw4GFg3EwJwxURghv8AYPdAwGxotksAAAAASUVORK5CYII=
 </value>
   </data>
+  <data name="IncorrectGroupNumber" xml:space="preserve">
+    <value>The supplied group number is incorrect.</value>
+  </data>
+  <data name="IncorrectRowNumber" xml:space="preserve">
+    <value>Row number is incorrect.</value>
+  </data>
+  <data name="InfoConnectingToSvr" xml:space="preserve">
+    <value>Connecting to {0}...</value>
+  </data>
+  <data name="InfoConnectingToSvrAsUser" xml:space="preserve">
+    <value>Connecting to {0} as {1}...</value>
+  </data>
+  <data name="InfoDisconnectingFromSvr" xml:space="preserve">
+    <value>Disconnecting connection from {0}...</value>
+  </data>
+  <data name="InfoDisconnectingFromSvrAsUser" xml:space="preserve">
+    <value>Disconnecting connection from {0} as {1}...</value>
+  </data>
+  <data name="InvalidArgument" xml:space="preserve">
+    <value>Argument is not valid.</value>
+  </data>
   <data name="InvalidCellType" xml:space="preserve">
     <value>EditableCellType should be greater than or equal to EditableCellType.FirstCustomEditableCellType.</value>
   </data>
   <data name="InvalidColIndexForMergedResizeProp" xml:space="preserve">
     <value>MergedHeaderResizeProportion property can be set only for columns that have merged header</value>
+  </data>
+  <data name="InvalidCommandType" xml:space="preserve">
+    <value>Unsupported command object.  Use SqlCommand or ReliableSqlCommand.</value>
+  </data>
+  <data name="InvalidConnectionType" xml:space="preserve">
+    <value>Invalid connection type</value>
   </data>
   <data name="InvalidCurrentSelBlockForClicpboard" xml:space="preserve">
     <value>Cannot create clipboard data object for currently selected block of cells because nothing is selected</value>
@@ -1410,6 +1605,12 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   </data>
   <data name="InvalidMergedHeaderResizeProportion" xml:space="preserve">
     <value>MergedHeaderResizeProportion property should be between 0f and 1f.</value>
+  </data>
+  <data name="InvalidNonButtonCellType" xml:space="preserve">
+    <value>Cell is not a button.</value>
+  </data>
+  <data name="InvalidNonStringCellType" xml:space="preserve">
+    <value>Cell is not a string.</value>
   </data>
   <data name="InvalidSelIndexInEmbeddedCombo" xml:space="preserve">
     <value>EmbeddedComboBox.SetCurSelectionIndex: invalid index.</value>
@@ -1425,6 +1626,12 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   </data>
   <data name="Level" xml:space="preserve">
     <value>Level</value>
+  </data>
+  <data name="LoadingText" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+  <data name="MemoryBasedStorageIsLimitedToNRows" xml:space="preserve">
+    <value>Memory-based storage is limited to {0} rows.</value>
   </data>
   <data name="MemoryGrantWarning" xml:space="preserve">
     <value>The query memory grant detected "{0}", which may impact the reliability. Grant size: Initial {1} KB, Final {2} KB, Used {3} KB.</value>
@@ -1490,6 +1697,21 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
         CQcILTd56wAAAABJRU5ErkJggg==
 </value>
   </data>
+  <data name="MissingIndexDetailsTitle" xml:space="preserve">
+    <value>/*
+Missing Index Details from {0}
+The Query Processor estimates that implementing the following index could improve the query cost by {1}%.
+*/</value>
+  </data>
+  <data name="MissingIndexFormat" xml:space="preserve">
+    <value>Missing Index (Impact {0}): {1}</value>
+  </data>
+  <data name="MsgCommandSuccess" xml:space="preserve">
+    <value>Command(s) completed successfully.</value>
+  </data>
+  <data name="MsgQueryCancelled" xml:space="preserve">
+    <value>Query was cancelled by user.</value>
+  </data>
   <data name="MultiPanelGridContainerIsNotAvailable" xml:space="preserve">
     <value>Multipanel grid container is not available.</value>
   </data>
@@ -1547,6 +1769,9 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   <data name="OnlySolidBrush" xml:space="preserve">
     <value>Only SolidBrush can be specified as parameter</value>
   </data>
+  <data name="OpenOnlineEditorException" xml:space="preserve">
+    <value>An error was encountered while trying to open the editor for the template.</value>
+  </data>
   <data name="OperatorDisplayCost" xml:space="preserve">
     <value>{0:0.#######} ({1}%)</value>
   </data>
@@ -1561,6 +1786,15 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   </data>
   <data name="PlanAffectingConvertDescription" xml:space="preserve">
     <value>Plan-affecting type conversion warning.</value>
+  </data>
+  <data name="PleaseSelectDirectory" xml:space="preserve">
+    <value>Please select directory</value>
+  </data>
+  <data name="PowerBuffer_ModelDisposed" xml:space="preserve">
+    <value>Could not retrieve the object from the server explorer.  Try closing the window and editing the object again.</value>
+  </data>
+  <data name="PowerBuffer_RetrievingDefinitionFromServer" xml:space="preserve">
+    <value>Retrieving updated definition from server</value>
   </data>
   <data name="PrimaryClones" xml:space="preserve">
     <value>Primary Clones</value>
@@ -1598,107 +1832,11 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
         AADwAQAA+AEAAPgBAAD4AQAA+BEAAPgJAAD8BwAA/gcAAP//AAA=
 </value>
   </data>
-  <data name="PropertyWindowConnection" xml:space="preserve">
-    <value>Connection</value>
-  </data>
-  <data name="PropertyWindowConnectionDetails" xml:space="preserve">
-    <value>Connection Details</value>
-  </data>
   <data name="PropertyWindowConnectionInfo" xml:space="preserve">
     <value>{0}  ({1})</value>
   </data>
-  <data name="PropertyWindowConnInfoDescription" xml:space="preserve">
-    <value>Name of the connection containing server name and login</value>
-  </data>
-  <data name="PropertyWindowConnInfoDisplayName" xml:space="preserve">
-    <value>Connection name</value>
-  </data>
-  <data name="PropertyWindowCurrentConnectionParameters" xml:space="preserve">
-    <value>Current connection parameters</value>
-  </data>
-  <data name="PropertyWindowDatabaseDescription" xml:space="preserve">
-    <value>The database path of the database for the connection</value>
-  </data>
-  <data name="PropertyWindowDatabaseDisplayName" xml:space="preserve">
-    <value>Database Path</value>
-  </data>
-  <data name="PropertyWindowElapsedTimeDescription" xml:space="preserve">
-    <value>The amount of time it took for the command to execute and process result from the server</value>
-  </data>
-  <data name="PropertyWindowElapsedTimeDisplayName" xml:space="preserve">
-    <value>Elapsed time</value>
-  </data>
-  <data name="PropertyWindowFinishTimeDescription" xml:space="preserve">
-    <value>The date and time when the last result was returned</value>
-  </data>
-  <data name="PropertyWindowFinishTimeDisplayName" xml:space="preserve">
-    <value>Finish time</value>
-  </data>
-  <data name="PropertyWindowLoginNameDescription" xml:space="preserve">
-    <value>The login name of the connection</value>
-  </data>
-  <data name="PropertyWindowLoginNameDisplayName" xml:space="preserve">
-    <value>Login name</value>
-  </data>
-  <data name="PropertyWindowNameDescription" xml:space="preserve">
-    <value>The display name of the connection</value>
-  </data>
-  <data name="PropertyWindowNameDisplayName" xml:space="preserve">
-    <value>Display name</value>
-  </data>
-  <data name="PropertyWindowPortDescription" xml:space="preserve">
-    <value>The Tcpip port utilized by the Firebird server</value>
-  </data>
-  <data name="PropertyWindowPortDisplayName" xml:space="preserve">
-    <value>Server Port</value>
-  </data>
-  <data name="PropertyWindowQueryExecutionDetailsCategory" xml:space="preserve">
-    <value>Query Execution Details</value>
-  </data>
-  <data name="PropertyWindowQueryWindowOptions" xml:space="preserve">
-    <value>Current query window options</value>
-  </data>
-  <data name="PropertyWindowServerNameDescription" xml:space="preserve">
-    <value>The server name of the connection</value>
-  </data>
-  <data name="PropertyWindowServerNameDisplayName" xml:space="preserve">
-    <value>Server name</value>
-  </data>
-  <data name="PropertyWindowServerVersionDescription" xml:space="preserve">
-    <value>The server version of the connection</value>
-  </data>
-  <data name="PropertyWindowServerVersionDisplayName" xml:space="preserve">
-    <value>Server version</value>
-  </data>
-  <data name="PropertyWindowSessionIDDescription" xml:space="preserve">
-    <value>The Tracing ID for the current session (Microsoft Azure SQL Database only)</value>
-  </data>
-  <data name="PropertyWindowSessionIDDisplayName" xml:space="preserve">
-    <value>Session Tracing ID</value>
-  </data>
-  <data name="PropertyWindowStartTimeDescription" xml:space="preserve">
-    <value>The date and time when the command was started</value>
-  </data>
-  <data name="PropertyWindowStartTimeDisplayName" xml:space="preserve">
-    <value>Start time</value>
-  </data>
-  <data name="PropertyWindowStateDescription" xml:space="preserve">
-    <value>The state of the connection</value>
-  </data>
-  <data name="PropertyWindowStateDisplayName" xml:space="preserve">
-    <value>State</value>
-  </data>
-  <data name="PropertyWindowStatusDescription" xml:space="preserve">
-    <value>Status</value>
-  </data>
-  <data name="PropertyWindowStatusDisplayName" xml:space="preserve">
-    <value>Status</value>
-  </data>
-  <data name="PropertyWindowTotalRowsReturnedDescription" xml:space="preserve">
-    <value>The total number of rows that are returned from the server</value>
-  </data>
-  <data name="PropertyWindowTotalRowsReturnedDisplayName" xml:space="preserve">
-    <value>Rows returned</value>
+  <data name="QEGridResultsNoColumnTitle" xml:space="preserve">
+    <value>(No column name)</value>
   </data>
   <data name="QeQueryOptionsAdvanced" xml:space="preserve">
     <value>Advanced</value>
@@ -1729,6 +1867,12 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   </data>
   <data name="ReaderCannotBeNull" xml:space="preserve">
     <value>Invalid argument: reader cannot be null.</value>
+  </data>
+  <data name="Reg_NotifyEditorFactory" xml:space="preserve">
+    <value>Editor Factory:   {0}</value>
+  </data>
+  <data name="Reg_NotifyEditorView" xml:space="preserve">
+    <value>Logical View:     {0}</value>
   </data>
   <data name="Results" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -1785,6 +1929,11 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   <data name="RowIndexShouldBeInRange" xml:space="preserve">
     <value>Row index must be greater than or equal to zero and less than the number of rows.</value>
   </data>
+  <data name="RowsAffectedMessage" xml:space="preserve">
+    <value>
+    ({0} row(s) affected)
+    </value>
+  </data>
   <data name="RuntimeCounterThread" xml:space="preserve">
     <value>Thread {0}</value>
   </data>
@@ -1794,8 +1943,24 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   <data name="RuntimeCounterThreadOnInstance" xml:space="preserve">
     <value>Thread {0} on Instance {1}</value>
   </data>
+  <data name="SaveAsXmlaFilterString" xml:space="preserve">
+    <value>XMLA files (*.xmla)
+*.xmla
+All files (*.*)
+*.*
+    </value>
+  </data>
+  <data name="SaveGridResults" xml:space="preserve">
+    <value>Save Grid Results</value>
+  </data>
+  <data name="SaveResults" xml:space="preserve">
+    <value>Save Results</value>
+  </data>
   <data name="ScalarOperator" xml:space="preserve">
     <value>Scalar Operator</value>
+  </data>
+  <data name="ScriptIsStillBeingExecuted" xml:space="preserve">
+    <value>The query is currently executing. Do you want to cancel the query?</value>
   </data>
   <data name="ScrollPosShouldBeMoreOrEqualZero" xml:space="preserve">
     <value>Parameter should be greater than or equal to zero.</value>
@@ -1920,6 +2085,33 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   </data>
   <data name="SqlEditorTabbedEditorPane_TextPlan_Button_Text" xml:space="preserve">
     <value>Execution plan (Estimated)</value>
+  </data>
+  <data name="SQLErrorFormat4" xml:space="preserve">
+    <value>{0}: Msg {1}, Level {2}, State {3}</value>
+  </data>
+  <data name="SQLErrorFormat4_NoSource" xml:space="preserve">
+    <value>Msg {0}, Level {1}, State {2}</value>
+  </data>
+  <data name="SQLErrorFormatFirebird" xml:space="preserve">
+    <value>{0}: Msg {1}, Level {2}, Line {3}</value>
+  </data>
+  <data name="SqlExecutionModeChangeFailed" xml:space="preserve">
+    <value>Execution mode cannot be changed when query is executing</value>
+  </data>
+  <data name="SqlExportFromGridFilterAllFiles" xml:space="preserve">
+    <value>All files (*.*)|*.*</value>
+  </data>
+  <data name="SqlExportFromGridFilterCSV" xml:space="preserve">
+    <value>CSV (Comma delimited) (*.csv) | *.csv</value>
+  </data>
+  <data name="SqlExportFromGridFilterTabDelimitted" xml:space="preserve">
+    <value>Text (Tab delimited) (*.txt) | *.txt</value>
+  </data>
+  <data name="SqlXMLFileFilter" xml:space="preserve">
+    <value>XML files (*.xml)|*.xml|All files (*.*)|*.*</value>
+  </data>
+  <data name="StartEditCell" xml:space="preserve">
+    <value>Start editing the cell</value>
   </data>
   <data name="StartupExpressionPredicate" xml:space="preserve">
     <value>Startup Expression Predicate</value>
@@ -2083,7 +2275,7 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
         XTesb3QPLh88M+QwdP6m681Lt7xuXbu94vbgcOjwnZHokdE77DtTd1PuvriXeW/h/sYH6AdFD6UeVjxS
         fNTws+7PbaOWo6fHXMf6Hwc/vj/OGn/2S8Yv7ycKnpCfVEyqTDZPmU2dmnafvvF05dOJZ+nPFmYKf5X+
         tfa5zvMffnP8rX82YnbiBf/Fp99LXsq/PPRq2aueuYC5R69TXy/MF72Rf3P4LeNt37vwd5MLWe+x7ys/
-        6H7o/ujz8cGn1E+f/gUDmPP8usTo0wAAAAlwSFlzAAAOwAAADsABataJCQAAAG1JREFUOE+1kVEOwCAI
+        6H7o/ujz8cGn1E+f/gUDmPP8usTo0wAAAAlwSFlzAAAOvAAADrwBlbxySQAAAG1JREFUOE+1kVEOwCAI
         Qz0b97/LthOwSFKDpjKJ7uMRbSkaLaq6BRUzWBERZfjGmdfM+3o6fBNCzPscMIa9V/n/BgBDAHRqAjRF
         UDFDt1k91dMW2asDKwji8TJDrCA8+4EIK0cGjPimCCquo+UF2S7T6wV7E/YAAAAASUVORK5CYII=
 </value>
@@ -2313,6 +2505,9 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   <data name="StorageNotInitialized" xml:space="preserve">
     <value>Invalid calling sequence: storage must be initialized first.</value>
   </data>
+  <data name="StorageViewDefaultConstructorCannotBeUsed" xml:space="preserve">
+    <value>StorageView default constructor cannot be used.</value>
+  </data>
   <data name="swap_horz" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6
@@ -2397,10 +2592,13 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
         XTesb3QPLh88M+QwdP6m681Lt7xuXbu94vbgcOjwnZHokdE77DtTd1PuvriXeW/h/sYH6AdFD6UeVjxS
         fNTws+7PbaOWo6fHXMf6Hwc/vj/OGn/2S8Yv7ycKnpCfVEyqTDZPmU2dmnafvvF05dOJZ+nPFmYKf5X+
         tfa5zvMffnP8rX82YnbiBf/Fp99LXsq/PPRq2aueuYC5R69TXy/MF72Rf3P4LeNt37vwd5MLWe+x7ys/
-        6H7o/ujz8cGn1E+f/gUDmPP8usTo0wAAAAlwSFlzAAAOwAAADsABataJCQAAAG1JREFUOE+1kVEOwCAI
+        6H7o/ujz8cGn1E+f/gUDmPP8usTo0wAAAAlwSFlzAAAOvAAADrwBlbxySQAAAG1JREFUOE+1kVEOwCAI
         Qz0b97/LthOwSFKDpjKJ7uMRbSkaLaq6BRUzWBERZfjGmdfM+3o6fBNCzPscMIa9V/n/BgBDAHRqAjRF
         UDFDt1k91dMW2asDKwji8TJDrCA8+4EIK0cGjPimCCquo+UF2S7T6wV7E/YAAAAASUVORK5CYII=
 </value>
+  </data>
+  <data name="ThisCommandIsNotSupported" xml:space="preserve">
+    <value>This command is not supported.</value>
   </data>
   <data name="TimeOut" xml:space="preserve">
     <value>Time Out</value>
@@ -2408,83 +2606,9 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   <data name="ToolBarHostAccessibleName" xml:space="preserve">
     <value>Toolbar</value>
   </data>
-  <data name="ToolOptionExecutionTimeDescription" xml:space="preserve">
-    <value>Select type of time display to include on the status bar.</value>
-  </data>
-  <data name="ToolOptionExecutionTimeDisplayName" xml:space="preserve">
-    <value>Display Execution Time</value>
-  </data>
-  <data name="ToolOptionGeneralCategory" xml:space="preserve">
-    <value>General</value>
-  </data>
-  <data name="ToolOptionIncludeDBNameDisplayName" xml:space="preserve">
-    <value>Include database name</value>
-  </data>
-  <data name="ToolOptionIncludeFileNameDisplayName" xml:space="preserve">
-    <value>Include file name</value>
-  </data>
-  <data name="ToolOptionIncludeLoginNameDisplayName" xml:space="preserve">
-    <value>Include login name</value>
-  </data>
-  <data name="ToolOptionIncludeRowCountDisplayName" xml:space="preserve">
-    <value>Include row count</value>
-  </data>
-  <data name="ToolOptionIncludeServerNameDisplayName" xml:space="preserve">
-    <value>Include server name</value>
-  </data>
-  <data name="ToolOptionPromptToSaveDescription" xml:space="preserve">
-    <value>Prompt to save unsaved SQL query windows on close.</value>
-  </data>
-  <data name="ToolOptionPromptToSaveDisplayName" xml:space="preserve">
-    <value>Prompt to save</value>
-  </data>
-  <data name="ToolOptionShowTimeOptionElapsed" xml:space="preserve">
-    <value>Elapsed</value>
-  </data>
-  <data name="ToolOptionShowTimeOptionEnd" xml:space="preserve">
-    <value>End</value>
-  </data>
-  <data name="ToolOptionShowTimeOptionNone" xml:space="preserve">
-    <value>None</value>
-  </data>
-  <data name="ToolOptionStatusBarCategory" xml:space="preserve">
-    <value>Status Bar Content</value>
-  </data>
-  <data name="ToolOptionStatusBarColorCategory" xml:space="preserve">
-    <value>Status Bar Color</value>
-  </data>
-  <data name="ToolOptionStatusBarDefaultColorDescription" xml:space="preserve">
-    <value>The background color of the status bar for single server connections</value>
-  </data>
-  <data name="ToolOptionStatusBarDefaultColorDisplayName" xml:space="preserve">
-    <value>Background color</value>
-  </data>
-  <data name="ToolOptionStatusBarIncludeDBNameDescription" xml:space="preserve">
-    <value>Include the database name on the status bar.</value>
-  </data>
-  <data name="ToolOptionStatusBarIncludeLoginNameDescription" xml:space="preserve">
-    <value>Include login name on the status bar.</value>
-  </data>
-  <data name="ToolOptionStatusBarIncludeRowCountDescription" xml:space="preserve">
-    <value>Include count of returned rows on the status bar.</value>
-  </data>
-  <data name="ToolOptionStatusBarIncludeServerNameDescription" xml:space="preserve">
-    <value>Include server name on the status bar.</value>
-  </data>
-  <data name="ToolOptionTabTextCategory" xml:space="preserve">
-    <value>Tab Text</value>
-  </data>
-  <data name="ToolOptionTabTextIncludeDatabaseNameDescription" xml:space="preserve">
-    <value>Include the name of the current connected database in the tab text.</value>
-  </data>
-  <data name="ToolOptionTabTextIncludeFileNameDescription" xml:space="preserve">
-    <value>Include the name of the script file in the tab text.</value>
-  </data>
-  <data name="ToolOptionTabTextIncludeLoginNameDescription" xml:space="preserve">
-    <value>Include the name of the login for the connection in the tab text.</value>
-  </data>
-  <data name="ToolOptionTabTextIncludeServerNameDescription" xml:space="preserve">
-    <value>Include the name of the connected server in the tab text.</value>
+  <data name="ToolTipUrl" xml:space="preserve">
+    <value>{0} - Click to follow.
+Click and hold to select this cell.</value>
   </data>
   <data name="TSQL" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -2537,6 +2661,12 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
         Q3f/S+1oo2gzX+HHs2qLhEXEN21x96rsCnKVYWBmske9BUSFOqVp8KkMS9pLLMHJuwYEPrPnT/DAmF2c
         SKU+XzeD6Z//CCvF1BtvkaArBQAAAABJRU5ErkJggg==
 </value>
+  </data>
+  <data name="UnableToApplyConnectionSettings" xml:space="preserve">
+    <value>Unable to apply connection settings</value>
+  </data>
+  <data name="UncommittedTransactionsWarning" xml:space="preserve">
+    <value>There are uncommitted transactions. Do you wish to commit these transactions before closing the window?</value>
   </data>
   <data name="UnexpectedRunType" xml:space="preserve">
     <value>Unexpected run type.</value>
@@ -2648,6 +2778,9 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
         AABJRU5ErkJggg==
 </value>
   </data>
+  <data name="ViewHaveToBeSetBeforeExecutingDoubleClickEvent" xml:space="preserve">
+    <value>View has to be set before executing double click event.</value>
+  </data>
   <data name="vsplit" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAABGdBTUEAALGOfPtRkwAAACBjSFJNAACH
@@ -2701,6 +2834,24 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   </data>
   <data name="Wait" xml:space="preserve">
     <value>The query had to wait {0} seconds for {1} during execution</value>
+  </data>
+  <data name="WarnSqlAdvancedQueryChanges" xml:space="preserve">
+    <value>SQL Server Advanced Query Execution option changes will only be applied to new SQL Server Query Editor windows. </value>
+  </data>
+  <data name="WarnSqlAnsiQueryChanges" xml:space="preserve">
+    <value>SQL Server ANSI Query Execution option changes will only be applied to new SQL Server Query Editor windows. </value>
+  </data>
+  <data name="WarnSqlGeneralQueryChanges" xml:space="preserve">
+    <value>SQL Server General Query Execution option changes will only be applied to new SQL Server Query Editor windows. </value>
+  </data>
+  <data name="WarnSqlGeneralResultsChanges" xml:space="preserve">
+    <value>SQL Server General option changes will only be applied to new SQL Server Query Editor windows. </value>
+  </data>
+  <data name="WarnSqlResultsToGridChanges" xml:space="preserve">
+    <value>SQL Server Results to Grid option changes will only be applied to new SQL Server Query Editor windows. </value>
+  </data>
+  <data name="WarnSqlResultsToTextChanges" xml:space="preserve">
+    <value>SQL Server Results to Text option changes will only be applied to new SQL Server Query Editor windows. </value>
   </data>
   <data name="ZoomLevelShouldBeBetween" xml:space="preserve">
     <value>Zoom level must be an integer value between {0} and {1}.</value>

@@ -30,7 +30,7 @@ namespace BlackbirdSql.Common.Model.Interfaces
 
 		void OnSpecialAction(object sender, QESQLBatchSpecialActionEventArgs args);
 
-		void OnStatementCompleted(object sender, QESQLBatchStatementCompletedEventArgs args);
+		void OnStatementCompleted(object sender, QESQLStatementCompletedEventArgs args);
 
 		void Cleanup();
 

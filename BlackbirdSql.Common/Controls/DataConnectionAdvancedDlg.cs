@@ -17,7 +17,7 @@ using BlackbirdSql.Common.Properties;
 namespace BlackbirdSql.Common.Controls;
 
 
-public class DataConnectionAdvancedDialog : Form
+public class DataConnectionAdvancedDlg : Form
 {
 	public class SpecializedPropertyGrid : PropertyGrid
 	{
@@ -165,13 +165,13 @@ public class DataConnectionAdvancedDialog : Form
 
 	private TableLayoutPanel tableLayoutPanel1;
 
-	public DataConnectionAdvancedDialog()
+	public DataConnectionAdvancedDlg()
 	{
 		InitializeComponent();
 		components ??= new Container();
 	}
 
-	public DataConnectionAdvancedDialog(IBPropertyAgent connectionProperties)
+	public DataConnectionAdvancedDlg(IBPropertyAgent connectionProperties)
 		: this()
 	{
 		UiTracer.TraceSource.AssertTraceEvent(connectionProperties != null, TraceEventType.Error, EnUiTraceId.Connection, "connectionProperties is null");
@@ -259,7 +259,7 @@ public class DataConnectionAdvancedDialog : Form
 	private void InitializeComponent()
 	{
 		components = new Container();
-		ComponentResourceManager resources = new ComponentResourceManager(typeof(DataConnectionAdvancedDialog));
+		ComponentResourceManager resources = new ComponentResourceManager(typeof(DataConnectionAdvancedDlg));
 		propertyGrid = new SpecializedPropertyGrid();
 		textBox = new TextBox();
 		buttonsTableLayoutPanel = new TableLayoutPanel();

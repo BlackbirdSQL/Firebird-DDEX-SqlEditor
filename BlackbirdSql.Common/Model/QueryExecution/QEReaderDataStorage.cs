@@ -15,6 +15,7 @@ using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Properties;
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 

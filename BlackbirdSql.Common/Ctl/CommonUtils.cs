@@ -42,7 +42,7 @@ public static class CommonUtils
 
 
 
-	public static void ShowContextMenu(int menuId, int xPos, int yPos, IOleCommandTarget commandTarget)
+	public static void ShowContextMenuEvent(int menuId, int xPos, int yPos, IOleCommandTarget commandTarget)
 	{
 		IVsUIShell obj = Package.GetGlobalService(typeof(IVsUIShell)) as IVsUIShell;
 		Guid rclsidActive = LibraryData.CLSID_CommandSet;
@@ -232,15 +232,15 @@ public static class CommonUtils
 	public static StreamWriter GetTextWriterForQueryResultsToFile(bool xmlResults, ref string intialDirectory)
 	{
 		Tracer.Trace(typeof(CommonUtils), "CommonUtils.GetTextWriterForQueryResultsToFile", "", null);
-		FileEncodingDialog fileEncodingDialog = new FileEncodingDialog();
-		string text = Properties.SharedResx.SqlExportFromGridFilterTabDelimitted;
+		FileEncodingDlg fileEncodingDialog = new FileEncodingDlg();
+		string text = Properties.ControlsResources.SqlExportFromGridFilterTabDelimitted;
 		if (xmlResults)
 		{
-			text = Properties.SharedResx.SqlXMLFileFilter;
+			text = Properties.ControlsResources.SqlXMLFileFilter;
 		}
 
-		text = text + "|" + Properties.SharedResx.SqlExportFromGridFilterAllFiles;
-		string fileNameUsingSaveDialog = GetFileNameUsingSaveDialog(MakeVsFilterString(text), Properties.SharedResx.SaveResults, intialDirectory, fileEncodingDialog);
+		text = text + "|" + Properties.ControlsResources.SqlExportFromGridFilterAllFiles;
+		string fileNameUsingSaveDialog = GetFileNameUsingSaveDialog(MakeVsFilterString(text), Properties.ControlsResources.SaveResults, intialDirectory, fileEncodingDialog);
 		if (fileNameUsingSaveDialog != null)
 		{
 			intialDirectory = Path.GetDirectoryName(fileNameUsingSaveDialog);

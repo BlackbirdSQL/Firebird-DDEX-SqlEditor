@@ -863,12 +863,12 @@ public class SplitViewSplitterStrip : ToolStrip
 			VSplitButton.Checked = _showSplitter && base.Orientation == Orientation.Vertical;
 			UpdateChevronButton();
 			SwapButton.Visible = _showSplitter;
-			if (this.ShowSplitterChanged != null)
+			if (ShowSplitterChangedEvent != null)
 			{
 				_ = base.Handle;
 				BeginInvoke((EventHandler)delegate
 				{
-					this.ShowSplitterChanged(this, EventArgs.Empty);
+					ShowSplitterChangedEvent(this, EventArgs.Empty);
 				});
 			}
 		}
@@ -876,11 +876,11 @@ public class SplitViewSplitterStrip : ToolStrip
 
 	public Rectangle SplitterRectangle => _splitterRectangle;
 
-	public event EventHandler DesignerXamlDoubleClick;
+	public event EventHandler DesignerXamlDoubleClickEvent;
 
-	public event EventHandler DesignerXamlClick;
+	public event EventHandler DesignerXamlClickEvent;
 
-	public event EventHandler ShowSplitterChanged;
+	public event EventHandler ShowSplitterChangedEvent;
 
 	public SplitViewSplitterStrip(IServiceProvider serviceProvider)
 	{
@@ -918,14 +918,14 @@ public class SplitViewSplitterStrip : ToolStrip
 			secondaryPaneButton2.Click += DesignerXamlButton_Click;
 		}
 		_VsFontColorPreferences = new VsFontColorPreferences();
-		_VsFontColorPreferences.PreferencesChanged += VsFontColorPreferences_PreferencesChanged;
+		_VsFontColorPreferences.PreferencesChangedEvent += VsFontColorPreferences_PreferencesChanged;
 	}
 
 	protected override void Dispose(bool disposing)
 	{
 		if (disposing)
 		{
-			_VsFontColorPreferences.PreferencesChanged -= VsFontColorPreferences_PreferencesChanged;
+			_VsFontColorPreferences.PreferencesChangedEvent -= VsFontColorPreferences_PreferencesChanged;
 			_VsFontColorPreferences.Dispose();
 		}
 		base.Dispose(disposing);
@@ -1174,18 +1174,12 @@ public class SplitViewSplitterStrip : ToolStrip
 
 	private void DesignerXamlButton_DoubleClick(object sender, EventArgs e)
 	{
-		if (this.DesignerXamlDoubleClick != null)
-		{
-			DesignerXamlDoubleClick(sender, EventArgs.Empty);
-		}
+		DesignerXamlDoubleClickEvent?.Invoke(sender, EventArgs.Empty);
 	}
 
 	private void DesignerXamlButton_Click(object sender, EventArgs e)
 	{
-		if (this.DesignerXamlClick != null)
-		{
-			DesignerXamlClick(sender, EventArgs.Empty);
-		}
+		DesignerXamlClickEvent?.Invoke(sender, EventArgs.Empty);
 	}
 
 	protected override object GetService(Type service)

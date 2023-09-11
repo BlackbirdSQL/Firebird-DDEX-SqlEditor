@@ -50,8 +50,8 @@ public class SqlEditorExecuteQueryCommand : AbstractSqlEditorCommand
 
 	protected bool ShouldRunCommand()
 	{
-		QueryExecutor queryExecutorForEditor = GetQueryExecutorForEditor();
-		if (queryExecutorForEditor != null && !queryExecutorForEditor.IsExecuting && (!queryExecutorForEditor.IsDebugging || queryExecutorForEditor.IsDebugging && queryExecutorForEditor.IsAllowedToExecuteWhileDebugging))
+		QueryManager qryMgrForEditor = GetQueryManagerForEditor();
+		if (qryMgrForEditor != null && !qryMgrForEditor.IsExecuting && (!qryMgrForEditor.IsDebugging || qryMgrForEditor.IsDebugging && qryMgrForEditor.IsAllowedToExecuteWhileDebugging))
 		{
 			return true;
 		}

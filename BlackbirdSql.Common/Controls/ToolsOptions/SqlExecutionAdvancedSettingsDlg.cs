@@ -497,19 +497,19 @@ namespace BlackbirdSql.Common.Controls.ToolsOptions
 		public override bool ValidateValuesInControls()
 		{
 			Tracer.Trace(GetType(), "", null);
-			if (!ValidateNumeric(_lockTimeoutUpDown, string.Format(CultureInfo.CurrentCulture, SharedResx.ErrInvalidSetLockTimeout, _lockTimeoutUpDown.Minimum, _lockTimeoutUpDown.Maximum)))
+			if (!ValidateNumeric(_lockTimeoutUpDown, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrInvalidSetLockTimeout, _lockTimeoutUpDown.Minimum, _lockTimeoutUpDown.Maximum)))
 			{
 				return false;
 			}
 
-			if (!ValidateNumeric(_queryGovernorUpDown, string.Format(CultureInfo.CurrentCulture, SharedResx.ErrInvalidSetQueryGov, _queryGovernorUpDown.Minimum, _queryGovernorUpDown.Maximum)))
+			if (!ValidateNumeric(_queryGovernorUpDown, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrInvalidSetQueryGov, _queryGovernorUpDown.Minimum, _queryGovernorUpDown.Maximum)))
 			{
 				return false;
 			}
 
 			if (TrackChanges && !SaveOrCompareCurrentValueOfControls(save: false))
 			{
-				Cmd.ShowMessageBoxEx(null, SharedResx.WarnSqlAdvancedQueryChanges, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				Cmd.ShowMessageBoxEx(null, ControlsResources.WarnSqlAdvancedQueryChanges, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				TrackChanges = false;
 			}
 

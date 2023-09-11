@@ -107,7 +107,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			{
 				if (FocusedGrid != null && CommonUtils.GetCoordinatesForPopupMenuFromWM_Context(ref m, out var x, out var y, (Control)(object)FocusedGrid))
 				{
-					CommonUtils.ShowContextMenu((int)EnCommandSet.ContextIdResultsWindow, x, y, this);
+					CommonUtils.ShowContextMenuEvent((int)EnCommandSet.ContextIdResultsWindow, x, y, this);
 				}
 			}
 			else
@@ -191,10 +191,10 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 				{
 					if (_firstGridPanel.GetHostedControl(i) is GridResultsGrid gridResultsGrid)
 					{
-						gridResultsGrid.AdjustSelectionForButtonClick -= OnAdjustSelectionForButtonClick;
+						gridResultsGrid.AdjustSelectionForButtonClickEvent -= OnAdjustSelectionForButtonClick;
 						gridResultsGrid.GridSpecialEvent -= new GridSpecialEventHandler(OnSpecialGridEvent);
-						gridResultsGrid.HeaderButtonClicked -= new HeaderButtonClickedEventHandler(OnHeaderButtonClicked);
-						gridResultsGrid.KeyPressedOnCell -= new KeyPressedOnCellEventHandler(OnKeyPressedOnCell);
+						gridResultsGrid.HeaderButtonClickedEvent -= new HeaderButtonClickedEventHandler(OnHeaderButtonClicked);
+						gridResultsGrid.KeyPressedOnCellEvent -= new KeyPressedOnCellEventHandler(OnKeyPressedOnCell);
 						((Control)(object)gridResultsGrid).GotFocus -= OnGridGotFocus;
 					}
 				}
@@ -299,11 +299,11 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			((Control)(object)gridResultsGrid).Visible = false;
 			((Control)(object)gridResultsGrid).Dock = DockStyle.Fill;
 			((Control)(object)gridResultsGrid).Tag = m_gridContainers.Count - 1;
-			gridResultsGrid.AdjustSelectionForButtonClick += OnAdjustSelectionForButtonClick;
+			gridResultsGrid.AdjustSelectionForButtonClickEvent += OnAdjustSelectionForButtonClick;
 			gridResultsGrid.GridSpecialEvent += new GridSpecialEventHandler(OnSpecialGridEvent);
-			gridResultsGrid.HeaderButtonClicked += new HeaderButtonClickedEventHandler(OnHeaderButtonClicked);
-			gridResultsGrid.KeyPressedOnCell += new KeyPressedOnCellEventHandler(OnKeyPressedOnCell);
-			gridResultsGrid.CustomizeCellGDIObjects += new CustomizeCellGDIObjectsEventHandler(OnCustomizeCellGDIObjects);
+			gridResultsGrid.HeaderButtonClickedEvent += new HeaderButtonClickedEventHandler(OnHeaderButtonClicked);
+			gridResultsGrid.KeyPressedOnCellEvent += new KeyPressedOnCellEventHandler(OnKeyPressedOnCell);
+			gridResultsGrid.CustomizeCellGDIObjectsEvent += new CustomizeCellGDIObjectsEventHandler(OnCustomizeCellGDIObjects);
 			((Control)(object)gridResultsGrid).GotFocus += OnGridGotFocus;
 			((Control)(object)gridResultsGrid).Font = curGridFont;
 			gridResultsGrid.HeaderFont = curGridFont;
@@ -740,7 +740,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 				catch (Exception e)
 				{
 					Tracer.LogExCatch(GetType(), e);
-					Cmd.ShowExceptionInDialog(SharedResx.ErrWhileSavingResults, e);
+					Cmd.ShowExceptionInDialog(ControlsResources.ErrWhileSavingResults, e);
 				}
 				finally
 				{
@@ -808,9 +808,9 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 		{
 			Tracer.Trace(GetType(), "DisplaySQLResultsControl.GetTextWriterForSaveResultsFromGrid", "", null);
 			saveFormat = EnGridSaveFormats.CommaSeparated;
-			FileEncodingDialog fileEncodingDialog = new FileEncodingDialog();
+			FileEncodingDlg fileEncodingDialog = new FileEncodingDlg();
 			SaveFormats saveFormats = new SaveFormats();
-			string fileNameUsingSaveDialog = CommonUtils.GetFileNameUsingSaveDialog(CommonUtils.MakeVsFilterString(saveFormats.FilterString), SharedResx.SaveGridResults, DefaultResultsDirectory, fileEncodingDialog, out int filterIndex);
+			string fileNameUsingSaveDialog = CommonUtils.GetFileNameUsingSaveDialog(CommonUtils.MakeVsFilterString(saveFormats.FilterString), ControlsResources.SaveGridResults, DefaultResultsDirectory, fileEncodingDialog, out int filterIndex);
 			if (fileNameUsingSaveDialog != null)
 			{
 				DefaultResultsDirectory = Path.GetDirectoryName(fileNameUsingSaveDialog);

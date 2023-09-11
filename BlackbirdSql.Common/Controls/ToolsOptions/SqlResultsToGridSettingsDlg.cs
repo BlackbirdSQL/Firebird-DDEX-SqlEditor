@@ -173,14 +173,14 @@ namespace BlackbirdSql.Common.Controls.ToolsOptions
 
 		public override bool ValidateValuesInControls()
 		{
-			if (!ValidateNumeric(_maxCharsUpDown, string.Format(CultureInfo.CurrentCulture, SharedResx.ErrInvalidMaxCharsPerCell, _maxCharsUpDown.Minimum, _maxCharsUpDown.Maximum)))
+			if (!ValidateNumeric(_maxCharsUpDown, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrInvalidMaxCharsPerCell, _maxCharsUpDown.Minimum, _maxCharsUpDown.Maximum)))
 			{
 				return false;
 			}
 
 			if (TrackChanges && !SaveOrCompareCurrentValueOfControls(save: false))
 			{
-				Cmd.ShowMessageBoxEx(null, SharedResx.WarnSqlResultsToGridChanges, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				Cmd.ShowMessageBoxEx(null, ControlsResources.WarnSqlResultsToGridChanges, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				TrackChanges = false;
 			}
 

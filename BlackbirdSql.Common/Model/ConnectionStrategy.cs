@@ -59,21 +59,21 @@ public abstract class ConnectionStrategy : IDisposable
 
 	protected UIConnectionInfo _UiConnectionInfo;
 
-	protected readonly object _InstanceLock = new object();
+	protected readonly object _LockObject = new object();
 
 
 	public virtual UIConnectionInfo UiConnectionInfo
 	{
 		get
 		{
-			lock (_InstanceLock)
+			lock (_LockObject)
 			{
 				return _UiConnectionInfo;
 			}
 		}
 		private set
 		{
-			lock (_InstanceLock)
+			lock (_LockObject)
 			{
 				_UiConnectionInfo = value;
 			}
@@ -84,7 +84,7 @@ public abstract class ConnectionStrategy : IDisposable
 	{
 		get
 		{
-			lock (_InstanceLock)
+			lock (_LockObject)
 			{
 				return _Connection;
 			}
@@ -109,7 +109,7 @@ public abstract class ConnectionStrategy : IDisposable
 	{
 		get
 		{
-			lock (_InstanceLock)
+			lock (_LockObject)
 			{
 				if (Connection != null && !string.IsNullOrEmpty(Connection.Database))
 				{
@@ -171,7 +171,7 @@ public abstract class ConnectionStrategy : IDisposable
 
 	protected void SetDbConnection(IDbConnection value)
 	{
-		lock (_InstanceLock)
+		lock (_LockObject)
 		{
 			IDbConnection connection = _Connection;
 			if (connection == value)
@@ -210,7 +210,7 @@ public abstract class ConnectionStrategy : IDisposable
 			throw ex;
 		}
 
-		lock (_InstanceLock)
+		lock (_LockObject)
 		{
 			UiConnectionInfo = uici;
 			SetDbConnection(connection);
@@ -237,7 +237,7 @@ public abstract class ConnectionStrategy : IDisposable
 
 		/* Probably not needed
 
-		lock (_InstanceLock)
+		lock (_LockObject)
 		{
 			FbConnection conn = (FbConnection)connection;
 
@@ -260,7 +260,7 @@ public abstract class ConnectionStrategy : IDisposable
 				Diag.Dug(ex);
 				Tracer.LogExCatch(typeof(SqlConnectionStrategy), ex);
 				StringBuilder stringBuilder2 = new StringBuilder(100);
-				stringBuilder2.AppendFormat(SharedResx.UnableToApplyConnectionSettings, ex.Message);
+				stringBuilder2.AppendFormat(ControlsResources.UnableToApplyConnectionSettings, ex.Message);
 				Cmd.ShowMessageBoxEx(string.Empty, stringBuilder2.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			}
 			finally
@@ -291,7 +291,7 @@ public abstract class ConnectionStrategy : IDisposable
 
 	public IDbConnection EnsureConnection(bool tryOpenConnection)
 	{
-		lock (_InstanceLock)
+		lock (_LockObject)
 		{
 			if (Connection == null || tryOpenConnection && Connection.State != ConnectionState.Open)
 			{
@@ -312,7 +312,7 @@ public abstract class ConnectionStrategy : IDisposable
 
 	public IDbConnection ChangeConnection(bool tryOpenConnection)
 	{
-		lock (_InstanceLock)
+		lock (_LockObject)
 		{
 			if (tryOpenConnection)
 			{
@@ -332,7 +332,7 @@ public abstract class ConnectionStrategy : IDisposable
 
 	public virtual void ResetConnection()
 	{
-		lock (_InstanceLock)
+		lock (_LockObject)
 		{
 			UiConnectionInfo = null;
 			SetDbConnection(null);
@@ -341,7 +341,7 @@ public abstract class ConnectionStrategy : IDisposable
 
 	private void OnConnectionChanged(IDbConnection previousConnection)
 	{
-		lock (_InstanceLock)
+		lock (_LockObject)
 		{
 			ConnectionChangedEventArgs args = new ConnectionChangedEventArgs(previousConnection);
 			ConnectionChanged?.Invoke(this, args);
@@ -350,7 +350,7 @@ public abstract class ConnectionStrategy : IDisposable
 
 	private void OnConnectionChangedPriority(IDbConnection previousConnection)
 	{
-		lock (_InstanceLock)
+		lock (_LockObject)
 		{
 			ConnectionChangedEventArgs args = new ConnectionChangedEventArgs(previousConnection);
 			ConnectionChangedPriority?.Invoke(this, args);
@@ -367,7 +367,7 @@ public abstract class ConnectionStrategy : IDisposable
 
 	protected virtual void Dispose(bool disposing)
 	{
-		lock (_InstanceLock)
+		lock (_LockObject)
 		{
 			if (disposing && Connection != null)
 			{
@@ -382,7 +382,7 @@ public abstract class ConnectionStrategy : IDisposable
 	{
 		try
 		{
-			lock (_InstanceLock)
+			lock (_LockObject)
 			{
 				_Csb = csb;
 
@@ -409,7 +409,7 @@ public abstract class ConnectionStrategy : IDisposable
 		catch (FbException e)
 		{
 			Tracer.LogExCatch(typeof(ConnectionStrategy), e);
-			Cmd.ShowMessageBoxEx(null, string.Format(CultureInfo.CurrentCulture, SharedResx.ErrDatabaseNotAccessible, selectedDatasetKey), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			Cmd.ShowMessageBoxEx(null, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrDatabaseNotAccessible, selectedDatasetKey), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 		}
 	}
 
@@ -528,10 +528,10 @@ public abstract class ConnectionStrategy : IDisposable
 			AllowCancel = true,
 			EnableRealProgress = false,
 			Timeout = TimeSpan.MaxValue,
-			WaitTitle = SharedResx.CommonMessageLoopConnecting
+			WaitTitle = ControlsResources.CommonMessageLoopConnecting
 		};
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, SharedResx.CommonMessageLoopAttemptingToConnect, uici.DataSource));
+		stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.CommonMessageLoopAttemptingToConnect, uici.DataSource));
 		if (connectingInfoMessage != null)
 		{
 			stringBuilder.Append(Environment.NewLine + Environment.NewLine);
@@ -566,8 +566,8 @@ public abstract class ConnectionStrategy : IDisposable
 #pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
 		if (!Cmd.IsInAutomationFunction())
 		{
-			string value = string.Format(CultureInfo.CurrentCulture, SharedResx.CommonMessageLoopFailedToOpenConnection, uici.DataSource);
-			string value2 = string.Format(CultureInfo.CurrentCulture, SharedResx.CommonMessageLoopErrorMessage, exception.Message);
+			string value = string.Format(CultureInfo.CurrentCulture, ControlsResources.CommonMessageLoopFailedToOpenConnection, uici.DataSource);
+			string value2 = string.Format(CultureInfo.CurrentCulture, ControlsResources.CommonMessageLoopErrorMessage, exception.Message);
 			StringBuilder stringBuilder2 = new StringBuilder();
 			stringBuilder2.Append(value);
 			stringBuilder2.Append(Environment.NewLine + Environment.NewLine);

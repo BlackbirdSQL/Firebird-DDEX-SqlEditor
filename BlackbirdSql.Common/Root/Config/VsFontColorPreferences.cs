@@ -51,7 +51,7 @@ public class VsFontColorPreferences : IVsTextManagerEvents, IDisposable
 		}
 	}
 
-	public event EventHandler PreferencesChanged;
+	public event EventHandler PreferencesChangedEvent;
 
 	public VsFontColorPreferences()
 	{
@@ -122,7 +122,7 @@ public class VsFontColorPreferences : IVsTextManagerEvents, IDisposable
 		_isFireEventPending = true;
 		Dispatcher.CurrentDispatcher.BeginInvoke((Action)delegate
 		{
-			PreferencesChanged?.Invoke(this, EventArgs.Empty);
+			PreferencesChangedEvent?.Invoke(this, EventArgs.Empty);
 			_isFireEventPending = false;
 		});
 	}

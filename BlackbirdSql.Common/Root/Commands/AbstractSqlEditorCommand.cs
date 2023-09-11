@@ -63,9 +63,9 @@ public abstract class AbstractSqlEditorCommand
 		return result;
 	}
 
-	protected QueryExecutor GetQueryExecutorForEditor()
+	protected QueryManager GetQueryManagerForEditor()
 	{
-		return GetAuxiliaryDocDataForEditor()?.QueryExecutor;
+		return GetAuxiliaryDocDataForEditor()?.QryMgr;
 	}
 
 	public static IVsTextLines GetTextLinesForTextView(IVsTextView textView)
@@ -81,12 +81,12 @@ public abstract class AbstractSqlEditorCommand
 
 	protected bool IsEditorExecutingOrDebugging()
 	{
-		QueryExecutor queryExecutorForEditor = GetQueryExecutorForEditor();
-		if (queryExecutorForEditor != null)
+		QueryManager qryMgrForEditor = GetQueryManagerForEditor();
+		if (qryMgrForEditor != null)
 		{
-			if (!queryExecutorForEditor.IsExecuting)
+			if (!qryMgrForEditor.IsExecuting)
 			{
-				return queryExecutorForEditor.IsDebugging;
+				return qryMgrForEditor.IsDebugging;
 			}
 
 			return true;
@@ -106,10 +106,10 @@ public abstract class AbstractSqlEditorCommand
 			switch (strategy.Mode)
 			{
 				case EnEditorMode.Standard:
-					QueryExecutor queryExecutor = auxDocData.QueryExecutor;
-					if (queryExecutor != null && queryExecutor.ConnectionStrategy != null)
+					QueryManager qryMgr = auxDocData.QryMgr;
+					if (qryMgr != null && qryMgr.ConnectionStrategy != null)
 					{
-						return queryExecutor.ConnectionStrategy?.IsDwConnection ?? false;
+						return qryMgr.ConnectionStrategy?.IsDwConnection ?? false;
 					}
 
 					break;

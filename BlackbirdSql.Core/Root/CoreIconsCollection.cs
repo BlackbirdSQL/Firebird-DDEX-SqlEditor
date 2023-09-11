@@ -54,7 +54,7 @@ public class CoreIconsCollection : AbstractIconsCollection
 				return _Icons;
 
 			// Ensure icons will be sequencially indexed for this ide instance.
-			lock (_IconsLock)
+			lock (_LockObject)
 			{
 				_Icons = new List<IBIconType>(15)
 				{

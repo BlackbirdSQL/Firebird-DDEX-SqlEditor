@@ -44,13 +44,13 @@ public sealed class AuxiliaryDocData
 		}
 	}
 
-	private QueryExecutor _QueryExecutor;
+	private QueryManager _QryMgr;
 
 	public const string C_TName = "AuxiliaryDocData";
 
 	private ISqlEditorStrategy _Strategy;
 
-	private readonly object _LocalLock = new object();
+	private readonly object _LockObject = new object();
 
 	private bool? _IntellisenseEnabled;
 
@@ -62,7 +62,7 @@ public sealed class AuxiliaryDocData
 	{
 		get
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
 				return _Strategy;
 			}
@@ -76,30 +76,30 @@ public sealed class AuxiliaryDocData
 				throw ex;
 			}
 
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
 				_Strategy = value;
-				QueryExecutor.ConnectionStrategy = Strategy.CreateConnectionStrategy();
-				QueryExecutor.SqlCmdVariableResolver = Strategy.ResolveSqlCmdVariable;
+				QryMgr.ConnectionStrategy = Strategy.CreateConnectionStrategy();
+				QryMgr.SqlCmdVariableResolver = Strategy.ResolveSqlCmdVariable;
 			}
 		}
 	}
 
-	public QueryExecutor QueryExecutor
+	public QueryManager QryMgr
 	{
 		get
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
-				if (_QueryExecutor == null)
+				if (_QryMgr == null)
 				{
-					_QueryExecutor = new QueryExecutor(Strategy.CreateConnectionStrategy(), Strategy.ResolveSqlCmdVariable);
-					_QueryExecutor.StatusChanged += QueryExecutorStatusChangedEventHandler;
-					_QueryExecutor.ScriptExecutionStarted += QueryExecutorScriptExecutionStartedHandler;
-					_QueryExecutor.ScriptExecutionCompleted += QueryExecutorScriptExecutionCompletedHandler;
+					_QryMgr = new QueryManager(Strategy.CreateConnectionStrategy(), Strategy.ResolveSqlCmdVariable);
+					_QryMgr.StatusChangedEvent += QueryManagerStatusChangedEventHandler;
+					_QryMgr.ScriptExecutionStartedEvent += QueryManagerScriptExecutionStartedHandler;
+					_QryMgr.ScriptExecutionCompletedEvent += QueryExecutorScriptExecutionCompletedHandler;
 				}
 
-				return _QueryExecutor;
+				return _QryMgr;
 			}
 		}
 	}
@@ -108,14 +108,14 @@ public sealed class AuxiliaryDocData
 	{
 		get
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
 				return _IntellisenseEnabled;
 			}
 		}
 		set
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
 				IVsUserData iVsUserData = GetIVsUserData();
 				if (iVsUserData != null)
@@ -132,16 +132,16 @@ public sealed class AuxiliaryDocData
 	{
 		get
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
-				return QueryExecutor.ExecutionOptions.WithClientStats;
+				return QryMgr.ExecutionOptions.WithClientStats;
 			}
 		}
 		set
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
-				QueryExecutor.ExecutionOptions.WithClientStats = value;
+				QryMgr.ExecutionOptions.WithClientStats = value;
 			}
 		}
 	}
@@ -150,16 +150,16 @@ public sealed class AuxiliaryDocData
 	{
 		get
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
-				return QueryExecutor.ExecutionOptions.WithExecutionPlan;
+				return QryMgr.ExecutionOptions.WithExecutionPlan;
 			}
 		}
 		set
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
-				QueryExecutor.ExecutionOptions.WithExecutionPlan = value;
+				QryMgr.ExecutionOptions.WithExecutionPlan = value;
 			}
 		}
 	}
@@ -168,16 +168,16 @@ public sealed class AuxiliaryDocData
 	{
 		get
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
-				return QueryExecutor.ExecutionOptions.WithEstimatedExecutionPlan;
+				return QryMgr.ExecutionOptions.WithEstimatedExecutionPlan;
 			}
 		}
 		set
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
-				QueryExecutor.ExecutionOptions.WithEstimatedExecutionPlan = value;
+				QryMgr.ExecutionOptions.WithEstimatedExecutionPlan = value;
 			}
 		}
 	}
@@ -186,19 +186,19 @@ public sealed class AuxiliaryDocData
 	{
 		get
 		{
-			return QueryExecutor.QueryExecutionSettings.ExecutionResults;
+			return QryMgr.QueryExecutionSettings.ExecutionResults;
 		}
 		set
 		{
 			Tracer.Trace(GetType(), "AuxiliaryDocData.ResultsSettings", "", null);
-			if (QueryExecutor.IsExecuting)
+			if (QryMgr.IsExecuting)
 			{
 				InvalidOperationException ex = new();
 				Diag.Dug(ex);
 				throw ex;
 			}
 
-			QueryExecutor.QueryExecutionSettings.ExecutionResults = value;
+			QryMgr.QueryExecutionSettings.ExecutionResults = value;
 			RaiseResultSettingsChangedEvent(value);
 		}
 	}
@@ -212,9 +212,9 @@ public sealed class AuxiliaryDocData
 		set
 		{
 			Tracer.Trace(GetType(), "DisplaySQLResultsControl.SqlExecutionMode", "value = {0}", value);
-			if (QueryExecutor.IsExecuting)
+			if (QryMgr.IsExecuting)
 			{
-				InvalidOperationException ex = new(SharedResx.SqlExecutionModeChangeFailed);
+				InvalidOperationException ex = new(ControlsResources.SqlExecutionModeChangeFailed);
 				Tracer.LogExThrow(GetType(), ex);
 				throw ex;
 			}
@@ -229,34 +229,34 @@ public sealed class AuxiliaryDocData
 
 	public bool IsQueryWindow { get; set; }
 
-	public event EventHandler<SqlExecutionModeChangedEventArgs> SqlExecutionModeChanged;
+	public event EventHandler<SqlExecutionModeChangedEventArgs> SqlExecutionModeChangedEvent;
 
-	public event EventHandler<ResultsSettingsChangedEventArgs> ResultSettingsChanged;
+	public event EventHandler<ResultsSettingsChangedEventArgs> ResultSettingsChangedEvent;
 
 	public AuxiliaryDocData(object docData)
 	{
 		DocData = docData;
 	}
 
-	private void QueryExecutorStatusChangedEventHandler(object sender, QueryExecutor.StatusChangedEventArgs args)
+	private void QueryManagerStatusChangedEventHandler(object sender, QueryManager.StatusChangedEventArgs args)
 	{
-		lock (_LocalLock)
+		lock (_LockObject)
 		{
-			if (args.Change == QueryExecutor.StatusType.ExecutionOptionsWithOleSqlChanged)
+			if (args.Change == QueryManager.StatusType.ExecutionOptionsWithOleSqlChanged)
 			{
-				SetOLESqlModeOnDocData(QueryExecutor.IsWithOleSQLScripting);
+				SetOLESqlModeOnDocData(QryMgr.IsWithOleSQLScripting);
 			}
 			else
 			{
-				if (args.Change != QueryExecutor.StatusType.Connected)
+				if (args.Change != QueryManager.StatusType.Connected)
 				{
 					return;
 				}
 
 				IVsUserData iVsUserData = GetIVsUserData();
-				if (QueryExecutor.IsConnected)
+				if (QryMgr.IsConnected)
 				{
-					IDbConnection connection = QueryExecutor.ConnectionStrategy.Connection;
+					IDbConnection connection = QryMgr.ConnectionStrategy.Connection;
 					if (connection.State != ConnectionState.Open)
 					{
 						return;
@@ -267,7 +267,7 @@ public sealed class AuxiliaryDocData
 						string serverVersion = dbConnection.ServerVersion;
 						Guid riidKey = LibraryData.CLSID_PropertySqlVersion;
 						iVsUserData.SetData(ref riidKey, serverVersion);
-						if (QueryExecutor.ConnectionStrategy is SqlConnectionStrategy connectionStrategy && connectionStrategy.IsDwConnection)
+						if (QryMgr.ConnectionStrategy is SqlConnectionStrategy connectionStrategy && connectionStrategy.IsDwConnection)
 						{
 							ActualExecutionPlanEnabled = false;
 							IntellisenseEnabled = false;
@@ -285,9 +285,9 @@ public sealed class AuxiliaryDocData
 		}
 	}
 
-	private bool QueryExecutorScriptExecutionStartedHandler(object sender, QueryExecutor.ScriptExecutionStartedEventArgs args)
+	private bool QueryManagerScriptExecutionStartedHandler(object sender, QueryManager.ScriptExecutionStartedEventArgs args)
 	{
-		IDbConnection connection = QueryExecutor.ConnectionStrategy.Connection;
+		IDbConnection connection = QryMgr.ConnectionStrategy.Connection;
 		if (connection != null)
 		{
 			_DatabaseAtQueryExecutionStart = connection.Database;
@@ -303,7 +303,7 @@ public sealed class AuxiliaryDocData
 	private void QueryExecutorScriptExecutionCompletedHandler(object sender, ScriptExecutionCompletedEventArgs args)
 	{
 		string text = null;
-		IDbConnection connection = QueryExecutor.ConnectionStrategy.Connection;
+		IDbConnection connection = QryMgr.ConnectionStrategy.Connection;
 		if (connection != null)
 		{
 			text = connection.Database;
@@ -334,13 +334,13 @@ public sealed class AuxiliaryDocData
 
 	public void UpdateExecutionSettings()
 	{
-		ResultsSettings = QueryExecutor.QueryExecutionSettings.ExecutionResults;
-		QueryExecutor.QueryExecutionSettingsApplied = false;
+		ResultsSettings = QryMgr.QueryExecutionSettings.ExecutionResults;
+		QryMgr.QueryExecutionSettingsApplied = false;
 	}
 
 	public IVsUserData GetIVsUserData()
 	{
-		lock (_LocalLock)
+		lock (_LockObject)
 		{
 			IVsUserData vsUserData = DocData as IVsUserData;
 			Tracer.Trace(GetType(), "AuxiliaryDocData.GetIVsUserData", "value of IVsUserData returned is {0}", vsUserData);
@@ -386,7 +386,7 @@ public sealed class AuxiliaryDocData
 
 	private void SetOLESqlModeOnDocData(bool on)
 	{
-		lock (_LocalLock)
+		lock (_LockObject)
 		{
 			IVsUserData iVsUserData = GetIVsUserData();
 			if (iVsUserData != null)
@@ -404,15 +404,15 @@ public sealed class AuxiliaryDocData
 
 	private void Dispose(bool disposing)
 	{
-		lock (_LocalLock)
+		lock (_LockObject)
 		{
 			if (disposing)
 			{
 				_Strategy?.Dispose();
-				_QueryExecutor?.Dispose();
+				_QryMgr?.Dispose();
 			}
 
-			_QueryExecutor = null;
+			_QryMgr = null;
 		}
 	}
 
@@ -428,19 +428,11 @@ public sealed class AuxiliaryDocData
 
 	public void RaiseSqlExecutionModeChangedEvent(EnSqlExecutionMode newSqlExecMode)
 	{
-		if (SqlExecutionModeChanged != null)
-		{
-			SqlExecutionModeChangedEventArgs e = new SqlExecutionModeChangedEventArgs(newSqlExecMode);
-			SqlExecutionModeChanged(this, e);
-		}
+		SqlExecutionModeChangedEvent?.Invoke(this, new(newSqlExecMode));
 	}
 
 	public void RaiseResultSettingsChangedEvent(IQueryExecutionResultsSettings resultSettings)
 	{
-		if (ResultSettingsChanged != null)
-		{
-			ResultsSettingsChangedEventArgs e = new ResultsSettingsChangedEventArgs(resultSettings);
-			ResultSettingsChanged(this, e);
-		}
+		ResultSettingsChangedEvent?.Invoke(this, new(resultSettings));
 	}
 }

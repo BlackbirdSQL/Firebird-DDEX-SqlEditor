@@ -102,7 +102,7 @@ public sealed class QEStatusBarManager : IDisposable
 
 	private readonly Queue<Action> _StatusBarUpdateActions = new Queue<Action>();
 
-	private readonly object _StatusBarLock = new object();
+	private readonly object _LockObject = new object();
 
 	private System.Timers.Timer _ElapsedExecutionTimer;
 
@@ -128,15 +128,15 @@ public sealed class QEStatusBarManager : IDisposable
 
 	private ISqlEditorWindowPane EditorWindowPane { get; set; }
 
-	private QueryExecutor QueryExecutor
+	private QueryManager QryMgr
 	{
 		get
 		{
-			QueryExecutor result = null;
+			QueryManager result = null;
 			AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(EditorWindowPane.DocData);
 			if (auxDocData != null)
 			{
-				result = auxDocData.QueryExecutor;
+				result = auxDocData.QryMgr;
 			}
 
 			return result;
@@ -217,9 +217,9 @@ public sealed class QEStatusBarManager : IDisposable
 		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c9: Expected O, but got Unknown
 		EditorWindowPane = editorWindowPane;
-		QueryExecutor.StatusChanged += HandleQueryExecutorStatusChanged;
-		QueryExecutor.ScriptExecutionStarted += HandleScriptExecutionStartedEventHandler;
-		QueryExecutor.ScriptExecutionCompleted += HandleScriptExecutionCompletedEventHandler;
+		QryMgr.StatusChangedEvent += HandleQueryManagerStatusChanged;
+		QryMgr.ScriptExecutionStartedEvent += HandleScriptExecutionStartedEventHandler;
+		QryMgr.ScriptExecutionCompletedEvent += HandleScriptExecutionCompletedEventHandler;
 		Tracer.Trace(GetType(), "QEStatusBarManager.Initialize", "_RowCountValid = {0}", rowCountValid);
 		this._StatusStrip = statusStrip;
 		this._StatusStrip.LayoutStyle = ToolStripLayoutStyle.Table;
@@ -228,8 +228,8 @@ public sealed class QEStatusBarManager : IDisposable
 		((ToolStripStatusLabel)(object)_GeneralPanel).Spring = true;
 		this._StatusStrip.RenderMode = ToolStripRenderMode.Professional;
 		this._StatusStrip.Renderer = new EditorStatusStripRenderer(this._StatusStrip);
-		_ = QueryExecutor.ConnectionStrategy.UiConnectionInfo;
-		IDbConnection connection = QueryExecutor.ConnectionStrategy.Connection;
+		_ = QryMgr.ConnectionStrategy.UiConnectionInfo;
+		IDbConnection connection = QryMgr.ConnectionStrategy.Connection;
 		if (connection != null && connection.State == ConnectionState.Open)
 		{
 			TransitionIntoOnlineMode(useNewConnectionOpenedState: false);
@@ -240,16 +240,16 @@ public sealed class QEStatusBarManager : IDisposable
 		}
 	}
 
-	private void HandleQueryExecutorStatusChanged(object sender, QueryExecutor.StatusChangedEventArgs args)
+	private void HandleQueryManagerStatusChanged(object sender, QueryManager.StatusChangedEventArgs args)
 	{
-		bool isConnected = QueryExecutor.IsConnected;
-		bool isDebugging = QueryExecutor.IsDebugging;
-		bool isExecuting = QueryExecutor.IsExecuting;
-		bool isConnecting = QueryExecutor.IsConnecting;
-		bool isCancelling = QueryExecutor.IsCancelling;
+		bool isConnected = QryMgr.IsConnected;
+		bool isDebugging = QryMgr.IsDebugging;
+		bool isExecuting = QryMgr.IsExecuting;
+		bool isConnecting = QryMgr.IsConnecting;
+		bool isCancelling = QryMgr.IsCancelling;
 		void a()
 		{
-			if (args.Change == QueryExecutor.StatusType.Connected || args.Change == QueryExecutor.StatusType.Connection)
+			if (args.Change == QueryManager.StatusType.Connected || args.Change == QueryManager.StatusType.Connection)
 			{
 				if (isConnected)
 				{
@@ -261,7 +261,7 @@ public sealed class QEStatusBarManager : IDisposable
 				}
 			}
 
-			if (args.Change == QueryExecutor.StatusType.Debugging)
+			if (args.Change == QueryManager.StatusType.Debugging)
 			{
 				if (isDebugging)
 				{
@@ -273,12 +273,12 @@ public sealed class QEStatusBarManager : IDisposable
 				}
 			}
 
-			if (args.Change == QueryExecutor.StatusType.Executing && isExecuting)
+			if (args.Change == QueryManager.StatusType.Executing && isExecuting)
 			{
 				SetKnownState(QEStatusBarKnownStates.Executing);
 			}
 
-			if (args.Change == QueryExecutor.StatusType.Connecting)
+			if (args.Change == QueryManager.StatusType.Connecting)
 			{
 				if (isConnecting)
 				{
@@ -294,12 +294,12 @@ public sealed class QEStatusBarManager : IDisposable
 				}
 			}
 
-			if (args.Change == QueryExecutor.StatusType.Cancelling && isCancelling)
+			if (args.Change == QueryManager.StatusType.Cancelling && isCancelling)
 			{
 				SetKnownState(QEStatusBarKnownStates.CancelingExecution);
 			}
 
-			if (args.Change == QueryExecutor.StatusType.DatabaseChanged)
+			if (args.Change == QueryManager.StatusType.DatabaseChanged)
 			{
 				ResetDatabaseName();
 			}
@@ -309,7 +309,7 @@ public sealed class QEStatusBarManager : IDisposable
 
 	private void EnqueAndExecuteStatusBarUpdate(Action a)
 	{
-		lock (_StatusBarLock)
+		lock (_LockObject)
 		{
 			_StatusBarUpdateActions.Enqueue(a);
 		}
@@ -334,7 +334,7 @@ public sealed class QEStatusBarManager : IDisposable
 		while (true)
 		{
 			Action action = null;
-			lock (_StatusBarLock)
+			lock (_LockObject)
 			{
 				if (_StatusBarUpdateActions.Count == 0)
 				{
@@ -348,14 +348,14 @@ public sealed class QEStatusBarManager : IDisposable
 		}
 	}
 
-	private bool HandleScriptExecutionStartedEventHandler(object sender, QueryExecutor.ScriptExecutionStartedEventArgs args)
+	private bool HandleScriptExecutionStartedEventHandler(object sender, QueryManager.ScriptExecutionStartedEventArgs args)
 	{
 		void a()
 		{
 			_StatusStrip.Show();
 			if (UserSettings.Instance.Current.StatusBar.ShowTimeOption == EnDisplayTimeOptions.Elapsed)
 			{
-				((ToolStripItem)(object)_ExecutionTimePanel).Text = FormatTimeSpanForStatus(DateTime.Now - DateTime.Now);
+				((ToolStripItem)(object)_ExecutionTimePanel).Text = (DateTime.Now - DateTime.Now).FormatForStatus();
 				ExecutionStartTime = DateTime.Now;
 				if (_ElapsedExecutionTimer == null)
 				{
@@ -398,7 +398,7 @@ public sealed class QEStatusBarManager : IDisposable
 					_ElapsedExecutionTimer.Enabled = false;
 				}
 
-				((ToolStripItem)(object)_ExecutionTimePanel).Text = FormatTimeSpanForStatus(DateTime.Now - ExecutionStartTime);
+				((ToolStripItem)(object)_ExecutionTimePanel).Text = (DateTime.Now - ExecutionStartTime).FormatForStatus();
 			}
 		}
 		EnqueAndExecuteStatusBarUpdate(a);
@@ -408,7 +408,7 @@ public sealed class QEStatusBarManager : IDisposable
 	{
 		void a()
 		{
-			((ToolStripItem)(object)_ExecutionTimePanel).Text = FormatTimeSpanForStatus(args.SignalTime - ExecutionStartTime);
+			((ToolStripItem)(object)_ExecutionTimePanel).Text = (args.SignalTime - ExecutionStartTime).FormatForStatus();
 		}
 		EnqueAndExecuteStatusBarUpdate(a);
 	}
@@ -416,7 +416,7 @@ public sealed class QEStatusBarManager : IDisposable
 	private void TransitionIntoOfflineMode()
 	{
 		Tracer.Trace(GetType(), "QEStatusBarManager.TransitionIntoOfflineMode", "", null);
-		ConnectionStrategy connectionStrategy = QueryExecutor.ConnectionStrategy;
+		ConnectionStrategy connectionStrategy = QryMgr.ConnectionStrategy;
 		if (connectionStrategy != null && connectionStrategy.UiConnectionInfo != (UIConnectionInfo)null)
 		{
 			ResetPanelsForOnlineMode();
@@ -432,7 +432,7 @@ public sealed class QEStatusBarManager : IDisposable
 
 	private void TransitionIntoOnlineMode(bool useNewConnectionOpenedState)
 	{
-		ConnectionStrategy connectionStrategy = QueryExecutor.ConnectionStrategy;
+		ConnectionStrategy connectionStrategy = QryMgr.ConnectionStrategy;
 		if (connectionStrategy.UiConnectionInfo != null)
 		{
 			ResetPanelsForOnlineMode();
@@ -500,13 +500,13 @@ public sealed class QEStatusBarManager : IDisposable
 					break;
 				case QEStatusBarKnownStates.ExecutionOk:
 					_GeneralPanel.SetOneImage(S_ExecSuccessBitmap);
-					if (!QueryExecutor.QueryExecutionEndTime.HasValue)
+					if (!QryMgr.QueryExecutionEndTime.HasValue)
 					{
 						((ToolStripItem)(object)_GeneralPanel).Text = string.Format(CultureInfo.CurrentCulture, ControlsResources.StatusBarQueryCompletedSuccessfully, string.Empty);
 					}
 					else
 					{
-						((ToolStripItem)(object)_GeneralPanel).Text = string.Format(CultureInfo.CurrentCulture, ControlsResources.StatusBarQueryCompletedSuccessfully, QueryExecutor.QueryExecutionEndTime);
+						((ToolStripItem)(object)_GeneralPanel).Text = string.Format(CultureInfo.CurrentCulture, ControlsResources.StatusBarQueryCompletedSuccessfully, QryMgr.QueryExecutionEndTime);
 					}
 
 					ResetDatabaseName();
@@ -540,14 +540,14 @@ public sealed class QEStatusBarManager : IDisposable
 
 			if (newState == QEStatusBarKnownStates.ExecutionTimedOut || newState == QEStatusBarKnownStates.ExecutionOk || newState == QEStatusBarKnownStates.ExecutionFailed || newState == QEStatusBarKnownStates.ExecutionCancelled)
 			{
-				if (QueryExecutor.QueryExecutionStartTime.HasValue && QueryExecutor.QueryExecutionEndTime.HasValue)
+				if (QryMgr.QueryExecutionStartTime.HasValue && QryMgr.QueryExecutionEndTime.HasValue)
 				{
-					_ = QueryExecutor.QueryExecutionStartTime.Value;
-					DateTime value = QueryExecutor.QueryExecutionEndTime.Value;
+					_ = QryMgr.QueryExecutionStartTime.Value;
+					DateTime value = QryMgr.QueryExecutionEndTime.Value;
 					SetExecutionCompletedTime(value);
 				}
 
-				SetRowsAffected(QueryExecutor.RowsAffected);
+				SetRowsAffected(QryMgr.RowsAffected);
 				AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(EditorWindowPane.DocData);
 				if (auxDocData != null && auxDocData.ResultsSettings.ProvideFeedbackWithSounds)
 				{
@@ -568,10 +568,12 @@ public sealed class QEStatusBarManager : IDisposable
 		((ToolStripItem)(object)_CompletedTimePanel).Text = endTime.ToString(CultureInfo.CurrentCulture);
 	}
 
+	/*
 	private static string FormatTimeSpanForStatus(TimeSpan ts)
 	{
 		return new TimeSpan(ts.Days, ts.Hours, ts.Minutes, ts.Seconds, 0).ToString();
 	}
+	*/
 
 	private void SetRowsAffected(long rows)
 	{
@@ -584,7 +586,7 @@ public sealed class QEStatusBarManager : IDisposable
 
 	private void UpdateStatusBar()
 	{
-		_StatusStrip.BackColor = QueryExecutor.ConnectionStrategy.StatusBarColor;
+		_StatusStrip.BackColor = QryMgr.ConnectionStrategy.StatusBarColor;
 		if (_StatusStrip.BackColor == EditorTabAndStatusBarSettings.Defaults.StatusBarColor)
 		{
 			_ = _StatusStrip.BackColor = _StatusStrip.BackColor = VsColorUtilities.GetShellColor(-53);
@@ -662,7 +664,7 @@ public sealed class QEStatusBarManager : IDisposable
 
 	private void ResetPanelsForOnlineMode()
 	{
-		ConnectionStrategy connectionStrategy = QueryExecutor.ConnectionStrategy;
+		ConnectionStrategy connectionStrategy = QryMgr.ConnectionStrategy;
 		string displayUserName = connectionStrategy.DisplayUserName;
 		string displayDatabaseName = connectionStrategy.DisplayDatabaseName;
 		string text = connectionStrategy.DisplayServerName;
@@ -681,23 +683,23 @@ public sealed class QEStatusBarManager : IDisposable
 		((ToolStripItem)(object)_ServerNamePanel).Text = text;
 		((ToolStripItem)(object)_UserNamePanel).Text = displayUserName;
 		((ToolStripItem)(object)_DatabaseNamePanel).Text = displayDatabaseName ?? string.Empty;
-		if (!QueryExecutor.QueryExecutionEndTime.HasValue || !QueryExecutor.QueryExecutionStartTime.HasValue)
+		if (!QryMgr.QueryExecutionEndTime.HasValue || !QryMgr.QueryExecutionStartTime.HasValue)
 		{
 			((ToolStripItem)(object)_ExecutionTimePanel).Text = "00:00:00";
 			((ToolStripItem)(object)_CompletedTimePanel).Text = "00:00:00";
 		}
 		else
 		{
-			((ToolStripItem)(object)_ExecutionTimePanel).Text = FormatTimeSpanForStatus(QueryExecutor.QueryExecutionEndTime.Value - QueryExecutor.QueryExecutionStartTime.Value);
-			((ToolStripItem)(object)_CompletedTimePanel).Text = QueryExecutor.QueryExecutionEndTime.Value.ToString(CultureInfo.CurrentCulture);
+			((ToolStripItem)(object)_ExecutionTimePanel).Text = (QryMgr.QueryExecutionEndTime.Value - QryMgr.QueryExecutionStartTime.Value).FormatForStatus();
+			((ToolStripItem)(object)_CompletedTimePanel).Text = QryMgr.QueryExecutionEndTime.Value.ToString(CultureInfo.CurrentCulture);
 		}
 
-		SetRowsAffected(QueryExecutor.RowsAffected);
+		SetRowsAffected(QryMgr.RowsAffected);
 	}
 
 	private void ResetDatabaseName()
 	{
-		string displayDatabaseName = QueryExecutor.ConnectionStrategy.DisplayDatabaseName;
+		string displayDatabaseName = QryMgr.ConnectionStrategy.DisplayDatabaseName;
 		((ToolStripItem)(object)_DatabaseNamePanel).Text = displayDatabaseName ?? string.Empty;
 	}
 
@@ -711,12 +713,12 @@ public sealed class QEStatusBarManager : IDisposable
 	{
 		if (disposing && !disposed)
 		{
-			QueryExecutor queryExecutor = QueryExecutor;
-			if (queryExecutor != null)
+			QueryManager qryMgr = QryMgr;
+			if (qryMgr != null)
 			{
-				queryExecutor.ScriptExecutionStarted -= HandleScriptExecutionStartedEventHandler;
-				queryExecutor.ScriptExecutionCompleted -= HandleScriptExecutionCompletedEventHandler;
-				queryExecutor.StatusChanged -= HandleQueryExecutorStatusChanged;
+				qryMgr.ScriptExecutionStartedEvent -= HandleScriptExecutionStartedEventHandler;
+				qryMgr.ScriptExecutionCompletedEvent -= HandleScriptExecutionCompletedEventHandler;
+				qryMgr.StatusChangedEvent -= HandleQueryManagerStatusChanged;
 			}
 
 			((Component)(object)_CompletedTimePanel).Dispose();

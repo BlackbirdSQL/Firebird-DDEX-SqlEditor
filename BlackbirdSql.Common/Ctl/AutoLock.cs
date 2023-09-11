@@ -11,7 +11,7 @@ namespace BlackbirdSql.Common.Ctl
 {
 	public class AutoLock
 	{
-		private readonly ReaderWriterLock _LocalLock;
+		private readonly ReaderWriterLock _LockObject;
 
 		private readonly bool _IsWriteLocked;
 
@@ -20,15 +20,15 @@ namespace BlackbirdSql.Common.Ctl
 			exception = null;
 			try
 			{
-				_LocalLock = lockObj;
+				_LockObject = lockObj;
 				_IsWriteLocked = isWriteLock;
 				if (_IsWriteLocked)
 				{
-					_LocalLock.AcquireWriterLock(timeOut);
+					_LockObject.AcquireWriterLock(timeOut);
 				}
 				else
 				{
-					_LocalLock.AcquireReaderLock(timeOut);
+					_LockObject.AcquireReaderLock(timeOut);
 				}
 
 				action();
@@ -39,13 +39,13 @@ namespace BlackbirdSql.Common.Ctl
 			}
 			finally
 			{
-				if (_IsWriteLocked && _LocalLock.IsWriterLockHeld)
+				if (_IsWriteLocked && _LockObject.IsWriterLockHeld)
 				{
-					_LocalLock.ReleaseWriterLock();
+					_LockObject.ReleaseWriterLock();
 				}
-				else if (!_IsWriteLocked && _LocalLock.IsReaderLockHeld)
+				else if (!_IsWriteLocked && _LockObject.IsReaderLockHeld)
 				{
-					_LocalLock.ReleaseReaderLock();
+					_LockObject.ReleaseReaderLock();
 				}
 			}
 		}

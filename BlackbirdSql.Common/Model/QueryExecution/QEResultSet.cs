@@ -15,6 +15,7 @@ using BlackbirdSql.Common.Controls.Enums;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
+using BlackbirdSql.Common.Properties;
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 
@@ -34,7 +35,7 @@ public sealed class QEResultSet : IDisposable, IGridStorage
 
 	private StringCollection _ColumnNames;
 
-	private readonly QueryExecutor _QueryExecutor;
+	private readonly QueryManager _QryMgr;
 
 	private readonly string _Script;
 
@@ -170,14 +171,14 @@ public sealed class QEResultSet : IDisposable, IGridStorage
 		}
 	}
 
-	public event MoreRowsAvailableEventHandler MoreRowsAvailable;
+	public event MoreRowsAvailableEventHandler MoreRowsAvailableEvent;
 
 	private QEResultSet()
 	{
 		Tracer.Trace(GetType(), "QEResultSet.QEResultSet", "", null);
 	}
 
-	public QEResultSet(IDataReader reader, QueryExecutor queryExecutor, string script)
+	public QEResultSet(IDataReader reader, QueryManager qryMgr, string script)
 		: this()
 	{
 		if (reader == null)
@@ -188,7 +189,7 @@ public sealed class QEResultSet : IDisposable, IGridStorage
 		}
 
 		_DataReader = reader;
-		_QueryExecutor = queryExecutor;
+		_QryMgr = qryMgr;
 		_Script = script;
 	}
 
@@ -273,7 +274,7 @@ public sealed class QEResultSet : IDisposable, IGridStorage
 			return true;
 		}
 
-		return _QueryExecutor.ConnectionStrategy?.ShouldShowColumnWithXmlHyperLinkEnabled(this, nColNum, _Script) ?? false;
+		return _QryMgr.ConnectionStrategy?.ShouldShowColumnWithXmlHyperLinkEnabled(this, nColNum, _Script) ?? false;
 	}
 
 	public DataRow GetSchemaRow(int nColNum)
@@ -503,10 +504,10 @@ public sealed class QEResultSet : IDisposable, IGridStorage
 
 	private void OnStorageNotify(long storageRowCount, bool storedAllData)
 	{
-		if (MoreRowsAvailable != null)
+		if (MoreRowsAvailableEvent != null)
 		{
 			_CachedMoreInfoEventArgs.SetEventInfo(storedAllData, storageRowCount);
-			MoreRowsAvailable(this, _CachedMoreInfoEventArgs);
+			MoreRowsAvailableEvent(this, _CachedMoreInfoEventArgs);
 			// _M_curRowsNum = storageRowCount;
 		}
 

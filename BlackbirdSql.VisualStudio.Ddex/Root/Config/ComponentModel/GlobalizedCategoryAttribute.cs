@@ -13,7 +13,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Config.ComponentModel;
 
 public sealed class GlobalizedCategoryAttribute : AbstractGlobalizedCategoryAttribute
 {
-	public override System.Resources.ResourceManager ResMgr => ControlsResources.ResourceManager;
+	public override System.Resources.ResourceManager ResMgr => Resources.ResourceManager;
 
 	public GlobalizedCategoryAttribute(string resourceName) : base(resourceName)
 	{

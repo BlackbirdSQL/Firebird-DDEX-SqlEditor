@@ -30,8 +30,8 @@ public class SqlEditorCancelQueryCommand : AbstractSqlEditorCommand
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-		QueryExecutor queryExecutorForEditor = GetQueryExecutorForEditor();
-		if (queryExecutorForEditor != null && queryExecutorForEditor.IsExecuting)
+		QueryManager qryMgrForEditor = GetQueryManagerForEditor();
+		if (qryMgrForEditor != null && qryMgrForEditor.IsExecuting)
 		{
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 		}
@@ -41,10 +41,10 @@ public class SqlEditorCancelQueryCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		QueryExecutor queryExecutorForEditor = GetQueryExecutorForEditor();
-		if (queryExecutorForEditor != null && queryExecutorForEditor.IsExecuting)
+		QueryManager qryMgrForEditor = GetQueryManagerForEditor();
+		if (qryMgrForEditor != null && qryMgrForEditor.IsExecuting)
 		{
-			queryExecutorForEditor.Cancel(bSync: false);
+			qryMgrForEditor.Cancel(bSync: false);
 		}
 
 		return VSConstants.S_OK;

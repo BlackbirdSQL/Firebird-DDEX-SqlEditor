@@ -9,7 +9,7 @@ namespace BlackbirdSql.Core.ComponentModel;
 
 public class GlobalOnOffConverter : BooleanConverter
 {
-	public System.Resources.ResourceManager ResMgr => ControlsResources.ResourceManager;
+	public System.Resources.ResourceManager ResMgr => AttributeResources.ResourceManager;
 
 
 	public GlobalOnOffConverter()

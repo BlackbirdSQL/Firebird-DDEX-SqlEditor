@@ -31,7 +31,7 @@ public class DialogModel : IDisposable, IServiceProvider, IServiceContainer
 
 	// private Exception _DiscoveryError;
 
-	private readonly object _LocalLock = new object();
+	private readonly object _LockObject = new object();
 
 	private bool _DeferredDispose;
 
@@ -93,15 +93,15 @@ public class DialogModel : IDisposable, IServiceProvider, IServiceContainer
 
 	public ObservableCollection<SectionHost> Sections { get; private set; }
 
-	public event EventHandler<EventArgs> DiscoveryCompleted;
+	public event EventHandler<EventArgs> DiscoveryCompletedEvent;
 
-	public event EventHandler<SectionEventArgs> SectionCreated;
+	public event EventHandler<SectionEventArgs> SectionCreatedEvent;
 
-	public event EventHandler<SectionEventArgs> SectionInitialized;
+	public event EventHandler<SectionEventArgs> SectionInitializedEvent;
 
-	public event EventHandler<SectionEventArgs> SectionClosing;
+	public event EventHandler<SectionEventArgs> SectionClosingEvent;
 
-	public event EventHandler ContextInfoProvidersChanged;
+	public event EventHandler ContextInfoProvidersChangedEvent;
 
 	public DialogModel(IBDependencyManager dependencyManager)
 	{
@@ -155,22 +155,22 @@ public class DialogModel : IDisposable, IServiceProvider, IServiceContainer
 
 	private void SectionHost_SectionCreated(object sender, SectionEventArgs e)
 	{
-		SectionCreated?.Invoke(this, e);
+		SectionCreatedEvent?.Invoke(this, e);
 	}
 
 	private void SectionHost_SectionInitialized(object sender, SectionEventArgs e)
 	{
-		SectionInitialized?.Invoke(this, e);
+		SectionInitializedEvent.Invoke(this, e);
 	}
 
 	private void SectionHost_SectionClosing(object sender, SectionEventArgs e)
 	{
-		SectionClosing?.Invoke(this, e);
+		SectionClosingEvent?.Invoke(this, e);
 	}
 
 	protected void RaiseContextInfoProvidersChanged()
 	{
-		ContextInfoProvidersChanged?.Invoke(this, EventArgs.Empty);
+		ContextInfoProvidersChangedEvent?.Invoke(this, EventArgs.Empty);
 	}
 
 	public object GetService(Type serviceType)
@@ -247,7 +247,7 @@ public class DialogModel : IDisposable, IServiceProvider, IServiceContainer
 		}
 		Trace.TraceEvent(TraceEventType.Information, EnUiTraceId.UiInfra, "RegisterSection section={0} pri={1}", sectionId, priority);
 		SectionRegInfo sectionRegInfo = null;
-		lock (_LocalLock)
+		lock (_LockObject)
 		{
 			sectionRegInfo = new SectionRegInfo(sectionTypeInfo);
 			bool flag = false;
@@ -497,18 +497,18 @@ public class DialogModel : IDisposable, IServiceProvider, IServiceContainer
 				return;
 			}
 			IsDiscoveryCompleted = true;
-			EventHandler<EventArgs> discoveryCompleted = DiscoveryCompleted;
-			if (discoveryCompleted == null)
-			{
+			EventHandler<EventArgs> completedHandler = DiscoveryCompletedEvent;
+
+			if (completedHandler == null)
 				return;
-			}
-			Delegate[] invocationList = discoveryCompleted.GetInvocationList();
+
+			Delegate[] invocationList = completedHandler.GetInvocationList();
 			for (int i = 0; i < invocationList.Length; i++)
 			{
-				EventHandler<EventArgs> eventHandler = (EventHandler<EventArgs>)invocationList[i];
+				EventHandler<EventArgs> handler = (EventHandler<EventArgs>)invocationList[i];
 				try
 				{
-					eventHandler(sender, EventArgs.Empty);
+					handler(sender, EventArgs.Empty);
 				}
 				catch (Exception ex)
 				{
@@ -570,9 +570,9 @@ public class DialogModel : IDisposable, IServiceProvider, IServiceContainer
 		foreach (SectionRegInfo section in _Sections)
 		{
 			SectionHost sectionHost = new SectionHost(section);
-			sectionHost.SectionCreated += SectionHost_SectionCreated;
-			sectionHost.SectionInitialized += SectionHost_SectionInitialized;
-			sectionHost.SectionClosing += SectionHost_SectionClosing;
+			sectionHost.SectionCreatedEvent += SectionHost_SectionCreated;
+			sectionHost.SectionInitializedEvent += SectionHost_SectionInitialized;
+			sectionHost.SectionClosingEvent += SectionHost_SectionClosing;
 			sectionHost.Create();
 			Sections.Add(sectionHost);
 			sectionHost.Initialize(channel);

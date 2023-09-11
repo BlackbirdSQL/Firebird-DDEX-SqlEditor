@@ -71,7 +71,7 @@ public class SortView : ISortView, IDisposable
 	{
 		if (m_bKeepSortingData)
 		{
-			Exception ex = new(SharedResx.AlreadySortingData);
+			Exception ex = new(ControlsResources.AlreadySortingData);
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -83,7 +83,7 @@ public class SortView : ISortView, IDisposable
 	{
 		if (m_bKeepSortingData)
 		{
-			Exception ex = new(SharedResx.AlreadySortingData);
+			Exception ex = new(ControlsResources.AlreadySortingData);
 			Diag.Dug(ex);
 			throw ex;
 		}

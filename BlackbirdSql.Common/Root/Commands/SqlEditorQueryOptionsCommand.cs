@@ -26,8 +26,8 @@ public class SqlEditorQueryOptionsCommand : AbstractSqlEditorCommand
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-		QueryExecutor queryExecutorForEditor = GetQueryExecutorForEditor();
-		if (queryExecutorForEditor != null && !queryExecutorForEditor.IsExecuting)
+		QueryManager qryMgrForEditor = GetQueryManagerForEditor();
+		if (qryMgrForEditor != null && !qryMgrForEditor.IsExecuting)
 		{
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 		}
@@ -37,19 +37,19 @@ public class SqlEditorQueryOptionsCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		using (CurrentWndSQLOptions currentWndSQLOptions = new CurrentWndSQLOptions())
+		using (SqlCurrentWndOptionsDlg currentWndSQLOptions = new SqlCurrentWndOptionsDlg())
 		{
 			AuxiliaryDocData auxiliaryDocDataForEditor = GetAuxiliaryDocDataForEditor();
 			if (auxiliaryDocDataForEditor != null)
 			{
-				QueryExecutor queryExecutor = auxiliaryDocDataForEditor.QueryExecutor;
-				if (queryExecutor != null)
+				QueryManager qryMgr = auxiliaryDocDataForEditor.QryMgr;
+				if (qryMgr != null)
 				{
 					currentWndSQLOptions.StartPosition = FormStartPosition.CenterParent;
-					currentWndSQLOptions.Serialize(queryExecutor.QueryExecutionSettings, bToControls: true);
+					currentWndSQLOptions.Serialize(qryMgr.QueryExecutionSettings, bToControls: true);
 					if (DialogResult.OK == FormUtilities.ShowDialog(currentWndSQLOptions))
 					{
-						currentWndSQLOptions.Serialize(queryExecutor.QueryExecutionSettings, bToControls: false);
+						currentWndSQLOptions.Serialize(qryMgr.QueryExecutionSettings, bToControls: false);
 						auxiliaryDocDataForEditor.UpdateExecutionSettings();
 					}
 				}

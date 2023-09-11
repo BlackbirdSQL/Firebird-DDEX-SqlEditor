@@ -21,50 +21,50 @@ namespace BlackbirdSql.Common.Ctl;
 
 public sealed class EventsChannel : IBEventsChannel
 {
-	public event EventHandler<SelectedConnectionChangedEventArgs> SelectedConnectionChanged;
+	public event EventHandler<SelectedConnectionChangedEventArgs> SelectedConnectionChangedEvent;
 
-	// public event EventHandler<WebBrowseEventArgs> WebBrowseRequested;
+	// public event EventHandler<WebBrowseEventArgs> WebBrowseRequestedEvent;
 
-	// public event EventHandler<FirewallRuleEventArgs> FirewallRuleDetected;
+	// public event EventHandler<FirewallRuleEventArgs> FirewallRuleDetectedEvent;
 
-	// public event EventHandler<FirewallRuleEventArgs> FirewallRuleCreated;
+	// public event EventHandler<FirewallRuleEventArgs> FirewallRuleCreatedEvent;
 
-	public event EventHandler<EventArgs> MakeConnection;
+	public event EventHandler<EventArgs> MakeConnectionEvent;
 
-	public event EventHandler<EventArgs> TestConnection;
+	public event EventHandler<EventArgs> TestConnectionEvent;
 
-	public event EventHandler<MessageEventArgs> ShowMessage;
+	public event EventHandler<MessageEventArgs> ShowMessageEvent;
 
-	public event EventHandler<CloseWindowEventArgs> CloseWindow;
+	public event EventHandler<CloseWindowEventArgs> CloseWindowEvent;
 
-	public event EventHandler<EventArgs> ResetConnectionProperty;
+	public event EventHandler<EventArgs> ResetConnectionPropertyEvent;
 
-	public event EventHandler<EventArgs> AuthenticationTypeChanged;
+	public event EventHandler<EventArgs> AuthenticationTypeChangedEvent;
 
-	public event EventHandler<MakeConnectionCompletedEventArgs> MakeConnectionCompleted;
+	public event EventHandler<MakeConnectionCompletedEventArgs> MakeConnectionCompletedEvent;
 
-	public event EventHandler<AdvancedPropertiesRequestedEventArgs> AdvancedPropertiesRequested;
+	public event EventHandler<AdvancedPropertiesRequestedEventArgs> AdvancedPropertiesRequestedEvent;
 
-	public event EventHandler<ConnectionsLoadedEventArgs> ConnectionsLoaded;
+	public event EventHandler<ConnectionsLoadedEventArgs> ConnectionsLoadedEvent;
 
-	public event EventHandler<ExceptionOccurredEventArgs> ExceptionOccurred;
+	public event EventHandler<ExceptionOccurredEventArgs> ExceptionOccurredEvent;
 
-	public event EventHandler<EventArgs> ConnectionPropertiesChanged;
+	public event EventHandler<EventArgs> ConnectionPropertiesChangedEvent;
 
 	public void OnSelectedConnectionChanged(IBPropertyAgent connectionInfo)
 	{
-		SelectedConnectionChanged?.Invoke(this, new SelectedConnectionChangedEventArgs(connectionInfo));
+		SelectedConnectionChangedEvent?.Invoke(this, new SelectedConnectionChangedEventArgs(connectionInfo));
 	}
 
 	/*
 	public void OnWebBrowseRequested(string navigateLink)
 	{
-		WebBrowseRequested?.Invoke(this, new WebBrowseEventArgs(navigateLink));
+		WebBrowseRequestedEvent?.Invoke(this, new WebBrowseEventArgs(navigateLink));
 	}
 
 	public void OnFirewallRuleDetected(IPAddress clientIpAddress, string serverName, EnFirewallRuleSource source)
 	{
-		FirewallRuleDetected?.Invoke(this, new FirewallRuleEventArgs
+		FirewallRuleDetectedEvent?.Invoke(this, new FirewallRuleEventArgs
 		{
 			ClientIpAddress = clientIpAddress,
 			ServerName = serverName,
@@ -74,7 +74,7 @@ public sealed class EventsChannel : IBEventsChannel
 
 	public void OnFirewallRuleCreated(IPAddress clientIpAddress, string serverName, EnFirewallRuleSource source)
 	{
-		FirewallRuleCreated?.Invoke(this, new FirewallRuleEventArgs
+		FirewallRuleCreatedEvent?.Invoke(this, new FirewallRuleEventArgs
 		{
 			ClientIpAddress = clientIpAddress,
 			ServerName = serverName,
@@ -85,71 +85,61 @@ public sealed class EventsChannel : IBEventsChannel
 
 	public void OnMakeConnection()
 	{
-		MakeConnection?.Invoke(this, new EventArgs());
+		MakeConnectionEvent?.Invoke(this, new EventArgs());
 	}
 
 	public void OnTestConnection()
 	{
-		TestConnection?.Invoke(this, new EventArgs());
+		TestConnectionEvent?.Invoke(this, new EventArgs());
 	}
 
 	public void OnShowMessage(string message, MessageBoxImage icon = MessageBoxImage.Hand, string title = null)
 	{
-		if (ShowMessage != null)
-		{
-			title ??= SharedResx.Error;
-
-			ShowMessage(this, new MessageEventArgs(message, icon, title));
-		}
+		ShowMessageEvent?.Invoke(this, new(message, icon, title ??= SharedResx.Error));
 	}
 
 	public void OnShowMessage(Exception ex, MessageBoxImage icon = MessageBoxImage.Hand, string title = null)
 	{
-		if (ShowMessage != null)
-		{
-			title ??= SharedResx.Error;
-
-			ShowMessage(this, new MessageEventArgs(ex.Message, icon, title, ex));
-		}
+		ShowMessageEvent?.Invoke(this, new MessageEventArgs(ex.Message, icon, title ??= SharedResx.Error, ex));
 	}
 
 	public void OnCloseWindow(bool success)
 	{
-		CloseWindow?.Invoke(this, new CloseWindowEventArgs(success));
+		CloseWindowEvent?.Invoke(this, new CloseWindowEventArgs(success));
 	}
 
 	public void OnResetConnectionProperty()
 	{
-		ResetConnectionProperty?.Invoke(this, new EventArgs());
+		ResetConnectionPropertyEvent.Invoke(this, new EventArgs());
 	}
 
 	public void OnAuthenticationTypeChanged()
 	{
-		AuthenticationTypeChanged?.Invoke(this, new EventArgs());
+		AuthenticationTypeChangedEvent?.Invoke(this, new EventArgs());
 	}
 
 	public void OnMakeConnectionCompleted(IDbConnection connection, string connectionString)
 	{
-		MakeConnectionCompleted?.Invoke(this, new MakeConnectionCompletedEventArgs(connection, connectionString));
+		MakeConnectionCompletedEvent?.Invoke(this, new MakeConnectionCompletedEventArgs(connection, connectionString));
 	}
 
 	public void OnAdvancedPropertiesRequested(IBPropertyAgent connectionProperties)
 	{
-		AdvancedPropertiesRequested?.Invoke(this, new AdvancedPropertiesRequestedEventArgs(connectionProperties));
+		AdvancedPropertiesRequestedEvent?.Invoke(this, new AdvancedPropertiesRequestedEventArgs(connectionProperties));
 	}
 
 	public void OnConnectionsLoaded(IBServerDefinition serverDefinition, int numberOfConnections)
 	{
-		ConnectionsLoaded?.Invoke(this, new ConnectionsLoadedEventArgs(serverDefinition, numberOfConnections));
+		ConnectionsLoadedEvent?.Invoke(this, new ConnectionsLoadedEventArgs(serverDefinition, numberOfConnections));
 	}
 
 	public void OnExceptionOccurred(IEnumerable<Exception> exceptions /*, EnFirewallRuleSource source */)
 	{
-		ExceptionOccurred?.Invoke(this, new ExceptionOccurredEventArgs(exceptions /*, source */));
+		ExceptionOccurredEvent?.Invoke(this, new ExceptionOccurredEventArgs(exceptions /*, source */));
 	}
 
 	public void OnConnectionPropertiesChanged()
 	{
-		ConnectionPropertiesChanged?.Invoke(this, new EventArgs());
+		ConnectionPropertiesChangedEvent?.Invoke(this, new EventArgs());
 	}
 }

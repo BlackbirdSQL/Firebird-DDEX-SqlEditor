@@ -13,7 +13,7 @@ namespace BlackbirdSql.Common.Model;
 
 public static class TelemetryConstants
 {
-	public static readonly string DefaultDatabaseName = SharedResx.DefaultDatabaseName;
+	public static readonly string DefaultDatabaseName = ControlsResources.DefaultDatabaseName;
 
 	public const string C_CountEnginePrefix = "CountEngine";
 

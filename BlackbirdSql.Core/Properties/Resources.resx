@@ -186,6 +186,9 @@
   <data name="CommandProvider_PromptSaveObject" xml:space="preserve">
     <value>SqlViewTextObjectCommandProvider_PromptSaveObject</value>
   </data>
+  <data name="EngineTypeIconNotfound" xml:space="preserve">
+    <value>Could not locate icon for Server Engine Type {0}.</value>
+  </data>
   <data name="IgnoreOnException" xml:space="preserve">
     <value>Retry number {0}. Ignoring Exception: {1}</value>
   </data>
@@ -197,5 +200,8 @@
   </data>
   <data name="RetryOnException" xml:space="preserve">
     <value>Retry number {0}. Delaying {1} ms before next retry. Exception: {2}</value>
+  </data>
+  <data name="TextBoxRequiredFieldToolTip" xml:space="preserve">
+    <value>This field cannot be empty</value>
   </data>
 </root>

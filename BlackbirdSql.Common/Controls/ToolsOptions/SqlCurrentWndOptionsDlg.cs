@@ -11,13 +11,13 @@ using BlackbirdSql.Common.Properties;
 
 namespace BlackbirdSql.Common.Controls.ToolsOptions
 {
-	public sealed class CurrentWndSQLOptions : CurrentWndOptions
+	public sealed class SqlCurrentWndOptionsDlg : AbstractCurrentWndOptionsDlg
 	{
 #pragma warning disable CS0649 // Field 'CurrentWndSQLOptions.components' is never assigned to, and will always have its default value null
 		private readonly Container components;
 #pragma warning restore CS0649 // Field 'CurrentWndSQLOptions.components' is never assigned to, and will always have its default value null
 
-		public CurrentWndSQLOptions()
+		public SqlCurrentWndOptionsDlg()
 		{
 			InitializeDialog();
 		}

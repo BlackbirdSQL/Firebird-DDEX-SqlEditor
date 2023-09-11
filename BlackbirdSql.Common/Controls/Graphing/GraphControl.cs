@@ -564,9 +564,9 @@ public class GraphControl : GraphCtrl
 
 	internal Rectangle GraphBoundingRectangle => graphBoundingRectangle;
 
-	public event EventHandler IsActiveChanged;
+	public event EventHandler IsActiveChangedEvent;
 
-	public event GraphEventHandler SelectionChanged;
+	public event GraphEventHandler SelectionChangedEvent;
 
 	public GraphControl()
 	{
@@ -696,7 +696,7 @@ public class GraphControl : GraphCtrl
 			}
 			lastActiveObject ??= RootNode;
 			SelectIDisplayObject(lastActiveObject);
-			IsActiveChanged?.Invoke(this, EventArgs.Empty);
+			IsActiveChangedEvent?.Invoke(this, EventArgs.Empty);
 		}
 	}
 
@@ -706,7 +706,7 @@ public class GraphControl : GraphCtrl
 		{
 			isActive = false;
 			SelectIDisplayObject(null);
-			IsActiveChanged?.Invoke(this, EventArgs.Empty);
+			IsActiveChangedEvent?.Invoke(this, EventArgs.Empty);
 		}
 	}
 
@@ -758,8 +758,8 @@ public class GraphControl : GraphCtrl
 	{
 		try
 		{
-			using CustomZoom customZoom = new CustomZoom((decimal)(ViewScale * 100f));
-			customZoom.ZoomChanged += OnZoomChanged;
+			using CustomZoomDlg customZoom = new CustomZoomDlg((decimal)(ViewScale * 100f));
+			customZoom.ZoomChangedEvent += OnZoomChanged;
 			customZoom.Location = customZoom.PointToClient(MousePosition);
 			customZoom.ShowDialog();
 		}
@@ -933,14 +933,14 @@ public class GraphControl : GraphCtrl
 		{
 			lastActiveObject = e.DisplayObject;
 		}
-		SelectionChanged?.Invoke(this, e);
+		SelectionChangedEvent?.Invoke(this, e);
 	}
 
 	private void OnZoomChanged(object sender, EventArgs e)
 	{
 		try
 		{
-			CustomZoom customZoom = sender as CustomZoom;
+			CustomZoomDlg customZoom = sender as CustomZoomDlg;
 			ViewScale = (float)customZoom.Zoom / 100f;
 		}
 		catch (Exception ex)

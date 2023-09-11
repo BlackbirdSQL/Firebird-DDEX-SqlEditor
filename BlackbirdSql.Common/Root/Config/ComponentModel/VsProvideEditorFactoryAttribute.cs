@@ -75,7 +75,7 @@ public sealed class VsProvideEditorFactoryAttribute : RegistrationAttribute
 
 	public override void Register(RegistrationContext context)
 	{
-		context.Log.WriteLine(string.Format(SharedResx.Culture, SharedResx.Reg_NotifyEditorFactory, FactoryType.Name));
+		context.Log.WriteLine(string.Format(ControlsResources.Culture, ControlsResources.Reg_NotifyEditorFactory, FactoryType.Name));
 		using Key key = context.CreateKey(EditorRegKey);
 		key.SetValue(string.Empty, DefaultName);
 		key.SetValue("DisplayName", string.Format(CultureInfo.InvariantCulture, "#{0}", NameResourceID));
@@ -95,7 +95,7 @@ public sealed class VsProvideEditorFactoryAttribute : RegistrationAttribute
 				ProvideViewAttribute provideViewAttribute = (ProvideViewAttribute)customAttributes[i];
 				if (provideViewAttribute.LogicalView != 0)
 				{
-					context.Log.WriteLine(string.Format(SharedResx.Culture, SharedResx.Reg_NotifyEditorView, converter.ConvertToString(provideViewAttribute.LogicalView)));
+					context.Log.WriteLine(string.Format(ControlsResources.Culture, ControlsResources.Reg_NotifyEditorView, converter.ConvertToString(provideViewAttribute.LogicalView)));
 					Guid guid = (Guid)converter.ConvertTo(provideViewAttribute.LogicalView, typeof(Guid));
 					string text = provideViewAttribute.PhysicalView;
 					text ??= string.Empty;

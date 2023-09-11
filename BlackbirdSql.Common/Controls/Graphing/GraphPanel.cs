@@ -111,21 +111,21 @@ public class GraphPanel : ContainerControl
 
 	public bool IsActive => GraphControl.IsActive;
 
-	public event GraphEventHandler SelectionChanged
+	public event GraphEventHandler SelectionChangedEvent
 	{
 		add
 		{
-			graphControl.SelectionChanged += value;
+			graphControl.SelectionChangedEvent += value;
 		}
 		remove
 		{
-			graphControl.SelectionChanged -= value;
+			graphControl.SelectionChangedEvent -= value;
 		}
 	}
 
-	public event EventHandler IsActiveChanged;
+	public event EventHandler IsActiveChangedEvent;
 
-	public event EventHandler ShowContextMenu;
+	public event EventHandler ShowContextMenuEvent;
 
 	public GraphPanel()
 	{
@@ -168,7 +168,7 @@ public class GraphPanel : ContainerControl
 		graphControl.AccessibleName = ControlsResources.ExecutionPlanGraphAAName;
 		graphControl.Dock = DockStyle.Fill;
 		graphControl.MouseDown += OnChildControlMouseDown;
-		graphControl.IsActiveChanged += OnGraphControlIsActiveChanged;
+		graphControl.IsActiveChangedEvent += OnGraphControlIsActiveChanged;
 		Controls.Add(graphControl);
 		queryContainer = new ContainerControl
 		{
@@ -204,7 +204,7 @@ public class GraphPanel : ContainerControl
 			if (graphControl != null)
 			{
 				graphControl.MouseDown -= OnChildControlMouseDown;
-				graphControl.IsActiveChanged -= OnGraphControlIsActiveChanged;
+				graphControl.IsActiveChangedEvent -= OnGraphControlIsActiveChanged;
 				graphControl = null;
 			}
 			if (_DescriptionCtl != null)
@@ -229,16 +229,16 @@ public class GraphPanel : ContainerControl
 		{
 			Activate();
 		}
-		if (e.Button == MouseButtons.Right && e.Clicks == 1 && ShowContextMenu != null)
+		if (e.Button == MouseButtons.Right && e.Clicks == 1 && ShowContextMenuEvent != null)
 		{
 			GraphControl.Refresh();
-			ShowContextMenu(this, EventArgs.Empty);
+			ShowContextMenuEvent(this, EventArgs.Empty);
 		}
 	}
 
 	private void OnGraphControlIsActiveChanged(object sender, EventArgs e)
 	{
-		IsActiveChanged?.Invoke(this, e);
+		IsActiveChangedEvent?.Invoke(this, e);
 	}
 
 	protected override void OnLayout(LayoutEventArgs levent)

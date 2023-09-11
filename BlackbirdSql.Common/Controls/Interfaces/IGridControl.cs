@@ -61,31 +61,31 @@ namespace BlackbirdSql.Common.Controls.Interfaces
 
 		GridColumnInfoCollection GridColumnsInfo { get; }
 
-		event CustomizeCellGDIObjectsEventHandler CustomizeCellGDIObjects;
+		event CustomizeCellGDIObjectsEventHandler CustomizeCellGDIObjectsEvent;
 
-		event MouseButtonClickingEventHandler MouseButtonClicking;
+		event MouseButtonClickingEventHandler MouseButtonClickingEvent;
 
-		event MouseButtonClickedEventHandler MouseButtonClicked;
+		event MouseButtonClickedEventHandler MouseButtonClickedEvent;
 
-		event MouseButtonDoubleClickedEventHandler MouseButtonDoubleClicked;
+		event MouseButtonDoubleClickedEventHandler MouseButtonDoubleClickedEvent;
 
-		event HeaderButtonClickedEventHandler HeaderButtonClicked;
+		event HeaderButtonClickedEventHandler HeaderButtonClickedEvent;
 
-		event ColumnWidthChangedEventHandler ColumnWidthChanged;
+		event ColumnWidthChangedEventHandler ColumnWidthChangedEvent;
 
-		event SelectionChangedEventHandler SelectionChanged;
+		event SelectionChangedEventHandler SelectionChangedEvent;
 
-		event StandardKeyProcessingEventHandler StandardKeyProcessing;
+		event StandardKeyProcessingEventHandler StandardKeyProcessingEvent;
 
-		event TooltipDataNeededEventHandler TooltipDataNeeded;
+		event TooltipDataNeededEventHandler TooltipDataNeededEvent;
 
-		event KeyPressedOnCellEventHandler KeyPressedOnCell;
+		event KeyPressedOnCellEventHandler KeyPressedOnCellEvent;
 
-		event EmbeddedControlContentsChangedEventHandler EmbeddedControlContentsChanged;
+		event EmbeddedControlContentsChangedEventHandler EmbeddedControlContentsChangedEvent;
 
-		event ColumnReorderRequestedEventHandler ColumnReorderRequested;
+		event ColumnReorderRequestedEventHandler ColumnReorderRequestedEvent;
 
-		event ColumnsReorderedEventHandler ColumnsReordered;
+		event ColumnsReorderedEventHandler ColumnsReorderedEvent;
 
 		event GridSpecialEventHandler GridSpecialEvent;
 

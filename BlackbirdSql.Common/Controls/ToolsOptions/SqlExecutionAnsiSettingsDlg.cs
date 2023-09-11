@@ -136,7 +136,7 @@ namespace BlackbirdSql.Common.Controls.ToolsOptions
 			Tracer.Trace(GetType(), "SqlExecutionAnsiSettingsDlg.ValidateValuesInControls", "", null);
 			if (TrackChanges && !SaveOrCompareCurrentValueOfControls(save: false))
 			{
-				Cmd.ShowMessageBoxEx(null, SharedResx.WarnSqlAnsiQueryChanges, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				Cmd.ShowMessageBoxEx(null, ControlsResources.WarnSqlAnsiQueryChanges, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				TrackChanges = false;
 			}
 

@@ -169,7 +169,7 @@ public class DlgGridControl : GridControl, IDlgGridControl, IGridControl
 
 	[Description("Occurs when it is time to populate embedded control with data.")]
 	[Category(C_GridEventsCategory)]
-	public event FillControlWithDataEventHandler FillControlWithData
+	public event FillControlWithDataEventHandler FillControlWithDataEvent
 	{
 		add
 		{
@@ -183,7 +183,7 @@ public class DlgGridControl : GridControl, IDlgGridControl, IGridControl
 
 	[Description("Occurs when it is time to validate curernt contents of the embedded control.")]
 	[Category(C_GridEventsCategory)]
-	public event SetCellDataFromControlEventHandler SetCellDataFromControl
+	public event SetCellDataFromControlEventHandler SetCellDataFromControlEvent
 	{
 		add
 		{

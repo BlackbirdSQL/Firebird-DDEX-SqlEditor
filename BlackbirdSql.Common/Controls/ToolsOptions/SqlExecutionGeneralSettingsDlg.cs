@@ -177,24 +177,24 @@ namespace BlackbirdSql.Common.Controls.ToolsOptions
 		public override bool ValidateValuesInControls()
 		{
 			Tracer.Trace(GetType(), "SqlExecutionGeneralSettingsDlg.ValidateValuesInControls", "", null);
-			if (!ValidateNumeric(_rowCountNumericUpDown, string.Format(CultureInfo.CurrentCulture, SharedResx.ErrInvalidSetRowcount, _rowCountNumericUpDown.Minimum, _rowCountNumericUpDown.Maximum)))
+			if (!ValidateNumeric(_rowCountNumericUpDown, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrInvalidSetRowcount, _rowCountNumericUpDown.Minimum, _rowCountNumericUpDown.Maximum)))
 			{
 				return false;
 			}
 
-			if (!ValidateNumeric(_textsizeNumericUpDown, string.Format(CultureInfo.CurrentCulture, SharedResx.ErrInvalidSetTextsize, _textsizeNumericUpDown.Minimum, _textsizeNumericUpDown.Maximum)))
+			if (!ValidateNumeric(_textsizeNumericUpDown, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrInvalidSetTextsize, _textsizeNumericUpDown.Minimum, _textsizeNumericUpDown.Maximum)))
 			{
 				return false;
 			}
 
-			if (!ValidateNumeric(_execTimeoutNumericUpDown, string.Format(CultureInfo.CurrentCulture, SharedResx.ErrInvalidExecutionTimeout, _execTimeoutNumericUpDown.Minimum, _execTimeoutNumericUpDown.Maximum)))
+			if (!ValidateNumeric(_execTimeoutNumericUpDown, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrInvalidExecutionTimeout, _execTimeoutNumericUpDown.Minimum, _execTimeoutNumericUpDown.Maximum)))
 			{
 				return false;
 			}
 
 			if (TrackChanges && !SaveOrCompareCurrentValueOfControls(save: false))
 			{
-				Cmd.ShowMessageBoxEx(null, SharedResx.WarnSqlGeneralQueryChanges, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				Cmd.ShowMessageBoxEx(null, ControlsResources.WarnSqlGeneralQueryChanges, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 				TrackChanges = false;
 			}
 

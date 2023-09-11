@@ -13,35 +13,35 @@ namespace BlackbirdSql.Core.Interfaces;
 
 public interface IBEventsChannel
 {
-	event EventHandler<SelectedConnectionChangedEventArgs> SelectedConnectionChanged;
+	event EventHandler<SelectedConnectionChangedEventArgs> SelectedConnectionChangedEvent;
 
-	// event EventHandler<WebBrowseEventArgs> WebBrowseRequested;
+	// event EventHandler<WebBrowseEventArgs> WebBrowseRequestedEvent;
 
-	// event EventHandler<FirewallRuleEventArgs> FirewallRuleDetected;
+	// event EventHandler<FirewallRuleEventArgs> FirewallRuleDetectedEvent;
 
-	// event EventHandler<FirewallRuleEventArgs> FirewallRuleCreated;
+	// event EventHandler<FirewallRuleEventArgs> FirewallRuleCreatedEvent;
 
-	event EventHandler<EventArgs> MakeConnection;
+	event EventHandler<EventArgs> MakeConnectionEvent;
 
-	event EventHandler<EventArgs> TestConnection;
+	event EventHandler<EventArgs> TestConnectionEvent;
 
-	event EventHandler<MessageEventArgs> ShowMessage;
+	event EventHandler<MessageEventArgs> ShowMessageEvent;
 
-	event EventHandler<CloseWindowEventArgs> CloseWindow;
+	event EventHandler<CloseWindowEventArgs> CloseWindowEvent;
 
-	event EventHandler<EventArgs> ResetConnectionProperty;
+	event EventHandler<EventArgs> ResetConnectionPropertyEvent;
 
-	event EventHandler<EventArgs> AuthenticationTypeChanged;
+	event EventHandler<EventArgs> AuthenticationTypeChangedEvent;
 
-	event EventHandler<MakeConnectionCompletedEventArgs> MakeConnectionCompleted;
+	event EventHandler<MakeConnectionCompletedEventArgs> MakeConnectionCompletedEvent;
 
-	event EventHandler<AdvancedPropertiesRequestedEventArgs> AdvancedPropertiesRequested;
+	event EventHandler<AdvancedPropertiesRequestedEventArgs> AdvancedPropertiesRequestedEvent;
 
-	event EventHandler<ConnectionsLoadedEventArgs> ConnectionsLoaded;
+	event EventHandler<ConnectionsLoadedEventArgs> ConnectionsLoadedEvent;
 
-	event EventHandler<EventArgs> ConnectionPropertiesChanged;
+	event EventHandler<EventArgs> ConnectionPropertiesChangedEvent;
 
-	event EventHandler<ExceptionOccurredEventArgs> ExceptionOccurred;
+	event EventHandler<ExceptionOccurredEventArgs> ExceptionOccurredEvent;
 
 	void OnSelectedConnectionChanged(IBPropertyAgent connectionInfo);
 

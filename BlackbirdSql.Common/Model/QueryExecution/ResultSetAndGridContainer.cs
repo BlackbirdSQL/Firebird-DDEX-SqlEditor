@@ -23,7 +23,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 
 	private QEResultSet _QeResultSet;
 
-	private MoreRowsAvailableEventHandler _MoreRowsAvailableDelegate;
+	private MoreRowsAvailableEventHandler _MoreRowsAvailableHandler;
 
 	private double m_controlToWindowRatio = 1.0;
 
@@ -62,7 +62,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 		_QeResultSet = resultSet;
 		_PrintColumnHeaders = printColumnHeaders;
 		_NumberOfCharsToShow = numberOfCharsToShow;
-		_MoreRowsAvailableDelegate = OnMoreRowsAvailableFromStorage;
+		_MoreRowsAvailableHandler = OnMoreRowsAvailableFromStorage;
 	}
 
 	public void Initialize(IGridControl2 grid)
@@ -70,7 +70,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 		Tracer.Trace(GetType(), "ResultSetAndGridContainer.Initialize", "", null);
 		_GridCtl = grid;
 		_QeResultSet.InGridMode = true;
-		_QeResultSet.MoreRowsAvailable += _MoreRowsAvailableDelegate;
+		_QeResultSet.MoreRowsAvailableEvent += _MoreRowsAvailableHandler;
 		((ISupportInitialize)_GridCtl).BeginInit();
 		_GridCtl.SelectionType = EnGridSelectionType.CellBlocks;
 		_GridCtl.GridStorage = _QeResultSet;
@@ -100,7 +100,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 			string text = _QeResultSet.ColumnNames[i];
 			if (text == null || text.Length == 0)
 			{
-				text = SharedResx.QEGridResultsNoColumnTitle;
+				text = ControlsResources.QEGridResultsNoColumnTitle;
 			}
 
 			_GridCtl.SetHeaderInfo(i + 1, text, null);
@@ -119,8 +119,8 @@ public sealed class ResultSetAndGridContainer : IDisposable
 		Tracer.Trace(GetType(), "ResultSetAndGridContainer.Dispose", "", null);
 		if (_QeResultSet != null)
 		{
-			_QeResultSet.MoreRowsAvailable -= _MoreRowsAvailableDelegate;
-			_MoreRowsAvailableDelegate = null;
+			_QeResultSet.MoreRowsAvailableEvent -= _MoreRowsAvailableHandler;
+			_MoreRowsAvailableHandler = null;
 			_QeResultSet.Dispose();
 			_QeResultSet = null;
 		}

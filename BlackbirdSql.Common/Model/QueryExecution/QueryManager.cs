@@ -1,29 +1,26 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.DataModel.QueryExecutor
 
 using System;
 using System.Data;
 using System.Data.Common;
 
-using BlackbirdSql.Core;
 using BlackbirdSql.Common.Config;
+using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Model.Enums;
+using BlackbirdSql.Common.Model.Events;
+using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core;
 
 using Microsoft.VisualStudio.Utilities;
 
 using Tracer = BlackbirdSql.Core.Diagnostics.Tracer;
-using BlackbirdSql.Common.Model;
-using BlackbirdSql.Common.Model.Enums;
-using BlackbirdSql.Common.Model.Events;
-using BlackbirdSql.Common.Model.Interfaces;
-using BlackbirdSql.Common.Interfaces;
+
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 
-
-public sealed class QueryExecutor : IDisposable
+public sealed class QueryManager : IDisposable
 {
 	[Flags]
 	public enum StatusType
@@ -68,11 +65,11 @@ public sealed class QueryExecutor : IDisposable
 
 	public delegate bool ScriptExecutionStartedEventHandler(object sender, ScriptExecutionStartedEventArgs args);
 
-	private uint _status;
+	private uint _Status;
 
-	private long _numberOfAffectedRows;
+	private long _RowsAffected;
 
-	private readonly object _LocalLock = new object();
+	private readonly object _LockObject = new object();
 
 	private QEOLESQLExec _SqlExec;
 
@@ -82,7 +79,7 @@ public sealed class QueryExecutor : IDisposable
 
 	private bool _QueryExecutionSettingsApplied;
 
-	public const string C_TName = "QueryExecutor";
+	public const string C_TName = "QryMgr";
 
 	public static TimeSpan SyncCancelTimeout = new TimeSpan(0, 0, 5);
 
@@ -114,9 +111,9 @@ public sealed class QueryExecutor : IDisposable
 	{
 		get
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
-				return _numberOfAffectedRows;
+				return _RowsAffected;
 			}
 		}
 	}
@@ -175,14 +172,14 @@ public sealed class QueryExecutor : IDisposable
 	{
 		get
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
 				return ExecutionOptions.WithOleSqlScripting;
 			}
 		}
 		set
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
 				ExecutionOptions.WithOleSqlScripting = value;
 				OnStatusChanged(new StatusChangedEventArgs(StatusType.ExecutionOptionsWithOleSqlChanged));
@@ -194,14 +191,14 @@ public sealed class QueryExecutor : IDisposable
 	{
 		get
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
 				return _SqlCmdVariableResolver;
 			}
 		}
 		set
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
 				_SqlCmdVariableResolver = value;
 				_SqlExec.SqlCmdVariableResolver = _SqlCmdVariableResolver;
@@ -213,14 +210,14 @@ public sealed class QueryExecutor : IDisposable
 	{
 		get
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
 				return _currentWorkingDirectoryPath;
 			}
 		}
 		set
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
 				_currentWorkingDirectoryPath = value;
 				_SqlExec.CurrentWorkingDirectoryPath = _currentWorkingDirectoryPath;
@@ -232,14 +229,14 @@ public sealed class QueryExecutor : IDisposable
 	{
 		get
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
 				return _ConnectionStrategy;
 			}
 		}
 		set
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
 				if (_ConnectionStrategy != null)
 				{
@@ -261,7 +258,7 @@ public sealed class QueryExecutor : IDisposable
 	{
 		get
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
 				if (_QueryExecutionSettings == null)
 				{
@@ -274,7 +271,7 @@ public sealed class QueryExecutor : IDisposable
 		}
 		set
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
 				_QueryExecutionSettings = value;
 			}
@@ -285,35 +282,41 @@ public sealed class QueryExecutor : IDisposable
 	{
 		get
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
 				return _QueryExecutionSettingsApplied;
 			}
 		}
 		set
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
 				_QueryExecutionSettingsApplied = value;
 			}
 		}
 	}
 
-	public event StatusChangedEventHandler StatusChanged;
+	public event StatusChangedEventHandler StatusChangedEvent;
 
-	public event ScriptExecutionStartedEventHandler ScriptExecutionStarted;
+	public event ScriptExecutionStartedEventHandler ScriptExecutionStartedEvent;
 
-	public event ScriptExecutionCompletedEventHandler ScriptExecutionCompleted;
+	public event ScriptExecutionCompletedEventHandler ScriptExecutionCompletedEvent;
 
-	public event QESQLBatchExecutedEventHandler BatchExecutionCompleted;
+	public event QESQLBatchExecutedEventHandler BatchExecutionCompletedEvent;
 
-	public event QEOLESQLErrorMessageEventHandler ScriptExecutionErrorMessage;
+	public event QEOLESQLErrorMessageEventHandler ScriptExecutionErrorMessageEvent;
 
-	public event QEOLESQLOutputRedirectionEventHandler SqlCmdOutputRedirection;
+	public event QEOLESQLOutputRedirectionEventHandler SqlCmdOutputRedirectionEvent;
 
-	public event QeSqlCmdMessageFromAppEventHandler SqlCmdMessageFromApp;
+	public event QeSqlCmdMessageFromAppEventHandler SqlCmdMessageFromAppEvent;
 
-	public QueryExecutor(SqlConnectionStrategy connectionStrategy, QEOLESQLExec.ResolveSqlCmdVariable sqlCmdVarResolver)
+	// Added for StaticsPanel.RetrieveStatisticsIfNeeded();
+	public event QESQLDataLoadedEventHandler DataLoadedEvent;
+
+	public event QESQLStatementCompletedEventHandler StatementCompletedEvent;
+
+
+	public QueryManager(SqlConnectionStrategy connectionStrategy, QEOLESQLExec.ResolveSqlCmdVariable sqlCmdVarResolver)
 	{
 		ConnectionStrategy = connectionStrategy;
 		_SqlExec = new QEOLESQLExec(SqlCmdVariableResolver, this);
@@ -340,10 +343,10 @@ public sealed class QueryExecutor : IDisposable
 
 	public void Cancel(bool bSync)
 	{
-		ScriptExecutionCompletedEventHandler scriptExecutionCompletedEventHandler = null;
+		ScriptExecutionCompletedEventHandler scriptExecutionCompletedHandler = null;
 		try
 		{
-			lock (_LocalLock)
+			lock (_LockObject)
 			{
 				IsCancelling = true;
 				if (IsDebugging)
@@ -352,11 +355,11 @@ public sealed class QueryExecutor : IDisposable
 					return;
 				}
 
-				Tracer.Trace(GetType(), "QueryExecutor.Cancel", "bSync = {0}", bSync);
-				Tracer.Trace(GetType(), "QueryExecutor.Cancel", "initiating Cancel");
+				Tracer.Trace(GetType(), "QryMgr.Cancel", "bSync = {0}", bSync);
+				Tracer.Trace(GetType(), "QryMgr.Cancel", "initiating Cancel");
 				try
 				{
-					Tracer.Trace(GetType(), "QueryExecutor.Cancel", "Issuing cancel request");
+					Tracer.Trace(GetType(), "QryMgr.Cancel", "Issuing cancel request");
 					_SqlExec.Cancel(bSync, SyncCancelTimeout);
 				}
 				finally
@@ -367,19 +370,19 @@ public sealed class QueryExecutor : IDisposable
 						UnRegisterSqlExecWithEventHandlers();
 						_SqlExec = new QEOLESQLExec(SqlCmdVariableResolver, this);
 						RegisterSqlExecWithEvenHandlers();
-						scriptExecutionCompletedEventHandler = ScriptExecutionCompleted;
+						scriptExecutionCompletedHandler = ScriptExecutionCompletedEvent;
 					}
 
-					Tracer.Trace(GetType(), "QueryExecutor.Cancel", "cancel completed");
+					Tracer.Trace(GetType(), "QryMgr.Cancel", "cancel completed");
 				}
 			}
 		}
 		finally
 		{
 			IsCancelling = false;
-			if (scriptExecutionCompletedEventHandler != null && bSync)
+			if (scriptExecutionCompletedHandler != null && bSync)
 			{
-				scriptExecutionCompletedEventHandler(this, new ScriptExecutionCompletedEventArgs(EnScriptExecutionResult.Cancel));
+				scriptExecutionCompletedHandler(this, new ScriptExecutionCompletedEventArgs(EnScriptExecutionResult.Cancel));
 			}
 		}
 	}
@@ -392,13 +395,14 @@ public sealed class QueryExecutor : IDisposable
 
 	private void Dispose(bool bDisposing)
 	{
-		lock (_LocalLock)
+		lock (_LockObject)
 		{
-			ScriptExecutionStarted = null;
-			ScriptExecutionCompleted = null;
-			BatchExecutionCompleted = null;
-			ScriptExecutionErrorMessage = null;
-			StatusChanged = null;
+			ScriptExecutionStartedEvent = null;
+			ScriptExecutionCompletedEvent = null;
+			StatementCompletedEvent = null;
+			BatchExecutionCompletedEvent = null;
+			ScriptExecutionErrorMessageEvent = null;
+			StatusChangedEvent = null;
 			try
 			{
 				if (IsExecuting)
@@ -408,7 +412,7 @@ public sealed class QueryExecutor : IDisposable
 			}
 			catch (Exception ex)
 			{
-				Tracer.Trace(GetType(), "QueryExecutor.Dispose", ex.ToString());
+				Tracer.Trace(GetType(), "QryMgr.Dispose", ex.ToString());
 			}
 
 			if (_SqlExec != null)
@@ -424,7 +428,7 @@ public sealed class QueryExecutor : IDisposable
 
 	private void ConnectionStateChangedEventHandler(object sender, StateChangeEventArgs args)
 	{
-		lock (_LocalLock)
+		lock (_LockObject)
 		{
 			using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
 			{
@@ -471,57 +475,61 @@ public sealed class QueryExecutor : IDisposable
 
 	private void RegisterSqlExecWithEvenHandlers()
 	{
-		lock (_LocalLock)
+		lock (_LockObject)
 		{
-			_SqlExec.ExecutionCompleted += OnExecutionCompleted;
-			_SqlExec.BatchExecutionCompleted += OnBatchExecutionCompleted;
-			_SqlExec.StartingBatchExecution += OnStartingBatchExecution;
-			_SqlExec.QEOLESQLOutputRedirection += OnOutputRedirection;
-			_SqlExec.QEOLESQLErrorMessage += OnScriptingErrorMessage;
-			_SqlExec.QeSqlCmdMessageFromApp += OnSqlCmdMsgFromApp;
-			_SqlExec.QeSqlCmdNewConnection += OnSqlCmdConnect;
+			_SqlExec.ExecutionCompletedEvent += OnExecutionCompleted;
+			_SqlExec.BatchExecutionCompletedEvent += OnBatchExecutionCompleted;
+			_SqlExec.DataLoadedEvent += OnDataLoaded;
+			_SqlExec.StartingBatchExecutionEvent += OnStartingBatchExecution;
+			_SqlExec.StatementCompletedEvent += OnStatementCompleted;
+			_SqlExec.SqlOutputRedirectionEvent += OnOutputRedirection;
+			_SqlExec.SqlErrorMessageEvent += OnScriptingErrorMessage;
+			_SqlExec.SqlCmdMessageFromAppEvent += OnSqlCmdMsgFromApp;
+			_SqlExec.SqlCmdNewConnectionOpenedEvent += OnSqlCmdConnect;
 		}
 	}
 
 	private void UnRegisterSqlExecWithEventHandlers()
 	{
-		lock (_LocalLock)
+		lock (_LockObject)
 		{
-			_SqlExec.ExecutionCompleted -= OnExecutionCompleted;
-			_SqlExec.BatchExecutionCompleted -= OnBatchExecutionCompleted;
-			_SqlExec.StartingBatchExecution -= OnStartingBatchExecution;
-			_SqlExec.QEOLESQLOutputRedirection -= OnOutputRedirection;
-			_SqlExec.QEOLESQLErrorMessage -= OnScriptingErrorMessage;
-			_SqlExec.QeSqlCmdMessageFromApp -= OnSqlCmdMsgFromApp;
-			_SqlExec.QeSqlCmdNewConnection -= OnSqlCmdConnect;
+			_SqlExec.ExecutionCompletedEvent -= OnExecutionCompleted;
+			_SqlExec.BatchExecutionCompletedEvent -= OnBatchExecutionCompleted;
+			_SqlExec.DataLoadedEvent -= OnDataLoaded;
+			_SqlExec.StartingBatchExecutionEvent -= OnStartingBatchExecution;
+			_SqlExec.StatementCompletedEvent -= OnStatementCompleted;
+			_SqlExec.SqlOutputRedirectionEvent -= OnOutputRedirection;
+			_SqlExec.SqlErrorMessageEvent -= OnScriptingErrorMessage;
+			_SqlExec.SqlCmdMessageFromAppEvent -= OnSqlCmdMsgFromApp;
+			_SqlExec.SqlCmdNewConnectionOpenedEvent -= OnSqlCmdConnect;
 		}
 	}
 
 	private void OnBatchExecutionCompleted(object sender, QESQLBatchExecutedEventArgs args)
 	{
-		Tracer.Trace(GetType(), "QueryExecutor.OnBatchExecutionCompleted", "", null);
-		_numberOfAffectedRows += args.Batch.RowsAffected;
-		BatchExecutionCompleted?.Invoke(sender, args);
+		Tracer.Trace(GetType(), "QryMgr.OnBatchExecutionCompleted", "", null);
+		_RowsAffected += args.Batch.RowsAffected;
+		BatchExecutionCompletedEvent?.Invoke(sender, args);
 	}
 
 	private void OnStartingBatchExecution(object sender, QESQLStartingBatchEventArgs args)
 	{
-		Tracer.Trace(GetType(), "QueryExecutor.OnStartingBatchExecution", "", null);
+		Tracer.Trace(GetType(), "QryMgr.OnStartingBatchExecution", "", null);
 	}
 
 	private void OnOutputRedirection(object sender, QEOLESQLOutputRedirectionEventArgs args)
 	{
-		SqlCmdOutputRedirection?.Invoke(sender, args);
+		SqlCmdOutputRedirectionEvent?.Invoke(sender, args);
 	}
 
 	private void OnScriptingErrorMessage(object sender, QEOLESQLErrorMessageEventArgs args)
 	{
-		ScriptExecutionErrorMessage?.Invoke(sender, args);
+		ScriptExecutionErrorMessageEvent?.Invoke(sender, args);
 	}
 
 	private void OnSqlCmdMsgFromApp(object sender, QeSqlCmdMessageFromAppEventArgs args)
 	{
-		SqlCmdMessageFromApp?.Invoke(sender, args);
+		SqlCmdMessageFromAppEvent?.Invoke(sender, args);
 	}
 
 	private void OnSqlCmdConnect(object sender, QeSqlCmdNewConnectionOpenedEventArgs args)
@@ -551,10 +559,10 @@ public sealed class QueryExecutor : IDisposable
 			return false;
 		}
 
-		Tracer.Trace(GetType(), "QueryExecutor.ValidateAndRun", "execTimeout = {0}, bParseOnly = {1}", execTimeout, bParseOnly);
+		Tracer.Trace(GetType(), "QryMgr.ValidateAndRun", "execTimeout = {0}, bParseOnly = {1}", execTimeout, bParseOnly);
 		if (IsExecuting)
 		{
-			InvalidOperationException ex = new(SharedResx.ExecutionNotCompleted);
+			InvalidOperationException ex = new(ControlsResources.ExecutionNotCompleted);
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -641,7 +649,7 @@ public sealed class QueryExecutor : IDisposable
 	private void OnExecutionCompleted(object sender, ScriptExecutionCompletedEventArgs args)
 	{
 		QueryExecutionEndTime = DateTime.Now;
-		ScriptExecutionCompleted?.Invoke(this, args);
+		ScriptExecutionCompletedEvent?.Invoke(this, args);
 
 		IsExecuting = false;
 		IsDebugging = false;
@@ -655,45 +663,57 @@ public sealed class QueryExecutor : IDisposable
 
 	private bool OnScriptExecutionStarted(string text, bool isParseOnly, IDbConnection connection)
 	{
-		_numberOfAffectedRows = 0L;
-		if (ScriptExecutionStarted != null)
+		_RowsAffected = 0L;
+		if (ScriptExecutionStartedEvent != null)
 		{
-			ScriptExecutionStartedEventArgs args = new ScriptExecutionStartedEventArgs(text, isParseOnly, connection);
-			return ScriptExecutionStarted(this, args);
+			return ScriptExecutionStartedEvent(this, new(text, isParseOnly, connection));
 		}
 
 		return true;
 	}
 
+
+	// Added for StaticsPanel.RetrieveStatisticsIfNeeded();
+	private void OnStatementCompleted(object sender, QESQLStatementCompletedEventArgs args)
+	{
+		StatementCompletedEvent?.Invoke(sender, args);
+	}
+
+	private void OnDataLoaded(object sender, QESQLDataLoadedEventArgs args)
+	{
+		DataLoadedEvent?.Invoke(sender, args);
+	}
+
+
 	private void OnStatusChanged(StatusChangedEventArgs args)
 	{
-		StatusChanged?.Invoke(this, args);
+		StatusChangedEvent?.Invoke(this, args);
 	}
 
 	private bool IsStatusFlagSet(StatusType statusType)
 	{
-		lock (_LocalLock)
+		lock (_LockObject)
 		{
-			return (_status & (uint)statusType) == (uint)statusType;
+			return (_Status & (uint)statusType) == (uint)statusType;
 		}
 	}
 
 	private void SetStatusFlag(bool enabled, StatusType statusType)
 	{
-		lock (_LocalLock)
+		lock (_LockObject)
 		{
 			if (!enabled)
 			{
-				if ((_status & (uint)statusType) == (uint)statusType)
+				if ((_Status & (uint)statusType) == (uint)statusType)
 				{
 					uint num = (uint)~statusType;
-					_status &= num;
+					_Status &= num;
 					OnStatusChanged(new StatusChangedEventArgs(statusType));
 				}
 			}
-			else if ((_status & (uint)statusType) != (uint)statusType)
+			else if ((_Status & (uint)statusType) != (uint)statusType)
 			{
-				_status |= (uint)statusType;
+				_Status |= (uint)statusType;
 				OnStatusChanged(new StatusChangedEventArgs(statusType));
 			}
 		}
@@ -706,9 +726,9 @@ public sealed class QueryExecutor : IDisposable
 
 	private void ConnectionChanged(object sender, ConnectionStrategy.ConnectionChangedEventArgs args)
 	{
-		lock (_LocalLock)
+		lock (_LockObject)
 		{
-			_numberOfAffectedRows = 0L;
+			_RowsAffected = 0L;
 			QueryExecutionStartTime = null;
 			QueryExecutionEndTime = null;
 			QueryExecutionSettingsApplied = false;

@@ -35,7 +35,7 @@ public sealed class RdtManager : IDisposable
 {
 	private static volatile RdtManager _Instance;
 
-	private static readonly object _LocalLock = new object();
+	private static readonly object _LockObject = new object();
 
 	private readonly IVsInvisibleEditorManager _InvisibleEditorManager;
 
@@ -47,7 +47,7 @@ public sealed class RdtManager : IDisposable
 
 	private readonly Dictionary<uint, int> _DocDataToKeepAliveOnClose = new Dictionary<uint, int>();
 
-	private readonly object _DocDataToKeepAliveOnCloseLock = new object();
+	private readonly object _KeepAliveLockObject = new object();
 
 	private readonly RunningDocumentTable _ShellRunningDocumentTable;
 
@@ -57,7 +57,7 @@ public sealed class RdtManager : IDisposable
 		{
 			if (_Instance == null)
 			{
-				lock (_LocalLock)
+				lock (_LockObject)
 				{
 					if (_Instance == null)
 					{
@@ -77,7 +77,7 @@ public sealed class RdtManager : IDisposable
 			return;
 		}
 
-		lock (_LocalLock)
+		lock (_LockObject)
 		{
 			_Instance ??= new RdtManager();
 		}
@@ -107,7 +107,7 @@ public sealed class RdtManager : IDisposable
 
 	public void AddKeepDocDataAliveOnCloseReference(uint docCookie)
 	{
-		lock (_DocDataToKeepAliveOnCloseLock)
+		lock (_KeepAliveLockObject)
 		{
 			if (_DocDataToKeepAliveOnClose.TryGetValue(docCookie, out var value))
 			{
@@ -122,7 +122,7 @@ public sealed class RdtManager : IDisposable
 
 	public void RemoveKeepDocDataAliveOnCloseReference(uint docCookie)
 	{
-		lock (_DocDataToKeepAliveOnCloseLock)
+		lock (_KeepAliveLockObject)
 		{
 			if (_DocDataToKeepAliveOnClose.TryGetValue(docCookie, out var value))
 			{
@@ -141,7 +141,7 @@ public sealed class RdtManager : IDisposable
 
 	public bool ShouldKeepDocDataAliveOnClose(uint docCookie)
 	{
-		lock (_DocDataToKeepAliveOnCloseLock)
+		lock (_KeepAliveLockObject)
 		{
 			return _DocDataToKeepAliveOnClose.ContainsKey(docCookie);
 		}
@@ -418,7 +418,7 @@ public sealed class RdtManager : IDisposable
 				Native.ThrowOnFailure(runningDocumentTable.NotifyOnBeforeSave(rdtCookie));
 				if (vsPersistDocData.SaveDocData(VSSAVEFLAGS.VSSAVE_Save, out var _, out var pfSaveCanceled) != 0 || pfSaveCanceled != 0)
 				{
-					InvalidOperationException ex = new(string.Format(CultureInfo.CurrentCulture, SharedResx.Exception_FailedToSaveFile, text));
+					InvalidOperationException ex = new(string.Format(CultureInfo.CurrentCulture, ControlsResources.Exception_FailedToSaveFile, text));
 					Diag.Dug(ex);
 					throw ex;
 				}
@@ -1067,7 +1067,7 @@ public sealed class RdtManager : IDisposable
 
 	public void Dispose()
 	{
-		lock (_DocDataToKeepAliveOnCloseLock)
+		lock (_KeepAliveLockObject)
 		{
 			SqlTracer.AssertTraceEvent(_DocDataToKeepAliveOnClose.Keys.Count == 0, TraceEventType.Error, (EnSqlTraceId)3, "EventsManager is still trying to keep doc data alive on dispose, this could be a symptom of memory leak from invisible doc data.");
 		}

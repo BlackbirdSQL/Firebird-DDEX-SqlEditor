@@ -15,16 +15,17 @@ using System.Security.Permissions;
 using System.Text;
 using System.Windows.Forms;
 
+using BlackbirdSql.Common.Controls;
+using BlackbirdSql.Common.Enums;
+using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Events;
-using BlackbirdSql.Common.Controls;
 
 using FirebirdSql.Data.FirebirdClient;
-using BlackbirdSql.Common.Enums;
 
 namespace BlackbirdSql.Common.Exceptions
 {
-	public sealed class ExceptionMessageBoxForm : Form
+	public sealed class ExceptionMessageBoxDlg : Form
 	{
 		public enum BeepType
 		{
@@ -302,9 +303,9 @@ namespace BlackbirdSql.Common.Exceptions
 			}
 		}
 
-		public event CopyToClipboardEventHandler OnCopyToClipboardInternal;
+		public event CopyToClipboardEventHandler CopyToClipboardInternalEvent;
 
-		public ExceptionMessageBoxForm()
+		public ExceptionMessageBoxDlg()
 		{
 			InitializeComponent();
 			tbBtnHelp.DropDown = m_dropdown;
@@ -1289,14 +1290,13 @@ namespace BlackbirdSql.Common.Exceptions
 		private void CopyToClipboard()
 		{
 			string text = BuildMessageText(isForEmail: false, isInternal: true);
-			if (OnCopyToClipboardInternal != null)
+			if (CopyToClipboardInternalEvent != null)
 			{
-				CopyToClipboardEventArgs copyToClipboardEventArgs = new CopyToClipboardEventArgs(text);
-				OnCopyToClipboardInternal(this, copyToClipboardEventArgs);
-				if (copyToClipboardEventArgs.EventHandled)
-				{
+				CopyToClipboardEventArgs args = new (text);
+				CopyToClipboardInternalEvent(this, args);
+
+				if (args.EventHandled)
 					return;
-				}
 			}
 
 			try
@@ -1371,7 +1371,7 @@ namespace BlackbirdSql.Common.Exceptions
 			try
 			{
 				DialogResult dialogResult;
-				using (PrivacyConfirmation privacyConfirmation = new PrivacyConfirmation(Text, text))
+				using (PrivacyConfirmationDlg privacyConfirmation = new PrivacyConfirmationDlg(Text, text))
 				{
 					if (Parent == null)
 					{
@@ -1417,7 +1417,7 @@ namespace BlackbirdSql.Common.Exceptions
 
 		public void ShowError(string str, Exception exError)
 		{
-			ExceptionMessageBox exceptionMessageBox = new(new Exception(str, exError)
+			ExceptionMessageBoxCtl exceptionMessageBox = new(new Exception(str, exError)
 			{
 				Source = Text
 			})
@@ -1455,7 +1455,7 @@ namespace BlackbirdSql.Common.Exceptions
 		{
 			try
 			{
-				using AdvancedInformation advancedInformation = new AdvancedInformation();
+				using AdvancedInformationDlg advancedInformation = new AdvancedInformationDlg();
 				advancedInformation.MessageBoxForm = this;
 				if ((options & EnExceptionMessageBoxOptions.RtlReading) != 0)
 				{
@@ -1603,7 +1603,7 @@ namespace BlackbirdSql.Common.Exceptions
 		private void InitializeComponent()
 		{
 			components = new Container();
-			ComponentResourceManager resources = new ComponentResourceManager(typeof(BlackbirdSql.Common.Exceptions.ExceptionMessageBoxForm));
+			ComponentResourceManager resources = new ComponentResourceManager(typeof(BlackbirdSql.Common.Exceptions.ExceptionMessageBoxDlg));
 			pnlForm = new TableLayoutPanel();
 			pnlIcon = new Panel();
 			pnlMessage = new TableLayoutPanel();

@@ -122,13 +122,13 @@ public abstract class AbstractDiskDataStorage : IDiskDataStorage, IDataStorage, 
 	{
 		if (storageReader == null)
 		{
-			throw new Exception(SharedResx.ReaderCannotBeNull);
+			throw new Exception(ControlsResources.ReaderCannotBeNull);
 		}
 		_StorageReader = new StorageDataReader(storageReader);
 		_FileName = Path.GetTempFileName();
 		if (_FileName.Length == 0)
 		{
-			throw new Exception(SharedResx.FailedToGetTempFileName);
+			throw new Exception(ControlsResources.FailedToGetTempFileName);
 		}
 		_FsWriter = new FileStreamWriter();
 		_FsWriter.Init(_FileName);
@@ -150,23 +150,23 @@ public abstract class AbstractDiskDataStorage : IDiskDataStorage, IDataStorage, 
 		}
 		if (storageReader == null)
 		{
-			throw new ArgumentException(SharedResx.ReaderCannotBeNull);
+			throw new ArgumentException(ControlsResources.ReaderCannotBeNull);
 		}
 		if (storageReader.FieldCount != _ColumnsArray.Count)
 		{
-			throw new ArgumentException(SharedResx.ColumnsCountDoesNotMatch);
+			throw new ArgumentException(ControlsResources.ColumnsCountDoesNotMatch);
 		}
 		for (int i = 0; i < storageReader.FieldCount; i++)
 		{
 			IColumnInfo columnInfo = GetColumnInfo(i);
 			if (columnInfo.ColumnName != storageReader.GetName(i) || columnInfo.DataTypeName != storageReader.GetDataTypeName(i))
 			{
-				throw new ArgumentException(SharedResx.ColumnsDoNotMatch);
+				throw new ArgumentException(ControlsResources.ColumnsDoNotMatch);
 			}
 		}
 		if (_DataStorageEnabled)
 		{
-			throw new Exception(SharedResx.CannotAddReaderWhenStoringData);
+			throw new Exception(ControlsResources.CannotAddReaderWhenStoringData);
 		}
 		_StorageReader = new StorageDataReader(storageReader);
 	}
@@ -175,7 +175,7 @@ public abstract class AbstractDiskDataStorage : IDiskDataStorage, IDataStorage, 
 	{
 		if (_DataStorageEnabled)
 		{
-			throw new Exception(SharedResx.AlreadyStoringData);
+			throw new Exception(ControlsResources.AlreadyStoringData);
 		}
 		_DataStorageEnabled = true;
 		_WorkerThread = new Thread(SerializeData);
@@ -195,11 +195,11 @@ public abstract class AbstractDiskDataStorage : IDiskDataStorage, IDataStorage, 
 	{
 		if (_DataStorageEnabled)
 		{
-			throw new InvalidOperationException(SharedResx.AlreadyStoringData);
+			throw new InvalidOperationException(ControlsResources.AlreadyStoringData);
 		}
 		if (_StorageReader == null)
 		{
-			throw new InvalidOperationException(SharedResx.StorageNotInitialized);
+			throw new InvalidOperationException(ControlsResources.StorageNotInitialized);
 		}
 		_DataStorageEnabled = true;
 		SerializeData();

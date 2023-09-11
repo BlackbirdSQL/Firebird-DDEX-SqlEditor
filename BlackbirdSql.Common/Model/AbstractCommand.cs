@@ -24,7 +24,7 @@ public abstract class AbstractCommand : AbstractDispatcherConnection, IOwnedComm
 
 	private readonly Predicate<object> _CanExecute;
 
-	private EventHandler _CanExecuteChanged;
+	private EventHandler _CanExecuteChangedHandler;
 
 
 	public override DescriberDictionary Describers
@@ -51,12 +51,12 @@ public abstract class AbstractCommand : AbstractDispatcherConnection, IOwnedComm
 		add
 		{
 			VerifyAccess();
-			_CanExecuteChanged = (EventHandler)Delegate.Combine(_CanExecuteChanged, value);
+			_CanExecuteChangedHandler = (EventHandler)Delegate.Combine(_CanExecuteChangedHandler, value);
 			CommandManager.RequerySuggested += value;
 		}
 		remove
 		{
-			_CanExecuteChanged = (EventHandler)Delegate.Remove(_CanExecuteChanged, value);
+			_CanExecuteChangedHandler = (EventHandler)Delegate.Remove(_CanExecuteChangedHandler, value);
 			CommandManager.RequerySuggested -= value;
 		}
 	}
@@ -111,6 +111,6 @@ public abstract class AbstractCommand : AbstractDispatcherConnection, IOwnedComm
 
 	public void RaiseCanExecuteChanged()
 	{
-		_CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+		_CanExecuteChangedHandler?.Invoke(this, EventArgs.Empty);
 	}
 }

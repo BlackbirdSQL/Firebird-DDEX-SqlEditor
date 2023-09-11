@@ -50,7 +50,7 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 
 	protected DiskStorageView()
 	{
-		throw new Exception(SharedResx.StorageViewDefaultConstructorCannotBeUsed);
+		throw new Exception(ControlsResources.StorageViewDefaultConstructorCannotBeUsed);
 	}
 
 	protected internal DiskStorageView(IDiskDataStorage storage)
@@ -121,7 +121,7 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 	{
 		if (i64Row >= RowCount || iCol >= ColumnCount)
 		{
-			throw new Exception(SharedResx.InvalidArgument);
+			throw new Exception(ControlsResources.InvalidArgument);
 		}
 		if (iCol == 0 || iCol != m_iPrevCol + 1 || i64Row != m_i64PrevRow)
 		{
@@ -597,7 +597,7 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 	{
 		if (m_i64CurrentRow - 1 >= RowCount || i >= ColumnCount)
 		{
-			throw new Exception(SharedResx.InvalidArgument);
+			throw new Exception(ControlsResources.InvalidArgument);
 		}
 		InitFileWriter();
 		_CurrentOffset = _DiskDataStorage.GetRowOffset(m_i64CurrentRow - 1);

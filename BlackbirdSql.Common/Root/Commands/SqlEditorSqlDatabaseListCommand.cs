@@ -99,8 +99,8 @@ public class SqlEditorSqlDatabaseListCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		QueryExecutor queryExecutorForEditor = GetQueryExecutorForEditor();
-		if (queryExecutorForEditor != null)
+		QueryManager qryMgrForEditor = GetQueryManagerForEditor();
+		if (qryMgrForEditor != null)
 		{
 
 
@@ -128,7 +128,7 @@ public class SqlEditorSqlDatabaseListCommand : AbstractSqlEditorCommand
 				}
 			}
 
-			// queryExecutorForEditor.ConnectionStrategy.GetAvailableDatabases();
+			// qryMgrForEditor.ConnectionStrategy.GetAvailableDatabases();
 			if (DatabaseList.Length > 0)
 			{
 				Marshal.GetNativeVariantForObject((object)_DatabaseList, pvaOut);
@@ -137,7 +137,7 @@ public class SqlEditorSqlDatabaseListCommand : AbstractSqlEditorCommand
 		}
 		else
 		{
-			ArgumentNullException ex = new("QueryExecutor is null");
+			ArgumentNullException ex = new("QryMgr is null");
 			Diag.Dug(ex);
 			throw ex;
 		}

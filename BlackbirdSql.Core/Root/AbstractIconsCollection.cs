@@ -36,7 +36,7 @@ namespace BlackbirdSql.Core;
 [EditorBrowsable(EditorBrowsableState.Never)]
 public abstract class AbstractIconsCollection
 {
-	protected static object _IconsLock = new();
+	protected static object _LockObject = new();
 
 	private readonly Dictionary<IBIconType, Lazy<BitmapImage>> _IconsRef;
 

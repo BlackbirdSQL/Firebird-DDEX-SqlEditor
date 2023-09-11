@@ -42,9 +42,9 @@ public class ResultWindowPane : WindowPane, IOleCommandTarget
 
 	private AbstractResultsPanel TargetResultsPanel { get; set; }
 
-	public event EventHandler<ResultControlEventArgs> PanelAdded;
+	public event EventHandler<ResultControlEventArgs> PanelAddedEvent;
 
-	public event EventHandler<ResultControlEventArgs> PanelRemoved;
+	public event EventHandler<ResultControlEventArgs> PanelRemovedEvent;
 
 	public ResultWindowPane()
 	{
@@ -128,11 +128,11 @@ public class ResultWindowPane : WindowPane, IOleCommandTarget
 
 	private void RaisePanelAddedEvent()
 	{
-		PanelAdded?.Invoke(this, new ResultControlEventArgs(TargetResultsPanel));
+		PanelAddedEvent?.Invoke(this, new ResultControlEventArgs(TargetResultsPanel));
 	}
 
 	private void RaisePanelRemovedEvent()
 	{
-		PanelRemoved?.Invoke(this, new ResultControlEventArgs(TargetResultsPanel));
+		PanelRemovedEvent?.Invoke(this, new ResultControlEventArgs(TargetResultsPanel));
 	}
 }

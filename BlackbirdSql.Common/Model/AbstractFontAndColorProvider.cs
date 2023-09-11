@@ -81,9 +81,9 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 
 	protected virtual uint FontColorFlags => 0u;
 
-	public event FontChangedEventHandler FontChanged;
+	public event FontChangedEventHandler FontChangedEvent;
 
-	public event ColorChangedEventHandler ColorChanged;
+	public event ColorChangedEventHandler ColorChangedEvent;
 
 	protected AbstractFontAndColorProvider()
 	{
@@ -176,7 +176,7 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 		if (fontInfo[0].bFaceNameValid != 0 && fontInfo[0].bPointSizeValid != 0)
 		{
 			font = new Font(fontInfo[0].bstrFaceName, fontInfo[0].wPointSize);
-			FontChangedEventHandler fontChanged = FontChanged;
+			FontChangedEventHandler fontChanged = FontChangedEvent;
 			if (font != null)
 			{
 				fontChanged?.Invoke(this, new FontChangedEventArgs(font));
@@ -289,7 +289,7 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 
 	protected void RaiseEvent(object sender, ColorChangedEventArgs args)
 	{
-		ColorChanged?.Invoke(this, args);
+		ColorChangedEvent?.Invoke(this, args);
 	}
 
 	protected uint DecodeSystemColor(uint systemColorReference)

@@ -12,7 +12,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Config.ComponentModel;
 
 public sealed class GlobalizedDescriptionAttribute : AbstractGlobalizedDescriptionAttribute
 {
-	public override System.Resources.ResourceManager ResMgr => ControlsResources.ResourceManager;
+	public override System.Resources.ResourceManager ResMgr => Resources.ResourceManager;
 
 	public GlobalizedDescriptionAttribute(string resourceName) :base(resourceName)
 	{

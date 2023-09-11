@@ -26,7 +26,7 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 
 	private readonly StringBuilder _rowBuilder = new StringBuilder(C_InitialRowBuilderCapacity);
 
-	private readonly MoreRowsAvailableEventHandler _MoreRowsAvailableDelegate;
+	private readonly MoreRowsAvailableEventHandler _MoreRowsAvailableHandler;
 
 	private static readonly Hashtable _typeToCharNumTable;
 
@@ -186,7 +186,7 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 		: base(resultsControl)
 	{
 		Tracer.Trace(GetType(), "ResultsToTextOrFileBatchConsumer.ResultsToTextOrFileBatchConsumer", "", null);
-		_MoreRowsAvailableDelegate = OnMoreRowsAvailable;
+		_MoreRowsAvailableHandler = OnMoreRowsAvailable;
 	}
 
 	public override void OnNewResultSet(object sender, QESQLBatchNewResultSetEventArgs args)
@@ -302,11 +302,11 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 		Tracer.Trace(GetType(), "ResultsToTextOrFileBatchConsumer.HookupWithEvents", "bSubscribe = {0}", bSubscribe);
 		if (bSubscribe)
 		{
-			_curResultSet.MoreRowsAvailable += _MoreRowsAvailableDelegate;
+			_curResultSet.MoreRowsAvailableEvent += _MoreRowsAvailableHandler;
 		}
 		else
 		{
-			_curResultSet.MoreRowsAvailable -= _MoreRowsAvailableDelegate;
+			_curResultSet.MoreRowsAvailableEvent -= _MoreRowsAvailableHandler;
 		}
 	}
 

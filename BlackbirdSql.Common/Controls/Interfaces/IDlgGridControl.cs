@@ -23,9 +23,9 @@ public interface IDlgGridControl : IGridControl
 
 	IDlgStorage DlgStorage { get; set; }
 
-	event FillControlWithDataEventHandler FillControlWithData;
+	event FillControlWithDataEventHandler FillControlWithDataEvent;
 
-	event SetCellDataFromControlEventHandler SetCellDataFromControl;
+	event SetCellDataFromControlEventHandler SetCellDataFromControlEvent;
 
 	void AddRow(GridCellCollection row);
 

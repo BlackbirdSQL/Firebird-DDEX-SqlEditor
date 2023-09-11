@@ -70,7 +70,7 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 		{
 			if (string.IsNullOrWhiteSpace(_AppTitle))
 			{
-				return SharedResx.ConnectToServer;
+				return ControlsResources.ConnectToServer;
 			}
 
 			return _AppTitle;
@@ -331,7 +331,7 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 		string tempFileName = Path.GetTempFileName();
 		if (tempFileName == null)
 		{
-			ShowMessageBoxEx(string.Empty, SharedResx.ErrCannotCreateTempFile, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			ShowMessageBoxEx(string.Empty, ControlsResources.ErrCannotCreateTempFile, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			return;
 		}
 		StreamWriter streamWriter = null;
@@ -422,7 +422,7 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 				break;
 		}
 
-		ExceptionMessageBox exceptionMessageBox = new(ex, buttons2, symbol)
+		ExceptionMessageBoxCtl exceptionMessageBox = new(ex, buttons2, symbol)
 		{
 			Caption = caption,
 			MessageLevelDefault = exceptionLevel

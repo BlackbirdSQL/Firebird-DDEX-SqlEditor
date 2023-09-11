@@ -61,65 +61,11 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid calling sequence: already sorting data.
-        /// </summary>
-        public static string AlreadySortingData {
-            get {
-                return ResourceManager.GetString("AlreadySortingData", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid calling sequence: already storing data..
-        /// </summary>
-        public static string AlreadyStoringData {
-            get {
-                return ResourceManager.GetString("AlreadyStoringData", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Average.
-        /// </summary>
-        public static string Average {
-            get {
-                return ResourceManager.GetString("Average", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Failed to create an editor..
         /// </summary>
         public static string BaseEditorFactory_FailedToCreateEditor {
             get {
                 return ResourceManager.GetString("BaseEditorFactory_FailedToCreateEditor", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An error occurred while executing batch. Error message is: {0}.
-        /// </summary>
-        public static string BatchError {
-            get {
-                return ResourceManager.GetString("BatchError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Batch execution completed {0} times..
-        /// </summary>
-        public static string BatchExecCompleted {
-            get {
-                return ResourceManager.GetString("BatchExecCompleted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Beginning execution loop.
-        /// </summary>
-        public static string BeginningBatchExec {
-            get {
-                return ResourceManager.GetString("BeginningBatchExec", resourceCulture);
             }
         }
         
@@ -133,191 +79,11 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid argument: buffer size should be a positive number..
-        /// </summary>
-        public static string BufferSizeShouldBePositive {
-            get {
-                return ResourceManager.GetString("BufferSizeShouldBePositive", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to TDS packets received from server.
-        /// </summary>
-        public static string BuffersReceivedStat {
-            get {
-                return ResourceManager.GetString("BuffersReceivedStat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to TDS packets sent from client.
-        /// </summary>
-        public static string BuffersSentStat {
-            get {
-                return ResourceManager.GetString("BuffersSentStat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Bytes received from server.
-        /// </summary>
-        public static string BytesReceivedStat {
-            get {
-                return ResourceManager.GetString("BytesReceivedStat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Bytes sent from client.
-        /// </summary>
-        public static string BytesSentStat {
-            get {
-                return ResourceManager.GetString("BytesSentStat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string Cancel {
             get {
                 return ResourceManager.GetString("Cancel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The query has exceeded the maximum number of execution plans that can be displayed. Only the first {0} execution plans are displayed..
-        /// </summary>
-        public static string CanDisplayOnlyNExecutionPlanControls {
-            get {
-                return ResourceManager.GetString("CanDisplayOnlyNExecutionPlanControls", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The query has exceeded the maximum number of result sets that can be displayed in the results grid. Only the first {0} result sets are displayed in the grid..
-        /// </summary>
-        public static string CanDisplayOnlyNGridResults {
-            get {
-                return ResourceManager.GetString("CanDisplayOnlyNGridResults", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A new reader cannot be added while storage is storing data..
-        /// </summary>
-        public static string CannotAddReaderWhenStoringData {
-            get {
-                return ResourceManager.GetString("CannotAddReaderWhenStoringData", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Debugging is not supported on this connection type..
-        /// </summary>
-        public static string CannotDebugConnectionType {
-            get {
-                return ResourceManager.GetString("CannotDebugConnectionType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot find data for execution plan..
-        /// </summary>
-        public static string CannotFindDataForExecutionPlan {
-            get {
-                return ResourceManager.GetString("CannotFindDataForExecutionPlan", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Client Execution Time.
-        /// </summary>
-        public static string ClientExecutionTime {
-            get {
-                return ResourceManager.GetString("ClientExecutionTime", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Client processing time.
-        /// </summary>
-        public static string ClientProcessingTime {
-            get {
-                return ResourceManager.GetString("ClientProcessingTime", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Trial  {0}.
-        /// </summary>
-        public static string ClientStatsTrial {
-            get {
-                return ResourceManager.GetString("ClientStatsTrial", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to You must specify a column delimiter..
-        /// </summary>
-        public static string ColumnDelimiterCannotBeEmpty {
-            get {
-                return ResourceManager.GetString("ColumnDelimiterCannotBeEmpty", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Number of columns in the new reader does not match storage..
-        /// </summary>
-        public static string ColumnsCountDoesNotMatch {
-            get {
-                return ResourceManager.GetString("ColumnsCountDoesNotMatch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Column definitions do not match those in the storage..
-        /// </summary>
-        public static string ColumnsDoNotMatch {
-            get {
-                return ResourceManager.GetString("ColumnsDoNotMatch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Attempting to connect to database server {0}..
-        /// </summary>
-        public static string CommonMessageLoopAttemptingToConnect {
-            get {
-                return ResourceManager.GetString("CommonMessageLoopAttemptingToConnect", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connecting....
-        /// </summary>
-        public static string CommonMessageLoopConnecting {
-            get {
-                return ResourceManager.GetString("CommonMessageLoopConnecting", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The connection error is:  {0}..
-        /// </summary>
-        public static string CommonMessageLoopErrorMessage {
-            get {
-                return ResourceManager.GetString("CommonMessageLoopErrorMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Failed to open a database connection to the server {0}..
-        /// </summary>
-        public static string CommonMessageLoopFailedToOpenConnection {
-            get {
-                return ResourceManager.GetString("CommonMessageLoopFailedToOpenConnection", resourceCulture);
             }
         }
         
@@ -457,24 +223,6 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The connection string could not be parsed..
-        /// </summary>
-        public static string ConnectionStringParser_InvalidConnectionString {
-            get {
-                return ResourceManager.GetString("ConnectionStringParser_InvalidConnectionString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connect to Server.
-        /// </summary>
-        public static string ConnectToServer {
-            get {
-                return ResourceManager.GetString("ConnectToServer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to &amp;Description.
         /// </summary>
         public static string DataConnectionAdvancedDialog_Description {
@@ -498,213 +246,6 @@ namespace BlackbirdSql.Common.Properties {
         public static string DataConnectionAdvancedDialog_Reset {
             get {
                 return ResourceManager.GetString("DataConnectionAdvancedDialog_Reset", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;default&gt;.
-        /// </summary>
-        public static string DefaultDatabaseName {
-            get {
-                return ResourceManager.GetString("DefaultDatabaseName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Microsoft SQL Server Management Studio.
-        /// </summary>
-        public static string DefaultMessageBoxCaption {
-            get {
-                return ResourceManager.GetString("DefaultMessageBoxCaption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} ({1}).
-        /// </summary>
-        public static string DisplayUserNameAndSPID {
-            get {
-                return ResourceManager.GetString("DisplayUserNameAndSPID", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ** An error was encountered during execution of batch. Exiting..
-        /// </summary>
-        public static string ErrBatchExecutionFailedExiting {
-            get {
-                return ResourceManager.GetString("ErrBatchExecutionFailedExiting", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ** An error was encountered during execution of batch. Continuing..
-        /// </summary>
-        public static string ErrBatchExecutionFailedIgnoring {
-            get {
-                return ResourceManager.GetString("ErrBatchExecutionFailedIgnoring", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Failed to create temporary XML file..
-        /// </summary>
-        public static string ErrCannotCreateTempFile {
-            get {
-                return ResourceManager.GetString("ErrCannotCreateTempFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Failed to get external files manager..
-        /// </summary>
-        public static string ErrCannotGetExternalFilesManager {
-            get {
-                return ResourceManager.GetString("ErrCannotGetExternalFilesManager", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot initialize new instance of editor..
-        /// </summary>
-        public static string ErrCannotInitNewEditorInst {
-            get {
-                return ResourceManager.GetString("ErrCannotInitNewEditorInst", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Database not accessible.
-        /// </summary>
-        public static string ErrDatabaseNotAccessible {
-            get {
-                return ResourceManager.GetString("ErrDatabaseNotAccessible", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot find directory in the path specified for &quot;:r&quot; command..
-        /// </summary>
-        public static string ErrDirWasnotFoundForRCmd {
-            get {
-                return ResourceManager.GetString("ErrDirWasnotFoundForRCmd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A fatal scripting error occurred..
-        /// </summary>
-        public static string ErrFatalScriptingErrorNoParam {
-            get {
-                return ResourceManager.GetString("ErrFatalScriptingErrorNoParam", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The file specified for :r command was not found..
-        /// </summary>
-        public static string ErrFileWasnotFoundForRCmd {
-            get {
-                return ResourceManager.GetString("ErrFileWasnotFoundForRCmd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot process the file specified in :r command. Message: {0}..
-        /// </summary>
-        public static string ErrGenericRCmdError {
-            get {
-                return ResourceManager.GetString("ErrGenericRCmdError", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Execution time-out value should be an integer between {0} and {1}..
-        /// </summary>
-        public static string ErrInvalidExecutionTimeout {
-            get {
-                return ResourceManager.GetString("ErrInvalidExecutionTimeout", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Maximum characters displayed in each cell should be an integer between {0} and {1}..
-        /// </summary>
-        public static string ErrInvalidMaxCharsPerCell {
-            get {
-                return ResourceManager.GetString("ErrInvalidMaxCharsPerCell", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Maximum characters per column should be an integer between {0} and {1}..
-        /// </summary>
-        public static string ErrInvalidMaxCharsPerColumn {
-            get {
-                return ResourceManager.GetString("ErrInvalidMaxCharsPerColumn", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An invalid path was specified to the :r command..
-        /// </summary>
-        public static string ErrInvalidPathInRCmd {
-            get {
-                return ResourceManager.GetString("ErrInvalidPathInRCmd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to LOCK_TIMEOUT value should be an integer between {0} and {1}..
-        /// </summary>
-        public static string ErrInvalidSetLockTimeout {
-            get {
-                return ResourceManager.GetString("ErrInvalidSetLockTimeout", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to QUERY_GOVERNOR_COST_LIMIT value should be an integer between {0} and {1}..
-        /// </summary>
-        public static string ErrInvalidSetQueryGov {
-            get {
-                return ResourceManager.GetString("ErrInvalidSetQueryGov", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to ROWCOUNT value should be an integer between {0} and {1}..
-        /// </summary>
-        public static string ErrInvalidSetRowcount {
-            get {
-                return ResourceManager.GetString("ErrInvalidSetRowcount", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to TEXTSIZE value should be an integer between {0} and {1}..
-        /// </summary>
-        public static string ErrInvalidSetTextsize {
-            get {
-                return ResourceManager.GetString("ErrInvalidSetTextsize", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Command {0} is not supported. String was not processed..
-        /// </summary>
-        public static string ErrNotSupportedSqlCmdCommand {
-            get {
-                return ResourceManager.GetString("ErrNotSupportedSqlCmdCommand", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Variable {0} is not defined..
-        /// </summary>
-        public static string ErrOLESQLVarNotDefined {
-            get {
-                return ResourceManager.GetString("ErrOLESQLVarNotDefined", resourceCulture);
             }
         }
         
@@ -754,96 +295,6 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error occurred while saving execution plan..
-        /// </summary>
-        public static string ErrorWhileSavingExecutionPlan {
-            get {
-                return ResourceManager.GetString("ErrorWhileSavingExecutionPlan", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The path specified to the :r command is too long..
-        /// </summary>
-        public static string ErrPathIsTooLongForRCmd {
-            get {
-                return ResourceManager.GetString("ErrPathIsTooLongForRCmd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A scripting error occurred..
-        /// </summary>
-        public static string ErrScriptingErrorNoParam {
-            get {
-                return ResourceManager.GetString("ErrScriptingErrorNoParam", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Incorrect syntax was encountered while parsing {0}..
-        /// </summary>
-        public static string ErrScriptingIncorrectSyntax {
-            get {
-                return ResourceManager.GetString("ErrScriptingIncorrectSyntax", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Scripting warning..
-        /// </summary>
-        public static string ErrScriptingWarningNoParam {
-            get {
-                return ResourceManager.GetString("ErrScriptingWarningNoParam", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Text writer is null..
-        /// </summary>
-        public static string ErrTextWriterNull {
-            get {
-                return ResourceManager.GetString("ErrTextWriterNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to close connection specified in the SQLCMD script..
-        /// </summary>
-        public static string ErrUnableToCloseCon {
-            get {
-                return ResourceManager.GetString("ErrUnableToCloseCon", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Fatal scripting error. Cannot open connection specified in the SQLCMD script..
-        /// </summary>
-        public static string ErrUnableToConnect {
-            get {
-                return ResourceManager.GetString("ErrUnableToConnect", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot execute {0} {1}..
-        /// </summary>
-        public static string ErrUnableToExecProcess {
-            get {
-                return ResourceManager.GetString("ErrUnableToExecProcess", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cannot launch {0} {1}..
-        /// </summary>
-        public static string ErrUnableToLaunchProcesss {
-            get {
-                return ResourceManager.GetString("ErrUnableToLaunchProcesss", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Unable to set up page..
         /// </summary>
         public static string ErrUnableToPageSetup {
@@ -853,65 +304,11 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unable to preview page..
-        /// </summary>
-        public static string ErrUnableToPrintPreview {
-            get {
-                return ResourceManager.GetString("ErrUnableToPrintPreview", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Unable to print results..
         /// </summary>
         public static string ErrUnableToPrintResults {
             get {
                 return ResourceManager.GetString("ErrUnableToPrintResults", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to process :r command..
-        /// </summary>
-        public static string ErrUnableToProcessRCmd {
-            get {
-                return ResourceManager.GetString("ErrUnableToProcessRCmd", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to redirect output to {0}..
-        /// </summary>
-        public static string ErrUnableToRedirOutput {
-            get {
-                return ResourceManager.GetString("ErrUnableToRedirOutput", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An error occurred while saving results..
-        /// </summary>
-        public static string ErrWhileSavingResults {
-            get {
-                return ResourceManager.GetString("ErrWhileSavingResults", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Failed to save file: {0}.
-        /// </summary>
-        public static string Exception_FailedToSaveFile {
-            get {
-                return ResourceManager.GetString("Exception_FailedToSaveFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Previous execution is not yet complete..
-        /// </summary>
-        public static string ExecutionNotCompleted {
-            get {
-                return ResourceManager.GetString("ExecutionNotCompleted", resourceCulture);
             }
         }
         
@@ -926,43 +323,6 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Execution Plan Files (*.sqlplan)|*.sqlplan|All Files (*.*)|*.*.
-        /// </summary>
-        public static string ExecutionPlanFilter {
-            get {
-                return ResourceManager.GetString("ExecutionPlanFilter", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Total execution time.
-        /// </summary>
-        public static string ExecutionTimeStat {
-            get {
-                return ResourceManager.GetString("ExecutionTimeStat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Failed to get temporary file name..
-        /// </summary>
-        public static string FailedToGetTempFileName {
-            get {
-                return ResourceManager.GetString("FailedToGetTempFileName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Error processing execution plan results. The error message is:
-        ///{0}.
-        /// </summary>
-        public static string FailedToReadExecutionPlan {
-            get {
-                return ResourceManager.GetString("FailedToReadExecutionPlan", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Favorites.
         /// </summary>
         public static string FavoriteConnectionTitle {
@@ -972,173 +332,11 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid calling sequence: file stream already initialized..
-        /// </summary>
-        public static string FileStreamAlreadyInitialized {
-            get {
-                return ResourceManager.GetString("FileStreamAlreadyInitialized", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid calling sequence: file stream must be initialized first..
-        /// </summary>
-        public static string FileStreamNeedsToBeInitializedFirst {
-            get {
-                return ResourceManager.GetString("FileStreamNeedsToBeInitializedFirst", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Type here to filter the list.
         /// </summary>
         public static string FilterTextBoxToolTip {
             get {
                 return ResourceManager.GetString("FilterTextBoxToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SQL Results - Execution Plan.
-        /// </summary>
-        public static string FontAndColorCategorySqlResultsExecutionPlan {
-            get {
-                return ResourceManager.GetString("FontAndColorCategorySqlResultsExecutionPlan", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SQL Results - Grid.
-        /// </summary>
-        public static string FontAndColorCategorySqlResultsGrid {
-            get {
-                return ResourceManager.GetString("FontAndColorCategorySqlResultsGrid", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SQL Results - Text.
-        /// </summary>
-        public static string FontAndColorCategorySqlResultsText {
-            get {
-                return ResourceManager.GetString("FontAndColorCategorySqlResultsText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Text inside grid cells..
-        /// </summary>
-        public static string FontAndColorGridCellDescription {
-            get {
-                return ResourceManager.GetString("FontAndColorGridCellDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Selected cell color when inactive.
-        /// </summary>
-        public static string FontAndColorGridInactiveSelectedCellDescription {
-            get {
-                return ResourceManager.GetString("FontAndColorGridInactiveSelectedCellDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Selected cell color when active.
-        /// </summary>
-        public static string FontAndColorGridSelectedCellDescription {
-            get {
-                return ResourceManager.GetString("FontAndColorGridSelectedCellDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Header row color.
-        /// </summary>
-        public static string FontAndColorItemGridHeaderRowCellDescription {
-            get {
-                return ResourceManager.GetString("FontAndColorItemGridHeaderRowCellDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Header Row.
-        /// </summary>
-        public static string FontAndColorItemGridHeaderRowCellName {
-            get {
-                return ResourceManager.GetString("FontAndColorItemGridHeaderRowCellName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to NULL Value Cell.
-        /// </summary>
-        public static string FontAndColorItemGridNullValueCellName {
-            get {
-                return ResourceManager.GetString("FontAndColorItemGridNullValueCellName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Text.
-        /// </summary>
-        public static string FontAndColorItemNameGridCell {
-            get {
-                return ResourceManager.GetString("FontAndColorItemNameGridCell", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Inactive Selected Cell.
-        /// </summary>
-        public static string FontAndColorItemNameGridInactiveSelectedCell {
-            get {
-                return ResourceManager.GetString("FontAndColorItemNameGridInactiveSelectedCell", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Selected Cell.
-        /// </summary>
-        public static string FontAndColorItemNameGridSelectedCell {
-            get {
-                return ResourceManager.GetString("FontAndColorItemNameGridSelectedCell", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Plain Text.
-        /// </summary>
-        public static string FontAndColorItemNameResultsPlainText {
-            get {
-                return ResourceManager.GetString("FontAndColorItemNameResultsPlainText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Text inside execution plan..
-        /// </summary>
-        public static string FontAndColorShowplanDescription {
-            get {
-                return ResourceManager.GetString("FontAndColorShowplanDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Text inside text results or messages..
-        /// </summary>
-        public static string FontAndColorTextResultsDescription {
-            get {
-                return ResourceManager.GetString("FontAndColorTextResultsDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to NULL value cell color.
-        /// </summary>
-        public static string FontAndGridItemGridNullValueCellDescription {
-            get {
-                return ResourceManager.GetString("FontAndGridItemGridNullValueCellDescription", resourceCulture);
             }
         }
         
@@ -1161,105 +359,6 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Number of INSERT, DELETE and UPDATE statements.
-        /// </summary>
-        public static string IduCountStat {
-            get {
-                return ResourceManager.GetString("IduCountStat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Rows affected by INSERT, DELETE, or UPDATE statements.
-        /// </summary>
-        public static string IduRowsStat {
-            get {
-                return ResourceManager.GetString("IduRowsStat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The supplied group number is incorrect..
-        /// </summary>
-        public static string IncorrectGroupNumber {
-            get {
-                return ResourceManager.GetString("IncorrectGroupNumber", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Row number is incorrect..
-        /// </summary>
-        public static string IncorrectRowNumber {
-            get {
-                return ResourceManager.GetString("IncorrectRowNumber", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connecting to {0}....
-        /// </summary>
-        public static string InfoConnectingToSvr {
-            get {
-                return ResourceManager.GetString("InfoConnectingToSvr", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connecting to {0} as {1}....
-        /// </summary>
-        public static string InfoConnectingToSvrAsUser {
-            get {
-                return ResourceManager.GetString("InfoConnectingToSvrAsUser", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Disconnecting connection from {0}....
-        /// </summary>
-        public static string InfoDisconnectingFromSvr {
-            get {
-                return ResourceManager.GetString("InfoDisconnectingFromSvr", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Disconnecting connection from {0} as {1}....
-        /// </summary>
-        public static string InfoDisconnectingFromSvrAsUser {
-            get {
-                return ResourceManager.GetString("InfoDisconnectingFromSvrAsUser", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Argument is not valid..
-        /// </summary>
-        public static string InvalidArgument {
-            get {
-                return ResourceManager.GetString("InvalidArgument", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unsupported command object.  Use SqlCommand or ReliableSqlCommand..
-        /// </summary>
-        public static string InvalidCommandType {
-            get {
-                return ResourceManager.GetString("InvalidCommandType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid connection type.
-        /// </summary>
-        public static string InvalidConnectionType {
-            get {
-                return ResourceManager.GetString("InvalidConnectionType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to {0} database under {1} server.
         /// </summary>
         public static string ListViewItemAutomationProperty {
@@ -1274,63 +373,6 @@ namespace BlackbirdSql.Common.Properties {
         public static string LoadingText {
             get {
                 return ResourceManager.GetString("LoadingText", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to /*
-        ///Missing Index Details from {0}
-        ///The Query Processor estimates that implementing the following index could improve the query cost by {1}%.
-        ///*/.
-        /// </summary>
-        public static string MissingIndexDetailsTitle {
-            get {
-                return ResourceManager.GetString("MissingIndexDetailsTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Missing Index (Impact {0}): {1}.
-        /// </summary>
-        public static string MissingIndexFormat {
-            get {
-                return ResourceManager.GetString("MissingIndexFormat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Command(s) completed successfully..
-        /// </summary>
-        public static string MsgCommandSuccess {
-            get {
-                return ResourceManager.GetString("MsgCommandSuccess", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Query was cancelled by user..
-        /// </summary>
-        public static string MsgQueryCancelled {
-            get {
-                return ResourceManager.GetString("MsgQueryCancelled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Wait time on server replies.
-        /// </summary>
-        public static string NetworkServerTimeStat {
-            get {
-                return ResourceManager.GetString("NetworkServerTimeStat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Network Statistics.
-        /// </summary>
-        public static string NetworkStatistics {
-            get {
-                return ResourceManager.GetString("NetworkStatistics", resourceCulture);
             }
         }
         
@@ -1353,15 +395,6 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An error was encountered while trying to open the editor for the template..
-        /// </summary>
-        public static string OpenOnlineEditorException {
-            get {
-                return ResourceManager.GetString("OpenOnlineEditorException", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Pin.
         /// </summary>
         public static string PinMenuAction {
@@ -1380,65 +413,11 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Please select directory.
-        /// </summary>
-        public static string PleaseSelectDirectory {
-            get {
-                return ResourceManager.GetString("PleaseSelectDirectory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Could not retrieve the object from the server explorer.  Try closing the window and editing the object again..
-        /// </summary>
-        public static string PowerBuffer_ModelDisposed {
-            get {
-                return ResourceManager.GetString("PowerBuffer_ModelDisposed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Retrieving updated definition from server.
-        /// </summary>
-        public static string PowerBuffer_RetrievingDefinitionFromServer {
-            get {
-                return ResourceManager.GetString("PowerBuffer_RetrievingDefinitionFromServer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Current connection parameters.
         /// </summary>
         public static string PropertyWindowCurrentConnectionParameters {
             get {
                 return ResourceManager.GetString("PropertyWindowCurrentConnectionParameters", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to (No column name).
-        /// </summary>
-        public static string QEGridResultsNoColumnTitle {
-            get {
-                return ResourceManager.GetString("QEGridResultsNoColumnTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Query Profile Statistics.
-        /// </summary>
-        public static string QueryProfileStatistics {
-            get {
-                return ResourceManager.GetString("QueryProfileStatistics", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid argument: reader cannot be null..
-        /// </summary>
-        public static string ReaderCannotBeNull {
-            get {
-                return ResourceManager.GetString("ReaderCannotBeNull", resourceCulture);
             }
         }
         
@@ -1452,107 +431,11 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Editor Factory:   {0}.
-        /// </summary>
-        public static string Reg_NotifyEditorFactory {
-            get {
-                return ResourceManager.GetString("Reg_NotifyEditorFactory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Logical View:     {0}.
-        /// </summary>
-        public static string Reg_NotifyEditorView {
-            get {
-                return ResourceManager.GetString("Reg_NotifyEditorView", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Remove from History.
         /// </summary>
         public static string RemoveMenuAction {
             get {
                 return ResourceManager.GetString("RemoveMenuAction", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 
-        ///    ({0} row(s) affected)
-        ///    .
-        /// </summary>
-        public static string RowsAffectedMessage {
-            get {
-                return ResourceManager.GetString("RowsAffectedMessage", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to XMLA files (*.xmla)
-        ///*.xmla
-        ///All files (*.*)
-        ///*.*
-        ///    .
-        /// </summary>
-        public static string SaveAsXmlaFilterString {
-            get {
-                return ResourceManager.GetString("SaveAsXmlaFilterString", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Save Grid Results.
-        /// </summary>
-        public static string SaveGridResults {
-            get {
-                return ResourceManager.GetString("SaveGridResults", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Save Results.
-        /// </summary>
-        public static string SaveResults {
-            get {
-                return ResourceManager.GetString("SaveResults", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The query is currently executing. Do you want to cancel the query?.
-        /// </summary>
-        public static string ScriptIsStillBeingExecuted {
-            get {
-                return ResourceManager.GetString("ScriptIsStillBeingExecuted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Number of SELECT statements .
-        /// </summary>
-        public static string SelectCountStat {
-            get {
-                return ResourceManager.GetString("SelectCountStat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Rows returned by SELECT statements.
-        /// </summary>
-        public static string SelectRowsStat {
-            get {
-                return ResourceManager.GetString("SelectRowsStat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Number of server roundtrips.
-        /// </summary>
-        public static string ServerRoundtripsStat {
-            get {
-                return ResourceManager.GetString("ServerRoundtripsStat", resourceCulture);
             }
         }
         
@@ -1575,101 +458,11 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0}: Msg {1}, Level {2}, State {3}.
-        /// </summary>
-        public static string SQLErrorFormat4 {
-            get {
-                return ResourceManager.GetString("SQLErrorFormat4", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Msg {0}, Level {1}, State {2}.
-        /// </summary>
-        public static string SQLErrorFormat4_NoSource {
-            get {
-                return ResourceManager.GetString("SQLErrorFormat4_NoSource", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0}: Msg {1}, Level {2}, Line {3}.
-        /// </summary>
-        public static string SQLErrorFormatFirebird {
-            get {
-                return ResourceManager.GetString("SQLErrorFormatFirebird", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Execution mode cannot be changed when query is executing.
-        /// </summary>
-        public static string SqlExecutionModeChangeFailed {
-            get {
-                return ResourceManager.GetString("SqlExecutionModeChangeFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to All files (*.*)|*.*.
-        /// </summary>
-        public static string SqlExportFromGridFilterAllFiles {
-            get {
-                return ResourceManager.GetString("SqlExportFromGridFilterAllFiles", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to CSV (Comma delimited) (*.csv) | *.csv.
-        /// </summary>
-        public static string SqlExportFromGridFilterCSV {
-            get {
-                return ResourceManager.GetString("SqlExportFromGridFilterCSV", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Text (Tab delimited) (*.txt) | *.txt.
-        /// </summary>
-        public static string SqlExportFromGridFilterTabDelimitted {
-            get {
-                return ResourceManager.GetString("SqlExportFromGridFilterTabDelimitted", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to SSDT Results Window.
         /// </summary>
         public static string SqlResultsEditorFactory_Caption {
             get {
                 return ResourceManager.GetString("SqlResultsEditorFactory_Caption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to XML files (*.xml)|*.xml|All files (*.*)|*.*.
-        /// </summary>
-        public static string SqlXMLFileFilter {
-            get {
-                return ResourceManager.GetString("SqlXMLFileFilter", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Invalid calling sequence: storage must be initialized first..
-        /// </summary>
-        public static string StorageNotInitialized {
-            get {
-                return ResourceManager.GetString("StorageNotInitialized", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to StorageView default constructor cannot be used..
-        /// </summary>
-        public static string StorageViewDefaultConstructorCannotBeUsed {
-            get {
-                return ResourceManager.GetString("StorageViewDefaultConstructorCannotBeUsed", resourceCulture);
             }
         }
         
@@ -1701,51 +494,6 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This command is not supported..
-        /// </summary>
-        public static string ThisCommandIsNotSupported {
-            get {
-                return ResourceManager.GetString("ThisCommandIsNotSupported", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Time Statistics.
-        /// </summary>
-        public static string TimeStatistics {
-            get {
-                return ResourceManager.GetString("TimeStatistics", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Number of transactions .
-        /// </summary>
-        public static string TransactionsStat {
-            get {
-                return ResourceManager.GetString("TransactionsStat", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Unable to apply connection settings.
-        /// </summary>
-        public static string UnableToApplyConnectionSettings {
-            get {
-                return ResourceManager.GetString("UnableToApplyConnectionSettings", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to There are uncommitted transactions. Do you wish to commit these transactions before closing the window?.
-        /// </summary>
-        public static string UncommittedTransactionsWarning {
-            get {
-                return ResourceManager.GetString("UncommittedTransactionsWarning", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Unpin.
         /// </summary>
         public static string UnPinMenuAction {
@@ -1760,69 +508,6 @@ namespace BlackbirdSql.Common.Properties {
         public static string UnpinToolTip {
             get {
                 return ResourceManager.GetString("UnpinToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to View has to be set before executing double click event..
-        /// </summary>
-        public static string ViewHaveToBeSetBeforeExecutingDoubleClickEvent {
-            get {
-                return ResourceManager.GetString("ViewHaveToBeSetBeforeExecutingDoubleClickEvent", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SQL Server Advanced Query Execution option changes will only be applied to new SQL Server Query Editor windows. .
-        /// </summary>
-        public static string WarnSqlAdvancedQueryChanges {
-            get {
-                return ResourceManager.GetString("WarnSqlAdvancedQueryChanges", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SQL Server ANSI Query Execution option changes will only be applied to new SQL Server Query Editor windows. .
-        /// </summary>
-        public static string WarnSqlAnsiQueryChanges {
-            get {
-                return ResourceManager.GetString("WarnSqlAnsiQueryChanges", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SQL Server General Query Execution option changes will only be applied to new SQL Server Query Editor windows. .
-        /// </summary>
-        public static string WarnSqlGeneralQueryChanges {
-            get {
-                return ResourceManager.GetString("WarnSqlGeneralQueryChanges", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SQL Server General option changes will only be applied to new SQL Server Query Editor windows. .
-        /// </summary>
-        public static string WarnSqlGeneralResultsChanges {
-            get {
-                return ResourceManager.GetString("WarnSqlGeneralResultsChanges", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SQL Server Results to Grid option changes will only be applied to new SQL Server Query Editor windows. .
-        /// </summary>
-        public static string WarnSqlResultsToGridChanges {
-            get {
-                return ResourceManager.GetString("WarnSqlResultsToGridChanges", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SQL Server Results to Text option changes will only be applied to new SQL Server Query Editor windows. .
-        /// </summary>
-        public static string WarnSqlResultsToTextChanges {
-            get {
-                return ResourceManager.GetString("WarnSqlResultsToTextChanges", resourceCulture);
             }
         }
     }

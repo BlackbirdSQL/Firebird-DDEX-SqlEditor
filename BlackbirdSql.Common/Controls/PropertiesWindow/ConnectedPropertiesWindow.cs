@@ -19,7 +19,7 @@ using FirebirdSql.Data.Services;
 
 namespace BlackbirdSql.Common.Controls.PropertiesWindow
 {
-	public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IPropertyWindowQueryExecutorInitialize
+	public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IPropertyWindowQueryManagerInitialize
 	{
 		private bool _isInitialized;
 
@@ -27,7 +27,7 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 		private SqlConnectionStrategy Strategy { get; set; }
 
 		[Browsable(false)]
-		private QueryExecutor Executor { get; set; }
+		private QueryManager QryMgr { get; set; }
 
 		[Browsable(false)]
 		private IDbConnection Connection => Strategy.Connection;
@@ -127,12 +127,12 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 		{
 			get
 			{
-				if (Executor == null || !Executor.QueryExecutionStartTime.HasValue)
+				if (QryMgr == null || !QryMgr.QueryExecutionStartTime.HasValue)
 				{
 					return string.Empty;
 				}
 
-				return FormatTime(Executor.QueryExecutionStartTime.Value);
+				return FormatTime(QryMgr.QueryExecutionStartTime.Value);
 			}
 		}
 
@@ -143,12 +143,12 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 		{
 			get
 			{
-				if (Executor == null || !Executor.QueryExecutionEndTime.HasValue)
+				if (QryMgr == null || !QryMgr.QueryExecutionEndTime.HasValue)
 				{
 					return string.Empty;
 				}
 
-				return FormatTime(Executor.QueryExecutionEndTime.Value);
+				return FormatTime(QryMgr.QueryExecutionEndTime.Value);
 			}
 		}
 
@@ -159,12 +159,12 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 		{
 			get
 			{
-				if (Executor == null || !Executor.QueryExecutionEndTime.HasValue || !Executor.QueryExecutionStartTime.HasValue)
+				if (QryMgr == null || !QryMgr.QueryExecutionEndTime.HasValue || !QryMgr.QueryExecutionStartTime.HasValue)
 				{
 					return string.Empty;
 				}
 
-				return GetElapsedTime(Executor.QueryExecutionStartTime.Value, Executor.QueryExecutionEndTime.Value);
+				return (QryMgr.QueryExecutionEndTime.Value - QryMgr.QueryExecutionStartTime.Value).FormatForStats();
 			}
 		}
 
@@ -175,9 +175,9 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 		{
 			get
 			{
-				if (Executor != null)
+				if (QryMgr != null)
 				{
-					return Executor.RowsAffected.ToString(CultureInfo.CurrentCulture);
+					return QryMgr.RowsAffected.ToString(CultureInfo.CurrentCulture);
 				}
 
 				return string.Empty;
@@ -240,20 +240,20 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 			return _isInitialized;
 		}
 
-		public void Initialize(QueryExecutor executor)
+		public void Initialize(QueryManager qryMgr)
 		{
-			Executor = executor;
+			QryMgr = qryMgr;
 			_isInitialized = true;
 		}
 		public override string GetClassName()
 		{
-			return ControlsResources.PropertyWindowCurrentConnectionParameters;
+			return AttributeResources.PropertyWindowCurrentConnectionParameters;
 		}
 
 
 		private string GetLoginName()
 		{
-			UIConnectionInfo connectionInfo = Executor.ConnectionStrategy.UiConnectionInfo;
+			UIConnectionInfo connectionInfo = QryMgr.ConnectionStrategy.UiConnectionInfo;
 			string result = string.Empty;
 			if (connectionInfo != null)
 			{
@@ -273,25 +273,6 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 			return time.ToString(CultureInfo.CurrentCulture);
 		}
 
-		private string GetElapsedTime(DateTime start, DateTime end)
-		{
-			string empty = (end - start).ToString();
-			if (!string.IsNullOrEmpty(empty))
-			{
-				string numberDecimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
-				int num = empty.LastIndexOf(numberDecimalSeparator, StringComparison.Ordinal);
-				if (num != -1)
-				{
-					int num2 = num + 4;
-					if (num2 <= empty.Length)
-					{
-						empty = empty[..num2];
-					}
-				}
-			}
-
-			return empty;
-		}
 
 		private string GetStateString(ConnectionState state)
 		{

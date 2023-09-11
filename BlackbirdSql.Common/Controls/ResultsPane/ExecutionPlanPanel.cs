@@ -87,7 +87,7 @@ public class ExecutionPlanPanel : AbstractResultsPanel, IOleCommandTarget
 		{
 			if (CommonUtils.GetCoordinatesForPopupMenuFromWM_Context(ref m, out var xPos, out var yPos, this))
 			{
-				CommonUtils.ShowContextMenu(264, xPos, yPos, this);
+				CommonUtils.ShowContextMenuEvent(264, xPos, yPos, this);
 			}
 		}
 		else

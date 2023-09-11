@@ -7,9 +7,7 @@ using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Core;
-
-
-
+using BlackbirdSql.Common.Properties;
 
 namespace BlackbirdSql.Common.Model;
 
@@ -47,7 +45,7 @@ public class MemStorageView : AbstractStorageView
 	{
 		if (i64Row > int.MaxValue)
 		{
-			Exception ex = new(string.Format(CultureInfo.CurrentCulture, UIGridResources.MemoryBasedStorageIsLimitedToNRows, int.MaxValue));
+			Exception ex = new(string.Format(CultureInfo.CurrentCulture, ControlsResources.MemoryBasedStorageIsLimitedToNRows, int.MaxValue));
 			Diag.Dug(ex);
 			throw ex;
 		}

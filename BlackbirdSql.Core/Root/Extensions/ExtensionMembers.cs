@@ -32,6 +32,11 @@ namespace BlackbirdSql.Core;
 // =========================================================================================================
 static class ExtensionMembers
 {
+	private static readonly string[] S_ByteSizeSuffixes =
+		{ "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+	private static readonly string[] S_SIExponents =
+		{ null, "\x00b3", "\x2076", "\x2079", "\x00b9\x00b2", "\x00b9\x2075", "\x00b9\x2078", "\x00b2\x00b9", "\x00b2\x2074" };
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -62,6 +67,159 @@ static class ExtensionMembers
 		return value1 == value2;
 	}
 
+	public static string FormatForStatus(this TimeSpan value)
+	{
+		return new TimeSpan(value.Days, value.Hours, value.Minutes, value.Seconds, 0).ToString();
+	}
+
+	public static string FormatForStatus(this long ticks)
+	{
+		TimeSpan value = new(ticks);
+
+		return value.FormatForStatus();
+	}
+
+	public static string FormatForStats(this TimeSpan value)
+	{
+		string empty = value.ToString();
+		if (!string.IsNullOrEmpty(empty))
+		{
+			string numberDecimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+			int num = empty.LastIndexOf(numberDecimalSeparator, StringComparison.Ordinal);
+			if (num != -1)
+			{
+				int num2 = num + 4;
+				if (num2 <= empty.Length)
+				{
+					empty = empty[..num2];
+				}
+			}
+		}
+
+		return empty;
+	}
+
+	public static string FormatForStats(this long ticks)
+	{
+		TimeSpan value = new(ticks);
+
+		return value.FormatForStats();
+	}
+
+	public static (string, float) ByteSizeFormat(this long value, int decimalPlaces = 3)
+	{
+		string str;
+		float newValue;
+
+		if (value < 0)
+		{
+			(str, newValue) = (-value).ByteSizeFormat(decimalPlaces);
+			str = "-" + str;
+			return (str, -newValue);
+		}
+
+		int i = 0;
+		newValue = (float)value;
+
+		while (value > 999999L && Math.Round(newValue, decimalPlaces) >= 1000)
+		{
+			newValue /= 1024;
+			i++;
+		}
+
+		if (decimalPlaces != 0 && Math.Round(newValue, 0) == Math.Round(newValue, decimalPlaces))
+			decimalPlaces = 0;
+
+		return (string.Format("{0:n" + decimalPlaces + "} {1}", newValue, S_ByteSizeSuffixes[i]), newValue);
+	}
+
+
+	public static (string, float) ByteSizeFormat(this float value, int decimalPlaces = 3)
+	{
+		string str;
+		float newValue;
+
+		if (value < 0)
+		{
+			(str, newValue) = (-value).ByteSizeFormat(decimalPlaces);
+			str = "-" + str;
+			return (str, -newValue);
+		}
+
+		int i = 0;
+		newValue = value;
+
+		while (value > 999999.999 && Math.Round(newValue, decimalPlaces) >= 1000)
+		{
+			newValue /= 1024;
+			i++;
+		}
+
+		if (decimalPlaces != 0 && Math.Round(newValue, 0) == Math.Round(newValue, decimalPlaces))
+			decimalPlaces = 0;
+
+		return (string.Format("{0:n" + decimalPlaces + "} {1}", newValue, S_ByteSizeSuffixes[i]), newValue);
+	}
+
+	public static (string, float) SISizeFormat(this long value, int decimalPlaces = 3)
+	{
+		string str;
+		float newValue;
+
+		if (value < 0)
+		{
+			(str, newValue)  = (-value).SISizeFormat(decimalPlaces);
+			str = "-" + str;
+			return (str, -newValue);
+		}
+
+		int i = 0;
+		newValue = (float)value;
+		while (value > 999999L && Math.Round(newValue, decimalPlaces) >= 1000)
+		{
+			newValue /= 1000;
+			i++;
+		}
+
+		if (i == 0)
+			return (value.ToString(), value);
+
+		if (decimalPlaces != 0 && Math.Round(newValue, 0) == Math.Round(newValue, decimalPlaces))
+			decimalPlaces = 0;
+
+		return (string.Format("{0:n" + decimalPlaces + "} (10{1})", newValue, S_SIExponents[i]), newValue);
+
+	}
+
+	public static (string, float) SISizeFormat(this float value, int decimalPlaces = 3)
+	{
+		string str;
+		float newValue;
+
+		if (value < 0)
+		{
+			(str, newValue) = (-value).SISizeFormat(decimalPlaces);
+			str = "-" + str;
+			return (str, -newValue);
+		}
+
+		int i = 0;
+		newValue = (float)value;
+		while (value > 999999.999 && Math.Round(newValue, decimalPlaces) >= 1000)
+		{
+			newValue /= 1000;
+			i++;
+		}
+
+		if (i == 0)
+			return (value.ToString(), value);
+
+		if (decimalPlaces != 0 && Math.Round(newValue, 0) == Math.Round(newValue, decimalPlaces))
+			decimalPlaces = 0;
+
+		return (string.Format("{0:n" + decimalPlaces + "} (10{1})", newValue, S_SIExponents[i]), newValue);
+
+	}
 
 
 	internal static string GetExceptionMessage(this Exception ex)
@@ -276,6 +434,21 @@ static class ExtensionMembers
 			Marshal.ZeroFreeGlobalAllocUnicode(intPtr);
 		}
 	}
+
+
+	public static DateTime ToDateTime(this long timestamp)
+	{
+		DateTimeOffset offset = DateTimeOffset.FromUnixTimeMilliseconds(timestamp);
+		return offset.UtcDateTime;
+	}
+
+
+	public static long ToUnixMilliseconds(this DateTime value)
+	{
+		return ((DateTimeOffset)value).ToUnixTimeMilliseconds();
+	}
+
+
 
 	private static SecureString CharArrayToSecureString(this IEnumerable<char> charArray)
 	{

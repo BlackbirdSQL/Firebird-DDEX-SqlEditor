@@ -540,11 +540,11 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 	{
 		if (track)
 		{
-			_TabbedEditorUI.TabActivated += OnTabActivated;
+			_TabbedEditorUI.TabActivatedEvent += OnTabActivated;
 		}
 		else
 		{
-			_TabbedEditorUI.TabActivated -= OnTabActivated;
+			_TabbedEditorUI.TabActivatedEvent -= OnTabActivated;
 		}
 	}
 

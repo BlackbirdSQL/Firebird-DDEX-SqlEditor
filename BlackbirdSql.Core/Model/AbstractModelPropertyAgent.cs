@@ -11,7 +11,7 @@ using System.Windows.Media.Imaging;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Enums;
 using BlackbirdSql.Core.Interfaces;
-
+using BlackbirdSql.Core.Properties;
 using FirebirdSql.Data.FirebirdClient;
 
 
@@ -383,7 +383,7 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 				iconType = ModelIconsCollection.Instance.SuperServer_32;
 				break;
 			default:
-				InvalidOperationException ex = new(string.Format(ModelResources.EngineTypeIconNotfound, serverDefinition.EngineType));
+				InvalidOperationException ex = new(string.Format(Resources.EngineTypeIconNotfound, serverDefinition.EngineType));
 				Diag.Dug(ex);
 				throw ex;
 		}

@@ -78,7 +78,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 			AddInflightOpen(dbl, new NodeElementDescriptor(elementType, identifierArray), mkDocument);
 		}
 
-		RaiseBeforeOpenDocument(mkDocument, dbl, identifierArray, objectType, BeforeOpenDocumentEvent);
+		RaiseBeforeOpenDocument(mkDocument, dbl, identifierArray, objectType, S_BeforeOpenDocumentHandler);
 
 		MonikerAgent moniker = new(node);
 		DbConnectionStringBuilder csb = moniker.ToCsb();
@@ -110,7 +110,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 			flag2 = true;
 			SuppressChangeTracking(mkDocument, suppress: true);
 			SetTextIntoTextBuffer(docCookie, string.Format(CultureInfo.CurrentCulture, "/*\n\r{0}\n\r*/",
-				SharedResx.PowerBuffer_RetrievingDefinitionFromServer));
+				ControlsResources.PowerBuffer_RetrievingDefinitionFromServer));
 
 			try
 			{
@@ -137,7 +137,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		if (!result)
 		{
 
-			InvalidOperationException ex = new(SharedResx.OpenOnlineEditorException);
+			InvalidOperationException ex = new(ControlsResources.OpenOnlineEditorException);
 			Diag.Dug(ex);
 			throw ex;
 		}

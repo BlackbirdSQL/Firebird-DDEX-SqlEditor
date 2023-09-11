@@ -274,7 +274,7 @@ namespace BlackbirdSql.Common.Controls.QueryExecution
 			{
 				BackColor = SystemColors.Control
 			};
-			qESplitter.SplitterMoved += OnSplitterMoved;
+			qESplitter.SplitterMovedEvent += OnSplitterMoved;
 			return qESplitter;
 		}
 

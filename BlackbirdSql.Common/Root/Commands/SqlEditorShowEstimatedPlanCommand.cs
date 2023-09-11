@@ -45,8 +45,8 @@ public class SqlEditorShowEstimatedPlanCommand : AbstractSqlEditorCommand
 		AuxiliaryDocData auxiliaryDocDataForEditor = GetAuxiliaryDocDataForEditor();
 		if (auxiliaryDocDataForEditor != null)
 		{
-			QueryExecutor queryExecutor = auxiliaryDocDataForEditor.QueryExecutor;
-			if (queryExecutor != null && !queryExecutor.IsExecuting)
+			QueryManager qryMgr = auxiliaryDocDataForEditor.QryMgr;
+			if (qryMgr != null && !qryMgr.IsExecuting)
 			{
 				try
 				{

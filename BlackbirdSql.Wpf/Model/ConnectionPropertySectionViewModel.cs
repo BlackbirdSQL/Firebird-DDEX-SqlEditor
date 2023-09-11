@@ -64,9 +64,7 @@ public class ConnectionPropertySectionViewModel : ViewModelBase
 
     // private readonly object _ConnectionTaskLock = new object();
 
-    private readonly object _DatabaseLoadingLock = new object();
-
-    private readonly object _UpdatingPropertiesLock = new object();
+    private readonly object _DatabaseLockObject = new object();
 
     // public const AuthenticationTypes DefaultAuth = AuthenticationTypes.SqlPassword;
 
@@ -183,9 +181,9 @@ public class ConnectionPropertySectionViewModel : ViewModelBase
         // _databaseDiscoveryProviderServiceManager = new ServiceManager<IDatabaseDiscoveryProvider>(dependencyManager);
         _ServerConnectionProviderServiceManager = new ServiceManager<IServerConnectionProvider>(dependencyManager);
         _ConnectionPropertiesManager = new ServiceManager<IConnectionPropertiesProvider>(dependencyManager);
-        _Channel.ResetConnectionProperty += ResetAuthenticationAndDatabases;
-        _Channel.AuthenticationTypeChanged += OnAuthenticationTypeChanged;
-        _Channel.ConnectionPropertiesChanged += ChannelOnConnectionPropertiesChanged;
+        _Channel.ResetConnectionPropertyEvent += ResetAuthenticationAndDatabases;
+        _Channel.AuthenticationTypeChangedEvent += OnAuthenticationTypeChanged;
+        _Channel.ConnectionPropertiesChangedEvent += ChannelOnConnectionPropertiesChanged;
         _Traceable = new Traceable(dependencyManager);
         _ThreadSafeCollection.Trace = _Traceable;
         SetDatabaseList(new ObservableCollection<string>());
@@ -268,7 +266,7 @@ public class ConnectionPropertySectionViewModel : ViewModelBase
     /*
 	private CancellationToken CreateNewCancellationToken()
 	{
-		lock (_ConnectionTaskLock)
+		lock (_ConnectionLockObject)
 		{
 			_DatabaseCancellationTokenSource.Cancel();
 			_DatabaseCancellationTokenSource = new CancellationTokenSource();
@@ -333,7 +331,7 @@ public class ConnectionPropertySectionViewModel : ViewModelBase
     private bool SetDatabaseAreLoaded(bool loaded)
     {
         bool result = false;
-        lock (_DatabaseLoadingLock)
+        lock (_DatabaseLockObject)
         {
             if (DatabasesAreLoaded != loaded)
             {
@@ -380,9 +378,9 @@ public class ConnectionPropertySectionViewModel : ViewModelBase
         {
             if (_Channel != null)
             {
-                _Channel.ResetConnectionProperty -= ResetAuthenticationAndDatabases;
-                _Channel.AuthenticationTypeChanged -= OnAuthenticationTypeChanged;
-                _Channel.ConnectionPropertiesChanged -= ChannelOnConnectionPropertiesChanged;
+                _Channel.ResetConnectionPropertyEvent -= ResetAuthenticationAndDatabases;
+                _Channel.AuthenticationTypeChangedEvent -= OnAuthenticationTypeChanged;
+                _Channel.ConnectionPropertiesChangedEvent -= ChannelOnConnectionPropertiesChanged;
             }
 
             _IsDisposed = true;
@@ -401,7 +399,7 @@ public class ConnectionPropertySectionViewModel : ViewModelBase
 
     public void UpdateConnectionProperty(ConnectionInfo connectionInfo = null)
     {
-        lock (_UpdatingPropertiesLock)
+        lock (_LockObject)
         {
             _IsUpdatingProperties = true;
             IBServerDefinition serverDefinition = connectionInfo?.ServerDefinition;

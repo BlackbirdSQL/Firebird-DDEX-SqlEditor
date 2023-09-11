@@ -313,10 +313,10 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 						{
 							if (!m_commit)
 							{
-								return UIGridResources.EmbeddedEditCancelAAName;
+								return ControlsResources.EmbeddedEditCancelAAName;
 							}
 
-							return UIGridResources.EmbeddedEditCommitAAName;
+							return ControlsResources.EmbeddedEditCommitAAName;
 						}
 					}
 
@@ -328,10 +328,10 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 						{
 							if (m_commit)
 							{
-								return UIGridResources.EmbeddedEditCommitDefaultAction;
+								return ControlsResources.EmbeddedEditCommitDefaultAction;
 							}
 
-							return UIGridResources.EmbeddedEditCancelDefaultAction;
+							return ControlsResources.EmbeddedEditCancelDefaultAction;
 						}
 					}
 
@@ -440,10 +440,10 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 					{
 						if (Grid.m_gridStorage.IsCellEditable(m_rowIndex, Grid.m_Columns[m_colIndex].ColumnIndex) != 0)
 						{
-							return UIGridResources.StartEditCell;
+							return ControlsResources.StartEditCell;
 						}
 
-						return UIGridResources.ClearSelAndSelectCell;
+						return ControlsResources.ClearSelAndSelectCell;
 					}
 				}
 
@@ -639,7 +639,7 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 						if (num != 0)
 						{
 							bool bSendMouseClick = false;
-							Grid.StartEditCell(m_rowIndex, m_colIndex, cellRectangle, num, ref bSendMouseClick);
+							Grid.StartEditingCell(m_rowIndex, m_colIndex, cellRectangle, num, ref bSendMouseClick);
 						}
 
 						Grid.m_selMgr.StartNewBlock(m_rowIndex, m_colIndex);
@@ -691,14 +691,14 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 					{
 						if (Grid.m_gridHeader[m_colIndex].AccessibleName != null)
 						{
-							return UIGridResources.ColumnHeaderAAName.Res(m_colIndex, Grid.m_gridHeader[m_colIndex].AccessibleName);
+							return ControlsResources.ColumnHeaderAAName.Res(m_colIndex, Grid.m_gridHeader[m_colIndex].AccessibleName);
 						}
 
-						return UIGridResources.ColumnHeaderAAName.Res(m_colIndex, Grid.m_gridHeader[m_colIndex].Text);
+						return ControlsResources.ColumnHeaderAAName.Res(m_colIndex, Grid.m_gridHeader[m_colIndex].Text);
 					}
 				}
 
-				public override string DefaultAction => UIGridResources.ColumnHeaderAADefaultAction;
+				public override string DefaultAction => ControlsResources.ColumnHeaderAADefaultAction;
 
 				public override string Value
 				{
@@ -783,7 +783,7 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 			{
 				get
 				{
-					return UIGridResources.ColumnNumber.Res(m_colIndex);
+					return ControlsResources.ColumnNumber.Res(m_colIndex);
 				}
 				set
 				{
@@ -1425,11 +1425,11 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 
 	protected Font m_linkFont;
 
-	private readonly UpdateGridInvoker m_UpdateGridInternalDelegate;
+	private readonly UpdateGridInvoker _UpdateGridInternalDelegate;
 
-	private readonly ContentsChangedEventHandler m_OnEmbeddedControlContentsChangedDelegate;
+	private readonly ContentsChangedEventHandler _OnEmbeddedControlContentsChangedHandler;
 
-	private readonly EventHandler m_OnEmbeddedControlLostFocusDelegate;
+	private readonly EventHandler _OnEmbeddedControlLostFocusHandler;
 
 	protected const string C_GridEventsCategory = "Grid Events";
 
@@ -2073,55 +2073,55 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 
 	[Description("Occurs when the grid is about to draw given cell. The background brush will be used only if the cell is in NON-SELECTED state.")]
 	[Category(C_GridEventsCategory)]
-	public event CustomizeCellGDIObjectsEventHandler CustomizeCellGDIObjects;
+	public event CustomizeCellGDIObjectsEventHandler CustomizeCellGDIObjectsEvent;
 
 	[Description("Called when user clicked on some cell BEFORE any processing is done.")]
 	[Category(C_GridEventsCategory)]
-	public event MouseButtonClickingEventHandler MouseButtonClicking;
+	public event MouseButtonClickingEventHandler MouseButtonClickingEvent;
 
 	[Description("Called when user clicked on some cell AFTER all the processing was done but BEFORE the grid is redrawn")]
 	[Category(C_GridEventsCategory)]
-	public event MouseButtonClickedEventHandler MouseButtonClicked;
+	public event MouseButtonClickedEventHandler MouseButtonClickedEvent;
 
 	[Description("Called when user double clicked on some part of the grid")]
 	[Category(C_GridEventsCategory)]
-	public event MouseButtonDoubleClickedEventHandler MouseButtonDoubleClicked;
+	public event MouseButtonDoubleClickedEventHandler MouseButtonDoubleClickedEvent;
 
 	[Description("Called when user clicked on some header button")]
 	[Category(C_GridEventsCategory)]
-	public event HeaderButtonClickedEventHandler HeaderButtonClicked;
+	public event HeaderButtonClickedEventHandler HeaderButtonClickedEvent;
 
 	[Description("Called when width of a column has changed")]
 	[Category(C_GridEventsCategory)]
-	public event ColumnWidthChangedEventHandler ColumnWidthChanged;
+	public event ColumnWidthChangedEventHandler ColumnWidthChangedEvent;
 
 	[Description("Called when selection has changed")]
 	[Category(C_GridEventsCategory)]
-	public event SelectionChangedEventHandler SelectionChanged;
+	public event SelectionChangedEventHandler SelectionChangedEvent;
 
 	[Description("Called BEFORE grid does standard processing of some keys (arrows, Tab etc)")]
 	[Category(C_GridEventsCategory)]
-	public event StandardKeyProcessingEventHandler StandardKeyProcessing;
+	public event StandardKeyProcessingEventHandler StandardKeyProcessingEvent;
 
 	[Description("Occurs when a user pressed some keyboard key while the grid had the focus and a current cell")]
 	[Category(C_GridEventsCategory)]
-	public event KeyPressedOnCellEventHandler KeyPressedOnCell;
+	public event KeyPressedOnCellEventHandler KeyPressedOnCellEvent;
 
 	[Description("Occurs when contents of the currently active embedded control has changed")]
 	[Category(C_GridEventsCategory)]
-	public event EmbeddedControlContentsChangedEventHandler EmbeddedControlContentsChanged;
+	public event EmbeddedControlContentsChangedEventHandler EmbeddedControlContentsChangedEvent;
 
 	[Description("Occurs when grid detects that it is time to show tooltip")]
 	[Category(C_GridEventsCategory)]
-	public event TooltipDataNeededEventHandler TooltipDataNeeded;
+	public event TooltipDataNeededEventHandler TooltipDataNeededEvent;
 
 	[Description("Occurs when user wants to initiate drag operation of the header of given column")]
 	[Category(C_GridEventsCategory)]
-	public event ColumnReorderRequestedEventHandler ColumnReorderRequested;
+	public event ColumnReorderRequestedEventHandler ColumnReorderRequestedEvent;
 
 	[Description("Occurs when user used drag and drop operation to move a column to a new location within the grid")]
 	[Category(C_GridEventsCategory)]
-	public event ColumnsReorderedEventHandler ColumnsReordered;
+	public event ColumnsReorderedEventHandler ColumnsReorderedEvent;
 
 	[Description("Occurs in response to some custom behavior within the grid control itself")]
 	public event GridSpecialEventHandler GridSpecialEvent;
@@ -2154,9 +2154,9 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 		m_gridTooltip.SetToolTip(this, "");
 		ResetHeaderFont();
 		InitializeCachedGDIObjects();
-		m_UpdateGridInternalDelegate = UpdateGridInternal;
-		m_OnEmbeddedControlContentsChangedDelegate = OnEmbeddedControlContentsChangedEventHandler;
-		m_OnEmbeddedControlLostFocusDelegate = OnEmbeddedControlLostFocusInternal;
+		_UpdateGridInternalDelegate = UpdateGridInternal;
+		_OnEmbeddedControlContentsChangedHandler = OnEmbeddedControlContentsChanged;
+		_OnEmbeddedControlLostFocusHandler = OnEmbeddedControlLostFocusInternal;
 		HandleCreated += delegate
 		{
 			BeginInvoke(new VoidInvoker(InitDefaultEmbeddedControls));
@@ -2190,7 +2190,7 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 	{
 		if (InvokeRequired)
 		{
-			BeginInvoke(m_UpdateGridInternalDelegate, bRecalcRows);
+			BeginInvoke(_UpdateGridInternalDelegate, bRecalcRows);
 		}
 		else
 		{
@@ -3305,7 +3305,7 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 	{
 		if (AccessibleName == null || AccessibleName == "")
 		{
-			AccessibleName = UIGridResources.GridControlAaName;
+			AccessibleName = ControlsResources.GridControlAaName;
 		}
 
 		AccessibleRole = AccessibleRole.Table;
@@ -3931,7 +3931,7 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 
 		m_selMgr.Clear();
 		EnsureCellIsVisibleInternal(nRowIndex, nColIndex);
-		bool num2 = StartEditCell(nRowIndex, nColIndex, num);
+		bool num2 = StartEditingCell(nRowIndex, nColIndex, num);
 		if (num2)
 		{
 			m_selMgr.StartNewBlock(nRowIndex, nColIndex);
@@ -4198,12 +4198,12 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 
 	protected virtual void OnStartedCellEdit()
 	{
-		m_curEmbeddedControl.LostFocus += m_OnEmbeddedControlLostFocusDelegate;
+		m_curEmbeddedControl.LostFocus += _OnEmbeddedControlLostFocusHandler;
 	}
 
 	protected virtual void OnStoppedCellEdit()
 	{
-		m_curEmbeddedControl.LostFocus -= m_OnEmbeddedControlLostFocusDelegate;
+		m_curEmbeddedControl.LostFocus -= _OnEmbeddedControlLostFocusHandler;
 	}
 
 	protected virtual GridPrinter AllocateGridPrinter()
@@ -4275,7 +4275,7 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 				using Graphics g2 = GraphicsFromHandle();
 				if (m_Columns[nColNumber].IsPointOverTextInCell(PointToClient(MousePosition), m_scrollMgr.GetCellRectangle(nRowNumber, nColNumber), m_gridStorage, nRowNumber, g2, m_linkFont))
 				{
-					toolTipText = UIGridResources.ToolTipUrl.Res(m_gridStorage.GetCellDataAsString(nRowNumber, m_Columns[nColNumber].ColumnIndex));
+					toolTipText = ControlsResources.ToolTipUrl.Res(m_gridStorage.GetCellDataAsString(nRowNumber, m_Columns[nColNumber].ColumnIndex));
 				}
 			}
 			catch (Exception ex)
@@ -5033,11 +5033,11 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 
 	protected virtual bool OnMouseButtonClicking(long nRowIndex, int nColIndex, Rectangle rCellRect, Keys modKeys, MouseButtons btn)
 	{
-		if (MouseButtonClicking != null)
+		if (MouseButtonClickingEvent != null)
 		{
-			MouseButtonClickingEventArgs mouseButtonClickingEventArgs = new MouseButtonClickingEventArgs(nRowIndex, m_Columns[nColIndex].ColumnIndex, rCellRect, modKeys, btn);
-			MouseButtonClicking(this, mouseButtonClickingEventArgs);
-			return mouseButtonClickingEventArgs.ShouldHandle;
+			MouseButtonClickingEventArgs args = new (nRowIndex, m_Columns[nColIndex].ColumnIndex, rCellRect, modKeys, btn);
+			MouseButtonClickingEvent(this, args);
+			return args.ShouldHandle;
 		}
 
 		return true;
@@ -5045,15 +5045,15 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 
 	protected virtual bool OnMouseButtonClicked(long nRowIndex, int nColIndex, Rectangle rCellRect, MouseButtons btn)
 	{
-		if (MouseButtonClicked != null)
+		if (MouseButtonClickedEvent != null)
 		{
-			MouseButtonClickedEventArgs mouseButtonClickedEventArgs = new MouseButtonClickedEventArgs(nRowIndex, m_Columns[nColIndex].ColumnIndex, rCellRect, btn);
-			MouseButtonClicked(this, mouseButtonClickedEventArgs);
+			MouseButtonClickedEventArgs args = new(nRowIndex, m_Columns[nColIndex].ColumnIndex, rCellRect, btn);
+			MouseButtonClickedEvent(this, args);
 			int childID = (int)nRowIndex + (WithHeader ? 1 : 0);
 			int objectID = nColIndex + 2 + 1;
 			AccessibilityNotifyClients(AccessibleEvents.StateChange, objectID, childID);
 			AccessibilityNotifyClients(AccessibleEvents.NameChange, objectID, childID);
-			return !mouseButtonClickedEventArgs.ShouldRedraw;
+			return !args.ShouldRedraw;
 		}
 
 		return false;
@@ -5061,21 +5061,22 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 
 	protected virtual void OnMouseButtonDoubleClicked(EnHitTestResult htArea, long nRowIndex, int nColIndex, Rectangle rCellRect, MouseButtons btn, EnGridButtonArea headerArea)
 	{
-		if (MouseButtonDoubleClicked != null)
+		if (MouseButtonDoubleClickedEvent != null)
 		{
 			int nColIndex2 = nColIndex >= 0 ? m_Columns[nColIndex].ColumnIndex : nColIndex;
-			MouseButtonDoubleClickedEventArgs args = new MouseButtonDoubleClickedEventArgs(htArea, nRowIndex, nColIndex2, rCellRect, btn, headerArea);
-			MouseButtonDoubleClicked(this, args);
+			MouseButtonDoubleClickedEventArgs args = new(htArea, nRowIndex, nColIndex2, rCellRect, btn, headerArea);
+			MouseButtonDoubleClickedEvent(this, args);
 		}
 	}
 
 	protected virtual bool OnHeaderButtonClicked(int nColIndex, MouseButtons btn, EnGridButtonArea headerArea)
 	{
-		if (HeaderButtonClicked != null)
+		if (HeaderButtonClickedEvent != null)
 		{
-			HeaderButtonClickedEventArgs headerButtonClickedEventArgs = new HeaderButtonClickedEventArgs(m_Columns[nColIndex].ColumnIndex, btn, headerArea);
-			HeaderButtonClicked(this, headerButtonClickedEventArgs);
-			return headerButtonClickedEventArgs.RepaintWholeGrid;
+			HeaderButtonClickedEventArgs args = new(m_Columns[nColIndex].ColumnIndex, btn, headerArea);
+			HeaderButtonClickedEvent(this, args);
+
+			return args.RepaintWholeGrid;
 		}
 
 		return false;
@@ -5083,34 +5084,24 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 
 	protected virtual void OnColumnWidthChanged(int nColIndex, int nNewColWidth)
 	{
-		if (ColumnWidthChanged != null)
-		{
-			ColumnWidthChangedEventArgs args = new ColumnWidthChangedEventArgs(m_Columns[nColIndex].ColumnIndex, nNewColWidth);
-			ColumnWidthChanged(this, args);
-		}
+		ColumnWidthChangedEvent?.Invoke(this, new(m_Columns[nColIndex].ColumnIndex, nNewColWidth));
 	}
 
 	protected virtual void OnSelectionChanged(BlockOfCellsCollection selectedCells)
 	{
 		if (!IsEditing)
-		{
 			NotifyAccAboutNewSelection(notifySelection: true, notifyFocus: true);
-		}
 
-		if (SelectionChanged != null)
-		{
-			SelectionChangedEventArgs args = new SelectionChangedEventArgs(AdjustColumnIndexesInSelectedCells(selectedCells, bFromUIToStorage: true));
-			SelectionChanged(this, args);
-		}
+		SelectionChangedEvent?.Invoke(this, new(AdjustColumnIndexesInSelectedCells(selectedCells, bFromUIToStorage: true)));
 	}
 
 	protected virtual bool OnStandardKeyProcessing(KeyEventArgs ke)
 	{
-		if (StandardKeyProcessing != null)
+		if (StandardKeyProcessingEvent != null)
 		{
-			StandardKeyProcessingEventArgs standardKeyProcessingEventArgs = new StandardKeyProcessingEventArgs(ke);
-			StandardKeyProcessing(this, standardKeyProcessingEventArgs);
-			return standardKeyProcessingEventArgs.ShouldHandle;
+			StandardKeyProcessingEventArgs args = new(ke);
+			StandardKeyProcessingEvent(this, args);
+			return args.ShouldHandle;
 		}
 
 		return true;
@@ -5118,21 +5109,17 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 
 	protected virtual void OnKeyPressedOnCell(long nCurRow, int nCurCol, Keys key, Keys mod)
 	{
-		if (KeyPressedOnCell != null)
-		{
-			KeyPressedOnCellEventArgs args = new KeyPressedOnCellEventArgs(nCurRow, m_Columns[nCurCol].ColumnIndex, key, mod);
-			KeyPressedOnCell(this, args);
-		}
+		KeyPressedOnCellEvent?.Invoke(this, new(nCurRow, m_Columns[nCurCol].ColumnIndex, key, mod));
 	}
 
-	private void OnEmbeddedControlContentsChangedEventHandler(object sender, EventArgs a)
+	private void OnEmbeddedControlContentsChanged(object sender, EventArgs a)
 	{
 		OnEmbeddedControlContentsChanged((IGridEmbeddedControl)sender);
 	}
 
 	protected virtual void OnEmbeddedControlContentsChanged(IGridEmbeddedControl embeddedControl)
 	{
-		EmbeddedControlContentsChanged?.Invoke(this, new EmbeddedControlContentsChangedEventArgs(embeddedControl));
+		EmbeddedControlContentsChangedEvent?.Invoke(this, new EmbeddedControlContentsChangedEventArgs(embeddedControl));
 	}
 
 	protected virtual void OnEmbeddedControlLostFocus()
@@ -5159,16 +5146,14 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 
 	protected virtual bool OnTooltipDataNeeded(EnHitTestResult ht, long rowNumber, int colNumber, ref string toolTipText)
 	{
-		if (colNumber >= 0 && TooltipDataNeeded != null)
+		if (colNumber >= 0 && TooltipDataNeededEvent != null)
 		{
-			TooltipDataNeededEventArgs tooltipDataNeededEventArgs = new TooltipDataNeededEventArgs(ht, rowNumber, m_Columns[colNumber].ColumnIndex);
-			TooltipDataNeeded(this, tooltipDataNeededEventArgs);
-			if (tooltipDataNeededEventArgs.TooltipText == null || tooltipDataNeededEventArgs.TooltipText == "")
-			{
+			TooltipDataNeededEventArgs args = new (ht, rowNumber, m_Columns[colNumber].ColumnIndex);
+			TooltipDataNeededEvent(this, args);
+			if (string.IsNullOrEmpty(args.TooltipText))
 				return false;
-			}
 
-			toolTipText = tooltipDataNeededEventArgs.TooltipText;
+			toolTipText = args.TooltipText;
 			return true;
 		}
 
@@ -5195,23 +5180,19 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 
 	protected virtual bool IsColumnHeaderDraggable(int colIndex)
 	{
-		if (ColumnReorderRequested == null)
+		if (ColumnReorderRequestedEvent == null)
 		{
 			return m_bColumnsReorderableByDefault;
 		}
 
 		ColumnReorderRequestedEventArgs columnReorderRequestedEventArgs = new ColumnReorderRequestedEventArgs(m_Columns[colIndex].ColumnIndex, m_bColumnsReorderableByDefault);
-		ColumnReorderRequested(this, columnReorderRequestedEventArgs);
+		ColumnReorderRequestedEvent(this, columnReorderRequestedEventArgs);
 		return columnReorderRequestedEventArgs.AllowReorder;
 	}
 
 	protected virtual void OnColumnsReordered(int oldIndex, int newIndex)
 	{
-		if (ColumnsReordered != null)
-		{
-			ColumnsReorderedEventArgs a = new ColumnsReorderedEventArgs(oldIndex, newIndex);
-			ColumnsReordered(this, a);
-		}
+		ColumnsReorderedEvent?.Invoke(this, new(oldIndex, newIndex));
 	}
 
 	protected virtual void OnColumnWasReordered(int nOldIndex, int nNewIndex)
@@ -5491,11 +5472,7 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 
 	protected void OnGridSpecialEvent(int eventType, object data, EnHitTestResult htResult, long rowIndex, int colIndex, Rectangle cellRect, MouseButtons mouseState, EnGridButtonArea headerArea)
 	{
-		if (GridSpecialEvent != null)
-		{
-			GridSpecialEventArgs sea = new GridSpecialEventArgs(eventType, data, htResult, rowIndex, colIndex, cellRect, mouseState, headerArea);
-			GridSpecialEvent(this, sea);
-		}
+		GridSpecialEvent?.Invoke(this, new(eventType, data, htResult, rowIndex, colIndex, cellRect, mouseState, headerArea));
 	}
 
 	protected void HandleStdCellLBtnUp(int nCurrentMouseX, int nCurrentMouseY)
@@ -6210,12 +6187,12 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 	{
 		textBrush = gridColumn.TextBrush.Color != SystemColors.WindowText || textBrush == null ? gridColumn.TextBrush : textBrush;
 		bkBrush = gridColumn.BackgroundBrush.Color != SystemColors.Window || bkBrush == null ? gridColumn.BackgroundBrush : bkBrush;
-		if (CustomizeCellGDIObjects != null)
+		if (CustomizeCellGDIObjectsEvent != null)
 		{
 			m_CustomizeCellGDIObjectsArgs.SetRowAndColumn(nRow, m_Columns[nCol].ColumnIndex);
 			m_CustomizeCellGDIObjectsArgs.TextBrush = textBrush;
 			m_CustomizeCellGDIObjectsArgs.BKBrush = bkBrush;
-			CustomizeCellGDIObjects(this, m_CustomizeCellGDIObjectsArgs);
+			CustomizeCellGDIObjectsEvent(this, m_CustomizeCellGDIObjectsArgs);
 			textBrush = m_CustomizeCellGDIObjectsArgs.TextBrush;
 			bkBrush = m_CustomizeCellGDIObjectsArgs.BKBrush;
 		}
@@ -6346,12 +6323,12 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 		}
 	}
 
-	private bool StartEditCell(long nRowIndex, int nColIndex, Rectangle rCellRect, int editType, ref bool bSendMouseClick)
+	private bool StartEditingCell(long nRowIndex, int nColIndex, Rectangle rCellRect, int editType, ref bool bSendMouseClick)
 	{
-		return StartEditCell(nRowIndex, nColIndex, rCellRect, editType, ref bSendMouseClick, focusEmbedded: true);
+		return StartEditingCell(nRowIndex, nColIndex, rCellRect, editType, ref bSendMouseClick, focusEmbedded: true);
 	}
 
-	private bool StartEditCell(long nRowIndex, int nColIndex, Rectangle rCellRect, int editType, ref bool bSendMouseClick, bool focusEmbedded)
+	private bool StartEditingCell(long nRowIndex, int nColIndex, Rectangle rCellRect, int editType, ref bool bSendMouseClick, bool focusEmbedded)
 	{
 		if (!m_EmbeddedControls.Contains(editType))
 		{
@@ -6382,7 +6359,7 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 				m_bInGridStorageCall = false;
 			}
 
-			gridEmbeddedControl.ContentsChanged += m_OnEmbeddedControlContentsChangedDelegate;
+			gridEmbeddedControl.ContentsChangedEvent += _OnEmbeddedControlContentsChangedHandler;
 			gridEmbeddedControl.RowIndex = nRowIndex;
 			gridEmbeddedControl.ColumnIndex = m_Columns[nColIndex].ColumnIndex;
 			rCellRect.Height += ScrollManager.GRID_LINE_WIDTH;
@@ -6422,27 +6399,27 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 	{
 		if (m_gridHeader[columnIndex].AccessibleName != null)
 		{
-			return UIGridResources.CellDefaultAccessibleName.Res(rowIndex, columnIndex, m_gridHeader[columnIndex].AccessibleName);
+			return ControlsResources.CellDefaultAccessibleName.Res(rowIndex, columnIndex, m_gridHeader[columnIndex].AccessibleName);
 		}
 
-		return UIGridResources.CellDefaultAccessibleName.Res(rowIndex, columnIndex, m_gridHeader[columnIndex].Text);
+		return ControlsResources.CellDefaultAccessibleName.Res(rowIndex, columnIndex, m_gridHeader[columnIndex].Text);
 	}
 
-	private bool StartEditCell(long nRowIndex, int nColIndex, int editType, bool focusEmbedded)
+	private bool StartEditingCell(long nRowIndex, int nColIndex, int editType, bool focusEmbedded)
 	{
 		Rectangle cellRectangle = m_scrollMgr.GetCellRectangle(nRowIndex, nColIndex);
 		if (!cellRectangle.IsEmpty)
 		{
 			bool bSendMouseClick = false;
-			return StartEditCell(nRowIndex, nColIndex, cellRectangle, editType, ref bSendMouseClick, focusEmbedded);
+			return StartEditingCell(nRowIndex, nColIndex, cellRectangle, editType, ref bSendMouseClick, focusEmbedded);
 		}
 
 		return false;
 	}
 
-	private bool StartEditCell(long nRowIndex, int nColIndex, int editType)
+	private bool StartEditingCell(long nRowIndex, int nColIndex, int editType)
 	{
-		return StartEditCell(nRowIndex, nColIndex, editType, focusEmbedded: true);
+		return StartEditingCell(nRowIndex, nColIndex, editType, focusEmbedded: true);
 	}
 
 	private bool StopEditCell()
@@ -6462,7 +6439,7 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 			if (m_gridStorage.SetCellDataFromControl(gridEmbeddedControl.RowIndex, gridEmbeddedControl.ColumnIndex, gridEmbeddedControl))
 			{
 				m_bInGridStorageCall = false;
-				gridEmbeddedControl.ContentsChanged -= m_OnEmbeddedControlContentsChangedDelegate;
+				gridEmbeddedControl.ContentsChangedEvent -= _OnEmbeddedControlContentsChangedHandler;
 				OnStoppedCellEdit();
 				m_curEmbeddedControl.Visible = false;
 				m_curEmbeddedControl = null;
@@ -6489,7 +6466,7 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 
 	private void CancelEditCell()
 	{
-		((IGridEmbeddedControl)m_curEmbeddedControl ?? throw new InvalidOperationException(ControlsResources.CurControlIsNotIGridEmbedded)).ContentsChanged -= m_OnEmbeddedControlContentsChangedDelegate;
+		((IGridEmbeddedControl)m_curEmbeddedControl ?? throw new InvalidOperationException(ControlsResources.CurControlIsNotIGridEmbedded)).ContentsChangedEvent -= _OnEmbeddedControlContentsChangedHandler;
 		OnStoppedCellEdit();
 		m_curEmbeddedControl.Visible = false;
 		m_curEmbeddedControl = null;
@@ -6667,7 +6644,7 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 						long currentRow = m_selMgr.CurrentRow;
 						int currentColumn = m_selMgr.CurrentColumn;
 						m_selMgr.Clear();
-						StartEditCell(currentRow, currentColumn, num, focusEmbedded: true);
+						StartEditingCell(currentRow, currentColumn, num, focusEmbedded: true);
 						m_selMgr.StartNewBlock(currentRow, currentColumn);
 						ForwardKeyStrokeToControl(ke);
 					}
@@ -6825,7 +6802,7 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 			int num4 = m_gridStorage.IsCellEditable(num, m_Columns[num3].ColumnIndex);
 			if (num4 != 0)
 			{
-				StartEditCell(num, num3, num4, FocusEditorOnNavigation);
+				StartEditingCell(num, num3, num4, FocusEditorOnNavigation);
 			}
 
 			m_selMgr.StartNewBlock(num, num3);
@@ -6894,7 +6871,7 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 		int num2 = m_gridStorage.IsCellEditable(currentRow, m_Columns[currentColumn].ColumnIndex);
 		if (num2 != 0)
 		{
-			StartEditCell(currentRow, currentColumn, num2, FocusEditorOnNavigation);
+			StartEditingCell(currentRow, currentColumn, num2, FocusEditorOnNavigation);
 		}
 
 		m_selMgr.StartNewBlock(currentRow, currentColumn);
@@ -7229,7 +7206,7 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 	{
 		if (bStartEditNewCurrentCell)
 		{
-			if (StartEditCell(m_selMgr.CurrentRow, m_selMgr.CurrentColumn, m_gridStorage.IsCellEditable(m_selMgr.CurrentRow, m_Columns[m_selMgr.CurrentColumn].ColumnIndex), FocusEditorOnNavigation) && m_curEmbeddedControl.ContainsFocus)
+			if (StartEditingCell(m_selMgr.CurrentRow, m_selMgr.CurrentColumn, m_gridStorage.IsCellEditable(m_selMgr.CurrentRow, m_Columns[m_selMgr.CurrentColumn].ColumnIndex), FocusEditorOnNavigation) && m_curEmbeddedControl.ContainsFocus)
 			{
 				NotifyControlAboutFocusFromKeyboard(keyPressed, modifiers);
 			}
@@ -7416,7 +7393,7 @@ public class GridControl : Control, ISupportInitialize, IGridControl
 	private bool HandleStartCellEditFromStdCellLBtnDown(int editType, long nRowIndex, int nColIndex, bool bNotifySelChange)
 	{
 		bool bSendMouseClick = false;
-		if (StartEditCell(nRowIndex, nColIndex, m_captureTracker.CellRect, editType, ref bSendMouseClick))
+		if (StartEditingCell(nRowIndex, nColIndex, m_captureTracker.CellRect, editType, ref bSendMouseClick))
 		{
 			if (bSendMouseClick)
 			{

@@ -60,7 +60,7 @@ public sealed class FontAndColorProviderGridResults : AbstractFontAndColorProvid
 
 	private FontAndColorProviderGridResults()
 	{
-		CategoryName = SharedResx.FontAndColorCategorySqlResultsGrid;
+		CategoryName = ControlsResources.FontAndColorCategorySqlResultsGrid;
 		Guid = VS.CLSID_FontAndColorsSqlResultsGridCategory;
 		FontDefault = new Font(Control.DefaultFont.Name, Control.DefaultFont.SizeInPoints);
 		FontAndColorUtilities.EncodeAutomaticColor(out var pcrResult);
@@ -75,7 +75,7 @@ public sealed class FontAndColorProviderGridResults : AbstractFontAndColorProvid
 			bNameValid = 1,
 			bstrName = GridCell,
 			bLocalizedNameValid = 1,
-			bstrLocalizedName = SharedResx.FontAndColorItemNameGridCell,
+			bstrLocalizedName = ControlsResources.FontAndColorItemNameGridCell,
 			bAutoForegroundValid = 1,
 			crAutoForeground = pcrResult2,
 			bAutoBackgroundValid = 1,
@@ -96,16 +96,16 @@ public sealed class FontAndColorProviderGridResults : AbstractFontAndColorProvid
 			bFlagsValid = 1,
 			fFlags = (uint)(__FCITEMFLAGS.FCIF_PLAINTEXT | __FCITEMFLAGS.FCIF_ALLOWCUSTOMCOLORS
 				| __FCITEMFLAGS.FCIF_ALLOWBGCHANGE | __FCITEMFLAGS.FCIF_ALLOWFGCHANGE),
-			bstrDescription = SharedResx.FontAndColorGridCellDescription
+			bstrDescription = ControlsResources.FontAndColorGridCellDescription
 		};
 		FontColorDefaults.Add(allColorableItemInfo);
-		allColorableItemInfo = CreateItemInfo(SelectedCell, SharedResx.FontAndColorItemNameGridSelectedCell, pcrResult4, pcrResult, SharedResx.FontAndColorGridSelectedCellDescription);
+		allColorableItemInfo = CreateItemInfo(SelectedCell, ControlsResources.FontAndColorItemNameGridSelectedCell, pcrResult4, pcrResult, ControlsResources.FontAndColorGridSelectedCellDescription);
 		FontColorDefaults.Add(allColorableItemInfo);
-		allColorableItemInfo = CreateItemInfo(SelectedCellInactive, SharedResx.FontAndColorItemNameGridInactiveSelectedCell, pcrResult5, pcrResult, SharedResx.FontAndColorGridInactiveSelectedCellDescription);
+		allColorableItemInfo = CreateItemInfo(SelectedCellInactive, ControlsResources.FontAndColorItemNameGridInactiveSelectedCell, pcrResult5, pcrResult, ControlsResources.FontAndColorGridInactiveSelectedCellDescription);
 		FontColorDefaults.Add(allColorableItemInfo);
-		allColorableItemInfo = CreateItemInfo(NullValueCell, SharedResx.FontAndColorItemGridNullValueCellName, pcrResult6, pcrResult, SharedResx.FontAndGridItemGridNullValueCellDescription);
+		allColorableItemInfo = CreateItemInfo(NullValueCell, ControlsResources.FontAndColorItemGridNullValueCellName, pcrResult6, pcrResult, ControlsResources.FontAndGridItemGridNullValueCellDescription);
 		FontColorDefaults.Add(allColorableItemInfo);
-		allColorableItemInfo = CreateItemInfo(HeaderRow, SharedResx.FontAndColorItemGridHeaderRowCellName, pcrResult7, pcrResult, SharedResx.FontAndColorItemGridHeaderRowCellDescription);
+		allColorableItemInfo = CreateItemInfo(HeaderRow, ControlsResources.FontAndColorItemGridHeaderRowCellName, pcrResult7, pcrResult, ControlsResources.FontAndColorItemGridHeaderRowCellDescription);
 		FontColorDefaults.Add(allColorableItemInfo);
 	}
 

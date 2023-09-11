@@ -258,7 +258,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 			{
 				for (int i = 0; i < GraphPanelCount; i++)
 				{
-					GetGraphPanel(i).IsActiveChanged -= OnGraphActiveChanged;
+					GetGraphPanel(i).IsActiveChangedEvent -= OnGraphActiveChanged;
 				}
 				multiControlPanel.Dispose();
 				multiControlPanel = null;
@@ -339,14 +339,14 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 			while (File.Exists(text) && num < 100);
 			if (num == 100)
 			{
-				throw new InvalidOperationException(SharedResx.ErrCannotCreateTempFile);
+				throw new InvalidOperationException(ControlsResources.ErrCannotCreateTempFile);
 			}
 			XmlDocument xmlDocument = new XmlDocument();
 			xmlDocument.LoadXml(showPlanXml);
 			xmlDocument.Save(text);
 			if (Package.GetGlobalService(typeof(IVsExternalFilesManager)) is not IVsExternalFilesManager obj)
 			{
-				Exception ex = new InvalidOperationException(SharedResx.ErrCannotGetExternalFilesManager);
+				Exception ex = new InvalidOperationException(ControlsResources.ErrCannotGetExternalFilesManager);
 				Tracer.LogExThrow(GetType(), ex);
 				throw ex;
 			}
@@ -392,7 +392,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 			string text = pvar.ToString();
 			text = text.Replace("*", "");
 			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.AppendLine(string.Format(CultureInfo.CurrentCulture, SharedResx.MissingIndexDetailsTitle, text, missingIndexImpact));
+			stringBuilder.AppendLine(string.Format(CultureInfo.CurrentCulture, ControlsResources.MissingIndexDetailsTitle, text, missingIndexImpact));
 			stringBuilder.AppendLine();
 			stringBuilder.AppendLine("/*");
 			stringBuilder.AppendLine(string.Format(CultureInfo.InvariantCulture, "USE {0}", missingIndexDatabase));
@@ -413,7 +413,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 			StreamWriter streamWriter = null;
 			SaveFileDialog saveFileDialog = new SaveFileDialog
 			{
-				Filter = SharedResx.ExecutionPlanFilter,
+				Filter = ControlsResources.ExecutionPlanFilter,
 				RestoreDirectory = true
 			};
 			if (saveFileDialog.ShowDialog() == DialogResult.OK && (stream = saveFileDialog.OpenFile()) != null)
@@ -434,7 +434,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 		catch (Exception e)
 		{
 			Tracer.LogExCatch(GetType(), e);
-			Cmd.ShowExceptionInDialog(SharedResx.ErrorWhileSavingExecutionPlan, e);
+			Cmd.ShowExceptionInDialog(ControlsResources.ErrorWhileSavingExecutionPlan, e);
 		}
 	}
 
@@ -589,7 +589,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 		catch (Exception e2)
 		{
 			Tracer.LogExCatch(GetType(), e2);
-			Cmd.ShowExceptionInDialog(SharedResx.ErrUnableToPrintPreview, e2);
+			Cmd.ShowExceptionInDialog(ControlsResources.ErrUnableToPrintPreview, e2);
 		}
 	}
 
@@ -657,7 +657,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 			graphPanel = new GraphPanel();
 		}
 		graphPanel.Name = "GraphPanel";
-		graphPanel.IsActiveChanged += OnGraphActiveChanged;
+		graphPanel.IsActiveChangedEvent += OnGraphActiveChanged;
 		multiControlPanel.AddControl(graphPanel);
 		return graphPanel;
 	}
@@ -783,7 +783,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 			text3 += string.Format(CultureInfo.InvariantCulture, "INCLUDE ({0})", text2);
 		}
 		string value6 = xmlNode2.Attributes["Impact"].Value;
-		string caption = string.Format(CultureInfo.InvariantCulture, SharedResx.MissingIndexFormat, value6, text3);
+		string caption = string.Format(CultureInfo.InvariantCulture, ControlsResources.MissingIndexFormat, value6, text3);
 		panel.DescriptionCtl.SetOptionalMissingIndex(caption, text3, value6, value2);
 	}
 }

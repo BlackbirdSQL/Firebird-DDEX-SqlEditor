@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BlackbirdSql.Common.Exceptions {
+namespace BlackbirdSql.Common.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace BlackbirdSql.Common.Exceptions {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BlackbirdSql.Common.Exceptions.ExceptionsResources", typeof(ExceptionsResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BlackbirdSql.Common.Properties.ExceptionsResources", typeof(ExceptionsResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

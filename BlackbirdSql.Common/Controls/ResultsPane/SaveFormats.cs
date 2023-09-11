@@ -46,8 +46,8 @@ public class SaveFormats
 
 	public SaveFormats()
 	{
-		saveFormatList.Add(new SaveFormatInfo(EnGridSaveFormats.CommaSeparated, SharedResx.SqlExportFromGridFilterCSV));
-		saveFormatList.Add(new SaveFormatInfo(EnGridSaveFormats.TabSeparated, SharedResx.SqlExportFromGridFilterTabDelimitted));
-		saveFormatList.Add(new SaveFormatInfo(EnGridSaveFormats.TabSeparated, SharedResx.SqlExportFromGridFilterAllFiles));
+		saveFormatList.Add(new SaveFormatInfo(EnGridSaveFormats.CommaSeparated, ControlsResources.SqlExportFromGridFilterCSV));
+		saveFormatList.Add(new SaveFormatInfo(EnGridSaveFormats.TabSeparated, ControlsResources.SqlExportFromGridFilterTabDelimitted));
+		saveFormatList.Add(new SaveFormatInfo(EnGridSaveFormats.TabSeparated, ControlsResources.SqlExportFromGridFilterAllFiles));
 	}
 }

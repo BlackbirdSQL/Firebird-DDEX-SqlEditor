@@ -16,7 +16,7 @@ namespace BlackbirdSql.Common.Controls.Interfaces
 
 		bool Enabled { get; set; }
 
-		event ContentsChangedEventHandler ContentsChanged;
+		event ContentsChangedEventHandler ContentsChangedEvent;
 
 		void ClearData();
 

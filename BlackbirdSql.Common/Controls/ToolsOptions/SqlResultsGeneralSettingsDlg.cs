@@ -147,7 +147,7 @@ public class SqlResultsGeneralSettingsDlg : ToolsOptionsBaseControl
 		Tracer.Trace(GetType(), "SqlResultsGeneral.ValidateValuesInControls", "", null);
 		if (TrackChanges && !SaveOrCompareCurrentValueOfControls(save: false))
 		{
-			Cmd.ShowMessageBoxEx(null, SharedResx.WarnSqlGeneralResultsChanges, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+			Cmd.ShowMessageBoxEx(null, ControlsResources.WarnSqlGeneralResultsChanges, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 			TrackChanges = false;
 		}
 		return true;
@@ -196,7 +196,7 @@ public class SqlResultsGeneralSettingsDlg : ToolsOptionsBaseControl
 		VSBROWSEINFOW vSBROWSEINFOW = default;
 		vSBROWSEINFOW.lStructSize = (uint)Marshal.SizeOf(typeof(VSBROWSEINFOW));
 		vSBROWSEINFOW.hwndOwner = Handle;
-		vSBROWSEINFOW.pwzDlgTitle = SharedResx.PleaseSelectDirectory;
+		vSBROWSEINFOW.pwzDlgTitle = ControlsResources.PleaseSelectDirectory;
 		vSBROWSEINFOW.pwzInitialDir = _resFileDirEdit.Text;
 		vSBROWSEINFOW.nMaxDirName = (uint)num;
 		vSBROWSEINFOW.pwzDirName = zero;

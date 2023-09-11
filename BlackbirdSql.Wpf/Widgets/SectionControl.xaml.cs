@@ -195,9 +195,9 @@ namespace BlackbirdSql.Wpf.Widgets
 			}
 		}
 
-		public event RoutedEventHandler Collapsed;
+		public event RoutedEventHandler CollapsedEvent;
 
-		public event RoutedEventHandler Expanded;
+		public event RoutedEventHandler ExpandedEvent;
 
 
 
@@ -262,7 +262,7 @@ namespace BlackbirdSql.Wpf.Widgets
 			{
 				OnCollapsed();
 			}
-			(expanded ? Expanded : Collapsed)?.Invoke(this, new RoutedEventArgs());
+			(expanded ? ExpandedEvent : CollapsedEvent)?.Invoke(this, new RoutedEventArgs());
 		}
 
 		private void BorderHeader_DragMove(object sender, DragEventArgs e)

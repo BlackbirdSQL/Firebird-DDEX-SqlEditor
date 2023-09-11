@@ -45,8 +45,8 @@ public class TabbedEditorUI : Control, IServiceProvider
 		protected override void InsertItem(int index, AbstractEditorTab item)
 		{
 			item.Owner = _TabbedEditorUI;
-			item.Shown += _TabbedEditorUI.OnTabShown;
-			item.ActiveChanged += _TabbedEditorUI.OnActiveTabChanged;
+			item.ShownEvent += _TabbedEditorUI.OnTabShown;
+			item.ActiveChangedEvent += _TabbedEditorUI.OnActiveTabChanged;
 			base.InsertItem(index, item);
 		}
 
@@ -74,7 +74,7 @@ public class TabbedEditorUI : Control, IServiceProvider
 
 	private readonly Panel _designerPanelAdditionalPanelFirst = new Panel();
 
-	public EventHandler OnFocus;
+	public EventHandler OnFocusHandler;
 
 	private Panel _Panel;
 
@@ -194,7 +194,7 @@ public class TabbedEditorUI : Control, IServiceProvider
 
 	public SplitViewContainer SplitViewContainer => _splitContainer;
 
-	public event EventHandler TabActivated;
+	public event EventHandler TabActivatedEvent;
 
 	public TabbedEditorUI()
 	{
@@ -220,9 +220,9 @@ public class TabbedEditorUI : Control, IServiceProvider
 		AddCustomControlsToPanel(_Panel);
 		_splitContainer.PanelTop.SizeChanged += Panel_SizeChanged;
 		_splitContainer.PanelBottom.SizeChanged += Panel_SizeChanged;
-		_splitContainer.PanelSwapped += SplitContainer_PanelSwapped;
-		_splitContainer.IsSplitterVisibleChanged += SplitContainer_IsSplitterVisibleChanged;
-		_splitContainer.TabActivationRequest += SplitContainer_TabActivationRequest;
+		_splitContainer.PanelSwappedEvent += SplitContainer_PanelSwapped;
+		_splitContainer.IsSplitterVisibleChangedEvent += SplitContainer_IsSplitterVisibleChanged;
+		_splitContainer.TabActivationRequestEvent += SplitContainer_TabActivationRequest;
 		_splitContainer.UseCustomTabActivation = true;
 		_splitContainer.CustomizeSplitterBarButton(VSConstants.LOGVIEWID_Designer, EnSplitterBarButtonDisplayStyle.ImageAndText, ControlsResources.TabbedEditor_SplitContainerButton1Text, ControlsResources.design);
 		_splitContainer.CustomizeSplitterBarButton(VSConstants.LOGVIEWID_TextView, EnSplitterBarButtonDisplayStyle.ImageAndText, "FB-SQL", ControlsResources.sql);
@@ -443,7 +443,7 @@ public class TabbedEditorUI : Control, IServiceProvider
 		if (sender is AbstractEditorTab editorTab && editorTab.IsActive)
 		{
 			_splitContainer.UpdateActiveTab(editorTab.LogicalView);
-			this.TabActivated?.Invoke(sender, e);
+			TabActivatedEvent?.Invoke(sender, e);
 			return;
 		}
 		AbstractEditorTab activeTab = ActiveTab;
@@ -453,13 +453,13 @@ public class TabbedEditorUI : Control, IServiceProvider
 			return;
 		}
 		_splitContainer.UpdateActiveTab(activeTab.LogicalView);
-		this.TabActivated?.Invoke(activeTab, e);
+		TabActivatedEvent?.Invoke(activeTab, e);
 	}
 
 	protected override void OnGotFocus(EventArgs e)
 	{
 		ActiveTab?.Activate();
-		OnFocus?.Invoke(this, e);
+		OnFocusHandler?.Invoke(this, e);
 	}
 
 	protected override void OnResize(EventArgs e)

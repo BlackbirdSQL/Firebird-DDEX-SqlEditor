@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BlackbirdSql.Core.Properties {
+namespace BlackbirdSql.Common.Properties {
     using System;
     
     
@@ -22,24 +22,24 @@ namespace BlackbirdSql.Core.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ControlsResources {
+    public class QEResources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal ControlsResources() {
+        internal QEResources() {
         }
         
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BlackbirdSql.Core.Properties.ControlsResources", typeof(ControlsResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BlackbirdSql.Common.Properties.QEResources", typeof(QEResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -51,7 +51,7 @@ namespace BlackbirdSql.Core.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,38 +61,47 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Disabled.
+        ///   Looks up a localized string similar to Initialize has already been called..
         /// </summary>
-        internal static string GlobalizedLiteralDisabled {
+        public static string ErrQEResultSetAlreadyInited {
             get {
-                return ResourceManager.GetString("GlobalizedLiteralDisabled", resourceCulture);
+                return ResourceManager.GetString("ErrQEResultSetAlreadyInited", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enabled.
+        ///   Looks up a localized string similar to Storage is already storing the data..
         /// </summary>
-        internal static string GlobalizedLiteralEnabled {
+        public static string ErrQEResultSetAlreadyStoring {
             get {
-                return ResourceManager.GetString("GlobalizedLiteralEnabled", resourceCulture);
+                return ResourceManager.GetString("ErrQEResultSetAlreadyStoring", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to False.
+        ///   Looks up a localized string similar to Initialize should be called before..
         /// </summary>
-        internal static string GlobalizedLiteralFalse {
+        public static string ErrQEResultSetNotInited {
             get {
-                return ResourceManager.GetString("GlobalizedLiteralFalse", resourceCulture);
+                return ResourceManager.GetString("ErrQEResultSetNotInited", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to True.
+        ///   Looks up a localized string similar to Invalid calling sequence: already storing data..
         /// </summary>
-        internal static string GlobalizedLiteralTrue {
+        public static string ErrQEStorageAlreadyStoring {
             get {
-                return ResourceManager.GetString("GlobalizedLiteralTrue", resourceCulture);
+                return ResourceManager.GetString("ErrQEStorageAlreadyStoring", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Object is not initialized with the reader..
+        /// </summary>
+        public static string ErrQEStorageNoReader {
+            get {
+                return ResourceManager.GetString("ErrQEStorageNoReader", resourceCulture);
             }
         }
     }

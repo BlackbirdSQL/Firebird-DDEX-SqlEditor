@@ -6,6 +6,7 @@ using System.Collections;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Globalization;
+using System.Resources;
 using System.Windows.Forms;
 
 using BlackbirdSql.Common.Controls.Enums;
@@ -13,6 +14,7 @@ using BlackbirdSql.Common.Controls.Events;
 using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core;
 using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Core.Enums;
 
@@ -26,37 +28,120 @@ namespace BlackbirdSql.Common.Controls.ResultsPane;
 
 public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 {
-	private enum StatisticsNameSpecialAction
+	private enum EnStatisticSpecialAction
 	{
 		NoAction,
-		ClientProcessingTimeAction
+		ClientProcessingTimeAction,
+		ElapsedTimeFormat,
+		DateTimeFormat,
+		ByteFormat,
+		SIFormat
 	}
 
-	private enum StatisticsNameDisplayFormat
-	{
-		Normal,
-		Millions,
-		Kilobytes
-	}
 
-	private struct StatisticName
+
+	private struct StatisticEntity
 	{
+		public static ResourceManager ResMgr => AttributeResources.ResourceManager;
+
 		public string Name;
 
-		public string DisplayName;
+		public readonly string DisplayName => ResMgr.GetString("StatisticsPanelStat" + Name);
 
-		public StatisticsNameSpecialAction SpecialAction;
+		public EnStatisticSpecialAction SpecialAction;
+
+		public bool CalculateAverage;
+
+		public StatisticEntity(string name, EnStatisticSpecialAction specialAction, bool calculateAverage = true)
+		{
+			Name = name;
+			SpecialAction = specialAction;
+			CalculateAverage = calculateAverage;
+		}
 	}
-
-	private StatisticsGridsCollection _gridControls = new StatisticsGridsCollection();
 
 	private const int C_MinNumberOfVisibleRows = 8;
 
-	private static Bitmap _arrowUp;
+	private delegate string GetCategoryValueDelegate(StatisticsSnapshot snapshot);
 
-	private static Bitmap _arrowDown;
+	private static readonly string[] S_CategoryNames = new string[5]
+	{
+		AttributeResources.StatisticsPanelCategoryClientExecutionTime,
+		AttributeResources.StatisticsPanelCategoryQueryProfileStats,
+		AttributeResources.StatisticsPanelCategoryNetworkStats,
+		AttributeResources.StatisticsPanelCategoryTimeStats,
+		AttributeResources.StatisticsPanelCategoryServerStats
+	};
 
-	private static Bitmap _arrowFlat;
+	private static readonly GetCategoryValueDelegate[] S_CategoryValueDelegates = new GetCategoryValueDelegate[5]
+	{
+		new GetCategoryValueDelegate(GetTimeOfExecution),
+		null,
+		null,
+		null,
+		null,
+	};
+
+
+	// Row definitions for each stat group
+	private static readonly StatisticEntity[][] Statistics = new StatisticEntity[5][]
+	{
+		// ClientExecutionTime
+		new StatisticEntity[0],
+
+		// QueryProfileStatistics
+		new StatisticEntity[6]
+		{
+			new StatisticEntity("IduRowCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("InsRowCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("UpdRowCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("DelRowCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("SelectRowCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("Transactions", EnStatisticSpecialAction.SIFormat)
+		},
+
+		// NetworkStatistics
+		new StatisticEntity[10]
+		{
+			new StatisticEntity("ServerRoundtrips", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("BufferCount", EnStatisticSpecialAction.SIFormat, false),
+			new StatisticEntity("ReadCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("WriteCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("ReadIdxCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("ReadSeqCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("PurgeCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("ExpungeCount", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("Marks", EnStatisticSpecialAction.SIFormat),
+			new StatisticEntity("PacketSize", EnStatisticSpecialAction.ByteFormat, false)
+		},
+
+		// TimeStatistics
+		new StatisticEntity[3]
+		{
+			new StatisticEntity("ExecutionStartTimeEpoch", EnStatisticSpecialAction.DateTimeFormat, false),
+			new StatisticEntity("ExecutionEndTimeEpoch", EnStatisticSpecialAction.DateTimeFormat, false),
+			new StatisticEntity("ExecutionTimeTicks", EnStatisticSpecialAction.ElapsedTimeFormat),
+		},
+
+		// ServerStatistics
+		new StatisticEntity[6]
+		{
+			new StatisticEntity("AllocationPages", EnStatisticSpecialAction.SIFormat, false),
+			new StatisticEntity("CurrentMemory", EnStatisticSpecialAction.ByteFormat),
+			new StatisticEntity("MaxMemory", EnStatisticSpecialAction.ByteFormat),
+			new StatisticEntity("DatabaseSizeInPages", EnStatisticSpecialAction.SIFormat, false),
+			new StatisticEntity("PageSize", EnStatisticSpecialAction.ByteFormat, false),
+			new StatisticEntity("ActiveUserCount", EnStatisticSpecialAction.SIFormat)
+		}
+	};
+
+
+	private StatisticsGridsCollection _gridControls = new StatisticsGridsCollection();
+
+	private static Bitmap S_ArrowUp;
+	private static Bitmap S_ArrowDown;
+	private static Bitmap S_ArrowFlat;
+	private static Bitmap S_ArrowBlank;
 
 	public int NumberOfGrids
 	{
@@ -86,9 +171,10 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 			new CommandID(VSConstants.CMDSETID.StandardCommandSet97_guid,
 			(int)VSConstants.VSStd97CmdID.PageSetup));
 		MenuService.AddRange(new MenuCommand[4] { menuCommand, menuCommand2, menuCommand4, menuCommand3 });
-		_arrowUp = ControlsResources.arrowUp;
-		_arrowDown = ControlsResources.arrowDown;
-		_arrowFlat = ControlsResources.arrowFlat;
+		S_ArrowUp = AttributeResources.StatisticsPanelArrowUp;
+		S_ArrowDown = AttributeResources.StatisticsPanelArrowDown;
+		S_ArrowFlat = AttributeResources.StatisticsPanelArrowFlat;
+		S_ArrowBlank = AttributeResources.StatisticsPanelArrowBlank;
 	}
 
 	protected override void Dispose(bool bDisposing)
@@ -113,7 +199,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 	{
 		Tracer.Trace(GetType(), "ClientStatistics.Clear", "", null);
 		base.Clear();
-		Tracer.Trace(GetType(), "ClientStatistics.Clear", "disposing grid containers", null);
+
 		if (_gridControls != null)
 		{
 			foreach (StatisticsDlgGridControl gridControl in _gridControls)
@@ -122,7 +208,6 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 			}
 			_gridControls.Clear();
 		}
-		Tracer.Trace(GetType(), "ClientStatistics.Clear", "returning", null);
 	}
 
 	protected override void WndProc(ref Message m)
@@ -131,7 +216,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		{
 			if (FocusedGrid != null && CommonUtils.GetCoordinatesForPopupMenuFromWM_Context(ref m, out var xPos, out var yPos, FocusedGrid))
 			{
-				CommonUtils.ShowContextMenu((int)EnCommandSet.ContextIdResultsWindow, xPos, yPos, this);
+				CommonUtils.ShowContextMenuEvent((int)EnCommandSet.ContextIdResultsWindow, xPos, yPos, this);
 			}
 		}
 		else
@@ -157,7 +242,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		statisticsDlgGridControl.Dock = DockStyle.Fill;
 		statisticsDlgGridControl.Tag = _gridControls.Count - 1;
 		statisticsDlgGridControl.GotFocus += OnGridGotFocus;
-		statisticsDlgGridControl.MouseButtonDoubleClicked += OnMouseButtonDoubleClicked;
+		statisticsDlgGridControl.MouseButtonDoubleClickedEvent += OnMouseButtonDoubleClicked;
 		statisticsDlgGridControl.Font = curGridFont;
 		statisticsDlgGridControl.HeaderFont = curGridFont;
 		try
@@ -209,57 +294,142 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		AddDarkColoredCell(cellCollection, null, useNullBitmap);
 	}
 
-	private float CalculateTheValue(StatisticName sn, IDictionary tryData, out string stringValue)
+	private (float, float) CalculateTheValue(StatisticEntity sn, IDictionary snapshotData, out string stringValue)
 	{
 		float result = 0f;
+		float cellValue = 0f;
+		long longres = 0;
 		switch (sn.SpecialAction)
 		{
-			case StatisticsNameSpecialAction.NoAction:
-				result = (long)tryData[sn.Name];
-				stringValue = result.ToString(CultureInfo.InvariantCulture);
+			case EnStatisticSpecialAction.NoAction:
+				result = cellValue = longres = (long)snapshotData[sn.Name];
+				stringValue = longres.ToString(CultureInfo.InvariantCulture);
 				break;
-			case StatisticsNameSpecialAction.ClientProcessingTimeAction:
-				result = (long)tryData["ExecutionTime"] - (long)tryData["NetworkServerTime"];
-				stringValue = result.ToString(CultureInfo.InvariantCulture);
+			case EnStatisticSpecialAction.ClientProcessingTimeAction:
+				result = cellValue = longres = (long)snapshotData["ExecutionTime"] - (long)snapshotData["NetworkServerTime"];
+				stringValue = longres.FormatForStats();
+				break;
+			case EnStatisticSpecialAction.ElapsedTimeFormat:
+				result = cellValue = longres = (long)snapshotData[sn.Name];
+				stringValue = longres.FormatForStats();
+				break;
+			case EnStatisticSpecialAction.DateTimeFormat:
+				result = cellValue = longres = (long)snapshotData[sn.Name];
+				stringValue = longres.ToDateTime().ToString("T", CultureInfo.InvariantCulture);
+				break;
+			case EnStatisticSpecialAction.ByteFormat:
+				result = longres = (long)snapshotData[sn.Name];
+				(stringValue, cellValue) = longres.ByteSizeFormat();
+				break;
+			case EnStatisticSpecialAction.SIFormat:
+				result = longres = (long)snapshotData[sn.Name];
+				(stringValue, cellValue) = longres.SISizeFormat();
 				break;
 			default:
-				stringValue = result.ToString(CultureInfo.InvariantCulture);
+				stringValue = longres.ToString(CultureInfo.InvariantCulture);
 				break;
 		}
-		return result;
+		return (result, cellValue);
 	}
 
-	private void AddStatistic(StatisticsDlgGridControl gridControl, StatisticsConnection connection, StatisticName[] statisticNames, int numberOfTries)
+	private string FormatTheValue(StatisticEntity sn, float value)
+	{
+		if (!sn.CalculateAverage)
+			return "";
+
+		string stringValue;
+
+		switch (sn.SpecialAction)
+		{
+			case EnStatisticSpecialAction.NoAction:
+				stringValue = value.ToString("F4", CultureInfo.InvariantCulture);
+				break;
+			case EnStatisticSpecialAction.ClientProcessingTimeAction:
+				stringValue = value.ToString(CultureInfo.InvariantCulture);
+				break;
+			case EnStatisticSpecialAction.ElapsedTimeFormat:
+				stringValue = ((long)value).FormatForStats();
+				break;
+			case EnStatisticSpecialAction.DateTimeFormat:
+				stringValue = "";
+				break;
+			case EnStatisticSpecialAction.ByteFormat:
+				(stringValue, _) = value.ByteSizeFormat();
+				break;
+			case EnStatisticSpecialAction.SIFormat:
+				(stringValue, _) = value.SISizeFormat();
+				break;
+			default:
+				stringValue = value.ToString(CultureInfo.InvariantCulture);
+				break;
+		}
+
+		return stringValue;
+
+	}
+
+
+	private void AddStatistic(StatisticsDlgGridControl gridControl, StatisticsConnection connection, StatisticEntity[] statisticNames, int numberOfTries)
 	{
 		for (int i = 0; i < statisticNames.Length; i++)
 		{
-			StatisticName sn = statisticNames[i];
+			StatisticEntity sn = statisticNames[i];
 			GridCellCollection gridCellCollection = new()
-			{
-				new GridCell("  " + sn.DisplayName)
-			};
-			float num = 0f;
+				{
+					new GridCell("  " + sn.DisplayName)
+				};
+
+			float result, nextResult;
+			float rowTotal = 0f;
+			string strAvg = "";
+
 			for (int j = 0; j < numberOfTries; j++)
 			{
-				float num3 = CalculateTheValue(sn, connection[j].TryData, out var stringValue);
-				num += num3;
-				float num2 = j != numberOfTries - 1 ? CalculateTheValue(sn, connection[j + 1].TryData, out _) : num3;
-				gridCellCollection.Add(new GridCell(stringValue));
-				GridCell gridCell = !(num2 > num3) ? !(num2 < num3) ? new GridCell(_arrowFlat) : new GridCell(_arrowUp) : new GridCell(_arrowDown);
+				(result, _) = CalculateTheValue(sn, connection[j].Snapshot, out string strValue);
+
+				if (sn.CalculateAverage)
+					rowTotal += result;
+
+				if (j != numberOfTries - 1)
+					(nextResult, _) = CalculateTheValue(sn, connection[j + 1].Snapshot, out _);
+				else
+					nextResult = result;
+
+				gridCellCollection.Add(new GridCell(strValue));
+				GridCell gridCell =
+					!sn.CalculateAverage
+						? new GridCell(S_ArrowBlank)
+						: (nextResult <= result)
+							? (nextResult >= result)
+								? new GridCell(S_ArrowFlat)
+								: new GridCell(S_ArrowUp)
+							: new GridCell(S_ArrowDown);
 				gridCellCollection.Add(gridCell);
 			}
-			gridCellCollection.Add(new GridCell((num / numberOfTries).ToString("F4", CultureInfo.InvariantCulture)));
+
+			if (sn.CalculateAverage)
+				strAvg = FormatTheValue(sn, rowTotal / numberOfTries);
+			gridCellCollection.Add(new(strAvg));
 			gridControl.AddRow(gridCellCollection);
+
 		}
 	}
 
 	private void PopulateGrid(StatisticsDlgGridControl gridControl, StatisticsConnection connection)
 	{
 		GridColumnInfo gridColumnInfo = new GridColumnInfo();
+
+		GridCellCollection[] gridCollections = new GridCellCollection[S_CategoryNames.Length];
+		for (int i = 0; i < S_CategoryNames.Length; i++)
+			gridCollections[i] = new GridCellCollection();
+
+		/*
 		GridCellCollection gridCellCollection = new GridCellCollection();
 		GridCellCollection gridCellCollection2 = new GridCellCollection();
 		GridCellCollection gridCellCollection3 = new GridCellCollection();
 		GridCellCollection gridCellCollection4 = new GridCellCollection();
+		*/
+
 		gridControl.AlwaysHighlightSelection = true;
 		gridControl.GridLineType = EnGridLineType.Solid;
 		gridControl.SelectionType = EnGridSelectionType.RowBlocks;
@@ -268,86 +438,134 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		gridColumnInfo.WidthType = EnGridColumnWidthType.InAverageFontChar;
 		gridColumnInfo.IsWithRightGridLine = true;
 		gridColumnInfo.IsHeaderMergedWithRight = false;
-		gridColumnInfo.ColumnWidth = 60;
+		gridColumnInfo.ColumnWidth = 50;
 		gridControl.AddColumn(gridColumnInfo);
-		AddDarkColoredCell(gridCellCollection, SharedResx.ClientExecutionTime);
-		AddDarkColoredCell(gridCellCollection2, SharedResx.QueryProfileStatistics);
-		AddDarkColoredCell(gridCellCollection3, SharedResx.NetworkStatistics);
-		AddDarkColoredCell(gridCellCollection4, SharedResx.TimeStatistics);
-		int num = Math.Min(connection.Count, 10);
-		for (int i = 0; i < num; i++)
+
+		for (int i = 0; i < gridCollections.Length; i++)
+			AddDarkColoredCell(gridCollections[i], S_CategoryNames[i]);
+
+		/*
+		AddDarkColoredCell(gridCellCollection, AttributeResources.StatisticsPanelCategoryClientExecutionTime);
+		AddDarkColoredCell(gridCellCollection2, AttributeResources.StatisticsPanelCategoryQueryProfileStats);
+		AddDarkColoredCell(gridCellCollection3, AttributeResources.StatisticsPanelCategoryNetworkStats);
+		AddDarkColoredCell(gridCellCollection4, AttributeResources.StatisticsPanelCategoryTimeStats);
+		*/
+
+		int connectionCount = Math.Min(connection.Count, 10);
+		for (int i = 0; i < connectionCount; i++)
 		{
 			gridColumnInfo.ColumnType = 1;
-			gridColumnInfo.ColumnWidth = 15;
+			gridColumnInfo.ColumnWidth = 20;
 			gridColumnInfo.WidthType = EnGridColumnWidthType.InAverageFontChar;
 			gridColumnInfo.IsWithRightGridLine = false;
 			gridColumnInfo.IsHeaderMergedWithRight = true;
 			gridControl.AddColumn(gridColumnInfo);
+
+
+			for (int j = 0; j < gridCollections.Length; j++)
+			{
+				if (S_CategoryValueDelegates.Length <= j || S_CategoryValueDelegates[j] == null)
+					AddDarkColoredCell(gridCollections[j]);
+				else
+					AddDarkColoredCell(gridCollections[j], S_CategoryValueDelegates[j](connection[i]));
+			}
+
+			/*
 			AddDarkColoredCell(gridCellCollection, connection[i].TimeOfExecution.ToString("T", CultureInfo.InvariantCulture));
 			AddDarkColoredCell(gridCellCollection2);
 			AddDarkColoredCell(gridCellCollection3);
 			AddDarkColoredCell(gridCellCollection4);
+			*/
+
 			gridColumnInfo = new()
 			{
 				ColumnType = 3,
 				WidthType = EnGridColumnWidthType.InPixels,
 				IsWithRightGridLine = true,
 				IsHeaderMergedWithRight = false,
-				ColumnWidth = _arrowUp.Width
+				ColumnWidth = S_ArrowUp.Width
 			};
 			gridControl.AddColumn(gridColumnInfo);
-			gridControl.SetHeaderInfo(2 * i + 2, string.Format(CultureInfo.CurrentCulture, SharedResx.ClientStatsTrial, num - i), null);
+			gridControl.SetHeaderInfo(2 * i + 2, string.Format(CultureInfo.CurrentCulture,
+				AttributeResources.StatisticsPanelSnapshotClientStatsTrial, connectionCount - i), null);
+
+			for (int j = 0; j < gridCollections.Length; j++)
+				AddDarkColoredCell(gridCollections[j], useNullBitmap: true);
+
+			/*
 			AddDarkColoredCell(gridCellCollection, useNullBitmap: true);
 			AddDarkColoredCell(gridCellCollection2, useNullBitmap: true);
 			AddDarkColoredCell(gridCellCollection3, useNullBitmap: true);
 			AddDarkColoredCell(gridCellCollection4, useNullBitmap: true);
+			*/
 		}
+
 		gridColumnInfo.ColumnType = 1;
-		gridColumnInfo.ColumnWidth = 20;
+		gridColumnInfo.ColumnWidth = 22;
 		gridColumnInfo.WidthType = EnGridColumnWidthType.InAverageFontChar;
 		gridControl.AddColumn(gridColumnInfo);
-		gridControl.SetHeaderInfo(2 * num + 1, SharedResx.Average, null);
+		gridControl.SetHeaderInfo(2 * connectionCount + 1, AttributeResources.StatisticsPanelSnapshotAverage, null);
+
+		for (int i = 0; i < gridCollections.Length; i++)
+			AddDarkColoredCell(gridCollections[i]);
+
+		/*
 		AddDarkColoredCell(gridCellCollection);
 		AddDarkColoredCell(gridCellCollection2);
 		AddDarkColoredCell(gridCellCollection3);
 		AddDarkColoredCell(gridCellCollection4);
+		*/
+
+		for (int i = 0; i < gridCollections.Length; i++)
+		{
+			gridControl.AddRow(gridCollections[i]);
+
+			if (Statistics[i].Length > 0)
+				AddStatistic(gridControl, connection, Statistics[i], connectionCount);
+		}
+
+		/*
 		gridControl.AddRow(gridCellCollection);
 		gridControl.AddRow(gridCellCollection2);
-		StatisticName[] array = new StatisticName[5];
+		StatisticEntity[] array = new StatisticEntity[5];
 		array[0].Name = "IduCount";
-		array[0].DisplayName = SharedResx.IduCountStat;
+		array[0].DisplayName = AttributeResources.ResourceManager.StatisticsPanelStatIduCount;
 		array[1].Name = "IduRows";
-		array[1].DisplayName = SharedResx.IduRowsStat;
+		array[1].DisplayName = AttributeResources.StatisticsPanelStatIduRowCount;
 		array[2].Name = "SelectCount";
-		array[2].DisplayName = SharedResx.SelectCountStat;
+		array[2].DisplayName = AttributeResources.StatisticsPanelStatReadIdxCount;
 		array[3].Name = "SelectRows";
-		array[3].DisplayName = SharedResx.SelectRowsStat;
+		array[3].DisplayName = AttributeResources.StatisticsPanelStatSelectRowCount;
 		array[4].Name = "Transactions";
-		array[4].DisplayName = SharedResx.TransactionsStat;
+		array[4].DisplayName = AttributeResources.StatisticsPanelStatTransactions;
 		AddStatistic(gridControl, connection, array, num);
 		gridControl.AddRow(gridCellCollection3);
-		StatisticName[] array2 = new StatisticName[5];
+		StatisticEntity[] array2 = new StatisticEntity[5];
 		array2[0].Name = "ServerRoundtrips";
-		array2[0].DisplayName = SharedResx.ServerRoundtripsStat;
+		array2[0].DisplayName = AttributeResources.StatisticsPanelStatServerRoundtrips;
 		array2[1].Name = "BuffersSent";
-		array2[1].DisplayName = SharedResx.BuffersSentStat;
+		array2[1].DisplayName = AttributeResources.StatisticsPanelStatBuffersSent;
 		array2[2].Name = "BuffersReceived";
-		array2[2].DisplayName = SharedResx.BuffersReceivedStat;
+		array2[2].DisplayName = AttributeResources.StatisticsPanelStatBufferCount;
 		array2[3].Name = "BytesSent";
-		array2[3].DisplayName = SharedResx.BytesSentStat;
+		array2[3].DisplayName = AttributeResources.StatisticsPanelStatWriteCount;
 		array2[4].Name = "BytesReceived";
-		array2[4].DisplayName = SharedResx.BytesReceivedStat;
+		array2[4].DisplayName = AttributeResources.StatisticsPanelStatReadCount;
 		AddStatistic(gridControl, connection, array2, num);
 		gridControl.AddRow(gridCellCollection4);
-		StatisticName[] array3 = new StatisticName[3];
+		StatisticEntity[] array3 = new StatisticEntity[3];
 		array3[0].Name = null;
-		array3[0].DisplayName = SharedResx.ClientProcessingTime;
-		array3[0].SpecialAction = StatisticsNameSpecialAction.ClientProcessingTimeAction;
+		array3[0].DisplayName = AttributeResources.StatisticsPanelStatClientProcessingTime;
+		array3[0].SpecialAction = EnStatisticSpecialAction.ClientProcessingTimeAction;
 		array3[1].Name = "ExecutionTime";
-		array3[1].DisplayName = SharedResx.ExecutionTimeStat;
+		array3[1].DisplayName = AttributeResources.StatisticsPanelStatExecutionTimeTicks;
+		array3[1].SpecialAction = EnStatisticSpecialAction.ElapsedTimeFormat;
 		array3[2].Name = "NetworkServerTime";
-		array3[2].DisplayName = SharedResx.NetworkServerTimeStat;
+		array3[2].DisplayName = AttributeResources.StatisticsPanelStatNetworkServerTime;
+		array3[2].SpecialAction = EnStatisticSpecialAction.ElapsedTimeFormat;
 		AddStatistic(gridControl, connection, array3, num);
+		*/
+
 		gridControl.UpdateGrid(bRecalcRows: true);
 		gridControl.SelectedRows = new int[1];
 	}
@@ -504,4 +722,10 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		}
 		return (int)OleConstants.OLECMDERR_E_UNKNOWNGROUP;
 	}
+
+	private static string GetTimeOfExecution(StatisticsSnapshot snapshot)
+	{
+		return snapshot.TimeOfExecution.ToString("T", CultureInfo.InvariantCulture);
+	}
+
 }

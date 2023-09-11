@@ -163,7 +163,7 @@ internal class Tracer : IBTrace, IBExportable
 		else if (Diag.EnableTracer)
 		{
 			StackFrame frame = new System.Diagnostics.StackTrace(1, true).GetFrame(0);
-			Diag.Trace(t.FullName + " func: " + functionName + (format != null ? (args != null ? string.Format(format, args) : format) : ""), frame.GetMethod().Name, frame.GetFileName(), frame.GetFileLineNumber());
+			Diag.Dug(false, t.FullName + " func: " + functionName + (format != null ? (args != null ? string.Format(format, args) : format) : ""), frame.GetMethod().Name, frame.GetFileName(), frame.GetFileLineNumber());
 		}
 
 	}
@@ -178,7 +178,7 @@ internal class Tracer : IBTrace, IBExportable
 		else if (Diag.EnableTracer)
 		{
 			StackFrame frame = new System.Diagnostics.StackTrace(1, true).GetFrame(0);
-			Diag.Trace(t.FullName + " func: " + functionName + (format != null ? (args != null ? string.Format(format, args) : format) : ""), frame.GetMethod().Name, frame.GetFileName(), frame.GetFileLineNumber());
+			Diag.Dug(false, t.FullName + " func: " + functionName + (format != null ? (args != null ? string.Format(format, args) : format) : ""), frame.GetMethod().Name, frame.GetFileName(), frame.GetFileLineNumber());
 		}
 	}
 
@@ -188,7 +188,7 @@ internal class Tracer : IBTrace, IBExportable
 		if (Diag.EnableTracer)
 		{
 			StackFrame frame = new System.Diagnostics.StackTrace(1, true).GetFrame(0);
-			Diag.Trace(t.FullName + " func: " + functionName + (format != null ? (args != null ? string.Format(format, args) : format) : ""), frame.GetMethod().Name, frame.GetFileName(), frame.GetFileLineNumber());
+			Diag.Dug(false, t.FullName + " func: " + functionName + (format != null ? (args != null ? string.Format(format, args) : format) : ""), frame.GetMethod().Name, frame.GetFileName(), frame.GetFileLineNumber());
 		}
 
 		if (SqlTracer.ShouldTrace(eventType))

@@ -191,7 +191,7 @@ public class Marker : IVsTextMarkerClient
 			return 1;
 		}
 
-		COMException ex = new(SharedResx.ThisCommandIsNotSupported, VSConstants.E_UNEXPECTED);
+		COMException ex = new(ControlsResources.ThisCommandIsNotSupported, VSConstants.E_UNEXPECTED);
 		Diag.Dug(ex);
 		throw ex;
 	}
@@ -209,7 +209,7 @@ public class Marker : IVsTextMarkerClient
 	{
 		if (_TextSpan == null)
 		{
-			COMException ex = new(SharedResx.ViewHaveToBeSetBeforeExecutingDoubleClickEvent, VSConstants.E_UNEXPECTED);
+			COMException ex = new(ControlsResources.ViewHaveToBeSetBeforeExecutingDoubleClickEvent, VSConstants.E_UNEXPECTED);
 			Diag.Dug(ex);
 			throw ex;
 		}

@@ -19,7 +19,7 @@ public class LongStringUITypeEditor : DiffImageUITypeEditor
 
 	public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 	{
-		using PropertyViewForm propertyViewForm = new PropertyViewForm();
+		using PropertyViewDlg propertyViewForm = new PropertyViewDlg();
 		propertyViewForm.Text = context.PropertyDescriptor.DisplayName;
 		propertyViewForm.DisplayText = value.ToString();
 		propertyViewForm.ShowDialog();

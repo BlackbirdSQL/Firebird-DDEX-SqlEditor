@@ -44,9 +44,9 @@ public sealed class HandleCollector
 				flag = NeedCollection();
 				currentHandleCount = handleCount;
 			}
-			lock (internalSyncObject)
+			lock (_LockObject)
 			{
-				HandleAdded?.Invoke(name, handle, currentHandleCount);
+				HandleAddedEvent?.Invoke(name, handle, currentHandleCount);
 			}
 			if (flag && flag)
 			{
@@ -98,9 +98,9 @@ public sealed class HandleCollector
 				}
 				currentHandleCount = handleCount;
 			}
-			lock (internalSyncObject)
+			lock (_LockObject)
 			{
-				HandleRemoved?.Invoke(name, handle, currentHandleCount);
+				HandleRemovedEvent?.Invoke(name, handle, currentHandleCount);
 			}
 			return handle;
 		}
@@ -112,11 +112,11 @@ public sealed class HandleCollector
 
 	private static int suspendCount;
 
-	private static readonly object internalSyncObject = new object();
+	private static readonly object _LockObject = new object();
 
-	public static event HandleChangeEventHandler HandleAdded;
+	public static event HandleChangeEventHandler HandleAddedEvent;
 
-	public static event HandleChangeEventHandler HandleRemoved;
+	public static event HandleChangeEventHandler HandleRemovedEvent;
 
 	public static IntPtr Add(IntPtr handle, int type)
 	{
@@ -126,7 +126,7 @@ public sealed class HandleCollector
 
 	public static void SuspendCollect()
 	{
-		lock (internalSyncObject)
+		lock (_LockObject)
 		{
 			suspendCount++;
 		}
@@ -135,7 +135,7 @@ public sealed class HandleCollector
 	public static void ResumeCollect()
 	{
 		bool flag = false;
-		lock (internalSyncObject)
+		lock (_LockObject)
 		{
 			if (suspendCount > 0)
 			{
@@ -163,7 +163,7 @@ public sealed class HandleCollector
 
 	public static int RegisterType(string typeName, int expense, int initialThreshold)
 	{
-		lock (internalSyncObject)
+		lock (_LockObject)
 		{
 			if (handleTypeCount == 0 || handleTypeCount == handleTypes.Length)
 			{

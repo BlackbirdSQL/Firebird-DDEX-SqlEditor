@@ -16,6 +16,7 @@ using BlackbirdSql.Common.Model.Enums;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core;
 using BlackbirdSql.Core.Diagnostics;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio;
@@ -112,7 +113,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 
 	private AsyncRedirectedOutputState _stdErrorRedirState;
 
-	private object _asyncRedirCritSection = new object();
+	private object _AsyncLockObject = new object();
 
 	private AsyncCallback _readBufferCallback;
 
@@ -124,16 +125,16 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 
 	public GetCurrentWorkingDirectoryPath CurrentWorkingDirectoryPath { get; set; }
 
-	public event QEOLESQLOutputRedirectionEventHandler QEOLESQLOutputRedirection;
+	public event QEOLESQLOutputRedirectionEventHandler SqlOutputRedirectionEvent;
 
-	public event QEOLESQLErrorMessageEventHandler QEOLESQLErrorMessage;
+	public event QEOLESQLErrorMessageEventHandler SqlErrorMessageEvent;
 
-	public event QeSqlCmdMessageFromAppEventHandler QeSqlCmdMessageFromApp;
+	public event QeSqlCmdMessageFromAppEventHandler SqlCmdMessageFromAppEvent;
 
-	public event QeSqlCmdNewConnectionOpenedEventHandler QeSqlCmdNewConnection;
+	public event QeSqlCmdNewConnectionOpenedEventHandler SqlCmdNewConnectionOpenedEvent;
 
-	public QEOLESQLExec(ResolveSqlCmdVariable sqlCmdVariableResolver, QueryExecutor queryExecutor)
-		: base(queryExecutor)
+	public QEOLESQLExec(ResolveSqlCmdVariable sqlCmdVariableResolver, QueryManager qryMgr)
+		: base(qryMgr)
 	{
 		SqlCmdVariableResolver = sqlCmdVariableResolver;
 	}
@@ -184,7 +185,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 				string info = parserState.Info;
 				if (parserState.StatusValue == ParserState.Status.Error && parserState.ErrorTypeValue == ParserState.ErrorType.SyntaxError && info != null && info.Length > 0)
 				{
-					OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, SharedResx.ErrScriptingIncorrectSyntax, info), EnQESQLScriptProcessingMessageType.FatalError);
+					OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrScriptingIncorrectSyntax, info), EnQESQLScriptProcessingMessageType.FatalError);
 				}
 			}
 		}
@@ -214,7 +215,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 			bool flag = _ExecBatchNumOfTimes > 1;
 			if (flag)
 			{
-				OnInfoMessage(SharedResx.BeginningBatchExec);
+				OnInfoMessage(ControlsResources.BeginningBatchExec);
 			}
 
 			for (int num = _ExecBatchNumOfTimes; num > 0; num--)
@@ -224,6 +225,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 				{
 					if (_ExecOptions.WithEstimatedExecutionPlan)
 						_SpecialActions |= EnQESQLBatchSpecialAction.ExpectEstimatedYukonXmlExecutionPlan;
+
 					// Execution
 					scriptExecutionResult = batch.Execute(_CurrentConn, _SpecialActions);
 				}
@@ -248,12 +250,12 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 						{
 							if (flag)
 							{
-								OnInfoMessage(SharedResx.ErrBatchExecutionFailedIgnoring);
+								OnInfoMessage(ControlsResources.ErrBatchExecutionFailedIgnoring);
 							}
 						}
 						else if (_ErrorAction == 0)
 						{
-							OnInfoMessage(SharedResx.ErrBatchExecutionFailedExiting);
+							OnInfoMessage(ControlsResources.ErrBatchExecutionFailedExiting);
 							return EnScriptExecutionResult.Halted;
 						}
 
@@ -265,7 +267,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 
 			if (flag)
 			{
-				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, SharedResx.BatchExecCompleted, _ExecBatchNumOfTimes));
+				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.BatchExecCompleted, _ExecBatchNumOfTimes));
 				return scriptExecutionResult;
 			}
 
@@ -298,12 +300,12 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 			return;
 		}
 
-		lock (_StateCritSection)
+		lock (_LockObject)
 		{
 			_runningProcess?.Kill();
 		}
 
-		lock (_asyncRedirCritSection)
+		lock (_AsyncLockObject)
 		{
 			_stdOutRedirState?.DoneEvent.Set();
 
@@ -318,7 +320,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		_ErrorAction = (EnErrorAction)1;
 		_LineNumOfLastBatchEnd = -1;
 		CloseCurrentConnIfNeeded();
-		lock (_StateCritSection)
+		lock (_LockObject)
 		{
 			if (_runningProcess != null)
 			{
@@ -352,7 +354,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 			// _currentSSConnInfo = null;
 		}
 
-		_asyncRedirCritSection = null;
+		_AsyncLockObject = null;
 	}
 
 	public EnParserAction GetMoreData(ref string str)
@@ -372,7 +374,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 
 		if (varValue == null)
 		{
-			OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, SharedResx.ErrOLESQLVarNotDefined, varName), EnQESQLScriptProcessingMessageType.FatalError);
+			OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrOLESQLVarNotDefined, varName), EnQESQLScriptProcessingMessageType.FatalError);
 			_ExecResult = EnScriptExecutionResult.Halted;
 			return (EnParserAction)1;
 		}
@@ -442,13 +444,13 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 
 	public EnParserAction Reset()
 	{
-		OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, SharedResx.ErrNotSupportedSqlCmdCommand, "Reset"), EnQESQLScriptProcessingMessageType.Warning);
+		OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrNotSupportedSqlCmdCommand, "Reset"), EnQESQLScriptProcessingMessageType.Warning);
 		return 0;
 	}
 
 	public EnParserAction Ed(string batch, ref IBatchSource batchSource)
 	{
-		OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, SharedResx.ErrNotSupportedSqlCmdCommand, "Ed"), EnQESQLScriptProcessingMessageType.Warning);
+		OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrNotSupportedSqlCmdCommand, "Ed"), EnQESQLScriptProcessingMessageType.Warning);
 		return 0;
 	}
 
@@ -459,7 +461,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
 		Tracer.Trace(GetType(), "QEOLESQLExec.ExecuteShellCommand", "command = {0}", command ?? "null");
 		ExecuteACommand(command, null);
-		lock (_StateCritSection)
+		lock (_LockObject)
 		{
 			if (_ExecState == ExecState.Cancelling)
 			{
@@ -473,19 +475,19 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 
 	public EnParserAction ServerList()
 	{
-		OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, SharedResx.ErrNotSupportedSqlCmdCommand, "ServerList"), EnQESQLScriptProcessingMessageType.Warning);
+		OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrNotSupportedSqlCmdCommand, "ServerList"), EnQESQLScriptProcessingMessageType.Warning);
 		return 0;
 	}
 
 	public EnParserAction List(string batch)
 	{
-		OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, SharedResx.ErrNotSupportedSqlCmdCommand, "List"), EnQESQLScriptProcessingMessageType.Warning);
+		OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrNotSupportedSqlCmdCommand, "List"), EnQESQLScriptProcessingMessageType.Warning);
 		return 0;
 	}
 
 	public EnParserAction ListVar(string varList)
 	{
-		OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, SharedResx.ErrNotSupportedSqlCmdCommand, "ListVar"), EnQESQLScriptProcessingMessageType.Warning);
+		OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrNotSupportedSqlCmdCommand, "ListVar"), EnQESQLScriptProcessingMessageType.Warning);
 		return 0;
 	}
 
@@ -511,7 +513,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		Tracer.Trace(GetType(), "QEOLESQLExec.PerfTrace", "od = {0}", od);
-		OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, SharedResx.ErrNotSupportedSqlCmdCommand, "perftrace"), EnQESQLScriptProcessingMessageType.Warning);
+		OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrNotSupportedSqlCmdCommand, "perftrace"), EnQESQLScriptProcessingMessageType.Warning);
 		return 0;
 	}
 
@@ -596,29 +598,29 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 
 	public EnParserAction Xml(EnXmlStatus xs)
 	{
-		OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, SharedResx.ErrNotSupportedSqlCmdCommand, "Xml"), EnQESQLScriptProcessingMessageType.Warning);
+		OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrNotSupportedSqlCmdCommand, "Xml"), EnQESQLScriptProcessingMessageType.Warning);
 		return 0;
 	}
 
 	public EnParserAction Help()
 	{
-		OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, SharedResx.ErrNotSupportedSqlCmdCommand, "Help"), EnQESQLScriptProcessingMessageType.Warning);
+		OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrNotSupportedSqlCmdCommand, "Help"), EnQESQLScriptProcessingMessageType.Warning);
 		return 0;
 	}
 
 	private void OnQEOLESQLErrorMessage(string errorLine, string msg, EnQESQLScriptProcessingMessageType msgType)
 	{
 		Tracer.Trace(GetType(), "QEOLESQLExec.OnQEOLESQLErrorMessage", "msg = {0}", msg);
-		QEOLESQLErrorMessage?.Invoke(this, new QEOLESQLErrorMessageEventArgs(errorLine, msg, msgType));
+		SqlErrorMessageEvent?.Invoke(this, new QEOLESQLErrorMessageEventArgs(errorLine, msg, msgType));
 	}
 
 	private void OnQeSqlCmdMessageFromApp(string message, bool stdOut)
 	{
-		if (QeSqlCmdMessageFromApp != null)
+		if (SqlCmdMessageFromAppEvent != null)
 		{
-			lock (_asyncRedirCritSection)
+			lock (_AsyncLockObject)
 			{
-				QeSqlCmdMessageFromApp(this, new QeSqlCmdMessageFromAppEventArgs(message, stdOut));
+				SqlCmdMessageFromAppEvent(this, new (message, stdOut));
 			}
 		}
 	}
@@ -626,10 +628,10 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 	private void OnQEOLESQLOutputRedirection(EnQEOLESQLOutputCategory category, string fullFileName)
 	{
 		Tracer.Trace(GetType(), "QEOLESQLExec.OnQEOLESQLOutputRedirection", "", null);
-		if (QEOLESQLOutputRedirection != null)
+		if (SqlOutputRedirectionEvent != null)
 		{
-			QEOLESQLOutputRedirectionEventArgs qEOLESQLOutputRedirectionEventArgs = new QEOLESQLOutputRedirectionEventArgs(category, fullFileName, _BatchConsumer);
-			QEOLESQLOutputRedirection(this, qEOLESQLOutputRedirectionEventArgs);
+			QEOLESQLOutputRedirectionEventArgs qEOLESQLOutputRedirectionEventArgs = new (category, fullFileName, _BatchConsumer);
+			SqlOutputRedirectionEvent(this, qEOLESQLOutputRedirectionEventArgs);
 			if (qEOLESQLOutputRedirectionEventArgs.BatchConsumer != null && qEOLESQLOutputRedirectionEventArgs.BatchConsumer != _BatchConsumer)
 			{
 				HookupBatchWithConsumer(_CurBatch, _BatchConsumer, bHookUp: false);
@@ -668,7 +670,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		catch (Exception ex)
 		{
 			Tracer.LogExCatch(GetType(), ex);
-			OnQEOLESQLErrorMessage(string.Format(CultureInfo.CurrentCulture, SharedResx.ErrUnableToRedirOutput, text), ex.Message, EnQESQLScriptProcessingMessageType.Error);
+			OnQEOLESQLErrorMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrUnableToRedirOutput, text), ex.Message, EnQESQLScriptProcessingMessageType.Error);
 		}
 	}
 
@@ -686,12 +688,12 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 			{
 				if (_CurrentConnInfo.UserID != null && _CurrentConnInfo.UserID.Length != 0)
 				{
-					OnInfoMessage(string.Format(CultureInfo.CurrentCulture, SharedResx.InfoDisconnectingFromSvrAsUser,
+					OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoDisconnectingFromSvrAsUser,
 						_CurrentConnInfo.DisplayName, _CurrentConnInfo.UserID));
 				}
 				else
 				{
-					OnInfoMessage(string.Format(CultureInfo.CurrentCulture, SharedResx.InfoDisconnectingFromSvr,
+					OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoDisconnectingFromSvr,
 						_CurrentConnInfo.DisplayName));
 				}
 			}
@@ -703,7 +705,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		catch (Exception ex)
 		{
 			Tracer.LogExCatch(GetType(), ex);
-			OnQEOLESQLErrorMessage(SharedResx.ErrUnableToCloseCon, ex.Message, EnQESQLScriptProcessingMessageType.Error);
+			OnQEOLESQLErrorMessage(ControlsResources.ErrUnableToCloseCon, ex.Message, EnQESQLScriptProcessingMessageType.Error);
 		}
 	}
 
@@ -723,11 +725,11 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 			{
 				if (_currentSSConnInfo.UserName != null && _currentSSConnInfo.UserName.Length != 0)
 				{
-					OnInfoMessage(string.Format(CultureInfo.CurrentCulture, SharedResx.InfoDisconnectingFromSvrAsUser, _currentSSConnInfo.ServerName, _currentSSConnInfo.UserName));
+					OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoDisconnectingFromSvrAsUser, _currentSSConnInfo.ServerName, _currentSSConnInfo.UserName));
 				}
 				else
 				{
-					OnInfoMessage(string.Format(CultureInfo.CurrentCulture, SharedResx.InfoDisconnectingFromSvr, _currentSSConnInfo.ServerName));
+					OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoDisconnectingFromSvr, _currentSSConnInfo.ServerName));
 				}
 			}
 			_currentSSConn.Close();
@@ -737,7 +739,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		catch (Exception ex)
 		{
 			Tracer.LogExCatch(GetType(), ex);
-			OnQEOLESQLErrorMessage(SharedResx.ErrUnableToCloseCon, ex.Message, EnQESQLScriptProcessingMessageType.Error);
+			OnQEOLESQLErrorMessage(ControlsResources.ErrUnableToCloseCon, ex.Message, EnQESQLScriptProcessingMessageType.Error);
 		}
 	}
 	*/
@@ -754,11 +756,11 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 
 			if (ci.UserID != null && ci.UserID.Length != 0)
 			{
-				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, SharedResx.InfoConnectingToSvrAsUser, ci.DisplayName, ci.UserID));
+				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoConnectingToSvrAsUser, ci.DisplayName, ci.UserID));
 			}
 			else
 			{
-				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, SharedResx.InfoConnectingToSvr, ci.DisplayName));
+				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoConnectingToSvr, ci.DisplayName));
 			}
 
 			// ci.Pooling = false;
@@ -778,7 +780,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 			Tracer.Trace(GetType(), Tracer.Level.Information, "QEOLESQLExec.AttemptToEstablishCurConnection: final connection string is \"{0}\"", connectionString);
 			IDbConnection dbConnection = new FbConnection(connectionString);
 			dbConnection.Open();
-			QeSqlCmdNewConnection?.Invoke(this, new QeSqlCmdNewConnectionOpenedEventArgs(dbConnection));
+			SqlCmdNewConnectionOpenedEvent?.Invoke(this, new QeSqlCmdNewConnectionOpenedEventArgs(dbConnection));
 
 			ProcessExecOptions(dbConnection);
 			SetRestoreConnectionOptions(bSet: true, dbConnection);
@@ -787,7 +789,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		catch (Exception ex)
 		{
 			Tracer.LogExCatch(GetType(), ex);
-			OnQEOLESQLErrorMessage(SharedResx.ErrUnableToConnect, ex.Message, EnQESQLScriptProcessingMessageType.FatalError);
+			OnQEOLESQLErrorMessage(ControlsResources.ErrUnableToConnect, ex.Message, EnQESQLScriptProcessingMessageType.FatalError);
 			return null;
 		}
 	}
@@ -805,11 +807,11 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 
 			if (ci.UserName != null && ci.UserName.Length != 0)
 			{
-				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, SharedResx.InfoConnectingToSvrAsUser, ci.ServerName, ci.UserName));
+				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoConnectingToSvrAsUser, ci.ServerName, ci.UserName));
 			}
 			else
 			{
-				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, SharedResx.InfoConnectingToSvr, ci.ServerName));
+				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoConnectingToSvr, ci.ServerName));
 			}
 
 			ci.ApplicationName = "Microsoft SQL Server Data Tools, T-SQL Editor";
@@ -828,7 +830,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 			Tracer.Trace(GetType(), Tracer.Level.Warning, "QEOLESQLExec.AttemptToEstablishCurConnection: final connection string is \"{0}\"", connectionString);
 			IDbConnection dbConnection = new Microsoft.Data.SqlClient.SqlConnection(connectionString);
 			dbConnection.Open();
-			QeSqlCmdNewConnection?.Invoke(this, new QeSqlCmdNewConnectionOpenedEventArgs(dbConnection));
+			SqlCmdNewConnectionOpenedEvent?.Invoke(this, new QeSqlCmdNewConnectionOpenedEventArgs(dbConnection));
 
 			ProcessExecOptions(dbConnection);
 			SetRestoreConnectionOptions(bSet: true, dbConnection);
@@ -837,7 +839,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		catch (Exception ex)
 		{
 			Tracer.LogExCatch(GetType(), ex);
-			OnQEOLESQLErrorMessage(SharedResx.ErrUnableToConnect, ex.Message, EnQESQLScriptProcessingMessageType.FatalError);
+			OnQEOLESQLErrorMessage(ControlsResources.ErrUnableToConnect, ex.Message, EnQESQLScriptProcessingMessageType.FatalError);
 			return null;
 		}
 	}
@@ -857,7 +859,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		{
 		}
 
-		lock (_StateCritSection)
+		lock (_LockObject)
 		{
 			if (_ExecState != ExecState.Executing)
 			{
@@ -901,7 +903,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 			};
 			process.StartInfo = processStartInfo;
 			process.Start();
-			lock (_StateCritSection)
+			lock (_LockObject)
 			{
 				if (_ExecState == ExecState.Cancelling)
 				{
@@ -919,7 +921,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 
 			Stream baseStream;
 			Stream baseStream2;
-			lock (_asyncRedirCritSection)
+			lock (_AsyncLockObject)
 			{
 				baseStream = _runningProcess.StandardOutput.BaseStream;
 				_stdOutRedirState = new AsyncRedirectedOutputState(baseStream, _runningProcess.StandardOutput.CurrentEncoding, true);
@@ -936,16 +938,16 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		catch (Win32Exception ex)
 		{
 			Tracer.LogExCatch(GetType(), ex);
-			OnQEOLESQLErrorMessage(string.Format(CultureInfo.CurrentCulture, SharedResx.ErrUnableToLaunchProcesss, fileName, commandLine), ex.Message, EnQESQLScriptProcessingMessageType.Error);
+			OnQEOLESQLErrorMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrUnableToLaunchProcesss, fileName, commandLine), ex.Message, EnQESQLScriptProcessingMessageType.Error);
 		}
 		catch (Exception ex2)
 		{
 			Tracer.LogExCatch(GetType(), ex2);
-			OnQEOLESQLErrorMessage(string.Format(CultureInfo.CurrentCulture, SharedResx.ErrUnableToExecProcess, fileName, commandLine), ex2.Message, EnQESQLScriptProcessingMessageType.Error);
+			OnQEOLESQLErrorMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrUnableToExecProcess, fileName, commandLine), ex2.Message, EnQESQLScriptProcessingMessageType.Error);
 		}
 		finally
 		{
-			lock (_StateCritSection)
+			lock (_LockObject)
 			{
 				if (_runningProcess != null)
 				{
@@ -954,7 +956,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 				}
 			}
 
-			lock (_asyncRedirCritSection)
+			lock (_AsyncLockObject)
 			{
 				_stdOutRedirState = null;
 				_stdErrorRedirState = null;
@@ -968,13 +970,13 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		switch (msgType)
 		{
 			case EnQESQLScriptProcessingMessageType.FatalError:
-				OnQEOLESQLErrorMessage(SharedResx.ErrFatalScriptingErrorNoParam, msg, msgType);
+				OnQEOLESQLErrorMessage(ControlsResources.ErrFatalScriptingErrorNoParam, msg, msgType);
 				break;
 			case EnQESQLScriptProcessingMessageType.Error:
-				OnQEOLESQLErrorMessage(SharedResx.ErrScriptingErrorNoParam, msg, msgType);
+				OnQEOLESQLErrorMessage(ControlsResources.ErrScriptingErrorNoParam, msg, msgType);
 				break;
 			default:
-				OnQEOLESQLErrorMessage(SharedResx.ErrScriptingWarningNoParam, msg, msgType);
+				OnQEOLESQLErrorMessage(ControlsResources.ErrScriptingWarningNoParam, msg, msgType);
 				break;
 		}
 	}
@@ -1008,17 +1010,17 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		}
 		catch (ArgumentException)
 		{
-			OnScriptProcessingError(SharedResx.ErrInvalidPathInRCmd, EnQESQLScriptProcessingMessageType.FatalError);
+			OnScriptProcessingError(ControlsResources.ErrInvalidPathInRCmd, EnQESQLScriptProcessingMessageType.FatalError);
 			return null;
 		}
 		catch (PathTooLongException)
 		{
-			OnScriptProcessingError(SharedResx.ErrPathIsTooLongForRCmd, EnQESQLScriptProcessingMessageType.FatalError);
+			OnScriptProcessingError(ControlsResources.ErrPathIsTooLongForRCmd, EnQESQLScriptProcessingMessageType.FatalError);
 			return null;
 		}
 		catch (Exception)
 		{
-			OnScriptProcessingError(SharedResx.ErrUnableToProcessRCmd, EnQESQLScriptProcessingMessageType.FatalError);
+			OnScriptProcessingError(ControlsResources.ErrUnableToProcessRCmd, EnQESQLScriptProcessingMessageType.FatalError);
 			return null;
 		}
 
@@ -1038,17 +1040,17 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		catch (FileNotFoundException e)
 		{
 			Tracer.LogExCatch(GetType(), e);
-			OnScriptProcessingError(SharedResx.ErrFileWasnotFoundForRCmd, EnQESQLScriptProcessingMessageType.FatalError);
+			OnScriptProcessingError(ControlsResources.ErrFileWasnotFoundForRCmd, EnQESQLScriptProcessingMessageType.FatalError);
 		}
 		catch (DirectoryNotFoundException e2)
 		{
 			Tracer.LogExCatch(GetType(), e2);
-			OnScriptProcessingError(SharedResx.ErrDirWasnotFoundForRCmd, EnQESQLScriptProcessingMessageType.FatalError);
+			OnScriptProcessingError(ControlsResources.ErrDirWasnotFoundForRCmd, EnQESQLScriptProcessingMessageType.FatalError);
 		}
 		catch (Exception ex4)
 		{
 			Tracer.LogExCatch(GetType(), ex4);
-			OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, SharedResx.ErrGenericRCmdError, ex4.Message), EnQESQLScriptProcessingMessageType.FatalError);
+			OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrGenericRCmdError, ex4.Message), EnQESQLScriptProcessingMessageType.FatalError);
 		}
 		finally
 		{

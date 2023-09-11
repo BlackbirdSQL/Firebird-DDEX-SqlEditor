@@ -30,7 +30,7 @@ public abstract class AbstractQESQLBatchConsumer : IQESQLBatchConsumer, IDisposa
 
 	protected ISqlQueryExecutionHandler _ResultsControl;
 
-	private MoreRowsAvailableEventHandler _MoreRowsFromDSForDiscardDelegate;
+	private MoreRowsAvailableEventHandler _MoreRowsFromDSForDiscardHandler;
 
 	private QESQLBatchNewResultSetEventArgs _ResultSetArgsForDiscard;
 
@@ -99,9 +99,9 @@ public abstract class AbstractQESQLBatchConsumer : IQESQLBatchConsumer, IDisposa
 	protected virtual void HandleNewResultSetForDiscard(QESQLBatchNewResultSetEventArgs args)
 	{
 		Tracer.Trace(GetType(), "QESQLBatchConsumerBase.HandleNewResultSetForDiscard", "", null);
-		_MoreRowsFromDSForDiscardDelegate = MoreRowsFromDSForDiscard;
+		_MoreRowsFromDSForDiscardHandler = MoreRowsFromDSForDiscard;
 		_ResultSetArgsForDiscard = args;
-		_ResultSetArgsForDiscard.ResultSet.MoreRowsAvailable += _MoreRowsFromDSForDiscardDelegate;
+		_ResultSetArgsForDiscard.ResultSet.MoreRowsAvailableEvent += _MoreRowsFromDSForDiscardHandler;
 		_ResultSetArgsForDiscard.ResultSet.StartConsumingDataWithoutStoring();
 	}
 
@@ -110,8 +110,8 @@ public abstract class AbstractQESQLBatchConsumer : IQESQLBatchConsumer, IDisposa
 		Tracer.Trace(GetType(), "QESQLBatchConsumerBase.MoreRowsFromDSForDiscard", "", null);
 		if (a.AllRows)
 		{
-			_ResultSetArgsForDiscard.ResultSet.MoreRowsAvailable -= _MoreRowsFromDSForDiscardDelegate;
-			_MoreRowsFromDSForDiscardDelegate = null;
+			_ResultSetArgsForDiscard.ResultSet.MoreRowsAvailableEvent -= _MoreRowsFromDSForDiscardHandler;
+			_MoreRowsFromDSForDiscardHandler = null;
 			_ResultSetArgsForDiscard = null;
 		}
 	}
@@ -166,7 +166,7 @@ public abstract class AbstractQESQLBatchConsumer : IQESQLBatchConsumer, IDisposa
 		_ResultsControl.ProcessSpecialActionOnBatch(args);
 	}
 
-	public virtual void OnStatementCompleted(object sender, QESQLBatchStatementCompletedEventArgs args)
+	public virtual void OnStatementCompleted(object sender, QESQLStatementCompletedEventArgs args)
 	{
 		Tracer.Trace(GetType(), "QESQLBatchConsumerBase.OnStatementCompleted", "sender: {0}, args.RecordCount: {1}, args.IsDebugging: {2}", sender, args.RecordCount, args.IsDebugging);
 	}
@@ -176,10 +176,10 @@ public abstract class AbstractQESQLBatchConsumer : IQESQLBatchConsumer, IDisposa
 		Tracer.Trace(GetType(), "QESQLBatchConsumerBase.Cleanup", "", null);
 		if (_ResultSetArgsForDiscard != null)
 		{
-			if (_MoreRowsFromDSForDiscardDelegate != null)
+			if (_MoreRowsFromDSForDiscardHandler != null)
 			{
-				_ResultSetArgsForDiscard.ResultSet.MoreRowsAvailable -= _MoreRowsFromDSForDiscardDelegate;
-				_MoreRowsFromDSForDiscardDelegate = null;
+				_ResultSetArgsForDiscard.ResultSet.MoreRowsAvailableEvent -= _MoreRowsFromDSForDiscardHandler;
+				_MoreRowsFromDSForDiscardHandler = null;
 			}
 			_ResultSetArgsForDiscard = null;
 		}

@@ -79,7 +79,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 			}
 		}
 
-		public event ContentsChangedEventHandler ContentsChanged;
+		public event ContentsChangedEventHandler ContentsChangedEvent;
 
 		protected EmbeddedTextBox()
 		{
@@ -246,7 +246,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 
 		private void OnTextChanged(object sender, EventArgs args)
 		{
-			ContentsChanged?.Invoke(this, args);
+			ContentsChangedEvent?.Invoke(this, args);
 		}
 	}
 }

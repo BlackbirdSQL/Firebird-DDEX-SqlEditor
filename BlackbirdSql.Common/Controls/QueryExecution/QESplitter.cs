@@ -151,7 +151,7 @@ public class QESplitter : Control, IMessageFilter
 		}
 	}
 
-	public event QESplitterMovedEventHandler SplitterMoved
+	public event QESplitterMovedEventHandler SplitterMovedEvent
 	{
 		add
 		{

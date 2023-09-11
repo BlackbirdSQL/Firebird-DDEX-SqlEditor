@@ -297,7 +297,7 @@ public class GridResultsGrid : GridControl, IGridControl2, IGridControl, IStatus
 
 	public SolidBrush BackGroundBrush => m_bkBrush;
 
-	public event AdjustSelectionForButtonClickEventHandler AdjustSelectionForButtonClick;
+	public event AdjustSelectionForButtonClickEventHandler AdjustSelectionForButtonClickEvent;
 
 	private static void PreloadStringsFromResources()
 	{
@@ -533,9 +533,9 @@ public class GridResultsGrid : GridControl, IGridControl2, IGridControl, IStatus
 
 	protected override bool AdjustSelectionForButtonCellMouseClick()
 	{
-		if (AdjustSelectionForButtonClick != null)
+		if (AdjustSelectionForButtonClickEvent != null)
 		{
-			AdjustSelectionForButtonClick(this, new AdjustSelectionForButtonClickEventArgs(m_captureTracker.RowIndex, m_captureTracker.ColumnIndex));
+			AdjustSelectionForButtonClickEvent(this, new (m_captureTracker.RowIndex, m_captureTracker.ColumnIndex));
 			return true;
 		}
 

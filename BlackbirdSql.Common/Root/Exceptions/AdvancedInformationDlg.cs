@@ -9,10 +9,11 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Enums;
+using BlackbirdSql.Common.Properties;
 
 namespace BlackbirdSql.Common.Exceptions
 {
-	public class AdvancedInformation : Form
+	public class AdvancedInformationDlg : Form
 	{
 		private IContainer components;
 
@@ -36,9 +37,9 @@ namespace BlackbirdSql.Common.Exceptions
 
 		private TableLayoutPanel tableLayoutPanel2;
 
-		public ExceptionMessageBoxForm MessageBoxForm { get; set; }
+		public ExceptionMessageBoxDlg MessageBoxForm { get; set; }
 
-		public AdvancedInformation()
+		public AdvancedInformationDlg()
 		{
 			InitializeComponent();
 			base.Icon = null;
@@ -171,7 +172,7 @@ namespace BlackbirdSql.Common.Exceptions
 		private void InitializeComponent()
 		{
 			components = new System.ComponentModel.Container();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BlackbirdSql.Common.Exceptions.AdvancedInformation));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BlackbirdSql.Common.Exceptions.AdvancedInformationDlg));
 			label1 = new System.Windows.Forms.Label();
 			tree = new System.Windows.Forms.TreeView();
 			label2 = new System.Windows.Forms.Label();

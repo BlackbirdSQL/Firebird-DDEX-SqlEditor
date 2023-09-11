@@ -9,6 +9,7 @@ using BlackbirdSql.Common.Controls.Enums;
 using BlackbirdSql.Common.Controls.Events;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Model.Interfaces;
+using BlackbirdSql.Common.Properties;
 
 // using Microsoft.SqlServer.Management.UI.Grid;
 
@@ -28,7 +29,7 @@ public class DlgStorage : IDlgStorage, IGridStorage, IDisposable
 	// [CLSCompliant(false)]
 	protected IDlgGridControl _DlgGridCtl;
 
-	protected CustomizeCellGDIObjectsEventHandler m_OnCustCellGDIObjects;
+	protected CustomizeCellGDIObjectsEventHandler _OnCustCellGDIObjectsHandler;
 
 	// [CLSCompliant(false)]
 	public virtual IMemDataStorage Storage => _GridMemStorage;
@@ -47,8 +48,8 @@ public class DlgStorage : IDlgStorage, IGridStorage, IDisposable
 		_GridMemStorage.InitStorage();
 		_StorageView = _GridMemStorage.GetStorageView();
 		_DlgGridCtl = grid;
-		m_OnCustCellGDIObjects = OnCustCellGDIObjects;
-		_DlgGridCtl.CustomizeCellGDIObjects += m_OnCustCellGDIObjects;
+		_OnCustCellGDIObjectsHandler = OnCustCellGDIObjects;
+		_DlgGridCtl.CustomizeCellGDIObjectsEvent += _OnCustCellGDIObjectsHandler;
 	}
 
 	public void Dispose()
@@ -69,9 +70,9 @@ public class DlgStorage : IDlgStorage, IGridStorage, IDisposable
 		}
 		if (_DlgGridCtl != null)
 		{
-			if (m_OnCustCellGDIObjects != null)
+			if (_OnCustCellGDIObjectsHandler != null)
 			{
-				_DlgGridCtl.CustomizeCellGDIObjects -= m_OnCustCellGDIObjects;
+				_DlgGridCtl.CustomizeCellGDIObjectsEvent -= _OnCustCellGDIObjectsHandler;
 			}
 			_DlgGridCtl = null;
 		}
@@ -91,7 +92,7 @@ public class DlgStorage : IDlgStorage, IGridStorage, IDisposable
 		{
 			return data;
 		}
-		return UIGridResources.InvalidNonStringCellType;
+		return ControlsResources.InvalidNonStringCellType;
 	}
 
 	public virtual int IsCellEditable(long nRowIndex, int nColIndex)
@@ -126,7 +127,7 @@ public class DlgStorage : IDlgStorage, IGridStorage, IDisposable
 		{
 			image = null;
 			state = EnButtonCellState.Normal;
-			buttonLabel = UIGridResources.InvalidNonButtonCellType;
+			buttonLabel = ControlsResources.InvalidNonButtonCellType;
 		}
 	}
 
@@ -144,28 +145,26 @@ public class DlgStorage : IDlgStorage, IGridStorage, IDisposable
 	{
 		if (FillControlWithDataEvent != null)
 		{
-			FillControlWithDataEventArgs e = new FillControlWithDataEventArgs((int)nRowIndex, nColIndex, control);
-			FillControlWithDataEvent(_DlgGridCtl, e);
+			FillControlWithDataEvent(_DlgGridCtl, new((int)nRowIndex, nColIndex, control));
+			return;
 		}
-		else
-		{
-			string cellDataAsString = GetCellDataAsString(nRowIndex, nColIndex);
-			control.AddDataAsString(cellDataAsString);
-			control.SetCurSelectionAsString(cellDataAsString);
-		}
+
+		string cellDataAsString = GetCellDataAsString(nRowIndex, nColIndex);
+		control.AddDataAsString(cellDataAsString);
+		control.SetCurSelectionAsString(cellDataAsString);
 	}
 
 	public virtual bool SetCellDataFromControl(long nRowIndex, int nColIndex, IGridEmbeddedControl control)
 	{
 		if (SetCellDataFromControlEvent != null)
 		{
-			SetCellDataFromControlEventArgs setCellDataFromControlEventArgs = new SetCellDataFromControlEventArgs((int)nRowIndex, nColIndex, control);
-			SetCellDataFromControlEvent(_DlgGridCtl, setCellDataFromControlEventArgs);
-			if (!setCellDataFromControlEventArgs.Valid)
-			{
+			SetCellDataFromControlEventArgs args = new ((int)nRowIndex, nColIndex, control);
+			SetCellDataFromControlEvent(_DlgGridCtl, args);
+
+			if (!args.Valid)
 				return false;
-			}
 		}
+
 		GridCell cell = GetCell(nRowIndex, nColIndex);
 		if (!(cell is not null))
 		{

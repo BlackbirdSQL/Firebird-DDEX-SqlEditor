@@ -54,8 +54,8 @@ public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
 		AuxiliaryDocData auxiliaryDocDataForEditor = GetAuxiliaryDocDataForEditor();
 		if (auxiliaryDocDataForEditor != null)
 		{
-			QueryExecutor queryExecutor = auxiliaryDocDataForEditor.QueryExecutor;
-			if (queryExecutor != null)
+			QueryManager qryMgr = auxiliaryDocDataForEditor.QryMgr;
+			if (qryMgr != null)
 			{
 				if (pvaIn != IntPtr.Zero)
 				{
@@ -65,7 +65,7 @@ public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
 				else if (pvaOut != IntPtr.Zero)
 				{
 					// Diag.Trace("SqlEditorSqlDatabaseCommand:HandleExec requesting current selection");
-					IDbConnection connection = queryExecutor.ConnectionStrategy.Connection;
+					IDbConnection connection = qryMgr.ConnectionStrategy.Connection;
 					object empty;
 					if (connection == null /* || connection.State != ConnectionState.Open */ || string.IsNullOrEmpty(connection.Database))
 					{
@@ -84,7 +84,7 @@ public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
 			}
 			else
 			{
-				ArgumentNullException ex = new("QueryExecutor is null");
+				ArgumentNullException ex = new("QryMgr is null");
 				Diag.Dug(ex);
 				throw ex;
 			}
@@ -118,7 +118,7 @@ public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
 		}
 
 
-		ConnectionStrategy connectionStrategy = docData.QueryExecutor.ConnectionStrategy;
+		ConnectionStrategy connectionStrategy = docData.QryMgr.ConnectionStrategy;
 		connectionStrategy.SetDatasetKeyOnConnection(selectedDatasetKey, csb);
 		// IDbConnection connection = connectionStrategy.Connection;
 

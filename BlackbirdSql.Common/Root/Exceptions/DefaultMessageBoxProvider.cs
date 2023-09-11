@@ -52,14 +52,14 @@ public class DefaultMessageBoxProvider : IMessageBoxProvider
 
 	protected virtual DialogResult ShowExceptionBasedMessageInternal(Exception e, string caption, EnExceptionMessageBoxButtons buttons, EnExceptionMessageBoxSymbol symbol, IWin32Window owner)
 	{
-		ExceptionMessageBox exceptionMessageBox = new ExceptionMessageBox(e);
+		ExceptionMessageBoxCtl exceptionMessageBox = new ExceptionMessageBoxCtl(e);
 		if (caption != null && caption.Length > 0)
 		{
 			exceptionMessageBox.Caption = caption;
 		}
 		else
 		{
-			exceptionMessageBox.Caption = SharedResx.DefaultMessageBoxCaption;
+			exceptionMessageBox.Caption = ControlsResources.DefaultMessageBoxCaption;
 		}
 		exceptionMessageBox.Symbol = symbol;
 		exceptionMessageBox.Options = EnExceptionMessageBoxOptions.RightAlign;
@@ -73,7 +73,7 @@ public class DefaultMessageBoxProvider : IMessageBoxProvider
 
 	protected virtual DialogResult ShowMessageInternal(string text, string caption, EnExceptionMessageBoxButtons buttons, EnExceptionMessageBoxSymbol symbol, IWin32Window owner)
 	{
-		ExceptionMessageBox exceptionMessageBox = new()
+		ExceptionMessageBoxCtl exceptionMessageBox = new()
 		{
 			Message = new(text)
 		};
@@ -83,7 +83,7 @@ public class DefaultMessageBoxProvider : IMessageBoxProvider
 		}
 		else
 		{
-			exceptionMessageBox.Caption = SharedResx.DefaultMessageBoxCaption;
+			exceptionMessageBox.Caption = ControlsResources.DefaultMessageBoxCaption;
 		}
 		exceptionMessageBox.Symbol = symbol;
 		exceptionMessageBox.Options = EnExceptionMessageBoxOptions.RightAlign;

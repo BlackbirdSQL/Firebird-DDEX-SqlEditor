@@ -31,9 +31,9 @@ public class SqlEditorConnectCommand : AbstractSqlEditorCommand
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 
-		QueryExecutor queryExecutorForEditor = GetQueryExecutorForEditor();
+		QueryManager qryMgrForEditor = GetQueryManagerForEditor();
 
-		if (queryExecutorForEditor != null && !queryExecutorForEditor.IsConnected)
+		if (qryMgrForEditor != null && !qryMgrForEditor.IsConnected)
 		{
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 		}
@@ -43,17 +43,17 @@ public class SqlEditorConnectCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		QueryExecutor queryExecutorForEditor = GetQueryExecutorForEditor();
-		if (queryExecutorForEditor != null)
+		QueryManager qryMgrForEditor = GetQueryManagerForEditor();
+		if (qryMgrForEditor != null)
 		{
 			try
 			{
-				queryExecutorForEditor.IsConnecting = true;
-				queryExecutorForEditor.ConnectionStrategy.EnsureConnection(tryOpenConnection: true);
+				qryMgrForEditor.IsConnecting = true;
+				qryMgrForEditor.ConnectionStrategy.EnsureConnection(tryOpenConnection: true);
 			}
 			finally
 			{
-				queryExecutorForEditor.IsConnecting = false;
+				qryMgrForEditor.IsConnecting = false;
 			}
 		}
 

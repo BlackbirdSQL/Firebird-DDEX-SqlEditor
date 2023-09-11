@@ -88,7 +88,7 @@ public sealed class FontAndColorProviderTextResults : AbstractFontAndColorProvid
 
 	private FontAndColorProviderTextResults()
 	{
-		CategoryName = SharedResx.FontAndColorCategorySqlResultsText;
+		CategoryName = ControlsResources.FontAndColorCategorySqlResultsText;
 		Guid = VS.CLSID_FontAndColorsSqlResultsTextCategory;
 		FontDefault = new Font("Courier New", Control.DefaultFont.SizeInPoints);
 		FontAndColorUtilities.EncodeAutomaticColor(out var pcrResult);
@@ -99,7 +99,7 @@ public sealed class FontAndColorProviderTextResults : AbstractFontAndColorProvid
 			bNameValid = 1,
 			bstrName = PlainText,
 			bLocalizedNameValid = 1,
-			bstrLocalizedName = SharedResx.FontAndColorItemNameResultsPlainText,
+			bstrLocalizedName = ControlsResources.FontAndColorItemNameResultsPlainText,
 			bAutoForegroundValid = 1,
 			crAutoForeground = pcrResult2,
 			bAutoBackgroundValid = 1,
@@ -120,7 +120,7 @@ public sealed class FontAndColorProviderTextResults : AbstractFontAndColorProvid
 			bFlagsValid = 1,
 			fFlags = (uint)(__FCITEMFLAGS.FCIF_PLAINTEXT | __FCITEMFLAGS.FCIF_ALLOWCUSTOMCOLORS
 				| __FCITEMFLAGS.FCIF_ALLOWBGCHANGE | __FCITEMFLAGS.FCIF_ALLOWFGCHANGE),
-			bstrDescription = SharedResx.FontAndColorTextResultsDescription
+			bstrDescription = ControlsResources.FontAndColorTextResultsDescription
 		};
 		FontColorDefaults.Add(allColorableItemInfo);
 	}

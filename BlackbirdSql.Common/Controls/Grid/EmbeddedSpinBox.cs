@@ -106,7 +106,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 			}
 		}
 
-		public event ContentsChangedEventHandler ContentsChanged;
+		public event ContentsChangedEventHandler ContentsChangedEvent;
 
 		protected EmbeddedSpinBox()
 		{
@@ -301,7 +301,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 
 		private void OnValueChanged(object sender, EventArgs args)
 		{
-			ContentsChanged?.Invoke(this, EventArgs.Empty);
+			ContentsChangedEvent?.Invoke(this, EventArgs.Empty);
 		}
 	}
 }

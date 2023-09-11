@@ -281,7 +281,7 @@ internal static class OperationTable
 			new Operation("Dynamic", "Dynamic", "DynamicDescription", "Dynamic_32x.ico", string.Empty),
 			new Operation("FastForward", "FastForward", "FastForwardDescription", "Cursor_catch_all_32x.ico", string.Empty),
 			new Operation("Keyset", "Keyset", "KeysetDescription", "Keyset_32x.ico", string.Empty),
-			new Operation("SnapShot", "Snapshot", "SnapshotDescription", "Snapshot_32x.ico", string.Empty)
+			new Operation("Snapshot", "Snapshot", "SnapshotDescription", "Snapshot_32x.ico", string.Empty)
 		});
 	}
 

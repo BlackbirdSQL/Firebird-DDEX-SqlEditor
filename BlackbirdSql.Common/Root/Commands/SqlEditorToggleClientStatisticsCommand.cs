@@ -30,6 +30,7 @@ public class SqlEditorToggleClientStatisticsCommand : AbstractSqlEditorCommand
 	{
 		AuxiliaryDocData auxiliaryDocDataForEditor = GetAuxiliaryDocDataForEditor();
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
+
 		if (auxiliaryDocDataForEditor != null)
 		{
 			if (!IsEditorExecutingOrDebugging())

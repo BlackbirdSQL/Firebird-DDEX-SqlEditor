@@ -48,11 +48,11 @@ public class SqlEditorCloneQueryWindowCommand : AbstractSqlEditorCommand
 				AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(lastFocusedSqlEditor.DocData);
 				if (auxDocData != null)
 				{
-					QueryExecutor queryExecutor = auxiliaryDocDataForEditor.QueryExecutor;
-					ConnectionStrategy connectionStrategy = auxDocData.QueryExecutor.ConnectionStrategy;
-					connectionStrategy.SetConnectionInfo(queryExecutor.ConnectionStrategy.UiConnectionInfo);
+					QueryManager qryMgr = auxiliaryDocDataForEditor.QryMgr;
+					ConnectionStrategy connectionStrategy = auxDocData.QryMgr.ConnectionStrategy;
+					connectionStrategy.SetConnectionInfo(qryMgr.ConnectionStrategy.UiConnectionInfo);
 					IDbConnection connection = connectionStrategy.Connection;
-					if (queryExecutor.IsConnected && connection.State != ConnectionState.Open)
+					if (qryMgr.IsConnected && connection.State != ConnectionState.Open)
 					{
 						connection.Open();
 					}

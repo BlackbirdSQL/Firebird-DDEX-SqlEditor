@@ -46,14 +46,14 @@ public sealed class ToolStripStatusLabelWithMaxLimit : ToolStripStatusLabel
 		base.AutoToolTip = false;
 		_vsFontColorPreferences = new VsFontColorPreferences();
 		Font = VsFontColorPreferences.EnvironmentFont;
-		_vsFontColorPreferences.PreferencesChanged += VsFontColorPreferences_PreferencesChanged;
+		_vsFontColorPreferences.PreferencesChangedEvent += VsFontColorPreferences_PreferencesChanged;
 	}
 
 	protected override void Dispose(bool disposing)
 	{
 		if (disposing && _vsFontColorPreferences != null)
 		{
-			_vsFontColorPreferences.PreferencesChanged -= VsFontColorPreferences_PreferencesChanged;
+			_vsFontColorPreferences.PreferencesChangedEvent -= VsFontColorPreferences_PreferencesChanged;
 			_vsFontColorPreferences.Dispose();
 			_vsFontColorPreferences = null;
 		}

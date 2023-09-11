@@ -470,6 +470,8 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 				new SqlEditorToolbarCommandHandler<SqlEditorToggleSqlCmdModeCommand>(clsid, (uint)EnCommandSet.CmdIdToggleSQLCMDMode));
 			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorToggleExecutionPlanCommand>(clsid, (uint)EnCommandSet.CmdIdToggleExecutionPlan));
+			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
+				new SqlEditorToolbarCommandHandler<SqlEditorToggleClientStatisticsCommand>(clsid, (uint)EnCommandSet.CmdIdToggleClientStatistics));
 		}
 	}
 
@@ -663,10 +665,10 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 		foreach (AuxiliaryDocData value in _DocDataEditors.Values)
 		{
-			QueryExecutor queryExecutor = value.QueryExecutor;
-			if (queryExecutor != null && queryExecutor.IsConnected)
+			QueryManager qryMgr = value.QryMgr;
+			if (qryMgr != null && qryMgr.IsConnected)
 			{
-				queryExecutor.ConnectionStrategy.Connection?.Close();
+				qryMgr.ConnectionStrategy.Connection?.Close();
 			}
 		}
 	}

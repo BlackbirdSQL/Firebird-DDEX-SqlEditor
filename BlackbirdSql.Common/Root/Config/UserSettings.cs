@@ -46,7 +46,7 @@ public sealed class UserSettings
 		}
 	}
 
-	public event PersistenceChangedEventHandler PersistenceModelChanged;
+	public event PersistenceChangedEventHandler PersistenceModelChangedEvent;
 
 	private UserSettings()
 	{
@@ -91,6 +91,6 @@ public sealed class UserSettings
 			_settings = _persistenceModel.Load();
 		}
 
-		PersistenceModelChanged?.Invoke(this, new EventArgs());
+		PersistenceModelChangedEvent?.Invoke(this, new EventArgs());
 	}
 }

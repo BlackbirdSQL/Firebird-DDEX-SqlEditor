@@ -31,7 +31,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 	protected bool _ParametersChanged = false;
 
-	protected PropertyChangedEventHandler _DispatcherPropertyChanged;
+	protected PropertyChangedEventHandler _DispatcherPropertyChangedHandler;
 	protected EventHandler<DataErrorsChangedEventArgs> _ErrorsChanged;
 
 	protected IBEventsChannel _Channel;
@@ -54,8 +54,8 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 	event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
 	{
-		add { _DispatcherPropertyChanged += value; }
-		remove { _DispatcherPropertyChanged -= value; }
+		add { _DispatcherPropertyChangedHandler += value; }
+		remove { _DispatcherPropertyChangedHandler -= value; }
 	}
 
 	public virtual event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged

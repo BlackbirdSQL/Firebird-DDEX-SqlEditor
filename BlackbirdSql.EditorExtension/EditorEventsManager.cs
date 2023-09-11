@@ -192,15 +192,15 @@ public class EditorEventsManager : AbstractEditorEventsManager
 
 	public IVsWindowFrame CurrentWindowFrame { get; private set; }
 
-	public event EventHandler<MonitorSelectionEventArgs> WindowChanged;
+	public event EventHandler<MonitorSelectionEventArgs> MonitorWindowChangedEvent;
 
-	public event EventHandler<MonitorSelectionEventArgs> DocumentChanged;
+	public event EventHandler<MonitorSelectionEventArgs> MonitorDocumentChangedEvent;
 
-	public event EventHandler<MonitorSelectionEventArgs> DocumentWindowChanged;
+	public event EventHandler<MonitorSelectionEventArgs> MonitorDocumentWindowChangedEvent;
 
-	public event EventHandler<MonitorSelectionEventArgs> UndoManagerChanged;
+	public event EventHandler<MonitorSelectionEventArgs> MonitorUndoManagerChangedEvent;
 
-	public event EventHandler<MonitorSelectionEventArgs> SelectionChanged;
+	public event EventHandler<MonitorSelectionEventArgs> MonitorSelectionChangedEvent;
 
 
 	#endregion Property Accessors
@@ -601,14 +601,14 @@ public class EditorEventsManager : AbstractEditorEventsManager
 		{
 			case VSConstants.VSSELELEMID.SEID_WindowFrame:
 				CurrentWindowFrame = newValue as IVsWindowFrame;
-				WindowChanged?.Invoke(this, new MonitorSelectionEventArgs(oldValue, newValue));
+				MonitorWindowChangedEvent?.Invoke(this, new MonitorSelectionEventArgs(oldValue, newValue));
 
 				break;
 			case VSConstants.VSSELELEMID.SEID_DocumentFrame:
 				CurrentDocumentFrame = newValue as IVsWindowFrame;
-				DocumentWindowChanged?.Invoke(this, new MonitorSelectionEventArgs(oldValue, newValue));
+				MonitorDocumentWindowChangedEvent?.Invoke(this, new MonitorSelectionEventArgs(oldValue, newValue));
 
-				if (DocumentChanged != null)
+				if (MonitorDocumentChangedEvent != null)
 				{
 					object pvar = null;
 					if (oldValue is IVsWindowFrame vsWindowFrame)
@@ -624,14 +624,14 @@ public class EditorEventsManager : AbstractEditorEventsManager
 
 					if (pvar != pvar2)
 					{
-						DocumentChanged(this, new MonitorSelectionEventArgs(oldValue, newValue));
+						MonitorDocumentChangedEvent(this, new MonitorSelectionEventArgs(oldValue, newValue));
 					}
 				}
 
 				break;
 			case VSConstants.VSSELELEMID.SEID_UndoManager:
 				CurrentUndoManager = newValue as IOleUndoManager;
-				UndoManagerChanged?.Invoke(this, new MonitorSelectionEventArgs(oldValue, newValue));
+				MonitorUndoManagerChangedEvent?.Invoke(this, new MonitorSelectionEventArgs(oldValue, newValue));
 
 				break;
 		}
@@ -665,7 +665,7 @@ public class EditorEventsManager : AbstractEditorEventsManager
 		IVsHierarchy pHierNew, uint itemidNew, IVsMultiItemSelect pMisNew, ISelectionContainer pScNew)
 	{
 		CurrentSelectionContainer = pScNew;
-		SelectionChanged?.Invoke(this, new MonitorSelectionEventArgs(pScOld, pScNew));
+		MonitorSelectionChangedEvent?.Invoke(this, new MonitorSelectionEventArgs(pScOld, pScNew));
 
 		return VSConstants.S_OK;
 	}

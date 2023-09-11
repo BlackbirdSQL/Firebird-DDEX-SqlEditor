@@ -958,7 +958,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	{
 		if (string.IsNullOrWhiteSpace(value) && !string.IsNullOrWhiteSpace(propertyName.Trim()))
 		{
-			ValidationErrors[propertyName] = CoreResources.TextBoxRequiredFieldToolTip;
+			ValidationErrors[propertyName] = Resources.TextBoxRequiredFieldToolTip;
 		}
 		else
 		{

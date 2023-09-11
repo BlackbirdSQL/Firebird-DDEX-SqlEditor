@@ -15,12 +15,12 @@ namespace BlackbirdSql.Common.Model.Events;
 
 public class QESQLBatchNewResultSetEventArgs : EventArgs
 {
-	private readonly QEResultSet m_qeRS;
+	private readonly QEResultSet _ResultSet;
 
-	public QEResultSet ResultSet => m_qeRS;
+	public QEResultSet ResultSet => _ResultSet;
 
-	public QESQLBatchNewResultSetEventArgs(QEResultSet rs)
+	public QESQLBatchNewResultSetEventArgs(QEResultSet resultSet)
 	{
-		m_qeRS = rs;
+		_ResultSet = resultSet;
 	}
 }

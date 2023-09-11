@@ -223,7 +223,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 	protected abstract bool IsEditorInstanceCreated { get; }
 
-	public event SpecialEditorCommandEventHandler ShowPopupMenu;
+	public event SpecialEditorCommandEventHandler ShowPopupMenuEvent;
 
 	public AbstractShellTextEditorControl()
 	{
@@ -235,7 +235,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 		Tracer.Trace(GetType(), "AbstractShellTextEditorControl.Dispose", "", null);
 		if (!IsDisposed)
 		{
-			ShowPopupMenu = null;
+			ShowPopupMenuEvent = null;
 			if (disposing)
 			{
 				if (_textBuffer != null)
@@ -519,7 +519,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 		if (_textCmdTarget == null || _textWindowPane == null || _VsTextManager == null)
 		{
-			Exception ex = new InvalidOperationException(SharedResx.ErrCannotInitNewEditorInst);
+			Exception ex = new InvalidOperationException(ControlsResources.ErrCannotInitNewEditorInst);
 			Tracer.LogExThrow(GetType(), ex);
 			throw ex;
 		}
@@ -669,9 +669,9 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 	public void OnSpecialEditorCommandEventHandler(object sender, SpecialEditorCommandEventArgs a)
 	{
-		if (a.CommandID == (int)VSConstants.VSStd2KCmdID.SHOWCONTEXTMENU && ShowPopupMenu != null)
+		if (a.CommandID == (int)VSConstants.VSStd2KCmdID.SHOWCONTEXTMENU && ShowPopupMenuEvent != null)
 		{
-			ShowPopupMenu(this, a);
+			ShowPopupMenuEvent(this, a);
 		}
 	}
 
@@ -690,7 +690,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 				Guid riidKey = LibraryData.CLSID_PropertyDisableXmlEditorPropertyWindowIntegration;
 				Native.ThrowOnFailure(vsUserData.SetData(ref riidKey, true), (string)null);
 				riidKey = LibraryData.CLSID_PropertyOverrideXmlEditorSaveAsFileFilter;
-				Native.ThrowOnFailure(vsUserData.SetData(ref riidKey, SharedResx.SaveAsXmlaFilterString), (string)null);
+				Native.ThrowOnFailure(vsUserData.SetData(ref riidKey, ControlsResources.SaveAsXmlaFilterString), (string)null);
 			}
 		}
 

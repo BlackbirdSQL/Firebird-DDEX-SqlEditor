@@ -44,10 +44,10 @@ public class SqlConnectionStrategy : ConnectionStrategy
 		{
 			if (DbConnectionWrapper.IsSupportedConnection(conn))
 			{
-				new DbConnectionWrapper(conn).InfoMessage += batch.OnSqlInfoMessage;
+				new DbConnectionWrapper(conn).InfoMessageEvent += batch.OnSqlInfoMessage;
 				if (DbCommandWrapper.IsSupportedCommand(command))
 				{
-					new DbCommandWrapper(command).StatementCompleted += batch.OnSqlStatementCompleted;
+					new DbCommandWrapper(command).StatementCompletedEvent += batch.OnSqlStatementCompleted;
 				}
 			}
 		}
@@ -56,10 +56,10 @@ public class SqlConnectionStrategy : ConnectionStrategy
 		{
 			if (DbConnectionWrapper.IsSupportedConnection(conn))
 			{
-				new DbConnectionWrapper(conn).InfoMessage -= batch.OnSqlInfoMessage;
+				new DbConnectionWrapper(conn).InfoMessageEvent -= batch.OnSqlInfoMessage;
 				if (DbCommandWrapper.IsSupportedCommand(command))
 				{
-					new DbCommandWrapper(command).StatementCompleted -= batch.OnSqlStatementCompleted;
+					new DbCommandWrapper(command).StatementCompletedEvent -= batch.OnSqlStatementCompleted;
 				}
 				else
 				{
@@ -97,7 +97,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 	{
 		get
 		{
-			lock (base._InstanceLock)
+			lock (_LockObject)
 			{
 				bool result = true;
 				if (base.Connection != null /* && base.Connection.State == ConnectionState.Open */)
@@ -148,7 +148,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 				_IsDwConnection = false;
 			return (bool)_IsDwConnection;
 			/*
-			lock (base._InstanceLock)
+			lock (_LockObject)
 			{
 				bool result = false;
 				if (base.Connection != null && base.Connection.State == ConnectionState.Open)
@@ -192,7 +192,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 	{
 		get
 		{
-			lock (_InstanceLock)
+			lock (_LockObject)
 			{
 				if (Connection == null || Connection.State != ConnectionState.Open)
 				{
@@ -208,7 +208,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 	{
 		get
 		{
-			lock (_InstanceLock)
+			lock (_LockObject)
 			{
 				if (Connection == null || Connection.State != ConnectionState.Open)
 				{
@@ -227,7 +227,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 			string text = base.DisplayUserName;
 			if (!string.IsNullOrEmpty(Spid))
 			{
-				text = string.Format(CultureInfo.CurrentCulture, SharedResx.DisplayUserNameAndSPID, text, Spid);
+				text = string.Format(CultureInfo.CurrentCulture, ControlsResources.DisplayUserNameAndSPID, text, Spid);
 			}
 
 			return text;
@@ -291,7 +291,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 			}
 		}
 
-		lock (_InstanceLock)
+		lock (_LockObject)
 		{
 			_Spid = null;
 			_ProductLevel = null;
@@ -316,7 +316,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 		/*
 		if (currentState == ConnectionState.Broken || currentState == ConnectionState.Closed)
 		{
-			lock (_InstanceLock)
+			lock (_LockObject)
 			{
 				_Spid = null;
 				_TracingId = null;
@@ -407,7 +407,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 
 		try
 		{
-			lock (_InstanceLock)
+			lock (_LockObject)
 			{
 				Tracer.Trace(typeof(SqlConnectionStrategy), "ApplyConnectionOptions()", "starting");
 				StringBuilder stringBuilder = new StringBuilder(512);
@@ -423,7 +423,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 		{
 			Tracer.LogExCatch(typeof(SqlConnectionStrategy), ex);
 			StringBuilder stringBuilder2 = new StringBuilder(100);
-			stringBuilder2.AppendFormat(SharedResx.UnableToApplyConnectionSettings, ex.Message);
+			stringBuilder2.AppendFormat(ControlsResources.UnableToApplyConnectionSettings, ex.Message);
 			Cmd.ShowMessageBoxEx(string.Empty, stringBuilder2.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Hand);
 		}
 		*/
@@ -466,7 +466,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 		/*
 		if (ci.ServerType == SqlServerConnectionProvider.ServerType && dbConnection != null && SqlVersionUtils.IsSqlDwAps(dbConnection))
 		{
-			ConnectionDialogException ex = new(SharedResx.ErrQEPdwNotSupported);
+			ConnectionDialogException ex = new(ControlsResources.ErrQEPdwNotSupported);
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -519,7 +519,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 		IDataReader dataReader = null;
 		IDbConnection dbConnection = null;
 		Exception ex = null;
-		lock (_InstanceLock)
+		lock (_LockObject)
 		{
 			try
 			{
@@ -634,7 +634,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 			if (ex != null)
 			{
 #pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
-				Cmd.ShowExceptionInDialog(SharedResx.SqlEditorNoAvailableDatabase, ex);
+				Cmd.ShowExceptionInDialog(ControlsResources.SqlEditorNoAvailableDatabase, ex);
 #pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 				return list;
 			}
@@ -647,7 +647,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 	public override void ResetAndEnableConnectionStatistics()
 	{
 		/*
-		lock (_InstanceLock)
+		lock (_LockObject)
 		{
 			FbConnection asSqlConnection = ReliableConnectionHelper.GetAsSqlConnection(Connection);
 			// asSqlConnection.ResetStatistics();
@@ -658,7 +658,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 
 	public override void SetDatasetKeyOnConnection(string selectedDatasetKey, DbConnectionStringBuilder csb)
 	{
-		lock (_InstanceLock)
+		lock (_LockObject)
 		{
 			if (Connection != null /* && Connection.State == ConnectionState.Open */ && IsCloudConnection)
 			{
@@ -681,7 +681,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 				catch (FbException e)
 				{
 					Tracer.LogExCatch(typeof(ConnectionStrategy), e);
-					Cmd.ShowMessageBoxEx(null, string.Format(CultureInfo.CurrentCulture, SharedResx.ErrDatabaseNotAccessible, selectedDatasetKey), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+					Cmd.ShowMessageBoxEx(null, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrDatabaseNotAccessible, selectedDatasetKey), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 				}
 			}
 			else
@@ -708,7 +708,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 
 	protected virtual void QueryServerSideProperties()
 	{
-		lock (_InstanceLock)
+		lock (_LockObject)
 		{
 			if (Connection == null || Connection.State != ConnectionState.Open)
 			{
@@ -836,7 +836,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 
 	public override string GetProductLevel()
 	{
-		lock (_InstanceLock)
+		lock (_LockObject)
 		{
 			return _ProductLevel ?? string.Empty;
 		}
