@@ -243,7 +243,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 		private void CreateAndInitVSTextEditor()
 		{
 			Tracer.Trace(GetType(), "VSTextEditorTabPage.CreateAndInitVSTextEditor", "", null);
-			_TextViewCtl.CreateAndInitEditorWindow(_rawServiceProvider);
+			_TextViewCtl.CreateAndInitEditorWindow(_ObjServiceProvider);
 			if (_shouldBeReadOnly)
 			{
 				Native.ThrowOnFailure(_TextViewCtl.TextBuffer.TextStream.GetStateFlags(out uint pdwReadOnlyFlags));

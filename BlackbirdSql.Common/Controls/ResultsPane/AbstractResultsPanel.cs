@@ -19,7 +19,7 @@ public abstract class AbstractResultsPanel : Panel
 {
 	public const string C_TName = "DispSQLResults";
 
-	protected object _rawServiceProvider;
+	protected object _ObjServiceProvider;
 
 	protected ServiceProvider _serviceProvider;
 
@@ -56,9 +56,9 @@ public abstract class AbstractResultsPanel : Panel
 			_serviceProvider = null;
 		}
 
-		if (_rawServiceProvider != null)
+		if (_ObjServiceProvider != null)
 		{
-			_rawServiceProvider = null;
+			_ObjServiceProvider = null;
 		}
 
 		if (disposing && _MenuService != null)
@@ -75,11 +75,11 @@ public abstract class AbstractResultsPanel : Panel
 		return _serviceProvider.GetService(serviceType);
 	}
 
-	public virtual void Initialize(object rawServiceProvider)
+	public virtual void Initialize(object oleServiceProvider)
 	{
 		Tracer.Trace(GetType(), "DisplaySqlResultsBaseTabPage.Initialize", "", null);
-		_rawServiceProvider = rawServiceProvider;
-		_serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)rawServiceProvider);
+		_ObjServiceProvider = oleServiceProvider;
+		_serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)oleServiceProvider);
 		_vsUIShell = GetService(typeof(IVsUIShell)) as IVsUIShell;
 	}
 

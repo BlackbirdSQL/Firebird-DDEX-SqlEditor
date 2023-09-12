@@ -398,15 +398,6 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Client Execution Time.
-        /// </summary>
-        internal static string StatisticsPanelCategoryClientExecutionTime {
-            get {
-                return ResourceManager.GetString("StatisticsPanelCategoryClientExecutionTime", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Network Statistics.
         /// </summary>
         internal static string StatisticsPanelCategoryNetworkStats {
@@ -430,6 +421,15 @@ namespace BlackbirdSql.Common.Properties {
         internal static string StatisticsPanelCategoryServerStats {
             get {
                 return ResourceManager.GetString("StatisticsPanelCategoryServerStats", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Snapshot Timestamp.
+        /// </summary>
+        internal static string StatisticsPanelCategorySnapshotTimestamp {
+            get {
+                return ResourceManager.GetString("StatisticsPanelCategorySnapshotTimestamp", resourceCulture);
             }
         }
         
@@ -587,7 +587,7 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Number of server mark requests.
+        ///   Looks up a localized string similar to Number of server mark.
         /// </summary>
         internal static string StatisticsPanelStatMarks {
             get {
@@ -623,7 +623,7 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Database page size (b).
+        ///   Looks up a localized string similar to Database page size.
         /// </summary>
         internal static string StatisticsPanelStatPageSize {
             get {
@@ -650,7 +650,7 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Number of server index read requests.
+        ///   Looks up a localized string similar to Server index read requests.
         /// </summary>
         internal static string StatisticsPanelStatReadIdxCount {
             get {
@@ -659,20 +659,11 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Number of server sequential read requests.
+        ///   Looks up a localized string similar to Server sequential read requests.
         /// </summary>
         internal static string StatisticsPanelStatReadSeqCount {
             get {
                 return ResourceManager.GetString("StatisticsPanelStatReadSeqCount", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Number of server sequential read requests.
-        /// </summary>
-        internal static string StatisticsPanelStatReadSeqCount2 {
-            get {
-                return ResourceManager.GetString("StatisticsPanelStatReadSeqCount2", resourceCulture);
             }
         }
         

@@ -32,6 +32,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Config.Interfaces;
 using BlackbirdSql.Common.Events;
+using BlackbirdSql.Core;
 
 namespace BlackbirdSql.Common.Model;
 
@@ -646,14 +647,22 @@ public class SqlConnectionStrategy : ConnectionStrategy
 
 	public override void ResetAndEnableConnectionStatistics()
 	{
-		/*
 		lock (_LockObject)
 		{
-			FbConnection asSqlConnection = ReliableConnectionHelper.GetAsSqlConnection(Connection);
+			try
+			{
+				// FbCommand cmd = new("ALTER SESSION RESET", (FbConnection)Connection);
+				// cmd.ExecuteNonQuery();
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+			}
+
+			// FbConnection asSqlConnection = ReliableConnectionHelper.GetAsSqlConnection(Connection);
 			// asSqlConnection.ResetStatistics();
 			// asSqlConnection.StatisticsEnabled = true;
 		}
-		*/
 	}
 
 	public override void SetDatasetKeyOnConnection(string selectedDatasetKey, DbConnectionStringBuilder csb)

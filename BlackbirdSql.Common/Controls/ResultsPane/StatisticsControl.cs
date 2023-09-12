@@ -5,8 +5,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core;
+using Microsoft.SqlServer.Management.SqlParser.MetadataProvider;
 
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
@@ -46,7 +48,30 @@ public class StatisticsControl : CollectionBase
 	{
 	}
 
-	public void RetrieveStatisticsIfNeeded(QueryManager qryMgr, IDbCommand command, long recordCount, long recordsAffected, DateTime executionEndTime)
+
+	public void LoadStatisticsSnapshotBase(QueryManager qryMgr)
+	{
+		try
+		{
+			StatisticsConnection conn = this[List.Count - 1];
+
+			StatisticsSnapshotAgent agent = new(conn.InternalConnection);
+
+			agent.Load(qryMgr, 0, 0, DateTime.Now);
+
+			conn.SetStatisticsBase(agent);
+
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
+	}
+
+
+
+	public void RetrieveStatisticsIfNeeded(QueryManager qryMgr, long recordCount, long recordsAffected, DateTime executionEndTime)
 	{
 		IEnumerator enumerator = GetEnumerator();
 		try
@@ -54,44 +79,44 @@ public class StatisticsControl : CollectionBase
 			while (enumerator.MoveNext())
 			{
 				StatisticsConnection conn = (StatisticsConnection)enumerator.Current;
+				StatisticsSnapshotAgent agent = new(conn.InternalConnection, conn.StatisticsConnectionBase);
 
-				// if (!conn.Loaded)
-				conn.Load(qryMgr, command, recordCount, recordsAffected, executionEndTime);
+				agent.Load(qryMgr, recordCount, recordsAffected, executionEndTime);
 
 
 				Dictionary<string, object> stats = new(25)
 				{
-					{ "IduRowCount", conn.IduRowCount },
-					{ "InsRowCount", conn.InsRowCount },
-					{ "UpdRowCount", conn.UpdRowCount },
-					{ "DelRowCount", conn.DelRowCount },
-					{ "SelectRowCount", conn.SelectRowCount },
-					{ "Transactions", conn.Transactions },
-					{ "ServerRoundtrips", conn.ServerRoundtrips },
-					{ "BufferCount", conn.BufferCount },
-					{ "ReadCount", conn.ReadCount },
-					{ "WriteCount", conn.WriteCount },
-					{ "ReadIdxCount", conn.ReadIdxCount },
-					{ "ReadSeqCount", conn.ReadSeqCount },
-					{ "PurgeCount", conn.PurgeCount },
-					{ "ExpungeCount", conn.ExpungeCount },
-					{ "Marks", conn.Marks },
-					{ "PacketSize", conn.PacketSize },
-					{ "ExecutionStartTimeEpoch", conn.ExecutionStartTimeEpoch },
-					{ "ExecutionEndTimeEpoch", conn.ExecutionEndTimeEpoch },
-					{ "ExecutionTimeTicks", conn.ExecutionTimeTicks },
-					{ "AllocationPages", conn.AllocationPages },
-					{ "CurrentMemory", conn.CurrentMemory },
-					{ "MaxMemory", conn.MaxMemory },
-					{ "DatabaseSizeInPages", conn.DatabaseSizeInPages },
-					{ "PageSize", conn.PageSize },
-					{ "ActiveUserCount", conn.ActiveUserCount }
+					{ "IduRowCount", agent.IduRowCount },
+					{ "InsRowCount", agent.InsRowCount },
+					{ "UpdRowCount", agent.UpdRowCount },
+					{ "DelRowCount", agent.DelRowCount },
+					{ "SelectRowCount", agent.SelectRowCount },
+					{ "Transactions", agent.Transactions },
+					{ "ServerRoundtrips", agent.ServerRoundtrips },
+					{ "BufferCount", agent.BufferCount },
+					{ "ReadCount", agent.ReadCount },
+					{ "WriteCount", agent.WriteCount },
+					{ "ReadIdxCount", agent.ReadIdxCount },
+					{ "ReadSeqCount", agent.ReadSeqCount },
+					{ "PurgeCount", agent.PurgeCount },
+					{ "ExpungeCount", agent.ExpungeCount },
+					{ "Marks", agent.Marks },
+					{ "PacketSize", agent.PacketSize },
+					{ "ExecutionStartTimeEpoch", agent.ExecutionStartTimeEpoch },
+					{ "ExecutionEndTimeEpoch", agent.ExecutionEndTimeEpoch },
+					{ "ExecutionTimeTicks", agent.ExecutionTimeTicks },
+					{ "AllocationPages", agent.AllocationPages },
+					{ "CurrentMemory", agent.CurrentMemory },
+					{ "MaxMemory", agent.MaxMemory },
+					{ "DatabaseSizeInPages", agent.DatabaseSizeInPages },
+					{ "PageSize", agent.PageSize },
+					{ "ActiveUserCount", agent.ActiveUserCount }
 				};
 
 
 				conn.Insert(0, new StatisticsSnapshot(stats));
 
-				// statisticsConnection.InternalConnection.ResetStatistics();
+				conn.ResetStatistics();
 			}
 		}
 		catch (Exception ex)

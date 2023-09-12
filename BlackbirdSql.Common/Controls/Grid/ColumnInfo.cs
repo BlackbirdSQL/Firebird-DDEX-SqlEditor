@@ -115,6 +115,9 @@ public class ColumnInfo : IColumnInfo
 		_AllServerDataTypes.Add("timestamp", value: false);
 		_AllServerDataTypes.Add("tinyint", value: false);
 		_AllServerDataTypes.Add("varbinary", value: false);
+		_AllServerDataTypes.Add("blob sub_type 1", value: false);
+		_AllServerDataTypes.Add("blob sub_type 2", value: false);
+		_AllServerDataTypes.Add("blob sub_type 3", value: false);
 		_AllServerDataTypes.Add("varchar", value: false);
 		_AllServerDataTypes.Add("array", value: false);
 		_AllServerDataTypes.Add("timetzex", value: false);
@@ -205,6 +208,9 @@ public class ColumnInfo : IColumnInfo
 			case "array":
 			case "guid":
 			case "binary":
+			case "blob sub_type 1":
+			case "blob sub_type 2":
+			case "blob sub_type 3":
 			case "image":
 				_IsBytesField = true;
 				_IsBlobField = true;

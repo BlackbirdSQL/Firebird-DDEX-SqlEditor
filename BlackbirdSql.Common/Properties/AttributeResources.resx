@@ -264,7 +264,7 @@
         XTesb3QPLh88M+QwdP6m681Lt7xuXbu94vbgcOjwnZHokdE77DtTd1PuvriXeW/h/sYH6AdFD6UeVjxS
         fNTws+7PbaOWo6fHXMf6Hwc/vj/OGn/2S8Yv7ycKnpCfVEyqTDZPmU2dmnafvvF05dOJZ+nPFmYKf5X+
         tfa5zvMffnP8rX82YnbiBf/Fp99LXsq/PPRq2aueuYC5R69TXy/MF72Rf3P4LeNt37vwd5MLWe+x7ys/
-        6H7o/ujz8cGn1E+f/gUDmPP8usTo0wAAAAlwSFlzAAALEgAACxIB0t1+/AAAAC1JREFUKFOVyLENACAA
+        6H7o/ujz8cGn1E+f/gUDmPP8usTo0wAAAAlwSFlzAAALDQAACw0B7QfALAAAAC1JREFUKFOVyLENACAA
         BCH3X/pdAC+xoOFs+8IszMIszMIszMIszMIszMJ827kmVa5g7NdlSwAAAABJRU5ErkJggg==
 </value>
   </data>
@@ -292,9 +292,6 @@
         AAD/+ZmZn/8AAP//mZn//wAA///5n///AAD///////8AAA==
 </value>
   </data>
-  <data name="StatisticsPanelCategoryClientExecutionTime" xml:space="preserve">
-    <value>Client Execution Time</value>
-  </data>
   <data name="StatisticsPanelCategoryNetworkStats" xml:space="preserve">
     <value>Network Statistics</value>
   </data>
@@ -303,6 +300,9 @@
   </data>
   <data name="StatisticsPanelCategoryServerStats" xml:space="preserve">
     <value>Server Statistics</value>
+  </data>
+  <data name="StatisticsPanelCategorySnapshotTimestamp" xml:space="preserve">
+    <value>Snapshot Timestamp</value>
   </data>
   <data name="StatisticsPanelCategoryTimeStats" xml:space="preserve">
     <value>Time Statistics</value>
@@ -356,7 +356,7 @@
     <value>Rows affected by INSERT statements</value>
   </data>
   <data name="StatisticsPanelStatMarks" xml:space="preserve">
-    <value>Number of server mark requests</value>
+    <value>Number of server mark</value>
   </data>
   <data name="StatisticsPanelStatMaxMemory" xml:space="preserve">
     <value>Maximum client memory allocated</value>
@@ -368,7 +368,7 @@
     <value>Packet size</value>
   </data>
   <data name="StatisticsPanelStatPageSize" xml:space="preserve">
-    <value>Database page size (b)</value>
+    <value>Database page size</value>
   </data>
   <data name="StatisticsPanelStatPurgeCount" xml:space="preserve">
     <value>Number of server purge requests</value>
@@ -377,13 +377,10 @@
     <value>Number of server read requests</value>
   </data>
   <data name="StatisticsPanelStatReadIdxCount" xml:space="preserve">
-    <value>Number of server index read requests</value>
+    <value>Server index read requests</value>
   </data>
   <data name="StatisticsPanelStatReadSeqCount" xml:space="preserve">
-    <value>Number of server sequential read requests</value>
-  </data>
-  <data name="StatisticsPanelStatReadSeqCount2" xml:space="preserve">
-    <value>Number of server sequential read requests</value>
+    <value>Server sequential read requests</value>
   </data>
   <data name="StatisticsPanelStatSelectRowCount" xml:space="preserve">
     <value>Rows returned by SELECT statements</value>

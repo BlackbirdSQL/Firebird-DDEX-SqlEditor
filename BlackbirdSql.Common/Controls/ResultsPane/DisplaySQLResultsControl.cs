@@ -60,7 +60,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 
 	private ServiceProvider _ServiceProvider;
 
-	private object _RawServiceProvider;
+	private object _ObjServiceProvider;
 
 	private ResultsWriter _ResultsWriter;
 
@@ -357,9 +357,9 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 			_ServiceProvider = null;
 		}
 
-		if (_RawServiceProvider != null)
+		if (_ObjServiceProvider != null)
 		{
-			_RawServiceProvider = null;
+			_ObjServiceProvider = null;
 		}
 
 		if (bDisposing)
@@ -425,7 +425,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 		}
 
 		_ServiceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)sp);
-		_RawServiceProvider = sp;
+		_ObjServiceProvider = sp;
 		OnHosted();
 	}
 
@@ -649,10 +649,10 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 	protected virtual void OnHosted()
 	{
 		Tracer.Trace(GetType(), "DisplaySQLResultsControl.OnHosted", "", null);
-		_GridResultsPage.Initialize(_RawServiceProvider);
-		_TextResultsPage.Initialize(_RawServiceProvider);
-		_TextMessagesPage.Initialize(_RawServiceProvider);
-		_TextPlanPage?.Initialize(_RawServiceProvider);
+		_GridResultsPage.Initialize(_ObjServiceProvider);
+		_TextResultsPage.Initialize(_ObjServiceProvider);
+		_TextMessagesPage.Initialize(_ObjServiceProvider);
+		_TextPlanPage?.Initialize(_ObjServiceProvider);
 	}
 
 	private void Initialize(ResultWindowPane gridResultsPanel, ResultWindowPane messagePanel)
@@ -838,7 +838,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 					Dock = DockStyle.Fill,
 					AutoSize = true,
 				};
-				_ExecutionPlanPage.Initialize(_RawServiceProvider);
+				_ExecutionPlanPage.Initialize(_ObjServiceProvider);
 				((IObjectWithSite)_ExecutionPlanPage.ExecutionPlanCtl).SetSite(_ExecutionPlanPane);
 			}
 
@@ -906,8 +906,8 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 					TextReadOnly = false
 				};
 
-				if (_RawServiceProvider != null)
-					_TextPlanPage.Initialize(_RawServiceProvider);
+				if (_ObjServiceProvider != null)
+					_TextPlanPage.Initialize(_ObjServiceProvider);
 
 				_PlanWriter = _TextPlanPage.ResultsWriter;
 			}
@@ -1276,9 +1276,9 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 			BackColor = SystemColors.Window
 		};
 		gridResultsPanel.ApplyHighlightedCellColor(_NullValueCellColor);
-		if (_RawServiceProvider != null)
+		if (_ObjServiceProvider != null)
 		{
-			gridResultsPanel.Initialize(_RawServiceProvider);
+			gridResultsPanel.Initialize(_ObjServiceProvider);
 		}
 
 		gridResultsPanel.SetGridTabOptions(AuxDocData.ResultsSettings.IncludeColumnHeadersWhileSavingGridResults, AuxDocData.ResultsSettings.QuoteStringsContainingCommas);
@@ -1448,8 +1448,12 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 				_ClientStatisticsCtl = new StatisticsControl();
 				StatisticsConnection node = new (asSqlConnection);
 				_ClientStatisticsCtl.Add(node);
+
 				_ClearStatisticsControl = false;
 			}
+
+			if (args.Connection != null)
+				_ClientStatisticsCtl.LoadStatisticsSnapshotBase(_QryMgr);
 		}
 
 		bool num = PrepareForExecution(args.IsParseOnly);
@@ -1468,7 +1472,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 		Tracer.Trace(GetType(), "DisplaySQLResultsControl.OnSqlDataLoadedForSQLExec", "", null);
 		if (!args.IsParseOnly && AuxDocData.ClientStatisticsEnabled && _ClientStatisticsCtl != null)
 		{
-			_ClientStatisticsCtl.RetrieveStatisticsIfNeeded(_QryMgr, args.Command, args.RecordCount, args.RecordsAffected, args.ExecutionEndTime);
+			_ClientStatisticsCtl.RetrieveStatisticsIfNeeded(_QryMgr, args.RecordCount, args.RecordsAffected, args.ExecutionEndTime);
 		}
 	}
 
@@ -1538,7 +1542,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 		if (AuxDocData.ClientStatisticsEnabled && _ClientStatisticsCtl != null)
 		{
 			_StatisticsPage = new StatisticsPanel(_DefaultResultsDirectory);
-			_StatisticsPage.Initialize(_RawServiceProvider);
+			_StatisticsPage.Initialize(_ObjServiceProvider);
 			_StatisticsPane.Clear();
 			_StatisticsPage.Dock = DockStyle.Fill;
 			_StatisticsPage.Name = "ClientStatisticsPanel";

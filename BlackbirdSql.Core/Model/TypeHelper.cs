@@ -530,6 +530,9 @@ internal static class TypeHelper
 			case "VARCHAR":
 			case "CHAR VARYING":
 			case "CHARACTER VARYING":
+			case "BLOB SUB_TYPE 1":
+			case "BLOB SUB_TYPE 2":
+			case "BLOB SUB_TYPE 3":
 				sql += $"({length})";
 				break;
 			case "DECFLOAT":

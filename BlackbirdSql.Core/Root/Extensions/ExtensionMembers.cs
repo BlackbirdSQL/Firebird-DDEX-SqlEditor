@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Windows.Forms;
@@ -16,8 +15,6 @@ using BlackbirdSql.Core.Interfaces;
 using FirebirdSql.Data.FirebirdClient;
 
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
-
-
 
 
 namespace BlackbirdSql.Core;
@@ -35,7 +32,11 @@ static class ExtensionMembers
 	private static readonly string[] S_ByteSizeSuffixes =
 		{ "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 	private static readonly string[] S_SIExponents =
-		{ null, "\x00b3", "\x2076", "\x2079", "\x00b9\x00b2", "\x00b9\x2075", "\x00b9\x2078", "\x00b2\x00b9", "\x00b2\x2074" };
+		{ null, "\x00b9", "\x00b2", "\x00b3", "\x2074", "\x2075", "\x2076", "\x2077", "\x2078", "\x2079",
+			"\x00b9\x2070", "\x00b9\x00b9", "\x00b9\x00b2", "\x00b9\x00b3", "\x00b9\x2074", "\x00b9\x2075",
+			"\x00b9\x2076", "\x00b9\x2077", "\x00b9\x2078", "\x00b9\x2079", "\x00b2\x2070", "\x00b2\x00b9",
+			"\x00b2\x00b2", "\x00b2\x00b3", "\x00b2\x2074", "\x00b2\x2075", "\x00b2\x2076", "\x00b2\x2077",
+			"\x00b2\x2078", "\x00b2\x2079"};
 
 
 	// ---------------------------------------------------------------------------------
@@ -125,6 +126,9 @@ static class ExtensionMembers
 		{
 			newValue /= 1024;
 			i++;
+
+			if (S_ByteSizeSuffixes.Length <= i + 1)
+				break;
 		}
 
 		if (decimalPlaces != 0 && Math.Round(newValue, 0) == Math.Round(newValue, decimalPlaces))
@@ -153,6 +157,9 @@ static class ExtensionMembers
 		{
 			newValue /= 1024;
 			i++;
+
+			if (S_ByteSizeSuffixes.Length <= i + 1)
+				break;
 		}
 
 		if (decimalPlaces != 0 && Math.Round(newValue, 0) == Math.Round(newValue, decimalPlaces))
@@ -161,27 +168,30 @@ static class ExtensionMembers
 		return (string.Format("{0:n" + decimalPlaces + "} {1}", newValue, S_ByteSizeSuffixes[i]), newValue);
 	}
 
-	public static (string, float) SISizeFormat(this long value, int decimalPlaces = 3)
+	public static (string, float) SISizeFormat(this long value, int maxDigits = 4, int decimalPlaces = 3)
 	{
 		string str;
 		float newValue;
 
 		if (value < 0)
 		{
-			(str, newValue)  = (-value).SISizeFormat(decimalPlaces);
+			(str, newValue)  = (-value).SISizeFormat(maxDigits, decimalPlaces);
 			str = "-" + str;
 			return (str, -newValue);
 		}
 
 		int i = 0;
 		newValue = (float)value;
-		while (value > 999999L && Math.Round(newValue, decimalPlaces) >= 1000)
+		while (Math.Floor(newValue) >= Math.Pow(10, maxDigits))
 		{
-			newValue /= 1000;
+			newValue /= 10;
 			i++;
+
+			if (S_SIExponents.Length <= i + 1)
+				break;
 		}
 
-		if (i == 0)
+		if (i <= 1)
 			return (value.ToString(), value);
 
 		if (decimalPlaces != 0 && Math.Round(newValue, 0) == Math.Round(newValue, decimalPlaces))
@@ -191,27 +201,30 @@ static class ExtensionMembers
 
 	}
 
-	public static (string, float) SISizeFormat(this float value, int decimalPlaces = 3)
+	public static (string, float) SISizeFormat(this float value, int maxDigits = 4, int decimalPlaces = 3)
 	{
 		string str;
 		float newValue;
 
 		if (value < 0)
 		{
-			(str, newValue) = (-value).SISizeFormat(decimalPlaces);
+			(str, newValue) = (-value).SISizeFormat(maxDigits, decimalPlaces);
 			str = "-" + str;
 			return (str, -newValue);
 		}
 
 		int i = 0;
 		newValue = (float)value;
-		while (value > 999999.999 && Math.Round(newValue, decimalPlaces) >= 1000)
+		while (Math.Floor(newValue) >= Math.Pow(10, maxDigits))
 		{
-			newValue /= 1000;
+			newValue /= 10;
 			i++;
+
+			if (S_SIExponents.Length <= i + 1)
+				break;
 		}
 
-		if (i == 0)
+		if (i <= 1)
 			return (value.ToString(), value);
 
 		if (decimalPlaces != 0 && Math.Round(newValue, 0) == Math.Round(newValue, decimalPlaces))

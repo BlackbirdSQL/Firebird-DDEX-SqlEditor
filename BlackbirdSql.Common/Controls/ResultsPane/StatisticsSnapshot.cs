@@ -3,10 +3,9 @@
 
 using System;
 using System.Collections;
-using System.Globalization;
+
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
-
 
 public class StatisticsSnapshot
 {

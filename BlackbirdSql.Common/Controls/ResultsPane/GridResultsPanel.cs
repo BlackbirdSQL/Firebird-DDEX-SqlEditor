@@ -161,10 +161,10 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			Tracer.Trace(GetType(), "GridResultsTabPanel.Initialize", "", null);
 			SuspendLayout();
 			base.Initialize(rawServiceProvider);
-			_firstGridPanel.Dock = DockStyle.Fill;
-			_firstGridPanel.Height = ClientRectangle.Height;
-			_firstGridPanel.Tag = -1;
-			Controls.Add(_firstGridPanel);
+			_FirstGridPanel.Dock = DockStyle.Fill;
+			_FirstGridPanel.Height = ClientRectangle.Height;
+			_FirstGridPanel.Tag = -1;
+			Controls.Add(_FirstGridPanel);
 			if (m_brushNullObjects == null)
 			{
 				Color color = Color.FromKnownColor(KnownColor.Info);
@@ -185,11 +185,11 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			Tracer.Trace(GetType(), "GridResultsTabPanel.Clear", "", null);
 			base.Clear();
 			Tracer.Trace(GetType(), "GridResultsTabPanel.Clear: disposing grid containers", "", null);
-			if (_firstGridPanel != null)
+			if (_FirstGridPanel != null)
 			{
-				for (int i = 0; i < _firstGridPanel.HostedControlsCount; i++)
+				for (int i = 0; i < _FirstGridPanel.HostedControlsCount; i++)
 				{
-					if (_firstGridPanel.GetHostedControl(i) is GridResultsGrid gridResultsGrid)
+					if (_FirstGridPanel.GetHostedControl(i) is GridResultsGrid gridResultsGrid)
 					{
 						gridResultsGrid.AdjustSelectionForButtonClickEvent -= OnAdjustSelectionForButtonClick;
 						gridResultsGrid.GridSpecialEvent -= new GridSpecialEventHandler(OnSpecialGridEvent);
@@ -308,13 +308,13 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			((Control)(object)gridResultsGrid).Font = curGridFont;
 			gridResultsGrid.HeaderFont = curGridFont;
 			gridResultsGrid.SetIncludeHeadersOnDragAndDrop(m_includeColumnHeaders);
-			if (_firstGridPanel.HostedControlsCount == 0)
+			if (_FirstGridPanel.HostedControlsCount == 0)
 			{
-				_firstGridPanel.HostedControlsMinInitialSize = CommonUtils.DefaultInitialMinNumberOfVisibleRows * (gridResultsGrid.RowHeight + 1) + gridResultsGrid.HeaderHeight + 1 + CommonUtils.GetExtraSizeForBorderStyle(gridResultsGrid.BorderStyle);
-				_firstGridPanel.HostedControlsMinSize = ((Control)(object)gridResultsGrid).GetPreferredSize(((Control)(object)gridResultsGrid).Size).Height;
+				_FirstGridPanel.HostedControlsMinInitialSize = CommonUtils.DefaultInitialMinNumberOfVisibleRows * (gridResultsGrid.RowHeight + 1) + gridResultsGrid.HeaderHeight + 1 + CommonUtils.GetExtraSizeForBorderStyle(gridResultsGrid.BorderStyle);
+				_FirstGridPanel.HostedControlsMinSize = ((Control)(object)gridResultsGrid).GetPreferredSize(((Control)(object)gridResultsGrid).Size).Height;
 			}
 
-			_firstGridPanel.AddControl((Control)(object)gridResultsGrid, limitMaxControlHeightToClientArea: false);
+			_FirstGridPanel.AddControl((Control)(object)gridResultsGrid, limitMaxControlHeightToClientArea: false);
 			((Control)(object)gridResultsGrid).BackColor = curBkColor;
 			cont.Initialize(gridResultsGrid);
 			cont.GridCtl.SetBkAndForeColors(curBkColor, curFkColor);

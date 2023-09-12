@@ -12,7 +12,7 @@ using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-
+using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Utilities;
 
 using Tracer = BlackbirdSql.Core.Diagnostics.Tracer;
@@ -605,6 +605,8 @@ public sealed class QueryManager : IDisposable
 			Diag.Dug(ex);
 			return false;
 		}
+
+
 
 		IsExecuting = true;
 		QueryExecutionStartTime = DateTime.Now;

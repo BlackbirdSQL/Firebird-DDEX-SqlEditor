@@ -6,7 +6,6 @@ using System.Collections;
 using System.ComponentModel.Design;
 using System.Drawing;
 using System.Globalization;
-using System.Resources;
 using System.Windows.Forms;
 
 using BlackbirdSql.Common.Controls.Enums;
@@ -21,135 +20,33 @@ using BlackbirdSql.Core.Enums;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 
+using EnStatisticSpecialAction = BlackbirdSql.Common.Controls.ResultsPane.StatisticsPropertySet.EnStatisticSpecialAction;
 using OleConstants = Microsoft.VisualStudio.OLE.Interop.Constants;
+using StatisticEntity = BlackbirdSql.Common.Controls.ResultsPane.StatisticsPropertySet.StatisticEntity;
 
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
 
 public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 {
-	private enum EnStatisticSpecialAction
-	{
-		NoAction,
-		ClientProcessingTimeAction,
-		ElapsedTimeFormat,
-		DateTimeFormat,
-		ByteFormat,
-		SIFormat
-	}
-
-
-
-	private struct StatisticEntity
-	{
-		public static ResourceManager ResMgr => AttributeResources.ResourceManager;
-
-		public string Name;
-
-		public readonly string DisplayName => ResMgr.GetString("StatisticsPanelStat" + Name);
-
-		public EnStatisticSpecialAction SpecialAction;
-
-		public bool CalculateAverage;
-
-		public StatisticEntity(string name, EnStatisticSpecialAction specialAction, bool calculateAverage = true)
-		{
-			Name = name;
-			SpecialAction = specialAction;
-			CalculateAverage = calculateAverage;
-		}
-	}
-
 	private const int C_MinNumberOfVisibleRows = 8;
-
-	private delegate string GetCategoryValueDelegate(StatisticsSnapshot snapshot);
-
-	private static readonly string[] S_CategoryNames = new string[5]
-	{
-		AttributeResources.StatisticsPanelCategoryClientExecutionTime,
-		AttributeResources.StatisticsPanelCategoryQueryProfileStats,
-		AttributeResources.StatisticsPanelCategoryNetworkStats,
-		AttributeResources.StatisticsPanelCategoryTimeStats,
-		AttributeResources.StatisticsPanelCategoryServerStats
-	};
-
-	private static readonly GetCategoryValueDelegate[] S_CategoryValueDelegates = new GetCategoryValueDelegate[5]
-	{
-		new GetCategoryValueDelegate(GetTimeOfExecution),
-		null,
-		null,
-		null,
-		null,
-	};
-
-
-	// Row definitions for each stat group
-	private static readonly StatisticEntity[][] Statistics = new StatisticEntity[5][]
-	{
-		// ClientExecutionTime
-		new StatisticEntity[0],
-
-		// QueryProfileStatistics
-		new StatisticEntity[6]
-		{
-			new StatisticEntity("IduRowCount", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("InsRowCount", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("UpdRowCount", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("DelRowCount", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("SelectRowCount", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("Transactions", EnStatisticSpecialAction.SIFormat)
-		},
-
-		// NetworkStatistics
-		new StatisticEntity[10]
-		{
-			new StatisticEntity("ServerRoundtrips", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("BufferCount", EnStatisticSpecialAction.SIFormat, false),
-			new StatisticEntity("ReadCount", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("WriteCount", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("ReadIdxCount", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("ReadSeqCount", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("PurgeCount", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("ExpungeCount", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("Marks", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("PacketSize", EnStatisticSpecialAction.ByteFormat, false)
-		},
-
-		// TimeStatistics
-		new StatisticEntity[3]
-		{
-			new StatisticEntity("ExecutionStartTimeEpoch", EnStatisticSpecialAction.DateTimeFormat, false),
-			new StatisticEntity("ExecutionEndTimeEpoch", EnStatisticSpecialAction.DateTimeFormat, false),
-			new StatisticEntity("ExecutionTimeTicks", EnStatisticSpecialAction.ElapsedTimeFormat),
-		},
-
-		// ServerStatistics
-		new StatisticEntity[6]
-		{
-			new StatisticEntity("AllocationPages", EnStatisticSpecialAction.SIFormat, false),
-			new StatisticEntity("CurrentMemory", EnStatisticSpecialAction.ByteFormat),
-			new StatisticEntity("MaxMemory", EnStatisticSpecialAction.ByteFormat),
-			new StatisticEntity("DatabaseSizeInPages", EnStatisticSpecialAction.SIFormat, false),
-			new StatisticEntity("PageSize", EnStatisticSpecialAction.ByteFormat, false),
-			new StatisticEntity("ActiveUserCount", EnStatisticSpecialAction.SIFormat)
-		}
-	};
-
-
-	private StatisticsGridsCollection _gridControls = new StatisticsGridsCollection();
 
 	private static Bitmap S_ArrowUp;
 	private static Bitmap S_ArrowDown;
 	private static Bitmap S_ArrowFlat;
 	private static Bitmap S_ArrowBlank;
 
+
+	private StatisticsGridsCollection _GridControls = new StatisticsGridsCollection();
+
+
 	public int NumberOfGrids
 	{
 		get
 		{
-			if (_gridControls != null)
+			if (_GridControls != null)
 			{
-				return _gridControls.Count;
+				return _GridControls.Count;
 			}
 			return 0;
 		}
@@ -170,7 +67,9 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		MenuCommand menuCommand4 = new MenuCommand(OnPrintPageSetup,
 			new CommandID(VSConstants.CMDSETID.StandardCommandSet97_guid,
 			(int)VSConstants.VSStd97CmdID.PageSetup));
+
 		MenuService.AddRange(new MenuCommand[4] { menuCommand, menuCommand2, menuCommand4, menuCommand3 });
+
 		S_ArrowUp = AttributeResources.StatisticsPanelArrowUp;
 		S_ArrowDown = AttributeResources.StatisticsPanelArrowDown;
 		S_ArrowFlat = AttributeResources.StatisticsPanelArrowFlat;
@@ -181,7 +80,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 	{
 		Tracer.Trace(GetType(), "ClientStatistics.Dispose", "", null);
 		Clear();
-		_gridControls = null;
+		_GridControls = null;
 		base.Dispose(bDisposing);
 	}
 
@@ -189,10 +88,10 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 	{
 		Tracer.Trace(GetType(), ".Initialize", "", null);
 		base.Initialize(sp);
-		_firstGridPanel.Dock = DockStyle.Fill;
-		_firstGridPanel.Height = ClientRectangle.Height;
-		_firstGridPanel.Tag = -1;
-		Controls.Add(_firstGridPanel);
+		_FirstGridPanel.Dock = DockStyle.Fill;
+		_FirstGridPanel.Height = ClientRectangle.Height;
+		_FirstGridPanel.Tag = -1;
+		Controls.Add(_FirstGridPanel);
 	}
 
 	public override void Clear()
@@ -200,13 +99,13 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		Tracer.Trace(GetType(), "ClientStatistics.Clear", "", null);
 		base.Clear();
 
-		if (_gridControls != null)
+		if (_GridControls != null)
 		{
-			foreach (StatisticsDlgGridControl gridControl in _gridControls)
+			foreach (StatisticsDlgGridControl gridControl in _GridControls)
 			{
 				gridControl.Dispose();
 			}
-			_gridControls.Clear();
+			_GridControls.Clear();
 		}
 	}
 
@@ -240,7 +139,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		statisticsDlgGridControl.DlgStorage = dlgStorage;
 		statisticsDlgGridControl.BeginInit();
 		statisticsDlgGridControl.Dock = DockStyle.Fill;
-		statisticsDlgGridControl.Tag = _gridControls.Count - 1;
+		statisticsDlgGridControl.Tag = _GridControls.Count - 1;
 		statisticsDlgGridControl.GotFocus += OnGridGotFocus;
 		statisticsDlgGridControl.MouseButtonDoubleClickedEvent += OnMouseButtonDoubleClicked;
 		statisticsDlgGridControl.Font = curGridFont;
@@ -253,14 +152,14 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		{
 			Cmd.ShowMessageBoxEx(string.Empty, ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 		}
-		if (_firstGridPanel.HostedControlsCount == 0)
+		if (_FirstGridPanel.HostedControlsCount == 0)
 		{
-			_firstGridPanel.HostedControlsMinInitialSize = C_MinNumberOfVisibleRows * (statisticsDlgGridControl.RowHeight + 1) + statisticsDlgGridControl.HeaderHeight + 1 + CommonUtils.GetExtraSizeForBorderStyle(statisticsDlgGridControl.BorderStyle);
-			_firstGridPanel.HostedControlsMinSize = statisticsDlgGridControl.RowHeight + 1 + statisticsDlgGridControl.HeaderHeight + 1 + CommonUtils.GetExtraSizeForBorderStyle(statisticsDlgGridControl.BorderStyle);
+			_FirstGridPanel.HostedControlsMinInitialSize = C_MinNumberOfVisibleRows * (statisticsDlgGridControl.RowHeight + 1) + statisticsDlgGridControl.HeaderHeight + 1 + CommonUtils.GetExtraSizeForBorderStyle(statisticsDlgGridControl.BorderStyle);
+			_FirstGridPanel.HostedControlsMinSize = statisticsDlgGridControl.RowHeight + 1 + statisticsDlgGridControl.HeaderHeight + 1 + CommonUtils.GetExtraSizeForBorderStyle(statisticsDlgGridControl.BorderStyle);
 		}
 		statisticsDlgGridControl.EndInit();
-		_firstGridPanel.AddControl(statisticsDlgGridControl, limitMaxControlHeightToClientArea: false);
-		_gridControls.Add(statisticsDlgGridControl);
+		_FirstGridPanel.AddControl(statisticsDlgGridControl, limitMaxControlHeightToClientArea: false);
+		_GridControls.Add(statisticsDlgGridControl);
 	}
 
 	private void AddDarkColoredCell(GridCellCollection cellCollection, string text, bool useNullBitmap)
@@ -294,7 +193,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		AddDarkColoredCell(cellCollection, null, useNullBitmap);
 	}
 
-	private (float, float) CalculateTheValue(StatisticEntity sn, IDictionary snapshotData, out string stringValue)
+	private (float, float) CalculateValue(StatisticEntity sn, IDictionary snapshotData, out string stringValue)
 	{
 		float result = 0f;
 		float cellValue = 0f;
@@ -332,7 +231,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		return (result, cellValue);
 	}
 
-	private string FormatTheValue(StatisticEntity sn, float value)
+	private string FormatValue(StatisticEntity sn, float value)
 	{
 		if (!sn.CalculateAverage)
 			return "";
@@ -385,19 +284,20 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 			for (int j = 0; j < numberOfTries; j++)
 			{
-				(result, _) = CalculateTheValue(sn, connection[j].Snapshot, out string strValue);
+				(result, _) = CalculateValue(sn, connection[j].Snapshot, out string strValue);
 
 				if (sn.CalculateAverage)
 					rowTotal += result;
 
 				if (j != numberOfTries - 1)
-					(nextResult, _) = CalculateTheValue(sn, connection[j + 1].Snapshot, out _);
+					(nextResult, _) = CalculateValue(sn, connection[j + 1].Snapshot, out _);
 				else
 					nextResult = result;
 
 				gridCellCollection.Add(new GridCell(strValue));
+
 				GridCell gridCell =
-					!sn.CalculateAverage
+					(!sn.CalculateAverage || j == numberOfTries - 1)
 						? new GridCell(S_ArrowBlank)
 						: (nextResult <= result)
 							? (nextResult >= result)
@@ -408,32 +308,32 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 			}
 
 			if (sn.CalculateAverage)
-				strAvg = FormatTheValue(sn, rowTotal / numberOfTries);
+				strAvg = FormatValue(sn, rowTotal / numberOfTries);
 			gridCellCollection.Add(new(strAvg));
 			gridControl.AddRow(gridCellCollection);
 
 		}
 	}
 
+
+	/// <summary>
+	/// This has all changed for the Firebird port and is now automated using the values
+	/// in StatisticsPropertySet
+	/// </summary>
 	private void PopulateGrid(StatisticsDlgGridControl gridControl, StatisticsConnection connection)
 	{
 		GridColumnInfo gridColumnInfo = new GridColumnInfo();
+		GridCellCollection[] gridCollections = new GridCellCollection[StatisticsPropertySet.SCategoryNames.Length];
 
-		GridCellCollection[] gridCollections = new GridCellCollection[S_CategoryNames.Length];
-		for (int i = 0; i < S_CategoryNames.Length; i++)
+		for (int i = 0; i < StatisticsPropertySet.SCategoryNames.Length; i++)
 			gridCollections[i] = new GridCellCollection();
-
-		/*
-		GridCellCollection gridCellCollection = new GridCellCollection();
-		GridCellCollection gridCellCollection2 = new GridCellCollection();
-		GridCellCollection gridCellCollection3 = new GridCellCollection();
-		GridCellCollection gridCellCollection4 = new GridCellCollection();
-		*/
 
 		gridControl.AlwaysHighlightSelection = true;
 		gridControl.GridLineType = EnGridLineType.Solid;
 		gridControl.SelectionType = EnGridSelectionType.RowBlocks;
 		gridControl.WithHeader = true;
+
+		// Add the Description column to the grid control
 		gridColumnInfo.ColumnType = 1;
 		gridColumnInfo.WidthType = EnGridColumnWidthType.InAverageFontChar;
 		gridColumnInfo.IsWithRightGridLine = true;
@@ -441,16 +341,11 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		gridColumnInfo.ColumnWidth = 50;
 		gridControl.AddColumn(gridColumnInfo);
 
+		// Add Cell to each category cell collection with the category title
 		for (int i = 0; i < gridCollections.Length; i++)
-			AddDarkColoredCell(gridCollections[i], S_CategoryNames[i]);
+			AddDarkColoredCell(gridCollections[i], StatisticsPropertySet.SCategoryNames[i]);
 
-		/*
-		AddDarkColoredCell(gridCellCollection, AttributeResources.StatisticsPanelCategoryClientExecutionTime);
-		AddDarkColoredCell(gridCellCollection2, AttributeResources.StatisticsPanelCategoryQueryProfileStats);
-		AddDarkColoredCell(gridCellCollection3, AttributeResources.StatisticsPanelCategoryNetworkStats);
-		AddDarkColoredCell(gridCellCollection4, AttributeResources.StatisticsPanelCategoryTimeStats);
-		*/
-
+		// Now for each trial add a column to the grid control;
 		int connectionCount = Math.Min(connection.Count, 10);
 		for (int i = 0; i < connectionCount; i++)
 		{
@@ -458,46 +353,43 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 			gridColumnInfo.ColumnWidth = 20;
 			gridColumnInfo.WidthType = EnGridColumnWidthType.InAverageFontChar;
 			gridColumnInfo.IsWithRightGridLine = false;
-			gridColumnInfo.IsHeaderMergedWithRight = true;
+			gridColumnInfo.IsHeaderMergedWithRight = false; // Set to false to allow resizing.
 			gridControl.AddColumn(gridColumnInfo);
 
-
+			// For each category cell collection add it's first right side cell value.
+			// The value is calculated using delegates from the delegate array.
 			for (int j = 0; j < gridCollections.Length; j++)
 			{
-				if (S_CategoryValueDelegates.Length <= j || S_CategoryValueDelegates[j] == null)
+				if (StatisticsPropertySet.SCategoryValueDelegates.Length <= j
+					|| StatisticsPropertySet.SCategoryValueDelegates[j] == null)
+				{
 					AddDarkColoredCell(gridCollections[j]);
+				}
 				else
-					AddDarkColoredCell(gridCollections[j], S_CategoryValueDelegates[j](connection[i]));
+				{
+					AddDarkColoredCell(gridCollections[j], StatisticsPropertySet.SCategoryValueDelegates[j](connection[i]));
+				}
 			}
 
-			/*
-			AddDarkColoredCell(gridCellCollection, connection[i].TimeOfExecution.ToString("T", CultureInfo.InvariantCulture));
-			AddDarkColoredCell(gridCellCollection2);
-			AddDarkColoredCell(gridCellCollection3);
-			AddDarkColoredCell(gridCellCollection4);
-			*/
-
+			// For each trial column append a bitmap column.
 			gridColumnInfo = new()
 			{
 				ColumnType = 3,
 				WidthType = EnGridColumnWidthType.InPixels,
 				IsWithRightGridLine = true,
 				IsHeaderMergedWithRight = false,
-				ColumnWidth = S_ArrowUp.Width
+				ColumnWidth = S_ArrowUp.Width,
+				IsUserResizable = false // Set to false to allow col to it's left to resize.
 			};
 			gridControl.AddColumn(gridColumnInfo);
-			gridControl.SetHeaderInfo(2 * i + 2, string.Format(CultureInfo.CurrentCulture,
+
+			// Set the header text for the trial column. Changed +2 to +1 because bitmap header column
+			// and column to it's left are no longer merged.
+			gridControl.SetHeaderInfo(2 * i + 1, string.Format(CultureInfo.CurrentCulture,
 				AttributeResources.StatisticsPanelSnapshotClientStatsTrial, connectionCount - i), null);
 
 			for (int j = 0; j < gridCollections.Length; j++)
 				AddDarkColoredCell(gridCollections[j], useNullBitmap: true);
-
-			/*
-			AddDarkColoredCell(gridCellCollection, useNullBitmap: true);
-			AddDarkColoredCell(gridCellCollection2, useNullBitmap: true);
-			AddDarkColoredCell(gridCellCollection3, useNullBitmap: true);
-			AddDarkColoredCell(gridCellCollection4, useNullBitmap: true);
-			*/
 		}
 
 		gridColumnInfo.ColumnType = 1;
@@ -509,74 +401,28 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		for (int i = 0; i < gridCollections.Length; i++)
 			AddDarkColoredCell(gridCollections[i]);
 
-		/*
-		AddDarkColoredCell(gridCellCollection);
-		AddDarkColoredCell(gridCellCollection2);
-		AddDarkColoredCell(gridCellCollection3);
-		AddDarkColoredCell(gridCellCollection4);
-		*/
-
 		for (int i = 0; i < gridCollections.Length; i++)
 		{
 			gridControl.AddRow(gridCollections[i]);
 
-			if (Statistics[i].Length > 0)
-				AddStatistic(gridControl, connection, Statistics[i], connectionCount);
+			if (StatisticsPropertySet.SStatisticEntities[i].Length > 0)
+				AddStatistic(gridControl, connection, StatisticsPropertySet.SStatisticEntities[i], connectionCount);
 		}
 
-		/*
-		gridControl.AddRow(gridCellCollection);
-		gridControl.AddRow(gridCellCollection2);
-		StatisticEntity[] array = new StatisticEntity[5];
-		array[0].Name = "IduCount";
-		array[0].DisplayName = AttributeResources.ResourceManager.StatisticsPanelStatIduCount;
-		array[1].Name = "IduRows";
-		array[1].DisplayName = AttributeResources.StatisticsPanelStatIduRowCount;
-		array[2].Name = "SelectCount";
-		array[2].DisplayName = AttributeResources.StatisticsPanelStatReadIdxCount;
-		array[3].Name = "SelectRows";
-		array[3].DisplayName = AttributeResources.StatisticsPanelStatSelectRowCount;
-		array[4].Name = "Transactions";
-		array[4].DisplayName = AttributeResources.StatisticsPanelStatTransactions;
-		AddStatistic(gridControl, connection, array, num);
-		gridControl.AddRow(gridCellCollection3);
-		StatisticEntity[] array2 = new StatisticEntity[5];
-		array2[0].Name = "ServerRoundtrips";
-		array2[0].DisplayName = AttributeResources.StatisticsPanelStatServerRoundtrips;
-		array2[1].Name = "BuffersSent";
-		array2[1].DisplayName = AttributeResources.StatisticsPanelStatBuffersSent;
-		array2[2].Name = "BuffersReceived";
-		array2[2].DisplayName = AttributeResources.StatisticsPanelStatBufferCount;
-		array2[3].Name = "BytesSent";
-		array2[3].DisplayName = AttributeResources.StatisticsPanelStatWriteCount;
-		array2[4].Name = "BytesReceived";
-		array2[4].DisplayName = AttributeResources.StatisticsPanelStatReadCount;
-		AddStatistic(gridControl, connection, array2, num);
-		gridControl.AddRow(gridCellCollection4);
-		StatisticEntity[] array3 = new StatisticEntity[3];
-		array3[0].Name = null;
-		array3[0].DisplayName = AttributeResources.StatisticsPanelStatClientProcessingTime;
-		array3[0].SpecialAction = EnStatisticSpecialAction.ClientProcessingTimeAction;
-		array3[1].Name = "ExecutionTime";
-		array3[1].DisplayName = AttributeResources.StatisticsPanelStatExecutionTimeTicks;
-		array3[1].SpecialAction = EnStatisticSpecialAction.ElapsedTimeFormat;
-		array3[2].Name = "NetworkServerTime";
-		array3[2].DisplayName = AttributeResources.StatisticsPanelStatNetworkServerTime;
-		array3[2].SpecialAction = EnStatisticSpecialAction.ElapsedTimeFormat;
-		AddStatistic(gridControl, connection, array3, num);
-		*/
 
 		gridControl.UpdateGrid(bRecalcRows: true);
 		gridControl.SelectedRows = new int[1];
 	}
 
+
+
 	public void ApplyCurrentGridFont(Font font)
 	{
-		if (_gridControls == null)
+		if (_GridControls == null)
 		{
 			return;
 		}
-		foreach (StatisticsDlgGridControl gridControl in _gridControls)
+		foreach (StatisticsDlgGridControl gridControl in _GridControls)
 		{
 			gridControl.Font = font;
 			gridControl.HeaderFont = font;
@@ -585,11 +431,11 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 	public void ApplyCurrentGridColor(Color bkColor, Color fkColor)
 	{
-		if (_gridControls == null)
+		if (_GridControls == null)
 		{
 			return;
 		}
-		foreach (StatisticsDlgGridControl gridControl in _gridControls)
+		foreach (StatisticsDlgGridControl gridControl in _GridControls)
 		{
 			gridControl.SetBkAndForeColors(bkColor, fkColor);
 		}
@@ -597,11 +443,11 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 	public void ApplySelectedCellColor(Color selectedCellColor)
 	{
-		if (_gridControls == null)
+		if (_GridControls == null)
 		{
 			return;
 		}
-		foreach (StatisticsDlgGridControl gridControl in _gridControls)
+		foreach (StatisticsDlgGridControl gridControl in _GridControls)
 		{
 			gridControl.SetSelectedCellColor(selectedCellColor);
 		}
@@ -609,11 +455,11 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 	public void ApplyInactiveSelectedCellColor(Color inactiveCellColor)
 	{
-		if (_gridControls == null)
+		if (_GridControls == null)
 		{
 			return;
 		}
-		foreach (StatisticsDlgGridControl gridControl in _gridControls)
+		foreach (StatisticsDlgGridControl gridControl in _GridControls)
 		{
 			gridControl.SetInactiveSelectedCellColor(inactiveCellColor);
 		}
@@ -621,11 +467,11 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 
 	public void ApplyHighlightedCellColor(Color highlightedColor)
 	{
-		if (_gridControls == null)
+		if (_GridControls == null)
 		{
 			return;
 		}
-		foreach (StatisticsDlgGridControl gridControl in _gridControls)
+		foreach (StatisticsDlgGridControl gridControl in _GridControls)
 		{
 			gridControl.SetHighlightedCellColor(highlightedColor);
 		}
@@ -723,9 +569,5 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		return (int)OleConstants.OLECMDERR_E_UNKNOWNGROUP;
 	}
 
-	private static string GetTimeOfExecution(StatisticsSnapshot snapshot)
-	{
-		return snapshot.TimeOfExecution.ToString("T", CultureInfo.InvariantCulture);
-	}
 
 }

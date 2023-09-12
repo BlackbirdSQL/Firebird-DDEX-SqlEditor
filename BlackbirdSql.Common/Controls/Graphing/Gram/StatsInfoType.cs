@@ -22,7 +22,7 @@ public class StatsInfoType
 
 	private string tableField;
 
-	private string statisticsField;
+	private string _StatisticsField;
 
 	private ulong modificationCountField;
 
@@ -72,15 +72,15 @@ public class StatsInfoType
 	}
 
 	[XmlAttribute]
-	public string Statistics
+	public string StatisticsField
 	{
 		get
 		{
-			return statisticsField;
+			return _StatisticsField;
 		}
 		set
 		{
-			statisticsField = value;
+			_StatisticsField = value;
 		}
 	}
 

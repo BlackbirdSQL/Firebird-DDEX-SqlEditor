@@ -19,6 +19,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Include="Controls\ResultsPane\StatisticsSnapshotAgent.cs" />
+	  <Compile Include="Controls\ResultsPane\StatisticsPropertySet.cs" />
 	  <Compile Include="Controls\Graphing\ActualPlanDataReaderNodeBuilder.cs" />
 	  <Compile Include="Controls\Graphing\CursorPlanTypeOperation.cs" />
 	  <Compile Include="Controls\Graphing\CustomZoomDlg.cs" />

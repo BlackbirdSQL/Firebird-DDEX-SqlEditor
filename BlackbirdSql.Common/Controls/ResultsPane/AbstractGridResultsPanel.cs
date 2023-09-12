@@ -18,21 +18,21 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 {
 	protected Control _lastFocusedControl;
 
-	protected MultiControlPanel _firstGridPanel = new MultiControlPanel();
+	protected MultiControlPanel _FirstGridPanel = new MultiControlPanel();
 
 	protected PageSettings _cachedPageSettings;
 
 	protected PrinterSettings _cachedPrinterSettings;
 
-	public Control BottomControl => _firstGridPanel.GetHostedControl(_firstGridPanel.HostedControlsCount - 1);
+	public Control BottomControl => _FirstGridPanel.GetHostedControl(_FirstGridPanel.HostedControlsCount - 1);
 
 	public Control TopControl
 	{
 		get
 		{
-			if (_firstGridPanel.HostedControlsCount > 0)
+			if (_FirstGridPanel.HostedControlsCount > 0)
 			{
-				return _firstGridPanel.GetHostedControl(0);
+				return _FirstGridPanel.GetHostedControl(0);
 			}
 
 			return null;
@@ -70,16 +70,16 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 	{
 		get
 		{
-			if (_firstGridPanel == null)
+			if (_FirstGridPanel == null)
 			{
 				InvalidOperationException ex = new(ControlsResources.MultiPanelGridContainerIsNotAvailable);
 				Diag.Dug(ex);
 				throw ex;
 			}
 
-			for (int i = 0; i < _firstGridPanel.HostedControlsCount; i++)
+			for (int i = 0; i < _FirstGridPanel.HostedControlsCount; i++)
 			{
-				Control hostedControl = _firstGridPanel.GetHostedControl(i);
+				Control hostedControl = _FirstGridPanel.GetHostedControl(i);
 				if (hostedControl.Focused)
 				{
 					return (GridControl)(object)(hostedControl is GridControl ? hostedControl : null);
@@ -202,7 +202,7 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 
 	public override void Clear()
 	{
-		_firstGridPanel.Clear();
+		_FirstGridPanel.Clear();
 		_lastFocusedControl = null;
 	}
 }
