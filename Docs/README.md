@@ -8,7 +8,7 @@
 
 The BlackbirdSQL DDEX 2.0 .NET Data with SqlEditor Provider extension, `BlackbirdSql.VisualStudio.Ddex`, implements most DDEX 2.0 interfaces prevalent in the SqlServer DDEX and SqlEditor extensions, but currently excludes the SqlServer designer logical views functionality. 
 
-[Download BlackbirdSql DDEX with SqlEditor Extension (Pre-release v9.1.0.79-beta)](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v9.1.0.79-beta/BlackbirdSql.VisualStudio.Ddex.vsix)
+[Download BlackbirdSql DDEX with SqlEditor Extension (Pre-release v9.1.0.81-beta)](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v9.1.0.81-beta/BlackbirdSql.VisualStudio.Ddex.vsix)
 
 *The first tenet of this package is `small footprint, low overhead`, and to be as unobtrusive as possible. It is installed as a standard VSIX extension. If you uninstall it is is gone. It does not leave it's fingerprints in either your computer system or your Visual Studio installation.*
 
@@ -17,6 +17,7 @@ The BlackbirdSQL DDEX 2.0 .NET Data with SqlEditor Provider extension, `Blackbir
 * SqlServer SqlEditor port for Firebird for editing Computed columns, Triggers, Views, Procedures, Functions and SQL scripts.</br>__Note:__ The editor service designer logical view and execution plan vizualizer are not currently functional. Execution plans are text based.
 * Trigger/Generator auto-increment linkage.
 * FlameRobin host and database selection within connection dialogs.
+* SqlEditor text-based execution plans and statistics snapshot comparer.
 * Within Server Explorer, top level folders for Tables, Views, Stored procedures, Functions, Sequence Generators, Triggers and Domains.
 * Within tables, drilldowns for indexes, foreign keys and triggers, and table columns, index columns, foreign key columns and trigger columns.
 * Identification of Identity fields, Primary keys, Unique keys and Computed columns.
