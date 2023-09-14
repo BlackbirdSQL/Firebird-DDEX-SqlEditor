@@ -6,7 +6,7 @@
 </br></br>
 
 
-The BlackbirdSQL DDEX 2.0 .NET Data with SqlEditor Provider extension, `BlackbirdSql.VisualStudio.Ddex`, implements most DDEX 2.0 interfaces prevalent in the SqlServer DDEX and SqlEditor extensions, but currently excludes the SqlServer designer logical views functionality. 
+The BlackbirdSQL DDEX 2.0 .NET Data with SqlEditor Provider extension, `BlackbirdSql.VisualStudio.Ddex`, implements most DDEX 2.0 interfaces prevalent in the SqlServer DDEX and SqlEditor extensions, but currently excludes the SqlServer designer logical views functionality.
 
 [Download BlackbirdSql DDEX with SqlEditor Extension (Pre-release v9.1.0.82-beta)](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v9.1.0.82-beta/BlackbirdSql.VisualStudio.Ddex.vsix)
 
@@ -14,7 +14,7 @@ The BlackbirdSQL DDEX 2.0 .NET Data with SqlEditor Provider extension, `Blackbir
 
 ### Features
 * Firebird DDEX provider support for most of the DDEX 2.0 IVs DML interfaces utilizing FirebirdSql.Data.FirebirdClient version 9.1.1.
-* SqlServer SqlEditor port for Firebird for editing Computed columns, Triggers, Views, Procedures, Functions and SQL scripts.</br>__Note:__ The editor service designer logical view and execution plan vizualizer are not currently functional. Execution plans are text based.
+* SqlServer SqlEditor port for Firebird for editing Computed columns, Triggers, Views, Procedures, Functions and SQL scripts.</br>__Note:__ The editor service designer logical view and execution plan visualizer are not currently functional. Execution plans are text based.
 * Trigger/Generator auto-increment linkage.
 * FlameRobin host and database selection within connection dialogs.
 * SqlEditor text-based execution plans and statistics snapshot comparer.
