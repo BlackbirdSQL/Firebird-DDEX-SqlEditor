@@ -11,8 +11,9 @@ using System.Text;
 
 
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Core.Providers;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Model;
 

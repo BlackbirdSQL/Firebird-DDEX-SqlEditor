@@ -16,7 +16,7 @@
 //$Authors = Jiri Cincura (jiri@cincura.net)
 
 using System;
-using BlackbirdSql.Common;
+
 
 namespace FirebirdSql.Data.Logging;
 

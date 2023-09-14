@@ -6,7 +6,7 @@
 using System;
 using System.Collections;
 using System.Drawing;
-using BlackbirdSql.Common.Events;
+using BlackbirdSql.Common.Ctl.Events;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 

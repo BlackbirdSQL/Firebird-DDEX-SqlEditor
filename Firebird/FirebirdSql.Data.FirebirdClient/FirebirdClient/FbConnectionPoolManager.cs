@@ -22,7 +22,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using BlackbirdSql.Common;
+
 using FirebirdSql.Data.Common;
 
 namespace FirebirdSql.Data.FirebirdClient;

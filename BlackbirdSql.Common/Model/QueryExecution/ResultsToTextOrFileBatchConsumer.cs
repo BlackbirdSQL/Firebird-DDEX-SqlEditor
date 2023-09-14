@@ -7,11 +7,10 @@ using System.Collections.Specialized;
 using System.Data.SqlTypes;
 using System.Globalization;
 using System.Text;
-
-using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 

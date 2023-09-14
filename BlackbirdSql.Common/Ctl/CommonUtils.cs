@@ -12,8 +12,6 @@ using System.Text;
 using System.Windows.Data;
 using System.Windows;
 using System.Windows.Forms;
-
-using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Common.Controls;
 
 using Microsoft.VisualStudio;
@@ -24,6 +22,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Point = System.Drawing.Point;
 using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Ctl;
 

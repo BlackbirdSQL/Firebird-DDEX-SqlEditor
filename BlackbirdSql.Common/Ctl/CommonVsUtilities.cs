@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -71,13 +71,13 @@ public static class CommonVsUtilities
 		return (DialogResult)pnResult;
 	}
 
-	internal static IEnumerable<uint> EnumerateOpenedDocuments(IDesignerDocumentService designerService, __VSRDTSAVEOPTIONS rdtSaveOptions)
+	internal static IEnumerable<uint> EnumerateOpenedDocuments(IBDesignerDocumentService designerService, __VSRDTSAVEOPTIONS rdtSaveOptions)
 	{
 		EnDocumentsFlag enumerateDocumentsFlag = GetDesignerDocumentFlagFromSaveOption(rdtSaveOptions);
 		return EnumerateOpenedDocuments(designerService, enumerateDocumentsFlag);
 	}
 
-	internal static IEnumerable<uint> EnumerateOpenedDocuments(IDesignerDocumentService designerService, EnDocumentsFlag flag)
+	internal static IEnumerable<uint> EnumerateOpenedDocuments(IBDesignerDocumentService designerService, EnDocumentsFlag flag)
 	{
 		foreach (uint editableDocument in designerService.GetEditableDocuments())
 		{

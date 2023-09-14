@@ -17,7 +17,7 @@
 
 using System;
 using System.Diagnostics;
-using BlackbirdSql.Common;
+
 using FirebirdSql.Data.Types;
 using static FirebirdSql.Data.Common.BitHelpers;
 

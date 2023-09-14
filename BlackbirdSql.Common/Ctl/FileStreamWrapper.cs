@@ -2,12 +2,12 @@
 // Microsoft.SqlServer.Management.UI.Grid.FileStreamWrapper
 using System;
 using System.IO;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Properties;
 
 namespace BlackbirdSql.Common.Ctl;
 
-public class FileStreamWrapper : IFileStreamWrapper, IDisposable
+public class FileStreamWrapper : IBFileStreamWrapper, IDisposable
 {
 	public const int DEFAULT_BUFFER_SIZE = 8192;
 

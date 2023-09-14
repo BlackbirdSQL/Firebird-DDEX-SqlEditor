@@ -13,10 +13,11 @@ using System.Reflection;
 using System.Windows.Threading;
 
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.ComponentModel;
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Diagnostics.Enums;
-using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.ComponentModel;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Interfaces;
 
 
 

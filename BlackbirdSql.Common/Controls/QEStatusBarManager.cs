@@ -12,8 +12,6 @@ using System.Globalization;
 using System.Media;
 using System.Timers;
 using System.Windows.Forms;
-
-using BlackbirdSql.Common.Config;
 using BlackbirdSql.Common.Controls.ResultsPane;
 using BlackbirdSql.Common.Model.Enums;
 using BlackbirdSql.Common.Model.Events;
@@ -27,9 +25,11 @@ using Microsoft.VisualStudio.Utilities;
 using Microsoft.Win32;
 
 
-using Tracer = BlackbirdSql.Core.Diagnostics.Tracer;
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Interfaces;
+using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
+using BlackbirdSql.Common.Ctl.Config;
+using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Core.Ctl.Extensions;
 
 namespace BlackbirdSql.Common.Controls;
 
@@ -126,7 +126,7 @@ public sealed class QEStatusBarManager : IDisposable
 
 	private DateTime ExecutionStartTime { get; set; }
 
-	private ISqlEditorWindowPane EditorWindowPane { get; set; }
+	private IBSqlEditorWindowPane EditorWindowPane { get; set; }
 
 	private QueryManager QryMgr
 	{
@@ -212,7 +212,7 @@ public sealed class QEStatusBarManager : IDisposable
 		UpdateStatusBar();
 	}
 
-	public void Initialize(StatusStrip statusStrip, bool rowCountValid, ISqlEditorWindowPane editorWindowPane)
+	public void Initialize(StatusStrip statusStrip, bool rowCountValid, IBSqlEditorWindowPane editorWindowPane)
 	{
 		//IL_00bf: Unknown result type (might be due to invalid IL or missing references)
 		//IL_00c9: Expected O, but got Unknown

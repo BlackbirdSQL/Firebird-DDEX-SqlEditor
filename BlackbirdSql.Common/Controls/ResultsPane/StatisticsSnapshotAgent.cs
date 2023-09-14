@@ -3,11 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
-
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core;
-
+using BlackbirdSql.Core.Ctl.Extensions;
 using FirebirdSql.Data.FirebirdClient;
 
 
@@ -123,8 +121,12 @@ public class StatisticsSnapshotAgent
 			_BufferCount = info.GetNumBuffers();
 			_ReadCount = info.GetReads() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ReadCount : 0);
 			_WriteCount = info.GetWrites() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._WriteCount : 0);
-			_ReadIdxCount = info.GetReadIdxCount() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ReadIdxCount : 0);
-			_ReadSeqCount = info.GetReadSeqCount() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ReadSeqCount : 0);
+
+			// _ReadIdxCount = info.GetReadIdxCount() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ReadIdxCount : 0);
+			// _ReadSeqCount = info.GetReadSeqCount() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ReadSeqCount : 0);
+			_ReadIdxCount = 0 - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ReadIdxCount : 0);
+			_ReadSeqCount = 0 - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ReadSeqCount : 0);
+
 			_PurgeCount = info.GetPurgeCount() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._PurgeCount : 0);
 			_ExpungeCount = info.GetExpungeCount() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ExpungeCount : 0);
 			_Marks = info.GetMarks() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._Marks : 0);
@@ -151,5 +153,6 @@ public class StatisticsSnapshotAgent
 
 	}
 
+	public static T ConvertValue<T>(object value) => value is IConvertible ? (T)Convert.ChangeType(value, typeof(T)) : (T)value;
 
 }

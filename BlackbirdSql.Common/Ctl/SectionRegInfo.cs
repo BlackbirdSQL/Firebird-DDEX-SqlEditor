@@ -6,11 +6,11 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using BlackbirdSql.Core.Interfaces;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Core.Ctl.Interfaces;
+
 
 namespace BlackbirdSql.Common.Ctl;
-
 
 [EditorBrowsable(EditorBrowsableState.Never)]
 [DebuggerDisplay("Id = {Id}, Priority = {Priority}")]
@@ -18,13 +18,13 @@ public class SectionRegInfo : IDisposable
 {
 	public Guid Id { get; private set; }
 
-	public Lazy<ISection, IBExportableMetadata> SectionTypeInfo { get; private set; }
+	public Lazy<IBSection, IBExportableMetadata> SectionTypeInfo { get; private set; }
 
 	public int Priority { get; private set; }
 
 	public object Tag { get; set; }
 
-	public SectionRegInfo(Lazy<ISection, IBExportableMetadata> sectionTypeInfo)
+	public SectionRegInfo(Lazy<IBSection, IBExportableMetadata> sectionTypeInfo)
 	{
 		Id = new Guid(sectionTypeInfo.Metadata.Id);
 		SectionTypeInfo = sectionTypeInfo;

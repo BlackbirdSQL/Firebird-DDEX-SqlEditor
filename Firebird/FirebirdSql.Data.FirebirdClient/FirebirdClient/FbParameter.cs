@@ -22,7 +22,7 @@ using System.ComponentModel;
 
 using FirebirdSql.Data.Common;
 using System.Text;
-using BlackbirdSql.Common;
+
 
 namespace FirebirdSql.Data.FirebirdClient;
 

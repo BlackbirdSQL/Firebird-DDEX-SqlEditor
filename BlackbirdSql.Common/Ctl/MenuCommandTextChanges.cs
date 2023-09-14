@@ -6,13 +6,14 @@
 using System;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
-using BlackbirdSql.Common.Interfaces;
+
+using BlackbirdSql.Common.Ctl.Interfaces;
+
 
 namespace BlackbirdSql.Common.Ctl;
 
-
 [ComVisible(false)]
-public class MenuCommandTextChanges : MenuCommand, IMenuCommandTextChanges
+public class MenuCommandTextChanges : MenuCommand, IBMenuCommandTextChanges
 {
 	private string text;
 

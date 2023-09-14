@@ -9,18 +9,19 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Diagnostics.Enums;
-using BlackbirdSql.Core.Interfaces;
-using BlackbirdSql.Core.Model;
+
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Events;
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Common.Ctl.Events;
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Model;
+
 
 namespace BlackbirdSql.Common.Model;
-
 
 [EditorBrowsable(EditorBrowsableState.Never)]
 public class DialogModel : IDisposable, IServiceProvider, IServiceContainer
@@ -89,7 +90,7 @@ public class DialogModel : IDisposable, IServiceProvider, IServiceContainer
 
 	public bool IsDiscoveryCompleted { get; private set; }
 
-	public IEnumerable<Lazy<ISection, IBExportableMetadata>> SectionCandidates { get; set; }
+	public IEnumerable<Lazy<IBSection, IBExportableMetadata>> SectionCandidates { get; set; }
 
 	public ObservableCollection<SectionHost> Sections { get; private set; }
 
@@ -225,7 +226,7 @@ public class DialogModel : IDisposable, IServiceProvider, IServiceContainer
 		return GetService(serviceType);
 	}
 
-	public void RegisterSection(Guid sectionId, Lazy<ISection, IBExportableMetadata> sectionTypeInfo, int priority)
+	public void RegisterSection(Guid sectionId, Lazy<IBSection, IBExportableMetadata> sectionTypeInfo, int priority)
 	{
 		if (sectionId == Guid.Empty)
 		{
@@ -462,7 +463,7 @@ public class DialogModel : IDisposable, IServiceProvider, IServiceContainer
 		{
 			Trace.TraceEvent(TraceEventType.Information, EnUiTraceId.UiInfra, "Start plugin discovery");
 			LoadPluginTypes(out var sections, e);
-			foreach (Lazy<ISection, IBExportableMetadata> value in sections.Values)
+			foreach (Lazy<IBSection, IBExportableMetadata> value in sections.Values)
 			{
 				if (IsCanceled(e))
 				{
@@ -524,19 +525,19 @@ public class DialogModel : IDisposable, IServiceProvider, IServiceContainer
 
 	public void SatisfyImportsOnce(object attributedPart)
 	{
-		IEnumerable<ExportableDescriptor<ISection>> serviceDescriptors = _DependencyManager.GetServiceDescriptors<ISection>();
-		SectionCandidates = serviceDescriptors.Select((x) => new Lazy<ISection, IBExportableMetadata>(() => x.Exportable, x.Metadata));
+		IEnumerable<ExportableDescriptor<IBSection>> serviceDescriptors = _DependencyManager.GetServiceDescriptors<IBSection>();
+		SectionCandidates = serviceDescriptors.Select((x) => new Lazy<IBSection, IBExportableMetadata>(() => x.Exportable, x.Metadata));
 	}
 
-	private void LoadPluginTypes(out Dictionary<string, Lazy<ISection, IBExportableMetadata>> sections, DoWorkEventArgs e)
+	private void LoadPluginTypes(out Dictionary<string, Lazy<IBSection, IBExportableMetadata>> sections, DoWorkEventArgs e)
 	{
-		sections = new Dictionary<string, Lazy<ISection, IBExportableMetadata>>(StringComparer.OrdinalIgnoreCase);
+		sections = new Dictionary<string, Lazy<IBSection, IBExportableMetadata>>(StringComparer.OrdinalIgnoreCase);
 		SatisfyImportsOnce(this);
 		if (SectionCandidates == null)
 		{
 			return;
 		}
-		foreach (Lazy<ISection, IBExportableMetadata> sectionCandidate in SectionCandidates)
+		foreach (Lazy<IBSection, IBExportableMetadata> sectionCandidate in SectionCandidates)
 		{
 			if (IsCanceled(e))
 			{
@@ -553,7 +554,7 @@ public class DialogModel : IDisposable, IServiceProvider, IServiceContainer
 		}
 	}
 
-	private void LoadSectionType(Lazy<ISection, IBExportableMetadata> sectionCandidate, Dictionary<string, Lazy<ISection, IBExportableMetadata>> sections)
+	private void LoadSectionType(Lazy<IBSection, IBExportableMetadata> sectionCandidate, Dictionary<string, Lazy<IBSection, IBExportableMetadata>> sections)
 	{
 		Trace.TraceEvent(TraceEventType.Information, EnUiTraceId.UiInfra, "Discovery: Section found section={0} pri={1}", sectionCandidate.Metadata.Id, sectionCandidate.Metadata.Priority);
 		if (sections.TryGetValue(sectionCandidate.Metadata.Id, out var _))

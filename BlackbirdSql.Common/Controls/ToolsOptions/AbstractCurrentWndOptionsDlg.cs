@@ -6,10 +6,9 @@
 using System;
 using System.ComponentModel;
 using System.Windows.Forms;
-
-using BlackbirdSql.Common.Config;
+using BlackbirdSql.Common.Ctl.Config;
 using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Core.Diagnostics;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 using Microsoft.VisualStudio.VSHelp;
 

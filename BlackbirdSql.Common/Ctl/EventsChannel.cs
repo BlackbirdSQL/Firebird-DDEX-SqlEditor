@@ -8,16 +8,12 @@ using System.Collections.Generic;
 using System.Data;
 using System.Windows;
 
-using BlackbirdSql.Core.Events;
-using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Common.Properties;
-
-
-
+using BlackbirdSql.Core.Ctl.Events;
+using BlackbirdSql.Core.Ctl.Interfaces;
 
 
 namespace BlackbirdSql.Common.Ctl;
-
 
 public sealed class EventsChannel : IBEventsChannel
 {

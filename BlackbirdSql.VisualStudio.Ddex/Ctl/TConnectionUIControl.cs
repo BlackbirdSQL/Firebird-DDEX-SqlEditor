@@ -6,9 +6,10 @@ using System;
 using System.Windows.Forms;
 
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Extensions;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model;
-
+using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
@@ -231,7 +232,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	private void EnableEvents()
 	{
 		if (_EventsDisabled == 0)
-			Diag.Dug(new InvalidOperationException("Events already enabled"));
+			Diag.Dug(new InvalidOperationException(Resources.ExceptionEventsAlreadyEnabled));
 		else
 			_EventsDisabled--;
 	}

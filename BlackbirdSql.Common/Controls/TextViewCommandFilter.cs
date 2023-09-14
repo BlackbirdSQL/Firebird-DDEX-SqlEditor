@@ -11,7 +11,7 @@ using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
-using BlackbirdSql.Common.Events;
+using BlackbirdSql.Common.Ctl.Events;
 
 namespace BlackbirdSql.Common.Controls;
 

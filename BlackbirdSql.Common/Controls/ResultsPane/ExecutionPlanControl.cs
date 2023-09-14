@@ -22,15 +22,14 @@ using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Enums;
+using BlackbirdSql.Core.Ctl.Enums;
 using Microsoft.AnalysisServices.Graphing;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Utilities;
-using Tracer = BlackbirdSql.Core.Diagnostics.Tracer;
+using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
 

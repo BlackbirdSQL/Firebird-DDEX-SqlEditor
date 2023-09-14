@@ -9,9 +9,10 @@ using System.Reflection;
 using System.Threading.Tasks;
 
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
-
+using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
@@ -186,7 +187,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 
 		if (!name.EndsWith("Definitions"))
 		{
-			Diag.Stack("Import resource not found: " + name);
+			Diag.Stack(Resources.ExceptionImportResourceNotFound.Res(name));
 			return null;
 		}
 
@@ -388,7 +389,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 			Stream stream = GetType().Assembly.GetManifestResourceStream(name);
 			if (stream == null)
 			{
-				Diag.Stack("Icon resource not found: " + name);
+				Diag.Stack(Resources.ExceptionIconResourceNotFound.Res(name));
 				return null;
 			}
 
@@ -413,12 +414,12 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 			}
 			else
 			{
-				Diag.Stack("Icon resource invalid: " + name);
+				Diag.Stack(Resources.ExceptionIconResourceInvalid.Res(name));
 			}
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, "Icon not found: " + name);
+			Diag.Dug(ex, Resources.ExceptionIconResourceNotFound.Res(name));
 		}
 
 		return null;

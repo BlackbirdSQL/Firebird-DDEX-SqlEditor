@@ -3,9 +3,7 @@
 
 using System;
 using System.Reflection;
-
-using BlackbirdSql.Core.Interfaces;
-
+using BlackbirdSql.Core.Ctl.Interfaces;
 
 namespace BlackbirdSql.Core.Model;
 

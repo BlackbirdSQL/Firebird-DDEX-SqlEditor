@@ -6,19 +6,15 @@ using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
 
-using BlackbirdSql.Common.Commands;
-using BlackbirdSql.Common.Config;
 using BlackbirdSql.Common.Controls.PropertiesWindow;
 using BlackbirdSql.Common.Controls.ResultsPane;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Commands;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Enums;
+using BlackbirdSql.Core.Ctl.Enums;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -30,12 +26,16 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
-using Tracer = BlackbirdSql.Core.Diagnostics.Tracer;
-
+using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
+using BlackbirdSql.Common.Ctl.Config;
+using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Control.Interfaces;
 
 namespace BlackbirdSql.Common.Controls;
 
-public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, ISqlEditorWindowPane, IVsFindTarget, IVsFindTarget2, IVsFindTarget3
+public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWindowPane, IVsFindTarget, IVsFindTarget2, IBVsFindTarget3
 {
 
 	private DisplaySQLResultsControl _ResultsControl;
@@ -645,7 +645,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, ISqlEditorWin
 		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(DocData);
 		if (auxDocData != null && auxDocData.Strategy != null)
 		{
-			ISqlEditorExtendedCommandHandler extendedCommandHandler = auxDocData.Strategy.ExtendedCommandHandler;
+			IBSqlEditorExtendedCommandHandler extendedCommandHandler = auxDocData.Strategy.ExtendedCommandHandler;
 			if (extendedCommandHandler != null && extendedCommandHandler.HandleExec(this, ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut) == 0)
 			{
 				return VSConstants.S_OK;
@@ -691,7 +691,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, ISqlEditorWin
 		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(DocData);
 		if (auxDocData != null && auxDocData.Strategy != null)
 		{
-			ISqlEditorExtendedCommandHandler extendedCommandHandler = auxDocData.Strategy.ExtendedCommandHandler;
+			IBSqlEditorExtendedCommandHandler extendedCommandHandler = auxDocData.Strategy.ExtendedCommandHandler;
 			if (extendedCommandHandler != null && extendedCommandHandler.HandleQueryStatus(this, ref pguidCmdGroup, cCmds, prgCmds, pCmdText) == 0)
 			{
 				return VSConstants.S_OK;
@@ -1201,7 +1201,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, ISqlEditorWin
 		{
 			QueryManager qryMgr = auxDocData.QryMgr;
 			text = qryMgr.ConnectionStrategy.GetEditorCaption(toolTip);
-			IUserSettings current = UserSettings.Instance.Current;
+			IBUserSettings current = UserSettings.Instance.Current;
 			if (!toolTip && (current.StatusBar.TabTextIncludeDatabaseName || current.StatusBar.TabTextIncludeLoginName || current.StatusBar.TabTextIncludeServerName))
 			{
 				if (qryMgr.IsConnected || qryMgr.IsConnecting)
@@ -1389,12 +1389,12 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, ISqlEditorWin
 		return VSFindTargetAdapter.NavigateTo2(pSpans, iSelMode);
 	}
 
-	int IVsFindTarget3.IsNewUISupported
+	int IBVsFindTarget3.IsNewUISupported
 	{
 		get { return VSFindTargetAdapter.IsNewUISupported; }
 	}
 
-	int IVsFindTarget3.NotifyShowingNewUI()
+	int IBVsFindTarget3.NotifyShowingNewUI()
 	{
 		return VSFindTargetAdapter.NotifyShowingNewUI();
 	}

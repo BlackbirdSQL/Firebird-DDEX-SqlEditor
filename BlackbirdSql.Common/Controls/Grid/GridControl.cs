@@ -23,6 +23,7 @@ using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Extensions;
 using Microsoft.VisualStudio;
 using Microsoft.Win32;
 

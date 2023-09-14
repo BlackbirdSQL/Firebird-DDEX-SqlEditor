@@ -11,9 +11,7 @@ using System.Reflection;
 using System.Threading;
 
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Exceptions;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.Enums;
 using BlackbirdSql.Common.Model.Events;
@@ -21,13 +19,15 @@ using BlackbirdSql.Common.Properties;
 
 using FirebirdSql.Data.FirebirdClient;
 using System.CodeDom;
-using BlackbirdSql.Common.Interfaces;
 using Microsoft;
 using EnvDTE;
 using System.Drawing;
 using Microsoft.VisualStudio.Data;
 using Microsoft.VisualStudio.Data.Framework;
 using System.Data.Common;
+using BlackbirdSql.Common.Ctl.Exceptions;
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 
@@ -68,7 +68,7 @@ public class QESQLBatch : IDisposable
 
 	protected BatchState _State;
 
-	protected ITextSpan _TextSpan;
+	protected IBTextSpan _TextSpan;
 
 	protected int _batchIndex;
 
@@ -142,7 +142,7 @@ public class QESQLBatch : IDisposable
 		}
 	}
 
-	public ITextSpan TextSpan
+	public IBTextSpan TextSpan
 	{
 		get
 		{
@@ -756,9 +756,10 @@ public class QESQLBatch : IDisposable
 				{
 					Tracer.Trace(GetType(), Tracer.Level.Verbose, "DoBatchExecution", ": calling ExecuteReader: " + _SpecialActions);
 					dataReader = _Command.ExecuteReader(CommandBehavior.SequentialAccess);
+
+					OnSqlStatementCompleted(_Command, new(dataReader == null ? 0 : dataReader.RecordsAffected, false, false));
 				}
 
-				OnSqlStatementCompleted(_Command, new(dataReader == null ? 0 : dataReader.RecordsAffected, false, false));
 
 
 

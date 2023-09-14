@@ -3,11 +3,11 @@
 
 using System;
 using System.Globalization;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Core;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Common.Ctl.Interfaces;
 
 namespace BlackbirdSql.Common.Model;
 
@@ -36,7 +36,7 @@ public class MemStorageView : AbstractStorageView
 	public override int ColumnCount => _MemStorage.ColumnCount;
 
 
-	public override IColumnInfo GetColumnInfo(int iCol)
+	public override IBColumnInfo GetColumnInfo(int iCol)
 	{
 		return _MemStorage.GetColumnInfo(iCol);
 	}

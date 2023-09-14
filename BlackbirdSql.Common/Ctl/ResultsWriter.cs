@@ -4,7 +4,7 @@
 #endregion
 
 using System.IO;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
 
 // using Microsoft.SqlServer.Management.QueryExecution;
 
@@ -39,12 +39,12 @@ public abstract class ResultsWriter
 
 	public abstract void AppendError(string text, bool noCRLF);
 
-	public void AppendError(string text, int line, ITextSpan textSpan)
+	public void AppendError(string text, int line, IBTextSpan textSpan)
 	{
 		AppendError(text, line, textSpan, noCRLF: false);
 	}
 
-	public abstract void AppendError(string text, int line, ITextSpan textSpan, bool noCRLF);
+	public abstract void AppendError(string text, int line, IBTextSpan textSpan, bool noCRLF);
 
 	public void AppendWarning(string text)
 	{

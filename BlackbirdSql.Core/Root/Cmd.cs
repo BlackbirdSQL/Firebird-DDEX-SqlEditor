@@ -2,8 +2,9 @@
 using System;
 using System.Globalization;
 using System.Text;
-using BlackbirdSql.Core.Enums;
-using BlackbirdSql.Core.Providers;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Extensions;
 using FirebirdSql.Data.FirebirdClient;
 
 

@@ -16,17 +16,12 @@ using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
 
 using FirebirdSql.Data.FirebirdClient;
 
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
-using BlackbirdSql.Common.Config.Interfaces;
-using BlackbirdSql.Common.Events;
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Interfaces;
 using System.Data;
 using Microsoft.AnalysisServices.Graphing;
 using BlackbirdSql.Common.Controls.Interfaces;
@@ -35,6 +30,10 @@ using BlackbirdSql.Common.Controls.Graphing.Enums;
 using BlackbirdSql.Common.Controls.Graphing;
 using EnvDTE;
 using Newtonsoft.Json.Linq;
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Common.Ctl.Events;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
 
@@ -159,7 +158,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 		}
 	}
 
-	public IQueryExecutionResultsSettings ResultsSettings
+	public IBQueryExecutionResultsSettings ResultsSettings
 	{
 		get
 		{
@@ -233,7 +232,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 
 	private bool CouldNotShowSomeGridResults => _GridCount > C_MaxGridResultSets;
 
-	public ISqlEditorWindowPane SqlEditorPane { get; set; }
+	public IBSqlEditorWindowPane SqlEditorPane { get; set; }
 
 	private bool ShouldDiscardResults
 	{
@@ -315,7 +314,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 
 	private bool WithEstimatedExecutionPlan => SqlExecutionOptions.WithEstimatedExecutionPlan;
 
-	public DisplaySQLResultsControl(ResultWindowPane resultsGridPanel, ResultWindowPane messagePanel, ResultWindowPane textResultsPanel, ResultWindowPane statisticsPanel, ResultWindowPane executionPlanPanel, ResultWindowPane textPlanPanel, ResultWindowPane spatialPane, ISqlEditorWindowPane editorPane)
+	public DisplaySQLResultsControl(ResultWindowPane resultsGridPanel, ResultWindowPane messagePanel, ResultWindowPane textResultsPanel, ResultWindowPane statisticsPanel, ResultWindowPane executionPlanPanel, ResultWindowPane textPlanPanel, ResultWindowPane spatialPane, IBSqlEditorWindowPane editorPane)
 	{
 		Tracer.Trace(GetType(), "DisplaySQLResultsControl.DisplaySQLResultsControl", "", null);
 		if (resultsGridPanel == null || messagePanel == null)
@@ -739,7 +738,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 		AddStringToErrors(message, -1, null, flush);
 	}
 
-	public void AddStringToErrors(string message, int line, ITextSpan textSpan, bool flush)
+	public void AddStringToErrors(string message, int line, IBTextSpan textSpan, bool flush)
 	{
 		_HadExecutionErrors = true;
 		AddMessageToTextWriterCommon(message, line, textSpan, ResultMessageType.Error, _ErrorsWriter, flush, noCr: false);
@@ -1005,7 +1004,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 		return dataReader;
 	}
 
-	private void AddMessageToTextWriterCommon(string message, int line, ITextSpan textSpan, ResultMessageType resultMessageType, ResultsWriter writer, bool flush, bool noCr)
+	private void AddMessageToTextWriterCommon(string message, int line, IBTextSpan textSpan, ResultMessageType resultMessageType, ResultsWriter writer, bool flush, bool noCr)
 	{
 		AddStringToTextWriterCommon(message, line, textSpan, resultMessageType, writer, flush, noCr);
 		if (AuxDocData.SqlExecutionMode == EnSqlExecutionMode.ResultsToFile && _ResultsWriter != null && _ResultsWriter != writer)
@@ -1014,7 +1013,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 		}
 	}
 
-	private void AddStringToTextWriterCommon(string message, int line, ITextSpan textSpan, ResultMessageType resultMessageType, ResultsWriter writer, bool flush, bool noCr)
+	private void AddStringToTextWriterCommon(string message, int line, IBTextSpan textSpan, ResultMessageType resultMessageType, ResultsWriter writer, bool flush, bool noCr)
 	{
 		if (message == null)
 		{
@@ -1254,7 +1253,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 		}
 	}
 
-	private void ApplyResultSettingsToBatchConsumer(AbstractQESQLBatchConsumer batchConsumer, IQueryExecutionResultsSettings resultsSettings)
+	private void ApplyResultSettingsToBatchConsumer(AbstractQESQLBatchConsumer batchConsumer, IBQueryExecutionResultsSettings resultsSettings)
 	{
 		Tracer.Trace(GetType(), "DisplaySQLResultsControl.ApplyResSettingsToBatchConsumer", "", null);
 		batchConsumer.MaxCharsPerColumn = MaxCharsPerColumn;

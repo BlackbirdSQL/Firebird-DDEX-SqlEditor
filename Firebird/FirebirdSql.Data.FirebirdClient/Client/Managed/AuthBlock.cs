@@ -21,7 +21,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using BlackbirdSql.Common;
+
 using FirebirdSql.Data.Client.Managed.Srp;
 using FirebirdSql.Data.Client.Managed.Sspi;
 using FirebirdSql.Data.Common;

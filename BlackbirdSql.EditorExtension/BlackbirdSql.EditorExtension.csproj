@@ -16,7 +16,6 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="9.1.1" />
 		<PackageReference Include="IndexRange" Version="1.0.2" />
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
 		<PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
@@ -32,15 +31,18 @@
 
 	<ItemGroup>
 		<None Include="Properties\BlackbirdSql.EditorExtension.snk" />
-		<Compile Include="Root\Config\SqlEditorGeneralSettingsDialogPage.cs" />
-		<Compile Include="Root\Config\SqlEditorTabAndStatusBarSettingsDialogPage.cs" />
-		<Compile Include="Root\Config\SqlExecutionAdvancedOptionsPage.cs" />
-		<Compile Include="Root\Config\SqlExecutionAnsiOptionsPage.cs" />
-		<Compile Include="Root\Config\SqlExecutionGeneralOptionsPage.cs" />
-		<Compile Include="Root\Config\SqlResultsGeneralOptionsPage.cs" />
-		<Compile Include="Root\Config\SqlResultsToGridOptionsPage.cs" />
-		<Compile Include="Root\Config\SqlResultsToTextOptionsPage.cs" />
-		<Compile Include="Root\Config\AbstractToolsOptionsDialogPage.cs" />
+		<Compile Include="Controls\Config\SqlEditorGeneralSettingsDialogPage.cs" />
+		<Compile Include="Controls\Config\SqlEditorTabAndStatusBarSettingsDialogPage.cs" />
+		<Compile Include="Controls\Config\SqlExecutionAdvancedOptionsPage.cs" />
+		<Compile Include="Controls\Config\SqlExecutionAnsiOptionsPage.cs" />
+		<Compile Include="Controls\Config\SqlExecutionGeneralOptionsPage.cs" />
+		<Compile Include="Controls\Config\SqlResultsGeneralOptionsPage.cs" />
+		<Compile Include="Controls\Config\SqlResultsToGridOptionsPage.cs" />
+		<Compile Include="Controls\Config\SqlResultsToTextOptionsPage.cs" />
+		<Compile Include="Controls\Config\AbstractToolsOptionsDialogPage.cs" />
+		<Compile Include="Ctl\ComponentModel\GlobalBoolConverter.cs" />
+		<Compile Include="Ctl\ComponentModel\GlobalEnumConverter.cs" />
+		<Compile Include="Ctl\ComponentModel\GlobalOnOffConverter.cs" />
 		<Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
 	</ItemGroup>
 
@@ -106,7 +108,7 @@
 		<Compile Include="Ctl\EditorFactoryWithoutEncoding.cs" />
 		<Compile Include="Ctl\SqlEditorToolbarCommandHandler.cs" />
 		<Compile Include="Ctl\SqlResultsEditorFactory.cs" />
-		<Compile Include="Root\Events\MonitorSelectionEventArgs.cs" />
+		<Compile Include="Ctl\Events\MonitorSelectionEventArgs.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

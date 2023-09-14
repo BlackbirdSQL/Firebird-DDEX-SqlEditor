@@ -22,7 +22,7 @@ using System.Data.Common;
 using System.Globalization;
 using System.Text;
 
-using BlackbirdSql.Common;
+
 
 using FirebirdSql.Data.Common;
 

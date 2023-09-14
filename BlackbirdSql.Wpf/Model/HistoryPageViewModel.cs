@@ -7,14 +7,16 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows.Input;
-using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Common.Model;
+
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Common.Model;
+using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Diagnostics.Enums;
-using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Interfaces;
 
 
 namespace BlackbirdSql.Wpf.Model
@@ -43,7 +45,7 @@ namespace BlackbirdSql.Wpf.Model
 
         private readonly ConnectionPropertySectionViewModel _connectionPropertyViewModel;
 
-        private readonly IConnectionMruManager _MruManager;
+        private readonly IBConnectionMruManager _MruManager;
 
         public const int C_MaxFavoriteConnections = 10;
 
@@ -141,7 +143,7 @@ namespace BlackbirdSql.Wpf.Model
 
         public ConnectionPropertySectionViewModel ConnectionPropertyViewModel => _connectionPropertyViewModel;
 
-        public HistoryPageViewModel(IBDependencyManager dependencyManager, ConnectionPropertySectionViewModel connectionPropertyViewModel, IBEventsChannel channel, IConnectionMruManager mruManager, bool isConnectionExpanded)
+        public HistoryPageViewModel(IBDependencyManager dependencyManager, ConnectionPropertySectionViewModel connectionPropertyViewModel, IBEventsChannel channel, IBConnectionMruManager mruManager, bool isConnectionExpanded)
         {
             Cmd.CheckForNull(dependencyManager, "dependencyManager");
             Cmd.CheckForNull(connectionPropertyViewModel, "connectionPropertyViewModel");

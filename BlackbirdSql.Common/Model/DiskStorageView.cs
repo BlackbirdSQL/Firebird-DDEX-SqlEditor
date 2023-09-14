@@ -5,18 +5,16 @@ using System.Data;
 using System.Data.SqlTypes;
 using System.Globalization;
 using System.Threading;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
-
-
+using BlackbirdSql.Common.Ctl.Interfaces;
 
 namespace BlackbirdSql.Common.Model;
 
 public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, IDataRecord
 {
-	protected IFileStreamReader _FsReader;
+	protected IBFileStreamReader _FsReader;
 
 	protected IFileStreamWriter _FsWriter;
 
@@ -112,7 +110,7 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 	public override int ColumnCount => _DiskDataStorage.ColumnCount;
 
 
-	public override IColumnInfo GetColumnInfo(int iCol)
+	public override IBColumnInfo GetColumnInfo(int iCol)
 	{
 		return _DiskDataStorage.GetColumnInfo(iCol);
 	}
@@ -146,7 +144,7 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 	{
 		object result = null;
 		bool IsNull = false;
-		IColumnInfo columnInfo = _DiskDataStorage.GetColumnInfo(iCol);
+		IBColumnInfo columnInfo = _DiskDataStorage.GetColumnInfo(iCol);
 		Type type = columnInfo.FieldType;
 		bool flag = columnInfo.IsSqlVariant;
 
@@ -438,7 +436,7 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 		int num = _DiskDataStorage.ColumnCount;
 		for (int i = 0; i < num; i++)
 		{
-			IColumnInfo columnInfo = _DiskDataStorage.GetColumnInfo(i);
+			IBColumnInfo columnInfo = _DiskDataStorage.GetColumnInfo(i);
 			dataTable.Columns.Add(new DataColumn(columnInfo.ColumnName, columnInfo.FieldType));
 		}
 		return dataTable;
@@ -569,7 +567,7 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 		int num = _DiskDataStorage.ColumnCount;
 		for (int i = 0; i < num; i++)
 		{
-			IColumnInfo columnInfo = _DiskDataStorage.GetColumnInfo(i);
+			IBColumnInfo columnInfo = _DiskDataStorage.GetColumnInfo(i);
 			if (string.Compare(columnInfo.ColumnName, name, StringComparison.Ordinal) == 0)
 			{
 				return i;

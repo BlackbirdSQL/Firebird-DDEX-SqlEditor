@@ -20,8 +20,8 @@ using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Enums;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Enums;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;

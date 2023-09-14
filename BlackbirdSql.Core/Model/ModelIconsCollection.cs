@@ -3,12 +3,10 @@
 
 using System.Collections.Generic;
 using System.ComponentModel;
-
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Interfaces;
 
 namespace BlackbirdSql.Core.Model;
-
 
 [EditorBrowsable(EditorBrowsableState.Never)]
 public class ModelIconsCollection : CoreIconsCollection

@@ -18,7 +18,7 @@
 using System;
 using System.Threading;
 using System.Transactions;
-using BlackbirdSql.Common;
+
 using FirebirdSql.Data.Common;
 
 namespace FirebirdSql.Data.FirebirdClient;

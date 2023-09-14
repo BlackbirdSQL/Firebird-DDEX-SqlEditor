@@ -13,8 +13,6 @@ using System.Text;
 using System.Windows.Forms;
 
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Diagnostics.Enums;
 using BlackbirdSql.Common.Properties;
 
 using EnvDTE;
@@ -23,10 +21,8 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
-
-
-
-
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Ctl;
 

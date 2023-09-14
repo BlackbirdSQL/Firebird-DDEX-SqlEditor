@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -19,7 +19,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
 using Cmd = BlackbirdSql.Common.Cmd;
-using Tracer = BlackbirdSql.Core.Diagnostics.Tracer;
+using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 
 

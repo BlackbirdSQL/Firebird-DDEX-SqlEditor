@@ -3,8 +3,8 @@
 // Decompiled with ICSharpCode.Decompiler 7.1.0.6543
 #endregion
 
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Interfaces;
 
 
 

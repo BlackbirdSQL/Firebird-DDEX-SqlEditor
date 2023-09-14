@@ -7,15 +7,12 @@ using System;
 using System.IO;
 using System.Text;
 
-using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Properties;
-
-
+using BlackbirdSql.Core.Ctl.Interfaces;
 
 
 namespace BlackbirdSql.Common.Model;
-
 
 public class ConnectionInfo : AbstractDispatcherConnection
 {

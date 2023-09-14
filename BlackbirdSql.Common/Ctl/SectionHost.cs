@@ -10,21 +10,21 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Diagnostics.Enums;
-using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Common.Ctl.Events;
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Common.Events;
-using BlackbirdSql.Common.Interfaces;
+
 
 namespace BlackbirdSql.Common.Ctl;
-
 
 [EditorBrowsable(EditorBrowsableState.Never)]
 [DebuggerDisplay("Id = {Id}, Priority = {Priority}")]
 public class SectionHost : IDisposable, IServiceProvider
 {
-	public class ErrorSection : ISection, IDisposable, INotifyPropertyChanged, IBExportable
+	public class ErrorSection : IBSection, IDisposable, INotifyPropertyChanged, IBExportable
 	{
 		public static string _error = "Error";
 
@@ -116,7 +116,7 @@ public class SectionHost : IDisposable, IServiceProvider
 
 	public Guid Id => SectionRegInfo.Id;
 
-	public ISection Section { get; private set; }
+	public IBSection Section { get; private set; }
 
 	public int Priority => SectionRegInfo.Priority;
 
@@ -144,7 +144,7 @@ public class SectionHost : IDisposable, IServiceProvider
 
 	private void ReplaceWithErrorSection(Exception ex)
 	{
-		ISection section = Section;
+		IBSection section = Section;
 		Section = new ErrorSection(ex);
 		if (section != null)
 		{

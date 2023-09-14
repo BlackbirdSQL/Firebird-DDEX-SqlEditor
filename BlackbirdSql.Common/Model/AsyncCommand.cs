@@ -5,13 +5,13 @@ using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-using BlackbirdSql.Core.Interfaces;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Core.Ctl.Interfaces;
+
 
 namespace BlackbirdSql.Common.Model;
 
-
-public class AsyncCommand<TResult> : AbstractCommand, IAsyncCommand, IOwnedCommand, ICommand
+public class AsyncCommand<TResult> : AbstractCommand, IBAsyncCommand, IBOwnedCommand, ICommand
 {
 	private readonly Func<object, Task<TResult>> _Command;
 

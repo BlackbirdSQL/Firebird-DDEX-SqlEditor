@@ -5,17 +5,14 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.EditorExtension;
 
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
-
-
 namespace BlackbirdSql.Controller;
-
 
 
 // =========================================================================================================

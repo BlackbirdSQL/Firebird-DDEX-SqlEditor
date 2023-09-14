@@ -5,9 +5,9 @@
 
 using System;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Core.Diagnostics;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 
 
@@ -143,7 +143,7 @@ namespace BlackbirdSql.Common.Controls.ToolsOptions
 			return true;
 		}
 
-		protected override void ApplySettingsToUI(IUserSettings options)
+		protected override void ApplySettingsToUI(IBUserSettings options)
 		{
 			if (options != null)
 			{
@@ -162,7 +162,7 @@ namespace BlackbirdSql.Common.Controls.ToolsOptions
 			}
 		}
 
-		protected override void SaveSettingsFromUI(IUserSettings options)
+		protected override void SaveSettingsFromUI(IBUserSettings options)
 		{
 			options.Execution.SetAnsiNulls = _setNullsCheck.Checked;
 			options.Execution.SetAnsiNullDefault = _setNullDefaultCheck.Checked;

@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Exceptions;
+using BlackbirdSql.Common.Ctl.Exceptions;
 using BlackbirdSql.Common.Properties;
 
 namespace BlackbirdSql.Common.Controls.Graphing;

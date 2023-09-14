@@ -5,7 +5,7 @@
 
 using System.ComponentModel;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Properties;
 
 
@@ -95,7 +95,7 @@ namespace BlackbirdSql.Common.Controls.ToolsOptions
 			AddTreeNodes(array2, treeNode);
 		}
 
-		public void Serialize(IUserSettings options, bool bToControls)
+		public void Serialize(IBUserSettings options, bool bToControls)
 		{
 			ToolsOptionsBaseControl[] optionViews = _optionViews;
 			foreach (ToolsOptionsBaseControl toolsOptionsBaseControl in optionViews)

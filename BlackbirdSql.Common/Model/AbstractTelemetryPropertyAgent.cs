@@ -5,8 +5,9 @@
 
 using System;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Enums;
-using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 
 using static BlackbirdSql.Common.Model.TelemetryConstants;

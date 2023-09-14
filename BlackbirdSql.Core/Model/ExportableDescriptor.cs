@@ -5,8 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using BlackbirdSql.Core.Enums;
-using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Interfaces;
+
 
 namespace BlackbirdSql.Core.Model;
 

@@ -5,11 +5,11 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
-using System.Drawing.Design;
 using System.Reflection;
 using System.Xml.Serialization;
-using BlackbirdSql.Common.ComponentModel;
+
 using BlackbirdSql.Common.Controls.Graphing.ComponentModel;
+
 
 namespace BlackbirdSql.Common.Controls.Graphing;
 

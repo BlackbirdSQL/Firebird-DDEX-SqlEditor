@@ -19,7 +19,7 @@
 
 using System;
 using System.Runtime.InteropServices;
-using BlackbirdSql.Common;
+
 
 namespace FirebirdSql.Data.Client.Managed.Sspi;
 

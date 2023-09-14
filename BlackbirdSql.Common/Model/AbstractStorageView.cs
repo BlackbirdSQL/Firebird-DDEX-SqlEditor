@@ -7,7 +7,7 @@ using System;
 using System.Data.SqlTypes;
 using System.Globalization;
 using System.Text;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Interfaces;
 
 // namespace Microsoft.SqlServer.Management.UI.Grid
@@ -223,7 +223,7 @@ public abstract class AbstractStorageView : IStorageView, IDisposable
 
 	public abstract long RowCount { get; }
 
-	public abstract IColumnInfo GetColumnInfo(int iCol);
+	public abstract IBColumnInfo GetColumnInfo(int iCol);
 
 	public abstract int ColumnCount { get; }
 

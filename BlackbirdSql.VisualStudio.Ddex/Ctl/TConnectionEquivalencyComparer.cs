@@ -6,12 +6,13 @@ using System;
 using System.Collections.Generic;
 
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.CommandProviders;
+using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Core.CommandProviders;
-
+using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
-
 
 
 namespace BlackbirdSql.VisualStudio.Ddex;
@@ -95,7 +96,7 @@ public class TConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 				// Get the correct key for the parameter in connection 1
 				if ((describer = ModelPropertySet.RecursiveGetSynonymDescriber(param.Key)) == null)
 				{
-					ArgumentException ex = new($"Could not locate Describer for connection parameter '{param.Key}'.");
+					ArgumentException ex = new(Resources.ExceptionParameterDescriberNotFound.Res(param.Key));
 					Diag.Dug(ex);
 					throw ex;
 				}
@@ -278,7 +279,7 @@ public class TConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 		{
 			if ((connectionDescriber = ModelPropertySet.RecursiveGetSynonymDescriber(parameter.Key)) == null)
 			{
-				ArgumentException ex = new($"Could not locate Describer for connection parameter '{parameter.Key}'.");
+				ArgumentException ex = new(Resources.ExceptionParameterDescriberNotFound.Res(parameter.Key));
 				Diag.Dug(ex);
 				throw ex;
 			}

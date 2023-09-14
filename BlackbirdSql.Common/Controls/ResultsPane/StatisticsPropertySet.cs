@@ -101,14 +101,12 @@ public class StatisticsPropertySet
 		},
 
 		// NetworkStatistics
-		new StatisticEntity[10]
+		new StatisticEntity[8]
 		{
 			new StatisticEntity("ServerRoundtrips", EnStatisticSpecialAction.SIFormat),
 			new StatisticEntity("BufferCount", EnStatisticSpecialAction.SIFormat, false),
 			new StatisticEntity("ReadCount", EnStatisticSpecialAction.SIFormat),
 			new StatisticEntity("WriteCount", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("ReadIdxCount", EnStatisticSpecialAction.SIFormat),
-			new StatisticEntity("ReadSeqCount", EnStatisticSpecialAction.SIFormat),
 			new StatisticEntity("PurgeCount", EnStatisticSpecialAction.SIFormat),
 			new StatisticEntity("ExpungeCount", EnStatisticSpecialAction.SIFormat),
 			new StatisticEntity("Marks", EnStatisticSpecialAction.SIFormat),

@@ -4,7 +4,7 @@
 using System;
 using System.IO;
 using System.Text;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
 
 // using Microsoft.SqlServer.Management.QueryExecution;
 // using Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ResultPane;
@@ -64,7 +64,7 @@ public sealed class FileStreamResultsWriter : ResultsWriter
 		}
 	}
 
-	public override void AppendError(string text, int line, ITextSpan textSpan, bool noCRLF)
+	public override void AppendError(string text, int line, IBTextSpan textSpan, bool noCRLF)
 	{
 		AppendError(text, noCRLF);
 	}

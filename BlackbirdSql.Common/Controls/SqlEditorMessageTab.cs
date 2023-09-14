@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using BlackbirdSql.Common;
 using BlackbirdSql.Common.Controls.ResultsPane;
 using BlackbirdSql.Core;
-using BlackbirdSql.Common.Enums;
+using BlackbirdSql.Common.Ctl.Enums;
 
 namespace BlackbirdSql.Common.Controls;
 

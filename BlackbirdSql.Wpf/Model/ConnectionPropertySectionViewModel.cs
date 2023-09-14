@@ -12,22 +12,24 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Diagnostics.Enums;
-using BlackbirdSql.Core.Extensions;
-using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Common.Ctl;
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Extensions;
+using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Model;
 
 using FirebirdSql.Data.FirebirdClient;
-using BlackbirdSql.Common.Model;
-using BlackbirdSql.Core.Model;
-using BlackbirdSql.Common.Ctl;
+
 using MonikerAgent = BlackbirdSql.Common.Model.MonikerAgent;
-using BlackbirdSql.Common.Interfaces;
+
 
 namespace BlackbirdSql.Wpf.Model;
-
 
 public class ConnectionPropertySectionViewModel : ViewModelBase
 {
@@ -46,7 +48,7 @@ public class ConnectionPropertySectionViewModel : ViewModelBase
 
     // private ServiceManager<IDatabaseDiscoveryProvider> _databaseDiscoveryProviderServiceManager;
 
-    private ServiceManager<IServerConnectionProvider> _ServerConnectionProviderServiceManager;
+    private ServiceManager<IBServerConnectionProvider> _ServerConnectionProviderServiceManager;
 
     private ServiceManager<IConnectionPropertiesProvider> _ConnectionPropertiesManager;
 
@@ -179,7 +181,7 @@ public class ConnectionPropertySectionViewModel : ViewModelBase
         _Traceable = new Traceable(dependencyManager);
         // _authenticationTypeServiceManager = new ServiceManager<IAuthenticationTypeProvider>(dependencyManager);
         // _databaseDiscoveryProviderServiceManager = new ServiceManager<IDatabaseDiscoveryProvider>(dependencyManager);
-        _ServerConnectionProviderServiceManager = new ServiceManager<IServerConnectionProvider>(dependencyManager);
+        _ServerConnectionProviderServiceManager = new ServiceManager<IBServerConnectionProvider>(dependencyManager);
         _ConnectionPropertiesManager = new ServiceManager<IConnectionPropertiesProvider>(dependencyManager);
         _Channel.ResetConnectionPropertyEvent += ResetAuthenticationAndDatabases;
         _Channel.AuthenticationTypeChangedEvent += OnAuthenticationTypeChanged;
@@ -216,7 +218,7 @@ public class ConnectionPropertySectionViewModel : ViewModelBase
 		ConnectionStrategy.PopulateConnectionStringBuilder(csb, uiConnectionInfo);
 
 
-        IServerConnectionProvider service = _ServerConnectionProviderServiceManager.GetService(InfoConnection.ServerDefinition);
+        IBServerConnectionProvider service = _ServerConnectionProviderServiceManager.GetService(InfoConnection.ServerDefinition);
         _Traceable.AssertTraceEvent(service != null, TraceEventType.Error, EnUiTraceId.Connection, "serverConnectionProvider is null");
         if (service == null)
         {

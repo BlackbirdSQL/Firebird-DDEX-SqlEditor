@@ -9,17 +9,16 @@ using System.Globalization;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Common.Model.Enums;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
-using BlackbirdSql.Core.Diagnostics;
 
 using FirebirdSql.Data.FirebirdClient;
 using System.Data.Common;
 using BlackbirdSql.Core;
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 
@@ -63,7 +62,7 @@ public abstract class AbstractQESQLExec : IDisposable
 
 	protected QESQLExecutionOptions _ExecOptions;
 
-	protected ITextSpan _TextSpan;
+	protected IBTextSpan _TextSpan;
 
 	private bool _ExecOptionHasBeenChanged;
 
@@ -118,7 +117,7 @@ public abstract class AbstractQESQLExec : IDisposable
 		};
 	}
 
-	public void Execute(ITextSpan textSpan, IDbConnection conn, int execTimeout, IQESQLBatchConsumer batchConsumer, QESQLExecutionOptions execOptions)
+	public void Execute(IBTextSpan textSpan, IDbConnection conn, int execTimeout, IQESQLBatchConsumer batchConsumer, QESQLExecutionOptions execOptions)
 	{
 		_Conn = conn;
 		_BatchConsumer = batchConsumer;
@@ -556,7 +555,7 @@ public abstract class AbstractQESQLExec : IDisposable
 		return scriptExecutionResult;
 	}
 
-	protected void ExecuteBatchCommon(string batch, ITextSpan textSpan, out bool continueProcessing)
+	protected void ExecuteBatchCommon(string batch, IBTextSpan textSpan, out bool continueProcessing)
 	{
 		Tracer.Trace(GetType(), "QESQLExec.ExecuteBatchCommon", " _ExecOptions.WithEstimatedExecutionPlan: " + _ExecOptions.WithEstimatedExecutionPlan);
 		continueProcessing = true;
@@ -665,7 +664,7 @@ public abstract class AbstractQESQLExec : IDisposable
 		}
 	}
 
-	protected abstract void DoScriptExecution(ITextSpan textSpan);
+	protected abstract void DoScriptExecution(IBTextSpan textSpan);
 
 	protected abstract EnScriptExecutionResult DoBatchExecution(QESQLBatch batch);
 
@@ -709,7 +708,6 @@ public abstract class AbstractQESQLExec : IDisposable
 					_TextPlan = "";
 				else
 					_TextPlan += "\n";
-
 				_TextPlan += ((FbCommand)sender).GetCommandExplainedPlan();
 			}
 		}

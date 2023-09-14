@@ -16,6 +16,9 @@ using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using BlackbirdSql.Core.Model;
+using BlackbirdSql.Core.Ctl.Extensions;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.VisualStudio.Ddex.Properties;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -66,7 +69,7 @@ public class TSourceInformation : AbstractSourceInformation
 	{
 		if (_Instances != null && _Instances.ContainsKey(connection))
 		{
-			DuplicateNameException ex = new("Source information for site already exists");
+			DuplicateNameException ex = new(Resources.ExceptionDuplicatingSiteInformation);
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -116,7 +119,7 @@ public class TSourceInformation : AbstractSourceInformation
 	{
 		if (site == null)
 		{
-			ArgumentNullException ex = new ArgumentNullException("Attempt to add a null site");
+			ArgumentNullException ex = new ArgumentNullException(Resources.ExceptionAddingNullSite);
 			Diag.Dug(ex);
 			throw ex;
 		}

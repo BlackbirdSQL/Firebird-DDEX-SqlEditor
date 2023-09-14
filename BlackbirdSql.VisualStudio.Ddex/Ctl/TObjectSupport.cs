@@ -8,8 +8,8 @@ using System.IO;
 using System.Reflection;
 
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Extensions;
-
+using BlackbirdSql.Core.Ctl.Extensions;
+using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
@@ -140,7 +140,7 @@ public class TObjectSupport : DataObjectSupport, IVsDataSupportImportResolver
 
 		if (!name.EndsWith("Definitions"))
 		{
-			Diag.Stack("Import resource not found: " + name);
+			Diag.Stack(Resources.ExceptionImportResourceNotFound.Res(name));
 			return null;
 		}
 

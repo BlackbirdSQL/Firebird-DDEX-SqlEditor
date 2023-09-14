@@ -7,12 +7,12 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Text;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Ctl;
 
 // using Microsoft.SqlServer.Management.QueryExecution;
 // using Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration;
 using Microsoft.VisualStudio.TextManager.Interop;
+using BlackbirdSql.Common.Ctl.Interfaces;
 
 
 
@@ -31,7 +31,7 @@ public sealed class ShellBufferWriter : ResultsWriter
 
 		private readonly int errorLine;
 
-		private readonly ITextSpan textSpan;
+		private readonly IBTextSpan textSpan;
 
 		public int Position => position;
 
@@ -39,7 +39,7 @@ public sealed class ShellBufferWriter : ResultsWriter
 
 		public int ErrorLine => errorLine;
 
-		public ITextSpan TextSpan => textSpan;
+		public IBTextSpan TextSpan => textSpan;
 
 		public Marker(int position, int length)
 		{
@@ -49,7 +49,7 @@ public sealed class ShellBufferWriter : ResultsWriter
 			textSpan = null;
 		}
 
-		public Marker(int position, int length, int errorLine, ITextSpan textSpan)
+		public Marker(int position, int length, int errorLine, IBTextSpan textSpan)
 			: this(position, length)
 		{
 			this.errorLine = errorLine;
@@ -174,7 +174,7 @@ public sealed class ShellBufferWriter : ResultsWriter
 		}
 	}
 
-	public override void AppendError(string text, int line, ITextSpan textSpan, bool noCRLF)
+	public override void AppendError(string text, int line, IBTextSpan textSpan, bool noCRLF)
 	{
 		lock (this)
 		{

@@ -8,13 +8,13 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Common.Ctl.Interfaces;
 
 namespace BlackbirdSql.Common.Ctl;
 
 
-public class FindTargetAdapter : IVsFindTarget, IVsFindTarget2, IVsFindTarget3
+public class FindTargetAdapter : IVsFindTarget, IVsFindTarget2, IBVsFindTarget3
 {
 	protected AbstractTabbedEditorPane TabbedEditorPane { get; set; }
 

@@ -7,17 +7,17 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Events;
-using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Model;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Events;
+using BlackbirdSql.Core.Ctl.Interfaces;
 
 using FirebirdSql.Data.FirebirdClient;
-using BlackbirdSql.Common.Enums;
+
 
 namespace BlackbirdSql.Wpf.Model;
-
 
 public class ConnectionEventTelemetryContext : ConnectionDialogTelemetryContext, IDisposable
 {

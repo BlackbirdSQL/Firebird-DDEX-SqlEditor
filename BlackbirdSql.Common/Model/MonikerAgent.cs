@@ -3,17 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Core.Enums;
-using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Interfaces;
 
 using Microsoft.VisualStudio.Data.Services;
 
 
-
-
 namespace BlackbirdSql.Common.Model;
-
 
 public class MonikerAgent : Core.Model.MonikerAgent
 {

@@ -4,12 +4,12 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Common.Config;
 using BlackbirdSql.Common.Ctl;
 using Microsoft.VisualStudio.Utilities;
-using BlackbirdSql.Common.Events;
-using BlackbirdSql.Common.Enums;
+using BlackbirdSql.Common.Ctl.Config;
+using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Common.Ctl.Events;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Controls;
 

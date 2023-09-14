@@ -8,15 +8,15 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 
+using BlackbirdSql.Core;
+using BlackbirdSql.Core.Model;
+using BlackbirdSql.VisualStudio.Ddex.Extensions;
+using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
-using BlackbirdSql.Core;
-using BlackbirdSql.VisualStudio.Ddex.Extensions;
-using BlackbirdSql.Core.Model;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
-
 
 // =========================================================================================================
 //										TObjectSelectorRoot Class
@@ -81,7 +81,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 				throw new ArgumentNullException("typeName");
 
 			if (Site == null)
-				throw new InvalidOperationException("Site is null");
+				throw new InvalidOperationException(Resources.ExceptionSiteIsNull);
 		}
 		catch (Exception ex)
 		{

@@ -6,14 +6,14 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Core;
 
 // namespace Microsoft.SqlServer.Management.UI.Grid
 namespace BlackbirdSql.Common.Controls.Grid;
 
-public class ColumnInfo : IColumnInfo
+public class ColumnInfo : IBColumnInfo
 {
 	protected string _ColumnName;
 

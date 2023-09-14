@@ -3,16 +3,12 @@
 
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Extensions;
-using BlackbirdSql.Core.Interfaces;
-using BlackbirdSql.Core.Providers;
 
 using EnvDTE;
 
@@ -24,9 +20,9 @@ using Microsoft.VisualStudio.TaskStatusCenter;
 using Microsoft.VisualStudio;
 
 using VSLangProj;
-using BlackbirdSql.Core.Model;
-using BlackbirdSql.Common.Model;
-using System.Management.Instrumentation;
+using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Ctl.Extensions;
+using BlackbirdSql.Core.Ctl;
 
 namespace BlackbirdSql.Controller;
 

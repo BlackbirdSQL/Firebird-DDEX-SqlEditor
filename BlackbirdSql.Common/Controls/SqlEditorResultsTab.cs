@@ -5,7 +5,7 @@ using System;
 using BlackbirdSql.Core;
 using BlackbirdSql.Common;
 using Microsoft.VisualStudio;
-using BlackbirdSql.Common.Enums;
+using BlackbirdSql.Common.Ctl.Enums;
 
 // using Microsoft.Data.Tools.Schema.Utilities.Sql.Common;
 // using Microsoft.VisualStudio.Data.Tools.Design.Core.Common.Win32;

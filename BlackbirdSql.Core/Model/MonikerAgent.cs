@@ -7,19 +7,18 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Interfaces;
 
-using BlackbirdSql.Core.Enums;
-using BlackbirdSql.Core.Interfaces;
 using FirebirdSql.Data.FirebirdClient;
+
 using Microsoft.VisualStudio.Data.Services;
 
-using DataObjectType = BlackbirdSql.Core.CommandProviders.CommandProperties.DataObjectType;
-
-
+using DataObjectType = BlackbirdSql.Core.Ctl.CommandProviders.CommandProperties.DataObjectType;
 
 
 namespace BlackbirdSql.Core.Model;
-
 
 public class MonikerAgent
 {

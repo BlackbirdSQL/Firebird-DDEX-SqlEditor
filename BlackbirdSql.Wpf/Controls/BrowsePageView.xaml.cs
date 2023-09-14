@@ -11,7 +11,7 @@ using System.Windows.Markup;
 
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Wpf.Model;
-using BlackbirdSql.Wpf.Widgets;
+using BlackbirdSql.Wpf.Controls.Widgets;
 
 namespace BlackbirdSql.Wpf.Controls;
 

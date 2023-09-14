@@ -9,12 +9,8 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Events;
-using BlackbirdSql.Common.Enums;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Diagnostics.Enums;
-using BlackbirdSql.Core.Enums;
+using BlackbirdSql.Core.Ctl.Enums;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -23,6 +19,9 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 using FirebirdSql.Data.FirebirdClient;
+using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Common.Ctl.Events;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Controls;
 

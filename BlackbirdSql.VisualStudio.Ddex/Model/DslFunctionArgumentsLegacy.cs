@@ -24,6 +24,7 @@ using System.Data;
 using System.Globalization;
 using System.Text;
 using BlackbirdSql.Core.Model;
+using BlackbirdSql.Core.Model.Enums;
 using FirebirdSql.Data.FirebirdClient;
 
 
@@ -149,7 +150,7 @@ internal class DslFunctionArgumentsLegacy : DslSchema
 			row["NULLABLE"] = (row["COLUMN_NULLABLE"] == DBNull.Value);
 
 			var dbType = (FbDbType)TypeHelper.GetDbDataTypeFromBlrType(blrType, subType, scale);
-			row["PARAMETER_DATA_TYPE"] = TypeHelper.GetDataTypeName((DbDataType)dbType).ToLowerInvariant();
+			row["PARAMETER_DATA_TYPE"] = TypeHelper.GetDataTypeName((EnDbDataType)dbType).ToLowerInvariant();
 
 			if (dbType == FbDbType.Char || dbType == FbDbType.VarChar)
 			{

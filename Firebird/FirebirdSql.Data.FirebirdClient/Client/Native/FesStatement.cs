@@ -19,7 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using BlackbirdSql.Common;
+
 using FirebirdSql.Data.Client.Native.Handles;
 using FirebirdSql.Data.Client.Native.Marshalers;
 using FirebirdSql.Data.Common;

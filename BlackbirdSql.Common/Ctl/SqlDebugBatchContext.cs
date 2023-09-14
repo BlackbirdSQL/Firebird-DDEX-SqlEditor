@@ -6,7 +6,7 @@
 using System;
 using System.Text;
 using BlackbirdSql.Core;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
 
 namespace BlackbirdSql.Common.Ctl;
 
@@ -32,7 +32,7 @@ public class SqlDebugBatchContext
 
 	public SQL_DEBUG_BATCH_CONTEXT BatchContext { get; set; }
 
-	public string GetBatchDebugScript(string script, ITextSpan textSpan)
+	public string GetBatchDebugScript(string script, IBTextSpan textSpan)
 	{
 		if (script == null)
 		{

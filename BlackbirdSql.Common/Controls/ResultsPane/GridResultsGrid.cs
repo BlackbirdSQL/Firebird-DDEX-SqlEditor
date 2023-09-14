@@ -16,10 +16,10 @@ using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Controls.QueryExecution;
 using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Core.Diagnostics;
 
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
 

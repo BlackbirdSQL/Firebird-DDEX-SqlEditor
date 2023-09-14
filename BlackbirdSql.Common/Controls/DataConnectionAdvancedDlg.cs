@@ -7,10 +7,10 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.ComponentModel.Com2Interop;
 
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Diagnostics.Enums;
-using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Interfaces;
 
 
 

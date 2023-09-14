@@ -3,10 +3,9 @@
 // Decompiled with ICSharpCode.Decompiler 7.1.0.6543
 #endregion
 
-using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Ctl.Interfaces;
 
 namespace BlackbirdSql.Common.Ctl;
-
 
 public class MruInfo
 {

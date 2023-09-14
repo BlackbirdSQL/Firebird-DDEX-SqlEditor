@@ -13,10 +13,10 @@ using System.Linq;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Diagnostics.Enums;
-using BlackbirdSql.Core.Enums;
-using FirebirdSql.Data.FirebirdClient;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Interfaces;
+
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell.Interop;
 

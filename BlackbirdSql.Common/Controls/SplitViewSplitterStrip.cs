@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Config;
+using BlackbirdSql.Common.Ctl.Config;
 using BlackbirdSql.Common.Properties;
 using Microsoft.VisualStudio;
 

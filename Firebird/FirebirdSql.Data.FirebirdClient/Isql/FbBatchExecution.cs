@@ -19,7 +19,7 @@ using System;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
-using BlackbirdSql.Common;
+
 using FirebirdSql.Data.FirebirdClient;
 
 namespace FirebirdSql.Data.Isql;

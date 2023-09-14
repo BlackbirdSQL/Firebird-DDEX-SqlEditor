@@ -2,7 +2,7 @@
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Common.Win32.HandleCollector
 using System;
 using System.Threading;
-using BlackbirdSql.Common.Events;
+using BlackbirdSql.Common.Ctl.Events;
 
 
 

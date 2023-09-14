@@ -8,17 +8,17 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Events;
+using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Enums;
+using BlackbirdSql.Core.Ctl.Enums;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
-using Tracer = BlackbirdSql.Core.Diagnostics.Tracer;
+using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 
 namespace BlackbirdSql.Common.Controls.ResultsPane

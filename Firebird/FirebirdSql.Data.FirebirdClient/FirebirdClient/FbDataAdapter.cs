@@ -20,7 +20,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 using System.Collections.Generic;
-using BlackbirdSql.Common;
+
 
 namespace FirebirdSql.Data.FirebirdClient;
 

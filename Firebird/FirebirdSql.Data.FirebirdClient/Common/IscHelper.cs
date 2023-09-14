@@ -18,7 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using BlackbirdSql.Common;
+
 using FirebirdSql.Data.FirebirdClient;
 
 namespace FirebirdSql.Data.Common;

@@ -3,15 +3,11 @@
 
 using System;
 using System.Windows.Forms;
-
-using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Common.Ctl;
 
 using Microsoft.VisualStudio.Data;
 using Microsoft.VisualStudio.Shell.Interop;
-
-
-
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
 

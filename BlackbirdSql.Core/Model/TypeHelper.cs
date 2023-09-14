@@ -18,6 +18,7 @@
 //$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 using System;
+using BlackbirdSql.Core.Model.Enums;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Types;
 
@@ -104,72 +105,72 @@ internal static class TypeHelper
 		}
 	}
 
-	public static string GetDataTypeName(DbDataType type)
+	public static string GetDataTypeName(EnDbDataType type)
 	{
 		switch (type)
 		{
-			case DbDataType.Array:
+			case EnDbDataType.Array:
 				return "ARRAY";
 
-			case DbDataType.Binary:
+			case EnDbDataType.Binary:
 				return "BLOB";
 
-			case DbDataType.Text:
+			case EnDbDataType.Text:
 				return "BLOB SUB_TYPE 1";
 
-			case DbDataType.Char:
-			case DbDataType.Guid:
+			case EnDbDataType.Char:
+			case EnDbDataType.Guid:
 				return "CHAR";
 
-			case DbDataType.VarChar:
+			case EnDbDataType.VarChar:
 				return "VARCHAR";
 
-			case DbDataType.SmallInt:
+			case EnDbDataType.SmallInt:
 				return "SMALLINT";
 
-			case DbDataType.Integer:
+			case EnDbDataType.Integer:
 				return "INTEGER";
 
-			case DbDataType.Float:
+			case EnDbDataType.Float:
 				return "FLOAT";
 
-			case DbDataType.Double:
+			case EnDbDataType.Double:
 				return "DOUBLE PRECISION";
 
-			case DbDataType.BigInt:
+			case EnDbDataType.BigInt:
 				return "BIGINT";
 
-			case DbDataType.Numeric:
+			case EnDbDataType.Numeric:
 				return "NUMERIC";
 
-			case DbDataType.Decimal:
+			case EnDbDataType.Decimal:
 				return "DECIMAL";
 
-			case DbDataType.Date:
+			case EnDbDataType.Date:
 				return "DATE";
 
-			case DbDataType.Time:
+			case EnDbDataType.Time:
 				return "TIME";
 
-			case DbDataType.TimeStamp:
+			case EnDbDataType.TimeStamp:
 				return "TIMESTAMP";
 
-			case DbDataType.Boolean:
+			case EnDbDataType.Boolean:
 				return "BOOLEAN";
 
-			case DbDataType.TimeStampTZ:
-			case DbDataType.TimeStampTZEx:
+			case EnDbDataType.TimeStampTZ:
+			case EnDbDataType.TimeStampTZEx:
 				return "TIMESTAMP WITH TIME ZONE";
 
-			case DbDataType.TimeTZ:
-			case DbDataType.TimeTZEx:
+			case EnDbDataType.TimeTZ:
+			case EnDbDataType.TimeTZEx:
 				return "TIME WITH TIME ZONE";
 
-			case DbDataType.Dec16:
-			case DbDataType.Dec34:
+			case EnDbDataType.Dec16:
+			case EnDbDataType.Dec34:
 				return "DECFLOAT";
 
-			case DbDataType.Int128:
+			case EnDbDataType.Int128:
 				return "INT128";
 
 			default:
@@ -177,66 +178,66 @@ internal static class TypeHelper
 		}
 	}
 
-	public static Type GetTypeFromDbDataType(DbDataType type)
+	public static Type GetTypeFromDbDataType(EnDbDataType type)
 	{
 		switch (type)
 		{
-			case DbDataType.Array:
+			case EnDbDataType.Array:
 				return typeof(System.Array);
 
-			case DbDataType.Binary:
+			case EnDbDataType.Binary:
 				return typeof(System.Byte[]);
 
-			case DbDataType.Text:
-			case DbDataType.Char:
-			case DbDataType.VarChar:
+			case EnDbDataType.Text:
+			case EnDbDataType.Char:
+			case EnDbDataType.VarChar:
 				return typeof(System.String);
 
-			case DbDataType.Guid:
+			case EnDbDataType.Guid:
 				return typeof(System.Guid);
 
-			case DbDataType.SmallInt:
+			case EnDbDataType.SmallInt:
 				return typeof(System.Int16);
 
-			case DbDataType.Integer:
+			case EnDbDataType.Integer:
 				return typeof(System.Int32);
 
-			case DbDataType.BigInt:
+			case EnDbDataType.BigInt:
 				return typeof(System.Int64);
 
-			case DbDataType.Float:
+			case EnDbDataType.Float:
 				return typeof(System.Single);
 
-			case DbDataType.Double:
+			case EnDbDataType.Double:
 				return typeof(System.Double);
 
-			case DbDataType.Numeric:
-			case DbDataType.Decimal:
+			case EnDbDataType.Numeric:
+			case EnDbDataType.Decimal:
 				return typeof(System.Decimal);
 
-			case DbDataType.Date:
-			case DbDataType.TimeStamp:
+			case EnDbDataType.Date:
+			case EnDbDataType.TimeStamp:
 				return typeof(System.DateTime);
 
-			case DbDataType.Time:
+			case EnDbDataType.Time:
 				return typeof(System.TimeSpan);
 
-			case DbDataType.Boolean:
+			case EnDbDataType.Boolean:
 				return typeof(System.Boolean);
 
-			case DbDataType.TimeStampTZ:
-			case DbDataType.TimeStampTZEx:
+			case EnDbDataType.TimeStampTZ:
+			case EnDbDataType.TimeStampTZEx:
 				return typeof(FbZonedDateTime);
 
-			case DbDataType.TimeTZ:
-			case DbDataType.TimeTZEx:
+			case EnDbDataType.TimeTZ:
+			case EnDbDataType.TimeTZEx:
 				return typeof(FbZonedTime);
 
-			case DbDataType.Dec16:
-			case DbDataType.Dec34:
+			case EnDbDataType.Dec16:
+			case EnDbDataType.Dec34:
 				return typeof(FbDecFloat);
 
-			case DbDataType.Int128:
+			case EnDbDataType.Int128:
 				return typeof(System.Numerics.BigInteger);
 
 			default:
@@ -346,166 +347,166 @@ internal static class TypeHelper
 
 
 
-	public static DbDataType GetDbDataTypeFromBlrType(int type, int subType, int scale)
+	public static EnDbDataType GetDbDataTypeFromBlrType(int type, int subType, int scale)
 	{
 		return GetDbDataTypeFromSqlType(GetSqlTypeFromBlrType(type), subType, scale);
 	}
 
-	public static DbDataType GetDbDataTypeFromSqlType(int type, int subType, int scale, int? length = null, Charset charset = null)
+	public static EnDbDataType GetDbDataTypeFromSqlType(int type, int subType, int scale, int? length = null, Charset charset = null)
 	{
 		// Special case for Guid handling
 		if ((type == IscCodes.SQL_TEXT || type == IscCodes.SQL_VARYING) && length == 16 && (charset?.IsOctetsCharset ?? false))
 		{
-			return DbDataType.Guid;
+			return EnDbDataType.Guid;
 		}
 
 		switch (type)
 		{
 			case IscCodes.SQL_TEXT:
-				return DbDataType.Char;
+				return EnDbDataType.Char;
 
 			case IscCodes.SQL_VARYING:
-				return DbDataType.VarChar;
+				return EnDbDataType.VarChar;
 
 			case IscCodes.SQL_SHORT:
 				if (subType == 2)
 				{
-					return DbDataType.Decimal;
+					return EnDbDataType.Decimal;
 				}
 				else if (subType == 1)
 				{
-					return DbDataType.Numeric;
+					return EnDbDataType.Numeric;
 				}
 				else if (scale < 0)
 				{
-					return DbDataType.Decimal;
+					return EnDbDataType.Decimal;
 				}
 				else
 				{
-					return DbDataType.SmallInt;
+					return EnDbDataType.SmallInt;
 				}
 
 			case IscCodes.SQL_LONG:
 				if (subType == 2)
 				{
-					return DbDataType.Decimal;
+					return EnDbDataType.Decimal;
 				}
 				else if (subType == 1)
 				{
-					return DbDataType.Numeric;
+					return EnDbDataType.Numeric;
 				}
 				else if (scale < 0)
 				{
-					return DbDataType.Decimal;
+					return EnDbDataType.Decimal;
 				}
 				else
 				{
-					return DbDataType.Integer;
+					return EnDbDataType.Integer;
 				}
 
 			case IscCodes.SQL_QUAD:
 			case IscCodes.SQL_INT64:
 				if (subType == 2)
 				{
-					return DbDataType.Decimal;
+					return EnDbDataType.Decimal;
 				}
 				else if (subType == 1)
 				{
-					return DbDataType.Numeric;
+					return EnDbDataType.Numeric;
 				}
 				else if (scale < 0)
 				{
-					return DbDataType.Decimal;
+					return EnDbDataType.Decimal;
 				}
 				else
 				{
-					return DbDataType.BigInt;
+					return EnDbDataType.BigInt;
 				}
 
 			case IscCodes.SQL_FLOAT:
-				return DbDataType.Float;
+				return EnDbDataType.Float;
 
 			case IscCodes.SQL_DOUBLE:
 			case IscCodes.SQL_D_FLOAT:
 				if (subType == 2)
 				{
-					return DbDataType.Decimal;
+					return EnDbDataType.Decimal;
 				}
 				else if (subType == 1)
 				{
-					return DbDataType.Numeric;
+					return EnDbDataType.Numeric;
 				}
 				else if (scale < 0)
 				{
-					return DbDataType.Decimal;
+					return EnDbDataType.Decimal;
 				}
 				else
 				{
-					return DbDataType.Double;
+					return EnDbDataType.Double;
 				}
 
 			case IscCodes.SQL_BLOB:
 				if (subType == 1)
 				{
-					return DbDataType.Text;
+					return EnDbDataType.Text;
 				}
 				else
 				{
-					return DbDataType.Binary;
+					return EnDbDataType.Binary;
 				}
 
 			case IscCodes.SQL_TIMESTAMP:
-				return DbDataType.TimeStamp;
+				return EnDbDataType.TimeStamp;
 
 			case IscCodes.SQL_TYPE_TIME:
-				return DbDataType.Time;
+				return EnDbDataType.Time;
 
 			case IscCodes.SQL_TYPE_DATE:
-				return DbDataType.Date;
+				return EnDbDataType.Date;
 
 			case IscCodes.SQL_ARRAY:
-				return DbDataType.Array;
+				return EnDbDataType.Array;
 
 			case IscCodes.SQL_NULL:
-				return DbDataType.Null;
+				return EnDbDataType.Null;
 
 			case IscCodes.SQL_BOOLEAN:
-				return DbDataType.Boolean;
+				return EnDbDataType.Boolean;
 
 			case IscCodes.SQL_TIMESTAMP_TZ:
-				return DbDataType.TimeStampTZ;
+				return EnDbDataType.TimeStampTZ;
 
 			case IscCodes.SQL_TIMESTAMP_TZ_EX:
-				return DbDataType.TimeStampTZEx;
+				return EnDbDataType.TimeStampTZEx;
 
 			case IscCodes.SQL_TIME_TZ:
-				return DbDataType.TimeTZ;
+				return EnDbDataType.TimeTZ;
 
 			case IscCodes.SQL_TIME_TZ_EX:
-				return DbDataType.TimeTZEx;
+				return EnDbDataType.TimeTZEx;
 
 			case IscCodes.SQL_DEC16:
-				return DbDataType.Dec16;
+				return EnDbDataType.Dec16;
 
 			case IscCodes.SQL_DEC34:
-				return DbDataType.Dec34;
+				return EnDbDataType.Dec34;
 
 			case IscCodes.SQL_INT128:
 				if (subType == 2)
 				{
-					return DbDataType.Decimal;
+					return EnDbDataType.Decimal;
 				}
 				else if (subType == 1)
 				{
-					return DbDataType.Numeric;
+					return EnDbDataType.Numeric;
 				}
 				else if (scale < 0)
 				{
-					return DbDataType.Decimal;
+					return EnDbDataType.Decimal;
 				}
 				else
 				{
-					return DbDataType.Int128;
+					return EnDbDataType.Int128;
 				}
 
 			default:

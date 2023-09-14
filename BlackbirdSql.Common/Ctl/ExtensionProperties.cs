@@ -9,11 +9,11 @@ using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Primitives;
 using System.Linq;
 
-using BlackbirdSql.Core.Enums;
-using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Interfaces;
+
 
 namespace BlackbirdSql.Common.Ctl;
-
 
 public class ExtensionProperties : CompositionProperties
 {

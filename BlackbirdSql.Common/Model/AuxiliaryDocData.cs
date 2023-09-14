@@ -8,16 +8,15 @@ using System.Data;
 using System.Data.Common;
 
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 
 using Microsoft.VisualStudio.TextManager.Interop;
-using BlackbirdSql.Common.Config.Interfaces;
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Interfaces;
-using BlackbirdSql.Common.Config;
+using BlackbirdSql.Common.Ctl.Config;
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Model;
 
@@ -36,9 +35,9 @@ public sealed class AuxiliaryDocData
 
 	public class ResultsSettingsChangedEventArgs : EventArgs
 	{
-		public IQueryExecutionResultsSettings ResultsSettings { get; private set; }
+		public IBQueryExecutionResultsSettings ResultsSettings { get; private set; }
 
-		public ResultsSettingsChangedEventArgs(IQueryExecutionResultsSettings resultSettings)
+		public ResultsSettingsChangedEventArgs(IBQueryExecutionResultsSettings resultSettings)
 		{
 			ResultsSettings = resultSettings;
 		}
@@ -48,7 +47,7 @@ public sealed class AuxiliaryDocData
 
 	public const string C_TName = "AuxiliaryDocData";
 
-	private ISqlEditorStrategy _Strategy;
+	private IBSqlEditorStrategy _Strategy;
 
 	private readonly object _LockObject = new object();
 
@@ -58,7 +57,7 @@ public sealed class AuxiliaryDocData
 
 	private object DocData { get; set; }
 
-	public ISqlEditorStrategy Strategy
+	public IBSqlEditorStrategy Strategy
 	{
 		get
 		{
@@ -182,7 +181,7 @@ public sealed class AuxiliaryDocData
 		}
 	}
 
-	public IQueryExecutionResultsSettings ResultsSettings
+	public IBQueryExecutionResultsSettings ResultsSettings
 	{
 		get
 		{
@@ -431,7 +430,7 @@ public sealed class AuxiliaryDocData
 		SqlExecutionModeChangedEvent?.Invoke(this, new(newSqlExecMode));
 	}
 
-	public void RaiseResultSettingsChangedEvent(IQueryExecutionResultsSettings resultSettings)
+	public void RaiseResultSettingsChangedEvent(IBQueryExecutionResultsSettings resultSettings)
 	{
 		ResultSettingsChangedEvent?.Invoke(this, new(resultSettings));
 	}

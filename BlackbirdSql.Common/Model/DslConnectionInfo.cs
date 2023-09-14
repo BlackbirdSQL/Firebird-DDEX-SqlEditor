@@ -1,14 +1,11 @@
 ﻿// Microsoft.SqlServer.ConnectionInfo, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91
 // Microsoft.SqlServer.Management.Common.SqlConnectionInfo
 
-using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 
 
-
-
 namespace BlackbirdSql.Common.Model;
-
 
 public class DslConnectionInfo : AbstractModelPropertyAgent
 {

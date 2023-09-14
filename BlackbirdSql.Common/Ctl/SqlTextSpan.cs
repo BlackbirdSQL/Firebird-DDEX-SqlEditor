@@ -4,7 +4,7 @@
 #endregion
 
 
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 
@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 namespace BlackbirdSql.Common.Ctl;
 
 
-public class SqlTextSpan : ITextSpan
+public class SqlTextSpan : IBTextSpan
 {
 	private readonly int _anchorLine;
 

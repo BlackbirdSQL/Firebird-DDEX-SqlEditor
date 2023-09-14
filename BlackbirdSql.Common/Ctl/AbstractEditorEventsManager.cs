@@ -6,11 +6,12 @@
 using System;
 using System.Windows.Forms;
 
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Interfaces;
-using BlackbirdSql.Core.Providers;
-using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Common.Model;
+using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Interfaces;
+
 
 namespace BlackbirdSql.Common.Ctl;
 

@@ -12,22 +12,24 @@ using System.Windows;
 using System.Windows.Threading;
 
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Common.Ctl.Events;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
+using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Diagnostics.Enums;
-using BlackbirdSql.Core.Events;
-using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Events;
+using BlackbirdSql.Core.Ctl.Extensions;
+using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 
 using FirebirdSql.Data.FirebirdClient;
-using BlackbirdSql.Common.Events;
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Interfaces;
+
 
 namespace BlackbirdSql.Wpf.Model;
-
 
 public class ConnectionDialogViewModel : ViewModelBase
 {
@@ -56,9 +58,9 @@ public class ConnectionDialogViewModel : ViewModelBase
 
     private readonly IBDependencyManager _DependencyManager;
 
-    private readonly IConnectionMruManager _MruManager;
+    private readonly IBConnectionMruManager _MruManager;
 
-    private readonly ServiceManager<IServerConnectionProvider> _ServerConnectionProviderServiceManager;
+    private readonly ServiceManager<IBServerConnectionProvider> _ServerConnectionProviderServiceManager;
 
     private readonly Traceable _Traceable;
 
@@ -105,7 +107,7 @@ public class ConnectionDialogViewModel : ViewModelBase
 
     // public TelemetryTracer TelemetryTracer => _TelemetryTracer;
 
-    public IAsyncCommand ConnectCommand { get; private set; }
+    public IBAsyncCommand ConnectCommand { get; private set; }
 
     public override DescriberDictionary Describers
     {
@@ -118,7 +120,7 @@ public class ConnectionDialogViewModel : ViewModelBase
         }
     }
 
-    public IAsyncCommand TestConnectionCommand { get; private set; }
+    public IBAsyncCommand TestConnectionCommand { get; private set; }
 
     public DialogModel Model
     {
@@ -211,10 +213,10 @@ public class ConnectionDialogViewModel : ViewModelBase
         TestConnectionCommand.CanExecuteChanged += OnCanExecuteChanged;
         Model = new DialogModel(dependencyManager);
         Model.DiscoveryCompletedEvent += Model_DiscoveryCompleted;
-        ServiceManager<IConnectionMruManager> serviceManager = new ServiceManager<IConnectionMruManager>(dependencyManager);
+        ServiceManager<IBConnectionMruManager> serviceManager = new ServiceManager<IBConnectionMruManager>(dependencyManager);
         _MruManager = serviceManager.GetService(null);
         Cmd.CheckForNull(_MruManager, "mruManager");
-        _ServerConnectionProviderServiceManager = new ServiceManager<IServerConnectionProvider>(dependencyManager);
+        _ServerConnectionProviderServiceManager = new ServiceManager<IBServerConnectionProvider>(dependencyManager);
         _Channel.MakeConnectionEvent += Connect;
         _Channel.TestConnectionEvent += ChannelOnTestConnection;
         _Channel.ConnectionsLoadedEvent += ChannelOnConnectionsLoaded;
@@ -386,7 +388,7 @@ public class ConnectionDialogViewModel : ViewModelBase
         CancellationToken cancellationToken = _CancellationTokenSource.Token;
         if (!cancellationToken.IsCancellationRequested && _ConnectionProperty.InfoConnection != null)
         {
-            IServerConnectionProvider serverConnectionProvider = GetServerConnectionProvider();
+            IBServerConnectionProvider serverConnectionProvider = GetServerConnectionProvider();
             _Traceable.AssertTraceEvent(serverConnectionProvider != null, TraceEventType.Error, EnUiTraceId.Connection, "serverConnectionProvider is null");
             if (serverConnectionProvider != null && WriteToConnectionInfo(serverConnectionProvider))
             {
@@ -479,7 +481,7 @@ public class ConnectionDialogViewModel : ViewModelBase
         return flag;
     }
 
-    public IServerConnectionProvider GetServerConnectionProvider()
+    public IBServerConnectionProvider GetServerConnectionProvider()
     {
         /*
 		if (_ConnectionProperty.InfoConnection.ServerDefinition == null)
@@ -488,7 +490,7 @@ public class ConnectionDialogViewModel : ViewModelBase
 		}
 		*/
 
-        IServerConnectionProvider service = _ServerConnectionProviderServiceManager.GetService(_ConnectionProperty.InfoConnection.ServerDefinition);
+        IBServerConnectionProvider service = _ServerConnectionProviderServiceManager.GetService(_ConnectionProperty.InfoConnection.ServerDefinition);
         Trace.AssertTraceEvent(service != null, TraceEventType.Error, EnUiTraceId.UiInfra, "Cannot load IServerConnectionProvider");
         return service;
     }
@@ -498,7 +500,7 @@ public class ConnectionDialogViewModel : ViewModelBase
         bool result = false;
         if (!_CancellationTokenSource.IsCancellationRequested && _ConnectionProperty.InfoConnection != null)
         {
-            IServerConnectionProvider serverConnectionProvider = GetServerConnectionProvider();
+            IBServerConnectionProvider serverConnectionProvider = GetServerConnectionProvider();
             _Traceable.AssertTraceEvent(serverConnectionProvider != null, TraceEventType.Error, EnUiTraceId.Connection, "serverConnectionProvider is null");
             if (serverConnectionProvider != null && WriteToConnectionInfo(serverConnectionProvider))
             {
@@ -542,12 +544,12 @@ public class ConnectionDialogViewModel : ViewModelBase
         return result;
     }
 
-    public Task<ConnectionResponse> OpenConnectionAsync(IDbConnection connection, IServerConnectionProvider serverConnectionProvider)
+    public Task<ConnectionResponse> OpenConnectionAsync(IDbConnection connection, IBServerConnectionProvider serverConnectionProvider)
     {
         return Task.Factory.StartNew(() => OpenConnection(connection, serverConnectionProvider), CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
     }
 
-    private ConnectionResponse OpenConnection(IDbConnection connection, IServerConnectionProvider serverConnectionProvider)
+    private ConnectionResponse OpenConnection(IDbConnection connection, IBServerConnectionProvider serverConnectionProvider)
     {
         ConnectionResponse connectionResponse = new ConnectionResponse();
         try
@@ -565,12 +567,12 @@ public class ConnectionDialogViewModel : ViewModelBase
         }
     }
 
-    public Task<ConnectionResponse> OpenConnectionWithVerifierAsync(IServerConnectionProvider serverConnectionProvider, CancellationToken cancellationToken)
+    public Task<ConnectionResponse> OpenConnectionWithVerifierAsync(IBServerConnectionProvider serverConnectionProvider, CancellationToken cancellationToken)
     {
         return Task.Factory.StartNew(() => OpenConnectionWithVerifier(serverConnectionProvider), CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
     }
 
-    private ConnectionResponse OpenConnectionWithVerifier(IServerConnectionProvider serverConnectionProvider)
+    private ConnectionResponse OpenConnectionWithVerifier(IBServerConnectionProvider serverConnectionProvider)
     {
         ConnectionResponse connectionResponse = new ConnectionResponse();
         try
@@ -587,7 +589,7 @@ public class ConnectionDialogViewModel : ViewModelBase
         }
     }
 
-    public bool WriteToConnectionInfo(IServerConnectionProvider serverConnectionProvider)
+    public bool WriteToConnectionInfo(IBServerConnectionProvider serverConnectionProvider)
     {
         _Traceable.TraceEvent(TraceEventType.Information, 3, "Writing to connection info...");
         if (_ConnectionProperty.ValidateConnectionInfo())
@@ -600,11 +602,11 @@ public class ConnectionDialogViewModel : ViewModelBase
         return false;
     }
 
-    private static void ValidateConnection(IServerConnectionProvider serverConnectionProvider, IDbConnection connection)
+    private static void ValidateConnection(IBServerConnectionProvider serverConnectionProvider, IDbConnection connection)
     {
         if (connection != null && connection.State != 0)
         {
-            (serverConnectionProvider as IConnectionValidator)?.CheckConnection(connection);
+            (serverConnectionProvider as IBConnectionValidator)?.CheckConnection(connection);
         }
     }
 

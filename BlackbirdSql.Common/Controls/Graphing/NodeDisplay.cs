@@ -8,7 +8,6 @@ using System.Drawing;
 using System.Drawing.Design;
 using System.Globalization;
 using System.Windows.Forms;
-using BlackbirdSql.Common.ComponentModel;
 using BlackbirdSql.Common.Controls.Graphing.ComponentModel;
 using BlackbirdSql.Common.Controls.Graphing.Interfaces;
 using BlackbirdSql.Common.Properties;

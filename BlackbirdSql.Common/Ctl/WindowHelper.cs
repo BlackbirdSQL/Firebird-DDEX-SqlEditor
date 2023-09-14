@@ -9,9 +9,9 @@ using System.Windows;
 using System.Windows.Interop;
 
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Diagnostics.Enums;
-using BlackbirdSql.Common.Structs;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Common.Ctl.Structs;
 
 namespace BlackbirdSql.Common.Ctl;
 

@@ -26,7 +26,7 @@ using System.Linq;
 using FirebirdSql.Data.Common;
 using System.Text;
 using System.Collections;
-using BlackbirdSql.Common;
+
 
 namespace FirebirdSql.Data.FirebirdClient;
 

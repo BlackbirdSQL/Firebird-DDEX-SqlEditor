@@ -9,14 +9,16 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Threading;
+
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Diagnostics.Enums;
-using BlackbirdSql.Core.Interfaces;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Interfaces;
+
 
 namespace BlackbirdSql.Common.Model;
-
 
 public abstract class ViewModelBase : AbstractDispatcherConnection
 {
@@ -27,7 +29,7 @@ public abstract class ViewModelBase : AbstractDispatcherConnection
 
 	private List<object> _Services;
 
-	private readonly Dictionary<string, List<Lazy<IOwnedCommand>>> _CommandDependencies;
+	private readonly Dictionary<string, List<Lazy<IBOwnedCommand>>> _CommandDependencies;
 
 	public override DescriberDictionary Describers
 	{
@@ -237,7 +239,7 @@ public abstract class ViewModelBase : AbstractDispatcherConnection
 			return;
 		}
 
-		foreach (IOwnedCommand item in value.Select((command) => command.Value))
+		foreach (IBOwnedCommand item in value.Select((command) => command.Value))
 		{
 			UiTracer.TraceSource.AssertTraceEvent(item != null, TraceEventType.Error, EnUiTraceId.UiInfra, "dependentCommand != null");
 			item?.RaiseCanExecuteChanged();

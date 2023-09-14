@@ -5,8 +5,6 @@
 
 using System;
 using System.ComponentModel;
-
-using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Common.Controls.Enums;
 using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Ctl;
@@ -14,6 +12,7 @@ using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 

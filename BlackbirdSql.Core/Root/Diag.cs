@@ -5,15 +5,21 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Ctl.Interfaces;
+
+#if BLACKBIRD
 using Microsoft;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TaskStatusCenter;
+#endif
 
+
+#if BLACKBIRD
 namespace BlackbirdSql.Core;
-
-
+#else
+namespace FirebirdSql.Data;
+#endif
 
 // =========================================================================================================
 //											Diag Class
@@ -52,12 +58,14 @@ public static class Diag
 
 	static string _Context = "APP";
 
+	#if BLACKBIRD
 	static IVsOutputWindowPane _OutputPane = null;
 	static readonly string _OutputPaneName = "BlackbirdSql";
 	static Guid _OutputPaneGuid = default;
+	#endif
 
 
-	#endregion Variables
+#endregion Variables
 
 
 
@@ -288,12 +296,16 @@ public static class Diag
 		}
 #endif
 
+#if BLACKBIRD
+
 		try
 		{
 			if (_EnableTaskLog)
 				OutputPaneWriteLine(str);
 		}
 		catch (Exception) { }
+
+		#endif
 
 		System.Diagnostics.Debug.WriteLine(str, "BlackbirSql");
 	}
@@ -525,6 +537,7 @@ public static class Diag
 	}
 
 
+#if BLACKBIRD
 
 	// Deadlock warning message suppression
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
@@ -540,7 +553,7 @@ public static class Diag
 	public static bool TaskHandlerProgress(IBTaskHandlerClient client, string text, bool completed = false)
 	{
 		_ = Task.Factory.StartNew(() => TaskHandlerProgressAsync(client, text, completed).Result,
-				default, TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent,
+				default, TaskCreationOptions.PreferFairness | TaskCreationOptions.DenyChildAttach,
 				TaskScheduler.Default);
 
 		return true;
@@ -558,12 +571,9 @@ public static class Diag
 		try
 		{
 			ITaskHandler taskHandler = client.GetTaskHandler();
-
-			bool updateTaskHandler = taskHandler != null;
-
 			TaskProgressData progressData = client.GetProgressData();
 
-			string title = EnableTaskLog && updateTaskHandler ? taskHandler.Options.Title.Replace("BlackbirdSql", "").Trim() + ": " : "";
+			string title = EnableTaskLog && taskHandler != null ? taskHandler.Options.Title.Replace("BlackbirdSql", "").Trim() + ": " : "";
 
 			// Switch to main thread
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -571,45 +581,48 @@ public static class Diag
 			// Check again since joining UI thread.
 			taskHandler = client.GetTaskHandler();
 
-			updateTaskHandler = taskHandler != null;
-
-			if (!EnableTaskLog && !updateTaskHandler)
+			if (!EnableTaskLog && taskHandler == null)
 				return false;
 
 
 			string[] arr = text.Split('\n');
 
-
-			for (int i = 0; i < arr.Length; i++)
-			{
-				if (updateTaskHandler)
-				{
-					progressData.ProgressText = arr[i];
-					taskHandler.Progress.Report(progressData);
-				}
-
-				if (EnableTaskLog)
-					arr[i] = title + arr[i];
-			}
-
-
 			if (EnableTaskLog)
 			{
-				text = string.Join("\n", arr);
+				string[] log = new string[arr.Length];
+
+				for (int i = 0; i < arr.Length; i++)
+					log[i] = title + arr[i];
+
+
+				text = string.Join("\n", log);
 
 				if (completed)
 				{
-					StringBuilder sb = new(arr[^1].Length);
+					StringBuilder sb = new(log[^1].Length);
 
-					sb.Append('=', (arr[^1].Length - 10) / 2);
-					sb.Append(" Finished ");
-					sb.Append('=', arr[^1].Length - sb.Length);
+					sb.Append('=', (log[^1].Length - 10) / 2);
+					sb.Append(" Done ");
+					sb.Append('=', log[^1].Length - sb.Length);
 
 					text += "\n" + sb + "\n";
 				}
 
 				_ = OutputPaneWriteLineAsync(text);
 			}
+
+			// Check again.
+			taskHandler = client.GetTaskHandler();
+
+			if (taskHandler == null)
+				return EnableTaskLog;
+
+			for (int i = 0; i < arr.Length; i++)
+			{
+				progressData.ProgressText = arr[i];
+				taskHandler.Progress.Report(progressData);
+			}
+
 		}
 		catch (Exception ex)
 		{
@@ -725,7 +738,8 @@ public static class Diag
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-		await EnsureOutputPaneAsync();
+		if (_OutputPane == null)
+			await EnsureOutputPaneAsync();
 
 		if (_OutputPane == null)
 		{
@@ -838,6 +852,7 @@ public static class Diag
 			}
 		}
 	}
+#endif
 
 #endregion Methods
 

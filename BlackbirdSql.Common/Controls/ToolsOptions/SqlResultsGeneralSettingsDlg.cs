@@ -4,10 +4,10 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Core.Diagnostics;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -153,7 +153,7 @@ public class SqlResultsGeneralSettingsDlg : ToolsOptionsBaseControl
 		return true;
 	}
 
-	protected override void ApplySettingsToUI(IUserSettings options)
+	protected override void ApplySettingsToUI(IBUserSettings options)
 	{
 		if (options == null)
 		{
@@ -175,7 +175,7 @@ public class SqlResultsGeneralSettingsDlg : ToolsOptionsBaseControl
 		}
 	}
 
-	protected override void SaveSettingsFromUI(IUserSettings options)
+	protected override void SaveSettingsFromUI(IBUserSettings options)
 	{
 		options.ExecutionResults.ProvideFeedbackWithSounds = _playSound.Checked;
 		options.ExecutionResults.ResultsDirectory = _resFileDirEdit.Text;

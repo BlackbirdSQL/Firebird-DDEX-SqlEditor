@@ -1,0 +1,78 @@
+﻿<StackPanel
+	x:Class="BlackbirdSql.Wpf.Controls.Widgets.SectionControl" x:ClassModifier="public"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:BlackbirdSql.Wpf.Controls.Widgets"
+	xmlns:ComCtl="clr-namespace:BlackbirdSql.Common.Ctl;assembly=BlackbirdSql.Common"
+	xmlns:ComCtls="clr-namespace:BlackbirdSql.Common.Controls;assembly=BlackbirdSql.Common"
+	xmlns:ComCvtrs="clr-namespace:BlackbirdSql.Common.Controls.Converters;assembly=BlackbirdSql.Common"
+	xmlns:ComModel="clr-namespace:BlackbirdSql.Common.Model;assembly=BlackbirdSql.Common"
+	xmlns:ComRes="clr-namespace:BlackbirdSql.Common.Properties;assembly=BlackbirdSql.Common"
+    mc:Ignorable="d" 
+	x:Name="thisSectionControl" x:Uid="sectionControl" KeyboardNavigation.TabNavigation="Local"
+	AutomationProperties.Name="{Binding ElementName=thisSectionControl, Path=HeaderText}">
+    <FrameworkElement.Resources>
+        <ResourceDictionary x:Uid="ResourceDictionary_1">
+			<ResourceDictionary.MergedDictionaries>
+				<ComCtl:CachedResourceDictionary
+					x:Uid="ResourceDictionary_2"
+					Source="pack://application:,,,/BlackbirdSql.Wpf;component/Themes/Default.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+			<ComCvtrs:NonEmptyStringToVisibleConverter x:Key="NonEmptyStringToVisible" x:Uid="NonEmptyStringToVisible" />
+			<Style x:Key="HeaderBorderStyle" x:Uid="HeaderBorderStyle" TargetType="{x:Type ComCtls:BorderButton}">
+				<Style.Resources>
+					<ResourceDictionary>
+						<Style x:Key="FocusVisual">
+							<Setter Property="Control.Template">
+								<Setter.Value>
+									<ControlTemplate>
+										<Border>
+											<Rectangle StrokeDashArray="1 2" StrokeThickness="1" Margin="2,2,2,-2" SnapsToDevicePixels="true" Stroke="{StaticResource BodyTextBrushKey}" />
+										</Border>
+									</ControlTemplate>
+								</Setter.Value>
+							</Setter>
+						</Style>
+					</ResourceDictionary>
+				</Style.Resources>
+				<Setter x:Uid="HeaderBorderStyle_Setter1" Property="BorderBrush" Value="{StaticResource ToolbarBrushKey}" />
+				<Setter x:Uid="HeaderBorderStyle_Setter2" Property="BorderThickness" Value="0,0,0,0" />
+				<Setter x:Uid="HeaderBorderStyle_Setter3" Property="Margin" Value="0,0,0,0" />
+				<Setter x:Uid="HeaderBorderStyle_Setter4" Property="Border.Padding" Value="0,2,0,0" />
+				<Setter x:Uid="HeaderBorderStyle_Setter5" Property="Focusable" Value="true" />
+				<Setter x:Uid="HeaderBorderStyle_Setter6" Property="FrameworkElement.FocusVisualStyle" Value="{StaticResource FocusVisual}" />
+				<Setter x:Uid="HeaderBorderStyle_Setter7" Property="UIElement.AllowDrop" Value="true" />
+				<Style.Triggers>
+					<Trigger x:Uid="HeaderBorderStyle_Trigger1" Property="UIElement.IsMouseOver" Value="True">
+						<Setter x:Uid="HeaderBorderStyle_Setter11" Property="BorderBrush" Value="{StaticResource ActionLinkBrushKey}" />
+					</Trigger>
+				</Style.Triggers>
+			</Style>
+		</ResourceDictionary>
+	</FrameworkElement.Resources>
+	<ComCtls:BorderButton x:Name="borderHeader" x:Uid="borderHeader" Style="{StaticResource HeaderBorderStyle}" AutomationProperties.Name="{Binding ElementName=thisSectionControl, Path=HeaderText}">
+		<Grid Name="header" x:Uid="header">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition x:Uid="headerCol1" Width="Auto" />
+				<ColumnDefinition x:Uid="headerCol2" Width="*" />
+				<ColumnDefinition x:Uid="headerCol3" Width="Auto" />
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition x:Uid="headerRow1" Height="Auto" />
+				<RowDefinition x:Uid="headerRow2" Height="Auto" />
+			</Grid.RowDefinitions>
+			<Grid Name="progressGrid" Row="0" ColumnSpan="3" Height="1" Margin="0,-5,0,0" />
+			<ToggleButton Name="expanderButton" x:Uid="expanderButton" Grid.Column="0" Grid.Row="1" Style="{StaticResource ExpandCollapseToggleStyle}" Visibility="{Binding ElementName=thisSectionControl, Path=ExpanderButtonVisibility}" AutomationProperties.Name="{Binding ElementName=thisSectionControl, Path=HeaderText}" Click="ExpanderButton_Click" />
+			<TextBlock Name="headerText" x:Uid="headerText" Grid.Column="1" Grid.Row="1" Margin="1,0,3,0" VerticalAlignment="Center" Style="{StaticResource SectionTitleText}" TextTrimming="CharacterEllipsis" Text="{Binding ElementName=thisSectionControl, Path=HeaderText}" Visibility="{Binding Path=Text, Converter={StaticResource NonEmptyStringToVisible}, RelativeSource={RelativeSource Self}}" />
+			<Grid Name="stateIconGrid" x:Uid="stateIconGrid" Column="2" Row="1" Margin="0,0,1,0" Visibility="{Binding ElementName=thisSectionControl, Path=StateGridVisibility}">
+				<Image Name="errorWarningIcon" x:Uid="errorWarningIcon" Grid.Column="0" Stretch="None" Visibility="Collapsed" />
+			</Grid>
+		</Grid>
+	</ComCtls:BorderButton>
+	<StackPanel Name="contentArea" x:Uid="contentArea" Margin="11,0,0,10">
+		<TextBlock Name="errorWarningText" x:Uid="errorWarningText" Padding="6,3,6,3" TextWrapping="Wrap" Background="{DynamicResource {x:Static SystemColors.InfoBrushKey}}" Text="{Binding ElementName=thisSectionControl, Path=ErrorWarningText}" Visibility="{Binding Path=Text, Converter={StaticResource NonEmptyStringToVisible}, RelativeSource={RelativeSource Self}}" />
+		<ContentControl Name="content" x:Uid="content" Focusable="False" Content="{Binding ElementName=thisSectionControl, Path=Content}" />
+	</StackPanel>
+</StackPanel>

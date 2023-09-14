@@ -2,7 +2,7 @@
 // Microsoft.SqlServer.ConnectionDlg.UI.WPF.DialogFonts
 
 using System.ComponentModel;
-using BlackbirdSql.Common.Enums;
+using BlackbirdSql.Common.Ctl.Enums;
 
 
 

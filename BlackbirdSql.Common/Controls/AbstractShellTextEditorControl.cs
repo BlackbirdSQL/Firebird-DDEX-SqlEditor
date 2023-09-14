@@ -12,7 +12,6 @@ using System.Security.Permissions;
 using System.Windows.Forms;
 
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Controls.ResultsPane;
 using BlackbirdSql.Common.Ctl;
@@ -24,8 +23,9 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 using Constants = Microsoft.VisualStudio.OLE.Interop.Constants;
-using BlackbirdSql.Common.Events;
-using BlackbirdSql.Common.Structs;
+using BlackbirdSql.Common.Ctl.Events;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Common.Ctl.Structs;
 
 namespace BlackbirdSql.Common.Controls;
 

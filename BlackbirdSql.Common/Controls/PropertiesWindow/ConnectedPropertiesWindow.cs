@@ -5,12 +5,13 @@ using System;
 using System.ComponentModel;
 using System.Data;
 using System.Globalization;
-using BlackbirdSql.Common.ComponentModel;
+
 using BlackbirdSql.Common.Controls.Interfaces;
+using BlackbirdSql.Common.Ctl.ComponentModel;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model;
 
 using FirebirdSql.Data.FirebirdClient;

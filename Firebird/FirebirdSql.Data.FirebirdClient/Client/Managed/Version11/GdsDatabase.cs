@@ -20,7 +20,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using BlackbirdSql.Common;
+
 using FirebirdSql.Data.Client.Managed.Sspi;
 using FirebirdSql.Data.Common;
 

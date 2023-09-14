@@ -9,15 +9,13 @@ using System.Runtime.InteropServices;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Controls.Events;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
-
-
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Controls.ResultsPane
 {

@@ -116,7 +116,7 @@ internal sealed class Charset
 		switch (SystemName)
 		{
 			case None:
-				Encoding = Encoding2.Default;
+				Encoding = Encoding.Default;
 				IsNoneCharset = true;
 				break;
 			case Octets:

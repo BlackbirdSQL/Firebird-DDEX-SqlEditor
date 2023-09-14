@@ -17,7 +17,7 @@
 
 using System;
 using System.Data;
-using BlackbirdSql.Common;
+
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Types;
 

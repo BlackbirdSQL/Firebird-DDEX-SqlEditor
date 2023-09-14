@@ -6,16 +6,15 @@
 using System;
 using System.Diagnostics;
 using System.Windows.Input;
-
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Diagnostics.Enums;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl;
 
 namespace BlackbirdSql.Common.Model;
 
 
-public abstract class AbstractCommand : AbstractDispatcherConnection, IOwnedCommand, ICommand
+public abstract class AbstractCommand : AbstractDispatcherConnection, IBOwnedCommand, ICommand
 {
 	public const string C_KeyIsExecuting = "IsExecuting";
 

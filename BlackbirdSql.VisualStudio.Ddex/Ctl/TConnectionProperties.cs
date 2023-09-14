@@ -2,7 +2,7 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 
-using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Model;
 
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;

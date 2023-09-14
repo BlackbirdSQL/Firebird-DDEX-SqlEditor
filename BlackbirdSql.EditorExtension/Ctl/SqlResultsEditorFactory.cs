@@ -15,7 +15,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Utilities;
 
 using Cmd = BlackbirdSql.Common.Cmd;
-using Tracer = BlackbirdSql.Core.Diagnostics.Tracer;
+using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 namespace BlackbirdSql.EditorExtension.Ctl;
 

@@ -5,8 +5,8 @@
 
 using System.Globalization;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Interfaces;
-using BlackbirdSql.Common.Config;
+using BlackbirdSql.Common.Ctl.Config;
+using BlackbirdSql.Common.Ctl.Interfaces;
 
 namespace BlackbirdSql.Common.Controls.ToolsOptions
 {
@@ -31,13 +31,13 @@ namespace BlackbirdSql.Common.Controls.ToolsOptions
 			Font = VsFontColorPreferences.EnvironmentFont;
 		}
 
-		public void LoadSettings(IUserSettings options)
+		public void LoadSettings(IBUserSettings options)
 		{
 			ApplySettingsToUI(options);
 			_trackChanges = true;
 		}
 
-		public void SaveSettings(IUserSettings options)
+		public void SaveSettings(IBUserSettings options)
 		{
 			SaveSettingsFromUI(options);
 			UserSettings.Instance.Save();
@@ -48,11 +48,11 @@ namespace BlackbirdSql.Common.Controls.ToolsOptions
 			ApplySettingsToUI(UserSettings.Instance.Default);
 		}
 
-		protected virtual void ApplySettingsToUI(IUserSettings options)
+		protected virtual void ApplySettingsToUI(IBUserSettings options)
 		{
 		}
 
-		protected virtual void SaveSettingsFromUI(IUserSettings options)
+		protected virtual void SaveSettingsFromUI(IBUserSettings options)
 		{
 		}
 

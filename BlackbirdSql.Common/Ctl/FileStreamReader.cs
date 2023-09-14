@@ -2,11 +2,11 @@
 // Microsoft.SqlServer.Management.UI.Grid.FileStreamReader
 using System;
 using System.Data.SqlTypes;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
 
 namespace BlackbirdSql.Common.Ctl;
 
-public class FileStreamReader : IFileStreamReader, IDisposable
+public class FileStreamReader : IBFileStreamReader, IDisposable
 {
 	public const int DEFAULT_BUFFER_SIZE = 8192;
 

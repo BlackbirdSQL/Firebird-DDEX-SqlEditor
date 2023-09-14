@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Automation.Provider;
-using BlackbirdSql.Common.Structs;
 using BlackbirdSql.Common.Ctl;
 using HandleCollector = BlackbirdSql.Common.Ctl.HandleCollector;
 using OLERECT = Microsoft.VisualStudio.OLE.Interop.RECT;
-
+using BlackbirdSql.Common.Ctl.Structs;
 
 namespace BlackbirdSql.Common;
 

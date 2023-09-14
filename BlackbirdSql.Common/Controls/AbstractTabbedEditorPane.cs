@@ -5,9 +5,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Events;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
@@ -18,10 +15,13 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
 using OleConstants = Microsoft.VisualStudio.OLE.Interop.Constants;
+using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Common.Ctl.Events;
+using BlackbirdSql.Common.Ctl.Interfaces;
 
 namespace BlackbirdSql.Common.Controls;
 
-public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IOleCommandTarget, IVsWindowFrameNotify3, IVsMultiViewDocumentView, IVsHasRelatedSaveItems, IVsDocumentLockHolder, IVsBroadcastMessageEvents, IDesignerDocumentService, ITabbedEditorService, IVsDocOutlineProvider, IVsDocOutlineProvider2, IVsToolboxActiveUserHook, IVsToolboxUser, IVsToolboxPageChooser, IVsDefaultToolboxTabState, IVsCodeWindow, IVsExtensibleObject
+public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IOleCommandTarget, IVsWindowFrameNotify3, IVsMultiViewDocumentView, IVsHasRelatedSaveItems, IVsDocumentLockHolder, IVsBroadcastMessageEvents, IBDesignerDocumentService, IBTabbedEditorService, IVsDocOutlineProvider, IVsDocOutlineProvider2, IVsToolboxActiveUserHook, IVsToolboxUser, IVsToolboxPageChooser, IVsDefaultToolboxTabState, IVsCodeWindow, IVsExtensibleObject
 {
 	private static TabbedEditorToolbarHandlerManager _ToolbarManager;
 
@@ -37,7 +37,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	private bool _IsAppActivated = true;
 
-	private ITextEditor _TextEditor;
+	private IBTextEditor _TextEditor;
 
 	private bool _IsLoading;
 
@@ -78,7 +78,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 	protected IVsMonitorSelection SelectionMonitor => Controller.SelectionMonitor;
 
 
-	ITextEditor ITabbedEditorService.TextEditor
+	IBTextEditor IBTabbedEditorService.TextEditor
 	{
 		get
 		{
@@ -96,13 +96,13 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	protected virtual Guid PrimaryViewGuid => VSConstants.LOGVIEWID_Designer;
 
-	AbstractEditorTab ITabbedEditorService.ActiveTab => _TabbedEditorUI.TopEditorTab;
+	AbstractEditorTab IBTabbedEditorService.ActiveTab => _TabbedEditorUI.TopEditorTab;
 
-	IVsWindowFrame ITabbedEditorService.TabFrame => GetService(typeof(IVsWindowFrame)) as IVsWindowFrame;
+	IVsWindowFrame IBTabbedEditorService.TabFrame => GetService(typeof(IVsWindowFrame)) as IVsWindowFrame;
 
 	public TabbedEditorUI TabbedEditorControl => _TabbedEditorUI;
 
-	Guid ITabbedEditorService.InitialLogicalView => _RequestedView;
+	Guid IBTabbedEditorService.InitialLogicalView => _RequestedView;
 
 	private IVsCodeWindow XamlCodeWindow
 	{
@@ -167,7 +167,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		(GetService(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable).RegisterDocumentLockHolder(0u, GetPrimaryDocCookie(), this, out _LockHolderCookie);
 	}
 
-	bool ITabbedEditorService.IsTabVisible(Guid logicalView)
+	bool IBTabbedEditorService.IsTabVisible(Guid logicalView)
 	{
 		foreach (AbstractEditorTab tab in _TabbedEditorUI.Tabs)
 		{
@@ -430,7 +430,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		{
 			return this;
 		}
-		if (serviceType == typeof(ITabbedEditorService))
+		if (serviceType == typeof(IBTabbedEditorService))
 		{
 			return this;
 		}
@@ -636,7 +636,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		return 0;
 	}
 
-	void ITabbedEditorService.Activate(Guid logicalView, EnTabViewMode mode)
+	void IBTabbedEditorService.Activate(Guid logicalView, EnTabViewMode mode)
 	{
 		ActivateView(ref logicalView, mode);
 	}
@@ -649,7 +649,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 			return num;
 		}
 		GuidId guidId = new GuidId(pguidCmdGroup, nCmdID);
-		if (ToolbarManager.TryGetCommandHandler(GetType(), guidId, out ITabbedEditorToolbarCommandHandler commandHandler))
+		if (ToolbarManager.TryGetCommandHandler(GetType(), guidId, out IBTabbedEditorToolbarCommandHandler commandHandler))
 		{
 			return commandHandler.HandleExec(this, nCmdexecopt, pvaIn, pvaOut);
 		}
@@ -677,7 +677,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		{
 			uint cmdID = prgCmds[i].cmdID;
 			GuidId guidId = new GuidId(pguidCmdGroup, cmdID);
-			if (ToolbarManager.TryGetCommandHandler(GetType(), guidId, out ITabbedEditorToolbarCommandHandler commandHandler))
+			if (ToolbarManager.TryGetCommandHandler(GetType(), guidId, out IBTabbedEditorToolbarCommandHandler commandHandler))
 			{
 				return commandHandler.HandleQueryStatus(this, ref prgCmds[i], pCmdText);
 			}
@@ -876,7 +876,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		}
 		if (elementid == 1)
 		{
-			IVsWindowFrame tabFrame = ((ITabbedEditorService)this).TabFrame;
+			IVsWindowFrame tabFrame = ((IBTabbedEditorService)this).TabFrame;
 			IVsWindowFrame vsWindowFrame = varValueOld as IVsWindowFrame;
 			IVsWindowFrame vsWindowFrame2 = varValueNew as IVsWindowFrame;
 			AbstractEditorTab editorTab = _TabbedEditorUI.ActiveTab;

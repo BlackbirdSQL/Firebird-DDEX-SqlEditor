@@ -8,7 +8,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using Microsoft.VisualStudio.Utilities;
-using Tracer = BlackbirdSql.Core.Diagnostics.Tracer;
+using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 namespace BlackbirdSql.Common.Controls;
 

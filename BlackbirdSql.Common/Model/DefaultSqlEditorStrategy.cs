@@ -5,9 +5,8 @@
 
 using System;
 using System.Data.Common;
-
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Model;
 
@@ -15,7 +14,7 @@ using BlackbirdSql.Core.Model;
 
 namespace BlackbirdSql.Common.Model;
 
-public sealed class DefaultSqlEditorStrategy : ISqlEditorStrategy, IDisposable
+public sealed class DefaultSqlEditorStrategy : IBSqlEditorStrategy, IDisposable
 {
 	private readonly UIConnectionInfo _DefaultUiConnectionInfo;
 
@@ -35,11 +34,11 @@ public sealed class DefaultSqlEditorStrategy : ISqlEditorStrategy, IDisposable
 
 	public bool IsDw => false;
 
-	public IMetadataProviderProvider MetadataProviderProvider => null;
+	public IBMetadataProviderProvider MetadataProviderProvider => null;
 
 	public EnEditorMode Mode => EnEditorMode.Standard;
 
-	public ISqlEditorExtendedCommandHandler ExtendedCommandHandler => null;
+	public IBSqlEditorExtendedCommandHandler ExtendedCommandHandler => null;
 
 	public DefaultSqlEditorStrategy()
 	{
@@ -82,7 +81,7 @@ public sealed class DefaultSqlEditorStrategy : ISqlEditorStrategy, IDisposable
 		GC.SuppressFinalize(this);
 	}
 
-	public ISqlEditorErrorTaskFactory GetErrorTaskFactory()
+	public IBSqlEditorErrorTaskFactory GetErrorTaskFactory()
 	{
 		return null;
 	}

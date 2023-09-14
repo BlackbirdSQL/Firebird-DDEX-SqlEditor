@@ -4,16 +4,17 @@
 using System;
 using System.Data;
 using System.Diagnostics;
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Diagnostics.Enums;
-using BlackbirdSql.Core.Events;
-using BlackbirdSql.Core.Interfaces;
-using BlackbirdSql.Core.Model;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Events;
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Common.Ctl.Events;
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Events;
+using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Model;
+
 
 namespace BlackbirdSql.Common.Controls;
 

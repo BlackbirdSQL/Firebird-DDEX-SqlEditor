@@ -7,10 +7,9 @@ using System;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-
-using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 
 

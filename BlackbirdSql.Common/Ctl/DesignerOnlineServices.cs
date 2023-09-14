@@ -13,10 +13,9 @@ using System.IO;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Diagnostics.Enums;
-using BlackbirdSql.Core.Enums;
-
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Interfaces;
 using FirebirdSql.Data.FirebirdClient;
 
 using Microsoft.VisualStudio.Shell.Interop;
@@ -24,10 +23,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using IServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 
-
 namespace BlackbirdSql.Common.Ctl;
-
-
 
 /// <summary>
 /// Do not use. To be completed.

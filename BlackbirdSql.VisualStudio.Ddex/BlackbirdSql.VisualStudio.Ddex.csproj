@@ -73,6 +73,11 @@
     </Content>
     <Content Include="Package.ico" />
     <Content Include="Resources\Package.ico" />
+    <EmbeddedResource Include="Properties\AttributeResources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\ToolbarImageStrip.png" />
     <None Include="Resources\ToolbarImageStrip.psd" />
     <None Include="Resources\ViewSupport.FolderTables.ico" />
@@ -102,9 +107,6 @@
   </ItemGroup>
   <!-- References (Packages) -->
   <ItemGroup>
-    <PackageReference Include="EntityFramework.Firebird">
-      <Version>9.1.1</Version>
-    </PackageReference>
     <PackageReference Include="IndexRange">
       <Version>1.0.2</Version>
     </PackageReference>
@@ -146,14 +148,19 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Root\Config\ComponentModel\GlobalizedCategoryAttribute.cs" />
-    <Compile Include="Root\Config\ComponentModel\GlobalizedDescriptionAttribute.cs" />
-    <Compile Include="Root\Config\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
+    <Compile Include="Ctl\ComponentModel\GlobalizedCategoryAttribute.cs" />
+    <Compile Include="Ctl\ComponentModel\GlobalizedDescriptionAttribute.cs" />
+    <Compile Include="Ctl\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Properties\BlackbirdSql.VisualStudio.Ddex.snk" />
   </ItemGroup>
   <!-- Includes (Properties and Properties Resources) -->
   <ItemGroup>
+    <Compile Include="Properties\AttributeResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AttributeResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -342,7 +349,7 @@
     <EmbeddedResource Include="Ctl\Import\TViewSupportElements.xml">
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TViewSupportElements.xml</LogicalName>
     </EmbeddedResource>
-    <Page Include="Root\Config\DebugOptionsControl.xaml">
+    <Page Include="Controls\Config\DebugOptionsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -351,25 +358,25 @@
   <ItemGroup>
     <Compile Include="BlackbirdSqlDdexExtension.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Root\CommandProviders\SystemCommandProvider.cs" />
-    <Compile Include="Root\CommandProviders\UniversalCommandProvider.cs" />
-    <Compile Include="Root\CommandProviders\UserCommandProvider.cs" />
-    <Compile Include="Root\Config\PackageData.cs" />
-    <Compile Include="Root\Config\PackageSupportedObjects.cs" />
-    <Compile Include="Root\Config\DebugOptionsControl.xaml.cs">
+    <Compile Include="CommandProviders\SystemCommandProvider.cs" />
+    <Compile Include="CommandProviders\UniversalCommandProvider.cs" />
+    <Compile Include="CommandProviders\UserCommandProvider.cs" />
+    <Compile Include="PackageData.cs" />
+    <Compile Include="PackageSupportedObjects.cs" />
+    <Compile Include="Controls\Config\DebugOptionsControl.xaml.cs">
       <DependentUpon>DebugOptionsControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Root\Config\DebugOptionsDialogPage.cs">
+    <Compile Include="Controls\Config\DebugOptionsDialogPage.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Root\Config\DebugOptionModel.cs" />
-    <Compile Include="Root\Config\GeneralOptionModel.cs" />
-    <Compile Include="Root\Config\OptionsProvider.cs" />
-    <Compile Include="Root\Config\VsPackageRegistration.cs" />
-    <Compile Include="Root\Extensions\AbstractLinkageParser.cs" />
-    <Compile Include="Root\Extensions\AbstruseLinkageParser.cs" />
-    <Compile Include="Root\Extensions\LinkageParser.cs" />
-    <Compile Include="Root\Interfaces\IBProviderObjectFactory.cs" />
+    <Compile Include="Ctl\Config\DebugOptionModel.cs" />
+    <Compile Include="Ctl\Config\GeneralOptionModel.cs" />
+    <Compile Include="Ctl\Config\OptionsProvider.cs" />
+    <Compile Include="Ctl\ComponentModel\VsPackageRegistration.cs" />
+    <Compile Include="Ctl\Extensions\AbstractLinkageParser.cs" />
+    <Compile Include="Ctl\Extensions\AbstruseLinkageParser.cs" />
+    <Compile Include="Ctl\Extensions\LinkageParser.cs" />
+    <Compile Include="Ctl\Interfaces\IBProviderObjectFactory.cs" />
     <Compile Include="Model\DslColumns.cs" />
     <Compile Include="Model\DslFunctionArguments.cs" />
     <Compile Include="Model\DslFunctionArgumentsLegacy.cs" />

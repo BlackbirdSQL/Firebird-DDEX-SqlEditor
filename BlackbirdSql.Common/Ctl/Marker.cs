@@ -7,14 +7,11 @@ using System;
 using System.Collections;
 using System.Runtime.InteropServices;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Common.Properties;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.TextManager.Interop;
-
-
-
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Ctl;
 

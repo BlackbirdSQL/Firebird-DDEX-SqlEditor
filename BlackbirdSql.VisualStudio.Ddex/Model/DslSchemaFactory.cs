@@ -31,8 +31,8 @@ using FirebirdSql.Data.FirebirdClient;
 
 using BlackbirdSql.Core;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
-
-
+using BlackbirdSql.VisualStudio.Ddex.Properties;
+using BlackbirdSql.Core.Ctl.Extensions;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
 
@@ -313,7 +313,7 @@ internal sealed class DslSchemaFactory
 		Assembly assembly = typeof(FirebirdClientFactory).Assembly;
 		if (assembly == null)
 		{
-			DllNotFoundException ex = new(typeof(FirebirdClientFactory).Name + " class assembly not found");
+			DllNotFoundException ex = new(Resources.ExceptionClassAssemblyNotFound.Res(typeof(FirebirdClientFactory).Name));
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -325,7 +325,7 @@ internal sealed class DslSchemaFactory
 
 		if (xmlStream == null)
 		{
-			NullReferenceException ex = new("Resource not found: " + ResourceName);
+			NullReferenceException ex = new(Resources.ExceptionResourceNotFound.Res(ResourceName));
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -369,41 +369,30 @@ internal sealed class DslSchemaFactory
 			throw;
 		}
 
+		if (cancellationToken.IsCancellationRequested)
+		{
+			parser?.SyncExit();
+			return Task.FromResult(new DataTable());
+		}
+
 		if (collection.Length != 1)
 		{
 			parser?.SyncExit();
-			NotSupportedException ex = new("Unsupported collection name " + schemaCollection);
+			NotSupportedException ex = new(Resources.ExceptionCollectionNotSupported.Res(schemaCollection));
 			Diag.Dug(ex);
 			throw ex;
 		}
 
-		if (restrictions != null && restrictions.Length > (int)collection[0]["NumberOfRestrictions"])
+		if (restrictions != null && restrictions.Length != (int)collection[0]["NumberOfRestrictions"])
 		{
 			parser?.SyncExit();
-			InvalidOperationException exbb = new("The number of specified restrictions is not valid.");
+			InvalidOperationException exbb =
+				new(Resources.ExceptionRestrictionsNotEqualToSpecified.Res(restrictions.Length,
+				(int)collection[0]["NumberOfRestrictions"]));
 			Diag.Dug(exbb);
 			throw exbb;
 		}
 
-		if (cancellationToken.IsCancellationRequested)
-		{
-			parser?.SyncExit();
-			return Task.FromResult(new DataTable());
-		}
-
-		if (ds.Tables[DbMetaDataCollectionNames.Restrictions].Select(filter).Length != (int)collection[0]["NumberOfRestrictions"])
-		{
-			parser?.SyncExit();
-			InvalidOperationException exbb = new("Incorrect restriction definition.");
-			Diag.Dug(exbb);
-			throw exbb;
-		}
-
-		if (cancellationToken.IsCancellationRequested)
-		{
-			parser?.SyncExit();
-			return Task.FromResult(new DataTable());
-		}
 
 		Task<DataTable> task;
 
@@ -420,7 +409,7 @@ internal sealed class DslSchemaFactory
 				break;
 			default:
 				parser?.SyncExit();
-				NotSupportedException ex = new("Unsupported population mechanism");
+				NotSupportedException ex = new(Resources.ExceptionUnsupportedPopulationMechanism.Res(collection[0]["PopulationMechanism"].ToString()));
 				Diag.Dug(ex);
 				throw ex;
 		}
@@ -480,17 +469,17 @@ internal sealed class DslSchemaFactory
 			case "GENERATORS":
 			case "TRIGGERS":
 			case "TRIGGERDEPENDENCIES":
-				ex = new(string.Format("The raw metadata collection {0} may not be called from here.", collectionName));
+				ex = new(Resources.ExceptionInvalidRawMetadataCall.Res(collectionName));
 				Diag.Dug(ex);
 				throw ex;
 			case "IDENTITYTRIGGERS":
 			case "STANDARDTRIGGERS":
 			case "SYSTEMTRIGGERS":
-				ex = new(string.Format("The metadata collection {0} is pre-built and may not be called from here.", collectionName));
+				ex = new(Resources.ExceptionInvalidPrebuiltMetadataCall.Res(collectionName));
 				Diag.Dug(ex);
 				throw ex;
 			default:
-				ex = new(string.Format("The metadata collection {0} is not supported.", collectionName));
+				ex = new(Resources.ExceptionCollectionNotSupported.Res(collectionName));
 				Diag.Dug(ex);
 				throw ex;
 		}
@@ -547,17 +536,17 @@ internal sealed class DslSchemaFactory
 			case "GENERATORS":
 			case "TRIGGERS":
 			case "TRIGGERDEPENDENCIES":
-				ex = new(string.Format("The raw metadata collection {0} may not be called from here.", collectionName));
+				ex = new(Resources.ExceptionInvalidRawMetadataCall.Res(collectionName));
 				Diag.Dug(ex);
 				throw ex;
 			case "IDENTITYTRIGGERS":
 			case "STANDARDTRIGGERS":
 			case "SYSTEMTRIGGERS":
-				ex = new(string.Format("The metadata collection {0} is pre-built and may not be called from here.", collectionName));
+				ex = new(Resources.ExceptionInvalidPrebuiltMetadataCall.Res(collectionName));
 				Diag.Dug(ex);
 				throw ex;
 			default:
-				ex = new(string.Format("The metadata collection {0} is not supported.", collectionName));
+				ex = new(Resources.ExceptionCollectionNotSupported.Res(collectionName));
 				Diag.Dug(ex);
 				throw ex;
 		}

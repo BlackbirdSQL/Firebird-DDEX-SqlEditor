@@ -4,7 +4,7 @@
     xmlns:local="clr-namespace:BlackbirdSql.Wpf.Themes"
 	xmlns:ComCtl="clr-namespace:BlackbirdSql.Common.Ctl;assembly=BlackbirdSql.Common"
 	xmlns:ComCtls="clr-namespace:BlackbirdSql.Common.Controls;assembly=BlackbirdSql.Common"
-	xmlns:ComCvtrs="clr-namespace:BlackbirdSql.Common.Converters;assembly=BlackbirdSql.Common"
+	xmlns:ComCvtrs="clr-namespace:BlackbirdSql.Common.Controls.Converters;assembly=BlackbirdSql.Common"
 	xmlns:ComModel="clr-namespace:BlackbirdSql.Common.Model;assembly=BlackbirdSql.Common"
 	xmlns:ComRes="clr-namespace:BlackbirdSql.Common.Properties;assembly=BlackbirdSql.Common">
 	<ComCvtrs:IsNullConverter x:Key="IsNullConverter" />

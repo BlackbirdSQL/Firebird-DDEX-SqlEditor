@@ -5,11 +5,11 @@
 
 using System;
 
-using BlackbirdSql.Common.Commands;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Commands;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Enums;
+using BlackbirdSql.Core.Ctl.Enums;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -19,9 +19,9 @@ namespace BlackbirdSql.Common.Ctl;
 
 public class SqlEditorViewFilter : AbstractViewFilter
 {
-	public ISqlEditorWindowPane Editor { get; private set; }
+	public IBSqlEditorWindowPane Editor { get; private set; }
 
-	public SqlEditorViewFilter(ISqlEditorWindowPane editorWindow)
+	public SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow)
 	{
 		Editor = editorWindow;
 	}

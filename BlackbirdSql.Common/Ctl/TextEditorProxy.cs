@@ -1,21 +1,21 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.Design.Core, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Controls.TabbedEditor.TextEditorProxy
 using System;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
 
 
 
 namespace BlackbirdSql.Common.Ctl;
 
-public class TextEditorProxy : MarshalByRefObject, ITextEditor, IDisposable
+public class TextEditorProxy : MarshalByRefObject, IBTextEditor, IDisposable
 {
-	private ITextEditor _underlyingEditor;
+	private IBTextEditor _underlyingEditor;
 
-	private ITextEditorEvents _textEditorEvents;
+	private IBTextEditorEvents _textEditorEvents;
 
-	public ITextEditorEvents TextEditorEvents => _textEditorEvents;
+	public IBTextEditorEvents TextEditorEvents => _textEditorEvents;
 
-	public TextEditorProxy(ITextEditor editor)
+	public TextEditorProxy(IBTextEditor editor)
 	{
 		_underlyingEditor = editor;
 	}
@@ -30,7 +30,7 @@ public class TextEditorProxy : MarshalByRefObject, ITextEditor, IDisposable
 		_underlyingEditor?.Focus();
 	}
 
-	public void SetTextEditorEvents(ITextEditorEvents events)
+	public void SetTextEditorEvents(IBTextEditorEvents events)
 	{
 		MarshalByRefObject marshalByRefObject = null;
 		if (events != null)
@@ -41,7 +41,7 @@ public class TextEditorProxy : MarshalByRefObject, ITextEditor, IDisposable
 				throw new NotSupportedException();
 			}
 		}
-		ITextEditorEvents textEditorEvents = _textEditorEvents;
+		IBTextEditorEvents textEditorEvents = _textEditorEvents;
 		_textEditorEvents = null;
 		textEditorEvents?.SetTextEditor(null);
 		_textEditorEvents = events;

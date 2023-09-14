@@ -2,10 +2,8 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using System.Linq.Expressions;
-using BlackbirdSql.Core.CommandProviders;
-using Microsoft.VisualStudio;
-using static System.Net.WebRequestMethods;
+using BlackbirdSql.Core.Ctl.CommandProviders;
+
 
 namespace BlackbirdSql.Common;
 

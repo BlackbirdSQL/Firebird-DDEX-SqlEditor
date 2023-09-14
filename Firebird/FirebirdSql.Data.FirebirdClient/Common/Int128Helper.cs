@@ -18,7 +18,7 @@
 using System;
 using System.Diagnostics;
 using System.Numerics;
-using BlackbirdSql.Common;
+
 
 namespace FirebirdSql.Data.Common;
 

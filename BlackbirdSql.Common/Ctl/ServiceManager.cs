@@ -3,12 +3,11 @@
 
 using System;
 using System.Collections.Generic;
-
-using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 
-namespace BlackbirdSql.Common.Ctl;
 
+namespace BlackbirdSql.Common.Ctl;
 
 public class ServiceManager<T> where T : IBExportable
 {

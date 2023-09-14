@@ -3,11 +3,10 @@
 // Decompiled with ICSharpCode.Decompiler 7.1.0.6543
 #endregion
 
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Interfaces;
-using BlackbirdSql.Common.Config.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Model.Events;
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Common.Ctl.Enums;
 
 // using Microsoft.SqlServer.Management.QueryExecution;
 // using Microsoft.VisualStudio.Data.Tools.SqlEditor.Interfaces;
@@ -23,7 +22,7 @@ public interface ISqlQueryExecutionHandler : IQueryExecutionHandler
 {
 	EnSqlExecutionMode SqlExecutionMode { get; set; }
 
-	IQueryExecutionResultsSettings ResultsSettings { get; set; }
+	IBQueryExecutionResultsSettings ResultsSettings { get; set; }
 
 	QESQLExecutionOptions SqlExecutionOptions { get; }
 
@@ -35,7 +34,7 @@ public interface ISqlQueryExecutionHandler : IQueryExecutionHandler
 
 	void AddStringToMessages(string message, bool flush);
 
-	void AddStringToErrors(string message, int lineNumber, ITextSpan textSpan, bool flush);
+	void AddStringToErrors(string message, int lineNumber, IBTextSpan textSpan, bool flush);
 
 	void ProcessSpecialActionOnBatch(QESQLBatchSpecialActionEventArgs args);
 

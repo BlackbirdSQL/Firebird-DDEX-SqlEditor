@@ -4,7 +4,7 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Media;
-using BlackbirdSql.Common.Enums;
+using BlackbirdSql.Common.Ctl.Enums;
 
 namespace BlackbirdSql.Common.Model;
 

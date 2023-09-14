@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 using FirebirdSql.Data.Common;
 using FirebirdSql.Data.Logging;
 
-using BlackbirdSql.Common;
+
 
 namespace FirebirdSql.Data.FirebirdClient;
 public sealed class FbBatchCommand : IFbPreparedCommand, IDescriptorFiller, IDisposable

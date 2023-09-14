@@ -12,10 +12,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Diagnostics.Enums;
-using BlackbirdSql.Core.Extensions;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Controls.PropertiesWindow;
@@ -30,9 +26,12 @@ using FirebirdSql.Data.Services;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Config.Interfaces;
-using BlackbirdSql.Common.Events;
 using BlackbirdSql.Core;
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Common.Ctl.Events;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Extensions;
 
 namespace BlackbirdSql.Common.Model;
 
@@ -387,7 +386,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 		uici = PromptForConnectionForEditor(out connection);
 	}
 
-	public override void ApplyConnectionOptions(IDbConnection conn, IQueryExecutionSettings s)
+	public override void ApplyConnectionOptions(IDbConnection conn, IBQueryExecutionSettings s)
 	{
 		if (!IsDwConnection)
 		{
@@ -400,7 +399,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 	}
 
 
-	private void DwApplyConnectionOptions(IDbConnection conn, IQueryExecutionSettings s)
+	private void DwApplyConnectionOptions(IDbConnection conn, IBQueryExecutionSettings s)
 	{
 		return;
 

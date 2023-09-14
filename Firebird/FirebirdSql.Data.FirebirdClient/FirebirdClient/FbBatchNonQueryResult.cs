@@ -21,7 +21,7 @@ using System.Linq;
 using static FirebirdSql.Data.Common.BatchBase;
 using static FirebirdSql.Data.FirebirdClient.FbBatchNonQueryResult;
 
-using BlackbirdSql.Common;
+
 
 
 namespace FirebirdSql.Data.FirebirdClient;

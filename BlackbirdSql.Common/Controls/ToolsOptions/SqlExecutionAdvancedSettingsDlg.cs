@@ -6,12 +6,11 @@
 using System;
 using System.Globalization;
 using System.Windows.Forms;
-
-using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Common;
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Controls.ToolsOptions
 {
@@ -516,7 +515,7 @@ namespace BlackbirdSql.Common.Controls.ToolsOptions
 			return true;
 		}
 
-		protected override void ApplySettingsToUI(IUserSettings options)
+		protected override void ApplySettingsToUI(IBUserSettings options)
 		{
 			if (options != null)
 			{
@@ -549,7 +548,7 @@ namespace BlackbirdSql.Common.Controls.ToolsOptions
 			}
 		}
 
-		protected override void SaveSettingsFromUI(IUserSettings options)
+		protected override void SaveSettingsFromUI(IBUserSettings options)
 		{
 			options.Execution.SetNoExec = _noExecCheckBox.Checked;
 			options.Execution.SetNoCount = _noCountCheckBox.Checked;

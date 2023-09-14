@@ -3,8 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Ctl;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -13,12 +11,12 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 using OleConstants = Microsoft.VisualStudio.OLE.Interop.Constants;
-
-
+using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Common.Ctl.Interfaces;
 
 namespace BlackbirdSql.Common.Controls;
 
-public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEvents, ITextEditor, IVsToolboxActiveUserHook, IVsToolboxUser, IDisposable
+public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEvents, IBTextEditor, IVsToolboxActiveUserHook, IVsToolboxUser, IDisposable
 {
 	private readonly IVsHierarchy _Hierarchy;
 
@@ -40,13 +38,13 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 
 	private TextEditorProxy _textEditorProxy;
 
-	private readonly ITabbedEditorService _tabbedEditorService;
+	private readonly IBTabbedEditorService _tabbedEditorService;
 
 	private ServiceProvider _services;
 
 	private TextEditorProxy TextEditorProxy => _textEditorProxy;
 
-	private ITextEditorEvents TextEditorEvents
+	private IBTextEditorEvents TextEditorEvents
 	{
 		get
 		{
@@ -136,7 +134,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 		_textEditorProxy = new TextEditorProxy(this);
 		if (tabbedEditorServices != null)
 		{
-			_tabbedEditorService = tabbedEditorServices.GetService(typeof(ITabbedEditorService)) as ITabbedEditorService;
+			_tabbedEditorService = tabbedEditorServices.GetService(typeof(IBTabbedEditorService)) as IBTabbedEditorService;
 			if (_tabbedEditorService != null)
 			{
 				_tabbedEditorService.TextEditor = TextEditorProxy;
@@ -336,13 +334,13 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 		Dispose(disposing: false);
 	}
 
-	public void SetTextEditorEvents(ITextEditorEvents events)
+	public void SetTextEditorEvents(IBTextEditorEvents events)
 	{
 	}
 
 	public void SyncState()
 	{
-		ITextEditorEvents textEditorEvents = TextEditorEvents;
+		IBTextEditorEvents textEditorEvents = TextEditorEvents;
 		if (textEditorEvents != null)
 		{
 			textEditorEvents.OnActiveChanged(IsActive);

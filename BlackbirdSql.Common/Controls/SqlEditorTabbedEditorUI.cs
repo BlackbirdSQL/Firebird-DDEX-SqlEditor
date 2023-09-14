@@ -5,7 +5,7 @@
 
 using System;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Properties;
 
 
@@ -53,7 +53,7 @@ namespace BlackbirdSql.Common.Controls
 			};
 			_StatusBar.Height += 4;
 			AbstractTabbedEditorPane editor = TabbedEditorPane;
-			StatusBarManager.Initialize(_StatusBar, rowCountValid: true, (ISqlEditorWindowPane)editor);
+			StatusBarManager.Initialize(_StatusBar, rowCountValid: true, (IBSqlEditorWindowPane)editor);
 			return _StatusBar;
 		}
 

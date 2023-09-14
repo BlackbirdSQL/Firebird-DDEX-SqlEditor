@@ -5,27 +5,26 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
-using System.Data.Common;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
 using BlackbirdSql.Common;
-using BlackbirdSql.Common.Commands;
-using BlackbirdSql.Common.Config.ComponentModel;
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Events;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Commands;
+using BlackbirdSql.Common.Ctl.ComponentModel;
+using BlackbirdSql.Common.Ctl.Events;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Enums;
-using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Core.Providers;
-using BlackbirdSql.EditorExtension.Config;
+using BlackbirdSql.EditorExtension.Controls.Config;
 using BlackbirdSql.EditorExtension.Ctl;
 using BlackbirdSql.Wpf.Controls;
 
@@ -37,9 +36,9 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
 using Cmd = BlackbirdSql.Common.Cmd;
-using Native = BlackbirdSql.Common.Native;
-using Tracer = BlackbirdSql.Core.Diagnostics.Tracer;
 using MonikerAgent = BlackbirdSql.Core.Model.MonikerAgent;
+using Native = BlackbirdSql.Common.Native;
+using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 
 namespace BlackbirdSql.EditorExtension;
@@ -152,7 +151,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 	private Dictionary<object, AuxiliaryDocData> _DocDataEditors = null;
 
-	public ISqlEditorWindowPane LastFocusedSqlEditor { get; set; }
+	public IBSqlEditorWindowPane LastFocusedSqlEditor { get; set; }
 
 	public Dictionary<object, AuxiliaryDocData> DocDataEditors => _DocDataEditors ??= new();
 
@@ -519,7 +518,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 		using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
 		{
 			Cmd.OpenNewMiscellaneousSqlFile(new ServiceProvider(Instance.OleServiceProvider));
-			ISqlEditorWindowPane lastFocusedSqlEditor = Instance.LastFocusedSqlEditor;
+			IBSqlEditorWindowPane lastFocusedSqlEditor = Instance.LastFocusedSqlEditor;
 			if (lastFocusedSqlEditor != null)
 			{
 				new SqlEditorConnectCommand(lastFocusedSqlEditor).Exec((uint)OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT, IntPtr.Zero, IntPtr.Zero);
@@ -701,12 +700,12 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 				// hierarchy.GetSite(out Microsoft.VisualStudio.OLE.Interop.IServiceProvider ppSP);
 
 				// Not point looking because This will always be null for us
-				ISqlEditorStrategyProvider sqlEditorStrategyProvider = null;
+				IBSqlEditorStrategyProvider sqlEditorStrategyProvider = null;
 				// ISqlEditorStrategyProvider sqlEditorStrategyProvider = new ServiceProvider(ppSP).GetService(typeof(ISqlEditorStrategyProvider)) as ISqlEditorStrategyProvider;
 
 				// We always use DefaultSqlEditorStrategy and use the csb passed via userdata that was
 				// contructed from the SE node
-				ISqlEditorStrategy sqlEditorStrategy = (sqlEditorStrategyProvider == null
+				IBSqlEditorStrategy sqlEditorStrategy = (sqlEditorStrategyProvider == null
 					? new DefaultSqlEditorStrategy(value.GetUserDataCsb())
 					: sqlEditorStrategyProvider.CreateEditorStrategy(documentMoniker, value));
 
@@ -759,7 +758,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 
 
-	public void SetSqlEditorStrategyForDocument(object docData, ISqlEditorStrategy strategy)
+	public void SetSqlEditorStrategyForDocument(object docData, IBSqlEditorStrategy strategy)
 	{
 		lock (Controller.PackageLock)
 		{

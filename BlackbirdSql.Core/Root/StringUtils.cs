@@ -8,8 +8,8 @@ using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Properties;
-using BlackbirdSql.Core.Providers;
 
 
 

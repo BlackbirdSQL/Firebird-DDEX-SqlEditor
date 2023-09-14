@@ -4,7 +4,7 @@
 #endregion
 
 using System;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
 
 // using Microsoft.SqlServer.Management.QueryExecution;
 
@@ -24,7 +24,7 @@ namespace BlackbirdSql.Common.Model.Events
 
 		private readonly int _line = -1;
 
-		private readonly ITextSpan _TextSpan;
+		private readonly IBTextSpan _TextSpan;
 
 		public string DetailedMessage => _detailedMessage;
 
@@ -32,7 +32,7 @@ namespace BlackbirdSql.Common.Model.Events
 
 		public int Line => _line;
 
-		public ITextSpan TextSpan => _TextSpan;
+		public IBTextSpan TextSpan => _TextSpan;
 
 		protected QESQLBatchErrorMessageEventArgs()
 		{
@@ -44,7 +44,7 @@ namespace BlackbirdSql.Common.Model.Events
 			_description = description;
 		}
 
-		public QESQLBatchErrorMessageEventArgs(string detailedMessage, string description, int line, ITextSpan textSpan)
+		public QESQLBatchErrorMessageEventArgs(string detailedMessage, string description, int line, IBTextSpan textSpan)
 		{
 			_detailedMessage = detailedMessage;
 			_description = description;

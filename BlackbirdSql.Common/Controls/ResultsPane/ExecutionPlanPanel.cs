@@ -3,7 +3,7 @@
 using System;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Core.Diagnostics;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using Microsoft.AnalysisServices.Graphing;
 using Microsoft.VisualStudio.OLE.Interop;
 

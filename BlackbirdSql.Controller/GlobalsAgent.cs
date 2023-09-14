@@ -1,22 +1,12 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
-
-
-using System;
-
-using Microsoft;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-
-using EnvDTE;
-
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Providers;
-using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Ctl.Events;
+using BlackbirdSql.Core.Ctl;
 
 namespace BlackbirdSql.Controller;
-
 
 
 // =========================================================================================================

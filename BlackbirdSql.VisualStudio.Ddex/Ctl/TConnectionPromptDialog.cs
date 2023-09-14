@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Model;
 
 using Microsoft.VisualStudio.Data.Framework;

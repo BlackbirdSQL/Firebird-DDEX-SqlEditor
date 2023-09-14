@@ -18,9 +18,7 @@ using System.Threading;
 using System.Windows.Forms;
 
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Common.Config;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
@@ -28,9 +26,11 @@ using BlackbirdSql.Common.Properties;
 using FirebirdSql.Data.FirebirdClient;
 
 using Microsoft.VisualStudio.Shell;
-using BlackbirdSql.Core.Extensions;
 using Microsoft.VisualStudio.LanguageServer.Client;
-using BlackbirdSql.Common.Config.Interfaces;
+using BlackbirdSql.Common.Ctl.Config;
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Extensions;
 
 namespace BlackbirdSql.Common.Model;
 
@@ -231,7 +231,7 @@ public abstract class ConnectionStrategy : IDisposable
 
 	protected abstract IDbConnection CreateDbConnectionFromConnectionInfo(UIConnectionInfo uici, bool tryOpenConnection);
 
-	public virtual void ApplyConnectionOptions(IDbConnection connection, IQueryExecutionSettings s)
+	public virtual void ApplyConnectionOptions(IDbConnection connection, IBQueryExecutionSettings s)
 	{
 		return;
 

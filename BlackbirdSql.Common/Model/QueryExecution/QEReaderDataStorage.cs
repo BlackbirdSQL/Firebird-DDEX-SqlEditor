@@ -10,12 +10,12 @@ using System.Data;
 using System.Threading;
 
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.Events;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 
@@ -130,9 +130,9 @@ public sealed class QEReaderDataStorage : IQEStorage, IDataStorage, IDisposable
 	public int ColumnCount => _ColumnsArray.Count;
 
 
-	public IColumnInfo GetColumnInfo(int iCol)
+	public IBColumnInfo GetColumnInfo(int iCol)
 	{
-		return (IColumnInfo)_ColumnsArray[iCol];
+		return (IBColumnInfo)_ColumnsArray[iCol];
 	}
 
 	public bool IsClosed()

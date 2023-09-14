@@ -5,7 +5,7 @@ using System;
 
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;

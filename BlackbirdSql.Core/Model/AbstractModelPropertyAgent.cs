@@ -7,14 +7,12 @@ using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Windows.Media.Imaging;
-
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Enums;
-using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Properties;
+
 using FirebirdSql.Data.FirebirdClient;
-
-
 
 
 namespace BlackbirdSql.Core.Model;

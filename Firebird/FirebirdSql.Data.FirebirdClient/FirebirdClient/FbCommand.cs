@@ -27,7 +27,7 @@ using FirebirdSql.Data.Common;
 using FirebirdSql.Data.Logging;
 
 
-using BlackbirdSql.Common;
+
 
 
 namespace FirebirdSql.Data.FirebirdClient;

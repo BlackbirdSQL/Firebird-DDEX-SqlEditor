@@ -1,16 +1,16 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
-
-
 using System;
 
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Interfaces;
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Model;
-using BlackbirdSql.EditorExtension.Events;
+using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.EditorExtension.Ctl.Events;
+
+using EnvDTE;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -18,10 +18,9 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 using IOleUndoManager = Microsoft.VisualStudio.OLE.Interop.IOleUndoManager;
 using Native = BlackbirdSql.Core.Native;
-using EnvDTE;
+
 
 namespace BlackbirdSql.EditorExtension;
-
 
 // =========================================================================================================
 //										EditorEventsManager Class

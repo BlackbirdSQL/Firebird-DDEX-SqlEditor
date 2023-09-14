@@ -9,10 +9,9 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Diagnostics.Enums;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Ctl;
 
@@ -26,7 +25,7 @@ public static class ListViewHelper
 
 		public FrameworkElement ParentElement { get; private set; }
 
-		private IListViewHelperFilterProvider FilterProvider { get; set; }
+		private IBListViewHelperFilterProvider FilterProvider { get; set; }
 
 		public string FilterText
 		{
@@ -99,7 +98,7 @@ public static class ListViewHelper
 		FilterTextProperty = DependencyProperty.RegisterAttached("FilterText", typeof(string), typeof(ListViewHelper), new UIPropertyMetadata(FilterTextChanged));
 		TargetListBoxProperty = DependencyProperty.RegisterAttached("TargetListBox", typeof(ListBox), typeof(ListViewHelper));
 		TargetListBoxItemsSourceProperty = DependencyProperty.RegisterAttached("TargetListBoxItemsSource", typeof(IEnumerable), typeof(ListViewHelper), new UIPropertyMetadata(TargetListBoxItemsSourceChanged));
-		FilterProviderProperty = DependencyProperty.RegisterAttached("FilterProvider", typeof(IListViewHelperFilterProvider), typeof(ListViewHelper));
+		FilterProviderProperty = DependencyProperty.RegisterAttached("FilterProvider", typeof(IBListViewHelperFilterProvider), typeof(ListViewHelper));
 		PrivateFilterProviderProperty = DependencyProperty.RegisterAttached("PrivateFilterProvider", typeof(CollectionFilterProvider), typeof(ListViewHelper));
 		// m_traceKeywords = new string[1] { "ListViewHelper" };
 	}
@@ -254,16 +253,16 @@ public static class ListViewHelper
 		}
 	}
 
-	public static IListViewHelperFilterProvider GetFilterProvider(FrameworkElement target)
+	public static IBListViewHelperFilterProvider GetFilterProvider(FrameworkElement target)
 	{
 		if (target != null)
 		{
-			return (IListViewHelperFilterProvider)target.GetValue(FilterProviderProperty);
+			return (IBListViewHelperFilterProvider)target.GetValue(FilterProviderProperty);
 		}
 		return null;
 	}
 
-	public static void SetFilterProvider(FrameworkElement target, IListViewHelperFilterProvider value)
+	public static void SetFilterProvider(FrameworkElement target, IBListViewHelperFilterProvider value)
 	{
 		target?.SetValue(FilterProviderProperty, value);
 	}

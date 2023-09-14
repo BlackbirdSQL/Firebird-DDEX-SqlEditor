@@ -5,11 +5,12 @@ using System;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
+
+using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Core;
-using BlackbirdSql.Common.Interfaces;
+
 
 namespace BlackbirdSql.Common.Controls;
-
 
 public class BorderButtonAutomationPeer : FrameworkElementAutomationPeer, IExpandCollapseProvider
 {

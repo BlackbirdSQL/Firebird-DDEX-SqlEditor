@@ -587,7 +587,7 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Number of server mark.
+        ///   Looks up a localized string similar to Number of server marks.
         /// </summary>
         internal static string StatisticsPanelStatMarks {
             get {

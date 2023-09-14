@@ -20,7 +20,7 @@ using System.Globalization;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
-using BlackbirdSql.Common;
+
 using FirebirdSql.Data.Types;
 
 namespace FirebirdSql.Data.Common;

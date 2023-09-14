@@ -13,10 +13,9 @@ using BlackbirdSql.Common.Controls.Events;
 using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Enums;
-
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Extensions;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 

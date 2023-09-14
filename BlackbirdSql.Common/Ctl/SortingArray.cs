@@ -8,12 +8,12 @@ using System.Collections;
 using System.Threading;
 using BlackbirdSql.Core;
 using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
 
 namespace BlackbirdSql.Common.Ctl;
 
 
-public class SortingArray : ISortingArray
+public class SortingArray : IBSortingArray
 {
 	protected const int C_IncrementalBufferSize = 100;
 

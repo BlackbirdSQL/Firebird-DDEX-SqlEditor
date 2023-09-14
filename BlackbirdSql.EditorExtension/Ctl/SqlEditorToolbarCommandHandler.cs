@@ -2,18 +2,17 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.SqlEditorToolbarCommandHandler<T>
 
 using System;
-
-using BlackbirdSql.Common.Commands;
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Commands;
+using BlackbirdSql.Common.Ctl.Interfaces;
 
 using Microsoft.VisualStudio.OLE.Interop;
 
 // namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration
 namespace BlackbirdSql.EditorExtension.Ctl
 {
-	public sealed class SqlEditorToolbarCommandHandler<T> : ITabbedEditorToolbarCommandHandler where T : AbstractSqlEditorCommand, new()
+	public sealed class SqlEditorToolbarCommandHandler<T> : IBTabbedEditorToolbarCommandHandler where T : AbstractSqlEditorCommand, new()
 	{
 		private readonly GuidId _GuidId;
 

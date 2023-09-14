@@ -8,9 +8,8 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Enums;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Enums;
 
 using FirebirdSql.Data.FirebirdClient;
 

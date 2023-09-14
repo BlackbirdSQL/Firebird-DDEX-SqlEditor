@@ -7,14 +7,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+
+using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.CommandProviders;
+using BlackbirdSql.VisualStudio.Ddex.Model;
+using BlackbirdSql.VisualStudio.Ddex.Properties;
+using FirebirdSql.Data.FirebirdClient;
+
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
-using FirebirdSql.Data.FirebirdClient;
-using BlackbirdSql.Core;
-using BlackbirdSql.VisualStudio.Ddex.Model;
-using BlackbirdSql.Core.CommandProviders;
 
 namespace BlackbirdSql.VisualStudio.Ddex;
 
@@ -88,10 +91,10 @@ public class TObjectSelector : AdoDotNetObjectSelector
 				throw new ArgumentNullException("typeName");
 
 			if (parameters == null || parameters.Length < 1 || parameters.Length > 2 || parameters[0] is not string)
-				throw new ArgumentNullException("Parameters are invalid");
+				throw new ArgumentNullException(Resources.ExceptionInvalidParameters);
 
 			if (Site == null)
-				throw new InvalidOperationException("Site is null");
+				throw new InvalidOperationException(Resources.ExceptionSiteIsNull);
 		}
 		catch (Exception ex)
 		{

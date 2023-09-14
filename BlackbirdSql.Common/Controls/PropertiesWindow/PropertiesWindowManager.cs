@@ -8,7 +8,7 @@ using System.Threading;
 using BlackbirdSql.Common.Controls.Events;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Controls.ResultsPane;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core;

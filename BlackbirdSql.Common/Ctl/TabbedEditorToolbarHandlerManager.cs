@@ -2,7 +2,7 @@
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Controls.TabbedEditor.TabbedEditorToolbarHandlerManager
 using System;
 using System.Collections.Generic;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
 
 
 
@@ -10,15 +10,15 @@ namespace BlackbirdSql.Common.Ctl;
 
 public class TabbedEditorToolbarHandlerManager
 {
-	private readonly Dictionary<Type, Dictionary<GuidId, ITabbedEditorToolbarCommandHandler>> _mappings = new Dictionary<Type, Dictionary<GuidId, ITabbedEditorToolbarCommandHandler>>();
+	private readonly Dictionary<Type, Dictionary<GuidId, IBTabbedEditorToolbarCommandHandler>> _mappings = new Dictionary<Type, Dictionary<GuidId, IBTabbedEditorToolbarCommandHandler>>();
 
-	public void AddMapping(Type tabbedEditorType, ITabbedEditorToolbarCommandHandler commandHandler)
+	public void AddMapping(Type tabbedEditorType, IBTabbedEditorToolbarCommandHandler commandHandler)
 	{
 		if (!_mappings.ContainsKey(tabbedEditorType))
 		{
-			_mappings.Add(tabbedEditorType, new Dictionary<GuidId, ITabbedEditorToolbarCommandHandler>());
+			_mappings.Add(tabbedEditorType, new Dictionary<GuidId, IBTabbedEditorToolbarCommandHandler>());
 		}
-		Dictionary<GuidId, ITabbedEditorToolbarCommandHandler> dictionary = _mappings[tabbedEditorType];
+		Dictionary<GuidId, IBTabbedEditorToolbarCommandHandler> dictionary = _mappings[tabbedEditorType];
 		GuidId guidId = commandHandler.GuidId;
 		if (dictionary.ContainsKey(guidId))
 		{
@@ -30,7 +30,7 @@ public class TabbedEditorToolbarHandlerManager
 		}
 	}
 
-	public bool TryGetCommandHandler(Type tabbedEditorType, GuidId guidId, out ITabbedEditorToolbarCommandHandler commandHandler)
+	public bool TryGetCommandHandler(Type tabbedEditorType, GuidId guidId, out IBTabbedEditorToolbarCommandHandler commandHandler)
 	{
 		commandHandler = null;
 		bool result = false;

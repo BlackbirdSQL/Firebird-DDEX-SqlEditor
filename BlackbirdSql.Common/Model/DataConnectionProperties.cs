@@ -1,13 +1,10 @@
 ﻿
 
-using BlackbirdSql.Core.Interfaces;
+using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 
 
-
-
 namespace BlackbirdSql.Common.Model;
-
 
 // namespace Microsoft.SqlServer.ConnectionDlg.Core
 public class DataConnectionProperties : AbstractModelPropertyAgent

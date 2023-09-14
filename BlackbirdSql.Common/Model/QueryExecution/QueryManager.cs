@@ -4,9 +4,8 @@
 using System;
 using System.Data;
 using System.Data.Common;
-
-using BlackbirdSql.Common.Config;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Config;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Enums;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
@@ -15,7 +14,7 @@ using BlackbirdSql.Core;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Utilities;
 
-using Tracer = BlackbirdSql.Core.Diagnostics.Tracer;
+using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
@@ -75,7 +74,7 @@ public sealed class QueryManager : IDisposable
 
 	private SqlConnectionStrategy _ConnectionStrategy;
 
-	private IUserSettings _QueryExecutionSettings;
+	private IBUserSettings _QueryExecutionSettings;
 
 	private bool _QueryExecutionSettingsApplied;
 
@@ -254,7 +253,7 @@ public sealed class QueryManager : IDisposable
 		}
 	}
 
-	public IUserSettings QueryExecutionSettings
+	public IBUserSettings QueryExecutionSettings
 	{
 		get
 		{
@@ -262,8 +261,8 @@ public sealed class QueryManager : IDisposable
 			{
 				if (_QueryExecutionSettings == null)
 				{
-					IUserSettings current = UserSettings.Instance.Current;
-					_QueryExecutionSettings = current.Clone() as IUserSettings;
+					IBUserSettings current = UserSettings.Instance.Current;
+					_QueryExecutionSettings = current.Clone() as IBUserSettings;
 				}
 
 				return _QueryExecutionSettings;
@@ -326,17 +325,17 @@ public sealed class QueryManager : IDisposable
 		IsAllowedToExecuteWhileDebugging = true;
 	}
 
-	public bool Run(ITextSpan textSpan)
+	public bool Run(IBTextSpan textSpan)
 	{
 		return ValidateAndRun(textSpan, 0, bParseOnly: false, withDebugging: false, useCustomExecutionTimeout: false);
 	}
 
-	public bool Run(ITextSpan textSpan, int execTimeout, bool withDebugging)
+	public bool Run(IBTextSpan textSpan, int execTimeout, bool withDebugging)
 	{
 		return ValidateAndRun(textSpan, execTimeout, bParseOnly: false, withDebugging, useCustomExecutionTimeout: true);
 	}
 
-	public void Parse(ITextSpan textSpan)
+	public void Parse(IBTextSpan textSpan)
 	{
 		ValidateAndRun(textSpan, 0, bParseOnly: true, withDebugging: false, useCustomExecutionTimeout: false);
 	}
@@ -537,7 +536,7 @@ public sealed class QueryManager : IDisposable
 		ConnectionStrategy.ApplyConnectionOptions(args.Connection, QueryExecutionSettings.Execution);
 	}
 
-	private bool ValidateAndRun(ITextSpan textSpan, int execTimeout, bool bParseOnly, bool withDebugging, bool useCustomExecutionTimeout)
+	private bool ValidateAndRun(IBTextSpan textSpan, int execTimeout, bool bParseOnly, bool withDebugging, bool useCustomExecutionTimeout)
 	{
 		Tracer.Trace(GetType(), Tracer.Level.Verbose, "ValidateAndRun", " Enter. : ExecutionOptions.WithEstimatedExecutionPlan: " + ExecutionOptions.WithEstimatedExecutionPlan);
 		

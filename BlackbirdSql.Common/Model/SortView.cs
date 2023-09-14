@@ -11,7 +11,7 @@ using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
 
 namespace BlackbirdSql.Common.Model;
 
@@ -19,7 +19,7 @@ public class SortView : ISortView, IDisposable
 {
 	protected IStorageView m_StorageView;
 
-	protected ISortingArray m_SortingArray;
+	protected IBSortingArray m_SortingArray;
 
 	protected ArrayList m_SortingKeys;
 

@@ -4,7 +4,7 @@
 #endregion
 
 using System;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
 
 // namespace Microsoft.SqlServer.Management.UI.Grid
 namespace BlackbirdSql.Common.Model.Interfaces;
@@ -19,7 +19,7 @@ public interface IDataStorage : IDisposable
 
 	int ColumnCount { get; }
 
-	IColumnInfo GetColumnInfo(int iCol);
+	IBColumnInfo GetColumnInfo(int iCol);
 
 	bool IsClosed();
 }

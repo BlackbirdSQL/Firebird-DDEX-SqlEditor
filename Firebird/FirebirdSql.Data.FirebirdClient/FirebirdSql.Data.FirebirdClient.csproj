@@ -28,6 +28,9 @@
 		<DefineConstants>DEBUG;TRACE</DefineConstants>
 	</PropertyGroup>
 	<ItemGroup>
+	  <Compile Include="..\..\BlackbirdSql.Core\Root\Diag.cs" Link="Diag.cs" />
+	</ItemGroup>
+	<ItemGroup>
 		<EmbeddedResource Include="Schema\FbMetaData.xml" />
 	</ItemGroup>
 	<ItemGroup>
@@ -49,9 +52,7 @@
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
-	</ItemGroup>
-	<ItemGroup>
-	  <ProjectReference Include="..\..\BlackbirdSql.Common\BlackbirdSql.Common.csproj" />
+	  <PackageReference Include="IndexRange" Version="1.0.2" />
 	</ItemGroup>
 	<Import Project="..\FirebirdSql.Data.External\FirebirdSql.Data.External.projitems" Label="Shared" />
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">

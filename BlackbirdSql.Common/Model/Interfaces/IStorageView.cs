@@ -4,7 +4,7 @@
 #endregion
 
 using System;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
 
 // namespace Microsoft.SqlServer.Management.UI.Grid
 namespace BlackbirdSql.Common.Model.Interfaces;
@@ -21,7 +21,7 @@ public interface IStorageView : IDisposable
 
 	long RowCount { get; }
 
-	IColumnInfo GetColumnInfo(int iCol);
+	IBColumnInfo GetColumnInfo(int iCol);
 
 	int ColumnCount { get; }
 

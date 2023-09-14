@@ -4,10 +4,9 @@
 using System;
 using System.Globalization;
 using System.IO;
-
-using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 

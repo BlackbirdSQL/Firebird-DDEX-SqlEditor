@@ -126,6 +126,172 @@
   <data name="DdexProvider_ShortDisplayName" xml:space="preserve">
     <value>BlackbirdSql DDEX 2.0 Provider</value>
   </data>
+  <data name="ExceptionAddingNullSite" xml:space="preserve">
+    <value>Attempt to add a null site</value>
+  </data>
+  <data name="ExceptionAttemptToAddNullConnection" xml:space="preserve">
+    <value>Attempt to add a null connection</value>
+  </data>
+  <data name="ExceptionAttemptToExitSyncFromAsync" xml:space="preserve">
+    <value>Attempt to exit a synchronous state when the object was not in a synchronous state</value>
+  </data>
+  <data name="ExceptionClassAssemblyNotFound" xml:space="preserve">
+    <value>{0} class assembly not found</value>
+  </data>
+  <data name="ExceptionCollectionNotSupported" xml:space="preserve">
+    <value>The metadata collection {0} is not supported.</value>
+  </data>
+  <data name="ExceptionConnectionClosed" xml:space="preserve">
+    <value>Connection closed</value>
+  </data>
+  <data name="ExceptionConnectionDisposed" xml:space="preserve">
+    <value>Connection disposed</value>
+  </data>
+  <data name="ExceptionConnectionNull" xml:space="preserve">
+    <value>Connection is null</value>
+  </data>
+  <data name="ExceptionDteIsNull" xml:space="preserve">
+    <value>DTE is null</value>
+  </data>
+  <data name="ExceptionDuplicatingSiteInformation" xml:space="preserve">
+    <value>Source information for site already exists</value>
+  </data>
+  <data name="ExceptionEventsAlreadyEnabled" xml:space="preserve">
+    <value>Events already enabled</value>
+  </data>
+  <data name="ExceptionFailedToRetrievePackageSettings" xml:space="preserve">
+    <value>Failed to retrieve Package settings</value>
+  </data>
+  <data name="ExceptionFailedToSubscribeOptionEvents" xml:space="preserve">
+    <value>Failed to subscribe to Option events</value>
+  </data>
+  <data name="ExceptionIBPackageControllerIsNull" xml:space="preserve">
+    <value>IBPackageController is null</value>
+  </data>
+  <data name="ExceptionIconResourceInvalid" xml:space="preserve">
+    <value>Icon resource invalid: {0}.</value>
+  </data>
+  <data name="ExceptionIconResourceNotFound" xml:space="preserve">
+    <value>Icon resource not found: {0}.</value>
+  </data>
+  <data name="ExceptionImportResourceNotFound" xml:space="preserve">
+    <value>Import resource not found: {0}.</value>
+  </data>
+  <data name="ExceptionInvalidParameters" xml:space="preserve">
+    <value>Parameters are invalid</value>
+  </data>
+  <data name="ExceptionInvalidPrebuiltMetadataCall" xml:space="preserve">
+    <value>The metadata collection {0} is pre-built and may not be called from here.</value>
+  </data>
+  <data name="ExceptionInvalidRawMetadataCall" xml:space="preserve">
+    <value>The raw metadata collection {0} may not be called from here.</value>
+  </data>
+  <data name="ExceptionIVsRunningDocumentTableIsNull" xml:space="preserve">
+    <value>IVsRunningDocumentTable is null</value>
+  </data>
+  <data name="ExceptionParameterDescriberNotFound" xml:space="preserve">
+    <value>Could not locate Describer for connection parameter '{0}'.</value>
+  </data>
+  <data name="ExceptionResourceNotFound" xml:space="preserve">
+    <value>Resource not found: {0}</value>
+  </data>
+  <data name="ExceptionRestrictionsNotEqualToSpecified" xml:space="preserve">
+    <value>The number of provided specifications [{0}] is not equal to the specified restrictions [{1}].</value>
+  </data>
+  <data name="ExceptionSiteIsNull" xml:space="preserve">
+    <value>Site is null</value>
+  </data>
+  <data name="ExceptionSVsSolutionIsNull" xml:space="preserve">
+    <value>SVsSolution is null</value>
+  </data>
+  <data name="ExceptionTriggerErrorAtColumnIndex" xml:space="preserve">
+    <value>Trigger Error at Column index: {0}.</value>
+  </data>
+  <data name="ExceptionTriggerGeneratorErrorAtColumnIndex" xml:space="preserve">
+    <value>Error at Trigger column index: {0}, Generator column index: {1}.</value>
+  </data>
+  <data name="ExceptionUnsupportedPopulationMechanism" xml:space="preserve">
+    <value>Unsupported population mechanism: {0}</value>
+  </data>
+  <data name="LinkageParserCancelled" xml:space="preserve">
+    <value>&gt;  Cancelled. {0}% completed. {1} took {2}ms.</value>
+  </data>
+  <data name="LinkageParserCancelledCatalog" xml:space="preserve">
+    <value>&gt;  Cancelled {0} sequence linkage.</value>
+  </data>
+  <data name="LinkageParserCatalogSwitchedToUiThread" xml:space="preserve">
+    <value>Switched {0} sequence linkage to UI thread.</value>
+  </data>
+  <data name="LinkageParserCompleted" xml:space="preserve">
+    <value>{0}% completed. {1}
+Linkage completed in {2}ms.</value>
+  </data>
+  <data name="LinkageParserCompletedCatalog" xml:space="preserve">
+    <value>Completed {0} sequence linkage in {1}ms.</value>
+  </data>
+  <data name="LinkageParserPausingAsync" xml:space="preserve">
+    <value>&gt;  Pausing async sequence linkage.</value>
+  </data>
+  <data name="LinkageParserPercentCompletedStage" xml:space="preserve">
+    <value>{0}% completed. {1}</value>
+  </data>
+  <data name="LinkageParserPercentCompletedStageElapsed" xml:space="preserve">
+    <value>{0}% completed. {1} took {2}ms.</value>
+  </data>
+  <data name="LinkageParserResumingAsync" xml:space="preserve">
+    <value>&gt;  Resuming async sequence linkage.</value>
+  </data>
+  <data name="LinkageParserResumingCatalog" xml:space="preserve">
+    <value>Resuming {0} sequence linkage.</value>
+  </data>
+  <data name="LinkageParserStageCompleted" xml:space="preserve">
+    <value>Parsed and linked {0} Triggers.</value>
+  </data>
+  <data name="LinkageParserStageGeneratorsBegin" xml:space="preserve">
+    <value>Selecting Generators...</value>
+  </data>
+  <data name="LinkageParserStageGeneratorsEnd" xml:space="preserve">
+    <value>SELECT Generators</value>
+  </data>
+  <data name="LinkageParserStageLinkingBegin" xml:space="preserve">
+    <value>Populating Linkage Table...</value>
+  </data>
+  <data name="LinkageParserStageLinkingEnd" xml:space="preserve">
+    <value>Populate Linkage Table</value>
+  </data>
+  <data name="LinkageParserStageSequencesBegin" xml:space="preserve">
+    <value>Populating Sequence Table...</value>
+  </data>
+  <data name="LinkageParserStageSequencesEnd" xml:space="preserve">
+    <value>Populate Sequence Table</value>
+  </data>
+  <data name="LinkageParserStageTriggerDependenciesEnd" xml:space="preserve">
+    <value>SELECT TriggerDependencies</value>
+  </data>
+  <data name="LinkageParserStageTriggerDependenciesStart" xml:space="preserve">
+    <value>Selecting TriggerDependencies...</value>
+  </data>
+  <data name="LinkageParserStageTriggersBegin" xml:space="preserve">
+    <value>Selecting Triggers...</value>
+  </data>
+  <data name="LinkageParserStageTriggersEnd" xml:space="preserve">
+    <value>SELECT Triggers</value>
+  </data>
+  <data name="LinkageParserStarted" xml:space="preserve">
+    <value>Started</value>
+  </data>
+  <data name="LinkageParserSwitchedToUiThread" xml:space="preserve">
+    <value>&gt;  Switched sequence linkage to UI thread.</value>
+  </data>
+  <data name="LinkageParserTaskHandlerTitle" xml:space="preserve">
+    <value>{0}  sequence linkage</value>
+  </data>
+  <data name="LinkageParserUpdating" xml:space="preserve">
+    <value>Updating sequence linkage.</value>
+  </data>
+  <data name="LinkageParserUpdatingCatalog" xml:space="preserve">
+    <value>Updating {0} sequence linkage.</value>
+  </data>
   <data name="Provider_DisplayName" xml:space="preserve">
     <value>.NET Provider for Firebird (FirebirdClient)</value>
   </data>

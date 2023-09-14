@@ -3,9 +3,9 @@
 
 using System;
 using System.Collections;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Model.Interfaces;
+using BlackbirdSql.Common.Ctl.Interfaces;
 
 
 // using Microsoft.SqlServer.Management.UI.Grid;
@@ -78,9 +78,9 @@ public abstract class AbstractMemDataStorage : IMemDataStorage, IDataStorage, ID
 
 	public int ColumnCount => _ColumnsArray.Count;
 
-	public IColumnInfo GetColumnInfo(int iCol)
+	public IBColumnInfo GetColumnInfo(int iCol)
 	{
-		return (IColumnInfo)_ColumnsArray[iCol];
+		return (IBColumnInfo)_ColumnsArray[iCol];
 	}
 
 	public bool IsClosed()

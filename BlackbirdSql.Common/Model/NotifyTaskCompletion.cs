@@ -4,15 +4,11 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-
-using BlackbirdSql.Core.Diagnostics;
-using BlackbirdSql.Core.Interfaces;
-
-
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Interfaces;
 
 
 namespace BlackbirdSql.Common.Model;
-
 
 public sealed class NotifyTaskCompletion<TResult> : AbstractDispatcherConnection
 {

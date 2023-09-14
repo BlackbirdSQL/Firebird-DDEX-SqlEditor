@@ -8,7 +8,7 @@ using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Controls.QueryExecution;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;

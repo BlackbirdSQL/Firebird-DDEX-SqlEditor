@@ -59,16 +59,16 @@
 		<Compile Include="Model\ConnectionPropertySectionViewModel.cs" />
 		<Compile Include="Model\HistoryPageViewModel.cs" />
 		<Compile Include="Themes\Themes.cs" />
-		<Compile Include="Widgets\LoadingControl.xaml.cs">
+		<Compile Include="Controls\Widgets\LoadingControl.xaml.cs">
 			<DependentUpon>LoadingControl.xaml</DependentUpon>
 		</Compile>
-		<Compile Include="Widgets\ProgressStrip.xaml.cs">
+		<Compile Include="Controls\Widgets\ProgressStrip.xaml.cs">
 			<DependentUpon>ProgressStrip.xaml</DependentUpon>
 		</Compile>
-		<Compile Include="Widgets\SectionControl.xaml.cs">
+		<Compile Include="Controls\Widgets\SectionControl.xaml.cs">
 			<DependentUpon>SectionControl.xaml</DependentUpon>
 		</Compile>
-		<Compile Include="Widgets\Spinner.xaml.cs">
+		<Compile Include="Controls\Widgets\Spinner.xaml.cs">
 			<DependentUpon>Spinner.xaml</DependentUpon>
 		</Compile>
 		<Page Include="Controls\BrowsePageView.xaml">
@@ -93,22 +93,22 @@
 		  <SubType>Designer</SubType>
 		  <Generator>XamlIntelliSenseFileGenerator</Generator>
 		</Page>
-		<Page Include="Widgets\LoadingControl.xaml">
+		<Page Include="Controls\Widgets\LoadingControl.xaml">
 			<SubType>Designer</SubType>
 			<Generator>XamlIntelliSenseFileGenerator</Generator>
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</Page>
-		<Page Include="Widgets\ProgressStrip.xaml">
+		<Page Include="Controls\Widgets\ProgressStrip.xaml">
 			<SubType>Designer</SubType>
 			<Generator>XamlIntelliSenseFileGenerator</Generator>
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</Page>
-		<Page Include="Widgets\SectionControl.xaml">
+		<Page Include="Controls\Widgets\SectionControl.xaml">
 			<SubType>Designer</SubType>
 			<Generator>XamlIntelliSenseFileGenerator</Generator>
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</Page>
-		<Page Include="Widgets\Spinner.xaml">
+		<Page Include="Controls\Widgets\Spinner.xaml">
 			<SubType>Designer</SubType>
 			<Generator>XamlIntelliSenseFileGenerator</Generator>
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
@@ -138,7 +138,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="9.1.1" />
 	  <PackageReference Include="IndexRange" Version="1.0.2" />
 	  <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
 	  <PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />

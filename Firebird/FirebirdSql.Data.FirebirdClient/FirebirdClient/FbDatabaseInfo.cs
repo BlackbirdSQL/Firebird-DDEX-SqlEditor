@@ -283,6 +283,23 @@ public sealed class FbDatabaseInfo
 	{
 		return GetValue<long>(IscCodes.isc_info_read_seq_count);
 	}
+	public List<object> GetInfoList(byte item)
+	{
+		FbConnection.EnsureOpen(Connection);
+
+		
+		var items = new byte[]
+		{
+			item,
+			IscCodes.isc_info_end
+		};
+		return Connection.InnerConnection.Database.GetDatabaseInfo(items);
+
+
+		// return info.Any() ? InfoValuesHelper.ConvertValue<long>(info[0]) : default;
+
+		// return GetValue<int>(IscCodes.isc_info_read_seq_count);
+	}
 	public Task<long> GetReadSeqCountAsync(CancellationToken cancellationToken = default)
 	{
 		return GetValueAsync<long>(IscCodes.isc_info_read_seq_count, cancellationToken);

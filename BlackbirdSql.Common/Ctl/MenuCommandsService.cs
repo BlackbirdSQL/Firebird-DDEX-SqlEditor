@@ -8,16 +8,13 @@ using System.ComponentModel.Design;
 using System.Drawing;
 using System.Windows.Forms;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
 using BlackbirdSql.Common.Model.QueryExecution;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 using Constants = Microsoft.VisualStudio.OLE.Interop.Constants;
-
-
-
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Ctl;
 

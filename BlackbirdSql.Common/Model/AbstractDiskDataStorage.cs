@@ -6,15 +6,14 @@ using System.Data;
 using System.Data.SqlTypes;
 using System.IO;
 using System.Threading;
-using BlackbirdSql.Common.Interfaces;
 using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
-
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Model;
 
@@ -158,7 +157,7 @@ public abstract class AbstractDiskDataStorage : IDiskDataStorage, IDataStorage, 
 		}
 		for (int i = 0; i < storageReader.FieldCount; i++)
 		{
-			IColumnInfo columnInfo = GetColumnInfo(i);
+			IBColumnInfo columnInfo = GetColumnInfo(i);
 			if (columnInfo.ColumnName != storageReader.GetName(i) || columnInfo.DataTypeName != storageReader.GetDataTypeName(i))
 			{
 				throw new ArgumentException(ControlsResources.ColumnsDoNotMatch);
@@ -208,7 +207,7 @@ public abstract class AbstractDiskDataStorage : IDiskDataStorage, IDataStorage, 
 	public virtual void SerializeData()
 	{
 		Type type = null;
-		IColumnInfo columnInfo = null;
+		IBColumnInfo columnInfo = null;
 		object[] array = new object[_ColumnsArray.Count];
 		while (_DataStorageEnabled && _StorageReader.Read())
 		{
@@ -256,7 +255,7 @@ public abstract class AbstractDiskDataStorage : IDiskDataStorage, IDataStorage, 
 					_CurrentOffset += _FsWriter.WriteNull();
 					continue;
 				}
-				if (((IColumnInfo)_ColumnsArray[i]).IsSqlVariant)
+				if (((IBColumnInfo)_ColumnsArray[i]).IsSqlVariant)
 				{
 					DiskDataEntity.StringValue = type.ToString();
 					_CurrentOffset += _FsWriter.WriteString(DiskDataEntity.StringValue);
@@ -539,9 +538,9 @@ public abstract class AbstractDiskDataStorage : IDiskDataStorage, IDataStorage, 
 	public int ColumnCount => _ColumnsArray.Count;
 
 
-	public IColumnInfo GetColumnInfo(int index)
+	public IBColumnInfo GetColumnInfo(int index)
 	{
-		return (IColumnInfo)_ColumnsArray[index];
+		return (IBColumnInfo)_ColumnsArray[index];
 	}
 
 	public bool IsClosed()

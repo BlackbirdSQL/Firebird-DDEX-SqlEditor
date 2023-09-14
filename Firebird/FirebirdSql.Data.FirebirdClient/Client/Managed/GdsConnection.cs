@@ -23,7 +23,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using BlackbirdSql.Common;
+
 using FirebirdSql.Data.Common;
 
 namespace FirebirdSql.Data.Client.Managed;

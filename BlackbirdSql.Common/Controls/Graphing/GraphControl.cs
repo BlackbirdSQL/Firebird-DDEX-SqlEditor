@@ -18,9 +18,9 @@ using BlackbirdSql.Common.Controls.Graphing.ComponentModel;
 using BlackbirdSql.Common.Controls.Graphing.Enums;
 using BlackbirdSql.Common.Controls.Graphing.Interfaces;
 using BlackbirdSql.Common.Controls.Widgets;
-using BlackbirdSql.Common.Enums;
-using BlackbirdSql.Common.Exceptions;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Common.Ctl.Exceptions;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using Microsoft.AnalysisServices.Graphing;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -1204,7 +1204,7 @@ public class GraphControl : GraphCtrl
 
 	private void ShowExceptionMessage(Exception exception)
 	{
-		((IMessageBoxProvider)new DefaultMessageBoxProvider(this)).ShowMessage(exception, (string)null, EnExceptionMessageBoxButtons.OK, EnExceptionMessageBoxSymbol.Error, (IWin32Window)this);
+		((IBMessageBoxProvider)new DefaultMessageBoxProvider(this)).ShowMessage(exception, (string)null, EnExceptionMessageBoxButtons.OK, EnExceptionMessageBoxSymbol.Error, (IWin32Window)this);
 	}
 
 	private void OnHelpRequested()

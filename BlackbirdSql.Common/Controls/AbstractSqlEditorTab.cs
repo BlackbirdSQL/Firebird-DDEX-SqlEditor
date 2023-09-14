@@ -9,7 +9,7 @@ using BlackbirdSql.Core;
 using BlackbirdSql.Common.Ctl;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
-using BlackbirdSql.Common.Enums;
+using BlackbirdSql.Common.Ctl.Enums;
 
 namespace BlackbirdSql.Common.Controls;
 

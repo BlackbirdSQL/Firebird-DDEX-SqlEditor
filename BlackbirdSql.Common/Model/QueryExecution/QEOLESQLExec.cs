@@ -10,14 +10,14 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Exceptions;
-using BlackbirdSql.Common.Interfaces;
+using BlackbirdSql.Common.Ctl.Exceptions;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Enums;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Diagnostics;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio;
 
@@ -139,7 +139,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		SqlCmdVariableResolver = sqlCmdVariableResolver;
 	}
 
-	protected override void DoScriptExecution(ITextSpan textSpan)
+	protected override void DoScriptExecution(IBTextSpan textSpan)
 	{
 		Tracer.Trace(GetType(), "QEOLESQLExec.DoScriptExecution", " _ExecOptions.WithEstimatedExecutionPlan: " + _ExecOptions.WithEstimatedExecutionPlan);
 		_ErrorAction = EnErrorAction.Ignore;
@@ -1066,7 +1066,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		{
 			lineNumber = 0;
 		}
-		ITextSpan textSpan = new SqlTextSpan(_TextSpan.AnchorLine, _TextSpan.AnchorCol, _TextSpan.EndLine, _TextSpan.EndCol, -1, lineNumber, batchString, ((SqlTextSpan)_TextSpan).VsTextView);
+		IBTextSpan textSpan = new SqlTextSpan(_TextSpan.AnchorLine, _TextSpan.AnchorCol, _TextSpan.EndLine, _TextSpan.EndCol, -1, lineNumber, batchString, ((SqlTextSpan)_TextSpan).VsTextView);
 		if (batchString != null)
 		{
 			_ExecBatchNumOfTimes = numOfTimes;
