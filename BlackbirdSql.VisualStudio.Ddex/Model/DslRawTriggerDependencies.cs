@@ -20,9 +20,7 @@
 //$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 using System.Text;
-
-
-
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
 
@@ -31,12 +29,15 @@ internal class DslRawTriggerDependencies : DslSchema
 {
 	public DslRawTriggerDependencies() : base()
 	{
+		Tracer.Trace(GetType(), "DslRawTriggerDependencies.DslRawTriggerDependencies");
 	}
 
 	#region Protected Methods
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
+		Tracer.Trace(GetType(), "DslRawTriggerDependencies.GetCommandText");
+
 		var sql = new StringBuilder();
 
 		string identityType = "0";

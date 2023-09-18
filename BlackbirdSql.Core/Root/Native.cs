@@ -26,6 +26,7 @@ public abstract class Native
 	// ---------------------------------------------------------------------------------
 
 
+
 	#endregion Constants and Static Variables
 
 

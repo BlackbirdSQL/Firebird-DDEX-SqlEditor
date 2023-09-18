@@ -9,23 +9,21 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Extensions;
+using BlackbirdSql.Core.Ctl.Interfaces;
 
 using EnvDTE;
 
-using FirebirdSql.Data.FirebirdClient;
-
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.TaskStatusCenter;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.TaskStatusCenter;
 
 using VSLangProj;
-using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Ctl.Extensions;
-using BlackbirdSql.Core.Ctl;
+
 
 namespace BlackbirdSql.Controller;
-
 
 // =========================================================================================================
 //											ControllerEventsManager Class
@@ -785,7 +783,7 @@ public class ControllerEventsManager : AbstractEventsManager
 
 			try
 			{
-				modified = XmlParser.ConfigureDbProvider(path, typeof(FirebirdClientFactory));
+				modified = XmlParser.ConfigureDbProvider(path, SystemData.ProviderFactoryType);
 			}
 			catch (Exception ex)
 			{
@@ -865,7 +863,7 @@ public class ControllerEventsManager : AbstractEventsManager
 			try
 			{
 				// If Entity framework must be configured then so must the client
-				modified = XmlParser.ConfigureEntityFramework(path, !Uig.IsConfiguredDbProviderStatus(config.ContainingProject), typeof(FirebirdClientFactory));
+				modified = XmlParser.ConfigureEntityFramework(path, !Uig.IsConfiguredDbProviderStatus(config.ContainingProject), SystemData.ProviderFactoryType);
 			}
 			catch (Exception ex)
 			{

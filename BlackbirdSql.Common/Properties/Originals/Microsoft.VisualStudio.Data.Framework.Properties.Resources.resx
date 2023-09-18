@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+<resheader name="resmimetype"><value>text/microsoft-resx</value></resheader><resheader name="version"><value>1.3</value></resheader><resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader><data name="DataSpecifier_MissingQualifier" xml:space="preserve"><value>The qualifier portion of a data specifier is missing.</value></data>
+  <data name="DataSpecifier_MissingFormatString" xml:space="preserve"><value>The format string portion of a data specifier is missing.</value></data>
+  <data name="IPA_MessageBoxTitle" xml:space="preserve"><value>Install Missing Packages</value></data>
+  <data name="AdoDotNetTableReader_IsClosed" xml:space="preserve"><value>The data reader is closed.</value></data>
+  <data name="AdoDotNetConnectionSupport_AlreadyInTransaction" xml:space="preserve"><value>The ADO .NET connection is already in a transaction.</value></data>
+  <data name="AdoDotNetProvider_ObjectNotImplemented" xml:space="preserve"><value>The ADO .NET data provider with invariant name '{0}' does not implement an object of type '{1}'.</value></data>
+  <data name="DataObjectSelector_InvalidParameters" xml:space="preserve"><value>The parameters array passed to this object selector is invalid; it must be a flat list of names of type members for which this object selector supports restrictions.</value></data>
+  <data name="DataParameter_NoUnknownDirection" xml:space="preserve"><value>The parameter direction cannot be set to unknown.</value></data>
+  <data name="DataConnectionProperties_PropertyAlreadyExists" xml:space="preserve"><value>The data connection property '{0}' already exists.</value></data>
+  <data name="DSRefBuilder_InvalidParameters" xml:space="preserve"><value>The parameters array contains invalid elements.</value></data>
+  <data name="DataParameter_InvalidType" xml:space="preserve"><value>The parameter type '{0}' is invalid.</value></data>
+  <data name="ServiceProvider_InvalidParentProvider" xml:space="preserve"><value>The parent provider must implement System.IServiceProvider or Microsoft.VisualStudio.OLE.Interop.IServiceProvider.</value></data>
+  <data name="DSRefClipboardObject_InvalidDSRef" xml:space="preserve"><value>The specified object does not implement IDSRefProvider and IDSRefConsumer.</value></data>
+  <data name="DataConnectionProperties_NotExtensible" xml:space="preserve"><value>The data connection properties are not extensible.</value></data>
+  <data name="DataSupportObject_UnknownInvokeName" xml:space="preserve"><value>The method name is unknown.</value></data>
+  <data name="AdoDotNetObjectSelector_InvalidParameters" xml:space="preserve"><value>The parameters array passed to this object selector is invalid.  It must be a 1 or 2 element array that contains the name of the ADO .NET metadata collection to select and optionally a set of sub-parameters describing a mapping of columns in the DataTable returned by the GetSchema() call to property names.</value></data>
+  <data name="DataAsyncCommand_FailedToStartWorkerThread" xml:space="preserve"><value>Failed to start the worker thread.</value></data>
+  <data name="AdoDotNetConnectionSupport_CannotPreparePreparedCommand" xml:space="preserve"><value>A prepared command cannot itself be prepared.</value></data>
+  <data name="ServiceProvider_InvalidServiceInstance" xml:space="preserve"><value>The service instance must inherit from or implement {0}.</value></data>
+  <data name="DataSupportObject_InvalidInvokeArguments" xml:space="preserve"><value>The arguments array is invalid.</value></data>
+  <data name="IPA_MessageBoxText" xml:space="preserve"><value>It has been detected that some packages required for data access are missing. If you proceed without installing these packages, some operations could fail.
+
+Please press Yes to install the packages, press No to ignore, or press Cancel to suppress this dialog.</value></data>
+  <data name="AdoDotNetMappedObjectConverter_InvalidUnderlyingValues" xml:space="preserve"><value>The underlying values array passed to this mapped object converter is invalid; it must be a single element array containing the string name of the native data type.</value></data>
+  <data name="DataConnectionProperties_PropertyNotFound" xml:space="preserve"><value>The data connection property '{0}' was not found.</value></data>
+  <data name="AdoDotNetParameter_ParseNotImplemented" xml:space="preserve"><value>Parsing values of type DbType.{0} is not implemented.</value></data>
+  <data name="DSRefBuilder_MissingSite" xml:space="preserve"><value>A connection site is required to build a DSRef.</value></data>
+  <data name="AdoDotNetReader_ItemTypeNotSupported" xml:space="preserve"><value>This data reader descriptor implementation does not support returning the DataItemTypeFormat.{0} format.</value></data>
+  <data name="DataParameter_NoNonNullValue" xml:space="preserve"><value>The parameter value must be null when the direction is set to output.</value></data>
+  <data name="DataAsyncCommand_NonUniqueUserState" xml:space="preserve"><value>The specified user state is not a unique object.</value></data>
+  <data name="AdoDotNetConnectionSupport_NotInTransaction" xml:space="preserve"><value>The ADO .NET connection is not currently in a transaction.</value></data>
+  <data name="AdoDotNetProvider_MissingInvariantName" xml:space="preserve"><value>The data provider is either not based on the ADO .NET technology or is missing the InvariantName property that identifies the underlying ADO .NET data provider.</value></data>
+  <data name="AdoDotNetRootObjectSelector_InvalidRestrictions" xml:space="preserve"><value>The restrictions array passed to this object selector is invalid; it must be either null or an empty array.</value></data>
+  <data name="DataParameter_SizeOutOfRange" xml:space="preserve"><value>The parameter size must be greater than zero.</value></data>
+  <data name="DataParameter_UnsupportedDirection" xml:space="preserve"><value>The parameter direction is unsupported.</value></data>
+  <data name="AdoDotNetTableReader_NoResults" xml:space="preserve"><value>The data reader is not positioned on any results.</value></data>
+  <data name="AdoDotNetConnectionSupport_ProviderObjectNotRecognized" xml:space="preserve"><value>The ADO .NET data provider with invariant name '{0}' does not recognize the specified provider object type.</value></data>
+  <data name="DataConnectionProperties_UnexpectedEnding" xml:space="preserve"><value>The data connection string is invalid at index {0} - unexpected ending.</value></data>
+  <data name="DataConnectionProperties_CannotRemoveProperty" xml:space="preserve"><value>The data connection property '{0}' cannot be removed because it is a built-in property.</value></data>
+  <data name="ServiceProvider_ServiceAlreadyExists" xml:space="preserve"><value>The service {0} already exists in the service container.</value></data>
+  <data name="DataSpecifier_MissingAlignment" xml:space="preserve"><value>The alignment portion of a data specifier is missing.</value></data>
+  <data name="DataConnectionProperties_MissingKeyValueSeparator" xml:space="preserve"><value>The data connection string is invalid at index {0} - missing key value separator.</value></data>
+  <data name="AdoDotNetTableReader_ItemIsNotByteArray" xml:space="preserve"><value>The item at the specified index is not a byte array.</value></data>
+  <data name="DataParameter_FixedSize" xml:space="preserve"><value>The parameter size is fixed.</value></data>
+  <data name="AdoDotNetProvider_NotRegistered" xml:space="preserve"><value>The ADO .NET data provider with invariant name '{0}' is not registered on this machine.</value></data>
+  <data name="DataParameter_CannotRetrieveProperty" xml:space="preserve"><value>Cannot retrieve this property for a non-derived parameter.</value></data>
+  <data name="DataSpecifier_MissingSpecifier" xml:space="preserve"><value>The specifier portion of a data specifier is missing.</value></data>
+  <data name="DataParameter_InvalidValue" xml:space="preserve"><value>The parameter value is of an invalid type.</value></data>
+  <data name="AdoDotNetConnectionSupport_InvalidPreparedCommand" xml:space="preserve"><value>The prepared command string has an invalid format or does not reference a known prepared command.</value></data>
+  <data name="DataTransaction_NoTransaction" xml:space="preserve"><value>The connection is not in a transaction.</value></data>
+  </root>

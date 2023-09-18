@@ -10,6 +10,7 @@ using System.Data.Common;
 
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.CommandProviders;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.VisualStudio.Ddex.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using FirebirdSql.Data.FirebirdClient;
@@ -19,7 +20,7 @@ using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
-namespace BlackbirdSql.VisualStudio.Ddex;
+namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 
 
 // =========================================================================================================
@@ -50,13 +51,13 @@ public class TObjectSelector : AdoDotNetObjectSelector
 
 	public TObjectSelector()
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TObjectSelector.TObjectSelector");
 	}
 
 
 	public TObjectSelector(IVsDataConnection connection) : base(connection)
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TObjectSelector.TObjectSelector(IVsDataConnection)");
 	}
 
 
@@ -77,13 +78,13 @@ public class TObjectSelector : AdoDotNetObjectSelector
 	/// </summary>
 	/// <remarks>
 	/// Also intercepts enumerations from the SE for <see cref="AbstractCommandProvider"/> and
-	/// sets <see cref="CommandProperties.CommandObjectType"/> to the correct node system object type
+	/// sets <see cref="CommandProperties.CommandNodeSystemType"/> to the correct node system object type
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
 	protected override IVsDataReader SelectObjects(string typeName, object[] restrictions,
 		string[] properties, object[] parameters)
 	{
-		// Diag.Trace(typeName);
+		Tracer.Trace(GetType(), "TObjectSelector.SelectObjects", "typeName: {0}", typeName);
 
 		try
 		{
@@ -152,7 +153,7 @@ public class TObjectSelector : AdoDotNetObjectSelector
 	// ---------------------------------------------------------------------------------
 	protected override IList<string> GetSupportedRestrictions(string typeName, object[] parameters)
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TObjectSelector.GetSupportedRestrictions", "typeName: {0}", typeName);
 
 		IList<string> list;
 
@@ -193,8 +194,8 @@ public class TObjectSelector : AdoDotNetObjectSelector
 	// ---------------------------------------------------------------------------------
 	protected override IList<string> GetRequiredRestrictions(string typeName, object[] parameters)
 	{
+		Tracer.Trace(GetType(), "TObjectSelector.GetRequiredRestrictions", "typeName: {0}", typeName);
 
-		// Diag.Trace();
 		IList<string> list;
 
 		try
@@ -218,8 +219,9 @@ public class TObjectSelector : AdoDotNetObjectSelector
 
 	private DataTable GetSchema(DbConnection connection, string typeName, object[] restrictions, object[] parameters)
 	{
-		// Diag.Trace();
-		if (CommandProperties.CommandObjectType != CommandProperties.DataObjectType.None
+		Tracer.Trace(GetType(), "TObjectSelector.GetSchema", "typeName: {0}", typeName);
+
+		if (CommandProperties.CommandNodeSystemType != CommandProperties.EnNodeSystemType.None
 			&& typeName == "Table" && parameters != null && parameters.Length > 0 && (string)parameters[0] == "Tables"
 			&& (restrictions == null || restrictions.Length < 3 || (restrictions.Length > 2 && restrictions[2] == null)))
 		{
@@ -232,12 +234,12 @@ public class TObjectSelector : AdoDotNetObjectSelector
 
 				restrictions = objs;
 			}
-			switch (CommandProperties.CommandObjectType)
+			switch (CommandProperties.CommandNodeSystemType)
 			{
-				case CommandProperties.DataObjectType.User:
+				case CommandProperties.EnNodeSystemType.User:
 					restrictions[3] = "TABLE";
 					break;
-				case CommandProperties.DataObjectType.System:
+				case CommandProperties.EnNodeSystemType.System:
 					restrictions[3] = "SYSTEM TABLE";
 					break;
 				default:
@@ -246,7 +248,7 @@ public class TObjectSelector : AdoDotNetObjectSelector
 			}
 		}
 		
-		CommandProperties.CommandObjectType = CommandProperties.DataObjectType.None;
+		CommandProperties.CommandNodeSystemType = CommandProperties.EnNodeSystemType.None;
 
 
 

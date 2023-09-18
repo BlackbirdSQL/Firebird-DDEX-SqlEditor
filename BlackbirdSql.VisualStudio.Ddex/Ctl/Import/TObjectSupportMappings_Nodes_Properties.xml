@@ -217,7 +217,7 @@
 		<MappedIdentifierPart name="ScalarFunction" underlyingMember="FUNCTION_NAME" />
 		<MappedIdentifierPart name="Name" underlyingMember="ARGUMENT_NAME" >
 			<Conversion>
-				<Calculate expr="IIF({0} IS NOT NULL OR '$(filter)' = 'true', {0}, '@RETURN_VALUE'" exprType="System.String" />
+				<Calculate expr="IIF({0} IS NOT NULL OR '$(filter)' = 'true', {0}, '@RETURN_VALUE')" exprType="System.String" />
 			</Conversion>
 		</MappedIdentifierPart>
 	</Define>

@@ -6,10 +6,9 @@ using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
-
-
-namespace BlackbirdSql.VisualStudio.Ddex;
+namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 
 
 
@@ -30,7 +29,7 @@ public class TConnectionUIConnector : DataConnectionUIConnector
 
 	public TConnectionUIConnector() :base()
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TConnectionUIConnector.TConnectionUIConnector");
 	}
 
 
@@ -54,7 +53,7 @@ public class TConnectionUIConnector : DataConnectionUIConnector
 	/// </param>
 	public override void Connect(IVsDataConnection connection)
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TConnectionUIConnector.Connect");
 
 		if (connection == null)
 		{

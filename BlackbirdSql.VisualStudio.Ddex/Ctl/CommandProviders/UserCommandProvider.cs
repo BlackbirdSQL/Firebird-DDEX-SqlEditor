@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using BlackbirdSql.Core.Ctl.CommandProviders;
 
 
-namespace BlackbirdSql.VisualStudio.Ddex.CommandProviders;
+namespace BlackbirdSql.VisualStudio.Ddex.Ctl.CommandProviders;
 
 [Guid(CommandProperties.UserQueryCommandProviderGuid)]
 
@@ -19,13 +19,8 @@ namespace BlackbirdSql.VisualStudio.Ddex.CommandProviders;
 // =========================================================================================================
 internal class UserCommandProvider : AbstractCommandProvider
 {
-
-	/// <summary>
-	/// Identifies this <see cref="AbstractCommandProvider"/> as spawned off of a User Object SE node
-	/// </summary>
-	protected override CommandProperties.DataObjectType CommandObjectType
+	public UserCommandProvider() : base(CommandProperties.EnNodeSystemType.User)
 	{
-		get { return CommandProperties.DataObjectType.User; }
 	}
 
 }

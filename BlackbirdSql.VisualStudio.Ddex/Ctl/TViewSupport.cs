@@ -6,9 +6,11 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
+using System.ServiceProcess;
 using System.Threading.Tasks;
 
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
@@ -22,7 +24,7 @@ using Microsoft.VisualStudio.Shell;
 
 
 
-namespace BlackbirdSql.VisualStudio.Ddex;
+namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 
 
 // =========================================================================================================
@@ -48,7 +50,8 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 			if (_IconPrefix == null)
 			{
 				string[] nsparts = GetType().FullName.Split('.');
-				nsparts[^1] = "Resources.ViewSupport.";
+				nsparts[^2] = "Resources";
+				nsparts[^1] = "ViewSupport.";
 
 				_IconPrefix = string.Join(".", nsparts);
 			}
@@ -64,13 +67,12 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 
 	public TViewSupport(string fileName, string path) : base(fileName, path)
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TViewSupport.TViewSupport", "fileName: {0}, path: {1}", fileName, path);
 	}
 
 	public TViewSupport(string resourceName, Assembly assembly) : base(resourceName, assembly)
 	{
-		// Diag.Trace();
-
+		Tracer.Trace(GetType(), "TViewSupport.TViewSupport", "resourceName: {0}", resourceName);
 	}
 
 
@@ -137,7 +139,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 	// ---------------------------------------------------------------------------------
 	protected override object CreateService(Type serviceType)
 	{
-		// Diag.Trace(serviceType.FullName);
+		Tracer.Trace(GetType(), "TViewSupport.CreateService", "serviceType: {0}", serviceType.Name);
 
 		/*
 		if (serviceType == typeof(IVsDataViewCommandProvider))
@@ -204,6 +206,8 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 
 	public override void Initialize()
 	{
+		Tracer.Trace(GetType(), "TViewSupport.Initialize");
+
 		base.Initialize();
 
 		IVsDataConnection connection = ViewHierarchy.ExplorerConnection.Connection;
@@ -473,9 +477,9 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 				};
 				ViewHierarchy.PersistentProperties["MkDocumentPrefix"] = sqlMoniker.ToString();
 
-				LinkageParser parser = LinkageParser.Instance(connection);
+				LinkageParser parser = LinkageParser.Instance(connection, true);
 
-				if (parser.ClearToLoadAsync)
+				if (parser != null && parser.ClearToLoadAsync)
 					parser.AsyncExecute(10, 5);
 			}
 		}

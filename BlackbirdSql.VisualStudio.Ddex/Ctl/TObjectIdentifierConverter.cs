@@ -9,7 +9,10 @@ using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Core;
-namespace BlackbirdSql.VisualStudio.Ddex;
+using System.Windows.Media;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+
+namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 
 
 // =========================================================================================================
@@ -29,13 +32,13 @@ public class TObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 
 	public TObjectIdentifierConverter() : base()
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TObjectIdentifierConverter.TObjectIdentifierConverter");
 	}
 
 
 	public TObjectIdentifierConverter(IVsDataConnection connection) : base(connection)
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TObjectIdentifierConverter.TObjectIdentifierConverter(IVsDataConnection)");
 	}
 
 

@@ -5,14 +5,14 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using BlackbirdSql.Core.Ctl.Interfaces;
 
 #if BLACKBIRD
+using BlackbirdSql.Core.Ctl.Interfaces;
+#endif
 using Microsoft;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TaskStatusCenter;
-#endif
 
 
 #if BLACKBIRD
@@ -48,7 +48,11 @@ public static class Diag
 	static bool _EnableTaskLog = true;
 
 	// Specify your own trace log file and settings here or override in VS options
-	static bool _EnableTracer = false;
+	#if BLACKBIRD
+		static bool _EnableTracer = false;
+	#else
+		static bool _EnableTracer = true;
+	#endif
 	static bool _EnableTrace = true;
 	static bool _EnableDiagnostics = true;
 	static bool _EnableFbDiagnostics = true;
@@ -58,11 +62,9 @@ public static class Diag
 
 	static string _Context = "APP";
 
-	#if BLACKBIRD
 	static IVsOutputWindowPane _OutputPane = null;
 	static readonly string _OutputPaneName = "BlackbirdSql";
 	static Guid _OutputPaneGuid = default;
-	#endif
 
 
 #endregion Variables
@@ -296,7 +298,6 @@ public static class Diag
 		}
 #endif
 
-#if BLACKBIRD
 
 		try
 		{
@@ -305,7 +306,6 @@ public static class Diag
 		}
 		catch (Exception) { }
 
-		#endif
 
 		System.Diagnostics.Debug.WriteLine(str, "BlackbirSql");
 	}
@@ -537,7 +537,6 @@ public static class Diag
 	}
 
 
-#if BLACKBIRD
 
 	// Deadlock warning message suppression
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
@@ -852,7 +851,6 @@ public static class Diag
 			}
 		}
 	}
-#endif
 
 #endregion Methods
 

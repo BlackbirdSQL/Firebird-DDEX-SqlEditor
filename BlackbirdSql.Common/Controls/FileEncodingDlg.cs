@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Properties;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
@@ -66,7 +67,7 @@ public class FileEncodingDlg : Form, IVsSaveOptionsDlg
 		ResetUI();
 		if (DialogResult.Cancel == ShowDialog(new Win32WindowWrapper(hwndDlgParent)))
 		{
-			return -2147221492;
+			return VSConstants.OLE_E_PROMPTSAVECANCELLED;
 		}
 		return 0;
 	}

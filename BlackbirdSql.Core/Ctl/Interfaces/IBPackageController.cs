@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 using EnvDTE;
+using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-
+using static BlackbirdSql.Core.Ctl.CommandProviders.CommandProperties;
 
 namespace BlackbirdSql.Core.Ctl.Interfaces;
 
@@ -33,6 +35,8 @@ public interface IBPackageController : IVsSolutionEvents3, /* IVsSolutionEvents2
 		ISelectionContainer pSCOld, IVsHierarchy pHierNew, uint itemidNew, IVsMultiItemSelect pMISNew,
 		ISelectionContainer pSCNew);
 
+	// Custom EventDelegates
+	delegate int NewQueryRequestedDelegate(IVsDataViewHierarchy site, EnNodeSystemType nodeSystemType);
 
 
 	// Solution events
@@ -51,6 +55,8 @@ public interface IBPackageController : IVsSolutionEvents3, /* IVsSolutionEvents2
 	event ElementValueChangedDelegate OnElementValueChangedEvent;
 	event SelectionChangedDelegate OnSelectionChangedEvent;
 
+	// Custom Events
+	event NewQueryRequestedDelegate OnNewQueryRequestedEvent;
 
 	string UserDataDirectory { get; }
 
@@ -95,5 +101,7 @@ public interface IBPackageController : IVsSolutionEvents3, /* IVsSolutionEvents2
 	void DeregisterMiscHierarchy();
 
 	void RegisterMiscHierarchy(IVsUIHierarchy hierarchy);
+
+	int OnNewQueryRequested(IVsDataViewHierarchy site, EnNodeSystemType nodeSystemType);
 
 }

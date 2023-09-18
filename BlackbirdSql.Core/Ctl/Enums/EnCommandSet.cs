@@ -67,6 +67,7 @@ public enum EnCommandSet
 	CmdIdChangeConnection = 0x0328, // 808
 
 	CmdIdOpenTextObject = 0x0334, // *820
-	CmdIdOpenAlterTextObject = 0x0335 // 821
+	CmdIdOpenAlterTextObject = 0x0335, // 821
+	CmdIdDesignRetrieveData = 0x0336 // 822
 
 }

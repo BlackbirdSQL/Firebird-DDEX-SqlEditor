@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using BlackbirdSql.Core.Ctl.CommandProviders;
 
 
-namespace BlackbirdSql.VisualStudio.Ddex.CommandProviders;
+namespace BlackbirdSql.VisualStudio.Ddex.Ctl.CommandProviders;
 
 [Guid(CommandProperties.UniversalCommandProviderGuid)]
 
@@ -19,13 +19,8 @@ namespace BlackbirdSql.VisualStudio.Ddex.CommandProviders;
 // =========================================================================================================
 internal class UniversalCommandProvider : AbstractCommandProvider
 {
-
-	/// <summary>
-	/// Identifies this <see cref="AbstractCommandProvider"/> as spawned off of a General Object SE node
-	/// </summary>
-	protected override CommandProperties.DataObjectType CommandObjectType
+	public UniversalCommandProvider() : base(CommandProperties.EnNodeSystemType.Global)
 	{
-		get { return CommandProperties.DataObjectType.Global; }
 	}
 
 }

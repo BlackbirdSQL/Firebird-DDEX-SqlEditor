@@ -2,7 +2,7 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.VisualStudio.Ddex.Interfaces;
 
 using Microsoft.VisualStudio.Data.Core;
@@ -11,7 +11,7 @@ using Microsoft.VisualStudio.Data.Framework;
 
 
 
-namespace BlackbirdSql.VisualStudio.Ddex;
+namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 
 
 // =========================================================================================================
@@ -34,6 +34,7 @@ public sealed class TProviderObjectFactory : DataProviderObjectFactory, IBProvid
 
 	public TProviderObjectFactory() : base()
 	{
+		Tracer.Trace(GetType(), "TProviderObjectFactory.TProviderObjectFactory");
 	}
 
 	#endregion Constructors / Destructors
@@ -59,6 +60,8 @@ public sealed class TProviderObjectFactory : DataProviderObjectFactory, IBProvid
 	// ---------------------------------------------------------------------------------
 	public override object CreateObject(Type objType)
 	{
+		Tracer.Trace(GetType(), "TProviderObjectFactory.CreateObject", "objType: {0}", objType.Name);
+
 		/* Uncomment this and change PackageSupportedObjects._UseFactoryOnly to true to debug implementations
 		 * Don't forget to do the same for TConnectionSupport if you do.
 		 * 
@@ -105,7 +108,7 @@ public sealed class TProviderObjectFactory : DataProviderObjectFactory, IBProvid
 		else if (objType == typeof(IVsDataViewSupport))
 		{
 			// Diag.Trace();
-			return new DataViewSupport("BlackbirdSql.VisualStudio.Ddex.TViewSupport", typeof(ProviderObjectFactory).Assembly);
+			return new DataViewSupport("BlackbirdSql.VisualStudio.Ddex.Ctl.TViewSupport", typeof(ProviderObjectFactory).Assembly);
 			// return new TViewSupport();
 		}
 		else if (objType == typeof(IVsDataConnectionEquivalencyComparer))

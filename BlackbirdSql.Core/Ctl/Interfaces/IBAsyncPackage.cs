@@ -10,6 +10,8 @@ using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using BlackbirdSql.Core.Ctl.Events;
+using Microsoft.VisualStudio.Data.Services.SupportEntities;
+using static BlackbirdSql.Core.Ctl.CommandProviders.CommandProperties;
 
 namespace BlackbirdSql.Core.Ctl.Interfaces;
 

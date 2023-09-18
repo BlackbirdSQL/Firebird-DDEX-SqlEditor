@@ -16,6 +16,7 @@
 //$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 using System.Text;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
 
@@ -25,6 +26,8 @@ internal class DslForeignKeys : DslSchema
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
+		Tracer.Trace(GetType(), "DslForeignKeys.DslForeignKeys");
+
 		var sql = new StringBuilder();
 		var where = new StringBuilder();
 

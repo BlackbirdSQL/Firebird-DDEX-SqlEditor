@@ -3,6 +3,7 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 //
 
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
 
 
@@ -15,6 +16,8 @@ internal class DslTriggerColumns : DslColumns
 {
 	public DslTriggerColumns(LinkageParser parser) : base(parser)
 	{
+		Tracer.Trace(GetType(), "DslTriggerColumns.DslTriggerColumns");
+
 		_ParentType = "Trigger";
 		_ObjectType = "TriggerColumn";
 		_ParentColumn = "dep.rdb$dependent_name";

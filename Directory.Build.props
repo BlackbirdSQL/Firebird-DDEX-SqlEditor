@@ -4,7 +4,7 @@
 		<DebugType>portable</DebugType>
 	</PropertyGroup>
 	<PropertyGroup>
-		<VersionPrefix>9.1.0.82</VersionPrefix>
+		<VersionPrefix>9.1.0.83</VersionPrefix>
 		<VersionSuffix>beta</VersionSuffix>
 		<TargetFrameworks>net48</TargetFrameworks>
 		<Company>BlackbirdSQL</Company>

@@ -5,6 +5,7 @@ using System;
 
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Ctl;
+using BlackbirdSql.Common.Ctl.DataTools;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Interfaces;
@@ -13,9 +14,10 @@ using BlackbirdSql.EditorExtension.Ctl.Events;
 using EnvDTE;
 
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-
+using static BlackbirdSql.Core.Ctl.CommandProviders.CommandProperties;
 using IOleUndoManager = Microsoft.VisualStudio.OLE.Interop.IOleUndoManager;
 using Native = BlackbirdSql.Core.Native;
 
@@ -239,6 +241,7 @@ public class EditorEventsManager : AbstractEditorEventsManager
 		Controller.OnElementValueChangedEvent -= OnElementValueChanged;
 		Controller.OnQueryCloseProjectEvent -= OnQueryCloseProject;
 		Controller.OnSelectionChangedEvent -= OnSelectionChanged;
+		Controller.OnNewQueryRequestedEvent -= OnNewQueryRequested;
 	}
 
 
@@ -395,6 +398,7 @@ public class EditorEventsManager : AbstractEditorEventsManager
 		Controller.OnElementValueChangedEvent += OnElementValueChanged;
 		Controller.OnQueryCloseProjectEvent += OnQueryCloseProject;
 		Controller.OnSelectionChangedEvent += OnSelectionChanged;
+		Controller.OnNewQueryRequestedEvent += OnNewQueryRequested;
 
 
 		Native.ThrowOnFailure(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_DocumentFrame, out var pvarValue));
@@ -669,6 +673,15 @@ public class EditorEventsManager : AbstractEditorEventsManager
 		return VSConstants.S_OK;
 	}
 
+	/// <summary>
+	/// This roadblocks because key services in DataTools.Interop are protected.
+	/// </summary>
+	public int OnNewQueryRequested(IVsDataViewHierarchy site, EnNodeSystemType nodeSystemType)
+	{
+		new QueryDesignerDocument(site).Show(nodeSystemType);
+		// host.QueryDesignerProviderTelemetry(qualityMetricProvider);
+		return VSConstants.S_OK;
+	}
 
 	#endregion IVs Events Implementation and Event handling
 

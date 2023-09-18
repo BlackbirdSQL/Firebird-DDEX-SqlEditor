@@ -1,10 +1,11 @@
-﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
-// $Authors = GA Christos (greg@blackbirdsql.org)
+﻿// Microsoft.VisualStudio.Data.Providers.Common, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Providers.Common.Host
 
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 
@@ -30,6 +31,7 @@ public class Hostess : AbstractHostess
 
 	public Hostess(IServiceProvider serviceProvider) : base(serviceProvider)
 	{
+		Tracer.Trace(GetType(), "Hostess.Hostess");
 	}
 
 
@@ -41,6 +43,8 @@ public class Hostess : AbstractHostess
 	/// <returns></returns>
 	internal IVsWindowFrame ActivateOrOpenVirtualDocument(IVsDataExplorerNode node, bool doNotShowWindowFrame)
 	{
+		Tracer.Trace(GetType(), "Hostess.ActivateOrOpenVirtualDocument");
+
 		ThreadHelper.ThrowIfNotOnUIThread();
 
 		int result;
@@ -84,7 +88,7 @@ public class Hostess : AbstractHostess
 
 		if (service == null)
 		{
-			NotSupportedException ex = new("IVsUIShellOpenDocument");
+			ServiceUnavailableException ex = new(typeof(IVsUIShellOpenDocument));
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -216,7 +220,6 @@ public class Hostess : AbstractHostess
 	}
 
 
-
 	internal void RegisterHierarchy(IVsUIHierarchy hierarchy)
 	{
 		IBPackageController controller;
@@ -293,7 +296,7 @@ public class Hostess : AbstractHostess
 			IVsUIShell service = HostService.GetService<SVsUIShell, IVsUIShell>();
 			if (service == null)
 			{
-				InvalidOperationException ex = new("Service <SVsUIShell, IVsUIShell> not found");
+				ServiceUnavailableException ex = new(typeof(IVsUIShell));
 				Diag.Dug(ex);
 				throw ex;
 			}

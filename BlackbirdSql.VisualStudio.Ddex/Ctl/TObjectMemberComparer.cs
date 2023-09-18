@@ -8,10 +8,9 @@ using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
-
-
-namespace BlackbirdSql.VisualStudio.Ddex;
+namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 
 
 // =========================================================================================================
@@ -29,12 +28,12 @@ public class TObjectMemberComparer : DataObjectMemberComparer
 	/* For debug trace */
 	public TObjectMemberComparer() : base()
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TObjectMemberComparer.TObjectMemberComparer");
 	}
 
 	public TObjectMemberComparer(IVsDataConnection dataConnection) : base(dataConnection)
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TObjectMemberComparer.TObjectMemberComparer(IVsDataConnection)");
 	}
 
 	public override int Compare(string typeName, string propertyName, object value1, object value2)

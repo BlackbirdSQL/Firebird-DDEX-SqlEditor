@@ -19,7 +19,7 @@
 				<Property name="ActiveUsers" type="System.Int32"/>
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelectorRoot" >
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectSelectorRoot" >
 					<Parameters method="SelectObjects" />
 				</Service>
 			</Services>
@@ -38,7 +38,7 @@
 				<Property name="DESCRIPTION" type="System.String" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="Collation" />
 					</Parameters>
@@ -66,7 +66,7 @@
 				<Property name="IS_ARRAY" type="System.Boolean" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="Domains" />
 					</Parameters>
@@ -84,7 +84,7 @@
 				<Property name="OWNER_NAME" type="System.String" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="Roles" />
 					</Parameters>
@@ -110,7 +110,7 @@
 				<Property name="TRIGGER_COUNT" type="System.Int32" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="Tables" />
 					</Parameters>
@@ -143,7 +143,7 @@
 				<Property name="IS_COMPUTED" type="System.Boolean" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="Indexes" />
 					</Parameters>
@@ -181,7 +181,7 @@
 				<Property name="DELETE_ACTION" type="System.Int32" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="ForeignKeys" />
 					</Parameters>
@@ -211,7 +211,7 @@
 				<Property name="DEPENDENCY_FIELD" type="System.String" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="Generators" />
 					</Parameters>
@@ -243,7 +243,7 @@
 				<Property name="DEFINITION" type="System.String" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="Views" />
 					</Parameters>
@@ -270,7 +270,7 @@
 				<Property name="IS_SYSTEM_FLAG" type="System.Int32" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="Procedures" />
 					</Parameters>
@@ -298,7 +298,7 @@
 				<Property name="IS_SYSTEM_FLAG" type="System.Int32" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="Functions" />
 					</Parameters>

@@ -14,6 +14,7 @@ using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.VisualStudio.Ddex.Controls.Config;
+using BlackbirdSql.VisualStudio.Ddex.Ctl;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.Config;
 using BlackbirdSql.VisualStudio.Ddex.Interfaces;
@@ -270,7 +271,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 
 			if (service == null)
 			{
-				TypeAccessException ex = new(serviceType.FullName);
+				ServiceUnavailableException ex = new(serviceType);
 				Diag.Dug(ex);
 				throw ex;
 			}

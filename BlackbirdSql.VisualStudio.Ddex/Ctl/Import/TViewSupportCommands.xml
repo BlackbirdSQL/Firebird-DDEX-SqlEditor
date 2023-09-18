@@ -28,6 +28,9 @@
 	<Define name="CommandUniversalNewQuery">
 		<CommandRef name="CommandHookDataToolsUniversal" arguments="0x3528" />
 	</Define>
+	<Define name="CommandUniversalRetrieveData">
+		<CommandRef name="CommandHookDataToolsUniversal" arguments="0x0336" />
+	</Define>
 	<Define name="CommandTextOpenScript">
 		<CommandRef name="CommandHookCommandSet" arguments="0x0334" />
 	</Define>
@@ -46,15 +49,18 @@
 	<!-- the code, but this just seems a whole lot more readable -->
 	<Define name="CommandHookDataToolsUser" parameters="cmdid">
 		<Command guid="501822E1-B5AF-11d0-B4DC-00A0C91506EF" cmdid="$(cmdid)"
-				 provider="BlackbirdSql.VisualStudio.Ddex.CommandProviders.UserCommandProvider" />
+				 provider="BlackbirdSql.VisualStudio.Ddex.Ctl.CommandProviders.UserCommandProvider" />
 	</Define>
 	<Define name="CommandHookDataToolsSystem" parameters="cmdid">
-		<Command guid="501822E1-B5AF-11d0-B4DC-00A0C91506EF" cmdid="$(cmdid)" provider="BlackbirdSql.VisualStudio.Ddex.CommandProviders.SystemCommandProvider" />
+		<Command guid="501822E1-B5AF-11d0-B4DC-00A0C91506EF" cmdid="$(cmdid)"
+				 provider="BlackbirdSql.VisualStudio.Ddex.Ctl.CommandProviders.SystemCommandProvider" />
 	</Define>
 	<Define name="CommandHookDataToolsUniversal" parameters="cmdid">
-		<Command guid="501822E1-B5AF-11d0-B4DC-00A0C91506EF" cmdid="$(cmdid)" provider="BlackbirdSql.VisualStudio.Ddex.CommandProviders.UniversalCommandProvider"  isDefault="true" />
+		<Command guid="501822E1-B5AF-11d0-B4DC-00A0C91506EF" cmdid="$(cmdid)"
+				 provider="BlackbirdSql.VisualStudio.Ddex.Ctl.CommandProviders.UniversalCommandProvider"  isDefault="true" />
 	</Define>
 	<Define name="CommandHookCommandSet" parameters="cmdid">
-		<Command guid="13CD7876-FC84-4DDA-91BF-4CDBF893B134" cmdid="$(cmdid)" provider="BlackbirdSql.VisualStudio.Ddex.CommandProviders.UniversalCommandProvider"  isDefault="true" />
+		<Command guid="13CD7876-FC84-4DDA-91BF-4CDBF893B134" cmdid="$(cmdid)"
+				 provider="BlackbirdSql.VisualStudio.Ddex.Ctl.CommandProviders.UniversalCommandProvider"  isDefault="true" />
 	</Define>
 </DataViewSupport>

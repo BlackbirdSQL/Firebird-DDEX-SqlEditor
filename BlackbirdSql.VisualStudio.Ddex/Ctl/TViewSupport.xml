@@ -60,9 +60,6 @@
 					<StaticNode nodeId="Tables">
 						<DisplayName resource="Node_Name_Tables" />
 						<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.DatabaseTables.ico" assembly="" />
-						<!--<Commands>
-							<CommandRef name="CommandNewQuery" />
-						</Commands>-->
 						<Children>
 							<StaticNodeRef name="TplStaticNodeTablesTables" arguments="System,1,NoChildren"/>
 							<SelectionRef name="TplSelectionTables" arguments="User,0,WithChildren"/>
@@ -75,7 +72,7 @@
 							<Selection type="View" restrictions="null,null">
 								<SelectionNode nodeId="View">
 									<DisplayName>{View.VIEW_NAME}</DisplayName>
-									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.View.ico" assembly="" />
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.View.ico" when="NOT ({View.IS_SYSTEM_VIEW} = 99)" assembly="" />
 									<Properties>
 										<TypeDisplayName resource="Type_View" />
 										<Property name="VIEW_CATALOG">
@@ -105,7 +102,6 @@
 									</Properties>
 									<Commands>
 										<CommandRef name="CommandRetrieveData" />
-										<CommandRef name="CommandUserNewQuery" />
 										<CommandRef name="CommandTextOpenScript" />
 									</Commands>
 									<Children>
@@ -122,7 +118,7 @@
 							<Selection type="StoredProcedure" restrictions="null,null">
 								<SelectionNode nodeId="Procedure">
 									<DisplayName>{Procedure.PROCEDURE_NAME}</DisplayName>
-									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Procedure.ico" assembly="" />
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Procedure.ico" when="NOT ({Procedure.IS_SYSTEM_FLAG} = 99)" assembly="" />
 									<Properties>
 										<TypeDisplayName resource="Type_StoredProcedure" />
 										<Property name="PROCEDURE_CATALOG">
@@ -198,7 +194,7 @@
 							<Selection type="Function" restrictions="null,null">
 								<SelectionNode nodeId="Function">
 									<DisplayName>{Function.FUNCTION_NAME}</DisplayName>
-									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Function.ico" assembly="" />
+									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Function.ico" when="NOT ({Function.IS_SYSTEM_FLAG} = 99)" assembly="" />
 									<Properties>
 										<TypeDisplayName resource="Type_ScalarFunction" />
 										<Property name="FUNCTION_CATALOG">

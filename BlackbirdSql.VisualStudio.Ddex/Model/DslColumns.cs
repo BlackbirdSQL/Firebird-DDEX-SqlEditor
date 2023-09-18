@@ -31,6 +31,7 @@ using BlackbirdSql.VisualStudio.Ddex.Extensions;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
 
@@ -134,6 +135,7 @@ internal class DslColumns : DslSchema
 
 	public DslColumns(LinkageParser parser) : base()
 	{
+		Tracer.Trace(GetType(), "DslColumns.DslColumns");
 		_LinkageParser = parser;
 	}
 
@@ -141,8 +143,8 @@ internal class DslColumns : DslSchema
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
+		Tracer.Trace(GetType(), "DslColumns.GetCommandText");
 
-		// Diag.Trace();
 		var sql = new StringBuilder();
 		var where = new StringBuilder();
 
@@ -468,6 +470,8 @@ END",
 
 	protected override void ProcessResult(DataTable schema)
 	{
+		Tracer.Trace(GetType(), "DslColumns.ProcessResult");
+
 		// schema.Columns[6].ColumnName = "NumericPrecision";
 		// schema.Columns[18].ColumnName = "Nullable";
 

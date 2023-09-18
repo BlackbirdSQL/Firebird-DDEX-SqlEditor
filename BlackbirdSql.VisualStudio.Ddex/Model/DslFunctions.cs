@@ -16,8 +16,7 @@
 //$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 using System.Text;
-
-
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
 
@@ -27,6 +26,8 @@ internal class DslFunctions : DslSchema
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
+		Tracer.Trace(GetType(), "DslFunctions.GetCommandText");
+
 		var sql = new StringBuilder();
 		var where = new StringBuilder();
 

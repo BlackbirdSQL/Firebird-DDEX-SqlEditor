@@ -2,12 +2,13 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
 
 
-namespace BlackbirdSql.VisualStudio.Ddex;
+namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 
 
 // =========================================================================================================
@@ -22,7 +23,7 @@ public class TConnectionUIProperties : TConnectionProperties
 
 	public TConnectionUIProperties() : base()
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TConnectionUIProperties.TConnectionUIProperties");
 	}
 
 

@@ -30,6 +30,8 @@ using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Services;
 
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using System.Collections;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
 
@@ -38,6 +40,7 @@ internal abstract class DslSchema
 {
 	public DslSchema()
 	{
+		Tracer.Trace(GetType(), "DslSchema.DslSchema");
 	}
 
 	#region Abstract Methods
@@ -50,7 +53,8 @@ internal abstract class DslSchema
 
 	public DataTable GetSchema(FbConnection connection, string collectionName, string[] restrictions)
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "DslSchema.GetSchema", "collectionName: {0}", collectionName);
+
 		var dataTable = new DataTable(collectionName);
 		var command = BuildCommand(connection, collectionName, ParseRestrictions(restrictions));
 		try
@@ -81,7 +85,8 @@ internal abstract class DslSchema
 
 	public DataTable GetRawSchema(FbConnection connection, string collectionName)
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "DslSchema.GetRawSchema", "collectionName: {0}", collectionName);
+
 		var dataTable = new DataTable(collectionName);
 		var command = BuildRawCommand(connection);
 		try
@@ -113,6 +118,8 @@ internal abstract class DslSchema
 
 	public async Task<DataTable> GetSchemaAsync(FbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
 	{
+		Tracer.Trace(GetType(), "DslSchema.GetSchemaAsync", "collectionName: {0}", collectionName);
+
 		var dataTable = new DataTable(collectionName);
 		var command = BuildCommand(connection, collectionName, ParseRestrictions(restrictions));
 
@@ -162,7 +169,8 @@ internal abstract class DslSchema
 
 	protected FbCommand BuildCommand(FbConnection connection, string collectionName, string[] restrictions)
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "DslSchema.BuildCommand", "collectionName: {0}", collectionName);
+
 		SetMajorVersionNumber(connection);
 
 		string schemaCollection;
@@ -215,7 +223,8 @@ internal abstract class DslSchema
 
 	protected FbCommand BuildRawCommand(FbConnection connection)
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "DslSchema.BuildRawCommand");
+
 		SetMajorVersionNumber(connection);
 
 		var builder = GetCommandText(null);

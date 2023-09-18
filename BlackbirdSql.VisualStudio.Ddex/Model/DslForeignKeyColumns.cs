@@ -16,6 +16,7 @@
 //$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
 
 
@@ -27,6 +28,8 @@ internal class DslForeignKeyColumns : DslColumns
 {
 	public DslForeignKeyColumns(LinkageParser parser) : base(parser)
 	{
+		Tracer.Trace(GetType(), "DslForeignKeyColumns.DslForeignKeyColumns");
+
 		_ParentType = "ForeignKey";
 		_ObjectType = "TableForeignKeyColumn";
 		_ParentColumn = "co.rdb$constraint_name";

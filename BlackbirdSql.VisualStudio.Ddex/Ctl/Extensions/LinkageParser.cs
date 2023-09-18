@@ -18,6 +18,7 @@ using Microsoft.VisualStudio.TaskStatusCenter;
 
 using FirebirdSql.Data.FirebirdClient;
 using BlackbirdSql.Core.Ctl.Extensions;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Extensions;
 
@@ -59,6 +60,20 @@ internal class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	protected LinkageParser(FbConnection connection) : base(connection)
 	{
+		Tracer.Trace(GetType(), "LinkageParser.LinkageParser(FbConnection)");
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// .ctor that clones a parser.
+	/// Protected .ctor. LinkageParser's are uniquely distinct to a connection. Use the
+	/// Instance() static to create or retrieve a parser for a connection or Site.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected LinkageParser(FbConnection connection, LinkageParser rhs) : base(connection, rhs)
+	{
+		Tracer.Trace(GetType(), "LinkageParser.LinkageParser(FbConnection, LinkageParser)");
 	}
 
 
@@ -68,8 +83,10 @@ internal class LinkageParser : AbstractLinkageParser
 	/// Retrieves or creates the parser instance of a connection derived from Site
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static LinkageParser Instance(IVsDataConnection site, bool canCreate = true)
+	public static LinkageParser Instance(IVsDataConnection site, bool canCreate)
 	{
+		Tracer.Trace(typeof(LinkageParser), "LinkageParser.Instance(IVsDataConnection, bool)", "canCreate: ", canCreate);
+
 		if (site == null)
 			return null;
 
@@ -86,15 +103,51 @@ internal class LinkageParser : AbstractLinkageParser
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Retrieves or creates a distinct unique parser for a connection.
+	/// Finds a matching connection existing parser for a connection.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static new LinkageParser Instance(FbConnection connection, bool canCreate = true)
+	public static LinkageParser EnsureInstance(FbConnection connection)
 	{
-		LinkageParser parser = (LinkageParser)AbstractLinkageParser.Instance(connection);
+		Tracer.Trace(typeof(LinkageParser), "LinkageParser.EnsureInstance(FbConnection)");
+		return Instance(connection, true);
+	}
 
-		if (canCreate)
-			parser ??= new(connection);
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Retrieves an existing parser for a connection.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static new LinkageParser Instance(FbConnection connection)
+	{
+		Tracer.Trace(typeof(LinkageParser), "LinkageParser.Instance(FbConnection)");
+		return Instance(connection, false);
+	}
+
+
+	// ---------------------------------------------------------------------------------
+		/// <summary>
+		/// Retrieves or creates a distinct unique parser for a connection.
+		/// </summary>
+		// ---------------------------------------------------------------------------------
+	protected static LinkageParser Instance(FbConnection connection, bool canCreate)
+	{
+		Tracer.Trace(typeof(LinkageParser), "LinkageParser.Instance(FbConnection, bool)", "canCreate: ", canCreate);
+
+		LinkageParser parser;
+
+		parser = (LinkageParser)AbstractLinkageParser.Instance(connection);
+
+		if (parser == null)
+		{
+			LinkageParser rhs = (LinkageParser)FindEquivalentParser(connection);
+
+			if (rhs != null)
+				parser = new(connection, rhs);
+			else if (canCreate)
+				parser = new(connection);
+		}
 
 		return parser;
 	}
@@ -130,9 +183,9 @@ internal class LinkageParser : AbstractLinkageParser
 			Thread.Sleep(delay);
 
 			if (userToken.IsCancellationRequested)
-				_Enabled = false;
+				Enabled = false;
 
-			if (!_Enabled || asyncToken.IsCancellationRequested || !ConnectionActive)
+			if (!Enabled || asyncToken.IsCancellationRequested || !ConnectionActive)
 			{
 				return false;
 			}
@@ -169,7 +222,7 @@ internal class LinkageParser : AbstractLinkageParser
 
 		_AsyncCardinal = 1;
 
-		UpdateStatusBar(_LinkStage, AsyncActive);
+		UpdateStatusBar(LinkStage, AsyncActive);
 
 		IVsTaskStatusCenterService tsc = ServiceProvider.GetGlobalServiceAsync<SVsTaskStatusCenterService,
 			IVsTaskStatusCenterService>(swallowExceptions: false).Result;
@@ -227,8 +280,8 @@ internal class LinkageParser : AbstractLinkageParser
 	{
 		// User requested this cancellation so UpdateStatusBar will be placed on UI thread
 		// queue, but as fire and forget so we're okay here.
-		if (!_Enabled)
-			UpdateStatusBar(_LinkStage, AsyncActive);
+		if (!Enabled)
+			UpdateStatusBar(LinkStage, AsyncActive);
 
 		_AsyncCardinal = 0;
 
@@ -252,7 +305,7 @@ internal class LinkageParser : AbstractLinkageParser
 		// This scenario can easily be reproduced when we perform a GetCurrentMemory() or
 		// GetActiveUsers() db sync request.
 
-		if (!SyncActive && _LinkStage < EnumLinkStage.Completed && _Enabled)
+		if (!SyncActive && LinkStage < EnumLinkStage.Completed && Enabled)
 		{
 			if (_AsyncToken.IsCancellationRequested)
 			{
@@ -277,7 +330,7 @@ internal class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public bool Disable()
 	{
-		_Enabled = false;
+		Enabled = false;
 
 		try
 		{
@@ -367,7 +420,7 @@ internal class LinkageParser : AbstractLinkageParser
 
 		SyncEnter(false);
 
-		UpdateStatusBar(_LinkStage, AsyncActive);
+		UpdateStatusBar(LinkStage, AsyncActive);
 
 		IVsTaskStatusCenterService tsc = ServiceProvider.GetGlobalServiceAsync<SVsTaskStatusCenterService, IVsTaskStatusCenterService>(swallowExceptions: false).Result;
 
@@ -431,38 +484,38 @@ internal class LinkageParser : AbstractLinkageParser
 		if (!ConnectionActive)
 			return false;
 
-		TaskHandlerProgress(GetPercentageComplete(_LinkStage), _LinkStage == EnumLinkStage.Start ? 0 : -1);
+		TaskHandlerProgress(GetPercentageComplete(LinkStage), LinkStage == EnumLinkStage.Start ? 0 : -1);
 
-		if (_LinkStage < EnumLinkStage.GeneratorsLoaded)
+		if (LinkStage < EnumLinkStage.GeneratorsLoaded)
 		{
-			TaskHandlerProgress(Resources.LinkageParserStageGeneratorsBegin, GetPercentageComplete(_LinkStage + 1, true), -3);
+			TaskHandlerProgress(Resources.LinkageParserStageGeneratorsBegin, GetPercentageComplete(LinkStage + 1, true), -3);
 
 			GetRawGeneratorSchema();
 
 			if (AsyncActive && userToken.IsCancellationRequested)
-				_Enabled = false;
+				Enabled = false;
 
-			TaskHandlerProgress(Resources.LinkageParserStageGeneratorsEnd, GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
+			TaskHandlerProgress(Resources.LinkageParserStageGeneratorsEnd, GetPercentageComplete(LinkStage), Stopwatch.ElapsedMilliseconds);
 		}
 
 
-		if (AsyncActive && (!_Enabled || asyncToken.IsCancellationRequested))
+		if (AsyncActive && (!Enabled || asyncToken.IsCancellationRequested))
 			return false;
 
 		if (!ConnectionActive)
 			return false;
 
 
-		if (_LinkStage < EnumLinkStage.TriggerDependenciesLoaded)
+		if (LinkStage < EnumLinkStage.TriggerDependenciesLoaded)
 		{
-			TaskHandlerProgress(Resources.LinkageParserStageTriggerDependenciesStart, GetPercentageComplete(_LinkStage + 1, true), -3);
+			TaskHandlerProgress(Resources.LinkageParserStageTriggerDependenciesStart, GetPercentageComplete(LinkStage + 1, true), -3);
 
 			GetRawTriggerDependenciesSchema();
 
 			if (AsyncActive && userToken.IsCancellationRequested)
-				_Enabled = false;
+				Enabled = false;
 
-			TaskHandlerProgress(Resources.LinkageParserStageTriggerDependenciesEnd, GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
+			TaskHandlerProgress(Resources.LinkageParserStageTriggerDependenciesEnd, GetPercentageComplete(LinkStage), Stopwatch.ElapsedMilliseconds);
 		}
 
 		if (AsyncActive && (!_Enabled || asyncToken.IsCancellationRequested))
@@ -471,16 +524,16 @@ internal class LinkageParser : AbstractLinkageParser
 		if (!ConnectionActive)
 			return false;
 
-		if (_LinkStage < EnumLinkStage.TriggersLoaded)
+		if (LinkStage < EnumLinkStage.TriggersLoaded)
 		{
-			TaskHandlerProgress(Resources.LinkageParserStageTriggersBegin, GetPercentageComplete(_LinkStage + 1, true), -3);
+			TaskHandlerProgress(Resources.LinkageParserStageTriggersBegin, GetPercentageComplete(LinkStage + 1, true), -3);
 
 			GetRawTriggerSchema();
 
 			if (AsyncActive && userToken.IsCancellationRequested)
 				_Enabled = false;
 
-			TaskHandlerProgress(Resources.LinkageParserStageTriggersEnd, GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
+			TaskHandlerProgress(Resources.LinkageParserStageTriggersEnd, GetPercentageComplete(LinkStage), Stopwatch.ElapsedMilliseconds);
 		}
 
 		if (AsyncActive && (!_Enabled || asyncToken.IsCancellationRequested))
@@ -489,36 +542,36 @@ internal class LinkageParser : AbstractLinkageParser
 
 		if (!SequencesPopulated)
 		{
-			TaskHandlerProgress(Resources.LinkageParserStageSequencesBegin, GetPercentageComplete(_LinkStage + 1, true), -3);
+			TaskHandlerProgress(Resources.LinkageParserStageSequencesBegin, GetPercentageComplete(LinkStage + 1, true), -3);
 
 			BuildSequenceTable();
 
 			if (AsyncActive && userToken.IsCancellationRequested)
 				_Enabled = false;
 
-			TaskHandlerProgress(Resources.LinkageParserStageSequencesEnd, GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
+			TaskHandlerProgress(Resources.LinkageParserStageSequencesEnd, GetPercentageComplete(LinkStage), Stopwatch.ElapsedMilliseconds);
 		}
 
 
-		if (AsyncActive && (!_Enabled || asyncToken.IsCancellationRequested))
+		if (AsyncActive && (!Enabled || asyncToken.IsCancellationRequested))
 			return false;
 
-		if (_LinkStage < EnumLinkStage.Completed)
+		if (LinkStage < EnumLinkStage.Completed)
 		{
-			TaskHandlerProgress(Resources.LinkageParserStageLinkingBegin, GetPercentageComplete(_LinkStage + 1, true), -3);
+			TaskHandlerProgress(Resources.LinkageParserStageLinkingBegin, GetPercentageComplete(LinkStage + 1, true), -3);
 
 			BuildTriggerTable();
 
-			TaskHandlerProgress(Resources.LinkageParserStageLinkingEnd, GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
+			TaskHandlerProgress(Resources.LinkageParserStageLinkingEnd, GetPercentageComplete(LinkStage), Stopwatch.ElapsedMilliseconds);
 		}
 
-		_LinkStage = EnumLinkStage.Completed;
+		LinkStage = EnumLinkStage.Completed;
 
-		TaskHandlerProgress(Resources.LinkageParserStageCompleted.Res(_Triggers.Rows.Count), GetPercentageComplete(_LinkStage), Stopwatch.ElapsedMilliseconds);
+		TaskHandlerProgress(Resources.LinkageParserStageCompleted.Res(_Triggers.Rows.Count), GetPercentageComplete(LinkStage), Stopwatch.ElapsedMilliseconds);
 
 		_Stopwatch = null;
 
-		UpdateStatusBar(_LinkStage, AsyncActive);
+		UpdateStatusBar(LinkStage, AsyncActive);
 
 		return true;
 	}
@@ -556,7 +609,7 @@ internal class LinkageParser : AbstractLinkageParser
 			_SyncToken = _SyncTokenSource.Token;
 
 			if (pausing)
-				TaskHandlerProgress(GetPercentageComplete(_LinkStage), -2);
+				TaskHandlerProgress(GetPercentageComplete(LinkStage), -2);
 			try
 			{
 				_AsyncTask.Wait(_SyncToken);
@@ -604,7 +657,7 @@ internal class LinkageParser : AbstractLinkageParser
 		_ProgressData = default;
 
 
-		if (!AsyncActive && _LinkStage < EnumLinkStage.Completed && _Enabled)
+		if (!AsyncActive && LinkStage < EnumLinkStage.Completed && Enabled)
 		{
 			if (_AsyncToken.IsCancellationRequested)
 			{

@@ -8,9 +8,10 @@ using BlackbirdSql.Core.Ctl.Interfaces;
 using EnvDTE;
 
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-
+using static BlackbirdSql.Core.Ctl.CommandProviders.CommandProperties;
 
 namespace BlackbirdSql.Core.Ctl;
 
@@ -73,6 +74,9 @@ internal abstract class AbstractPackageController : IBPackageController
 	private IBPackageController.SelectionChangedDelegate _OnSelectionChangedEvent;
 	private IBPackageController.ElementValueChangedDelegate _OnElementValueChangedEvent;
 	private IBPackageController.CmdUIContextChangedDelegate _OnCmdUIContextChangedEvent;
+
+	// Custom events Delegates
+	private IBPackageController.NewQueryRequestedDelegate _OnNewQueryRequestedEvent;
 
 
 	#endregion Variables
@@ -187,6 +191,16 @@ internal abstract class AbstractPackageController : IBPackageController
 	{
 		add { EnsureMonitorSelection(); _OnSelectionChangedEvent += value; }
 		remove { _OnSelectionChangedEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsSelectionEvents.OnSelectionChangedEvent"/> event.
+	/// </summary>
+	event IBPackageController.NewQueryRequestedDelegate IBPackageController.OnNewQueryRequestedEvent
+	{
+		add { _OnNewQueryRequestedEvent += value; }
+		remove { _OnNewQueryRequestedEvent -= value; }
 	}
 
 
@@ -515,6 +529,11 @@ internal abstract class AbstractPackageController : IBPackageController
 		}
 
 	}
+
+
+
+	public int OnNewQueryRequested(IVsDataViewHierarchy site, EnNodeSystemType nodeSystemType) => _OnNewQueryRequestedEvent != null
+	? _OnNewQueryRequestedEvent(site, nodeSystemType) : VSConstants.E_NOTIMPL;
 
 
 	#endregion Methods

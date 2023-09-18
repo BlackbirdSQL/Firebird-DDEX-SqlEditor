@@ -9,6 +9,7 @@ using System.Data;
 using System.Data.Common;
 
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
@@ -16,7 +17,7 @@ using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
-namespace BlackbirdSql.VisualStudio.Ddex;
+namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 
 // =========================================================================================================
 //										TObjectSelectorRoot Class
@@ -46,7 +47,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 	public TObjectSelectorRoot() : base()
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TObjectSelectorRoot.TObjectSelectorRoot");
 	}
 
 
@@ -73,7 +74,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	// ---------------------------------------------------------------------------------
 	protected override IVsDataReader SelectObjects(string typeName, object[] restrictions, string[] properties, object[] parameters)
 	{
-		// Diag.Trace(typeName);
+		Tracer.Trace(GetType(), "TObjectSelectorRoot.SelectObjects", "typeName: {0}", typeName);
 
 		try
 		{
@@ -90,7 +91,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		}
 
 
-		LinkageParser parser = LinkageParser.Instance(Site);
+		LinkageParser parser = LinkageParser.Instance(Site, true);
 
 		IVsDataReader reader;
 
@@ -111,7 +112,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 			try
 			{
-				parser.SyncEnter(true);
+				parser?.SyncEnter(true);
 
 				schema = GetRootSchema(connection, parameters);
 
@@ -127,7 +128,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			}
 			finally
 			{
-				parser.SyncExit();
+				parser?.SyncExit();
 			}
 		}
 		catch (Exception ex)
@@ -168,9 +169,9 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	// ---------------------------------------------------------------------------------
 	private DataTable GetRootSchema(DbConnection connection, object[] parameters)
 	{
-		Site.EnsureConnected();
+		Tracer.Trace(GetType(), "TObjectSelectorRoot.GetRootSchema");
 
-		// Diag.Trace();
+		Site.EnsureConnected();
 
 
 		// We use TSourceInformation for the dual purpose of the Root IVsDataObjectSelector

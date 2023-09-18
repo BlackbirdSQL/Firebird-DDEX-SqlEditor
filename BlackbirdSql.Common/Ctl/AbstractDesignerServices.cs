@@ -474,16 +474,15 @@ public abstract class AbstractDesignerServices
 		{
 			return;
 		}
+
 		IComponentModel componentModel = ((AsyncPackage)Controller.Instance.DdexPackage).GetService<SComponentModel, IComponentModel>();
 		if (componentModel == null)
-		{
 			return;
-		}
+
 		IVsEditorAdaptersFactoryService service = componentModel.GetService<IVsEditorAdaptersFactoryService>();
 		if (service == null)
-		{
 			return;
-		}
+
 		ITextBuffer documentBuffer = service.GetDocumentBuffer((IVsTextBuffer)docData);
 		ITextDocumentFactoryService service2 = componentModel.GetService<ITextDocumentFactoryService>();
 		if (service2 != null)
@@ -636,9 +635,8 @@ public abstract class AbstractDesignerServices
 		}
 		IVsEditorAdaptersFactoryService service = componentModel.GetService<IVsEditorAdaptersFactoryService>();
 		if (service == null)
-		{
 			return;
-		}
+
 		IWpfTextViewHost wpfTextViewHost = service.GetWpfTextViewHost(ppView);
 		if (wpfTextViewHost != null)
 		{

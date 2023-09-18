@@ -10,10 +10,9 @@ using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
-
-
-namespace BlackbirdSql.VisualStudio.Ddex;
+namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 
 
 // =========================================================================================================
@@ -33,7 +32,7 @@ public class TSourceVersionComparer : DataSourceVersionComparer, IComparer<strin
 
 	public TSourceVersionComparer()
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TSourceVersionComparer.TSourceVersionComparer");
 		base.Comparer = this;
 	}
 

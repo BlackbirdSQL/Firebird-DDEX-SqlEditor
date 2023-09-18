@@ -23,6 +23,7 @@ using System;
 using System.Data;
 using System.Globalization;
 using System.Text;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
 
@@ -32,6 +33,8 @@ internal class DslIndexes : DslSchema
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
+		Tracer.Trace(GetType(), "DslIndexes.GetCommandText");
+
 		// BlackbirdSql added ForeignKey
 
 		var sql = new StringBuilder();
@@ -113,6 +116,8 @@ internal class DslIndexes : DslSchema
 
 	protected override void ProcessResult(DataTable schema)
 	{
+		Tracer.Trace(GetType(), "DslIndexes.ProcessResult");
+
 		schema.BeginLoadData();
 		schema.Columns.Add("IS_PRIMARY", typeof(bool));
 		schema.Columns.Add("IS_UNIQUE", typeof(bool));

@@ -3,6 +3,7 @@
 
 
 using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
@@ -11,7 +12,7 @@ using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
 
-namespace BlackbirdSql.VisualStudio.Ddex;
+namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 
 
 // =========================================================================================================
@@ -37,7 +38,7 @@ public class TConnectionProperties : AdoDotNetConnectionProperties
 	{
 		get
 		{
-			// Diag.Trace("ProtectedMandatoryProperties required");
+			Tracer.Trace(GetType(), "TConnectionProperties.get_IsComplete");
 
 			foreach (Describer describer in CorePropertySet.Describers)
 			{
@@ -81,7 +82,7 @@ public class TConnectionProperties : AdoDotNetConnectionProperties
 	/// </summary>
 	public TConnectionProperties() : base()
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TConnectionProperties.TConnectionProperties");
 	}
 
 

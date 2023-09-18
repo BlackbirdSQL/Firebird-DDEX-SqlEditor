@@ -17,6 +17,7 @@
 
 
 
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
 
 
@@ -28,6 +29,8 @@ internal class DslProcedureParameters : DslColumns
 {
 	public DslProcedureParameters(LinkageParser parser) : base(parser)
 	{
+		Tracer.Trace(GetType(), "DslProcedureParameters.DslProcedureParameters");
+
 		string packageName;
 
 		if (MajorVersionNumber >= 3)

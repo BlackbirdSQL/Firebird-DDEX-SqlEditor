@@ -2,7 +2,7 @@
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Project Properties -->
   <PropertyGroup>
-    <ApplicationIcon>Package.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\Package.ico</ApplicationIcon>
     <MinimumVisualStudioVersion>17.0</MinimumVisualStudioVersion>
     <OutputType>Library</OutputType>
     <RootNamespace>BlackbirdSql.VisualStudio.Ddex</RootNamespace>
@@ -63,30 +63,15 @@
   </PropertyGroup>
   <!-- Includes - Top Level -->
   <ItemGroup>
-    <Content Include="blackbird-vsix-icon.png">
-      <IncludeInVSIX>true</IncludeInVSIX>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="license.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="Package.ico" />
-    <Content Include="Resources\Package.ico" />
     <EmbeddedResource Include="Properties\AttributeResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\ToolbarImageStrip.png" />
-    <None Include="Resources\ToolbarImageStrip.psd" />
-    <None Include="Resources\ViewSupport.FolderTables.ico" />
-    <None Include="Properties\BlackbirdSql.VisualStudio.Ddex.NET.snk" />
-    <None Include="Resources\ViewSupport.FolderForeignKeys.psd" />
-    <None Include="Resources\ViewSupport.FolderIndexes.psd" />
-    <None Include="Resources\ViewSupport.FolderLarge.psd" />
-    <None Include="Resources\ViewSupport.FolderTables.psd" />
-    <None Include="Resources\ViewSupport.FolderTriggers.psd" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -107,6 +92,9 @@
   </ItemGroup>
   <!-- References (Packages) -->
   <ItemGroup>
+    <PackageReference Include="FirebirdSql.Data.FirebirdClient">
+      <Version>9.1.1</Version>
+    </PackageReference>
     <PackageReference Include="IndexRange">
       <Version>1.0.2</Version>
     </PackageReference>
@@ -148,14 +136,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Ctl\ComponentModel\GlobalizedCategoryAttribute.cs" />
-    <Compile Include="Ctl\ComponentModel\GlobalizedDescriptionAttribute.cs" />
-    <Compile Include="Ctl\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Properties\BlackbirdSql.VisualStudio.Ddex.snk" />
   </ItemGroup>
   <!-- Includes (Properties and Properties Resources) -->
   <ItemGroup>
+    <EmbeddedResource Include="VSPackage.resx">
+      <MergeWithCTO>true</MergeWithCTO>
+      <ManifestResourceName>VSPackage</ManifestResourceName>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <Compile Include="Properties\AttributeResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -171,11 +161,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="VSPackage.resx">
-      <MergeWithCTO>true</MergeWithCTO>
-      <ManifestResourceName>VSPackage</ManifestResourceName>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <None Include="Properties\BlackbirdSql.VisualStudio.Ddex.NET.snk" />
   </ItemGroup>
   <!-- Includes (VSi Resources) -->
   <ItemGroup>
@@ -183,7 +169,14 @@
       <ResourceName>Menus.ctmenu</ResourceName>
     </VSCTCompile>
   </ItemGroup>
+  <!-- Includes (Resources) -->
   <ItemGroup>
+    <Content Include="Resources\blackbird-vsix-icon.png">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Package.ico" />
+    <None Include="..\Resources\blackbird-logo.png" Pack="true" PackagePath="" />
+    <EmbeddedResource Include="Resources\ToolbarImageStrip.png" />
     <EmbeddedResource Include="Resources\ViewSupport.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -253,6 +246,7 @@
     <EmbeddedResource Include="Resources\ViewSupport.UserViewColumn.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.UniqueKeyTable.ico" />
     <EmbeddedResource Include="Resources\ViewSupport.View.ico" />
+    <None Include="Resources\ToolbarImageStrip.psd" />
     <None Include="Resources\ViewSupport.ArrowDownLarge.psd" />
     <None Include="Resources\ViewSupport.ArrowNodeOpen.psd" />
     <None Include="Resources\ViewSupport.ComputedTriggerColumn.psd" />
@@ -273,6 +267,12 @@
     <None Include="Resources\ViewSupport.DatabaseViewsOpen.psd" />
     <None Include="Resources\ViewSupport.Domain.psd" />
     <None Include="Resources\ViewSupport.DotDotDot.psd" />
+    <None Include="Resources\ViewSupport.FolderTables.ico" />
+    <None Include="Resources\ViewSupport.FolderForeignKeys.psd" />
+    <None Include="Resources\ViewSupport.FolderIndexes.psd" />
+    <None Include="Resources\ViewSupport.FolderLarge.psd" />
+    <None Include="Resources\ViewSupport.FolderTables.psd" />
+    <None Include="Resources\ViewSupport.FolderTriggers.psd" />
     <None Include="Resources\ViewSupport.FolderEmpty.psd" />
     <None Include="Resources\ViewSupport.FolderSystem.psd" />
     <None Include="Resources\ViewSupport.FolderSystemColumns.psd" />
@@ -306,61 +306,40 @@
   </ItemGroup>
   <!-- Includes (Source Resources) -->
   <ItemGroup>
-    <EmbeddedResource Include="Ctl\TConnectionPromptDialog.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>TConnectionPromptDialog.cs</DependentUpon>
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TConnectionPromptDialog.resx</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Ctl\TConnectionUIControl.resx">
-      <DependentUpon>TConnectionUIControl.cs</DependentUpon>
-      <SubType>Designer</SubType>
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TConnectionUIControl.resx</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Ctl\TObjectSupport.xml">
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupport.xml</LogicalName>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Ctl\TObjectSupport.xml" />
+    <EmbeddedResource Include="Ctl\TViewSupport.xml" />
     <EmbeddedResource Include="Ctl\Import\TObjectSupportTypes.xml">
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupportTypes.xml</LogicalName>
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectSupportTypes.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Ctl\Import\TObjectSupportMappings.xml">
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupportMappings.xml</LogicalName>
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectSupportMappings.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Ctl\Import\TObjectSupportMappings_Nodes.xml">
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupportMappings_Nodes.xml</LogicalName>
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectSupportMappings_Nodes.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Ctl\Import\TObjectSupportTypes_Nodes.xml">
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupportTypes_Nodes.xml</LogicalName>
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectSupportTypes_Nodes.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Ctl\Import\TObjectSupportMappings_Nodes_Properties.xml">
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupportMappings_Nodes_Properties.xml</LogicalName>
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectSupportMappings_Nodes_Properties.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Ctl\Import\TObjectSupportTypes_Nodes_Properties.xml">
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupportTypes_Nodes_Properties.xml</LogicalName>
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectSupportTypes_Nodes_Properties.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Ctl\Import\TObjectSupportServices.xml">
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TObjectSupportServices.xml</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Ctl\TViewSupport.xml">
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TViewSupport.xml</LogicalName>
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectSupportServices.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Ctl\Import\TViewSupportCommands.xml">
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TViewSupportCommands.xml</LogicalName>
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.Ctl.TViewSupportCommands.xml</LogicalName>
     </EmbeddedResource>
     <EmbeddedResource Include="Ctl\Import\TViewSupportElements.xml">
-      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TViewSupportElements.xml</LogicalName>
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.Ctl.TViewSupportElements.xml</LogicalName>
     </EmbeddedResource>
-    <Page Include="Controls\Config\DebugOptionsControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <!-- Includes (Source files) -->
   <ItemGroup>
     <Compile Include="BlackbirdSqlDdexExtension.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="CommandProviders\SystemCommandProvider.cs" />
-    <Compile Include="CommandProviders\UniversalCommandProvider.cs" />
-    <Compile Include="CommandProviders\UserCommandProvider.cs" />
     <Compile Include="PackageData.cs" />
     <Compile Include="PackageSupportedObjects.cs" />
     <Compile Include="Controls\Config\DebugOptionsControl.xaml.cs">
@@ -369,6 +348,13 @@
     <Compile Include="Controls\Config\DebugOptionsDialogPage.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Page Include="Controls\Config\DebugOptionsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Compile Include="Ctl\CommandProviders\SystemCommandProvider.cs" />
+    <Compile Include="Ctl\CommandProviders\UniversalCommandProvider.cs" />
+    <Compile Include="Ctl\CommandProviders\UserCommandProvider.cs" />
     <Compile Include="Ctl\Config\DebugOptionModel.cs" />
     <Compile Include="Ctl\Config\GeneralOptionModel.cs" />
     <Compile Include="Ctl\Config\OptionsProvider.cs" />
@@ -403,6 +389,11 @@
     <Compile Include="Ctl\TConnectionPromptDialog.Designer.cs">
       <DependentUpon>TConnectionPromptDialog.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Ctl\TConnectionPromptDialog.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>TConnectionPromptDialog.cs</DependentUpon>
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TConnectionPromptDialog.resx</LogicalName>
+    </EmbeddedResource>
     <Compile Include="Ctl\TConnectionProperties.cs" />
     <Compile Include="Ctl\TConnectionSupport.cs" />
     <Compile Include="Ctl\TConnectionUIConnector.cs" />
@@ -412,6 +403,11 @@
     <Compile Include="Ctl\TConnectionUIControl.Designer.cs">
       <DependentUpon>TConnectionUIControl.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Ctl\TConnectionUIControl.resx">
+      <DependentUpon>TConnectionUIControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+      <LogicalName>BlackbirdSql.VisualStudio.Ddex.TConnectionUIControl.resx</LogicalName>
+    </EmbeddedResource>
     <Compile Include="Ctl\TConnectionUIProperties.cs" />
     <Compile Include="Ctl\TMappedObjectConverter.cs" />
     <Compile Include="Ctl\TObjectIdentifierConverter.cs" />
@@ -425,6 +421,9 @@
     <Compile Include="Ctl\TSourceInformation.cs" />
     <Compile Include="Ctl\TSourceVersionComparer.cs" />
     <Compile Include="Ctl\TViewSupport.cs" />
+    <Compile Include="Ctl\ComponentModel\GlobalizedCategoryAttribute.cs" />
+    <Compile Include="Ctl\ComponentModel\GlobalizedDescriptionAttribute.cs" />
+    <Compile Include="Ctl\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
   </ItemGroup>
   <!-- Includes (VSIX Manifest) -->
   <ItemGroup />

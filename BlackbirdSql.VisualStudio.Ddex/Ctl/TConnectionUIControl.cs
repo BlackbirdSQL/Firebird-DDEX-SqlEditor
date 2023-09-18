@@ -7,6 +7,7 @@ using System.Windows.Forms;
 
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
@@ -15,7 +16,7 @@ using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
 
-namespace BlackbirdSql.VisualStudio.Ddex;
+namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 
 
 // =========================================================================================================
@@ -70,9 +71,10 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 	public TConnectionUIControl() : base()
 	{
+		Tracer.Trace(GetType(), "TConnectionUIControl.TConnectionUIControl");
+
 		try
 		{
-			// Diag.Trace();
 			InitializeComponent();
 
 			// Diag.Trace("Creating erd");

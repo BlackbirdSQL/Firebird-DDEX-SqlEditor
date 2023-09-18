@@ -138,6 +138,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="9.1.1" />
 	  <PackageReference Include="IndexRange" Version="1.0.2" />
 	  <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
 	  <PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />

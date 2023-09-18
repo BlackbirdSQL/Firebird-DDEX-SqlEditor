@@ -4,11 +4,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core;
-using Microsoft.SqlServer.Management.SqlParser.MetadataProvider;
+
 
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;

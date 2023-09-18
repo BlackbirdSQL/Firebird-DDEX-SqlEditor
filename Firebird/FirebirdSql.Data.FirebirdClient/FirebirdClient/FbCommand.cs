@@ -323,7 +323,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	public FbCommand(string cmdText, FbConnection connection, FbTransaction transaction)
 	{
-		// Diag.Trace();
+		Diag.Trace($"Command: {cmdText}");
 		_namedParameters = Array.Empty<string>();
 		_updatedRowSource = UpdateRowSource.Both;
 		_commandType = CommandType.Text;
@@ -348,6 +348,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	public static FbCommand CreateWithTypeCoercions(Type[] expectedColumnTypes)
 	{
+		Diag.Trace();
 		var result = new FbCommand();
 		result._expectedColumnTypes = expectedColumnTypes;
 		return result;
@@ -423,7 +424,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	object ICloneable.Clone()
 	{
-		// Diag.Trace();
+		Diag.Trace();
 		var command = new FbCommand();
 
 		command.CommandText = CommandText;
@@ -464,7 +465,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	public override void Prepare()
 	{
-		// Diag.Trace();
+		Diag.Trace();
 		CheckCommand();
 
 		using (var explicitCancellation = ExplicitCancellation.Enter(CancellationToken.None, Cancel))
@@ -492,7 +493,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	public override async Task PrepareAsync(CancellationToken cancellationToken = default)
 #endif
 	{
-		// Diag.Trace();
+		Diag.Trace();
 		CheckCommand();
 
 		using (var explicitCancellation = ExplicitCancellation.Enter(cancellationToken, Cancel))
@@ -517,7 +518,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	public override int ExecuteNonQuery()
 	{
-		// Diag.Trace();
+		Diag.Trace();
 		CheckCommand();
 
 		using (var explicitCancellation = ExplicitCancellation.Enter(CancellationToken.None, Cancel))
@@ -556,7 +557,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	}
 	public override async Task<int> ExecuteNonQueryAsync(CancellationToken cancellationToken)
 	{
-		// Diag.Trace();
+		Diag.Trace();
 		CheckCommand();
 
 		using (var explicitCancellation = ExplicitCancellation.Enter(cancellationToken, Cancel))
@@ -600,7 +601,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	public new FbDataReader ExecuteReader(CommandBehavior behavior)
 	{
-		// Diag.Trace();
+		Diag.Trace();
 		CheckCommand();
 
 		using (var explicitCancellation = ExplicitCancellation.Enter(CancellationToken.None, Cancel))
@@ -628,7 +629,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	public new Task<FbDataReader> ExecuteReaderAsync(CommandBehavior behavior) => ExecuteReaderAsync(behavior, CancellationToken.None);
 	public new async Task<FbDataReader> ExecuteReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
 	{
-		// Diag.Trace();
+		Diag.Trace();
 		CheckCommand();
 
 		using (var explicitCancellation = ExplicitCancellation.Enter(cancellationToken, Cancel))
@@ -656,7 +657,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	public override object ExecuteScalar()
 	{
-		// Diag.Trace();
+		Diag.Trace();
 		DbValue[] values = null;
 		object val = null;
 
@@ -705,7 +706,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	}
 	public override async Task<object> ExecuteScalarAsync(CancellationToken cancellationToken)
 	{
-		// Diag.Trace();
+		Diag.Trace();
 		DbValue[] values = null;
 		object val = null;
 
@@ -1532,7 +1533,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 
 	private void ExecuteCommand(CommandBehavior behavior, bool returnsSet)
 	{
-		// Diag.Trace();
+		Diag.Trace();
 		LogMessages.CommandExecution(Log, this);
 
 		try
@@ -1581,7 +1582,7 @@ public sealed class FbCommand : DbCommand, IFbPreparedCommand, IDescriptorFiller
 	}
 	private async Task ExecuteCommandAsync(CommandBehavior behavior, bool returnsSet, CancellationToken cancellationToken = default)
 	{
-		// Diag.Trace();
+		Diag.Trace();
 		LogMessages.CommandExecution(Log, this);
 
 		await PrepareAsync(returnsSet, cancellationToken).ConfigureAwait(false);

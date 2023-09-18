@@ -6,9 +6,8 @@ using System.Data;
 using System.Data.Common;
 using System.IO;
 using System.Xml;
-using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Core;
-using Microsoft.VisualStudio.LanguageServer.Client;
+
 
 namespace BlackbirdSql.Core.Ctl.Extensions;
 
@@ -817,7 +816,7 @@ internal static class XmlParser
 
 			// We're using the current latest version of the client (on this build it's 9.1.1.0)
 			string factoryQualifiedNameType;
-			string factoryNameType = SystemData.ProviderFactoryType + ", " + SystemData.Invariant;
+			string factoryNameType = SystemData.ProviderFactoryClassName + ", " + SystemData.Invariant;
 
 			if (xmlNode == null)
 			{
@@ -856,7 +855,7 @@ internal static class XmlParser
 				else if (xmlAttr.Value.Replace(" ", "") != factoryNameType.Replace(" ", ""))
 				{
 					// Check if it's not using the fully qualified name - must be current latest version (build is 9.1.1)
-					factoryQualifiedNameType = SystemData.ProviderFactoryType + ", " + factoryClass.AssemblyQualifiedName;
+					factoryQualifiedNameType = SystemData.ProviderFactoryClassName + ", " + factoryClass.AssemblyQualifiedName;
 
 					if (xmlAttr.Value.Replace(" ", "") != factoryQualifiedNameType.Replace(" ", ""))
 					{

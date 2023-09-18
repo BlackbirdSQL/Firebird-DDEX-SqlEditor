@@ -38,7 +38,7 @@
 				<Property name="PARENT_TYPE" type="System.String" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="$(collectionName)" />
 					</Parameters>
@@ -77,7 +77,7 @@
 				<Property name="DEPENDENCY_FIELDS" type="System.String" />
 			</Properties>
 			<Services>
-				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.TObjectSelector">
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectSelector">
 					<Parameters method="SelectObjects">
 						<Parameter value="$(triggerType)s" />
 					</Parameters>

@@ -19,6 +19,7 @@
 
 //$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
 
 
@@ -30,6 +31,8 @@ internal class DslIndexColumns : DslColumns
 {
 	public DslIndexColumns(LinkageParser parser) : base(parser)
 	{
+		Tracer.Trace(GetType(), "DslIndexColumns.DslIndexColumns");
+
 		_ParentType = "Index";
 		_ObjectType = "TableIndexColumn";
 		_ParentColumn = "idx.rdb$index_name";

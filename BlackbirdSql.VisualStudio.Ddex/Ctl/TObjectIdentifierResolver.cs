@@ -1,19 +1,18 @@
 // $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
-
 using System;
+
+using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.VisualStudio.Ddex.Model;
+
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
-using BlackbirdSql.Core;
-using BlackbirdSql.VisualStudio.Ddex.Model;
 
-
-
-namespace BlackbirdSql.VisualStudio.Ddex;
-
+namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 
 // =========================================================================================================
 //										TObjectIdentifierResolver Class
@@ -32,12 +31,12 @@ public class TObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	public TObjectIdentifierResolver() : base()
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TObjectIdentifierResolver.TObjectIdentifierResolver");
 	}
 
 	public TObjectIdentifierResolver(IVsDataConnection connection) : base(connection)
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TObjectIdentifierResolver.TObjectIdentifierResolver(IVsDataConnection)");
 	}
 
 
@@ -54,13 +53,15 @@ public class TObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Implementation of IVsDataObjectIdentifierResolver.ContractIdentifier
 	/// Contracts an identifier for a data object with the specified type and complete
-	/// identifier.
+	/// identifier for use as a label or title.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public override object[] ContractIdentifier(string typeName, object[] fullIdentifier)
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TObjectIdentifierResolver.ContractIdentifier", "typeName: {0}", typeName);
+
 
 		if (typeName == null)
 		{
@@ -69,18 +70,6 @@ public class TObjectIdentifierResolver : DataObjectIdentifierResolver
 			throw ex;
 		}
 
-		/*
-		string str = "";
-
-		if (fullIdentifier != null)
-		{
-			foreach (object item in fullIdentifier)
-			{
-				str += (item != null ? item.ToString() : "null") + ", ";
-			}
-		}
-		// Diag.Trace(String.Format("typeName: {0} Identifiers: {1}", typeName, str));
-		*/
 
 		if (typeName == DslObjectTypes.Root)
 		{
@@ -128,8 +117,7 @@ public class TObjectIdentifierResolver : DataObjectIdentifierResolver
 	// ---------------------------------------------------------------------------------
 	public override object[] ExpandIdentifier(string typeName, object[] partialIdentifier)
 	{
-		// Diag.Trace();
-		// Diag.Trace(String.Format("ExpandIdentifier({0},...)", typeName));
+		Tracer.Trace(GetType(), "TObjectIdentifierResolver.ExpandIdentifier", "typeName: {0}", typeName);
 
 		if (typeName == null)
 		{

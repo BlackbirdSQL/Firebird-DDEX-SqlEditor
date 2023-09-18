@@ -8,6 +8,7 @@ using System.IO;
 using System.Reflection;
 
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Core;
@@ -18,7 +19,7 @@ using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
 
-namespace BlackbirdSql.VisualStudio.Ddex;
+namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 
 
 // =========================================================================================================
@@ -39,19 +40,19 @@ public class TObjectSupport : DataObjectSupport, IVsDataSupportImportResolver
 
 	public TObjectSupport(string fileName, string path) : base(fileName, path)
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TObjectSupport.TObjectSupport", "fileName: {0}, path: {1}", fileName, path);
 	}
 
 
 	public TObjectSupport(string resourceName, Assembly assembly) : base(resourceName, assembly)
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TObjectSupport.TObjectSupport", "resourceName: {0}", resourceName);
 	}
 
 
 	public TObjectSupport(IVsDataConnection connection) : base(typeof(TObjectSupport).FullName, typeof(TObjectSupport).Assembly)
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TObjectSupport.TObjectSupport(IVsDataConnection)");
 	}
 
 

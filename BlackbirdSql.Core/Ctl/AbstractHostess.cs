@@ -1,11 +1,13 @@
-﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
-// $Authors = GA Christos (greg@blackbirdsql.org)
+﻿// Microsoft.VisualStudio.Data.Providers.Common, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Providers.Common.Host
 
 using System;
+using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using Microsoft;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Core;
@@ -30,6 +32,8 @@ public abstract class AbstractHostess : IDisposable
 
 	private readonly IServiceProvider _ServiceProvider;
 	private IVsDataHostService _HostService;
+
+	private delegate void PostExecuteCommandDelegate(CommandID command);
 
 
 	private delegate object CreateLocalInstanceDelegate(Guid classId);
@@ -79,7 +83,8 @@ public abstract class AbstractHostess : IDisposable
 
 	public AbstractHostess(IServiceProvider serviceProvider)
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "AbstractHostess.AbstractHostess(IServiceProvider)");
+
 		_ServiceProvider = serviceProvider;
 	}
 
@@ -94,6 +99,8 @@ public abstract class AbstractHostess : IDisposable
 
 	public bool ActivateDocumentIfOpen(string documentMoniker)
 	{
+		Tracer.Trace(GetType(), "AbstractHostess.ActivateDocumentIfOpen", "documentMoniker: {0}", documentMoniker);
+
 		ThreadHelper.ThrowIfNotOnUIThread();
 		return ActivateDocumentIfOpen(documentMoniker, doNotShowWindowFrame: false) != null;
 	}
@@ -102,12 +109,14 @@ public abstract class AbstractHostess : IDisposable
 
 	public IVsWindowFrame ActivateDocumentIfOpen(string mkDocument, bool doNotShowWindowFrame)
 	{
+		Tracer.Trace(GetType(), "AbstractHostess.ActivateDocumentIfOpen", "mkDocument: {0}, doNotShowWindowFrame: {1}", mkDocument, doNotShowWindowFrame);
+
 		ThreadHelper.ThrowIfNotOnUIThread();
 
 		IVsUIShellOpenDocument service = HostService.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
 		if (service == null)
 		{
-			NotSupportedException ex = new("IVsUIShellOpenDocument");
+			ServiceUnavailableException ex = new(typeof(IVsUIShellOpenDocument));
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -155,7 +164,7 @@ public abstract class AbstractHostess : IDisposable
 
 		if (service == null)
 		{
-			InvalidOperationException ex = new("ILocalRegistry2 service not found");
+			ServiceUnavailableException ex = new(typeof(ILocalRegistry2));
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -193,7 +202,7 @@ public abstract class AbstractHostess : IDisposable
 		IVsUIShellOpenDocument service = HostService.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
 		if (service == null)
 		{
-			NotSupportedException ex = new("IVsUIShellOpenDocument");
+			ServiceUnavailableException ex = new(typeof(IVsUIShellOpenDocument));
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -213,6 +222,30 @@ public abstract class AbstractHostess : IDisposable
 
 
 
+	public void PostExecuteCommand(CommandID command)
+	{
+		Tracer.Trace(GetType(), "AbstractHostess.PostExecuteCommand", "command: {0}", command);
+
+		if (Thread.CurrentThread == _HostService.UIThread)
+		{
+			PostExecuteCommandImpl(command);
+			return;
+		}
+		_HostService.BeginInvokeOnUIThread(new PostExecuteCommandDelegate(PostExecuteCommandImpl), command);
+	}
+
+
+
+	private void PostExecuteCommandImpl(CommandID command)
+	{
+		IVsUIShell service = _HostService.GetService<SVsUIShell, IVsUIShell>();
+		Guid pguidCmdGroup = command.Guid;
+		uint iD = (uint)command.ID;
+		object pvaIn = null;
+		Native.WrapComCall(service.PostExecCommand(ref pguidCmdGroup, iD, 0u, ref pvaIn));
+	}
+
+
 
 	public void RenameDocument(string oldDocumentMoniker, string newDocumentMoniker)
 	{
@@ -227,7 +260,7 @@ public abstract class AbstractHostess : IDisposable
 
 		if (service == null)
 		{
-			InvalidOperationException ex = new("IVsRunningDocumentTable service not found");
+			ServiceUnavailableException ex = new(typeof(IVsRunningDocumentTable));
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -261,7 +294,7 @@ public abstract class AbstractHostess : IDisposable
 		IUIService service = HostService.GetService<IUIService>();
 		if (service == null)
 		{
-			InvalidOperationException ex = new("IUIService service not found");
+			ServiceUnavailableException ex = new(typeof(IUIService));
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -305,7 +338,7 @@ public abstract class AbstractHostess : IDisposable
 		IVsUIShell service = GetService<SVsUIShell, IVsUIShell>();
 		if (service == null)
 		{
-			InvalidOperationException ex = new("IVsUIShell service not found");
+			ServiceUnavailableException ex = new(typeof(IVsUIShell));
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -336,7 +369,7 @@ public abstract class AbstractHostess : IDisposable
 		T service = HostService.TryGetService<T>();
 		if (service == null)
 		{
-			InvalidOperationException ex = new(typeof(T).Name + " service not found");
+			ServiceUnavailableException ex = new(typeof(T));
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -370,10 +403,12 @@ public abstract class AbstractHostess : IDisposable
 
 	public T GetService<T>()
 	{
+		Tracer.Trace(GetType(), "AbstractHostess.GetService<T>", "T: {0}", typeof(T).FullName);
+
 		T service = HostService.GetService<T>();
 		if (service == null)
 		{
-			InvalidOperationException ex = new(typeof(T).Name + " service not found");
+			ServiceUnavailableException ex = new(typeof(T));
 			Diag.Dug(ex);
 			throw ex;
 		}

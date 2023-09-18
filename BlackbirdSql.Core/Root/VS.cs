@@ -16,11 +16,35 @@ namespace BlackbirdSql.Core;
 /// </summary>
 // =========================================================================================================
 
-internal static class VS
+public static class VS
 {
 	public const uint dwReserved = 0u;
 
-	
+	public const int STG_E_FILEALREADYEXISTS = -2147286960; // 0x80030050
+	public const int STG_E_NOTCURRENT = -2147286783; // 0x80030101
+	public const int OLE_E_NOTIFYCANCELLED = -2147217842; // 0x80040E4E
+
+
+	// ---------------------------------------------------------------------------------
+	#region DataTools Members - VS
+	// ---------------------------------------------------------------------------------
+
+
+	public const string IVsDataConnectionManagerInteropGuid = "E7A0D4E0-D0E4-4AFA-A8A1-DD4636073D98";
+	public const string IVsDataConnectionInteropGuid = "902A17C6-B166-485F-A49F-9029549442DD";
+
+	public static readonly IntPtr DSREFNODEID_NIL = (IntPtr)0;
+	public static readonly IntPtr DSREFNODEID_ROOT = (IntPtr)0;
+
+	public static Guid CLSID_DSRef = new Guid("E09EE6AC-FEF0-41ae-9F77-3C394DA49849");
+	public static Guid CLSID_DSRefProperty_Provider = new Guid("B30985D6-6BBB-45f2-9AB8-371664F03270");
+	public static Guid CLSID_DSRefProperty_PreciseType = new Guid("39A5A7E7-513F-44a4-B79D-7652CD8962D9");
+
+	public static Guid CLSID_Mode_QueryDesigner = new Guid("B2C40B32-3A37-4ca9-97B9-FA44248B69FF");
+
+	#endregion DataTools Members
+
+
 
 	// ---------------------------------------------------------------------------------
 	#region SqlEditor Members - VS

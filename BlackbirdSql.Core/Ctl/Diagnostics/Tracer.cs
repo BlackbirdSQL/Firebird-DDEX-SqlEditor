@@ -161,8 +161,21 @@ internal class Tracer : IBTrace, IBExportable
 		}
 		else if (Diag.EnableTracer)
 		{
-			StackFrame frame = new StackTrace(1, true).GetFrame(0);
-			Diag.Dug(false, t.FullName + " func: " + functionName + (format != null ? args != null ? string.Format(format, args) : format : ""), frame.GetMethod().Name, frame.GetFileName(), frame.GetFileLineNumber());
+			StackFrame frame = null;
+
+			for (int i = 1; i < 4; i++)
+			{
+				frame = new StackTrace(i, true).GetFrame(0);
+				if (!frame.GetFileName().EndsWith("\\Tracer.cs", StringComparison.OrdinalIgnoreCase)
+					|| frame.GetMethod().Name.ToLower() != "trace")
+				{
+					break;
+				}
+			}
+
+			Diag.Dug(false, t.FullName + " func: " + functionName
+				+ (format != null ? args != null ? (" " + string.Format(format, args)) : (" " + format) : ""),
+				frame.GetMethod().Name, frame.GetFileName(), frame.GetFileLineNumber());
 		}
 
 	}
@@ -176,8 +189,21 @@ internal class Tracer : IBTrace, IBExportable
 		}
 		else if (Diag.EnableTracer)
 		{
-			StackFrame frame = new StackTrace(1, true).GetFrame(0);
-			Diag.Dug(false, t.FullName + " func: " + functionName + (format != null ? args != null ? string.Format(format, args) : format : ""), frame.GetMethod().Name, frame.GetFileName(), frame.GetFileLineNumber());
+			StackFrame frame = null;
+
+			for (int i = 1; i < 4; i++)
+			{
+				frame = new StackTrace(i, true).GetFrame(0);
+				if (!frame.GetFileName().EndsWith("\\Tracer.cs", StringComparison.OrdinalIgnoreCase)
+					|| frame.GetMethod().Name.ToLower() != "trace")
+				{
+					break;
+				}
+			}
+
+			Diag.Dug(false, t.FullName + " func: " + functionName
+				+ (format != null ? args != null ? (" " + string.Format(format, args)) : (" " + format) : ""),
+				frame.GetMethod().Name, frame.GetFileName(), frame.GetFileLineNumber());
 		}
 	}
 
@@ -186,8 +212,21 @@ internal class Tracer : IBTrace, IBExportable
 	{
 		if (Diag.EnableTracer)
 		{
-			StackFrame frame = new StackTrace(1, true).GetFrame(0);
-			Diag.Dug(false, t.FullName + " func: " + functionName + (format != null ? args != null ? string.Format(format, args) : format : ""), frame.GetMethod().Name, frame.GetFileName(), frame.GetFileLineNumber());
+			StackFrame frame = null;
+
+			for (int i = 1; i < 4; i++)
+			{
+				frame = new StackTrace(i, true).GetFrame(0);
+				if (!frame.GetFileName().EndsWith("\\Tracer.cs", StringComparison.OrdinalIgnoreCase)
+					|| frame.GetMethod().Name.ToLower() != "trace")
+				{
+					break;
+				}
+			}
+
+			Diag.Dug(false, t.FullName + " func: " + functionName
+				+ (format != null ? args != null ? (" " + string.Format(format, args)) : (" " + format) : ""),
+				frame.GetMethod().Name, frame.GetFileName(), frame.GetFileLineNumber());
 		}
 
 		if (SqlTracer.ShouldTrace(eventType))

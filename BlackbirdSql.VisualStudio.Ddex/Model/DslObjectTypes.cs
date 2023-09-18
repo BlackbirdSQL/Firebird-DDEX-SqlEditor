@@ -4,6 +4,7 @@
 //
 
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
@@ -53,8 +54,6 @@ internal static class DslObjectTypes
 	/// <returns></returns>
 	public static int GetIdentifierLength(string typeName)
 	{
-		// Diag.Trace();
-
 		switch (typeName)
 		{
 			case DslObjectTypes.Root:

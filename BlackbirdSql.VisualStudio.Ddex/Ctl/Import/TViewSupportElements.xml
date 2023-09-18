@@ -475,11 +475,9 @@
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)$(parentType)Column.ico" when="{Column.PARENT_TYPE} = 'Trigger' OR {Column.PARENT_TYPE} = 'View'" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Column.ico" assembly="" />
 				<PropertiesRef name="TplPropertiesColumn" arguments="$(parentType),Column,COLUMN_NAME,Advanced"/>
-				<!--
 				<Commands>
-					<CommandRef name="CommandTextOpenScript" />
+					<CommandRef name="Command$(systemType)NewQuery" />
 				</Commands>
-				-->
 			</SelectionNode>
 		</Selection>
 	</Define>
@@ -642,12 +640,9 @@
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Identity$(systemType)Trigger.ico" when="{Trigger.IS_IDENTITY}" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Trigger.ico" assembly="" />
 				<PropertiesRef name="TplPropertiesTrigger" />
-				<!--
 				<Commands>
-					<CommandRef name="CommandTextOpenScript" />
-					<CommandRef name="CommandTextOpenAlterScript" />
+					<CommandRef name="Command$(systemType)NewQuery" />
 				</Commands>
-				-->
 				<Children>
 					<SelectionRef name="TplSelectionColumn" arguments="TriggerColumn,Trigger,$(systemType),{Trigger.TABLE_CATALOG},,{Trigger.TABLE_SCHEMA},,{Trigger.TRIGGER_NAME}" />
 				</Children>
@@ -665,12 +660,9 @@
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Identity$(systemType)Trigger.ico" when="{Trigger.IS_IDENTITY}" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Trigger.ico" assembly="" />
 				<PropertiesRef name="TplPropertiesTrigger" />
-				<!--
 				<Commands>
-					<CommandRef name="CommandTextOpenScript" />
-					<CommandRef name="CommandTextOpenAlterScript" />
+					<CommandRef name="Command$(systemType)NewQuery" />
 				</Commands>
-				-->
 			</SelectionNode>
 		</Selection>
 	</Define>
@@ -681,6 +673,9 @@
 		<StaticNode nodeId="$(systemType)$(triggerType)s">
 			<DisplayName resource="Node_Name_$(systemType)$(triggerType)s" />
 			<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Folder$(systemType)$(triggerType)s.ico" assembly="" />
+			<Commands>
+				<CommandRef name="Command$(systemType)NewQuery" />
+			</Commands>
 			<Children>
 				<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="$(triggerType),$(systemType),$(systemObjectFlag),null,,null"/>
 			</Children>
@@ -753,11 +748,9 @@
 									<DisplayName>{Index.INDEX_NAME}</DisplayName>
 									<Icon name="PrimaryKey" />
 									<PropertiesRef name="TplPropertiesIndex" />
-									<!--
 									<Commands>
-										<CommandRef name="CommandTextOpenScript" />
+										<CommandRef name="Command$(systemType)NewQuery" />
 									</Commands>
-									-->
 									<Children>
 										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
 									</Children>
@@ -768,11 +761,9 @@
 									<DisplayName>{Index.INDEX_NAME}</DisplayName>
 									<Icon name="UniqueKey" />
 									<PropertiesRef name="TplPropertiesIndex" />
-									<!--
 									<Commands>
-										<CommandRef name="CommandTextOpenScript" />
+										<CommandRef name="Command$(systemType)NewQuery" />
 									</Commands>
-									-->
 									<Children>
 										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
 									</Children>
@@ -783,11 +774,9 @@
 									<DisplayName>{Index.INDEX_NAME}</DisplayName>
 									<Icon name="Index" />
 									<PropertiesRef name="TplPropertiesIndex" />
-									<!--
 									<Commands>
-										<CommandRef name="CommandTextOpenScript" />
+										<CommandRef name="Command$(systemType)NewQuery" />
 									</Commands>
-									-->
 									<Children>
 										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
 									</Children>
@@ -798,11 +787,9 @@
 									<DisplayName>{Index.INDEX_NAME}</DisplayName>
 									<Icon name="ForeignKey" />
 									<PropertiesRef name="TplPropertiesIndex" />
-									<!--
 									<Commands>
-										<CommandRef name="CommandTextOpenScript" />
+										<CommandRef name="Command$(systemType)NewQuery" />
 									</Commands>
-									-->
 									<Children>
 										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
 									</Children>
@@ -871,11 +858,9 @@
 											<StandardValuesRef name="TplStandardValuesForeignKeyRule" />
 										</Property>
 									</Properties>
-									<!--
 									<Commands>
-										<CommandRef name="CommandTextOpenScript" />
+										<CommandRef name="Command$(systemType)NewQuery" />
 									</Commands>
-									-->
 									<Children>
 										<SelectionRef name="TplSelectionColumn" arguments="ForeignKeyColumn,ForeignKey,$(systemType),{ForeignKey.CONSTRAINT_CATALOG},,{ForeignKey.CONSTRAINT_SCHEMA},,{ForeignKey.TABLE_NAME},,{ForeignKey.CONSTRAINT_NAME}" />
 									</Children>
@@ -922,6 +907,9 @@
 		<StaticNode nodeId="$(systemType)Tables">
 			<DisplayName resource="Node_Name_$(systemType)Tables" />
 			<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Folder$(systemType)Tables.ico" assembly="" />
+			<Commands>
+				<CommandRef name="Command$(systemType)NewQuery" />
+			</Commands>
 			<Children>
 				<SelectionRef name="TplSelectionTables" arguments="$(systemType),$(systemObjectFlag),$(triggerChildrenType)"/>
 			</Children>

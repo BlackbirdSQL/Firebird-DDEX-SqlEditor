@@ -21,11 +21,18 @@ public static class CommandProperties
 {
 	#region Statics
 
+	private static readonly object _LockObject = new();
 
 	/// <summary>
 	/// The package-wide flag indicating whether or not the current node in the SE is a 'IsSystemObject'
 	/// </summary>
-	public static DataObjectType CommandObjectType = DataObjectType.None;
+	private static EnNodeSystemType _CommandNodeSystemType = EnNodeSystemType.None;
+
+	public static EnNodeSystemType CommandNodeSystemType
+	{
+		get { lock(_LockObject) { return _CommandNodeSystemType; } }
+		set { lock (_LockObject) { _CommandNodeSystemType = value; } }
+	}
 
 	/// <summary>
 	/// The package-wide flag indicating the last command type
@@ -96,11 +103,12 @@ public static class CommandProperties
 	public static CommandID ShowAddTableDialog = new CommandID(new Guid(MenuGroupDavGuid), _CmdIdAddTableViewForQRY);
 	public static CommandID OpenTextObject = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdOpenTextObject);
 	public static CommandID OpenAlterTextObject = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdOpenAlterTextObject);
-	public static CommandID RetrieveData = new CommandID(new Guid(MenuGroupGuid), _CmdIdSERetrieveData);
+	public static CommandID DesignRetrieveData = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdDesignRetrieveData);
 	public static CommandID ExecuteTextObject = new CommandID(new Guid(MenuGroupGuid), _CmdIdSERun);
 
 
 	// Unsupported
+	public static CommandID RetrieveData = new CommandID(new Guid(MenuGroupGuid), _CmdIdSERetrieveData);
 	public static CommandID GlobalNewDiagram = new CommandID(new Guid(MenuGroupGuid), 12352);
 	public static CommandID GlobalNewTable = new CommandID(new Guid(MenuGroupGuid), 12353);
 	public static CommandID GlobalNewView = new CommandID(new Guid(MenuGroupGuid), 12355);
@@ -144,7 +152,7 @@ public static class CommandProperties
 	/// Enumerator for flagging the current SE node as 'IsSystemObject' or not
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public enum DataObjectType
+	public enum EnNodeSystemType
 	{
 		None = 0,
 		Global = 1,

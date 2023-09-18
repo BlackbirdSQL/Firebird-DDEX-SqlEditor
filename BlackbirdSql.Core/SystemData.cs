@@ -4,10 +4,7 @@
 using System;
 
 
-
-
 namespace BlackbirdSql.Core;
-
 
 // =========================================================================================================
 //											SystemData Class
@@ -21,7 +18,7 @@ public static class SystemData
 
 	public const string Invariant = "FirebirdSql.Data.FirebirdClient";
 	public const string ProviderFactoryName = "FirebirdClient Data Provider";
-	public const string ProviderFactoryType = "FirebirdSql.Data.FirebirdClient.FirebirdClientFactory";
+	public const string ProviderFactoryClassName = "FirebirdSql.Data.FirebirdClient.FirebirdClientFactory";
 	public const string ProviderFactoryDescription = ".NET Framework Data Provider for Firebird";
 
 	public const string EFProvider = "EntityFramework.Firebird";
@@ -30,6 +27,7 @@ public static class SystemData
 
 	public const string DataProviderName = "Firebird SQL Server"; // Firebird
 
+	public static Type ProviderFactoryType = typeof(FirebirdSql.Data.FirebirdClient.FirebirdClientFactory);
 
 	/// <summary>
 	/// The path to the provider's configured connections xml (in this case FlameRobin for Firebird).

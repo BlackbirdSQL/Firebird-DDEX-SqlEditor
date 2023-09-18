@@ -20,9 +20,7 @@
 //$Authors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 using System.Text;
-
-
-
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
 
@@ -32,6 +30,7 @@ internal class DslRawGenerators : DslSchema
 
 	public DslRawGenerators() : base()
 	{
+		Tracer.Trace(GetType(), "DslRawGenerators.DslRawGenerators");
 	}
 
 
@@ -39,6 +38,8 @@ internal class DslRawGenerators : DslSchema
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
+		Tracer.Trace(GetType(), "DslRawGenerators.GetCommandText");
+
 		var sql = new StringBuilder();
 
 		sql.Append(

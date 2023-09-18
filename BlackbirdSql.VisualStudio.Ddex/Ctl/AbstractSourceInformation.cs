@@ -12,6 +12,7 @@ using System.Text;
 
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
@@ -29,7 +30,7 @@ using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
 
-namespace BlackbirdSql.VisualStudio.Ddex;
+namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 
 
 // =========================================================================================================
@@ -107,9 +108,11 @@ public abstract class AbstractSourceInformation : DataSourceInformation, IVsData
 	{
 		get
 		{
+			// Tracer.Trace(GetType(), "AbstractSourceInformation.get_SourceInformation");
+
 			if (_SourceInformation == null && Connection != null)
 			{
-				LinkageParser parser = LinkageParser.Instance((FbConnection)Connection, false);
+				LinkageParser parser = LinkageParser.Instance(Site, false);
 				parser?.SyncEnter(true);
 
 				try
@@ -175,10 +178,12 @@ public abstract class AbstractSourceInformation : DataSourceInformation, IVsData
 
 	public AbstractSourceInformation() : this(default)
 	{
+		Tracer.Trace(GetType(), "AbstractSourceInformation.AbstractSourceInformation");
 	}
 
 	public AbstractSourceInformation(IVsDataConnection connection) : base(connection)
 	{
+		Tracer.Trace(GetType(), "AbstractSourceInformation.AbstractSourceInformation(IVsDataConnection)");
 		AddStandardProperties();
 	}
 
@@ -248,6 +253,8 @@ public abstract class AbstractSourceInformation : DataSourceInformation, IVsData
 
 	protected DataTable CreateSourceInformationSchema()
 	{
+		Tracer.Trace(GetType(), "AbstractSourceInformation.CreateSourceInformationSchema");
+
 		object value;
 		DataTable schema;
 
@@ -626,6 +633,7 @@ public abstract class AbstractSourceInformation : DataSourceInformation, IVsData
 
 	protected override void OnSiteChanged(EventArgs e)
 	{
+
 		base.OnSiteChanged(e);
 
 		if (Site == null && _SourceInformation != null)

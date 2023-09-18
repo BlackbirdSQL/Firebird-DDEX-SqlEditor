@@ -23,6 +23,7 @@ using System;
 using System.Data;
 using System.Globalization;
 using System.Text;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
 using FirebirdSql.Data.FirebirdClient;
@@ -37,7 +38,8 @@ internal class DslFunctionArgumentsLegacy : DslSchema
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "DslFunctionArgumentsLegacy.GetCommandText");
+
 		var sql = new StringBuilder();
 		var where = new StringBuilder();
 
@@ -118,6 +120,8 @@ internal class DslFunctionArgumentsLegacy : DslSchema
 
 	protected override void ProcessResult(DataTable schema)
 	{
+		Tracer.Trace(GetType(), "DslFunctionArgumentsLegacy.ProcessResult");
+
 		// schema.Columns[8].ColumnName = "NumericPrecision";
 
 		schema.BeginLoadData();

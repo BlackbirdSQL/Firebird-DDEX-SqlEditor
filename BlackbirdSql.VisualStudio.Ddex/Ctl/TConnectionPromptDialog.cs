@@ -8,6 +8,7 @@ using System.Windows.Forms;
 
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 
 using Microsoft.VisualStudio.Data.Framework;
@@ -15,7 +16,7 @@ using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
 
-namespace BlackbirdSql.VisualStudio.Ddex;
+namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 
 
 // =========================================================================================================
@@ -89,7 +90,7 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 
 	public TConnectionPromptDialog()
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TConnectionPromptDialog.TConnectionPromptDialog");
 
 		try
 		{

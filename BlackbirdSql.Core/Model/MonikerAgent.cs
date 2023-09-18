@@ -15,7 +15,7 @@ using FirebirdSql.Data.FirebirdClient;
 
 using Microsoft.VisualStudio.Data.Services;
 
-using DataObjectType = BlackbirdSql.Core.Ctl.CommandProviders.CommandProperties.DataObjectType;
+using EnNodeSystemType = BlackbirdSql.Core.Ctl.CommandProviders.CommandProperties.EnNodeSystemType;
 
 
 namespace BlackbirdSql.Core.Model;
@@ -484,11 +484,11 @@ public class MonikerAgent
 
 
 
-	public static string GetNodeObjectType(DataObjectType objectType)
+	public static string GetNodeObjectType(EnNodeSystemType nodeSystemType)
 	{
-		if (objectType == DataObjectType.System)
+		if (nodeSystemType == EnNodeSystemType.System)
 			return "System";
-		else if (objectType == DataObjectType.User)
+		else if (nodeSystemType == EnNodeSystemType.User)
 			return "User";
 
 		return "";

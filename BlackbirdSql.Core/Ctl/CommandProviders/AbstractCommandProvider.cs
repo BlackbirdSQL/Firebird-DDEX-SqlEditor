@@ -6,17 +6,19 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
 
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Properties;
+
 using FirebirdSql.Data.FirebirdClient;
+
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell;
 
-
-using DataObjectType = BlackbirdSql.Core.Ctl.CommandProviders.CommandProperties.DataObjectType;
+using EnNodeSystemType = BlackbirdSql.Core.Ctl.CommandProviders.CommandProperties.EnNodeSystemType;
 
 
 /*
@@ -69,6 +71,8 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 	private Hostess _Host;
 
+	private readonly EnNodeSystemType _CommandNodeSystemType = EnNodeSystemType.None;
+
 
 	#endregion Variables
 
@@ -85,10 +89,10 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	protected IBAsyncPackage DdexPackage => Controller.DdexPackage;
 
 	/// <summary>
-	/// Abstract accessor to the command <see cref="DataObjectType"/>.
+	/// Abstract accessor to the command <see cref="EnNodeSystemType"/>.
 	/// Identifies whether the target SE node is is a User, System or Global node.
 	/// </summary>
-	protected abstract DataObjectType CommandObjectType { get; }
+	protected EnNodeSystemType CommandNodeSystemType => _CommandNodeSystemType;
 
 
 	/// <summary>
@@ -108,6 +112,10 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	#endregion Property Accessors
 
 
+	public AbstractCommandProvider(EnNodeSystemType nodeType) : base()
+	{
+		_CommandNodeSystemType = nodeType;
+	}
 
 
 
@@ -234,8 +242,11 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	{
 		ThreadHelper.ThrowIfNotOnUIThread();
 
+		Tracer.Trace(GetType(), "AbstractCommandProvider.CreateCommand", "itemId: {0}, commandId: {1}", itemId, commandId);
+
 		MenuCommand command = null;
 		DataViewMenuCommand cmd = null;
+		EnNodeSystemType commandNodeSystemType = EnNodeSystemType.None;
 		IVsDataExplorerNode node;
 
 
@@ -243,15 +254,26 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		{
 			cmd = new DataViewMenuCommand(itemId, commandId, delegate
 			{
+				node = Site.ExplorerConnection.FindNode(itemId);
+				commandNodeSystemType = _CommandNodeSystemType;
+
+				if (commandNodeSystemType < EnNodeSystemType.User)
+				{
+					EnNodeSystemType currentNodeSystemType = GetUnknownNodeSystemType(node);
+
+					if (currentNodeSystemType != EnNodeSystemType.None)
+						commandNodeSystemType = currentNodeSystemType;
+				}
 				if (cmd.Visible)
 				{
-					node = Site.ExplorerConnection.FindNode(itemId);
-
-					cmd.Properties["Text"] = GetResourceString("New", "Query", CommandObjectType);
+					cmd.Properties["Text"] = GetResourceString("New", "Query", commandNodeSystemType);
 				}
 			}, delegate
 			{
-				OnNewQuery(itemId, CommandObjectType);
+				if (itemId == int.MaxValue)
+					OnNewQuery(itemId, commandNodeSystemType);
+				else
+					OnInterceptorNewQuery(itemId, commandNodeSystemType);
 			});
 			command = cmd;
 		}
@@ -304,6 +326,34 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 	}
 
+	internal static EnNodeSystemType GetUnknownNodeSystemType(IVsDataExplorerNode node)
+	{
+		if (node != null && node.Object != null)
+		{
+			IVsDataObject @object = node.Object;
+
+			if (@object.Type.Name == "View")
+			{
+				if ((short)@object.Properties["IS_SYSTEM_VIEW"] != 0)
+					return EnNodeSystemType.System;
+
+				return EnNodeSystemType.User;
+			}
+			else if (@object.Type.Name == "Procedure" || @object.Type.Name == "Function")
+			{
+				if ((int)@object.Properties["IS_SYSTEM_FLAG"] != 0)
+					return EnNodeSystemType.System;
+
+				return EnNodeSystemType.User;
+			}
+
+			return EnNodeSystemType.None;
+		}
+
+		return EnNodeSystemType.None;
+	}
+
+
 
 	public static string GetResourceString(string commandFunction, string scriptType, IVsDataExplorerNode node)
 	{
@@ -311,7 +361,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 	}
 
-	public static string GetResourceString(string commandFunction, string scriptType, DataObjectType nodeSystemType)
+	public static string GetResourceString(string commandFunction, string scriptType, EnNodeSystemType nodeSystemType)
 	{
 		return GetResourceString(commandFunction, scriptType, MonikerAgent.GetNodeObjectType(nodeSystemType));
 
@@ -348,21 +398,35 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// New query command event handler.
+	/// This roadblocks because key services in DataTools.Interop are protected.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected void OnNewQuery(int itemId, DataObjectType objectType)
+	private void OnNewQuery(int itemId, EnNodeSystemType nodeSystemType)
 	{
-		// Diag.Trace("On new query");
+		Tracer.Trace(GetType(), "AbstractCommandProvider.OnNewQuery", "itemId: {0}, nodeSystemType: {1}", itemId, nodeSystemType);
+
+		Controller.Instance.OnNewQueryRequested(Site, nodeSystemType);
+		// Host.QueryDesignerProviderTelemetry(qualityMetricProvider);
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// New query intercept system command event handler.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected void OnInterceptorNewQuery(int itemId, EnNodeSystemType nodeSystemType)
+	{
+		Tracer.Trace(GetType(), "AbstractCommandProvider.OnInterceptorNewQuery", "itemId: {0}, nodeSystemType: {1}", itemId, nodeSystemType);
 
 		IVsDataExplorerNode vsDataExplorerNode = Site.ExplorerConnection.FindNode(itemId);
 
 		MenuCommand command = vsDataExplorerNode.GetCommand(CommandProperties.GlobalNewQuery);
 
-		// This should be locked
-		// Diag.Trace("SETTNG CONNECTION COMMANDTYPE TO: " + objectType + " for command in assembly: " + command.GetType().AssemblyQualifiedName);
-		CommandProperties.CommandObjectType = objectType;
+		CommandProperties.CommandNodeSystemType = nodeSystemType;
 
 		command.Invoke();
+
 
 		// Diag.Trace("COMMAND INVOKED");
 	}
@@ -378,6 +442,8 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	{
 		ThreadHelper.ThrowIfNotOnUIThread();
 
+		Tracer.Trace(GetType(), "AbstractCommandProvider.OnOpen", "itemId: {0}, alternate: {1}", itemId, alternate);
+
 		IVsDataExplorerNode node = Site.ExplorerConnection.FindNode(itemId);
 
 		// CommandProperties.CommandObjectType = objectType;
@@ -389,7 +455,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 			if (service == null)
 			{
-				InvalidOperationException ex = new("IBDesignerExplorerServices service not found");
+				ServiceUnavailableException ex = new(typeof(IBDesignerExplorerServices));
 				Diag.Dug(ex);
 				throw ex;
 			}
@@ -402,7 +468,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 			if (service == null)
 			{
-				InvalidOperationException ex = new("IBDesignerOnlineServices service not found");
+				ServiceUnavailableException ex = new(typeof(IBDesignerOnlineServices));
 				Diag.Dug(ex);
 				throw ex;
 			}

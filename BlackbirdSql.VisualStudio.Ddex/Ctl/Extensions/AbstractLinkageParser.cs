@@ -11,8 +11,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.VisualStudio.Ddex.Ctl;
 using BlackbirdSql.VisualStudio.Ddex.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 
@@ -184,7 +186,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 	// =========================================================================================================
 
 
-	public bool AsyncActive { get { return _AsyncCardinal != 0; } }
+	public bool AsyncActive { get { lock (_LockObject) { return _AsyncCardinal != 0; } } }
 
 
 	/// <summary>
@@ -192,7 +194,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 	/// </summary>
 	public bool ClearToLoad
 	{
-		get { return (!SyncActive && !Loaded); }
+		get { lock (_LockObject) { return (!SyncActive && !Loaded); } }
 	}
 
 
@@ -203,8 +205,11 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 	{
 		get
 		{
-			return (_Enabled && !AsyncActive && !Loaded && !SyncActive
-				&& !_AsyncToken.IsCancellationRequested && ConnectionActive);
+			lock (_LockObject)
+			{
+				return (_Enabled && !AsyncActive && !Loaded && !SyncActive
+					&& !_AsyncToken.IsCancellationRequested && ConnectionActive);
+			}
 		}
 	}
 
@@ -216,9 +221,12 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 	{
 		get
 		{
-			return (_Connection != null
+			lock (_LockObject)
+			{
+				return (_Connection != null
 				&& (_Connection.State & ConnectionState.Open) != 0
 				&& (_Connection.State & (ConnectionState.Closed | ConnectionState.Broken)) == 0);
+			}
 		}
 	}
 
@@ -227,13 +235,36 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 	/// Getter to the parser status indicator. Returns false if the user has cancelled async
 	/// operations through the IDE task handler.
 	/// </summary>
-	public bool Enabled { get { return _Enabled; } }
+	public bool Enabled
+	{
+		get { lock (_LockObject) { return _Enabled; } }
+		protected set { lock (_LockObject) { _Enabled = value; } }
+	}
+
+
+
+	/// <summary>
+	/// The tracked linkage build process stage.
+	/// </summary>
+	/// <remarks>
+	/// The async linkage process can be interrupted by either a user TaskHandler
+	/// cancellation or when the UI thread requires the trigger or sequence tables,
+	/// in which case the UI thread takes over the linkage process.
+	/// </remarks>
+	public EnumLinkStage LinkStage
+	{
+		get { lock (_LockObject) { return _LinkStage; } }
+		protected set { lock (_LockObject) { _LinkStage = value; } }
+	}
 
 
 	/// <summary>
 	/// Getter indicating whether or not linkage has completed.
 	/// </summary>
-	public bool Loaded { get { return _LinkStage >= EnumLinkStage.Completed; } }
+	public bool Loaded
+	{
+		get { lock (_LockObject) { return _LinkStage >= EnumLinkStage.Completed; } }
+	}
 
 
 	/// <summary>
@@ -243,21 +274,27 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 	{
 		get
 		{
-			return _Requesting;
+			lock (_LockObject)
+			{
+				return _Requesting;
+			}
 		}
 		set
 		{
-			if (value)
+			lock (_LockObject)
 			{
-				Stopwatch.Reset();
-				Stopwatch.Start();
+				if (value)
+				{
+					Stopwatch.Reset();
+					Stopwatch.Start();
+				}
+				else
+				{
+					Stopwatch.Stop();
+					_Elapsed += Stopwatch.ElapsedMilliseconds;
+				}
+				_Requesting = value;
 			}
-			else
-			{
-				Stopwatch.Stop();
-				_Elapsed += Stopwatch.ElapsedMilliseconds;
-			}
-			_Requesting = value;
 		}
 	}
 
@@ -265,10 +302,10 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 	/// <summary>
 	/// Getter indicating whether or not the parser has fetched the generators.
 	/// </summary>
-	public bool SequencesPopulated { get { return _LinkStage >= EnumLinkStage.SequencesPopulated; } }
+	public bool SequencesPopulated { get { lock (_LockObject) { return LinkStage >= EnumLinkStage.SequencesPopulated; } } }
 
 
-	public bool SyncActive { get { return _SyncCardinal != 0; } }
+	public bool SyncActive { get { lock (_LockObject) { return _SyncCardinal != 0; } } }
 
 	/// <summary>
 	/// The name of the running task if the object is currently using the task handler.
@@ -295,62 +332,93 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 	// ---------------------------------------------------------------------------------
 	protected AbstractLinkageParser(FbConnection connection) : base(connection)
 	{
-		// Diag.Trace("new connection");
+		Tracer.Trace(typeof(LinkageParser), "AbstractLinkageParser.AbstractLinkageParser(FbConnection)");
 
-		_Instances.Add(connection, this);
+		lock (_LockObject)
+		{
+			_Instances.Add(connection, this);
 
-		_Connection.StateChange += ConnectionStateChanged;
-		_Connection.Disposed += ConnectionDisposed;
-
-
-		_AsyncTask = null;
-
-
-		_Sequences = new();
-
-		_Sequences.Columns.Add("GENERATOR_CATALOG", typeof(string));
-		_Sequences.Columns.Add("GENERATOR_SCHEMA", typeof(string));
-		_Sequences.Columns.Add("SEQUENCE_GENERATOR", typeof(string));
-		_Sequences.Columns.Add("IS_SYSTEM_FLAG", typeof(int));
-		_Sequences.Columns.Add("GENERATOR_ID", typeof(short));
-		_Sequences.Columns.Add("GENERATOR_IDENTITY", typeof(int));
-		_Sequences.Columns.Add("IDENTITY_SEED", typeof(long));
-		_Sequences.Columns.Add("IDENTITY_INCREMENT", typeof(int));
-		_Sequences.Columns.Add("IDENTITY_CURRENT", typeof(long));
-		_Sequences.Columns.Add("DEPENDENCY_TRIGGER", typeof(string));
-		_Sequences.Columns.Add("DEPENDENCY_TABLE", typeof(string));
-		_Sequences.Columns.Add("DEPENDENCY_FIELD", typeof(string));
-
-		_Sequences.PrimaryKey = new DataColumn[] { _Sequences.Columns["SEQUENCE_GENERATOR"] };
-
-		_Sequences.AcceptChanges();
+			_Connection.StateChange += ConnectionStateChanged;
+			_Connection.Disposed += ConnectionDisposed;
 
 
-		_Triggers = new();
+			_AsyncTask = null;
 
-		_Triggers.Columns.Add("TABLE_CATALOG", typeof(string));
-		_Triggers.Columns.Add("TABLE_SCHEMA", typeof(string));
-		_Triggers.Columns.Add("TRIGGER_NAME", typeof(string));
-		_Triggers.Columns.Add("TABLE_NAME", typeof(string));
-		_Triggers.Columns.Add("DESCRIPTION", typeof(string));
-		_Triggers.Columns.Add("IS_SYSTEM_FLAG", typeof(int));
-		_Triggers.Columns.Add("TRIGGER_TYPE", typeof(long));
-		_Triggers.Columns.Add("IS_INACTIVE", typeof(bool));
-		_Triggers.Columns.Add("PRIORITY", typeof(short));
-		_Triggers.Columns.Add("EXPRESSION", typeof(string));
-		_Triggers.Columns.Add("IS_IDENTITY", typeof(bool));
-		_Triggers.Columns.Add("SEQUENCE_GENERATOR", typeof(string));
-		_Triggers.Columns.Add("DEPENDENCY_FIELDS", typeof(string));
-		_Triggers.Columns.Add("IDENTITY_SEED", typeof(long));
-		_Triggers.Columns.Add("IDENTITY_INCREMENT", typeof(int));
-		_Triggers.Columns.Add("IDENTITY_TYPE", typeof(short));
-		_Triggers.Columns.Add("DEPENDENCY_FIELD", typeof(string));
-		_Triggers.Columns.Add("DEPENDENCY_COUNT", typeof(int));
-		_Triggers.Columns.Add("IDENTITY_CURRENT", typeof(long));
 
-		_Triggers.PrimaryKey = new DataColumn[] { _Triggers.Columns["TRIGGER_NAME"] };
+			_Sequences = new();
 
-		_Triggers.AcceptChanges();
+			_Sequences.Columns.Add("GENERATOR_CATALOG", typeof(string));
+			_Sequences.Columns.Add("GENERATOR_SCHEMA", typeof(string));
+			_Sequences.Columns.Add("SEQUENCE_GENERATOR", typeof(string));
+			_Sequences.Columns.Add("IS_SYSTEM_FLAG", typeof(int));
+			_Sequences.Columns.Add("GENERATOR_ID", typeof(short));
+			_Sequences.Columns.Add("GENERATOR_IDENTITY", typeof(int));
+			_Sequences.Columns.Add("IDENTITY_SEED", typeof(long));
+			_Sequences.Columns.Add("IDENTITY_INCREMENT", typeof(int));
+			_Sequences.Columns.Add("IDENTITY_CURRENT", typeof(long));
+			_Sequences.Columns.Add("DEPENDENCY_TRIGGER", typeof(string));
+			_Sequences.Columns.Add("DEPENDENCY_TABLE", typeof(string));
+			_Sequences.Columns.Add("DEPENDENCY_FIELD", typeof(string));
+
+			_Sequences.PrimaryKey = new DataColumn[] { _Sequences.Columns["SEQUENCE_GENERATOR"] };
+
+			_Sequences.AcceptChanges();
+
+
+			_Triggers = new();
+
+			_Triggers.Columns.Add("TABLE_CATALOG", typeof(string));
+			_Triggers.Columns.Add("TABLE_SCHEMA", typeof(string));
+			_Triggers.Columns.Add("TRIGGER_NAME", typeof(string));
+			_Triggers.Columns.Add("TABLE_NAME", typeof(string));
+			_Triggers.Columns.Add("DESCRIPTION", typeof(string));
+			_Triggers.Columns.Add("IS_SYSTEM_FLAG", typeof(int));
+			_Triggers.Columns.Add("TRIGGER_TYPE", typeof(long));
+			_Triggers.Columns.Add("IS_INACTIVE", typeof(bool));
+			_Triggers.Columns.Add("PRIORITY", typeof(short));
+			_Triggers.Columns.Add("EXPRESSION", typeof(string));
+			_Triggers.Columns.Add("IS_IDENTITY", typeof(bool));
+			_Triggers.Columns.Add("SEQUENCE_GENERATOR", typeof(string));
+			_Triggers.Columns.Add("DEPENDENCY_FIELDS", typeof(string));
+			_Triggers.Columns.Add("IDENTITY_SEED", typeof(long));
+			_Triggers.Columns.Add("IDENTITY_INCREMENT", typeof(int));
+			_Triggers.Columns.Add("IDENTITY_TYPE", typeof(short));
+			_Triggers.Columns.Add("DEPENDENCY_FIELD", typeof(string));
+			_Triggers.Columns.Add("DEPENDENCY_COUNT", typeof(int));
+			_Triggers.Columns.Add("IDENTITY_CURRENT", typeof(long));
+
+			_Triggers.PrimaryKey = new DataColumn[] { _Triggers.Columns["TRIGGER_NAME"] };
+
+			_Triggers.AcceptChanges();
+		}
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Protected default .ctor for creating an instance clone for a db connection.
+	/// </summary>
+	/// <param name="connection"></param>
+	// ---------------------------------------------------------------------------------
+	protected AbstractLinkageParser(FbConnection connection, AbstractLinkageParser rhs) : base(connection)
+	{
+		Tracer.Trace(typeof(LinkageParser), "AbstractLinkageParser.AbstractLinkageParser(FbConnection, AbstractLinkageParser)");
+
+		lock (_LockObject)
+		{
+			_Instances.Add(connection, this);
+
+			_Connection.StateChange += ConnectionStateChanged;
+			_Connection.Disposed += ConnectionDisposed;
+
+
+			_AsyncTask = null;
+
+			_Sequences = rhs._Sequences.Copy();
+			_Triggers = rhs._Triggers.Copy();
+
+			LinkStage = EnumLinkStage.Completed;
+		}
 	}
 
 
@@ -365,8 +433,10 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 	/// </param>
 	/// <returns>The distinctly unique parser associated with the db connection.</returns>
 	// ---------------------------------------------------------------------------------
-	protected static AbstractLinkageParser Instance(FbConnection connection, bool canCreate = true)
+	protected static AbstractLinkageParser Instance(FbConnection connection)
 	{
+		Tracer.Trace(typeof(LinkageParser), "AbstractLinkageParser.Instance(FbConnection)");
+
 		AbstractLinkageParser parser = null;
 
 		if (connection == null)
@@ -376,18 +446,18 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 			throw ex;
 		}
 
-		if (_Instances == null)
+		lock (_LockObject)
 		{
-			if (!canCreate)
-				return null;
-
-			_Instances = new();
-		}
-		else
-		{
-			if (_Instances.TryGetValue(connection, out object parserObject))
+			if (_Instances == null)
 			{
-				parser = (AbstractLinkageParser)parserObject;
+				_Instances = new();
+			}
+			else
+			{
+				if (_Instances.TryGetValue(connection, out object parserObject))
+				{
+					parser = (AbstractLinkageParser)parserObject;
+				}
 			}
 		}
 
@@ -416,6 +486,52 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 	// =========================================================================================================
 	#region Abstract method declarations - AbstractLinkageParser
 	// =========================================================================================================
+
+
+
+	protected static AbstractLinkageParser FindEquivalentParser(FbConnection connection)
+	{
+		Tracer.Trace(typeof(LinkageParser), "AbstractLinkageParser.FindEquivalentParser");
+
+		lock (_LockObject)
+		{
+
+			if (_Instances == null)
+				return null;
+
+			FbConnectionStringBuilder csb1 = null;
+			FbConnectionStringBuilder csb2;
+
+			foreach (KeyValuePair<FbConnection, object> pair in _Instances)
+			{
+				AbstractLinkageParser parser = (AbstractLinkageParser)pair.Value;
+
+				if (!parser.Loaded)
+					continue;
+
+				csb1 ??= new(connection.ConnectionString);
+
+				try
+				{
+					csb2 = new (pair.Key.ConnectionString);
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex);
+					continue;
+				}
+
+
+
+				if (TConnectionEquivalencyComparer.AreEquivalent(csb1, csb2))
+				{
+					return parser;
+				}
+			}
+		}
+
+		return null;
+	}
 
 
 	// ---------------------------------------------------------------------------------
@@ -488,7 +604,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 		_Sequences.AcceptChanges();
 
 		_RawGenerators = null;
-		_LinkStage = EnumLinkStage.SequencesPopulated;
+		LinkStage = EnumLinkStage.SequencesPopulated;
 
 		Stopwatch.Stop();
 		_Elapsed += Stopwatch.ElapsedMilliseconds;
@@ -662,7 +778,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 		_Sequences.EndLoadData();
 		_Sequences.AcceptChanges();
 
-		_LinkStage = EnumLinkStage.LinkageCompleted;
+		LinkStage = EnumLinkStage.LinkageCompleted;
 		_RawTriggers = null;
 		_RawTriggerDependencies = null;
 		_DslParser = null;
@@ -718,7 +834,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 
 
 		if (_RawGenerators != null)
-			_LinkStage = EnumLinkStage.GeneratorsLoaded;
+			LinkStage = EnumLinkStage.GeneratorsLoaded;
 
 		return _RawGenerators;
 	}
@@ -772,7 +888,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 
 
 		if (_RawTriggerDependencies != null)
-			_LinkStage = EnumLinkStage.TriggerDependenciesLoaded;
+			LinkStage = EnumLinkStage.TriggerDependenciesLoaded;
 
 		return _RawTriggerDependencies;
 	}
@@ -822,7 +938,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 		}
 
 		if (_RawTriggers != null)
-			_LinkStage = EnumLinkStage.TriggersLoaded;
+			LinkStage = EnumLinkStage.TriggersLoaded;
 
 
 		return _RawTriggers;
@@ -1153,7 +1269,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 			if (AsyncActive)
 			{
 				// If it's a user cancel request.
-				if (!_Enabled)
+				if (!Enabled)
 				{
 					completed = true;
 					text = Resources.LinkageParserCancelled.Res(progress, stage, elapsed);
@@ -1218,21 +1334,21 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 			if (isAsync)
 			{
 				// If it's a user cancel request.
-				if (!_Enabled)
+				if (!Enabled)
 					text = Resources.LinkageParserCancelledCatalog.Res(catalog);
 				else
 					text = Resources.LinkageParserResumingCatalog.Res(catalog);
 			}
 			else
 			{
-				if (!_Enabled)
+				if (!Enabled)
 					text = Resources.LinkageParserResumingCatalog.Res(catalog);
 				else
 					text = Resources.LinkageParserCatalogSwitchedToUiThread.Res(catalog);
 			}
 		}
 
-		if (stage == EnumLinkStage.Completed || (isAsync && !_Enabled))
+		if (stage == EnumLinkStage.Completed || (isAsync && !Enabled))
 		{
 			clear = true;
 		}
@@ -1320,8 +1436,10 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 			return;
 
 		// Diag.Trace();
-
-		_Instances.Remove(_Connection);
+		lock (_LockObject)
+		{
+			_Instances.Remove(_Connection);
+		}
 		_Connection = null;
 	}
 

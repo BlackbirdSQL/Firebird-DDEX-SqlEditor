@@ -20,10 +20,12 @@
 //$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 using System;
+using System.Collections;
 using System.Data;
 using System.Text;
 
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
 
@@ -34,6 +36,8 @@ internal class DslTables : DslSchema
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
+		Tracer.Trace(GetType(), "DslTables.GetCommandText");
+
 		var sql = new StringBuilder();
 		var where = new StringBuilder();
 
@@ -116,6 +120,8 @@ internal class DslTables : DslSchema
 
 	protected override void ProcessResult(DataTable schema)
 	{
+		Tracer.Trace(GetType(), "DslTables.ProcessResult");
+
 		schema.BeginLoadData();
 
 		foreach (DataRow row in schema.Rows)

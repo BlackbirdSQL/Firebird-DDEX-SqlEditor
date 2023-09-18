@@ -9,10 +9,9 @@ using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
-
-
-namespace BlackbirdSql.VisualStudio.Ddex;
+namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 
 
 // =========================================================================================================
@@ -35,12 +34,12 @@ public class TMappedObjectConverter : AdoDotNetMappedObjectConverter
 
 	public TMappedObjectConverter() : base()
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TMappedObjectConverter.TMappedObjectConverter");
 	}
 
 	public TMappedObjectConverter(IVsDataConnection connection) : base(connection)
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TMappedObjectConverter.TMappedObjectConverter(IVsDataConnection)");
 	}
 
 
@@ -57,7 +56,7 @@ public class TMappedObjectConverter : AdoDotNetMappedObjectConverter
 
 	protected override object ConvertToMappedMember(string typeName, string mappedMemberName, object[] underlyingValues, object[] parameters)
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TMappedObjectConverter.ConvertToMappedMember", "typeName: {0}, mappedMemberName: {1}", typeName, mappedMemberName);
 		return base.ConvertToMappedMember(typeName, mappedMemberName, underlyingValues, parameters);
 	}
 

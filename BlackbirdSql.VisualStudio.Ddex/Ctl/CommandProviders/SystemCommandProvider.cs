@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using BlackbirdSql.Core.Ctl.CommandProviders;
 
 
-namespace BlackbirdSql.VisualStudio.Ddex.CommandProviders;
+namespace BlackbirdSql.VisualStudio.Ddex.Ctl.CommandProviders;
 
 [Guid(CommandProperties.SystemQueryCommandProviderGuid)]
 
@@ -20,12 +20,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.CommandProviders;
 internal class SystemCommandProvider : AbstractCommandProvider
 {
 
-	/// <summary>
-	/// Identifies this <see cref="AbstractCommandProvider"/> as spawned off of a System Object SE node
-	/// </summary>
-	protected override CommandProperties.DataObjectType CommandObjectType
+	public SystemCommandProvider() :base(CommandProperties.EnNodeSystemType.System)
 	{
-		get { return CommandProperties.DataObjectType.System; }
 	}
-
 }

@@ -238,11 +238,23 @@
 	  <Compile Include="Controls\Graphing\XmlPlanNodeBuilder.cs" />
 	  <Compile Include="Controls\Graphing\Parsers\XmlPlanParser.cs" />
 	  <Compile Include="Controls\Graphing\Parsers\XmlPlanParserFactory.cs" />
+	  <Compile Include="Ctl\DataTools\AbstractDataToolsDocument.cs" />
+	  <Compile Include="Ctl\DataTools\DSRefBuilder.cs" />
+	  <Compile Include="Ctl\DataTools\Enums\EN__VSDATACONNECTIONSTATE.cs" />
+	  <Compile Include="Ctl\DataTools\Events\IVsDataConnectionEvents.cs" />
+	  <Compile Include="Ctl\DataTools\Interfaces\IVsDataConnection.cs" />
+	  <Compile Include="Ctl\DataTools\Interfaces\IVsDataConnectionManager.cs" />
+	  <Compile Include="Ctl\DataTools\QueryDesignerDocument.cs" />
+	  <Compile Include="Ctl\Parser\Enums\EnBindMode.cs" />
+	  <Compile Include="Ctl\Parser\Interfaces\IBBinder.cs" />
+	  <Compile Include="Ctl\Parser\ParseResult.cs" />
 	  <Compile Include="Model\Events\QESQLDataLoadedEventArgs.cs" />
 	  <Compile Include="Model\Events\QESQLDataLoadedEventHandler.cs" />
 	  <Compile Include="Model\Events\QESQLStatementCompletedEventArgs.cs" />
 	  <Compile Include="Model\Events\QESQLBatchSpecialActionEventHandler.cs" />
 	  <Compile Include="Model\Events\QESQLStatementCompletedEventHandler.cs" />
+	  <Compile Include="Model\Parser\Interfaces\IBMetadataProvider.cs" />
+	  <Compile Include="Model\Parser\Interfaces\IBServer.cs" />
 	  <Compile Include="Properties\AttributeResources.Designer.cs">
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
@@ -259,6 +271,11 @@
 	  <Compile Include="Controls\Graphing\NodeDisplay.cs" />
 	  <Compile Include="Controls\Widgets\MultilineToolTip.cs" />
 	  <Compile Include="Model\Events\QESQLBatchSpecialActionEventArgs.cs" />
+	  <Compile Include="Properties\Resources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Resources.resx</DependentUpon>
+	  </Compile>
 	  <Compile Include="Root\Cmd.cs" />
 	  <Compile Include="Controls\Graphing\ComponentModel\DisplayNameDescriptionAttribute.cs" />
 	  <Compile Include="Controls\Graphing\ComponentModel\DisplayOrderAttribute.cs" />
@@ -717,7 +734,7 @@
 	  <Compile Include="Ctl\Interfaces\IBSqlEditorStrategy.cs" />
 	  <Compile Include="Model\Interfaces\ISqlQueryExecutionHandler.cs" />
 	  <Compile Include="Model\Interfaces\IVariableResolver.cs" />
-	  <Compile Include="Model\ManagedBatchParser.cs" />
+	  <Compile Include="Model\Parser\ManagedBatchParser.cs" />
 	  <Compile Include="Model\MonikerAgent.cs" />
 	  <Compile Include="Model\NotifyTaskCompletion.cs" />
 	  <Compile Include="Model\ParserState.cs" />
@@ -781,6 +798,12 @@
 	  <EmbeddedResource Include="Controls\Exceptions\ExceptionMessageBoxDlg.resx" />
 	  <EmbeddedResource Include="Properties\ExceptionsResources.resx" />
 	  <EmbeddedResource Include="Controls\Exceptions\PrivacyConfirmationDlg.resx" />
+	  <None Include="Properties\Originals\Microsoft.VisualStudio.Data.Providers.Common.Properties.Resources.resx" />
+	  <EmbeddedResource Include="Properties\Resources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <None Include="Properties\Originals\Microsoft.VisualStudio.Data.Framework.Properties.Resources.resx" />
 	  <EmbeddedResource Include="Properties\QEResources.resx" />
 	  <None Include="Properties\Originals\TabbedEditorResources.resx" />
 	  <EmbeddedResource Include="Properties\SharedResx.resx" />
@@ -806,7 +829,6 @@
 	  <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="9.1.1" />
 	  <PackageReference Include="IndexRange" Version="1.0.2" />
 	  <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-	  <PackageReference Include="Microsoft.SqlServer.Management.SqlParser" Version="170.9.0" />
 	  <PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
 	  <PackageReference Include="Microsoft.VisualStudio.Data.Framework" Version="17.5.33428.388" />
 	  <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.6.36389" />
@@ -817,6 +839,10 @@
 	  <Reference Include="Accessibility" />
 	  <Reference Include="Microsoft.AnalysisServices.Graphing">
 	    <HintPath>..\..\..\..\..\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\Microsoft\SQLCommon\Microsoft.AnalysisServices.Graphing.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Microsoft.VisualStudio.DataTools.Interop">
+	    <HintPath>..\..\..\..\..\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Microsoft.VisualStudio.DataTools.Interop.dll</HintPath>
+	    <EmbedInteropTypes>False</EmbedInteropTypes>
 	  </Reference>
 	  <Reference Include="PresentationFramework" />
 	  <Reference Include="UIAutomationProvider" />

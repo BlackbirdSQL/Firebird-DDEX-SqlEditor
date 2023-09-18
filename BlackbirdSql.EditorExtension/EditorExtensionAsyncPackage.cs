@@ -14,6 +14,7 @@ using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Commands;
 using BlackbirdSql.Common.Ctl.ComponentModel;
+using BlackbirdSql.Common.Ctl.DataTools;
 using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
@@ -29,11 +30,14 @@ using BlackbirdSql.EditorExtension.Ctl;
 using BlackbirdSql.Wpf.Controls;
 
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
+
+using static BlackbirdSql.Core.Ctl.CommandProviders.CommandProperties;
 
 using Cmd = BlackbirdSql.Common.Cmd;
 using MonikerAgent = BlackbirdSql.Core.Model.MonikerAgent;
@@ -253,7 +257,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 
 	// =========================================================================================================
-	#region Method Implementations - EditorExtensionAsyncPackage
+	#region Methods and Implementations - EditorExtensionAsyncPackage
 	// =========================================================================================================
 
 
@@ -373,7 +377,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 			if (service == null)
 			{
-				TypeAccessException ex = new(serviceType.FullName);
+				ServiceUnavailableException ex = new(serviceType);
 				Diag.Dug(ex);
 				throw ex;
 			}
@@ -395,7 +399,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 			if (service == null)
 			{
-				TypeAccessException ex = new(serviceType.FullName);
+				ServiceUnavailableException ex = new(serviceType);
 				Diag.Dug(ex);
 				throw ex;
 			}
@@ -786,7 +790,8 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 		return connectionDialogFrame.DialogResult;
 	}
 
-	#endregion Method Implementations
+
+	#endregion Methods and Implementations
 
 }
 

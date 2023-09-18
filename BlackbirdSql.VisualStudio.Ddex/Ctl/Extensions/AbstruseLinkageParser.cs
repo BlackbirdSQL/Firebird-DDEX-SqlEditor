@@ -7,9 +7,7 @@ using FirebirdSql.Data.FirebirdClient;
 
 using C5;
 using BlackbirdDsl;
-
-
-
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Extensions;
 
@@ -29,6 +27,9 @@ internal abstract class AbstruseLinkageParser
 	// -----------------------------------------------------------------------------------------------------
 	#region Variables - AbstruseLinkageParser
 	// -----------------------------------------------------------------------------------------------------
+
+
+	protected static object _LockObject = new object ();
 
 
 	// ---------------------------------------------------------------------------------
@@ -112,6 +113,8 @@ internal abstract class AbstruseLinkageParser
 	/// <param name="connection"></param>
 	protected AbstruseLinkageParser(FbConnection connection)
 	{
+		Tracer.Trace(typeof(LinkageParser), "AbstruseLinkageParser.AbstruseLinkageParser(FbConnection)");
+
 		_Connection = connection;
 	}
 

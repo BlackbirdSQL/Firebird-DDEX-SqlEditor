@@ -19,8 +19,10 @@ using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
+using System.Data.Odbc;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
-namespace BlackbirdSql.VisualStudio.Ddex;
+namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 
 
 // =========================================================================================================
@@ -62,11 +64,14 @@ public class TSourceInformation : AbstractSourceInformation
 
 	public TSourceInformation() : base()
 	{
+		Tracer.Trace(GetType(), "TSourceInformation.TSourceInformation");
 		AddExtendedProperties();
 	}
 
 	public TSourceInformation(IVsDataConnection connection) : base(connection)
 	{
+		Tracer.Trace(GetType(), "TSourceInformation.TSourceInformation(IVsDataConnection)");
+
 		if (_Instances != null && _Instances.ContainsKey(connection))
 		{
 			DuplicateNameException ex = new(Resources.ExceptionDuplicatingSiteInformation);

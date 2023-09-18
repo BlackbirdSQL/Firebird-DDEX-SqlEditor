@@ -21,6 +21,7 @@
 
 
 
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
 
 
@@ -33,6 +34,8 @@ internal class DslViewColumns : DslColumns
 
 	public DslViewColumns(LinkageParser parser) : base(parser)
 	{
+		Tracer.Trace(GetType(), "DslViewColumns.DslViewColumns");
+
 		_ParentType = "View";
 		_ObjectType = "ViewColumn";
 

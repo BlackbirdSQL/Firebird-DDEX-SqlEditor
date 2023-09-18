@@ -1,27 +1,21 @@
 // $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
-
 using System;
-using System.Data;
-using System.Data.Common;
 using System.ComponentModel.Design;
-using System.Threading;
+using System.Data;
+
+using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 using Microsoft.VisualStudio.Data.Core;
+using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
-using FirebirdSql.Data.FirebirdClient;
 
-using BlackbirdSql.Core;
-using BlackbirdSql.VisualStudio.Ddex.Extensions;
-using System.Diagnostics;
-using System.ServiceProcess;
-
-namespace BlackbirdSql.VisualStudio.Ddex;
-
+namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 
 // =========================================================================================================
 //										TConnectionSupport Class
@@ -32,6 +26,61 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 // =========================================================================================================
 public class TConnectionSupport : AdoDotNetConnectionSupport
 {
+	/// <summary>
+	/// Trace replacement for AdoDotNetCommand but doesn't seem to do anything.
+	/// </summary>
+	public class TCommand : DataCommand
+	{
+		private TConnectionSupport ConnectionSupport => base.Site.GetService(typeof(IVsDataConnectionSupport)) as TConnectionSupport;
+
+
+		public TCommand() : base()
+		{
+			Tracer.Trace(GetType(), "TCommand.TCommand");
+		}
+
+		public TCommand(IVsDataConnection connection)
+			: base(connection)
+		{
+			Tracer.Trace(GetType(), "TCommand.TCommand(IVsDataConnection)");
+		}
+
+		public override IVsDataParameter CreateParameter()
+		{
+			Tracer.Trace(GetType(), "TCommand.CreateParameter");
+			return ConnectionSupport.CreateParameterCore();
+		}
+
+		public override IVsDataParameter[] DeriveParameters(string command, DataCommandType commandType, int commandTimeout)
+		{
+			Tracer.Trace(GetType(), "TCommand.DeriveParameters", "commandType: {0}, command: {1}", commandType, command);
+			return ConnectionSupport.DeriveParametersCore(command, commandType, commandTimeout);
+		}
+
+		public override string Prepare(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
+		{
+			Tracer.Trace(GetType(), "TCommand.Prepare", "commandType: {0}, command: {1}", commandType, command);
+			return ConnectionSupport.PrepareCore(command, commandType, parameters, commandTimeout);
+		}
+
+		public override IVsDataReader DeriveSchema(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
+		{
+			Tracer.Trace(GetType(), "TCommand.DeriveSchema", "commandType: {0}, command: {1}", commandType, command);
+			return ConnectionSupport.DeriveSchemaCore(command, commandType, parameters, commandTimeout);
+		}
+
+		public override IVsDataReader Execute(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
+		{
+			Tracer.Trace(GetType(), "TCommand.Execute", "commandType: {0}, command: {1}", commandType, command);
+			return ConnectionSupport.ExecuteCore(command, commandType, parameters, commandTimeout);
+		}
+
+		public override int ExecuteWithoutResults(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
+		{
+			Tracer.Trace(GetType(), "TCommand.ExecuteWithoutResults", "commandType: {0}, command: {1}", commandType, command);
+			return ConnectionSupport.ExecuteWithoutResultsCore(command, commandType, parameters, commandTimeout);
+		}
+	}
 
 
 
@@ -97,7 +146,7 @@ public class TConnectionSupport : AdoDotNetConnectionSupport
 
 	public TConnectionSupport() : base()
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TConnectionSupport.TConnectionSupport");
 	}
 
 
@@ -112,6 +161,7 @@ public class TConnectionSupport : AdoDotNetConnectionSupport
 	// =========================================================================================================
 
 
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Creates a new service object based on the specified interface service type.
@@ -124,7 +174,12 @@ public class TConnectionSupport : AdoDotNetConnectionSupport
 	// ---------------------------------------------------------------------------------
 	protected override object CreateService(IServiceContainer container, Type serviceType)
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "TConnectionSupport.CreateService", "Service requested: {0}", serviceType.Name);
+
+		if (serviceType == typeof(IVsDataCommand))
+		{
+			return new TCommand(base.Site);
+		}
 
 		/* Uncomment this and change PackageSupportedObjects._UseFactoryOnly to true to debug implementations
 		 * Don't forget to do the same for the ProviderObjectFactory if you do.
@@ -180,6 +235,7 @@ public class TConnectionSupport : AdoDotNetConnectionSupport
 	// ---------------------------------------------------------------------------------
 	public override bool Open(bool doPromptCheck)
 	{
+		Tracer.Trace(GetType(), "TConnectionSupport.Open", "doPromptCheck: {0}", doPromptCheck);
 
 		try
 		{
