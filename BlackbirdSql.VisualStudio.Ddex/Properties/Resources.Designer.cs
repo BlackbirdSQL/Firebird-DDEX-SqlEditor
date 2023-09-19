@@ -61,6 +61,24 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The arguments array is invalid..
+        /// </summary>
+        public static string DataSupportObject_InvalidInvokeArguments {
+            get {
+                return ResourceManager.GetString("DataSupportObject_InvalidInvokeArguments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The method name is unknown..
+        /// </summary>
+        public static string DataSupportObject_UnknownInvokeName {
+            get {
+                return ResourceManager.GetString("DataSupportObject_UnknownInvokeName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Use this selection to connect to Firebird using the DDEX 2.0 BlackbirdSql Provider.
         /// </summary>
         public static string DdexProvider_Description {
@@ -84,6 +102,24 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string DdexProvider_ShortDisplayName {
             get {
                 return ResourceManager.GetString("DdexProvider_ShortDisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The parameters array contains invalid elements..
+        /// </summary>
+        public static string DSRefBuilder_InvalidParameters {
+            get {
+                return ResourceManager.GetString("DSRefBuilder_InvalidParameters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A connection site is required to build a DSRef..
+        /// </summary>
+        public static string DSRefBuilder_MissingSite {
+            get {
+                return ResourceManager.GetString("DSRefBuilder_MissingSite", resourceCulture);
             }
         }
         
@@ -318,6 +354,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string ExceptionSVsSolutionIsNull {
             get {
                 return ResourceManager.GetString("ExceptionSVsSolutionIsNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SyncTokenSource was found to be null when exiting sync.
+        /// </summary>
+        public static string ExceptionSyncTokenSourceNull {
+            get {
+                return ResourceManager.GetString("ExceptionSyncTokenSourceNull", resourceCulture);
             }
         }
         

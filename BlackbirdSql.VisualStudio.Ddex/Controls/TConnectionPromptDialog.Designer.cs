@@ -1,7 +1,7 @@
 ﻿
 using System.Windows.Forms;
 
-namespace BlackbirdSql.VisualStudio.Ddex.Ctl
+namespace BlackbirdSql.VisualStudio.Ddex.Controls
 {
     partial class TConnectionPromptDialog
     {

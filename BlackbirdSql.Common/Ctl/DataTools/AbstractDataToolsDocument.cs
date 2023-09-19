@@ -868,7 +868,8 @@ public abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersist
 		}
 		dsRefBuilder ??= OwningHierarchy.ExplorerConnection.Connection.GetService(typeof(IDSRefBuilder))
 			as IDSRefBuilder;
-		dsRefBuilder ??= new DSRefBuilder(OwningHierarchy.ExplorerConnection.Connection);
+		// IDSRefBuilder service should never be null. Defined in TConnectionSupport.
+		dsRefBuilder ??= new Microsoft.VisualStudio.Data.Framework.DSRefBuilder(OwningHierarchy.ExplorerConnection.Connection); 
 
 		object obj = Host.CreateLocalInstance(VS.CLSID_DSRef);
 		if (identifier != null)

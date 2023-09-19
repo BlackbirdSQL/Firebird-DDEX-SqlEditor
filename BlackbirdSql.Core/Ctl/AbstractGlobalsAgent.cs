@@ -98,6 +98,7 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 
 	private IBAsyncPackage _DdexPackage = null;
 
+	protected bool _ShowDiagramPane = true;
 	protected bool _ValidateConfig = false;
 	protected bool _ValidateEdmx = false;
 
@@ -129,13 +130,7 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	// =========================================================================================================
 
 
-	public DTE Dte
-	{
-		get
-		{
-			return _Controller.Dte;
-		}
-	}
+	public DTE Dte => _Controller.Dte;
 
 
 	public IBPackageController Controller => _Controller ??= Core.Controller.Instance;
@@ -146,16 +141,19 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Returns a boolean indicating whether or not the the query designer diagram pane
+	/// is visible when table or view data is initially retrieved.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public bool ShowDiagramPane => _ShowDiagramPane;
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Returns a boolean indicating whether or not the app.config may be validated
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public bool ValidateConfig
-	{
-		get
-		{
-			return _ValidateConfig;
-		}
-	}
+	public bool ValidateConfig => _ValidateConfig;
 
 
 	// ---------------------------------------------------------------------------------
@@ -164,13 +162,7 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	/// Vlaidation flags are always persistent in Release builds.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public bool PeristentValidation
-	{
-		get
-		{
-			return _PersistentValidation;
-		}
-	}
+	public bool PeristentValidation => _PersistentValidation;
 
 
 	// ---------------------------------------------------------------------------------
@@ -178,13 +170,7 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	/// Returns a boolean indicating whether or not edmx files may be validated
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public bool ValidateEdmx
-	{
-		get
-		{
-			return _ValidateEdmx;
-		}
-	}
+	public bool ValidateEdmx => _ValidateEdmx;
 
 
 

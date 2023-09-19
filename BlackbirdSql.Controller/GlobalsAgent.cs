@@ -85,6 +85,7 @@ internal class GlobalsAgent : AbstractGlobalsAgent
 			Diag.EnableDiagnostics = (bool)e["EnableDiagnostics"];
 			Diag.EnableTaskLog = (bool)e["EnableTaskLog"];
 
+			_ShowDiagramPane = (bool)e["ShowDiagramPane"];
 			_ValidateConfig = (bool)e["ValidateConfig"];
 			_ValidateEdmx = (bool)e["ValidateEdmx"];
 		}

@@ -1,5 +1,5 @@
 
-namespace BlackbirdSql.VisualStudio.Ddex.Ctl
+namespace BlackbirdSql.VisualStudio.Ddex.Controls
 {
     partial class TConnectionUIControl
     {

@@ -3,6 +3,7 @@
 
 using System.ComponentModel;
 using BlackbirdSql.Core.Ctl.Config;
+using BlackbirdSql.EditorExtension.Ctl.ComponentModel;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl.Config;
@@ -16,12 +17,18 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl.Config;
 // =========================================================================================================
 public class GeneralOptionModel : AbstractOptionModel<GeneralOptionModel>
 {
+	[GlobalizedCategory("OptionCategoryQueryDesigner")]
+	[GlobalizedDisplayName("OptionDisplayShowDiagramPane")]
+	[GlobalizedDescription("OptionDescriptionShowDiagramPane")]
+	[TypeConverter(typeof(GlobalShowHideConverter))]
+	[DefaultValue(true)]
+	public bool ShowDiagramPane { get; set; } = true;
 
 	[GlobalizedCategory("OptionCategoryDiagnostics")]
 	[GlobalizedDisplayName("OptionDisplayEnableDiagnostics")]
 	[GlobalizedDescription("OptionDescriptionEnableDiagnostics")]
-	[DefaultValue(true)]
-	public bool EnableDiagnostics { get; set; } = true;
+	[DefaultValue(false)]
+	public bool EnableDiagnostics { get; set; } = false;
 
 	[GlobalizedCategory("OptionCategoryDiagnostics")]
 	[GlobalizedDisplayName("OptionDisplayEnableTaskLog")]

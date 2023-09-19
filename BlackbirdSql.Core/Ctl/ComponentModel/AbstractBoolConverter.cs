@@ -9,7 +9,7 @@ namespace BlackbirdSql.Core.Ctl.ComponentModel;
 
 public abstract class AbstractBoolConverter : BooleanConverter
 {
-	public System.Resources.ResourceManager ResMgr => AttributeResources.ResourceManager;
+	public virtual System.Resources.ResourceManager ResMgr => AttributeResources.ResourceManager;
 
 	public abstract string LiteralFalseResource { get; }
 	public abstract string LiteralTrueResource { get; }

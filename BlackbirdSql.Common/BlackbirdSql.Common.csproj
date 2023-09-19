@@ -239,7 +239,6 @@
 	  <Compile Include="Controls\Graphing\Parsers\XmlPlanParser.cs" />
 	  <Compile Include="Controls\Graphing\Parsers\XmlPlanParserFactory.cs" />
 	  <Compile Include="Ctl\DataTools\AbstractDataToolsDocument.cs" />
-	  <Compile Include="Ctl\DataTools\DSRefBuilder.cs" />
 	  <Compile Include="Ctl\DataTools\Enums\EN__VSDATACONNECTIONSTATE.cs" />
 	  <Compile Include="Ctl\DataTools\Events\IVsDataConnectionEvents.cs" />
 	  <Compile Include="Ctl\DataTools\Interfaces\IVsDataConnection.cs" />

@@ -88,6 +88,24 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hide.
+        /// </summary>
+        internal static string GlobalizedLiteralHide {
+            get {
+                return ResourceManager.GetString("GlobalizedLiteralHide", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Visible.
+        /// </summary>
+        internal static string GlobalizedLiteralShow {
+            get {
+                return ResourceManager.GetString("GlobalizedLiteralShow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to True.
         /// </summary>
         internal static string GlobalizedLiteralTrue {

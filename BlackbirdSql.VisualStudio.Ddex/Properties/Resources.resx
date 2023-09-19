@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DataSupportObject_InvalidInvokeArguments" xml:space="preserve">
+    <value>The arguments array is invalid.</value>
+  </data>
+  <data name="DataSupportObject_UnknownInvokeName" xml:space="preserve">
+    <value>The method name is unknown.</value>
+  </data>
   <data name="DdexProvider_Description" xml:space="preserve">
     <value>Use this selection to connect to Firebird using the DDEX 2.0 BlackbirdSql Provider</value>
   </data>
@@ -125,6 +131,12 @@
   </data>
   <data name="DdexProvider_ShortDisplayName" xml:space="preserve">
     <value>BlackbirdSql DDEX 2.0 Provider</value>
+  </data>
+  <data name="DSRefBuilder_InvalidParameters" xml:space="preserve">
+    <value>The parameters array contains invalid elements.</value>
+  </data>
+  <data name="DSRefBuilder_MissingSite" xml:space="preserve">
+    <value>A connection site is required to build a DSRef.</value>
   </data>
   <data name="ExceptionAddingNullSite" xml:space="preserve">
     <value>Attempt to add a null site</value>
@@ -203,6 +215,9 @@
   </data>
   <data name="ExceptionSVsSolutionIsNull" xml:space="preserve">
     <value>SVsSolution is null</value>
+  </data>
+  <data name="ExceptionSyncTokenSourceNull" xml:space="preserve">
+    <value>SyncTokenSource was found to be null when exiting sync</value>
   </data>
   <data name="ExceptionTriggerErrorAtColumnIndex" xml:space="preserve">
     <value>Trigger Error at Column index: {0}.</value>

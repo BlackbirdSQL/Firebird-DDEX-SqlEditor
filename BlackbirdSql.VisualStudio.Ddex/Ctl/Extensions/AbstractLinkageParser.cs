@@ -81,11 +81,17 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 	protected Task<bool> _AsyncTask;
 
 	/// <summary>
+	/// Handle to the sync task if it exists.
+	/// </summary>
+	protected Task<bool> _SyncTask;
+
+	/// <summary>
 	/// Cancellation token for async operations. 
 	/// </summary>
 	protected CancellationToken _AsyncToken;
 
 	protected CancellationToken _SyncToken;
+	protected CancellationToken _DummyToken;
 
 	/// <summary>
 	/// Cancellation token source for async operations. 
@@ -93,6 +99,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 	protected CancellationTokenSource _AsyncTokenSource = null;
 
 	protected CancellationTokenSource _SyncTokenSource = null;
+	protected CancellationTokenSource _DummyTokenSource = null;
 
 	/// <summary>
 	/// The total elapsed time in milliseconds that the parser was actively
@@ -343,6 +350,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 
 
 			_AsyncTask = null;
+			_SyncTask = null;
 
 
 			_Sequences = new();
@@ -413,6 +421,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser, IBTaskHan
 
 
 			_AsyncTask = null;
+			_SyncTask = null;
 
 			_Sequences = rhs._Sequences.Copy();
 			_Triggers = rhs._Triggers.Copy();

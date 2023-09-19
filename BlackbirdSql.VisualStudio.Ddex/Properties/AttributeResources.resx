@@ -126,6 +126,9 @@
   <data name="OptionCategoryEntityFramework" xml:space="preserve">
     <value>EntityFramework settings</value>
   </data>
+  <data name="OptionCategoryQueryDesigner" xml:space="preserve">
+    <value>Query designer</value>
+  </data>
   <data name="OptionDescriptionEnableDiagnostics" xml:space="preserve">
     <value>Enables the execution of Diagnostics calls. This option should remain enabled. Disabling does not disable Exceptions.</value>
   </data>
@@ -152,6 +155,9 @@
   </data>
   <data name="OptionDescriptionPersistentValidation" xml:space="preserve">
     <value>Enables persistent validation flags. If disabled the validation flag of solutions and projects will be repeated upon reopening if Validation is enabled. Only applicable to DEBUG builds.</value>
+  </data>
+  <data name="OptionDescriptionShowDiagramPane" xml:space="preserve">
+    <value>Sets the query designer diagram pane to visible when a table or view's data is initially retrieved.</value>
   </data>
   <data name="OptionDescriptionValidateConfig" xml:space="preserve">
     <value>Enable this option to allow BlackbirdSql to ensure that Firebird EntityFramework is configured in your non-CPS projects' App.config.</value>
@@ -186,10 +192,22 @@
   <data name="OptionDisplayPersistentValidation" xml:space="preserve">
     <value>Persistent validation flags</value>
   </data>
+  <data name="OptionDisplayShowDiagramPane" xml:space="preserve">
+    <value>Initial state of Diagram Pane</value>
+  </data>
   <data name="OptionDisplayValidateConfig" xml:space="preserve">
     <value>Validate App.config</value>
   </data>
   <data name="OptionDisplayValidateEdmx" xml:space="preserve">
     <value>Update legacy edmx models</value>
+  </data>
+  <data name="OptionPageCategory" xml:space="preserve">
+    <value>BlackbirdSql DDEX 2.0</value>
+  </data>
+  <data name="OptionPageNameDebug" xml:space="preserve">
+    <value>Debugging</value>
+  </data>
+  <data name="OptionPageNameGeneral" xml:space="preserve">
+    <value>General</value>
   </data>
 </root>

@@ -376,6 +376,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 			return new GlobalEventArgs(new KeyValuePair<string, object>[]
 				{
 					// General options
+					GlobalEventArgs.ValuePair( "ShowDiagramPane", GeneralOptionModel.Instance.ShowDiagramPane ),
 					GlobalEventArgs.ValuePair( "EnableDiagnostics", GeneralOptionModel.Instance.EnableDiagnostics ),
 					GlobalEventArgs.ValuePair( "EnableTaskLog", GeneralOptionModel.Instance.EnableTaskLog ),
 					GlobalEventArgs.ValuePair( "ValidateConfig", GeneralOptionModel.Instance.ValidateConfig ),
@@ -407,6 +408,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 			return new GlobalEventArgs(group, new KeyValuePair<string, object>[]
 				{
 					// General options
+					GlobalEventArgs.ValuePair( "ShowDiagramPane", GeneralOptionModel.Instance.ShowDiagramPane ),
 					GlobalEventArgs.ValuePair( "EnableDiagnostics", GeneralOptionModel.Instance.EnableDiagnostics ),
 					GlobalEventArgs.ValuePair( "EnableTaskLog", GeneralOptionModel.Instance.EnableTaskLog ),
 					GlobalEventArgs.ValuePair( "ValidateConfig", GeneralOptionModel.Instance.ValidateConfig ),

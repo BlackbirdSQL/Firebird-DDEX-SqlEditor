@@ -21,34 +21,6 @@ using Microsoft.VisualStudio.Shell;
 using EnNodeSystemType = BlackbirdSql.Core.Ctl.CommandProviders.CommandProperties.EnNodeSystemType;
 
 
-/*
- * For New Query commands, this command provider sets a static indicator to filter the table list 
- * dialog presented on a new query to either user tables or system tables or both.
- * We don't want to mess with the internal storage manager so we force a new connection for table
- * lists for new query command requests.
- * If the active node can be identified as a system or user object the descendent classes 
- * SystemCommandProvider and UserQueryCommandProvider are invoked respectively, otherwise 
- * UniversalCommandProvider is used.
- * 
- * For New Query commands, the command provider is specified at the local/node level using command id 0x3528.
- * At the top of the explorer tree we specify the UniversalCommander and directly below it the global 
- * command using id 0x3513 on the built-in command provider with guid 884DD964-5327-461f-9F06-6484DD540F8F.
- * 
- * When invoked we simply set the static CommandProperties.CommandObjectType to DataObjectType.System or
- * DataObjectType.User DataObjectType.Global and then invoke the global command using id 0x3513 which will 
- * revert to the built-in provider.
- * Once the built-in command has been invoked and objects have been enumerated we set the static 
- * CommandProperties.CommandObjectType back to DataObjectType.None.
- * 
- * When the datatable list dialog is instantiated by VSs DataQueryDesignerDocument and it requests a table 
- * list our ddex services can then examine the CommandProperties.CommandObjectType indicator to determine 
- * if any filtering should occur.
- * If the VS user does a refresh he/she will get a full list irrelevant of the node type because the 
- * association with the node is lost. The built in DataQueryDesignerDocument only makes a single call back to
- * our package when it does a connection equivalency check. This is where we intercept it and return false,
- * knowing that the next call back to us will be for a new connection and then a new table schema. It is at
- * this point that we provide provide it with the appropriate table list.
-*/
 
 
 
@@ -326,31 +298,37 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 	}
 
+
+	/// <summary>
+	/// Determines the IsSystemObject type of View, Procedure and Function node lists
+	/// which may be mixed.
+	/// </summary>
+	/// <param name="node"></param>
+	/// <returns></returns>
 	internal static EnNodeSystemType GetUnknownNodeSystemType(IVsDataExplorerNode node)
 	{
-		if (node != null && node.Object != null)
-		{
-			IVsDataObject @object = node.Object;
-
-			if (@object.Type.Name == "View")
-			{
-				if ((short)@object.Properties["IS_SYSTEM_VIEW"] != 0)
-					return EnNodeSystemType.System;
-
-				return EnNodeSystemType.User;
-			}
-			else if (@object.Type.Name == "Procedure" || @object.Type.Name == "Function")
-			{
-				if ((int)@object.Properties["IS_SYSTEM_FLAG"] != 0)
-					return EnNodeSystemType.System;
-
-				return EnNodeSystemType.User;
-			}
-
+		if (node == null || node.Object == null)
 			return EnNodeSystemType.None;
+
+		IVsDataObject @object = node.Object;
+
+		if (@object.Type.Name == "View")
+		{
+			if ((short)@object.Properties["IS_SYSTEM_VIEW"] != 0)
+				return EnNodeSystemType.System;
+
+			return EnNodeSystemType.User;
+		}
+		else if (@object.Type.Name == "Procedure" || @object.Type.Name == "Function")
+		{
+			if ((int)@object.Properties["IS_SYSTEM_FLAG"] != 0)
+				return EnNodeSystemType.System;
+
+			return EnNodeSystemType.User;
 		}
 
 		return EnNodeSystemType.None;
+
 	}
 
 
@@ -420,15 +398,11 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		Tracer.Trace(GetType(), "AbstractCommandProvider.OnInterceptorNewQuery", "itemId: {0}, nodeSystemType: {1}", itemId, nodeSystemType);
 
 		IVsDataExplorerNode vsDataExplorerNode = Site.ExplorerConnection.FindNode(itemId);
-
 		MenuCommand command = vsDataExplorerNode.GetCommand(CommandProperties.GlobalNewQuery);
 
 		CommandProperties.CommandNodeSystemType = nodeSystemType;
 
 		command.Invoke();
-
-
-		// Diag.Trace("COMMAND INVOKED");
 	}
 
 
@@ -445,9 +419,6 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		Tracer.Trace(GetType(), "AbstractCommandProvider.OnOpen", "itemId: {0}, alternate: {1}", itemId, alternate);
 
 		IVsDataExplorerNode node = Site.ExplorerConnection.FindNode(itemId);
-
-		// CommandProperties.CommandObjectType = objectType;
-
 
 		if (SystemData.MandatedSqlEditorFactoryGuid.Equals(SystemData.DslEditorFactoryGuid, StringComparison.OrdinalIgnoreCase))
 		{

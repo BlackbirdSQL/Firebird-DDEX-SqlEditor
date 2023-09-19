@@ -133,9 +133,12 @@
     <ProjectReference Include="..\BlackbirdSql.EditorExtension\BlackbirdSql.EditorExtension.csproj">
       <Project>{fb5dd543-3c21-4829-869d-abb2cd0360a5}</Project>
       <Name>BlackbirdSql.EditorExtension</Name>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Ctl\ComponentModel\GlobalShowHideConverter.cs" />
+    <Compile Include="Ctl\DataTools\DSRefBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Properties\BlackbirdSql.VisualStudio.Ddex.snk" />
   </ItemGroup>
@@ -383,13 +386,13 @@
     <Compile Include="Model\DslProcedures.cs" />
     <Compile Include="Model\DslForeignKeys.cs" />
     <Compile Include="Ctl\TConnectionEquivalencyComparer.cs" />
-    <Compile Include="Ctl\TConnectionPromptDialog.cs">
+    <Compile Include="Controls\TConnectionPromptDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Ctl\TConnectionPromptDialog.Designer.cs">
+    <Compile Include="Controls\TConnectionPromptDialog.Designer.cs">
       <DependentUpon>TConnectionPromptDialog.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Ctl\TConnectionPromptDialog.resx">
+    <EmbeddedResource Include="Controls\TConnectionPromptDialog.resx">
       <SubType>Designer</SubType>
       <DependentUpon>TConnectionPromptDialog.cs</DependentUpon>
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TConnectionPromptDialog.resx</LogicalName>
@@ -397,13 +400,13 @@
     <Compile Include="Ctl\TConnectionProperties.cs" />
     <Compile Include="Ctl\TConnectionSupport.cs" />
     <Compile Include="Ctl\TConnectionUIConnector.cs" />
-    <Compile Include="Ctl\TConnectionUIControl.cs">
+    <Compile Include="Controls\TConnectionUIControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Ctl\TConnectionUIControl.Designer.cs">
+    <Compile Include="Controls\TConnectionUIControl.Designer.cs">
       <DependentUpon>TConnectionUIControl.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Ctl\TConnectionUIControl.resx">
+    <EmbeddedResource Include="Controls\TConnectionUIControl.resx">
       <DependentUpon>TConnectionUIControl.cs</DependentUpon>
       <SubType>Designer</SubType>
       <LogicalName>BlackbirdSql.VisualStudio.Ddex.TConnectionUIControl.resx</LogicalName>

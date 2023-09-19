@@ -16,7 +16,7 @@ using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
 
-namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
+namespace BlackbirdSql.VisualStudio.Ddex.Controls;
 
 
 // =========================================================================================================

@@ -330,42 +330,11 @@ internal class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public bool Disable()
 	{
+		SyncEnter(false);
+
 		Enabled = false;
 
-		try
-		{
-			if (_AsyncTask == null || _AsyncTask.IsCompleted)
-				return true;
-
-			_AsyncTokenSource.Cancel();
-
-			// _AsyncCardinal < 2: Async is still waiting in thread queue managed by UI thread so we flag
-			// it to cancel and leave.
-			// If we wait we'll deadlock because the launch is behind us.
-			if (_AsyncCardinal < 2)
-				return true;
-
-			_SyncTokenSource = new();
-			_SyncToken = _SyncTokenSource.Token;
-
-			try
-			{
-#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
-				_AsyncTask.Wait(_SyncToken);
-#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
-			}
-			catch (Exception) { }
-
-			_SyncTokenSource.Dispose();
-			_SyncTokenSource = null;
-			_SyncToken = default;
-
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw ex;
-		}
+		SyncExit();
 
 		return true;
 	}
@@ -587,38 +556,92 @@ internal class LinkageParser : AbstractLinkageParser
 	/// Increments the sync call counter and suspends any async tasks. This should be
 	/// called on every occasion that a UI thread db call is made in the package.
 	/// </summary>
+	/// <remarks>
+	/// This is tricky because although we're entering a sandboxed synchronous tunnel
+	/// everything outside is async, including our own async process. This means we have
+	/// to handle additional sync requests coming in. At any point the parsing might be
+	/// completed. Further, if the linkage tables are required by a process, it will
+	/// synchronously complete the linkage, so any new processes in the queue must check
+	/// if their task has not been completed synchronously or asynchronously.
+	/// </remarks>
 	// ---------------------------------------------------------------------------------
 	public bool SyncEnter(bool pausing)
 	{
-		_SyncCardinal++;
+		lock (_LockObject)
+		{
+			_SyncCardinal++;
+
+			if (Loaded)
+				return true;
+
+		}
 
 		try
 		{
-			if (_AsyncTask == null || _AsyncTask.IsCompleted)
-				return true;
+			// There is another sync request ahead of us so we'll wait until it's done
+			if (_SyncTask != null && !_SyncTask.IsCompleted)
+			{
+				try
+				{
+					_SyncTask.Wait(_SyncToken);
+				}
+				catch (Exception) { }
+			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
 
-			_AsyncTokenSource.Cancel();
+		try
+		{
+			lock (_LockObject)
+			{
+				// Again check if we're loaded
+				if (Loaded)
+					return true;
 
-			// _AsyncCardinal < 2: Async is still waiting in thread queue managed by UI thread so we flag
-			// it to cancel and leave.
-			// If we wait we'll deadlock because the launch is behind us.
-			if (_AsyncCardinal < 2)
-				return true;
+				// If there's no async running we have exclusive sync control
+				if (_AsyncTask == null || _AsyncTask.IsCompleted)
+					return true;
 
-			_SyncTokenSource = new();
-			_SyncToken = _SyncTokenSource.Token;
+				// Async is active so request cancellation
+				_AsyncTokenSource.Cancel();
+
+
+				// Hold any other sync calls coming in
+				_SyncTokenSource = new();
+				_SyncToken = _SyncTokenSource.Token;
+				_SyncTask = Task.FromCanceled<bool>(_SyncToken);
+			}
 
 			if (pausing)
 				TaskHandlerProgress(GetPercentageComplete(LinkStage), -2);
+
+			lock (_LockObject)
+			{
+				// _AsyncCardinal < 2: Async is still waiting in thread queue managed by UI thread so we flag
+				// it to cancel and leave. Basically async is done but has not completed updated it's status.
+				// If we wait we'll deadlock because the launch is behind us.
+				if (_AsyncCardinal < 2)
+					return true;
+			}
+
+
+			// Create a dummy while we wait
+			_DummyTokenSource = new();
+			_DummyToken = _DummyTokenSource.Token;
+
 			try
 			{
-				_AsyncTask.Wait(_SyncToken);
+				_AsyncTask.Wait(_DummyToken);
 			}
 			catch (Exception) {}
 
-			_SyncTokenSource.Dispose();
-			_SyncTokenSource = null;
-			_SyncToken = default;
+			// Dispose of the dummy
+			_DummyTokenSource.Dispose();
+			_DummyTokenSource = null;
 
 		}
 		catch (Exception ex)
@@ -641,17 +664,51 @@ internal class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public void SyncExit()
 	{
-		_SyncCardinal--;
-
-		if (_SyncCardinal < 0)
+		lock (_LockObject)
 		{
-			InvalidOperationException ex = new(Resources.ExceptionAttemptToExitSyncFromAsync);
-			Diag.Dug(ex);
-			throw ex;
+			_SyncCardinal--;
+
+			if (_SyncCardinal < 0)
+			{
+				InvalidOperationException ex = new(Resources.ExceptionAttemptToExitSyncFromAsync);
+				Diag.Dug(ex);
+				throw ex;
+			}
+
+			// If we're loaded and no token, exit
+			if (Loaded && _SyncTokenSource == null)
+				return;
+
+			// If we're the only process in sync + entering sync
+			if ((Loaded || _SyncCardinal == 0) && _SyncTokenSource != null)
+			{
+				// This is a cleanup.
+				// If the token was previously cancelled any processes waiting on it
+				// have gone through, so we can dispose, otherwise cancel it.
+				if (_SyncTokenSource.IsCancellationRequested)
+				{
+					_SyncTokenSource.Dispose();
+					_SyncTokenSource = null;
+				}
+				else
+				{
+					_SyncTokenSource.Cancel();
+				}
+			}
+
+			// If there are others waiting behing us or we're loaded, we're done.
+			if (_SyncCardinal > 0 || Loaded)
+			{
+				// In all other case we are the process that enabled the token so we can cancel
+				// to let the next through.
+				_SyncTokenSource?.Cancel();
+				return;
+			}
 		}
 
-		if (_SyncCardinal > 0)
-			return;
+
+		// If we reached here it means we must restart the async process.
+
 
 		_TaskHandler = null;
 		_ProgressData = default;
@@ -666,8 +723,14 @@ internal class LinkageParser : AbstractLinkageParser
 				_AsyncToken = _AsyncTokenSource.Token;
 			}
 
+			// Should be no one behind us
 			AsyncExecute();
 		}
+
+		// Lastly we can green light any processes that may just have come in
+		// behind us.
+		_SyncTokenSource?.Cancel();
+
 
 	}
 

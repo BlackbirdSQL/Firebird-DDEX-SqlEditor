@@ -22,6 +22,7 @@ public interface IBGlobalsAgent
 	IBAsyncPackage DdexPackage { get; }
 
 
+	bool ShowDiagramPane { get; }
 
 	bool ValidateConfig { get; }
 

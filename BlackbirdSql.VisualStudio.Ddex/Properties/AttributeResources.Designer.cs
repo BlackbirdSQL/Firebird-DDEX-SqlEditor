@@ -88,6 +88,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Query designer.
+        /// </summary>
+        public static string OptionCategoryQueryDesigner {
+            get {
+                return ResourceManager.GetString("OptionCategoryQueryDesigner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enables the execution of Diagnostics calls. This option should remain enabled. Disabling does not disable Exceptions..
         /// </summary>
         public static string OptionDescriptionEnableDiagnostics {
@@ -165,6 +174,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDescriptionPersistentValidation {
             get {
                 return ResourceManager.GetString("OptionDescriptionPersistentValidation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the query designer diagram pane to visible when a table or view&apos;s data is initially retrieved..
+        /// </summary>
+        public static string OptionDescriptionShowDiagramPane {
+            get {
+                return ResourceManager.GetString("OptionDescriptionShowDiagramPane", resourceCulture);
             }
         }
         
@@ -268,6 +286,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Initial state of Diagram Pane.
+        /// </summary>
+        public static string OptionDisplayShowDiagramPane {
+            get {
+                return ResourceManager.GetString("OptionDisplayShowDiagramPane", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Validate App.config.
         /// </summary>
         public static string OptionDisplayValidateConfig {
@@ -282,6 +309,33 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDisplayValidateEdmx {
             get {
                 return ResourceManager.GetString("OptionDisplayValidateEdmx", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BlackbirdSql DDEX 2.0.
+        /// </summary>
+        public static string OptionPageCategory {
+            get {
+                return ResourceManager.GetString("OptionPageCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Debugging.
+        /// </summary>
+        public static string OptionPageNameDebug {
+            get {
+                return ResourceManager.GetString("OptionPageNameDebug", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to General.
+        /// </summary>
+        public static string OptionPageNameGeneral {
+            get {
+                return ResourceManager.GetString("OptionPageNameGeneral", resourceCulture);
             }
         }
     }

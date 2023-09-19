@@ -178,8 +178,14 @@ public class TConnectionSupport : AdoDotNetConnectionSupport
 
 		if (serviceType == typeof(IVsDataCommand))
 		{
-			return new TCommand(base.Site);
+			return new TCommand(Site);
 		}
+		if (serviceType == typeof(IDSRefBuilder))
+		{
+			return new DataTools.DSRefBuilder(Site);
+		}
+
+
 
 		/* Uncomment this and change PackageSupportedObjects._UseFactoryOnly to true to debug implementations
 		 * Don't forget to do the same for the ProviderObjectFactory if you do.

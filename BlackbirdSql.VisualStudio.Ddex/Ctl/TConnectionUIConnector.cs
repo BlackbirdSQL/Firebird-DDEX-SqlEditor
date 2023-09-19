@@ -23,7 +23,7 @@ public class TConnectionUIConnector : DataConnectionUIConnector
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Constructors / Destructors - TConnectionUIControl
+	#region Constructors / Destructors - TConnectionUIConnector
 	// ---------------------------------------------------------------------------------
 
 
@@ -40,7 +40,7 @@ public class TConnectionUIConnector : DataConnectionUIConnector
 
 
 	// =========================================================================================================
-	#region Implementations - TConnectionUIControl
+	#region Implementations - TConnectionUIConnector
 	// =========================================================================================================
 
 

@@ -318,6 +318,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 		Guid rguidService = LibraryData.CLSID_FontAndColorService;
 		Native.ThrowOnFailure(obj.ProfferService(ref rguidService, this, out _FontAndColorServiceCookie));
 
+
 		Services.AddService(typeof(IBDesignerExplorerServices), ServicesCreatorCallbackAsync, promote: true);
 		Services.AddService(typeof(IBDesignerOnlineServices), ServicesCreatorCallbackAsync, promote: true);
 		// Services.AddService(typeof(ISqlEditorStrategyProvider), ServicesCreatorCallbackAsync, promote: true);

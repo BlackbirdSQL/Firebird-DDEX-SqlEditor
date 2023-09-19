@@ -126,6 +126,12 @@
   <data name="GlobalizedLiteralFalse" xml:space="preserve">
     <value>False</value>
   </data>
+  <data name="GlobalizedLiteralHide" xml:space="preserve">
+    <value>Hide</value>
+  </data>
+  <data name="GlobalizedLiteralShow" xml:space="preserve">
+    <value>Visible</value>
+  </data>
   <data name="GlobalizedLiteralTrue" xml:space="preserve">
     <value>True</value>
   </data>

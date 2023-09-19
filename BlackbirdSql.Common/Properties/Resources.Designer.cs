@@ -61,47 +61,11 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The arguments array is invalid..
-        /// </summary>
-        internal static string DataSupportObject_InvalidInvokeArguments {
-            get {
-                return ResourceManager.GetString("DataSupportObject_InvalidInvokeArguments", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The method name is unknown..
-        /// </summary>
-        internal static string DataSupportObject_UnknownInvokeName {
-            get {
-                return ResourceManager.GetString("DataSupportObject_UnknownInvokeName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to {2}: {1}{0}.
         /// </summary>
         internal static string DataToolsDocument_Caption {
             get {
                 return ResourceManager.GetString("DataToolsDocument_Caption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The parameters array contains invalid elements..
-        /// </summary>
-        internal static string DSRefBuilder_InvalidParameters {
-            get {
-                return ResourceManager.GetString("DSRefBuilder_InvalidParameters", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A connection site is required to build a DSRef..
-        /// </summary>
-        internal static string DSRefBuilder_MissingSite {
-            get {
-                return ResourceManager.GetString("DSRefBuilder_MissingSite", resourceCulture);
             }
         }
         

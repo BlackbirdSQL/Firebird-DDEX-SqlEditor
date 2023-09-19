@@ -5,9 +5,11 @@ using System;
 using System.ComponentModel.Design;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Interfaces;
 using Microsoft;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Core;
@@ -32,6 +34,7 @@ public abstract class AbstractHostess : IDisposable
 
 	private readonly IServiceProvider _ServiceProvider;
 	private IVsDataHostService _HostService;
+	private IVsUIShell _ShellService;
 
 	private delegate void PostExecuteCommandDelegate(CommandID command);
 
@@ -51,6 +54,27 @@ public abstract class AbstractHostess : IDisposable
 			catch (Exception ex) { Diag.Dug(ex); throw; }
 
 			return _HostService;
+		}
+	}
+
+	public IVsUIShell ShellService
+	{
+		get
+		{
+			if (_ShellService != null)
+				return _ShellService;
+
+			_HostService ??= _ServiceProvider.GetService(typeof(IVsDataHostService)) as IVsDataHostService;
+
+			if (_HostService != null)
+				_ShellService = _HostService.GetService<SVsUIShell, IVsUIShell>();
+
+			_ShellService ??= Package.GetGlobalService(typeof(SVsUIShell)) as IVsUIShell;
+
+			try { Assumes.Present(_ShellService); }
+			catch (Exception ex) { Diag.Dug(ex); throw; }
+
+			return _ShellService;
 		}
 	}
 
@@ -222,27 +246,48 @@ public abstract class AbstractHostess : IDisposable
 
 
 
-	public void PostExecuteCommand(CommandID command)
+	public void PostExecuteCommand(CommandID command, int delay = 0)
 	{
 		Tracer.Trace(GetType(), "AbstractHostess.PostExecuteCommand", "command: {0}", command);
 
-		if (Thread.CurrentThread == _HostService.UIThread)
+		_ = ShellService;
+
+		if (delay == 0 && _HostService != null && Thread.CurrentThread == HostService.UIThread)
 		{
 			PostExecuteCommandImpl(command);
 			return;
 		}
-		_HostService.BeginInvokeOnUIThread(new PostExecuteCommandDelegate(PostExecuteCommandImpl), command);
+
+		// Fallback if Site does not have an IVsDataHostService service
+		if (_HostService == null || delay > 0)
+		{
+			if (delay == 0 && ThreadHelper.CheckAccess())
+				PostExecuteCommandImpl(command);
+			else
+				_ = Task.Run(() => PostExecuteCommandAsync(command, delay));
+			return;
+		}
+
+		HostService.BeginInvokeOnUIThread(new PostExecuteCommandDelegate(PostExecuteCommandImpl), command);
 	}
 
+	private async Task<bool> PostExecuteCommandAsync(CommandID command, int delay)
+	{
+		if (delay > 0)
+			Thread.Sleep(delay);
+
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+		PostExecuteCommandImpl(command);
+		return true;
+	}
 
 
 	private void PostExecuteCommandImpl(CommandID command)
 	{
-		IVsUIShell service = _HostService.GetService<SVsUIShell, IVsUIShell>();
 		Guid pguidCmdGroup = command.Guid;
 		uint iD = (uint)command.ID;
 		object pvaIn = null;
-		Native.WrapComCall(service.PostExecCommand(ref pguidCmdGroup, iD, 0u, ref pvaIn));
+		Native.WrapComCall(ShellService.PostExecCommand(ref pguidCmdGroup, iD, 0u, ref pvaIn));
 	}
 
 
@@ -335,14 +380,6 @@ public abstract class AbstractHostess : IDisposable
 	{
 		ThreadHelper.ThrowIfNotOnUIThread();
 
-		IVsUIShell service = GetService<SVsUIShell, IVsUIShell>();
-		if (service == null)
-		{
-			ServiceUnavailableException ex = new(typeof(IVsUIShell));
-			Diag.Dug(ex);
-			throw ex;
-		}
-
 		Guid rclsidComp = Guid.Empty;
 		OLEMSGDEFBUTTON msgdefbtn = OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST;
 		if (defaultButton == MessageBoxDefaultButton.Button2)
@@ -354,7 +391,7 @@ public abstract class AbstractHostess : IDisposable
 
 		try
 		{
-			Native.WrapComCall(service.ShowMessageBox(0u, ref rclsidComp, null, question, helpId, 0u, (OLEMSGBUTTON)buttons, msgdefbtn, OLEMSGICON.OLEMSGICON_QUERY, 0, out pnResult));
+			Native.WrapComCall(ShellService.ShowMessageBox(0u, ref rclsidComp, null, question, helpId, 0u, (OLEMSGBUTTON)buttons, msgdefbtn, OLEMSGICON.OLEMSGICON_QUERY, 0, out pnResult));
 		}
 		catch (Exception ex)
 		{

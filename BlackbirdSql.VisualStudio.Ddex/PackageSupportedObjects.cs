@@ -86,11 +86,11 @@ internal static class PackageSupportedObjects
 	public static readonly IDictionary<string, RegistryValue> Values = new Dictionary<string, RegistryValue>()
 	{
 		{ "IVsDataConnectionEquivalencyComparer:0", new(null, "BlackbirdSql.VisualStudio.Ddex.Ctl.TConnectionEquivalencyComparer") },
-		{ "IVsDataConnectionPromptDialog:0", new(null, "BlackbirdSql.VisualStudio.Ddex.Ctl.TConnectionPromptDialog") },
+		{ "IVsDataConnectionPromptDialog:0", new(null, "BlackbirdSql.VisualStudio.Ddex.Controls.TConnectionPromptDialog") },
 		{ "IVsDataConnectionProperties:0", new(null, "BlackbirdSql.VisualStudio.Ddex.Ctl.TConnectionProperties") },
 		{ "IVsDataConnectionSupport:0", new (null, "BlackbirdSql.VisualStudio.Ddex.Ctl.TConnectionSupport") },
 		{ "IVsDataConnectionUIConnector:0", new (null, "BlackbirdSql.VisualStudio.Ddex.Ctl.TConnectionUIConnector") },
-		{ "IVsDataConnectionUIControl:0", new(null, "BlackbirdSql.VisualStudio.Ddex.Ctl.TConnectionUIControl") },
+		{ "IVsDataConnectionUIControl:0", new(null, "BlackbirdSql.VisualStudio.Ddex.Controls.TConnectionUIControl") },
 		{ "IVsDataConnectionUIProperties:0", new(null, "BlackbirdSql.VisualStudio.Ddex.Ctl.TConnectionUIProperties") },
 		{ "IVsDataMappedObjectConverter:0", new(null, "BlackbirdSql.VisualStudio.Ddex.Ctl.TMappedObjectConverter") },
 		{ "IVsDataObjectIdentifierConverter:0", new(null, "BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectIdentifierConverter") },
