@@ -45,7 +45,7 @@
 					<CommandName>OnlineToolbar</CommandName>
 				</Strings>
 			</Menu>
-			<Menu guid="CommandSetGuid" id="MenuIdResultsTo" priority="0x0150" type="MenuController">
+			<Menu guid="CommandSetGuid" id="MenuIdResultsToGroup" priority="0x0150" type="MenuController">
 				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>TextIsAnchorCommand</CommandFlag>
@@ -77,16 +77,22 @@
          group as the part of a menu contained between two lines. The parent of a group
          must be a menu. -->
 		<Groups>
+			<!-- Explorer scope -->
+			<Group guid="CommandSetGuid" id="MenuIdSeRootGroup" priority="0x0600">
+				<!--<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />-->
+				<Parent guid="SeRootGuid" id="IDMX_DV_SERVER_NODE" />
+			</Group>
+
 			<!-- Table scope -->
 			<Group guid="CommandSetGuid" id="MenuIdSeNodeGroup" priority="0x0600">
 				<!--<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />-->
-				<Parent guid="ServerExplorerObjectNodesGuid" id="IDMX_DV_OBJECT_NODE" />
+				<Parent guid="SeObjectNodesGuid" id="IDMX_DV_OBJECT_NODE" />
 			</Group>
 
-			<!-- Database scope -->
-			<Group guid="CommandSetGuid" id="MenuIdSeRootGroup" priority="0x0600">
+			<!-- Table scope -->
+			<Group guid="CommandSetGuid" id="MenuIdSeStaticGroup" priority="0x0600">
 				<!--<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />-->
-				<Parent guid="ServerExplorerObjectNodesGuid" id="IDMX_DV_STATIC_NODE" />
+				<Parent guid="SeObjectNodesGuid" id="IDMX_DV_STATIC_NODE" />
 			</Group>
 
 
@@ -97,7 +103,7 @@
 				<Parent guid="CommandSetGuid" id="MenuIdOnlineToolbar"/>
 			</Group>
 			<Group guid="CommandSetGuid" id="CtlrIdResultsToGroup" priority="0x0220">
-				<Parent guid="CommandSetGuid" id="MenuIdResultsTo" />
+				<Parent guid="CommandSetGuid" id="MenuIdResultsToGroup" />
 			</Group>
 		</Groups>
 
@@ -234,7 +240,34 @@
 					<CommandName>CommandTextOpenAlterScript</CommandName>
 				</Strings>
 			</Button>
+
+			<!--  MenuIdSeRootGroup -->
+			<Button guid="VsUIHierarchyWindowCmdIds" id="UIHWCMDID_RightClick" priority="0x0130" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdSeRootGroup" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<Strings>
+					<ButtonText>Right Click</ButtonText>
+					<CommandName>RightClick</CommandName>
+				</Strings>
+			</Button>
+			<Button guid="VsUIHierarchyWindowCmdIds" id="UIHWCMDID_DoubleClick" priority="0x0130" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdSeRootGroup" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<Strings>
+					<ButtonText>Double Click</ButtonText>
+					<CommandName>DoubleClick</CommandName>
+				</Strings>
+			</Button>
+			<Button guid="VsUIHierarchyWindowCmdIds" id="UIHWCMDID_EnterKey" priority="0x0130" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdSeRootGroup" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<Strings>
+					<ButtonText>Enter Key</ButtonText>
+					<CommandName>EnterKey</CommandName>
+				</Strings>
+			</Button>
 		</Buttons>
+
 
 		<!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
 		<Bitmaps>
@@ -252,42 +285,53 @@
 		<GuidSymbol name="PackageGuid" value="{0B100D64-7249-4208-8748-2810B511E90C}" />
 
 		<!-- Server Explorer guid -->
-		<GuidSymbol name="ServerExplorerGuid" value="{74D21310-2AEE-11D1-8BFB-00A0C90F26F7}">
+		<GuidSymbol name="SeRootGuid" value="{74D21310-2AEE-11D1-8BFB-00A0C90F26F7}">
 			<!-- server explorer - root node -->
 			<IDSymbol name="IDMX_DV_SERVER_NODE" value="0x503" />
 		</GuidSymbol>
 
 		<!-- Server Explorer nodes guid -->
-		<GuidSymbol name="ServerExplorerObjectNodesGuid" value="{d4f02a6a-c5ae-4bf2-938d-f1625bdca0e2}">
+		<GuidSymbol name="SeObjectNodesGuid" value="{d4f02a6a-c5ae-4bf2-938d-f1625bdca0e2}">
 			<!-- server explorer - object node -->
 			<IDSymbol name="IDMX_DV_OBJECT_NODE" value="0x8200" />
 			<IDSymbol name="IDMX_DV_STATIC_NODE" value="0x8100" />
 		</GuidSymbol>
 
+
+		<!-- Server Explorer UI Hierarchy command set guid -->
+		<GuidSymbol name="VsUIHierarchyWindowCmdIds" value="{60481700-078B-11D1-AAF8-00A0C9055A90}">
+			<!-- server explorer - object node -->
+			<IDSymbol name="UIHWCMDID_RightClick" value="0x0001" />
+			<IDSymbol name="UIHWCMDID_DoubleClick" value="0x0002" />
+			<IDSymbol name="UIHWCMDID_EnterKey" value="0x0003" />
+		</GuidSymbol>
+
+
 		<!-- This is the guid used to group the menu commands together -->
 		<GuidSymbol name="CommandSetGuid" value="{13CD7876-FC84-4DDA-91BF-4CDBF893B134}">
 			<IDSymbol name="MenuIdToplevelMenu" value="0xC201" /> <!-- 49665 -->
-			<IDSymbol name="MenuIdScriptToolbar" value="0x2000" /> <!-- 8192 -->
-			<IDSymbol name="MenuIdOnlineToolbar" value="0x2001" /> <!-- 8193 -->
+			<IDSymbol name="MenuIdScriptToolbar" value="0x5000" /> <!-- 20480 -->
+			<IDSymbol name="MenuIdOnlineToolbar" value="0x5001" /> <!-- 20481 -->
 
-			<IDSymbol name="MenuIdScriptToolbarGroup" value="0x3000" /> <!-- 12288 -->
-			<IDSymbol name="MenuIdOnlineToolbarGroup" value="0x3001" /> <!-- 12289 -->
+			<IDSymbol name="MenuIdScriptToolbarGroup" value="0x5100" /> <!-- 20736 -->
+			<IDSymbol name="MenuIdOnlineToolbarGroup" value="0x5101" /> <!-- 20737 -->
 
-			<IDSymbol name="MenuIdSeNodeGroup" value="0x3002" /> <!-- 12290 -->
-			<IDSymbol name="MenuIdSeRootGroup" value="0x3003" /> <!-- 12291 -->
-			<IDSymbol name="MenuIdResultsTo" value="0x3004" />
+			<IDSymbol name="MenuIdSeRootGroup" value="0x5200" /> <!-- 20992 -->
+			<IDSymbol name="MenuIdSeNodeGroup" value="0x5201" /> <!-- 20993 -->
+			<IDSymbol name="MenuIdSeStaticGroup" value="0x5202" /> <!-- 20994 -->
+			<IDSymbol name="MenuIdResultsToGroup" value="0x5203" /> <!-- 20995 -->
 
-			<IDSymbol name="CtlrIdResultsToGroup" value="0x3010" />
+			<IDSymbol name="CtlrIdResultsToGroup" value="0x5300" />
 
-			<IDSymbol name="ContextIdExecutionSettings" value="0x3100" />
-			<IDSymbol name="ContextIdConnection" value="0x3101" />
-			<IDSymbol name="ContextIdResultsTo" value="0x3102" />
-			<IDSymbol name="ContextIdResultsWindow" value="0x3103" />
-			<IDSymbol name="ContextIdMessageWindow" value="0x3104" />
-			<IDSymbol name="ContextIdExecutionPlanWindow" value="0x3105" />
+			<IDSymbol name="ContextIdExecutionSettings" value="0x5400" />
+			<IDSymbol name="ContextIdConnection" value="0x5401" />
+			<IDSymbol name="ContextIdResultsTo" value="0x5402" />
+			<IDSymbol name="ContextIdResultsWindow" value="0x5403" />
+			<IDSymbol name="ContextIdMessageWindow" value="0x5404" />
+			<IDSymbol name="ContextIdExecutionPlanWindow" value="0x5405" />
 
-			<IDSymbol name="CmbIdSqlDatabases" value="0x3200" />
-			<IDSymbol name="CmbIdSqlDatabasesGetList" value="0x3201" />
+			<IDSymbol name="CmbIdSqlDatabases" value="0x5500" />
+			<IDSymbol name="CmbIdSqlDatabasesGetList" value="0x5501" />
 
 			<IDSymbol name="CmdIdConnect" value="0x0300" /> <!-- 768 -->
 			<IDSymbol name="CmdIdDisconnect" value="0x0301" /> <!-- 769 -->

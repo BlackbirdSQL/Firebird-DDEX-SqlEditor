@@ -6,7 +6,6 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
-using System.ServiceProcess;
 using System.Threading.Tasks;
 
 using BlackbirdSql.Core;
@@ -140,7 +139,6 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 	protected override object CreateService(Type serviceType)
 	{
 		Tracer.Trace(GetType(), "TViewSupport.CreateService", "serviceType: {0}", serviceType.Name);
-
 		/*
 		if (serviceType == typeof(IVsDataViewCommandProvider))
 		{
@@ -211,6 +209,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 		base.Initialize();
 
 		IVsDataConnection connection = ViewHierarchy.ExplorerConnection.Connection;
+
 		if (connection.State == DataConnectionState.Open)
 		{
 			InitializeProperties();
@@ -477,10 +476,11 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 				};
 				ViewHierarchy.PersistentProperties["MkDocumentPrefix"] = sqlMoniker.ToString();
 
-				LinkageParser parser = LinkageParser.Instance(connection, true);
-
-				if (parser != null && parser.ClearToLoadAsync)
-					parser.AsyncExecute(10, 5);
+				// We start async linkage here but with a decent delay because there are instances where we get here
+				// but synchronous access to the db is required straight after.
+				// In those cases we do not want an async load to have started. 150ms.
+				LinkageParser parser = LinkageParser.EnsureInstance(connection);
+				parser?.AsyncExecute(10, 15);
 			}
 		}
 		catch (Exception ex)

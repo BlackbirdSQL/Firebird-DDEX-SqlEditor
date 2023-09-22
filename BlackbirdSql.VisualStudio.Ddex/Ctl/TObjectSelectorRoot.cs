@@ -13,6 +13,7 @@ using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
+using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
@@ -91,7 +92,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		}
 
 
-		LinkageParser parser = LinkageParser.Instance(Site, true);
+		LinkageParser parser = LinkageParser.Instance(Site);
 
 		IVsDataReader reader;
 
@@ -100,19 +101,24 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			object lockedProviderObject = Site.GetLockedProviderObject();
 
 
-			if (lockedProviderObject == null || lockedProviderObject is not DbConnection connection)
+			if (lockedProviderObject == null || lockedProviderObject is not FbConnection connection)
 			{
 				NotImplementedException ex = new("Site.GetLockedProviderObject()");
 				Diag.Dug(ex);
 				throw ex;
 			}
 
+			Site.EnsureConnected();
+
 			DataTable schema;
 
+			int syncCardinal = 0;
 
 			try
 			{
-				parser?.SyncEnter(true);
+				if (parser != null)
+					Tracer.Trace(GetType(), "SelectObjects pausing");
+				syncCardinal = parser != null ? parser.SyncEnter(true) : 0;
 
 				schema = GetRootSchema(connection, parameters);
 
@@ -128,7 +134,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			}
 			finally
 			{
-				parser?.SyncExit();
+				parser?.SyncExit(syncCardinal);
 			}
 		}
 		catch (Exception ex)

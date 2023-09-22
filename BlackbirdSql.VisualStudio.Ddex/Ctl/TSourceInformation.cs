@@ -9,21 +9,20 @@ using System.Data;
 using System.IO;
 
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Model;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Extensions;
+using BlackbirdSql.VisualStudio.Ddex.Properties;
 
 using FirebirdSql.Data.FirebirdClient;
 
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
-using BlackbirdSql.Core.Model;
-using BlackbirdSql.Core.Ctl.Extensions;
-using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.VisualStudio.Ddex.Properties;
-using System.Data.Odbc;
-using BlackbirdSql.Core.Ctl.Diagnostics;
+
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
-
 
 // =========================================================================================================
 //										TSourceInformation Class
@@ -240,22 +239,26 @@ public class TSourceInformation : AbstractSourceInformation
 					retval = -1;
 					if ((Connection.State & ConnectionState.Open) != 0)
 					{
-						parser = LinkageParser.Instance(Site, false);
-						parser?.SyncEnter(true);
+						parser = LinkageParser.Instance(Site);
+						if (parser != null)
+							Tracer.Trace(GetType(), "RetrieveValue pausing value: {0}", propertyName);
+						int syncCardinal = parser != null ? parser.SyncEnter(true) : 0;
 						FbDatabaseInfo info = new((FbConnection)Connection);
 						retval = info.GetCurrentMemory();
-						parser?.SyncExit();
+						parser?.SyncExit(syncCardinal);
 					}
 					break;
 				case ModelConstants.C_KeySIActiveUsers:
 					retval = ModelConstants.C_DefaultSIActiveUsers;
 					if ((Connection.State & ConnectionState.Open) != 0)
 					{
-						parser = LinkageParser.Instance(Site, false);
-						parser?.SyncEnter(true);
+						parser = LinkageParser.Instance(Site);
+						if (parser != null)
+							Tracer.Trace(GetType(), "RetrieveValue pausing value: {0}", propertyName);
+						int syncCardinal = parser != null ? parser.SyncEnter(true) : 0;
 						FbDatabaseInfo info = new((FbConnection)Connection);
 						retval = info.GetActiveUsers().Count;
-						parser?.SyncExit();
+						parser?.SyncExit(syncCardinal);
 					}
 					break;
 				default:

@@ -150,14 +150,22 @@ internal class Tracer : IBTrace, IBExportable
 	{
 		Trace(t, functionName, "");
 	}
-
+	public static void Trace(string type, string functionName)
+	{
+		Trace(type, functionName, "");
+	}
 
 
 	public static void Trace(Type t, string functionName, string format, params object[] args)
 	{
+		Trace(t.FullName, functionName, format, args);
+	}
+
+	public static void Trace(string type, string functionName, string format, params object[] args)
+	{
 		if (SqlTracer.ShouldTrace(TraceEventType.Information))
 		{
-			Trace(t, TraceEventType.Information, functionName, format, args);
+			Trace(type, TraceEventType.Information, functionName, format, args);
 		}
 		else if (Diag.EnableTracer)
 		{
@@ -173,19 +181,25 @@ internal class Tracer : IBTrace, IBExportable
 				}
 			}
 
-			Diag.Dug(false, t.FullName + " func: " + functionName
+			Diag.Dug(false, type + " func: " + functionName
 				+ (format != null ? args != null ? (" " + string.Format(format, args)) : (" " + format) : ""),
 				frame.GetMethod().Name, frame.GetFileName(), frame.GetFileLineNumber());
 		}
 
 	}
 
+
 	public static void Trace(Type t, Level traceLevel, string functionName, string format, params object[] args)
+	{
+		Trace(t.FullName, traceLevel, functionName, format, args);
+	}
+
+	public static void Trace(string type, Level traceLevel, string functionName, string format, params object[] args)
 	{
 		TraceEventType traceEventTypeForTraceLevel = GetTraceEventTypeForTraceLevel(traceLevel);
 		if (SqlTracer.ShouldTrace(traceEventTypeForTraceLevel))
 		{
-			Trace(t, traceEventTypeForTraceLevel, functionName, format, args);
+			Trace(type, traceEventTypeForTraceLevel, functionName, format, args);
 		}
 		else if (Diag.EnableTracer)
 		{
@@ -201,14 +215,14 @@ internal class Tracer : IBTrace, IBExportable
 				}
 			}
 
-			Diag.Dug(false, t.FullName + " func: " + functionName
+			Diag.Dug(false, type + " func: " + functionName
 				+ (format != null ? args != null ? (" " + string.Format(format, args)) : (" " + format) : ""),
 				frame.GetMethod().Name, frame.GetFileName(), frame.GetFileLineNumber());
 		}
 	}
 
 
-	private static void Trace(Type t, TraceEventType eventType, string functionName, string format, params object[] args)
+	private static void Trace(string type, TraceEventType eventType, string functionName, string format, params object[] args)
 	{
 		if (Diag.EnableTracer)
 		{
@@ -224,7 +238,7 @@ internal class Tracer : IBTrace, IBExportable
 				}
 			}
 
-			Diag.Dug(false, t.FullName + " func: " + functionName
+			Diag.Dug(false, type + " func: " + functionName
 				+ (format != null ? args != null ? (" " + string.Format(format, args)) : (" " + format) : ""),
 				frame.GetMethod().Name, frame.GetFileName(), frame.GetFileLineNumber());
 		}
@@ -232,7 +246,7 @@ internal class Tracer : IBTrace, IBExportable
 		if (SqlTracer.ShouldTrace(eventType))
 		{
 			EnSqlTraceId traceIdForType = EnSqlTraceId.SqlEditorAndLanguageServices;
-			string componentNameForType = t.FullName;
+			string componentNameForType = type;
 			Trace(eventType, traceIdForType, componentNameForType, functionName, format, args);
 		}
 	}

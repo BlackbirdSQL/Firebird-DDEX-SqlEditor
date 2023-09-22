@@ -215,7 +215,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		ThreadHelper.ThrowIfNotOnUIThread();
 
 		Tracer.Trace(GetType(), "AbstractCommandProvider.CreateCommand", "itemId: {0}, commandId: {1}", itemId, commandId);
-
+		
 		MenuCommand command = null;
 		DataViewMenuCommand cmd = null;
 		EnNodeSystemType commandNodeSystemType = EnNodeSystemType.None;
@@ -287,6 +287,21 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 				OnOpen(itemId, true);
 			});
 			command = cmd;
+		}
+		else if (commandId.Equals(CommandProperties.RightClick))
+		{
+			Tracer.Trace(GetType(), "CreateCommand", "RightClick");
+			command = base.CreateCommand(itemId, commandId, parameters);
+		}
+		else if (commandId.Equals(CommandProperties.DoubleClick))
+		{
+			Tracer.Trace(GetType(), "CreateCommand", "DoubleClick");
+			command = base.CreateCommand(itemId, commandId, parameters);
+		}
+		else if (commandId.Equals(CommandProperties.EnterKey))
+		{
+			Tracer.Trace(GetType(), "CreateCommand", "EnterKey");
+			command = base.CreateCommand(itemId, commandId, parameters);
 		}
 		else
 		{

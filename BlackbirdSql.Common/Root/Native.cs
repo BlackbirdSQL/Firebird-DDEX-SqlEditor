@@ -4,12 +4,13 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Automation.Provider;
 using BlackbirdSql.Common.Ctl;
-using HandleCollector = BlackbirdSql.Common.Ctl.HandleCollector;
-using OLERECT = Microsoft.VisualStudio.OLE.Interop.RECT;
 using BlackbirdSql.Common.Ctl.Structs;
 
-namespace BlackbirdSql.Common;
+using HandleCollector = BlackbirdSql.Common.Ctl.HandleCollector;
+using OLERECT = Microsoft.VisualStudio.OLE.Interop.RECT;
 
+
+namespace BlackbirdSql.Common;
 
 // =========================================================================================================
 //											Native Class
@@ -624,11 +625,6 @@ public abstract class Native : BlackbirdSql.Core.Native
 	// SetScrollInfo
 	[DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
 	public static extern int SetScrollInfo(IntPtr hWnd, int fnBar, SCROLLINFO si, bool redraw);
-
-
-
-	[DllImport("User32.dll", CharSet = CharSet.Unicode)]
-	public static extern int SetProp(HandleRef hWnd, string propName, HandleRef data);
 
 
 	// SetWindowLong

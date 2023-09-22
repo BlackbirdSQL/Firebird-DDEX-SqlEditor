@@ -38,6 +38,10 @@ public abstract class Native
 	// =========================================================================================================
 
 
+	[DllImport("user32.dll")]
+	public static extern bool EnableWindow(IntPtr hWnd, bool enable);
+
+
 	// Failed
 	public static bool Failed(int hr)
 	{
@@ -51,6 +55,10 @@ public abstract class Native
 	[SuppressUnmanagedCodeSecurity]
 	public static extern bool InternalUseRandomizedHashing();
 	*/
+
+
+	[DllImport("User32.dll", CharSet = CharSet.Unicode)]
+	public static extern int SetProp(HandleRef hWnd, string propName, HandleRef data);
 
 
 	// Succeeded

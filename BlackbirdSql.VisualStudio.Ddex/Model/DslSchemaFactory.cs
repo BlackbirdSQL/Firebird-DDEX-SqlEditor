@@ -67,6 +67,8 @@ internal sealed class DslSchemaFactory
 		LinkageParser parser = null;
 		string schemaCollection;
 
+		int syncCardinal = 0;
+
 
 		switch (collectionName)
 		{
@@ -98,12 +100,14 @@ internal sealed class DslSchemaFactory
 				try
 				{
 					parser = LinkageParser.Instance(connection);
-					parser?.SyncEnter(true);
+					if (parser != null)
+						Tracer.Trace(typeof(DslSchemaFactory), "GetSchema pausing");
+					syncCardinal = parser != null ? parser.SyncEnter(true) : 0;
 					return connection.GetSchema(collectionName, restrictions);
 				}
 				finally
 				{
-					parser?.SyncExit();
+					parser?.SyncExit(syncCardinal);
 				}
 		}
 
@@ -111,8 +115,6 @@ internal sealed class DslSchemaFactory
 		if (RequiresTriggers(schemaCollection))
 		{
 			parser = LinkageParser.EnsureInstance(connection);
-			if (parser.ClearToLoad)
-				parser.Execute();
 		}
 		else
 		{
@@ -148,12 +150,14 @@ internal sealed class DslSchemaFactory
 			throw ex;
 		}
 
-		parser?.SyncEnter(true);
+		if (parser != null)
+			Tracer.Trace(typeof(DslSchemaFactory), "GetSchema pausing");
+		syncCardinal = parser != null ? parser.SyncEnter(true) : 0;
 
 		var xmlStream = assembly.GetManifestResourceStream(ResourceName);
 		if (xmlStream == null)
 		{
-			parser?.SyncExit();
+			parser?.SyncExit(syncCardinal);
 			NullReferenceException ex = new("Resource not found: " + ResourceName);
 			Diag.Dug(ex);
 			throw ex;
@@ -170,7 +174,7 @@ internal sealed class DslSchemaFactory
 		}
 		catch
 		{
-			parser?.SyncExit();
+			parser?.SyncExit(syncCardinal);
 			throw;
 		}
 		finally
@@ -182,7 +186,7 @@ internal sealed class DslSchemaFactory
 
 		if (collection.Length != 1)
 		{
-			parser?.SyncExit();
+			parser?.SyncExit(syncCardinal);
 			NotSupportedException ex = new("Unsupported collection name " + schemaCollection);
 			Diag.Dug(ex);
 			throw ex;
@@ -190,7 +194,7 @@ internal sealed class DslSchemaFactory
 
 		if (restrictions != null && restrictions.Length > (int)collection[0]["NumberOfRestrictions"])
 		{
-			parser?.SyncExit();
+			parser?.SyncExit(syncCardinal);
 			InvalidOperationException ex = new("The number of specified restrictions is not valid.");
 			Diag.Dug(ex);
 			throw ex;
@@ -198,7 +202,7 @@ internal sealed class DslSchemaFactory
 
 		if (ds.Tables[DbMetaDataCollectionNames.Restrictions].Select(filter).Length != (int)collection[0]["NumberOfRestrictions"])
 		{
-			parser?.SyncExit();
+			parser?.SyncExit(syncCardinal);
 			InvalidOperationException ex = new("Incorrect restriction definition.");
 			Diag.Dug(ex);
 			throw ex;
@@ -218,13 +222,13 @@ internal sealed class DslSchemaFactory
 				schema = SqlCommandSchema(connection, collectionName, restrictions);
 				break;
 			default:
-				parser?.SyncExit();
+				parser?.SyncExit(syncCardinal);
 				NotSupportedException ex = new("Unsupported population mechanism");
 				Diag.Dug(ex);
 				throw ex;
 		}
 
-		parser?.SyncExit();
+		parser?.SyncExit(syncCardinal);
 		return schema;
 	}
 
@@ -233,6 +237,7 @@ internal sealed class DslSchemaFactory
 	{
 		Tracer.Trace(typeof(DslSchemaFactory), "DslSchemaFactory.GetSchemaAsync", "collectionName: {0}", collectionName);
 
+		int syncCardinal = 0;
 		LinkageParser parser = null;
 		string schemaCollection;
 
@@ -266,7 +271,9 @@ internal sealed class DslSchemaFactory
 				try
 				{
 					parser = LinkageParser.Instance(connection);
-					parser?.SyncEnter(true);
+					if (parser != null)
+						Tracer.Trace(typeof(DslSchemaFactory), "GetSchemaAsync pausing");
+					syncCardinal = parser != null ? parser.SyncEnter(true) : 0;
 					return connection.GetSchemaAsync(collectionName, restrictions, cancellationToken);
 				}
 				catch (Exception)
@@ -277,7 +284,7 @@ internal sealed class DslSchemaFactory
 				}
 				finally
 				{
-					parser?.SyncExit();
+					parser?.SyncExit(syncCardinal);
 				}
 		}
 
@@ -288,8 +295,6 @@ internal sealed class DslSchemaFactory
 		if (RequiresTriggers(schemaCollection))
 		{
 			parser = LinkageParser.EnsureInstance(connection);
-			if (parser.ClearToLoad)
-				parser.Execute();
 		}
 		else
 		{
@@ -339,7 +344,9 @@ internal sealed class DslSchemaFactory
 
 		var oldCulture = Thread.CurrentThread.CurrentCulture;
 
-		parser?.SyncEnter(true);
+		if (parser != null)
+			Tracer.Trace(typeof(DslSchemaFactory), "GetSchemaAsync pausing");
+		syncCardinal = parser != null ? parser.SyncEnter(true) : 0;
 
 		try
 		{
@@ -350,7 +357,7 @@ internal sealed class DslSchemaFactory
 		}
 		catch
 		{
-			parser?.SyncExit();
+			parser?.SyncExit(syncCardinal);
 			throw;
 		}
 		finally
@@ -360,7 +367,7 @@ internal sealed class DslSchemaFactory
 
 		if (cancellationToken.IsCancellationRequested)
 		{
-			parser?.SyncExit();
+			parser?.SyncExit(syncCardinal);
 			return Task.FromResult(new DataTable());
 		}
 
@@ -371,20 +378,20 @@ internal sealed class DslSchemaFactory
 		}
 		catch (Exception ex)
 		{
-			parser?.SyncExit();
+			parser?.SyncExit(syncCardinal);
 			Diag.Dug(ex);
 			throw;
 		}
 
 		if (cancellationToken.IsCancellationRequested)
 		{
-			parser?.SyncExit();
+			parser?.SyncExit(syncCardinal);
 			return Task.FromResult(new DataTable());
 		}
 
 		if (collection.Length != 1)
 		{
-			parser?.SyncExit();
+			parser?.SyncExit(syncCardinal);
 			NotSupportedException ex = new(Resources.ExceptionCollectionNotSupported.Res(schemaCollection));
 			Diag.Dug(ex);
 			throw ex;
@@ -392,7 +399,7 @@ internal sealed class DslSchemaFactory
 
 		if (restrictions != null && restrictions.Length != (int)collection[0]["NumberOfRestrictions"])
 		{
-			parser?.SyncExit();
+			parser?.SyncExit(syncCardinal);
 			InvalidOperationException exbb =
 				new(Resources.ExceptionRestrictionsNotEqualToSpecified.Res(restrictions.Length,
 				(int)collection[0]["NumberOfRestrictions"]));
@@ -415,13 +422,13 @@ internal sealed class DslSchemaFactory
 				task = SqlCommandSchemaAsync(connection, collectionName, restrictions, cancellationToken);
 				break;
 			default:
-				parser?.SyncExit();
+				parser?.SyncExit(syncCardinal);
 				NotSupportedException ex = new(Resources.ExceptionUnsupportedPopulationMechanism.Res(collection[0]["PopulationMechanism"].ToString()));
 				Diag.Dug(ex);
 				throw ex;
 		}
 
-		parser?.SyncExit();
+		parser?.SyncExit(syncCardinal);
 		return task;
 	}
 
@@ -439,23 +446,23 @@ internal sealed class DslSchemaFactory
 		switch (collectionName.ToUpperInvariant())
 		{
 			case "COLUMNS":
-				dslSchema = new DslColumns(LinkageParser.Instance(connection));
+				dslSchema = new DslColumns(LinkageParser.EnsureInstance(connection));
 				break;
 			case "FOREIGNKEYCOLUMNS":
-				dslSchema = new DslForeignKeyColumns(LinkageParser.Instance(connection));
+				dslSchema = new DslForeignKeyColumns(LinkageParser.EnsureInstance(connection));
 				break;
 			case "FOREIGNKEYS":
 				dslSchema = new DslForeignKeys();
 				break;
 
 			case "FUNCTIONARGUMENTS":
-				dslSchema = new DslFunctionArguments(LinkageParser.Instance(connection));
+				dslSchema = new DslFunctionArguments(LinkageParser.EnsureInstance(connection));
 				break;
 			case "FUNCTIONS":
 				dslSchema = new DslFunctions();
 				break;
 			case "INDEXCOLUMNS":
-				dslSchema = new DslIndexColumns(LinkageParser.Instance(connection));
+				dslSchema = new DslIndexColumns(LinkageParser.EnsureInstance(connection));
 				break;
 			case "INDEXES":
 				dslSchema = new DslIndexes();
@@ -464,16 +471,16 @@ internal sealed class DslSchemaFactory
 				dslSchema = new DslProcedures();
 				break;
 			case "PROCEDUREPARAMETERS":
-				dslSchema = new DslProcedureParameters(LinkageParser.Instance(connection));
+				dslSchema = new DslProcedureParameters(LinkageParser.EnsureInstance(connection));
 				break;
 			case "TABLES":
 				dslSchema = new DslTables();
 				break;
 			case "TRIGGERCOLUMNS":
-				dslSchema = new DslTriggerColumns(LinkageParser.Instance(connection));
+				dslSchema = new DslTriggerColumns(LinkageParser.EnsureInstance(connection));
 				break;
 			case "VIEWCOLUMNS":
-				dslSchema = new DslViewColumns(LinkageParser.Instance(connection));
+				dslSchema = new DslViewColumns(LinkageParser.EnsureInstance(connection));
 				break;
 			case "GENERATORS":
 			case "TRIGGERS":
@@ -508,22 +515,22 @@ internal sealed class DslSchemaFactory
 		switch (collectionName.ToUpperInvariant())
 		{
 			case "COLUMNS":
-				dslSchema = new DslColumns(LinkageParser.Instance(connection));
+				dslSchema = new DslColumns(LinkageParser.EnsureInstance(connection));
 				break;
 			case "FOREIGNKEYCOLUMNS":
-				dslSchema = new DslForeignKeyColumns(LinkageParser.Instance(connection));
+				dslSchema = new DslForeignKeyColumns(LinkageParser.EnsureInstance(connection));
 				break;
 			case "FOREIGNKEYS":
 				dslSchema = new DslForeignKeys();
 				break;
 			case "FUNCTIONARGUMENTS":
-				dslSchema = new DslFunctionArguments(LinkageParser.Instance(connection));
+				dslSchema = new DslFunctionArguments(LinkageParser.EnsureInstance(connection));
 				break;
 			case "FUNCTIONS":
 				dslSchema = new DslFunctions();
 				break;
 			case "INDEXCOLUMNS":
-				dslSchema = new DslIndexColumns(LinkageParser.Instance(connection));
+				dslSchema = new DslIndexColumns(LinkageParser.EnsureInstance(connection));
 				break;
 			case "INDEXES":
 				dslSchema = new DslIndexes();
@@ -532,16 +539,16 @@ internal sealed class DslSchemaFactory
 				dslSchema = new DslProcedures();
 				break;
 			case "PROCEDUREPARAMETERS":
-				dslSchema = new DslProcedureParameters(LinkageParser.Instance(connection));
+				dslSchema = new DslProcedureParameters(LinkageParser.EnsureInstance(connection));
 				break;
 			case "TABLES":
 				dslSchema = new DslTables();
 				break;
 			case "TRIGGERCOLUMNS":
-				dslSchema = new DslTriggerColumns(LinkageParser.Instance(connection));
+				dslSchema = new DslTriggerColumns(LinkageParser.EnsureInstance(connection));
 				break;
 			case "VIEWCOLUMNS":
-				dslSchema = new DslViewColumns(LinkageParser.Instance(connection));
+				dslSchema = new DslViewColumns(LinkageParser.EnsureInstance(connection));
 				break;
 			case "GENERATORS":
 			case "TRIGGERS":

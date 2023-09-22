@@ -46,6 +46,7 @@ public abstract class AbstractSourceInformation : DataSourceInformation, IVsData
 
 	private static PropertyDescriptorCollection _Descriptors = null;
 
+	private readonly object _LocalLock = new object();
 
 	// ---------------------------------------------------------------------------------
 	#region Property Accessors - TSourceInformation
@@ -110,37 +111,43 @@ public abstract class AbstractSourceInformation : DataSourceInformation, IVsData
 		{
 			// Tracer.Trace(GetType(), "AbstractSourceInformation.get_SourceInformation");
 
-			if (_SourceInformation == null && Connection != null)
+			lock (_LocalLock)
 			{
-				LinkageParser parser = LinkageParser.Instance(Site, false);
-				parser?.SyncEnter(true);
-
-				try
+				if (_SourceInformation == null && Connection != null)
 				{
+					LinkageParser parser = LinkageParser.Instance(Site);
+					if (parser != null)
+						Tracer.Trace(GetType(), "get_SourceInformation pausing");
 
-					Site.EnsureConnected();
+					int syncCardinal = parser != null ? parser.SyncEnter(true) : 0;
 
-					_SourceInformation = CreateSourceInformationSchema();
-
-					_SourceInformation ??= new DataTable
+					try
 					{
-						Locale = CultureInfo.InvariantCulture
-					};
 
+						Site.EnsureConnected();
+
+						_SourceInformation = CreateSourceInformationSchema();
+
+						_SourceInformation ??= new DataTable
+						{
+							Locale = CultureInfo.InvariantCulture
+						};
+
+					}
+					catch (Exception ex)
+					{
+						Diag.Dug(ex);
+						throw ex;
+					}
+					finally
+					{
+						parser?.SyncExit(syncCardinal);
+					}
 				}
-				catch (Exception ex)
-				{
-					Diag.Dug(ex);
-					throw ex;
-				}
-				finally
-				{
-					parser?.SyncExit();
-				}
+
+
+				return _SourceInformation;
 			}
-
-
-			return _SourceInformation;
 		}
 	}
 
@@ -638,8 +645,11 @@ public abstract class AbstractSourceInformation : DataSourceInformation, IVsData
 
 		if (Site == null && _SourceInformation != null)
 		{
-			_SourceInformation.Dispose();
-			_SourceInformation = null;
+			lock (_LocalLock)
+			{
+				_SourceInformation.Dispose();
+				_SourceInformation = null;
+			}
 		}
 
 	}

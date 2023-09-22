@@ -47,12 +47,14 @@ public static class Diag
 
 	static bool _EnableTaskLog = true;
 
+	private static readonly object _LockObject = new();
+
 	// Specify your own trace log file and settings here or override in VS options
-	#if BLACKBIRD
-		static bool _EnableTracer = false;
-	#else
+#if BLACKBIRD
+	static bool _EnableTracer = false;
+#else
 		static bool _EnableTracer = true;
-	#endif
+#endif
 	static bool _EnableTrace = true;
 	static bool _EnableDiagnostics = true;
 	static bool _EnableFbDiagnostics = true;
@@ -67,7 +69,7 @@ public static class Diag
 	static Guid _OutputPaneGuid = default;
 
 
-#endregion Variables
+	#endregion Variables
 
 
 
@@ -245,63 +247,71 @@ public static class Diag
 		string logfile = _LogFile;
 		string str;
 
-		try
-		{
-			if ((pos = sourceFilePath.IndexOf("\\BlackbirdSql")) == -1)
-			{
-				if ((pos = sourceFilePath.IndexOf("\\BlackbirdDsl")) == -1)
-				{
-					if ((pos = sourceFilePath.IndexOf("\\FirebirdSql")) == -1)
-						pos = sourceFilePath.IndexOf("\\EntityFramework.Firebird");
+		bool enableDiagnosticsLog;
+		bool enableTaskLog;
 
-					if (pos != -1)
+		lock (_LockObject)
+		{
+			enableDiagnosticsLog = _EnableDiagnosticsLog;
+			enableTaskLog = _EnableTaskLog;
+
+			try
+			{
+				if ((pos = sourceFilePath.IndexOf("\\BlackbirdSql")) == -1)
+				{
+					if ((pos = sourceFilePath.IndexOf("\\BlackbirdDsl")) == -1)
 					{
-						if (!isException && !_EnableFbDiagnostics)
-							return;
-						logfile = _FbLogFile;
+						if ((pos = sourceFilePath.IndexOf("\\FirebirdSql")) == -1)
+							pos = sourceFilePath.IndexOf("\\EntityFramework.Firebird");
+
+						if (pos != -1)
+						{
+							if (!isException && !_EnableFbDiagnostics)
+								return;
+							logfile = _FbLogFile;
 #if !DEBUG
 					return;
 #endif
+						}
 					}
 				}
+
+
+				if (pos != -1)
+					sourceFilePath = sourceFilePath[(pos + 1)..];
+
+				str = _Context + ":" + (isException ? ":EXCEPTION: " : " ") + DateTime.Now.ToString("hh.mm.ss.ffffff") + ":   "
+					+ memberName + " :: " + sourceFilePath + " :: " + sourceLineNumber +
+					(message == "" ? "" : Environment.NewLine + "\t" + message) + Environment.NewLine;
 			}
-
-
-			if (pos != -1)
-				sourceFilePath = sourceFilePath[(pos + 1)..];
-
-			str = _Context + ":" + (isException ? ":EXCEPTION: " : " ") + DateTime.Now.ToString("hh.mm.ss.ffffff") + ":   "
-				+ memberName + " :: " + sourceFilePath + " :: " + sourceLineNumber +
-				(message == "" ? "" : Environment.NewLine + "\t" + message) + Environment.NewLine;
-		}
-		catch (Exception ex)
-		{
-			str = $"{ex.Message} sourceFilePath: {sourceFilePath} memberName: {memberName} sourceLineNumber: {sourceLineNumber} message: {message}";
-		}
+			catch (Exception ex)
+			{
+				str = $"{ex.Message} sourceFilePath: {sourceFilePath} memberName: {memberName} sourceLineNumber: {sourceLineNumber} message: {message}";
+			}
 
 #if DEBUG
-		try
-		{
-			if (_EnableDiagnosticsLog)
+			try
 			{
+				if (enableDiagnosticsLog)
+				{
 
-				StreamWriter sw = File.AppendText(logfile);
+					StreamWriter sw = File.AppendText(logfile);
 
-				sw.WriteLine(str);
+					sw.WriteLine(str);
 
-				sw.Close();
+					sw.Close();
+				}
 			}
-		}
-		catch (Exception ex)
-		{
-			str = "DIAG EXCEPTION: " + ex.Message + Environment.NewLine + str;
-		}
+			catch (Exception ex)
+			{
+				str = "DIAG EXCEPTION: " + ex.Message + Environment.NewLine + str;
+			}
 #endif
-
+		}
 
 		try
 		{
-			if (_EnableTaskLog)
+			if (enableTaskLog)
 				OutputPaneWriteLine(str);
 		}
 		catch (Exception) { }
@@ -437,13 +447,22 @@ public static class Diag
 			message += " NO STACKTRACE";
 		}
 
-		bool enableLog = _EnableDiagnosticsLog;
-		_EnableDiagnosticsLog = true;
-		bool enableTaskLog = _EnableTaskLog;
-		_EnableTaskLog = false;
+		bool enableLog;
+		bool enableTaskLog;
+
+		lock (_LockObject)
+		{
+			enableLog = _EnableDiagnosticsLog;
+			_EnableDiagnosticsLog = true;
+			enableTaskLog = _EnableTaskLog;
+			_EnableTaskLog = false;
+		}
 		Dug(true, ex.Message + " " + message, memberName, sourceFilePath, sourceLineNumber);
-		_EnableTaskLog = enableTaskLog;
-		_EnableDiagnosticsLog = enableLog;
+		lock (_LockObject)
+		{
+			_EnableTaskLog = enableTaskLog;
+			_EnableDiagnosticsLog = enableLog;
+		}
 	}
 
 
@@ -498,13 +517,22 @@ public static class Diag
 			return;
 
 #if DEBUG
-		bool enableLog = _EnableDiagnosticsLog;
-		_EnableDiagnosticsLog = true;
-		bool enableTaskLog = _EnableTaskLog;
-		_EnableTaskLog = false;
+		bool enableLog;
+		bool enableTaskLog;
+
+		lock (_LockObject)
+		{
+			enableLog = _EnableDiagnosticsLog;
+			_EnableDiagnosticsLog = true;
+			enableTaskLog = _EnableTaskLog;
+			_EnableTaskLog = false;
+		}
 		Dug(false, message, memberName, sourceFilePath, sourceLineNumber);
-		_EnableTaskLog = enableTaskLog;
-		_EnableDiagnosticsLog = enableLog;
+		lock (_LockObject)
+		{
+			_EnableTaskLog = enableTaskLog;
+			_EnableDiagnosticsLog = enableLog;
+		}
 
 #endif
 	}
@@ -552,8 +580,8 @@ public static class Diag
 	public static bool TaskHandlerProgress(IBTaskHandlerClient client, string text, bool completed = false)
 	{
 		_ = Task.Factory.StartNew(() => TaskHandlerProgressAsync(client, text, completed).Result,
-				default, TaskCreationOptions.PreferFairness | TaskCreationOptions.DenyChildAttach,
-				TaskScheduler.Default);
+			default, TaskCreationOptions.PreferFairness | TaskCreationOptions.DenyChildAttach,
+			TaskScheduler.Default);
 
 		return true;
 	}
@@ -567,68 +595,84 @@ public static class Diag
 	// ---------------------------------------------------------------------------------
 	public static async Task<bool> TaskHandlerProgressAsync(IBTaskHandlerClient client, string text, bool completed = false)
 	{
+		bool enableDiagnosticsLog;
+		bool enableTaskLog;
+
+		lock (_LockObject)
+		{
+			enableDiagnosticsLog = _EnableDiagnosticsLog;
+			enableTaskLog = _EnableTaskLog;
+		}
+
 		try
 		{
-			ITaskHandler taskHandler = client.GetTaskHandler();
-			TaskProgressData progressData = client.GetProgressData();
-
-			string title = EnableTaskLog && taskHandler != null ? taskHandler.Options.Title.Replace("BlackbirdSql", "").Trim() + ": " : "";
-
 			// Switch to main thread
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-			// Check again since joining UI thread.
-			taskHandler = client.GetTaskHandler();
 
-			if (!EnableTaskLog && taskHandler == null)
-				return false;
+			ITaskHandler taskHandler = client.GetTaskHandler();
+			TaskProgressData progressData = client.GetProgressData();
+			string title;
 
-
-			string[] arr = text.Split('\n');
-
-			if (EnableTaskLog)
+			lock (_LockObject)
 			{
-				string[] log = new string[arr.Length];
+				title = enableTaskLog && taskHandler != null ? taskHandler.Options.Title.Replace("BlackbirdSql", "").Trim() + ": " : "";
 
-				for (int i = 0; i < arr.Length; i++)
-					log[i] = title + arr[i];
+				// Check again since joining UI thread.
+				taskHandler = client.GetTaskHandler();
+
+				if (!enableTaskLog && taskHandler == null)
+					return false;
 
 
-				text = string.Join("\n", log);
+				string[] arr = text.Split('\n');
 
-				if (completed)
+				if (enableTaskLog)
 				{
-					StringBuilder sb = new(log[^1].Length);
+					string[] log = new string[arr.Length];
 
-					sb.Append('=', (log[^1].Length - 10) / 2);
-					sb.Append(" Done ");
-					sb.Append('=', log[^1].Length - sb.Length);
+					for (int i = 0; i < arr.Length; i++)
+						log[i] = title + arr[i];
 
-					text += "\n" + sb + "\n";
+
+					text = string.Join("\n", log);
+
+					if (completed)
+					{
+						StringBuilder sb = new(log[^1].Length);
+
+						sb.Append('=', (log[^1].Length - 10) / 2);
+						sb.Append(" Done ");
+						sb.Append('=', log[^1].Length - sb.Length);
+
+						text += "\n" + sb + "\n";
+					}
+
+					_ = OutputPaneWriteLineAsync(text);
 				}
 
-				_ = OutputPaneWriteLineAsync(text);
-			}
+				// Check again.
+				taskHandler = client.GetTaskHandler();
 
-			// Check again.
-			taskHandler = client.GetTaskHandler();
+				if (taskHandler == null)
+					return enableTaskLog;
 
-			if (taskHandler == null)
-				return EnableTaskLog;
-
-			for (int i = 0; i < arr.Length; i++)
-			{
-				progressData.ProgressText = arr[i];
-				taskHandler.Progress.Report(progressData);
+				for (int i = 0; i < arr.Length; i++)
+				{
+					progressData.ProgressText = arr[i];
+					taskHandler.Progress.Report(progressData);
+				}
 			}
 
 		}
 		catch (Exception ex)
 		{
-			bool enableTaskLog = _EnableTaskLog;
-			_EnableTaskLog = false;
-			Dug(ex);
-			_EnableTaskLog = enableTaskLog;
+			lock (_LockObject)
+			{
+				_EnableTaskLog = false;
+				Dug(ex);
+				_EnableTaskLog = enableTaskLog;
+			}
 
 			throw ex;
 		}
@@ -651,8 +695,8 @@ public static class Diag
 	public static bool UpdateStatusBar(string value, bool clear)
 	{
 		_ = Task.Factory.StartNew(() => UpdateStatusBarAsync(value, clear).Result, default,
-				TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent,
-				TaskScheduler.Default);
+			TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent,
+			TaskScheduler.Default);
 
 		return true;
 	}
@@ -681,7 +725,7 @@ public static class Diag
 				statusBar.Clear();
 			}
 			else
-			{ 
+			{
 				statusBar.SetText(value);
 
 				if (clear)
@@ -696,10 +740,13 @@ public static class Diag
 		}
 		catch (Exception ex)
 		{
-			bool enableTaskLog = _EnableTaskLog;
-			_EnableTaskLog = false;
-			Dug(ex);
-			_EnableTaskLog = enableTaskLog;
+			lock (_LockObject)
+			{
+				bool enableTaskLog = _EnableTaskLog;
+				_EnableTaskLog = false;
+				Dug(ex);
+				_EnableTaskLog = enableTaskLog;
+			}
 
 			throw ex;
 		}
@@ -744,10 +791,13 @@ public static class Diag
 		{
 			NullReferenceException ex = new("OutputWindowPane is null");
 
-			bool enableTaskLog = _EnableTaskLog;
-			_EnableTaskLog = false;
-			Dug(ex);
-			_EnableTaskLog = enableTaskLog;
+			lock (_LockObject)
+			{
+				bool enableTaskLog = _EnableTaskLog;
+				_EnableTaskLog = false;
+				Dug(ex);
+				_EnableTaskLog = enableTaskLog;
+			}
 
 			throw ex;
 		}
@@ -763,10 +813,13 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				bool enableTaskLog = _EnableTaskLog;
-				_EnableTaskLog = false;
-				Dug(ex);
-				_EnableTaskLog = enableTaskLog;
+				lock (_LockObject)
+				{
+					bool enableTaskLog = _EnableTaskLog;
+					_EnableTaskLog = false;
+					Dug(ex);
+					_EnableTaskLog = enableTaskLog;
+				}
 
 				throw ex;
 			}
@@ -779,10 +832,13 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				bool enableTaskLog = _EnableTaskLog;
-				_EnableTaskLog = false;
-				Dug(ex);
-				_EnableTaskLog = enableTaskLog;
+				lock (_LockObject)
+				{
+					bool enableTaskLog = _EnableTaskLog;
+					_EnableTaskLog = false;
+					Dug(ex);
+					_EnableTaskLog = enableTaskLog;
+				}
 
 				throw ex;
 			}
@@ -811,10 +867,13 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				bool enableTaskLog = _EnableTaskLog;
-				_EnableTaskLog = false;
-				Dug(ex);
-				_EnableTaskLog = enableTaskLog;
+				lock (_LockObject)
+				{
+					bool enableTaskLog = _EnableTaskLog;
+					_EnableTaskLog = false;
+					Dug(ex);
+					_EnableTaskLog = enableTaskLog;
+				}
 				throw;
 			}
 
@@ -830,28 +889,34 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				bool enableTaskLog = _EnableTaskLog;
-				_EnableTaskLog = false;
-				Dug(ex);
-				_EnableTaskLog = enableTaskLog;
+				lock (_LockObject)
+				{
+					bool enableTaskLog = _EnableTaskLog;
+					_EnableTaskLog = false;
+					Dug(ex);
+					_EnableTaskLog = enableTaskLog;
+				}
 				throw;
 			}
 
 			try
-			{ 
+			{
 				outputWindow.GetPane(ref _OutputPaneGuid, out _OutputPane);
 			}
 			catch (Exception ex)
 			{
-				bool enableTaskLog = _EnableTaskLog;
-				_EnableTaskLog = false;
-				Dug(ex);
-				_EnableTaskLog = enableTaskLog;
+				lock (_LockObject)
+				{
+					bool enableTaskLog = _EnableTaskLog;
+					_EnableTaskLog = false;
+					Dug(ex);
+					_EnableTaskLog = enableTaskLog;
+				}
 				throw;
 			}
 		}
 	}
 
-#endregion Methods
+	#endregion Methods
 
 }

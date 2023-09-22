@@ -119,8 +119,10 @@ public class TObjectSelector : AdoDotNetObjectSelector
 
 		try
 		{
-			if (lockedProviderObject is not DbConnection connection)
+			if (lockedProviderObject is not FbConnection connection)
 				throw new NotImplementedException("(DbConnection)Site.GetLockedProviderObject()");
+
+			Site.EnsureConnected();
 
 
 			schema = GetSchema(connection, typeName, restrictions, parameters);
@@ -263,12 +265,16 @@ public class TObjectSelector : AdoDotNetObjectSelector
 			}
 		}
 
+		Tracer.Trace(GetType(), "TObjectSelector.GetSchema", "Ensuring connection typeName: {0}", typeName);
 
 		Site.EnsureConnected();
 
 
+		Tracer.Trace(GetType(), "TObjectSelector.GetSchema", "Calling GetSchema params.ToString, typeName: {0}", typeName);
+
 		DataTable schema = DslSchemaFactory.GetSchema((FbConnection)connection, parameters[0].ToString(), array);
 
+		Tracer.Trace(GetType(), "TObjectSelector.GetSchema", "Returned from GetSchema params.ToString, typeName: {0}", typeName);
 
 
 		if (parameters.Length == 2 && parameters[1] is DictionaryEntry entry)

@@ -3750,6 +3750,7 @@ public sealed class VSConstants
 	public const uint CEF_OPENASNEW = 8u;
 
 	[EditorBrowsable(EditorBrowsableState.Never)]
+	// FOR DOUBLECLICK
 	public static readonly Guid GUID_VsUIHierarchyWindowCmds = new Guid("{60481700-078B-11D1-AAF8-00A0C9055A90}");
 
 	public static readonly IntPtr HIERARCHY_DONTCHANGE = new IntPtr(-1);

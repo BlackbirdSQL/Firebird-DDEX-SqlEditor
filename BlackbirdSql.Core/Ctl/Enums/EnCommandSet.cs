@@ -12,27 +12,28 @@ namespace BlackbirdSql.Core.Ctl.Enums;
 public enum EnCommandSet
 {
 	MenuIdToplevelMenu = 0xC201, // 49665
-	MenuIdScriptToolbar = 0x2000, // 8192
-	MenuIdOnlineToolbar = 0x2001, // 8193
+	MenuIdScriptToolbar = 0x5000, // 20480
+	MenuIdOnlineToolbar = 0x5001, // 20481
 
-	MenuIdScriptToolbarGroup = 0x3000, // 12288
-	MenuIdOnlineToolbarGroup = 0x3001, // 12289
+	MenuIdScriptToolbarGroup = 0x5100, // 20736
+	MenuIdOnlineToolbarGroup = 0x5101, // 20737
 
-	MenuIdSeNodeGroup = 0x3002, // 12290
-	MenuIdSeRootGroup = 0x3003, // 12291
-	MenuIdResultsTo = 0x3004,
+	MenuIdSeRootGroup = 0x5200, // 20992
+	MenuIdSeNodeGroup = 0x5201, // 20993
+	MenuIdSeStaticGroup = 0x5202, // 20994
+	MenuIdResultsToGroup = 0x5203, // 20995
 
-	CtlrIdResultsToGroup = 0x3010,
+	CtlrIdResultsToGroup = 0x5300,
 
-	ContextIdExecutionSettings = 0x3100,
-	ContextIdConnection = 0x3101,
-	ContextIdResultsTo = 0x3102,
-	ContextIdResultsWindow = 0x3103,
-	ContextIdMessageWindow = 0x3104,
-	ContextIdExecutionPlanWindow = 0x3105,
+	ContextIdExecutionSettings = 0x5400,
+	ContextIdConnection = 0x5401,
+	ContextIdResultsTo = 0x5402,
+	ContextIdResultsWindow = 0x5403,
+	ContextIdMessageWindow = 0x5404,
+	ContextIdExecutionPlanWindow = 0x5405,
 
-	CmbIdSqlDatabases = 0x3200,
-	CmbIdSqlDatabasesGetList = 0x3201,
+	CmbIdSqlDatabases = 0x5500,
+	CmbIdSqlDatabasesGetList = 0x5501,
 
 	CmdIdConnect = 0x0300, // 768
 	CmdIdDisconnect = 0x0301, // 769

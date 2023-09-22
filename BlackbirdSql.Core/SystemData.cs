@@ -54,8 +54,6 @@ public static class SystemData
 	public const string ObjectFactoryServiceGuidNET = "AE2CB68C-0AA2-46A7-910A-CBDA1464DCB0";
 
 	public const string DataSourceGuid = "2979569E-416D-4DD8-B06B-EBCB70DE7A4E"; // Firebird
-	public const string TechnologyGuid = "77AB9A9D-78B9-4ba7-91AC-873F5338F1D2"; // Visual Studio DataProviders
-
 
 	public const string DesignerExplorerServicesGuid = "4D30B519-9FB6-4FFD-A0CE-92863B1C37EA";
 	public const string DesignerOnlineServicesGuid = "27F3F968-74EB-46B7-A1FF-6CCA57C0D894";

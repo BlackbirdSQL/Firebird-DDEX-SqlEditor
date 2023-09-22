@@ -8,22 +8,21 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
 
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Model;
 using BlackbirdSql.Common.Ctl;
+using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Common.Ctl.Exceptions;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Model;
 
 using Microsoft;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
-using System.Linq.Expressions;
-using BlackbirdSql.Common.Ctl.Enums;
-using BlackbirdSql.Common.Ctl.Exceptions;
-using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Ctl.Diagnostics;
+
 
 namespace BlackbirdSql.Common;
-
 
 // =========================================================================================================
 //												Cmd Class

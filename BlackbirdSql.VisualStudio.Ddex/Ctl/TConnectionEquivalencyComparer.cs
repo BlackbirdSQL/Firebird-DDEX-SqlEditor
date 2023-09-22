@@ -63,7 +63,7 @@ public class TConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 	/// </remarks>
 	public static bool AreEquivalent(DbConnectionStringBuilder csb1, DbConnectionStringBuilder csb2)
 	{
-		Tracer.Trace(typeof(TConnectionEquivalencyComparer), "TConnectionEquivalencyComparer.AreEquivalent(IDictionary, IDictionary)");
+		// Tracer.Trace(typeof(TConnectionEquivalencyComparer), "TConnectionEquivalencyComparer.AreEquivalent(IDictionary, IDictionary)");
 
 		int equivalencyValueCount = 0;
 		int equivalencyKeyCount = ModelPropertySet.EquivalencyDescriberCount;
@@ -178,8 +178,8 @@ public class TConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 			return false;
 		}
 
-		Tracer.Trace(typeof(TConnectionEquivalencyComparer),
-			"TConnectionEquivalencyComparer.AreEquivalent(IDictionary, IDictionary)", "Connections are equivalent");
+		// Tracer.Trace(typeof(TConnectionEquivalencyComparer),
+		// 	"TConnectionEquivalencyComparer.AreEquivalent(IDictionary, IDictionary)", "Connections are equivalent");
 
 		return true;
 	}

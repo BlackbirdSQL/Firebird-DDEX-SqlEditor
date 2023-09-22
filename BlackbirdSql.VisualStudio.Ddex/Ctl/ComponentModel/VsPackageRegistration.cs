@@ -81,7 +81,7 @@ internal sealed class VsPackageRegistration: RegistrationAttribute
 			key.SetValue("Assembly", providerObjectFactoryAssembly);
 
 			key.SetValue("PlatformVersion", "2.0");
-			key.SetValue("Technology", "{" + SystemData.TechnologyGuid + "}");
+			key.SetValue("Technology", "{" + VS.AdoDotNetTechnologyGuid + "}");
 			key.SetValue("AssociatedSource", dataSourceGuid);
 			key.SetValue("InvariantName", invariantName);
 			key.SetValue("Description", "DdexProvider_Description, "

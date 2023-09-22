@@ -264,7 +264,7 @@ public class ControllerEventsManager : AbstractEventsManager
 
 			return true;
 		},
-			default, TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent, TaskScheduler.Default);
+		default, TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent, TaskScheduler.Default);
 
 
 		_TaskHandler.RegisterTask(_ValidationTask);

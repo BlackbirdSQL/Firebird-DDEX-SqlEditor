@@ -16,6 +16,9 @@
 				<CommandRef name="CommandGlobalNewQuery" />
 				<CommandRef name="CommandTextOpenScript" />
 				<CommandRef name="CommandTextOpenAlterScript" />
+				<CommandRef name="CommandRightClick" />
+				<CommandRef name="CommandDoubleClick" />
+				<CommandRef name="CommandEnterKey" />
 			</GlobalCommands>
 			<ConnectionNode nodeId="Root" type="">
 				<InitialDisplayName>{Root.Server} ({Root.Database})</InitialDisplayName>
@@ -55,6 +58,9 @@
 				<Commands>
 					<!--<CommandRef name="CommandNewQuery" />-->
 					<!--<CommandRef name="CommandUniversalDetachDatabase" />-->
+					<CommandRef name="CommandRightClick" />
+					<CommandRef name="CommandDoubleClick" />
+					<CommandRef name="CommandEnterKey" />
 				</Commands>
 				<Children>
 					<StaticNode nodeId="Tables">

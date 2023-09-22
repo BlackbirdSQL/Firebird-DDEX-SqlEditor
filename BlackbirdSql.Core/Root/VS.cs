@@ -30,8 +30,11 @@ public static class VS
 	// ---------------------------------------------------------------------------------
 
 
+	public static string AdoDotNetTechnologyGuid = "77AB9A9D-78B9-4ba7-91AC-873F5338F1D2";
+
 	public const string IVsDataConnectionManagerInteropGuid = "E7A0D4E0-D0E4-4AFA-A8A1-DD4636073D98";
 	public const string IVsDataConnectionInteropGuid = "902A17C6-B166-485F-A49F-9029549442DD";
+
 
 	public static readonly IntPtr DSREFNODEID_NIL = (IntPtr)0;
 	public static readonly IntPtr DSREFNODEID_ROOT = (IntPtr)0;
