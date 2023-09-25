@@ -27,7 +27,7 @@ using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
 
-internal class DslIndexes : DslSchema
+internal class DslIndexes : AbstractDslSchema
 {
 	#region Protected Methods
 

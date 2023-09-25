@@ -50,8 +50,10 @@ public static class SystemData
 
 	public const string PackageControllerGuid = "CF77D510-C1DB-44EA-85F5-8201089D6FAF";
 
-	public const string ObjectFactoryServiceGuid = "B0640FC7-F798-4CC0-81F9-2587762D4957";
-	public const string ObjectFactoryServiceGuidNET = "AE2CB68C-0AA2-46A7-910A-CBDA1464DCB0";
+	public const string ProviderObjectFactoryGuid = "B0640FC7-F798-4CC0-81F9-2587762D4957";
+	public const string ProviderObjectFactoryGuidNET = "AE2CB68C-0AA2-46A7-910A-CBDA1464DCB0";
+
+	public const string ProviderSchemaFactoryGuid = "9FDE2679-7080-4C88-A734-71AEC4CB099A";
 
 	public const string DataSourceGuid = "2979569E-416D-4DD8-B06B-EBCB70DE7A4E"; // Firebird
 

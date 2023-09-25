@@ -27,8 +27,6 @@ using System.Text;
 
 using FirebirdSql.Data.FirebirdClient;
 
-using BlackbirdSql.VisualStudio.Ddex.Extensions;
-using BlackbirdSql.Core;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Ctl.Diagnostics;
@@ -41,7 +39,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Model;
 /// Refer to <see cref="DslForeignKeyColumns"/> to see an example of a more complex
 /// derived type.
 /// </summary>
-internal class DslColumns : DslSchema
+internal class DslColumns : AbstractDslSchema
 {
 	LinkageParser _LinkageParser = null;
 	/// <summary>

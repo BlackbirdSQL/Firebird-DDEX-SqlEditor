@@ -22,7 +22,7 @@ public static class CommandProperties
 {
 	#region Statics
 
-	private static readonly object _LockObject = new();
+	private static readonly object _LockGlobal = new();
 
 	/// <summary>
 	/// The package-wide flag indicating whether or not the current node in the SE is a 'IsSystemObject'
@@ -31,8 +31,8 @@ public static class CommandProperties
 
 	public static EnNodeSystemType CommandNodeSystemType
 	{
-		get { lock(_LockObject) { return _CommandNodeSystemType; } }
-		set { lock (_LockObject) { _CommandNodeSystemType = value; } }
+		get { lock(_LockGlobal) { return _CommandNodeSystemType; } }
+		set { lock (_LockGlobal) { _CommandNodeSystemType = value; } }
 	}
 
 	/// <summary>

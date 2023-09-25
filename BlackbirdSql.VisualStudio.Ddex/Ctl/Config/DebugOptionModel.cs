@@ -38,7 +38,7 @@ public class DebugOptionModel : AbstractOptionModel<DebugOptionModel>
 	[GlobalizedCategory("OptionCategoryDebug")]
 	[GlobalizedDisplayName("OptionDisplayEnableDiagnosticsLog")]
 	[GlobalizedDescription("OptionDescriptionEnableDiagnosticsLog")]
-	[DefaultValue(true)]
+	[DefaultValue(false)]
 	public bool EnableDiagnosticsLog { get; set; } = false;
 
 	[GlobalizedCategory("OptionCategoryDebug")]

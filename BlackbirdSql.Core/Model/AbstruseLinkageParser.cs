@@ -5,19 +5,10 @@ using System;
 using BlackbirdDsl;
 using C5;
 using FirebirdSql.Data.FirebirdClient;
-using System.Threading.Tasks;
-using System.Threading;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio;
-using System.Runtime.InteropServices;
-using BlackbirdSql.Core;
-using Diag = BlackbirdSql.Core.Diag;
-using Microsoft.VisualStudio.Data.Services.SupportEntities;
-
-namespace BlackbirdSql.VisualStudio.Ddex.Extensions;
 
 
+namespace BlackbirdSql.Core.Model;
 
 // =========================================================================================================
 //										AbstruseLinkageParser Class
@@ -36,68 +27,8 @@ internal abstract class AbstruseLinkageParser
 
 
 
-	protected static object _LockObject = new object();
-	protected object _LocalObject = new();
-
-
-	// Threading / multi process control variables.
-	// A quick double tap on an unopened SE connection causes a hang. It was assumed this was due to multiple thread
-	// processes queued onto the ui thread. iow different processes entering the ddex at different entry points all
-	// coming from the same SE Site.
-	// To prevent this from causing unpredictable state changes and/or deadlocks within the ddex, we queue them back
-	// onto a single queue when necessary and drip feed the ddex with those processes.
-	// Essentially this allows us to support multiple thread processes across multiple SE nodes because we decide
-	// which tasks can be async and which will be sync.
-	// So this worked for a single async task which we create and then the first sync task from the double tap, but
-	// the 3rd task from the 2nd tap doesn't ever seem to reach us. In fact the SE blocks input to it's tool window
-	// while, for example, a node is loading & expanding; but a double tap in this scenario seems to cause the 2nd
-	// input to incorrectly slip through and hang ServerExplorer.
-	// Examining the VSServerExplorer package code, there is no support for async operations, even though
-	// IVsDataViewSupport can be configured for it, so we know from that, that the 2nd tap should never have been
-	// allow through as 2 seperate inputs.
-	// Also, it seems the Fb client async methods are not actually async, so... duno...
-
-	// The parser id / index
-	public static int _InstanceSeed = 1000;
-	public int _InstanceId = 0;
-
-	// The async process thread id / index
-	public static int _AsyncProcessSeed = 9000;
-	public int _AsyncProcessId = 0;
-
-
-	protected bool _SeDisabled = false;
-	protected static bool S_SeDisabled = false;
-	protected static IntPtr S_SeToolHWnd = IntPtr.Zero;
-
-	/// <summary>
-	/// The async process state, 0 = No aync process, 1 = Queued on a task, 2 = Active.
-	/// </summary>
-	protected int _AsyncCardinal = 0;
-
-	/// <summary>
-	/// The number of sync tasks. Active + Queued.
-	/// </summary>
-	protected int _SyncCardinal = 0;
-
-	/// <summary>
-	/// The async task variables if it exists.
-	/// </summary>
-	protected Task<bool> _AsyncTask;
-	protected CancellationToken _AsyncToken;
-	protected CancellationTokenSource _AsyncTokenSource = null;
-
-
-
-	// This is the token the async process signals when it exits. The first
-	// process in the sync queue waits on this.
-	protected CancellationToken _SyncWaitAsyncToken;
-	protected CancellationTokenSource _SyncWaitAsyncTokenSource = null;
-
-
-
-
-
+	protected static object _LockGlobal = new object();
+	protected object _LockObject = new();
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -105,23 +36,6 @@ internal abstract class AbstruseLinkageParser
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	protected Parser _DslParser = null;
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// The db connection asociated with this LinkageParser
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected FbConnection _Connection = null;
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Stopwatch instance used to report total time and times taken to complete
-	/// individual tasks to the IDE task handler and status bar.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected System.Diagnostics.Stopwatch _Stopwatch;
 
 
 	#endregion Variables
@@ -136,31 +50,9 @@ internal abstract class AbstruseLinkageParser
 
 
 	/// <summary>
-	/// Getter indicating wether or not the UI thread can and should resume linkage operations.
-	/// </summary>
-	public System.Diagnostics.Stopwatch Stopwatch
-	{
-		get
-		{
-			_Stopwatch ??= new();
-
-			return _Stopwatch;
-		}
-	}
-
-
-	/// <summary>
 	/// Getter to retrieve or create an instance of the BlackbirdDsl.<see cref="Parser"/>.
 	/// </summary>
-	public Parser DslParser
-	{
-		get
-		{
-			_DslParser ??= new Parser(DslOptions.TOKENIZE_ONLY);
-			return _DslParser;
-		}
-
-	}
+	public Parser DslParser => _DslParser ??= new Parser(DslOptions.TOKENIZE_ONLY);
 
 
 	#endregion Property accessors
@@ -178,12 +70,10 @@ internal abstract class AbstruseLinkageParser
 	/// Protected default .ctor for creating an instance for a db connection.
 	/// </summary>
 	/// <param name="connection"></param>
-	protected AbstruseLinkageParser(FbConnection connection)
+	protected AbstruseLinkageParser()
 	{
 		ThreadHelper.ThrowIfNotOnUIThread();
 		// Tracer.Trace(typeof(AbstruseLinkageParser), $"StaticId:[{"0000"}] AbstruseLinkageParser(FbConnection)");
-		_Connection = connection;
-
 	}
 
 
@@ -198,66 +88,12 @@ internal abstract class AbstruseLinkageParser
 	// =========================================================================================================
 
 
-	protected void SetSeToolWindow()
-	{
-		/*
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		if (S_SeToolHWnd == IntPtr.Zero)
-		{
-			try
-			{
-				IVsUIShell uiShell = Package.GetGlobalService(typeof(SVsUIShell)) as IVsUIShell;
-
-
-				uint grfFTW = 0u; ;
-				Guid rguidPersistenceSlot = VSConstants.StandardToolWindows.ServerExplorer;
-
-				Native.ThrowOnFailure(uiShell.FindToolWindow(grfFTW, rguidPersistenceSlot, out IVsWindowFrame toolWindow));
-				Native.ThrowOnFailure(toolWindow.GetProperty((int)__VSFPROPID9.VSFPROPID_ContainingHwnd, out object pvar));
-
-				S_SeToolHWnd = (IntPtr)pvar;
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-			}
-		}
-		*/
-	}
-
-
-
-	protected void EnableSeWindow(bool enable)
-	{
-		/*
-		ThreadHelper.ThrowIfNotOnUIThread();
-
-		if (enable == S_SeDisabled && S_SeDisabled == _SeDisabled && S_SeToolHWnd != IntPtr.Zero)
-		{
-			lock (_LockObject)
-			{
-				S_SeDisabled = _SeDisabled = !enable;
-				try
-				{
-					Native.EnableWindow(S_SeToolHWnd, enable);
-				}
-				catch (Exception ex)
-				{
-					S_SeDisabled = _SeDisabled = enable;
-					Diag.Dug(ex);
-				}
-			}
-		}
-		*/
-	}
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Parses a trigger DSL statement.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public (string, int, int) ParseTriggerDSL(string sql)
+	protected (string, int, int) ParseTriggerDSL(string sql)
 	{
 		return ParseTriggerDSL(sql, null, null, null);
 	}
@@ -268,7 +104,7 @@ internal abstract class AbstruseLinkageParser
 	/// Parses a trigger DSL statement given a trigger name.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public (string, int, int) ParseTriggerDSL(string sql, string trigger)
+	protected (string, int, int) ParseTriggerDSL(string sql, string trigger)
 	{
 		return ParseTriggerDSL(sql, trigger, null, null);
 	}
@@ -280,7 +116,7 @@ internal abstract class AbstruseLinkageParser
 	/// Parses a trigger DSL statement givern a trigger and table name.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public (string, int, int) ParseTriggerDSL(string sql, string trigger, string table)
+	protected (string, int, int) ParseTriggerDSL(string sql, string trigger, string table)
 	{
 		return ParseTriggerDSL(sql, trigger, table, null);
 	}
@@ -292,7 +128,7 @@ internal abstract class AbstruseLinkageParser
 	/// Parses a trigger DSL statement givern a trigger, table name and column name.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public (string, int, int) ParseTriggerDSL(string sql, string trigger, string table, string column)
+	protected (string, int, int) ParseTriggerDSL(string sql, string trigger, string table, string column)
 	{
 		int increment = -1;
 		int seed = -1;

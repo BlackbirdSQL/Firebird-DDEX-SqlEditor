@@ -2,8 +2,9 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+
 using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.VisualStudio.Ddex.Interfaces;
+using BlackbirdSql.Core.Model.Interfaces;
 
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;

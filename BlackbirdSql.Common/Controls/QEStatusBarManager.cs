@@ -102,7 +102,7 @@ public sealed class QEStatusBarManager : IDisposable
 
 	private readonly Queue<Action> _StatusBarUpdateActions = new Queue<Action>();
 
-	private readonly object _LockObject = new object();
+	private readonly object _LockLocal = new object();
 
 	private System.Timers.Timer _ElapsedExecutionTimer;
 
@@ -133,7 +133,7 @@ public sealed class QEStatusBarManager : IDisposable
 		get
 		{
 			QueryManager result = null;
-			AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(EditorWindowPane.DocData);
+			AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(EditorWindowPane.DocData);
 			if (auxDocData != null)
 			{
 				result = auxDocData.QryMgr;
@@ -309,7 +309,7 @@ public sealed class QEStatusBarManager : IDisposable
 
 	private void EnqueAndExecuteStatusBarUpdate(Action a)
 	{
-		lock (_LockObject)
+		lock (_LockLocal)
 		{
 			_StatusBarUpdateActions.Enqueue(a);
 		}
@@ -334,7 +334,7 @@ public sealed class QEStatusBarManager : IDisposable
 		while (true)
 		{
 			Action action = null;
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				if (_StatusBarUpdateActions.Count == 0)
 				{
@@ -548,7 +548,7 @@ public sealed class QEStatusBarManager : IDisposable
 				}
 
 				SetRowsAffected(QryMgr.RowsAffected);
-				AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(EditorWindowPane.DocData);
+				AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(EditorWindowPane.DocData);
 				if (auxDocData != null && auxDocData.ResultsSettings.ProvideFeedbackWithSounds)
 				{
 					new SoundPlayer().Play();

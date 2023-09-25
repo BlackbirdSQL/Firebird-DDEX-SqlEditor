@@ -54,7 +54,7 @@ public abstract class AbstractSqlEditorCommand
 				IVsTextLines textLinesForTextView = GetTextLinesForTextView(codeEditorTextView);
 				if (textLinesForTextView != null)
 				{
-					result = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(textLinesForTextView);
+					result = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(textLinesForTextView);
 				}
 			}
 		}
@@ -96,7 +96,7 @@ public abstract class AbstractSqlEditorCommand
 
 	protected bool IsDwEditorConnection()
 	{
-		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(EditorWindow.DocData);
+		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(EditorWindow.DocData);
 		if (auxDocData != null)
 		{
 			IBSqlEditorStrategy strategy = auxDocData.Strategy;

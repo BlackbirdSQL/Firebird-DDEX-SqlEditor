@@ -15,7 +15,6 @@ using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.VisualStudio.Ddex.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Model;
 
 using FirebirdSql.Data.FirebirdClient;
@@ -115,11 +114,11 @@ public abstract class AbstractSourceInformation : DataSourceInformation, IVsData
 			{
 				if (_SourceInformation == null && Connection != null)
 				{
-					LinkageParser parser = LinkageParser.Instance(Site);
+					LinkageParser parser = LinkageParser.GetInstance(Site);
 					if (parser != null)
 						Tracer.Trace(GetType(), "get_SourceInformation pausing");
 
-					int syncCardinal = parser != null ? parser.SyncEnter(true) : 0;
+					int syncCardinal = parser != null ? parser.SyncEnter() : 0;
 
 					try
 					{
@@ -266,7 +265,7 @@ public abstract class AbstractSourceInformation : DataSourceInformation, IVsData
 		DataTable schema;
 
 
-		schema = DslSchemaFactory.GetSchema((FbConnection)Connection, "DataSourceInformation", null);
+		schema = DslProviderSchemaFactory.GetSchema((FbConnection)Connection, "DataSourceInformation", null);
 
 		Describer describer;
 		// Rename each column in the schema to it's AdoDotNet root column name

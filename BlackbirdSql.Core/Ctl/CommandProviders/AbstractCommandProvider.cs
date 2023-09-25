@@ -290,16 +290,19 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		}
 		else if (commandId.Equals(CommandProperties.RightClick))
 		{
+			// Not working
 			Tracer.Trace(GetType(), "CreateCommand", "RightClick");
 			command = base.CreateCommand(itemId, commandId, parameters);
 		}
 		else if (commandId.Equals(CommandProperties.DoubleClick))
 		{
+			// Not working
 			Tracer.Trace(GetType(), "CreateCommand", "DoubleClick");
 			command = base.CreateCommand(itemId, commandId, parameters);
 		}
 		else if (commandId.Equals(CommandProperties.EnterKey))
 		{
+			// Not working
 			Tracer.Trace(GetType(), "CreateCommand", "EnterKey");
 			command = base.CreateCommand(itemId, commandId, parameters);
 		}
@@ -437,7 +440,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 		if (SystemData.MandatedSqlEditorFactoryGuid.Equals(SystemData.DslEditorFactoryGuid, StringComparison.OrdinalIgnoreCase))
 		{
-			IBDesignerExplorerServices service = ((AsyncPackage)Controller.Instance.DdexPackage).GetService<IBDesignerExplorerServices, IBDesignerExplorerServices>();
+			IBDesignerExplorerServices service = Controller.GetService<IBDesignerExplorerServices, IBDesignerExplorerServices>();
 
 			if (service == null)
 			{
@@ -449,7 +452,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		}
 		else
 		{
-			IBDesignerOnlineServices service = ((AsyncPackage)Controller.Instance.DdexPackage).GetService<IBDesignerOnlineServices,
+			IBDesignerOnlineServices service = Controller.GetService<IBDesignerOnlineServices,
 				IBDesignerOnlineServices>();
 
 			if (service == null)

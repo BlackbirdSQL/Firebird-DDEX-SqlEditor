@@ -47,7 +47,6 @@ public class ConnectionEventTelemetryContext : ConnectionDialogTelemetryContext,
 
     private bool _connectionPropertiesAdded;
 
-    // private readonly object _LockObject = new object();
 
 
     public override void EnsureContextProperties()

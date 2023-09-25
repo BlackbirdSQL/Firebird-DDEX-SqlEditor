@@ -60,6 +60,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <!-- Includes - Top Level -->
   <ItemGroup>
@@ -96,7 +97,7 @@
       <Version>9.1.1</Version>
     </PackageReference>
     <PackageReference Include="IndexRange">
-      <Version>1.0.2</Version>
+      <Version>1.0.3</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.CSharp">
       <Version>4.7.0</Version>
@@ -107,7 +108,8 @@
     <PackageReference Include="Microsoft.VisualStudio.Data.Framework">
       <Version>17.5.33428.388</Version>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.6.36389" ExcludeAssets="runtime">
+    <PackageReference Include="Microsoft.VisualStudio.SDK" ExcludeAssets="runtime">
+      <Version>17.6.36389</Version>
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VSSDK.BuildTools">
@@ -115,12 +117,19 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="System.Configuration.ConfigurationManager">
+      <Version>7.0.0</Version>
+    </PackageReference>
   </ItemGroup>
   <!-- References (Projects) -->
   <ItemGroup>
     <ProjectReference Include="..\BlackbirdDsl\BlackbirdDsl.vcxproj">
       <Project>{20fa4c6f-3c4e-46f2-b408-089d66d52c1b}</Project>
       <Name>BlackbirdDsl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BlackbirdSql.Common\BlackbirdSql.Common.csproj">
+      <Project>{a17289fa-efef-49aa-8757-296447c2c1be}</Project>
+      <Name>BlackbirdSql.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\BlackbirdSql.Controller\BlackbirdSql.Controller.csproj">
       <Project>{866da724-0a9b-48fc-be41-03161a61a105}</Project>
@@ -134,6 +143,10 @@
       <Project>{fb5dd543-3c21-4829-869d-abb2cd0360a5}</Project>
       <Name>BlackbirdSql.EditorExtension</Name>
       <EmbedInteropTypes>False</EmbedInteropTypes>
+    </ProjectReference>
+    <ProjectReference Include="..\BlackbirdSql.Wpf\BlackbirdSql.Wpf.csproj">
+      <Project>{1d8dcf60-f00e-4d04-af60-58119ec57ec7}</Project>
+      <Name>BlackbirdSql.Wpf</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -362,18 +375,14 @@
     <Compile Include="Ctl\Config\GeneralOptionModel.cs" />
     <Compile Include="Ctl\Config\OptionsProvider.cs" />
     <Compile Include="Ctl\ComponentModel\VsPackageRegistration.cs" />
-    <Compile Include="Ctl\Extensions\AbstractLinkageParser.cs" />
-    <Compile Include="Ctl\Extensions\AbstruseLinkageParser.cs" />
-    <Compile Include="Ctl\Extensions\LinkageParser.cs" />
-    <Compile Include="Ctl\Interfaces\IBProviderObjectFactory.cs" />
     <Compile Include="Model\DslColumns.cs" />
     <Compile Include="Model\DslFunctionArguments.cs" />
     <Compile Include="Model\DslFunctionArgumentsLegacy.cs" />
     <Compile Include="Model\DslIndexColumns.cs" />
     <Compile Include="Model\DslObjectTypes.cs" />
     <Compile Include="Model\DslProcedureParameters.cs" />
-    <Compile Include="Model\DslSchema.cs" />
-    <Compile Include="Model\DslSchemaFactory.cs" />
+    <Compile Include="Model\AbstractDslSchema.cs" />
+    <Compile Include="Model\DslProviderSchemaFactory.cs" />
     <Compile Include="Model\DslTriggerColumns.cs" />
     <Compile Include="Model\DslRawTriggerDependencies.cs" />
     <Compile Include="Model\DslViewColumns.cs" />
@@ -429,7 +438,9 @@
     <Compile Include="Ctl\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
   </ItemGroup>
   <!-- Includes (VSIX Manifest) -->
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Ctl\Extensions\" />
+  </ItemGroup>
   <!-- Imports -->
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

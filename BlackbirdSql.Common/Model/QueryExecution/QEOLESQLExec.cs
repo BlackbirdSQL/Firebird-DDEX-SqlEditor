@@ -114,7 +114,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 
 	private AsyncRedirectedOutputState _stdErrorRedirState;
 
-	private object _AsyncLockObject = new object();
+	private object _AsyncLockLocal = new object();
 
 	private AsyncCallback _readBufferCallback;
 
@@ -140,9 +140,9 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		SqlCmdVariableResolver = sqlCmdVariableResolver;
 	}
 
-	protected override void DoScriptExecution(IBTextSpan textSpan)
+	protected override void ExecuteScript(IBTextSpan textSpan)
 	{
-		Tracer.Trace(GetType(), "QEOLESQLExec.DoScriptExecution", " _ExecOptions.WithEstimatedExecutionPlan: " + _ExecOptions.WithEstimatedExecutionPlan);
+		Tracer.Trace(GetType(), "QEOLESQLExec.ExecuteScript", " _ExecOptions.WithEstimatedExecutionPlan: " + _ExecOptions.WithEstimatedExecutionPlan);
 		_ErrorAction = EnErrorAction.Ignore;
 		_ExecBatchNumOfTimes = 1;
 		_CurrentConn = _Conn;
@@ -202,10 +202,10 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		}
 	}
 
-	protected override EnScriptExecutionResult DoBatchExecution(QESQLBatch batch)
+	protected override EnScriptExecutionResult ExecuteBatchCommand(QESQLBatch batch)
 	{
-		Tracer.Trace(GetType(), "QEOLESQLExec.DoBatchExecution", " _ExecOptions.WithEstimatedExecutionPlan: " + _ExecOptions.WithEstimatedExecutionPlan);
-		if (batch.Text == null || batch.Text != null && batch.Text.Length == 0)
+		Tracer.Trace(GetType(), "QEOLESQLExec.ExecuteBatchCommand", " _ExecOptions.WithEstimatedExecutionPlan: " + _ExecOptions.WithEstimatedExecutionPlan);
+		if (batch.SqlScript == null || batch.SqlScript != null && batch.SqlScript.Length == 0)
 		{
 			return EnScriptExecutionResult.Success;
 		}
@@ -219,7 +219,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 				OnInfoMessage(ControlsResources.BeginningBatchExec);
 			}
 
-			for (int num = _ExecBatchNumOfTimes; num > 0; num--)
+			for (int i = _ExecBatchNumOfTimes; i > 0; i--)
 			{
 				scriptExecutionResult = EnScriptExecutionResult.Failure;
 				try
@@ -306,7 +306,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 			_runningProcess?.Kill();
 		}
 
-		lock (_AsyncLockObject)
+		lock (_AsyncLockLocal)
 		{
 			_stdOutRedirState?.DoneEvent.Set();
 
@@ -355,7 +355,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 			// _currentSSConnInfo = null;
 		}
 
-		_AsyncLockObject = null;
+		_AsyncLockLocal = null;
 	}
 
 	public EnParserAction GetMoreData(ref string str)
@@ -404,7 +404,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 			_LineNumOfLastBatchEnd = -1;
 		}
 
-		if (ExecuteBatchHelper(str, num, lineNumber))
+		if (ProcessBatchLine(str, num, lineNumber))
 		{
 			return 0;
 		}
@@ -421,7 +421,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 			stringBuilder.AppendFormat(" {0}", exitBatch);
 		}
 
-		// ExecuteBatchHelper(stringBuilder.ToString(), 1, _SqlCmdParser.GetLastCommandLineNumber());
+		// ProcessBatchLine(stringBuilder.ToString(), 1, _SqlCmdParser.GetLastCommandLineNumber());
 		return (EnParserAction)1;
 	}
 
@@ -619,7 +619,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 	{
 		if (SqlCmdMessageFromAppEvent != null)
 		{
-			lock (_AsyncLockObject)
+			lock (_AsyncLockLocal)
 			{
 				SqlCmdMessageFromAppEvent(this, new (message, stdOut));
 			}
@@ -922,7 +922,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 
 			Stream baseStream;
 			Stream baseStream2;
-			lock (_AsyncLockObject)
+			lock (_AsyncLockLocal)
 			{
 				baseStream = _runningProcess.StandardOutput.BaseStream;
 				_stdOutRedirState = new AsyncRedirectedOutputState(baseStream, _runningProcess.StandardOutput.CurrentEncoding, true);
@@ -957,7 +957,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 				}
 			}
 
-			lock (_AsyncLockObject)
+			lock (_AsyncLockLocal)
 			{
 				_stdOutRedirState = null;
 				_stdErrorRedirState = null;
@@ -1061,7 +1061,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		return null;
 	}
 
-	private bool ExecuteBatchHelper(string batchString, int numOfTimes, int lineNumber)
+	private bool ProcessBatchLine(string batchString, int numOfTimes, int lineNumber)
 	{
 		if (lineNumber == -1)
 		{
@@ -1071,7 +1071,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		if (batchString != null)
 		{
 			_ExecBatchNumOfTimes = numOfTimes;
-			ExecuteBatchCommon(batchString, textSpan, out bool continueProcessing);
+			ProcessBatchCommand(batchString, textSpan, out bool continueProcessing);
 			return continueProcessing;
 		}
 

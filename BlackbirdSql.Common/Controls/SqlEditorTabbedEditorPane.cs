@@ -10,10 +10,14 @@ using BlackbirdSql.Common.Controls.PropertiesWindow;
 using BlackbirdSql.Common.Controls.ResultsPane;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Commands;
+using BlackbirdSql.Common.Ctl.Config;
+using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 
 using Microsoft.VisualStudio;
@@ -27,11 +31,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
 using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
-using BlackbirdSql.Common.Ctl.Config;
-using BlackbirdSql.Common.Ctl.Enums;
-using BlackbirdSql.Common.Ctl.Interfaces;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Control.Interfaces;
+
 
 namespace BlackbirdSql.Common.Controls;
 
@@ -363,7 +363,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 			splitViewContainer.SwapButtons();
 			splitViewContainer.PathStripVisibleInSplitMode = false;
 			TabbedEditorUI.TabActivatedEvent += TabActivatedHandler;
-			AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(DocData);
+			AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(DocData);
 			if (auxDocData != null && auxDocData.QryMgr != null)
 			{
 				auxDocData.QryMgr.StatusChangedEvent += OnUpdateTooltipAndWindowCaption;
@@ -438,7 +438,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 	{
 
 		SplitViewContainer splitViewContainer = TabbedEditorUI.SplitViewContainer;
-		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(DocData);
+		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(DocData);
 		QueryManager qryMgr = auxDocData.QryMgr;
 
 		bool isActual = qryMgr.ExecutionOptions.WithExecutionPlan && !qryMgr.ExecutionOptions.WithEstimatedExecutionPlan;
@@ -570,7 +570,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 		int result = 0;
 
 
-		if (AbstractEditorEventsManager.ShouldStopClose(((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(DocData), GetType()))
+		if (AbstractEditorEventsManager.ShouldStopClose(((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(DocData), GetType()))
 		{
 			result = VSConstants.OLE_E_PROMPTSAVECANCELLED;
 		}
@@ -580,7 +580,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 
 	protected override int SaveFiles(ref uint pgrfSaveOptions)
 	{
-		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(DocData);
+		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(DocData);
 		if (pgrfSaveOptions == (uint)__FRAMECLOSE.FRAMECLOSE_PromptSave && auxDocData.SuppressSavePromptWhenClosingEditor())
 		{
 			pgrfSaveOptions = (uint)__FRAMECLOSE.FRAMECLOSE_NoSave;
@@ -642,7 +642,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 			}
 		}
 
-		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(DocData);
+		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(DocData);
 		if (auxDocData != null && auxDocData.Strategy != null)
 		{
 			IBSqlEditorExtendedCommandHandler extendedCommandHandler = auxDocData.Strategy.ExtendedCommandHandler;
@@ -688,7 +688,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 			}
 		}
 
-		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(DocData);
+		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(DocData);
 		if (auxDocData != null && auxDocData.Strategy != null)
 		{
 			IBSqlEditorExtendedCommandHandler extendedCommandHandler = auxDocData.Strategy.ExtendedCommandHandler;
@@ -775,7 +775,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 
 	private static IWpfTextView GetWpfTextView(IVsTextView textView)
 	{
-		return (((System.IServiceProvider)Controller.Instance.DdexPackage).GetService(typeof(SComponentModel)) as IComponentModel).GetService<IVsEditorAdaptersFactoryService>().GetWpfTextView(textView);
+		return (((System.IServiceProvider)Controller.DdexPackage).GetService(typeof(SComponentModel)) as IComponentModel).GetService<IVsEditorAdaptersFactoryService>().GetWpfTextView(textView);
 	}
 
 	public SqlEditorCodeTab GetSqlEditorCodeTab()
@@ -847,7 +847,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 			ResultWindowPane textPlanPanel = GetSqlTextPlanTab().GetView() as ResultWindowPane;
 			_ResultsControl = new DisplaySQLResultsControl(resultsGridPanel, messagePanel, textResultsPanel,
 				statisticsPanel, executionPlanPanel, textPlanPanel, spatialPane, this);
-			_ResultsControl.SetSite(Controller.Instance.DdexPackage.OleServiceProvider);
+			_ResultsControl.SetSite(Controller.OleServiceProvider);
 		}
 
 		return _ResultsControl;
@@ -876,7 +876,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 
 			if (sqlTextSpan != null && !string.IsNullOrEmpty(sqlTextSpan.Text))
 			{
-				AuxiliaryDocData auxDocData = (((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(DocData));
+				AuxiliaryDocData auxDocData = (((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(DocData));
 
 				Tracer.Trace(GetType(), Tracer.Level.Verbose, "ExecuteOrParseQuery", "AuxiliaryDocData.EstimatedExecutionPlanEnabled: " + auxDocData.EstimatedExecutionPlanEnabled);
 
@@ -900,7 +900,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 			_ViewFilter.Dispose();
 			_ResultsControl?.Dispose();
 
-			AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(DocData);
+			AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(DocData);
 			if (auxDocData != null && auxDocData.QryMgr != null)
 			{
 				auxDocData.QryMgr.StatusChangedEvent -= OnUpdateTooltipAndWindowCaption;
@@ -978,7 +978,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 	public void CustomizeTabsForResultsSetting(bool isParseOnly)
 	{
 		EnsureTabs(false);		
-		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(DocData);
+		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(DocData);
 		EnSqlExecutionMode sqlExecutionMode = auxDocData.SqlExecutionMode;
 		AbstractEditorTab sqlEditorResultsTab = GetSqlEditorResultsTab();
 		GetSqlEditorMessageTab();
@@ -1066,7 +1066,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 			try
 			{
 				auxDocData =
-					((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(DocData)
+					((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(DocData)
 					?? throw new NullReferenceException("(AuxiliaryDocData)auxDocData");
 
 				if (auxDocData.Strategy == null)
@@ -1163,7 +1163,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 		uint itemid = Convert.ToUInt32(pvar2, CultureInfo.InvariantCulture);
 		IVsHierarchy vsHierarchy = pvar as IVsHierarchy;
 		vsHierarchy?.SetProperty(itemid, (int)__VSHPROPID.VSHPROPID_ShowOnlyItemCaption, true);
-		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(DocData);
+		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(DocData);
 
 		// There are no Firebird projects so this will never execute
 		if (auxDocData != null && auxDocData.Strategy != null
@@ -1196,7 +1196,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 	private string GetAdditionalTooltipOrWindowCaption(bool toolTip)
 	{
 		string text = string.Empty;
-		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(DocData);
+		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(DocData);
 		if (auxDocData != null && auxDocData.QryMgr != null)
 		{
 			QueryManager qryMgr = auxDocData.QryMgr;

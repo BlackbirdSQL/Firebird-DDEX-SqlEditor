@@ -31,7 +31,7 @@ public sealed class RdtManager : IDisposable
 {
 	private static volatile RdtManager _Instance;
 
-	private static readonly object _LockObject = new object();
+	private static readonly object _LockGlobal = new object();
 
 	private readonly IVsInvisibleEditorManager _InvisibleEditorManager;
 
@@ -43,7 +43,7 @@ public sealed class RdtManager : IDisposable
 
 	private readonly Dictionary<uint, int> _DocDataToKeepAliveOnClose = new Dictionary<uint, int>();
 
-	private readonly object _KeepAliveLockObject = new object();
+	private readonly object _KeepAliveLockLocal = new object();
 
 	private readonly RunningDocumentTable _ShellRunningDocumentTable;
 
@@ -53,7 +53,7 @@ public sealed class RdtManager : IDisposable
 		{
 			if (_Instance == null)
 			{
-				lock (_LockObject)
+				lock (_LockGlobal)
 				{
 					if (_Instance == null)
 					{
@@ -73,7 +73,7 @@ public sealed class RdtManager : IDisposable
 			return;
 		}
 
-		lock (_LockObject)
+		lock (_LockGlobal)
 		{
 			_Instance ??= new RdtManager();
 		}
@@ -103,7 +103,7 @@ public sealed class RdtManager : IDisposable
 
 	public void AddKeepDocDataAliveOnCloseReference(uint docCookie)
 	{
-		lock (_KeepAliveLockObject)
+		lock (_KeepAliveLockLocal)
 		{
 			if (_DocDataToKeepAliveOnClose.TryGetValue(docCookie, out var value))
 			{
@@ -118,7 +118,7 @@ public sealed class RdtManager : IDisposable
 
 	public void RemoveKeepDocDataAliveOnCloseReference(uint docCookie)
 	{
-		lock (_KeepAliveLockObject)
+		lock (_KeepAliveLockLocal)
 		{
 			if (_DocDataToKeepAliveOnClose.TryGetValue(docCookie, out var value))
 			{
@@ -137,7 +137,7 @@ public sealed class RdtManager : IDisposable
 
 	public bool ShouldKeepDocDataAliveOnClose(uint docCookie)
 	{
-		lock (_KeepAliveLockObject)
+		lock (_KeepAliveLockLocal)
 		{
 			return _DocDataToKeepAliveOnClose.ContainsKey(docCookie);
 		}
@@ -1063,7 +1063,7 @@ public sealed class RdtManager : IDisposable
 
 	public void Dispose()
 	{
-		lock (_KeepAliveLockObject)
+		lock (_KeepAliveLockLocal)
 		{
 			SqlTracer.AssertTraceEvent(_DocDataToKeepAliveOnClose.Keys.Count == 0, TraceEventType.Error, (EnSqlTraceId)3, "EventsManager is still trying to keep doc data alive on dispose, this could be a symptom of memory leak from invisible doc data.");
 		}

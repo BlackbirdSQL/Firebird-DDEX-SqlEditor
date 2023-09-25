@@ -11,7 +11,6 @@ using System.Data.Common;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.VisualStudio.Ddex.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
@@ -92,7 +91,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		}
 
 
-		LinkageParser parser = LinkageParser.Instance(Site);
+		LinkageParser parser = LinkageParser.GetInstance(Site);
 
 		IVsDataReader reader;
 
@@ -118,7 +117,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			{
 				if (parser != null)
 					Tracer.Trace(GetType(), "SelectObjects pausing");
-				syncCardinal = parser != null ? parser.SyncEnter(true) : 0;
+				syncCardinal = parser != null ? parser.SyncEnter() : 0;
 
 				schema = GetRootSchema(connection, parameters);
 

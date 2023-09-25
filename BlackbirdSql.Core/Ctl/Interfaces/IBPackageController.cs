@@ -100,6 +100,9 @@ public interface IBPackageController : IVsSolutionEvents3, /* IVsSolutionEvents2
 
 	void DeregisterMiscHierarchy();
 
+
+	TInterface GetService<TService, TInterface>() where TInterface : class;
+
 	void RegisterMiscHierarchy(IVsUIHierarchy hierarchy);
 
 	int OnNewQueryRequested(IVsDataViewHierarchy site, EnNodeSystemType nodeSystemType);

@@ -11,10 +11,7 @@ namespace BlackbirdDsl {
 
 void OffsetCalculator::PrintOffset(SysStr^ text, SysStr^ sql, int charPos, SysStr^ key, bool parsed, SysStr^ backtracking)
 {
-#ifndef _DEBUG
-	return;
-#endif
-
+#ifdef _DEBUG
 	SysStr^ spaces = "";
 
 	SysStr^ holdem = sql->Substring(0, charPos) + "^" + sql->Substring(charPos);
@@ -22,6 +19,9 @@ void OffsetCalculator::PrintOffset(SysStr^ text, SysStr^ sql, int charPos, SysSt
 
 	Diag::Dug(true, text + "  Key: " + key + "  Parsed: " + parsed + "  Back: " + backtracking + " "
 		+ holdem);
+#else // _DEBUG
+	return;
+#endif // else _DEBUG
 }
 
 

@@ -39,7 +39,7 @@ public sealed class QEResultSet : IDisposable, IGridStorage
 
 	private readonly string _Script;
 
-	private readonly object _LockObject = new object();
+	private readonly object _LockLocal = new object();
 
 	private bool _IsStopping;
 
@@ -212,7 +212,7 @@ public sealed class QEResultSet : IDisposable, IGridStorage
 			_ColumnNames.Add(storageDataReader.GetName(i));
 		}
 
-		lock (_LockObject)
+		lock (_LockLocal)
 		{
 			if (!forwardOnly)
 			{
@@ -250,7 +250,7 @@ public sealed class QEResultSet : IDisposable, IGridStorage
 			_QeStorageView = null;
 		}
 
-		lock (_LockObject)
+		lock (_LockLocal)
 		{
 			if (_QeStorage != null)
 			{
@@ -322,7 +322,7 @@ public sealed class QEResultSet : IDisposable, IGridStorage
 	{
 		Tracer.Trace(GetType(), "QEResultSet.InitiateStopRetrievingData", "", null);
 		_IsStopping = true;
-		lock (_LockObject)
+		lock (_LockLocal)
 		{
 			_QeStorage?.InitiateStopStoringData();
 		}

@@ -2,38 +2,37 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ResultPane.DisplaySQLResultsControl
 
 using System;
+using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using BlackbirdSql.Common.Controls.Graphing;
+using BlackbirdSql.Common.Controls.Graphing.Enums;
+using BlackbirdSql.Common.Controls.Graphing.Interfaces;
+using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Common.Ctl.Events;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.Enums;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
+using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 using FirebirdSql.Data.FirebirdClient;
 
+using Microsoft.AnalysisServices.Graphing;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System.Data;
-using Microsoft.AnalysisServices.Graphing;
-using BlackbirdSql.Common.Controls.Interfaces;
-using BlackbirdSql.Common.Controls.Graphing.Interfaces;
-using BlackbirdSql.Common.Controls.Graphing.Enums;
-using BlackbirdSql.Common.Controls.Graphing;
-using EnvDTE;
-using Newtonsoft.Json.Linq;
-using BlackbirdSql.Common.Ctl.Interfaces;
-using BlackbirdSql.Common.Ctl.Enums;
-using BlackbirdSql.Common.Ctl.Events;
-using BlackbirdSql.Core.Ctl.Diagnostics;
+
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
 
@@ -139,7 +138,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 		{
 			if (_AuxDocData == null && SqlEditorPane != null)
 			{
-				_AuxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(SqlEditorPane.DocData);
+				_AuxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(SqlEditorPane.DocData);
 			}
 
 			return _AuxDocData;
@@ -474,7 +473,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 	public bool PrepareForExecution(bool prepareForParse)
 	{
 		Tracer.Trace(GetType(), "DisplaySQLResultsControl.PrepareForExecution", "prepareForParse = {0}", prepareForParse);
-		(((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(SqlEditorPane.DocData)).QryMgr.ResultsHandler = BatchConsumer;
+		(((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(SqlEditorPane.DocData)).QryMgr.ResultsHandler = BatchConsumer;
 		ResultsWriter resultsWriter = null;
 		if (AuxDocData.SqlExecutionMode == EnSqlExecutionMode.ResultsToFile && !prepareForParse && !AuxDocData.ResultsSettings.DiscardResultsForText && !WithEstimatedExecutionPlan)
 		{
@@ -670,10 +669,10 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 		{
 			Name = "_TextMessagesPage"
 		};
-		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(SqlEditorPane.DocData);
+		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(SqlEditorPane.DocData);
 		RegisterToQueryExecutorEvents(auxDocData.QryMgr);
 
-		IVsFontAndColorStorage vsFontAndColorStorage = ((AsyncPackage)Controller.Instance.DdexPackage).GetService<SVsFontAndColorStorage, IVsFontAndColorStorage>();
+		IVsFontAndColorStorage vsFontAndColorStorage = Controller.GetService<SVsFontAndColorStorage, IVsFontAndColorStorage>();
 
 		if (AbstractFontAndColorProvider.GetFontAndColorSettingsForCategory(VS.CLSID_FontAndColorsSqlResultsGridCategory,
 			FontAndColorProviderGridResults.GridCell, vsFontAndColorStorage, out var categoryFont, out var foreColor,

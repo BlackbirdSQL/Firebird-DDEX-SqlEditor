@@ -189,7 +189,7 @@ public class SqlEditorViewFilter : AbstractViewFilter
 					case VSConstants.VSStd2KCmdID.INSERTSNIPPET:
 					case VSConstants.VSStd2KCmdID.SURROUNDWITH:
 						{
-							AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(Editor.DocData);
+							AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(Editor.DocData);
 							if (auxDocData != null && auxDocData.QryMgr != null && !auxDocData.QryMgr.IsExecuting && !auxDocData.QryMgr.IsDebugging)
 							{
 								prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED);
@@ -223,7 +223,7 @@ public class SqlEditorViewFilter : AbstractViewFilter
 					case VSConstants.VSStd97CmdID.GotoDefn:
 					case VSConstants.VSStd97CmdID.FindReferences:
 						{
-							AuxiliaryDocData auxillaryDocData2 = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(Editor.DocData);
+							AuxiliaryDocData auxillaryDocData2 = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(Editor.DocData);
 							if (auxillaryDocData2 != null && (auxillaryDocData2.Strategy.IsOnline || auxillaryDocData2.Strategy is DefaultSqlEditorStrategy))
 							{
 								prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);

@@ -19,6 +19,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Include="Ctl\Interfaces\IBWindowPane.cs" />
 	  <Compile Include="Controls\ResultsPane\StatisticsSnapshotAgent.cs" />
 	  <Compile Include="Controls\ResultsPane\StatisticsPropertySet.cs" />
 	  <Compile Include="Controls\Graphing\ActualPlanDataReaderNodeBuilder.cs" />
@@ -826,7 +827,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="9.1.1" />
-	  <PackageReference Include="IndexRange" Version="1.0.2" />
+	  <PackageReference Include="IndexRange" Version="1.0.3" />
 	  <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
 	  <PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
 	  <PackageReference Include="Microsoft.VisualStudio.Data.Framework" Version="17.5.33428.388" />
@@ -855,85 +856,37 @@
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
 	  </Compile>
-	  <Compile Update="Controls\AnimatedStatusStripItem.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
-	  <Compile Update="Controls\Grid\DlgGridControl.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
-	  <Compile Update="Controls\Grid\EmbeddedComboBox.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
-	  <Compile Update="Controls\Grid\EmbeddedSpinBox.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
-	  <Compile Update="Controls\Grid\EmbeddedTextBox.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
-	  <Compile Update="Controls\Grid\GridControl.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
+	  <Compile Update="Controls\AnimatedStatusStripItem.cs" />
+	  <Compile Update="Controls\Grid\DlgGridControl.cs" />
+	  <Compile Update="Controls\Grid\EmbeddedComboBox.cs" />
+	  <Compile Update="Controls\Grid\EmbeddedSpinBox.cs" />
+	  <Compile Update="Controls\Grid\EmbeddedTextBox.cs" />
+	  <Compile Update="Controls\Grid\GridControl.cs" />
 	  <Compile Update="Controls\Grid\GridPrintDocument.cs">
 	    <SubType>Component</SubType>
 	  </Compile>
-	  <Compile Update="Controls\AbstractShellTextEditorControl.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
-	  <Compile Update="Controls\ResultsPane\AbstractResultsPanel.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
-	  <Compile Update="Controls\ResultsPane\GridResultsGrid.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
+	  <Compile Update="Controls\AbstractShellTextEditorControl.cs" />
+	  <Compile Update="Controls\ResultsPane\AbstractResultsPanel.cs" />
+	  <Compile Update="Controls\ResultsPane\GridResultsGrid.cs" />
 	  <Compile Update="Controls\ResultsPane\GridResultsPanel.cs" />
 	  <Compile Update="Controls\ResultsPane\AbstractGridResultsPanel.cs" />
-	  <Compile Update="Controls\ResultsPane\ShellTextViewControl.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
-	  <Compile Update="Controls\ResultsPane\StatisticsDlgGridControl.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
-	  <Compile Update="Controls\ResultsPane\StatisticsPanel.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
-	  <Compile Update="Controls\ResultsPane\TextResultsViewContol.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
-	  <Compile Update="Controls\ResultsPane\VSTextEditorPanel.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
-	  <Compile Update="Controls\ToolsOptions\AbstractCurrentWndOptionsDlg.cs">
-	    <SubType>Form</SubType>
-	  </Compile>
-	  <Compile Update="Controls\ToolsOptions\SqlCurrentWndOptionsDlg.cs">
-	    <SubType>Form</SubType>
-	  </Compile>
-	  <Compile Update="Controls\ToolsOptions\Separator.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
-	  <Compile Update="Controls\ToolsOptions\SqlExecutionAdvancedSettingsDlg.cs">
-	    <SubType>UserControl</SubType>
-	  </Compile>
-	  <Compile Update="Controls\ToolsOptions\SqlExecutionAnsiSettingsDlg.cs">
-	    <SubType>UserControl</SubType>
-	  </Compile>
+	  <Compile Update="Controls\ResultsPane\ShellTextViewControl.cs" />
+	  <Compile Update="Controls\ResultsPane\StatisticsDlgGridControl.cs" />
+	  <Compile Update="Controls\ResultsPane\StatisticsPanel.cs" />
+	  <Compile Update="Controls\ResultsPane\TextResultsViewContol.cs" />
+	  <Compile Update="Controls\ResultsPane\VSTextEditorPanel.cs" />
+	  <Compile Update="Controls\ToolsOptions\AbstractCurrentWndOptionsDlg.cs" />
+	  <Compile Update="Controls\ToolsOptions\SqlCurrentWndOptionsDlg.cs" />
+	  <Compile Update="Controls\ToolsOptions\Separator.cs" />
+	  <Compile Update="Controls\ToolsOptions\SqlExecutionAdvancedSettingsDlg.cs" />
+	  <Compile Update="Controls\ToolsOptions\SqlExecutionAnsiSettingsDlg.cs" />
 	  <Compile Update="Controls\ToolsOptions\SqlExecutionGeneralSettingsDlg.cs" />
-	  <Compile Update="Controls\ToolsOptions\SqlResultsGeneralSettingsDlg.cs">
-	    <SubType>UserControl</SubType>
-	  </Compile>
-	  <Compile Update="Controls\ToolsOptions\SqlResultsToGridSettingsDlg.cs">
-	    <SubType>UserControl</SubType>
-	  </Compile>
-	  <Compile Update="Controls\ToolsOptions\SqlResultToTextSettingsDlg.cs">
-	    <SubType>UserControl</SubType>
-	  </Compile>
-	  <Compile Update="Controls\ToolsOptions\ToolsOptionsBaseControl.cs">
-	    <SubType>UserControl</SubType>
-	  </Compile>
+	  <Compile Update="Controls\ToolsOptions\SqlResultsGeneralSettingsDlg.cs" />
+	  <Compile Update="Controls\ToolsOptions\SqlResultsToGridSettingsDlg.cs" />
+	  <Compile Update="Controls\ToolsOptions\SqlResultToTextSettingsDlg.cs" />
+	  <Compile Update="Controls\ToolsOptions\ToolsOptionsBaseControl.cs" />
 	  <Compile Update="Controls\WrappingCheckBox.cs" />
-	  <Compile Update="Controls\DataConnectionAdvancedDlg.cs">
-	    <SubType>Form</SubType>
-	  </Compile>
+	  <Compile Update="Controls\DataConnectionAdvancedDlg.cs" />
 	  <Compile Update="Controls\Exceptions\AdvancedInformationDlg.cs" />
 	  <Compile Update="Controls\Exceptions\ExceptionMessageBoxDlg.cs" />
 	  <Compile Update="Properties\ExceptionsResources.Designer.cs">
@@ -942,15 +895,9 @@
 	    <AutoGen>True</AutoGen>
 	  </Compile>
 	  <Compile Update="Controls\Exceptions\PrivacyConfirmationDlg.cs" />
-	  <Compile Update="Controls\FileEncodingDlg.cs">
-	    <SubType>Form</SubType>
-	  </Compile>
-	  <Compile Update="Controls\QueryExecution\MultiControlPanel.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
-	  <Compile Update="Controls\QueryExecution\QESplitter.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
+	  <Compile Update="Controls\FileEncodingDlg.cs" />
+	  <Compile Update="Controls\QueryExecution\MultiControlPanel.cs" />
+	  <Compile Update="Controls\QueryExecution\QESplitter.cs" />
 	  <Compile Update="Properties\QEResources.Designer.cs">
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
@@ -961,18 +908,10 @@
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
 	  </Compile>
-	  <Compile Update="Controls\SplitViewSplitterStrip.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
-	  <Compile Update="Controls\ToolbarHost.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
-	  <Compile Update="Controls\Splitter.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
-	  <Compile Update="Controls\ToolStripStatusLabelWithMaxLimit.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
+	  <Compile Update="Controls\SplitViewSplitterStrip.cs" />
+	  <Compile Update="Controls\ToolbarHost.cs" />
+	  <Compile Update="Controls\Splitter.cs" />
+	  <Compile Update="Controls\ToolStripStatusLabelWithMaxLimit.cs" />
 	</ItemGroup>
 
 

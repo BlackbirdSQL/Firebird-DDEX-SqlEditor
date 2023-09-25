@@ -52,6 +52,11 @@
     <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+    <LinkKeyFile>$(ProjectDir)BlackbirdDsl.snk</LinkKeyFile>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -71,6 +76,7 @@
       <EnableUAC>false</EnableUAC>
       <Version>
       </Version>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <Xdcmake>
       <DocumentLibraryDependencies>false</DocumentLibraryDependencies>
@@ -89,6 +95,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir)Include;$(ProjectDir)CPenta\Include;$(ProjectDir)Parser\Include;$(ProjectDir)Parser\Extensions\Include;$(ProjectDir)Parser\Configuration\Include;$(ProjectDir)Parser\Common\Include;$(ProjectDir)Parser\Assemblers\Include;$(ProjectDir)Parser\Parsers\Include</AdditionalIncludeDirectories>
       <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
       <XMLDocumentationFileName>$(IntDir)XmlDoc\</XMLDocumentationFileName>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -96,6 +103,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <Xdcmake>
       <DocumentLibraryDependencies>false</DocumentLibraryDependencies>
@@ -244,6 +252,7 @@
   <ItemGroup>
     <None Include="BlackbirdDsl.rc2" />
     <None Include="BlackbirdDsl.snk" />
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BlackbirdDsl.rc" />

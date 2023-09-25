@@ -49,7 +49,7 @@ public sealed class AuxiliaryDocData
 
 	private IBSqlEditorStrategy _Strategy;
 
-	private readonly object _LockObject = new object();
+	private readonly object _LockLocal = new object();
 
 	private bool? _IntellisenseEnabled;
 
@@ -61,7 +61,7 @@ public sealed class AuxiliaryDocData
 	{
 		get
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				return _Strategy;
 			}
@@ -75,7 +75,7 @@ public sealed class AuxiliaryDocData
 				throw ex;
 			}
 
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				_Strategy = value;
 				QryMgr.ConnectionStrategy = Strategy.CreateConnectionStrategy();
@@ -88,7 +88,7 @@ public sealed class AuxiliaryDocData
 	{
 		get
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				if (_QryMgr == null)
 				{
@@ -107,14 +107,14 @@ public sealed class AuxiliaryDocData
 	{
 		get
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				return _IntellisenseEnabled;
 			}
 		}
 		set
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				IVsUserData iVsUserData = GetIVsUserData();
 				if (iVsUserData != null)
@@ -131,14 +131,14 @@ public sealed class AuxiliaryDocData
 	{
 		get
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				return QryMgr.ExecutionOptions.WithClientStats;
 			}
 		}
 		set
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				QryMgr.ExecutionOptions.WithClientStats = value;
 			}
@@ -149,14 +149,14 @@ public sealed class AuxiliaryDocData
 	{
 		get
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				return QryMgr.ExecutionOptions.WithExecutionPlan;
 			}
 		}
 		set
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				QryMgr.ExecutionOptions.WithExecutionPlan = value;
 			}
@@ -167,14 +167,14 @@ public sealed class AuxiliaryDocData
 	{
 		get
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				return QryMgr.ExecutionOptions.WithEstimatedExecutionPlan;
 			}
 		}
 		set
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				QryMgr.ExecutionOptions.WithEstimatedExecutionPlan = value;
 			}
@@ -239,7 +239,7 @@ public sealed class AuxiliaryDocData
 
 	private void QueryManagerStatusChangedEventHandler(object sender, QueryManager.StatusChangedEventArgs args)
 	{
-		lock (_LockObject)
+		lock (_LockLocal)
 		{
 			if (args.Change == QueryManager.StatusType.ExecutionOptionsWithOleSqlChanged)
 			{
@@ -339,7 +339,7 @@ public sealed class AuxiliaryDocData
 
 	public IVsUserData GetIVsUserData()
 	{
-		lock (_LockObject)
+		lock (_LockLocal)
 		{
 			IVsUserData vsUserData = DocData as IVsUserData;
 			Tracer.Trace(GetType(), "AuxiliaryDocData.GetIVsUserData", "value of IVsUserData returned is {0}", vsUserData);
@@ -385,7 +385,7 @@ public sealed class AuxiliaryDocData
 
 	private void SetOLESqlModeOnDocData(bool on)
 	{
-		lock (_LockObject)
+		lock (_LockLocal)
 		{
 			IVsUserData iVsUserData = GetIVsUserData();
 			if (iVsUserData != null)
@@ -403,7 +403,7 @@ public sealed class AuxiliaryDocData
 
 	private void Dispose(bool disposing)
 	{
-		lock (_LockObject)
+		lock (_LockLocal)
 		{
 			if (disposing)
 			{

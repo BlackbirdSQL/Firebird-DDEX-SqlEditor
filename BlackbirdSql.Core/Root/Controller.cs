@@ -47,7 +47,14 @@ internal static class Controller
 
 	public static IVsRunningDocumentTable DocTable => Instance.DocTable;
 
+	public static Microsoft.VisualStudio.OLE.Interop.IServiceProvider OleServiceProvider
+		=> Instance.DdexPackage.OleServiceProvider;
+
 	public static IVsMonitorSelection SelectionMonitor => Instance.SelectionMonitor;
+
+
+	public static TInterface GetService<TService, TInterface>() where TInterface : class
+		=> Instance.GetService<TService, TInterface>();
 
 
 }

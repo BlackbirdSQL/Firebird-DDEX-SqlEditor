@@ -32,7 +32,7 @@ using FirebirdSql.Data.FirebirdClient;
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
 
 
-internal class DslFunctionArgumentsLegacy : DslSchema
+internal class DslFunctionArgumentsLegacy : AbstractDslSchema
 {
 	#region Protected Methods
 

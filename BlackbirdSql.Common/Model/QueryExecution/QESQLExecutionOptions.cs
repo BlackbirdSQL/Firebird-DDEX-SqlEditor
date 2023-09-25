@@ -251,7 +251,7 @@ public class QESQLExecutionOptions : ICloneable
 
 	public static bool IsSupported(QESQLBatch batch)
 	{
-		return IsSupported(batch.Text);
+		return IsSupported(batch.SqlScript);
 	}
 
 	public static bool IsSupported(string statement)

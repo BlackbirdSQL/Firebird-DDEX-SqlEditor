@@ -112,7 +112,7 @@ internal class GlobalsAgent : AbstractGlobalsAgent
 				G_Key = C_PersistentKey;
 #else
 			G_Persistent = true;
-			G_Key = G_PersistentKey;
+			G_Key = C_PersistentKey;
 #endif
 		}
 

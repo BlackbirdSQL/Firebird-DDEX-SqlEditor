@@ -55,7 +55,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	private IList<uint> _OverrideSaveFileList;
 
-	private bool _FirstTimeShowEventHandled;
+	// private bool _FirstTimeShowEventHandled;
 
 	private bool _IsHelpInitialized;
 
@@ -827,7 +827,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 					EnsureToolbarAssociatedWithTabs();
 					OnShow(fShow);
 				}
-				_FirstTimeShowEventHandled = true;
+				// _FirstTimeShowEventHandled = true;
 				break;
 			case __FRAMESHOW.FRAMESHOW_TabActivated:
 			case __FRAMESHOW.FRAMESHOW_TabDeactivated:
@@ -1192,18 +1192,4 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		}
 	}
 
-	[Conditional("DEBUG")]
-#pragma warning disable IDE0051 // Remove unused private members
-	private void VerifyTabShowFalse()
-#pragma warning restore IDE0051 // Remove unused private members
-	{
-		if (_FirstTimeShowEventHandled)
-		{
-			return;
-		}
-		foreach (AbstractEditorTab tab in _TabbedEditorUI.Tabs)
-		{
-			_ = tab;
-		}
-	}
 }

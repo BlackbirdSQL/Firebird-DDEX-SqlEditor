@@ -13,11 +13,12 @@ using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Model.Interfaces;
 using BlackbirdSql.VisualStudio.Ddex.Controls.Config;
 using BlackbirdSql.VisualStudio.Ddex.Ctl;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.Config;
-using BlackbirdSql.VisualStudio.Ddex.Interfaces;
+using BlackbirdSql.VisualStudio.Ddex.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 
 using FirebirdSql.Data.FirebirdClient;
@@ -73,8 +74,8 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 [VsPackageRegistration]
 
 // Register services
-[ProvideService(typeof(IBPackageController), IsAsyncQueryable = true, ServiceName = PackageData.ControllerServiceName)]
-[ProvideService(typeof(IBProviderObjectFactory), IsAsyncQueryable = true, ServiceName = PackageData.ObjectFactoryServiceName)]
+[ProvideService(typeof(IBPackageController), IsAsyncQueryable = true, ServiceName = PackageData.PackageControllerServiceName)]
+[ProvideService(typeof(IBProviderObjectFactory), IsAsyncQueryable = true, ServiceName = PackageData.ProviderObjectFactoryServiceName)]
 
 
 // Implement Visual studio options/settings
@@ -227,6 +228,8 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 		// Add provider object factory
 		Services.AddService(typeof(IBProviderObjectFactory), ServicesCreatorCallbackAsync, promote: true);
 
+		Services.AddService(typeof(IBProviderSchemaFactory), ServicesCreatorCallbackAsync, promote: true);
+
 
 		_ = AdviseEventsAsync();
 
@@ -278,6 +281,28 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 
 			return service;
 		}
+		if (serviceType == typeof(IBProviderSchemaFactory))
+		{
+			object service;
+			try
+			{
+				service = new DslProviderSchemaFactory();
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw ex;
+			}
+
+			if (service == null)
+			{
+				ServiceUnavailableException ex = new(serviceType);
+				Diag.Dug(ex);
+				throw ex;
+			}
+
+			return service;
+		}
 
 		return await base.CreateServiceInstanceAsync(serviceType, token);
 
@@ -296,7 +321,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 	// ---------------------------------------------------------------------------------
 	public override async Task<object> ServicesCreatorCallbackAsync(IAsyncServiceContainer container, CancellationToken token, Type serviceType)
 	{
-		if (serviceType == typeof(IBProviderObjectFactory))
+		if (serviceType == typeof(IBProviderObjectFactory) || serviceType == typeof(IBProviderSchemaFactory))
 			return await CreateServiceInstanceAsync(serviceType, token);
 
 

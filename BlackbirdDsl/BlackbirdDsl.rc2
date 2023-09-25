@@ -19,9 +19,9 @@ PRODUCTVERSION 9, 1, 0, 3
 FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
 FILEFLAGS 0x1L
-#else
+#else // _DEBUG
 FILEFLAGS 0x0L
-#endif
+#endif // else _DEBUG
 FILEOS 0x40004L
 FILETYPE 0x2L
 FILESUBTYPE 0x0L
@@ -32,12 +32,12 @@ BLOCK "1c0904b0"
 BEGIN
 VALUE "CompanyName", "BlackbirdSql"
 VALUE "FileDescription", "Blackbird Dsl Parser"
-VALUE "FileVersion", "9.1.0.84"
+VALUE "FileVersion", "9.1.0.87"
 VALUE "InternalName", "BlackbirdDsl.dll"
 VALUE "LegalCopyright", "Copyright (C) 2023"
 VALUE "OriginalFilename", "BlackbirdDsl.dll"
 VALUE "ProductName", "BlackbirdDsl"
-VALUE "ProductVersion", "9.1.0.84"
+VALUE "ProductVersion", "9.1.0.87"
 END
 END
 BLOCK "VarFileInfo"

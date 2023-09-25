@@ -135,7 +135,7 @@ public abstract class AbstractQESQLExec : IDisposable
 		}
 
 		_ExecState = ExecState.Initial;
-		_ExecThread = new(StartExecuting)
+		_ExecThread = new(ProcessScript)
 		{
 			CurrentCulture = CultureInfo.CurrentCulture,
 			CurrentUICulture = CultureInfo.CurrentUICulture,
@@ -219,11 +219,11 @@ public abstract class AbstractQESQLExec : IDisposable
 		Dispose(bDisposing: true);
 	}
 
-	private void StartExecuting()
+	private void ProcessScript()
 	{
 		try
 		{
-			Tracer.Trace(GetType(), "QESQLExec.StartExecuting");
+			Tracer.Trace(GetType(), "QESQLExec.ProcessScript");
 			ProcessExecOptions(_Conn);
 			_ExecOptionHasBeenChanged = false;
 			_ExecResult = EnScriptExecutionResult.Failure;
@@ -246,7 +246,7 @@ public abstract class AbstractQESQLExec : IDisposable
 			_ExecResult = SetRestoreConnectionOptions(bSet: true, _Conn);
 
 			if (_ExecResult == EnScriptExecutionResult.Success)
-				DoScriptExecution(_TextSpan);
+				ExecuteScript(_TextSpan);
 
 			bool discarded = false;
 			lock (_LockObject)
@@ -256,7 +256,7 @@ public abstract class AbstractQESQLExec : IDisposable
 
 			if (discarded)
 			{
-				Tracer.Trace(GetType(), Tracer.Level.Warning, "QESQLExec.StartExecuting", "execution was discarded");
+				Tracer.Trace(GetType(), Tracer.Level.Warning, "QESQLExec.ProcessScript", "execution was discarded");
 				Cleanup();
 				if (_Conn != null && _Conn.State == ConnectionState.Open)
 				{
@@ -272,7 +272,7 @@ public abstract class AbstractQESQLExec : IDisposable
 				return;
 			}
 
-			Tracer.Trace(GetType(), Tracer.Level.Verbose, "QESQLExec.StartExecuting", "execution was NOT discarded");
+			Tracer.Trace(GetType(), Tracer.Level.Verbose, "QESQLExec.ProcessScript", "execution was NOT discarded");
 			// EstimatedExecutionPlan = gets the plan without executing the script. MS still seem to execute the script.
 			// We have bypassed that and get the plan at ExecuteReader above.
 			// ActualExecutionPlan = the WithExecutionPlan toggle is latched so we can get the actual because
@@ -555,11 +555,13 @@ public abstract class AbstractQESQLExec : IDisposable
 		return scriptExecutionResult;
 	}
 
-	protected void ExecuteBatchCommon(string batch, IBTextSpan textSpan, out bool continueProcessing)
+	protected void ProcessBatchCommand(string sqlScript, IBTextSpan textSpan, out bool continueProcessing)
 	{
-		Tracer.Trace(GetType(), "QESQLExec.ExecuteBatchCommon", " _ExecOptions.WithEstimatedExecutionPlan: " + _ExecOptions.WithEstimatedExecutionPlan);
+		Tracer.Trace(GetType(), "QESQLExec.ProcessBatchCommand", " _ExecOptions.WithEstimatedExecutionPlan: " + _ExecOptions.WithEstimatedExecutionPlan);
+
 		continueProcessing = true;
-		if (batch.Trim().Length <= 0)
+
+		if (sqlScript.Trim().Length <= 0)
 		{
 			_ExecResult |= EnScriptExecutionResult.Success;
 			return;
@@ -574,7 +576,7 @@ public abstract class AbstractQESQLExec : IDisposable
 			else
 			{
 				_CurBatch.Reset();
-				_CurBatch.Text = batch;
+				_CurBatch.SqlScript = sqlScript;
 				_CurBatch.TextSpan = textSpan;
 				_CurBatch.BatchIndex = _CurBatchIndex;
 				_CurBatchIndex++;
@@ -590,13 +592,13 @@ public abstract class AbstractQESQLExec : IDisposable
 			{
 				OnStartBatchExecution(_CurBatch);
 				// Execution
-				scriptExecutionResult = DoBatchExecution(_CurBatch);
+				scriptExecutionResult = ExecuteBatchCommand(_CurBatch);
 			}
 			finally
 			{
 				lock (_LockObject)
 				{
-					Tracer.Trace(GetType(), Tracer.Level.Verbose, "QESQLExec.ExecuteBatchCommon", "execState = {0}", _ExecState);
+					Tracer.Trace(GetType(), Tracer.Level.Verbose, "QESQLExec.ProcessBatchCommand", "execState = {0}", _ExecState);
 					discarded = _ExecState == ExecState.Discarded;
 					if (_ExecState == ExecState.Cancelling || discarded)
 					{
@@ -664,9 +666,9 @@ public abstract class AbstractQESQLExec : IDisposable
 		}
 	}
 
-	protected abstract void DoScriptExecution(IBTextSpan textSpan);
+	protected abstract void ExecuteScript(IBTextSpan textSpan);
 
-	protected abstract EnScriptExecutionResult DoBatchExecution(QESQLBatch batch);
+	protected abstract EnScriptExecutionResult ExecuteBatchCommand(QESQLBatch batch);
 
 	protected virtual void OnStartBatchExecution(QESQLBatch batch)
 	{

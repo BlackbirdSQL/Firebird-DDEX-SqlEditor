@@ -35,7 +35,7 @@ public abstract class AbstractDesignerServices
 
 	protected static Guid _DslEditorFactoryClsid = Guid.Empty;
 	protected static Dictionary<DatabaseLocation, Dictionary<NodeElementDescriptor, string>> _InflightOpens = null;
-	protected static object _LockObject;
+	protected static object _LockGlobal;
 
 
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
@@ -66,17 +66,17 @@ public abstract class AbstractDesignerServices
 	protected static Dictionary<DatabaseLocation, Dictionary<NodeElementDescriptor, string>> InflightOpens
 		=> _InflightOpens ??= new(DatabaseLocation.CreateComparer());
 
-	protected static IServiceProvider OleProvider => Controller.Instance.DdexPackage.OleServiceProvider;
+	protected static IServiceProvider OleProvider => Controller.OleServiceProvider;
 
 
 	public AbstractDesignerServices()
 	{
-		_LockObject ??= new object();
+		_LockGlobal ??= new object();
 	}
 
 	protected static void AddInflightOpen(DatabaseLocation dbl, NodeElementDescriptor descriptor, string moniker)
 	{
-		lock (_LockObject)
+		lock (_LockGlobal)
 		{
 			if (!InflightOpens.TryGetValue(dbl, out Dictionary<NodeElementDescriptor, string> value))
 			{
@@ -96,7 +96,7 @@ public abstract class AbstractDesignerServices
 		SqlTracer.AssertTraceEvent(!RdtManager.Instance.IsFileInRdt(moniker), TraceEventType.Warning, EnSqlTraceId.TableDesigner, "The document: " + moniker + " is already in RDT.");
 
 		IVsTextLines vsTextLines = null;
-		ILocalRegistry localRegistry = ((AsyncPackage)Controller.Instance.DdexPackage).GetService<SLocalRegistry, ILocalRegistry>();
+		ILocalRegistry localRegistry = Controller.GetService<SLocalRegistry, ILocalRegistry>();
 
 		if (localRegistry != null)
 		{
@@ -202,7 +202,7 @@ public abstract class AbstractDesignerServices
 	{
 		string value = null;
 
-		lock (_LockObject)
+		lock (_LockGlobal)
 		{
 			if (InflightOpens.TryGetValue(dbl, out Dictionary<NodeElementDescriptor, string> value2))
 			{
@@ -255,7 +255,7 @@ public abstract class AbstractDesignerServices
 		frame = null;
 		sp = null;
 
-		IVsUIShellOpenDocument vsUIShellOpenDocument = ((AsyncPackage)Controller.Instance.DdexPackage).GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
+		IVsUIShellOpenDocument vsUIShellOpenDocument = Controller.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
 
 		if (vsUIShellOpenDocument == null)
 		{
@@ -309,7 +309,7 @@ public abstract class AbstractDesignerServices
 		documentAlreadyLoaded = docCookie != 0;
 		frame = null;
 
-		IVsUIShellOpenDocument vsUIShellOpenDocument = ((AsyncPackage)Controller.Instance.DdexPackage).GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument >();
+		IVsUIShellOpenDocument vsUIShellOpenDocument = Controller.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument >();
 
 		if (vsUIShellOpenDocument == null)
 		{
@@ -475,7 +475,7 @@ public abstract class AbstractDesignerServices
 			return;
 		}
 
-		IComponentModel componentModel = ((AsyncPackage)Controller.Instance.DdexPackage).GetService<SComponentModel, IComponentModel>();
+		IComponentModel componentModel = Controller.GetService<SComponentModel, IComponentModel>();
 		if (componentModel == null)
 			return;
 
@@ -505,7 +505,7 @@ public abstract class AbstractDesignerServices
 			throw ExceptionFactory.CreateArgumentNullException("desc");
 		}
 		*/
-		lock (_LockObject)
+		lock (_LockGlobal)
 		{
 			if (_InflightOpens.TryGetValue(dbl, out var value))
 			{
@@ -629,7 +629,7 @@ public abstract class AbstractDesignerServices
 		{
 			return;
 		}
-		if (((System.IServiceProvider)Controller.Instance.DdexPackage).GetService(typeof(SComponentModel)) is not IComponentModel componentModel)
+		if (((System.IServiceProvider)Controller.DdexPackage).GetService(typeof(SComponentModel)) is not IComponentModel componentModel)
 		{
 			return;
 		}

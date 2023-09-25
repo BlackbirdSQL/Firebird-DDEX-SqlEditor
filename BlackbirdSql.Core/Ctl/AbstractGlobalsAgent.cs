@@ -114,7 +114,7 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 #if DEBUG
 	protected string G_Key = C_TransitoryKey; // For non-persistent
 #else
-	G_Key = G_PersistentKey; // For persistent
+	protected string G_Key = C_PersistentKey; // For persistent
 #endif
 
 

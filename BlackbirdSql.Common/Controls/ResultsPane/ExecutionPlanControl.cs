@@ -23,12 +23,14 @@ using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Enums;
+
 using Microsoft.AnalysisServices.Graphing;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Utilities;
+
 using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
@@ -399,7 +401,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 			stringBuilder.AppendLine(string.Format(CultureInfo.InvariantCulture, "{0}", missingIndexQueryText));
 			stringBuilder.AppendLine("GO");
 			stringBuilder.AppendLine("*/");
-			Cmd.OpenNewMiscellaneousSqlFile(new ServiceProvider(Controller.Instance.DdexPackage.OleServiceProvider), stringBuilder.ToString());
+			Cmd.OpenNewMiscellaneousSqlFile(new ServiceProvider(Controller.OleServiceProvider), stringBuilder.ToString());
 		}
 	}
 

@@ -20,7 +20,7 @@ using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
 
-internal class DslFunctions : DslSchema
+internal class DslFunctions : AbstractDslSchema
 {
 	#region Protected Methods
 

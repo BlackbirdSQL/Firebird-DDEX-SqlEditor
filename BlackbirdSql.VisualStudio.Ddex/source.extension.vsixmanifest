@@ -1,28 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
-	<Metadata>
-		<Identity Id="BlackbirdSql.VisualStudio.Ddex.bb045ad5-6038-4963-aa12-e4a5262eecaa" Version="9.1.0.84" Language="en-US" Publisher="BlackbirdSql" />
-		<DisplayName>BlackbirdSql.VisualStudio.Ddex</DisplayName>
-		<Description xml:space="preserve">BlackbirdSql DDEX Data Tools</Description>
-		<License>license.txt</License>
-		<Icon>blackbird-vsix-icon.png</Icon>
-		<PreviewImage>blackbird-vsix-icon.png</PreviewImage>
-		<Tags>DDEX;Firebird;FirebirdSql;DDEX 2.0</Tags>
-		<Preview>true</Preview>
-	</Metadata>
-	<Installation>
-		<InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
-			<ProductArchitecture>amd64</ProductArchitecture>
-		</InstallationTarget>
-	</Installation>
-	<Dependencies>
-		<Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
-		<Dependency Id="Microsoft.VisualStudio.MPF.16.0" DisplayName="Visual Studio MPF 16.0" d:Source="Installed" Version="[16.0,17.0)" />
-	</Dependencies>
-	<Prerequisites>
-		<Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,18.0)" DisplayName="Visual Studio core editor" />
-	</Prerequisites>
-	<Assets>
-		<Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
-	</Assets>
+    <Metadata>
+        <Identity Id="BlackbirdSql.VisualStudio.Ddex.bb045ad5-6038-4963-aa12-e4a5262eecaa" Version="9.1.0.87" Language="en-US" Publisher="BlackbirdSql" />
+        <DisplayName>BlackbirdSql.VisualStudio.Ddex</DisplayName>
+        <Description xml:space="preserve"> BlackbirdSql DDEX Data Tools &amp; SqlEditor</Description>
+        <License>license.txt</License>
+        <Icon>blackbird-vsix-icon.png</Icon>
+        <PreviewImage>blackbird-vsix-icon.png</PreviewImage>
+        <Tags>DDEX;Firebird;FirebirdSql;DDEX 2.0;SqlEditor</Tags>
+        <Preview>true</Preview>
+    </Metadata>
+    <Installation>
+        <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.0, 18.0)">
+            <ProductArchitecture>amd64</ProductArchitecture>
+        </InstallationTarget>
+    </Installation>
+    <Dependencies>
+        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
+        <Dependency Id="Microsoft.VisualStudio.MPF.16.0" DisplayName="Visual Studio MPF 16.0" d:Source="Installed" Version="[16.0,17.0)" />
+    </Dependencies>
+    <Prerequisites>
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,18.0)" DisplayName="Visual Studio core editor" />
+    </Prerequisites>
+    <Assets>
+        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+    </Assets>
 </PackageManifest>

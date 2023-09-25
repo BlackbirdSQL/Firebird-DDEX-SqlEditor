@@ -37,10 +37,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Include="Controls\LinkageParserTaskHandler.cs" />
 	  <Compile Include="Ctl\ComponentModel\AbstractBoolConverter.cs" />
+	  <Compile Include="Model\AbstractLinkageParser.cs" />
 	  <Compile Include="Model\BinaryEncoding.cs" />
 	  <Compile Include="Model\Charset.cs" />
 	  <Compile Include="Model\Enums\EnDbDataType.cs" />
+	  <Compile Include="Model\AbstruseLinkageParser.cs" />
+	  <Compile Include="Model\Interfaces\IBProviderObjectFactory.cs" />
+	  <Compile Include="Model\Interfaces\IBProviderSchemaFactory.cs" />
+	  <Compile Include="Model\LinkageParser.cs" />
 	  <Compile Include="Model\TypeHelper.cs" />
 	  <Compile Include="Model\IscCodes.cs" />
 	  <Compile Include="Properties\AttributeResources.Designer.cs">
@@ -133,7 +139,6 @@
 	  <Compile Include="Ctl\Interfaces\IBServerDefinition.cs" />
 	  <Compile Include="Ctl\Interfaces\IBStandardMetadata.cs" />
 	  <Compile Include="Ctl\Interfaces\IBTaskHandlerClient.cs" />
-	  <Compile Include="Control\Interfaces\IBWindowPane.cs" />
 	  <Compile Include="Ctl\Interfaces\IBEnumerableAdvancedDescriptors.cs" />
 	  <Compile Include="Ctl\Interfaces\IBEnumerableEquivalencyDescriptors.cs" />
 	  <Compile Include="Ctl\Interfaces\IBEnumerableMandatoryDescriptors.cs" />
@@ -147,7 +152,7 @@
 	  <Compile Include="Model\MonikerAgent.cs" />
 	  <Compile Include="Model\UIConnectionInfo.cs" />
 	  <Compile Include="Ctl\Config\AbstractOptionModel.cs" />
-	  <Compile Include="Control\Config\AbstractOptionPage.cs" />
+	  <Compile Include="Controls\Config\AbstractOptionPage.cs" />
 	  <Compile Include="Ctl\Enums\EnNativeSettingsType.cs" />
 	  <Compile Include="Ctl\Config\OptionModelPropertyWrapper.cs" />
 	  <Compile Include="Ctl\ComponentModel\OverrideCollectionNameAttribute.cs" />
@@ -209,7 +214,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="9.1.1" />
-		<PackageReference Include="IndexRange" Version="1.0.2" />
+		<PackageReference Include="IndexRange" Version="1.0.3" />
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
 		<PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
 	</ItemGroup>
@@ -218,6 +223,12 @@
 		<PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
 		<PackageReference Include="Microsoft.VisualStudio.Data.Framework" Version="17.5.33428.388" />
 		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.6.36389" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\BlackbirdDsl\BlackbirdDsl.vcxproj">
+	    <Private>True</Private>
+	  </ProjectReference>
 	</ItemGroup>
 
 	<ItemGroup>

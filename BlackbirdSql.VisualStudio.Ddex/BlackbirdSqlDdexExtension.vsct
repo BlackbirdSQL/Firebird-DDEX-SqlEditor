@@ -241,7 +241,7 @@
 				</Strings>
 			</Button>
 
-			<!--  MenuIdSeRootGroup -->
+			<!--  MenuIdSeRootGroup 
 			<Button guid="VsUIHierarchyWindowCmdIds" id="UIHWCMDID_RightClick" priority="0x0130" type="Button">
 				<Parent guid="CommandSetGuid" id="MenuIdSeRootGroup" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
@@ -266,6 +266,7 @@
 					<CommandName>EnterKey</CommandName>
 				</Strings>
 			</Button>
+			-->
 		</Buttons>
 
 

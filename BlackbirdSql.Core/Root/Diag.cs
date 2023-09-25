@@ -47,7 +47,7 @@ public static class Diag
 
 	static bool _EnableTaskLog = true;
 
-	private static readonly object _LockObject = new();
+	private static readonly object _LockGlobal = new();
 
 	// Specify your own trace log file and settings here or override in VS options
 #if BLACKBIRD
@@ -250,7 +250,7 @@ public static class Diag
 		bool enableDiagnosticsLog;
 		bool enableTaskLog;
 
-		lock (_LockObject)
+		lock (_LockGlobal)
 		{
 			enableDiagnosticsLog = _EnableDiagnosticsLog;
 			enableTaskLog = _EnableTaskLog;
@@ -429,7 +429,7 @@ public static class Diag
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
 		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
 #else
-	public static void Dug(Exception ex, string message = "",
+	public static void DebugDug(Exception ex, string message = "",
 		string memberName = "Release:Unavailable",
 		string sourceFilePath = "Release:Unavailable",
 		int sourceLineNumber = 0)
@@ -450,7 +450,7 @@ public static class Diag
 		bool enableLog;
 		bool enableTaskLog;
 
-		lock (_LockObject)
+		lock (_LockGlobal)
 		{
 			enableLog = _EnableDiagnosticsLog;
 			_EnableDiagnosticsLog = true;
@@ -458,7 +458,7 @@ public static class Diag
 			_EnableTaskLog = false;
 		}
 		Dug(true, ex.Message + " " + message, memberName, sourceFilePath, sourceLineNumber);
-		lock (_LockObject)
+		lock (_LockGlobal)
 		{
 			_EnableTaskLog = enableTaskLog;
 			_EnableDiagnosticsLog = enableLog;
@@ -507,7 +507,7 @@ public static class Diag
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
 		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
 #else
-	public static void Trace(string message = "Debug trace",
+	public static void DebugTrace(string message = "Debug trace",
 		string memberName = "Release:Unavailable",
 		string sourceFilePath = "Release:Unavailable",
 		int sourceLineNumber = 0)
@@ -520,7 +520,7 @@ public static class Diag
 		bool enableLog;
 		bool enableTaskLog;
 
-		lock (_LockObject)
+		lock (_LockGlobal)
 		{
 			enableLog = _EnableDiagnosticsLog;
 			_EnableDiagnosticsLog = true;
@@ -528,7 +528,7 @@ public static class Diag
 			_EnableTaskLog = false;
 		}
 		Dug(false, message, memberName, sourceFilePath, sourceLineNumber);
-		lock (_LockObject)
+		lock (_LockGlobal)
 		{
 			_EnableTaskLog = enableTaskLog;
 			_EnableDiagnosticsLog = enableLog;
@@ -566,10 +566,6 @@ public static class Diag
 
 
 
-	// Deadlock warning message suppression
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
-		Justification = "Code logic ensures a deadlock cannot occur")]
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Launches TaskHandlerProgressAsync from a thread in the thread pool so that it
@@ -598,7 +594,7 @@ public static class Diag
 		bool enableDiagnosticsLog;
 		bool enableTaskLog;
 
-		lock (_LockObject)
+		lock (_LockGlobal)
 		{
 			enableDiagnosticsLog = _EnableDiagnosticsLog;
 			enableTaskLog = _EnableTaskLog;
@@ -614,7 +610,7 @@ public static class Diag
 			TaskProgressData progressData = client.GetProgressData();
 			string title;
 
-			lock (_LockObject)
+			lock (_LockGlobal)
 			{
 				title = enableTaskLog && taskHandler != null ? taskHandler.Options.Title.Replace("BlackbirdSql", "").Trim() + ": " : "";
 
@@ -667,7 +663,7 @@ public static class Diag
 		}
 		catch (Exception ex)
 		{
-			lock (_LockObject)
+			lock (_LockGlobal)
 			{
 				_EnableTaskLog = false;
 				Dug(ex);
@@ -681,10 +677,6 @@ public static class Diag
 	}
 
 
-
-	// Deadlock warning message suppression
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
-		Justification = "Code logic ensures a deadlock cannot occur")]
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -740,7 +732,7 @@ public static class Diag
 		}
 		catch (Exception ex)
 		{
-			lock (_LockObject)
+			lock (_LockGlobal)
 			{
 				bool enableTaskLog = _EnableTaskLog;
 				_EnableTaskLog = false;
@@ -791,7 +783,7 @@ public static class Diag
 		{
 			NullReferenceException ex = new("OutputWindowPane is null");
 
-			lock (_LockObject)
+			lock (_LockGlobal)
 			{
 				bool enableTaskLog = _EnableTaskLog;
 				_EnableTaskLog = false;
@@ -813,7 +805,7 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				lock (_LockObject)
+				lock (_LockGlobal)
 				{
 					bool enableTaskLog = _EnableTaskLog;
 					_EnableTaskLog = false;
@@ -832,7 +824,7 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				lock (_LockObject)
+				lock (_LockGlobal)
 				{
 					bool enableTaskLog = _EnableTaskLog;
 					_EnableTaskLog = false;
@@ -867,7 +859,7 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				lock (_LockObject)
+				lock (_LockGlobal)
 				{
 					bool enableTaskLog = _EnableTaskLog;
 					_EnableTaskLog = false;
@@ -889,7 +881,7 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				lock (_LockObject)
+				lock (_LockGlobal)
 				{
 					bool enableTaskLog = _EnableTaskLog;
 					_EnableTaskLog = false;
@@ -905,7 +897,7 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				lock (_LockObject)
+				lock (_LockGlobal)
 				{
 					bool enableTaskLog = _EnableTaskLog;
 					_EnableTaskLog = false;

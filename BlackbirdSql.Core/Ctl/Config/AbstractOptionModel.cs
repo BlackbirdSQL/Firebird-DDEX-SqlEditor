@@ -28,7 +28,7 @@ public abstract class AbstractOptionModel<T> : IBOptionModel where T : AbstractO
 
 	private static IReadOnlyList<IBOptionModelPropertyWrapper> _PropertyWrappers = new List<IBOptionModelPropertyWrapper>();
 
-	private static readonly object _LockObject = new object();
+	private static readonly object _LockGlobal = new object();
 
 	private static bool _PropertyWrappersLoaded;
 
@@ -182,7 +182,7 @@ public abstract class AbstractOptionModel<T> : IBOptionModel where T : AbstractO
 			return _PropertyWrappers;
 		}
 
-		lock (_LockObject)
+		lock (_LockGlobal)
 		{
 			if (_PropertyWrappersLoaded)
 			{

@@ -16,12 +16,15 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="IndexRange" Version="1.0.2" />
+		<PackageReference Include="IndexRange" Version="1.0.3" />
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
 		<PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
 		<PackageReference Include="Microsoft.VisualStudio.Data.Framework" Version="17.5.33428.388" />
 		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.6.36389" />
-		<PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.6.2164" />
+		<PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.6.2164">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup>

@@ -66,7 +66,7 @@ public class ConnectionPropertySectionViewModel : ViewModelBase
 
     // private readonly object _ConnectionTaskLock = new object();
 
-    private readonly object _DatabaseLockObject = new object();
+    private readonly object _ConnectionLockLocal = new object();
 
     // public const AuthenticationTypes DefaultAuth = AuthenticationTypes.SqlPassword;
 
@@ -265,10 +265,10 @@ public class ConnectionPropertySectionViewModel : ViewModelBase
         return new ConnectionPropertySectionViewModel(Channel, _Traceable.DependencyManager, InfoConnection, this);
     }
 
-    /*
+	/*
 	private CancellationToken CreateNewCancellationToken()
 	{
-		lock (_ConnectionLockObject)
+		lock (_ConnectionLockLocal)
 		{
 			_DatabaseCancellationTokenSource.Cancel();
 			_DatabaseCancellationTokenSource = new CancellationTokenSource();
@@ -277,7 +277,7 @@ public class ConnectionPropertySectionViewModel : ViewModelBase
 	}
 	*/
 
-    public bool ValidateConnectionInfo()
+	public bool ValidateConnectionInfo()
     {
         if (!InfoConnection.IsComplete)
         {
@@ -333,7 +333,7 @@ public class ConnectionPropertySectionViewModel : ViewModelBase
     private bool SetDatabaseAreLoaded(bool loaded)
     {
         bool result = false;
-        lock (_DatabaseLockObject)
+        lock (_ConnectionLockLocal)
         {
             if (DatabasesAreLoaded != loaded)
             {

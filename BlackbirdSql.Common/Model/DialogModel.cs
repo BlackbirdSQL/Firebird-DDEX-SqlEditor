@@ -32,7 +32,7 @@ public class DialogModel : IDisposable, IServiceProvider, IServiceContainer
 
 	// private Exception _DiscoveryError;
 
-	private readonly object _LockObject = new object();
+	private readonly object _LockLocal = new object();
 
 	private bool _DeferredDispose;
 
@@ -248,7 +248,7 @@ public class DialogModel : IDisposable, IServiceProvider, IServiceContainer
 		}
 		Trace.TraceEvent(TraceEventType.Information, EnUiTraceId.UiInfra, "RegisterSection section={0} pri={1}", sectionId, priority);
 		SectionRegInfo sectionRegInfo = null;
-		lock (_LockObject)
+		lock (_LockLocal)
 		{
 			sectionRegInfo = new SectionRegInfo(sectionTypeInfo);
 			bool flag = false;

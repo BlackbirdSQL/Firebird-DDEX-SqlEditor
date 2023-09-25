@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Model.Interfaces;
 using EnvDTE;
 
 using Microsoft.VisualStudio;
@@ -469,6 +470,9 @@ internal abstract class AbstractPackageController : IBPackageController
 
 	}
 
+
+	public TInterface GetService<TService, TInterface>() where TInterface : class
+		=> ((AsyncPackage)DdexPackage).GetService<TService, TInterface>();
 
 
 	public void RegisterEventsManager(IBEventsManager manager)

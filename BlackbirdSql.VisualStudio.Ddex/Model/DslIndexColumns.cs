@@ -20,7 +20,7 @@
 //$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.VisualStudio.Ddex.Extensions;
+using BlackbirdSql.Core.Model;
 
 
 

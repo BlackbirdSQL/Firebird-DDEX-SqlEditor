@@ -31,16 +31,15 @@ using FirebirdSql.Data.Services;
 
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
-using System.Collections;
+
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
 
-
-internal abstract class DslSchema
+internal abstract class AbstractDslSchema
 {
-	public DslSchema()
+	public AbstractDslSchema()
 	{
-		Tracer.Trace(GetType(), "DslSchema.DslSchema");
+		Tracer.Trace(GetType(), "AbstractDslSchema");
 	}
 
 	#region Abstract Methods
@@ -53,7 +52,7 @@ internal abstract class DslSchema
 
 	public DataTable GetSchema(FbConnection connection, string collectionName, string[] restrictions)
 	{
-		Tracer.Trace(GetType(), "DslSchema.GetSchema", "collectionName: {0}", collectionName);
+		Tracer.Trace(GetType(), "GetSchema", "collectionName: {0}", collectionName);
 
 		var dataTable = new DataTable(collectionName);
 		var command = BuildCommand(connection, collectionName, ParseRestrictions(restrictions));
@@ -82,10 +81,10 @@ internal abstract class DslSchema
 		return dataTable;
 	}
 
-
+	/*
 	public DataTable GetRawSchema(FbConnection connection, string collectionName)
 	{
-		Tracer.Trace(GetType(), "DslSchema.GetRawSchema", "collectionName: {0}", collectionName);
+		Tracer.Trace(GetType(), "GetRawSchema", "collectionName: {0}", collectionName);
 
 		var dataTable = new DataTable(collectionName);
 		var command = BuildRawCommand(connection);
@@ -113,12 +112,12 @@ internal abstract class DslSchema
 		ProcessResult(dataTable);
 		return dataTable;
 	}
-
+	*/
 
 
 	public async Task<DataTable> GetSchemaAsync(FbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
 	{
-		Tracer.Trace(GetType(), "DslSchema.GetSchemaAsync", "collectionName: {0}", collectionName);
+		Tracer.Trace(GetType(), "GetSchemaAsync", "collectionName: {0}", collectionName);
 
 		var dataTable = new DataTable(collectionName);
 		var command = BuildCommand(connection, collectionName, ParseRestrictions(restrictions));
@@ -169,7 +168,7 @@ internal abstract class DslSchema
 
 	protected FbCommand BuildCommand(FbConnection connection, string collectionName, string[] restrictions)
 	{
-		Tracer.Trace(GetType(), "DslSchema.BuildCommand", "collectionName: {0}", collectionName);
+		Tracer.Trace(GetType(), "BuildCommand", "collectionName: {0}", collectionName);
 
 		SetMajorVersionNumber(connection);
 
@@ -221,17 +220,19 @@ internal abstract class DslSchema
 	}
 
 
+	/*
 	protected FbCommand BuildRawCommand(FbConnection connection)
 	{
-		Tracer.Trace(GetType(), "DslSchema.BuildRawCommand");
+		Tracer.Trace(GetType(), "BuildRawCommand");
 
 		SetMajorVersionNumber(connection);
 
 		var builder = GetCommandText(null);
-		var command = new FbCommand(builder.ToString(), connection /*, transaction*/);
+		var command = new FbCommand(builder.ToString(), connection /*, transaction * /);
 
 		return command;
 	}
+	*/
 
 
 

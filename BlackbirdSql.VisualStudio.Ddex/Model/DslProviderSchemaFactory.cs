@@ -27,20 +27,18 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-using FirebirdSql.Data.FirebirdClient;
-
 using BlackbirdSql.Core;
-using BlackbirdSql.VisualStudio.Ddex.Extensions;
-using BlackbirdSql.VisualStudio.Ddex.Properties;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Model.Interfaces;
+using BlackbirdSql.Core.Model;
+using BlackbirdSql.VisualStudio.Ddex.Properties;
+
+using FirebirdSql.Data.FirebirdClient;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
 
-
-
-
-internal sealed class DslSchemaFactory
+internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 {
 	#region Static Members
 
@@ -50,9 +48,9 @@ internal sealed class DslSchemaFactory
 
 	#region Constructors
 
-	private DslSchemaFactory()
+	public DslProviderSchemaFactory()
 	{
-		Tracer.Trace(GetType(), "DslSchemaFactory.DslSchemaFactory");
+		Tracer.Trace(GetType(), "DslProviderSchemaFactory.DslProviderSchemaFactory");
 	}
 
 	#endregion
@@ -60,9 +58,15 @@ internal sealed class DslSchemaFactory
 	#region Methods
 
 	// Schema factory to handle custom collections
+	DataTable IBProviderSchemaFactory.GetSchema(FbConnection connection, string collectionName, string[] restrictions)
+	{
+		return DslProviderSchemaFactory.GetSchema(connection, collectionName, restrictions);
+	}
+
+	// Schema factory to handle custom collections
 	public static DataTable GetSchema(FbConnection connection, string collectionName, string[] restrictions)
 	{
-		Tracer.Trace(typeof(DslSchemaFactory), "DslSchemaFactory.GetSchema", "collectionName: {0}", collectionName);
+		Tracer.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.GetSchema", "collectionName: {0}", collectionName);
 
 		LinkageParser parser = null;
 		string schemaCollection;
@@ -87,9 +91,14 @@ internal sealed class DslSchemaFactory
 			case "ViewColumns":
 				schemaCollection = collectionName;
 				break;
+			case "RawGenerators":
+				schemaCollection = "Generators";
+				break;
 			case "TriggerColumns":
 				schemaCollection = "Columns";
 				break;
+			case "RawTriggerDependencies":
+			case "RawTriggers":
 			case "TriggerDependencies":
 			case "IdentityTriggers":
 			case "StandardTriggers":
@@ -99,10 +108,10 @@ internal sealed class DslSchemaFactory
 			default:
 				try
 				{
-					parser = LinkageParser.Instance(connection);
+					parser = LinkageParser.GetInstance(connection);
 					if (parser != null)
-						Tracer.Trace(typeof(DslSchemaFactory), "GetSchema pausing");
-					syncCardinal = parser != null ? parser.SyncEnter(true) : 0;
+						Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchema pausing");
+					syncCardinal = parser != null ? parser.SyncEnter() : 0;
 					return connection.GetSchema(collectionName, restrictions);
 				}
 				finally
@@ -112,13 +121,13 @@ internal sealed class DslSchemaFactory
 		}
 
 
-		if (RequiresTriggers(schemaCollection))
+		if (RequiresTriggers(collectionName))
 		{
 			parser = LinkageParser.EnsureInstance(connection);
 		}
-		else
+		else if (RequiresSyncControl(collectionName))
 		{
-			parser = LinkageParser.Instance(connection);
+			parser = LinkageParser.GetInstance(connection);
 		}
 
 
@@ -151,8 +160,8 @@ internal sealed class DslSchemaFactory
 		}
 
 		if (parser != null)
-			Tracer.Trace(typeof(DslSchemaFactory), "GetSchema pausing");
-		syncCardinal = parser != null ? parser.SyncEnter(true) : 0;
+			Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchema pausing");
+		syncCardinal = parser != null ? parser.SyncEnter() : 0;
 
 		var xmlStream = assembly.GetManifestResourceStream(ResourceName);
 		if (xmlStream == null)
@@ -233,9 +242,16 @@ internal sealed class DslSchemaFactory
 	}
 
 
+	// Schema factory to handle custom collections asynchronously
+	Task<DataTable> IBProviderSchemaFactory.GetSchemaAsync(FbConnection connection, string collectionName,
+		string[] restrictions, CancellationToken cancellationToken)
+	{
+		return DslProviderSchemaFactory.GetSchemaAsync(connection, collectionName, restrictions, cancellationToken);
+	}
+
 	public static Task<DataTable> GetSchemaAsync(FbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
 	{
-		Tracer.Trace(typeof(DslSchemaFactory), "DslSchemaFactory.GetSchemaAsync", "collectionName: {0}", collectionName);
+		Tracer.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.GetSchemaAsync", "collectionName: {0}", collectionName);
 
 		int syncCardinal = 0;
 		LinkageParser parser = null;
@@ -253,16 +269,21 @@ internal sealed class DslSchemaFactory
 			case "Indexes":
 			case "Procedures":
 			case "ProcedureParameters":
-			case "Tables":
 			case "Triggers":
+			case "Tables":
 			case "ViewColumns":
 				schemaCollection = collectionName;
+				break;
+			case "RawGenerators":
+				schemaCollection = "Generators";
 				break;
 			case "TriggerColumns":
 				schemaCollection = "Columns";
 				break;
 			case "TriggerDependencies":
 			case "IdentityTriggers":
+			case "RawTriggerDependencies":
+			case "RawTriggers":
 			case "StandardTriggers":
 			case "SystemTriggers":
 				schemaCollection = "Triggers";
@@ -270,10 +291,10 @@ internal sealed class DslSchemaFactory
 			default:
 				try
 				{
-					parser = LinkageParser.Instance(connection);
+					parser = LinkageParser.GetInstance(connection);
 					if (parser != null)
-						Tracer.Trace(typeof(DslSchemaFactory), "GetSchemaAsync pausing");
-					syncCardinal = parser != null ? parser.SyncEnter(true) : 0;
+						Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchemaAsync pausing");
+					syncCardinal = parser != null ? parser.SyncEnter() : 0;
 					return connection.GetSchemaAsync(collectionName, restrictions, cancellationToken);
 				}
 				catch (Exception)
@@ -292,13 +313,13 @@ internal sealed class DslSchemaFactory
 			return Task.FromResult(new DataTable());
 
 
-		if (RequiresTriggers(schemaCollection))
+		if (RequiresTriggers(collectionName))
 		{
 			parser = LinkageParser.EnsureInstance(connection);
 		}
-		else
+		else if (RequiresSyncControl(collectionName))
 		{
-			parser = LinkageParser.Instance(connection);
+			parser = LinkageParser.GetInstance(connection);
 		}
 
 
@@ -345,8 +366,9 @@ internal sealed class DslSchemaFactory
 		var oldCulture = Thread.CurrentThread.CurrentCulture;
 
 		if (parser != null)
-			Tracer.Trace(typeof(DslSchemaFactory), "GetSchemaAsync pausing");
-		syncCardinal = parser != null ? parser.SyncEnter(true) : 0;
+			Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchemaAsync pausing");
+
+		syncCardinal = parser != null ? parser.SyncEnter() : 0;
 
 		try
 		{
@@ -438,9 +460,9 @@ internal sealed class DslSchemaFactory
 
 	private static DataTable PrepareCollection(FbConnection connection, string collectionName, string schemaCollection, string[] restrictions)
 	{
-		Tracer.Trace(typeof(DslSchemaFactory), "DslSchemaFactory.PrepareCollection", "collectionName: {0}, schemaCollection: {1}", collectionName, schemaCollection);
+		Tracer.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.PrepareCollection", "collectionName: {0}, schemaCollection: {1}", collectionName, schemaCollection);
 
-		DslSchema dslSchema;
+		AbstractDslSchema dslSchema;
 		NotSupportedException ex;
 
 		switch (collectionName.ToUpperInvariant())
@@ -454,7 +476,6 @@ internal sealed class DslSchemaFactory
 			case "FOREIGNKEYS":
 				dslSchema = new DslForeignKeys();
 				break;
-
 			case "FUNCTIONARGUMENTS":
 				dslSchema = new DslFunctionArguments(LinkageParser.EnsureInstance(connection));
 				break;
@@ -473,6 +494,15 @@ internal sealed class DslSchemaFactory
 			case "PROCEDUREPARAMETERS":
 				dslSchema = new DslProcedureParameters(LinkageParser.EnsureInstance(connection));
 				break;
+			case "RAWGENERATORS":
+				dslSchema = new DslRawGenerators();
+				break;
+			case "RAWTRIGGERS":
+				dslSchema = new DslRawTriggers();
+				break;
+			case "RAWTRIGGERDEPENDENCIES":
+				dslSchema = new DslRawTriggerDependencies();
+				break;
 			case "TABLES":
 				dslSchema = new DslTables();
 				break;
@@ -483,11 +513,8 @@ internal sealed class DslSchemaFactory
 				dslSchema = new DslViewColumns(LinkageParser.EnsureInstance(connection));
 				break;
 			case "GENERATORS":
-			case "TRIGGERS":
 			case "TRIGGERDEPENDENCIES":
-				ex = new(Resources.ExceptionInvalidRawMetadataCall.Res(collectionName));
-				Diag.Dug(ex);
-				throw ex;
+			case "TRIGGERS":
 			case "IDENTITYTRIGGERS":
 			case "STANDARDTRIGGERS":
 			case "SYSTEMTRIGGERS":
@@ -507,9 +534,9 @@ internal sealed class DslSchemaFactory
 
 	private static Task<DataTable> PrepareCollectionAsync(FbConnection connection, string collectionName, string schemaCollection, string[] restrictions, CancellationToken cancellationToken = default)
 	{
-		Tracer.Trace(typeof(DslSchemaFactory), "DslSchemaFactory.PrepareCollectionAsync", "collectionName: {0}, schemaCollection: {1}", collectionName, schemaCollection);
+		Tracer.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.PrepareCollectionAsync", "collectionName: {0}, schemaCollection: {1}", collectionName, schemaCollection);
 
-		DslSchema dslSchema;
+		AbstractDslSchema dslSchema;
 		NotSupportedException ex;
 
 		switch (collectionName.ToUpperInvariant())
@@ -541,6 +568,15 @@ internal sealed class DslSchemaFactory
 			case "PROCEDUREPARAMETERS":
 				dslSchema = new DslProcedureParameters(LinkageParser.EnsureInstance(connection));
 				break;
+			case "RAWGENERATORS":
+				dslSchema = new DslRawGenerators();
+				break;
+			case "RAWTRIGGERS":
+				dslSchema = new DslRawTriggers();
+				break;
+			case "RAWTRIGGERDEPENDENCIES":
+				dslSchema = new DslRawTriggerDependencies();
+				break;
 			case "TABLES":
 				dslSchema = new DslTables();
 				break;
@@ -551,11 +587,8 @@ internal sealed class DslSchemaFactory
 				dslSchema = new DslViewColumns(LinkageParser.EnsureInstance(connection));
 				break;
 			case "GENERATORS":
-			case "TRIGGERS":
 			case "TRIGGERDEPENDENCIES":
-				ex = new(Resources.ExceptionInvalidRawMetadataCall.Res(collectionName));
-				Diag.Dug(ex);
-				throw ex;
+			case "TRIGGERS":
 			case "IDENTITYTRIGGERS":
 			case "STANDARDTRIGGERS":
 			case "SYSTEMTRIGGERS":
@@ -594,20 +627,26 @@ internal sealed class DslSchemaFactory
 			case "Indexes":
 			case "Procedures":
 			case "Tables":
+			case "RawGenerators":
+			case "RawTriggerDependencies":
+			case "RawTriggers":
 				return false;
-			case "Columns":
-			case "ForeignKeyColumns":
-			case "FunctionArguments":
-			case "Generators":
-			case "IndexColumns":
-			case "ProcedureParameters":
-			case "Triggers":
-			case "ViewColumns":
-			case "TriggerColumns":
-			case "TriggerDependencies":
-			case "IdentityTriggers":
-			case "StandardTriggers":
-			case "SystemTriggers":
+			default:
+				break;
+		}
+
+		return true;
+	}
+
+
+	static bool RequiresSyncControl(string collection)
+	{
+		switch (collection)
+		{
+			case "RawGenerators":
+			case "RawTriggers":
+			case "RawTriggerDependencies":
+				return false;
 			default:
 				break;
 		}

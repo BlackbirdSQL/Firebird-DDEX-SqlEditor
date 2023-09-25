@@ -219,7 +219,7 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 				{
 					Guid clsid = typeof(VsTextBufferClass).GUID;
 					Guid iid = VSConstants.IID_IUnknown;
-					object obj = ((AsyncPackage)Controller.Instance.DdexPackage).CreateInstance(ref clsid, ref iid, typeof(object));
+					object obj = ((AsyncPackage)Controller.DdexPackage).CreateInstance(ref clsid, ref iid, typeof(object));
 					if (WithEncoding)
 					{
 						IVsUserData obj2 = obj as IVsUserData;

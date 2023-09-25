@@ -40,7 +40,7 @@ public abstract class AbstractSqlEditorTab : AbstractEditorTab
 		IDisposable disposable = WaitCursorHelper.NewWaitCursor();
 		try
 		{
-			Microsoft.VisualStudio.OLE.Interop.IServiceProvider instance = Controller.Instance.DdexPackage.OleServiceProvider;
+			Microsoft.VisualStudio.OLE.Interop.IServiceProvider instance = Controller.OleServiceProvider;
 
 			if (WindowPaneServiceProvider.GetService(typeof(SVsUIShellOpenDocument)) is not IVsUIShellOpenDocument shell)
 				throw new NotSupportedException("IVsUIShellOpenDocument");

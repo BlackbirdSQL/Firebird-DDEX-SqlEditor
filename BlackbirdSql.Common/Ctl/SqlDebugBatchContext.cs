@@ -13,7 +13,7 @@ namespace BlackbirdSql.Common.Ctl;
 
 public class SqlDebugBatchContext
 {
-	private static readonly object _LockObject = new object();
+	private static readonly object _LockGlobal = new object();
 
 	private static SqlDebugBatchContext _Instance;
 
@@ -21,7 +21,7 @@ public class SqlDebugBatchContext
 	{
 		get
 		{
-			lock (_LockObject)
+			lock (_LockGlobal)
 			{
 				_Instance ??= new SqlDebugBatchContext();
 			}

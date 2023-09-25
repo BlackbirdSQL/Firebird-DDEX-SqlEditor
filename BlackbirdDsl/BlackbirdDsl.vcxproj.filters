@@ -416,6 +416,7 @@
     <None Include="BlackbirdDsl.rc2">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BlackbirdDsl.rc">

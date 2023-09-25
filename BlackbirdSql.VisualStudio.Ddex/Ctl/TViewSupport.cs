@@ -12,7 +12,6 @@ using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.VisualStudio.Ddex.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;

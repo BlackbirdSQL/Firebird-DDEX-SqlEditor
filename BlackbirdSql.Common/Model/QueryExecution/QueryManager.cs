@@ -68,7 +68,7 @@ public sealed class QueryManager : IDisposable
 
 	private long _RowsAffected;
 
-	private readonly object _LockObject = new object();
+	private readonly object _LockLocal = new object();
 
 	private QEOLESQLExec _SqlExec;
 
@@ -110,7 +110,7 @@ public sealed class QueryManager : IDisposable
 	{
 		get
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				return _RowsAffected;
 			}
@@ -171,14 +171,14 @@ public sealed class QueryManager : IDisposable
 	{
 		get
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				return ExecutionOptions.WithOleSqlScripting;
 			}
 		}
 		set
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				ExecutionOptions.WithOleSqlScripting = value;
 				OnStatusChanged(new StatusChangedEventArgs(StatusType.ExecutionOptionsWithOleSqlChanged));
@@ -190,14 +190,14 @@ public sealed class QueryManager : IDisposable
 	{
 		get
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				return _SqlCmdVariableResolver;
 			}
 		}
 		set
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				_SqlCmdVariableResolver = value;
 				_SqlExec.SqlCmdVariableResolver = _SqlCmdVariableResolver;
@@ -209,14 +209,14 @@ public sealed class QueryManager : IDisposable
 	{
 		get
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				return _currentWorkingDirectoryPath;
 			}
 		}
 		set
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				_currentWorkingDirectoryPath = value;
 				_SqlExec.CurrentWorkingDirectoryPath = _currentWorkingDirectoryPath;
@@ -228,14 +228,14 @@ public sealed class QueryManager : IDisposable
 	{
 		get
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				return _ConnectionStrategy;
 			}
 		}
 		set
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				if (_ConnectionStrategy != null)
 				{
@@ -257,7 +257,7 @@ public sealed class QueryManager : IDisposable
 	{
 		get
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				if (_QueryExecutionSettings == null)
 				{
@@ -270,7 +270,7 @@ public sealed class QueryManager : IDisposable
 		}
 		set
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				_QueryExecutionSettings = value;
 			}
@@ -281,14 +281,14 @@ public sealed class QueryManager : IDisposable
 	{
 		get
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				return _QueryExecutionSettingsApplied;
 			}
 		}
 		set
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				_QueryExecutionSettingsApplied = value;
 			}
@@ -345,7 +345,7 @@ public sealed class QueryManager : IDisposable
 		ScriptExecutionCompletedEventHandler scriptExecutionCompletedHandler = null;
 		try
 		{
-			lock (_LockObject)
+			lock (_LockLocal)
 			{
 				IsCancelling = true;
 				if (IsDebugging)
@@ -394,7 +394,7 @@ public sealed class QueryManager : IDisposable
 
 	private void Dispose(bool bDisposing)
 	{
-		lock (_LockObject)
+		lock (_LockLocal)
 		{
 			ScriptExecutionStartedEvent = null;
 			ScriptExecutionCompletedEvent = null;
@@ -427,7 +427,7 @@ public sealed class QueryManager : IDisposable
 
 	private void ConnectionStateChangedEventHandler(object sender, StateChangeEventArgs args)
 	{
-		lock (_LockObject)
+		lock (_LockLocal)
 		{
 			using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
 			{
@@ -474,7 +474,7 @@ public sealed class QueryManager : IDisposable
 
 	private void RegisterSqlExecWithEvenHandlers()
 	{
-		lock (_LockObject)
+		lock (_LockLocal)
 		{
 			_SqlExec.ExecutionCompletedEvent += OnExecutionCompleted;
 			_SqlExec.BatchExecutionCompletedEvent += OnBatchExecutionCompleted;
@@ -490,7 +490,7 @@ public sealed class QueryManager : IDisposable
 
 	private void UnRegisterSqlExecWithEventHandlers()
 	{
-		lock (_LockObject)
+		lock (_LockLocal)
 		{
 			_SqlExec.ExecutionCompletedEvent -= OnExecutionCompleted;
 			_SqlExec.BatchExecutionCompletedEvent -= OnBatchExecutionCompleted;
@@ -693,7 +693,7 @@ public sealed class QueryManager : IDisposable
 
 	private bool IsStatusFlagSet(StatusType statusType)
 	{
-		lock (_LockObject)
+		lock (_LockLocal)
 		{
 			return (_Status & (uint)statusType) == (uint)statusType;
 		}
@@ -701,7 +701,7 @@ public sealed class QueryManager : IDisposable
 
 	private void SetStatusFlag(bool enabled, StatusType statusType)
 	{
-		lock (_LockObject)
+		lock (_LockLocal)
 		{
 			if (!enabled)
 			{
@@ -727,7 +727,7 @@ public sealed class QueryManager : IDisposable
 
 	private void ConnectionChanged(object sender, ConnectionStrategy.ConnectionChangedEventArgs args)
 	{
-		lock (_LockObject)
+		lock (_LockLocal)
 		{
 			_RowsAffected = 0L;
 			QueryExecutionStartTime = null;

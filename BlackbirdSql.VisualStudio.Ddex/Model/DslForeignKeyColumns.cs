@@ -17,7 +17,7 @@
 
 
 using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.VisualStudio.Ddex.Extensions;
+using BlackbirdSql.Core.Model;
 
 
 

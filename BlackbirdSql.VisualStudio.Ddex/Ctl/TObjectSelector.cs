@@ -272,7 +272,7 @@ public class TObjectSelector : AdoDotNetObjectSelector
 
 		Tracer.Trace(GetType(), "TObjectSelector.GetSchema", "Calling GetSchema params.ToString, typeName: {0}", typeName);
 
-		DataTable schema = DslSchemaFactory.GetSchema((FbConnection)connection, parameters[0].ToString(), array);
+		DataTable schema = DslProviderSchemaFactory.GetSchema((FbConnection)connection, parameters[0].ToString(), array);
 
 		Tracer.Trace(GetType(), "TObjectSelector.GetSchema", "Returned from GetSchema params.ToString, typeName: {0}", typeName);
 

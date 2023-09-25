@@ -25,7 +25,7 @@ using BlackbirdSql.Core.Ctl.Diagnostics;
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
 
 
-internal class DslRawTriggers : DslSchema
+internal class DslRawTriggers : AbstractDslSchema
 {
 	public DslRawTriggers() : base()
 	{

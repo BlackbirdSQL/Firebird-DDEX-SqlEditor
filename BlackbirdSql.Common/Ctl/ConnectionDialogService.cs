@@ -20,7 +20,7 @@ public class ConnectionDialogService
 
 	private ExtensionProperties _ExtensionProperties = new ExtensionProperties();
 
-	private readonly object _LockObject = new object();
+	private readonly object _LockLocal = new object();
 
 	public static ConnectionDialogService Instance => _Instance;
 
@@ -45,7 +45,7 @@ public class ConnectionDialogService
 
 	public void Initialize(ExtensionProperties extensionProperties)
 	{
-		lock (_LockObject)
+		lock (_LockLocal)
 		{
 			_ExtensionProperties = extensionProperties ?? new ExtensionProperties(useDefaultLocations: true);
 			_DependencyManager = new DependencyManager(_ExtensionProperties);

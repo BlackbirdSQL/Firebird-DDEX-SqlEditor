@@ -20,7 +20,7 @@ public ref class Diag abstract sealed
 
 public:
 
-	#pragma region Variables
+#pragma region Variables
 
 
 	// Specify your own trace log file and settings here or override in VS options
@@ -44,7 +44,7 @@ public:
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Flag indicating whether or not <see cref="Diag::Dug(bool isException, SysStr^ message, StackTrace^ stack)"/> calls are logged
+	/// Flag indicating whether or not Diag::Dug(bool isException, SysStr^ message, StackTrace^ stack) calls are logged
 	/// </summary>
 	/// <remarks>
 	/// Exceptions are alweays logged.
@@ -74,9 +74,9 @@ public:
 	// ---------------------------------------------------------------------------------
 #ifdef _DEBUG
 	static bool EnableDiagnosticsLog = true;
-#else
+#else // _DEBUG
 	static bool EnableDiagnosticsLog = false;
-#endif // _DEBUG
+#endif // else _DEBUG
 
 
 	// ---------------------------------------------------------------------------------
@@ -95,31 +95,32 @@ public:
 	static SysStr^ FbLogFile = "/temp/vsdiagfb.log";
 
 
-	#pragma endregion Variables
+#pragma endregion Variables
 
 
 
 
 
 	// =========================================================================================================
-	#pragma region Property Accessors - Diag
-	// =========================================================================================================
+#pragma region Property Accessors - Diag
+// =========================================================================================================
 
 
 
 
-	#pragma endregion Property accessors
+#pragma endregion Property accessors
 
 
 
 
 
-	// =========================================================================================================
-	#pragma region Methods - Diag
-	// =========================================================================================================
+// =========================================================================================================
+#pragma region Methods - Diag
+// =========================================================================================================
 
 
 private:
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -128,10 +129,12 @@ private:
 	// ---------------------------------------------------------------------------------
 #ifdef _DEBUG
 	static void Dug(bool isException, SysStr^ message, StackTrace^ stack)
-#else
-	static void Dug(bool isException, SysStr^ message, SysObj^ stack)
-#endif // _DEBUG
 	{
+#else // _DEBUG
+	static void Dug(bool isException, SysStr ^ message, SysObj ^ stack)
+	{
+#endif // else _DEBUG
+
 		if (!isException && !EnableDiagnostics && !EnableTrace)
 			return;
 
@@ -145,7 +148,8 @@ private:
 		methodName = methodInfo->Name;
 		sourceFilePath = frame->GetFileName();
 		sourceLineNumber = frame->GetFileLineNumber();
-#endif
+#endif // _DEBUG
+
 
 		int pos;
 		SysStr^ logfile = LogFile;
@@ -173,7 +177,7 @@ private:
 			+ methodName + " :: " + sourceFilePath + " :: " + sourceLineNumber +
 			(message == "" ? "" : System::Environment::NewLine + "\t" + message) + System::Environment::NewLine;
 
-#if _DEBUG
+#ifdef _DEBUG
 		// Remove conditional for a full trace
 		try
 		{
@@ -188,9 +192,8 @@ private:
 			}
 		}
 		catch (System::Exception^) {}
-#endif
+#endif // _DEBUG
 
-		// System::Diagnostics.Debug::WriteLine(str, "BlackbirSql");
 	}
 
 
@@ -209,9 +212,9 @@ public:
 
 #ifdef _DEBUG
 		StackTrace^ stack = gcnew StackTrace(true);
-#else
+#else // _DEBUG
 		SysObj^ stack = nullptr;
-#endif // _DEBUG
+#endif // else _DEBUG
 
 
 		Dug(isException, message, stack);
@@ -229,9 +232,9 @@ public:
 
 #ifdef _DEBUG
 		StackTrace^ stack = gcnew StackTrace(true);
-#else
+#else // _DEBUG
 		SysObj^ stack = nullptr;
-#endif // _DEBUG
+#endif // else _DEBUG
 
 		Dug(true, ex->Message + ":" + System::Environment::NewLine
 			+ (ex->StackTrace != nullptr ? ex->StackTrace->ToString() : ""),
@@ -249,9 +252,9 @@ public:
 
 #ifdef _DEBUG
 		StackTrace^ stack = gcnew StackTrace(true);
-#else
-		SysObj^ stack = nullptr;
-#endif // _DEBUG
+#else // _DEBUG
+ 		SysObj^ stack = nullptr;
+#endif // else _DEBUG
 
 		Dug(true, ex->Message
 			+ (message != "" ? " " + message : "")
@@ -272,9 +275,9 @@ public:
 
 #ifdef _DEBUG
 		StackTrace^ stack = gcnew StackTrace(true);
-#else
+#else // _DEBUG
 		SysObj^ stack = nullptr;
-#endif // _DEBUG
+#endif // else _DEBUG
 
 		SysStr^ message = "TRACE: " + (System::Environment::StackTrace)->ToString();
 
@@ -292,9 +295,9 @@ public:
 	{
 #ifdef _DEBUG
 		StackTrace^ stack = gcnew StackTrace(true);
-#else
-		SysObj^ stack = nullptr;
-#endif // _DEBUG
+#else // _DEBUG
+ 		SysObj^ stack = nullptr;
+#endif // else _DEBUG
 
 		message += ":" + System::Environment::NewLine + "TRACE: " + (System::Environment::StackTrace)->ToString();
 
@@ -315,9 +318,9 @@ public:
 
 #ifdef _DEBUG
 		StackTrace^ stack = gcnew StackTrace(true);
-#else
+#else // _DEBUG
 		SysObj^ stack = nullptr;
-#endif // _DEBUG
+#endif // else _DEBUG
 
 		Dug(false, "", stack);
 	}
@@ -335,15 +338,15 @@ public:
 
 #ifdef _DEBUG
 		StackTrace^ stack = gcnew StackTrace(true);
-#else
-		SysObj^ stack = nullptr;
-#endif // _DEBUG
+#else // _DEBUG
+ 		SysObj^ stack = nullptr;
+#endif // else _DEBUG
 
 		Dug(false, message, stack);
 	}
 
 
-	#pragma endregion Methods
+#pragma endregion Methods
 
 
 };

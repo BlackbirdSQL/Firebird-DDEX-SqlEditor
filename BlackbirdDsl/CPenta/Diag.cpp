@@ -5,7 +5,6 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 
-
 namespace C5 {
 
 }

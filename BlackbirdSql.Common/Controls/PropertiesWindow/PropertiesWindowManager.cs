@@ -24,7 +24,7 @@ public class PropertiesWindowManager : IDisposable
 
 	private Semaphore _SingleAsyncUpdate = new Semaphore(1, 1);
 
-	private readonly object _LockObject = new object();
+	private readonly object _LockLocal = new object();
 
 	public SqlEditorTabbedEditorPane EditorPane { get; private set; }
 
@@ -35,7 +35,7 @@ public class PropertiesWindowManager : IDisposable
 	public PropertiesWindowManager(SqlEditorTabbedEditorPane editorPane)
 	{
 		EditorPane = editorPane;
-		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.Instance.DdexPackage).GetAuxiliaryDocData(editorPane.DocData);
+		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(editorPane.DocData);
 		QryMgr = auxDocData.QryMgr;
 		EditorUI = editorPane.TabbedEditorUI;
 		RegistererEventHandlers();
@@ -130,7 +130,7 @@ public class PropertiesWindowManager : IDisposable
 
 	private void RefreshPropertyWindow()
 	{
-		lock (_LockObject)
+		lock (_LockLocal)
 		{
 			if (_Disposed || _SingleAsyncUpdate == null || !_SingleAsyncUpdate.WaitOne(0))
 			{
@@ -143,7 +143,7 @@ public class PropertiesWindowManager : IDisposable
 #pragma warning disable CS0618 // Type or member is obsolete
 			ThreadHelper.Generic.Invoke(delegate
 			{
-				lock (_LockObject)
+				lock (_LockLocal)
 				{
 					if (_Disposed || _SingleAsyncUpdate == null)
 					{
@@ -165,7 +165,7 @@ public class PropertiesWindowManager : IDisposable
 		{
 			Task task = Task.Factory.StartNew(delegate
 			{
-				lock (_LockObject)
+				lock (_LockLocal)
 				{
 					if (_Disposed || _SingleAsyncUpdate == null)
 					{
@@ -226,7 +226,7 @@ public class PropertiesWindowManager : IDisposable
 
 	protected virtual void Dispose(bool disposing)
 	{
-		lock (_LockObject)
+		lock (_LockLocal)
 		{
 			if (!_Disposed)
 			{

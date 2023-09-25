@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using BlackbirdSql.Core.Ctl.Config;
 using Microsoft.VisualStudio.Shell;
 
-namespace BlackbirdSql.Core.Control.Config
+namespace BlackbirdSql.Core.Controls.Config
 {
 	//
 	// Summary:

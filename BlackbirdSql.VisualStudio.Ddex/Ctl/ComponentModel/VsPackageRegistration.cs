@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 
 using BlackbirdSql.Core;
-using BlackbirdSql.VisualStudio.Ddex.Interfaces;
+using BlackbirdSql.Core.Model.Interfaces;
 
 using FirebirdSql.Data.FirebirdClient;
 
@@ -184,7 +184,7 @@ internal sealed class VsPackageRegistration: RegistrationAttribute
 			Diag.Dug(ex);
 			throw ex;
 		}
-		Debug.Assert(guidAttribute.Value == SystemData.ObjectFactoryServiceGuid);
+		Debug.Assert(guidAttribute.Value == SystemData.ProviderObjectFactoryGuid);
 
 		context.RemoveValue("DataSources\\" + dataSourceGuid, "DefaultProvider");
 		context.RemoveKey("DataSources\\" + dataSourceGuid + "\\SupportingProviders\\" + providerGuid);

@@ -82,7 +82,7 @@ public class ConnectionDialogWrapper : IDisposable
 		BlackbirdSql.Core.Cmd.CheckForNull(ci, "uiConnectionInfo");
 		BlackbirdSql.Core.Cmd.CheckForNull(parent, "parent");
 
-		IBEditorPackage editorPackage = (IBEditorPackage)Controller.Instance.DdexPackage;
+		IBEditorPackage editorPackage = (IBEditorPackage)Controller.DdexPackage;
 
 		result = editorPackage.ShowConnectionDialogFrame(parent, _DependencyManager, _Channel, ci, ConnectionVerifier, config, ref uIConnectionInfo);
 
