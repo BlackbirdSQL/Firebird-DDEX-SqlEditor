@@ -19,30 +19,30 @@ using BlackbirdSql.Common.Properties;
 namespace BlackbirdSql.Common.Controls.Grid;
 
 
-public class DlgStorage : IDlgStorage, IGridStorage, IDisposable
+public class DlgStorage : IBDlgStorage, IBGridStorage, IDisposable
 {
-	protected IGridMemDataStorage _GridMemStorage;
+	protected IBGridMemDataStorage _GridMemStorage;
 
 	// [CLSCompliant(false)]
-	protected IStorageView _StorageView;
+	protected IBStorageView _StorageView;
 
 	// [CLSCompliant(false)]
-	protected IDlgGridControl _DlgGridCtl;
+	protected IBDlgGridControl _DlgGridCtl;
 
 	protected CustomizeCellGDIObjectsEventHandler _OnCustCellGDIObjectsHandler;
 
 	// [CLSCompliant(false)]
-	public virtual IMemDataStorage Storage => _GridMemStorage;
+	public virtual IBMemDataStorage Storage => _GridMemStorage;
 
 	// [CLSCompliant(false)]
-	public virtual IStorageView StorageView => _StorageView;
+	public virtual IBStorageView StorageView => _StorageView;
 
 	public event FillControlWithDataEventHandler FillControlWithDataEvent;
 
 	public event SetCellDataFromControlEventHandler SetCellDataFromControlEvent;
 
 	// [CLSCompliant(false)]
-	public DlgStorage(IDlgGridControl grid)
+	public DlgStorage(IBDlgGridControl grid)
 	{
 		_GridMemStorage = new GridMemDataStorage();
 		_GridMemStorage.InitStorage();
@@ -141,7 +141,7 @@ public class DlgStorage : IDlgStorage, IGridStorage, IDisposable
 		return EnGridCheckBoxState.None;
 	}
 
-	public virtual void FillControlWithData(long nRowIndex, int nColIndex, IGridEmbeddedControl control)
+	public virtual void FillControlWithData(long nRowIndex, int nColIndex, IBGridEmbeddedControl control)
 	{
 		if (FillControlWithDataEvent != null)
 		{
@@ -154,7 +154,7 @@ public class DlgStorage : IDlgStorage, IGridStorage, IDisposable
 		control.SetCurSelectionAsString(cellDataAsString);
 	}
 
-	public virtual bool SetCellDataFromControl(long nRowIndex, int nColIndex, IGridEmbeddedControl control)
+	public virtual bool SetCellDataFromControl(long nRowIndex, int nColIndex, IBGridEmbeddedControl control)
 	{
 		if (SetCellDataFromControlEvent != null)
 		{

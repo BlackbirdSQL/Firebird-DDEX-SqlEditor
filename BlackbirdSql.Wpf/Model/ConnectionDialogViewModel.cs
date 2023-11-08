@@ -16,6 +16,7 @@ using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
+using BlackbirdSql.Common.Model.Wpf;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
@@ -25,13 +26,13 @@ using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
-
+using BlackbirdSql.Wpf.Ctl.Interfaces;
 using FirebirdSql.Data.FirebirdClient;
 
 
 namespace BlackbirdSql.Wpf.Model;
 
-public class ConnectionDialogViewModel : ViewModelBase
+public class ConnectionDialogViewModel : AbstractViewModel
 {
     protected const string C_KeyCanExecute = "CanExecute";
     // protected const string C_KeyCompression = "Compression";
@@ -438,7 +439,7 @@ public class ConnectionDialogViewModel : ViewModelBase
             _Describers = new();
 
             // Initializers for property sets are held externally for this class
-            ViewModelBase.CreateAndPopulatePropertySet(_Describers);
+            AbstractViewModel.CreateAndPopulatePropertySet(_Describers);
 
             _Describers.Add(C_KeyCanExecute, typeof(bool), false);
             // _Describers.Add(C_KeyCompression, typeof(bool), false);

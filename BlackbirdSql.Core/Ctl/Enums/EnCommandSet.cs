@@ -17,11 +17,13 @@ public enum EnCommandSet
 
 	MenuIdScriptToolbarGroup = 0x5100, // 20736
 	MenuIdOnlineToolbarGroup = 0x5101, // 20737
+	MenuIdReusableGroup = 0x5102, // 20738
 
 	MenuIdSeRootGroup = 0x5200, // 20992
 	MenuIdSeNodeGroup = 0x5201, // 20993
 	MenuIdSeStaticGroup = 0x5202, // 20994
 	MenuIdResultsToGroup = 0x5203, // 20995
+	MenuIdEditorContextGroup = 0x5204, // 20996
 
 	CtlrIdResultsToGroup = 0x5300,
 
@@ -48,7 +50,7 @@ public enum EnCommandSet
 	CmdIdResultsAsText = 0x030B, // 779
 	CmdIdResultsAsGrid = 0x030C, // 780
 	CmdIdResultsAsFile = 0x030D, // 781
-	CmdIdQueryOptions = 0x030E, // 782
+	CmdIdQuerySettings = 0x030E, // 782
 	CmdIdToggleResultsPane = 0x030F, // 783
 	CmdIdNewQueryConnection = 0x0310, // 784
 	CmdIdSaveResultsAs = 0x0311, // 785
@@ -69,6 +71,7 @@ public enum EnCommandSet
 
 	CmdIdOpenTextObject = 0x0334, // *820
 	CmdIdOpenAlterTextObject = 0x0335, // 821
-	CmdIdDesignRetrieveData = 0x0336 // 822
+	CmdIdDesignRetrieveData = 0x0336, // 822
+	CmdIdResetPageOptions = 0x0337 // 823
 
 }

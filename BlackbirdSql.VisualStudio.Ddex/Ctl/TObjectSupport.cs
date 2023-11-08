@@ -40,13 +40,13 @@ public class TObjectSupport : DataObjectSupport, IVsDataSupportImportResolver
 
 	public TObjectSupport(string fileName, string path) : base(fileName, path)
 	{
-		Tracer.Trace(GetType(), "TObjectSupport.TObjectSupport", "fileName: {0}, path: {1}", fileName, path);
+		Tracer.Trace(GetType(), "TObjectSupport.TObjectSupport()", "fileName: {0}, path: {1}", fileName, path);
 	}
 
 
 	public TObjectSupport(string resourceName, Assembly assembly) : base(resourceName, assembly)
 	{
-		Tracer.Trace(GetType(), "TObjectSupport.TObjectSupport", "resourceName: {0}", resourceName);
+		// Tracer.Trace(GetType(), "TObjectSupport.TObjectSupport()", "resourceName: {0}", resourceName);
 	}
 
 
@@ -141,7 +141,7 @@ public class TObjectSupport : DataObjectSupport, IVsDataSupportImportResolver
 
 		if (!name.EndsWith("Definitions"))
 		{
-			Diag.Stack(Resources.ExceptionImportResourceNotFound.Res(name));
+			Diag.Stack(Resources.ExceptionImportResourceNotFound.FmtRes(name));
 			return null;
 		}
 

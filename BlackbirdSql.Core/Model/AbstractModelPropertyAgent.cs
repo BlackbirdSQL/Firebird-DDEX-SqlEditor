@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 using System.Globalization;
-using System.IO;
 using System.Net;
 using System.Windows.Media.Imaging;
 using BlackbirdSql.Core.Ctl;
@@ -13,6 +12,7 @@ using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Properties;
 
 using FirebirdSql.Data.FirebirdClient;
+using Microsoft.VisualStudio.Data;
 
 
 namespace BlackbirdSql.Core.Model;
@@ -22,6 +22,7 @@ namespace BlackbirdSql.Core.Model;
 //										AbstractModelPropertyAgent Class
 //
 /// <summary>
+/// 
 /// The Method Members partial class of the AbstractModelPropertyAgent class.
 /// A conglomerate base class for supporting all of... the Sql client UIConnectionInfo class and UI
 /// Connection and Model classes, and implementing the IDataConnectionProperties, ICustomTypeDescriptor
@@ -50,7 +51,6 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 	#region Variables - AbstractModelPropertyAgent
 	// ---------------------------------------------------------------------------------
 
-
 	protected static new DescriberDictionary _Describers = null;
 
 
@@ -69,9 +69,9 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 	{
 		get
 		{
-			_Connection ??= new FbConnection(ConnectionStringBuilder.ConnectionString);
+			_DataConnection ??= new FbConnection(ConnectionStringBuilder.ConnectionString);
 
-			return _Connection;
+			return _DataConnection;
 		}
 	}
 
@@ -93,50 +93,6 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 		}
 	}
 
-	public override string Dataset
-	{
-		get
-		{
-			if (!Isset("Database"))
-				return "";
-
-			string database = (string)GetProperty("Database");
-
-			if (string.IsNullOrEmpty(database))
-				return "";
-
-			return Path.GetFileNameWithoutExtension(database);
-		}
-	}
-
-	// public override string[] EquivalencyKeys => CorePropertySet.EquivalencyKeys;
-
-
-
-	public override string DisplayName
-	{
-		get
-		{
-			if (_DisplayName == null)
-			{
-				string database = Database;
-
-				if (database == "")
-					return "";
-
-				return $"{ServerNameNoDot}({Dataset})";
-			}
-
-			return _DisplayName;
-		}
-		set
-		{
-			_DisplayName = value;
-		}
-	}
-
-
-	// public virtual string[] MandatoryProperties => CorePropertySet.ProtectedMandatoryKeys;
 
 
 	public virtual string ServerNameNoDot

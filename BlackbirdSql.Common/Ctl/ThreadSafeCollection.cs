@@ -11,8 +11,8 @@ using System.Threading;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 
-namespace BlackbirdSql.Common.Ctl;
 
+namespace BlackbirdSql.Common.Ctl;
 
 public class ThreadSafeCollection<T>
 {

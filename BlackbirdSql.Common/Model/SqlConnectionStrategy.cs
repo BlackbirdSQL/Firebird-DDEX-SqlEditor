@@ -1,44 +1,48 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
-
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.DataModel.SqlConnectionStrategy
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using BlackbirdSql.Core.Model;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Controls.PropertiesWindow;
 using BlackbirdSql.Common.Ctl;
+using BlackbirdSql.Common.Ctl.Events;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Extensions;
+using BlackbirdSql.Core.Model;
 
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Services;
 
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using System.Windows.Forms;
-using BlackbirdSql.Core;
-using BlackbirdSql.Common.Ctl.Interfaces;
-using BlackbirdSql.Common.Ctl.Events;
-using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Extensions;
+
 
 namespace BlackbirdSql.Common.Model;
 
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
-public class SqlConnectionStrategy : ConnectionStrategy
+public class SqlConnectionStrategy : AbstractConnectionStrategy
 {
-	private class SqlBatchExecutionHandler : IBatchExecutionHandler
+	private class SqlBatchExecutionHandler : IBBatchExecutionHandler
 	{
 		public void Register(IDbConnection conn, IDbCommand command, QESQLBatch batch)
 		{
@@ -244,7 +248,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 	{
 		if (uici != null)
 		{
-			Tracer.Trace(GetType(), Tracer.Level.Verbose, "CreateDbConnectionFromConnectionInfo", "UIConnectionInfo is not null");
+			Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "CreateDbConnectionFromConnectionInfo", "UIConnectionInfo is not null");
 			if (openConnection)
 			{
 				CreateAndOpenDbConnectionFromConnectionInfo(uici, out var connection);
@@ -256,14 +260,14 @@ public class SqlConnectionStrategy : ConnectionStrategy
 			return new FbConnection(csb.ToString());
 		}
 
-		Tracer.Trace(GetType(), Tracer.Level.Verbose, "CreateDbConnectionFromConnectionInfo", "ERROR UIConnectionInfois null.");
+		Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "CreateDbConnectionFromConnectionInfo", "ERROR UIConnectionInfois null.");
 
 		return null;
 	}
 
 	protected virtual void CreateAndOpenDbConnectionFromConnectionInfo(UIConnectionInfo uici, out IDbConnection connection)
 	{
-		Tracer.Trace(GetType(), Tracer.Level.Verbose, "CreateAndOpenDbConnectionFromConnectionInfo", "Enter");
+		Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "CreateAndOpenDbConnectionFromConnectionInfo", "Enter");
 
 		FbConnectionStringBuilder csb = new FbConnectionStringBuilder();
 		PopulateConnectionStringBuilder(csb, uici);
@@ -370,13 +374,13 @@ public class SqlConnectionStrategy : ConnectionStrategy
 	{
 		if (UiConnectionInfo != null)
 		{
-			Tracer.Trace(GetType(), Tracer.Level.Verbose, "AcquireConnectionInfo", "UiConnectionInfo is not null");
+			Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "AcquireConnectionInfo", "UiConnectionInfo is not null");
 			uici = UiConnectionInfo;
 			connection = CreateDbConnectionFromConnectionInfo(uici, tryOpenConnection);
 		}
 		else
 		{
-			Tracer.Trace(GetType(), Tracer.Level.Verbose, "AcquireConnectionInfo", "UiConnectionInfo is null. Prompting");
+			Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "AcquireConnectionInfo", "UiConnectionInfo is null. Prompting");
 			uici = PromptForConnectionForEditor(out connection);
 		}
 	}
@@ -386,7 +390,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 		uici = PromptForConnectionForEditor(out connection);
 	}
 
-	public override void ApplyConnectionOptions(IDbConnection conn, IBQueryExecutionSettings s)
+	public override void ApplyConnectionOptions(IDbConnection conn, IBLiveUserSettings s)
 	{
 		if (!IsDwConnection)
 		{
@@ -399,7 +403,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 	}
 
 
-	private void DwApplyConnectionOptions(IDbConnection conn, IBQueryExecutionSettings s)
+	private void DwApplyConnectionOptions(IDbConnection conn, IBLiveUserSettings s)
 	{
 		return;
 
@@ -442,8 +446,12 @@ public class SqlConnectionStrategy : ConnectionStrategy
 
 	private static UIConnectionInfo PromptForConnection(out IDbConnection connection, VerifyConnectionDelegate validateConnectionDelegate)
 	{
-		ThreadHelper.ThrowIfNotOnUIThread();
-
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
 
 		using (ConnectionDialogWrapper connectionDialogWrapper = new ConnectionDialogWrapper())
 		{
@@ -502,14 +510,9 @@ public class SqlConnectionStrategy : ConnectionStrategy
 	{
 		List<string> list = new List<string>();
 
-		DataTable databases = XmlParser.Databases;
-
-		foreach (DataRow row in databases.Rows)
+		foreach (KeyValuePair<string, string> pair in MonikerAgent.RegisteredDatasets)
 		{
-			if ((string)row["Name"] == "")
-				continue;
-
-			list.Add((string)row["DatasetKey"]);
+			list.Add(pair.Key);
 		}
 
 		return list;
@@ -633,9 +636,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 
 			if (ex != null)
 			{
-#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
 				Cmd.ShowExceptionInDialog(ControlsResources.SqlEditorNoAvailableDatabase, ex);
-#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 				return list;
 			}
 
@@ -664,7 +665,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 		}
 	}
 
-	public override void SetDatasetKeyOnConnection(string selectedDatasetKey, DbConnectionStringBuilder csb)
+	public override void SetDatasetDisplayMemberOnConnection(string selectedDisplayMember, DbConnectionStringBuilder csb)
 	{
 		lock (_LockObject)
 		{
@@ -674,7 +675,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 				{
 					_Csb = csb;
 
-					_Csb ??= XmlParser.GetCsbFromDatabases(selectedDatasetKey);
+					_Csb ??= XmlParser.GetCsbFromDatabases(selectedDisplayMember);
 					if (_Csb != null)
 					{
 						if (Connection.State == ConnectionState.Open)
@@ -688,13 +689,13 @@ public class SqlConnectionStrategy : ConnectionStrategy
 				}
 				catch (FbException e)
 				{
-					Tracer.LogExCatch(typeof(ConnectionStrategy), e);
-					Cmd.ShowMessageBoxEx(null, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrDatabaseNotAccessible, selectedDatasetKey), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+					Tracer.LogExCatch(typeof(AbstractConnectionStrategy), e);
+					Cmd.ShowMessageBoxEx(null, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrDatabaseNotAccessible, selectedDisplayMember), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 				}
 			}
 			else
 			{
-				base.SetDatasetKeyOnConnection(selectedDatasetKey, csb);
+				base.SetDatasetDisplayMemberOnConnection(selectedDisplayMember, csb);
 			}
 		}
 	}
@@ -905,7 +906,7 @@ public class SqlConnectionStrategy : ConnectionStrategy
 		*/
 	}
 
-	public override IBatchExecutionHandler CreateBatchExecutionHandler()
+	public override IBBatchExecutionHandler CreateBatchExecutionHandler()
 	{
 		return new SqlBatchExecutionHandler();
 	}

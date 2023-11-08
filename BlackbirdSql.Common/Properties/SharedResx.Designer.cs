@@ -277,24 +277,6 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to FB-SQL editor error message marker.
-        /// </summary>
-        public static string ErrorMarkerDescription {
-            get {
-                return ResourceManager.GetString("ErrorMarkerDescription", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Error Message.
-        /// </summary>
-        public static string ErrorMarkerDisplayName {
-            get {
-                return ResourceManager.GetString("ErrorMarkerDisplayName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Unable to set up page..
         /// </summary>
         public static string ErrUnableToPageSetup {

@@ -5,7 +5,12 @@ using System;
 using System.Data;
 using System.Data.Common;
 using System.IO;
+using System.Windows;
 using System.Xml;
+using BlackbirdSql.Core.Ctl.Config;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Model;
 using Microsoft.VisualStudio.Data.Core;
 
 
@@ -43,7 +48,7 @@ internal static class XmlParser
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Single-level extrapolation of an xml stream with imports into a single stream.
-	/// Also, in DEBUG and if <see cref="Diag.EnableDiagnosticsLog"/> is set, writes a copy of the
+	/// Also, in DEBUG and if <see cref="Diag.EnableEnableSaveExtrapolatedXml"/> is set, writes a copy of the
 	/// extrapolation to <paramref name="xmlName"/>.Extapolated.xml in the
 	/// <see cref="Diag.LogFile"/> folder.
 	/// </summary>
@@ -147,7 +152,7 @@ internal static class XmlParser
 		if (updated)
 		{
 #if DEBUG
-			if (Diag.EnableDiagnosticsLog)
+			if (UserSettings.EnableSaveExtrapolatedXml)
 			{
 				FileInfo info = new FileInfo(Diag.LogFile);
 				xmlDoc.Save(info.DirectoryName + "/" + xmlName + ".Extrapolated.xml");
@@ -184,7 +189,7 @@ internal static class XmlParser
 			if (_DataSources != null)
 				return _DataSources;
 
-			_DataSources = Databases.DefaultView.ToTable(true, "Orderer", "DatasetName", "DataSource", "DataSourceLc", "PortNumber");
+			_DataSources = Databases.DefaultView.ToTable(true, "Orderer", "ServerName", "DataSource", "DataSourceLc", "PortNumber");
 
 
 			return _DataSources;
@@ -214,15 +219,19 @@ internal static class XmlParser
 
 			databases.Columns.Add("Id", typeof(int));
 			databases.Columns.Add("Orderer", typeof(int));
-			databases.Columns.Add("DatasetName", typeof(string));
+			databases.Columns.Add("ServerName", typeof(string));
 			databases.Columns.Add("DataSource", typeof(string));
 			databases.Columns.Add("DataSourceLc", typeof(string));
 			databases.Columns.Add("Name", typeof(string));
+			databases.Columns.Add("DisplayMember", typeof(string));
 			databases.Columns.Add("InitialCatalog", typeof(string));
 			databases.Columns.Add("InitialCatalogLc", typeof(string));
+			databases.Columns.Add("Dataset", typeof(string));
 			databases.Columns.Add("DatasetKey", typeof(string));
 			databases.Columns.Add("PortNumber", typeof(int));
+			databases.Columns.Add("ServerType", typeof(int));
 			databases.Columns.Add("Charset", typeof(string));
+			databases.Columns.Add("Dialect", typeof(int));
 			databases.Columns.Add("UserName", typeof(string));
 			databases.Columns.Add("Password", typeof(string));
 			databases.Columns.Add("RoleName", typeof(string));
@@ -252,8 +261,11 @@ internal static class XmlParser
 					*/
 					XmlNodeList xmlServers, xmlDatabases;
 					XmlNode xmlNode = null;
-					uint port;
-					string datasetName, datasource, authentication, path;
+					int port;
+					EnDbServerType serverType = CoreConstants.C_DefaultServerType;
+					int dialect = ModelConstants.C_DefaultDialect;
+					string serverName, datasource, authentication, user, password, path, charset, role;
+					string displayMember;
 
 					xmlServers = xmlRoot.SelectNodes("//server");
 
@@ -262,7 +274,7 @@ internal static class XmlParser
 					{
 						if ((xmlNode = xmlServer.SelectSingleNode("name")) == null)
 							continue;
-						datasetName = xmlNode.InnerText.Trim();
+						serverName = xmlNode.InnerText.Trim();
 
 
 						if ((xmlNode = xmlServer.SelectSingleNode("host")) == null)
@@ -272,10 +284,10 @@ internal static class XmlParser
 
 						if ((xmlNode = xmlServer.SelectSingleNode("port")) == null)
 							continue;
-						port = Convert.ToUInt32(xmlNode.InnerText.Trim());
+						port = Convert.ToInt32(xmlNode.InnerText.Trim());
 
 						if (port == 0)
-							port = 3050;
+							port = CoreConstants.C_DefaultPortNumber;
 
 						if (datasource == "localhost")
 							hasLocal = true;
@@ -283,16 +295,20 @@ internal static class XmlParser
 						row = databases.NewRow();
 
 						row["Id"] = databases.Rows.Count;
-						row["DatasetName"] = datasetName;
+						row["ServerName"] = serverName;
 						row["DataSource"] = datasource;
 						row["DataSourceLc"] = datasource.ToLower();
-						row["PortNumber"] = (int)port;
+						row["PortNumber"] = port;
+						row["ServerType"] = (int)serverType;
 
+						row["DisplayMember"] = "";
 						row["Name"] = "";
 						row["InitialCatalog"] = "";
 						row["InitialCatalogLc"] = "";
+						row["Dataset"] = "";
 						row["DatasetKey"] = "";
 						row["Charset"] = "";
+						row["Dialect"] = 0;
 						row["UserName"] = "";
 						row["Password"] = "";
 						row["RoleName"] = "";
@@ -321,12 +337,14 @@ internal static class XmlParser
 							row = databases.NewRow();
 
 							row["Id"] = databases.Rows.Count;
-							row["DatasetName"] = datasetName;
+							row["ServerName"] = serverName;
 							row["DataSource"] = datasource;
 							row["DataSourceLc"] = datasource.ToLower();
-							row["PortNumber"] = (int)port;
+							row["PortNumber"] = port;
+							row["ServerType"] = (int)serverType;
 
-							row["Name"] = xmlNode.InnerText.Trim();
+							displayMember = xmlNode.InnerText.Trim();
+							row["Name"] = displayMember;
 
 							if ((xmlNode = xmlDatabase.SelectSingleNode("path")) == null)
 								continue;
@@ -335,15 +353,18 @@ internal static class XmlParser
 							row["InitialCatalog"] = path;
 							row["InitialCatalogLc"] = path.ToLower();
 
-							row["DatasetKey"] = $"{datasource} ({Path.GetFileNameWithoutExtension(path)})";
-
 							if ((xmlNode = xmlDatabase.SelectSingleNode("charset")) == null)
 								continue;
-							row["Charset"] = xmlNode.InnerText.Trim();
 
-							row["UserName"] = "";
-							row["Password"] = "";
-							row["RoleName"] = "";
+
+							charset = xmlNode.InnerText.Trim();
+							row["Charset"] = charset;
+							row["Dialect"] = dialect;
+
+
+							user = "";
+							password = "";
+							role = "";
 
 							if ((xmlNode = xmlDatabase.SelectSingleNode("authentication")) == null)
 								authentication = "trusted";
@@ -354,16 +375,36 @@ internal static class XmlParser
 							{
 								if ((xmlNode = xmlDatabase.SelectSingleNode("username")) != null)
 								{
-									row["UserName"] = xmlNode.InnerText.Trim();
+									user = xmlNode.InnerText.Trim();
 
 									if (authentication == "pwd"
 										&& (xmlNode = xmlDatabase.SelectSingleNode("password")) != null)
 									{
-										row["Password"] = xmlNode.InnerText.Trim();
+										password = xmlNode.InnerText.Trim();
 									}
 								}
 
 							}
+
+							// The displayMember may not be unique at this juncture.
+							MonikerAgent moniker = MonikerAgent.RegisterDatasetKey(displayMember, datasource, port,
+								serverType, path, user, password, role, charset, ModelConstants.C_DefaultDialect, false);
+
+							if (moniker == null)
+								continue;
+
+							row["UserName"] = user;
+							row["Password"] = password;
+							row["RoleName"] = role;
+
+							Tracer.Trace(typeof(XmlParser), "Databases getter()", "Database path: {0}.", path);
+
+
+							// MonikerAgent will return a new DisplayMember if the supplied one was not unique.
+							// to the server.
+							row["DatasetKey"] = moniker.DatasetKey;
+							row["DisplayMember"] = moniker.DisplayMember;
+							row["Dataset"] = moniker.Dataset;
 
 							if (datasource == "localhost")
 								row["Orderer"] = 2;
@@ -387,16 +428,20 @@ internal static class XmlParser
 				row = databases.NewRow();
 
 				row["Id"] = databases.Rows.Count;
-				row["DatasetName"] = "";
+				row["ServerName"] = "";
 				row["DataSource"] = "";
 				row["DataSourceLc"] = "";
 				row["PortNumber"] = 0;
+				row["ServerType"] = 0;
 
+				row["DisplayMember"] = "";
 				row["Name"] = "";
 				row["InitialCatalog"] = "";
 				row["InitialCatalogLc"] = "";
+				row["Dataset"] = "";
 				row["DatasetKey"] = "";
 				row["Charset"] = "";
+				row["Dialect"] = 0;
 				row["UserName"] = "";
 				row["Password"] = "";
 				row["RoleName"] = "";
@@ -412,15 +457,19 @@ internal static class XmlParser
 
 				row["Id"] = databases.Rows.Count;
 				row["Orderer"] = 1;
-				row["DatasetName"] = "Reset";
+				row["ServerName"] = "Reset";
 				row["DataSource"] = "";
 				row["DataSourceLc"] = "reset";
+				row["DisplayMember"] = "";
 				row["Name"] = "";
 				row["PortNumber"] = 0;
+				row["ServerType"] = 0;
 				row["InitialCatalog"] = "";
 				row["InitialCatalogLc"] = "";
+				row["Dataset"] = "";
 				row["DatasetKey"] = "";
 				row["Charset"] = "";
+				row["Dialect"] = 0;
 				row["UserName"] = "";
 				row["Password"] = "";
 				row["RoleName"] = "";
@@ -434,15 +483,19 @@ internal static class XmlParser
 
 					row["Id"] = databases.Rows.Count;
 					row["Orderer"] = 2;
-					row["DatasetName"] = "Localhost";
+					row["ServerName"] = "Localhost";
 					row["DataSource"] = "localhost";
 					row["DataSourceLc"] = "localhost";
+					row["DisplayMember"] = "";
 					row["Name"] = "";
-					row["PortNumber"] = 3050;
+					row["PortNumber"] = CoreConstants.C_DefaultPortNumber;
+					row["ServerType"] = CoreConstants.C_DefaultServerType;
 					row["InitialCatalog"] = "";
 					row["InitialCatalogLc"] = "";
+					row["Dataset"] = "";
 					row["DatasetKey"] = "";
 					row["Charset"] = "";
+					row["Dialect"] = 0;
 					row["UserName"] = "";
 					row["Password"] = "";
 					row["RoleName"] = "";
@@ -450,7 +503,7 @@ internal static class XmlParser
 					databases.Rows.Add(row);
 				}
 
-				databases.DefaultView.Sort = "Orderer,DatasetName,Name ASC";
+				databases.DefaultView.Sort = "Orderer,ServerName,DisplayMember ASC";
 
 
 			}
@@ -461,14 +514,14 @@ internal static class XmlParser
 		}
 	}
 
-	public static DbConnectionStringBuilder GetCsbFromDatabases(string datasetKey)
+	public static DbConnectionStringBuilder GetCsbFromDatabases(string displayMember)
 	{
 		foreach (DataRow row in Databases.Rows)
 		{
 			if ((string)row["Name"] == "")
 				continue;
 
-			if (datasetKey.Equals((string)row["DatasetKey"]))
+			if (displayMember.Equals((string)row["DisplayMember"]))
 			{
 				DbConnectionStringBuilder csb = new()
 				{
@@ -479,7 +532,9 @@ internal static class XmlParser
 					["UserID"] = (string)row["UserName"],
 					["Password"] = (string)row["Password"],
 					["Role"] = (string)row["RoleName"],
-					["DatasetKey"] = (string)row["DatasetKey"]
+					["Dataset"] = (string)row["Dataset"],
+					["DatasetKey"] = (string)row["DatasetKey"],
+					["DisplayMember"] = (string)row["DisplayMember"]
 				};
 				return csb;
 			}

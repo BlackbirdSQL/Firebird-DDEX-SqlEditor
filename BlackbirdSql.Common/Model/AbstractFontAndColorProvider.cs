@@ -5,15 +5,21 @@
 
 using System;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using BlackbirdSql.Common.Ctl.Events;
+using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
 
 namespace BlackbirdSql.Common.Model;
 
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IVsFontAndColorEvents
 {
@@ -73,6 +79,13 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 	{
 		get
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			return _FontAndColorUtilities ??=
 				Microsoft.VisualStudio.Shell.Package.GetGlobalService(
 					typeof(SVsFontAndColorStorage)) as IVsFontAndColorUtilities;
@@ -223,6 +236,13 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 
 	public static bool GetFontAndColorSettingsForCategory(Guid categoryGuid, string itemName, IVsFontAndColorStorage vsFontAndColorStorage, out Font categoryFont, out Color? foreColor, out Color? bkColor, bool readFont)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		categoryFont = null;
 		foreColor = null;
 		bkColor = null;
@@ -294,7 +314,15 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 
 	protected uint DecodeSystemColor(uint systemColorReference)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		Native.ThrowOnFailure(FontAndColorUtilities.GetEncodedSysColor(systemColorReference, out int piSysColor));
+
 		return Native.GetSysColor(piSysColor);
 	}
 }

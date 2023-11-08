@@ -68,7 +68,9 @@ public static class CoreConstants
 
 
 	// Other external properties
+	internal const string C_DefaultExDataset = "";
 	internal const string C_DefaultExDatasetKey = "";
+	internal const string C_DefaultExDisplayMember = "";
 	internal const ServerDefinition C_DefaultExServerDefinition = null;
 	internal const string C_DefaultExAdministratorLogin = "";
 	internal const string C_DefaultExServerFullyQualifiedDomainName = "localhost";

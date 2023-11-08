@@ -63,22 +63,22 @@ namespace BlackbirdSql.Common.Controls.Grid
 			m_forcedButton.State = state;
 		}
 
-		public override void DrawCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IGridStorage storage, long nRowIndex)
+		public override void DrawCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex)
 		{
 			DrawCellCommon(g, bkBrush, textBrush, textFont, rect, storage, nRowIndex, bEnabled: true, useGdiPlus: false);
 		}
 
-		public override void PrintCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IGridStorage storage, long nRowIndex)
+		public override void PrintCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex)
 		{
 			DrawCellCommon(g, bkBrush, textBrush, textFont, rect, storage, nRowIndex, bEnabled: true, useGdiPlus: true);
 		}
 
-		public override void DrawDisabledCell(Graphics g, Font textFont, Rectangle rect, IGridStorage storage, long nRowIndex)
+		public override void DrawDisabledCell(Graphics g, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex)
 		{
 			DrawCellCommon(g, SDisabledCellBKBrush, SDisabledCellForeBrush, textFont, rect, storage, nRowIndex, bEnabled: false);
 		}
 
-		public override string GetAccessibleValue(long nRowIndex, IGridStorage storage)
+		public override string GetAccessibleValue(long nRowIndex, IBGridStorage storage)
 		{
 			storage.GetCellDataForButton(nRowIndex, m_myColumnIndex, out _, out _, out string buttonLabel);
 			return buttonLabel;
@@ -108,17 +108,17 @@ namespace BlackbirdSql.Common.Controls.Grid
 			DrawButton(g, bkBrush, (SolidBrush)textBrush, textFont, rect, buttomBmp, buttonLabel, btnState, bEnabled);
 		}
 
-		protected void DrawCellCommon(Graphics g, Brush bkBrush, Brush textBrush, Font textFont, Rectangle rect, IGridStorage storage, long nRowIndex, bool bEnabled)
+		protected void DrawCellCommon(Graphics g, Brush bkBrush, Brush textBrush, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex, bool bEnabled)
 		{
 			DrawCellCommon(g, bkBrush, (SolidBrush)textBrush, textFont, rect, storage, nRowIndex, bEnabled);
 		}
 
-		protected void DrawCellCommon(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IGridStorage storage, long nRowIndex, bool bEnabled)
+		protected void DrawCellCommon(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex, bool bEnabled)
 		{
 			DrawCellCommon(g, bkBrush, textBrush, textFont, rect, storage, nRowIndex, bEnabled, useGdiPlus: false);
 		}
 
-		protected void DrawCellCommon(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IGridStorage storage, long nRowIndex, bool bEnabled, bool useGdiPlus)
+		protected void DrawCellCommon(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex, bool bEnabled, bool useGdiPlus)
 		{
 			ButtonState btnState = ButtonState.Normal;
 			storage.GetCellDataForButton(nRowIndex, m_myColumnIndex, out var state, out Bitmap image, out string buttonLabel);

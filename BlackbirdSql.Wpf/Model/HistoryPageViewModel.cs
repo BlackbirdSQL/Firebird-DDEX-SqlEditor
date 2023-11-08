@@ -11,6 +11,7 @@ using System.Windows.Input;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
+using BlackbirdSql.Common.Model.Wpf;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
@@ -21,7 +22,7 @@ using BlackbirdSql.Core.Ctl.Interfaces;
 
 namespace BlackbirdSql.Wpf.Model
 {
-	public class HistoryPageViewModel : ViewModelBase
+	public class HistoryPageViewModel : AbstractViewModel
     {
         public const string C_KeyHasRecentConnections = "HasRecentConnections";
         public const string C_KeyHasFavoriteConnections = "HasFavoriteConnections";

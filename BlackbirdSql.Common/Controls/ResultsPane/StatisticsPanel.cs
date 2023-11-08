@@ -205,23 +205,23 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 				break;
 			case EnStatisticSpecialAction.ClientProcessingTimeAction:
 				result = cellValue = longres = (long)snapshotData["ExecutionTime"] - (long)snapshotData["NetworkServerTime"];
-				stringValue = longres.FormatForStats();
+				stringValue = longres.FmtSqlStats();
 				break;
 			case EnStatisticSpecialAction.ElapsedTimeFormat:
 				result = cellValue = longres = (long)snapshotData[sn.Name];
-				stringValue = longres.FormatForStats();
+				stringValue = longres.FmtSqlStats();
 				break;
 			case EnStatisticSpecialAction.DateTimeFormat:
 				result = cellValue = longres = (long)snapshotData[sn.Name];
-				stringValue = longres.ToDateTime().ToString("T", CultureInfo.InvariantCulture);
+				stringValue = longres.ToUtcDateTime().ToString("T", CultureInfo.InvariantCulture);
 				break;
 			case EnStatisticSpecialAction.ByteFormat:
 				result = longres = (long)snapshotData[sn.Name];
-				(stringValue, cellValue) = longres.ByteSizeFormat();
+				(stringValue, cellValue) = longres.FmtByteSize();
 				break;
 			case EnStatisticSpecialAction.SIFormat:
 				result = longres = (long)snapshotData[sn.Name];
-				(stringValue, cellValue) = longres.SISizeFormat();
+				(stringValue, cellValue) = longres.FmtExpSize();
 				break;
 			default:
 				stringValue = longres.ToString(CultureInfo.InvariantCulture);
@@ -246,16 +246,16 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 				stringValue = value.ToString(CultureInfo.InvariantCulture);
 				break;
 			case EnStatisticSpecialAction.ElapsedTimeFormat:
-				stringValue = ((long)value).FormatForStats();
+				stringValue = ((long)value).FmtSqlStats();
 				break;
 			case EnStatisticSpecialAction.DateTimeFormat:
 				stringValue = "";
 				break;
 			case EnStatisticSpecialAction.ByteFormat:
-				(stringValue, _) = value.ByteSizeFormat();
+				(stringValue, _) = value.FmtByteSize();
 				break;
 			case EnStatisticSpecialAction.SIFormat:
-				(stringValue, _) = value.SISizeFormat();
+				(stringValue, _) = value.FmtExpSize();
 				break;
 			default:
 				stringValue = value.ToString(CultureInfo.InvariantCulture);

@@ -15,16 +15,16 @@ namespace BlackbirdSql.Common.Model.QueryExecution;
 [Serializable]
 public class QESQLBatchConsumerException : ApplicationException
 {
-	public enum ErrorType
+	public enum EnErrorType
 	{
 		CannotShowMoreResults
 	}
 
-	private readonly ErrorType extraInfo;
+	private readonly EnErrorType extraInfo;
 
-	public ErrorType ExtraInfo => extraInfo;
+	public EnErrorType ExtraInfo => extraInfo;
 
-	public QESQLBatchConsumerException(string errorString, ErrorType extraInfo)
+	public QESQLBatchConsumerException(string errorString, EnErrorType extraInfo)
 		: base(errorString)
 	{
 		this.extraInfo = extraInfo;

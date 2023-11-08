@@ -117,14 +117,86 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="#311" xml:space="preserve">
+    <value>BlackbirdSql, SQL Editor</value>
+  </data>
+  <data name="#312" xml:space="preserve">
+    <value>BlackbirdSql, SQL Editor (with Encoding)</value>
+  </data>
+  <data name="#313" xml:space="preserve">
+    <value>BlackbirdSql, Results Editor</value>
+  </data>
   <data name="100" xml:space="preserve">
     <value>IVs provider for Firebird (BlackbirdSql)</value>
   </data>
   <data name="102" xml:space="preserve">
     <value>IVs Provider for FirebirdClient (BlackbirdSql)</value>
   </data>
-  <data name="106" xml:space="preserve">
-    <value>RJDTMPQPE2PMCIRHDZM8APRHIJIEQDM8ZPZREQCTR1ETREI2JDHTDHHPPHJRC2HRK2JHPCZEM2H3E1AQA2QQIEJJR1AIDPZZDEZCZPRCH0HZJMPEQPETA3M3ERI8JTJJ</value>
+  <data name="200" xml:space="preserve">
+    <value>BlackbirdSQL Server Tools</value>
+  </data>
+  <data name="201" xml:space="preserve">
+    <value>Ddex Provider</value>
+  </data>
+  <data name="221" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="222" xml:space="preserve">
+    <value>Debug</value>
+  </data>
+  <data name="300" xml:space="preserve">
+    <value>BlackbirdSQL Server Tools</value>
+  </data>
+  <data name="301" xml:space="preserve">
+    <value>SqlEditor</value>
+  </data>
+  <data name="311" xml:space="preserve">
+    <value>BlackbirdSql Server Data Tools, SQL Editor</value>
+  </data>
+  <data name="312" xml:space="preserve">
+    <value>BlackbirdSql Server Data Tools, Results Editor</value>
+  </data>
+  <data name="313" xml:space="preserve">
+    <value>BlackbirdSql Server Data Tools, Message Editor</value>
+  </data>
+  <data name="314" xml:space="preserve">
+    <value>BlackbirdSql Server Data Tools, Statistics Editor</value>
+  </data>
+  <data name="315" xml:space="preserve">
+    <value>BlackbirdSql Server Data Tools, Showplan Editor</value>
+  </data>
+  <data name="317" xml:space="preserve">
+    <value>BlackbirdSql Server Data Tools, FB-SQL Editor (with Encoding)</value>
+  </data>
+  <data name="318" xml:space="preserve">
+    <value>BlackbirdSql Server Data Tools, Spatial Results Editor</value>
+  </data>
+  <data name="321" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="322" xml:space="preserve">
+    <value>Editor Tab and Status Bar</value>
+  </data>
+  <data name="323" xml:space="preserve">
+    <value>Query Execution</value>
+  </data>
+  <data name="324" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="325" xml:space="preserve">
+    <value>Advanced</value>
+  </data>
+  <data name="326" xml:space="preserve">
+    <value>Query Results</value>
+  </data>
+  <data name="327" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="328" xml:space="preserve">
+    <value>Grid Results</value>
+  </data>
+  <data name="329" xml:space="preserve">
+    <value>Text Results</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="400" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

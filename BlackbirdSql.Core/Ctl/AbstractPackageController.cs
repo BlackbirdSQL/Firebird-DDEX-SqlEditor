@@ -3,18 +3,26 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Model.Interfaces;
 using EnvDTE;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.TaskStatusCenter;
 using static BlackbirdSql.Core.Ctl.CommandProviders.CommandProperties;
 
+
 namespace BlackbirdSql.Core.Ctl;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 // =========================================================================================================
 //										AbstractPackageController Class
@@ -41,7 +49,8 @@ internal abstract class AbstractPackageController : IBPackageController
 	protected static IBPackageController _Instance = null;
 	protected static List<IBEventsManager> _EventsManagers = null;
 
-	private readonly object _PackageLock = new object();
+	// A package instance global lock
+	private readonly object _LockGlobal = new object();
 
 	private static IVsUIHierarchy _MiscHierarchy = null;
 
@@ -49,6 +58,7 @@ internal abstract class AbstractPackageController : IBPackageController
 	private readonly IBAsyncPackage _DdexPackage;
 
 	protected IVsMonitorSelection _MonitorSelection = null;
+	private IVsTaskStatusCenterService _StatusCenterService = null;
 
 	protected uint _HSolutionEvents = uint.MaxValue;
 	protected uint _HDocTableEvents = uint.MaxValue;
@@ -91,7 +101,8 @@ internal abstract class AbstractPackageController : IBPackageController
 	// =========================================================================================================
 
 
-	public string UserDataDirectory => Get_ApplicationDataDirectory();
+	public string UserDataDirectory => _UserDataDirectory ??=
+		Environment.GetFolderPath(Environment.SpecialFolder.Personal);
 
 
 
@@ -229,6 +240,13 @@ internal abstract class AbstractPackageController : IBPackageController
 	{
 		get
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			try
 			{
 				if (Package.GetGlobalService(typeof(SVsShell)) is IVsShell vsShell)
@@ -254,7 +272,15 @@ internal abstract class AbstractPackageController : IBPackageController
 		{
 			if (SelectionMonitor != null)
 			{
+				if (!ThreadHelper.CheckAccess())
+				{
+					COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+					Diag.Dug(exc);
+					throw exc;
+				}
+
 				Native.ThrowOnFailure(SelectionMonitor.IsCmdUIContextActive(ToolboxCmdUICookie, out int pfActive));
+
 				return pfActive != 0;
 			}
 			return true;
@@ -278,12 +304,60 @@ internal abstract class AbstractPackageController : IBPackageController
 
 	public IAsyncServiceContainer Services => (IAsyncServiceContainer)_DdexPackage;
 
+
+	/// <summary>
+	/// Struggling to resolve deadlocking on GetService[Async] calls forLinkageParserl, so we're going
+	/// to maintain instances of certain services.
+	/// </summary>
+	/// <remarks>
+	/// Deadlock debug notes:
+	/// 1. Caveat: Both GetService() and GetServiceAsynce seem to require the UIThread at some point.
+	/// 2. The LinkageParser can switch between the UIThread and pool multiple times during the lifetime of
+	/// a task. By default building the linkage is async, but if a Linkage result set/schema is required
+	/// we complete the build process on the UIThread.
+	/// 3. A launcher task using Run or StartNew can be in a prelaunch phase where it cannot be notified of
+	/// it's cancellation.
+	/// The reproduceable: Suppose a ServerExplorer tree is expanded on it's Sequences node and the user
+	/// refreshes. The entire visible tree structure is refreshed. Any existing Linkage tables are disposed
+	/// of and an async rebuild is launched.
+	/// Once ServerExplorer reaches the expanded Sequences node, it will request the Sequences, which are held
+	/// in a linkage table, which is currently being built async.
+	/// So we notify the async task of cancellation and wait. The async task performs a cleanup and notifies
+	/// the sync task that it is handing over the linkage process.
+	/// This all sounds very beautiful and easy enough, but there are some major caveats...
+	/// 1. The async task launcher task (StartNew etc) may be in prelaunch, a phase in which it is inaccessible.
+	/// The timeslice on this phase is substantial, so during for example a refresh, it's a given that a sync
+	/// task will attempt to cancel an inacessible launcher, which is busy doing some of it's "launch stuff"
+	/// on the very UIThread the sync task has now blocked.
+	/// 2. A sync or async task has called GetService[Async], and at this juncture another task on the UIThread
+	/// may have sent out a cancellation request. GetService will deadlock behind it on the UI.
+	/// GetService[Async] also uses a substantial timeslice relatively speaking, so this deadlock will
+	/// happen more often than not.
+	/// 3. There has been a call to the Tracer, Diag class, TaskHandler or output window. GetService is gonna
+	/// happen somewhere in that logic, and it's a deadlock.
+	/// Solution: 1 has been resolved some time back, but with 2 and 3 we have no access whatsoever.
+	/// So the easiest solution is to store those service instances once they've been created, eliminating
+	/// the need for GetService during processing/linkage/building.
+	/// </remarks>
+
+	public IVsTaskStatusCenterService StatusCenterService => _StatusCenterService ??=
+		ThreadHelper.JoinableTaskFactory.Run(new Func<Task<IVsTaskStatusCenterService>>(GetStatusCenterServiceAsync));
+		
+
+
 	public uint ToolboxCmdUICookie
 	{
 		get
 		{
 			if (_ToolboxCmdUICookie == 0 && SelectionMonitor != null)
 			{
+				if (!ThreadHelper.CheckAccess())
+				{
+					COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+					Diag.Dug(exc);
+					throw exc;
+				}
+
 				Guid rguidCmdUI = new Guid(VSConstants.UICONTEXT.ToolboxInitialized_string);
 				SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _ToolboxCmdUICookie);
 			}
@@ -291,7 +365,11 @@ internal abstract class AbstractPackageController : IBPackageController
 		}
 	}
 
-	public object PackageLock => _PackageLock;
+
+	/// <summary>
+	/// The extension wide package instance lock.
+	/// </summary>
+	public object LockGlobal => _LockGlobal;
 
 
 	// ---------------------------------------------------------------------------------
@@ -299,7 +377,8 @@ internal abstract class AbstractPackageController : IBPackageController
 	/// Accessor to <see cref="_Solution.Globals"/>
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public Globals SolutionGlobals => Dte.Solution.Globals;
+	public Globals SolutionGlobals =>
+		(Dte != null && Dte.Solution != null) ? Dte.Solution.Globals : null;
 
 
 	#endregion Property Accessors
@@ -377,9 +456,6 @@ internal abstract class AbstractPackageController : IBPackageController
 	// ---------------------------------------------------------------------------------
 	public virtual void Dispose()
 	{
-		// We should already be on UI thread. Callers must ensure this can never happen
-		ThreadHelper.ThrowIfNotOnUIThread();
-
 		UnadviseEvents(true);
 
 		if (_EventsManagers != null)
@@ -424,41 +500,17 @@ internal abstract class AbstractPackageController : IBPackageController
 
 
 
-	public string Get_ApplicationDataDirectory()
-	{
-		/*
-		ThreadHelper.ThrowIfNotOnUIThread();
-		if (_UserDataDirectory == null)
-		{
-			try
-			{
-				IVsShell service = ((AsyncPackage)DdexPackage).GetService<SVsShell, IVsShell>();
-				if (service == null)
-				{
-					ArgumentException ex = new("Could not get service <SVsShell, IVsShell>");
-					Diag.Dug(ex);
-					throw ex;
-				}
-
-				Native.WrapComCall(service.GetProperty((int)__VSSPROPID.VSSPROPID_AppDataDir, out object pvar));
-				_UserDataDirectory = pvar as string;
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-				throw ex;
-			}
-		}
-		*/
-
-		return _UserDataDirectory ??= Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-	}
-
-
 	protected void EnsureMonitorSelection()
 	{
 		if (_MonitorSelection != null)
 			return;
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
 
 		_MonitorSelection = Package.GetGlobalService(typeof(IVsMonitorSelection)) as IVsMonitorSelection;
 
@@ -471,8 +523,24 @@ internal abstract class AbstractPackageController : IBPackageController
 	}
 
 
+
+
 	public TInterface GetService<TService, TInterface>() where TInterface : class
 		=> ((AsyncPackage)DdexPackage).GetService<TService, TInterface>();
+
+
+
+	public async Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class
+		=> await ((AsyncPackage)DdexPackage).GetServiceAsync<TService, TInterface>();
+
+
+
+	private async Task<IVsTaskStatusCenterService> GetStatusCenterServiceAsync()
+	{
+		return await ServiceProvider.GetGlobalServiceAsync<SVsTaskStatusCenterService,
+						IVsTaskStatusCenterService>(swallowExceptions: false);
+	}
+
 
 
 	public void RegisterEventsManager(IBEventsManager manager)
@@ -508,29 +576,21 @@ internal abstract class AbstractPackageController : IBPackageController
 	// ---------------------------------------------------------------------------------
 	public void UnadviseEvents(bool disposing)
 	{
-		// We should already be on UI thread. Callers must ensure this can never happen
-		ThreadHelper.ThrowIfNotOnUIThread();
-
 		_ = disposing;
 
 		if (DteSolution != null && _HSolutionEvents != uint.MaxValue)
-		{
 			DteSolution.UnadviseSolutionEvents(_HSolutionEvents);
-			_HSolutionEvents = uint.MaxValue;
-		}
 
 		if (DocTable != null && _HDocTableEvents != uint.MaxValue)
-		{
 			DocTable.UnadviseRunningDocTableEvents(_HDocTableEvents);
-			_HDocTableEvents = uint.MaxValue;
-		}
 
 		if (_MonitorSelection != null && _HSelectionEvents != uint.MaxValue)
-		{
 			_MonitorSelection.UnadviseSelectionEvents(_HSelectionEvents);
-			_MonitorSelection = null;
-			_HSelectionEvents = uint.MaxValue;
-		}
+
+		_HSolutionEvents = uint.MaxValue;
+		_HDocTableEvents = uint.MaxValue;
+		_MonitorSelection = null;
+		_HSelectionEvents = uint.MaxValue;
 
 	}
 

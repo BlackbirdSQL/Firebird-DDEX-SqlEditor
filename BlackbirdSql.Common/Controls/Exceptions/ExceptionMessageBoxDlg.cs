@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Text;
 using System.Windows.Forms;
-
+using BlackbirdSql.Common.Controls.Widgets;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Ctl.Exceptions;
 using BlackbirdSql.Common.Properties;
@@ -27,7 +27,7 @@ namespace BlackbirdSql.Common.Controls.Exceptions
 {
 	public sealed class ExceptionMessageBoxDlg : Form
 	{
-		public enum BeepType
+		public enum EnBeepType
 		{
 			Standard = -1,
 			Default = 0,
@@ -1440,7 +1440,7 @@ namespace BlackbirdSql.Common.Controls.Exceptions
 					if (!isButtonPressed)
 					{
 						e.Cancel = true;
-						MessageBeep(BeepType.Hand);
+						MessageBeep(EnBeepType.Hand);
 					}
 
 					break;
@@ -1482,7 +1482,7 @@ namespace BlackbirdSql.Common.Controls.Exceptions
 		}
 
 		[DllImport("user32.dll", CharSet = CharSet.Auto)]
-		public static extern bool MessageBeep(BeepType type);
+		public static extern bool MessageBeep(EnBeepType type);
 
 		private void Beep()
 		{
@@ -1490,13 +1490,13 @@ namespace BlackbirdSql.Common.Controls.Exceptions
 			{
 				case EnExceptionMessageBoxSymbol.None:
 				case EnExceptionMessageBoxSymbol.Warning:
-					MessageBeep(BeepType.Asterisk);
+					MessageBeep(EnBeepType.Asterisk);
 					break;
 				case EnExceptionMessageBoxSymbol.Information:
-					MessageBeep(BeepType.Exclamation);
+					MessageBeep(EnBeepType.Exclamation);
 					break;
 				case EnExceptionMessageBoxSymbol.Error:
-					MessageBeep(BeepType.Hand);
+					MessageBeep(EnBeepType.Hand);
 					break;
 			}
 		}

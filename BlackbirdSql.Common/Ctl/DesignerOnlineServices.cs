@@ -9,7 +9,7 @@ using System.Data.Common;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-
+using System.Runtime.InteropServices;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
@@ -17,7 +17,8 @@ using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using FirebirdSql.Data.FirebirdClient;
-
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 using IServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
@@ -87,7 +88,7 @@ public class DesignerOnlineServices : AbstractDesignerServices, IBDesignerOnline
 		if (string.IsNullOrEmpty(mkDocument))
 		{
 			mkDocument = MonikerAgent.BuildMiscDocumentMoniker(dbl.DataSource, dbl.Database,
-				dbl.UserName, elementType, ref identifierArray, false, true, "");
+				elementType, ref identifierArray, false, false);
 
 
 			flag = true;
@@ -162,6 +163,15 @@ public class DesignerOnlineServices : AbstractDesignerServices, IBDesignerOnline
 	// Microsoft.VisualStudio.Data.Tools.Package.Explorers.SqlServerObjectExplorer.SqlServerObjectExplorerService:ViewCode()
 	public void ViewCode(DbConnectionStringBuilder csb, EnModelObjectType objectType, bool alternate, IList<string> identifierList, string script)
 	{
+		// Sanity check.
+		// Currently our only entry point to AbstractDesignerServices whose warnings are suppressed.
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(ex);
+			throw ex;
+		}
+
 		EnsureConnectionSpecifiesDatabase(csb);
 
 		Guid clsidEditorFactory = new Guid(SystemData.MandatedSqlEditorFactoryGuid);

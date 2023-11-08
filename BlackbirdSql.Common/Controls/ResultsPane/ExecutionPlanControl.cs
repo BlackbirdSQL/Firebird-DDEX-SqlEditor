@@ -5,10 +5,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
@@ -18,7 +20,7 @@ using BlackbirdSql.Common.Controls.Graphing.Enums;
 using BlackbirdSql.Common.Controls.Graphing.Gram;
 using BlackbirdSql.Common.Controls.Graphing.Interfaces;
 using BlackbirdSql.Common.Controls.QueryExecution;
-using BlackbirdSql.Common.Ctl;
+using BlackbirdSql.Common.Ctl.Commands;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
@@ -35,7 +37,10 @@ using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
 
-public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.Interfaces.IObjectWithSite, IOleCommandTarget
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "UIThread compliance is performed by the class.")]
+
+public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.Interfaces.IBObjectWithSite, IOleCommandTarget
 {
 	private class DataBinding
 	{
@@ -173,7 +178,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 		}
 	}
 
-	void BlackbirdSql.Common.Controls.Interfaces.IObjectWithSite.SetSite(System.IServiceProvider serviceProvider)
+	void BlackbirdSql.Common.Controls.Interfaces.IBObjectWithSite.SetSite(System.IServiceProvider serviceProvider)
 	{
 		this.serviceProvider = serviceProvider;
 		OnHosted();
@@ -316,6 +321,13 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 
 	private void OnExecutionPlanXml(object sender, EventArgs a)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		string text = string.Empty;
 		try
 		{
@@ -372,10 +384,16 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 
 	internal void OnMissingIndexDetails(object sender, EventArgs a)
 	{
-		if (!currentGraphPanel.DescriptionCtl.HasMissingIndex)
+		if (!ThreadHelper.CheckAccess())
 		{
-			return;
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
+
+		if (!currentGraphPanel.DescriptionCtl.HasMissingIndex)
+			return;
+
 		string missingIndexDatabase = currentGraphPanel.DescriptionCtl.MissingIndexDatabase;
 		string missingIndexImpact = currentGraphPanel.DescriptionCtl.MissingIndexImpact;
 		string missingIndexQueryText = currentGraphPanel.DescriptionCtl.MissingIndexQueryText;
@@ -728,6 +746,13 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 
 	private Font GetExecutionPlanFont()
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		IVsFontAndColorStorage vsFontAndColorStorage = (IVsFontAndColorStorage)GetService(typeof(SVsFontAndColorStorage));
 		if (AbstractFontAndColorProvider.GetFontAndColorSettingsForCategory(VS.CLSID_FontAndColorsSqlResultsExecutionPlanCategory, FontAndColorProviderExecutionPlan.Text, vsFontAndColorStorage, out var categoryFont, out var _, out var _, readFont: true))
 		{

@@ -19,7 +19,6 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -30,12 +29,17 @@ using IServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 namespace BlackbirdSql.Common.Ctl;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Callers using this class must ensure compliance")]
+
 public abstract class AbstractDesignerServices
 {
 
+
 	protected static Guid _DslEditorFactoryClsid = Guid.Empty;
 	protected static Dictionary<DatabaseLocation, Dictionary<NodeElementDescriptor, string>> _InflightOpens = null;
-	protected static object _LockGlobal;
+	// A static class lock
+	protected static object _LockClass;
 
 
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
@@ -71,12 +75,12 @@ public abstract class AbstractDesignerServices
 
 	public AbstractDesignerServices()
 	{
-		_LockGlobal ??= new object();
+		_LockClass ??= new object();
 	}
 
 	protected static void AddInflightOpen(DatabaseLocation dbl, NodeElementDescriptor descriptor, string moniker)
 	{
-		lock (_LockGlobal)
+		lock (_LockClass)
 		{
 			if (!InflightOpens.TryGetValue(dbl, out Dictionary<NodeElementDescriptor, string> value))
 			{
@@ -202,7 +206,7 @@ public abstract class AbstractDesignerServices
 	{
 		string value = null;
 
-		lock (_LockGlobal)
+		lock (_LockClass)
 		{
 			if (InflightOpens.TryGetValue(dbl, out Dictionary<NodeElementDescriptor, string> value2))
 			{
@@ -505,7 +509,7 @@ public abstract class AbstractDesignerServices
 			throw ExceptionFactory.CreateArgumentNullException("desc");
 		}
 		*/
-		lock (_LockGlobal)
+		lock (_LockClass)
 		{
 			if (_InflightOpens.TryGetValue(dbl, out var value))
 			{

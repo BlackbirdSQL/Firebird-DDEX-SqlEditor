@@ -1,16 +1,19 @@
-﻿
-using System;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
-using BlackbirdSql.Core.Ctl.Events;
+
 using BlackbirdSql.Core.Ctl.Interfaces;
+
 using EnvDTE;
-using Microsoft.VisualStudio.Data.Services.SupportEntities;
+
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using static BlackbirdSql.Core.Ctl.CommandProviders.CommandProperties;
+
 
 namespace BlackbirdSql.Core.Ctl;
+
+[SuppressMessage("Usage", "VSTHRD001:Avoid legacy thread switching APIs")]
 
 public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 {
@@ -57,9 +60,7 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	{
 		get
 		{
-#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread - We're safe here
 			_DocTable ??= GetDocTable();
-#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 
 			// If it's null there's an issue. Possibly we've come in too early
 			if (_DocTable == null)
@@ -83,9 +84,7 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	{
 		get
 		{
-#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread - We're safe here
 			_Dte ??= GetDte();
-#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 
 			// If it's null there's an issue. Possibly we've come in too early
 			if (_Dte == null)
@@ -108,9 +107,7 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	{
 		get
 		{
-#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread - We're safe here
 			_DteSolution ??= GetSolution();
-#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 
 			// If it's null there's an issue. Possibly we've come in too early
 			if (_DteSolution == null)
@@ -192,8 +189,6 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	// ---------------------------------------------------------------------------------
 	protected override void Dispose(bool disposing)
 	{
-		ThreadHelper.ThrowIfNotOnUIThread();
-
 		base.Dispose(disposing);
 	}
 
@@ -267,31 +262,6 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Populates the GlobalEventArgs with all options available to the package. The
-	/// final package class must implement this method.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public abstract GlobalEventArgs PopulateOptionsEventArgs();
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Populates the GlobalEventArgs with the options available to the package for the
-	/// specified options group.
-	/// The final package class must implement this method.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public abstract GlobalEventArgs PopulateOptionsEventArgs(string group);
-
-
-
-	public abstract void RegisterOptionsEventHandlers(IBAsyncPackage.SettingsSavedDelegate onOptionsSettingSaved);
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
 	/// Implementation of the <see cref="IBAsyncPackage"/> ServicesCreatorCallback
 	/// method.
 	/// Initializes and configures a service of the specified type that is used by this
@@ -320,7 +290,6 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 
 	private IVsRunningDocumentTable GetDocTable()
 	{
-		ThreadHelper.ThrowIfNotOnUIThread();
 		try
 		{
 			if (GetService(typeof(SVsRunningDocumentTable)) is not IVsRunningDocumentTable service)
@@ -337,7 +306,6 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 
 	private DTE GetDte()
 	{
-		ThreadHelper.ThrowIfNotOnUIThread();
 		try
 		{
 			return GetService(typeof(DTE)) is not DTE service ? throw new InvalidOperationException("DTE service not found") : service;
@@ -353,7 +321,6 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 
 	private IVsSolution GetSolution()
 	{
-		ThreadHelper.ThrowIfNotOnUIThread();
 		try
 		{
 			if (GetService(typeof(SVsSolution)) is not IVsSolution service)
@@ -374,17 +341,14 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	{
 		// If we’re already on the UI thread, just execute the method directly.
 		if (ThreadHelper.CheckAccess())
-		{
 			return function();
-		}
+
 
 		T result = default;
 		// Prefer BeginInvoke over Invoke since BeginInvoke is potentially saver than Invoke.
 		using (ManualResetEventSlim eventHandle = new ManualResetEventSlim(false))
 		{
-#pragma warning disable VSTHRD001 // Avoid legacy thread switching APIs
 			ThreadHelper.Generic.BeginInvoke(() => { result = function(); eventHandle.Set(); });
-#pragma warning restore VSTHRD001 // Avoid legacy thread switching APIs
 			// Wait for the invoke to complete.
 			var success = eventHandle.Wait(TimeSpan.FromSeconds(uiInvokeTimeoutSeconds));
 			// If the operation timed out, fail.
@@ -401,9 +365,7 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	}
 
 
-
-
-
 	#endregion Methods
+
 
 }

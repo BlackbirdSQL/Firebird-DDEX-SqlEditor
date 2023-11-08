@@ -11,7 +11,6 @@ using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Utilities;
 
 using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
@@ -22,7 +21,7 @@ namespace BlackbirdSql.Common.Model.QueryExecution;
 public sealed class QueryManager : IDisposable
 {
 	[Flags]
-	public enum StatusType
+	public enum EnStatusType
 	{
 		Connected = 0x1,
 		Executing = 0x2,
@@ -38,9 +37,9 @@ public sealed class QueryManager : IDisposable
 
 	public class StatusChangedEventArgs : EventArgs
 	{
-		public StatusType Change { get; private set; }
+		public EnStatusType Change { get; private set; }
 
-		public StatusChangedEventArgs(StatusType changeType)
+		public StatusChangedEventArgs(EnStatusType changeType)
 		{
 			Change = changeType;
 		}
@@ -68,15 +67,16 @@ public sealed class QueryManager : IDisposable
 
 	private long _RowsAffected;
 
+	// A private 'this' object lock
 	private readonly object _LockLocal = new object();
 
 	private QEOLESQLExec _SqlExec;
 
 	private SqlConnectionStrategy _ConnectionStrategy;
 
-	private IBUserSettings _QueryExecutionSettings;
+	private QESQLCommandBuilder _LiveSettings;
 
-	private bool _QueryExecutionSettingsApplied;
+	private bool _LiveSettingsApplied;
 
 	public const string C_TName = "QryMgr";
 
@@ -86,9 +86,18 @@ public sealed class QueryManager : IDisposable
 
 	private QEOLESQLExec.GetCurrentWorkingDirectoryPath _currentWorkingDirectoryPath;
 
-	public QESQLExecutionOptions ExecutionOptions { get; private set; }
+	public QESQLCommandBuilder LiveSettings
+	{
+		get
+		{
+			lock (_LockLocal)
+			{
+				return _LiveSettings ??= QESQLCommandBuilder.CreateInstance();
+			}
+		}
+	}
 
-	public IQESQLBatchConsumer ResultsHandler { get; set; }
+	public IBQESQLBatchConsumer ResultsHandler { get; set; }
 
 	public DateTime? QueryExecutionStartTime { get; private set; }
 
@@ -98,11 +107,11 @@ public sealed class QueryManager : IDisposable
 	{
 		get
 		{
-			return IsStatusFlagSet(StatusType.Connected);
+			return IsStatusFlagSet(EnStatusType.Connected);
 		}
 		private set
 		{
-			SetStatusFlag(value, StatusType.Connected);
+			SetStatusFlag(value, EnStatusType.Connected);
 		}
 	}
 
@@ -121,11 +130,11 @@ public sealed class QueryManager : IDisposable
 	{
 		get
 		{
-			return IsStatusFlagSet(StatusType.Debugging);
+			return IsStatusFlagSet(EnStatusType.Debugging);
 		}
 		private set
 		{
-			SetStatusFlag(value, StatusType.Debugging);
+			SetStatusFlag(value, EnStatusType.Debugging);
 		}
 	}
 
@@ -135,11 +144,11 @@ public sealed class QueryManager : IDisposable
 	{
 		get
 		{
-			return IsStatusFlagSet(StatusType.Executing);
+			return IsStatusFlagSet(EnStatusType.Executing);
 		}
 		private set
 		{
-			SetStatusFlag(value, StatusType.Executing);
+			SetStatusFlag(value, EnStatusType.Executing);
 		}
 	}
 
@@ -147,11 +156,11 @@ public sealed class QueryManager : IDisposable
 	{
 		get
 		{
-			return IsStatusFlagSet(StatusType.Connecting);
+			return IsStatusFlagSet(EnStatusType.Connecting);
 		}
 		set
 		{
-			SetStatusFlag(value, StatusType.Connecting);
+			SetStatusFlag(value, EnStatusType.Connecting);
 		}
 	}
 
@@ -159,11 +168,11 @@ public sealed class QueryManager : IDisposable
 	{
 		get
 		{
-			return IsStatusFlagSet(StatusType.Cancelling);
+			return IsStatusFlagSet(EnStatusType.Cancelling);
 		}
 		private set
 		{
-			SetStatusFlag(value, StatusType.Cancelling);
+			SetStatusFlag(value, EnStatusType.Cancelling);
 		}
 	}
 
@@ -173,15 +182,15 @@ public sealed class QueryManager : IDisposable
 		{
 			lock (_LockLocal)
 			{
-				return ExecutionOptions.WithOleSqlScripting;
+				return LiveSettings.WithOleSqlScripting;
 			}
 		}
 		set
 		{
 			lock (_LockLocal)
 			{
-				ExecutionOptions.WithOleSqlScripting = value;
-				OnStatusChanged(new StatusChangedEventArgs(StatusType.ExecutionOptionsWithOleSqlChanged));
+				LiveSettings.WithOleSqlScripting = value;
+				OnStatusChanged(new StatusChangedEventArgs(EnStatusType.ExecutionOptionsWithOleSqlChanged));
 			}
 		}
 	}
@@ -248,49 +257,28 @@ public sealed class QueryManager : IDisposable
 				_ConnectionStrategy.ConnectionChanged += ConnectionChanged;
 				_ConnectionStrategy.DatabaseChanged += HandleDatabaseChanged;
 				SetStateForConnection(ConnectionStrategy.Connection);
-				OnStatusChanged(new StatusChangedEventArgs(StatusType.Connection));
+				OnStatusChanged(new StatusChangedEventArgs(EnStatusType.Connection));
 			}
 		}
 	}
 
-	public IBUserSettings QueryExecutionSettings
+
+
+
+	public bool LiveSettingsApplied
 	{
 		get
 		{
 			lock (_LockLocal)
 			{
-				if (_QueryExecutionSettings == null)
-				{
-					IBUserSettings current = UserSettings.Instance.Current;
-					_QueryExecutionSettings = current.Clone() as IBUserSettings;
-				}
-
-				return _QueryExecutionSettings;
+				return _LiveSettingsApplied;
 			}
 		}
 		set
 		{
 			lock (_LockLocal)
 			{
-				_QueryExecutionSettings = value;
-			}
-		}
-	}
-
-	public bool QueryExecutionSettingsApplied
-	{
-		get
-		{
-			lock (_LockLocal)
-			{
-				return _QueryExecutionSettingsApplied;
-			}
-		}
-		set
-		{
-			lock (_LockLocal)
-			{
-				_QueryExecutionSettingsApplied = value;
+				_LiveSettingsApplied = value;
 			}
 		}
 	}
@@ -321,7 +309,6 @@ public sealed class QueryManager : IDisposable
 		_SqlExec = new QEOLESQLExec(SqlCmdVariableResolver, this);
 		SqlCmdVariableResolver = sqlCmdVarResolver;
 		RegisterSqlExecWithEvenHandlers();
-		ExecutionOptions = new QESQLExecutionOptions();
 		IsAllowedToExecuteWhileDebugging = true;
 	}
 
@@ -447,7 +434,7 @@ public sealed class QueryManager : IDisposable
 					case ConnectionState.Closed:
 					case ConnectionState.Broken:
 						IsConnected = false;
-						QueryExecutionSettingsApplied = false;
+						LiveSettingsApplied = false;
 						if (IsExecuting)
 						{
 							IsExecuting = false;
@@ -463,7 +450,7 @@ public sealed class QueryManager : IDisposable
 						if (originalState == ConnectionState.Closed || originalState == ConnectionState.Connecting)
 						{
 							IsConnected = true;
-							QueryExecutionSettingsApplied = false;
+							LiveSettingsApplied = false;
 						}
 
 						break;
@@ -533,15 +520,15 @@ public sealed class QueryManager : IDisposable
 
 	private void OnSqlCmdConnect(object sender, QeSqlCmdNewConnectionOpenedEventArgs args)
 	{
-		ConnectionStrategy.ApplyConnectionOptions(args.Connection, QueryExecutionSettings.Execution);
+		ConnectionStrategy.ApplyConnectionOptions(args.Connection, LiveSettings);
 	}
 
 	private bool ValidateAndRun(IBTextSpan textSpan, int execTimeout, bool bParseOnly, bool withDebugging, bool useCustomExecutionTimeout)
 	{
-		Tracer.Trace(GetType(), Tracer.Level.Verbose, "ValidateAndRun", " Enter. : ExecutionOptions.WithEstimatedExecutionPlan: " + ExecutionOptions.WithEstimatedExecutionPlan);
+		Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ValidateAndRun", " Enter. : ExecutionOptions.WithEstimatedExecutionPlan: " + LiveSettings.WithEstimatedExecutionPlan);
 		
 		ConnectionStrategy.EnsureConnection(tryOpenConnection: true);
-		Tracer.Trace(GetType(), Tracer.Level.Verbose, "ValidateAndRun", "Ensured connection");
+		Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ValidateAndRun", "Ensured connection");
 		IDbConnection connection = ConnectionStrategy.Connection;
 
 		if (connection == null)
@@ -566,10 +553,10 @@ public sealed class QueryManager : IDisposable
 			throw ex;
 		}
 
-		if (!QueryExecutionSettingsApplied)
+		if (!LiveSettingsApplied)
 		{
-			ConnectionStrategy.ApplyConnectionOptions(connection, QueryExecutionSettings.Execution);
-			QueryExecutionSettingsApplied = true;
+			ConnectionStrategy.ApplyConnectionOptions(connection, LiveSettings);
+			LiveSettingsApplied = true;
 		}
 
 		if (execTimeout < 0)
@@ -586,14 +573,14 @@ public sealed class QueryManager : IDisposable
 			throw ex;
 		}
 
-		QESQLExecutionOptions qESQLExecutionOptions = CreateExecutionOptionsObject();
+		QESQLCommandBuilder qESQLExecutionOptions = CreateExecutionOptionsObject();
 		if (bParseOnly)
 		{
 			qESQLExecutionOptions.ParseOnly = true;
 			qESQLExecutionOptions.SuppressProviderMessageHeaders = true;
-			qESQLExecutionOptions.WithOleSqlScripting = ExecutionOptions.WithOleSqlScripting;
+			qESQLExecutionOptions.WithOleSqlScripting = LiveSettings.WithOleSqlScripting;
 		}
-		else if (ExecutionOptions.WithClientStats)
+		else if (LiveSettings.WithClientStats)
 		{
 			ConnectionStrategy.ResetAndEnableConnectionStatistics();
 		}
@@ -623,7 +610,7 @@ public sealed class QueryManager : IDisposable
 
 		if (!useCustomExecutionTimeout)
 		{
-			execTimeout = qESQLExecutionOptions.ExecutionTimeout;
+			execTimeout = qESQLExecutionOptions.EditorExecutionTimeout;
 		}
 
 		_SqlExec.Execute(textSpan, connection, execTimeout, ResultsHandler, qESQLExecutionOptions);
@@ -631,20 +618,10 @@ public sealed class QueryManager : IDisposable
 		return true;
 	}
 
-	private QESQLExecutionOptions CreateExecutionOptionsObject()
+	private QESQLCommandBuilder CreateExecutionOptionsObject()
 	{
-		return new QESQLExecutionOptions(ExecutionOptions)
-		{
-			ParseOnly = QueryExecutionSettings.Execution.SetParseOnly,
-			WithNoExec = QueryExecutionSettings.Execution.SetNoExec,
-			WithExecutionPlanText = QueryExecutionSettings.Execution.SetShowplanText,
-			WithStatisticsProfile = QueryExecutionSettings.Execution.SetStatisticsProfile,
-			WithStatisticsIO = QueryExecutionSettings.Execution.SetStatisticsIO,
-			WithStatisticsTime = QueryExecutionSettings.Execution.SetStatisticsTime,
-			BatchSeparator = QueryExecutionSettings.Execution.BatchSeparator,
-			ExecutionTimeout = QueryExecutionSettings.Execution.ExecutionTimeout,
-			SuppressProviderMessageHeaders = QueryExecutionSettings.Execution.SuppressProviderMessageHeaders
-		};
+		return (QESQLCommandBuilder)LiveSettings.Clone();
+
 	}
 
 	private void OnExecutionCompleted(object sender, ScriptExecutionCompletedEventArgs args)
@@ -655,7 +632,7 @@ public sealed class QueryManager : IDisposable
 		IsExecuting = false;
 		IsDebugging = false;
 		IsCancelling = false;
-		if (QueryExecutionSettings.Execution.DisconnectAfterQueryExecutes)
+		if (LiveSettings.EditorExecutionDisconnectOnCompletion)
 		{
 			ConnectionStrategy.Connection.Close();
 			ConnectionStrategy.SetConnectionInfo(null);
@@ -691,7 +668,7 @@ public sealed class QueryManager : IDisposable
 		StatusChangedEvent?.Invoke(this, args);
 	}
 
-	private bool IsStatusFlagSet(StatusType statusType)
+	private bool IsStatusFlagSet(EnStatusType statusType)
 	{
 		lock (_LockLocal)
 		{
@@ -699,7 +676,7 @@ public sealed class QueryManager : IDisposable
 		}
 	}
 
-	private void SetStatusFlag(bool enabled, StatusType statusType)
+	private void SetStatusFlag(bool enabled, EnStatusType statusType)
 	{
 		lock (_LockLocal)
 		{
@@ -722,20 +699,20 @@ public sealed class QueryManager : IDisposable
 
 	private void HandleDatabaseChanged(object sender, EventArgs args)
 	{
-		OnStatusChanged(new StatusChangedEventArgs(StatusType.DatabaseChanged));
+		OnStatusChanged(new StatusChangedEventArgs(EnStatusType.DatabaseChanged));
 	}
 
-	private void ConnectionChanged(object sender, ConnectionStrategy.ConnectionChangedEventArgs args)
+	private void ConnectionChanged(object sender, AbstractConnectionStrategy.ConnectionChangedEventArgs args)
 	{
 		lock (_LockLocal)
 		{
 			_RowsAffected = 0L;
 			QueryExecutionStartTime = null;
 			QueryExecutionEndTime = null;
-			QueryExecutionSettingsApplied = false;
+			LiveSettingsApplied = false;
 			IDbConnection previousConnection = args.PreviousConnection;
 			IDbConnection connection = ConnectionStrategy.Connection;
-			QueryExecutionSettings.Execution.ExecutionTimeout = ConnectionStrategy.GetExecutionTimeout();
+			LiveSettings.EditorExecutionTimeout = ConnectionStrategy.GetExecutionTimeout();
 			if (previousConnection != null)
 			{
 				if (previousConnection is DbConnection dbConnection)
@@ -745,7 +722,7 @@ public sealed class QueryManager : IDisposable
 			}
 
 			SetStateForConnection(connection);
-			OnStatusChanged(new StatusChangedEventArgs(StatusType.Connection));
+			OnStatusChanged(new StatusChangedEventArgs(EnStatusType.Connection));
 		}
 	}
 

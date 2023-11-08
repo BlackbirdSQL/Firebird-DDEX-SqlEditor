@@ -17,7 +17,7 @@ namespace BlackbirdSql.Core.Model;
 /// Handles Trigger / Generator linkage parsing specific tasks utilizing BlackbirdDsl.<see cref="Parser"/>.
 /// </summary>
 // =========================================================================================================
-internal abstract class AbstruseLinkageParser
+public abstract class AbstruseLinkageParser : IDisposable
 {
 
 
@@ -27,7 +27,9 @@ internal abstract class AbstruseLinkageParser
 
 
 
-	protected static object _LockGlobal = new object();
+	// A static class lock
+	protected static object _LockClass = new object();
+	// A protected 'this' object lock
 	protected object _LockObject = new();
 
 	// ---------------------------------------------------------------------------------
@@ -72,9 +74,14 @@ internal abstract class AbstruseLinkageParser
 	/// <param name="connection"></param>
 	protected AbstruseLinkageParser()
 	{
-		ThreadHelper.ThrowIfNotOnUIThread();
 		// Tracer.Trace(typeof(AbstruseLinkageParser), $"StaticId:[{"0000"}] AbstruseLinkageParser(FbConnection)");
 	}
+
+
+
+	public abstract void Dispose();
+
+	protected abstract bool Dispose(bool disposing);
 
 
 	#endregion Constructors / Destructors

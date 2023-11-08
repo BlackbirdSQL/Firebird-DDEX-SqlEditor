@@ -21,17 +21,17 @@ public class ExportableAttribute : ExportAttribute, IBExportableMetadata, IBStan
 
 	public string Id { get; private set; }
 
-	public string DisplayName { get; private set; }
+	public string DisplayMember { get; private set; }
 
 	public int Priority { get; private set; }
 
-	public ExportableAttribute(string engineProduct, EnEngineType engineType, Type type, string id, int priority = 0, string displayName = null)
+	public ExportableAttribute(string engineProduct, EnEngineType engineType, Type type, string id, int priority = 0, string displayMember = null)
 		: base(type)
 	{
 		EngineProduct = engineProduct;
 		EngineType = engineType;
 		Id = id;
-		DisplayName = displayName;
+		DisplayMember = displayMember;
 		Priority = priority;
 	}
 

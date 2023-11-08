@@ -21,12 +21,11 @@ public interface IBGlobalsAgent
 
 	IBAsyncPackage DdexPackage { get; }
 
-
-	bool ShowDiagramPane { get; }
+	string GlobalsKey { get; }
 
 	bool ValidateConfig { get; }
 
-	bool PeristentValidation { get; }
+	bool PersistentValidation { get; }
 
 	bool ValidateEdmx { get; }
 
@@ -63,8 +62,6 @@ public interface IBGlobalsAgent
 	bool IsUpdatedEdmxsStatus(Project project);
 
 	bool SetFlagStatus(Globals globals, int flag, bool enabled, int flag2 = 0, bool enabled2 = false);
-
-	void UpdatePackageGlobals(GlobalEventArgs e);
 
 }
 

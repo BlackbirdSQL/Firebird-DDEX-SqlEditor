@@ -1,76 +1,261 @@
 ﻿
 using System;
+using System.ComponentModel;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using FirebirdSql.Data.FirebirdClient;
 
 namespace BlackbirdSql.Core.Ctl;
 
-
+/// <summary>
+/// A Describer is a detailed description of a property descriptor as
+/// defined in the Firebird csb, or an alias for properties used outside
+/// of the csb, or a nova external property that is not used to create
+/// an actual connection.
+/// </summary>
 public class Describer
 {
-	private string _Parameter;
+	private string _ConnectionParameter;
+	public static PropertyDescriptorCollection _Descriptors = null;
 
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the property descriptor collection for the current connection string.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected static PropertyDescriptorCollection Descriptors
+	{
+		get
+		{
+			return _Descriptors ??= TypeDescriptor.GetProperties(typeof(FbConnectionStringBuilder));
+		}
+	}
+
+
+
+	/// <summary>
+	/// The TitleCased property name as defined in the Firebird csb or
+	/// or a title-cased nova name for external properties.
+	/// If ConnectionParameter is not null and does not match Name, then
+	/// Name is considered a synonym of ConnectionParameter.
+	/// </summary>
 	public string Name { get; set; }
+
+	/// <summary>
+	/// The property's system type.
+	/// </summary>
 	public Type PropertyType { get; set; }
+
+	/// <summary>
+	/// The property's system data type.
+	/// </summary>
+	public Type DataType => PropertyType.IsSubclassOf(typeof(Enum))
+				? typeof(int) : PropertyType;
+
+	/// <summary>
+	/// The property default value. For properties where the default value
+	/// must be determined at runtime, for strings use null and for
+	/// cardinals use int.MinValue.
+	/// </summary>
 	public object DefaultValue { get; set; }
-	public bool IsParameter { get; set; }
+
+	/// <summary>
+	/// True if this describer represents a Firebird connection property/parameter.
+	/// If PropertyName is not null than the describer defined by it's Name
+	/// is a pseudonym for PropertyNanme.
+	/// </summary>
+	public bool IsConnectionParameter { get; set; }
+
+	/// <summary>
+	/// Returns false if the describer is a connection property/parameter and appears in
+	/// connection dialog front-ends (ie. a basic connection property/parameter) else
+	/// true in all other cases.
+	/// </summary>
 	public bool IsAdvanced { get; set; }
+
+	/// <summary>
+	/// Returns false if the descripber is a secure value else false.
+	/// </summary>
 	public bool IsPublic { get; set; }
+
+	/// <summary>
+	/// Returns true if the describer represents a connection property/parameter and is required.
+	/// </summary>
 	public bool IsMandatory { get; set; }
+
+	/// <summary>
+	/// Determines if changes to the underlying connection property/parameter value will produce
+	/// differing results from the database. For example UserID and NoDatabaseTriggers
+	/// are equivalency properties whereas PacketSize is not.
+	/// </summary>
 	public bool IsEquivalency { get; set; }
 
 
 	/// <summary>
-	/// The Parameter name else the Descriptor Name if the Parameter
-	/// field is null. Returns null if the Descriptor is not a Parameter.
+	/// The ConnectionParameter name else the Descriptor Name if ConnectionParameter
+	/// is null. Returns null if the Descriptor is not a connection property/parameter.
 	/// </summary>
-	public string DerivedParameter
+	public string DerivedConnectionParameter
 	{
 		get
 		{
-			if (!IsParameter)
+			if (!IsConnectionParameter)
 				return null;
 
-			if (_Parameter != null)
-				return _Parameter;
+			if (_ConnectionParameter != null)
+				return _ConnectionParameter;
 
 			return Name.ToLower();
 		}
 	}
 
-	public bool IsPublicMandatory
+
+	public PropertyDescriptor Descriptor => ConnectionParameter == null ? null : Descriptors.Find(ConnectionParameter, true);
+
+
+	public string DisplayName
 	{
 		get
 		{
-			return IsMandatory && Name != "Password";
+			if (!IsConnectionParameter)
+				return null;
+
+			Type csbType = typeof(FbConnectionStringBuilder);
+
+			PropertyInfo pinfo = csbType.GetProperty(Name);
+
+			if (pinfo == null)
+			{
+				ArgumentNullException ex = new ArgumentNullException($"Property {Name} not found in csb.");
+				Diag.Dug(ex);
+				return null;
+			}
+
+			DisplayNameAttribute attr = pinfo.GetCustomAttribute<DisplayNameAttribute>();
+			if (attr == null)
+			{
+				ArgumentNullException ex = new ArgumentNullException($"Property {Name} DisplayNameAttribute not found in csb.");
+				Diag.Dug(ex);
+				return null;
+			}
+
+			return attr.DisplayName;
 		}
+	}
+
+	/// <summary>
+	/// Returns true is this describer is a connection property/parameter and is a mandatory
+	/// property and is a public property.
+	/// </summary>
+	public bool IsPublicMandatory => IsMandatory && !IsPublic;
+
+
+	/// <summary>
+	/// The connection property/parameter name as defined in the Firebird csb. If ConnectionParameter
+	/// is not null and does not match the Descriptor Name, then the Descriptor Name is
+	/// considered a synonym of ConnectionParameter.
+	/// </summary>
+	public string ConnectionParameter
+	{
+		get { return _ConnectionParameter; }
+		set { _ConnectionParameter = value; }
+	}
+
+	/// <summary>
+	/// Shortened .ctor.
+	/// </summary>
+	/// <param name="name">
+	/// The TitleCased property name as defined in the Firebird csb or
+	/// or a title-cased nova name for external properties.
+	/// If ConnectionParameter is not null and does not match Name, then
+	/// Name is considered a synonym of ConnectionParameter.
+	/// </param>
+	/// <param name="propertyType">The property's system type.</param>
+	/// <param name="defaultValue">
+	/// The property default value. For properties where the default value
+	/// must be determined at runtime, for strings use null and for
+	/// cardinals use int.MinValue.
+	/// </param>
+	/// <param name="isConnectionProperty">
+	/// True if this describer represents a Firebird connection property/parameter.
+	/// If PropertyName is not null than the describer defined by it's Name
+	/// is a pseudonym for PropertyNanme.
+	/// </param>
+	/// <param name="isAdvanced">
+	/// false if the describer is a connection property/parameter and appears in
+	/// connection dialog front-ends (ie. a basic connection property/parameter) else
+	/// true in all other cases.
+	/// </param>
+	/// <param name="isPublic">
+	/// false if the descripber is a secure value else false.
+	/// </param>
+	/// <param name="isMandatory">
+	/// true if the describer represents a connection property/parameter and is required.
+	/// </param>
+	/// <param name="isEquivalency">
+	/// Determines if changes to the underlying connection property/parameter value will produce
+	/// differing results from the database. For example UserID and NoDatabaseTriggers
+	/// are equivalency properties whereas PacketSize is not.
+	/// </param>
+	public Describer(string name, Type propertyType, object defaultValue = null, bool isConnectionProperty = false,
+		bool isAdvanced = true, bool isPublic = true, bool isMandatory = false, bool isEquivalency = false)
+		: this(name, null, propertyType, defaultValue, isConnectionProperty, isAdvanced, isPublic, isMandatory, isEquivalency)
+	{
 	}
 
 
 	/// <summary>
-	/// The stored Parameter name. If Parameter is not null then the Descriptor
-	/// Name is considered a synonym of Parameter.
+	/// Full .ctor.
 	/// </summary>
-	public string Parameter
-	{
-		get { return _Parameter; }
-		set { _Parameter = value; }
-	}
-
-
-	public Describer(string name, Type propertyType, object defaultValue = null, bool isParameter = false,
-		bool isAdvanced = true, bool isPublic = true, bool isMandatory = false, bool isEquivalency = false)
-		: this(name, null, propertyType, defaultValue, isParameter, isAdvanced, isPublic, isMandatory, isEquivalency)
-	{
-	}
-
-	public Describer(string name, string parameter, Type propertyType, object defaultValue = null,
-		bool isParameter = false, bool isAdvanced = true, bool isPublic = true, bool isMandatory = false,
+	/// <param name="name">
+	/// The TitleCased property name as defined in the Firebird csb or
+	/// or a title-cased nova name for external properties.
+	/// If ConnectionParameter is not null and does not match Name, then
+	/// Name is considered a synonym of ConnectionParameter.
+	/// </param>
+	/// <param name="connectionParameter">
+	/// The connection property/parameter name as defined in the Firebird csb. If
+	/// ConnectionParameter is not null and does not match the Descriptor Name,
+	/// then the Descriptor Name is considered a synonym of ConnectionParameter.
+	/// </param>
+	/// <param name="propertyType">The property's system type.</param>
+	/// <param name="defaultValue">
+	/// The property default value. For properties where the default value
+	/// must be determined at runtime, for strings use null and for
+	/// cardinals use int.MinValue.
+	/// </param>
+	/// <param name="isConnectionProperty">
+	/// True if this describer represents a Firebird connection property/parameter.
+	/// If PropertyName is not null than the describer defined by it's Name
+	/// is a pseudonym for PropertyNanme.
+	/// </param>
+	/// <param name="isAdvanced">
+	/// false if the describer is a connection property/parameter and appears in
+	/// connection dialog front-ends (ie. a basic cconnection property/parameter) else
+	/// true in all other cases.
+	/// </param>
+	/// <param name="isPublic">
+	/// false if the descripber is a secure value else false.
+	/// </param>
+	/// <param name="isMandatory">
+	/// Returns true if the describer represents a connection property/parameter and is required.
+	/// </param>
+	/// <param name="isEquivalency">
+	/// Determines if changes to the underlying connection property value will produce
+	/// differing results from the database. For example UserID and NoDatabaseTriggers
+	/// are equivalency properties whereas PacketSize is not.
+	/// </param>
+	public Describer(string name, string connectionParameter, Type propertyType, object defaultValue = null,
+		bool isConnectionProperty = false, bool isAdvanced = true, bool isPublic = true, bool isMandatory = false,
 		bool isEquivalency = false)
 	{
 		Name = name;
-		_Parameter = parameter;
+		_ConnectionParameter = connectionParameter;
 		PropertyType = propertyType;
 		DefaultValue = defaultValue;
-		IsParameter = isParameter;
+		IsConnectionParameter = isConnectionProperty;
 		IsAdvanced = isAdvanced;
 		IsPublic = isPublic;
 		IsMandatory = isMandatory;
@@ -81,19 +266,21 @@ public class Describer
 	/// <summary>
 	/// Checks if this descriptor is a parameter and if true then checks if
 	/// it's parameter field or name matches the given parameter name.
+	/// Used to locate a describer in a DesciberDictionary that can be used
+	/// as a connection property/parameter.
 	/// </summary>
-	public bool ParameterMatches(string parameter)
+	public bool MatchesConnectionProperty(string connectionParameter)
 	{
-		return IsParameter && SynonymMatches(parameter);
+		return IsConnectionParameter && SynonymMatches(connectionParameter);
 	}
 
 	/// <summary>
-	/// Checks if this descriptor is a parameter and if true then checks if
-	/// it's parameter field or name matches the given parameter name.
+	/// Checks if this descriptor is a connection property/parameter and if true
+	/// then checks if it's parameter field or name matches the given parameter name.
 	/// </summary>
 	public bool SynonymMatches(string synonym)
 	{
-		return _Parameter != null && _Parameter.Equals(synonym, StringComparison.OrdinalIgnoreCase)
+		return _ConnectionParameter != null && _ConnectionParameter.Equals(synonym, StringComparison.OrdinalIgnoreCase)
 				|| Name.Equals(synonym, StringComparison.OrdinalIgnoreCase);
 	}
 

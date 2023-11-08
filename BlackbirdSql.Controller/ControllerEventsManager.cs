@@ -4,7 +4,9 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,6 +26,9 @@ using VSLangProj;
 
 
 namespace BlackbirdSql.Controller;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 // =========================================================================================================
 //											ControllerEventsManager Class
@@ -92,9 +97,6 @@ public class ControllerEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	public override void Dispose()
 	{
-		// We should already be on UI thread. Callers must ensure this can never happen
-		ThreadHelper.ThrowIfNotOnUIThread();
-
 		// Controller.OnAfterDocumentWindowHideEvent -= OnAfterDocumentWindowHide;
 		// Controller.OnQueryCloseProjectEvent -= OnQueryCloseProject;
 		Controller.OnQueryCloseSolutionEvent -= OnQueryCloseSolution;
@@ -120,6 +122,13 @@ public class ControllerEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	public override void Initialize()
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		// Controller.OnAfterDocumentWindowHideEvent += OnAfterDocumentWindowHide;
 		// Controller.OnQueryCloseProjectEvent += OnQueryCloseProject;
 		Controller.OnQueryCloseSolutionEvent += OnQueryCloseSolution;
@@ -183,6 +192,8 @@ public class ControllerEventsManager : AbstractEventsManager
 	}
 
 
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Recursively makes calls to <see cref="RecursiveValidateProjectAsync"/>, which is
@@ -197,11 +208,8 @@ public class ControllerEventsManager : AbstractEventsManager
 			return true;
 
 
-		UpdateStatusBar("BlackbirdSql validating solution");
+		await Task.Run(() => UpdateStatusBar("BlackbirdSql validating solution"));
 
-
-		IVsTaskStatusCenterService tsc = await ServiceProvider.GetGlobalServiceAsync<SVsTaskStatusCenterService,
-			IVsTaskStatusCenterService>(swallowExceptions: false);
 
 		TaskHandlerOptions options = default;
 		options.Title = "BlackbirdSql Solution Validaton";
@@ -210,7 +218,7 @@ public class ControllerEventsManager : AbstractEventsManager
 		_ProgressData = default;
 		_ProgressData.CanBeCanceled = true;
 
-		_TaskHandler = tsc.PreRegister(options, _ProgressData);
+		_TaskHandler = Controller.StatusCenterService.PreRegister(options, _ProgressData);
 
 
 		_ValidationTokenSource?.Dispose();
@@ -323,8 +331,12 @@ public class ControllerEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	protected void RecursiveValidateProject(ProjectItems projectItems, bool validatingSolution)
 	{
-		// We should already be on UI thread. Callers must ensure this can never happen
-		ThreadHelper.ThrowIfNotOnUIThread();
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
 
 		foreach (ProjectItem projectItem in projectItems)
 		{
@@ -358,8 +370,12 @@ public class ControllerEventsManager : AbstractEventsManager
 		if (_TaskHandler != null && _TaskHandler.UserCancellation.IsCancellationRequested)
 			return false;
 
-		ThreadHelper.ThrowIfNotOnUIThread();
-
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
 
 		if (Kind(item.Kind) == "PhysicalFolder")
 		{
@@ -480,17 +496,12 @@ public class ControllerEventsManager : AbstractEventsManager
 				return;
 		}
 
-		// We should already be on UI thread. Callers must ensure this can never happen
-		try
+		if (!ThreadHelper.CheckAccess())
 		{
-			ThreadHelper.ThrowIfNotOnUIThread();
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw;
-		}
-
 
 		ProjectItem config = null;
 
@@ -685,15 +696,11 @@ public class ControllerEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	private ProjectItem GetAppConfigProjectItem(Project project, bool createIfNotFound = false)
 	{
-		// We should already be on UI thread. Callers must ensure this can never happen
-		try
+		if (!ThreadHelper.CheckAccess())
 		{
-			ThreadHelper.ThrowIfNotOnUIThread();
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return null;
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
 
 		ProjectItem config = null;
@@ -759,7 +766,12 @@ public class ControllerEventsManager : AbstractEventsManager
 				return false;
 		}
 
-		ThreadHelper.ThrowIfNotOnUIThread();
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
 
 		if (Uig.IsConfiguredDbProviderStatus(config.ContainingProject))
 			return true;
@@ -838,10 +850,16 @@ public class ControllerEventsManager : AbstractEventsManager
 				return false;
 		}
 
-		ThreadHelper.ThrowIfNotOnUIThread();
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
 
 		if (Uig.IsConfiguredEFStatus(config.ContainingProject))
 			return true;
+
 
 		bool modified;
 
@@ -919,14 +937,11 @@ public class ControllerEventsManager : AbstractEventsManager
 				return false;
 		}
 
-		try
+		if (!ThreadHelper.CheckAccess())
 		{
-			ThreadHelper.ThrowIfNotOnUIThread();
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
 
 
@@ -982,9 +997,6 @@ public class ControllerEventsManager : AbstractEventsManager
 	/// <param name="dte"></param>
 	void AddReferenceAddedEventHandler(DTE dte)
 	{
-		// We should already be on UI thread. Callers must ensure this can never happen
-		ThreadHelper.ThrowIfNotOnUIThread();
-
 		try
 		{
 
@@ -1019,9 +1031,6 @@ public class ControllerEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	private void AddReferenceAddedEventHandler(VSProjectEvents events)
 	{
-		// We should already be on UI thread. Callers must ensure this can never happen
-		ThreadHelper.ThrowIfNotOnUIThread();
-
 		try
 		{
 			_ReferenceAddedEventHandler ??= new _dispReferencesEvents_ReferenceAddedEventHandler(OnReferenceAdded);
@@ -1215,14 +1224,11 @@ public class ControllerEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
 	{
-		try
+		if (!ThreadHelper.CheckAccess())
 		{
-			ThreadHelper.ThrowIfNotOnUIThread();
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return VSConstants.S_OK;
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
 
 		// Get the root (project) node. 
@@ -1260,9 +1266,6 @@ public class ControllerEventsManager : AbstractEventsManager
 	public int OnQueryCloseSolution(object pUnkReserved, ref int pfCancel)
 	{
 		_ValidationTokenSource?.Cancel();
-
-		ThreadHelper.ThrowIfNotOnUIThread();
-
 
 		if (Uig.IsValidateFailedStatus)
 		{

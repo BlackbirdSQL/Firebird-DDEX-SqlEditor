@@ -2,6 +2,7 @@
 // Microsoft.VisualStudio.Data.Providers.Common.Host
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -21,6 +22,9 @@ using IServiceProvider = System.IServiceProvider;
 
 
 namespace BlackbirdSql.Core.Ctl;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 /// <summary>
 /// Editor related Host services.
@@ -45,13 +49,11 @@ public class Hostess : AbstractHostess
 	{
 		Tracer.Trace(GetType(), "Hostess.ActivateOrOpenVirtualDocument");
 
-		ThreadHelper.ThrowIfNotOnUIThread();
-
 		int result;
 
 		MonikerAgent moniker = new(node);
 		string source = MonikerAgent.GetDecoratedDdlSource(node, false);
-		string mkDocument = moniker.ToString();
+		string mkDocument = moniker.DocumentMoniker;
 		string path = moniker.ToPath(UserDataDirectory);
 		uint grfIDO = (uint)__VSIDOFLAGS.IDO_ActivateIfOpen;
 
@@ -93,6 +95,12 @@ public class Hostess : AbstractHostess
 			throw ex;
 		}
 
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
 
 		// Check if the document is already open.
 		try
@@ -252,7 +260,12 @@ public class Hostess : AbstractHostess
 	/// </summary>
 	protected int CreateDocDataFromText(Package package, Guid langGuid, string text, out IntPtr docData)
 	{
-		ThreadHelper.ThrowIfNotOnUIThread();
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
 
 		// Create a new IVsTextLines buffer.
 		Type persistDocDataType = typeof(IVsPersistDocData);
@@ -287,8 +300,6 @@ public class Hostess : AbstractHostess
 		string editorCaption, Guid editorType, string physicalView, Guid commandUIGuid, object documentView,
 		object documentData, int owningItemId, IVsUIHierarchy owningHierarchy, IOleServiceProvider serviceProvider)
 	{
-		ThreadHelper.ThrowIfNotOnUIThread();
-
 		IntPtr iUnknownForObject = Marshal.GetIUnknownForObject(documentView);
 		IntPtr iUnknownForObject2 = Marshal.GetIUnknownForObject(documentData);
 		try
@@ -300,6 +311,14 @@ public class Hostess : AbstractHostess
 				Diag.Dug(ex);
 				throw ex;
 			}
+
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			Native.WrapComCall(service.CreateDocumentWindow((uint)attributes, documentMoniker, owningHierarchy, (uint)owningItemId, iUnknownForObject, iUnknownForObject2, ref editorType, physicalView, ref commandUIGuid, serviceProvider, ownerCaption, editorCaption, null, out IVsWindowFrame ppWindowFrame));
 			return ppWindowFrame;
 		}

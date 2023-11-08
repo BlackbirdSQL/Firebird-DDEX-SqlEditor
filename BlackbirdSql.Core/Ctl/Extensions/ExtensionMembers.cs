@@ -36,48 +36,31 @@ static class ExtensionMembers
 			"\x00b2\x2078", "\x00b2\x2079"};
 
 
-	// ---------------------------------------------------------------------------------
+
 	/// <summary>
-	/// Converts a string to title case and strips out spaces. This provides a
-	/// readable/usable column name format for connection property descriptors.
+	/// Formats time span for display in an sql window statusbar.
 	/// </summary>
-	/// <param name="value"></param>
-	/// <returns>
-	/// The title case string without spaces else returns the original if the string
-	/// is null
-	/// </returns>
-	// ---------------------------------------------------------------------------------
-	public static string DescriptorCase(this string value)
-	{
-		if (string.IsNullOrEmpty(value))
-			return value;
-
-		return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(value).Replace(" ", "");
-	}
-
-	public static bool EmptyOrEqual(this string value1, string value2)
-	{
-		if (string.IsNullOrEmpty(value1) && string.IsNullOrEmpty(value2))
-		{
-			return true;
-		}
-
-		return value1 == value2;
-	}
-
-	public static string FormatForStatus(this TimeSpan value)
+	public static string FmtSqlStatus(this TimeSpan value)
 	{
 		return new TimeSpan(value.Days, value.Hours, value.Minutes, value.Seconds, 0).ToString();
 	}
 
-	public static string FormatForStatus(this long ticks)
+
+	/// <summary>
+	/// Formats time ticks for display in an sql window statusbar.
+	/// </summary>
+	public static string FmtSqlStatus(this long ticks)
 	{
 		TimeSpan value = new(ticks);
 
-		return value.FormatForStatus();
+		return value.FmtSqlStatus();
 	}
 
-	public static string FormatForStats(this TimeSpan value)
+
+	/// <summary>
+	/// Formats time span for display in sql statistics output.
+	/// </summary>
+	public static string FmtSqlStats(this TimeSpan value)
 	{
 		string empty = value.ToString();
 		if (!string.IsNullOrEmpty(empty))
@@ -97,21 +80,28 @@ static class ExtensionMembers
 		return empty;
 	}
 
-	public static string FormatForStats(this long ticks)
+	/// <summary>
+	/// Formats time span ticks for display in sql statistics output.
+	/// </summary>
+	public static string FmtSqlStats(this long ticks)
 	{
 		TimeSpan value = new(ticks);
 
-		return value.FormatForStats();
+		return value.FmtSqlStats();
 	}
 
-	public static (string, float) ByteSizeFormat(this long value, int decimalPlaces = 3)
+
+	/// <summary>
+	/// Format a long byte size down to it's byte unit by decimal places.
+	/// </summary>
+	public static (string, float) FmtByteSize(this long value, int decimalPlaces = 3)
 	{
 		string str;
 		float newValue;
 
 		if (value < 0)
 		{
-			(str, newValue) = (-value).ByteSizeFormat(decimalPlaces);
+			(str, newValue) = (-value).FmtByteSize(decimalPlaces);
 			str = "-" + str;
 			return (str, -newValue);
 		}
@@ -135,14 +125,18 @@ static class ExtensionMembers
 	}
 
 
-	public static (string, float) ByteSizeFormat(this float value, int decimalPlaces = 3)
+
+	/// <summary>
+	/// Format a float byte size down to it's byte unit by decimal places.
+	/// </summary>
+	public static (string, float) FmtByteSize(this float value, int decimalPlaces = 3)
 	{
 		string str;
 		float newValue;
 
 		if (value < 0)
 		{
-			(str, newValue) = (-value).ByteSizeFormat(decimalPlaces);
+			(str, newValue) = (-value).FmtByteSize(decimalPlaces);
 			str = "-" + str;
 			return (str, -newValue);
 		}
@@ -165,14 +159,18 @@ static class ExtensionMembers
 		return (string.Format("{0:n" + decimalPlaces + "} {1}", newValue, S_ByteSizeSuffixes[i]), newValue);
 	}
 
-	public static (string, float) SISizeFormat(this long value, int maxDigits = 4, int decimalPlaces = 3)
+
+	/// <summary>
+	/// Formats a long into superscipt exponential notation by decimal places
+	/// </summary>
+	public static (string, float) FmtExpSize(this long value, int maxDigits = 4, int decimalPlaces = 3)
 	{
 		string str;
 		float newValue;
 
 		if (value < 0)
 		{
-			(str, newValue) = (-value).SISizeFormat(maxDigits, decimalPlaces);
+			(str, newValue) = (-value).FmtExpSize(maxDigits, decimalPlaces);
 			str = "-" + str;
 			return (str, -newValue);
 		}
@@ -198,14 +196,17 @@ static class ExtensionMembers
 
 	}
 
-	public static (string, float) SISizeFormat(this float value, int maxDigits = 4, int decimalPlaces = 3)
+	/// <summary>
+	/// Formats a float into superscipt exponential notation by decimal places
+	/// </summary>
+	public static (string, float) FmtExpSize(this float value, int maxDigits = 4, int decimalPlaces = 3)
 	{
 		string str;
 		float newValue;
 
 		if (value < 0)
 		{
-			(str, newValue) = (-value).SISizeFormat(maxDigits, decimalPlaces);
+			(str, newValue) = (-value).FmtExpSize(maxDigits, decimalPlaces);
 			str = "-" + str;
 			return (str, -newValue);
 		}
@@ -232,6 +233,9 @@ static class ExtensionMembers
 	}
 
 
+	/// <summary>
+	/// Concatenates exception message with inner exception.
+	/// </summary>
 	internal static string GetExceptionMessage(this Exception ex)
 	{
 		string text = string.Empty;
@@ -253,8 +257,6 @@ static class ExtensionMembers
 	/// if it's underlying connection properties object implements the dynamic
 	/// <see cref="ICustomTypeDescriptor"/> interface.
 	/// </summary>
-	/// <param name="descriptor"></param>
-	/// <param name="connectionProperties"></param>
 	/// <returns>The descriptor's current value</returns>
 	// ---------------------------------------------------------------------------------
 	public static object GetValueX(this PropertyDescriptor descriptor, IVsDataConnectionProperties connectionProperties)
@@ -271,30 +273,10 @@ static class ExtensionMembers
 
 
 
-	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Performs an extended get of a connection descriptor's value
-	/// if it's underlying connection properties object implements the dynamic
-	/// <see cref="ICustomTypeDescriptor"/> interface.
+	/// Checks if an exception or aggregate exception or it's inner exception
+	/// is of a specific type.
 	/// </summary>
-	/// <param name="descriptor"></param>
-	/// <param name="connectionProperties"></param>
-	/// <returns>The descriptor's current value</returns>
-	// ---------------------------------------------------------------------------------
-	public static object GetValueX(this PropertyDescriptor descriptor, IBPropertyAgent connectionProperties)
-	{
-		object component = connectionProperties;
-
-		if (connectionProperties is ICustomTypeDescriptor customTypeDescriptor)
-		{
-			component = customTypeDescriptor.GetPropertyOwner(descriptor);
-		}
-
-		return descriptor.GetValue(component);
-	}
-
-
-
 	internal static bool IsExceptionType(this Exception ex, Type type)
 	{
 		if (ex == null)
@@ -317,54 +299,47 @@ static class ExtensionMembers
 	}
 
 
-	public static bool IsLocalAccount(this string account, StringComparison stringComparison = StringComparison.InvariantCultureIgnoreCase)
-	{
-		/*
-		if (!account.IsDataLakeLocalAccount(stringComparison))
-		{
-			return account.IsCosmosLocalAccount(stringComparison);
-		}
-		*/
-		return true;
-	}
-
-
+	/// <summary>
+	/// Checks if an exception is a Firebird exception.
+	/// </summary>
 	internal static bool IsSqlException(this Exception ex)
 	{
 		return ex.IsExceptionType(typeof(FbException));
 	}
 
-	public static string QuoteNameIfNeed(this string name)
-	{
-		if (!string.IsNullOrEmpty(name))
-		{
-			return "[" + name.Replace("]", "]]") + "]";
-		}
-
-		return string.Empty;
-	}
 
 
-
-	public static string Res(this string value, object arg0)
+	/// <summary>
+	/// Formats a resource string format string given arguments.
+	/// </summary>
+	public static string FmtRes(this string value, object arg0)
 	{
 		return string.Format(CultureInfo.CurrentCulture, value, arg0);
 
 	}
 
-	public static string Res(this string value, object arg0, object arg1)
+	/// <summary>
+	/// Formats a resource string format string given arguments.
+	/// </summary>
+	public static string FmtRes(this string value, object arg0, object arg1)
 	{
 		return string.Format(CultureInfo.CurrentCulture, value, arg0, arg1);
 
 	}
 
-	public static string Res(this string value, object arg0, object arg1, object arg2)
+	/// <summary>
+	/// Formats a resource string format string given arguments.
+	/// </summary>
+	public static string FmtRes(this string value, object arg0, object arg1, object arg2)
 	{
 		return string.Format(CultureInfo.CurrentCulture, value, arg0, arg1, arg2);
 
 	}
 
-	public static string Res(this string value, object arg0, object arg1, object arg2, object arg3)
+	/// <summary>
+	/// Formats a resource string format string given arguments.
+	/// </summary>
+	public static string FmtRes(this string value, object arg0, object arg1, object arg2, object arg3)
 	{
 		return string.Format(CultureInfo.CurrentCulture, value, arg0, arg1, arg2, arg3);
 
@@ -420,17 +395,31 @@ static class ExtensionMembers
 		return comboBox.SelectedIndex;
 	}
 
-	public static string SecureStringToString(this SecureString secureString)
+
+	/// <summary>
+	/// Converts a secure string to it's readable string.
+	/// </summary>
+	public static string ToReadable(this SecureString secureString)
 	{
-		return new string(secureString.SecureStringToCharArray());
+		return new string(secureString.ToCharArray());
 	}
 
-	public static SecureString StringToSecureString(this string unsecureString)
+
+	/// <summary>
+	/// Converts a string to a SecureString.
+	/// </summary>
+	/// <param name="unsecureString"></param>
+	/// <returns></returns>
+	public static SecureString ToSecure(this string unsecureString)
 	{
-		return unsecureString.ToCharArray().CharArrayToSecureString();
+		return unsecureString.ToCharArray().ToSecure();
 	}
 
-	private static char[] SecureStringToCharArray(this SecureString secureString)
+
+	/// <summary>
+	/// Converts a SecureString to a char array.
+	/// </summary>
+	private static char[] ToCharArray(this SecureString secureString)
 	{
 		char[] array = new char[secureString.Length];
 		IntPtr intPtr = Marshal.SecureStringToGlobalAllocUnicode(secureString);
@@ -446,21 +435,29 @@ static class ExtensionMembers
 	}
 
 
-	public static DateTime ToDateTime(this long timestamp)
+	/// <summary>
+	/// Converts a long timestamp to a UTC DateTime.
+	/// </summary>
+	public static DateTime ToUtcDateTime(this long timestamp)
 	{
 		DateTimeOffset offset = DateTimeOffset.FromUnixTimeMilliseconds(timestamp);
 		return offset.UtcDateTime;
 	}
 
 
-	public static long ToUnixMilliseconds(this DateTime value)
+	/// <summary>
+	/// Converts a DateTime to it's long unix milliseconds timestamp.
+	/// </summary>
+	public static long UnixMilliseconds(this DateTime value)
 	{
 		return ((DateTimeOffset)value).ToUnixTimeMilliseconds();
 	}
 
 
-
-	private static SecureString CharArrayToSecureString(this IEnumerable<char> charArray)
+	/// <summary>
+	/// Converts an IEnumerable char array to a SecureString.
+	/// </summary>
+	private static SecureString ToSecure(this IEnumerable<char> charArray)
 	{
 		SecureString secureString = new SecureString();
 		foreach (char item in charArray)
@@ -472,6 +469,10 @@ static class ExtensionMembers
 		return secureString;
 	}
 
+
+	/// <summary>
+	/// Gets the server name from a Firebird exception.
+	/// </summary>
 	public static string GetServer(this FbException exception)
 	{
 		if (exception == null)
@@ -483,6 +484,11 @@ static class ExtensionMembers
 		return null;
 	}
 
+
+
+	/// <summary>
+	/// Sets the server name in a Firebird exception.
+	/// </summary>
 	public static void SetServer(this FbException exception, string value)
 	{
 		if (exception == null)
@@ -491,6 +497,10 @@ static class ExtensionMembers
 		exception.Data["Server"] = value;
 	}
 
+
+	/// <summary>
+	/// Gets the error number from a Firebird exception.
+	/// </summary>
 	public static int GetNumber(this FbException exception)
 	{
 		if (exception == null)
@@ -502,6 +512,10 @@ static class ExtensionMembers
 		return exception.Errors.ElementAt(0).Number;
 	}
 
+
+	/// <summary>
+	/// Gets the class byte value from a Firebird exception.
+	/// </summary>
 	public static byte GetClass(this FbException exception)
 	{
 		if (exception == null)
@@ -513,6 +527,9 @@ static class ExtensionMembers
 		return exception.Errors.ElementAt(0).Class;
 	}
 
+	/// <summary>
+	/// Gets the source line number of a Firebird exception.
+	/// </summary>
 	public static int GetLineNumber(this FbException exception)
 	{
 		if (exception == null)
@@ -524,6 +541,10 @@ static class ExtensionMembers
 		return exception.Errors.ElementAt(0).LineNumber;
 	}
 
+
+	/// <summary>
+	/// Returns the sql exception state of a Firebird exception.
+	/// </summary>
 	public static string GetState(this FbException exception)
 	{
 		if (exception == null)
@@ -533,6 +554,9 @@ static class ExtensionMembers
 		return exception.SQLSTATE;
 	}
 
+	/// <summary>
+	/// Gets the method name of a Firebird excerption.
+	/// </summary>
 	public static string GetProcedure(this FbException exception)
 	{
 		if (exception == null)

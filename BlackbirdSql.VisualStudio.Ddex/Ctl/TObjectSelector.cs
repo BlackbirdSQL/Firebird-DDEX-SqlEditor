@@ -30,7 +30,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 /// Implementation of <see cref="IVsDataObjectSelector"/> enumerator interface
 /// </summary>
 // =========================================================================================================
-public class TObjectSelector : AdoDotNetObjectSelector
+public class TObjectSelector : TObjectSelectorTable
 {
 
 	// ---------------------------------------------------------------------------------
@@ -49,15 +49,15 @@ public class TObjectSelector : AdoDotNetObjectSelector
 	// =========================================================================================================
 
 
-	public TObjectSelector()
+	public TObjectSelector() : base()
 	{
-		Tracer.Trace(GetType(), "TObjectSelector.TObjectSelector");
+		Tracer.Trace(GetType(), "TObjectSelector.TObjectSelector()");
 	}
 
 
 	public TObjectSelector(IVsDataConnection connection) : base(connection)
 	{
-		Tracer.Trace(GetType(), "TObjectSelector.TObjectSelector(IVsDataConnection)");
+		Tracer.Trace(GetType(), "TObjectSelector(IVsDataConnection)");
 	}
 
 
@@ -84,7 +84,7 @@ public class TObjectSelector : AdoDotNetObjectSelector
 	protected override IVsDataReader SelectObjects(string typeName, object[] restrictions,
 		string[] properties, object[] parameters)
 	{
-		Tracer.Trace(GetType(), "TObjectSelector.SelectObjects", "typeName: {0}", typeName);
+		Tracer.Trace(GetType(), "SelectObjects()", "typeName: {0}", typeName);
 
 		try
 		{
@@ -125,7 +125,7 @@ public class TObjectSelector : AdoDotNetObjectSelector
 			Site.EnsureConnected();
 
 
-			schema = GetSchema(connection, typeName, restrictions, parameters);
+			schema = GetSchema(connection, typeName, ref restrictions, parameters);
 
 			reader = new AdoDotNetTableReader(schema);
 		}
@@ -145,113 +145,12 @@ public class TObjectSelector : AdoDotNetObjectSelector
 
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Override included for TABLE_TYPE hack
-	/// </summary>
-	/// <param name="typeName"></param>
-	/// <param name="parameters"></param>
-	/// <returns>The list of supported reestrictions</returns>
-	// ---------------------------------------------------------------------------------
-	protected override IList<string> GetSupportedRestrictions(string typeName, object[] parameters)
+	protected override DataTable GetSchema(DbConnection connection, string typeName, ref object[] restrictions, object[] parameters)
 	{
-		Tracer.Trace(GetType(), "TObjectSelector.GetSupportedRestrictions", "typeName: {0}", typeName);
+		Tracer.Trace(GetType(), "GetSchema()", "typeName: {0}", typeName);
 
-		IList<string> list;
-
-		try
-		{
-			list = base.GetSupportedRestrictions(typeName, parameters);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw;
-		}
-
-
-		// Table type hack
-		if (typeName == "Table" || typeName == "SystemTable")
-		{
-			IList<string> array = new string[list.Count + 1];
-
-			for (int i = 0; i < list.Count; i++)
-				array[i] = list[i];
-
-			array[list.Count] = "TABLE_TYPE";
-			list = array;
-		}
-		return list;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Override for debugging
-	/// </summary>
-	/// <param name="typeName"></param>
-	/// <param name="parameters"></param>
-	/// <returns></returns>
-	// ---------------------------------------------------------------------------------
-	protected override IList<string> GetRequiredRestrictions(string typeName, object[] parameters)
-	{
-		Tracer.Trace(GetType(), "TObjectSelector.GetRequiredRestrictions", "typeName: {0}", typeName);
-
-		IList<string> list;
-
-		try
-		{
-			list = base.GetRequiredRestrictions(typeName, parameters);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw;
-		}
-
-
-		return list;
-	}
-
-
-	#endregion Method Implementations
-
-
-
-	private DataTable GetSchema(DbConnection connection, string typeName, object[] restrictions, object[] parameters)
-	{
-		Tracer.Trace(GetType(), "TObjectSelector.GetSchema", "typeName: {0}", typeName);
-
-		if (CommandProperties.CommandNodeSystemType != CommandProperties.EnNodeSystemType.None
-			&& typeName == "Table" && parameters != null && parameters.Length > 0 && (string)parameters[0] == "Tables"
-			&& (restrictions == null || restrictions.Length < 3 || (restrictions.Length > 2 && restrictions[2] == null)))
-		{
-			if (restrictions == null || restrictions.Length < 4)
-			{
-				object[] objs = new object[4];
-
-				for (int i = 0; restrictions != null && i < restrictions.Length; i++)
-					objs[i] = restrictions[i];
-
-				restrictions = objs;
-			}
-			switch (CommandProperties.CommandNodeSystemType)
-			{
-				case CommandProperties.EnNodeSystemType.User:
-					restrictions[3] = "TABLE";
-					break;
-				case CommandProperties.EnNodeSystemType.System:
-					restrictions[3] = "SYSTEM TABLE";
-					break;
-				default:
-					restrictions[3] = null;
-					break;
-			}
-		}
-		
-		CommandProperties.CommandNodeSystemType = CommandProperties.EnNodeSystemType.None;
-
+		if (typeName == "Table")
+			base.GetSchema(connection, typeName, ref restrictions, parameters);
 
 
 		string[] array = null;
@@ -267,7 +166,15 @@ public class TObjectSelector : AdoDotNetObjectSelector
 
 		Tracer.Trace(GetType(), "TObjectSelector.GetSchema", "Ensuring connection typeName: {0}", typeName);
 
-		Site.EnsureConnected();
+		try
+		{
+			Site.EnsureConnected();
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
 
 
 		Tracer.Trace(GetType(), "TObjectSelector.GetSchema", "Calling GetSchema params.ToString, typeName: {0}", typeName);
@@ -290,5 +197,7 @@ public class TObjectSelector : AdoDotNetObjectSelector
 		return schema;
 	}
 
+
+	#endregion Method Implementations
 
 }

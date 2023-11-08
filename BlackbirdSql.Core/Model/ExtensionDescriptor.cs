@@ -17,7 +17,7 @@ internal class ExtensionDescriptor<T, TMetadata> where TMetadata : IBStandardMet
 
 	public string ExtensionId => Metadata.Id;
 
-	public string DisplayName => Metadata.DisplayName;
+	public string DisplayMember => Metadata.DisplayMember;
 
 	public string ExtensionAssemblyName => Extension.GetType().Module.Name;
 

@@ -1,10 +1,9 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Ctl.Events;
+using BlackbirdSql.Controller.Ctl.Config;
 using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Interfaces;
 
 namespace BlackbirdSql.Controller;
 
@@ -18,6 +17,45 @@ namespace BlackbirdSql.Controller;
 // =========================================================================================================
 internal class GlobalsAgent : AbstractGlobalsAgent
 {
+
+
+	// =========================================================================================================
+	#region Property Accessors - GlobalsAgent
+	// =========================================================================================================
+
+
+#if DEBUG
+	public override string GlobalsKey => !PersistentValidation ? C_TransitoryKey : C_PersistentKey;
+#else
+	public override string GlobalsKey => C_PersistentKey;
+#endif
+
+
+#if DEBUG
+	public override bool PersistentValidation => UserSettings.PersistentValidation;
+#else
+	public override bool PersistentValidation => true;
+#endif
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns a boolean indicating whether or not the app.config may be validated
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public override bool ValidateConfig => UserSettings.ValidateConfig;
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns a boolean indicating whether or not edmx files may be validated
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public override bool ValidateEdmx => UserSettings.ValidateEdmx;
+
+	#endregion Property Accessors
+
+
 
 
 	// =========================================================================================================
@@ -63,62 +101,5 @@ internal class GlobalsAgent : AbstractGlobalsAgent
 
 	#endregion Constructors / Destructors
 
-
-
-
-
-	// =========================================================================================================
-	#region Event handlers - GlobalsAgent
-	// =========================================================================================================
-
-
-	/// <summary>
-	/// Propogates option settings globally across the package and it's services.
-	/// This is the centralized method that is customized with any changes to the
-	/// option models.
-	/// </summary>
-	/// <param name="e"></param>
-	public override void UpdatePackageGlobals(GlobalEventArgs e)
-	{
-		if (e.Group == "General" || e.Group == null)
-		{
-			Diag.EnableDiagnostics = (bool)e["EnableDiagnostics"];
-			Diag.EnableTaskLog = (bool)e["EnableTaskLog"];
-
-			_ShowDiagramPane = (bool)e["ShowDiagramPane"];
-			_ValidateConfig = (bool)e["ValidateConfig"];
-			_ValidateEdmx = (bool)e["ValidateEdmx"];
-		}
-
-		if (e.Group == "Debug" || e.Group == null)
-		{
-			_PersistentValidation = (bool)e["PersistentValidation"];
-
-			Diag.EnableTrace = (bool)e["EnableTrace"];
-			Diag.EnableTracer = (bool)e["EnableTracer"];
-
-			Diag.EnableDiagnosticsLog = (bool)e["EnableDiagnosticsLog"];
-			Diag.LogFile = (string)e["LogFile"];
-
-			Diag.EnableFbDiagnostics = (bool)e["EnableFbDiagnostics"];
-			Diag.FbLogFile = (string)e["FbLogFile"];
-
-#if DEBUG
-			G_Persistent = _PersistentValidation;
-
-			if (!_PersistentValidation)
-				G_Key = C_TransitoryKey;
-			else
-				G_Key = C_PersistentKey;
-#else
-			G_Persistent = true;
-			G_Key = C_PersistentKey;
-#endif
-		}
-
-	}
-
-
-	#endregion Event handlers
 
 }

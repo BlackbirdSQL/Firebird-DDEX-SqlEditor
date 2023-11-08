@@ -59,8 +59,8 @@ public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
 			{
 				if (pvaIn != IntPtr.Zero)
 				{
-					string selectedDatasetKey = (string)Marshal.GetObjectForNativeVariant(pvaIn);
-					SetDatasetKey(auxiliaryDocDataForEditor, selectedDatasetKey);
+					string selectedDisplayMember = (string)Marshal.GetObjectForNativeVariant(pvaIn);
+					SetDatasetDisplayMember(auxiliaryDocDataForEditor, selectedDisplayMember);
 				}
 				else if (pvaOut != IntPtr.Zero)
 				{
@@ -73,11 +73,8 @@ public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
 					}
 					else
 					{
-						FbConnectionStringBuilder csb = new()
-						{
-							ConnectionString = connection.ConnectionString
-						};
-						empty = $"{csb.DataSource} ({Path.GetFileNameWithoutExtension(csb.Database)})";
+						MonikerAgent moniker = new(connection);
+						empty = moniker.DatasetKey;
 					}
 					Marshal.GetNativeVariantForObject(empty, pvaOut);
 				}
@@ -100,16 +97,16 @@ public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
 		return VSConstants.S_OK;
 	}
 
-	private void SetDatasetKey(AuxiliaryDocData docData, string selectedDatasetKey)
+	private void SetDatasetDisplayMember(AuxiliaryDocData docData, string selectedDisplayMember)
 	{
 		DbConnectionStringBuilder csb = docData.GetUserDataCsb();
 
 		IVsUserData userData = docData.GetIVsUserData();
-		if (userData != null && (csb == null || (string)csb["DatasetKey"] != selectedDatasetKey))
+		if (userData != null && (csb == null || (string)csb["DisplayMember"] != selectedDisplayMember))
 		{
 			try
 			{
-				csb = XmlParser.GetCsbFromDatabases(selectedDatasetKey);
+				csb = XmlParser.GetCsbFromDatabases(selectedDisplayMember);
 			}
 			catch (Exception ex)
 			{
@@ -118,8 +115,8 @@ public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
 		}
 
 
-		ConnectionStrategy connectionStrategy = docData.QryMgr.ConnectionStrategy;
-		connectionStrategy.SetDatasetKeyOnConnection(selectedDatasetKey, csb);
+		AbstractConnectionStrategy connectionStrategy = docData.QryMgr.ConnectionStrategy;
+		connectionStrategy.SetDatasetDisplayMemberOnConnection(selectedDisplayMember, csb);
 		// IDbConnection connection = connectionStrategy.Connection;
 
 		// if (connection != null && connection.State == ConnectionState.Open)
@@ -127,7 +124,7 @@ public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
 		if (userData != null)
 		{
 			Guid clsid = LibraryData.CLSID_PropertyDatabaseChanged;
-			Core.Native.ThrowOnFailure(userData.SetData(ref clsid, selectedDatasetKey), (string)null);
+			Core.Native.ThrowOnFailure(userData.SetData(ref clsid, selectedDisplayMember), (string)null);
 		}
 		else
 		{

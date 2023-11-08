@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Printing;
@@ -14,6 +15,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Windows.Forms;
+
 using BlackbirdSql.Common.Controls.Graphing.ComponentModel;
 using BlackbirdSql.Common.Controls.Graphing.Enums;
 using BlackbirdSql.Common.Controls.Graphing.Interfaces;
@@ -21,11 +23,18 @@ using BlackbirdSql.Common.Controls.Widgets;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Ctl.Exceptions;
 using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Core;
+
 using Microsoft.AnalysisServices.Graphing;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
+
 namespace BlackbirdSql.Common.Controls.Graphing;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 public class GraphControl : GraphCtrl
 {
@@ -640,6 +649,13 @@ public class GraphControl : GraphCtrl
 
 	protected override void WndProc(ref Message m)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		if (m.Msg == 522)
 		{
 			long num = (long)m.LParam & 0xFFFFFFFFu;

@@ -2,16 +2,24 @@
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Common.FormUtilities
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
+
 using BlackbirdSql.Common.Ctl;
+using BlackbirdSql.Core;
+
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
 namespace BlackbirdSql.Common.Controls;
 
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 public static class FormUtilities
 {
@@ -27,6 +35,13 @@ public static class FormUtilities
 
 	private static DialogResult ShowDialogOrForm(Form form, CommonDialog dialog)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		if (form != null && dialog != null)
 		{
 			throw new ArgumentException("one of either form or dialog needs to be null!");

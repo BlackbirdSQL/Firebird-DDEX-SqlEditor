@@ -5,12 +5,17 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Core;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
 
 namespace BlackbirdSql.Common.Ctl;
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "UIThread compliance is performed by applicable methods.")]
 
 public static class CommonVsUtilities
 {
@@ -28,6 +33,13 @@ public static class CommonVsUtilities
 
 	public static DialogResult ShowMessageBoxEx(string title, string text, string helpKeyword, MessageBoxButtons buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcon icon)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(ex);
+			throw ex;
+		}
+
 		_marshalingControl ??= new Control();
 		if (_marshalingControl.InvokeRequired)
 		{
@@ -122,6 +134,13 @@ public static class CommonVsUtilities
 
 	public static bool IsDirty(object docData)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(ex);
+			throw ex;
+		}
+
 		if (docData is IVsPersistDocData vsPersistDocData)
 		{
 			Native.ThrowOnFailure(vsPersistDocData.IsDocDataDirty(out var pfDirty));
@@ -132,6 +151,13 @@ public static class CommonVsUtilities
 
 	public static bool TryGetDocDataFromCookie(uint cookie, out object docData)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(ex);
+			throw ex;
+		}
+
 		docData = null;
 		bool result = false;
 		if (Package.GetGlobalService(typeof(IVsRunningDocumentTable)) is IVsRunningDocumentTable vsRunningDocumentTable)

@@ -37,7 +37,7 @@ public interface IBPropertyAgent : IDisposable, ICustomTypeDescriptor, IDataConn
 	// string[] AdvancedOptions { get; }
 
 
-	IBEventsChannel Channel { get; }
+	IBEventsChannel Channel { get; set; }
 
 	DbConnection DataConnection { get; }
 
@@ -51,13 +51,13 @@ public interface IBPropertyAgent : IDisposable, ICustomTypeDescriptor, IDataConn
 
 	DescriberDictionary Describers { get; }
 
-	string Dataset { get; }
+	string DatasetKey { get; }
 
 
 	/// <summary>
 	/// The display name of the IBPropertyAgent instance.
 	/// </summary>
-	string DisplayName { get; set; }
+	string DisplayMember { get; set; }
 
 
 	/// <summary>
@@ -145,6 +145,7 @@ public interface IBPropertyAgent : IDisposable, ICustomTypeDescriptor, IDataConn
 	string GetPropertyTypeName(string name);
 
 	(Version, bool) GetServerVersion(IDbConnection connection);
+
 
 	(IBIconType, bool) GetSet_Icon();
 

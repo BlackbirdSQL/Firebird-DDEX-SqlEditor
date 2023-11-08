@@ -15,7 +15,7 @@ using BlackbirdSql.Common.Controls.Interfaces;
 // namespace Microsoft.SqlServer.Management.UI.Grid
 namespace BlackbirdSql.Common.Controls.Grid
 {
-	public class GridTextColumn : GridColumn
+	public class GridTextColumn : AbstractGridColumn
 	{
 		protected bool m_bVertical;
 
@@ -42,7 +42,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 			}
 		}
 
-		public override void DrawCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IGridStorage storage, long nRowIndex)
+		public override void DrawCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex)
 		{
 			g.FillRectangle(bkBrush, rect);
 			rect.Inflate(-CELL_CONTENT_OFFSET, 0);
@@ -59,7 +59,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 			}
 		}
 
-		public override void PrintCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IGridStorage storage, long nRowIndex)
+		public override void PrintCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex)
 		{
 			g.FillRectangle(bkBrush, rect.X - 1, rect.Y, rect.Width, rect.Height);
 			rect.Inflate(-CELL_CONTENT_OFFSET, 0);
@@ -76,7 +76,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 			}
 		}
 
-		public override string GetAccessibleValue(long nRowIndex, IGridStorage storage)
+		public override string GetAccessibleValue(long nRowIndex, IBGridStorage storage)
 		{
 			return storage.GetCellDataAsString(nRowIndex, m_myColumnIndex);
 		}
@@ -100,7 +100,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 			}
 		}
 
-		private void DrawTextStringForVerticalFonts(Graphics g, SolidBrush textBrush, Font textFont, Rectangle rect, IGridStorage storage, long nRowIndex, bool useGdiPlus)
+		private void DrawTextStringForVerticalFonts(Graphics g, SolidBrush textBrush, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex, bool useGdiPlus)
 		{
 			using Matrix transform = new Matrix(0f, -1f, 1f, 0f, rect.X - rect.Y, rect.X + rect.Y + rect.Height);
 			new Rectangle(rect.X, rect.Y, rect.Height, rect.Width);

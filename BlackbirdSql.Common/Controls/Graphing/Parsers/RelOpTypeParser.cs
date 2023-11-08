@@ -12,7 +12,7 @@ using BlackbirdSql.Common.Properties;
 
 namespace BlackbirdSql.Common.Controls.Graphing.Parsers;
 
-internal sealed class RelOpTypeParser : XmlPlanParser
+internal sealed class RelOpTypeParser : AbstractXmlPlanParser
 {
 	private const string C_OPERATION_INDEX_DELETE = "IndexDelete";
 
@@ -61,7 +61,7 @@ internal sealed class RelOpTypeParser : XmlPlanParser
 
 	public override Node GetCurrentNode(object item, object parentItem, Node parentNode, NodeBuilderContext context)
 	{
-		return XmlPlanParser.NewNode(context);
+		return AbstractXmlPlanParser.NewNode(context);
 	}
 
 	public override IEnumerable GetChildren(object parsedItem)

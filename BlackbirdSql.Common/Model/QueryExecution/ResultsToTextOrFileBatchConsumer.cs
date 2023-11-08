@@ -181,7 +181,7 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 		};
 	}
 
-	public ResultsToTextOrFileBatchConsumer(ISqlQueryExecutionHandler resultsControl)
+	public ResultsToTextOrFileBatchConsumer(IBSqlQueryExecutionHandler resultsControl)
 		: base(resultsControl)
 	{
 		Tracer.Trace(GetType(), "ResultsToTextOrFileBatchConsumer.ResultsToTextOrFileBatchConsumer", "", null);
@@ -206,8 +206,9 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 			OutputColumnNames();
 		}
 		_numOfColumnsInCurRS = _curResultSet.ColumnNames.Count;
-		_curResultSet.StartRetrievingData(_MaxCharsPerColumn, _ResultsControl.ResultsSettings.MaxCharsPerColumnForXml);
-		Tracer.Trace(GetType(), Tracer.Level.Information, "ResultsToTextOrFileBatchConsumer.OnNewResultSet", "returning");
+		// per column text max chars.
+		_curResultSet.StartRetrievingData(_MaxCharsPerColumn, _ResultsControl.SqlExecutionOptions.EditorResultsGridMaxCharsPerColumnXml);
+		Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ResultsToTextOrFileBatchConsumer.OnNewResultSet", "returning");
 	}
 
 	public override void OnFinishedProcessingResultSet(object sender, EventArgs args)
@@ -322,7 +323,7 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 			int num;
 			if (obj != null)
 			{
-				Tracer.Trace(GetType(), Tracer.Level.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: found hash entry of col {0}, type = {1}", i, text2);
+				Tracer.Trace(GetType(), Tracer.EnLevel.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: found hash entry of col {0}, type = {1}", i, text2);
 				num = (int)obj;
 			}
 			else
@@ -332,42 +333,42 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 					case "SYSTEM.STRING":
 					case "SYSTEM.DATA.SQLTYPES.SQLSTRING":
 					case "SYSTEM.OBJECT":
-						Tracer.Trace(GetType(), Tracer.Level.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign:  col {0} is String", i);
+						Tracer.Trace(GetType(), Tracer.EnLevel.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign:  col {0} is String", i);
 						num = (int)_curResultSet.GetSchemaRow(i)[C_ColumnSizeIndex];
 						break;
 					case "SYSTEM.BOOLEAN":
 					case "SYSTEM.DATA.SQLTYPES.SQLBOOLEAN":
-						Tracer.Trace(GetType(), Tracer.Level.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: col {0} is Boolean", i);
+						Tracer.Trace(GetType(), Tracer.EnLevel.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: col {0} is Boolean", i);
 						num = 5;
 						break;
 					case "SYSTEM.DATETIME":
 					case "SYSTEM.DATA.SQLTYPES.SQLDATETIME":
 						if (text3 == "DATE")
 						{
-							Tracer.Trace(GetType(), Tracer.Level.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: col {0} is Date", i);
+							Tracer.Trace(GetType(), Tracer.EnLevel.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: col {0} is Date", i);
 							num = "yyyy-MM-dd".Length;
 						}
 						else if (text3 == "DATETIME2")
 						{
-							Tracer.Trace(GetType(), Tracer.Level.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: col {0} is DateTime2", i);
+							Tracer.Trace(GetType(), Tracer.EnLevel.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: col {0} is DateTime2", i);
 							num = text.Length;
 						}
 						else
 						{
-							Tracer.Trace(GetType(), Tracer.Level.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: col {0} is DataTime", i);
+							Tracer.Trace(GetType(), Tracer.EnLevel.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: col {0} is DataTime", i);
 							num = "yyyy-MM-dd HH:mm:ss.fff".Length;
 						}
 						break;
 					default:
 						if (text3 == "TIME")
 						{
-							Tracer.Trace(GetType(), Tracer.Level.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: col {0} is Time", i);
+							Tracer.Trace(GetType(), Tracer.EnLevel.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: col {0} is Time", i);
 							num = 16;
 							break;
 						}
 						if (text3 == "DATETIMEOFFSET")
 						{
-							Tracer.Trace(GetType(), Tracer.Level.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: col {0} is DateTimeOffset", i);
+							Tracer.Trace(GetType(), Tracer.EnLevel.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: col {0} is DateTimeOffset", i);
 							num = 34;
 							break;
 						}
@@ -376,24 +377,24 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 							case "SYSTEM.BYTE[]":
 							case "SYSTEM.DATA.SQLTYPES.SQLBYTE[]":
 							case "SYSTEM.DATA.SQLTYPES.SQLBINARY":
-								Tracer.Trace(GetType(), Tracer.Level.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: col {0} is Byte[]", i);
+								Tracer.Trace(GetType(), Tracer.EnLevel.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: col {0} is Byte[]", i);
 								num = (int)_curResultSet.GetSchemaRow(i)[C_ColumnSizeIndex];
 								num = num != int.MaxValue ? num * C_ColumnSizeIndex + C_ColumnSizeIndex : _MaxCharsPerColumn;
 								break;
 							case "SYSTEM.GUID":
 							case "SYSTEM.DATA.SQLTYPES.SQLGUID":
-								Tracer.Trace(GetType(), Tracer.Level.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: col {0} is Guid", i);
+								Tracer.Trace(GetType(), Tracer.EnLevel.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: col {0} is Guid", i);
 								num = 36;
 								break;
 							default:
 								if (string.Compare(QEResultSet.SXmlTypeNameOnServer, text3, StringComparison.OrdinalIgnoreCase) == 0)
 								{
-									Tracer.Trace(GetType(), Tracer.Level.Information, "CreateColumnWidthsAndFormatStrings",				"ColumnAlign: col {0} is XML", i);
+									Tracer.Trace(GetType(), Tracer.EnLevel.Information, "CreateColumnWidthsAndFormatStrings",				"ColumnAlign: col {0} is XML", i);
 									num = (int)_curResultSet.GetSchemaRow(i)[C_ColumnSizeIndex];
 								}
 								else
 								{
-									Tracer.Trace(GetType(), Tracer.Level.Information, "CreateColumnWidthsAndFormatStrings",				"ColumnAlign: col {0} is unexpected type {1}", i, text2);
+									Tracer.Trace(GetType(), Tracer.EnLevel.Information, "CreateColumnWidthsAndFormatStrings",				"ColumnAlign: col {0} is unexpected type {1}", i, text2);
 									num = _MaxCharsPerColumn;
 								}
 								break;
@@ -401,16 +402,16 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 						break;
 				}
 			}
-			Tracer.Trace(GetType(), Tracer.Level.Information, "CreateColumnWidthsAndFormatStrings", "CreateColumnWidthsAndFormatStrings", "ColumnAlign: initial length for col {0} is {1}", i, num);
+			Tracer.Trace(GetType(), Tracer.EnLevel.Information, "CreateColumnWidthsAndFormatStrings", "CreateColumnWidthsAndFormatStrings", "ColumnAlign: initial length for col {0} is {1}", i, num);
 			int num2 = _curResultSet.ColumnNames[i].Length;
 			if (num < num2 && _bPrintColumnHeaders)
 			{
-				Tracer.Trace(GetType(), Tracer.Level.Warning, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: adjusting col {0} length for column name length", i);
+				Tracer.Trace(GetType(), Tracer.EnLevel.Warning, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: adjusting col {0} length for column name length", i);
 				num = num2;
 			}
 			if (num > _MaxCharsPerColumn)
 			{
-				Tracer.Trace(GetType(), Tracer.Level.Warning, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: adjusting col {0} length for max chars", i);
+				Tracer.Trace(GetType(), Tracer.EnLevel.Warning, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: adjusting col {0} length for max chars", i);
 				num = _MaxCharsPerColumn;
 				switch (text2)
 				{
@@ -423,10 +424,10 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 			}
 			if (num < 4)
 			{
-				Tracer.Trace(GetType(), Tracer.Level.Warning, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: adjusting col {0} length for NULL", i);
+				Tracer.Trace(GetType(), Tracer.EnLevel.Warning, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: adjusting col {0} length for NULL", i);
 				num = 4;
 			}
-			Tracer.Trace(GetType(), Tracer.Level.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: final length of col {0} is {1}", i, num);
+			Tracer.Trace(GetType(), Tracer.EnLevel.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: final length of col {0} is {1}", i, num);
 			_columnWidths[i] = num;
 			if (!_bRightAlignNumerics || _bRightAlignNumerics && !_numericsTypes.Contains(text2))
 			{
@@ -443,7 +444,7 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 			{
 				_columnsFormatCollection.Add("{0," + num + "}");
 			}
-			Tracer.Trace(GetType(), Tracer.Level.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: format string of col {0} is \"{1}\", m_bRightAlignNumerics = {2}", i, _columnsFormatCollection[i], _bRightAlignNumerics);
+			Tracer.Trace(GetType(), Tracer.EnLevel.Information, "CreateColumnWidthsAndFormatStrings", "ColumnAlign: format string of col {0} is \"{1}\", m_bRightAlignNumerics = {2}", i, _columnsFormatCollection[i], _bRightAlignNumerics);
 		}
 	}
 

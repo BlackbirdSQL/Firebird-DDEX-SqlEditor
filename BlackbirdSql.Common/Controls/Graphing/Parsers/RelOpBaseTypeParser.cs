@@ -6,7 +6,7 @@ using System.ComponentModel;
 
 namespace BlackbirdSql.Common.Controls.Graphing.Parsers;
 
-internal class RelOpBaseTypeParser : XmlPlanParser
+internal class RelOpBaseTypeParser : AbstractXmlPlanParser
 {
 	private static RelOpBaseTypeParser relOpBaseTypeParser;
 

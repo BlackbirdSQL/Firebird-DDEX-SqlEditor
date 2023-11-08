@@ -37,14 +37,37 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Include="Controls\ComponentModel\AbstractFolderNameEditor.cs" />
+	  <Compile Include="Controls\ComponentModel\AbstractFileNameEditor.cs" />
+	  <Compile Include="Controls\Interfaces\IBSettingsPage.cs" />
+	  <Compile Include="Controls\Events\GridItemValueChangedEventArgs.cs" />
+	  <Compile Include="Controls\Events\SelectedGridItemFocusEventArgs.cs" />
 	  <Compile Include="Controls\LinkageParserTaskHandler.cs" />
+	  <Compile Include="Ctl\AbstractPackageController.cs" />
+	  <Compile Include="Ctl\ComponentModel\AbstractGlobalizedRadioAttribute.cs" />
+	  <Compile Include="Ctl\ComponentModel\AutomationAttribute.cs" />
+	  <Compile Include="Ctl\ComponentModel\AdvancedDefaultValueAttribute.cs" />
+	  <Compile Include="Ctl\ComponentModel\ParametersAttribute.cs" />
+	  <Compile Include="Ctl\ComponentModel\LiteralRangeAttribute.cs" />
+	  <Compile Include="Ctl\ComponentModel\MinMaxIncrementAttribute.cs" />
 	  <Compile Include="Ctl\ComponentModel\AbstractBoolConverter.cs" />
+	  <Compile Include="Ctl\ComponentModel\DisplayOrderAttribute.cs" />
+	  <Compile Include="Ctl\ComponentModel\GlobalizedVerbTextAttribute.cs" />
+	  <Compile Include="Ctl\ComponentModel\AbstractUomConverter.cs" />
+	  <Compile Include="Ctl\ComponentModel\VsProvideOptionPageAttribute.cs" />
+	  <Compile Include="Ctl\ComponentModel\VerbSite.cs" />
+	  <Compile Include="Ctl\Enums\EnSqlOutputFormat.cs" />
+	  <Compile Include="Ctl\Enums\EnSqlOutputMode.cs" />
+	  <Compile Include="Ctl\Events\AutomationVerbEventHandler.cs" />
+	  <Compile Include="Ctl\Extensions\IBLiveSettings.cs" />
+	  <Compile Include="Ctl\Interfaces\IBUserSettings.cs" />
 	  <Compile Include="Model\AbstractLinkageParser.cs" />
 	  <Compile Include="Model\BinaryEncoding.cs" />
 	  <Compile Include="Model\Charset.cs" />
+	  <Compile Include="Model\Enums\EnBlobSubType.cs" />
 	  <Compile Include="Model\Enums\EnDbDataType.cs" />
 	  <Compile Include="Model\AbstruseLinkageParser.cs" />
-	  <Compile Include="Model\Interfaces\IBProviderObjectFactory.cs" />
+	  <Compile Include="Model\AbstractMonikerAgent.cs" />
 	  <Compile Include="Model\Interfaces\IBProviderSchemaFactory.cs" />
 	  <Compile Include="Model\LinkageParser.cs" />
 	  <Compile Include="Model\TypeHelper.cs" />
@@ -86,13 +109,11 @@
 	  <Compile Include="Ctl\Enums\EnSqlTraceId.cs" />
 	  <Compile Include="Ctl\Enums\EnUiTraceId.cs" />
 	  <Compile Include="Ctl\Enums\EnWinEventTracingLevel.cs" />
-	  <Compile Include="Ctl\Diagnostics\EtwProvider.cs" />
 	  <Compile Include="Ctl\Diagnostics\EventProviderVersionTwo.cs" />
 	  <Compile Include="Ctl\Interfaces\IBTrace.cs" />
 	  <Compile Include="Ctl\Interfaces\IBSqlTraceTelemetryProvider.cs" />
 	  <Compile Include="Ctl\Diagnostics\LogObject.cs" />
 	  <Compile Include="Ctl\Diagnostics\SqlEtwProvider.cs" />
-	  <Compile Include="Ctl\Diagnostics\SqlEventProvider.cs" />
 	  <Compile Include="Ctl\Diagnostics\SqlTracer.cs" />
 	  <Compile Include="Ctl\Diagnostics\Traceable.cs" />
 	  <Compile Include="Ctl\Diagnostics\AbstractTraceableBase.cs" />
@@ -121,7 +142,6 @@
 	  <Compile Include="Ctl\Extensions\XmlParser.cs" />
 	  <Compile Include="GlobalSuppressions.cs" />
 	  <Compile Include="Ctl\Interfaces\IBAsyncPackage.cs" />
-	  <Compile Include="Ctl\Interfaces\IBConnectionPropertiesProvider.cs" />
 	  <Compile Include="Ctl\Interfaces\IBDependencyManager.cs" />
 	  <Compile Include="Ctl\Interfaces\IBDesignerExplorerServices.cs" />
 	  <Compile Include="Ctl\Interfaces\IBDesignerOnlineServices.cs" />
@@ -132,8 +152,8 @@
 	  <Compile Include="Ctl\Interfaces\IBGlobalsAgent.cs" />
 	  <Compile Include="Ctl\Interfaces\IBIconsCollection.cs" />
 	  <Compile Include="Ctl\Interfaces\IBIconType.cs" />
-	  <Compile Include="Ctl\Interfaces\IBOptionModel.cs" />
-	  <Compile Include="Ctl\Interfaces\IBOptionModelPropertyWrapper.cs" />
+	  <Compile Include="Model\Interfaces\IBSettingsModel.cs" />
+	  <Compile Include="Ctl\Interfaces\IBSettingsModelPropertyWrapper.cs" />
 	  <Compile Include="Ctl\Interfaces\IBPackageController.cs" />
 	  <Compile Include="Ctl\Interfaces\IBPropertyAgent.cs" />
 	  <Compile Include="Ctl\Interfaces\IBServerDefinition.cs" />
@@ -151,10 +171,10 @@
 	  <Compile Include="Model\ModelPropertySet.cs" />
 	  <Compile Include="Model\MonikerAgent.cs" />
 	  <Compile Include="Model\UIConnectionInfo.cs" />
-	  <Compile Include="Ctl\Config\AbstractOptionModel.cs" />
-	  <Compile Include="Controls\Config\AbstractOptionPage.cs" />
+	  <Compile Include="Model\Config\AbstractSettingsModel.cs" />
+	  <Compile Include="Controls\Config\AbstractSettingsPage.cs" />
 	  <Compile Include="Ctl\Enums\EnNativeSettingsType.cs" />
-	  <Compile Include="Ctl\Config\OptionModelPropertyWrapper.cs" />
+	  <Compile Include="Ctl\Config\PropertyWrapper.cs" />
 	  <Compile Include="Ctl\ComponentModel\OverrideCollectionNameAttribute.cs" />
 	  <Compile Include="Ctl\ComponentModel\OverrideDataTypeAttribute.cs" />
 	  <Compile Include="Ctl\ComponentModel\OverridePropertyNameAttribute.cs" />
@@ -165,8 +185,8 @@
 	  <Compile Include="Ctl\AbstractEventsManager.cs" />
 	  <Compile Include="Ctl\AbstractGlobalsAgent.cs" />
 	  <Compile Include="Ctl\AbstractHostess.cs" />
-	  <Compile Include="Ctl\AbstractPackageController.cs" />
-	  <Compile Include="Ctl\Events\GlobalEventArgs.cs" />
+	  <Compile Include="Ctl\Config\UserSettings.cs" />
+	  <Compile Include="Ctl\Events\PropagateSettingsEventArgs.cs" />
 	  <Compile Include="Ctl\HashLog.cs" />
 	  <Compile Include="Ctl\Hostess.cs" />
 	  <Compile Include="Root\Cmd.cs" />
@@ -174,6 +194,7 @@
 	  <Compile Include="Ctl\HashHelpersEx.cs" />
 	  <Compile Include="Root\Native.cs" />
 	  <Compile Include="Root\StringUtils.cs" />
+	  <Compile Include="Root\UnsafeNative.cs" />
 	  <Compile Include="Root\VS.cs" />
 	  <Compile Include="Ctl\PublicDictionaryEnumerator.cs" />
 	  <Compile Include="SystemData.cs" />
@@ -233,6 +254,7 @@
 
 	<ItemGroup>
 	  <Reference Include="PresentationFramework" />
+	  <Reference Include="System.ComponentModel.DataAnnotations" />
 	  <Reference Include="System.Runtime.Caching" />
 	  <Reference Include="UIAutomationProvider" />
 	  <Reference Include="UIAutomationTypes" />

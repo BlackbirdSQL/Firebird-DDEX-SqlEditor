@@ -13,7 +13,7 @@ using BlackbirdSql.Core.Ctl.Diagnostics;
 namespace BlackbirdSql.Common.Model.QueryExecution;
 
 
-public sealed class QEStorageViewOnReader : AbstractStorageView, IQEStorageView, IStorageView, IDisposable
+public sealed class QEStorageViewOnReader : AbstractStorageView, IBQEStorageView, IBStorageView, IDisposable
 {
 	private readonly QEReaderDataStorage _QeReaderStorage;
 

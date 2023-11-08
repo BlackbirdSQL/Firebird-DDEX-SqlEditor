@@ -3,6 +3,7 @@
 
 using System;
 using System.ComponentModel.Design;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -15,6 +16,7 @@ using BlackbirdSql.Core.Ctl.Enums;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
@@ -23,6 +25,9 @@ using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 namespace BlackbirdSql.Common.Controls.ResultsPane
 {
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+		Justification = "Class is UIThread compliant.")]
+
 	public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 	{
 		protected TextResultsViewContol _TextViewCtl;
@@ -171,6 +176,14 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 		public override void Initialize(object sp)
 		{
 			Tracer.Trace(GetType(), "VSTextEditorTabPage.Initialize", "", null);
+
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			base.Initialize(sp);
 			if (_ClsidLanguageService != Guid.Empty)
 			{
@@ -253,6 +266,13 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		public int QueryStatus(ref Guid guidGroup, uint cmdId, OLECMD[] oleCmd, IntPtr oleText)
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			int num = TextViewCtl.QueryStatus(ref guidGroup, cmdId, oleCmd, oleText);
 
 			if (num == 0)
@@ -284,10 +304,18 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 		public int Exec(ref Guid guidGroup, uint nCmdId, uint nCmdExcept, IntPtr variantIn, IntPtr variantOut)
 		{
 			MenuCommand menuCommand = MenuService.FindCommand(new CommandID(guidGroup, (int)nCmdId));
+
 			if (menuCommand != null && guidGroup.Equals(LibraryData.CLSID_CommandSet))
 			{
 				menuCommand.Invoke();
 				return VSConstants.S_OK;
+			}
+
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
 			}
 
 			return _TextViewCtl.Exec(ref guidGroup, nCmdId, nCmdExcept, variantIn, variantOut);

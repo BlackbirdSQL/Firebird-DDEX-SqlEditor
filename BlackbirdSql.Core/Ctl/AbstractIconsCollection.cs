@@ -30,8 +30,9 @@ namespace BlackbirdSql.Core.Ctl;
 /// their object will be in the class's private _Icons list at the index position <code>Id - _Seed + 1</code>.
 /// </remarks>
 [EditorBrowsable(EditorBrowsableState.Never)]
-public abstract class AbstractIconsCollection
+public abstract class AbstractIconsCollection : IBIconsCollection
 {
+	// A protected 'this' object lock
 	protected object _LockObject = new();
 
 	private readonly Dictionary<IBIconType, Lazy<BitmapImage>> _IconsRef;

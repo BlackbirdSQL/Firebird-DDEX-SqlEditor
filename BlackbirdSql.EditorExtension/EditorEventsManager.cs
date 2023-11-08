@@ -2,10 +2,11 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Ctl.DataTools;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Interfaces;
@@ -17,12 +18,16 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+
 using static BlackbirdSql.Core.Ctl.CommandProviders.CommandProperties;
 using IOleUndoManager = Microsoft.VisualStudio.OLE.Interop.IOleUndoManager;
 using Native = BlackbirdSql.Core.Native;
 
 
 namespace BlackbirdSql.EditorExtension;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 // =========================================================================================================
 //										EditorEventsManager Class
@@ -150,7 +155,16 @@ public class EditorEventsManager : AbstractEditorEventsManager
 			object pvar = null;
 
 			if (CurrentDocumentFrame != null)
+			{
+				if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 				ErrorHandler.ThrowOnFailure(CurrentDocumentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out pvar));
+			}
 
 			return pvar;
 		}
@@ -164,7 +178,16 @@ public class EditorEventsManager : AbstractEditorEventsManager
 			object pvar = null;
 
 			if (CurrentDocumentFrame != null)
+			{
+				if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 				ErrorHandler.ThrowOnFailure(CurrentDocumentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out pvar));
+			}
 
 			return pvar;
 		}
@@ -178,7 +201,16 @@ public class EditorEventsManager : AbstractEditorEventsManager
 			object pvar = null;
 
 			if (CurrentWindowFrame != null)
+			{
+				if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 				ErrorHandler.ThrowOnFailure(CurrentWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out pvar));
+			}
 
 			return pvar;
 		}
@@ -265,7 +297,12 @@ public class EditorEventsManager : AbstractEditorEventsManager
 	// ---------------------------------------------------------------------------------
 	private int CleanupTemporarySqlItems(IVsUIHierarchy miscHierarchy)
 	{
-		ThreadHelper.ThrowIfNotOnUIThread();
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
 
 		bool deleted = false;
 		var itemid = VSConstants.VSITEMID_ROOT;
@@ -309,11 +346,17 @@ public class EditorEventsManager : AbstractEditorEventsManager
 
 	private bool GetUiContextValue(uint cookie)
 	{
-		SelectionMonitor.IsCmdUIContextActive(cookie, out var pfActive);
-		if (pfActive != 1)
+		if (!ThreadHelper.CheckAccess())
 		{
-			return false;
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
+
+		SelectionMonitor.IsCmdUIContextActive(cookie, out var pfActive);
+
+		if (pfActive != 1)
+			return false;
 
 		return true;
 	}
@@ -326,12 +369,15 @@ public class EditorEventsManager : AbstractEditorEventsManager
 	// ---------------------------------------------------------------------------------
 	private bool RemoveTemporarySqlItem(ProjectItem projectItem)
 	{
-		ThreadHelper.ThrowIfNotOnUIThread();
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
 
 		if (projectItem.FileCount == 0 || Kind(projectItem.Kind) != "MiscItem")
-		{
 			return false;
-		}
 
 		bool deleted = false;
 		// FileNames is 1 based indexing - How/Why??? - A VB team did this!
@@ -366,6 +412,13 @@ public class EditorEventsManager : AbstractEditorEventsManager
 
 	private void SetUiContextValue(uint cookie, bool value)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		SelectionMonitor.SetCmdUIContext(cookie, value ? 1 : 0);
 	}
 
@@ -374,6 +427,13 @@ public class EditorEventsManager : AbstractEditorEventsManager
 		int pfActive = 0;
 		if (SelectionMonitor != null)
 		{
+			if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 			ErrorHandler.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref commandContext, out var pdwCmdUICookie));
 			ErrorHandler.ThrowOnFailure(SelectionMonitor.IsCmdUIContextActive(pdwCmdUICookie, out pfActive));
 		}
@@ -390,6 +450,13 @@ public class EditorEventsManager : AbstractEditorEventsManager
 	// ---------------------------------------------------------------------------------
 	public override void Initialize()
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		Controller.OnAfterDocumentWindowHideEvent += OnAfterDocumentWindowHide;
 		Controller.OnAfterSaveEvent += OnAfterSave;
 		Controller.OnBeforeDocumentWindowShowEvent += OnBeforeDocumentWindowShow;
@@ -443,7 +510,7 @@ public class EditorEventsManager : AbstractEditorEventsManager
 
 	public bool HasAnyAuxiliaryDocData()
 	{
-		lock (Controller.PackageLock)
+		lock (Controller.LockGlobal)
 		{
 			return EditorPackage.DocDataEditors.Count > 0;
 		}
@@ -497,10 +564,14 @@ public class EditorEventsManager : AbstractEditorEventsManager
 
 	public int OnAfterDocumentWindowHide(uint docCookie, IVsWindowFrame pFrame)
 	{
-		ThreadHelper.ThrowIfNotOnUIThread();
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
 
-
-		lock (Controller.PackageLock)
+		lock (Controller.LockGlobal)
 		{
 
 			if (new RunningDocumentTable(EditorPackage).GetDocumentInfo(docCookie).IsDocumentInitialized
@@ -541,6 +612,13 @@ public class EditorEventsManager : AbstractEditorEventsManager
 
 	public int OnBeforeDocumentWindowShow(uint docCookie, int fFirstShow, IVsWindowFrame pFrame)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		if (new RunningDocumentTable(EditorPackage).GetDocumentInfo(docCookie).IsDocumentInitialized
 			&& Native.Succeeded(pFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar)))
 		{
@@ -600,6 +678,13 @@ public class EditorEventsManager : AbstractEditorEventsManager
 
 	public int OnElementValueChanged(uint elementid, object oldValue, object newValue)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		switch ((VSConstants.VSSELELEMID)elementid)
 		{
 			case VSConstants.VSSELELEMID.SEID_WindowFrame:
@@ -646,6 +731,13 @@ public class EditorEventsManager : AbstractEditorEventsManager
 
 	public int OnQueryCloseProject(IVsHierarchy hierarchy, int removing, ref int cancel)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		if (!Native.Succeeded(hierarchy.GetGuidProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_TypeGuid, out var pguid))
 			|| !(pguid == VSConstants.GUID_ItemType_VirtualFolder))
 		{
@@ -678,7 +770,8 @@ public class EditorEventsManager : AbstractEditorEventsManager
 	/// </summary>
 	public int OnNewQueryRequested(IVsDataViewHierarchy site, EnNodeSystemType nodeSystemType)
 	{
-		new QueryDesignerDocument(site).Show(nodeSystemType);
+		// This roadbloacks atm because of protection modfiers. TBC
+		// new QueryDesignerDocument(site).Show(nodeSystemType);
 		// host.QueryDesignerProviderTelemetry(qualityMetricProvider);
 		return VSConstants.S_OK;
 	}

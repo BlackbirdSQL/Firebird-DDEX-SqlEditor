@@ -16,18 +16,18 @@ using BlackbirdSql.Common.Ctl.Interfaces;
 namespace BlackbirdSql.Common.Model;
 
 
-public abstract class AbstractMemDataStorage : IMemDataStorage, IDataStorage, IDisposable
+public abstract class AbstractMemDataStorage : IBMemDataStorage, IBDataStorage, IDisposable
 {
 	protected ArrayList _ColumnsArray;
 
 	protected ArrayList _RowsArray;
 
-	public virtual IStorageView GetStorageView()
+	public virtual IBStorageView GetStorageView()
 	{
 		return new MemStorageView(this);
 	}
 
-	public ISortView GetSortView()
+	public IBSortView GetSortView()
 	{
 		return new SortView(GetStorageView());
 	}

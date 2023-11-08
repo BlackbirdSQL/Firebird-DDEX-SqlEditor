@@ -13,7 +13,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 {
 	public sealed class CaptureTracker
 	{
-		public enum DragOperation
+		public enum EnDragOperation
 		{
 			None,
 			DragReady,
@@ -56,7 +56,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 
 		private int m_selectionBlockIndex;
 
-		private DragOperation m_dragState;
+		private EnDragOperation m_dragState;
 
 		private GridDragImageListOperation m_dragOper;
 
@@ -288,7 +288,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 			}
 		}
 
-		public DragOperation DragState
+		public EnDragOperation DragState
 		{
 			get
 			{
@@ -425,7 +425,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 			m_mouseCapturePoint.X = -1;
 			m_mouseCapturePoint.Y = -1;
 			m_selectionBlockIndex = -1;
-			m_dragState = DragOperation.None;
+			m_dragState = EnDragOperation.None;
 			DragImageOperation = null;
 			m_headerDragY = -1;
 			m_colIndexToDragColAfter = NoColIndexToDragColAfter;

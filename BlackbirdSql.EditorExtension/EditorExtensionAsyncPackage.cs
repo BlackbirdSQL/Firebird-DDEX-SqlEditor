@@ -1,13 +1,13 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.SqlEditorPackage
-
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 using BlackbirdSql.Common;
 using BlackbirdSql.Common.Controls;
@@ -18,25 +18,24 @@ using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
-using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.EditorExtension.Controls.Config;
 using BlackbirdSql.EditorExtension.Ctl;
+using BlackbirdSql.EditorExtension.Ctl.Config;
+using BlackbirdSql.EditorExtension.Properties;
 using BlackbirdSql.Wpf.Controls;
 
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
-
-using static BlackbirdSql.Core.Ctl.CommandProviders.CommandProperties;
 
 using Cmd = BlackbirdSql.Common.Cmd;
 using MonikerAgent = BlackbirdSql.Core.Model.MonikerAgent;
@@ -63,38 +62,56 @@ namespace BlackbirdSql.EditorExtension;
 
 // [ProvideLoadKey("Standard", "##VERSION.MAJOR.MINOR.BUILD.REVISION##", "Microsoft SQL Server Data Tools - TSql Editor", "Microsoft Corporation", 101)]
 // [Guid(SystemData.PackageGuid)]
-[ProvideOptionPage(typeof(SqlResultsGeneralOptionsPage), "BlackbirdSql Editor", "Query Results", 14, 15, true)]
-[ProvideOptionPage(typeof(SqlResultsToTextOptionsPage), "BlackbirdSql Editor", "Results To Text", 14, 18, true)]
-[ProvideOptionPage(typeof(SqlResultsToGridOptionsPage), "BlackbirdSql Editor", "Results To Grid", 14, 19, true)]
-[ProvideOptionPage(typeof(SqlExecutionGeneralOptionsPage), "BlackbirdSql Editor", "Query Execution", 13, 15, true)]
-[ProvideOptionPage(typeof(SqlExecutionAdvancedOptionsPage), "BlackbirdSql Editor", "Advanced Query Execution", 13, 16, true)]
-[ProvideOptionPage(typeof(SqlExecutionAnsiOptionsPage), "BlackbirdSql Editor", "ANSI Query Execution", 13, 17, true)]
-[ProvideOptionPage(typeof(SqlEditorGeneralSettingsDialogPage), "BlackbirdSql Editor", "General", 11, 20, true)]
-[ProvideOptionPage(typeof(SqlEditorTabAndStatusBarSettingsDialogPage), "BlackbirdSql Editor", "Editor Tab and Status Bar", 11, 21, true)]
 
-[VsProvideEditorFactory(typeof(EditorFactoryWithoutEncoding), 111, false, DefaultName = "BlackbirdSql Editor",
+
+[VsProvideOptionPage(typeof(SettingsProvider.GeneralSettingsPage), SettingsProvider.CategoryName,
+	SettingsProvider.SubCategoryName, SettingsProvider.GeneralSettingsPageName, 300, 301, 321)]
+[VsProvideOptionPage(typeof(SettingsProvider.TabAndStatusBarSettingsPage), SettingsProvider.CategoryName,
+	SettingsProvider.SubCategoryName, SettingsProvider.TabAndStatusBarSettingsPageName, 300, 301, 322)]
+
+[VsProvideOptionPage(typeof(SettingsProvider.ExecutionSettingsPage), SettingsProvider.CategoryName,
+	SettingsProvider.SubCategoryName, SettingsProvider.ExecutionSettingsPageName,
+	SettingsProvider.ExecutionGeneralSettingsPageName, 300, 301, 323, 324)]
+[VsProvideOptionPage(typeof(SettingsProvider.ExecutionAdvancedSettingsPage), SettingsProvider.CategoryName,
+	SettingsProvider.SubCategoryName, SettingsProvider.ExecutionSettingsPageName,
+	SettingsProvider.ExecutionAdvancedSettingsPageName, 300, 301, 323, 325)]
+
+[VsProvideOptionPage(typeof(SettingsProvider.ResultsSettingsPage), SettingsProvider.CategoryName,
+	SettingsProvider.SubCategoryName, SettingsProvider.ResultsSettingsPageName,
+	SettingsProvider.ResultsGeneralSettingsPageName, 300, 301, 326, 327)]
+[VsProvideOptionPage(typeof(SettingsProvider.ResultsGridSettingsPage), SettingsProvider.CategoryName,
+	SettingsProvider.SubCategoryName, SettingsProvider.ResultsSettingsPageName,
+	SettingsProvider.ResultsGridSettingsPageName, 300, 301, 326, 328)]
+[VsProvideOptionPage(typeof(SettingsProvider.ResultsTextSettingsPage), SettingsProvider.CategoryName,
+	SettingsProvider.SubCategoryName, SettingsProvider.ResultsSettingsPageName,
+	SettingsProvider.ResultsTextSettingsPageName, 300, 301, 326, 329)]
+
+
+[VsProvideEditorFactory(typeof(EditorFactoryWithoutEncoding), 311, false, DefaultName = "BlackbirdSql Editor",
 	CommonPhysicalViewAttributes = (int)__VSPHYSICALVIEWATTRIBUTES.PVA_SupportsPreview,
 	TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
 [ProvideEditorExtension(typeof(EditorFactoryWithoutEncoding), MonikerAgent.C_SqlExtension, 110,
-	DefaultName = "BlackbirdSql Editor", NameResourceID = 111, RegisterFactory = true)]
+	DefaultName = "BlackbirdSql Editor", NameResourceID = 311, RegisterFactory = true)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithoutEncoding), VSConstants.LOGVIEWID.Debugging_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithoutEncoding), VSConstants.LOGVIEWID.Code_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithoutEncoding), VSConstants.LOGVIEWID.Designer_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithoutEncoding), VSConstants.LOGVIEWID.TextView_string)]
-[VsProvideFileExtensionMappingAttribute(typeof(EditorFactoryWithoutEncoding), "BlackbirdSql Editor", 111, 100)]
+[VsProvideFileExtensionMapping(typeof(EditorFactoryWithoutEncoding), "BlackbirdSql Editor", 311, 100)]
 
-[VsProvideEditorFactory(typeof(EditorFactoryWithEncoding), 112, false, DefaultName = "BlackbirdSql Editor with Encoding",
+[VsProvideEditorFactory(typeof(EditorFactoryWithEncoding), 312, false,
+	DefaultName = "BlackbirdSql Editor with Encoding",
 	CommonPhysicalViewAttributes = (int)__VSPHYSICALVIEWATTRIBUTES.PVA_SupportsPreview,
 	TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
 [ProvideEditorExtension(typeof(EditorFactoryWithEncoding), MonikerAgent.C_SqlExtension, 100,
-	DefaultName = "BlackbirdSql Editor with Encoding", NameResourceID = 112, RegisterFactory = true)]
+	DefaultName = "BlackbirdSql Editor with Encoding", NameResourceID = 312, RegisterFactory = true)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.Debugging_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.Code_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.Designer_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.TextView_string)]
-[VsProvideFileExtensionMappingAttribute(typeof(EditorFactoryWithEncoding), "BlackbirdSql Editor with Encoding", 112, 96)]
+[VsProvideFileExtensionMapping(typeof(EditorFactoryWithEncoding), "BlackbirdSql Editor with Encoding", 312, 96)]
 
-[VsProvideEditorFactory(typeof(SqlResultsEditorFactory), 113, false, DefaultName = "BlackbirdSql Results", CommonPhysicalViewAttributes = 0)]
+[VsProvideEditorFactory(typeof(SqlResultsEditorFactory), 313, false,
+	DefaultName = "BlackbirdSql Results", CommonPhysicalViewAttributes = 0)]
 [ProvideEditorLogicalView(typeof(SqlResultsEditorFactory), VSConstants.LOGVIEWID.Debugging_string)]
 [ProvideEditorLogicalView(typeof(SqlResultsEditorFactory), VSConstants.LOGVIEWID.Code_string)]
 [ProvideEditorLogicalView(typeof(SqlResultsEditorFactory), VSConstants.LOGVIEWID.Designer_string)]
@@ -114,6 +131,8 @@ namespace BlackbirdSql.EditorExtension;
 #region							EditorExtensionAsyncPackage Class Declaration
 // =========================================================================================================
 
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEditorPackage, IVsTextMarkerTypeProvider, Microsoft.VisualStudio.OLE.Interop.IServiceProvider, IVsFontAndColorDefaultsProvider, IVsBroadcastMessageEvents
 {
@@ -163,14 +182,6 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Accessor to this package's <see cref="IBLanguageService"/> else null.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public virtual IBLanguageService LanguageService => throw new NotImplementedException();
-
-
 	public override IBEventsManager EventsManager => _EventsManager ??= new EditorEventsManager(Controller);
 
 
@@ -192,7 +203,6 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 	// ---------------------------------------------------------------------------------
 	public EditorExtensionAsyncPackage() : base()
 	{
-		Tracer.Trace(GetType(), "ctor()", "", null);
 	}
 
 
@@ -208,7 +218,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 		{
 			if (_Instance == null)
 			{
-				NullReferenceException ex = new("Cannot instantiate EditorExtensionAsyncPackage from abstract ancestor");
+				NullReferenceException ex = new(Resources.ErrCannotInstantiateFromAbstractAncestor);
 				Diag.Dug(ex);
 				throw ex;
 			}
@@ -231,16 +241,17 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 			Tracer.Trace(GetType(), "Dispose()", "", null);
 
 
-			if (GetGlobalService(typeof(SVsShell)) is IVsShell vsShell)
+			if (ThreadHelper.CheckAccess() && GetGlobalService(typeof(SVsShell)) is IVsShell vsShell)
 			{
 				Native.ThrowOnFailure(vsShell.UnadviseBroadcastMessages(_VsBroadcastMessageEventsCookie));
 			}
 
 			_EventsManager?.Dispose();
 
+			if (!ThreadHelper.CheckAccess())
+				return;
 
-
-			if (Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(SProfferService)) is IProfferService profferService)
+			if (GetGlobalService(typeof(SProfferService)) is IProfferService profferService)
 			{
 				Native.ThrowOnFailure(profferService.RevokeService(_MarkerServiceCookie));
 				Native.ThrowOnFailure(profferService.RevokeService(_FontAndColorServiceCookie));
@@ -268,25 +279,6 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 	protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 	{
 		await base.InitializeAsync(cancellationToken, progress);
-
-		// Services.AddService(typeof(IBProviderObjectFactory), ServicesCreatorCallbackAsync, promote: true);
-
-		/*
-		_ = ((Action)delegate
-		{
-			ThreadHelper.Generic.Invoke(delegate
-			{
-				try
-				{
-					DemandLoadPackage("9A62B3CA-5BDF-47CB-A406-3CEB946F1DDF");
-				}
-				catch (Exception)
-				{
-				}
-			});
-		}).BeginInvoke(null, null);
-		*/
-
 	}
 
 
@@ -303,7 +295,6 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 		if (cancellationToken.IsCancellationRequested)
 			return;
 
-		// await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 		await base.FinalizeAsync(cancellationToken, progress);
 
 		if (await GetServiceAsync(typeof(IProfferService)) is not IProfferService obj)
@@ -500,13 +491,6 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 			OleMenuCommand oleMenuCommand3 = new OleMenuCommand(CycleToPreviousEditorTab, id3);
 			oleMenuCommand3.BeforeQueryStatus += EnableCommand;
 			oleMenuCommandService.AddCommand(oleMenuCommand3);
-			/*
-			CommandID id4 = new CommandID(clsid, (int)EnCommandSet.CmdIdOpenAlterTextObject);
-			OleMenuCommand oleMenuCommand4 = new OleMenuCommand(OnNewQueryConnection, id4);
-			oleMenuCommand4.BeforeQueryStatus += EnableCommand;
-			oleMenuCommandService.AddCommand(oleMenuCommand4);
-			*/
-
 		}
 		else
 		{
@@ -607,7 +591,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 	{
 		if (markerGuid == VS.CLSID_TSqlEditorMessageErrorMarker)
 		{
-			vsTextMarker = new VsTextMarker((uint)MARKERVISUAL.MV_COLOR_ALWAYS, COLORINDEX.CI_RED, COLORINDEX.CI_USERTEXT_BK, SharedResx.ErrorMarkerDisplayName, SharedResx.ErrorMarkerDescription, "Error Message");
+			vsTextMarker = new VsTextMarker((uint)MARKERVISUAL.MV_COLOR_ALWAYS, COLORINDEX.CI_RED, COLORINDEX.CI_USERTEXT_BK, Resources.ErrorMarkerDisplayName, Resources.ErrorMarkerDescription, "Error Message");
 			return VSConstants.S_OK;
 		}
 
@@ -619,7 +603,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 	public bool HasAnyAuxillaryDocData()
 	{
-		lock (Controller.PackageLock)
+		lock (Controller.LockGlobal)
 		{
 			return _DocDataEditors != null && _DocDataEditors.Count > 0;
 		}
@@ -680,7 +664,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 	public AuxiliaryDocData GetAuxiliaryDocData(object docData)
 	{
-		lock (Controller.PackageLock)
+		lock (Controller.LockGlobal)
 		{
 			if (docData == null || _DocDataEditors == null)
 			{
@@ -696,7 +680,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 	public void EnsureAuxilliaryDocData(IVsHierarchy hierarchy, string documentMoniker, object docData)
 	{
-		lock (Controller.PackageLock)
+		lock (Controller.LockGlobal)
 		{
 			if (_DocDataEditors == null || !_DocDataEditors.TryGetValue(docData, out AuxiliaryDocData value))
 			{
@@ -726,7 +710,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 	public bool ContainsEditorStatus(object docData)
 	{
-		lock (Controller.PackageLock)
+		lock (Controller.LockGlobal)
 		{
 			if (docData == null || _DocDataEditors == null)
 			{
@@ -747,7 +731,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 	public void RemoveEditorStatus(object docData)
 	{
-		lock (Controller.PackageLock)
+		lock (Controller.LockGlobal)
 		{
 			if (_DocDataEditors == null)
 				return;
@@ -764,7 +748,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 	public void SetSqlEditorStrategyForDocument(object docData, IBSqlEditorStrategy strategy)
 	{
-		lock (Controller.PackageLock)
+		lock (Controller.LockGlobal)
 		{
 			if (_DocDataEditors == null || !_DocDataEditors.TryGetValue(docData, out var value))
 			{
@@ -775,6 +759,29 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 			value.Strategy = strategy;
 		}
+	}
+
+
+	public DialogResult ShowExecutionSettingsDialogFrame(AuxiliaryDocData auxDocData,
+		FormStartPosition startPosition)
+	{
+		DialogResult result = DialogResult.Abort;
+
+		QueryManager qryMgr = auxDocData.QryMgr;
+		if (qryMgr == null)
+			return DialogResult.Abort;
+
+		using (CurrentWndOptionsDlg dlg = new(qryMgr.LiveSettings))
+		{
+			dlg.StartPosition = startPosition;
+
+			result = FormUtilities.ShowDialog(dlg);
+
+			if (result == DialogResult.OK)
+				auxDocData.UpdateLiveSettingsState(qryMgr.LiveSettings);
+		}
+
+		return result;
 	}
 
 	public bool? ShowConnectionDialogFrame(IntPtr parent, IBDependencyManager dependencyManager, EventsChannel channel,
@@ -792,6 +799,17 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 
 	#endregion Methods and Implementations
+
+
+
+
+	// =========================================================================================================
+	#region Event handlers - BlackbirdSqlDdexExtension
+	// =========================================================================================================
+
+
+	#endregion Event handlers
+
 
 }
 

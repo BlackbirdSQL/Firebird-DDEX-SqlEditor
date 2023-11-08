@@ -11,9 +11,9 @@ public class ManagedBatchParser : IDisposable
 {
 	EnParseMode _ParseMode = EnParseMode.RecognizeAll;
 
-	private ICommandExecuter _Executor = null;
-	private IVariableResolver _Resolver = null;
-	private IBatchSource _BatchSource = null;
+	private IBCommandExecuter _Executor = null;
+	private IBVariableResolver _Resolver = null;
+	private IBBatchSource _BatchSource = null;
 
 	private bool _SubstitutionEnabled = true;
 	private bool _RecognizeOnlyVariables = false;
@@ -68,17 +68,17 @@ public class ManagedBatchParser : IDisposable
 		_ = _SubstitutionEnabled;
 	}
 
-	public void SetBatchSource(IBatchSource pIBatchSource)
+	public void SetBatchSource(IBBatchSource pIBatchSource)
 	{
 		_BatchSource = pIBatchSource;
 	}
 
-	public void SetCommandExecuter(ICommandExecuter pICommandExecuter)
+	public void SetCommandExecuter(IBCommandExecuter pICommandExecuter)
 	{
 		_Executor = pICommandExecuter;
 	}
 
-	public void SetVariableResolver(IVariableResolver pIVariableResolver)
+	public void SetVariableResolver(IBVariableResolver pIVariableResolver)
 	{
 		_Resolver = pIVariableResolver;
 		_ = _Resolver;

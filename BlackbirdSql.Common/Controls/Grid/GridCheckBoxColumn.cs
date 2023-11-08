@@ -108,28 +108,28 @@ namespace BlackbirdSql.Common.Controls.Grid
 			CalcCheckboxSize();
 		}
 
-		public override void DrawCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IGridStorage storage, long nRowIndex)
+		public override void DrawCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex)
 		{
 			EnGridCheckBoxState cellDataForCheckBox = storage.GetCellDataForCheckBox(nRowIndex, m_myColumnIndex);
 			g.FillRectangle(bkBrush, rect);
 			GridCheckBox.DrawCheckbox(g, rect, m_myAlign, m_isRTL, cellDataForCheckBox, bEnabled: true);
 		}
 
-		public override void PrintCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IGridStorage storage, long nRowIndex)
+		public override void PrintCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex)
 		{
 			EnGridCheckBoxState cellDataForCheckBox = storage.GetCellDataForCheckBox(nRowIndex, m_myColumnIndex);
 			g.FillRectangle(bkBrush, rect.X - 1, rect.Y, rect.Width, rect.Height);
 			GridCheckBox.DrawCheckbox(g, rect, m_myAlign, m_isRTL, cellDataForCheckBox, bEnabled: true);
 		}
 
-		public override void DrawDisabledCell(Graphics g, Font textFont, Rectangle rect, IGridStorage storage, long nRowIndex)
+		public override void DrawDisabledCell(Graphics g, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex)
 		{
 			EnGridCheckBoxState cellDataForCheckBox = storage.GetCellDataForCheckBox(nRowIndex, m_myColumnIndex);
 			g.FillRectangle(SDisabledCellBKBrush, rect);
 			GridCheckBox.DrawCheckbox(g, rect, m_myAlign, m_isRTL, cellDataForCheckBox, bEnabled: false);
 		}
 
-		public override AccessibleStates GetAccessibleState(long nRowIndex, IGridStorage storage)
+		public override AccessibleStates GetAccessibleState(long nRowIndex, IBGridStorage storage)
 		{
 			return storage.GetCellDataForCheckBox(nRowIndex, m_myColumnIndex) switch
 			{
@@ -140,7 +140,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 			};
 		}
 
-		public override string GetAccessibleValue(long nRowIndex, IGridStorage storage)
+		public override string GetAccessibleValue(long nRowIndex, IBGridStorage storage)
 		{
 			return storage.GetCellDataForCheckBox(nRowIndex, m_myColumnIndex).ToString();
 		}

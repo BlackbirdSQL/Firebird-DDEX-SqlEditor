@@ -2,6 +2,7 @@
 // Microsoft.VisualStudio.Data.Providers.Common.DataToolsDocument
 using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Forms;
 
 using BlackbirdSql.Common.Properties;
@@ -220,7 +221,7 @@ public abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersist
 	{
 		try
 		{
-			Caption = Resources.DataToolsDocument_Caption.Res(
+			Caption = Resources.DataToolsDocument_Caption.FmtRes(
 				BuildConnectionName(owningHierarchy.ExplorerConnection.Connection),
 				GetObjectTypeDisplayName(obj, owningItemId, owningHierarchy),
 				obj.Identifier.ToString(DataObjectIdentifierFormat.ForDisplay));

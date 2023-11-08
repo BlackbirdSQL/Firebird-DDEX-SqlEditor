@@ -9,7 +9,7 @@ namespace BlackbirdSql.Common.Controls.Graphing;
 
 [TypeConverter(typeof(ExpandableObjectConverter))]
 [Editor(typeof(LongStringUITypeEditor), typeof(UITypeEditor))]
-public class ExpandableObjectWrapper : ObjectParser, ICustomTypeDescriptor
+public class ExpandableObjectWrapper : AbstractObjectParser, ICustomTypeDescriptor
 {
 	private readonly PropertyDescriptorCollection properties;
 

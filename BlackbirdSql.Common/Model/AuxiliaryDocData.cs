@@ -6,40 +6,40 @@
 using System;
 using System.Data;
 using System.Data.Common;
-
-using BlackbirdSql.Core;
+using BlackbirdSql.Common.Ctl.Config;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
-
-using Microsoft.VisualStudio.TextManager.Interop;
-using BlackbirdSql.Common.Ctl.Config;
-using BlackbirdSql.Common.Ctl.Interfaces;
-using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Interfaces;
+using Microsoft.VisualStudio.TextManager.Interop;
+using Newtonsoft.Json.Linq;
+
 
 namespace BlackbirdSql.Common.Model;
-
 
 public sealed class AuxiliaryDocData
 {
 	public class SqlExecutionModeChangedEventArgs : EventArgs
 	{
-		public EnSqlExecutionMode SqlExecutionMode { get; private set; }
+		public EnSqlOutputMode SqlExecutionMode { get; private set; }
 
-		public SqlExecutionModeChangedEventArgs(EnSqlExecutionMode executionMode)
+		public SqlExecutionModeChangedEventArgs(EnSqlOutputMode executionMode)
 		{
 			SqlExecutionMode = executionMode;
 		}
 	}
 
-	public class ResultsSettingsChangedEventArgs : EventArgs
+	public class LiveSettingsChangedEventArgs : EventArgs
 	{
-		public IBQueryExecutionResultsSettings ResultsSettings { get; private set; }
+		public IBLiveUserSettings LiveSettings { get; private set; }
 
-		public ResultsSettingsChangedEventArgs(IBQueryExecutionResultsSettings resultSettings)
+		public LiveSettingsChangedEventArgs(IBLiveUserSettings liveSettings)
 		{
-			ResultsSettings = resultSettings;
+			LiveSettings = liveSettings;
 		}
 	}
 
@@ -49,6 +49,7 @@ public sealed class AuxiliaryDocData
 
 	private IBSqlEditorStrategy _Strategy;
 
+	// A private 'this' object lock
 	private readonly object _LockLocal = new object();
 
 	private bool? _IntellisenseEnabled;
@@ -109,6 +110,9 @@ public sealed class AuxiliaryDocData
 		{
 			lock (_LockLocal)
 			{
+				if (!_IntellisenseEnabled.HasValue)
+					_IntellisenseEnabled = UserSettings.EditorEnableIntellisense;
+
 				return _IntellisenseEnabled;
 			}
 		}
@@ -133,14 +137,14 @@ public sealed class AuxiliaryDocData
 		{
 			lock (_LockLocal)
 			{
-				return QryMgr.ExecutionOptions.WithClientStats;
+				return QryMgr.LiveSettings.WithClientStats;
 			}
 		}
 		set
 		{
 			lock (_LockLocal)
 			{
-				QryMgr.ExecutionOptions.WithClientStats = value;
+				QryMgr.LiveSettings.WithClientStats = value;
 			}
 		}
 	}
@@ -151,14 +155,14 @@ public sealed class AuxiliaryDocData
 		{
 			lock (_LockLocal)
 			{
-				return QryMgr.ExecutionOptions.WithExecutionPlan;
+				return QryMgr.LiveSettings.WithExecutionPlan;
 			}
 		}
 		set
 		{
 			lock (_LockLocal)
 			{
-				QryMgr.ExecutionOptions.WithExecutionPlan = value;
+				QryMgr.LiveSettings.WithExecutionPlan = value;
 			}
 		}
 	}
@@ -169,44 +173,28 @@ public sealed class AuxiliaryDocData
 		{
 			lock (_LockLocal)
 			{
-				return QryMgr.ExecutionOptions.WithEstimatedExecutionPlan;
+				return QryMgr.LiveSettings.WithEstimatedExecutionPlan;
 			}
 		}
 		set
 		{
 			lock (_LockLocal)
 			{
-				QryMgr.ExecutionOptions.WithEstimatedExecutionPlan = value;
+				QryMgr.LiveSettings.WithEstimatedExecutionPlan = value;
 			}
 		}
 	}
 
-	public IBQueryExecutionResultsSettings ResultsSettings
+
+	public IBLiveUserSettings LiveSettings => QryMgr.LiveSettings;
+
+
+
+	public EnSqlOutputMode SqlExecutionMode
 	{
 		get
 		{
-			return QryMgr.QueryExecutionSettings.ExecutionResults;
-		}
-		set
-		{
-			Tracer.Trace(GetType(), "AuxiliaryDocData.ResultsSettings", "", null);
-			if (QryMgr.IsExecuting)
-			{
-				InvalidOperationException ex = new();
-				Diag.Dug(ex);
-				throw ex;
-			}
-
-			QryMgr.QueryExecutionSettings.ExecutionResults = value;
-			RaiseResultSettingsChangedEvent(value);
-		}
-	}
-
-	public EnSqlExecutionMode SqlExecutionMode
-	{
-		get
-		{
-			return ResultsSettings.SqlExecutionMode;
+			return LiveSettings.EditorResultsOutputMode;
 		}
 		set
 		{
@@ -218,9 +206,9 @@ public sealed class AuxiliaryDocData
 				throw ex;
 			}
 
-			if (ResultsSettings.SqlExecutionMode != value)
+			if (LiveSettings.EditorResultsOutputMode != value)
 			{
-				ResultsSettings.SqlExecutionMode = value;
+				LiveSettings.EditorResultsOutputMode = value;
 				RaiseSqlExecutionModeChangedEvent(value);
 			}
 		}
@@ -230,7 +218,7 @@ public sealed class AuxiliaryDocData
 
 	public event EventHandler<SqlExecutionModeChangedEventArgs> SqlExecutionModeChangedEvent;
 
-	public event EventHandler<ResultsSettingsChangedEventArgs> ResultSettingsChangedEvent;
+	public event EventHandler<LiveSettingsChangedEventArgs> LiveSettingsChangedEvent;
 
 	public AuxiliaryDocData(object docData)
 	{
@@ -241,13 +229,13 @@ public sealed class AuxiliaryDocData
 	{
 		lock (_LockLocal)
 		{
-			if (args.Change == QueryManager.StatusType.ExecutionOptionsWithOleSqlChanged)
+			if (args.Change == QueryManager.EnStatusType.ExecutionOptionsWithOleSqlChanged)
 			{
 				SetOLESqlModeOnDocData(QryMgr.IsWithOleSQLScripting);
 			}
 			else
 			{
-				if (args.Change != QueryManager.StatusType.Connected)
+				if (args.Change != QueryManager.EnStatusType.Connected)
 				{
 					return;
 				}
@@ -331,10 +319,10 @@ public sealed class AuxiliaryDocData
 		_DatabaseAtQueryExecutionStart = null;
 	}
 
-	public void UpdateExecutionSettings()
+	public void UpdateLiveSettingsState(IBLiveUserSettings liveSettings)
 	{
-		ResultsSettings = QryMgr.QueryExecutionSettings.ExecutionResults;
-		QryMgr.QueryExecutionSettingsApplied = false;
+		QryMgr.LiveSettingsApplied = false;
+		RaiseLiveSettingsChangedEvent(liveSettings);
 	}
 
 	public IVsUserData GetIVsUserData()
@@ -380,7 +368,7 @@ public sealed class AuxiliaryDocData
 
 	public void SetResultsAsTextExecutionMode()
 	{
-		SqlExecutionMode = EnSqlExecutionMode.ResultsToText;
+		SqlExecutionMode = EnSqlOutputMode.ToText;
 	}
 
 	private void SetOLESqlModeOnDocData(bool on)
@@ -419,19 +407,19 @@ public sealed class AuxiliaryDocData
 	{
 		if (IsQueryWindow)
 		{
-			return !UserSettings.Instance.Current.General.PromptForSaveWhenClosingQueryWindows;
+			return !UserSettings.EditorPromptToSave;
 		}
 
 		return false;
 	}
 
-	public void RaiseSqlExecutionModeChangedEvent(EnSqlExecutionMode newSqlExecMode)
+	public void RaiseSqlExecutionModeChangedEvent(EnSqlOutputMode newSqlExecMode)
 	{
 		SqlExecutionModeChangedEvent?.Invoke(this, new(newSqlExecMode));
 	}
 
-	public void RaiseResultSettingsChangedEvent(IBQueryExecutionResultsSettings resultSettings)
+	public void RaiseLiveSettingsChangedEvent(IBLiveUserSettings liveSettings)
 	{
-		ResultSettingsChangedEvent?.Invoke(this, new(resultSettings));
+		LiveSettingsChangedEvent?.Invoke(this, new(liveSettings));
 	}
 }

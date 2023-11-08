@@ -25,7 +25,7 @@ internal sealed class ConditionParser : XmlPlanHierarchyParser
 			FunctionType[] uDF = condition.UDF;
 			foreach (FunctionType function in uDF)
 			{
-				yield return new FunctionTypeItem(function, FunctionTypeItem.ItemType.Udf);
+				yield return new FunctionTypeItem(function, FunctionTypeItem.EnItemType.Udf);
 			}
 			condition.UDF = null;
 		}

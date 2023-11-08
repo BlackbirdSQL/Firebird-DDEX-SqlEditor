@@ -1,32 +1,32 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
-
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.TabbedEditor.ResultWindowPane
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
+
 using BlackbirdSql.Common.Controls.Events;
 using BlackbirdSql.Common.Controls.ResultsPane;
+using BlackbirdSql.Core;
 
-// using Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ResultPane;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 
 
-
-
-// namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.TabbedEditor
 namespace BlackbirdSql.Common.Controls;
 
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 public class ResultWindowPane : WindowPane, IOleCommandTarget
 {
-	private readonly Panel _windowPanel = new Panel();
+	private readonly Panel _WindowPanel = new Panel();
 
 	private IOleCommandTarget _CmdTarget;
 
-	public override IWin32Window Window => _windowPanel;
+	public override IWin32Window Window => _WindowPanel;
 
 	public IOleCommandTarget CommandTarget
 	{
@@ -48,13 +48,20 @@ public class ResultWindowPane : WindowPane, IOleCommandTarget
 
 	public ResultWindowPane()
 	{
-		_windowPanel.Name = "ResultsWindowPaneWindowPanel";
-		_windowPanel.Dock = DockStyle.Fill;
-		_windowPanel.Location = new Point(0, 0);
+		_WindowPanel.Name = "ResultsWindowPaneWindowPanel";
+		_WindowPanel.Dock = DockStyle.Fill;
+		_WindowPanel.Location = new Point(0, 0);
 	}
 
 	public int QueryStatus(ref Guid guidGroup, uint cmdId, OLECMD[] oleCmd, IntPtr oleText)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		if (_CmdTarget != null)
 			return _CmdTarget.QueryStatus(ref guidGroup, cmdId, oleCmd, oleText);
 
@@ -63,19 +70,24 @@ public class ResultWindowPane : WindowPane, IOleCommandTarget
 
 	public int Exec(ref Guid guidGroup, uint nCmdId, uint nCmdExcept, IntPtr variantIn, IntPtr variantOut)
 	{
-		if (_CmdTarget != null)
+		if (!ThreadHelper.CheckAccess())
 		{
-			return _CmdTarget.Exec(ref guidGroup, nCmdId, nCmdExcept, variantIn, variantOut);
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
+
+		if (_CmdTarget != null)
+			return _CmdTarget.Exec(ref guidGroup, nCmdId, nCmdExcept, variantIn, variantOut);
 
 		return (int)Constants.OLECMDERR_E_NOTSUPPORTED;
 	}
 
 	public void Clear()
 	{
-		if (_windowPanel != null)
+		if (_WindowPanel != null)
 		{
-			_windowPanel.Controls.Clear();
+			_WindowPanel.Controls.Clear();
 			RaisePanelRemovedEvent();
 			CommandTarget = null;
 			TargetResultsPanel = null;
@@ -84,9 +96,16 @@ public class ResultWindowPane : WindowPane, IOleCommandTarget
 
 	public void Add(AbstractResultsPanel resultsTabPanel)
 	{
-		if (_windowPanel != null)
+		if (_WindowPanel != null)
 		{
-			_windowPanel.Controls.Add(resultsTabPanel);
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
+			_WindowPanel.Controls.Add(resultsTabPanel);
 			if (resultsTabPanel is IOleCommandTarget)
 			{
 				CommandTarget = resultsTabPanel as IOleCommandTarget;
@@ -99,9 +118,9 @@ public class ResultWindowPane : WindowPane, IOleCommandTarget
 
 	public bool Contains(AbstractResultsPanel resultsTabPanel)
 	{
-		if (_windowPanel != null)
+		if (_WindowPanel != null)
 		{
-			return _windowPanel.Controls.Contains(resultsTabPanel);
+			return _WindowPanel.Controls.Contains(resultsTabPanel);
 		}
 
 		return false;
@@ -109,9 +128,9 @@ public class ResultWindowPane : WindowPane, IOleCommandTarget
 
 	public void Remove(AbstractResultsPanel resultsTabPanel)
 	{
-		if (_windowPanel != null)
+		if (_WindowPanel != null)
 		{
-			_windowPanel.Controls.Remove(resultsTabPanel);
+			_WindowPanel.Controls.Remove(resultsTabPanel);
 			CommandTarget = null;
 			RaisePanelRemovedEvent();
 			TargetResultsPanel = null;

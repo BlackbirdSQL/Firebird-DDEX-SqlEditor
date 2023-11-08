@@ -20,7 +20,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 		{
 		}
 
-		public override bool IsPointOverTextInCell(Point pt, Rectangle cellRect, IGridStorage storage, long row, Graphics g, Font f)
+		public override bool IsPointOverTextInCell(Point pt, Rectangle cellRect, IBGridStorage storage, long row, Graphics g, Font f)
 		{
 			string cellStringToMeasure = GetCellStringToMeasure(row, storage);
 			if (cellStringToMeasure != null && cellStringToMeasure.Length > 0)
@@ -54,7 +54,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 			return false;
 		}
 
-		protected virtual string GetCellStringToMeasure(long rowIndex, IGridStorage storage)
+		protected virtual string GetCellStringToMeasure(long rowIndex, IBGridStorage storage)
 		{
 			return string.Intern(storage.GetCellDataAsString(rowIndex, ColumnIndex));
 		}

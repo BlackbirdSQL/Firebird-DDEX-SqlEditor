@@ -9,7 +9,7 @@ namespace BlackbirdSql.Common.Controls.Graphing;
 
 internal sealed class FunctionTypeItem
 {
-	internal enum ItemType
+	internal enum EnItemType
 	{
 		Unknown,
 		Udf,
@@ -18,13 +18,13 @@ internal sealed class FunctionTypeItem
 
 	private readonly FunctionType function;
 
-	private readonly ItemType type;
+	private readonly EnItemType type;
 
 	internal FunctionType Function => function;
 
-	internal ItemType Type => type;
+	internal EnItemType Type => type;
 
-	internal FunctionTypeItem(FunctionType function, ItemType type)
+	internal FunctionTypeItem(FunctionType function, EnItemType type)
 	{
 		this.function = function;
 		this.type = type;

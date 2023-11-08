@@ -7,7 +7,7 @@ using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 
-internal sealed class QEDiskDataStorage : AbstractDiskDataStorage, IQEStorage, IDataStorage, IDisposable
+internal sealed class QEDiskDataStorage : AbstractDiskDataStorage, IBQEStorage, IBDataStorage, IDisposable
 {
 	private bool _IsClosed = true;
 
@@ -23,7 +23,7 @@ internal sealed class QEDiskDataStorage : AbstractDiskDataStorage, IQEStorage, I
 		Tracer.Trace(GetType(), "QEDiskDataStorage.SerializeData", "", null);
 		try
 		{
-			Tracer.Trace(GetType(), Tracer.Level.Verbose, "QEDiskDataStorage.SerializeData", "_DataStorageEnabled = {0}", _DataStorageEnabled);
+			Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "QEDiskDataStorage.SerializeData", "_DataStorageEnabled = {0}", _DataStorageEnabled);
 			base.SerializeData();
 		}
 		catch (Exception e)
@@ -62,7 +62,7 @@ internal sealed class QEDiskDataStorage : AbstractDiskDataStorage, IQEStorage, I
 		_DataStorageEnabled = false;
 	}
 
-	public override IStorageView GetStorageView()
+	public override IBStorageView GetStorageView()
 	{
 		Tracer.Trace(GetType(), "QEDiskDataStorage.GetStorageView", "", null);
 		QEDiskStorageView qEDiskStorageView = new QEDiskStorageView(this);

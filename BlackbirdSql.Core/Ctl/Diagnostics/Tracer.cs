@@ -11,6 +11,7 @@ using System.Globalization;
 using System.Text;
 
 using BlackbirdSql.Core.Ctl.ComponentModel;
+using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
@@ -21,7 +22,7 @@ namespace BlackbirdSql.Core.Ctl.Diagnostics;
 [Exportable(typeof(IBTrace), "BlackbirdSql.Core.Diagnostics.Tracer", 0, null)]
 internal class Tracer : IBTrace, IBExportable
 {
-	public enum Level : uint
+	public enum EnLevel : uint
 	{
 		Warning = 2u,
 		Error = 1u,
@@ -82,21 +83,21 @@ internal class Tracer : IBTrace, IBExportable
 
 
 
-	private static TraceEventType GetTraceEventTypeForTraceLevel(Level tracelevel)
+	private static TraceEventType GetTraceEventTypeForTraceLevel(EnLevel tracelevel)
 	{
 		TraceEventType result = TraceEventType.Information;
 		switch (tracelevel)
 		{
-			case Level.Error:
+			case EnLevel.Error:
 				result = TraceEventType.Error;
 				break;
-			case Level.Warning:
+			case EnLevel.Warning:
 				result = TraceEventType.Warning;
 				break;
-			case Level.Information:
+			case EnLevel.Information:
 				result = TraceEventType.Information;
 				break;
-			case Level.Verbose:
+			case EnLevel.Verbose:
 				result = TraceEventType.Verbose;
 				break;
 		}
@@ -106,7 +107,7 @@ internal class Tracer : IBTrace, IBExportable
 
 
 	public static void LogExCatch(Type t, Exception e,
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0,
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "")
 	{
@@ -115,7 +116,7 @@ internal class Tracer : IBTrace, IBExportable
 
 
 	public static void LogExCatch(Type t, Exception e, string msg,
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0,
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "")
 	{
@@ -127,7 +128,7 @@ internal class Tracer : IBTrace, IBExportable
 
 
 	public static void LogExThrow(Type t, Exception e,
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0,
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "")
 	{
@@ -136,7 +137,7 @@ internal class Tracer : IBTrace, IBExportable
 	}
 
 	public static void LogExThrow(Type t, string message,
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0,
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "")
 	{
@@ -167,7 +168,7 @@ internal class Tracer : IBTrace, IBExportable
 		{
 			Trace(type, TraceEventType.Information, functionName, format, args);
 		}
-		else if (Diag.EnableTracer)
+		else if (UserSettings.EnableTracer)
 		{
 			StackFrame frame = null;
 
@@ -189,19 +190,19 @@ internal class Tracer : IBTrace, IBExportable
 	}
 
 
-	public static void Trace(Type t, Level traceLevel, string functionName, string format, params object[] args)
+	public static void Trace(Type t, EnLevel traceLevel, string functionName, string format, params object[] args)
 	{
 		Trace(t.FullName, traceLevel, functionName, format, args);
 	}
 
-	public static void Trace(string type, Level traceLevel, string functionName, string format, params object[] args)
+	public static void Trace(string type, EnLevel traceLevel, string functionName, string format, params object[] args)
 	{
 		TraceEventType traceEventTypeForTraceLevel = GetTraceEventTypeForTraceLevel(traceLevel);
 		if (SqlTracer.ShouldTrace(traceEventTypeForTraceLevel))
 		{
 			Trace(type, traceEventTypeForTraceLevel, functionName, format, args);
 		}
-		else if (Diag.EnableTracer)
+		else if (UserSettings.EnableTracer)
 		{
 			StackFrame frame = null;
 
@@ -224,7 +225,7 @@ internal class Tracer : IBTrace, IBExportable
 
 	private static void Trace(string type, TraceEventType eventType, string functionName, string format, params object[] args)
 	{
-		if (Diag.EnableTracer)
+		if (UserSettings.EnableTracer)
 		{
 			StackFrame frame = null;
 

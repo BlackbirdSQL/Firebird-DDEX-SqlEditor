@@ -3,7 +3,6 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using BlackbirdSql.Common.Ctl.DataTools.Enums.Interop;
 using BlackbirdSql.Common.Ctl.DataTools.Events.Interop;
 
 
@@ -14,6 +13,14 @@ namespace BlackbirdSql.Common.Ctl.DataTools.Interfaces.Interop;
 [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 internal interface IVsDataConnection
 {
+	// Microsoft.VisualStudio.Data.Interop.__VSDATACONNECTIONSTATE
+	internal enum EN__VSDATACONNECTIONSTATE
+	{
+		VSDCS_CLOSED = 0,
+		VSDCS_OPEN = 1,
+		VSDCS_BROKEN = int.MinValue
+	}
+
 	[DispId(1610678272)]
 	Guid Provider
 	{
@@ -70,7 +77,7 @@ internal interface IVsDataConnection
 	}
 
 	[DispId(1610678281)]
-	EN__VSDATACONNECTIONSTATE State
+	IVsDataConnection.EN__VSDATACONNECTIONSTATE State
 	{
 		[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
 		get;

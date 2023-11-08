@@ -66,7 +66,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 	// Schema factory to handle custom collections
 	public static DataTable GetSchema(FbConnection connection, string collectionName, string[] restrictions)
 	{
-		Tracer.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.GetSchema", "collectionName: {0}", collectionName);
+		Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchema()", "collectionName: {0}", collectionName);
 
 		LinkageParser parser = null;
 		string schemaCollection;
@@ -109,8 +109,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 				try
 				{
 					parser = LinkageParser.GetInstance(connection);
-					if (parser != null)
-						Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchema pausing");
+					Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchema()", "getting external schema: {0}. {1}.", collectionName, parser == null ? "no parser to pause" : "making linker pause request");
 					syncCardinal = parser != null ? parser.SyncEnter() : 0;
 					return connection.GetSchema(collectionName, restrictions);
 				}
@@ -123,7 +122,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 		if (RequiresTriggers(collectionName))
 		{
-			parser = LinkageParser.EnsureInstance(connection);
+			parser = LinkageParser.EnsureInstance(connection, typeof(DslProviderSchemaFactory));
 		}
 		else if (RequiresSyncControl(collectionName))
 		{
@@ -159,8 +158,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 			throw ex;
 		}
 
-		if (parser != null)
-			Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchema pausing");
+		Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchema()", parser == null ? "no parser to pause" : "making linker pause request");
 		syncCardinal = parser != null ? parser.SyncEnter() : 0;
 
 		var xmlStream = assembly.GetManifestResourceStream(ResourceName);
@@ -292,8 +290,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 				try
 				{
 					parser = LinkageParser.GetInstance(connection);
-					if (parser != null)
-						Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchemaAsync pausing");
+					Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchemaAsync()", parser == null ? "no parser to pause" : "making linker pause request");
 					syncCardinal = parser != null ? parser.SyncEnter() : 0;
 					return connection.GetSchemaAsync(collectionName, restrictions, cancellationToken);
 				}
@@ -315,7 +312,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 		if (RequiresTriggers(collectionName))
 		{
-			parser = LinkageParser.EnsureInstance(connection);
+			parser = LinkageParser.EnsureInstance(connection, typeof(DslProviderSchemaFactory));
 		}
 		else if (RequiresSyncControl(collectionName))
 		{
@@ -346,7 +343,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 		Assembly assembly = typeof(FirebirdClientFactory).Assembly;
 		if (assembly == null)
 		{
-			DllNotFoundException ex = new(Resources.ExceptionClassAssemblyNotFound.Res(typeof(FirebirdClientFactory).Name));
+			DllNotFoundException ex = new(Resources.ExceptionClassAssemblyNotFound.FmtRes(typeof(FirebirdClientFactory).Name));
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -358,15 +355,14 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 		if (xmlStream == null)
 		{
-			NullReferenceException ex = new(Resources.ExceptionResourceNotFound.Res(ResourceName));
+			NullReferenceException ex = new(Resources.ExceptionResourceNotFound.FmtRes(ResourceName));
 			Diag.Dug(ex);
 			throw ex;
 		}
 
 		var oldCulture = Thread.CurrentThread.CurrentCulture;
 
-		if (parser != null)
-			Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchemaAsync pausing");
+		Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchemaAsync()", parser == null ? "no parser to pause" : "making linker pause request");
 
 		syncCardinal = parser != null ? parser.SyncEnter() : 0;
 
@@ -414,7 +410,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 		if (collection.Length != 1)
 		{
 			parser?.SyncExit(syncCardinal);
-			NotSupportedException ex = new(Resources.ExceptionCollectionNotSupported.Res(schemaCollection));
+			NotSupportedException ex = new(Resources.ExceptionCollectionNotSupported.FmtRes(schemaCollection));
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -423,7 +419,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 		{
 			parser?.SyncExit(syncCardinal);
 			InvalidOperationException exbb =
-				new(Resources.ExceptionRestrictionsNotEqualToSpecified.Res(restrictions.Length,
+				new(Resources.ExceptionRestrictionsNotEqualToSpecified.FmtRes(restrictions.Length,
 				(int)collection[0]["NumberOfRestrictions"]));
 			Diag.Dug(exbb);
 			throw exbb;
@@ -445,7 +441,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 				break;
 			default:
 				parser?.SyncExit(syncCardinal);
-				NotSupportedException ex = new(Resources.ExceptionUnsupportedPopulationMechanism.Res(collection[0]["PopulationMechanism"].ToString()));
+				NotSupportedException ex = new(Resources.ExceptionUnsupportedPopulationMechanism.FmtRes(collection[0]["PopulationMechanism"].ToString()));
 				Diag.Dug(ex);
 				throw ex;
 		}
@@ -464,26 +460,28 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 		AbstractDslSchema dslSchema;
 		NotSupportedException ex;
+		Type schemaFactoryType = typeof(DslProviderSchemaFactory);
+
 
 		switch (collectionName.ToUpperInvariant())
 		{
 			case "COLUMNS":
-				dslSchema = new DslColumns(LinkageParser.EnsureInstance(connection));
+				dslSchema = new DslColumns(LinkageParser.EnsureInstance(connection, schemaFactoryType));
 				break;
 			case "FOREIGNKEYCOLUMNS":
-				dslSchema = new DslForeignKeyColumns(LinkageParser.EnsureInstance(connection));
+				dslSchema = new DslForeignKeyColumns(LinkageParser.EnsureInstance(connection, schemaFactoryType));
 				break;
 			case "FOREIGNKEYS":
 				dslSchema = new DslForeignKeys();
 				break;
 			case "FUNCTIONARGUMENTS":
-				dslSchema = new DslFunctionArguments(LinkageParser.EnsureInstance(connection));
+				dslSchema = new DslFunctionArguments(LinkageParser.EnsureInstance(connection, schemaFactoryType));
 				break;
 			case "FUNCTIONS":
 				dslSchema = new DslFunctions();
 				break;
 			case "INDEXCOLUMNS":
-				dslSchema = new DslIndexColumns(LinkageParser.EnsureInstance(connection));
+				dslSchema = new DslIndexColumns(LinkageParser.EnsureInstance(connection, schemaFactoryType));
 				break;
 			case "INDEXES":
 				dslSchema = new DslIndexes();
@@ -492,7 +490,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 				dslSchema = new DslProcedures();
 				break;
 			case "PROCEDUREPARAMETERS":
-				dslSchema = new DslProcedureParameters(LinkageParser.EnsureInstance(connection));
+				dslSchema = new DslProcedureParameters(LinkageParser.EnsureInstance(connection, schemaFactoryType));
 				break;
 			case "RAWGENERATORS":
 				dslSchema = new DslRawGenerators();
@@ -507,10 +505,10 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 				dslSchema = new DslTables();
 				break;
 			case "TRIGGERCOLUMNS":
-				dslSchema = new DslTriggerColumns(LinkageParser.EnsureInstance(connection));
+				dslSchema = new DslTriggerColumns(LinkageParser.EnsureInstance(connection, schemaFactoryType));
 				break;
 			case "VIEWCOLUMNS":
-				dslSchema = new DslViewColumns(LinkageParser.EnsureInstance(connection));
+				dslSchema = new DslViewColumns(LinkageParser.EnsureInstance(connection, schemaFactoryType));
 				break;
 			case "GENERATORS":
 			case "TRIGGERDEPENDENCIES":
@@ -518,11 +516,11 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 			case "IDENTITYTRIGGERS":
 			case "STANDARDTRIGGERS":
 			case "SYSTEMTRIGGERS":
-				ex = new(Resources.ExceptionInvalidPrebuiltMetadataCall.Res(collectionName));
+				ex = new(Resources.ExceptionInvalidPrebuiltMetadataCall.FmtRes(collectionName));
 				Diag.Dug(ex);
 				throw ex;
 			default:
-				ex = new(Resources.ExceptionCollectionNotSupported.Res(collectionName));
+				ex = new(Resources.ExceptionCollectionNotSupported.FmtRes(collectionName));
 				Diag.Dug(ex);
 				throw ex;
 		}
@@ -538,26 +536,28 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 		AbstractDslSchema dslSchema;
 		NotSupportedException ex;
+		Type schemaFactoryType = typeof(DslProviderSchemaFactory);
+
 
 		switch (collectionName.ToUpperInvariant())
 		{
 			case "COLUMNS":
-				dslSchema = new DslColumns(LinkageParser.EnsureInstance(connection));
+				dslSchema = new DslColumns(LinkageParser.EnsureInstance(connection, schemaFactoryType));
 				break;
 			case "FOREIGNKEYCOLUMNS":
-				dslSchema = new DslForeignKeyColumns(LinkageParser.EnsureInstance(connection));
+				dslSchema = new DslForeignKeyColumns(LinkageParser.EnsureInstance(connection, schemaFactoryType));
 				break;
 			case "FOREIGNKEYS":
 				dslSchema = new DslForeignKeys();
 				break;
 			case "FUNCTIONARGUMENTS":
-				dslSchema = new DslFunctionArguments(LinkageParser.EnsureInstance(connection));
+				dslSchema = new DslFunctionArguments(LinkageParser.EnsureInstance(connection, schemaFactoryType));
 				break;
 			case "FUNCTIONS":
 				dslSchema = new DslFunctions();
 				break;
 			case "INDEXCOLUMNS":
-				dslSchema = new DslIndexColumns(LinkageParser.EnsureInstance(connection));
+				dslSchema = new DslIndexColumns(LinkageParser.EnsureInstance(connection, schemaFactoryType));
 				break;
 			case "INDEXES":
 				dslSchema = new DslIndexes();
@@ -566,7 +566,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 				dslSchema = new DslProcedures();
 				break;
 			case "PROCEDUREPARAMETERS":
-				dslSchema = new DslProcedureParameters(LinkageParser.EnsureInstance(connection));
+				dslSchema = new DslProcedureParameters(LinkageParser.EnsureInstance(connection, schemaFactoryType));
 				break;
 			case "RAWGENERATORS":
 				dslSchema = new DslRawGenerators();
@@ -581,10 +581,10 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 				dslSchema = new DslTables();
 				break;
 			case "TRIGGERCOLUMNS":
-				dslSchema = new DslTriggerColumns(LinkageParser.EnsureInstance(connection));
+				dslSchema = new DslTriggerColumns(LinkageParser.EnsureInstance(connection, schemaFactoryType));
 				break;
 			case "VIEWCOLUMNS":
-				dslSchema = new DslViewColumns(LinkageParser.EnsureInstance(connection));
+				dslSchema = new DslViewColumns(LinkageParser.EnsureInstance(connection, schemaFactoryType));
 				break;
 			case "GENERATORS":
 			case "TRIGGERDEPENDENCIES":
@@ -592,11 +592,11 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 			case "IDENTITYTRIGGERS":
 			case "STANDARDTRIGGERS":
 			case "SYSTEMTRIGGERS":
-				ex = new(Resources.ExceptionInvalidPrebuiltMetadataCall.Res(collectionName));
+				ex = new(Resources.ExceptionInvalidPrebuiltMetadataCall.FmtRes(collectionName));
 				Diag.Dug(ex);
 				throw ex;
 			default:
-				ex = new(Resources.ExceptionCollectionNotSupported.Res(collectionName));
+				ex = new(Resources.ExceptionCollectionNotSupported.FmtRes(collectionName));
 				Diag.Dug(ex);
 				throw ex;
 		}

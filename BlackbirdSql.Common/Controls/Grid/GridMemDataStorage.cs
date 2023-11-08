@@ -14,7 +14,7 @@ namespace BlackbirdSql.Common.Controls.Grid;
 
 
 // [CLSCompliant(false)]
-public class GridMemDataStorage : AbstractMemDataStorage, IGridMemDataStorage, IMemDataStorage, IDataStorage, IDisposable
+public class GridMemDataStorage : AbstractMemDataStorage, IBGridMemDataStorage, IBMemDataStorage, IBDataStorage, IDisposable
 {
 	private class ComparerWrapper : IComparer
 	{

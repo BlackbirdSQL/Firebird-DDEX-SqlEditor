@@ -17,7 +17,7 @@ using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Model;
 
-public abstract class AbstractDiskDataStorage : IDiskDataStorage, IDataStorage, IDisposable
+public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage, IDisposable
 {
 	protected string _FileName;
 
@@ -31,7 +31,7 @@ public abstract class AbstractDiskDataStorage : IDiskDataStorage, IDataStorage, 
 
 	protected StorageDataReader _StorageReader;
 
-	protected IFileStreamWriter _FsWriter;
+	protected IBFileStreamWriter _FsWriter;
 
 	protected bool _DataStorageEnabled;
 
@@ -85,12 +85,12 @@ public abstract class AbstractDiskDataStorage : IDiskDataStorage, IDataStorage, 
 
 	public event StorageNotifyDelegate StorageNotify;
 
-	public virtual IStorageView GetStorageView()
+	public virtual IBStorageView GetStorageView()
 	{
 		return new DiskStorageView(this);
 	}
 
-	public ISortView GetSortView()
+	public IBSortView GetSortView()
 	{
 		return new SortView(GetStorageView());
 	}

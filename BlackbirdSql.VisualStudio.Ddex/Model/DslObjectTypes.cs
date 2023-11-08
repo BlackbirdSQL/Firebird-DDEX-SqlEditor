@@ -24,6 +24,7 @@ internal static class DslObjectTypes
 {
 	public const string Root = "";
 	public const string Domain = "Domain";
+	public const string Database = "Database";
 	public const string Table = "Table";
 	public const string TableColumn = "TableColumn";
 	public const string TableIndex = "TableIndex";
@@ -58,6 +59,9 @@ internal static class DslObjectTypes
 		{
 			case DslObjectTypes.Root:
 				return 0;
+
+			case DslObjectTypes.Database:
+				return 1;
 
 			case DslObjectTypes.Table:
 			case DslObjectTypes.ScalarFunction:

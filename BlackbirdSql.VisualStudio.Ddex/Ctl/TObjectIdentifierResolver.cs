@@ -31,7 +31,7 @@ public class TObjectIdentifierResolver : DataObjectIdentifierResolver
 
 	public TObjectIdentifierResolver() : base()
 	{
-		Tracer.Trace(GetType(), "TObjectIdentifierResolver.TObjectIdentifierResolver");
+		// Tracer.Trace(GetType(), "TObjectIdentifierResolver.TObjectIdentifierResolver");
 	}
 
 	public TObjectIdentifierResolver(IVsDataConnection connection) : base(connection)
@@ -117,7 +117,7 @@ public class TObjectIdentifierResolver : DataObjectIdentifierResolver
 	// ---------------------------------------------------------------------------------
 	public override object[] ExpandIdentifier(string typeName, object[] partialIdentifier)
 	{
-		Tracer.Trace(GetType(), "TObjectIdentifierResolver.ExpandIdentifier", "typeName: {0}", typeName);
+		// Tracer.Trace(GetType(), "TObjectIdentifierResolver.ExpandIdentifier", "typeName: {0}", typeName);
 
 		if (typeName == null)
 		{

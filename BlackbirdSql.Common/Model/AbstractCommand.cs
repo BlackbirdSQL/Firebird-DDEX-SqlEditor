@@ -10,9 +10,12 @@ using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl;
+using System.Diagnostics.CodeAnalysis;
 
 namespace BlackbirdSql.Common.Model;
 
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 public abstract class AbstractCommand : AbstractDispatcherConnection, IBOwnedCommand, ICommand
 {

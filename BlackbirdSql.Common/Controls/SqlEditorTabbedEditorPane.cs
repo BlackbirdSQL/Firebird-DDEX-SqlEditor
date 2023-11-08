@@ -1,13 +1,17 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.TabbedEditor.SqlEditorTabbedEditorPane
-
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
+using System.Reflection.Metadata;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using BlackbirdSql.Common.Controls.PropertiesWindow;
 using BlackbirdSql.Common.Controls.ResultsPane;
+using BlackbirdSql.Common.Controls.Widgets;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Commands;
 using BlackbirdSql.Common.Ctl.Config;
@@ -24,6 +28,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -34,6 +39,10 @@ using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 
 namespace BlackbirdSql.Common.Controls;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
+// [SuppressMessage("Usage", "VSTHRD104:Offer async methods")]
 
 public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWindowPane, IVsFindTarget, IVsFindTarget2, IBVsFindTarget3
 {
@@ -67,7 +76,15 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 	{
 		get
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			string result = null;
+
 			if (GetService(typeof(SVsWindowFrame)) is IVsWindowFrame vsWindowFrame)
 			{
 				vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_pszMkDocument, out var pvar);
@@ -441,7 +458,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(DocData);
 		QueryManager qryMgr = auxDocData.QryMgr;
 
-		bool isActual = qryMgr.ExecutionOptions.WithExecutionPlan && !qryMgr.ExecutionOptions.WithEstimatedExecutionPlan;
+		bool isActual = qryMgr.LiveSettings.WithExecutionPlan && !qryMgr.LiveSettings.WithEstimatedExecutionPlan;
 
 		string btnPlanText = isActual
 			? ControlsResources.SqlEditorTabbedEditorPane_ActualPlan_Button_Text
@@ -542,7 +559,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 
 			_ProperyWindowManager = new PropertiesWindowManager(this);
 
-			qryMgr.IsWithOleSQLScripting = auxDocData.QryMgr.QueryExecutionSettings.Execution.OLESQLScriptingByDefault;
+			qryMgr.IsWithOleSQLScripting = auxDocData.QryMgr.LiveSettings.EditorExecutionDefaultOleScripting;
 			qryMgr.CurrentWorkingDirectoryPath = GetCurrentWorkingDirectory;
 
 			ConfigureTextViewForAutonomousFind(GetSqlEditorCodeTab().CurrentFrame, GetCodeEditorTextView());
@@ -752,6 +769,13 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 		SqlEditorCodeTab sqlEditorCodeTab = GetSqlEditorCodeTab();
 		if (sqlEditorCodeTab != null)
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			IVsWindowFrame currentFrame = sqlEditorCodeTab.CurrentFrame;
 			Native.ThrowOnFailure(currentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar));
 			Native.ThrowOnFailure(((IVsCodeWindow)pvar).GetPrimaryView(out ppView));
@@ -855,7 +879,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 
 	public void ExecuteQuery()
 	{
-		Tracer.Trace(GetType(), Tracer.Level.Verbose, "ExecuteQuery", "calling ExecuteOrParseQuery");
+		Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteQuery", "calling ExecuteOrParseQuery");
 		ExecuteOrParseQuery(isExecute: true);
 	}
 
@@ -878,11 +902,11 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 			{
 				AuxiliaryDocData auxDocData = (((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(DocData));
 
-				Tracer.Trace(GetType(), Tracer.Level.Verbose, "ExecuteOrParseQuery", "AuxiliaryDocData.EstimatedExecutionPlanEnabled: " + auxDocData.EstimatedExecutionPlanEnabled);
+				Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteOrParseQuery", "AuxiliaryDocData.EstimatedExecutionPlanEnabled: " + auxDocData.EstimatedExecutionPlanEnabled);
 
 				QueryManager qryMgr = auxDocData.QryMgr;
 
-				Tracer.Trace(GetType(), Tracer.Level.Verbose, "ExecuteOrParseQuery", "AuxiliaryDocData.QryMgr: " + qryMgr);
+				Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteOrParseQuery", "AuxiliaryDocData.QryMgr: " + qryMgr);
 
 				if (isExecute)
 					qryMgr.Run(sqlTextSpan);
@@ -977,9 +1001,9 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 
 	public void CustomizeTabsForResultsSetting(bool isParseOnly)
 	{
-		EnsureTabs(false);		
+		EnsureTabs(false);
 		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(DocData);
-		EnSqlExecutionMode sqlExecutionMode = auxDocData.SqlExecutionMode;
+		EnSqlOutputMode sqlExecutionMode = auxDocData.SqlExecutionMode;
 		AbstractEditorTab sqlEditorResultsTab = GetSqlEditorResultsTab();
 		GetSqlEditorMessageTab();
 		AbstractEditorTab sqlEditorTextResultsTab = GetSqlEditorTextResultsTab();
@@ -1010,7 +1034,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 		sqlExecutionPlanTab.TabButtonVisible = false; // Parser not completed
 		sqlTextPlanTab.TabButtonVisible = auxDocData.ActualExecutionPlanEnabled || auxDocData.EstimatedExecutionPlanEnabled;
 
-		if (sqlExecutionMode == EnSqlExecutionMode.ResultsToFile || sqlExecutionMode == EnSqlExecutionMode.ResultsToText || auxDocData.EstimatedExecutionPlanEnabled)
+		if (sqlExecutionMode == EnSqlOutputMode.ToFile || sqlExecutionMode == EnSqlOutputMode.ToText || auxDocData.EstimatedExecutionPlanEnabled)
 		{
 			if (!auxDocData.EstimatedExecutionPlanEnabled)
 				ActivateTextResultsTab();
@@ -1021,12 +1045,12 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 			if (sqlEditorTextResultsTab != null)
 				sqlEditorTextResultsTab.TabButtonVisible = !auxDocData.EstimatedExecutionPlanEnabled;
 
-			if (auxDocData.ResultsSettings.DisplayResultInSeparateTabForText)
+			if (auxDocData.LiveSettings.EditorResultsTextSeparateTabs)
 			{
 				TabbedEditorUI.SplitViewContainer.IsSplitterVisible = false;
 			}
 		}
-		else if (sqlExecutionMode == EnSqlExecutionMode.ResultsToGrid)
+		else if (sqlExecutionMode == EnSqlOutputMode.ToGrid)
 		{
 			if (sqlEditorResultsTab != null)
 			{
@@ -1038,7 +1062,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 				sqlEditorTextResultsTab.TabButtonVisible = false;
 			}
 
-			if (auxDocData.ResultsSettings.DisplayResultInSeparateTabForGrid)
+			if (auxDocData.LiveSettings.EditorResultsGridSeparateTabs)
 			{
 				TabbedEditorUI.SplitViewContainer.IsSplitterVisible = false;
 			}
@@ -1114,16 +1138,34 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 
 	public void OnUpdateTooltipAndWindowCaption(object sender, QueryManager.StatusChangedEventArgs args)
 	{
-		if (args.Change == QueryManager.StatusType.Connection || args.Change == QueryManager.StatusType.Connected)
+		_ = Task.Run(() => OnUpdateTooltipAndWindowCaptionAsync(sender, args));
+
+	}
+
+	public async Task OnUpdateTooltipAndWindowCaptionAsync(object sender, QueryManager.StatusChangedEventArgs args)
+	{
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		if (args.Change == QueryManager.EnStatusType.Connection || args.Change == QueryManager.EnStatusType.Connected)
 		{
 			UpdateToolTip();
 		}
 
+
 		UpdateWindowCaption();
 	}
 
+
+
 	private void UpdateWindowCaption()
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		IVsWindowFrame vsWindowFrame = (IVsWindowFrame)GetService(typeof(IVsWindowFrame));
 		if (vsWindowFrame != null)
 		{
@@ -1136,7 +1178,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 				text = " ";
 			}
 
-			if (UserSettings.Instance.Current.StatusBar.TabTextIncludeFileName)
+			if (UserSettings.EditorStatusTabTextIncludeFileName)
 			{
 				text = "%2" + text2 + text;
 			}
@@ -1147,6 +1189,13 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 
 	private void UpdateToolTip()
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		IVsWindowFrame vsWindowFrame = (IVsWindowFrame)GetService(typeof(IVsWindowFrame));
 		if (vsWindowFrame == null)
 		{
@@ -1201,8 +1250,9 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 		{
 			QueryManager qryMgr = auxDocData.QryMgr;
 			text = qryMgr.ConnectionStrategy.GetEditorCaption(toolTip);
-			IBUserSettings current = UserSettings.Instance.Current;
-			if (!toolTip && (current.StatusBar.TabTextIncludeDatabaseName || current.StatusBar.TabTextIncludeLoginName || current.StatusBar.TabTextIncludeServerName))
+			// IBSqlEditorUserSettings current = SqlEditorUserSettings.Instance.Current;
+			if (!toolTip && (UserSettings.EditorStatusTabTextIncludeDatabaseName
+				|| UserSettings.EditorStatusTabTextIncludeLoginName || UserSettings.EditorStatusTabTextIncludeServerName))
 			{
 				if (qryMgr.IsConnected || qryMgr.IsConnecting)
 				{
@@ -1245,6 +1295,13 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 			ArgumentNullException ex = new("textView");
 			Diag.Dug(ex);
 			throw ex;
+		}
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
 
 		frame.GetProperty((int)__VSFPROPID.VSFPROPID_SPFrame, out object pvar);

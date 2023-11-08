@@ -6,16 +6,12 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Text;
-
-
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model.Interfaces;
 using BlackbirdSql.Core.Properties;
 
 using FirebirdSql.Data.FirebirdClient;
-
-using Microsoft.VisualStudio.TaskStatusCenter;
 
 
 namespace BlackbirdSql.Core.Model;
@@ -27,7 +23,7 @@ namespace BlackbirdSql.Core.Model;
 /// Handles Trigger / Generator linkage building tasks of the LinkageParser class.
 /// </summary>
 // =========================================================================================================
-internal abstract class AbstractLinkageParser : AbstruseLinkageParser
+public abstract class AbstractLinkageParser : AbstruseLinkageParser
 {
 
 
@@ -64,12 +60,24 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// =========================================================================================================
 
 
+	protected static IBProviderSchemaFactory _SchemaFactory = null;
+	protected static Type _SchemaFactoryType = null;
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// The db connection asociated with this LinkageParser
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	protected FbConnection _Connection = null;
+
+	protected bool _Disposing = false;
+
+	/// <summary>
+	/// Parser status inidicator that is set to false if the user cancels async
+	/// operations in the IDE task handler.
+	/// </summary>
+	protected bool _Enabled = true;
+
 
 	/// <summary>
 	/// The total elapsed time in milliseconds that the parser was actively
@@ -79,7 +87,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 	/// <summary>
 	/// Per connection LinkageParser instances xref.
-	/// _Instances must be accessed within _LockGlobal code logic.
+	/// _Instances must be accessed within _LockClass code logic.
 	/// </summary>
 	protected static Dictionary<FbConnection, object> _Instances = null;
 
@@ -153,12 +161,14 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// <summary>
 	/// Getter inidicating whether or not the parser's db connection is active and open.
 	/// </summary>
-	protected bool ConnectionActive => _Connection != null
+	protected bool ConnectionActive => _Connection != null && !_Disposing
 		&& (_Connection.State & ConnectionState.Open) != 0
 		&& (_Connection.State & (ConnectionState.Closed | ConnectionState.Broken)) == 0;
 
 	/// <summary>
-	/// Getter indicating whether or not linkage has completed.
+	/// Getter indicating whether or not linkage has completed. !Loaded differs
+	/// from Incomplete in that !Incomplete may be because the linker has
+	/// been disabled.
 	/// </summary>
 	protected bool Loaded => _LinkStage >= EnLinkStage.Completed;
 
@@ -192,6 +202,23 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 
 	/// <summary>
+	/// Gets an instance of DslProviderSchemaFactory. Async operations must always be
+	/// passed an instance of DslProviderSchemaFactory and set _SchemaFactory because
+	/// GetService() will deadlock behind any sync operation that may occur while an
+	/// async task is busy launching.
+	/// </summary>
+	/// <remarks>
+	/// Deadlocks are still happening on GetService() calls on a ConectionNode refresh
+	/// where LinkageParser dependent nodes are in an expanded state, so we are
+	/// going to keep a permanent instance of IBProviderSchemaFactory, because tracing
+	/// of threads is inconsistent in debug vs normal runs.
+	/// </remarks>
+	protected static IBProviderSchemaFactory SchemaFactory => _SchemaFactory ??=
+		(IBProviderSchemaFactory)Activator.CreateInstance(_SchemaFactoryType);
+
+
+
+	/// <summary>
 	/// Getter indicating whether or not the parser has fetched the generators.
 	/// </summary>
 	protected bool SequencesPopulated => _LinkStage >= EnLinkStage.SequencesPopulated;
@@ -222,13 +249,15 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// ---------------------------------------------------------------------------------
 	protected AbstractLinkageParser(FbConnection connection, AbstractLinkageParser rhs) : base()
 	{
-		Tracer.Trace(typeof(AbstractLinkageParser), $"StaticId:[{"0000"}] AbstractLinkageParser(FbConnection, AbstractLinkageParser)");
+		Tracer.Trace(typeof(AbstractLinkageParser), $"AbstractLinkageParser(FbConnection, AbstractLinkageParser)");
 
 		_Connection = connection;
+		_Instances ??= new();
 
 		_Instances.Add(_Connection, this);
 
-		_Connection.Disposed += ConnectionDisposed;
+		// _Connection.StateChange += OnConnectionStateChanged;
+		_Connection.Disposed += OnConnectionDisposed;
 
 		if (rhs == null)
 		{
@@ -257,7 +286,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// ---------------------------------------------------------------------------------
 	protected static AbstractLinkageParser GetInstance(FbConnection connection)
 	{
-		// Tracer.Trace(typeof(AbstractLinkageParser), $"StaticId:[{"0000"}] Instance(FbConnection)");
+		Tracer.Trace(typeof(AbstractLinkageParser), "GetInstance(FbConnection)");
 
 		AbstractLinkageParser parser = null;
 
@@ -268,22 +297,48 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 			throw ex;
 		}
 
-		if (_Instances == null)
+		Tracer.Trace(typeof(AbstractLinkageParser), "GetInstance(FbConnection)");
+
+		if (_Instances != null && _Instances.TryGetValue(connection, out object parserObject))
 		{
-			_Instances = new();
-		}
-		else
-		{
-			if (_Instances.TryGetValue(connection, out object parserObject))
-			{
-				Tracer.Trace(typeof(AbstractLinkageParser), $"StaticId:[{"0000"}] Instance(FbConnection)", "Found existing connection");
-				parser = (AbstractLinkageParser)parserObject;
-			}
+			parser = (AbstractLinkageParser)parserObject;
+			Tracer.Trace(typeof(AbstractLinkageParser), "GetInstance(FbConnection)", "Found existing connection");
 		}
 
 		return parser;
 	}
 
+
+	~AbstractLinkageParser()
+	{
+		Dispose(true);
+	}
+
+
+	public override void Dispose()
+	{
+		Dispose(true);
+	}
+
+
+	protected override bool Dispose(bool disposing)
+	{
+		Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "Disabling instance");
+
+		if (_Connection == null || _Instances == null)
+			return false;
+
+		Disable();
+
+		Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "Removing instance");
+
+		_Instances.Remove(_Connection);
+		if (_Instances.Count == 0)
+			_Instances = null;
+		_Connection = null;
+
+		return true;
+	}
 
 	#endregion Constructors / Destructors
 
@@ -472,7 +527,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 				}
 				catch (Exception ex)
 				{
-					Diag.Dug(ex, Resources.ExceptionTriggerErrorAtColumnIndex.Res(i));
+					Diag.Dug(ex, Resources.ExceptionTriggerErrorAtColumnIndex.FmtRes(i));
 				}
 			}
 
@@ -490,7 +545,7 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 				}
 				catch (Exception ex)
 				{
-					Diag.Dug(ex, Resources.ExceptionTriggerGeneratorErrorAtColumnIndex.Res(i, j));
+					Diag.Dug(ex, Resources.ExceptionTriggerGeneratorErrorAtColumnIndex.FmtRes(i, j));
 				}
 			}
 
@@ -628,6 +683,31 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 
 
+	public abstract bool Disable();
+
+
+
+	protected static bool DisposeInstance(FbConnection connection)
+	{
+		Tracer.Trace(typeof(AbstractLinkageParser), "DisposeInstance(FbConnection)");
+
+		lock (_LockClass)
+		{
+			if (_Instances == null || !_Instances.TryGetValue(connection, out object obj))
+				return false;
+
+
+			if (obj is not AbstractLinkageParser parser)
+				return false;
+
+			parser.Dispose(true);
+		}
+
+		return true;
+	}
+
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Performs an external full SELECT of the database system generator table.
@@ -635,13 +715,11 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// ---------------------------------------------------------------------------------
 	protected DataTable GetRawGeneratorSchema()
 	{
-		IBProviderSchemaFactory schemaFactory = Controller.GetService<IBProviderSchemaFactory, IBProviderSchemaFactory>();
-
 		Requesting = true;
 
 		try
 		{
-			_RawGenerators = schemaFactory.GetSchema(_Connection, "RawGenerators", null);
+			_RawGenerators = SchemaFactory.GetSchema(_Connection, "RawGenerators", null);
 		}
 		catch (Exception ex)
 		{
@@ -671,13 +749,11 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// ---------------------------------------------------------------------------------
 	protected DataTable GetRawTriggerDependenciesSchema()
 	{
-		IBProviderSchemaFactory schemaFactory = Controller.GetService<IBProviderSchemaFactory, IBProviderSchemaFactory>();
-
 		Requesting = true;
 
 		try
 		{
-			_RawTriggerDependencies = schemaFactory.GetSchema(_Connection, "RawTriggerDependencies", null);
+			_RawTriggerDependencies = SchemaFactory.GetSchema(_Connection, "RawTriggerDependencies", null);
 		}
 		catch (Exception ex)
 		{
@@ -705,13 +781,11 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// ---------------------------------------------------------------------------------
 	protected DataTable GetRawTriggerSchema()
 	{
-		IBProviderSchemaFactory schemaFactory = Controller.GetService<IBProviderSchemaFactory, IBProviderSchemaFactory>();
-
 		Requesting = true;
 
 		try
 		{
-			_RawTriggers = schemaFactory.GetSchema(_Connection, "RawTriggers", null);
+			_RawTriggers = SchemaFactory.GetSchema(_Connection, "RawTriggers", null);
 		}
 		catch (Exception ex)
 		{
@@ -770,10 +844,13 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 	protected static AbstractLinkageParser FindEquivalentParser(FbConnection connection)
 	{
-		// Tracer.Trace(typeof(AbstractLinkageParser), $"StaticId:[{"0000"}] FindEquivalentParser");
+		Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()");
 
 		if (_Instances == null)
+		{
+			Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Not found. _Instances is null.");
 			return null;
+		}
 
 		FbConnectionStringBuilder csb1 = null;
 		FbConnectionStringBuilder csb2;
@@ -798,8 +875,13 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 			}
 
 			if (ModelPropertySet.AreEquivalent(csb1, csb2))
+			{
+				Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Found equivalent.");
 				return parser;
+			}
 		}
+
+		Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "No equivalent found.");
 
 		return null;
 	}
@@ -1010,18 +1092,10 @@ internal abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// in the <see cref="_Instances"/> dictionary.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected void ConnectionDisposed(object sender, EventArgs e)
-	{
-		if (_Connection == null)
-			return;
+	protected abstract void OnConnectionDisposed(object sender, EventArgs e);
 
-		// Diag.Trace();
-		lock (_LockGlobal)
-		{
-			_Instances.Remove(_Connection);
-		}
-		_Connection = null;
-	}
+
+	protected abstract void OnConnectionStateChanged(object sender, StateChangeEventArgs e);
 
 
 	#endregion Event handlers

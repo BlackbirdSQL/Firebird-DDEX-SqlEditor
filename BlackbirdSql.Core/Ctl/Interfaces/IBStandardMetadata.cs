@@ -8,5 +8,5 @@ public interface IBStandardMetadata
 
 	string Id { get; }
 
-	string DisplayName { get; }
+	string DisplayMember { get; }
 }

@@ -20,9 +20,6 @@ namespace BlackbirdSql.Core.Ctl.Interfaces;
 public interface IBAsyncPackage
 {
 
-	delegate void SettingsSavedDelegate(object sender);
-
-
 	IBPackageController Controller { get; }
 
 	IVsRunningDocumentTable DocTable { get; }
@@ -45,12 +42,6 @@ public interface IBAsyncPackage
 
 	Task FinalizeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress);
 
-	GlobalEventArgs PopulateOptionsEventArgs();
-
-	GlobalEventArgs PopulateOptionsEventArgs(string group);
-
-
-	void RegisterOptionsEventHandlers(SettingsSavedDelegate onSettingSaved);
 
 	Task<object> ServicesCreatorCallbackAsync(IAsyncServiceContainer container, CancellationToken token, Type serviceType);
 

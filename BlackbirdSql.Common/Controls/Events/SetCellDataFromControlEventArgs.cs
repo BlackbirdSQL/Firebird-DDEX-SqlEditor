@@ -18,7 +18,7 @@ public class SetCellDataFromControlEventArgs : EventArgs
 
 	private readonly int m_ColNum;
 
-	private readonly IGridEmbeddedControl m_Control;
+	private readonly IBGridEmbeddedControl m_Control;
 
 	private bool m_Valid;
 
@@ -26,7 +26,7 @@ public class SetCellDataFromControlEventArgs : EventArgs
 
 	public int ColumnIndex => m_ColNum;
 
-	public IGridEmbeddedControl Control => m_Control;
+	public IBGridEmbeddedControl Control => m_Control;
 
 	public bool Valid
 	{
@@ -40,7 +40,7 @@ public class SetCellDataFromControlEventArgs : EventArgs
 		}
 	}
 
-	public SetCellDataFromControlEventArgs(int nRow, int nCol, IGridEmbeddedControl control)
+	public SetCellDataFromControlEventArgs(int nRow, int nCol, IBGridEmbeddedControl control)
 	{
 		m_RowNum = nRow;
 		m_ColNum = nCol;

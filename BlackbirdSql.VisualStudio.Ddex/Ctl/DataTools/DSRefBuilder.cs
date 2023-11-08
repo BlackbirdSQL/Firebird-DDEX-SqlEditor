@@ -8,6 +8,7 @@ using BlackbirdSql.Controller;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.VisualStudio.Ddex.Ctl.Config;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Core;
@@ -37,7 +38,7 @@ public class DSRefBuilder : DataSiteableObject<IVsDataConnection>, IDSRefBuilder
 	public DSRefBuilder(IVsDataConnection connection)
 		: base(connection)
 	{
-		Tracer.Trace(GetType(), "DSRefBuilder.DSRefBuilder(IVsDataConnection)");
+		Tracer.Trace(GetType(), "DSRefBuilder(IVsDataConnection)");
 	}
 
 
@@ -47,7 +48,7 @@ public class DSRefBuilder : DataSiteableObject<IVsDataConnection>, IDSRefBuilder
 	/// </summary>
 	public void AppendToDSRef(object dsRef, string typeName, object[] identifier)
 	{
-		Tracer.Trace(GetType(), "IDSRefBuilder.AppendToDSRef");
+		Tracer.Trace(GetType(), "AppendToDSRef()");
 		AppendToDSRef(dsRef, typeName, identifier, null);
 	}
 
@@ -70,7 +71,7 @@ public class DSRefBuilder : DataSiteableObject<IVsDataConnection>, IDSRefBuilder
 
 				AppendToDSRef(args[0], args[1] as string, args[2] as object[], parameters);
 
-				if (PackageController.Instance.Uig.ShowDiagramPane)
+				if (UserSettings.ShowDiagramPane)
 				{
 					Hostess host = new(Site);
 					CommandID cmd = new CommandID(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.ShowGraphicalPane);

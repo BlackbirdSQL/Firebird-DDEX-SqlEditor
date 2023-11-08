@@ -162,8 +162,8 @@
   <data name="ExceptionFailedToRetrievePackageSettings" xml:space="preserve">
     <value>Failed to retrieve Package settings</value>
   </data>
-  <data name="ExceptionFailedToSubscribeOptionEvents" xml:space="preserve">
-    <value>Failed to subscribe to Option events</value>
+  <data name="ExceptionFailedToSubscribeSettingsEvents" xml:space="preserve">
+    <value>Failed to subscribe to Settings events</value>
   </data>
   <data name="ExceptionIBPackageControllerIsNull" xml:space="preserve">
     <value>IBPackageController is null</value>

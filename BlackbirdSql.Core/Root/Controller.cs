@@ -1,12 +1,13 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
+using System.Threading.Tasks;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Interfaces;
 
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-
+using Microsoft.VisualStudio.TaskStatusCenter;
 
 namespace BlackbirdSql.Core;
 
@@ -52,9 +53,13 @@ internal static class Controller
 
 	public static IVsMonitorSelection SelectionMonitor => Instance.SelectionMonitor;
 
+	public static IVsTaskStatusCenterService StatusCenterService => Instance.StatusCenterService;
 
 	public static TInterface GetService<TService, TInterface>() where TInterface : class
 		=> Instance.GetService<TService, TInterface>();
+
+	public static async Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class
+		=> await Instance.GetServiceAsync<TService, TInterface>();
 
 
 }

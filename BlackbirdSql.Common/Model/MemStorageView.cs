@@ -14,13 +14,13 @@ namespace BlackbirdSql.Common.Model;
 
 public class MemStorageView : AbstractStorageView
 {
-	protected IMemDataStorage _MemStorage;
+	protected IBMemDataStorage _MemStorage;
 
 	public MemStorageView()
 	{
 	}
 
-	public MemStorageView(IMemDataStorage storage)
+	public MemStorageView(IBMemDataStorage storage)
 	{
 		_MemStorage = storage;
 	}

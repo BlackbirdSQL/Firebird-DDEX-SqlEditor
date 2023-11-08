@@ -5,8 +5,11 @@
 
 using System;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using BlackbirdSql.Core;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell;
 
 
 
@@ -14,13 +17,16 @@ using Microsoft.VisualStudio.OLE.Interop;
 // namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration
 namespace BlackbirdSql.Common.Ctl;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "UIThread compliance is performed by the class.")]
+
 public sealed class ConnectionPointCookie : IDisposable
 {
-	private IConnectionPointContainer _cpc;
+	private IConnectionPointContainer _Cpc;
 
-	private IConnectionPoint _connectionPoint;
+	private IConnectionPoint _ConnectionPoint;
 
-	private uint cookie;
+	private uint _Cookie;
 
 	public ConnectionPointCookie(object source, object sink, Type eventInterface)
 		: this(source, sink, eventInterface, throwException: true)
@@ -47,36 +53,43 @@ public sealed class ConnectionPointCookie : IDisposable
 
 		try
 		{
-			if (_connectionPoint != null && cookie != 0)
+			if (_ConnectionPoint != null && _Cookie != 0)
 			{
-				_connectionPoint.Unadvise(cookie);
+				_ConnectionPoint.Unadvise(_Cookie);
 			}
 		}
 		finally
 		{
-			cookie = 0u;
-			_connectionPoint = null;
-			_cpc = null;
+			_Cookie = 0u;
+			_ConnectionPoint = null;
+			_Cpc = null;
 		}
 	}
 
 	public ConnectionPointCookie(object source, object sink, Type eventInterface, bool throwException)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		Exception ex = null;
 		if (source is IConnectionPointContainer container)
 		{
-			_cpc = container;
+			_Cpc = container;
 			try
 			{
 				Guid riid = eventInterface.GUID;
-				_cpc.FindConnectionPoint(ref riid, out _connectionPoint);
+				_Cpc.FindConnectionPoint(ref riid, out _ConnectionPoint);
 			}
 			catch
 			{
-				_connectionPoint = null;
+				_ConnectionPoint = null;
 			}
 
-			if (_connectionPoint == null)
+			if (_ConnectionPoint == null)
 			{
 				ex = new ArgumentException("The source object does not expose the " + eventInterface.Name + " event inteface");
 			}
@@ -88,12 +101,12 @@ public sealed class ConnectionPointCookie : IDisposable
 			{
 				try
 				{
-					_connectionPoint.Advise(sink, out cookie);
+					_ConnectionPoint.Advise(sink, out _Cookie);
 				}
 				catch
 				{
-					cookie = 0u;
-					_connectionPoint = null;
+					_Cookie = 0u;
+					_ConnectionPoint = null;
 					ex = new Exception(string.Format(CultureInfo.CurrentCulture, "IConnectionPoint::Advise failed with for event interface '" + eventInterface.Name));
 				}
 			}
@@ -103,7 +116,7 @@ public sealed class ConnectionPointCookie : IDisposable
 			ex = new InvalidCastException("The source object does not expost IConnectionPointContainer");
 		}
 
-		if (throwException && (_connectionPoint == null || cookie == 0))
+		if (throwException && (_ConnectionPoint == null || _Cookie == 0))
 		{
 			if (ex == null)
 			{

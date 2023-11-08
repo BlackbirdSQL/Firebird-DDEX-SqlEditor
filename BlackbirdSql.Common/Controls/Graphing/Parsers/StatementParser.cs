@@ -7,7 +7,7 @@ using BlackbirdSql.Common.Controls.Graphing.Gram;
 
 namespace BlackbirdSql.Common.Controls.Graphing.Parsers;
 
-internal class StatementParser : XmlPlanParser
+internal class StatementParser : AbstractXmlPlanParser
 {
 	private static StatementParser statementParser;
 
@@ -22,7 +22,7 @@ internal class StatementParser : XmlPlanParser
 
 	public override Node GetCurrentNode(object item, object parentItem, Node parentNode, NodeBuilderContext context)
 	{
-		return XmlPlanParser.NewNode(context);
+		return AbstractXmlPlanParser.NewNode(context);
 	}
 
 	protected override Operation GetNodeOperation(Node node)
@@ -63,20 +63,20 @@ internal class StatementParser : XmlPlanParser
 				FunctionType[] uDF = statement.UDF;
 				foreach (FunctionType function in uDF)
 				{
-					yield return new FunctionTypeItem(function, FunctionTypeItem.ItemType.Udf);
+					yield return new FunctionTypeItem(function, FunctionTypeItem.EnItemType.Udf);
 				}
 				statement.UDF = null;
 			}
 			if (statement.StoredProc != null)
 			{
-				yield return new FunctionTypeItem(statement.StoredProc, FunctionTypeItem.ItemType.StoredProcedure);
+				yield return new FunctionTypeItem(statement.StoredProc, FunctionTypeItem.EnItemType.StoredProcedure);
 				statement.StoredProc = null;
 			}
 			yield break;
 		}
 		foreach (object child in GetChildren(parsedItem))
 		{
-			XmlPlanParser parser = XmlPlanParserFactory.GetParser(child.GetType());
+			AbstractXmlPlanParser parser = XmlPlanParserFactory.GetParser(child.GetType());
 			foreach (FunctionTypeItem item in parser.ExtractFunctions(child))
 			{
 				yield return item;

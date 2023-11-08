@@ -21,14 +21,15 @@ public readonly struct DatabaseLocation
 	{
 		public bool Equals(DatabaseLocation x, DatabaseLocation y)
 		{
-			if (x.Empty || y.Empty)
-				return x.Empty == y.Empty;
+			if (x.IsEmpty || y.IsEmpty)
+				return x.IsEmpty == y.IsEmpty;
 
-			if (StringComparer.OrdinalIgnoreCase.Compare(x.Database, y.Database) == 0
-				&& StringComparer.OrdinalIgnoreCase.Compare(x.DataSource, y.DataSource) == 0)
+			if (StringComparer.OrdinalIgnoreCase.Compare(x.DataSource, y.DataSource) == 0
+				&& StringComparer.OrdinalIgnoreCase.Compare(x.Database, y.Database) == 0)
 			{
-				return StringComparer.OrdinalIgnoreCase.Compare(x.UserName, y.UserName) == 0;
+				return x.Alternate == y.Alternate;
 			}
+
 			return false;
 		}
 
@@ -39,31 +40,17 @@ public readonly struct DatabaseLocation
 	}
 
 	private readonly string _DataSource;
-
-
 	private readonly string _Database;
-
-	// private readonly bool _integratedAuth;
-
-	private readonly string _UserName;
-
 	private readonly bool _Alternate;
 
 	private readonly int _HashCode;
 
-	// private readonly SqlAuthenticationMethodUtils.AuthenticationMethod _authentication;
-
-	public bool Empty => string.IsNullOrWhiteSpace(_DataSource);
-
+	public bool IsEmpty => string.IsNullOrWhiteSpace(_DataSource);
 	public string Database => _Database;
-
 	public string DataSource => _DataSource;
+	public bool Alternate => _Alternate;
 
-	public string UserName => _UserName;
 
-	// public bool IntegratedSecurity => _integratedAuth;
-
-	// public SqlAuthenticationMethodUtils.AuthenticationMethod Authentication => _authentication;
 
 	public DatabaseLocation(DbConnectionStringBuilder csb, bool alternate)
 	{
@@ -90,12 +77,11 @@ public readonly struct DatabaseLocation
 		}
 		_DataSource = fbcsb.DataSource;
 		_Database = fbcsb.Database;
-		_UserName = fbcsb.UserID;
 		_Alternate = alternate;
 
-		string text = _Database + _DataSource + _UserName + (_Alternate ? "Alter" : "");
+		string text = _DataSource + "//" + _Database + "//" + (_Alternate ? "Alter" : "");
 
-		_HashCode = text.GetHashCode();
+		_HashCode = text.ToLowerInvariant().GetHashCode();
 	}
 
 	public DatabaseLocation(IVsDataExplorerNode node, bool alternate)
@@ -123,12 +109,11 @@ public readonly struct DatabaseLocation
 		}
 		_DataSource = moniker.Server;
 		_Database = moniker.Database;
-		_UserName = moniker.User;
 		_Alternate = alternate;
 
-		string text = _Database + _DataSource + _UserName + (_Alternate ? "Alter" : "");
+		string text = _DataSource + "//" + _Database + "//" + (_Alternate ? "Alter" : "");
 
-		_HashCode = text.GetHashCode();
+		_HashCode = text.ToLowerInvariant().GetHashCode();
 	}
 
 	public static IEqualityComparer<DatabaseLocation> CreateComparer()
@@ -140,8 +125,7 @@ public readonly struct DatabaseLocation
 	{
 		if (csb is FbConnectionStringBuilder fbcsb
 			&& string.Compare(fbcsb.DataSource, DataSource, StringComparison.Ordinal) == 0
-			&& string.Compare(fbcsb.Database, Database, StringComparison.Ordinal) == 0
-			&& string.Compare(fbcsb.UserID, UserName, StringComparison.OrdinalIgnoreCase) == 0)
+			&& string.Compare(fbcsb.Database, Database, StringComparison.Ordinal) == 0)
 		{
 			return true;
 		}

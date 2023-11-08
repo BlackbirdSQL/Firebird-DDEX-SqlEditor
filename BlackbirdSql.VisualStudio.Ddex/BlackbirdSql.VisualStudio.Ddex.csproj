@@ -79,6 +79,7 @@
   </ItemGroup>
   <!-- References (Assemblies) -->
   <ItemGroup>
+    <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -90,6 +91,8 @@
     <Reference Include="System.Numerics" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Serialization" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <!-- References (Packages) -->
   <ItemGroup>
@@ -150,8 +153,17 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\ComponentModel\AdvancedFileNameEditor.cs" />
+    <Compile Include="Controls\ComponentModel\AdvancedFolderNameEditor.cs" />
+    <Compile Include="Ctl\ComponentModel\GlobalBoolConverter.cs" />
+    <Compile Include="Ctl\ComponentModel\GlobalEnableDisableConverter.cs" />
+    <Compile Include="Ctl\ComponentModel\GlobalOnOffConverter.cs" />
     <Compile Include="Ctl\ComponentModel\GlobalShowHideConverter.cs" />
+    <Compile Include="Ctl\ComponentModel\GlobalYesNoConverter.cs" />
+    <Compile Include="Ctl\Config\UserSettings.cs" />
     <Compile Include="Ctl\DataTools\DSRefBuilder.cs" />
+    <Compile Include="Ctl\Interfaces\IBProviderObjectFactory.cs" />
+    <Compile Include="Ctl\TObjectSelectorTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Properties\BlackbirdSql.VisualStudio.Ddex.snk" />
   </ItemGroup>
@@ -358,23 +370,23 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="PackageData.cs" />
     <Compile Include="PackageSupportedObjects.cs" />
-    <Compile Include="Controls\Config\DebugOptionsControl.xaml.cs">
-      <DependentUpon>DebugOptionsControl.xaml</DependentUpon>
+    <Compile Include="Controls\Config\DebugSettingsControl.xaml.cs">
+      <DependentUpon>DebugSettingsControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\Config\DebugOptionsDialogPage.cs">
+    <Compile Include="Controls\Config\DebugSettingsDialogPage.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Page Include="Controls\Config\DebugOptionsControl.xaml">
+    <Page Include="Controls\Config\DebugSettingsControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Compile Include="Ctl\CommandProviders\SystemCommandProvider.cs" />
     <Compile Include="Ctl\CommandProviders\UniversalCommandProvider.cs" />
     <Compile Include="Ctl\CommandProviders\UserCommandProvider.cs" />
-    <Compile Include="Ctl\Config\DebugOptionModel.cs" />
-    <Compile Include="Ctl\Config\GeneralOptionModel.cs" />
-    <Compile Include="Ctl\Config\OptionsProvider.cs" />
-    <Compile Include="Ctl\ComponentModel\VsPackageRegistration.cs" />
+    <Compile Include="Model\Config\DebugSettingsModel.cs" />
+    <Compile Include="Model\Config\GeneralSettingsModel.cs" />
+    <Compile Include="Ctl\Config\SettingsProvider.cs" />
+    <Compile Include="Ctl\ComponentModel\VsPackageRegistrationAttribute.cs" />
     <Compile Include="Model\DslColumns.cs" />
     <Compile Include="Model\DslFunctionArguments.cs" />
     <Compile Include="Model\DslFunctionArgumentsLegacy.cs" />
@@ -429,7 +441,6 @@
     <Compile Include="Ctl\TObjectSupport.cs" />
     <Compile Include="Ctl\TObjectSelectorRoot.cs" />
     <Compile Include="Ctl\TProviderObjectFactory.cs" />
-    <Compile Include="Ctl\AbstractSourceInformation.cs" />
     <Compile Include="Ctl\TSourceInformation.cs" />
     <Compile Include="Ctl\TSourceVersionComparer.cs" />
     <Compile Include="Ctl\TViewSupport.cs" />
@@ -438,9 +449,7 @@
     <Compile Include="Ctl\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
   </ItemGroup>
   <!-- Includes (VSIX Manifest) -->
-  <ItemGroup>
-    <Folder Include="Ctl\Extensions\" />
-  </ItemGroup>
+  <ItemGroup />
   <!-- Imports -->
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

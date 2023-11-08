@@ -2,7 +2,7 @@
 // Microsoft.VisualStudio.Data.Interop.IVsDataConnectionEvents
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using BlackbirdSql.Common.Ctl.DataTools.Enums.Interop;
+using BlackbirdSql.Common.Ctl.DataTools.Interfaces.Interop;
 
 namespace BlackbirdSql.Common.Ctl.DataTools.Events.Interop;
 
@@ -12,7 +12,7 @@ namespace BlackbirdSql.Common.Ctl.DataTools.Events.Interop;
 internal interface IVsDataConnectionEvents
 {
 	[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-	void OnStateChanged([In] EN__VSDATACONNECTIONSTATE vsdcsOldState, [In] EN__VSDATACONNECTIONSTATE vsdcsNewState);
+	void OnStateChanged([In] IVsDataConnection.EN__VSDATACONNECTIONSTATE vsdcsOldState, [In] IVsDataConnection.EN__VSDATACONNECTIONSTATE vsdcsNewState);
 
 	[MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
 	void OnMessageReceived([In][MarshalAs(UnmanagedType.BStr)] string bstrMessage);

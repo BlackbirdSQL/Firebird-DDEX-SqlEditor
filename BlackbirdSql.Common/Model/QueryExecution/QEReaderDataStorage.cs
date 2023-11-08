@@ -20,7 +20,7 @@ using BlackbirdSql.Core.Ctl.Diagnostics;
 namespace BlackbirdSql.Common.Model.QueryExecution;
 
 
-public sealed class QEReaderDataStorage : IQEStorage, IDataStorage, IDisposable
+public sealed class QEReaderDataStorage : IBQEStorage, IBDataStorage, IDisposable
 {
 	private const int C_ColumnSizeIndex = 2;
 
@@ -106,7 +106,7 @@ public sealed class QEReaderDataStorage : IQEStorage, IDataStorage, IDisposable
 		InitiateStopStoringData();
 	}
 
-	public IStorageView GetStorageView()
+	public IBStorageView GetStorageView()
 	{
 		QEStorageViewOnReader qEStorageViewOnReader = new QEStorageViewOnReader(this);
 		if (MaxCharsToStore > 0)
@@ -117,7 +117,7 @@ public sealed class QEReaderDataStorage : IQEStorage, IDataStorage, IDisposable
 		return qEStorageViewOnReader;
 	}
 
-	public ISortView GetSortView()
+	public IBSortView GetSortView()
 	{
 		Exception ex = new NotImplementedException();
 		Tracer.LogExThrow(GetType(), ex);
@@ -201,7 +201,7 @@ public sealed class QEReaderDataStorage : IQEStorage, IDataStorage, IDisposable
 		Tracer.Trace(GetType(), "QEReaderDataStorage.GetDataFromReader", "", null);
 		try
 		{
-			Tracer.Trace(GetType(), Tracer.Level.Verbose, "QEReaderDataStorage.GetDataFromReader", "_DataStorageEnabled = {0}", _DataStorageEnabled);
+			Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "QEReaderDataStorage.GetDataFromReader", "_DataStorageEnabled = {0}", _DataStorageEnabled);
 			while (_DataStorageEnabled && _StorageReader.Read())
 			{
 				Interlocked.Increment(ref _RowCount);

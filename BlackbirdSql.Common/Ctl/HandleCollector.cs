@@ -44,7 +44,7 @@ public sealed class HandleCollector
 				flag = NeedCollection();
 				currentHandleCount = handleCount;
 			}
-			lock (_LockGlobal)
+			lock (_LockClass)
 			{
 				HandleAddedEvent?.Invoke(name, handle, currentHandleCount);
 			}
@@ -98,7 +98,7 @@ public sealed class HandleCollector
 				}
 				currentHandleCount = handleCount;
 			}
-			lock (_LockGlobal)
+			lock (_LockClass)
 			{
 				HandleRemovedEvent?.Invoke(name, handle, currentHandleCount);
 			}
@@ -112,7 +112,8 @@ public sealed class HandleCollector
 
 	private static int suspendCount;
 
-	private static readonly object _LockGlobal = new object();
+	// A static class lock
+	private static readonly object _LockClass = new object();
 
 	public static event HandleChangeEventHandler HandleAddedEvent;
 
@@ -126,7 +127,7 @@ public sealed class HandleCollector
 
 	public static void SuspendCollect()
 	{
-		lock (_LockGlobal)
+		lock (_LockClass)
 		{
 			suspendCount++;
 		}
@@ -135,7 +136,7 @@ public sealed class HandleCollector
 	public static void ResumeCollect()
 	{
 		bool flag = false;
-		lock (_LockGlobal)
+		lock (_LockClass)
 		{
 			if (suspendCount > 0)
 			{
@@ -163,7 +164,7 @@ public sealed class HandleCollector
 
 	public static int RegisterType(string typeName, int expense, int initialThreshold)
 	{
-		lock (_LockGlobal)
+		lock (_LockClass)
 		{
 			if (handleTypeCount == 0 || handleTypeCount == handleTypes.Length)
 			{

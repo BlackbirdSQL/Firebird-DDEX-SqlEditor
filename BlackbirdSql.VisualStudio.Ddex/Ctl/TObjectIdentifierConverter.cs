@@ -187,7 +187,8 @@ public class TObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 	//     An System.EventArgs object containing the event data.
 	protected override void OnSiteChanged(EventArgs e)
 	{
-		// Diag.Trace();
+		Tracer.Trace(GetType(), "OnSiteChanged()");
+
 		base.OnSiteChanged(e);
 	}
 

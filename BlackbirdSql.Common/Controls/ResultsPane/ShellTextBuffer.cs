@@ -5,22 +5,27 @@
 
 using System;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
+using BlackbirdSql.Common.Controls.Events;
+using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
-using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Controls.Events;
-using BlackbirdSql.Core.Ctl.Diagnostics;
+
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
 
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, IVsTextBufferDataEvents, IVsChangeClusterEvents, IVsTextBufferEvents
 {
@@ -186,6 +191,13 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 				Native.ThrowOnFailure(vsTextStream.GetUndoManager(out IOleUndoManager ppUndoManager), (string)null);
 				if (ppUndoManager != null)
 				{
+					if (!ThreadHelper.CheckAccess())
+					{
+						COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+						Diag.Dug(exc);
+						throw exc;
+					}
+
 					ppUndoManager.Enable(value ? 1 : 0);
 					undoEnabled = value;
 				}
@@ -209,7 +221,14 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 
 	public ShellTextBuffer(IVsTextStream textStream, object serviceProvider)
 	{
-		Initialize(textStream, new Microsoft.VisualStudio.Shell.ServiceProvider(serviceProvider as Microsoft.VisualStudio.OLE.Interop.IServiceProvider));
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
+		Initialize(textStream, new ServiceProvider(serviceProvider as Microsoft.VisualStudio.OLE.Interop.IServiceProvider));
 	}
 
 	public ShellTextBuffer()
@@ -232,7 +251,14 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 			throw ex2;
 		}
 
-		Microsoft.VisualStudio.Shell.ServiceProvider serviceProvider2 = new Microsoft.VisualStudio.Shell.ServiceProvider(serviceProvider as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
+		ServiceProvider serviceProvider2 = new ServiceProvider(serviceProvider as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
 		ILocalRegistry obj = (ILocalRegistry)serviceProvider2.GetService(typeof(ILocalRegistry));
 		if (obj == null)
 		{
@@ -291,14 +317,21 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 
 		if (vsTextBuffer != null)
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			(vsTextBuffer as IVsPersistDocData)?.Close();
 			vsTextBuffer = null;
 		}
 
 		serviceProvider = null;
 		ClearAllMarkers();
+
 		base.Dispose();
-		Tracer.Trace(GetType(), Tracer.Level.Verbose, "ShellTextBuffer.Dispose", "returning");
 	}
 
 	public override void Dirty()
@@ -309,10 +342,17 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 
 	private IVsWindowFrame GetWindowFrame(Guid logview)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		IVsUIShellOpenDocument obj = (IVsUIShellOpenDocument)serviceProvider.GetService(typeof(IVsUIShellOpenDocument));
 		if (obj == null)
 		{
-			Exception ex = new COMException("Required IVsUIShellOpenDocument service does not exist.", VSConstants.E_UNEXPECTED);
+			Exception ex = new COMException("Required IVsUIShellOpenDocument service does not exist.", VSConstants.E_NOINTERFACE);
 			Tracer.LogExThrow(GetType(), ex);
 			throw ex;
 		}
@@ -517,11 +557,25 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 
 	public override void ShowCode()
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		Native.ThrowOnFailure(GetWindowFrame(VSConstants.LOGVIEWID_Code).Show(), (string)null);
 	}
 
 	public override void ShowCode(int lineNum)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		try
 		{
 			IVsWindowFrame windowFrame = GetWindowFrame(VSConstants.LOGVIEWID_Code);

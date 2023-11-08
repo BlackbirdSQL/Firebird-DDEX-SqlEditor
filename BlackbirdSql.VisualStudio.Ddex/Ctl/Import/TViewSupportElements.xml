@@ -217,16 +217,6 @@
 
 	<!-- Definition list of table specific column properties -->
 	<Define name="TplPropertiesListTableColumn" >
-		<Property name="TABLE_CATALOG">
-			<DisplayName resource="Identifier_Name_Catalog" />
-			<Category resource="Category_Identifier" />
-			<Description resource="Identifier_Desc_Catalog" />
-		</Property>
-		<Property name="TABLE_SCHEMA">
-			<DisplayName resource="Identifier_Name_Schema" />
-			<Category resource="Category_Identifier" />
-			<Description resource="Identifier_Desc_Schema" />
-		</Property>
 		<Property name="TABLE_NAME">
 			<DisplayName resource="Identifier_Name_Table" />
 			<Category resource="Category_Identifier" />
@@ -242,16 +232,6 @@
 	
 	<!-- Definition list of view specific column properties -->
 	<Define name="TplPropertiesListViewColumn" >
-		<Property name="VIEW_CATALOG">
-			<DisplayName resource="Identifier_Name_Catalog" />
-			<Category resource="Category_Identifier" />
-			<Description resource="Identifier_Desc_Catalog" />
-		</Property>
-		<Property name="VIEW_SCHEMA">
-			<DisplayName resource="Identifier_Name_Schema" />
-			<Category resource="Category_Identifier" />
-			<Description resource="Identifier_Desc_Schema" />
-		</Property>
 		<Property name="VIEW_NAME">
 			<DisplayName resource="Identifier_Name_View" />
 			<Category resource="Category_Identifier" />
@@ -267,16 +247,6 @@
 
 	<!-- Definition list of trigger specific column -->
 	<Define name="TplPropertiesListTriggerColumn" >
-		<Property name="TABLE_CATALOG">
-			<DisplayName resource="Identifier_Name_Catalog" />
-			<Category resource="Category_Identifier" />
-			<Description resource="Identifier_Desc_Catalog" />
-		</Property>
-		<Property name="TABLE_SCHEMA">
-			<DisplayName resource="Identifier_Name_Schema" />
-			<Category resource="Category_Identifier" />
-			<Description resource="Identifier_Desc_Schema" />
-		</Property>
 		<Property name="TRIGGER_NAME">
 			<DisplayName resource="Identifier_Name_Trigger" />
 			<Category resource="Category_Identifier" />
@@ -292,16 +262,6 @@
 	
 	<!-- Definition list of index specific column properties -->
 	<Define name="TplPropertiesListIndexColumn" >
-		<Property name="TABLE_CATALOG">
-			<DisplayName resource="Identifier_Name_Catalog" />
-			<Category resource="Category_Identifier" />
-			<Description resource="Identifier_Desc_Catalog" />
-		</Property>
-		<Property name="TABLE_SCHEMA">
-			<DisplayName resource="Identifier_Name_Catalog" />
-			<Category resource="Category_Identifier" />
-			<Description resource="Identifier_Desc_Catalog" />
-		</Property>
 		<Property name="TABLE_NAME">
 			<DisplayName resource="Identifier_Name_Table" />
 			<Category resource="Category_Identifier" />
@@ -322,16 +282,6 @@
 
 	<!-- Definition list of foreign key specific column properties -->
 	<Define name="TplPropertiesListForeignKeyColumn" >
-		<Property name="CONSTRAINT_CATALOG">
-			<DisplayName resource="Identifier_Name_Catalog" />
-			<Category resource="Category_Identifier" />
-			<Description resource="Identifier_Desc_Catalog" />
-		</Property>
-		<Property name="CONSTRAINT_SCHEMA">
-			<DisplayName resource="Identifier_Name_Schema" />
-			<Category resource="Category_Identifier" />
-			<Description resource="Identifier_Desc_Schema" />
-		</Property>
 		<Property name="TABLE_NAME">
 			<DisplayName resource="Identifier_Name_Table" />
 			<Category resource="Category_Identifier" />
@@ -341,16 +291,6 @@
 			<DisplayName resource="Identifier_Name_ForeignKey" />
 			<Category resource="Category_Identifier" />
 			<Description resource="Identifier_Desc_ForeignKey" />
-		</Property>
-		<Property name="REFERENCED_TABLE_CATALOG">
-			<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedCatalog" />
-			<Category resource="Category_ReferencedObject" />
-			<Description resource="Property_Desc_ForeignKeyColumn_ReferencedCatalog" />
-		</Property>
-		<Property name="REFERENCED_TABLE_SCHEMA">
-			<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedSchema" />
-			<Category resource="Category_ReferencedObject" />
-			<Description resource="Property_Desc_ForeignKeyColumn_ReferencedSchema" />
 		</Property>
 		<Property name="REFERENCED_TABLE_NAME">
 			<DisplayName resource="Property_Name_ForeignKeyColumn_ReferencedTable" />
@@ -384,16 +324,6 @@
 
 	<!-- Definition list of stored procedure specific column properties -->
 	<Define name="TplPropertiesListStoredProcedureColumn" >
-		<Property name="PROCEDURE_CATALOG">
-			<DisplayName resource="Identifier_Name_Catalog" />
-			<Category resource="Category_Identifier" />
-			<Description resource="Identifier_Desc_Catalog" />
-		</Property>
-		<Property name="PROCEDURE_SCHEMA">
-			<DisplayName resource="Identifier_Name_Schema" />
-			<Category resource="Category_Identifier" />
-			<Description resource="Identifier_Desc_Schema" />
-		</Property>
 		<Property name="PROCEDURE_NAME">
 			<DisplayName resource="Identifier_Name_StoredProcedure" />
 			<Category resource="Category_Identifier" />
@@ -419,16 +349,6 @@
 
 	<!-- Definition list of function specific column properties -->
 	<Define name="TplPropertiesListFunctionColumn" >
-		<Property name="FUNCTION_CATALOG">
-			<DisplayName resource="Identifier_Name_Catalog" />
-			<Category resource="Category_Identifier" />
-			<Description resource="Identifier_Desc_Catalog" />
-		</Property>
-		<Property name="FUNCTION_SCHEMA">
-			<DisplayName resource="Identifier_Name_Schema" />
-			<Category resource="Category_Identifier" />
-			<Description resource="Identifier_Desc_Schema" />
-		</Property>
 		<Property name="FUNCTION_NAME">
 			<DisplayName resource="Identifier_Name_ScalarFunction" />
 			<Category resource="Category_Identifier" />
@@ -488,16 +408,6 @@
 	<Define name="TplPropertiesIndex" >
 		<Properties>
 			<TypeDisplayName resource="Type_Index" />
-			<Property name="TABLE_CATALOG">
-				<DisplayName resource="Identifier_Name_Catalog" />
-				<Category resource="Category_Identifier" />
-				<Description resource="Identifier_Desc_Catalog" />
-			</Property>
-			<Property name="TABLE_SCHEMA">
-				<DisplayName resource="Identifier_Name_Schema" />
-				<Category resource="Category_Identifier" />
-				<Description resource="Identifier_Desc_Schema" />
-			</Property>
 			<Property name="TABLE_NAME">
 				<DisplayName resource="Identifier_Name_Table" />
 				<Category resource="Category_Identifier" />
@@ -550,16 +460,6 @@
 	<Define name="TplPropertiesTrigger" >
 		<Properties>
 			<TypeDisplayName resource="Type_Trigger" />
-			<Property name="TABLE_CATALOG">
-				<DisplayName resource="Identifier_Name_Catalog" />
-				<Category resource="Category_Identifier" />
-				<Description resource="Identifier_Desc_Catalog" />
-			</Property>
-			<Property name="TABLE_SCHEMA">
-				<DisplayName resource="Identifier_Name_Schema" />
-				<Category resource="Category_Identifier" />
-				<Description resource="Identifier_Desc_Schema" />
-			</Property>
 			<Property name="TABLE_NAME">
 				<DisplayName resource="Identifier_Name_Table" />
 				<Category resource="Category_Identifier" />
@@ -692,16 +592,6 @@
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Table.ico" assembly="" />
 				<Properties>
 					<TypeDisplayName resource="Type_Table" />
-					<Property name="TABLE_CATALOG">
-						<DisplayName resource="Identifier_Name_Catalog" />
-						<Category resource="Category_Identifier" />
-						<Description resource="Identifier_Desc_Catalog" />
-					</Property>
-					<Property name="TABLE_SCHEMA">
-						<DisplayName resource="Identifier_Name_Schema" />
-						<Category resource="Category_Identifier" />
-						<Description resource="Identifier_Desc_Schema" />
-					</Property>
 					<Property name="TABLE_NAME">
 						<DisplayName resource="Identifier_Name_Name" />
 						<Category resource="Category_Identifier" />
@@ -810,16 +700,6 @@
 									<Icon name="ForeignKey" />
 									<Properties>
 										<TypeDisplayName resource="Type_ForeignKey" />
-										<Property name="CONSTRAINT_CATALOG">
-											<DisplayName resource="Identifier_Name_Catalog" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Catalog" />
-										</Property>
-										<Property name="CONSTRAINT_SCHEMA">
-											<DisplayName resource="Identifier_Name_Schema" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Schema" />
-										</Property>
 										<Property name="TABLE_NAME">
 											<DisplayName resource="Identifier_Name_Table" />
 											<Category resource="Category_Identifier" />
@@ -829,16 +709,6 @@
 											<DisplayName resource="Identifier_Name_Name" />
 											<Category resource="Category_Identifier" />
 											<Description resource="Identifier_Desc_Name" />
-										</Property>
-										<Property name="REFERENCED_TABLE_CATALOG">
-											<DisplayName resource="Property_Name_ForeignKey_ReferencedCatalog" />
-											<Category resource="Category_ReferencedObject" />
-											<Description resource="Property_Desc_ForeignKey_ReferencedCatalog" />
-										</Property>
-										<Property name="REFERENCED_TABLE_SCHEMA">
-											<DisplayName resource="Property_Name_ForeignKey_ReferencedSchema" />
-											<Category resource="Category_ReferencedObject" />
-											<Description resource="Property_Desc_ForeignKey_ReferencedSchema" />
 										</Property>
 										<Property name="REFERENCED_TABLE_NAME">
 											<DisplayName resource="Property_Name_ForeignKey_ReferencedTable" />

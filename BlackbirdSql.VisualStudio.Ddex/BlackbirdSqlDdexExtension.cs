@@ -3,21 +3,21 @@
 
 
 using System;
-using System.Collections.Generic;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
 
 using BlackbirdSql.Controller;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Interfaces;
-using BlackbirdSql.VisualStudio.Ddex.Controls.Config;
 using BlackbirdSql.VisualStudio.Ddex.Ctl;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.Config;
+using BlackbirdSql.VisualStudio.Ddex.Ctl.Interfaces;
 using BlackbirdSql.VisualStudio.Ddex.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 
@@ -48,6 +48,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 #region							BlackbirdSqlDdexExtension Class Attributes
 // ---------------------------------------------------------------------------------------------------------
 
+
 // Register this class as a VS package.
 [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
 
@@ -74,17 +75,17 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 [VsPackageRegistration]
 
 // Register services
-[ProvideService(typeof(IBPackageController), IsAsyncQueryable = true, ServiceName = PackageData.PackageControllerServiceName)]
-[ProvideService(typeof(IBProviderObjectFactory), IsAsyncQueryable = true, ServiceName = PackageData.ProviderObjectFactoryServiceName)]
+[ProvideService(typeof(IBPackageController), IsAsyncQueryable = true,
+	ServiceName = PackageData.PackageControllerServiceName)]
+[ProvideService(typeof(IBProviderObjectFactory), IsAsyncQueryable = true,
+	ServiceName = PackageData.ProviderObjectFactoryServiceName)]
 
 
 // Implement Visual studio options/settings
-[ProvideOptionPage(typeof(OptionsProvider.GeneralOptionPage), OptionsProvider.OptionPageCategory,
-	OptionsProvider.GeneralOptionPageName, 0, 0, true, SupportsProfiles = true)]
-#if DEBUG
-[ProvideOptionPage(typeof(DebugOptionsDialogPage), OptionsProvider.OptionPageCategory,
-	OptionsProvider.DebugOptionPageName, 0, 0, true, SupportsProfiles = true)]
-#endif
+[VsProvideOptionPage(typeof(SettingsProvider.GeneralSettingsPage), SettingsProvider.CategoryName,
+	SettingsProvider.SubCategoryName, SettingsProvider.GeneralSettingsPageName, 200, 201, 221)]
+[VsProvideOptionPage(typeof(SettingsProvider.DebugSettingsPage), SettingsProvider.CategoryName,
+	SettingsProvider.SubCategoryName, SettingsProvider.DebugSettingsPageName, 200, 201, 222)]
 
 
 #endregion Class Attributes
@@ -92,18 +93,18 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 
 
 
-
 // =========================================================================================================
 #region							BlackbirdSqlDdexExtension Class Declaration
+//
 // =========================================================================================================
-
-
 public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 {
 
 
 
 	#region Variables - BlackbirdSqlDdexExtension
+
+
 	#endregion Variables
 
 
@@ -114,6 +115,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 	#region Property accessors - BlackbirdSqlDdexExtension
 	// =========================================================================================================
 
+	private UserSettings ExtensionSettings => (UserSettings)UserSettings.Instance;
 
 	#endregion Property accessors
 
@@ -182,7 +184,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 
 		// Add FirebirdClient to assembly cache
 		if (_InvariantAssembly == null && DbProviderFactoriesEx.AddAssemblyToCache(typeof(FirebirdClientFactory),
-			Properties.Resources.Provider_ShortDisplayName, Properties.Resources.Provider_DisplayName))
+			Resources.Provider_ShortDisplayName, Resources.Provider_DisplayName))
 		{
 			_InvariantAssembly = typeof(FirebirdClientFactory).Assembly;
 
@@ -206,6 +208,8 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 		// It is the final descendent package class's responsibility to initiate the call to FinalizeAsync.
 		await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
+
+		// We are the final descendent package class so call FinalizeAsync().
 		await FinalizeAsync(cancellationToken, progress);
 
 
@@ -225,9 +229,15 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 		if (cancellationToken.IsCancellationRequested)
 			return;
 
-		// Add provider object factory
-		Services.AddService(typeof(IBProviderObjectFactory), ServicesCreatorCallbackAsync, promote: true);
+		// Load all packages settings models and propogate throughout the extension.
+		PropagateSettingsEventArgs e = new();
 
+		ExtensionSettings.PopulateSettingsEventArgs(ref e);
+		ExtensionSettings.PropagateSettings(e);
+		ExtensionSettings.RegisterSettingsEventHandlers(ExtensionSettings.OnSettingsSaved);
+
+		// Add provider object and schema factories
+		Services.AddService(typeof(IBProviderObjectFactory), ServicesCreatorCallbackAsync, promote: true);
 		Services.AddService(typeof(IBProviderSchemaFactory), ServicesCreatorCallbackAsync, promote: true);
 
 
@@ -378,88 +388,17 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 	}
 
 
-
-	public override void RegisterOptionsEventHandlers(IBAsyncPackage.SettingsSavedDelegate onSettingsSavedDelegate)
-	{
-		try
-		{
-			GeneralOptionModel.Saved += new Action<GeneralOptionModel>(onSettingsSavedDelegate);
-			DebugOptionModel.Saved += new Action<DebugOptionModel>(onSettingsSavedDelegate);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex, Resources.ExceptionFailedToSubscribeOptionEvents);
-		}
-	}
-
-
-
-	public override GlobalEventArgs PopulateOptionsEventArgs()
-	{
-		try
-		{
-			return new GlobalEventArgs(new KeyValuePair<string, object>[]
-				{
-					// General options
-					GlobalEventArgs.ValuePair( "ShowDiagramPane", GeneralOptionModel.Instance.ShowDiagramPane ),
-					GlobalEventArgs.ValuePair( "EnableDiagnostics", GeneralOptionModel.Instance.EnableDiagnostics ),
-					GlobalEventArgs.ValuePair( "EnableTaskLog", GeneralOptionModel.Instance.EnableTaskLog ),
-					GlobalEventArgs.ValuePair( "ValidateConfig", GeneralOptionModel.Instance.ValidateConfig ),
-					GlobalEventArgs.ValuePair( "ValidateEdmx", GeneralOptionModel.Instance.ValidateEdmx ),
-					// Debug options
-					GlobalEventArgs.ValuePair( "PersistentValidation", DebugOptionModel.Instance.PersistentValidation ),
-					GlobalEventArgs.ValuePair( "EnableTrace", DebugOptionModel.Instance.EnableTrace ),
-					GlobalEventArgs.ValuePair( "EnableTracer", DebugOptionModel.Instance.EnableTracer ),
-					GlobalEventArgs.ValuePair( "EnableDiagnosticsLog", DebugOptionModel.Instance.EnableDiagnosticsLog ),
-					GlobalEventArgs.ValuePair( "LogFile", DebugOptionModel.Instance.LogFile ),
-					GlobalEventArgs.ValuePair( "EnableFbDiagnostics", DebugOptionModel.Instance.EnableFbDiagnostics ),
-					GlobalEventArgs.ValuePair( "FbLogFile", DebugOptionModel.Instance.FbLogFile )
-				});
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex, Resources.ExceptionFailedToRetrievePackageSettings);
-			throw ex;
-		}
-
-
-	}
-
-
-	public override GlobalEventArgs PopulateOptionsEventArgs(string group)
-	{
-		if (group == "General")
-		{
-			return new GlobalEventArgs(group, new KeyValuePair<string, object>[]
-				{
-					// General options
-					GlobalEventArgs.ValuePair( "ShowDiagramPane", GeneralOptionModel.Instance.ShowDiagramPane ),
-					GlobalEventArgs.ValuePair( "EnableDiagnostics", GeneralOptionModel.Instance.EnableDiagnostics ),
-					GlobalEventArgs.ValuePair( "EnableTaskLog", GeneralOptionModel.Instance.EnableTaskLog ),
-					GlobalEventArgs.ValuePair( "ValidateConfig", GeneralOptionModel.Instance.ValidateConfig ),
-					GlobalEventArgs.ValuePair( "ValidateEdmx", GeneralOptionModel.Instance.ValidateEdmx )
-				});
-		}
-		else if (group == "Debug")
-		{
-			return new GlobalEventArgs(group, new KeyValuePair<string, object>[]
-				{
-					// Debug options
-					GlobalEventArgs.ValuePair( "PersistentValidation", DebugOptionModel.Instance.PersistentValidation ),
-					GlobalEventArgs.ValuePair( "EnableTrace", DebugOptionModel.Instance.EnableTrace ),
-					GlobalEventArgs.ValuePair( "EnableTracer", DebugOptionModel.Instance.EnableTracer ),
-					GlobalEventArgs.ValuePair( "EnableDiagnosticsLog", DebugOptionModel.Instance.EnableDiagnosticsLog ),
-					GlobalEventArgs.ValuePair( "LogFile", DebugOptionModel.Instance.LogFile ),
-					GlobalEventArgs.ValuePair( "EnableFbDiagnostics", DebugOptionModel.Instance.EnableFbDiagnostics ),
-					GlobalEventArgs.ValuePair( "FbLogFile", DebugOptionModel.Instance.FbLogFile )
-				});
-		}
-
-		return null;
-	}
-
-
 	#endregion Methods
+
+
+
+
+	// =========================================================================================================
+	#region Event handlers - BlackbirdSqlDdexExtension
+	// =========================================================================================================
+
+
+	#endregion Event handlers
 
 }
 

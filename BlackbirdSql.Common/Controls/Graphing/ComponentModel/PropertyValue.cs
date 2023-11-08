@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core.Ctl.ComponentModel;
 
 namespace BlackbirdSql.Common.Controls.Graphing.ComponentModel;
 
@@ -46,7 +47,7 @@ internal sealed class PropertyValue : PropertyDescriptor
 
 	private int _DisplayOrder = int.MaxValue;
 
-	private PropertyDescriptor _BaseProperty;
+	private readonly PropertyDescriptor _BaseProperty;
 
 	private bool _IsLongString;
 
@@ -117,10 +118,7 @@ internal sealed class PropertyValue : PropertyDescriptor
 			InitializeDisplayAttributesIfNecessary();
 			if (_DisplayName != null || _DisplayNameKey != null)
 			{
-				if (_DisplayName == null)
-				{
-					_DisplayName = ControlsResources.ResourceManager.GetString(_DisplayNameKey);
-				}
+				_DisplayName ??= ControlsResources.ResourceManager.GetString(_DisplayNameKey);
 				return _DisplayName;
 			}
 			return base.DisplayName;
@@ -134,10 +132,7 @@ internal sealed class PropertyValue : PropertyDescriptor
 			InitializeDisplayAttributesIfNecessary();
 			if (_Description != null || _DescriptionKey != null)
 			{
-				if (_Description == null)
-				{
-					_Description = ControlsResources.ResourceManager.GetString(_DescriptionKey);
-				}
+				_Description ??= ControlsResources.ResourceManager.GetString(_DescriptionKey);
 				return _Description;
 			}
 			return base.Description;
@@ -150,10 +145,10 @@ internal sealed class PropertyValue : PropertyDescriptor
 		_Value = value;
 	}
 
-	public PropertyValue(PropertyDescriptor _BaseProperty, object value)
-		: this(_BaseProperty.Name, value)
+	public PropertyValue(PropertyDescriptor baseProperty, object value)
+		: this(baseProperty.Name, value)
 	{
-		this._BaseProperty = _BaseProperty;
+		_BaseProperty = baseProperty;
 	}
 
 	public void SetDisplayNameAndDescription(string newDisplayName, string newDescription)
@@ -196,10 +191,7 @@ internal sealed class PropertyValue : PropertyDescriptor
 		{
 			_DisplayNameKey = displayNameDescriptionAttribute.DisplayName;
 			_DescriptionKey = displayNameDescriptionAttribute.Description;
-			if (_DescriptionKey == null)
-			{
-				_DescriptionKey = _DisplayNameKey;
-			}
+			_DescriptionKey ??= _DisplayNameKey;
 		}
 		if (Attributes[typeof(DisplayOrderAttribute)] is DisplayOrderAttribute displayOrderAttribute)
 		{

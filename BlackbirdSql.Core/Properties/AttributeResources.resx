@@ -117,22 +117,49 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="GlobalizedDesignerVerbReset" xml:space="preserve">
+    <value>Reset To Defaults  ↩</value>
+  </data>
+  <data name="GlobalizedDialogFilterGeneric" xml:space="preserve">
+    <value>All Files(*.*)|*.*</value>
+  </data>
+  <data name="GlobalizedDialogGenericOpenFile" xml:space="preserve">
+    <value>Open File</value>
+  </data>
+  <data name="GlobalizedDialogGenericSelectFolder" xml:space="preserve">
+    <value>Select Folder</value>
+  </data>
   <data name="GlobalizedLiteralDisabled" xml:space="preserve">
-    <value>Disabled</value>
+    <value>☐ Disabled</value>
   </data>
   <data name="GlobalizedLiteralEnabled" xml:space="preserve">
-    <value>Enabled</value>
+    <value>☑ Enabled</value>
   </data>
   <data name="GlobalizedLiteralFalse" xml:space="preserve">
-    <value>False</value>
+    <value>☐ False</value>
   </data>
   <data name="GlobalizedLiteralHide" xml:space="preserve">
-    <value>Hide</value>
+    <value>☐ Hidden</value>
+  </data>
+  <data name="GlobalizedLiteralNo" xml:space="preserve">
+    <value>☐ No</value>
+  </data>
+  <data name="GlobalizedLiteralOff" xml:space="preserve">
+    <value>☐ Off</value>
+  </data>
+  <data name="GlobalizedLiteralOn" xml:space="preserve">
+    <value>☑ On</value>
   </data>
   <data name="GlobalizedLiteralShow" xml:space="preserve">
-    <value>Visible</value>
+    <value>☑ Visible</value>
   </data>
   <data name="GlobalizedLiteralTrue" xml:space="preserve">
-    <value>True</value>
+    <value>☑ True</value>
+  </data>
+  <data name="GlobalizedLiteralYes" xml:space="preserve">
+    <value>☑ Yes</value>
+  </data>
+  <data name="Reg_NotifyOptionPage" xml:space="preserve">
+    <value>Option Page:      {0}\{1}\{2}</value>
   </data>
 </root>

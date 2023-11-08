@@ -61,7 +61,43 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Disabled.
+        ///   Looks up a localized string similar to Reset To Defaults  ↩.
+        /// </summary>
+        internal static string GlobalizedDesignerVerbReset {
+            get {
+                return ResourceManager.GetString("GlobalizedDesignerVerbReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All Files(*.*)|*.*.
+        /// </summary>
+        internal static string GlobalizedDialogFilterGeneric {
+            get {
+                return ResourceManager.GetString("GlobalizedDialogFilterGeneric", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open File.
+        /// </summary>
+        internal static string GlobalizedDialogGenericOpenFile {
+            get {
+                return ResourceManager.GetString("GlobalizedDialogGenericOpenFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select Folder.
+        /// </summary>
+        internal static string GlobalizedDialogGenericSelectFolder {
+            get {
+                return ResourceManager.GetString("GlobalizedDialogGenericSelectFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ☐ Disabled.
         /// </summary>
         internal static string GlobalizedLiteralDisabled {
             get {
@@ -70,7 +106,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enabled.
+        ///   Looks up a localized string similar to ☑ Enabled.
         /// </summary>
         internal static string GlobalizedLiteralEnabled {
             get {
@@ -79,7 +115,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to False.
+        ///   Looks up a localized string similar to ☐ False.
         /// </summary>
         internal static string GlobalizedLiteralFalse {
             get {
@@ -88,7 +124,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Hide.
+        ///   Looks up a localized string similar to ☐ Hidden.
         /// </summary>
         internal static string GlobalizedLiteralHide {
             get {
@@ -97,7 +133,34 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Visible.
+        ///   Looks up a localized string similar to ☐ No.
+        /// </summary>
+        internal static string GlobalizedLiteralNo {
+            get {
+                return ResourceManager.GetString("GlobalizedLiteralNo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ☐ Off.
+        /// </summary>
+        internal static string GlobalizedLiteralOff {
+            get {
+                return ResourceManager.GetString("GlobalizedLiteralOff", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ☑ On.
+        /// </summary>
+        internal static string GlobalizedLiteralOn {
+            get {
+                return ResourceManager.GetString("GlobalizedLiteralOn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ☑ Visible.
         /// </summary>
         internal static string GlobalizedLiteralShow {
             get {
@@ -106,11 +169,29 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to True.
+        ///   Looks up a localized string similar to ☑ True.
         /// </summary>
         internal static string GlobalizedLiteralTrue {
             get {
                 return ResourceManager.GetString("GlobalizedLiteralTrue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ☑ Yes.
+        /// </summary>
+        internal static string GlobalizedLiteralYes {
+            get {
+                return ResourceManager.GetString("GlobalizedLiteralYes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option Page:      {0}\{1}\{2}.
+        /// </summary>
+        internal static string Reg_NotifyOptionPage {
+            get {
+                return ResourceManager.GetString("Reg_NotifyOptionPage", resourceCulture);
             }
         }
     }

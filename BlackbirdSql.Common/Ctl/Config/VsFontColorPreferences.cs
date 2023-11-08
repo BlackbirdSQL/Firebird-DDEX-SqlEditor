@@ -3,10 +3,12 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms.Design;
 using System.Windows.Threading;
-using BlackbirdSql.Common.Ctl;
+using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using Microsoft.VisualStudio;
@@ -19,34 +21,47 @@ using Microsoft.Win32;
 
 namespace BlackbirdSql.Common.Ctl.Config;
 
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
+[SuppressMessage("Usage", "VSTHRD001:Avoid legacy thread switching APIs")]
+[SuppressMessage("Usage", "VSTHRD110:Observe result of async calls")]
+
 public class VsFontColorPreferences : IVsTextManagerEvents, IDisposable
 {
-	private ConnectionPointCookie _textManagerEventsCookie;
+	private ConnectionPointCookie _TextManagerEventsCookie;
 
-	private bool _isFireEventPending;
+	private bool _IsFireEventPending;
 
 	public static Font EnvironmentFont
 	{
 		get
 		{
 			Font font = null;
+
 			if (Package.GetGlobalService(typeof(IUIService)) is IUIService iUIService)
 			{
 				font = iUIService.Styles["DialogFont"] as Font;
+
 				if (font != null)
-				{
 					return font;
-				}
 			}
+
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			if (Package.GetGlobalService(typeof(SUIHostLocale)) is IUIHostLocale2 iUIHostLocale)
 			{
 				UIDLGLOGFONT[] array = new UIDLGLOGFONT[1];
 				ErrorHandler.ThrowOnFailure(iUIHostLocale.GetDialogFont(array));
+
 				if (array.Length != 0)
-				{
 					font = FontFromUIDLGLOGFONT(array[0]);
-				}
 			}
+
 			return font;
 		}
 	}
@@ -56,7 +71,7 @@ public class VsFontColorPreferences : IVsTextManagerEvents, IDisposable
 	public VsFontColorPreferences()
 	{
 		IVsTextManager source = Package.GetGlobalService(typeof(SVsTextManager)) as IVsTextManager;
-		_textManagerEventsCookie = new ConnectionPointCookie(source, this, typeof(IVsTextManagerEvents));
+		_TextManagerEventsCookie = new ConnectionPointCookie(source, this, typeof(IVsTextManagerEvents));
 		SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
 	}
 
@@ -76,10 +91,10 @@ public class VsFontColorPreferences : IVsTextManagerEvents, IDisposable
 	{
 		if (disposing)
 		{
-			if (_textManagerEventsCookie != null)
+			if (_TextManagerEventsCookie != null)
 			{
-				_textManagerEventsCookie.Dispose();
-				_textManagerEventsCookie = null;
+				_TextManagerEventsCookie.Dispose();
+				_TextManagerEventsCookie = null;
 			}
 			SystemEvents.UserPreferenceChanged -= SystemEvents_UserPreferenceChanged;
 		}
@@ -115,15 +130,22 @@ public class VsFontColorPreferences : IVsTextManagerEvents, IDisposable
 
 	private void FireVsFontColorPreferencesChanged()
 	{
-		if (_isFireEventPending)
-		{
+		if (_IsFireEventPending)
 			return;
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
-		_isFireEventPending = true;
+
+		_IsFireEventPending = true;
+
 		Dispatcher.CurrentDispatcher.BeginInvoke((Action)delegate
 		{
 			PreferencesChangedEvent?.Invoke(this, EventArgs.Empty);
-			_isFireEventPending = false;
+			_IsFireEventPending = false;
 		});
 	}
 

@@ -20,7 +20,7 @@ using Microsoft.VisualStudio;
 // namespace Microsoft.SqlServer.Management.UI.Grid
 namespace BlackbirdSql.Common.Controls.Grid
 {
-	public class EmbeddedSpinBox : NumericUpDown, IGridEmbeddedControl, IGridEmbeddedControlManagement2, IGridEmbeddedControlManagement, IGridEmbeddedSpinControl
+	public class EmbeddedSpinBox : NumericUpDown, IBGridEmbeddedControl, IBGridEmbeddedControlManagement2, IBGridEmbeddedControlManagement, IBGridEmbeddedSpinControl
 	{
 		protected int m_MarginsWidth;
 

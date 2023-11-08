@@ -212,8 +212,6 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	// ---------------------------------------------------------------------------------
 	protected override MenuCommand CreateCommand(int itemId, CommandID commandId, object[] parameters)
 	{
-		ThreadHelper.ThrowIfNotOnUIThread();
-
 		Tracer.Trace(GetType(), "AbstractCommandProvider.CreateCommand", "itemId: {0}, commandId: {1}", itemId, commandId);
 		
 		MenuCommand command = null;
@@ -227,6 +225,13 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 			cmd = new DataViewMenuCommand(itemId, commandId, delegate
 			{
 				node = Site.ExplorerConnection.FindNode(itemId);
+
+				if (node == null)
+				{
+					Tracer.Trace(GetType(), "AbstractCommandProvider.CreateCommand", "itemId: {0}, commandId: {1}. Node is null. Exiting.", itemId, commandId);
+					return;
+				}
+
 				commandNodeSystemType = _CommandNodeSystemType;
 
 				if (commandNodeSystemType < EnNodeSystemType.User)
@@ -359,7 +364,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 	public static string GetResourceString(string commandFunction, string scriptType, EnNodeSystemType nodeSystemType)
 	{
-		return GetResourceString(commandFunction, scriptType, MonikerAgent.GetNodeObjectType(nodeSystemType));
+		return GetResourceString(commandFunction, scriptType, MonikerAgent.GetNodeSystemType(nodeSystemType));
 
 	}
 
@@ -432,8 +437,6 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	// ---------------------------------------------------------------------------------
 	protected void OnOpen(int itemId, bool alternate)
 	{
-		ThreadHelper.ThrowIfNotOnUIThread();
-
 		Tracer.Trace(GetType(), "AbstractCommandProvider.OnOpen", "itemId: {0}, alternate: {1}", itemId, alternate);
 
 		IVsDataExplorerNode node = Site.ExplorerConnection.FindNode(itemId);
@@ -467,10 +470,10 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 			MonikerAgent moniker = new(node);
 
 			csb.DataSource = moniker.Server;
-			csb.Port = moniker.Port;
-			csb.UserID = moniker.User;
 			csb.Database = moniker.Database;
-			csb.Password = moniker.Password;
+			csb.UserID = moniker.User;
+			csb.Role = moniker.Role;
+			csb.NoDatabaseTriggers = moniker.NoTriggers;
 
 			IList<string> identifierList = moniker.Identifier.ToArray();
 			EnModelObjectType objectType = moniker.ObjectType;

@@ -1,17 +1,15 @@
 ﻿
-using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
-using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
-
-using FirebirdSql.Data.FirebirdClient;
 
 using Microsoft.VisualStudio.Data.Services;
 
@@ -20,179 +18,177 @@ using EnNodeSystemType = BlackbirdSql.Core.Ctl.CommandProviders.CommandPropertie
 
 namespace BlackbirdSql.Core.Model;
 
-public class MonikerAgent
+// =========================================================================================================
+//
+//											MonikerAgent Class
+//
+/// <summary>
+/// This class and it's descendents centrally control monikers for the extension.
+/// A BlackbirdSql moniker is based on Server(Dataset) where Dataset is the database file name.
+/// </summary>
+/// <remarks>
+/// Monikers must be uniquely identifiable by the server->databasePath (document moniker - D prefix) and
+/// also by the connection equivalency properties (connection moniker C - prefix) if provided, so
+/// non-unique datasets are numbered for a session. This means that a node's moniker may differ
+/// from one ide session to another.
+/// A connection moniker will always have a doument moniker, but a document moniker may not necessarly
+/// have a connection moniker. Connection monikers may also share document monikers if the underlying
+/// databases are one and the same.
+/// Also, changes to a connection's properties must always call OnMonikerPropertiesChanged() otherwise
+/// the agent will break. 
+/// </remarks>
+// =========================================================================================================
+public class MonikerAgent : AbstractMonikerAgent
 {
-	// Url format: fbsql://user:password@server:port/dataset[/database_serialized/nodeType/id2.dd3...]
+
+	// ---------------------------------------------------------------------------------
+	#region Constants - MonikerAgent
+	// ---------------------------------------------------------------------------------
+
 	public const string C_SqlExtension = ".fbsql";
 
 	protected const string C_ServiceFolder = "ServerxExplorer";
 	protected const string C_TempSqlFolder = "SqlTemporaryFiles";
-	protected const string C_Scheme = "fbsql";
-	protected const string C_PathPrefix = "{0}({1})";
-	protected const char C_CompositeIdentifierSeparator = '.';
+
+
+	#endregion Constants
+
+
+
+
+	// =========================================================================================================
+	#region Variables - MonikerAgent
+	// =========================================================================================================
+
 
 	protected readonly bool _IsUnique = false;
 
-	protected bool _LowerCaseDatabase = true;
 
-	protected string _TypeSuffix = "";
-
-	protected string _Explorer = "";
-
-	protected string _User = "";
-	protected string _Password = "";
-	protected string _Server = "";
-
-	protected int _Port = CoreConstants.C_DefaultPortNumber;
-
-	protected string _Database = "";
-
-	protected string _Dataset = null;
+	#endregion Variables
 
 
-	protected EnModelObjectType _ObjectType;
 
-	protected string _ObjectName;
+
+	// =========================================================================================================
+	#region Property accessors - MonikerAgent
+	// =========================================================================================================
+
+
 
 	public string DocumentMoniker => ToDocumentMoniker();
 
 
-	public bool LowerCaseDatabase
-	{
-		get { return _LowerCaseDatabase; }
-		set { _LowerCaseDatabase = value; }
-	}
+	public string[] Identifier => ObjectName.Split('.');
 
 
-	public string Server
-	{
-		get { return _Server; }
-		set { _Server = value; }
-	}
-
-	public int Port
-	{
-		get { return _Port; }
-		set { _Port = value; }
-	}
-
-	public string Database
-	{
-		get { return _Database; }
-		set { _Database = value; }
-	}
-
-	public string Dataset
-	{
-		get
-		{
-			if (string.IsNullOrEmpty(_Dataset))
-			{
-				if (string.IsNullOrEmpty(_Database))
-					return "";
-
-				return Path.GetFileNameWithoutExtension(_Database);
-			}
-
-			return _Dataset;
-		}
-		set { _Dataset = value; }
-	}
-
-	public string[] Identifier => _ObjectName.Split('.');
-
-
-	public string User
-	{
-		get { return _User; }
-		set { _User = value; }
-	}
-
-	public string Password
-	{
-		get { return _Password; }
-		set { _Password = value; }
-	}
-
-
-	public EnModelObjectType ObjectType
-	{
-		get { return _ObjectType; }
-		set { _ObjectType = value; }
-	}
-
-
-	public string ObjectName
-	{
-		get { return _ObjectName; }
-		set { _ObjectName = value; }
-	}
 
 	public object[] OriginalIdentifier => GetOriginalIdentifier();
 
+	public static IDictionary<string, string> RegisteredDatasets => _SDatasetKeys ?? LoadConfiguredConnections();
+	public static IDictionary<string, string> RegisteredConnectionMonikers => _SConnectionMonikers ?? LoadConfiguredConnectionMonikers();
 
-	public string Moniker => ToString();
+
+	#endregion Property accessors
 
 
-	public MonikerAgent(bool isUnique = false, bool lowercaseDatabase = true, string typeSuffix = "")
+
+
+	// =========================================================================================================
+	#region Constructors / Destructors - MonikerAgent
+	// =========================================================================================================
+
+
+	public MonikerAgent(bool isUnique = false, bool alternate = false) : base()
 	{
 		_IsUnique = isUnique;
-		_LowerCaseDatabase = lowercaseDatabase;
-		_TypeSuffix = typeSuffix;
+		_Alternate = alternate;
 	}
 
 
-	public MonikerAgent(string fbSqlUrl, bool isUnique = false, bool lowercaseDatabase = true, string typeSuffix = "")
-		: this(isUnique, lowercaseDatabase, typeSuffix)
+	public MonikerAgent(IDbConnection connection) : base(connection)
 	{
-		Parse(fbSqlUrl);
+		_IsUnique = true;
 	}
 
-	public MonikerAgent(IBPropertyAgent ci, bool isUnique = false, bool lowercaseDatabase = true, string typeSuffix = "")
-		: this(isUnique, lowercaseDatabase, typeSuffix)
+
+	public MonikerAgent(IBPropertyAgent ci) : base(ci)
 	{
-		Parse(ci);
+		_IsUnique = true;
 	}
 
 
-	public MonikerAgent(IVsDataExplorerNode node, bool isUnique = false, bool lowercaseDatabase = true, string typeSuffix = "")
-		: this(isUnique, lowercaseDatabase, typeSuffix)
+	public MonikerAgent(IVsDataExplorerNode node, bool isUnique = false, bool alternate = false)
+		: base(node)
 	{
-		Extract(node);
+		_IsUnique = (ObjectType == EnModelObjectType.Database) || isUnique;
+		_Alternate = alternate;
 	}
 
-	public MonikerAgent(string server, string database, string user, EnModelObjectType objectType,
-		IList<string> identifierList, bool isUnique = false, bool lowercaseDatabase = true, string typeSuffix = "")
-		: this(server, database, user, objectType, (object[])identifierList.ToArray(), isUnique, lowercaseDatabase, typeSuffix)
+
+	public MonikerAgent(string server, string database, EnModelObjectType objectType,
+			IList<string> identifierList, bool isUnique = false, bool alternate = false)
+		: base(null, server, database, objectType, identifierList.ToArray<object>())
 	{
+		_IsUnique = (ObjectType == EnModelObjectType.Database) || isUnique;
+		_Alternate = alternate;
 	}
 
 
-	public MonikerAgent(string server, string database, string user, EnModelObjectType objectType,
-		object[] identifier, bool isUnique = false, bool lowercaseDatabase = true, string typeSuffix = "")
-		: this(isUnique, lowercaseDatabase, typeSuffix)
+	public MonikerAgent(string displayMember, string dataset, string server, int port, EnDbServerType serverType, string database,
+			string user, string password, string role, string charset, int dialect, EnModelObjectType objectType, object[] identifier, bool isUnique)
+		: base(displayMember, dataset, server, port, serverType, database, user, password, role, charset, dialect, false, objectType, identifier)
 	{
-		_Server = server;
-		_Database = database;
-		_User = user;
-		_ObjectType = objectType;
-
-		_ObjectName = "";
-
-		if (identifier != null && identifier.Length > 0)
-		{
-			_ObjectName = identifier[0] != null ? identifier[0].ToString() : "";
-			for (int i = 1; i < identifier.Length; i++)
-				_ObjectName += C_CompositeIdentifierSeparator
-					+ (identifier[i] != null ? identifier[i].ToString() : "");
-		}
-
+		_IsUnique = (ObjectType == EnModelObjectType.Database) || isUnique;
 	}
 
 
+	/// <summary>
+	/// .ctor for use only by XmlParser for registering FlameRobin datasetKeys.
+	/// </summary>
+	protected MonikerAgent(string displayMember, string server, int port, EnDbServerType serverType, string database,
+		string user, string password, string role, string charset, int dialect, bool noTriggers)
+		: base(displayMember, server, port, serverType, database, user, password, role, charset, dialect, noTriggers)
+	{
+		_IsUnique = true;
+	}
 
+
+	/// <summary>
+	/// Reserved for the registration of FlameRobin datasetKeys.
+	/// </summary>
+	public static MonikerAgent RegisterDatasetKey(string displayMember, string server, int port, EnDbServerType serverType,
+		string database, string user, string password, string role, string charset, int dialect, bool noTriggers)
+	{
+		MonikerAgent moniker = new(displayMember, server, port, serverType, database, user, password, role, charset, dialect, false);
+		string datasetKey = moniker.RegisterUniqueConnectionDatsetKey(true);
+
+		if (string.IsNullOrWhiteSpace(datasetKey))
+			return null;
+
+
+		return moniker;
+	}
+
+	#endregion Property Constructors / Destructors
+
+
+
+
+	// =========================================================================================================
+	#region Methods - MonikerAgent
+	// =========================================================================================================
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Decorates a DDL raw script to it's executable form.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static string GetDecoratedDdlSource(IVsDataExplorerNode node, bool alternate)
 	{
+		Tracer.Trace(typeof(MonikerAgent), "GetDecoratedDdlSource()");
+
 		IVsDataObject obj = node.Object;
 		IVsDataExplorerChildNodeCollection nodes;
 
@@ -327,52 +323,32 @@ public class MonikerAgent
 
 
 
-	public void Extract(IVsDataExplorerNode node)
-	{
-		_Explorer = node.ExplorerConnection.DisplayName;
-
-		IVsDataObject @rootObj = node.ExplorerConnection.ConnectionNode.Object;
-		IVsDataObject @nodeObj = node.Object;
-
-		if (@rootObj != null && @nodeObj != null)
-		{
-			_Server = (string)@rootObj.Properties[ModelConstants.C_KeyRootDataSourceName];
-			_Port = (int)@rootObj.Properties[ModelConstants.C_KeySIPortNumber];
-			// This could be ambiguous
-			_Dataset = (string)@rootObj.Properties[ModelConstants.C_KeyRootDataset];
-			_Database = (string)@rootObj.Properties[ModelConstants.C_KeySICatalog];
-			_User = (string)@rootObj.Properties[ModelConstants.C_KeySIUserId];
-			_Password = (string)@rootObj.Properties[ModelConstants.C_KeySIPassword];
-
-			_ObjectType = nodeObj.Type.ToModelObjectType();
-			_ObjectName = @nodeObj.Identifier.ToString(DataObjectIdentifierFormat.None);
-		}
-	}
-
-
-
-
-
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets a full identifier for a node including it's root node
+	/// identifier and type.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public string[] GetFullIdentifier()
 	{
+		Tracer.Trace(GetType(), "GetFullIdentifier()");
+
 		// 	public const string UrlPrefix = "fbsql://{0}@{1}({2})";
 
 		string[] nodeIdentifier = Identifier;
 
 		string[] identifier = new string[nodeIdentifier.Length + 2];
 
-		identifier[0] = _Explorer;
-		identifier[1] = _ObjectType.ToString();
+		identifier[0] = Explorer;
+		identifier[1] = ObjectType.ToString();
 
 		for (int i = 0; i < nodeIdentifier.Length; i++)
 		{
-			identifier[i+2] = nodeIdentifier[i];
+			identifier[i + 2] = nodeIdentifier[i];
 		}
 
 		return identifier;
 	}
-
-
 
 
 
@@ -416,6 +392,11 @@ public class MonikerAgent
 	}
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets a node's type as reflected in the IVsObjectSupport xml given the node.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static string GetNodeBaseType(IVsDataExplorerNode node)
 	{
 		if (node != null && node.Object != null)
@@ -427,6 +408,13 @@ public class MonikerAgent
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets a node's type as reflected in the IVsObjectSupport xml given the node's
+	/// Object.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static string GetNodeBaseType(IVsDataObject @object)
 	{
 		if (ModelObjectTypeIn(@object, EnModelObjectType.Index, EnModelObjectType.ForeignKey,
@@ -452,39 +440,12 @@ public class MonikerAgent
 
 
 
-	public static string GetNodeAlterExpression(IVsDataExplorerNode node)
-	{
-		if (node != null && node.Object != null)
-		{
-			IVsDataObject @object = node.Object;
-
-			if (ModelObjectTypeIn(@object, EnModelObjectType.Index, EnModelObjectType.ForeignKey,
-				EnModelObjectType.View, EnModelObjectType.StoredProcedure, EnModelObjectType.Function))
-			{
-				return @object.Type.Name;
-			}
-			else if (@object.Type.Name.EndsWith("Column"))
-			{
-				return "Column";
-			}
-			else if (@object.Type.Name.EndsWith("Parameter"))
-			{
-				return "Parameter";
-			}
-			else if (@object.Type.Name.EndsWith("Trigger"))
-			{
-				return "Trigger";
-			}
-
-		}
-
-		return "";
-	}
-
-
-
-
-	public static string GetNodeObjectType(EnNodeSystemType nodeSystemType)
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets a node's system type - System or User.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static string GetNodeSystemType(EnNodeSystemType nodeSystemType)
 	{
 		if (nodeSystemType == EnNodeSystemType.System)
 			return "System";
@@ -495,6 +456,34 @@ public class MonikerAgent
 	}
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Appends the ServerExplorer and SqlTemporaryFiles folders to the provided
+	/// application root directory.
+	/// </summary>
+	/// <param name="appDataPath">
+	/// The root temporary application directory path to save to.
+	/// </param>
+	// ---------------------------------------------------------------------------------
+	public static string ConstructFullTemporaryDirectory(string appDataPath)
+	{
+		string path = appDataPath;
+
+		path = Path.Combine(path, C_ServiceFolder);
+		path = Path.Combine(path, C_TempSqlFolder);
+
+		Tracer.Trace(typeof(MonikerAgent), "ConstructFullTemporaryDirectory()", "TemporaryDirectory: {0}", path);
+
+		return path;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns a node's identifier in it's original form in the tree.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	protected object[] GetOriginalIdentifier()
 	{
 		// 	public const string UrlPrefix = "fbsql://{0}@{1}({2})";
@@ -538,181 +527,75 @@ public class MonikerAgent
 
 
 
-	public void Parse(string fbSqlUrl)
-	{
-		UriBuilder urlb = new UriBuilder(fbSqlUrl);
-
-
-		// fbsql://username:password@server/databasename/database/type/id0.id2.id3
-		// SqlFiles/Firebird/Type/user.server(dataset).id0.id1.id2
-
-		if (urlb.Scheme == C_Scheme)
-		{
-			/* TBC
-			string protocol = Regex.Escape(ProtocolPrefix);
-			string user = "[^@]+";
-			Regex regex = new($"{protocol}({user})");
-			*/
-
-			_User = urlb.UserName;
-			_Password = urlb.Password;
-			_Server = urlb.Host;
-			_Port = urlb.Port;
-
-
-			string[] arr = urlb.Path.Split('/');
-
-			int i;
-
-			_Dataset = null;
-			if (arr.Length > 0)
-				_Dataset = arr[0];
-
-			_Database = "";
-			if (arr.Length > 1)
-				_Database = JsonSerializer.Deserialize<string>(arr[1]);
-
-			_ObjectType = EnModelObjectType.Unknown;
-			if (arr.Length > 2)
-				_ObjectType = arr[2].ToModelObjectType();
-
-			_ObjectName = "";
-
-			if (arr.Length > 3)
-			{
-				_ObjectName = arr[3];
-				for (i = 4; i < arr.Length; i++)
-					_ObjectName += C_CompositeIdentifierSeparator + arr[i];
-			}
-		}
-	}
-
-
-
-	public void Parse(IBPropertyAgent ci)
-	{
-		_User = (string)(ci["UserID"] ?? string.Empty);
-		_Password = (string)(ci["Password"] ?? string.Empty);
-		_Server = string.IsNullOrEmpty((string)ci["DataSource"]) ? "localhost" : (string)ci["DataSource"];
-		_Database = (string)ci["Database"];
-		_Port = (int)ci["Port"];
-		_Dataset = ci.Dataset;
-
-		_ObjectName = null;
-		_ObjectType = EnModelObjectType.Unknown;
-	}
-
-
-
+	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Converts the moniker to it's url format.
+	/// Builds a document moniker unique to a database independent of connection
+	/// settings
 	/// </summary>
-	/// <remarks>
-	/// Url format: fbsql://user:password@server:port/dataset[/database_serialized/nodeType/id2.dd3...]
-	/// </remarks>
-	public override string ToString()
+	// ---------------------------------------------------------------------------------
+	public string ToDocumentMoniker(bool prefixOnly = false)
 	{
-		// 	public const string UrlPrefix = "fbsql://{0}@{1}({2})";
+		EnModelObjectType objectType = (!_Alternate || (int)ObjectType >= 20) ? ObjectType : (ObjectType + 20);
 
-		UriBuilder urlb = new()
+		StringBuilder stringBuilder = new StringBuilder(DatabaseMoniker);
+
+
+		if (!prefixOnly && objectType != EnModelObjectType.Unknown && objectType != EnModelObjectType.AlterUnknown)
 		{
-			Scheme = C_Scheme,
-			// UserName = _User,
-			// Password = _Password,
-			Host = _Server,
-			Port = _Port
-		};
+			int len;
 
+			stringBuilder.AppendFormat(CultureInfo.CurrentCulture, "{0}/", objectType.ToString());
 
-
-		StringBuilder stringBuilder = new(Dataset);
-
-		stringBuilder.Append("/");
-
-		string str = string.IsNullOrEmpty(_Database) ? "" : JsonSerializer.Serialize(_Database, typeof(string));
-
-
-		stringBuilder.Append(str);
-
-		stringBuilder.Append("/");
-
-		if (_ObjectType != EnModelObjectType.Unknown)
-			stringBuilder.Append(_ObjectType);
-
-
-		if (_ObjectName != null)
-		{
-			stringBuilder.Append("/");
-			stringBuilder.Append(_ObjectName);
-		}
-
-		urlb.Path = stringBuilder.ToString();
-
-		return urlb.Uri.ToString();
-	}
-
-
-
-	public DbConnectionStringBuilder ToCsb()
-	{
-		FbConnectionStringBuilder csb = new()
-		{
-			DataSource = _Server,
-			Port = _Port,
-			Database = _Database,
-			UserID = _User,
-			Password = _Password
-		};
-		csb.Add("DatasetKey", $"{_Server} ({Dataset})");
-
-		return csb;
-
-	}
-
-
-
-	protected string ToDocumentMoniker()
-	{
-		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.AppendFormat(CultureInfo.CurrentCulture, "{0}/", Server);
-		stringBuilder.AppendFormat(CultureInfo.CurrentCulture, "{0}/", _LowerCaseDatabase ? Database.ToLower() : Database);
-		stringBuilder.AppendFormat(CultureInfo.CurrentCulture, "{0}/", User);
-		stringBuilder.AppendFormat(CultureInfo.CurrentCulture, "{0}/", ObjectType.ToString() + _TypeSuffix);
-
-		int len;
-
-		if (Identifier != null && Identifier.Length > 0)
-		{
-			len = Identifier.Length;
-			for (int i = 0; i < len; i++)
+			if (Identifier != null && Identifier.Length > 0)
 			{
-				stringBuilder.AppendFormat(CultureInfo.CurrentCulture, "{0}.", Identifier[i]);
+				len = Identifier.Length;
+				for (int i = 0; i < len; i++)
+				{
+					stringBuilder.AppendFormat(CultureInfo.CurrentCulture, "{0}.", Identifier[i]);
+				}
+				stringBuilder.Length--;
 			}
-			stringBuilder.Length--;
-		}
 
-		stringBuilder.Append(C_SqlExtension);
+			stringBuilder.Append(C_SqlExtension);
 
-		len = stringBuilder.Length;
+			len = stringBuilder.Length;
 
-		for (int j = 0; j < len; j++)
-		{
-			char c = stringBuilder[j];
-			if (!char.IsLetterOrDigit(c) && c != '.' && c != '/')
+			for (int j = 0; j < len; j++)
 			{
-				stringBuilder[j] = '_';
+				char c = stringBuilder[j];
+				if (!char.IsLetterOrDigit(c) && c != '.' && c != '/')
+				{
+					stringBuilder[j] = '_';
+				}
 			}
 		}
 
-		stringBuilder.Insert(0, string.Format(CultureInfo.InvariantCulture, "{0}/", "__SQL"));
+		string result = stringBuilder.ToString();
 
-		return stringBuilder.ToString();
+		Tracer.Trace(GetType(), "ToDocumentMoniker()", "DocumentMoniker: {0}", result);
+
+		return result;
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Converts a moniker into a valid file path for saving to and reading from disk.
+	/// </summary>
+	/// <param name="appDataPath">
+	/// The root temporary application directory path to save to.
+	/// </param>
+	/// <returns>
+	/// The file path in the format tempAppFolderPath\ObjectName[server(serializedDatabasePath.ObjectType)].fbsql
+	/// </returns>
+	// ---------------------------------------------------------------------------------
 	public string ToPath(string appDataPath)
 	{
-		string moniker = string.Format(CultureInfo.InvariantCulture, C_PathPrefix, _Server, _Dataset);
+		string str = StringUtils.Serialize64(Database);
+		// string str = JsonConvert.SerializeObject(Database.ToLowerInvariant());
+
+		string moniker = C_DatasetKeyFmt.FmtRes(Server, str);
 
 		moniker = moniker.Replace("\\", "."); // "{backslash}");
 		moniker = moniker.Replace("/", "."); // "{slash}");
@@ -724,65 +607,22 @@ public class MonikerAgent
 		moniker = moniker.Replace(">", "{closebracket}");
 		moniker = moniker.Replace("|", "{bar}");
 
-		moniker = $"{_ObjectName}[{moniker}.{_ObjectType}]{C_SqlExtension}";
+		moniker = $"{ObjectName}[{moniker}.{ObjectType}]{C_SqlExtension}";
 
-		string path = GetTemporaryDataDirectory(appDataPath);
-		// path = Path.Combine(path, $"{GetNodePathType(_ObjectType)} ({GetNodeScriptProperty(_ObjectType)}s)");
+		string path = ConstructFullTemporaryDirectory(appDataPath);
+
 		path = Path.Combine(path, moniker);
 
-		return path;
-	}
+		Tracer.Trace(GetType(), "ToPath()", path);
 
-	public static string GetTemporaryDataDirectory(string appDataPath)
-	{
-		string path = appDataPath;
-
-		path = Path.Combine(path, C_ServiceFolder);
-		path = Path.Combine(path, C_TempSqlFolder);
 
 		return path;
 	}
 
 
 
-	/// <summary>
-	/// Converts an identifier string array to a moniker string - not used
-	/// </summary>
-	public static string ToString(string[] identifierParts, DataObjectIdentifierFormat format = DataObjectIdentifierFormat.None)
-	{
-		StringBuilder stringBuilder = new StringBuilder();
-
-		int num = identifierParts.Length;
-		if ((format & DataObjectIdentifierFormat.ForDisplay) != 0 && num > 0)
-		{
-			num--;
-		}
-
-		for (int i = 0; i < num; i++)
-		{
-			if (identifierParts[i] != null || stringBuilder.Length != 0)
-			{
-				stringBuilder.Append(identifierParts[i]);
-				stringBuilder.Append(C_CompositeIdentifierSeparator);
-			}
-		}
-
-		string text = stringBuilder.ToString().Trim(C_CompositeIdentifierSeparator);
-		if ((format & DataObjectIdentifierFormat.ForDisplay) != 0)
-		{
-			if (text.Length > 0)
-			{
-				return identifierParts[^1] + " (" + text + ")";
-			}
-
-			return identifierParts[^1];
-		}
-
-		return text;
-	}
-
-
-
+	// ---------------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------------
 	public static string GetTriggerEvent(long eventType)
 	{
 		return eventType switch
@@ -809,4 +649,7 @@ public class MonikerAgent
 			_ => "",
 		};
 	}
+
+	#endregion Methods
+
 }

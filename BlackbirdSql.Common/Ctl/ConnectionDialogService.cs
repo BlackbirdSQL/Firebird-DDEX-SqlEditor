@@ -20,6 +20,7 @@ public class ConnectionDialogService
 
 	private ExtensionProperties _ExtensionProperties = new ExtensionProperties();
 
+	// A private 'this' object lock
 	private readonly object _LockLocal = new object();
 
 	public static ConnectionDialogService Instance => _Instance;

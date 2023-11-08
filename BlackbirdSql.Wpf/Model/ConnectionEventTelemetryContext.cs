@@ -19,7 +19,7 @@ using FirebirdSql.Data.FirebirdClient;
 
 namespace BlackbirdSql.Wpf.Model;
 
-public class ConnectionEventTelemetryContext : ConnectionDialogTelemetryContext, IDisposable
+public class ConnectionEventTelemetryContext : AbstractTelemetryContext, IDisposable
 {
     // private const string C_LocalDbPrefix = "(localdb)";
 

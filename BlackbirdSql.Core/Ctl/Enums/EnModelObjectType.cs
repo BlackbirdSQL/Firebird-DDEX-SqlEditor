@@ -8,6 +8,7 @@ public enum EnModelObjectType
 {
 	Unknown = 0,
 	Column,
+	Database,
 	Index,
 	IndexColumn,
 	ForeignKeyColumn,
@@ -20,7 +21,9 @@ public enum EnModelObjectType
 	StoredProcedureParameter,
 	Function,
 	FunctionParameter,
-	AlterColumn = 21,
+	AlterUnknown = 20,
+	AlterColumn,
+	AlterDatabase,
 	AlterIndex,
 	AlterIndexColumn,
 	AlterForeignKeyColumn,
@@ -37,37 +40,18 @@ public enum EnModelObjectType
 
 public static class EnModelObjectTypeExtensions
 {
-	public static string ToString(this EnModelObjectType value)
-	{
-		return value switch
-		{
-			EnModelObjectType.StoredProcedure => "StoredProcedure",
-			EnModelObjectType.Function => "Function",
-			EnModelObjectType.Trigger => "Trigger",
-			EnModelObjectType.Index => "Index",
-			EnModelObjectType.ForeignKey => "ForeignKey",
-			EnModelObjectType.View => "View",
-			EnModelObjectType.Column => "Column",
-			EnModelObjectType.IndexColumn => "IndexColumn",
-			EnModelObjectType.ForeignKeyColumn => "ForeignKeyColumn",
-			EnModelObjectType.TriggerColumn => "TriggerColumn",
-			EnModelObjectType.ViewColumn => "ViewColumn",
-			EnModelObjectType.StoredProcedureParameter => "StoredProcedureParameter",
-			EnModelObjectType.FunctionParameter => "FunctionParameter",
-			_ => "Unknown"
-		};
 
-	}
 
 	public static EnModelObjectType ToModelObjectType(this IVsDataObjectType nodeType)
 	{
 		return nodeType.Name.ToUpperInvariant() switch
 		{
+			"DATABASE" => EnModelObjectType.Database,
 			"STOREDPROCEDURE" => EnModelObjectType.StoredProcedure,
 			"FUNCTION" => EnModelObjectType.Function,
 			"TRIGGER" => EnModelObjectType.Trigger,
 			"INDEX" => EnModelObjectType.Index,
-			"FOREIGN KEY" => EnModelObjectType.ForeignKey,
+			"FOREIGNKEY" => EnModelObjectType.ForeignKey,
 			"VIEW" => EnModelObjectType.View,
 			"COLUMN" => EnModelObjectType.Column,
 			"INDEXCOLUMN" => EnModelObjectType.IndexColumn,
@@ -81,45 +65,38 @@ public static class EnModelObjectTypeExtensions
 	}
 
 
-
-	public static string ToUrlString(this EnModelObjectType value)
+	public static EnModelObjectType ToModelObjectType(this string monikerType)
 	{
-		return value switch
+		return monikerType.ToUpperInvariant() switch
 		{
-			EnModelObjectType.StoredProcedure => "Stored Procedure",
-			EnModelObjectType.Function => "Function",
-			EnModelObjectType.Trigger => "Trigger",
-			EnModelObjectType.Index => "Index",
-			EnModelObjectType.ForeignKey => "Foreign Key",
-			EnModelObjectType.View => "View",
-			EnModelObjectType.Column => "Column",
-			EnModelObjectType.IndexColumn => "Index Column",
-			EnModelObjectType.ForeignKeyColumn => "Foreign Key Column",
-			EnModelObjectType.TriggerColumn => "Trigger Column",
-			EnModelObjectType.ViewColumn => "View Column",
-			EnModelObjectType.StoredProcedureParameter => "Stored Procedure Parameter",
-			EnModelObjectType.FunctionParameter => "Function Parameter",
-			_ => "Unknown"
-		};
-	}
-
-	public static EnModelObjectType ToModelObjectType(this string urlType)
-	{
-		return urlType.ToUpperInvariant() switch
-		{
-			"STORED PROCEDURE" => EnModelObjectType.StoredProcedure,
+			"DATABASE" => EnModelObjectType.Database,
+			"STOREDPROCEDURE" => EnModelObjectType.StoredProcedure,
 			"FUNCTION" => EnModelObjectType.Function,
 			"TRIGGER" => EnModelObjectType.Trigger,
 			"INDEX" => EnModelObjectType.Index,
-			"FOREIGN KEY" => EnModelObjectType.ForeignKey,
+			"FOREIGNKEY" => EnModelObjectType.ForeignKey,
 			"VIEW" => EnModelObjectType.View,
 			"COLUMN" => EnModelObjectType.Column,
-			"INDEX COLUMN" => EnModelObjectType.IndexColumn,
-			"FOREIGN KEY COLUMN" => EnModelObjectType.ForeignKeyColumn,
-			"TRIGGER COLUMN" => EnModelObjectType.TriggerColumn,
-			"VIEW COLUMN" => EnModelObjectType.ViewColumn,
-			"STORED PROCEDURE PARAMETER" => EnModelObjectType.StoredProcedureParameter,
-			"FUNCTION PARAMETER" => EnModelObjectType.FunctionParameter,
+			"INDEXCOLUMN" => EnModelObjectType.IndexColumn,
+			"FOREIGNKEYCOLUMN" => EnModelObjectType.ForeignKeyColumn,
+			"TRIGGERCOLUMN" => EnModelObjectType.TriggerColumn,
+			"VIEWCOLUMN" => EnModelObjectType.ViewColumn,
+			"STOREDPROCEDUREPARAMETER" => EnModelObjectType.StoredProcedureParameter,
+			"FUNCTIONPARAMETER" => EnModelObjectType.FunctionParameter,
+			"ALTERDATABASE" => EnModelObjectType.AlterDatabase,
+			"ALTERSTOREDPROCEDURE" => EnModelObjectType.AlterStoredProcedure,
+			"ALTERFUNCTION" => EnModelObjectType.AlterFunction,
+			"ALTERTRIGGER" => EnModelObjectType.AlterTrigger,
+			"ALTERINDEX" => EnModelObjectType.AlterIndex,
+			"ALTERFOREIGNKEY" => EnModelObjectType.AlterForeignKey,
+			"ALTERVIEW" => EnModelObjectType.AlterView,
+			"ALTERCOLUMN" => EnModelObjectType.AlterColumn,
+			"ALTERINDEXCOLUMN" => EnModelObjectType.AlterIndexColumn,
+			"ALTERFOREIGNKEYCOLUMN" => EnModelObjectType.AlterForeignKeyColumn,
+			"ALTERTRIGGERCOLUMN" => EnModelObjectType.AlterTriggerColumn,
+			"ALTERVIEWCOLUMN" => EnModelObjectType.AlterViewColumn,
+			"ALTERSTOREDPROCEDUREPARAMETER" => EnModelObjectType.AlterStoredProcedureParameter,
+			"ALTERFUNCTIONPARAMETER" => EnModelObjectType.AlterFunctionParameter,
 			_ => EnModelObjectType.Unknown
 		};
 	}

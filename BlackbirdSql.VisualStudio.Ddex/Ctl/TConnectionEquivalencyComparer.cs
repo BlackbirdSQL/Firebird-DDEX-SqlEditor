@@ -31,7 +31,7 @@ public class TConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 
 	public TConnectionEquivalencyComparer() : base()
 	{
-		Tracer.Trace(GetType(), "TConnectionEquivalencyComparer.TConnectionEquivalencyComparer");
+		// Tracer.Trace(GetType(), "TConnectionEquivalencyComparer.TConnectionEquivalencyComparer");
 	}
 
 
@@ -50,7 +50,7 @@ public class TConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Checks whether or not connection property objects are equivalent
+	/// Checks whether or not connection property/parameter objects are equivalent
 	/// </summary>
 	/// <param name="connectionProperties1"></param>
 	/// <param name="connectionProperties2"></param>
@@ -62,7 +62,7 @@ public class TConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 	// ---------------------------------------------------------------------------------
 	protected override bool AreEquivalent(IVsDataConnectionProperties connectionProperties1, IVsDataConnectionProperties connectionProperties2)
 	{
-		Tracer.Trace(GetType(), "TConnectionEquivalencyComparer.AreEquivalent");
+		// Tracer.Trace(GetType(), "AreEquivalent()");
 
 		// The only interception we can make when a new query lists tables or views is when the
 		// Microsoft.VisualStudio.Data.Package.DataConnectionManager checks if the connection it requires
@@ -107,6 +107,8 @@ public class TConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 	// ---------------------------------------------------------------------------------
 	protected static string StandardizeDataSource(string dataSource)
 	{
+		Tracer.Trace(typeof(TConnectionEquivalencyComparer), "StandardizeDataSource()");
+
 		dataSource = dataSource.ToUpperInvariant();
 		string[] array = new string[2] { ".", "localhost" };
 		foreach (string text in array)

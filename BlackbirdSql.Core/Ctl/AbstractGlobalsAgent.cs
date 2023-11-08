@@ -2,16 +2,23 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using BlackbirdSql.Core.Ctl.Events;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+
 using BlackbirdSql.Core.Ctl.Interfaces;
+
 using EnvDTE;
 
 using Microsoft;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
 namespace BlackbirdSql.Core.Ctl;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 // =========================================================================================================
 //											AbstractGlobalsAgent Class
@@ -98,29 +105,8 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 
 	private IBAsyncPackage _DdexPackage = null;
 
-	protected bool _ShowDiagramPane = true;
-	protected bool _ValidateConfig = false;
-	protected bool _ValidateEdmx = false;
-
-	protected bool _PersistentValidation = true;
-
-	protected bool G_Persistent = true;
-
-	/// <summary>
-	/// The project and solution globals validation key. A single int32 using binary bitwise for the
-	/// different status settings.
-	/// If the PersistentValidation is true the persistent key will be used.
-	/// </summary>
-#if DEBUG
-	protected string G_Key = C_TransitoryKey; // For non-persistent
-#else
-	protected string G_Key = C_PersistentKey; // For persistent
-#endif
-
-
 
 	#endregion
-
 
 
 
@@ -130,7 +116,7 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	// =========================================================================================================
 
 
-	public DTE Dte => _Controller.Dte;
+	public DTE Dte => Controller.Dte;
 
 
 	public IBPackageController Controller => _Controller ??= Core.Controller.Instance;
@@ -139,30 +125,32 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 
 
 
-	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Returns a boolean indicating whether or not the the query designer diagram pane
-	/// is visible when table or view data is initially retrieved.
+	/// The project and solution globals validation key. A single int32 using binary bitwise for the
+	/// different status settings.
+	/// If the PersistentValidation is true the persistent key will be used.
 	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public bool ShowDiagramPane => _ShowDiagramPane;
-
+#if DEBUG
+	public virtual string GlobalsKey => C_TransitoryKey; // For non-persistent
+#else
+	public virtual string GlobalsKey => C_PersistentKey; // For persistent
+#endif
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Returns a boolean indicating whether or not the app.config may be validated
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public bool ValidateConfig => _ValidateConfig;
+	public abstract bool ValidateConfig { get; }
 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Returns a boolean indicating whether or not validation flags are persistent.
-	/// Vlaidation flags are always persistent in Release builds.
+	/// Validation flags are always persistent in Release builds.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public bool PeristentValidation => _PersistentValidation;
+	public abstract bool PersistentValidation { get; }
 
 
 	// ---------------------------------------------------------------------------------
@@ -170,13 +158,10 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	/// Returns a boolean indicating whether or not edmx files may be validated
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public bool ValidateEdmx => _ValidateEdmx;
+	public abstract bool ValidateEdmx { get; }
 
 
 
-	// UI thread warning message suppression
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-		Justification = "UI thread ensured in code logic.")]
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Get's or sets whether at any point a solution validation failed
@@ -186,11 +171,25 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	{
 		get
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			return GetFlagStatus(Dte.Solution.Globals, G_ValidateFailed);
 		}
 
 		set
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			SetFlagStatus(Dte.Solution.Globals, G_ValidateFailed, value);
 		}
 	}
@@ -214,11 +213,6 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	protected AbstractGlobalsAgent()
 	{
-		// ((IBGlobalsAgent)null).SetInstance(this);
-
-		GlobalEventArgs e = PopulateOptionsEventArgs();
-		UpdatePackageGlobals(e);
-		Core.Controller.DdexPackage.RegisterOptionsEventHandlers(OnSettingsSaved);
 	}
 
 
@@ -269,9 +263,6 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	// =========================================================================================================
 
 
-	// UI thread warning message suppression
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "UI thread ensured in code logic.")]
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// For solutions: Sets a status indicator tagging it as previously validated or
@@ -300,14 +291,11 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	public bool SetIsScannedStatus(Project project)
 	{
-		try
+		if (!ThreadHelper.CheckAccess())
 		{
-			ThreadHelper.ThrowIfNotOnUIThread();
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
 
 		return SetFlagStatus(project.Globals, G_Scanned, true);
@@ -326,14 +314,11 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	public bool SetIsValidatedDbProviderStatus(Project project)
 	{
-		try
+		if (!ThreadHelper.CheckAccess())
 		{
-			ThreadHelper.ThrowIfNotOnUIThread();
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
 
 		return SetFlagStatus(project.Globals, G_DbProviderConfigured, true);
@@ -353,14 +338,11 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	public bool SetIsValidatedEFStatus(Project project)
 	{
-		try
+		if (!ThreadHelper.CheckAccess())
 		{
-			ThreadHelper.ThrowIfNotOnUIThread();
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
 
 		return SetFlagStatus(project.Globals, G_EFConfigured, true, G_DbProviderConfigured, true);
@@ -379,16 +361,12 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	public bool SetIsUpdatedEdmxsStatus(Project project)
 	{
-		try
+		if (!ThreadHelper.CheckAccess())
 		{
-			ThreadHelper.ThrowIfNotOnUIThread();
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
-
 		return SetFlagStatus(project.Globals, G_EdmxsUpdated, true);
 	}
 
@@ -403,23 +381,28 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	public bool ClearValidateStatus()
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		try
 		{
-			ThreadHelper.ThrowIfNotOnUIThread();
-
 			if (Dte.Solution.Globals == null)
 			{
 				Diag.Stack(Dte.Solution.FullName + ": Solution.Globals is null");
 				return false;
 			}
 
-			if (!Dte.Solution.Globals.get_VariableExists(G_Key))
+			if (!Dte.Solution.Globals.get_VariableExists(GlobalsKey))
 			{
 				return true;
 			}
 
-			Dte.Solution.Globals[G_Key] = 0.ToString();
-			Dte.Solution.Globals.set_VariablePersists(G_Key, G_Persistent);
+			Dte.Solution.Globals[GlobalsKey] = 0.ToString();
+			Dte.Solution.Globals.set_VariablePersists(GlobalsKey, PersistentValidation);
 		}
 		catch (Exception ex)
 		{
@@ -443,10 +426,15 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	public bool ClearPersistentFlag(Globals globals, string key)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		try
 		{
-			ThreadHelper.ThrowIfNotOnUIThread();
-
 			if (!globals.get_VariableExists(key))
 				return true;
 
@@ -464,9 +452,6 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 
 
 
-	// UI thread warning message suppression
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-		Justification = "UI thread ensured in code logic.")]
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Verifies whether or not a solution is in a validation state (or previously
@@ -477,8 +462,10 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	public bool IsValidatedStatus(Globals globals)
 	{
+		if (globals == null)
+			return true;
 #if DEBUG
-		if (!_PersistentValidation)
+		if (!PersistentValidation)
 			ClearPersistentFlag(globals, C_PersistentKey);
 #endif
 		return GetFlagStatus(globals, G_Validated);
@@ -501,15 +488,11 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	public bool IsValidExecutableProjectType(IVsSolution solution, Project project)
 	{
-		// We should already be on UI thread. Callers must ensure this can never happen
-		try
+		if (!ThreadHelper.CheckAccess())
 		{
-			ThreadHelper.ThrowIfNotOnUIThread();
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
 
 		if (IsValidatedStatus(project.Globals))
@@ -568,9 +551,6 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 
 
 
-	// UI thread warning message suppression
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-		Justification = "UI thread ensured in code logic.")]
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Verifies whether or not a solution has been validated or a project is a valid
@@ -585,6 +565,8 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	public bool IsValidStatus(Globals globals)
 	{
+		if (globals == null)
+			return true;
 		return GetFlagStatus(globals, G_Valid);
 	}
 
@@ -600,9 +582,14 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	public bool IsScannedStatus(Project project)
 	{
-#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		return GetFlagStatus(project.Globals, G_Scanned);
-#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 	}
 
 
@@ -617,9 +604,14 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	public bool IsConfiguredDbProviderStatus(Project project)
 	{
-#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		return GetFlagStatus(project.Globals, G_DbProviderConfigured);
-#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 	}
 
 
@@ -634,9 +626,14 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	public bool IsConfiguredEFStatus(Project project)
 	{
-#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		return GetFlagStatus(project.Globals, G_EFConfigured);
-#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 	}
 
 
@@ -652,9 +649,14 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	public bool IsUpdatedEdmxsStatus(Project project)
 	{
-#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		return GetFlagStatus(project.Globals, G_EdmxsUpdated);
-#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 	}
 
 
@@ -678,8 +680,6 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 
 		try
 		{
-			ThreadHelper.ThrowIfNotOnUIThread();
-
 			if (globals == null)
 			{
 				ArgumentNullException ex = new("Globals is null");
@@ -687,10 +687,17 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 				throw ex;
 			}
 
-
-			if (globals.get_VariableExists(G_Key))
+			if (!ThreadHelper.CheckAccess())
 			{
-				str = (string)globals[G_Key];
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
+
+			if (globals.get_VariableExists(GlobalsKey))
+			{
+				str = (string)globals[GlobalsKey];
 				value = str == "" ? 0 : int.Parse(str);
 				exists = true;
 			}
@@ -717,10 +724,10 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 			}
 
 
-			globals[G_Key] = value.ToString();
+			globals[GlobalsKey] = value.ToString();
 
-			if (!exists && G_Persistent)
-				globals.set_VariablePersists(G_Key, G_Persistent);
+			if (!exists && PersistentValidation)
+				globals.set_VariablePersists(GlobalsKey, PersistentValidation);
 		}
 		catch (Exception ex)
 		{
@@ -749,8 +756,6 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 
 		try
 		{
-			ThreadHelper.ThrowIfNotOnUIThread();
-
 			if (globals == null)
 			{
 				ArgumentNullException ex = new("Globals is null");
@@ -758,9 +763,16 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 				throw ex;
 			}
 
-			if (globals.get_VariableExists(G_Key))
+			if (!ThreadHelper.CheckAccess())
 			{
-				str = (string)globals[G_Key];
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
+			if (globals.get_VariableExists(GlobalsKey))
+			{
+				str = (string)globals[GlobalsKey];
 				value = str == "" ? 0 : int.Parse(str);
 
 				return (value & flag) != 0;
@@ -777,54 +789,7 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	}
 
 
-
-	/// <summary>
-	/// Propogates option settings globally across the package and it's services.
-	/// This is the centralized method that is customized in the final GlobalsAgent
-	/// class with any changes to the option models.
-	/// </summary>
-	/// <param name="e"></param>
-	public abstract void UpdatePackageGlobals(GlobalEventArgs e);
-
-
 	#endregion Methods
 
-
-
-
-
-	// =========================================================================================================
-	#region Event handlers - AbstractGlobalsAgent
-	// =========================================================================================================
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Debug options saved event handler 
-	/// </summary>
-	/// <param name="e"></param>
-	// ---------------------------------------------------------------------------------
-	protected static void OnSettingsSaved(object sender)
-	{
-		GlobalEventArgs e = PopulateOptionsEventArgs(sender);
-
-		Instance.UpdatePackageGlobals(e);
-	}
-
-
-	protected static GlobalEventArgs PopulateOptionsEventArgs()
-	{
-		return Core.Controller.DdexPackage.PopulateOptionsEventArgs();
-	}
-
-
-	protected static GlobalEventArgs PopulateOptionsEventArgs(object sender)
-	{
-		return Instance.DdexPackage.PopulateOptionsEventArgs(((IBOptionModel)sender).GetGroup());
-	}
-
-
-
-	#endregion Event handlers
 
 }

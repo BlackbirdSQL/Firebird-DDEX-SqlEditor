@@ -2,8 +2,7 @@
 // Microsoft.SqlServer.ConnectionDlg.UI.BrowsePageViewModel
 
 using System.Diagnostics;
-
-using BlackbirdSql.Common.Model;
+using BlackbirdSql.Common.Model.Wpf;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
@@ -14,7 +13,7 @@ using BlackbirdSql.Core.Ctl.Interfaces;
 
 namespace BlackbirdSql.Wpf.Model;
 
-public class BrowsePageViewModel : ViewModelBase
+public class BrowsePageViewModel : AbstractViewModel
 {
     protected const string C_KeySelectedConnection = "SelectedConnection";
 
@@ -70,7 +69,7 @@ public class BrowsePageViewModel : ViewModelBase
             _Describers = new();
 
             // Initializers for property sets are held externally for this class
-            ViewModelBase.CreateAndPopulatePropertySet(_Describers);
+            AbstractViewModel.CreateAndPopulatePropertySet(_Describers);
 
             _Describers.Add(C_KeySelectedConnection, typeof(object), null);
         }

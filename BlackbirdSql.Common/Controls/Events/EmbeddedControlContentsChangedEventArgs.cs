@@ -10,11 +10,11 @@ namespace BlackbirdSql.Common.Controls.Events;
 
 public class EmbeddedControlContentsChangedEventArgs : EventArgs
 {
-	private readonly IGridEmbeddedControl m_EmbeddedControl;
+	private readonly IBGridEmbeddedControl m_EmbeddedControl;
 
-	public IGridEmbeddedControl EmbeddedControl => m_EmbeddedControl;
+	public IBGridEmbeddedControl EmbeddedControl => m_EmbeddedControl;
 
-	public EmbeddedControlContentsChangedEventArgs(IGridEmbeddedControl embCtrl)
+	public EmbeddedControlContentsChangedEventArgs(IBGridEmbeddedControl embCtrl)
 	{
 		m_EmbeddedControl = embCtrl;
 	}

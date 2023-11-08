@@ -10,13 +10,13 @@ namespace BlackbirdSql.Common.Model;
 
 
 // =========================================================================================================
-//										ConnectionDlgPropertySet Class
+//										TelemetryPropertySet Class
 //
 /// <summary>
-/// PropertySet for the base class (AbstractModelPropertyAgent) for replicating the Firebird ConnectionString
-/// class and additional members to support SourceInformation, Root ObjectSelector and SqlServer style
-/// ConnectionInfo classes. Descendent AbstractModelPropertyAgent classes may or may not have a seperate
-/// PropertySet class dependent on the number of additional descriptors.
+/// Static Telemetry PropertySet for use by the base class AbstractTelemetryPropertyAgent (derived from
+/// the universal connection base class AbstractPropertyAgent).
+/// The static constants base class for use by connection classes derived from AbstractPropertyAgent.
+/// Refer to the <seealso cref="PropertySet"/> class for more information.
 /// </summary>
 // =========================================================================================================
 public abstract class TelemetryPropertySet : CorePropertySet

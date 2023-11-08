@@ -20,7 +20,7 @@ using BlackbirdSql.Core.Ctl.Diagnostics;
 namespace BlackbirdSql.Common.Model.QueryExecution;
 
 
-public sealed class QEResultSet : IDisposable, IGridStorage
+public sealed class QEResultSet : IDisposable, IBGridStorage
 {
 	public const int C_MaxCharsToStore = 10485760;
 
@@ -29,9 +29,9 @@ public sealed class QEResultSet : IDisposable, IGridStorage
 	private static readonly string _SNameOfJSONColumn = "JSON_" + VS.IXMLDocumentGuid;
 
 
-	private IQEStorage _QeStorage;
+	private IBQEStorage _QeStorage;
 
-	private IQEStorageView _QeStorageView;
+	private IBQEStorageView _QeStorageView;
 
 	private StringCollection _ColumnNames;
 
@@ -39,6 +39,7 @@ public sealed class QEResultSet : IDisposable, IGridStorage
 
 	private readonly string _Script;
 
+	// A private 'this' object lock
 	private readonly object _LockLocal = new object();
 
 	private bool _IsStopping;
@@ -391,7 +392,7 @@ public sealed class QEResultSet : IDisposable, IGridStorage
 
 		_QeStorage.MaxCharsToStore = Math.Max(nMaxNumCharsToDisplay, C_MaxCharsToStore);
 		_QeStorage.MaxXmlCharsToStore = nMaxNumXmlCharsToDisplay;
-		_QeStorageView = (IQEStorageView)_QeStorage.GetStorageView();
+		_QeStorageView = (IBQEStorageView)_QeStorage.GetStorageView();
 		_QeStorageView.MaxNumBytesToDisplay = nMaxNumCharsToDisplay / 2;
 		_QeStorage.StartStoringData();
 	}
@@ -488,14 +489,14 @@ public sealed class QEResultSet : IDisposable, IGridStorage
 		return EnGridCheckBoxState.None;
 	}
 
-	public void FillControlWithData(long nRowIndex, int nColIndex, IGridEmbeddedControl control)
+	public void FillControlWithData(long nRowIndex, int nColIndex, IBGridEmbeddedControl control)
 	{
 		Exception ex = new NotImplementedException();
 		Tracer.LogExThrow(GetType(), ex);
 		throw ex;
 	}
 
-	public bool SetCellDataFromControl(long nRowIndex, int nColIndex, IGridEmbeddedControl control)
+	public bool SetCellDataFromControl(long nRowIndex, int nColIndex, IBGridEmbeddedControl control)
 	{
 		Exception ex = new NotImplementedException();
 		Tracer.LogExThrow(GetType(), ex);

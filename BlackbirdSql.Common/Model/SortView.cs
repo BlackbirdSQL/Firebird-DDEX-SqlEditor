@@ -15,9 +15,9 @@ using BlackbirdSql.Common.Ctl.Interfaces;
 
 namespace BlackbirdSql.Common.Model;
 
-public class SortView : ISortView, IDisposable
+public class SortView : IBSortView, IDisposable
 {
-	protected IStorageView m_StorageView;
+	protected IBStorageView m_StorageView;
 
 	protected IBSortingArray m_SortingArray;
 
@@ -40,7 +40,7 @@ public class SortView : ISortView, IDisposable
 		throw ex;
 	}
 
-	public SortView(IStorageView view)
+	public SortView(IBStorageView view)
 	{
 		m_StorageView = view;
 		m_SortingArray = new SortingArray();

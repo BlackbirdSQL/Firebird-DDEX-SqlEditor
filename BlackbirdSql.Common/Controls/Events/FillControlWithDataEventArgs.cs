@@ -18,15 +18,15 @@ public class FillControlWithDataEventArgs : EventArgs
 
 	private readonly int m_ColNum;
 
-	private readonly IGridEmbeddedControl m_Control;
+	private readonly IBGridEmbeddedControl m_Control;
 
 	public int RowIndex => m_RowNum;
 
 	public int ColumnIndex => m_ColNum;
 
-	public IGridEmbeddedControl Control => m_Control;
+	public IBGridEmbeddedControl Control => m_Control;
 
-	public FillControlWithDataEventArgs(int nRow, int nCol, IGridEmbeddedControl control)
+	public FillControlWithDataEventArgs(int nRow, int nCol, IBGridEmbeddedControl control)
 	{
 		m_RowNum = nRow;
 		m_ColNum = nCol;

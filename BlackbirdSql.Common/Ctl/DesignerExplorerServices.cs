@@ -9,23 +9,22 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-
+using System.Runtime.InteropServices;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
-
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 using IServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 
-
 namespace BlackbirdSql.Common.Ctl;
-
 
 public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExplorerServices
 {
@@ -71,7 +70,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		}
 		if (string.IsNullOrEmpty(mkDocument))
 		{
-			mkDocument = MonikerAgent.BuildMiscDocumentMoniker(node, ref identifierArray, false, true, alternate ? ".alter" : "");
+			mkDocument = MonikerAgent.BuildMiscDocumentMoniker(node, ref identifierArray, false, alternate);
 
 
 			flag = true;
@@ -150,6 +149,15 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 	// Microsoft.VisualStudio.Data.Tools.Package.Explorers.SqlServerObjectExplorer.SqlServerObjectExplorerService:ViewCode()
 	public void ViewCode(IVsDataExplorerNode node, bool alternate)
 	{
+		// Sanity check.
+		// Currently our only entry point to AbstractDesignerServices whose warnings are suppressed.
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(ex);
+			throw ex;
+		}
+
 		MonikerAgent moniker = new(node);
 
 		IList<string> identifierList = moniker.Identifier.ToArray();

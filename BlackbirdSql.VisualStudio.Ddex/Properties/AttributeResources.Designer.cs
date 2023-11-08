@@ -61,11 +61,11 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Debug.
+        ///   Looks up a localized string similar to Debugging.
         /// </summary>
-        public static string OptionCategoryDebug {
+        public static string OptionCategoryDebugging {
             get {
-                return ResourceManager.GetString("OptionCategoryDebug", resourceCulture);
+                return ResourceManager.GetString("OptionCategoryDebugging", resourceCulture);
             }
         }
         
@@ -106,7 +106,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enables diagnostics logging to a log file. This option also saves the extrapolated TObjectSupport.xml imports to the logfile folder. Only applicable to DEBUG builds..
+        ///   Looks up a localized string similar to Enables diagnostics logging to a log file..
         /// </summary>
         public static string OptionDescriptionEnableDiagnosticsLog {
             get {
@@ -115,7 +115,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enables the execution of Firebird Debug.Dug()/Debug.Trace() calls. Only applicable to DEBUG builds..
+        ///   Looks up a localized string similar to Enables the execution of Firebird Debug.Dug()/Debug.Trace() calls. Only applicable to builds that include the debug Firebird library..
         /// </summary>
         public static string OptionDescriptionEnableFbDiagnostics {
             get {
@@ -133,7 +133,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enables the execution of Diag.Trace() calls. Only applicable to DEBUG builds..
+        ///   Looks up a localized string similar to Enables the execution of Diag.Trace() calls..
         /// </summary>
         public static string OptionDescriptionEnableTrace {
             get {
@@ -142,7 +142,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enables Sql Tracer output to be directed to Diag.Trace(). Only applicable to DEBUG builds..
+        ///   Looks up a localized string similar to Enables Sql Tracer output to be directed to Diag.Trace()..
         /// </summary>
         public static string OptionDescriptionEnableTracer {
             get {
@@ -151,7 +151,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Location of Firebird diagnostics log file. Note: Only applicable to DEBUG builds..
+        ///   Looks up a localized string similar to Location of Firebird diagnostics log file. Note: Only applicable to builds that include the debug Firerbird library..
         /// </summary>
         public static string OptionDescriptionFbLogFile {
             get {
@@ -160,7 +160,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Location of diagnostics log file. Only applicable to DEBUG builds..
+        ///   Looks up a localized string similar to Location of diagnostics log file..
         /// </summary>
         public static string OptionDescriptionLogFile {
             get {
@@ -174,6 +174,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDescriptionPersistentValidation {
             get {
                 return ResourceManager.GetString("OptionDescriptionPersistentValidation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saves the extrapolated IVsDataObjectSupport xml (TObjectSupport.xml), after imports, to the directory location of the diagnostics log file..
+        /// </summary>
+        public static string OptionDescriptionSaveExtrapolatedXml {
+            get {
+                return ResourceManager.GetString("OptionDescriptionSaveExtrapolatedXml", resourceCulture);
             }
         }
         
@@ -205,6 +214,42 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select the folder to be used for the Firebird diagnostics log file..
+        /// </summary>
+        public static string OptionDialogFbLogFile {
+            get {
+                return ResourceManager.GetString("OptionDialogFbLogFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All Files(*.*)|*.*.
+        /// </summary>
+        public static string OptionDialogFilterFbLogFile {
+            get {
+                return ResourceManager.GetString("OptionDialogFilterFbLogFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All Files(*.*)|*.*.
+        /// </summary>
+        public static string OptionDialogFilterLogFile {
+            get {
+                return ResourceManager.GetString("OptionDialogFilterLogFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select the folder to be used for the diagnostics log file..
+        /// </summary>
+        public static string OptionDialogLogFile {
+            get {
+                return ResourceManager.GetString("OptionDialogLogFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enable diagnostics.
         /// </summary>
         public static string OptionDisplayEnableDiagnostics {
@@ -228,6 +273,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDisplayEnableFbDiagnostics {
             get {
                 return ResourceManager.GetString("OptionDisplayEnableFbDiagnostics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save extrapolated xml.
+        /// </summary>
+        public static string OptionDisplayEnableSaveExtrapolatedXml {
+            get {
+                return ResourceManager.GetString("OptionDisplayEnableSaveExtrapolatedXml", resourceCulture);
             }
         }
         

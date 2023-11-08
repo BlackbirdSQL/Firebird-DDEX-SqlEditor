@@ -9,5 +9,3 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Style", "IDE0060:Remove unused parameter")]
 [assembly: SuppressMessage("Performance", "CA1822:Mark members as static")]
 [assembly: SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits")]
-[assembly: SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
-// [assembly: SuppressMessage("Microsoft.Performance", "CA1812:AvoidUninstantiatedInternalClasses")]

@@ -4,21 +4,28 @@
 #endregion
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
-using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Controls.Events;
+using BlackbirdSql.Common.Ctl;
+using BlackbirdSql.Common.Ctl.Commands;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
-using BlackbirdSql.Core.Ctl.Diagnostics;
+
 
 namespace BlackbirdSql.Common.Controls.ResultsPane
 {
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+		Justification = "Class is UIThread compliant.")]
+
 	public class ShellTextViewControl : AbstractShellTextEditorControl, VsCodeWindow, IVsCodeWindow
 	{
 		protected IVsTextView m_textView;
@@ -231,7 +238,6 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			}
 
 			base.Dispose(bDisposing);
-			Tracer.Trace(GetType(), Tracer.Level.Verbose, "ShellTextViewControl.Dispose()", "returning");
 		}
 
 		protected override void OnTextBufferCreated(ShellTextBuffer buf)
@@ -241,10 +247,17 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		protected override void SinkEventsAndCacheInterfaces()
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			SinkEditorEvents(bSink: true);
-			_textWindowPane = (IVsWindowPane)m_textView;
-			_textWndFrameNotify = null;
-			_textCmdTarget = (IOleCommandTarget)m_textView;
+			_TextWindowPane = (IVsWindowPane)m_textView;
+			_TextWndFrameNotify = null;
+			_TextCmdTarget = (IOleCommandTarget)m_textView;
 		}
 
 		protected override void UnsinkEventsAndFreeInterfaces()
@@ -256,19 +269,19 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 				_CommandFilter = null;
 			}
 
-			if (_textCmdTarget != null)
+			if (_TextCmdTarget != null)
 			{
-				_textCmdTarget = null;
+				_TextCmdTarget = null;
 			}
 
-			if (_textWndFrameNotify != null)
+			if (_TextWndFrameNotify != null)
 			{
-				_textWndFrameNotify = null;
+				_TextWndFrameNotify = null;
 			}
 
-			if (_textWindowPane != null)
+			if (_TextWindowPane != null)
 			{
-				_textWindowPane = null;
+				_TextWindowPane = null;
 			}
 
 			if (m_textView != null)
@@ -282,6 +295,14 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 		protected override void CreateEditorWindow(object nativeSP)
 		{
 			Tracer.Trace(GetType(), "ShellTextViewControl.CreateEditorWindow", "", null);
+
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			ILocalRegistry obj = (ILocalRegistry)_OleServiceProvider.GetService(typeof(ILocalRegistry));
 			if (obj == null)
 			{
@@ -295,7 +316,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			m_textView = (IVsTextView)Marshal.GetObjectForIUnknown(ppvObj);
 			Marshal.Release(ppvObj);
 			((IObjectWithSite)m_textView).SetSite(nativeSP);
-			Native.ThrowOnFailure(m_textView.Initialize(_textBuffer.TextStream as IVsTextLines, Handle, (uint)textViewFlags, textViewInit));
+			Native.ThrowOnFailure(m_textView.Initialize(_TextBuffer.TextStream as IVsTextLines, Handle, (uint)textViewFlags, textViewInit));
 			IVsTextEditorPropertyCategoryContainer obj2 = (IVsTextEditorPropertyCategoryContainer)m_textView;
 			Guid rguidCategory = VSConstants.EditPropyCategoryGuid.ViewMasterSettings_guid;
 			Native.ThrowOnFailure(obj2.GetPropertyCategory(ref rguidCategory, out IVsTextEditorPropertyContainer ppProp));
@@ -325,7 +346,6 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			EditorHandle = m_textView.GetWindowHandle();
 			ApplyInitialLanguageService();
 			DoPostCreationInit();
-			Tracer.Trace(GetType(), Tracer.Level.Verbose, "ShellTextViewControl.CreateEditorWindow", "successfully created window");
 		}
 
 		private void SinkEditorEvents(bool bSink)
@@ -353,7 +373,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 				}
 
 				Guid pguidLangService = Guid.Empty;
-				Native.ThrowOnFailure(((IVsTextBuffer)_textBuffer.TextStream).GetLanguageServiceID(out pguidLangService));
+				Native.ThrowOnFailure(((IVsTextBuffer)_TextBuffer.TextStream).GetLanguageServiceID(out pguidLangService));
 				if (pguidLangService == Guid.Empty)
 					throw new InvalidOperationException("IVsTextBuffer:GetLanguageServiceID");
 
@@ -363,7 +383,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 				}
 				else
 				{
-					OnNewLangSvc(_textBuffer, new LangServiceEventArgs(pguidLangService));
+					OnNewLangSvc(_TextBuffer, new LangServiceEventArgs(pguidLangService));
 				}
 			}
 			catch (Exception ex)
@@ -376,7 +396,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 		{
 			Tracer.Trace(GetType(), "ShellTextViewControl.DoPostCreationInit", "", null);
 			OnSizeChanged(new EventArgs());
-			if (_bWantCustomPopupMenu)
+			if (_WantCustomPopupMenu)
 			{
 				_CommandFilter = new TextViewCommandFilter(m_textView, new int[1] { 102 });
 				_CommandFilter.SpecialEditorCommand += base.OnSpecialEditorCommandEventHandler;
@@ -423,7 +443,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		int IVsCodeWindow.GetBuffer(out IVsTextLines buffer)
 		{
-			buffer = _textBuffer.TextStream as IVsTextLines;
+			buffer = _TextBuffer.TextStream as IVsTextLines;
 			return VSConstants.S_OK;
 		}
 

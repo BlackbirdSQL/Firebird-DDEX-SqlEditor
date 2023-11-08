@@ -183,12 +183,6 @@
   <data name="Error" xml:space="preserve">
     <value>Error</value>
   </data>
-  <data name="ErrorMarkerDescription" xml:space="preserve">
-    <value>FB-SQL editor error message marker</value>
-  </data>
-  <data name="ErrorMarkerDisplayName" xml:space="preserve">
-    <value>Error Message</value>
-  </data>
   <data name="Error_MissingSomeConnectionProperties" xml:space="preserve">
     <value>Please fill in all required fields.</value>
   </data>

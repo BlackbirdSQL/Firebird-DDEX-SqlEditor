@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using BlackbirdSql.Common.Controls.Graphing.ComponentModel;
 using BlackbirdSql.Common.Controls.Graphing.Interfaces;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core.Ctl.ComponentModel;
 using Microsoft.AnalysisServices.Graphing;
 
 

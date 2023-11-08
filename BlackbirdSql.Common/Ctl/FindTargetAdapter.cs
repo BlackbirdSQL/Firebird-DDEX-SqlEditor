@@ -1,18 +1,24 @@
 // Microsoft.VisualStudio.Data.Tools.Design.Core, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Controls.TabbedEditor.FindTargetAdapter
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 
+using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Core;
 using BlackbirdSql.Common.Controls;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
-using BlackbirdSql.Common.Ctl.Enums;
-using BlackbirdSql.Common.Ctl.Interfaces;
+
 
 namespace BlackbirdSql.Common.Ctl;
 
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 public class FindTargetAdapter : IVsFindTarget, IVsFindTarget2, IBVsFindTarget3
 {
@@ -106,6 +112,13 @@ public class FindTargetAdapter : IVsFindTarget, IVsFindTarget2, IBVsFindTarget3
 
 	public int NavigateTo(TextSpan[] pts)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		IVsWindowFrame vsWindowFrame = (IVsWindowFrame)((System.IServiceProvider)TabbedEditorPane).GetService(typeof(SVsWindowFrame));
 		if (vsWindowFrame != null)
 		{

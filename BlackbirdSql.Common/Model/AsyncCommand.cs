@@ -7,6 +7,7 @@ using System.Windows.Input;
 
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using EnvDTE;
 
 
 namespace BlackbirdSql.Common.Model;
@@ -35,9 +36,9 @@ public class AsyncCommand<TResult> : AbstractCommand, IBAsyncCommand, IBOwnedCom
 		return new AsyncCommand<TResult>(_Command);
 	}
 
-	public override async void Execute(object parameter)
+	public override void Execute(object parameter)
 	{
-		await ExecuteAsync(parameter);
+		_ = Task.Run(() => ExecuteAsync(parameter));
 	}
 
 	public async Task ExecuteAsync(object parameter)
@@ -49,7 +50,7 @@ public class AsyncCommand<TResult> : AbstractCommand, IBAsyncCommand, IBOwnedCom
 		{
 			await Execution.TaskCompletion;
 		}
-		if (CheckAccess())
+		if (IsUIThread)
 		{
 			IsExecuting = false;
 			RaiseCanExecuteChanged();

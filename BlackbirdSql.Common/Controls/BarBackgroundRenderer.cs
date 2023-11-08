@@ -4,7 +4,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl;
-
+using Microsoft.VisualStudio.Shell.Interop;
 
 
 namespace BlackbirdSql.Common.Controls;
@@ -42,9 +42,9 @@ public class BarBackgroundRenderer : ToolStripProfessionalRenderer
 
 	protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
 	{
-		_VSCOLOR_FILETAB_GRADIENTHIGHLIGHT = VsColorUtilities.GetShellColor(-213);
-		_VSCOLOR_FILETAB_GRADIENTDARK = VsColorUtilities.GetShellColor(-213);
-		_VSCOLOR_FILETAB_SELECTEDBACKGROUND = VsColorUtilities.GetShellColor(-202);
+		_VSCOLOR_FILETAB_GRADIENTHIGHLIGHT = VsColorUtilities.GetShellColor(__VSSYSCOLOREX3.VSCOLOR_THREEDFACE);
+		_VSCOLOR_FILETAB_GRADIENTDARK = VsColorUtilities.GetShellColor(__VSSYSCOLOREX3.VSCOLOR_THREEDFACE);
+		_VSCOLOR_FILETAB_SELECTEDBACKGROUND = VsColorUtilities.GetShellColor(__VSSYSCOLOREX3.VSCOLOR_HIGHLIGHT);
 		if (e.ToolStrip is ToolStripDropDown)
 		{
 			base.OnRenderToolStripBackground(e);
@@ -71,7 +71,7 @@ public class BarBackgroundRenderer : ToolStripProfessionalRenderer
 	{
 		Graphics graphics = e.Graphics;
 		Rectangle rectangle = new Rectangle(Point.Empty, e.ToolStrip.Size);
-		using Brush brush = new SolidBrush(VsColorUtilities.GetShellColor(-213));
+		using Brush brush = new SolidBrush(VsColorUtilities.GetShellColor(__VSSYSCOLOREX3.VSCOLOR_THREEDFACE));
 		graphics.FillRectangle(brush, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 	}
 
@@ -79,7 +79,7 @@ public class BarBackgroundRenderer : ToolStripProfessionalRenderer
 	{
 		Graphics graphics = e.Graphics;
 		Rectangle rectangle = new Rectangle(Point.Empty, e.ToolStrip.Size);
-		using Brush brush = new SolidBrush(VsColorUtilities.GetShellColor(-213));
+		using Brush brush = new SolidBrush(VsColorUtilities.GetShellColor(__VSSYSCOLOREX3.VSCOLOR_THREEDFACE));
 		graphics.FillRectangle(brush, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 	}
 }

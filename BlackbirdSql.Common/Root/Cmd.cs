@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Security;
 using System.Windows;
 using System.Windows.Forms;
@@ -19,10 +20,14 @@ using BlackbirdSql.Core.Model;
 
 using Microsoft;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
 namespace BlackbirdSql.Common;
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "UIThread compliance is performed by applicable methods.")]
 
 // =========================================================================================================
 //												Cmd Class
@@ -204,6 +209,13 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 
 	public static IVsProject3 GetMiscellaneousProject(IServiceProvider provider)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(ex);
+			throw ex;
+		}
+
 		IVsExternalFilesManager obj = provider.GetService(typeof(SVsExternalFilesManager)) as IVsExternalFilesManager;
 		try { Assumes.Present(obj); } catch (Exception ex) { Diag.Dug(ex); throw; }
 
@@ -217,7 +229,13 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 	// IsInAutomationFunction
 	public static bool IsInAutomationFunction()
 	{
-		Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(ex);
+			throw ex;
+		}
+
 		IVsExtensibility3 extensibility = GlobalServices.Extensibility;
 
 		if (extensibility == null)
@@ -292,6 +310,13 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 	public static void OpenAsMiscellaneousFile(IServiceProvider provider, string path, string caption,
 		Guid editor, string physicalView, Guid logicalView)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(ex);
+			throw ex;
+		}
+
 		try
 		{
 			IVsProject3 miscellaneousProject = GetMiscellaneousProject(provider);
@@ -325,6 +350,13 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 
 	public static void OpenNewMiscellaneousSqlFile(IServiceProvider provider, string initialContent = "")
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(ex);
+			throw ex;
+		}
+
 		IVsProject3 miscellaneousProject = GetMiscellaneousProject(provider);
 		miscellaneousProject.GenerateUniqueItemName(VSConstants.VSITEMID_ROOT, MonikerAgent.C_SqlExtension, "SQLQuery", out string pbstrItemName);
 		string tempFileName = Path.GetTempFileName();
@@ -468,7 +500,13 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 	public static DialogResult ShowMessageBoxEx(string title, string text, string helpKeyword,
 		MessageBoxButtons buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcon icon)
 	{
-		Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(ex);
+			throw ex;
+		}
+
 		_MarshalingControl ??= new Control();
 
 		if (_MarshalingControl.InvokeRequired)

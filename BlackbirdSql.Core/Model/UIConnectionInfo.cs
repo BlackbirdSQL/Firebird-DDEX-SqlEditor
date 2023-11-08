@@ -21,7 +21,7 @@ public class UIConnectionInfo : AbstractModelPropertyAgent
 
 	// private const string XmlServerName = "ServerName";
 
-	// private const string XmlDisplayName = "DisplayName";
+	// private const string XmlDisplayName = "DisplayMember";
 
 	// private const string XmlUserName = "UserName";
 

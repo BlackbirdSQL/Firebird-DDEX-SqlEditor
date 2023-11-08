@@ -4,7 +4,6 @@
 
 using System;
 using System.Windows.Forms;
-
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
@@ -71,7 +70,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 	public TConnectionUIControl() : base()
 	{
-		Tracer.Trace(GetType(), "TConnectionUIControl.TConnectionUIControl");
+		// Tracer.Trace(GetType(), "TConnectionUIControl.TConnectionUIControl");
 
 		try
 		{
@@ -88,11 +87,11 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 			cmbDataSource.DataSource = _DataSources;
 			cmbDataSource.ValueMember = "DataSourceLc";
-			cmbDataSource.DisplayMember = "DatasetName";
+			cmbDataSource.DisplayMember = "ServerName";
 
 			cmbDatabase.DataSource = _DataSources.Dependent;
 			cmbDatabase.ValueMember = "InitialCatalogLc";
-			cmbDatabase.DisplayMember = "Name";
+			cmbDatabase.DisplayMember = "DisplayMember";
 		}
 		catch (Exception ex)
 		{
@@ -120,13 +119,15 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	// ---------------------------------------------------------------------------------
 	public override void LoadProperties()
 	{
+		// Tracer.Trace(GetType(), "LoadProperties()");
+
 		try
 		{
 			// Diag.Trace("Loading datasource text");
 			DisableEvents();
 
 
-			if (Site != null && Site.TryGetValue("Data Source", out object value))
+			if (Site != null && Site.TryGetValue("DataSource", out object value))
 				txtDataSource.Text = (string)value;
 			else
 				txtDataSource.Text = CoreConstants.C_DefaultDataSource;
@@ -142,7 +143,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			else
 				txtUserName.Text = CoreConstants.C_DefaultUserId;
 
-			if (Site != null && Site.TryGetValue("Initial Catalog", out value))
+			if (Site != null && Site.TryGetValue("Database", out value))
 				txtDatabase.Text = (string)value;
 			else
 				txtDatabase.Text = CoreConstants.C_DefaultCatalog;
@@ -154,7 +155,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				txtPassword.Text = CoreConstants.C_DefaultPassword;
 
 
-			if (Site != null && Site.TryGetValue("Role Name", out value))
+			if (Site != null && Site.TryGetValue("Role", out value))
 				txtRole.Text = (string)value;
 			else
 				txtRole.Text = ModelConstants.C_DefaultRoleName;
@@ -164,7 +165,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			else
 				cboCharset.SetSelectedValueX(ModelConstants.C_DefaultCharacterSet);
 
-			if (Site != null && Site.TryGetValue("Port Number", out value))
+			if (Site != null && Site.TryGetValue("Port", out value))
 				txtPort.Text = (string)value;
 			else
 				txtPort.Text = CoreConstants.C_DefaultPortNumber.ToString();
@@ -174,7 +175,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			else
 				cboDialect.SetSelectedValueX(ModelConstants.C_DefaultDialect);
 
-			if (Site != null && Site.TryGetValue("Server Type", out value))
+			if (Site != null && Site.TryGetValue("ServerType", out value))
 				cboServerType.SelectedIndex = Convert.ToInt32((string)value);
 			else
 				cboServerType.SelectedIndex = (int)CoreConstants.C_DefaultServerType;
@@ -282,7 +283,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 			// Diag.Trace("Database text changed");
 			if (Site != null)
-				Site["Initial Catalog"] = txtDatabase.Text.Trim();
+				Site["Database"] = txtDatabase.Text.Trim();
 
 			if (!_DataSources.IsReady)
 				return;
@@ -335,7 +336,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			{
 				txtDatabase.Text = (string)_DataSources.DependentRow["InitialCatalog"];
 				if (Site != null)
-					Site["Initial Catalog"] = txtDatabase.Text;
+					Site["Database"] = txtDatabase.Text;
 			}
 
 			int selectedIndex = cboCharset.SelectedIndex;
@@ -357,7 +358,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				{
 					Site["User ID"] = txtUserName.Text;
 					Site["Password"] = txtPassword.Text;
-					Site["Role Name"] = txtRole.Text;
+					Site["Role"] = txtRole.Text;
 				}
 			}
 
@@ -388,7 +389,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			// Diag.Trace("DataSource text changed");
 
 			if (Site != null)
-				Site["Data Source"] = txtDataSource.Text.Trim();
+				Site["DataSource"] = txtDataSource.Text.Trim();
 
 			if (!_DataSources.IsReady)
 				return;
@@ -463,14 +464,14 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 				if (Site != null)
 				{
-					Site["Data Source"] = "";
-					Site["Port Number"] = CoreConstants.C_DefaultPortNumber.ToString();
-					Site["Server Type"] = cboServerType.SelectedIndex;
-					Site["Initial Catalog"] = "";
+					Site["DataSource"] = "";
+					Site["Port"] = CoreConstants.C_DefaultPortNumber.ToString();
+					Site["ServerType"] = cboServerType.SelectedIndex;
+					Site["Database"] = "";
 					Site["Dialect"] = ModelConstants.C_DefaultDialect;
 					Site["User ID"] = txtUserName.Text = "";
 					Site["Password"] = txtPassword.Text = "";
-					Site["Role Name"] = txtRole.Text = "";
+					Site["Role"] = txtRole.Text = "";
 					Site["Character Set"] = ModelConstants.C_DefaultCharacterSet;
 				}
 
@@ -482,7 +483,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				{
 					txtDataSource.Text = (string)_DataSources.Row["DataSource"];
 					if (Site != null)
-						Site["Data Source"] = txtDataSource.Text;
+						Site["DataSource"] = txtDataSource.Text;
 				}
 
 
@@ -490,7 +491,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				{
 					txtPort.Text = _DataSources.Row["PortNumber"].ToString();
 					if (Site != null)
-						Site["Port Number"] = txtPort.Text;
+						Site["Port"] = txtPort.Text;
 				}
 			}
 
@@ -525,13 +526,13 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				else if (sender.Equals(txtPassword))
 					Site["Password"] = txtPassword.Text;
 				else if (sender.Equals(txtRole))
-					Site["Role Name"] = txtRole.Text;
+					Site["Role"] = txtRole.Text;
 				else if (sender.Equals(cboCharset))
 					Site["Character Set"] = cboCharset.Text;
 				else if (sender.Equals(txtPort))
 				{
 					if (!String.IsNullOrEmpty(txtPort.Text))
-						Site["Port Number"] = Convert.ToInt32(txtPort.Text);
+						Site["Port"] = Convert.ToInt32(txtPort.Text);
 				}
 				else if (sender.Equals(cboDialect))
 				{
@@ -541,7 +542,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				else if (sender.Equals(cboServerType))
 				{
 					if (cboServerType.SelectedIndex != -1)
-						Site["Server Type"] = cboServerType.SelectedIndex;
+						Site["ServerType"] = cboServerType.SelectedIndex;
 				}
 			}
 		}

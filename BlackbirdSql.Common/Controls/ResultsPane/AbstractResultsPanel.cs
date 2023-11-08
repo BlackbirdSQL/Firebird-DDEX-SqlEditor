@@ -1,15 +1,23 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ResultPane.DisplaySqlResultsBasePanel
-
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Ctl;
 
-using Microsoft.VisualStudio.Data;
-using Microsoft.VisualStudio.Shell.Interop;
+using BlackbirdSql.Common.Ctl.Commands;
+using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+
+
 namespace BlackbirdSql.Common.Controls.ResultsPane;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 public abstract class AbstractResultsPanel : Panel
 {
@@ -74,6 +82,14 @@ public abstract class AbstractResultsPanel : Panel
 	public virtual void Initialize(object oleServiceProvider)
 	{
 		Tracer.Trace(GetType(), "DisplaySqlResultsBaseTabPage.Initialize", "", null);
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		_ObjServiceProvider = oleServiceProvider;
 		_serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)oleServiceProvider);
 		_vsUIShell = GetService(typeof(IVsUIShell)) as IVsUIShell;

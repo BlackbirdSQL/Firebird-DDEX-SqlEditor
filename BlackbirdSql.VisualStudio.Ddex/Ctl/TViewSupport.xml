@@ -16,19 +16,16 @@
 				<CommandRef name="CommandGlobalNewQuery" />
 				<CommandRef name="CommandTextOpenScript" />
 				<CommandRef name="CommandTextOpenAlterScript" />
-				<CommandRef name="CommandRightClick" />
-				<CommandRef name="CommandDoubleClick" />
-				<CommandRef name="CommandEnterKey" />
 			</GlobalCommands>
-			<ConnectionNode nodeId="Root" type="">
-				<InitialDisplayName>{Root.Server} ({Root.Database})</InitialDisplayName>
+			<ConnectionNode nodeId="Database" type="Database">
+				<InitialDisplayName>{Root.DatasetKey}</InitialDisplayName>
 				<Properties>
-					<Property name="InitialCatalog">
+					<Property name="Database">
 						<DisplayName resource="Identifier_Name_DatabasePath" />
 						<Category resource="Category_Connection" />
 						<Description resource="Identifier_Desc_DatabasePath" />
 					</Property>
-					<Property name="UserId">
+					<Property name="UserID">
 						<DisplayName resource="Identifier_Name_UserId" />
 						<Category resource="Category_Connection" />
 						<Description resource="Identifier_Desc_UserId" />
@@ -39,7 +36,7 @@
 						<Description resource="Identifier_Desc_ServerType" />
 						<StandardValuesRef name="TplStandardValuesServerType" />
 					</Property>
-					<Property name="PortNumber">
+					<Property name="Port">
 						<DisplayName resource="Identifier_Name_ServerPort" />
 						<Category resource="Category_DataSourceInformation" />
 						<Description resource="Identifier_Desc_ServerPort" />
@@ -58,9 +55,6 @@
 				<Commands>
 					<!--<CommandRef name="CommandNewQuery" />-->
 					<!--<CommandRef name="CommandUniversalDetachDatabase" />-->
-					<CommandRef name="CommandRightClick" />
-					<CommandRef name="CommandDoubleClick" />
-					<CommandRef name="CommandEnterKey" />
 				</Commands>
 				<Children>
 					<StaticNode nodeId="Tables">
@@ -81,11 +75,6 @@
 									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.View.ico" when="NOT ({View.IS_SYSTEM_VIEW} = 99)" assembly="" />
 									<Properties>
 										<TypeDisplayName resource="Type_View" />
-										<Property name="VIEW_CATALOG">
-											<DisplayName resource="Identifier_Name_Catalog" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Catalog" />
-										</Property>
 										<Property name="VIEW_NAME">
 											<DisplayName resource="Identifier_Name_Name" />
 											<Category resource="Category_Identifier" />
@@ -127,16 +116,6 @@
 									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Procedure.ico" when="NOT ({Procedure.IS_SYSTEM_FLAG} = 99)" assembly="" />
 									<Properties>
 										<TypeDisplayName resource="Type_StoredProcedure" />
-										<Property name="PROCEDURE_CATALOG">
-											<DisplayName resource="Identifier_Name_Catalog" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Catalog" />
-										</Property>
-										<Property name="PROCEDURE_SCHEMA">
-											<DisplayName resource="Identifier_Name_Schema" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Schema" />
-										</Property>
 										<Property name="PROCEDURE_NAME">
 											<DisplayName resource="Identifier_Name_Name" />
 											<Category resource="Category_Identifier" />
@@ -203,16 +182,6 @@
 									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Function.ico" when="NOT ({Function.IS_SYSTEM_FLAG} = 99)" assembly="" />
 									<Properties>
 										<TypeDisplayName resource="Type_ScalarFunction" />
-										<Property name="FUNCTION_CATALOG">
-											<DisplayName resource="Identifier_Name_Catalog" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Catalog" />
-										</Property>
-										<Property name="FUNCTION_SCHEMA">
-											<DisplayName resource="Identifier_Name_Schema" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Schema" />
-										</Property>
 										<Property name="FUNCTION_NAME">
 											<DisplayName resource="Identifier_Name_Name" />
 											<Category resource="Category_Identifier" />
@@ -264,16 +233,6 @@
 									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.IdentityColumn.ico" assembly="" />
 									<Properties>
 										<TypeDisplayName resource="Type_Sequence" />
-										<Property name="GENERATOR_CATALOG">
-											<DisplayName resource="Identifier_Name_Catalog" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Catalog" />
-										</Property>
-										<Property name="GENERATOR_SCHEMA">
-											<DisplayName resource="Identifier_Name_Schema" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Schema" />
-										</Property>
 										<Property name="SEQUENCE_GENERATOR">
 											<DisplayName resource="Identifier_Name_Name" />
 											<Category resource="Category_Identifier" />
@@ -333,16 +292,6 @@
 									<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Domain.ico" assembly="" />
 									<Properties>
 										<TypeDisplayName resource="Type_Domain" />
-										<Property name="DOMAIN_CATALOG">
-											<DisplayName resource="Identifier_Name_Catalog" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Catalog" />
-										</Property>
-										<Property name="DOMAIN_SCHEMA">
-											<DisplayName resource="Identifier_Name_Schema" />
-											<Category resource="Category_Identifier" />
-											<Description resource="Identifier_Desc_Schema" />
-										</Property>
 										<Property name="DOMAIN_NAME">
 											<DisplayName resource="Identifier_Name_Name" />
 											<Category resource="Category_Identifier" />

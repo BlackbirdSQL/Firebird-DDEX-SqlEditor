@@ -1,15 +1,14 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
-
 using System;
+using System.Data;
 using System.Diagnostics;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Properties;
 
 using FirebirdSql.Data.FirebirdClient;
@@ -17,9 +16,8 @@ using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.TaskStatusCenter;
-using System.Data;
-using BlackbirdSql.Core.Controls;
+using BlackbirdSql.Core.Model.Interfaces;
+
 
 namespace BlackbirdSql.Core.Model;
 
@@ -41,7 +39,7 @@ namespace BlackbirdSql.Core.Model;
 /// from the async thread to complete the build.
 /// </remarks>
 // =========================================================================================================
-internal class LinkageParser : AbstractLinkageParser
+public class LinkageParser : AbstractLinkageParser
 {
 
 
@@ -90,11 +88,6 @@ internal class LinkageParser : AbstractLinkageParser
 	// To overcome this we signal a cancel to the launcher, and then treat it as "launch cancelled", because we
 	// know it will cancel the payload launch once it is clear to execute.
 
-	/// <summary>
-	/// Parser status inidicator that is set to false if the user cancels async
-	/// operations in the IDE task handler.
-	/// </summary>
-	protected bool _Enabled = true;
 
 	// The parser id / index for tracing
 	public static int _InstanceSeed = 1000;
@@ -154,7 +147,9 @@ internal class LinkageParser : AbstractLinkageParser
 	protected bool ClearToLoadSync => !Loaded && _Enabled;
 
 	/// <summary>
-	/// Getter indicating whether or not linkage is still required.
+	/// Getter indicating whether or not linkage is still required. Incomplete
+	/// differs from !Loaded in that in that !Incomplete may be because the linker
+	/// has been disabled.
 	/// </summary>
 	protected bool Incomplete => _LinkStage < EnLinkStage.Completed && _Enabled;
 
@@ -174,12 +169,12 @@ internal class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Protected .ctor. LinkageParser's are uniquely distinct to a connection. Use the
-	/// Instance() static to create or retrieve a parser for a connection or Site.
+	/// Instance() static to create or retrieve a parser for a connection.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	protected LinkageParser(FbConnection connection) : this(connection, null)
 	{
-		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] _LinkageParser(FbConnection)");
+		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] _LinkageParser(FbConnection)");
 	}
 
 
@@ -187,13 +182,12 @@ internal class LinkageParser : AbstractLinkageParser
 	/// <summary>
 	/// .ctor that clones a parser.
 	/// Protected .ctor. LinkageParser's are uniquely distinct to a connection. Use the
-	/// Instance() static to create or retrieve a parser for a connection or Site.
+	/// Instance() static to create or retrieve a parser for a connection.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	protected LinkageParser(FbConnection connection, LinkageParser rhs) : base(connection, rhs)
 	{
-		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] _LinkageParser(FbConnection, LinkageParser)");
-		_Connection.StateChange += ConnectionStateChanged;
+		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] _LinkageParser(FbConnection, LinkageParser)");
 		_TaskHandler = new(_Connection);
 	}
 
@@ -207,34 +201,43 @@ internal class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	protected static LinkageParser CreateInstance(FbConnection connection, bool canCreate)
 	{
-		// Tracer.Trace(typeof(LinkageParser), $"StaticId:[{"0000"}] Instance(FbConnection, bool)", "canCreate: {0}", canCreate);
+		Tracer.Trace(typeof(LinkageParser), "CreateInstance(FbConnection, bool)", "canCreate: {0}. This static or GetInstance() will always provide a trace of it's result.", canCreate);
 
 		LinkageParser parser;
 
-		lock (_LockGlobal)
+		lock (_LockClass)
 		{
 			parser = (LinkageParser)AbstractLinkageParser.GetInstance(connection);
 
+			Tracer.Trace(typeof(LinkageParser), "CreateInstance(FbConnection, bool)", "Done calling AbstractLinkageParser.GetInstance().");
+
 			if (parser == null)
 			{
+				Tracer.Trace(typeof(LinkageParser), "CreateInstance(FbConnection, bool)", "Calling FindEquivalentParser()");
+
 				LinkageParser rhs = (LinkageParser)FindEquivalentParser(connection);
 
 				if (rhs != null)
 				{
+					Tracer.Trace(typeof(LinkageParser), "CreateInstance(FbConnection, bool)", "Found equivalent parser. Cloning.");
 					parser = new(connection, rhs)
 					{
 						_InstanceId = _InstanceSeed < 1990 ? ++_InstanceSeed : 1001
 					};
-					Tracer.Trace(typeof(LinkageParser), $"StaticId:[{"0000"}] Instance(FbConnection, bool)", "Found parser to clone. canCreate: {0}", canCreate);
+					Tracer.Trace(typeof(LinkageParser), $"ParserId:[{parser._InstanceId}->S{parser._SyncCardinal}] CreateInstance(FbConnection, bool)", "Found parser to clone. canCreate: {0}", canCreate);
 				}
 				else if (canCreate)
 				{
-					Tracer.Trace(typeof(LinkageParser), $"StaticId:[{"0000"}] Instance(FbConnection, bool)", "Created new parser. canCreate: {0}", canCreate);
+					Tracer.Trace(typeof(LinkageParser), "CreateInstance(FbConnection, bool)", "Could not find equivalent parser. Creating new.");
 					parser = new(connection)
 					{
 						_InstanceId = _InstanceSeed < 1990 ? ++_InstanceSeed : 1001
 					};
-					Tracer.Trace(typeof(LinkageParser), $"StaticId:[{"0000"}] Instance(FbConnection, bool)", "Created new Parser. canCreate: {0}", canCreate);
+					Tracer.Trace(typeof(LinkageParser), $"ParserId:[{parser._InstanceId}->S{parser._SyncCardinal}] CreateInstance(FbConnection, bool)", "Created new parser. canCreate: {0}", canCreate);
+				}
+				else
+				{
+					Tracer.Trace(typeof(LinkageParser), "CreateInstance(FbConnection, bool)", "Could not find a Parser and may not create.");
 				}
 
 			}
@@ -247,49 +250,14 @@ internal class LinkageParser : AbstractLinkageParser
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Retrieves or creates the parser instance of a connection derived from Site
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected static LinkageParser CreateInstance(IVsDataConnection site, bool canCreate)
-	{
-		// Tracer.Trace(typeof(LinkageParser), $"StaticId:[{"0000"}] Instance(IVsDataConnection, bool)", "canCreate: {0}", canCreate);
-
-		if (site == null)
-			return null;
-
-		if (site.GetService(typeof(IVsDataConnectionSupport)) is not IVsDataConnectionSupport vsDataConnectionSupport)
-			return null;
-
-		if (vsDataConnectionSupport.ProviderObject is not FbConnection connection)
-			return null;
-
-		return CreateInstance(connection, canCreate);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
 	/// Retrieves or creates the parser instance of a connection.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static LinkageParser EnsureInstance(FbConnection connection)
+	public static LinkageParser EnsureInstance(FbConnection connection, Type schemaFactoryType)
 	{
-		// Tracer.Trace(typeof(LinkageParser), $"StaticId:[{"0000"}] EnsureInstance(FbConnection)");
+		Tracer.Trace(typeof(LinkageParser), $"StaticId:[{"0000"}] EnsureInstance(FbConnection)");
+		_SchemaFactoryType = schemaFactoryType;
 		return CreateInstance(connection, true);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Retrieves or creates the parser instance of a connection derived from Site.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static LinkageParser EnsureInstance(IVsDataConnection site)
-	{
-		// Tracer.Trace(typeof(LinkageParser), $"StaticId:[{"0000"}] EnsureInstance(IVsDataConnection)");
-		return CreateInstance(site, true);
 	}
 
 
@@ -301,21 +269,8 @@ internal class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public static new LinkageParser GetInstance(FbConnection connection)
 	{
-		// Tracer.Trace(typeof(LinkageParser), $"StaticId:[{"0000"}] Instance(FbConnection)");
+		Tracer.Trace(typeof(LinkageParser), $"StaticId:[{"0000"}] Instance(FbConnection)");
 		return CreateInstance(connection, false);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Retrieves an existing parser for a connection derived from Site.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static LinkageParser GetInstance(IVsDataConnection site)
-	{
-		// Tracer.Trace(typeof(LinkageParser), $"StaticId:[{"0000"}] Instance(FbConnection)");
-		return CreateInstance(site, false);
 	}
 
 
@@ -390,40 +345,46 @@ internal class LinkageParser : AbstractLinkageParser
 	{
 		if (!ClearToLoadAsync)
 		{
-			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] _AsyncExecute", "ENTER and exit - !ClearToLoadAsync - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
+			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] AsyncExecute()", "ENTERED then exited because !ClearToLoadAsync - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
 			return false;
 		}
 
+
 		int asyncProcessId = _AsyncProcessSeed < 9990 ? ++_AsyncProcessSeed : 9001;
+		_AsyncProcessSeed = asyncProcessId;
 
-		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->A{asyncProcessId}] _AsyncExecute", "ENTER - ClearToLoadAsync - _AsyncPayloadLaunchState: {0}, IsUiThread: {1}.", _AsyncPayloadLaunchState, ThreadHelper.CheckAccess());
+		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->A{asyncProcessId}] AsyncExecute()", "ENTER - ClearToLoadAsync - _AsyncPayloadLaunchState: {0}, IsUiThread: {1}.", _AsyncPayloadLaunchState, ThreadHelper.CheckAccess());
 
-		_AsyncPayloadLaunchState = EnAsyncLaunchState.Pending;
 
+		lock (_LockObject)
+		{
+			_AsyncPayloadLaunchState = EnAsyncLaunchState.Pending;
+			_AsyncLauncherTokenSource?.Dispose();
+			_AsyncLauncherTokenSource = new();
+			_AsyncLauncherToken = _AsyncLauncherTokenSource.Token;
+		}
+
+		CancellationToken asyncCancellationToken = _AsyncLauncherToken;
 
 		_TaskHandler.Status(_LinkStage, _TotalElapsed, _Enabled, AsyncActive);
 		_TaskHandler.PreRegister(true);
 
-		_AsyncLauncherTokenSource?.Dispose();
-		_AsyncLauncherTokenSource = new();
-		_AsyncLauncherToken = _AsyncLauncherTokenSource.Token;
-
 
 		// The following for brevity.
-		CancellationToken asyncCancellationToken = _AsyncLauncherToken;
 		CancellationToken userCancellationToken = _TaskHandler.UserCancellation;
 		TaskCreationOptions creationOptions = TaskCreationOptions.LongRunning | TaskCreationOptions.AttachedToParent;
 		TaskScheduler scheduler = TaskScheduler.Default;
 
+		// 
 		bool payload() =>
 			AsyncPayloadTask(asyncProcessId, asyncCancellationToken, userCancellationToken, delay, multiplier);
 
-		// Start up the payload launcher.
+		// Start up the payload launcher with tracking.
 		_AsyncPayloadLauncher = Task.Factory.StartNew(payload, default, creationOptions, scheduler);
 
 		_TaskHandler.RegisterTask(_AsyncPayloadLauncher);
 
-		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->A{asyncProcessId}] _AsyncExecute", "EXIT - AsyncTask registered - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
+		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->A{asyncProcessId}] AsyncExecute()", "EXIT - AsyncTask registered - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
 
 
 		return true;
@@ -442,11 +403,13 @@ internal class LinkageParser : AbstractLinkageParser
 		// queue, but as fire and forget so we're okay here.
 		if (!_Enabled)
 		{
-			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->A{asyncProcessId}] _AsyncExit", "ENTER and !_Enabled - _SyncWaitOnAsyncTokenSource?.Cancel - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
+			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->A{asyncProcessId}] AsyncExit()", "ENTER and !_Enabled - _SyncWaitOnAsyncTokenSource?.Cancel - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
 			_TaskHandler.Status(_LinkStage, _TotalElapsed, _Enabled, AsyncActive);
 		}
 		else
-			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->A{asyncProcessId}] _AsyncExit", "ENTER and _Enabled - _SyncWaitOnAsyncTokenSource?.Cancel - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
+		{
+			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->A{asyncProcessId}] AsyncExit()", "ENTER and _Enabled - _SyncWaitOnAsyncTokenSource?.Cancel - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
+		}
 
 
 		// _TaskHandler = null;
@@ -469,27 +432,34 @@ internal class LinkageParser : AbstractLinkageParser
 		// This scenario can easily be reproduced when we perform a GetCurrentMemory() or
 		// GetActiveUsers() db sync request.
 
-		if (!SyncActive && _LinkStage < EnLinkStage.Completed && _Enabled)
+		if (!SyncActive && Incomplete)
 		{
-			if (asyncCancellationToken.IsCancellationRequested)
+			lock (_LockObject)
 			{
-				Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->A{asyncProcessId}] _AsyncExit", "_AsyncLauncherToken.IsCancellationRequested - _AsyncLauncherTokenSource renew - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
-				_AsyncLauncherTokenSource.Dispose();
-				_AsyncLauncherTokenSource = new();
-				_AsyncLauncherToken = _AsyncLauncherTokenSource.Token;
+				if (asyncCancellationToken.IsCancellationRequested)
+				{
+					Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->A{asyncProcessId}] AsyncExit()", "_AsyncLauncherToken.IsCancellationRequested - _AsyncLauncherTokenSource renew - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
+					_AsyncLauncherTokenSource.Dispose();
+					_AsyncLauncherTokenSource = new();
+					_AsyncLauncherToken = _AsyncLauncherTokenSource.Token;
+				}
+				Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->A{asyncProcessId}] AsyncExit()", "Re-executing AsyncExecute() - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
+				_AsyncPayloadLaunchState = EnAsyncLaunchState.Inactive;
 			}
-			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->A{asyncProcessId}] _AsyncExit", "Re-executing AsyncExecute() - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
-			_AsyncPayloadLaunchState = EnAsyncLaunchState.Inactive;
+
 			AsyncExecute();
 		}
 		else
 		{
-			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->A{asyncProcessId}] _AsyncExit", "EXIT resetting and _SyncWaitOnAsyncTokenSource?.Cancel() - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
-			_AsyncPayloadLaunchState = EnAsyncLaunchState.Inactive;
-			_SyncWaitOnAsyncTokenSource?.Cancel();
+			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->A{asyncProcessId}] AsyncExit()", "EXIT resetting and _SyncWaitOnAsyncTokenSource?.Cancel() - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
+			lock (_LockObject)
+			{
+				_AsyncPayloadLaunchState = EnAsyncLaunchState.Inactive;
+				_SyncWaitOnAsyncTokenSource?.Cancel();
+			}
 		}
 
-		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->A{asyncProcessId}] _AsyncExit", "EXIT - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
+		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->A{asyncProcessId}] AsyncExit()", "EXIT - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
 
 		return true;
 	}
@@ -508,32 +478,35 @@ internal class LinkageParser : AbstractLinkageParser
 
 		try
 		{
-			Tracer.Trace("<AsyncExecute>._AsyncPayloadLauncher", $"ParserId:[{_InstanceId}->A{asyncProcessId}] _AsyncExecute:AsyncTask", "ENTER - userCancellationToken.IsCancellationRequested: {0}", userCancellationToken.IsCancellationRequested);
+			Tracer.Trace("<AsyncExecute>._AsyncPayloadLauncher", $"ParserId:[{_InstanceId}->A{asyncProcessId}] AsyncExecute>AsyncPayloadTask()", "ENTER - userCancellationToken.IsCancellationRequested: {0}", userCancellationToken.IsCancellationRequested);
 
-			if (!asyncCancellationToken.IsCancellationRequested && !userCancellationToken.IsCancellationRequested)
+			if (userCancellationToken.IsCancellationRequested)
 			{
-				Tracer.Trace("<AsyncExecute>._AsyncPayloadLauncher", $"ParserId:[{_InstanceId}->A{asyncProcessId}] _AsyncExecute:AsyncTask", "Ready to populate - _AsyncPayloadLaunchState: {0}, IsUiThread: {1}.", _AsyncPayloadLaunchState, ThreadHelper.CheckAccess());
-				_AsyncPayloadLaunchState++;
-
-				if (AsyncDelay(delay, multiplier, asyncCancellationToken, userCancellationToken))
-					_ = PopulateLinkageTables(asyncCancellationToken, userCancellationToken, "AsyncId", asyncProcessId);
-				else if (userCancellationToken.IsCancellationRequested)
-					_Enabled = false;
+				_Enabled = false;
 			}
-			else
+			else if (!asyncCancellationToken.IsCancellationRequested)
 			{
-				Tracer.Trace("<AsyncExecute>._AsyncPayloadLauncher", $"ParserId:[{_InstanceId}->A{asyncProcessId}] _AsyncExecute:AsyncTask", "Populate failed because _AsyncLauncherTokenSource.IsCancellationRequested - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
+				if (AsyncDelay(delay, multiplier, asyncCancellationToken, userCancellationToken))
+				{
+					lock (_LockObject)
+						_AsyncPayloadLaunchState = EnAsyncLaunchState.Launching;
+					_ = PopulateLinkageTables(asyncCancellationToken, userCancellationToken, "AsyncId", asyncProcessId);
+				}
+				else if (userCancellationToken.IsCancellationRequested)
+				{
+					_Enabled = false;
+				}
 			}
 
 		}
 		catch (Exception ex)
 		{
 			Diag.Dug(ex);
-			throw;
+			// throw;
 		}
 		finally
 		{
-			Tracer.Trace("<AsyncExecute>._AsyncPayloadLauncher", $"ParserId:[{_InstanceId}->A{asyncProcessId}] _AsyncExecute:AsyncTask", "Finally calling AsyncExit - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
+			Tracer.Trace("<AsyncExecute>._AsyncPayloadLauncher", $"ParserId:[{_InstanceId}->A{asyncProcessId}] AsyncExecute>AsyncPayloadTask()", "Finally calling AsyncExit - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
 			AsyncExit(asyncProcessId, asyncCancellationToken, userCancellationToken);
 		}
 
@@ -548,9 +521,9 @@ internal class LinkageParser : AbstractLinkageParser
 	/// Disable future async operations and suspends any current async tasks.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public bool Disable()
+	public override bool Disable()
 	{
-		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] _Disable()");
+		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] Disable()");
 
 		if (!_Enabled)
 			return false;
@@ -565,6 +538,34 @@ internal class LinkageParser : AbstractLinkageParser
 	}
 
 
+
+	public new static bool DisposeInstance(FbConnection connection)
+	{
+		return AbstractLinkageParser.DisposeInstance(connection);
+	}
+
+
+	public static bool DisposeInstance(IVsDataConnection site)
+	{
+		Tracer.Trace(typeof(LinkageParser), "DisposeInstance(IVsDataConnection)");
+
+		if (site == null)
+			return false;
+
+		if (site.GetService(typeof(IVsDataConnectionSupport)) is not IVsDataConnectionSupport vsDataConnectionSupport)
+			return false;
+
+		if (vsDataConnectionSupport.ProviderObject is not FbConnection connection)
+			return false;
+
+
+		return DisposeInstance(connection);
+	}
+
+
+
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Launches the UI thread build of the linkage tables if the UI requires them.
@@ -575,7 +576,9 @@ internal class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	protected override bool EnsureLoaded()
 	{
-		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] _EnsureLoaded not pausing, executing");
+		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] EnsureLoaded() not pausing, calling SyncExecute()");
+
+
 		return SyncExecute();
 	}
 
@@ -595,24 +598,27 @@ internal class LinkageParser : AbstractLinkageParser
 	protected bool PopulateLinkageTables(CancellationToken asyncCancellationToken,
 		CancellationToken userToken, string idType, int id)
 	{
+		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] {idType}[{id}] PopulateLinkageTables()", "SyncCardinal: {0}, UIThread: {1}", _SyncCardinal, ThreadHelper.CheckAccess());
 
 		if (_Connection == null)
 		{
+			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] {idType}[{id}] PopulateLinkageTables()", "Connection null SyncCardinal: {0}", _SyncCardinal);
 			ObjectDisposedException ex = new(Resources.ExceptionConnectionNull);
 			Diag.Dug(ex);
-			throw ex;
+			return false;
 		}
 
 		if (!ConnectionActive)
 		{
-			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] {idType}[{id}] _PopulateLinkageTables", "ENTER and exit - !ConnectionActive - SyncCardinal: {0}", _SyncCardinal);
+			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] {idType}[{id}] PopulateLinkageTables()", "ENTER and exit - !ConnectionActive - SyncCardinal: {0}", _SyncCardinal);
 			return false;
 		}
 
 		try
 		{
 
-			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] {idType}[{id}] _PopulateLinkageTables", "ENTER - _LinkStage: {0}", _LinkStage);
+			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] {idType}[{id}] PopulateLinkageTables()", "ENTER - _LinkStage: {0}", _LinkStage);
+
 			_TaskHandler.Progress(Percent(_LinkStage), _LinkStage == EnLinkStage.Start ? 0 : -1, _TotalElapsed, _Enabled, AsyncActive);
 
 			if (_LinkStage < EnLinkStage.GeneratorsLoaded)
@@ -706,7 +712,7 @@ internal class LinkageParser : AbstractLinkageParser
 
 			_LinkStage = EnLinkStage.Completed;
 
-			_TaskHandler.Progress(Resources.LinkageParserStageCompleted.Res(_Triggers.Rows.Count),
+			_TaskHandler.Progress(Resources.LinkageParserStageCompleted.FmtRes(_Triggers.Rows.Count),
 				Percent(_LinkStage), Stopwatch.ElapsedMilliseconds, _TotalElapsed, _Enabled, AsyncActive);
 
 			_Stopwatch = null;
@@ -776,7 +782,7 @@ internal class LinkageParser : AbstractLinkageParser
 					_AsyncPayloadLauncher = null;
 				}
 
-				Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] _SyncEnter", "ENTER/EXIT SyncEnter - _SyncCardinal: {0} pausing: {1}, IsUiThread: {2}.", _SyncCardinal, pausing, ThreadHelper.CheckAccess());
+				Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] SyncEnter()", "ENTER/EXIT SyncEnter - _SyncCardinal: {0} pausing: {1}, IsUiThread: {2}.", _SyncCardinal, pausing, ThreadHelper.CheckAccess());
 
 				return 0;
 			}
@@ -789,7 +795,7 @@ internal class LinkageParser : AbstractLinkageParser
 
 			if (_SyncCardinal > 1 || !AsyncActive)
 			{
-				Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{_SyncCardinal}] _SyncEnter", "Cleared - Loaded or no _AsyncPayloadLauncher or _AsyncPayloadLauncher.IsCompleted");
+				Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{_SyncCardinal}] SyncEnter()", "Cleared - Loaded or no _AsyncPayloadLauncher or _AsyncPayloadLauncher.IsCompleted");
 				return !Incomplete ? _SyncCardinal : -_SyncCardinal;
 			}
 		}
@@ -802,44 +808,61 @@ internal class LinkageParser : AbstractLinkageParser
 		try
 		{
 			// Async is active so request cancellation. 
-			_AsyncLauncherTokenSource.Cancel();
+			lock (_LockObject)
+				_AsyncLauncherTokenSource.Cancel();
 
 			if (pausing) _TaskHandler.Progress(Percent(_LinkStage), -2, _TotalElapsed, _Enabled, AsyncActive);
 
-			if (_AsyncPayloadLaunchState < EnAsyncLaunchState.Launching)
+			lock (_LockObject)
 			{
-				// _AsyncPayloadLaunchState < 2: _AsyncPayloadLauncher is still waiting in thread queue managed by
-				// UI thread so we flag it to cancel and leave.
-				// If we wait we'll deadlock because the launcher's payload launch task/process will be behind us.
+				if (_AsyncPayloadLaunchState < EnAsyncLaunchState.Launching)
+				{
+					// _AsyncPayloadLaunchState < 2: _AsyncPayloadLauncher is still waiting in thread queue managed by
+					// UI thread so we flag it to cancel and leave.
+					// If we wait we'll deadlock because the launcher's payload launch task/process will be behind us.
 
-				Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{_SyncCardinal}] _SyncEnter", "Async task has not launched it's payload yet. We can exit.");
+					Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{_SyncCardinal}] SyncEnter()", "Async task has not launched it's payload yet. We can exit.");
 
-				return !Incomplete ? _SyncCardinal : -_SyncCardinal;
+					return !Incomplete ? _SyncCardinal : -_SyncCardinal;
+				}
+
+				// Create a wait-on-async while we wait
+				_SyncWaitOnAsyncTokenSource?.Dispose();
+				_SyncWaitOnAsyncTokenSource = new();
+				_SyncWaitOnAsyncToken = _SyncWaitOnAsyncTokenSource.Token;
+			}
+			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S {_SyncCardinal}] SyncEnter()", "WAITING _AsyncPayloadLauncher.Wait - _AsyncPayloadLaunchState: {0}, isFaulted: {1}, _AsyncPayloadLaunchState: {2}, UIThread: {3}.", _AsyncPayloadLaunchState, _AsyncPayloadLauncher.IsFaulted.ToString(), _AsyncPayloadLaunchState, ThreadHelper.CheckAccess());
+
+			while (AsyncActive)
+			{
+				try
+				{
+					_AsyncPayloadLauncher.Wait(1000, _SyncWaitOnAsyncToken);
+				}
+				catch // (OperationCanceledException ex)
+				{
+					Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S {_SyncCardinal}] SyncEnter()", "_SyncWaitAsyncTask.Cancelled "); //, ex.Message);
+				}
+				if (_AsyncPayloadLaunchState == EnAsyncLaunchState.Pending)
+				{
+					Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S {_SyncCardinal}] SyncEnter()", "_AsyncPayloadLauncher Timeout");
+					_AsyncPayloadLauncher.Dispose();
+					_AsyncPayloadLauncher = null;
+					AsyncExit(_AsyncProcessSeed, _AsyncLauncherToken, _TaskHandler.UserCancellation);
+				}
+				Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S {_SyncCardinal}] SyncEnter()", "Wait loop _AsyncPayloadLaunchState: {0}, _SyncWaitOnAsyncToken.IsCancellationRequested: {1}, UIThread: {2}.", _AsyncPayloadLaunchState, _SyncWaitOnAsyncToken.IsCancellationRequested, ThreadHelper.CheckAccess());
 			}
 
-			// Create a wait-on-async while we wait
-			_SyncWaitOnAsyncTokenSource?.Dispose();
-			_SyncWaitOnAsyncTokenSource = new();
-			_SyncWaitOnAsyncToken = _SyncWaitOnAsyncTokenSource.Token;
-
-			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S {_SyncCardinal}] _SyncEnter", "Waiting _AsyncPayloadLauncher.Wait - _AsyncPayloadLaunchState: {0} isFaulted: {1}.", _AsyncPayloadLaunchState, _AsyncPayloadLauncher.IsFaulted.ToString());
-
-			try
-			{
-				_AsyncPayloadLauncher.Wait(_SyncWaitOnAsyncToken);
-			}
-			catch (OperationCanceledException ex)
-			{
-				Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S {_SyncCardinal}] _SyncEnter", "_SyncWaitAsyncTask.Cancelled {0}", ex.Message);
-			}
-
-			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S {_SyncCardinal}] _SyncEnter", "Released _AsyncPayloadLauncher.Wait - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
+			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S {_SyncCardinal}] SyncEnter()", "Released _AsyncPayloadLauncher.Wait - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
 
 			// We have exclusive control.
 			// Dispose of the wait-on-async token
-			_SyncWaitOnAsyncTokenSource?.Dispose();
-			_SyncWaitOnAsyncTokenSource = null;
-			_SyncWaitOnAsyncToken = default;
+			lock (_LockObject)
+			{
+				_SyncWaitOnAsyncTokenSource?.Dispose();
+				_SyncWaitOnAsyncTokenSource = null;
+				_SyncWaitOnAsyncToken = default;
+			}
 
 		}
 		catch (Exception ex)
@@ -848,7 +871,7 @@ internal class LinkageParser : AbstractLinkageParser
 			throw ex;
 		}
 
-		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{_SyncCardinal}] _SyncEnter", "EXIT after Wait and exiting - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
+		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{_SyncCardinal}] SyncEnter()", "EXIT after Wait and exiting - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
 
 
 		return !Incomplete ? _SyncCardinal : -_SyncCardinal;
@@ -869,13 +892,13 @@ internal class LinkageParser : AbstractLinkageParser
 	{
 		if (!ClearToLoadSync)
 		{
-			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] _SyncExecute", "ENTER and EXIT - Loaded or !_Enabled - _SyncCardinal: {0}", _SyncCardinal);
+			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] SyncExecute()", "ENTER and EXIT - Loaded or !_Enabled - _SyncCardinal: {0}", _SyncCardinal);
 			return true;
 		}
 
 		if (_Connection == null)
 		{
-			Microsoft.VisualStudio.Data.DataProviderException ex = new(Resources.ExceptionConnectionDisposed);
+			ObjectDisposedException ex = new(Resources.ExceptionConnectionDisposed);
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -907,11 +930,11 @@ internal class LinkageParser : AbstractLinkageParser
 
 		if (syncCardinal >= 0)
 		{
-			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{syncCardinal}]  _SyncExecute", "Exiting - SyncEnter returned loaded}");
+			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{syncCardinal}]  SyncExecute()", "Exiting - SyncEnter returned loaded}");
 			return true;
 		}
 
-		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{syncCardinal}]  _SyncExecute", "Ready to prepare for sync execution");
+		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{syncCardinal}]  SyncExecute()", "Ready to prepare for sync execution");
 
 
 		_TaskHandler.Status(_LinkStage, _TotalElapsed, _Enabled, AsyncActive);
@@ -924,12 +947,12 @@ internal class LinkageParser : AbstractLinkageParser
 			{
 				if (!ClearToLoadSync)
 				{
-					Tracer.Trace("<AsyncExecute>.task", $"ParserId:[{_InstanceId}->S {syncCardinal}]  _SyncExecute", "Thread aborted PopulateLinkageTables() because ClearToLoadSync state change");
+					Tracer.Trace("<SyncExecute>.task", $"ParserId:[{_InstanceId}->S {syncCardinal}]  SyncExecute()", "Thread aborted PopulateLinkageTables() because ClearToLoadSync state change");
 					return false;
 				}
-				Tracer.Trace("<AsyncExecute>.task", $"ParserId:[{_InstanceId}->S {syncCardinal}]  _SyncExecute", "Calling PopulateLinkageTables()");
+				Tracer.Trace("<AsyncExecute>.task", $"ParserId:[{_InstanceId}->S {syncCardinal}]  SyncExecute()", "Calling PopulateLinkageTables()");
 				bool result = PopulateLinkageTables(default, default, "SyncCardinal", syncCardinal);
-				Tracer.Trace("<AsyncExecute>.task", $"ParserId:[{_InstanceId}->S {syncCardinal}] _SyncExecute", "Done PopulateLinkageTables() Success: {0}", result.ToString());
+				Tracer.Trace("<SyncExecute>.task", $"ParserId:[{_InstanceId}->S {syncCardinal}] SyncExecute()", "Done PopulateLinkageTables() Success: {0}", result.ToString());
 				return result;
 			}
 			catch (Exception ex)
@@ -942,15 +965,15 @@ internal class LinkageParser : AbstractLinkageParser
 
 		_TaskHandler.RegisterTask(task);
 
-		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{syncCardinal}]  _SyncExecute", "Sync thread for PopulateLinkageTables() loaded. Waiting for it to complete...");
+		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{syncCardinal}]  SyncExecute()", "Sync thread for PopulateLinkageTables() loaded. Waiting for it to complete...");
 
 		task.Wait();
 
-		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{syncCardinal}]  _SyncExecute", "Done waiting for thread - calling SyncExit.");
+		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{syncCardinal}]  SyncExecute()", "Done waiting for thread - calling SyncExit.");
 
 		SyncExit(syncCardinal);
 
-		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{syncCardinal}]  _SyncExecute", "EXIT - SyncExit done.");
+		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{syncCardinal}]  SyncExecute()", "EXIT - SyncExit done.");
 
 
 		return true;
@@ -967,7 +990,7 @@ internal class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public void SyncExit(int syncCardinal)
 	{
-		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{syncCardinal}]  _SyncExit", "ENTER SyncExit");
+		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{syncCardinal}]  SyncExit()", "ENTER SyncExit");
 
 
 		lock (_LockObject)
@@ -994,17 +1017,17 @@ internal class LinkageParser : AbstractLinkageParser
 
 
 			_SyncCardinal--;
-
-			// If we don't have to restart the async exit.
-			if (!Incomplete)
-				return;
-
-
-			// Should be no one behind us
-			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{syncCardinal}]  _SyncExit", "Restarting AsyncExecute");
-			AsyncExecute();
-			Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S7{syncCardinal}]  _SyncExi4t", "EXIT");
 		}
+
+		// If we don't have to restart the async exit.
+		if (!Incomplete)
+			return;
+		
+
+		// Should be no one behind us
+		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{syncCardinal}]  SyncExit()", "Restarting AsyncExecute");
+		AsyncExecute();
+		Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S7{syncCardinal}]  SyncExit()", "EXIT");
 
 
 	}
@@ -1036,21 +1059,35 @@ internal class LinkageParser : AbstractLinkageParser
 	// =========================================================================================================
 
 
+	protected override void OnConnectionDisposed(object sender, EventArgs e)
+	{
+		Tracer.Trace(GetType(), "OnConnectionDisposed()");
+
+		if (_Connection == null)
+			return;
+
+		Dispose(true);
+	}
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Event handler for a LinkageParser's db connection state change.
+	/// No longer used because this delegate is left dangling.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	void ConnectionStateChanged(object sender, StateChangeEventArgs e)
+	protected override void OnConnectionStateChanged(object sender, StateChangeEventArgs e)
 	{
+		Tracer.Trace(GetType(), "OnConnectionStateChanged()");
+
 		if (_AsyncLauncherTokenSource != null && (e.CurrentState & (ConnectionState.Closed | ConnectionState.Broken)) != 0)
 		{
-			_AsyncLauncherTokenSource.Cancel();
+			Disable();
 		}
 		else if ((e.OriginalState & (ConnectionState.Closed | ConnectionState.Broken)) != 0
 			&& (e.CurrentState & (ConnectionState.Closed | ConnectionState.Broken)) == 0)
 		{
-			_Connection = (FbConnection)sender;
+			_Enabled = true;
 			AsyncExecute();
 		}
 	}

@@ -10,7 +10,7 @@ using BlackbirdSql.Common.Controls.Interfaces;
 // namespace Microsoft.SqlServer.Management.UI.Grid
 namespace BlackbirdSql.Common.Controls.Grid
 {
-	public class GridBitmapColumn : GridColumn
+	public class GridBitmapColumn : AbstractGridColumn
 	{
 		protected bool m_isRTL = s_defaultRTL;
 
@@ -19,21 +19,21 @@ namespace BlackbirdSql.Common.Controls.Grid
 		{
 		}
 
-		public override void DrawCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IGridStorage storage, long nRowIndex)
+		public override void DrawCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex)
 		{
 			Bitmap cellDataAsBitmap = storage.GetCellDataAsBitmap(nRowIndex, m_myColumnIndex);
 			g.FillRectangle(bkBrush, rect);
 			DrawBitmap(g, bkBrush, rect, cellDataAsBitmap, bEnabled: true);
 		}
 
-		public override void PrintCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IGridStorage storage, long nRowIndex)
+		public override void PrintCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex)
 		{
 			Bitmap cellDataAsBitmap = storage.GetCellDataAsBitmap(nRowIndex, m_myColumnIndex);
 			g.FillRectangle(bkBrush, rect.X - 1, rect.Y, rect.Width, rect.Height);
 			DrawBitmap(g, bkBrush, rect, cellDataAsBitmap, bEnabled: true);
 		}
 
-		public override void DrawDisabledCell(Graphics g, Font textFont, Rectangle rect, IGridStorage storage, long nRowIndex)
+		public override void DrawDisabledCell(Graphics g, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex)
 		{
 			Bitmap cellDataAsBitmap = storage.GetCellDataAsBitmap(nRowIndex, m_myColumnIndex);
 			g.FillRectangle(SDisabledCellBKBrush, rect);

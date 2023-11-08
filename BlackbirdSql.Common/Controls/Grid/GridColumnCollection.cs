@@ -12,11 +12,11 @@ namespace BlackbirdSql.Common.Controls.Grid
 {
 	public class GridColumnCollection : CollectionBase, IDisposable
 	{
-		public GridColumn this[int index]
+		public AbstractGridColumn this[int index]
 		{
 			get
 			{
-				return (GridColumn)List[index];
+				return (AbstractGridColumn)List[index];
 			}
 			set
 			{
@@ -30,7 +30,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 
 		public void Dispose()
 		{
-			foreach (GridColumn item in List)
+			foreach (AbstractGridColumn item in List)
 			{
 				item.Dispose();
 			}
@@ -40,7 +40,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 
 		public void SetRTL(bool bRightToLeft)
 		{
-			foreach (GridColumn item in List)
+			foreach (AbstractGridColumn item in List)
 			{
 				item.SetRTL(bRightToLeft);
 			}
@@ -48,7 +48,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 
 		public void ProcessNewGridFont(Font newFont)
 		{
-			foreach (GridColumn item in List)
+			foreach (AbstractGridColumn item in List)
 			{
 				item.ProcessNewGridFont(newFont);
 			}
@@ -59,17 +59,17 @@ namespace BlackbirdSql.Common.Controls.Grid
 			AddRange(value);
 		}
 
-		public GridColumnCollection(GridColumn[] value)
+		public GridColumnCollection(AbstractGridColumn[] value)
 		{
 			AddRange(value);
 		}
 
-		public int Add(GridColumn node)
+		public int Add(AbstractGridColumn node)
 		{
 			return List.Add(node);
 		}
 
-		public void AddRange(GridColumn[] nodes)
+		public void AddRange(AbstractGridColumn[] nodes)
 		{
 			for (int i = 0; i < nodes.Length; i++)
 			{
@@ -85,22 +85,22 @@ namespace BlackbirdSql.Common.Controls.Grid
 			}
 		}
 
-		public bool Contains(GridColumn node)
+		public bool Contains(AbstractGridColumn node)
 		{
 			return List.Contains(node);
 		}
 
-		public void CopyTo(GridColumn[] array, int index)
+		public void CopyTo(AbstractGridColumn[] array, int index)
 		{
 			List.CopyTo(array, index);
 		}
 
-		public int IndexOf(GridColumn node)
+		public int IndexOf(AbstractGridColumn node)
 		{
 			return List.IndexOf(node);
 		}
 
-		public void Insert(int index, GridColumn node)
+		public void Insert(int index, AbstractGridColumn node)
 		{
 			for (int i = 0; i < Count; i++)
 			{
@@ -113,14 +113,14 @@ namespace BlackbirdSql.Common.Controls.Grid
 			List.Insert(index, node);
 		}
 
-		public void Remove(GridColumn node)
+		public void Remove(AbstractGridColumn node)
 		{
 			List.Remove(node);
 		}
 
 		public void Move(int fromIndex, int toIndex)
 		{
-			GridColumn value = this[fromIndex];
+			AbstractGridColumn value = this[fromIndex];
 			RemoveAt(fromIndex);
 			List.Insert(toIndex, value);
 		}

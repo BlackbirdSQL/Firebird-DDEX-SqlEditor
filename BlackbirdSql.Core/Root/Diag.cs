@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using BlackbirdSql.Core.Ctl.Config;
 
 #if BLACKBIRD
 using BlackbirdSql.Core.Ctl.Interfaces;
@@ -45,22 +46,12 @@ public static class Diag
 {
 	#region Variables
 
-	static bool _EnableTaskLog = true;
 
-	private static readonly object _LockGlobal = new();
+	// A static class lock
+	private static readonly object _LockClass = new();
+	private static int _InternalActive = 0;
+	private static int _TaskLogActive = 0;
 
-	// Specify your own trace log file and settings here or override in VS options
-#if BLACKBIRD
-	static bool _EnableTracer = false;
-#else
-		static bool _EnableTracer = true;
-#endif
-	static bool _EnableTrace = true;
-	static bool _EnableDiagnostics = true;
-	static bool _EnableFbDiagnostics = true;
-	static bool _EnableDiagnosticsLog = true;
-	static string _LogFile = "/temp/vsdiag.log";
-	static string _FbLogFile = "/temp/vsdiagfb.log";
 
 	static string _Context = "APP";
 
@@ -69,7 +60,7 @@ public static class Diag
 	static Guid _OutputPaneGuid = default;
 
 
-	#endregion Variables
+#endregion Variables
 
 
 
@@ -107,22 +98,8 @@ public static class Diag
 	/// output window.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool EnableTaskLog
-	{
-		get { return _EnableTaskLog; }
-		set { _EnableTaskLog = value; }
-	}
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Flag indicating whether or not Tracer calls are logged
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static bool EnableTracer
-	{
-		get { return _EnableTracer; }
-		set { _EnableTracer = value; }
-	}
+	public static bool EnableTaskLog => _InternalActive == 0 && _TaskLogActive == 0
+		&& UserSettings.EnableTaskLog;
 
 
 
@@ -131,12 +108,7 @@ public static class Diag
 	/// Flag indicating whether or not <see cref="Diag.Trace"/> calls are logged
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool EnableTrace
-	{
-		get { return _EnableTrace; }
-		set { _EnableTrace = value; }
-	}
-
+	public static bool EnableTrace => UserSettings.EnableTrace;
 
 
 	// ---------------------------------------------------------------------------------
@@ -147,12 +119,7 @@ public static class Diag
 	/// Exceptions are alweays logged.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public static bool EnableDiagnostics
-	{
-		get { return _EnableDiagnostics; }
-		set { _EnableDiagnostics = value; }
-	}
-
+	public static bool EnableDiagnostics => UserSettings.EnableDiagnostics;
 
 
 	// ---------------------------------------------------------------------------------
@@ -163,12 +130,7 @@ public static class Diag
 	/// Only applies to the Debug configuration. Debug Exceptions are always logged.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public static bool EnableFbDiagnostics
-	{
-		get { return _EnableFbDiagnostics; }
-		set { _EnableFbDiagnostics = value; }
-	}
-
+	public static bool EnableFbDiagnostics => UserSettings.EnableFbDiagnostics;
 
 
 	// ---------------------------------------------------------------------------------
@@ -179,12 +141,7 @@ public static class Diag
 	/// Only applies to the Debug configuration. Debug Exceptions are always logged.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public static bool EnableDiagnosticsLog
-	{
-		get { return _EnableDiagnosticsLog; }
-		set { _EnableDiagnosticsLog = value; }
-	}
-
+	public static bool EnableDiagnosticsLog => _InternalActive > 0 || UserSettings.EnableDiagnosticsLog;
 
 
 	// ---------------------------------------------------------------------------------
@@ -192,12 +149,7 @@ public static class Diag
 	/// The log file path
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string LogFile
-	{
-		get { return _LogFile; }
-		set { _LogFile = value; }
-	}
-
+	public static string LogFile => UserSettings.LogFile;
 
 
 	// ---------------------------------------------------------------------------------
@@ -205,11 +157,7 @@ public static class Diag
 	/// The Firebird log file path
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string FbLogFile
-	{
-		get { return _FbLogFile; }
-		set { _FbLogFile = value; }
-	}
+	public static string FbLogFile => UserSettings.FbLogFile;
 
 
 	#endregion Property accessors
@@ -232,28 +180,28 @@ public static class Diag
 	public static void Dug(bool isException, string message = "",
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
 #else
 	public static void Dug(bool isException = false, string message = "Debug trace",
-		string memberName = "Release:Unavailable",
-		string sourceFilePath = "Release:Unavailable",
-		int sourceLineNumber = 0)
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
 #endif
 	{
-		if (!isException && !_EnableDiagnostics && !_EnableTrace)
+		if (!isException && !EnableDiagnostics && !EnableTrace)
 			return;
 
 		int pos;
-		string logfile = _LogFile;
+		string logfile = LogFile;
 		string str;
 
 		bool enableDiagnosticsLog;
 		bool enableTaskLog;
 
-		lock (_LockGlobal)
+		lock (_LockClass)
 		{
-			enableDiagnosticsLog = _EnableDiagnosticsLog;
-			enableTaskLog = _EnableTaskLog;
+			enableDiagnosticsLog = EnableDiagnosticsLog;
+			enableTaskLog = EnableTaskLog;
 
 			try
 			{
@@ -266,12 +214,9 @@ public static class Diag
 
 						if (pos != -1)
 						{
-							if (!isException && !_EnableFbDiagnostics)
+							if (!isException && !EnableFbDiagnostics)
 								return;
-							logfile = _FbLogFile;
-#if !DEBUG
-					return;
-#endif
+							logfile = FbLogFile;
 						}
 					}
 				}
@@ -289,7 +234,6 @@ public static class Diag
 				str = $"{ex.Message} sourceFilePath: {sourceFilePath} memberName: {memberName} sourceLineNumber: {sourceLineNumber} message: {message}";
 			}
 
-#if DEBUG
 			try
 			{
 				if (enableDiagnosticsLog)
@@ -306,7 +250,6 @@ public static class Diag
 			{
 				str = "DIAG EXCEPTION: " + ex.Message + Environment.NewLine + str;
 			}
-#endif
 		}
 
 		try
@@ -332,22 +275,17 @@ public static class Diag
 	public static void Dug(bool isException, Exception ex, string message = "",
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
 #else
 	public static void Dug(bool isException, Exception ex, string message = "",
-		string memberName = "Release:Unavailable",
-		string sourceFilePath = "Release:Unavailable",
-		int sourceLineNumber = 0)
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
 #endif
 	{
 
-#if DEBUG
-		if (!isException && !_EnableDiagnostics && !_EnableTrace)
+		if (!isException && !EnableDiagnostics && !EnableTrace)
 			return;
-#else
-		if (!isException && !_EnableDiagnostics)
-			return;
-#endif
 
 		Dug(isException, ex?.Message + (message != "" ? " " + message : "") + ":" + Environment.NewLine + ex?.StackTrace?.ToString(),
 			memberName, sourceFilePath, sourceLineNumber);
@@ -365,12 +303,12 @@ public static class Diag
 	public static void Dug(string message, Exception ex,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
 #else
 	public static void Dug(string message, Exception ex,
-		string memberName = "Release:Unavailable",
-		string sourceFilePath = "Release:Unavailable",
-		int sourceLineNumber = 0)
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
 #endif
 	{
 		Dug(true, String.Format(message, ex) + ":" + Environment.NewLine + ex?.StackTrace?.ToString(),
@@ -389,12 +327,12 @@ public static class Diag
 	public static void Dug(Exception ex, string message = "",
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
 #else
 	public static void Dug(Exception ex, string message = "",
-		string memberName = "Release:Unavailable",
-		string sourceFilePath = "Release:Unavailable",
-		int sourceLineNumber = 0)
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
 #endif
 	{
 		message ??= "";
@@ -427,12 +365,12 @@ public static class Diag
 	public static void DebugDug(Exception ex, string message = "",
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
 #else
 	public static void DebugDug(Exception ex, string message = "",
-		string memberName = "Release:Unavailable",
-		string sourceFilePath = "Release:Unavailable",
-		int sourceLineNumber = 0)
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
 #endif
 	{
 		if (message != "")
@@ -447,22 +385,13 @@ public static class Diag
 			message += " NO STACKTRACE";
 		}
 
-		bool enableLog;
-		bool enableTaskLog;
+		lock (_LockClass)
+			_InternalActive++;
 
-		lock (_LockGlobal)
-		{
-			enableLog = _EnableDiagnosticsLog;
-			_EnableDiagnosticsLog = true;
-			enableTaskLog = _EnableTaskLog;
-			_EnableTaskLog = false;
-		}
 		Dug(true, ex.Message + " " + message, memberName, sourceFilePath, sourceLineNumber);
-		lock (_LockGlobal)
-		{
-			_EnableTaskLog = enableTaskLog;
-			_EnableDiagnosticsLog = enableLog;
-		}
+
+		lock (_LockClass)
+			_InternalActive--;
 	}
 
 
@@ -476,12 +405,12 @@ public static class Diag
 	public static void Stack(string message = "",
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
 #else
 	public static void Stack(string message = "",
-		string memberName = "Release:Unavailable",
-		string sourceFilePath = "Release:Unavailable",
-		int sourceLineNumber = 0)
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
 #endif
 	{
 		if (message != "")
@@ -505,36 +434,26 @@ public static class Diag
 	public static void DebugTrace(string message = "",
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
 #else
 	public static void DebugTrace(string message = "Debug trace",
-		string memberName = "Release:Unavailable",
-		string sourceFilePath = "Release:Unavailable",
-		int sourceLineNumber = 0)
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
 #endif
 	{
-		if (!_EnableTrace)
+		if (!EnableTrace)
 			return;
 
-#if DEBUG
-		bool enableLog;
-		bool enableTaskLog;
 
-		lock (_LockGlobal)
-		{
-			enableLog = _EnableDiagnosticsLog;
-			_EnableDiagnosticsLog = true;
-			enableTaskLog = _EnableTaskLog;
-			_EnableTaskLog = false;
-		}
+		lock (_LockClass)
+			_InternalActive++;
+
 		Dug(false, message, memberName, sourceFilePath, sourceLineNumber);
-		lock (_LockGlobal)
-		{
-			_EnableTaskLog = enableTaskLog;
-			_EnableDiagnosticsLog = enableLog;
-		}
 
-#endif
+		lock (_LockClass)
+			_InternalActive--;
+
 	}
 
 
@@ -548,20 +467,18 @@ public static class Diag
 	public static void Trace(string message = "",
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = 0)
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
 #else
 	public static void Trace(string message = "Debug trace",
-		string memberName = "Release:Unavailable",
-		string sourceFilePath = "Release:Unavailable",
-		int sourceLineNumber = 0)
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
 #endif
 	{
-		if (!_EnableTrace)
+		if (!EnableTrace)
 			return;
 
-#if DEBUG
 		Dug(false, message, memberName, sourceFilePath, sourceLineNumber);
-#endif
 	}
 
 
@@ -575,7 +492,7 @@ public static class Diag
 	// ---------------------------------------------------------------------------------
 	public static bool TaskHandlerProgress(IBTaskHandlerClient client, string text, bool completed = false)
 	{
-		_ = Task.Factory.StartNew(() => TaskHandlerProgressAsync(client, text, completed).Result,
+		_ = Task.Factory.StartNew(() => TaskHandlerProgressAsync(client, text, completed),
 			default, TaskCreationOptions.PreferFairness | TaskCreationOptions.DenyChildAttach,
 			TaskScheduler.Default);
 
@@ -583,34 +500,35 @@ public static class Diag
 	}
 
 
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Moves back onto the UI thread and updates the IDE task handler progress bar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 	public static async Task<bool> TaskHandlerProgressAsync(IBTaskHandlerClient client, string text, bool completed = false)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 	{
 		bool enableDiagnosticsLog;
 		bool enableTaskLog;
 
-		lock (_LockGlobal)
+		lock (_LockClass)
 		{
-			enableDiagnosticsLog = _EnableDiagnosticsLog;
-			enableTaskLog = _EnableTaskLog;
+			enableDiagnosticsLog = EnableDiagnosticsLog;
+			enableTaskLog = EnableTaskLog;
 		}
 
 		try
 		{
 			// Switch to main thread
-			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+			// await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 
 			ITaskHandler taskHandler = client.GetTaskHandler();
 			TaskProgressData progressData = client.GetProgressData();
 			string title;
 
-			lock (_LockGlobal)
+			lock (_LockClass)
 			{
 				title = enableTaskLog && taskHandler != null ? taskHandler.Options.Title.Replace("BlackbirdSql", "").Trim() + ": " : "";
 
@@ -663,11 +581,11 @@ public static class Diag
 		}
 		catch (Exception ex)
 		{
-			lock (_LockGlobal)
+			lock (_LockClass)
 			{
-				_EnableTaskLog = false;
+				_TaskLogActive++;
 				Dug(ex);
-				_EnableTaskLog = enableTaskLog;
+				_TaskLogActive--;
 			}
 
 			throw ex;
@@ -686,7 +604,7 @@ public static class Diag
 	// ---------------------------------------------------------------------------------
 	public static bool UpdateStatusBar(string value, bool clear)
 	{
-		_ = Task.Factory.StartNew(() => UpdateStatusBarAsync(value, clear).Result, default,
+		_ = Task.Factory.StartNew(() => UpdateStatusBarAsync(value, clear), default,
 			TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent,
 			TaskScheduler.Default);
 
@@ -732,12 +650,11 @@ public static class Diag
 		}
 		catch (Exception ex)
 		{
-			lock (_LockGlobal)
+			lock (_LockClass)
 			{
-				bool enableTaskLog = _EnableTaskLog;
-				_EnableTaskLog = false;
+				_TaskLogActive++;
 				Dug(ex);
-				_EnableTaskLog = enableTaskLog;
+				_TaskLogActive--;
 			}
 
 			throw ex;
@@ -756,10 +673,7 @@ public static class Diag
 	// ---------------------------------------------------------------------------------
 	public static void OutputPaneWriteLine(string value)
 	{
-		ThreadHelper.JoinableTaskFactory.Run(async () =>
-		{
-			await OutputPaneWriteLineAsync(value);
-		});
+		_ = Task.Run(() => OutputPaneWriteLineAsync(value));
 	}
 
 
@@ -783,12 +697,11 @@ public static class Diag
 		{
 			NullReferenceException ex = new("OutputWindowPane is null");
 
-			lock (_LockGlobal)
+			lock (_LockClass)
 			{
-				bool enableTaskLog = _EnableTaskLog;
-				_EnableTaskLog = false;
+				_TaskLogActive++;
 				Dug(ex);
-				_EnableTaskLog = enableTaskLog;
+				_TaskLogActive--;
 			}
 
 			throw ex;
@@ -805,12 +718,11 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				lock (_LockGlobal)
+				lock (_LockClass)
 				{
-					bool enableTaskLog = _EnableTaskLog;
-					_EnableTaskLog = false;
+					_TaskLogActive++;
 					Dug(ex);
-					_EnableTaskLog = enableTaskLog;
+					_TaskLogActive--;
 				}
 
 				throw ex;
@@ -824,12 +736,11 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				lock (_LockGlobal)
+				lock (_LockClass)
 				{
-					bool enableTaskLog = _EnableTaskLog;
-					_EnableTaskLog = false;
+					_TaskLogActive++;
 					Dug(ex);
-					_EnableTaskLog = enableTaskLog;
+					_TaskLogActive--;
 				}
 
 				throw ex;
@@ -859,12 +770,11 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				lock (_LockGlobal)
+				lock (_LockClass)
 				{
-					bool enableTaskLog = _EnableTaskLog;
-					_EnableTaskLog = false;
+					_TaskLogActive++;
 					Dug(ex);
-					_EnableTaskLog = enableTaskLog;
+					_TaskLogActive--;
 				}
 				throw;
 			}
@@ -881,12 +791,11 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				lock (_LockGlobal)
+				lock (_LockClass)
 				{
-					bool enableTaskLog = _EnableTaskLog;
-					_EnableTaskLog = false;
+					_TaskLogActive++;
 					Dug(ex);
-					_EnableTaskLog = enableTaskLog;
+					_TaskLogActive--;
 				}
 				throw;
 			}
@@ -897,12 +806,11 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				lock (_LockGlobal)
+				lock (_LockClass)
 				{
-					bool enableTaskLog = _EnableTaskLog;
-					_EnableTaskLog = false;
+					_TaskLogActive++;
 					Dug(ex);
-					_EnableTaskLog = enableTaskLog;
+					_TaskLogActive--;
 				}
 				throw;
 			}

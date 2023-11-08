@@ -2,8 +2,8 @@
 // location unknown
 // Decompiled with ICSharpCode.Decompiler 7.1.0.6543
 #endregion
-
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
 using System.Runtime.InteropServices;
@@ -11,24 +11,28 @@ using System.Security;
 using System.Security.Permissions;
 using System.Windows.Forms;
 
-using BlackbirdSql.Core;
 using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Controls.ResultsPane;
 using BlackbirdSql.Common.Ctl;
+using BlackbirdSql.Common.Ctl.Events;
+using BlackbirdSql.Common.Ctl.Structs;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Data;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 using Constants = Microsoft.VisualStudio.OLE.Interop.Constants;
-using BlackbirdSql.Common.Ctl.Events;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Common.Ctl.Structs;
+
 
 namespace BlackbirdSql.Common.Controls;
 
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOleCommandTarget, IVsWindowFrameNotify, IVsTextViewEvents
 {
@@ -36,23 +40,23 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 	protected static readonly string STName = "VSEditor";
 
-	protected BorderStyle _borderStyle = BorderStyle.Fixed3D;
+	protected BorderStyle _BorderStyle = BorderStyle.Fixed3D;
 
-	protected ShellTextBuffer _textBuffer;
+	protected ShellTextBuffer _TextBuffer;
 
-	private IntPtr _editorHandle = IntPtr.Zero;
+	private IntPtr _EditorHandle = IntPtr.Zero;
 
 	protected ServiceProvider _OleServiceProvider;
 
-	private bool _parentedEditorWithParkingWindow;
+	private bool _ParentedEditorWithParkingWindow;
 
-	protected IOleCommandTarget _textCmdTarget;
+	protected IOleCommandTarget _TextCmdTarget;
 
-	protected IVsWindowPane _textWindowPane;
+	protected IVsWindowPane _TextWindowPane;
 
-	protected IVsWindowFrameNotify _textWndFrameNotify;
+	protected IVsWindowFrameNotify _TextWndFrameNotify;
 
-	protected bool _bWantCustomPopupMenu;
+	protected bool _WantCustomPopupMenu;
 
 	protected Guid _ClsidLanguageService = Guid.Empty;
 
@@ -60,7 +64,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 	private static IVsTextManager _VsTextManager = null;
 
-	private bool _withEncoding;
+	private bool _WithEncoding;
 
 	// private const int C_WM_DESTROY = 2;
 
@@ -75,7 +79,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 		{
 			Tracer.Trace(GetType(), "AbstractShellTextEditorControl.CreateParams", "", null);
 			CreateParams createParams = base.CreateParams;
-			if (_borderStyle != 0)
+			if (_BorderStyle != 0)
 			{
 				createParams.Style |= 8388608;
 			}
@@ -89,9 +93,9 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 	{
 		get
 		{
-			if (_textBuffer != null)
+			if (_TextBuffer != null)
 			{
-				return _textBuffer.TextStream;
+				return _TextBuffer.TextStream;
 			}
 
 			return null;
@@ -116,9 +120,9 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 	{
 		get
 		{
-			if (_textBuffer != null)
+			if (_TextBuffer != null)
 			{
-				return _textBuffer;
+				return _TextBuffer;
 			}
 
 			return null;
@@ -133,14 +137,14 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 	{
 		get
 		{
-			return _borderStyle;
+			return _BorderStyle;
 		}
 		set
 		{
 			Tracer.Trace(GetType(), "AbstractShellTextEditorControl.BorderStyle", "value = {0}", value.ToString());
 			if (Enum.IsDefined(typeof(BorderStyle), value))
 			{
-				_borderStyle = value;
+				_BorderStyle = value;
 				if (IsHandleCreated)
 				{
 					RecreateHandle();
@@ -153,12 +157,12 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 	{
 		get
 		{
-			return _bWantCustomPopupMenu;
+			return _WantCustomPopupMenu;
 		}
 		set
 		{
 			VerifyBeforeInstanceProperty();
-			_bWantCustomPopupMenu = true;
+			_WantCustomPopupMenu = true;
 		}
 	}
 
@@ -174,7 +178,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 			if (!_ClsidLanguageService.Equals(value))
 			{
 				_ClsidLanguageService = value;
-				if (!_ClsidLanguageService.Equals(Guid.Empty) && _textBuffer != null)
+				if (!_ClsidLanguageService.Equals(Guid.Empty) && _TextBuffer != null)
 				{
 					ApplyLS(value);
 				}
@@ -192,7 +196,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 		{
 			Tracer.Trace(GetType(), "AbstractShellTextEditorControl.ClsidLanguageServiceDefault", "value = {0}", value.ToString("D", CultureInfo.CurrentCulture));
 			_ClsidLanguageServiceDefault = value;
-			_textBuffer.DetectLangSid = false;
+			_TextBuffer.DetectLangSid = false;
 		}
 	}
 
@@ -201,11 +205,11 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 	{
 		get
 		{
-			return _withEncoding;
+			return _WithEncoding;
 		}
 		set
 		{
-			_withEncoding = value;
+			_WithEncoding = value;
 		}
 	}
 
@@ -213,11 +217,11 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 	{
 		get
 		{
-			return _editorHandle;
+			return _EditorHandle;
 		}
 		set
 		{
-			_editorHandle = value;
+			_EditorHandle = value;
 		}
 	}
 
@@ -238,10 +242,10 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 			ShowPopupMenuEvent = null;
 			if (disposing)
 			{
-				if (_textBuffer != null)
+				if (_TextBuffer != null)
 				{
-					_textBuffer.Dispose();
-					_textBuffer = null;
+					_TextBuffer.Dispose();
+					_TextBuffer = null;
 				}
 
 				if (_OleServiceProvider != null)
@@ -251,9 +255,9 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 				}
 			}
 
-			if (_editorHandle != IntPtr.Zero)
+			if (_EditorHandle != IntPtr.Zero)
 			{
-				_editorHandle = IntPtr.Zero;
+				_EditorHandle = IntPtr.Zero;
 			}
 
 			UnsinkEventsAndFreeInterfaces();
@@ -274,9 +278,16 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 	public virtual int QueryStatus(ref Guid guidGroup, uint nCmdId, OLECMD[] oleCmd, IntPtr oleText)
 	{
-		if (_textCmdTarget != null)
+		if (_TextCmdTarget != null)
 		{
-			return _textCmdTarget.QueryStatus(ref guidGroup, nCmdId, oleCmd, oleText);
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
+			return _TextCmdTarget.QueryStatus(ref guidGroup, nCmdId, oleCmd, oleText);
 		}
 
 		return (int)Constants.MSOCMDERR_E_UNKNOWNGROUP;
@@ -284,9 +295,16 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 	public virtual int Exec(ref Guid guidGroup, uint nCmdId, uint nCmdExcept, IntPtr pobIn, IntPtr pvaOut)
 	{
-		if (_textCmdTarget != null)
+		if (_TextCmdTarget != null)
 		{
-			return _textCmdTarget.Exec(ref guidGroup, nCmdId, nCmdExcept, pobIn, pvaOut);
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
+			return _TextCmdTarget.Exec(ref guidGroup, nCmdId, nCmdExcept, pobIn, pvaOut);
 		}
 
 		return (int)Constants.MSOCMDERR_E_UNKNOWNGROUP;
@@ -322,9 +340,17 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 	public virtual int OnShow(int frameShow)
 	{
 		Tracer.Trace(GetType(), "AbstractShellTextEditorControl.OnShow", "frameShow = {0}", frameShow);
-		if (_textWndFrameNotify != null)
+
+		if (_TextWndFrameNotify != null)
 		{
-			return _textWndFrameNotify.OnShow(frameShow);
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
+			return _TextWndFrameNotify.OnShow(frameShow);
 		}
 
 		return VSConstants.S_OK;
@@ -333,9 +359,17 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 	public virtual int OnMove()
 	{
 		Tracer.Trace(GetType(), "AbstractShellTextEditorControl.OnMove", "", null);
-		if (_textWndFrameNotify != null)
+
+		if (_TextWndFrameNotify != null)
 		{
-			return _textWndFrameNotify.OnMove();
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
+			return _TextWndFrameNotify.OnMove();
 		}
 
 		return VSConstants.S_OK;
@@ -344,9 +378,17 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 	public virtual int OnSize()
 	{
 		Tracer.Trace(GetType(), "AbstractShellTextEditorControl.OnSize", "", null);
-		if (_textWndFrameNotify != null)
+
+		if (_TextWndFrameNotify != null)
 		{
-			return _textWndFrameNotify.OnSize();
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
+			return _TextWndFrameNotify.OnSize();
 		}
 
 		return VSConstants.S_OK;
@@ -355,9 +397,17 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 	public virtual int OnDockableChange(int fDockable)
 	{
 		Tracer.Trace(GetType(), "AbstractShellTextEditorControl.OnDockableChange", "fDockable = {0}", fDockable);
-		if (_textWndFrameNotify != null)
+
+		if (_TextWndFrameNotify != null)
 		{
-			return _textWndFrameNotify.OnDockableChange(fDockable);
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
+			return _TextWndFrameNotify.OnDockableChange(fDockable);
 		}
 
 		return VSConstants.S_OK;
@@ -365,9 +415,16 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 	public int LoadViewState(IStream state)
 	{
-		if (_textWindowPane != null)
+		if (_TextWindowPane != null)
 		{
-			return _textWindowPane.LoadViewState(state);
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
+			return _TextWindowPane.LoadViewState(state);
 		}
 
 		return VSConstants.E_NOTIMPL;
@@ -375,9 +432,16 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 	public int SaveViewState(IStream state)
 	{
-		if (_textWindowPane != null)
+		if (_TextWindowPane != null)
 		{
-			return _textWindowPane.SaveViewState(state);
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
+			return _TextWindowPane.SaveViewState(state);
 		}
 
 		return VSConstants.E_NOTIMPL;
@@ -390,7 +454,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 			using Control control = new Control();
 			IntPtr parent = GetParent(new HandleRef(control, control.Handle));
 			SetParent(new HandleRef(this, Handle), new HandleRef(this, parent));
-			_parentedEditorWithParkingWindow = true;
+			_ParentedEditorWithParkingWindow = true;
 		}
 	}
 
@@ -409,12 +473,12 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 	protected override void CreateHandle()
 	{
 		base.CreateHandle();
-		if (_parentedEditorWithParkingWindow)
+		if (_ParentedEditorWithParkingWindow)
 		{
-			_parentedEditorWithParkingWindow = false;
-			if (IsWindow(_editorHandle) && Handle != GetParent(_editorHandle))
+			_ParentedEditorWithParkingWindow = false;
+			if (IsWindow(_EditorHandle) && Handle != GetParent(_EditorHandle))
 			{
-				SetParent(new HandleRef(this, _editorHandle), new HandleRef(this, Handle));
+				SetParent(new HandleRef(this, _EditorHandle), new HandleRef(this, Handle));
 			}
 		}
 	}
@@ -422,11 +486,19 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 	protected override void OnSizeChanged(EventArgs e)
 	{
 		Tracer.Trace(GetType(), "AbstractShellTextEditorControl.OnSizeChanged", "", null);
-		if (_editorHandle != IntPtr.Zero)
+		if (_EditorHandle != IntPtr.Zero)
 		{
 			Tracer.Trace(GetType(), "AbstractShellTextEditorControl.OnSizeChanged", "adjusting text view size");
+
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			Rectangle clientRectangle = ClientRectangle;
-			Native.SetWindowPos(_editorHandle, IntPtr.Zero, clientRectangle.X, clientRectangle.Y, clientRectangle.Width, clientRectangle.Height, 4);
+			Native.SetWindowPos(_EditorHandle, IntPtr.Zero, clientRectangle.X, clientRectangle.Y, clientRectangle.Width, clientRectangle.Height, 4);
 			OnSize();
 		}
 
@@ -444,9 +516,9 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 	protected override void OnGotFocus(EventArgs e)
 	{
 		base.OnGotFocus(e);
-		if (_editorHandle != IntPtr.Zero)
+		if (_EditorHandle != IntPtr.Zero)
 		{
-			Native.SetFocus(_editorHandle);
+			Native.SetFocus(_EditorHandle);
 		}
 	}
 
@@ -497,9 +569,17 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 	public void CreateAndInitEditorWindow(object serviceProvider)
 	{
 		Tracer.Trace(GetType(), "AbstractShellTextEditorControl.CreateAndInitEditorWindow", "", null);
-		if (_textBuffer == null)
+
+		if (_TextBuffer == null)
 		{
 			CreateAndInitTextBuffer(serviceProvider, null);
+		}
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
 
 		_OleServiceProvider = new ServiceProvider(serviceProvider as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
@@ -517,7 +597,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 			SinkEventsAndCacheInterfaces();
 		}
 
-		if (_textCmdTarget == null || _textWindowPane == null || _VsTextManager == null)
+		if (_TextCmdTarget == null || _TextWindowPane == null || _VsTextManager == null)
 		{
 			Exception ex = new InvalidOperationException(ControlsResources.ErrCannotInitNewEditorInst);
 			Tracer.LogExThrow(GetType(), ex);
@@ -530,33 +610,41 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 		Tracer.Trace(GetType(), "AbstractShellTextEditorControl.CreateAndInitTextBuffer", "", null);
 		if (existingDocData != null)
 		{
-			_textBuffer = new(existingDocData, sp)
+			_TextBuffer = new(existingDocData, sp)
 			{
-				WithEncoding = _withEncoding
+				WithEncoding = _WithEncoding
 			};
 		}
 		else
 		{
-			_textBuffer = new()
+			_TextBuffer = new()
 			{
-				WithEncoding = _withEncoding
+				WithEncoding = _WithEncoding
 			};
 			if (GetType().Name == "TextResultsViewContol")
 			{
-				_textBuffer.InitContent = true;
+				_TextBuffer.InitContent = true;
 			}
 
-			_textBuffer.SetSite(sp);
+			_TextBuffer.SetSite(sp);
 		}
 
-		OnTextBufferCreated(_textBuffer);
+		OnTextBufferCreated(_TextBuffer);
 	}
 
 	public static void ResetFontAndColor(Font font, Guid fontCategory, Guid colorCategory)
 	{
 		Tracer.Trace(typeof(AbstractShellTextEditorControl), "AbstractShellTextEditorControl.ResetFontAndColor", "", null);
+
 		if (_VsTextManager != null)
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			IConnectionPointContainer connectionPointContainer = _VsTextManager as IConnectionPointContainer;
 			Microsoft.VisualStudio.OLE.Interop.CONNECTDATA[] array = new Microsoft.VisualStudio.OLE.Interop.CONNECTDATA[1];
 			uint pcFetched = 1u;
@@ -678,14 +766,14 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 	protected void ApplyLS(Guid lsGuid)
 	{
 		Tracer.Trace(GetType(), "SqlTextViewControl.ApplyLS", "lsGuid = {0}", lsGuid);
-		if (_textBuffer == null)
+		if (_TextBuffer == null)
 		{
 			return;
 		}
 
 		if (MandatedXmlLanguageServiceClsid == lsGuid)
 		{
-			if (_textBuffer.TextStream is IVsUserData vsUserData)
+			if (_TextBuffer.TextStream is IVsUserData vsUserData)
 			{
 				Guid riidKey = LibraryData.CLSID_PropertyDisableXmlEditorPropertyWindowIntegration;
 				Native.ThrowOnFailure(vsUserData.SetData(ref riidKey, true), (string)null);
@@ -694,7 +782,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 			}
 		}
 
-		Native.ThrowOnFailure(_textBuffer.TextStream.SetLanguageServiceID(ref lsGuid), (string)null);
+		Native.ThrowOnFailure(_TextBuffer.TextStream.SetLanguageServiceID(ref lsGuid), (string)null);
 	}
 
 	protected abstract void CreateEditorWindow(object nativeSP);

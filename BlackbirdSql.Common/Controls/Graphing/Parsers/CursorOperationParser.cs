@@ -4,7 +4,7 @@
 
 namespace BlackbirdSql.Common.Controls.Graphing.Parsers;
 
-internal class CursorOperationParser : XmlPlanParser
+internal class CursorOperationParser : AbstractXmlPlanParser
 {
 	private static CursorOperationParser cursorOperationParser;
 
@@ -19,7 +19,7 @@ internal class CursorOperationParser : XmlPlanParser
 
 	public override Node GetCurrentNode(object item, object parentItem, Node parentNode, NodeBuilderContext context)
 	{
-		return XmlPlanParser.NewNode(context);
+		return AbstractXmlPlanParser.NewNode(context);
 	}
 
 	protected override Operation GetNodeOperation(Node node)

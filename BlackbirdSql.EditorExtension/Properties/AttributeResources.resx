@@ -1,0 +1,925 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ConverterUomDefault_Milliseconds" xml:space="preserve">
+    <value>default</value>
+  </data>
+  <data name="ConverterUomDefault_MillisecondsUnlimited" xml:space="preserve">
+    <value>default</value>
+  </data>
+  <data name="ConverterUomDefault_Seconds" xml:space="preserve">
+    <value>default</value>
+  </data>
+  <data name="ConverterUomDefault_SecondsDisabled" xml:space="preserve">
+    <value>default</value>
+  </data>
+  <data name="ConverterUomDefault_SecondsUnlimited" xml:space="preserve">
+    <value>default</value>
+  </data>
+  <data name="ConverterUomDefault_Separator" xml:space="preserve">
+    <value>default</value>
+  </data>
+  <data name="ConverterUomFormatDefault_Milliseconds" xml:space="preserve">
+    <value>Default [{0} ms]</value>
+  </data>
+  <data name="ConverterUomFormatDefault_MillisecondsUnlimited" xml:space="preserve">
+    <value>Default [{0} ms]</value>
+  </data>
+  <data name="ConverterUomFormatDefault_Seconds" xml:space="preserve">
+    <value>Default [{0} seconds]</value>
+  </data>
+  <data name="ConverterUomFormatDefault_SecondsDisabled" xml:space="preserve">
+    <value>Default [{0} seconds]</value>
+  </data>
+  <data name="ConverterUomFormatDefault_SecondsUnlimited" xml:space="preserve">
+    <value>Default [{0} seconds]</value>
+  </data>
+  <data name="ConverterUomFormatDefault_Separator" xml:space="preserve">
+    <value>Default [{0}]</value>
+  </data>
+  <data name="ConverterUomFormatMax_Milliseconds" xml:space="preserve">
+    <value>Maximum [{0} ms]</value>
+  </data>
+  <data name="ConverterUomFormatMax_MillisecondsUnlimited" xml:space="preserve">
+    <value>Maximum [{0} ms]</value>
+  </data>
+  <data name="ConverterUomFormatMax_Seconds" xml:space="preserve">
+    <value>Maximum [{0} seconds]</value>
+  </data>
+  <data name="ConverterUomFormatMax_SecondsDisabled" xml:space="preserve">
+    <value>Maximum [{0} seconds]</value>
+  </data>
+  <data name="ConverterUomFormatMax_SecondsUnlimited" xml:space="preserve">
+    <value>Maximum [{0} seconds]</value>
+  </data>
+  <data name="ConverterUomFormatMin_Milliseconds" xml:space="preserve">
+    <value>Minimum [{0} ms]</value>
+  </data>
+  <data name="ConverterUomFormatMin_MillisecondsUnlimited" xml:space="preserve">
+    <value>Unlimited [{0} ms]</value>
+  </data>
+  <data name="ConverterUomFormatMin_Seconds" xml:space="preserve">
+    <value>Minimum [{0} seconds]</value>
+  </data>
+  <data name="ConverterUomFormatMin_SecondsDisabled" xml:space="preserve">
+    <value>Disabled [{0} seconds]</value>
+  </data>
+  <data name="ConverterUomFormatMin_SecondsUnlimited" xml:space="preserve">
+    <value>Unlimited [{0} seconds]</value>
+  </data>
+  <data name="ConverterUomFormat_Milliseconds" xml:space="preserve">
+    <value>{0} ms</value>
+  </data>
+  <data name="ConverterUomFormat_MillisecondsUnlimited" xml:space="preserve">
+    <value>{0} ms</value>
+  </data>
+  <data name="ConverterUomFormat_Seconds" xml:space="preserve">
+    <value>{0} seconds</value>
+  </data>
+  <data name="ConverterUomFormat_SecondsDisabled" xml:space="preserve">
+    <value>{0} seconds</value>
+  </data>
+  <data name="ConverterUomFormat_SecondsUnlimited" xml:space="preserve">
+    <value>{0} seconds</value>
+  </data>
+  <data name="ConverterUomFormat_Separator" xml:space="preserve">
+    <value>[{0}]</value>
+  </data>
+  <data name="ConverterUomMax_Milliseconds" xml:space="preserve">
+    <value>max,maximum</value>
+  </data>
+  <data name="ConverterUomMax_MillisecondsUnlimited" xml:space="preserve">
+    <value>max,maximum</value>
+  </data>
+  <data name="ConverterUomMax_Seconds" xml:space="preserve">
+    <value>max,maximum</value>
+  </data>
+  <data name="ConverterUomMax_SecondsDisabled" xml:space="preserve">
+    <value>max,maximum</value>
+  </data>
+  <data name="ConverterUomMax_SecondsUnlimited" xml:space="preserve">
+    <value>max,maximum</value>
+  </data>
+  <data name="ConverterUomMin_Milliseconds" xml:space="preserve">
+    <value>min,minimum</value>
+  </data>
+  <data name="ConverterUomMin_MillisecondsUnlimited" xml:space="preserve">
+    <value>min,minimum,unlimited</value>
+  </data>
+  <data name="ConverterUomMin_Seconds" xml:space="preserve">
+    <value>min,minimum</value>
+  </data>
+  <data name="ConverterUomMin_SecondsDisabled" xml:space="preserve">
+    <value>min,minimum,unlimited,disabled</value>
+  </data>
+  <data name="ConverterUomMin_SecondsUnlimited" xml:space="preserve">
+    <value>min,minimum,unlimited</value>
+  </data>
+  <data name="ConverterUom_Milliseconds" xml:space="preserve">
+    <value>ms</value>
+  </data>
+  <data name="ConverterUom_MillisecondsUnlimited" xml:space="preserve">
+    <value>ms</value>
+  </data>
+  <data name="ConverterUom_Seconds" xml:space="preserve">
+    <value>seconds</value>
+  </data>
+  <data name="ConverterUom_SecondsDisabled" xml:space="preserve">
+    <value>seconds</value>
+  </data>
+  <data name="ConverterUom_SecondsUnlimited" xml:space="preserve">
+    <value>seconds</value>
+  </data>
+  <data name="ConverterUom_Separator" xml:space="preserve">
+    <value>separator</value>
+  </data>
+  <data name="EnBlobSubType_All_Selected" xml:space="preserve">
+    <value>◉ All</value>
+  </data>
+  <data name="EnBlobSubType_All_Unselected" xml:space="preserve">
+    <value>◎ All</value>
+  </data>
+  <data name="EnBlobSubType_Binary_Selected" xml:space="preserve">
+    <value>◉ Binary Only [0]</value>
+  </data>
+  <data name="EnBlobSubType_Binary_Unselected" xml:space="preserve">
+    <value>◎ Binary Only [0]</value>
+  </data>
+  <data name="EnBlobSubType_BLR_Selected" xml:space="preserve">
+    <value>◉ BLR Only [2]</value>
+  </data>
+  <data name="EnBlobSubType_BLR_Unselected" xml:space="preserve">
+    <value>◎ BLR Only [2]</value>
+  </data>
+  <data name="EnBlobSubType_Off_Selected" xml:space="preserve">
+    <value>◉ None [Off]</value>
+  </data>
+  <data name="EnBlobSubType_Off_Unselected" xml:space="preserve">
+    <value>◎ None [Off]</value>
+  </data>
+  <data name="EnBlobSubType_Text_Selected" xml:space="preserve">
+    <value>◉ Text Only [1]</value>
+  </data>
+  <data name="EnBlobSubType_Text_Unselected" xml:space="preserve">
+    <value>◎ Text Only [1]</value>
+  </data>
+  <data name="EnBytes_1024_Selected" xml:space="preserve">
+    <value>◉ 1 KB</value>
+  </data>
+  <data name="EnBytes_1024_Unselected" xml:space="preserve">
+    <value>◎ 1 KB</value>
+  </data>
+  <data name="EnBytes_256_Selected" xml:space="preserve">
+    <value>◉ 256 Bytes</value>
+  </data>
+  <data name="EnBytes_256_Unselected" xml:space="preserve">
+    <value>◎ 256 Bytes</value>
+  </data>
+  <data name="EnBytes_4096_Selected" xml:space="preserve">
+    <value>◉ 4 KB</value>
+  </data>
+  <data name="EnBytes_4096_Unselected" xml:space="preserve">
+    <value>◎ 4 KB</value>
+  </data>
+  <data name="EnBytes_64_Selected" xml:space="preserve">
+    <value>◉ 64 Bytes</value>
+  </data>
+  <data name="EnBytes_64_Unselected" xml:space="preserve">
+    <value>◎ 64 Bytes</value>
+  </data>
+  <data name="EnBytes_8192_Selected" xml:space="preserve">
+    <value>◉ 8 KB</value>
+  </data>
+  <data name="EnBytes_8192_Unselected" xml:space="preserve">
+    <value>◎ 8 KB</value>
+  </data>
+  <data name="EnBytes_Min_Selected" xml:space="preserve">
+    <value>◉ 32 Bytes</value>
+  </data>
+  <data name="EnBytes_Min_Unselected" xml:space="preserve">
+    <value>◎ 32 Bytes</value>
+  </data>
+  <data name="EnDeadlockPriority_Low_Selected" xml:space="preserve">
+    <value>◉ Low</value>
+  </data>
+  <data name="EnDeadlockPriority_Low_Unselected" xml:space="preserve">
+    <value>◎ Low</value>
+  </data>
+  <data name="EnDeadlockPriority_Normal_Selected" xml:space="preserve">
+    <value>◉ Normal</value>
+  </data>
+  <data name="EnDeadlockPriority_Normal_Unselected" xml:space="preserve">
+    <value>◎ Normal</value>
+  </data>
+  <data name="EnIsolationLevel_ReadCommitted_Selected" xml:space="preserve">
+    <value>◉ Read Committed</value>
+  </data>
+  <data name="EnIsolationLevel_ReadCommitted_Unselected" xml:space="preserve">
+    <value>◎ Read Committed</value>
+  </data>
+  <data name="EnIsolationLevel_ReadUncommitted_Selected" xml:space="preserve">
+    <value>◉ Read Uncommitted</value>
+  </data>
+  <data name="EnIsolationLevel_ReadUncommitted_Unselected" xml:space="preserve">
+    <value>◎ Read Uncommitted</value>
+  </data>
+  <data name="EnIsolationLevel_RepeatableRead_Selected" xml:space="preserve">
+    <value>◉ Repeatable Read</value>
+  </data>
+  <data name="EnIsolationLevel_RepeatableRead_Unselected" xml:space="preserve">
+    <value>◎ Repeatable Read</value>
+  </data>
+  <data name="EnIsolationLevel_Serializable_Selected" xml:space="preserve">
+    <value>◉ Serializable</value>
+  </data>
+  <data name="EnIsolationLevel_Serializable_Unselected" xml:space="preserve">
+    <value>◎ Serializable</value>
+  </data>
+  <data name="EnKilobytes_16_Selected" xml:space="preserve">
+    <value>◉ 16 KB</value>
+  </data>
+  <data name="EnKilobytes_16_Unselected" xml:space="preserve">
+    <value>◎ 16 KB</value>
+  </data>
+  <data name="EnKilobytes_1_Selected" xml:space="preserve">
+    <value>◉ 1 KB</value>
+  </data>
+  <data name="EnKilobytes_1_Unselected" xml:space="preserve">
+    <value>◎ 1 KB</value>
+  </data>
+  <data name="EnKilobytes_4_Selected" xml:space="preserve">
+    <value>◉ 4 KB</value>
+  </data>
+  <data name="EnKilobytes_4_Unselected" xml:space="preserve">
+    <value>◎ 4 KB</value>
+  </data>
+  <data name="EnKilobytes_64_Selected" xml:space="preserve">
+    <value>◉ 64 KB</value>
+  </data>
+  <data name="EnKilobytes_64_Unselected" xml:space="preserve">
+    <value>◎ 64 KB</value>
+  </data>
+  <data name="EnKilobytes_Min_Selected" xml:space="preserve">
+    <value>◉ 32 Bytes</value>
+  </data>
+  <data name="EnKilobytes_Min_Unselected" xml:space="preserve">
+    <value>◎ 32 Bytes</value>
+  </data>
+  <data name="EnKilobytes_Qtr_Selected" xml:space="preserve">
+    <value>◉ 256 Bytes</value>
+  </data>
+  <data name="EnKilobytes_Qtr_Unselected" xml:space="preserve">
+    <value>◎ 256 Bytes</value>
+  </data>
+  <data name="EnMegabytes_1_Selected" xml:space="preserve">
+    <value>◉ 1 MB</value>
+  </data>
+  <data name="EnMegabytes_1_Unselected" xml:space="preserve">
+    <value>◎ 1 MB</value>
+  </data>
+  <data name="EnMegabytes_2_Selected" xml:space="preserve">
+    <value>◉ 2 MB</value>
+  </data>
+  <data name="EnMegabytes_2_Unselected" xml:space="preserve">
+    <value>◎ 2 MB</value>
+  </data>
+  <data name="EnMegabytes_5_Selected" xml:space="preserve">
+    <value>◉ 5 MB</value>
+  </data>
+  <data name="EnMegabytes_5_Unselected" xml:space="preserve">
+    <value>◎ 5 MB</value>
+  </data>
+  <data name="EnMegabytes_Max_Selected" xml:space="preserve">
+    <value>◉ Unlimited</value>
+  </data>
+  <data name="EnMegabytes_Max_Unselected" xml:space="preserve">
+    <value>◎ Unlimited</value>
+  </data>
+  <data name="EnOutputFormat_ColAligned_Selected" xml:space="preserve">
+    <value>◉ Column aligned</value>
+  </data>
+  <data name="EnOutputFormat_ColAligned_Unselected" xml:space="preserve">
+    <value>◎ Column aligned</value>
+  </data>
+  <data name="EnOutputFormat_CommaDelim_Selected" xml:space="preserve">
+    <value>◉ Comma delimited</value>
+  </data>
+  <data name="EnOutputFormat_CommaDelim_Unselected" xml:space="preserve">
+    <value>◎ Comma delimited</value>
+  </data>
+  <data name="EnOutputFormat_Custom_Selected" xml:space="preserve">
+    <value>◉ Custom delimiter</value>
+  </data>
+  <data name="EnOutputFormat_Custom_Unselected" xml:space="preserve">
+    <value>◎ Custom delimiter</value>
+  </data>
+  <data name="EnOutputFormat_SpaceDelim_Selected" xml:space="preserve">
+    <value>◉ Space delimited</value>
+  </data>
+  <data name="EnOutputFormat_SpaceDelim_Unselected" xml:space="preserve">
+    <value>◎ Space delimited</value>
+  </data>
+  <data name="EnOutputFormat_TabDelim_Selected" xml:space="preserve">
+    <value>◉ Tab delimited</value>
+  </data>
+  <data name="EnOutputFormat_TabDelim_Unselected" xml:space="preserve">
+    <value>◎ Tab delimited</value>
+  </data>
+  <data name="EnShowTimeOption_Elapsed_Selected" xml:space="preserve">
+    <value>◉ Elapsed</value>
+  </data>
+  <data name="EnShowTimeOption_Elapsed_Unselected" xml:space="preserve">
+    <value>◎ Elapsed</value>
+  </data>
+  <data name="EnShowTimeOption_End_Selected" xml:space="preserve">
+    <value>◉ End</value>
+  </data>
+  <data name="EnShowTimeOption_End_Unselected" xml:space="preserve">
+    <value>◎ End</value>
+  </data>
+  <data name="EnShowTimeOption_None_Selected" xml:space="preserve">
+    <value>◉ None</value>
+  </data>
+  <data name="EnShowTimeOption_None_Unselected" xml:space="preserve">
+    <value>◎ None</value>
+  </data>
+  <data name="EnSqlOutputMode_File_Selected" xml:space="preserve">
+    <value>◉ Results to file</value>
+  </data>
+  <data name="EnSqlOutputMode_File_Unselected" xml:space="preserve">
+    <value>◎ Results to file</value>
+  </data>
+  <data name="EnSqlOutputMode_Grid_Selected" xml:space="preserve">
+    <value>◉ Results to grids</value>
+  </data>
+  <data name="EnSqlOutputMode_Grid_Unselected" xml:space="preserve">
+    <value>◎ Results to grids</value>
+  </data>
+  <data name="EnSqlOutputMode_Text_Selected" xml:space="preserve">
+    <value>◉ Results to text</value>
+  </data>
+  <data name="EnSqlOutputMode_Text_Unselected" xml:space="preserve">
+    <value>◎ Results to text</value>
+  </data>
+  <data name="EnStatusBarPosition_Bottom_Selected" xml:space="preserve">
+    <value>◉ Bottom</value>
+  </data>
+  <data name="EnStatusBarPosition_Bottom_Unselected" xml:space="preserve">
+    <value>◎ Bottom</value>
+  </data>
+  <data name="EnStatusBarPosition_Top_Selected" xml:space="preserve">
+    <value>◉ Top</value>
+  </data>
+  <data name="EnStatusBarPosition_Top_Unselected" xml:space="preserve">
+    <value>◎ Top</value>
+  </data>
+  <data name="OptionCategoryAdvanced" xml:space="preserve">
+    <value>Advanced</value>
+  </data>
+  <data name="OptionCategoryGeneral" xml:space="preserve">
+    <value> General</value>
+  </data>
+  <data name="OptionCategoryGrid" xml:space="preserve">
+    <value>Grid Tab</value>
+  </data>
+  <data name="OptionCategoryGridTabs" xml:space="preserve">
+    <value>Tab Behavior</value>
+  </data>
+  <data name="OptionCategoryGridULimits" xml:space="preserve">
+    <value>Column Data Limits</value>
+  </data>
+  <data name="OptionCategoryStatusBar" xml:space="preserve">
+    <value>Status Bar Content</value>
+  </data>
+  <data name="OptionCategoryStatusBarColor" xml:space="preserve">
+    <value>Status Bar Color</value>
+  </data>
+  <data name="OptionCategoryTabText" xml:space="preserve">
+    <value>Tab Text</value>
+  </data>
+  <data name="OptionCategoryText" xml:space="preserve">
+    <value>Text Tab</value>
+  </data>
+  <data name="OptionCategoryTextFormat" xml:space="preserve">
+    <value>Formatting</value>
+  </data>
+  <data name="OptionCategoryTextTabs" xml:space="preserve">
+    <value>Tab Behavior</value>
+  </data>
+  <data name="OptionDescriptionContextBatchSeparator" xml:space="preserve">
+    <value>The default batch separator for the database engine.</value>
+  </data>
+  <data name="OptionDescriptionContextStatusBarPosition" xml:space="preserve">
+    <value>The position of the status base in the editor window.</value>
+  </data>
+  <data name="OptionDescriptionEnableIntellisense" xml:space="preserve">
+    <value>Enables editor code window Intellisense. Note: The editor currently uses built-in language services so syntax errors may show on valid Firebird grammar.</value>
+  </data>
+  <data name="OptionDescriptionExecutionCostLimit" xml:space="preserve">
+    <value>Overrides the currently configured query governor cost limit value for the current connection. Valid range: 'Min[imum]', 'Default' or 0 to 'Max[imum]' or 100000. (Case insensitive)</value>
+  </data>
+  <data name="OptionDescriptionExecutionDeadlockPriority" xml:space="preserve">
+    <value>Specifies the relative importance that the current session continue processing if it is deadlocked with another session.</value>
+  </data>
+  <data name="OptionDescriptionExecutionDefaultOleScripting" xml:space="preserve">
+    <value>By default, open new queries in SQLCMD (OLE scripting) mode</value>
+  </data>
+  <data name="OptionDescriptionExecutionDisconnectOnCompletion" xml:space="preserve">
+    <value>If enabled, disconnects the connection once query execution is complete.</value>
+  </data>
+  <data name="OptionDescriptionExecutionIsolationLevel" xml:space="preserve">
+    <value>Specifies the transaction locking behavior for a commond.</value>
+  </data>
+  <data name="OptionDescriptionExecutionLockTimeout" xml:space="preserve">
+    <value>The maximum transaction lock conflict wait timeout for WAIT transactions. Valid range: 'Default', 'Min[imum]', 'Unlimited' or 0 to 'Max[imum]' (MaxInt). (Case insensitive)</value>
+  </data>
+  <data name="OptionDescriptionExecutionSetBail" xml:space="preserve">
+    <value>Setting this command determines whether or not isql will "bail out" on any errors when the input command has been used to read a script file. Isql will not exit if it is running in interactive mode, and you cause an error.</value>
+  </data>
+  <data name="OptionDescriptionExecutionSetBlobDisplay" xml:space="preserve">
+    <value>Select the type of BLOB data that can be displayed.</value>
+  </data>
+  <data name="OptionDescriptionExecutionSetConcatenationNull" xml:space="preserve">
+    <value>When SET CONCAT_NULL_YIELDS_NULL is ON, concatenating a null value with a string yields a NULL result.</value>
+  </data>
+  <data name="OptionDescriptionExecutionSetCount" xml:space="preserve">
+    <value>This command determines whether a line of text is displayed at the end of the output from a DML statement, telling the user how many rows were affected.</value>
+  </data>
+  <data name="OptionDescriptionExecutionSetExplain" xml:space="preserve">
+    <value>Extends the SET PLAN option to report the explained plan instead of the standard one.</value>
+  </data>
+  <data name="OptionDescriptionExecutionSetParseOnly" xml:space="preserve">
+    <value>When SET PARSEONLY is ON, SQL Server only parses the statement. When SET PARSEONLY is OFF, SQL Server compiles and executes the statement.</value>
+  </data>
+  <data name="OptionDescriptionExecutionSetPlan" xml:space="preserve">
+    <value>Displays the plan used to access the data for each statement executed.</value>
+  </data>
+  <data name="OptionDescriptionExecutionSetPlanOnly" xml:space="preserve">
+    <value>This command prevents Firebird from actually executing the SQL statement and instead, simply shows the plan that it would use to access the data. This command relies on the set plan command. If set plan off had been executed, this command would have no effect, so turning planonly on has the additional effect of executing set plan on implicitly. Executing set planonly off does not implicitly execute set plan off.</value>
+  </data>
+  <data name="OptionDescriptionExecutionSetPlanText" xml:space="preserve">
+    <value>Causes Microsoft SQL Server not to execute Transact-SQL statements. Instead, SQL Server returns detailed information about how the statements are executed.</value>
+  </data>
+  <data name="OptionDescriptionExecutionSetRowCount" xml:space="preserve">
+    <value>Specify the maximum number of rows to return before the server stops processing your query.</value>
+  </data>
+  <data name="OptionDescriptionExecutionSetStatisticsIO" xml:space="preserve">
+    <value>Causes SQL Server to display information about the amount of physical and logical IO activity generated by Transact-SQL statements.</value>
+  </data>
+  <data name="OptionDescriptionExecutionSetStats" xml:space="preserve">
+    <value>This command determines whether or not isql should display various statistics about each SQL command executed.</value>
+  </data>
+  <data name="OptionDescriptionExecutionSetWarnings" xml:space="preserve">
+    <value>This command specifies whether warnings are to be output.</value>
+  </data>
+  <data name="OptionDescriptionExecutionSuppressHeaders" xml:space="preserve">
+    <value>This command turns the display of column headings on or off as desired.</value>
+  </data>
+  <data name="OptionDescriptionExecutionTimeout" xml:space="preserve">
+    <value>Valid range: 'Default', 'Min[imum]', 'Unlimited' or 0 (no time-out) to 'Max[imum]' or 32000 seconds. (Case insensitive)</value>
+  </data>
+  <data name="OptionDescriptionPromptToSave" xml:space="preserve">
+    <value>Prompt to save unsaved SQL query windows on close.</value>
+  </data>
+  <data name="OptionDescriptionResultsDirectory" xml:space="preserve">
+    <value>The default folder for saving SQL results.</value>
+  </data>
+  <data name="OptionDescriptionResultsGridCsvQuoteStringsCommas" xml:space="preserve">
+    <value>Use quoted strings containing list separators when saving .csv results</value>
+  </data>
+  <data name="OptionDescriptionResultsGridDiscardResults" xml:space="preserve">
+    <value>Discard grid results after execution</value>
+  </data>
+  <data name="OptionDescriptionResultsGridMaxStd" xml:space="preserve">
+    <value>The maximum number of characters for a standard/text data column.</value>
+  </data>
+  <data name="OptionDescriptionResultsGridMaxXml" xml:space="preserve">
+    <value>The maximum number of characters for an XML data column.</value>
+  </data>
+  <data name="OptionDescriptionResultsGridOutputQuery" xml:space="preserve">
+    <value>Include the query script in grid result sets.</value>
+  </data>
+  <data name="OptionDescriptionResultsGridSaveIncludeHeaders" xml:space="preserve">
+    <value>Include column headers when copying or saving a grid result set.</value>
+  </data>
+  <data name="OptionDescriptionResultsGridSeparateTabs" xml:space="preserve">
+    <value>Collapse grid results pane after query execution.</value>
+  </data>
+  <data name="OptionDescriptionResultsGridSingleTab" xml:space="preserve">
+    <value>Use a single tab for grid results.</value>
+  </data>
+  <data name="OptionDescriptionResultsGridSwitchToResults" xml:space="preserve">
+    <value>Switch focus to grid results pane after query execution.</value>
+  </data>
+  <data name="OptionDescriptionResultsOutputMode" xml:space="preserve">
+    <value>Server query results can be displayed in grid or text format, or redirected to a file.</value>
+  </data>
+  <data name="OptionDescriptionResultsPlaySounds" xml:space="preserve">
+    <value>Play windows sounds on SQL results.</value>
+  </data>
+  <data name="OptionDescriptionResultsTextAlignRightNumerics" xml:space="preserve">
+    <value>Align numeric numeric result values to the right.</value>
+  </data>
+  <data name="OptionDescriptionResultsTextDelimiter" xml:space="preserve">
+    <value>The single character custom delimiter.</value>
+  </data>
+  <data name="OptionDescriptionResultsTextDiscardResults" xml:space="preserve">
+    <value>Discard text results after execution</value>
+  </data>
+  <data name="OptionDescriptionResultsTextIncludeHeaders" xml:space="preserve">
+    <value>Include column headers when outputting or printing a text result set.</value>
+  </data>
+  <data name="OptionDescriptionResultsTextMaxStd" xml:space="preserve">
+    <value>The maximum number of characters for a text result column.</value>
+  </data>
+  <data name="OptionDescriptionResultsTextOutputFormat" xml:space="preserve">
+    <value>The output format of text based results</value>
+  </data>
+  <data name="OptionDescriptionResultsTextOutputQuery" xml:space="preserve">
+    <value>Include the query script in text result sets.</value>
+  </data>
+  <data name="OptionDescriptionResultsTextScrollingResults" xml:space="preserve">
+    <value>Interactively scroll results as text results are received.</value>
+  </data>
+  <data name="OptionDescriptionResultsTextSeparateTabs" xml:space="preserve">
+    <value>Collapse text results pane after query execution.</value>
+  </data>
+  <data name="OptionDescriptionResultsTextSwitchToResults" xml:space="preserve">
+    <value>Switch focus to text results pane after query execution.</value>
+  </data>
+  <data name="OptionDescriptionStatusBarBackgroundColor" xml:space="preserve">
+    <value>The background color of the status bar for single server connections</value>
+  </data>
+  <data name="OptionDescriptionStatusBarExecutionTimeMethod" xml:space="preserve">
+    <value>Select type of time display to include on the status bar.</value>
+  </data>
+  <data name="OptionDescriptionStatusBarIncludeDatabaseName" xml:space="preserve">
+    <value>Include the database name on the status bar.</value>
+  </data>
+  <data name="OptionDescriptionStatusBarIncludeLoginName" xml:space="preserve">
+    <value>Include login name on the status bar.</value>
+  </data>
+  <data name="OptionDescriptionStatusBarIncludeRowCount" xml:space="preserve">
+    <value>Include count of returned rows on the status bar.</value>
+  </data>
+  <data name="OptionDescriptionStatusBarIncludeServerName" xml:space="preserve">
+    <value>Include server name on the status bar.</value>
+  </data>
+  <data name="OptionDescriptionTabTextIncludeDatabaseName" xml:space="preserve">
+    <value>Include the name of the current connected database in the tab text.</value>
+  </data>
+  <data name="OptionDescriptionTabTextIncludeFileName" xml:space="preserve">
+    <value>Include the name of the script file in the tab text.</value>
+  </data>
+  <data name="OptionDescriptionTabTextIncludeLoginName" xml:space="preserve">
+    <value>Include the name of the login for the connection in the tab text.</value>
+  </data>
+  <data name="OptionDescriptionTabTextIncludeServerName" xml:space="preserve">
+    <value>Include the name of the connected server in the tab text.</value>
+  </data>
+  <data name="OptionDialogResultsDirectory" xml:space="preserve">
+    <value>Select the folder to be used as the default for saving query results.</value>
+  </data>
+  <data name="OptionDisplayContextBatchSeparator" xml:space="preserve">
+    <value>SQL Batch Separator</value>
+  </data>
+  <data name="OptionDisplayContextStatusBarPosition" xml:space="preserve">
+    <value>Status bar position</value>
+  </data>
+  <data name="OptionDisplayEnableIntellisense" xml:space="preserve">
+    <value>Enable Intellisense</value>
+  </data>
+  <data name="OptionDisplayExecutionCostLimit" xml:space="preserve">
+    <value>SET QUERY_GOVERNOR_COST_LIMIT</value>
+  </data>
+  <data name="OptionDisplayExecutionDeadlockPriority" xml:space="preserve">
+    <value>SET DEADLOCK_PRIORITY</value>
+  </data>
+  <data name="OptionDisplayExecutionDefaultOleScripting" xml:space="preserve">
+    <value>Default to SQLCMD mode</value>
+  </data>
+  <data name="OptionDisplayExecutionDisconnectOnCompletion" xml:space="preserve">
+    <value>Disconnect on completion</value>
+  </data>
+  <data name="OptionDisplayExecutionIsolationLevel" xml:space="preserve">
+    <value>Isolation level</value>
+  </data>
+  <data name="OptionDisplayExecutionLockTimeout" xml:space="preserve">
+    <value>SET LOCK TIMEOUT</value>
+  </data>
+  <data name="OptionDisplayExecutionSetBail" xml:space="preserve">
+    <value>SET BAIL</value>
+  </data>
+  <data name="OptionDisplayExecutionSetBlobDisplay" xml:space="preserve">
+    <value>SET BLOBDISPLAY</value>
+  </data>
+  <data name="OptionDisplayExecutionSetConcatenationNull" xml:space="preserve">
+    <value>SET CONCAT_NULL_YIELDS_NULL</value>
+  </data>
+  <data name="OptionDisplayExecutionSetCount" xml:space="preserve">
+    <value>SET COUNT</value>
+  </data>
+  <data name="OptionDisplayExecutionSetExplain" xml:space="preserve">
+    <value>SET EXPLAIN</value>
+  </data>
+  <data name="OptionDisplayExecutionSetParseOnly" xml:space="preserve">
+    <value>SET PARSEONLY*</value>
+  </data>
+  <data name="OptionDisplayExecutionSetPlan" xml:space="preserve">
+    <value>SET PLAN</value>
+  </data>
+  <data name="OptionDisplayExecutionSetPlanOnly" xml:space="preserve">
+    <value>SET PLANONLY</value>
+  </data>
+  <data name="OptionDisplayExecutionSetPlanText" xml:space="preserve">
+    <value>SET SHOWPLAN_TEXT</value>
+  </data>
+  <data name="OptionDisplayExecutionSetRowCount" xml:space="preserve">
+    <value>SET ROWCOUNT</value>
+  </data>
+  <data name="OptionDisplayExecutionSetStatisticsIO" xml:space="preserve">
+    <value>SET STATISTICS IO</value>
+  </data>
+  <data name="OptionDisplayExecutionSetStats" xml:space="preserve">
+    <value>SET STATS</value>
+  </data>
+  <data name="OptionDisplayExecutionSetWarnings" xml:space="preserve">
+    <value>SET WARNINGS</value>
+  </data>
+  <data name="OptionDisplayExecutionSuppressHeaders" xml:space="preserve">
+    <value>SET HEADING</value>
+  </data>
+  <data name="OptionDisplayExecutionTimeout" xml:space="preserve">
+    <value>Execution time-out</value>
+  </data>
+  <data name="OptionDisplayPromptToSave" xml:space="preserve">
+    <value>Prompt to save</value>
+  </data>
+  <data name="OptionDisplayResultsDirectory" xml:space="preserve">
+    <value>Default save folder</value>
+  </data>
+  <data name="OptionDisplayResultsGridCsvQuoteStringsCommas" xml:space="preserve">
+    <value>Quoted csv separators</value>
+  </data>
+  <data name="OptionDisplayResultsGridDiscardResults" xml:space="preserve">
+    <value>Non-persistent grid results</value>
+  </data>
+  <data name="OptionDisplayResultsGridMaxStd" xml:space="preserve">
+    <value>Standard grid data</value>
+  </data>
+  <data name="OptionDisplayResultsGridMaxXml" xml:space="preserve">
+    <value>XML data</value>
+  </data>
+  <data name="OptionDisplayResultsGridOutputQuery" xml:space="preserve">
+    <value>Include query script</value>
+  </data>
+  <data name="OptionDisplayResultsGridSaveIncludeHeaders" xml:space="preserve">
+    <value>Save with column headers</value>
+  </data>
+  <data name="OptionDisplayResultsGridSeparateTabs" xml:space="preserve">
+    <value> Auto-collapse grid results</value>
+  </data>
+  <data name="OptionDisplayResultsGridSingleTab" xml:space="preserve">
+    <value>Use single tab</value>
+  </data>
+  <data name="OptionDisplayResultsGridSwitchToResults" xml:space="preserve">
+    <value>  Auto-switch to grid results</value>
+  </data>
+  <data name="OptionDisplayResultsOutputMode" xml:space="preserve">
+    <value>Default SQL output mode</value>
+  </data>
+  <data name="OptionDisplayResultsPlaySounds" xml:space="preserve">
+    <value>Play interface sounds</value>
+  </data>
+  <data name="OptionDisplayResultsTextAlignRightNumerics" xml:space="preserve">
+    <value>Right align numeric values</value>
+  </data>
+  <data name="OptionDisplayResultsTextDelimiter" xml:space="preserve">
+    <value>  Custom delimiter</value>
+  </data>
+  <data name="OptionDisplayResultsTextDiscardResults" xml:space="preserve">
+    <value>Non-persistent text results</value>
+  </data>
+  <data name="OptionDisplayResultsTextIncludeHeaders" xml:space="preserve">
+    <value>Include column headers</value>
+  </data>
+  <data name="OptionDisplayResultsTextMaxStd" xml:space="preserve">
+    <value>Maximum characters in a column</value>
+  </data>
+  <data name="OptionDisplayResultsTextOutputFormat" xml:space="preserve">
+    <value> Output format</value>
+  </data>
+  <data name="OptionDisplayResultsTextOutputQuery" xml:space="preserve">
+    <value>Include query script in results</value>
+  </data>
+  <data name="OptionDisplayResultsTextScrollingResults" xml:space="preserve">
+    <value>Interactively scroll received text</value>
+  </data>
+  <data name="OptionDisplayResultsTextSeparateTabs" xml:space="preserve">
+    <value> Auto-collapse text results</value>
+  </data>
+  <data name="OptionDisplayResultsTextSwitchToResults" xml:space="preserve">
+    <value>  Auto-switch to text results</value>
+  </data>
+  <data name="OptionDisplayStatusBarBackgroundColor" xml:space="preserve">
+    <value>Background color</value>
+  </data>
+  <data name="OptionDisplayStatusBarExecutionTimeMethod" xml:space="preserve">
+    <value>Display execution time</value>
+  </data>
+  <data name="OptionDisplayStatusBarIncludeDatabaseName" xml:space="preserve">
+    <value>Include database name</value>
+  </data>
+  <data name="OptionDisplayStatusBarIncludeLoginName" xml:space="preserve">
+    <value>Include login name</value>
+  </data>
+  <data name="OptionDisplayStatusBarIncludeRowCount" xml:space="preserve">
+    <value>Include row count</value>
+  </data>
+  <data name="OptionDisplayStatusBarIncludeServerName" xml:space="preserve">
+    <value>Include server name</value>
+  </data>
+  <data name="OptionDisplayTabTextIncludeDatabaseName" xml:space="preserve">
+    <value>Include database name</value>
+  </data>
+  <data name="OptionDisplayTabTextIncludeFileName" xml:space="preserve">
+    <value>Include file name</value>
+  </data>
+  <data name="OptionDisplayTabTextIncludeLoginName" xml:space="preserve">
+    <value>Include login name</value>
+  </data>
+  <data name="OptionDisplayTabTextIncludeServerName" xml:space="preserve">
+    <value>Include server name</value>
+  </data>
+  <data name="OptionPageExecution" xml:space="preserve">
+    <value>Execution</value>
+  </data>
+  <data name="OptionPageExecutionAdvanced" xml:space="preserve">
+    <value>Advanced</value>
+  </data>
+  <data name="OptionPageExecutionGeneral" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="OptionPageResults" xml:space="preserve">
+    <value>Results</value>
+  </data>
+  <data name="OptionPageResultsGeneral" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="OptionPageResultsGrid" xml:space="preserve">
+    <value>Grid</value>
+  </data>
+  <data name="OptionPageResultsText" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="Properties_16x" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        AAABAAIAEBAQAAEABAAoAQAAJgAAABAQAAABAAgAaAUAAE4BAAAoAAAAEAAAACAAAAABAAQAAAAAAIAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAgAAAAICAAIAAAACAAIAAgIAAAICAgADAwMAAAAD/AAD/
+        AAAA//8A/wAAAP8A/wD//wAA////AAAAAAAAAAAAAA/wAAAAAAAA948AAAAAAA+Hd/AAAAAAD4d3fwAA
+        AAAA93d3///wAAAPd3d3d48AAAD3d3d3ePAAAA93d3d38AAAD3d3d3fwAAAPd3f/d/AAAA93d/D38AAA
+        D4d3fw/wAAAA+Hd38AAAAAAP///wAAAAAAAAAAAA//8AAOf/AADD/wAAgf8AAID/AADABwAA4AMAAPAB
+        AAD4AQAA+AEAAPgBAAD4EQAA+AkAAPwHAAD+BwAA//8AACgAAAAQAAAAIAAAAAEACAAAAAAAAAEAAAAA
+        AAAAAAAAAAEAAAABAAAAAAAAQkJCAE1NTQBZWVkAZGRkAIaGhgCcnJwAp6enAL6+vgDr6+sA9vb2APr6
+        +gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAsLAAAAAAAAAAAAAAAAAAoGBwoAAAAA
+        AAAAAAAAAAsHAQEFCgAAAAAAAAAAAAALBwEBAQUKAAAAAAAAAAAAAAoEAQEBBQoKCgoLAAAAAAAACQQB
+        AQECAQEDCAoAAAAAAAAJBAEBAQEBAQEICwAAAAAAAAkBAQEBAQEBAwoAAAAAAAAKAQEBAQUFAQEKAAAA
+        AAAACgEBAQUKCgUBCgAAAAAAAAoDAQEFCgAKBgoAAAAAAAALCAEBAQUKAAoLAAAAAAAAAAoIAwEBBgoA
+        AAAAAAAAAAAACwoKCgoLAAAAAAAAAAAAAAAAAAAAAAAAAP//AADn/wAAw/8AAIH/AACA/wAAwAcAAOAD
+        AADwAQAA+AEAAPgBAAD4AQAA+BEAAPgJAAD8BwAA/gcAAP//AAA=
+</value>
+  </data>
+</root>

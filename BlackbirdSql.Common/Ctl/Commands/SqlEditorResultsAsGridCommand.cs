@@ -7,11 +7,11 @@ using System;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using BlackbirdSql.Common.Model;
-using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Core.Ctl.Enums;
+
 
 namespace BlackbirdSql.Common.Ctl.Commands;
-
 
 public class SqlEditorResultsAsGridCommand : AbstractSqlEditorCommand
 {
@@ -35,7 +35,7 @@ public class SqlEditorResultsAsGridCommand : AbstractSqlEditorCommand
 				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 			}
 
-			if (auxiliaryDocDataForEditor.SqlExecutionMode == EnSqlExecutionMode.ResultsToGrid)
+			if (auxiliaryDocDataForEditor.SqlExecutionMode == EnSqlOutputMode.ToGrid)
 			{
 				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
 			}
@@ -49,7 +49,7 @@ public class SqlEditorResultsAsGridCommand : AbstractSqlEditorCommand
 		AuxiliaryDocData auxiliaryDocDataForEditor = GetAuxiliaryDocDataForEditor();
 		if (auxiliaryDocDataForEditor != null)
 		{
-			auxiliaryDocDataForEditor.SqlExecutionMode = EnSqlExecutionMode.ResultsToGrid;
+			auxiliaryDocDataForEditor.SqlExecutionMode = EnSqlOutputMode.ToGrid;
 		}
 
 		return VSConstants.S_OK;

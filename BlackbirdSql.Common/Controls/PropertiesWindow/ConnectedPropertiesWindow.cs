@@ -12,7 +12,6 @@ using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core.Ctl.Extensions;
-using BlackbirdSql.Core.Model;
 
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Services;
@@ -20,7 +19,7 @@ using FirebirdSql.Data.Services;
 
 namespace BlackbirdSql.Common.Controls.PropertiesWindow
 {
-	public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IPropertyWindowQueryManagerInitialize
+	public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBPropertyWindowQueryManagerInitialize
 	{
 		private bool _isInitialized;
 
@@ -42,7 +41,8 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 			{
 				if (Connection != null)
 				{
-					return ((FbConnection)Connection).DataSource + "(" + System.IO.Path.GetFileNameWithoutExtension(Connection.Database) + ")";
+					MonikerAgent moniker = new(Connection);
+					return moniker.DatasetKey;
 				}
 
 				return string.Empty;
@@ -165,7 +165,7 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 					return string.Empty;
 				}
 
-				return (QryMgr.QueryExecutionEndTime.Value - QryMgr.QueryExecutionStartTime.Value).FormatForStats();
+				return (QryMgr.QueryExecutionEndTime.Value - QryMgr.QueryExecutionStartTime.Value).FmtSqlStats();
 			}
 		}
 
@@ -254,7 +254,7 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 
 		private string GetLoginName()
 		{
-			UIConnectionInfo connectionInfo = QryMgr.ConnectionStrategy.UiConnectionInfo;
+            Core.Model.UIConnectionInfo connectionInfo = QryMgr.ConnectionStrategy.UiConnectionInfo;
 			string result = string.Empty;
 			if (connectionInfo != null)
 			{

@@ -29,7 +29,7 @@ public class TConnectionUIConnector : DataConnectionUIConnector
 
 	public TConnectionUIConnector() :base()
 	{
-		Tracer.Trace(GetType(), "TConnectionUIConnector.TConnectionUIConnector");
+		// Tracer.Trace(GetType(), "TConnectionUIConnector.TConnectionUIConnector()");
 	}
 
 
@@ -53,7 +53,7 @@ public class TConnectionUIConnector : DataConnectionUIConnector
 	/// </param>
 	public override void Connect(IVsDataConnection connection)
 	{
-		Tracer.Trace(GetType(), "TConnectionUIConnector.Connect");
+		// Tracer.Trace(GetType(), "Connect()");
 
 		if (connection == null)
 		{

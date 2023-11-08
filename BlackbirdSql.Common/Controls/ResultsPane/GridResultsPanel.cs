@@ -6,9 +6,11 @@
 using System;
 using System.Collections;
 using System.ComponentModel.Design;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
@@ -20,11 +22,13 @@ using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 using Constants = Microsoft.VisualStudio.OLE.Interop.Constants;
@@ -32,6 +36,9 @@ using Constants = Microsoft.VisualStudio.OLE.Interop.Constants;
 
 namespace BlackbirdSql.Common.Controls.ResultsPane
 {
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+		Justification = "Class is UIThread compliant.")]
+
 	public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 	{
 		private ResultSetAndGridContainerCollection m_gridContainers = new ResultSetAndGridContainerCollection();
@@ -184,7 +191,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			//IL_009e: Expected O, but got Unknown
 			Tracer.Trace(GetType(), "GridResultsTabPanel.Clear", "", null);
 			base.Clear();
-			Tracer.Trace(GetType(), "GridResultsTabPanel.Clear: disposing grid containers", "", null);
+
 			if (_FirstGridPanel != null)
 			{
 				for (int i = 0; i < _FirstGridPanel.HostedControlsCount; i++)
@@ -209,8 +216,6 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 				m_gridContainers.Clear();
 			}
-
-			Tracer.Trace(GetType(), "GridResultsTabPanel.Clear: returning", "", null);
 		}
 
 		public void SaveGrid(GridControl grid, EnGridSaveFormats saveFormat, TextWriter writer)
@@ -479,6 +484,14 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 		public bool HandleXMLCellClick(QEResultSet rs, long nRowIndex, int nColIndex)
 		{
 			Tracer.Trace(GetType(), "GridResultsTabPanel.HandleXMLCellClick", "", null);
+
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			Cursor current = Cursor.Current;
 			string text = null;
 			XmlWriter xmlWriter = null;

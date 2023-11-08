@@ -15,6 +15,7 @@ using System.Windows.Input;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
+using BlackbirdSql.Common.Model.Wpf;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
@@ -23,7 +24,7 @@ using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
-
+using BlackbirdSql.Wpf.Model.Interfaces;
 using FirebirdSql.Data.FirebirdClient;
 
 using MonikerAgent = BlackbirdSql.Common.Model.MonikerAgent;
@@ -31,7 +32,7 @@ using MonikerAgent = BlackbirdSql.Common.Model.MonikerAgent;
 
 namespace BlackbirdSql.Wpf.Model;
 
-public class ConnectionPropertySectionViewModel : ViewModelBase
+public class ConnectionPropertySectionViewModel : AbstractViewModel
 {
     public const string C_KeyInfoConnection = "InfoConnection";
     public const string C_KeyIsUserNameEnabled = "IsUserNameEnabled";
@@ -50,7 +51,7 @@ public class ConnectionPropertySectionViewModel : ViewModelBase
 
     private ServiceManager<IBServerConnectionProvider> _ServerConnectionProviderServiceManager;
 
-    private ServiceManager<IConnectionPropertiesProvider> _ConnectionPropertiesManager;
+    private ServiceManager<IBConnectionPropertiesProvider> _ConnectionPropertiesManager;
 
     // private Dictionary<AuthenticationTypes, string> _AuthenticationCollection;
 
@@ -160,7 +161,7 @@ public class ConnectionPropertySectionViewModel : ViewModelBase
             _Describers = new();
 
             // Initializers for property sets are held externally for this class
-            ViewModelBase.CreateAndPopulatePropertySet(_Describers);
+            AbstractViewModel.CreateAndPopulatePropertySet(_Describers);
         }
 
         // If null then this was a call from our own .ctor so no need to pass anything back
@@ -182,7 +183,7 @@ public class ConnectionPropertySectionViewModel : ViewModelBase
         // _authenticationTypeServiceManager = new ServiceManager<IAuthenticationTypeProvider>(dependencyManager);
         // _databaseDiscoveryProviderServiceManager = new ServiceManager<IDatabaseDiscoveryProvider>(dependencyManager);
         _ServerConnectionProviderServiceManager = new ServiceManager<IBServerConnectionProvider>(dependencyManager);
-        _ConnectionPropertiesManager = new ServiceManager<IConnectionPropertiesProvider>(dependencyManager);
+        _ConnectionPropertiesManager = new ServiceManager<IBConnectionPropertiesProvider>(dependencyManager);
         _Channel.ResetConnectionPropertyEvent += ResetAuthenticationAndDatabases;
         _Channel.AuthenticationTypeChangedEvent += OnAuthenticationTypeChanged;
         _Channel.ConnectionPropertiesChangedEvent += ChannelOnConnectionPropertiesChanged;
@@ -215,7 +216,7 @@ public class ConnectionPropertySectionViewModel : ViewModelBase
 
         FbConnectionStringBuilder csb = new();
 
-		ConnectionStrategy.PopulateConnectionStringBuilder(csb, uiConnectionInfo);
+		AbstractConnectionStrategy.PopulateConnectionStringBuilder(csb, uiConnectionInfo);
 
 
         IBServerConnectionProvider service = _ServerConnectionProviderServiceManager.GetService(InfoConnection.ServerDefinition);
@@ -414,8 +415,8 @@ public class ConnectionPropertySectionViewModel : ViewModelBase
             string ciMoniker = null;
             if (connectionInfo != null && connectionInfo.IsComplete)
             {
-                MonikerAgent moniker = new(connectionInfo, true);
-                ciMoniker = moniker.Moniker;
+                MonikerAgent moniker = new(connectionInfo);
+                ciMoniker = moniker.SafeDatasetMoniker;
             }
 
 
@@ -463,87 +464,72 @@ public class ConnectionPropertySectionViewModel : ViewModelBase
 		*/
     }
 
-    private void SetDatabaseList(ObservableCollection<string> dataList = null, string defaultMoniker = null)
+    private void SetDatabaseList(ObservableCollection<string> dataList = null, string defaultDatasetKey = null)
     {
         ObservableCollection<string> observableCollection = dataList ?? new ObservableCollection<string>();
 
-        string ciMoniker = null;
-        string thisMoniker = null;
+        string ciDatasetKey = null;
+        string thisDatsetKey = null;
 
-        MonikerAgent moniker = new(true);
+        MonikerAgent moniker;
 
         if (InfoConnection != null && InfoConnection.IsComplete)
         {
-            moniker.Parse(InfoConnection);
-            ciMoniker = moniker.Moniker;
+            moniker = new (InfoConnection);
+			ciDatasetKey = moniker.DatasetKey;
 
-            if (defaultMoniker == null)
+            if (defaultDatasetKey == null)
             {
-                defaultMoniker = ciMoniker;
-                ciMoniker = null;
+				defaultDatasetKey = ciDatasetKey;
+				ciDatasetKey = null;
             }
-            else if (ciMoniker == defaultMoniker)
+            else if (ciDatasetKey == defaultDatasetKey)
             {
-                ciMoniker = null;
+				ciDatasetKey = null;
             }
         }
 
         if (IsComplete)
         {
-            moniker.Parse(this);
-            thisMoniker = moniker.Moniker;
+			moniker = new(this);
+			thisDatsetKey = moniker.DatasetKey;
 
-            if (defaultMoniker == null)
+            if (defaultDatasetKey == null)
             {
-                defaultMoniker = thisMoniker;
-                thisMoniker = null;
+                defaultDatasetKey = thisDatsetKey;
+				thisDatsetKey = null;
             }
-            else if (thisMoniker == defaultMoniker
-                || ciMoniker != null && thisMoniker == ciMoniker)
+            else if (thisDatsetKey == defaultDatasetKey
+                || ciDatasetKey != null && thisDatsetKey == ciDatasetKey)
             {
-                thisMoniker = null;
+                thisDatsetKey = null;
             }
         }
 
         int pos = 0;
 
-        if (defaultMoniker != null && !observableCollection.Contains(defaultMoniker))
+        if (defaultDatasetKey != null && !observableCollection.Contains(defaultDatasetKey))
         {
-            observableCollection.Insert(pos, defaultMoniker);
+            observableCollection.Insert(pos, defaultDatasetKey);
             pos++;
         }
-        if (ciMoniker != null && !observableCollection.Contains(ciMoniker))
+        if (ciDatasetKey != null && !observableCollection.Contains(ciDatasetKey))
         {
-            observableCollection.Insert(pos, ciMoniker);
+            observableCollection.Insert(pos, ciDatasetKey);
             pos++;
         }
-        if (thisMoniker != null && !observableCollection.Contains(thisMoniker))
+        if (thisDatsetKey != null && !observableCollection.Contains(thisDatsetKey))
         {
-            observableCollection.Insert(pos, thisMoniker);
+            observableCollection.Insert(pos, thisDatsetKey);
             pos++;
         }
 
-        string str;
-        DataTable table = XmlParser.Databases;
 
-        foreach (DataRow row in table.Rows)
+        foreach (KeyValuePair<string, string> pair in MonikerAgent.RegisteredDatasets)
         {
-            str = (string)row["InitialCatalog"];
 
-            if (str == "")
-                continue;
-
-            moniker.User = (string)row["UserName"];
-            moniker.Password = (string)row["Password"];
-            moniker.Server = (string)row["DataSource"];
-            moniker.Database = str;
-            moniker.Port = (int)row["PortNumber"];
-            moniker.Dataset = (string)row["Name"];
-
-            str = moniker.Moniker;
-
-            if (!observableCollection.Contains(str))
-                observableCollection.Add(str);
+            if (!observableCollection.Contains(pair.Key))
+                observableCollection.Add(pair.Key);
         }
 
         _ThreadSafeCollection.SetDataList(observableCollection ?? new ObservableCollection<string>());

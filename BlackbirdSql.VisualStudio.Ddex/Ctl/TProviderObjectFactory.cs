@@ -2,10 +2,8 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-
 using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Model.Interfaces;
-
+using BlackbirdSql.VisualStudio.Ddex.Ctl.Interfaces;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
 
@@ -35,7 +33,7 @@ public sealed class TProviderObjectFactory : DataProviderObjectFactory, IBProvid
 
 	public TProviderObjectFactory() : base()
 	{
-		Tracer.Trace(GetType(), "TProviderObjectFactory.TProviderObjectFactory");
+		// Tracer.Trace(GetType(), "TProviderObjectFactory.TProviderObjectFactory");
 	}
 
 	#endregion Constructors / Destructors

@@ -16,6 +16,8 @@ namespace BlackbirdSql.Core;
 //
 //									AbstractPropertyAgent Class - Events
 //
+// The base class for all property based dispatcher and connection classes used in conjunction with
+// PropertySet static classes.
 // =========================================================================================================
 public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 {
@@ -44,7 +46,11 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	// =========================================================================================================
 
 
-	public virtual IBEventsChannel Channel => _Channel;
+	public virtual IBEventsChannel Channel
+	{
+		get { return _Channel; }
+		set { _Channel = value; }
+	}
 
 	public virtual event EventHandler PropertyChanged;
 

@@ -1,15 +1,22 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.Design.Core, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Controls.ToolbarHost
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using BlackbirdSql.Core;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
 
 namespace BlackbirdSql.Common.Controls;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 public class ToolbarHost : Panel, IVsToolWindowToolbar
 {
@@ -40,6 +47,13 @@ public class ToolbarHost : Panel, IVsToolWindowToolbar
 	{
 		if (_VsToolbarHost != null && h != IntPtr.Zero)
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			Native.ThrowOnFailure(_VsToolbarHost.ProcessMouseActivation(h, 7u, IntPtr.Zero, IntPtr.Zero));
 		}
 	}
@@ -90,6 +104,13 @@ public class ToolbarHost : Panel, IVsToolWindowToolbar
 		base.OnSizeChanged(e);
 		if (_VsToolbarHost != null)
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			Native.ThrowOnFailure(_VsToolbarHost.BorderChanged());
 		}
 	}
@@ -146,6 +167,13 @@ public class ToolbarHost : Panel, IVsToolWindowToolbar
 		{
 			if (_UiShell == null)
 				throw new NullReferenceException("UiShell is null");
+
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
 
 			Native.ThrowOnFailure(_UiShell.SetupToolbar2(base.Handle, this, _CommandTarget, out _VsToolbarHost));
 

@@ -2,11 +2,17 @@
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Controls.TabbedEditor.TabbedEditorPane
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
+
 using BlackbirdSql.Common.Ctl;
+using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Common.Ctl.Events;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Core;
+
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -15,11 +21,12 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
 using OleConstants = Microsoft.VisualStudio.OLE.Interop.Constants;
-using BlackbirdSql.Common.Ctl.Enums;
-using BlackbirdSql.Common.Ctl.Events;
-using BlackbirdSql.Common.Ctl.Interfaces;
+
 
 namespace BlackbirdSql.Common.Controls;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is guarded in .ctor.")]
 
 public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IOleCommandTarget, IVsWindowFrameNotify3, IVsMultiViewDocumentView, IVsHasRelatedSaveItems, IVsDocumentLockHolder, IVsBroadcastMessageEvents, IBDesignerDocumentService, IBTabbedEditorService, IVsDocOutlineProvider, IVsDocOutlineProvider2, IVsToolboxActiveUserHook, IVsToolboxUser, IVsToolboxPageChooser, IVsDefaultToolboxTabState, IVsCodeWindow, IVsExtensibleObject
 {
@@ -59,14 +66,8 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	private bool _IsHelpInitialized;
 
-	public static TabbedEditorToolbarHandlerManager ToolbarManager
-	{
-		get
-		{
-			_ToolbarManager ??= new TabbedEditorToolbarHandlerManager();
-			return _ToolbarManager;
-		}
-	}
+	public static TabbedEditorToolbarHandlerManager ToolbarManager =>
+		_ToolbarManager ??= new TabbedEditorToolbarHandlerManager();
 
 
 	public bool IsDisposed { get; private set; }
@@ -134,6 +135,13 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 	public AbstractTabbedEditorPane(System.IServiceProvider provider, Package package, object docData, Guid toolbarGuid, uint toolbarID)
 		: base(provider)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		_Package = package;
 		_ = _Package; // Suppression
 		_DocData = docData as IVsTextLines;
@@ -150,6 +158,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	protected override void Initialize()
 	{
+
 		base.Initialize();
 
 		Controller.Instance.OnElementValueChangedEvent += OnElementValueChanged;

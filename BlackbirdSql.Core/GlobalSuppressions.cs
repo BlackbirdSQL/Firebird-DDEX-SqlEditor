@@ -5,8 +5,10 @@
 
 using System.Diagnostics.CodeAnalysis;
 
+[assembly: SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits")]
 [assembly: SuppressMessage("Style", "IDE0060:Remove unused parameter")]
 [assembly: SuppressMessage("Style", "IDE0066:Convert switch statement to expression")]
-[assembly: SuppressMessage("Build", "VSTHRD010:Accessing \"BlackbirdSql.Core.Cmd.ShowMessageBoxEx\" should only be done on the main thread. Call Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread() first.")]
-[assembly: SuppressMessage("Usage", "VSTHRD104:Offer async methods")]
-[assembly: SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits")]
+// [assembly: SuppressMessage("Usage", "VSTHRD104:Offer async methods")]
+// [assembly: SuppressMessage("Usage", "VSTHRD108:Assert thread affinity unconditionally")]
+// [assembly: SuppressMessage("Usage", "VSTHRD110:Observe result of async calls")]
+// [assembly: SuppressMessage("Usage", "VSTHRD001:Avoid legacy thread switching APIs")]

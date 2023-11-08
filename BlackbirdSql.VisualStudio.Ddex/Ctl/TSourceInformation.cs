@@ -2,24 +2,15 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+using FirebirdSql.Data.Services;
+using System.Data.Common;
 using System.Data;
-using System.IO;
-
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Extensions;
-using BlackbirdSql.Core.Model;
-using BlackbirdSql.VisualStudio.Ddex.Properties;
-
-using FirebirdSql.Data.FirebirdClient;
-
+using System.Text;
+using System;
+using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
-
+using BlackbirdSql.Core;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 
@@ -30,16 +21,8 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 /// Implementation of <see cref="IVsDataSourceInformation"/> interface
 /// </summary>
 // =========================================================================================================
-public class TSourceInformation : AbstractSourceInformation
+public class TSourceInformation : AdoDotNetSourceInformation
 {
-	IVsDataConnection _InstanceSite = null;
-
-	/// <summary>
-	/// Per site SourceInformation instances xref.
-	/// </summary>
-	protected static Dictionary<IVsDataConnection, object> _Instances = null;
-
-
 
 
 
@@ -48,9 +31,7 @@ public class TSourceInformation : AbstractSourceInformation
 	// ---------------------------------------------------------------------------------
 
 
-
 	#endregion Property Accessors
-
 
 
 
@@ -62,89 +43,15 @@ public class TSourceInformation : AbstractSourceInformation
 
 	public TSourceInformation() : base()
 	{
-		Tracer.Trace(GetType(), "TSourceInformation.TSourceInformation");
-		AddExtendedProperties();
+		AddExtendProperties();
 	}
 
 	public TSourceInformation(IVsDataConnection connection) : base(connection)
 	{
-		Tracer.Trace(GetType(), "TSourceInformation.TSourceInformation(IVsDataConnection)");
-
-		if (_Instances != null && _Instances.ContainsKey(connection))
-		{
-			DuplicateNameException ex = new(Resources.ExceptionDuplicatingSiteInformation);
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-
-		Instance(connection, this);
-
-		AddExtendedProperties();
+		AddExtendProperties();
 	}
 
 
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Returns an instance of the IVsDataSourceInformation for a site or creates one if it
-	/// doesn't exist.
-	/// </summary>
-	/// <param name="site">
-	/// The Site uniquely and distinctly associated with the IVsDataSourceInformation
-	/// instance.
-	/// </param>
-	/// <returns>The distinctly unique IVsDataSourceInformation instance associated
-	/// with the Site.</returns>
-	// ---------------------------------------------------------------------------------
-	internal static TSourceInformation Instance(IVsDataConnection site)
-	{
-		return Instance(site, null);
-	}
-
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Returns an instance of the IVsDataSourceInformation for a site or creates one if it
-	/// doesn't exist.
-	/// </summary>
-	/// <param name="site">
-	/// The Site uniquely and distinctly associated with the IVsDataSourceInformation
-	/// instance.
-	/// </param>
-	/// <returns>The distinctly unique IVsDataSourceInformation instance associated
-	/// with the Site.</returns>
-	// ---------------------------------------------------------------------------------
-	protected static TSourceInformation Instance(IVsDataConnection site, TSourceInformation instance)
-	{
-		if (site == null)
-		{
-			ArgumentNullException ex = new ArgumentNullException(Resources.ExceptionAddingNullSite);
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		if (_Instances != null)
-		{
-			if (instance == null && _Instances.TryGetValue(site, out object instanceObject))
-			{
-				return (TSourceInformation)instanceObject;
-			}
-		}
-
-		if (instance == null)
-			return new(site);
-
-		_Instances ??= new();
-
-		_Instances.Add(site, instance);
-		instance._InstanceSite = site;
-
-		return instance;
-	}
 
 
 	#endregion Constructors / Destructors
@@ -163,12 +70,13 @@ public class TSourceInformation : AbstractSourceInformation
 	/// Adds additional properties applicable to this data source type
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private void AddExtendedProperties()
+	private void AddExtendProperties()
 	{
 		AddProperty(CatalogSupported, false);
 		AddProperty(CatalogSupportedInDml, false);
-		AddProperty(DefaultSchema, null);
+		AddProperty(DefaultSchema);
 		AddProperty(DefaultCatalog, null);
+		AddProperty(DefaultSchema, null);
 		AddProperty(IdentifierOpenQuote, "\"");
 		AddProperty(IdentifierCloseQuote, "\"");
 		AddProperty(ParameterPrefix, "@");
@@ -176,14 +84,16 @@ public class TSourceInformation : AbstractSourceInformation
 		AddProperty(ProcedureSupported, true);
 		AddProperty(QuotedIdentifierPartsCaseSensitive, true);
 		AddProperty(SchemaSupported, false);
-		AddProperty(SchemaSupportedInDml, true);
+		AddProperty(SchemaSupportedInDml, false);
 		AddProperty(ServerSeparator, ".");
 		AddProperty(SupportsAnsi92Sql, true);
+		AddProperty(SupportsQuotedIdentifierParts, true);
 		AddProperty(SupportsCommandTimeout, false);
 		AddProperty(SupportsQuotedIdentifierParts, true);
 		AddProperty("DesktopDataSource", true);
 		AddProperty("LocalDatabase", true);
 	}
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -195,82 +105,26 @@ public class TSourceInformation : AbstractSourceInformation
 	// ---------------------------------------------------------------------------------
 	protected override object RetrieveValue(string propertyName)
 	{
-
-		object adoValue;
-		object retval;
-
-		LinkageParser parser;
-
-		PropertyDescriptor descriptor;
-		IVsDataConnectionProperties connectionProperties;
+		object retval = null;
 
 
 		try
 		{
 			switch (propertyName)
 			{
-				case ModelConstants.C_KeySIPortNumber:
-					descriptor = FindColumnPropertyDescriptor(propertyName);
-					connectionProperties = GetConnectionProperties();
-					if ((retval = descriptor.GetValueX(connectionProperties)) == null)
-						retval = CoreConstants.C_DefaultPortNumber;
+				case DataSourceVersion:
+					retval = "Firebird " + FbServerProperties.ParseServerVersion(Connection.ServerVersion).ToString();
 					break;
-				case ModelConstants.C_KeySIServerType:
-					retval = CoreConstants.C_DefaultServerType;
-					descriptor = FindColumnPropertyDescriptor(propertyName);
-					connectionProperties = GetConnectionProperties();
-					if ((retval = descriptor.GetValueX(connectionProperties)) == null)
-						retval = CoreConstants.C_DefaultServerType;
-					break;
-				case ModelConstants.C_KeySIUserId:
-					descriptor = FindColumnPropertyDescriptor(propertyName);
-					connectionProperties = GetConnectionProperties();
-					retval = descriptor.GetValueX(connectionProperties);
-					break;
-				case ModelConstants.C_KeySIDataset:
-					adoValue = GetAdoPropertyValue(ModelConstants.C_KeySICatalog);
-					if (adoValue == null)
-						retval = "";
-					else
-						retval = Path.GetFileNameWithoutExtension(adoValue as string);
-					break;
-				case ModelConstants.C_KeySIMemoryUsage:
-					retval = -1;
-					if ((Connection.State & ConnectionState.Open) != 0)
-					{
-						parser = LinkageParser.GetInstance(Site);
-						if (parser != null)
-							Tracer.Trace(GetType(), "RetrieveValue pausing value: {0}", propertyName);
-						int syncCardinal = parser != null ? parser.SyncEnter() : 0;
-						FbDatabaseInfo info = new((FbConnection)Connection);
-						retval = info.GetCurrentMemory();
-						parser?.SyncExit(syncCardinal);
-					}
-					break;
-				case ModelConstants.C_KeySIActiveUsers:
-					retval = ModelConstants.C_DefaultSIActiveUsers;
-					if ((Connection.State & ConnectionState.Open) != 0)
-					{
-						parser = LinkageParser.GetInstance(Site);
-						if (parser != null)
-							Tracer.Trace(GetType(), "RetrieveValue pausing value: {0}", propertyName);
-						int syncCardinal = parser != null ? parser.SyncEnter() : 0;
-						FbDatabaseInfo info = new((FbConnection)Connection);
-						retval = info.GetActiveUsers().Count;
-						parser?.SyncExit(syncCardinal);
-					}
-					break;
+
 				default:
-					retval = null;
 					break;
 			}
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"PropertyName: '{propertyName}'");
+			Diag.Dug(ex);
 			return null;
 		}
-
 
 		retval ??= base.RetrieveValue(propertyName);
 
@@ -287,30 +141,6 @@ public class TSourceInformation : AbstractSourceInformation
 	// =========================================================================================================
 	#region Event handlers - TSourceInformation
 	// =========================================================================================================
-
-
-
-
-
-	protected override void OnSiteChanged(EventArgs e)
-	{
-		if (Site == null || Site != _InstanceSite)
-		{
-			if (_InstanceSite != null)
-			{
-				_Instances.Remove(_InstanceSite);
-				_InstanceSite = null;
-			}
-
-			if (Site != null)
-			{
-				Instance(Site, this);
-			}
-		}
-
-		base.OnSiteChanged(e);
-
-	}
 
 
 	#endregion Event handlers

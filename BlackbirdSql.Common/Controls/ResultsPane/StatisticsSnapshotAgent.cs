@@ -80,8 +80,8 @@ public class StatisticsSnapshotAgent
 	// TimeStatistics
 	protected DateTime ExecutionStartTime => _ExecutionStartTime;
 	protected DateTime ExecutionEndTime => _ExecutionEndTime;
-	public long ExecutionStartTimeEpoch => _ExecutionStartTime.ToUnixMilliseconds();
-	public long ExecutionEndTimeEpoch => _ExecutionEndTime.ToUnixMilliseconds();
+	public long ExecutionStartTimeEpoch => _ExecutionStartTime.UnixMilliseconds();
+	public long ExecutionEndTimeEpoch => _ExecutionEndTime.UnixMilliseconds();
 	public long ExecutionTimeTicks => (_ExecutionEndTime - _ExecutionStartTime).Ticks;
 
 	// ServerStatistics

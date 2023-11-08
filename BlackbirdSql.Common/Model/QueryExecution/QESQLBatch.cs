@@ -28,6 +28,7 @@ using System.Data.Common;
 using BlackbirdSql.Common.Ctl.Exceptions;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Model;
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 
@@ -41,7 +42,7 @@ public class QESQLBatch : IDisposable
 	}
 	*/
 
-	protected enum BatchState
+	protected enum EnBatchState
 	{
 		Initial,
 		Executing,
@@ -58,7 +59,7 @@ public class QESQLBatch : IDisposable
 
 	protected string _SqlScript = "";
 
-	protected int _ExecTimeout = 30;
+	protected int _ExecTimeout = ModelConstants.C_DefaultCommandTimeout;
 
 	protected EnQESQLBatchSpecialAction _SpecialActions;
 
@@ -66,7 +67,7 @@ public class QESQLBatch : IDisposable
 
 	protected QEResultSet _ActiveResultSet;
 
-	protected BatchState _State;
+	protected EnBatchState _State;
 
 	protected IBTextSpan _TextSpan;
 
@@ -84,7 +85,7 @@ public class QESQLBatch : IDisposable
 
 	public IDbCommand Command => _Command;
 
-	private ConnectionStrategy ConnectionStrategy => QryMgr.ConnectionStrategy;
+	private AbstractConnectionStrategy ConnectionStrategy => QryMgr.ConnectionStrategy;
 
 	private QueryManager QryMgr { get; set; }
 
@@ -243,7 +244,7 @@ public class QESQLBatch : IDisposable
 		Tracer.Trace(GetType(), "QESQLBatch.Reset", "", null);
 		lock (this)
 		{
-			_State = BatchState.Initial;
+			_State = EnBatchState.Initial;
 			_Command = null;
 			_TextSpan = null;
 			_RowsAffected = 0L;
@@ -253,7 +254,7 @@ public class QESQLBatch : IDisposable
 
 	public EnScriptExecutionResult Execute(IDbConnection conn, EnQESQLBatchSpecialAction specialActions)
 	{
-		Tracer.Trace(GetType(), "QESQLBatch.Execute", " ExecutionOptions.WithEstimatedExecutionPlan: " + QryMgr.ExecutionOptions.WithEstimatedExecutionPlan);
+		Tracer.Trace(GetType(), "QESQLBatch.Execute", " ExecutionOptions.WithEstimatedExecutionPlan: " + QryMgr.LiveSettings.WithEstimatedExecutionPlan);
 		lock (this)
 		{
 			if (_Command != null)
@@ -277,26 +278,26 @@ public class QESQLBatch : IDisposable
 		Tracer.Trace(GetType(), "QESQLBatch.Cancel", "", null);
 		lock (this)
 		{
-			if (_State == BatchState.Cancelling)
+			if (_State == EnBatchState.Cancelling)
 			{
 				return;
 			}
 
-			_State = BatchState.Cancelling;
+			_State = EnBatchState.Cancelling;
 			if (_ActiveResultSet != null)
 			{
 				CancellingEvent?.Invoke(this, new EventArgs());
 
-				Tracer.Trace(GetType(), Tracer.Level.Information, "QESQLBatch.Cancel: calling InitiateStopRetrievingData", "", null);
+				Tracer.Trace(GetType(), Tracer.EnLevel.Information, "QESQLBatch.Cancel: calling InitiateStopRetrievingData", "", null);
 				_ActiveResultSet.InitiateStopRetrievingData();
-				Tracer.Trace(GetType(), Tracer.Level.Information, "QESQLBatch.Cancel: InitiateStopRetrievingData returned", "", null);
+				Tracer.Trace(GetType(), Tracer.EnLevel.Information, "QESQLBatch.Cancel: InitiateStopRetrievingData returned", "", null);
 				if (_Command != null)
 				{
 					try
 					{
-						Tracer.Trace(GetType(), Tracer.Level.Information, "QESQLBatch.Cancel: calling m_command.Cancel", "", null);
+						Tracer.Trace(GetType(), Tracer.EnLevel.Information, "QESQLBatch.Cancel: calling m_command.Cancel", "", null);
 						_Command.Cancel();
-						Tracer.Trace(GetType(), Tracer.Level.Information, "QESQLBatch.Cancel: m_command.Cancel returned", "", null);
+						Tracer.Trace(GetType(), Tracer.EnLevel.Information, "QESQLBatch.Cancel: m_command.Cancel returned", "", null);
 					}
 					catch (Exception e)
 					{
@@ -306,7 +307,7 @@ public class QESQLBatch : IDisposable
 			}
 			else if (_Command != null)
 			{
-				Tracer.Trace(GetType(), Tracer.Level.Information, "QESQLBatch.Cancel: executing Cancel command", "", null);
+				Tracer.Trace(GetType(), Tracer.EnLevel.Information, "QESQLBatch.Cancel: executing Cancel command", "", null);
 				try
 				{
 					_Command.Cancel();
@@ -316,7 +317,7 @@ public class QESQLBatch : IDisposable
 					Tracer.LogExCatch(GetType(), e2);
 				}
 
-				Tracer.Trace(GetType(), Tracer.Level.Information, "QESQLBatch.Cancel: Cancel command returned", "", null);
+				Tracer.Trace(GetType(), Tracer.EnLevel.Information, "QESQLBatch.Cancel: Cancel command returned", "", null);
 			}
 		}
 	}
@@ -531,7 +532,7 @@ public class QESQLBatch : IDisposable
 		}
 
 		Tracer.Trace(GetType(), "QESQLBatch.ProcessResultSetForExecutionPlan", "", null);
-		Tracer.Trace(GetType(), Tracer.Level.Information, "ProcessResultSetForExecutionPlan", "firing SpecialAction event for showplan", null);
+		Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ProcessResultSetForExecutionPlan", "firing SpecialAction event for showplan", null);
 		QESQLBatchSpecialActionEventArgs args = new QESQLBatchSpecialActionEventArgs(batchSpecialAction, this, dataReader);
 		try
 		{
@@ -544,7 +545,7 @@ public class QESQLBatch : IDisposable
 			SpecialActionEvent(this, args);
 			lock (this)
 			{
-				if (_State == BatchState.Cancelling)
+				if (_State == EnBatchState.Cancelling)
 				{
 					return EnScriptExecutionResult.Cancel;
 				}
@@ -595,10 +596,10 @@ public class QESQLBatch : IDisposable
 
 		try
 		{
-			Tracer.Trace(GetType(), Tracer.Level.Verbose, "ProcessResultSet", "result set has been created!");
+			Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ProcessResultSet", "result set has been created!");
 			EnScriptExecutionResult result = EnScriptExecutionResult.Success;
 			QESQLBatchNewResultSetEventArgs args = new QESQLBatchNewResultSetEventArgs(_ActiveResultSet);
-			Tracer.Trace(GetType(), Tracer.Level.Information, "ProcessResultSet", "firing the event!");
+			Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ProcessResultSet", "firing the event!");
 
 			// The data reader loads into a mem or disk storage dataset here then notifies
 			// the consumer result set for loading into a grid or text page.
@@ -609,10 +610,10 @@ public class QESQLBatch : IDisposable
 
 			_RowsAffected += _ActiveResultSet.TotalNumberOfRows;
 
-			if (_State != BatchState.Initial && _State != BatchState.Cancelling)
+			if (_State != EnBatchState.Initial && _State != EnBatchState.Cancelling)
 				DataLoadedEvent?.Invoke(this, new(_Command, _RowsAffected, dataReader.RecordsAffected, DateTime.Now, false, false));
 
-			if (_State != BatchState.Cancelling)
+			if (_State != EnBatchState.Cancelling)
 				return result;
 
 			return EnScriptExecutionResult.Cancel;
@@ -636,9 +637,9 @@ public class QESQLBatch : IDisposable
 		Tracer.Trace(GetType(), "QESQLBatch.ExecuteInternal", "conn.State = {0}", conn.State);
 		lock (this)
 		{
-			if (_State == BatchState.Cancelling)
+			if (_State == EnBatchState.Cancelling)
 			{
-				_State = BatchState.Initial;
+				_State = EnBatchState.Initial;
 				return EnScriptExecutionResult.Cancel;
 			}
 		}
@@ -659,7 +660,7 @@ public class QESQLBatch : IDisposable
 			{
 				lock (this)
 				{
-					_State = BatchState.Initial;
+					_State = EnBatchState.Initial;
 					return EnScriptExecutionResult.Cancel;
 				}
 			}
@@ -678,7 +679,7 @@ public class QESQLBatch : IDisposable
 		}
 
 		dbCommand.CommandTimeout = _ExecTimeout;
-		IBatchExecutionHandler batchExecutionHandler = ConnectionStrategy.CreateBatchExecutionHandler();
+		IBBatchExecutionHandler batchExecutionHandler = ConnectionStrategy.CreateBatchExecutionHandler();
 		batchExecutionHandler?.Register(conn, dbCommand, this);
 
 
@@ -686,7 +687,7 @@ public class QESQLBatch : IDisposable
 
 		lock (this)
 		{
-			_State = BatchState.Executing;
+			_State = EnBatchState.Executing;
 			_Command = dbCommand;
 			dbCommand = null;
 		}
@@ -699,23 +700,23 @@ public class QESQLBatch : IDisposable
 
 			if (_NoResultsExpected && !expectEstimatedPlan)
 			{
-				Tracer.Trace(GetType(), Tracer.Level.Verbose, "ExecuteInternal", "calling ExecuteNonQuery!");
+				Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteInternal", "calling ExecuteNonQuery!");
 				int i = _Command.ExecuteNonQuery();
 
 				QESQLStatementCompletedEventArgs args = new(i, false, false);
 				OnSqlStatementCompleted(_Command, args);
 
-				Tracer.Trace(GetType(), Tracer.Level.Information, "ExecuteInternal", " ExecuteNonQuery returned!");
+				Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ExecuteInternal", " ExecuteNonQuery returned!");
 				lock (this)
 				{
-					if (_State == BatchState.Cancelling)
+					if (_State == EnBatchState.Cancelling)
 					{
 						result = EnScriptExecutionResult.Cancel;
 					}
 					else
 					{
 						result = EnScriptExecutionResult.Success;
-						_State = BatchState.Executed;
+						_State = EnBatchState.Executed;
 					}
 				}
 			}
@@ -725,7 +726,7 @@ public class QESQLBatch : IDisposable
 				{
 					// We can't use the SET db command to configure the command output for ExecuteReader so we
 					// get the the plan using GetCommandPlan().
-					Tracer.Trace(GetType(), Tracer.Level.Verbose, "ExecuteInternal", ": creating reader from GetCommandPlan: " + _SpecialActions);
+					Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteInternal", ": creating reader from GetCommandPlan: " + _SpecialActions);
 
 					DataTable table = new ();
 					table.Columns.Add(LibraryData.C_YukonXmlExecutionPlanColumn, typeof(string));
@@ -743,7 +744,7 @@ public class QESQLBatch : IDisposable
 				{
 					// The SELECT @@showplan command doesn't exist. We load the actual plan from the last command using GetCommandPlan() and
 					// do a hack by placing the result in the query script after "SELECT @@showplan:" instead.
-					Tracer.Trace(GetType(), Tracer.Level.Verbose, "ExecuteInternal", ": creating reader plan data from script: " + _SpecialActions);
+					Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteInternal", ": creating reader plan data from script: " + _SpecialActions);
 					DataTable table = new();
 					table.Columns.Add(LibraryData.C_YukonXmlExecutionPlanColumn, typeof(string));
 					DataRow row = table.NewRow();
@@ -755,7 +756,7 @@ public class QESQLBatch : IDisposable
 				}
 				else
 				{
-					Tracer.Trace(GetType(), Tracer.Level.Verbose, "ExecuteInternal", ": calling ExecuteReader: " + _SpecialActions);
+					Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteInternal", ": calling ExecuteReader: " + _SpecialActions);
 					dataReader = _Command.ExecuteReader(CommandBehavior.SequentialAccess);
 
 					OnSqlStatementCompleted(_Command, new(dataReader == null ? 0 : dataReader.RecordsAffected, false, false));
@@ -764,16 +765,16 @@ public class QESQLBatch : IDisposable
 
 
 
-				Tracer.Trace(GetType(), Tracer.Level.Information, "ExecuteInternal", ": got the reader!");
+				Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ExecuteInternal", ": got the reader!");
 				lock (this)
 				{
-					if (_State == BatchState.Cancelling)
+					if (_State == EnBatchState.Cancelling)
 					{
 						result = EnScriptExecutionResult.Cancel;
 					}
 					else
 					{
-						_State = BatchState.ProcessingResults;
+						_State = EnBatchState.ProcessingResults;
 					}
 				}
 
@@ -796,23 +797,23 @@ public class QESQLBatch : IDisposable
 					{
 						if (dataReader.FieldCount <= 0)
 						{
-							Tracer.Trace(GetType(), Tracer.Level.Warning, "ExecuteInternal", ": result set is empty");
+							Tracer.Trace(GetType(), Tracer.EnLevel.Warning, "ExecuteInternal", ": result set is empty");
 							hasMoreRows = dataReader.NextResult();
 							continue;
 						}
 
-						Tracer.Trace(GetType(), Tracer.Level.Information, "ExecuteInternal", ": processing result set");
+						Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ExecuteInternal", ": processing result set");
 
 						processingResult = ProcessResultSet(dataReader, script);
 
 						if (processingResult != EnScriptExecutionResult.Success)
 						{
-							Tracer.Trace(GetType(), Tracer.Level.Verbose, "ExecuteInternal", ": something wrong while processing the result set: {0}", processingResult);
+							Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteInternal", ": something wrong while processing the result set: {0}", processingResult);
 							result = processingResult;
 							break;
 						}
 
-						Tracer.Trace(GetType(), Tracer.Level.Verbose, "ExecuteInternal", ": successfully processed the result set");
+						Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteInternal", ": successfully processed the result set");
 						FinishedResultSetEvent?.Invoke(this, new EventArgs());
 
 						hasMoreRows = dataReader.NextResult();
@@ -821,7 +822,7 @@ public class QESQLBatch : IDisposable
 
 					if (ContainsErrors)
 					{
-						Tracer.Trace(GetType(), Tracer.Level.Warning, "ExecuteInternal", ": successfull processed result set, but there were errors shown to the user");
+						Tracer.Trace(GetType(), Tracer.EnLevel.Warning, "ExecuteInternal", ": successfull processed result set, but there were errors shown to the user");
 						result = EnScriptExecutionResult.Failure;
 					}
 
@@ -829,13 +830,13 @@ public class QESQLBatch : IDisposable
 					{
 						lock (this)
 						{
-							_State = BatchState.Executed;
+							_State = EnBatchState.Executed;
 						}
 					}
 				}
 				else
 				{
-					Tracer.Trace(GetType(), Tracer.Level.Warning, "ExecuteInternal", ": no NewResultSet handler was specified or Cancel was received!");
+					Tracer.Trace(GetType(), Tracer.EnLevel.Warning, "ExecuteInternal", ": no NewResultSet handler was specified or Cancel was received!");
 				}
 			}
 		}
@@ -863,7 +864,7 @@ public class QESQLBatch : IDisposable
 			Tracer.LogExCatch(GetType(), exf);
 			lock (this)
 			{
-				result = _State != BatchState.Cancelling ? EnScriptExecutionResult.Failure : EnScriptExecutionResult.Cancel;
+				result = _State != EnBatchState.Cancelling ? EnScriptExecutionResult.Failure : EnScriptExecutionResult.Cancel;
 			}
 
 			if (result != EnScriptExecutionResult.Cancel)
@@ -876,7 +877,7 @@ public class QESQLBatch : IDisposable
 			Tracer.LogExCatch(GetType(), ex3);
 			lock (this)
 			{
-				result = _State != BatchState.Cancelling ? EnScriptExecutionResult.Failure : EnScriptExecutionResult.Cancel;
+				result = _State != EnBatchState.Cancelling ? EnScriptExecutionResult.Failure : EnScriptExecutionResult.Cancel;
 			}
 
 			if (result != EnScriptExecutionResult.Cancel)
@@ -895,7 +896,7 @@ public class QESQLBatch : IDisposable
 		{
 			batchExecutionHandler?.UnRegister(conn, _Command, this);
 			conn.GetType().ToString().EndsWith(C_PlanConnectionType, StringComparison.Ordinal);
-			Tracer.Trace(GetType(), Tracer.Level.Information, "ExecuteInternal", "Closing the data reader");
+			Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ExecuteInternal", "Closing the data reader");
 			if (dataReader != null)
 			{
 				try
@@ -916,18 +917,18 @@ public class QESQLBatch : IDisposable
 					Tracer.LogExCatch(GetType(), e4);
 				}
 
-				Tracer.Trace(GetType(), Tracer.Level.Verbose, "ExecuteInternal", "data reader is closed");
+				Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteInternal", "data reader is closed");
 			}
 
 			lock (this)
 			{
-				_State = BatchState.Initial;
+				_State = EnBatchState.Initial;
 				_Command.Dispose();
 				_Command = null;
 			}
 		}
 
-		Tracer.Trace(GetType(), Tracer.Level.Information, "ExecuteInternal", "returning {0}", result);
+		Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ExecuteInternal", "returning {0}", result);
 		return result;
 	}
 }

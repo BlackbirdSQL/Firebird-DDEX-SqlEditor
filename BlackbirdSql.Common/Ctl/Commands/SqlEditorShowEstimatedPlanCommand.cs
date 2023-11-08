@@ -50,7 +50,7 @@ public class SqlEditorShowEstimatedPlanCommand : AbstractSqlEditorCommand
 			{
 				try
 				{
-					Tracer.Trace(GetType(), Tracer.Level.Verbose, "HandleExec", "calling ISqlEditorWindowPane.HandleExec");
+					Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "HandleExec", "calling ISqlEditorWindowPane.HandleExec");
 					auxiliaryDocDataForEditor.EstimatedExecutionPlanEnabled = true;
 					EditorWindow.ExecuteQuery();
 				}

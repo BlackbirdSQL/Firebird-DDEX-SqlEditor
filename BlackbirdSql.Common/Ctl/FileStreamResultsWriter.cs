@@ -15,7 +15,7 @@ using BlackbirdSql.Common.Ctl.Interfaces;
 namespace BlackbirdSql.Common.Ctl;
 
 
-public sealed class FileStreamResultsWriter : ResultsWriter
+public sealed class FileStreamResultsWriter : AbstractResultsWriter
 {
 	private StreamWriter writer;
 

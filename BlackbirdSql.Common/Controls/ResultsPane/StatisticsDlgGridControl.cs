@@ -34,7 +34,7 @@ public class StatisticsDlgGridControl : DlgGridControl
 		BackColor = bkColor;
 	}
 
-	protected override void GetCellGDIObjects(GridColumn gridColumn, long nRow, int nCol, ref SolidBrush bkBrush, ref SolidBrush textBrush)
+	protected override void GetCellGDIObjects(AbstractGridColumn gridColumn, long nRow, int nCol, ref SolidBrush bkBrush, ref SolidBrush textBrush)
 	{
 		base.GetCellGDIObjects(gridColumn, nRow, nCol, ref bkBrush, ref textBrush);
 		bkBrush = _bkBrush;

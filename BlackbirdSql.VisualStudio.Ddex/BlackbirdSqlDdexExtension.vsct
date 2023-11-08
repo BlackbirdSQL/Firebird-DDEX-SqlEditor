@@ -1,35 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-	<!--  This is the file that defines the actual layout and type of the commands.
-        It is divided in different sections (e.g. command definition, command
-        placement, ...), with each defining a specific set of properties.
-        See the comment before each section for more details about how to
-        use it. -->
 
-	<!--  The VSCT compiler (the tool that translates this file into the binary
-        format that VisualStudio will consume) has the ability to run a preprocessor
-        on the vsct file; this preprocessor is (usually) the C++ preprocessor, so
-        it is possible to define includes and macros with the same syntax used
-        in C++ files. Using this ability of the compiler here, we include some files
-        defining some of the constants that we will use inside the file. -->
-
-	<!--This is the file that defines the IDs for all the commands exposed by VisualStudio. -->
 	<Extern href="stdidcmd.h"/>
-
-	<!--This header contains the command ids for the menus provided by the shell. -->
 	<Extern href="vsshlids.h"/>
 
-	<!--The Commands section is where commands, menus, and menu groups are defined.
-      This section uses a Guid to identify the package that provides the command defined inside it. -->
+
+
+
 	<Commands package="PackageGuid">
-		<!-- Inside this section we have different sub-sections: one for the menus, another
-    for the menu groups, one for the buttons (the actual commands), one for the combos
-    and the last one for the bitmaps used. Each element is identified by a command id that
-    is a unique pair of guid and numeric identifier; the guid part of the identifier is usually
-    called "command set" and is used to group different command inside a logically related
-    group; your package should define its own command set in order to avoid collisions
-    with command ids defined by other packages. -->
+
 		<Menus>
 			<Menu guid="CommandSetGuid" id="MenuIdScriptToolbar" type="Toolbar">
 				<CommandFlag>DefaultDocked</CommandFlag>
@@ -56,6 +36,8 @@
 			</Menu>
 		</Menus>
 
+
+
 		<Combos>
 			<Combo guid="CommandSetGuid" id="CmbIdSqlDatabases" priority="0x0100" type="DropDownCombo" defaultWidth="240" idCommandList="CmbIdSqlDatabasesGetList">
 				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup"/>
@@ -72,11 +54,14 @@
 			</Combo>
 		</Combos>
 
-		<!-- In this section you can define new menu groups. A menu group is a container for
-         other menus or buttons (commands); from a visual point of view you can see the
-         group as the part of a menu contained between two lines. The parent of a group
-         must be a menu. -->
+
+
 		<Groups>
+			<!-- Edit window context menu -->
+			<Group guid="CommandSetGuid" id="MenuIdEditorContextGroup" priority="0x0600">
+				<!-- <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_WINDOW" /> -->
+			</Group>
+
 			<!-- Explorer scope -->
 			<Group guid="CommandSetGuid" id="MenuIdSeRootGroup" priority="0x0600">
 				<!--<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />-->
@@ -105,19 +90,15 @@
 			<Group guid="CommandSetGuid" id="CtlrIdResultsToGroup" priority="0x0220">
 				<Parent guid="CommandSetGuid" id="MenuIdResultsToGroup" />
 			</Group>
+
+			<Group guid="CommandSetGuid" id="MenuIdReusableGroup" priority="0x0600">
+				<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
+			</Group>
 		</Groups>
 
-		<!--Buttons section. -->
-		<!--This section defines the elements the user can interact with, like a menu command or a button
-        or combo box in a toolbar. -->
+
+
 		<Buttons>
-			<!--To define a menu group you have to specify its ID, the parent menu and its display priority.
-          The command is visible and enabled by default. If you need to change the visibility, status, etc, you can use
-          the CommandFlag node.
-          You can add more than one CommandFlag node e.g.:
-              <CommandFlag>DefaultInvisible</CommandFlag>
-              <CommandFlag>DynamicVisibility</CommandFlag>
-          If you do not want an image next to your command, remove the Icon node /> -->
 
 			<!-- MenuIdScriptToolbarGroup -->
 			<Button guid="CommandSetGuid" id="CmdIdExecuteQuery" priority="0x0000" type="Button">
@@ -217,6 +198,31 @@
 				</Strings>
 			</Button>
 
+
+			
+			<!-- MenuIdEditorContextGroup -->
+			<Button guid="CommandSetGuid" id="CmdIdToggleIntellisense" priority="0x0040" type="Button">
+				<!-- <Parent guid="CommandSetGuid" id="MenuIdEditorContextGroup" /> -->
+				<!-- <CommandFlag>TextChanges</CommandFlag> -->
+				<Icon guid="ImagesGuid" id="ImgToggleIntellisense" />
+				<CommandFlag>TextChanges</CommandFlag>
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<Strings>
+					<ButtonText>Intellisense Enabled</ButtonText>
+				</Strings>
+			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdQuerySettings" priority="0x0040" type="Button">
+				<CommandFlag>TextChanges</CommandFlag>
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<Strings>
+					<ButtonText>Execution Settings...</ButtonText>
+				</Strings>
+			</Button>
+
+
+
 			<!-- MenuIdSeNodeGroup -->
 			<Button guid="CommandSetGuid" id="CmdIdOpenTextObject" priority="0x0120" type="Button">
 				<Parent guid="CommandSetGuid" id="MenuIdSeNodeGroup" />
@@ -238,6 +244,13 @@
 				<Strings>
 					<ButtonText>Open Alter Expression</ButtonText>
 					<CommandName>CommandTextOpenAlterScript</CommandName>
+				</Strings>
+			</Button>
+
+			<Button guid="CommandSetGuid" id="CmdIdResetPageOptions" priority="0x0100" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdReusableGroup" />
+				<Strings>
+					<ButtonText>Reset</ButtonText>
 				</Strings>
 			</Button>
 
@@ -267,23 +280,41 @@
 				</Strings>
 			</Button>
 			-->
+
+
 		</Buttons>
 
 
 		<!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
 		<Bitmaps>
-			<!--  The bitmap id is defined in a way that is a little bit different from the others:
-            the declaration starts with a guid for the bitmap strip, then there is the resource id of the
-            bitmap strip containing the bitmaps and then there are the numeric ids of the elements used
-            inside a button definition. An important aspect of this declaration is that the element id
-            must be the actual index (1-based) of the bitmap inside the bitmap strip. -->
-			<Bitmap guid="ImagesGuid" href="Resources\ToolbarImageStrip.png" usedList="ImgExecuteQuery, ImgRunQuery, ImgCancelQuery, ImgConnect, ImgDisconnect, ImgNewQueryConnection, ImgResultsAsGrid, ImgResultsAsText, ImgDownGlygh, ImgOpenScript, ImgParseQuery, ImgToggleExecutionPlan, ImgShowEstimatedPlan, ImgToggleClientStatistics" />
+			<Bitmap guid="ImagesGuid" href="Resources\ToolbarImageStrip.png" usedList="ImgExecuteQuery, ImgRunQuery, ImgCancelQuery, ImgConnect, ImgDisconnect, ImgNewQueryConnection, ImgResultsAsGrid, ImgResultsAsText, ImgDownGlygh, ImgOpenScript, ImgParseQuery, ImgToggleExecutionPlan, ImgShowEstimatedPlan, ImgToggleClientStatistics, ImgToggleIntellisense" />
 		</Bitmaps>
 	</Commands>
+
+
+	<CommandPlacements>
+
+		<!-- Placement for group. The parent of a group is a menu, context menu or toolbar. 
+           The priority sets the position of the group compared to the priority of other existing groups in the menu.    
+		-->
+		<CommandPlacement guid="CommandSetGuid" id="MenuIdEditorContextGroup" priority="0xFFFF" >
+			<!-- The parent of the group will be the code window context menu -->
+			<Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN"/>
+		</CommandPlacement>
+
+		<!-- Placement for command. The parent of a command is always a group, never a menu, context menu or toolbar. -->
+		<CommandPlacement guid="CommandSetGuid" id="CmdIdToggleIntellisense" priority="0x0001" >
+			<Parent guid="CommandSetGuid" id="MenuIdEditorContextGroup"/>
+		</CommandPlacement>
+		<CommandPlacement guid="CommandSetGuid" id="CmdIdQuerySettings" priority="0x0002" >
+			<Parent guid="CommandSetGuid" id="MenuIdEditorContextGroup"/>
+		</CommandPlacement>
+	</CommandPlacements>
 
 	<Symbols>
 		<!-- This is the package guid. -->
 		<GuidSymbol name="PackageGuid" value="{0B100D64-7249-4208-8748-2810B511E90C}" />
+
 
 		<!-- Server Explorer guid -->
 		<GuidSymbol name="SeRootGuid" value="{74D21310-2AEE-11D1-8BFB-00A0C90F26F7}">
@@ -310,17 +341,30 @@
 
 		<!-- This is the guid used to group the menu commands together -->
 		<GuidSymbol name="CommandSetGuid" value="{13CD7876-FC84-4DDA-91BF-4CDBF893B134}">
-			<IDSymbol name="MenuIdToplevelMenu" value="0xC201" /> <!-- 49665 -->
-			<IDSymbol name="MenuIdScriptToolbar" value="0x5000" /> <!-- 20480 -->
-			<IDSymbol name="MenuIdOnlineToolbar" value="0x5001" /> <!-- 20481 -->
+			<IDSymbol name="MenuIdToplevelMenu" value="0xC201" />
+			<!-- 49665 -->
+			<IDSymbol name="MenuIdScriptToolbar" value="0x5000" />
+			<!-- 20480 -->
+			<IDSymbol name="MenuIdOnlineToolbar" value="0x5001" />
+			<!-- 20481 -->
 
-			<IDSymbol name="MenuIdScriptToolbarGroup" value="0x5100" /> <!-- 20736 -->
-			<IDSymbol name="MenuIdOnlineToolbarGroup" value="0x5101" /> <!-- 20737 -->
+			<IDSymbol name="MenuIdScriptToolbarGroup" value="0x5100" />
+			<!-- 20736 -->
+			<IDSymbol name="MenuIdOnlineToolbarGroup" value="0x5101" />
+			<!-- 20737 -->
+			<IDSymbol name="MenuIdReusableGroup" value="0x5102" />
+			<!-- 20738 -->
 
-			<IDSymbol name="MenuIdSeRootGroup" value="0x5200" /> <!-- 20992 -->
-			<IDSymbol name="MenuIdSeNodeGroup" value="0x5201" /> <!-- 20993 -->
-			<IDSymbol name="MenuIdSeStaticGroup" value="0x5202" /> <!-- 20994 -->
-			<IDSymbol name="MenuIdResultsToGroup" value="0x5203" /> <!-- 20995 -->
+			<IDSymbol name="MenuIdSeRootGroup" value="0x5200" />
+			<!-- 20992 -->
+			<IDSymbol name="MenuIdSeNodeGroup" value="0x5201" />
+			<!-- 20993 -->
+			<IDSymbol name="MenuIdSeStaticGroup" value="0x5202" />
+			<!-- 20994 -->
+			<IDSymbol name="MenuIdResultsToGroup" value="0x5203" />
+			<!-- 20995 -->
+			<IDSymbol name="MenuIdEditorContextGroup" value="0x5204" />
+			<!-- 20996 -->
 
 			<IDSymbol name="CtlrIdResultsToGroup" value="0x5300" />
 
@@ -334,41 +378,77 @@
 			<IDSymbol name="CmbIdSqlDatabases" value="0x5500" />
 			<IDSymbol name="CmbIdSqlDatabasesGetList" value="0x5501" />
 
-			<IDSymbol name="CmdIdConnect" value="0x0300" /> <!-- 768 -->
-			<IDSymbol name="CmdIdDisconnect" value="0x0301" /> <!-- 769 -->
-			<IDSymbol name="CmdIdCloneQuery" value="0x0302" /> <!-- 770 -->
-			<IDSymbol name="CmdIdExecuteQuery" value="0x0304" /> <!-- 772 -->
-			<IDSymbol name="CmdIdCancelQuery" value="0x0305" /> <!-- 773 -->
-			<IDSymbol name="CmdIdShowEstimatedPlan" value="0x0306" /> <!-- 774 -->
-			<IDSymbol name="CmdIdToggleIntellisense" value="0x0307" /> <!-- 775 -->
-			<IDSymbol name="CmdIdToggleSQLCMDMode" value="0x0308" /> <!-- 776 -->
-			<IDSymbol name="CmdIdToggleClientStatistics" value="0x0309" /> <!-- 777 -->
-			<IDSymbol name="CmdIdToggleExecutionPlan" value="0x030A" /> <!-- 778 -->
-			<IDSymbol name="CmdIdResultsAsText" value="0x030B" /> <!-- 779 -->
-			<IDSymbol name="CmdIdResultsAsGrid" value="0x030C" /> <!-- 780 -->
-			<IDSymbol name="CmdIdResultsAsFile" value="0x030D" /> <!-- 781 -->
-			<IDSymbol name="CmdIdQueryOptions" value="0x030E" /> <!-- 782 -->
-			<IDSymbol name="CmdIdToggleResultsPane" value="0x030F" /> <!-- 783 -->
-			<IDSymbol name="CmdIdNewQueryConnection" value="0x0310" /> <!-- 784 -->
-			<IDSymbol name="CmdIdSaveResultsAs" value="0x0311" /> <!-- 785 -->
-			<IDSymbol name="CmdIdExecutionPlanXml" value="0x0314" /> <!-- 788 -->
-			<IDSymbol name="CmdIdExecutionPlanMissingIndex" value="0x0315" /> <!-- 789 -->
-			<IDSymbol name="CmdIdPrintPreview" value="0x0316" /> <!-- 790 -->
-			<IDSymbol name="CmdIdExecutionPlanSave" value="0x0317" /> <!-- 791 -->
-			<IDSymbol name="CmdIdExecutionPlanZoomIn" value="0x0318" /> <!-- 792 -->
-			<IDSymbol name="CmdIdExecutionPlanZoomOut" value="0x0319" /> <!-- 793 -->
-			<IDSymbol name="CmdIdExecutionPlanZoomCustom" value="0x0320" /> <!-- 800 -->
-			<IDSymbol name="CmdIdExecutionPlanZoomToFit" value="0x0321" /> <!-- 801 -->
-			<IDSymbol name="CmdIdCopyWithHeaders" value="0x0322" /> <!-- 802 -->
-			<IDSymbol name="CmdIdCycleToNextTab" value="0x0323" /> <!-- 803 -->
-			<IDSymbol name="CmdIdCycleToPrevious" value="0x0324" /> <!-- 804 -->
-			<IDSymbol name="CmdIdParseQuery" value="0x0326" /> <!-- 806 -->
-			<IDSymbol name="CmdIdDisconnectAllQueries" value="0x0327" /> <!-- 807 -->
-			<IDSymbol name="CmdIdChangeConnection" value="0x0328" /> <!-- 808 -->
+			<IDSymbol name="CmdIdConnect" value="0x0300" />
+			<!-- 768 -->
+			<IDSymbol name="CmdIdDisconnect" value="0x0301" />
+			<!-- 769 -->
+			<IDSymbol name="CmdIdCloneQuery" value="0x0302" />
+			<!-- 770 -->
+			<IDSymbol name="CmdIdExecuteQuery" value="0x0304" />
+			<!-- 772 -->
+			<IDSymbol name="CmdIdCancelQuery" value="0x0305" />
+			<!-- 773 -->
+			<IDSymbol name="CmdIdShowEstimatedPlan" value="0x0306" />
+			<!-- 774 -->
+			<IDSymbol name="CmdIdToggleIntellisense" value="0x0307" />
+			<!-- 775 -->
+			<IDSymbol name="CmdIdToggleSQLCMDMode" value="0x0308" />
+			<!-- 776 -->
+			<IDSymbol name="CmdIdToggleClientStatistics" value="0x0309" />
+			<!-- 777 -->
+			<IDSymbol name="CmdIdToggleExecutionPlan" value="0x030A" />
+			<!-- 778 -->
+			<IDSymbol name="CmdIdResultsAsText" value="0x030B" />
+			<!-- 779 -->
+			<IDSymbol name="CmdIdResultsAsGrid" value="0x030C" />
+			<!-- 780 -->
+			<IDSymbol name="CmdIdResultsAsFile" value="0x030D" />
+			<!-- 781 -->
+			<IDSymbol name="CmdIdQuerySettings" value="0x030E" />
+			<!-- 782 -->
+			<IDSymbol name="CmdIdToggleResultsPane" value="0x030F" />
+			<!-- 783 -->
+			<IDSymbol name="CmdIdNewQueryConnection" value="0x0310" />
+			<!-- 784 -->
+			<IDSymbol name="CmdIdSaveResultsAs" value="0x0311" />
+			<!-- 785 -->
+			<IDSymbol name="CmdIdExecutionPlanXml" value="0x0314" />
+			<!-- 788 -->
+			<IDSymbol name="CmdIdExecutionPlanMissingIndex" value="0x0315" />
+			<!-- 789 -->
+			<IDSymbol name="CmdIdPrintPreview" value="0x0316" />
+			<!-- 790 -->
+			<IDSymbol name="CmdIdExecutionPlanSave" value="0x0317" />
+			<!-- 791 -->
+			<IDSymbol name="CmdIdExecutionPlanZoomIn" value="0x0318" />
+			<!-- 792 -->
+			<IDSymbol name="CmdIdExecutionPlanZoomOut" value="0x0319" />
+			<!-- 793 -->
+			<IDSymbol name="CmdIdExecutionPlanZoomCustom" value="0x0320" />
+			<!-- 800 -->
+			<IDSymbol name="CmdIdExecutionPlanZoomToFit" value="0x0321" />
+			<!-- 801 -->
+			<IDSymbol name="CmdIdCopyWithHeaders" value="0x0322" />
+			<!-- 802 -->
+			<IDSymbol name="CmdIdCycleToNextTab" value="0x0323" />
+			<!-- 803 -->
+			<IDSymbol name="CmdIdCycleToPrevious" value="0x0324" />
+			<!-- 804 -->
+			<IDSymbol name="CmdIdParseQuery" value="0x0326" />
+			<!-- 806 -->
+			<IDSymbol name="CmdIdDisconnectAllQueries" value="0x0327" />
+			<!-- 807 -->
+			<IDSymbol name="CmdIdChangeConnection" value="0x0328" />
+			<!-- 808 -->
 
-
-			<IDSymbol name="CmdIdOpenTextObject" value="0x0334" /> <!-- 820 -->
-			<IDSymbol name="CmdIdOpenAlterTextObject" value="0x0335" /> <!-- 821 -->
+			<IDSymbol name="CmdIdOpenTextObject" value="0x0334" />
+			<!-- 820 -->
+			<IDSymbol name="CmdIdOpenAlterTextObject" value="0x0335" />
+			<!-- 821 -->
+			<IDSymbol name="CmdIdDesignRetrieveData" value="0x0336" />
+			<!-- 822 -->
+			<IDSymbol name="CmdIdResetPageOptions" value="0x0337" />
+			<!-- 823 -->
 		</GuidSymbol>
 
 		<GuidSymbol name="ImagesGuid" value="{b9096f40-3268-4397-a5ec-8827624c447d}" >
@@ -386,6 +466,9 @@
 			<IDSymbol name="ImgToggleExecutionPlan" value="12" />
 			<IDSymbol name="ImgShowEstimatedPlan" value="13" />
 			<IDSymbol name="ImgToggleClientStatistics" value="14" />
+			<IDSymbol name="ImgToggleIntellisense" value="15" />
 		</GuidSymbol>
+
 	</Symbols>
+
 </CommandTable>

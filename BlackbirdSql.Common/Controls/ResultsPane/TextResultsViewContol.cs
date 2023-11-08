@@ -2,24 +2,23 @@
 // location unknown
 // Decompiled with ICSharpCode.Decompiler 7.1.0.6543
 #endregion
-
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 using BlackbirdSql.Core;
-using Microsoft.VisualStudio;
 
-// using Microsoft.VisualStudio.Data.Tools.Design.Core.Common.Win32;
-// using Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 
-
-
-// namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ResultPane
 namespace BlackbirdSql.Common.Controls.ResultsPane
 {
+	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+		Justification = "Class is UIThread compliant.")]
+
 	public class TextResultsViewContol : ShellTextViewControl, IOleCommandTarget, IVsTextViewEvents
 	{
 		private IOleCommandTarget nextTarget;
@@ -80,6 +79,13 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 			if (nextTarget != null)
 			{
+				if (!ThreadHelper.CheckAccess())
+				{
+					COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+					Diag.Dug(exc);
+					throw exc;
+				}
+
 				return nextTarget.QueryStatus(ref guidGroup, commandNumber, commands, oleText);
 			}
 
@@ -137,6 +143,13 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 			if (nextTarget != null)
 			{
+				if (!ThreadHelper.CheckAccess())
+				{
+					COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+					Diag.Dug(exc);
+					throw exc;
+				}
+
 				return nextTarget.Exec(ref guidGroup, commandId, nCmdExcept, vIn, vOut);
 			}
 

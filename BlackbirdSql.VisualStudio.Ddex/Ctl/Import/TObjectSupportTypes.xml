@@ -6,24 +6,46 @@
 		<!-- Root -->
 		<RootType>
 			<Properties>
-				<Property name="Server" type="System.String"/>
-				<Property name="Database" type="System.String"/>
-				<Property name="PortNumber" type="System.Int32"/>
-				<Property name="InitialCatalog" type="System.String"/>
-				<Property name="ServerType" type="System.Int32"/>
-				<!-- <Property name="ServerVersion" type="System.String"/> -->
-				<!-- <Property name="DataSourceProductVersion" type="System.String"/> -->
-				<Property name="UserId" type="System.String"/>
-				<Property name="Password" type="System.String"/>
-				<Property name="MemoryUsage" type="System.Int32"/>
-				<Property name="ActiveUsers" type="System.Int32"/>
+				<Property name="DatasetKey" type="System.String"/>
 			</Properties>
 			<Services>
 				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectSelectorRoot" >
-					<Parameters method="SelectObjects" />
+					<Parameters method="SelectObjects">
+						<Parameter value="Root" />
+					</Parameters>
 				</Service>
 			</Services>
 		</RootType>
+
+		<!-- Database -->
+		<Type name="Database">
+			<Identifier>
+				<Part name="DatasetKey" type="System.String" />
+			</Identifier>
+			<Properties>
+				<Property name="DatasetKey" isIdentifierPart="true" />
+				<Property name="DataSource" type="System.String" />
+				<Property name="Port" type="System.Int32"/>
+				<Property name="ServerType" type="System.Int32"/>
+				<Property name="Database" type="System.String" />
+				<Property name="DisplayMember" type="System.String" />
+				<Property name="UserID" type="System.String"/>
+				<Property name="Password" type="System.String"/>
+				<Property name="Role" type="System.String"/>
+				<Property name="Charset" type="System.String"/>
+				<Property name="Dialect" type="System.Int32"/>
+				<Property name="NoDatabaseTriggers" type="System.Boolean"/>
+				<Property name="MemoryUsage" type="System.String"/>
+				<Property name="ActiveUsers" type="System.Int32"/>
+			</Properties>
+			<Services>
+				<Service type="IVsDataObjectSelector" implementationType="BlackbirdSql.VisualStudio.Ddex.Ctl.TObjectSelectorRoot">
+					<Parameters method="SelectObjects">
+						<Parameter value="Database" />
+					</Parameters>
+				</Service>
+			</Services>
+		</Type>
 
 		<!-- Collation -->
 		<Type name="Collation" preferredOrdering="COLLATION_NAME">

@@ -4,27 +4,34 @@
 #endregion
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Controls.Enums;
+using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Controls.Interfaces;
+using BlackbirdSql.Common.Controls.QueryExecution;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
-using BlackbirdSql.Common.Controls.QueryExecution;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using BlackbirdSql.Core.Ctl.Diagnostics;
+
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
 
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
-public class GridResultsGrid : GridControl, IGridControl2, IGridControl, IStatusBarContributer
+public class GridResultsGrid : GridControl, IBGridControl2, IBGridControl, IBStatusBarContributer
 {
 	private class GridHyperlinkColumnWithLimit : GridHyperlinkColumn
 	{
@@ -104,7 +111,7 @@ public class GridResultsGrid : GridControl, IGridControl2, IGridControl, IStatus
 			}
 		}
 
-		public override void DrawCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IGridStorage storage, long nRowIndex)
+		public override void DrawCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex)
 		{
 			g.FillRectangle(bkBrush, rect);
 			AdjustCellRect(ref rect);
@@ -144,7 +151,7 @@ public class GridResultsGrid : GridControl, IGridControl2, IGridControl, IStatus
 			}
 		}
 
-		public override void PrintCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IGridStorage storage, long nRowIndex)
+		public override void PrintCell(Graphics g, Brush bkBrush, SolidBrush textBrush, Font textFont, Rectangle rect, IBGridStorage storage, long nRowIndex)
 		{
 			g.FillRectangle(bkBrush, rect.X - 1, rect.Y, rect.Width, rect.Height);
 			AdjustCellRect(ref rect);
@@ -181,7 +188,7 @@ public class GridResultsGrid : GridControl, IGridControl2, IGridControl, IStatus
 			}
 		}
 
-		protected override string GetCellStringToMeasure(long rowIndex, IGridStorage storage)
+		protected override string GetCellStringToMeasure(long rowIndex, IBGridStorage storage)
 		{
 			m_cellSB.Length = 0;
 			m_cellSB.Append(storage.GetCellDataAsString(rowIndex, ColumnIndex));
@@ -202,8 +209,15 @@ public class GridResultsGrid : GridControl, IGridControl2, IGridControl, IStatus
 
 		private Color GetVSHyperLinkColor()
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			if (Package.GetGlobalService(typeof(SVsUIShell)) is IVsUIShell2 vsUIShell
-				&& Native.Succeeded(vsUIShell.GetVSSysColorEx(-29, out var pdwRGBval)))
+				&& Native.Succeeded(vsUIShell.GetVSSysColorEx((int)__VSSYSCOLOREX.VSCOLOR_CONTROL_LINK_TEXT, out var pdwRGBval)))
 			{
 				return ColorTranslator.FromWin32((int)pdwRGBval);
 			}
@@ -271,7 +285,7 @@ public class GridResultsGrid : GridControl, IGridControl2, IGridControl, IStatus
 		set
 		{
 			_NumberOfCharsToShow = Math.Min(value, 43679);
-			foreach (GridColumn column in m_Columns)
+			foreach (AbstractGridColumn column in m_Columns)
 			{
 				(column as GridHyperlinkColumnWithLimit)?.SetMaxNumOfChars(_NumberOfCharsToShow);
 			}
@@ -321,7 +335,7 @@ public class GridResultsGrid : GridControl, IGridControl2, IGridControl, IStatus
 		Tracer.Trace(GetType(), "GridResultsGrid.GridResultsGrid", "", null);
 	}
 
-	void IStatusBarContributer.GetColumnAndRowNumber(out long rowNumber, out long columnNumber)
+	void IBStatusBarContributer.GetColumnAndRowNumber(out long rowNumber, out long columnNumber)
 	{
 		GetCurrentCell(out rowNumber, out var columnIndex);
 		columnNumber = columnIndex;
@@ -424,7 +438,7 @@ public class GridResultsGrid : GridControl, IGridControl2, IGridControl, IStatus
 		DisposeBrushes();
 	}
 
-	protected override void GetCellGDIObjects(GridColumn gridColumn, long nRow, int nCol, ref SolidBrush bkBrush, ref SolidBrush textBrush)
+	protected override void GetCellGDIObjects(AbstractGridColumn gridColumn, long nRow, int nCol, ref SolidBrush bkBrush, ref SolidBrush textBrush)
 	{
 		base.GetCellGDIObjects(gridColumn, nRow, nCol, ref bkBrush, ref textBrush);
 		if (!SystemInformation.HighContrast && nCol > 0)
@@ -479,7 +493,7 @@ public class GridResultsGrid : GridControl, IGridControl2, IGridControl, IStatus
 		Tracer.Trace(GetType(), "SqlManagerUIDlgGrid.OnMouseButtonDoubleClicked", "", null);
 		if (m_gridStorage != null && htArea == EnHitTestResult.ColumnResize && btn == MouseButtons.Left && (m_Columns[colIndex].ColumnType == 2 || m_Columns[colIndex].ColumnType == 1))
 		{
-			Tracer.Trace(GetType(), Tracer.Level.Verbose, "GridResultsGrid.OnMouseButtonDoubleClicked", "auto resizing column {0}", colIndex);
+			Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "GridResultsGrid.OnMouseButtonDoubleClicked", "auto resizing column {0}", colIndex);
 			ResizeColumnToShowAllContentsInternal(colIndex);
 		}
 	}
@@ -564,7 +578,7 @@ public class GridResultsGrid : GridControl, IGridControl2, IGridControl, IStatus
 		m_bkBrush = new SolidBrush(bkColor);
 		m_foreBrush = new SolidBrush(foreColor);
 		BackColor = bkColor;
-		foreach (GridColumn column in m_Columns)
+		foreach (AbstractGridColumn column in m_Columns)
 		{
 			(column as GridHyperlinkColumnWithLimit)?.SetNewTextBrush(m_foreBrush);
 		}
@@ -667,10 +681,10 @@ public class GridResultsGrid : GridControl, IGridControl2, IGridControl, IStatus
 		}
 	}
 
-	bool IGridControl2.Focus()
+	bool IBGridControl2.Focus()
 	{
 		return Focus();
 	}
 
-	bool IGridControl2.ContainsFocus => ContainsFocus;
+	bool IBGridControl2.ContainsFocus => ContainsFocus;
 }

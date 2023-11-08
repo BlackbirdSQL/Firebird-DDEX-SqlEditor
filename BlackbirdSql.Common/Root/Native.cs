@@ -48,7 +48,7 @@ public abstract class Native : BlackbirdSql.Core.Native
 	// =========================================================================================================
 
 
-	public enum NotificationKind
+	public enum EnNotificationKind
 	{
 		NotificationKind_ItemAdded,
 		NotificationKind_ItemRemoved,
@@ -58,7 +58,7 @@ public abstract class Native : BlackbirdSql.Core.Native
 	}
 
 
-	public enum NotificationProcessing
+	public enum EnNotificationProcessing
 	{
 		NotificationProcessing_ImportantAll,
 		NotificationProcessing_ImportantMostRecent,
@@ -188,36 +188,6 @@ public abstract class Native : BlackbirdSql.Core.Native
 
 
 
-	[StructLayout(LayoutKind.Sequential)]
-	public class SCROLLINFO
-	{
-		public int cbSize = Marshal.SizeOf(typeof(SCROLLINFO));
-		public int fMask;
-		public int nMin;
-		public int nMax;
-		public int nPage;
-		public int nPos;
-		public int nTrackPos;
-
-		public SCROLLINFO()
-		{
-		}
-
-		public SCROLLINFO(int mask, int min, int max, int page, int pos)
-		{
-			fMask = mask;
-			nMin = min;
-			nMax = max;
-			nPage = page;
-			nPos = pos;
-		}
-
-		public SCROLLINFO(bool bInitWithAllMask) : this()
-		{
-			if (bInitWithAllMask)
-				fMask = 23;
-		}
-	}
 
 
 
@@ -413,11 +383,6 @@ public abstract class Native : BlackbirdSql.Core.Native
 
 
 
-	// GetScrollInfo
-	[DllImport("user32.dll", CharSet = CharSet.Auto)]
-	public static extern int GetScrollInfo(IntPtr hWnd, int fnBar, [In][Out] SCROLLINFO si);
-
-
 	// GetSysColor
 	[DllImport("user32", CharSet = CharSet.Auto)]
 	public static extern uint GetSysColor(int sysColor);
@@ -588,24 +553,6 @@ public abstract class Native : BlackbirdSql.Core.Native
 	}
 
 
-	// SendMessage
-	[DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
-	public static extern IntPtr SendMessage(IntPtr hWnd, int nMsg, IntPtr wParam, IntPtr lParam);
-
-	// SendMessage
-	public static IntPtr SendMessage(IntPtr hwnd, int msg)
-	{
-		return SendMessage(hwnd, msg, IntPtr.Zero, IntPtr.Zero);
-	}
-
-	// SendMessage
-	public static IntPtr SendMessage(IntPtr hwnd, int msg, IntPtr wParam)
-	{
-		return SendMessage(hwnd, msg, wParam, IntPtr.Zero);
-	}
-
-
-
 	// SelectObject
 	[DllImport("gdi32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
 	public static extern IntPtr SelectObject(IntPtr hDC, IntPtr hObject);
@@ -642,7 +589,7 @@ public abstract class Native : BlackbirdSql.Core.Native
 
 	// UiaRaiseNotificationEvent
 	[DllImport("UIAutomationCore.dll", CharSet = CharSet.Unicode)]
-	public static extern int UiaRaiseNotificationEvent(IRawElementProviderSimple provider, NotificationKind notificationKind, NotificationProcessing notificationProcessing, string notificationText, string notificationId);
+	public static extern int UiaRaiseNotificationEvent(IRawElementProviderSimple provider, EnNotificationKind notificationKind, EnNotificationProcessing notificationProcessing, string notificationText, string notificationId);
 
 
 	#endregion Static Methods

@@ -22,7 +22,7 @@ public abstract class ExportableDescriptor<T> where T : IBExportable
 				return string.Empty;
 			}
 
-			return Metadata.DisplayName;
+			return Metadata.DisplayMember;
 		}
 	}
 

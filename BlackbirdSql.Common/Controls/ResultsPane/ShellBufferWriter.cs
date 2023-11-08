@@ -21,7 +21,7 @@ using BlackbirdSql.Common.Ctl.Interfaces;
 namespace BlackbirdSql.Common.Controls.ResultsPane;
 
 
-public sealed class ShellBufferWriter : ResultsWriter
+public sealed class ShellBufferWriter : AbstractResultsWriter
 {
 	private class Marker
 	{

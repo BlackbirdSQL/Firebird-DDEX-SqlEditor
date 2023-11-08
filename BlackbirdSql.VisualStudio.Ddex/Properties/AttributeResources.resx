@@ -117,8 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="OptionCategoryDebug" xml:space="preserve">
-    <value>Debug</value>
+  <data name="OptionCategoryDebugging" xml:space="preserve">
+    <value>Debugging</value>
   </data>
   <data name="OptionCategoryDiagnostics" xml:space="preserve">
     <value>Diagnostics</value>
@@ -133,28 +133,31 @@
     <value>Enables the execution of Diagnostics calls. This option should remain enabled. Disabling does not disable Exceptions.</value>
   </data>
   <data name="OptionDescriptionEnableDiagnosticsLog" xml:space="preserve">
-    <value>Enables diagnostics logging to a log file. This option also saves the extrapolated TObjectSupport.xml imports to the logfile folder. Only applicable to DEBUG builds.</value>
+    <value>Enables diagnostics logging to a log file.</value>
   </data>
   <data name="OptionDescriptionEnableFbDiagnostics" xml:space="preserve">
-    <value>Enables the execution of Firebird Debug.Dug()/Debug.Trace() calls. Only applicable to DEBUG builds.</value>
+    <value>Enables the execution of Firebird Debug.Dug()/Debug.Trace() calls. Only applicable to builds that include the debug Firebird library.</value>
   </data>
   <data name="OptionDescriptionEnableTaskLog" xml:space="preserve">
     <value>Enables logging of tasks to the output window pane. This option should remain enabled.</value>
   </data>
   <data name="OptionDescriptionEnableTrace" xml:space="preserve">
-    <value>Enables the execution of Diag.Trace() calls. Only applicable to DEBUG builds.</value>
+    <value>Enables the execution of Diag.Trace() calls.</value>
   </data>
   <data name="OptionDescriptionEnableTracer" xml:space="preserve">
-    <value>Enables Sql Tracer output to be directed to Diag.Trace(). Only applicable to DEBUG builds.</value>
+    <value>Enables Sql Tracer output to be directed to Diag.Trace().</value>
   </data>
   <data name="OptionDescriptionFbLogFile" xml:space="preserve">
-    <value>Location of Firebird diagnostics log file. Note: Only applicable to DEBUG builds.</value>
+    <value>Location of Firebird diagnostics log file. Note: Only applicable to builds that include the debug Firerbird library.</value>
   </data>
   <data name="OptionDescriptionLogFile" xml:space="preserve">
-    <value>Location of diagnostics log file. Only applicable to DEBUG builds.</value>
+    <value>Location of diagnostics log file.</value>
   </data>
   <data name="OptionDescriptionPersistentValidation" xml:space="preserve">
     <value>Enables persistent validation flags. If disabled the validation flag of solutions and projects will be repeated upon reopening if Validation is enabled. Only applicable to DEBUG builds.</value>
+  </data>
+  <data name="OptionDescriptionSaveExtrapolatedXml" xml:space="preserve">
+    <value>Saves the extrapolated IVsDataObjectSupport xml (TObjectSupport.xml), after imports, to the directory location of the diagnostics log file.</value>
   </data>
   <data name="OptionDescriptionShowDiagramPane" xml:space="preserve">
     <value>Sets the query designer diagram pane to visible when a table or view's data is initially retrieved.</value>
@@ -165,6 +168,18 @@
   <data name="OptionDescriptionValidateEdmx" xml:space="preserve">
     <value>Enable this option to allow BlackbirdSql to update legacy edmx models to use EntityFramework 6.</value>
   </data>
+  <data name="OptionDialogFbLogFile" xml:space="preserve">
+    <value>Select the folder to be used for the Firebird diagnostics log file.</value>
+  </data>
+  <data name="OptionDialogFilterFbLogFile" xml:space="preserve">
+    <value>All Files(*.*)|*.*</value>
+  </data>
+  <data name="OptionDialogFilterLogFile" xml:space="preserve">
+    <value>All Files(*.*)|*.*</value>
+  </data>
+  <data name="OptionDialogLogFile" xml:space="preserve">
+    <value>Select the folder to be used for the diagnostics log file.</value>
+  </data>
   <data name="OptionDisplayEnableDiagnostics" xml:space="preserve">
     <value>Enable diagnostics</value>
   </data>
@@ -173,6 +188,9 @@
   </data>
   <data name="OptionDisplayEnableFbDiagnostics" xml:space="preserve">
     <value>Enable Firebird diagnostics</value>
+  </data>
+  <data name="OptionDisplayEnableSaveExtrapolatedXml" xml:space="preserve">
+    <value>Save extrapolated xml</value>
   </data>
   <data name="OptionDisplayEnableTaskLog" xml:space="preserve">
     <value>Enable task logging</value>

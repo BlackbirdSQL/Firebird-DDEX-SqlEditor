@@ -1,0 +1,475 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+
+	<Extern href="stdidcmd.h"/>
+	<Extern href="vsshlids.h"/>
+
+
+
+
+	<Commands package="PackageGuid">
+
+		<Menus>
+			<Menu guid="CommandSetGuid" id="MenuIdScriptToolbar" type="Toolbar">
+				<CommandFlag>DefaultDocked</CommandFlag>
+				<Strings>
+					<ButtonText>Script Toolbar</ButtonText>
+					<CommandName>ScriptToolbar</CommandName>
+				</Strings>
+			</Menu>
+			<Menu guid="CommandSetGuid" id="MenuIdOnlineToolbar" type="Toolbar">
+				<CommandFlag>DefaultDocked</CommandFlag>
+				<Strings>
+					<ButtonText>Online Toolbar</ButtonText>
+					<CommandName>OnlineToolbar</CommandName>
+				</Strings>
+			</Menu>
+			<Menu guid="CommandSetGuid" id="MenuIdResultsToGroup" priority="0x0150" type="MenuController">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
+				<CommandFlag>TextChanges</CommandFlag>
+				<CommandFlag>TextIsAnchorCommand</CommandFlag>
+				<Strings>
+					<ButtonText>Results To Menu Controller</ButtonText>
+					<CommandName>ResultsToMenuController</CommandName>
+				</Strings>
+			</Menu>
+		</Menus>
+
+
+
+		<Combos>
+			<Combo guid="CommandSetGuid" id="CmbIdSqlDatabases" priority="0x0100" type="DropDownCombo" defaultWidth="240" idCommandList="CmbIdSqlDatabasesGetList">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup"/>
+				<CommandFlag>IconAndText</CommandFlag>
+				<CommandFlag>CommandWellOnly</CommandFlag>
+				<Strings>
+					<MenuText>Database Selection: </MenuText>
+					<ButtonText></ButtonText>
+					<ToolTipText>Select Database</ToolTipText>
+					<CanonicalName>Databases</CanonicalName>
+					<LocCanonicalName>Databases</LocCanonicalName>
+					<CommandName>Databases</CommandName>
+				</Strings>
+			</Combo>
+		</Combos>
+
+
+
+		<Groups>
+			<!-- Edit window context menu -->
+			<Group guid="CommandSetGuid" id="MenuIdEditorContextGroup" priority="0x0600">
+				<!-- <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_WINDOW" /> -->
+			</Group>
+
+			<!-- Explorer scope -->
+			<Group guid="CommandSetGuid" id="MenuIdSeRootGroup" priority="0x0600">
+				<!--<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />-->
+				<Parent guid="SeRootGuid" id="IDMX_DV_SERVER_NODE" />
+			</Group>
+
+			<!-- Table scope -->
+			<Group guid="CommandSetGuid" id="MenuIdSeNodeGroup" priority="0x0600">
+				<!--<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />-->
+				<Parent guid="SeObjectNodesGuid" id="IDMX_DV_OBJECT_NODE" />
+			</Group>
+
+			<!-- Table scope -->
+			<Group guid="CommandSetGuid" id="MenuIdSeStaticGroup" priority="0x0600">
+				<!--<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />-->
+				<Parent guid="SeObjectNodesGuid" id="IDMX_DV_STATIC_NODE" />
+			</Group>
+
+
+			<Group guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" priority="0x0600">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbar"/>
+			</Group>
+			<Group guid="CommandSetGuid" id="MenuIdOnlineToolbarGroup" priority="0x0600">
+				<Parent guid="CommandSetGuid" id="MenuIdOnlineToolbar"/>
+			</Group>
+			<Group guid="CommandSetGuid" id="CtlrIdResultsToGroup" priority="0x0220">
+				<Parent guid="CommandSetGuid" id="MenuIdResultsToGroup" />
+			</Group>
+
+			<Group guid="CommandSetGuid" id="MenuIdReusableGroup" priority="0x0600">
+				<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
+			</Group>
+		</Groups>
+
+
+
+		<Buttons>
+
+			<!-- MenuIdScriptToolbarGroup -->
+			<Button guid="CommandSetGuid" id="CmdIdExecuteQuery" priority="0x0000" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
+				<Icon guid="ImagesGuid" id="ImgExecuteQuery" />
+				<Strings>
+					<ButtonText>Execute Query</ButtonText>
+				</Strings>
+			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdCancelQuery" priority="0x0020" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
+				<Icon guid="ImagesGuid" id="ImgCancelQuery" />
+				<Strings>
+					<ButtonText>Cancel Query</ButtonText>
+				</Strings>
+			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdParseQuery" priority="0x0030" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
+				<Icon guid="ImagesGuid" id="ImgParseQuery" />
+				<Strings>
+					<ButtonText>Parse Query</ButtonText>
+				</Strings>
+			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdShowEstimatedPlan" priority="0x0040" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
+				<Icon guid="ImagesGuid" id="ImgShowEstimatedPlan" />
+				<Strings>
+					<ButtonText>Show Estimated Execution Plan</ButtonText>
+				</Strings>
+			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdConnect" priority="0x0050" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
+				<Icon guid="ImagesGuid" id="ImgConnect" />
+				<Strings>
+					<ButtonText>Connect</ButtonText>
+				</Strings>
+			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdDisconnect" priority="0x0060" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
+				<Icon guid="ImagesGuid" id="ImgDisconnect" />
+				<Strings>
+					<ButtonText>Disconnect</ButtonText>
+				</Strings>
+			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdChangeConnection" priority="0x0080" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
+				<Icon guid="ImagesGuid" id="ImgConnect" />
+				<Strings>
+					<ButtonText>Change Connection</ButtonText>
+				</Strings>
+			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdNewQueryConnection" priority="0x0120" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
+				<Icon guid="ImagesGuid" id="ImgNewQueryConnection" />
+				<Strings>
+					<ButtonText>New Query Connection</ButtonText>
+				</Strings>
+			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdToggleExecutionPlan" priority="0x0140" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
+				<Icon guid="ImagesGuid" id="ImgToggleExecutionPlan" />
+				<Strings>
+					<ButtonText>Include Actual Execution Plan</ButtonText>
+				</Strings>
+			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdToggleClientStatistics" priority="0x0150" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
+				<Icon guid="ImagesGuid" id="ImgToggleClientStatistics" />
+				<Strings>
+					<ButtonText>Include Client Statistics on next Query Execution</ButtonText>
+				</Strings>
+			</Button>
+
+			<!-- MenuIdScriptToolbarGroup : CtlrIdResultsToGroup -->
+			<Button guid="CommandSetGuid" id="CmdIdResultsAsGrid" priority="0x0000" type="Button">
+				<Parent guid="CommandSetGuid" id="CtlrIdResultsToGroup" />
+				<Icon guid="ImagesGuid" id="ImgResultsAsGrid" />
+				<Strings>
+					<ButtonText>Results As Grid</ButtonText>
+					<CommandName>ResultsAsGrid</CommandName>
+				</Strings>
+			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdResultsAsText" priority="0x0020" type="Button">
+				<Parent guid="CommandSetGuid" id="CtlrIdResultsToGroup" />
+				<Icon guid="ImagesGuid" id="ImgResultsAsText" />
+				<Strings>
+					<ButtonText>Results As Text</ButtonText>
+					<CommandName>ResultsAsText</CommandName>
+				</Strings>
+			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdResultsAsFile" priority="0x0040" type="Button">
+				<Parent guid="CommandSetGuid" id="CtlrIdResultsToGroup" />
+				<Icon guid="ImagesGuid" id="ImgResultsAsText" />
+				<Strings>
+					<ButtonText>Results As File</ButtonText>
+					<CommandName>ResultsAsFile</CommandName>
+				</Strings>
+			</Button>
+
+
+			
+			<!-- MenuIdEditorContextGroup -->
+			<Button guid="CommandSetGuid" id="CmdIdToggleIntellisense" priority="0x0040" type="Button">
+				<!-- <Parent guid="CommandSetGuid" id="MenuIdEditorContextGroup" /> -->
+				<!-- <CommandFlag>TextChanges</CommandFlag> -->
+				<Icon guid="ImagesGuid" id="ImgToggleIntellisense" />
+				<CommandFlag>TextChanges</CommandFlag>
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<Strings>
+					<ButtonText>Intellisense Enabled</ButtonText>
+				</Strings>
+			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdQuerySettings" priority="0x0040" type="Button">
+				<CommandFlag>TextChanges</CommandFlag>
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<Strings>
+					<ButtonText>Execution Settings...</ButtonText>
+				</Strings>
+			</Button>
+
+
+
+			<!-- MenuIdSeNodeGroup -->
+			<Button guid="CommandSetGuid" id="CmdIdOpenTextObject" priority="0x0120" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdSeNodeGroup" />
+				<Icon guid="ImagesGuid" id="ImgOpenScript" />
+				<CommandFlag>TextChanges</CommandFlag>
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<Strings>
+					<ButtonText>Open Expression</ButtonText>
+					<CommandName>CommandTextOpenScript</CommandName>
+				</Strings>
+			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdOpenAlterTextObject" priority="0x0130" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdSeNodeGroup" />
+				<Icon guid="ImagesGuid" id="ImgOpenScript" />
+				<CommandFlag>TextChanges</CommandFlag>
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<Strings>
+					<ButtonText>Open Alter Expression</ButtonText>
+					<CommandName>CommandTextOpenAlterScript</CommandName>
+				</Strings>
+			</Button>
+
+			<Button guid="CommandSetGuid" id="CmdIdResetPageOptions" priority="0x0100" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdReusableGroup" />
+				<Strings>
+					<ButtonText>Reset</ButtonText>
+				</Strings>
+			</Button>
+
+			<!--  MenuIdSeRootGroup 
+			<Button guid="VsUIHierarchyWindowCmdIds" id="UIHWCMDID_RightClick" priority="0x0130" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdSeRootGroup" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<Strings>
+					<ButtonText>Right Click</ButtonText>
+					<CommandName>RightClick</CommandName>
+				</Strings>
+			</Button>
+			<Button guid="VsUIHierarchyWindowCmdIds" id="UIHWCMDID_DoubleClick" priority="0x0130" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdSeRootGroup" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<Strings>
+					<ButtonText>Double Click</ButtonText>
+					<CommandName>DoubleClick</CommandName>
+				</Strings>
+			</Button>
+			<Button guid="VsUIHierarchyWindowCmdIds" id="UIHWCMDID_EnterKey" priority="0x0130" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdSeRootGroup" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<Strings>
+					<ButtonText>Enter Key</ButtonText>
+					<CommandName>EnterKey</CommandName>
+				</Strings>
+			</Button>
+			-->
+
+
+		</Buttons>
+
+
+		<!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
+		<Bitmaps>
+			<Bitmap guid="ImagesGuid" href="Resources\ToolbarImageStrip.png" usedList="ImgExecuteQuery, ImgRunQuery, ImgCancelQuery, ImgConnect, ImgDisconnect, ImgNewQueryConnection, ImgResultsAsGrid, ImgResultsAsText, ImgDownGlygh, ImgOpenScript, ImgParseQuery, ImgToggleExecutionPlan, ImgShowEstimatedPlan, ImgToggleClientStatistics, ImgToggleIntellisense" />
+		</Bitmaps>
+	</Commands>
+
+
+	<CommandPlacements>
+
+		<!-- Placement for group. The parent of a group is a menu, context menu or toolbar. 
+           The priority sets the position of the group compared to the priority of other existing groups in the menu.    
+		-->
+		<CommandPlacement guid="CommandSetGuid" id="MenuIdEditorContextGroup">
+			<!-- priority="0xFFFF" -->
+			<!-- The parent of the group will be the code window context menu -->
+			<Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN"/>
+		</CommandPlacement>
+
+		<!-- Placement for command. The parent of a command is always a group, never a menu, context menu or toolbar. -->
+		<CommandPlacement guid="CommandSetGuid" id="CmdIdToggleIntellisense" priority="0x0001" >
+			<Parent guid="CommandSetGuid" id="MenuIdEditorContextGroup"/>
+		</CommandPlacement>
+		<CommandPlacement guid="CommandSetGuid" id="CmdIdQuerySettings" priority="0x0002" >
+			<Parent guid="CommandSetGuid" id="MenuIdEditorContextGroup"/>
+		</CommandPlacement>
+	</CommandPlacements>
+
+	<Symbols>
+		<!-- This is the package guid. -->
+		<GuidSymbol name="PackageGuid" value="{0B100D64-7249-4208-8748-2810B511E90C}" />
+
+
+		<!-- Server Explorer guid -->
+		<GuidSymbol name="SeRootGuid" value="{74D21310-2AEE-11D1-8BFB-00A0C90F26F7}">
+			<!-- server explorer - root node -->
+			<IDSymbol name="IDMX_DV_SERVER_NODE" value="0x503" />
+		</GuidSymbol>
+
+		<!-- Server Explorer nodes guid -->
+		<GuidSymbol name="SeObjectNodesGuid" value="{d4f02a6a-c5ae-4bf2-938d-f1625bdca0e2}">
+			<!-- server explorer - object node -->
+			<IDSymbol name="IDMX_DV_OBJECT_NODE" value="0x8200" />
+			<IDSymbol name="IDMX_DV_STATIC_NODE" value="0x8100" />
+		</GuidSymbol>
+
+
+		<!-- Server Explorer UI Hierarchy command set guid -->
+		<GuidSymbol name="VsUIHierarchyWindowCmdIds" value="{60481700-078B-11D1-AAF8-00A0C9055A90}">
+			<!-- server explorer - object node -->
+			<IDSymbol name="UIHWCMDID_RightClick" value="0x0001" />
+			<IDSymbol name="UIHWCMDID_DoubleClick" value="0x0002" />
+			<IDSymbol name="UIHWCMDID_EnterKey" value="0x0003" />
+		</GuidSymbol>
+
+
+		<!-- This is the guid used to group the menu commands together -->
+		<GuidSymbol name="CommandSetGuid" value="{13CD7876-FC84-4DDA-91BF-4CDBF893B134}">
+			<IDSymbol name="MenuIdToplevelMenu" value="0xC201" />
+			<!-- 49665 -->
+			<IDSymbol name="MenuIdScriptToolbar" value="0x5000" />
+			<!-- 20480 -->
+			<IDSymbol name="MenuIdOnlineToolbar" value="0x5001" />
+			<!-- 20481 -->
+
+			<IDSymbol name="MenuIdScriptToolbarGroup" value="0x5100" />
+			<!-- 20736 -->
+			<IDSymbol name="MenuIdOnlineToolbarGroup" value="0x5101" />
+			<!-- 20737 -->
+			<IDSymbol name="MenuIdReusableGroup" value="0x5102" />
+			<!-- 20738 -->
+
+			<IDSymbol name="MenuIdSeRootGroup" value="0x5200" />
+			<!-- 20992 -->
+			<IDSymbol name="MenuIdSeNodeGroup" value="0x5201" />
+			<!-- 20993 -->
+			<IDSymbol name="MenuIdSeStaticGroup" value="0x5202" />
+			<!-- 20994 -->
+			<IDSymbol name="MenuIdResultsToGroup" value="0x5203" />
+			<!-- 20995 -->
+			<IDSymbol name="MenuIdEditorContextGroup" value="0x5204" />
+			<!-- 20996 -->
+
+			<IDSymbol name="CtlrIdResultsToGroup" value="0x5300" />
+
+			<IDSymbol name="ContextIdExecutionSettings" value="0x5400" />
+			<IDSymbol name="ContextIdConnection" value="0x5401" />
+			<IDSymbol name="ContextIdResultsTo" value="0x5402" />
+			<IDSymbol name="ContextIdResultsWindow" value="0x5403" />
+			<IDSymbol name="ContextIdMessageWindow" value="0x5404" />
+			<IDSymbol name="ContextIdExecutionPlanWindow" value="0x5405" />
+
+			<IDSymbol name="CmbIdSqlDatabases" value="0x5500" />
+			<IDSymbol name="CmbIdSqlDatabasesGetList" value="0x5501" />
+
+			<IDSymbol name="CmdIdConnect" value="0x0300" />
+			<!-- 768 -->
+			<IDSymbol name="CmdIdDisconnect" value="0x0301" />
+			<!-- 769 -->
+			<IDSymbol name="CmdIdCloneQuery" value="0x0302" />
+			<!-- 770 -->
+			<IDSymbol name="CmdIdExecuteQuery" value="0x0304" />
+			<!-- 772 -->
+			<IDSymbol name="CmdIdCancelQuery" value="0x0305" />
+			<!-- 773 -->
+			<IDSymbol name="CmdIdShowEstimatedPlan" value="0x0306" />
+			<!-- 774 -->
+			<IDSymbol name="CmdIdToggleIntellisense" value="0x0307" />
+			<!-- 775 -->
+			<IDSymbol name="CmdIdToggleSQLCMDMode" value="0x0308" />
+			<!-- 776 -->
+			<IDSymbol name="CmdIdToggleClientStatistics" value="0x0309" />
+			<!-- 777 -->
+			<IDSymbol name="CmdIdToggleExecutionPlan" value="0x030A" />
+			<!-- 778 -->
+			<IDSymbol name="CmdIdResultsAsText" value="0x030B" />
+			<!-- 779 -->
+			<IDSymbol name="CmdIdResultsAsGrid" value="0x030C" />
+			<!-- 780 -->
+			<IDSymbol name="CmdIdResultsAsFile" value="0x030D" />
+			<!-- 781 -->
+			<IDSymbol name="CmdIdQuerySettings" value="0x030E" />
+			<!-- 782 -->
+			<IDSymbol name="CmdIdToggleResultsPane" value="0x030F" />
+			<!-- 783 -->
+			<IDSymbol name="CmdIdNewQueryConnection" value="0x0310" />
+			<!-- 784 -->
+			<IDSymbol name="CmdIdSaveResultsAs" value="0x0311" />
+			<!-- 785 -->
+			<IDSymbol name="CmdIdExecutionPlanXml" value="0x0314" />
+			<!-- 788 -->
+			<IDSymbol name="CmdIdExecutionPlanMissingIndex" value="0x0315" />
+			<!-- 789 -->
+			<IDSymbol name="CmdIdPrintPreview" value="0x0316" />
+			<!-- 790 -->
+			<IDSymbol name="CmdIdExecutionPlanSave" value="0x0317" />
+			<!-- 791 -->
+			<IDSymbol name="CmdIdExecutionPlanZoomIn" value="0x0318" />
+			<!-- 792 -->
+			<IDSymbol name="CmdIdExecutionPlanZoomOut" value="0x0319" />
+			<!-- 793 -->
+			<IDSymbol name="CmdIdExecutionPlanZoomCustom" value="0x0320" />
+			<!-- 800 -->
+			<IDSymbol name="CmdIdExecutionPlanZoomToFit" value="0x0321" />
+			<!-- 801 -->
+			<IDSymbol name="CmdIdCopyWithHeaders" value="0x0322" />
+			<!-- 802 -->
+			<IDSymbol name="CmdIdCycleToNextTab" value="0x0323" />
+			<!-- 803 -->
+			<IDSymbol name="CmdIdCycleToPrevious" value="0x0324" />
+			<!-- 804 -->
+			<IDSymbol name="CmdIdParseQuery" value="0x0326" />
+			<!-- 806 -->
+			<IDSymbol name="CmdIdDisconnectAllQueries" value="0x0327" />
+			<!-- 807 -->
+			<IDSymbol name="CmdIdChangeConnection" value="0x0328" />
+			<!-- 808 -->
+
+			<IDSymbol name="CmdIdOpenTextObject" value="0x0334" />
+			<!-- 820 -->
+			<IDSymbol name="CmdIdOpenAlterTextObject" value="0x0335" />
+			<!-- 821 -->
+			<IDSymbol name="CmdIdDesignRetrieveData" value="0x0336" />
+			<!-- 822 -->
+			<IDSymbol name="CmdIdResetPageOptions" value="0x0337" />
+			<!-- 823 -->
+		</GuidSymbol>
+
+		<GuidSymbol name="ImagesGuid" value="{b9096f40-3268-4397-a5ec-8827624c447d}" >
+			<IDSymbol name="ImgExecuteQuery" value="1" />
+			<IDSymbol name="ImgRunQuery" value="2" />
+			<IDSymbol name="ImgCancelQuery" value="3" />
+			<IDSymbol name="ImgConnect" value="4" />
+			<IDSymbol name="ImgDisconnect" value="5" />
+			<IDSymbol name="ImgNewQueryConnection" value="6" />
+			<IDSymbol name="ImgResultsAsGrid" value="7" />
+			<IDSymbol name="ImgResultsAsText" value="8" />
+			<IDSymbol name="ImgDownGlygh" value="9"/>
+			<IDSymbol name="ImgOpenScript" value="10"/>
+			<IDSymbol name="ImgParseQuery" value="11" />
+			<IDSymbol name="ImgToggleExecutionPlan" value="12" />
+			<IDSymbol name="ImgShowEstimatedPlan" value="13" />
+			<IDSymbol name="ImgToggleClientStatistics" value="14" />
+			<IDSymbol name="ImgToggleIntellisense" value="15" />
+		</GuidSymbol>
+
+	</Symbols>
+
+</CommandTable>

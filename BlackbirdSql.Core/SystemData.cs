@@ -60,7 +60,7 @@ public static class SystemData
 	public const string DesignerExplorerServicesGuid = "4D30B519-9FB6-4FFD-A0CE-92863B1C37EA";
 	public const string DesignerOnlineServicesGuid = "27F3F968-74EB-46B7-A1FF-6CCA57C0D894";
 
-	public const string EventProviderGuid = "DB9B059D-ED1E-43EB-94A0-51C5AF15D397";
+	public const string EventProviderGuid = "C8333EC7-A86E-40AB-AD3C-405C97DC876B";
 	
 	// BlackbirdSql Output pane
 	public const string OutputPaneGuid = "9E2B946C-4D46-4067-ABEB-E181F3B3768E";
@@ -92,7 +92,7 @@ public static class SystemData
 	public const string DslEditorPaneGuid = "ADE35F8D-9953-4E4C-9190-A0DDE7075840";
 
 
-	public const string DslEventProviderGuid = "7D445E62-A204-408E-B331-72EF93D0F2F0";
+	public const string DslEventProviderGuid = "2025C8D6-6399-45DD-98B4-EEF358BDF87D";
 
 
 	#endregion Editor and Language Service Guids

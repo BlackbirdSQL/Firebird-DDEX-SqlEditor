@@ -6,7 +6,7 @@ using BlackbirdSql.Common.Model.Interfaces;
 
 namespace BlackbirdSql.Common.Ctl;
 
-public class FileStreamWriter : IFileStreamWriter, IDisposable
+public class FileStreamWriter : IBFileStreamWriter, IDisposable
 {
 	public const int DEFAULT_BUFFER_SIZE = 8192;
 

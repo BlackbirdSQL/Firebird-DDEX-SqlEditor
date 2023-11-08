@@ -20,7 +20,7 @@ using BlackbirdSql.Core;
 // namespace Microsoft.SqlServer.Management.UI.Grid
 namespace BlackbirdSql.Common.Controls.Grid
 {
-	public class EmbeddedComboBox : ComboBox, IGridEmbeddedControl, IGridEmbeddedControlManagement2, IGridEmbeddedControlManagement
+	public class EmbeddedComboBox : ComboBox, IBGridEmbeddedControl, IBGridEmbeddedControlManagement2, IBGridEmbeddedControlManagement
 	{
 		protected int m_MarginsWidth;
 

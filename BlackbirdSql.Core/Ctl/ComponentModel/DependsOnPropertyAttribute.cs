@@ -3,9 +3,8 @@
 
 using System;
 
+
 namespace BlackbirdSql.Core.Ctl.ComponentModel;
-
-
 
 [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
 internal abstract class DependsOnPropertyAttribute : Attribute

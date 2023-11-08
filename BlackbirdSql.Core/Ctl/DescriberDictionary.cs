@@ -150,12 +150,12 @@ public class DescriberDictionary : PublicDictionary<string, Describer>, IBEnumer
 			}
 		}
 
-		if (!value.IsParameter)
+		if (!value.IsConnectionParameter)
 		{
 			return null;
 		}
 
-		return value.DerivedParameter;
+		return value.DerivedConnectionParameter;
 
 	}
 
@@ -191,7 +191,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>, IBEnumer
 		{
 			if (_Entries[j].HashCode >= 0)
 			{
-				if (_Entries[j].Value.ParameterMatches(parameter))
+				if (_Entries[j].Value.MatchesConnectionProperty(parameter))
 					return _Entries[j].Value;
 			}
 		}
@@ -263,7 +263,7 @@ public class DescriberDictionary : PublicDictionary<string, Describer>, IBEnumer
 			throw ex;
 		}
 
-		return descriptor.IsParameter;
+		return descriptor.IsConnectionParameter;
 	}
 
 

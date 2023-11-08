@@ -49,7 +49,7 @@ public class SqlEditorCloneQueryWindowCommand : AbstractSqlEditorCommand
 				if (auxDocData != null)
 				{
 					QueryManager qryMgr = auxiliaryDocDataForEditor.QryMgr;
-					ConnectionStrategy connectionStrategy = auxDocData.QryMgr.ConnectionStrategy;
+					AbstractConnectionStrategy connectionStrategy = auxDocData.QryMgr.ConnectionStrategy;
 					connectionStrategy.SetConnectionInfo(qryMgr.ConnectionStrategy.UiConnectionInfo);
 					IDbConnection connection = connectionStrategy.Connection;
 					if (qryMgr.IsConnected && connection.State != ConnectionState.Open)

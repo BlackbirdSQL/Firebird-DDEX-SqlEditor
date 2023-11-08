@@ -18,12 +18,15 @@ using Microsoft.VisualStudio.Shell;
 
 namespace BlackbirdSql.Common.Controls.PropertiesWindow;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD001:Avoid legacy thread switching APIs")]
+
 public class PropertiesWindowManager : IDisposable
 {
 	private bool _Disposed;
 
 	private Semaphore _SingleAsyncUpdate = new Semaphore(1, 1);
 
+	// A private 'this' object lock
 	private readonly object _LockLocal = new object();
 
 	public SqlEditorTabbedEditorPane EditorPane { get; private set; }
@@ -82,7 +85,7 @@ public class PropertiesWindowManager : IDisposable
 
 	private void OnConnectionChanged(object sender, QueryManager.StatusChangedEventArgs args)
 	{
-		if (args.Change == QueryManager.StatusType.Connection || args.Change == QueryManager.StatusType.Connected)
+		if (args.Change == QueryManager.EnStatusType.Connection || args.Change == QueryManager.EnStatusType.Connected)
 		{
 			RefreshPropertyWindow();
 		}
@@ -140,7 +143,6 @@ public class PropertiesWindowManager : IDisposable
 
 		((Action)delegate
 		{
-#pragma warning disable CS0618 // Type or member is obsolete
 			ThreadHelper.Generic.Invoke(delegate
 			{
 				lock (_LockLocal)
@@ -157,7 +159,6 @@ public class PropertiesWindowManager : IDisposable
 					EditorUI.ActiveTab.PropertyWindowSelectedObjects = propertyWindowObjects;
 				}
 			});
-#pragma warning restore CS0618 // Type or member is obsolete
 		}).BeginInvoke(null, null);
 
 		/*
@@ -206,7 +207,7 @@ public class PropertiesWindowManager : IDisposable
 		object propertiesWindowDisplayObject = QryMgr.ConnectionStrategy.GetPropertiesWindowDisplayObject();
 		if (propertiesWindowDisplayObject != null)
 		{
-			if (propertiesWindowDisplayObject is IPropertyWindowQueryManagerInitialize propertyWindowQueryExecutorInitialize
+			if (propertiesWindowDisplayObject is IBPropertyWindowQueryManagerInitialize propertyWindowQueryExecutorInitialize
 				&& !propertyWindowQueryExecutorInitialize.IsInitialized())
 			{
 				propertyWindowQueryExecutorInitialize.Initialize(QryMgr);

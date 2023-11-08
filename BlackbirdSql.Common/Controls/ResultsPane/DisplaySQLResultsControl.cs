@@ -3,10 +3,11 @@
 
 using System;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 using BlackbirdSql.Common.Controls.Graphing;
@@ -14,7 +15,6 @@ using BlackbirdSql.Common.Controls.Graphing.Enums;
 using BlackbirdSql.Common.Controls.Graphing.Interfaces;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
@@ -25,10 +25,12 @@ using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Enums;
 
 using FirebirdSql.Data.FirebirdClient;
 
 using Microsoft.AnalysisServices.Graphing;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -36,10 +38,13 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
 
+[SuppressMessage("Usage", "VSTHRD001:Avoid legacy thread switching APIs")]
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
-public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecutionHandler, IDisposable
+public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecutionHandler, IDisposable
 {
-	private enum ResultMessageType
+	private enum EnResultMessageType
 	{
 		Normal,
 		Warning,
@@ -60,13 +65,13 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 
 	private object _ObjServiceProvider;
 
-	private ResultsWriter _ResultsWriter;
+	private AbstractResultsWriter _ResultsWriter;
 
-	private ResultsWriter _PlanWriter;
+	private AbstractResultsWriter _PlanWriter;
 
-	private ResultsWriter _MessagesWriter;
+	private AbstractResultsWriter _MessagesWriter;
 
-	private ResultsWriter _ErrorsWriter;
+	private AbstractResultsWriter _ErrorsWriter;
 
 	private bool _HasMessages;
 
@@ -145,7 +150,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 		}
 	}
 
-	public EnSqlExecutionMode SqlExecutionMode
+	public EnSqlOutputMode SqlExecutionMode
 	{
 		get
 		{
@@ -157,11 +162,11 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 		}
 	}
 
-	public IBQueryExecutionResultsSettings ResultsSettings
+	public IBLiveUserSettings LiveSettings
 	{
 		get
 		{
-			return AuxDocData.ResultsSettings;
+			return AuxDocData.LiveSettings;
 		}
 		set
 		{
@@ -219,13 +224,13 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 		}
 	}
 
-	public QESQLExecutionOptions SqlExecutionOptions => AuxDocData.QryMgr.ExecutionOptions;
+	public QESQLCommandBuilder SqlExecutionOptions => AuxDocData.QryMgr.LiveSettings;
 
 	public ResultWindowPane ExecutionPlanWindowPane => _ExecutionPlanPane;
 
 	public ResultWindowPane TextPlanWindowPane => _TextPlanPane;
 
-	public IQESQLBatchConsumer BatchConsumer => _BatchConsumer;
+	public IBQESQLBatchConsumer BatchConsumer => _BatchConsumer;
 
 	public bool CanAddMoreGrids => _GridCount < C_MaxGridResultSets;
 
@@ -237,11 +242,13 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 	{
 		get
 		{
-			if (AuxDocData.ResultsSettings.SqlExecutionMode != EnSqlExecutionMode.ResultsToText && AuxDocData.ResultsSettings.SqlExecutionMode != EnSqlExecutionMode.ResultsToFile || !AuxDocData.ResultsSettings.DiscardResultsForText)
+			if (AuxDocData.LiveSettings.EditorResultsOutputMode != EnSqlOutputMode.ToText
+				&& AuxDocData.LiveSettings.EditorResultsOutputMode != EnSqlOutputMode.ToFile
+				|| !AuxDocData.LiveSettings.EditorResultsTextDiscardResults)
 			{
-				if (AuxDocData.ResultsSettings.SqlExecutionMode == EnSqlExecutionMode.ResultsToGrid)
+				if (AuxDocData.LiveSettings.EditorResultsOutputMode == EnSqlOutputMode.ToGrid)
 				{
-					return AuxDocData.ResultsSettings.DiscardResultsForGrid;
+					return AuxDocData.LiveSettings.EditorResultsGridDiscardResults;
 				}
 
 				return false;
@@ -255,11 +262,11 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 	{
 		get
 		{
-			if (AuxDocData.SqlExecutionMode != EnSqlExecutionMode.ResultsToText && AuxDocData.SqlExecutionMode != EnSqlExecutionMode.ResultsToFile || !AuxDocData.ResultsSettings.OutputQueryForText)
+			if (AuxDocData.SqlExecutionMode != EnSqlOutputMode.ToText && AuxDocData.SqlExecutionMode != EnSqlOutputMode.ToFile || !AuxDocData.LiveSettings.EditorResultsTextOutputQuery)
 			{
-				if (AuxDocData.SqlExecutionMode == EnSqlExecutionMode.ResultsToGrid)
+				if (AuxDocData.SqlExecutionMode == EnSqlOutputMode.ToGrid)
 				{
-					return AuxDocData.ResultsSettings.OutputQueryForGrid;
+					return AuxDocData.LiveSettings.EditorResultsGridOutputQuery;
 				}
 
 				return false;
@@ -273,12 +280,12 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 	{
 		get
 		{
-			if (AuxDocData.SqlExecutionMode == EnSqlExecutionMode.ResultsToText || AuxDocData.SqlExecutionMode == EnSqlExecutionMode.ResultsToFile)
+			if (AuxDocData.SqlExecutionMode == EnSqlOutputMode.ToText || AuxDocData.SqlExecutionMode == EnSqlOutputMode.ToFile)
 			{
-				return AuxDocData.ResultsSettings.MaxCharsPerColumnForText;
+				return AuxDocData.LiveSettings.EditorResultsTextMaxCharsPerColumnStd;
 			}
 
-			return AuxDocData.ResultsSettings.MaxCharsPerColumnForGrid;
+			return AuxDocData.LiveSettings.EditorResultsGridMaxCharsPerColumnStd;
 		}
 	}
 
@@ -286,19 +293,19 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 	{
 		get
 		{
-			if (AuxDocData.SqlExecutionMode == EnSqlExecutionMode.ResultsToText || AuxDocData.SqlExecutionMode == EnSqlExecutionMode.ResultsToFile)
+			if (AuxDocData.SqlExecutionMode == EnSqlOutputMode.ToText || AuxDocData.SqlExecutionMode == EnSqlOutputMode.ToFile)
 			{
-				if (AuxDocData.ResultsSettings.DisplayResultInSeparateTabForText)
+				if (AuxDocData.LiveSettings.EditorResultsTextSeparateTabs)
 				{
-					return AuxDocData.ResultsSettings.SwitchToResultsTabAfterQueryExecutesForText;
+					return AuxDocData.LiveSettings.EditorResultsTextSwitchToResults;
 				}
 
 				return false;
 			}
 
-			if (AuxDocData.ResultsSettings.DisplayResultInSeparateTabForGrid)
+			if (AuxDocData.LiveSettings.EditorResultsGridSeparateTabs)
 			{
-				return AuxDocData.ResultsSettings.SwitchToResultsTabAfterQueryExecutesForGrid;
+				return AuxDocData.LiveSettings.EditorResultsGridSwitchToResults;
 			}
 
 			return false;
@@ -333,7 +340,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 		_ = _SpatialResultsPane; // Warn suppression;
 		SqlEditorPane = editorPane;
 		Initialize(resultsGridPanel, messagePanel);
-		AuxDocData.ResultSettingsChangedEvent += OnResultSettingsChanged;
+		AuxDocData.LiveSettingsChangedEvent += OnLiveSettingsChanged;
 		AuxDocData.SqlExecutionModeChangedEvent += OnSqlExecutionModeChanged;
 		FontAndColorProviderGridResults.Instance.ColorChangedEvent += OnGridColorChanged;
 		FontAndColorProviderGridResults.Instance.FontChangedEvent += OnGridFontChanged;
@@ -403,9 +410,6 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 
 		RemoveExecutionPlanPage();
 		RemoveTextPlanPage();
-
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.Dispose", "calling base class");
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.Dispose", "returning");
 	}
 
 	public void ClearResultsTabs()
@@ -417,10 +421,16 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 	public void SetSite(object sp)
 	{
 		Tracer.Trace(GetType(), "DisplaySQLResultsControl.SetSite", "", null);
-		if (_ServiceProvider != null)
+
+		if (!ThreadHelper.CheckAccess())
 		{
-			_ServiceProvider = null;
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
+
+		if (_ServiceProvider != null)
+			_ServiceProvider = null;
 
 		_ServiceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)sp);
 		_ObjServiceProvider = sp;
@@ -429,16 +439,17 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 
 	private void OnSqlExecutionModeChanged(object sender, AuxiliaryDocData.SqlExecutionModeChangedEventArgs sqlExecutionModeArgs)
 	{
-		EnSqlExecutionMode sqlExecutionMode = sqlExecutionModeArgs.SqlExecutionMode;
+		EnSqlOutputMode sqlExecutionMode = sqlExecutionModeArgs.SqlExecutionMode;
 		ProcessSqlExecMode(sqlExecutionMode);
-		ApplyResultSettingsToBatchConsumer(_BatchConsumer, AuxDocData.ResultsSettings);
+		ApplyLiveSettingsToBatchConsumer(_BatchConsumer, AuxDocData.LiveSettings);
 	}
 
-	private void OnResultSettingsChanged(object sender, AuxiliaryDocData.ResultsSettingsChangedEventArgs resultSettingsChangedArgs)
+	private void OnLiveSettingsChanged(object sender, AuxiliaryDocData.LiveSettingsChangedEventArgs liveSettingsChangedArgs)
 	{
 		OnSqlExecutionModeChanged(sender, new AuxiliaryDocData.SqlExecutionModeChangedEventArgs(AuxDocData.SqlExecutionMode));
-		_GridResultsPage.SetGridTabOptions(AuxDocData.ResultsSettings.IncludeColumnHeadersWhileSavingGridResults, AuxDocData.ResultsSettings.QuoteStringsContainingCommas);
-		DefaultResultsDirectory = AuxDocData.QryMgr.QueryExecutionSettings.ExecutionResults.ResultsDirectory;
+		_GridResultsPage.SetGridTabOptions(AuxDocData.LiveSettings.EditorResultsGridSaveIncludeHeaders,
+			AuxDocData.LiveSettings.EditorResultsGridCsvQuoteStringsCommas);
+		DefaultResultsDirectory = AuxDocData.QryMgr.LiveSettings.EditorResultsDirectory;
 	}
 
 	private void OnGridColorChanged(object sender, ColorChangedEventArgs args)
@@ -474,8 +485,9 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 	{
 		Tracer.Trace(GetType(), "DisplaySQLResultsControl.PrepareForExecution", "prepareForParse = {0}", prepareForParse);
 		(((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(SqlEditorPane.DocData)).QryMgr.ResultsHandler = BatchConsumer;
-		ResultsWriter resultsWriter = null;
-		if (AuxDocData.SqlExecutionMode == EnSqlExecutionMode.ResultsToFile && !prepareForParse && !AuxDocData.ResultsSettings.DiscardResultsForText && !WithEstimatedExecutionPlan)
+		AbstractResultsWriter resultsWriter = null;
+		if (AuxDocData.SqlExecutionMode == EnSqlOutputMode.ToFile && !prepareForParse
+			&& !AuxDocData.LiveSettings.EditorResultsTextDiscardResults && !WithEstimatedExecutionPlan)
 		{
 			StreamWriter textWriterForQueryResultsToFile = CommonUtils.GetTextWriterForQueryResultsToFile(xmlResults: false, ref _DefaultResultsDirectory);
 			if (textWriterForQueryResultsToFile == null)
@@ -497,7 +509,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 			_PlanWriter = _TextPlanPage.ResultsWriter;
 		}
 
-		if (AuxDocData.SqlExecutionMode == EnSqlExecutionMode.ResultsToText || ShouldDiscardResults || WithEstimatedExecutionPlan)
+		if (AuxDocData.SqlExecutionMode == EnSqlOutputMode.ToText || ShouldDiscardResults || WithEstimatedExecutionPlan)
 		{
 			resultsWriter = _TextResultsPage.ResultsWriter;
 		}
@@ -657,8 +669,8 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 	{
 		Tracer.Trace(GetType(), "DisplaySQLResultsControl.Initialize", "", null);
 		ProcessSqlExecMode(AuxDocData.SqlExecutionMode);
-		ApplyResultSettingsToBatchConsumer(_BatchConsumer, AuxDocData.ResultsSettings);
-		_ = DefaultResultsDirectory = AuxDocData.ResultsSettings.ResultsDirectory;
+		ApplyLiveSettingsToBatchConsumer(_BatchConsumer, AuxDocData.LiveSettings);
+		_ = DefaultResultsDirectory = AuxDocData.LiveSettings.EditorResultsDirectory;
 		_GridResultsPage = AllocateNewGridTabPage();
 		_GridResultsPage.Name = "_GridResultsPage";
 		_TextResultsPage = new(_DefaultResultsDirectory, xmlEditor: false)
@@ -717,19 +729,19 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 
 	public void AddStringToResults(string message, bool flush)
 	{
-		AddStringToTextWriterCommon(message, -1, null, ResultMessageType.Normal, _ResultsWriter, flush, noCr: false);
+		AddStringToTextWriterCommon(message, -1, null, EnResultMessageType.Normal, _ResultsWriter, flush, noCr: false);
 		_HasTextResults = true;
 	}
 
 	public void AddStringToPlan(string message, bool flush)
 	{
-		AddStringToTextWriterCommon(message, -1, null, ResultMessageType.Normal, _PlanWriter, flush, noCr: false);
+		AddStringToTextWriterCommon(message, -1, null, EnResultMessageType.Normal, _PlanWriter, flush, noCr: false);
 		// _HasTextPlan = true;
 	}
 
 	public void AddStringToMessages(string message, bool flush)
 	{
-		AddMessageToTextWriterCommon(message, -1, null, ResultMessageType.Normal, _MessagesWriter, flush, noCr: false);
+		AddMessageToTextWriterCommon(message, -1, null, EnResultMessageType.Normal, _MessagesWriter, flush, noCr: false);
 	}
 
 	public void AddStringToErrors(string message, bool flush)
@@ -740,7 +752,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 	public void AddStringToErrors(string message, int line, IBTextSpan textSpan, bool flush)
 	{
 		_HadExecutionErrors = true;
-		AddMessageToTextWriterCommon(message, line, textSpan, ResultMessageType.Error, _ErrorsWriter, flush, noCr: false);
+		AddMessageToTextWriterCommon(message, line, textSpan, EnResultMessageType.Error, _ErrorsWriter, flush, noCr: false);
 	}
 
 	public void AddResultSetSeparatorMsg()
@@ -748,16 +760,16 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 		AddStringToResults("", flush: true);
 	}
 
+
 	public void AddGridContainer(ResultSetAndGridContainer grid)
 	{
 		Tracer.Trace(GetType(), "DisplaySQLResultsControl.AddGridContainer", "", null);
 
-#pragma warning disable CS0618 // Type or member is obsolete
+
 		ThreadHelper.Generic.Invoke(delegate
 		{
 			AddGridContainerInt(grid);
 		});
-#pragma warning restore CS0618 // Type or member is obsolete
 
 		/*
 		Task task = Task.Factory.StartNew(delegate
@@ -806,20 +818,16 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 
 		if (!hasGraphs)
 		{
-#pragma warning disable CS0618 // Type or member is obsolete
 			ThreadHelper.Generic.Invoke(delegate
 			{
 				ProcessSpecialActionOnBatchInt(args.Action, executionPlanData);
 			});
-#pragma warning restore CS0618 // Type or member is obsolete
 			return;
 		}
-#pragma warning disable CS0618 // Type or member is obsolete
 		ThreadHelper.Generic.Invoke(delegate
 		{
 			ProcessSpecialActionOnBatchInt(args.Action, graphs, dataSource);
 		});
-#pragma warning restore CS0618 // Type or member is obsolete
 	}
 
 	private void ProcessSpecialActionOnBatchInt(EnQESQLBatchSpecialAction action, IGraph[] graphs, object dataSource)
@@ -837,7 +845,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 					AutoSize = true,
 				};
 				_ExecutionPlanPage.Initialize(_ObjServiceProvider);
-				((IObjectWithSite)_ExecutionPlanPage.ExecutionPlanCtl).SetSite(_ExecutionPlanPane);
+				((IBObjectWithSite)_ExecutionPlanPage.ExecutionPlanCtl).SetSite(_ExecutionPlanPane);
 			}
 
 			try
@@ -1003,16 +1011,16 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 		return dataReader;
 	}
 
-	private void AddMessageToTextWriterCommon(string message, int line, IBTextSpan textSpan, ResultMessageType resultMessageType, ResultsWriter writer, bool flush, bool noCr)
+	private void AddMessageToTextWriterCommon(string message, int line, IBTextSpan textSpan, EnResultMessageType resultMessageType, AbstractResultsWriter writer, bool flush, bool noCr)
 	{
 		AddStringToTextWriterCommon(message, line, textSpan, resultMessageType, writer, flush, noCr);
-		if (AuxDocData.SqlExecutionMode == EnSqlExecutionMode.ResultsToFile && _ResultsWriter != null && _ResultsWriter != writer)
+		if (AuxDocData.SqlExecutionMode == EnSqlOutputMode.ToFile && _ResultsWriter != null && _ResultsWriter != writer)
 		{
 			_ResultsWriter.AppendNormal(message, noCr);
 		}
 	}
 
-	private void AddStringToTextWriterCommon(string message, int line, IBTextSpan textSpan, ResultMessageType resultMessageType, ResultsWriter writer, bool flush, bool noCr)
+	private void AddStringToTextWriterCommon(string message, int line, IBTextSpan textSpan, EnResultMessageType resultMessageType, AbstractResultsWriter writer, bool flush, bool noCr)
 	{
 		if (message == null)
 		{
@@ -1021,13 +1029,13 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 
 		switch (resultMessageType)
 		{
-			case ResultMessageType.Normal:
+			case EnResultMessageType.Normal:
 				writer.AppendNormal(message, noCr);
 				break;
-			case ResultMessageType.Warning:
+			case EnResultMessageType.Warning:
 				writer.AppendWarning(message, noCr);
 				break;
-			case ResultMessageType.Error:
+			case EnResultMessageType.Error:
 				writer.AppendError(message, line, textSpan, noCr);
 				break;
 			default:
@@ -1048,12 +1056,10 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 
 		_HasMessages = true;
 
-#pragma warning disable CS0618 // Type or member is obsolete
 		ThreadHelper.Generic.Invoke(delegate
 		{
 			FlushTextWritersInt(writer);
 		});
-#pragma warning restore CS0618 // Type or member is obsolete
 
 		/*
  		Task task = Task.Factory.StartNew(delegate
@@ -1141,7 +1147,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 		Tracer.Trace(GetType(), "DisplaySQLResultsControl.UnhookFromEvents", "", null);
 		UnRegisterQueryExecutorEvents();
 		AuxDocData.SqlExecutionModeChangedEvent -= OnSqlExecutionModeChanged;
-		AuxDocData.ResultSettingsChangedEvent -= OnResultSettingsChanged;
+		AuxDocData.LiveSettingsChangedEvent -= OnLiveSettingsChanged;
 		FontAndColorProviderGridResults.Instance.ColorChangedEvent -= OnGridColorChanged;
 		FontAndColorProviderGridResults.Instance.FontChangedEvent -= OnGridFontChanged;
 	}
@@ -1184,14 +1190,14 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 		AddStringToMessages("------------------------*/", flush: true);
 	}
 
-	private void FlushTextWritersInt(ResultsWriter textWriter)
+	private void FlushTextWritersInt(AbstractResultsWriter textWriter)
 	{
 		if (textWriter != null)
 		{
 			textWriter.Flush();
-			if (AuxDocData.ResultsSettings.ScrollResultsAsReceivedForText)
+			if (AuxDocData.LiveSettings.EditorResultsTextScrollingResults)
 			{
-				if (AuxDocData.ResultsSettings.SqlExecutionMode == EnSqlExecutionMode.ResultsToText && textWriter == _TextResultsPage.ResultsWriter)
+				if (AuxDocData.LiveSettings.EditorResultsOutputMode == EnSqlOutputMode.ToText && textWriter == _TextResultsPage.ResultsWriter)
 				{
 					_TextResultsPage.ScrollTextViewToMaxScrollUnit();
 				}
@@ -1205,26 +1211,25 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 		if (_GridCount == C_MaxGridResultSets)
 		{
 			MarkAsCouldNotAddMoreGrids();
-			Exception ex = new QESQLBatchConsumerException(string.Format(CultureInfo.CurrentCulture, ControlsResources.CanDisplayOnlyNGridResults, C_MaxGridResultSets), QESQLBatchConsumerException.ErrorType.CannotShowMoreResults);
+			Exception ex = new QESQLBatchConsumerException(string.Format(CultureInfo.CurrentCulture, ControlsResources.CanDisplayOnlyNGridResults, C_MaxGridResultSets), QESQLBatchConsumerException.EnErrorType.CannotShowMoreResults);
 			Tracer.LogExThrow(GetType(), ex);
 			throw ex;
 		}
 
 		_GridCount++;
 		GridResultsPanel gridResultsPanel = null;
-		if (AuxDocData.ResultsSettings.ShowAllGridsInTheSameTab || !AuxDocData.ResultsSettings.ShowAllGridsInTheSameTab && _GridResultsPage.NumberOfGrids == 0)
+		if (AuxDocData.LiveSettings.EditorResultsGridSingleTab || !AuxDocData.LiveSettings.EditorResultsGridSingleTab && _GridResultsPage.NumberOfGrids == 0)
 		{
 			gridResultsPanel = _GridResultsPage;
 		}
 
 		gridResultsPanel.AddGridContainer(cont, _FontGridResults, _BkGridColor, _GridColor, _SelectedCellColor, _InactiveCellColor);
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.AddGridContainerInt", "returning");
 	}
 
-	private void ProcessSqlExecMode(EnSqlExecutionMode mode)
+	private void ProcessSqlExecMode(EnSqlOutputMode mode)
 	{
 		Tracer.Trace(GetType(), "DisplaySQLResultsControl.ProcessSqlExecMode", "", null);
-		if (!Enum.IsDefined(typeof(EnSqlExecutionMode), mode))
+		if (!Enum.IsDefined(typeof(EnSqlOutputMode), mode))
 		{
 			Exception ex = new ArgumentOutOfRangeException("mode");
 			Tracer.LogExThrow(GetType(), ex);
@@ -1239,11 +1244,11 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 
 		switch (mode)
 		{
-			case EnSqlExecutionMode.ResultsToText:
-			case EnSqlExecutionMode.ResultsToFile:
+			case EnSqlOutputMode.ToText:
+			case EnSqlOutputMode.ToFile:
 				_BatchConsumer = new ResultsToTextOrFileBatchConsumer(this);
 				break;
-			case EnSqlExecutionMode.ResultsToGrid:
+			case EnSqlOutputMode.ToGrid:
 				_BatchConsumer = new ResultsToGridBatchConsumer(this);
 				break;
 			default:
@@ -1252,16 +1257,16 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 		}
 	}
 
-	private void ApplyResultSettingsToBatchConsumer(AbstractQESQLBatchConsumer batchConsumer, IBQueryExecutionResultsSettings resultsSettings)
+	private void ApplyLiveSettingsToBatchConsumer(AbstractQESQLBatchConsumer batchConsumer, IBLiveUserSettings liveSettings)
 	{
 		Tracer.Trace(GetType(), "DisplaySQLResultsControl.ApplyResSettingsToBatchConsumer", "", null);
 		batchConsumer.MaxCharsPerColumn = MaxCharsPerColumn;
 		batchConsumer.DiscardResults = ShouldDiscardResults;
 		if (batchConsumer is ResultsToTextOrFileBatchConsumer obj)
 		{
-			obj.ColumnsDelimiter = resultsSettings.ColumnDelimiterForText;
-			obj.PrintColumnHeaders = resultsSettings.PrintColumnHeadersForText;
-			obj.RightAlignNumerics = resultsSettings.RightAlignNumericsForText;
+			obj.ColumnsDelimiter = liveSettings.EditorResultsTextDelimiter;
+			obj.PrintColumnHeaders = liveSettings.EditorResultsTextIncludeHeaders;
+			obj.RightAlignNumerics = liveSettings.EditorResultsTextAlignRightNumerics;
 		}
 	}
 
@@ -1279,7 +1284,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 			gridResultsPanel.Initialize(_ObjServiceProvider);
 		}
 
-		gridResultsPanel.SetGridTabOptions(AuxDocData.ResultsSettings.IncludeColumnHeadersWhileSavingGridResults, AuxDocData.ResultsSettings.QuoteStringsContainingCommas);
+		gridResultsPanel.SetGridTabOptions(AuxDocData.LiveSettings.EditorResultsGridSaveIncludeHeaders, AuxDocData.LiveSettings.EditorResultsGridCsvQuoteStringsCommas);
 		return gridResultsPanel;
 	}
 
@@ -1491,12 +1496,10 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 		}
 		*/
 
-#pragma warning disable CS0618 // Type or member is obsolete
 		ThreadHelper.Generic.Invoke(delegate
 		{
 			OnSqlExecutionCompletedInt(sender, args);
 		});
-#pragma warning restore CS0618 // Type or member is obsolete
 
 
 		/*
@@ -1554,7 +1557,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 			{
 				SqlEditorPane.ActivateMessageTab();
 			}
-			else if (AuxDocData.SqlExecutionMode == EnSqlExecutionMode.ResultsToGrid)
+			else if (AuxDocData.SqlExecutionMode == EnSqlOutputMode.ToGrid)
 			{
 				if (_GridResultsPage.NumberOfGrids > 0)
 				{
@@ -1565,7 +1568,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 					SqlEditorPane.IsResultsGridButtonVisible = false;
 				}
 			}
-			else if (AuxDocData.SqlExecutionMode == EnSqlExecutionMode.ResultsToText)
+			else if (AuxDocData.SqlExecutionMode == EnSqlOutputMode.ToText)
 			{
 				if (string.IsNullOrEmpty(_TextResultsPage.TextViewCtl.TextBuffer.Text))
 				{
@@ -1595,7 +1598,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 				_HadExecutionErrors = (args.ExecutionResult & EnScriptExecutionResult.Failure) != 0;
 			}
 
-			if (AuxDocData.SqlExecutionMode == EnSqlExecutionMode.ResultsToGrid && CouldNotShowSomeGridResults)
+			if (AuxDocData.SqlExecutionMode == EnSqlOutputMode.ToGrid && CouldNotShowSomeGridResults)
 			{
 				_TextMessagesPage.ResultsWriter.AppendError(string.Format(CultureInfo.CurrentCulture, ControlsResources.CanDisplayOnlyNGridResults, C_MaxGridResultSets));
 				_HasMessages = true;
@@ -1608,7 +1611,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 				text ??= ControlsResources.MsgCommandSuccess;
 
 				_TextMessagesPage.ResultsWriter.AppendNormal(text);
-				if (!_HasTextResults && AuxDocData.SqlExecutionMode == EnSqlExecutionMode.ResultsToFile && _ResultsWriter != null)
+				if (!_HasTextResults && AuxDocData.SqlExecutionMode == EnSqlOutputMode.ToFile && _ResultsWriter != null)
 				{
 					_ResultsWriter.AppendNormal(text);
 				}
@@ -1646,7 +1649,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 
 	private void OnQueryExecutorStatusChanged(object sender, QueryManager.StatusChangedEventArgs args)
 	{
-		if (args.Change == QueryManager.StatusType.Connection)
+		if (args.Change == QueryManager.EnStatusType.Connection)
 		{
 			_ClearStatisticsControl = true;
 		}
@@ -1655,7 +1658,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 	private void OnSqlCmdOutputRedirection(object sender, QEOLESQLOutputRedirectionEventArgs args)
 	{
 		Tracer.Trace(GetType(), "DisplaySQLResultsControl.OnSqlCmdOutputRedirection", "", null);
-		ResultsWriter resultsWriter = _TextResultsPage.ResultsWriter;
+		AbstractResultsWriter resultsWriter = _TextResultsPage.ResultsWriter;
 		if (args.FullFileName != null && args.FullFileName != "stderr" && args.FullFileName != "stdout")
 		{
 			resultsWriter = new FileStreamResultsWriter(args.FullFileName, append: false);
@@ -1709,7 +1712,7 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 			if (_ResultRedirBatchConsumer == null)
 			{
 				_ResultRedirBatchConsumer = new ResultsToTextOrFileBatchConsumer(this);
-				ApplyResultSettingsToBatchConsumer(_ResultRedirBatchConsumer, AuxDocData.ResultsSettings);
+				ApplyLiveSettingsToBatchConsumer(_ResultRedirBatchConsumer, AuxDocData.LiveSettings);
 			}
 
 			args.BatchConsumer = _ResultRedirBatchConsumer;
@@ -1722,11 +1725,11 @@ public class DisplaySQLResultsControl : ISqlQueryExecutionHandler, IQueryExecuti
 		string message = args.Message;
 		if (args.StdOut)
 		{
-			AddMessageToTextWriterCommon(message, -1, null, ResultMessageType.Normal, _MessagesWriter, flush: true, noCr: true);
+			AddMessageToTextWriterCommon(message, -1, null, EnResultMessageType.Normal, _MessagesWriter, flush: true, noCr: true);
 			return;
 		}
 
 		_HadExecutionErrors = true;
-		AddMessageToTextWriterCommon(message, -1, null, ResultMessageType.Error, _ErrorsWriter, flush: true, noCr: true);
+		AddMessageToTextWriterCommon(message, -1, null, EnResultMessageType.Error, _ErrorsWriter, flush: true, noCr: true);
 	}
 }

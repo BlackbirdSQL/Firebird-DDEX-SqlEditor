@@ -80,6 +80,15 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot instantiate EditorExtensionAsyncPackage from abstract ancestor.
+        /// </summary>
+        public static string ErrCannotInstantiateFromAbstractAncestor {
+            get {
+                return ResourceManager.GetString("ErrCannotInstantiateFromAbstractAncestor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Execution time-out value should be an integer between {0} and {1}..
         /// </summary>
         public static string ErrInvalidExecutionTimeout {
@@ -143,21 +152,56 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to FB-SQL editor error message marker.
+        /// </summary>
+        public static string ErrorMarkerDescription {
+            get {
+                return ResourceManager.GetString("ErrorMarkerDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error Message.
+        /// </summary>
+        public static string ErrorMarkerDisplayName {
+            get {
+                return ResourceManager.GetString("ErrorMarkerDisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to subscribe to Settings events.
+        /// </summary>
+        public static string ExceptionFailedToSubscribeSettingsEvents {
+            get {
+                return ResourceManager.GetString("ExceptionFailedToSubscribeSettingsEvents", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value of &apos;{1}&apos; is not valid for &apos;{0}&apos;. &apos;{0}&apos; should be between {2} and {3}..
+        /// </summary>
+        public static string ExceptionInvalidBoundArgument {
+            get {
+                return ResourceManager.GetString("ExceptionInvalidBoundArgument", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service for interface {0} unavailable..
+        /// </summary>
+        public static string ExceptionNoInterface {
+            get {
+                return ResourceManager.GetString("ExceptionNoInterface", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please select directory.
         /// </summary>
         public static string PleaseSelectDirectory {
             get {
                 return ResourceManager.GetString("PleaseSelectDirectory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        public static System.Drawing.Icon Properties_16x {
-            get {
-                object obj = ResourceManager.GetObject("Properties_16x", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
             }
         }
         

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace BlackbirdSql.Common.Controls.Graphing.Parsers;
 
-internal class XmlPlanHierarchyParser : XmlPlanParser
+internal class XmlPlanHierarchyParser : AbstractXmlPlanParser
 {
 	private static XmlPlanHierarchyParser xmlPlanHierarchyParser;
 
@@ -27,7 +27,7 @@ internal class XmlPlanHierarchyParser : XmlPlanParser
 	{
 		foreach (object child in GetChildren(parsedItem))
 		{
-			XmlPlanParser parser = XmlPlanParserFactory.GetParser(child.GetType());
+			AbstractXmlPlanParser parser = XmlPlanParserFactory.GetParser(child.GetType());
 			foreach (FunctionTypeItem item in parser.ExtractFunctions(child))
 			{
 				yield return item;

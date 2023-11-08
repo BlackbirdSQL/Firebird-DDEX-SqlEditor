@@ -138,8 +138,8 @@ private:
 		if (!isException && !EnableDiagnostics && !EnableTrace)
 			return;
 
-		int sourceLineNumber = 0;
-		SysStr^ methodName = "Release:Unavailable", ^ sourceFilePath = "Release:Unavailable";
+		int sourceLineNumber = -1;
+		SysStr^ methodName = "[Release: MemberName Unavailable]", ^ sourceFilePath = "[Release: SourcePath Unavailable]";
 
 #ifdef _DEBUG
 		StackFrame^ frame = frame = stack->GetFrame(0);

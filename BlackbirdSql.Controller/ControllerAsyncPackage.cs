@@ -183,7 +183,6 @@ public abstract class ControllerAsyncPackage : EditorExtensionAsyncPackage
 	{
 		try
 		{
-			ThreadHelper.ThrowIfNotOnUIThread();
 			((PackageController)_Controller)?.Dispose();
 		}
 		catch (Exception ex)

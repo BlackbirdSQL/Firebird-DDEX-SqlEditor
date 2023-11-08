@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 namespace BlackbirdSql.Common.Controls.Graphing.Parsers;
 
-internal sealed class FunctionTypeParser : XmlPlanParser
+internal sealed class FunctionTypeParser : AbstractXmlPlanParser
 {
 	private static FunctionTypeParser functionTypeParser;
 
@@ -20,7 +20,7 @@ internal sealed class FunctionTypeParser : XmlPlanParser
 
 	public override Node GetCurrentNode(object item, object parentItem, Node parentNode, NodeBuilderContext context)
 	{
-		Node node = XmlPlanParser.NewNode(context);
+		Node node = AbstractXmlPlanParser.NewNode(context);
 		bool flag = false;
 		if (parentItem != null)
 		{

@@ -196,11 +196,11 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to subscribe to Option events.
+        ///   Looks up a localized string similar to Failed to subscribe to Settings events.
         /// </summary>
-        public static string ExceptionFailedToSubscribeOptionEvents {
+        public static string ExceptionFailedToSubscribeSettingsEvents {
             get {
-                return ResourceManager.GetString("ExceptionFailedToSubscribeOptionEvents", resourceCulture);
+                return ResourceManager.GetString("ExceptionFailedToSubscribeSettingsEvents", resourceCulture);
             }
         }
         

@@ -48,9 +48,9 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 				{
 					if (!descriptor.IsPublicMandatory)
 						continue;
-					if (!ConnectionUIProperties.ContainsKey(descriptor.DerivedParameter))
+					if (!ConnectionUIProperties.ContainsKey(descriptor.DerivedConnectionParameter))
 					{
-						Diag.Stack("ConnectionUIProperties public mandatory core property missing: " + descriptor.DerivedParameter);
+						Diag.Stack("ConnectionUIProperties public mandatory core property missing: " + descriptor.DerivedConnectionParameter);
 						return false;
 					}
 				}
@@ -59,9 +59,9 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 				{
 					if (!descriptor.IsPublicMandatory)
 						continue;
-					if (!ConnectionUIProperties.ContainsKey(descriptor.DerivedParameter))
+					if (!ConnectionUIProperties.ContainsKey(descriptor.DerivedConnectionParameter))
 					{
-						Diag.Stack("ConnectionUIProperties public mandatory schema property missing: " + descriptor.DerivedParameter);
+						Diag.Stack("ConnectionUIProperties public mandatory schema property missing: " + descriptor.DerivedConnectionParameter);
 						return false;
 					}
 				}
@@ -137,6 +137,8 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 	// ---------------------------------------------------------------------------------
 	public new string ShowDialog(IVsDataConnectionSupport dataConnectionSupport)
 	{
+		Tracer.Trace(GetType(), "ShowDialog()");
+
 		try
 		{
 			return base.ShowDialog(dataConnectionSupport);
@@ -158,6 +160,8 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 	// ---------------------------------------------------------------------------------
 	protected override void LoadProperties()
 	{
+		Tracer.Trace(GetType(), "LoadProperties()");
+
 		try
 		{
 			ConnectionUIProperties.Parse(ConnectionSupport.ConnectionString);
@@ -170,8 +174,8 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 
 		try
 		{
-			serverTextBox.Text = ConnectionUIProperties["Data Source"] as string;
-			databaseTextBox.Text = ConnectionUIProperties["Initial Catalog"] as string;
+			serverTextBox.Text = ConnectionUIProperties["DataSource"] as string;
+			databaseTextBox.Text = ConnectionUIProperties["Database"] as string;
 
 			userNameTextBox.Text = ConnectionUIProperties["User ID"] as string;
 			if (ConnectionUIProperties.TryGetValue("Password", out object value))
@@ -211,12 +215,12 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 		{
 			if (serverTextBox.Enabled)
 			{
-				ConnectionUIProperties["Data Source"] = serverTextBox.Text.Trim();
+				ConnectionUIProperties["DataSource"] = serverTextBox.Text.Trim();
 			}
 
 			if (databaseTextBox.Enabled)
 			{
-				ConnectionUIProperties["Initial Catalog"] = databaseTextBox.Text.Trim();
+				ConnectionUIProperties["Database"] = databaseTextBox.Text.Trim();
 			}
 
 			if (userNameTextBox.Enabled)

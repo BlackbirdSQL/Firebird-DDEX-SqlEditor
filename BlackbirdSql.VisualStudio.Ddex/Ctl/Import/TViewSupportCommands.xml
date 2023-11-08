@@ -38,16 +38,6 @@
 		<CommandRef name="CommandHookCommandSet" arguments="0x0335" />
 	</Define>
 
-	<!-- Server Explorer input commands -->
-	<Define name="CommandRightClick">
-		<CommandRef name="CommandHookVsUiHierarchy" arguments="0x0001" />
-	</Define>
-	<Define name="CommandDoubleClick">
-		<CommandRef name="CommandHookVsUiHierarchy" arguments="0x0002" />
-	</Define>
-	<Define name="CommandEnterKey">
-		<CommandRef name="CommandHookVsUiHierarchy" arguments="0x0003" />
-	</Define>
 
 	<!-- Built-in DataTools commands hook -->
 	<Define name="CommandHookDataTools" parameters="cmdid">
@@ -72,10 +62,6 @@
 	</Define>
 	<Define name="CommandHookCommandSet" parameters="cmdid">
 		<Command guid="13CD7876-FC84-4DDA-91BF-4CDBF893B134" cmdid="$(cmdid)"
-				 provider="BlackbirdSql.VisualStudio.Ddex.Ctl.CommandProviders.UniversalCommandProvider"  isDefault="true" />
-	</Define>
-	<Define name="CommandHookVsUiHierarchy" parameters="cmdid">
-		<Command guid="60481700-078B-11D1-AAF8-00A0C9055A90" cmdid="$(cmdid)"
 				 provider="BlackbirdSql.VisualStudio.Ddex.Ctl.CommandProviders.UniversalCommandProvider"  isDefault="true" />
 	</Define>
 </DataViewSupport>

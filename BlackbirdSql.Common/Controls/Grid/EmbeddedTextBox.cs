@@ -19,7 +19,7 @@ using Microsoft.VisualStudio;
 // namespace Microsoft.SqlServer.Management.UI.Grid
 namespace BlackbirdSql.Common.Controls.Grid
 {
-	public class EmbeddedTextBox : TextBox, IGridEmbeddedControl, IGridEmbeddedControlManagement2, IGridEmbeddedControlManagement
+	public class EmbeddedTextBox : TextBox, IBGridEmbeddedControl, IBGridEmbeddedControlManagement2, IBGridEmbeddedControlManagement
 	{
 		protected int m_MarginsWidth;
 

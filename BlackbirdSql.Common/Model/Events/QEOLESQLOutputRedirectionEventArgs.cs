@@ -19,13 +19,13 @@ public class QEOLESQLOutputRedirectionEventArgs : EventArgs
 
 	private readonly EnQEOLESQLOutputCategory _redirCategory;
 
-	private IQESQLBatchConsumer _curConsumer;
+	private IBQESQLBatchConsumer _curConsumer;
 
 	public EnQEOLESQLOutputCategory OutputRedirectionCategory => _redirCategory;
 
 	public string FullFileName => _fullFileName;
 
-	public IQESQLBatchConsumer BatchConsumer
+	public IBQESQLBatchConsumer BatchConsumer
 	{
 		get
 		{
@@ -41,7 +41,7 @@ public class QEOLESQLOutputRedirectionEventArgs : EventArgs
 	{
 	}
 
-	public QEOLESQLOutputRedirectionEventArgs(EnQEOLESQLOutputCategory category, string fullFileName, IQESQLBatchConsumer curConsumer)
+	public QEOLESQLOutputRedirectionEventArgs(EnQEOLESQLOutputCategory category, string fullFileName, IBQESQLBatchConsumer curConsumer)
 	{
 		_fullFileName = fullFileName;
 		_redirCategory = category;

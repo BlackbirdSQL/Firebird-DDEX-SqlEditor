@@ -13,7 +13,7 @@ using BlackbirdSql.Common.Model.Interfaces;
 // namespace Microsoft.SqlServer.Management.UI.Grid
 namespace BlackbirdSql.Common.Model;
 
-public abstract class AbstractStorageView : IStorageView, IDisposable
+public abstract class AbstractStorageView : IBStorageView, IDisposable
 {
 	protected const int C_DEFAULT_MAX_NUM_BYTES_TO_DISPLAY = 256;
 

@@ -5,22 +5,20 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Runtime.InteropServices;
-using BlackbirdSql.Core;
+
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
+using BlackbirdSql.Core;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-using System.Data;
-using System.Windows.Documents;
-using BlackbirdSql.Common.Model;
 using Microsoft.VisualStudio.TextManager.Interop;
-using System.Data.Common;
-using BlackbirdSql.Common.Ctl.Interfaces;
-using BlackbirdSql.Core.Ctl.Extensions;
+
 
 namespace BlackbirdSql.Common.Ctl.Commands;
-
 
 public class SqlEditorSqlDatabaseListCommand : AbstractSqlEditorCommand
 {
@@ -33,23 +31,18 @@ public class SqlEditorSqlDatabaseListCommand : AbstractSqlEditorCommand
 		{
 			if (_DatabaseList == null)
 			{
-				DataTable databases = XmlParser.Databases;
-
 				int k = 1;
 				int i = 1;
-				string nodeDatasetKey = null;
+				string nodeDisplayMember = null;
 
 				if (_Csb != null)
-					nodeDatasetKey = (string)_Csb["DatasetKey"];
+					nodeDisplayMember = (string)_Csb["DatasetKey"];
 
-				foreach (DataRow row in databases.Rows)
+				foreach (KeyValuePair<string, string> pair in MonikerAgent.RegisteredDatasets)
 				{
-					if ((string)row["Name"] == "")
-						continue;
-
 					if (i > 0)
 					{
-						if (nodeDatasetKey.Equals((string)row["DatasetKey"], StringComparison.OrdinalIgnoreCase))
+						if (nodeDisplayMember.Equals(pair.Key, StringComparison.OrdinalIgnoreCase))
 						{
 							k--;
 							i--;
@@ -63,16 +56,11 @@ public class SqlEditorSqlDatabaseListCommand : AbstractSqlEditorCommand
 				_DatabaseList = new string[k];
 
 				if (i > 0)
-				{
 					_DatabaseList[0] = (string)_Csb["DatasetKey"];
-				}
 
-				foreach (DataRow row in databases.Rows)
+				foreach (KeyValuePair<string, string> pair in MonikerAgent.RegisteredDatasets)
 				{
-					if ((string)row["Name"] == "")
-						continue;
-
-					_DatabaseList[i] = (string)row["DatasetKey"];
+					_DatabaseList[i] = pair.Key;
 					i++;
 				}
 			}

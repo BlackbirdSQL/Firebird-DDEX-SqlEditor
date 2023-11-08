@@ -1,11 +1,13 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.Design.Core, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Common.VsColorUtilities
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using System.Windows.Media;
-using BlackbirdSql.Common;
+using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -13,19 +15,23 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.Win32;
 
 
+namespace BlackbirdSql.Common.Ctl;
 
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 public static class VsColorUtilities
 {
-	private static System.Drawing.Pen _panelBorderPen;
+	private static System.Drawing.Pen _PanelBorderPen;
 
-	private static IVsUIShell2 _uiShell;
+	private static IVsUIShell2 _UiShell;
 
-	private static IVsFontAndColorUtilities _vsFontAndColorUtilities;
+	private static IVsFontAndColorUtilities _FontAndColorUtilities;
 
-	private static SolidColorBrush _ssoxFillSelectedBrush;
+	private static SolidColorBrush _SsoxFillSelectedBrush;
 
-	private static SolidColorBrush _ssoxActiveCaptionTextBrush;
+	private static SolidColorBrush _SsoxActiveCaptionTextBrush;
+
 
 	public static System.Drawing.Pen PanelBorderPen
 	{
@@ -33,7 +39,7 @@ public static class VsColorUtilities
 		{
 			if (System.Windows.Forms.Application.RenderWithVisualStyles)
 			{
-				return _panelBorderPen ??= new System.Drawing.Pen(VisualStyleInformation.TextControlBorder);
+				return _PanelBorderPen ??= new System.Drawing.Pen(VisualStyleInformation.TextControlBorder);
 			}
 			return SystemPens.ControlDark;
 		}
@@ -55,8 +61,15 @@ public static class VsColorUtilities
 	{
 		get
 		{
-			_uiShell ??= Package.GetGlobalService(typeof(SVsUIShell)) as IVsUIShell2;
-			return _uiShell;
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
+			return _UiShell ??= Package.GetGlobalService(typeof(SVsUIShell)) as IVsUIShell2;
+
 		}
 	}
 
@@ -64,8 +77,14 @@ public static class VsColorUtilities
 	{
 		get
 		{
-			_vsFontAndColorUtilities ??= Package.GetGlobalService(typeof(SVsFontAndColorStorage)) as IVsFontAndColorUtilities;
-			return _vsFontAndColorUtilities;
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
+			return _FontAndColorUtilities ??= Package.GetGlobalService(typeof(SVsFontAndColorStorage)) as IVsFontAndColorUtilities;
 		}
 	}
 
@@ -76,109 +95,146 @@ public static class VsColorUtilities
 
 	private static void HandleUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
 	{
-		_panelBorderPen = null;
-		_ssoxFillSelectedBrush = null;
-		_ssoxActiveCaptionTextBrush = null;
+		_PanelBorderPen = null;
+		_SsoxFillSelectedBrush = null;
+		_SsoxActiveCaptionTextBrush = null;
 	}
 
 	public static System.Drawing.Color GetWatermarkBackgroundColor()
 	{
-		return GetShellColor(-47);
+		return GetShellColor(__VSSYSCOLOREX.VSCOLOR_DESIGNER_TRAY);
 	}
 
 	public static System.Drawing.Color GetWatermarkForegroundColor()
 	{
-		return GetShellColor(-219);
+		return GetShellColor(__VSSYSCOLOREX3.VSCOLOR_WINDOWTEXT);
 	}
 
 	public static System.Drawing.Color GetGridBackgroundHighlightColor()
 	{
-		return GetShellColor(-77);
+		return GetShellColor(__VSSYSCOLOREX.VSCOLOR_HELP_SEARCH_FRAME_BACKGROUND);
 	}
 
 	public static System.Drawing.Color GetGhostedTextColor()
 	{
-		return GetShellColor(-26);
+		return GetShellColor(__VSSYSCOLOREX.VSCOLOR_CONTROL_EDIT_HINTTEXT);
 	}
 
 	public static void GetToolTipColors(out System.Drawing.Color background, out System.Drawing.Color border, out System.Drawing.Color text)
 	{
-		background = GetShellColor(-127);
-		border = GetShellColor(-126);
-		text = GetShellColor(-128);
+		background = GetShellColor(__VSSYSCOLOREX.VSCOLOR_SCREENTIP_BACKGROUND);
+		border = GetShellColor(__VSSYSCOLOREX.VSCOLOR_SCREENTIP_BORDER);
+		text = GetShellColor(__VSSYSCOLOREX.VSCOLOR_SCREENTIP_TEXT);
 	}
 
 	public static SolidColorBrush GetSqlServerObjectExplorerFillSelectedBrush()
 	{
-		if (_ssoxFillSelectedBrush == null)
+		if (_SsoxFillSelectedBrush == null)
 		{
 			if (SystemInformation.HighContrast)
 			{
-				_ssoxFillSelectedBrush = System.Windows.SystemColors.ActiveCaptionBrush;
+				_SsoxFillSelectedBrush = System.Windows.SystemColors.ActiveCaptionBrush;
 			}
 			else
 			{
-				_ssoxFillSelectedBrush = GetShellMediaBrush(-299);
+				_SsoxFillSelectedBrush = GetShellMediaBrush(-299);
 			}
 		}
-		return _ssoxFillSelectedBrush;
+		return _SsoxFillSelectedBrush;
 	}
 
 	public static SolidColorBrush GetSqlServerObjectExplorerActiveCaptionTextBrush()
 	{
-		if (_ssoxActiveCaptionTextBrush == null)
+		if (_SsoxActiveCaptionTextBrush == null)
 		{
 			if (SystemInformation.HighContrast)
 			{
-				_ssoxActiveCaptionTextBrush = System.Windows.SystemColors.ActiveCaptionTextBrush;
+				_SsoxActiveCaptionTextBrush = System.Windows.SystemColors.ActiveCaptionTextBrush;
 			}
 			else
 			{
-				_ssoxActiveCaptionTextBrush = GetShellMediaBrush(-38);
+				_SsoxActiveCaptionTextBrush = GetShellMediaBrush(-38);
 			}
 		}
-		return _ssoxActiveCaptionTextBrush;
+		return _SsoxActiveCaptionTextBrush;
 	}
 
 	public static System.Drawing.Color GetShellColor(COLORINDEX colorIndex)
 	{
 		System.Drawing.Color empty = System.Drawing.Color.Empty;
 		IVsFontAndColorUtilities fontAndColorUtilities = FontAndColorUtilities;
+
 		if (fontAndColorUtilities == null)
-		{
 			return empty;
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
+
 		fontAndColorUtilities.GetRGBOfIndex(colorIndex, out var pcrResult);
+
 		return ColorTranslator.FromWin32((int)pcrResult);
 	}
 
-	public static System.Drawing.Color GetShellColor(int color)
+	public static System.Drawing.Color GetShellColor(__VSSYSCOLOREX color)
+	{
+		return GetShellColor((int)color);
+	}
+
+	public static System.Drawing.Color GetShellColor(__VSSYSCOLOREX2 color)
+	{
+		return GetShellColor((int)color);
+	}
+	public static System.Drawing.Color GetShellColor(__VSSYSCOLOREX3 color)
+	{
+		return GetShellColor((int)color);
+	}
+
+	private static System.Drawing.Color GetShellColor(int color)
 	{
 		System.Drawing.Color empty = System.Drawing.Color.Empty;
 		IVsUIShell2 uiShell = UiShell;
+
 		if (uiShell == null)
-		{
 			return empty;
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
-		Native.ThrowOnFailure(uiShell.GetVSSysColorEx(color, out var pdwRGBval));
+
+		Native.ThrowOnFailure(uiShell.GetVSSysColorEx(color, out uint pdwRGBval));
+
 		return ColorTranslator.FromWin32((int)pdwRGBval);
 	}
 
 	public static void AssignStandardColors(LinkLabel linkLabel)
 	{
-		linkLabel.ActiveLinkColor = GetShellColor(-30);
-		linkLabel.LinkColor = GetShellColor(-29);
-		linkLabel.VisitedLinkColor = GetShellColor(-31);
+		linkLabel.ActiveLinkColor = GetShellColor(__VSSYSCOLOREX.VSCOLOR_CONTROL_LINK_TEXT_HOVER);
+		linkLabel.LinkColor = GetShellColor(__VSSYSCOLOREX.VSCOLOR_CONTROL_LINK_TEXT);
+		linkLabel.VisitedLinkColor = GetShellColor(__VSSYSCOLOREX.VSCOLOR_CONTROL_LINK_TEXT_PRESSED);
 	}
 
 	private static System.Windows.Media.Color GetMediaColor(int colorIndex)
 	{
 		if (UiShell == null)
-		{
 			throw new InvalidOperationException();
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
+
 		ErrorHandler.ThrowOnFailure(UiShell.GetVSSysColorEx(colorIndex, out var pdwRGBval));
 		System.Drawing.Color color = ColorTranslator.FromWin32((int)pdwRGBval);
+
 		return System.Windows.Media.Color.FromArgb(color.A, color.R, color.G, color.B);
 	}
 

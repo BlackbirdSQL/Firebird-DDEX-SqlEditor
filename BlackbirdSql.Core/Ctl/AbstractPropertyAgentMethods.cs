@@ -18,15 +18,16 @@ using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Properties;
-
+using FirebirdSql.Data.FirebirdClient;
 
 namespace BlackbirdSql.Core;
-
 
 // =========================================================================================================
 //
 //									AbstractPropertyAgent Class - Methods
 //
+// The base class for all property based dispatcher and connection classes used in conjunction with
+// PropertySet static classes.
 // =========================================================================================================
 public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 {
@@ -37,11 +38,12 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 	protected static DescriberDictionary _Describers = null;
 
-	protected DbConnection _Connection = null;
+	protected DbConnection _DataConnection = null;
 	protected DbConnectionStringBuilder _ConnectionStringBuilder;
-	protected string _DisplayName;
+	protected string _DatasetKey = null;
 	protected long _Id;
 	protected bool _IsDisposed;
+	// A protected 'this' object lock
 	protected object _LockObject = new object();
 	protected static long _Seed = -1L;
 	protected object _Null = new();
@@ -250,7 +252,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 						if ((int)value1 != (int)value2)
 							return false;
 						break;
-					case "bool":
+					case "boolean":
 						if ((bool)value1 != (bool)value2)
 							return false;
 						break;
@@ -317,8 +319,8 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		}
 		else if (lhs is SecureString secureValue)
 		{
-			result = string.CompareOrdinal(secureValue.SecureStringToString(),
-				((SecureString)rhs).SecureStringToString());
+			result = string.CompareOrdinal(secureValue.ToReadable(),
+				((SecureString)rhs).ToReadable());
 		}
 		else if (lhs is byte[] byteValue)
 		{
@@ -425,6 +427,8 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		{
 			lhs.SetProperty(pair.Key, pair.Value);
 		}
+
+		lhs.Channel = Channel;
 	}
 
 
@@ -623,9 +627,9 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 		while (xmlTextReader.Read())
 		{
-			if (xmlTextReader.NodeType == XmlNodeType.Element && xmlTextReader.LocalName == "DisplayName")
+			if (xmlTextReader.NodeType == XmlNodeType.Element && xmlTextReader.LocalName == "DisplayMember")
 			{
-				DisplayName = xmlTextReader.ReadString();
+				DisplayMember = xmlTextReader.ReadString();
 				break;
 			}
 		}
@@ -686,23 +690,24 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	public virtual void Parse(DbConnectionStringBuilder csb)
 	{
 		bool changed = false;
-		Describer descriptor;
+		Describer describer;
 
 		foreach (KeyValuePair<string, object> pair in csb)
 		{
-			if (pair.Key.ToLower() == "datasetkey")
+			string lckey = pair.Key.ToLower();
+			if (lckey == "displaymember" || lckey == "datasetkey" || lckey == "dataset")
 				continue;
 
-			descriptor = Describers.GetSynonymDescriptor(pair.Key);
+			describer = Describers.GetSynonymDescriptor(pair.Key);
 
-			if (descriptor == null)
+			if (describer == null)
 			{
 				NotSupportedException ex = new($"Connection parameter '{pair.Key}' has no descriptor property configured.");
 				Diag.Dug(ex);
 				continue;
 			}
 
-			if (SetProperty(descriptor.Name, pair.Value))
+			if (SetProperty(describer.Name, pair.Value))
 				changed = true;
 		}
 
@@ -839,7 +844,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	public virtual void SaveToStream(XmlWriter writer, bool unsecured)
 	{
 		writer.WriteStartElement("ConnectionInformation");
-		writer.WriteElementString("DisplayName", null, DisplayName);
+		writer.WriteElementString("DisplayMember", null, DisplayMember);
 
 		string key;
 		object value;
@@ -855,7 +860,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 			if (pair.Key == "InMemoryPassword")
 			{
 				key = "Password";
-				value = ((SecureString)pair.Value).SecureStringToString();
+				value = ((SecureString)pair.Value).ToReadable();
 			}
 			else
 			{

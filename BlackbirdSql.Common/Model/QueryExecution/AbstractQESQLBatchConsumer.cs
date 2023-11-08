@@ -7,13 +7,15 @@ using System.IO;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Model;
+
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 
 
-public abstract class AbstractQESQLBatchConsumer : IQESQLBatchConsumer, IDisposable
+public abstract class AbstractQESQLBatchConsumer : IBQESQLBatchConsumer, IDisposable
 {
-	protected int _MaxCharsPerColumn = AbstractQESQLExec.DefaultMaxCharsPerColumnForText;
+	protected int _MaxCharsPerColumn = ModelConstants.C_DefaultTextMaxCharsPerColumnStd;
 
 	protected bool _DiscardResults = true;
 
@@ -27,7 +29,7 @@ public abstract class AbstractQESQLBatchConsumer : IQESQLBatchConsumer, IDisposa
 
 	protected const int C_NewMessagesFlushFreqMore1000 = 100;
 
-	protected ISqlQueryExecutionHandler _ResultsControl;
+	protected IBSqlQueryExecutionHandler _ResultsControl;
 
 	private MoreRowsAvailableEventHandler _MoreRowsFromDSForDiscardHandler;
 
@@ -57,7 +59,7 @@ public abstract class AbstractQESQLBatchConsumer : IQESQLBatchConsumer, IDisposa
 		}
 	}
 
-	protected AbstractQESQLBatchConsumer(ISqlQueryExecutionHandler resultsControl)
+	protected AbstractQESQLBatchConsumer(IBSqlQueryExecutionHandler resultsControl)
 	{
 		Tracer.Trace(GetType(), "QESQLBatchConsumerBase.QESQLBatchConsumerBase", "", null);
 		_ResultsControl = resultsControl;

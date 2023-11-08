@@ -8,8 +8,10 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows.Threading;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
@@ -18,10 +20,14 @@ using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
-
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 
 namespace BlackbirdSql.Common.Model;
 
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
+[SuppressMessage("Usage", "VSTHRD001:Avoid legacy thread switching APIs")]
 
 // =========================================================================================================
 //									AbstractDispatcherConnection Class
@@ -64,6 +70,9 @@ public class AbstractDispatcherConnection : AbstractModelPropertyAgent
 
 
 	public Dispatcher Dispatcher => _Dispatcher;
+
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public bool IsUIThread => Dispatcher.CheckAccess();
 
 
 	#endregion Property Accessors
@@ -125,52 +134,55 @@ public class AbstractDispatcherConnection : AbstractModelPropertyAgent
 
 
 	[EditorBrowsable(EditorBrowsableState.Never)]
-	public bool CheckAccess()
-	{
-		return Dispatcher.CheckAccess();
-	}
-
-	[EditorBrowsable(EditorBrowsableState.Never)]
 	protected void VerifyAccess()
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		Dispatcher.VerifyAccess();
 	}
+
+
 
 	public void CheckAccessExecute(Action action)
 	{
 		Cmd.CheckForNull(action, "action");
-		if (CheckAccess())
-		{
+
+		if (IsUIThread)
 			action();
-		}
 		else
-		{
 			Dispatcher.Invoke(action, DispatcherPriority.Normal);
-		}
 	}
+
+
 
 	public void CheckAccessBeginExecute(Action action)
 	{
 		Cmd.CheckForNull(action, "action");
-		if (CheckAccess())
-		{
+
+#pragma warning disable VSTHRD110 // Observe result of async calls
+
+		if (IsUIThread)
 			action();
-		}
 		else
-		{
 			Dispatcher.BeginInvoke(action, DispatcherPriority.Normal);
-		}
+
+#pragma warning restore VSTHRD110 // Observe result of async calls
 	}
 
 	public TResult CheckAccessExecute<TResult>(Func<TResult> func)
 	{
 		Cmd.CheckForNull(func, "action");
-		if (CheckAccess())
-		{
+
+		if (IsUIThread)
 			return func();
-		}
 
 		return Dispatcher.Invoke(func, DispatcherPriority.Normal);
+
 	}
 
 

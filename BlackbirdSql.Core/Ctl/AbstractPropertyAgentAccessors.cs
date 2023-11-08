@@ -15,6 +15,7 @@ using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 
 using Microsoft.Data.ConnectionUI;
+using Microsoft.VisualStudio.Data;
 
 
 namespace BlackbirdSql.Core;
@@ -23,6 +24,8 @@ namespace BlackbirdSql.Core;
 //									AbstractPropertyAgent Class - Accessors
 //
 /// <summary>
+/// The base class for all property based dispatcher and connection classes used in conjunction with
+/// PropertySet static classes.
 /// A conglomerate base class that supports dynamic addition of properties and parsing functionality for
 /// <see cref="DbConnectionStringBuilder"/>, <see cref="MonikerAgent"/> and property strings as
 /// well as support for the <see cref="IDisposable"/>, <see cref="ICustomTypeDescriptor"/>,
@@ -57,7 +60,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	protected int _GetSetCardinal = 0;
 
 
-	#endregion Accesor Variables
+	#endregion Accessor Variables
 
 
 
@@ -89,14 +92,14 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	{
 		get
 		{
-			if (_Connection == null)
+			if (_DataConnection == null)
 			{
 				NotImplementedException ex = new("DataConnection");
 				Diag.Dug(ex);
 				throw ex;
 			}
 
-			return _Connection;
+			return _DataConnection;
 		}
 	}
 
@@ -113,27 +116,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	}
 
 
-	public virtual string DisplayName
-	{
-		get
-		{
-			if (_DisplayName == null)
-			{
-				string database = Database;
 
-				if (database == "")
-					return "";
-
-				return $"{DataSource}({Dataset})";
-			}
-
-			return _DisplayName;
-		}
-		set
-		{
-			_DisplayName = value;
-		}
-	}
 
 	// public abstract string[] EquivalencyKeys { get; }
 
@@ -164,10 +147,6 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	public virtual string PropertyString => ConnectionStringBuilder.ConnectionString;
 
 
-	public virtual string Dataset => null;
-
-
-
 	public IDictionary<string, string> ValidationErrors
 		=> _ValidationErrors ??= new Dictionary<string, string>();
 
@@ -181,6 +160,24 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	// =========================================================================================================
 	#region External (non-connection) Property Accessors - AbstractPropertyAgent
 	// =========================================================================================================
+
+
+	public string DatasetKey
+	{
+		get { return (string)GetProperty("DatasetKey"); }
+		set { SetProperty("DatasetKey", value); }
+	}
+
+	public string Dataset
+	{
+		get { return (string)GetProperty("Dataset"); }
+		set { SetProperty("Dataset", value); }
+	}
+	public string DisplayMember
+	{
+		get { return (string)GetProperty("DisplayMember"); }
+		set { SetProperty("DisplayMember", value); }
+	}
 
 
 	public string AdministratorLogin
@@ -311,6 +308,32 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		return _ConnectionStringBuilder;
 	}
 
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the DatsetKey property and sets and registers it if successful.
+	/// </summary>
+	/// <returns>Returns the value tuple of the derived DatasetKey else null and
+	/// a boolean indicating wehther or not a connection was opened.</returns>
+	// ---------------------------------------------------------------------------------
+	public virtual (string, bool) GetSet_DatasetKey()
+	{
+		if (!IsComplete)
+			return (null, false);
+
+		MonikerAgent moniker = new(this);
+
+		string datasetKey = moniker.DatasetKey;
+
+		if (string.IsNullOrEmpty(datasetKey))
+			return (null, false);
+
+		DatasetKey = datasetKey;
+		Dataset = moniker.Dataset;
+		DisplayMember = moniker.DisplayMember;
+
+		return (datasetKey, false);
+	}
 
 
 	public virtual (IBIconType, bool) GetSet_Icon()
@@ -471,7 +494,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		}
 		else
 		{
-			_AssignedConnectionProperties["InMemoryPassword"] = value.StringToSecureString();
+			_AssignedConnectionProperties["InMemoryPassword"] = value.ToSecure();
 			_AssignedConnectionProperties.Remove("Password");
 		}
 
@@ -509,7 +532,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	public virtual object GetProperty(string name)
 	{
 		if (name == "Password" && _AssignedConnectionProperties.TryGetValue("InMemoryPassword", out object secure))
-			return ((SecureString)secure).SecureStringToString();
+			return ((SecureString)secure).ToReadable();
 
 
 		if (_AssignedConnectionProperties.TryGetValue(name, out object value))
@@ -558,7 +581,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 			case "int32":
 				changed = Set_IntProperty(name, Convert.ToInt32(value));
 				break;
-			case "bool":
+			case "boolean":
 				changed = Set_BoolProperty(name, Convert.ToBoolean(value));
 				break;
 			case "byte[]":
@@ -612,6 +635,10 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		{
 			switch (name)
 			{
+				case "DatasetKey":
+					(value, connectionOpened) = GetSet_DatasetKey();
+					result = true;
+					break;
 				case "Icon":
 					(value, connectionOpened) = GetSet_Icon();
 					result = true;
@@ -716,7 +743,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 		bool changed;
 		string currValue = isSetInMemory
-			? ((SecureString)_AssignedConnectionProperties["InMemoryPassword"]).SecureStringToString()
+			? ((SecureString)_AssignedConnectionProperties["InMemoryPassword"]).ToReadable()
 			: (isSet ? (string)_AssignedConnectionProperties[name] : null);
 
 		if (Cmd.NullEquality(newValue, currValue) <= EnNullEquality.Equal)

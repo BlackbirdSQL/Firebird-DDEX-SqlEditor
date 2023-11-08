@@ -30,22 +30,43 @@
 	<ItemGroup>
 		<Reference Include="PresentationFramework" />
 		<Reference Include="System" />
+		<Reference Include="System.ComponentModel.DataAnnotations" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<Compile Include="Controls\Config\AbstractCurrentWndOptionsDlg.cs" />
+		<Compile Include="Model\Config\ContextSettingsModel.cs" />
 		<None Include="Properties\BlackbirdSql.EditorExtension.snk" />
-		<Compile Include="Controls\Config\SqlEditorGeneralSettingsDialogPage.cs" />
-		<Compile Include="Controls\Config\SqlEditorTabAndStatusBarSettingsDialogPage.cs" />
-		<Compile Include="Controls\Config\SqlExecutionAdvancedOptionsPage.cs" />
-		<Compile Include="Controls\Config\SqlExecutionAnsiOptionsPage.cs" />
-		<Compile Include="Controls\Config\SqlExecutionGeneralOptionsPage.cs" />
-		<Compile Include="Controls\Config\SqlResultsGeneralOptionsPage.cs" />
-		<Compile Include="Controls\Config\SqlResultsToGridOptionsPage.cs" />
-		<Compile Include="Controls\Config\SqlResultsToTextOptionsPage.cs" />
-		<Compile Include="Controls\Config\AbstractToolsOptionsDialogPage.cs" />
+		<Compile Include="Controls\ComponentModel\AdvancedFolderNameEditor.cs" />
+		<None Include="Controls\ComponentModel\NumericUpDownPropertyEditor.cs" />
+		<Compile Include="Controls\Config\CurrentWndOptionsDlg.cs" />
+		<Compile Include="Model\Config\ExecutionAdvancedSettingsModel.cs" />
+		<Compile Include="Model\Config\ResultsGridSettingsModel.cs" />
+		<Compile Include="Model\Config\ResultsTextSettingsModel.cs" />
+		<Compile Include="Ctl\ComponentModel\GlobalizedRadioAttribute.cs" />
 		<Compile Include="Ctl\ComponentModel\GlobalBoolConverter.cs" />
 		<Compile Include="Ctl\ComponentModel\GlobalEnumConverter.cs" />
+		<Compile Include="Ctl\ComponentModel\GlobalizedCategoryAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\GlobalizedDescriptionAttribute.cs" />
+		<Compile Include="Ctl\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
 		<Compile Include="Ctl\ComponentModel\GlobalOnOffConverter.cs" />
+		<Compile Include="Ctl\ComponentModel\UomConverter.cs" />
+		<Compile Include="Ctl\ComponentModel\RangeConverter.cs" />
+		<Compile Include="Ctl\Config\SettingsProvider.cs" />
+		<Compile Include="Ctl\Config\UserSettings.cs" />
+		<Compile Include="Ctl\ComponentModel\GlobalYesNoConverter.cs" />
+		<Compile Include="Ctl\ComponentModel\GlobalEnableDisableConverter.cs" />
+		<Compile Include="Ctl\ComponentModel\GlobalOnOffInverter.cs" />
+		<Compile Include="Model\Config\GeneralSettingsModel.cs" />
+		<Compile Include="Model\Config\TabAndStatusBarSettingsModel.cs" />
+		<Compile Include="Model\Config\ExecutionSettingsModel.cs" />
+		<Compile Include="Model\Config\ResultsSettingsModel.cs" />
+		<Compile Include="PackageData.cs" />
+		<Compile Include="Properties\AttributeResources.Designer.cs">
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		  <DependentUpon>AttributeResources.resx</DependentUpon>
+		</Compile>
 		<Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
 	</ItemGroup>
 
@@ -55,13 +76,17 @@
 			<DesignTime>True</DesignTime>
 			<DependentUpon>Resources.resx</DependentUpon>
 		</Compile>
+		<Resource Include="..\BlackbirdSql.VisualStudio.Ddex\VSPackage.resx" Link="VSPackage.resx" />
+		<EmbeddedResource Include="Controls\Config\AbstractCurrentWndOptionsDlg.resx">
+		  <SubType>Designer</SubType>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Properties\AttributeResources.resx">
+		  <Generator>ResXFileCodeGenerator</Generator>
+		  <LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
 		<EmbeddedResource Include="Properties\Resources.resx">
 			<Generator>PublicResXFileCodeGenerator</Generator>
 			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
-		</EmbeddedResource>
-		<EmbeddedResource Include="VSPackage.resx">
-			<!-- <MergeWithCTO>true</MergeWithCTO> -->
-			<ManifestResourceName>VSPackage</ManifestResourceName>
 		</EmbeddedResource>
 	</ItemGroup>
 

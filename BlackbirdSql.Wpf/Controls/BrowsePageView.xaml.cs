@@ -8,10 +8,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
-
-using BlackbirdSql.Common.Ctl;
+using BlackbirdSql.Common.Ctl.Wpf;
 using BlackbirdSql.Wpf.Model;
 using BlackbirdSql.Wpf.Controls.Widgets;
+
 
 namespace BlackbirdSql.Wpf.Controls;
 

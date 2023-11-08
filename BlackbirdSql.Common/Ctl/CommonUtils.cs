@@ -8,11 +8,14 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows.Data;
 using System.Windows;
 using System.Windows.Forms;
+
 using BlackbirdSql.Common.Controls;
+using BlackbirdSql.Common.Controls.Grid;
+using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -20,12 +23,12 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 using Point = System.Drawing.Point;
-using BlackbirdSql.Common.Controls.Grid;
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
+
 
 namespace BlackbirdSql.Common.Ctl;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "UIThread compliance is performed by applicable methods.")]
 
 public static class CommonUtils
 {
@@ -43,6 +46,13 @@ public static class CommonUtils
 
 	public static void ShowContextMenuEvent(int menuId, int xPos, int yPos, IOleCommandTarget commandTarget)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(ex);
+			throw ex;
+		}
+
 		IVsUIShell obj = Package.GetGlobalService(typeof(IVsUIShell)) as IVsUIShell;
 		Guid rclsidActive = LibraryData.CLSID_CommandSet;
 
@@ -100,6 +110,13 @@ public static class CommonUtils
 
 	public static IEnumerable<IVsWindowFrame> GetWindowFramesForDocData(object existingDocData, System.IServiceProvider serviceProvider)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(ex);
+			throw ex;
+		}
+
 		if (existingDocData == null)
 		{
 			ArgumentException ex = new("docData");
@@ -150,6 +167,14 @@ public static class CommonUtils
 	public static string GetFileNameUsingSaveDialog(string strFilterString, string strCaption, string initialDir, IVsSaveOptionsDlg optionsDlg, out int filterIndex)
 	{
 		Tracer.Trace(typeof(CommonUtils), "CommonUtils.GetFileNameUsingSaveDialog", "strFilterString = {0}, strCaption = {1}", strFilterString, strCaption);
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(ex);
+			throw ex;
+		}
+
 		filterIndex = 0;
 		if (Package.GetGlobalService(typeof(SVsUIShell)) is IVsUIShell vsUIShell)
 		{
@@ -200,7 +225,7 @@ public static class CommonUtils
 					}
 
 					empty = new string(array2, 0, i);
-					Tracer.Trace(typeof(CommonUtils), Tracer.Level.Information, "CommonUtils.GetFileNameUsingSaveDialog", "file name is {0}", empty);
+					Tracer.Trace(typeof(CommonUtils), Tracer.EnLevel.Information, "CommonUtils.GetFileNameUsingSaveDialog", "file name is {0}", empty);
 					return empty;
 				}
 				catch (Exception e)
@@ -224,7 +249,7 @@ public static class CommonUtils
 			}
 		}
 
-		Tracer.Trace(typeof(CommonUtils), Tracer.Level.Verbose, "CommonUtils.GetFileNameUsingSaveDialog", "cannot get IVsUIShell!!");
+		Tracer.Trace(typeof(CommonUtils), Tracer.EnLevel.Verbose, "CommonUtils.GetFileNameUsingSaveDialog", "cannot get IVsUIShell!!");
 		return null;
 	}
 

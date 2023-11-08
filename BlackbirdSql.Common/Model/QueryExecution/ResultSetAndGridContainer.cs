@@ -8,17 +8,19 @@ using System.ComponentModel;
 using BlackbirdSql.Common.Controls.Enums;
 using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Ctl;
+using BlackbirdSql.Common.Ctl.Config;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Model;
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 
 public sealed class ResultSetAndGridContainer : IDisposable
 {
-	private IGridControl2 _GridCtl;
+	private IBGridControl2 _GridCtl;
 
 	private QEResultSet _QeResultSet;
 
@@ -28,7 +30,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 
 	private readonly bool _PrintColumnHeaders = true;
 
-	private readonly int _NumberOfCharsToShow = AbstractQESQLExec.DefaultMaxCharsPerColumnForGrid;
+	private readonly int _NumberOfCharsToShow = ModelConstants.C_DefaultGridMaxCharsPerColumnStd;
 
 	private bool m_bGridHasRows;
 
@@ -40,7 +42,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 
 	public QEResultSet QEResultSet => _QeResultSet;
 
-	public IGridControl2 GridCtl => _GridCtl;
+	public IBGridControl2 GridCtl => _GridCtl;
 
 	public double ControlToWindowRatio
 	{
@@ -64,7 +66,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 		_MoreRowsAvailableHandler = OnMoreRowsAvailableFromStorage;
 	}
 
-	public void Initialize(IGridControl2 grid)
+	public void Initialize(IBGridControl2 grid)
 	{
 		Tracer.Trace(GetType(), "ResultSetAndGridContainer.Initialize", "", null);
 		_GridCtl = grid;
@@ -110,7 +112,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 		((ISupportInitialize)_GridCtl).EndInit();
 		_GridCtl.UpdateGrid();
 		m_bGridHasRows = false;
-		Tracer.Trace(GetType(), Tracer.Level.Information, "ResultSetAndGridContainer.Initialize", "returning");
+		Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ResultSetAndGridContainer.Initialize", "returning");
 	}
 
 	public void Dispose()

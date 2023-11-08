@@ -1,26 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
-using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Markup;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using BlackbirdSql.Common.Controls;
-using BlackbirdSql.Common.Controls.Converters;
+using BlackbirdSql.Common.Controls.Converters.Wpf;
+using BlackbirdSql.Common.Controls.Wpf;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Core.Ctl.Diagnostics;
@@ -28,8 +15,8 @@ using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Wpf.Model;
 using BlackbirdSql.Wpf.Controls.Widgets;
+using BlackbirdSql.Wpf.Model;
 
 
 namespace BlackbirdSql.Wpf.Controls;

@@ -11,10 +11,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
-using BlackbirdSql.Common.Model;
 using BlackbirdSql.Wpf.Model;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Common.Model.Wpf;
 
 namespace BlackbirdSql.Wpf.Controls
 {

@@ -1,6 +1,6 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:model="clr-namespace:BlackbirdSql.Common.Model">
+    xmlns:model="clr-namespace:BlackbirdSql.Common.Model.Wpf">
 	<SolidColorBrush x:Key="BodyTextBrushKey" Color="{Binding Source={x:Static model:DialogColors.Instance}, Path=BodyTextColor, Mode=OneWay}" />
 </ResourceDictionary>

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Core.Ctl.Interfaces;
@@ -13,12 +13,14 @@ public interface IBEditorPackage
 {
 	Dictionary<object, AuxiliaryDocData> DocDataEditors { get; }
 
-	IBLanguageService LanguageService { get; }
-
 	IBSqlEditorWindowPane LastFocusedSqlEditor { get; set; }
 
 	AuxiliaryDocData GetAuxiliaryDocData(object docData);
 
-	bool? ShowConnectionDialogFrame(IntPtr parent, IBDependencyManager dependencyManager, EventsChannel channel,
-		UIConnectionInfo ci, VerifyConnectionDelegate verifierDelegate, ConnectionDialogConfiguration config, ref UIConnectionInfo uIConnectionInfo);
+	public DialogResult ShowExecutionSettingsDialogFrame(AuxiliaryDocData auxDocData,
+		FormStartPosition startPosition);
+
+	bool? ShowConnectionDialogFrame(IntPtr parent, IBDependencyManager dependencyManager,
+		EventsChannel channel, UIConnectionInfo ci, VerifyConnectionDelegate verifierDelegate,
+		ConnectionDialogConfiguration config, ref UIConnectionInfo uIConnectionInfo);
 }

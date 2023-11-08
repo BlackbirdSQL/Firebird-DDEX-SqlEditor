@@ -1,14 +1,10 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
-
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution.Controls.MultiControlPanel
 using System;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Model.Events;
-using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 
 
@@ -335,11 +331,11 @@ namespace BlackbirdSql.Common.Controls.QueryExecution
 
 			if (usePreferredSize)
 			{
-				Tracer.Trace(GetType(), Tracer.Level.Information, "MultiControlPanel.ResizeControls", "control number = {0}, control heights = {1}, adjustment = {2}", count, IntArrayToString(array), num2);
+				Tracer.Trace(GetType(), Tracer.EnLevel.Information, "MultiControlPanel.ResizeControls", "control number = {0}, control heights = {1}, adjustment = {2}", count, IntArrayToString(array), num2);
 			}
 			else
 			{
-				Tracer.Trace(GetType(), Tracer.Level.Information, "MultiControlPanel.ResizeControls", "control number = {0}, control height = {1}", count, hostedControlsMinInitialSize + num2);
+				Tracer.Trace(GetType(), Tracer.EnLevel.Information, "MultiControlPanel.ResizeControls", "control number = {0}, control height = {1}", count, hostedControlsMinInitialSize + num2);
 			}
 
 			num3 = 0;

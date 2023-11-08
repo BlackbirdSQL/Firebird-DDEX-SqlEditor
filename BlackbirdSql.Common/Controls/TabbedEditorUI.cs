@@ -4,19 +4,25 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using BlackbirdSql.Common.Controls.Widgets;
+using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
-
 namespace BlackbirdSql.Common.Controls;
 
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 [DesignerCategory("code")]
 public class TabbedEditorUI : Control, IServiceProvider
@@ -215,8 +221,8 @@ public class TabbedEditorUI : Control, IServiceProvider
 		_provider = tabbedEditorPane;
 		InitializeComponent();
 		_Panel.SuspendLayout();
-		BackColor = VsColorUtilities.GetShellColor(-217);
-		_Panel.BackColor = VsColorUtilities.GetShellColor(-217);
+		BackColor = VsColorUtilities.GetShellColor(__VSSYSCOLOREX3.VSCOLOR_WINDOW);
+		_Panel.BackColor = VsColorUtilities.GetShellColor(__VSSYSCOLOREX3.VSCOLOR_WINDOW);
 		AddCustomControlsToPanel(_Panel);
 		_splitContainer.PanelTop.SizeChanged += Panel_SizeChanged;
 		_splitContainer.PanelBottom.SizeChanged += Panel_SizeChanged;
@@ -235,6 +241,13 @@ public class TabbedEditorUI : Control, IServiceProvider
 	{
 		if (_ToolbarHost == null)
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			_ToolbarHost = new ToolbarHost();
 			_ToolbarHost.SuspendLayout();
 			_Panel.SuspendLayout();
@@ -622,7 +635,7 @@ public class TabbedEditorUI : Control, IServiceProvider
 	{
 		this._Panel = new System.Windows.Forms.Panel();
 		this._Panel.SuspendLayout();
-		this._splitContainer = new BlackbirdSql.Common.Controls.SplitViewContainer();
+		this._splitContainer = new BlackbirdSql.Common.Controls.Widgets.SplitViewContainer();
 		this._splitContainer.SuspendLayout();
 		base.SuspendLayout();
 		this._splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;

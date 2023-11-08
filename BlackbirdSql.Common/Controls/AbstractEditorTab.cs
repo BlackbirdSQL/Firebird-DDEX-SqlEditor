@@ -4,12 +4,16 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 using BlackbirdSql.Common.Ctl;
+using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 
 using Microsoft.VisualStudio;
@@ -18,12 +22,12 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
-using FirebirdSql.Data.FirebirdClient;
-using BlackbirdSql.Common.Ctl.Enums;
-using BlackbirdSql.Common.Ctl.Events;
-using BlackbirdSql.Core.Ctl.Diagnostics;
+
 
 namespace BlackbirdSql.Common.Controls;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMultiViewDocumentView, IVsWindowFrameNotify3, IOleCommandTarget, IVsToolboxActiveUserHook, IVsToolboxPageChooser, IVsDefaultToolboxTabState, IVsToolboxUser
 {
@@ -66,6 +70,13 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 	{
 		get
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			Guid pguid = Guid.Empty;
 			_CurrentFrame?.GetGuidProperty((int)__VSFPROPID.VSFPROPID_CmdUIGuid, out pguid);
 			return pguid;
@@ -82,6 +93,13 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 	{
 		get
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			IVsWindowFrame vsWindowFrame = _CurrentFrame ?? WindowPaneServiceProvider.GetService(typeof(SVsWindowFrame)) as IVsWindowFrame;
 			if (vsWindowFrame == null)
 			{
@@ -107,6 +125,13 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 	{
 		get
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			if (_TrackSelection == null && GetView() is System.IServiceProvider serviceProvider)
 			{
 				_TrackSelection = serviceProvider.GetService(typeof(STrackSelection)) as ITrackSelection;
@@ -125,6 +150,13 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		{
 			if (TrackSelection != null)
 			{
+				if (!ThreadHelper.CheckAccess())
+				{
+					COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+					Diag.Dug(exc);
+					throw exc;
+				}
+
 				SelectionContainer selectionContainer = new SelectionContainer(selectableReadOnly: true, selectedReadOnly: false)
 				{
 					SelectedObjects = value,
@@ -151,7 +183,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 				_ParentPanel = new Panel
 				{
 					Name = "_ParentPanel for " + GetType().Name,
-					BackColor = VsColorUtilities.GetShellColor(-217),
+					BackColor = VsColorUtilities.GetShellColor(__VSSYSCOLOREX3.VSCOLOR_WINDOW),
 					Height = 0,
 					Width = 0
 				};
@@ -236,6 +268,13 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		}
 		set
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			_Owner = value;
 			_CurrentFrame?.SetProperty((int)__VSFPROPID2.VSFPROPID_ParentHwnd, _Owner.Handle);
 		}
@@ -272,7 +311,15 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	protected Panel GetPanelForCurrentFrame()
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		ErrorHandler.ThrowOnFailure(CurrentFrame.GetProperty((int)__VSFPROPID2.VSFPROPID_ParentHwnd, out var pvar));
+
 		return Control.FromHandle((IntPtr)(int)pvar) as Panel;
 	}
 
@@ -294,6 +341,13 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 			UpdateActive(isActive: true);
 			if (setFocus)
 			{
+				if (!ThreadHelper.CheckAccess())
+				{
+					COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+					Diag.Dug(exc);
+					throw exc;
+				}
+
 				((IVsWindowFrame2)Frame).ActivateOwnerDockedWindow();
 			}
 		}
@@ -306,6 +360,13 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		if (_TextEditor != null)
 			return;
 
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		if (_CurrentFrame == null)
 		{
 			using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
@@ -313,7 +374,9 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 				_CurrentFrame = CreateWindowFrame();
 			}
 		}
+
 		object view = GetView();
+
 		if (view is IVsCodeWindow vsCodeWindow && view is IOleCommandTarget oleCommandTarget && view is Microsoft.VisualStudio.OLE.Interop.IServiceProvider serviceProvider && _TextEditor == null)
 		{
 			_TextEditor = new TextEditor(serviceProvider, _WindowPaneServiceProvider, vsCodeWindow, oleCommandTarget);
@@ -327,10 +390,16 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	protected void SetFrameProperties(IVsWindowFrame parentFrame, IVsWindowFrame frame)
 	{
-		if (parentFrame != frame)
+		if (!ThreadHelper.CheckAccess())
 		{
-			frame.SetProperty((int)__VSFPROPID2.VSFPROPID_ParentFrame, parentFrame);
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
+
+		if (parentFrame != frame)
+			frame.SetProperty((int)__VSFPROPID2.VSFPROPID_ParentFrame, parentFrame);
+
 		frame.SetProperty((int)__VSFPROPID.VSFPROPID_ViewHelper, this);
 		frame.SetProperty((int)__VSFPROPID3.VSFPROPID_NotifyOnActivate, true);
 		Guid rguid = GetEditorFactoryGuid();
@@ -346,7 +415,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 				Dock = DockStyle.Fill,
 				Height = 0,
 				Width = 0,
-				BackColor = VsColorUtilities.GetShellColor(-217)
+				BackColor = VsColorUtilities.GetShellColor(__VSSYSCOLOREX3.VSCOLOR_WINDOW)
 			};
 			frame.SetProperty((int)__VSFPROPID2.VSFPROPID_ParentHwnd, panel.Handle);
 			ParentPanel.Controls.Add(panel);
@@ -369,6 +438,13 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 	{
 		if (_CurrentFrame != null)
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			try
 			{
 				_CmdTarget = null;
@@ -399,10 +475,17 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		try
 		{
 			_Visible = false;
+
 			if (_CurrentFrame == null)
-			{
 				return;
+
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
 			}
+
 			_SavedSelection = null;
 			if (Native.Succeeded(_CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_SPFrame, out var pvar)))
 			{
@@ -439,7 +522,15 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 	{
 		if (_CurrentFrame != null)
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			_CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar);
+
 			return pvar;
 		}
 		return null;
@@ -466,6 +557,13 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 			Guid rguidRelativeTo = Guid.Empty;
 			if (panelForCurrentFrame.Width >= 0 && panelForCurrentFrame.Height >= 0)
 			{
+				if (!ThreadHelper.CheckAccess())
+				{
+					COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+					Diag.Dug(exc);
+					throw exc;
+				}
+
 				_CurrentFrame.SetFramePos((VSSETFRAMEPOS)(-1073741824), ref rguidRelativeTo, 0, 0, panelForCurrentFrame.Width, panelForCurrentFrame.Height);
 			}
 			else
@@ -479,10 +577,18 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 	{
 		try
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			_Showing = true;
 			Frame.ShowNoActivate();
 			_Showing = false;
 			_Visible = true;
+
 			((IVsWindowFrameNotify3)this).OnShow(1);
 			if (GetView() is IOleCommandTarget cmdTarget)
 			{
@@ -554,6 +660,13 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	int IVsMultiViewDocumentView.ActivateLogicalView(ref Guid rguidLogicalView)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		if (_WindowPaneServiceProvider is IVsMultiViewDocumentView vsMultiViewDocumentView)
 		{
 			return vsMultiViewDocumentView.ActivateLogicalView(ref rguidLogicalView);
@@ -563,6 +676,13 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	int IVsMultiViewDocumentView.GetActiveLogicalView(out Guid pguidLogicalView)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		if (_WindowPaneServiceProvider is IVsMultiViewDocumentView vsMultiViewDocumentView)
 		{
 			return vsMultiViewDocumentView.GetActiveLogicalView(out pguidLogicalView);
@@ -573,6 +693,13 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	int IVsMultiViewDocumentView.IsLogicalViewActive(ref Guid rguidLogicalView, out int pIsActive)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		if (_WindowPaneServiceProvider is IVsMultiViewDocumentView vsMultiViewDocumentView)
 		{
 			return vsMultiViewDocumentView.IsLogicalViewActive(ref rguidLogicalView, out pIsActive);
@@ -586,6 +713,13 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		IsClosed = true;
 		if (_CurrentFrame != null)
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			int num = _CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar);
 			if (Native.Succeeded(num))
 			{
@@ -621,11 +755,18 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		{
 			ShownEvent(this, EventArgs.Empty);
 		}
+
 		int result = 0;
 		if (_CurrentFrame == null)
-		{
 			return result;
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
+
 		result = _CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar);
 		AbstractTabbedEditorPane AbstractTabbedEditorPane = pvar as AbstractTabbedEditorPane;
 		if (Native.Succeeded(result) && AbstractTabbedEditorPane == null)
@@ -661,6 +802,13 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		}
 		if (_CmdTarget == null || _CmdTarget is AbstractTabbedEditorPane)
 			return 0;
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
 
 		return _CmdTarget.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 	}
@@ -711,6 +859,13 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 			}
 			else
 			{
+				if (!ThreadHelper.CheckAccess())
+				{
+					COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+					Diag.Dug(exc);
+					throw exc;
+				}
+
 				num = _CmdTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
 			}
 		}
@@ -719,6 +874,13 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	int IVsToolboxActiveUserHook.InterceptDataObject(Microsoft.VisualStudio.OLE.Interop.IDataObject pIn, out Microsoft.VisualStudio.OLE.Interop.IDataObject ppOut)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		IVsToolboxActiveUserHook textEditor = _TextEditor;
 		if (textEditor != null && textEditor.InterceptDataObject(pIn, out ppOut) == 0)
 		{
@@ -734,7 +896,15 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	int IVsToolboxActiveUserHook.ToolboxSelectionChanged(Microsoft.VisualStudio.OLE.Interop.IDataObject pSelected)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		IVsToolboxActiveUserHook textEditor = _TextEditor;
+
 		if (textEditor != null && textEditor.ToolboxSelectionChanged(pSelected) == 0)
 		{
 			return 0;
@@ -748,6 +918,13 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 	int IVsToolboxUser.IsSupported(Microsoft.VisualStudio.OLE.Interop.IDataObject pDO)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		IVsToolboxUser textEditor = TextEditor;
 		if (textEditor != null && textEditor.IsSupported(pDO) == 0)
 		{
@@ -769,6 +946,13 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 
 			if (toolboxEventArgs.Handled)
 				return toolboxEventArgs.HResult;
+		}
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
 
 		IVsToolboxUser textEditor = TextEditor;

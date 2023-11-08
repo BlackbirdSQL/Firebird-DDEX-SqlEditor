@@ -2,15 +2,19 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Interfaces;
-
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 
 
 namespace BlackbirdSql.Controller;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 
 // =========================================================================================================
@@ -82,10 +86,14 @@ internal class PackageController : AbstractPackageController
 		if (_EventsAdvised)
 			return;
 
-		_EventsAdvised = true;
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
 
-		// We should already be on UI thread. Callers must ensure this can never happen
-		ThreadHelper.ThrowIfNotOnUIThread();
+		_EventsAdvised = true;
 
 		// Sanity check. Disable events if enabled
 		UnadviseEvents(false);

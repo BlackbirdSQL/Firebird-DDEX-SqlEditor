@@ -50,14 +50,16 @@
 		<Compile Include="Controls\ConnectionDialogFrame.xaml.cs">
 		  <DependentUpon>ConnectionDialogFrame.xaml</DependentUpon>
 		</Compile>
+		<Compile Include="Ctl\Interfaces\IBConnectionValidator.cs" />
 		<Compile Include="GlobalSuppressions.cs" />
 		<Compile Include="Controls\HistoryPageView.xaml.cs" />
 		<Compile Include="Model\BrowsePageViewModel.cs" />
-		<Compile Include="Model\ConnectionDialogTelemetryContext.cs" />
+		<Compile Include="Model\AbstractTelemetryContext.cs" />
 		<Compile Include="Model\ConnectionDialogViewModel.cs" />
 		<Compile Include="Model\ConnectionEventTelemetryContext.cs" />
 		<Compile Include="Model\ConnectionPropertySectionViewModel.cs" />
 		<Compile Include="Model\HistoryPageViewModel.cs" />
+		<Compile Include="Model\Interfaces\IBConnectionPropertiesProvider.cs" />
 		<Compile Include="Themes\Themes.cs" />
 		<Compile Include="Controls\Widgets\LoadingControl.xaml.cs">
 			<DependentUpon>LoadingControl.xaml</DependentUpon>

@@ -2,8 +2,13 @@
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Controls.TabbedEditor.TextEditor
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl;
+using BlackbirdSql.Common.Ctl.Enums;
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -11,38 +16,43 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 using OleConstants = Microsoft.VisualStudio.OLE.Interop.Constants;
-using BlackbirdSql.Common.Ctl.Enums;
-using BlackbirdSql.Common.Ctl.Interfaces;
+
 
 namespace BlackbirdSql.Common.Controls;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEvents, IBTextEditor, IVsToolboxActiveUserHook, IVsToolboxUser, IDisposable
 {
 	private readonly IVsHierarchy _Hierarchy;
 
-	private readonly IVsCodeWindow _codeWindow;
+	private readonly IVsCodeWindow _CodeWindow;
 
-	private ConnectionPointCookie _codeWindowCookie;
+	private ConnectionPointCookie _CodeWindowCookie;
 
-	private Dictionary<IVsTextView, ConnectionPointCookie> _connectedViews;
+	private Dictionary<IVsTextView, ConnectionPointCookie> _ConnectedViews;
 
-	private IVsTextLines _lines;
+	private IVsTextLines _Lines;
 
-	private IVsTextStream _stream;
+	private IVsTextStream _Stream;
 
-	private bool _isActive;
+	private bool _IsActive;
 
-	private readonly IOleCommandTarget _cmdTarget;
+	private readonly IOleCommandTarget _CmdTarget;
 
-	private Timer _textTimer;
+	private Timer _TextTimer;
 
-	private TextEditorProxy _textEditorProxy;
+	private TextEditorProxy _TextEditorProxy;
 
-	private readonly IBTabbedEditorService _tabbedEditorService;
+	private readonly IBTabbedEditorService _TabbedEditorService;
 
-	private ServiceProvider _services;
+	private ServiceProvider _Services;
 
-	private TextEditorProxy TextEditorProxy => _textEditorProxy;
+	private TextEditorProxy TextEditorProxy => _TextEditorProxy;
+
+
+
 
 	private IBTextEditorEvents TextEditorEvents
 	{
@@ -69,9 +79,9 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 	{
 		get
 		{
-			if (Native.Failed(_codeWindow.GetLastActiveView(out var ppView)))
+			if (Native.Failed(_CodeWindow.GetLastActiveView(out var ppView)))
 			{
-				Native.ThrowOnFailure(_codeWindow.GetPrimaryView(out ppView));
+				Native.ThrowOnFailure(_CodeWindow.GetPrimaryView(out ppView));
 			}
 			return ppView;
 		}
@@ -81,19 +91,19 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 	{
 		get
 		{
-			return _isActive;
+			return _IsActive;
 		}
 		set
 		{
-			if (_isActive != value)
+			if (_IsActive != value)
 			{
-				_isActive = value;
-				if (_isActive)
+				_IsActive = value;
+				if (_IsActive)
 				{
 					ReplacePropGrid(this, EventArgs.Empty);
 					OnCaretPositionChanged();
 				}
-				TextEditorEvents?.OnActiveChanged(_isActive);
+				TextEditorEvents?.OnActiveChanged(_IsActive);
 			}
 		}
 	}
@@ -102,11 +112,11 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 	{
 		get
 		{
-			if (_lines == null)
+			if (_Lines == null)
 			{
-				TextView.GetBuffer(out _lines);
+				TextView.GetBuffer(out _Lines);
 			}
-			return _lines;
+			return _Lines;
 		}
 	}
 
@@ -114,30 +124,37 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 	{
 		get
 		{
-			_stream ??= Lines as IVsTextStream;
-			return _stream;
+			_Stream ??= Lines as IVsTextStream;
+			return _Stream;
 		}
 	}
 
 	public TextEditor(Microsoft.VisualStudio.OLE.Interop.IServiceProvider vsServices, System.IServiceProvider tabbedEditorServices, IVsCodeWindow codeWindow, IOleCommandTarget commandTarget)
 	{
-		_codeWindow = codeWindow;
-		_cmdTarget = commandTarget;
-		_services = new ServiceProvider(vsServices);
+		_CodeWindow = codeWindow;
+		_CmdTarget = commandTarget;
+		_Services = new ServiceProvider(vsServices);
 		ConnectView(TextView);
-		_codeWindowCookie = new ConnectionPointCookie(_codeWindow, this, typeof(IVsCodeWindowEvents));
-		_textTimer = new Timer
+		_CodeWindowCookie = new ConnectionPointCookie(_CodeWindow, this, typeof(IVsCodeWindowEvents));
+		_TextTimer = new Timer
 		{
 			Interval = 200
 		};
-		_textTimer.Tick += OnCaretPositionChangedDelay;
-		_textEditorProxy = new TextEditorProxy(this);
+		_TextTimer.Tick += OnCaretPositionChangedDelay;
+		_TextEditorProxy = new TextEditorProxy(this);
 		if (tabbedEditorServices != null)
 		{
-			_tabbedEditorService = tabbedEditorServices.GetService(typeof(IBTabbedEditorService)) as IBTabbedEditorService;
-			if (_tabbedEditorService != null)
+			if (!ThreadHelper.CheckAccess())
 			{
-				_tabbedEditorService.TextEditor = TextEditorProxy;
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
+			_TabbedEditorService = tabbedEditorServices.GetService(typeof(IBTabbedEditorService)) as IBTabbedEditorService;
+			if (_TabbedEditorService != null)
+			{
+				_TabbedEditorService.TextEditor = TextEditorProxy;
 			}
 			if (tabbedEditorServices.GetService(typeof(SVsWindowFrame)) is IVsWindowFrame vsWindowFrame)
 			{
@@ -150,27 +167,34 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 
 	private void ConnectView(IVsTextView view)
 	{
-		_connectedViews ??= new Dictionary<IVsTextView, ConnectionPointCookie>();
+		_ConnectedViews ??= new Dictionary<IVsTextView, ConnectionPointCookie>();
 		ConnectionPointCookie value = new ConnectionPointCookie(view, this, typeof(IVsTextViewEvents));
-		_connectedViews.Add(view, value);
+		_ConnectedViews.Add(view, value);
 	}
 
 	private void ReplacePropGrid(object sender, EventArgs e)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 #pragma warning disable IDE0059 // Unnecessary assignment of a value
-		IVsTrackSelectionEx vsTrackSelectionEx = _services.GetService(typeof(SVsTrackSelectionEx)) as IVsTrackSelectionEx;
+		IVsTrackSelectionEx vsTrackSelectionEx = _Services.GetService(typeof(SVsTrackSelectionEx)) as IVsTrackSelectionEx;
 #pragma warning restore IDE0059 // Unnecessary assignment of a value
 	}
 
 	private void OnCaretPositionChanged()
 	{
-		_textTimer.Enabled = false;
-		_textTimer.Enabled = true;
+		_TextTimer.Enabled = false;
+		_TextTimer.Enabled = true;
 	}
 
 	private void OnCaretPositionChangedDelay(object sender, EventArgs e)
 	{
-		_textTimer.Enabled = false;
+		_TextTimer.Enabled = false;
 		TextEditorEvents?.OnCaretChanged(SelectionStart);
 	}
 
@@ -206,14 +230,21 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 
 	int IOleCommandTarget.Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (_cmdTarget != null)
+		if (_CmdTarget != null)
 		{
-			int num = _cmdTarget.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
+			int num = _CmdTarget.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 			if (num == (int)OleConstants.OLECMDERR_E_NOTSUPPORTED || num == (int)OleConstants.OLECMDERR_E_UNKNOWNGROUP)
 			{
 				if (VSConstants.GUID_VSStandardCommandSet97.Equals(pguidCmdGroup) && nCmdID == 332)
 				{
-					_tabbedEditorService?.Activate(VSConstants.LOGVIEWID_Designer, EnTabViewMode.Default);
+					_TabbedEditorService?.Activate(VSConstants.LOGVIEWID_Designer, EnTabViewMode.Default);
 					num = 0;
 				}
 				Native.Failed(num);
@@ -225,9 +256,16 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 
 	int IOleCommandTarget.QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
 	{
-		if (_cmdTarget != null)
+		if (_CmdTarget != null)
 		{
-			int num = _cmdTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
+			int num = _CmdTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
 			if ((num == (int)OleConstants.OLECMDERR_E_NOTSUPPORTED || num == (int)OleConstants.OLECMDERR_E_UNKNOWNGROUP) && VSConstants.GUID_VSStandardCommandSet97.Equals(pguidCmdGroup))
 			{
 				for (int i = 0; i < cCmds; i++)
@@ -299,33 +337,34 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 		{
 			return;
 		}
-		if (_codeWindowCookie != null)
+		if (_CodeWindowCookie != null)
 		{
-			_codeWindowCookie.Dispose();
-			_codeWindowCookie = null;
+			_CodeWindowCookie.Dispose();
+			_CodeWindowCookie = null;
 		}
-		if (_connectedViews != null)
+		if (_ConnectedViews != null)
 		{
-			foreach (ConnectionPointCookie value in _connectedViews.Values)
+			foreach (ConnectionPointCookie value in _ConnectedViews.Values)
 			{
 				value.Dispose();
 			}
-			_connectedViews = null;
+			_ConnectedViews = null;
 		}
-		if (_textEditorProxy != null)
+		if (_TextEditorProxy != null)
 		{
-			_textEditorProxy.Dispose();
-			_textEditorProxy = null;
+			_TextEditorProxy.Dispose();
+			_TextEditorProxy = null;
 		}
-		if (_textTimer != null)
+		if (_TextTimer != null)
 		{
-			_textTimer.Dispose();
-			_textTimer = null;
+			_TextTimer.Dispose();
+			_TextTimer = null;
 		}
-		if (_services != null)
+		if (_Services != null)
 		{
-			_services.Dispose();
-			_services = null;
+			if (ThreadHelper.CheckAccess())
+				_Services.Dispose();
+			_Services = null;
 		}
 	}
 
@@ -353,15 +392,15 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 
 	public void Focus()
 	{
-		_tabbedEditorService?.Activate(VSConstants.LOGVIEWID_TextView, EnTabViewMode.Default);
+		_TabbedEditorService?.Activate(VSConstants.LOGVIEWID_TextView, EnTabViewMode.Default);
 	}
 
 	int IVsCodeWindowEvents.OnCloseView(IVsTextView pView)
 	{
-		if (_connectedViews != null && _connectedViews.TryGetValue(pView, out var value))
+		if (_ConnectedViews != null && _ConnectedViews.TryGetValue(pView, out var value))
 		{
 			value.Dispose();
-			_connectedViews.Remove(pView);
+			_ConnectedViews.Remove(pView);
 		}
 		return 0;
 	}

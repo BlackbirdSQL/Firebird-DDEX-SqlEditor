@@ -1,6 +1,5 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution.QEOLESQLExec
-
 using System;
 using System.ComponentModel;
 using System.Data;
@@ -9,6 +8,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading;
+
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Exceptions;
 using BlackbirdSql.Common.Ctl.Interfaces;
@@ -17,9 +17,11 @@ using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.Parser;
 using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Model;
+
 using FirebirdSql.Data.FirebirdClient;
+
 using Microsoft.VisualStudio;
 
 
@@ -28,7 +30,7 @@ using Microsoft.VisualStudio;
 namespace BlackbirdSql.Common.Model.QueryExecution;
 
 
-public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, ICommandExecuter, IVariableResolver
+public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter2, IBCommandExecuter, IBVariableResolver
 {
 	public const int C_ReadBufferSizeInBytes = 1024;
 
@@ -66,7 +68,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		}
 	}
 
-	public class BatchSourceString : IBatchSource
+	public class BatchSourceString : IBBatchSource
 	{
 		private string str;
 
@@ -86,7 +88,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 			return VSConstants.S_OK;
 		}
 
-		EnParserAction IBatchSource.GetMoreData(ref string str)
+		EnParserAction IBBatchSource.GetMoreData(ref string str)
 		{
 			//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 			return GetMoreData(ref str);
@@ -142,7 +144,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 
 	protected override void ExecuteScript(IBTextSpan textSpan)
 	{
-		Tracer.Trace(GetType(), "QEOLESQLExec.ExecuteScript", " _ExecOptions.WithEstimatedExecutionPlan: " + _ExecOptions.WithEstimatedExecutionPlan);
+		Tracer.Trace(GetType(), "QEOLESQLExec.ExecuteScript", " _ExecOptions.WithEstimatedExecutionPlan: " + ExecOptions.WithEstimatedExecutionPlan);
 		_ErrorAction = EnErrorAction.Ignore;
 		_ExecBatchNumOfTimes = 1;
 		_CurrentConn = _Conn;
@@ -154,13 +156,13 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		{
 			_SqlCmdParser.Cleanup();
 		}
-		string batchDelimiter = AbstractQESQLExec.DefaultBatchSeparator;
-		if (_ExecOptions.BatchSeparator != null && _ExecOptions.BatchSeparator.Length > 0)
+		string batchDelimiter = ModelConstants.C_DefaultBatchSeparator;
+		if (ExecOptions.EditorContextBatchSeparator != null && ExecOptions.EditorContextBatchSeparator.Length > 0)
 		{
-			batchDelimiter = _ExecOptions.BatchSeparator;
+			batchDelimiter = ExecOptions.EditorContextBatchSeparator;
 		}
 		_SqlCmdParser.SetBatchDelimiter(batchDelimiter);
-		if (_ExecOptions.WithOleSqlScripting)
+		if (ExecOptions.WithOleSqlScripting)
 		{
 			_SqlCmdParser.SetParseMode(EnParseMode.RecognizeAll);
 		}
@@ -180,11 +182,11 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		{
 			Tracer.LogExCatch(GetType(), ex);
 			ParserState parserState = ex.ParserStateValue;
-			if (parserState.ErrorTypeValue != ParserState.ErrorType.CommandAborted)
+			if (parserState.ErrorTypeValue != ParserState.EnErrorType.CommandAborted)
 			{
 				_ExecResult = EnScriptExecutionResult.Failure;
 				string info = parserState.Info;
-				if (parserState.StatusValue == ParserState.Status.Error && parserState.ErrorTypeValue == ParserState.ErrorType.SyntaxError && info != null && info.Length > 0)
+				if (parserState.StatusValue == ParserState.EnStatus.Error && parserState.ErrorTypeValue == ParserState.EnErrorType.SyntaxError && info != null && info.Length > 0)
 				{
 					OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrScriptingIncorrectSyntax, info), EnQESQLScriptProcessingMessageType.FatalError);
 				}
@@ -204,7 +206,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 
 	protected override EnScriptExecutionResult ExecuteBatchCommand(QESQLBatch batch)
 	{
-		Tracer.Trace(GetType(), "QEOLESQLExec.ExecuteBatchCommand", " _ExecOptions.WithEstimatedExecutionPlan: " + _ExecOptions.WithEstimatedExecutionPlan);
+		Tracer.Trace(GetType(), "QEOLESQLExec.ExecuteBatchCommand", " _ExecOptions.WithEstimatedExecutionPlan: " + ExecOptions.WithEstimatedExecutionPlan);
 		if (batch.SqlScript == null || batch.SqlScript != null && batch.SqlScript.Length == 0)
 		{
 			return EnScriptExecutionResult.Success;
@@ -224,7 +226,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 				scriptExecutionResult = EnScriptExecutionResult.Failure;
 				try
 				{
-					if (_ExecOptions.WithEstimatedExecutionPlan)
+					if (ExecOptions.WithEstimatedExecutionPlan)
 						_SpecialActions |= EnQESQLBatchSpecialAction.ExpectEstimatedYukonXmlExecutionPlan;
 
 					// Execution
@@ -294,9 +296,9 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		base.OnExecutionCompleted(execResult);
 	}
 
-	protected override void CompleteAsyncCancelOperation(ExecState stateBeforeCancelOp)
+	protected override void CompleteAsyncCancelOperation(EnExecState stateBeforeCancelOp)
 	{
-		if (stateBeforeCancelOp != ExecState.Executing)
+		if (stateBeforeCancelOp != EnExecState.Executing)
 		{
 			return;
 		}
@@ -425,7 +427,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		return (EnParserAction)1;
 	}
 
-	public EnParserAction IncludeFileName(string fileName, ref IBatchSource pIBatchSource)
+	public EnParserAction IncludeFileName(string fileName, ref IBBatchSource pIBatchSource)
 	{
 		string text = ReadFileContent(fileName);
 		if (text == null)
@@ -434,7 +436,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 			return (EnParserAction)1;
 		}
 
-		pIBatchSource = (IBatchSource)(object)new BatchSourceString(text);
+		pIBatchSource = (IBBatchSource)(object)new BatchSourceString(text);
 		return 0;
 	}
 
@@ -449,7 +451,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		return 0;
 	}
 
-	public EnParserAction Ed(string batch, ref IBatchSource batchSource)
+	public EnParserAction Ed(string batch, ref IBBatchSource batchSource)
 	{
 		OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrNotSupportedSqlCmdCommand, "Ed"), EnQESQLScriptProcessingMessageType.Warning);
 		return 0;
@@ -464,7 +466,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		ExecuteACommand(command, null);
 		lock (_LockObject)
 		{
-			if (_ExecState == ExecState.Cancelling)
+			if (_ExecState == EnExecState.Cancelling)
 			{
 				_ExecResult = EnScriptExecutionResult.Cancel;
 				return (EnParserAction)1;
@@ -690,12 +692,12 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 				if (_CurrentConnInfo.UserID != null && _CurrentConnInfo.UserID.Length != 0)
 				{
 					OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoDisconnectingFromSvrAsUser,
-						_CurrentConnInfo.DisplayName, _CurrentConnInfo.UserID));
+						_CurrentConnInfo.DisplayMember, _CurrentConnInfo.UserID));
 				}
 				else
 				{
 					OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoDisconnectingFromSvr,
-						_CurrentConnInfo.DisplayName));
+						_CurrentConnInfo.DisplayMember));
 				}
 			}
 
@@ -757,11 +759,11 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 
 			if (ci.UserID != null && ci.UserID.Length != 0)
 			{
-				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoConnectingToSvrAsUser, ci.DisplayName, ci.UserID));
+				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoConnectingToSvrAsUser, ci.DisplayMember, ci.UserID));
 			}
 			else
 			{
-				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoConnectingToSvr, ci.DisplayName));
+				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoConnectingToSvr, ci.DisplayMember));
 			}
 
 			// ci.Pooling = false;
@@ -778,7 +780,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 				// connectionString += ";TrustServerCertificate=true";
 			}
 
-			Tracer.Trace(GetType(), Tracer.Level.Information, "QEOLESQLExec.AttemptToEstablishCurConnection: final connection string is \"{0}\"", connectionString);
+			Tracer.Trace(GetType(), Tracer.EnLevel.Information, "QEOLESQLExec.AttemptToEstablishCurConnection: final connection string is \"{0}\"", connectionString);
 			IDbConnection dbConnection = new FbConnection(connectionString);
 			dbConnection.Open();
 			SqlCmdNewConnectionOpenedEvent?.Invoke(this, new QeSqlCmdNewConnectionOpenedEventArgs(dbConnection));
@@ -828,7 +830,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 				connectionString += ";TrustServerCertificate=true";
 			}
 
-			Tracer.Trace(GetType(), Tracer.Level.Warning, "QEOLESQLExec.AttemptToEstablishCurConnection: final connection string is \"{0}\"", connectionString);
+			Tracer.Trace(GetType(), Tracer.EnLevel.Warning, "QEOLESQLExec.AttemptToEstablishCurConnection: final connection string is \"{0}\"", connectionString);
 			IDbConnection dbConnection = new Microsoft.Data.SqlClient.SqlConnection(connectionString);
 			dbConnection.Open();
 			SqlCmdNewConnectionOpenedEvent?.Invoke(this, new QeSqlCmdNewConnectionOpenedEventArgs(dbConnection));
@@ -862,7 +864,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 
 		lock (_LockObject)
 		{
-			if (_ExecState != ExecState.Executing)
+			if (_ExecState != EnExecState.Executing)
 			{
 				return;
 			}
@@ -906,7 +908,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 			process.Start();
 			lock (_LockObject)
 			{
-				if (_ExecState == ExecState.Cancelling)
+				if (_ExecState == EnExecState.Cancelling)
 				{
 					process.Kill();
 					process.Dispose();
@@ -1025,7 +1027,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 			return null;
 		}
 
-		Tracer.Trace(GetType(), Tracer.Level.Information, "ReadFileContent: full file name is \"{0}\"", text);
+		Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ReadFileContent: full file name is \"{0}\"", text);
 		StreamReader streamReader = null;
 		try
 		{
@@ -1078,31 +1080,31 @@ public class QEOLESQLExec : AbstractQESQLExec, IBatchSource, ICommandExecuter2, 
 		return true;
 	}
 
-	EnParserAction IBatchSource.GetMoreData(ref string str)
+	EnParserAction IBBatchSource.GetMoreData(ref string str)
 	{
 		//IL_0002: Unknown result type (might be due to invalid IL or missing references)
 		return GetMoreData(ref str);
 	}
 
-	EnParserAction ICommandExecuter.Ed(string batch, ref IBatchSource pIBatchSource)
+	EnParserAction IBCommandExecuter.Ed(string batch, ref IBBatchSource pIBatchSource)
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		return Ed(batch, ref pIBatchSource);
 	}
 
-	EnParserAction ICommandExecuter.IncludeFileName(string fileName, ref IBatchSource ppIBatchSource)
+	EnParserAction IBCommandExecuter.IncludeFileName(string fileName, ref IBBatchSource ppIBatchSource)
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		return IncludeFileName(fileName, ref ppIBatchSource);
 	}
 
-	EnParserAction IVariableResolver.ResolveVariable(string varName, ref string varValue)
+	EnParserAction IBVariableResolver.ResolveVariable(string varName, ref string varValue)
 	{
 		//IL_0003: Unknown result type (might be due to invalid IL or missing references)
 		return ResolveVariable(varName, ref varValue);
 	}
 
-	EnParserAction IVariableResolver.ResolveVariableOwnership(string varName, string varValue, ref bool bTakeOwmership)
+	EnParserAction IBVariableResolver.ResolveVariableOwnership(string varName, string varValue, ref bool bTakeOwmership)
 	{
 		//IL_0004: Unknown result type (might be due to invalid IL or missing references)
 		return ResolveVariableOwnership(varName, varValue, ref bTakeOwmership);

@@ -6,6 +6,7 @@
 using System;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
+using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 
@@ -43,9 +44,7 @@ public class SqlEditorToggleIntellisenseCommand : AbstractSqlEditorCommand
 		if (auxiliaryDocDataForEditor != null)
 		{
 			if (!IsEditorExecutingOrDebugging())
-			{
 				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
-			}
 
 			if (auxiliaryDocDataForEditor.IntellisenseEnabled.HasValue && auxiliaryDocDataForEditor.IntellisenseEnabled.Value)
 			{
@@ -59,6 +58,7 @@ public class SqlEditorToggleIntellisenseCommand : AbstractSqlEditorCommand
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
 		AuxiliaryDocData auxiliaryDocDataForEditor = GetAuxiliaryDocDataForEditor();
+
 		if (auxiliaryDocDataForEditor != null && auxiliaryDocDataForEditor.IntellisenseEnabled.HasValue)
 		{
 			auxiliaryDocDataForEditor.IntellisenseEnabled = !auxiliaryDocDataForEditor.IntellisenseEnabled.Value;

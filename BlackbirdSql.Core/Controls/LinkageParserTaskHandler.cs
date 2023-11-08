@@ -2,12 +2,12 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System.Data.Common;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Properties;
 
 using Microsoft.VisualStudio.Shell;
@@ -18,6 +18,7 @@ using static BlackbirdSql.Core.Model.AbstractLinkageParser;
 
 namespace BlackbirdSql.Core.Controls;
 
+
 // =========================================================================================================
 //										LinkageParserTaskHandler Class
 //
@@ -25,7 +26,7 @@ namespace BlackbirdSql.Core.Controls;
 /// Handles TaskHandler and statusbar output for the LinkageParser.
 /// </summary>
 // =========================================================================================================
-internal class LinkageParserTaskHandler : IBTaskHandlerClient
+public class LinkageParserTaskHandler : IBTaskHandlerClient
 {
 
 	// =========================================================================================================
@@ -33,8 +34,7 @@ internal class LinkageParserTaskHandler : IBTaskHandlerClient
 	// =========================================================================================================
 
 
-	private readonly string _Catalog;
-
+	private readonly string _DatasetKey;
 	/// <summary>
 	/// Handle to the ITaskHandler ProgressData.
 	/// </summary>
@@ -59,6 +59,7 @@ internal class LinkageParserTaskHandler : IBTaskHandlerClient
 	// =========================================================================================================
 
 
+	
 	/// <summary>
 	/// The name of the running task if the object is currently using the task handler.
 	/// </summary>
@@ -95,7 +96,8 @@ internal class LinkageParserTaskHandler : IBTaskHandlerClient
 	public LinkageParserTaskHandler(DbConnection connection)
 	{
 		// Tracer.Trace(GetType(), "LinkageParserTaskHandle.LinkageParserTaskHandle");
-		_Catalog = $"{connection.DataSource} ({Path.GetFileNameWithoutExtension(connection.Database)})";
+		MonikerAgent moniker = new(connection);
+		_DatasetKey = moniker.DatasetKey;
 	}
 
 
@@ -125,17 +127,14 @@ internal class LinkageParserTaskHandler : IBTaskHandlerClient
 
 	public void PreRegister(bool canBeCancelled)
 	{
-		IVsTaskStatusCenterService tsc = ServiceProvider.GetGlobalServiceAsync<SVsTaskStatusCenterService,
-			IVsTaskStatusCenterService>(swallowExceptions: false).Result;
-
 		TaskHandlerOptions options = default;
-		options.Title = Resources.LinkageParserTaskHandlerTitle.Res(_Catalog);
+		options.Title = Resources.LinkageParserTaskHandlerTitle.FmtRes(_DatasetKey);
 		options.ActionsAfterCompletion = CompletionActions.None;
 
 		_ProgressData = default;
 		_ProgressData.CanBeCanceled = canBeCancelled;
 
-		_TaskHandler = tsc.PreRegister(options, _ProgressData);
+		_TaskHandler = Controller.StatusCenterService.PreRegister(options, _ProgressData);
 
 	}
 
@@ -225,7 +224,7 @@ internal class LinkageParserTaskHandler : IBTaskHandlerClient
 		else if (progress == 100)
 		{
 			completed = true;
-			text = Resources.LinkageParserCompleted.Res(progress, stage, totalElapsed);
+			text = Resources.LinkageParserCompleted.FmtRes(progress, stage, totalElapsed);
 		}
 		else
 		{
@@ -235,7 +234,7 @@ internal class LinkageParserTaskHandler : IBTaskHandlerClient
 				if (!enabled)
 				{
 					completed = true;
-					text = Resources.LinkageParserCancelled.Res(progress, stage, elapsed);
+					text = Resources.LinkageParserCancelled.FmtRes(progress, stage, elapsed);
 				}
 				else
 				{
@@ -244,9 +243,9 @@ internal class LinkageParserTaskHandler : IBTaskHandlerClient
 					else if (elapsed == -2)
 						text = Resources.LinkageParserPausingAsync;
 					else if (elapsed == -3)
-						text = Resources.LinkageParserPercentCompletedStage.Res(progress, stage);
+						text = Resources.LinkageParserPercentCompletedStage.FmtRes(progress, stage);
 					else
-						text = Resources.LinkageParserPercentCompletedStageElapsed.Res(progress, stage, elapsed);
+						text = Resources.LinkageParserPercentCompletedStageElapsed.FmtRes(progress, stage, elapsed);
 
 				}
 			}
@@ -255,9 +254,9 @@ internal class LinkageParserTaskHandler : IBTaskHandlerClient
 				if (elapsed == -1)
 					text = Resources.LinkageParserSwitchedToUiThread;
 				else if (elapsed == -3)
-					text = Resources.LinkageParserPercentCompletedStage.Res(progress, stage);
+					text = Resources.LinkageParserPercentCompletedStage.FmtRes(progress, stage);
 				else
-					text = Resources.LinkageParserPercentCompletedStageElapsed.Res(progress, stage, elapsed);
+					text = Resources.LinkageParserPercentCompletedStageElapsed.FmtRes(progress, stage, elapsed);
 			}
 
 		}
@@ -277,7 +276,7 @@ internal class LinkageParserTaskHandler : IBTaskHandlerClient
 	public bool Status(EnLinkStage stage, long totalElapsed, bool enabled, bool asyncActive)
 	{
 		// string async;
-		string catalog = _Catalog;
+		string catalog = _DatasetKey;
 
 		bool clear = false;
 		string text;
@@ -285,12 +284,12 @@ internal class LinkageParserTaskHandler : IBTaskHandlerClient
 		if (stage == EnLinkStage.Start)
 		{
 			// async = isAsync ? " (async)" : "";
-			text = Resources.LinkageParserUpdatingCatalog.Res(catalog);
+			text = Resources.LinkageParserUpdatingCatalog.FmtRes(catalog);
 		}
 		else if (stage == EnLinkStage.Completed)
 		{
 			// async = isAsync ? " (async)" : "";
-			text = Resources.LinkageParserCompletedCatalog.Res(catalog, totalElapsed);
+			text = Resources.LinkageParserCompletedCatalog.FmtRes(catalog, totalElapsed);
 		}
 		else
 		{
@@ -298,16 +297,16 @@ internal class LinkageParserTaskHandler : IBTaskHandlerClient
 			{
 				// If it's a user cancel request.
 				if (!enabled)
-					text = Resources.LinkageParserCancelledCatalog.Res(catalog);
+					text = Resources.LinkageParserCancelledCatalog.FmtRes(catalog);
 				else
-					text = Resources.LinkageParserResumingCatalog.Res(catalog);
+					text = Resources.LinkageParserResumingCatalog.FmtRes(catalog);
 			}
 			else
 			{
 				if (!enabled)
-					text = Resources.LinkageParserCancelledCatalog.Res(catalog);
+					text = Resources.LinkageParserCancelledCatalog.FmtRes(catalog);
 				else
-					text = Resources.LinkageParserCatalogSwitchedToUiThread.Res(catalog);
+					text = Resources.LinkageParserCatalogSwitchedToUiThread.FmtRes(catalog);
 			}
 		}
 

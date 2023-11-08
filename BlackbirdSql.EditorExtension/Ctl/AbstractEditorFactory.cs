@@ -3,6 +3,7 @@
 
 using System;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -22,9 +23,10 @@ using Cmd = BlackbirdSql.Common.Cmd;
 using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 
-
-
 namespace BlackbirdSql.EditorExtension.Ctl;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 public abstract class AbstractEditorFactory : AbstruseEditorFactory
 {
@@ -42,6 +44,13 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 		{
 			if (_monitorSelection == null)
 			{
+				if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 				Microsoft.VisualStudio.OLE.Interop.IServiceProvider oleServiceProvider = OleServiceProvider;
 
 				Guid guidService = typeof(IVsMonitorSelection).GUID;
@@ -217,6 +226,13 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 				IVsTextLines vsTextLines2 = null;
 				if (vsTextLines == null)
 				{
+					if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 					Guid clsid = typeof(VsTextBufferClass).GUID;
 					Guid iid = VSConstants.IID_IUnknown;
 					object obj = ((AsyncPackage)Controller.DdexPackage).CreateInstance(ref clsid, ref iid, typeof(object));
@@ -292,7 +308,15 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 
 	private static Guid GetProjectGuid(IVsHierarchy hierarchy)
 	{
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
 		Native.ThrowOnFailure(hierarchy.GetGuidProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_TypeGuid, out var pguid));
+
 		return pguid;
 	}
 
@@ -309,8 +333,13 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 		Guid clsidTsDataProject = VS.CLSID_TSqlDataProjectNode;
 
 		if (ServiceProvider.GetService(typeof(IVsSolution)) is not IVsSolution vsSolution)
-		{
 			return;
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
 
 		Guid rguidEnumOnlyThisType = Guid.Empty;

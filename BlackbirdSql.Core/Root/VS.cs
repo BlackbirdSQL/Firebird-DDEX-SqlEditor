@@ -30,7 +30,7 @@ public static class VS
 	// ---------------------------------------------------------------------------------
 
 
-	public static string AdoDotNetTechnologyGuid = "77AB9A9D-78B9-4ba7-91AC-873F5338F1D2";
+	public const string AdoDotNetTechnologyGuid = "77AB9A9D-78B9-4ba7-91AC-873F5338F1D2";
 
 	public const string IVsDataConnectionManagerInteropGuid = "E7A0D4E0-D0E4-4AFA-A8A1-DD4636073D98";
 	public const string IVsDataConnectionInteropGuid = "902A17C6-B166-485F-A49F-9029549442DD";
@@ -46,6 +46,25 @@ public static class VS
 	public static Guid CLSID_Mode_QueryDesigner = new Guid("B2C40B32-3A37-4ca9-97B9-FA44248B69FF");
 
 	#endregion DataTools Members
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	#region ServerExplorer Members - VS
+	// ---------------------------------------------------------------------------------
+
+
+	// Microsoft.VSDesigner.ServerExplorer.Constants.guidDataCmdId
+	public const string SeDataCommandSetGuid = "501822E1-B5AF-11d0-B4DC-00A0C91506EF";
+	public const string DavCommandSetGuid = "732ABE75-CD80-11d0-A2DB-00AA00A3EFFF";
+
+	// Server explorer tree object guids
+	public const string SeRootGuid = "74d21310-2aee-11d1-8bfb-00a0c90f26f7";
+	public const string SeObjectNodesGuid = "d4f02a6a-c5ae-4bf2-938d-f1625bdca0e2";
+
+	#endregion ServerExplorer Members
+
 
 
 

@@ -3,6 +3,8 @@ using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Core;
 using System;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Common.Ctl.Config;
+using BlackbirdSql.Core.Model;
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 
@@ -13,11 +15,11 @@ public class ResultsToGridBatchConsumer : AbstractQESQLBatchConsumer
 
 	private bool _CouldNotAddGrid;
 
-	public ResultsToGridBatchConsumer(ISqlQueryExecutionHandler resultsControl)
+	public ResultsToGridBatchConsumer(IBSqlQueryExecutionHandler resultsControl)
 		: base(resultsControl)
 	{
 		Tracer.Trace(GetType(), "ResultsToGridBatchConsumer.ResultsToGridBatchConsumer", "", null);
-		_MaxCharsPerColumn = AbstractQESQLExec.DefaultMaxCharsPerColumnForGrid;
+		_MaxCharsPerColumn = ModelConstants.C_DefaultGridMaxCharsPerColumnStd;
 	}
 
 	public override void CleanupAfterFinishingExecution()
@@ -58,12 +60,12 @@ public class ResultsToGridBatchConsumer : AbstractQESQLBatchConsumer
 		try
 		{
 			_ResultsControl.AddGridContainer(_GridContainer);
-			_GridContainer.StartRetrievingData(_MaxCharsPerColumn, _ResultsControl.ResultsSettings.MaxCharsPerColumnForXml);
+			_GridContainer.StartRetrievingData(_MaxCharsPerColumn, _ResultsControl.SqlExecutionOptions.EditorResultsGridMaxCharsPerColumnXml);
 		}
 		catch (QESQLBatchConsumerException ex)
 		{
 			Tracer.LogExCatch(GetType(), ex);
-			if (ex.ExtraInfo == QESQLBatchConsumerException.ErrorType.CannotShowMoreResults)
+			if (ex.ExtraInfo == QESQLBatchConsumerException.EnErrorType.CannotShowMoreResults)
 			{
 				_CouldNotAddGrid = true;
 				return;

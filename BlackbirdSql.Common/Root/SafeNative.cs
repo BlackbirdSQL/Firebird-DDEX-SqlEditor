@@ -20,9 +20,6 @@ public static class SafeNative
 	public static extern bool DeleteObject(IntPtr hObject);
 
 	[DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
-	public static extern bool GetScrollInfo(IntPtr hWnd, int fnBar, [In][Out] Native.SCROLLINFO si);
-
-	[DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
 	public static extern bool ScrollWindow(IntPtr hWnd, int nXAmount, int nYAmount, ref Native.RECT rectScrollRegion, ref Native.RECT rectClip);
 
 	[DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]

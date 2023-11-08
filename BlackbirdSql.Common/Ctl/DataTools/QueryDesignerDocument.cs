@@ -27,13 +27,13 @@ internal class QueryDesignerDocument : AbstractDataToolsDocument
 	protected override int WindowFrameAttributes => base.WindowFrameAttributes | 0x28;
 
 	public QueryDesignerDocument(IVsDataViewHierarchy owningHierarchy)
-		: base(C_NewMonikerFormat.Res(owningHierarchy.ExplorerConnection.DisplayName, ++S_NewQueryCount),
+		: base(C_NewMonikerFormat.FmtRes(owningHierarchy.ExplorerConnection.DisplayName, ++S_NewQueryCount),
 			Guid.Empty, VS.CLSID_Mode_QueryDesigner, typeof(IDTQueryDesignerFactory).GUID,
 			owningHierarchy.CreateNewItem(), owningHierarchy)
 	{
 		try
 		{
-			Caption = Resources.QueryDesignerDocument_NewQueryCaption.Res(
+			Caption = Resources.QueryDesignerDocument_NewQueryCaption.FmtRes(
 				BuildConnectionName(owningHierarchy.ExplorerConnection.Connection), S_NewQueryCount);
 			_OriginalOwningItemId = -1;
 		}

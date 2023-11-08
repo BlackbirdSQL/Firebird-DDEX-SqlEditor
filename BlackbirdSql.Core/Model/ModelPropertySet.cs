@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 using BlackbirdSql.Core.Ctl;
@@ -19,19 +20,17 @@ using FirebirdSql.Data.FirebirdClient;
 using static BlackbirdSql.Core.Model.ModelConstants;
 
 
-
-
 namespace BlackbirdSql.Core.Model;
-
 
 // =========================================================================================================
 //										ModelPropertySet Class
 //
 /// <summary>
-/// PropertySet for the base class (AbstractModelPropertyAgent) for replicating the Firebird ConnectionString
-/// class and additional members to support SourceInformation, Root ObjectSelector and SqlServer style
-/// ConnectionInfo classes. Descendent AbstractModelPropertyAgent classes may or may not have a seperate
-/// PropertySet class dependent on the number of additional describers.
+/// Static PropertySet for the base class AbstractModelPropertyAgent for replicating the Firebird
+/// ConnectionString class and additional members to support SourceInformation, Root ObjectSelector and
+/// SqlServer style ConnectionInfo classes. Descendent AbstractModelPropertyAgent classes may or may not
+/// have a separate PropertySet class dependent on the number of additional describers.
+/// Refer to the <seealso cref="PropertySet"/> class for more information.
 /// </summary>
 // =========================================================================================================
 public abstract class ModelPropertySet : CorePropertySet
@@ -42,18 +41,22 @@ public abstract class ModelPropertySet : CorePropertySet
 
 	public static int _EquivalencyDescriberCount = -1;
 
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// FbStringBuilder Descriptor/Parameter Properties.
 	/// </summary>
+	/// <remarks>
+	/// Equivalency describers are tagged with *.
+	/// </remarks>
 	// ---------------------------------------------------------------------------------
 	public static readonly new Describer[] Describers
 		= new Describer[23]
 	{
 		new Describer("PacketSize", C_KeyPacketSize, typeof(int), C_DefaultPacketSize, true),
-		new Describer("Role", C_KeyRoleName, typeof(string), C_DefaultRoleName, true, false, true, false, true),
-		new Describer("Dialect", C_KeyDialect, typeof(int), C_DefaultDialect, true, false, true, false, true),
-		new Describer("Charset", C_KeyCharacterSet, typeof(string), C_DefaultCharacterSet, true, false, true, false, true),
+		new Describer("Role", C_KeyRoleName, typeof(string), C_DefaultRoleName, true, false, true, false, true), // *
+		new Describer("Dialect", C_KeyDialect, typeof(int), C_DefaultDialect, true, false, true, false, true), // *
+		new Describer("Charset", C_KeyCharacterSet, typeof(string), C_DefaultCharacterSet, true, false, true, false, true), // *
 		new Describer("ConnectionTimeout", C_KeyConnectionTimeout, typeof(int), C_DefaultConnectionTimeout, true),
 		new Describer("Pooling", C_KeyPooling, typeof(bool), C_DefaultPooling, true),
 		new Describer("ConnectionLifeTime", C_KeyConnectionLifetime, typeof(int), C_DefaultConnectionLifetime, true),
@@ -65,7 +68,7 @@ public abstract class ModelPropertySet : CorePropertySet
 		new Describer("Enlist", C_KeyEnlist, typeof(bool), C_DefaultEnlist, true),
 		new Describer("ClientLibrary", C_KeyClientLibrary, typeof(string), C_DefaultClientLibrary, true),
 		new Describer("DbCachePages", C_KeyDbCachePages, typeof(int), C_DefaultDbCachePages, true),
-		new Describer("NoDatabaseTriggers", C_KeyNoDbTriggers, typeof(bool), C_DefaultNoDbTriggers, true, true, true, false, true),
+		new Describer("NoDatabaseTriggers", C_KeyNoDbTriggers, typeof(bool), C_DefaultNoDbTriggers, true, true, true, false, true), // *
 		new Describer("NoGarbageCollect", C_KeyNoGarbageCollect, typeof(bool), C_DefaultNoGarbageCollect, true),
 		new Describer("Compression", C_KeyCompression, typeof(bool), C_DefaultCompression, true),
 		new Describer("CryptKey", C_KeyCryptKey, typeof(byte[]), C_DefaultCryptKey, true),
@@ -97,7 +100,7 @@ public abstract class ModelPropertySet : CorePropertySet
 		StringPair( "wirecrypt", "CryptKey" ),
 		StringPair( "app", "ApplicationName" ),
 		StringPair( "parallel", "ParallelWorkers" )
-};
+	};
 
 
 
@@ -107,55 +110,39 @@ public abstract class ModelPropertySet : CorePropertySet
 	/// Parameter field.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static readonly Describer[] SourceInformationDescribers
-		= new Describer[11]
+	public static readonly Describer[] RootNodeDescribers
+		= new Describer[1]
 	{
-		new Describer(C_KeySIDataSourceName, "DataSource", typeof(string)),
-		new Describer(C_KeySIDataSourceProduct, typeof(string)),
-		new Describer(C_KeySIDataSourceVersion, typeof(string)), 
-
-		// SourceInformation additional titlecased connection properties for Root
-		new Describer(C_KeySICatalog, "Database", typeof(string)),
-		new Describer(C_KeySIPortNumber, "Port", typeof(int), CoreConstants.C_DefaultPortNumber),
-		new Describer(C_KeySIServerType, "ServerType" , typeof(EnDbServerType), CoreConstants.C_DefaultServerType),
-		new Describer(C_KeySIUserId, "UserID", typeof(string)),
-		new Describer(C_KeySIPassword, "Password", typeof(string)),
-
-		// SourceInformation additional connection derived properties for Root
-		new Describer( C_KeySIDataset,  typeof(string)),
-
-		new Describer( C_KeySIMemoryUsage, typeof(int), C_DefaultSIMemoryUsage ),
-		new Describer( C_KeySIActiveUsers, typeof(int), C_DefaultSIActiveUsers )
+		new Describer(C_KeyNodeDatasetKey, typeof(string))
 	};
 
 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Universal lookup of all possible synonyms of Source Information specific column
-	/// names.
+	/// Source Information column describers with Parameter Property Descriptor name in
+	/// Parameter field.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static readonly KeyValuePair<string, string>[] SourceInformationSynonyms
-		= new KeyValuePair<string, string>[2]
+	public static readonly Describer[] ConnectionNodeDescribers
+		= new Describer[14]
 	{
-		StringPair( "DataSourceProductName", C_KeySIDataSourceProduct ), // FbMetaData
-		StringPair( "DataSourceProductVersion", C_KeySIDataSourceVersion ), // FbMetaData
+		new Describer(C_KeyNodeDatasetKey,  typeof(string)),
+		new Describer(C_KeyNodeDataSource, "DataSource", typeof(string)),
+		new Describer(C_KeyNodePort, "Port", typeof(int), CoreConstants.C_DefaultPortNumber),
+		new Describer(C_KeyNodeServerType, "ServerType", typeof(EnDbServerType), CoreConstants.C_DefaultServerType),
+		new Describer(C_KeyNodeDatabase, "Database", typeof(string)),
+		new Describer(C_KeyNodeDisplayMember,  typeof(string)),
+		new Describer(C_KeyNodeUserId, "UserID", typeof(string), CoreConstants.C_DefaultUserId),
+		new Describer(C_KeyNodePassword, "Password", typeof(string), CoreConstants.C_DefaultPassword, false, true, false),
+		new Describer(C_KeyNodeRole, "Role", typeof(string)),
+		new Describer(C_KeyNodeCharset, "Charset", typeof(string)),
+		new Describer(C_KeyNodeDialect, "Dialect", typeof(int)),
+		new Describer(C_KeyNodeNoDbTriggers, "NoDatabaseTriggers", typeof(bool)),
+		new Describer(C_KeyNodeMemoryUsage, typeof(string), C_DefaultNodeMemoryUsage ),
+		new Describer(C_KeyNodeActiveUsers, typeof(int), C_DefaultNodeActiveUsers )
 	};
 
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Translation table for the Root object from the DataSourceInformation schema
-	/// column names.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static readonly KeyValuePair<string, string>[] RootTranslations = new KeyValuePair<string, string>[2]
-	{
-		StringPair( C_KeySIDataSourceName, C_KeyRootDataSourceName ),
-		StringPair( C_KeySIDataset, C_KeyRootDataset )
-	};
 
 
 	#endregion Constants and Statics
@@ -171,7 +158,7 @@ public abstract class ModelPropertySet : CorePropertySet
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Checks whether or not connection property objects are equivalent
+	/// Checks whether or not connection property/parameter objects are equivalent
 	/// </summary>
 	/// <remarks>
 	/// We consider connections equivalent if they will produce the same results. The connection properties
@@ -179,7 +166,7 @@ public abstract class ModelPropertySet : CorePropertySet
 	/// </remarks>
 	public static bool AreEquivalent(DbConnectionStringBuilder csb1, DbConnectionStringBuilder csb2)
 	{
-		// Tracer.Trace(typeof(TConnectionEquivalencyComparer), "TConnectionEquivalencyComparer.AreEquivalent(IDictionary, IDictionary)");
+		// Tracer.Trace(typeof(ModelPropertySet), "AreEquivalent()");
 
 		int equivalencyValueCount = 0;
 		int equivalencyKeyCount = ModelPropertySet.EquivalencyDescriberCount;
@@ -200,7 +187,7 @@ public abstract class ModelPropertySet : CorePropertySet
 				// Get the correct key for the parameter in connection 1
 				if ((describer = ModelPropertySet.RecursiveGetSynonymDescriber(param.Key)) == null)
 				{
-					ArgumentException ex = new(Resources.ExceptionParameterDescriberNotFound.Res(param.Key));
+					ArgumentException ex = new(Resources.ExceptionParameterDescriberNotFound.FmtRes(param.Key));
 					Diag.Dug(ex);
 					throw ex;
 				}
@@ -227,7 +214,7 @@ public abstract class ModelPropertySet : CorePropertySet
 
 				value2 ??= describer.DefaultValue;
 
-				if (!AreEquivalent(describer.DerivedParameter, value1, value2))
+				if (!AreEquivalent(describer.DerivedConnectionParameter, value1, value2))
 				{
 					Tracer.Trace(typeof(ModelPropertySet), "AreEquivalent(IDictionary, IDictionary)",
 						"Connection parameter '{0}' mismatch: '{1}' : '{2}.",
@@ -276,7 +263,7 @@ public abstract class ModelPropertySet : CorePropertySet
 
 					value1 ??= describer.DefaultValue;
 
-					if (!AreEquivalent(describer.DerivedParameter, value2, value1))
+					if (!AreEquivalent(describer.DerivedConnectionParameter, value2, value1))
 					{
 						Tracer.Trace(typeof(ModelPropertySet), "AreEquivalent(IDictionary, IDictionary)",
 							"Connection2 parameter '{0}' mismatch: '{1}' : '{2}.",
@@ -304,7 +291,8 @@ public abstract class ModelPropertySet : CorePropertySet
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Performs an equivalency comparison of to values of the connection property 'key'
+	/// Performs an equivalency comparison of to values of the connection
+	/// property/parameter 'key'.
 	/// </summary>
 	/// <param name="key"></param>
 	/// <param name="value1"></param>
@@ -385,8 +373,8 @@ public abstract class ModelPropertySet : CorePropertySet
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Finds the value of the connection property 'key' in a connection properties list
-	/// given that the property key used in the list may be a synonym.
+	/// Finds the value of the connection property/parameter 'key' in a connection
+	/// properties list given that the property key used in the list may be a synonym.
 	/// </summary>
 	/// <param name="key"></param>
 	/// <param name="connectionProperties"></param>
@@ -398,13 +386,13 @@ public abstract class ModelPropertySet : CorePropertySet
 		// First try for matching keys
 		object value;
 
-		if (describer.Parameter != null)
+		if (describer.ConnectionParameter != null)
 		{
-			if (csb.TryGetValue(describer.Parameter, out value))
+			if (csb.TryGetValue(describer.ConnectionParameter, out value))
 				return value;
 		}
 
-		if (describer.Parameter == null || describer.Name != describer.Parameter)
+		if (describer.ConnectionParameter == null || describer.Name != describer.ConnectionParameter)
 		{
 			if (csb.TryGetValue(describer.Name, out value))
 				return value;
@@ -418,7 +406,7 @@ public abstract class ModelPropertySet : CorePropertySet
 		{
 			if ((connectionDescriber = ModelPropertySet.RecursiveGetSynonymDescriber(parameter.Key)) == null)
 			{
-				ArgumentException ex = new(Resources.ExceptionParameterDescriberNotFound.Res(parameter.Key));
+				ArgumentException ex = new(Resources.ExceptionParameterDescriberNotFound.FmtRes(parameter.Key));
 				Diag.Dug(ex);
 				throw ex;
 			}
@@ -434,46 +422,12 @@ public abstract class ModelPropertySet : CorePropertySet
 
 
 	/// <summary>
-	/// Get the describer for a source information column name.
+	/// Gets the describer for a root or connection node column name.
 	/// </summary>
-	public static Describer GetSourceInformationDescriber(string name)
+	public static Describer GetConnectionNodeDescriber(string name)
 	{
-		return Array.Find(SourceInformationDescribers,
+		return Array.Find(ConnectionNodeDescribers,
 			(obj) => obj.Name == name);
-	}
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Gets a Source Information column's type given it's column name.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static Type GetSourceInformationType(string name)
-	{
-		Describer describer = GetSourceInformationDescriber(name);
-
-		if (describer == null)
-			return null;
-
-		return describer.PropertyType;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Gets the source information column name given a schema column.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static Describer GetSchemaColumnSourceInformationDescriber(string name)
-	{
-		KeyValuePair<string, string> pair = Array.Find(SourceInformationSynonyms,
-			(obj) => obj.Key.Equals(name, StringComparison.OrdinalIgnoreCase));
-
-		if (pair.Key != null)
-			return GetSourceInformationDescriber(pair.Value);
-
-		return GetSourceInformationDescriber(name);
 	}
 
 

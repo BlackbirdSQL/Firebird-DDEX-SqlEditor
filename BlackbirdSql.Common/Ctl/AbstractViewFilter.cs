@@ -2,10 +2,13 @@
 // location unknown
 // Decompiled with ICSharpCode.Decompiler 7.1.0.6543
 #endregion
-
 using System;
-
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+using BlackbirdSql.Core;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 
@@ -13,6 +16,8 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace BlackbirdSql.Common.Ctl;
 
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 public abstract class AbstractViewFilter : IOleCommandTarget, IDisposable
 {
@@ -40,6 +45,13 @@ public abstract class AbstractViewFilter : IOleCommandTarget, IDisposable
 	{
 		if (_nextTarget != null)
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			return _nextTarget.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 		}
 
@@ -50,6 +62,13 @@ public abstract class AbstractViewFilter : IOleCommandTarget, IDisposable
 	{
 		if (_nextTarget != null)
 		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
 			return _nextTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
 		}
 

@@ -16,9 +16,9 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 {
 	protected IBFileStreamReader _FsReader;
 
-	protected IFileStreamWriter _FsWriter;
+	protected IBFileStreamWriter _FsWriter;
 
-	protected IDiskDataStorage _DiskDataStorage;
+	protected IBDiskDataStorage _DiskDataStorage;
 
 	protected long _CurrentOffset;
 
@@ -51,7 +51,7 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 		throw new Exception(ControlsResources.StorageViewDefaultConstructorCannotBeUsed);
 	}
 
-	protected internal DiskStorageView(IDiskDataStorage storage)
+	protected internal DiskStorageView(IBDiskDataStorage storage)
 	{
 		_DiskDataStorage = storage;
 		_CurrentOffset = 0L;

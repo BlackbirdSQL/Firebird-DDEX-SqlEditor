@@ -2,8 +2,9 @@
 // location unknown
 // Decompiled with ICSharpCode.Decompiler 7.1.0.6543
 #endregion
-
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 using BlackbirdSql.Common.Ctl.Enums;
@@ -16,6 +17,9 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 
 namespace BlackbirdSql.Common.Controls;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Class is UIThread compliant.")]
 
 public class SqlEditorCodeTab : AbstractSqlEditorTab
 {
@@ -48,6 +52,13 @@ public class SqlEditorCodeTab : AbstractSqlEditorTab
 			NotSupportedException ex = new("IVsUIShellOpenDocument");
 			Diag.Dug(ex);
 			throw ex;
+		}
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
 		}
 
 		uint[] array = new uint[1];

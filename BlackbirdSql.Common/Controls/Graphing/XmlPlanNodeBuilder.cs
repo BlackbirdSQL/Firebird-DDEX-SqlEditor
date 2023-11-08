@@ -40,7 +40,7 @@ public sealed class XmlPlanNodeBuilder : INodeBuilder, IXmlBatchParser
 		{
 			currentNodeId = 0;
 			NodeBuilderContext nodeBuilderContext = new NodeBuilderContext(new ExecutionPlanGraph(), showPlanType, this);
-			XmlPlanParser.Parse(item, null, null, nodeBuilderContext);
+			AbstractXmlPlanParser.Parse(item, null, null, nodeBuilderContext);
 			list.Add(nodeBuilderContext.Graph);
 		}
 		return list.ToArray();
@@ -197,14 +197,14 @@ public sealed class XmlPlanNodeBuilder : INodeBuilder, IXmlBatchParser
 		foreach (FunctionTypeItem item in XmlPlanParserFactory.GetParser(statement.GetType()).ExtractFunctions(statement))
 		{
 			StmtSimpleType stmtSimpleType = null;
-			if (item.Type == FunctionTypeItem.ItemType.StoredProcedure)
+			if (item.Type == FunctionTypeItem.EnItemType.StoredProcedure)
 			{
 				stmtSimpleType = new StmtSimpleType
 				{
 					StoredProc = item.Function
 				};
 			}
-			else if (item.Type == FunctionTypeItem.ItemType.Udf)
+			else if (item.Type == FunctionTypeItem.EnItemType.Udf)
 			{
 				stmtSimpleType = new StmtSimpleType
 				{

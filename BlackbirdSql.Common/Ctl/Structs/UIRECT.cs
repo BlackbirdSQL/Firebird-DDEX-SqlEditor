@@ -49,10 +49,10 @@ namespace BlackbirdSql.Common.Ctl.Structs
 		{
 #pragma warning disable IDE0251 // Make member 'readonly'
 			get
-#pragma warning restore IDE0251 // Make member 'readonly'
 			{
 				return Right - Left;
 			}
+#pragma warning restore IDE0251 // Make member 'readonly'
 			set
 			{
 				Right = Left + value;

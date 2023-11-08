@@ -4,10 +4,10 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:BlackbirdSql.Wpf.Controls"
 	xmlns:widgets="clr-namespace:BlackbirdSql.Wpf.Controls.Widgets"
-	xmlns:ComCtl="clr-namespace:BlackbirdSql.Common.Ctl;assembly=BlackbirdSql.Common"
-	xmlns:ComCtls="clr-namespace:BlackbirdSql.Common.Controls;assembly=BlackbirdSql.Common"
-	xmlns:ComCvtrs="clr-namespace:BlackbirdSql.Common.Controls.Converters;assembly=BlackbirdSql.Common"
-	xmlns:ComModel="clr-namespace:BlackbirdSql.Common.Model;assembly=BlackbirdSql.Common"
+	xmlns:ComCtl="clr-namespace:BlackbirdSql.Common.Ctl.Wpf;assembly=BlackbirdSql.Common"
+	xmlns:ComCtls="clr-namespace:BlackbirdSql.Common.Controls.Wpf;assembly=BlackbirdSql.Common"
+	xmlns:ComCvtrs="clr-namespace:BlackbirdSql.Common.Controls.Converters.Wpf;assembly=BlackbirdSql.Common"
+	xmlns:ComModel="clr-namespace:BlackbirdSql.Common.Model.Wpf;assembly=BlackbirdSql.Common"
 	xmlns:ComRes="clr-namespace:BlackbirdSql.Common.Properties;assembly=BlackbirdSql.Common"
 	x:Name="projectSectionView" x:Uid="projectSectionView" Loaded="ControlLoaded">
 	<FrameworkElement.Resources>
@@ -121,7 +121,7 @@
 		<PasswordBox Name="PasswordBox" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Margin="0 6 0 0" MinHeight="23" Style="{StaticResource PasswordBoxStyle}" AutomationProperties.Name="{x:Static ComRes:SharedResx.Connection_Password}" IsEnabled="{Binding IsPasswordEnabled, UpdateSourceTrigger=PropertyChanged}" ComCtl:PasswordBoxAssistant.Password="{Binding Connection.Password}" />
 		<CheckBox Name="RememberPasswordCheckBox" Content="{x:Static ComRes:SharedResx.Connection_RememberPassword}" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Margin="0 6 0 0" Style="{StaticResource CheckBoxStyle}" IsEnabled="{Binding IsPasswordEnabled}" IsChecked="{Binding Connection.PersistPassword}" />
 		<Label Name="DatabaseLabel" Content="{x:Static ComRes:SharedResx.Connection_Database}" Grid.Row="6" Grid.Column="0" Padding="0,0,24,0" Margin="0 6 0 0" Target="{Binding ElementName=DatabaseNameComboBox}" />
-		<ComboBox Name="DatabaseNameComboBox" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Margin="0 6 0 0" IsEditable="True" IsTextSearchEnabled="True" Style="{StaticResource ComboBoxStyle}" AutomationProperties.Name="{x:Static ComRes:SharedResx.Connection_Dataset}" ItemsSource="{Binding Path=DatabaseList}" SelectedItem="{Binding Path=Connection.Dataset}" Text="{Binding Path=Connection.Dataset}" DropDownOpened="DatabaseNameComboBoxOnDropDownOpened" />
+		<ComboBox Name="DatabaseNameComboBox" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Margin="0 6 0 0" IsEditable="True" IsTextSearchEnabled="True" Style="{StaticResource ComboBoxStyle}" AutomationProperties.Name="{x:Static ComRes:SharedResx.Connection_Dataset}" ItemsSource="{Binding Path=DatabaseList}" SelectedItem="{Binding Path=Connection.DatasetKey}" Text="{Binding Path=Connection.DatasetKey}" DropDownOpened="DatabaseNameComboBoxOnDropDownOpened" />
 		<TextBlock Name="AdvancedPropertiesLink" x:Uid="AdvancedPropertiesLink" Grid.Row="7" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="6,6,0,0" AutomationProperties.Name="{x:Static ComRes:SharedResx.Connection_AdvancedProperties}">
 			<Hyperlink AutomationProperties.Name="{x:Static ComRes:SharedResx.Connection_AdvancedProperties}" Command="{Binding Path=AdvancedPropertiesCommand}">
 				<TextBlock Text="{x:Static ComRes:SharedResx.Connection_AdvancedProperties}" />

@@ -2,15 +2,11 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ResultPane.FileEncodingDialog
 using System;
 using System.ComponentModel;
-using System.Drawing;
-using System.Resources;
 using System.Text;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Properties;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
-
 
 
 namespace BlackbirdSql.Common.Controls;

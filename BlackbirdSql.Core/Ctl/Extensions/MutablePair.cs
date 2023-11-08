@@ -116,7 +116,7 @@ public struct MutablePair<TKey, TValue>
 	public static MutablePair<TKey, TValue> Find(List<MutablePair<TKey, TValue>> list,
 		string key, StringComparison stringComparison = StringComparison.CurrentCultureIgnoreCase)
 	{
-		return list.Find((obj) => obj.Key.ToString().Equals(key, stringComparison));
+		return list.Find((obj) => (obj.Key as string).Equals(key, stringComparison));
 	}
 
 	public static MutablePair<TKey, TValue> ValuePair(TKey key, TValue value)

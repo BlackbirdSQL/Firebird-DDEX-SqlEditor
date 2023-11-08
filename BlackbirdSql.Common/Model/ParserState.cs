@@ -7,14 +7,14 @@ namespace BlackbirdSql.Common.Model;
 
 public class ParserState
 {
-	public enum Status
+	public enum EnStatus
 	{
 		Success,
 		Abort,
 		Error
 	}
 
-	public enum ErrorType
+	public enum EnErrorType
 	{
 		NoError,
 		Unknown,
@@ -23,9 +23,9 @@ public class ParserState
 		CommandAborted
 	}
 
-	private readonly Status _StatusValue;
+	private readonly EnStatus _StatusValue;
 
-	private readonly ErrorType _ErrorTypeValue;
+	private readonly EnErrorType _ErrorTypeValue;
 
 	private readonly int _Line;
 
@@ -33,18 +33,18 @@ public class ParserState
 
 	public string Info => _Info;
 
-	public ErrorType ErrorTypeValue => _ErrorTypeValue;
+	public EnErrorType ErrorTypeValue => _ErrorTypeValue;
 
 	public int Line => _Line;
 
-	public Status StatusValue => _StatusValue;
+	public EnStatus StatusValue => _StatusValue;
 
-	private Status TranslateStatus(ParserState ps)
+	private EnStatus TranslateStatus(ParserState ps)
 	{
 		return ps.StatusValue;
 	}
 
-	private unsafe ErrorType TranslateErrorType(ParserState ps)
+	private unsafe EnErrorType TranslateErrorType(ParserState ps)
 	{
 		return ps.ErrorTypeValue;
 	}

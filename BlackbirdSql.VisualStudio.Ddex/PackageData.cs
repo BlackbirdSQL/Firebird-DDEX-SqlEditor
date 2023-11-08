@@ -48,9 +48,9 @@ static class PackageData
 	public const string ProviderGuidNET = "66F5BB69-4C70-4319-8947-A2E0643A4CE";
 
 
-
-	// WPF Pages 
-	public const string WpfDebugOptionsGiud = "7E2D7C87-1FAD-42D1-AE67-4EEA3281E52C";
+	// Settings Guids
+	public const string GeneralSettingsGuid = "C76D0CE2-CB4D-4594-8A94-6E6833B4A160";
+	public const string DebugSettingsGuid = "7E2D7C87-1FAD-42D1-AE67-4EEA3281E52C";
 
 
 
