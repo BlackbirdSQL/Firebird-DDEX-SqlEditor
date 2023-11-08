@@ -1,4 +1,4 @@
-# BlackbirdSQL DDEX 2.0 with SqlEditor Provider for Firebird 9.1.0.88 Beta
+# BlackbirdSQL DDEX 2.0 with SqlEditor Provider for Firebird 9.1.0.88 Pre-release
 
 #### Screenshots
 ![ReadMe](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/assets/120905720/0b52cc20-c957-451d-93c0-31255abb0ada)
@@ -6,9 +6,14 @@
 </br></br>
 
 
-The BlackbirdSQL DDEX 2.0 .NET Data with SqlEditor Provider extension, `BlackbirdSql.VisualStudio.Ddex`, implements most DDEX 2.0 interfaces prevalent in the SqlServer DDEX and SqlEditor extensions.
+The BlackbirdSQL DDEX 2.0 .NET Data with SqlEditor Provider extension, `BlackbirdSql.VisualStudio.Ddex`, implements the majority of DDEX 2.0 interfaces prevalent in the SqlServer DDEX and SqlEditor extensions.
 
-[Download BlackbirdSql DDEX with SqlEditor Extension (Pre-release v9.1.0.84-beta)](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v9.1.0.84-beta/BlackbirdSql.VisualStudio.Ddex.vsix)
+[Download BlackbirdSql DDEX with SqlEditor Extension (Pre-release v9.1.0.88)](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v9.1.0.88-prerealease/BlackbirdSql.VisualStudio.Ddex.vsix))
+
+__DISCLOSURE WARNING:__ This extension exposes a few PropertyGridView members with gated access modifiers by using Visual Studio's built-in Reflection library. The code is all localized within the AbstractSettingsPage class.</br>
+This allows us to implement a few lightweight windows functionality features like single-click check boxes, radio buttons and cardinal synonyms into the DialogPage property grid used in User Settings, and eliminates the need for custom settings pages and bloated custom property grids.</br>
+If this is something you do not advocate, please refrain from using this software because we are convinced of the long-term stability of the applicable sections of code, and so it follows that the code will never be removed unless Microsoft implement public access modifiers into the PropertyGridView hierarchy.</br>
+As it stands, AbstractSettingsPage exposes the gridView object, updates the gridView.originalTextValue field, reads the gridView.selectedRow field and Window.SortedByCategories property, attaches to the GotFocus and LostFocus events of the gridView.edit TextBox, and intercepts the TextBox's MouseDown event.
 
 *The first tenet of this package is `small footprint, low overhead`, and to be as unobtrusive as possible. It is installed as a standard VSIX extension. If you uninstall it is is gone. It does not leave it's fingerprints in either your computer system or your Visual Studio installation.*
 
@@ -29,7 +34,7 @@ The BlackbirdSQL DDEX 2.0 .NET Data with SqlEditor Provider extension, `Blackbir
 * Plug and play. No configuration of the .csproj, app.config or machine.config files and no GAC registration.
 * BlackbirdSql background and UI thread tasks compliant with the IDE TaskHandler and implements the user cancel feature for background tasks from the TaskHandler window.
 * All exception, task progress and task status reporting logged to the output window accessible under *BlackbirdSql* in the dropdown (Enabled by default under Options).
-* The connection node `Refresh` command option in the SE will successfully recover from a connection timeout shutdown exception, to the node's previous state
+* The connection node `Refresh` command option in the SE will successfully recover from a connection timeout shutdown exception, to the node's previous state.
 
 ### AutoIncrement Identity Fields
 There is a simple parser coded in C++/Cli which parses the Trigger source for linkage to the auto-increment sequence generator. The original parser code was ported from the pgsql LISP con-cell parser but then scrapped in favor of the [greenlion/PHP-SQL-Parser](https://github.com/greenlion/PHP-SQL-Parser) PHP parser, which meant adapting the BlackbirdSql Cell class library so that it could imitate PHP style arrays/variables. This library is fully functional but the port of the parser itself was not completed because the partial port satisfied the needs for parsing the Trigger DDL.</br>
@@ -39,12 +44,12 @@ The parser itself is reasonably fast (+- 0.1 milliseconds per trigger), but SQL 
 ## Known issues
 * The Language service for the SqlEditor service is still under development and has not been linked into the extension. When opening scripts for Triggers, Views, Procedures, Funtions, Computed columns or SQL statements, the SqlEditor uses the Visual Studio built-in T-SQL Language service. This means that Intellisense may mark incompatible SQL and DDL as errors. The scripts will still successfully execute.
 * The SqlEditor port does not currently support script parameter loading feature.
-* The BlackbirdSql Editor settings in Visual Studio Options has been ported as is from the Microsoft SqlServer SqlEditor settings. This means that many of the options are not currently being used or are not applicable.
+* The BlackbirdSql Editor settings in Visual Studio Options have been ported from the Microsoft SqlServer SqlEditor settings. This means that many of the options are not currently being used or are not applicable. because only one Firebird iSql command is available from the code side.
 * If on startup of the Visual Studio IDE, and only on startup, an attempt is made to access an EDMX model or a Database in the SE before the associated DDEX provider has been given the IDE shell context, Visual Studio will flag the provider as unavailable for the duration of the session. This is true for both the SqlServer and BlackbirdSql providers, and is likely the case for any other DDEX provider that loads asynchronously.</br>
 As it stands Visual Studio will have to be restarted to clear the flag.</br>
 Unless we're missing a trick here this seems to be unavoidable. Loading is asynchronous, so the provider needs time to register and load.</br>
 We want to be as unobtrusive as possible so load delays are just a reality if we go the asynchronous route. (*Loading is initiated at the earliest possible, which is as soon as the IDE shell context is available.*)
-* If you have a huge number of triggers then rendering of the triggers in the SE, or any other collection for that matter, may take some time. This has nothing to do with the parser but is simply down to network and database server performance. To minimize the effect of this, Trigger/Generator linkage is built asynchronously as soon as a connection is established.
+* If you have a huge number of triggers then rendering of the triggers in the SE, or any other collection for that matter, may take some time. This has nothing to do with the parser but is simply down to network and database server performance. To minimize the effect of this, Trigger/Generator linkage is built asynchronously as soon as a connection is established, but will switch over to the main thread 
 * There seems to be an issue with drag and drop on procedures and functions which I haven't looked at. It's likely something trivial but not sure if this functionality is available to SqlServer so may be another rabbit hole.</br>
 The same applies to drag and drop from the SE directly into the edmx, not available on SqlServer but I don't see why it cannot be done.
 * The enhanced localized new query command is working but has not yet been placed in the views or functions/procedures nodes of the SE, which still use the built-in new query command.</br>
