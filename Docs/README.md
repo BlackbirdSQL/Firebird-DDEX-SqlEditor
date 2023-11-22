@@ -1,4 +1,4 @@
-# BlackbirdSQL DDEX 2.0 with SqlEditor Provider for Firebird 9.1.0.90 PreRelease
+# BlackbirdSQL DDEX 2.0 with SqlEditor Provider for Firebird 9.1.1
 
 #### Screenshots
 ![ReadMe](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/assets/120905720/0b52cc20-c957-451d-93c0-31255abb0ada)
