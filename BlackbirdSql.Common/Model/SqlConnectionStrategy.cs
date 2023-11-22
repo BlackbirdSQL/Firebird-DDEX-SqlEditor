@@ -482,7 +482,6 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 				Diag.Dug(ex);
 				throw;
 			}
-			connection = new FbConnection();
 		}
 
 		/*
@@ -510,6 +509,9 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 
 		}
 		*/
+
+		connection = null;
+
 		return null;
 	}
 
@@ -727,7 +729,8 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 						if (Connection.State == ConnectionState.Open)
 							Connection.Close();
 						Connection.ConnectionString = _Csb.ConnectionString;
-						// UiConnectionInfo.ConnectionStringBuilder = _Csb;
+						if (UiConnectionInfo == null)
+							UiConnectionInfo = new();
 						UiConnectionInfo.Parse(_Csb);
 						SetConnectionInfo(UiConnectionInfo);
 						Connection.Open();

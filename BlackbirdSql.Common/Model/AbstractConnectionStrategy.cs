@@ -72,7 +72,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 				return _UiConnectionInfo;
 			}
 		}
-		private set
+		protected set
 		{
 			lock (_LockObject)
 			{
@@ -425,7 +425,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 					Connection.ConnectionString = _Csb.ConnectionString;
 
 					if (UiConnectionInfo == null)
-						UiConnectionInfo = new UIConnectionInfo();
+						UiConnectionInfo = new();
 
 					UiConnectionInfo.Parse(_Csb);
 					DatabaseChanged?.Invoke(this, new EventArgs());
