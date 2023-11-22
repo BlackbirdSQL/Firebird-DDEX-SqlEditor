@@ -6,7 +6,6 @@ using System.Data;
 using System.Data.Common;
 using System.Drawing;
 using System.Globalization;
-using System.IO;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -17,8 +16,8 @@ using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model;
 
 using FirebirdSql.Data.FirebirdClient;
@@ -33,6 +32,7 @@ namespace BlackbirdSql.Common.Model;
 public abstract class AbstractConnectionStrategy : IDisposable
 {
 	protected DbConnectionStringBuilder _Csb = null;
+	protected string _LastDatasetKey = null;
 
 	public delegate void ConnectionChangedEvent(object sender, ConnectionChangedEventArgs args);
 
@@ -56,6 +56,11 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 	// A protected 'this' object lock
 	protected readonly object _LockObject = new object();
+
+
+
+
+	public string LastDatasetKey => _LastDatasetKey;
 
 
 	public virtual UIConnectionInfo UiConnectionInfo
@@ -101,26 +106,28 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		}
 	}
 
-	public virtual string DisplayMember
+	public virtual string DatasetId
 	{
 		get
 		{
 			lock (_LockObject)
 			{
-				MonikerAgent moniker;
+				CsbAgent csa;
 
 				if (Connection != null)
 				{
-					moniker = new(Connection);
-					if (!string.IsNullOrWhiteSpace(moniker.DisplayMember))
-						return moniker.DisplayMember;
+					csa = new(Connection);
+					csa.RegisterDataset();
+					if (!string.IsNullOrWhiteSpace(csa.DatasetId))
+						return csa.DatasetId;
 				}
 
 				if (UiConnectionInfo != null)
 				{
-					moniker = new(UiConnectionInfo);
-					if (!string.IsNullOrWhiteSpace(moniker.DisplayMember))
-						return moniker.DisplayMember;
+					csa = new(UiConnectionInfo);
+					csa.RegisterDataset();
+					if (!string.IsNullOrWhiteSpace(csa.DatasetId))
+						return csa.DatasetId;
 				}
 
 				return string.Empty;
@@ -176,22 +183,27 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		lock (_LockObject)
 		{
 			IDbConnection connection = _Connection;
+
 			if (connection == value)
-			{
 				return;
-			}
 
 			if (_Connection != null)
 			{
 				if (_Connection.State != 0)
-				{
 					_Connection.Close();
-				}
 
 				_Connection.Dispose();
 			}
 
 			_Connection = value;
+
+			if (_Connection != null)
+			{
+				CsbAgent csa = new(_Connection);
+				csa.RegisterDataset();
+				_LastDatasetKey = csa.DatasetKey;
+			}
+
 			OnConnectionChangedPriority(connection);
 			OnConnectionChanged(connection);
 		}
@@ -239,8 +251,8 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		lock (_LockObject)
 		{
 			FbConnection conn = (FbConnection)connection;
-			
-			Tracer.Trace(typeof(SqlConnectionStrategy), "ApplyConnectionOptions()", "starting");
+
+			// Tracer.Trace(typeof(SqlConnectionStrategy), "ApplyConnectionOptions()", "starting");
 
 			FbScript script = s.CommandBuilder(s.EditorExecutionSetRowCount.SqlCmd(), s.EditorExecutionSetBlobDisplay.SqlCmd(),
 				s.EditorExecutionSetCount.SqlCmd(), s.EditorExecutionLockTimeout.SqlCmd(), s.EditorExecutionSetBail.SqlCmd(),
@@ -278,7 +290,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 				}
 			}
 		}
-	
+
 	}
 
 	private void OnUnknownStatement(object sender, UnknownStatementEventArgs e)
@@ -308,7 +320,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		{
 			if (Connection == null || tryOpenConnection && Connection.State != ConnectionState.Open)
 			{
-				Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "EnsureConnection", "Connection is null or not open");
+				// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "EnsureConnection", "Connection is null or not open");
 				AcquireConnectionInfo(tryOpenConnection, out var uici, out var connection);
 				if (uici != null && connection == null)
 				{
@@ -391,38 +403,41 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		}
 	}
 
-	public virtual void SetDatasetDisplayMemberOnConnection(string selectedDisplayMember, DbConnectionStringBuilder csb)
+	public virtual void SetDatasetKeyOnConnection(string selectedDatasetKey, DbConnectionStringBuilder csb)
 	{
 		try
 		{
 			lock (_LockObject)
 			{
 				_Csb = csb;
+				_Csb ??= ConnectionLocator.GetCsbFromDatabases(selectedDatasetKey);
 
-
-				if (Connection != null /* && Connection.State == ConnectionState.Open */)
+				if (_Csb != null)
 				{
-					_Csb ??= XmlParser.GetCsbFromDatabases(selectedDisplayMember);
-					if (_Csb != null)
-					{
-						bool isOpen = Connection.State == ConnectionState.Open;
-						if (isOpen)
-							Connection.Close();
+					if (Connection == null)
+						SetDbConnection(new FbConnection(_Csb.ConnectionString));
 
-						Connection.ConnectionString = _Csb.ConnectionString;
-						// UiConnectionInfo.ConnectionStringBuilder = _Csb;
-						UiConnectionInfo.Parse(_Csb);
-						DatabaseChanged?.Invoke(this, new EventArgs());
-						if (isOpen)
-							Connection.Open();
-					}
+
+					bool isOpen = Connection.State == ConnectionState.Open;
+					if (isOpen)
+						Connection.Close();
+
+					Connection.ConnectionString = _Csb.ConnectionString;
+
+					if (UiConnectionInfo == null)
+						UiConnectionInfo = new UIConnectionInfo();
+
+					UiConnectionInfo.Parse(_Csb);
+					DatabaseChanged?.Invoke(this, new EventArgs());
+					if (isOpen)
+						Connection.Open();
 				}
 			}
 		}
 		catch (FbException e)
 		{
 			Tracer.LogExCatch(typeof(AbstractConnectionStrategy), e);
-			Cmd.ShowMessageBoxEx(null, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrDatabaseNotAccessible, selectedDisplayMember), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			Cmd.ShowMessageBoxEx(null, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrDatabaseNotAccessible, selectedDatasetKey), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 		}
 	}
 
@@ -448,7 +463,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 				stringBuilder.Append(".");
 			}
 
-			stringBuilder.Append(DisplayMember);
+			stringBuilder.Append(DatasetId);
 		}
 
 		if ((UserSettings.EditorStatusTabTextIncludeLoginName || ignoreSettings) && !string.IsNullOrEmpty(DisplayUserName))
@@ -646,7 +661,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 				}
 				else
 				{
-					Scsb.UserID = connectionInfo.UserName;
+					Scsb.UserID = connectionInfo.UserID;
 					if (connectionInfo.AuthenticationType != 5)
 					{
 						scsb.Password = connectionInfo.Password;
@@ -659,7 +674,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 		}
 
-		((FbConnectionStringBuilder)scsb).Pooling = false;
+		((CsbAgent)scsb).Pooling = false;
 	}
 
 

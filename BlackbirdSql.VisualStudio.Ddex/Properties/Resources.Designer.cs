@@ -61,6 +61,51 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .NET Framework DDEX 2.0 Provider for Firebird (BlackbirdSql).
+        /// </summary>
+        public static string DataProvider_Ddex {
+            get {
+                return ResourceManager.GetString("DataProvider_Ddex", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this selection to connect to Firebird using the DDEX 2.0 BlackbirdSql Provider..
+        /// </summary>
+        public static string DataProvider_Ddex_DataSource_Description {
+            get {
+                return ResourceManager.GetString("DataProvider_Ddex_DataSource_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this data provider to connect to Firebird SQL Server..
+        /// </summary>
+        public static string DataProvider_Ddex_Description {
+            get {
+                return ResourceManager.GetString("DataProvider_Ddex_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FirebirdClient [BlackbirdSql].
+        /// </summary>
+        public static string DataProvider_Ddex_Short {
+            get {
+                return ResourceManager.GetString("DataProvider_Ddex_Short", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Firebird SQL Server.
+        /// </summary>
+        public static string DataSource_FirebirdSqlServer {
+            get {
+                return ResourceManager.GetString("DataSource_FirebirdSqlServer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The arguments array is invalid..
         /// </summary>
         public static string DataSupportObject_InvalidInvokeArguments {
@@ -75,33 +120,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string DataSupportObject_UnknownInvokeName {
             get {
                 return ResourceManager.GetString("DataSupportObject_UnknownInvokeName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Use this selection to connect to Firebird using the DDEX 2.0 BlackbirdSql Provider.
-        /// </summary>
-        public static string DdexProvider_Description {
-            get {
-                return ResourceManager.GetString("DdexProvider_Description", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .NET Framework DDEX 2.0 Provider for Firebird (BlackbirdSql).
-        /// </summary>
-        public static string DdexProvider_DisplayName {
-            get {
-                return ResourceManager.GetString("DdexProvider_DisplayName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to BlackbirdSql DDEX 2.0 Provider.
-        /// </summary>
-        public static string DdexProvider_ShortDisplayName {
-            get {
-                return ResourceManager.GetString("DdexProvider_ShortDisplayName", resourceCulture);
             }
         }
         

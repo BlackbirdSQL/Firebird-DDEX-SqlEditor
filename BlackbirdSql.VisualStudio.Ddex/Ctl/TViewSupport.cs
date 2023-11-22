@@ -68,12 +68,12 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 
 	public TViewSupport(string fileName, string path) : base(fileName, path)
 	{
-		Tracer.Trace(GetType(), "TViewSupport.TViewSupport()", "fileName: {0}, path: {1}", fileName, path);
+		// Tracer.Trace(GetType(), "TViewSupport.TViewSupport()", "fileName: {0}, path: {1}", fileName, path);
 	}
 
 	public TViewSupport(string resourceName, Assembly assembly) : base(resourceName, assembly)
 	{
-		Tracer.Trace(GetType(), "TViewSupport.TViewSupport()", "resourceName: {0} assembly: {1}", resourceName, assembly.FullName);
+		// Tracer.Trace(GetType(), "TViewSupport.TViewSupport()", "resourceName: {0} assembly: {1}", resourceName, assembly.FullName);
 	}
 
 
@@ -91,11 +91,11 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 
 	public override void Close()
 	{
-		Tracer.Trace(GetType(), "Close()");
+		// Tracer.Trace(GetType(), "Close()");
 
 		if (_Loaded && ViewHierarchy != null && ViewHierarchy.ExplorerConnection != null)
 		{
-			Tracer.Trace(GetType(), "Close()", "Disassociating from ExplorerConnection.");
+			// Tracer.Trace(GetType(), "Close()", "Disassociating from ExplorerConnection.");
 
 			ViewHierarchy.ExplorerConnection.NodeExpandedOrRefreshed -= OnNodeStateChanged;
 			ViewHierarchy.ExplorerConnection.NodeRemoving -= OnNodeRemoving;
@@ -105,7 +105,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 
 			if (connection != null)
 			{
-				Tracer.Trace(GetType(), "Close()", "Disposing of site objects");
+				// Tracer.Trace(GetType(), "Close()", "Disposing of site objects");
 
 				connection.StateChanged -= OnConnectionStateChanged;
 
@@ -125,7 +125,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 	// ---------------------------------------------------------------------------------
 	protected override object CreateService(Type serviceType)
 	{
-		Tracer.Trace(GetType(), "CreateService()", "serviceType: {0}", serviceType.Name);
+		// Tracer.Trace(GetType(), "CreateService()", "serviceType: {0}", serviceType.Name);
 
 
 		// If it's asking for a visibility provider it means the tree must be opening so it's
@@ -207,7 +207,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 
 	public override void Initialize()
 	{
-		Tracer.Trace(GetType(), "Initialize()");
+		// Tracer.Trace(GetType(), "Initialize()");
 
 		base.Initialize();
 
@@ -504,7 +504,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 		if (!_Initialized && e.NewState == DataConnectionState.Open)
 			InitializeProperties();
 
-		Tracer.Trace(GetType(), "OnNodeChanged()", "Old: {0} new:{1}.", e.OldState, e.NewState);
+		// Tracer.Trace(GetType(), "OnNodeChanged()", "Old: {0} new:{1}.", e.OldState, e.NewState);
 
 		if (!_Refreshing || e.OldState == DataConnectionState.Open || e.NewState != DataConnectionState.Open
 			|| ViewHierarchy == null || ViewHierarchy.ExplorerConnection == null
@@ -589,7 +589,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 					$"Object.IsDeleted: {e.Node.Object.IsDeleted}.";
 			}
 
-			Tracer.Trace(GetType(), "OnNodeChanged()", str);
+			// Tracer.Trace(GetType(), "OnNodeChanged()", str);
 
 			site = ViewHierarchy.ExplorerConnection.Connection;
 			lockedProviderObject = site.GetLockedProviderObject();
@@ -633,7 +633,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 
 	private void OnNodeRemoving(object sender, DataExplorerNodeEventArgs e)
 	{
-		Tracer.Trace(GetType(), "OnNodeRemoving()", "Node: {0}.", e.Node != null ? e.Node.ToString() : "null");
+		// Tracer.Trace(GetType(), "OnNodeRemoving()", "Node: {0}.", e.Node != null ? e.Node.ToString() : "null");
 	}
 
 
@@ -661,7 +661,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 				str += $", Object.Name: {e.Node.Object.Name}, Object.Type: {e.Node.Object.Type.Name}, " +
 					$"Object.IsDeleted: {e.Node.Object.IsDeleted}.";
 			}
-			Tracer.Trace(GetType(), "OnNodeStateChanged()", str);
+			// Tracer.Trace(GetType(), "OnNodeStateChanged()", str);
 		}
 		catch (Exception ex)
 		{

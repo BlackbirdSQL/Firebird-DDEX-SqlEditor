@@ -51,13 +51,13 @@ public class TObjectSelector : TObjectSelectorTable
 
 	public TObjectSelector() : base()
 	{
-		Tracer.Trace(GetType(), "TObjectSelector.TObjectSelector()");
+		// Tracer.Trace(GetType(), "TObjectSelector.TObjectSelector()");
 	}
 
 
 	public TObjectSelector(IVsDataConnection connection) : base(connection)
 	{
-		Tracer.Trace(GetType(), "TObjectSelector(IVsDataConnection)");
+		// Tracer.Trace(GetType(), "TObjectSelector(IVsDataConnection)");
 	}
 
 
@@ -84,7 +84,7 @@ public class TObjectSelector : TObjectSelectorTable
 	protected override IVsDataReader SelectObjects(string typeName, object[] restrictions,
 		string[] properties, object[] parameters)
 	{
-		Tracer.Trace(GetType(), "SelectObjects()", "typeName: {0}", typeName);
+		// Tracer.Trace(GetType(), "SelectObjects()", "typeName: {0}", typeName);
 
 		try
 		{
@@ -147,7 +147,7 @@ public class TObjectSelector : TObjectSelectorTable
 
 	protected override DataTable GetSchema(DbConnection connection, string typeName, ref object[] restrictions, object[] parameters)
 	{
-		Tracer.Trace(GetType(), "GetSchema()", "typeName: {0}", typeName);
+		// Tracer.Trace(GetType(), "GetSchema()", "typeName: {0}", typeName);
 
 		if (typeName == "Table")
 			base.GetSchema(connection, typeName, ref restrictions, parameters);
@@ -164,7 +164,7 @@ public class TObjectSelector : TObjectSelectorTable
 			}
 		}
 
-		Tracer.Trace(GetType(), "TObjectSelector.GetSchema", "Ensuring connection typeName: {0}", typeName);
+		// Tracer.Trace(GetType(), "TObjectSelector.GetSchema", "Ensuring connection typeName: {0}", typeName);
 
 		try
 		{
@@ -177,11 +177,11 @@ public class TObjectSelector : TObjectSelectorTable
 		}
 
 
-		Tracer.Trace(GetType(), "TObjectSelector.GetSchema", "Calling GetSchema params.ToString, typeName: {0}", typeName);
+		// Tracer.Trace(GetType(), "TObjectSelector.GetSchema", "Calling GetSchema params.ToString, typeName: {0}", typeName);
 
 		DataTable schema = DslProviderSchemaFactory.GetSchema((FbConnection)connection, parameters[0].ToString(), array);
 
-		Tracer.Trace(GetType(), "TObjectSelector.GetSchema", "Returned from GetSchema params.ToString, typeName: {0}", typeName);
+		// Tracer.Trace(GetType(), "TObjectSelector.GetSchema", "Returned from GetSchema params.ToString, typeName: {0}", typeName);
 
 
 		if (parameters.Length == 2 && parameters[1] is DictionaryEntry entry)

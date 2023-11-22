@@ -4,11 +4,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Data.Common;
-using System.Runtime.InteropServices;
-using BlackbirdDsl;
+using System.Linq;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
@@ -17,11 +14,9 @@ using BlackbirdSql.Core.Model;
 using BlackbirdSql.VisualStudio.Ddex.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using FirebirdSql.Data.FirebirdClient;
-using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
-using Microsoft.VisualStudio.LanguageServer.Client;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
@@ -43,8 +38,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	// Sanity checker.
 	private readonly bool _Ctor = false;
 	FbConnection _Connection;
-	FbConnectionStringBuilder _Csb;
-	MonikerAgent _Moniker;
+	CsbAgent _Csa;
 
 
 	#endregion Variables
@@ -60,12 +54,12 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 	public TObjectSelectorRoot() : base()
 	{
-		Tracer.Trace(GetType(), "TObjectSelectorRoot.TObjectSelectorRoot()");
+		// Tracer.Trace(GetType(), "TObjectSelectorRoot.TObjectSelectorRoot()");
 	}
 
 	public TObjectSelectorRoot(IVsDataConnection connection) : base()
 	{
-		Tracer.Trace(GetType(), "TObjectSelectorRoot(IVsDataConnection)", "NOTE THIS!!!");
+		// Tracer.Trace(GetType(), "TObjectSelectorRoot(IVsDataConnection)", "NOTE THIS!!!");
 
 		_Ctor = true;
 		Site = connection;
@@ -97,7 +91,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	// ---------------------------------------------------------------------------------
 	protected override IVsDataReader SelectObjects(string typeName, object[] restrictions, string[] properties, object[] parameters)
 	{
-		Tracer.Trace(GetType(), "SelectObjects()", "typeName: {0}.", typeName);
+		// Tracer.Trace(GetType(), "SelectObjects()", "typeName: {0}.", typeName);
 
 		try
 		{
@@ -116,6 +110,8 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			throw;
 		}
 
+		Tracer.Trace(GetType(), "SelectObjects()", "TYPE IVsDataConnection: {0}.", Site.GetType().FullName);
+
 		int syncCardinal = 0;
 		object lockedProviderObject = null;
 		FbConnection connection = null;
@@ -133,20 +129,20 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 				throw ex;
 			}
 
+			// Tracer.Trace(GetType(), "SelectObjects()", "Site type: {0}", Site.GetType().FullName);
 			Site.EnsureConnected();
 			parser = LinkageParser.GetInstance(connection);
 
-			Tracer.Trace(GetType(), "SelectObjects()", parser == null ? "no parser to pause" : "making linker pause request");
+			// Tracer.Trace(GetType(), "SelectObjects()", parser == null ? "no parser to pause" : "making linker pause request");
 			syncCardinal = parser != null ? parser.SyncEnter() : 0;
 
 			_Connection = connection;
-			_Csb = new FbConnectionStringBuilder(connection.ConnectionString);
-			_Moniker = new(connection);
+			_Csa = new(connection);
+			_Csa.RegisterDataset();
 
 			DataTable schema = CreateSchema(typeName, parameters);
 
-			_Moniker = null;
-			_Csb = null;
+			_Csa = null;
 			_Connection = null;
 
 			reader = new AdoDotNetTableReader(schema);
@@ -197,13 +193,13 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	// ---------------------------------------------------------------------------------
 	private DataTable CreateSchema(string typeName, object[] parameters)
 	{
-		Tracer.Trace(GetType(), "CreateSchema()", "typename: {0}", typeName);
+		// Tracer.Trace(GetType(), "CreateSchema()", "typename: {0}", typeName);
 
 		DataTable schema = new DataTable();
 
 		Describer[] describers = typeName == "Database"
-			? ModelPropertySet.ConnectionNodeDescribers
-			: ModelPropertySet.RootNodeDescribers;
+			? CsbAgent.Describers.Values.ToArray()
+			: new Describer[] { CsbAgent.Describers[CoreConstants.C_KeyExDatasetKey] };
 
 
 		foreach (Describer describer in describers)
@@ -241,7 +237,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			}
 		}
 
-		Tracer.Trace(GetType(), "CreateSchema()", "Schema type '{0}' loaded with {1} rows.", typeName, schema.Rows.Count);
+		// Tracer.Trace(GetType(), "CreateSchema()", "Schema type '{0}' loaded with {1} rows.", typeName, schema.Rows.Count);
 
 
 		return schema;
@@ -260,49 +256,30 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	{
 		string strval;
 		object retval;
+		object errval = DBNull.Value;
+
 
 		try
 		{
 			switch (name)
 			{
-				case ModelConstants.C_KeyNodeDatasetKey:
-					retval = _Moniker.DatasetKey;
+				case CoreConstants.C_KeyExDatasetKey:
+					retval = _Csa.DatasetKey;
 					break;
-				case ModelConstants.C_KeyNodeDataSource:
+				case CoreConstants.C_KeyDataSource:
 					retval = _Connection.DataSource;
 					break;
-				case ModelConstants.C_KeyNodePort:
-					retval = _Csb.Port;
+				case CoreConstants.C_KeyExDataset:
+					retval = _Csa.Dataset;
 					break;
-				case ModelConstants.C_KeyNodeServerType:
-					retval = _Csb.ServerType;
-					break;
-				case ModelConstants.C_KeyNodeDatabase:
+				case CoreConstants.C_KeyDatabase:
 					retval = _Connection.Database;
 					break;
-				case ModelConstants.C_KeyNodeDisplayMember:
-					retval = _Moniker.DisplayMember;
+				case CoreConstants.C_KeyExDatasetId:
+					retval = _Csa.DatasetId;
 					break;
-				case ModelConstants.C_KeyNodeUserId:
-					retval = _Csb.UserID;
-					break;
-				case ModelConstants.C_KeyNodePassword:
-					retval = _Csb.Password;
-					break;
-				case ModelConstants.C_KeyNodeRole:
-					retval = _Csb.Role;
-					break;
-				case ModelConstants.C_KeyNodeCharset:
-					retval = _Csb.Charset;
-					break;
-				case ModelConstants.C_KeyNodeDialect:
-					retval = _Csb.Dialect;
-					break;
-				case ModelConstants.C_KeyNodeNoDbTriggers:
-					retval = _Csb.NoDatabaseTriggers;
-					break;
-				case ModelConstants.C_KeyNodeMemoryUsage:
-					retval = ModelConstants.C_DefaultNodeMemoryUsage;
+				case ModelConstants.C_KeyExMemoryUsage:
+					retval = ModelConstants.C_DefaultExMemoryUsage;
 					if ((_Connection.State & ConnectionState.Open) > 0)
 					{
 						FbDatabaseInfo info = new(_Connection);
@@ -310,8 +287,9 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 						retval = strval;
 					}
 					break;
-				case ModelConstants.C_KeyNodeActiveUsers:
-					retval = ModelConstants.C_DefaultNodeActiveUsers;
+				case ModelConstants.C_KeyExActiveUsers:
+					errval = 0;
+					retval = ModelConstants.C_DefaultExActiveUsers;
 					if ((_Connection.State & ConnectionState.Open) != 0)
 					{
 						FbDatabaseInfo info = new(_Connection);
@@ -319,18 +297,25 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 					}
 					break;
 				default:
-					ArgumentException ex = new($"Invalid root/connection node property {name}.");
-					Diag.Dug(ex);
-					retval = null;
+					Describer describer = CsbAgent.Describers[name];
+					if (!_Csa.ContainsKey(describer.Name))
+						retval = describer.DefaultValue ?? DBNull.Value;
+					else if (describer.DataType == typeof(int))
+						retval = Convert.ToInt32(_Csa[describer.Name]);
+					else
+						retval = _Csa[describer.Name];
+					// Tracer.Trace(GetType(), "RetrieveValue()", "Name: {0}, CsbName: {1}, retval: {2}, ContainsKey(CsbName): {3}, _Csb[CsbName]: {4}.", name, describer.Name, retval, _Csa.ContainsKey(describer.Name), _Csa.ContainsKey(describer.Name) ? _Csa[describer.Name] : "NoExist");
+
 					break;
 			}
 		}
 		catch (Exception ex)
 		{
 			Diag.Dug(ex, $"PropertyName: '{name}'");
-			return null;
+			return errval;
 		}
 
+		retval ??= DBNull.Value;
 
 		return retval;
 	}
@@ -348,7 +333,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 	protected override void OnSiteChanged(EventArgs e)
 	{
-		Tracer.Trace(GetType(), "OnSiteChanged()");
+		// Tracer.Trace(GetType(), "OnSiteChanged()");
 
 		if (!_Ctor)
 			base.OnSiteChanged(e);

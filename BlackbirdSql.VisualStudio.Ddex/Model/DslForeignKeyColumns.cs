@@ -28,7 +28,7 @@ internal class DslForeignKeyColumns : DslColumns
 {
 	public DslForeignKeyColumns(LinkageParser parser) : base(parser)
 	{
-		Tracer.Trace(GetType(), "DslForeignKeyColumns.DslForeignKeyColumns");
+		// Tracer.Trace(GetType(), "DslForeignKeyColumns.DslForeignKeyColumns");
 
 		_ParentType = "ForeignKey";
 		_ObjectType = "TableForeignKeyColumn";

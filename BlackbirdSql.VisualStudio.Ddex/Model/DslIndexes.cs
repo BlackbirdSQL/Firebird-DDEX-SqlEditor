@@ -33,7 +33,7 @@ internal class DslIndexes : AbstractDslSchema
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
-		Tracer.Trace(GetType(), "DslIndexes.GetCommandText");
+		// Tracer.Trace(GetType(), "DslIndexes.GetCommandText");
 
 		// BlackbirdSql added ForeignKey
 
@@ -116,7 +116,7 @@ internal class DslIndexes : AbstractDslSchema
 
 	protected override void ProcessResult(DataTable schema)
 	{
-		Tracer.Trace(GetType(), "DslIndexes.ProcessResult");
+		// Tracer.Trace(GetType(), "DslIndexes.ProcessResult");
 
 		schema.BeginLoadData();
 		schema.Columns.Add("IS_PRIMARY", typeof(bool));

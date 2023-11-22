@@ -10,17 +10,15 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
-using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Model;
 
 
 namespace BlackbirdSql.Core.Ctl.Diagnostics;
 
-[Exportable(typeof(IBTrace), "BlackbirdSql.Core.Diagnostics.Tracer", 0, null)]
-internal class Tracer : IBTrace, IBExportable
+// [Exportable(typeof(IBTrace), "BlackbirdSql.Core.Diagnostics.Tracer", 0, null)]
+internal class Tracer : IBTrace // , IBExportable
 {
 	public enum EnLevel : uint
 	{
@@ -32,10 +30,11 @@ internal class Tracer : IBTrace, IBExportable
 
 	private static readonly TraceSource Source = new TraceSource("BlackbirdSql.Core.Diagnostics.Tracer");
 
-	public IBExportableMetadata Metadata { get; set; }
+	// public IBExportableMetadata Metadata { get; set; }
 
-	public IBDependencyManager DependencyManager { get; set; }
+	// public IBDependencyManager DependencyManager { get; set; }
 
+	/*
 	public ExportableStatus Status
 	{
 		get
@@ -50,7 +49,7 @@ internal class Tracer : IBTrace, IBExportable
 			return new ExportableStatus();
 		}
 	}
-
+	*/
 
 
 	private static string GetMessageForException(Exception exception)

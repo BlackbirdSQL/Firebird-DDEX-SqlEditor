@@ -25,16 +25,36 @@
 			<Properties>
 				<Property name="DatasetKey" isIdentifierPart="true" />
 				<Property name="DataSource" type="System.String" />
+				<Property name="Dataset" type="System.String" />
 				<Property name="Port" type="System.Int32"/>
 				<Property name="ServerType" type="System.Int32"/>
 				<Property name="Database" type="System.String" />
-				<Property name="DisplayMember" type="System.String" />
+				<Property name="DatasetId" type="System.String" />
 				<Property name="UserID" type="System.String"/>
 				<Property name="Password" type="System.String"/>
 				<Property name="Role" type="System.String"/>
 				<Property name="Charset" type="System.String"/>
 				<Property name="Dialect" type="System.Int32"/>
 				<Property name="NoDatabaseTriggers" type="System.Boolean"/>
+				<Property name="PacketSize" type="System.Int32"/>
+				<Property name="ConnectionTimeout" type="System.Int32"/>
+				<Property name="Pooling" type="System.Boolean"/>
+				<Property name="ConnectionLifeTime" type="System.Int32"/>
+				<Property name="MinPoolSize" type="System.Int32"/>
+				<Property name="MaxPoolSize" type="System.Int32"/>
+				<Property name="FetchSize" type="System.Int32"/>
+				<Property name="IsolationLevel" type="System.Int32"/>
+				<Property name="ReturnRecordsAffected" type="System.Boolean"/>
+				<Property name="Enlist" type="System.Boolean"/>
+				<Property name="ClientLibrary" type="System.String"/>
+				<Property name="DbCachePages" type="System.Int32"/>
+				<Property name="NoGarbageCollect" type="System.Boolean"/>
+				<Property name="Compression" type="System.Boolean"/>
+				<Property name="CryptKey" type="System.String"/>
+				<Property name="WireCrypt" type="System.Int32"/>
+				<Property name="ApplicationName" type="System.String"/>
+				<Property name="CommandTimeout" type="System.Int32"/>
+				<Property name="ParallelWorkers" type="System.Int32"/>
 				<Property name="MemoryUsage" type="System.String"/>
 				<Property name="ActiveUsers" type="System.Int32"/>
 			</Properties>

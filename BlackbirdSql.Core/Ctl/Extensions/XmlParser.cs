@@ -2,15 +2,9 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using System.Data;
-using System.Data.Common;
 using System.IO;
-using System.Windows;
 using System.Xml;
 using BlackbirdSql.Core.Ctl.Config;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Model;
 using Microsoft.VisualStudio.Data.Core;
 
 
@@ -24,12 +18,9 @@ namespace BlackbirdSql.Core.Ctl.Extensions;
 /// Xml parser utility methods
 /// </summary>
 // =========================================================================================================
-internal static class XmlParser
+public static class XmlParser
 {
 	#region Variables
-
-
-	static DataTable _DataSources = null, _Databases = null;
 
 
 	#endregion Variables
@@ -171,382 +162,10 @@ internal static class XmlParser
 	}
 
 
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Populates a <see cref="DataTable"/> with the distinct Server hostnames (DataSources) of all registered
-	/// servers of the current data provider (in this case FlameRobin for Firebird), using the xml located
-	/// at <see cref="SystemData.ConfiguredConnectionsPath"/>.
-	/// </summary>
-	/// <returns>
-	/// The populated <see cref="DataTable"/> that can be used together with <see cref="Databases"/> in an <see cref="ErmBindingSource"/>.
-	/// </returns>
-	// ---------------------------------------------------------------------------------
-	public static DataTable DataSources
-	{
-		get
-		{
-			if (_DataSources != null)
-				return _DataSources;
-
-			_DataSources = Databases.DefaultView.ToTable(true, "Orderer", "ServerName", "DataSource", "DataSourceLc", "PortNumber");
-
-
-			return _DataSources;
-		}
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Populates a <see cref="DataTable"/> with all registered databases of the current data provider (in this case FlameRobin for Firebird)
-	/// using the xml located at <see cref="SystemData.ConfiguredConnectionsPath"/>.
-	/// </summary>
-	/// <returns>
-	/// The populated <see cref="DataTable"/> that can be used together with <see cref="DataSources"/> in an <see cref="ErmBindingSource"/>.
-	/// </returns>
-	// ---------------------------------------------------------------------------------
-	public static DataTable Databases
-	{
-		get
-		{
-			if (_Databases != null)
-				return _Databases;
-
-			DataTable databases = new DataTable();
-
-
-			databases.Columns.Add("Id", typeof(int));
-			databases.Columns.Add("Orderer", typeof(int));
-			databases.Columns.Add("ServerName", typeof(string));
-			databases.Columns.Add("DataSource", typeof(string));
-			databases.Columns.Add("DataSourceLc", typeof(string));
-			databases.Columns.Add("Name", typeof(string));
-			databases.Columns.Add("DisplayMember", typeof(string));
-			databases.Columns.Add("InitialCatalog", typeof(string));
-			databases.Columns.Add("InitialCatalogLc", typeof(string));
-			databases.Columns.Add("Dataset", typeof(string));
-			databases.Columns.Add("DatasetKey", typeof(string));
-			databases.Columns.Add("PortNumber", typeof(int));
-			databases.Columns.Add("ServerType", typeof(int));
-			databases.Columns.Add("Charset", typeof(string));
-			databases.Columns.Add("Dialect", typeof(int));
-			databases.Columns.Add("UserName", typeof(string));
-			databases.Columns.Add("Password", typeof(string));
-			databases.Columns.Add("RoleName", typeof(string));
-
-
-			bool hasLocal = false;
-			DataRow row;
-
-			string xmlPath = SystemData.ConfiguredConnectionsPath;
-
-			if (File.Exists(xmlPath))
-			{
-				try
-				{
-					XmlDocument xmlDoc = new XmlDocument();
-
-					xmlDoc.Load(xmlPath);
-
-					XmlNode xmlRoot = xmlDoc.DocumentElement;
-					/* XmlNamespaceManager xmlNs = new XmlNamespaceManager(xmlDoc.NameTable);
-
-
-					if (!xmlNs.HasNamespace("confBlackbirdNs"))
-					{
-						xmlNs.AddNamespace("confBlackbirdNs", xmlRoot.NamespaceURI);
-					}
-					*/
-					XmlNodeList xmlServers, xmlDatabases;
-					XmlNode xmlNode = null;
-					int port;
-					EnDbServerType serverType = CoreConstants.C_DefaultServerType;
-					int dialect = ModelConstants.C_DefaultDialect;
-					string serverName, datasource, authentication, user, password, path, charset, role;
-					string displayMember;
-
-					xmlServers = xmlRoot.SelectNodes("//server");
-
-
-					foreach (XmlNode xmlServer in xmlServers)
-					{
-						if ((xmlNode = xmlServer.SelectSingleNode("name")) == null)
-							continue;
-						serverName = xmlNode.InnerText.Trim();
-
-
-						if ((xmlNode = xmlServer.SelectSingleNode("host")) == null)
-							continue;
-						datasource = xmlNode.InnerText.Trim();
-
-
-						if ((xmlNode = xmlServer.SelectSingleNode("port")) == null)
-							continue;
-						port = Convert.ToInt32(xmlNode.InnerText.Trim());
-
-						if (port == 0)
-							port = CoreConstants.C_DefaultPortNumber;
-
-						if (datasource == "localhost")
-							hasLocal = true;
-
-						row = databases.NewRow();
-
-						row["Id"] = databases.Rows.Count;
-						row["ServerName"] = serverName;
-						row["DataSource"] = datasource;
-						row["DataSourceLc"] = datasource.ToLower();
-						row["PortNumber"] = port;
-						row["ServerType"] = (int)serverType;
-
-						row["DisplayMember"] = "";
-						row["Name"] = "";
-						row["InitialCatalog"] = "";
-						row["InitialCatalogLc"] = "";
-						row["Dataset"] = "";
-						row["DatasetKey"] = "";
-						row["Charset"] = "";
-						row["Dialect"] = 0;
-						row["UserName"] = "";
-						row["Password"] = "";
-						row["RoleName"] = "";
-
-						if (datasource == "localhost")
-							row["Orderer"] = 2;
-						else
-							row["Orderer"] = 3;
-
-						databases.Rows.Add(row);
-
-
-						xmlDatabases = xmlServer.SelectNodes("database");
-
-
-
-						foreach (XmlNode xmlDatabase in xmlDatabases)
-						{
-							if ((xmlNode = xmlDatabase.SelectSingleNode("name")) == null)
-								continue;
-
-
-							// Add a ghost row to each database
-							// A binding source cannot have an invalidated state. ie. Position == -1 and Current == null,
-							// if it's List Count > 0. The ghost row is a placeholder for that state.
-							row = databases.NewRow();
-
-							row["Id"] = databases.Rows.Count;
-							row["ServerName"] = serverName;
-							row["DataSource"] = datasource;
-							row["DataSourceLc"] = datasource.ToLower();
-							row["PortNumber"] = port;
-							row["ServerType"] = (int)serverType;
-
-							displayMember = xmlNode.InnerText.Trim();
-							row["Name"] = displayMember;
-
-							if ((xmlNode = xmlDatabase.SelectSingleNode("path")) == null)
-								continue;
-
-							path = xmlNode.InnerText.Trim();
-							row["InitialCatalog"] = path;
-							row["InitialCatalogLc"] = path.ToLower();
-
-							if ((xmlNode = xmlDatabase.SelectSingleNode("charset")) == null)
-								continue;
-
-
-							charset = xmlNode.InnerText.Trim();
-							row["Charset"] = charset;
-							row["Dialect"] = dialect;
-
-
-							user = "";
-							password = "";
-							role = "";
-
-							if ((xmlNode = xmlDatabase.SelectSingleNode("authentication")) == null)
-								authentication = "trusted";
-							else
-								authentication = xmlNode.InnerText.Trim();
-
-							if (authentication != "trusted")
-							{
-								if ((xmlNode = xmlDatabase.SelectSingleNode("username")) != null)
-								{
-									user = xmlNode.InnerText.Trim();
-
-									if (authentication == "pwd"
-										&& (xmlNode = xmlDatabase.SelectSingleNode("password")) != null)
-									{
-										password = xmlNode.InnerText.Trim();
-									}
-								}
-
-							}
-
-							// The displayMember may not be unique at this juncture.
-							MonikerAgent moniker = MonikerAgent.RegisterDatasetKey(displayMember, datasource, port,
-								serverType, path, user, password, role, charset, ModelConstants.C_DefaultDialect, false);
-
-							if (moniker == null)
-								continue;
-
-							row["UserName"] = user;
-							row["Password"] = password;
-							row["RoleName"] = role;
-
-							Tracer.Trace(typeof(XmlParser), "Databases getter()", "Database path: {0}.", path);
-
-
-							// MonikerAgent will return a new DisplayMember if the supplied one was not unique.
-							// to the server.
-							row["DatasetKey"] = moniker.DatasetKey;
-							row["DisplayMember"] = moniker.DisplayMember;
-							row["Dataset"] = moniker.Dataset;
-
-							if (datasource == "localhost")
-								row["Orderer"] = 2;
-							else
-								row["Orderer"] = 3;
-
-							databases.Rows.Add(row);
-						}
-					}
-
-				}
-				catch (Exception ex)
-				{
-					Diag.Dug(ex);
-				}
-
-
-				// Add a ghost row to the datasources list
-				// This will be the default datasource row so that anything else
-				// selected will generate a CurrentChanged event.
-				row = databases.NewRow();
-
-				row["Id"] = databases.Rows.Count;
-				row["ServerName"] = "";
-				row["DataSource"] = "";
-				row["DataSourceLc"] = "";
-				row["PortNumber"] = 0;
-				row["ServerType"] = 0;
-
-				row["DisplayMember"] = "";
-				row["Name"] = "";
-				row["InitialCatalog"] = "";
-				row["InitialCatalogLc"] = "";
-				row["Dataset"] = "";
-				row["DatasetKey"] = "";
-				row["Charset"] = "";
-				row["Dialect"] = 0;
-				row["UserName"] = "";
-				row["Password"] = "";
-				row["RoleName"] = "";
-
-				row["Orderer"] = 0;
-
-				databases.Rows.Add(row);
-
-
-				// Add a Clear/Reset dummy row for the datasources list
-				// If selected will invoke a form reset the move the cursor back to the ghost row.
-				row = databases.NewRow();
-
-				row["Id"] = databases.Rows.Count;
-				row["Orderer"] = 1;
-				row["ServerName"] = "Reset";
-				row["DataSource"] = "";
-				row["DataSourceLc"] = "reset";
-				row["DisplayMember"] = "";
-				row["Name"] = "";
-				row["PortNumber"] = 0;
-				row["ServerType"] = 0;
-				row["InitialCatalog"] = "";
-				row["InitialCatalogLc"] = "";
-				row["Dataset"] = "";
-				row["DatasetKey"] = "";
-				row["Charset"] = "";
-				row["Dialect"] = 0;
-				row["UserName"] = "";
-				row["Password"] = "";
-				row["RoleName"] = "";
-				databases.Rows.Add(row);
-
-
-				// Add at least one row, that will be the ghost row, for localhost. 
-				if (!hasLocal)
-				{
-					row = databases.NewRow();
-
-					row["Id"] = databases.Rows.Count;
-					row["Orderer"] = 2;
-					row["ServerName"] = "Localhost";
-					row["DataSource"] = "localhost";
-					row["DataSourceLc"] = "localhost";
-					row["DisplayMember"] = "";
-					row["Name"] = "";
-					row["PortNumber"] = CoreConstants.C_DefaultPortNumber;
-					row["ServerType"] = CoreConstants.C_DefaultServerType;
-					row["InitialCatalog"] = "";
-					row["InitialCatalogLc"] = "";
-					row["Dataset"] = "";
-					row["DatasetKey"] = "";
-					row["Charset"] = "";
-					row["Dialect"] = 0;
-					row["UserName"] = "";
-					row["Password"] = "";
-					row["RoleName"] = "";
-
-					databases.Rows.Add(row);
-				}
-
-				databases.DefaultView.Sort = "Orderer,ServerName,DisplayMember ASC";
-
-
-			}
-
-			_Databases = databases.DefaultView.ToTable(false);
-
-			return _Databases;
-		}
-	}
-
-	public static DbConnectionStringBuilder GetCsbFromDatabases(string displayMember)
-	{
-		foreach (DataRow row in Databases.Rows)
-		{
-			if ((string)row["Name"] == "")
-				continue;
-
-			if (displayMember.Equals((string)row["DisplayMember"]))
-			{
-				DbConnectionStringBuilder csb = new()
-				{
-					["DataSource"] = (string)row["DataSource"],
-					["Port"] = (int)row["PortNumber"],
-					["Database"] = (string)row["InitialCatalog"],
-					["Charset"] = (string)row["Charset"],
-					["UserID"] = (string)row["UserName"],
-					["Password"] = (string)row["Password"],
-					["Role"] = (string)row["RoleName"],
-					["Dataset"] = (string)row["Dataset"],
-					["DatasetKey"] = (string)row["DatasetKey"],
-					["DisplayMember"] = (string)row["DisplayMember"]
-				};
-				return csb;
-			}
-		}
-
-		return null;
-	}
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Checks if a project has Firebird EntityFramework configured in the app.config and configures it if it doesn't
+	/// Checks if a project has the FirebirdSql.Data.FirebirdClient db provider
+	/// configured in the app.config and configures it if it doesn't
 	/// </summary>
 	/// <param name="project"></param>
 	/// <exception cref="Exception">
@@ -616,7 +235,8 @@ internal static class XmlParser
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Checks if a project has Firebird EntityFramework configured in the app.config and configures it if it doesn't
+	/// Checks if a project has Firebird EntityFramework configured in the app.config
+	/// and configures it if it doesn't
 	/// </summary>
 	/// <param name="project"></param>
 	/// <exception cref="Exception">
@@ -817,7 +437,8 @@ internal static class XmlParser
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Updates the app.config xml system.data section
+	/// Updates the app.config xml system.data section with the
+	/// FirebirdSql.Data.FirebirdClient db provider.
 	/// </summary>
 	/// <param name="project"></param>
 	/// <exception cref="Exception">

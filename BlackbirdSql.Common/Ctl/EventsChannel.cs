@@ -9,6 +9,7 @@ using System.Data;
 using System.Windows;
 
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Ctl.Interfaces;
 
@@ -58,22 +59,22 @@ public sealed class EventsChannel : IBEventsChannel
 		WebBrowseRequestedEvent?.Invoke(this, new WebBrowseEventArgs(navigateLink));
 	}
 
-	public void OnFirewallRuleDetected(IPAddress clientIpAddress, string serverName, EnFirewallRuleSource source)
+	public void OnFirewallRuleDetected(IPAddress clientIpAddress, string dataSource, EnFirewallRuleSource source)
 	{
 		FirewallRuleDetectedEvent?.Invoke(this, new FirewallRuleEventArgs
 		{
 			ClientIpAddress = clientIpAddress,
-			ServerName = serverName,
+			DataSource = dataSource,
 			Source = source
 		});
 	}
 
-	public void OnFirewallRuleCreated(IPAddress clientIpAddress, string serverName, EnFirewallRuleSource source)
+	public void OnFirewallRuleCreated(IPAddress clientIpAddress, string dataSource, EnFirewallRuleSource source)
 	{
 		FirewallRuleCreatedEvent?.Invoke(this, new FirewallRuleEventArgs
 		{
 			ClientIpAddress = clientIpAddress,
-			ServerName = serverName,
+			DataSource = dataSource,
 			Source = source
 		});
 	}
@@ -124,9 +125,9 @@ public sealed class EventsChannel : IBEventsChannel
 		AdvancedPropertiesRequestedEvent?.Invoke(this, new AdvancedPropertiesRequestedEventArgs(connectionProperties));
 	}
 
-	public void OnConnectionsLoaded(IBServerDefinition serverDefinition, int numberOfConnections)
+	public void OnConnectionsLoaded(EnEngineType serverEngine, int numberOfConnections)
 	{
-		ConnectionsLoadedEvent?.Invoke(this, new ConnectionsLoadedEventArgs(serverDefinition, numberOfConnections));
+		ConnectionsLoadedEvent?.Invoke(this, new ConnectionsLoadedEventArgs(serverEngine, numberOfConnections));
 	}
 
 	public void OnExceptionOccurred(IEnumerable<Exception> exceptions /*, EnFirewallRuleSource source */)

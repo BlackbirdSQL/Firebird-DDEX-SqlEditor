@@ -819,7 +819,7 @@ namespace BlackbirdSql.Common.Controls.Exceptions
 					stringBuilder.Append(Environment.NewLine);
 				}
 
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.SqlError, ex2.GetNumber().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.SqlError, ex2.GetErrorCode().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
 				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.SqlSeverity, ex2.GetClass().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
@@ -1038,7 +1038,7 @@ namespace BlackbirdSql.Common.Controls.Exceptions
 					stringBuilder2.Append(' ');
 					if (innerException.GetType() == typeof(FbException) || innerException.GetType() == typeof(FbException))
 					{
-						stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.ErrorSourceNumber, ExceptionsResources.SqlServerSource, ((FbException)innerException).GetNumber()));
+						stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.ErrorSourceNumber, ExceptionsResources.SqlServerSource, ((FbException)innerException).GetErrorCode()));
 					}
 					else
 					{
@@ -1191,7 +1191,7 @@ namespace BlackbirdSql.Common.Controls.Exceptions
 					stringBuilder.Append(Environment.NewLine);
 				}
 
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.SqlError, ex2.GetNumber().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.SqlError, ex2.GetErrorCode().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
 				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.SqlSeverity, ex2.GetClass().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);

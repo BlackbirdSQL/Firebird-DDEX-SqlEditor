@@ -28,12 +28,12 @@ public class TObjectMemberComparer : DataObjectMemberComparer
 	/* For debug trace */
 	public TObjectMemberComparer() : base()
 	{
-		Tracer.Trace(GetType(), "TObjectMemberComparer.TObjectMemberComparer");
+		// Tracer.Trace(GetType(), "TObjectMemberComparer.TObjectMemberComparer");
 	}
 
 	public TObjectMemberComparer(IVsDataConnection dataConnection) : base(dataConnection)
 	{
-		Tracer.Trace(GetType(), "TObjectMemberComparer.TObjectMemberComparer(IVsDataConnection)");
+		// Tracer.Trace(GetType(), "TObjectMemberComparer.TObjectMemberComparer(IVsDataConnection)");
 	}
 
 	public override int Compare(string typeName, string propertyName, object value1, object value2)

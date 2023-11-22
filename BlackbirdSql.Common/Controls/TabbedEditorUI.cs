@@ -70,7 +70,7 @@ public class TabbedEditorUI : Control, IServiceProvider
 
 	private EditorTabCollection _Tabs;
 
-	private IServiceProvider _provider;
+	private IServiceProvider _Provider;
 
 	private string _designerMessage;
 
@@ -218,7 +218,7 @@ public class TabbedEditorUI : Control, IServiceProvider
 		TabbedEditorPane = tabbedEditorPane;
 		_toolbarGuid = toolbarGuid;
 		_toolbarID = mnuIdTabbedEditorToolbar;
-		_provider = tabbedEditorPane;
+		_Provider = tabbedEditorPane;
 		InitializeComponent();
 		_Panel.SuspendLayout();
 		BackColor = VsColorUtilities.GetShellColor(__VSSYSCOLOREX3.VSCOLOR_WINDOW);
@@ -334,7 +334,7 @@ public class TabbedEditorUI : Control, IServiceProvider
 			EditorTabCollection tabs = _Tabs;
 			_Tabs = null;
 			tabs?.Clear();
-			_provider = null;
+			_Provider = null;
 			_splitContainer.SplitterBar.Dispose();
 		}
 		base.Dispose(disposing);
@@ -443,9 +443,9 @@ public class TabbedEditorUI : Control, IServiceProvider
 	protected override object GetService(Type service)
 	{
 		object obj = null;
-		if (_provider != null)
+		if (_Provider != null)
 		{
-			obj = _provider.GetService(service);
+			obj = _Provider.GetService(service);
 		}
 		obj ??= base.GetService(service);
 		return obj;

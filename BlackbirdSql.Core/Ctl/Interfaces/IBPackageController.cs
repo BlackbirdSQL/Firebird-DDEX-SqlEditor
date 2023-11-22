@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using EnvDTE;
@@ -7,7 +6,9 @@ using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TaskStatusCenter;
+
 using static BlackbirdSql.Core.Ctl.CommandProviders.CommandProperties;
+
 
 namespace BlackbirdSql.Core.Ctl.Interfaces;
 
@@ -26,6 +27,7 @@ public interface IBPackageController : IVsSolutionEvents3, /* IVsSolutionEvents2
 
 	// Solution Event Delegates
 	delegate int AfterOpenProjectDelegate(IVsHierarchy pHierarchy, int fAdded);
+	delegate int AfterCloseSolutionDelegate(object pUnkReserved);
 	delegate int QueryCloseProjectDelegate(IVsHierarchy hierarchy, int removing, ref int cancel);
 	delegate int QueryCloseSolutionDelegate(object pUnkReserved, ref int pfCancel);
 
@@ -42,6 +44,7 @@ public interface IBPackageController : IVsSolutionEvents3, /* IVsSolutionEvents2
 
 	// Solution events
 	event AfterOpenProjectDelegate OnAfterOpenProjectEvent;
+	event AfterCloseSolutionDelegate OnAfterCloseSolutionEvent;
 	event QueryCloseProjectDelegate OnQueryCloseProjectEvent;
 	event QueryCloseSolutionDelegate OnQueryCloseSolutionEvent;
 

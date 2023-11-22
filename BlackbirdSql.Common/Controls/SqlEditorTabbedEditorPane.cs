@@ -799,7 +799,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 
 	private static IWpfTextView GetWpfTextView(IVsTextView textView)
 	{
-		return (((System.IServiceProvider)Controller.DdexPackage).GetService(typeof(SComponentModel)) as IComponentModel).GetService<IVsEditorAdaptersFactoryService>().GetWpfTextView(textView);
+		return Controller.GetService<SComponentModel, IComponentModel>().GetService<IVsEditorAdaptersFactoryService>().GetWpfTextView(textView);
 	}
 
 	public SqlEditorCodeTab GetSqlEditorCodeTab()

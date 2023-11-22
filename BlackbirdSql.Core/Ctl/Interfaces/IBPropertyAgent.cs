@@ -55,9 +55,9 @@ public interface IBPropertyAgent : IDisposable, ICustomTypeDescriptor, IDataConn
 
 
 	/// <summary>
-	/// The display name of the IBPropertyAgent instance.
+	/// The id of the IBPropertyAgent instance dataset.
 	/// </summary>
-	string DisplayMember { get; set; }
+	string DatasetId { get; set; }
 
 
 	/// <summary>
@@ -136,9 +136,9 @@ public interface IBPropertyAgent : IDisposable, ICustomTypeDescriptor, IDataConn
 	object GetProperty(string name);
 
 
-	Describer GetParameterDescriptor(string name);
+	Describer GetParameterDescriber(string name);
 
-	Describer GetSynonymDescriptor(string synonym);
+	Describer GetSynonymDescriber(string synonym);
 
 	Type GetPropertyType(string name);
 

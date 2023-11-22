@@ -6,7 +6,6 @@ using System;
 using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
-using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
@@ -72,14 +71,14 @@ public class TConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 
 		if (CommandProperties.CommandNodeSystemType != CommandProperties.EnNodeSystemType.None)
 		{
-			Tracer.Trace(GetType(), "TConnectionEquivalencyComparer.AreEquivalent", "Returning false. CommandProperties.CommandNodeSystemType: {0}", CommandProperties.CommandNodeSystemType);
+			// Tracer.Trace(GetType(), "TConnectionEquivalencyComparer.AreEquivalent", "Returning false. CommandProperties.CommandNodeSystemType: {0}", CommandProperties.CommandNodeSystemType);
 			return false;
 		}
 
-		FbConnectionStringBuilder csb1 = new(connectionProperties1.ToString());
-		FbConnectionStringBuilder csb2 = new(connectionProperties2.ToString());
+		CsbAgent csa1 = new(connectionProperties1.ToString());
+		CsbAgent csa2 = new(connectionProperties2.ToString());
 
-		return ModelPropertySet.AreEquivalent(csb1, csb2);
+		return CsbAgent.AreEquivalent(csa1, csa2);
 
 	}
 
@@ -107,7 +106,7 @@ public class TConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 	// ---------------------------------------------------------------------------------
 	protected static string StandardizeDataSource(string dataSource)
 	{
-		Tracer.Trace(typeof(TConnectionEquivalencyComparer), "StandardizeDataSource()");
+		// Tracer.Trace(typeof(TConnectionEquivalencyComparer), "StandardizeDataSource()");
 
 		dataSource = dataSource.ToUpperInvariant();
 		string[] array = new string[2] { ".", "localhost" };

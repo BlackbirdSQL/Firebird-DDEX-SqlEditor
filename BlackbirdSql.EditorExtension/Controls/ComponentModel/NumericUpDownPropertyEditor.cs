@@ -50,9 +50,7 @@ namespace BlackbirdSql.EditorExtension.Controls.ComponentModel
 			// Get the System.Windows.Forms.PropertyGridInternal.PropertyGridView.
 			if (provider.GetService(typeof(IWindowsFormsEditorService)) is not IWindowsFormsEditorService editorService)
 			{
-				COMException ex = new(Resources.ExceptionNoInterface.FmtRes("IWindowsFormsEditorService"), VSConstants.E_NOINTERFACE);
-				Diag.Dug(ex);
-				throw ex;
+				throw Diag.ServiceUnavailable(typeof(IWindowsFormsEditorService));
 			}
 
 			if (context.PropertyDescriptor.Attributes[typeof(MinMaxIncrementAttribute)] is MinMaxIncrementAttribute minmaxAttr)

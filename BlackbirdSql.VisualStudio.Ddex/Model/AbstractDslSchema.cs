@@ -39,7 +39,7 @@ internal abstract class AbstractDslSchema
 {
 	public AbstractDslSchema()
 	{
-		Tracer.Trace(GetType(), "AbstractDslSchema");
+		// Tracer.Trace(GetType(), "AbstractDslSchema");
 	}
 
 	#region Abstract Methods
@@ -52,7 +52,7 @@ internal abstract class AbstractDslSchema
 
 	public DataTable GetSchema(FbConnection connection, string collectionName, string[] restrictions)
 	{
-		Tracer.Trace(GetType(), "GetSchema", "collectionName: {0}", collectionName);
+		// Tracer.Trace(GetType(), "GetSchema", "collectionName: {0}", collectionName);
 
 		var dataTable = new DataTable(collectionName);
 		var command = BuildCommand(connection, collectionName, ParseRestrictions(restrictions));
@@ -84,7 +84,7 @@ internal abstract class AbstractDslSchema
 	/*
 	public DataTable GetRawSchema(FbConnection connection, string collectionName)
 	{
-		Tracer.Trace(GetType(), "GetRawSchema", "collectionName: {0}", collectionName);
+		// Tracer.Trace(GetType(), "GetRawSchema", "collectionName: {0}", collectionName);
 
 		var dataTable = new DataTable(collectionName);
 		var command = BuildRawCommand(connection);
@@ -117,7 +117,7 @@ internal abstract class AbstractDslSchema
 
 	public async Task<DataTable> GetSchemaAsync(FbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
 	{
-		Tracer.Trace(GetType(), "GetSchemaAsync", "collectionName: {0}", collectionName);
+		// Tracer.Trace(GetType(), "GetSchemaAsync", "collectionName: {0}", collectionName);
 
 		var dataTable = new DataTable(collectionName);
 		var command = BuildCommand(connection, collectionName, ParseRestrictions(restrictions));
@@ -168,7 +168,7 @@ internal abstract class AbstractDslSchema
 
 	protected FbCommand BuildCommand(FbConnection connection, string collectionName, string[] restrictions)
 	{
-		Tracer.Trace(GetType(), "BuildCommand", "collectionName: {0}", collectionName);
+		// Tracer.Trace(GetType(), "BuildCommand", "collectionName: {0}", collectionName);
 
 		SetMajorVersionNumber(connection);
 
@@ -223,7 +223,7 @@ internal abstract class AbstractDslSchema
 	/*
 	protected FbCommand BuildRawCommand(FbConnection connection)
 	{
-		Tracer.Trace(GetType(), "BuildRawCommand");
+		// Tracer.Trace(GetType(), "BuildRawCommand");
 
 		SetMajorVersionNumber(connection);
 

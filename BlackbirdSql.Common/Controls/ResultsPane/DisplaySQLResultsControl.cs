@@ -188,7 +188,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 				throw ex;
 			}
 
-			Tracer.Trace(GetType(), "DisplaySQLResultsControl.DefaultResultsDirectory", "value = {0}", value);
+			// Tracer.Trace(GetType(), "DisplaySQLResultsControl.DefaultResultsDirectory", "value = {0}", value);
 			_DefaultResultsDirectory = value;
 			if (_DefaultResultsDirectory != value)
 			{
@@ -322,7 +322,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	public DisplaySQLResultsControl(ResultWindowPane resultsGridPanel, ResultWindowPane messagePanel, ResultWindowPane textResultsPanel, ResultWindowPane statisticsPanel, ResultWindowPane executionPlanPanel, ResultWindowPane textPlanPanel, ResultWindowPane spatialPane, IBSqlEditorWindowPane editorPane)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.DisplaySQLResultsControl", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.DisplaySQLResultsControl", "", null);
 		if (resultsGridPanel == null || messagePanel == null)
 		{
 			Exception ex = new ArgumentException("tabControl");
@@ -354,7 +354,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	protected void Dispose(bool bDisposing)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.Dispose", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.Dispose", "", null);
 		CleanupGrids();
 		UnhookFromEvents();
 		if (_ServiceProvider != null)
@@ -414,13 +414,13 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	public void ClearResultsTabs()
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.ClearResultsTabs", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.ClearResultsTabs", "", null);
 		ClearTabs();
 	}
 
 	public void SetSite(object sp)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.SetSite", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.SetSite", "", null);
 
 		if (!ThreadHelper.CheckAccess())
 		{
@@ -483,7 +483,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	public bool PrepareForExecution(bool prepareForParse)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.PrepareForExecution", "prepareForParse = {0}", prepareForParse);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.PrepareForExecution", "prepareForParse = {0}", prepareForParse);
 		(((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(SqlEditorPane.DocData)).QryMgr.ResultsHandler = BatchConsumer;
 		AbstractResultsWriter resultsWriter = null;
 		if (AuxDocData.SqlExecutionMode == EnSqlOutputMode.ToFile && !prepareForParse
@@ -522,7 +522,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	public void SetGridResultsFont(Font f)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.SetGridResultsFont", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.SetGridResultsFont", "", null);
 		if (f == null)
 		{
 			Exception ex = new ArgumentNullException("f");
@@ -537,7 +537,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	public void SetGridResultsColors(Color? bkColor, Color? fkColor)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.SetGridResultsColors", "bkColor = {0}, fkColor = {1}", bkColor, fkColor);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.SetGridResultsColors", "bkColor = {0}, fkColor = {1}", bkColor, fkColor);
 		if (bkColor.HasValue)
 		{
 			_BkGridColor = bkColor.Value;
@@ -565,7 +565,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	public void SetGridSelectedCellColor(Color? selectedCellColor)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.SetGridSelectedCellColor", "color = {0}", selectedCellColor);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.SetGridSelectedCellColor", "color = {0}", selectedCellColor);
 		if (selectedCellColor.HasValue)
 		{
 			_SelectedCellColor = selectedCellColor.Value;
@@ -584,7 +584,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	public void SetGridInactiveSelectedCellColor(Color? inactiveSelectedCellColor)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.SetGridInactiveSelectedCellColor", "color = {0}", inactiveSelectedCellColor);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.SetGridInactiveSelectedCellColor", "color = {0}", inactiveSelectedCellColor);
 		if (inactiveSelectedCellColor.HasValue)
 		{
 			_InactiveCellColor = inactiveSelectedCellColor.Value;
@@ -603,7 +603,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	public void SetGridNullValueColor(Color? nullValueCellColor)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.SetGridNullValueColor", "color = {0}", nullValueCellColor);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.SetGridNullValueColor", "color = {0}", nullValueCellColor);
 		if (nullValueCellColor.HasValue)
 		{
 			_NullValueCellColor = nullValueCellColor.Value;
@@ -621,7 +621,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	public void SetHeaderRowColor(Color? headerRowColor)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.SetHeaderRowColor", "color = {0}", headerRowColor);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.SetHeaderRowColor", "color = {0}", headerRowColor);
 		if (headerRowColor.HasValue)
 		{
 			_HeaderRowColor = headerRowColor.Value;
@@ -643,7 +643,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	private void OnQEOLESQLErrorMessage(object sender, QEOLESQLErrorMessageEventArgs args)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.OnQEOLESQLErrorMessage", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.OnQEOLESQLErrorMessage", "", null);
 		if (args.MessageType != EnQESQLScriptProcessingMessageType.Warning)
 		{
 			AddStringToErrors(args.DetailedMessage, args.Line, args.TextSpan, flush: false);
@@ -658,7 +658,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	protected virtual void OnHosted()
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.OnHosted", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.OnHosted", "", null);
 		_GridResultsPage.Initialize(_ObjServiceProvider);
 		_TextResultsPage.Initialize(_ObjServiceProvider);
 		_TextMessagesPage.Initialize(_ObjServiceProvider);
@@ -667,7 +667,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	private void Initialize(ResultWindowPane gridResultsPanel, ResultWindowPane messagePanel)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.Initialize", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.Initialize", "", null);
 		ProcessSqlExecMode(AuxDocData.SqlExecutionMode);
 		ApplyLiveSettingsToBatchConsumer(_BatchConsumer, AuxDocData.LiveSettings);
 		_ = DefaultResultsDirectory = AuxDocData.LiveSettings.EditorResultsDirectory;
@@ -763,7 +763,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	public void AddGridContainer(ResultSetAndGridContainer grid)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.AddGridContainer", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.AddGridContainer", "", null);
 
 
 		ThreadHelper.Generic.Invoke(delegate
@@ -788,7 +788,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	public void ProcessSpecialActionOnBatch(QESQLBatchSpecialActionEventArgs args)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.ProcessSpecialActionOnBatch", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.ProcessSpecialActionOnBatch", "", null);
 		IGraph[] graphs = null;
 		object dataSource = null;
 
@@ -804,8 +804,8 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 		}
 		catch (Exception e)
 		{
-			// Exexution plan visulizer is not supported yet. Just log the exception
-			Tracer.Trace(GetType(), "ProcessSpecialActionOnBatch", "Exception: {0}", e.Message);
+			// Execution plan visualizer is not supported yet. Just log the exception
+			Tracer.Trace(GetType(), "ProcessSpecialActionOnBatch", "Execution plan visualizer under development. Exception: {0}", e.Message);
 		}
 
 		/*
@@ -833,7 +833,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 	private void ProcessSpecialActionOnBatchInt(EnQESQLBatchSpecialAction action, IGraph[] graphs, object dataSource)
 	{
 		//IL_00bf: Expected O, but got Unknown
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.ProcessSpecialActionOnBatchInt", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.ProcessSpecialActionOnBatchInt", "", null);
 		try
 		{
 			if (_ExecutionPlanPage == null)
@@ -898,7 +898,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	private void ProcessSpecialActionOnBatchInt(EnQESQLBatchSpecialAction action, object dataSource)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.ProcessSpecialActionOnBatchInt", "Text plan source: " + dataSource, null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.ProcessSpecialActionOnBatchInt", "Text plan source: " + dataSource, null);
 		try
 		{
 			if (_TextPlanPage == null)
@@ -1072,7 +1072,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	private void Clear()
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.Clear", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.Clear", "", null);
 		CheckAndCloseTextWriters();
 		_TextResultsPage.Clear();
 		_TextMessagesPage.Clear();
@@ -1093,7 +1093,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	public void RemoveStatisticsPage()
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.RemoveStatisticsTab", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.RemoveStatisticsTab", "", null);
 		if (_StatisticsPage != null && _StatisticsPane != null && _StatisticsPane.Contains(_StatisticsPage))
 		{
 			_StatisticsPane.Remove(_StatisticsPage);
@@ -1103,7 +1103,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	public void RemoveExecutionPlanPage()
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.RemoveExecutionPlanTab", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.RemoveExecutionPlanTab", "", null);
 		if (_ExecutionPlanPage != null)
 		{
 			if (_ExecutionPlanPane.Contains(_ExecutionPlanPage))
@@ -1121,7 +1121,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	public void RemoveTextPlanPage()
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.RemoveTextPlanTab", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.RemoveTextPlanTab", "", null);
 		if (_TextPlanPage != null)
 		{
 			if (_TextPlanPane.Contains(_TextPlanPage))
@@ -1137,14 +1137,14 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	private void CleanupGrids()
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.CleanupGrids", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.CleanupGrids", "", null);
 		_GridCount = 0;
 		_GridResultsPage?.Clear();
 	}
 
 	private void UnhookFromEvents()
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.UnhookFromEvents", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.UnhookFromEvents", "", null);
 		UnRegisterQueryExecutorEvents();
 		AuxDocData.SqlExecutionModeChangedEvent -= OnSqlExecutionModeChanged;
 		AuxDocData.LiveSettingsChangedEvent -= OnLiveSettingsChanged;
@@ -1154,7 +1154,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	private void PrepareTabs(bool isParseOnly)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.PrepareTabs", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.PrepareTabs", "", null);
 		ClearTabs();
 
 		SqlEditorPane.CustomizeTabsForResultsSetting(isParseOnly);
@@ -1184,7 +1184,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	private void OutputQueryIntoMessages(string strScript)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.OutputQueryIntoMessages", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.OutputQueryIntoMessages", "", null);
 		AddStringToMessages("/*------------------------", flush: false);
 		AddStringToMessages(strScript, flush: false);
 		AddStringToMessages("------------------------*/", flush: true);
@@ -1207,7 +1207,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	private void AddGridContainerInt(ResultSetAndGridContainer cont)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.AddGridContainerInt", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.AddGridContainerInt", "", null);
 		if (_GridCount == C_MaxGridResultSets)
 		{
 			MarkAsCouldNotAddMoreGrids();
@@ -1228,7 +1228,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	private void ProcessSqlExecMode(EnSqlOutputMode mode)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.ProcessSqlExecMode", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.ProcessSqlExecMode", "", null);
 		if (!Enum.IsDefined(typeof(EnSqlOutputMode), mode))
 		{
 			Exception ex = new ArgumentOutOfRangeException("mode");
@@ -1259,7 +1259,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	private void ApplyLiveSettingsToBatchConsumer(AbstractQESQLBatchConsumer batchConsumer, IBLiveUserSettings liveSettings)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.ApplyResSettingsToBatchConsumer", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.ApplyResSettingsToBatchConsumer", "", null);
 		batchConsumer.MaxCharsPerColumn = MaxCharsPerColumn;
 		batchConsumer.DiscardResults = ShouldDiscardResults;
 		if (batchConsumer is ResultsToTextOrFileBatchConsumer obj)
@@ -1272,7 +1272,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	private GridResultsPanel AllocateNewGridTabPage()
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.AllocateNewGridTabPage", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.AllocateNewGridTabPage", "", null);
 		GridResultsPanel gridResultsPanel = new(_DefaultResultsDirectory)
 		{
 			Name = "GridResultsPanel",
@@ -1290,7 +1290,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	private void ClearTabs()
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.ClearTabs", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.ClearTabs", "", null);
 		CleanupGrids();
 
 		if (_ExecutionPlanPage != null)
@@ -1306,7 +1306,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	private void FlushAllTextWriters()
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.FlushAllTextWriters", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.FlushAllTextWriters", "", null);
 		try
 		{
 			if (_ResultsWriter != null)
@@ -1365,7 +1365,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	private void CheckAndCloseTextWriters()
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.CheckAndCloseTextWriters", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.CheckAndCloseTextWriters", "", null);
 		if (_ResultsWriter != null && _ResultsWriter is FileStreamResultsWriter)
 		{
 			try
@@ -1472,7 +1472,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 	// Added for StaticsPanel.RetrieveStatisticsIfNeeded();
 	public virtual void OnSqlDataLoadedForSQLExec(object sender, QESQLDataLoadedEventArgs args)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.OnSqlDataLoadedForSQLExec", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.OnSqlDataLoadedForSQLExec", "", null);
 		if (!args.IsParseOnly && AuxDocData.ClientStatisticsEnabled && _ClientStatisticsCtl != null)
 		{
 			_ClientStatisticsCtl.RetrieveStatisticsIfNeeded(_QryMgr, args.RecordCount, args.RecordsAffected, args.ExecutionEndTime);
@@ -1482,12 +1482,12 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	public virtual void OnSqlStatementCompletedForSQLExec(object sender, QESQLStatementCompletedEventArgs args)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.OnSqlExecutionCompletedForSQLExec", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.OnSqlExecutionCompletedForSQLExec", "", null);
 	}
 
 	private void OnSqlExecutionCompletedForSQLExec(object sender, ScriptExecutionCompletedEventArgs args)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.OnSqlExecutionCompletedForSQLExec", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.OnSqlExecutionCompletedForSQLExec", "", null);
 
 		/* Moved to OnSqlStatementCompletedForSQLExec(()
 		if (!args.IsParseOnly && AuxDocData.ClientStatisticsEnabled && _ClientStatisticsCtl != null)
@@ -1513,7 +1513,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	private void OnSqlExecutionCompletedInt(object sender, ScriptExecutionCompletedEventArgs args)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.OnSqlExecutionCompletedInt", "ExecResult = {0}", args.ExecutionResult);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.OnSqlExecutionCompletedInt", "ExecResult = {0}", args.ExecutionResult);
 
 		if (_ExecutionPlanPage != null && !_ExecutionPlanPane.Contains(_ExecutionPlanPage))
 		{
@@ -1657,7 +1657,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	private void OnSqlCmdOutputRedirection(object sender, QEOLESQLOutputRedirectionEventArgs args)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.OnSqlCmdOutputRedirection", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.OnSqlCmdOutputRedirection", "", null);
 		AbstractResultsWriter resultsWriter = _TextResultsPage.ResultsWriter;
 		if (args.FullFileName != null && args.FullFileName != "stderr" && args.FullFileName != "stdout")
 		{
@@ -1721,7 +1721,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	private void OnSqlCmdMsgFromApp(object sender, QeSqlCmdMessageFromAppEventArgs args)
 	{
-		Tracer.Trace(GetType(), "DisplaySQLResultsControl.OnSqlCmdMsgFromApp", "", null);
+		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.OnSqlCmdMsgFromApp", "", null);
 		string message = args.Message;
 		if (args.StdOut)
 		{

@@ -9,23 +9,23 @@ namespace BlackbirdSql.Common.Ctl;
 
 public sealed class GuidId
 {
-	private Guid _guid = Guid.Empty;
+	private Guid _Clsid = Guid.Empty;
 
 	private readonly uint _id;
 
-	public Guid Guid => _guid;
+	public Guid Clsid => _Clsid;
 
 	public uint Id => _id;
 
 	public GuidId(Guid guid, uint id)
 	{
-		_guid = guid;
+		_Clsid = guid;
 		_id = id;
 	}
 
 	public override string ToString()
 	{
-		return _guid.ToString() + "/" + _id.ToString(CultureInfo.InvariantCulture);
+		return _Clsid.ToString() + "/" + _id.ToString(CultureInfo.InvariantCulture);
 	}
 
 	public override bool Equals(object o)
@@ -34,7 +34,7 @@ public sealed class GuidId
 		{
 			return false;
 		}
-		if (Guid.Equals(guidId.Guid))
+		if (Clsid.Equals(guidId.Clsid))
 		{
 			return Id == guidId.Id;
 		}
@@ -43,6 +43,6 @@ public sealed class GuidId
 
 	public override int GetHashCode()
 	{
-		return Guid.GetHashCode() ^ Id.GetHashCode();
+		return Clsid.GetHashCode() ^ Id.GetHashCode();
 	}
 }

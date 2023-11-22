@@ -96,8 +96,9 @@ public class LinkageParserTaskHandler : IBTaskHandlerClient
 	public LinkageParserTaskHandler(DbConnection connection)
 	{
 		// Tracer.Trace(GetType(), "LinkageParserTaskHandle.LinkageParserTaskHandle");
-		MonikerAgent moniker = new(connection);
-		_DatasetKey = moniker.DatasetKey;
+		CsbAgent csa = new(connection);
+		csa.RegisterDataset();
+		_DatasetKey = csa.DatasetKey;
 	}
 
 

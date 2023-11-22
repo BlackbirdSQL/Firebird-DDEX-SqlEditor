@@ -32,13 +32,13 @@ public class DSRefBuilder : DataSiteableObject<IVsDataConnection>, IDSRefBuilder
 
 	public DSRefBuilder()
 	{
-		Tracer.Trace(GetType(), "DSRefBuilder.DSRefBuilder");
+		// Tracer.Trace(GetType(), "DSRefBuilder.DSRefBuilder");
 	}
 
 	public DSRefBuilder(IVsDataConnection connection)
 		: base(connection)
 	{
-		Tracer.Trace(GetType(), "DSRefBuilder(IVsDataConnection)");
+		// Tracer.Trace(GetType(), "DSRefBuilder(IVsDataConnection)");
 	}
 
 
@@ -48,7 +48,7 @@ public class DSRefBuilder : DataSiteableObject<IVsDataConnection>, IDSRefBuilder
 	/// </summary>
 	public void AppendToDSRef(object dsRef, string typeName, object[] identifier)
 	{
-		Tracer.Trace(GetType(), "AppendToDSRef()");
+		// Tracer.Trace(GetType(), "AppendToDSRef()");
 		AppendToDSRef(dsRef, typeName, identifier, null);
 	}
 
@@ -58,7 +58,7 @@ public class DSRefBuilder : DataSiteableObject<IVsDataConnection>, IDSRefBuilder
 	/// </summary>
 	public object Invoke(string name, object[] args, object[] parameters)
 	{
-		Tracer.Trace(GetType(), "IVsDataSupportObject{IDSRefBuilder}.Invoke");
+		// Tracer.Trace(GetType(), "IVsDataSupportObject{IDSRefBuilder}.Invoke");
 		try
 		{
 			if (name == null)
@@ -93,7 +93,7 @@ public class DSRefBuilder : DataSiteableObject<IVsDataConnection>, IDSRefBuilder
 
 	protected virtual void AppendToDSRef(object dsRef, string typeName, object[] identifier, object[] parameters)
 	{
-		Tracer.Trace(GetType(), "DSRefBuilder.AppendToDSRef(object dsRef, string typeName, ...)");
+		// Tracer.Trace(GetType(), "DSRefBuilder.AppendToDSRef(object dsRef, string typeName, ...)");
 		try
 		{
 			if (dsRef == null)
@@ -155,7 +155,7 @@ public class DSRefBuilder : DataSiteableObject<IVsDataConnection>, IDSRefBuilder
 
 	private void AppendToDSRef(object dsRef, IntPtr parentNode, object[] identifier, object[] parameters)
 	{
-		Tracer.Trace(GetType(), "DSRefBuilder.AppendToDSRef(object dsRef, IntPtr parentNode, ...)");
+		// Tracer.Trace(GetType(), "DSRefBuilder.AppendToDSRef(object dsRef, IntPtr parentNode, ...)");
 		try
 		{
 			string text = null;

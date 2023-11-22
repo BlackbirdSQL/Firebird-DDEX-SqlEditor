@@ -744,17 +744,9 @@ public abstract class AbstractDataToolsDocument : IVsPersistDocData2, IVsPersist
 		IDTDocToolFactoryProvider service;
 
 
-		try
-		{
-			service = Host.GetService<IDTDocToolFactoryProvider>();
-			if (service == null)
-				throw new ServiceUnavailableException(typeof(IDTDocToolFactoryProvider));
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw ex;
-		}
+		service = Host.GetService<IDTDocToolFactoryProvider>();
+		if (service == null)
+			throw Diag.ServiceUnavailable(typeof(IDTDocToolFactoryProvider));
 
 
 		IVsDataConnectionManager service2;

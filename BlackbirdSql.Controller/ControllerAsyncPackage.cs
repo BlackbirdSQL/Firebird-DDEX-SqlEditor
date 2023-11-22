@@ -1,6 +1,7 @@
 ﻿
 
 using System;
+using System.ComponentModel.Design;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -94,7 +95,7 @@ public abstract class ControllerAsyncPackage : EditorExtensionAsyncPackage
 
 		await base.InitializeAsync(cancellationToken, progress);
 
-		Services.AddService(typeof(IBPackageController), ServicesCreatorCallbackAsync, promote: true);
+		ServiceContainer.AddService(typeof(IBPackageController), ServicesCreatorCallbackAsync, promote: true);
 
 	}
 

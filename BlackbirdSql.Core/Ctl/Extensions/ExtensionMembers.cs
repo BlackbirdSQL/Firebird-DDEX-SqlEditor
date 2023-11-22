@@ -501,7 +501,7 @@ static class ExtensionMembers
 	/// <summary>
 	/// Gets the error number from a Firebird exception.
 	/// </summary>
-	public static int GetNumber(this FbException exception)
+	public static int GetErrorCode(this FbException exception)
 	{
 		if (exception == null)
 			return -1;

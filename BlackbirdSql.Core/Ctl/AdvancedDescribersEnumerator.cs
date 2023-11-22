@@ -14,7 +14,7 @@ internal class AdvancedDescribersEnumerator : AbstractDescribersEnumerator
 
 	public override bool IsValid(Describer descriptor)
 	{
-		return descriptor.IsAdvanced;
+		return descriptor.IsAdvanced; // && descriptor.IsConnectionParameter;
 	}
 
 }

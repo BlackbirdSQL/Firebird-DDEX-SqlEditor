@@ -125,7 +125,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		protected override void Dispose(bool bDisposing)
 		{
-			Tracer.Trace(GetType(), "GridResultsTabPanel.Dispose", "", null);
+			// Tracer.Trace(GetType(), "GridResultsTabPanel.Dispose", "", null);
 			if (bDisposing)
 			{
 				if (m_brushNullObjects != null)
@@ -147,7 +147,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			//IL_0020: Expected O, but got Unknown
 			//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0029: Expected O, but got Unknown
-			Tracer.Trace(typeof(GridResultsPanel), "GridResultsTabPanel.SelectAllCellInGrid", "", null);
+			// Tracer.Trace(typeof(GridResultsPanel), "GridResultsTabPanel.SelectAllCellInGrid", "", null);
 			BlockOfCellsCollection val = new BlockOfCellsCollection();
 			BlockOfCells val2 = new BlockOfCells(0L, 1);
 			QEResultSet qEResultSet = (QEResultSet)(object)grid.GridStorage;
@@ -165,7 +165,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		public override void Initialize(object rawServiceProvider)
 		{
-			Tracer.Trace(GetType(), "GridResultsTabPanel.Initialize", "", null);
+			// Tracer.Trace(GetType(), "GridResultsTabPanel.Initialize", "", null);
 			SuspendLayout();
 			base.Initialize(rawServiceProvider);
 			_FirstGridPanel.Dock = DockStyle.Fill;
@@ -189,7 +189,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			//IL_008c: Expected O, but got Unknown
 			//IL_0094: Unknown result type (might be due to invalid IL or missing references)
 			//IL_009e: Expected O, but got Unknown
-			Tracer.Trace(GetType(), "GridResultsTabPanel.Clear", "", null);
+			// Tracer.Trace(GetType(), "GridResultsTabPanel.Clear", "", null);
 			base.Clear();
 
 			if (_FirstGridPanel != null)
@@ -220,7 +220,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		public void SaveGrid(GridControl grid, EnGridSaveFormats saveFormat, TextWriter writer)
 		{
-			Tracer.Trace(GetType(), "GridResultsTabPanel.SaveGrid", "", null);
+			// Tracer.Trace(GetType(), "GridResultsTabPanel.SaveGrid", "", null);
 			if (writer == null)
 			{
 				Exception ex = new ArgumentNullException("writer");
@@ -483,7 +483,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		public bool HandleXMLCellClick(QEResultSet rs, long nRowIndex, int nColIndex)
 		{
-			Tracer.Trace(GetType(), "GridResultsTabPanel.HandleXMLCellClick", "", null);
+			// Tracer.Trace(GetType(), "GridResultsTabPanel.HandleXMLCellClick", "", null);
 
 			if (!ThreadHelper.CheckAccess())
 			{
@@ -562,7 +562,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 					_ = 0;
 				}
 
-				IVsProject3 miscellaneousProject = Cmd.GetMiscellaneousProject(_serviceProvider);
+				IVsProject3 miscellaneousProject = Cmd.GetMiscellaneousProject(_ServiceProvider);
 				VSADDRESULT[] pResult = new VSADDRESULT[1];
 				VSADDITEMOPERATION dwAddItemOperation = VSADDITEMOPERATION.VSADDITEMOP_CLONEFILE;
 				Native.WrapComCall(miscellaneousProject.AddItem(uint.MaxValue, dwAddItemOperation, text3, 1u, new string[1] { text }, IntPtr.Zero, pResult), Array.Empty<int>());
@@ -718,7 +718,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		private void OnSelectAll(object sender, EventArgs a)
 		{
-			Tracer.Trace(GetType(), "GridResultsTabPanel.OnSelectAll", "", null);
+			// Tracer.Trace(GetType(), "GridResultsTabPanel.OnSelectAll", "", null);
 			GridControl focusedGrid = FocusedGrid;
 			if (focusedGrid != null)
 			{
@@ -728,7 +728,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		private void OnSaveAs(object sender, EventArgs a)
 		{
-			Tracer.Trace(GetType(), "GridResultsTabPanel.OnSaveAs", "", null);
+			// Tracer.Trace(GetType(), "GridResultsTabPanel.OnSaveAs", "", null);
 			GridControl focusedGrid = FocusedGrid;
 			if (focusedGrid == null)
 			{
@@ -774,7 +774,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			//IL_0055: Expected O, but got Unknown
 			//IL_0083: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0089: Expected O, but got Unknown
-			Tracer.Trace(GetType(), "GridResultsTabPanel.SelectWholeRowOrColumn", "nIndex = {0}, bRow = {1}", nIndex, bRow);
+			// Tracer.Trace(GetType(), "GridResultsTabPanel.SelectWholeRowOrColumn", "nIndex = {0}, bRow = {1}", nIndex, bRow);
 			QEResultSet qEResultSet = (QEResultSet)(object)grid.GridStorage;
 			if (!qEResultSet.StoredAllData)
 			{
@@ -812,14 +812,14 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		private QEResultSet GetGridResultSet(GridControl grid)
 		{
-			Tracer.Trace(GetType(), "GridResultsTabPanel.GetGridResultSet", "", null);
+			// Tracer.Trace(GetType(), "GridResultsTabPanel.GetGridResultSet", "", null);
 			int index = (int)((Control)(object)grid).Tag;
 			return m_gridContainers[index].QEResultSet;
 		}
 
 		private TextWriter GetTextWriterForSaveResultsFromGrid(out EnGridSaveFormats saveFormat)
 		{
-			Tracer.Trace(GetType(), "DisplaySQLResultsControl.GetTextWriterForSaveResultsFromGrid", "", null);
+			// Tracer.Trace(GetType(), "DisplaySQLResultsControl.GetTextWriterForSaveResultsFromGrid", "", null);
 			saveFormat = EnGridSaveFormats.CommaSeparated;
 			FileEncodingDlg fileEncodingDialog = new FileEncodingDlg();
 			SaveFormats saveFormats = new SaveFormats();

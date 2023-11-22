@@ -10,18 +10,18 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
-using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using FirebirdSql.Data.FirebirdClient;
+using BlackbirdSql.Core.Model;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 using IServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+using MonikerAgent = BlackbirdSql.Common.Model.MonikerAgent;
 
 
 namespace BlackbirdSql.Common.Ctl;
@@ -42,9 +42,9 @@ public class DesignerOnlineServices : AbstractDesignerServices, IBDesignerOnline
 
 	public static void EnsureConnectionSpecifiesDatabase(DbConnectionStringBuilder csb)
 	{
-		if (csb is not FbConnectionStringBuilder fbcsb || string.IsNullOrWhiteSpace(fbcsb.Database))
+		if (csb is not CsbAgent csa || string.IsNullOrWhiteSpace(csa.Database))
 		{
-			ArgumentNullException ex = new("csb FbConnectionStringBuilder:Database");
+			ArgumentNullException ex = new("csb CsbAgent:Database");
 			Diag.Dug(ex);
 			throw ex;
 		}

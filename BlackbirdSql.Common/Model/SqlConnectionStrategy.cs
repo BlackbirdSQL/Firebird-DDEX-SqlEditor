@@ -22,9 +22,9 @@ using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model;
 
 using FirebirdSql.Data.FirebirdClient;
@@ -33,7 +33,7 @@ using FirebirdSql.Data.Services;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-
+using Microsoft.VisualStudio.Data.Services;
 
 namespace BlackbirdSql.Common.Model;
 
@@ -83,7 +83,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 
 	private string _ProductLevel;
 
-	public static readonly FbConnectionStringBuilder BuilderWithDefaultApplicationName = new("server=localhost;");
+	public static readonly CsbAgent BuilderWithDefaultApplicationName = new("server=localhost;");
 
 	public const string C_ApplicationName = LibraryData.ApplicationName;
 
@@ -111,8 +111,8 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 						// FbConnection sqlConnection = (FbConnection)Connection;
 						try
 						{
-							FbConnectionStringBuilder csb = new(Connection.ConnectionString);
-							_IsCloudConnection = result = csb.ServerType == FbServerType.Default;
+							CsbAgent csa = new(Connection.ConnectionString);
+							_IsCloudConnection = result = csa.ServerType == FbServerType.Default;
 						}
 						catch (Exception e)
 						{
@@ -248,31 +248,33 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 	{
 		if (uici != null)
 		{
-			Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "CreateDbConnectionFromConnectionInfo", "UIConnectionInfo is not null");
+			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "CreateDbConnectionFromConnectionInfo", "UIConnectionInfo is not null");
 			if (openConnection)
 			{
 				CreateAndOpenDbConnectionFromConnectionInfo(uici, out var connection);
 				return connection;
 			}
 
-			FbConnectionStringBuilder csb = new();
-			PopulateConnectionStringBuilder(csb, uici);
-			return new FbConnection(csb.ToString());
+			CsbAgent csa = new();
+			PopulateConnectionStringBuilder(csa, uici);
+			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "CreateDbConnectionFromConnectionInfo", "Csb connectionString: {0}", csa.ConnectionString);
+
+			return new FbConnection(csa.ConnectionString);
 		}
 
-		Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "CreateDbConnectionFromConnectionInfo", "ERROR UIConnectionInfois null.");
+		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "CreateDbConnectionFromConnectionInfo", "ERROR UIConnectionInfois null.");
 
 		return null;
 	}
 
 	protected virtual void CreateAndOpenDbConnectionFromConnectionInfo(UIConnectionInfo uici, out IDbConnection connection)
 	{
-		Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "CreateAndOpenDbConnectionFromConnectionInfo", "Enter");
+		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "CreateAndOpenDbConnectionFromConnectionInfo", "Enter");
 
-		FbConnectionStringBuilder csb = new FbConnectionStringBuilder();
-		PopulateConnectionStringBuilder(csb, uici);
+		CsbAgent csa = new();
+		PopulateConnectionStringBuilder(csa, uici);
 
-		connection = new FbConnection(csb.ToString());
+		connection = new FbConnection(csa.ToString());
 
 		connection.Open();
 
@@ -374,13 +376,13 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 	{
 		if (UiConnectionInfo != null)
 		{
-			Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "AcquireConnectionInfo", "UiConnectionInfo is not null");
+			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "AcquireConnectionInfo", "UiConnectionInfo is not null");
 			uici = UiConnectionInfo;
 			connection = CreateDbConnectionFromConnectionInfo(uici, tryOpenConnection);
 		}
 		else
 		{
-			Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "AcquireConnectionInfo", "UiConnectionInfo is null. Prompting");
+			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "AcquireConnectionInfo", "UiConnectionInfo is null. Prompting");
 			uici = PromptForConnectionForEditor(out connection);
 		}
 	}
@@ -413,11 +415,11 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 		{
 			lock (_LockObject)
 			{
-				Tracer.Trace(typeof(SqlConnectionStrategy), "ApplyConnectionOptions()", "starting");
+				// Tracer.Trace(typeof(SqlConnectionStrategy), "ApplyConnectionOptions()", "starting");
 				StringBuilder stringBuilder = new StringBuilder(512);
 				stringBuilder.AppendFormat(CultureInfo.InvariantCulture, "{0} {1} {2}", s.SetRowCountString, s.SetTextSizeString, s.SetImplicitTransactionString);
 				string text = stringBuilder.ToString();
-				Tracer.Trace(typeof(SqlConnectionStrategy), "ApplyConnectionOptions()", ": Executing script: \"{0}\"", text);
+				// Tracer.Trace(typeof(SqlConnectionStrategy), "ApplyConnectionOptions()", ": Executing script: \"{0}\"", text);
 				using IDbCommand dbCommand = conn.CreateCommand();
 				dbCommand.CommandText = text;
 				dbCommand.ExecuteNonQuery();
@@ -453,17 +455,61 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 			throw exc;
 		}
 
+		// Tracer.Trace(typeof(UIConnectionInfo), "PromptForConnection()");
+
+		IVsDataConnectionDialog connectionDialogHandler = Controller.GetService<IVsDataConnectionDialog>()
+			?? throw Diag.ServiceUnavailable(typeof(IVsDataConnectionDialog));
+
+		using (connectionDialogHandler)
+		{
+			try
+			{
+				connectionDialogHandler.AddSources(new Guid(VS.AdoDotNetTechnologyGuid));
+
+				if (connectionDialogHandler.ShowDialog())
+				{
+					string connectionString = DataProtection.DecryptString(connectionDialogHandler.EncryptedConnectionString);
+					CsbAgent csa = new(connectionString);
+					csa.RegisterDataset();
+					UIConnectionInfo connectionInfo = new ();
+					connectionInfo.Parse(csa);
+					connection = new FbConnection(csa.ConnectionString);
+					return connectionInfo;
+				}
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
+			connection = new FbConnection();
+		}
+
+		/*
+
 		using (ConnectionDialogWrapper connectionDialogWrapper = new ConnectionDialogWrapper())
 		{
 			UIConnectionInfo uIConnectionInfo = new UIConnectionInfo();
 			connectionDialogWrapper.ConnectionVerifier = validateConnectionDelegate;
-			Native.ThrowOnFailure((Package.GetGlobalService(typeof(IVsUIShell)) as IVsUIShell).GetDialogOwnerHwnd(out var phwnd));
-			if (connectionDialogWrapper.ShowDialogValidateConnection(phwnd, uIConnectionInfo, out connection) == true)
-			{
-				return uIConnectionInfo;
-			}
-		}
 
+			IVsUIShell uiShell = Package.GetGlobalService(typeof(IVsUIShell)) as IVsUIShell
+				?? throw Diag.ServiceUnavailable(typeof(IVsUIShell));
+
+			try
+			{
+				Native.ThrowOnFailure(uiShell.GetDialogOwnerHwnd(out var phwnd));
+
+				if (connectionDialogWrapper.ShowDialogValidateConnection(phwnd, uIConnectionInfo, out connection) == true)
+					return uIConnectionInfo;
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
+
+		}
+		*/
 		return null;
 	}
 
@@ -491,11 +537,11 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 			ci.ApplicationName = C_ApplicationName;
 		}
 
-		FbConnectionStringBuilder csb = new();
+		CsbAgent csa = new();
 
-		PopulateConnectionStringBuilder(csb, ci);
+		PopulateConnectionStringBuilder(csa, ci);
 
-		IDbConnection dbConnection = new FbConnection(csb.ConnectionString);
+		IDbConnection dbConnection = new FbConnection(csa.ConnectionString);
 
 		dbConnection.Open();
 		using IDbCommand dbCommand = dbConnection.CreateCommand();
@@ -510,7 +556,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 	{
 		List<string> list = new List<string>();
 
-		foreach (KeyValuePair<string, string> pair in MonikerAgent.RegisteredDatasets)
+		foreach (KeyValuePair<string, string> pair in CsbAgent.RegisteredDatasets)
 		{
 			list.Add(pair.Key);
 		}
@@ -665,7 +711,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 		}
 	}
 
-	public override void SetDatasetDisplayMemberOnConnection(string selectedDisplayMember, DbConnectionStringBuilder csb)
+	public override void SetDatasetKeyOnConnection(string selectedDatasetKey, DbConnectionStringBuilder csb)
 	{
 		lock (_LockObject)
 		{
@@ -675,7 +721,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 				{
 					_Csb = csb;
 
-					_Csb ??= XmlParser.GetCsbFromDatabases(selectedDisplayMember);
+					_Csb ??= ConnectionLocator.GetCsbFromDatabases(selectedDatasetKey);
 					if (_Csb != null)
 					{
 						if (Connection.State == ConnectionState.Open)
@@ -690,12 +736,12 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 				catch (FbException e)
 				{
 					Tracer.LogExCatch(typeof(AbstractConnectionStrategy), e);
-					Cmd.ShowMessageBoxEx(null, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrDatabaseNotAccessible, selectedDisplayMember), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+					Cmd.ShowMessageBoxEx(null, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrDatabaseNotAccessible, selectedDatasetKey), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 				}
 			}
 			else
 			{
-				base.SetDatasetDisplayMemberOnConnection(selectedDisplayMember, csb);
+				base.SetDatasetKeyOnConnection(selectedDatasetKey, csb);
 			}
 		}
 	}
@@ -781,7 +827,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 	/*
 	public static string GetDefaultDatabaseForLogin(string connectionString, bool useExistingDbOnError)
 	{
-		using FbConnection conn = ConnectionHelperUtils.OpenSqlConnection(new FbConnectionStringBuilder(connectionString));
+		using FbConnection conn = ConnectionHelperUtils.OpenSqlConnection(new CsbAgent(connectionString));
 		return GetDefaultDatabaseForLogin(conn, useExistingDbOnError);
 	}
 	*/
@@ -863,9 +909,9 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 
 				flag = databaseInfo.GetActiveTransactions().Count > 0;
 			}
-			catch (Exception ex)
+			catch // (Exception ex)
 			{
-				Tracer.Trace(GetType(), "AreTransactionsOpen", ex.ToString());
+				// Tracer.Trace(GetType(), "AreTransactionsOpen", ex.ToString());
 				return flag;
 			}
 		}

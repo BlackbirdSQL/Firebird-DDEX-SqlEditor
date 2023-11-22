@@ -36,48 +36,48 @@ public class TConnectionSupport : AdoDotNetConnectionSupport
 
 		public TCommand() : base()
 		{
-			Tracer.Trace(GetType(), "TCommand.TCommand");
+			// Tracer.Trace(GetType(), "TCommand.TCommand");
 		}
 
 		public TCommand(IVsDataConnection connection)
 			: base(connection)
 		{
-			Tracer.Trace(GetType(), "TCommand.TCommand(IVsDataConnection)");
+			// Tracer.Trace(GetType(), "TCommand.TCommand(IVsDataConnection)");
 		}
 
 		public override IVsDataParameter CreateParameter()
 		{
-			Tracer.Trace(GetType(), "CreateParameter()");
+			// Tracer.Trace(GetType(), "CreateParameter()");
 			return ConnectionSupport.CreateParameterCore();
 		}
 
 		public override IVsDataParameter[] DeriveParameters(string command, DataCommandType commandType, int commandTimeout)
 		{
-			Tracer.Trace(GetType(), "DeriveParameters()", "commandType: {0}, command: {1}", commandType, command);
+			// Tracer.Trace(GetType(), "DeriveParameters()", "commandType: {0}, command: {1}", commandType, command);
 			return ConnectionSupport.DeriveParametersCore(command, commandType, commandTimeout);
 		}
 
 		public override string Prepare(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
 		{
-			Tracer.Trace(GetType(), "Prepare()", "commandType: {0}, command: {1}", commandType, command);
+			// Tracer.Trace(GetType(), "Prepare()", "commandType: {0}, command: {1}", commandType, command);
 			return ConnectionSupport.PrepareCore(command, commandType, parameters, commandTimeout);
 		}
 
 		public override IVsDataReader DeriveSchema(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
 		{
-			Tracer.Trace(GetType(), "DeriveSchema()", "commandType: {0}, command: {1}", commandType, command);
+			// Tracer.Trace(GetType(), "DeriveSchema()", "commandType: {0}, command: {1}", commandType, command);
 			return ConnectionSupport.DeriveSchemaCore(command, commandType, parameters, commandTimeout);
 		}
 
 		public override IVsDataReader Execute(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
 		{
-			Tracer.Trace(GetType(), "Execute()", "commandType: {0}, command: {1}", commandType, command);
+			// Tracer.Trace(GetType(), "Execute()", "commandType: {0}, command: {1}", commandType, command);
 			return ConnectionSupport.ExecuteCore(command, commandType, parameters, commandTimeout);
 		}
 
 		public override int ExecuteWithoutResults(string command, DataCommandType commandType, IVsDataParameter[] parameters, int commandTimeout)
 		{
-			Tracer.Trace(GetType(), "ExecuteWithoutResults()", "commandType: {0}, command: {1}", commandType, command);
+			// Tracer.Trace(GetType(), "ExecuteWithoutResults()", "commandType: {0}, command: {1}", commandType, command);
 			return ConnectionSupport.ExecuteWithoutResultsCore(command, commandType, parameters, commandTimeout);
 		}
 	}
@@ -174,7 +174,7 @@ public class TConnectionSupport : AdoDotNetConnectionSupport
 	// ---------------------------------------------------------------------------------
 	protected override object CreateService(IServiceContainer container, Type serviceType)
 	{
-		Tracer.Trace(GetType(), "TConnectionSupport.CreateService()", "Service requested: {0}", serviceType.Name);
+		// Tracer.Trace(GetType(), "TConnectionSupport.CreateService()", "Service requested: {0}", serviceType.Name);
 
 		if (serviceType == typeof(IVsDataCommand))
 		{

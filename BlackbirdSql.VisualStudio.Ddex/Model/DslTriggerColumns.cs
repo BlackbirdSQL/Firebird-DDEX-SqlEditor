@@ -16,7 +16,7 @@ internal class DslTriggerColumns : DslColumns
 {
 	public DslTriggerColumns(LinkageParser parser) : base(parser)
 	{
-		Tracer.Trace(GetType(), "DslTriggerColumns.DslTriggerColumns");
+		// Tracer.Trace(GetType(), "DslTriggerColumns.DslTriggerColumns");
 
 		_ParentType = "Trigger";
 		_ObjectType = "TriggerColumn";

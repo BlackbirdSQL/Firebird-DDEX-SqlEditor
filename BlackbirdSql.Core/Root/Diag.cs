@@ -6,9 +6,11 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using BlackbirdSql.Core.Ctl.Config;
+using BlackbirdSql.Core.Ctl.Extensions;
 
 #if BLACKBIRD
 using BlackbirdSql.Core.Ctl.Interfaces;
+using FirebirdSql.Data.FirebirdClient;
 #endif
 using Microsoft;
 using Microsoft.VisualStudio.Shell;
@@ -318,13 +320,41 @@ public static class Diag
 
 
 
+
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Diagnostics method for Exceptions only
+	/// Diagnostics method for ServiceUnavailable
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 #if DEBUG
-	public static void Dug(Exception ex, string message = "",
+	public static ServiceUnavailableException ServiceUnavailable(Type type,
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
+#else
+	public static ServiceUnavailableException ServiceUnavailable(Type type,
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
+#endif
+	{
+		ServiceUnavailableException ex = new(type);
+		Dug(ex, "", memberName, sourceFilePath, sourceLineNumber);
+
+		return ex;
+	}
+
+
+
+		// ---------------------------------------------------------------------------------
+		/// <summary>
+		/// Diagnostics method for Exceptions only
+		/// </summary>
+		// ---------------------------------------------------------------------------------
+#if DEBUG
+		public static void Dug(Exception ex, string message = "",
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
 		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
@@ -340,6 +370,10 @@ public static class Diag
 		if (message != "")
 			message += ":";
 
+		if (ex is FbException exf)
+		{
+			message += Environment.NewLine + $"Firebird error code: {exf.GetErrorCode()}, Class: {exf.GetClass()}, Proc: {exf.GetProcedure()}, Line: {exf.GetLineNumber()}.";
+		}
 		if (ex.StackTrace != null)
 		{
 			message += Environment.NewLine + "TRACE: " + ex.StackTrace.ToString();
@@ -766,7 +800,9 @@ public static class Diag
 			try
 			{
 				outputWindow = await ServiceProvider.GetGlobalServiceAsync<SVsOutputWindow, IVsOutputWindow>(swallowExceptions: false);
-				Assumes.Present(outputWindow);
+
+				if (outputWindow == null)
+					throw new ServiceUnavailableException(typeof(IVsOutputWindow));
 			}
 			catch (Exception ex)
 			{

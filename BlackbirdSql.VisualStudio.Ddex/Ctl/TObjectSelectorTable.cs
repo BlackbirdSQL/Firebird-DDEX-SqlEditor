@@ -73,7 +73,7 @@ public class TObjectSelectorTable : AdoDotNetObjectSelector
 	// ---------------------------------------------------------------------------------
 	protected override IList<string> GetSupportedRestrictions(string typeName, object[] parameters)
 	{
-		Tracer.Trace(GetType(), "GetSupportedRestrictions()", "typeName: {0}", typeName);
+		// Tracer.Trace(GetType(), "GetSupportedRestrictions()", "typeName: {0}", typeName);
 
 		IList<string> list = base.GetSupportedRestrictions(typeName, parameters);
 
@@ -97,7 +97,7 @@ public class TObjectSelectorTable : AdoDotNetObjectSelector
 
 	protected virtual DataTable GetSchema(DbConnection connection, string typeName, ref object[] restrictions, object[] parameters)
 	{
-		Tracer.Trace(GetType(), "GetSchema()", "typeName: {0}", typeName);
+		// Tracer.Trace(GetType(), "GetSchema()", "typeName: {0}", typeName);
 
 		if (CommandProperties.CommandNodeSystemType != CommandProperties.EnNodeSystemType.None
 			&& parameters != null && parameters.Length > 0 && (string)parameters[0] == "Tables"

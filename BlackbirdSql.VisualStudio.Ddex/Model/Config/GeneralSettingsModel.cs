@@ -38,6 +38,13 @@ public class GeneralSettingsModel : AbstractSettingsModel<GeneralSettingsModel>
 	// =====================================================================================================
 
 
+	[GlobalizedCategory("OptionCategoryGeneral")]
+	[GlobalizedDisplayName("OptionDisplayIncludeAppConnections")]
+	[GlobalizedDescription("OptionDescriptionIncludeAppConnections")]
+	[TypeConverter(typeof(GlobalYesNoConverter))]
+	[DefaultValue(true)]
+	public bool IncludeAppConnections { get; set; } = true;
+
 	[GlobalizedCategory("OptionCategoryQueryDesigner")]
 	[GlobalizedDisplayName("OptionDisplayShowDiagramPane")]
 	[GlobalizedDescription("OptionDescriptionShowDiagramPane")]

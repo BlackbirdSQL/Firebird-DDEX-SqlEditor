@@ -31,7 +31,7 @@ internal class DslIndexColumns : DslColumns
 {
 	public DslIndexColumns(LinkageParser parser) : base(parser)
 	{
-		Tracer.Trace(GetType(), "DslIndexColumns.DslIndexColumns");
+		// Tracer.Trace(GetType(), "DslIndexColumns.DslIndexColumns");
 
 		_ParentType = "Index";
 		_ObjectType = "TableIndexColumn";

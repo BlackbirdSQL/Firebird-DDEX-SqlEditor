@@ -2,9 +2,8 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 
-using System.Data.Common;
-using System;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
@@ -25,8 +24,11 @@ public class TConnectionUIProperties : TConnectionProperties
 
 	public TConnectionUIProperties() : base()
 	{
-		// Tracer.Trace(GetType(), "TConnectionUIProperties.TConnectionUIProperties()");
+		Tracer.Trace(GetType(), "TConnectionUIProperties.TConnectionUIProperties()");
 	}
 
-
+	public TConnectionUIProperties(IVsDataProvider site) : base(site)
+	{
+		Tracer.Trace(GetType(), "TConnectionUIProperties.TConnectionUIProperties(IVsDataProvider)", "Site type: {0}", site.GetType());
+	}
 }

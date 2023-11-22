@@ -43,16 +43,16 @@ public sealed class SqlResultsEditorFactory : AbstruseEditorFactory
 		Cursor current = Cursor.Current;
 		try
 		{
-			Tracer.Trace(GetType(), "IVsEditorFactory.CreateEditorInstance", "nCreateFlags = {0}, strMoniker = {1}, strPhysicalView = {2}, itemid = {3}", createFlags, moniker, physicalView, itemId);
+			// Tracer.Trace(GetType(), "IVsEditorFactory.CreateEditorInstance", "nCreateFlags = {0}, strMoniker = {1}, strPhysicalView = {2}, itemid = {3}", createFlags, moniker, physicalView, itemId);
 			if (!string.IsNullOrEmpty(physicalView))
 			{
-				Tracer.Trace(GetType(), "IVsEditorFactory.CreateEditorInstance", "physicalView is null - returning E_INVALIDARG");
+				// Tracer.Trace(GetType(), "IVsEditorFactory.CreateEditorInstance", "physicalView is null - returning E_INVALIDARG");
 				return VSConstants.E_INVALIDARG;
 			}
 
 			if ((createFlags & 6) == 0)
 			{
-				Tracer.Trace(GetType(), "IVsEditorFactory.CreateEditorInstance", "invalid create flags - returning E_INVALIDARG");
+				// Tracer.Trace(GetType(), "IVsEditorFactory.CreateEditorInstance", "invalid create flags - returning E_INVALIDARG");
 				return VSConstants.E_INVALIDARG;
 			}
 

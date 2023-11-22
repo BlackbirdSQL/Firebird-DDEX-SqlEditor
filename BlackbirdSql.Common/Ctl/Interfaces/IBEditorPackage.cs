@@ -20,7 +20,7 @@ public interface IBEditorPackage
 	public DialogResult ShowExecutionSettingsDialogFrame(AuxiliaryDocData auxDocData,
 		FormStartPosition startPosition);
 
-	bool? ShowConnectionDialogFrame(IntPtr parent, IBDependencyManager dependencyManager,
-		EventsChannel channel, UIConnectionInfo ci, VerifyConnectionDelegate verifierDelegate,
+	bool? ShowConnectionDialogFrame(IntPtr parent, EventsChannel channel,
+		UIConnectionInfo ci, VerifyConnectionDelegate verifierDelegate,
 		ConnectionDialogConfiguration config, ref UIConnectionInfo uIConnectionInfo);
 }

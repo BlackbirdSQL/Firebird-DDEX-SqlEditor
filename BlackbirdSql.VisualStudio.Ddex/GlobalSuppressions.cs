@@ -9,3 +9,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Style", "IDE0060:Remove unused parameter")]
 [assembly: SuppressMessage("Performance", "CA1822:Mark members as static")]
 [assembly: SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits")]
+[assembly: SuppressMessage("Usage", "VSTHRD104:Offer async methods")]

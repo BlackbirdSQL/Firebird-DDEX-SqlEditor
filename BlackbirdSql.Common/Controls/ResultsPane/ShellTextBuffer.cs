@@ -262,7 +262,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 		ILocalRegistry obj = (ILocalRegistry)serviceProvider2.GetService(typeof(ILocalRegistry));
 		if (obj == null)
 		{
-			Exception ex3 = new COMException(null, VSConstants.E_UNEXPECTED);
+			ServiceUnavailableException ex3 = new(typeof(ILocalRegistry));
 			Tracer.LogExThrow(GetType(), ex3);
 			throw ex3;
 		}
@@ -352,7 +352,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 		IVsUIShellOpenDocument obj = (IVsUIShellOpenDocument)serviceProvider.GetService(typeof(IVsUIShellOpenDocument));
 		if (obj == null)
 		{
-			Exception ex = new COMException("Required IVsUIShellOpenDocument service does not exist.", VSConstants.E_NOINTERFACE);
+			ServiceUnavailableException ex = new (typeof(IVsUIShellOpenDocument));
 			Tracer.LogExThrow(GetType(), ex);
 			throw ex;
 		}

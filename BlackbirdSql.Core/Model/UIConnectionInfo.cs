@@ -19,11 +19,11 @@ public class UIConnectionInfo : AbstractModelPropertyAgent
 
 	// private const string XmlServerType = "ServerType";
 
-	// private const string XmlServerName = "ServerName";
+	// private const string XmlServerName = "DataSource";
 
-	// private const string XmlDisplayName = "DisplayMember";
+	// private const string XmlDisplayName = "DatasetId";
 
-	// private const string XmlUserName = "UserName";
+	// private const string XmlUserName = "UserID";
 
 	// private const string XmlPassword = "Password";
 

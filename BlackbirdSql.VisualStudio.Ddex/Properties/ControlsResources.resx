@@ -1,0 +1,255 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="String" xml:space="preserve">
+    <value>The latest &lt;a href="https://www.nuget.org/packages/Microsoft.Data.SqlClient"&gt;Microsoft.Data.SqlClient&lt;/a&gt; package will be installed to the project.</value>
+  </data>
+  <data name="String1" xml:space="preserve">
+    <value>The latest &lt;a href="https://www.nuget.org/packages/Microsoft.Data.SqlClient"&gt;Microsoft.Data.SqlClient&lt;/a&gt; package will be installed to the project.</value>
+  </data>
+  <data name="String10" xml:space="preserve">
+    <value>Using the .NET Framework Data Provider for Oracle is not recommended because it is being deprecated.</value>
+  </data>
+  <data name="String11" xml:space="preserve">
+    <value>Using the .NET Framework Data Provider for Oracle is not recommended because it is being deprecated.</value>
+  </data>
+  <data name="String12" xml:space="preserve">
+    <value>For the most up-to-date support for new features in Microsoft SQL Server and Azure SQL Database, please choose &lt;a href="https://aka.ms/Microsoft.Data.SqlClient"&gt;Microsoft SqlClient Data Provider for SQL Server&lt;/a&gt; instead.</value>
+  </data>
+  <data name="String13" xml:space="preserve">
+    <value>For the most up-to-date support for new features in Microsoft SQL Server and Azure SQL Database, please choose &lt;a href="https://aka.ms/Microsoft.Data.SqlClient"&gt;Microsoft SqlClient Data Provider for SQL Server&lt;/a&gt; instead.</value>
+  </data>
+  <data name="String14" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="String15" xml:space="preserve">
+    <value>To resolve this issue, you must upgrade the database file by creating a new data connection, or you must modify the existing connection to this database file.</value>
+  </data>
+  <data name="String16" xml:space="preserve">
+    <value>For more information, see https://go.microsoft.com/fwlink/?LinkId=235986</value>
+  </data>
+  <data name="String2" xml:space="preserve">
+    <value>Data connections in Visual Studio can only be made using 64-bit data providers. However, at runtime 32-bit applications can continue to use 32-bit data providers</value>
+  </data>
+  <data name="String3" xml:space="preserve">
+    <value>For more information, please see &lt;a href="https://aka.ms/VSDataProviders"&gt;https://aka.ms/VSDataProviders&lt;/a&gt;.</value>
+  </data>
+  <data name="String4" xml:space="preserve">
+    <value>Data connections in Visual Studio can only be made using 64-bit data providers. However, at runtime 32-bit applications can continue to use 32-bit data providers.</value>
+  </data>
+  <data name="String5" xml:space="preserve">
+    <value>For more information, please see &lt;a href="https://aka.ms/VSDataProviders"&gt;https://aka.ms/VSDataProviders&lt;/a&gt;.</value>
+  </data>
+  <data name="String6" xml:space="preserve">
+    <value>Data connections in Visual Studio can only be made using 64-bit data providers. However, at runtime 32-bit applications can continue to use 32-bit data providers.</value>
+  </data>
+  <data name="String7" xml:space="preserve">
+    <value>For more information, please see &lt;a href="https://aka.ms/VSDataProviders"&gt;https://aka.ms/VSDataProviders&lt;/a&gt;.</value>
+  </data>
+  <data name="String8" xml:space="preserve">
+    <value>Data connections in Visual Studio can only be made using 64-bit data providers. However, at runtime 32-bit applications can continue to use 32-bit data providers.</value>
+  </data>
+  <data name="String9" xml:space="preserve">
+    <value>For more information, please see &lt;a href="https://aka.ms/VSDataProviders"&gt;https://aka.ms/VSDataProviders&lt;/a&gt;.</value>
+  </data>
+  <data name="TDataConnectionAdvancedDlg_Add" xml:space="preserve">
+    <value>&amp;Add...</value>
+  </data>
+  <data name="TDataConnectionAdvancedDlg_Description" xml:space="preserve">
+    <value>&amp;Description</value>
+  </data>
+  <data name="TDataConnectionAdvancedDlg_Remove" xml:space="preserve">
+    <value>Remo&amp;ve</value>
+  </data>
+  <data name="TDataConnectionAdvancedDlg_Reset" xml:space="preserve">
+    <value>&amp;Reset</value>
+  </data>
+  <data name="TDataConnectionDlgHandler_ChooseSourceAcceptText" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="TDataConnectionDlgHandler_HeaderLabel" xml:space="preserve">
+    <value>Enter information to connect to the selected data source.</value>
+  </data>
+  <data name="TDataConnectionDlgHandler_NoSourceSelected" xml:space="preserve">
+    <value>No data source is selected.</value>
+  </data>
+  <data name="TDataConnectionDlgHandler_UnknownProvider" xml:space="preserve">
+    <value>The data provider is unknown.</value>
+  </data>
+  <data name="TDataConnectionDlgHandler_UnknownSource" xml:space="preserve">
+    <value>The data source is unknown.</value>
+  </data>
+  <data name="TDataConnectionDlg_CannotChangeSingleDataProvider" xml:space="preserve">
+    <value>The selected data provider cannot be changed when there is only one data provider available.</value>
+  </data>
+  <data name="TDataConnectionDlg_CannotChangeSingleDataSource" xml:space="preserve">
+    <value>The selected data source cannot be changed when there is only one data source available.</value>
+  </data>
+  <data name="TDataConnectionDlg_CannotModifyState" xml:space="preserve">
+    <value>The data connection dialog state cannot be programmatically modified when the dialog is visible.</value>
+  </data>
+  <data name="TDataConnectionDlg_ChangeDataSourceTitle" xml:space="preserve">
+    <value>Change Data Source</value>
+  </data>
+  <data name="TDataConnectionDlg_ChooseDataSourceAcceptText" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="TDataConnectionDlg_ChooseDataSourceTitle" xml:space="preserve">
+    <value>Choose Data Source</value>
+  </data>
+  <data name="TDataConnectionDlg_DataSourceNoAssociation" xml:space="preserve">
+    <value>The selected data source has no association with this data provider.</value>
+  </data>
+  <data name="TDataConnectionDlg_DataSourceNotFound" xml:space="preserve">
+    <value>The data source was not found.</value>
+  </data>
+  <data name="TDataConnectionDlg_DataSourceWithShortProvider" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
+  <data name="TDataConnectionDlg_NoDataProviderSelected" xml:space="preserve">
+    <value>No data provider is currently selected.</value>
+  </data>
+  <data name="TDataConnectionDlg_NoDataProvidersForDataSource" xml:space="preserve">
+    <value>The '{0}' data source has no association with any data providers.</value>
+  </data>
+  <data name="TDataConnectionDlg_NoDataSourcesAvailable" xml:space="preserve">
+    <value>No data sources are available.</value>
+  </data>
+  <data name="TDataConnectionDlg_NoDataSourceSelected" xml:space="preserve">
+    <value>No data source is currently selected.</value>
+  </data>
+  <data name="TDataConnectionDlg_NoHelpAvailable" xml:space="preserve">
+    <value>No help is available in this context.</value>
+  </data>
+  <data name="TDataConnectionDlg_ShowDialogNotSupported" xml:space="preserve">
+    <value>You cannot use the Form.ShowDialog() method to show the data connection dialog.  Use DataConnectionDialog.Show() instead.</value>
+  </data>
+  <data name="TDataConnectionDlg_TestConnectionSucceeded" xml:space="preserve">
+    <value>Test connection succeeded.</value>
+  </data>
+  <data name="TDataConnectionDlg_TestResults" xml:space="preserve">
+    <value>Test results</value>
+  </data>
+  <data name="TDataSource_CannotChangeSingleDataProvider" xml:space="preserve">
+    <value>The default data provider cannot be changed when there is only one data provider available.</value>
+  </data>
+  <data name="TDataSource_DataProviderNotFound" xml:space="preserve">
+    <value>The data provider was not found.</value>
+  </data>
+</root>

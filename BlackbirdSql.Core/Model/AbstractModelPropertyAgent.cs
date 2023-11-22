@@ -5,18 +5,18 @@ using System.Data;
 using System.Data.Common;
 using System.Globalization;
 using System.Net;
+using System.Text;
 using System.Windows.Media.Imaging;
+
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Properties;
 
 using FirebirdSql.Data.FirebirdClient;
-using Microsoft.VisualStudio.Data;
 
 
 namespace BlackbirdSql.Core.Model;
-
 
 // =========================================================================================================
 //										AbstractModelPropertyAgent Class
@@ -255,7 +255,7 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 
 	public byte[] CryptKey
 	{
-		get { return (byte[])GetProperty("CryptKey"); }
+		get { return (byte[])Encoding.Default.GetBytes((string)GetProperty("CryptKey")); }
 		set { SetProperty("CryptKey", value); }
 	}
 
@@ -302,21 +302,19 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 
 	public override (IBIconType, bool) GetSet_Icon()
 	{
-		if (ServerType == EnDbServerType.Embedded)
+		if (ServerType == FbServerType.Embedded)
 		{
 			Icon = CoreIconsCollection.Instance.EmbeddedDatabase_32;
 
 			return (CoreIconsCollection.Instance.EmbeddedDatabase_32, false);
 		}
 
-		ServerDefinition serverDefinition = ServerDefinition;
-
-		if (serverDefinition == null)
+		if (ServerEngine == EnEngineType.Unknown)
 			return (CoreIconsCollection.Instance.ServerError_32, false);
 
 		IBIconType iconType;
 
-		switch (serverDefinition.EngineType)
+		switch (ServerEngine)
 		{
 			case EnEngineType.LocalClassicServer:
 				iconType = ModelIconsCollection.Instance.LocalClassicServer_32;
@@ -337,7 +335,7 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 				iconType = ModelIconsCollection.Instance.SuperServer_32;
 				break;
 			default:
-				InvalidOperationException ex = new(string.Format(Resources.EngineTypeIconNotfound, serverDefinition.EngineType));
+				InvalidOperationException ex = new(string.Format(Resources.EngineTypeIconNotfound, ServerEngine));
 				Diag.Dug(ex);
 				throw ex;
 		}
@@ -352,29 +350,29 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Gets the ServerDefinition property and sets it if successful.
+	/// Gets the ServerEngine property and sets it if successful.
 	/// </summary>
-	/// <returns>Returns the value tuple of the derived ServerDefinition else null and
+	/// <returns>Returns the value tuple of the derived ServerEngine else null and
 	/// a boolean indicating wehther or not a connection was opened.</returns>
 	// ---------------------------------------------------------------------------------
-	public override (ServerDefinition, bool) GetSet_ServerDefinition()
+	public override (EnEngineType, bool) GetSet_ServerEngine()
 	{
-		ServerDefinition serverDefinition;
+		EnEngineType serverEngine;
 
-		if (ServerType == EnDbServerType.Embedded)
+		if (ServerType == FbServerType.Embedded)
 		{
-			serverDefinition = new("Firebird", EnEngineType.EmbeddedDatabase);
-			return (serverDefinition, false);
+			serverEngine = EnEngineType.EmbeddedDatabase;
+			return (serverEngine, false);
 		}
 		else if (DataConnection.State != ConnectionState.Open && !IsComplete)
 		{
-			return (null, false);
+			return (EnEngineType.Unknown, false);
 		}
 
 		Version version = ServerVersion;
 
 		if (version == null)
-			return (null, false);
+			return (EnEngineType.Unknown, false);
 
 		bool opened = false;
 
@@ -400,7 +398,7 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 				{ }
 
 				if (DataConnection.State != ConnectionState.Open)
-					return (null, false);
+					return (EnEngineType.Unknown, false);
 
 				opened = true;
 			}
@@ -429,29 +427,27 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 
 		bool isLocalHost = PropertySet.IsLocalIpAddress(host);
 
-		EnEngineType engineType;
 
 		switch (serverClass.ToLower())
 		{
 			case "classic":
-				engineType = isLocalHost ? EnEngineType.LocalClassicServer : EnEngineType.ClassicServer;
+				serverEngine = isLocalHost ? EnEngineType.LocalClassicServer : EnEngineType.ClassicServer;
 				break;
 			case "superclassic":
-				engineType = isLocalHost ? EnEngineType.LocalSuperClassic : EnEngineType.SuperClassic;
+				serverEngine = isLocalHost ? EnEngineType.LocalSuperClassic : EnEngineType.SuperClassic;
 				break;
 			case "superserver":
-				engineType = isLocalHost ? EnEngineType.LocalSuperServer : EnEngineType.SuperServer;
+				serverEngine = isLocalHost ? EnEngineType.LocalSuperServer : EnEngineType.SuperServer;
 				break;
 			default:
-				ArgumentException ex = new("The Firebird server return a bad argument for ServerMode: " + serverClass);
+				ArgumentException ex = new("The Firebird server returned a bad argument for ServerMode: " + serverClass);
 				Diag.Dug(ex);
 				throw ex;
 		}
 
-		serverDefinition = new("Firebird", engineType);
-		ServerDefinition = serverDefinition;
+		ServerEngine = serverEngine;
 
-		return (serverDefinition, opened);
+		return (serverEngine, opened);
 	}
 
 
@@ -585,7 +581,7 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 
 	public override void Parse(string s)
 	{
-		Parse(new FbConnectionStringBuilder(s));
+		Parse(new CsbAgent(s));
 	}
 
 

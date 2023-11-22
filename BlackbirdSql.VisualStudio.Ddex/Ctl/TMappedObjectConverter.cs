@@ -34,12 +34,12 @@ public class TMappedObjectConverter : AdoDotNetMappedObjectConverter
 
 	public TMappedObjectConverter() : base()
 	{
-		Tracer.Trace(GetType(), "TMappedObjectConverter.TMappedObjectConverter");
+		// Tracer.Trace(GetType(), "TMappedObjectConverter.TMappedObjectConverter");
 	}
 
 	public TMappedObjectConverter(IVsDataConnection connection) : base(connection)
 	{
-		Tracer.Trace(GetType(), "TMappedObjectConverter.TMappedObjectConverter(IVsDataConnection)");
+		// Tracer.Trace(GetType(), "TMappedObjectConverter.TMappedObjectConverter(IVsDataConnection)");
 	}
 
 
@@ -56,7 +56,7 @@ public class TMappedObjectConverter : AdoDotNetMappedObjectConverter
 
 	protected override object ConvertToMappedMember(string typeName, string mappedMemberName, object[] underlyingValues, object[] parameters)
 	{
-		Tracer.Trace(GetType(), "TMappedObjectConverter.ConvertToMappedMember", "typeName: {0}, mappedMemberName: {1}", typeName, mappedMemberName);
+		// Tracer.Trace(GetType(), "TMappedObjectConverter.ConvertToMappedMember", "typeName: {0}, mappedMemberName: {1}", typeName, mappedMemberName);
 		return base.ConvertToMappedMember(typeName, mappedMemberName, underlyingValues, parameters);
 	}
 

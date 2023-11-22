@@ -36,6 +36,7 @@
 	<ItemGroup>
 		<Compile Include="Controls\Config\AbstractCurrentWndOptionsDlg.cs" />
 		<Compile Include="Model\Config\ContextSettingsModel.cs" />
+		<None Include="..\BlackbirdSql.VisualStudio.Ddex\BlackbirdSqlDdexExtension.vsct" Link="BlackbirdSqlDdexExtension.vsct" />
 		<None Include="Properties\BlackbirdSql.EditorExtension.snk" />
 		<Compile Include="Controls\ComponentModel\AdvancedFolderNameEditor.cs" />
 		<None Include="Controls\ComponentModel\NumericUpDownPropertyEditor.cs" />
@@ -142,7 +143,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\BlackbirdSql.Common\BlackbirdSql.Common.csproj" />
 		<ProjectReference Include="..\BlackbirdSql.Core\BlackbirdSql.Core.csproj" />
-		<ProjectReference Include="..\BlackbirdSql.Wpf\BlackbirdSql.Wpf.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

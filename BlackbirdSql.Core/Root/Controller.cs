@@ -45,6 +45,8 @@ internal static class Controller
 	// ---------------------------------------------------------------------------------
 	public static IBAsyncPackage DdexPackage => Instance.DdexPackage;
 
+	public static System.IServiceProvider ServiceProvider => (System.IServiceProvider)Instance.DdexPackage;
+
 
 	public static IVsRunningDocumentTable DocTable => Instance.DocTable;
 
@@ -57,6 +59,9 @@ internal static class Controller
 
 	public static TInterface GetService<TService, TInterface>() where TInterface : class
 		=> Instance.GetService<TService, TInterface>();
+
+	public static TInterface GetService<TInterface>() where TInterface : class
+		=> Instance.GetService<TInterface, TInterface>();
 
 	public static async Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class
 		=> await Instance.GetServiceAsync<TService, TInterface>();

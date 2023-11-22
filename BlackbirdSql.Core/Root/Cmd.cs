@@ -146,7 +146,7 @@ public abstract class Cmd
 		{
 			if (e is FbException ex)
 			{
-				stringBuilder.AppendLine(HashLog.Format(CultureInfo.CurrentCulture, Properties.Resources.ClassNumber, ex.GetProcedure(), ex.GetNumber()));
+				stringBuilder.AppendLine(HashLog.Format(CultureInfo.CurrentCulture, Properties.Resources.ClassNumber, ex.GetProcedure(), ex.GetErrorCode()));
 			}
 
 			stringBuilder.AppendLine(e.Message);
@@ -176,9 +176,9 @@ public abstract class Cmd
 	// NullEquality
 	public static EnNullEquality NullEquality(object lhs, object rhs)
 	{
-		if (lhs == null && rhs == null) return EnNullEquality.Equal;
+		if ((lhs == null || lhs == DBNull.Value) && (rhs == null || rhs == DBNull.Value)) return EnNullEquality.Equal;
 
-		if (lhs == null || rhs == null) return EnNullEquality.UnEqual;
+		if (lhs == null || lhs == DBNull.Value || rhs == null || rhs == DBNull.Value) return EnNullEquality.UnEqual;
 
 		return EnNullEquality.NotNulls;
 

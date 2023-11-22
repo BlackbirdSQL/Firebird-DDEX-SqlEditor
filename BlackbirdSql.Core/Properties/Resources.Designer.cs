@@ -268,6 +268,15 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project[{0}] {1}.
+        /// </summary>
+        public static string ConnectionLocatorProjectDatasetId {
+            get {
+                return ResourceManager.GetString("ConnectionLocatorProjectDatasetId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not locate icon for Server Engine Type {0}..
         /// </summary>
         public static string EngineTypeIconNotfound {

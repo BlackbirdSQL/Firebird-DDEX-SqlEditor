@@ -52,7 +52,7 @@ public abstract class AbstruseEditorFactory : IVsEditorFactory
 
 	public int MapLogicalView(ref Guid logicalView, out string strLogicalView)
 	{
-		Tracer.Trace(GetType(), "IVsEditorFactory.MapLogicalView", "logicalView = {0}", logicalView.ToString());
+		// Tracer.Trace(GetType(), "IVsEditorFactory.MapLogicalView", "logicalView = {0}", logicalView.ToString());
 		if (logicalView.Equals(VSConstants.LOGVIEWID_Debugging))
 		{
 			Diag.Stack("Debugging view not supported");
@@ -74,7 +74,7 @@ public abstract class AbstruseEditorFactory : IVsEditorFactory
 			return VSConstants.S_OK;
 		}
 
-		Tracer.Trace(GetType(), traceName, "IVsEditorFactory.MapLogicalView", "returning E_NOTIMPL");
+		// Tracer.Trace(GetType(), traceName, "IVsEditorFactory.MapLogicalView", "returning E_NOTIMPL");
 		strLogicalView = null;
 
 		return VSConstants.E_NOTIMPL;
@@ -82,7 +82,7 @@ public abstract class AbstruseEditorFactory : IVsEditorFactory
 
 	public int SetSite(Microsoft.VisualStudio.OLE.Interop.IServiceProvider serviceProvider)
 	{
-		Tracer.Trace(GetType(), "IVsEditorFactory.SetSite", "");
+		// Tracer.Trace(GetType(), "IVsEditorFactory.SetSite", "");
 		OleServiceProvider = serviceProvider;
 		ServiceProvider = new Microsoft.VisualStudio.Shell.ServiceProvider(serviceProvider);
 		return VSConstants.S_OK;
@@ -90,7 +90,7 @@ public abstract class AbstruseEditorFactory : IVsEditorFactory
 
 	public int Close()
 	{
-		Tracer.Trace(GetType(), "IVsEditorFactory.Close", "");
+		// Tracer.Trace(GetType(), "IVsEditorFactory.Close", "");
 		OleServiceProvider = null;
 		ServiceProvider = null;
 		return VSConstants.S_OK;

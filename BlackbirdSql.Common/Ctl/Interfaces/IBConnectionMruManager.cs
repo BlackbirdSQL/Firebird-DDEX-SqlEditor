@@ -2,17 +2,18 @@
 // Microsoft.SqlServer.ConnectionDlg.Core.IConnectionMruManager
 
 using System.Collections.Generic;
+using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 
 namespace BlackbirdSql.Common.Ctl.Interfaces;
 
-public interface IBConnectionMruManager : IBExportable
+public interface IBConnectionMruManager // : IBExportable
 {
-	void AddConnection(string connectionString, bool isFavorite, IBServerDefinition serverDefinition);
+	void AddConnection(string connectionString, bool isFavorite, EnEngineType serverEngine);
 
 	void RemoveConnection(string connectionString);
 
-	void UpdateFavorite(string connectionString, bool isFavorite, IBServerDefinition serverDefinition);
+	void UpdateFavorite(string connectionString, bool isFavorite, EnEngineType serverEngine);
 
 	List<MruInfo> GetMruList();
 }

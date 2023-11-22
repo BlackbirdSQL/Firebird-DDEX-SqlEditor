@@ -6,22 +6,16 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
 
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Properties;
 
-using FirebirdSql.Data.FirebirdClient;
 
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
-using Microsoft.VisualStudio.Shell;
 
 using EnNodeSystemType = BlackbirdSql.Core.Ctl.CommandProviders.CommandProperties.EnNodeSystemType;
-
-
-
 
 
 namespace BlackbirdSql.Core.Ctl.CommandProviders;
@@ -212,7 +206,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	// ---------------------------------------------------------------------------------
 	protected override MenuCommand CreateCommand(int itemId, CommandID commandId, object[] parameters)
 	{
-		Tracer.Trace(GetType(), "AbstractCommandProvider.CreateCommand", "itemId: {0}, commandId: {1}", itemId, commandId);
+		// Tracer.Trace(GetType(), "AbstractCommandProvider.CreateCommand", "itemId: {0}, commandId: {1}", itemId, commandId);
 		
 		MenuCommand command = null;
 		DataViewMenuCommand cmd = null;
@@ -228,7 +222,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 				if (node == null)
 				{
-					Tracer.Trace(GetType(), "AbstractCommandProvider.CreateCommand", "itemId: {0}, commandId: {1}. Node is null. Exiting.", itemId, commandId);
+					// Tracer.Trace(GetType(), "AbstractCommandProvider.CreateCommand", "itemId: {0}, commandId: {1}. Node is null. Exiting.", itemId, commandId);
 					return;
 				}
 
@@ -296,19 +290,19 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		else if (commandId.Equals(CommandProperties.RightClick))
 		{
 			// Not working
-			Tracer.Trace(GetType(), "CreateCommand", "RightClick");
+			// Tracer.Trace(GetType(), "CreateCommand", "RightClick");
 			command = base.CreateCommand(itemId, commandId, parameters);
 		}
 		else if (commandId.Equals(CommandProperties.DoubleClick))
 		{
 			// Not working
-			Tracer.Trace(GetType(), "CreateCommand", "DoubleClick");
+			// Tracer.Trace(GetType(), "CreateCommand", "DoubleClick");
 			command = base.CreateCommand(itemId, commandId, parameters);
 		}
 		else if (commandId.Equals(CommandProperties.EnterKey))
 		{
 			// Not working
-			Tracer.Trace(GetType(), "CreateCommand", "EnterKey");
+			// Tracer.Trace(GetType(), "CreateCommand", "EnterKey");
 			command = base.CreateCommand(itemId, commandId, parameters);
 		}
 		else
@@ -404,7 +398,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	// ---------------------------------------------------------------------------------
 	private void OnNewQuery(int itemId, EnNodeSystemType nodeSystemType)
 	{
-		Tracer.Trace(GetType(), "AbstractCommandProvider.OnNewQuery", "itemId: {0}, nodeSystemType: {1}", itemId, nodeSystemType);
+		// Tracer.Trace(GetType(), "AbstractCommandProvider.OnNewQuery", "itemId: {0}, nodeSystemType: {1}", itemId, nodeSystemType);
 
 		Controller.Instance.OnNewQueryRequested(Site, nodeSystemType);
 		// Host.QueryDesignerProviderTelemetry(qualityMetricProvider);
@@ -418,7 +412,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	// ---------------------------------------------------------------------------------
 	protected void OnInterceptorNewQuery(int itemId, EnNodeSystemType nodeSystemType)
 	{
-		Tracer.Trace(GetType(), "AbstractCommandProvider.OnInterceptorNewQuery", "itemId: {0}, nodeSystemType: {1}", itemId, nodeSystemType);
+		// Tracer.Trace(GetType(), "AbstractCommandProvider.OnInterceptorNewQuery", "itemId: {0}, nodeSystemType: {1}", itemId, nodeSystemType);
 
 		IVsDataExplorerNode vsDataExplorerNode = Site.ExplorerConnection.FindNode(itemId);
 		MenuCommand command = vsDataExplorerNode.GetCommand(CommandProperties.GlobalNewQuery);
@@ -437,48 +431,29 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	// ---------------------------------------------------------------------------------
 	protected void OnOpen(int itemId, bool alternate)
 	{
-		Tracer.Trace(GetType(), "AbstractCommandProvider.OnOpen", "itemId: {0}, alternate: {1}", itemId, alternate);
+		// Tracer.Trace(GetType(), "AbstractCommandProvider.OnOpen", "itemId: {0}, alternate: {1}", itemId, alternate);
 
 		IVsDataExplorerNode node = Site.ExplorerConnection.FindNode(itemId);
 
 		if (SystemData.MandatedSqlEditorFactoryGuid.Equals(SystemData.DslEditorFactoryGuid, StringComparison.OrdinalIgnoreCase))
 		{
-			IBDesignerExplorerServices service = Controller.GetService<IBDesignerExplorerServices, IBDesignerExplorerServices>();
+			IBDesignerExplorerServices service = Controller.GetService<IBDesignerExplorerServices>()
+				?? throw Diag.ServiceUnavailable(typeof(IBDesignerExplorerServices));
 
-			if (service == null)
-			{
-				ServiceUnavailableException ex = new(typeof(IBDesignerExplorerServices));
-				Diag.Dug(ex);
-				throw ex;
-			}
 			service.ViewCode(node, alternate);
 		}
 		else
 		{
-			IBDesignerOnlineServices service = Controller.GetService<IBDesignerOnlineServices,
-				IBDesignerOnlineServices>();
-
-			if (service == null)
-			{
-				ServiceUnavailableException ex = new(typeof(IBDesignerOnlineServices));
-				Diag.Dug(ex);
-				throw ex;
-			}
-
-			FbConnectionStringBuilder csb = new();
+			IBDesignerOnlineServices service = Controller.GetService<IBDesignerOnlineServices>()
+				?? throw Diag.ServiceUnavailable(typeof(IBDesignerOnlineServices));
 
 			MonikerAgent moniker = new(node);
 
-			csb.DataSource = moniker.Server;
-			csb.Database = moniker.Database;
-			csb.UserID = moniker.User;
-			csb.Role = moniker.Role;
-			csb.NoDatabaseTriggers = moniker.NoTriggers;
-
 			IList<string> identifierList = moniker.Identifier.ToArray();
 			EnModelObjectType objectType = moniker.ObjectType;
-
 			string script = MonikerAgent.GetDecoratedDdlSource(node, alternate);
+			CsbAgent csb = new(node);
+
 			service.ViewCode(csb, objectType, alternate, identifierList, script);
 
 		}

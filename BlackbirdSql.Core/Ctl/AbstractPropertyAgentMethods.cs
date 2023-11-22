@@ -18,7 +18,7 @@ using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Properties;
-using FirebirdSql.Data.FirebirdClient;
+
 
 namespace BlackbirdSql.Core;
 
@@ -261,7 +261,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 							return false;
 						break;
 					case "byte[]":
-						return Compare((byte[])value1, (byte[])value2) == 0;
+						return Compare(value1, value2) == 0;
 					default:
 						ArgumentException ex = new($"Property type {typeName} for property {descriptor.Name} is not supported");
 						Diag.Dug(ex);
@@ -313,9 +313,10 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 		int result;
 
-		if (lhs is ServerDefinition)
+		if (lhs.GetType().IsEnum)
 		{
-			result = ((IBServerDefinition)lhs).EqualsServerDefinition((IBServerDefinition)rhs) ? 1 : 0;
+			result = (int)lhs == (int)rhs ? 1
+				: ((int)lhs > (int)rhs ? 1 : -1);
 		}
 		else if (lhs is SecureString secureValue)
 		{
@@ -540,14 +541,14 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 
 
-	public virtual Describer GetParameterDescriptor(string parameter)
+	public virtual Describer GetParameterDescriber(string parameter)
 	{
-		return Describers.GetParameterDescriptor(parameter);
+		return Describers.GetParameterDescriber(parameter);
 	}
 
-	public virtual Describer GetSynonymDescriptor(string synonym)
+	public virtual Describer GetSynonymDescriber(string synonym)
 	{
-		return Describers.GetSynonymDescriptor(synonym);
+		return Describers.GetSynonymDescriber(synonym);
 	}
 
 
@@ -627,9 +628,9 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 		while (xmlTextReader.Read())
 		{
-			if (xmlTextReader.NodeType == XmlNodeType.Element && xmlTextReader.LocalName == "DisplayMember")
+			if (xmlTextReader.NodeType == XmlNodeType.Element && xmlTextReader.LocalName == "DatasetKey")
 			{
-				DisplayMember = xmlTextReader.ReadString();
+				DatasetKey = xmlTextReader.ReadString();
 				break;
 			}
 		}
@@ -656,10 +657,10 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 				{
 					obj = Convert.ToBoolean(value);
 				}
-				else if (type == typeof(byte[]))
-				{
-					obj = Encoding.Default.GetBytes(value);
-				}
+				// else if (type == typeof(byte[]))
+				// {
+				//	obj = Encoding.Default.GetBytes(value);
+				// }
 				else if (type == typeof(Version))
 				{
 					obj = new Version(value);
@@ -698,12 +699,17 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 			if (lckey == "displaymember" || lckey == "datasetkey" || lckey == "dataset")
 				continue;
 
-			describer = Describers.GetSynonymDescriptor(pair.Key);
+			describer = Describers.GetSynonymDescriber(pair.Key);
 
 			if (describer == null)
 			{
-				NotSupportedException ex = new($"Connection parameter '{pair.Key}' has no descriptor property configured.");
-				Diag.Dug(ex);
+				// It could be a connection dataset which includes DatasetKey, DatasetId etc. so don't
+				// report an exception if it is.
+				if (CsbAgent.Describers[pair.Key] == null)
+				{
+					NotSupportedException ex = new($"Connection parameter '{pair.Key}' has no descriptor property configured.");
+					Diag.Dug(ex);
+				}
 				continue;
 			}
 
@@ -733,12 +739,12 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 
 
-	public virtual void PopulateConnectionStringBuilder(DbConnectionStringBuilder csb, bool secure)
+	public virtual void PopulateConnectionStringBuilder(DbConnectionStringBuilder dbcsb, bool secure)
 	{
-		csb.Clear();
+		CsbAgent csa = (CsbAgent)dbcsb;
 
-		string name;
-
+		csa.Clear();
+				
 		foreach (KeyValuePair<string, object> pair in _AssignedConnectionProperties)
 		{
 			if ((secure && (pair.Key.ToLower() == CoreConstants.C_KeyPassword.ToLower() || pair.Key.ToLower() == CoreConstants.C_KeyExInMemoryPassword.ToLower()))
@@ -749,17 +755,17 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 			if (pair.Key == CoreConstants.C_KeyExInMemoryPassword)
 			{
-				csb[CoreConstants.C_KeyPassword] = GetProperty("Password");
+				csa[CoreConstants.C_KeyPassword] = GetProperty("Password");
 				continue;
 			}
 
-
-			name = Describers.GetDescriptorParameter(pair.Key);
-
-			if (name == null)
+			if (pair.Value == null || pair.Value == DBNull.Value)
 				continue;
 
-			csb[name] = pair.Value;
+			if (pair.Value.GetType() == typeof(byte[]))
+				csa[pair.Key] = Encoding.Default.GetString((byte[])pair.Value);
+			else
+				csa[pair.Key] = pair.Value;
 		}
 
 	}
@@ -844,14 +850,14 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	public virtual void SaveToStream(XmlWriter writer, bool unsecured)
 	{
 		writer.WriteStartElement("ConnectionInformation");
-		writer.WriteElementString("DisplayMember", null, DisplayMember);
+		writer.WriteElementString("DatasetKey", null, DatasetKey);
 
 		string key;
 		object value;
 
 		foreach (KeyValuePair<string, object> pair in _AssignedConnectionProperties)
 		{
-			if (!unsecured && (pair.Key == "Password" || pair.Key == "InMemoryPassword" || pair.Key == "UserID"))
+			if (!unsecured && (pair.Key == "Password" || pair.Key == "InMemoryPassword"))
 				continue;
 
 			if (Describers.IsAdvanced(pair.Key))
@@ -912,7 +918,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		if (csb.ContainsKey("Password"))
 		{
 			_ParametersChanged = true;
-			csb["Password"] = "*****";
+			csb[CoreConstants.C_KeyFbPassword] = "*****";
 		}
 
 		return csb.ConnectionString;
@@ -996,7 +1002,12 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 
 		bool changed;
-		object currValue = isSet ? _AssignedConnectionProperties[name] : null;
+		object assignedValue = isSet ? _AssignedConnectionProperties[name] : null;
+		object currValue = isSet 
+			? assignedValue
+			: ((newValue == null || newValue == DBNull.Value)
+				? newValue
+				: Describers[name].DefaultValue);
 
 		if (Cmd.NullEquality(newValue, currValue) <= EnNullEquality.Equal)
 		{
@@ -1035,21 +1046,44 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 			return true;
 		}
 
-
 		bool changed;
-		int? currValue = isSet ? (int)_AssignedConnectionProperties[name] : null;
-
-		if (Cmd.NullEquality(newValue, currValue) <= EnNullEquality.Equal)
-		{
-			changed = Cmd.NullEquality(newValue, currValue) == EnNullEquality.UnEqual;
-
-			if (changed && IsParameter(name))
-				_ParametersChanged = true;
-
-			return changed;
-		}
+		int defaultValue = Convert.ToInt32(Describers[name].DefaultValue);
+		int currValue = isSet ? Convert.ToInt32(_AssignedConnectionProperties[name]) : defaultValue;
 
 		changed = newValue != currValue;
+
+		if (changed && IsParameter(name))
+			_ParametersChanged |= changed;
+
+		return changed;
+	}
+
+
+
+	protected virtual bool WillEnumPropertyChange(string name, object newValue, bool removing)
+	{
+		bool isSet = Isset(name);
+
+		if (removing)
+		{
+			if (!isSet)
+				return false;
+
+			_AssignedConnectionProperties.Remove(name);
+
+			if (IsParameter(name))
+				_ParametersChanged = true;
+
+			return true;
+		}
+
+
+		bool changed;
+		int defaultValue = Convert.ToInt32(Describers[name].DefaultValue);
+		int currValue = isSet ? Convert.ToInt32(_AssignedConnectionProperties[name]) : defaultValue;
+		int value = newValue != null ? Convert.ToInt32(newValue) : defaultValue;
+
+		changed = value != currValue;
 
 		if (changed && IsParameter(name))
 			_ParametersChanged |= changed;
@@ -1078,17 +1112,8 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 
 		bool changed;
-		bool? currValue = isSet ? (bool)_AssignedConnectionProperties[name] : null;
-
-		if (Cmd.NullEquality(newValue, currValue) <= EnNullEquality.Equal)
-		{
-			changed = Cmd.NullEquality(newValue, currValue) == EnNullEquality.UnEqual;
-
-			if (changed && IsParameter(name))
-				_ParametersChanged = true;
-
-			return changed;
-		}
+		bool defaultValue = Convert.ToBoolean(Describers[name].DefaultValue);
+		bool currValue = isSet ? Convert.ToBoolean(_AssignedConnectionProperties[name]) : defaultValue;
 
 		changed = newValue != currValue;
 
@@ -1100,7 +1125,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 
 
-	protected virtual bool WillBytePropertyChange(string name, byte[] newValue, bool removing)
+	protected virtual bool WillBytePropertyChange(string name, object newObjValue, bool removing)
 	{
 		bool isSet = Isset(name);
 
@@ -1117,9 +1142,28 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 			return true;
 		}
 
+		string newValue;
+
+		if (newObjValue == null || newObjValue == DBNull.Value)
+		{
+			newValue = (string)newObjValue;
+		}
+		else
+		{
+			newValue = newObjValue.GetType() == typeof(byte[])
+				? Encoding.Default.GetString((byte[])newObjValue)
+				: (string)newObjValue;
+		}
 
 		bool changed;
-		byte[] currValue = isSet ? (byte[])_AssignedConnectionProperties[name] : null;
+		object assignedValue = isSet ? _AssignedConnectionProperties[name] : null;
+		object obj = isSet
+			? assignedValue
+			: ((newValue == null || (object)newValue == DBNull.Value)
+				? newValue
+				: Describers[name].DefaultValue);
+
+		string currValue = obj?.ToString();
 
 		if (Cmd.NullEquality(newValue, currValue) <= EnNullEquality.Equal)
 		{
@@ -1131,7 +1175,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 			return changed;
 		}
 
-		changed = newValue.Length != currValue.Length || newValue.ToString() != currValue.ToString();
+		changed = !newValue.Equals(currValue);
 
 		if (changed && IsParameter(name))
 			_ParametersChanged |= changed;
@@ -1160,7 +1204,13 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 
 		bool changed;
-		object obj = isSet ? _AssignedConnectionProperties[name] : null;
+		object assignedValue = isSet ? _AssignedConnectionProperties[name] : null;
+		object obj = isSet
+			? assignedValue
+			: ((newValue == null || (object)newValue == DBNull.Value)
+				? newValue
+				: Describers[name].DefaultValue);
+
 		string currValue = obj?.ToString();
 
 		if (Cmd.NullEquality(newValue, currValue) <= EnNullEquality.Equal)

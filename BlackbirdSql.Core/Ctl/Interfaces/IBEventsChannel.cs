@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Windows;
+using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Events;
 
 namespace BlackbirdSql.Core.Ctl.Interfaces;
@@ -67,7 +68,7 @@ public interface IBEventsChannel
 
 	void OnAdvancedPropertiesRequested(IBPropertyAgent connectionProperties);
 
-	void OnConnectionsLoaded(IBServerDefinition serverDefinition, int numberOfConnections);
+	void OnConnectionsLoaded(EnEngineType serverEngine, int numberOfConnections);
 
 	void OnConnectionPropertiesChanged();
 

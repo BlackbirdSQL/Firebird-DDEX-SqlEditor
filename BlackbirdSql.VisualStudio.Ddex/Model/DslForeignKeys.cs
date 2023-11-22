@@ -26,7 +26,7 @@ internal class DslForeignKeys : AbstractDslSchema
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
-		Tracer.Trace(GetType(), "DslForeignKeys.DslForeignKeys");
+		// Tracer.Trace(GetType(), "DslForeignKeys.DslForeignKeys");
 
 		var sql = new StringBuilder();
 		var where = new StringBuilder();

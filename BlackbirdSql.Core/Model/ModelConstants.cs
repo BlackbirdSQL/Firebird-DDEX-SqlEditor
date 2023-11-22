@@ -6,6 +6,7 @@
 //$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 using System.Data;
+using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Model.Enums;
 using FirebirdSql.Data.FirebirdClient;
 
@@ -24,6 +25,125 @@ namespace BlackbirdSql.Core.Model;
 // =========================================================================================================
 public static class ModelConstants
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Property Names - ModelConstants
+	// ---------------------------------------------------------------------------------
+
+
+	// Built-in default parameter keys
+	public const string C_KeyFbRole = "role name";
+	public const string C_KeyFbDialect = "dialect";
+	public const string C_KeyFbCharset = "character set";
+	public const string C_KeyFbNoDatabaseTriggers = "no db triggers";
+	public const string C_KeyFbPacketSize = "packet size";
+	public const string C_KeyFbConnectionTimeout = "connection timeout";
+	public const string C_KeyFbPooling = "pooling";
+	public const string C_KeyFbConnectionLifeTime = "connection lifetime";
+	public const string C_KeyFbMinPoolSize = "min pool size";
+	public const string C_KeyFbMaxPoolSize = "max pool size";
+	public const string C_KeyFbFetchSize = "fetch size";
+	public const string C_KeyFbIsolationLevel = "isolation level";
+	public const string C_KeyFbReturnRecordsAffected = "records affected";
+	public const string C_KeyFbEnlist = "enlist";
+	public const string C_KeyFbClientLibrary = "client library";
+	public const string C_KeyFbDbCachePages = "cache pages";
+	public const string C_KeyFbNoGarbageCollect = "no garbage collect";
+	public const string C_KeyFbCompression = "compression";
+	public const string C_KeyFbCryptKey = "crypt key";
+	public const string C_KeyFbWireCrypt = "wire crypt";
+	public const string C_KeyFbApplicationName = "application name";
+	public const string C_KeyFbCommandTimeout = "command timeout";
+	public const string C_KeyFbParallelWorkers = "parallel workers";
+
+
+	// Built-in property descriptor keys
+	public const string C_KeyRole = "Role";
+	public const string C_KeyDialect = "Dialect";
+	public const string C_KeyCharset = "Charset";
+	public const string C_KeyNoDatabaseTriggers = "NoDatabaseTriggers";
+	public const string C_KeyPacketSize = "PacketSize";
+	public const string C_KeyConnectionTimeout = "ConnectionTimeout";
+	public const string C_KeyPooling = "Pooling";
+	public const string C_KeyConnectionLifeTime = "ConnectionLifeTime";
+	public const string C_KeyMinPoolSize = "MinPoolSize";
+	public const string C_KeyMaxPoolSize = "MaxPoolSize";
+	public const string C_KeyFetchSize = "FetchSize";
+	public const string C_KeyIsolationLevel = "IsolationLevel";
+	public const string C_KeyReturnRecordsAffected = "ReturnRecordsAffected";
+	public const string C_KeyEnlist = "Enlist";
+	public const string C_KeyClientLibrary = "ClientLibrary";
+	public const string C_KeyDbCachePages = "DbCachePages";
+	public const string C_KeyNoGarbageCollect = "NoGarbageCollect";
+	public const string C_KeyCompression = "Compression";
+	public const string C_KeyCryptKey = "CryptKey";
+	public const string C_KeyWireCrypt = "WireCrypt";
+	public const string C_KeyApplicationName = "ApplicationName";
+	public const string C_KeyCommandTimeout = "CommandTimeout";
+	public const string C_KeyParallelWorkers = "ParallelWorkers";
+
+	// Extended property descriptor keys
+	public const string C_KeyExObjectType = "ObjectType";
+	public const string C_KeyExExplorerTreeName = "ExplorerTreeName";
+	public const string C_KeyExObjectName = "ObjectName";
+	public const string C_KeyExAlternate = "Alternate";
+	public const string C_KeyExIsUnique = "IsUnique";
+
+	public const string C_KeyExMemoryUsage = "MemoryUsage";
+	public const string C_KeyExActiveUsers = "ActiveUsers";
+
+
+	#endregion Property Names
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	#region Property Default Values - ModelConstants
+	// ---------------------------------------------------------------------------------
+
+
+	// Built-in property defaults
+	public const string C_DefaultRole = "";
+	public const int C_DefaultDialect = 3;
+	public const string C_DefaultCharset = "UTF8";
+	public const bool C_DefaultNoDatabaseTriggers = false;
+	public const int C_DefaultPacketSize = 8192;
+	public const int C_DefaultConnectionTimeout = 15;
+	public const bool C_DefaultPooling = true;
+	public const int C_DefaultConnectionLifeTime = 0;
+	public const int C_DefaultMinPoolSize = 0;
+	public const int C_DefaultMaxPoolSize = 100;
+	public const int C_DefaultFetchSize = 200;
+	public const IsolationLevel C_DefaultIsolationLevel = IsolationLevel.ReadCommitted;
+	public const bool C_DefaultReturnRecordsAffected = true;
+	public const bool C_DefaultEnlist = true;
+	public const string C_DefaultClientLibrary = "fbembed";
+	public const int C_DefaultDbCachePages = 0;
+	public const bool C_DefaultNoGarbageCollect = false;
+	public const bool C_DefaultCompression = false;
+	public const byte[] C_DefaultCryptKey = null;
+	public const FbWireCrypt C_DefaultWireCrypt = FbWireCrypt.Enabled;
+	public const string C_DefaultApplicationName = "";
+	public const int C_DefaultCommandTimeout = 0;
+	public const int C_DefaultParallelWorkers = 0;
+
+	// Extended property defaults
+	public const EnModelObjectType C_DefaultExObjectType = EnModelObjectType.Unknown;
+	public const string C_DefaultExExplorerTreeName = "";
+	public const string C_DefaultExObjectName = "";
+	public const bool C_DefaultExAlternate = false;
+	public const bool C_DefaultExIsUnique = false;
+
+	// External (non-paramameter) property defaults 
+	public const string C_DefaultExMemoryUsage = null;
+	public const int C_DefaultExActiveUsers = int.MinValue;
+
+
+	#endregion Property Default Values
+
+
+
 
 	// ---------------------------------------------------------------------------------
 	#region Model Engine Miscellanoeus values and defaults - ModelConstants
@@ -58,97 +178,6 @@ public static class ModelConstants
 	#endregion Model Engine Miscellanoeus values and defaults
 
 
-
-
-	// ---------------------------------------------------------------------------------
-	#region Default Parameter Names - ModelConstants
-	// ---------------------------------------------------------------------------------
-
-
-	// Firbird default parameters
-	public const string C_KeyRoleName = "role name";
-	public const string C_KeyCharacterSet = "character set";
-	public const string C_KeyDialect = "dialect";
-	public const string C_KeyPacketSize = "packet size";
-	public const string C_KeyPooling = "pooling";
-	public const string C_KeyConnectionLifetime = "connection lifetime";
-	public const string C_KeyMinPoolSize = "min pool size";
-	public const string C_KeyMaxPoolSize = "max pool size";
-	public const string C_KeyConnectionTimeout = "connection timeout";
-	public const string C_KeyFetchSize = "fetch size";
-	public const string C_KeyIsolationLevel = "isolation level";
-	public const string C_KeyRecordsAffected = "records affected";
-	public const string C_KeyEnlist = "enlist";
-	public const string C_KeyClientLibrary = "client library";
-	public const string C_KeyDbCachePages = "cache pages";
-	public const string C_KeyNoDbTriggers = "no db triggers";
-	public const string C_KeyNoGarbageCollect = "no garbage collect";
-	public const string C_KeyCompression = "compression";
-	public const string C_KeyCryptKey = "crypt key";
-	public const string C_KeyWireCrypt = "wire crypt";
-	public const string C_KeyApplicationName = "application name";
-	public const string C_KeyCommandTimeout = "command timeout";
-	public const string C_KeyParallelWorkers = "parallel workers";
-
-
-	// Root and Connection node keys
-	public const string C_KeyNodeDatasetKey = "DatasetKey";
-	public const string C_KeyNodeDataSource = "DataSource";
-	public const string C_KeyNodePort = "Port";
-	public const string C_KeyNodeDatabase = "Database";
-	public const string C_KeyNodeDisplayMember = "DisplayMember";
-	public const string C_KeyNodeServerType = "ServerType";
-	public const string C_KeyNodeUserId = "UserID";
-	public const string C_KeyNodePassword = "Password";
-	public const string C_KeyNodeRole = "Role";
-	public const string C_KeyNodeCharset = "Charset";
-	public const string C_KeyNodeDialect = "Dialect";
-	public const string C_KeyNodeNoDbTriggers = "NoDatabaseTriggers";
-	public const string C_KeyNodeMemoryUsage = "MemoryUsage";
-	public const string C_KeyNodeActiveUsers = "ActiveUsers";
-
-
-	#endregion Default Parameter Names
-
-
-
-
-	// ---------------------------------------------------------------------------------
-	#region Parameter Default Values - ModelConstants
-	// ---------------------------------------------------------------------------------
-
-
-	public const string C_DefaultRoleName = "";
-	public const string C_DefaultCharacterSet = "UTF8";
-	public const int C_DefaultDialect = 3;
-	public const int C_DefaultPacketSize = 8192;
-	public const bool C_DefaultPooling = true;
-	public const int C_DefaultConnectionLifetime = 0;
-	public const int C_DefaultMinPoolSize = 0;
-	public const int C_DefaultMaxPoolSize = 100;
-	public const int C_DefaultConnectionTimeout = 15;
-	public const int C_DefaultFetchSize = 200;
-	public const IsolationLevel C_DefaultIsolationLevel = IsolationLevel.ReadCommitted;
-	public const bool C_DefaultRecordsAffected = true;
-	public const bool C_DefaultEnlist = true;
-	public const string C_DefaultClientLibrary = "fbembed";
-	public const int C_DefaultDbCachePages = 0;
-	public const bool C_DefaultNoDbTriggers = false;
-	public const bool C_DefaultNoGarbageCollect = false;
-	public const bool C_DefaultCompression = false;
-	public const byte[] C_DefaultCryptKey = null;
-	public const FbWireCrypt C_DefaultWireCrypt = FbWireCrypt.Enabled;
-	public const string C_DefaultApplicationName = "";
-	public const int C_DefaultCommandTimeout = 0;
-	public const int C_DefaultParallelWorkers = 0;
-
-
-	// Connection node defaults
-	public const string C_DefaultNodeMemoryUsage = null;
-	public const int C_DefaultNodeActiveUsers = int.MinValue;
-
-
-	#endregion Property Default Values
 
 
 }

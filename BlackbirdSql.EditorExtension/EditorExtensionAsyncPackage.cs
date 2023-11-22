@@ -28,7 +28,6 @@ using BlackbirdSql.EditorExtension.Controls.Config;
 using BlackbirdSql.EditorExtension.Ctl;
 using BlackbirdSql.EditorExtension.Ctl.Config;
 using BlackbirdSql.EditorExtension.Properties;
-using BlackbirdSql.Wpf.Controls;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -238,8 +237,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 	{
 		if (disposing)
 		{
-			Tracer.Trace(GetType(), "Dispose()", "", null);
-
+			// Tracer.Trace(GetType(), "Dispose()", "", null);
 
 			if (ThreadHelper.CheckAccess() && GetGlobalService(typeof(SVsShell)) is IVsShell vsShell)
 			{
@@ -298,7 +296,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 		await base.FinalizeAsync(cancellationToken, progress);
 
 		if (await GetServiceAsync(typeof(IProfferService)) is not IProfferService obj)
-			return;
+			throw Diag.ServiceUnavailable(typeof(OleMenuCommandService));
 
 		Guid rguidMarkerService = LibraryData.CLSID_EditorMarkerService;
 		Native.ThrowOnFailure(
@@ -309,8 +307,8 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 		Native.ThrowOnFailure(obj.ProfferService(ref rguidService, this, out _FontAndColorServiceCookie));
 
 
-		Services.AddService(typeof(IBDesignerExplorerServices), ServicesCreatorCallbackAsync, promote: true);
-		Services.AddService(typeof(IBDesignerOnlineServices), ServicesCreatorCallbackAsync, promote: true);
+		ServiceContainer.AddService(typeof(IBDesignerExplorerServices), ServicesCreatorCallbackAsync, promote: true);
+		ServiceContainer.AddService(typeof(IBDesignerOnlineServices), ServicesCreatorCallbackAsync, promote: true);
 		// Services.AddService(typeof(ISqlEditorStrategyProvider), ServicesCreatorCallbackAsync, promote: true);
 
 		_SqlEditorFactory = new EditorFactoryWithoutEncoding();
@@ -355,45 +353,15 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 		}
 		else if (serviceType == typeof(IBDesignerExplorerServices))
 		{
-			object service;
-			try
-			{
-				service = new DesignerExplorerServices();
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-				throw ex;
-			}
-
-			if (service == null)
-			{
-				ServiceUnavailableException ex = new(serviceType);
-				Diag.Dug(ex);
-				throw ex;
-			}
+			object service = new DesignerExplorerServices()
+				?? throw Diag.ServiceUnavailable(serviceType);
 
 			return service;
 		}
 		else if (serviceType == typeof(IBDesignerOnlineServices))
 		{
-			object service;
-			try
-			{
-				service = new DesignerOnlineServices();
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-				throw ex;
-			}
-
-			if (service == null)
-			{
-				ServiceUnavailableException ex = new(serviceType);
-				Diag.Dug(ex);
-				throw ex;
-			}
+			object service = new DesignerOnlineServices()
+				?? throw Diag.ServiceUnavailable(serviceType);
 
 			return service;
 		}
@@ -466,6 +434,8 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 				new SqlEditorToolbarCommandHandler<SqlEditorToggleExecutionPlanCommand>(clsid, (uint)EnCommandSet.CmdIdToggleExecutionPlan));
 			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorToggleClientStatisticsCommand>(clsid, (uint)EnCommandSet.CmdIdToggleClientStatistics));
+			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
+				new SqlEditorToolbarCommandHandler<SqlEditorNewQueryCommand>(clsid, (uint)EnCommandSet.CmdIdNewQueryConnection));
 		}
 	}
 
@@ -473,43 +443,40 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 	private async Task DefineCommandsAsync()
 	{
-		OleMenuCommandService commandService = await GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
+		if (await GetServiceAsync(typeof(IMenuCommandService)) is not OleMenuCommandService oleMenuCommandService)
+			throw Diag.ServiceUnavailable(typeof(OleMenuCommandService));
 
-		if (await GetServiceAsync(typeof(IMenuCommandService)) is OleMenuCommandService oleMenuCommandService)
-		{
-			Guid clsid = LibraryData.CLSID_CommandSet;
+		// Tracer.Trace(GetType(), "DefineCommandsAsync()", "OleCommandService class: {0}.", oleMenuCommandService.GetType().FullName);
 
-			CommandID id = new CommandID(clsid, (int)EnCommandSet.CmdIdNewQueryConnection);
-			OleMenuCommand oleMenuCommand = new OleMenuCommand(OnNewQueryConnection, id);
-			oleMenuCommand.BeforeQueryStatus += EnableCommand;
-			oleMenuCommandService.AddCommand(oleMenuCommand);
-			CommandID id2 = new CommandID(clsid, (int)EnCommandSet.CmdIdCycleToNextTab);
-			OleMenuCommand oleMenuCommand2 = new OleMenuCommand(CycleToNextEditorTab, id2);
-			oleMenuCommand2.BeforeQueryStatus += EnableCommand;
-			oleMenuCommandService.AddCommand(oleMenuCommand2);
-			CommandID id3 = new CommandID(clsid, (int)EnCommandSet.CmdIdCycleToPrevious);
-			OleMenuCommand oleMenuCommand3 = new OleMenuCommand(CycleToPreviousEditorTab, id3);
-			oleMenuCommand3.BeforeQueryStatus += EnableCommand;
-			oleMenuCommandService.AddCommand(oleMenuCommand3);
-		}
-		else
-		{
-			ServiceUnavailableException ex = new(typeof(IMenuCommandService));
-			Diag.Dug(ex);
-		}
+		Guid clsid = LibraryData.CLSID_CommandSet;
+
+		CommandID id = new CommandID(clsid, (int)EnCommandSet.CmdIdNewQueryConnection);
+		OleMenuCommand oleMenuCommand = new OleMenuCommand(OnNewQueryConnection, id);
+		oleMenuCommand.BeforeQueryStatus += EnableCommand;
+		oleMenuCommandService.AddCommand(oleMenuCommand);
+		CommandID id2 = new CommandID(clsid, (int)EnCommandSet.CmdIdCycleToNextTab);
+		OleMenuCommand oleMenuCommand2 = new OleMenuCommand(CycleToNextEditorTab, id2);
+		oleMenuCommand2.BeforeQueryStatus += EnableCommand;
+		oleMenuCommandService.AddCommand(oleMenuCommand2);
+		CommandID id3 = new CommandID(clsid, (int)EnCommandSet.CmdIdCycleToPrevious);
+		OleMenuCommand oleMenuCommand3 = new OleMenuCommand(CycleToPreviousEditorTab, id3);
+		oleMenuCommand3.BeforeQueryStatus += EnableCommand;
+		oleMenuCommandService.AddCommand(oleMenuCommand3);
 	}
 
 
 
 	private void OnNewQueryConnection(object sender, EventArgs e)
 	{
+		Tracer.Trace(GetType(), "OnNewQueryConnection()");
+
 		using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
 		{
 			Cmd.OpenNewMiscellaneousSqlFile(new ServiceProvider(Instance.OleServiceProvider));
 			IBSqlEditorWindowPane lastFocusedSqlEditor = Instance.LastFocusedSqlEditor;
 			if (lastFocusedSqlEditor != null)
 			{
-				new SqlEditorConnectCommand(lastFocusedSqlEditor).Exec((uint)OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT, IntPtr.Zero, IntPtr.Zero);
+				new SqlEditorNewQueryCommand(lastFocusedSqlEditor).Exec((uint)OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT, IntPtr.Zero, IntPtr.Zero);
 				GetAuxiliaryDocData(lastFocusedSqlEditor.DocData).IsQueryWindow = true;
 			}
 		}
@@ -519,6 +486,8 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 	private void EnableCommand(object sender, EventArgs e)
 	{
+		Tracer.Trace(GetType(), "EnableCommand()");
+
 		if (sender is OleMenuCommand oleMenuCommand)
 		{
 			oleMenuCommand.Enabled = true;
@@ -784,17 +753,23 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 		return result;
 	}
 
-	public bool? ShowConnectionDialogFrame(IntPtr parent, IBDependencyManager dependencyManager, EventsChannel channel,
+	public bool? ShowConnectionDialogFrame(IntPtr parent, EventsChannel channel,
 		UIConnectionInfo ci, VerifyConnectionDelegate verifierDelegate, ConnectionDialogConfiguration config,
 		ref UIConnectionInfo uIConnectionInfo)
 	{
-		ConnectionDialogFrame connectionDialogFrame = new ConnectionDialogFrame(dependencyManager, channel, ci, verifierDelegate, config);
+		Tracer.Trace(GetType(), "ShowConnectionDialogFrame()");
+
+		/*
+		ConnectionDialogFrame connectionDialogFrame = new ConnectionDialogFrame(channel, ci, verifierDelegate, config);
 
 		connectionDialogFrame.ShowModal(parent);
 		uIConnectionInfo = connectionDialogFrame.UIConnectionInfo;
 		connectionDialogFrame.ViewModel.CloseSections();
 
 		return connectionDialogFrame.DialogResult;
+		*/
+
+		return false;
 	}
 
 

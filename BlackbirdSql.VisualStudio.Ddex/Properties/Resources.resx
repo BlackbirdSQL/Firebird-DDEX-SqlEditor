@@ -117,20 +117,26 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="DataProvider_Ddex" xml:space="preserve">
+    <value>.NET Framework DDEX 2.0 Provider for Firebird (BlackbirdSql)</value>
+  </data>
+  <data name="DataProvider_Ddex_DataSource_Description" xml:space="preserve">
+    <value>Use this selection to connect to Firebird using the DDEX 2.0 BlackbirdSql Provider.</value>
+  </data>
+  <data name="DataProvider_Ddex_Description" xml:space="preserve">
+    <value>Use this data provider to connect to Firebird SQL Server.</value>
+  </data>
+  <data name="DataProvider_Ddex_Short" xml:space="preserve">
+    <value>FirebirdClient [BlackbirdSql]</value>
+  </data>
+  <data name="DataSource_FirebirdSqlServer" xml:space="preserve">
+    <value>Firebird SQL Server</value>
+  </data>
   <data name="DataSupportObject_InvalidInvokeArguments" xml:space="preserve">
     <value>The arguments array is invalid.</value>
   </data>
   <data name="DataSupportObject_UnknownInvokeName" xml:space="preserve">
     <value>The method name is unknown.</value>
-  </data>
-  <data name="DdexProvider_Description" xml:space="preserve">
-    <value>Use this selection to connect to Firebird using the DDEX 2.0 BlackbirdSql Provider</value>
-  </data>
-  <data name="DdexProvider_DisplayName" xml:space="preserve">
-    <value>.NET Framework DDEX 2.0 Provider for Firebird (BlackbirdSql)</value>
-  </data>
-  <data name="DdexProvider_ShortDisplayName" xml:space="preserve">
-    <value>BlackbirdSql DDEX 2.0 Provider</value>
   </data>
   <data name="DSRefBuilder_InvalidParameters" xml:space="preserve">
     <value>The parameters array contains invalid elements.</value>

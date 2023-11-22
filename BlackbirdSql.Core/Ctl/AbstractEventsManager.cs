@@ -188,7 +188,7 @@ public abstract class AbstractEventsManager : IBEventsManager
 	/// <param name="kind"></param>
 	/// <returns>The descriptive name from <see cref="ProjectGuids"/></returns>
 	// ---------------------------------------------------------------------------------
-	protected string Kind(string kind)
+	protected static string Kind(string kind)
 	{
 		if (!ProjectGuids.TryGetValue(kind, out string name))
 			name = kind;
@@ -203,7 +203,7 @@ public abstract class AbstractEventsManager : IBEventsManager
 	/// DTE object Kind guid string descriptive name dictionary
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected readonly Dictionary<string, string> ProjectGuids = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+	protected static readonly Dictionary<string, string> ProjectGuids = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
 	{
 		{ "{2150E333-8FDC-42A3-9474-1A3956D46DE8}", "SolutionFolder" },
 		{ "{66A26720-8FB5-11D2-AA7E-00C04F688DDE}", "ProjectFolder" },

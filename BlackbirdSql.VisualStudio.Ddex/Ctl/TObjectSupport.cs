@@ -40,7 +40,7 @@ public class TObjectSupport : DataObjectSupport, IVsDataSupportImportResolver
 
 	public TObjectSupport(string fileName, string path) : base(fileName, path)
 	{
-		Tracer.Trace(GetType(), "TObjectSupport.TObjectSupport()", "fileName: {0}, path: {1}", fileName, path);
+		// Tracer.Trace(GetType(), "TObjectSupport.TObjectSupport()", "fileName: {0}, path: {1}", fileName, path);
 	}
 
 
@@ -52,7 +52,7 @@ public class TObjectSupport : DataObjectSupport, IVsDataSupportImportResolver
 
 	public TObjectSupport(IVsDataConnection connection) : base(typeof(TObjectSupport).FullName, typeof(TObjectSupport).Assembly)
 	{
-		Tracer.Trace(GetType(), "TObjectSupport.TObjectSupport(IVsDataConnection)");
+		// Tracer.Trace(GetType(), "TObjectSupport.TObjectSupport(IVsDataConnection)");
 	}
 
 

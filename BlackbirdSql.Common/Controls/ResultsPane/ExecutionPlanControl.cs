@@ -65,7 +65,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 
 	private GraphPanel currentGraphPanel;
 
-	private MenuCommandsService menuCommands = new MenuCommandsService();
+	private MenuCommandsService _MenuService = new MenuCommandsService();
 
 	private PageSettings cachedPageSettings;
 
@@ -187,7 +187,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 	int IOleCommandTarget.QueryStatus(ref Guid guidGroup, uint cmdID, OLECMD[] oleCmd, IntPtr oleText)
 	{
 		CommandID commandID = new CommandID(guidGroup, (int)oleCmd[0].cmdID);
-		MenuCommand menuCommand = menuCommands.FindCommand(commandID);
+		MenuCommand menuCommand = _MenuService.FindCommand(commandID);
 		if (menuCommand != null)
 		{
 			if (guidGroup.Equals(VSConstants.GUID_VSStandardCommandSet97))
@@ -237,7 +237,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 	int IOleCommandTarget.Exec(ref Guid guidGroup, uint nCmdId, uint nCmdExcept, IntPtr vIn, IntPtr vOut)
 	{
 		CommandID commandID = new CommandID(guidGroup, (int)nCmdId);
-		MenuCommand menuCommand = menuCommands.FindCommand(commandID);
+		MenuCommand menuCommand = _MenuService.FindCommand(commandID);
 		if (menuCommand != null)
 		{
 			Tracer.Trace(GetType(), "Exec", "{0}:{1}", commandID.Guid, commandID.ID);
@@ -270,10 +270,10 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 				multiControlPanel = null;
 			}
 			serviceProvider = null;
-			if (menuCommands != null)
+			if (_MenuService != null)
 			{
-				menuCommands.Dispose();
-				menuCommands = null;
+				_MenuService.Dispose();
+				_MenuService = null;
 			}
 			cachedPageSettings = null;
 			cachedPrinterSettings = null;
@@ -660,7 +660,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 			new MenuCommand(OnPrint, new CommandID(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.Print)),
 			new MenuCommand(OnPrintPageSetup, new CommandID(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.PageSetup))
 		};
-		menuCommands.AddRange(cmds);
+		_MenuService.AddRange(cmds);
 	}
 
 	private new object GetService(Type serviceType)

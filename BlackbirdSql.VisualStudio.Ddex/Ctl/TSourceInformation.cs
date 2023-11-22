@@ -113,7 +113,14 @@ public class TSourceInformation : AdoDotNetSourceInformation
 			switch (propertyName)
 			{
 				case DataSourceVersion:
-					retval = "Firebird " + FbServerProperties.ParseServerVersion(Connection.ServerVersion).ToString();
+					try
+					{
+						string str = Connection.ServerVersion;
+						retval = str != null
+							? "Firebird " + FbServerProperties.ParseServerVersion(Connection.ServerVersion).ToString()
+							: "";
+					}
+					catch { retval = ""; }
 					break;
 
 				default:

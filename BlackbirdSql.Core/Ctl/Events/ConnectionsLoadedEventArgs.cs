@@ -2,19 +2,20 @@
 // Microsoft.SqlServer.ConnectionDlg.UI.ConnectionsLoadedEventArgs
 
 using System;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Ctl.Enums;
+
 
 namespace BlackbirdSql.Core.Ctl.Events;
 
 public class ConnectionsLoadedEventArgs : EventArgs
 {
-	public IBServerDefinition ServerDefinition { get; private set; }
+	public EnEngineType ServerEngine { get; private set; }
 
 	public int NumberOfConnections { get; private set; }
 
-	public ConnectionsLoadedEventArgs(IBServerDefinition serverDefinition, int numberOfConnections)
+	public ConnectionsLoadedEventArgs(EnEngineType serverEngine, int numberOfConnections)
 	{
-		ServerDefinition = serverDefinition;
+		ServerEngine = serverEngine;
 		NumberOfConnections = numberOfConnections;
 	}
 }

@@ -5,19 +5,20 @@
 
 using System;
 using System.Data;
+using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 
 
 namespace BlackbirdSql.Common.Ctl.Interfaces;
 
-public interface IBServerConnectionProvider : IBExportable
+public interface IBServerConnectionProvider // : IBExportable
 {
 	Guid ServerType { get; }
 
-	string GetConnectionString(UIConnectionInfo ci, IBServerDefinition serverDefinition);
+	string GetConnectionString(UIConnectionInfo ci, EnEngineType serverEngine);
 
-	IDbConnection CreateConnection(UIConnectionInfo ci, IBServerDefinition serverDefinition);
+	IDbConnection CreateConnection(UIConnectionInfo ci, EnEngineType serverEngine);
 
 	IDbConnection CreateConnection(string connectionString);
 }

@@ -16,7 +16,7 @@ namespace BlackbirdSql.Common.Ctl;
 
 public class ThreadSafeCollection<T>
 {
-	private readonly ReaderWriterLock _lockObject = new ReaderWriterLock();
+	private readonly ReaderWriterLock _LockObject = new ReaderWriterLock();
 
 	private readonly TimeSpan _lockTimeout = TimeSpan.FromSeconds(5.0);
 
@@ -29,7 +29,7 @@ public class ThreadSafeCollection<T>
 			_dataList ??= new ObservableCollection<T>();
 
 			T[] newData = new T[_dataList.Count];
-			new AutoLock(_lockObject, isWriteLock: false, _lockTimeout, delegate
+			new AutoLock(_LockObject, isWriteLock: false, _lockTimeout, delegate
 			{
 				_dataList.CopyTo(newData, 0);
 			}, out var exception);
@@ -50,7 +50,7 @@ public class ThreadSafeCollection<T>
 		get
 		{
 			bool isEmpty = false;
-			new AutoLock(_lockObject, isWriteLock: false, _lockTimeout, delegate
+			new AutoLock(_LockObject, isWriteLock: false, _lockTimeout, delegate
 			{
 				isEmpty = _dataList == null || _dataList.Count == 0;
 			}, out var exception);
@@ -68,7 +68,7 @@ public class ThreadSafeCollection<T>
 		get
 		{
 			int numberOfConnections = 0;
-			new AutoLock(_lockObject, isWriteLock: false, _lockTimeout, delegate
+			new AutoLock(_LockObject, isWriteLock: false, _lockTimeout, delegate
 			{
 				numberOfConnections = _dataList != null ? _dataList.Count : 0;
 			}, out var exception);
@@ -85,7 +85,7 @@ public class ThreadSafeCollection<T>
 
 	public void Add(T newItem)
 	{
-		new AutoLock(_lockObject, isWriteLock: true, _lockTimeout, delegate
+		new AutoLock(_LockObject, isWriteLock: true, _lockTimeout, delegate
 		{
 			_dataList.Add(newItem);
 		}, out var exception);
@@ -97,7 +97,7 @@ public class ThreadSafeCollection<T>
 
 	public void Remove(T newItem)
 	{
-		new AutoLock(_lockObject, isWriteLock: true, _lockTimeout, delegate
+		new AutoLock(_LockObject, isWriteLock: true, _lockTimeout, delegate
 		{
 			_dataList.Remove(newItem);
 		}, out var exception);
@@ -109,7 +109,7 @@ public class ThreadSafeCollection<T>
 
 	public ReadOnlyObservableCollection<T> SetDataList(ObservableCollection<T> dataList)
 	{
-		new AutoLock(_lockObject, isWriteLock: true, _lockTimeout, delegate
+		new AutoLock(_LockObject, isWriteLock: true, _lockTimeout, delegate
 		{
 			_dataList = dataList;
 		}, out var exception);

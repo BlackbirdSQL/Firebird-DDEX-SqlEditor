@@ -186,6 +186,9 @@
   <data name="CommandProvider_PromptSaveObject" xml:space="preserve">
     <value>SqlViewTextObjectCommandProvider_PromptSaveObject</value>
   </data>
+  <data name="ConnectionLocatorProjectDatasetId" xml:space="preserve">
+    <value>Project[{0}] {1}</value>
+  </data>
   <data name="EngineTypeIconNotfound" xml:space="preserve">
     <value>Could not locate icon for Server Engine Type {0}.</value>
   </data>

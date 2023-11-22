@@ -39,7 +39,7 @@
 
 
 		<Combos>
-			<Combo guid="CommandSetGuid" id="CmbIdSqlDatabases" priority="0x0100" type="DropDownCombo" defaultWidth="240" idCommandList="CmbIdSqlDatabasesGetList">
+			<Combo guid="CommandSetGuid" id="CmbIdSqlDatabases" priority="0x0100" type="DropDownCombo" defaultWidth="280" idCommandList="CmbIdSqlDatabasesGetList">
 				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup"/>
 				<CommandFlag>IconAndText</CommandFlag>
 				<CommandFlag>CommandWellOnly</CommandFlag>
@@ -143,6 +143,7 @@
 					<ButtonText>Disconnect</ButtonText>
 				</Strings>
 			</Button>
+			<!--
 			<Button guid="CommandSetGuid" id="CmdIdChangeConnection" priority="0x0080" type="Button">
 				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
 				<Icon guid="ImagesGuid" id="ImgConnect" />
@@ -150,11 +151,12 @@
 					<ButtonText>Change Connection</ButtonText>
 				</Strings>
 			</Button>
+			-->
 			<Button guid="CommandSetGuid" id="CmdIdNewQueryConnection" priority="0x0120" type="Button">
 				<Parent guid="CommandSetGuid" id="MenuIdScriptToolbarGroup" />
 				<Icon guid="ImagesGuid" id="ImgNewQueryConnection" />
 				<Strings>
-					<ButtonText>New Query Connection</ButtonText>
+					<ButtonText>New Query</ButtonText>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdToggleExecutionPlan" priority="0x0140" type="Button">
@@ -297,12 +299,16 @@
 		<!-- Placement for group. The parent of a group is a menu, context menu or toolbar. 
            The priority sets the position of the group compared to the priority of other existing groups in the menu.    
 		-->
+
+		<!-- Context menu external group -->
 		<CommandPlacement guid="CommandSetGuid" id="MenuIdEditorContextGroup" priority="0xFFFF" >
 			<!-- The parent of the group will be the code window context menu -->
 			<Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN"/>
 		</CommandPlacement>
 
 		<!-- Placement for command. The parent of a command is always a group, never a menu, context menu or toolbar. -->
+
+		<!-- Context menu external group items -->
 		<CommandPlacement guid="CommandSetGuid" id="CmdIdToggleIntellisense" priority="0x0001" >
 			<Parent guid="CommandSetGuid" id="MenuIdEditorContextGroup"/>
 		</CommandPlacement>

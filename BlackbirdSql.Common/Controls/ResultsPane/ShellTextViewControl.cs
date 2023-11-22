@@ -194,7 +194,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		public ShellTextViewControl()
 		{
-			Tracer.Trace(GetType(), "ShellTextViewControl.ShellTextViewControl", "", null);
+			// Tracer.Trace(GetType(), "ShellTextViewControl.ShellTextViewControl", "", null);
 			textViewFlags = TextViewInitFlags.VIF_SET_OVERTYPE | TextViewInitFlags.VIF_HSCROLL
 				| TextViewInitFlags.VIF_VSCROLL | TextViewInitFlags.VIF_UPDATE_STATUS_BAR;
 			textViewInit[0].fDragDropMove = 1u;
@@ -220,7 +220,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		protected override void Dispose(bool bDisposing)
 		{
-			Tracer.Trace(GetType(), "ShellTextViewControl.Dispose", "", null);
+			// Tracer.Trace(GetType(), "ShellTextViewControl.Dispose", "", null);
 			DisposeCodeWindowManager();
 			if (bDisposing)
 			{
@@ -294,7 +294,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		protected override void CreateEditorWindow(object nativeSP)
 		{
-			Tracer.Trace(GetType(), "ShellTextViewControl.CreateEditorWindow", "", null);
+			// Tracer.Trace(GetType(), "ShellTextViewControl.CreateEditorWindow", "", null);
 
 			if (!ThreadHelper.CheckAccess())
 			{
@@ -303,16 +303,16 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 				throw exc;
 			}
 
-			ILocalRegistry obj = (ILocalRegistry)_OleServiceProvider.GetService(typeof(ILocalRegistry));
-			if (obj == null)
+			ILocalRegistry localRegistry = (ILocalRegistry)_OleServiceProvider.GetService(typeof(ILocalRegistry));
+			if (localRegistry == null)
 			{
-				Exception ex = new COMException(null, VSConstants.E_UNEXPECTED);
+				ServiceUnavailableException ex = new(typeof(ILocalRegistry));
 				Tracer.LogExThrow(GetType(), ex);
 				throw ex;
 			}
 
 			Guid riid = typeof(IVsTextView).GUID;
-			Native.ThrowOnFailure(obj.CreateInstance(DefGuidList.CLSID_VsTextView, null, ref riid, (uint)CLSCTX.CLSCTX_INPROC_SERVER, out IntPtr ppvObj));
+			Native.ThrowOnFailure(localRegistry.CreateInstance(DefGuidList.CLSID_VsTextView, null, ref riid, (uint)CLSCTX.CLSCTX_INPROC_SERVER, out IntPtr ppvObj));
 			m_textView = (IVsTextView)Marshal.GetObjectForIUnknown(ppvObj);
 			Marshal.Release(ppvObj);
 			((IObjectWithSite)m_textView).SetSite(nativeSP);
@@ -363,7 +363,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		private void ApplyInitialLanguageService()
 		{
-			Tracer.Trace(GetType(), "ShellTextViewControl.ApplyInitialLanguageService", "", null);
+			// Tracer.Trace(GetType(), "ShellTextViewControl.ApplyInitialLanguageService", "", null);
 			try
 			{
 				if (!Equals(_ClsidLanguageService, Guid.Empty))
@@ -394,7 +394,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		private void DoPostCreationInit()
 		{
-			Tracer.Trace(GetType(), "ShellTextViewControl.DoPostCreationInit", "", null);
+			// Tracer.Trace(GetType(), "ShellTextViewControl.DoPostCreationInit", "", null);
 			OnSizeChanged(new EventArgs());
 			if (_WantCustomPopupMenu)
 			{
@@ -405,7 +405,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		private void OnNewLangSvc(object sender, LangServiceEventArgs a)
 		{
-			Tracer.Trace(GetType(), "SqlTextViewControl.OnNewLangSvc", "", null);
+			// Tracer.Trace(GetType(), "SqlTextViewControl.OnNewLangSvc", "", null);
 
 			if (_OleServiceProvider == null)
 				return;

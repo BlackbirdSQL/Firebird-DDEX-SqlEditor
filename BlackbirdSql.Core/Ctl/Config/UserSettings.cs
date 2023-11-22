@@ -149,6 +149,13 @@ public abstract class UserSettings : IBUserSettings
 #endif
 
 
+	/// <summary>
+	/// Determines if configured connections in a solution's projects are included in selection lists when adding
+	/// a new connnection.
+	/// </summary>
+	public static bool IncludeAppConnections => (bool)GetSetting("DdexGeneralIncludeAppConnections", true);
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// The log file path

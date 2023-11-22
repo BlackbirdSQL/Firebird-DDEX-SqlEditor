@@ -88,6 +88,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to  General.
+        /// </summary>
+        public static string OptionCategoryGeneral {
+            get {
+                return ResourceManager.GetString("OptionCategoryGeneral", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Query designer.
         /// </summary>
         public static string OptionCategoryQueryDesigner {
@@ -156,6 +165,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDescriptionFbLogFile {
             get {
                 return ResourceManager.GetString("OptionDescriptionFbLogFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If enabled, includes any configured connection strings that exist in a solution&apos;s projects in the drop down selection lists when adding a new connection..
+        /// </summary>
+        public static string OptionDescriptionIncludeAppConnections {
+            get {
+                return ResourceManager.GetString("OptionDescriptionIncludeAppConnections", resourceCulture);
             }
         }
         
@@ -318,6 +336,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDisplayFbLogFile {
             get {
                 return ResourceManager.GetString("OptionDisplayFbLogFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include solution connections.
+        /// </summary>
+        public static string OptionDisplayIncludeAppConnections {
+            get {
+                return ResourceManager.GetString("OptionDisplayIncludeAppConnections", resourceCulture);
             }
         }
         

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using BlackbirdSql.Core.Ctl.Interfaces;
 
 using EnvDTE;
-
+using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -133,9 +133,7 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 			if (GetService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider))
 				is not Microsoft.VisualStudio.OLE.Interop.IServiceProvider provider)
 			{
-				InvalidOperationException ex = new("OLE.Interop.IServiceProvider service not found");
-				Diag.Dug(ex);
-				throw ex;
+				throw Diag.ServiceUnavailable(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider));
 			}
 
 			return provider;
@@ -147,7 +145,7 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	/// Accessor to the 'this' cast as the <see cref="IAsyncServiceContainer"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public virtual IAsyncServiceContainer Services => this;
+	public virtual IAsyncServiceContainer ServiceContainer => this;
 
 
 	#endregion Property accessors
@@ -204,6 +202,8 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	// =========================================================================================================
 
 
+	// public abstract IVsDataConnectionDialog CreateConnectionDialogHandler();
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Creates a service instance of the specified type if this class has access to the
@@ -242,6 +242,8 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
 
+	public abstract TInterface GetService<TService, TInterface>() where TInterface : class;
+	public abstract Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class;
 
 
 
@@ -290,25 +292,19 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 
 	private IVsRunningDocumentTable GetDocTable()
 	{
-		try
+		if (GetService(typeof(SVsRunningDocumentTable)) is not IVsRunningDocumentTable service)
 		{
-			if (GetService(typeof(SVsRunningDocumentTable)) is not IVsRunningDocumentTable service)
-				throw new InvalidOperationException("IBDesignerOnlineServices service not found");
-			return service;
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
+			Diag.ServiceUnavailable(typeof(IVsRunningDocumentTable));
 			return null;
 		}
-
+		return service;
 	}
 
 	private DTE GetDte()
 	{
 		try
 		{
-			return GetService(typeof(DTE)) is not DTE service ? throw new InvalidOperationException("DTE service not found") : service;
+			return GetService(typeof(DTE)) is not DTE service ? throw new ServiceUnavailableException(typeof(DTE)) : service;
 		}
 		catch (Exception ex)
 		{
@@ -324,7 +320,7 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 		try
 		{
 			if (GetService(typeof(SVsSolution)) is not IVsSolution service)
-				throw new InvalidOperationException("IVsSolution service not found");
+				throw new ServiceUnavailableException(typeof(IVsSolution));
 			return service;
 		}
 		catch (Exception ex)

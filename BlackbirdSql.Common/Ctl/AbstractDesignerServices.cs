@@ -19,6 +19,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -263,8 +264,7 @@ public abstract class AbstractDesignerServices
 
 		if (vsUIShellOpenDocument == null)
 		{
-			NotSupportedException ex = new("IVsUIShellOpenDocument");
-			Diag.Dug(ex);
+			Diag.ServiceUnavailable(typeof(IVsUIShellOpenDocument));
 			SqlTracer.TraceEvent(TraceEventType.Error, EnSqlTraceId.CoreServices, "Could not get uiOpenDocument");
 			return VSConstants.E_FAIL;
 		}
@@ -317,8 +317,7 @@ public abstract class AbstractDesignerServices
 
 		if (vsUIShellOpenDocument == null)
 		{
-			NotSupportedException ex = new("IVsUIShellOpenDocument");
-			Diag.Dug(ex);
+			Diag.ServiceUnavailable(typeof(IVsUIShellOpenDocument));
 			SqlTracer.TraceEvent(TraceEventType.Error, EnSqlTraceId.CoreServices, "Could not get uiOpenDocument");
 			return;
 		}
@@ -633,7 +632,7 @@ public abstract class AbstractDesignerServices
 		{
 			return;
 		}
-		if (((System.IServiceProvider)Controller.DdexPackage).GetService(typeof(SComponentModel)) is not IComponentModel componentModel)
+		if (Controller.GetService<SComponentModel>() is not IComponentModel componentModel)
 		{
 			return;
 		}

@@ -30,7 +30,7 @@ using Microsoft.VisualStudio;
 namespace BlackbirdSql.Common.Model.QueryExecution;
 
 
-public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter2, IBCommandExecuter, IBVariableResolver
+public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter, IBVariableResolver
 {
 	public const int C_ReadBufferSizeInBytes = 1024;
 
@@ -119,10 +119,6 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter2
 	private object _AsyncLockLocal = new object();
 
 	private AsyncCallback _readBufferCallback;
-
-	private bool _encryptConnectionOptions;
-
-	private bool _trustServerCertificateOption;
 
 	public ResolveSqlCmdVariable SqlCmdVariableResolver { get; set; }
 
@@ -520,29 +516,6 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter2
 		return 0;
 	}
 
-	public EnParserAction Connect(int timeout, string server, int port, string database, string user,
-		string password, bool encryptConnection, bool trustServerCertificate)
-	{
-		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		_encryptConnectionOptions = encryptConnection;
-		_trustServerCertificateOption = trustServerCertificate;
-		EnParserAction result = Connect(timeout, server, port, database, user, password);
-		_encryptConnectionOptions = false;
-		_trustServerCertificateOption = false;
-		return result;
-	}
-
-	public EnParserAction Connect(int timeout, string server, string user,
-		string password, bool encryptConnection, bool trustServerCertificate)
-	{
-		//IL_0016: Unknown result type (might be due to invalid IL or missing references)
-		_encryptConnectionOptions = encryptConnection;
-		_trustServerCertificateOption = trustServerCertificate;
-		EnParserAction result = Connect(timeout, server, user, password);
-		_encryptConnectionOptions = false;
-		_trustServerCertificateOption = false;
-		return result;
-	}
 
 
 
@@ -692,12 +665,12 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter2
 				if (_CurrentConnInfo.UserID != null && _CurrentConnInfo.UserID.Length != 0)
 				{
 					OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoDisconnectingFromSvrAsUser,
-						_CurrentConnInfo.DisplayMember, _CurrentConnInfo.UserID));
+						_CurrentConnInfo.DatasetId, _CurrentConnInfo.UserID));
 				}
 				else
 				{
 					OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoDisconnectingFromSvr,
-						_CurrentConnInfo.DisplayMember));
+						_CurrentConnInfo.DatasetId));
 				}
 			}
 
@@ -726,13 +699,13 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter2
 			}
 			if (_currentSSConnInfo != null)
 			{
-				if (_currentSSConnInfo.UserName != null && _currentSSConnInfo.UserName.Length != 0)
+				if (_currentSSConnInfo.UserID != null && _currentSSConnInfo.UserID.Length != 0)
 				{
-					OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoDisconnectingFromSvrAsUser, _currentSSConnInfo.ServerName, _currentSSConnInfo.UserName));
+					OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoDisconnectingFromSvrAsUser, _currentSSConnInfo.DataSource, _currentSSConnInfo.UserID));
 				}
 				else
 				{
-					OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoDisconnectingFromSvr, _currentSSConnInfo.ServerName));
+					OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoDisconnectingFromSvr, _currentSSConnInfo.DataSource));
 				}
 			}
 			_currentSSConn.Close();
@@ -759,17 +732,18 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter2
 
 			if (ci.UserID != null && ci.UserID.Length != 0)
 			{
-				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoConnectingToSvrAsUser, ci.DisplayMember, ci.UserID));
+				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoConnectingToSvrAsUser, ci.DatasetId, ci.UserID));
 			}
 			else
 			{
-				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoConnectingToSvr, ci.DisplayMember));
+				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoConnectingToSvr, ci.DatasetId));
 			}
 
 			// ci.Pooling = false;
 			ci.ApplicationName = LibraryData.ApplicationName;
 			string connectionString = ci.PropertyString;
 			// connectionString += ";Pooling=false";
+			/*
 			if (_encryptConnectionOptions)
 			{
 				// connectionString += ";Encrypt=true";
@@ -779,6 +753,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter2
 			{
 				// connectionString += ";TrustServerCertificate=true";
 			}
+			*/
 
 			Tracer.Trace(GetType(), Tracer.EnLevel.Information, "QEOLESQLExec.AttemptToEstablishCurConnection: final connection string is \"{0}\"", connectionString);
 			IDbConnection dbConnection = new FbConnection(connectionString);
@@ -805,16 +780,16 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter2
 		{
 			if (ci.ServerName == null || ci.ServerName.Length == 0 && _SSconn != null)
 			{
-				ci.ServerName = ((SqlConnection)_SSconn).DataSource;
+				ci.DataSource = ((SqlConnection)_SSconn).DataSource;
 			}
 
-			if (ci.UserName != null && ci.UserName.Length != 0)
+			if (ci.UserID != null && ci.UserID.Length != 0)
 			{
-				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoConnectingToSvrAsUser, ci.ServerName, ci.UserName));
+				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoConnectingToSvrAsUser, ci.DataSource, ci.UserID));
 			}
 			else
 			{
-				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoConnectingToSvr, ci.ServerName));
+				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoConnectingToSvr, ci.DataSource));
 			}
 
 			ci.ApplicationName = "Microsoft SQL Server Data Tools, T-SQL Editor";

@@ -126,6 +126,9 @@
   <data name="OptionCategoryEntityFramework" xml:space="preserve">
     <value>EntityFramework settings</value>
   </data>
+  <data name="OptionCategoryGeneral" xml:space="preserve">
+    <value> General</value>
+  </data>
   <data name="OptionCategoryQueryDesigner" xml:space="preserve">
     <value>Query designer</value>
   </data>
@@ -149,6 +152,9 @@
   </data>
   <data name="OptionDescriptionFbLogFile" xml:space="preserve">
     <value>Location of Firebird diagnostics log file. Note: Only applicable to builds that include the debug Firerbird library.</value>
+  </data>
+  <data name="OptionDescriptionIncludeAppConnections" xml:space="preserve">
+    <value>If enabled, includes any configured connection strings that exist in a solution's projects in the drop down selection lists when adding a new connection.</value>
   </data>
   <data name="OptionDescriptionLogFile" xml:space="preserve">
     <value>Location of diagnostics log file.</value>
@@ -203,6 +209,9 @@
   </data>
   <data name="OptionDisplayFbLogFile" xml:space="preserve">
     <value>Firebird Log file</value>
+  </data>
+  <data name="OptionDisplayIncludeAppConnections" xml:space="preserve">
+    <value>Include solution connections</value>
   </data>
   <data name="OptionDisplayLogFile" xml:space="preserve">
     <value>Log file</value>

@@ -49,9 +49,7 @@ public class SqlEditorCodeTab : AbstractSqlEditorTab
 	{
 		if (WindowPaneServiceProvider.GetService(typeof(SVsUIShellOpenDocument)) is not IVsUIShellOpenDocument vsUIShellOpenDocument)
 		{
-			NotSupportedException ex = new("IVsUIShellOpenDocument");
-			Diag.Dug(ex);
-			throw ex;
+			throw Diag.ServiceUnavailable(typeof(IVsUIShellOpenDocument));
 		}
 
 		if (!ThreadHelper.CheckAccess())

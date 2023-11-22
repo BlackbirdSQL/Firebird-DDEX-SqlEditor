@@ -59,7 +59,7 @@ public sealed class TProviderObjectFactory : DataProviderObjectFactory, IBProvid
 	// ---------------------------------------------------------------------------------
 	public override object CreateObject(Type objType)
 	{
-		Tracer.Trace(GetType(), "TProviderObjectFactory.CreateObject", "objType: {0}", objType.Name);
+		// Tracer.Trace(GetType(), "TProviderObjectFactory.CreateObject", "objType: {0}", objType.Name);
 
 		/* Uncomment this and change PackageSupportedObjects._UseFactoryOnly to true to debug implementations
 		 * Don't forget to do the same for TConnectionSupport if you do.

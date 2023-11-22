@@ -14,9 +14,8 @@ using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Model;
 using Microsoft.VisualStudio.TextManager.Interop;
-using Newtonsoft.Json.Linq;
 
 
 namespace BlackbirdSql.Common.Model;
@@ -198,7 +197,7 @@ public sealed class AuxiliaryDocData
 		}
 		set
 		{
-			Tracer.Trace(GetType(), "DisplaySQLResultsControl.SqlExecutionMode", "value = {0}", value);
+			// Tracer.Trace(GetType(), "DisplaySQLResultsControl.SqlExecutionMode", "value = {0}", value);
 			if (QryMgr.IsExecuting)
 			{
 				InvalidOperationException ex = new(ControlsResources.SqlExecutionModeChangeFailed);
@@ -277,7 +276,8 @@ public sealed class AuxiliaryDocData
 		IDbConnection connection = QryMgr.ConnectionStrategy.Connection;
 		if (connection != null)
 		{
-			_DatabaseAtQueryExecutionStart = connection.Database;
+			CsbAgent csa = new(connection);
+			_DatabaseAtQueryExecutionStart = csa.SafeDatasetMoniker;
 		}
 		else
 		{
@@ -289,19 +289,20 @@ public sealed class AuxiliaryDocData
 
 	private void QueryExecutorScriptExecutionCompletedHandler(object sender, ScriptExecutionCompletedEventArgs args)
 	{
-		string text = null;
+		string connectionUrl = null;
 		IDbConnection connection = QryMgr.ConnectionStrategy.Connection;
 		if (connection != null)
 		{
-			text = connection.Database;
+			CsbAgent csa = new(connection);
+			connectionUrl = csa.SafeDatasetMoniker;
 		}
 
 		bool flag = false;
-		if (text != null && _DatabaseAtQueryExecutionStart == null || text == null && _DatabaseAtQueryExecutionStart != null)
+		if (connectionUrl != null && _DatabaseAtQueryExecutionStart == null || connectionUrl == null && _DatabaseAtQueryExecutionStart != null)
 		{
 			flag = true;
 		}
-		else if (text != null && !text.Equals(_DatabaseAtQueryExecutionStart, StringComparison.Ordinal))
+		else if (connectionUrl != null && !connectionUrl.Equals(_DatabaseAtQueryExecutionStart, StringComparison.Ordinal))
 		{
 			flag = true;
 		}
@@ -311,8 +312,8 @@ public sealed class AuxiliaryDocData
 			IVsUserData iVsUserData = GetIVsUserData();
 			if (iVsUserData != null)
 			{
-				Guid riidKey = LibraryData.CLSID_PropertyDatabaseChanged;
-				Native.ThrowOnFailure(iVsUserData.SetData(ref riidKey, text));
+				Guid riidKey = LibraryData.CLSID_PropertyDatabaseConnectionChanged;
+				Native.ThrowOnFailure(iVsUserData.SetData(ref riidKey, connectionUrl));
 			}
 		}
 
@@ -330,7 +331,7 @@ public sealed class AuxiliaryDocData
 		lock (_LockLocal)
 		{
 			IVsUserData vsUserData = DocData as IVsUserData;
-			Tracer.Trace(GetType(), "AuxiliaryDocData.GetIVsUserData", "value of IVsUserData returned is {0}", vsUserData);
+			// Tracer.Trace(GetType(), "AuxiliaryDocData.GetIVsUserData", "value of IVsUserData returned is {0}", vsUserData);
 			return vsUserData;
 		}
 	}

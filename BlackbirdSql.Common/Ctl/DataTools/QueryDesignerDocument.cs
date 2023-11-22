@@ -140,7 +140,7 @@ internal class QueryDesignerDocument : AbstractDataToolsDocument
 		if (owningHierarchy.ExplorerConnection.Connection.GetService(typeof(IVsDataObjectSupportModel))
 			is not IVsDataObjectSupportModel vsDataObjectSupportModel)
 		{
-			throw new NotSupportedException();
+			throw new ServiceUnavailableException(typeof(IVsDataObjectSupportModel));
 		}
 
 		if (vsDataObjectSupportModel.MappedTypes.ContainsKey("Table"))

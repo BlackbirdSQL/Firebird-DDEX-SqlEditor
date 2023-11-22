@@ -48,10 +48,10 @@ public abstract class AbstractSqlEditorTab : AbstractEditorTab
 			Microsoft.VisualStudio.OLE.Interop.IServiceProvider instance = Controller.OleServiceProvider;
 
 			if (WindowPaneServiceProvider.GetService(typeof(SVsUIShellOpenDocument)) is not IVsUIShellOpenDocument shell)
-				throw new NotSupportedException("IVsUIShellOpenDocument");
+				throw new ServiceUnavailableException(typeof(IVsUIShellOpenDocument));
 
 			if (WindowPaneServiceProvider.GetService(typeof(SVsUIShell)) is not IVsUIShell vsUIShell)
-				throw new NotSupportedException("IVsUIShell");
+				throw new ServiceUnavailableException(typeof(IVsUIShell));
 
 			if (!ThreadHelper.CheckAccess())
 			{
@@ -60,10 +60,9 @@ public abstract class AbstractSqlEditorTab : AbstractEditorTab
 				throw exc;
 			}
 
-			IVsWindowFrame vsWindowFrame = WindowPaneServiceProvider.GetService(typeof(SVsWindowFrame)) as IVsWindowFrame;
 			IVsRunningDocumentTable vsRunningDocumentTable =
 				WindowPaneServiceProvider.GetService(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable
-				?? throw new ArgumentNullException("IVsRunningDocumentTable");
+				?? throw new ServiceUnavailableException(typeof(IVsRunningDocumentTable));
 
 			uint[] array = new uint[1];
 			string documentMoniker = DocumentMoniker;
@@ -74,6 +73,9 @@ public abstract class AbstractSqlEditorTab : AbstractEditorTab
 			Native.ThrowOnFailure(shell.GetStandardEditorFactory(VS.dwReserved, ref pguidEditorType, null, ref rguidLogicalView, out var pbstrPhysicalView, out var ppEF), (string)null);
 			Native.ThrowOnFailure(ppEF.CreateEditorInstance((uint)(__VSCREATEEDITORFLAGS.CEF_OPENFILE | __VSCREATEEDITORFLAGS.CEF_SILENT), documentMoniker, pbstrPhysicalView, ppHierOpen, array[0], ppunkDocData2, out ppunkDocView, out ppunkDocData2, out _, out var pguidCmdUI, out var pgrfCDW), (string)null);
 			Native.ThrowOnFailure(vsUIShell.CreateDocumentWindow((uint)((ulong)pgrfCDW | 0x20uL | 0xFFFFF | 0x400000), documentMoniker, ppHierOpen ?? ppHier as IVsUIHierarchy, pitemid, ppunkDocView, ppunkDocData2, ref pguidEditorType, pbstrPhysicalView, ref pguidCmdUI, instance, string.Empty, string.Empty, null, out ppWindowFrame), (string)null);
+
+			IVsWindowFrame vsWindowFrame = WindowPaneServiceProvider.GetService(typeof(SVsWindowFrame)) as IVsWindowFrame
+				?? throw new ServiceUnavailableException(typeof(IVsWindowFrame));
 
 			SetFrameProperties(vsWindowFrame, ppWindowFrame);
 

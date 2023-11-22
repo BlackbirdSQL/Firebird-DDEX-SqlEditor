@@ -3,6 +3,7 @@
 // Decompiled with ICSharpCode.Decompiler 7.1.0.6543
 #endregion
 
+using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 
 namespace BlackbirdSql.Common.Ctl;
@@ -13,14 +14,14 @@ public class MruInfo
 
 	public bool IsFavorite { get; private set; }
 
-	public IBServerDefinition ServerDefinition { get; private set; }
+	public EnEngineType ServerEngine { get; private set; }
 
 	public string PropertyString => ConnectionInfo != null ? ConnectionInfo.PropertyString : "";
 
-	public MruInfo(IBPropertyAgent ci, bool isFavorite, IBServerDefinition serverDefinition)
+	public MruInfo(IBPropertyAgent ci, bool isFavorite, EnEngineType serverEngine)
 	{
 		ConnectionInfo = ci.Copy();
 		IsFavorite = isFavorite;
-		ServerDefinition = serverDefinition;
+		ServerEngine = serverEngine;
 	}
 }

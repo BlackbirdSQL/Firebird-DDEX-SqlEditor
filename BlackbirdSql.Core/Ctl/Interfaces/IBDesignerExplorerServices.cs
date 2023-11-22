@@ -11,6 +11,8 @@ namespace BlackbirdSql.Core.Ctl.Interfaces;
 [Guid(SystemData.DesignerExplorerServicesGuid)]
 public interface IBDesignerExplorerServices
 {
+	void NewQuery(string datasetKey);
+
 	void ViewCode(IVsDataExplorerNode node, bool alternate);
 
 	/*

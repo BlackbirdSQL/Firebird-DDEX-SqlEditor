@@ -90,7 +90,7 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 
 	public TConnectionPromptDialog()
 	{
-		Tracer.Trace(GetType(), "TConnectionPromptDialog.TConnectionPromptDialog");
+		// Tracer.Trace(GetType(), "TConnectionPromptDialog.TConnectionPromptDialog");
 
 		try
 		{
@@ -137,7 +137,7 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 	// ---------------------------------------------------------------------------------
 	public new string ShowDialog(IVsDataConnectionSupport dataConnectionSupport)
 	{
-		Tracer.Trace(GetType(), "ShowDialog()");
+		// Tracer.Trace(GetType(), "ShowDialog()");
 
 		try
 		{
@@ -160,7 +160,7 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 	// ---------------------------------------------------------------------------------
 	protected override void LoadProperties()
 	{
-		Tracer.Trace(GetType(), "LoadProperties()");
+		// Tracer.Trace(GetType(), "LoadProperties()");
 
 		try
 		{
@@ -174,10 +174,10 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 
 		try
 		{
-			serverTextBox.Text = ConnectionUIProperties["DataSource"] as string;
-			databaseTextBox.Text = ConnectionUIProperties["Database"] as string;
+			serverTextBox.Text = ConnectionUIProperties.ContainsKey("DataSource") ? ConnectionUIProperties["DataSource"] as string : "";
+			databaseTextBox.Text = ConnectionUIProperties.ContainsKey("Database") ? ConnectionUIProperties["Database"] as string : "";
 
-			userNameTextBox.Text = ConnectionUIProperties["User ID"] as string;
+			userNameTextBox.Text = ConnectionUIProperties.ContainsKey("User ID") ? ConnectionUIProperties["User ID"] as string : "";
 			if (ConnectionUIProperties.TryGetValue("Password", out object value))
 				passwordTextBox.Text = value as string;
 			else
@@ -215,21 +215,33 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 		{
 			if (serverTextBox.Enabled)
 			{
-				ConnectionUIProperties["DataSource"] = serverTextBox.Text.Trim();
+				// if (serverTextBox.Text.Trim() == "")
+				//	ConnectionUIProperties.Remove("DataSource");
+				// else
+					ConnectionUIProperties["DataSource"] = serverTextBox.Text.Trim();
 			}
 
 			if (databaseTextBox.Enabled)
 			{
-				ConnectionUIProperties["Database"] = databaseTextBox.Text.Trim();
+				// if (databaseTextBox.Text.Trim() == "")
+				//	ConnectionUIProperties.Remove("Database");
+				// else
+					ConnectionUIProperties["Database"] = databaseTextBox.Text.Trim();
 			}
 
 			if (userNameTextBox.Enabled)
 			{
-				ConnectionUIProperties["User ID"] = userNameTextBox.Text.Trim();
+				// if (userNameTextBox.Text.Trim() == "")
+				//	ConnectionUIProperties.Remove("User ID");
+				// else
+					ConnectionUIProperties["User ID"] = userNameTextBox.Text.Trim();
 			}
 
-			ConnectionUIProperties["Password"] = passwordTextBox.Text;
-			// ConnectionUIProperties["No Garbage Collect"] = savePasswordCheckBox.Checked;
+			// if (passwordTextBox.Text.Trim() == "")
+			//	ConnectionUIProperties.Remove("Password");
+			// else
+				ConnectionUIProperties["Password"] = passwordTextBox.Text;
+
 			ConnectionSupport.ConnectionString = ConnectionUIProperties.ToString();
 		}
 		catch (Exception ex)
@@ -311,7 +323,9 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 
 	private void SetOkButtonStatus(object sender, EventArgs e)
 	{
-		okButton.Enabled = passwordTextBox.Text.Length > 0 && userNameTextBox.Text.Length > 0;
+		okButton.Enabled = passwordTextBox.Text.Trim().Length > 0
+			&& userNameTextBox.Text.Trim().Length > 0
+			&& serverTextBox.Text.Trim().Length > 0;
 	}
 
 

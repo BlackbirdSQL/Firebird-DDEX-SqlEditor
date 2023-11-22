@@ -5,8 +5,10 @@ using System;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 
-namespace BlackbirdSql.Core.Ctl;
+using FirebirdSql.Data.FirebirdClient;
 
+
+namespace BlackbirdSql.Core.Ctl;
 
 // =========================================================================================================
 //											CoreConstants Class
@@ -18,32 +20,44 @@ namespace BlackbirdSql.Core.Ctl;
 public static class CoreConstants
 {
 
-
 	// ---------------------------------------------------------------------------------
 	#region Property Names - CoreConstants
 	// ---------------------------------------------------------------------------------
 
 
-	// Built-in default parameters
-	internal const string C_KeyExIcon = "Icon";
-	internal const string C_KeyDataSource = "data source";
-	internal const string C_KeyPortNumber = "port number";
-	internal const string C_KeyServerType = "server type";
-	internal const string C_KeyCatalog = "initial catalog";
-	internal const string C_KeyUserId = "user id";
-	internal const string C_KeyPassword = "password";
+	// Built-in default parameter keys
+	public const string C_KeyFbDataSource = "data source";
+	public const string C_KeyFbPort = "port number";
+	public const string C_KeyFbServerType = "server type";
+	public const string C_KeyFbDatabase = "initial catalog";
+	public const string C_KeyFbUserID = "user id";
+	public const string C_KeyFbPassword = "password";
+
+	// Built-in property descriptor keys
+	public const string C_KeyDataSource = "DataSource";
+	public const string C_KeyPort = "Port";
+	public const string C_KeyServerType = "ServerType";
+	public const string C_KeyDatabase = "Database";
+	public const string C_KeyUserID = "UserID";
+	public const string C_KeyPassword = "Password";
+
+	// Extended property descriptor keys
+	public const string C_KeyExIcon = "Icon";
+	public const string C_KeyExDataset = "Dataset";
+	public const string C_KeyExDatasetKey = "DatasetKey";
+	public const string C_KeyExDatasetId = "DatasetId";
 
 
-	// External (non-paramameter) properties 
-	internal const string C_KeyExServerDefinition = "ServerDefinition";
-	internal const string C_KeyExServerVersion = "ServerVersion";
-	internal const string C_KeyExPersistPassword = "PersistPassword";
-	internal const string C_KeyExAdministratorLogin = "AdministratorLogin";
-	internal const string C_KeyExServerFullyQualifiedDomainName = "ServerFullyQualifiedDomainName";
-	internal const string C_KeyExOtherParams = "OtherParams";
+	// External (non-paramameter) property descriptor
+	public const string C_KeyExServerEngine = "ServerEngine";
+	public const string C_KeyExServerVersion = "ServerVersion";
+	public const string C_KeyExPersistPassword = "PersistPassword";
+	public const string C_KeyExAdministratorLogin = "AdministratorLogin";
+	public const string C_KeyExServerFullyQualifiedDomainName = "ServerFullyQualifiedDomainName";
+	public const string C_KeyExOtherParams = "OtherParams";
 
-	// Internal (hidden) properties
-	internal const string C_KeyExInMemoryPassword = "InMemoryPassword";
+	// Internal (hidden) property keys
+	public const string C_KeyExInMemoryPassword = "InMemoryPassword";
 
 
 	#endregion Property Names
@@ -57,26 +71,30 @@ public static class CoreConstants
 
 
 	// Built-in property defaults
-	internal const IBIconType C_DefaultExIcon = null;
-	internal const string C_DefaultDataSource = "";
-	internal const int C_DefaultPortNumber = 3050;
-	internal const EnDbServerType C_DefaultServerType = EnDbServerType.Default;
-	internal const string C_DefaultCatalog = "";
-	internal const string C_DefaultUserId = "";
-	internal const string C_DefaultPassword = "";
-	internal const string C_DefaultExOtherParams = null;
+	public const string C_DefaultDataSource = "";
+	public const int C_DefaultPort = 3050;
+	public const FbServerType C_DefaultServerType = FbServerType.Default;
+	public const string C_DefaultDatabase = "";
+	public const string C_DefaultUserID = "";
+	public const string C_DefaultPassword = "";
 
 
-	// Other external properties
-	internal const string C_DefaultExDataset = "";
-	internal const string C_DefaultExDatasetKey = "";
-	internal const string C_DefaultExDisplayMember = "";
-	internal const ServerDefinition C_DefaultExServerDefinition = null;
-	internal const string C_DefaultExAdministratorLogin = "";
-	internal const string C_DefaultExServerFullyQualifiedDomainName = "localhost";
-	internal const SecureString C_DefaultExInMemoryPassword = null;
-	internal const Version C_DefaultExServerVersion = null;
-	internal const bool C_DefaultExPersistPassword = false;
+	// Extended property defaults
+	public const IBIconType C_DefaultExIcon = null;
+	public const string C_DefaultExDataset = "";
+	public const string C_DefaultExDatasetKey = "";
+	public const string C_DefaultExDatasetId = "";
+
+	// External (non-paramameter) property defaults 
+	public const EnEngineType C_DefaultExServerEngine = EnEngineType.Unknown;
+	public const Version C_DefaultExServerVersion = null;
+	public const bool C_DefaultExPersistPassword = false;
+	public const string C_DefaultExAdministratorLogin = "";
+	public const string C_DefaultExServerFullyQualifiedDomainName = "localhost";
+	public const string C_DefaultExOtherParams = null;
+
+	// Internal (hidden) property defaults
+	public const SecureString C_DefaultExInMemoryPassword = null;
 
 
 	#endregion Property Default Values

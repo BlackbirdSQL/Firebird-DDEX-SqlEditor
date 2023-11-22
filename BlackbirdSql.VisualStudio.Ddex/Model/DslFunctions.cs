@@ -26,7 +26,7 @@ internal class DslFunctions : AbstractDslSchema
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
-		Tracer.Trace(GetType(), "DslFunctions.GetCommandText");
+		// Tracer.Trace(GetType(), "DslFunctions.GetCommandText");
 
 		var sql = new StringBuilder();
 		var where = new StringBuilder();

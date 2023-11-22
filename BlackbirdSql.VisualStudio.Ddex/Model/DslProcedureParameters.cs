@@ -29,7 +29,7 @@ internal class DslProcedureParameters : DslColumns
 {
 	public DslProcedureParameters(LinkageParser parser) : base(parser)
 	{
-		Tracer.Trace(GetType(), "DslProcedureParameters.DslProcedureParameters");
+		// Tracer.Trace(GetType(), "DslProcedureParameters.DslProcedureParameters");
 
 		string packageName;
 

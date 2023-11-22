@@ -5,13 +5,10 @@ using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Threading;
-
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using BlackbirdSql.Core.Ctl.Events;
-using Microsoft.VisualStudio.Data.Services.SupportEntities;
-using static BlackbirdSql.Core.Ctl.CommandProviders.CommandProperties;
+using Microsoft.VisualStudio.Data.Services;
 
 namespace BlackbirdSql.Core.Ctl.Interfaces;
 
@@ -33,16 +30,23 @@ public interface IBAsyncPackage
 
 	Microsoft.VisualStudio.OLE.Interop.IServiceProvider OleServiceProvider { get; }
 
-	IAsyncServiceContainer Services { get; }
+	IAsyncServiceContainer ServiceContainer { get; }
 
 
 
+	// IVsDataConnectionDialog CreateConnectionDialogHandler();
 
 	Task<object> CreateServiceInstanceAsync(Type serviceType, CancellationToken token);
 
 	Task FinalizeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress);
 
+	TInterface GetService<TService, TInterface>() where TInterface : class;
 
-	Task<object> ServicesCreatorCallbackAsync(IAsyncServiceContainer container, CancellationToken token, Type serviceType);
+	Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class;
+
+
+
+
+Task<object> ServicesCreatorCallbackAsync(IAsyncServiceContainer container, CancellationToken token, Type serviceType);
 
 }

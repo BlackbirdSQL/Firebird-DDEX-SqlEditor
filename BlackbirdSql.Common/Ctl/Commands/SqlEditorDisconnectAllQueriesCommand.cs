@@ -50,6 +50,7 @@ public class SqlEditorDisconnectAllQueriesCommand : AbstractSqlEditorCommand
 				}
 				else
 				{
+					qryMgr.ConnectionStrategy.Connection?.Close();
 					qryMgr.ConnectionStrategy.ResetConnection();
 				}
 			}

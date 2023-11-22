@@ -2,10 +2,11 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+using System.ComponentModel;
 using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 using Microsoft.VisualStudio.Data.Core;
-using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
@@ -15,10 +16,10 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 //										TConnectionProperties Class
 //
 /// <summary>
-/// Implementation of <see cref="IVsDataConnectionProperties"/> interface
+/// Implementation of <see cref="IVsDataConnectionProperties"/> interface.
 /// </summary>
 // =========================================================================================================
-public class TConnectionProperties : AdoDotNetConnectionProperties
+public class TConnectionProperties : TAbstractConnectionProperties
 {
 	// Sanity checker.
 	private readonly bool _Ctor = false;
@@ -37,43 +38,9 @@ public class TConnectionProperties : AdoDotNetConnectionProperties
 	{
 		get
 		{
-			// Tracer.Trace(GetType(), "IsComplete:getter");
-
-			foreach (Describer describer in CorePropertySet.Describers)
+			foreach (Describer describer in CsbAgent.Describers.Mandatory)
 			{
-				if (!describer.IsMandatory)
-					continue;
-
-				// Diag.Trace($"Getting display name for property: {describer.Name} Csb: {ConnectionStringBuilder}");
-
-				string displayName = describer.DisplayName;
-
-				if (displayName == null)
-					continue;
-
-				// Diag.Trace($"DisplayName: {displayName}.");
-
-				if (!base.TryGetValue(displayName, out object value) || string.IsNullOrEmpty((string)value))
-				{
-					return false;
-				}
-			}
-
-			foreach (Describer describer in ModelPropertySet.Describers)
-			{
-				if (!describer.IsMandatory)
-					continue;
-
-				// Diag.Trace($"Getting display name for property: {describer.Name}");
-
-				string displayName = describer.DisplayName;
-
-				if (displayName == null)
-					continue;
-
-				// Diag.Trace($"DisplayName: {displayName}.");
-
-				if (!base.TryGetValue(displayName, out object value) || string.IsNullOrEmpty((string)value))
+				if (!base.TryGetValue(describer.Key, out object value) || string.IsNullOrEmpty((string)value))
 				{
 					return false;
 				}
@@ -137,8 +104,43 @@ public class TConnectionProperties : AdoDotNetConnectionProperties
 		if (!_Ctor)
 		{
 			base.OnSiteChanged(e);
+
 			_InstanceSite = Site;
 		}
+	}
+
+
+
+	public override object this[string key]
+	{
+		get
+		{
+			// Tracer.Trace(GetType(), "get this[]", "key: {0}, get value: {1}, csb type: {2}", key, base[key], ConnectionStringBuilder.GetType().FullName);
+			return base[key];
+		}
+		set
+		{
+			// Tracer.Trace(GetType(), "set this[]", "key: {0} set value: {1}, csb type: {2}", key, value, ConnectionStringBuilder.GetType().FullName);
+			base[key] = value;
+		}
+	}
+
+	/*
+	public override string[] GetSynonyms(string key)
+	{
+		Tracer.Trace(GetType(), "GetSynonyms()", "key: {0}", key);
+		return CsbAgent.Describers.GetSynonyms(key).ToArray();
+	}
+	*/
+
+	public object GetEditor(Type editorBaseType)
+	{
+		return TypeDescriptor.GetEditor(ConnectionStringBuilder, editorBaseType, noCustomTypeDesc: true);
+	}
+
+	public TypeConverter GetConverter()
+	{
+		return TypeDescriptor.GetConverter(ConnectionStringBuilder, noCustomTypeDesc: true);
 	}
 
 }

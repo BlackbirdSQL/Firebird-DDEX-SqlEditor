@@ -12,7 +12,7 @@ using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core.Ctl.Extensions;
-
+using BlackbirdSql.Core.Model;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Services;
 
@@ -41,8 +41,9 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 			{
 				if (Connection != null)
 				{
-					MonikerAgent moniker = new(Connection);
-					return moniker.DatasetKey;
+					CsbAgent csa = new(Connection);
+					csa.RegisterDataset();
+					return csa.DatasetKey;
 				}
 
 				return string.Empty;
@@ -52,7 +53,7 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 		[GlobalizedCategory("PropertyWindowConnectionDetails")]
 		[GlobalizedDescription("PropertyWindowServerNameDescription")]
 		[GlobalizedDisplayName("PropertyWindowServerNameDisplayName")]
-		public string ServerName
+		public string DataSource
 		{
 			get
 			{
@@ -112,8 +113,8 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 			{
 				if (Connection != null)
 				{
-					FbConnectionStringBuilder csb = new(Connection.ConnectionString);
-					return csb.Port;
+					CsbAgent csa = new(Connection.ConnectionString);
+					return csa.Port;
 				}
 
 				return 0;

@@ -14,6 +14,7 @@ using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Model;
 
 using EnvDTE;
 
@@ -99,6 +100,7 @@ public class ControllerEventsManager : AbstractEventsManager
 	{
 		// Controller.OnAfterDocumentWindowHideEvent -= OnAfterDocumentWindowHide;
 		// Controller.OnQueryCloseProjectEvent -= OnQueryCloseProject;
+		Controller.OnAfterCloseSolutionEvent -= OnAfterCloseSolution;
 		Controller.OnQueryCloseSolutionEvent -= OnQueryCloseSolution;
 	}
 
@@ -132,6 +134,7 @@ public class ControllerEventsManager : AbstractEventsManager
 		// Controller.OnAfterDocumentWindowHideEvent += OnAfterDocumentWindowHide;
 		// Controller.OnQueryCloseProjectEvent += OnQueryCloseProject;
 		Controller.OnQueryCloseSolutionEvent += OnQueryCloseSolution;
+		Controller.OnAfterCloseSolutionEvent += OnAfterCloseSolution;
 
 		// This is a once off procedure for solutions and their projects. (ie. Once validated always validated)
 		// We're going to check each project that gets loaded (or has a reference added) if it
@@ -1211,6 +1214,26 @@ public class ControllerEventsManager : AbstractEventsManager
 	/// <param name="reference"></param>
 	// ---------------------------------------------------------------------------------
 	private void OnReferenceAdded(Reference reference) => _ = HandleReferenceAddedAsync(reference);
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Event handler for the <see cref="IVsSolutionEvents"/> AfterCloseSolution event
+	/// </summary>
+	/// <param name="pUnkReserved"></param>
+	/// <returns></returns>
+	// ---------------------------------------------------------------------------------
+	public int OnAfterCloseSolution(object pUnkReserved)
+	{
+		// Reset configured connections registration.
+		ConnectionLocator.Reset();
+		// Reset the unique database connection DatasetKeys.
+		CsbAgent.Reset();
+
+		return VSConstants.S_OK;
+
+	}
 
 
 

@@ -10,7 +10,7 @@ using System.Runtime.CompilerServices;
 namespace BlackbirdSql.Core.Ctl.Interfaces;
 
 
-public interface IBTrace : IBExportable
+public interface IBTrace // : IBExportable
 {
 	bool TraceEvent(TraceEventType eventType, int traceId, string message, params object[] args);
 

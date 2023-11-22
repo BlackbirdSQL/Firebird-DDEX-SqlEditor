@@ -36,7 +36,7 @@ internal class DslTables : AbstractDslSchema
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
-		Tracer.Trace(GetType(), "DslTables.GetCommandText");
+		// Tracer.Trace(GetType(), "DslTables.GetCommandText");
 
 		var sql = new StringBuilder();
 		var where = new StringBuilder();
@@ -120,7 +120,7 @@ internal class DslTables : AbstractDslSchema
 
 	protected override void ProcessResult(DataTable schema)
 	{
-		Tracer.Trace(GetType(), "DslTables.ProcessResult");
+		// Tracer.Trace(GetType(), "DslTables.ProcessResult");
 
 		schema.BeginLoadData();
 

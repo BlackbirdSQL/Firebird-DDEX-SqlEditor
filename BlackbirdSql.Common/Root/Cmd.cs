@@ -63,7 +63,6 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 
 	private static string _AppTitle;
 	private static Control _MarshalingControl;
-	private static ResourceDictionary _SharedResources;
 
 	private delegate DialogResult SafeShowMessageBox(string title, string text, string helpKeyword, MessageBoxButtons buttons, MessageBoxIcon icon);
 
@@ -84,18 +83,6 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 			_AppTitle = value;
 		}
 	}
-
-
-
-	public static ResourceDictionary SharedResources
-	{
-		get
-		{
-			return _SharedResources ??= (ResourceDictionary)System.Windows.Application.LoadComponent(
-				new Uri("/Properties/SharedResources.xaml", UriKind.Relative));
-		}
-	}
-
 
 
 
@@ -216,9 +203,8 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 			throw ex;
 		}
 
-		IVsExternalFilesManager obj = provider.GetService(typeof(SVsExternalFilesManager)) as IVsExternalFilesManager;
-		try { Assumes.Present(obj); } catch (Exception ex) { Diag.Dug(ex); throw; }
-
+		IVsExternalFilesManager obj = provider.GetService(typeof(SVsExternalFilesManager)) as IVsExternalFilesManager
+			?? throw Diag.ServiceUnavailable(typeof(IVsExternalFilesManager));
 		Native.WrapComCall(obj.GetExternalFilesProject(out IVsProject ppProject), Array.Empty<int>());
 
 		return (IVsProject3)ppProject;
@@ -310,6 +296,8 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 	public static void OpenAsMiscellaneousFile(IServiceProvider provider, string path, string caption,
 		Guid editor, string physicalView, Guid logicalView)
 	{
+		Tracer.Trace(typeof(Cmd), "OpenAsMiscellaneousFile()");
+
 		if (!ThreadHelper.CheckAccess())
 		{
 			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
@@ -350,6 +338,8 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 
 	public static void OpenNewMiscellaneousSqlFile(IServiceProvider provider, string initialContent = "")
 	{
+		Tracer.Trace(typeof(Cmd), "OpenAsMiscellaneousFile()");
+
 		if (!ThreadHelper.CheckAccess())
 		{
 			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);

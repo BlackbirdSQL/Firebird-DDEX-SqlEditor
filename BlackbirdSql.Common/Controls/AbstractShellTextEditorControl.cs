@@ -77,7 +77,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 		[SecurityPermission(SecurityAction.InheritanceDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
 		get
 		{
-			Tracer.Trace(GetType(), "AbstractShellTextEditorControl.CreateParams", "", null);
+			// Tracer.Trace(GetType(), "AbstractShellTextEditorControl.CreateParams", "", null);
 			CreateParams createParams = base.CreateParams;
 			if (_BorderStyle != 0)
 			{
@@ -141,7 +141,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 		}
 		set
 		{
-			Tracer.Trace(GetType(), "AbstractShellTextEditorControl.BorderStyle", "value = {0}", value.ToString());
+			// Tracer.Trace(GetType(), "AbstractShellTextEditorControl.BorderStyle", "value = {0}", value.ToString());
 			if (Enum.IsDefined(typeof(BorderStyle), value))
 			{
 				_BorderStyle = value;
@@ -174,7 +174,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 		}
 		set
 		{
-			Tracer.Trace(GetType(), "AbstractShellTextEditorControl.LanguageService", "value = {0}", value.ToString("D", CultureInfo.CurrentCulture));
+			// Tracer.Trace(GetType(), "AbstractShellTextEditorControl.LanguageService", "value = {0}", value.ToString("D", CultureInfo.CurrentCulture));
 			if (!_ClsidLanguageService.Equals(value))
 			{
 				_ClsidLanguageService = value;
@@ -194,7 +194,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 		}
 		set
 		{
-			Tracer.Trace(GetType(), "AbstractShellTextEditorControl.ClsidLanguageServiceDefault", "value = {0}", value.ToString("D", CultureInfo.CurrentCulture));
+			// Tracer.Trace(GetType(), "AbstractShellTextEditorControl.ClsidLanguageServiceDefault", "value = {0}", value.ToString("D", CultureInfo.CurrentCulture));
 			_ClsidLanguageServiceDefault = value;
 			_TextBuffer.DetectLangSid = false;
 		}
@@ -231,12 +231,12 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 	public AbstractShellTextEditorControl()
 	{
-		Tracer.Trace(GetType(), "AbstractShellTextEditorControl.AbstractShellTextEditorControl", "", null);
+		// Tracer.Trace(GetType(), "AbstractShellTextEditorControl.AbstractShellTextEditorControl", "", null);
 	}
 
 	protected override void Dispose(bool disposing)
 	{
-		Tracer.Trace(GetType(), "AbstractShellTextEditorControl.Dispose", "", null);
+		// Tracer.Trace(GetType(), "AbstractShellTextEditorControl.Dispose", "", null);
 		if (!IsDisposed)
 		{
 			ShowPopupMenuEvent = null;
@@ -270,10 +270,10 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 		}
 		else
 		{
-			Tracer.Trace(GetType(), "AbstractShellTextEditorControl.Dispose", "already disposed");
+			// Tracer.Trace(GetType(), "AbstractShellTextEditorControl.Dispose", "already disposed");
 		}
 
-		Tracer.Trace(GetType(), "AbstractShellTextEditorControl.Dispose", "returning");
+		// Tracer.Trace(GetType(), "AbstractShellTextEditorControl.Dispose", "returning");
 	}
 
 	public virtual int QueryStatus(ref Guid guidGroup, uint nCmdId, OLECMD[] oleCmd, IntPtr oleText)
@@ -339,7 +339,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 	public virtual int OnShow(int frameShow)
 	{
-		Tracer.Trace(GetType(), "AbstractShellTextEditorControl.OnShow", "frameShow = {0}", frameShow);
+		// Tracer.Trace(GetType(), "AbstractShellTextEditorControl.OnShow", "frameShow = {0}", frameShow);
 
 		if (_TextWndFrameNotify != null)
 		{
@@ -358,7 +358,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 	public virtual int OnMove()
 	{
-		Tracer.Trace(GetType(), "AbstractShellTextEditorControl.OnMove", "", null);
+		// Tracer.Trace(GetType(), "AbstractShellTextEditorControl.OnMove", "", null);
 
 		if (_TextWndFrameNotify != null)
 		{
@@ -377,7 +377,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 	public virtual int OnSize()
 	{
-		Tracer.Trace(GetType(), "AbstractShellTextEditorControl.OnSize", "", null);
+		// Tracer.Trace(GetType(), "AbstractShellTextEditorControl.OnSize", "", null);
 
 		if (_TextWndFrameNotify != null)
 		{
@@ -396,7 +396,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 	public virtual int OnDockableChange(int fDockable)
 	{
-		Tracer.Trace(GetType(), "AbstractShellTextEditorControl.OnDockableChange", "fDockable = {0}", fDockable);
+		// Tracer.Trace(GetType(), "AbstractShellTextEditorControl.OnDockableChange", "fDockable = {0}", fDockable);
 
 		if (_TextWndFrameNotify != null)
 		{
@@ -485,10 +485,10 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 	protected override void OnSizeChanged(EventArgs e)
 	{
-		Tracer.Trace(GetType(), "AbstractShellTextEditorControl.OnSizeChanged", "", null);
+		// Tracer.Trace(GetType(), "AbstractShellTextEditorControl.OnSizeChanged", "", null);
 		if (_EditorHandle != IntPtr.Zero)
 		{
-			Tracer.Trace(GetType(), "AbstractShellTextEditorControl.OnSizeChanged", "adjusting text view size");
+			// Tracer.Trace(GetType(), "AbstractShellTextEditorControl.OnSizeChanged", "adjusting text view size");
 
 			if (!ThreadHelper.CheckAccess())
 			{
@@ -568,7 +568,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 	public void CreateAndInitEditorWindow(object serviceProvider)
 	{
-		Tracer.Trace(GetType(), "AbstractShellTextEditorControl.CreateAndInitEditorWindow", "", null);
+		// Tracer.Trace(GetType(), "AbstractShellTextEditorControl.CreateAndInitEditorWindow", "", null);
 
 		if (_TextBuffer == null)
 		{
@@ -607,7 +607,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 	public void CreateAndInitTextBuffer(object sp, IVsTextStream existingDocData)
 	{
-		Tracer.Trace(GetType(), "AbstractShellTextEditorControl.CreateAndInitTextBuffer", "", null);
+		// Tracer.Trace(GetType(), "AbstractShellTextEditorControl.CreateAndInitTextBuffer", "", null);
 		if (existingDocData != null)
 		{
 			_TextBuffer = new(existingDocData, sp)
@@ -634,7 +634,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 	public static void ResetFontAndColor(Font font, Guid fontCategory, Guid colorCategory)
 	{
-		Tracer.Trace(typeof(AbstractShellTextEditorControl), "AbstractShellTextEditorControl.ResetFontAndColor", "", null);
+		// Tracer.Trace(typeof(AbstractShellTextEditorControl), "AbstractShellTextEditorControl.ResetFontAndColor", "", null);
 
 		if (_VsTextManager != null)
 		{
@@ -696,7 +696,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 		}
 		else
 		{
-			Tracer.Trace(typeof(CommonUtils), "AbstractShellTextEditorControl.ResetFontAndColor", "s_vsTextManager is null");
+			// Tracer.Trace(typeof(CommonUtils), "AbstractShellTextEditorControl.ResetFontAndColor", "s_vsTextManager is null");
 		}
 	}
 
@@ -765,7 +765,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 	protected void ApplyLS(Guid lsGuid)
 	{
-		Tracer.Trace(GetType(), "SqlTextViewControl.ApplyLS", "lsGuid = {0}", lsGuid);
+		// Tracer.Trace(GetType(), "SqlTextViewControl.ApplyLS", "lsGuid = {0}", lsGuid);
 		if (_TextBuffer == null)
 		{
 			return;

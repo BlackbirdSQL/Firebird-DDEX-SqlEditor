@@ -25,7 +25,7 @@ public abstract class AbstractResultsPanel : Panel
 
 	protected object _ObjServiceProvider;
 
-	protected ServiceProvider _serviceProvider;
+	protected ServiceProvider _ServiceProvider;
 
 	protected IVsUIShell _vsUIShell;
 
@@ -49,15 +49,15 @@ public abstract class AbstractResultsPanel : Panel
 
 	protected AbstractResultsPanel(string defaultResultsDirectory)
 	{
-		Tracer.Trace(GetType(), "DisplaySqlResultsBaseTabPage.DisplaySqlResultsBaseTabPage", "", null);
+		// Tracer.Trace(GetType(), "DisplaySqlResultsBaseTabPage.DisplaySqlResultsBaseTabPage", "", null);
 		_defaultResultsDirectory = defaultResultsDirectory;
 	}
 
 	protected override void Dispose(bool disposing)
 	{
-		if (_serviceProvider != null)
+		if (_ServiceProvider != null)
 		{
-			_serviceProvider = null;
+			_ServiceProvider = null;
 		}
 
 		if (_ObjServiceProvider != null)
@@ -76,12 +76,12 @@ public abstract class AbstractResultsPanel : Panel
 
 	protected new object GetService(Type serviceType)
 	{
-		return _serviceProvider.GetService(serviceType);
+		return _ServiceProvider.GetService(serviceType);
 	}
 
 	public virtual void Initialize(object oleServiceProvider)
 	{
-		Tracer.Trace(GetType(), "DisplaySqlResultsBaseTabPage.Initialize", "", null);
+		// Tracer.Trace(GetType(), "DisplaySqlResultsBaseTabPage.Initialize", "", null);
 
 		if (!ThreadHelper.CheckAccess())
 		{
@@ -91,7 +91,7 @@ public abstract class AbstractResultsPanel : Panel
 		}
 
 		_ObjServiceProvider = oleServiceProvider;
-		_serviceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)oleServiceProvider);
+		_ServiceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)oleServiceProvider);
 		_vsUIShell = GetService(typeof(IVsUIShell)) as IVsUIShell;
 	}
 

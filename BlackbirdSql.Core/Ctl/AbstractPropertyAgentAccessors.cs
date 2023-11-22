@@ -6,16 +6,19 @@ using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Security;
+using System.Text;
 using System.Windows;
 using System.Windows.Media.Imaging;
+
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 
+using FirebirdSql.Data.FirebirdClient;
+
 using Microsoft.Data.ConnectionUI;
-using Microsoft.VisualStudio.Data;
 
 
 namespace BlackbirdSql.Core;
@@ -27,7 +30,7 @@ namespace BlackbirdSql.Core;
 /// The base class for all property based dispatcher and connection classes used in conjunction with
 /// PropertySet static classes.
 /// A conglomerate base class that supports dynamic addition of properties and parsing functionality for
-/// <see cref="DbConnectionStringBuilder"/>, <see cref="MonikerAgent"/> and property strings as
+/// <see cref="DbConnectionStringBuilder"/>, <see cref="CsbAgent"/> and property strings as
 /// well as support for the <see cref="IDisposable"/>, <see cref="ICustomTypeDescriptor"/>,
 /// <see cref="IDataConnectionProperties"/>, <see cref="IComparable{T}"/>, <see cref="IEquatable{T}"/>,
 /// <see cref="INotifyPropertyChanged"/>, <see cref="INotifyDataErrorInfo"/> and
@@ -173,10 +176,10 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		get { return (string)GetProperty("Dataset"); }
 		set { SetProperty("Dataset", value); }
 	}
-	public string DisplayMember
+	public string DatasetId
 	{
-		get { return (string)GetProperty("DisplayMember"); }
-		set { SetProperty("DisplayMember", value); }
+		get { return (string)GetProperty("DatasetId"); }
+		set { SetProperty("DatasetId", value); }
 	}
 
 
@@ -208,10 +211,10 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	}
 
 
-	public ServerDefinition ServerDefinition
+	public EnEngineType ServerEngine
 	{
-		get { return (ServerDefinition)GetProperty("ServerDefinition"); }
-		set { SetProperty("ServerDefinition", value); }
+		get { return (EnEngineType)GetProperty("ServerEngine"); }
+		set { SetProperty("ServerEngine", value); }
 	}
 
 
@@ -268,9 +271,9 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	}
 
 
-	public EnDbServerType ServerType
+	public FbServerType ServerType
 	{
-		get { return (EnDbServerType)GetProperty("ServerType"); }
+		get { return (FbServerType)GetProperty("ServerType"); }
 		set { SetProperty("ServerType", value); }
 	}
 
@@ -303,6 +306,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 		_ParametersChanged = false;
 
+		_ConnectionStringBuilder ??= new CsbAgent();
 		PopulateConnectionStringBuilder(_ConnectionStringBuilder, secure);
 
 		return _ConnectionStringBuilder;
@@ -321,16 +325,17 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		if (!IsComplete)
 			return (null, false);
 
-		MonikerAgent moniker = new(this);
+		CsbAgent csa = new(this);
+		csa.RegisterDataset();
 
-		string datasetKey = moniker.DatasetKey;
+		string datasetKey = csa.DatasetKey;
 
 		if (string.IsNullOrEmpty(datasetKey))
 			return (null, false);
 
 		DatasetKey = datasetKey;
-		Dataset = moniker.Dataset;
-		DisplayMember = moniker.DisplayMember;
+		Dataset = csa.Dataset;
+		DatasetId = csa.DatasetId;
 
 		return (datasetKey, false);
 	}
@@ -340,7 +345,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	{
 		IBIconType iconType;
 
-		if (ServerType == EnDbServerType.Embedded)
+		if (ServerType == FbServerType.Embedded)
 			iconType = CoreIconsCollection.Instance.EmbeddedDatabase_32;
 		else
 			iconType = CoreIconsCollection.Instance.ClassicServer_32;
@@ -355,23 +360,23 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Gets the ServerDefinition property and sets it if successful.
+	/// Gets the ServerEngine property and sets it if successful.
 	/// </summary>
-	/// <returns>Returns the value tuple of the derived ServerDefinition else null and
+	/// <returns>Returns the value tuple of the derived ServerEngine else null and
 	/// a boolean indicating wehther or not a connection was opened.</returns>
 	// ---------------------------------------------------------------------------------
-	public virtual  (ServerDefinition, bool) GetSet_ServerDefinition()
+	public virtual  (EnEngineType, bool) GetSet_ServerEngine()
 	{
-		ServerDefinition serverDefinition;
+		EnEngineType serverEngine;
 
-		if (ServerType == EnDbServerType.Embedded)
-			serverDefinition = new("Firebird", EnEngineType.EmbeddedDatabase);
+		if (ServerType == FbServerType.Embedded)
+			serverEngine = EnEngineType.EmbeddedDatabase;
 		else
-			serverDefinition = new("Firebird", EnEngineType.ClassicServer);
+			serverEngine = EnEngineType.ClassicServer;
 
-		ServerDefinition = serverDefinition;
+		ServerEngine = serverEngine;
 
-		return (serverDefinition, false);
+		return (serverEngine, false);
 	}
 
 
@@ -401,26 +406,15 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 
 
-	protected virtual bool Set_ServerDefinitionProperty(string name, ServerDefinition value)
-	{
-		if (!WillServerDefinitionPropertyChange(name, value, false))
-			return false;
-
-		_AssignedConnectionProperties[name] = new ServerDefinition(value.EngineProduct, value.EngineType);
-
-		RaisePropertyChanged(name);
-
-		return true;
-	}
-
-
-
 	protected virtual bool Set_StringProperty(string name, string value)
 	{
 		if (!WillStringPropertyChange(name, value, false))
 			return false;
 
-		_AssignedConnectionProperties[name] = value;
+		if (Describers[name].DefaultEqualsOrEmpty(value))
+			_AssignedConnectionProperties.Remove(name);
+		else
+			_AssignedConnectionProperties[name] = value;
 
 		RaisePropertyChanged(name);
 
@@ -432,7 +426,10 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		if (!WillObjectPropertyChange(name, value, false))
 			return false;
 
-		_AssignedConnectionProperties[name] = value;
+		if (Describers[name].DefaultEquals(value))
+			_AssignedConnectionProperties.Remove(name);
+		else
+			_AssignedConnectionProperties[name] = value;
 
 		RaisePropertyChanged(name);
 
@@ -446,7 +443,10 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		if (!WillIntPropertyChange(name, value, false))
 			return false;
 
-		_AssignedConnectionProperties[name] = value;
+		if (value == Convert.ToInt32(Describers[name].DefaultValue))
+			_AssignedConnectionProperties.Remove(name);
+		else
+			_AssignedConnectionProperties[name] = value;
 
 		RaisePropertyChanged(name);
 
@@ -460,7 +460,10 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		if (!WillBoolPropertyChange(name, value, false))
 			return false;
 
-		_AssignedConnectionProperties[name] = value;
+		if (value == Convert.ToBoolean(Describers[name].DefaultValue))
+			_AssignedConnectionProperties.Remove(name);
+		else
+			_AssignedConnectionProperties[name] = value;
 
 		RaisePropertyChanged(name);
 
@@ -469,12 +472,48 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 
 
-	protected virtual bool Set_ByteProperty(string name, byte[] value)
+	protected virtual bool Set_EnumProperty(string name, object enumValue)
+	{
+		// We will always store as int32.
+
+		object value = enumValue;
+
+		if (enumValue != null)
+		{
+			if (enumValue.GetType().IsSubclassOf(typeof(Enum)) || enumValue.GetType() == typeof(int))
+				value = Convert.ToInt32(enumValue);
+			else if (enumValue is string s)
+				value = Convert.ToInt32(Enum.Parse(Describers[name].PropertyType, s, true));
+		}
+
+
+		if (!WillEnumPropertyChange(name, value, false))
+			return false;
+
+		if (enumValue == null || Convert.ToInt32(value) == Convert.ToInt32(Describers[name].DefaultValue))
+			_AssignedConnectionProperties.Remove(name);
+		else
+			_AssignedConnectionProperties[name] = value;
+
+		RaisePropertyChanged(name);
+
+		return true;
+	}
+
+
+
+	protected virtual bool Set_ByteProperty(string name, object value)
 	{
 		if (!WillBytePropertyChange(name, value, false))
 			return false;
 
-		_AssignedConnectionProperties[name] = value.Clone();
+		// We will always store as string.
+		if (value == null || value == DBNull.Value)
+			_AssignedConnectionProperties.Remove(name);
+		else if (value.GetType() == typeof(byte[]))
+			_AssignedConnectionProperties[name] = Encoding.Default.GetString((byte[])value);
+		else
+			_AssignedConnectionProperties[name] = (string)value;
 
 		RaisePropertyChanged(name);
 
@@ -510,7 +549,10 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		if (!WillStringPropertyChange(name, value?.ToString(), false))
 			return false;
 
-		_AssignedConnectionProperties[name] = (Version)value.Clone();
+		if (Describers[name].DefaultEqualsOrEmptyString(value))
+			_AssignedConnectionProperties.Remove(name);
+		else
+			_AssignedConnectionProperties[name] = (Version)value.Clone();
 
 		RaisePropertyChanged(name);
 
@@ -564,19 +606,23 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		bool changed;
 		string propertyTypeName;
 
-		propertyTypeName = GetPropertyTypeName(name).ToLower();
+
+		if (GetPropertyType(name).IsSubclassOf(typeof(Enum)))
+			propertyTypeName = "enum";
+		else
+			propertyTypeName = GetPropertyTypeName(name).ToLower();
 
 
 		switch (propertyTypeName)
 		{
-			case "serverdefinition":
-				changed = Set_ServerDefinitionProperty(name, (ServerDefinition)value);
-				break;
 			case "password":
 				changed = Set_PasswordProperty(name, Convert.ToString(value));
 				break;
 			case "version":
 				changed = Set_VersionProperty(name, (Version)value);
+				break;
+			case "enum":
+				changed = Set_EnumProperty(name, value);
 				break;
 			case "int32":
 				changed = Set_IntProperty(name, Convert.ToInt32(value));
@@ -585,7 +631,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 				changed = Set_BoolProperty(name, Convert.ToBoolean(value));
 				break;
 			case "byte[]":
-				changed = Set_ByteProperty(name, (byte[])value);
+				changed = Set_ByteProperty(name, value);
 				break;
 			case "string":
 				changed = Set_StringProperty(name, Convert.ToString(value));
@@ -643,8 +689,8 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 					(value, connectionOpened) = GetSet_Icon();
 					result = true;
 					break;
-				case "ServerDefinition":
-					(value, connectionOpened) = GetSet_ServerDefinition();
+				case "ServerEngine":
+					(value, connectionOpened) = GetSet_ServerEngine();
 					result = value != null;
 					break;
 				case "ServerVersion":
@@ -677,47 +723,6 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 	}
 
-
-
-	protected virtual bool WillServerDefinitionPropertyChange(string name, IBServerDefinition newValue, bool removing)
-	{
-		bool isSet = Isset(name);
-
-		if (removing)
-		{
-			if (!isSet)
-				return false;
-
-			_AssignedConnectionProperties.Remove(name);
-
-			if (IsParameter(name))
-				_ParametersChanged = true;
-
-			return true;
-		}
-
-
-		bool changed;
-		IBServerDefinition currValue = isSet ? (IBServerDefinition)_AssignedConnectionProperties[name] : null;
-
-		if (Cmd.NullEquality(newValue, currValue) <= EnNullEquality.Equal)
-		{
-			changed = Cmd.NullEquality(newValue, currValue) == EnNullEquality.UnEqual;
-
-			if (changed && IsParameter(name))
-				_ParametersChanged = true;
-
-			return changed;
-		}
-
-		changed = currValue.EqualsServerDefinition(newValue);
-
-
-		// if (changed && IsParameter(name))
-		// 	_ParametersChanged |= changed;
-
-		return changed;
-	}
 
 
 

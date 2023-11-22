@@ -69,27 +69,29 @@ internal sealed class VsPackageRegistrationAttribute: RegistrationAttribute
 			// Add this package as a provider for the Firebird data source
 			key2 = key.CreateSubkey("SupportingProviders");
 			key3 = key2.CreateSubkey(providerGuid);
-			key3.SetValue("DisplayName", SystemData.DataProviderName);
-			key3.SetValue("UsingDescription", "DdexProvider_Description, "
+			key3.SetValue("DisplayName", "DataSource_FirebirdSqlServer, "
+				+ "BlackbirdSql.VisualStudio.Ddex.Properties.Resources, " + providerObjectFactoryAssembly);
+			key3.SetValue("UsingDescription", "DataProvider_Ddex_DataSource_Description, "
 				+ "BlackbirdSql.VisualStudio.Ddex.Properties.Resources, " + providerObjectFactoryAssembly);
 			DisposeKey(ref key3);
 			DisposeKey(ref key2);
 			DisposeKey(ref key);
 
 			key = context.CreateKey("DataProviders\\" + providerGuid);
-			key.SetValue(null, Properties.Resources.Provider_DisplayName);
+			key.SetValue(null, Properties.Resources.DataProvider_Ddex);
 			key.SetValue("Assembly", providerObjectFactoryAssembly);
 
 			key.SetValue("PlatformVersion", "2.0");
 			key.SetValue("Technology", "{" + VS.AdoDotNetTechnologyGuid + "}");
 			key.SetValue("AssociatedSource", dataSourceGuid);
 			key.SetValue("InvariantName", invariantName);
-			key.SetValue("Description", "DdexProvider_Description, "
+			// DataProvider_Mds_Description, SR, Microsoft.Data.ConnectionUI.Dialog, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+			key.SetValue("Description", "DataProvider_Ddex_Description, "
 				+ "BlackbirdSql.VisualStudio.Ddex.Properties.Resources, " + providerObjectFactoryAssembly);
-			key.SetValue("DisplayName", "DdexProvider_DisplayName, "
+			key.SetValue("DisplayName", "DataProvider_Ddex, "
 				+ "BlackbirdSql.VisualStudio.Ddex.Properties.Resources, " + providerObjectFactoryAssembly);
 			key.SetValue("ShortDisplayName",
-				"DdexProvider_ShortDisplayName, BlackbirdSql.VisualStudio.Ddex.Properties.Resources, "
+			"DataProvider_Ddex_Short, BlackbirdSql.VisualStudio.Ddex.Properties.Resources, "
 				+ providerObjectFactoryAssembly);
 
 			// With everything working correctly we should need no codebase, no gac registration, and no dotnet system/machine config

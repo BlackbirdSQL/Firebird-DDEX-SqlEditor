@@ -2,8 +2,8 @@
 using System;
 using System.ComponentModel;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using FirebirdSql.Data.FirebirdClient;
+using BlackbirdSql.Core.Model;
+
 
 namespace BlackbirdSql.Core.Ctl;
 
@@ -29,7 +29,7 @@ public class Describer
 	{
 		get
 		{
-			return _Descriptors ??= TypeDescriptor.GetProperties(typeof(FbConnectionStringBuilder));
+			return _Descriptors ??= TypeDescriptor.GetProperties(typeof(CsbAgent));
 		}
 	}
 
@@ -52,7 +52,9 @@ public class Describer
 	/// The property's system data type.
 	/// </summary>
 	public Type DataType => PropertyType.IsSubclassOf(typeof(Enum))
-				? typeof(int) : PropertyType;
+		? typeof(int)
+		: (PropertyType == typeof(byte[])
+			? typeof(string) : PropertyType);
 
 	/// <summary>
 	/// The property default value. For properties where the default value
@@ -95,19 +97,17 @@ public class Describer
 
 	/// <summary>
 	/// The ConnectionParameter name else the Descriptor Name if ConnectionParameter
-	/// is null. Returns null if the Descriptor is not a connection property/parameter.
+	/// is null. .
 	/// </summary>
 	public string DerivedConnectionParameter
 	{
 		get
 		{
-			if (!IsConnectionParameter)
-				return null;
 
 			if (_ConnectionParameter != null)
 				return _ConnectionParameter;
 
-			return Name.ToLower();
+			return Key;
 		}
 	}
 
@@ -122,7 +122,7 @@ public class Describer
 			if (!IsConnectionParameter)
 				return null;
 
-			Type csbType = typeof(FbConnectionStringBuilder);
+			Type csbType = typeof(CsbAgent);
 
 			PropertyInfo pinfo = csbType.GetProperty(Name);
 
@@ -142,6 +142,16 @@ public class Describer
 			}
 
 			return attr.DisplayName;
+		}
+	}
+
+	public string Key
+	{
+		get
+		{
+			// if (!IsConnectionParameter)
+			// 	return null;
+			return Name;
 		}
 	}
 
@@ -237,7 +247,7 @@ public class Describer
 	/// true in all other cases.
 	/// </param>
 	/// <param name="isPublic">
-	/// false if the descripber is a secure value else false.
+	/// false if the describer is a secure value else true.
 	/// </param>
 	/// <param name="isMandatory">
 	/// Returns true if the describer represents a connection property/parameter and is required.
@@ -260,6 +270,90 @@ public class Describer
 		IsPublic = isPublic;
 		IsMandatory = isMandatory;
 		IsEquivalency = isEquivalency;
+	}
+
+
+
+	/// <summary>
+	/// Compares equivalency to DefaultValue, accounting for null and DBNull.
+	/// </summary>
+	/// <param name="rhs"></param>
+	/// <returns></returns>
+	public bool DefaultEquals(object rhs)
+	{
+		if (DefaultValue == null)
+		{
+			if (rhs == null || rhs == DBNull.Value)
+				return true;
+
+			return false;
+		}
+
+		if (PropertyType.IsEnum)
+			return Convert.ToInt32(DefaultValue) == Convert.ToInt32(rhs);
+
+		return DefaultValue.Equals(rhs);
+	}
+
+
+	/// <summary>
+	/// Compares equivalency to DefaultValue, accounting for null, DBNull and
+	/// empty string for string types.
+	/// </summary>
+	/// <param name="rhs"></param>
+	/// <returns></returns>
+	public bool DefaultEqualsOrEmpty(object rhs)
+	{
+		if (DefaultValue == null)
+		{
+			if (rhs == null || rhs == DBNull.Value)
+				return true;
+
+			return false;
+		}
+
+		if (DataType == typeof(string) && string.IsNullOrWhiteSpace((string)DefaultValue))
+		{
+			if (string.IsNullOrWhiteSpace((string)rhs) || rhs == DBNull.Value)
+				return true;
+
+			return false;
+		}
+
+		if (PropertyType.IsEnum)
+			return Convert.ToInt32(DefaultValue) == Convert.ToInt32(rhs);
+
+		return DefaultValue.Equals(rhs);
+	}
+
+	/// <summary>
+	/// Compares equivalency to DefaultValue, accounting for null, DBNull and
+	/// empty string for tyes convertable to string types.
+	/// </summary>
+	/// <param name="rhs"></param>
+	/// <returns></returns>
+	public bool DefaultEqualsOrEmptyString(object rhs)
+	{
+		if (DefaultValue == null)
+		{
+			if (rhs == null || rhs == DBNull.Value || rhs.ToString() == "")
+				return true;
+
+			return false;
+		}
+
+		if (string.IsNullOrWhiteSpace(DefaultValue.ToString()))
+		{
+			if (string.IsNullOrWhiteSpace(rhs.ToString()))
+				return true;
+
+			return false;
+		}
+
+		if (PropertyType.IsEnum)
+			return Convert.ToInt32(DefaultValue) == Convert.ToInt32(rhs);
+
+		return DefaultValue.Equals(rhs);
 	}
 
 

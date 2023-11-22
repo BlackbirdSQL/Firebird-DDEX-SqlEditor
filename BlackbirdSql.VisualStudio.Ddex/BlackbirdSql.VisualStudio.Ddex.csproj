@@ -68,6 +68,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <EmbeddedResource Include="Controls\DataTools\TAddPropertyDlg.resx">
+      <DependentUpon>TAddPropertyDlg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\DataTools\TDataConnectionAdvancedDlg.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\DataTools\TDataConnectionDlg.resx">
+      <DependentUpon>TDataConnectionDlg.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\AttributeResources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>
@@ -147,28 +156,50 @@
       <Name>BlackbirdSql.EditorExtension</Name>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </ProjectReference>
-    <ProjectReference Include="..\BlackbirdSql.Wpf\BlackbirdSql.Wpf.csproj">
-      <Project>{1d8dcf60-f00e-4d04-af60-58119ec57ec7}</Project>
-      <Name>BlackbirdSql.Wpf</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\DataTools\TAddPropertyDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Controls\ComponentModel\AdvancedFileNameEditor.cs" />
     <Compile Include="Controls\ComponentModel\AdvancedFolderNameEditor.cs" />
+    <Compile Include="Controls\DataTools\TDataConnectionAdvancedDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\DataTools\TDataConnectionDlg.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\DataTools\TDataConnectionDlgHandler.cs" />
+    <Compile Include="Controls\Enums\EnDataConnectionDlgContext.cs" />
+    <Compile Include="Controls\Events\ContextHelpEventArgs.cs" />
+    <Compile Include="Controls\Events\UserPreferenceChangedHandler.cs" />
+    <Compile Include="Controls\DataTools\ExceptionSafeButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Ctl\ComponentModel\GlobalBoolConverter.cs" />
     <Compile Include="Ctl\ComponentModel\GlobalEnableDisableConverter.cs" />
     <Compile Include="Ctl\ComponentModel\GlobalOnOffConverter.cs" />
     <Compile Include="Ctl\ComponentModel\GlobalShowHideConverter.cs" />
     <Compile Include="Ctl\ComponentModel\GlobalYesNoConverter.cs" />
     <Compile Include="Ctl\Config\UserSettings.cs" />
+    <Compile Include="Ctl\DataTools\TDataProvider.cs" />
+    <Compile Include="Ctl\DataTools\TDataSource.cs" />
     <Compile Include="Ctl\DataTools\DSRefBuilder.cs" />
+    <Compile Include="Ctl\DataTools\TVsDataProvider.cs" />
     <Compile Include="Ctl\Interfaces\IBProviderObjectFactory.cs" />
+    <Compile Include="Ctl\TAbstractConnectionProperties.cs" />
     <Compile Include="Ctl\TObjectSelectorTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Properties\BlackbirdSql.VisualStudio.Ddex.snk" />
   </ItemGroup>
   <!-- Includes (Properties and Properties Resources) -->
   <ItemGroup>
+    <EmbeddedResource Include="Properties\ControlsResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ControlsResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="Properties\Internal\Microsoft.Data.ConnectionUI.Dialog.SR.resx" />
     <EmbeddedResource Include="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>
@@ -178,6 +209,11 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>AttributeResources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\ControlsResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ControlsResources.resx</DependentUpon>
     </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

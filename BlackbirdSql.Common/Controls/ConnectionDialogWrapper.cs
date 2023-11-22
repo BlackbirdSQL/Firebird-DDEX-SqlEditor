@@ -24,7 +24,7 @@ public class ConnectionDialogWrapper : IDisposable
 
 	private readonly EventsChannel _Channel;
 
-	private readonly IBDependencyManager _DependencyManager;
+	// private readonly IBDependencyManager _DependencyManager;
 
 	// private IConnectionStringManager _connectionStringManager;
 
@@ -37,8 +37,8 @@ public class ConnectionDialogWrapper : IDisposable
 
 	public ConnectionDialogWrapper()
 	{
-		_DependencyManager = ConnectionDialogService.Instance.DependencyManager;
-		Trace = new Traceable(_DependencyManager);
+		// _DependencyManager = ConnectionDialogService.Instance.DependencyManager;
+		// Trace = new Traceable(_DependencyManager);
 		_Connection = null;
 		_Channel = new EventsChannel();
 		_Channel.MakeConnectionCompletedEvent += GetConnectionObject;
@@ -55,6 +55,8 @@ public class ConnectionDialogWrapper : IDisposable
 
 	public bool? ShowDialogValidateConnection(IntPtr parent, UIConnectionInfo ci, out IDbConnection connection)
 	{
+		Tracer.Trace(GetType(), "ShowDialogValidateConnection()");
+
 		ShowDialog(parent, ci, out connection, out var result, new ConnectionDialogConfiguration
 		{
 			IsConnectMode = true,
@@ -78,13 +80,15 @@ public class ConnectionDialogWrapper : IDisposable
 
 	private UIConnectionInfo ShowDialog(IntPtr parent, UIConnectionInfo ci, out IDbConnection connection, out bool? result, ConnectionDialogConfiguration config)
 	{
+		Tracer.Trace(GetType(), "ShowDialog()");
+
 		UIConnectionInfo uIConnectionInfo = ci;
-		BlackbirdSql.Core.Cmd.CheckForNull(ci, "uiConnectionInfo");
-		BlackbirdSql.Core.Cmd.CheckForNull(parent, "parent");
+		Cmd.CheckForNull(ci, "uiConnectionInfo");
+		Cmd.CheckForNull(parent, "parent");
 
 		IBEditorPackage editorPackage = (IBEditorPackage)Controller.DdexPackage;
 
-		result = editorPackage.ShowConnectionDialogFrame(parent, _DependencyManager, _Channel, ci, ConnectionVerifier, config, ref uIConnectionInfo);
+		result = editorPackage.ShowConnectionDialogFrame(parent, _Channel, ci, ConnectionVerifier, config, ref uIConnectionInfo);
 
 		connection = _Connection;
 

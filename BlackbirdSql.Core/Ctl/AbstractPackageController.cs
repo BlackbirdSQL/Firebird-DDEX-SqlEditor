@@ -78,6 +78,7 @@ internal abstract class AbstractPackageController : IBPackageController
 	private IBPackageController.BeforeLastDocumentUnlockDelegate _OnBeforeLastDocumentUnlockEvent;
 
 	private IBPackageController.AfterOpenProjectDelegate _OnAfterOpenProjectEvent;
+	private IBPackageController.AfterCloseSolutionDelegate _OnAfterCloseSolutionEvent;
 	private IBPackageController.QueryCloseProjectDelegate _OnQueryCloseProjectEvent;
 	private IBPackageController.QueryCloseSolutionDelegate _OnQueryCloseSolutionEvent;
 
@@ -123,6 +124,16 @@ internal abstract class AbstractPackageController : IBPackageController
 	{
 		add { _OnAfterOpenProjectEvent += value; }
 		remove { _OnAfterOpenProjectEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsSolutionEvents.OnAfterCloseSolution"/> event.
+	/// </summary>
+	event IBPackageController.AfterCloseSolutionDelegate IBPackageController.OnAfterCloseSolutionEvent
+	{
+		add { _OnAfterCloseSolutionEvent += value; }
+		remove { _OnAfterCloseSolutionEvent -= value; }
 	}
 
 
@@ -524,14 +535,20 @@ internal abstract class AbstractPackageController : IBPackageController
 
 
 
+	public TInterface GetService<TInterface>() where TInterface : class
+		=> GetService<TInterface, TInterface>();
+
 
 	public TInterface GetService<TService, TInterface>() where TInterface : class
-		=> ((AsyncPackage)DdexPackage).GetService<TService, TInterface>();
+		=> DdexPackage.GetService<TService, TInterface>();
 
+
+	public async Task<TInterface> GetServiceAsync<TInterface>() where TInterface : class
+		=> await GetServiceAsync<TInterface, TInterface>();
 
 
 	public async Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class
-		=> await ((AsyncPackage)DdexPackage).GetServiceAsync<TService, TInterface>();
+		=> await DdexPackage.GetServiceAsync<TService, TInterface>();
 
 
 
@@ -616,6 +633,9 @@ internal abstract class AbstractPackageController : IBPackageController
 	public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded) => _OnAfterOpenProjectEvent != null
 		? _OnAfterOpenProjectEvent(pHierarchy, fAdded) : VSConstants.E_NOTIMPL;
 
+	public int OnAfterCloseSolution(object pUnkReserved) => _OnAfterCloseSolutionEvent != null
+		? _OnAfterCloseSolutionEvent(pUnkReserved) : VSConstants.E_NOTIMPL;
+
 	public int OnQueryCloseProject(IVsHierarchy pHierarchy, int fRemoving, ref int pfCancel) => _OnQueryCloseProjectEvent != null
 		? _OnQueryCloseProjectEvent(pHierarchy, fRemoving, ref pfCancel) : VSConstants.E_NOTIMPL;
 
@@ -630,7 +650,6 @@ internal abstract class AbstractPackageController : IBPackageController
 	public int OnAfterMergeSolution(object pUnkReserved) => VSConstants.E_NOTIMPL;
 	public int OnAfterOpeningChildren(IVsHierarchy hierarchy) => VSConstants.E_NOTIMPL;
 	public int OnAfterOpenSolution(object pUnkReserved, int fNewSolution) => VSConstants.E_NOTIMPL;
-	public int OnAfterCloseSolution(object pUnkReserved) => VSConstants.E_NOTIMPL;
 	public int OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved) => VSConstants.E_NOTIMPL;
 	public int OnBeforeCloseSolution(object pUnkReserved) => VSConstants.E_NOTIMPL;
 	public int OnBeforeClosingChildren(IVsHierarchy hierarchy) => VSConstants.E_NOTIMPL;

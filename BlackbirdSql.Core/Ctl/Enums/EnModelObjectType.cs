@@ -21,6 +21,7 @@ public enum EnModelObjectType
 	StoredProcedureParameter,
 	Function,
 	FunctionParameter,
+	NewQuery,
 	AlterUnknown = 20,
 	AlterColumn,
 	AlterDatabase,
@@ -35,7 +36,8 @@ public enum EnModelObjectType
 	AlterStoredProcedure,
 	AlterStoredProcedureParameter,
 	AlterFunction,
-	AlterFunctionParameter
+	AlterFunctionParameter,
+	AlterNewQuery
 }
 
 public static class EnModelObjectTypeExtensions
@@ -83,6 +85,7 @@ public static class EnModelObjectTypeExtensions
 			"VIEWCOLUMN" => EnModelObjectType.ViewColumn,
 			"STOREDPROCEDUREPARAMETER" => EnModelObjectType.StoredProcedureParameter,
 			"FUNCTIONPARAMETER" => EnModelObjectType.FunctionParameter,
+			"NEWQUERY" => EnModelObjectType.NewQuery,
 			"ALTERDATABASE" => EnModelObjectType.AlterDatabase,
 			"ALTERSTOREDPROCEDURE" => EnModelObjectType.AlterStoredProcedure,
 			"ALTERFUNCTION" => EnModelObjectType.AlterFunction,
@@ -97,6 +100,7 @@ public static class EnModelObjectTypeExtensions
 			"ALTERVIEWCOLUMN" => EnModelObjectType.AlterViewColumn,
 			"ALTERSTOREDPROCEDUREPARAMETER" => EnModelObjectType.AlterStoredProcedureParameter,
 			"ALTERFUNCTIONPARAMETER" => EnModelObjectType.AlterFunctionParameter,
+			"ALTERNEWQUERY" => EnModelObjectType.NewQuery,
 			_ => EnModelObjectType.Unknown
 		};
 	}

@@ -32,13 +32,13 @@ public class TObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 
 	public TObjectIdentifierConverter() : base()
 	{
-		Tracer.Trace(GetType(), "TObjectIdentifierConverter.TObjectIdentifierConverter");
+		// Tracer.Trace(GetType(), "TObjectIdentifierConverter.TObjectIdentifierConverter");
 	}
 
 
 	public TObjectIdentifierConverter(IVsDataConnection connection) : base(connection)
 	{
-		Tracer.Trace(GetType(), "TObjectIdentifierConverter.TObjectIdentifierConverter(IVsDataConnection)");
+		// Tracer.Trace(GetType(), "TObjectIdentifierConverter.TObjectIdentifierConverter(IVsDataConnection)");
 	}
 
 
@@ -187,7 +187,7 @@ public class TObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 	//     An System.EventArgs object containing the event data.
 	protected override void OnSiteChanged(EventArgs e)
 	{
-		Tracer.Trace(GetType(), "OnSiteChanged()");
+		// Tracer.Trace(GetType(), "OnSiteChanged()");
 
 		base.OnSiteChanged(e);
 	}

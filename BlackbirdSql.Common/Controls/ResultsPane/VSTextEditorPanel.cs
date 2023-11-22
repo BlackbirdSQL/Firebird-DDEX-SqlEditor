@@ -158,7 +158,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		protected override void Dispose(bool bDisposing)
 		{
-			Tracer.Trace(GetType(), "VSTextEditorPanel.Dispose", "", null);
+			// Tracer.Trace(GetType(), "VSTextEditorPanel.Dispose", "", null);
 			if (bDisposing && _TextViewCtl != null)
 			{
 				_TextViewCtl.Dispose();
@@ -175,7 +175,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		public override void Initialize(object sp)
 		{
-			Tracer.Trace(GetType(), "VSTextEditorTabPage.Initialize", "", null);
+			// Tracer.Trace(GetType(), "VSTextEditorTabPage.Initialize", "", null);
 
 			if (!ThreadHelper.CheckAccess())
 			{
@@ -208,7 +208,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			_TextViewCtl.CreateAndInitTextBuffer(sp, null);
 			_TextWriter = new ShellBufferWriter(_TextViewCtl.TextBuffer);
 			CreateAndInitVSTextEditor();
-			if (_serviceProvider.GetService(VS.CLSID_TextManager) is not IVsTextManager vsTextManager)
+			if (_ServiceProvider.GetService(VS.CLSID_TextManager) is not IVsTextManager vsTextManager)
 			{
 				return;
 			}
@@ -228,7 +228,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		public override void Clear()
 		{
-			Tracer.Trace(GetType(), "VSTextEditorTabPage.Clear", "", null);
+			// Tracer.Trace(GetType(), "VSTextEditorTabPage.Clear", "", null);
 			_TextViewCtl?.TextBuffer.Clear();
 
 			_TextWriter?.Reset();
@@ -236,7 +236,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		public void ScrollTextViewToMaxScrollUnit()
 		{
-			Tracer.Trace(GetType(), "VSTextEditorTabPage.ScrollTextViewToMaxScrollUnit", "", null);
+			// Tracer.Trace(GetType(), "VSTextEditorTabPage.ScrollTextViewToMaxScrollUnit", "", null);
 			if (!IsHandleCreated)
 			{
 				CreateHandle();
@@ -255,7 +255,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		private void CreateAndInitVSTextEditor()
 		{
-			Tracer.Trace(GetType(), "VSTextEditorTabPage.CreateAndInitVSTextEditor", "", null);
+			// Tracer.Trace(GetType(), "VSTextEditorTabPage.CreateAndInitVSTextEditor", "", null);
 			_TextViewCtl.CreateAndInitEditorWindow(_ObjServiceProvider);
 			if (_shouldBeReadOnly)
 			{
@@ -323,7 +323,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		private void OnSaveAs(object sender, EventArgs a)
 		{
-			Tracer.Trace(GetType(), "VSTextEditorTabPage.OnSaveAs", "", null);
+			// Tracer.Trace(GetType(), "VSTextEditorTabPage.OnSaveAs", "", null);
 			Control textView = _TextViewCtl;
 			Cursor current = Cursor.Current;
 			try

@@ -14,6 +14,7 @@ using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Interfaces;
+using BlackbirdSql.VisualStudio.Ddex.Controls.DataTools;
 using BlackbirdSql.VisualStudio.Ddex.Ctl;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.Config;
@@ -22,7 +23,9 @@ using BlackbirdSql.VisualStudio.Ddex.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 
 using FirebirdSql.Data.FirebirdClient;
-
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Data.Core;
+using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -162,6 +165,39 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 	// =========================================================================================================
 
 
+	/*
+	public override IVsDataConnectionDialog CreateConnectionDialogHandler()
+	{
+		return new TDataConnectionDlgHandler();
+	}
+	*/
+
+	public override TInterface GetService<TService, TInterface>()
+	{
+		TInterface instance = null;
+		Type type = typeof(TService);
+
+		ThreadHelper.JoinableTaskFactory.Run(async delegate
+		{
+			instance = (TInterface)await CreateServiceInstanceAsync(type, default);
+		});
+
+		instance ??= ((AsyncPackage)this).GetService<TService, TInterface>();
+
+		return instance;
+	}
+
+	public override Task<TInterface> GetServiceAsync<TService, TInterface>()
+	{
+		Type type = typeof(TService);
+
+		Task<object> task = CreateServiceInstanceAsync(type, default);
+
+		if (task == null || task == Task.FromResult<object>(null))
+			return ((AsyncPackage)this).GetServiceAsync<TService, TInterface>();
+
+		return task as Task<TInterface>;
+	}
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -237,8 +273,9 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 		ExtensionSettings.RegisterSettingsEventHandlers(ExtensionSettings.OnSettingsSaved);
 
 		// Add provider object and schema factories
-		Services.AddService(typeof(IBProviderObjectFactory), ServicesCreatorCallbackAsync, promote: true);
-		Services.AddService(typeof(IBProviderSchemaFactory), ServicesCreatorCallbackAsync, promote: true);
+		ServiceContainer.AddService(typeof(IBProviderObjectFactory), ServicesCreatorCallbackAsync, promote: true);
+		ServiceContainer.AddService(typeof(IBProviderSchemaFactory), ServicesCreatorCallbackAsync, promote: true);
+		ServiceContainer.AddService(typeof(IVsDataConnectionDialog), ServicesCreatorCallbackAsync, promote: true);
 
 
 		_ = AdviseEventsAsync();
@@ -269,49 +306,18 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 			throw ex;
 		}
 
-		if (serviceType == typeof(IBProviderObjectFactory))
+		if (serviceType == typeof(IBProviderObjectFactory) || serviceType == typeof(IVsDataProviderObjectFactory))
 		{
-			object service;
-			try
-			{
-				service = new TProviderObjectFactory();
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-				throw ex;
-			}
-
-			if (service == null)
-			{
-				ServiceUnavailableException ex = new(serviceType);
-				Diag.Dug(ex);
-				throw ex;
-			}
-
-			return service;
+			return new TProviderObjectFactory();
 		}
 		if (serviceType == typeof(IBProviderSchemaFactory))
 		{
-			object service;
-			try
-			{
-				service = new DslProviderSchemaFactory();
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-				throw ex;
-			}
-
-			if (service == null)
-			{
-				ServiceUnavailableException ex = new(serviceType);
-				Diag.Dug(ex);
-				throw ex;
-			}
-
-			return service;
+			return new DslProviderSchemaFactory();
+		}
+		// IVsDataConnectionDialog
+		if (serviceType == typeof(IVsDataConnectionDialog))
+		{
+			return new TDataConnectionDlgHandler();
 		}
 
 		return await base.CreateServiceInstanceAsync(serviceType, token);

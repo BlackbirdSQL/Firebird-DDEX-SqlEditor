@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -50,10 +51,10 @@ public abstract class AbstractHostess : IDisposable
 	{
 		get
 		{
-			_HostService ??= _ServiceProvider.GetService(typeof(IVsDataHostService)) as IVsDataHostService;
+			_HostService ??= _ServiceProvider.GetService<IVsDataHostService, IVsDataHostService>();
 
-			try { Assumes.Present(_HostService); }
-			catch (Exception ex) { Diag.Dug(ex); throw; }
+			if (_HostService == null)
+				throw Diag.ServiceUnavailable(typeof(IVsDataHostService));
 
 			return _HostService;
 		}
@@ -76,15 +77,15 @@ public abstract class AbstractHostess : IDisposable
 			throw exc;
 		}
 
-			_HostService ??= _ServiceProvider.GetService(typeof(IVsDataHostService)) as IVsDataHostService;
+			_HostService ??= _ServiceProvider.GetService<IVsDataHostService, IVsDataHostService>();
 
 			if (_HostService != null)
 				_ShellService = _HostService.GetService<SVsUIShell, IVsUIShell>();
 
 			_ShellService ??= Package.GetGlobalService(typeof(SVsUIShell)) as IVsUIShell;
 
-			try { Assumes.Present(_ShellService); }
-			catch (Exception ex) { Diag.Dug(ex); throw; }
+			if (_ShellService == null)
+				throw Diag.ServiceUnavailable(typeof(IVsUIShell));
 
 			return _ShellService;
 		}
@@ -117,13 +118,21 @@ public abstract class AbstractHostess : IDisposable
 	}
 
 
+	public AbstractHostess()
+	{
+		// Tracer.Trace(GetType(), "AbstractHostess.AbstractHostess(IServiceProvider)");
+
+		_ServiceProvider = (IServiceProvider)Controller.DdexPackage;
+	}
+
 	public AbstractHostess(IServiceProvider serviceProvider)
 	{
-		Tracer.Trace(GetType(), "AbstractHostess.AbstractHostess(IServiceProvider)");
+		// Tracer.Trace(GetType(), "AbstractHostess.AbstractHostess(IServiceProvider)");
 
 		_ServiceProvider = serviceProvider;
 	}
 
+	
 	~AbstractHostess()
 	{
 		Dispose(disposing: false);
@@ -135,7 +144,7 @@ public abstract class AbstractHostess : IDisposable
 
 	public bool ActivateDocumentIfOpen(string documentMoniker)
 	{
-		Tracer.Trace(GetType(), "AbstractHostess.ActivateDocumentIfOpen", "documentMoniker: {0}", documentMoniker);
+		// Tracer.Trace(GetType(), "AbstractHostess.ActivateDocumentIfOpen", "documentMoniker: {0}", documentMoniker);
 
 		return ActivateDocumentIfOpen(documentMoniker, doNotShowWindowFrame: false) != null;
 	}
@@ -144,15 +153,10 @@ public abstract class AbstractHostess : IDisposable
 
 	public IVsWindowFrame ActivateDocumentIfOpen(string mkDocument, bool doNotShowWindowFrame)
 	{
-		Tracer.Trace(GetType(), "AbstractHostess.ActivateDocumentIfOpen", "mkDocument: {0}, doNotShowWindowFrame: {1}", mkDocument, doNotShowWindowFrame);
+		// Tracer.Trace(GetType(), "AbstractHostess.ActivateDocumentIfOpen", "mkDocument: {0}, doNotShowWindowFrame: {1}", mkDocument, doNotShowWindowFrame);
 
-		IVsUIShellOpenDocument service = HostService.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
-		if (service == null)
-		{
-			ServiceUnavailableException ex = new(typeof(IVsUIShellOpenDocument));
-			Diag.Dug(ex);
-			throw ex;
-		}
+		IVsUIShellOpenDocument service = HostService.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>()
+			?? throw Diag.ServiceUnavailable(typeof(IVsUIShellOpenDocument));
 
 		if (!ThreadHelper.CheckAccess())
 		{
@@ -196,14 +200,8 @@ public abstract class AbstractHostess : IDisposable
 
 	private object CreateLocalInstanceImpl(Guid classId)
 	{
-		ILocalRegistry2 service = HostService.GetService<SLocalRegistry, ILocalRegistry2>();
-
-		if (service == null)
-		{
-			ServiceUnavailableException ex = new(typeof(ILocalRegistry2));
-			Diag.Dug(ex);
-			throw ex;
-		}
+		ILocalRegistry2 service = HostService.GetService<SLocalRegistry, ILocalRegistry2>()
+			?? throw Diag.ServiceUnavailable(typeof(ILocalRegistry2));
 
 		if (!ThreadHelper.CheckAccess())
 		{
@@ -240,13 +238,8 @@ public abstract class AbstractHostess : IDisposable
 	{
 		int pDocInProj;
 
-		IVsUIShellOpenDocument service = HostService.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
-		if (service == null)
-		{
-			ServiceUnavailableException ex = new(typeof(IVsUIShellOpenDocument));
-			Diag.Dug(ex);
-			throw ex;
-		}
+		IVsUIShellOpenDocument service = HostService.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>()
+			?? throw Diag.ServiceUnavailable(typeof(IVsUIShellOpenDocument));
 
 		if (!ThreadHelper.CheckAccess())
 		{
@@ -272,7 +265,7 @@ public abstract class AbstractHostess : IDisposable
 
 	public void PostExecuteCommand(CommandID command, int delay = 0)
 	{
-		Tracer.Trace(GetType(), "AbstractHostess.PostExecuteCommand", "command: {0}", command);
+		// Tracer.Trace(GetType(), "AbstractHostess.PostExecuteCommand", "command: {0}", command);
 
 		_ = ShellService;
 
@@ -330,14 +323,8 @@ public abstract class AbstractHostess : IDisposable
 
 	public void RenameDocument(string oldDocumentMoniker, int newItemId, string newDocumentMoniker)
 	{
-		IVsRunningDocumentTable service = HostService.GetService<SVsRunningDocumentTable, IVsRunningDocumentTable>();
-
-		if (service == null)
-		{
-			ServiceUnavailableException ex = new(typeof(IVsRunningDocumentTable));
-			Diag.Dug(ex);
-			throw ex;
-		}
+		IVsRunningDocumentTable service = HostService.GetService<SVsRunningDocumentTable, IVsRunningDocumentTable>()
+			?? throw Diag.ServiceUnavailable(typeof(IVsRunningDocumentTable));
 
 		if (!ThreadHelper.CheckAccess())
 		{
@@ -372,13 +359,8 @@ public abstract class AbstractHostess : IDisposable
 
 	private void ShowMessageImpl(string message)
 	{
-		IUIService service = HostService.GetService<IUIService>();
-		if (service == null)
-		{
-			ServiceUnavailableException ex = new(typeof(IUIService));
-			Diag.Dug(ex);
-			throw ex;
-		}
+		IUIService service = HostService.GetService<IUIService>()
+			?? throw Diag.ServiceUnavailable(typeof(IUIService));
 		service.ShowMessage(message);
 	}
 
@@ -440,14 +422,7 @@ public abstract class AbstractHostess : IDisposable
 	public T TryGetService<T>()
 	{
 		T service = HostService.TryGetService<T>();
-		if (service == null)
-		{
-			ServiceUnavailableException ex = new(typeof(T));
-			Diag.Dug(ex);
-			throw ex;
-		}
-		return service;
-
+		return service == null ? throw Diag.ServiceUnavailable(typeof(T)) : service;
 	}
 
 	public TInterface TryGetService<TService, TInterface>()
@@ -476,40 +451,22 @@ public abstract class AbstractHostess : IDisposable
 
 	public T GetService<T>()
 	{
-		Tracer.Trace(GetType(), "AbstractHostess.GetService<T>", "T: {0}", typeof(T).FullName);
+		// Tracer.Trace(GetType(), "AbstractHostess.GetService<T>", "T: {0}", typeof(T).FullName);
 
 		T service = HostService.GetService<T>();
-		if (service == null)
-		{
-			ServiceUnavailableException ex = new(typeof(T));
-			Diag.Dug(ex);
-			throw ex;
-		}
-		return service;
+		return service == null ? throw Diag.ServiceUnavailable(typeof(T)) : service;
 	}
 
 	public TInterface GetService<TService, TInterface>()
 	{
 		TInterface service = HostService.GetService<TService, TInterface>();
-		if (service == null)
-		{
-			InvalidOperationException ex = new($"{typeof(TService).Name} : {typeof(TInterface).Name} service not found");
-			Diag.Dug(ex);
-			throw ex;
-		}
-		return service;
+		return service == null ? throw Diag.ServiceUnavailable(typeof(TInterface)) : service;
 	}
 
 	public T GetService<T>(Guid serviceGuid)
 	{
 		T service = HostService.GetService<T>(serviceGuid);
-		if (service == null)
-		{
-			InvalidOperationException ex = new($"{typeof(T).Name} service (Guid: {serviceGuid}) not found");
-			Diag.Dug(ex);
-			throw ex;
-		}
-		return service;
+		return service == null ? throw Diag.ServiceUnavailable(typeof(T)) : service;
 	}
 
 	void IDisposable.Dispose()
@@ -531,7 +488,7 @@ public abstract class AbstractHostess : IDisposable
 			*/
 
 			_HostService = null;
-			// _serviceProvider = null;
+			// _ServiceProvider = null;
 		}
 	}
 

@@ -22,13 +22,16 @@
 	  <NoWarn>1701;1702;CS0618</NoWarn>
 	</PropertyGroup>
 
+
 	<ItemGroup>
 	  <EmbeddedResource Remove="Properties\Originals\SqlEditorResource.resx" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Compile Include="Ctl\Config\LiveUserSettings.cs" />
+	  <Compile Include="Ctl\Commands\SqlEditorNewQueryCommand.cs" />
 	  <Compile Include="Ctl\Config\UserSettings.cs" />
+	  <Compile Include="Model\MonikerAgent.cs" />
 	  <None Include="Ctl\DataTools\AbstractDataToolsDocument.cs" />
 	  <Compile Include="Ctl\Enums\EnDeadlockPriority.cs" />
 	  <Compile Include="Ctl\Interfaces\IBLiveUserSettings.cs" />
@@ -304,13 +307,9 @@
 	  <Compile Include="Controls\AbstractTabbedEditorPane.cs" />
 	  <Compile Include="Controls\Widgets\AnimatedStatusStripItem.cs" />
 	  <Compile Include="Controls\BarBackgroundRenderer.cs" />
-	  <Compile Include="Controls\Wpf\BorderButton.cs" />
-	  <Compile Include="Controls\Wpf\BorderButtonAutomationPeer.cs" />
 	  <Compile Include="Controls\ConnectionDialogWrapper.cs" />
 	  <Compile Include="Properties\ControlsResources.Designer.cs" />
 	  <Compile Include="Controls\ControlUtils.cs" />
-	  <Compile Include="Controls\Wpf\DataConnectionAdvancedDlg.cs" />
-	  <Compile Include="Controls\Wpf\DialogWindow.cs" />
 	  <Compile Include="Controls\EditorStatusStripRenderer.cs" />
 	  <Compile Include="Controls\Enums\EnButtonCellState.cs" />
 	  <Compile Include="Controls\Enums\EnGridButtonArea.cs" />
@@ -426,7 +425,6 @@
 	  <Compile Include="Model\Interfaces\IBSortView.cs" />
 	  <Compile Include="Controls\Interfaces\IBStatusBarContributer.cs" />
 	  <Compile Include="Model\Interfaces\IBStorageView.cs" />
-	  <Compile Include="Controls\Wpf\NotificationTextBlock.cs" />
 	  <Compile Include="Ctl\ComponentModel\GlobalizedCategoryAttribute.cs" />
 	  <Compile Include="Ctl\ComponentModel\GlobalizedDescriptionAttribute.cs" />
 	  <Compile Include="Ctl\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
@@ -472,11 +470,6 @@
 	  <Compile Include="Ctl\Commands\TextViewCommandFilter.cs" />
 	  <Compile Include="Controls\ToolbarHost.cs" />
 	  <Compile Include="Controls\Widgets\ToolStripStatusLabelWithMaxLimit.cs" />
-	  <Compile Include="Controls\Wpf\TreeViewItemBehaviors.cs" />
-	  <Compile Include="Controls\Wpf\TreeViewItemExtensions.cs" />
-	  <Compile Include="Controls\Wpf\Watermark.cs" />
-	  <Compile Include="Controls\Wpf\WatermarkAdorner.cs" />
-	  <Compile Include="Controls\Wpf\WatermarkState.cs" />
 	  <Compile Include="Controls\Widgets\WrappingCheckBox.cs" />
 	  <Compile Include="Ctl\AbstractEditorEventsManager.cs" />
 	  <Compile Include="Ctl\AbstractTextBuffer.cs" />
@@ -485,7 +478,6 @@
 	  <Compile Include="Ctl\AutoLock.cs" />
 	  <Compile Include="Ctl\BitArrayCollection.cs" />
 	  <Compile Include="Ctl\BlockOfCellsCollection.cs" />
-	  <Compile Include="Ctl\Wpf\CachedResourceDictionary.cs" />
 	  <Compile Include="Ctl\Commands\AbstractSqlEditorCommand.cs" />
 	  <Compile Include="Ctl\Commands\SqlEditorCancelQueryCommand.cs" />
 	  <Compile Include="Ctl\Commands\SqlEditorChangeConnectionCommand.cs" />
@@ -510,56 +502,25 @@
 	  <Compile Include="Ctl\CommonHandles.cs" />
 	  <Compile Include="Ctl\CommonUtils.cs" />
 	  <Compile Include="Ctl\CommonVsUtilities.cs" />
-	  <Compile Include="Ctl\CompositionProperties.cs" />
 	  <Compile Include="Ctl\ConnectionDialogConfiguration.cs" />
 	  <Compile Include="Ctl\ConnectionDialogService.cs" />
 	  <Compile Include="Ctl\ConnectionPointCookie.cs" />
 	  <Compile Include="Ctl\ConnectionResponse.cs" />
-	  <Compile Include="Controls\Converters\Wpf\AllTrueToVisibleConverter.cs" />
-	  <Compile Include="Controls\Converters\Wpf\AnyTrueToVisibleConverter.cs" />
-	  <Compile Include="Controls\Converters\Wpf\ArithmeticConverter.cs" />
-	  <Compile Include="Controls\Converters\Wpf\BoolInvertConverter.cs" />
-	  <Compile Include="Controls\Converters\Wpf\CanvasScaleConverter.cs" />
-	  <Compile Include="Controls\Converters\Wpf\ConnectionListItemPinMenuItemConverter.cs" />
-	  <Compile Include="Controls\Converters\Wpf\ConnectionListItemPinTooltipConverter.cs" />
-	  <Compile Include="Controls\Converters\Wpf\ConnectionListItemPinUnPinConverter.cs" />
-	  <Compile Include="Controls\Converters\Wpf\ConverterHelper.cs" />
-	  <Compile Include="Controls\Converters\Wpf\IconToImageSourceConverter.cs" />
-	  <Compile Include="Controls\Converters\Wpf\ImageToImageSourceConverter.cs" />
-	  <Compile Include="Controls\Converters\Wpf\IndentWidthToMarginConverter.cs" />
-	  <Compile Include="Controls\Converters\Wpf\IsAllTrueConverter.cs" />
-	  <Compile Include="Controls\Converters\Wpf\IsAnyTrueConverter.cs" />
-	  <Compile Include="Controls\Converters\Wpf\IsNullConverter.cs" />
-	  <Compile Include="Controls\Converters\Wpf\IsParentConverter.cs" />
-	  <Compile Include="Controls\Converters\Wpf\NonEmptyStringToVisibleConverter.cs" />
-	  <Compile Include="Controls\Converters\Wpf\NullToVisibleConverter.cs" />
-	  <Compile Include="Controls\Converters\Wpf\AbstractPinUnpinConverter.cs" />
-	  <Compile Include="Controls\Converters\Wpf\ToggleButtonBorderBrushConverter.cs" />
-	  <Compile Include="Controls\Converters\Wpf\ToggleButtonConverterHelper.cs" />
-	  <Compile Include="Controls\Converters\Wpf\ToggleButtonFillBrushConverter.cs" />
-	  <Compile Include="Controls\Converters\Wpf\TrueToVisibleConverter.cs" />
 	  <Compile Include="Ctl\DatabaseLocation.cs" />
 	  <Compile Include="Ctl\DbCommandWrapper.cs" />
 	  <Compile Include="Ctl\DbConnectionWrapper.cs" />
-	  <Compile Include="Ctl\DependencyManager.cs" />
 	  <Compile Include="Ctl\DesignerExplorerServices.cs" />
 	  <Compile Include="Ctl\DesignerOnlineServices.cs" />
 	  <Compile Include="Ctl\EventsChannel.cs" />
-	  <Compile Include="Ctl\ExtensionProperties.cs" />
 	  <Compile Include="Ctl\FindTargetAdapter.cs" />
 	  <Compile Include="Ctl\GuidId.cs" />
 	  <Compile Include="Ctl\HandleCollector.cs" />
-	  <Compile Include="Ctl\Wpf\ListViewHelper.cs" />
 	  <Compile Include="Ctl\Marker.cs" />
 	  <Compile Include="Ctl\Commands\MenuCommandsService.cs" />
 	  <Compile Include="Ctl\Commands\MenuCommandTextChanges.cs" />
 	  <Compile Include="Ctl\MruInfo.cs" />
 	  <Compile Include="Ctl\NodeElementDescriptor.cs" />
-	  <Compile Include="Ctl\Wpf\PasswordBoxAssistant.cs" />
 	  <Compile Include="Ctl\RdtManager.cs" />
-	  <Compile Include="Ctl\SectionHost.cs" />
-	  <Compile Include="Ctl\SectionRegInfo.cs" />
-	  <Compile Include="Ctl\ServiceManager.cs" />
 	  <Compile Include="Ctl\SortingArray.cs" />
 	  <Compile Include="Ctl\SqlDebugBatchContext.cs" />
 	  <Compile Include="Ctl\Commands\SqlEditorViewFilter.cs" />
@@ -600,10 +561,6 @@
 	  <Compile Include="Ctl\Events\FontChangedEventArgs.cs" />
 	  <Compile Include="Ctl\Events\FontChangedEventHandler.cs" />
 	  <Compile Include="Ctl\Events\HandleChangeEventHandler.cs" />
-	  <Compile Include="Ctl\Events\SectionEventArgs.cs" />
-	  <Compile Include="Ctl\Events\SectionInitializeEventArgs.cs" />
-	  <Compile Include="Ctl\Events\SectionLoadedEventArgs.cs" />
-	  <Compile Include="Ctl\Events\SectionSaveContextEventArgs.cs" />
 	  <Compile Include="Ctl\Events\SpecialEditorCommandEventArgs.cs" />
 	  <Compile Include="Ctl\Events\SpecialEditorCommandEventHandler.cs" />
 	  <Compile Include="Ctl\Events\TabActivationEventArgs.cs" />
@@ -631,7 +588,6 @@
 	  <Compile Include="Ctl\Interfaces\IBMenuCommandTextChanges.cs" />
 	  <Compile Include="Ctl\Interfaces\IBMetadataProviderProvider.cs" />
 	  <Compile Include="Ctl\Interfaces\IBOwnedCommand.cs" />
-	  <Compile Include="Ctl\Interfaces\IBSection.cs" />
 	  <Compile Include="Ctl\Interfaces\IBServerConnectionProvider.cs" />
 	  <Compile Include="Ctl\Interfaces\IBSortingArray.cs" />
 	  <Compile Include="Ctl\Interfaces\IBSqlEditorErrorTaskFactory.cs" />
@@ -652,15 +608,9 @@
 	  <Compile Include="Model\AsyncCommand.cs" />
 	  <Compile Include="Model\AuxiliaryDocData.cs" />
 	  <Compile Include="Model\ConnectionDialogTelemetryContext.cs" />
-	  <Compile Include="Model\Wpf\ConnectionInfo.cs" />
 	  <Compile Include="Model\AbstractConnectionStrategy.cs" />
 	  <Compile Include="Model\DataConnectionProperties.cs" />
 	  <Compile Include="Model\DefaultSqlEditorStrategy.cs" />
-	  <Compile Include="Model\Wpf\DialogColorProvider.cs" />
-	  <Compile Include="Model\Wpf\DialogColors.cs" />
-	  <Compile Include="Model\Wpf\DialogFontProvider.cs" />
-	  <Compile Include="Model\Wpf\DialogFonts.cs" />
-	  <Compile Include="Model\Wpf\DialogModel.cs" />
 	  <Compile Include="Model\AbstractDiskDataStorage.cs" />
 	  <Compile Include="Model\DiskStorageView.cs" />
 	  <Compile Include="Model\DslConnectionInfo.cs" />
@@ -708,7 +658,6 @@
 	  <Compile Include="Model\Interfaces\IBBatchExecutionHandler.cs" />
 	  <Compile Include="Model\Interfaces\IBBatchSource.cs" />
 	  <Compile Include="Model\Interfaces\IBCommandExecuter.cs" />
-	  <Compile Include="Model\Interfaces\IBCommandExecuter2.cs" />
 	  <Compile Include="Model\Interfaces\IBDiskDataStorage.cs" />
 	  <Compile Include="Model\Interfaces\IBFileStreamWriter.cs" />
 	  <Compile Include="Model\Interfaces\IBGridControl2.cs" />
@@ -720,7 +669,6 @@
 	  <Compile Include="Model\Interfaces\IBSqlQueryExecutionHandler.cs" />
 	  <Compile Include="Model\Interfaces\IBVariableResolver.cs" />
 	  <Compile Include="Model\Parser\ManagedBatchParser.cs" />
-	  <Compile Include="Model\MonikerAgent.cs" />
 	  <Compile Include="Model\NotifyTaskCompletion.cs" />
 	  <Compile Include="Model\ParserState.cs" />
 	  <Compile Include="Model\QueryExecution\OLECMDTEXT.cs" />
@@ -745,7 +693,6 @@
 	  <Compile Include="Model\SqlConnectionStrategy.cs" />
 	  <Compile Include="Model\TelemetryConstants.cs" />
 	  <Compile Include="Model\TelemetryPropertySet.cs" />
-	  <Compile Include="Model\Wpf\AbstractViewModel.cs" />
 	  <Compile Include="Ctl\Structs\MONITORINFO.cs" />
 	  <Compile Include="Root\Native.cs" />
 	  <Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
@@ -769,7 +716,6 @@
 	    <LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
 	  <EmbeddedResource Include="Properties\ControlsResources.resx" />
-	  <EmbeddedResource Include="Controls\Wpf\DataConnectionAdvancedDlg.resx" />
 	  <EmbeddedResource Include="Controls\FileEncodingDlg.resx" />
 	  <EmbeddedResource Include="Properties\Originals\SqlExecutionAnsiSettingsDlg.resx" />
 	  <EmbeddedResource Include="Controls\Exceptions\AdvancedInformationDlg.resx" />
@@ -858,7 +804,6 @@
 	  <Compile Update="Controls\ResultsPane\TextResultsViewContol.cs" />
 	  <Compile Update="Controls\ResultsPane\VSTextEditorPanel.cs" />
 	  <Compile Update="Controls\Widgets\WrappingCheckBox.cs" />
-	  <Compile Update="Controls\Wpf\DataConnectionAdvancedDlg.cs" />
 	  <Compile Update="Controls\Exceptions\AdvancedInformationDlg.cs" />
 	  <Compile Update="Controls\Exceptions\ExceptionMessageBoxDlg.cs" />
 	  <Compile Update="Properties\ExceptionsResources.Designer.cs">
@@ -893,9 +838,6 @@
 	    <LastGenOutput>ControlsResources.Designer.cs</LastGenOutput>
 	    <Generator>PublicResXFileCodeGenerator</Generator>
 	  </EmbeddedResource>
-	  <EmbeddedResource Update="Controls\Wpf\DataConnectionAdvancedDlg.resx">
-	    <SubType>Designer</SubType>
-	  </EmbeddedResource>
 	  <EmbeddedResource Update="Properties\Originals\SqlExecutionAnsiSettingsDlg.resx">
 	    <SubType>Designer</SubType>
 	  </EmbeddedResource>
@@ -914,15 +856,6 @@
 	    <LastGenOutput>SharedResx.Designer.cs</LastGenOutput>
 	    <Generator>PublicResXFileCodeGenerator</Generator>
 	  </EmbeddedResource>
-	</ItemGroup>
-
-
-	<ItemGroup>
-	  <Page Include="Properties\SharedResources.xaml">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	    <SubType>Designer</SubType>
-	    <Generator>XamlIntelliSenseFileGenerator</Generator>
-	  </Page>
 	</ItemGroup>
 
 

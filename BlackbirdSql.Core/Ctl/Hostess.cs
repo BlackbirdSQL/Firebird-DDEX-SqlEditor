@@ -4,9 +4,9 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 
@@ -18,7 +18,6 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 using IObjectWithSite = Microsoft.VisualStudio.OLE.Interop.IObjectWithSite;
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
-using IServiceProvider = System.IServiceProvider;
 
 
 namespace BlackbirdSql.Core.Ctl;
@@ -31,11 +30,15 @@ namespace BlackbirdSql.Core.Ctl;
 /// </summary>
 public class Hostess : AbstractHostess
 {
-
-
-	public Hostess(IServiceProvider serviceProvider) : base(serviceProvider)
+	public Hostess() : base()
 	{
-		Tracer.Trace(GetType(), "Hostess.Hostess");
+		// Tracer.Trace(GetType(), "Hostess.Hostess");
+	}
+
+
+	public Hostess(System.IServiceProvider serviceProvider) : base(serviceProvider)
+	{
+		// Tracer.Trace(GetType(), "Hostess.Hostess");
 	}
 
 
@@ -47,7 +50,7 @@ public class Hostess : AbstractHostess
 	/// <returns></returns>
 	internal IVsWindowFrame ActivateOrOpenVirtualDocument(IVsDataExplorerNode node, bool doNotShowWindowFrame)
 	{
-		Tracer.Trace(GetType(), "Hostess.ActivateOrOpenVirtualDocument");
+		// Tracer.Trace(GetType(), "Hostess.ActivateOrOpenVirtualDocument");
 
 		int result;
 
@@ -77,23 +80,8 @@ public class Hostess : AbstractHostess
 		if (doNotShowWindowFrame)
 			grfIDO = 0u;
 
-		IVsUIShellOpenDocument service;
-		try
-		{
-			service = HostService.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		if (service == null)
-		{
-			ServiceUnavailableException ex = new(typeof(IVsUIShellOpenDocument));
-			Diag.Dug(ex);
-			throw ex;
-		}
+		IVsUIShellOpenDocument service = HostService.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>()
+			?? throw Diag.ServiceUnavailable(typeof(IVsUIShellOpenDocument));
 
 		if (!ThreadHelper.CheckAccess())
 		{
@@ -228,26 +216,31 @@ public class Hostess : AbstractHostess
 	}
 
 
+	public static Type GetManagedTypeFromCLSID(Guid classId)
+	{
+		Type type = Type.GetTypeFromCLSID(classId);
+
+		if (type != null && type.IsCOMObject)
+			type = null;
+
+		return type;
+	}
+
+
+	public static Type GetTypeFromAssembly(Assembly assembly, string typeName, bool throwOnError = false)
+	{
+		return assembly.GetType(typeName, throwOnError);
+	}
+
+
+	public static Assembly LoadAssemblyFrom(string fileName)
+		=> Assembly.LoadFrom(fileName);
+
+
 	internal void RegisterHierarchy(IVsUIHierarchy hierarchy)
 	{
-		IBPackageController controller;
-
-		try
-		{
-			controller = GetService<IBPackageController>();
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		if (controller == null)
-		{
-			ServiceUnavailableException ex = new(typeof(IBPackageController));
-			Diag.Dug(ex);
-			throw ex;
-		}
+		IBPackageController controller = GetService<IBPackageController>()
+			?? throw Diag.ServiceUnavailable(typeof(IBPackageController));
 
 		controller.RegisterMiscHierarchy(hierarchy);
 	}
@@ -300,24 +293,23 @@ public class Hostess : AbstractHostess
 		string editorCaption, Guid editorType, string physicalView, Guid commandUIGuid, object documentView,
 		object documentData, int owningItemId, IVsUIHierarchy owningHierarchy, IOleServiceProvider serviceProvider)
 	{
-		IntPtr iUnknownForObject = Marshal.GetIUnknownForObject(documentView);
-		IntPtr iUnknownForObject2 = Marshal.GetIUnknownForObject(documentData);
+		IVsUIShell service = HostService.GetService<SVsUIShell, IVsUIShell>()
+			?? throw Diag.ServiceUnavailable(typeof(IVsUIShell));
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
+		IntPtr iUnknownForObject = IntPtr.Zero;
+		IntPtr iUnknownForObject2 = IntPtr.Zero;
+
 		try
 		{
-			IVsUIShell service = HostService.GetService<SVsUIShell, IVsUIShell>();
-			if (service == null)
-			{
-				ServiceUnavailableException ex = new(typeof(IVsUIShell));
-				Diag.Dug(ex);
-				throw ex;
-			}
-
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			iUnknownForObject = Marshal.GetIUnknownForObject(documentView);
+			iUnknownForObject2 = Marshal.GetIUnknownForObject(documentData);
 
 			Native.WrapComCall(service.CreateDocumentWindow((uint)attributes, documentMoniker, owningHierarchy, (uint)owningItemId, iUnknownForObject, iUnknownForObject2, ref editorType, physicalView, ref commandUIGuid, serviceProvider, ownerCaption, editorCaption, null, out IVsWindowFrame ppWindowFrame));
 			return ppWindowFrame;
@@ -334,4 +326,29 @@ public class Hostess : AbstractHostess
 		}
 	}
 
+
+	public static object CreateManagedInstance(Guid classId)
+	{
+		Type managedTypeFromCLSID = GetManagedTypeFromCLSID(classId)
+			?? throw new TypeLoadException(classId.ToString("B"));
+		return Activator.CreateInstance(managedTypeFromCLSID);
+	}
+
+
+
+	public static object CreateInstance(Type type, params object[] args)
+	{
+		try
+		{
+			if (type.IsInterface)
+				throw new TypeAccessException($"Cannot create interface instance: {type.Name}.");
+
+			return Activator.CreateInstance(type, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, args, null);
+		}
+		catch (TargetInvocationException ex)
+		{
+			Diag.Dug(ex);
+			throw ex.InnerException;
+		}
+	}
 }

@@ -249,7 +249,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// ---------------------------------------------------------------------------------
 	protected AbstractLinkageParser(FbConnection connection, AbstractLinkageParser rhs) : base()
 	{
-		Tracer.Trace(typeof(AbstractLinkageParser), $"AbstractLinkageParser(FbConnection, AbstractLinkageParser)");
+		// Tracer.Trace(typeof(AbstractLinkageParser), $"AbstractLinkageParser(FbConnection, AbstractLinkageParser)");
 
 		_Connection = connection;
 		_Instances ??= new();
@@ -286,7 +286,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// ---------------------------------------------------------------------------------
 	protected static AbstractLinkageParser GetInstance(FbConnection connection)
 	{
-		Tracer.Trace(typeof(AbstractLinkageParser), "GetInstance(FbConnection)");
+		// Tracer.Trace(typeof(AbstractLinkageParser), "GetInstance(FbConnection)");
 
 		AbstractLinkageParser parser = null;
 
@@ -297,12 +297,12 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 			throw ex;
 		}
 
-		Tracer.Trace(typeof(AbstractLinkageParser), "GetInstance(FbConnection)");
+		// Tracer.Trace(typeof(AbstractLinkageParser), "GetInstance(FbConnection)");
 
 		if (_Instances != null && _Instances.TryGetValue(connection, out object parserObject))
 		{
 			parser = (AbstractLinkageParser)parserObject;
-			Tracer.Trace(typeof(AbstractLinkageParser), "GetInstance(FbConnection)", "Found existing connection");
+			// Tracer.Trace(typeof(AbstractLinkageParser), "GetInstance(FbConnection)", "Found existing connection");
 		}
 
 		return parser;
@@ -323,14 +323,14 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 	protected override bool Dispose(bool disposing)
 	{
-		Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "Disabling instance");
+		// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "Disabling instance");
 
 		if (_Connection == null || _Instances == null)
 			return false;
 
 		Disable();
 
-		Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "Removing instance");
+		// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "Removing instance");
 
 		_Instances.Remove(_Connection);
 		if (_Instances.Count == 0)
@@ -689,7 +689,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 	protected static bool DisposeInstance(FbConnection connection)
 	{
-		Tracer.Trace(typeof(AbstractLinkageParser), "DisposeInstance(FbConnection)");
+		// Tracer.Trace(typeof(AbstractLinkageParser), "DisposeInstance(FbConnection)");
 
 		lock (_LockClass)
 		{
@@ -844,16 +844,16 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 	protected static AbstractLinkageParser FindEquivalentParser(FbConnection connection)
 	{
-		Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()");
+		// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()");
 
 		if (_Instances == null)
 		{
-			Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Not found. _Instances is null.");
+			// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Not found. _Instances is null.");
 			return null;
 		}
 
-		FbConnectionStringBuilder csb1 = null;
-		FbConnectionStringBuilder csb2;
+		CsbAgent csa1 = null;
+		CsbAgent csa2;
 
 		foreach (KeyValuePair<FbConnection, object> pair in _Instances)
 		{
@@ -862,11 +862,11 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 			if (!parser.Loaded)
 				continue;
 
-			csb1 ??= new(connection.ConnectionString);
+			csa1 ??= new(connection.ConnectionString);
 
 			try
 			{
-				csb2 = new(pair.Key.ConnectionString);
+				csa2 = new(pair.Key.ConnectionString);
 			}
 			catch (Exception ex)
 			{
@@ -874,14 +874,14 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 				continue;
 			}
 
-			if (ModelPropertySet.AreEquivalent(csb1, csb2))
+			if (CsbAgent.AreEquivalent(csa1, csa2))
 			{
-				Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Found equivalent.");
+				// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Found equivalent.");
 				return parser;
 			}
 		}
 
-		Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "No equivalent found.");
+		// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "No equivalent found.");
 
 		return null;
 	}

@@ -120,6 +120,9 @@
   <data name="DataToolsDocument_Caption" xml:space="preserve">
     <value>{2}: {1}{0}</value>
   </data>
+  <data name="DesignerExplorerServices_DecoratedNewQuery" xml:space="preserve">
+    <value>/* ** New Query ** */</value>
+  </data>
   <data name="QueryDesignerDocument_NewQueryCaption" xml:space="preserve">
     <value>Query{1}: Query{0}</value>
   </data>

@@ -29,14 +29,14 @@ internal class DslRawTriggerDependencies : AbstractDslSchema
 {
 	public DslRawTriggerDependencies() : base()
 	{
-		Tracer.Trace(GetType(), "DslRawTriggerDependencies.DslRawTriggerDependencies");
+		// Tracer.Trace(GetType(), "DslRawTriggerDependencies.DslRawTriggerDependencies");
 	}
 
 	#region Protected Methods
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
-		Tracer.Trace(GetType(), "DslRawTriggerDependencies.GetCommandText");
+		// Tracer.Trace(GetType(), "DslRawTriggerDependencies.GetCommandText");
 
 		var sql = new StringBuilder();
 

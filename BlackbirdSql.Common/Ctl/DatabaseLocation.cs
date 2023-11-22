@@ -6,9 +6,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Model;
-using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Services;
-// using Microsoft.Data.SqlClient;
 
 
 
@@ -61,22 +59,22 @@ public readonly struct DatabaseLocation
 			throw ex;
 		}
 
-		FbConnectionStringBuilder fbcsb = csb as FbConnectionStringBuilder;
+		CsbAgent csa = csb as CsbAgent;
 
-		if (string.IsNullOrWhiteSpace(fbcsb.DataSource))
+		if (string.IsNullOrWhiteSpace(csa.DataSource))
 		{
 			ArgumentNullException ex = new("dataSource");
 			Diag.Dug(ex);
 			throw ex;
 		}
-		if (string.IsNullOrEmpty(fbcsb.Database))
+		if (string.IsNullOrEmpty(csa.Database))
 		{
-			ArgumentNullException ex = new("database");
+			ArgumentNullException ex = new("Database");
 			Diag.Dug(ex);
 			throw ex;
 		}
-		_DataSource = fbcsb.DataSource;
-		_Database = fbcsb.Database;
+		_DataSource = csa.DataSource;
+		_Database = csa.Database;
 		_Alternate = alternate;
 
 		string text = _DataSource + "//" + _Database + "//" + (_Alternate ? "Alter" : "");
@@ -93,22 +91,22 @@ public readonly struct DatabaseLocation
 			throw ex;
 		}
 
-		MonikerAgent moniker = new(node);
+		CsbAgent csa = new(node);
 
-		if (string.IsNullOrWhiteSpace(moniker.Server))
+		if (string.IsNullOrWhiteSpace(csa.DataSource))
 		{
-			ArgumentNullException ex = new("Server");
+			ArgumentNullException ex = new("DataSource");
 			Diag.Dug(ex);
 			throw ex;
 		}
-		if (string.IsNullOrEmpty(moniker.Database))
+		if (string.IsNullOrEmpty(csa.Database))
 		{
 			ArgumentNullException ex = new("Database");
 			Diag.Dug(ex);
 			throw ex;
 		}
-		_DataSource = moniker.Server;
-		_Database = moniker.Database;
+		_DataSource = csa.DataSource;
+		_Database = csa.Database;
 		_Alternate = alternate;
 
 		string text = _DataSource + "//" + _Database + "//" + (_Alternate ? "Alter" : "");
@@ -123,9 +121,9 @@ public readonly struct DatabaseLocation
 
 	public bool Matches(DbConnectionStringBuilder csb)
 	{
-		if (csb is FbConnectionStringBuilder fbcsb
-			&& string.Compare(fbcsb.DataSource, DataSource, StringComparison.Ordinal) == 0
-			&& string.Compare(fbcsb.Database, Database, StringComparison.Ordinal) == 0)
+		if (csb is CsbAgent csa
+			&& string.Compare(csa.DataSource, DataSource, StringComparison.Ordinal) == 0
+			&& string.Compare(csa.Database, Database, StringComparison.Ordinal) == 0)
 		{
 			return true;
 		}

@@ -50,7 +50,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 	public DslProviderSchemaFactory()
 	{
-		Tracer.Trace(GetType(), "DslProviderSchemaFactory.DslProviderSchemaFactory");
+		// Tracer.Trace(GetType(), "DslProviderSchemaFactory.DslProviderSchemaFactory");
 	}
 
 	#endregion
@@ -66,7 +66,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 	// Schema factory to handle custom collections
 	public static DataTable GetSchema(FbConnection connection, string collectionName, string[] restrictions)
 	{
-		Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchema()", "collectionName: {0}", collectionName);
+		// Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchema()", "collectionName: {0}", collectionName);
 
 		LinkageParser parser = null;
 		string schemaCollection;
@@ -109,7 +109,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 				try
 				{
 					parser = LinkageParser.GetInstance(connection);
-					Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchema()", "getting external schema: {0}. {1}.", collectionName, parser == null ? "no parser to pause" : "making linker pause request");
+					// Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchema()", "getting external schema: {0}. {1}.", collectionName, parser == null ? "no parser to pause" : "making linker pause request");
 					syncCardinal = parser != null ? parser.SyncEnter() : 0;
 					return connection.GetSchema(collectionName, restrictions);
 				}
@@ -158,7 +158,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 			throw ex;
 		}
 
-		Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchema()", parser == null ? "no parser to pause" : "making linker pause request");
+		// Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchema()", parser == null ? "no parser to pause" : "making linker pause request");
 		syncCardinal = parser != null ? parser.SyncEnter() : 0;
 
 		var xmlStream = assembly.GetManifestResourceStream(ResourceName);
@@ -249,7 +249,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 	public static Task<DataTable> GetSchemaAsync(FbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)
 	{
-		Tracer.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.GetSchemaAsync", "collectionName: {0}", collectionName);
+		// Tracer.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.GetSchemaAsync", "collectionName: {0}", collectionName);
 
 		int syncCardinal = 0;
 		LinkageParser parser = null;
@@ -290,7 +290,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 				try
 				{
 					parser = LinkageParser.GetInstance(connection);
-					Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchemaAsync()", parser == null ? "no parser to pause" : "making linker pause request");
+					// Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchemaAsync()", parser == null ? "no parser to pause" : "making linker pause request");
 					syncCardinal = parser != null ? parser.SyncEnter() : 0;
 					return connection.GetSchemaAsync(collectionName, restrictions, cancellationToken);
 				}
@@ -362,7 +362,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 		var oldCulture = Thread.CurrentThread.CurrentCulture;
 
-		Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchemaAsync()", parser == null ? "no parser to pause" : "making linker pause request");
+		// Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchemaAsync()", parser == null ? "no parser to pause" : "making linker pause request");
 
 		syncCardinal = parser != null ? parser.SyncEnter() : 0;
 
@@ -456,7 +456,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 	private static DataTable PrepareCollection(FbConnection connection, string collectionName, string schemaCollection, string[] restrictions)
 	{
-		Tracer.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.PrepareCollection", "collectionName: {0}, schemaCollection: {1}", collectionName, schemaCollection);
+		// Tracer.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.PrepareCollection", "collectionName: {0}, schemaCollection: {1}", collectionName, schemaCollection);
 
 		AbstractDslSchema dslSchema;
 		NotSupportedException ex;
@@ -532,7 +532,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 	private static Task<DataTable> PrepareCollectionAsync(FbConnection connection, string collectionName, string schemaCollection, string[] restrictions, CancellationToken cancellationToken = default)
 	{
-		Tracer.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.PrepareCollectionAsync", "collectionName: {0}, schemaCollection: {1}", collectionName, schemaCollection);
+		// Tracer.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.PrepareCollectionAsync", "collectionName: {0}, schemaCollection: {1}", collectionName, schemaCollection);
 
 		AbstractDslSchema dslSchema;
 		NotSupportedException ex;

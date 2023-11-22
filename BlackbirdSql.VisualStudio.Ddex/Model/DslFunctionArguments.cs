@@ -29,7 +29,7 @@ internal class DslFunctionArguments : DslColumns
 {
 	public DslFunctionArguments(LinkageParser parser) : base(parser)
 	{
-		Tracer.Trace(GetType(), "DslFunctionArguments.DslFunctionArguments");
+		// Tracer.Trace(GetType(), "DslFunctionArguments.DslFunctionArguments");
 
 		string packageName;
 

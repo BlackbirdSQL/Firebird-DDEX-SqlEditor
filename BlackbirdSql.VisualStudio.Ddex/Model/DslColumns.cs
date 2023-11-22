@@ -133,7 +133,7 @@ internal class DslColumns : AbstractDslSchema
 
 	public DslColumns(LinkageParser parser) : base()
 	{
-		Tracer.Trace(GetType(), "DslColumns.DslColumns");
+		// Tracer.Trace(GetType(), "DslColumns.DslColumns");
 		_LinkageParser = parser;
 	}
 
@@ -141,7 +141,7 @@ internal class DslColumns : AbstractDslSchema
 
 	protected override StringBuilder GetCommandText(string[] restrictions)
 	{
-		Tracer.Trace(GetType(), "DslColumns.GetCommandText");
+		// Tracer.Trace(GetType(), "DslColumns.GetCommandText");
 
 		var sql = new StringBuilder();
 		var where = new StringBuilder();
@@ -468,7 +468,7 @@ END",
 
 	protected override void ProcessResult(DataTable schema)
 	{
-		Tracer.Trace(GetType(), "DslColumns.ProcessResult");
+		// Tracer.Trace(GetType(), "DslColumns.ProcessResult");
 
 		// schema.Columns[6].ColumnName = "NumericPrecision";
 		// schema.Columns[18].ColumnName = "Nullable";

@@ -24,7 +24,7 @@ public class ExecutionPlanPanel : AbstractResultsPanel, IOleCommandTarget
 {
 	private ExecutionPlanControl _ExecutionPlanCtl;
 
-	private MenuCommandsService menuCommands = new MenuCommandsService();
+	private MenuCommandsService _MenuService = new MenuCommandsService();
 
 	public ExecutionPlanControl ExecutionPlanCtl => _ExecutionPlanCtl;
 
@@ -42,7 +42,7 @@ public class ExecutionPlanPanel : AbstractResultsPanel, IOleCommandTarget
 			Name = "ExecutionPlanControl",
 			Dock = DockStyle.Fill
 		};
-		((BlackbirdSql.Common.Controls.Interfaces.IBObjectWithSite)_ExecutionPlanCtl).SetSite((System.IServiceProvider)_serviceProvider);
+		((BlackbirdSql.Common.Controls.Interfaces.IBObjectWithSite)_ExecutionPlanCtl).SetSite((System.IServiceProvider)_ServiceProvider);
 		base.Controls.Add(_ExecutionPlanCtl);
 	}
 
@@ -72,10 +72,10 @@ public class ExecutionPlanPanel : AbstractResultsPanel, IOleCommandTarget
 				_ExecutionPlanCtl.Dispose();
 				_ExecutionPlanCtl = null;
 			}
-			if (menuCommands != null)
+			if (_MenuService != null)
 			{
-				menuCommands.Dispose();
-				menuCommands = null;
+				_MenuService.Dispose();
+				_MenuService = null;
 			}
 		}
 		base.Dispose(disposing);

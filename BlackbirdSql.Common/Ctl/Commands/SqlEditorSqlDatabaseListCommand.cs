@@ -9,9 +9,9 @@ using System.Data.Common;
 using System.Runtime.InteropServices;
 
 using BlackbirdSql.Common.Ctl.Interfaces;
-using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Model;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -38,7 +38,7 @@ public class SqlEditorSqlDatabaseListCommand : AbstractSqlEditorCommand
 				if (_Csb != null)
 					nodeDisplayMember = (string)_Csb["DatasetKey"];
 
-				foreach (KeyValuePair<string, string> pair in MonikerAgent.RegisteredDatasets)
+				foreach (KeyValuePair<string, string> pair in CsbAgent.RegisteredDatasets)
 				{
 					if (i > 0)
 					{
@@ -58,7 +58,7 @@ public class SqlEditorSqlDatabaseListCommand : AbstractSqlEditorCommand
 				if (i > 0)
 					_DatabaseList[0] = (string)_Csb["DatasetKey"];
 
-				foreach (KeyValuePair<string, string> pair in MonikerAgent.RegisteredDatasets)
+				foreach (KeyValuePair<string, string> pair in CsbAgent.RegisteredDatasets)
 				{
 					_DatabaseList[i] = pair.Key;
 					i++;

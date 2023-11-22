@@ -95,6 +95,9 @@ public class SqlEditorViewFilter : AbstractViewFilter
 				case EnCommandSet.CmbIdSqlDatabasesGetList:
 					sqlEditorCommand = new SqlEditorSqlDatabaseListCommand(Editor);
 					break;
+				case EnCommandSet.CmdIdNewQueryConnection:
+					sqlEditorCommand = new SqlEditorNewQueryCommand(Editor);
+					break;
 			}
 
 			if (sqlEditorCommand != null)
@@ -176,6 +179,9 @@ public class SqlEditorViewFilter : AbstractViewFilter
 						break;
 					case EnCommandSet.CmdIdCloneQuery:
 						sqlEditorCommand = new SqlEditorCloneQueryWindowCommand(Editor);
+						break;
+					case EnCommandSet.CmdIdNewQueryConnection:
+						sqlEditorCommand = new SqlEditorNewQueryCommand(Editor);
 						break;
 				}
 

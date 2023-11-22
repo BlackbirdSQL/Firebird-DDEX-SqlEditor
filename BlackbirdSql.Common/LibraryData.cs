@@ -39,7 +39,7 @@ public static class LibraryData
 	/// <summary>
 	/// Unique guid key for saving the DbConnectionStringBuilder object parsed from the
 	/// ServerExplorer node into IVsUserData. This connection info is added to the FlameRobin list if
-	/// it does not exist. Note that the csb will include the parameter 'DisplayMember' which is the string
+	/// it does not exist. Note that the csb will include the parameter 'DatasetKey' which is the string
 	/// used in the toolbar dropdown list.
 	/// </summary>
 	public const string SqlEditorConnectionStringGuid = "EDD5003E-0797-40FF-8ACF-F93ED2A6C059";
@@ -52,7 +52,7 @@ public static class LibraryData
 
 
 	// Property Guids
-	public static readonly Guid CLSID_PropertyDatabaseChanged = new("D63AB40F-C17E-44a4-8017-0770EEF27FF5");
+	public static readonly Guid CLSID_PropertyDatabaseConnectionChanged = new("D63AB40F-C17E-44a4-8017-0770EEF27FF5");
 	public static readonly Guid CLSID_IntelliSenseEnabled = new("097A840C-BDDA-4573-8F6D-671EBB21746D");
 	public static readonly Guid CLSID_PropertyDisableXmlEditorPropertyWindowIntegration = new("b8b94ef1-79a4-446a-95bb-002419e4453a");
 	public static readonly Guid CLSID_PropertyOverrideXmlEditorSaveAsFileFilter = new("8D88CCA5-7567-4b5c-9CD7-67A3AC136D2D");
