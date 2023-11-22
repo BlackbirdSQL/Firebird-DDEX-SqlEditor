@@ -51,7 +51,7 @@ public abstract class ModelPropertySet : CorePropertySet
 	/// Equivalency describers are tagged with *.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public static readonly new Describer[] Describers = new Describer[23]
+	public static readonly new Describer[] Describers = new Describer[24]
 	{
 		new Describer(C_KeyRole, C_KeyFbRole, typeof(string), C_DefaultRole, true, false, true, false, true), // *
 		new Describer(C_KeyDialect, C_KeyFbDialect, typeof(int), C_DefaultDialect, true, false, true, false, true), // *
@@ -76,6 +76,8 @@ public abstract class ModelPropertySet : CorePropertySet
 		new Describer(C_KeyApplicationName, C_KeyFbApplicationName, typeof(string), C_DefaultApplicationName, true),
 		new Describer(C_KeyCommandTimeout, C_KeyFbCommandTimeout, typeof(int), C_DefaultCommandTimeout, true),
 		new Describer(C_KeyParallelWorkers, C_KeyFbParallelWorkers, typeof(int), C_DefaultParallelWorkers, true),
+
+		new Describer(C_KeyExClientVersion, typeof(Version), C_DefaultExClientVersion, false, false)
 	};
 
 

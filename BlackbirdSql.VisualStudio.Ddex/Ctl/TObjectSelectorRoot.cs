@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
@@ -277,6 +278,9 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 					break;
 				case CoreConstants.C_KeyExDatasetId:
 					retval = _Csa.DatasetId;
+					break;
+				case ModelConstants.C_KeyExClientVersion:
+					retval = typeof(FbConnection).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
 					break;
 				case ModelConstants.C_KeyExMemoryUsage:
 					retval = ModelConstants.C_DefaultExMemoryUsage;

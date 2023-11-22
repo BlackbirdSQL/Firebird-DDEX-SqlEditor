@@ -5,6 +5,7 @@
 
 //$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
+using System;
 using System.Data;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Model.Enums;
@@ -89,6 +90,7 @@ public static class ModelConstants
 	public const string C_KeyExAlternate = "Alternate";
 	public const string C_KeyExIsUnique = "IsUnique";
 
+	public const string C_KeyExClientVersion = "ClientVersion";
 	public const string C_KeyExMemoryUsage = "MemoryUsage";
 	public const string C_KeyExActiveUsers = "ActiveUsers";
 
@@ -136,6 +138,7 @@ public static class ModelConstants
 	public const bool C_DefaultExIsUnique = false;
 
 	// External (non-paramameter) property defaults 
+	public const Version C_DefaultExClientVersion = null;
 	public const string C_DefaultExMemoryUsage = null;
 	public const int C_DefaultExActiveUsers = int.MinValue;
 

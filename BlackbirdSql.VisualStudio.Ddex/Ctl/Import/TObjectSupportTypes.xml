@@ -55,6 +55,7 @@
 				<Property name="ApplicationName" type="System.String"/>
 				<Property name="CommandTimeout" type="System.Int32"/>
 				<Property name="ParallelWorkers" type="System.Int32"/>
+				<Property name="ClientVersion" type="System.String"/>
 				<Property name="MemoryUsage" type="System.String"/>
 				<Property name="ActiveUsers" type="System.Int32"/>
 			</Properties>

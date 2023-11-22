@@ -981,4 +981,10 @@
   <data name="Property_Name_Sequence_Table" xml:space="preserve">
     <value>Dependency Table</value>
   </data>
+  <data name="Identifier_Desc_ClientVersion" xml:space="preserve">
+    <value>The FirbirdSql.Data.FirebirdClient library version.</value>
+  </data>
+  <data name="Identifier_Name_ClientVersion" xml:space="preserve">
+    <value>Client Version</value>
+  </data>
 </root>

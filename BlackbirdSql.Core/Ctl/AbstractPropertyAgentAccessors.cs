@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
+using System.Reflection;
 using System.Security;
 using System.Text;
 using System.Windows;
@@ -231,6 +232,12 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		set { SetProperty("ServerVersion", value); }
 	}
 
+	public Version ClientVersion
+	{
+		get { return (Version)GetProperty("ClientVersion"); }
+		set { SetProperty("ClientVersion", value); }
+	}
+
 
 	#endregion External (non-connection) Property Accessors
 
@@ -400,6 +407,26 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 		if (version != null)
 			ServerVersion = version;
+
+		return (version, opened);
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the ClientVersion property and sets it if successful.
+	/// </summary>
+	/// <returns>Returns the value tuple of the derived ClientVersion else null and
+	/// a boolean indicating wehther or not a connection was opened.</returns>
+	// ---------------------------------------------------------------------------------
+	public (Version, bool) GetSet_ClientVersion()
+	{
+
+		bool opened = false;
+		Version version = new(typeof(FbConnection).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version);
+
+		if (version != null)
+			ClientVersion = version;
 
 		return (version, opened);
 	}
@@ -695,6 +722,10 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 					break;
 				case "ServerVersion":
 					(value, connectionOpened) = GetSet_ServerVersion();
+					result = value != null;
+					break;
+				case "ClientVersion":
+					(value, connectionOpened) = GetSet_ClientVersion();
 					result = value != null;
 					break;
 				default:

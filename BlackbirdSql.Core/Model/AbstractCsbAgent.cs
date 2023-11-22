@@ -92,7 +92,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static readonly DescriberDictionary Describers = new(
-		new Describer[34]
+		new Describer[35]
 		{
 			new Describer(C_KeyExDatasetKey, typeof(string), C_DefaultExDatasetKey),
 			new Describer(C_KeyExDatasetId, typeof(string), C_DefaultExDatasetId),
@@ -129,6 +129,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 			new Describer(C_KeyCommandTimeout, C_KeyFbCommandTimeout, typeof(int), C_DefaultCommandTimeout, true),
 			new Describer(C_KeyParallelWorkers, C_KeyFbParallelWorkers, typeof(int), C_DefaultParallelWorkers, true),
 
+			new Describer(C_KeyExClientVersion, typeof(Version), C_DefaultExClientVersion, false, false),
 			new Describer(C_KeyExMemoryUsage, typeof(string), C_DefaultExMemoryUsage, false, false),
 			new Describer(C_KeyExActiveUsers, typeof(int), C_DefaultExActiveUsers, false, false)
 		},
@@ -563,6 +564,31 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 		set
 		{
 			this["DatasetId"] = value;
+		}
+	}
+
+
+	/// <summary>
+	/// The server memory usage.
+	/// </summary>
+	[Browsable(false)]
+	[Category("Extended")]
+	[DisplayName("Client version")]
+	[Description("The FirbirdSql.Data.Firebird library version.")]
+	[ReadOnly(true)]
+	[DefaultValue(C_DefaultExClientVersion)]
+	public Version ClientVersion
+	{
+		get
+		{
+			if (TryGetValue(C_KeyExClientVersion, out object value))
+				return (Version)value;
+
+			return null;
+		}
+		set
+		{
+			this[C_KeyExClientVersion] = value;
 		}
 	}
 

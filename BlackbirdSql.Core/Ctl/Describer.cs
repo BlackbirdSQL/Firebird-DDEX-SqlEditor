@@ -54,7 +54,9 @@ public class Describer
 	public Type DataType => PropertyType.IsSubclassOf(typeof(Enum))
 		? typeof(int)
 		: (PropertyType == typeof(byte[])
-			? typeof(string) : PropertyType);
+			? typeof(string) 
+			: (PropertyType == typeof(Version)
+				? typeof(string) : PropertyType));
 
 	/// <summary>
 	/// The property default value. For properties where the default value

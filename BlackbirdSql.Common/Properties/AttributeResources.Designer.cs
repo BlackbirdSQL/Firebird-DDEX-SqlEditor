@@ -61,6 +61,24 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The client library version..
+        /// </summary>
+        internal static string PropertyWindowClientVersionDescription {
+            get {
+                return ResourceManager.GetString("PropertyWindowClientVersionDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Client version.
+        /// </summary>
+        internal static string PropertyWindowClientVersionDisplayName {
+            get {
+                return ResourceManager.GetString("PropertyWindowClientVersionDisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Connection.
         /// </summary>
         internal static string PropertyWindowConnection {

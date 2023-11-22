@@ -229,7 +229,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="9.1.1" />
+		<PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="10.0.0" />
 		<PackageReference Include="IndexRange" Version="1.0.3" />
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
 		<PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />

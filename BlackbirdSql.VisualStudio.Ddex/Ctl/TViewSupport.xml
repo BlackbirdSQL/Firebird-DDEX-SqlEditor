@@ -30,6 +30,11 @@
 						<Category resource="Category_Connection" />
 						<Description resource="Identifier_Desc_UserId" />
 					</Property>
+					<Property name="ClientVersion">
+						<DisplayName resource="Identifier_Name_ClientVersion" />
+						<Category resource="Category_Connection" />
+						<Description resource="Identifier_Desc_ClientVersion" />
+					</Property>
 					<Property name="ServerType">
 						<DisplayName resource="Identifier_Name_ServerType" />
 						<Category resource="Category_DataSourceInformation" />

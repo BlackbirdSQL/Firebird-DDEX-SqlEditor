@@ -5,12 +5,13 @@ using System;
 using System.ComponentModel;
 using System.Data;
 using System.Globalization;
-
+using System.Reflection;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Ctl.ComponentModel;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model;
 using FirebirdSql.Data.FirebirdClient;
@@ -81,12 +82,21 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 					// version = ((text != null) ? new Version(text) : null);
 				}
 
-				if (!(version != null))
-				{
+				if (version == null)
 					return string.Empty;
-				}
 
 				return version.ToString();
+			}
+		}
+
+		[GlobalizedCategory("PropertyWindowConnectionDetails")]
+		[GlobalizedDescription("PropertyWindowClientVersionDescription")]
+		[GlobalizedDisplayName("PropertyWindowClientVersionDisplayName")]
+		public string ClientVersion
+		{
+			get
+			{
+				return typeof(FbConnection).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
 			}
 		}
 
