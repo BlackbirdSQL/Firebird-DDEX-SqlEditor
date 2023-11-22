@@ -1,4 +1,4 @@
-# BlackbirdSQL DDEX 2.0 with SqlEditor Provider for Firebird 9.1.0.90 Beta
+# BlackbirdSQL DDEX 2.0 with SqlEditor Provider for Firebird 9.1.0.90 PreRelease
 
 #### Screenshots
 ![ReadMe](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/assets/120905720/0b52cc20-c957-451d-93c0-31255abb0ada)
@@ -8,7 +8,7 @@
 
 The BlackbirdSQL DDEX 2.0 .NET Data with SqlEditor Provider extension, `BlackbirdSql.VisualStudio.Ddex`, implements most DDEX 2.0 interfaces prevalent in the SqlServer DDEX and SqlEditor extensions.
 
-[Download BlackbirdSql DDEX with SqlEditor Extension (Pre-release v9.1.0.84-beta)](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v9.1.0.84-beta/BlackbirdSql.VisualStudio.Ddex.vsix)
+[Download BlackbirdSql DDEX with SqlEditor Extension (Pre-release v9.1.0.90)](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v9.1.0.90-prelease/BlackbirdSql.VisualStudio.Ddex.vsix)
 
 *The first tenet of this package is `small footprint, low overhead`, and to be as unobtrusive as possible. It is installed as a standard VSIX extension. If you uninstall it is is gone. It does not leave it's fingerprints in either your computer system or your Visual Studio installation.*
 
