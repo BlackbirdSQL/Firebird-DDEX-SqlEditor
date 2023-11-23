@@ -2,7 +2,8 @@
 
 This extension goes a long way towards cracking the nut that is the Visual Studio extensions interface. For example, using the existing VS Options PropertyGrid and GridView implementations to set non-persistent live user settings in an editor pane, and calling the extension's existing IVsDataConnectionUIProperties and IVsDataConnectionUIControl implementations through an IVsDataConnectionDialog implementation when a connection needs to be configured in custom contexts.</br>
 By accessing and reusing IVs implementations alreaded coded within the extension and Visual Studio, the need for custom classes can by and large be eliminated.</br> 
-Also, a __disclaimer/warning__ regarding exposing members with hidden access modifiers. The private edit field of the VS User Options PropertyGrid GridView is accessed to implement radio buttons and check boxes using type converters and attributes in the class AbstractSettingsPage. The code performing this access is 100% stable, using standard calls included in Visual Studio's Reflection. If you object to this practice, do not install this extension.</br>
+Also, a __disclaimer/warning__ regarding exposing members with hidden access modifiers. The private edit field of the VS User Options PropertyGrid GridView is accessed to overcome a long-time irritant and implement radio buttons and check boxes into the grid by utilizing type converters and attributes.</br>
+This all occurs in the first 5 `AbstractSettingsPage` property accessors. The code performing this access is 100% stable, using standard calls included in Visual Studio's Reflection. If you object to this practice, do not install this extension.</br>
 
 #### Screenshots
 ![ReadMe](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/assets/120905720/0b52cc20-c957-451d-93c0-31255abb0ada)
