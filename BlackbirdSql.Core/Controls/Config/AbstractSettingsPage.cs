@@ -64,23 +64,42 @@ public class AbstractSettingsPage<TPage, T> : DialogPage, IBSettingsPage where T
 
 
 	// =========================================================================================================
-	#region Property Accessors - AbstractSettingsPage
+	#region Exposing Property Accessors - AbstractSettingsPage
 	// =========================================================================================================
 
 
-	[Browsable(false)]
+	/// <summary>
+	/// *** Exposes the private PropertyGrid.gridView.edit field ***.
+	/// </summary>
+	[Browsable(false)] // For brevity.
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-	public override object AutomationObject => _Model;
+	private TextBox EditField
+	{
+		get
+		{
+			Control gridView = GridView;
 
+			if (gridView == null)
+				return null;
 
+			Type typeGridView = gridView.GetType();
 
-	public PropertyGrid Grid => (PropertyGrid)Window;
+			FieldInfo editFieldInfo = typeGridView.GetField("edit",
+				BindingFlags.NonPublic | BindingFlags.Instance);
+
+			if (editFieldInfo == null)
+				return null;
+
+			return editFieldInfo.GetValue(gridView) as TextBox;
+		}
+	}
+
 
 
 	/// <summary>
-	/// Exposes the private PropertyGrid.gridView field.
+	/// *** Exposes the private PropertyGrid.gridView field ***.
 	/// </summary>
-	[Browsable(false)]
+	[Browsable(false)] // For brevity.
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 	private Control GridView
 	{
@@ -104,10 +123,12 @@ public class AbstractSettingsPage<TPage, T> : DialogPage, IBSettingsPage where T
 
 
 	/// <summary>
-	/// Exposes the private PropertyGridView.originalTextValue field.
+	/// *** Exposes the private PropertyGridView.originalTextValue field ***.
 	/// We do this every time because unsure if reflection would manage an exposed
 	/// built-in object, ie. not sure our string memory reference is locked in.
 	/// </summary>
+	[Browsable(false)] // For brevity.
+	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 	private string OriginalTextValue
 	{
 		get
@@ -146,8 +167,10 @@ public class AbstractSettingsPage<TPage, T> : DialogPage, IBSettingsPage where T
 
 
 	/// <summary>
-	/// Gets the private PropertyGridView.selectedRow field value.
+	/// *** Exposes the private PropertyGridView.selectedRow field value ***.
 	/// </summary>
+	[Browsable(false)] // For brevity.
+	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 	private int SelectedRow
 	{
 		get
@@ -171,9 +194,9 @@ public class AbstractSettingsPage<TPage, T> : DialogPage, IBSettingsPage where T
 
 
 	/// <summary>
-	/// Exposes the private PropertyGrid.SortedByCategories property.
+	/// *** Exposes the private PropertyGrid.SortedByCategories property ***.
 	/// </summary>
-	[Browsable(false)]
+	[Browsable(false)] // For brevity.
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 	private bool SortedByCategories
 	{
@@ -198,10 +221,31 @@ public class AbstractSettingsPage<TPage, T> : DialogPage, IBSettingsPage where T
 	}
 
 
+	#endregion Exposing Property Accessors
+
+
+
+
+	// =========================================================================================================
+	#region Property Accessors - AbstractSettingsPage
+	// =========================================================================================================
+
+
+	[Browsable(false)]
+	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+	public override object AutomationObject => _Model;
+
+
+	[Browsable(false)]
+	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+	public PropertyGrid Grid => (PropertyGrid)Window;
+
+
+
 	/// <summary>
 	/// The settings page PropertyGrid window.
 	/// </summary>
-	[Browsable(false)]
+	[Browsable(false)] // For brevity.
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 	protected override IWin32Window Window
 	{
@@ -306,32 +350,22 @@ public class AbstractSettingsPage<TPage, T> : DialogPage, IBSettingsPage where T
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Exposes hidden PropertyGrid and PropertGridView members.
+	/// *** Exposes the private PropertyGridView.edit field's event delegates ***.
 	/// No reason why this isn't perfectly legal other than it bypasses access modifiers.
 	/// We're doing this because the PropertyGrid control is just too restrictive on access
 	/// modifiers and some of the behavior breaks ms windows conventions anyway.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private void ExposeMembers()
+	private void ExposeEventDelegates()
 {
 		lock (_LockLocal)
 		{
 			if (_Exposed)
 				return;
 
-			Control gridView = GridView;
-			if (gridView == null)
-				return;
+			TextBox editCtl = EditField;
 
-			Type typeGridView = gridView.GetType();
-
-			FieldInfo editFieldInfo = typeGridView.GetField("edit",
-				BindingFlags.NonPublic | BindingFlags.Instance);
-
-			if (editFieldInfo == null)
-				return;
-
-			if (editFieldInfo.GetValue(gridView) is not TextBox editCtl)
+			if (editCtl == null)
 				return;
 
 			_Exposed = true;
@@ -536,7 +570,7 @@ public class AbstractSettingsPage<TPage, T> : DialogPage, IBSettingsPage where T
 	// ---------------------------------------------------------------------------------
 	private void OnGotFocus(object sender, EventArgs e)
 	{
-		ExposeMembers();
+		ExposeEventDelegates();
 	}
 
 
@@ -733,7 +767,7 @@ public class AbstractSettingsPage<TPage, T> : DialogPage, IBSettingsPage where T
 	// ---------------------------------------------------------------------------------
 	protected void OnSelectedItemChanged(object sender, SelectedGridItemChangedEventArgs e)
 	{
-		ExposeMembers();
+		ExposeEventDelegates();
 	}
 
 
@@ -747,7 +781,7 @@ public class AbstractSettingsPage<TPage, T> : DialogPage, IBSettingsPage where T
 	{
 		lock (_LockLocal)
 		{
-			ExposeMembers();
+			ExposeEventDelegates();
 			GridItem item = _Window.SelectedGridItem;
 			string name = item != null && item.PropertyDescriptor != null ? item.PropertyDescriptor.Name : "Null";
 
