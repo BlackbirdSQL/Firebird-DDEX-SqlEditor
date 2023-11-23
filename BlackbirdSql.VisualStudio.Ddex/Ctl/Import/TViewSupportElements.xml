@@ -237,11 +237,13 @@
 			<Category resource="Category_Identifier" />
 			<Description resource="Identifier_Desc_View" />
 		</Property>
+		<!--
 		<Property name="TRIGGER_NAME">
 			<DisplayName resource="Property_Name_Column_IdentityTrigger" />
 			<Category resource="Category_Initialization" />
 			<Description resource="Property_Desc_Column_IdentityTrigger" />
 		</Property>
+		-->
 	</Define>
 
 
@@ -368,7 +370,7 @@
 
 
 
-	<!-- Definition of column properties -->
+	<!-- Definition of column properties View,Column,COLUMN_NAME,Advanced -->
 	<Define name="TplPropertiesColumn" parameters="parentType,type,identifierColumn,advanced">
 		<Properties>
 			<TypeDisplayName resource="Type_$(parentType)$(type)" />
@@ -381,7 +383,7 @@
 
 	
 	<!-- Definition of column selection node -->
-	<Define name="TplSelectionColumn" parameters="type, parentType, systemType, restrictions">
+	<Define name="TplSelectionColumn" parameters="type, parentType, systemType, advanced, restrictions">
 		<Selection type="$(type)" restrictions="$(restrictions)">
 			<SelectionNode nodeId="Column">
 				<DisplayName>{Column.COLUMN_NAME}</DisplayName>
@@ -394,7 +396,7 @@
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.UniqueKey$(parentType).ico" when="{Column.IN_PRIMARYKEY}" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)$(parentType)Column.ico" when="{Column.PARENT_TYPE} = 'Trigger' OR {Column.PARENT_TYPE} = 'View'" assembly="" />
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Column.ico" assembly="" />
-				<PropertiesRef name="TplPropertiesColumn" arguments="$(parentType),Column,COLUMN_NAME,Advanced"/>
+				<PropertiesRef name="TplPropertiesColumn" arguments="$(parentType),Column,COLUMN_NAME,$(advanced)"/>
 				<Commands>
 					<CommandRef name="Command$(systemType)NewQuery" />
 				</Commands>
@@ -544,7 +546,7 @@
 					<CommandRef name="Command$(systemType)NewQuery" />
 				</Commands>
 				<Children>
-					<SelectionRef name="TplSelectionColumn" arguments="TriggerColumn,Trigger,$(systemType),{Trigger.TABLE_CATALOG},,{Trigger.TABLE_SCHEMA},,{Trigger.TRIGGER_NAME}" />
+					<SelectionRef name="TplSelectionColumn" arguments="TriggerColumn,Trigger,$(systemType),Advanced,{Trigger.TABLE_CATALOG},,{Trigger.TABLE_SCHEMA},,{Trigger.TRIGGER_NAME}" />
 				</Children>
 			</SelectionNode>
 		</Selection>
@@ -642,7 +644,7 @@
 										<CommandRef name="Command$(systemType)NewQuery" />
 									</Commands>
 									<Children>
-										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
+										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),Advanced,{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
 									</Children>
 								</SelectionNode>
 							</Selection>
@@ -655,7 +657,7 @@
 										<CommandRef name="Command$(systemType)NewQuery" />
 									</Commands>
 									<Children>
-										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
+										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),Advanced,{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
 									</Children>
 								</SelectionNode>
 							</Selection>
@@ -668,7 +670,7 @@
 										<CommandRef name="Command$(systemType)NewQuery" />
 									</Commands>
 									<Children>
-										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
+										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),Advanced,{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
 									</Children>
 								</SelectionNode>
 							</Selection>
@@ -681,7 +683,7 @@
 										<CommandRef name="Command$(systemType)NewQuery" />
 									</Commands>
 									<Children>
-										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
+										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),Advanced,{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
 									</Children>
 								</SelectionNode>
 							</Selection>
@@ -732,7 +734,7 @@
 										<CommandRef name="Command$(systemType)NewQuery" />
 									</Commands>
 									<Children>
-										<SelectionRef name="TplSelectionColumn" arguments="ForeignKeyColumn,ForeignKey,$(systemType),{ForeignKey.CONSTRAINT_CATALOG},,{ForeignKey.CONSTRAINT_SCHEMA},,{ForeignKey.TABLE_NAME},,{ForeignKey.CONSTRAINT_NAME}" />
+										<SelectionRef name="TplSelectionColumn" arguments="ForeignKeyColumn,ForeignKey,$(systemType),Advanced,{ForeignKey.CONSTRAINT_CATALOG},,{ForeignKey.CONSTRAINT_SCHEMA},,{ForeignKey.TABLE_NAME},,{ForeignKey.CONSTRAINT_NAME}" />
 									</Children>
 								</SelectionNode>
 							</Selection>
@@ -763,7 +765,7 @@
 						<DisplayName resource="Node_Name_Columns" />
 						<!-- <Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.FolderTriggers.ico" assembly="" /> -->
 						<Children>
-							<SelectionRef name="TplSelectionColumn" arguments="Column,Table,$(systemType),{Table.TABLE_CATALOG},,{Table.TABLE_SCHEMA},,{Table.TABLE_NAME}" />
+							<SelectionRef name="TplSelectionColumn" arguments="Column,Table,$(systemType),Advanced,{Table.TABLE_CATALOG},,{Table.TABLE_SCHEMA},,{Table.TABLE_NAME}" />
 						</Children>
 					</StaticNode>
 				</Children>

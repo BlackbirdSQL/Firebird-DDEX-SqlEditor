@@ -459,7 +459,7 @@ END",
 					intoClause);
 
 
-		// Diag.Trace(sql.ToString());
+		// Tracer.Trace(GetType(), "GetCommandText()", "Sql: {0}", sql.ToString());
 
 		return sql;
 	}
