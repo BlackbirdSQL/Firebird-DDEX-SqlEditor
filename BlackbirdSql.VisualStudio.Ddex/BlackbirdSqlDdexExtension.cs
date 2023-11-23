@@ -4,12 +4,14 @@
 
 using System;
 using System.Data.Common;
+using System.Management.Instrumentation;
 using System.Threading;
 using System.Threading.Tasks;
 
 using BlackbirdSql.Controller;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.ComponentModel;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
@@ -179,8 +181,11 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 
 		ThreadHelper.JoinableTaskFactory.Run(async delegate
 		{
-			instance = (TInterface)await CreateServiceInstanceAsync(type, default);
+			instance = await CreateServiceInstanceAsync(type, default) as TInterface;
 		});
+
+
+		// Tracer.Trace(GetType(), "GetService()", "TService: {0}, TInterface: {1}, instance: {2}", type, typeof(TInterface), instance );
 
 		instance ??= ((AsyncPackage)this).GetService<TService, TInterface>();
 

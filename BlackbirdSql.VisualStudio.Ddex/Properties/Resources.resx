@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="DataProvider_Ddex" xml:space="preserve">
-    <value>.NET Framework DDEX 2.0 Provider for Firebird (BlackbirdSql)</value>
+    <value>BlackbirdSql .NET Framework DDEX 2.0 Provider for Firebird</value>
   </data>
   <data name="DataProvider_Ddex_DataSource_Description" xml:space="preserve">
     <value>Use this selection to connect to Firebird using the DDEX 2.0 BlackbirdSql Provider.</value>
@@ -128,6 +128,9 @@
   </data>
   <data name="DataProvider_Ddex_Short" xml:space="preserve">
     <value>FirebirdClient [BlackbirdSql]</value>
+  </data>
+  <data name="DataProvider_Name" xml:space="preserve">
+    <value>BlackbirdSql .NET Framework Data Provider for Firebird {0}</value>
   </data>
   <data name="DataSource_FirebirdSqlServer" xml:space="preserve">
     <value>Firebird SQL Server</value>

@@ -61,7 +61,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .NET Framework DDEX 2.0 Provider for Firebird (BlackbirdSql).
+        ///   Looks up a localized string similar to BlackbirdSql .NET Framework DDEX 2.0 Provider for Firebird.
         /// </summary>
         public static string DataProvider_Ddex {
             get {
@@ -93,6 +93,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string DataProvider_Ddex_Short {
             get {
                 return ResourceManager.GetString("DataProvider_Ddex_Short", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BlackbirdSql .NET Framework Data Provider for Firebird {0}.
+        /// </summary>
+        public static string DataProvider_Name {
+            get {
+                return ResourceManager.GetString("DataProvider_Name", resourceCulture);
             }
         }
         

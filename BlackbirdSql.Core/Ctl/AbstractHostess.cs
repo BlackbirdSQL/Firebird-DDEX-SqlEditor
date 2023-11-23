@@ -71,16 +71,13 @@ public abstract class AbstractHostess : IDisposable
 				return _ShellService;
 
 			if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+			{
+				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+				Diag.Dug(exc);
+				throw exc;
+			}
 
-			_HostService ??= _ServiceProvider.GetService<IVsDataHostService, IVsDataHostService>();
-
-			if (_HostService != null)
-				_ShellService = _HostService.GetService<SVsUIShell, IVsUIShell>();
+			_ShellService = HostService.GetService<SVsUIShell, IVsUIShell>();
 
 			_ShellService ??= Package.GetGlobalService(typeof(SVsUIShell)) as IVsUIShell;
 
@@ -120,19 +117,13 @@ public abstract class AbstractHostess : IDisposable
 
 	public AbstractHostess()
 	{
-		// Tracer.Trace(GetType(), "AbstractHostess.AbstractHostess(IServiceProvider)");
+		// Tracer.Trace(GetType(), "AbstractHostess.AbstractHostess(IServiceProvider = DdexPackage)");
 
-		_ServiceProvider = (IServiceProvider)Controller.DdexPackage;
+		_ServiceProvider = Controller.ServiceProvider;
 	}
 
-	public AbstractHostess(IServiceProvider serviceProvider)
-	{
-		// Tracer.Trace(GetType(), "AbstractHostess.AbstractHostess(IServiceProvider)");
 
-		_ServiceProvider = serviceProvider;
-	}
 
-	
 	~AbstractHostess()
 	{
 		Dispose(disposing: false);
@@ -269,19 +260,16 @@ public abstract class AbstractHostess : IDisposable
 
 		_ = ShellService;
 
-		if (delay == 0 && _HostService != null && IsUIThread)
+		if (delay == 0 && IsUIThread)
 		{
 			PostExecuteCommandImpl(command);
 			return;
 		}
 
 		// Fallback if Site does not have an IVsDataHostService service
-		if (_HostService == null || delay > 0)
+		if (delay > 0)
 		{
-			if (delay == 0 && ThreadHelper.CheckAccess())
-				PostExecuteCommandImpl(command);
-			else
-				_ = Task.Run(() => PostExecuteCommandAsync(command, delay));
+			_ = Task.Run(() => PostExecuteCommandAsync(command, delay));
 			return;
 		}
 

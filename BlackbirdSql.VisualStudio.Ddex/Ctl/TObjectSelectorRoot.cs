@@ -111,7 +111,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			throw;
 		}
 
-		Tracer.Trace(GetType(), "SelectObjects()", "TYPE IVsDataConnection: {0}.", Site.GetType().FullName);
+		// Tracer.Trace(GetType(), "SelectObjects()", "TYPE IVsDataConnection: {0}.", Site.GetType().FullName);
 
 		int syncCardinal = 0;
 		object lockedProviderObject = null;
@@ -280,7 +280,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 					retval = _Csa.DatasetId;
 					break;
 				case ModelConstants.C_KeyExClientVersion:
-					retval = typeof(FbConnection).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
+					retval = $"FirebirdSql {typeof(FbConnection).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version}";
 					break;
 				case ModelConstants.C_KeyExMemoryUsage:
 					retval = ModelConstants.C_DefaultExMemoryUsage;

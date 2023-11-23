@@ -85,7 +85,7 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 				if (version == null)
 					return string.Empty;
 
-				return version.ToString();
+				return "Firebird " + version.ToString();
 			}
 		}
 
@@ -96,7 +96,7 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 		{
 			get
 			{
-				return typeof(FbConnection).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
+				return $"FirebirdSql {typeof(FbConnection).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version}";
 			}
 		}
 

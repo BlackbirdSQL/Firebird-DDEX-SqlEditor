@@ -35,8 +35,6 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	// ---------------------------------------------------------------------------------
 
 
-	private Hostess _Host;
-
 	private readonly EnNodeSystemType _CommandNodeSystemType = EnNodeSystemType.None;
 
 
@@ -60,19 +58,6 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	/// </summary>
 	protected EnNodeSystemType CommandNodeSystemType => _CommandNodeSystemType;
 
-
-	/// <summary>
-	/// IDE host access class object
-	/// </summary>
-	protected Hostess Host
-	{
-		get
-		{
-			_Host ??= new(Site.ServiceProvider);
-
-			return _Host;
-		}
-	}
 
 
 	#endregion Property Accessors
@@ -401,7 +386,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		// Tracer.Trace(GetType(), "AbstractCommandProvider.OnNewQuery", "itemId: {0}, nodeSystemType: {1}", itemId, nodeSystemType);
 
 		Controller.Instance.OnNewQueryRequested(Site, nodeSystemType);
-		// Host.QueryDesignerProviderTelemetry(qualityMetricProvider);
+		// Hostess.QueryDesignerProviderTelemetry(qualityMetricProvider);
 	}
 
 
@@ -458,7 +443,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 		}
 
-		// Host.ActivateOrOpenVirtualDocument(node, false);
+		// Hostess.ActivateOrOpenVirtualDocument(node, false);
 	}
 
 

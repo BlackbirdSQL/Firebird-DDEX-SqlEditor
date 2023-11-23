@@ -4,10 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.Interfaces;
 
 using FirebirdSql.Data.FirebirdClient;
@@ -78,14 +80,16 @@ internal sealed class VsPackageRegistrationAttribute: RegistrationAttribute
 			DisposeKey(ref key);
 
 			key = context.CreateKey("DataProviders\\" + providerGuid);
-			key.SetValue(null, Properties.Resources.DataProvider_Ddex);
+
+			string providerName = Properties.Resources.DataProvider_Name
+				.FmtRes(GetType().Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version);
+			key.SetValue(null, providerName);
 			key.SetValue("Assembly", providerObjectFactoryAssembly);
 
 			key.SetValue("PlatformVersion", "2.0");
 			key.SetValue("Technology", "{" + VS.AdoDotNetTechnologyGuid + "}");
 			key.SetValue("AssociatedSource", dataSourceGuid);
 			key.SetValue("InvariantName", invariantName);
-			// DataProvider_Mds_Description, SR, Microsoft.Data.ConnectionUI.Dialog, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 			key.SetValue("Description", "DataProvider_Ddex_Description, "
 				+ "BlackbirdSql.VisualStudio.Ddex.Properties.Resources, " + providerObjectFactoryAssembly);
 			key.SetValue("DisplayName", "DataProvider_Ddex, "

@@ -4,7 +4,6 @@ using System;
 using System.Collections;
 using System.ComponentModel.Design;
 using System.Globalization;
-using BlackbirdSql.Controller;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
@@ -73,7 +72,7 @@ public class DSRefBuilder : DataSiteableObject<IVsDataConnection>, IDSRefBuilder
 
 				if (UserSettings.ShowDiagramPane)
 				{
-					Hostess host = new(Site);
+					Hostess host = new();
 					CommandID cmd = new CommandID(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.ShowGraphicalPane);
 					// Delay 10 ms just to give Editor WindowFrame and QueryDesignerDocument time to breath.
 					host.PostExecuteCommand(cmd, 10);

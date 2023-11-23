@@ -7,6 +7,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 
@@ -35,11 +36,6 @@ public class Hostess : AbstractHostess
 		// Tracer.Trace(GetType(), "Hostess.Hostess");
 	}
 
-
-	public Hostess(System.IServiceProvider serviceProvider) : base(serviceProvider)
-	{
-		// Tracer.Trace(GetType(), "Hostess.Hostess");
-	}
 
 
 	/// <summary>

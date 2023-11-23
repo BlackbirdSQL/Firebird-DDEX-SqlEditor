@@ -101,7 +101,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 			}
 
 			IVsWindowFrame vsWindowFrame = _CurrentFrame ?? WindowPaneServiceProvider.GetService(typeof(SVsWindowFrame)) as IVsWindowFrame;
-			if (vsWindowFrame == null)
+			if (!(vsWindowFrame != null))
 			{
 				return null;
 			}
