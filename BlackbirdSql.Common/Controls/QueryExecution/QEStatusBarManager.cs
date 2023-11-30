@@ -1,7 +1,5 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.StatusBar.QEStatusBarManager
 
 using System;
 using System.Collections.Generic;
@@ -310,11 +308,11 @@ public sealed class QEStatusBarManager : IDisposable
 		EnqueAndExecuteStatusBarUpdate(a);
 	}
 
-	private void EnqueAndExecuteStatusBarUpdate(Action a)
+	private void EnqueAndExecuteStatusBarUpdate(Action act)
 	{
 		lock (_LockLocal)
 		{
-			_StatusBarUpdateActions.Enqueue(a);
+			_StatusBarUpdateActions.Enqueue(act);
 		}
 
 		if (DisplaySQLResultsControl.IsRunningOnUIThread())
@@ -353,7 +351,7 @@ public sealed class QEStatusBarManager : IDisposable
 
 	private bool HandleScriptExecutionStartedEventHandler(object sender, QueryManager.ScriptExecutionStartedEventArgs args)
 	{
-		void a()
+		void act()
 		{
 			_StatusStrip.Show();
 			if (UserSettings.EditorStatusBarExecutionTimeMethod == EnExecutionTimeMethod.Elapsed)
@@ -369,7 +367,7 @@ public sealed class QEStatusBarManager : IDisposable
 				_ElapsedExecutionTimer.Enabled = true;
 			}
 		}
-		EnqueAndExecuteStatusBarUpdate(a);
+		EnqueAndExecuteStatusBarUpdate(act);
 		return true;
 	}
 

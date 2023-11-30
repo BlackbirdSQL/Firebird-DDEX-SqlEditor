@@ -3,65 +3,73 @@
 
 	<!-- Commands -->
 
-	<!-- Built-in commands -->
-	<Define name="CommandGlobalNewQuery" >
-		<CommandRef name="CommandHookDataTools" arguments="0x3513" />
+	<!-- Original built-in commands -->
+	<Define name="CommandNewQueryGlobal" >
+		<CommandRef name="CommandHookSeDataCommandSet" arguments="0x3513" />
 	</Define>
-	<Define name="CommandLocalNewQuery">
+	<Define name="CommandNewQueryLocal">
 		<!-- Don't use this cmd id. We use it to intercept new query requests in our custom commands -->
-		<CommandRef name="CommandHookDataTools" arguments="0x3528" />
+		<CommandRef name="CommandHookSeDataCommandSet" arguments="0x3528" />
 	</Define>
-	<Define name="CommandDetachDatabase">
-		<CommandRef name="CommandHookDataTools" arguments="0x3517" />
+	<Define name="CommandDetachDatabaseGlobal">
+		<CommandRef name="CommandHookSeDataCommandSet" arguments="0x3517" />
 	</Define>
-	<Define name="CommandRetrieveData">
-		<CommandRef name="CommandHookDataTools" arguments="0x3060" />
-	</Define>
-
-	<!-- BlackbirdSql custom commands -->
-	<Define name="CommandUserNewQuery">
-		<CommandRef name="CommandHookDataToolsUser" arguments="0x3528" />
-	</Define>
-	<Define name="CommandSystemNewQuery">
-		<CommandRef name="CommandHookDataToolsSystem" arguments="0x3528" />
-	</Define>
-	<Define name="CommandUniversalNewQuery">
-		<CommandRef name="CommandHookDataToolsUniversal" arguments="0x3528" />
-	</Define>
-	<Define name="CommandUniversalRetrieveData">
-		<CommandRef name="CommandHookDataToolsUniversal" arguments="0x0336" />
-	</Define>
-	<Define name="CommandTextOpenScript">
-		<CommandRef name="CommandHookCommandSet" arguments="0x0334" />
-	</Define>
-	<Define name="CommandTextOpenAlterScript">
-		<CommandRef name="CommandHookCommandSet" arguments="0x0335" />
+	<Define name="CommandRetrieveDesignerLocal">
+		<!-- Will exist but won't display because CanCopy is false because CommandOverrideCopyLocal is disabled -->
+		<CommandRef name="CommandHookSeDataCommandSet" arguments="0x3060" />
 	</Define>
 
-
-	<!-- Built-in DataTools commands hook -->
-	<Define name="CommandHookDataTools" parameters="cmdid">
-		<Command guid="501822E1-B5AF-11d0-B4DC-00A0C91506EF" cmdid="$(cmdid)" provider="884DD964-5327-461f-9F06-6484DD540F8F" isDefault="false" />
+	<!-- Overriden built-in commands (Universal Suffix) -->
+	<Define name="CommandOverrideCopyLocal">
+		<CommandRef name="CommandHookCommandSet97Universal" arguments="0x000F" />
+	</Define>
+	<Define name="CommandOverrideNewQueryLocal">
+		<CommandRef name="CommandHookSeDataCommandSetUniversal" arguments="0x3528" />
 	</Define>
 
-	<!-- BlackbirdSql DataTools commands hooks -->
-	<!-- We distinguish between system, user and global data object nodes -->
-	<!-- Yes we could establish this distinction by examining the node within -->
-	<!-- the code, but this just seems a whole lot more readable -->
-	<Define name="CommandHookDataToolsUser" parameters="cmdid">
+	<!-- BlackbirdSql custom commands (Universal Suffix) -->
+	<Define name="CommandNewSqlQueryUniversal">
+		<CommandRef name="CommandHookCommandSetUniversal" arguments="0x0310" />
+	</Define>
+	<Define name="CommandRetrieveDesignerUniversal">
+		<CommandRef name="CommandHookCommandSetUniversal" arguments="0x0336" />
+	</Define>
+	<Define name="CommandTextOpenScriptUniversal">
+		<CommandRef name="CommandHookCommandSetUniversal" arguments="0x0334" />
+	</Define>
+	<Define name="CommandTextOpenAlterScriptUniversal">
+		<CommandRef name="CommandHookCommandSetUniversal" arguments="0x0335" />
+	</Define>
+	<Define name="CommandCopyUniversal">
+		<CommandRef name="CommandHookCommandSetUniversal" arguments="0x0338" />
+	</Define>
+	<Define name="CommandNewDesignerQueryUniversal">
+		<CommandRef name="CommandHookCommandSetUniversal" arguments="0x0339" />
+	</Define>
+
+
+	<!-- Built-in SE DataTools commands hook -->
+	<Define name="CommandHookSeDataCommandSet" parameters="cmdid">
 		<Command guid="501822E1-B5AF-11d0-B4DC-00A0C91506EF" cmdid="$(cmdid)"
-				 provider="BlackbirdSql.VisualStudio.Ddex.Ctl.CommandProviders.UserCommandProvider" />
+				 provider="884DD964-5327-461f-9F06-6484DD540F8F" isDefault="false" />
 	</Define>
-	<Define name="CommandHookDataToolsSystem" parameters="cmdid">
-		<Command guid="501822E1-B5AF-11d0-B4DC-00A0C91506EF" cmdid="$(cmdid)"
-				 provider="BlackbirdSql.VisualStudio.Ddex.Ctl.CommandProviders.SystemCommandProvider" />
-	</Define>
-	<Define name="CommandHookDataToolsUniversal" parameters="cmdid">
-		<Command guid="501822E1-B5AF-11d0-B4DC-00A0C91506EF" cmdid="$(cmdid)"
+
+	<!-- BlackbirdSql DataTools CommandS hook -->
+	<Define name="CommandHookCommandSetUniversal" parameters="cmdid">
+		<Command guid="13CD7876-FC84-4DDA-91BF-4CDBF893B134" cmdid="$(cmdid)"
 				 provider="BlackbirdSql.VisualStudio.Ddex.Ctl.CommandProviders.UniversalCommandProvider"  isDefault="true" />
 	</Define>
-	<Define name="CommandHookCommandSet" parameters="cmdid">
-		<Command guid="13CD7876-FC84-4DDA-91BF-4CDBF893B134" cmdid="$(cmdid)"
+
+
+	<!-- Overriden SE CommandSet for Universal nodes hook -->
+	<Define name="CommandHookSeDataCommandSetUniversal" parameters="cmdid">
+		<Command guid="501822E1-B5AF-11d0-B4DC-00A0C91506EF" cmdid="$(cmdid)"
+				 provider="BlackbirdSql.VisualStudio.Ddex.Ctl.CommandProviders.UniversalCommandProvider" isDefault="true" />
+	</Define>
+
+	<!-- Overriden Standard 97 CommandSet for Universal nodes -->
+	<Define name="CommandHookCommandSet97Universal" parameters="cmdid">
+		<Command guid="5efc7975-14bc-11cf-9b2b-00aa00573819" cmdid="$(cmdid)"
 				 provider="BlackbirdSql.VisualStudio.Ddex.Ctl.CommandProviders.UniversalCommandProvider"  isDefault="true" />
 	</Define>
 </DataViewSupport>

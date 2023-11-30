@@ -18,7 +18,7 @@ internal class QEDiskStorageView : DiskStorageView, IBQEStorageView, IBStorageVi
 		{
 			if (_MaxBytesToDisplay != value)
 			{
-				Tracer.Trace(GetType(), "QEDiskStorageView.MaxNumBytesToDisplay", "value = {0}", value);
+				// Tracer.Trace(GetType(), "QEDiskStorageView.MaxNumBytesToDisplay", "value = {0}", value);
 				_MaxBytesToDisplay = value;
 				_SbWork.Capacity = _MaxBytesToDisplay * 2 + 2;
 			}
@@ -28,6 +28,6 @@ internal class QEDiskStorageView : DiskStorageView, IBQEStorageView, IBStorageVi
 	public QEDiskStorageView(IBDiskDataStorage storage)
 		: base(storage)
 	{
-		Tracer.Trace(GetType(), "QEDiskStorageView.QEDiskStorageView", "", null);
+		// Tracer.Trace(GetType(), "QEDiskStorageView.QEDiskStorageView", "", null);
 	}
 }

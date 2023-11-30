@@ -13,7 +13,7 @@ namespace BlackbirdSql.Common.Model.Interfaces;
 
 public interface IBSqlQueryExecutionHandler : IBQueryExecutionHandler
 {
-	EnSqlOutputMode SqlExecutionMode { get; set; }
+	EnSqlOutputMode SqlOutputMode { get; set; }
 
 
 	QESQLCommandBuilder SqlExecutionOptions { get; }
@@ -38,5 +38,5 @@ public interface IBSqlQueryExecutionHandler : IBQueryExecutionHandler
 
 	void AddResultSetSeparatorMsg();
 
-	void AddStringToResults(string result, bool flush);
+	void AddStringToResults(string result, bool flush, bool isTextResults);
 }

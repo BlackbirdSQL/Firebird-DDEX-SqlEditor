@@ -1294,15 +1294,6 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enables editor code window Intellisense. Note: The editor currently uses built-in language services so syntax errors may show on valid Firebird grammar..
-        /// </summary>
-        internal static string OptionDescriptionEnableIntellisense {
-            get {
-                return ResourceManager.GetString("OptionDescriptionEnableIntellisense", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Overrides the currently configured query governor cost limit value for the current connection. Valid range: &apos;Min[imum]&apos;, &apos;Default&apos; or 0 to &apos;Max[imum]&apos; or 100000. (Case insensitive).
         /// </summary>
         internal static string OptionDescriptionExecutionCostLimit {
@@ -1492,11 +1483,29 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enables editor code window Intellisense. Note: The editor currently uses built-in language services so syntax errors may show on valid Firebird grammar..
+        /// </summary>
+        internal static string OptionDescriptionGeneralEnableIntellisense {
+            get {
+                return ResourceManager.GetString("OptionDescriptionGeneralEnableIntellisense", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Executes a table select or view definition query automatically on open..
+        /// </summary>
+        internal static string OptionDescriptionGeneralExecuteQueryOnOpen {
+            get {
+                return ResourceManager.GetString("OptionDescriptionGeneralExecuteQueryOnOpen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Prompt to save unsaved SQL query windows on close..
         /// </summary>
-        internal static string OptionDescriptionPromptToSave {
+        internal static string OptionDescriptionGeneralPromptToSave {
             get {
-                return ResourceManager.GetString("OptionDescriptionPromptToSave", resourceCulture);
+                return ResourceManager.GetString("OptionDescriptionGeneralPromptToSave", resourceCulture);
             }
         }
         
@@ -1816,15 +1825,6 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enable Intellisense.
-        /// </summary>
-        internal static string OptionDisplayEnableIntellisense {
-            get {
-                return ResourceManager.GetString("OptionDisplayEnableIntellisense", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to SET QUERY_GOVERNOR_COST_LIMIT.
         /// </summary>
         internal static string OptionDisplayExecutionCostLimit {
@@ -2014,11 +2014,29 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enable Intellisense.
+        /// </summary>
+        internal static string OptionDisplayGeneralEnableIntellisense {
+            get {
+                return ResourceManager.GetString("OptionDisplayGeneralEnableIntellisense", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Auto-execute select query.
+        /// </summary>
+        internal static string OptionDisplayGeneralExecuteQueryOnOpen {
+            get {
+                return ResourceManager.GetString("OptionDisplayGeneralExecuteQueryOnOpen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Prompt to save.
         /// </summary>
-        internal static string OptionDisplayPromptToSave {
+        internal static string OptionDisplayGeneralPromptToSave {
             get {
-                return ResourceManager.GetString("OptionDisplayPromptToSave", resourceCulture);
+                return ResourceManager.GetString("OptionDisplayGeneralPromptToSave", resourceCulture);
             }
         }
         

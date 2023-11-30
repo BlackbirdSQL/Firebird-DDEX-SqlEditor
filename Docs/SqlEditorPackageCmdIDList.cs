@@ -48,7 +48,7 @@ internal static class SqlEditorPackageCmdIDList
 
 	internal const uint cmdIdSqlEditorToggleResultsPane = 783u;
 
-	internal const uint cmdIdSqlEditorNewQueryConnection = 784u;
+	internal const uint cmdIdSqlEditorNewSqlQuery = 784u;
 
 	internal const uint cmdidSqlEditorSaveResultsAs = 785u;
 

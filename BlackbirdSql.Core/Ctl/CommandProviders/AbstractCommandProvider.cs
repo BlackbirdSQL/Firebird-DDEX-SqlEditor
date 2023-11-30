@@ -5,17 +5,18 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
-
-using BlackbirdSql.Core.Ctl.Enums;
+using System.Reflection;
+using System.Security.Policy;
+using BlackbirdSql.Core.Ctl.Config;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
+using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Properties;
-
-
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 
-using EnNodeSystemType = BlackbirdSql.Core.Ctl.CommandProviders.CommandProperties.EnNodeSystemType;
 
 
 namespace BlackbirdSql.Core.Ctl.CommandProviders;
@@ -30,158 +31,24 @@ namespace BlackbirdSql.Core.Ctl.CommandProviders;
 public abstract class AbstractCommandProvider : DataViewCommandProvider
 {
 
-	// ---------------------------------------------------------------------------------
-	#region Variables - AbstractCommandProvider
-	// ---------------------------------------------------------------------------------
+	// -----------------------------------------------------------------------------------------------------
+	#region Constructors / Destructors - AbstractCommandProvider
+	// -----------------------------------------------------------------------------------------------------
 
 
-	private readonly EnNodeSystemType _CommandNodeSystemType = EnNodeSystemType.None;
-
-
-	#endregion Variables
-
-
-
-
-
-	// =========================================================================================================
-	#region Property Accessors - AbstractCommandProvider
-	// =========================================================================================================
-
-
-	// protected abstract Package DdexPackage { get; }
-	protected IBAsyncPackage DdexPackage => Controller.DdexPackage;
-
-	/// <summary>
-	/// Abstract accessor to the command <see cref="EnNodeSystemType"/>.
-	/// Identifies whether the target SE node is is a User, System or Global node.
-	/// </summary>
-	protected EnNodeSystemType CommandNodeSystemType => _CommandNodeSystemType;
-
-
-
-	#endregion Property Accessors
-
-
-	public AbstractCommandProvider(EnNodeSystemType nodeType) : base()
+	public AbstractCommandProvider() : base()
 	{
-		_CommandNodeSystemType = nodeType;
 	}
+
+
+	#endregion Constructors / Destructors
+
 
 
 
 	// =========================================================================================================
 	#region Methods - AbstractCommandProvider
 	// =========================================================================================================
-
-
-
-	protected static bool CanExecute(IVsDataExplorerNode node)
-	{
-		if (node != null)
-		{
-			IVsDataObject @object = node.Object;
-			if (@object == null || !MonikerAgent.ModelObjectTypeIn(@object, EnModelObjectType.StoredProcedure,
-				EnModelObjectType.Function))
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// True if the node has an expression or source that can be opened in an IDE
-	/// editor window else false.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	internal static bool CanOpen(IVsDataExplorerNode node)
-	{
-		if (node != null && node.Object != null)
-		{
-			IVsDataObject @object = node.Object;
-
-			if (@object.Type.Name.EndsWith("Column") || @object.Type.Name.EndsWith("Parameter")
-				|| MonikerAgent.ModelObjectTypeIn(@object, EnModelObjectType.Index, EnModelObjectType.ForeignKey))
-			{
-				if ((bool)@object.Properties["IS_COMPUTED"])
-				{
-					return true;
-				}
-			}
-			else if (@object.Type.Name.EndsWith("Trigger")
-				|| MonikerAgent.ModelObjectTypeIn(@object, EnModelObjectType.View, EnModelObjectType.StoredProcedure, EnModelObjectType.Function))
-			{
-				return true;
-			}
-
-		}
-
-		return false;
-	}
-
-
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// True if the node has an expression or source node object can be altered in an
-	/// IDE editor window else false.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	internal static bool CanAlter(IVsDataExplorerNode node)
-	{
-		if (node != null && node.Object != null)
-		{
-			IVsDataObject @object = node.Object;
-
-			if (@object.Type.Name.EndsWith("Trigger")
-				|| MonikerAgent.ModelObjectTypeIn(@object, EnModelObjectType.View, EnModelObjectType.StoredProcedure, EnModelObjectType.Function))
-			{
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// True if the node has an expression or source that can be opened in an IDE
-	/// editor window else false.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	internal static bool HasScript(IVsDataExplorerNode node)
-	{
-		if (node != null && node.Object != null)
-		{
-			IVsDataObject @object = node.Object;
-
-			if (@object.Type.Name.EndsWith("Column") || @object.Type.Name.EndsWith("Parameter")
-				|| MonikerAgent.ModelObjectTypeIn(@object, EnModelObjectType.Index, EnModelObjectType.ForeignKey))
-			{
-				if ((bool)@object.Properties["IS_COMPUTED"])
-				{
-					return true;
-				}
-			}
-			else if (@object.Type.Name.EndsWith("Trigger")
-				|| MonikerAgent.ModelObjectTypeIn(@object, EnModelObjectType.View, EnModelObjectType.StoredProcedure, EnModelObjectType.Function))
-			{
-				return true;
-			}
-
-		}
-
-		return false;
-	}
-
 
 
 	// ---------------------------------------------------------------------------------
@@ -192,106 +59,199 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	protected override MenuCommand CreateCommand(int itemId, CommandID commandId, object[] parameters)
 	{
 		// Tracer.Trace(GetType(), "AbstractCommandProvider.CreateCommand", "itemId: {0}, commandId: {1}", itemId, commandId);
-		
+
+		string label;
 		MenuCommand command = null;
 		DataViewMenuCommand cmd = null;
-		EnNodeSystemType commandNodeSystemType = EnNodeSystemType.None;
+		EnNodeSystemType nodeSystemType = EnNodeSystemType.Undefined;
 		IVsDataExplorerNode node;
 
 
-		if (commandId.Equals(CommandProperties.NewQuery))
+		if (commandId.Equals(CommandProperties.NewSqlQuery))
 		{
 			cmd = new DataViewMenuCommand(itemId, commandId, delegate
 			{
-				node = Site.ExplorerConnection.FindNode(itemId);
+				// Tracer.Trace(GetType(), "CreateCommand()", "NewSqlQuery");
+				cmd.Visible = cmd.Enabled = true;
 
-				if (node == null)
+				node = Site.ExplorerConnection.ConnectionNode;
+
+				if (cmd.Visible && !command.Properties.Contains("GotText")
+					&& (label = GlobalizeLabel(cmd, node)) != string.Empty)
 				{
-					// Tracer.Trace(GetType(), "AbstractCommandProvider.CreateCommand", "itemId: {0}, commandId: {1}. Node is null. Exiting.", itemId, commandId);
-					return;
+					cmd.Properties["GotText"] = true;
+					cmd.Properties["Text"] = label;
 				}
 
-				commandNodeSystemType = _CommandNodeSystemType;
-
-				if (commandNodeSystemType < EnNodeSystemType.User)
-				{
-					EnNodeSystemType currentNodeSystemType = GetUnknownNodeSystemType(node);
-
-					if (currentNodeSystemType != EnNodeSystemType.None)
-						commandNodeSystemType = currentNodeSystemType;
-				}
-				if (cmd.Visible)
-				{
-					cmd.Properties["Text"] = GetResourceString("New", "Query", commandNodeSystemType);
-				}
 			}, delegate
 			{
-				if (itemId == int.MaxValue)
-					OnNewQuery(itemId, commandNodeSystemType);
-				else
-					OnInterceptorNewQuery(itemId, commandNodeSystemType);
+				OnNewSqlQuery();
 			});
+			command = cmd;
+		}
+		else if (commandId.Equals(CommandProperties.NewDesignerQuery))
+		{
+			cmd = new DataViewMenuCommand(itemId, commandId, delegate
+			{
+				// Tracer.Trace(GetType(), "CreateCommand()", "NewDesignerQuery");
+				cmd.Visible = cmd.Enabled = true;
+
+				node = Site.ExplorerConnection.FindNode(itemId);
+				nodeSystemType = node.NodeSystemType();
+
+				// Tracer.Trace(GetType(), "CreateCommand()", "NewDesignerQuery itemid: {0}, commandid: {1} systemType {2}.", itemId, commandId.ID, nodeSystemType.ToString());
+
+				if (cmd.Visible && !command.Properties.Contains("GotText")
+					&& (label = GlobalizeLabel(cmd, nodeSystemType)) != string.Empty)
+				{
+					cmd.Properties["GotText"] = true;
+					cmd.Properties["Text"] = label;
+				}
+
+			}, delegate
+					{
+						OnInterceptorNewDesignerQuery(itemId, nodeSystemType);
+					});
+			command = cmd;
+		}
+		else if (commandId.Equals(CommandProperties.OverrideNewQueryLocal))
+		{
+			// We're hiding the new query command at the node level so that we can use our New Designer
+			// with the correct text.
+			node = Site.ExplorerConnection.FindNode(itemId);
+
+			cmd = new DataViewMenuCommand(itemId, commandId,
+				delegate
+				{
+					cmd.Enabled = cmd.Visible = false;
+				},
+				delegate
+				{
+					// Never called.
+				});
+
 			command = cmd;
 		}
 		else if (commandId.Equals(CommandProperties.OpenTextObject))
 		{
 			cmd = new DataViewMenuCommand(itemId, commandId, delegate
 			{
-				IVsDataExplorerNode node = Site.ExplorerConnection.FindNode(itemId);
-				cmd.Visible = HasScript(node);
-				cmd.Enabled = CanOpen(node);
+				node = Site.ExplorerConnection.FindNode(itemId);
 
-				if (cmd.Visible)
+				IVsDataExplorerNode scriptNode = node.ScriptNode();
+
+				cmd.Visible = scriptNode != null;
+				cmd.Enabled = cmd.Visible && scriptNode.CanOpen();
+
+				if (cmd.Visible && !command.Properties.Contains("GotText")
+					&& (label = GlobalizeLabel(cmd, scriptNode)) != string.Empty)
 				{
-					node = Site.ExplorerConnection.FindNode(itemId);
-					cmd.Properties["Text"] = GetResourceString("Open", "Script", node);
+					cmd.Properties["GotText"] = true;
+					cmd.Properties["Text"] = label;
 				}
+
+				if (scriptNode != null)
+					itemId = scriptNode.ItemId;
+
 			}, delegate
-			{
-				OnOpen(itemId, false);
-			});
+				{
+					OnOpenScript(itemId, EnModelTargetType.QueryScript);
+				});
 			command = cmd;
 		}
 		else if (commandId.Equals(CommandProperties.OpenAlterTextObject))
 		{
 			cmd = new DataViewMenuCommand(itemId, commandId, delegate
 			{
-				IVsDataExplorerNode node = Site.ExplorerConnection.FindNode(itemId);
-				cmd.Visible = HasScript(node);
-				cmd.Enabled = CanAlter(node);
+				node = Site.ExplorerConnection.FindNode(itemId);
 
-				if (cmd.Visible)
+				IVsDataExplorerNode scriptNode = node.ScriptNode();
+
+				cmd.Visible = cmd.Enabled = (scriptNode != null) && scriptNode.CanAlter();
+
+				if (cmd.Visible && !command.Properties.Contains("GotText")
+					&& (label = GlobalizeLabel(cmd, scriptNode)) != string.Empty)
 				{
-					node = Site.ExplorerConnection.FindNode(itemId);
-
-					cmd.Properties["Text"] = GetResourceString("Alter", "Script", node);
+					cmd.Properties["GotText"] = true;
+					cmd.Properties["Text"] = label;
 				}
+
+				if (scriptNode != null)
+					itemId = scriptNode.ItemId;
+
 			}, delegate
-			{
-				OnOpen(itemId, true);
-			});
+					{
+						OnOpenScript(itemId, EnModelTargetType.AlterScript);
+					});
 			command = cmd;
 		}
-		else if (commandId.Equals(CommandProperties.RightClick))
+		else if (commandId.Equals(CommandProperties.OverrideCopy))
 		{
-			// Not working
-			// Tracer.Trace(GetType(), "CreateCommand", "RightClick");
-			command = base.CreateCommand(itemId, commandId, parameters);
+			// We're hiding the copy command at the node level so that we can use our copy with the correct text.
+			node = Site.ExplorerConnection.FindNode(itemId);
+
+			cmd = new DataViewMenuCommand(itemId, commandId,
+				delegate
+				{
+					cmd.Enabled = cmd.Visible = false;
+				},
+				delegate
+				{
+					// Never called.
+				});
+
+			command = cmd;
 		}
-		else if (commandId.Equals(CommandProperties.DoubleClick))
+		else if (commandId.Equals(CommandProperties.CopyObject))
 		{
-			// Not working
-			// Tracer.Trace(GetType(), "CreateCommand", "DoubleClick");
-			command = base.CreateCommand(itemId, commandId, parameters);
+			cmd = new DataViewMenuCommand(itemId, commandId, delegate
+			{
+				node = Site.ExplorerConnection.FindNode(itemId);
+				cmd.Enabled = cmd.Visible = node.CanCopy();
+
+				if (cmd.Visible && !command.Properties.Contains("GotText")
+					&& (label = GlobalizeLabel(cmd, node)) != string.Empty)
+				{
+					cmd.Properties["GotText"] = true;
+					cmd.Properties["Text"] = label;
+				}
+
+			}, delegate
+					{
+						OnInterceptorCopy(itemId);
+					});
+			command = cmd;
 		}
-		else if (commandId.Equals(CommandProperties.EnterKey))
+		else if (commandId.Equals(CommandProperties.RetrieveDesignerData))
 		{
-			// Not working
-			// Tracer.Trace(GetType(), "CreateCommand", "EnterKey");
-			command = base.CreateCommand(itemId, commandId, parameters);
+			node = Site.ExplorerConnection.FindNode(itemId);
+
+			cmd = new DataViewMenuCommand(itemId, commandId, delegate
+			{
+				IVsDataExplorerNode designerNode = node.DesignerNode();
+
+				cmd.Enabled = cmd.Visible = designerNode != null;
+
+				if (cmd.Visible && !command.Properties.Contains("GotText")
+					&& (label = GlobalizeLabel(cmd, designerNode)) != string.Empty)
+				{
+					cmd.Properties["GotText"] = true;
+					cmd.Properties["Text"] = label;
+				}
+
+				if (designerNode != null)
+					itemId = designerNode.ItemId;
+
+			}, delegate
+			{
+				OnInterceptorDesignRetrieveData(itemId);
+			});
+
+			command = cmd;
 		}
 		else
 		{
+			// Tracer.Trace(GetType(), "CreateCommand()", "itemid: {0}, commandid: {1}.", itemId, commandId.ID);
 			command = base.CreateCommand(itemId, commandId, parameters);
 		}
 
@@ -301,56 +261,11 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	}
 
 
-	/// <summary>
-	/// Determines the IsSystemObject type of View, Procedure and Function node lists
-	/// which may be mixed.
-	/// </summary>
-	/// <param name="node"></param>
-	/// <returns></returns>
-	internal static EnNodeSystemType GetUnknownNodeSystemType(IVsDataExplorerNode node)
+
+	public static string GetResourceString(string commandFunction, string nodeType, string targetType)
 	{
-		if (node == null || node.Object == null)
-			return EnNodeSystemType.None;
-
-		IVsDataObject @object = node.Object;
-
-		if (@object.Type.Name == "View")
-		{
-			if ((short)@object.Properties["IS_SYSTEM_VIEW"] != 0)
-				return EnNodeSystemType.System;
-
-			return EnNodeSystemType.User;
-		}
-		else if (@object.Type.Name == "Procedure" || @object.Type.Name == "Function")
-		{
-			if ((int)@object.Properties["IS_SYSTEM_FLAG"] != 0)
-				return EnNodeSystemType.System;
-
-			return EnNodeSystemType.User;
-		}
-
-		return EnNodeSystemType.None;
-
-	}
-
-
-
-	public static string GetResourceString(string commandFunction, string scriptType, IVsDataExplorerNode node)
-	{
-		return GetResourceString(commandFunction, scriptType, MonikerAgent.GetNodeBaseType(node));
-
-	}
-
-	public static string GetResourceString(string commandFunction, string scriptType, EnNodeSystemType nodeSystemType)
-	{
-		return GetResourceString(commandFunction, scriptType, MonikerAgent.GetNodeSystemType(nodeSystemType));
-
-	}
-
-
-	public static string GetResourceString(string commandFunction, string scriptType, string nodeType)
-	{
-		string resource = $"CommandProvider_{commandFunction}{nodeType}{scriptType}";
+		string resource = $"CommandProvider_{commandFunction}{nodeType}{targetType}";
+		// Tracer.Trace(typeof(AbstractCommandProvider), "GetResourceString()", "resourceKey: {0}", resource);
 		try
 		{
 			return Resources.ResourceManager.GetString(resource);
@@ -361,6 +276,47 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 			Diag.Dug(ex);
 			return "Resource not found: " + resource;
 		}
+	}
+
+
+
+	public static string GlobalizeLabel(DataViewMenuCommand cmd, IVsDataExplorerNode node)
+	{
+		if (!cmd.Visible)
+			return string.Empty;
+
+		string text = string.Empty;
+		EnModelObjectType type = node.NodeBaseType();
+
+		if (cmd.CommandID.Equals(CommandProperties.NewSqlQuery))
+			text = GetResourceString("New", "Sql", "Query");
+		if (cmd.CommandID.Equals(CommandProperties.OpenTextObject))
+			text = GetResourceString("Open", type.ToString(), "Script");
+		else if (cmd.CommandID.Equals(CommandProperties.OpenAlterTextObject))
+			text = GetResourceString("Alter", type.ToString(), "Script");
+		else if (cmd.CommandID.Equals(CommandProperties.CopyObject))
+			text = GetResourceString("Copy", type.ToString(), "Node");
+		else if (cmd.CommandID.Equals(CommandProperties.RetrieveDesignerData))
+			text = GetResourceString("Retrieve", type.ToString(), "DesignerData");
+
+		return text;
+	}
+
+	public static string GlobalizeLabel(DataViewMenuCommand cmd, EnNodeSystemType nodeSystemType)
+	{
+		if (!cmd.Visible)
+			return string.Empty;
+
+		string text = string.Empty;
+		string type = nodeSystemType.ToString();
+
+		if (cmd.CommandID.Equals(CommandProperties.NewDesignerQuery))
+			text = GetResourceString("New", type, "Designer");
+
+		// Tracer.Trace(typeof(AbstractCommandProvider), "GlobalizeLabel(EnNodeSystemType)", "text: {0}", text);
+
+		return text;
+
 	}
 
 
@@ -375,19 +331,96 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	// =========================================================================================================
 
 
+	protected virtual void OnInterceptorDesignRetrieveData(int itemId)
+	{
+		// Tracer.Trace(GetType(), "OnInterceptorDesignRetrieveData()", "itemId: {0}.", itemId);
+
+		IVsDataExplorerNode node = Site.ExplorerConnection.FindNode(itemId);
+		MenuCommand command = node.GetCommand(CommandProperties.RetrieveDesignerLocal);
+
+		if (command == null)
+		{
+			ArgumentException ex = new("GetCommand() GlobalNewQuery returned null");
+			Diag.Dug(ex);
+			return;
+		}
+
+		try
+		{
+			command.Invoke();
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+		}
+
+		if (UserSettings.ShowDiagramPane)
+		{
+			Hostess host = new(Site.ServiceProvider);
+			CommandID cmd = new CommandID(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.ShowGraphicalPane);
+			// Delay 10 ms just to give Editor WindowFrame and QueryDesignerDocument time to breath.
+			host.PostExecuteCommand(cmd, 10);
+		}
+
+	}
+
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// New query command event handler.
-	/// This roadblocks because key services in DataTools.Interop are protected.
+	/// Exposes CopyMenuCommand's private field '_explorerNode'.
+	/// Copy intercept system command event handler.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private void OnNewQuery(int itemId, EnNodeSystemType nodeSystemType)
+	protected void OnInterceptorCopy(int itemId)
 	{
-		// Tracer.Trace(GetType(), "AbstractCommandProvider.OnNewQuery", "itemId: {0}, nodeSystemType: {1}", itemId, nodeSystemType);
+		// Tracer.Trace(GetType(), "OnInterceptorCopy()", "itemId: {0}", itemId);
 
-		Controller.Instance.OnNewQueryRequested(Site, nodeSystemType);
-		// Hostess.QueryDesignerProviderTelemetry(qualityMetricProvider);
+		// Get the copy command at the connection node level. This will be the original
+		// built-in copy command and the only access we have to the original because we
+		// have not implemented an override copy command at that level.
+		IVsDataExplorerNode connectionNode = Site.ExplorerConnection.ConnectionNode;
+		MenuCommand command = connectionNode.GetCommand(CommandProperties.OverrideCopy);
+
+		if (command == null)
+		{
+			ArgumentException ex = new("GetCommand() Copy returned null");
+			Diag.Dug(ex);
+			return;
+		}
+
+		IVsDataExplorerNode node = Site.ExplorerConnection.FindNode(itemId);
+
+
+		// The copy command we've retrieved belongs to the connection node so we use reflection
+		// to change the command's node to the current node.
+
+		Type typeCommand = command.GetType();
+
+		FieldInfo explorerNodeInfo = typeCommand.GetField("_explorerNode",
+			BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.IgnoreCase);
+
+		if (explorerNodeInfo == null)
+		{
+			ArgumentException ex = new($"MenuCommand GetField(_explorerNode) returned null. Command type: {command.GetType().FullName}");
+			Diag.Dug(ex);
+			return;
+		}
+
+
+		try
+		{
+			// Set the copy command's node to the current node using Reflection.
+			explorerNodeInfo.SetValue(command, node);
+			// Invoking the copy will now copy the correct node.
+			command.Invoke();
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+		}
 	}
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -395,16 +428,54 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	/// New query intercept system command event handler.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected void OnInterceptorNewQuery(int itemId, EnNodeSystemType nodeSystemType)
+	protected void OnInterceptorNewDesignerQuery(int itemId, EnNodeSystemType nodeSystemType)
 	{
-		// Tracer.Trace(GetType(), "AbstractCommandProvider.OnInterceptorNewQuery", "itemId: {0}, nodeSystemType: {1}", itemId, nodeSystemType);
+		// Tracer.Trace(GetType(), "OnInterceptorNewDesigner()", "itemId: {0}, nodeSystemType: {1}", itemId, nodeSystemType);
 
-		IVsDataExplorerNode vsDataExplorerNode = Site.ExplorerConnection.FindNode(itemId);
-		MenuCommand command = vsDataExplorerNode.GetCommand(CommandProperties.GlobalNewQuery);
+		IVsDataExplorerNode node = Site.ExplorerConnection.FindNode(itemId);
+		MenuCommand command = node.GetCommand(CommandProperties.NewQueryGlobal);
+
+		if (command == null)
+		{
+			ArgumentException ex = new("GetCommand() NewQueryGlobal returned null");
+			Diag.Dug(ex);
+			return;
+		}
 
 		CommandProperties.CommandNodeSystemType = nodeSystemType;
 
-		command.Invoke();
+		try
+		{
+			command.Invoke();
+		}
+		catch (Exception ex)
+		{
+			CommandProperties.CommandNodeSystemType = EnNodeSystemType.Undefined;
+			Diag.Dug(ex);
+		}
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Open new SQL Query command event handler.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected void OnNewSqlQuery()
+	{
+		// Tracer.Trace(GetType(), "OnNewSqlQuery()");
+
+		if (SystemData.MandatedSqlEditorFactoryGuid.Equals(SystemData.DslEditorFactoryGuid, StringComparison.OrdinalIgnoreCase))
+		{
+			IBDesignerExplorerServices service = Controller.GetService<IBDesignerExplorerServices>()
+				?? throw Diag.ServiceUnavailable(typeof(IBDesignerExplorerServices));
+
+			CsbAgent csa = new(Site.ExplorerConnection.ConnectionNode);
+			csa.RegisterDataset();
+
+			service.NewSqlQuery(csa.DatasetKey);
+		}
 	}
 
 
@@ -414,9 +485,9 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	/// Open text object command event handler.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected void OnOpen(int itemId, bool alternate)
+	protected void OnOpenScript(int itemId, EnModelTargetType targetType)
 	{
-		// Tracer.Trace(GetType(), "AbstractCommandProvider.OnOpen", "itemId: {0}, alternate: {1}", itemId, alternate);
+		// Tracer.Trace(GetType(), "OnOpen()", "itemId: {0}, alternate: {1}", itemId, alternate);
 
 		IVsDataExplorerNode node = Site.ExplorerConnection.FindNode(itemId);
 
@@ -425,21 +496,21 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 			IBDesignerExplorerServices service = Controller.GetService<IBDesignerExplorerServices>()
 				?? throw Diag.ServiceUnavailable(typeof(IBDesignerExplorerServices));
 
-			service.ViewCode(node, alternate);
+			service.ViewCode(node, targetType);
 		}
 		else
 		{
 			IBDesignerOnlineServices service = Controller.GetService<IBDesignerOnlineServices>()
 				?? throw Diag.ServiceUnavailable(typeof(IBDesignerOnlineServices));
 
-			MonikerAgent moniker = new(node);
+			MonikerAgent moniker = new(node, targetType);
 
 			IList<string> identifierList = moniker.Identifier.ToArray();
 			EnModelObjectType objectType = moniker.ObjectType;
-			string script = MonikerAgent.GetDecoratedDdlSource(node, alternate);
+			string script = MonikerAgent.GetDecoratedDdlSource(node, targetType);
 			CsbAgent csb = new(node);
 
-			service.ViewCode(csb, objectType, alternate, identifierList, script);
+			service.ViewCode(csb, objectType, identifierList, targetType, script);
 
 		}
 

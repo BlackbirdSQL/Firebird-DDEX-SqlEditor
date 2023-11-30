@@ -435,7 +435,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorToggleClientStatisticsCommand>(clsid, (uint)EnCommandSet.CmdIdToggleClientStatistics));
 			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
-				new SqlEditorToolbarCommandHandler<SqlEditorNewQueryCommand>(clsid, (uint)EnCommandSet.CmdIdNewQueryConnection));
+				new SqlEditorToolbarCommandHandler<SqlEditorNewQueryCommand>(clsid, (uint)EnCommandSet.CmdIdNewSqlQuery));
 		}
 	}
 
@@ -450,8 +450,8 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 		Guid clsid = LibraryData.CLSID_CommandSet;
 
-		CommandID id = new CommandID(clsid, (int)EnCommandSet.CmdIdNewQueryConnection);
-		OleMenuCommand oleMenuCommand = new OleMenuCommand(OnNewQueryConnection, id);
+		CommandID id = new CommandID(clsid, (int)EnCommandSet.CmdIdNewSqlQuery);
+		OleMenuCommand oleMenuCommand = new OleMenuCommand(OnNewSqlQuery, id);
 		oleMenuCommand.BeforeQueryStatus += EnableCommand;
 		oleMenuCommandService.AddCommand(oleMenuCommand);
 		CommandID id2 = new CommandID(clsid, (int)EnCommandSet.CmdIdCycleToNextTab);
@@ -466,9 +466,9 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 
 
-	private void OnNewQueryConnection(object sender, EventArgs e)
+	private void OnNewSqlQuery(object sender, EventArgs e)
 	{
-		Tracer.Trace(GetType(), "OnNewQueryConnection()");
+		// Tracer.Trace(GetType(), "OnNewSqlQuery()");
 
 		using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
 		{
@@ -486,7 +486,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 	private void EnableCommand(object sender, EventArgs e)
 	{
-		Tracer.Trace(GetType(), "EnableCommand()");
+		// Tracer.Trace(GetType(), "EnableCommand()");
 
 		if (sender is OleMenuCommand oleMenuCommand)
 		{
@@ -539,17 +539,17 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 	private void GetServicePointer(Guid interfaceGuid, object serviceObject, out IntPtr service)
 	{
-		IntPtr intPtr = IntPtr.Zero;
+		IntPtr intPtrUnknown = IntPtr.Zero;
 		try
 		{
-			intPtr = Marshal.GetIUnknownForObject(serviceObject);
-			Marshal.QueryInterface(intPtr, ref interfaceGuid, out service);
+			intPtrUnknown = Marshal.GetIUnknownForObject(serviceObject);
+			Marshal.QueryInterface(intPtrUnknown, ref interfaceGuid, out service);
 		}
 		finally
 		{
-			if (intPtr != IntPtr.Zero)
+			if (intPtrUnknown != IntPtr.Zero)
 			{
-				Marshal.Release(intPtr);
+				Marshal.Release(intPtrUnknown);
 			}
 		}
 	}
@@ -757,7 +757,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 		UIConnectionInfo ci, VerifyConnectionDelegate verifierDelegate, ConnectionDialogConfiguration config,
 		ref UIConnectionInfo uIConnectionInfo)
 	{
-		Tracer.Trace(GetType(), "ShowConnectionDialogFrame()");
+		// Tracer.Trace(GetType(), "ShowConnectionDialogFrame()");
 
 		/*
 		ConnectionDialogFrame connectionDialogFrame = new ConnectionDialogFrame(channel, ci, verifierDelegate, config);

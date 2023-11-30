@@ -11,7 +11,6 @@ using System.Threading;
 using System.Windows.Forms;
 
 using BlackbirdSql.Common.Ctl.Config;
-using BlackbirdSql.Common.Ctl.Config.UserSettingsExtensions;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
@@ -27,7 +26,6 @@ using Microsoft.VisualStudio.Shell;
 
 
 namespace BlackbirdSql.Common.Model;
-
 
 public abstract class AbstractConnectionStrategy : IDisposable
 {
@@ -318,14 +316,13 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	{
 		lock (_LockObject)
 		{
-			if (Connection == null || tryOpenConnection && Connection.State != ConnectionState.Open)
+			if (Connection == null || (tryOpenConnection && Connection.State != ConnectionState.Open))
 			{
 				// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "EnsureConnection", "Connection is null or not open");
 				AcquireConnectionInfo(tryOpenConnection, out var uici, out var connection);
+
 				if (uici != null && connection == null)
-				{
-					connection = CreateDbConnectionFromConnectionInfo(uici, tryOpenConnection: false);
-				}
+					connection = CreateDbConnectionFromConnectionInfo(uici, tryOpenConnection);
 
 				UiConnectionInfo = uici;
 				SetDbConnection(connection);
@@ -532,15 +529,15 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	protected void CreateAndOpenConnectionWithCommonMessageLoop(UIConnectionInfo uici, string connectingInfoMessage, string errorPrescription, out IDbConnection connection)
 	{
 		connection = null;
-		IDbConnection c = null;
+		IDbConnection testConnection = null;
 		Exception exception = null;
 		ManualResetEvent resetEvent = new ManualResetEvent(initialState: false);
 		Action action = delegate
 		{
 			try
 			{
-				c = CreateDbConnectionFromConnectionInfo(uici, tryOpenConnection: false);
-				c.Open();
+				testConnection = CreateDbConnectionFromConnectionInfo(uici, false);
+				testConnection.Open();
 			}
 			catch (Exception ex)
 			{
@@ -573,16 +570,16 @@ public abstract class AbstractConnectionStrategy : IDisposable
 			((Action)delegate
 			{
 				int connectionTimeout = 15; // Ns2.SqlServerConnectionService.GetConnectionTimeout(uici);
-				if (resetEvent.WaitOne(2 * connectionTimeout) && c != null)
+				if (resetEvent.WaitOne(2 * connectionTimeout) && testConnection != null)
 				{
-					c.Close();
-					c.Dispose();
+					testConnection.Close();
+					testConnection.Dispose();
 				}
 			}).BeginInvoke(null, null);
 		}
 		else
 		{
-			connection = c;
+			connection = testConnection;
 		}
 
 		if (exception == null)

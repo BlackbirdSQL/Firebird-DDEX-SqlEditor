@@ -31,8 +31,6 @@
 	  <Compile Include="Ctl\Config\LiveUserSettings.cs" />
 	  <Compile Include="Ctl\Commands\SqlEditorNewQueryCommand.cs" />
 	  <Compile Include="Ctl\Config\UserSettings.cs" />
-	  <Compile Include="Model\MonikerAgent.cs" />
-	  <None Include="Ctl\DataTools\AbstractDataToolsDocument.cs" />
 	  <Compile Include="Ctl\Enums\EnDeadlockPriority.cs" />
 	  <Compile Include="Ctl\Interfaces\IBLiveUserSettings.cs" />
 	  <Compile Include="Properties\SqlResources.Designer.cs">
@@ -263,7 +261,6 @@
 	  <Compile Include="Ctl\DataTools\Events\IVsDataConnectionEvents.cs" />
 	  <Compile Include="Ctl\DataTools\Interfaces\IVsDataConnection.cs" />
 	  <Compile Include="Ctl\DataTools\Interfaces\IVsDataConnectionManager.cs" />
-	  <None Include="Ctl\DataTools\QueryDesignerDocument.cs" />
 	  <Compile Include="Ctl\Parser\Enums\EnBindMode.cs" />
 	  <Compile Include="Ctl\Parser\Interfaces\IBBinder.cs" />
 	  <Compile Include="Ctl\Parser\ParseResult.cs" />
@@ -520,7 +517,6 @@
 	  <Compile Include="Ctl\Commands\MenuCommandTextChanges.cs" />
 	  <Compile Include="Ctl\MruInfo.cs" />
 	  <Compile Include="Ctl\NodeElementDescriptor.cs" />
-	  <Compile Include="Ctl\RdtManager.cs" />
 	  <Compile Include="Ctl\SortingArray.cs" />
 	  <Compile Include="Ctl\SqlDebugBatchContext.cs" />
 	  <Compile Include="Ctl\Commands\SqlEditorViewFilter.cs" />

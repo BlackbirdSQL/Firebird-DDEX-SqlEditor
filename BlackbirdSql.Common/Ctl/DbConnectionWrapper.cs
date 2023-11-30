@@ -25,7 +25,7 @@ public sealed class DbConnectionWrapper
 
 	// private readonly bool _isReliableConnection;
 
-	private readonly Action<FbConnection> _sqlConnectionCreatedObserver;
+	private readonly Action<FbConnection> _SqlConnectionCreatedObserver;
 
 	public string DataSource
 	{
@@ -66,7 +66,7 @@ public sealed class DbConnectionWrapper
 		}
 
 		_Connection = connection;
-		_sqlConnectionCreatedObserver = sqlConnectionCreatedObserver;
+		_SqlConnectionCreatedObserver = sqlConnectionCreatedObserver;
 	}
 
 	public static bool IsSupportedConnection(IDbConnection connection)
@@ -82,7 +82,7 @@ public sealed class DbConnectionWrapper
 	public FbConnection CloneAndOpenConnection()
 	{
 		FbConnection sqlConnection = ((ICloneable)GetAsSqlConnection()).Clone() as FbConnection;
-		_sqlConnectionCreatedObserver?.Invoke(sqlConnection);
+		_SqlConnectionCreatedObserver?.Invoke(sqlConnection);
 
 		sqlConnection.Open();
 		return sqlConnection;

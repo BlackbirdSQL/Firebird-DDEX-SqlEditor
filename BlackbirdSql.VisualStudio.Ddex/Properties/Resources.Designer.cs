@@ -115,42 +115,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The arguments array is invalid..
-        /// </summary>
-        public static string DataSupportObject_InvalidInvokeArguments {
-            get {
-                return ResourceManager.GetString("DataSupportObject_InvalidInvokeArguments", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The method name is unknown..
-        /// </summary>
-        public static string DataSupportObject_UnknownInvokeName {
-            get {
-                return ResourceManager.GetString("DataSupportObject_UnknownInvokeName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The parameters array contains invalid elements..
-        /// </summary>
-        public static string DSRefBuilder_InvalidParameters {
-            get {
-                return ResourceManager.GetString("DSRefBuilder_InvalidParameters", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A connection site is required to build a DSRef..
-        /// </summary>
-        public static string DSRefBuilder_MissingSite {
-            get {
-                return ResourceManager.GetString("DSRefBuilder_MissingSite", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Attempt to add a null site.
         /// </summary>
         public static string ExceptionAddingNullSite {
@@ -372,6 +336,24 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string Provider_ShortDisplayName {
             get {
                 return ResourceManager.GetString("Provider_ShortDisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Query{1}: DesignData{0}.
+        /// </summary>
+        public static string QueryDesignerDocument_NewQueryCaption {
+            get {
+                return ResourceManager.GetString("QueryDesignerDocument_NewQueryCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {1}: DesignData{0}.
+        /// </summary>
+        public static string QueryDesignerDocument_RetrieveDataCaption {
+            get {
+                return ResourceManager.GetString("QueryDesignerDocument_RetrieveDataCaption", resourceCulture);
             }
         }
     }

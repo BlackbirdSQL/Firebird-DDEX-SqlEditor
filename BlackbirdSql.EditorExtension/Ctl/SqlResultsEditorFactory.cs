@@ -33,10 +33,10 @@ public sealed class SqlResultsEditorFactory : AbstruseEditorFactory
 	{
 	}
 
-	public override int CreateEditorInstance(uint createFlags, string moniker, string physicalView, IVsHierarchy hierarchy, uint itemId, IntPtr existingDocData, out IntPtr docViewIntPtr, out IntPtr docDataIntPtr, out string caption, out Guid cmdUIGuid, out int result)
+	public override int CreateEditorInstance(uint createFlags, string moniker, string physicalView, IVsHierarchy hierarchy, uint itemId, IntPtr existingDocData, out IntPtr intPtrDocView, out IntPtr intPtrDocData, out string caption, out Guid cmdUIGuid, out int result)
 	{
-		docViewIntPtr = IntPtr.Zero;
-		docDataIntPtr = IntPtr.Zero;
+		intPtrDocView = IntPtr.Zero;
+		intPtrDocData = IntPtr.Zero;
 		caption = "";
 		cmdUIGuid = Guid.Empty;
 		result = 1;
@@ -63,10 +63,10 @@ public sealed class SqlResultsEditorFactory : AbstruseEditorFactory
 
 			result = 0;
 			Cursor.Current = Cursors.WaitCursor;
-			ResultWindowPane o = CreateResultsWindowPane();
+			ResultWindowPane resultWindowPane = CreateResultsWindowPane();
 			caption = SharedResx.SqlResultsEditorFactory_Caption;
-			docViewIntPtr = Marshal.GetIUnknownForObject(o);
-			docDataIntPtr = Marshal.GetIUnknownForObject(o);
+			intPtrDocView = Marshal.GetIUnknownForObject(resultWindowPane);
+			intPtrDocData = Marshal.GetIUnknownForObject(resultWindowPane);
 			cmdUIGuid = VSConstants.GUID_TextEditorFactory;
 			return VSConstants.S_OK;
 		}

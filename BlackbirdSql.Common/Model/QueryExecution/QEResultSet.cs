@@ -176,7 +176,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 
 	private QEResultSet()
 	{
-		Tracer.Trace(GetType(), "QEResultSet.QEResultSet", "", null);
+		// Tracer.Trace(GetType(), "QEResultSet.QEResultSet", "", null);
 	}
 
 	public QEResultSet(IDataReader reader, QueryManager qryMgr, string script)
@@ -194,9 +194,9 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 		_Script = script;
 	}
 
-	public void Initialize(bool forwardOnly)
+	public void Initialize(bool textBased, bool forwardOnly)
 	{
-		Tracer.Trace(GetType(), "QEResultSet.Initialize", "", null);
+		// Tracer.Trace(GetType(), "QEResultSet.Initialize", "", null);
 		if (_QeStorage != null)
 		{
 			Exception ex = new InvalidOperationException(QEResources.ErrQEResultSetAlreadyInited);
@@ -204,7 +204,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 			throw ex;
 		}
 
-		StorageDataReader storageDataReader = new StorageDataReader(_DataReader);
+		StorageDataReader storageDataReader = new StorageDataReader(_DataReader, null);
 		_StorageReaderSchemaTable = storageDataReader.GetSchemaTable();
 		int fieldCount = storageDataReader.FieldCount;
 		_ColumnNames = new StringCollection();
@@ -225,7 +225,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 			}
 		}
 
-		_QeStorage.InitStorage(_DataReader);
+		_QeStorage.InitStorage(_DataReader, textBased);
 		// _M_curRowsNum = 0L;
 		_NotifyDelegate = OnStorageNotify;
 		_QeStorage.StorageNotify += _NotifyDelegate;
@@ -238,13 +238,13 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 
 	public void Dispose()
 	{
-		Tracer.Trace(GetType(), "QEResultSet.Dispose", "", null);
+		// Tracer.Trace(GetType(), "QEResultSet.Dispose", "", null);
 		Dispose(bDisposing: true);
 	}
 
 	private void Dispose(bool bDisposing)
 	{
-		Tracer.Trace(GetType(), "QEResultSet.Dispose", "bDisposing = {0}", bDisposing);
+		// Tracer.Trace(GetType(), "QEResultSet.Dispose", "bDisposing = {0}", bDisposing);
 		if (_QeStorageView != null)
 		{
 			_QeStorageView.Dispose();
@@ -321,7 +321,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 
 	public void InitiateStopRetrievingData()
 	{
-		Tracer.Trace(GetType(), "QEResultSet.InitiateStopRetrievingData", "", null);
+		// Tracer.Trace(GetType(), "QEResultSet.InitiateStopRetrievingData", "", null);
 		_IsStopping = true;
 		lock (_LockLocal)
 		{
@@ -348,7 +348,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 
 	public void StartConsumingDataWithoutStoring()
 	{
-		Tracer.Trace(GetType(), "QEResultSet.StartConsumingDataWithoutStoring", "", null);
+		// Tracer.Trace(GetType(), "QEResultSet.StartConsumingDataWithoutStoring", "", null);
 		if (_QeStorage == null)
 		{
 			Exception ex = new InvalidOperationException(QEResources.ErrQEResultSetNotInited);
@@ -375,7 +375,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 
 	public void StartRetrievingData(int nMaxNumCharsToDisplay, int nMaxNumXmlCharsToDisplay)
 	{
-		Tracer.Trace(GetType(), "QEResultSet.StartRetrievingData", "nMaxNumCharsToDisplay = {0}", nMaxNumCharsToDisplay);
+		// Tracer.Trace(GetType(), "QEResultSet.StartRetrievingData", "nMaxNumCharsToDisplay = {0}", nMaxNumCharsToDisplay);
 		if (_QeStorage == null)
 		{
 			Exception ex = new InvalidOperationException(QEResources.ErrQEResultSetNotInited);

@@ -3,7 +3,6 @@ using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Core;
 using System;
 using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Common.Ctl.Config;
 using BlackbirdSql.Core.Model;
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
@@ -18,7 +17,7 @@ public class ResultsToGridBatchConsumer : AbstractQESQLBatchConsumer
 	public ResultsToGridBatchConsumer(IBSqlQueryExecutionHandler resultsControl)
 		: base(resultsControl)
 	{
-		Tracer.Trace(GetType(), "ResultsToGridBatchConsumer.ResultsToGridBatchConsumer", "", null);
+		// Tracer.Trace(GetType(), "ResultsToGridBatchConsumer.ResultsToGridBatchConsumer", "", null);
 		_MaxCharsPerColumn = ModelConstants.C_DefaultGridMaxCharsPerColumnStd;
 	}
 
@@ -30,7 +29,7 @@ public class ResultsToGridBatchConsumer : AbstractQESQLBatchConsumer
 
 	public override void OnNewResultSet(object sender, QESQLBatchNewResultSetEventArgs args)
 	{
-		Tracer.Trace(GetType(), "ResultsToGridBatchConsumer.OnNewResultSet", "", null);
+		// Tracer.Trace(GetType(), "ResultsToGridBatchConsumer.OnNewResultSet", "", null);
 
 		try
 		{
@@ -43,11 +42,11 @@ public class ResultsToGridBatchConsumer : AbstractQESQLBatchConsumer
 			if (DiscardResults || _CouldNotAddGrid)
 			{
 				Diag.Stack("ERROR or DISCARD: Could not add more grids");
-				args.ResultSet.Initialize(forwardOnly: true);
+				args.ResultSet.Initialize(false, true);
 				HandleNewResultSetForDiscard(args);
 				return;
 			}
-			args.ResultSet.Initialize(forwardOnly: false);
+			args.ResultSet.Initialize(false, false);
 			_GridContainer = new ResultSetAndGridContainer(args.ResultSet, printColumnHeaders: true, _MaxCharsPerColumn);
 		}
 		catch (Exception ex)
@@ -90,7 +89,7 @@ public class ResultsToGridBatchConsumer : AbstractQESQLBatchConsumer
 
 	public override void Cleanup()
 	{
-		Tracer.Trace(GetType(), "ResultsToGridBatchConsumer.Cleanup", "", null);
+		// Tracer.Trace(GetType(), "ResultsToGridBatchConsumer.Cleanup", "", null);
 		base.Cleanup();
 		if (_GridContainer != null)
 		{

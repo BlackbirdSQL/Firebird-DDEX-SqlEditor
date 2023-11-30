@@ -5,9 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-
-using BlackbirdSql.Core.Ctl.Enums;
-
+using BlackbirdSql.Core.Model.Enums;
 
 namespace BlackbirdSql.Common.Ctl.Events;
 
@@ -22,8 +20,10 @@ public class BeforeOpenDocumentEventArgs : EventArgs
 	public IList<string> IdentifierList { get; private set; }
 
 	public EnModelObjectType ElementType { get; private set; }
+	public EnModelTargetType TargetType { get; private set; }
 
-	public BeforeOpenDocumentEventArgs(string mkDocument, DbConnectionStringBuilder scsb, IList<string> identifierList, EnModelObjectType elementType)
+	public BeforeOpenDocumentEventArgs(string mkDocument, DbConnectionStringBuilder scsb,
+		IList<string> identifierList, EnModelObjectType elementType, EnModelTargetType targetType)
 	{
 		/*
 		if (string.IsNullOrWhiteSpace(mkDocument))
@@ -40,15 +40,18 @@ public class BeforeOpenDocumentEventArgs : EventArgs
 		IdentifierList = identifierList;
 		ElementType = elementType;
 		Location = default;
+		TargetType = targetType;
 	}
 
-	public BeforeOpenDocumentEventArgs(string mkDocument, DatabaseLocation dbl, IList<string> identifierList, EnModelObjectType elementType)
+	public BeforeOpenDocumentEventArgs(string mkDocument, DatabaseLocation dbl,
+		IList<string> identifierList, EnModelObjectType elementType, EnModelTargetType targetType)
 	{
 		Moniker = mkDocument;
 		ConnectionString = null;
 		IdentifierList = identifierList;
 		ElementType = elementType;
 		Location = dbl;
+		TargetType = targetType;
 	}
 
 }

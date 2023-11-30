@@ -33,7 +33,7 @@ public static class WindowHelper
 	{
 		try
 		{
-			Tracer.Trace(typeof(WindowHelper), "ShowModal()");
+			// Tracer.Trace(typeof(WindowHelper), "ShowModal()");
 
 			WindowInteropHelper helper = new WindowInteropHelper(window)
 			{

@@ -4,13 +4,10 @@
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
-
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Properties;
-
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.TaskStatusCenter;
 
 using static BlackbirdSql.Core.Model.AbstractLinkageParser;

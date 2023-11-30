@@ -6,12 +6,12 @@ using System;
 using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
+using BlackbirdSql.Core.Model.Enums;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
-
 
 // =========================================================================================================
 //									TConnectionEquivalencyComparer Class
@@ -69,7 +69,7 @@ public class TConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 		// we're going to hack it by invalidating the connection.
 		// 
 
-		if (CommandProperties.CommandNodeSystemType != CommandProperties.EnNodeSystemType.None)
+		if (CommandProperties.CommandNodeSystemType != EnNodeSystemType.Undefined)
 		{
 			// Tracer.Trace(GetType(), "TConnectionEquivalencyComparer.AreEquivalent", "Returning false. CommandProperties.CommandNodeSystemType: {0}", CommandProperties.CommandNodeSystemType);
 			return false;

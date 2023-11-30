@@ -61,38 +61,11 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {2}: {1}{0}.
-        /// </summary>
-        internal static string DataToolsDocument_Caption {
-            get {
-                return ResourceManager.GetString("DataToolsDocument_Caption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to /* ** New Query ** */.
         /// </summary>
         internal static string DesignerExplorerServices_DecoratedNewQuery {
             get {
                 return ResourceManager.GetString("DesignerExplorerServices_DecoratedNewQuery", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Query{1}: Query{0}.
-        /// </summary>
-        internal static string QueryDesignerDocument_NewQueryCaption {
-            get {
-                return ResourceManager.GetString("QueryDesignerDocument_NewQueryCaption", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {1}: Query{0}.
-        /// </summary>
-        internal static string QueryDesignerDocument_RetrieveDataCaption {
-            get {
-                return ResourceManager.GetString("QueryDesignerDocument_RetrieveDataCaption", resourceCulture);
             }
         }
     }

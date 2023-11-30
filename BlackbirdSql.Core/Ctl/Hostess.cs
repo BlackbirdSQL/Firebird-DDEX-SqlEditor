@@ -10,7 +10,7 @@ using System.Text;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
-
+using BlackbirdSql.Core.Model.Enums;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell;
@@ -33,9 +33,13 @@ public class Hostess : AbstractHostess
 {
 	public Hostess() : base()
 	{
-		// Tracer.Trace(GetType(), "Hostess.Hostess");
+		// Tracer.Trace(GetType(), "Hostess.Hostess()");
 	}
 
+	public Hostess(IServiceProvider dataViewHierarchyServiceProvider) : base(dataViewHierarchyServiceProvider)
+	{
+		// Tracer.Trace(GetType(), "Hostess.Hostess(IServiceProvider dataViewHierarchyServiceProvider)");
+	}
 
 
 	/// <summary>
@@ -50,9 +54,9 @@ public class Hostess : AbstractHostess
 
 		int result;
 
-		MonikerAgent moniker = new(node);
-		string source = MonikerAgent.GetDecoratedDdlSource(node, false);
-		string mkDocument = moniker.DocumentMoniker;
+		MonikerAgent moniker = new(node, EnModelTargetType.QueryScript);
+		string source = MonikerAgent.GetDecoratedDdlSource(node, EnModelTargetType.QueryScript);
+		string mkDocument = moniker.MiscDocumentMonikerPath;
 		string path = moniker.ToPath(UserDataDirectory);
 		uint grfIDO = (uint)__VSIDOFLAGS.IDO_ActivateIfOpen;
 
@@ -299,15 +303,18 @@ public class Hostess : AbstractHostess
 			throw exc;
 		}
 
-		IntPtr iUnknownForObject = IntPtr.Zero;
-		IntPtr iUnknownForObject2 = IntPtr.Zero;
+		IntPtr intPtrUnknown = IntPtr.Zero;
+		IntPtr intPtrUnknown2 = IntPtr.Zero;
 
 		try
 		{
-			iUnknownForObject = Marshal.GetIUnknownForObject(documentView);
-			iUnknownForObject2 = Marshal.GetIUnknownForObject(documentData);
+			intPtrUnknown = Marshal.GetIUnknownForObject(documentView);
+			intPtrUnknown2 = Marshal.GetIUnknownForObject(documentData);
 
-			Native.WrapComCall(service.CreateDocumentWindow((uint)attributes, documentMoniker, owningHierarchy, (uint)owningItemId, iUnknownForObject, iUnknownForObject2, ref editorType, physicalView, ref commandUIGuid, serviceProvider, ownerCaption, editorCaption, null, out IVsWindowFrame ppWindowFrame));
+			Native.WrapComCall(service.CreateDocumentWindow((uint)attributes, documentMoniker,
+				owningHierarchy, (uint)owningItemId, intPtrUnknown, intPtrUnknown2, ref editorType,
+				physicalView, ref commandUIGuid, serviceProvider, ownerCaption, editorCaption,
+				null, out IVsWindowFrame ppWindowFrame));
 			return ppWindowFrame;
 		}
 		catch (Exception ex)
@@ -317,8 +324,8 @@ public class Hostess : AbstractHostess
 		}
 		finally
 		{
-			Marshal.Release(iUnknownForObject2);
-			Marshal.Release(iUnknownForObject);
+			Marshal.Release(intPtrUnknown2);
+			Marshal.Release(intPtrUnknown);
 		}
 	}
 

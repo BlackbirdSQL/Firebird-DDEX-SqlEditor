@@ -52,14 +52,14 @@ public sealed class ResultSetAndGridContainer : IDisposable
 		}
 		set
 		{
-			Tracer.Trace(GetType(), "ResultSetAndGridContainer.ControlToWindowRatio", "value = {0}", value);
+			// Tracer.Trace(GetType(), "ResultSetAndGridContainer.ControlToWindowRatio", "value = {0}", value);
 			m_controlToWindowRatio = value;
 		}
 	}
 
 	public ResultSetAndGridContainer(QEResultSet resultSet, bool printColumnHeaders, int numberOfCharsToShow)
 	{
-		Tracer.Trace(GetType(), "ResultSetAndGridContainer.ResultSetAndGridContainer", "", null);
+		// Tracer.Trace(GetType(), "ResultSetAndGridContainer.ResultSetAndGridContainer", "", null);
 		_QeResultSet = resultSet;
 		_PrintColumnHeaders = printColumnHeaders;
 		_NumberOfCharsToShow = numberOfCharsToShow;
@@ -68,7 +68,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 
 	public void Initialize(IBGridControl2 grid)
 	{
-		Tracer.Trace(GetType(), "ResultSetAndGridContainer.Initialize", "", null);
+		// Tracer.Trace(GetType(), "ResultSetAndGridContainer.Initialize", "", null);
 		_GridCtl = grid;
 		_QeResultSet.InGridMode = true;
 		_QeResultSet.MoreRowsAvailableEvent += _MoreRowsAvailableHandler;
@@ -112,12 +112,12 @@ public sealed class ResultSetAndGridContainer : IDisposable
 		((ISupportInitialize)_GridCtl).EndInit();
 		_GridCtl.UpdateGrid();
 		m_bGridHasRows = false;
-		Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ResultSetAndGridContainer.Initialize", "returning");
+		// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ResultSetAndGridContainer.Initialize", "returning");
 	}
 
 	public void Dispose()
 	{
-		Tracer.Trace(GetType(), "ResultSetAndGridContainer.Dispose", "", null);
+		// Tracer.Trace(GetType(), "ResultSetAndGridContainer.Dispose", "", null);
 		if (_QeResultSet != null)
 		{
 			_QeResultSet.MoreRowsAvailableEvent -= _MoreRowsAvailableHandler;
@@ -135,7 +135,7 @@ public sealed class ResultSetAndGridContainer : IDisposable
 
 	public void StartRetrievingData(int nMaxNumCharsToDisplay, int nMaxNumXmlCharsToDisplay)
 	{
-		Tracer.Trace(GetType(), "ResultSetAndGridContainer.StartRetrievingData", "nMaxNumCharsToDisplay = {0}, nMaxNumXmlCharsToDisplay={1}", nMaxNumCharsToDisplay, nMaxNumXmlCharsToDisplay);
+		// Tracer.Trace(GetType(), "ResultSetAndGridContainer.StartRetrievingData", "nMaxNumCharsToDisplay = {0}, nMaxNumXmlCharsToDisplay={1}", nMaxNumCharsToDisplay, nMaxNumXmlCharsToDisplay);
 		_QeResultSet.StartRetrievingData(nMaxNumCharsToDisplay, nMaxNumXmlCharsToDisplay);
 	}
 

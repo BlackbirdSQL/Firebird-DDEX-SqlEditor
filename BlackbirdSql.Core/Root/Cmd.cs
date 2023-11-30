@@ -1,8 +1,12 @@
 ﻿
 using System;
+using System.Diagnostics;
 using System.Globalization;
+using System.IO;
+using System.Security;
 using System.Text;
 using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Extensions;
 using FirebirdSql.Data.FirebirdClient;
@@ -54,7 +58,37 @@ public abstract class Cmd
 	// =========================================================================================================
 
 
+	// CanonicalizeDirectoryName
+	public static string CanonicalizeDirectoryName(string fullPathDirName)
+	{
+		if (string.IsNullOrEmpty(fullPathDirName))
+		{
+			ArgumentNullException ex = new("fullPathDirName");
+			Diag.Dug(ex);
+			throw ex;
+		}
 
+		return CanonicalizeFileNameOrDirectoryImpl(fullPathDirName, pathIsDir: true);
+	}
+
+
+	// CanonicalizeFileNameOrDirectoryImpl
+	private static string CanonicalizeFileNameOrDirectoryImpl(string path, bool pathIsDir)
+	{
+		if (path.StartsWith("FBSQL::", StringComparison.OrdinalIgnoreCase) || path.StartsWith("FBSQLCLR::", StringComparison.OrdinalIgnoreCase))
+		{
+			return path;
+		}
+
+		path = Path.GetFullPath(path);
+		path = path.ToUpperInvariant();
+		if (pathIsDir)
+		{
+			return EnsureNoBackslash(path);
+		}
+
+		return path;
+	}
 
 
 	// CheckForEmptyString
@@ -128,6 +162,18 @@ public abstract class Cmd
 	}
 
 
+	// EnsureNoBackslash
+	public static string EnsureNoBackslash(string fullPath)
+	{
+		string result = fullPath;
+		if (!string.IsNullOrEmpty(fullPath) && fullPath.Length > 1 && (fullPath[^1] == '\\' || fullPath[^1] == '/'))
+		{
+			result = fullPath[..^1];
+		}
+
+		return result;
+	}
+
 
 	// Failed
 	public static bool Failed(int hr)
@@ -168,6 +214,64 @@ public abstract class Cmd
 
 		if (ex.InnerException != null)
 			return IsCriticalException(ex.InnerException);
+
+		return false;
+	}
+
+
+	// IsSamePath
+	public static bool IsSamePath(string file1, string file2)
+	{
+		if (file1 == null || file1.Length == 0)
+		{
+			if (file2 != null)
+				return file2.Length == 0;
+
+			return true;
+		}
+
+		try
+		{
+			if (!Uri.TryCreate(file1, UriKind.Absolute, out var result)
+				|| !Uri.TryCreate(file2, UriKind.Absolute, out var result2))
+			{
+				return false;
+			}
+
+			if (result != null && result.IsFile && result2 != null && result2.IsFile)
+			{
+				try
+				{
+					string strA = CanonicalizeDirectoryName(result.LocalPath);
+					string strB = CanonicalizeDirectoryName(result2.LocalPath);
+
+					return string.Compare(strA, strB, StringComparison.OrdinalIgnoreCase) == 0;
+				}
+				catch (PathTooLongException)
+				{
+					return false;
+				}
+				catch (ArgumentException)
+				{
+					return false;
+				}
+				catch (SecurityException)
+				{
+					return false;
+				}
+				catch (NotSupportedException)
+				{
+					return false;
+				}
+			}
+
+			return file1 == file2;
+		}
+		catch (UriFormatException ex5)
+		{
+			SqlTracer.TraceEvent(TraceEventType.Verbose, EnSqlTraceId.CoreServices,
+				string.Format(CultureInfo.CurrentCulture, "IsSamePath exception: {0}", ex5.Message));
+		}
 
 		return false;
 	}

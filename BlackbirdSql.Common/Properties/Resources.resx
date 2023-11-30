@@ -117,16 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="DataToolsDocument_Caption" xml:space="preserve">
-    <value>{2}: {1}{0}</value>
-  </data>
   <data name="DesignerExplorerServices_DecoratedNewQuery" xml:space="preserve">
     <value>/* ** New Query ** */</value>
-  </data>
-  <data name="QueryDesignerDocument_NewQueryCaption" xml:space="preserve">
-    <value>Query{1}: Query{0}</value>
-  </data>
-  <data name="QueryDesignerDocument_RetrieveDataCaption" xml:space="preserve">
-    <value>{1}: Query{0}</value>
   </data>
 </root>

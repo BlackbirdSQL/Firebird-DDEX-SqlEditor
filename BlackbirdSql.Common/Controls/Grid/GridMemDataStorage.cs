@@ -62,7 +62,7 @@ public class GridMemDataStorage : AbstractMemDataStorage, IBGridMemDataStorage, 
 
 	public void InsertColumn(int nIndex, string name)
 	{
-		_ColumnsArray.Insert(nIndex, new ColumnInfo(name));
+		_ColumnInfoArray.Insert(nIndex, new ColumnInfo(name));
 	}
 
 	public void DeleteColumn(int colIndex)
@@ -85,7 +85,7 @@ public class GridMemDataStorage : AbstractMemDataStorage, IBGridMemDataStorage, 
 				_RowsArray[i] = array2;
 			}
 		}
-		_ColumnsArray.RemoveAt(colIndex);
+		_ColumnInfoArray.RemoveAt(colIndex);
 	}
 
 	public void SortByColumn(int colIndex, IComparer comparer, bool descending)

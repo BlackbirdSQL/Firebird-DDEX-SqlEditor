@@ -11,7 +11,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl.CommandProviders;
 
 
 // =========================================================================================================
-//										UniversalQueryCommandProvider Class
+//										UniversalCommandProvider Class
 //
 /// <summary>
 /// Implements commands on System Object nodes
@@ -19,7 +19,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl.CommandProviders;
 // =========================================================================================================
 internal class UniversalCommandProvider : AbstractCommandProvider
 {
-	public UniversalCommandProvider() : base(CommandProperties.EnNodeSystemType.Global)
+	public UniversalCommandProvider() : base()
 	{
 	}
 

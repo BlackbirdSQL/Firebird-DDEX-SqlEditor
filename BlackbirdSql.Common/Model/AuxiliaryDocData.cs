@@ -24,11 +24,11 @@ public sealed class AuxiliaryDocData
 {
 	public class SqlExecutionModeChangedEventArgs : EventArgs
 	{
-		public EnSqlOutputMode SqlExecutionMode { get; private set; }
+		public EnSqlOutputMode SqlOutputMode { get; private set; }
 
 		public SqlExecutionModeChangedEventArgs(EnSqlOutputMode executionMode)
 		{
-			SqlExecutionMode = executionMode;
+			SqlOutputMode = executionMode;
 		}
 	}
 
@@ -189,7 +189,7 @@ public sealed class AuxiliaryDocData
 
 
 
-	public EnSqlOutputMode SqlExecutionMode
+	public EnSqlOutputMode SqlOutputMode
 	{
 		get
 		{
@@ -197,7 +197,7 @@ public sealed class AuxiliaryDocData
 		}
 		set
 		{
-			// Tracer.Trace(GetType(), "DisplaySQLResultsControl.SqlExecutionMode", "value = {0}", value);
+			// Tracer.Trace(GetType(), "DisplaySQLResultsControl.SqlOutputMode", "value = {0}", value);
 			if (QryMgr.IsExecuting)
 			{
 				InvalidOperationException ex = new(ControlsResources.SqlExecutionModeChangeFailed);
@@ -369,7 +369,7 @@ public sealed class AuxiliaryDocData
 
 	public void SetResultsAsTextExecutionMode()
 	{
-		SqlExecutionMode = EnSqlOutputMode.ToText;
+		SqlOutputMode = EnSqlOutputMode.ToText;
 	}
 
 	private void SetOLESqlModeOnDocData(bool on)

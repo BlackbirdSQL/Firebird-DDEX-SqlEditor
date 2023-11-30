@@ -35,7 +35,7 @@ public class SqlEditorResultsAsGridCommand : AbstractSqlEditorCommand
 				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 			}
 
-			if (auxiliaryDocDataForEditor.SqlExecutionMode == EnSqlOutputMode.ToGrid)
+			if (auxiliaryDocDataForEditor.SqlOutputMode == EnSqlOutputMode.ToGrid)
 			{
 				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
 			}
@@ -49,7 +49,7 @@ public class SqlEditorResultsAsGridCommand : AbstractSqlEditorCommand
 		AuxiliaryDocData auxiliaryDocDataForEditor = GetAuxiliaryDocDataForEditor();
 		if (auxiliaryDocDataForEditor != null)
 		{
-			auxiliaryDocDataForEditor.SqlExecutionMode = EnSqlOutputMode.ToGrid;
+			auxiliaryDocDataForEditor.SqlOutputMode = EnSqlOutputMode.ToGrid;
 		}
 
 		return VSConstants.S_OK;

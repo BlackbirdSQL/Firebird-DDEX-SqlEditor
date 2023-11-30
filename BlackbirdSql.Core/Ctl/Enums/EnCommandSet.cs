@@ -12,10 +12,10 @@ namespace BlackbirdSql.Core.Ctl.Enums;
 public enum EnCommandSet
 {
 	MenuIdToplevelMenu = 0xC201, // 49665
-	MenuIdScriptToolbar = 0x5000, // 20480
+	MenuIdEditorToolbar = 0x5000, // 20480
 	MenuIdOnlineToolbar = 0x5001, // 20481
 
-	MenuIdScriptToolbarGroup = 0x5100, // 20736
+	MenuIdEditorToolbarGroup = 0x5100, // 20736
 	MenuIdOnlineToolbarGroup = 0x5101, // 20737
 	MenuIdReusableGroup = 0x5102, // 20738
 
@@ -24,6 +24,7 @@ public enum EnCommandSet
 	MenuIdSeStaticGroup = 0x5202, // 20994
 	MenuIdResultsToGroup = 0x5203, // 20995
 	MenuIdEditorContextGroup = 0x5204, // 20996
+	MenuIdSeNodeGroup2 = 0x5205, // 20997
 
 	CtlrIdResultsToGroup = 0x5300,
 
@@ -52,7 +53,7 @@ public enum EnCommandSet
 	CmdIdResultsAsFile = 0x030D, // 781
 	CmdIdQuerySettings = 0x030E, // 782
 	CmdIdToggleResultsPane = 0x030F, // 783
-	CmdIdNewQueryConnection = 0x0310, // 784
+	CmdIdNewSqlQuery = 0x0310, // 784
 	CmdIdSaveResultsAs = 0x0311, // 785
 	CmdIdExecutionPlanXml = 0x0314, // 788
 	CmdIdExecutionPlanMissingIndex = 0x0315, // 789
@@ -71,7 +72,9 @@ public enum EnCommandSet
 
 	CmdIdOpenTextObject = 0x0334, // *820
 	CmdIdOpenAlterTextObject = 0x0335, // 821
-	CmdIdDesignRetrieveData = 0x0336, // 822
-	CmdIdResetPageOptions = 0x0337 // 823
+	CmdIdRetrieveDesignerData = 0x0336, // 822
+	CmdIdResetPageOptions = 0x0337, // 823
+	CmdIdCopyObject = 0x0338, // 824
+	CmdIdNewDesignerQuery = 0x0339, // 825
 
 }

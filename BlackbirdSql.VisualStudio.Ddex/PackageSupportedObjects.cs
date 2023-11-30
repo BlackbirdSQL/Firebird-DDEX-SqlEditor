@@ -68,7 +68,7 @@ internal static class PackageSupportedObjects
 		{ "IVsDataSourceInformation", _UseFactoryOnly ? 0 : 1 },
 		{ "IVsDataSourceVersionComparer", _UseFactoryOnly ? 0 : 1 },
 		// { "IVsDataTransaction", 0 },
-		{ "IVsDataViewSupport", _UseFactoryOnly ? 0 : 4 },
+		{ "IVsDataViewSupport", _UseFactoryOnly ? 0 : 5 },
 	};
 
 
@@ -108,8 +108,8 @@ internal static class PackageSupportedObjects
 		{ "IVsDataViewSupport:0", new(null, "BlackbirdSql.VisualStudio.Ddex.Ctl.TViewSupport") },
 		{ "IVsDataViewSupport:1", new("AllowAsynchronousEnumerations", "false") },
 		{ "IVsDataViewSupport:2", new("HasDocumentProvider",  0) },
-		{ "IVsDataViewSupport:3", new("XmlResource", "BlackbirdSql.VisualStudio.Ddex.Ctl.TViewSupport.xml") }
-		// { "IVsDataViewSupport:4", new("PersistentCommands", "501822E1-B5AF-11d0-B4DC-00A0C91506EF,0x3528,3") },
+		{ "IVsDataViewSupport:3", new("XmlResource", "BlackbirdSql.VisualStudio.Ddex.Ctl.TViewSupport.xml") },
+		{ "IVsDataViewSupport:4", new("PersistentCommands", "501822E1-B5AF-11d0-B4DC-00A0C91506EF,0x3060,3") }
 	};
 
 
@@ -129,7 +129,7 @@ internal static class PackageSupportedObjects
 	/// A container class for a registry value consisting of the value's name and value.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public class RegistryValue
+	public readonly struct RegistryValue
 	{
 		public readonly string Name;
 		public readonly Object Value;

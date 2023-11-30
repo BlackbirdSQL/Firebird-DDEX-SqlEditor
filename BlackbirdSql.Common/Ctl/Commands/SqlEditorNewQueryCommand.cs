@@ -15,6 +15,7 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Utilities;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Model.Enums;
 
 namespace BlackbirdSql.Common.Ctl.Commands;
 
@@ -81,7 +82,7 @@ public class SqlEditorNewQueryCommand : AbstractSqlEditorCommand
 			IBDesignerExplorerServices service = Controller.GetService<IBDesignerExplorerServices>()
 				?? throw Diag.ServiceUnavailable(typeof(IBDesignerExplorerServices));
 
-			service.NewQuery(qryMgr.ConnectionStrategy.LastDatasetKey);
+			service.NewSqlQuery(qryMgr.ConnectionStrategy.LastDatasetKey);
 		}
 
 		return VSConstants.S_OK;

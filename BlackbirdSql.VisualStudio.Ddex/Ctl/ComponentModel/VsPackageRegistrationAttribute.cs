@@ -67,7 +67,6 @@ internal sealed class VsPackageRegistrationAttribute: RegistrationAttribute
 			key.SetValue(null, SystemData.DataProviderName);
 			key.SetValue("DefaultProvider", providerGuid);
 
-
 			// Add this package as a provider for the Firebird data source
 			key2 = key.CreateSubkey("SupportingProviders");
 			key3 = key2.CreateSubkey(providerGuid);

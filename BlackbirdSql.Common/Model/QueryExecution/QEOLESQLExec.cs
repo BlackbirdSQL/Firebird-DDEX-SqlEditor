@@ -140,7 +140,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 
 	protected override void ExecuteScript(IBTextSpan textSpan)
 	{
-		Tracer.Trace(GetType(), "QEOLESQLExec.ExecuteScript", " _ExecOptions.WithEstimatedExecutionPlan: " + ExecOptions.WithEstimatedExecutionPlan);
+		// Tracer.Trace(GetType(), "QEOLESQLExec.ExecuteScript", " _ExecOptions.WithEstimatedExecutionPlan: " + ExecOptions.WithEstimatedExecutionPlan);
 		_ErrorAction = EnErrorAction.Ignore;
 		_ExecBatchNumOfTimes = 1;
 		_CurrentConn = _Conn;
@@ -202,7 +202,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 
 	protected override EnScriptExecutionResult ExecuteBatchCommand(QESQLBatch batch)
 	{
-		Tracer.Trace(GetType(), "QEOLESQLExec.ExecuteBatchCommand", " _ExecOptions.WithEstimatedExecutionPlan: " + ExecOptions.WithEstimatedExecutionPlan);
+		// Tracer.Trace(GetType(), "QEOLESQLExec.ExecuteBatchCommand", " _ExecOptions.WithEstimatedExecutionPlan: " + ExecOptions.WithEstimatedExecutionPlan);
 		if (batch.SqlScript == null || batch.SqlScript != null && batch.SqlScript.Length == 0)
 		{
 			return EnScriptExecutionResult.Success;
@@ -279,7 +279,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 		}
 	}
 
-	protected override void OnExecutionCompleted(EnScriptExecutionResult execResult)
+	protected override void OnExecutionCompleted(EnScriptExecutionResult execResult, bool isTextResult)
 	{
 		try
 		{
@@ -289,7 +289,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 		{
 		}
 
-		base.OnExecutionCompleted(execResult);
+		base.OnExecutionCompleted(execResult, isTextResult);
 	}
 
 	protected override void CompleteAsyncCancelOperation(EnExecState stateBeforeCancelOp)
@@ -315,7 +315,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 	protected override void Cleanup()
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		Tracer.Trace(GetType(), "QEOLESQLExec.Cleanup", "", null);
+		// Tracer.Trace(GetType(), "QEOLESQLExec.Cleanup", "", null);
 		_ErrorAction = (EnErrorAction)1;
 		_LineNumOfLastBatchEnd = -1;
 		CloseCurrentConnIfNeeded();
@@ -333,7 +333,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 
 	protected override void Dispose(bool bDisposing)
 	{
-		Tracer.Trace(GetType(), "QEOLESQLExec.Dispose", "bDisposing = {0}", bDisposing);
+		// Tracer.Trace(GetType(), "QEOLESQLExec.Dispose", "bDisposing = {0}", bDisposing);
 		base.Dispose(bDisposing);
 		if (_SqlCmdParser != null)
 		{
@@ -358,7 +358,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 
 	public EnParserAction GetMoreData(ref string str)
 	{
-		Tracer.Trace(GetType(), "QEOLESQLExec.GetMoreData", "", null);
+		// Tracer.Trace(GetType(), "QEOLESQLExec.GetMoreData", "", null);
 		str = _TextSpan.Text;
 		return 0;
 	}
@@ -394,7 +394,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 
 	public EnParserAction ProcessBatch(string str, int num)
 	{
-		Tracer.Trace(GetType(), "QEOLESQLExec.ProcessBatch", "str = {0}, num = {1}", str ?? "null", num);
+		// Tracer.Trace(GetType(), "QEOLESQLExec.ProcessBatch", "str = {0}, num = {1}", str ?? "null", num);
 		int lineNumber = _LineNumOfLastBatchEnd + 1;
 		// _LineNumOfLastBatchEnd = _SqlCmdParser.GetLastCommandLineNumber() - 1;
 		if (_LineNumOfLastBatchEnd < -1)
@@ -412,7 +412,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 
 	public EnParserAction Exit(string batch, string exitBatch)
 	{
-		Tracer.Trace(GetType(), "QEOLESQLExec.Exit", "batch = {0}, exitBatch = {1}", batch ?? "null", exitBatch ?? "null");
+		// Tracer.Trace(GetType(), "QEOLESQLExec.Exit", "batch = {0}, exitBatch = {1}", batch ?? "null", exitBatch ?? "null");
 		StringBuilder stringBuilder = new StringBuilder(batch);
 		if (exitBatch != null)
 		{
@@ -458,7 +458,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 		//IL_0053: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0057: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0064: Unknown result type (might be due to invalid IL or missing references)
-		Tracer.Trace(GetType(), "QEOLESQLExec.ExecuteShellCommand", "command = {0}", command ?? "null");
+		// Tracer.Trace(GetType(), "QEOLESQLExec.ExecuteShellCommand", "command = {0}", command ?? "null");
 		ExecuteACommand(command, null);
 		lock (_LockObject)
 		{
@@ -494,7 +494,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		Tracer.Trace(GetType(), "QEOLESQLExec.Error", "od = {0}", od);
+		// Tracer.Trace(GetType(), "QEOLESQLExec.Error", "od = {0}", od);
 		CheckRedirectionCategoty(od, fileName, EnQEOLESQLOutputCategory.Errors);
 		return 0;
 	}
@@ -503,7 +503,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
-		Tracer.Trace(GetType(), "QEOLESQLExec.Out", "od = {0}", od);
+		// Tracer.Trace(GetType(), "QEOLESQLExec.Out", "od = {0}", od);
 		CheckRedirectionCategoty(od, fileName, EnQEOLESQLOutputCategory.Results);
 		return 0;
 	}
@@ -511,7 +511,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 	public EnParserAction PerfTrace(EnOutputDestination od, string fileName)
 	{
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		Tracer.Trace(GetType(), "QEOLESQLExec.PerfTrace", "od = {0}", od);
+		// Tracer.Trace(GetType(), "QEOLESQLExec.PerfTrace", "od = {0}", od);
 		OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrNotSupportedSqlCmdCommand, "perftrace"), EnQESQLScriptProcessingMessageType.Warning);
 		return 0;
 	}
@@ -567,7 +567,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0025: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0026: Unknown result type (might be due to invalid IL or missing references)
-		Tracer.Trace(GetType(), "QEOLESQLExec.OnError", "ea = {0}", ea);
+		// Tracer.Trace(GetType(), "QEOLESQLExec.OnError", "ea = {0}", ea);
 		_ErrorAction = ea;
 		return 0;
 	}
@@ -586,7 +586,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 
 	private void OnQEOLESQLErrorMessage(string errorLine, string msg, EnQESQLScriptProcessingMessageType msgType)
 	{
-		Tracer.Trace(GetType(), "QEOLESQLExec.OnQEOLESQLErrorMessage", "msg = {0}", msg);
+		// Tracer.Trace(GetType(), "QEOLESQLExec.OnQEOLESQLErrorMessage", "msg = {0}", msg);
 		SqlErrorMessageEvent?.Invoke(this, new QEOLESQLErrorMessageEventArgs(errorLine, msg, msgType));
 	}
 
@@ -603,7 +603,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 
 	private void OnQEOLESQLOutputRedirection(EnQEOLESQLOutputCategory category, string fullFileName)
 	{
-		Tracer.Trace(GetType(), "QEOLESQLExec.OnQEOLESQLOutputRedirection", "", null);
+		// Tracer.Trace(GetType(), "QEOLESQLExec.OnQEOLESQLOutputRedirection", "", null);
 		if (SqlOutputRedirectionEvent != null)
 		{
 			QEOLESQLOutputRedirectionEventArgs qEOLESQLOutputRedirectionEventArgs = new (category, fullFileName, _BatchConsumer);
@@ -628,7 +628,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 		//IL_001a: Invalid comparison between Unknown and I4
 		//IL_0024: Unknown result type (might be due to invalid IL or missing references)
 		//IL_0026: Invalid comparison between Unknown and I4
-		Tracer.Trace(GetType(), "QEOLESQLExec.CheckRedirectionCategoty", "", null);
+		// Tracer.Trace(GetType(), "QEOLESQLExec.CheckRedirectionCategoty", "", null);
 		string text = fileName;
 		if ((int)od == 2)
 		{
@@ -652,7 +652,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 
 	private void CloseCurrentConnIfNeeded()
 	{
-		Tracer.Trace(GetType(), "QEOLESQLExec.CloseCurrentConnIfNeeded", "", null);
+		// Tracer.Trace(GetType(), "QEOLESQLExec.CloseCurrentConnIfNeeded", "", null);
 		try
 		{
 			if (_CurrentConn == null || _CurrentConn == _Conn || _CurrentConn.State != ConnectionState.Open)
@@ -690,7 +690,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 	/*
 	private void CloseCurrentSSConnIfNeeded()
 	{
-		Tracer.Trace(GetType(), "QEOLESQLExec.CloseCurrentConnIfNeeded", "", null);
+		// Tracer.Trace(GetType(), "QEOLESQLExec.CloseCurrentConnIfNeeded", "", null);
 		try
 		{
 			if (_currentSSConn == null || _currentSSConn == _SSconn || _currentSSConn.State != ConnectionState.Open)
@@ -722,7 +722,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 
 	private IDbConnection AttemptToEstablishCurConnection(DslConnectionInfo ci)
 	{
-		Tracer.Trace(GetType(), "QEOLESQLExec.AttemptToEstablishCurConnection", "ci = {0}", ci.ToString());
+		// Tracer.Trace(GetType(), "QEOLESQLExec.AttemptToEstablishCurConnection", "ci = {0}", ci.ToString());
 		try
 		{
 			if (ci.DataSource == null || ci.DataSource.Length == 0 && _Conn != null)
@@ -755,7 +755,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 			}
 			*/
 
-			Tracer.Trace(GetType(), Tracer.EnLevel.Information, "QEOLESQLExec.AttemptToEstablishCurConnection: final connection string is \"{0}\"", connectionString);
+			// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "QEOLESQLExec.AttemptToEstablishCurConnection: final connection string is \"{0}\"", connectionString);
 			IDbConnection dbConnection = new FbConnection(connectionString);
 			dbConnection.Open();
 			SqlCmdNewConnectionOpenedEvent?.Invoke(this, new QeSqlCmdNewConnectionOpenedEventArgs(dbConnection));
@@ -775,7 +775,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 	/*
 	private IDbConnection AttemptToEstablishCurConnection(Microsoft.SqlServer.Management.Common.SqlConnectionInfo ci)
 	{
-		Tracer.Trace(GetType(), "QEOLESQLExec.AttemptToEstablishCurConnection", "ci = {0}", ci.ToString());
+		// Tracer.Trace(GetType(), "QEOLESQLExec.AttemptToEstablishCurConnection", "ci = {0}", ci.ToString());
 		try
 		{
 			if (ci.ServerName == null || ci.ServerName.Length == 0 && _SSconn != null)
@@ -859,7 +859,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 
 	private void ExecuteACommand(string fileName, string commandLine)
 	{
-		Tracer.Trace(GetType(), "QEOLESQLExec.ExecuteACommand", "fileName = {0}, commandLine = {1}", fileName, commandLine);
+		// Tracer.Trace(GetType(), "QEOLESQLExec.ExecuteACommand", "fileName = {0}, commandLine = {1}", fileName, commandLine);
 		Process process = null;
 		try
 		{
@@ -944,7 +944,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 
 	private void OnScriptProcessingError(string msg, EnQESQLScriptProcessingMessageType msgType)
 	{
-		Tracer.Trace(GetType(), "QEOLESQLExec.OnScriptProcessingError", "msg = {0}", msg);
+		// Tracer.Trace(GetType(), "QEOLESQLExec.OnScriptProcessingError", "msg = {0}", msg);
 		switch (msgType)
 		{
 			case EnQESQLScriptProcessingMessageType.FatalError:
@@ -961,7 +961,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 
 	private string ReadFileContent(string fileName)
 	{
-		Tracer.Trace(GetType(), "QEOLESQLExec.ReadFileContent", "fileName = \"{0}\"", fileName);
+		// Tracer.Trace(GetType(), "QEOLESQLExec.ReadFileContent", "fileName = \"{0}\"", fileName);
 		string text = null;
 		if (CurrentWorkingDirectoryPath != null && !File.Exists(fileName))
 		{
@@ -1002,7 +1002,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 			return null;
 		}
 
-		Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ReadFileContent: full file name is \"{0}\"", text);
+		// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ReadFileContent: full file name is \"{0}\"", text);
 		StreamReader streamReader = null;
 		try
 		{

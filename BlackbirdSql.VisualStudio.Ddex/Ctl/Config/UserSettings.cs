@@ -34,7 +34,13 @@ public class UserSettings : Controller.Ctl.Config.UserSettings
 	// =========================================================================================================
 
 
-	public static bool ShowDiagramPane => (bool)GetSetting("DdexGeneralShowDiagramPane", true);
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Sets the query designer diagram pane to visible when a table or view's data
+	/// is initially retrieved.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static new bool ShowDiagramPane => (bool)GetSetting("DdexGeneralShowDiagramPane", true);
 
 
 	#endregion Property Accessors

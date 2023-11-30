@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using BlackbirdSql.Core.Model.Enums;
 using EnvDTE;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TaskStatusCenter;
-
-using static BlackbirdSql.Core.Ctl.CommandProviders.CommandProperties;
 
 
 namespace BlackbirdSql.Core.Ctl.Interfaces;

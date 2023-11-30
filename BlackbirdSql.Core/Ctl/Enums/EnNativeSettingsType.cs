@@ -56,7 +56,7 @@ public enum EnNativeSettingsType
 //
 // Summary:
 //     Extension methods for Community.VisualStudio.Toolkit.NativeSettingsType.
-public static class NativeSettingsTypeExtensions
+public static class EnNativeSettingsTypeExtensions
 {
 	//
 	// Summary:

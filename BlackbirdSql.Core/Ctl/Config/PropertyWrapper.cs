@@ -9,8 +9,6 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
-using System.Reflection.Metadata;
-using System.Runtime.Serialization.Formatters.Binary;
 
 using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Ctl.Enums;

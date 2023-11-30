@@ -47,7 +47,7 @@ public class SqlEditorConnectCommand : AbstractSqlEditorCommand
 			{
 				// Tracer.Trace(GetType(), "HandleExec()");
 				qryMgrForEditor.IsConnecting = true;
-				qryMgrForEditor.ConnectionStrategy.EnsureConnection(tryOpenConnection: true);
+				qryMgrForEditor.ConnectionStrategy.EnsureConnection(true);
 			}
 			finally
 			{

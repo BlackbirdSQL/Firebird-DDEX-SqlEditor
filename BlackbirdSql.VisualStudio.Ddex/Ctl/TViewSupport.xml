@@ -12,10 +12,14 @@
 		<View name="ByType">
 			<DisplayName>By Type</DisplayName>
 			<GlobalCommands>
-				<CommandRef name="CommandUniversalNewQuery" />
-				<CommandRef name="CommandGlobalNewQuery" />
-				<CommandRef name="CommandTextOpenScript" />
-				<CommandRef name="CommandTextOpenAlterScript" />
+				<CommandRef name="CommandNewSqlQueryUniversal" />
+				<CommandRef name="CommandNewDesignerQueryUniversal" />
+				<CommandRef name="CommandNewQueryGlobal" />
+				<CommandRef name="CommandOverrideNewQueryLocal" />
+				<CommandRef name="CommandRetrieveDesignerUniversal" />
+				<CommandRef name="CommandTextOpenScriptUniversal" />
+				<CommandRef name="CommandTextOpenAlterScriptUniversal" />
+				<CommandRef name="CommandCopyUniversal" />
 			</GlobalCommands>
 			<ConnectionNode nodeId="Database" type="Database">
 				<InitialDisplayName>{Root.DatasetKey}</InitialDisplayName>
@@ -101,8 +105,8 @@
 										</Property>
 									</Properties>
 									<Commands>
-										<CommandRef name="CommandRetrieveData" />
-										<CommandRef name="CommandTextOpenScript" />
+										<CommandRef name="CommandOverrideCopyLocal" />
+										<CommandRef name="CommandRetrieveDesignerLocal" />
 									</Commands>
 									<Children>
 										<SelectionRef name="TplSelectionColumn" arguments="ViewColumn,View,User,Empty,{View.VIEW_CATALOG},,{View.VIEW_SCHEMA},,{View.VIEW_NAME}" />
@@ -146,7 +150,7 @@
 										</Property>
 									</Properties>
 									<Commands>
-										<CommandRef name="CommandTextOpenScript" />
+										<CommandRef name="CommandTextOpenScriptUniversal" />
 									</Commands>
 									<Children>
 										<StaticNode nodeId="StoredProcedureColumns">
@@ -212,7 +216,7 @@
 										</Property>
 									</Properties>
 									<Commands>
-										<CommandRef name="CommandTextOpenScript" />
+										<CommandRef name="CommandTextOpenScriptUniversal" />
 									</Commands>
 									<Children>
 										<Selection type="FunctionParameter" restrictions="{Function.FUNCTION_CATALOG},{Function.FUNCTION_SCHEMA},{Function.FUNCTION_NAME}">
@@ -271,9 +275,6 @@
 											<Description resource="Property_Desc_Sequence_Field" />
 										</Property>
 									</Properties>
-									<Commands>
-										<CommandRef name="CommandRetrieveData" />
-									</Commands>
 								</SelectionNode>
 							</Selection>
 						</Children>
@@ -342,9 +343,6 @@
 											<Category resource="Category_DataType" />
 										</Property>
 									</Properties>
-									<Commands>
-										<CommandRef name="CommandRetrieveData" />
-									</Commands>
 								</SelectionNode>
 							</Selection>
 						</Children>

@@ -39,8 +39,8 @@ public class DebugSettingsModel : AbstractSettingsModel<DebugSettingsModel>
 
 
 	[GlobalizedCategory("OptionCategoryDebugging")]
-	[GlobalizedDisplayName("OptionDisplayEnableTrace")]
-	[GlobalizedDescription("OptionDescriptionEnableTrace")]
+	[GlobalizedDisplayName("OptionDisplayDebugEnableTrace")]
+	[GlobalizedDescription("OptionDescriptionDebugEnableTrace")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
 #if DEBUG
 	[DefaultValue(true)]
@@ -51,15 +51,15 @@ public class DebugSettingsModel : AbstractSettingsModel<DebugSettingsModel>
 #endif
 
 	[GlobalizedCategory("OptionCategoryDebugging")]
-	[GlobalizedDisplayName("OptionDisplayEnableTracer")]
-	[GlobalizedDescription("OptionDescriptionEnableTracer")]
+	[GlobalizedDisplayName("OptionDisplayDebugEnableTracer")]
+	[GlobalizedDescription("OptionDescriptionDebugEnableTracer")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
 	[DefaultValue(false)]
 	public bool EnableTracer { get; set; } = false;
 
 	[GlobalizedCategory("OptionCategoryDebugging")]
-	[GlobalizedDisplayName("OptionDisplayPersistentValidation")]
-	[GlobalizedDescription("OptionDescriptionPersistentValidation")]
+	[GlobalizedDisplayName("OptionDisplayDebugPersistentValidation")]
+	[GlobalizedDescription("OptionDescriptionDebugPersistentValidation")]
 	[TypeConverter(typeof(GlobalBoolConverter))]
 #if DEBUG
 	[DefaultValue(false)]
@@ -70,8 +70,8 @@ public class DebugSettingsModel : AbstractSettingsModel<DebugSettingsModel>
 #endif
 
 	[GlobalizedCategory("OptionCategoryDebugging")]
-	[GlobalizedDisplayName("OptionDisplayEnableDiagnosticsLog")]
-	[GlobalizedDescription("OptionDescriptionEnableDiagnosticsLog")]
+	[GlobalizedDisplayName("OptionDisplayDebugEnableDiagnosticsLog")]
+	[GlobalizedDescription("OptionDescriptionDebugEnableDiagnosticsLog")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
 #if DEBUG
 	[DefaultValue(true)]
@@ -82,35 +82,30 @@ public class DebugSettingsModel : AbstractSettingsModel<DebugSettingsModel>
 #endif
 
 	[GlobalizedCategory("OptionCategoryDebugging")]
-	[GlobalizedDisplayName("OptionDisplayEnableSaveExtrapolatedXml")]
-	[GlobalizedDescription("OptionDescriptionSaveExtrapolatedXml")]
+	[GlobalizedDisplayName("OptionDisplayDebugEnableSaveExtrapolatedXml")]
+	[GlobalizedDescription("OptionDescriptionDebugSaveExtrapolatedXml")]
 	[TypeConverter(typeof(GlobalYesNoConverter))]
-#if DEBUG
-	[DefaultValue(true)]
-	public bool EnableSaveExtrapolatedXml { get; set; } = true;
-#else
 	[DefaultValue(false)]
 	public bool EnableSaveExtrapolatedXml { get; set; } = false;
-#endif
 
 
 	[GlobalizedCategory("OptionCategoryDebugging")]
-	[GlobalizedDisplayName("OptionDisplayLogFile")]
-	[GlobalizedDescription("OptionDescriptionLogFile")]
+	[GlobalizedDisplayName("OptionDisplayDebugLogFile")]
+	[GlobalizedDescription("OptionDescriptionDebugLogFile")]
 	[Editor(typeof(AdvancedFileNameEditor), typeof(UITypeEditor)), Parameters("OptionDialogLogFile", "OptionDialogFilterLogFile")]
 	[DefaultValue("/temp/vsdiag.log")]
 	public string LogFile { get; set; } = "/temp/vsdiag.log";
 
 	[GlobalizedCategory("OptionCategoryDebugging")]
-	[GlobalizedDisplayName("OptionDisplayEnableFbDiagnostics")]
-	[GlobalizedDescription("OptionDescriptionEnableFbDiagnostics")]
+	[GlobalizedDisplayName("OptionDisplayDebugEnableFbDiagnostics")]
+	[GlobalizedDescription("OptionDescriptionDebugEnableFbDiagnostics")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
 	[DefaultValue(true)]
 	public bool EnableFbDiagnostics { get; set; } = true;
 
 	[GlobalizedCategory("OptionCategoryDebugging")]
-	[GlobalizedDisplayName("OptionDisplayFbLogFile")]
-	[GlobalizedDescription("OptionDescriptionFbLogFile")]
+	[GlobalizedDisplayName("OptionDisplayDebugFbLogFile")]
+	[GlobalizedDescription("OptionDescriptionDebugFbLogFile")]
 	[Editor(typeof(AdvancedFileNameEditor), typeof(UITypeEditor)), Parameters("OptionDialogFbLogFile", "OptionDialogFilterFbLogFile")]
 	[DefaultValue("/temp/vsdiagfb.log")]
 	public string FbLogFile { get; set; } = "/temp/vsdiagfb.log";

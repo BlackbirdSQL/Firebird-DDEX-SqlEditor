@@ -58,6 +58,9 @@ public static class VS
 	// Microsoft.VSDesigner.ServerExplorer.Constants.guidDataCmdId
 	public const string SeDataCommandSetGuid = "501822E1-B5AF-11d0-B4DC-00A0C91506EF";
 	public const string DavCommandSetGuid = "732ABE75-CD80-11d0-A2DB-00AA00A3EFFF";
+	public const string VSStandardCommandSet97Guid = "5efc7975-14bc-11cf-9b2b-00aa00573819";
+	public const string DetachCommandProviderGuid = "8C591813-BB90-4B5C-BD7B-5A286D130D2E";
+
 
 	// Server explorer tree object guids
 	public const string SeRootGuid = "74d21310-2aee-11d1-8bfb-00a0c90f26f7";

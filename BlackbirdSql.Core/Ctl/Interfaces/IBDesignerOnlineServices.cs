@@ -4,9 +4,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Runtime.InteropServices;
-
-using BlackbirdSql.Core.Ctl.Enums;
-
+using BlackbirdSql.Core.Model.Enums;
 
 namespace BlackbirdSql.Core.Ctl.Interfaces;
 
@@ -14,7 +12,8 @@ namespace BlackbirdSql.Core.Ctl.Interfaces;
 [Guid(SystemData.DesignerOnlineServicesGuid)]
 public interface IBDesignerOnlineServices
 {
-	void ViewCode(DbConnectionStringBuilder connection, EnModelObjectType objectType, bool alternate, IList<string> identifierList, string script);
+	void ViewCode(DbConnectionStringBuilder connection, EnModelObjectType objectType,
+		IList<string> identifierList, EnModelTargetType targetType, string script);
 
 	/*
 	void Add(SqlConnectionStringBuilder connection, SqlServerObjectType objectType);

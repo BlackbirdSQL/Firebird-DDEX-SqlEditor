@@ -43,6 +43,7 @@
 	  <Compile Include="Controls\Events\GridItemValueChangedEventArgs.cs" />
 	  <Compile Include="Controls\Events\SelectedGridItemFocusEventArgs.cs" />
 	  <Compile Include="Controls\LinkageParserTaskHandler.cs" />
+	  <Compile Include="Controls\WaitCursor.cs" />
 	  <Compile Include="Ctl\AbstractPackageController.cs" />
 	  <Compile Include="Ctl\ComponentModel\AbstractGlobalizedRadioAttribute.cs" />
 	  <Compile Include="Ctl\ComponentModel\AutomationAttribute.cs" />
@@ -57,6 +58,9 @@
 	  <Compile Include="Ctl\ComponentModel\VsProvideOptionPageAttribute.cs" />
 	  <Compile Include="Ctl\ComponentModel\VerbSite.cs" />
 	  <Compile Include="Ctl\ConnectionLocator.cs" />
+	  <Compile Include="Ctl\RdtManager.cs" />
+	  <Compile Include="Model\Enums\EnNodeSystemType.cs" />
+	  <Compile Include="Model\Enums\EnModelTargetType.cs" />
 	  <Compile Include="Ctl\Enums\EnSqlOutputFormat.cs" />
 	  <Compile Include="Ctl\Enums\EnSqlOutputMode.cs" />
 	  <Compile Include="Ctl\Events\AutomationVerbEventHandler.cs" />
@@ -122,7 +126,7 @@
 	  <Compile Include="Ctl\Diagnostics\Tracer.cs" />
 	  <Compile Include="Ctl\Diagnostics\UiTracer.cs" />
 	  <Compile Include="Ctl\Enums\EnEngineType.cs" />
-	  <Compile Include="Ctl\Enums\EnModelObjectType.cs" />
+	  <Compile Include="Model\Enums\EnModelObjectType.cs" />
 	  <Compile Include="Ctl\Enums\EnNullEquality.cs" />
 	  <Compile Include="Ctl\Events\AdvancedPropertiesRequestedEventArgs.cs" />
 	  <Compile Include="Ctl\Events\CloseWindowEventArgs.cs" />
@@ -248,6 +252,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Reference Include="Microsoft.VisualStudio.Data.Providers.Common">
+	    <HintPath>..\..\..\..\..\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Microsoft.VisualStudio.Data.Providers.Common.dll</HintPath>
+	  </Reference>
 	  <Reference Include="PresentationFramework" />
 	  <Reference Include="System.ComponentModel.DataAnnotations" />
 	  <Reference Include="System.Runtime.Caching" />

@@ -117,9 +117,16 @@ public abstract class AbstractHostess : IDisposable
 
 	public AbstractHostess()
 	{
-		// Tracer.Trace(GetType(), "AbstractHostess.AbstractHostess(IServiceProvider = DdexPackage)");
+		// Tracer.Trace(GetType(), "AbstractHostess.AbstractHostess()");
 
 		_ServiceProvider = Controller.ServiceProvider;
+	}
+
+	public AbstractHostess(IServiceProvider dataViewHierarchyServiceProvider)
+	{
+		// Tracer.Trace(GetType(), "AbstractHostess.AbstractHostess(IServiceProvider dataViewHierarchyServiceProvider)");
+
+		_ServiceProvider = dataViewHierarchyServiceProvider;
 	}
 
 

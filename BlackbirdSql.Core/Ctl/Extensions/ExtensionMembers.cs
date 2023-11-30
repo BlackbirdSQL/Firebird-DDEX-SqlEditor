@@ -9,9 +9,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Windows.Forms;
-using BlackbirdSql.Core.Ctl.Interfaces;
 using FirebirdSql.Data.FirebirdClient;
-
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
@@ -344,6 +342,7 @@ static class ExtensionMembers
 		return string.Format(CultureInfo.CurrentCulture, value, arg0, arg1, arg2, arg3);
 
 	}
+
 
 
 	// ---------------------------------------------------------------------------------

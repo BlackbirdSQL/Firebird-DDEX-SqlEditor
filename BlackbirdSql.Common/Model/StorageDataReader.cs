@@ -6,15 +6,14 @@
 using System;
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlTypes;
+using System.Drawing;
 using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-using System.Xml;
-
+using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Core;
-
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using FirebirdSql.Data.FirebirdClient;
 
 
@@ -29,69 +28,69 @@ public class StorageDataReader
 
 	private class StringWriterWithMaxCapacity : StringWriter
 	{
-		private readonly int maxCapacity = int.MaxValue;
+		private readonly int _MaxCapacity = int.MaxValue;
 
-		private bool stopWriting;
+		private bool _StopWriting;
 
-		private readonly QueryKeepStoringData keepStoringDataDelegate;
+		private readonly QueryKeepStoringData _KeepStoringDataDelegate;
 
 		private int CurrentLength => base.GetStringBuilder().Length;
 
-		public int MaximumCapacity => maxCapacity;
+		public int MaximumCapacity => _MaxCapacity;
 
 		public StringWriterWithMaxCapacity(IFormatProvider formatProvider)
 			: base(formatProvider)
 		{
 		}
 
-		public StringWriterWithMaxCapacity(IFormatProvider formatProvider, int capacity, QueryKeepStoringData keepStoringDataDelegate)
+		public StringWriterWithMaxCapacity(IFormatProvider formatProvider, int capacity, QueryKeepStoringData _KeepStoringDataDelegate)
 			: this(formatProvider)
 		{
-			maxCapacity = capacity;
-			this.keepStoringDataDelegate = keepStoringDataDelegate;
+			_MaxCapacity = capacity;
+			this._KeepStoringDataDelegate = _KeepStoringDataDelegate;
 		}
 
 		public override void Write(char value)
 		{
-			if (keepStoringDataDelegate != null && !keepStoringDataDelegate())
+			if (_KeepStoringDataDelegate != null && !_KeepStoringDataDelegate())
 			{
 				StorageAbortedException ex = new();
 				Diag.Dug(ex);
 				throw ex;
 			}
 
-			if (!stopWriting)
+			if (!_StopWriting)
 			{
-				if (CurrentLength < maxCapacity)
+				if (CurrentLength < _MaxCapacity)
 				{
 					base.Write(value);
 				}
 				else
 				{
-					stopWriting = true;
+					_StopWriting = true;
 				}
 			}
 		}
 
 		public override void Write(char[] buffer, int index, int count)
 		{
-			if (keepStoringDataDelegate != null && !keepStoringDataDelegate())
+			if (_KeepStoringDataDelegate != null && !_KeepStoringDataDelegate())
 			{
 				StorageAbortedException ex = new();
 				Diag.Dug(ex);
 				throw ex;
 			}
 
-			if (stopWriting)
+			if (_StopWriting)
 			{
 				return;
 			}
 
 			int currentLength = CurrentLength;
-			if (currentLength + (count - index) > maxCapacity)
+			if (currentLength + (count - index) > _MaxCapacity)
 			{
-				stopWriting = true;
-				count = maxCapacity - currentLength + index;
+				_StopWriting = true;
+				count = _MaxCapacity - currentLength + index;
 				if (count < 0)
 				{
 					count = 0;
@@ -103,20 +102,20 @@ public class StorageDataReader
 
 		public override void Write(string value)
 		{
-			if (keepStoringDataDelegate != null && !keepStoringDataDelegate())
+			if (_KeepStoringDataDelegate != null && !_KeepStoringDataDelegate())
 			{
 				StorageAbortedException ex = new();
 				Diag.Dug(ex);
 				throw ex;
 			}
 
-			if (!stopWriting)
+			if (!_StopWriting)
 			{
 				int currentLength = CurrentLength;
-				if (value.Length + currentLength > maxCapacity)
+				if (value.Length + currentLength > _MaxCapacity)
 				{
-					stopWriting = true;
-					base.Write(value[..(maxCapacity - currentLength)]);
+					_StopWriting = true;
+					base.Write(value[..(_MaxCapacity - currentLength)]);
 				}
 				else
 				{
@@ -150,14 +149,17 @@ public class StorageDataReader
 		}
 	}
 
+
+
+
 	private readonly IDataReader dataReader;
-
+	readonly IBDataStorage _DataStorage;
 	private readonly DbDataReader _DbDataReader;
-
 	private readonly FbDataReader _SqlReader;
-
-
 	// private readonly MethodInfo getSqlXmlMethod;
+
+
+
 
 	public int FieldCount
 	{
@@ -187,7 +189,7 @@ public class StorageDataReader
 	}
 	*/
 
-	public StorageDataReader(IDataReader reader)
+	public StorageDataReader(IDataReader reader, IBDataStorage dataStorage)
 	{
 		dataReader = reader;
 		_DbDataReader = reader as DbDataReader;
@@ -215,6 +217,8 @@ public class StorageDataReader
 			}
 			*/
 		}
+
+		_DataStorage = dataStorage;
 	}
 
 	public string GetName(int i)
@@ -348,7 +352,11 @@ public class StorageDataReader
 			}
 		}
 
-		return new string(array);
+		string result = new string(array);
+
+		// Tracer.Trace(GetType(), "GetCharsWithMaxCapacity()", "Col: {0}[{1}], maxReturnBytes: {2}, result: {3}.", GetName(iCol), iCol, maxCharsToReturn, result);
+
+		return result;
 	}
 
 	public string GetXmlWithMaxCapacity(int iCol, int maxCharsToReturn)
@@ -356,7 +364,7 @@ public class StorageDataReader
 		return GetXmlWithMaxCapacity(iCol, maxCharsToReturn, null);
 	}
 
-	public string GetXmlWithMaxCapacity(int iCol, int maxCharsToReturn, QueryKeepStoringData keepStoringDataDelegate)
+	public string GetXmlWithMaxCapacity(int iCol, int maxCharsToReturn, QueryKeepStoringData _KeepStoringDataDelegate)
 	{
 		NotImplementedException ex = new("GetXmlWithMaxCapacity()");
 		Diag.Dug(ex);
@@ -370,7 +378,7 @@ public class StorageDataReader
 				return null;
 			}
 
-			StringWriterWithMaxCapacity stringWriterWithMaxCapacity = new StringWriterWithMaxCapacity(null, maxCharsToReturn, keepStoringDataDelegate);
+			StringWriterWithMaxCapacity stringWriterWithMaxCapacity = new StringWriterWithMaxCapacity(null, maxCharsToReturn, _KeepStoringDataDelegate);
 			XmlWriterSettings xmlWriterSettings = new()
 			{
 				CloseOutput = false,
@@ -416,6 +424,39 @@ public class StorageDataReader
 		}
 
 		return dataReader.GetChars(i, dataIndex, buffer, bufferIndex, length);
+	}
+
+
+	public object GetSerializedWithMaxCapacity(int i, int maxReturnBytes)
+	{
+		if (_DataStorage == null)
+			return GetBytesWithMaxCapacity(i, maxReturnBytes);
+
+
+		object result;
+		IBColumnInfo columnInfo = _DataStorage.GetColumnInfo(i);
+
+		if (!columnInfo.IsBlobField)
+		{
+			result = GetValue(i);
+		}
+		else if (columnInfo.IsBytesField)
+		{
+			result = GetBytesWithMaxCapacity(i, maxReturnBytes);
+		}
+		else if (columnInfo.IsCharsField)
+		{
+			result = GetCharsWithMaxCapacity(i, maxReturnBytes);
+		}
+		else
+		{
+			result = GetValue(i);
+		}
+
+		// Tracer.Trace(GetType(), "GetSerializedWithMaxCapacity()", "Col: {0}[{1}], maxReturnBytes: {2}, result: {3}.", GetName(i), i, maxReturnBytes, result);
+
+
+		return result;
 	}
 
 	/*

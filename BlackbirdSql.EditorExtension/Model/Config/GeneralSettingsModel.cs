@@ -36,16 +36,24 @@ public class GeneralSettingsModel : AbstractSettingsModel<GeneralSettingsModel>
 
 
 	[GlobalizedCategory("OptionCategoryGeneral")]
-	[GlobalizedDisplayName("OptionDisplayEnableIntellisense")]
-	[GlobalizedDescription("OptionDescriptionEnableIntellisense")]
+	[GlobalizedDisplayName("OptionDisplayGeneralExecuteQueryOnOpen")]
+	[GlobalizedDescription("OptionDescriptionGeneralExecuteQueryOnOpen")]
+	[TypeConverter(typeof(GlobalYesNoConverter))]
+	[DefaultValue(true)]
+	public bool ExecuteQueryOnOpen { get; set; } = true;
+
+
+	[GlobalizedCategory("OptionCategoryGeneral")]
+	[GlobalizedDisplayName("OptionDisplayGeneralEnableIntellisense")]
+	[GlobalizedDescription("OptionDescriptionGeneralEnableIntellisense")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
 	[DefaultValue(true)]
 	public bool EnableIntellisense { get; set; } = true;
 
 
 	[GlobalizedCategory("OptionCategoryGeneral")]
-	[GlobalizedDisplayName("OptionDisplayPromptToSave")]
-	[GlobalizedDescription("OptionDescriptionPromptToSave")]
+	[GlobalizedDisplayName("OptionDisplayGeneralPromptToSave")]
+	[GlobalizedDescription("OptionDescriptionGeneralPromptToSave")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
 	[DefaultValue(false)]
 	public bool PromptToSave { get; set; } = false;

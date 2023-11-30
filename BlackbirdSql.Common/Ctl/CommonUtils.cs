@@ -166,7 +166,7 @@ public static class CommonUtils
 
 	public static string GetFileNameUsingSaveDialog(string strFilterString, string strCaption, string initialDir, IVsSaveOptionsDlg optionsDlg, out int filterIndex)
 	{
-		Tracer.Trace(typeof(CommonUtils), "CommonUtils.GetFileNameUsingSaveDialog", "strFilterString = {0}, strCaption = {1}", strFilterString, strCaption);
+		// Tracer.Trace(typeof(CommonUtils), "CommonUtils.GetFileNameUsingSaveDialog", "strFilterString = {0}, strCaption = {1}", strFilterString, strCaption);
 
 		if (!ThreadHelper.CheckAccess())
 		{
@@ -225,7 +225,7 @@ public static class CommonUtils
 					}
 
 					empty = new string(array2, 0, i);
-					Tracer.Trace(typeof(CommonUtils), Tracer.EnLevel.Information, "CommonUtils.GetFileNameUsingSaveDialog", "file name is {0}", empty);
+					// Tracer.Trace(typeof(CommonUtils), Tracer.EnLevel.Information, "CommonUtils.GetFileNameUsingSaveDialog", "file name is {0}", empty);
 					return empty;
 				}
 				catch (Exception e)
@@ -249,13 +249,13 @@ public static class CommonUtils
 			}
 		}
 
-		Tracer.Trace(typeof(CommonUtils), Tracer.EnLevel.Verbose, "CommonUtils.GetFileNameUsingSaveDialog", "cannot get IVsUIShell!!");
+		// Tracer.Trace(typeof(CommonUtils), Tracer.EnLevel.Verbose, "CommonUtils.GetFileNameUsingSaveDialog", "cannot get IVsUIShell!!");
 		return null;
 	}
 
 	public static StreamWriter GetTextWriterForQueryResultsToFile(bool xmlResults, ref string intialDirectory)
 	{
-		Tracer.Trace(typeof(CommonUtils), "CommonUtils.GetTextWriterForQueryResultsToFile", "", null);
+		// Tracer.Trace(typeof(CommonUtils), "CommonUtils.GetTextWriterForQueryResultsToFile", "", null);
 		FileEncodingDlg fileEncodingDialog = new FileEncodingDlg();
 		string text = Properties.ControlsResources.SqlExportFromGridFilterTabDelimitted;
 		if (xmlResults)

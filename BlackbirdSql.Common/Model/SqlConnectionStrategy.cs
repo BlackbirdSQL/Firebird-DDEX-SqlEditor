@@ -276,8 +276,22 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 
 		connection = new FbConnection(csa.ToString());
 
-		connection.Open();
+		try
+		{
+			connection.Open();
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
 
+		if (connection.State != ConnectionState.Open)
+		{
+			DataException ex = new($"Failed to open connection using ConnectionString: {connection.ConnectionString}");
+			Diag.Dug(ex);
+			throw ex;
+		}
 		/*
 		if (ReliableConnectionHelper.OpenConnection(sqlConnectionStringBuilder, useRetry: true) is ReliableSqlConnection reliableSqlConnection && !string.IsNullOrEmpty(reliableSqlConnection.Database) && reliableSqlConnection.State == ConnectionState.Open)
 		{
@@ -384,12 +398,16 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 		{
 			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "AcquireConnectionInfo", "UiConnectionInfo is null. Prompting");
 			uici = PromptForConnectionForEditor(out connection);
+			if (tryOpenConnection && connection != null && connection.State != ConnectionState.Open)
+				connection.Open();
 		}
 	}
 
 	protected override void ChangeConnectionInfo(bool tryOpenConnection, out UIConnectionInfo uici, out IDbConnection connection)
 	{
 		uici = PromptForConnectionForEditor(out connection);
+		if (tryOpenConnection && connection != null && connection.State != ConnectionState.Open)
+			connection.Open();
 	}
 
 	public override void ApplyConnectionOptions(IDbConnection conn, IBLiveUserSettings s)

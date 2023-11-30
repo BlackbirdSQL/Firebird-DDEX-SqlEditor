@@ -1235,9 +1235,6 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   <data name="ExactMatchClones" xml:space="preserve">
     <value>Single Clone Match</value>
   </data>
-  <data name="Exception_FailedToSaveFile" xml:space="preserve">
-    <value>Failed to save file: {0}</value>
-  </data>
   <data name="ExecutionNotCompleted" xml:space="preserve">
     <value>Previous execution is not yet complete.</value>
   </data>

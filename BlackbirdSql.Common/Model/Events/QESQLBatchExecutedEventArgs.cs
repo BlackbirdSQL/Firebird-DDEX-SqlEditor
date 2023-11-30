@@ -16,8 +16,9 @@ public class QESQLBatchExecutedEventArgs : ScriptExecutionCompletedEventArgs
 {
 	public QESQLBatch Batch { get; private set; }
 
-	public QESQLBatchExecutedEventArgs(EnScriptExecutionResult res, QESQLBatch batch, bool withEstimatedPlan, bool isParseOnly)
-		: base(res, withEstimatedPlan, isParseOnly)
+	public QESQLBatchExecutedEventArgs(EnScriptExecutionResult res, QESQLBatch batch,
+			bool withEstimatedPlan, bool isParseOnly, bool isTextResults)
+		: base(res, withEstimatedPlan, isParseOnly, isTextResults)
 	{
 		Batch = batch;
 	}

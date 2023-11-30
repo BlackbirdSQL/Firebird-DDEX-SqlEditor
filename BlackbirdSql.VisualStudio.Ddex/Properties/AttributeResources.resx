@@ -132,50 +132,53 @@
   <data name="OptionCategoryQueryDesigner" xml:space="preserve">
     <value>Query designer</value>
   </data>
-  <data name="OptionDescriptionEnableDiagnostics" xml:space="preserve">
-    <value>Enables the execution of Diagnostics calls. This option should remain enabled. Disabling does not disable Exceptions.</value>
-  </data>
-  <data name="OptionDescriptionEnableDiagnosticsLog" xml:space="preserve">
+  <data name="OptionDescriptionDebugEnableDiagnosticsLog" xml:space="preserve">
     <value>Enables diagnostics logging to a log file.</value>
   </data>
-  <data name="OptionDescriptionEnableFbDiagnostics" xml:space="preserve">
+  <data name="OptionDescriptionDebugEnableFbDiagnostics" xml:space="preserve">
     <value>Enables the execution of Firebird Debug.Dug()/Debug.Trace() calls. Only applicable to builds that include the debug Firebird library.</value>
   </data>
-  <data name="OptionDescriptionEnableTaskLog" xml:space="preserve">
-    <value>Enables logging of tasks to the output window pane. This option should remain enabled.</value>
-  </data>
-  <data name="OptionDescriptionEnableTrace" xml:space="preserve">
+  <data name="OptionDescriptionDebugEnableTrace" xml:space="preserve">
     <value>Enables the execution of Diag.Trace() calls.</value>
   </data>
-  <data name="OptionDescriptionEnableTracer" xml:space="preserve">
+  <data name="OptionDescriptionDebugEnableTracer" xml:space="preserve">
     <value>Enables Sql Tracer output to be directed to Diag.Trace().</value>
   </data>
-  <data name="OptionDescriptionFbLogFile" xml:space="preserve">
+  <data name="OptionDescriptionDebugFbLogFile" xml:space="preserve">
     <value>Location of Firebird diagnostics log file. Note: Only applicable to builds that include the debug Firerbird library.</value>
   </data>
-  <data name="OptionDescriptionIncludeAppConnections" xml:space="preserve">
-    <value>If enabled, includes any configured connection strings that exist in a solution's projects in the drop down selection lists when adding a new connection.</value>
-  </data>
-  <data name="OptionDescriptionLogFile" xml:space="preserve">
+  <data name="OptionDescriptionDebugLogFile" xml:space="preserve">
     <value>Location of diagnostics log file.</value>
   </data>
-  <data name="OptionDescriptionPersistentValidation" xml:space="preserve">
+  <data name="OptionDescriptionDebugPersistentValidation" xml:space="preserve">
     <value>Enables persistent validation flags. If disabled the validation flag of solutions and projects will be repeated upon reopening if Validation is enabled. Only applicable to DEBUG builds.</value>
   </data>
-  <data name="OptionDescriptionSaveExtrapolatedXml" xml:space="preserve">
+  <data name="OptionDescriptionDebugSaveExtrapolatedXml" xml:space="preserve">
     <value>Saves the extrapolated IVsDataObjectSupport xml (TObjectSupport.xml), after imports, to the directory location of the diagnostics log file.</value>
   </data>
-  <data name="OptionDescriptionShowDiagramPane" xml:space="preserve">
+  <data name="OptionDescriptionGeneralEnableDiagnostics" xml:space="preserve">
+    <value>Enables the execution of Diagnostics calls. This option should remain enabled. Disabling does not disable Exceptions.</value>
+  </data>
+  <data name="OptionDescriptionGeneralEnableTaskLog" xml:space="preserve">
+    <value>Enables logging of tasks to the output window pane. This option should remain enabled.</value>
+  </data>
+  <data name="OptionDescriptionGeneralIncludeAppConnections" xml:space="preserve">
+    <value>If enabled, includes any configured connection strings that exist in a solution's projects in the drop down selection lists when adding a new connection.</value>
+  </data>
+  <data name="OptionDescriptionGeneralShowDiagramPane" xml:space="preserve">
     <value>Sets the query designer diagram pane to visible when a table or view's data is initially retrieved.</value>
   </data>
-  <data name="OptionDescriptionValidateConfig" xml:space="preserve">
+  <data name="OptionDescriptionGeneralValidateConfig" xml:space="preserve">
     <value>Enable this option to allow BlackbirdSql to ensure that Firebird EntityFramework is configured in your non-CPS projects' App.config.</value>
   </data>
-  <data name="OptionDescriptionValidateEdmx" xml:space="preserve">
+  <data name="OptionDescriptionGeneralValidateEdmx" xml:space="preserve">
     <value>Enable this option to allow BlackbirdSql to update legacy edmx models to use EntityFramework 6.</value>
   </data>
-  <data name="OptionDialogFbLogFile" xml:space="preserve">
+  <data name="OptionDialogDebugFbLogFile" xml:space="preserve">
     <value>Select the folder to be used for the Firebird diagnostics log file.</value>
+  </data>
+  <data name="OptionDialogDebugLogFile" xml:space="preserve">
+    <value>Select the folder to be used for the diagnostics log file.</value>
   </data>
   <data name="OptionDialogFilterFbLogFile" xml:space="preserve">
     <value>All Files(*.*)|*.*</value>
@@ -183,49 +186,46 @@
   <data name="OptionDialogFilterLogFile" xml:space="preserve">
     <value>All Files(*.*)|*.*</value>
   </data>
-  <data name="OptionDialogLogFile" xml:space="preserve">
-    <value>Select the folder to be used for the diagnostics log file.</value>
-  </data>
-  <data name="OptionDisplayEnableDiagnostics" xml:space="preserve">
-    <value>Enable diagnostics</value>
-  </data>
-  <data name="OptionDisplayEnableDiagnosticsLog" xml:space="preserve">
+  <data name="OptionDisplayDebugEnableDiagnosticsLog" xml:space="preserve">
     <value>Enable diagnostics logging</value>
   </data>
-  <data name="OptionDisplayEnableFbDiagnostics" xml:space="preserve">
+  <data name="OptionDisplayDebugEnableFbDiagnostics" xml:space="preserve">
     <value>Enable Firebird diagnostics</value>
   </data>
-  <data name="OptionDisplayEnableSaveExtrapolatedXml" xml:space="preserve">
+  <data name="OptionDisplayDebugEnableSaveExtrapolatedXml" xml:space="preserve">
     <value>Save extrapolated xml</value>
   </data>
-  <data name="OptionDisplayEnableTaskLog" xml:space="preserve">
-    <value>Enable task logging</value>
-  </data>
-  <data name="OptionDisplayEnableTrace" xml:space="preserve">
+  <data name="OptionDisplayDebugEnableTrace" xml:space="preserve">
     <value>Enable trace</value>
   </data>
-  <data name="OptionDisplayEnableTracer" xml:space="preserve">
+  <data name="OptionDisplayDebugEnableTracer" xml:space="preserve">
     <value>Enable tracer</value>
   </data>
-  <data name="OptionDisplayFbLogFile" xml:space="preserve">
+  <data name="OptionDisplayDebugFbLogFile" xml:space="preserve">
     <value>Firebird Log file</value>
   </data>
-  <data name="OptionDisplayIncludeAppConnections" xml:space="preserve">
-    <value>Include solution connections</value>
-  </data>
-  <data name="OptionDisplayLogFile" xml:space="preserve">
+  <data name="OptionDisplayDebugLogFile" xml:space="preserve">
     <value>Log file</value>
   </data>
-  <data name="OptionDisplayPersistentValidation" xml:space="preserve">
+  <data name="OptionDisplayDebugPersistentValidation" xml:space="preserve">
     <value>Persistent validation flags</value>
   </data>
-  <data name="OptionDisplayShowDiagramPane" xml:space="preserve">
+  <data name="OptionDisplayGeneralEnableDiagnostics" xml:space="preserve">
+    <value>Enable diagnostics</value>
+  </data>
+  <data name="OptionDisplayGeneralEnableTaskLog" xml:space="preserve">
+    <value>Enable task logging</value>
+  </data>
+  <data name="OptionDisplayGeneralIncludeAppConnections" xml:space="preserve">
+    <value>Include solution connections</value>
+  </data>
+  <data name="OptionDisplayGeneralShowDiagramPane" xml:space="preserve">
     <value>Initial state of Diagram Pane</value>
   </data>
-  <data name="OptionDisplayValidateConfig" xml:space="preserve">
+  <data name="OptionDisplayGeneralValidateConfig" xml:space="preserve">
     <value>Validate App.config</value>
   </data>
-  <data name="OptionDisplayValidateEdmx" xml:space="preserve">
+  <data name="OptionDisplayGeneralValidateEdmx" xml:space="preserve">
     <value>Update legacy edmx models</value>
   </data>
   <data name="OptionPageCategory" xml:space="preserve">

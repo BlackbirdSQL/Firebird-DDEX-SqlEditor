@@ -113,10 +113,10 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 	{
 	}
 
-	public override int CreateEditorInstance(uint createFlags, string moniker, string physicalView, IVsHierarchy hierarchy, uint itemId, IntPtr existingDocData, out IntPtr docViewIntPtr, out IntPtr docDataIntPtr, out string caption, out Guid cmdUIGuid, out int result)
+	public override int CreateEditorInstance(uint createFlags, string moniker, string physicalView, IVsHierarchy hierarchy, uint itemId, IntPtr existingDocData, out IntPtr intPtrDocView, out IntPtr intPtrDocData, out string caption, out Guid cmdUIGuid, out int result)
 	{
-		docViewIntPtr = IntPtr.Zero;
-		docDataIntPtr = IntPtr.Zero;
+		intPtrDocView = IntPtr.Zero;
+		intPtrDocData = IntPtr.Zero;
 		caption = "";
 		cmdUIGuid = Guid.Empty;
 		result = 1;
@@ -127,7 +127,7 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 			Cursor current = Cursor.Current;
 			try
 			{
-				Tracer.Trace(GetType(), "IVsEditorFactory.CreateEditorInstance", "nCreateFlags = {0}, strMoniker = {1}, strPhysicalView = {2}, itemid = {3}", createFlags, moniker, physicalView, itemId);
+				// Tracer.Trace(GetType(), "IVsEditorFactory.CreateEditorInstance", "nCreateFlags = {0}, strMoniker = {1}, strPhysicalView = {2}, itemid = {3}", createFlags, moniker, physicalView, itemId);
 				SqlEtwProvider.EventWriteTSqlEditorLaunch(IsStart: true, EditorId ?? string.Empty);
 				if ((createFlags & 0x10) != 16)
 				{
@@ -161,7 +161,7 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 				{
 					ArgumentException ex = new("physicalView is not CodeFrame or empty: " + physicalView);
 					Diag.Dug(ex);
-					Tracer.Trace(GetType(), "IVsEditorFactory.CreateEditorInstance", "physicalView is not null or empty- returning E_INVALIDARG");
+					// Tracer.Trace(GetType(), "IVsEditorFactory.CreateEditorInstance", "physicalView is not null or empty- returning E_INVALIDARG");
 					return VSConstants.E_INVALIDARG;
 				}
 
@@ -169,7 +169,7 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 				{
 					ArgumentException ex = new("invalid create flags: " + createFlags);
 					Diag.Dug(ex);
-					Tracer.Trace(GetType(), "IVsEditorFactory.CreateEditorInstance", "invalid create flags - returning E_INVALIDARG");
+					// Tracer.Trace(GetType(), "IVsEditorFactory.CreateEditorInstance", "invalid create flags - returning E_INVALIDARG");
 					return VSConstants.E_INVALIDARG;
 				}
 
@@ -254,9 +254,9 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 				if (vsTextLines2 != null)
 				{
 					EnsureAuxilliaryDocData(hierarchy, moniker, vsTextLines2);
-					SqlEditorTabbedEditorPane o = CreateTabbedEditorPane(vsTextLines2, moniker);
-					docViewIntPtr = Marshal.GetIUnknownForObject(o);
-					docDataIntPtr = Marshal.GetIUnknownForObject(vsTextLines2);
+					SqlEditorTabbedEditorPane editorPane = CreateTabbedEditorPane(vsTextLines2, moniker);
+					intPtrDocView = Marshal.GetIUnknownForObject(editorPane);
+					intPtrDocData = Marshal.GetIUnknownForObject(vsTextLines2);
 					caption = string.Empty;
 					cmdUIGuid = VSConstants.GUID_TextEditorFactory;
 					Guid guidLangService = MandatedSqlLanguageServiceClsid;

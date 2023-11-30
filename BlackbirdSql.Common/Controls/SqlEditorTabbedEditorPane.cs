@@ -4,7 +4,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
-using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -879,7 +878,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 
 	public void ExecuteQuery()
 	{
-		Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteQuery", "calling ExecuteOrParseQuery");
+		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteQuery", "calling ExecuteOrParseQuery");
 		ExecuteOrParseQuery(isExecute: true);
 	}
 
@@ -902,11 +901,11 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 			{
 				AuxiliaryDocData auxDocData = (((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(DocData));
 
-				Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteOrParseQuery", "AuxiliaryDocData.EstimatedExecutionPlanEnabled: " + auxDocData.EstimatedExecutionPlanEnabled);
+				// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteOrParseQuery", "AuxiliaryDocData.EstimatedExecutionPlanEnabled: " + auxDocData.EstimatedExecutionPlanEnabled);
 
 				QueryManager qryMgr = auxDocData.QryMgr;
 
-				Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteOrParseQuery", "AuxiliaryDocData.QryMgr: " + qryMgr);
+				// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteOrParseQuery", "AuxiliaryDocData.QryMgr: " + qryMgr);
 
 				if (isExecute)
 					qryMgr.Run(sqlTextSpan);
@@ -1003,7 +1002,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 	{
 		EnsureTabs(false);
 		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(DocData);
-		EnSqlOutputMode sqlExecutionMode = auxDocData.SqlExecutionMode;
+		EnSqlOutputMode sqlExecutionMode = auxDocData.SqlOutputMode;
 		AbstractEditorTab sqlEditorResultsTab = GetSqlEditorResultsTab();
 		GetSqlEditorMessageTab();
 		AbstractEditorTab sqlEditorTextResultsTab = GetSqlEditorTextResultsTab();
@@ -1113,7 +1112,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 					TabbedEditorUI.InitializeToolbarHost(this, clsidCmdSet, menuId);
 					break;
 				case EnEditorMode.Standard:
-					menuId = (uint)EnCommandSet.MenuIdScriptToolbar;
+					menuId = (uint)EnCommandSet.MenuIdEditorToolbar;
 					TabbedEditorUI.InitializeToolbarHost(this, clsidCmdSet, menuId);
 					break;
 				default:
@@ -1308,7 +1307,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 		Microsoft.VisualStudio.OLE.Interop.IServiceProvider site = pvar as Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 		if (textView is not IObjectWithSite objectWithSite)
 		{
-			Tracer.Trace(typeof(AbstractSqlEditorTab), "ConfigureTextViewForAutonomousFind", "Couldn't cast textView to IObjectWithsite!");
+			// Tracer.Trace(typeof(AbstractSqlEditorTab), "ConfigureTextViewForAutonomousFind", "Couldn't cast textView to IObjectWithsite!");
 			return;
 		}
 
@@ -1316,7 +1315,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 		ITextView wpfTextView = GetWpfTextView(textView);
 		if (wpfTextView == null)
 		{
-			Tracer.Trace(typeof(AbstractSqlEditorTab), "ConfigureTextViewForAutonomousFind", "Couldn't get ITextView from IVsTextView!");
+			// Tracer.Trace(typeof(AbstractSqlEditorTab), "ConfigureTextViewForAutonomousFind", "Couldn't get ITextView from IVsTextView!");
 		}
 		else
 		{

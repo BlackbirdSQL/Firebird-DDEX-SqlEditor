@@ -541,7 +541,7 @@ END",
 
 			trig = null;
 
-			if (Convert.ToBoolean(row["IS_IDENTITY"]) == true)
+			if (_LinkageParser != null && Convert.ToBoolean(row["IS_IDENTITY"]) == true)
 			{
 				if (row["TRIGGER_NAME"] != DBNull.Value)
 				{

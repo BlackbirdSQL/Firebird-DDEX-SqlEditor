@@ -32,7 +32,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Model;
 internal class DslViewColumns : DslColumns
 {
 
-	public DslViewColumns(LinkageParser parser) : base(parser)
+	public DslViewColumns() : base(null)
 	{
 		// Tracer.Trace(GetType(), "DslViewColumns.DslViewColumns");
 

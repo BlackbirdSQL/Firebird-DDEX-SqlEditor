@@ -1,14 +1,10 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
-using System;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Threading;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model.Config;
 
@@ -39,43 +35,43 @@ public class GeneralSettingsModel : AbstractSettingsModel<GeneralSettingsModel>
 
 
 	[GlobalizedCategory("OptionCategoryGeneral")]
-	[GlobalizedDisplayName("OptionDisplayIncludeAppConnections")]
-	[GlobalizedDescription("OptionDescriptionIncludeAppConnections")]
+	[GlobalizedDisplayName("OptionDisplayGeneralIncludeAppConnections")]
+	[GlobalizedDescription("OptionDescriptionGeneralIncludeAppConnections")]
 	[TypeConverter(typeof(GlobalYesNoConverter))]
 	[DefaultValue(true)]
 	public bool IncludeAppConnections { get; set; } = true;
 
 	[GlobalizedCategory("OptionCategoryQueryDesigner")]
-	[GlobalizedDisplayName("OptionDisplayShowDiagramPane")]
-	[GlobalizedDescription("OptionDescriptionShowDiagramPane")]
+	[GlobalizedDisplayName("OptionDisplayGeneralShowDiagramPane")]
+	[GlobalizedDescription("OptionDescriptionGeneralShowDiagramPane")]
 	[TypeConverter(typeof(GlobalShowHideConverter))]
 	[DefaultValue(true)]
 	public bool ShowDiagramPane { get; set; } = true;
 
 	[GlobalizedCategory("OptionCategoryDiagnostics")]
-	[GlobalizedDisplayName("OptionDisplayEnableDiagnostics")]
-	[GlobalizedDescription("OptionDescriptionEnableDiagnostics")]
+	[GlobalizedDisplayName("OptionDisplayGeneralEnableDiagnostics")]
+	[GlobalizedDescription("OptionDescriptionGeneralEnableDiagnostics")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
 	[DefaultValue(true)]
 	public bool EnableDiagnostics { get; set; } = true;
 
 	[GlobalizedCategory("OptionCategoryDiagnostics")]
-	[GlobalizedDisplayName("OptionDisplayEnableTaskLog")]
-	[GlobalizedDescription("OptionDescriptionEnableTaskLog")]
+	[GlobalizedDisplayName("OptionDisplayGeneralEnableTaskLog")]
+	[GlobalizedDescription("OptionDescriptionGeneralEnableTaskLog")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
 	[DefaultValue(true)]
 	public bool EnableTaskLog { get; set; } = true;
 
 	[GlobalizedCategory("OptionCategoryEntityFramework")]
-	[GlobalizedDisplayName("OptionDisplayValidateConfig")]
-	[GlobalizedDescription("OptionDescriptionValidateConfig")]
+	[GlobalizedDisplayName("OptionDisplayGeneralValidateConfig")]
+	[GlobalizedDescription("OptionDescriptionGeneralValidateConfig")]
 	[TypeConverter(typeof(GlobalYesNoConverter))]
 	[DefaultValue(true)]
 	public bool ValidateConfig { get; set; } = true;
 
 	[GlobalizedCategory("OptionCategoryEntityFramework")]
-	[GlobalizedDisplayName("OptionDisplayValidateEdmx")]
-	[GlobalizedDescription("OptionDescriptionValidateEdmx")]
+	[GlobalizedDisplayName("OptionDisplayGeneralValidateEdmx")]
+	[GlobalizedDescription("OptionDescriptionGeneralValidateEdmx")]
 	[TypeConverter(typeof(GlobalYesNoConverter))]
 	[DefaultValue(true)]
 	public bool ValidateEdmx { get; set; } = true;

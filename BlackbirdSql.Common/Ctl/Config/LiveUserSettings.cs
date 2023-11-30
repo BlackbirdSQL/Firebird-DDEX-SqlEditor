@@ -88,6 +88,12 @@ public class LiveUserSettings : UserSettings, IBLiveUserSettings, IBLiveSettings
 		set { this["EditorGeneralPromptToSave"] = value; }
 	}
 
+	public new bool EditorExecuteQueryOnOpen
+	{
+		get { return (bool)this["EditorGeneralExecuteQueryOnOpen"]; }
+		set { this["EditorGeneralExecuteQueryOnOpen"] = value; }
+	}
+
 	// Editor ContextSettingsModel
 	public new EnStatusBarPosition EditorContextStatusBarPosition
 	{

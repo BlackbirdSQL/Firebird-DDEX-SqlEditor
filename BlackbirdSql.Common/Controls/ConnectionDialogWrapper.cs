@@ -55,7 +55,7 @@ public class ConnectionDialogWrapper : IDisposable
 
 	public bool? ShowDialogValidateConnection(IntPtr parent, UIConnectionInfo ci, out IDbConnection connection)
 	{
-		Tracer.Trace(GetType(), "ShowDialogValidateConnection()");
+		// Tracer.Trace(GetType(), "ShowDialogValidateConnection()");
 
 		ShowDialog(parent, ci, out connection, out var result, new ConnectionDialogConfiguration
 		{
@@ -80,7 +80,7 @@ public class ConnectionDialogWrapper : IDisposable
 
 	private UIConnectionInfo ShowDialog(IntPtr parent, UIConnectionInfo ci, out IDbConnection connection, out bool? result, ConnectionDialogConfiguration config)
 	{
-		Tracer.Trace(GetType(), "ShowDialog()");
+		// Tracer.Trace(GetType(), "ShowDialog()");
 
 		UIConnectionInfo uIConnectionInfo = ci;
 		Cmd.CheckForNull(ci, "uiConnectionInfo");

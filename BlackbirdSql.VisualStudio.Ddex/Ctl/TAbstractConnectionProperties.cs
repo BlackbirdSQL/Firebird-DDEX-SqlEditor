@@ -462,7 +462,7 @@ public class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>
 	{
 		if (Site != null)
 		{
-			Tracer.Trace(GetType(), "OnSiteChanged()", "TYPE IVsDataProvider Site type: {0}", Site.GetType().FullName);
+			// Tracer.Trace(GetType(), "OnSiteChanged()", "TYPE IVsDataProvider Site type: {0}", Site.GetType().FullName);
 			_ConnectionStringBuilder = new CsbAgent();
 
 			Reset();

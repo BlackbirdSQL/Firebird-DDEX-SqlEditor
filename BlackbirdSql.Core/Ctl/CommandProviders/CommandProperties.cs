@@ -3,10 +3,8 @@
 
 using System;
 using System.ComponentModel.Design;
-
 using BlackbirdSql.Core.Ctl.Enums;
-using Microsoft.VisualStudio;
-using static Microsoft.VisualStudio.VSConstants;
+using BlackbirdSql.Core.Model.Enums;
 
 namespace BlackbirdSql.Core.Ctl.CommandProviders;
 
@@ -28,7 +26,7 @@ public static class CommandProperties
 	/// <summary>
 	/// The package-wide flag indicating whether or not the current node in the SE is a 'IsSystemObject'
 	/// </summary>
-	private static EnNodeSystemType _CommandNodeSystemType = EnNodeSystemType.None;
+	private static EnNodeSystemType _CommandNodeSystemType = EnNodeSystemType.Undefined;
 
 	public static EnNodeSystemType CommandNodeSystemType
 	{
@@ -52,11 +50,7 @@ public static class CommandProperties
 	// =========================================================================================================
 	
 	// VS DataToolsCommands providers
-	public const string DetachCommandProviderGuid = "8C591813-BB90-4B5C-BD7B-5A286D130D2E";
-	public const string SystemQueryCommandProviderGuid = "C253F0FC-D24B-4BE4-A2DE-57502D677A09";
-	public const string UserQueryCommandProviderGuid = "B07EDD71-7F1E-4A14-8BB0-38A30C72251D";
 	public const string UniversalCommandProviderGuid = "CD332A3B-B404-45B7-988F-587672086727";
-	public const string SystemOpenTextCommandProviderGuid = "CC8C9523-2143-4CDA-B2BC-129A8B2D0809";
 
 	// Command sets
 	public const string CommandSetGuid = "13CD7876-FC84-4DDA-91BF-4CDBF893B134";
@@ -73,15 +67,16 @@ public static class CommandProperties
 	// =========================================================================================================
 
 
-	private const int _CmdIdSENewQuery = 13587;       // 0x3513
-	private const int _CmdIdSELocalNewQuery = 13608;  // 0x3528
-	private const int _CmdIdAddTableViewForQRY = 39; // 0x0027
-	private const int _CmdIdSERetrieveData = 12384;   // 0x3060
-	private const int _CmdIdSERun = 12386;            // 0x3062
-	private const int _CmdIdSEDetachDatabase = 13591; // 0x3517
-	private const int _CmdIdUpdateScript = 12345;     // 0x3039
-	private const int _CmdIdNewTrigger = 13607;       // 0x3527
-	private const int _CmdIdAddTrigger = 12362;       // 0x304A
+	private const int _CmdIdSENewQueryGlobal = 0x3513; // 13587;
+	private const int _CmdIdSENewQueryLocal = 0x3528; // 13608;
+	private const int _CmdIdAddTableViewForQRY = 0x0027; // 39;
+	private const int _CmdIdSERetrieveDesignerLocal = 0x3060; // 12384;
+	// private const int _CmdIdSERun = 0x3062; // 12386;
+	// private const int _CmdIdSEDetachDatabase = 0x3517; // 13591;
+	private const int _CmdIdUpdateScript = 0x3039; // 12345;
+	private const int _CmdIdNewTrigger = 0x3527; // 13607;
+	private const int _CmdIdAddTrigger = 0x304A; // 12362;
+	private const int _CmdIdCopy = 0x000F; // 15;
 
 
 	#endregion IDs
@@ -95,27 +90,21 @@ public static class CommandProperties
 	// =========================================================================================================
 
 
-	public static CommandID DetachDatabase = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdSEDetachDatabase);
-	public static CommandID GlobalNewQuery = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdSENewQuery);
-	public static CommandID NewQuery = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdSELocalNewQuery);
+	// public static CommandID DetachDatabase = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdSEDetachDatabase);
+	public static CommandID NewQueryGlobal = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdSENewQueryGlobal);
+	public static CommandID OverrideNewQueryLocal = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdSENewQueryLocal);
+	public static CommandID NewSqlQuery = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdNewSqlQuery);
+	public static CommandID NewDesignerQuery = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdNewDesignerQuery);
 	public static CommandID ShowAddTableDialog = new CommandID(new Guid(VS.DavCommandSetGuid), _CmdIdAddTableViewForQRY);
 	public static CommandID OpenTextObject = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdOpenTextObject);
 	public static CommandID OpenAlterTextObject = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdOpenAlterTextObject);
-	public static CommandID DesignRetrieveData = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdDesignRetrieveData);
-	public static CommandID ExecuteTextObject = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdSERun);
-
-	public static CommandID RightClick = new CommandID(GUID_VsUIHierarchyWindowCmds, (int)VsUIHierarchyWindowCmdIds.UIHWCMDID_RightClick);
-	public static CommandID DoubleClick = new CommandID(GUID_VsUIHierarchyWindowCmds, (int)VsUIHierarchyWindowCmdIds.UIHWCMDID_DoubleClick);
-	public static CommandID EnterKey = new CommandID(GUID_VsUIHierarchyWindowCmds, (int)VsUIHierarchyWindowCmdIds.UIHWCMDID_EnterKey);
-
-	public static CommandID ResetPageOptions = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdResetPageOptions);
-
-	/// <summary>
-	// VsUIHierarchyWindowCmdIds
-	/// </summary>
+	public static CommandID RetrieveDesignerLocal = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdSERetrieveDesignerLocal);
+	public static CommandID RetrieveDesignerData = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdRetrieveDesignerData);
+	public static CommandID OverrideCopy = new CommandID(new Guid(VS.VSStandardCommandSet97Guid), _CmdIdCopy);
+	public static CommandID CopyObject = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdCopyObject);
+	// public static CommandID ExecuteTextObject = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdSERun);
 
 	// Unsupported
-	public static CommandID RetrieveData = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdSERetrieveData);
 	public static CommandID GlobalNewDiagram = new CommandID(new Guid(VS.SeDataCommandSetGuid), 12352);
 	public static CommandID GlobalNewTable = new CommandID(new Guid(VS.SeDataCommandSetGuid), 12353);
 	public static CommandID GlobalNewView = new CommandID(new Guid(VS.SeDataCommandSetGuid), 12355);
@@ -143,31 +132,8 @@ public static class CommandProperties
 	public static CommandID ScriptObject = new CommandID(new Guid(VS.SeDataCommandSetGuid), 12347);
 	public static CommandID BrowseIntoSSDT = new CommandID(new Guid(VS.SeDataCommandSetGuid), 13592);
 
+
 	#endregion Command IDs
 
-
-
-
-
-	// =========================================================================================================
-	#region Child classes - CommandProperties
-	// =========================================================================================================
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Enumerator for flagging the current SE node as 'IsSystemObject' or not
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public enum EnNodeSystemType
-	{
-		None = 0,
-		Global = 1,
-		User = 2,
-		System = 3
-	};
-
-
-	#endregion Child classes
 
 }

@@ -135,18 +135,6 @@
   <data name="DataSource_FirebirdSqlServer" xml:space="preserve">
     <value>Firebird SQL Server</value>
   </data>
-  <data name="DataSupportObject_InvalidInvokeArguments" xml:space="preserve">
-    <value>The arguments array is invalid.</value>
-  </data>
-  <data name="DataSupportObject_UnknownInvokeName" xml:space="preserve">
-    <value>The method name is unknown.</value>
-  </data>
-  <data name="DSRefBuilder_InvalidParameters" xml:space="preserve">
-    <value>The parameters array contains invalid elements.</value>
-  </data>
-  <data name="DSRefBuilder_MissingSite" xml:space="preserve">
-    <value>A connection site is required to build a DSRef.</value>
-  </data>
   <data name="ExceptionAddingNullSite" xml:space="preserve">
     <value>Attempt to add a null site</value>
   </data>
@@ -221,5 +209,11 @@
   </data>
   <data name="Provider_ShortDisplayName" xml:space="preserve">
     <value>FirebirdClient Provider</value>
+  </data>
+  <data name="QueryDesignerDocument_NewQueryCaption" xml:space="preserve">
+    <value>Query{1}: DesignData{0}</value>
+  </data>
+  <data name="QueryDesignerDocument_RetrieveDataCaption" xml:space="preserve">
+    <value>{1}: DesignData{0}</value>
   </data>
 </root>

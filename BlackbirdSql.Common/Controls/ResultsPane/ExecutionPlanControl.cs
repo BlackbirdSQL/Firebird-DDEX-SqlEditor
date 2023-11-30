@@ -240,7 +240,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 		MenuCommand menuCommand = _MenuService.FindCommand(commandID);
 		if (menuCommand != null)
 		{
-			Tracer.Trace(GetType(), "Exec", "{0}:{1}", commandID.Guid, commandID.ID);
+			// Tracer.Trace(GetType(), "Exec", "{0}:{1}", commandID.Guid, commandID.ID);
 			try
 			{
 				menuCommand.Invoke();
@@ -555,7 +555,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 
 	internal void OnPrint(object sender, EventArgs e)
 	{
-		Tracer.Trace(GetType(), "OnPrint", "", null);
+		// Tracer.Trace(GetType(), "OnPrint", "", null);
 		if (currentGraphPanel == null)
 		{
 			return;
@@ -586,7 +586,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 
 	internal void OnPrintPreview(object sender, EventArgs e)
 	{
-		Tracer.Trace(GetType(), "OnPrintPreview", "", null);
+		// Tracer.Trace(GetType(), "OnPrintPreview", "", null);
 		if (currentGraphPanel == null)
 		{
 			return;
@@ -614,7 +614,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 
 	internal void OnPrintPageSetup(object sender, EventArgs e)
 	{
-		Tracer.Trace(GetType(), "OnPrintPageSetup", "", null);
+		// Tracer.Trace(GetType(), "OnPrintPageSetup", "", null);
 		try
 		{
 			using PageSetupDialog pageSetupDialog = new PageSetupDialog();

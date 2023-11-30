@@ -774,7 +774,7 @@ public class QESQLBatch : IDisposable
 					{
 						if (dataReader.FieldCount <= 0)
 						{
-							// Tracer.Trace(GetType(), Tracer.EnLevel.Warning, "ExecuteInternal", ": result set is empty");
+							Tracer.Trace(GetType(), Tracer.EnLevel.Warning, "ExecuteInternal", ": result set is empty");
 							hasMoreRows = dataReader.NextResult();
 							continue;
 						}
@@ -799,7 +799,7 @@ public class QESQLBatch : IDisposable
 
 					if (ContainsErrors)
 					{
-						// Tracer.Trace(GetType(), Tracer.EnLevel.Warning, "ExecuteInternal", ": successfull processed result set, but there were errors shown to the user");
+						Tracer.Trace(GetType(), Tracer.EnLevel.Warning, "ExecuteInternal", ": successfull processed result set, but there were errors shown to the user");
 						result = EnScriptExecutionResult.Failure;
 					}
 
@@ -813,7 +813,7 @@ public class QESQLBatch : IDisposable
 				}
 				else
 				{
-					// Tracer.Trace(GetType(), Tracer.EnLevel.Warning, "ExecuteInternal", ": no NewResultSet handler was specified or Cancel was received!");
+					Tracer.Trace(GetType(), Tracer.EnLevel.Warning, "ExecuteInternal", ": no NewResultSet handler was specified or Cancel was received!");
 				}
 			}
 		}

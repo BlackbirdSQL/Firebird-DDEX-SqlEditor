@@ -18,7 +18,7 @@ namespace BlackbirdSql.Common.Model;
 
 public abstract class AbstractMemDataStorage : IBMemDataStorage, IBDataStorage, IDisposable
 {
-	protected ArrayList _ColumnsArray;
+	protected ArrayList _ColumnInfoArray;
 
 	protected ArrayList _RowsArray;
 
@@ -34,7 +34,7 @@ public abstract class AbstractMemDataStorage : IBMemDataStorage, IBDataStorage, 
 
 	public AbstractMemDataStorage()
 	{
-		_ColumnsArray = new ArrayList();
+		_ColumnInfoArray = new ArrayList();
 		_RowsArray = new ArrayList();
 	}
 
@@ -44,13 +44,13 @@ public abstract class AbstractMemDataStorage : IBMemDataStorage, IBDataStorage, 
 
 	public virtual void InitStorage()
 	{
-		_ColumnsArray.Clear();
+		_ColumnInfoArray.Clear();
 		_RowsArray.Clear();
 	}
 
 	public virtual void AddColumn(string name)
 	{
-		_ColumnsArray.Add(new ColumnInfo(name));
+		_ColumnInfoArray.Add(new ColumnInfo(name));
 	}
 
 	public virtual void AddRow(object[] values)
@@ -76,11 +76,11 @@ public abstract class AbstractMemDataStorage : IBMemDataStorage, IBDataStorage, 
 	public long RowCount => _RowsArray.Count;
 
 
-	public int ColumnCount => _ColumnsArray.Count;
+	public int ColumnCount => _ColumnInfoArray.Count;
 
 	public IBColumnInfo GetColumnInfo(int iCol)
 	{
-		return (IBColumnInfo)_ColumnsArray[iCol];
+		return (IBColumnInfo)_ColumnInfoArray[iCol];
 	}
 
 	public bool IsClosed()

@@ -9,7 +9,10 @@ using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Model;
+using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.EditorExtension.Ctl.Events;
 
 using EnvDTE;
@@ -19,7 +22,6 @@ using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-using static BlackbirdSql.Core.Ctl.CommandProviders.CommandProperties;
 using IOleUndoManager = Microsoft.VisualStudio.OLE.Interop.IOleUndoManager;
 using Native = BlackbirdSql.Core.Native;
 

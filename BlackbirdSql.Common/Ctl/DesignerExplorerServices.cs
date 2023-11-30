@@ -4,28 +4,31 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using BlackbirdSql.Common.Model;
+using System.Threading;
+using System.Threading.Tasks;
+using BlackbirdSql.Common.Ctl.Commands;
+using BlackbirdSql.Common.Ctl.Config;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
+using BlackbirdSql.Core.Model.Enums;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
-using Microsoft.VisualStudio.Package;
+using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 using IServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
-using MonikerAgent = BlackbirdSql.Common.Model.MonikerAgent;
+
 
 namespace BlackbirdSql.Common.Ctl;
 
@@ -41,9 +44,9 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 	// Microsoft.VisualStudio.Data.Tools.Package, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 	// Microsoft.VisualStudio.Data.Tools.Package.Explorers.SqlServerObjectExplorer.SqlServerObjectExplorerServiceHelper.OpenOnlineEditor
 	// combined with local methods
-	public static void OpenExplorerEditor(IVsDataExplorerNode node, EnModelObjectType objectType, bool alternate,
-		IList<string> identifierList, Guid editorFactory, Action<IServiceProvider> documentLoadedCallback,
-		string physicalViewName = null)
+	public static void OpenExplorerEditor(IVsDataExplorerNode node, EnModelObjectType objectType,
+		IList<string> identifierList, EnModelTargetType targetType, Guid editorFactory,
+		Action<DatabaseLocation> documentLoadedCallback, string physicalViewName = null)
 	{
 		bool result = false;
 
@@ -51,9 +54,8 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 			editorFactory = new(SystemData.MandatedSqlEditorFactoryGuid);
 
 		string mkDocument = null;
-		objectType += (alternate ? 20 : 0);
 		EnModelObjectType elementType = objectType;
-		DatabaseLocation dbl = new(node, alternate);
+		DatabaseLocation dbl = new(node, targetType);
 		HashSet<NodeElementDescriptor> originalObjects = null;
 		bool flag = false;
 		IList<string> identifierArray = null;
@@ -73,14 +75,14 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		}
 		if (string.IsNullOrEmpty(mkDocument))
 		{
-			mkDocument = MonikerAgent.BuildMiscDocumentMoniker(node, ref identifierArray, false, alternate);
+			mkDocument = MonikerAgent.BuildMiscDocumentMonikerPath(node, ref identifierArray, targetType, false);
 
 
 			flag = true;
 			AddInflightOpen(dbl, new NodeElementDescriptor(elementType, identifierArray), mkDocument);
 		}
 
-		RaiseBeforeOpenDocument(mkDocument, dbl, identifierArray, objectType, S_BeforeOpenDocumentHandler);
+		RaiseBeforeOpenDocument(mkDocument, dbl, identifierArray, objectType, targetType, S_BeforeOpenDocumentHandler);
 
 		CsbAgent csa = new(node);
 
@@ -115,7 +117,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 			try
 			{
-				string script = MonikerAgent.GetDecoratedDdlSource(node, alternate);
+				string script = MonikerAgent.GetDecoratedDdlSource(node, targetType);
 
 				PopulateEditorWithObject(false, mkDocument, docCookie, script, originalObjects);
 				ExecuteDocumentLoadedCallback(documentLoadedCallback, dbl);
@@ -147,7 +149,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 
 
-	public static void OpenNewQueryEditor(string datasetKey, Guid editorFactory, Action<IServiceProvider> documentLoadedCallback,
+	public static void OpenNewQueryEditor(string datasetKey, Guid editorFactory, Action<DatabaseLocation> documentLoadedCallback,
 		string physicalViewName = null)
 	{
 		bool result = false;
@@ -155,12 +157,12 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		if (editorFactory == Guid.Empty)
 			editorFactory = new(SystemData.MandatedSqlEditorFactoryGuid);
 
-		bool alternate = false;
+		EnModelTargetType targetType = EnModelTargetType.QueryScript;
 		string mkDocument = null;
-		EnModelObjectType objectType = EnModelObjectType.NewQuery;
+		EnModelObjectType objectType = EnModelObjectType.NewSqlQuery;
 		EnModelObjectType elementType = objectType;
 		CsbAgent csa = new(CsbAgent.GetDatasetConnectionString(datasetKey));
-		DatabaseLocation dbl = new(csa, alternate);
+		DatabaseLocation dbl = new(csa, targetType);
 		HashSet<NodeElementDescriptor> originalObjects = null;
 		bool flag = false;
 
@@ -182,14 +184,14 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		}
 		if (string.IsNullOrEmpty(mkDocument))
 		{
-			mkDocument = MonikerAgent.BuildMiscDocumentMoniker(csa.DataSource, csa.Database, elementType, ref identifierArray, true, alternate);
+			mkDocument = MonikerAgent.BuildMiscDocumentMonikerPath(csa.DataSource, csa.Database, elementType, ref identifierArray, targetType, true);
 
 
 			flag = true;
 			AddInflightOpen(dbl, new NodeElementDescriptor(elementType, identifierArray), mkDocument);
 		}
 
-		RaiseBeforeOpenDocument(mkDocument, dbl, identifierArray, objectType, S_BeforeOpenDocumentHandler);
+		RaiseBeforeOpenDocument(mkDocument, dbl, identifierArray, objectType, targetType, S_BeforeOpenDocumentHandler);
 
 		OpenMiscDocument(mkDocument, csa, true, false, editorFactory, out uint docCookie, out IVsWindowFrame frame,
 			out bool editorAlreadyOpened, out bool documentAlreadyLoaded, physicalViewName);
@@ -253,7 +255,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 	}
 
 
-	public void NewQuery(string datasetKey)
+	public void NewSqlQuery(string datasetKey)
 	{
 		// Sanity check.
 		// Currently our only entry point to AbstractDesignerServices whose warnings are suppressed.
@@ -271,10 +273,36 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 
 
+	public void OnSqlQueryLoaded(DatabaseLocation dbl)
+	{
+		IBSqlEditorWindowPane lastFocusedSqlEditor = ((IBEditorPackage)Controller.DdexPackage).LastFocusedSqlEditor;
+		if (lastFocusedSqlEditor != null)
+		{
+			SqlEditorExecuteQueryCommand command = new (lastFocusedSqlEditor);
+
+			_ = Task.Run(() => OnSqlQueryLoadedAsync(command, 10));
+		}
+	}
+
+	private async Task<bool> OnSqlQueryLoadedAsync(AbstractSqlEditorCommand command, int delay)
+	{
+		// Give editor time to breath.
+		if (delay > 0)
+			Thread.Sleep(delay);
+
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		command.Exec((uint)OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT, IntPtr.Zero, IntPtr.Zero);
+
+		return true;
+	}
+
+
+
 
 	// Microsoft.VisualStudio.Data.Tools.Package, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 	// Microsoft.VisualStudio.Data.Tools.Package.Explorers.SqlServerObjectExplorer.SqlServerObjectExplorerService:ViewCode()
-	public void ViewCode(IVsDataExplorerNode node, bool alternate)
+	public void ViewCode(IVsDataExplorerNode node, EnModelTargetType targetType)
 	{
 		// Sanity check.
 		// Currently our only entry point to AbstractDesignerServices whose warnings are suppressed.
@@ -285,13 +313,22 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 			throw ex;
 		}
 
-		MonikerAgent moniker = new(node);
+		MonikerAgent moniker = new(node, targetType);
 
 		IList<string> identifierList = moniker.Identifier.ToArray();
 		EnModelObjectType objectType = moniker.ObjectType;
 		Guid clsidEditorFactory = new Guid(SystemData.DslEditorFactoryGuid);
 
-		OpenExplorerEditor(node, objectType, alternate, identifierList, clsidEditorFactory, null, null);
+		Action<DatabaseLocation> callback = null;
+
+		if ((objectType == EnModelObjectType.Table || objectType == EnModelObjectType.View)
+			&& targetType == EnModelTargetType.QueryScript && UserSettings.EditorExecuteQueryOnOpen)
+		{
+			callback = OnSqlQueryLoaded;
+		}
+
+
+		OpenExplorerEditor(node, objectType, identifierList, targetType, clsidEditorFactory, callback, null);
 	}
 
 

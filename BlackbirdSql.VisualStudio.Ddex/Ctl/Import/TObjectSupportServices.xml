@@ -4,8 +4,7 @@
 	<Define name="TplSchemaObjectTypeDSRefBuilderService0" parameters="parentRefDummy, parentPreciseDummy, subParentRefDummy, subParentPreciseDummy, refDummy, preciseDummy"/>
 
 	<Define name="TplSchemaObjectTypeDSRefBuilderService3" parameters="parentRefDummy, parentPreciseDummy, subParentRefDummy, subParentPreciseDummy, refType, preciseType">
-		<Service type="IDSRefBuilder" implementationType="BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools.DSRefBuilder">
-		<!-- <Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder"> -->
+		<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
 			<Parameters method="AppendToDSRef">
 				<Parameter>
 					<ParameterListRef name="TplAppendToDSRefBaseParameters" arguments="$(refType), $(preciseType)" />
@@ -15,8 +14,7 @@
 	</Define>
 
 	<Define name="TplSchemaObjectTypeDSRefBuilderService4" parameters="parentRefType, parentPreciseType, subParentRefDummy, subParentPreciseDummy, refType, preciseType">
-		<Service type="IDSRefBuilder" implementationType="BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools.DSRefBuilder">
-		<!-- <Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder"> -->
+		<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
 			<Parameters method="AppendToDSRef">
 				<Parameter>
 					<ParameterListRef name="TplAppendToDSRefBaseParameters" arguments="$(parentRefType), $(parentPreciseType)" />
@@ -31,8 +29,7 @@
 	</Define>
 
 	<Define name="TplSchemaObjectTypeDSRefBuilderService5" parameters="parentRefType, parentPreciseType, subParentRefType, subParentPreciseType, refType, preciseType">
-		<Service type="IDSRefBuilder" implementationType="BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools.DSRefBuilder">
-		<!-- <Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder"> -->
+		<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
 			<Parameters method="AppendToDSRef">
 				<Parameter>
 					<ParameterListRef name="TplAppendToDSRefBaseParameters" arguments="$(parentRefType), $(parentPreciseType)" />
@@ -52,8 +49,7 @@
 	</Define>
 
 	<Define name="TplFunctionDSRefBuilderService4" parameters="parentRefType, parentPreciseType, subParentRefDummy, subParentPreciseDummy, refType, preciseType">
-		<Service type="IDSRefBuilder" implementationType="BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools.DSRefBuilder">
-		<!-- <Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder"> -->
+		<Service type="IDSRefBuilder" implementationType="Microsoft.VisualStudio.Data.Framework.DSRefBuilder">
 			<Parameters method="AppendToDSRef">
 				<Parameter>
 					<ParameterListRef name="TplAppendToDSRefBaseParameters" arguments="$(parentRefType), $(parentPreciseType)" />

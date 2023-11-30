@@ -106,137 +106,146 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enables the execution of Diagnostics calls. This option should remain enabled. Disabling does not disable Exceptions..
-        /// </summary>
-        public static string OptionDescriptionEnableDiagnostics {
-            get {
-                return ResourceManager.GetString("OptionDescriptionEnableDiagnostics", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Enables diagnostics logging to a log file..
         /// </summary>
-        public static string OptionDescriptionEnableDiagnosticsLog {
+        public static string OptionDescriptionDebugEnableDiagnosticsLog {
             get {
-                return ResourceManager.GetString("OptionDescriptionEnableDiagnosticsLog", resourceCulture);
+                return ResourceManager.GetString("OptionDescriptionDebugEnableDiagnosticsLog", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Enables the execution of Firebird Debug.Dug()/Debug.Trace() calls. Only applicable to builds that include the debug Firebird library..
         /// </summary>
-        public static string OptionDescriptionEnableFbDiagnostics {
+        public static string OptionDescriptionDebugEnableFbDiagnostics {
             get {
-                return ResourceManager.GetString("OptionDescriptionEnableFbDiagnostics", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enables logging of tasks to the output window pane. This option should remain enabled..
-        /// </summary>
-        public static string OptionDescriptionEnableTaskLog {
-            get {
-                return ResourceManager.GetString("OptionDescriptionEnableTaskLog", resourceCulture);
+                return ResourceManager.GetString("OptionDescriptionDebugEnableFbDiagnostics", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Enables the execution of Diag.Trace() calls..
         /// </summary>
-        public static string OptionDescriptionEnableTrace {
+        public static string OptionDescriptionDebugEnableTrace {
             get {
-                return ResourceManager.GetString("OptionDescriptionEnableTrace", resourceCulture);
+                return ResourceManager.GetString("OptionDescriptionDebugEnableTrace", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Enables Sql Tracer output to be directed to Diag.Trace()..
         /// </summary>
-        public static string OptionDescriptionEnableTracer {
+        public static string OptionDescriptionDebugEnableTracer {
             get {
-                return ResourceManager.GetString("OptionDescriptionEnableTracer", resourceCulture);
+                return ResourceManager.GetString("OptionDescriptionDebugEnableTracer", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Location of Firebird diagnostics log file. Note: Only applicable to builds that include the debug Firerbird library..
         /// </summary>
-        public static string OptionDescriptionFbLogFile {
+        public static string OptionDescriptionDebugFbLogFile {
             get {
-                return ResourceManager.GetString("OptionDescriptionFbLogFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to If enabled, includes any configured connection strings that exist in a solution&apos;s projects in the drop down selection lists when adding a new connection..
-        /// </summary>
-        public static string OptionDescriptionIncludeAppConnections {
-            get {
-                return ResourceManager.GetString("OptionDescriptionIncludeAppConnections", resourceCulture);
+                return ResourceManager.GetString("OptionDescriptionDebugFbLogFile", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Location of diagnostics log file..
         /// </summary>
-        public static string OptionDescriptionLogFile {
+        public static string OptionDescriptionDebugLogFile {
             get {
-                return ResourceManager.GetString("OptionDescriptionLogFile", resourceCulture);
+                return ResourceManager.GetString("OptionDescriptionDebugLogFile", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Enables persistent validation flags. If disabled the validation flag of solutions and projects will be repeated upon reopening if Validation is enabled. Only applicable to DEBUG builds..
         /// </summary>
-        public static string OptionDescriptionPersistentValidation {
+        public static string OptionDescriptionDebugPersistentValidation {
             get {
-                return ResourceManager.GetString("OptionDescriptionPersistentValidation", resourceCulture);
+                return ResourceManager.GetString("OptionDescriptionDebugPersistentValidation", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Saves the extrapolated IVsDataObjectSupport xml (TObjectSupport.xml), after imports, to the directory location of the diagnostics log file..
         /// </summary>
-        public static string OptionDescriptionSaveExtrapolatedXml {
+        public static string OptionDescriptionDebugSaveExtrapolatedXml {
             get {
-                return ResourceManager.GetString("OptionDescriptionSaveExtrapolatedXml", resourceCulture);
+                return ResourceManager.GetString("OptionDescriptionDebugSaveExtrapolatedXml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enables the execution of Diagnostics calls. This option should remain enabled. Disabling does not disable Exceptions..
+        /// </summary>
+        public static string OptionDescriptionGeneralEnableDiagnostics {
+            get {
+                return ResourceManager.GetString("OptionDescriptionGeneralEnableDiagnostics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enables logging of tasks to the output window pane. This option should remain enabled..
+        /// </summary>
+        public static string OptionDescriptionGeneralEnableTaskLog {
+            get {
+                return ResourceManager.GetString("OptionDescriptionGeneralEnableTaskLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If enabled, includes any configured connection strings that exist in a solution&apos;s projects in the drop down selection lists when adding a new connection..
+        /// </summary>
+        public static string OptionDescriptionGeneralIncludeAppConnections {
+            get {
+                return ResourceManager.GetString("OptionDescriptionGeneralIncludeAppConnections", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Sets the query designer diagram pane to visible when a table or view&apos;s data is initially retrieved..
         /// </summary>
-        public static string OptionDescriptionShowDiagramPane {
+        public static string OptionDescriptionGeneralShowDiagramPane {
             get {
-                return ResourceManager.GetString("OptionDescriptionShowDiagramPane", resourceCulture);
+                return ResourceManager.GetString("OptionDescriptionGeneralShowDiagramPane", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Enable this option to allow BlackbirdSql to ensure that Firebird EntityFramework is configured in your non-CPS projects&apos; App.config..
         /// </summary>
-        public static string OptionDescriptionValidateConfig {
+        public static string OptionDescriptionGeneralValidateConfig {
             get {
-                return ResourceManager.GetString("OptionDescriptionValidateConfig", resourceCulture);
+                return ResourceManager.GetString("OptionDescriptionGeneralValidateConfig", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Enable this option to allow BlackbirdSql to update legacy edmx models to use EntityFramework 6..
         /// </summary>
-        public static string OptionDescriptionValidateEdmx {
+        public static string OptionDescriptionGeneralValidateEdmx {
             get {
-                return ResourceManager.GetString("OptionDescriptionValidateEdmx", resourceCulture);
+                return ResourceManager.GetString("OptionDescriptionGeneralValidateEdmx", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Select the folder to be used for the Firebird diagnostics log file..
         /// </summary>
-        public static string OptionDialogFbLogFile {
+        public static string OptionDialogDebugFbLogFile {
             get {
-                return ResourceManager.GetString("OptionDialogFbLogFile", resourceCulture);
+                return ResourceManager.GetString("OptionDialogDebugFbLogFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select the folder to be used for the diagnostics log file..
+        /// </summary>
+        public static string OptionDialogDebugLogFile {
+            get {
+                return ResourceManager.GetString("OptionDialogDebugLogFile", resourceCulture);
             }
         }
         
@@ -259,137 +268,128 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select the folder to be used for the diagnostics log file..
-        /// </summary>
-        public static string OptionDialogLogFile {
-            get {
-                return ResourceManager.GetString("OptionDialogLogFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enable diagnostics.
-        /// </summary>
-        public static string OptionDisplayEnableDiagnostics {
-            get {
-                return ResourceManager.GetString("OptionDisplayEnableDiagnostics", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Enable diagnostics logging.
         /// </summary>
-        public static string OptionDisplayEnableDiagnosticsLog {
+        public static string OptionDisplayDebugEnableDiagnosticsLog {
             get {
-                return ResourceManager.GetString("OptionDisplayEnableDiagnosticsLog", resourceCulture);
+                return ResourceManager.GetString("OptionDisplayDebugEnableDiagnosticsLog", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Enable Firebird diagnostics.
         /// </summary>
-        public static string OptionDisplayEnableFbDiagnostics {
+        public static string OptionDisplayDebugEnableFbDiagnostics {
             get {
-                return ResourceManager.GetString("OptionDisplayEnableFbDiagnostics", resourceCulture);
+                return ResourceManager.GetString("OptionDisplayDebugEnableFbDiagnostics", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Save extrapolated xml.
         /// </summary>
-        public static string OptionDisplayEnableSaveExtrapolatedXml {
+        public static string OptionDisplayDebugEnableSaveExtrapolatedXml {
             get {
-                return ResourceManager.GetString("OptionDisplayEnableSaveExtrapolatedXml", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enable task logging.
-        /// </summary>
-        public static string OptionDisplayEnableTaskLog {
-            get {
-                return ResourceManager.GetString("OptionDisplayEnableTaskLog", resourceCulture);
+                return ResourceManager.GetString("OptionDisplayDebugEnableSaveExtrapolatedXml", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Enable trace.
         /// </summary>
-        public static string OptionDisplayEnableTrace {
+        public static string OptionDisplayDebugEnableTrace {
             get {
-                return ResourceManager.GetString("OptionDisplayEnableTrace", resourceCulture);
+                return ResourceManager.GetString("OptionDisplayDebugEnableTrace", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Enable tracer.
         /// </summary>
-        public static string OptionDisplayEnableTracer {
+        public static string OptionDisplayDebugEnableTracer {
             get {
-                return ResourceManager.GetString("OptionDisplayEnableTracer", resourceCulture);
+                return ResourceManager.GetString("OptionDisplayDebugEnableTracer", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Firebird Log file.
         /// </summary>
-        public static string OptionDisplayFbLogFile {
+        public static string OptionDisplayDebugFbLogFile {
             get {
-                return ResourceManager.GetString("OptionDisplayFbLogFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Include solution connections.
-        /// </summary>
-        public static string OptionDisplayIncludeAppConnections {
-            get {
-                return ResourceManager.GetString("OptionDisplayIncludeAppConnections", resourceCulture);
+                return ResourceManager.GetString("OptionDisplayDebugFbLogFile", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Log file.
         /// </summary>
-        public static string OptionDisplayLogFile {
+        public static string OptionDisplayDebugLogFile {
             get {
-                return ResourceManager.GetString("OptionDisplayLogFile", resourceCulture);
+                return ResourceManager.GetString("OptionDisplayDebugLogFile", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Persistent validation flags.
         /// </summary>
-        public static string OptionDisplayPersistentValidation {
+        public static string OptionDisplayDebugPersistentValidation {
             get {
-                return ResourceManager.GetString("OptionDisplayPersistentValidation", resourceCulture);
+                return ResourceManager.GetString("OptionDisplayDebugPersistentValidation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable diagnostics.
+        /// </summary>
+        public static string OptionDisplayGeneralEnableDiagnostics {
+            get {
+                return ResourceManager.GetString("OptionDisplayGeneralEnableDiagnostics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable task logging.
+        /// </summary>
+        public static string OptionDisplayGeneralEnableTaskLog {
+            get {
+                return ResourceManager.GetString("OptionDisplayGeneralEnableTaskLog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include solution connections.
+        /// </summary>
+        public static string OptionDisplayGeneralIncludeAppConnections {
+            get {
+                return ResourceManager.GetString("OptionDisplayGeneralIncludeAppConnections", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Initial state of Diagram Pane.
         /// </summary>
-        public static string OptionDisplayShowDiagramPane {
+        public static string OptionDisplayGeneralShowDiagramPane {
             get {
-                return ResourceManager.GetString("OptionDisplayShowDiagramPane", resourceCulture);
+                return ResourceManager.GetString("OptionDisplayGeneralShowDiagramPane", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Validate App.config.
         /// </summary>
-        public static string OptionDisplayValidateConfig {
+        public static string OptionDisplayGeneralValidateConfig {
             get {
-                return ResourceManager.GetString("OptionDisplayValidateConfig", resourceCulture);
+                return ResourceManager.GetString("OptionDisplayGeneralValidateConfig", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Update legacy edmx models.
         /// </summary>
-        public static string OptionDisplayValidateEdmx {
+        public static string OptionDisplayGeneralValidateEdmx {
             get {
-                return ResourceManager.GetString("OptionDisplayValidateEdmx", resourceCulture);
+                return ResourceManager.GetString("OptionDisplayGeneralValidateEdmx", resourceCulture);
             }
         }
         

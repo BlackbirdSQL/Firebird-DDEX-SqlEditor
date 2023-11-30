@@ -26,7 +26,7 @@ public sealed class QEReaderDataStorage : IBQEStorage, IBDataStorage, IDisposabl
 
 	private long _RowCount;
 
-	private readonly ArrayList _ColumnsArray;
+	private readonly ArrayList _ColumnInfoArray;
 
 	private bool _DataStorageEnabled = true;
 
@@ -83,14 +83,14 @@ public sealed class QEReaderDataStorage : IBQEStorage, IBDataStorage, IDisposabl
 	public QEReaderDataStorage()
 	{
 		_RowCount = 0L;
-		_ColumnsArray = new ArrayList();
+		_ColumnInfoArray = new ArrayList();
 		_IsClosed = true;
 		_DataStorageEnabled = true;
 	}
 
 	public void StartConsumingDataWithoutStoring()
 	{
-		Tracer.Trace(GetType(), "QEDiskDataStorage.StartConsumingDataWithoutStoring", "", null);
+		// Tracer.Trace(GetType(), "QEDiskDataStorage.StartConsumingDataWithoutStoring", "", null);
 		if (_StorageReader == null)
 		{
 			InvalidOperationException ex = new(QEResources.ErrQEStorageNoReader);
@@ -127,12 +127,12 @@ public sealed class QEReaderDataStorage : IBQEStorage, IBDataStorage, IDisposabl
 	public long RowCount => _RowCount;
 
 
-	public int ColumnCount => _ColumnsArray.Count;
+	public int ColumnCount => _ColumnInfoArray.Count;
 
 
 	public IBColumnInfo GetColumnInfo(int iCol)
 	{
-		return (IBColumnInfo)_ColumnsArray[iCol];
+		return (IBColumnInfo)_ColumnInfoArray[iCol];
 	}
 
 	public bool IsClosed()
@@ -140,7 +140,7 @@ public sealed class QEReaderDataStorage : IBQEStorage, IBDataStorage, IDisposabl
 		return _IsClosed;
 	}
 
-	public void InitStorage(IDataReader reader)
+	public void InitStorage(IDataReader reader, bool textBased)
 	{
 		if (reader == null)
 		{
@@ -149,12 +149,12 @@ public sealed class QEReaderDataStorage : IBQEStorage, IBDataStorage, IDisposabl
 			throw ex;
 		}
 
-		_StorageReader = new StorageDataReader(reader);
+		_StorageReader = new StorageDataReader(reader, textBased ? this : null);
 		_StorageReader.GetSchemaTable();
 		int fieldCount = _StorageReader.FieldCount;
 		for (int i = 0; i < fieldCount; i++)
 		{
-			_ColumnsArray.Add(new ColumnInfo(_StorageReader, i));
+			_ColumnInfoArray.Add(new ColumnInfo(_StorageReader, i));
 		}
 	}
 
@@ -185,7 +185,7 @@ public sealed class QEReaderDataStorage : IBQEStorage, IBDataStorage, IDisposabl
 
 	private void ConsumeDataWithoutStoring()
 	{
-		Tracer.Trace(GetType(), "QEReaderDataStorage.ConsumeDataWithoutStoring", "", null);
+		// Tracer.Trace(GetType(), "QEReaderDataStorage.ConsumeDataWithoutStoring", "", null);
 		_IsClosed = false;
 		while (_DataStorageEnabled && _StorageReader.Read())
 		{
@@ -198,10 +198,10 @@ public sealed class QEReaderDataStorage : IBQEStorage, IBDataStorage, IDisposabl
 
 	private void GetDataFromReader()
 	{
-		Tracer.Trace(GetType(), "QEReaderDataStorage.GetDataFromReader", "", null);
+		// Tracer.Trace(GetType(), "QEReaderDataStorage.GetDataFromReader", "", null);
 		try
 		{
-			Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "QEReaderDataStorage.GetDataFromReader", "_DataStorageEnabled = {0}", _DataStorageEnabled);
+			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "QEReaderDataStorage.GetDataFromReader", "_DataStorageEnabled = {0}", _DataStorageEnabled);
 			while (_DataStorageEnabled && _StorageReader.Read())
 			{
 				Interlocked.Increment(ref _RowCount);

@@ -508,7 +508,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 				dslSchema = new DslTriggerColumns(LinkageParser.EnsureInstance(connection, schemaFactoryType));
 				break;
 			case "VIEWCOLUMNS":
-				dslSchema = new DslViewColumns(LinkageParser.EnsureInstance(connection, schemaFactoryType));
+				dslSchema = new DslViewColumns();
 				break;
 			case "GENERATORS":
 			case "TRIGGERDEPENDENCIES":
@@ -584,7 +584,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 				dslSchema = new DslTriggerColumns(LinkageParser.EnsureInstance(connection, schemaFactoryType));
 				break;
 			case "VIEWCOLUMNS":
-				dslSchema = new DslViewColumns(LinkageParser.EnsureInstance(connection, schemaFactoryType));
+				dslSchema = new DslViewColumns();
 				break;
 			case "GENERATORS":
 			case "TRIGGERDEPENDENCIES":
@@ -630,6 +630,8 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 			case "RawGenerators":
 			case "RawTriggerDependencies":
 			case "RawTriggers":
+			case "Views":
+			case "ViewColumns":
 				return false;
 			default:
 				break;

@@ -528,9 +528,6 @@
   <data name="OptionDescriptionContextStatusBarPosition" xml:space="preserve">
     <value>The position of the status base in the editor window.</value>
   </data>
-  <data name="OptionDescriptionEnableIntellisense" xml:space="preserve">
-    <value>Enables editor code window Intellisense. Note: The editor currently uses built-in language services so syntax errors may show on valid Firebird grammar.</value>
-  </data>
   <data name="OptionDescriptionExecutionCostLimit" xml:space="preserve">
     <value>Overrides the currently configured query governor cost limit value for the current connection. Valid range: 'Min[imum]', 'Default' or 0 to 'Max[imum]' or 100000. (Case insensitive)</value>
   </data>
@@ -594,7 +591,13 @@
   <data name="OptionDescriptionExecutionTimeout" xml:space="preserve">
     <value>Valid range: 'Default', 'Min[imum]', 'Unlimited' or 0 (no time-out) to 'Max[imum]' or 32000 seconds. (Case insensitive)</value>
   </data>
-  <data name="OptionDescriptionPromptToSave" xml:space="preserve">
+  <data name="OptionDescriptionGeneralEnableIntellisense" xml:space="preserve">
+    <value>Enables editor code window Intellisense. Note: The editor currently uses built-in language services so syntax errors may show on valid Firebird grammar.</value>
+  </data>
+  <data name="OptionDescriptionGeneralExecuteQueryOnOpen" xml:space="preserve">
+    <value>Executes a table select or view definition query automatically on open.</value>
+  </data>
+  <data name="OptionDescriptionGeneralPromptToSave" xml:space="preserve">
     <value>Prompt to save unsaved SQL query windows on close.</value>
   </data>
   <data name="OptionDescriptionResultsDirectory" xml:space="preserve">
@@ -702,9 +705,6 @@
   <data name="OptionDisplayContextStatusBarPosition" xml:space="preserve">
     <value>Status bar position</value>
   </data>
-  <data name="OptionDisplayEnableIntellisense" xml:space="preserve">
-    <value>Enable Intellisense</value>
-  </data>
   <data name="OptionDisplayExecutionCostLimit" xml:space="preserve">
     <value>SET QUERY_GOVERNOR_COST_LIMIT</value>
   </data>
@@ -768,7 +768,13 @@
   <data name="OptionDisplayExecutionTimeout" xml:space="preserve">
     <value>Execution time-out</value>
   </data>
-  <data name="OptionDisplayPromptToSave" xml:space="preserve">
+  <data name="OptionDisplayGeneralEnableIntellisense" xml:space="preserve">
+    <value>Enable Intellisense</value>
+  </data>
+  <data name="OptionDisplayGeneralExecuteQueryOnOpen" xml:space="preserve">
+    <value>Auto-execute select query</value>
+  </data>
+  <data name="OptionDisplayGeneralPromptToSave" xml:space="preserve">
     <value>Prompt to save</value>
   </data>
   <data name="OptionDisplayResultsDirectory" xml:space="preserve">

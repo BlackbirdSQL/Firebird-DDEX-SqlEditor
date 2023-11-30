@@ -16,12 +16,12 @@ using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
+using BlackbirdSql.Core.Model.Enums;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 using IServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
-using MonikerAgent = BlackbirdSql.Common.Model.MonikerAgent;
 
 
 namespace BlackbirdSql.Common.Ctl;
@@ -55,9 +55,9 @@ public class DesignerOnlineServices : AbstractDesignerServices, IBDesignerOnline
 	// Microsoft.VisualStudio.Data.Tools.Package, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 	// Microsoft.VisualStudio.Data.Tools.Package.Explorers.SqlServerObjectExplorer.SqlServerObjectExplorerServiceHelper.OpenOnlineEditor
 	// combined with local methods
-	public static void OpenOnlineEditor(DbConnectionStringBuilder csb, EnModelObjectType objectType, bool alternate,
-		IList<string> identifierList, string script, Guid editorFactory, Action<IServiceProvider> documentLoadedCallback,
-		string physicalViewName = null)
+	public static void OpenOnlineEditor(DbConnectionStringBuilder csb, EnModelObjectType objectType,
+		IList<string> identifierList, EnModelTargetType targetType, string script, Guid editorFactory,
+		Action<IServiceProvider> documentLoadedCallback, string physicalViewName = null)
 	{
 		bool result = false;
 
@@ -65,9 +65,8 @@ public class DesignerOnlineServices : AbstractDesignerServices, IBDesignerOnline
 			editorFactory = new(SystemData.MandatedSqlEditorFactoryGuid);
 
 		string mkDocument = null;
-		objectType += (alternate ? 20 : 0);
 		EnModelObjectType elementType = objectType;
-		DatabaseLocation dbl = new(csb, alternate);
+		DatabaseLocation dbl = new(csb, targetType);
 		HashSet<NodeElementDescriptor> originalObjects = null;
 		bool flag = false;
 		IList<string> identifierArray = null;
@@ -87,15 +86,15 @@ public class DesignerOnlineServices : AbstractDesignerServices, IBDesignerOnline
 		}
 		if (string.IsNullOrEmpty(mkDocument))
 		{
-			mkDocument = MonikerAgent.BuildMiscDocumentMoniker(dbl.DataSource, dbl.Database,
-				elementType, ref identifierArray, false, false);
+			mkDocument = MonikerAgent.BuildMiscDocumentMonikerPath(dbl.DataSource, dbl.Database,
+				elementType, ref identifierArray, targetType, false);
 
 
 			flag = true;
 			AddInflightOpen(dbl, new NodeElementDescriptor(elementType, identifierArray), mkDocument);
 		}
 
-		RaiseBeforeOpenDocument(mkDocument, dbl, identifierArray, objectType, S_BeforeOpenDocumentHandler);
+		RaiseBeforeOpenDocument(mkDocument, dbl, identifierArray, objectType, targetType, S_BeforeOpenDocumentHandler);
 
 
 		
@@ -161,7 +160,8 @@ public class DesignerOnlineServices : AbstractDesignerServices, IBDesignerOnline
 
 	// Microsoft.VisualStudio.Data.Tools.Package, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 	// Microsoft.VisualStudio.Data.Tools.Package.Explorers.SqlServerObjectExplorer.SqlServerObjectExplorerService:ViewCode()
-	public void ViewCode(DbConnectionStringBuilder csb, EnModelObjectType objectType, bool alternate, IList<string> identifierList, string script)
+	public void ViewCode(DbConnectionStringBuilder csb, EnModelObjectType objectType,
+		IList<string> identifierList, EnModelTargetType targetType, string script)
 	{
 		// Sanity check.
 		// Currently our only entry point to AbstractDesignerServices whose warnings are suppressed.
@@ -176,7 +176,7 @@ public class DesignerOnlineServices : AbstractDesignerServices, IBDesignerOnline
 
 		Guid clsidEditorFactory = new Guid(SystemData.MandatedSqlEditorFactoryGuid);
 
-		OpenOnlineEditor(csb, objectType, alternate, identifierList, script, clsidEditorFactory, null, null);
+		OpenOnlineEditor(csb, objectType, identifierList, targetType, script, clsidEditorFactory, null, null);
 	}
 
 

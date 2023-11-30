@@ -12,7 +12,7 @@ using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Core;
-
+using BlackbirdSql.Core.Ctl;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;

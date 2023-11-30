@@ -124,29 +124,74 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &amp;New Global Query.
+        ///   Looks up a localized string similar to &amp;Copy Function.
         /// </summary>
-        public static string CommandProvider_NewQuery {
+        public static string CommandProvider_CopyFunctionNode {
             get {
-                return ResourceManager.GetString("CommandProvider_NewQuery", resourceCulture);
+                return ResourceManager.GetString("CommandProvider_CopyFunctionNode", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &amp;New System Query.
+        ///   Looks up a localized string similar to &amp;Copy Procedure.
         /// </summary>
-        public static string CommandProvider_NewSystemQuery {
+        public static string CommandProvider_CopyStoredProcedureNode {
             get {
-                return ResourceManager.GetString("CommandProvider_NewSystemQuery", resourceCulture);
+                return ResourceManager.GetString("CommandProvider_CopyStoredProcedureNode", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &amp;New User Query.
+        ///   Looks up a localized string similar to &amp;Copy Table.
         /// </summary>
-        public static string CommandProvider_NewUserQuery {
+        public static string CommandProvider_CopyTableNode {
             get {
-                return ResourceManager.GetString("CommandProvider_NewUserQuery", resourceCulture);
+                return ResourceManager.GetString("CommandProvider_CopyTableNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Copy View.
+        /// </summary>
+        public static string CommandProvider_CopyViewNode {
+            get {
+                return ResourceManager.GetString("CommandProvider_CopyViewNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;New Designer Query.
+        /// </summary>
+        public static string CommandProvider_NewGlobalDesigner {
+            get {
+                return ResourceManager.GetString("CommandProvider_NewGlobalDesigner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New SQL &amp;Query.
+        /// </summary>
+        public static string CommandProvider_NewSqlQuery {
+            get {
+                return ResourceManager.GetString("CommandProvider_NewSqlQuery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;New System Designer Query.
+        /// </summary>
+        public static string CommandProvider_NewSystemDesigner {
+            get {
+                return ResourceManager.GetString("CommandProvider_NewSystemDesigner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;New User Designer Query.
+        /// </summary>
+        public static string CommandProvider_NewUserDesigner {
+            get {
+                return ResourceManager.GetString("CommandProvider_NewUserDesigner", resourceCulture);
             }
         }
         
@@ -223,6 +268,15 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &amp;Open Table SQL Query.
+        /// </summary>
+        public static string CommandProvider_OpenTableScript {
+            get {
+                return ResourceManager.GetString("CommandProvider_OpenTableScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &amp;Open Create Trigger Expression.
         /// </summary>
         public static string CommandProvider_OpenTriggerScript {
@@ -268,6 +322,24 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open Table in &amp;Designer.
+        /// </summary>
+        public static string CommandProvider_RetrieveTableDesignerData {
+            get {
+                return ResourceManager.GetString("CommandProvider_RetrieveTableDesignerData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open View in &amp;Designer.
+        /// </summary>
+        public static string CommandProvider_RetrieveViewDesignerData {
+            get {
+                return ResourceManager.GetString("CommandProvider_RetrieveViewDesignerData", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project[{0}] {1}.
         /// </summary>
         public static string ConnectionLocatorProjectDatasetId {
@@ -282,6 +354,15 @@ namespace BlackbirdSql.Core.Properties {
         public static string EngineTypeIconNotfound {
             get {
                 return ResourceManager.GetString("EngineTypeIconNotfound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to save file: {0}.
+        /// </summary>
+        public static string Exception_FailedToSaveFile {
+            get {
+                return ResourceManager.GetString("Exception_FailedToSaveFile", resourceCulture);
             }
         }
         

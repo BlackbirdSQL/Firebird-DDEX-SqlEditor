@@ -138,14 +138,29 @@
   <data name="CommandProvider_CancelExecution" xml:space="preserve">
     <value>SqlViewTextObjectCommandProvider_CancelExecution</value>
   </data>
-  <data name="CommandProvider_NewQuery" xml:space="preserve">
-    <value>&amp;New Global Query</value>
+  <data name="CommandProvider_CopyFunctionNode" xml:space="preserve">
+    <value>&amp;Copy Function</value>
   </data>
-  <data name="CommandProvider_NewSystemQuery" xml:space="preserve">
-    <value>&amp;New System Query</value>
+  <data name="CommandProvider_CopyStoredProcedureNode" xml:space="preserve">
+    <value>&amp;Copy Procedure</value>
   </data>
-  <data name="CommandProvider_NewUserQuery" xml:space="preserve">
-    <value>&amp;New User Query</value>
+  <data name="CommandProvider_CopyTableNode" xml:space="preserve">
+    <value>&amp;Copy Table</value>
+  </data>
+  <data name="CommandProvider_CopyViewNode" xml:space="preserve">
+    <value>&amp;Copy View</value>
+  </data>
+  <data name="CommandProvider_NewGlobalDesigner" xml:space="preserve">
+    <value>&amp;New Designer Query</value>
+  </data>
+  <data name="CommandProvider_NewSqlQuery" xml:space="preserve">
+    <value>New SQL &amp;Query</value>
+  </data>
+  <data name="CommandProvider_NewSystemDesigner" xml:space="preserve">
+    <value>&amp;New System Designer Query</value>
+  </data>
+  <data name="CommandProvider_NewUserDesigner" xml:space="preserve">
+    <value>&amp;New User Designer Query</value>
   </data>
   <data name="CommandProvider_NoSourceAvailable" xml:space="preserve">
     <value>No source available</value>
@@ -171,6 +186,9 @@
   <data name="CommandProvider_OpenSystemScript" xml:space="preserve">
     <value>&amp;Open System Script</value>
   </data>
+  <data name="CommandProvider_OpenTableScript" xml:space="preserve">
+    <value>&amp;Open Table SQL Query</value>
+  </data>
   <data name="CommandProvider_OpenTriggerScript" xml:space="preserve">
     <value>&amp;Open Create Trigger Expression</value>
   </data>
@@ -185,6 +203,12 @@
   </data>
   <data name="CommandProvider_PromptSaveObject" xml:space="preserve">
     <value>SqlViewTextObjectCommandProvider_PromptSaveObject</value>
+  </data>
+  <data name="CommandProvider_RetrieveTableDesignerData" xml:space="preserve">
+    <value>Open Table in &amp;Designer</value>
+  </data>
+  <data name="CommandProvider_RetrieveViewDesignerData" xml:space="preserve">
+    <value>Open View in &amp;Designer</value>
   </data>
   <data name="ConnectionLocatorProjectDatasetId" xml:space="preserve">
     <value>Project[{0}] {1}</value>
@@ -212,6 +236,9 @@
   </data>
   <data name="ExceptionTriggerGeneratorErrorAtColumnIndex" xml:space="preserve">
     <value>Error at Trigger column index: {0}, Generator column index: {1}.</value>
+  </data>
+  <data name="Exception_FailedToSaveFile" xml:space="preserve">
+    <value>Failed to save file: {0}</value>
   </data>
   <data name="IgnoreOnException" xml:space="preserve">
     <value>Retry number {0}. Ignoring Exception: {1}</value>

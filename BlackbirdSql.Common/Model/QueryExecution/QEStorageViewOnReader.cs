@@ -39,7 +39,7 @@ public sealed class QEStorageViewOnReader : AbstractStorageView, IBQEStorageView
 		{
 			if (_MaxBytesToDisplay != value)
 			{
-				Tracer.Trace(GetType(), "QueryExecution", "QEDiskStorageView.MaxNumBytesToDisplay", "value = {0}", value);
+				// Tracer.Trace(GetType(), "QueryExecution", "QEDiskStorageView.MaxNumBytesToDisplay", "value = {0}", value);
 				_MaxBytesToDisplay = value;
 				_SbWork.Capacity = _MaxBytesToDisplay * C_ColumnSizeIndex + C_ColumnSizeIndex;
 			}
@@ -50,7 +50,7 @@ public sealed class QEStorageViewOnReader : AbstractStorageView, IBQEStorageView
 
 	public QEStorageViewOnReader(QEReaderDataStorage readerDataStorage)
 	{
-		Tracer.Trace(GetType(), "QEStorageViewOnReader.QEStorageViewOnReader", "", null);
+		// Tracer.Trace(GetType(), "QEStorageViewOnReader.QEStorageViewOnReader", "", null);
 		_QeReaderStorage = readerDataStorage;
 		_StorageReader = readerDataStorage.StorageReader;
 		int num = readerDataStorage.ColumnCount;
@@ -101,7 +101,8 @@ public sealed class QEStorageViewOnReader : AbstractStorageView, IBQEStorageView
 		{
 			if (_BytesGetFlags[iCol])
 			{
-				return _StorageReader.GetBytesWithMaxCapacity(iCol, MaxNumBytesToDisplay);
+				return _StorageReader.GetSerializedWithMaxCapacity(iCol, MaxNumBytesToDisplay);
+				// return _StorageReader.GetBytesWithMaxCapacity(iCol, MaxNumBytesToDisplay);
 			}
 
 			if (_CharsGetFlags[iCol])

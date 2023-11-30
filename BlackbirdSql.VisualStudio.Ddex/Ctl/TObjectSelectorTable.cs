@@ -4,17 +4,15 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-
 using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Ctl.Diagnostics;
-
+using BlackbirdSql.Core.Model.Enums;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
-
 
 // =========================================================================================================
 //											TObjectSelectorTable Class
@@ -99,7 +97,7 @@ public class TObjectSelectorTable : AdoDotNetObjectSelector
 	{
 		// Tracer.Trace(GetType(), "GetSchema()", "typeName: {0}", typeName);
 
-		if (CommandProperties.CommandNodeSystemType != CommandProperties.EnNodeSystemType.None
+		if (CommandProperties.CommandNodeSystemType != EnNodeSystemType.Undefined
 			&& parameters != null && parameters.Length > 0 && (string)parameters[0] == "Tables"
 			&& (restrictions == null || restrictions.Length < 3 || (restrictions.Length > 2 && restrictions[2] == null)))
 		{
@@ -114,10 +112,10 @@ public class TObjectSelectorTable : AdoDotNetObjectSelector
 			}
 			switch (CommandProperties.CommandNodeSystemType)
 			{
-				case CommandProperties.EnNodeSystemType.User:
+				case EnNodeSystemType.User:
 					restrictions[3] = "TABLE";
 					break;
-				case CommandProperties.EnNodeSystemType.System:
+				case EnNodeSystemType.System:
 					restrictions[3] = "SYSTEM TABLE";
 					break;
 				default:
@@ -126,7 +124,7 @@ public class TObjectSelectorTable : AdoDotNetObjectSelector
 			}
 		}
 		
-		CommandProperties.CommandNodeSystemType = CommandProperties.EnNodeSystemType.None;
+		CommandProperties.CommandNodeSystemType = EnNodeSystemType.Undefined;
 
 		return null;
 	}

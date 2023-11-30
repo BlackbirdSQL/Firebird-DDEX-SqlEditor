@@ -16,7 +16,7 @@
 						HorizontalAlignment="Left" VerticalAlignment="Top" IsThreeState="False"
 						Checked="CbEnableTrace_Checked" Unchecked="CbEnableTrace_Unchecked"/>
 					<TextBox x:Name="LblEnableTrace"
-						Text="{x:Static ComRes:AttributeResources.OptionDescriptionEnableTrace}"
+						Text="{x:Static ComRes:AttributeResources.OptionDescriptionDebugEnableTrace}"
 						Margin="6,0,5,0" IsReadOnly="True" IsEnabled="False" TextWrapping="Wrap" 
 						BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Stretch" Padding="0" VerticalAlignment="Top" />
 					<CheckBox x:Name="CbEnableTracer" Content="Enable _tracer"
@@ -24,7 +24,7 @@
 						HorizontalAlignment="Left" VerticalAlignment="Top" IsThreeState="False"
 						Checked="CbEnableTracer_Checked" Unchecked="CbEnableTracer_Unchecked"/>
 					<TextBox x:Name="LblEnableTracer"
-						Text="{x:Static ComRes:AttributeResources.OptionDescriptionEnableTracer}"
+						Text="{x:Static ComRes:AttributeResources.OptionDescriptionDebugEnableTracer}"
 						Margin="6,0,5,0" IsReadOnly="True" IsEnabled="False" TextWrapping="Wrap" 
 						BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Stretch" Padding="0" VerticalAlignment="Top" />
 					<CheckBox x:Name="CbPersistentValidation" Content="Persistent _validation flags"
@@ -32,7 +32,7 @@
 						HorizontalAlignment="Left" VerticalAlignment="Top" IsThreeState="False"
 						Checked="CbPersistentValidation_Checked" Unchecked="CbPersistentValidation_Unchecked"/>
 					<TextBox x:Name="LblPersistentValidation"
-						Text="{x:Static ComRes:AttributeResources.OptionDescriptionPersistentValidation}"
+						Text="{x:Static ComRes:AttributeResources.OptionDescriptionDebugPersistentValidation}"
 						Margin="6,0,5,0" IsReadOnly="True" IsEnabled="False" TextWrapping="Wrap" 
 						BorderBrush="{x:Null}" Background="{x:Null}" HorizontalAlignment="Stretch" Padding="0" VerticalAlignment="Top" />
 					<CheckBox x:Name="CbEnableFbDiagnostics" Content="Enable _Firebird diagnostics" HorizontalAlignment="Left"
@@ -40,7 +40,7 @@
 						IsThreeState="False"
 						Checked="CbEnableFbDiagnostics_Checked" Unchecked="CbEnableFbDiagnostics_Unchecked"/>
 					<TextBox  x:Name="LblEnableFbDiagnostics"
-						Text="{x:Static ComRes:AttributeResources.OptionDescriptionEnableFbDiagnostics}"
+						Text="{x:Static ComRes:AttributeResources.OptionDescriptionDebugEnableFbDiagnostics}"
 						Margin="11,0,5,0" IsReadOnly="True" IsEnabled="False" TextWrapping="Wrap" BorderBrush="{x:Null}"
 						Background="{x:Null}" HorizontalAlignment="Stretch" Padding="0" VerticalAlignment="Top" />
 					<CheckBox x:Name="CbEnableDiagnosticsLog" Content="Enable _diagnostics logging" HorizontalAlignment="Left"
@@ -48,27 +48,27 @@
 						IsThreeState="False"
 						Checked="CbEnableDiagnosticsLog_Checked" Unchecked="CbEnableDiagnosticsLog_Unchecked"/>
 					<TextBox  x:Name="LblEnableDiagnosticsLog"
-						Text="{x:Static ComRes:AttributeResources.OptionDescriptionEnableDiagnosticsLog}"
+						Text="{x:Static ComRes:AttributeResources.OptionDescriptionDebugEnableDiagnosticsLog}"
 						Margin="11,0,5,0" IsReadOnly="True" IsEnabled="False" TextWrapping="Wrap" BorderBrush="{x:Null}"
 						Background="{x:Null}" HorizontalAlignment="Stretch" Padding="0" VerticalAlignment="Top" />
-					<GroupBox x:Name="PnlLogFile" Header="{x:Static ComRes:AttributeResources.OptionDisplayLogFile}"
+					<GroupBox x:Name="PnlLogFile" Header="{x:Static ComRes:AttributeResources.OptionDisplayDebugLogFile}"
 							  Margin="6,10,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" >
 						<StackPanel>
 							<TextBox x:Name="TxtLogFile" HorizontalAlignment="Stretch"
 								Margin="5,10,5,0" TextWrapping="Wrap" VerticalAlignment="Top"
 								TextChanged="TxtLogFile_TextChanged"/>
 							<TextBox x:Name="LblLogFile"
-								Text="{x:Static ComRes:AttributeResources.OptionDescriptionLogFile}"
+								Text="{x:Static ComRes:AttributeResources.OptionDescriptionDebugLogFile}"
 								Margin="7,0,5,5" IsReadOnly="True" IsEnabled="False" TextWrapping="Wrap" BorderBrush="{x:Null}"
 								Background="{x:Null}" HorizontalAlignment="Left" Padding="0" VerticalAlignment="Top" />
 						</StackPanel>
 					</GroupBox>
-					<GroupBox x:Name="PnlFbLogFile" Header="{x:Static ComRes:AttributeResources.OptionDisplayFbLogFile}"
+					<GroupBox x:Name="PnlFbLogFile" Header="{x:Static ComRes:AttributeResources.OptionDisplayDebugFbLogFile}"
 							  Margin="6,10,5,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" >
 						<StackPanel>
 							<TextBox x:Name="TxtFbLogFile" HorizontalAlignment="Stretch" Margin="5,10,5,0" TextWrapping="Wrap" VerticalAlignment="Top" />
 							<TextBox x:Name="LblFbLogFile"
-								Text="{x:Static ComRes:AttributeResources.OptionDescriptionFbLogFile}"
+								Text="{x:Static ComRes:AttributeResources.OptionDescriptionDebugFbLogFile}"
 								Margin="7,0,5,5" IsReadOnly="True" IsEnabled="False" TextWrapping="Wrap" BorderBrush="{x:Null}"
 								Background="{x:Null}" HorizontalAlignment="Left" Padding="0" VerticalAlignment="Top" />
 						</StackPanel>

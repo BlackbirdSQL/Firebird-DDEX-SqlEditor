@@ -25,6 +25,7 @@ public interface IBLiveUserSettings
 
 
 	bool EditorEnableIntellisense { get; set; }
+	bool EditorExecuteQueryOnOpen { get; set; }
 	bool EditorPromptToSave { get; set; }
 
 	// Editor ContextSettingsModel

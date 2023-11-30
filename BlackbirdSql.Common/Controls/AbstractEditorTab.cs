@@ -600,8 +600,8 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 				(serviceProvider.GetService(typeof(SVsTrackSelectionEx)) as IVsTrackSelectionEx).OnSelectChange(_SavedSelection);
 				_SavedSelection = null;
 			}
-			int property = _CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_SPFrame, out var pvar2);
-			if (!Native.Succeeded(property))
+			int hr = _CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_SPFrame, out var pvar2);
+			if (!Native.Succeeded(hr))
 			{
 				return;
 			}
@@ -610,28 +610,28 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 			{
 				IVsHierarchy o = null;
 				uint itemid = 0u;
-				property = _CurrentFrame.GetProperty((int)VsFramePropID.Hierarchy, out var pvar3);
-				if (Native.Succeeded(property))
+				hr = _CurrentFrame.GetProperty((int)VsFramePropID.Hierarchy, out var pvar3);
+				if (Native.Succeeded(hr))
 				{
 					o = (IVsHierarchy)pvar3;
-					property = _CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_ItemID, out var pvar4);
-					if (Native.Succeeded(property))
+					hr = _CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_ItemID, out var pvar4);
+					if (Native.Succeeded(hr))
 					{
 						itemid = (uint)(int)pvar4;
 					}
 				}
-				if (!Native.Succeeded(property) || serviceProvider2.GetService(typeof(SVsTrackSelectionEx)) is not IVsTrackSelectionEx vsTrackSelectionEx)
+				if (!Native.Succeeded(hr) || serviceProvider2.GetService(typeof(SVsTrackSelectionEx)) is not IVsTrackSelectionEx vsTrackSelectionEx)
 				{
 					return;
 				}
 				IntPtr pSC = (IntPtr)(-1);
 				IntPtr ppv = IntPtr.Zero;
-				IntPtr iUnknownForObject = Marshal.GetIUnknownForObject(o);
+				IntPtr intPtrUnknown = Marshal.GetIUnknownForObject(o);
 				try
 				{
 					Guid iid = typeof(IVsHierarchy).GUID;
-					property = Marshal.QueryInterface(iUnknownForObject, ref iid, out ppv);
-					if (Native.Succeeded(property))
+					hr = Marshal.QueryInterface(intPtrUnknown, ref iid, out ppv);
+					if (Native.Succeeded(hr))
 					{
 						try
 						{
@@ -646,7 +646,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 				}
 				finally
 				{
-					Marshal.Release(iUnknownForObject);
+					Marshal.Release(intPtrUnknown);
 				}
 			}
 		}

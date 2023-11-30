@@ -1,48 +1,44 @@
-﻿#region Assembly Microsoft.SqlServer.GridControl, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91
-// C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\Microsoft\SQLCommon\Microsoft.SqlServer.GridControl.dll
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.SqlServer.GridControl, Version=16.200.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91
+// Microsoft.SqlServer.Management.UI.Grid.TooltipDataNeededEventArgs
 
 using System;
 using BlackbirdSql.Common.Controls.Enums;
 
 
-// namespace Microsoft.SqlServer.Management.UI.Grid
-namespace BlackbirdSql.Common.Controls.Events
+namespace BlackbirdSql.Common.Controls.Events;
+
+public class TooltipDataNeededEventArgs : EventArgs
 {
-	public class TooltipDataNeededEventArgs : EventArgs
+	private readonly EnHitTestResult m_htResult;
+
+	private readonly long m_rowIndex;
+
+	private readonly int m_colIndex;
+
+	private string m_toolTip;
+
+	public EnHitTestResult HitTest => m_htResult;
+
+	public long RowIndex => m_rowIndex;
+
+	public int ColumnIndex => m_colIndex;
+
+	public string TooltipText
 	{
-		private readonly EnHitTestResult m_htResult;
-
-		private readonly long m_rowIndex;
-
-		private readonly int m_colIndex;
-
-		private string m_toolTip;
-
-		public EnHitTestResult HitTest => m_htResult;
-
-		public long RowIndex => m_rowIndex;
-
-		public int ColumnIndex => m_colIndex;
-
-		public string TooltipText
+		get
 		{
-			get
-			{
-				return m_toolTip;
-			}
-			set
-			{
-				m_toolTip = value;
-			}
+			return m_toolTip;
 		}
-
-		public TooltipDataNeededEventArgs(EnHitTestResult ht, long rowIndex, int colIndex)
+		set
 		{
-			m_htResult = ht;
-			m_rowIndex = rowIndex;
-			m_colIndex = colIndex;
+			m_toolTip = value;
 		}
+	}
+
+	public TooltipDataNeededEventArgs(EnHitTestResult ht, long rowIndex, int colIndex)
+	{
+		m_htResult = ht;
+		m_rowIndex = rowIndex;
+		m_colIndex = colIndex;
 	}
 }

@@ -24,11 +24,11 @@ public class TConnectionUIProperties : TConnectionProperties
 
 	public TConnectionUIProperties() : base()
 	{
-		Tracer.Trace(GetType(), "TConnectionUIProperties.TConnectionUIProperties()");
+		// Tracer.Trace(GetType(), "TConnectionUIProperties.TConnectionUIProperties()");
 	}
 
 	public TConnectionUIProperties(IVsDataProvider site) : base(site)
 	{
-		Tracer.Trace(GetType(), "TConnectionUIProperties.TConnectionUIProperties(IVsDataProvider)", "Site type: {0}", site.GetType());
+		// Tracer.Trace(GetType(), "TConnectionUIProperties.TConnectionUIProperties(IVsDataProvider)", "Site type: {0}", site.GetType());
 	}
 }

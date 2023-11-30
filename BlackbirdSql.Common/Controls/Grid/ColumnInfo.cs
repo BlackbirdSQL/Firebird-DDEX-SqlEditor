@@ -9,6 +9,7 @@ using System.Data;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 // namespace Microsoft.SqlServer.Management.UI.Grid
 namespace BlackbirdSql.Common.Controls.Grid;
@@ -180,6 +181,8 @@ public class ColumnInfo : IBColumnInfo
 	public void InitFieldTypes()
 	{
 		string text = DataTypeName.ToLowerInvariant();
+		// if (text.Contains("date"))
+		//	Tracer.Trace(GetType(), "InitFieldTypes()", "Type: {0}.", text);
 		switch (text)
 		{
 			case "varchar":

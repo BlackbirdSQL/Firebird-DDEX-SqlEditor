@@ -12,14 +12,14 @@ using System.Runtime.InteropServices;
 using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
-
+using BlackbirdSql.Core.Model.Enums;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
@@ -434,12 +434,15 @@ public abstract class AbstractDesignerServices
 
 
 
-	protected static void RaiseBeforeOpenDocument(string mkDocument, DatabaseLocation dbl, IList<string> identifierList, EnModelObjectType elementType, EventHandler<BeforeOpenDocumentEventArgs> handlers)
+	protected static void RaiseBeforeOpenDocument(string mkDocument, DatabaseLocation dbl,
+		IList<string> identifierList, EnModelObjectType elementType, EnModelTargetType targetType,
+		EventHandler<BeforeOpenDocumentEventArgs> handlers)
 	{
 		if (handlers == null)
 			return;
 
-		BeforeOpenDocumentEventArgs e = new BeforeOpenDocumentEventArgs(mkDocument, dbl, identifierList, elementType);
+		BeforeOpenDocumentEventArgs e = new BeforeOpenDocumentEventArgs(mkDocument, dbl,
+			identifierList, elementType, targetType);
 
 		handlers(null, e);
 	}
@@ -452,17 +455,17 @@ public abstract class AbstractDesignerServices
 		IVsRunningDocumentTable vsRunningDocumentTable = Controller.DocTable;
 		if (vsRunningDocumentTable != null)
 		{
-			IntPtr intPtr = IntPtr.Zero;
+			IntPtr intPtrUnknown = IntPtr.Zero;
 			try
 			{
-				intPtr = Marshal.GetIUnknownForObject(docData);
-				vsRunningDocumentTable.RegisterAndLockDocument(lockType, moniker, hier, itemid, intPtr, out pdwCookie);
+				intPtrUnknown = Marshal.GetIUnknownForObject(docData);
+				vsRunningDocumentTable.RegisterAndLockDocument(lockType, moniker, hier, itemid, intPtrUnknown, out pdwCookie);
 			}
 			finally
 			{
-				if (intPtr != IntPtr.Zero)
+				if (intPtrUnknown != IntPtr.Zero)
 				{
-					Marshal.Release(intPtr);
+					Marshal.Release(intPtrUnknown);
 				}
 			}
 		}

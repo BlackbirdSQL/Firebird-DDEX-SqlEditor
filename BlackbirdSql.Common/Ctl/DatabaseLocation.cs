@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Model;
+using BlackbirdSql.Core.Model.Enums;
 using Microsoft.VisualStudio.Data.Services;
 
 
@@ -22,13 +23,9 @@ public readonly struct DatabaseLocation
 			if (x.IsEmpty || y.IsEmpty)
 				return x.IsEmpty == y.IsEmpty;
 
-			if (StringComparer.OrdinalIgnoreCase.Compare(x.DataSource, y.DataSource) == 0
-				&& StringComparer.OrdinalIgnoreCase.Compare(x.Database, y.Database) == 0)
-			{
-				return x.Alternate == y.Alternate;
-			}
-
-			return false;
+			return StringComparer.OrdinalIgnoreCase.Compare(x.DataSource, y.DataSource) == 0
+				&& StringComparer.OrdinalIgnoreCase.Compare(x.Database, y.Database) == 0
+				&& x.TargetType == y.TargetType;
 		}
 
 		public int GetHashCode(DatabaseLocation obj)
@@ -39,18 +36,18 @@ public readonly struct DatabaseLocation
 
 	private readonly string _DataSource;
 	private readonly string _Database;
-	private readonly bool _Alternate;
+	private readonly EnModelTargetType _TargetType;
 
 	private readonly int _HashCode;
 
 	public bool IsEmpty => string.IsNullOrWhiteSpace(_DataSource);
 	public string Database => _Database;
 	public string DataSource => _DataSource;
-	public bool Alternate => _Alternate;
+	public EnModelTargetType TargetType => _TargetType;
 
 
 
-	public DatabaseLocation(DbConnectionStringBuilder csb, bool alternate)
+	public DatabaseLocation(DbConnectionStringBuilder csb, EnModelTargetType targetType)
 	{
 		if (csb == null)
 		{
@@ -75,14 +72,14 @@ public readonly struct DatabaseLocation
 		}
 		_DataSource = csa.DataSource;
 		_Database = csa.Database;
-		_Alternate = alternate;
+		_TargetType = targetType;
 
-		string text = _DataSource + "//" + _Database + "//" + (_Alternate ? "Alter" : "");
+		string text = _DataSource + "//" + _Database + "//" + _TargetType.ToString();
 
 		_HashCode = text.ToLowerInvariant().GetHashCode();
 	}
 
-	public DatabaseLocation(IVsDataExplorerNode node, bool alternate)
+	public DatabaseLocation(IVsDataExplorerNode node, EnModelTargetType targetType)
 	{
 		if (node == null)
 		{
@@ -107,9 +104,9 @@ public readonly struct DatabaseLocation
 		}
 		_DataSource = csa.DataSource;
 		_Database = csa.Database;
-		_Alternate = alternate;
+		_TargetType = targetType;
 
-		string text = _DataSource + "//" + _Database + "//" + (_Alternate ? "Alter" : "");
+		string text = _DataSource + "//" + _Database + "//" + _TargetType.ToString();
 
 		_HashCode = text.ToLowerInvariant().GetHashCode();
 	}

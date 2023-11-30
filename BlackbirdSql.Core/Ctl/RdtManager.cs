@@ -13,10 +13,10 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
-using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Properties;
 
 using EnvDTE;
 
@@ -26,7 +26,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 
-namespace BlackbirdSql.Common.Ctl;
+namespace BlackbirdSql.Core.Ctl;
 
 [SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
 	Justification = "Class is UIThread compliant.")]
@@ -396,18 +396,18 @@ public sealed class RdtManager : IDisposable
 		Cmd.CheckForNullReference((object)hierarchy, "hierarchy");
 		Cmd.CheckForEmptyString(oldMkDoc, "oldMkDoc");
 		Cmd.CheckForEmptyString(newMkDoc, "newMkDoc");
-		IntPtr iUnknownForObject = Marshal.GetIUnknownForObject(hierarchy);
+		IntPtr intPtrUnknown = Marshal.GetIUnknownForObject(hierarchy);
 		IntPtr ppv;
 		try
 		{
 			Guid iid = typeof(IVsHierarchy).GUID;
-			Marshal.QueryInterface(iUnknownForObject, ref iid, out ppv);
+			Marshal.QueryInterface(intPtrUnknown, ref iid, out ppv);
 		}
 		finally
 		{
-			if (iUnknownForObject != IntPtr.Zero)
+			if (intPtrUnknown != IntPtr.Zero)
 			{
-				Marshal.Release(iUnknownForObject);
+				Marshal.Release(intPtrUnknown);
 			}
 		}
 
@@ -483,7 +483,7 @@ public sealed class RdtManager : IDisposable
 				Native.ThrowOnFailure(runningDocumentTable.NotifyOnBeforeSave(rdtCookie));
 				if (vsPersistDocData.SaveDocData(VSSAVEFLAGS.VSSAVE_Save, out var _, out var pfSaveCanceled) != 0 || pfSaveCanceled != 0)
 				{
-					InvalidOperationException ex = new(string.Format(CultureInfo.CurrentCulture, ControlsResources.Exception_FailedToSaveFile, text));
+					InvalidOperationException ex = new(string.Format(CultureInfo.CurrentCulture, Resources.Exception_FailedToSaveFile, text));
 					Diag.Dug(ex);
 					throw ex;
 				}

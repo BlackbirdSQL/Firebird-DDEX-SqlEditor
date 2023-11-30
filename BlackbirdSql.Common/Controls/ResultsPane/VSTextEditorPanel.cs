@@ -6,15 +6,18 @@ using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Events;
+using BlackbirdSql.Common.Ctl.Structs;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Enums;
 
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -120,11 +123,11 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 				_shouldBeReadOnly = value;
 				if (_TextViewCtl.IsHandleCreated)
 				{
-					Native.ThrowOnFailure(_TextViewCtl.TextBuffer.TextStream.GetStateFlags(out uint pdwReadOnlyFlags));
+					_ = Native.ThrowOnFailure(_TextViewCtl.TextBuffer.TextStream.GetStateFlags(out uint pdwReadOnlyFlags));
 					uint num = !value ? pdwReadOnlyFlags & 0xFFFFFFFEu : pdwReadOnlyFlags | (uint)BUFFERSTATEFLAGS.BSF_USER_READONLY;
 					if (num != pdwReadOnlyFlags)
 					{
-						Native.ThrowOnFailure(_TextViewCtl.TextBuffer.TextStream.SetStateFlags(num));
+						_ = Native.ThrowOnFailure(_TextViewCtl.TextBuffer.TextStream.SetStateFlags(num));
 					}
 				}
 			}
@@ -215,14 +218,14 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 			try
 			{
-				Native.ThrowOnFailure(vsTextManager.GetRegisteredMarkerTypeID(ref VS.CLSID_TSqlEditorMessageErrorMarker, out ShellTextBuffer.markerTypeError));
+				_ = Native.ThrowOnFailure(vsTextManager.GetRegisteredMarkerTypeID(ref VS.CLSID_TSqlEditorMessageErrorMarker, out ShellTextBuffer.markerTypeError));
 			}
 			catch
 			{
 			}
 			finally
 			{
-				Marshal.ReleaseComObject(vsTextManager);
+				_ = Marshal.ReleaseComObject(vsTextManager);
 			}
 		}
 
@@ -236,16 +239,61 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		public void ScrollTextViewToMaxScrollUnit()
 		{
-			// Tracer.Trace(GetType(), "VSTextEditorTabPage.ScrollTextViewToMaxScrollUnit", "", null);
 			if (!IsHandleCreated)
 			{
 				CreateHandle();
 			}
 
-			Native.ThrowOnFailure(_TextViewCtl.TextView.GetScrollInfo(1, out var _, out var piMaxUnit, out var piVisibleUnits, out var _));
-			int iFirstVisibleUnit = Math.Max(0, piMaxUnit - piVisibleUnits);
-			Native.ThrowOnFailure(_TextViewCtl.TextView.SetScrollPosition(1, iFirstVisibleUnit));
+			_ = Task.Run(() => ScrollTextViewToMaxScrollUnitAsync());
 		}
+
+
+
+		protected async Task<bool> ScrollTextViewToMaxScrollUnitAsync()
+		{
+			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+			Native.ThrowOnFailure(_TextViewCtl.TextView.GetScrollInfo(1, out _, out var piMaxUnit, out var piVisibleUnits, out _));
+
+			if (piMaxUnit > 2)
+			{
+				int iFirstVisibleUnit = Math.Max(0, piMaxUnit - piVisibleUnits);
+
+				Native.ThrowOnFailure(_TextViewCtl.TextView.SetScrollPosition(1, iFirstVisibleUnit));
+			}
+
+			return true;
+		}
+
+
+
+		public void ScrollTextViewToTop()
+		{
+			if (!IsHandleCreated)
+			{
+				CreateHandle();
+			}
+
+			_ = Task.Run(() => ScrollTextViewToTopAsync());
+		}
+
+
+
+		protected async Task<bool> ScrollTextViewToTopAsync()
+		{
+			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+			Native.ThrowOnFailure(_TextViewCtl.TextView.GetScrollInfo(1, out _, out var piMaxUnit, out _, out _));
+
+			if (piMaxUnit > 2)
+			{
+				Native.ThrowOnFailure(_TextViewCtl.TextView.SetScrollPosition(1, 0));
+			}
+
+			return true;
+		}
+
+
 
 		private void OnShowPopupMenu(object sender, SpecialEditorCommandEventArgs a)
 		{
@@ -259,8 +307,8 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			_TextViewCtl.CreateAndInitEditorWindow(_ObjServiceProvider);
 			if (_shouldBeReadOnly)
 			{
-				Native.ThrowOnFailure(_TextViewCtl.TextBuffer.TextStream.GetStateFlags(out uint pdwReadOnlyFlags));
-				Native.ThrowOnFailure(_TextViewCtl.TextBuffer.TextStream.SetStateFlags(pdwReadOnlyFlags | (uint)BUFFERSTATEFLAGS.BSF_USER_READONLY));
+				_ = Native.ThrowOnFailure(_TextViewCtl.TextBuffer.TextStream.GetStateFlags(out uint pdwReadOnlyFlags));
+				_ = Native.ThrowOnFailure(_TextViewCtl.TextBuffer.TextStream.SetStateFlags(pdwReadOnlyFlags | (uint)BUFFERSTATEFLAGS.BSF_USER_READONLY));
 			}
 		}
 

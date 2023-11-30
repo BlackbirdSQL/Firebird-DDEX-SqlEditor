@@ -142,11 +142,7 @@ public abstract class UserSettings : IBUserSettings
 	/// imports, must be saved to the diagnostics logfile directory.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if DEBUG
-	public static bool EnableSaveExtrapolatedXml => (bool)GetSetting("DdexDebugEnableSaveExtrapolatedXml", true);
-#else
 	public static bool EnableSaveExtrapolatedXml => (bool)GetSetting("DdexDebugEnableSaveExtrapolatedXml", false);
-#endif
 
 
 	/// <summary>
@@ -164,7 +160,6 @@ public abstract class UserSettings : IBUserSettings
 	public static string LogFile => (string)GetSetting("DdexDebugLogFile", "/temp/vsdiag.log");
 
 
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// The Firebird log file path
@@ -173,9 +168,16 @@ public abstract class UserSettings : IBUserSettings
 	public static string FbLogFile => (string)GetSetting("DdexDebugFbLogFile", "/temp/vsdiagfb.log");
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Sets the query designer diagram pane to visible when a table or view's data
+	/// is initially retrieved.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool ShowDiagramPane => (bool)GetSetting("DdexGeneralShowDiagramPane", true);
 
 
-#endregion Property Accessors
+	#endregion Property Accessors
 
 
 

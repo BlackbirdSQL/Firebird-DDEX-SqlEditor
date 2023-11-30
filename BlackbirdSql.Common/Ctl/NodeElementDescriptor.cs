@@ -6,13 +6,14 @@ using System.Collections.ObjectModel;
 using System.Text;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Model.Enums;
 
 namespace BlackbirdSql.Common.Ctl;
 
 public class NodeElementDescriptor
 {
-	private EnModelObjectType _Type;
+	private EnModelObjectType _ObjectType;
+	private EnModelTargetType _TargetType;
 
 	private readonly List<string> _IdentifierList;
 
@@ -36,16 +37,16 @@ public class NodeElementDescriptor
 
 	public bool IgnoreName { get; set; }
 
-	public EnModelObjectType ElementType
+	public EnModelObjectType ObjectType
 	{
-		get
-		{
-			return _Type;
-		}
-		set
-		{
-			_Type = value;
-		}
+		get { return _ObjectType; }
+		set { _ObjectType = value; }
+	}
+
+	public EnModelTargetType TargetType
+	{
+		get { return _TargetType; }
+		set { _TargetType = value; }
 	}
 
 	// public SqlColumnGraphType GraphType { get; set; }
@@ -75,10 +76,7 @@ public class NodeElementDescriptor
 
 	public ReadOnlyCollection<string> ExternalReferenceList => _ExternalReferenceList.AsReadOnly();
 
-	public NodeElementDescriptor(EnModelObjectType elementType, params string[] identifiers)
-		: this(identifiers, elementType, EnNodeElementDescriptorVolatility.None)
-	{
-	}
+
 
 	public NodeElementDescriptor(EnModelObjectType elementType, IEnumerable<string> identifiers)
 		: this(identifiers, elementType, EnNodeElementDescriptorVolatility.None)
@@ -87,30 +85,18 @@ public class NodeElementDescriptor
 
 	public NodeElementDescriptor(NodeElementDescriptor rhs)
 	{
-		_ExternalReferenceList = rhs._ExternalReferenceList;
 		_IdentifierList = rhs._IdentifierList;
-		_Type = rhs._Type;
+		_ObjectType = rhs._ObjectType;
+		_TargetType = rhs._TargetType;
 		_Volatility = rhs._Volatility;
+		_ExternalReferenceList = rhs._ExternalReferenceList;
 	}
 
-	public NodeElementDescriptor(EnModelObjectType elementType, EnNodeElementDescriptorVolatility volatility, params string[] identifiers)
-		: this(identifiers, elementType, volatility)
-	{
-	}
 
-	public NodeElementDescriptor(params string[] identifiers)
-		: this(identifiers, EnModelObjectType.Unknown, EnNodeElementDescriptorVolatility.None)
-	{
-	}
-
-	public NodeElementDescriptor(EnModelObjectType elementType, EnNodeElementDescriptorVolatility volatility, IEnumerable<string> identifiers)
-		: this(identifiers, elementType, volatility)
-	{
-	}
 
 	private NodeElementDescriptor(IEnumerable<string> identifierList, EnModelObjectType elementType, EnNodeElementDescriptorVolatility volatility)
 	{
-		_Type = elementType;
+		_ObjectType = elementType;
 		_Volatility = volatility;
 		_IdentifierList = new List<string>();
 		if (identifierList != null)
@@ -121,6 +107,9 @@ public class NodeElementDescriptor
 		IgnoreName = false;
 		// GraphType = SqlColumnGraphType.None;
 	}
+
+
+
 
 	public void AddExternalNameParts(params string[] names)
 	{
@@ -201,9 +190,9 @@ public class NodeElementDescriptor
 	public static int GetHashCode(NodeElementDescriptor obj)
 	{
 		int num = 0;
-		if (obj._Type != EnModelObjectType.Unknown)
+		if (obj._ObjectType != EnModelObjectType.Unknown)
 		{
-			num = obj._Type.GetHashCode();
+			num = obj._ObjectType.GetHashCode();
 		}
 		num ^= obj._Volatility.GetHashCode();
 		num ^= obj.IgnoreName.GetHashCode();

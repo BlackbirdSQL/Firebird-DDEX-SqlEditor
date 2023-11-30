@@ -11,9 +11,9 @@ using System.Text;
 
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Properties;
 
 using FirebirdSql.Data.FirebirdClient;
@@ -1224,7 +1224,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 			return;
 		}
 
-		EnModelObjectType objType = nodeObj.Type.ToModelObjectType();
+		EnModelObjectType objType = node.ModelObjectType();
 
 
 		// Tracer.Trace(GetType(), "Extract(IVsDataExplorerNode)", "Node type is {0}.", objType);

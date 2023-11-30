@@ -7,7 +7,6 @@
 
 using System;
 using System.Data;
-using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Model.Enums;
 using FirebirdSql.Data.FirebirdClient;
 
@@ -87,7 +86,7 @@ public static class ModelConstants
 	public const string C_KeyExObjectType = "ObjectType";
 	public const string C_KeyExExplorerTreeName = "ExplorerTreeName";
 	public const string C_KeyExObjectName = "ObjectName";
-	public const string C_KeyExAlternate = "Alternate";
+	public const string C_KeyExTargetType = "TargetType";
 	public const string C_KeyExIsUnique = "IsUnique";
 
 	public const string C_KeyExClientVersion = "ClientVersion";
@@ -134,7 +133,7 @@ public static class ModelConstants
 	public const EnModelObjectType C_DefaultExObjectType = EnModelObjectType.Unknown;
 	public const string C_DefaultExExplorerTreeName = "";
 	public const string C_DefaultExObjectName = "";
-	public const bool C_DefaultExAlternate = false;
+	public const EnModelTargetType C_DefaultExTargetType = EnModelTargetType.Unknown;
 	public const bool C_DefaultExIsUnique = false;
 
 	// External (non-paramameter) property defaults 

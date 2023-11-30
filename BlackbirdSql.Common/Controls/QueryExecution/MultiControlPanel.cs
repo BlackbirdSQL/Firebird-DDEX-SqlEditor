@@ -98,7 +98,7 @@ namespace BlackbirdSql.Common.Controls.QueryExecution
 			}
 			set
 			{
-				Tracer.Trace(GetType(), "MultiControlPanel.HostedControlsMinInitialSize", "value = {0}", value);
+				// Tracer.Trace(GetType(), "MultiControlPanel.HostedControlsMinInitialSize", "value = {0}", value);
 				hostedControlsMinInitialSize = value;
 			}
 		}
@@ -111,7 +111,7 @@ namespace BlackbirdSql.Common.Controls.QueryExecution
 			}
 			set
 			{
-				Tracer.Trace(GetType(), "MultiControlPanel.HostedControlsMinSize", "value = {0}", value);
+				// Tracer.Trace(GetType(), "MultiControlPanel.HostedControlsMinSize", "value = {0}", value);
 				hostedControlsMinSize = value;
 			}
 		}
@@ -132,7 +132,7 @@ namespace BlackbirdSql.Common.Controls.QueryExecution
 
 		public MultiControlPanel()
 		{
-			Tracer.Trace(GetType(), "MultiControlPanel.MultiControlPanel", "", null);
+			// Tracer.Trace(GetType(), "MultiControlPanel.MultiControlPanel", "", null);
 			AutoScroll = true;
 			Clear();
 		}
@@ -163,7 +163,7 @@ namespace BlackbirdSql.Common.Controls.QueryExecution
 
 		public void AddControl(Control controlToHost, bool limitMaxControlHeightToClientArea)
 		{
-			Tracer.Trace(GetType(), "MultiControlPanel.AddControl", "", null);
+			// Tracer.Trace(GetType(), "MultiControlPanel.AddControl", "", null);
 			if (controlToHost == null)
 			{
 				Exception ex = new ArgumentNullException("controlToHost");
@@ -264,7 +264,7 @@ namespace BlackbirdSql.Common.Controls.QueryExecution
 
 		private QESplitter AllocateNewSplitter(Control boundControl, int minSize)
 		{
-			Tracer.Trace(GetType(), "MultiControlPanel.AllocateNewSplitter", "minSize = {0}", minSize);
+			// Tracer.Trace(GetType(), "MultiControlPanel.AllocateNewSplitter", "minSize = {0}", minSize);
 			QESplitter qESplitter = new QESplitter(boundControl, minSize)
 			{
 				BackColor = SystemColors.Control
@@ -275,7 +275,7 @@ namespace BlackbirdSql.Common.Controls.QueryExecution
 
 		public void ResizeControls(bool usePreferredSize, bool limitMaxControlHeightToClientArea)
 		{
-			Tracer.Trace(GetType(), "MultiControlPanel.ResizeControls", "", null);
+			// Tracer.Trace(GetType(), "MultiControlPanel.ResizeControls", "", null);
 			int count = hostPanel.Controls.Count;
 			switch (count)
 			{
@@ -329,14 +329,16 @@ namespace BlackbirdSql.Common.Controls.QueryExecution
 				num2 = (hostPanel.Height - num) / count;
 			}
 
+			/*
 			if (usePreferredSize)
 			{
-				Tracer.Trace(GetType(), Tracer.EnLevel.Information, "MultiControlPanel.ResizeControls", "control number = {0}, control heights = {1}, adjustment = {2}", count, IntArrayToString(array), num2);
+				// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "MultiControlPanel.ResizeControls", "control number = {0}, control heights = {1}, adjustment = {2}", count, IntArrayToString(array), num2);
 			}
 			else
 			{
-				Tracer.Trace(GetType(), Tracer.EnLevel.Information, "MultiControlPanel.ResizeControls", "control number = {0}, control height = {1}", count, hostedControlsMinInitialSize + num2);
+				// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "MultiControlPanel.ResizeControls", "control number = {0}, control height = {1}", count, hostedControlsMinInitialSize + num2);
 			}
+			*/
 
 			num3 = 0;
 			foreach (Control control4 in hostPanel.Controls)
@@ -355,6 +357,9 @@ namespace BlackbirdSql.Common.Controls.QueryExecution
 			}
 		}
 
+
+
+		/*
 		private string IntArrayToString(int[] values)
 		{
 			StringBuilder stringBuilder = new StringBuilder();
@@ -370,6 +375,9 @@ namespace BlackbirdSql.Common.Controls.QueryExecution
 
 			return stringBuilder.ToString();
 		}
+		*/
+
+
 
 		private void OnSplitterMoved(object sender, QESplitterMovedEventArgs e)
 		{

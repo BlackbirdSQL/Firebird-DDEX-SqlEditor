@@ -20,14 +20,16 @@ using BlackbirdSql.VisualStudio.Ddex.Controls.DataTools;
 using BlackbirdSql.VisualStudio.Ddex.Ctl;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.Config;
+using BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.Interfaces;
 using BlackbirdSql.VisualStudio.Ddex.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 
 using FirebirdSql.Data.FirebirdClient;
-using Microsoft.VisualStudio;
+
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Services;
+using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 

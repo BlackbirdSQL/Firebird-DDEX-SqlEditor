@@ -13,7 +13,6 @@ using BlackbirdSql.VisualStudio.Ddex.Ctl.Interfaces;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
-using static System.Net.Mime.MediaTypeNames;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools;
@@ -418,7 +417,7 @@ public class TVsDataProvider : IVsDataProvider // , IVsDataInternalProvider, IVs
 				}
 			}
 
-			Tracer.Trace(GetType(), "GetTypeActivatorImpl()", "Activator not implemented for guid: {0}, object type: {1}.", clsid, objType.FullName);
+			// Tracer.Trace(GetType(), "GetTypeActivatorImpl()", "Activator not implemented for guid: {0}, object type: {1}.", clsid, objType.FullName);
 
 			return null;
 		}
@@ -908,7 +907,7 @@ public class TVsDataProvider : IVsDataProvider // , IVsDataInternalProvider, IVs
 			return null;
 		}
 
-		Tracer.Trace(GetType(), "GetString(resourceId)", "resourceId: {0}", resourceId);
+		// Tracer.Trace(GetType(), "GetString(resourceId)", "resourceId: {0}", resourceId);
 
 		return $"rescourceId: {resourceId}.";
 

@@ -39,7 +39,7 @@ public static class XmlParser
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Single-level extrapolation of an xml stream with imports into a single stream.
-	/// Also, in DEBUG and if <see cref="Diag.EnableEnableSaveExtrapolatedXml"/> is set, writes a copy of the
+	/// Also, in DEBUG and if <see cref="Diag.EnableSaveExtrapolatedXml"/> is set, writes a copy of the
 	/// extrapolation to <paramref name="xmlName"/>.Extapolated.xml in the
 	/// <see cref="Diag.LogFile"/> folder.
 	/// </summary>

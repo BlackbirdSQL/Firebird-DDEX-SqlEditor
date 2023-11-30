@@ -128,7 +128,7 @@ public class TConnectionProperties : TAbstractConnectionProperties
 	/*
 	public override string[] GetSynonyms(string key)
 	{
-		Tracer.Trace(GetType(), "GetSynonyms()", "key: {0}", key);
+		// Tracer.Trace(GetType(), "GetSynonyms()", "key: {0}", key);
 		return CsbAgent.Describers.GetSynonyms(key).ToArray();
 	}
 	*/

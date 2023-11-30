@@ -1001,15 +1001,6 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to save file: {0}.
-        /// </summary>
-        public static string Exception_FailedToSaveFile {
-            get {
-                return ResourceManager.GetString("Exception_FailedToSaveFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Previous execution is not yet complete..
         /// </summary>
         public static string ExecutionNotCompleted {

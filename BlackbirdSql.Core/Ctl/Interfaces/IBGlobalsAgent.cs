@@ -65,36 +65,4 @@ public interface IBGlobalsAgent
 
 }
 
-public static class ExtensionMembers
-{
 
-	internal static IBGlobalsAgent _GlobalsAgentInstance;
-
-
-	public static IBGlobalsAgent GetInstance(this IBGlobalsAgent value, bool throwIfNotExists = true)
-	{
-		if (_GlobalsAgentInstance == null && throwIfNotExists)
-		{
-			NullReferenceException ex = new("Attempt to access uninitialized GlobalsAgent instance");
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		return _GlobalsAgentInstance;
-	}
-
-	public static IBGlobalsAgent SetInstance(this IBGlobalsAgent instance, IBGlobalsAgent value)
-	{
-		if (_GlobalsAgentInstance != null)
-		{
-			ArgumentException ex = new("GlobalsAgent instance already created");
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		_GlobalsAgentInstance = instance;
-
-		return _GlobalsAgentInstance;
-	}
-
-}

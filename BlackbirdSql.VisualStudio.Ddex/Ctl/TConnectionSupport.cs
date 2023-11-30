@@ -180,11 +180,6 @@ public class TConnectionSupport : AdoDotNetConnectionSupport
 		{
 			return new TCommand(Site);
 		}
-		if (serviceType == typeof(IDSRefBuilder))
-		{
-			return new DataTools.DSRefBuilder(Site);
-		}
-
 
 
 		/* Uncomment this and change PackageSupportedObjects._UseFactoryOnly to true to debug implementations

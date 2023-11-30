@@ -332,7 +332,7 @@ public class GridResultsGrid : GridControl, IBGridControl2, IBGridControl, IBSta
 
 	public GridResultsGrid()
 	{
-		Tracer.Trace(GetType(), "GridResultsGrid.GridResultsGrid", "", null);
+		// Tracer.Trace(GetType(), "GridResultsGrid.GridResultsGrid", "", null);
 	}
 
 	void IBStatusBarContributer.GetColumnAndRowNumber(out long rowNumber, out long columnNumber)
@@ -395,7 +395,7 @@ public class GridResultsGrid : GridControl, IBGridControl2, IBGridControl, IBSta
 
 	protected override GridHyperlinkColumn AllocateHyperlinkColumn(GridColumnInfo ci, int nWidthInPixels, int colIndex)
 	{
-		Tracer.Trace(GetType(), "GridHyperlinkColumn.AllocateHyperlinkColumn", "ci = {0}, nWidthInPixels = {1}, colIndex = {2}", ci, nWidthInPixels, colIndex);
+		// Tracer.Trace(GetType(), "GridHyperlinkColumn.AllocateHyperlinkColumn", "ci = {0}, nWidthInPixels = {1}, colIndex = {2}", ci, nWidthInPixels, colIndex);
 		GridHyperlinkColumnWithLimit gridHyperlinkColumnWithLimit = new GridHyperlinkColumnWithLimit(ci, nWidthInPixels, colIndex, isRealHyperlink: true);
 		LinkLabel linkLabel = new LinkLabel();
 		gridHyperlinkColumnWithLimit.TextBrush = new SolidBrush(linkLabel.LinkColor);
@@ -490,10 +490,10 @@ public class GridResultsGrid : GridControl, IBGridControl2, IBGridControl, IBSta
 
 	protected override void OnMouseButtonDoubleClicked(EnHitTestResult htArea, long rowIndex, int colIndex, Rectangle cellRect, MouseButtons btn, EnGridButtonArea headerArea)
 	{
-		Tracer.Trace(GetType(), "SqlManagerUIDlgGrid.OnMouseButtonDoubleClicked", "", null);
+		// Tracer.Trace(GetType(), "SqlManagerUIDlgGrid.OnMouseButtonDoubleClicked", "", null);
 		if (m_gridStorage != null && htArea == EnHitTestResult.ColumnResize && btn == MouseButtons.Left && (m_Columns[colIndex].ColumnType == 2 || m_Columns[colIndex].ColumnType == 1))
 		{
-			Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "GridResultsGrid.OnMouseButtonDoubleClicked", "auto resizing column {0}", colIndex);
+			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "GridResultsGrid.OnMouseButtonDoubleClicked", "auto resizing column {0}", colIndex);
 			ResizeColumnToShowAllContentsInternal(colIndex);
 		}
 	}

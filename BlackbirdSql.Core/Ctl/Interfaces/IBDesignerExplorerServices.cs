@@ -2,6 +2,7 @@
 // Microsoft.VisualStudio.Data.Tools.ISqlServerObjectExplorerService
 
 using System.Runtime.InteropServices;
+using BlackbirdSql.Core.Model.Enums;
 using Microsoft.VisualStudio.Data.Services;
 
 
@@ -11,9 +12,9 @@ namespace BlackbirdSql.Core.Ctl.Interfaces;
 [Guid(SystemData.DesignerExplorerServicesGuid)]
 public interface IBDesignerExplorerServices
 {
-	void NewQuery(string datasetKey);
+	void NewSqlQuery(string datasetKey);
 
-	void ViewCode(IVsDataExplorerNode node, bool alternate);
+	void ViewCode(IVsDataExplorerNode node, EnModelTargetType targetType);
 
 	/*
 	void Add(SqlConnectionStringBuilder connection, SqlServerObjectType objectType);

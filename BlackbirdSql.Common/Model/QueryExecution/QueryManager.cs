@@ -4,7 +4,6 @@
 using System;
 using System.Data;
 using System.Data.Common;
-using BlackbirdSql.Common.Ctl.Config;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Enums;
 using BlackbirdSql.Common.Model.Events;
@@ -341,11 +340,11 @@ public sealed class QueryManager : IDisposable
 					return;
 				}
 
-				Tracer.Trace(GetType(), "QryMgr.Cancel", "bSync = {0}", bSync);
-				Tracer.Trace(GetType(), "QryMgr.Cancel", "initiating Cancel");
+				// Tracer.Trace(GetType(), "QryMgr.Cancel", "bSync = {0}", bSync);
+				// Tracer.Trace(GetType(), "QryMgr.Cancel", "initiating Cancel");
 				try
 				{
-					Tracer.Trace(GetType(), "QryMgr.Cancel", "Issuing cancel request");
+					// Tracer.Trace(GetType(), "QryMgr.Cancel", "Issuing cancel request");
 					_SqlExec.Cancel(bSync, SyncCancelTimeout);
 				}
 				finally
@@ -359,7 +358,7 @@ public sealed class QueryManager : IDisposable
 						scriptExecutionCompletedHandler = ScriptExecutionCompletedEvent;
 					}
 
-					Tracer.Trace(GetType(), "QryMgr.Cancel", "cancel completed");
+					// Tracer.Trace(GetType(), "QryMgr.Cancel", "cancel completed");
 				}
 			}
 		}
@@ -398,7 +397,7 @@ public sealed class QueryManager : IDisposable
 			}
 			catch (Exception ex)
 			{
-				Tracer.Trace(GetType(), "QryMgr.Dispose", ex.ToString());
+				Diag.Dug(ex);
 			}
 
 			if (_SqlExec != null)
@@ -493,14 +492,14 @@ public sealed class QueryManager : IDisposable
 
 	private void OnBatchExecutionCompleted(object sender, QESQLBatchExecutedEventArgs args)
 	{
-		Tracer.Trace(GetType(), "QryMgr.OnBatchExecutionCompleted", "", null);
+		// Tracer.Trace(GetType(), "QryMgr.OnBatchExecutionCompleted", "", null);
 		_RowsAffected += args.Batch.RowsAffected;
 		BatchExecutionCompletedEvent?.Invoke(sender, args);
 	}
 
 	private void OnStartingBatchExecution(object sender, QESQLStartingBatchEventArgs args)
 	{
-		Tracer.Trace(GetType(), "QryMgr.OnStartingBatchExecution", "", null);
+		// Tracer.Trace(GetType(), "QryMgr.OnStartingBatchExecution", "", null);
 	}
 
 	private void OnOutputRedirection(object sender, QEOLESQLOutputRedirectionEventArgs args)
@@ -525,18 +524,15 @@ public sealed class QueryManager : IDisposable
 
 	private bool ValidateAndRun(IBTextSpan textSpan, int execTimeout, bool bParseOnly, bool withDebugging, bool useCustomExecutionTimeout)
 	{
-		Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ValidateAndRun", " Enter. : ExecutionOptions.WithEstimatedExecutionPlan: " + LiveSettings.WithEstimatedExecutionPlan);
+		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ValidateAndRun()", " Enter. : ExecutionOptions.WithEstimatedExecutionPlan: " + LiveSettings.WithEstimatedExecutionPlan);
 		
-		ConnectionStrategy.EnsureConnection(tryOpenConnection: true);
-		Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ValidateAndRun", "Ensured connection");
+		ConnectionStrategy.EnsureConnection(true);
 		IDbConnection connection = ConnectionStrategy.Connection;
 
 		if (connection == null)
-		{
-			DataException ex = new("Connection is null");
-			Diag.Dug(ex);
 			return false;
-		}
+
+		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ValidateAndRun()", "Ensured connection");
 
 		if (connection.State != ConnectionState.Open)
 		{
@@ -545,7 +541,7 @@ public sealed class QueryManager : IDisposable
 			return false;
 		}
 
-		Tracer.Trace(GetType(), "QryMgr.ValidateAndRun", "execTimeout = {0}, bParseOnly = {1}", execTimeout, bParseOnly);
+		// Tracer.Trace(GetType(), "ValidateAndRun()", "execTimeout = {0}, bParseOnly = {1}", execTimeout, bParseOnly);
 		if (IsExecuting)
 		{
 			InvalidOperationException ex = new(ControlsResources.ExecutionNotCompleted);
@@ -587,8 +583,8 @@ public sealed class QueryManager : IDisposable
 
 		if (!OnScriptExecutionStarted(textSpan.Text, bParseOnly, connection))
 		{
-			OperationCanceledException ex = new("OnScriptExecutionStarted return false");
-			Diag.Dug(ex);
+			// OperationCanceledException ex = new("OnScriptExecutionStarted returned false");
+			// Diag.Dug(ex);
 			return false;
 		}
 

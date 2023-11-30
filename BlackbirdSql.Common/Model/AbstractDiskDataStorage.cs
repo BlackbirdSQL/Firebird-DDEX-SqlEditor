@@ -27,7 +27,7 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 
 	protected ArrayList64 _OffsetsArray;
 
-	protected ArrayList _ColumnsArray;
+	protected ArrayList _ColumnInfoArray;
 
 	protected StorageDataReader _StorageReader;
 
@@ -102,7 +102,7 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 		_DataStorageEnabled = false;
 		_WorkerThread = null;
 		_OffsetsArray = new ArrayList64();
-		_ColumnsArray = new ArrayList();
+		_ColumnInfoArray = new ArrayList();
 		_DiskDataEntity = new StorageDataEntity();
 	}
 
@@ -123,7 +123,7 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 		{
 			throw new Exception(ControlsResources.ReaderCannotBeNull);
 		}
-		_StorageReader = new StorageDataReader(storageReader);
+		_StorageReader = new StorageDataReader(storageReader, null);
 		_FileName = Path.GetTempFileName();
 		if (_FileName.Length == 0)
 		{
@@ -135,7 +135,7 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 		for (int i = 0; i < this._StorageReader.FieldCount; i++)
 		{
 			ColumnInfo columnInfo = new ColumnInfo(this._StorageReader, i);
-			_ColumnsArray.Add(columnInfo);
+			_ColumnInfoArray.Add(columnInfo);
 			_HasBlobs |= columnInfo.IsBlobField;
 		}
 	}
@@ -151,7 +151,7 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 		{
 			throw new ArgumentException(ControlsResources.ReaderCannotBeNull);
 		}
-		if (storageReader.FieldCount != _ColumnsArray.Count)
+		if (storageReader.FieldCount != _ColumnInfoArray.Count)
 		{
 			throw new ArgumentException(ControlsResources.ColumnsCountDoesNotMatch);
 		}
@@ -167,7 +167,7 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 		{
 			throw new Exception(ControlsResources.CannotAddReaderWhenStoringData);
 		}
-		_StorageReader = new StorageDataReader(storageReader);
+		_StorageReader = new StorageDataReader(storageReader, null);
 	}
 
 	public void StartStoringData()
@@ -208,7 +208,7 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 	{
 		Type type = null;
 		IBColumnInfo columnInfo = null;
-		object[] array = new object[_ColumnsArray.Count];
+		object[] array = new object[_ColumnInfoArray.Count];
 		while (_DataStorageEnabled && _StorageReader.Read())
 		{
 			_OffsetsArray.Add(_CurrentOffset);
@@ -216,7 +216,7 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 			{
 				_StorageReader.GetValues(array);
 			}
-			for (int i = 0; i < _ColumnsArray.Count; i++)
+			for (int i = 0; i < _ColumnInfoArray.Count; i++)
 			{
 				if (_HasBlobs)
 				{
@@ -255,7 +255,7 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 					_CurrentOffset += _FsWriter.WriteNull();
 					continue;
 				}
-				if (((IBColumnInfo)_ColumnsArray[i]).IsSqlVariant)
+				if (((IBColumnInfo)_ColumnInfoArray[i]).IsSqlVariant)
 				{
 					DiskDataEntity.StringValue = type.ToString();
 					_CurrentOffset += _FsWriter.WriteString(DiskDataEntity.StringValue);
@@ -535,12 +535,12 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 		return (long)_OffsetsArray.GetItem(index);
 	}
 
-	public int ColumnCount => _ColumnsArray.Count;
+	public int ColumnCount => _ColumnInfoArray.Count;
 
 
 	public IBColumnInfo GetColumnInfo(int index)
 	{
-		return (IBColumnInfo)_ColumnsArray[index];
+		return (IBColumnInfo)_ColumnInfoArray[index];
 	}
 
 	public bool IsClosed()

@@ -8,12 +8,9 @@ using System.Linq;
 using System.Text;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Extensions;
-
+using BlackbirdSql.Core.Model.Enums;
 using Microsoft.VisualStudio.Data.Services;
-
-using EnNodeSystemType = BlackbirdSql.Core.Ctl.CommandProviders.CommandProperties.EnNodeSystemType;
 
 
 namespace BlackbirdSql.Core.Model;
@@ -56,15 +53,21 @@ public class MonikerAgent
 	// =========================================================================================================
 
 
-	private bool _Alternate = ModelConstants.C_DefaultExAlternate;
 	private string _Database = CoreConstants.C_DefaultDatabase;
 	private string _DataSource = CoreConstants.C_DefaultDataSource;
 	private string _ExplorerTreeName = ModelConstants.C_DefaultExExplorerTreeName;
 	private bool _IsUnique = ModelConstants.C_DefaultExIsUnique;
+	private string _MiscDocumentMoniker = null;
+	private string _MiscDocumentMonikerPath = null;
 	private string _ObjectName = ModelConstants.C_DefaultExObjectName;
 	private EnModelObjectType _ObjectType = ModelConstants.C_DefaultExObjectType;
+	private EnModelTargetType _TargetType = ModelConstants.C_DefaultExTargetType;
+	private long _UniqueId;
 
 	#endregion Variables
+
+
+
 
 
 
@@ -74,101 +77,117 @@ public class MonikerAgent
 	// =========================================================================================================
 
 
-	[Category("Extended")]
-	[DisplayName("Alternate")]
-	[Description("True if the editor content of a document moniker has been decorated with it's alternate form, usually it's Alter format.")]
-	[DefaultValue(ModelConstants.C_DefaultExAlternate)]
-	public bool Alternate
-	{
-		get { return _Alternate; }
-		set { _Alternate = value; }
-	}
-
-
-	[Category("Source")]
-	[DisplayName("Database")]
-	[Description("The name of the database path on the server.")]
-	[DefaultValue(CoreConstants.C_DefaultDatabase)]
-	public string Database
-	{
-		get { return _Database; }
-		set { _Database = value; }
-	}
+	/// <summary>
+	/// The name of the database path on the server.
+	/// </summary>
+	private string Database => _Database;
 
 
 	/// <summary>
 	/// Returns the unique document moniker url prefix in the form
 	/// fbsql://server/database_lc_serialized//
 	/// </summary>
-	[Browsable(false)]
-	protected string DatabaseMoniker => BuildUniqueDatabaseUrl();
+	private string DatabaseMoniker => BuildUniqueDatabaseUrl();
 
 
-	[Category("Source")]
-	[DisplayName("DataSource")]
-	[Description("The name of the database host.")]
-	[DefaultValue(CoreConstants.C_DefaultDataSource)]
-	public string DataSource
+	/// <summary>
+	/// The name of the database host.
+	/// </summary>
+	private string DataSource => _DataSource;
+
+
+	/// <summary>
+	/// The display name of the explorer connection tree.
+	/// </summary>
+	private string ExplorerTreeName => _ExplorerTreeName;
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets a full identifier for a node including it's root node
+	/// identifier and type.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public string[] FullIdentifier
 	{
-		get { return _DataSource; }
-		set { _DataSource = value; }
+		get
+		{
+			// Tracer.Trace(GetType(), "GetFullIdentifier()");
+
+			string[] nodeIdentifier = Identifier;
+			string[] identifier = new string[nodeIdentifier.Length + 2];
+
+			identifier[0] = ExplorerTreeName;
+			identifier[1] = ObjectType.ToString();
+
+			for (int i = 0; i < nodeIdentifier.Length; i++)
+			{
+				identifier[i + 2] = nodeIdentifier[i];
+			}
+
+			return identifier;
+		}
 	}
 
 
-	[Browsable(false)]
-	public string DocumentMoniker => ToDocumentMoniker();
 
-
-	[Category("Extended")]
-	[DisplayName("Explorer Tree Name")]
-	[Description("The display name of the explorer connection tree.")]
-	[DefaultValue(ModelConstants.C_DefaultExExplorerTreeName)]
-	public string ExplorerTreeName
-	{
-		get { return _ExplorerTreeName; }
-		set { _ExplorerTreeName = value; }
-	}
-
-
-	[Browsable(false)]
 	public string[] Identifier => ObjectName.Split(C_CompositeSeparator);
 
 
-	[Category("Extended")]
-	[DisplayName("IsUnique")]
-	[Description("For document monikers, true if reopening a document opens it into a new window, otherwise for false the same window is used.")]
-	[DefaultValue(ModelConstants.C_DefaultExIsUnique)]
-	public bool IsUnique
+	/// <summary>
+	/// For document monikers, true if reopening a document opens it into a new window,
+	/// otherwise for false the same window is used.
+	/// </summary>
+	private bool IsUnique => _IsUnique;
+
+
+	public string MiscDocumentMoniker => _MiscDocumentMoniker ??= BuildMiscDocumentMoniker(false);
+
+	public string MiscDocumentMonikerPath => _MiscDocumentMonikerPath ??= BuildMiscDocumentMoniker(true);
+
+
+	/// <summary>
+	/// The dot delimited node object identifier.
+	/// </summary>
+	private string ObjectName => _ObjectName;
+
+
+	/// <summary>
+	/// The Server Explorer node object type.
+	/// </summary>
+	public EnModelObjectType ObjectType => _ObjectType;
+
+
+	public object[] OriginalIdentifier
 	{
-		get { return _IsUnique; }
-		set { _IsUnique = value; }
+		get
+		{
+			object[] nodeIdentifier = Identifier;
+
+			string[] identifier = new string[nodeIdentifier.Length + 2];
+
+			identifier[0] = identifier[1] = "";
+
+			for (int i = 0; i < nodeIdentifier.Length; i++)
+			{
+				identifier[i + 2] = nodeIdentifier[i]?.ToString();
+			}
+
+			return identifier;
+		}
 	}
 
 
-	[Category("Extended")]
-	[DisplayName("ObjectName")]
-	[Description("The dot delimited node object identifier.")]
-	[DefaultValue(ModelConstants.C_DefaultExObjectName)]
-	protected string ObjectName
-	{
-		get { return _ObjectName; }
-		set { _ObjectName = value; }
-	}
+	/// <summary>
+	/// The IDE window target type of the data object.
+	/// </summary>
+	[DefaultValue(EnModelTargetType.Unknown)]
+	private EnModelTargetType TargetType => _TargetType;
 
 
-	[Category("Extended")]
-	[DisplayName("ObjectType")]
-	[Description("The Server Explorer node object type.")]
-	[DefaultValue(ModelConstants.C_DefaultExObjectType)]
-	public EnModelObjectType ObjectType
-	{
-		get { return _ObjectType; }
-		set { _ObjectType = value; }
-	}
 
+	public long UniqueId => _UniqueId;
 
-	[Browsable(false)]
-	public object[] OriginalIdentifier => GetOriginalIdentifier();
 
 
 	#endregion Property accessors
@@ -181,22 +200,28 @@ public class MonikerAgent
 	// =========================================================================================================
 
 
-	public MonikerAgent(IVsDataExplorerNode node, bool isUnique = false, bool alternate = false)
+	public MonikerAgent(IVsDataExplorerNode node, EnModelTargetType targetType, bool isUnique = false)
 	{
-		Extract(node);
+		_IsUnique = (ObjectType == EnModelObjectType.Database) || isUnique;
+		_TargetType = targetType;
 
-		IsUnique = (ObjectType == EnModelObjectType.Database) || isUnique;
-		Alternate = alternate;
+		Extract(node);
 	}
 
 
 	public MonikerAgent(string server, string database, EnModelObjectType objectType,
-			IList<string> identifierList, bool isUnique = false, bool alternate = false)
+			IList<string> identifierList, EnModelTargetType targetType, bool isUnique = false)
 	{
-		IsUnique = (ObjectType == EnModelObjectType.Database) || isUnique;
-		Alternate = alternate;
+		_IsUnique = (ObjectType == EnModelObjectType.Database) || isUnique;
+		_TargetType = targetType;
 
-		Initialize(server, database, objectType, identifierList.ToArray<object>());
+		Initialize(server, database, objectType, identifierList.ToArray<object>(), targetType);
+	}
+
+
+	public MonikerAgent(IVsDataExplorerConnection explorerConnection, EnModelTargetType targetType, bool isUnique = false)
+	{
+		Extract(explorerConnection, targetType, isUnique);
 	}
 
 
@@ -210,6 +235,75 @@ public class MonikerAgent
 	// =========================================================================================================
 
 
+	private string BuildMiscDocumentMoniker(bool includeExtension)
+	{
+		string text = BuildUnsafeDocumentMoniker(includeExtension);
+		string extension = includeExtension ? Path.GetExtension(text) : "";
+		string name = includeExtension
+			? text[..text.LastIndexOf(extension, StringComparison.OrdinalIgnoreCase)]
+			: text;
+		string result = text;
+
+		// Tracer.Trace(GetType(), "BuildMiscDocumentMoniker()", "Split Misc DocumentMoniker name:{0}, extension: {1}.", name, extension);
+
+		if (IsUnique)
+		{
+			for (int i = 2; i < 1000; i++)
+			{
+				if (!RdtManager.Instance.IsFileInRdt(result))
+					break;
+
+				if (i > 100)
+					_UniqueId = DateTime.Now.Ticks;
+				else
+					_UniqueId = i;
+
+				result = string.Format(CultureInfo.InvariantCulture, "{0}_{1}{2}", name, _UniqueId, extension);
+			}
+		}
+		else
+		{
+			result = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, extension);
+		}
+
+		// Tracer.Trace(GetType(), "BuildMiscDocumentMoniker()", "Result Misc DocumentMoniker: {0}", result);
+
+		return result;
+	}
+
+
+
+	public static string BuildMiscDocumentMonikerPath(IVsDataExplorerNode node,
+		ref IList<string> identifierArray, EnModelTargetType targetType, bool isUnique)
+	{
+		MonikerAgent moniker = new(node, targetType, isUnique);
+		identifierArray = moniker.Identifier;
+
+		// Tracer.Trace(typeof(MonikerAgent), "BuildMiscDocumentMoniker(IVsDataExplorerNode)", "ObjectName: {0}, ", moniker.ObjectName, moniker.ObjectType.ToString());
+
+		string result = moniker.BuildMiscDocumentMoniker(true);
+
+		// Tracer.Trace(typeof(MonikerAgent), "BuildMiscDocumentMoniker(IVsDataExplorerNode)", "DocumentMoniker: {0}", result);
+
+		return result;
+	}
+
+
+
+	public static string BuildMiscDocumentMonikerPath(string server, string database, EnModelObjectType elementType,
+		ref IList<string> identifierArray, EnModelTargetType targetType, bool isUnique)
+	{
+		MonikerAgent moniker = new(server, database, elementType, identifierArray, targetType, isUnique);
+		identifierArray = moniker.Identifier;
+
+		string result = moniker.BuildMiscDocumentMoniker(true);
+
+		// Tracer.Trace(typeof(MonikerAgent), "BuildMiscDocumentMoniker(server, database, identifierArray)", "DocumentMoniker: {0}", result);
+
+		return result;
+	}
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Builds a uniquely identifiable database url. Database urls are used for
@@ -220,7 +314,7 @@ public class MonikerAgent
 	/// fbsql://server/database_lc_serialized//
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	protected string BuildUniqueDatabaseUrl()
+	private string BuildUniqueDatabaseUrl()
 	{
 		// We'll use UriBuilder for the url.
 
@@ -263,7 +357,7 @@ public class MonikerAgent
 	/// The root temporary application directory path to save to.
 	/// </param>
 	// ---------------------------------------------------------------------------------
-	public static string ConstructFullTemporaryDirectory(string appDataPath)
+	private string ConstructFullTemporaryDirectory(string appDataPath)
 	{
 		string path = appDataPath;
 
@@ -295,11 +389,9 @@ public class MonikerAgent
 			return;
 		}
 
-		EnModelObjectType objType = nodeObj.Type.ToModelObjectType();
-		if (objType == EnModelObjectType.AlterDatabase)
-			objType = EnModelObjectType.Database;
+		EnModelObjectType objType = node.ModelObjectType();
 
-		// Tracer.Trace(GetType(), "Extract(IVsDataExplorerNode)", "Node type is {0}.", objType);
+		// Tracer.Trace(GetType(), "Extract(IVsDataExplorerNode)", "Node type for node '{0}' is {1}.", node.Name, objType.ToString());
 
 		IVsDataObject @dbObj;
 
@@ -308,29 +400,87 @@ public class MonikerAgent
 		else
 			@dbObj = node.ExplorerConnection.ConnectionNode.Object;
 
-		ExplorerTreeName = node.ExplorerConnection.DisplayName;
+		_ExplorerTreeName = node.ExplorerConnection.DisplayName;
 
 		if (@dbObj != null && @nodeObj != null)
 		{
-			DataSource = (string)@dbObj.Properties[CoreConstants.C_KeyDataSource];
-			Database = (string)@dbObj.Properties[CoreConstants.C_KeyDatabase];
+			_DataSource = (string)@dbObj.Properties[CoreConstants.C_KeyDataSource];
+			_Database = (string)@dbObj.Properties[CoreConstants.C_KeyDatabase];
 
-			ObjectType = objType;
+			_ObjectType = objType;
 
-			ObjectName = "";
+			_ObjectName = "";
 
 			object[] identifier = @nodeObj.Identifier.ToArray();
 
 			if (identifier != null && identifier.Length > 0)
 			{
-				ObjectName = identifier[0] != null ? identifier[0].ToString() : "";
+				_ObjectName = identifier[0] != null ? identifier[0].ToString() : "";
 				for (int i = 1; i < identifier.Length; i++)
 				{
-					ObjectName += C_CompositeSeparator
+					_ObjectName += C_CompositeSeparator
 						+ (identifier[i] != null ? identifier[i].ToString() : "");
 				}
-				ObjectName = ObjectName.Trim(C_CompositeSeparator);
+				_ObjectName = _ObjectName.Trim(C_CompositeSeparator);
 			}
+		}
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Extracts moniker information from a Server Explorer connection.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private void Extract(IVsDataExplorerConnection explorerConnection, EnModelTargetType targetType, bool isUnique = false)
+	{
+		// Tracer.Trace(GetType(), "Extract(IVsDataExplorerConnection)");
+
+		_IsUnique = (ObjectType == EnModelObjectType.Database) || isUnique;
+		_TargetType = targetType;
+
+		IVsDataObject @nodeObj = explorerConnection.ConnectionNode.Object;
+
+		if (@nodeObj == null)
+		{
+			ArgumentNullException ex = new($"{explorerConnection.DisplayName} Object is null");
+			Diag.Dug(ex);
+			return;
+		}
+
+		EnModelObjectType objType;
+
+		switch (targetType)
+		{
+			case EnModelTargetType.QueryScript:
+			case EnModelTargetType.AlterScript:
+				objType = EnModelObjectType.NewSqlQuery;
+				break;
+			case EnModelTargetType.DesignData:
+				objType = EnModelObjectType.NewDesignerQuery;
+				break;
+			default:
+				objType = EnModelObjectType.NewSqlQuery;
+				break;
+		}
+
+		string objectName = objType.ToString();
+
+
+		// Tracer.Trace(GetType(), "Extract(IVsDataExplorerNode)", "Node type is {0}.", objType);
+
+		IVsDataObject @dbObj = @nodeObj;
+
+		_ExplorerTreeName = explorerConnection.DisplayName;
+
+		if (@dbObj != null && @nodeObj != null)
+		{
+			_DataSource = (string)@dbObj.Properties[CoreConstants.C_KeyDataSource];
+			_Database = (string)@dbObj.Properties[CoreConstants.C_KeyDatabase];
+
+			_ObjectType = objType;
+			_ObjectName = objectName;
 		}
 	}
 
@@ -340,7 +490,7 @@ public class MonikerAgent
 	/// Decorates a DDL raw script to it's executable form.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string GetDecoratedDdlSource(IVsDataExplorerNode node, bool alternate)
+	public static string GetDecoratedDdlSource(IVsDataExplorerNode node, EnModelTargetType targetType)
 	{
 		// Tracer.Trace(typeof(MonikerAgent), "GetDecoratedDdlSource()");
 
@@ -365,11 +515,11 @@ public class MonikerAgent
 		}
 
 
-		switch (GetNodeBaseType(obj))
+		switch (node.NodeBaseType())
 		{
-			case "Trigger":
+			case EnModelObjectType.Trigger:
 				string active = (bool)obj.Properties["IS_INACTIVE"] ? "INACTIVE" : "ACTIVE";
-				if (alternate)
+				if (targetType == EnModelTargetType.AlterScript)
 					str = $"ALTER TRIGGER {obj.Properties["TRIGGER_NAME"]}";
 				else
 					str = $"CREATE TRIGGER {obj.Properties["TRIGGER_NAME"]} FOR {obj.Properties["TABLE_NAME"]}";
@@ -378,8 +528,11 @@ public class MonikerAgent
 					+ $"{GetTriggerEvent((long)obj.Properties["TRIGGER_TYPE"])} POSITION {(short)obj.Properties["PRIORITY"]}\n"
 					+ src;
 				return src;
-			case "View":
-				if (!alternate)
+			case EnModelObjectType.Table:
+				src = $"SELECT * FROM {src.ToUpperInvariant()}";
+				return src;
+			case EnModelObjectType.View:
+				if (targetType != EnModelTargetType.AlterScript)
 					return src;
 
 				nodes = node.GetChildren(false);
@@ -390,7 +543,7 @@ public class MonikerAgent
 					str += ")";
 				src = $"ALTER VIEW {obj.Properties["VIEW_NAME"]}{str}\nAS\n{src}";
 				return src;
-			case "StoredProcedure":
+			case EnModelObjectType.StoredProcedure:
 				nodes = node.GetChildren(false);
 
 				foreach (IVsDataExplorerNode child in nodes)
@@ -406,7 +559,7 @@ public class MonikerAgent
 
 					if (direction == 0 || direction == 3) // In
 					{
-						if (alternate)
+						if (targetType == EnModelTargetType.AlterScript)
 							str += (str != "" ? ",\n\t" : "\n\t(") + flddef;
 						else
 							str += (str != "" ? "\n" : "\n-- The following input parameters need to be initialized after the BEGIN statement\n")
@@ -415,26 +568,26 @@ public class MonikerAgent
 					if (direction > 0) // Out
 						strout += (strout != "" ? ",\n\t" : "\n\t(") + flddef;
 				}
-				if (str != "" && alternate)
+				if (str != "" && targetType == EnModelTargetType.AlterScript)
 					str += ")";
 				if (strout != "")
 					strout = $"\nRETURNS{strout})";
 
-				if (strout != "" && alternate)
+				if (strout != "" && targetType == EnModelTargetType.AlterScript)
 					str += strout;
 
-				if (alternate)
+				if (targetType == EnModelTargetType.AlterScript)
 					str = $"ALTER PROCEDURE {obj.Properties["PROCEDURE_NAME"]}{str}\n";
 				else
 					strout = $"EXECUTE BLOCK{strout}\n";
 
-				if (alternate)
+				if (targetType == EnModelTargetType.AlterScript)
 					src = $"{str}AS\n{src}";
 				else
 					src = $"{strout}AS{str}\n-- End of parameter declarations\n{src}";
 
 				return src;
-			case "Function":
+			case EnModelObjectType.Function:
 				nodes = node.GetChildren(false);
 
 				foreach (IVsDataExplorerNode child in nodes)
@@ -463,7 +616,7 @@ public class MonikerAgent
 				if (strout != "")
 					str += strout;
 
-				if (alternate)
+				if (targetType == EnModelTargetType.AlterScript)
 					str = $"ALTER FUNCTION {obj.Properties["FUNCTION_NAME"]}{str}\n";
 				else
 					str = $"CREATE FUNCTION {obj.Properties["FUNCTION_NAME"]}{str}\n";
@@ -480,39 +633,10 @@ public class MonikerAgent
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Gets a full identifier for a node including it's root node
-	/// identifier and type.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public string[] GetFullIdentifier()
-	{
-		// Tracer.Trace(GetType(), "GetFullIdentifier()");
-
-		// 	public const string UrlPrefix = "fbsql://{0}@{1}({2})";
-
-		string[] nodeIdentifier = Identifier;
-
-		string[] identifier = new string[nodeIdentifier.Length + 2];
-
-		identifier[0] = ExplorerTreeName;
-		identifier[1] = ObjectType.ToString();
-
-		for (int i = 0; i < nodeIdentifier.Length; i++)
-		{
-			identifier[i + 2] = nodeIdentifier[i];
-		}
-
-		return identifier;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
 	/// Gets the Source script of a node if it exists else null.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string GetNodeScriptProperty(IVsDataObject obj)
+	private static string GetNodeScriptProperty(IVsDataObject obj)
 	{
 		if (obj != null)
 			return GetNodeScriptProperty(obj.Type.Name);
@@ -527,12 +651,16 @@ public class MonikerAgent
 	/// Gets the Source script of a node if it exists else null.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string GetNodeScriptProperty(string type)
+	private static string GetNodeScriptProperty(string type)
 	{
 		if (type.EndsWith("Column") || type.EndsWith("Trigger")
 			 || type == "Index" || type == "ForeignKey")
 		{
 			return "Expression";
+		}
+		else if (type == "Table")
+		{
+			return "Table_Name";
 		}
 		else if (type == "View")
 		{
@@ -547,134 +675,26 @@ public class MonikerAgent
 	}
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Gets a node's type as reflected in the IVsObjectSupport xml given the node.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static string GetNodeBaseType(IVsDataExplorerNode node)
+
+	private void Initialize(string server, string database, EnModelObjectType objectType, object[] identifier, EnModelTargetType targetType)
 	{
-		if (node != null && node.Object != null)
-		{
-			return GetNodeBaseType(node.Object);
-		}
+		_DataSource = server;
+		_Database = database;
 
-		return "";
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Gets a node's type as reflected in the IVsObjectSupport xml given the node's
-	/// Object.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static string GetNodeBaseType(IVsDataObject @object)
-	{
-		if (ModelObjectTypeIn(@object, EnModelObjectType.Index, EnModelObjectType.ForeignKey,
-			EnModelObjectType.View, EnModelObjectType.StoredProcedure, EnModelObjectType.Function))
-		{
-			return @object.Type.Name;
-		}
-		else if (@object.Type.Name.EndsWith("Column"))
-		{
-			return "Column";
-		}
-		else if (@object.Type.Name.EndsWith("Parameter"))
-		{
-			return "Parameter";
-		}
-		else if (@object.Type.Name.EndsWith("Trigger"))
-		{
-			return "Trigger";
-		}
-
-		return "";
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Gets a node's system type - System or User.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static string GetNodeSystemType(EnNodeSystemType nodeSystemType)
-	{
-		if (nodeSystemType == EnNodeSystemType.System)
-			return "System";
-		else if (nodeSystemType == EnNodeSystemType.User)
-			return "User";
-
-		return "";
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Returns a node's identifier in it's original form in the tree.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected object[] GetOriginalIdentifier()
-	{
-		// 	public const string UrlPrefix = "fbsql://{0}@{1}({2})";
-
-		object[] nodeIdentifier = Identifier;
-
-		string[] identifier = new string[nodeIdentifier.Length + 2];
-
-		identifier[0] = identifier[1] = "";
-
-		for (int i = 0; i < nodeIdentifier.Length; i++)
-		{
-			identifier[i + 2] = nodeIdentifier[i]?.ToString();
-		}
-
-		return identifier;
-	}
-
-
-
-	private void Initialize(string server, string database, EnModelObjectType objectType, object[] identifier)
-	{
-		DataSource = server;
-		Database = database;
-
-		ObjectType = objectType;
-		ObjectName = "";
+		_ObjectType = objectType;
+		_ObjectName = "";
 
 		if (identifier != null && identifier.Length > 0)
 		{
-			ObjectName = identifier[0] != null ? identifier[0].ToString() : "";
+			_ObjectName = identifier[0] != null ? identifier[0].ToString() : "";
 			for (int i = 1; i < identifier.Length; i++)
 			{
-				ObjectName += C_CompositeSeparator
+				_ObjectName += C_CompositeSeparator
 					+ (identifier[i] != null ? identifier[i].ToString() : "");
 			}
 		}
 
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Returns true if typeName exists in the values array else false.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static bool ModelObjectTypeIn(IVsDataObject @object, params EnModelObjectType[] types)
-	{
-		EnModelObjectType objecttype = @object.Type.ToModelObjectType();
-
-		foreach (EnModelObjectType type in types)
-		{
-			if (type == objecttype)
-				return true;
-		}
-
-		return false;
+		_TargetType = targetType;
 	}
 
 
@@ -685,18 +705,16 @@ public class MonikerAgent
 	/// settings
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public string ToDocumentMoniker(bool prefixOnly = false)
+	private string BuildUnsafeDocumentMoniker(bool includeExtension, bool prefixOnly = false)
 	{
-		EnModelObjectType objectType = (!Alternate || (int)ObjectType >= 20) ? ObjectType : (ObjectType + 20);
-
 		StringBuilder stringBuilder = new StringBuilder(DatabaseMoniker);
 
 
-		if (!prefixOnly && objectType != EnModelObjectType.Unknown && objectType != EnModelObjectType.AlterUnknown)
+		if (!prefixOnly && ObjectType != EnModelObjectType.Unknown)
 		{
 			int len;
 
-			stringBuilder.AppendFormat(CultureInfo.CurrentCulture, "{0}/", objectType.ToString());
+			stringBuilder.AppendFormat(CultureInfo.CurrentCulture, "{0}_{1}/", ObjectType.ToString(), TargetType.ToString());
 
 			if (Identifier != null && Identifier.Length > 0)
 			{
@@ -708,7 +726,8 @@ public class MonikerAgent
 				stringBuilder.Length--;
 			}
 
-			stringBuilder.Append(C_SqlExtension);
+			if (includeExtension)
+				stringBuilder.Append(C_SqlExtension);
 
 			len = stringBuilder.Length;
 
@@ -724,7 +743,7 @@ public class MonikerAgent
 
 		string result = stringBuilder.ToString();
 
-		// Tracer.Trace(GetType(), "ToDocumentMoniker()", "DocumentMoniker: {0}", result);
+		// Tracer.Trace(GetType(), "BuildUnsafeDocumentMoniker()", "DocumentMoniker: {0}", result);
 
 		return result;
 	}
@@ -775,7 +794,7 @@ public class MonikerAgent
 
 	// ---------------------------------------------------------------------------------
 	// ---------------------------------------------------------------------------------
-	public static string GetTriggerEvent(long eventType)
+	private static string GetTriggerEvent(long eventType)
 	{
 		return eventType switch
 		{
