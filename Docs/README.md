@@ -1,4 +1,4 @@
-# BlackbirdSQL DDEX 2.0 with SqlEditor Provider for Firebird 10.0.0.0
+# BlackbirdSQL DDEX 2.0 with SqlEditor Provider for Firebird
 
 The BlackbirdSQL DDEX 2.0 .NET with SqlEditor Provider extension for Firebird, `BlackbirdSql.VisualStudio.Ddex`, implements most DDEX 2.0 interfaces prevalent in the SqlServer DDEX and SqlEditor extensions.
 
