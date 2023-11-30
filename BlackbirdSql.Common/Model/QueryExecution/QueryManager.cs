@@ -4,12 +4,14 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using BlackbirdSql.Common.Ctl.Config;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Enums;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Enums;
 using Microsoft.VisualStudio.Utilities;
 
 using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
@@ -73,7 +75,7 @@ public sealed class QueryManager : IDisposable
 
 	private SqlConnectionStrategy _ConnectionStrategy;
 
-	private QESQLCommandBuilder _LiveSettings;
+	private LiveUserSettings _LiveSettings;
 
 	private bool _LiveSettingsApplied;
 
@@ -85,13 +87,13 @@ public sealed class QueryManager : IDisposable
 
 	private QEOLESQLExec.GetCurrentWorkingDirectoryPath _currentWorkingDirectoryPath;
 
-	public QESQLCommandBuilder LiveSettings
+	public LiveUserSettings LiveSettings
 	{
 		get
 		{
 			lock (_LockLocal)
 			{
-				return _LiveSettings ??= QESQLCommandBuilder.CreateInstance();
+				return _LiveSettings ??= LiveUserSettings.CreateInstance();
 			}
 		}
 	}
@@ -313,17 +315,17 @@ public sealed class QueryManager : IDisposable
 
 	public bool Run(IBTextSpan textSpan)
 	{
-		return ValidateAndRun(textSpan, 0, bParseOnly: false, withDebugging: false, useCustomExecutionTimeout: false);
+		return ValidateAndRun(textSpan, 0, false, false, false);
 	}
 
 	public bool Run(IBTextSpan textSpan, int execTimeout, bool withDebugging)
 	{
-		return ValidateAndRun(textSpan, execTimeout, bParseOnly: false, withDebugging, useCustomExecutionTimeout: true);
+		return ValidateAndRun(textSpan, execTimeout, false, withDebugging, true);
 	}
 
 	public void Parse(IBTextSpan textSpan)
 	{
-		ValidateAndRun(textSpan, 0, bParseOnly: true, withDebugging: false, useCustomExecutionTimeout: false);
+		ValidateAndRun(textSpan, 0, true, false, false);
 	}
 
 	public void Cancel(bool bSync)
@@ -522,7 +524,7 @@ public sealed class QueryManager : IDisposable
 		ConnectionStrategy.ApplyConnectionOptions(args.Connection, LiveSettings);
 	}
 
-	private bool ValidateAndRun(IBTextSpan textSpan, int execTimeout, bool bParseOnly, bool withDebugging, bool useCustomExecutionTimeout)
+	private bool ValidateAndRun(IBTextSpan textSpan, int execTimeout, bool parseOnly, bool withDebugging, bool useCustomExecutionTimeout)
 	{
 		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ValidateAndRun()", " Enter. : ExecutionOptions.WithEstimatedExecutionPlan: " + LiveSettings.WithEstimatedExecutionPlan);
 		
@@ -569,19 +571,21 @@ public sealed class QueryManager : IDisposable
 			throw ex;
 		}
 
-		QESQLCommandBuilder qESQLExecutionOptions = CreateExecutionOptionsObject();
-		if (bParseOnly)
+		LiveUserSettings sqlLiveSettings = CreateLiveSettingsObject();
+
+		if (parseOnly)
 		{
-			qESQLExecutionOptions.ParseOnly = true;
-			qESQLExecutionOptions.SuppressProviderMessageHeaders = true;
-			qESQLExecutionOptions.WithOleSqlScripting = LiveSettings.WithOleSqlScripting;
+			// Not supported.
+			sqlLiveSettings.ParseOnly = true;
+			sqlLiveSettings.SuppressProviderMessageHeaders = true;
+			// sqlLiveSettings.WithOleSqlScripting = SqlLiveSettings.WithOleSqlScripting;
 		}
-		else if (LiveSettings.WithClientStats)
+		else if (sqlLiveSettings.WithClientStats)
 		{
 			ConnectionStrategy.ResetAndEnableConnectionStatistics();
 		}
 
-		if (!OnScriptExecutionStarted(textSpan.Text, bParseOnly, connection))
+		if (!OnScriptExecutionStarted(textSpan.Text, parseOnly, connection))
 		{
 			// OperationCanceledException ex = new("OnScriptExecutionStarted returned false");
 			// Diag.Dug(ex);
@@ -596,27 +600,27 @@ public sealed class QueryManager : IDisposable
 		if (withDebugging)
 		{
 			IsDebugging = true;
-			qESQLExecutionOptions.WithDebugging = true;
+			sqlLiveSettings.WithDebugging = true;
 		}
 		else
 		{
 			IsDebugging = false;
-			qESQLExecutionOptions.WithDebugging = false;
+			sqlLiveSettings.WithDebugging = false;
 		}
 
 		if (!useCustomExecutionTimeout)
 		{
-			execTimeout = qESQLExecutionOptions.EditorExecutionTimeout;
+			execTimeout = sqlLiveSettings.EditorExecutionTimeout;
 		}
 
-		_SqlExec.Execute(textSpan, connection, execTimeout, ResultsHandler, qESQLExecutionOptions);
+		_SqlExec.Execute(textSpan, connection, execTimeout, ResultsHandler, sqlLiveSettings);
 
 		return true;
 	}
 
-	private QESQLCommandBuilder CreateExecutionOptionsObject()
+	private LiveUserSettings CreateLiveSettingsObject()
 	{
-		return (QESQLCommandBuilder)LiveSettings.Clone();
+		return (LiveUserSettings)LiveSettings.Clone();
 
 	}
 
@@ -635,12 +639,12 @@ public sealed class QueryManager : IDisposable
 		}
 	}
 
-	private bool OnScriptExecutionStarted(string text, bool isParseOnly, IDbConnection connection)
+	private bool OnScriptExecutionStarted(string text, bool parseOnly, IDbConnection connection)
 	{
 		_RowsAffected = 0L;
 		if (ScriptExecutionStartedEvent != null)
 		{
-			return ScriptExecutionStartedEvent(this, new(text, isParseOnly, connection));
+			return ScriptExecutionStartedEvent(this, new(text, parseOnly, connection));
 		}
 
 		return true;

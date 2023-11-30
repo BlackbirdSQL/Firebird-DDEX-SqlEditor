@@ -100,8 +100,8 @@ public class DebugSettingsModel : AbstractSettingsModel<DebugSettingsModel>
 	[GlobalizedDisplayName("OptionDisplayDebugEnableFbDiagnostics")]
 	[GlobalizedDescription("OptionDescriptionDebugEnableFbDiagnostics")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
-	[DefaultValue(true)]
-	public bool EnableFbDiagnostics { get; set; } = true;
+	[DefaultValue(false)]
+	public bool EnableFbDiagnostics { get; set; } = false;
 
 	[GlobalizedCategory("OptionCategoryDebugging")]
 	[GlobalizedDisplayName("OptionDisplayDebugFbLogFile")]

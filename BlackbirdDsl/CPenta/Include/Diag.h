@@ -61,7 +61,7 @@ public:
 	/// Only applies to the Debug configuration. Debug Exceptions are always logged.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	static bool EnableFbDiagnostics = true;
+	static bool EnableFbDiagnostics = false;
 
 
 	// ---------------------------------------------------------------------------------

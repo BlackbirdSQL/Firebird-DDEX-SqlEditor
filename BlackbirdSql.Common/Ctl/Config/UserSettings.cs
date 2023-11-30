@@ -157,7 +157,7 @@ public abstract class UserSettings : Core.Ctl.Config.UserSettings
 
 	public static bool EditorResultsTextIncludeHeaders => (bool)GetSetting("EditorResultsTextIncludeHeaders", true);
 	public static bool EditorResultsTextOutputQuery => (bool)GetSetting("EditorResultsTextOutputQuery", false);
-	public static bool EditorResultsTextScrollingResults => (bool)GetSetting("EditorResultsTextScrollingResults", true);
+	public static bool EditorResultsTextScrollingResults => (bool)GetSetting("EditorResultsTextScrollingResults", false);
 	public static bool EditorResultsTextAlignRightNumerics => (bool)GetSetting("EditorResultsTextAlignRightNumerics", false);
 	public static bool EditorResultsTextDiscardResults => (bool)GetSetting("EditorResultsTextDiscardResults", false);
 	public static int EditorResultsTextMaxCharsPerColumnStd =>

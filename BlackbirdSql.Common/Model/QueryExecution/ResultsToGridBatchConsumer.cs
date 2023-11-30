@@ -59,7 +59,7 @@ public class ResultsToGridBatchConsumer : AbstractQESQLBatchConsumer
 		try
 		{
 			_ResultsControl.AddGridContainer(_GridContainer);
-			_GridContainer.StartRetrievingData(_MaxCharsPerColumn, _ResultsControl.SqlExecutionOptions.EditorResultsGridMaxCharsPerColumnXml);
+			_GridContainer.StartRetrievingData(_MaxCharsPerColumn, _ResultsControl.LiveSettings.EditorResultsGridMaxCharsPerColumnXml);
 		}
 		catch (QESQLBatchConsumerException ex)
 		{

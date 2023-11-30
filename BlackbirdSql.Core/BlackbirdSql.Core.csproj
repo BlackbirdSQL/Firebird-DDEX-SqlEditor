@@ -29,14 +29,6 @@
 	</Target>
 
 	<ItemGroup>
-	  <Compile Remove="Properties\Originals\InvalidResources.Designer.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <EmbeddedResource Remove="Properties\Originals\InvalidResources.resx" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <Compile Include="Controls\ComponentModel\AbstractFolderNameEditor.cs" />
 	  <Compile Include="Controls\ComponentModel\AbstractFileNameEditor.cs" />
 	  <Compile Include="Controls\Interfaces\IBSettingsPage.cs" />
@@ -217,21 +209,6 @@
 	  <EmbeddedResource Include="Properties\Resources.resx" />
 	</ItemGroup>
 
-
-
-
-	<ItemGroup>
-	  <None Include="Properties\Originals\InvalidResources.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>InvalidResources.resx</DependentUpon>
-	  </None>
-	  <None Include="Properties\Originals\InvalidResources.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>InvalidResources.Designer.cs</LastGenOutput>
-	  </None>
-	</ItemGroup>
-
 	<ItemGroup>
 		<PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="10.0.0" />
 		<PackageReference Include="IndexRange" Version="1.0.3" />
@@ -252,9 +229,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Reference Include="Microsoft.VisualStudio.Data.Providers.Common">
-	    <HintPath>..\..\..\..\..\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Microsoft.VisualStudio.Data.Providers.Common.dll</HintPath>
-	  </Reference>
 	  <Reference Include="PresentationFramework" />
 	  <Reference Include="System.ComponentModel.DataAnnotations" />
 	  <Reference Include="System.Runtime.Caching" />

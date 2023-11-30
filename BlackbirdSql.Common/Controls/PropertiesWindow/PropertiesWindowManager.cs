@@ -12,7 +12,7 @@ using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core;
-using Microsoft.AnalysisServices.Graphing;
+// using Microsoft.AnalysisServices.Graphing;
 using Microsoft.VisualStudio.Shell;
 
 
@@ -94,6 +94,7 @@ public class PropertiesWindowManager : IDisposable
 
 	private void OnExecutionPlanPanelAdded(object sender, ResultControlEventArgs args)
 	{
+		/*
 		if (args.ResultsControl is ExecutionPlanPanel executionPlanPanel)
 		{
 			for (int i = 0; i < executionPlanPanel.ExecutionPlanCtl.GraphPanelCount; i++)
@@ -101,10 +102,12 @@ public class PropertiesWindowManager : IDisposable
 				executionPlanPanel.ExecutionPlanCtl.GetGraphPanel(i).SelectionChangedEvent += OnGraphSelectionChanged;
 			}
 		}
+		*/
 	}
 
 	private void OnExecutionPlanPanelRemoved(object sender, ResultControlEventArgs args)
 	{
+		/*
 		if (args.ResultsControl is ExecutionPlanPanel executionPlanPanel)
 		{
 			for (int i = 0; i < executionPlanPanel.ExecutionPlanCtl.GraphPanelCount; i++)
@@ -112,12 +115,13 @@ public class PropertiesWindowManager : IDisposable
 				executionPlanPanel.ExecutionPlanCtl.GetGraphPanel(i).SelectionChangedEvent -= OnGraphSelectionChanged;
 			}
 		}
+		*/
 	}
 
 
 
 
-
+	/*
 	private void OnGraphSelectionChanged(object sender, GraphEventArgs e)
 	{
 		IDisplay displayObject = e.DisplayObject;
@@ -130,6 +134,7 @@ public class PropertiesWindowManager : IDisposable
 			EditorUI.ActiveTab.PropertyWindowSelectedObjects = arrayList;
 		}
 	}
+	*/
 
 	private void RefreshPropertyWindow()
 	{

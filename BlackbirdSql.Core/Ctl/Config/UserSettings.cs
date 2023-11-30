@@ -118,7 +118,7 @@ public abstract class UserSettings : IBUserSettings
 	/// Only applies to the Debug configuration. Debug Exceptions are always logged.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public static bool EnableFbDiagnostics => (bool)GetSetting("DdexDebugEnableFbDiagnostics", true);
+	public static bool EnableFbDiagnostics => (bool)GetSetting("DdexDebugEnableFbDiagnostics", false);
 
 
 	// ---------------------------------------------------------------------------------

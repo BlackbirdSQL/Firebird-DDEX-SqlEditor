@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using BlackbirdSql.Core.Ctl.Interfaces;
 
 using EnvDTE;
-using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 

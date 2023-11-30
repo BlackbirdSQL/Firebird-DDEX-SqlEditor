@@ -558,7 +558,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 
 			_ProperyWindowManager = new PropertiesWindowManager(this);
 
-			qryMgr.IsWithOleSQLScripting = auxDocData.QryMgr.LiveSettings.EditorExecutionDefaultOleScripting;
+			qryMgr.IsWithOleSQLScripting = qryMgr.LiveSettings.EditorExecutionDefaultOleScripting;
 			qryMgr.CurrentWorkingDirectoryPath = GetCurrentWorkingDirectory;
 
 			ConfigureTextViewForAutonomousFind(GetSqlEditorCodeTab().CurrentFrame, GetCodeEditorTextView());
@@ -879,12 +879,12 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 	public void ExecuteQuery()
 	{
 		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteQuery", "calling ExecuteOrParseQuery");
-		ExecuteOrParseQuery(isExecute: true);
+		ExecuteOrParseQuery(true);
 	}
 
 	public void ParseQuery()
 	{
-		ExecuteOrParseQuery(isExecute: false);
+		ExecuteOrParseQuery(false);
 	}
 
 	private void ExecuteOrParseQuery(bool isExecute)

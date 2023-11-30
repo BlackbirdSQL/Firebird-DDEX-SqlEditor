@@ -10,7 +10,7 @@ using BlackbirdSql.Common.Ctl.Commands;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 
-using Microsoft.AnalysisServices.Graphing;
+// using Microsoft.AnalysisServices.Graphing;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -50,6 +50,7 @@ public class ExecutionPlanPanel : AbstractResultsPanel, IOleCommandTarget
 	{
 	}
 
+	/*
 	public void AddGraphs(IGraph[] graphs, object dataSource)
 	{
 		try
@@ -62,6 +63,7 @@ public class ExecutionPlanPanel : AbstractResultsPanel, IOleCommandTarget
 			throw;
 		}
 	}
+	*/
 
 	protected override void Dispose(bool disposing)
 	{

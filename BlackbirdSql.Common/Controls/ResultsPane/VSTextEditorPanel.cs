@@ -255,12 +255,9 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 			Native.ThrowOnFailure(_TextViewCtl.TextView.GetScrollInfo(1, out _, out var piMaxUnit, out var piVisibleUnits, out _));
 
-			if (piMaxUnit > 2)
-			{
-				int iFirstVisibleUnit = Math.Max(0, piMaxUnit - piVisibleUnits);
+			int iFirstVisibleUnit = Math.Max(0, piMaxUnit - piVisibleUnits);
 
-				Native.ThrowOnFailure(_TextViewCtl.TextView.SetScrollPosition(1, iFirstVisibleUnit));
-			}
+			Native.ThrowOnFailure(_TextViewCtl.TextView.SetScrollPosition(1, iFirstVisibleUnit));
 
 			return true;
 		}
@@ -283,12 +280,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 		{
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-			Native.ThrowOnFailure(_TextViewCtl.TextView.GetScrollInfo(1, out _, out var piMaxUnit, out _, out _));
-
-			if (piMaxUnit > 2)
-			{
-				Native.ThrowOnFailure(_TextViewCtl.TextView.SetScrollPosition(1, 0));
-			}
+			Native.ThrowOnFailure(_TextViewCtl.TextView.SetScrollPosition(1, 0));
 
 			return true;
 		}

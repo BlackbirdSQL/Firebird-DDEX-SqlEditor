@@ -361,8 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/Tests/
 /Private/
 /Private/*
-/Samples/
-/Samples/*
+/Firebird/
+/Firebird/*
+/Originals/
+/Originals/*

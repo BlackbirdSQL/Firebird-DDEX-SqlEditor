@@ -140,7 +140,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 
 	protected override void ExecuteScript(IBTextSpan textSpan)
 	{
-		// Tracer.Trace(GetType(), "QEOLESQLExec.ExecuteScript", " _ExecOptions.WithEstimatedExecutionPlan: " + ExecOptions.WithEstimatedExecutionPlan);
+		// Tracer.Trace(GetType(), "QEOLESQLExec.ExecuteScript", " _ExecOptions.WithEstimatedExecutionPlan: " + ExecLiveSettings.WithEstimatedExecutionPlan);
 		_ErrorAction = EnErrorAction.Ignore;
 		_ExecBatchNumOfTimes = 1;
 		_CurrentConn = _Conn;
@@ -153,12 +153,12 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 			_SqlCmdParser.Cleanup();
 		}
 		string batchDelimiter = ModelConstants.C_DefaultBatchSeparator;
-		if (ExecOptions.EditorContextBatchSeparator != null && ExecOptions.EditorContextBatchSeparator.Length > 0)
+		if (ExecLiveSettings.EditorContextBatchSeparator != null && ExecLiveSettings.EditorContextBatchSeparator.Length > 0)
 		{
-			batchDelimiter = ExecOptions.EditorContextBatchSeparator;
+			batchDelimiter = ExecLiveSettings.EditorContextBatchSeparator;
 		}
 		_SqlCmdParser.SetBatchDelimiter(batchDelimiter);
-		if (ExecOptions.WithOleSqlScripting)
+		if (ExecLiveSettings.WithOleSqlScripting)
 		{
 			_SqlCmdParser.SetParseMode(EnParseMode.RecognizeAll);
 		}
@@ -202,7 +202,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 
 	protected override EnScriptExecutionResult ExecuteBatchCommand(QESQLBatch batch)
 	{
-		// Tracer.Trace(GetType(), "QEOLESQLExec.ExecuteBatchCommand", " _ExecOptions.WithEstimatedExecutionPlan: " + ExecOptions.WithEstimatedExecutionPlan);
+		// Tracer.Trace(GetType(), "QEOLESQLExec.ExecuteBatchCommand", " _ExecOptions.WithEstimatedExecutionPlan: " + ExecLiveSettings.WithEstimatedExecutionPlan);
 		if (batch.SqlScript == null || batch.SqlScript != null && batch.SqlScript.Length == 0)
 		{
 			return EnScriptExecutionResult.Success;
@@ -222,7 +222,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 				scriptExecutionResult = EnScriptExecutionResult.Failure;
 				try
 				{
-					if (ExecOptions.WithEstimatedExecutionPlan)
+					if (ExecLiveSettings.WithEstimatedExecutionPlan)
 						_SpecialActions |= EnQESQLBatchSpecialAction.ExpectEstimatedYukonXmlExecutionPlan;
 
 					// Execution
@@ -279,7 +279,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 		}
 	}
 
-	protected override void OnExecutionCompleted(EnScriptExecutionResult execResult, bool isTextResult)
+	protected override void OnExecutionCompleted(EnScriptExecutionResult execResult)
 	{
 		try
 		{
@@ -289,7 +289,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 		{
 		}
 
-		base.OnExecutionCompleted(execResult, isTextResult);
+		base.OnExecutionCompleted(execResult);
 	}
 
 	protected override void CompleteAsyncCancelOperation(EnExecState stateBeforeCancelOp)
@@ -805,7 +805,7 @@ public class QEOLESQLExec : AbstractQESQLExec, IBBatchSource, IBCommandExecuter,
 				connectionString += ";TrustServerCertificate=true";
 			}
 
-			Tracer.Trace(GetType(), Tracer.EnLevel.Warning, "QEOLESQLExec.AttemptToEstablishCurConnection: final connection string is \"{0}\"", connectionString);
+			// Tracer.Trace(GetType(), Tracer.EnLevel.Warning, "QEOLESQLExec.AttemptToEstablishCurConnection: final connection string is \"{0}\"", connectionString);
 			IDbConnection dbConnection = new Microsoft.Data.SqlClient.SqlConnection(connectionString);
 			dbConnection.Open();
 			SqlCmdNewConnectionOpenedEvent?.Invoke(this, new QeSqlCmdNewConnectionOpenedEventArgs(dbConnection));

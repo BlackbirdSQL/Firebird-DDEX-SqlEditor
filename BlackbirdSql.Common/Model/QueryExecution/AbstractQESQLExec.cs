@@ -30,68 +30,61 @@ public abstract class AbstractQESQLExec : IDisposable
 		Discarded
 	}
 
+
+
+
 	public const int C_Int1MB = 1048576;
-
 	public const int C_Int5MB = 5242880;
-
 	public const string C_PlanConnectionType = "FbConnection"; // "SqlCeConnection"
-
-
 	public const int int2GB = int.MaxValue;
 
 
-	protected QESQLBatchCollection _SetConnectionOptionsBatches = new QESQLBatchCollection();
 
-	protected QESQLBatchCollection _RestoreConnectionOptionsBatches = new QESQLBatchCollection();
 
-	protected IBQESQLBatchConsumer _BatchConsumer;
-
-	protected IDbConnection _Conn;
-	protected IDbConnection _SSconn;
-
-	protected EnQESQLBatchSpecialAction _SpecialActions;
-
-	protected int _ExecTimeout;
-
-	private QESQLCommandBuilder _ExecOptions;
-
-	protected IBTextSpan _TextSpan;
-
-	private bool _ExecOptionHasBeenChanged;
-
-	protected int _CurBatchIndex = -1;
-
-	protected QESQLBatch _CurBatch;
-
-	protected string _TextPlan = null;
-
-	protected EnScriptExecutionResult _ExecResult = EnScriptExecutionResult.Failure;
-
-	private Thread _ExecThread;
-
-	protected EnExecState _ExecState;
 
 	// A protected 'this' object lock
 	protected object _LockObject = new object();
 
+	protected QESQLBatchCollection _SetConnectionOptionsBatches = new QESQLBatchCollection();
+	protected QESQLBatchCollection _RestoreConnectionOptionsBatches = new QESQLBatchCollection();
+	protected IBQESQLBatchConsumer _BatchConsumer;
+	protected IDbConnection _Conn;
+	protected IDbConnection _SSconn;
+	protected EnQESQLBatchSpecialAction _SpecialActions;
+	protected int _ExecTimeout;
+	private LiveUserSettings _ExecLiveSettings;
+	protected IBTextSpan _TextSpan;
+	private bool _ExecOptionHasBeenChanged;
+	protected int _CurBatchIndex = -1;
+	protected QESQLBatch _CurBatch;
+	protected string _TextPlan = null;
+	protected EnScriptExecutionResult _ExecResult = EnScriptExecutionResult.Failure;
+	private Thread _ExecThread;
+	protected EnExecState _ExecState;
+
 	private static readonly TimeSpan S_SleepTimeout = new TimeSpan(0, 0, 0, 0, 50);
+
+
+
+
 
 	private AbstractConnectionStrategy ConnectionStrategy => QryMgr.ConnectionStrategy;
 
-	protected QESQLCommandBuilder ExecOptions => _ExecOptions;
+	protected LiveUserSettings ExecLiveSettings => _ExecLiveSettings;
 
 	protected QueryManager QryMgr { get; set; }
 
 
 	public event ScriptExecutionCompletedEventHandler ExecutionCompletedEvent;
-
 	public event QESQLBatchExecutedEventHandler BatchExecutionCompletedEvent;
-
 	public event QESQLStartingBatchEventHandler StartingBatchExecutionEvent;
 
 	// Added for StaticsPanel.RetrieveStatisticsIfNeeded();
 	public event QESQLStatementCompletedEventHandler StatementCompletedEvent;
 	public event QESQLDataLoadedEventHandler DataLoadedEvent;
+
+
+
 
 	public AbstractQESQLExec(QueryManager qryMgr)
 	{
@@ -102,13 +95,13 @@ public abstract class AbstractQESQLExec : IDisposable
 		};
 	}
 
-	public void Execute(IBTextSpan textSpan, IDbConnection conn, int execTimeout, IBQESQLBatchConsumer batchConsumer, QESQLCommandBuilder execOptions)
+	public void Execute(IBTextSpan textSpan, IDbConnection conn, int execTimeout, IBQESQLBatchConsumer batchConsumer, LiveUserSettings sqlLiveSettings)
 	{
 		_Conn = conn;
 		_BatchConsumer = batchConsumer;
 		_ExecTimeout = execTimeout;
 		// Tracer.Trace(GetType(), "QESQLExec.Execute", " execOptions.WithEstimatedExecutionPlan: " + execOptions.WithEstimatedExecutionPlan);
-		_ExecOptions = execOptions.Clone() as QESQLCommandBuilder;
+		_ExecLiveSettings = sqlLiveSettings.Clone() as LiveUserSettings;
 		_TextSpan = textSpan;
 		_SpecialActions = EnQESQLBatchSpecialAction.None;
 
@@ -170,8 +163,8 @@ public abstract class AbstractQESQLExec : IDisposable
 
 			if (thread2 != null && thread2.IsAlive)
 			{
-				Tracer.Trace(GetType(), Tracer.EnLevel.Warning, "QESQLExec.Cancel: execution thread won't cancel. Forgetting about it", "", null);
-				HookupBatchWithConsumer(_CurBatch, _BatchConsumer, bHookUp: false);
+				Tracer.Trace(GetType(), Tracer.EnLevel.Warning, "Cancel()", "Execution thread won't cancel. Forgetting about it.");
+				HookupBatchWithConsumer(_CurBatch, _BatchConsumer, false);
 				lock (_LockObject)
 				{
 					_ExecState = EnExecState.Discarded;
@@ -214,21 +207,21 @@ public abstract class AbstractQESQLExec : IDisposable
 			_ExecResult = EnScriptExecutionResult.Failure;
 			_CurBatchIndex = 0;
 			_CurBatch.ExecTimeout = _ExecTimeout;
-			_CurBatch.SetSuppressProviderMessageHeaders(ExecOptions.SuppressProviderMessageHeaders);
-			HookupBatchWithConsumer(_CurBatch, _BatchConsumer, bHookUp: true);
+			_CurBatch.SetSuppressProviderMessageHeaders(ExecLiveSettings.SuppressProviderMessageHeaders);
+			HookupBatchWithConsumer(_CurBatch, _BatchConsumer, true);
 
 			lock (_LockObject)
 			{
 				if (_ExecState == EnExecState.Cancelling)
 				{
-					OnExecutionCompleted(EnScriptExecutionResult.Cancel, false);
+					OnExecutionCompleted(EnScriptExecutionResult.Cancel);
 					return;
 				}
 
 				_ExecState = EnExecState.Executing;
 			}
 
-			_ExecResult = SetRestoreConnectionOptions(bSet: true, _Conn);
+			_ExecResult = SetRestoreConnectionOptions(true, _Conn);
 
 			if (_ExecResult == EnScriptExecutionResult.Success)
 				ExecuteScript(_TextSpan);
@@ -241,7 +234,7 @@ public abstract class AbstractQESQLExec : IDisposable
 
 			if (discarded)
 			{
-				Tracer.Trace(GetType(), Tracer.EnLevel.Warning, "QESQLExec.ProcessScript", "execution was discarded");
+				Tracer.Trace(GetType(), Tracer.EnLevel.Warning, "ProcessScript()", "Execution was discarded.");
 				Cleanup();
 				if (_Conn != null && _Conn.State == ConnectionState.Open)
 				{
@@ -262,7 +255,7 @@ public abstract class AbstractQESQLExec : IDisposable
 			// We have bypassed that and get the plan at ExecuteReader above.
 			// ActualExecutionPlan = the WithExecutionPlan toggle is latched so we can get the actual because
 			// ExecuteReader has been called.
-			if (_ExecResult == EnScriptExecutionResult.Success && _Conn.GetType().ToString().EndsWith(C_PlanConnectionType, StringComparison.Ordinal) && ExecOptions.WithExecutionPlan && !ExecOptions.WithEstimatedExecutionPlan)
+			if (_ExecResult == EnScriptExecutionResult.Success && _Conn.GetType().ToString().EndsWith(C_PlanConnectionType, StringComparison.Ordinal) && ExecLiveSettings.WithExecutionPlan && !ExecLiveSettings.WithEstimatedExecutionPlan)
 			{
 				PostProcessSqlCeExecutionPlan();
 			}
@@ -278,15 +271,13 @@ public abstract class AbstractQESQLExec : IDisposable
 				_ExecResult = EnScriptExecutionResult.Failure;
 			}
 
-			bool isTextResult = _BatchConsumer is ResultsToTextOrFileBatchConsumer;
-
-			OnExecutionCompleted(_ExecResult, isTextResult);
+			OnExecutionCompleted(_ExecResult);
 		}
 		catch (Exception e)
 		{
 			Tracer.LogExCatch(GetType(), e);
 			_ExecResult = EnScriptExecutionResult.Failure;
-			OnExecutionCompleted(_ExecResult, false);
+			OnExecutionCompleted(_ExecResult);
 		}
 	}
 
@@ -385,26 +376,26 @@ public abstract class AbstractQESQLExec : IDisposable
 		string cmd1, cmd2, cmd3, cmd4;
 		if (dbConnection.GetType().ToString().EndsWith(C_PlanConnectionType, StringComparison.Ordinal))
 		{
-			if (ExecOptions.WithEstimatedExecutionPlan)
+			if (ExecLiveSettings.WithEstimatedExecutionPlan)
 			{
-				cmd1 = ExecOptions.EditorExecutionSetPlanXml.SqlCmd(true);
+				cmd1 = ExecLiveSettings.EditorExecutionSetPlanXml.SqlCmd(true);
 				_SetConnectionOptionsBatches.Add(new QESQLBatch(bNoResultsExpected: true, cmd1, _ExecTimeout, QryMgr));
-				cmd2 = ExecOptions.EditorExecutionSetNoExec.SqlCmd(true);
+				cmd2 = ExecLiveSettings.EditorExecutionSetNoExec.SqlCmd(true);
 				_SetConnectionOptionsBatches.Add(new QESQLBatch(bNoResultsExpected: true, cmd2, _ExecTimeout, QryMgr));
-				cmd3 = ExecOptions.EditorExecutionSetPlanXml.SqlCmd();
+				cmd3 = ExecLiveSettings.EditorExecutionSetPlanXml.SqlCmd();
 				_RestoreConnectionOptionsBatches.Add(new QESQLBatch(bNoResultsExpected: true, cmd3, _ExecTimeout, QryMgr));
-				cmd4 = ExecOptions.EditorExecutionSetNoExec.SqlCmd();
+				cmd4 = ExecLiveSettings.EditorExecutionSetNoExec.SqlCmd();
 				_RestoreConnectionOptionsBatches.Add(new QESQLBatch(bNoResultsExpected: true, cmd4, _ExecTimeout, QryMgr));
 			}
-			else if (ExecOptions.WithExecutionPlan)
+			else if (ExecLiveSettings.WithExecutionPlan)
 			{
-				cmd1 = ExecOptions.EditorExecutionSetStats.SqlCmd(true);
+				cmd1 = ExecLiveSettings.EditorExecutionSetStats.SqlCmd(true);
 				_SetConnectionOptionsBatches.Add(new QESQLBatch(bNoResultsExpected: true, cmd1, _ExecTimeout, QryMgr));
-				cmd2 = ExecOptions.EditorExecutionSetPlanXml.SqlCmd(true);
+				cmd2 = ExecLiveSettings.EditorExecutionSetPlanXml.SqlCmd(true);
 				_SetConnectionOptionsBatches.Add(new QESQLBatch(bNoResultsExpected: true, cmd2, _ExecTimeout, QryMgr));
-				cmd3 = ExecOptions.EditorExecutionSetStats.SqlCmd();
+				cmd3 = ExecLiveSettings.EditorExecutionSetStats.SqlCmd();
 				_RestoreConnectionOptionsBatches.Add(new QESQLBatch(bNoResultsExpected: true, cmd3, _ExecTimeout, QryMgr));
-				cmd4 = ExecOptions.EditorExecutionSetPlanXml.SqlCmd();
+				cmd4 = ExecLiveSettings.EditorExecutionSetPlanXml.SqlCmd();
 				_RestoreConnectionOptionsBatches.Add(new QESQLBatch(bNoResultsExpected: true, cmd4, _ExecTimeout, QryMgr));
 			}
 
@@ -417,48 +408,48 @@ public abstract class AbstractQESQLExec : IDisposable
 		}
 
 		int major = ConnectionStrategy.GetServerVersion().Major;
-		if (ExecOptions.WithNoExec)
+		if (ExecLiveSettings.WithNoExec)
 		{
 			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "QESQLExec.ProcessExecOptions", "setting noexec off");
-			stringBuilder2.AppendFormat("{0} ", ExecOptions.EditorExecutionSetNoExec.SqlCmd());
+			stringBuilder2.AppendFormat("{0} ", ExecLiveSettings.EditorExecutionSetNoExec.SqlCmd());
 		}
 
-		if (ExecOptions.WithStatisticsIO)
+		if (ExecLiveSettings.WithStatisticsIO)
 		{
 			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "QESQLExec.ProcessExecOptions", "setting statistics io");
-			stringBuilder.AppendFormat("{0} ", ExecOptions.EditorExecutionSetStatisticsIO.SqlCmd(true));
-			stringBuilder2.AppendFormat("{0} ", ExecOptions.EditorExecutionSetStatisticsIO.SqlCmd());
+			stringBuilder.AppendFormat("{0} ", ExecLiveSettings.EditorExecutionSetStatisticsIO.SqlCmd(true));
+			stringBuilder2.AppendFormat("{0} ", ExecLiveSettings.EditorExecutionSetStatisticsIO.SqlCmd());
 		}
 
-		if (ExecOptions.WithStatisticsTime)
+		if (ExecLiveSettings.WithStatisticsTime)
 		{
 			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "QESQLExec.ProcessExecOptions", "setting statistics time");
-			// stringBuilder.AppendFormat("{0} ", ExecOptions.EditorExecutionSetStatisticsTime.SqlCmd(true));
-			// stringBuilder2.AppendFormat("{0} ", ExecOptions.EditorExecutionSetStatisticsTime.SqlCmd());
+			// stringBuilder.AppendFormat("{0} ", ExecLiveSettings.EditorExecutionSetStatisticsTime.SqlCmd(true));
+			// stringBuilder2.AppendFormat("{0} ", ExecLiveSettings.EditorExecutionSetStatisticsTime.SqlCmd());
 		}
 
-		if (ExecOptions.WithDebugging)
+		if (ExecLiveSettings.WithDebugging)
 		{
 			_SpecialActions |= EnQESQLBatchSpecialAction.ExecuteWithDebugging;
 		}
 
 		if (ConnectionStrategy.IsExecutionPlanAndQueryStatsSupported)
 		{
-			if (ExecOptions.WithEstimatedExecutionPlan)
+			if (ExecLiveSettings.WithEstimatedExecutionPlan)
 			{
 				// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "QESQLExec.ProcessExecOptions", "setting estimated execution plan");
 				_SpecialActions &= ~EnQESQLBatchSpecialAction.ExecutionPlanMask;
 				if (major >= -1 /* 9 */) // Always
 				{
 					_SetConnectionOptionsBatches.Insert(0, new QESQLBatch(bNoResultsExpected: true,
-						ExecOptions.EditorExecutionSetPlanXml.SqlCmd(true), _ExecTimeout, QryMgr));
+						ExecLiveSettings.EditorExecutionSetPlanXml.SqlCmd(true), _ExecTimeout, QryMgr));
 					_SetConnectionOptionsBatches.Insert(0, new QESQLBatch(bNoResultsExpected: true,
-						ExecOptions.EditorExecutionSetNoExec.SqlCmd(true), _ExecTimeout, QryMgr));
+						ExecLiveSettings.EditorExecutionSetNoExec.SqlCmd(true), _ExecTimeout, QryMgr));
 
 					_RestoreConnectionOptionsBatches.Add(new QESQLBatch(bNoResultsExpected: true,
-						ExecOptions.EditorExecutionSetPlanXml.SqlCmd(), _ExecTimeout, QryMgr));
+						ExecLiveSettings.EditorExecutionSetPlanXml.SqlCmd(), _ExecTimeout, QryMgr));
 					_RestoreConnectionOptionsBatches.Add(new QESQLBatch(bNoResultsExpected: true,
-						ExecOptions.EditorExecutionSetNoExec.SqlCmd(), _ExecTimeout, QryMgr));
+						ExecLiveSettings.EditorExecutionSetNoExec.SqlCmd(), _ExecTimeout, QryMgr));
 					
 					_SpecialActions |= EnQESQLBatchSpecialAction.ExpectEstimatedExecutionPlan;
 					_SpecialActions |= EnQESQLBatchSpecialAction.ExpectEstimatedYukonXmlExecutionPlan;
@@ -466,20 +457,20 @@ public abstract class AbstractQESQLExec : IDisposable
 				else
 				{
 					// _SetConnectionOptionsBatches.Insert(0, new QESQLBatch(bNoResultsExpected: true,
-					//		ExecOptions.EditorExecutionSetExecutionPlanAll.SqlCmd(true), _ExecTimeout, QryMgr));
+					//		ExecLiveSettings.EditorExecutionSetExecutionPlanAll.SqlCmd(true), _ExecTimeout, QryMgr));
 					// _RestoreConnectionOptionsBatches.Add(new QESQLBatch(bNoResultsExpected: true,
-					//		ExecOptions.EditorExecutionSetExecutionPlanAll.SqlCmd(), _ExecTimeout, QryMgr));
+					//		ExecLiveSettings.EditorExecutionSetExecutionPlanAll.SqlCmd(), _ExecTimeout, QryMgr));
 					_SpecialActions |= EnQESQLBatchSpecialAction.ExpectEstimatedExecutionPlan;
 				}
 			}
-			else if (ExecOptions.WithStatisticsProfile || ExecOptions.WithExecutionPlan)
+			else if (ExecLiveSettings.WithStatisticsProfile || ExecLiveSettings.WithExecutionPlan)
 			{
 				// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "QESQLExec.ProcessExecOptions", "setting statistics profile");
 				if (major >= -1 /* 9 */)
 				{
-					stringBuilder.AppendFormat("{0} ", ExecOptions.EditorExecutionSetStats.SqlCmd(true));
-					stringBuilder2.AppendFormat("{0} ", ExecOptions.EditorExecutionSetStats.SqlCmd());
-					if (ExecOptions.WithExecutionPlan)
+					stringBuilder.AppendFormat("{0} ", ExecLiveSettings.EditorExecutionSetStats.SqlCmd(true));
+					stringBuilder2.AppendFormat("{0} ", ExecLiveSettings.EditorExecutionSetStats.SqlCmd());
+					if (ExecLiveSettings.WithExecutionPlan)
 					{
 						_SpecialActions &= ~EnQESQLBatchSpecialAction.ExecutionPlanMask;
 						_SpecialActions |= EnQESQLBatchSpecialAction.ExpectActualExecutionPlan;
@@ -488,9 +479,9 @@ public abstract class AbstractQESQLExec : IDisposable
 				}
 				else
 				{
-					stringBuilder.AppendFormat("{0} ", ExecOptions.EditorExecutionSetStats.SqlCmd(true));
-					stringBuilder2.AppendFormat("{0} ", ExecOptions.EditorExecutionSetStats.SqlCmd());
-					if (ExecOptions.WithExecutionPlan)
+					stringBuilder.AppendFormat("{0} ", ExecLiveSettings.EditorExecutionSetStats.SqlCmd(true));
+					stringBuilder2.AppendFormat("{0} ", ExecLiveSettings.EditorExecutionSetStats.SqlCmd());
+					if (ExecLiveSettings.WithExecutionPlan)
 					{
 						_SpecialActions &= ~EnQESQLBatchSpecialAction.ExecutionPlanMask;
 						_SpecialActions |= EnQESQLBatchSpecialAction.ExpectActualExecutionPlan;
@@ -499,17 +490,17 @@ public abstract class AbstractQESQLExec : IDisposable
 			}
 		}
 
-		if (ExecOptions.ParseOnly)
+		if (ExecLiveSettings.ParseOnly)
 		{
 			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "QESQLExec.ProcessExecOptions", "setting parseonly");
-			stringBuilder.AppendFormat("{0} ", ExecOptions.EditorExecutionSetParseOnly.SqlCmd(true));
-			stringBuilder2.AppendFormat("{0} ", ExecOptions.EditorExecutionSetParseOnly.SqlCmd());
+			stringBuilder.AppendFormat("{0} ", ExecLiveSettings.EditorExecutionSetParseOnly.SqlCmd(true));
+			stringBuilder2.AppendFormat("{0} ", ExecLiveSettings.EditorExecutionSetParseOnly.SqlCmd());
 		}
 
-		if (ExecOptions.WithNoExec)
+		if (ExecLiveSettings.WithNoExec)
 		{
 			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "QESQLExec.ProcessExecOptions", "setting noexec on");
-			stringBuilder.AppendFormat("{0} ", ExecOptions.EditorExecutionSetNoExec.SqlCmd(true));
+			stringBuilder.AppendFormat("{0} ", ExecLiveSettings.EditorExecutionSetNoExec.SqlCmd(true));
 		}
 
 		cmd1 = stringBuilder.ToString().Trim();
@@ -520,13 +511,13 @@ public abstract class AbstractQESQLExec : IDisposable
 			_RestoreConnectionOptionsBatches.Add(new QESQLBatch(bNoResultsExpected: true, cmd2, _ExecTimeout, QryMgr));
 		}
 
-		if (ConnectionStrategy.IsExecutionPlanAndQueryStatsSupported && ExecOptions.WithExecutionPlanText && !ExecOptions.WithStatisticsProfile && !ExecOptions.WithExecutionPlan && !ExecOptions.WithEstimatedExecutionPlan)
+		if (ConnectionStrategy.IsExecutionPlanAndQueryStatsSupported && ExecLiveSettings.WithExecutionPlanText && !ExecLiveSettings.WithStatisticsProfile && !ExecLiveSettings.WithExecutionPlan && !ExecLiveSettings.WithEstimatedExecutionPlan)
 		{
 			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "QESQLExec.ProcessExecOptions", "setting showplan_text");
 			_SetConnectionOptionsBatches.Insert(0, new QESQLBatch(bNoResultsExpected: true,
-				ExecOptions.EditorExecutionSetShowplanText.SqlCmd(true), _ExecTimeout, QryMgr));
+				ExecLiveSettings.EditorExecutionSetShowplanText.SqlCmd(true), _ExecTimeout, QryMgr));
 			_RestoreConnectionOptionsBatches.Add(new QESQLBatch(bNoResultsExpected: true,
-				ExecOptions.EditorExecutionSetShowplanText.SqlCmd(), _ExecTimeout, QryMgr));
+				ExecLiveSettings.EditorExecutionSetShowplanText.SqlCmd(), _ExecTimeout, QryMgr));
 		}
 
 		// Above left in for brevity. Just clear. We handle some in FbCommand logically
@@ -550,7 +541,7 @@ public abstract class AbstractQESQLExec : IDisposable
 
 			QESQLBatch qESQLBatch = qESQLBatchCollection[i];
 
-			if (!QESQLCommandBuilder.IsSupported(qESQLBatch))
+			if (!LiveUserSettings.IsSupported(qESQLBatch))
 				continue;
 
 			HookupBatchWithConsumer(qESQLBatch, _BatchConsumer, bHookUp: true);
@@ -575,7 +566,7 @@ public abstract class AbstractQESQLExec : IDisposable
 
 	protected void ProcessBatchCommand(string sqlScript, IBTextSpan textSpan, out bool continueProcessing)
 	{
-		// Tracer.Trace(GetType(), "QESQLExec.ProcessBatchCommand", " ExecOptions.WithEstimatedExecutionPlan: " + ExecOptions.WithEstimatedExecutionPlan);
+		// Tracer.Trace(GetType(), "QESQLExec.ProcessBatchCommand", " ExecLiveSettings.WithEstimatedExecutionPlan: " + ExecLiveSettings.WithEstimatedExecutionPlan);
 
 		continueProcessing = true;
 
@@ -701,15 +692,13 @@ public abstract class AbstractQESQLExec : IDisposable
 		{
 			bool isParseOnly = false;
 			bool withEstimatedPlan = false;
-			if (ExecOptions != null)
+			if (ExecLiveSettings != null)
 			{
-				isParseOnly = ExecOptions.ParseOnly;
-				withEstimatedPlan = ExecOptions.WithEstimatedExecutionPlan;
+				isParseOnly = ExecLiveSettings.ParseOnly;
+				withEstimatedPlan = ExecLiveSettings.WithEstimatedExecutionPlan;
 			}
 
-			bool isTextResult = !isParseOnly && (_BatchConsumer is ResultsToTextOrFileBatchConsumer);
-
-			BatchExecutionCompletedEvent(this, new (batchResult, batch, withEstimatedPlan, isParseOnly, isTextResult));
+			BatchExecutionCompletedEvent(this, new (batchResult, batch, withEstimatedPlan, isParseOnly));
 		}
 	}
 
@@ -722,7 +711,8 @@ public abstract class AbstractQESQLExec : IDisposable
 		StatementCompletedEvent?.Invoke(sender, args);
 
 		// Added for hitching the text plan onto the sql query
-		if (((DbCommand)sender).Connection.GetType().ToString().EndsWith(C_PlanConnectionType, StringComparison.Ordinal) && ExecOptions.WithExecutionPlan && !ExecOptions.WithEstimatedExecutionPlan)
+		if (((DbCommand)sender).Connection.GetType().ToString().EndsWith(C_PlanConnectionType, StringComparison.Ordinal)
+			&& ExecLiveSettings.WithExecutionPlan && !ExecLiveSettings.WithEstimatedExecutionPlan)
 		{
 			lock (_LockObject)
 			{
@@ -737,15 +727,15 @@ public abstract class AbstractQESQLExec : IDisposable
 	}
 
 
-	protected virtual void OnExecutionCompleted(EnScriptExecutionResult execResult, bool isTextResults)
+	protected virtual void OnExecutionCompleted(EnScriptExecutionResult execResult)
 	{
 		// Tracer.Trace(GetType(), "QESQLExec::OnExecutionCompleted():  QESQLExec.OnExecutionCompleted", "execResult = {0}", execResult);
 		bool withEstimatedPlan = false;
 		bool isParseOnly = false;
-		if (ExecOptions != null)
+		if (ExecLiveSettings != null)
 		{
-			withEstimatedPlan = ExecOptions.WithEstimatedExecutionPlan;
-			isParseOnly = ExecOptions.ParseOnly;
+			withEstimatedPlan = ExecLiveSettings.WithEstimatedExecutionPlan;
+			isParseOnly = ExecLiveSettings.ParseOnly;
 		}
 
 		try
@@ -755,7 +745,7 @@ public abstract class AbstractQESQLExec : IDisposable
 		}
 		finally
 		{
-			ExecutionCompletedEvent?.Invoke(this, new ScriptExecutionCompletedEventArgs(execResult, withEstimatedPlan, isParseOnly, isTextResults));
+			ExecutionCompletedEvent?.Invoke(this, new ScriptExecutionCompletedEventArgs(execResult, withEstimatedPlan, isParseOnly));
 		}
 	}
 
@@ -780,11 +770,11 @@ public abstract class AbstractQESQLExec : IDisposable
 		}
 
 		_BatchConsumer = null;
-		_ExecOptions = null;
+		_ExecLiveSettings = null;
+
 		lock (_LockObject)
-		{
 			_ExecThread = null;
-		}
+
 	}
 
 	protected virtual void Dispose(bool bDisposing)

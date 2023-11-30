@@ -21,20 +21,18 @@ namespace BlackbirdSql.Common.Model.Events
 
 		public bool IsParseOnly { get; private set; }
 
-		public bool IsTextResults { get; private set; }
 
 		public ScriptExecutionCompletedEventArgs(EnScriptExecutionResult executionResult)
-			: this(executionResult, false, false, false)
+			: this(executionResult, false, false)
 		{
 		}
 
 		public ScriptExecutionCompletedEventArgs(EnScriptExecutionResult executionResult,
-			bool withEstimatedPlan, bool isParseOnly, bool isTextResults)
+			bool withEstimatedPlan, bool isParseOnly)
 		{
 			ExecutionResult = executionResult;
 			WithEstimatedPlan = withEstimatedPlan;
 			IsParseOnly = isParseOnly;
-			IsTextResults = isTextResults;
 		}
 	}
 }

@@ -114,7 +114,6 @@ public abstract class AbstractEditorEventsManager : AbstractEventsManager
 					}
 					catch (Exception ex)
 					{
-						Tracer.Trace(type, "HandleCloseEditorOrDesigner", ex.ToString());
 						Cmd.ShowMessageBoxEx("", ex.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 					}
 

@@ -46,10 +46,10 @@ public class SqlEditorResultsAsTextCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		AuxiliaryDocData auxiliaryDocDataForEditor = GetAuxiliaryDocDataForEditor();
-		if (auxiliaryDocDataForEditor != null)
+		AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
+		if (auxDocData != null)
 		{
-			auxiliaryDocDataForEditor.SqlOutputMode = EnSqlOutputMode.ToText;
+			auxDocData.SqlOutputMode = EnSqlOutputMode.ToText;
 		}
 
 		return VSConstants.S_OK;

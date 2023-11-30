@@ -98,6 +98,28 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlackbirdSql.Core", "Blackb
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlackbirdSql.Common", "BlackbirdSql.Common\BlackbirdSql.Common.csproj", "{A17289FA-EFEF-49AA-8757-296447C2C1BE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Originals", "Originals", "{4B834E6D-07B9-4D5C-8C06-263DB7404B44}"
+	ProjectSection(SolutionItems) = preProject
+		Originals\ConnectionDialogResources2.resx = Originals\ConnectionDialogResources2.resx
+		Originals\ConnectionDlg.Core.CoreResource.resx = Originals\ConnectionDlg.Core.CoreResource.resx
+		Originals\ConnectionDlg.UI.ConnectionPropertiesResources.resx = Originals\ConnectionDlg.UI.ConnectionPropertiesResources.resx
+		Originals\ConnectionDlg.UI.FirewallRullDialogResources.resx = Originals\ConnectionDlg.UI.FirewallRullDialogResources.resx
+		Originals\Data.Tools.SqlEditor.Resources.resx = Originals\Data.Tools.SqlEditor.Resources.resx
+		Originals\DesignerServicesResource.resx = Originals\DesignerServicesResource.resx
+		Originals\Management.SqlMgmt.SR.resx = Originals\Management.SqlMgmt.SR.resx
+		Originals\Management.SqlMgmt.SRError.resx = Originals\Management.SqlMgmt.SRError.resx
+		Originals\Management.UI.Grid.SRError.resx = Originals\Management.UI.Grid.SRError.resx
+		Originals\Management.UI.Grid.StringDataStorage.resx = Originals\Management.UI.Grid.StringDataStorage.resx
+		Originals\Microsoft.VisualStudio.Data.Framework.Properties.Resources.resx = Originals\Microsoft.VisualStudio.Data.Framework.Properties.Resources.resx
+		Originals\Microsoft.VisualStudio.Data.Providers.Common.Properties.Resources.resx = Originals\Microsoft.VisualStudio.Data.Providers.Common.Properties.Resources.resx
+		Originals\SqlEditor.Resources.resx = Originals\SqlEditor.Resources.resx
+		Originals\SqlEditorResource.resx = Originals\SqlEditorResource.resx
+		Originals\SqlExecutionAnsiSettingsDlg.resx = Originals\SqlExecutionAnsiSettingsDlg.resx
+		Originals\SqlPackageResource.resx = Originals\SqlPackageResource.resx
+		Originals\TabbedEditorResources.resx = Originals\TabbedEditorResources.resx
+		Originals\VSPackage.resx = Originals\VSPackage.resx
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -102,6 +102,22 @@ public interface IBLiveUserSettings
 	char EditorResultsTextDelimiter { get; set; }
 
 
+
+	bool WithExecutionPlan { get; set; }
+	bool WithClientStats { get; set; }
+	bool WithProfiling { get; set; }
+	bool ParseOnly { get; set; }
+	bool WithNoExec { get; set; }
+	bool WithExecutionPlanText { get; set; }
+	bool WithStatisticsTime { get; set; }
+	bool WithStatisticsIO { get; set; }
+	bool WithStatisticsProfile { get; set; }
+	bool WithEstimatedExecutionPlan { get; set; }
+	bool WithOleSqlScripting { get; set; }
+	public bool SuppressProviderMessageHeaders { get; set; }
+	public bool WithDebugging { get; set; }
+
+
 	#endregion Property Accessors
 
 	FbScript CommandBuilder(params string[] statements);

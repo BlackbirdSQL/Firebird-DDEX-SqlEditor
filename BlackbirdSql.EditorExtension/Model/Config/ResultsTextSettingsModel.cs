@@ -94,8 +94,8 @@ public class ResultsTextSettingsModel : AbstractSettingsModel<ResultsTextSetting
 	[GlobalizedDisplayName("OptionDisplayResultsTextScrollingResults")]
 	[GlobalizedDescription("OptionDescriptionResultsTextScrollingResults")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
-	[DefaultValue(true)]
-	public bool ScrollingResults { get; set; } = true;
+	[DefaultValue(false)]
+	public bool ScrollingResults { get; set; } = false;
 
 	[GlobalizedCategory("OptionCategoryGeneral")]
 	[GlobalizedDisplayName("OptionDisplayResultsTextAlignRightNumerics")]

@@ -15,10 +15,10 @@ using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
-using BlackbirdSql.Common.Controls.Graphing;
-using BlackbirdSql.Common.Controls.Graphing.Enums;
-using BlackbirdSql.Common.Controls.Graphing.Gram;
-using BlackbirdSql.Common.Controls.Graphing.Interfaces;
+// using BlackbirdSql.Common.Controls.Graphing;
+// using BlackbirdSql.Common.Controls.Graphing.Enums;
+// using BlackbirdSql.Common.Controls.Graphing.Gram;
+// using BlackbirdSql.Common.Controls.Graphing.Interfaces;
 using BlackbirdSql.Common.Controls.QueryExecution;
 using BlackbirdSql.Common.Ctl.Commands;
 using BlackbirdSql.Common.Model;
@@ -26,7 +26,7 @@ using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Enums;
 
-using Microsoft.AnalysisServices.Graphing;
+// using Microsoft.AnalysisServices.Graphing;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -40,7 +40,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane;
 [SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
 	Justification = "UIThread compliance is performed by the class.")]
 
-public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.Interfaces.IBObjectWithSite, IOleCommandTarget
+public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.Interfaces.IBObjectWithSite // , IOleCommandTarget
 {
 	private class DataBinding
 	{
@@ -55,7 +55,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 		}
 	}
 
-	private Dictionary<GraphPanel, DataBinding> dataBindings;
+	// private readonly Dictionary<GraphPanel, DataBinding> dataBindings;
 
 	// private const string TraceName = "ExecutionPlan";
 
@@ -63,17 +63,19 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 
 	private MultiControlPanel multiControlPanel;
 
-	private GraphPanel currentGraphPanel;
+	// private GraphPanel currentGraphPanel;
 
 	private MenuCommandsService _MenuService = new MenuCommandsService();
 
+	/*
 	private PageSettings cachedPageSettings;
 
 	private PrinterSettings cachedPrinterSettings;
 
 	private bool shouldResizePanels;
 
-	private string sqlplanFile;
+	private readonly string sqlplanFile;
+	*/
 
 	public int GraphPanelCount => multiControlPanel.HostedControlsCount;
 
@@ -82,6 +84,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 		Initialize();
 	}
 
+	/*
 	public GraphPanel GetGraphPanel(int index)
 	{
 		if (index < 0 || index >= GraphPanelCount)
@@ -142,6 +145,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 		streamWriter.Write(value.DataSource);
 	}
 
+
 	public void AddGraphs(IGraph[] graphs, object dataSource)
 	{
 		multiControlPanel.SuspendLayout();
@@ -177,6 +181,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 			GetGraphPanel(0).Activate();
 		}
 	}
+	*/
 
 	void BlackbirdSql.Common.Controls.Interfaces.IBObjectWithSite.SetSite(System.IServiceProvider serviceProvider)
 	{
@@ -184,6 +189,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 		OnHosted();
 	}
 
+	/*
 	int IOleCommandTarget.QueryStatus(ref Guid guidGroup, uint cmdID, OLECMD[] oleCmd, IntPtr oleText)
 	{
 		CommandID commandID = new CommandID(guidGroup, (int)oleCmd[0].cmdID);
@@ -234,6 +240,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 		return -2147221248;
 	}
 
+
 	int IOleCommandTarget.Exec(ref Guid guidGroup, uint nCmdId, uint nCmdExcept, IntPtr vIn, IntPtr vOut)
 	{
 		CommandID commandID = new CommandID(guidGroup, (int)nCmdId);
@@ -255,6 +262,8 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 		return -2147221248;
 	}
 
+	*/
+
 	protected override void Dispose(bool disposing)
 	{
 		Font font = null;
@@ -264,7 +273,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 			{
 				for (int i = 0; i < GraphPanelCount; i++)
 				{
-					GetGraphPanel(i).IsActiveChangedEvent -= OnGraphActiveChanged;
+					// GetGraphPanel(i).IsActiveChangedEvent -= OnGraphActiveChanged;
 				}
 				multiControlPanel.Dispose();
 				multiControlPanel = null;
@@ -275,9 +284,9 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 				_MenuService.Dispose();
 				_MenuService = null;
 			}
-			cachedPageSettings = null;
-			cachedPrinterSettings = null;
-			currentGraphPanel = null;
+			// cachedPageSettings = null;
+			// cachedPrinterSettings = null;
+			// currentGraphPanel = null;
 			if (Font != base.Parent.Font)
 			{
 				font = Font;
@@ -293,6 +302,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 		Font = GetExecutionPlanFont();
 	}
 
+	/*
 	protected override void OnFontChanged(EventArgs e)
 	{
 		base.OnFontChanged(e);
@@ -413,12 +423,12 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.AppendLine(string.Format(CultureInfo.CurrentCulture, ControlsResources.MissingIndexDetailsTitle, text, missingIndexImpact));
 			stringBuilder.AppendLine();
-			stringBuilder.AppendLine("/*");
+			stringBuilder.AppendLine("/ * ");
 			stringBuilder.AppendLine(string.Format(CultureInfo.InvariantCulture, "USE {0}", missingIndexDatabase));
 			stringBuilder.AppendLine("GO");
 			stringBuilder.AppendLine(string.Format(CultureInfo.InvariantCulture, "{0}", missingIndexQueryText));
 			stringBuilder.AppendLine("GO");
-			stringBuilder.AppendLine("*/");
+			stringBuilder.AppendLine("* /");
 			Cmd.OpenNewMiscellaneousSqlFile(new ServiceProvider(Controller.OleServiceProvider), stringBuilder.ToString());
 		}
 	}
@@ -631,6 +641,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 			Cmd.ShowExceptionInDialog(ControlsResources.ErrUnableToPageSetup, e2);
 		}
 	}
+	*/
 
 	private void Initialize()
 	{
@@ -646,6 +657,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 
 	private void InitializeMenuCommands()
 	{
+		/*
 		Guid clsid = LibraryData.CLSID_CommandSet;
 		MenuCommand[] cmds = new MenuCommand[10]
 		{
@@ -661,6 +673,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 			new MenuCommand(OnPrintPageSetup, new CommandID(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.PageSetup))
 		};
 		_MenuService.AddRange(cmds);
+		*/
 	}
 
 	private new object GetService(Type serviceType)
@@ -668,6 +681,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 		return serviceProvider.GetService(serviceType);
 	}
 
+	/*
 	private GraphPanel CreateGraphPanel()
 	{
 		GraphPanel graphPanel;
@@ -680,7 +694,9 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 		multiControlPanel.AddControl(graphPanel);
 		return graphPanel;
 	}
+	*/
 
+	/*
 	private void UpdateAllPanelDescriptions()
 	{
 		double totalCost = GetTotalCost();
@@ -743,6 +759,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 			currentGraphPanel = graphPanel;
 		}
 	}
+	*/
 
 	private Font GetExecutionPlanFont()
 	{
@@ -761,6 +778,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 		return new Font("Courier New", 10f);
 	}
 
+	/*
 	private void SetOptionalMissingIndex(GraphPanel panel)
 	{
 		if (dataBindings == null || !dataBindings.TryGetValue(panel, out DataBinding value))
@@ -812,4 +830,5 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 		string caption = string.Format(CultureInfo.InvariantCulture, ControlsResources.MissingIndexFormat, value6, text3);
 		panel.DescriptionCtl.SetOptionalMissingIndex(caption, text3, value6, value2);
 	}
+	*/
 }

@@ -10,11 +10,11 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-using BlackbirdSql.Common.Controls.Graphing;
-using BlackbirdSql.Common.Controls.Graphing.Enums;
-using BlackbirdSql.Common.Controls.Graphing.Interfaces;
-using BlackbirdSql.Common.Controls.Interfaces;
+// using BlackbirdSql.Common.Controls.Graphing;
+// using BlackbirdSql.Common.Controls.Graphing.Enums;
+// using BlackbirdSql.Common.Controls.Graphing.Interfaces;
 using BlackbirdSql.Common.Ctl;
+using BlackbirdSql.Common.Ctl.Config;
 using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
@@ -29,7 +29,7 @@ using BlackbirdSql.Core.Ctl.Enums;
 
 using FirebirdSql.Data.FirebirdClient;
 
-using Microsoft.AnalysisServices.Graphing;
+// using Microsoft.AnalysisServices.Graphing;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -54,88 +54,51 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 	private delegate void FlushXMLWriterOrEnsureXMLResultsTabDelegate(ShellBufferWriter writer);
 
 	// private readonly object _thisObject = new object();
-
 	private AbstractQESQLBatchConsumer _BatchConsumer;
-
 	private ResultsToTextOrFileBatchConsumer _ResultRedirBatchConsumer;
-
 	private StatisticsControl _ClientStatisticsCtl;
-
 	private ServiceProvider _ServiceProvider;
-
 	private object _ObjServiceProvider;
-
 	private AbstractResultsWriter _ResultsWriter;
-
 	private AbstractResultsWriter _PlanWriter;
-
 	private AbstractResultsWriter _MessagesWriter;
-
 	private AbstractResultsWriter _ErrorsWriter;
-
 	private bool _HasMessages;
-
 	private bool _HasTextResults;
-
 	// private bool _HasTextPlan;
-
 	private bool _HadExecutionErrors;
-
 	protected int _GridCount;
-
 	private AuxiliaryDocData _AuxDocData;
-
 	private string _DefaultResultsDirectory = "";
-
 	private const int C_MaxGridResultSets = 10000000;
-
-	private const int C_MaxExecutionPlanControls = 100;
-
-	private bool _ExecutionPlanMaxCountExceeded;
-
+	// private const int C_MaxExecutionPlanControls = 100;
+	// private bool _ExecutionPlanMaxCountExceeded;
 	private readonly ResultWindowPane _ResultsGridPane;
-
 	private readonly ResultWindowPane _MessagePane;
-
 	private readonly ResultWindowPane _TextResultsPane;
-
 	private readonly ResultWindowPane _StatisticsPane;
-
 	private readonly ResultWindowPane _ExecutionPlanPane;
-
 	private readonly ResultWindowPane _TextPlanPane;
-
 	private readonly ResultWindowPane _SpatialResultsPane;
-
 	private GridResultsPanel _GridResultsPage;
-
 	private VSTextEditorPanel _TextResultsPage;
-
 	private VSTextEditorPanel _TextMessagesPage;
-
 	private StatisticsPanel _StatisticsPage;
-
 	private ExecutionPlanPanel _ExecutionPlanPage;
-
 	private VSTextEditorPanel _TextPlanPage;
-
 	private Font _FontGridResults = Control.DefaultFont;
-
 	private Color _BkGridColor = SystemColors.Window;
-
 	private Color _GridColor = SystemColors.WindowText;
-
 	private Color _SelectedCellColor = SystemColors.Highlight;
-
 	private Color _InactiveCellColor = SystemColors.InactiveCaption;
-
 	private Color _NullValueCellColor = SystemColors.InactiveCaption;
-
 	private Color _HeaderRowColor = SystemColors.InactiveCaption;
-
 	private bool _ClearStatisticsControl;
-
 	private QueryManager _QryMgr;
+
+
+
+
 
 	public AuxiliaryDocData AuxDocData
 	{
@@ -162,16 +125,8 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 		}
 	}
 
-	public IBLiveUserSettings LiveSettings
-	{
-		get
-		{
-			return AuxDocData.LiveSettings;
-		}
-		set
-		{
-		}
-	}
+	public IBLiveUserSettings LiveSettings => AuxDocData.LiveSettings;
+
 
 	public string DefaultResultsDirectory
 	{
@@ -224,7 +179,6 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 		}
 	}
 
-	public QESQLCommandBuilder SqlExecutionOptions => AuxDocData.QryMgr.LiveSettings;
 
 	public ResultWindowPane ExecutionPlanWindowPane => _ExecutionPlanPane;
 
@@ -318,7 +272,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	public IVsTextView TextPlanPaneTextView => _TextPlanPage?.TextViewCtl.TextView;
 
-	private bool WithEstimatedExecutionPlan => SqlExecutionOptions.WithEstimatedExecutionPlan;
+	private bool WithEstimatedExecutionPlan => LiveSettings.WithEstimatedExecutionPlan;
 
 	public DisplaySQLResultsControl(ResultWindowPane resultsGridPanel, ResultWindowPane messagePanel, ResultWindowPane textResultsPanel, ResultWindowPane statisticsPanel, ResultWindowPane executionPlanPanel, ResultWindowPane textPlanPanel, ResultWindowPane spatialPane, IBSqlEditorWindowPane editorPane)
 	{
@@ -449,7 +403,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 		OnSqlExecutionModeChanged(sender, new AuxiliaryDocData.SqlExecutionModeChangedEventArgs(AuxDocData.SqlOutputMode));
 		_GridResultsPage.SetGridTabOptions(AuxDocData.LiveSettings.EditorResultsGridSaveIncludeHeaders,
 			AuxDocData.LiveSettings.EditorResultsGridCsvQuoteStringsCommas);
-		DefaultResultsDirectory = AuxDocData.QryMgr.LiveSettings.EditorResultsDirectory;
+		DefaultResultsDirectory = AuxDocData.LiveSettings.EditorResultsDirectory;
 	}
 
 	private void OnGridColorChanged(object sender, ColorChangedEventArgs args)
@@ -728,15 +682,15 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 		}
 	}
 
-	public void AddStringToResults(string message, bool flush, bool isTextResults)
+	public void AddStringToResults(string message, bool flush)
 	{
-		AddStringToTextWriterCommon(message, -1, null, EnResultMessageType.Normal, _ResultsWriter, flush, isTextResults, false);
+		AddStringToTextWriterCommon(message, -1, null, EnResultMessageType.Normal, _ResultsWriter, flush, false);
 		_HasTextResults = true;
 	}
 
 	public void AddStringToPlan(string message, bool flush)
 	{
-		AddStringToTextWriterCommon(message, -1, null, EnResultMessageType.Normal, _PlanWriter, flush, false, false);
+		AddStringToTextWriterCommon(message, -1, null, EnResultMessageType.Normal, _PlanWriter, flush, false);
 		// _HasTextPlan = true;
 	}
 
@@ -758,7 +712,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	public void AddResultSetSeparatorMsg()
 	{
-		AddStringToResults("", true, false);
+		AddStringToResults("", true);
 	}
 
 
@@ -790,13 +744,14 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 	public void ProcessSpecialActionOnBatch(QESQLBatchSpecialActionEventArgs args)
 	{
 		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.ProcessSpecialActionOnBatch", "", null);
-		IGraph[] graphs = null;
-		object dataSource = null;
+		// IGraph[] graphs = null;
+		// object dataSource = null;
 
 		bool hasGraphs = false;
 
 		object executionPlanData = GetExecutionPlanData(args.DataReader, args.Action);
 
+		/*
 		try
 		{
 			// GetExecutionPlanGraphs(args.DataReader, args.Batch, args.Action, out graphs, out dataSource);
@@ -806,8 +761,9 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 		catch (Exception e)
 		{
 			// Execution plan visualizer is not supported yet. Just log the exception
-			Tracer.Trace(GetType(), "ProcessSpecialActionOnBatch", "Execution plan visualizer under development. Exception: {0}", e.Message);
+			// Tracer.Trace(GetType(), "ProcessSpecialActionOnBatch", "Execution plan visualizer under development. Exception: {0}", e.Message);
 		}
+		*/
 
 		/*
 		Task task = Task.Factory.StartNew(delegate
@@ -825,12 +781,16 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 			});
 			return;
 		}
+
+		/*
 		ThreadHelper.Generic.Invoke(delegate
 		{
 			ProcessSpecialActionOnBatchInt(args.Action, graphs, dataSource);
 		});
+		*/
 	}
 
+	/*
 	private void ProcessSpecialActionOnBatchInt(EnQESQLBatchSpecialAction action, IGraph[] graphs, object dataSource)
 	{
 		//IL_00bf: Expected O, but got Unknown
@@ -895,6 +855,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 			AddStringToErrors(ex.Message, flush: true);
 		}
 	}
+	*/
 
 
 	private void ProcessSpecialActionOnBatchInt(EnQESQLBatchSpecialAction action, object dataSource)
@@ -961,7 +922,6 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 			throw exo;
 		}
 	}
-	*/
 	protected void GetExecutionPlanGraphs(object executionPlanData, EnQESQLBatchSpecialAction batchSpecialAction, out IGraph[] graphs, out object dataSource)
 	{
 		EnExecutionPlanType val = (EnExecutionPlanType)((batchSpecialAction & EnQESQLBatchSpecialAction.ExpectActualExecutionPlan) != 0 ? 1 : 2);
@@ -984,6 +944,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 			throw exo;
 		}
 	}
+	*/
 
 	/* Experimental
 	private object GetExecutionPlanData(IDbCommand command, EnQESQLBatchSpecialAction batchSpecialAction)
@@ -1015,7 +976,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 	private void AddMessageToTextWriterCommon(string message, int line, IBTextSpan textSpan,
 		EnResultMessageType resultMessageType, AbstractResultsWriter writer, bool flush, bool noCr)
 	{
-		AddStringToTextWriterCommon(message, line, textSpan, resultMessageType, writer, flush, false, noCr);
+		AddStringToTextWriterCommon(message, line, textSpan, resultMessageType, writer, flush, noCr);
 		if (AuxDocData.SqlOutputMode == EnSqlOutputMode.ToFile && _ResultsWriter != null && _ResultsWriter != writer)
 		{
 			_ResultsWriter.AppendNormal(message, noCr);
@@ -1023,7 +984,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 	}
 
 	private void AddStringToTextWriterCommon(string message, int line, IBTextSpan textSpan,
-		EnResultMessageType resultMessageType, AbstractResultsWriter writer, bool flush, bool isTextResults, bool noCr)
+		EnResultMessageType resultMessageType, AbstractResultsWriter writer, bool flush, bool noCr)
 	{
 		if (message == null)
 		{
@@ -1061,7 +1022,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 		ThreadHelper.Generic.Invoke(delegate
 		{
-			FlushTextWritersInt(writer, isTextResults);
+			FlushTextWritersInt(writer);
 		});
 
 		/*
@@ -1193,22 +1154,17 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 		AddStringToMessages("------------------------*/", flush: true);
 	}
 
-	private void FlushTextWritersInt(AbstractResultsWriter textWriter, bool isTextResults)
+	private void FlushTextWritersInt(AbstractResultsWriter textWriter)
 	{
 		if (textWriter != null)
 		{
 			textWriter.Flush();
-			if (AuxDocData.LiveSettings.EditorResultsTextScrollingResults)
+			if (AuxDocData.LiveSettings.EditorResultsTextScrollingResults && textWriter == _TextResultsPage.ResultsWriter)
 			{
-				if (AuxDocData.LiveSettings.EditorResultsOutputMode == EnSqlOutputMode.ToText && textWriter == _TextResultsPage.ResultsWriter)
-				{
-					// Tracer.Trace(GetType(), "FlushTextWritersInt()",
-					// 	isTextResults ? "_TextResultsPage.ScrollTextViewToTop()" : "_TextResultsPage.ScrollTextViewToMaxScrollUnit()");
-					if (isTextResults)
-						_TextResultsPage.ScrollTextViewToTop();
-					else
-						_TextResultsPage.ScrollTextViewToMaxScrollUnit();
-				}
+				if (!AuxDocData.LiveSettings.EditorResultsTextScrollingResults)
+					_TextResultsPage.ScrollTextViewToTop();
+				else
+					_TextResultsPage.ScrollTextViewToMaxScrollUnit();
 			}
 		}
 	}
@@ -1312,14 +1268,14 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	}
 
-	private void FlushAllTextWriters(bool isTextResults)
+	private void FlushAllTextWriters()
 	{
 		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.FlushAllTextWriters", "", null);
 		try
 		{
 			if (_ResultsWriter != null)
 			{
-				FlushTextWritersInt(_ResultsWriter, isTextResults);
+				FlushTextWritersInt(_ResultsWriter);
 			}
 		}
 		catch
@@ -1530,10 +1486,12 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 				_ExecutionPlanPane.Add(_ExecutionPlanPage);
 			}
 
+			/*
 			if (_ExecutionPlanMaxCountExceeded)
 			{
 				_TextMessagesPage.ResultsWriter.AppendNormal(string.Format(CultureInfo.CurrentCulture, ControlsResources.CanDisplayOnlyNExecutionPlanControls, C_MaxExecutionPlanControls), noCRLF: true);
 			}
+			*/
 		}
 
 		if (_TextPlanPage != null && !_TextPlanPane.Contains(_TextPlanPage))
@@ -1578,11 +1536,11 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 			}
 			else if (AuxDocData.SqlOutputMode == EnSqlOutputMode.ToText)
 			{
-				if (string.IsNullOrEmpty(_TextResultsPage.TextViewCtl.TextBuffer.Text))
+				if (string.IsNullOrWhiteSpace(_TextResultsPage.TextViewCtl.TextBuffer.Text))
 				{
 					SqlEditorPane.IsTextResultsButtonVisible = false;
 				}
-				else
+				else 
 				{
 					SqlEditorPane.ActivateTextResultsTab();
 				}
@@ -1590,14 +1548,10 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 		}
 
 		if (!AutoSelectResultsTab)
-		{
 			SqlEditorPane.ActivateCodeTab();
-		}
 
 		if (!_QryMgr.IsExecuting)
-		{
 			return;
-		}
 
 		try
 		{
@@ -1630,7 +1584,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 				_TextMessagesPage.ResultsWriter.AppendNormal(ControlsResources.MsgQueryCancelled);
 			}
 
-			FlushAllTextWriters(args.IsTextResults);
+			FlushAllTextWriters();
 			CheckAndCloseTextWriters();
 			_TextResultsPage.UndoEnabled = true;
 			_TextMessagesPage.UndoEnabled = true;

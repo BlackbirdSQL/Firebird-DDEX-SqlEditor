@@ -14,6 +14,10 @@
 		<ApplicationIcon>Package.ico</ApplicationIcon>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <None Remove="Properties\Originals\**" />
+	</ItemGroup>
+
 
 	<ItemGroup>
 		<PackageReference Include="IndexRange" Version="1.0.3" />
@@ -143,10 +147,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\BlackbirdSql.Common\BlackbirdSql.Common.csproj" />
 		<ProjectReference Include="..\BlackbirdSql.Core\BlackbirdSql.Core.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Properties\Originals\" />
 	</ItemGroup>
 
 

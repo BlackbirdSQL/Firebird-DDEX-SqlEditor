@@ -7,7 +7,7 @@ using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Core.Ctl.Enums;
-
+using BlackbirdSql.Common.Ctl.Config;
 
 namespace BlackbirdSql.Common.Model.Interfaces;
 
@@ -16,7 +16,7 @@ public interface IBSqlQueryExecutionHandler : IBQueryExecutionHandler
 	EnSqlOutputMode SqlOutputMode { get; set; }
 
 
-	QESQLCommandBuilder SqlExecutionOptions { get; }
+	IBLiveUserSettings LiveSettings { get; }
 
 	string DefaultResultsDirectory { get; set; }
 
@@ -38,5 +38,5 @@ public interface IBSqlQueryExecutionHandler : IBQueryExecutionHandler
 
 	void AddResultSetSeparatorMsg();
 
-	void AddStringToResults(string result, bool flush, bool isTextResults);
+	void AddStringToResults(string result, bool flush);
 }

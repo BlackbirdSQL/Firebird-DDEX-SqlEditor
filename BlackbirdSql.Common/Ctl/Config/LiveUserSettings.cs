@@ -1,11 +1,14 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Ctl.Interfaces;
@@ -25,7 +28,7 @@ namespace BlackbirdSql.Common.Ctl.Config;
 /// VisualStudio.Ddex > Controller > EditorExtension > Common > Core.
 /// </summary>
 // =========================================================================================================
-public class LiveUserSettings : UserSettings, IBLiveUserSettings, IBLiveSettings
+public class LiveUserSettings : UserSettings, IBLiveUserSettings, IBLiveSettings, ICloneable
 {
 
 	// ---------------------------------------------------------------------------------
@@ -33,6 +36,7 @@ public class LiveUserSettings : UserSettings, IBLiveUserSettings, IBLiveSettings
 	// ---------------------------------------------------------------------------------
 
 
+	private readonly BitArray _ExecOptions;
 	protected Dictionary<string, object> _LiveStore;
 	
 
@@ -420,6 +424,86 @@ public class LiveUserSettings : UserSettings, IBLiveUserSettings, IBLiveSettings
 
 
 
+	public bool WithExecutionPlan
+	{
+		get { return _ExecOptions[0]; }
+		set { _ExecOptions[0] = value; }
+	}
+
+	public bool WithClientStats
+	{
+		get { return _ExecOptions[1] && !WithEstimatedExecutionPlan; }
+		set { _ExecOptions[1] = value; }
+	}
+
+	public bool WithProfiling
+	{
+		get { return _ExecOptions[2]; }
+		set { _ExecOptions[2] = value; }
+	}
+
+	public bool ParseOnly
+	{
+		get { return _ExecOptions[3]; }
+		set { _ExecOptions[3] = value; }
+	}
+
+	public bool WithNoExec
+	{
+		get { return _ExecOptions[4]; }
+		set { _ExecOptions[4] = value; }
+	}
+
+	public bool WithExecutionPlanText
+	{
+		get { return _ExecOptions[5]; }
+		set { _ExecOptions[5] = value; }
+	}
+
+	public bool WithStatisticsTime
+	{
+		get { return _ExecOptions[6]; }
+		set { _ExecOptions[6] = value; }
+	}
+
+	public bool WithStatisticsIO
+	{
+		get { return _ExecOptions[7]; }
+		set { _ExecOptions[7] = value; }
+	}
+
+	public bool WithStatisticsProfile
+	{
+		get { return _ExecOptions[8]; }
+		set { _ExecOptions[8] = value; }
+	}
+
+	public bool WithEstimatedExecutionPlan
+	{
+		get { return _ExecOptions[9]; }
+		set { _ExecOptions[9] = value; }
+	}
+
+	public bool WithOleSqlScripting
+	{
+		get { return _ExecOptions[13]; }
+		set { _ExecOptions[13] = value; }
+	}
+
+	public bool SuppressProviderMessageHeaders
+	{
+		get { return _ExecOptions[14]; }
+		set { _ExecOptions[14] = value; }
+	}
+
+	public bool WithDebugging
+	{
+		get { return _ExecOptions[15]; }
+		set { _ExecOptions[15] = value; }
+	}
+
+
+
 	#endregion Property Accessors
 
 
@@ -438,7 +522,15 @@ public class LiveUserSettings : UserSettings, IBLiveUserSettings, IBLiveSettings
 	// ---------------------------------------------------------------------------------
 	protected LiveUserSettings() : base(true)
 	{
+		_ExecOptions = new BitArray(16);
 	}
+
+	protected LiveUserSettings(BitArray execOptions) : base(true)
+	{
+		_ExecOptions = execOptions.Clone() as BitArray;
+	}
+
+
 
 	public static LiveUserSettings CreateInstance()
 	{
@@ -448,11 +540,14 @@ public class LiveUserSettings : UserSettings, IBLiveUserSettings, IBLiveSettings
 		};
 
 		return settings;
+
 	}
 
-	public static LiveUserSettings CreateInstance(IDictionary<string, object> liveStore)
+
+
+	public static LiveUserSettings CreateInstance(IDictionary<string, object> liveStore, BitArray execOptions)
 	{
-		LiveUserSettings settings = new()
+		LiveUserSettings settings = new(execOptions)
 		{
 			_LiveStore = new(liveStore)
 		};
@@ -468,6 +563,14 @@ public class LiveUserSettings : UserSettings, IBLiveUserSettings, IBLiveSettings
 	// =========================================================================================================
 	#region Methods - LiveUserSettings
 	// =========================================================================================================
+
+
+	public virtual object Clone()
+	{
+		lock (_LockClass)
+			return CreateInstance(_LiveStore, _ExecOptions);
+	}
+
 
 
 	public FbScript CommandBuilder(params string[] statements)
@@ -493,6 +596,15 @@ public class LiveUserSettings : UserSettings, IBLiveUserSettings, IBLiveSettings
 	}
 
 
+
+	public static bool IsSupported(object property)
+	{
+		Type type = property.GetType();
+
+		string cmd = SqlResources.ResourceManager.GetString(type.Name);
+
+		return cmd == null;
+	}
 
 
 
