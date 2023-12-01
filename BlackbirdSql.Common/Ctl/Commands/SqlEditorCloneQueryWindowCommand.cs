@@ -5,15 +5,15 @@
 
 using System;
 using System.Data;
-using BlackbirdSql.Core;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
+using BlackbirdSql.Core;
 
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Data;
+using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Utilities;
-using BlackbirdSql.Common.Ctl.Interfaces;
 
 namespace BlackbirdSql.Common.Ctl.Commands;
 

@@ -67,10 +67,10 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 			mkDocument = LookupObjectMoniker(dbl, elementType, identifierArray);
 			if (objectType != EnModelObjectType.Unknown)
 			{
-				originalObjects = new HashSet<NodeElementDescriptor>
-				{
-					new NodeElementDescriptor(objectType, identifierArray)
-				};
+				originalObjects = 
+				[
+					new (objectType, identifierArray)
+				];
 			}
 		}
 		if (string.IsNullOrEmpty(mkDocument))
@@ -176,10 +176,10 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 			mkDocument = LookupObjectMoniker(dbl, elementType, identifierArray);
 			if (objectType != EnModelObjectType.Unknown)
 			{
-				originalObjects = new HashSet<NodeElementDescriptor>
-				{
-					new NodeElementDescriptor(objectType, identifierArray)
-				};
+				originalObjects =
+				[
+					new (objectType, identifierArray)
+				];
 			}
 		}
 		if (string.IsNullOrEmpty(mkDocument))

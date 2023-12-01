@@ -17,7 +17,6 @@ using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Enums;
 
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.TextManager.Interop;

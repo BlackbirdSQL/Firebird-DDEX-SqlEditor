@@ -11,24 +11,11 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<SignAssembly>True</SignAssembly>
 		<AssemblyOriginatorKeyFile>Properties\BlackbirdSql.EditorExtension.snk</AssemblyOriginatorKeyFile>
-		<ApplicationIcon>Package.ico</ApplicationIcon>
+		<ApplicationIcon>blackbirdsql.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
 	  <None Remove="Properties\Originals\**" />
-	</ItemGroup>
-
-
-	<ItemGroup>
-		<PackageReference Include="IndexRange" Version="1.0.3" />
-		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-		<PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
-		<PackageReference Include="Microsoft.VisualStudio.Data.Framework" Version="17.5.33428.388" />
-		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.6.36389" />
-		<PackageReference Include="Microsoft.VSSDK.BuildTools" Version="17.6.2164">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -96,14 +83,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="Package.ico" />
+		<Content Include="blackbirdsql.ico" />
 		<Content Include="Resources\arrowDown.bmp" />
 		<Content Include="Resources\arrowFlat.bmp" />
 		<Content Include="Resources\arrowUp.bmp" />
 		<Content Include="Resources\ExecutionPlan.bmp" />
 		<Content Include="Resources\FileEncodingDialog.ico" />
 		<Content Include="Resources\Messages.bmp" />
-		<Content Include="Resources\Package.ico" />
+		<Content Include="Resources\blackbirdsql.ico" />
 		<Content Include="Resources\Properties_16x.ico" />
 		<Content Include="Resources\Results.bmp" />
 		<Content Include="Resources\Run.png" />

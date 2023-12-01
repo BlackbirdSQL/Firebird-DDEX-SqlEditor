@@ -252,7 +252,6 @@
   <ItemGroup>
     <None Include="BlackbirdDsl.rc2" />
     <None Include="BlackbirdDsl.snk" />
-    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BlackbirdDsl.rc" />

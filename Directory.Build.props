@@ -4,17 +4,17 @@
 		<DebugType>portable</DebugType>
 	</PropertyGroup>
 	<PropertyGroup>
-		<VersionPrefix>10.0.0.101</VersionPrefix>
-		<VersionSuffix></VersionSuffix>
+		<VersionPrefix>10.0.1.0</VersionPrefix>
+		<VersionSuffix>prerelease</VersionSuffix>
 		<TargetFrameworks>net48</TargetFrameworks>
-		<Company>BlackbirdSQL</Company>
+		<Company>BlackbirdSql</Company>
 		<Product>NETProvider</Product>
-		<Authors>BlackbirdSQL</Authors>
-		<PackageProjectUrl>http://www.blackbirdsql.org/en/net-provider/</PackageProjectUrl>
-		<PackageIconUrl>https://raw.githubusercontent.com/BlackbirdSQL/NETProvider/master/blackbird-logo.png</PackageIconUrl>
-		<PackageIcon>blackbird-logo.png</PackageIcon>
-		<RepositoryUrl></RepositoryUrl>
-		<RepositoryType></RepositoryType>
+		<Authors>BlackbirdSql</Authors>
+		<PackageProjectUrl>https://www.blackbirdsql.org/</PackageProjectUrl>
+		<PackageIconUrl>https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/tree/master/Resources/blackbird-128x128.png</PackageIconUrl>
+		<PackageIcon>Resources\blackbird-128x128.png</PackageIcon>
+		<RepositoryUrl>https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor.git</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<MinClientVersion>3.6</MinClientVersion>
 		<IncludeSymbols>true</IncludeSymbols>

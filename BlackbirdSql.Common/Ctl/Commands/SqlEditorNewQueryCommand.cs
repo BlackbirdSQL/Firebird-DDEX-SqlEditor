@@ -10,7 +10,6 @@ using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
 
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Data;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Utilities;
 using BlackbirdSql.Common.Ctl.Interfaces;

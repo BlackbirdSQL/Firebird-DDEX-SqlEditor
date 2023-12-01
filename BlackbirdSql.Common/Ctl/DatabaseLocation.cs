@@ -10,9 +10,7 @@ using BlackbirdSql.Core.Model.Enums;
 using Microsoft.VisualStudio.Data.Services;
 
 
-
 namespace BlackbirdSql.Common.Ctl;
-
 
 public readonly struct DatabaseLocation
 {

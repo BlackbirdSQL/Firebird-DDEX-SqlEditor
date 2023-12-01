@@ -11,7 +11,7 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<SignAssembly>True</SignAssembly>
 		<AssemblyOriginatorKeyFile>Properties\BlackbirdSql.Common.snk</AssemblyOriginatorKeyFile>
-		<ApplicationIcon>Package.ico</ApplicationIcon>
+		<ApplicationIcon>blackbirdsql.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
@@ -698,7 +698,7 @@
 
 
 	<ItemGroup>
-	  <Content Include="Package.ico" />
+	  <Content Include="blackbirdsql.ico" />
 	</ItemGroup>
 
 
@@ -725,15 +725,6 @@
 	  </EmbeddedResource>
 	  <EmbeddedResource Include="Properties\QEResources.resx" />
 	  <EmbeddedResource Include="Properties\SharedResx.resx" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="10.0.0" />
-	  <PackageReference Include="IndexRange" Version="1.0.3" />
-	  <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-	  <PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
-	  <PackageReference Include="Microsoft.VisualStudio.Data.Framework" Version="17.5.33428.388" />
-	  <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.6.36389" />
 	</ItemGroup>
 
 

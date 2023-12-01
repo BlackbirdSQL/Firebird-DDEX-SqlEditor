@@ -13,7 +13,6 @@ using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
-using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Controls.PropertiesWindow;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Events;
@@ -31,9 +30,9 @@ using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Services;
 
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Data.Services;
+using Microsoft.VisualStudio.Shell;
+
 
 namespace BlackbirdSql.Common.Model;
 

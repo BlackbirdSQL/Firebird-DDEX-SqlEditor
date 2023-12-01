@@ -11,7 +11,7 @@
 		<AssemblyOriginatorKeyFile>Properties\BlackbirdSql.Core.snk</AssemblyOriginatorKeyFile>
 		<PlatformTarget>x64</PlatformTarget>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<ApplicationIcon>Package.ico</ApplicationIcon>
+		<ApplicationIcon>blackbirdsql.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
@@ -50,6 +50,8 @@
 	  <Compile Include="Ctl\ComponentModel\VsProvideOptionPageAttribute.cs" />
 	  <Compile Include="Ctl\ComponentModel\VerbSite.cs" />
 	  <Compile Include="Ctl\ConnectionLocator.cs" />
+	  <Compile Include="Ctl\Extensions\Index.cs" />
+	  <Compile Include="Ctl\Extensions\Range.cs" />
 	  <Compile Include="Ctl\RdtManager.cs" />
 	  <Compile Include="Model\Enums\EnNodeSystemType.cs" />
 	  <Compile Include="Model\Enums\EnModelTargetType.cs" />
@@ -195,7 +197,7 @@
 
 
 	<ItemGroup>
-	  <Content Include="Package.ico" />
+	  <Content Include="blackbirdsql.ico" />
 	</ItemGroup>
 
 
@@ -211,15 +213,11 @@
 
 	<ItemGroup>
 		<PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="10.0.0" />
-		<PackageReference Include="IndexRange" Version="1.0.3" />
-		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-		<PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
+		<PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
-		<PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
-		<PackageReference Include="Microsoft.VisualStudio.Data.Framework" Version="17.5.33428.388" />
-		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.6.36389" />
+		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.8.37222" />
 	</ItemGroup>
 
 	<ItemGroup>

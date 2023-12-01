@@ -11,7 +11,7 @@
 	  <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	  <SignAssembly>True</SignAssembly>
 	  <AssemblyOriginatorKeyFile>Properties\BlackbirdSql.Controller.snk</AssemblyOriginatorKeyFile>
-	  <ApplicationIcon>Package.ico</ApplicationIcon>
+	  <ApplicationIcon>blackbirdsql.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,19 +26,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Package.ico" />
+    <Content Include="blackbirdsql.ico" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="IndexRange" Version="1.0.3" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
-    <PackageReference Include="Microsoft.VisualStudio.Data.Framework" Version="17.5.33428.388" />
-    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.6.36389" />
   </ItemGroup>
 
   <ItemGroup>

@@ -10,28 +10,21 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 
-using BlackbirdSql.Core;
 using BlackbirdSql.Common.Ctl;
+using BlackbirdSql.Common.Ctl.Exceptions;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.Enums;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Properties;
-
-using FirebirdSql.Data.FirebirdClient;
-using System.CodeDom;
-using Microsoft;
-using EnvDTE;
-using System.Drawing;
-using Microsoft.VisualStudio.Data;
-using Microsoft.VisualStudio.Data.Framework;
-using System.Data.Common;
-using BlackbirdSql.Common.Ctl.Exceptions;
-using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 
-namespace BlackbirdSql.Common.Model.QueryExecution;
+using FirebirdSql.Data.FirebirdClient;
 
+
+namespace BlackbirdSql.Common.Model.QueryExecution;
 
 public class QESQLBatch : IDisposable
 {
