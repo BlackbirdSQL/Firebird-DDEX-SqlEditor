@@ -8,10 +8,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
-		CHANGELOG.md = CHANGELOG.md
 		Directory.Build.props = Directory.Build.props
-		license.txt = license.txt
-		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Firebird", "Firebird", "{2AF853FC-ADFF-4432-8BFB-45093A1969F4}"
@@ -48,6 +45,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{F6F05A4E-8
 		Docs\ado-net-schema.md = Docs\ado-net-schema.md
 		Docs\ado-net.md = Docs\ado-net.md
 		Docs\batching.md = Docs\batching.md
+		Docs\CHANGELOG.md = Docs\CHANGELOG.md
 		Docs\decfloat.md = Docs\decfloat.md
 		Docs\DefGuidList.cs = Docs\DefGuidList.cs
 		Directory.Build.props = Directory.Build.props
@@ -58,6 +56,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{F6F05A4E-8
 		Docs\events.md = Docs\events.md
 		Docs\int128.md = Docs\int128.md
 		Docs\IvsServices Regex.txt = Docs\IvsServices Regex.txt
+		Docs\license.txt = Docs\license.txt
+		Docs\README.md = Docs\README.md
 		Docs\services-backup.md = Docs\services-backup.md
 		Docs\time-zones.md = Docs\time-zones.md
 	EndProjectSection

@@ -80,12 +80,12 @@
       <LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Content Include="..\CHANGELOG.md">
+    <Content Include="..\Docs\CHANGELOG.md">
       <Link>CHANGELOG.md</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="..\README.md">
+    <Content Include="..\Docs\README.md">
       <Link>README.md</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
