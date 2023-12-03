@@ -322,6 +322,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid IVsDataConnectionProperties property: {0}..
+        /// </summary>
+        public static string IVsDataConnectionProperties_PropertyInvalid {
+            get {
+                return ResourceManager.GetString("IVsDataConnectionProperties_PropertyInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to .NET Provider for Firebird (FirebirdClient).
         /// </summary>
         public static string Provider_DisplayName {

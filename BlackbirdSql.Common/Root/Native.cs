@@ -304,7 +304,7 @@ public abstract class Native : BlackbirdSql.Core.Native
 
 	public static void FindMaximumSingleMonitorRectangle(UIRECT windowRect, out UIRECT screenSubRect, out UIRECT monitorRect)
 	{
-		List<UIRECT> rects = new List<UIRECT>();
+		List<UIRECT> rects = [];
 		EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, delegate (IntPtr hMonitor, IntPtr hdcMonitor, ref UIRECT rect, IntPtr lpData)
 		{
 			MONITORINFO monitorInfo = default;

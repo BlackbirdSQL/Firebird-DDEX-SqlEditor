@@ -6,6 +6,8 @@ using System.IO;
 using System.Xml;
 using BlackbirdSql.Core.Ctl.Config;
 using Microsoft.VisualStudio.Data.Core;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 
 namespace BlackbirdSql.Core.Ctl.Extensions;

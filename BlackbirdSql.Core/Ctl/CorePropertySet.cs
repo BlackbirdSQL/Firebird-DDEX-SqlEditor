@@ -37,9 +37,8 @@ public abstract class CorePropertySet : PropertySet
 	/// Equivalency describers are tagged with *.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public static readonly Describer[] Describers
-		= new Describer[16]
-	{
+	public static readonly Describer[] Describers =
+	[
 		new Describer(C_KeyExIcon, typeof(object)),
 
 		new Describer(C_KeyDataSource, C_KeyFbDataSource, typeof(string), C_DefaultDataSource, true, false, true, true, true), // *
@@ -58,7 +57,7 @@ public abstract class CorePropertySet : PropertySet
 		new Describer(C_KeyExAdministratorLogin, typeof(string), C_DefaultExAdministratorLogin),
 		new Describer(C_KeyExServerFullyQualifiedDomainName, typeof(string), C_DefaultExServerFullyQualifiedDomainName),
 		new Describer(C_KeyExOtherParams, typeof(string))
-	};
+	];
 
 
 	#endregion Constants

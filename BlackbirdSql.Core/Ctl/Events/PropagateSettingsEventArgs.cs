@@ -55,7 +55,7 @@ public class PropagateSettingsEventArgs : EventArgs
 	}
 
 
-	public List<MutablePair<string, object>> Arguments => _Arguments ??= new();
+	public List<MutablePair<string, object>> Arguments => _Arguments ??= [];
 
 
 

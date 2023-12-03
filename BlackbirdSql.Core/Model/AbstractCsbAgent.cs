@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 using System.IO;
+using System.Linq.Expressions;
 using System.Text;
 
 using BlackbirdSql.Core.Ctl;
@@ -52,9 +53,82 @@ namespace BlackbirdSql.Core.Model;
 public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 {
 
+
 	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - AbstractCsbAgent
+	// ---------------------------------------------------------------------------------
+
+
+	public AbstractCsbAgent() : base()
+	{
+	}
+
+	public AbstractCsbAgent(string connectionString) : base(connectionString)
+	{
+	}
+
+	/// <summary>
+	/// .ctor for use only by ConnectionLocator for registering solution datasetKeys.
+	/// </summary>
+	protected AbstractCsbAgent(string datasetId, string connectionString) : base(connectionString)
+	{
+		DatasetId = datasetId;
+	}
+
+
+	public AbstractCsbAgent(IDbConnection connection) : base(connection.ConnectionString)
+	{
+	}
+
+
+	public AbstractCsbAgent(IBPropertyAgent ci) : base()
+	{
+		Parse(ci);
+	}
+
+
+	public AbstractCsbAgent(IVsDataExplorerNode node) : base()
+	{
+		Extract(node);
+	}
+
+
+	/// <summary>
+	/// .ctor for use only by ConnectionLocator for registering FlameRobin datasetKeys.
+	/// </summary>
+	protected AbstractCsbAgent(string datasetId, string server, int port, string database, string user,
+				string password, string charset)
+	{
+		Initialize(datasetId, server, port, C_DefaultServerType, database, user, password,
+			C_DefaultRole, charset, C_DefaultDialect, C_DefaultNoDatabaseTriggers);
+	}
+
+
+	private void Initialize(string datasetId, string server, int port, FbServerType serverType, string database, string user,
+		string password, string role, string charset, int dialect, bool noTriggers)
+	{
+		DatasetId = datasetId;
+		DataSource = server;
+		Port = port;
+		ServerType = serverType;
+		Database = database;
+		UserID = user;
+		Password = password;
+		Role = role;
+		Charset = charset;
+		Dialect = dialect;
+		NoDatabaseTriggers = noTriggers;
+	}
+
+
+	#endregion Property Constructors / Destructors
+
+
+
+
+	// =====================================================================================================
 	#region Constants - AbstractCsbAgent
-	// ---------------------------------------------------------------------------------
+	// =====================================================================================================
 
 	private const string C_Scheme = "fbsql";
 	protected const string C_DatasetKeyFmt = "{0} ({1})";
@@ -66,9 +140,9 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 
 
-	// =========================================================================================================
+	// =====================================================================================================
 	#region Variables - AbstractCsbAgent
-	// =========================================================================================================
+	// =====================================================================================================
 
 
 	protected static IDictionary<string, string> _SDatasetKeys;
@@ -81,6 +155,9 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	private readonly object _LockLocal = new object();
 	private bool _IndexActive = false;
 
+	private string _EquivalencyConnectionString = null;
+	private string _EquivalencyMoniker = null;
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -92,8 +169,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static readonly DescriberDictionary Describers = new(
-		new Describer[35]
-		{
+		[
 			new Describer(C_KeyExDatasetKey, typeof(string), C_DefaultExDatasetKey),
 			new Describer(C_KeyExDatasetId, typeof(string), C_DefaultExDatasetId),
 			new Describer(C_KeyExDataset, typeof(string), C_DefaultExDataset),
@@ -132,9 +208,8 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 			new Describer(C_KeyExClientVersion, typeof(Version), C_DefaultExClientVersion, false, false),
 			new Describer(C_KeyExMemoryUsage, typeof(string), C_DefaultExMemoryUsage, false, false),
 			new Describer(C_KeyExActiveUsers, typeof(int), C_DefaultExActiveUsers, false, false)
-		},
-		new KeyValuePair<string, string>[20]
-		{
+		],
+		[
 			StringPair( "server", C_KeyDataSource ),
 			StringPair( "host", C_KeyDataSource ),
 			StringPair( "uid", C_KeyUserID),
@@ -155,7 +230,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 			StringPair( "wire compression", C_KeyCompression ),
 			StringPair( "app", C_KeyApplicationName ),
 			StringPair( "parallel", C_KeyParallelWorkers )
-		}
+		]
 	);
 
 
@@ -164,9 +239,9 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 
 
-	// =========================================================================================================
+	// =====================================================================================================
 	#region Property accessors - AbstractCsbAgent
-	// =========================================================================================================
+	// =====================================================================================================
 
 
 	/// <summary>
@@ -179,152 +254,164 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 		{
 			lock (_LockLocal)
 			{
-				if (_IndexActive)
-					return base[keyword];
+					if (_IndexActive)
+						return base[keyword];
 
-				_IndexActive = true;
-
-				object result;
-
-				switch (keyword)
+				try
 				{
-					case C_KeyDataSource:
-						// case C_KeyFbDataSource:
-						result = DataSource;
-						break;
-					case C_KeyPort:
-						// case C_KeyFbPort:
-						result = Port;
-						break;
-					case C_KeyServerType:
-						// case C_KeyFbServerType:
-						result = (int)ServerType;
-						break;
-					case C_KeyDatabase:
-						// case C_KeyFbDatabase:
-						result = Database;
-						break;
-					case C_KeyUserID:
-					// case C_KeyFbUserID:
-					case "User ID":
-						result = UserID;
-						break;
-					case C_KeyPassword:
-						// case C_KeyFbPassword:
-						result = Password;
-						break;
-					case C_KeyRole:
-						// case C_KeyFbRole:
-						result = Role;
-						break;
-					case C_KeyDialect:
-						// case C_KeyFbDialect:
-						result = Dialect;
-						break;
-					case C_KeyCharset:
-					// case C_KeyFbCharset:
-					case "Character Set":
-						result = Charset;
-						break;
-					case C_KeyNoDatabaseTriggers:
-					// case C_KeyFbNoDatabaseTriggers:
-					case "No Triggers":
-						result = NoDatabaseTriggers;
-						break;
-					case C_KeyPacketSize:
-						// case C_KeyFbPacketSize:
-						result = PacketSize;
-						break;
-					case C_KeyConnectionTimeout:
-					// case C_KeyFbConnectionTimeout:
-					case "Connection Timeout":
-						result = ConnectionTimeout;
-						break;
-					case C_KeyPooling:
-						//  case C_KeyFbPooling:
-						result = Pooling;
-						break;
-					case C_KeyConnectionLifeTime:
-					//  case C_KeyFbConnectionLifeTime:
-					case "Connection LifeTime":
-						result = ConnectionLifeTime;
-						break;
-					case C_KeyMinPoolSize:
-						//  case C_KeyFbMinPoolSize:
-						result = MinPoolSize;
-						break;
-					case C_KeyMaxPoolSize:
-						//  case C_KeyFbMaxPoolSize:
-						result = MaxPoolSize;
-						break;
-					case C_KeyFetchSize:
-						//  case C_KeyFbFetchSize:
-						result = FetchSize;
-						break;
-					case C_KeyIsolationLevel:
-						//  case C_KeyFbIsolationLevel:
-						result = (int)IsolationLevel;
-						break;
-					case C_KeyReturnRecordsAffected:
-					//  case C_KeyFbReturnRecordsAffected:
-					case "Records Affected":
-						result = ReturnRecordsAffected;
-						break;
-					case C_KeyEnlist:
-						//  case C_KeyFbEnlist:
-						result = Enlist;
-						break;
-					case C_KeyClientLibrary:
-					//  case C_KeyFbClientLibrary:
-					case "Client Library":
-						result = ClientLibrary;
-						break;
-					case C_KeyDbCachePages:
-					//  case C_KeyFbDbCachePages:
-					case "DB Cache Pages":
-						result = DbCachePages;
-						break;
-					case C_KeyNoGarbageCollect:
-					//  case C_KeyFbNoGarbageCollect:
-					case "No Garbage Collect":
-						result = NoGarbageCollect;
-						break;
-					case C_KeyCompression:
-						//  case C_KeyFbCompression:
-						result = Compression;
-						break;
-					case C_KeyCryptKey:
-					//  case C_KeyFbCryptKey:
-					case "Crypt Key":
-						result = CryptKey;
-						break;
-					case C_KeyWireCrypt:
-					//  case C_KeyFbWireCrypt:
-					case "Wire Crypt":
-						result = (int)WireCrypt;
-						break;
-					case C_KeyApplicationName:
-					//  case C_KeyFbApplicationName:
-					case "Application Name":
-						result = ApplicationName;
-						break;
-					case C_KeyCommandTimeout:
-					//  case C_KeyFbCommandTimeout:
-					case "Command Timeout":
-						result = CommandTimeout;
-						break;
-					case C_KeyParallelWorkers:
-					//  case C_KeyFbParallelWorkers:
-					case "Parallel Workers":
-						result = ParallelWorkers;
-						break;
-					default:
-						result = base[keyword];
-						break;
-				}
 
-				_IndexActive = false;
-				return result;
+					_IndexActive = true;
+
+					object result;
+
+					switch (keyword)
+					{
+						case C_KeyDataSource:
+							// case C_KeyFbDataSource:
+							result = DataSource;
+							break;
+						case C_KeyPort:
+							// case C_KeyFbPort:
+							result = Port;
+							break;
+						case C_KeyServerType:
+							// case C_KeyFbServerType:
+							result = (int)ServerType;
+							break;
+						case C_KeyDatabase:
+							// case C_KeyFbDatabase:
+							result = Database;
+							break;
+						case C_KeyUserID:
+						// case C_KeyFbUserID:
+						case "User ID":
+							result = UserID;
+							break;
+						case C_KeyPassword:
+							// case C_KeyFbPassword:
+							result = Password;
+							break;
+						case C_KeyRole:
+							// case C_KeyFbRole:
+							result = Role;
+							break;
+						case C_KeyDialect:
+							// case C_KeyFbDialect:
+							result = Dialect;
+							break;
+						case C_KeyCharset:
+						// case C_KeyFbCharset:
+						case "Character Set":
+							result = Charset;
+							break;
+						case C_KeyNoDatabaseTriggers:
+						// case C_KeyFbNoDatabaseTriggers:
+						case "No Triggers":
+							result = NoDatabaseTriggers;
+							break;
+						case C_KeyPacketSize:
+							// case C_KeyFbPacketSize:
+							result = PacketSize;
+							break;
+						case C_KeyConnectionTimeout:
+						// case C_KeyFbConnectionTimeout:
+						case "Connection Timeout":
+							result = ConnectionTimeout;
+							break;
+						case C_KeyPooling:
+							//  case C_KeyFbPooling:
+							result = Pooling;
+							break;
+						case C_KeyConnectionLifeTime:
+						//  case C_KeyFbConnectionLifeTime:
+						case "Connection LifeTime":
+							result = ConnectionLifeTime;
+							break;
+						case C_KeyMinPoolSize:
+							//  case C_KeyFbMinPoolSize:
+							result = MinPoolSize;
+							break;
+						case C_KeyMaxPoolSize:
+							//  case C_KeyFbMaxPoolSize:
+							result = MaxPoolSize;
+							break;
+						case C_KeyFetchSize:
+							//  case C_KeyFbFetchSize:
+							result = FetchSize;
+							break;
+						case C_KeyIsolationLevel:
+							//  case C_KeyFbIsolationLevel:
+							result = (int)IsolationLevel;
+							break;
+						case C_KeyReturnRecordsAffected:
+						//  case C_KeyFbReturnRecordsAffected:
+						case "Records Affected":
+							result = ReturnRecordsAffected;
+							break;
+						case C_KeyEnlist:
+							//  case C_KeyFbEnlist:
+							result = Enlist;
+							break;
+						case C_KeyClientLibrary:
+						//  case C_KeyFbClientLibrary:
+						case "Client Library":
+							result = ClientLibrary;
+							break;
+						case C_KeyDbCachePages:
+						//  case C_KeyFbDbCachePages:
+						case "DB Cache Pages":
+							result = DbCachePages;
+							break;
+						case C_KeyNoGarbageCollect:
+						//  case C_KeyFbNoGarbageCollect:
+						case "No Garbage Collect":
+							result = NoGarbageCollect;
+							break;
+						case C_KeyCompression:
+							//  case C_KeyFbCompression:
+							result = Compression;
+							break;
+						case C_KeyCryptKey:
+						//  case C_KeyFbCryptKey:
+						case "Crypt Key":
+							result = CryptKey;
+							break;
+						case C_KeyWireCrypt:
+						//  case C_KeyFbWireCrypt:
+						case "Wire Crypt":
+							result = (int)WireCrypt;
+							break;
+						case C_KeyApplicationName:
+						//  case C_KeyFbApplicationName:
+						case "Application Name":
+							result = ApplicationName;
+							break;
+						case C_KeyCommandTimeout:
+						//  case C_KeyFbCommandTimeout:
+						case "Command Timeout":
+							result = CommandTimeout;
+							break;
+						case C_KeyParallelWorkers:
+						//  case C_KeyFbParallelWorkers:
+						case "Parallel Workers":
+							result = ParallelWorkers;
+							break;
+						default:
+							result = base[keyword];
+							break;
+					}
+
+					return result;
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex);
+					throw;
+				}
+				finally
+				{
+					_IndexActive = false;
+				}
 			}
 		}
 		set
@@ -337,164 +424,175 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 					return;
 				}
 
-				if (value == DBNull.Value)
-					value = null;
-
-				_IndexActive = true;
-
-				switch (keyword)
+				try
 				{
-					case C_KeyDataSource:
-						//  case C_KeyFbDataSource:
-						DataSource = (string)value;
-						break;
-					case C_KeyPort:
-						//  case C_KeyFbPort:
-						Port = Convert.ToInt32(value);
-						break;
-					case C_KeyServerType:
-						//  case C_KeyFbServerType:
-						if (value is FbServerType fbServerType)
-							ServerType = fbServerType;
-						else if (value is string s && Enum.TryParse<FbServerType>(s, true, out var enumResult))
-							ServerType = enumResult;
-						else
-							ServerType = (FbServerType)Convert.ToInt32(value);
-						break;
-					case C_KeyDatabase:
-						//  case C_KeyFbDatabase:
-						Database = (string)value;
-						break;
-					case C_KeyUserID:
-					//  case C_KeyFbUserID:
-					case "User ID":
-						UserID = (string)value;
-						break;
-					case C_KeyPassword:
-						//  case C_KeyFbPassword:
-						Password = (string)value;
-						break;
-					case C_KeyRole:
-						//  case C_KeyFbRole:
-						Role = (string)value;
-						break;
-					case C_KeyDialect:
-						//  case C_KeyFbDialect:
-						Dialect = Convert.ToInt32(value);
-						break;
-					case C_KeyCharset:
-					//  case C_KeyFbCharset:
-					case "Character Set":
-						Charset = (string)value;
-						break;
-					case C_KeyNoDatabaseTriggers:
-					//  case C_KeyFbNoDatabaseTriggers:
-					case "No Triggers":
-						NoDatabaseTriggers = Convert.ToBoolean(value);
-						break;
-					case C_KeyPacketSize:
-						//  case C_KeyFbPacketSize:
-						PacketSize = Convert.ToInt32(value);
-						break;
-					case C_KeyConnectionTimeout:
-					//  case C_KeyFbConnectionTimeout:
-					case "Connection Timeout":
-						ConnectionTimeout = Convert.ToInt32(value);
-						break;
-					case C_KeyPooling:
-						//  case C_KeyFbPooling:
-						Pooling = Convert.ToBoolean(value);
-						break;
-					case C_KeyConnectionLifeTime:
-					//  case C_KeyFbConnectionLifeTime:
-					case "Connection LifeTime":
-						ConnectionLifeTime = Convert.ToInt32(value);
-						break;
-					case C_KeyMinPoolSize:
-						//  case C_KeyFbMinPoolSize:
-						MinPoolSize = Convert.ToInt32(value);
-						break;
-					case C_KeyMaxPoolSize:
-						//  case C_KeyFbMaxPoolSize:
-						MaxPoolSize = Convert.ToInt32(value);
-						break;
-					case C_KeyFetchSize:
-						//  case C_KeyFbFetchSize:
-						FetchSize = Convert.ToInt32(value);
-						break;
-					case C_KeyIsolationLevel:
-						//  case C_KeyFbIsolationLevel:
-						if (value is IsolationLevel isolationLevel)
-							IsolationLevel = isolationLevel;
-						else if (value is string s && Enum.TryParse<IsolationLevel>(s, true, out var enumResult))
-							IsolationLevel = enumResult;
-						else
-							IsolationLevel = (IsolationLevel)Convert.ToInt32(value);
-						break;
-					case C_KeyReturnRecordsAffected:
-					//  case C_KeyFbReturnRecordsAffected:
-					case "Records Affected":
-						ReturnRecordsAffected = Convert.ToBoolean(value);
-						break;
-					case C_KeyEnlist:
-						//  case C_KeyFbEnlist:
-						Enlist = Convert.ToBoolean(value);
-						break;
-					case C_KeyClientLibrary:
-					//  case C_KeyFbClientLibrary:
-					case "Client Library":
-						ClientLibrary = (string)value;
-						break;
-					case C_KeyDbCachePages:
-					//  case C_KeyFbDbCachePages:
-					case "DB Cache Pages":
-						DbCachePages = Convert.ToInt32(value);
-						break;
-					case C_KeyNoGarbageCollect:
-					//  case C_KeyFbNoGarbageCollect:
-					case "No Garbage Collect":
-						NoGarbageCollect = Convert.ToBoolean(value);
-						break;
-					case C_KeyCompression:
-						//  case C_KeyFbCompression:
-						Compression = Convert.ToBoolean(value);
-						break;
-					case C_KeyCryptKey:
-					//  case C_KeyFbCryptKey:
-					case "Crypt Key":
-						CryptKey = (byte[])value;
-						break;
-					case C_KeyWireCrypt:
-					//  case C_KeyFbWireCrypt:
-					case "Wire Crypt":
-						if (value is FbWireCrypt wireCrypt)
-							WireCrypt = wireCrypt;
-						else if (value is string s && Enum.TryParse<FbWireCrypt>(s, true, out var enumResult))
-							WireCrypt = enumResult;
-						else
-							WireCrypt = (FbWireCrypt)Convert.ToInt32(value);
-						break;
-					case C_KeyApplicationName:
-					//  case C_KeyFbApplicationName:
-					case "Application Name":
-						ApplicationName = (string)value;
-						break;
-					case C_KeyCommandTimeout:
-					//  case C_KeyFbCommandTimeout:
-					case "Command Timeout":
-						CommandTimeout = Convert.ToInt32(value);
-						break;
-					case C_KeyParallelWorkers:
-					//  case C_KeyFbParallelWorkers:
-					case "Parallel Workers":
-						ParallelWorkers = Convert.ToInt32(value);
-						break;
-					default:
-						base[keyword] = value;
-						break;
+					if (value == DBNull.Value)
+						value = null;
+
+					_IndexActive = true;
+
+					switch (keyword)
+					{
+						case C_KeyDataSource:
+							//  case C_KeyFbDataSource:
+							DataSource = (string)value;
+							break;
+						case C_KeyPort:
+							//  case C_KeyFbPort:
+							Port = Convert.ToInt32(value);
+							break;
+						case C_KeyServerType:
+							//  case C_KeyFbServerType:
+							if (value is FbServerType fbServerType)
+								ServerType = fbServerType;
+							else if (value is string s && Enum.TryParse<FbServerType>(s, true, out var enumResult))
+								ServerType = enumResult;
+							else
+								ServerType = (FbServerType)Convert.ToInt32(value);
+							break;
+						case C_KeyDatabase:
+							//  case C_KeyFbDatabase:
+							Database = (string)value;
+							break;
+						case C_KeyUserID:
+						//  case C_KeyFbUserID:
+						case "User ID":
+							UserID = (string)value;
+							break;
+						case C_KeyPassword:
+							//  case C_KeyFbPassword:
+							Password = (string)value;
+							break;
+						case C_KeyRole:
+							//  case C_KeyFbRole:
+							Role = (string)value;
+							break;
+						case C_KeyDialect:
+							//  case C_KeyFbDialect:
+							Dialect = Convert.ToInt32(value);
+							break;
+						case C_KeyCharset:
+						//  case C_KeyFbCharset:
+						case "Character Set":
+							Charset = (string)value;
+							break;
+						case C_KeyNoDatabaseTriggers:
+						//  case C_KeyFbNoDatabaseTriggers:
+						case "No Triggers":
+							NoDatabaseTriggers = Convert.ToBoolean(value);
+							break;
+						case C_KeyPacketSize:
+							//  case C_KeyFbPacketSize:
+							PacketSize = Convert.ToInt32(value);
+							break;
+						case C_KeyConnectionTimeout:
+						//  case C_KeyFbConnectionTimeout:
+						case "Connection Timeout":
+							ConnectionTimeout = Convert.ToInt32(value);
+							break;
+						case C_KeyPooling:
+							//  case C_KeyFbPooling:
+							Pooling = Convert.ToBoolean(value);
+							break;
+						case C_KeyConnectionLifeTime:
+						//  case C_KeyFbConnectionLifeTime:
+						case "Connection LifeTime":
+							ConnectionLifeTime = Convert.ToInt32(value);
+							break;
+						case C_KeyMinPoolSize:
+							//  case C_KeyFbMinPoolSize:
+							MinPoolSize = Convert.ToInt32(value);
+							break;
+						case C_KeyMaxPoolSize:
+							//  case C_KeyFbMaxPoolSize:
+							MaxPoolSize = Convert.ToInt32(value);
+							break;
+						case C_KeyFetchSize:
+							//  case C_KeyFbFetchSize:
+							FetchSize = Convert.ToInt32(value);
+							break;
+						case C_KeyIsolationLevel:
+							//  case C_KeyFbIsolationLevel:
+							if (value is IsolationLevel isolationLevel)
+								IsolationLevel = isolationLevel;
+							else if (value is string s && Enum.TryParse<IsolationLevel>(s, true, out var enumResult))
+								IsolationLevel = enumResult;
+							else
+								IsolationLevel = (IsolationLevel)Convert.ToInt32(value);
+							break;
+						case C_KeyReturnRecordsAffected:
+						//  case C_KeyFbReturnRecordsAffected:
+						case "Records Affected":
+							ReturnRecordsAffected = Convert.ToBoolean(value);
+							break;
+						case C_KeyEnlist:
+							//  case C_KeyFbEnlist:
+							Enlist = Convert.ToBoolean(value);
+							break;
+						case C_KeyClientLibrary:
+						//  case C_KeyFbClientLibrary:
+						case "Client Library":
+							ClientLibrary = (string)value;
+							break;
+						case C_KeyDbCachePages:
+						//  case C_KeyFbDbCachePages:
+						case "DB Cache Pages":
+							DbCachePages = Convert.ToInt32(value);
+							break;
+						case C_KeyNoGarbageCollect:
+						//  case C_KeyFbNoGarbageCollect:
+						case "No Garbage Collect":
+							NoGarbageCollect = Convert.ToBoolean(value);
+							break;
+						case C_KeyCompression:
+							//  case C_KeyFbCompression:
+							Compression = Convert.ToBoolean(value);
+							break;
+						case C_KeyCryptKey:
+						//  case C_KeyFbCryptKey:
+						case "Crypt Key":
+							CryptKey = (byte[])value;
+							break;
+						case C_KeyWireCrypt:
+						//  case C_KeyFbWireCrypt:
+						case "Wire Crypt":
+							if (value is FbWireCrypt wireCrypt)
+								WireCrypt = wireCrypt;
+							else if (value is string s && Enum.TryParse<FbWireCrypt>(s, true, out var enumResult))
+								WireCrypt = enumResult;
+							else
+								WireCrypt = (FbWireCrypt)Convert.ToInt32(value);
+							break;
+						case C_KeyApplicationName:
+						//  case C_KeyFbApplicationName:
+						case "Application Name":
+							ApplicationName = (string)value;
+							break;
+						case C_KeyCommandTimeout:
+						//  case C_KeyFbCommandTimeout:
+						case "Command Timeout":
+							CommandTimeout = Convert.ToInt32(value);
+							break;
+						case C_KeyParallelWorkers:
+						//  case C_KeyFbParallelWorkers:
+						case "Parallel Workers":
+							ParallelWorkers = Convert.ToInt32(value);
+							break;
+						default:
+							base[keyword] = value;
+							break;
+					}
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex);
+					throw;
+				}
+				finally
+				{
+					_IndexActive = false;
 				}
 
-				_IndexActive = false;
 			}
 		}
 	}
@@ -512,7 +610,15 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	[Description("The short name (file name without extension) of the database file")]
 	[ReadOnly(true)]
 	[DefaultValue(C_DefaultExDataset)]
-	public string Dataset => (string.IsNullOrWhiteSpace(Database) ? "" : Path.GetFileNameWithoutExtension(Database));
+	public string Dataset
+	{
+		get
+		{
+			// Tracer.Trace(GetType(), "Dataset", "Database: {0}, Path.GetFileNameWithoutExtension(Database): {1}.",
+			//	Database, string.IsNullOrWhiteSpace(Database) ? "" : Path.GetFileNameWithoutExtension(Database));
+			return (string.IsNullOrWhiteSpace(Database) ? "" : Path.GetFileNameWithoutExtension(Database));
+		}
+	}
 
 
 	/// <summary>
@@ -701,80 +807,9 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 
 
-	// =========================================================================================================
-	#region Constructors / Destructors - AbstractCsbAgent
-	// =========================================================================================================
-
-
-	public AbstractCsbAgent() : base()
-	{
-	}
-
-	public AbstractCsbAgent(string connectionString) : base(connectionString)
-	{
-	}
-
-	/// <summary>
-	/// .ctor for use only by ConnectionLocator for registering solution datasetKeys.
-	/// </summary>
-	protected AbstractCsbAgent(string datasetId, string connectionString) : base(connectionString)
-	{
-		DatasetId = datasetId;
-	}
-
-
-	public AbstractCsbAgent(IDbConnection connection) : base(connection.ConnectionString)
-	{
-	}
-
-
-	public AbstractCsbAgent(IBPropertyAgent ci) : base()
-	{
-		Parse(ci);
-	}
-
-
-	public AbstractCsbAgent(IVsDataExplorerNode node) : base()
-	{
-		Extract(node);
-	}
-
-
-	/// <summary>
-	/// .ctor for use only by ConnectionLocator for registering FlameRobin datasetKeys.
-	/// </summary>
-	protected AbstractCsbAgent(string datasetId, string server, int port, string database, string user,
-				string password, string charset)
-	{
-		Initialize(datasetId, server, port, C_DefaultServerType, database, user, password,
-			C_DefaultRole, charset, C_DefaultDialect, C_DefaultNoDatabaseTriggers);
-	}
-
-
-	private void Initialize(string datasetId, string server, int port, FbServerType serverType, string database, string user,
-		string password, string role, string charset, int dialect, bool noTriggers)
-	{
-		DatasetId = datasetId;
-		DataSource = server;
-		Port = port;
-		ServerType = serverType;
-		Database = database;
-		UserID = user;
-		Password = password;
-		Role = role;
-		Charset = charset;
-		Dialect = dialect;
-		NoDatabaseTriggers = noTriggers;
-	}
-
-
-	#endregion Property Constructors / Destructors
-
-
-
-	// =========================================================================================================
+	// =====================================================================================================
 	#region Methods - AbstractCsbAgent
-	// =========================================================================================================
+	// =====================================================================================================
 
 
 
@@ -1048,12 +1083,32 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	}
 
 
+	/// <summary>
+	/// Performs a stored equivalency check against connections. Many commands as well as
+	/// PropertyWindows use CsbAgent to do status validations and updates on pulsed events.
+	/// This can result in a very high volume of calls, so the agent stores the document
+	/// moniker and connection strings for low overhead respnses when the connection has not
+	/// changed.
+	/// </summary>
+	/// <param name="obj"></param>
+	/// <returns></returns>
 	public override bool Equals(object obj)
 	{
 		if (obj is not IDbConnection connection)
 			return base.Equals(obj);
 
+		if (connection == null) return false;
+
+		if (_EquivalencyConnectionString != null
+			&& _EquivalencyConnectionString == connection.ConnectionString)
+		{
+			return SafeDatasetMoniker.Equals(_EquivalencyMoniker, StringComparison.InvariantCulture);
+		}
+
 		string datasetMoniker = BuildUniqueConnectionUrl(connection);
+
+		_EquivalencyConnectionString = connection.ConnectionString;
+		_EquivalencyMoniker = datasetMoniker;
 
 		return SafeDatasetMoniker.Equals(datasetMoniker, StringComparison.InvariantCulture);
 	}
@@ -1090,7 +1145,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 		UriBuilder urlb = new()
 		{
 			Scheme = C_Scheme,
-			Host = DataSource,
+			Host = DataSource.ToLowerInvariant(),
 			UserName = UserID.ToLowerInvariant(),
 			Port = Port,
 			Password = safeUrl ? string.Empty : Password.ToLowerInvariant()
@@ -1101,6 +1156,9 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 		// Serialize the db path.
 		string str = StringUtils.Serialize64(Database.ToLowerInvariant());
+
+		// Tracer.Trace(GetType(), "BuildUniqueConnectionUrl(IDbConnection)", "database.ToLc: {0}, serialized: {1}.", Database.ToLowerInvariant(), str);
+
 		// string str = JsonConvert.SerializeObject(_Database.ToLowerInvariant());
 		// string str = JsonSerializer.Serialize(_Database.ToLowerInvariant(), typeof(string));
 
@@ -1130,7 +1188,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 		string result = urlb.Uri.ToString();
 
-		// Tracer.Trace(GetType(), "BuildUniqueConnectionUrl()", "Url: {0}", result);
+		// Tracer.Trace(GetType(), "BuildUniqueConnectionUrl(IDbConnection)", "Url: {0}", result);
 
 		// We have a unique connection url
 		return result;
@@ -1147,7 +1205,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// fbsql://user_uc@server:port/database_lc_serialized/[role_uc.charset_uc.dialect.noTriggersTrueFalse]/
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	private string BuildUniqueConnectionUrl(IDbConnection connection)
+	public static string BuildUniqueConnectionUrl(IDbConnection connection)
 	{
 		// We'll use UriBuilder for the url.
 
@@ -1173,7 +1231,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 		UriBuilder urlb = new()
 		{
 			Scheme = C_Scheme,
-			Host = server,
+			Host = server.ToLowerInvariant(),
 			UserName = user.ToLowerInvariant(),
 			Port = port,
 		};
@@ -1310,9 +1368,17 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 	public static string GetDatasetConnectionString(string datasetKey)
 	{
-		LoadConfiguredConnections();
+		return GetDatasetConnectionString(datasetKey, false);
+	}
 
-		if (!_SDatasetKeys.TryGetValue(datasetKey, out string connectionUrl))
+
+
+	private static string GetDatasetConnectionString(string datasetKey, bool initializing)
+	{
+		if (!initializing)
+			LoadConfiguredConnections();
+
+		if (_SDatasetKeys == null || !_SDatasetKeys.TryGetValue(datasetKey, out string connectionUrl))
 			return null;
 
 		if (!_SConnectionMonikers.TryGetValue(connectionUrl, out string connectionString))
@@ -1408,7 +1474,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 		// is to load any additional non-default properties from the register and return.
 		if (!string.IsNullOrWhiteSpace(DatasetKey))
 		{
-			connectionString = GetDatasetConnectionString(DatasetKey);
+			connectionString = GetDatasetConnectionString(DatasetKey, initializing);
 
 			if (connectionString != null)
 			{
@@ -1438,13 +1504,13 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 			// Register it with the next available DatasetKey.
 
 			// Set the base for naming the DatasetId part of DatasetKey.
-			string datasetId = !string.IsNullOrWhiteSpace(DatasetId) ? DatasetId : Dataset;
+			string datasetId = string.IsNullOrWhiteSpace(DatasetId) ? Dataset : DatasetId;
 
 			// Establish a unique key using i as the suffix.
 			// This loop will execute at least once.
 			for (int i = 0; i <= SDatasetKeys.Count; i++)
 			{
-				uniqueDatasetId = datasetId + (i == 0 ? "" : (i + 1));
+				uniqueDatasetId = datasetId + (i == 0 ? "" : $"_{i + 1}");
 				uniqueDatasetKey = C_DatasetKeyFmt.FmtRes(DataSource, uniqueDatasetId);
 
 				if (!_SDatasetKeys.ContainsKey(uniqueDatasetKey))

@@ -100,7 +100,7 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 
 	protected AbstractFontAndColorProvider()
 	{
-		fontColorDefaults = new ArrayList();
+		fontColorDefaults = [];
 	}
 
 	int IVsFontAndColorDefaults.GetFlags(out uint flags)

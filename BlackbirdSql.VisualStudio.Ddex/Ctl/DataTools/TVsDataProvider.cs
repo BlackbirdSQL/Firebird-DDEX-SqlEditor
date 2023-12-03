@@ -1514,7 +1514,7 @@ public class TVsDataProvider : IVsDataProvider // , IVsDataInternalProvider, IVs
 			}
 			if (!supportedObjectTypes.ContainsKey(empty))
 			{
-				supportedObjectTypes.Add(empty, new List<string>());
+				supportedObjectTypes.Add(empty, []);
 			}
 			supportedObjectTypes[empty].Add(item);
 		}

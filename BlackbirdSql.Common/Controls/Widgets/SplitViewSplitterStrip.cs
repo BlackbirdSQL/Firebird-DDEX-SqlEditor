@@ -714,10 +714,10 @@ public class SplitViewSplitterStrip : ToolStrip
 	{
 		get
 		{
-			_primaryPaneButtons ??= new List<ToolStripButton>
-				{
+			_primaryPaneButtons ??=
+				[
 					Button2
-				};
+				];
 			return _primaryPaneButtons;
 		}
 	}
@@ -726,10 +726,10 @@ public class SplitViewSplitterStrip : ToolStrip
 	{
 		get
 		{
-			_secondaryPaneButtons ??= new List<ToolStripButton>
-				{
+			_secondaryPaneButtons ??=
+				[
 					Button1
-				};
+				];
 			return _secondaryPaneButtons;
 		}
 	}

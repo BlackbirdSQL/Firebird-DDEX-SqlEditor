@@ -98,12 +98,12 @@ public class NodeElementDescriptor
 	{
 		_ObjectType = elementType;
 		_Volatility = volatility;
-		_IdentifierList = new List<string>();
+		_IdentifierList = [];
 		if (identifierList != null)
 		{
 			_IdentifierList.AddRange(identifierList);
 		}
-		_ExternalReferenceList = new List<string>();
+		_ExternalReferenceList = [];
 		IgnoreName = false;
 		// GraphType = SqlColumnGraphType.None;
 	}

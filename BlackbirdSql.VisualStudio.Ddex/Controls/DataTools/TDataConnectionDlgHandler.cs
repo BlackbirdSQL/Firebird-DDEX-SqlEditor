@@ -29,21 +29,15 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 	/// <summary>
 	/// Orignal class: Microsoft.VisualStudio.Data.HostServices.Environment.ConnectionDialogContainer.
 	/// </summary>
-	private class TiConnectionDialogContainer : Container
+	private class TiConnectionDialogContainer(IUIService uiService, IServiceProvider serviceProvider) : Container
 	{
 		private ProfessionalColorTable _ProfessionalColorTable;
 
 		private AmbientProperties _AmbientProperties;
 
-		private readonly IUIService _UiService;
+		private readonly IUIService _UiService = uiService;
 
-		private readonly IServiceProvider _ServiceProvider;
-
-		public TiConnectionDialogContainer(IUIService uiService, IServiceProvider serviceProvider)
-		{
-			_UiService = uiService;
-			_ServiceProvider = serviceProvider;
-		}
+		private readonly IServiceProvider _ServiceProvider = serviceProvider;
 
 		protected override object GetService(Type serviceType)
 		{
@@ -71,24 +65,19 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 
 
 	/// <summary>
-	/// Orignal name: DataSourceCollection.
+	/// Original name: DataSourceCollection.
 	/// </summary>
-	private class TiDataSourceCollection : ICollection<Guid>, IEnumerable<Guid>, IEnumerable
+	private class TiDataSourceCollection(TDataConnectionDlgHandler dialog) : ICollection<Guid>, IEnumerable<Guid>, IEnumerable
 	{
 		private readonly IDictionary<Guid, TDataSource> _GuidDataSourceMapping = new Dictionary<Guid, TDataSource>();
 
-		private readonly TDataConnectionDlgHandler _DlgHandler;
+		private readonly TDataConnectionDlgHandler _DlgHandler = dialog;
 
 		public int Count => _DlgHandler._ConnectionDlg.DataSources.Count;
 
 		public bool IsReadOnly => _DlgHandler._ConnectionDlg.DataSources.IsReadOnly;
 
 		internal IDictionary<Guid, TDataSource> GuidDataSourceMapping => _GuidDataSourceMapping;
-
-		public TiDataSourceCollection(TDataConnectionDlgHandler dialog)
-		{
-			_DlgHandler = dialog;
-		}
 
 		public void Add(Guid clsidItem)
 		{
@@ -183,22 +172,17 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 	/// <summary>
 	/// Orignal name: DataProviderCollection.
 	/// </summary>
-	private class TiDataProviderCollection : ICollection<Guid>, IEnumerable<Guid>, IEnumerable
+	private class TiDataProviderCollection(TDataSource source) : ICollection<Guid>, IEnumerable<Guid>, IEnumerable
 	{
 		private readonly IDictionary<Guid, BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools.TDataProvider> _GuidDataSourceMapping = new Dictionary<Guid, BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools.TDataProvider>();
 
-		private readonly TDataSource _DataSource;
+		private readonly TDataSource _DataSource = source;
 
 		public int Count => _DataSource.Providers.Count;
 
 		public bool IsReadOnly => _DataSource.Providers.IsReadOnly;
 
 		internal IDictionary<Guid, BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools.TDataProvider> Mapping => _GuidDataSourceMapping;
-
-		public TiDataProviderCollection(TDataSource source)
-		{
-			_DataSource = source;
-		}
 
 		public void Add(Guid item)
 		{
@@ -284,19 +268,11 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 	/// <summary>
 	/// Orignal name: UIDataProvider.
 	/// </summary>
-	private class TiUIDataProvider : TDataProvider
+	private class TiUIDataProvider(IVsDataProvider vsDataProvider) : TDataProvider(vsDataProvider.Guid.ToString(null, CultureInfo.InvariantCulture), vsDataProvider.DisplayName, vsDataProvider.ShortDisplayName)
 	{
-		private readonly IVsDataProvider _VsDataProvider;
+		private readonly IVsDataProvider _VsDataProvider = vsDataProvider;
 
 		public Guid Clsid => new Guid(Name);
-
-		public TiUIDataProvider(IVsDataProvider vsDataProvider)
-			: base(vsDataProvider.Guid.ToString(null, CultureInfo.InvariantCulture), vsDataProvider.DisplayName, vsDataProvider.ShortDisplayName)
-		{
-			_VsDataProvider = vsDataProvider;
-		}
-
-
 
 		public override string GetDescription(TDataSource dataSource)
 		{
@@ -377,9 +353,9 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 	/// <summary>
 	/// Orignal name: UIDataConnectionUIControl.
 	/// </summary>
-	private class TiDataConnectionUIControl : IDataConnectionUIControl, IContainerControl
+	private class TiDataConnectionUIControl(IVsDataConnectionUIControl connectionUIControl) : IDataConnectionUIControl, IContainerControl
 	{
-		private readonly IVsDataConnectionUIControl _ConnectionUIControl;
+		private readonly IVsDataConnectionUIControl _ConnectionUIControl = connectionUIControl;
 
 		public Control ActiveControl
 		{
@@ -391,11 +367,6 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 			{
 				throw new NotImplementedException();
 			}
-		}
-
-		public TiDataConnectionUIControl(IVsDataConnectionUIControl connectionUIControl)
-		{
-			_ConnectionUIControl = connectionUIControl;
 		}
 
 		public void Initialize(IDataConnectionProperties connectionProperties)
@@ -426,14 +397,9 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 	/// </summary>
 	private class TiDataConnectionUIProperties : IDataConnectionProperties, ICustomTypeDescriptor
 	{
-		private class DefaultConnectionUITester : IVsDataConnectionUITester
+		private class DefaultConnectionUITester(Guid provider) : IVsDataConnectionUITester
 		{
-			private Guid _Provider;
-
-			public DefaultConnectionUITester(Guid provider)
-			{
-				_Provider = provider;
-			}
+			private Guid _Provider = provider;
 
 			public void Test(IVsDataConnectionUIProperties connectionUIProperties)
 			{
@@ -945,7 +911,7 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 		{
 			_ProviderSelections ??= new Dictionary<Guid, Guid>
 				{
-					[new Guid(SystemData.DataSourceGuid)] = new Guid(PackageData.ProviderGuid)
+					[new Guid(SystemData.DataSourceGuid)] = new Guid(SystemData.ProviderGuid)
 				};
 
 			return _ProviderSelections;
@@ -961,7 +927,7 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 		// v_form = Host.System.CreateInstance<DataConnectionDlg>(Array.Empty<object>());
 		try
 		{
-			_ConnectionDlg = (TDataConnectionDlg)Activator.CreateInstance(typeof(TDataConnectionDlg), BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, Array.Empty<object>(), null);
+			_ConnectionDlg = (TDataConnectionDlg)Activator.CreateInstance(typeof(TDataConnectionDlg), BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, [], null);
 		}
 		catch (TargetInvocationException ex)
 		{

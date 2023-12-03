@@ -70,7 +70,7 @@ public class DlgGridControl : GridControl, IBDlgGridControl, IBGridControl
 	// [CLSCompliant(false)]
 	protected IBDlgStorage m_Storage;
 
-	public BitArrayCollection m_cellDirtyBits = new BitArrayCollection();
+	public BitArrayCollection m_cellDirtyBits = [];
 
 	private const int C_BitArrayGrowthChunk = 100;
 
@@ -455,7 +455,7 @@ public class DlgGridControl : GridControl, IBDlgGridControl, IBGridControl
 	{
 		if (selectedRows != null && ValidateRowsSel(bRowBLocksAllowed: true))
 		{
-			BlockOfCellsCollection blockOfCellsCollection = new BlockOfCellsCollection();
+			BlockOfCellsCollection blockOfCellsCollection = [];
 			for (int i = 0; i < selectedRows.Length; i++)
 			{
 				BlockOfCells blockOfCells = new BlockOfCells(selectedRows[i], 0);
@@ -577,10 +577,10 @@ public class DlgGridControl : GridControl, IBDlgGridControl, IBGridControl
 			colIndex = GetUIColumnIndexByStorageIndex(colIndex);
 		}
 		BlockOfCells node = new BlockOfCells(rowIndex, colIndex);
-		BlockOfCellsCollection blockOfCellsCollection = new()
-		{
+		BlockOfCellsCollection blockOfCellsCollection =
+		[
 			node
-		};
+		];
 		SelectedCells = blockOfCellsCollection;
 	}
 

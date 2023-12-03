@@ -85,7 +85,7 @@ public abstract class AbstractDesignerServices
 		{
 			if (!InflightOpens.TryGetValue(dbl, out Dictionary<NodeElementDescriptor, string> value))
 			{
-				value = new Dictionary<NodeElementDescriptor, string>();
+				value = [];
 				InflightOpens[dbl] = value;
 			}
 			value[descriptor] = moniker;

@@ -38,7 +38,7 @@ public abstract class AbstractEnumConverter : EnumConverter, IDisposable
 
 	public AbstractEnumConverter(Type type) : base(type)
 	{
-		_LookupTables = new Dictionary<CultureInfo, Dictionary<string, object>>();
+		_LookupTables = [];
 	}
 
 	public void Dispose()
@@ -60,7 +60,7 @@ public abstract class AbstractEnumConverter : EnumConverter, IDisposable
 			{
 				// There are two radio button strings per enum value: Selected/Unselected.
 				_Building = true;
-				value = new Dictionary<string, object>();
+				value = [];
 				foreach (object standardValue in GetStandardValues())
 				{
 					_BuildValue = (int)standardValue;

@@ -65,7 +65,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 
 	// private GraphPanel currentGraphPanel;
 
-	private MenuCommandsService _MenuService = new MenuCommandsService();
+	private MenuCommandsService _MenuService = [];
 
 	/*
 	private PageSettings cachedPageSettings;

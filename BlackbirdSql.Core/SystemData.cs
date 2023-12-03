@@ -32,7 +32,7 @@ public static class SystemData
 	/// <summary>
 	/// The path to the provider's configured connections xml (in this case FlameRobin for Firebird).
 	/// </summary>
-	public static string ConfiguredConnectionsPath
+	public static string UtilityConfigurationPath
 		= Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
 		+ "\\flamerobin\\fr_databases.conf";
 
@@ -47,6 +47,8 @@ public static class SystemData
 
 	public const string PackageGuid = "0B100D64-7249-4208-8748-2810B511E90C";
 	public const string PackageGuideNET = "7787981E-E42A-412F-A42B-9AD07A7DE169";
+
+	public const string ProviderGuid = "43015F6E-757F-408B-966E-C2BCE34686BA";
 
 	public const string PackageControllerGuid = "CF77D510-C1DB-44EA-85F5-8201089D6FAF";
 

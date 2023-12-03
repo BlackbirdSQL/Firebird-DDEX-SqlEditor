@@ -69,7 +69,7 @@ public class VerbSite : IMenuCommandService, ISite
 			string cmdText;
 			CommandID cmdId;
 			CommandIdAttribute cmdIdAttr;
-			DesignerVerbCollection verbs = new DesignerVerbCollection();
+			DesignerVerbCollection verbs = [];
 
 			// Use reflection to enumerate all the public methods on the object
 			MethodInfo[] mia = _Component.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance);

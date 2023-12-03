@@ -15,7 +15,7 @@ namespace BlackbirdSql.Common.Ctl.Exceptions;
 [ListBindable(false)]
 public sealed class SqlErrorCollection : ICollection, IEnumerable
 {
-	private readonly ArrayList errors = new ArrayList();
+	private readonly ArrayList errors = [];
 
 	public int Count => errors.Count;
 

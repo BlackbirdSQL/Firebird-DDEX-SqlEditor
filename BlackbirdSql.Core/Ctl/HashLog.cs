@@ -139,7 +139,7 @@ internal static class HashLog
 	private static string GenerateHashString(string original)
 	{
 		byte[] bytes = Encoding.UTF8.GetBytes(original);
-		bytes = bytes.Concat(HashLogSalt).ToArray();
+		bytes = [.. bytes, .. HashLogSalt];
 		byte[] array = HashAlgorithm.ComputeHash(bytes);
 		int val = Math.Max(C_MinHashBytes, original.Length / 2);
 		val = Math.Min(val, array.Length);

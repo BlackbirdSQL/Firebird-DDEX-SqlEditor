@@ -174,73 +174,73 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 		Dictionary<EnNativeSettingsType, Action<WritableSettingsStore, string, string, object>> setDictionary = (Dictionary<EnNativeSettingsType, Action<WritableSettingsStore, string, string, object>>)(SettingStoreSetMethodsDict = new Dictionary<EnNativeSettingsType, Action<WritableSettingsStore, string, string, object>>(7));
 		Dictionary<EnNativeSettingsType, Func<SettingsStore, string, string, object>> getDictionary = (Dictionary<EnNativeSettingsType, Func<SettingsStore, string, string, object>>)(SettingStoreGetMethodsDict = new Dictionary<EnNativeSettingsType, Func<SettingsStore, string, string, object>>(7));
 		Type writableSettingsStoreType = typeof(WritableSettingsStore);
-		setDictionary[EnNativeSettingsType.String] = CreateSettingsStoreSetMethod<string>(writableSettingsStoreType.GetMethod("SetString", new Type[3]
-		{
+		setDictionary[EnNativeSettingsType.String] = CreateSettingsStoreSetMethod<string>(writableSettingsStoreType.GetMethod("SetString",
+		[
 			typeof(string),
 			typeof(string),
 			typeof(string)
-		}));
-		setDictionary[EnNativeSettingsType.Int32] = CreateSettingsStoreSetMethod<int>(writableSettingsStoreType.GetMethod("SetInt32", new Type[3]
-		{
+		]));
+		setDictionary[EnNativeSettingsType.Int32] = CreateSettingsStoreSetMethod<int>(writableSettingsStoreType.GetMethod("SetInt32",
+		[
 			typeof(string),
 			typeof(string),
 			typeof(int)
-		}));
-		setDictionary[EnNativeSettingsType.UInt32] = CreateSettingsStoreSetMethod<uint>(writableSettingsStoreType.GetMethod("SetUInt32", new Type[3]
-		{
+		]));
+		setDictionary[EnNativeSettingsType.UInt32] = CreateSettingsStoreSetMethod<uint>(writableSettingsStoreType.GetMethod("SetUInt32",
+		[
 			typeof(string),
 			typeof(string),
 			typeof(uint)
-		}));
-		setDictionary[EnNativeSettingsType.Int64] = CreateSettingsStoreSetMethod<long>(writableSettingsStoreType.GetMethod("SetInt64", new Type[3]
-		{
+		]));
+		setDictionary[EnNativeSettingsType.Int64] = CreateSettingsStoreSetMethod<long>(writableSettingsStoreType.GetMethod("SetInt64",
+		[
 			typeof(string),
 			typeof(string),
 			typeof(long)
-		}));
-		setDictionary[EnNativeSettingsType.UInt64] = CreateSettingsStoreSetMethod<ulong>(writableSettingsStoreType.GetMethod("SetUInt64", new Type[3]
-		{
+		]));
+		setDictionary[EnNativeSettingsType.UInt64] = CreateSettingsStoreSetMethod<ulong>(writableSettingsStoreType.GetMethod("SetUInt64",
+		[
 			typeof(string),
 			typeof(string),
 			typeof(ulong)
-		}));
-		setDictionary[EnNativeSettingsType.Binary] = CreateSettingsStoreSetMethod<MemoryStream>(writableSettingsStoreType.GetMethod("SetMemoryStream", new Type[3]
-		{
+		]));
+		setDictionary[EnNativeSettingsType.Binary] = CreateSettingsStoreSetMethod<MemoryStream>(writableSettingsStoreType.GetMethod("SetMemoryStream",
+		[
 			typeof(string),
 			typeof(string),
 			typeof(MemoryStream)
-		}));
+		]));
 		Type settingsStoreType = typeof(SettingsStore);
-		getDictionary[EnNativeSettingsType.String] = CreateSettingsStoreGetMethod<string>(settingsStoreType.GetMethod("GetString", new Type[2]
-		{
+		getDictionary[EnNativeSettingsType.String] = CreateSettingsStoreGetMethod<string>(settingsStoreType.GetMethod("GetString",
+		[
 			typeof(string),
 			typeof(string)
-		}));
-		getDictionary[EnNativeSettingsType.Int32] = CreateSettingsStoreGetMethod<int>(settingsStoreType.GetMethod("GetInt32", new Type[2]
-		{
+		]));
+		getDictionary[EnNativeSettingsType.Int32] = CreateSettingsStoreGetMethod<int>(settingsStoreType.GetMethod("GetInt32",
+		[
 			typeof(string),
 			typeof(string)
-		}));
-		getDictionary[EnNativeSettingsType.UInt32] = CreateSettingsStoreGetMethod<uint>(settingsStoreType.GetMethod("GetUInt32", new Type[2]
-		{
+		]));
+		getDictionary[EnNativeSettingsType.UInt32] = CreateSettingsStoreGetMethod<uint>(settingsStoreType.GetMethod("GetUInt32",
+		[
 			typeof(string),
 			typeof(string)
-		}));
-		getDictionary[EnNativeSettingsType.Int64] = CreateSettingsStoreGetMethod<long>(settingsStoreType.GetMethod("GetInt64", new Type[2]
-		{
+		]));
+		getDictionary[EnNativeSettingsType.Int64] = CreateSettingsStoreGetMethod<long>(settingsStoreType.GetMethod("GetInt64",
+		[
 			typeof(string),
 			typeof(string)
-		}));
-		getDictionary[EnNativeSettingsType.UInt64] = CreateSettingsStoreGetMethod<ulong>(settingsStoreType.GetMethod("GetUInt64", new Type[2]
-		{
+		]));
+		getDictionary[EnNativeSettingsType.UInt64] = CreateSettingsStoreGetMethod<ulong>(settingsStoreType.GetMethod("GetUInt64",
+		[
 			typeof(string),
 			typeof(string)
-		}));
-		getDictionary[EnNativeSettingsType.Binary] = CreateSettingsStoreGetMethod<MemoryStream>(settingsStoreType.GetMethod("GetMemoryStream", new Type[2]
-		{
+		]));
+		getDictionary[EnNativeSettingsType.Binary] = CreateSettingsStoreGetMethod<MemoryStream>(settingsStoreType.GetMethod("GetMemoryStream",
+		[
 			typeof(string),
 			typeof(string)
-		}));
+		]));
 	}
 
 	//
@@ -399,11 +399,10 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 			throw ex;
 		}
 
-		return (Func<object, object>)method.MakeGenericMethod(propertyInfo.DeclaringType, propertyInfo.PropertyType).Invoke(null, new object[1] { propertyInfo.GetGetMethod(nonPublic: false) });
+		return (Func<object, object>)method.MakeGenericMethod(propertyInfo.DeclaringType, propertyInfo.PropertyType).Invoke(null, [propertyInfo.GetGetMethod(nonPublic: false)]);
 	}
 
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
 
 	//
 	// Summary:
@@ -454,11 +453,10 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 			throw ex;
 		}
 
-		return (Action<object, object>)method.MakeGenericMethod(propertyInfo.DeclaringType, propertyInfo.PropertyType).Invoke(null, new object[1] { propertyInfo.GetSetMethod(nonPublic: false) });
+		return (Action<object, object>)method.MakeGenericMethod(propertyInfo.DeclaringType, propertyInfo.PropertyType).Invoke(null, [propertyInfo.GetSetMethod(nonPublic: false)]);
 	}
 
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
 
 	//
 	// Summary:

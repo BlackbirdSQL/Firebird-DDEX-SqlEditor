@@ -7,7 +7,9 @@ using System.ComponentModel;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model;
+using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
@@ -46,42 +48,41 @@ public class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>
 		set
 		{
 			if (key == null)
-			{
 				throw new ArgumentNullException("key");
-			}
 
-			bool flag = false;
+			bool changed = false;
+
 			lock (_LockObject)
 			{
 				if (!ContainsKey(key))
 				{
 					if (!IsExtensible)
 					{
-						throw new KeyNotFoundException(string.Format(null, "Resources.DataConnectionProperties_PropertyNotFound: {0}", key));
+						throw new KeyNotFoundException(Resources.IVsDataConnectionProperties_PropertyInvalid.FmtRes(key));
 					}
 
 					((CsbAgent)ConnectionStringBuilder).Add(key, value);
-					flag = true;
+					changed = ContainsKey(key);
 				}
-
-				object objB = ConnectionStringBuilder[key];
-				ConnectionStringBuilder.Remove(key);
-				ConnectionStringBuilder.TryGetValue(key, out object value2);
-				ConnectionStringBuilder[key] = value;
-				if (Equals(value2, value))
+				else
 				{
-					ConnectionStringBuilder.Remove(key);
+					object original = ConnectionStringBuilder[key];
+					ConnectionStringBuilder[key] = value;
+
+					if (!ContainsKey(key))
+					{
+						changed = true;
+					}
+					else
+					{
+						value = ConnectionStringBuilder[key];
+						if (!Equals(value, original))
+							changed = true;
+					}
 				}
 
-				if (!Equals(value, objB))
-				{
-					flag = true;
-				}
-			}
-
-			if (flag)
-			{
-				OnPropertyChanged(new PropertyChangedEventArgs(key));
+				if (changed)
+					OnPropertyChanged(new PropertyChangedEventArgs(key));
 			}
 		}
 	}
@@ -163,7 +164,7 @@ public class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>
 			throw new ArgumentNullException("key");
 		}
 
-		PropertyDescriptorCollection properties = ((ICustomTypeDescriptor)this).GetProperties(new Attribute[1] { PasswordPropertyTextAttribute.Yes });
+		PropertyDescriptorCollection properties = ((ICustomTypeDescriptor)this).GetProperties([PasswordPropertyTextAttribute.Yes]);
 		foreach (PropertyDescriptor item in properties)
 		{
 			if (item.Name.Equals(key, StringComparison.OrdinalIgnoreCase))
@@ -263,7 +264,7 @@ public class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>
 
 	public virtual string ToDisplayString()
 	{
-		PropertyDescriptorCollection properties = ((ICustomTypeDescriptor)this).GetProperties(new Attribute[1] { PasswordPropertyTextAttribute.Yes });
+		PropertyDescriptorCollection properties = ((ICustomTypeDescriptor)this).GetProperties([PasswordPropertyTextAttribute.Yes]);
 		IList<KeyValuePair<string, object>> list = new List<KeyValuePair<string, object>>();
 		foreach (PropertyDescriptor item in properties)
 		{
@@ -294,7 +295,7 @@ public class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>
 
 	public virtual string ToSafeString()
 	{
-		PropertyDescriptorCollection properties = ((ICustomTypeDescriptor)this).GetProperties(new Attribute[1] { PasswordPropertyTextAttribute.Yes });
+		PropertyDescriptorCollection properties = ((ICustomTypeDescriptor)this).GetProperties([PasswordPropertyTextAttribute.Yes]);
 		IList<KeyValuePair<string, object>> list = new List<KeyValuePair<string, object>>();
 		foreach (PropertyDescriptor item in properties)
 		{

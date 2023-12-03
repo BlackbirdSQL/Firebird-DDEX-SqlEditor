@@ -216,6 +216,9 @@
   <data name="EngineTypeIconNotfound" xml:space="preserve">
     <value>Could not locate icon for Server Engine Type {0}.</value>
   </data>
+  <data name="ErmBindingSource_Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
   <data name="ExceptionAttemptToAddNullConnection" xml:space="preserve">
     <value>Attempt to add a null connection</value>
   </data>

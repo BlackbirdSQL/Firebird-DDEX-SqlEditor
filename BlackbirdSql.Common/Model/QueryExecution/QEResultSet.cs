@@ -207,7 +207,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 		StorageDataReader storageDataReader = new StorageDataReader(_DataReader, null);
 		_StorageReaderSchemaTable = storageDataReader.GetSchemaTable();
 		int fieldCount = storageDataReader.FieldCount;
-		_ColumnNames = new StringCollection();
+		_ColumnNames = [];
 		for (int i = 0; i < fieldCount; i++)
 		{
 			_ColumnNames.Add(storageDataReader.GetName(i));

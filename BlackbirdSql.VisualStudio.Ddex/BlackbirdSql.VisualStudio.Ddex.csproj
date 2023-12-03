@@ -499,6 +499,12 @@
     <PreBuildEvent>
     </PreBuildEvent>
   </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>set DestFolder="%25LocalAppData%25\Microsoft\VisualStudio\17.0_5d5e49fcExp\Extensions\BlackbirdSql\BlackbirdSql.VisualStudio.Ddex\$(VersionPrefix)\"
+if exist %25DestFolder%25 (
+copy /v /y /b $(ProjectDir)$(OutDir)*.pdb %25DestFolder%25
+)</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

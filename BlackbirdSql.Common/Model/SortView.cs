@@ -44,8 +44,8 @@ public class SortView : IBSortView, IDisposable
 	{
 		m_StorageView = view;
 		m_SortingArray = new SortingArray();
-		m_SortingKeys = new ArrayList();
-		m_KeyValues = new ArrayList();
+		m_SortingKeys = [];
+		m_KeyValues = [];
 		m_iCurrentRow = -1;
 		m_bKeepSortingData = false;
 		m_sortingThread = null;

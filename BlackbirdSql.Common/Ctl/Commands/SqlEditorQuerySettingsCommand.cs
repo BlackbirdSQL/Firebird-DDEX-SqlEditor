@@ -15,13 +15,10 @@ using Microsoft.VisualStudio.OLE.Interop;
 
 namespace BlackbirdSql.Common.Ctl.Commands;
 
-public class SqlEditorQuerySettingsCommand : AbstractSqlEditorCommand
-{
-	public SqlEditorQuerySettingsCommand(IBSqlEditorWindowPane editorWindow)
-		: base(editorWindow)
-	{
-	}
+public class SqlEditorQuerySettingsCommand(IBSqlEditorWindowPane editorWindow)
 
+	: AbstractSqlEditorCommand(editorWindow)
+{
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;

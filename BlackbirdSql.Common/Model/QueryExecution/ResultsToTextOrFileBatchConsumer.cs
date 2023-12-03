@@ -68,7 +68,7 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 	private readonly MoreRowsAvailableEventHandler _MoreRowsAvailableHandler;
 	private static readonly Hashtable _TypeToCharNumHashTable;
 	private static readonly Hashtable _NumericsTypesHashTable;
-	private StringCollection _ColumnsFormatCollection = new StringCollection();
+	private StringCollection _ColumnsFormatCollection = [];
 	private int[] _ColumnWidths;
 	private char _ColumnsDelimiter;
 	private bool _RightAlignNumerics;

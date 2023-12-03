@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel;
 using System.Data;
+using System.Data.Common;
 using System.Globalization;
 using System.Reflection;
 using BlackbirdSql.Common.Controls.Interfaces;
@@ -20,12 +21,21 @@ using FirebirdSql.Data.Services;
 
 namespace BlackbirdSql.Common.Controls.PropertiesWindow
 {
-	public class ConnectedPropertiesWindow : AbstractPropertiesWindow, IBPropertyWindowQueryManagerInitialize
+	public class ConnectedPropertiesWindow(SqlConnectionStrategy connectionStrategy)
+		: AbstractPropertiesWindow, IBPropertyWindowQueryManagerInitialize
 	{
-		private bool _isInitialized;
+		private bool _Initialized;
+		private CsbAgent _Csa = null;
+		private string _ConnectionInfo = null;
+		private string _ServerVersion = null;
+		private string _ClientVersion = null;
+
+
+
+
 
 		[Browsable(false)]
-		private SqlConnectionStrategy Strategy { get; set; }
+		private SqlConnectionStrategy Strategy { get; set; } = connectionStrategy;
 
 		[Browsable(false)]
 		private QueryManager QryMgr { get; set; }
@@ -40,12 +50,9 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 		{
 			get
 			{
-				if (Connection != null)
-				{
-					CsbAgent csa = new(Connection);
-					csa.RegisterDataset();
-					return csa.DatasetKey;
-				}
+				ValidateStoredConnection();
+				if (_Csa != null)
+					return _Csa.DatasetKey;
 
 				return string.Empty;
 			}
@@ -60,7 +67,7 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 			{
 				if (Connection != null)
 				{
-					return ((FbConnection)Connection).DataSource;
+					return ((DbConnection)Connection).DataSource;
 				}
 
 				return string.Empty;
@@ -74,6 +81,12 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 		{
 			get
 			{
+				ValidateStoredConnection();
+
+				if (_ServerVersion != null)
+					return _ServerVersion;
+
+
 				Version version = null;
 				if (Connection != null && Connection.State == ConnectionState.Open)
 				{
@@ -83,22 +96,20 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 				}
 
 				if (version == null)
-					return string.Empty;
+					_ServerVersion = string.Empty;
+				else
+					_ServerVersion = "Firebird " + version.ToString();
 
-				return "Firebird " + version.ToString();
+				return _ServerVersion;
 			}
 		}
 
 		[GlobalizedCategory("PropertyWindowConnectionDetails")]
 		[GlobalizedDescription("PropertyWindowClientVersionDescription")]
 		[GlobalizedDisplayName("PropertyWindowClientVersionDisplayName")]
-		public string ClientVersion
-		{
-			get
-			{
-				return $"FirebirdSql {typeof(FbConnection).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version}";
-			}
-		}
+		public string ClientVersion =>
+			_ClientVersion ??= $"FirebirdSql {typeof(FbConnection).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version}";
+
 
 		[GlobalizedCategory("PropertyWindowConnectionDetails")]
 		[GlobalizedDescription("PropertyWindowDatabaseDescription")]
@@ -108,7 +119,7 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 			get
 			{
 				if (Connection != null)
-					return ((FbConnection)Connection).Database;
+					return ((DbConnection)Connection).Database;
 
 				return string.Empty;
 			}
@@ -121,11 +132,9 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 		{
 			get
 			{
-				if (Connection != null)
-				{
-					CsbAgent csa = new(Connection.ConnectionString);
-					return csa.Port;
-				}
+				ValidateStoredConnection();
+				if (_Csa != null)
+					return _Csa.Port;
 
 				return 0;
 			}
@@ -216,7 +225,18 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 		[GlobalizedCategory("PropertyWindowConnectionDetails")]
 		[GlobalizedDescription("PropertyWindowLoginNameDescription")]
 		[GlobalizedDisplayName("PropertyWindowLoginNameDisplayName")]
-		public string LoginName => GetLoginName();
+		public string LoginName
+		{
+			get
+			{
+				ValidateStoredConnection();
+				if (_Csa != null)
+					return _Csa.UserID;
+
+				return string.Empty;
+			}
+
+		}
 
 		[GlobalizedCategory("PropertyWindowConnectionDetails")]
 		[GlobalizedDescription("PropertyWindowSessionIDDescription")]
@@ -230,50 +250,39 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 		{
 			get
 			{
-				string empty = string.Empty;
-				if (Connection != null)
+				ValidateStoredConnection();
+
+				if (_ConnectionInfo != null)
+					return _ConnectionInfo;
+
+				if (_Csa != null)
 				{
-					return string.Format(CultureInfo.CurrentCulture, ControlsResources.PropertyWindowConnectionInfo, Name, GetLoginName());
+					_ConnectionInfo = string.Format(CultureInfo.CurrentCulture, ControlsResources.PropertyWindowConnectionInfo, _Csa.DatasetKey, _Csa.UserID);
+				}
+				else
+				{
+					_ConnectionInfo = string.Empty;
 				}
 
-				return empty;
+				return _ConnectionInfo;
 			}
-		}
-
-		// private static string DomainUserName => string.Format(CultureInfo.InvariantCulture, "{0}\\{1}", Environment.UserDomainName, Environment.UserName);
-
-		public ConnectedPropertiesWindow(SqlConnectionStrategy connectionStrategy)
-		{
-			Strategy = connectionStrategy;
 		}
 
 		public bool IsInitialized()
 		{
-			return _isInitialized;
+			return _Initialized;
 		}
 
 		public void Initialize(QueryManager qryMgr)
 		{
 			QryMgr = qryMgr;
-			_isInitialized = true;
+			_Initialized = true;
 		}
 		public override string GetClassName()
 		{
 			return AttributeResources.PropertyWindowCurrentConnectionParameters;
 		}
 
-
-		private string GetLoginName()
-		{
-            Core.Model.UIConnectionInfo connectionInfo = QryMgr.ConnectionStrategy.UiConnectionInfo;
-			string result = string.Empty;
-			if (connectionInfo != null)
-			{
-				result = connectionInfo.UserID;
-			}
-
-			return result;
-		}
 
 		private string FormatTime(DateTime time)
 		{
@@ -298,5 +307,30 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 				_ => ControlsResources.ConnectionStateOpen,
 			};
 		}
+
+		private void ValidateStoredConnection()
+		{
+			if (Connection != null)
+			{
+				if (_Csa == null || !_Csa.Equals(Connection))
+				{
+					Tracer.Trace(GetType(), "ValidateStoredConnection()", "Registering CsbAgent.");
+					_Csa = new(Connection);
+					_Csa.RegisterDataset();
+
+					_ConnectionInfo = null;
+					_ServerVersion = null;
+				}
+				return;
+			}
+
+			if (_Csa != null)
+			{
+				_Csa = null;
+				_ConnectionInfo = null;
+				_ServerVersion = null;
+			}
+		}
+
 	}
 }

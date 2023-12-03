@@ -766,7 +766,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		if ((pgrfSaveOptions & num2) != num2)
 		{
 			bool flag = false;
-			List<uint> list = new List<uint>();
+			List<uint> list = [];
 			uint primaryDocCookie = GetPrimaryDocCookie();
 			enumerable ??= CommonVsUtilities.EnumerateOpenedDocuments(this, CommonVsUtilities.EnDocumentsFlag.DirtyExceptPrimary);
 			foreach (uint item in new List<uint>(enumerable) { primaryDocCookie })

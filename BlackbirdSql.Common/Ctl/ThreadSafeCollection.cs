@@ -20,26 +20,26 @@ public class ThreadSafeCollection<T>
 
 	private readonly TimeSpan _lockTimeout = TimeSpan.FromSeconds(5.0);
 
-	private ObservableCollection<T> _dataList = new ObservableCollection<T>();
+	private ObservableCollection<T> _dataList = [];
 
 	public ReadOnlyObservableCollection<T> CloneList
 	{
 		get
 		{
-			_dataList ??= new ObservableCollection<T>();
+			_dataList ??= [];
 
 			T[] newData = new T[_dataList.Count];
 			new AutoLock(_LockObject, isWriteLock: false, _lockTimeout, delegate
 			{
 				_dataList.CopyTo(newData, 0);
 			}, out var exception);
-			ReadOnlyObservableCollection<T> readOnlyObservableCollection = new ReadOnlyObservableCollection<T>(new ObservableCollection<T>(newData.ToList()));
+			ReadOnlyObservableCollection<T> readOnlyObservableCollection = new ReadOnlyObservableCollection<T>(new ObservableCollection<T>([.. newData]));
 			if (exception != null && Trace != null)
 			{
 				Trace.TraceException(TraceEventType.Error, EnUiTraceId.UiInfra, exception, "Failed to return data list", 75, "ThreadSafeCollection.cs", "CloneList");
 			}
 
-			readOnlyObservableCollection ??= new ReadOnlyObservableCollection<T>(new ObservableCollection<T>());
+			readOnlyObservableCollection ??= new ReadOnlyObservableCollection<T>([]);
 
 			return readOnlyObservableCollection;
 		}

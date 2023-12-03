@@ -54,9 +54,9 @@ internal sealed class VsPackageRegistrationAttribute: RegistrationAttribute
 				? SystemData.DataSourceGuid
 				: $"{{{SystemData.DataSourceGuid}}}";
 
-			string providerGuid = PackageData.ProviderGuid.StartsWith("{")
-				? PackageData.ProviderGuid
-				: $"{{{PackageData.ProviderGuid}}}";
+			string providerGuid = SystemData.ProviderGuid.StartsWith("{")
+				? SystemData.ProviderGuid
+				: $"{{{SystemData.ProviderGuid}}}";
 
 			// Clean up
 			context.RemoveKey("DataSources\\" + dataSourceGuid + "\\SupportingProviders\\" + providerGuid);
@@ -167,9 +167,9 @@ internal sealed class VsPackageRegistrationAttribute: RegistrationAttribute
 			? SystemData.DataSourceGuid
 			: $"{{{SystemData.DataSourceGuid}}}";
 
-		string providerGuid = PackageData.ProviderGuid.StartsWith("{")
-			? PackageData.ProviderGuid
-			: $"{{{PackageData.ProviderGuid}}}";
+		string providerGuid = SystemData.ProviderGuid.StartsWith("{")
+			? SystemData.ProviderGuid
+			: $"{{{SystemData.ProviderGuid}}}";
 
 		Type providerObjectFactoryInterface = typeof(IBProviderObjectFactory);
 		Attribute customAttribute = Attribute.GetCustomAttribute(providerObjectFactoryInterface, typeof(GuidAttribute));

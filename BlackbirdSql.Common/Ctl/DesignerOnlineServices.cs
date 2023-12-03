@@ -78,10 +78,10 @@ public class DesignerOnlineServices : AbstractDesignerServices, IBDesignerOnline
 			mkDocument = LookupObjectMoniker(dbl, elementType, identifierArray);
 			if (objectType != EnModelObjectType.Unknown)
 			{
-				originalObjects = new HashSet<NodeElementDescriptor>
-				{
+				originalObjects =
+				[
 					new NodeElementDescriptor(objectType, identifierArray)
-				};
+				];
 			}
 		}
 		if (string.IsNullOrEmpty(mkDocument))

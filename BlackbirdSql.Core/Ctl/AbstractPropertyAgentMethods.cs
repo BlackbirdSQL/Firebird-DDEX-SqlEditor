@@ -111,7 +111,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		{
 			if (_Describers == null)
 			{
-				_Describers = new();
+				_Describers = [];
 
 				// Initializers for property sets are held externally for this class
 				CorePropertySet.CreateAndPopulatePropertySetFromStatic(_Describers);
@@ -696,7 +696,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		foreach (KeyValuePair<string, object> pair in csb)
 		{
 			string lckey = pair.Key.ToLower();
-			if (lckey == "displaymember" || lckey == "datasetkey" || lckey == "dataset")
+			if (lckey == "displaymember") // || lckey == "datasetkey" || lckey == "dataset")
 				continue;
 
 			describer = Describers.GetSynonymDescriber(pair.Key);

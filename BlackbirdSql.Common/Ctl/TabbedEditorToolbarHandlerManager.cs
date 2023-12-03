@@ -10,13 +10,13 @@ namespace BlackbirdSql.Common.Ctl;
 
 public class TabbedEditorToolbarHandlerManager
 {
-	private readonly Dictionary<Type, Dictionary<GuidId, IBTabbedEditorToolbarCommandHandler>> _mappings = new Dictionary<Type, Dictionary<GuidId, IBTabbedEditorToolbarCommandHandler>>();
+	private readonly Dictionary<Type, Dictionary<GuidId, IBTabbedEditorToolbarCommandHandler>> _mappings = [];
 
 	public void AddMapping(Type tabbedEditorType, IBTabbedEditorToolbarCommandHandler commandHandler)
 	{
 		if (!_mappings.ContainsKey(tabbedEditorType))
 		{
-			_mappings.Add(tabbedEditorType, new Dictionary<GuidId, IBTabbedEditorToolbarCommandHandler>());
+			_mappings.Add(tabbedEditorType, []);
 		}
 		Dictionary<GuidId, IBTabbedEditorToolbarCommandHandler> dictionary = _mappings[tabbedEditorType];
 		GuidId guidId = commandHandler.GuidId;

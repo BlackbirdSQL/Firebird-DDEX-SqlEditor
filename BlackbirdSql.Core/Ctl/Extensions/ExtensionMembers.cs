@@ -25,13 +25,13 @@ namespace BlackbirdSql.Core.Ctl.Extensions;
 static class ExtensionMembers
 {
 	private static readonly string[] S_ByteSizeSuffixes =
-		{ "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+		["bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 	private static readonly string[] S_SIExponents =
-		{ null, "\x00b9", "\x00b2", "\x00b3", "\x2074", "\x2075", "\x2076", "\x2077", "\x2078", "\x2079",
+		[ null, "\x00b9", "\x00b2", "\x00b3", "\x2074", "\x2075", "\x2076", "\x2077", "\x2078", "\x2079",
 			"\x00b9\x2070", "\x00b9\x00b9", "\x00b9\x00b2", "\x00b9\x00b3", "\x00b9\x2074", "\x00b9\x2075",
 			"\x00b9\x2076", "\x00b9\x2077", "\x00b9\x2078", "\x00b9\x2079", "\x00b2\x2070", "\x00b2\x00b9",
 			"\x00b2\x00b2", "\x00b2\x00b3", "\x00b2\x2074", "\x00b2\x2075", "\x00b2\x2076", "\x00b2\x2077",
-			"\x00b2\x2078", "\x00b2\x2079"};
+			"\x00b2\x2078", "\x00b2\x2079"];
 
 
 

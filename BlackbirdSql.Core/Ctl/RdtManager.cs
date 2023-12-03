@@ -47,7 +47,7 @@ public sealed class RdtManager : IDisposable
 
 	private readonly IVsUIShell _UiShell;
 
-	private readonly Dictionary<uint, int> _DocDataToKeepAliveOnClose = new Dictionary<uint, int>();
+	private readonly Dictionary<uint, int> _DocDataToKeepAliveOnClose = [];
 
 	private readonly object _KeepAliveLockLocal = new object();
 
@@ -502,7 +502,7 @@ public sealed class RdtManager : IDisposable
 	public List<string> GetDirtyFiles(Predicate<string> shouldHandle)
 	{
 		Cmd.CheckForNullReference((object)shouldHandle, "shouldHandle");
-		List<string> dirtyFiles = new List<string>();
+		List<string> dirtyFiles = [];
 		if (Instance.GetRunningDocumentTable() != null)
 		{
 			IVsUIShell uiShell = _UiShell;
@@ -1199,7 +1199,7 @@ public sealed class RdtManager : IDisposable
 
 						if (saveFile)
 						{
-							List<string> dirtyFiles = new List<string> { fullPathFileName };
+							List<string> dirtyFiles = [fullPathFileName];
 							Instance.SaveDirtyFiles(dirtyFiles);
 							return result;
 						}

@@ -14,7 +14,7 @@ public class SaveFormats
 {
 	private const string C_FilterStringSeperator = "|";
 
-	private readonly List<SaveFormatInfo> saveFormatList = new List<SaveFormatInfo>();
+	private readonly List<SaveFormatInfo> saveFormatList = [];
 
 	public string FilterString
 	{

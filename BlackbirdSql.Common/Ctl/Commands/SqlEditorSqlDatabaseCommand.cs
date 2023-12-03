@@ -28,7 +28,7 @@ public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
 	/// This avoids repeatedly creating a new MonikerAgent and going through the
 	/// registration process each time.
 	/// </summary>
-	private static CsbAgent _Csa = null;
+	private CsbAgent _Csa = null;
 
 	public SqlEditorSqlDatabaseCommand()
 	{
@@ -96,11 +96,13 @@ public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
 			{
 				// Tracer.Trace(GetType(), "HandleExec()", "pvaOut Current selection is empty.");
 				objDatasetKey = string.Empty;
+				_Csa = null;
 			}
 			else
 			{
 				if (_Csa == null || !_Csa.Equals(connection))
 				{
+					Tracer.Trace(GetType(), "HandleExec()", "Registering CsbAgent.");
 					_Csa = new(connection);
 					_Csa.RegisterDataset();
 				}

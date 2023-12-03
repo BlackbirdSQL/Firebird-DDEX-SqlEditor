@@ -110,7 +110,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 						// FbConnection sqlConnection = (FbConnection)Connection;
 						try
 						{
-							CsbAgent csa = new(Connection.ConnectionString);
+							CsbAgent csa = new(Connection);
 							_IsCloudConnection = result = csa.ServerType == FbServerType.Default;
 						}
 						catch (Exception e)
@@ -254,7 +254,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 				return connection;
 			}
 
-			CsbAgent csa = new();
+			CsbAgent csa = [];
 			PopulateConnectionStringBuilder(csa, uici);
 			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "CreateDbConnectionFromConnectionInfo", "Csb connectionString: {0}", csa.ConnectionString);
 
@@ -270,7 +270,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 	{
 		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "CreateAndOpenDbConnectionFromConnectionInfo", "Enter");
 
-		CsbAgent csa = new();
+		CsbAgent csa = [];
 		PopulateConnectionStringBuilder(csa, uici);
 
 		connection = new FbConnection(csa.ToString());
@@ -556,7 +556,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 			ci.ApplicationName = C_ApplicationName;
 		}
 
-		CsbAgent csa = new();
+		CsbAgent csa = [];
 
 		PopulateConnectionStringBuilder(csa, ci);
 
@@ -573,7 +573,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 
 	public override List<string> GetAvailableDatabases()
 	{
-		List<string> list = new List<string>();
+		List<string> list = [];
 
 		foreach (KeyValuePair<string, string> pair in CsbAgent.RegisteredDatasets)
 		{

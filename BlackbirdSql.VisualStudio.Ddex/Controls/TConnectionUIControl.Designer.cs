@@ -90,7 +90,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			this.cboDialect.Name = "cboDialect";
 			this.cboDialect.Size = new System.Drawing.Size(78, 21);
 			this.cboDialect.TabIndex = 9;
-			this.cboDialect.TextChanged += new System.EventHandler(this.SetProperty);
+			this.cboDialect.TextChanged += new System.EventHandler(this.OnSetProperty);
 			// 
 			// grbSettings
 			// 
@@ -141,7 +141,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			this.cboCharset.Name = "cboCharset";
 			this.cboCharset.Size = new System.Drawing.Size(108, 21);
 			this.cboCharset.TabIndex = 7;
-			this.cboCharset.TextChanged += new System.EventHandler(this.SetProperty);
+			this.cboCharset.TextChanged += new System.EventHandler(this.OnSetProperty);
 			// 
 			// lblCharset
 			// 
@@ -172,7 +172,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			this.cboServerType.Name = "cboServerType";
 			this.cboServerType.Size = new System.Drawing.Size(145, 21);
 			this.cboServerType.TabIndex = 32;
-			this.cboServerType.TextChanged += new System.EventHandler(this.SetProperty);
+			this.cboServerType.TextChanged += new System.EventHandler(this.OnSetProperty);
 			// 
 			// lblServerType
 			// 
@@ -213,7 +213,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			this.txtRole.Name = "txtRole";
 			this.txtRole.Size = new System.Drawing.Size(140, 20);
 			this.txtRole.TabIndex = 5;
-			this.txtRole.TextChanged += new System.EventHandler(this.SetProperty);
+			this.txtRole.TextChanged += new System.EventHandler(this.OnSetProperty);
 			// 
 			// lblPassword
 			// 
@@ -231,7 +231,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			this.txtPassword.PasswordChar = '*';
 			this.txtPassword.Size = new System.Drawing.Size(140, 20);
 			this.txtPassword.TabIndex = 3;
-			this.txtPassword.TextChanged += new System.EventHandler(this.SetProperty);
+			this.txtPassword.TextChanged += new System.EventHandler(this.OnSetProperty);
 			// 
 			// lblUser
 			// 
@@ -248,7 +248,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			this.txtUserName.Name = "txtUserName";
 			this.txtUserName.Size = new System.Drawing.Size(140, 20);
 			this.txtUserName.TabIndex = 1;
-			this.txtUserName.TextChanged += new System.EventHandler(this.SetProperty);
+			this.txtUserName.TextChanged += new System.EventHandler(this.OnSetProperty);
 			// 
 			// cmdGetFile
 			// 
@@ -258,7 +258,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			this.cmdGetFile.Size = new System.Drawing.Size(24, 23);
 			this.cmdGetFile.TabIndex = 23;
 			this.cmdGetFile.Text = "...";
-			this.cmdGetFile.Click += new System.EventHandler(this.CmdGetFile_Click);
+			this.cmdGetFile.Click += new System.EventHandler(this.OnCmdGetFileClick);
 			// 
 			// cmbDatabase
 			// 
@@ -283,7 +283,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			this.txtPort.Size = new System.Drawing.Size(65, 20);
 			this.txtPort.TabIndex = 31;
 			this.txtPort.Text = "3050";
-			this.txtPort.TextChanged += new System.EventHandler(this.SetProperty);
+			this.txtPort.TextChanged += new System.EventHandler(this.OnSetProperty);
 			// 
 			// lblPort
 			// 
@@ -313,7 +313,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			this.txtDataSource.Name = "txtDataSource";
 			this.txtDataSource.Size = new System.Drawing.Size(134, 13);
 			this.txtDataSource.TabIndex = 29;
-			this.txtDataSource.TextChanged += new System.EventHandler(this.DataSourceTextChanged);
+			this.txtDataSource.TextChanged += new System.EventHandler(this.OnDataSourceTextChanged);
 			// 
 			// txtDatabase
 			// 
@@ -322,7 +322,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			this.txtDatabase.Name = "txtDatabase";
 			this.txtDatabase.Size = new System.Drawing.Size(358, 13);
 			this.txtDatabase.TabIndex = 33;
-			this.txtDatabase.TextChanged += new System.EventHandler(this.DatabaseTextChanged);
+			this.txtDatabase.TextChanged += new System.EventHandler(this.OnDatabaseTextChanged);
 			// 
 			// lblDatabaseBlank
 			// 

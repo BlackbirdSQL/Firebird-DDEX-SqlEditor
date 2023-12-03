@@ -44,9 +44,6 @@ static class PackageData
 	public const string EdmxUIContextRuleGuid = "{e000c7e5-dba5-4682-abe0-7f6ce57b236d}";
 	public const string ShellInitializedContextRuleGuid = "{E80EF1CB-6D64-4609-8FAA-FEACFD3BC89F}";
 
-	public const string ProviderGuid = "43015F6E-757F-408B-966E-C2BCE34686BA";
-	public const string ProviderGuidNET = "66F5BB69-4C70-4319-8947-A2E0643A4CE";
-
 
 	// Settings Guids
 	public const string GeneralSettingsGuid = "C76D0CE2-CB4D-4594-8A94-6E6833B4A160";

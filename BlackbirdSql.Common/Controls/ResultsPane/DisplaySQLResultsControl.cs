@@ -1412,7 +1412,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 			FbConnection asSqlConnection = (FbConnection)args.Connection;
 			if (args.Connection != null && (_ClientStatisticsCtl == null || _ClearStatisticsControl))
 			{
-				_ClientStatisticsCtl = new StatisticsControl();
+				_ClientStatisticsCtl = [];
 				StatisticsConnection node = new (asSqlConnection);
 				_ClientStatisticsCtl.Add(node);
 

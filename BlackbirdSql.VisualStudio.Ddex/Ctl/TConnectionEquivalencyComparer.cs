@@ -109,7 +109,7 @@ public class TConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 		// Tracer.Trace(typeof(TConnectionEquivalencyComparer), "StandardizeDataSource()");
 
 		dataSource = dataSource.ToUpperInvariant();
-		string[] array = new string[2] { ".", "localhost" };
+		string[] array = [".", "localhost"];
 		foreach (string text in array)
 		{
 			if (dataSource.Equals(text, StringComparison.Ordinal))

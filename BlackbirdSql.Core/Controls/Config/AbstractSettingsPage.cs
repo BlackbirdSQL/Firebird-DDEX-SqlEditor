@@ -552,11 +552,10 @@ public class AbstractSettingsPage<TPage, T> : DialogPage, IBSettingsPage where T
 
 			// Fix glitch.
 
-			InvokeMethod(GridView, "SetScrollOffset", BindingFlags.Public | BindingFlags.Instance,
-				new object[] { 0 });
+			InvokeMethod(GridView, "SetScrollOffset", BindingFlags.Public | BindingFlags.Instance, [0]);
 
 			InvokeMethod(GridView, "SelectRow", BindingFlags.NonPublic | BindingFlags.Instance,
-				new object[] { SortedByCategories ? 1 : 0 });
+				[SortedByCategories ? 1 : 0]);
 		}
 
 	}
@@ -705,7 +704,7 @@ public class AbstractSettingsPage<TPage, T> : DialogPage, IBSettingsPage where T
 			// Diag.Trace($"OnGridEditBoxMouseDown: Invoking DoubleClickRow().");
 
 			InvokeMethod(GridView, "DoubleClickRow", BindingFlags.Public | BindingFlags.Instance,
-				new object[] { row, false, 2 }, true);
+				[row, false, 2], true);
 
 			_EventActive = false;
 
@@ -717,7 +716,7 @@ public class AbstractSettingsPage<TPage, T> : DialogPage, IBSettingsPage where T
 		// Diag.Trace($"OnGridEditBoxMouseDown: Invoking OnBtnClick().");
 
 		InvokeMethod(GridView, "OnBtnClick", BindingFlags.NonPublic | BindingFlags.Instance,
-			new object[] { this, new EventArgs() });
+			[this, new EventArgs()]);
 
 		_EventActive = false;
 

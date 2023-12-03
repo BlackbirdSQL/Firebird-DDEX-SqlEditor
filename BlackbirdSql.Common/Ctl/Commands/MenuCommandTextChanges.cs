@@ -13,7 +13,8 @@ using BlackbirdSql.Common.Ctl.Interfaces;
 namespace BlackbirdSql.Common.Ctl.Commands;
 
 [ComVisible(false)]
-public class MenuCommandTextChanges : MenuCommand, IBMenuCommandTextChanges
+public class MenuCommandTextChanges(EventHandler handler, CommandID command)
+	: MenuCommand(handler, command), IBMenuCommandTextChanges
 {
 	private string text;
 
@@ -27,10 +28,5 @@ public class MenuCommandTextChanges : MenuCommand, IBMenuCommandTextChanges
 		{
 			text = value;
 		}
-	}
-
-	public MenuCommandTextChanges(EventHandler handler, CommandID command)
-		: base(handler, command)
-	{
 	}
 }

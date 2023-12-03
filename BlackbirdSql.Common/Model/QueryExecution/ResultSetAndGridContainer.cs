@@ -169,10 +169,10 @@ public sealed class ResultSetAndGridContainer : IDisposable
 		if (_GridCtl.GridStorage.RowCount > 0)
 		{
 			BlockOfCells node = new BlockOfCells(0L, 1);
-			BlockOfCellsCollection blockOfCellsCollection = new()
-			{
+			BlockOfCellsCollection blockOfCellsCollection =
+			[
 				node
-			};
+			];
 			_GridCtl.SelectedCells = blockOfCellsCollection;
 		}
 	}

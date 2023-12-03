@@ -27,5 +27,7 @@ public class SettingsProvider
 	[Guid(PackageData.GeneralSettingsGuid)]
 	public class GeneralSettingsPage : AbstractSettingsPage<GeneralSettingsPage, GeneralSettingsModel> { }
 
+	[ComVisible(true)]
+	[Guid(PackageData.DebugSettingsGuid)]
 	public class DebugSettingsPage : AbstractSettingsPage<DebugSettingsPage, DebugSettingsModel> { }
 }

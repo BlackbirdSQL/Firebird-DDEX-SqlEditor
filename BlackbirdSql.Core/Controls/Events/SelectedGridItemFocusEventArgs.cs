@@ -5,11 +5,11 @@ using System.Windows.Forms;
 
 namespace BlackbirdSql.Core.Controls.Events;
 
-public class SelectedGridItemFocusEventArgs : EventArgs
+public class SelectedGridItemFocusEventArgs(GridItem selectionItem) : EventArgs
 {
 	private bool _ValidateValue = false;
 	private string _Value = null;
-	private readonly GridItem _SelectionItem;
+	private readonly GridItem _SelectionItem = selectionItem;
 
 
 	public GridItem SelectionItem => _SelectionItem;
@@ -24,10 +24,5 @@ public class SelectedGridItemFocusEventArgs : EventArgs
 	{
 		get { return _Value; }
 		set { _Value = value; }
-	}
-
-	public SelectedGridItemFocusEventArgs(GridItem selectionItem)
-	{
-		_SelectionItem = selectionItem;
 	}
 }

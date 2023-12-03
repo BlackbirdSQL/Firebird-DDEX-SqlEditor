@@ -18,6 +18,7 @@ using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
+using Microsoft.VisualStudio.LanguageServer.Client;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
@@ -38,8 +39,9 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 	// Sanity checker.
 	private readonly bool _Ctor = false;
-	FbConnection _Connection;
-	CsbAgent _Csa;
+	private FbConnection _Connection;
+
+	private CsbAgent _Csa = null;
 
 
 	#endregion Variables
@@ -138,12 +140,16 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			syncCardinal = parser != null ? parser.SyncEnter() : 0;
 
 			_Connection = connection;
-			_Csa = new(connection);
-			_Csa.RegisterDataset();
+
+			if (_Csa == null || !_Csa.Equals(connection))
+			{
+				Tracer.Trace(GetType(), "SelectObjects()", "Registering CsbAgent.");
+				_Csa = new(connection);
+				_Csa.RegisterDataset();
+			}
 
 			DataTable schema = CreateSchema(typeName, parameters);
 
-			_Csa = null;
 			_Connection = null;
 
 			reader = new AdoDotNetTableReader(schema);
@@ -199,8 +205,8 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		DataTable schema = new DataTable();
 
 		Describer[] describers = typeName == "Database"
-			? CsbAgent.Describers.Values.ToArray()
-			: new Describer[] { CsbAgent.Describers[CoreConstants.C_KeyExDatasetKey] };
+			? [.. CsbAgent.Describers.Values]
+			: [CsbAgent.Describers[CoreConstants.C_KeyExDatasetKey]];
 
 
 		foreach (Describer describer in describers)

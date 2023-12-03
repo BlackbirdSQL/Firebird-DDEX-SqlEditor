@@ -26,45 +26,11 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls;
 // =========================================================================================================
 public partial class TConnectionUIControl : DataConnectionUIControl
 {
-	#region Variables - TConnectionUIControl
 
 
-	private readonly ErmBindingSource _DataSources;
-
-	private int _EventsDisabled = 0;
-
-
-	#endregion Variables
-
-
-
-
-
-	// =========================================================================================================
-	#region Property Accessors - TConnectionUIControl
-	// =========================================================================================================
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Returns true if when execution has enetered an event handler that may cause recursion
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private bool EventsDisabled
-	{
-		get { return _EventsDisabled > 0; }
-	}
-
-
-	#endregion Property accessors
-
-
-
-
-
-	// =========================================================================================================
+	// -----------------------------------------------------------------------------------------------------
 	#region Constructors / Destructors - TConnectionUIControl
-	// =========================================================================================================
+	// -----------------------------------------------------------------------------------------------------
 
 
 	public TConnectionUIControl() : base()
@@ -102,6 +68,46 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 	#endregion Constructors / Destructors
 
+
+
+
+	// =========================================================================================================
+	#region Variables - TConnectionUIControl
+	// =========================================================================================================
+
+
+	private readonly ErmBindingSource _DataSources;
+
+	private int _EventsDisabled = 0;
+
+
+	#endregion Variables
+
+
+
+
+
+	// =========================================================================================================
+	#region Property Accessors - TConnectionUIControl
+	// =========================================================================================================
+
+
+	private bool InvalidDependent => _DataSources.DependentRow == null
+		|| _DataSources.DependentRow["DatabaseLc"] == DBNull.Value
+		|| (string)_DataSources.DependentRow["DatabaseLc"] == "";
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns true if when execution has enetered an event handler that may cause recursion
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private bool EventsDisabled
+	{
+		get { return _EventsDisabled > 0; }
+	}
+
+
+	#endregion Property accessors
 
 
 
@@ -191,8 +197,8 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			else
 				_DataSources.Position = -1;
 
-			_DataSources.CurrentChanged += DataSourcesCurrentChanged;
-			_DataSources.DependencyCurrentChanged += DatabasesCurrentChanged;
+			_DataSources.CurrentChanged += OnDataSourcesCurrentChanged;
+			_DataSources.DependencyCurrentChanged += OnDatabasesCurrentChanged;
 		}
 		catch (Exception ex)
 		{
@@ -241,6 +247,20 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	}
 
 
+
+	private void ValidateDatasetKey()
+	{
+		if (InvalidDependent)
+		{
+			DisableEvents();
+			Site.Remove("Dataset");
+			Site.Remove("DatasetId");
+			Site.Remove("DatasetKey");
+			EnableEvents();
+		}
+	}
+
+
 	#endregion Methods
 
 
@@ -259,7 +279,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	/// <param name="sender"></param>
 	/// <param name="e"></param>
 	// ---------------------------------------------------------------------------------
-	private void CmdGetFile_Click(object sender, EventArgs e)
+	private void OnCmdGetFileClick(object sender, EventArgs e)
 	{
 		if (openFileDialog.ShowDialog() == DialogResult.OK)
 		{
@@ -274,7 +294,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	/// Checks the database input text and updates form values
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private void DatabaseTextChanged(object sender, EventArgs e)
+	private void OnDatabaseTextChanged(object sender, EventArgs e)
 	{
 		try
 		{
@@ -323,14 +343,14 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	/// <param name="sender"></param>
 	/// <param name="e"></param>
 	// ---------------------------------------------------------------------------------
-	private void DatabasesCurrentChanged(object sender, EventArgs e)
+	private void OnDatabasesCurrentChanged(object sender, EventArgs e)
 	{
 		// Diag.Trace("Databases CurrentChanged");
 		try
 		{
-			if (_DataSources.DependentRow == null || _DataSources.DependentRow["DatabaseLc"] == DBNull.Value
-				|| (string)_DataSources.DependentRow["DatabaseLc"] == "")
+			if (InvalidDependent)
 			{
+				ValidateDatasetKey();
 				return;
 			}
 
@@ -415,7 +435,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	/// Checks the database input text and moves the binding source cursor if the data source is found
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private void DataSourceTextChanged(object sender, EventArgs e)
+	private void OnDataSourceTextChanged(object sender, EventArgs e)
 	{
 		try
 		{
@@ -471,7 +491,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	///	If it's (2) did it the input text will already match the current row info
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	private void DataSourcesCurrentChanged(object sender, EventArgs e)
+	private void OnDataSourcesCurrentChanged(object sender, EventArgs e)
 	{
 		// Diag.Trace("_DataSources CurrentChanged");
 
@@ -561,7 +581,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	/// <param name="sender"></param>
 	/// <param name="e"></param>
 	// ---------------------------------------------------------------------------------
-	private void SetProperty(object sender, EventArgs e)
+	private void OnSetProperty(object sender, EventArgs e)
 	{
 		try
 		{

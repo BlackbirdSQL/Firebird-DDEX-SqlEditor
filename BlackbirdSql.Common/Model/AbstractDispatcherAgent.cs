@@ -292,7 +292,7 @@ public class AbstractDispatcherAgent : AbstractPropertyAgent
 
 			foreach (DependsOnPropertyAttribute obj in array)
 			{
-				dictionary ??= new Dictionary<string, List<string>>();
+				dictionary ??= [];
 
 				string[] propertyNames = obj.PropertyNames;
 
@@ -313,7 +313,7 @@ public class AbstractDispatcherAgent : AbstractPropertyAgent
 
 					if (!dictionary.TryGetValue(propertyName, out var value))
 					{
-						value = new List<string>();
+						value = [];
 						dictionary.Add(propertyName, value);
 					}
 
@@ -337,17 +337,17 @@ public class AbstractDispatcherAgent : AbstractPropertyAgent
 			foreach (ValueDependsOnExternalPropertyAttribute customAttribute
 				in propertyInfo.GetCustomAttributes<ValueDependsOnExternalPropertyAttribute>(inherit: false))
 			{
-				dictionary ??= new Dictionary<string, Dictionary<string, HashSet<string>>>();
+				dictionary ??= [];
 
 				if (!dictionary.TryGetValue(customAttribute.SourceName, out var value))
 				{
-					value = new Dictionary<string, HashSet<string>>();
+					value = [];
 					dictionary.Add(customAttribute.SourceName, value);
 				}
 
 				if (!value.TryGetValue(customAttribute.PropertyName, out var value2))
 				{
-					value2 = new HashSet<string>();
+					value2 = [];
 					value.Add(customAttribute.PropertyName, value2);
 				}
 
@@ -370,11 +370,11 @@ public class AbstractDispatcherAgent : AbstractPropertyAgent
 			foreach (ValueDependsOnCollectionAttribute customAttribute
 				in propertyInfo.GetCustomAttributes<ValueDependsOnCollectionAttribute>(inherit: false))
 			{
-				dictionary ??= new Dictionary<string, HashSet<string>>();
+				dictionary ??= [];
 
 				if (!dictionary.TryGetValue(customAttribute.SourceName, out var value))
 				{
-					value = new HashSet<string>();
+					value = [];
 					dictionary.Add(customAttribute.SourceName, value);
 				}
 

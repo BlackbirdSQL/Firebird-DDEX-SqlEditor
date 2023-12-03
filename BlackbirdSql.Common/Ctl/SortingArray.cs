@@ -59,7 +59,7 @@ public class SortingArray : IBSortingArray
 				m_arrGroups[num] = m_arrGroups[num - 1];
 			}
 
-			m_arrGroups[iGroup] = new ArrayList();
+			m_arrGroups[iGroup] = [];
 			Interlocked.Increment(ref m_iGroups);
 			return InsertWith(iGroup, val);
 		}

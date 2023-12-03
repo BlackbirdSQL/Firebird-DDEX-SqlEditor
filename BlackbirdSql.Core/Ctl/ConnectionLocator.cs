@@ -20,6 +20,7 @@ using EnvDTE;
 
 using Microsoft;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -40,11 +41,21 @@ namespace BlackbirdSql.Core.Ctl;
 // =========================================================================================================
 public abstract class ConnectionLocator
 {
+	private const string C_ViewFileExtension = "SEView";
+
+
+
 	// A static class lock
 	private static readonly object _LockClass = new();
+
+	private static bool _Loading = false;
 	private static bool _HasLocal = false;
 	private static IDictionary<string, string> _TempServerNames = null;
 	private static DataTable _DataSources = null, _Databases = null;
+
+
+
+
 
 	// =========================================================================================================
 	#region Property accessors - ConnectionLocator
@@ -54,7 +65,7 @@ public abstract class ConnectionLocator
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Populates a <see cref="DataTable"/> with all registered databases of the current data provider (in this case FlameRobin for Firebird)
-	/// using the xml located at <see cref="SystemData.ConfiguredConnectionsPath"/>.
+	/// using the xml located at <see cref="SystemData.UtilityConfigurationPath"/>.
 	/// </summary>
 	/// <returns>
 	/// The populated <see cref="DataTable"/> that can be used together with <see cref="DataSources"/> in an <see cref="ErmBindingSource"/>.
@@ -81,7 +92,7 @@ public abstract class ConnectionLocator
 	/// <summary>
 	/// Populates a <see cref="DataTable"/> with the distinct Server hostnames (DataSources) of all registered
 	/// servers of the current data provider (in this case FlameRobin for Firebird), using the xml located
-	/// at <see cref="SystemData.ConfiguredConnectionsPath"/>.
+	/// at <see cref="SystemData.UtilityConfigurationPath"/>.
 	/// </summary>
 	/// <returns>
 	/// The populated <see cref="DataTable"/> that can be used together with <see cref="Databases"/> in an <see cref="ErmBindingSource"/>.
@@ -117,6 +128,47 @@ public abstract class ConnectionLocator
 	// =========================================================================================================
 	#region Methods - ConnectionLocator
 	// =========================================================================================================
+
+
+	private static string AddServerRow(DataTable databases, string datasource, int port)
+	{
+		// To keep uniformity of server names, the case of the first connection
+		// discovered for a server name is the case that will be used for all
+		// connections for that server.
+		if (_TempServerNames.TryGetValue(datasource.ToLowerInvariant(), out string serverName))
+			return serverName;
+
+		// No server row previously added so add one.
+
+		_TempServerNames.Add(datasource.ToLowerInvariant(), datasource);
+		serverName = datasource;
+
+
+		DataRow row = CreateConnectionNodeRow(databases);
+
+		row["Id"] = databases.Rows.Count;
+		row["DataSource"] = serverName;
+		row["DataSourceLc"] = serverName.ToLower();
+		row["Port"] = port;
+
+		row["Name"] = "";
+		row["DatabaseLc"] = "";
+
+		if (serverName == "localhost")
+			row["Orderer"] = 2;
+		else
+			row["Orderer"] = 3;
+
+		// string str = "AddServerRow: ";
+		// foreach (DataColumn col in databases.Columns)
+		//	str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
+		// Tracer.Trace(typeof(ConnectionLocator), "RegisterAppConnectionStrings()", str);
+
+		databases.Rows.Add(row);
+
+		return serverName;
+
+	}
 
 
 	// ---------------------------------------------------------------------------------
@@ -203,7 +255,7 @@ public abstract class ConnectionLocator
 
 				if (datasetKey.Equals((string)row["DatasetKey"]))
 				{
-					DbConnectionStringBuilder csb = new();
+					DbConnectionStringBuilder csb = [];
 
 					foreach (Describer describer in CsbAgent.Describers.Values)
 					{
@@ -305,6 +357,14 @@ public abstract class ConnectionLocator
 			if (_Databases != null)
 				return;
 
+			if (_Loading)
+			{
+				COMException exc = new("Recursive call", VSConstants.RPC_E_CANTCALLOUT_AGAIN);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
+
 			if (!ThreadHelper.CheckAccess())
 			{
 				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
@@ -320,12 +380,22 @@ public abstract class ConnectionLocator
 				throw exc;
 			}
 
-			_TempServerNames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-			LoadConfiguredConnectionsImpl();
+			_Loading = true;
 
-			_HasLocal = false;
-			_TempServerNames = null;
+			try
+			{
+				_TempServerNames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+				LoadConfiguredConnectionsImpl();
+
+			}
+			finally
+			{
+				_HasLocal = false;
+				_TempServerNames = null;
+				_Loading = false;
+			}
 		}
 
 	}
@@ -334,7 +404,7 @@ public abstract class ConnectionLocator
 
 	private static void LoadConfiguredConnectionsImpl()
 	{
-		string str;
+		// Tracer.Trace(typeof(ConnectionLocator), "LoadConfiguredConnectionsImpl()");
 
 		DataTable databases = new DataTable();
 
@@ -348,280 +418,77 @@ public abstract class ConnectionLocator
 		foreach (Describer describer in CsbAgent.Describers.Values)
 			databases.Columns.Add(describer.Name, describer.DataType);
 
-		DataRow row;
+		LoadServerExplorerConfiguredConnections(databases);
+		LoadUtilityConfiguredConnections(databases);
+		LoadSolutionConfiguredConnections(databases);
 
-		string xmlPath = SystemData.ConfiguredConnectionsPath;
 
-		if (File.Exists(xmlPath))
+
+		// Add a ghost row to the datasources list
+		// This will be the default datasource row so that anything else
+		// selected will generate a CurrentChanged event.
+		DataRow row = CreateConnectionNodeRow(databases);
+
+		row["Id"] = databases.Rows.Count;
+		row["DataSourceLc"] = "";
+		row["Port"] = 0;
+
+		row["Name"] = "";
+		row["DatabaseLc"] = "";
+
+		row["Orderer"] = 0;
+
+		// string str = "AddGhostRow: ";
+		// foreach (DataColumn col in databases.Columns)
+		//	str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
+		// Tracer.Trace(typeof(ConnectionLocator), "LoadConfiguredConnectionsImpl()", str);
+
+		databases.Rows.Add(row);
+
+
+		// Add a Clear/Reset dummy row for the datasources list
+		// If selected will invoke a form reset the move the cursor back to the ghost row.
+		row = CreateConnectionNodeRow(databases);
+
+		row["Id"] = databases.Rows.Count;
+		row["Orderer"] = 1;
+		row["DataSource"] = Resources.ErmBindingSource_Reset;
+		row["DataSourceLc"] = Resources.ErmBindingSource_Reset.ToLowerInvariant();
+		row["Name"] = "";
+		row["Port"] = 0;
+		row["DatabaseLc"] = "";
+
+		// str = "AddResetRow: ";
+		// foreach (DataColumn col in databases.Columns)
+		//	str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
+		// Tracer.Trace(typeof(ConnectionLocator), "LoadConfiguredConnectionsImpl()", str);
+
+		databases.Rows.Add(row);
+
+
+		// Add at least one row, that will be the ghost row, for localhost. 
+		if (!_HasLocal)
 		{
-			try
-			{
-				XmlDocument xmlDoc = new XmlDocument();
-
-				xmlDoc.Load(xmlPath);
-
-				XmlNode xmlRoot = xmlDoc.DocumentElement;
-				/* XmlNamespaceManager xmlNs = new XmlNamespaceManager(xmlDoc.NameTable);
-
-
-				if (!xmlNs.HasNamespace("confBlackbirdNs"))
-				{
-					xmlNs.AddNamespace("confBlackbirdNs", xmlRoot.NamespaceURI);
-				}
-				*/
-				XmlNodeList xmlServers, xmlDatabases;
-				XmlNode xmlNode = null;
-				int port;
-				string serverName, datasource, authentication, user, password, path, charset;
-				string datasetId;
-
-				xmlServers = xmlRoot.SelectNodes("//server");
-
-
-				foreach (XmlNode xmlServer in xmlServers)
-				{
-					if ((xmlNode = xmlServer.SelectSingleNode("name")) == null)
-						continue;
-					serverName = xmlNode.InnerText.Trim();
-
-					if ((xmlNode = xmlServer.SelectSingleNode("host")) == null)
-						continue;
-					datasource = xmlNode.InnerText.Trim();
-
-
-					if ((xmlNode = xmlServer.SelectSingleNode("port")) == null)
-						continue;
-					port = Convert.ToInt32(xmlNode.InnerText.Trim());
-
-					if (port == 0)
-						port = CoreConstants.C_DefaultPort;
-
-
-					if (datasource.ToLowerInvariant() == "localhost")
-					{
-						datasource = "localhost";
-						_HasLocal = true;
-					}
-
-					// To keep uniformity of server names, the case of the first connection
-					// discovered for a server name is the case that will be used for all
-					// connections for that server.
-					if (!_TempServerNames.TryGetValue(datasource.ToLowerInvariant(), out serverName))
-					{
-						_TempServerNames.Add(datasource.ToLowerInvariant(), datasource);
-						serverName = datasource;
-					}
-
-
-					row = CreateConnectionNodeRow(databases);
-
-					row["Id"] = databases.Rows.Count;
-					row["DataSource"] = serverName;
-					row["DataSourceLc"] = serverName.ToLower();
-					row["Port"] = port;
-
-					row["Name"] = "";
-					row["DatabaseLc"] = "";
-
-					if (serverName == "localhost")
-						row["Orderer"] = 2;
-					else
-						row["Orderer"] = 3;
-
-					str = "AddServerRow: ";
-
-					foreach (DataColumn col in databases.Columns)
-						str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
-
-					// Tracer.Trace(typeof(ConnectionLocator), "LoadConfiguredConnectionsImpl()", str);
-
-					databases.Rows.Add(row);
-
-
-					xmlDatabases = xmlServer.SelectNodes("database");
-
-
-
-					foreach (XmlNode xmlDatabase in xmlDatabases)
-					{
-						if ((xmlNode = xmlDatabase.SelectSingleNode("name")) == null)
-							continue;
-
-
-						// Add a ghost row to each database
-						// A binding source cannot have an invalidated state. ie. Position == -1 and Current == null,
-						// if it's List Count > 0. The ghost row is a placeholder for that state.
-
-						row = CreateConnectionNodeRow(databases);
-
-						row["Id"] = databases.Rows.Count;
-						row["DataSource"] = serverName;
-						row["DataSourceLc"] = serverName.ToLower();
-						row["Port"] = port;
-
-						datasetId = xmlNode.InnerText.Trim();
-						row["Name"] = datasetId;
-
-						if ((xmlNode = xmlDatabase.SelectSingleNode("path")) == null)
-							continue;
-
-						path = xmlNode.InnerText.Trim();
-						row["Database"] = path;
-						row["DatabaseLc"] = path.ToLower();
-
-						if ((xmlNode = xmlDatabase.SelectSingleNode("charset")) == null)
-							continue;
-
-
-						charset = xmlNode.InnerText.Trim();
-						row["Charset"] = charset;
-
-
-						user = "";
-						password = "";
-
-						if ((xmlNode = xmlDatabase.SelectSingleNode("authentication")) == null)
-							authentication = "trusted";
-						else
-							authentication = xmlNode.InnerText.Trim();
-
-						if (authentication != "trusted")
-						{
-							if ((xmlNode = xmlDatabase.SelectSingleNode("username")) != null)
-							{
-								user = xmlNode.InnerText.Trim();
-
-								if (authentication == "pwd"
-									&& (xmlNode = xmlDatabase.SelectSingleNode("password")) != null)
-								{
-									password = xmlNode.InnerText.Trim();
-								}
-							}
-
-						}
-
-						row["UserID"] = user;
-						row["Password"] = password;
-
-
-						// Tracer.Trace(typeof(ConnectionLocator), "LoadConfiguredConnectionsImpl()", "Calling RegisterDatasetKey for datasetId: {0}.", datasetId);
-
-						// The datasetId may not be unique at this juncture.
-						CsbAgent csa = CsbAgent.CreateRegisteredDataset(datasetId, serverName, port, path,
-							user, password, charset);
-
-						if (csa == null)
-							continue;
-
-						// Tracer.Trace(typeof(ConnectionLocator), "LoadConfiguredConnectionsImpl()", "Database path: {0}.", path);
-
-
-						// CsbAgent will return a new DatasetId if the supplied one was not unique.
-						// to the server.
-						row["DatasetKey"] = csa.DatasetKey;
-						row["DatasetId"] = csa.DatasetId;
-						row["Dataset"] = csa.Dataset;
-
-						if (serverName == "localhost")
-							row["Orderer"] = 2;
-						else
-							row["Orderer"] = 3;
-
-
-						str = "AddDbRow: ";
-
-						foreach (DataColumn col in databases.Columns)
-							str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
-
-						// Tracer.Trace(typeof(ConnectionLocator), "LoadConfiguredConnectionsImpl()", str);
-
-						databases.Rows.Add(row);
-					}
-				}
-
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-			}
-
-			if (UserSettings.IncludeAppConnections)
-				LoadSolutionConfiguredConnections(databases);
-
-
-
-			// Add a ghost row to the datasources list
-			// This will be the default datasource row so that anything else
-			// selected will generate a CurrentChanged event.
 			row = CreateConnectionNodeRow(databases);
 
 			row["Id"] = databases.Rows.Count;
-			row["DataSourceLc"] = "";
-			row["Port"] = 0;
-
+			row["Orderer"] = 2;
+			row["DataSource"] = "localhost";
+			row["DataSourceLc"] = "localhost";
 			row["Name"] = "";
 			row["DatabaseLc"] = "";
 
-			row["Orderer"] = 0;
-
-			str = "AddGhostRow: ";
-
-			foreach (DataColumn col in databases.Columns)
-				str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
-
+			// str = "AddLocalHostGhostRow: ";
+			// foreach (DataColumn col in databases.Columns)
+			//	str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
 			// Tracer.Trace(typeof(ConnectionLocator), "LoadConfiguredConnectionsImpl()", str);
 
 			databases.Rows.Add(row);
-
-
-			// Add a Clear/Reset dummy row for the datasources list
-			// If selected will invoke a form reset the move the cursor back to the ghost row.
-			row = CreateConnectionNodeRow(databases);
-
-			row["Id"] = databases.Rows.Count;
-			row["Orderer"] = 1;
-			row["DataSource"] = "Reset";
-			row["DataSourceLc"] = "reset";
-			row["Name"] = "";
-			row["Port"] = 0;
-			row["DatabaseLc"] = "";
-
-			str = "AddResetRow: ";
-
-			foreach (DataColumn col in databases.Columns)
-				str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
-
-			// Tracer.Trace(typeof(ConnectionLocator), "LoadConfiguredConnectionsImpl()", str);
-
-			databases.Rows.Add(row);
-
-
-			// Add at least one row, that will be the ghost row, for localhost. 
-			if (!_HasLocal)
-			{
-				row = CreateConnectionNodeRow(databases);
-
-				row["Id"] = databases.Rows.Count;
-				row["Orderer"] = 2;
-				row["DataSource"] = "localhost";
-				row["DataSourceLc"] = "localhost";
-				row["Name"] = "";
-				row["DatabaseLc"] = "";
-
-				str = "AddLocalHostGhostRow: ";
-
-				foreach (DataColumn col in databases.Columns)
-					str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
-
-				// Tracer.Trace(typeof(ConnectionLocator), "LoadConfiguredConnectionsImpl()", str);
-
-				databases.Rows.Add(row);
-			}
-
-			databases.DefaultView.Sort = "Orderer,DataSource,DatasetId ASC";
-
-
 		}
+
+		databases.DefaultView.Sort = "Orderer,DataSource,DatasetId ASC";
+
+
 
 		_Databases = databases.DefaultView.ToTable(false);
 
@@ -629,10 +496,191 @@ public abstract class ConnectionLocator
 
 
 
-	private static void LoadSolutionConfiguredConnections(DataTable databases)
-	{ 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "<Pending>")]
+	private static void LoadServerExplorerConfiguredConnections(DataTable databases)
+	{
+		// Tracer.Trace(typeof(ConnectionLocator), "LoadServerExplorerConfiguredConnections()");
 
-		if (Controller.Instance.Dte.Solution.Projects.Count == 0)
+		if (Package.GetGlobalService(typeof(SVsShell)) is not IVsShell vsShell)
+			throw Diag.ServiceUnavailable(typeof(IVsShell));
+
+		vsShell.GetProperty((int)__VSSPROPID.VSSPROPID_AppDataDir, out var pvar);
+		string folder = pvar as string;
+		folder = Path.Combine(folder, "ServerExplorer");
+
+		if (!Directory.Exists(folder))
+			return;
+
+		if (folder[^1] != '\\')
+			folder += "\\";
+
+		FileInfo[] files = new DirectoryInfo(folder).GetFiles("*." + C_ViewFileExtension);
+
+		if (files == null || files.Length == 0)
+			return;
+
+
+		foreach (FileInfo info in files)
+		{
+			try
+			{
+				LoadServerExplorerConfiguredConnectionsImpl(databases, info.FullName);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+			}
+		}
+
+	}
+
+
+
+	private static void LoadServerExplorerConfiguredConnectionsImpl(DataTable databases, string xmlPath)
+	{
+
+		// Tracer.Trace(typeof(ConnectionLocator), "LoadServerExplorerConfiguredConnectionsImpl()");
+
+		XmlDocument xmlDoc = new XmlDocument();
+
+		xmlDoc.Load(xmlPath);
+
+
+		XmlNode xmlRoot = xmlDoc.DocumentElement;
+		XmlNamespaceManager xmlNs = new XmlNamespaceManager(xmlDoc.NameTable);
+
+
+		if (!xmlNs.HasNamespace("SOAP-ENV"))
+			xmlNs.AddNamespace("SOAP-ENV", xmlRoot.NamespaceURI);
+
+		if (!xmlNs.HasNamespace("a1"))
+		{
+			xmlNs.AddNamespace("a1", "http://schemas.microsoft.com/clr/nsassem/Microsoft.VSDesigner.ServerExplorer/Microsoft.VisualStudio.ServerExplorer%2C%20Version%3D17.0.0.0%2C%20Culture%3Dneutral%2C%20PublicKeyToken%3Db03f5f7f11d50a3a");
+		}
+
+
+		xmlRoot = xmlRoot.SelectSingleNode("//SOAP-ENV:Body", xmlNs);
+
+		if (xmlRoot == null)
+		{
+			Exception ex = new($"Root node SOAP-ENV:Body not found in file: {xmlPath}.");
+			throw ex;
+		}
+
+		XmlNodeList xmlConnections = xmlRoot.SelectNodes("a1:DataViewNode", xmlNs);
+
+
+		if (xmlConnections == null)
+		{
+			Exception ex = new($"Select a1:DataViewNodes returned null in file: {xmlPath}.");
+			throw ex;
+		}
+
+		if (xmlConnections.Count == 0)
+		{
+			Exception ex = new($"No a1:DataViewNode nodes found in file: {xmlPath}.");
+			throw ex;
+		}
+
+
+		string datasetId, datasource;
+		string connectionString;
+		CsbAgent csa;
+		DataRow row;
+
+		foreach (XmlNode xmlConnection in xmlConnections)
+		{
+			XmlNode xmlNode = xmlConnection.SelectSingleNode("Provider", xmlNs);
+
+			if (xmlNode == null)
+			{
+				Exception ex = new($"Provider not found for connection node {xmlConnection.Attributes["id"]} in file: {xmlPath}.");
+				continue;
+			}
+
+			if (xmlNode.InnerText.Trim().ToUpperInvariant() != SystemData.ProviderGuid)
+				continue;
+
+
+			xmlNode = xmlConnection.SelectSingleNode("Label", xmlNs);
+			if (xmlNode == null)
+			{
+				Exception ex = new($"Label not found for connection node {xmlConnection.Attributes["id"]} in file: {xmlPath}.");
+				continue;
+			}
+
+			// datasetKey = xmlNode.InnerText.Trim();
+
+			xmlNode = xmlConnection.SelectSingleNode("EncryptedConnectionString", xmlNs);
+			if (xmlNode == null)
+			{
+				Exception ex = new($"EncryptedConnectionString not found for connection node {xmlConnection.Attributes["id"]} in file: {xmlPath}.");
+				continue;
+			}
+
+			connectionString = DataProtection.DecryptString(xmlNode.InnerText.Trim());
+
+			// Tracer.Trace(typeof(ConnectionLocator), "LoadServerExplorerConfiguredConnectionsImpl()", "Decrypted connectionstring: {0}.", connectionString);
+
+			csa = new(connectionString);
+
+			datasource = csa.DataSource;
+			datasetId = csa.DatasetId;
+
+			if (datasource.ToLowerInvariant() == "localhost")
+			{
+				datasource = "localhost";
+				_HasLocal = true;
+			}
+
+			// To keep uniformity of server names, the case of the first connection
+			// discovered for a server name is the case that will be used for all
+			// connections for that server.
+			csa.DataSource = AddServerRow(databases, datasource, csa.Port);
+
+			
+			// Tracer.Trace(typeof(ConnectionLocator), "RegisterAppConnectionStrings()", "Updated csb datasource: {0}, serverName: {1}, connectionstring: {2}.", datasource, serverName, csa.ConnectionString);
+
+			// The datasetId may not be unique at this juncture and already registered.
+			csa = CsbAgent.CreateRegisteredDataset(datasetId, csa.ConnectionString);
+
+			
+			if (csa == null)
+				continue;
+
+
+			row = CreateConnectionNodeRow(databases, csa);
+
+			row["Id"] = databases.Rows.Count;
+			row["DataSourceLc"] = csa.DataSource.ToLower();
+			row["Name"] = csa.DatasetId;
+			row["DatabaseLc"] = csa.Database.ToLower();
+
+			if (csa.DataSource.ToLowerInvariant() == "localhost")
+				row["Orderer"] = 2;
+			else
+				row["Orderer"] = 3;
+
+
+			// string str = "AddAppDbRow: ";
+			// foreach (DataColumn col in databases.Columns)
+			//	str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
+			// Tracer.Trace(typeof(ConnectionLocator), "RegisterAppConnectionStrings()", str);
+
+			databases.Rows.Add(row);
+
+		}
+
+
+
+
+	}
+
+
+
+	private static void LoadSolutionConfiguredConnections(DataTable databases)
+	{
+		if (!UserSettings.IncludeAppConnections || Controller.Instance.Dte.Solution.Projects.Count == 0)
 			return;
 
 		int projectCount = Controller.Instance.Dte.Solution.Projects.Count;
@@ -642,6 +690,177 @@ public abstract class ConnectionLocator
 		{
 			if (!RecursiveScanSolutionProject(databases, i))
 				i = projectCount - 1;
+		}
+
+	}
+
+
+
+	private static void LoadUtilityConfiguredConnections(DataTable databases)
+	{
+		DataRow row;
+
+		string xmlPath = SystemData.UtilityConfigurationPath;
+
+		if (!File.Exists(xmlPath))
+			return;
+
+		try
+		{
+			XmlDocument xmlDoc = new XmlDocument();
+
+			xmlDoc.Load(xmlPath);
+
+			XmlNode xmlRoot = xmlDoc.DocumentElement;
+			/* XmlNamespaceManager xmlNs = new XmlNamespaceManager(xmlDoc.NameTable);
+
+
+			if (!xmlNs.HasNamespace("confBlackbirdNs"))
+			{
+				xmlNs.AddNamespace("confBlackbirdNs", xmlRoot.NamespaceURI);
+			}
+			*/
+			XmlNodeList xmlServers, xmlDatabases;
+			XmlNode xmlNode = null;
+			CsbAgent csa;
+			int port;
+			string serverName, datasource, authentication, user, password, path, charset;
+			string datasetId;
+
+			xmlServers = xmlRoot.SelectNodes("//server");
+
+
+			foreach (XmlNode xmlServer in xmlServers)
+			{
+				if ((xmlNode = xmlServer.SelectSingleNode("name")) == null)
+					continue;
+				serverName = xmlNode.InnerText.Trim();
+
+				if ((xmlNode = xmlServer.SelectSingleNode("host")) == null)
+					continue;
+				datasource = xmlNode.InnerText.Trim();
+
+
+				if ((xmlNode = xmlServer.SelectSingleNode("port")) == null)
+					continue;
+				port = Convert.ToInt32(xmlNode.InnerText.Trim());
+
+				if (port == 0)
+					port = CoreConstants.C_DefaultPort;
+
+
+				if (datasource.ToLowerInvariant() == "localhost")
+				{
+					datasource = "localhost";
+					_HasLocal = true;
+				}
+
+				// To keep uniformity of server names, the case of the first connection
+				// discovered for a server name is the case that will be used for all
+				// connections for that server.
+				serverName = AddServerRow(databases, datasource, port);
+
+				xmlDatabases = xmlServer.SelectNodes("database");
+
+				foreach (XmlNode xmlDatabase in xmlDatabases)
+				{
+					if ((xmlNode = xmlDatabase.SelectSingleNode("name")) == null)
+						continue;
+
+
+					// Add a ghost row to each database
+					// A binding source cannot have an invalidated state. ie. Position == -1 and Current == null,
+					// if it's List Count > 0. The ghost row is a placeholder for that state.
+
+					row = CreateConnectionNodeRow(databases);
+
+					row["Id"] = databases.Rows.Count;
+					row["DataSource"] = serverName;
+					row["DataSourceLc"] = serverName.ToLower();
+					row["Port"] = port;
+
+					datasetId = xmlNode.InnerText.Trim();
+					row["Name"] = datasetId;
+
+					if ((xmlNode = xmlDatabase.SelectSingleNode("path")) == null)
+						continue;
+
+					path = xmlNode.InnerText.Trim();
+					row["Database"] = path;
+					row["DatabaseLc"] = path.ToLower();
+
+					if ((xmlNode = xmlDatabase.SelectSingleNode("charset")) == null)
+						continue;
+
+
+					charset = xmlNode.InnerText.Trim();
+					row["Charset"] = charset;
+
+
+					user = "";
+					password = "";
+
+					if ((xmlNode = xmlDatabase.SelectSingleNode("authentication")) == null)
+						authentication = "trusted";
+					else
+						authentication = xmlNode.InnerText.Trim();
+
+					if (authentication != "trusted")
+					{
+						if ((xmlNode = xmlDatabase.SelectSingleNode("username")) != null)
+						{
+							user = xmlNode.InnerText.Trim();
+
+							if (authentication == "pwd"
+								&& (xmlNode = xmlDatabase.SelectSingleNode("password")) != null)
+							{
+								password = xmlNode.InnerText.Trim();
+							}
+						}
+
+					}
+
+					row["UserID"] = user;
+					row["Password"] = password;
+
+
+					// Tracer.Trace(typeof(ConnectionLocator), "LoadConfiguredConnectionsImpl()", "Calling RegisterDatasetKey for datasetId: {0}.", datasetId);
+
+					// The datasetId may not be unique at this juncture and already registered.
+					csa = CsbAgent.CreateRegisteredDataset(datasetId, serverName, port, path,
+						user, password, charset);
+
+					if (csa == null)
+						continue;
+
+					// Tracer.Trace(typeof(ConnectionLocator), "LoadConfiguredConnectionsImpl()", "Database path: {0}.", path);
+
+
+					// CsbAgent will return a new DatasetId if the supplied one was not unique.
+					// to the server.
+					row["DatasetKey"] = csa.DatasetKey;
+					row["DatasetId"] = csa.DatasetId;
+					row["Dataset"] = csa.Dataset;
+
+					if (serverName == "localhost")
+						row["Orderer"] = 2;
+					else
+						row["Orderer"] = 3;
+
+
+					// string str = "AddDbRow: ";
+					// foreach (DataColumn col in databases.Columns)
+					//	str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
+					// Tracer.Trace(typeof(ConnectionLocator), "LoadConfiguredConnectionsImpl()", str);
+
+					databases.Rows.Add(row);
+				}
+			}
+
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
 		}
 
 	}
@@ -798,8 +1017,6 @@ public abstract class ConnectionLocator
 
 	private static void RegisterAppConnectionStrings(DataTable databases, string projectName, string xmlPath)
 	{
-		string str;
-
 		XmlDocument xmlDoc = new XmlDocument();
 
 		try
@@ -815,8 +1032,6 @@ public abstract class ConnectionLocator
 
 		try
 		{
-
-
 			XmlNode xmlRoot = xmlDoc.DocumentElement;
 			XmlNamespaceManager xmlNs = new XmlNamespaceManager(xmlDoc.NameTable);
 
@@ -839,7 +1054,7 @@ public abstract class ConnectionLocator
 			xmlParent = xmlNode;
 
 
-			XmlNodeList xmlNodes = xmlParent.SelectNodes("confBlackbirdNs:add[@providerName='" + SystemData.Invariant + "']", xmlNs);
+			XmlNodeList xmlNodes = xmlParent.SelectNodes($"confBlackbirdNs:add[@providerName='{SystemData.Invariant}']", xmlNs);
 
 			if (xmlNodes.Count == 0)
 				return;
@@ -869,44 +1084,13 @@ public abstract class ConnectionLocator
 				// To keep uniformity of server names, the case of the first connection
 				// discovered for a server name is the case that will be used for all
 				// connections for that server.
-				if (!_TempServerNames.TryGetValue(datasource.ToLowerInvariant(), out string serverName))
-				{
-					// No server row previously added so add one.
-
-					_TempServerNames.Add(datasource.ToLowerInvariant(), datasource);
-					serverName = datasource;
-
-
-					row = CreateConnectionNodeRow(databases);
-
-					row["Id"] = databases.Rows.Count;
-					row["DataSource"] = serverName;
-					row["DataSourceLc"] = serverName.ToLower();
-					row["Port"] = csa.Port;
-					row["ServerType"] = (int)csa.ServerType;
-
-					row["Name"] = "";
-					row["DatabaseLc"] = "";
-
-					if (serverName == "localhost")
-						row["Orderer"] = 2;
-					else
-						row["Orderer"] = 3;
-
-					str = "AddAppServerRow: ";
-
-					foreach (DataColumn col in databases.Columns)
-						str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
-
-					// Tracer.Trace(typeof(ConnectionLocator), "RegisterAppConnectionStrings()", str);
-
-					databases.Rows.Add(row);
-				}
+				string serverName = AddServerRow(databases, datasource, csa.Port);
 
 				csa.DataSource = serverName;
 
 				// Tracer.Trace(typeof(ConnectionLocator), "RegisterAppConnectionStrings()", "Updated csb datasource: {0}, serverName: {1}, connectionstring: {2}.", datasource, serverName, csa.ConnectionString);
 
+				// The datasetId may not be unique at this juncture and already registered.
 				csa = CsbAgent.CreateRegisteredDataset(datasetId, csa.ConnectionString);
 
 				if (csa == null)
@@ -925,11 +1109,9 @@ public abstract class ConnectionLocator
 				else
 					row["Orderer"] = 3;
 
-				str = "AddAppDbRow: ";
-
-				foreach (DataColumn col in databases.Columns)
-					str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
-
+				// string str = "AddAppDbRow: ";
+				// foreach (DataColumn col in databases.Columns)
+				// 	str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
 				// Tracer.Trace(typeof(ConnectionLocator), "RegisterAppConnectionStrings()", str);
 
 				databases.Rows.Add(row);

@@ -24,7 +24,7 @@ public class ExecutionPlanPanel : AbstractResultsPanel, IOleCommandTarget
 {
 	private ExecutionPlanControl _ExecutionPlanCtl;
 
-	private MenuCommandsService _MenuService = new MenuCommandsService();
+	private MenuCommandsService _MenuService = [];
 
 	public ExecutionPlanControl ExecutionPlanCtl => _ExecutionPlanCtl;
 

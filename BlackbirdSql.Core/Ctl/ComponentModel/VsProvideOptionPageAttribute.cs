@@ -187,7 +187,7 @@ public sealed class VsProvideOptionPageAttribute : ProvideOptionDialogPageAttrib
 			if (!string.IsNullOrWhiteSpace(VisibilityCmdUIContexts))
 			{
 				string[] array = VisibilityCmdUIContexts.Split(S_UIContextSeparators, StringSplitOptions.RemoveEmptyEntries);
-				List<Guid> list = new List<Guid>();
+				List<Guid> list = [];
 				string[] array2 = array;
 				foreach (string input in array2)
 				{

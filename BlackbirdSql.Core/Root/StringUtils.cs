@@ -33,7 +33,7 @@ public static class StringUtils
 		byte[] arr = Convert.FromBase64String(value64);
 
 
-		return System.Text.Encoding.UTF8.GetString(arr);
+		return System.Text.Encoding.Default.GetString(arr);
 	}
 
 
@@ -84,7 +84,7 @@ public static class StringUtils
 		if (lowerCase)
 			value = value.ToLowerInvariant();
 
-		byte[] arr = System.Text.Encoding.UTF8.GetBytes(value);
+		byte[] arr = System.Text.Encoding.Default.GetBytes(value);
 
 		// Convert the byte array to a Base64 string
 
@@ -190,7 +190,7 @@ public static class StringUtils
 
 	public static List<Tuple<string, int>> GetVariablesFromString(string value)
 	{
-		List<Tuple<string, int>> list = new List<Tuple<string, int>>();
+		List<Tuple<string, int>> list = [];
 		if (!string.IsNullOrEmpty(value))
 		{
 			int num = 0;
@@ -322,19 +322,9 @@ public static class StringUtils
 		byte[] array = "msFT7_&#$!~<"u8.ToArray();
 		Array.Copy(array, 0, randomBytes, randomBytes.GetLength(0) / 2, array.GetLength(0));
 		StringBuilder stringBuilder = new StringBuilder();
-		List<char> list = new()
-		{
-			'\'',
-			'-',
-			'*',
-			'/',
-			'\\',
-			'"',
-			'[',
-			']',
-			')',
-			'('
-		};
+
+		List<char> list = ['\'', '-', '*', '/', '\\', '"', '[', ']', ')', '(' ];
+
 		for (int i = 0; i < randomBytes.GetLength(0); i++)
 		{
 			if (randomBytes[i] == 0)

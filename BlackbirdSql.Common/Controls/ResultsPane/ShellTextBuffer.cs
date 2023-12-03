@@ -55,7 +55,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 
 	private bool initContent;
 
-	private readonly Hashtable markers = new Hashtable();
+	private readonly Hashtable markers = [];
 
 	public static int markerTypeError = 4;
 

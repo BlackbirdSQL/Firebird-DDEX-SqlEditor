@@ -23,20 +23,16 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls.DataTools;
 
 public class TDataConnectionDlg : Form
 {
-	private class TiDataSourceCollection : ICollection<TDataSource>, IEnumerable<TDataSource>, IEnumerable
+	private class TiDataSourceCollection(TDataConnectionDlg dialog)
+		: ICollection<TDataSource>, IEnumerable<TDataSource>, IEnumerable
 	{
-		private readonly List<TDataSource> _DataSources = new List<TDataSource>();
+		private readonly List<TDataSource> _DataSources = [];
 
-		private readonly TDataConnectionDlg _dialog;
+		private readonly TDataConnectionDlg _Dialog = dialog;
 
 		public int Count => _DataSources.Count;
 
-		public bool IsReadOnly => _dialog._ShowingDialog;
-
-		public TiDataSourceCollection(TDataConnectionDlg dialog)
-		{
-			_dialog = dialog;
-		}
+		public bool IsReadOnly => _Dialog._ShowingDialog;
 
 		public void Add(TDataSource item)
 		{
@@ -44,7 +40,7 @@ public class TDataConnectionDlg : Form
 			{
 				throw new ArgumentNullException("item");
 			}
-			if (_dialog._ShowingDialog)
+			if (_Dialog._ShowingDialog)
 			{
 				throw new InvalidOperationException("ControlsResources.DataConnectionDlg_CannotModifyState");
 			}
@@ -61,26 +57,26 @@ public class TDataConnectionDlg : Form
 
 		public bool Remove(TDataSource item)
 		{
-			if (_dialog._ShowingDialog)
+			if (_Dialog._ShowingDialog)
 			{
 				throw new InvalidOperationException("ControlsResources.DataConnectionDlg_CannotModifyState");
 			}
 			bool result = _DataSources.Remove(item);
-			if (item == _dialog.SelectedDataSource)
+			if (item == _Dialog.SelectedDataSource)
 			{
-				_dialog.SetSelectedDataSource(null, noSingleItemCheck: true);
+				_Dialog.SetSelectedDataSource(null, noSingleItemCheck: true);
 			}
 			return result;
 		}
 
 		public void Clear()
 		{
-			if (_dialog._ShowingDialog)
+			if (_Dialog._ShowingDialog)
 			{
 				throw new InvalidOperationException("ControlsResources.DataConnectionDlg_CannotModifyState");
 			}
 			_DataSources.Clear();
-			_dialog.SetSelectedDataSource(null, noSingleItemCheck: true);
+			_Dialog.SetSelectedDataSource(null, noSingleItemCheck: true);
 		}
 
 		public void CopyTo(TDataSource[] array, int arrayIndex)

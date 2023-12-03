@@ -36,14 +36,9 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 	public delegate void DatabaseChangedEvent(object sender, EventArgs args);
 
-	public class ConnectionChangedEventArgs : EventArgs
+	public class ConnectionChangedEventArgs(IDbConnection previousConnection) : EventArgs
 	{
-		public IDbConnection PreviousConnection { get; private set; }
-
-		public ConnectionChangedEventArgs(IDbConnection previousConnection)
-		{
-			PreviousConnection = previousConnection;
-		}
+		public IDbConnection PreviousConnection { get; private set; } = previousConnection;
 	}
 
 	private static readonly Color DefaultColor = SystemColors.Control;

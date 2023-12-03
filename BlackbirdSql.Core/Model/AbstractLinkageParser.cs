@@ -252,7 +252,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		// Tracer.Trace(typeof(AbstractLinkageParser), $"AbstractLinkageParser(FbConnection, AbstractLinkageParser)");
 
 		_Connection = connection;
-		_Instances ??= new();
+		_Instances ??= [];
 
 		_Instances.Add(_Connection, this);
 
@@ -570,7 +570,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 				if (genId != null)
 				{
-					key = new object[] { genId };
+					key = [genId];
 					seq = _Sequences.Rows.Find(key);
 
 					if (seq != null)
@@ -649,7 +649,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		_Sequences.Columns.Add("DEPENDENCY_TABLE", typeof(string));
 		_Sequences.Columns.Add("DEPENDENCY_FIELD", typeof(string));
 
-		_Sequences.PrimaryKey = new DataColumn[] { _Sequences.Columns["SEQUENCE_GENERATOR"] };
+		_Sequences.PrimaryKey = [_Sequences.Columns["SEQUENCE_GENERATOR"]];
 
 		_Sequences.AcceptChanges();
 
@@ -676,7 +676,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		_Triggers.Columns.Add("DEPENDENCY_COUNT", typeof(int));
 		_Triggers.Columns.Add("IDENTITY_CURRENT", typeof(long));
 
-		_Triggers.PrimaryKey = new DataColumn[] { _Triggers.Columns["TRIGGER_NAME"] };
+		_Triggers.PrimaryKey = [_Triggers.Columns["TRIGGER_NAME"]];
 
 		_Triggers.AcceptChanges();
 	}
@@ -862,7 +862,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 			if (!parser.Loaded)
 				continue;
 
-			csa1 ??= new(connection.ConnectionString);
+			csa1 ??= new(connection);
 
 			try
 			{

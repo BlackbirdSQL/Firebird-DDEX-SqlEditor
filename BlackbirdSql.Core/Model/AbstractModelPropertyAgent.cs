@@ -29,6 +29,11 @@ namespace BlackbirdSql.Core.Model;
 /// and all other known connection interfaces.
 /// </summary>
 /// <remarks>
+/// It is the final owning (child) class's responsibility to perform the once off
+/// creation of the static private property set for it's class by calling the static
+/// CreatePropertySet(). The final child class is the class that initiated
+/// instanciation and is identifiable in that it has no _Owner private instance
+/// variable.
 /// Steps for adding an additional property in descendents:
 /// 1. Add the core property descriptor support using
 /// <see cref="Add(string, Type, object)"/>.
@@ -43,13 +48,102 @@ namespace BlackbirdSql.Core.Model;
 /// descriptors. <see cref="ICustomTypeDescriptor"/> members will still need to be overloaded.
 /// </remarks>
 // =========================================================================================================
-public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
+public abstract class AbstractModelPropertyAgent(IBEventsChannel channel, IBPropertyAgent rhs,
+		bool generateNewId)
+	: AbstractPropertyAgent(channel, rhs, generateNewId)
 {
 
+	// ---------------------------------------------------------------------------------
+	#region Additional Constructors / Destructors - AbstractModelPropertyAgent
+	// ---------------------------------------------------------------------------------
+
+
+	public AbstractModelPropertyAgent(IBPropertyAgent rhs, bool generateNewId) : this(null, rhs, generateNewId)
+	{
+	}
+
+	public AbstractModelPropertyAgent(bool generateNewId) : this(null, null, generateNewId)
+	{
+	}
+
+
+	public AbstractModelPropertyAgent() : this(null, null, true)
+	{
+	}
+
+
+	public AbstractModelPropertyAgent(IBPropertyAgent rhs) : this(null, rhs, true)
+	{
+	}
+
+	public AbstractModelPropertyAgent(string server, int port, string database, string userId, string password)
+		: this(null, null, true)
+	{
+		DataSource = server;
+		Port = port;
+		Database = database;
+		UserID = userId;
+		Password = password;
+	}
+
+
+	static AbstractModelPropertyAgent()
+	{
+	}
+
 
 	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// The daisy-chained static mehod for creating a class's static private property
+	/// set.
+	/// </summary>
+	/// <param name="propertyTypes">
+	/// The property types list this class will add it's properties to. As a rule this
+	/// parameter will be null when called by it's own .ctor so that we can
+	/// distinguish between calls from descendent CreateAndPopulatePropertySet()
+	/// methods and the .ctor.
+	/// </param>
+	/// <remarks>
+	/// (Terminology: an object's Owner is it's direct child descendent class's
+	/// instance. an Initiator is the final descendent child class instance. ie it
+	/// has no Owner. A Sub-instance is an object with an Owner.)
+	/// Whenever an instance is the Initiator it must make a call to this method with
+	/// a null argument to initiate the creation of it's class's private property set,
+	/// if it does not exist. If a sub-class is simply adding it's properties to a
+	/// child's property set it may at the same time create it's own property set,
+	/// which can then be used to populate the <paramref name="propertyTypes"/> list's
+	/// of subsequent child classes, in addition to having the property set already
+	/// available for it's own final class instantiations as Initiator. That is a
+	/// performance issue to be determined for each class.
+	/// If a Class's property set is a replica of it's parent's, it may force it's
+	/// parent to create the common shared property set by passing null to the parent
+	/// class's CreatePropertySet() method. For details on property sets refer to
+	/// the <see cref="ModelPropertySet"/> class.
+	/// </remarks>
+	protected static new void CreateAndPopulatePropertySet(DescriberDictionary describers = null)
+	{
+		if (_Describers == null)
+		{
+			_Describers = [];
+
+			// Initializers for property sets are held externally for this class
+			ModelPropertySet.CreateAndPopulatePropertySetFromStatic(_Describers);
+		}
+
+		// If null then this was a call from our own .ctor so no need to pass anything back
+		describers?.AddRange(_Describers);
+
+	}
+
+	#endregion Additional Constructors / Destructors
+
+
+
+
+	// =========================================================================================================
 	#region Variables - AbstractModelPropertyAgent
-	// ---------------------------------------------------------------------------------
+	// =========================================================================================================
+
 
 	protected static new DescriberDictionary _Describers = null;
 
@@ -450,113 +544,7 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 		return (serverEngine, opened);
 	}
 
-
 	#endregion Property Getters/Setters
-
-
-
-
-	// =========================================================================================================
-	#region Constructors / Destructors - AbstractModelPropertyAgent
-	// =========================================================================================================
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Universal .ctor
-	/// </summary>
-	/// <remarks>
-	/// It is the final owning (child) class's responsibility to perform the once off
-	/// creation of the static private property set for it's class by calling the static
-	/// CreatePropertySet(). The final child class is the class that initiated
-	/// instanciation and is identifiable in that it has no _Owner private instance
-	/// variable.
-	/// </remarks>
-	// ---------------------------------------------------------------------------------
-	public AbstractModelPropertyAgent(IBEventsChannel channel, IBPropertyAgent rhs, bool generateNewId)
-		: base(channel, rhs, generateNewId)
-	{
-	}
-
-	public AbstractModelPropertyAgent(IBPropertyAgent rhs, bool generateNewId) : this(null, rhs, generateNewId)
-	{
-	}
-
-	public AbstractModelPropertyAgent(bool generateNewId) : this(null, null, generateNewId)
-	{
-	}
-
-
-	public AbstractModelPropertyAgent() : this(null, null, true)
-	{
-	}
-
-
-	public AbstractModelPropertyAgent(IBPropertyAgent rhs) : this(null, rhs, true)
-	{
-	}
-
-	public AbstractModelPropertyAgent(string server, int port, string database, string userId, string password)
-		: this(null, null, true)
-	{
-		DataSource = server;
-		Port = port;
-		Database = database;
-		UserID = userId;
-		Password = password;
-	}
-
-
-	static AbstractModelPropertyAgent()
-	{
-	}
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// The daisy-chained static mehod for creating a class's static private property
-	/// set.
-	/// </summary>
-	/// <param name="propertyTypes">
-	/// The property types list this class will add it's properties to. As a rule this
-	/// parameter will be null when called by it's own .ctor so that we can
-	/// distinguish between calls from descendent CreateAndPopulatePropertySet()
-	/// methods and the .ctor.
-	/// </param>
-	/// <remarks>
-	/// (Terminology: an object's Owner is it's direct child descendent class's
-	/// instance. an Initiator is the final descendent child class instance. ie it
-	/// has no Owner. A Sub-instance is an object with an Owner.)
-	/// Whenever an instance is the Initiator it must make a call to this method with
-	/// a null argument to initiate the creation of it's class's private property set,
-	/// if it does not exist. If a sub-class is simply adding it's properties to a
-	/// child's property set it may at the same time create it's own property set,
-	/// which can then be used to populate the <paramref name="propertyTypes"/> list's
-	/// of subsequent child classes, in addition to having the property set already
-	/// available for it's own final class instantiations as Initiator. That is a
-	/// performance issue to be determined for each class.
-	/// If a Class's property set is a replica of it's parent's, it may force it's
-	/// parent to create the common shared property set by passing null to the parent
-	/// class's CreatePropertySet() method. For details on property sets refer to
-	/// the <see cref="ModelPropertySet"/> class.
-	/// </remarks>
-	protected static new void CreateAndPopulatePropertySet(DescriberDictionary describers = null)
-	{
-		if (_Describers == null)
-		{
-			_Describers = new();
-
-			// Initializers for property sets are held externally for this class
-			ModelPropertySet.CreateAndPopulatePropertySetFromStatic(_Describers);
-		}
-
-		// If null then this was a call from our own .ctor so no need to pass anything back
-		describers?.AddRange(_Describers);
-
-	}
-
-	#endregion Constructors / Destructors
-
 
 
 
@@ -579,9 +567,9 @@ public abstract class AbstractModelPropertyAgent : AbstractPropertyAgent
 	}
 
 
-	public override void Parse(string s)
+	public override void Parse(string connectionString)
 	{
-		Parse(new CsbAgent(s));
+		Parse(new CsbAgent(connectionString));
 	}
 
 

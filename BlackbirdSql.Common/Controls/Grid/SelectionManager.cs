@@ -16,7 +16,7 @@ public sealed class SelectionManager
 
 	private bool m_bOnlyOneSelItem = true;
 
-	private readonly BlockOfCellsCollection m_selBlocks = new BlockOfCellsCollection();
+	private readonly BlockOfCellsCollection m_selBlocks = [];
 
 	private int m_curSelBlockIndex = -1;
 

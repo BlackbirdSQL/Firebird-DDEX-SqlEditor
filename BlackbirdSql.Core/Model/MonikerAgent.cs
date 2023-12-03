@@ -215,7 +215,7 @@ public class MonikerAgent
 		_IsUnique = (ObjectType == EnModelObjectType.Database) || isUnique;
 		_TargetType = targetType;
 
-		Initialize(server, database, objectType, identifierList.ToArray<object>(), targetType);
+		Initialize(server, database, objectType, [.. identifierList], targetType);
 	}
 
 
@@ -321,14 +321,14 @@ public class MonikerAgent
 		UriBuilder urlb = new()
 		{
 			Scheme = C_Scheme,
-			Host = DataSource,
+			Host = DataSource.ToLowerInvariant(),
 		};
 
 
 		// Append the serialized database path.
 
 		// Serialize the db path.
-		string str = StringUtils.Serialize64(Database);
+		string str = StringUtils.Serialize64(Database.ToLowerInvariant());
 		// string str = string.IsNullOrEmpty(_Database) ? "" : JsonConvert.SerializeObject(_Database.ToLowerInvariant());
 
 		// Tracer.Trace(GetType(), "BuildUniqueDatabaseUrl()", "Serialized dbpath: {0}", str);
@@ -411,7 +411,7 @@ public class MonikerAgent
 
 			_ObjectName = "";
 
-			object[] identifier = @nodeObj.Identifier.ToArray();
+			object[] identifier = [.. @nodeObj.Identifier];
 
 			if (identifier != null && identifier.Length > 0)
 			{
@@ -763,7 +763,7 @@ public class MonikerAgent
 	// ---------------------------------------------------------------------------------
 	public string ToPath(string appDataPath)
 	{
-		string str = StringUtils.Serialize64(Database);
+		string str = StringUtils.Serialize64(Database.ToLowerInvariant());
 		// string str = JsonConvert.SerializeObject(Database.ToLowerInvariant());
 
 		string moniker = C_DatasetKeyFmt.FmtRes(DataSource, str);

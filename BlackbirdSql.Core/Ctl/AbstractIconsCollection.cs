@@ -53,7 +53,7 @@ public abstract class AbstractIconsCollection : IBIconsCollection
 		if (iconResourceList == null)
 			return;
 
-		_IconsRef = new Dictionary<IBIconType, Lazy<BitmapImage>>();
+		_IconsRef = [];
 
 		foreach (IBIconType item in iconResourceList)
 		{

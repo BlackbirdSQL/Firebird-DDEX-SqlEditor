@@ -174,7 +174,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 	public IBSqlEditorWindowPane LastFocusedSqlEditor { get; set; }
 
-	public Dictionary<object, AuxiliaryDocData> DocDataEditors => _DocDataEditors ??= new();
+	public Dictionary<object, AuxiliaryDocData> DocDataEditors => _DocDataEditors ??= [];
 
 
 	public bool EnableSpatialResultsTab { get; set; }

@@ -560,7 +560,7 @@ internal abstract class AbstractPackageController : IBPackageController
 
 	public void RegisterEventsManager(IBEventsManager manager)
 	{
-		_EventsManagers ??= new List<IBEventsManager>();
+		_EventsManagers ??= [];
 
 		_EventsManagers.Add(manager);
 

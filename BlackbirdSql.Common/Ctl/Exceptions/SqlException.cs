@@ -36,7 +36,7 @@ public sealed class SqlException : DbException
 	{
 		get
 		{
-			_errors ??= new SqlErrorCollection();
+			_errors ??= [];
 
 			return _errors;
 		}

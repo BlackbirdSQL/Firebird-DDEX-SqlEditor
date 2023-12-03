@@ -98,7 +98,7 @@ public abstract class AbstractCommand : AbstractDispatcherConnection, IBOwnedCom
 	{
 		if (_Describers == null)
 		{
-			_Describers = new();
+			_Describers = [];
 			AbstractDispatcherConnection.CreateAndPopulatePropertySet(_Describers);
 
 			_Describers.Add(C_KeyIsExecuting, typeof(bool), false);

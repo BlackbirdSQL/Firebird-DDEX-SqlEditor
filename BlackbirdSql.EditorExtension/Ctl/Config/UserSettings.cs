@@ -8,7 +8,6 @@ using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.EditorExtension.Model.Config;
 using BlackbirdSql.EditorExtension.Properties;
-using BlackbirdSql.Core.Ctl.Extensions;
 
 
 namespace BlackbirdSql.EditorExtension.Ctl.Config;

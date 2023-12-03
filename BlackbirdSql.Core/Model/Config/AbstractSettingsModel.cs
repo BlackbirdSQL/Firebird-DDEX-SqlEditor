@@ -114,7 +114,7 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 					return _PropertyWrappers;
 
 
-				List<IBSettingsModelPropertyWrapper> list = new List<IBSettingsModelPropertyWrapper>();
+				List<IBSettingsModelPropertyWrapper> list = [];
 				_PropertyWrappers = list;
 
 				foreach (PropertyInfo property in GetOptionProperties())

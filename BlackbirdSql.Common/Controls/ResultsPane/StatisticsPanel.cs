@@ -36,7 +36,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 	private static Bitmap S_ArrowBlank;
 
 
-	private StatisticsGridsCollection _GridControls = new StatisticsGridsCollection();
+	private StatisticsGridsCollection _GridControls = [];
 
 
 	public int NumberOfGrids
@@ -272,10 +272,10 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		for (int i = 0; i < statisticNames.Length; i++)
 		{
 			StatisticEntity sn = statisticNames[i];
-			GridCellCollection gridCellCollection = new()
-				{
+			GridCellCollection gridCellCollection =
+				[
 					new GridCell("  " + sn.DisplayName)
-				};
+				];
 
 			float result, nextResult;
 			float rowTotal = 0f;
@@ -325,7 +325,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		GridCellCollection[] gridCollections = new GridCellCollection[StatisticsPropertySet.SCategoryNames.Length];
 
 		for (int i = 0; i < StatisticsPropertySet.SCategoryNames.Length; i++)
-			gridCollections[i] = new GridCellCollection();
+			gridCollections[i] = [];
 
 		gridControl.AlwaysHighlightSelection = true;
 		gridControl.GridLineType = EnGridLineType.Solid;
@@ -496,7 +496,7 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 	{
 		if (FocusedGrid is StatisticsDlgGridControl statisticsDlgGridControl)
 		{
-			BlockOfCellsCollection blockOfCellsCollection = new BlockOfCellsCollection();
+			BlockOfCellsCollection blockOfCellsCollection = [];
 			BlockOfCells blockOfCells = new(0L, 0)
 			{
 				Width = statisticsDlgGridControl.ColumnsNumber,

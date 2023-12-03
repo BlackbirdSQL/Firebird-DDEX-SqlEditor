@@ -83,7 +83,7 @@ public sealed class QEReaderDataStorage : IBQEStorage, IBDataStorage, IDisposabl
 	public QEReaderDataStorage()
 	{
 		_RowCount = 0L;
-		_ColumnInfoArray = new ArrayList();
+		_ColumnInfoArray = [];
 		_IsClosed = true;
 		_DataStorageEnabled = true;
 	}

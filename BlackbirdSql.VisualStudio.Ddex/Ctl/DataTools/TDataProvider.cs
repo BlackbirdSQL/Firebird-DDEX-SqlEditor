@@ -61,7 +61,7 @@ public class TDataProvider
 
 	public string Name => _Name;
 
-	public Guid NameClsid => _Name == SystemData.Invariant ? new(PackageData.ProviderGuid) : new Guid(_Name);
+	public Guid NameClsid => _Name == SystemData.Invariant ? new(SystemData.ProviderGuid) : new Guid(_Name);
 
 	public string DisplayName
 	{

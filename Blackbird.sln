@@ -97,6 +97,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Originals", "Originals", "{
 		Originals\ConnectionDlg.UI.FirewallRullDialogResources.resx = Originals\ConnectionDlg.UI.FirewallRullDialogResources.resx
 		Originals\Cosmos.TabbedEditor.GuidList.cs = Originals\Cosmos.TabbedEditor.GuidList.cs
 		Originals\Data.Tools.SqlEditor.Resources.resx = Originals\Data.Tools.SqlEditor.Resources.resx
+		Originals\DefaultView.SEView = Originals\DefaultView.SEView
 		Originals\DefGuidList.cs = Originals\DefGuidList.cs
 		Originals\DesignerServicesResource.resx = Originals\DesignerServicesResource.resx
 		Originals\IvsServices Regex.txt = Originals\IvsServices Regex.txt

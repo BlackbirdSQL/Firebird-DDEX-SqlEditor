@@ -121,7 +121,7 @@ internal class DslColumns : AbstractDslSchema
 	/// 'alias, columnType' where columnType = {column, type}
 	/// null values are permitted for 'column'.
 	/// </summary>
-	protected readonly Dictionary<string, ColumnType> _AdditionalColumns = new Dictionary<string, ColumnType>();
+	protected readonly Dictionary<string, ColumnType> _AdditionalColumns = [];
 
 	/// <summary>
 	/// Any additional conditions to be inserted into the WHERE clause.

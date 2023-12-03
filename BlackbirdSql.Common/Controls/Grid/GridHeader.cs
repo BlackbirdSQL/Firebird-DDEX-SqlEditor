@@ -239,7 +239,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 			}
 		}
 
-		private readonly HeaderItemCollection m_Items = new HeaderItemCollection();
+		private readonly HeaderItemCollection m_Items = [];
 
 		private Font m_headerFont;
 

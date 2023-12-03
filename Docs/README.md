@@ -5,7 +5,7 @@ The BlackbirdSQL DDEX 2.0 .NET with SqlEditor Provider extension for Firebird, `
 [Download BlackbirdSql DDEX with SqlEditor Extension (Pre-release v10.0.1.0)](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v10.0.1.0-prerelease/BlackbirdSql.VisualStudio.Ddex.vsix)
 
 #### Screenshots
-![ReadMe](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/assets/120905720/0b52cc20-c957-451d-93c0-31255abb0ada)
+![ReadMe](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/assets/120905720/8c2515a0-6ee2-49f5-8293-3dba1b51f3b5)
 </br>`Click on image to view fullscreen`
 </br></br>
 
@@ -19,7 +19,7 @@ This all occurs in the first 5 `AbstractSettingsPage` property accessors. The co
 * Firebird DDEX provider support for most of the DDEX 2.0 IVs DML interfaces utilizing FirebirdSql.Data.FirebirdClient version 10.0.0.
 * SqlServer SqlEditor port for Firebird for editing Computed columns, Triggers, Views, Procedures, Functions and SQL scripts.</br>__Note:__ The editor service execution plan visualizer is not currently functional. Execution plans are text based.
 * Trigger/Generator auto-increment linkage.
-* FlameRobin host and database drop-down selection within connection dialogs, including any connections pre-configured within the current solution's projects.
+* Host and database drop-down selection within connection dialogs; derived from Server Explorer, FlameRobin and the current solution projects' connection strings.
 * SqlEditor text-based execution plans and statistics snapshot comparer.
 * Within Server Explorer, top level folders for Tables, Views, Stored procedures, Functions, Sequence Generators, Triggers and Domains.
 * Within tables, drilldowns for indexes, foreign keys and triggers, and table columns, index columns, foreign key columns and trigger columns.

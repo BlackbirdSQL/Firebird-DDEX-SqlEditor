@@ -204,6 +204,9 @@
   <data name="ExceptionUnsupportedPopulationMechanism" xml:space="preserve">
     <value>Unsupported population mechanism: {0}</value>
   </data>
+  <data name="IVsDataConnectionProperties_PropertyInvalid" xml:space="preserve">
+    <value>Invalid IVsDataConnectionProperties property: {0}.</value>
+  </data>
   <data name="Provider_DisplayName" xml:space="preserve">
     <value>.NET Provider for Firebird (FirebirdClient)</value>
   </data>

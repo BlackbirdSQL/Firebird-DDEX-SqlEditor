@@ -174,7 +174,7 @@ internal class Tracer : IBTrace // , IBExportable
 			for (int i = 1; i < 4; i++)
 			{
 				frame = new StackTrace(i, true).GetFrame(0);
-				if (!frame.GetFileName().EndsWith("\\Tracer.cs", StringComparison.OrdinalIgnoreCase)
+				if (frame == null || !frame.GetFileName().EndsWith("\\Tracer.cs", StringComparison.OrdinalIgnoreCase)
 					|| frame.GetMethod().Name.ToLower() != "trace")
 				{
 					break;
@@ -183,7 +183,8 @@ internal class Tracer : IBTrace // , IBExportable
 
 			Diag.Dug(false, type + " func: " + functionName
 				+ (format != null ? args != null ? (" " + string.Format(format, args)) : (" " + format) : ""),
-				frame.GetMethod().Name, frame.GetFileName(), frame.GetFileLineNumber());
+				frame == null ? "ERRNULL" : frame.GetMethod().Name, frame == null ? "ERRNULL" : frame.GetFileName(),
+				frame == null ? int.MinValue : frame.GetFileLineNumber());
 		}
 
 	}
@@ -208,7 +209,7 @@ internal class Tracer : IBTrace // , IBExportable
 			for (int i = 1; i < 4; i++)
 			{
 				frame = new StackTrace(i, true).GetFrame(0);
-				if (!frame.GetFileName().EndsWith("\\Tracer.cs", StringComparison.OrdinalIgnoreCase)
+				if (frame == null || !frame.GetFileName().EndsWith("\\Tracer.cs", StringComparison.OrdinalIgnoreCase)
 					|| frame.GetMethod().Name.ToLower() != "trace")
 				{
 					break;
@@ -217,7 +218,8 @@ internal class Tracer : IBTrace // , IBExportable
 
 			Diag.Dug(false, type + " func: " + functionName
 				+ (format != null ? args != null ? (" " + string.Format(format, args)) : (" " + format) : ""),
-				frame.GetMethod().Name, frame.GetFileName(), frame.GetFileLineNumber());
+				frame == null ? "ERRNULL" : frame.GetMethod().Name, frame == null ? "ERRNULL" : frame.GetFileName(),
+				frame == null ? int.MinValue : frame.GetFileLineNumber());
 		}
 	}
 
@@ -231,7 +233,7 @@ internal class Tracer : IBTrace // , IBExportable
 			for (int i = 1; i < 4; i++)
 			{
 				frame = new StackTrace(i, true).GetFrame(0);
-				if (!frame.GetFileName().EndsWith("\\Tracer.cs", StringComparison.OrdinalIgnoreCase)
+				if (frame == null || !frame.GetFileName().EndsWith("\\Tracer.cs", StringComparison.OrdinalIgnoreCase)
 					|| frame.GetMethod().Name.ToLower() != "trace")
 				{
 					break;
@@ -240,7 +242,8 @@ internal class Tracer : IBTrace // , IBExportable
 
 			Diag.Dug(false, type + " func: " + functionName
 				+ (format != null ? args != null ? (" " + string.Format(format, args)) : (" " + format) : ""),
-				frame.GetMethod().Name, frame.GetFileName(), frame.GetFileLineNumber());
+				frame == null ? "ERRNULL" : frame.GetMethod().Name, frame == null ? "ERRNULL" : frame.GetFileName(),
+				frame == null ? int.MinValue : frame.GetFileLineNumber());
 		}
 
 		if (SqlTracer.ShouldTrace(eventType))

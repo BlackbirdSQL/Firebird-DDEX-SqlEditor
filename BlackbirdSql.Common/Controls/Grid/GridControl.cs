@@ -1420,7 +1420,7 @@ public class GridControl : Control, ISupportInitialize, IBGridControl
 
 	private const int C_MaximumColumnWidth = 20000;
 
-	private Hashtable m_EmbeddedControls = new Hashtable();
+	private Hashtable m_EmbeddedControls = [];
 
 	private bool shouldRenderFocusRectangle;
 
@@ -1450,7 +1450,7 @@ public class GridControl : Control, ISupportInitialize, IBGridControl
 
 	protected Rectangle m_scrollableArea;
 
-	protected GridColumnCollection m_Columns = new GridColumnCollection();
+	protected GridColumnCollection m_Columns = [];
 
 	protected ScrollManager m_scrollMgr = new ScrollManager();
 
@@ -1775,7 +1775,7 @@ public class GridControl : Control, ISupportInitialize, IBGridControl
 	{
 		get
 		{
-			BlockOfCellsCollection blockOfCellsCollection = new BlockOfCellsCollection();
+			BlockOfCellsCollection blockOfCellsCollection = [];
 			if (InvokeRequired)
 			{
 				InvokerInOutArgs invokerInOutArgs = new InvokerInOutArgs
@@ -1913,7 +1913,7 @@ public class GridControl : Control, ISupportInitialize, IBGridControl
 	{
 		get
 		{
-			GridColumnInfoCollection gridColumnInfoCollection = new GridColumnInfoCollection();
+			GridColumnInfoCollection gridColumnInfoCollection = [];
 			for (int i = 0; i < m_Columns.Count; i++)
 			{
 				gridColumnInfoCollection.Add(GetGridColumnInfo(i));
@@ -5260,7 +5260,7 @@ public class GridControl : Control, ISupportInitialize, IBGridControl
 			return originalCol;
 		}
 
-		BlockOfCellsCollection blockOfCellsCollection = new BlockOfCellsCollection();
+		BlockOfCellsCollection blockOfCellsCollection = [];
 		foreach (BlockOfCells item in originalCol)
 		{
 			BlockOfCells blockOfCells = !bFromUIToStorage ? new BlockOfCells(item.Y, GetUIColumnIndexByStorageIndex(item.X)) : new BlockOfCells(item.Y, m_Columns[item.X].ColumnIndex);

@@ -178,7 +178,7 @@ public class MenuCommandsService : Collection<MenuCommand>, IDisposable, IMenuCo
 			pOINTS.x = (short)x;
 			pOINTS.y = (short)y;
 			Guid rclsidActive = menuID.Guid;
-			Core.Native.ThrowOnFailure(oleComponentUIManager.ShowContextMenu(VS.dwReserved, ref rclsidActive, menuID.ID, new POINTS[1] { pOINTS }, this), (string)null);
+			Core.Native.ThrowOnFailure(oleComponentUIManager.ShowContextMenu(VS.dwReserved, ref rclsidActive, menuID.ID, [pOINTS], this), (string)null);
 		}
 	}
 

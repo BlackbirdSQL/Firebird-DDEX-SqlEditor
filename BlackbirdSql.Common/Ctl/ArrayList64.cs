@@ -19,7 +19,7 @@ public class ArrayList64
 
 	public ArrayList64()
 	{
-		m_arr32 = new ArrayList();
+		m_arr32 = [];
 		_Count = 0L;
 	}
 
@@ -31,15 +31,15 @@ public class ArrayList64
 		}
 		else
 		{
-			m_arrArr ??= new ArrayList
-				{
+			m_arrArr ??=
+				[
 					m_arr32
-				};
+				];
 			int num = (int)(_Count / int.MaxValue);
 			ArrayList arrayList;
 			if (m_arrArr.Count <= num)
 			{
-				arrayList = new ArrayList();
+				arrayList = [];
 				m_arrArr.Add(arrayList);
 			}
 			else

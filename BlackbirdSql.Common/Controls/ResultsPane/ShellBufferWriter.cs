@@ -85,7 +85,7 @@ public sealed class ShellBufferWriter : AbstractResultsWriter
 
 	private StringBuilder stringBuilder = new StringBuilder();
 
-	private readonly ArrayList errorMarkers = new ArrayList();
+	private readonly ArrayList errorMarkers = [];
 
 	private IVsTextView doubleClickView;
 

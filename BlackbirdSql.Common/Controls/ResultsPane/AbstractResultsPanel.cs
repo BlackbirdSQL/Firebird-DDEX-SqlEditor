@@ -33,7 +33,7 @@ public abstract class AbstractResultsPanel : Panel
 
 	private string _defaultResultsDirectory;
 
-	protected MenuCommandsService MenuService => _MenuService ??= new MenuCommandsService();
+	protected MenuCommandsService MenuService => _MenuService ??= [];
 
 	public string DefaultResultsDirectory
 	{

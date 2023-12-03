@@ -45,8 +45,8 @@ public abstract class AbstractQESQLExec : IDisposable
 	// A protected 'this' object lock
 	protected object _LockObject = new object();
 
-	protected QESQLBatchCollection _SetConnectionOptionsBatches = new QESQLBatchCollection();
-	protected QESQLBatchCollection _RestoreConnectionOptionsBatches = new QESQLBatchCollection();
+	protected QESQLBatchCollection _SetConnectionOptionsBatches = [];
+	protected QESQLBatchCollection _RestoreConnectionOptionsBatches = [];
 	protected IBQESQLBatchConsumer _BatchConsumer;
 	protected IDbConnection _Conn;
 	protected IDbConnection _SSconn;

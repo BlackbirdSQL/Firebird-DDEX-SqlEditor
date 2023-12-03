@@ -358,6 +358,15 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reset.
+        /// </summary>
+        public static string ErmBindingSource_Reset {
+            get {
+                return ResourceManager.GetString("ErmBindingSource_Reset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to save file: {0}.
         /// </summary>
         public static string Exception_FailedToSaveFile {

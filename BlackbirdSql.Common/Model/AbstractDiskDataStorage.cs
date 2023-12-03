@@ -102,7 +102,7 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 		_DataStorageEnabled = false;
 		_WorkerThread = null;
 		_OffsetsArray = new ArrayList64();
-		_ColumnInfoArray = new ArrayList();
+		_ColumnInfoArray = [];
 		_DiskDataEntity = new StorageDataEntity();
 	}
 

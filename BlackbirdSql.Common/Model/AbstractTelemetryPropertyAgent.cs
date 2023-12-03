@@ -218,7 +218,7 @@ public abstract class AbstractTelemetryPropertyAgent : AbstractDispatcherConnect
 	{
 		if (_Describers == null)
 		{
-			_Describers = new();
+			_Describers = [];
 
 			AbstractModelPropertyAgent.CreateAndPopulatePropertySet(_Describers);
 

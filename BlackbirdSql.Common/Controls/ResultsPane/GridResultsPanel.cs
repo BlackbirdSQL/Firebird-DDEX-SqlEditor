@@ -41,7 +41,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 	public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 	{
-		private ResultSetAndGridContainerCollection m_gridContainers = new ResultSetAndGridContainerCollection();
+		private ResultSetAndGridContainerCollection m_gridContainers = [];
 
 		private bool m_includeColumnHeaders;
 
@@ -148,7 +148,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			//IL_0023: Unknown result type (might be due to invalid IL or missing references)
 			//IL_0029: Expected O, but got Unknown
 			// Tracer.Trace(typeof(GridResultsPanel), "GridResultsTabPanel.SelectAllCellInGrid", "", null);
-			BlockOfCellsCollection val = new BlockOfCellsCollection();
+			BlockOfCellsCollection val = [];
 			BlockOfCells val2 = new BlockOfCells(0L, 1);
 			QEResultSet qEResultSet = (QEResultSet)(object)grid.GridStorage;
 			if (qEResultSet.StoredAllData)
@@ -667,10 +667,10 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 				Width = num3 - num2 + 1,
 				Height = rowCount
 			};
-			BlockOfCellsCollection val2 = new BlockOfCellsCollection
-			{
+			BlockOfCellsCollection val2 =
+			[
 				val
-			};
+			];
 			grid.SetSelectedCellsAndCurrentCell(val2, 0L, currentSelectedBlock.OriginalX);
 		}
 
@@ -708,10 +708,10 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 					Width = qEResultSet.TotalNumberOfColumns - 1,
 					Height = num2 - num + 1
 				};
-				BlockOfCellsCollection val2 = new()
-				{
+				BlockOfCellsCollection val2 =
+				[
 					val
-				};
+				];
 				grid.SetSelectedCellsAndCurrentCell(val2, currentSelectedBlock.OriginalY, 1);
 			}
 		}
@@ -781,7 +781,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 				return;
 			}
 
-			BlockOfCellsCollection val = new BlockOfCellsCollection();
+			BlockOfCellsCollection val = [];
 			BlockOfCells val2;
 			if (bRow)
 			{

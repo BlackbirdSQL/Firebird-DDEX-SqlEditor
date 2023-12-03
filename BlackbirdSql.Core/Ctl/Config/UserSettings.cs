@@ -60,7 +60,7 @@ public abstract class UserSettings : IBUserSettings
 	}
 
 
-	protected static Dictionary<string, object> SettingsStore => _SettingsStore ??= new();
+	protected static Dictionary<string, object> SettingsStore => _SettingsStore ??= [];
 
 
 	// ---------------------------------------------------------------------------------

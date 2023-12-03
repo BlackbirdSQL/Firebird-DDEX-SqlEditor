@@ -14,7 +14,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 	{
 		public delegate TResult Func<out TResult, in T1>(T1 i);
 
-		private readonly Dictionary<int, T> columnIndexes = new Dictionary<int, T>();
+		private readonly Dictionary<int, T> columnIndexes = [];
 
 		public T this[int index] => columnIndexes[index];
 

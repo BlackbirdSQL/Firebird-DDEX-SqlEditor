@@ -34,8 +34,8 @@ public abstract class AbstractMemDataStorage : IBMemDataStorage, IBDataStorage, 
 
 	public AbstractMemDataStorage()
 	{
-		_ColumnInfoArray = new ArrayList();
-		_RowsArray = new ArrayList();
+		_ColumnInfoArray = [];
+		_RowsArray = [];
 	}
 
 	public virtual void Dispose()

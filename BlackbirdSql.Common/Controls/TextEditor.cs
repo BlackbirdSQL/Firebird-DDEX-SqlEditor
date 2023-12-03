@@ -167,7 +167,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 
 	private void ConnectView(IVsTextView view)
 	{
-		_ConnectedViews ??= new Dictionary<IVsTextView, ConnectionPointCookie>();
+		_ConnectedViews ??= [];
 		ConnectionPointCookie value = new ConnectionPointCookie(view, this, typeof(IVsTextViewEvents));
 		_ConnectedViews.Add(view, value);
 	}
