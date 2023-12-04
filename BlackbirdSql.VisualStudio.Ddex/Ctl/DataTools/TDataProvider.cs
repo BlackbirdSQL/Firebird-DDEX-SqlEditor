@@ -50,7 +50,7 @@ public class TDataProvider
 			{
 				{ string.Empty, typeof(TConnectionUIProperties) }
 			};
-			_BlackbirdSqlDataProvider = new TDataProvider(SystemData.Invariant, Resources.DataProvider_Ddex, Resources.DataProvider_Ddex_Short,
+			_BlackbirdSqlDataProvider = new (SystemData.Invariant, Resources.DataProvider_Ddex, Resources.DataProvider_Ddex_Short,
 				Resources.DataProvider_Ddex_Description, typeof(FbConnection), dictionary, dictionary2, dictionary3);
 			}
 			return _BlackbirdSqlDataProvider;

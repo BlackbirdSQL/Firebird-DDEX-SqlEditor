@@ -143,7 +143,6 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 			if (_Csa == null || !_Csa.Equals(connection))
 			{
-				Tracer.Trace(GetType(), "SelectObjects()", "Registering CsbAgent.");
 				_Csa = new(connection);
 				_Csa.RegisterDataset();
 			}

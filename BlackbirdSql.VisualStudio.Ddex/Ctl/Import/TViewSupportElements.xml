@@ -391,7 +391,7 @@
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Column.ico" assembly="" />
 				<PropertiesRef name="TplPropertiesColumn" arguments="$(parentType),Column,COLUMN_NAME,$(advanced)"/>
 				<Commands>
-					<!-- <CommandRef name="CommandNewDesignerQueryUniversal" /> -->
+					<CommandRef name="CommandOverrideRetrieveDataLocal" />
 				</Commands>
 			</SelectionNode>
 		</Selection>
@@ -536,7 +536,7 @@
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Trigger.ico" assembly="" />
 				<PropertiesRef name="TplPropertiesTrigger" />
 				<Commands>
-					<!-- <CommandRef name="CommandNewDesignerQueryUniversal" /> -->
+					<CommandRef name="CommandOverrideRetrieveDataLocal" />
 				</Commands>
 				<Children>
 					<SelectionRef name="TplSelectionColumn" arguments="TriggerColumn,Trigger,$(systemType),Advanced,{Trigger.TABLE_CATALOG},,{Trigger.TABLE_SCHEMA},,{Trigger.TRIGGER_NAME}" />
@@ -556,7 +556,7 @@
 				<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.$(systemType)Trigger.ico" assembly="" />
 				<PropertiesRef name="TplPropertiesTrigger" />
 				<Commands>
-					<!-- <CommandRef name="CommandNewDesignerQueryUniversal" /> -->
+					<CommandRef name="CommandOverrideRetrieveDataLocal" />
 				</Commands>
 			</SelectionNode>
 		</Selection>
@@ -569,7 +569,6 @@
 			<DisplayName resource="Node_Name_$(systemType)$(triggerType)s" />
 			<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Folder$(systemType)$(triggerType)s.ico" assembly="" />
 			<Commands>
-				<!-- <CommandRef name="CommandNewDesignerQueryUniversal" /> -->
 			</Commands>
 			<Children>
 				<SelectionRef name="TplSelectionTriggers$(triggerChildrenType)" arguments="$(triggerType),$(systemType),$(systemObjectFlag),null,,null"/>
@@ -620,10 +619,7 @@
 					</Property>
 				</Properties>
 				<Commands>
-					<CommandRef name="CommandOverrideCopyLocal" />
-					<CommandRef name="CommandRetrieveDesignerLocal" />
-					<CommandRef name="CommandTextOpenScriptUniversal" />
-					<!-- <CommandRef name="CommandNewDesignerQueryUniversal" /> -->
+					<CommandRef name="CommandOverrideRetrieveDataLocal" />
 				</Commands>
 				<Children>
 					<StaticNode skipWhen="{Table.INDEX_COUNT} = 0" nodeId="Indexes">
@@ -636,7 +632,7 @@
 									<Icon name="PrimaryKey" />
 									<PropertiesRef name="TplPropertiesIndex" />
 									<Commands>
-										<!-- <CommandRef name="CommandNewDesignerQueryUniversal" /> -->
+										<CommandRef name="CommandOverrideRetrieveDataLocal" />
 									</Commands>
 									<Children>
 										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),Advanced,{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
@@ -649,7 +645,7 @@
 									<Icon name="UniqueKey" />
 									<PropertiesRef name="TplPropertiesIndex" />
 									<Commands>
-										<!-- <CommandRef name="CommandNewDesignerQueryUniversal" /> -->
+										<CommandRef name="CommandOverrideRetrieveDataLocal" />
 									</Commands>
 									<Children>
 										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),Advanced,{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
@@ -662,7 +658,7 @@
 									<Icon name="Index" />
 									<PropertiesRef name="TplPropertiesIndex" />
 									<Commands>
-										<!-- <CommandRef name="CommandNewDesignerQueryUniversal" /> -->
+										<CommandRef name="CommandOverrideRetrieveDataLocal" />
 									</Commands>
 									<Children>
 										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),Advanced,{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
@@ -675,7 +671,7 @@
 									<Icon name="ForeignKey" />
 									<PropertiesRef name="TplPropertiesIndex" />
 									<Commands>
-										<!-- <CommandRef name="CommandNewDesignerQueryUniversal" /> -->
+										<CommandRef name="CommandOverrideRetrieveDataLocal" />
 									</Commands>
 									<Children>
 										<SelectionRef name="TplSelectionColumn" arguments="IndexColumn,Index,$(systemType),Advanced,{Index.TABLE_CATALOG},,{Index.TABLE_SCHEMA},,{Index.TABLE_NAME},,{Index.INDEX_NAME}" />
@@ -724,9 +720,33 @@
 											<Description resource="Property_Desc_ForeignKey_DeleteRule" />
 											<StandardValuesRef name="TplStandardValuesForeignKeyRule" />
 										</Property>
+										<Property name="IS_PRIMARY">
+											<DisplayName resource="Property_Name_Index_IsPrimary" />
+											<Description resource="Property_Desc_Index_IsPrimary" />
+										</Property>
+										<Property name="IS_UNIQUE">
+											<DisplayName resource="Property_Name_Index_IsUnique" />
+											<Description resource="Property_Desc_Index_IsUnique" />
+										</Property>
+										<Property name="IS_SYSTEM_FLAG">
+											<DisplayName resource="Property_Name_ObjectSystemType" />
+											<Category resource="Category_Identifier" />
+											<Description resource="Property_Desc_ObjectSystemType" />
+											<StandardValues>
+												<StandardValue value="0" resource="Property_Value_IndexType_User" />
+												<StandardValue value="1" resource="Property_Value_IndexType_System" />
+											</StandardValues>
+										</Property>
+										<Property name="EXPRESSION">
+											<DisplayName resource="Property_Name_Index_Expression" />
+											<Description resource="Property_Desc_Index_Expression" />
+										</Property>
+										<Property name="IS_COMPUTED">
+											<DisplayName resource="Property_Name_Index_IsComputed" />
+											<Description resource="Property_Desc_Index_IsComputed" />
+										</Property>
 									</Properties>
 									<Commands>
-										<!-- <CommandRef name="CommandNewDesignerQueryUniversal" /> -->
 									</Commands>
 									<Children>
 										<SelectionRef name="TplSelectionColumn" arguments="ForeignKeyColumn,ForeignKey,$(systemType),Advanced,{ForeignKey.CONSTRAINT_CATALOG},,{ForeignKey.CONSTRAINT_SCHEMA},,{ForeignKey.TABLE_NAME},,{ForeignKey.CONSTRAINT_NAME}" />
@@ -775,7 +795,6 @@
 			<DisplayName resource="Node_Name_$(systemType)Tables" />
 			<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.Folder$(systemType)Tables.ico" assembly="" />
 			<Commands>
-				<!-- <CommandRef name="CommandNewDesignerQueryUniversal" /> -->
 			</Commands>
 			<Children>
 				<SelectionRef name="TplSelectionTables" arguments="$(systemType),$(systemObjectFlag),$(triggerChildrenType)"/>

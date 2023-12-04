@@ -314,7 +314,6 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 			{
 				if (_Csa == null || !_Csa.Equals(Connection))
 				{
-					Tracer.Trace(GetType(), "ValidateStoredConnection()", "Registering CsbAgent.");
 					_Csa = new(Connection);
 					_Csa.RegisterDataset();
 

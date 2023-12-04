@@ -144,7 +144,7 @@ public abstract class AbstractHostess : IDisposable
 	{
 		// Tracer.Trace(GetType(), "AbstractHostess.ActivateDocumentIfOpen", "documentMoniker: {0}", documentMoniker);
 
-		return ActivateDocumentIfOpen(documentMoniker, doNotShowWindowFrame: false) != null;
+		return ActivateDocumentIfOpen(documentMoniker, false) != null;
 	}
 
 
@@ -163,19 +163,15 @@ public abstract class AbstractHostess : IDisposable
 			throw exc;
 		}
 
-		Guid rguidLogicalView = VSConstants.LOGVIEWID_TextView;
-
-		uint grfIDO = (uint)__VSIDOFLAGS.IDO_ActivateIfOpen;
-		if (doNotShowWindowFrame)
-		{
-			grfIDO = 0u;
-		}
-
 		IVsWindowFrame ppWindowFrame;
 
 		try
 		{
-			_ = Native.WrapComCall(service.IsDocumentOpen(null, uint.MaxValue, mkDocument, ref rguidLogicalView, grfIDO, out _, null, out ppWindowFrame, out _));
+			Guid rguidLogicalView = Guid.Empty;
+			uint grfIDO = doNotShowWindowFrame ? 0u : (uint)__VSIDOFLAGS.IDO_ActivateIfOpen;
+
+			_ = Native.WrapComCall(service.IsDocumentOpen(null, uint.MaxValue, mkDocument, ref rguidLogicalView,
+				grfIDO, out IVsUIHierarchy ppHierOpen, null, out ppWindowFrame, out int pfOpen));
 		}
 		catch (Exception ex)
 		{
@@ -184,6 +180,7 @@ public abstract class AbstractHostess : IDisposable
 		}
 
 		return ppWindowFrame;
+
 	}
 
 	public object CreateLocalInstance(Guid classId)

@@ -24,7 +24,6 @@ public enum EnCommandSet
 	MenuIdSeStaticGroup = 0x5202, // 20994
 	MenuIdResultsToGroup = 0x5203, // 20995
 	MenuIdEditorContextGroup = 0x5204, // 20996
-	MenuIdSeNodeGroup2 = 0x5205, // 20997
 
 	CtlrIdResultsToGroup = 0x5300,
 
@@ -74,7 +73,6 @@ public enum EnCommandSet
 	CmdIdOpenAlterTextObject = 0x0335, // 821
 	CmdIdRetrieveDesignerData = 0x0336, // 822
 	CmdIdResetPageOptions = 0x0337, // 823
-	CmdIdCopyObject = 0x0338, // 824
-	CmdIdNewDesignerQuery = 0x0339, // 825
+	CmdIdNewDesignerQuery = 0x0338, // 824
 
 }

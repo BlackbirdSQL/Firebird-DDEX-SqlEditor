@@ -3,6 +3,7 @@
 
 	<!-- Commands -->
 
+	
 	<!-- Original built-in commands -->
 	<Define name="CommandNewQueryGlobal" >
 		<CommandRef name="CommandHookSeDataCommandSet" arguments="0x3513" />
@@ -14,14 +15,16 @@
 	<Define name="CommandDetachDatabaseGlobal">
 		<CommandRef name="CommandHookSeDataCommandSet" arguments="0x3517" />
 	</Define>
-	<Define name="CommandRetrieveDesignerLocal">
-		<!-- Will exist but won't display because CanCopy is false because CommandOverrideCopyLocal is disabled -->
+	<Define name="CommandRetrieveDataGlobal">
+		<!-- Will exist at connection node level but won't display because we override with
+		CommandOverrideRetrieveDataLocal at the local node level -->
 		<CommandRef name="CommandHookSeDataCommandSet" arguments="0x3060" />
 	</Define>
 
-	<!-- Overriden built-in commands (Universal Suffix) -->
-	<Define name="CommandOverrideCopyLocal">
-		<CommandRef name="CommandHookCommandSet97Universal" arguments="0x000F" />
+	
+	<!-- Overriden built-in commands (Local Suffix) -->
+	<Define name="CommandOverrideRetrieveDataLocal">
+		<CommandRef name="CommandHookSeDataCommandSetUniversal" arguments="0x3060" />
 	</Define>
 	<Define name="CommandOverrideNewQueryLocal">
 		<CommandRef name="CommandHookSeDataCommandSetUniversal" arguments="0x3528" />
@@ -40,11 +43,8 @@
 	<Define name="CommandTextOpenAlterScriptUniversal">
 		<CommandRef name="CommandHookCommandSetUniversal" arguments="0x0335" />
 	</Define>
-	<Define name="CommandCopyUniversal">
-		<CommandRef name="CommandHookCommandSetUniversal" arguments="0x0338" />
-	</Define>
 	<Define name="CommandNewDesignerQueryUniversal">
-		<CommandRef name="CommandHookCommandSetUniversal" arguments="0x0339" />
+		<CommandRef name="CommandHookCommandSetUniversal" arguments="0x0338" />
 	</Define>
 
 
@@ -67,9 +67,4 @@
 				 provider="BlackbirdSql.VisualStudio.Ddex.Ctl.CommandProviders.UniversalCommandProvider" isDefault="true" />
 	</Define>
 
-	<!-- Overriden Standard 97 CommandSet for Universal nodes -->
-	<Define name="CommandHookCommandSet97Universal" parameters="cmdid">
-		<Command guid="5efc7975-14bc-11cf-9b2b-00aa00573819" cmdid="$(cmdid)"
-				 provider="BlackbirdSql.VisualStudio.Ddex.Ctl.CommandProviders.UniversalCommandProvider"  isDefault="true" />
-	</Define>
 </DataViewSupport>

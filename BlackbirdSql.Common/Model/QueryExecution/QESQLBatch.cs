@@ -64,17 +64,12 @@ public class QESQLBatch : IDisposable
 
 	protected IBTextSpan _TextSpan;
 
-	protected int _batchIndex;
+	protected int _BatchIndex;
 
 	protected long _RowsAffected;
 
-	private bool _suppressProviderMessageHeaders;
+	private bool _SuppressProviderMessageHeaders;
 
-	protected static string[] _preYukonExecutionPlanColumns = new string[20]
-	{
-		"Rows", "Executes", "StmtText", "StmtId", "NodeId", "Parent", "PhysicalOp", "LogicalOp", "Argument", "DefinedValues",
-		"EstimateRows", "EstimateIO", "EstimateCPU", "AvgRowSize", "TotalSubtreeCost", "OutputList", "Warnings", "Type", "Parallel", "EstimateExecutions"
-	};
 
 	public IDbCommand Command => _Command;
 
@@ -84,7 +79,7 @@ public class QESQLBatch : IDisposable
 
 	public bool ContainsErrors { private get; set; }
 
-	public bool SuppressProviderMessageHeaders => _suppressProviderMessageHeaders;
+	public bool SuppressProviderMessageHeaders => _SuppressProviderMessageHeaders;
 
 	public string SqlScript
 	{
@@ -136,8 +131,8 @@ public class QESQLBatch : IDisposable
 
 	public int BatchIndex
 	{
-		get { return _batchIndex; }
-		set { _batchIndex = value; }
+		get { return _BatchIndex; }
+		set { _BatchIndex = value; }
 	}
 
 	public long RowsAffected => _RowsAffected;
@@ -206,7 +201,7 @@ public class QESQLBatch : IDisposable
 	public void SetSuppressProviderMessageHeaders(bool shouldSuppress)
 	{
 		// Tracer.Trace(GetType(), "QESQLBatch.SetSuppressProviderMessageHeaders", "shouldSuppress = {0}", shouldSuppress);
-		_suppressProviderMessageHeaders = shouldSuppress;
+		_SuppressProviderMessageHeaders = shouldSuppress;
 	}
 
 	public void Reset()
@@ -381,10 +376,10 @@ public class QESQLBatch : IDisposable
 						error.Number, error.Class, error.LineNumber + num);
 					/*
 					text = ((error.Procedure != null && (error.Procedure == null || error.Procedure.Length != 0))
-						? ((!_suppressProviderMessageHeaders)
+						? ((!_SuppressProviderMessageHeaders)
 							? string.Format(CultureInfo.CurrentCulture, LanguageServicesResources.SQLErrorFormat6, error.Source, error.Number, error.Class, error.State, error.Procedure, error.LineNumber + num)
 							: string.Format(CultureInfo.CurrentCulture, LanguageServicesResources.SQLErrorFormat6_NoSource, error.Number, error.Class, error.State, error.Procedure, error.LineNumber + num))
-						: ((!_suppressProviderMessageHeaders)
+						: ((!_SuppressProviderMessageHeaders)
 							? string.Format(CultureInfo.CurrentCulture, LanguageServicesResources.SQLErrorFormat5, error.Source, error.Number, error.Class, error.State, error.LineNumber + num)
 							: string.Format(CultureInfo.CurrentCulture, LanguageServicesResources.SQLErrorFormat5_NoSource, error.Number, error.Class, error.State, error.LineNumber + num)));
 					*/
@@ -392,7 +387,7 @@ public class QESQLBatch : IDisposable
 				else if (error.Class > 0 && error.Number > 0)
 				{
 					flag = false;
-					text = !_suppressProviderMessageHeaders ? string.Format(CultureInfo.CurrentCulture, ControlsResources.SQLErrorFormat4, error.Message, error.Number, error.Class, -1) : string.Format(CultureInfo.CurrentCulture, ControlsResources.SQLErrorFormat4_NoSource, error.Number, error.Class, -1);
+					text = !_SuppressProviderMessageHeaders ? string.Format(CultureInfo.CurrentCulture, ControlsResources.SQLErrorFormat4, error.Message, error.Number, error.Class, -1) : string.Format(CultureInfo.CurrentCulture, ControlsResources.SQLErrorFormat4_NoSource, error.Number, error.Class, -1);
 				}
 
 				if (flag && ErrorMessageEvent != null)
@@ -434,10 +429,10 @@ public class QESQLBatch : IDisposable
 						error.Number, error.Class, error.LineNumber + num);
 					/*
 					text = ((error.Procedure != null && (error.Procedure == null || error.Procedure.Length != 0))
-						? ((!_suppressProviderMessageHeaders)
+						? ((!_SuppressProviderMessageHeaders)
 							? string.Format(CultureInfo.CurrentCulture, LanguageServicesResources.SQLErrorFormat6, error.Source, error.Number, error.Class, error.State, error.Procedure, error.LineNumber + num)
 							: string.Format(CultureInfo.CurrentCulture, LanguageServicesResources.SQLErrorFormat6_NoSource, error.Number, error.Class, error.State, error.Procedure, error.LineNumber + num))
-						: ((!_suppressProviderMessageHeaders)
+						: ((!_SuppressProviderMessageHeaders)
 							? string.Format(CultureInfo.CurrentCulture, LanguageServicesResources.SQLErrorFormat5, error.Source, error.Number, error.Class, error.State, error.LineNumber + num)
 							: string.Format(CultureInfo.CurrentCulture, LanguageServicesResources.SQLErrorFormat5_NoSource, error.Number, error.Class, error.State, error.LineNumber + num)));
 					*/
@@ -445,7 +440,7 @@ public class QESQLBatch : IDisposable
 				else if (error.Class > 0 && error.Number > 0)
 				{
 					flag = false;
-					text = !_suppressProviderMessageHeaders ? string.Format(CultureInfo.CurrentCulture, ControlsResources.SQLErrorFormat4, error.Message, error.Number, error.Class, -1) : string.Format(CultureInfo.CurrentCulture, ControlsResources.SQLErrorFormat4_NoSource, error.Number, error.Class, -1);
+					text = !_SuppressProviderMessageHeaders ? string.Format(CultureInfo.CurrentCulture, ControlsResources.SQLErrorFormat4, error.Message, error.Number, error.Class, -1) : string.Format(CultureInfo.CurrentCulture, ControlsResources.SQLErrorFormat4_NoSource, error.Number, error.Class, -1);
 				}
 
 				if (flag && ErrorMessageEvent != null)

@@ -69,10 +69,6 @@
 				<!--<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />-->
 				<Parent guid="SeObjectNodesGuid" id="IDMX_DV_OBJECT_NODE" />
 			</Group>
-			<Group guid="CommandSetGuid" id="MenuIdSeNodeGroup2" priority="0x0700">
-				<!--<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />-->
-				<Parent guid="SeObjectNodesGuid" id="IDMX_DV_OBJECT_NODE" />
-			</Group>
 
 			<!-- Static Node scope -->
 			<Group guid="CommandSetGuid" id="MenuIdSeStaticGroup" priority="0x0600">
@@ -280,19 +276,6 @@
 				</Strings>
 			</Button>
 
-			<!-- MenuIdSeNodeGroup2 -->
-			<Button guid="CommandSetGuid" id="CmdIdCopyObject" priority="0x0170" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdSeNodeGroup2" />
-				<Icon guid="ImagesGuid" id="ImgCopy" />
-				<CommandFlag>TextChanges</CommandFlag>
-				<CommandFlag>DefaultInvisible</CommandFlag>
-				<CommandFlag>DynamicVisibility</CommandFlag>
-				<Strings>
-					<ButtonText>Copy</ButtonText>
-					<CommandName>CommandCopyUniversal</CommandName>
-				</Strings>
-			</Button>
-
 
 
 			<!-- MenuIdSeStaticGroup -->
@@ -435,8 +418,6 @@
 			<IDSymbol name="MenuIdResultsToGroup" value="0x5203" />
 			<!-- 20996 -->
 			<IDSymbol name="MenuIdEditorContextGroup" value="0x5204" />
-			<!-- 20997 -->
-			<IDSymbol name="MenuIdSeNodeGroup2" value="0x5205" />
 
 			<IDSymbol name="CtlrIdResultsToGroup" value="0x5300" />
 
@@ -522,9 +503,7 @@
 			<!-- 823 -->
 			<IDSymbol name="CmdIdResetPageOptions" value="0x0337" />
 			<!-- 824 -->
-			<IDSymbol name="CmdIdCopyObject" value="0x0338" />
-			<!-- 825 -->
-			<IDSymbol name="CmdIdNewDesignerQuery" value="0x0339" />
+			<IDSymbol name="CmdIdNewDesignerQuery" value="0x0338" />
 		</GuidSymbol>
 
 		<GuidSymbol name="ImagesGuid" value="{b9096f40-3268-4397-a5ec-8827624c447d}" >

@@ -9,13 +9,17 @@ using System.Reflection;
 using System.Security.Policy;
 using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Properties;
+using EnvDTE;
+using EnvDTE80;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
+using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
 
@@ -185,9 +189,10 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 					});
 			command = cmd;
 		}
-		else if (commandId.Equals(CommandProperties.OverrideCopy))
+		else if (commandId.Equals(CommandProperties.OverrideRetrieveDataLocal))
 		{
-			// We're hiding the copy command at the node level so that we can use our copy with the correct text.
+			// We're hiding the retrieve data command at the local node level so that we can use
+			// our retrieve data command with the correct text.
 			node = Site.ExplorerConnection.FindNode(itemId);
 
 			cmd = new DataViewMenuCommand(itemId, commandId,
@@ -200,26 +205,6 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 					// Never called.
 				});
 
-			command = cmd;
-		}
-		else if (commandId.Equals(CommandProperties.CopyObject))
-		{
-			cmd = new DataViewMenuCommand(itemId, commandId, delegate
-			{
-				node = Site.ExplorerConnection.FindNode(itemId);
-				cmd.Enabled = cmd.Visible = node.CanCopy();
-
-				if (cmd.Visible && !command.Properties.Contains("GotText")
-					&& (label = GlobalizeLabel(cmd, node)) != string.Empty)
-				{
-					cmd.Properties["GotText"] = true;
-					cmd.Properties["Text"] = label;
-				}
-
-			}, delegate
-					{
-						OnInterceptorCopy(itemId);
-					});
 			command = cmd;
 		}
 		else if (commandId.Equals(CommandProperties.RetrieveDesignerData))
@@ -294,8 +279,6 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 			text = GetResourceString("Open", type.ToString(), "Script");
 		else if (cmd.CommandID.Equals(CommandProperties.OpenAlterTextObject))
 			text = GetResourceString("Alter", type.ToString(), "Script");
-		else if (cmd.CommandID.Equals(CommandProperties.CopyObject))
-			text = GetResourceString("Copy", type.ToString(), "Node");
 		else if (cmd.CommandID.Equals(CommandProperties.RetrieveDesignerData))
 			text = GetResourceString("Retrieve", type.ToString(), "DesignerData");
 
@@ -331,22 +314,63 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	// =========================================================================================================
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Exposes the connection node RetrieveData DataViewMenuCommand's private field
+	/// '_commandProvider' and uses it to create a new RetrieveData command for the
+	/// handler's current node.
+	/// Retrieve data intercept system command event handler.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	protected virtual void OnInterceptorDesignRetrieveData(int itemId)
 	{
 		// Tracer.Trace(GetType(), "OnInterceptorDesignRetrieveData()", "itemId: {0}.", itemId);
 
+		Hostess host = new(Site.ServiceProvider);
 		IVsDataExplorerNode node = Site.ExplorerConnection.FindNode(itemId);
-		MenuCommand command = node.GetCommand(CommandProperties.RetrieveDesignerLocal);
 
-		if (command == null)
+		if (host.ActivateDocumentIfOpen("DataExplorer://{0}/{1}/{2}".FmtRes(node.ExplorerConnection.DisplayName, node.Object.Type.Name, node.Object.Identifier.ToString())))
+		{
+			return;
+		}
+
+		// Get the retrieve data command at the connection node level. This will be the original
+		// built-in retrieve data command and the only access we have to the original because we
+		// have overridden the local node with a hidden OverrideRetrieveDataLocal command.
+		IVsDataExplorerNode connectionNode = Site.ExplorerConnection.ConnectionNode;
+		MenuCommand globalCommand = connectionNode.GetCommand(CommandProperties.OverrideRetrieveDataLocal);
+
+		if (globalCommand == null)
 		{
 			ArgumentException ex = new("GetCommand() GlobalNewQuery returned null");
 			Diag.Dug(ex);
 			return;
 		}
 
+		// The retrieve data command we've retrieved belongs to the connection node so we use reflection
+		// to create a new command using it's command provider.
+
+		Type typeCommand = globalCommand.GetType();
+
+		FieldInfo commandProviderInfo = typeCommand.GetField("_commandProvider",
+			BindingFlags.NonPublic | BindingFlags.Instance);
+
+		if (commandProviderInfo == null)
+		{
+			ArgumentException ex = new($"ProviderMenuCommand GetField(_commandProvider) returned null. Command type: {globalCommand.GetType().FullName}");
+			Diag.Dug(ex);
+			return;
+		}
+
+
 		try
 		{
+			// Get the connection node RetrieveData command's command provider.
+			IVsDataViewCommandProvider commandProvider = (IVsDataViewCommandProvider)commandProviderInfo.GetValue(globalCommand);
+			// Use the provider to create a new retrieve data command at the local node level.
+			DataViewMenuCommand command = (DataViewMenuCommand)commandProvider.CreateCommand(itemId, CommandProperties.OverrideRetrieveDataLocal);
+
+			// Invoking the new command will now retrieve the correct node.
 			command.Invoke();
 		}
 		catch (Exception ex)
@@ -354,71 +378,16 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 			Diag.Dug(ex);
 		}
 
+
+		// Show the diagram pane if enabled.
 		if (UserSettings.ShowDiagramPane)
 		{
-			Hostess host = new(Site.ServiceProvider);
 			CommandID cmd = new CommandID(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.ShowGraphicalPane);
-			// Delay 10 ms just to give Editor WindowFrame and QueryDesignerDocument time to breath.
+			// Delay 10 ms to give Editor WindowFrame and QueryDesignerDocument time to breath.
 			host.PostExecuteCommand(cmd, 10);
 		}
 
-	}
 
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Exposes CopyMenuCommand's private field '_explorerNode'.
-	/// Copy intercept system command event handler.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected void OnInterceptorCopy(int itemId)
-	{
-		// Tracer.Trace(GetType(), "OnInterceptorCopy()", "itemId: {0}", itemId);
-
-		// Get the copy command at the connection node level. This will be the original
-		// built-in copy command and the only access we have to the original because we
-		// have not implemented an override copy command at that level.
-		IVsDataExplorerNode connectionNode = Site.ExplorerConnection.ConnectionNode;
-		MenuCommand command = connectionNode.GetCommand(CommandProperties.OverrideCopy);
-
-		if (command == null)
-		{
-			ArgumentException ex = new("GetCommand() Copy returned null");
-			Diag.Dug(ex);
-			return;
-		}
-
-		IVsDataExplorerNode node = Site.ExplorerConnection.FindNode(itemId);
-
-
-		// The copy command we've retrieved belongs to the connection node so we use reflection
-		// to change the command's node to the current node.
-
-		Type typeCommand = command.GetType();
-
-		FieldInfo explorerNodeInfo = typeCommand.GetField("_explorerNode",
-			BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.IgnoreCase);
-
-		if (explorerNodeInfo == null)
-		{
-			ArgumentException ex = new($"MenuCommand GetField(_explorerNode) returned null. Command type: {command.GetType().FullName}");
-			Diag.Dug(ex);
-			return;
-		}
-
-
-		try
-		{
-			// Set the copy command's node to the current node using Reflection.
-			explorerNodeInfo.SetValue(command, node);
-			// Invoking the copy will now copy the correct node.
-			command.Invoke();
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-		}
 	}
 
 

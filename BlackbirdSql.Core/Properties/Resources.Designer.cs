@@ -124,42 +124,6 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &amp;Copy Function.
-        /// </summary>
-        public static string CommandProvider_CopyFunctionNode {
-            get {
-                return ResourceManager.GetString("CommandProvider_CopyFunctionNode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &amp;Copy Procedure.
-        /// </summary>
-        public static string CommandProvider_CopyStoredProcedureNode {
-            get {
-                return ResourceManager.GetString("CommandProvider_CopyStoredProcedureNode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &amp;Copy Table.
-        /// </summary>
-        public static string CommandProvider_CopyTableNode {
-            get {
-                return ResourceManager.GetString("CommandProvider_CopyTableNode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to &amp;Copy View.
-        /// </summary>
-        public static string CommandProvider_CopyViewNode {
-            get {
-                return ResourceManager.GetString("CommandProvider_CopyViewNode", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to &amp;New Designer Query.
         /// </summary>
         public static string CommandProvider_NewGlobalDesigner {

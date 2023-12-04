@@ -138,18 +138,6 @@
   <data name="CommandProvider_CancelExecution" xml:space="preserve">
     <value>SqlViewTextObjectCommandProvider_CancelExecution</value>
   </data>
-  <data name="CommandProvider_CopyFunctionNode" xml:space="preserve">
-    <value>&amp;Copy Function</value>
-  </data>
-  <data name="CommandProvider_CopyStoredProcedureNode" xml:space="preserve">
-    <value>&amp;Copy Procedure</value>
-  </data>
-  <data name="CommandProvider_CopyTableNode" xml:space="preserve">
-    <value>&amp;Copy Table</value>
-  </data>
-  <data name="CommandProvider_CopyViewNode" xml:space="preserve">
-    <value>&amp;Copy View</value>
-  </data>
   <data name="CommandProvider_NewGlobalDesigner" xml:space="preserve">
     <value>&amp;New Designer Query</value>
   </data>

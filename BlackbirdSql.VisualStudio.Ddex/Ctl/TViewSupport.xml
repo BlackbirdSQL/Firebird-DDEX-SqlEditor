@@ -17,9 +17,10 @@
 				<CommandRef name="CommandNewQueryGlobal" />
 				<CommandRef name="CommandOverrideNewQueryLocal" />
 				<CommandRef name="CommandRetrieveDesignerUniversal" />
+				<CommandRef name="CommandRetrieveDataGlobal" />
 				<CommandRef name="CommandTextOpenScriptUniversal" />
 				<CommandRef name="CommandTextOpenAlterScriptUniversal" />
-				<CommandRef name="CommandCopyUniversal" />
+				<!-- <CommandRef name="CommandCopyUniversal" /> -->
 			</GlobalCommands>
 			<ConnectionNode nodeId="Database" type="Database">
 				<InitialDisplayName>{Root.DatasetKey}</InitialDisplayName>
@@ -105,8 +106,7 @@
 										</Property>
 									</Properties>
 									<Commands>
-										<CommandRef name="CommandOverrideCopyLocal" />
-										<CommandRef name="CommandRetrieveDesignerLocal" />
+										<CommandRef name="CommandOverrideRetrieveDataLocal" />
 									</Commands>
 									<Children>
 										<SelectionRef name="TplSelectionColumn" arguments="ViewColumn,View,User,Empty,{View.VIEW_CATALOG},,{View.VIEW_SCHEMA},,{View.VIEW_NAME}" />
@@ -150,7 +150,7 @@
 										</Property>
 									</Properties>
 									<Commands>
-										<CommandRef name="CommandTextOpenScriptUniversal" />
+										<CommandRef name="CommandOverrideRetrieveDataLocal" />
 									</Commands>
 									<Children>
 										<StaticNode nodeId="StoredProcedureColumns">
@@ -162,6 +162,9 @@
 														<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamOut.ico" when="{Column.PARAMETER_DIRECTION} = 1" assembly="" />
 														<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamInOut.ico" assembly="" />
 														<PropertiesRef name="TplPropertiesColumn" arguments="StoredProcedure,Column,PARAMETER_NAME,Empty"/>
+														<Commands>
+															<CommandRef name="CommandOverrideRetrieveDataLocal" />
+														</Commands>
 													</SelectionNode>
 												</Selection>
 											</Children>
@@ -174,6 +177,9 @@
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamInOut.ico" when="{Parameter.PARAMETER_DIRECTION} = 3" assembly="" />
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamReturn.ico" assembly="" />
 												<PropertiesRef name="TplPropertiesColumn" arguments="StoredProcedure,Parameter,PARAMETER_NAME,Empty"/>
+												<Commands>
+													<CommandRef name="CommandOverrideRetrieveDataLocal" />
+												</Commands>
 											</SelectionNode>
 										</Selection>
 									</Children>
@@ -216,7 +222,7 @@
 										</Property>
 									</Properties>
 									<Commands>
-										<CommandRef name="CommandTextOpenScriptUniversal" />
+										<CommandRef name="CommandOverrideRetrieveDataLocal" />
 									</Commands>
 									<Children>
 										<Selection type="FunctionParameter" restrictions="{Function.FUNCTION_CATALOG},{Function.FUNCTION_SCHEMA},{Function.FUNCTION_NAME}">
@@ -225,6 +231,9 @@
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamIn.ico" when="{Parameter.ORDINAL_POSITION} > 0" assembly="" />
 												<Icon name="BlackbirdSql.VisualStudio.Ddex.Resources.ViewSupport.ParamReturn.ico" assembly="" />
 												<PropertiesRef name="TplPropertiesColumn" arguments="Function,Parameter,ARGUMENT_NAME,Empty"/>
+												<Commands>
+													<CommandRef name="CommandOverrideRetrieveDataLocal" />
+												</Commands>
 											</SelectionNode>
 										</Selection>
 									</Children>

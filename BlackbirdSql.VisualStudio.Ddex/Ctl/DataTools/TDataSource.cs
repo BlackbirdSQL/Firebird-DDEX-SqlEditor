@@ -90,7 +90,7 @@ public class TDataSource
 		{
 			if (_FbDataSource == null)
 			{
-				_FbDataSource = new TDataSource("FirebirdSqlServer", Resources.DataSource_FirebirdSqlServer);
+				_FbDataSource = new ("FirebirdSqlServer", Resources.DataSource_FirebirdSqlServer);
 				_FbDataSource.Providers.Add(TDataProvider.BlackbirdSqlDataProvider);
 			}
 			return _FbDataSource;

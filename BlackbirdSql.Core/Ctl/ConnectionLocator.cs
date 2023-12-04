@@ -578,8 +578,9 @@ public abstract class ConnectionLocator
 
 		if (xmlConnections.Count == 0)
 		{
-			Exception ex = new($"No a1:DataViewNode nodes found in file: {xmlPath}.");
-			throw ex;
+			Tracer.Trace(typeof(ConnectionLocator), Tracer.EnLevel.Information, "LoadServerExplorerConfiguredConnectionsImpl()",
+				"No a1:DataViewNode nodes found in file: {0}.", xmlPath);
+			return;
 		}
 
 

@@ -70,13 +70,13 @@ public static class CommandProperties
 	private const int _CmdIdSENewQueryGlobal = 0x3513; // 13587;
 	private const int _CmdIdSENewQueryLocal = 0x3528; // 13608;
 	private const int _CmdIdAddTableViewForQRY = 0x0027; // 39;
-	private const int _CmdIdSERetrieveDesignerLocal = 0x3060; // 12384;
+	private const int _CmdIdSERetrieveData = 0x3060; // 12384;
 	// private const int _CmdIdSERun = 0x3062; // 12386;
 	// private const int _CmdIdSEDetachDatabase = 0x3517; // 13591;
-	private const int _CmdIdUpdateScript = 0x3039; // 12345;
-	private const int _CmdIdNewTrigger = 0x3527; // 13607;
-	private const int _CmdIdAddTrigger = 0x304A; // 12362;
-	private const int _CmdIdCopy = 0x000F; // 15;
+	// private const int _CmdIdUpdateScript = 0x3039; // 12345;
+	// private const int _CmdIdNewTrigger = 0x3527; // 13607;
+	// private const int _CmdIdAddTrigger = 0x304A; // 12362;
+	// private const int _CmdIdCopy = 0x000F; // 15;
 
 
 	#endregion IDs
@@ -98,13 +98,12 @@ public static class CommandProperties
 	public static CommandID ShowAddTableDialog = new CommandID(new Guid(VS.DavCommandSetGuid), _CmdIdAddTableViewForQRY);
 	public static CommandID OpenTextObject = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdOpenTextObject);
 	public static CommandID OpenAlterTextObject = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdOpenAlterTextObject);
-	public static CommandID RetrieveDesignerLocal = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdSERetrieveDesignerLocal);
+	public static CommandID OverrideRetrieveDataLocal = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdSERetrieveData);
 	public static CommandID RetrieveDesignerData = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdRetrieveDesignerData);
-	public static CommandID OverrideCopy = new CommandID(new Guid(VS.VSStandardCommandSet97Guid), _CmdIdCopy);
-	public static CommandID CopyObject = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdCopyObject);
-	// public static CommandID ExecuteTextObject = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdSERun);
 
 	// Unsupported
+	/*
+	public static CommandID ExecuteTextObject = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdSERun);
 	public static CommandID GlobalNewDiagram = new CommandID(new Guid(VS.SeDataCommandSetGuid), 12352);
 	public static CommandID GlobalNewTable = new CommandID(new Guid(VS.SeDataCommandSetGuid), 12353);
 	public static CommandID GlobalNewView = new CommandID(new Guid(VS.SeDataCommandSetGuid), 12355);
@@ -131,7 +130,7 @@ public static class CommandProperties
 	public static CommandID DebugTextObject = new CommandID(new Guid(VS.SeDataCommandSetGuid), 12306);
 	public static CommandID ScriptObject = new CommandID(new Guid(VS.SeDataCommandSetGuid), 12347);
 	public static CommandID BrowseIntoSSDT = new CommandID(new Guid(VS.SeDataCommandSetGuid), 13592);
-
+	*/
 
 	#endregion Command IDs
 

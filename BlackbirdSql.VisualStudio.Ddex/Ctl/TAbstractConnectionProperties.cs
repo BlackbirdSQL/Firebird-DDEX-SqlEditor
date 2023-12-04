@@ -356,7 +356,7 @@ public class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>
 
 	string ICustomTypeDescriptor.GetComponentName()
 	{
-		//Tracer.Trace(GetType(), "ICustomTypeDescriptor.GetComponentName()");
+		// Tracer.Trace(GetType(), "ICustomTypeDescriptor.GetComponentName()");
 		return TypeDescriptor.GetComponentName(ConnectionStringBuilder, noCustomTypeDesc: true);
 	}
 

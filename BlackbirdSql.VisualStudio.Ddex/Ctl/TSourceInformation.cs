@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 
@@ -106,7 +107,6 @@ public class TSourceInformation : AdoDotNetSourceInformation
 	protected override object RetrieveValue(string propertyName)
 	{
 		object retval = null;
-
 
 		try
 		{

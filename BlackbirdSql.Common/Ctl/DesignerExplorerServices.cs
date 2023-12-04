@@ -46,7 +46,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 	// combined with local methods
 	public static void OpenExplorerEditor(IVsDataExplorerNode node, EnModelObjectType objectType,
 		IList<string> identifierList, EnModelTargetType targetType, Guid editorFactory,
-		Action<DatabaseLocation> documentLoadedCallback, string physicalViewName = null)
+		Action<DatabaseLocation, bool> documentLoadedCallback, string physicalViewName = null)
 	{
 		bool result = false;
 
@@ -96,7 +96,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 		if (editorAlreadyOpened)
 		{
-			ExecuteDocumentLoadedCallback(documentLoadedCallback, dbl);
+			ExecuteDocumentLoadedCallback(documentLoadedCallback, dbl, true);
 		}
 		else if (docCookie == 0)
 		{
@@ -106,7 +106,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		}
 		else if (documentAlreadyLoaded)
 		{
-			ExecuteDocumentLoadedCallback(documentLoadedCallback, dbl);
+			ExecuteDocumentLoadedCallback(documentLoadedCallback, dbl, true);
 		}
 		else
 		{
@@ -120,7 +120,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 				string script = MonikerAgent.GetDecoratedDdlSource(node, targetType);
 
 				PopulateEditorWithObject(false, mkDocument, docCookie, script, originalObjects);
-				ExecuteDocumentLoadedCallback(documentLoadedCallback, dbl);
+				ExecuteDocumentLoadedCallback(documentLoadedCallback, dbl, false);
 				RemoveInflightOpen(dbl, new NodeElementDescriptor(elementType, identifierArray));
 			}
 			catch (Exception ex)
@@ -273,8 +273,11 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 
 
-	public void OnSqlQueryLoaded(DatabaseLocation dbl)
+	public void OnSqlQueryLoaded(DatabaseLocation dbl, bool alreadyLoaded)
 	{
+		if (alreadyLoaded)
+			return;
+
 		IBSqlEditorWindowPane lastFocusedSqlEditor = ((IBEditorPackage)Controller.DdexPackage).LastFocusedSqlEditor;
 		if (lastFocusedSqlEditor != null)
 		{
@@ -319,7 +322,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		EnModelObjectType objectType = moniker.ObjectType;
 		Guid clsidEditorFactory = new Guid(SystemData.DslEditorFactoryGuid);
 
-		Action<DatabaseLocation> callback = null;
+		Action<DatabaseLocation, bool> callback = null;
 
 		if ((objectType == EnModelObjectType.Table || objectType == EnModelObjectType.View)
 			&& targetType == EnModelTargetType.QueryScript && UserSettings.EditorExecuteQueryOnOpen)
