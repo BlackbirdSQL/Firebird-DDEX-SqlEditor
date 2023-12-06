@@ -187,13 +187,13 @@ public class ColumnInfo : IBColumnInfo
 
 	public void InitFieldTypes(string providerSpecificDataTypeName = null)
 	{
-		string text = DataTypeName.ToLowerInvariant();
+		string dataTypeName = DataTypeName.ToLowerInvariant();
 
 		if (providerSpecificDataTypeName != null)
 			providerSpecificDataTypeName = providerSpecificDataTypeName.ToLowerInvariant();
 		// if (text.Contains("date"))
 		//	Tracer.Trace(GetType(), "InitFieldTypes()", "Type: {0}.", text);
-		switch (text)
+		switch (dataTypeName)
 		{
 			case "varchar":
 			case "nvarchar":
@@ -221,6 +221,7 @@ public class ColumnInfo : IBColumnInfo
 			case "array":
 			case "guid":
 			case "binary":
+			case "blob":
 			case "blob sub_type 1":
 			case "blob sub_type 2":
 			case "blob sub_type 3":
@@ -246,9 +247,9 @@ public class ColumnInfo : IBColumnInfo
 				_IsSqlVariant = true;
 				break;
 			default:
-				if (!_AllServerDataTypes.ContainsKey(text))
+				if (!_AllServerDataTypes.ContainsKey(dataTypeName))
 				{
-					Diag.Stack("Invalid text _FieldType: " + text);
+					Diag.Stack("Invalid DataTypeName _FieldType: " + dataTypeName);
 					_IsUdtField = true;
 					_IsBytesField = true;
 					_IsBlobField = true;

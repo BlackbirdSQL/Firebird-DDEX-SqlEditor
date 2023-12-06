@@ -59,3 +59,6 @@ Resolved Blob handling exceptions and name update.
 
 #### v10.0.1.3
 Resolved Blob handling exceptions and Readme update.
+
+#### v10.0.1.4
+Resolved Generic Blob handling exceptions.

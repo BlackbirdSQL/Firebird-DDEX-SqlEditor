@@ -2,11 +2,11 @@
 
 The BlackbirdSQL DDEX 2.0 .NET with SqlEditor Provider extension for Firebird, `BlackbirdSql.VisualStudio.Ddex`, implements most DDEX 2.0 interfaces prevalent in the SqlServer DDEX and SqlEditor extensions.
 
-[Download BlackbirdSql DDEX with SqlEditor Extension (Pre-release v10.0.1.3)](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v10.0.1.3/BlackbirdSql.VisualStudio.Ddex.vsix)
+[Download BlackbirdSql DDEX with SqlEditor Extension (Pre-release v10.0.1.4)](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v10.0.1.4/BlackbirdSql.VisualStudio.Ddex.vsix)
 
 #### Screenshots
 ![ReadMe](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/assets/120905720/8c2515a0-6ee2-49f5-8293-3dba1b51f3b5)
-</br>`Click on image to view fullscreen`
+</br>`Open image in new tab to view fullscreen`
 </br></br>
 
 This extension goes a long way towards cracking the nut that is the Visual Studio extensions interface. For example, using the existing VS Options PropertyGrid and GridView implementations to set non-persistent live user settings in an editor pane, and calling the extension's existing IVsDataConnectionUIProperties and IVsDataConnectionUIControl implementations through an IVsDataConnectionDialog implementation when a connection needs to be configured in custom contexts.</br>
