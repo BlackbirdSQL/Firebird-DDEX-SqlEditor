@@ -4,8 +4,8 @@
 		<DebugType>portable</DebugType>
 	</PropertyGroup>
 	<PropertyGroup>
-		<VersionPrefix>10.0.1.2</VersionPrefix>
-		<VersionSuffix>prerelease</VersionSuffix>
+		<VersionPrefix>10.0.1.3</VersionPrefix>
+		<VersionSuffix>release</VersionSuffix>
 		<TargetFrameworks>net48</TargetFrameworks>
 		<Company>BlackbirdSql</Company>
 		<Product>NETProvider</Product>
