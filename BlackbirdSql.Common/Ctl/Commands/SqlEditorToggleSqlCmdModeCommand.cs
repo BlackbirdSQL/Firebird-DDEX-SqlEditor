@@ -33,7 +33,7 @@ public class SqlEditorToggleSqlCmdModeCommand : AbstractSqlEditorCommand
 		QueryManager qryMgrForEditor = GetQueryManagerForEditor();
 		if (qryMgrForEditor != null)
 		{
-			if (!IsEditorExecutingOrDebugging())
+			if (!IsEditorExecuting())
 			{
 				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 			}

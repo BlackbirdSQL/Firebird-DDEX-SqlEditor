@@ -15,26 +15,52 @@ namespace BlackbirdSql.EditorExtension.Model.Config;
 //										ExecutionAdvancedSettingsModel Class
 //
 /// <summary>
-/// Option Model for General options
+/// Option Model for Advanced execution options
 /// </summary>
 // =========================================================================================================
-public class ExecutionAdvancedSettingsModel : AbstractSettingsModel<ExecutionAdvancedSettingsModel>
+public class ExecutionAdvancedSettingsModel(IBLiveSettings liveSettings)
+	: AbstractSettingsModel<ExecutionAdvancedSettingsModel>(C_Package, C_Group, C_LivePrefix, liveSettings)
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Additional Constructors / Destructors - ExecutionAdvancedSettingsModel
+	// ---------------------------------------------------------------------------------
+
+
+	public ExecutionAdvancedSettingsModel() : this(null)
+	{
+	}
+
+
+	#endregion Additional Constructors / Destructors
+
+
+
+
+	// =====================================================================================================
+	#region Constants - ExecutionAdvancedSettingsModel
+	// =====================================================================================================
+
 
 	private const string C_Package = "Editor";
 	private const string C_Group = "ExecutionAdvanced";
 	private const string C_LivePrefix = "EditorExecutionAdvanced";
 
+
+	#endregion Constants
+
+
+
+
+	// =====================================================================================================
+	#region Property Accessors - ExecutionAdvancedSettingsModel
+	// =====================================================================================================
+
+
 	[Browsable(false)]
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 	public override string CollectionName { get; } = "\\BlackbirdSql\\SqlEditor.ExecutionAdvancedSettings";
 
-
-
-
-	// =====================================================================================================
-	#region Model Properties - ExecutionAdvancedSettingsModel
-	// =====================================================================================================
 
 
 	[TypeConverter(typeof(GlobalEnumConverter))]
@@ -193,26 +219,6 @@ public class ExecutionAdvancedSettingsModel : AbstractSettingsModel<ExecutionAdv
 	public bool DisconnectOnCompletion { get; set; } = false;
 
 
-	#endregion Model Properties
-
-
-
-
-	// =====================================================================================================
-	#region Constructors / Destructors - ExecutionAdvancedSettingsModel
-	// =====================================================================================================
-
-
-	public ExecutionAdvancedSettingsModel() : this(null)
-	{
-	}
-
-	public ExecutionAdvancedSettingsModel(IBLiveSettings liveSettings)
-		: base(C_Package, C_Group, C_LivePrefix, liveSettings)
-	{
-	}
-
-
-	#endregion Constructors / Destructors
+	#endregion Property Accessors
 
 }

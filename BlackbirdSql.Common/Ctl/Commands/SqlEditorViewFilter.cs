@@ -20,14 +20,10 @@ namespace BlackbirdSql.Common.Ctl.Commands;
 [SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
 	Justification = "Base class is UIThread compliant.")]
 
-public class SqlEditorViewFilter : AbstractViewFilter
+public class SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow) : AbstractViewFilter
 {
-	public IBSqlEditorWindowPane Editor { get; private set; }
+	public IBSqlEditorWindowPane Editor { get; private set; } = editorWindow;
 
-	public SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow)
-	{
-		Editor = editorWindow;
-	}
 
 	public override int Exec(ref Guid pguidCmdGroup, uint cmdId, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
@@ -199,7 +195,7 @@ public class SqlEditorViewFilter : AbstractViewFilter
 					case VSConstants.VSStd2KCmdID.SURROUNDWITH:
 						{
 							AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(Editor.DocData);
-							if (auxDocData != null && auxDocData.QryMgr != null && !auxDocData.QryMgr.IsExecuting && !auxDocData.QryMgr.IsDebugging)
+							if (auxDocData != null && auxDocData.QryMgr != null && !auxDocData.QryMgr.IsExecuting)
 							{
 								prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED);
 							}

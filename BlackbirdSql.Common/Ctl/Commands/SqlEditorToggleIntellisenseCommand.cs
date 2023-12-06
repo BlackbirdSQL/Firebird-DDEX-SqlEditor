@@ -43,7 +43,7 @@ public class SqlEditorToggleIntellisenseCommand : AbstractSqlEditorCommand
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 		if (auxiliaryDocDataForEditor != null)
 		{
-			if (!IsEditorExecutingOrDebugging())
+			if (!IsEditorExecuting())
 				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 
 			if (auxiliaryDocDataForEditor.IntellisenseEnabled.HasValue && auxiliaryDocDataForEditor.IntellisenseEnabled.Value)

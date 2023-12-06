@@ -23,31 +23,8 @@ namespace BlackbirdSql.Common.Controls.ResultsPane;
 
 public sealed class ShellBufferWriter : AbstractResultsWriter
 {
-	private class Marker
+	private class Marker(int position, int length)
 	{
-		private readonly int position;
-
-		private readonly int length;
-
-		private readonly int errorLine;
-
-		private readonly IBTextSpan textSpan;
-
-		public int Position => position;
-
-		public int Length => length;
-
-		public int ErrorLine => errorLine;
-
-		public IBTextSpan TextSpan => textSpan;
-
-		public Marker(int position, int length)
-		{
-			this.position = position;
-			this.length = length;
-			errorLine = -1;
-			textSpan = null;
-		}
 
 		public Marker(int position, int length, int errorLine, IBTextSpan textSpan)
 			: this(position, length)
@@ -55,18 +32,31 @@ public sealed class ShellBufferWriter : AbstractResultsWriter
 			this.errorLine = errorLine;
 			this.textSpan = textSpan;
 		}
+
+
+
+		private readonly int position = position;
+		private readonly int length = length;
+
+		private readonly int errorLine = -1;
+		private readonly IBTextSpan textSpan = null;
+
+
+		public int Position => position;
+		public int Length => length;
+		public int ErrorLine => errorLine;
+		public IBTextSpan TextSpan => textSpan;
 	}
 
-	public sealed class ShellBufferTextWriter : TextWriter
+	public sealed class ShellBufferTextWriter(ShellBufferWriter owner) : TextWriter
 	{
-		private readonly ShellBufferWriter owner;
+		private readonly ShellBufferWriter owner = owner;
+
+
 
 		public override Encoding Encoding => Encoding.Default;
 
-		public ShellBufferTextWriter(ShellBufferWriter owner)
-		{
-			this.owner = owner;
-		}
+
 
 		public override void Flush()
 		{
@@ -74,6 +64,7 @@ public sealed class ShellBufferWriter : AbstractResultsWriter
 
 			base.Flush();
 		}
+
 
 		public override void Write(char ch)
 		{

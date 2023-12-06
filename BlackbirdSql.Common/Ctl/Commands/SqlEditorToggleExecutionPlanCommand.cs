@@ -42,7 +42,7 @@ public class SqlEditorToggleExecutionPlanCommand : AbstractSqlEditorCommand
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 		if (auxiliaryDocDataForEditor != null)
 		{
-			if (!IsEditorExecutingOrDebugging())
+			if (!IsEditorExecuting())
 			{
 				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 			}

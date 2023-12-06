@@ -496,13 +496,6 @@ public class LiveUserSettings : UserSettings, IBLiveUserSettings, IBLiveSettings
 		set { _ExecOptions[14] = value; }
 	}
 
-	public bool WithDebugging
-	{
-		get { return _ExecOptions[15]; }
-		set { _ExecOptions[15] = value; }
-	}
-
-
 
 	#endregion Property Accessors
 

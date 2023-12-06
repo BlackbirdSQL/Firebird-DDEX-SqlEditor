@@ -146,6 +146,7 @@
 										</Property>
 										<Property name="SOURCE">
 											<DisplayName resource="Property_Name_Dsl" />
+											<Category resource="Category_Initialization" />
 											<Description resource="Property_Desc_Dsl" />
 										</Property>
 									</Properties>
@@ -218,6 +219,7 @@
 										</Property>
 										<Property name="SOURCE">
 											<DisplayName resource="Property_Name_Dsl" />
+											<Category resource="Category_Initialization" />
 											<Description resource="Property_Desc_Dsl" />
 										</Property>
 									</Properties>
@@ -258,14 +260,17 @@
 										</Property>
 										<Property name="IDENTITY_SEED">
 											<DisplayName resource="Property_Name_Sequence_Seed" />
+											<Category resource="Category_Initialization" />
 											<Description resource="Property_Desc_Sequence_Seed" />
 										</Property>
 										<Property name="IDENTITY_INCREMENT">
 											<DisplayName resource="Property_Name_Sequence_Increment" />
+											<Category resource="Category_Initialization" />
 											<Description resource="Property_Desc_Sequence_Increment" />
 										</Property>
 										<Property name="IDENTITY_CURRENT">
 											<DisplayName resource="Property_Name_Sequence_Current" />
+											<Category resource="Category_Initialization" />
 											<Description resource="Property_Desc_Sequence_Current" />
 										</Property>
 										<Property name="DEPENDENCY_TRIGGER">

@@ -33,7 +33,7 @@ public class SqlEditorToggleClientStatisticsCommand : AbstractSqlEditorCommand
 
 		if (auxiliaryDocDataForEditor != null)
 		{
-			if (!IsEditorExecutingOrDebugging())
+			if (!IsEditorExecuting())
 			{
 				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 			}

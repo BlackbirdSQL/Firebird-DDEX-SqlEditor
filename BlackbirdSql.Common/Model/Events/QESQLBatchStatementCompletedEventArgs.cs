@@ -12,26 +12,12 @@ using System;
 // namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution
 namespace BlackbirdSql.Common.Model.Events
 {
-	public sealed class QESQLBatchStatementCompletedEventArgs : EventArgs
+	public sealed class QESQLBatchStatementCompletedEventArgs(long recordCount, bool isParseOnly) : EventArgs
 	{
-		private readonly long _RecordCount;
-
-		private readonly bool _IsDebugging;
-
-		private readonly bool _IsParseOnly;
+		private readonly long _RecordCount = recordCount;
+		private readonly bool _IsParseOnly = isParseOnly;
 
 		public bool IsParseOnly => _IsParseOnly;
-
 		public long RecordCount => _RecordCount;
-
-		public bool IsDebugging => _IsDebugging;
-
-
-		public QESQLBatchStatementCompletedEventArgs(long recordCount, bool isParseOnly, bool isDebugging)
-		{
-			_RecordCount = recordCount;
-			_IsDebugging = isDebugging;
-			_IsParseOnly = isParseOnly;
-		}
 	}
 }

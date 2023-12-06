@@ -22,6 +22,7 @@ using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 
 using FirebirdSql.Data.FirebirdClient;
+using BlackbirdSql.Core.Ctl.Extensions;
 
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
@@ -46,7 +47,7 @@ public class QESQLBatch : IDisposable
 
 	private const int C_ChangeDatabaseErrorNumber = 5701;
 
-	public const string C_PlanConnectionType = "FbConnection"; // "SqlCeConnection"
+	// public const string C_PlanConnectionType = "FbConnection"; // "SqlCeConnection"
 
 	protected bool _NoResultsExpected;
 
@@ -95,14 +96,8 @@ public class QESQLBatch : IDisposable
 
 	public EnQESQLBatchSpecialAction SpecialActions
 	{
-		get
-		{
-			return _SpecialActions;
-		}
-		set
-		{
-			_SpecialActions = value;
-		}
+		get { return _SpecialActions; }
+		set { _SpecialActions = value; }
 	}
 
 	public bool NoResultsExpected
@@ -119,14 +114,8 @@ public class QESQLBatch : IDisposable
 
 	public IBTextSpan TextSpan
 	{
-		get
-		{
-			return _TextSpan;
-		}
-		set
-		{
-			_TextSpan = value;
-		}
+		get { return _TextSpan; }
+		set { _TextSpan = value; }
 	}
 
 	public int BatchIndex
@@ -217,25 +206,24 @@ public class QESQLBatch : IDisposable
 		}
 	}
 
-	public EnScriptExecutionResult Execute(IDbConnection conn, EnQESQLBatchSpecialAction specialActions)
+	public EnScriptExecutionResult ProcessStatement(IDbConnection conn, EnQESQLBatchSpecialAction specialActions)
 	{
-		// Tracer.Trace(GetType(), "QESQLBatch.Execute", " ExecutionOptions.WithEstimatedExecutionPlan: " + QryMgr.LiveSettings.WithEstimatedExecutionPlan);
+		// Tracer.Trace(GetType(), "QESQLBatch.ProcessStatement", " ExecutionOptions.WithEstimatedExecutionPlan: " + QryMgr.LiveSettings.WithEstimatedExecutionPlan);
 		lock (this)
 		{
 			if (_Command != null)
-			{
 				_Command = null;
-			}
 		}
 
 		if (_ActiveResultSet != null)
-		{
 			_ActiveResultSet = null;
-		}
 
 		_SpecialActions = specialActions;
-		// Execution
-		return ExecuteInternal(conn, _SqlScript);
+
+		// ----------------------------------------------------------------------------------- //
+		// ******************** Execution Point (12) - ProcessStatement() ******************** //
+		// ----------------------------------------------------------------------------------- //
+		return ExecuteStatement(conn, _SqlScript);
 	}
 
 	public void Cancel()
@@ -300,7 +288,7 @@ public class QESQLBatch : IDisposable
 
 		if (dataReader.FieldCount == 1 && string.Compare(dataReader.GetName(0), LibraryData.C_YukonXmlExecutionPlanColumn, StringComparison.OrdinalIgnoreCase) == 0)
 		{
-			batchSpecialAction = EnQESQLBatchSpecialAction.ExpectYukonXmlExecutionPlan;
+			batchSpecialAction = EnQESQLBatchSpecialAction.YukonXmlExecutionPlansMask;
 			return true;
 		}
 
@@ -350,30 +338,38 @@ public class QESQLBatch : IDisposable
 		if (sysEx.GetType().ToString().EndsWith("FbException", StringComparison.Ordinal))
 		{
 			FbException ex = (FbException)sysEx;
-			HandleSqlMessages(ex.Errors);
+			HandleSqlMessages(ex.Errors,  true);
 		}
 	}
 
-	public void HandleSqlMessages(FbErrorCollection errors)
+	public void HandleSqlMessages(FbErrorCollection errors, bool isException)
 	{
 		// Tracer.Trace(GetType(), "QESQLBatch.HandleSqlMessages", "", null);
+
 		foreach (FbError error in errors)
 		{
 			if (error.Number != C_ChangeDatabaseErrorNumber)
 			{
 				string text = string.Empty;
-				bool flag = false;
-				int num = 0;
-				if (_TextSpan != null && _TextSpan.LineWithinTextSpan >= 0)
-				{
-					num = _TextSpan.LineWithinTextSpan + _TextSpan.AnchorLine;
-				}
+				bool isError = false;
 
-				if (error.Class > 10)
+				/*
+				int num = 0;
+
+				if (_TextSpan != null && _TextSpan.LineWithinTextSpan >= 0)
+					num = _TextSpan.LineWithinTextSpan + _TextSpan.AnchorLine;
+				*/
+
+				if (isException)
 				{
-					flag = true;
-					text = string.Format(CultureInfo.CurrentCulture, ControlsResources.SQLErrorFormatFirebird, error.Message,
-						error.Number, error.Class, error.LineNumber + num);
+					if (error.Message != null && error.Message.Trim() != string.Empty)
+					{
+						isError = true;
+						text = error.Message.Trim();
+						// text = ControlsResources.SQLErrorFormatFirebird.FmtRes(error.Message == null ? string.Empty : error.Message.Trim(),
+						//	error.Number, error.Class, error.LineNumber + num);
+					}
+
 					/*
 					text = ((error.Procedure != null && (error.Procedure == null || error.Procedure.Length != 0))
 						? ((!_SuppressProviderMessageHeaders)
@@ -386,90 +382,36 @@ public class QESQLBatch : IDisposable
 				}
 				else if (error.Class > 0 && error.Number > 0)
 				{
-					flag = false;
 					text = !_SuppressProviderMessageHeaders ? string.Format(CultureInfo.CurrentCulture, ControlsResources.SQLErrorFormat4, error.Message, error.Number, error.Class, -1) : string.Format(CultureInfo.CurrentCulture, ControlsResources.SQLErrorFormat4_NoSource, error.Number, error.Class, -1);
+					text = text.Trim();
 				}
 
-				if (flag && ErrorMessageEvent != null)
-				{
-					RaiseErrorMessage(new(text, error.Message, error.LineNumber, _TextSpan));
-				}
-				else if (!flag && MessageEvent != null)
-				{
-					RaiseMessage(new(text, error.Message));
-				}
-
-				if (flag)
+				if (isError)
 				{
 					ContainsErrors = true;
+					if (ErrorMessageEvent != null)
+						RaiseErrorMessage(new(text, string.Empty, -1, _TextSpan));
+				}
+				else if (MessageEvent != null && text != string.Empty)
+				{ 
+					RaiseMessage(new(text, error.Message));
 				}
 			}
 		}
 	}
 
-	public void HandleSqlMessages(SqlErrorCollection errors)
-	{
-		// Tracer.Trace(GetType(), "QESQLBatch.HandleSqlMessages", "", null);
-		foreach (FbError error in errors)
-		{
-			if (error.Number != C_ChangeDatabaseErrorNumber)
-			{
-				string text = string.Empty;
-				bool flag = false;
-				int num = 0;
-				if (_TextSpan != null && _TextSpan.LineWithinTextSpan >= 0)
-				{
-					num = _TextSpan.LineWithinTextSpan + _TextSpan.AnchorLine;
-				}
 
-				if (error.Class > 10)
-				{
-					flag = true;
-					text = string.Format(CultureInfo.CurrentCulture, ControlsResources.SQLErrorFormatFirebird, error.Message,
-						error.Number, error.Class, error.LineNumber + num);
-					/*
-					text = ((error.Procedure != null && (error.Procedure == null || error.Procedure.Length != 0))
-						? ((!_SuppressProviderMessageHeaders)
-							? string.Format(CultureInfo.CurrentCulture, LanguageServicesResources.SQLErrorFormat6, error.Source, error.Number, error.Class, error.State, error.Procedure, error.LineNumber + num)
-							: string.Format(CultureInfo.CurrentCulture, LanguageServicesResources.SQLErrorFormat6_NoSource, error.Number, error.Class, error.State, error.Procedure, error.LineNumber + num))
-						: ((!_SuppressProviderMessageHeaders)
-							? string.Format(CultureInfo.CurrentCulture, LanguageServicesResources.SQLErrorFormat5, error.Source, error.Number, error.Class, error.State, error.LineNumber + num)
-							: string.Format(CultureInfo.CurrentCulture, LanguageServicesResources.SQLErrorFormat5_NoSource, error.Number, error.Class, error.State, error.LineNumber + num)));
-					*/
-				}
-				else if (error.Class > 0 && error.Number > 0)
-				{
-					flag = false;
-					text = !_SuppressProviderMessageHeaders ? string.Format(CultureInfo.CurrentCulture, ControlsResources.SQLErrorFormat4, error.Message, error.Number, error.Class, -1) : string.Format(CultureInfo.CurrentCulture, ControlsResources.SQLErrorFormat4_NoSource, error.Number, error.Class, -1);
-				}
-
-				if (flag && ErrorMessageEvent != null)
-				{
-					RaiseErrorMessage(new(text, error.Message, error.LineNumber, _TextSpan));
-				}
-				else if (!flag && MessageEvent != null)
-				{
-					RaiseMessage(new(text, error.Message));
-				}
-
-				if (flag)
-				{
-					ContainsErrors = true;
-				}
-			}
-		}
-	}
 
 	public void OnSqlInfoMessage(object sender, FbInfoMessageEventArgs a)
 	{
 		// Tracer.Trace(GetType(), "QESQLBatch.OnSqlInfoMessage", "", null);
-		HandleSqlMessages(a.Errors);
+		HandleSqlMessages(a.Errors, false);
 	}
 
 	public void OnSqlStatementCompleted(object sender, QESQLStatementCompletedEventArgs e)
 	{
 		// Tracer.Trace(GetType(), "QESQLBatch.OnSqlStatementCompleted", "", null);
-		StatementCompletedEvent?.Invoke(sender, new(e.RecordCount, e.IsParseOnly, (_SpecialActions & EnQESQLBatchSpecialAction.ExecuteWithDebugging) != 0));
+		StatementCompletedEvent?.Invoke(sender, new(e.RecordCount, e.IsParseOnly));
 
 		if (MessageEvent != null)
 		{
@@ -542,7 +484,10 @@ public class QESQLBatch : IDisposable
 		// Tracer.Trace(GetType(), "QESQLBatch.ProcessResultSet", "", null);
 
 
-		if ((_SpecialActions & EnQESQLBatchSpecialAction.ExecutionPlanMask) != 0 && SpecialActionEvent != null && IsExecutionPlanResultSet(dataReader, out var batchSpecialAction) && (_SpecialActions & batchSpecialAction) != 0)
+		if ((_SpecialActions & EnQESQLBatchSpecialAction.ExecutionPlansFullMask) != 0
+			&& SpecialActionEvent != null
+			&& IsExecutionPlanResultSet(dataReader, out var batchSpecialAction)
+			&& (_SpecialActions & batchSpecialAction) != 0)
 		{
 			return ProcessResultSetForExecutionPlan(dataReader, batchSpecialAction);
 		}
@@ -576,7 +521,7 @@ public class QESQLBatch : IDisposable
 			_RowsAffected += _ActiveResultSet.TotalNumberOfRows;
 
 			if (_State != EnBatchState.Initial && _State != EnBatchState.Cancelling)
-				DataLoadedEvent?.Invoke(this, new(_Command, _RowsAffected, dataReader.RecordsAffected, DateTime.Now, false, false));
+				DataLoadedEvent?.Invoke(this, new(_Command, _RowsAffected, dataReader.RecordsAffected, DateTime.Now, false));
 
 			if (_State != EnBatchState.Cancelling)
 				return result;
@@ -597,9 +542,9 @@ public class QESQLBatch : IDisposable
 		}
 	}
 
-	protected EnScriptExecutionResult ExecuteInternal(IDbConnection conn, string script)
+	protected EnScriptExecutionResult ExecuteStatement(IDbConnection conn, string script)
 	{
-		// Tracer.Trace(GetType(), "QESQLBatch.ExecuteInternal", "conn.State = {0}", conn.State);
+		// Tracer.Trace(GetType(), "QESQLBatch.ExecuteStatement", "conn.State = {0}", conn.State);
 		lock (this)
 		{
 			if (_State == EnBatchState.Cancelling)
@@ -610,32 +555,9 @@ public class QESQLBatch : IDisposable
 		}
 
 		EnScriptExecutionResult result = EnScriptExecutionResult.Success;
-		string text;
-		if ((_SpecialActions & EnQESQLBatchSpecialAction.ExecuteWithDebugging) != 0)
-		{
-			if (conn == null || conn is not FbConnection)
-			{
-				InvalidOperationException ex = new(ControlsResources.CannotDebugConnectionType);
-				Diag.Dug(ex);
-				throw ex;
-			}
+		string text = script;
 
-			text = TextSpan != null ? SqlDebugBatchContext.Instance.GetBatchDebugScript(script, TextSpan) : script;
-			if (text == null)
-			{
-				lock (this)
-				{
-					_State = EnBatchState.Initial;
-					return EnScriptExecutionResult.Cancel;
-				}
-			}
-		}
-		else
-		{
-			text = script;
-		}
-
-		// Tracer.Trace(GetType(), "QESQLBatch.ExecuteInternal", " Creating command - _SpecialActions: " + _SpecialActions);
+		// Tracer.Trace(GetType(), "QESQLBatch.ExecuteStatement", " Creating command - _SpecialActions: " + _SpecialActions);
 		IDbCommand dbCommand = conn.CreateCommand();
 
 		if (text.Length < 18 || text[..18].ToLower() != "select @@showplan:")
@@ -659,19 +581,22 @@ public class QESQLBatch : IDisposable
 
 		try
 		{
-			bool expectEstimatedPlan = conn.GetType().ToString().EndsWith(C_PlanConnectionType, StringComparison.Ordinal)
-					&& (_SpecialActions & EnQESQLBatchSpecialAction.ExpectEstimatedYukonXmlExecutionPlan) > 0
+			bool expectEstimatedPlan = (_SpecialActions & EnQESQLBatchSpecialAction.ExpectEstimatedYukonXmlExecutionPlan) > 0
 					&& (_SpecialActions & EnQESQLBatchSpecialAction.ExpectActualYukonXmlExecutionPlan) == 0;
+
+
+			// ----------------------------------------------------------------------------------------- //
+			// ******************** Final Execution Point (13) - ExecuteStatement() ******************** //
+			// ----------------------------------------------------------------------------------------- //
 
 			if (_NoResultsExpected && !expectEstimatedPlan)
 			{
-				// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteInternal", "calling ExecuteNonQuery!");
 				int i = _Command.ExecuteNonQuery();
 
-				QESQLStatementCompletedEventArgs args = new(i, false, false);
+				QESQLStatementCompletedEventArgs args = new(i, false);
 				OnSqlStatementCompleted(_Command, args);
 
-				// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ExecuteInternal", " ExecuteNonQuery returned!");
+				// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ExecuteStatement()", " ExecuteNonQuery returned!");
 				lock (this)
 				{
 					if (_State == EnBatchState.Cancelling)
@@ -691,7 +616,7 @@ public class QESQLBatch : IDisposable
 				{
 					// We can't use the SET db command to configure the command output for ExecuteReader so we
 					// get the the plan using GetCommandPlan().
-					// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteInternal", ": creating reader from GetCommandPlan: " + _SpecialActions);
+					// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteStatement()", ": creating reader from GetCommandPlan: " + _SpecialActions);
 
 					DataTable table = new ();
 					table.Columns.Add(LibraryData.C_YukonXmlExecutionPlanColumn, typeof(string));
@@ -704,12 +629,11 @@ public class QESQLBatch : IDisposable
 
 					dataReader = new DataTableReader(table);
 				}
-				else if (conn.GetType().ToString().EndsWith(C_PlanConnectionType, StringComparison.Ordinal)
-					&& text.Length > 18 && text[..18].ToLower() == "select @@showplan:")
+				else if (text.Length > 18 && text[..18].ToLower() == "select @@showplan:")
 				{
 					// The SELECT @@showplan command doesn't exist. We load the actual plan from the last command using GetCommandPlan() and
 					// do a hack by placing the result in the query script after "SELECT @@showplan:" instead.
-					// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteInternal", ": creating reader plan data from script: " + _SpecialActions);
+					// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteStatement()", ": creating reader plan data from script: " + _SpecialActions);
 					DataTable table = new();
 					table.Columns.Add(LibraryData.C_YukonXmlExecutionPlanColumn, typeof(string));
 					DataRow row = table.NewRow();
@@ -721,16 +645,16 @@ public class QESQLBatch : IDisposable
 				}
 				else
 				{
-					// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteInternal", ": calling ExecuteReader: " + _SpecialActions);
+					// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteStatement()", ": calling ExecuteReader: " + _SpecialActions);
 					dataReader = _Command.ExecuteReader(CommandBehavior.SequentialAccess);
 
-					OnSqlStatementCompleted(_Command, new(dataReader == null ? 0 : dataReader.RecordsAffected, false, false));
+					OnSqlStatementCompleted(_Command, new(dataReader == null ? 0 : dataReader.RecordsAffected, false));
 				}
 
 
 
 
-				// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ExecuteInternal", ": got the reader!");
+				// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ExecuteStatement()", ": got the reader!");
 				lock (this)
 				{
 					if (_State == EnBatchState.Cancelling)
@@ -743,6 +667,7 @@ public class QESQLBatch : IDisposable
 					}
 				}
 
+				/*
 				if (dataReader != null)
 				{
 					Type type = dataReader.GetType();
@@ -752,6 +677,7 @@ public class QESQLBatch : IDisposable
 						property?.SetValue(dataReader, false, null);
 					}
 				}
+				*/
 
 				if (NewResultSetEvent != null && result != EnScriptExecutionResult.Cancel)
 				{
@@ -762,23 +688,26 @@ public class QESQLBatch : IDisposable
 					{
 						if (dataReader.FieldCount <= 0)
 						{
-							Tracer.Trace(GetType(), Tracer.EnLevel.Warning, "ExecuteInternal()", "Result set is empty.");
+							Tracer.Warning(GetType(), "ExecuteStatement()", "Result set is empty.");
 							hasMoreRows = dataReader.NextResult();
 							continue;
 						}
 
-						// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ExecuteInternal", ": processing result set");
+						// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ExecuteStatement()", ": processing result set");
 
+						// ------------------------------------------------------------------------------- //
+						// ******************** Output Point (1) - ExecuteStatement() ******************** //
+						// ------------------------------------------------------------------------------- //
 						processingResult = ProcessResultSet(dataReader, script);
 
 						if (processingResult != EnScriptExecutionResult.Success)
 						{
-							// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteInternal", ": something wrong while processing the result set: {0}", processingResult);
+							// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteStatement()", ": something wrong while processing the result set: {0}", processingResult);
 							result = processingResult;
 							break;
 						}
 
-						// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteInternal", ": successfully processed the result set");
+						// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteStatement()", ": successfully processed the result set");
 						FinishedResultSetEvent?.Invoke(this, new EventArgs());
 
 						hasMoreRows = dataReader.NextResult();
@@ -787,7 +716,7 @@ public class QESQLBatch : IDisposable
 
 					if (ContainsErrors)
 					{
-						Tracer.Trace(GetType(), Tracer.EnLevel.Warning, "ExecuteInternal()", "Successfully processed result set, but there were errors shown to the user.");
+						Tracer.Warning(GetType(), "ExecuteStatement()", "Successfully processed result set, but there were errors shown to the user.");
 						result = EnScriptExecutionResult.Failure;
 					}
 
@@ -801,7 +730,7 @@ public class QESQLBatch : IDisposable
 				}
 				else
 				{
-					Tracer.Trace(GetType(), Tracer.EnLevel.Warning, "ExecuteInternal()", "No NewResultSet handler was specified or Cancel was received!");
+					Tracer.Warning(GetType(), "ExecuteStatement()", "No NewResultSet handler was specified or Cancel was received!");
 				}
 			}
 		}
@@ -824,25 +753,20 @@ public class QESQLBatch : IDisposable
 		}
 		catch (FbException exf)
 		{
-			Diag.Dug(exf, $"Command: " + _Command.CommandText);
-			// Tracer.LogExCatch(GetType(), exf);
+			Tracer.Warning(GetType(), "ExecuteStatement()", "Firebird exception: {0}\nCommand: {1}.", exf.Message, _Command.CommandText);
+
 			lock (this)
-			{
 				result = _State != EnBatchState.Cancelling ? EnScriptExecutionResult.Failure : EnScriptExecutionResult.Cancel;
-			}
 
 			if (result != EnScriptExecutionResult.Cancel)
-			{
 				HandleExceptionMessages(exf);
-			}
+
 		}
 		catch (SystemException ex3)
 		{
 			Tracer.LogExCatch(GetType(), ex3);
 			lock (this)
-			{
 				result = _State != EnBatchState.Cancelling ? EnScriptExecutionResult.Failure : EnScriptExecutionResult.Cancel;
-			}
 
 			if (result != EnScriptExecutionResult.Cancel)
 			{
@@ -859,8 +783,8 @@ public class QESQLBatch : IDisposable
 		finally
 		{
 			batchExecutionHandler?.UnRegister(conn, _Command, this);
-			conn.GetType().ToString().EndsWith(C_PlanConnectionType, StringComparison.Ordinal);
-			// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ExecuteInternal", "Closing the data reader");
+
+			// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ExecuteStatement()", "Closing the data reader");
 			if (dataReader != null)
 			{
 				try
@@ -880,8 +804,6 @@ public class QESQLBatch : IDisposable
 				{
 					Tracer.LogExCatch(GetType(), e4);
 				}
-
-				// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteInternal", "data reader is closed");
 			}
 
 			lock (this)
@@ -892,7 +814,8 @@ public class QESQLBatch : IDisposable
 			}
 		}
 
-		// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ExecuteInternal", "returning {0}", result);
+		// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ExecuteStatement()", "returning {0}", result);
+
 		return result;
 	}
 }

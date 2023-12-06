@@ -8,7 +8,7 @@ namespace BlackbirdSql.Common.Model.Interfaces;
 
 public interface IBCommandExecuter
 {
-	EnParserAction ProcessBatch(string str, int num);
+	EnParserAction ProcessParsedBatchStatement(string str, int numberOfTimes);
 
 	EnParserAction Reset();
 

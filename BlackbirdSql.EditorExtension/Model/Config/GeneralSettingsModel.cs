@@ -16,23 +16,49 @@ namespace BlackbirdSql.EditorExtension.Model.Config;
 /// Option Model for General options
 /// </summary>
 // =========================================================================================================
-public class GeneralSettingsModel : AbstractSettingsModel<GeneralSettingsModel>
+public class GeneralSettingsModel(IBLiveSettings liveSettings)
+	: AbstractSettingsModel<GeneralSettingsModel>(C_Package, C_Group, C_LivePrefix, liveSettings)
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Additional Constructors / Destructors - GeneralSettingsModel
+	// ---------------------------------------------------------------------------------
+
+
+	public GeneralSettingsModel() : this(null)
+	{
+	}
+
+
+	#endregion Additional Constructors / Destructors
+
+
+
+
+	// =====================================================================================================
+	#region Constants - GeneralSettingsModel
+	// =====================================================================================================
+
 
 	private const string C_Package = "Editor";
 	private const string C_Group = "General";
 	private const string C_LivePrefix = "EditorGeneral";
 
+
+	#endregion Constants
+
+
+
+
+	// =====================================================================================================
+	#region Property Accessors - GeneralSettingsModel
+	// =====================================================================================================
+
+
 	[Browsable(false)]
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 	public override string CollectionName { get; } = "\\BlackbirdSql\\SqlEditor.GeneralSettings";
 
-
-
-
-	// =====================================================================================================
-	#region Model Properties - GeneralSettingsModel
-	// =====================================================================================================
 
 
 	[GlobalizedCategory("OptionCategoryGeneral")]
@@ -59,26 +85,6 @@ public class GeneralSettingsModel : AbstractSettingsModel<GeneralSettingsModel>
 	public bool PromptToSave { get; set; } = false;
 
 
-	#endregion Model Properties
-
-
-
-
-	// =====================================================================================================
-	#region Constructors / Destructors - GeneralSettingsModel
-	// =====================================================================================================
-
-
-	public GeneralSettingsModel() : this(null)
-	{
-	}
-
-	public GeneralSettingsModel(IBLiveSettings liveSettings)
-		: base(C_Package, C_Group, C_LivePrefix, liveSettings)
-	{
-	}
-
-
-	#endregion Constructors / Destructors
+	#endregion Property Accessors
 
 }

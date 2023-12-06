@@ -19,23 +19,49 @@ namespace BlackbirdSql.VisualStudio.Ddex.Model.Config;
 /// Settings Model for Debug options
 /// </summary>
 // =========================================================================================================
-public class DebugSettingsModel : AbstractSettingsModel<DebugSettingsModel>
+public class DebugSettingsModel(IBLiveSettings liveSettings)
+	: AbstractSettingsModel<DebugSettingsModel>(C_Package, C_Group, C_LivePrefix, liveSettings)
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Additional Constructors / Destructors - DebugSettingsModel
+	// ---------------------------------------------------------------------------------
+
+
+	public DebugSettingsModel() : this(null)
+	{
+	}
+
+
+	#endregion Additional Constructors / Destructors
+
+
+
+
+	// =====================================================================================================
+	#region Constants - DebugSettingsModel
+	// =====================================================================================================
+
 
 	private const string C_Package = "Ddex";
 	private const string C_Group = "Debug";
 	private const string C_LivePrefix = "DdexDebug";
 
+
+	#endregion Constants
+
+
+
+
+	// =====================================================================================================
+	#region Property Accessors - DebugSettingsModel
+	// =====================================================================================================
+
+
 	[Browsable(false)]
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 	public override string CollectionName { get; } = "\\BlackbirdSql\\Ddex.DebugSettings";
 
-
-
-
-	// =====================================================================================================
-	#region Model Properties - DebugSettingsModel
-	// =====================================================================================================
 
 
 	[GlobalizedCategory("OptionCategoryDebugging")]
@@ -111,26 +137,6 @@ public class DebugSettingsModel : AbstractSettingsModel<DebugSettingsModel>
 	public string FbLogFile { get; set; } = "/temp/vsdiagfb.log";
 
 
-	#endregion Model Properties
-
-
-
-
-	// =====================================================================================================
-	#region Constructors / Destructors - DebugSettingsModel
-	// =====================================================================================================
-
-
-	public DebugSettingsModel() : this(null)
-	{
-	}
-
-	public DebugSettingsModel(IBLiveSettings liveSettings)
-		: base(C_Package, C_Group, C_LivePrefix, liveSettings)
-	{
-	}
-
-
-	#endregion Constructors / Destructors
+	#endregion Property Accessors
 
 }

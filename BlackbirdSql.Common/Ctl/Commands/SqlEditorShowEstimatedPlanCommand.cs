@@ -32,7 +32,7 @@ public class SqlEditorShowEstimatedPlanCommand : AbstractSqlEditorCommand
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-		if (!IsEditorExecutingOrDebugging())
+		if (!IsEditorExecuting())
 		{
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 		}
@@ -52,6 +52,7 @@ public class SqlEditorShowEstimatedPlanCommand : AbstractSqlEditorCommand
 				{
 					// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "HandleExec", "calling ISqlEditorWindowPane.HandleExec");
 					auxDocData.EstimatedExecutionPlanEnabled = true;
+
 					EditorWindow.ExecuteQuery();
 				}
 				finally

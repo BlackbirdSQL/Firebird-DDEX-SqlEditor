@@ -28,6 +28,9 @@ using Native = BlackbirdSql.Core.Native;
 
 namespace BlackbirdSql.EditorExtension;
 
+/// <summary>
+/// Private singleton .ctor
+/// </summary>
 [SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
 	Justification = "Class is UIThread compliant.")]
 
@@ -38,8 +41,32 @@ namespace BlackbirdSql.EditorExtension;
 /// Manages Solution, RDT and Selection events for the editor extension.
 /// </summary>
 // =========================================================================================================
-public class EditorEventsManager : AbstractEditorEventsManager
+public class EditorEventsManager(IBPackageController controller) : AbstractEditorEventsManager(controller)
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - EditorEventsManager
+	// ---------------------------------------------------------------------------------
+
+
+	public override void Dispose()
+	{
+		Controller.OnAfterDocumentWindowHideEvent -= OnAfterDocumentWindowHide;
+		Controller.OnAfterSaveEvent -= OnAfterSave;
+		Controller.OnBeforeDocumentWindowShowEvent -= OnBeforeDocumentWindowShow;
+		Controller.OnBeforeLastDocumentUnlockEvent -= OnBeforeLastDocumentUnlock;
+		Controller.OnCmdUIContextChangedEvent -= OnCmdUIContextChanged;
+		Controller.OnElementValueChangedEvent -= OnElementValueChanged;
+		Controller.OnQueryCloseProjectEvent -= OnQueryCloseProject;
+		Controller.OnSelectionChangedEvent -= OnSelectionChanged;
+		Controller.OnNewQueryRequestedEvent -= OnNewQueryRequested;
+	}
+
+
+	#endregion Constructors / Destructors
+
+
+
 
 	// ---------------------------------------------------------------------------------
 	#region Variables
@@ -47,33 +74,19 @@ public class EditorEventsManager : AbstractEditorEventsManager
 
 
 	public const int C_EID_UndoManager = 0;
-
 	public const int C_EID_WindowFrame = 1;
-
 	public const int C_EID_DocumentFrame = 2;
-
 	public const int C_EID_StartupProject = 3;
-
 	public const int C_EID_PropertyBrowserSID = 4;
-
 	public const int C_EID_UserContext = 5;
-
 	public const int C_EID_ResultList = 6;
-
 	public const int C_EID_LastWindowFrame = 7;
 
-	private uint _SolutionBuildingCookie;
 
-	private uint _DebuggerLaunchingCookie;
-
-	private uint _DebuggingCookie;
 
 	private uint _PublishingPreviewCommitOffCookie;
-
 	// private uint _PreviewCommitOffCookie;
-
-	private uint _NotBuildingAndNotDebuggingCookie;
-
+	private uint _NotBuildingCookie;
 	private uint _SolutionOpeningCookie;
 
 	private uint _SolutionOrProjectUpgradingCookie;
@@ -95,20 +108,6 @@ public class EditorEventsManager : AbstractEditorEventsManager
 	EditorExtensionAsyncPackage EditorPackage => (EditorExtensionAsyncPackage)DdexPackage;
 
 
-	public bool IsDebuggerLaunching
-	{
-		get { return GetUiContextValue(_DebuggerLaunchingCookie); }
-
-		set { SetUiContextValue(_DebuggerLaunchingCookie, value); }
-	}
-
-
-	public bool IsDebugging
-	{
-		get { return GetUiContextValue(_DebuggingCookie); }
-
-		set { SetUiContextValue(_DebuggingCookie, value); }
-	}
 
 
 	public bool IsServerExplorerActive
@@ -123,10 +122,10 @@ public class EditorEventsManager : AbstractEditorEventsManager
 	{
 		get
 		{
-			if (GetUiContextValue(_NotBuildingAndNotDebuggingCookie) && !GetUiContextValue(_SolutionOpeningCookie)
+			if (GetUiContextValue(_NotBuildingCookie) && !GetUiContextValue(_SolutionOpeningCookie)
 				&& !GetUiContextValue(_SolutionOrProjectUpgradingCookie) && !GetUiContextValue(_PublishingPreviewCommitOffCookie))
 			{
-				return GetUiContextValue(_DebuggingCookie);
+				return false;
 			}
 
 			return true;
@@ -220,67 +219,17 @@ public class EditorEventsManager : AbstractEditorEventsManager
 
 
 	public ISelectionContainer CurrentSelectionContainer { get; private set; }
-
 	public IOleUndoManager CurrentUndoManager { get; private set; }
-
 	public IVsWindowFrame CurrentDocumentFrame { get; private set; }
-
 	public IVsWindowFrame CurrentWindowFrame { get; private set; }
 
 	public event EventHandler<MonitorSelectionEventArgs> MonitorWindowChangedEvent;
-
 	public event EventHandler<MonitorSelectionEventArgs> MonitorDocumentChangedEvent;
-
 	public event EventHandler<MonitorSelectionEventArgs> MonitorDocumentWindowChangedEvent;
-
 	public event EventHandler<MonitorSelectionEventArgs> MonitorUndoManagerChangedEvent;
-
 	public event EventHandler<MonitorSelectionEventArgs> MonitorSelectionChangedEvent;
 
-
 	#endregion Property Accessors
-
-
-
-
-
-	// =========================================================================================================
-	#region Constructors / Destructors - EditorEventsManager
-	// =========================================================================================================
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Private singleton .ctor
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public EditorEventsManager(IBPackageController controller) : base(controller)
-	{
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// EditorEventsManager disposal.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public override void Dispose()
-	{
-		Controller.OnAfterDocumentWindowHideEvent -= OnAfterDocumentWindowHide;
-		Controller.OnAfterSaveEvent -= OnAfterSave;
-		Controller.OnBeforeDocumentWindowShowEvent -= OnBeforeDocumentWindowShow;
-		Controller.OnBeforeLastDocumentUnlockEvent -= OnBeforeLastDocumentUnlock;
-		Controller.OnCmdUIContextChangedEvent -= OnCmdUIContextChanged;
-		Controller.OnElementValueChangedEvent -= OnElementValueChanged;
-		Controller.OnQueryCloseProjectEvent -= OnQueryCloseProject;
-		Controller.OnSelectionChangedEvent -= OnSelectionChanged;
-		Controller.OnNewQueryRequestedEvent -= OnNewQueryRequested;
-	}
-
-
-	#endregion Constructors / Destructors
-
 
 
 
@@ -288,8 +237,6 @@ public class EditorEventsManager : AbstractEditorEventsManager
 	// =========================================================================================================
 	#region Methods - EditorEventsManager
 	// =========================================================================================================
-
-
 
 
 	// ---------------------------------------------------------------------------------
@@ -479,26 +426,18 @@ public class EditorEventsManager : AbstractEditorEventsManager
 		Native.ThrowOnFailure(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_UndoManager, out pvarValue));
 		CurrentUndoManager = pvarValue as IOleUndoManager;
 
-		Guid rguidCmdUI = VSConstants.UICONTEXT_SolutionBuilding;
-		Native.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _SolutionBuildingCookie));
-
-		rguidCmdUI =VS.UICONTEXT_DebuggerLaunching;
-		Native.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _DebuggerLaunchingCookie));
-
-		rguidCmdUI = VS.UICONTEXT_PublishingPreviewCommitOff;
+		Guid rguidCmdUI = VS.UICONTEXT_PublishingPreviewCommitOff;
 		Native.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _PublishingPreviewCommitOffCookie));
 
 		// rguidCmdUI = new(ServiceData.PreviewCommitOffGuid);
 		// Native.ThrowOnFailure(MonitorSelection.GetCmdUIContextCookie(ref rguidCmdUI, out _PreviewCommitOffCookie));
 
-		rguidCmdUI = VSConstants.UICONTEXT.Debugging_guid;
-		Native.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _DebuggingCookie));
 
 		rguidCmdUI = VSConstants.StandardToolWindows.ServerExplorer;
 		Native.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _ServerExplorerCookie));
 
 		rguidCmdUI = VSConstants.UICONTEXT.NotBuildingAndNotDebugging_guid;
-		Native.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _NotBuildingAndNotDebuggingCookie));
+		Native.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _NotBuildingCookie));
 
 		rguidCmdUI = VSConstants.UICONTEXT.SolutionOpening_guid;
 		Native.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _SolutionOpeningCookie));
@@ -668,11 +607,6 @@ public class EditorEventsManager : AbstractEditorEventsManager
 
 	public int OnCmdUIContextChanged(uint cookie, int fActive)
 	{
-		if (_SolutionBuildingCookie == cookie && fActive == 0)
-		{
-			IsDebuggerLaunching = false;
-		}
-
 		return VSConstants.S_OK;
 	}
 

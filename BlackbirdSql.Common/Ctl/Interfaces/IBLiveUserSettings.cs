@@ -115,7 +115,6 @@ public interface IBLiveUserSettings
 	bool WithEstimatedExecutionPlan { get; set; }
 	bool WithOleSqlScripting { get; set; }
 	public bool SuppressProviderMessageHeaders { get; set; }
-	public bool WithDebugging { get; set; }
 
 
 	#endregion Property Accessors

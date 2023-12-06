@@ -20,10 +20,9 @@ namespace BlackbirdSql.Common.Model.Enums
 		ExpectActualYukonXmlExecutionPlan = 0x4,
 		// Do not execute script. Create Yukon reader only
 		ExpectEstimatedYukonXmlExecutionPlan = 0x8,
-		// Not used
-		ExecuteWithDebugging = 0x10,
-		// The script contains the execution plan results
-		ExpectYukonXmlExecutionPlan = 0xC,
-		ExecutionPlanMask = 0xF
+		// 0x4 | 0x8 The script contains the execution plan results
+		YukonXmlExecutionPlansMask = 0xC,
+		// 0x1 | 0x2 | 0x4 | 0x8
+		ExecutionPlansFullMask = 0xF
 	}
 }

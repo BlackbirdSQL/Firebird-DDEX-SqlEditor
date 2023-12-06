@@ -14,7 +14,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace BlackbirdSql.EditorExtension.Ctl;
 
-public abstract class AbstruseEditorFactory : IVsEditorFactory
+public abstract class AbstruseEditorFactory(bool withEncoding) : IVsEditorFactory
 {
 
 	protected static readonly string traceName = "BlackbirdSql.EditorExtension.AbstruseEditorFactory";
@@ -23,7 +23,7 @@ public abstract class AbstruseEditorFactory : IVsEditorFactory
 
 	public uint Cookie { get; set; }
 
-	public bool WithEncoding { get; private set; }
+	public bool WithEncoding { get; private set; } = withEncoding;
 
 	public abstract Guid ClsidEditorFactory { get; }
 
@@ -41,12 +41,6 @@ public abstract class AbstruseEditorFactory : IVsEditorFactory
 	protected Microsoft.VisualStudio.OLE.Interop.IServiceProvider OleServiceProvider { get; private set; }
 
 	protected IServiceProvider ServiceProvider { get; private set; }
-
-	public AbstruseEditorFactory(bool withEncoding)
-	{
-		WithEncoding = withEncoding;
-	}
-
 
 	public abstract int CreateEditorInstance(uint createFlags, string moniker, string physicalView, IVsHierarchy hierarchy, uint itemId, IntPtr existingDocData, out IntPtr docViewIntPtr, out IntPtr docDataIntPtr, out string caption, out Guid cmdUIGuid, out int result);
 

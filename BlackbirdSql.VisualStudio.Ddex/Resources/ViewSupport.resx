@@ -757,7 +757,7 @@
     <value>Number of dependency columns for this trigger</value>
   </data>
   <data name="Property_Name_Trigger_DependencyCount" xml:space="preserve">
-    <value>Column Dependency Count</value>
+    <value>Dependency Count</value>
   </data>
   <data name="Property_Desc_Column_Domain" xml:space="preserve">
     <value>The data type domain this column belong to, if defined</value>

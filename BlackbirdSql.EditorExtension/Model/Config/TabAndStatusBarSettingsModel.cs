@@ -9,33 +9,60 @@ using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.EditorExtension.Ctl.ComponentModel;
 
+
 namespace BlackbirdSql.EditorExtension.Model.Config;
 
 // =========================================================================================================
 //										TabAndStatusBarSettingsModel Class
 //
 /// <summary>
-/// Option Model for General options
+/// Option Model for Tabs ad Statuc bar options
 /// </summary>
 // =========================================================================================================
-public class TabAndStatusBarSettingsModel : AbstractSettingsModel<TabAndStatusBarSettingsModel>
+public class TabAndStatusBarSettingsModel(IBLiveSettings liveSettings)
+	: AbstractSettingsModel<TabAndStatusBarSettingsModel>(C_Package, C_Group, C_LivePrefix, liveSettings)
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Additional Constructors / Destructors - TabAndStatusBarSettingsModel
+	// ---------------------------------------------------------------------------------
+
+
+	public TabAndStatusBarSettingsModel() : this(null)
+	{
+	}
+
+
+	#endregion Additional Constructors / Destructors
+
+
+
+
+	// =====================================================================================================
+	#region Constants - ResultsSettingsModel
+	// =====================================================================================================
+
 
 	private const string C_Package = "Editor";
 	private const string C_Group = "TabAndStatusBar";
 	private const string C_LivePrefix = "EditorStatus";
-	protected const string C_DefaultControlColor = "Control";
+	private const string C_DefaultControlColor = "Control";
+
+
+	#endregion Constants
+
+
+
+
+	// =====================================================================================================
+	#region Property Accessors - ResultsSettingsModel
+	// =====================================================================================================
+
 
 	[Browsable(false)]
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 	public override string CollectionName { get; } = "\\BlackbirdSql\\SqlEditor.TabAndStatusBarSettings";
 
-
-
-
-	// =====================================================================================================
-	#region Model Properties - ResultsSettingsModel
-	// =====================================================================================================
 
 
 	[TypeConverter(typeof(GlobalEnumConverter))]
@@ -124,26 +151,6 @@ public class TabAndStatusBarSettingsModel : AbstractSettingsModel<TabAndStatusBa
 	public bool TabIncludeServerName { get; set; } = false;
 
 
-	#endregion Model Properties
-
-
-
-
-	// =====================================================================================================
-	#region Constructors / Destructors - TabAndStatusBarSettingsModel
-	// =====================================================================================================
-
-
-	public TabAndStatusBarSettingsModel() : this(null)
-	{
-	}
-
-	public TabAndStatusBarSettingsModel(IBLiveSettings liveSettings)
-		: base(C_Package, C_Group, C_LivePrefix, liveSettings)
-	{
-	}
-
-
-	#endregion Constructors / Destructors
+	#endregion Property Accessors
 
 }

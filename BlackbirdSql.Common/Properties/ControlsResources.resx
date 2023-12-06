@@ -915,9 +915,6 @@
   <data name="CannotAddReaderWhenStoringData" xml:space="preserve">
     <value>A new reader cannot be added while storage is storing data.</value>
   </data>
-  <data name="CannotDebugConnectionType" xml:space="preserve">
-    <value>Debugging is not supported on this connection type.</value>
-  </data>
   <data name="CannotFindDataForExecutionPlan" xml:space="preserve">
     <value>Cannot find data for execution plan.</value>
   </data>
@@ -2179,9 +2176,6 @@ All files (*.*)
   </data>
   <data name="StatusBarConnectionReady" xml:space="preserve">
     <value>Connection Ready</value>
-  </data>
-  <data name="StatusBarDebuggingQuery" xml:space="preserve">
-    <value>Debugging query...</value>
   </data>
   <data name="StatusBarDisconnected" xml:space="preserve">
     <value>Disconnected.</value>

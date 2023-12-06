@@ -670,7 +670,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 					Native.ThrowOnFailure(ppEnum.Next(1u, array, out pcFetched), (string)null);
 					if (pcFetched == 1)
 					{
-						(array[0].punk as IVsTextManagerEvents).OnUserPreferencesChanged(null, null, null, new FONTCOLORPREFERENCES[1] { fONTCOLORPREFERENCES });
+						(array[0].punk as IVsTextManagerEvents).OnUserPreferencesChanged(null, null, null, [fONTCOLORPREFERENCES]);
 					}
 				}
 			}

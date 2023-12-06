@@ -2,7 +2,8 @@
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Project Properties -->
   <PropertyGroup>
-    <ApplicationIcon>blackbirdsql.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
     <MinimumVisualStudioVersion>17.0</MinimumVisualStudioVersion>
     <OutputType>Library</OutputType>
     <RootNamespace>BlackbirdSql.VisualStudio.Ddex</RootNamespace>
@@ -66,6 +67,16 @@
   </PropertyGroup>
   <!-- Includes - Top Level -->
   <ItemGroup>
+    <Content Include="..\Resources\blackbird-vsix-preview.jpg">
+      <Link>blackbird-vsix-preview.jpg</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\Resources\blackbirdsql.ico">
+      <Link>blackbirdsql.ico</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <EmbeddedResource Include="Controls\DataTools\TAddPropertyDlg.resx">
       <DependentUpon>TAddPropertyDlg.cs</DependentUpon>
     </EmbeddedResource>
@@ -82,6 +93,11 @@
     </EmbeddedResource>
     <Content Include="..\Docs\CHANGELOG.md">
       <Link>CHANGELOG.md</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="..\Docs\license.txt">
+      <Link>license.txt</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -473,21 +489,8 @@
     <Compile Include="Ctl\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="blackbird-90x90.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="blackbird-vsix-preview.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="blackbirdsql.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
-    <Content Include="license.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
+    <Content Include="..\Resources\blackbird-90x90.png">
+      <Link>blackbird-90x90.png</Link>
     </Content>
   </ItemGroup>
   <!-- Includes (VSIX Manifest) -->

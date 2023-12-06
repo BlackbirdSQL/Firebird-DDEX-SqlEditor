@@ -114,9 +114,6 @@ public static class CommandProperties
 	public static CommandID UpdateScript = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdUpdateScript);
 	public static CommandID NewTrigger = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdNewTrigger);
 	public static CommandID GlobalNewTrigger = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdAddTrigger);
-	public static CommandID ApplicationDebugging = new CommandID(new Guid(VS.SeDataCommandSetGuid), 13589);
-	public static CommandID AllowSqlClrDebugging = new CommandID(new Guid(VS.SeDataCommandSetGuid), 13590);
-	public static CommandID EndApplicationDebugging = new CommandID(new Guid(VS.SeDataCommandSetGuid), 13632);
 	public static CommandID NewDiagram = new CommandID(new Guid(VS.SeDataCommandSetGuid), 13610);
 	public static CommandID ShowDiagramAddTableDialog = new CommandID(new Guid(VS.DavCommandSetGuid), 33);
 	public static CommandID NewTable = new CommandID(new Guid(VS.SeDataCommandSetGuid), 13600);

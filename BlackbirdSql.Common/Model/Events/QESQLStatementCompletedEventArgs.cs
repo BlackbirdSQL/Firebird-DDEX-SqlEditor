@@ -5,25 +5,11 @@ using System.Data;
 namespace BlackbirdSql.Common.Model.Events;
 
 
-public sealed class QESQLStatementCompletedEventArgs
+public sealed class QESQLStatementCompletedEventArgs(long recordCount, bool isParseOnly)
 {
-	private readonly long _RecordCount;
-
-	private readonly bool _IsDebugging;
-
-	private readonly bool _IsParseOnly;
+	private readonly long _RecordCount = recordCount;
+	private readonly bool _IsParseOnly = isParseOnly;
 
 	public bool IsParseOnly => _IsParseOnly;
-
 	public long RecordCount => _RecordCount;
-
-	public bool IsDebugging => _IsDebugging;
-
-
-	public QESQLStatementCompletedEventArgs(long recordCount, bool isParseOnly, bool isDebugging)
-	{
-		_RecordCount = recordCount;
-		_IsDebugging = isDebugging;
-		_IsParseOnly = isParseOnly;
-	}
 }

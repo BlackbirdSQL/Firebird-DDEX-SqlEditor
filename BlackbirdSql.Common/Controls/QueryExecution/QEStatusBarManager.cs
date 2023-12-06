@@ -44,7 +44,6 @@ public sealed class QEStatusBarManager : IDisposable
 		Connected,
 		NewConnectionOpened,
 		Executing,
-		Debugging,
 		Parsing,
 		ExecutionOk,
 		ExecutionFailed,
@@ -152,8 +151,8 @@ public sealed class QEStatusBarManager : IDisposable
 		S_ExecSuccessBitmap = new Bitmap(ControlsResources.StatusBar_success);
 		S_ExecWithErrorBitmap = new Bitmap(ControlsResources.StatusBar_error);
 		S_ExecCanceledBitmap = new Bitmap(ControlsResources.StatusBar_cancel);
-		S_ExecutingBitmaps = new Image[14]
-		{
+		S_ExecutingBitmaps =
+		[
 			new Bitmap(ControlsResources.StatusBar_spin1),
 			new Bitmap(ControlsResources.StatusBar_spin2),
 			new Bitmap(ControlsResources.StatusBar_spin3),
@@ -168,42 +167,19 @@ public sealed class QEStatusBarManager : IDisposable
 			new Bitmap(ControlsResources.StatusBar_spin12),
 			new Bitmap(ControlsResources.StatusBar_spin13),
 			new Bitmap(ControlsResources.StatusBar_spin14)
-		};
-		S_ExecutingCancelBitmaps = new Image[14]
-		{
-			S_ExecutingBitmaps[13],
-			S_ExecutingBitmaps[12],
-			S_ExecutingBitmaps[11],
-			S_ExecutingBitmaps[10],
-			S_ExecutingBitmaps[9],
-			S_ExecutingBitmaps[8],
-			S_ExecutingBitmaps[7],
-			S_ExecutingBitmaps[6],
-			S_ExecutingBitmaps[5],
-			S_ExecutingBitmaps[4],
-			S_ExecutingBitmaps[3],
-			S_ExecutingBitmaps[2],
-			S_ExecutingBitmaps[1],
-			S_ExecutingBitmaps[0]
-		};
+		];
+		S_ExecutingCancelBitmaps =
+		[
+			S_ExecutingBitmaps[13], S_ExecutingBitmaps[12], S_ExecutingBitmaps[11],
+			S_ExecutingBitmaps[10], S_ExecutingBitmaps[9], S_ExecutingBitmaps[8],
+			S_ExecutingBitmaps[7], S_ExecutingBitmaps[6], S_ExecutingBitmaps[5],
+			S_ExecutingBitmaps[4], S_ExecutingBitmaps[3], S_ExecutingBitmaps[2],
+			S_ExecutingBitmaps[1], S_ExecutingBitmaps[0]
+		];
 	}
 
 	public QEStatusBarManager()
 	{
-		//IL_0006: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0010: Expected O, but got Unknown
-		//IL_0018: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0022: Expected O, but got Unknown
-		//IL_002a: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0034: Expected O, but got Unknown
-		//IL_003c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0046: Expected O, but got Unknown
-		//IL_004b: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0055: Expected O, but got Unknown
-		//IL_005d: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0067: Expected O, but got Unknown
-		//IL_006c: Unknown result type (might be due to invalid IL or missing references)
-		//IL_0076: Expected O, but got Unknown
 		CurrentState = EnQeStatusBarKnownStates.Unknown;
 		SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
 	}
@@ -244,7 +220,6 @@ public sealed class QEStatusBarManager : IDisposable
 	private void HandleQueryManagerStatusChanged(object sender, QueryManager.StatusChangedEventArgs args)
 	{
 		bool isConnected = QryMgr.IsConnected;
-		bool isDebugging = QryMgr.IsDebugging;
 		bool isExecuting = QryMgr.IsExecuting;
 		bool isConnecting = QryMgr.IsConnecting;
 		bool isCancelling = QryMgr.IsCancelling;
@@ -259,18 +234,6 @@ public sealed class QEStatusBarManager : IDisposable
 				else if (!isConnected)
 				{
 					TransitionIntoOfflineMode();
-				}
-			}
-
-			if (args.Change == QueryManager.EnStatusType.Debugging)
-			{
-				if (isDebugging)
-				{
-					SetKnownState(EnQeStatusBarKnownStates.Debugging);
-				}
-				else
-				{
-					SetKnownState(EnQeStatusBarKnownStates.ExecutionOk);
 				}
 			}
 
@@ -480,10 +443,6 @@ public sealed class QEStatusBarManager : IDisposable
 					((ToolStripItem)(object)_GeneralPanel).Text = ControlsResources.StatusBarExecutingQuery;
 					_GeneralPanel.StartAnimate();
 					break;
-				case EnQeStatusBarKnownStates.Debugging:
-					_GeneralPanel.SetOneImage(null);
-					((ToolStripItem)(object)_GeneralPanel).Text = ControlsResources.StatusBarDebuggingQuery;
-					break;
 				case EnQeStatusBarKnownStates.CancelingExecution:
 					_GeneralPanel.SetImages(S_ExecutingCancelBitmaps);
 					((ToolStripItem)(object)_GeneralPanel).Text = ControlsResources.StatusBarCancellingQuery;
@@ -532,7 +491,7 @@ public sealed class QEStatusBarManager : IDisposable
 					break;
 			}
 
-			if (newState == EnQeStatusBarKnownStates.Executing || newState == EnQeStatusBarKnownStates.Debugging || newState == EnQeStatusBarKnownStates.Offline)
+			if (newState == EnQeStatusBarKnownStates.Executing || newState == EnQeStatusBarKnownStates.Offline)
 			{
 				DateTime now = DateTime.Now;
 				SetExecutionCompletedTime(now);

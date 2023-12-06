@@ -75,16 +75,12 @@ public abstract class AbstractSqlEditorCommand
 		return ppBuffer;
 	}
 
-	protected bool IsEditorExecutingOrDebugging()
+	protected bool IsEditorExecuting()
 	{
 		QueryManager qryMgrForEditor = GetQueryManagerForEditor();
-		if (qryMgrForEditor != null)
-		{
-			if (!qryMgrForEditor.IsExecuting)
-				return qryMgrForEditor.IsDebugging;
 
-			return true;
-		}
+		if (qryMgrForEditor != null)
+			return qryMgrForEditor.IsExecuting;
 
 		return false;
 	}

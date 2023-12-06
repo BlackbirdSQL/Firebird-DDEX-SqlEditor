@@ -6,32 +6,59 @@ using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.EditorExtension.Ctl.ComponentModel;
+
+
 namespace BlackbirdSql.EditorExtension.Model.Config;
 
 // =========================================================================================================
 //										ContextSettingsModel Class
 //
 /// <summary>
-/// Option Model for General options
+/// Option Model for Pane context options
 /// </summary>
 // =========================================================================================================
-public class ContextSettingsModel : AbstractSettingsModel<ContextSettingsModel>
+public class ContextSettingsModel(IBLiveSettings liveSettings)
+	: AbstractSettingsModel<ContextSettingsModel>(C_Package, C_Group, C_LivePrefix, liveSettings)
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Additional Constructors / Destructors - ContextSettingsModel
+	// ---------------------------------------------------------------------------------
+
+
+	public ContextSettingsModel() : this(null)
+	{
+	}
+
+
+	#endregion Additional Constructors / Destructors
+
+
+
+
+	// =====================================================================================================
+	#region Constants - ContextSettingsModel
+	// =====================================================================================================
+
 
 	private const string C_Package = "Editor";
 	private const string C_Group = "Context";
 	private const string C_LivePrefix = "EditorContext";
 
+
+	#endregion Constants
+
+
+
+
+	// =====================================================================================================
+	#region Property Accessors - ContextSettingsModel
+	// =====================================================================================================
+
+
 	[Browsable(false)]
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 	public override string CollectionName { get; } = "\\BlackbirdSql\\SqlEditor.ContextSettings";
-
-
-
-
-	// =====================================================================================================
-	#region Model Properties - ContextSettingsModel
-	// =====================================================================================================
 
 
 
@@ -58,26 +85,6 @@ public class ContextSettingsModel : AbstractSettingsModel<ContextSettingsModel>
 	public string BatchSeparator { get; set; } = ModelConstants.C_DefaultBatchSeparator;
 
 
-	#endregion Model Properties
-
-
-
-
-	// =====================================================================================================
-	#region Constructors / Destructors - ContextSettingsModel
-	// =====================================================================================================
-
-
-	public ContextSettingsModel() : this(null)
-	{
-	}
-
-	public ContextSettingsModel(IBLiveSettings liveSettings)
-		: base(C_Package, C_Group, C_LivePrefix, liveSettings)
-	{
-	}
-
-
-	#endregion Constructors / Destructors
+	#endregion Property Accessors
 
 }

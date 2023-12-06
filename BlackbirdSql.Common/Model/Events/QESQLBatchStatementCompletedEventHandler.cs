@@ -3,13 +3,7 @@
 // Decompiled with ICSharpCode.Decompiler 7.1.0.6543
 #endregion
 
-// using Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution;
-// using Ns = Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution;
 
+namespace BlackbirdSql.Common.Model.Events;
 
-// namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution
-
-namespace BlackbirdSql.Common.Model.Events
-{
-	public delegate void QESQLBatchStatementCompletedEventHandler(object sender, QESQLBatchStatementCompletedEventArgs args);
-}
+public delegate void QESQLBatchStatementCompletedEventHandler(object sender, QESQLBatchStatementCompletedEventArgs args);

@@ -1,15 +1,13 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
-using System;
 using System.ComponentModel;
-using System.Drawing.Design;
 using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Config;
-using BlackbirdSql.EditorExtension.Controls.ComponentModel;
 using BlackbirdSql.EditorExtension.Ctl.ComponentModel;
+
 
 namespace BlackbirdSql.EditorExtension.Model.Config;
 
@@ -17,27 +15,52 @@ namespace BlackbirdSql.EditorExtension.Model.Config;
 //										ResultsTextSettingsModel Class
 //
 /// <summary>
-/// Option Model for Results options
+/// Option Model for Text Results options
 /// </summary>
 // =========================================================================================================
-public class ResultsTextSettingsModel : AbstractSettingsModel<ResultsTextSettingsModel>
+public class ResultsTextSettingsModel(IBLiveSettings liveSettings)
+	: AbstractSettingsModel<ResultsTextSettingsModel>(C_Package, C_Group, C_LivePrefix, liveSettings)
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Additional Constructors / Destructors - ResultsTextSettingsModel
+	// ---------------------------------------------------------------------------------
+
+
+	public ResultsTextSettingsModel() : this(null)
+	{
+	}
+
+
+	#endregion Additional Constructors / Destructors
+
+
+
+
+	// =====================================================================================================
+	#region Constants - ResultsTextSettingsModel
+	// =====================================================================================================
+
 
 	private const string C_Package = "Editor";
 	private const string C_Group = "ResultsText";
 	private const string C_LivePrefix = "EditorResultsText";
 
 
+	#endregion Constants
+
+
+
+
+	// =====================================================================================================
+	#region Property Accessors - ResultsTextSettingsModel
+	// =====================================================================================================
+
+
 	[Browsable(false)]
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 	public override string CollectionName { get; } = "\\BlackbirdSql\\SqlEditor.ResultsTextSettings";
 
-
-
-
-	// =====================================================================================================
-	#region Model Properties - ResultsTextSettingsModel
-	// =====================================================================================================
 
 
 	[TypeConverter(typeof(GlobalEnumConverter))]
@@ -155,26 +178,6 @@ public class ResultsTextSettingsModel : AbstractSettingsModel<ResultsTextSetting
 	public string Delimiter { get; set; } = ",";
 
 
-	#endregion Model Properties
-
-
-
-
-	// =====================================================================================================
-	#region Constructors / Destructors - ResultsTextSettingsModel
-	// =====================================================================================================
-
-
-	public ResultsTextSettingsModel() : this(null)
-	{
-	}
-
-	public ResultsTextSettingsModel(IBLiveSettings liveSettings)
-		: base(C_Package, C_Group, C_LivePrefix, liveSettings)
-	{
-	}
-
-
-	#endregion Constructors / Destructors
+	#endregion Property Accessors
 
 }

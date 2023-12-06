@@ -39,9 +39,9 @@ public class SqlEditorParseQueryCommand : SqlEditorExecuteQueryCommand
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 		if (auxiliaryDocDataForEditor != null)
 		{
-			if (!IsEditorExecutingOrDebugging())
+			if (!IsEditorExecuting())
 			{
-				// Diasabled for now
+				// Disabled for now
 				// prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 			}
 		}

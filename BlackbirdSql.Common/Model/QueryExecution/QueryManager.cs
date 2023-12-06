@@ -26,40 +26,29 @@ public sealed class QueryManager : IDisposable
 	{
 		Connected = 0x1,
 		Executing = 0x2,
-		Debugging = 0x4,
-		Connection = 0x8,
-		Connecting = 0x10,
-		Cancelling = 0x20,
-		ExecutionOptionsWithOleSqlChanged = 0x40,
-		DatabaseChanged = 0x80
+		Connection = 0x4,
+		Connecting = 0x8,
+		Cancelling = 0x10,
+		ExecutionOptionsWithOleSqlChanged = 0x20,
+		DatabaseChanged = 0x40
 	}
 
 	public delegate void StatusChangedEventHandler(object sender, StatusChangedEventArgs args);
 
-	public class StatusChangedEventArgs : EventArgs
+	public class StatusChangedEventArgs(EnStatusType changeType) : EventArgs
 	{
-		public EnStatusType Change { get; private set; }
-
-		public StatusChangedEventArgs(EnStatusType changeType)
-		{
-			Change = changeType;
-		}
+		public EnStatusType Change { get; private set; } = changeType;
 	}
 
-	public class ScriptExecutionStartedEventArgs : EventArgs
+	public class ScriptExecutionStartedEventArgs(string queryText, bool isParseOnly,
+			IDbConnection connection)
+		: EventArgs
 	{
-		public string QueryText { get; private set; }
+		public string QueryText { get; private set; } = queryText;
 
-		public bool IsParseOnly { get; private set; }
+		public bool IsParseOnly { get; private set; } = isParseOnly;
 
-		public IDbConnection Connection { get; private set; }
-
-		public ScriptExecutionStartedEventArgs(string queryText, bool isParseOnly, IDbConnection connection)
-		{
-			QueryText = queryText;
-			IsParseOnly = isParseOnly;
-			Connection = connection;
-		}
+		public IDbConnection Connection { get; private set; } = connection;
 	}
 
 	public delegate bool ScriptExecutionStartedEventHandler(object sender, ScriptExecutionStartedEventArgs args);
@@ -127,19 +116,7 @@ public sealed class QueryManager : IDisposable
 		}
 	}
 
-	public bool IsDebugging
-	{
-		get
-		{
-			return IsStatusFlagSet(EnStatusType.Debugging);
-		}
-		private set
-		{
-			SetStatusFlag(value, EnStatusType.Debugging);
-		}
-	}
 
-	public bool IsAllowedToExecuteWhileDebugging { get; set; }
 
 	public bool IsExecuting
 	{
@@ -309,24 +286,28 @@ public sealed class QueryManager : IDisposable
 		ConnectionStrategy = connectionStrategy;
 		_SqlExec = new QEOLESQLExec(SqlCmdVariableResolver, this);
 		SqlCmdVariableResolver = sqlCmdVarResolver;
+
 		RegisterSqlExecWithEvenHandlers();
-		IsAllowedToExecuteWhileDebugging = true;
 	}
+
+
 
 	public bool Run(IBTextSpan textSpan)
 	{
-		return ValidateAndRun(textSpan, 0, false, false, false);
+		// --------------------------------------------------------------------- //
+		// ******************** Execution Point (3) - Run() ******************** //
+		// --------------------------------------------------------------------- //
+		return ValidateAndRun(textSpan, false);
 	}
 
-	public bool Run(IBTextSpan textSpan, int execTimeout, bool withDebugging)
-	{
-		return ValidateAndRun(textSpan, execTimeout, false, withDebugging, true);
-	}
+
 
 	public void Parse(IBTextSpan textSpan)
 	{
-		ValidateAndRun(textSpan, 0, true, false, false);
+		ValidateAndRun(textSpan, true);
 	}
+
+
 
 	public void Cancel(bool bSync)
 	{
@@ -336,11 +317,6 @@ public sealed class QueryManager : IDisposable
 			lock (_LockLocal)
 			{
 				IsCancelling = true;
-				if (IsDebugging)
-				{
-					// EditorDebugContext.DetachDebugger(stopExecution: true);
-					return;
-				}
 
 				// Tracer.Trace(GetType(), "QryMgr.Cancel", "bSync = {0}", bSync);
 				// Tracer.Trace(GetType(), "QryMgr.Cancel", "initiating Cancel");
@@ -436,15 +412,9 @@ public sealed class QueryManager : IDisposable
 					case ConnectionState.Broken:
 						IsConnected = false;
 						LiveSettingsApplied = false;
-						if (IsExecuting)
-						{
-							IsExecuting = false;
-						}
 
-						if (IsDebugging)
-						{
-							IsDebugging = false;
-						}
+						if (IsExecuting)
+							IsExecuting = false;
 
 						break;
 					case ConnectionState.Open:
@@ -524,7 +494,7 @@ public sealed class QueryManager : IDisposable
 		ConnectionStrategy.ApplyConnectionOptions(args.Connection, LiveSettings);
 	}
 
-	private bool ValidateAndRun(IBTextSpan textSpan, int execTimeout, bool parseOnly, bool withDebugging, bool useCustomExecutionTimeout)
+	private bool ValidateAndRun(IBTextSpan textSpan, bool parseOnly)
 	{
 		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ValidateAndRun()", " Enter. : ExecutionOptions.WithEstimatedExecutionPlan: " + LiveSettings.WithEstimatedExecutionPlan);
 		
@@ -557,13 +527,6 @@ public sealed class QueryManager : IDisposable
 			LiveSettingsApplied = true;
 		}
 
-		if (execTimeout < 0)
-		{
-			ArgumentOutOfRangeException ex = new("execTimeout");
-			Diag.Dug(ex);
-			throw ex;
-		}
-
 		if (textSpan == null)
 		{
 			ArgumentNullException ex = new("textSpan");
@@ -585,6 +548,7 @@ public sealed class QueryManager : IDisposable
 			ConnectionStrategy.ResetAndEnableConnectionStatistics();
 		}
 
+
 		if (!OnScriptExecutionStarted(textSpan.Text, parseOnly, connection))
 		{
 			// OperationCanceledException ex = new("OnScriptExecutionStarted returned false");
@@ -597,23 +561,12 @@ public sealed class QueryManager : IDisposable
 		IsExecuting = true;
 		QueryExecutionStartTime = DateTime.Now;
 		QueryExecutionEndTime = DateTime.Now;
-		if (withDebugging)
-		{
-			IsDebugging = true;
-			sqlLiveSettings.WithDebugging = true;
-		}
-		else
-		{
-			IsDebugging = false;
-			sqlLiveSettings.WithDebugging = false;
-		}
 
-		if (!useCustomExecutionTimeout)
-		{
-			execTimeout = sqlLiveSettings.EditorExecutionTimeout;
-		}
 
-		_SqlExec.Execute(textSpan, connection, execTimeout, ResultsHandler, sqlLiveSettings);
+		// -------------------------------------------------------------------------------- //
+		// ******************** Execution Point (4) - ValidateAndRun() ******************** //
+		// -------------------------------------------------------------------------------- //
+		_SqlExec.Execute(textSpan, connection, ResultsHandler, sqlLiveSettings);
 
 		return true;
 	}
@@ -630,8 +583,8 @@ public sealed class QueryManager : IDisposable
 		ScriptExecutionCompletedEvent?.Invoke(this, args);
 
 		IsExecuting = false;
-		IsDebugging = false;
 		IsCancelling = false;
+
 		if (LiveSettings.EditorExecutionDisconnectOnCompletion)
 		{
 			ConnectionStrategy.Connection.Close();
@@ -738,13 +691,11 @@ public sealed class QueryManager : IDisposable
 			IsExecuting = newConnection.State == ConnectionState.Executing;
 			IsConnected = newConnection.State == ConnectionState.Open;
 			IsConnecting = newConnection.State == ConnectionState.Connecting;
-			IsDebugging = false;
 			IsCancelling = false;
 		}
 		else
 		{
 			IsExecuting = false;
-			IsDebugging = false;
 			IsConnected = false;
 			IsConnecting = false;
 			IsCancelling = false;

@@ -169,7 +169,7 @@ public abstract class AbstractQESQLBatchConsumer : IBQESQLBatchConsumer, IDispos
 
 	public virtual void OnStatementCompleted(object sender, QESQLStatementCompletedEventArgs args)
 	{
-		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.OnStatementCompleted", "sender: {0}, args.RecordCount: {1}, args.IsDebugging: {2}", sender, args.RecordCount, args.IsDebugging);
+		// Tracer.Trace(GetType(), "QESQLBatchConsumerBase.OnStatementCompleted", "sender: {0}, args.RecordCount: {1}", sender, args.RecordCount);
 	}
 
 	public virtual void Cleanup()

@@ -44,7 +44,7 @@ public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-		if (!IsEditorExecutingOrDebugging())
+		if (!IsEditorExecuting())
 		{
 			// Diag.Trace("SqlEditorSqlDatabaseCommand:HandleQueryStatus enabled");
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;

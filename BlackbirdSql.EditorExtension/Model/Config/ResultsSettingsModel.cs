@@ -4,14 +4,12 @@
 using System;
 using System.ComponentModel;
 using System.Drawing.Design;
-using System.Threading.Tasks;
 using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.EditorExtension.Controls.ComponentModel;
 using BlackbirdSql.EditorExtension.Ctl.ComponentModel;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Threading;
+
 
 namespace BlackbirdSql.EditorExtension.Model.Config;
 
@@ -19,27 +17,52 @@ namespace BlackbirdSql.EditorExtension.Model.Config;
 //										ResultsSettingsModel Class
 //
 /// <summary>
-/// Option Model for Results options
+/// Option Model for General Results options
 /// </summary>
 // =========================================================================================================
-public class ResultsSettingsModel : AbstractSettingsModel<ResultsSettingsModel>
+public class ResultsSettingsModel(IBLiveSettings liveSettings)
+	: AbstractSettingsModel<ResultsSettingsModel>(C_Package, C_Group, C_LivePrefix, liveSettings)
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Additional Constructors / Destructors - ResultsSettingsModel
+	// ---------------------------------------------------------------------------------
+
+
+	public ResultsSettingsModel() : this(null)
+	{
+	}
+
+
+	#endregion Additional Constructors / Destructors
+
+
+
+
+	// =====================================================================================================
+	#region Constants - ResultsSettingsModel
+	// =====================================================================================================
+
 
 	private const string C_Package = "Editor";
 	private const string C_Group = "Results";
 	private const string C_LivePrefix = "EditorResultsGeneral";
 
 
+	#endregion Constants
+
+
+
+
+	// =====================================================================================================
+	#region Property Accessors - ResultsSettingsModel
+	// =====================================================================================================
+
+
 	[Browsable(false)]
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 	public override string CollectionName { get; } = "\\BlackbirdSql\\SqlEditor.ResultsSettings";
 
-
-
-
-	// =====================================================================================================
-	#region Model Properties - ResultsSettingsModel
-	// =====================================================================================================
 
 
 	[TypeConverter(typeof(GlobalEnumConverter))]
@@ -81,26 +104,6 @@ public class ResultsSettingsModel : AbstractSettingsModel<ResultsSettingsModel>
 
 
 
-	#endregion Model Properties
-
-
-
-
-	// =====================================================================================================
-	#region Constructors / Destructors - ResultsSettingsModel
-	// =====================================================================================================
-
-
-	public ResultsSettingsModel() : this(null)
-	{
-	}
-
-	public ResultsSettingsModel(IBLiveSettings liveSettings)
-		: base(C_Package, C_Group, C_LivePrefix, liveSettings)
-	{
-	}
-
-
-	#endregion Constructors / Destructors
+	#endregion Property Accessors
 
 }

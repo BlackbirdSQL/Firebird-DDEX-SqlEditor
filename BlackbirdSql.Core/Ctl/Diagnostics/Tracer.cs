@@ -105,6 +105,13 @@ internal class Tracer : IBTrace // , IBExportable
 
 
 
+	public static void Information(Type t, string functionName, string format, params object[] args)
+	{
+		Trace(t, EnLevel.Information, functionName, format, args);
+	}
+
+
+
 	public static void LogExCatch(Type t, Exception e,
 		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
@@ -295,10 +302,18 @@ internal class Tracer : IBTrace // , IBExportable
 	}
 
 
+
 	public bool TraceException(TraceEventType eventType, int traceId, Exception exception, string message, int lineNumber = 0, string fileName = "", string memberName = "")
 	{
 		string messageForException = GetMessageForException(exception);
 		return TraceEvent(eventType, traceId, string.Format(CultureInfo.CurrentCulture, "{0} {1}", message, messageForException));
+	}
+
+
+
+	public static void Warning(Type t, string functionName, string format, params object[] args)
+	{
+		Trace(t, EnLevel.Warning, functionName, format, args);
 	}
 
 }

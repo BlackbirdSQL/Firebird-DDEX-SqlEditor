@@ -6,6 +6,7 @@ using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
 
+
 namespace BlackbirdSql.VisualStudio.Ddex.Model.Config;
 
 // =========================================================================================================
@@ -15,23 +16,49 @@ namespace BlackbirdSql.VisualStudio.Ddex.Model.Config;
 /// Option Model for General options
 /// </summary>
 // =========================================================================================================
-public class GeneralSettingsModel : AbstractSettingsModel<GeneralSettingsModel>
+public class GeneralSettingsModel(IBLiveSettings liveSettings)
+	: AbstractSettingsModel<GeneralSettingsModel>(C_Package, C_Group, C_LivePrefix, liveSettings)
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Additional Constructors / Destructors - GeneralSettingsModel
+	// ---------------------------------------------------------------------------------
+
+
+	public GeneralSettingsModel() : this(null)
+	{
+	}
+
+
+	#endregion Additional Constructors / Destructors
+
+
+
+
+	// =====================================================================================================
+	#region Constants - DebugSettingsModel
+	// =====================================================================================================
+
 
 	private const string C_Package = "Ddex";
 	private const string C_Group = "General";
 	private const string C_LivePrefix = "DdexGeneral";
 
+
+	#endregion Constants
+
+
+
+
+	// =====================================================================================================
+	#region Property Accessors - GeneralSettingsModel
+	// =====================================================================================================
+
+
 	[Browsable(false)]
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 	public override string CollectionName { get; } = "\\BlackbirdSql\\Ddex.GeneralSettings";
 
-
-
-
-	// =====================================================================================================
-	#region Model Properties - GeneralSettingsModel
-	// =====================================================================================================
 
 
 	[GlobalizedCategory("OptionCategoryGeneral")]
@@ -77,26 +104,6 @@ public class GeneralSettingsModel : AbstractSettingsModel<GeneralSettingsModel>
 	public bool ValidateEdmx { get; set; } = true;
 
 
-	#endregion Model Properties
-
-
-
-
-	// =====================================================================================================
-	#region Constructors / Destructors - GeneralSettingsModel
-	// =====================================================================================================
-
-
-	public GeneralSettingsModel() : this(null)
-	{
-	}
-
-	public GeneralSettingsModel(IBLiveSettings liveSettings)
-		: base(C_Package, C_Group, C_LivePrefix, liveSettings)
-	{
-	}
-
-
-	#endregion Constructors / Destructors
+	#endregion Property Accessors
 
 }

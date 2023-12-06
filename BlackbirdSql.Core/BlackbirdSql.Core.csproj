@@ -35,7 +35,6 @@
 	  <Compile Include="Controls\Events\GridItemValueChangedEventArgs.cs" />
 	  <Compile Include="Controls\Events\SelectedGridItemFocusEventArgs.cs" />
 	  <Compile Include="Controls\LinkageParserTaskHandler.cs" />
-	  <Compile Include="Controls\WaitCursor.cs" />
 	  <Compile Include="Ctl\AbstractPackageController.cs" />
 	  <Compile Include="Ctl\ComponentModel\AbstractGlobalizedRadioAttribute.cs" />
 	  <Compile Include="Ctl\ComponentModel\AutomationAttribute.cs" />

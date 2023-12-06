@@ -18,8 +18,6 @@ using Microsoft.VisualStudio.Shell;
 
 namespace BlackbirdSql.Common.Controls.PropertiesWindow;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD001:Avoid legacy thread switching APIs")]
-
 public class PropertiesWindowManager : IDisposable
 {
 	private bool _Disposed;

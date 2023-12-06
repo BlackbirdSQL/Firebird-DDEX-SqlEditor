@@ -331,6 +331,7 @@
 		</Property>
 		<Property name="PARAMETER_DIRECTION">
 			<DisplayName resource="Property_Name_Parameter_Direction" />
+			<Category resource="Category_Identifier" />
 			<Description resource="Property_Desc_Parameter_Direction" />
 			<StandardValues>
 				<StandardValue value="0" resource="Property_Value_Direction_In" />
@@ -415,14 +416,17 @@
 			</Property>
 			<Property name="IS_PRIMARY">
 				<DisplayName resource="Property_Name_Index_IsPrimary" />
+				<Category resource="Category_Constraints" />
 				<Description resource="Property_Desc_Index_IsPrimary" />
 			</Property>
 			<Property name="IS_UNIQUE">
 				<DisplayName resource="Property_Name_Index_IsUnique" />
+				<Category resource="Category_Constraints" />
 				<Description resource="Property_Desc_Index_IsUnique" />
 			</Property>
 			<Property name="IS_FOREIGNKEY">
 				<DisplayName resource="Property_Name_Index_IsForeignKey" />
+				<Category resource="Category_Constraints" />
 				<Description resource="Property_Desc_Index_IsForeignKey" />
 			</Property>
 			<Property name="IS_SYSTEM_FLAG">
@@ -436,15 +440,18 @@
 			</Property>
 			<Property name="IS_INACTIVE">
 				<DisplayName resource="Property_Name_Disabled" />
+				<Category resource="Category_Initialization" />
 				<Description resource="Property_Desc_Disabled" />
 				<!-- <StandardValuesRef name="TplStandardValuesInverseBoolean" /> -->
 			</Property>
 			<Property name="EXPRESSION">
 				<DisplayName resource="Property_Name_Index_Expression" />
+				<Category resource="Category_Initialization" />
 				<Description resource="Property_Desc_Index_Expression" />
 			</Property>
 			<Property name="IS_COMPUTED">
 				<DisplayName resource="Property_Name_Index_IsComputed" />
+				<Category resource="Category_Initialization" />
 				<Description resource="Property_Desc_Index_IsComputed" />
 			</Property>
 		</Properties>
@@ -467,15 +474,18 @@
 			</Property>
 			<Property name="TRIGGER_TYPE">
 				<DisplayName resource="Property_Name_Trigger_Type" />
+				<Category resource="Category_Identifier" />
 				<Description resource="Property_Desc_Trigger_Name" />
 				<StandardValuesRef name="TplStandardValuesTriggerEventType" />
 			</Property>
 			<Property name="PRIORITY">
 				<DisplayName resource="Property_Name_Trigger_Priority" />
+				<Category resource="Category_Initialization" />
 				<Description resource="Property_Desc_Trigger_Priority" />
 			</Property>
 			<Property name="IS_INACTIVE">
 				<DisplayName resource="Property_Name_Disabled" />
+				<Category resource="Category_Initialization" />
 				<Description resource="Property_Desc_Disabled" />
 				<!-- <StandardValuesRef name="TplStandardValuesInverseBoolean" /> -->
 			</Property>
@@ -491,14 +501,17 @@
 			</Property>
 			<Property name="EXPRESSION">
 				<DisplayName resource="Property_Name_Dsl" />
+				<Category resource="Category_Initialization" />
 				<Description resource="Property_Desc_Dsl" />
 			</Property>
 			<Property name="DEPENDENCY_COUNT">
 				<DisplayName resource="Property_Name_Trigger_DependencyCount" />
+				<Category resource="Category_Constraints" />
 				<Description resource="Property_Desc_Trigger_DependencyCount" />
 			</Property>
 			<Property name="DEPENDENCY_FIELDS">
 				<DisplayName resource="Property_Name_Trigger_Dependencies" />
+				<Category resource="Category_Constraints" />
 				<Description resource="Property_Desc_Trigger_Dependencies" />
 			</Property>
 			<Property name="SEQUENCE_GENERATOR">
@@ -607,14 +620,17 @@
 					</Property>
 					<Property name="INDEX_COUNT">
 						<DisplayName resource="Property_Name_IndexCount" />
+						<Category resource="Category_Constraints" />
 						<Description resource="Property_Desc_IndexCount" />
 					</Property>
 					<Property name="FOREIGNKEY_COUNT">
 						<DisplayName resource="Property_Name_ForeignKeyCount" />
+						<Category resource="Category_Constraints" />
 						<Description resource="Property_Desc_ForeignKeyCount" />
 					</Property>
 					<Property name="TRIGGER_COUNT">
 						<DisplayName resource="Property_Name_TriggerCount" />
+						<Category resource="Category_Constraints" />
 						<Description resource="Property_Desc_TriggrCount" />
 					</Property>
 				</Properties>
@@ -722,10 +738,12 @@
 										</Property>
 										<Property name="IS_PRIMARY">
 											<DisplayName resource="Property_Name_Index_IsPrimary" />
+											<Category resource="Category_Constraints" />
 											<Description resource="Property_Desc_Index_IsPrimary" />
 										</Property>
 										<Property name="IS_UNIQUE">
 											<DisplayName resource="Property_Name_Index_IsUnique" />
+											<Category resource="Category_Constraints" />
 											<Description resource="Property_Desc_Index_IsUnique" />
 										</Property>
 										<Property name="IS_SYSTEM_FLAG">
@@ -739,10 +757,12 @@
 										</Property>
 										<Property name="EXPRESSION">
 											<DisplayName resource="Property_Name_Index_Expression" />
+											<Category resource="Category_Initialization" />
 											<Description resource="Property_Desc_Index_Expression" />
 										</Property>
 										<Property name="IS_COMPUTED">
 											<DisplayName resource="Property_Name_Index_IsComputed" />
+											<Category resource="Category_Initialization" />
 											<Description resource="Property_Desc_Index_IsComputed" />
 										</Property>
 									</Properties>

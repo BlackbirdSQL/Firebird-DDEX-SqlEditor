@@ -81,19 +81,14 @@ public class ResultsToGridBatchConsumer : AbstractQESQLBatchConsumer
 	public override void OnStatementCompleted(object sender, QESQLStatementCompletedEventArgs args)
 	{
 		base.OnStatementCompleted(sender, args);
-		if (args.IsDebugging && args.RecordCount > 0 && _GridContainer != null)
-		{
-			_GridContainer.UpdateGrid();
-		}
 	}
 
 	public override void Cleanup()
 	{
 		// Tracer.Trace(GetType(), "ResultsToGridBatchConsumer.Cleanup", "", null);
 		base.Cleanup();
+
 		if (_GridContainer != null)
-		{
 			_GridContainer = null;
-		}
 	}
 }

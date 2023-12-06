@@ -189,15 +189,6 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Debugging is not supported on this connection type..
-        /// </summary>
-        public static string CannotDebugConnectionType {
-            get {
-                return ResourceManager.GetString("CannotDebugConnectionType", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cannot find data for execution plan..
         /// </summary>
         public static string CannotFindDataForExecutionPlan {
@@ -2746,15 +2737,6 @@ namespace BlackbirdSql.Common.Properties {
         public static string StatusBarConnectionReady {
             get {
                 return ResourceManager.GetString("StatusBarConnectionReady", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Debugging query....
-        /// </summary>
-        public static string StatusBarDebuggingQuery {
-            get {
-                return ResourceManager.GetString("StatusBarDebuggingQuery", resourceCulture);
             }
         }
         

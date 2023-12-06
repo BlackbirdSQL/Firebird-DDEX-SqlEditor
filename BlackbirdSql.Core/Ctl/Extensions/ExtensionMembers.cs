@@ -310,36 +310,9 @@ static class ExtensionMembers
 	/// <summary>
 	/// Formats a resource string format string given arguments.
 	/// </summary>
-	public static string FmtRes(this string value, object arg0)
+	public static string FmtRes(this string value, params object[] args)
 	{
-		return string.Format(CultureInfo.CurrentCulture, value, arg0);
-
-	}
-
-	/// <summary>
-	/// Formats a resource string format string given arguments.
-	/// </summary>
-	public static string FmtRes(this string value, object arg0, object arg1)
-	{
-		return string.Format(CultureInfo.CurrentCulture, value, arg0, arg1);
-
-	}
-
-	/// <summary>
-	/// Formats a resource string format string given arguments.
-	/// </summary>
-	public static string FmtRes(this string value, object arg0, object arg1, object arg2)
-	{
-		return string.Format(CultureInfo.CurrentCulture, value, arg0, arg1, arg2);
-
-	}
-
-	/// <summary>
-	/// Formats a resource string format string given arguments.
-	/// </summary>
-	public static string FmtRes(this string value, object arg0, object arg1, object arg2, object arg3)
-	{
-		return string.Format(CultureInfo.CurrentCulture, value, arg0, arg1, arg2, arg3);
+		return string.Format(CultureInfo.CurrentCulture, value, args);
 
 	}
 

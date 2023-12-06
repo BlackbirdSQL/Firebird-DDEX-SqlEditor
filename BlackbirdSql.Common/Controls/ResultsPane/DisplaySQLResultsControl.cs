@@ -38,7 +38,6 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
 
-[SuppressMessage("Usage", "VSTHRD001:Avoid legacy thread switching APIs")]
 [SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
 	Justification = "Class is UIThread compliant.")]
 
@@ -958,7 +957,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	private object GetExecutionPlanData(IDataReader dataReader, EnQESQLBatchSpecialAction batchSpecialAction)
 	{
-		if ((batchSpecialAction & EnQESQLBatchSpecialAction.ExpectYukonXmlExecutionPlan) != 0)
+		if ((batchSpecialAction & EnQESQLBatchSpecialAction.YukonXmlExecutionPlansMask) != 0)
 		{
 			if (!dataReader.Read())
 			{

@@ -59,7 +59,7 @@ public sealed class DbCommandWrapper
 
 	public void Dummy()
 	{
-		StatementCompletedEvent?.Invoke(this, new(0, false, false));
+		StatementCompletedEvent?.Invoke(this, new(0, false));
 	}
 
 	public static bool IsSupportedCommand(IDbCommand command)

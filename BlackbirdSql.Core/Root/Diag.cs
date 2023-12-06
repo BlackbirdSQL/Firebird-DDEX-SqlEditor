@@ -380,7 +380,7 @@ public static class Diag
 		}
 		else
 		{
-			message += " NO STACKTRACE";
+			message += Environment.NewLine + "TRACE: " + Environment.StackTrace.ToString();
 		}
 
 		Dug(true, ex.Message + " " + message, memberName, sourceFilePath, sourceLineNumber);

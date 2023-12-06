@@ -20,26 +20,16 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace BlackbirdSql.Common.Model;
 
-public sealed class AuxiliaryDocData
+public sealed class AuxiliaryDocData(object docData)
 {
-	public class SqlExecutionModeChangedEventArgs : EventArgs
+	public class SqlExecutionModeChangedEventArgs(EnSqlOutputMode executionMode) : EventArgs
 	{
-		public EnSqlOutputMode SqlOutputMode { get; private set; }
-
-		public SqlExecutionModeChangedEventArgs(EnSqlOutputMode executionMode)
-		{
-			SqlOutputMode = executionMode;
-		}
+		public EnSqlOutputMode SqlOutputMode { get; private set; } = executionMode;
 	}
 
-	public class LiveSettingsChangedEventArgs : EventArgs
+	public class LiveSettingsChangedEventArgs(IBLiveUserSettings liveSettings) : EventArgs
 	{
-		public IBLiveUserSettings LiveSettings { get; private set; }
-
-		public LiveSettingsChangedEventArgs(IBLiveUserSettings liveSettings)
-		{
-			LiveSettings = liveSettings;
-		}
+		public IBLiveUserSettings LiveSettings { get; private set; } = liveSettings;
 	}
 
 	private QueryManager _QryMgr;
@@ -55,7 +45,7 @@ public sealed class AuxiliaryDocData
 
 	private string _DatabaseAtQueryExecutionStart;
 
-	private object DocData { get; set; }
+	private object DocData { get; set; } = docData;
 
 	public IBSqlEditorStrategy Strategy
 	{
@@ -218,11 +208,6 @@ public sealed class AuxiliaryDocData
 	public event EventHandler<SqlExecutionModeChangedEventArgs> SqlExecutionModeChangedEvent;
 
 	public event EventHandler<LiveSettingsChangedEventArgs> LiveSettingsChangedEvent;
-
-	public AuxiliaryDocData(object docData)
-	{
-		DocData = docData;
-	}
 
 	private void QueryManagerStatusChangedEventHandler(object sender, QueryManager.StatusChangedEventArgs args)
 	{

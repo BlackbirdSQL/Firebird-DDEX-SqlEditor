@@ -879,6 +879,10 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 	public void ExecuteQuery()
 	{
 		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteQuery", "calling ExecuteOrParseQuery");
+
+		// ------------------------------------------------------------------------------ //
+		// ******************** Execution Point (1) - ExecuteQuery() ******************** //
+		// ------------------------------------------------------------------------------ //
 		ExecuteOrParseQuery(true);
 	}
 
@@ -905,8 +909,10 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 
 				QueryManager qryMgr = auxDocData.QryMgr;
 
-				// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteOrParseQuery", "AuxiliaryDocData.QryMgr: " + qryMgr);
 
+				// ----------------------------------------------------------------------------------- //
+				// ******************** Execution Point (2) ExecuteOrParseQuery() ******************** //
+				// ----------------------------------------------------------------------------------- //
 				if (isExecute)
 					qryMgr.Run(sqlTextSpan);
 				else
@@ -1256,13 +1262,11 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 				if (qryMgr.IsConnected || qryMgr.IsConnecting)
 				{
 					if (qryMgr.IsExecuting)
-					{
-						text = !qryMgr.IsDebugging ? text + " " + ControlsResources.ConnectionStateExecuting : text + " " + ControlsResources.ConnectionStateDebugging;
-					}
+						text += " " + ControlsResources.ConnectionStateExecuting;
 				}
 				else
 				{
-					text = text + " " + ControlsResources.ConnectionStateNotConnected;
+					text += " " + ControlsResources.ConnectionStateNotConnected;
 				}
 			}
 		}

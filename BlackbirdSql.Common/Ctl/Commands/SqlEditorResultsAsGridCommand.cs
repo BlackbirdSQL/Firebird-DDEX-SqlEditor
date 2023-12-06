@@ -30,7 +30,7 @@ public class SqlEditorResultsAsGridCommand : AbstractSqlEditorCommand
 		AuxiliaryDocData auxiliaryDocDataForEditor = GetAuxiliaryDocDataForEditor();
 		if (auxiliaryDocDataForEditor != null)
 		{
-			if (!IsEditorExecutingOrDebugging())
+			if (!IsEditorExecuting())
 			{
 				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 			}

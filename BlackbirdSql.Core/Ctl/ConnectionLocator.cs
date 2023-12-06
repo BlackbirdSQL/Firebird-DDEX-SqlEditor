@@ -578,7 +578,7 @@ public abstract class ConnectionLocator
 
 		if (xmlConnections.Count == 0)
 		{
-			Tracer.Trace(typeof(ConnectionLocator), Tracer.EnLevel.Information, "LoadServerExplorerConfiguredConnectionsImpl()",
+			Tracer.Information(typeof(ConnectionLocator), "LoadServerExplorerConfiguredConnectionsImpl()",
 				"No a1:DataViewNode nodes found in file: {0}.", xmlPath);
 			return;
 		}

@@ -9,33 +9,60 @@ using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.EditorExtension.Ctl.ComponentModel;
+
+
 namespace BlackbirdSql.EditorExtension.Model.Config;
 
 // =========================================================================================================
 //										ExecutionSettingsModel Class
 //
 /// <summary>
-/// Option Model for General options
+/// Option Model for General Execution options
 /// </summary>
 // =========================================================================================================
-public class ExecutionSettingsModel : AbstractSettingsModel<ExecutionSettingsModel>
+public class ExecutionSettingsModel(IBLiveSettings liveSettings)
+	: AbstractSettingsModel<ExecutionSettingsModel>(C_Package, C_Group, C_LivePrefix, liveSettings)
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Additional Constructors / Destructors - ExecutionSettingsModel
+	// ---------------------------------------------------------------------------------
+
+
+	public ExecutionSettingsModel() : this(null)
+	{
+	}
+
+
+	#endregion Additional Constructors / Destructors
+
+
+
+
+	// =====================================================================================================
+	#region Constants - ExecutionSettingsModel
+	// =====================================================================================================
+
 
 	private const string C_Package = "Editor";
 	private const string C_Group = "Execution";
 	private const string C_LivePrefix = "EditorExecutionGeneral";
 
 
+	#endregion Constants
+
+
+
+
+	// =====================================================================================================
+	#region Property Accessors - ExecutionSettingsModel
+	// =====================================================================================================
+
+
 	[Browsable(false)]
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 	public override string CollectionName { get; } = "\\BlackbirdSql\\SqlEditor.ExecutionSettings";
 
-
-
-
-	// =====================================================================================================
-	#region Model Properties - ExecutionSettingsModel
-	// =====================================================================================================
 
 
 	[TypeConverter(typeof(GlobalEnumConverter))]
@@ -83,26 +110,6 @@ public class ExecutionSettingsModel : AbstractSettingsModel<ExecutionSettingsMod
 	public int Timeout { get; set; } = ModelConstants.C_DefaultCommandTimeout;
 
 
-	#endregion Model Properties
-
-
-
-
-	// =====================================================================================================
-	#region Constructors / Destructors - ExecutionSettingsModel
-	// =====================================================================================================
-
-
-	public ExecutionSettingsModel() : this(null)
-	{
-	}
-
-	public ExecutionSettingsModel(IBLiveSettings liveSettings)
-		: base(C_Package, C_Group, C_LivePrefix, liveSettings)
-	{
-	}
-
-
-	#endregion Constructors / Destructors
+	#endregion Property Accessors
 
 }

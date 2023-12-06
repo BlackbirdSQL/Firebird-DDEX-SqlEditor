@@ -90,7 +90,10 @@ public class ManagedBatchParser : IDisposable
 
 		_BatchSource.GetMoreData(ref script);
 
-		_Executor.ProcessBatch(script, 1);
+		// ----------------------------------------------------------------------- //
+		// ******************** Execution Point (8) - Parse() ******************** //
+		// ----------------------------------------------------------------------- //
+		_Executor.ProcessParsedBatchStatement(script, 1);
 
 		return true;
 	}

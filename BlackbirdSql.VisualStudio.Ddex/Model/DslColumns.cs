@@ -39,9 +39,12 @@ namespace BlackbirdSql.VisualStudio.Ddex.Model;
 /// Refer to <see cref="DslForeignKeyColumns"/> to see an example of a more complex
 /// derived type.
 /// </summary>
-internal class DslColumns : AbstractDslSchema
+internal class DslColumns(LinkageParser parser) : AbstractDslSchema()
 {
-	LinkageParser _LinkageParser = null;
+	LinkageParser _LinkageParser = parser;
+
+
+
 	/// <summary>
 	/// The parent DslSchema this column collection belongs to.
 	/// (Not it's <see cref="DslObjectTypes"/> type.)
@@ -127,15 +130,6 @@ internal class DslColumns : AbstractDslSchema
 	/// Any additional conditions to be inserted into the WHERE clause.
 	/// </summary>
 	protected string _ConditionClause = "";
-
-
-
-
-	public DslColumns(LinkageParser parser) : base()
-	{
-		// Tracer.Trace(GetType(), "DslColumns.DslColumns");
-		_LinkageParser = parser;
-	}
 
 	#region Protected Methods
 
@@ -601,16 +595,10 @@ END",
 	/// A container class for additional columns.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public class ColumnType
+	public class ColumnType(string column, string type)
 	{
-		public readonly string Column;
-		public readonly string Type;
-
-		public ColumnType(string column, string type)
-		{
-			Column = column;
-			Type = type;
-		}
+		public readonly string Column = column;
+		public readonly string Type = type;
 	}
 
 
