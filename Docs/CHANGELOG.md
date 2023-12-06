@@ -53,3 +53,6 @@ Pre-release version for publishing on Visual Sturio Markeyplace.
 
 #### v10.0.1.1-prerelease
 Resolved Blob handling exceptions.
+
+#### v10.0.1.2-prerelease
+Resolved Blob handling exceptions and name update.

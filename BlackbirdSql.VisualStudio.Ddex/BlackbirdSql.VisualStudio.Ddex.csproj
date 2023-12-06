@@ -67,13 +67,19 @@
   </PropertyGroup>
   <!-- Includes - Top Level -->
   <ItemGroup>
-    <Content Include="..\Resources\blackbird-vsix-preview.jpg">
-      <Link>blackbird-vsix-preview.jpg</Link>
+    <Content Include="blackbird-128x128.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
-    <Content Include="..\Resources\blackbirdsql.ico">
-      <Link>blackbirdsql.ico</Link>
+    <Content Include="blackbird-90x90.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="blackbird-vsix-preview.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="blackbirdsql.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -488,11 +494,6 @@
     <Compile Include="Ctl\ComponentModel\GlobalizedDescriptionAttribute.cs" />
     <Compile Include="Ctl\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\Resources\blackbird-90x90.png">
-      <Link>blackbird-90x90.png</Link>
-    </Content>
-  </ItemGroup>
   <!-- Includes (VSIX Manifest) -->
   <!-- Imports -->
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -503,7 +504,8 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>set DestFolder="%25LocalAppData%25\Microsoft\VisualStudio\17.0_5d5e49fcExp\Extensions\BlackbirdSql\BlackbirdSql.VisualStudio.Ddex\$(VersionPrefix)\"
+    <PostBuildEvent>set DestFolder="%25LocalAppData%25\Microsoft\VisualStudio\17.0_5d5e49fcExp\Extensions\$(Company)\BlackbirdSql DDEX and SqlEditor for Firebird\$(VersionPrefix)\"
+echo %25DestFolder%25
 if exist %25DestFolder%25 (
 copy /v /y /b $(ProjectDir)$(OutDir)*.pdb %25DestFolder%25
 )</PostBuildEvent>
