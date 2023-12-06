@@ -140,7 +140,7 @@ public sealed class QEReaderDataStorage : IBQEStorage, IBDataStorage, IDisposabl
 		return _IsClosed;
 	}
 
-	public void InitStorage(IDataReader reader, bool textBased)
+	public void InitStorage(IDataReader reader)
 	{
 		if (reader == null)
 		{
@@ -149,7 +149,7 @@ public sealed class QEReaderDataStorage : IBQEStorage, IBDataStorage, IDisposabl
 			throw ex;
 		}
 
-		_StorageReader = new StorageDataReader(reader, textBased ? this : null);
+		_StorageReader = new StorageDataReader(reader);
 		_StorageReader.GetSchemaTable();
 		int fieldCount = _StorageReader.FieldCount;
 		for (int i = 0; i < fieldCount; i++)

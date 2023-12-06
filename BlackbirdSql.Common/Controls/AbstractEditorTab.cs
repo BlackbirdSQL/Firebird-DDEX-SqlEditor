@@ -29,39 +29,27 @@ namespace BlackbirdSql.Common.Controls;
 [SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
 	Justification = "Class is UIThread compliant.")]
 
-public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMultiViewDocumentView, IVsWindowFrameNotify3, IOleCommandTarget, IVsToolboxActiveUserHook, IVsToolboxPageChooser, IVsDefaultToolboxTabState, IVsToolboxUser
+public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Guid logicalView, EnEditorTabType editorTabType)
+	: IDisposable, IVsDesignerInfo, IVsMultiViewDocumentView, IVsWindowFrameNotify3, IOleCommandTarget,
+		IVsToolboxActiveUserHook, IVsToolboxPageChooser, IVsDefaultToolboxTabState, IVsToolboxUser
 {
 	protected IVsWindowFrame _CurrentFrame;
-
 	protected TextEditor _TextEditor;
-
-	protected IOleCommandTarget _CmdTarget;
-
-	private readonly System.IServiceProvider _WindowPaneServiceProvider;
-
-	private Guid _LogicalView;
-
+	protected IOleCommandTarget _CmdTarget = editorPane;
+	private readonly System.IServiceProvider _WindowPaneServiceProvider = editorPane;
+	private Guid _LogicalView = logicalView;
 	private IWin32Window _Owner;
-
 	private ISelectionContainer _SavedSelection;
-
 	private bool _Showing;
-
 	private bool _Visible;
-
 	private bool _IsActive;
-
-	private EnEditorTabType _EditorTabType;
-
-	private readonly AbstractTabbedEditorPane _TabbedEditorPane;
-
+	private EnEditorTabType _EditorTabType = editorTabType;
+	private readonly AbstractTabbedEditorPane _TabbedEditorPane = editorPane;
 	private Rectangle _Bounds;
-
 	private Panel _ParentPanel;
-
 	private ITrackSelection _TrackSelection;
-
 	private ICollection _PropertyWindowSelectedObjects;
+	private IDisposable _DisposableWaitCursor;
 
 
 
@@ -84,6 +72,33 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 	}
 
 	public IVsWindowFrame CurrentFrame => _CurrentFrame;
+
+	public IDisposable DisposableWaitCursor
+	{
+		get
+		{
+			return _DisposableWaitCursor;
+		}
+		set
+		{
+			if (_DisposableWaitCursor != null)
+			{
+				_DisposableWaitCursor.Dispose();
+				_DisposableWaitCursor = value;
+
+				Controller.DisposableWaitCursor = value;
+			}
+			else if (Controller.DisposableWaitCursor == null)
+			{
+				_DisposableWaitCursor = value;
+				Controller.DisposableWaitCursor = value;
+			}
+			else
+			{
+				value.Dispose();
+			}
+		}
+	}
 
 	protected System.IServiceProvider WindowPaneServiceProvider => _WindowPaneServiceProvider;
 
@@ -299,15 +314,6 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 	public event EventHandler ShownEvent;
 
 	public event EventHandler<ToolboxEventArgs> ToolboxItemPickedEvent;
-
-	public AbstractEditorTab(AbstractTabbedEditorPane editorPane, Guid logicalView, EnEditorTabType editorTabType)
-	{
-		_EditorTabType = editorTabType;
-		_WindowPaneServiceProvider = editorPane;
-		_LogicalView = logicalView;
-		_CmdTarget = editorPane;
-		_TabbedEditorPane = editorPane;
-	}
 
 	protected Panel GetPanelForCurrentFrame()
 	{

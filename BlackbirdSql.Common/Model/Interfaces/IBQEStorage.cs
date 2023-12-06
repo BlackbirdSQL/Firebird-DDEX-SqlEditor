@@ -23,7 +23,7 @@ namespace BlackbirdSql.Common.Model.Interfaces
 
 		event StorageNotifyDelegate StorageNotify;
 
-		void InitStorage(IDataReader reader, bool textBased);
+		void InitStorage(IDataReader reader);
 
 		void StartStoringData();
 

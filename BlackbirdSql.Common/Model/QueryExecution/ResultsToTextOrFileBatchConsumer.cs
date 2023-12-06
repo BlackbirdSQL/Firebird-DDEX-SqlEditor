@@ -579,7 +579,7 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 	{
 		// Tracer.Trace(GetType(), "ResultsToTextOrFileBatchConsumer.OnNewResultSet", "", null);
 		Cleanup();
-		args.ResultSet.Initialize(true, true);
+		args.ResultSet.Initialize(true);
 		if (DiscardResults)
 		{
 			HandleNewResultSetForDiscard(args);

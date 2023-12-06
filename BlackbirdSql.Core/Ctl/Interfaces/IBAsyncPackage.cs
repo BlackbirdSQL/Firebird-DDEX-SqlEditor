@@ -19,6 +19,8 @@ public interface IBAsyncPackage
 
 	IBPackageController Controller { get; }
 
+	IDisposable DisposableWaitCursor { get; set; }
+
 	IVsRunningDocumentTable DocTable { get; }
 
 	DTE Dte { get; }

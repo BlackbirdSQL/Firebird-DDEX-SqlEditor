@@ -13,11 +13,11 @@ public sealed class WaitCursorHelper
 {
 	private class WaitCursor : IDisposable
 	{
-		private Cursor _currentCursor;
+		private Cursor _CurrentCursor;
 
 		public WaitCursor()
 		{
-			_currentCursor = Cursor.Current;
+			_CurrentCursor = Cursor.Current;
 			Cursor.Current = Cursors.WaitCursor;
 		}
 
@@ -34,17 +34,17 @@ public sealed class WaitCursorHelper
 
 		private void DisposeInternal()
 		{
-			if (!(_currentCursor != null))
+			if (!(_CurrentCursor != null))
 			{
 				return;
 			}
 
 			lock (this)
 			{
-				if (_currentCursor != null)
+				if (_CurrentCursor != null)
 				{
-					Cursor.Current = _currentCursor;
-					_currentCursor = null;
+					Cursor.Current = _CurrentCursor;
+					_CurrentCursor = null;
 				}
 			}
 		}

@@ -22,13 +22,11 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 
 	protected static Package _Instance = null;
 	protected IBPackageController _Controller;
-
+	private IDisposable _DisposableWaitCursor;
 	protected DTE _Dte = null;
 	protected IVsSolution _DteSolution = null;
 	protected IVsRunningDocumentTable _DocTable = null;
-
 	protected System.Reflection.Assembly _InvariantAssembly = null;
-
 
 
 	#endregion Variables
@@ -49,6 +47,13 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	// ---------------------------------------------------------------------------------
 	public virtual IBPackageController Controller => _Controller
 		??= (IBPackageController)GetGlobalService(typeof(IBPackageController));
+
+
+	public IDisposable DisposableWaitCursor
+	{
+		get { return _DisposableWaitCursor; }
+		set { _DisposableWaitCursor = value; }
+	}
 
 
 	// ---------------------------------------------------------------------------------

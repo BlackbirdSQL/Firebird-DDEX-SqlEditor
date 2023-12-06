@@ -93,6 +93,17 @@ public sealed class AuxiliaryDocData(object docData)
 		}
 	}
 
+	public bool HasQryMgr 
+	{
+		get
+		{
+			lock (_LockLocal)
+			{
+				return _QryMgr != null;
+			}
+		}
+	}
+
 	public bool? IntellisenseEnabled
 	{
 		get

@@ -7,22 +7,16 @@ using System;
 using System.Data;
 using System.Globalization;
 using System.IO;
-using System.Reflection;
 using System.Threading;
-
-using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Ctl.Exceptions;
 using BlackbirdSql.Common.Ctl.Interfaces;
-using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.Enums;
 using BlackbirdSql.Common.Model.Events;
+using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
-
 using FirebirdSql.Data.FirebirdClient;
-using BlackbirdSql.Core.Ctl.Extensions;
 
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
@@ -338,7 +332,7 @@ public class QESQLBatch : IDisposable
 		if (sysEx.GetType().ToString().EndsWith("FbException", StringComparison.Ordinal))
 		{
 			FbException ex = (FbException)sysEx;
-			HandleSqlMessages(ex.Errors,  true);
+			HandleSqlMessages(ex.Errors, true);
 		}
 	}
 
@@ -393,7 +387,7 @@ public class QESQLBatch : IDisposable
 						RaiseErrorMessage(new(text, string.Empty, -1, _TextSpan));
 				}
 				else if (MessageEvent != null && text != string.Empty)
-				{ 
+				{
 					RaiseMessage(new(text, error.Message));
 				}
 			}
@@ -415,7 +409,7 @@ public class QESQLBatch : IDisposable
 
 		if (MessageEvent != null)
 		{
-			RaiseMessage(new (string.Format(CultureInfo.CurrentCulture, ControlsResources.RowsAffectedMessage, e.RecordCount.ToString(CultureInfo.InvariantCulture))));
+			RaiseMessage(new(string.Format(CultureInfo.CurrentCulture, ControlsResources.RowsAffectedMessage, e.RecordCount.ToString(CultureInfo.InvariantCulture))));
 		}
 	}
 
@@ -589,9 +583,15 @@ public class QESQLBatch : IDisposable
 			// ******************** Final Execution Point (13) - ExecuteStatement() ******************** //
 			// ----------------------------------------------------------------------------------------- //
 
+
 			if (_NoResultsExpected && !expectEstimatedPlan)
 			{
-				int i = _Command.ExecuteNonQuery();
+
+				int i;
+
+
+				i = _Command.ExecuteNonQuery();
+
 
 				QESQLStatementCompletedEventArgs args = new(i, false);
 				OnSqlStatementCompleted(_Command, args);
@@ -618,12 +618,14 @@ public class QESQLBatch : IDisposable
 					// get the the plan using GetCommandPlan().
 					// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteStatement()", ": creating reader from GetCommandPlan: " + _SpecialActions);
 
-					DataTable table = new ();
+					DataTable table = new();
 					table.Columns.Add(LibraryData.C_YukonXmlExecutionPlanColumn, typeof(string));
 					DataRow row = table.NewRow();
+					string str = null;
 
 					_Command.Prepare();
-					string str = ((FbCommand)_Command).GetCommandExplainedPlan();
+					str = ((FbCommand)_Command).GetCommandExplainedPlan();
+
 					row[LibraryData.C_YukonXmlExecutionPlanColumn] = str;
 					table.Rows.Add(row);
 

@@ -6,28 +6,32 @@
 using System;
 using System.Data;
 using System.Data.Common;
-using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-using BlackbirdSql.Common.Ctl.Interfaces;
-using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using FirebirdSql.Data.FirebirdClient;
 
 
-
-
 namespace BlackbirdSql.Common.Model;
-
 
 public class StorageDataReader
 {
 	public delegate bool QueryKeepStoringData();
 
-	private class StringWriterWithMaxCapacity : StringWriter
+	private class StringWriterWithMaxCapacity(IFormatProvider formatProvider)
+		: StringWriter(formatProvider)
 	{
+		public StringWriterWithMaxCapacity(IFormatProvider formatProvider, int capacity,
+				QueryKeepStoringData _KeepStoringDataDelegate)
+			: this(formatProvider)
+		{
+			_MaxCapacity = capacity;
+			this._KeepStoringDataDelegate = _KeepStoringDataDelegate;
+		}
+
+
 		private readonly int _MaxCapacity = int.MaxValue;
 
 		private bool _StopWriting;
@@ -38,17 +42,7 @@ public class StorageDataReader
 
 		public int MaximumCapacity => _MaxCapacity;
 
-		public StringWriterWithMaxCapacity(IFormatProvider formatProvider)
-			: base(formatProvider)
-		{
-		}
 
-		public StringWriterWithMaxCapacity(IFormatProvider formatProvider, int capacity, QueryKeepStoringData _KeepStoringDataDelegate)
-			: this(formatProvider)
-		{
-			_MaxCapacity = capacity;
-			this._KeepStoringDataDelegate = _KeepStoringDataDelegate;
-		}
 
 		public override void Write(char value)
 		{
@@ -153,7 +147,6 @@ public class StorageDataReader
 
 
 	private readonly IDataReader dataReader;
-	readonly IBDataStorage _DataStorage;
 	private readonly DbDataReader _DbDataReader;
 	private readonly FbDataReader _SqlReader;
 	// private readonly MethodInfo getSqlXmlMethod;
@@ -189,7 +182,7 @@ public class StorageDataReader
 	}
 	*/
 
-	public StorageDataReader(IDataReader reader, IBDataStorage dataStorage)
+	public StorageDataReader(IDataReader reader)
 	{
 		dataReader = reader;
 		_DbDataReader = reader as DbDataReader;
@@ -207,18 +200,8 @@ public class StorageDataReader
 			ArgumentException ex = new("Invalid IDataReader", "reader");
 			Diag.Dug(ex);
 			throw ex;
-			/*
-			try
-			{
-				getSqlXmlMethod = reader.GetType().GetMethod("GetSqlXml");
-			}
-			catch
-			{
-			}
-			*/
 		}
 
-		_DataStorage = dataStorage;
 	}
 
 	public string GetName(int i)
@@ -427,6 +410,7 @@ public class StorageDataReader
 	}
 
 
+	/*
 	public object GetSerializedWithMaxCapacity(int i, int maxReturnBytes)
 	{
 		if (_DataStorage == null)
@@ -458,6 +442,8 @@ public class StorageDataReader
 
 		return result;
 	}
+	*/
+
 
 	/*
 	private SqlXml GetSqlXml(int i)

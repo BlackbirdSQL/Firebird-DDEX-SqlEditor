@@ -18,16 +18,15 @@ using BlackbirdSql.Common.Ctl.Enums;
 namespace BlackbirdSql.Common.Controls;
 
 
-public class SqlEditorMessageTab : AbstractSqlEditorTab
+public class SqlEditorMessageTab(AbstractTabbedEditorPane editorPane, Guid logicalView, Guid editorLogicalView, EnEditorTabType editorTabType)
+	: AbstractSqlEditorTab(editorPane, logicalView, editorTabType)
 {
+
+	protected Guid _EditorLogicalView = editorLogicalView;
+
 	private Guid _ClsidLogicalView = VSConstants.LOGVIEWID_Designer;
 
 	private Guid _ClsidEditorFactory = new(LibraryData.SqlResultsEditorFactoryGuid);
-
-	public SqlEditorMessageTab(AbstractTabbedEditorPane editorPane, Guid logicalView, Guid editorLogicalView, EnEditorTabType editorTabType)
-		: base(editorPane, logicalView, editorTabType)
-	{
-	}
 
 	protected override Guid GetEditorTabEditorFactoryGuid()
 	{

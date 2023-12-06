@@ -565,7 +565,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 				IVsProject3 miscellaneousProject = Cmd.GetMiscellaneousProject(_ServiceProvider);
 				VSADDRESULT[] pResult = new VSADDRESULT[1];
 				VSADDITEMOPERATION dwAddItemOperation = VSADDITEMOPERATION.VSADDITEMOP_CLONEFILE;
-				Native.WrapComCall(miscellaneousProject.AddItem(uint.MaxValue, dwAddItemOperation, text3, 1u, new string[1] { text }, IntPtr.Zero, pResult), Array.Empty<int>());
+				Native.WrapComCall(miscellaneousProject.AddItem(uint.MaxValue, dwAddItemOperation, text3, 1u, [text], IntPtr.Zero, pResult), []);
 			}
 			catch (Exception)
 			{

@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using BlackbirdSql.Core;
 using BlackbirdSql.Common;
 using BlackbirdSql.Common.Model.Events;
+using BlackbirdSql.Common.Ctl.Interfaces;
 
 
 
@@ -69,6 +70,7 @@ public class QESplitter : Control, IMessageFilter
 		set
 		{
 			horizontalSplitter = value;
+
 			Cursor = SplitterCursor;
 		}
 	}
@@ -167,7 +169,9 @@ public class QESplitter : Control, IMessageFilter
 	{
 		SetStyle(ControlStyles.Selectable, value: false);
 		TabStop = false;
+
 		Cursor = SplitterCursor;
+
 		this.boundControl = boundControl;
 		this.boundControlMinSize = boundControlMinSize;
 	}

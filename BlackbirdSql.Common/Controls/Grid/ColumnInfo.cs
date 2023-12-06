@@ -136,7 +136,7 @@ public class ColumnInfo : IBColumnInfo
 		_FieldType = fieldType;
 		_MaxLength = maxLength;
 		_Precision = 0;
-		InitFieldTypes();
+		InitFieldTypes(providerSpecificDataTypeName);
 	}
 
 	public ColumnInfo(StorageDataReader reader, int colIndex)
@@ -155,6 +155,13 @@ public class ColumnInfo : IBColumnInfo
 		{
 			_ProviderSpecificDataTypeName = reader.GetProviderSpecificDataTypeName(colIndex);
 			_FieldType = reader.GetFieldType(colIndex);
+
+			if (_IsBytesField && _ProviderSpecificDataTypeName.ToLowerInvariant() == "system.string")
+			{
+				_IsBytesField = false;
+				_IsCharsField = true;
+			}
+
 			return;
 		}
 
@@ -178,9 +185,12 @@ public class ColumnInfo : IBColumnInfo
 		_ColumnName = name;
 	}
 
-	public void InitFieldTypes()
+	public void InitFieldTypes(string providerSpecificDataTypeName = null)
 	{
 		string text = DataTypeName.ToLowerInvariant();
+
+		if (providerSpecificDataTypeName != null)
+			providerSpecificDataTypeName = providerSpecificDataTypeName.ToLowerInvariant();
 		// if (text.Contains("date"))
 		//	Tracer.Trace(GetType(), "InitFieldTypes()", "Type: {0}.", text);
 		switch (text)
@@ -245,6 +255,15 @@ public class ColumnInfo : IBColumnInfo
 				}
 
 				break;
+		}
+
+		if (_IsBytesField && providerSpecificDataTypeName != null)
+		{
+			if (providerSpecificDataTypeName == "system.string")
+			{
+				_IsBytesField = false;
+				_IsCharsField = true;
+			}
 		}
 	}
 }

@@ -21,19 +21,19 @@ namespace BlackbirdSql.Common.Controls;
 [SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
 	Justification = "Class is UIThread compliant.")]
 
-public class SqlEditorCodeTab : AbstractSqlEditorTab
+public class SqlEditorCodeTab(AbstractTabbedEditorPane editorPane, Guid logicalView,
+		Guid editorLogicalView, EnEditorTabType editorTabType)
+	: AbstractSqlEditorTab(editorPane, logicalView, editorTabType)
 {
+	protected Guid _EditorLogicalView = editorLogicalView;
+
+
+
 	private Guid _ClsidLogicalView = VSConstants.LOGVIEWID_TextView;
 
 	public static readonly string S_FramePhysicalViewString = "CodeFrame";
 
 	private Guid _ClsidEditorFactory = VSConstants.GUID_TextEditorFactory;
-
-	public SqlEditorCodeTab(AbstractTabbedEditorPane editorPane, Guid logicalView, Guid editorLogicalView, EnEditorTabType editorTabType)
-		: base(editorPane, logicalView, editorTabType)
-	{
-	}
-
 
 	protected override string GetPhysicalViewString()
 	{

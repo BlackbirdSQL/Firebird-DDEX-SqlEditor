@@ -677,13 +677,17 @@ public class SplitViewContainer : Control, IServiceProvider
 			_mouseDownOnSplitter = true;
 			_startDragLocation = e.Location;
 			SplitterBar.Capture = true;
-			if (Orientation == Orientation.Horizontal)
+			if (Cursor.Current != Cursors.WaitCursor)
 			{
-				Cursor.Current = Cursors.HSplit;
-			}
-			else
-			{
-				Cursor.Current = Cursors.VSplit;
+
+				if (Orientation == Orientation.Horizontal)
+				{
+					Cursor.Current = Cursors.HSplit;
+				}
+				else
+				{
+					Cursor.Current = Cursors.VSplit;
+				}
 			}
 		}
 		else

@@ -657,7 +657,10 @@ public class GridResultsGrid : GridControl, IBGridControl2, IBGridControl, IBSta
 
 	private void InitialColumnResizeInternal()
 	{
-		if (!Visible)
+		if (Visible)
+			return;
+
+		try
 		{
 			if (!IsHandleCreated)
 			{
@@ -678,6 +681,11 @@ public class GridResultsGrid : GridControl, IBGridControl2, IBGridControl, IBSta
 			}
 
 			Show();
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
 		}
 	}
 

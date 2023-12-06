@@ -51,3 +51,5 @@ Version sync.
 #### v10.0.1.0-prerelease
 Pre-release version for publishing on Visual Sturio Markeyplace.
 
+#### v10.0.1.1-prerelease
+Resolved Blob handling exceptions.

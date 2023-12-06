@@ -28,7 +28,7 @@ namespace BlackbirdSql.EditorExtension.Ctl;
 [SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
 	Justification = "Class is UIThread compliant.")]
 
-public abstract class AbstractEditorFactory : AbstruseEditorFactory
+public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorFactory(withEncoding)
 {
 
 	protected static volatile int _EditorId;
@@ -107,11 +107,6 @@ public abstract class AbstractEditorFactory : AbstruseEditorFactory
 	}
 
 	private string EditorId { get; set; }
-
-	public AbstractEditorFactory(bool withEncoding)
-		: base(withEncoding)
-	{
-	}
 
 	public override int CreateEditorInstance(uint createFlags, string moniker, string physicalView, IVsHierarchy hierarchy, uint itemId, IntPtr existingDocData, out IntPtr intPtrDocView, out IntPtr intPtrDocData, out string caption, out Guid cmdUIGuid, out int result)
 	{

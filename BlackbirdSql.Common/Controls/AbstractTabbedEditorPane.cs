@@ -11,15 +11,20 @@ using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text.Projection;
 using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.VisualStudio.Utilities;
 
+
+using DpiAwareness = Microsoft.VisualStudio.Utilities.DpiAwareness;
+using DpiAwarenessContext = Microsoft.VisualStudio.Utilities.DpiAwarenessContext;
 using OleConstants = Microsoft.VisualStudio.OLE.Interop.Constants;
 
 
@@ -33,44 +38,60 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 	private static TabbedEditorToolbarHandlerManager _ToolbarManager;
 
 	private Package _Package;
-
 	private TabbedEditorUI _TabbedEditorUI;
-
 	private Guid _RequestedView;
-
+	private IDisposable _DisposableWaitCursor;
 	// private uint _selectionMonitorCookie;
-
 	// private IVsMonitorSelection _SelectionMonitor;
-
 	private bool _IsAppActivated = true;
-
 	private IBTextEditor _TextEditor;
-
 	private bool _IsLoading;
-
 	private bool _IsClosing;
-
 	private bool _IsInUpdateCmdUIContext;
-
 	private uint _LockHolderCookie;
-
 	// private Guid _toolbarGuid;
-
 	// private readonly uint _toolbarID;
-
 	private IVsTextLines _DocData;
-
 	private IList<uint> _OverrideSaveFileList;
-
 	// private bool _FirstTimeShowEventHandled;
-
 	private bool _IsHelpInitialized;
+
+
 
 	public static TabbedEditorToolbarHandlerManager ToolbarManager =>
 		_ToolbarManager ??= new TabbedEditorToolbarHandlerManager();
 
 
 	public bool IsDisposed { get; private set; }
+
+	public IDisposable DisposableWaitCursor
+	{
+		get
+		{
+			return _DisposableWaitCursor;
+		}
+		set
+		{
+			if (_DisposableWaitCursor != null)
+			{
+				_DisposableWaitCursor.Dispose();
+				_DisposableWaitCursor = value;
+
+				Controller.DisposableWaitCursor = value;
+			}
+			else if (Controller.DisposableWaitCursor == null)
+			{
+				_DisposableWaitCursor = value;
+				Controller.DisposableWaitCursor = value;
+			}
+			else
+			{
+				Cursor.Current = Cursors.WaitCursor;
+				value?.Dispose();
+			}
+		}
+	}
+
 
 	public virtual IVsTextLines DocData => _DocData;
 
@@ -148,7 +169,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		_RequestedView = VSConstants.LOGVIEWID_Designer;
 		// _toolbarGuid = toolbarGuid;
 		// _toolbarID = toolbarID;
-		using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
+		using (Microsoft.VisualStudio.Utilities.DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
 		{
 			_TabbedEditorUI = CreateTabbedEditorUI(toolbarGuid, toolbarID);
 			_TabbedEditorUI.CreateControl();
@@ -453,6 +474,13 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 			_ = _TabbedEditorUI.TopEditorTab;
 		}
 	}
+
+	protected void OnQueryScriptExecutionCompleted(object sender, ScriptExecutionCompletedEventArgs args)
+	{
+		DisposableWaitCursor = null;
+	}
+
+
 
 	private void OnTabActivated(object sender, EventArgs e)
 	{

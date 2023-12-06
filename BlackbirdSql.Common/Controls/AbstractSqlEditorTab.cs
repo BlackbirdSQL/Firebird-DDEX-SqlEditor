@@ -10,8 +10,8 @@ using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Core;
 
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 
 namespace BlackbirdSql.Common.Controls;
@@ -19,15 +19,11 @@ namespace BlackbirdSql.Common.Controls;
 [SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
 	Justification = "Class is UIThread compliant.")]
 
-public abstract class AbstractSqlEditorTab : AbstractEditorTab
+public abstract class AbstractSqlEditorTab(AbstractTabbedEditorPane editorPane,
+		Guid logicalView, EnEditorTabType editorTabType)
+	: AbstractEditorTab(editorPane, logicalView, editorTabType)
 {
 	public static readonly string S_PhysicalViewString = "ResultFrame";
-
-	public AbstractSqlEditorTab(AbstractTabbedEditorPane editorPane, Guid logicalView, EnEditorTabType editorTabType)
-		: base(editorPane, logicalView, editorTabType)
-	{
-	}
-
 
 	protected override string GetPhysicalViewString()
 	{
@@ -42,7 +38,10 @@ public abstract class AbstractSqlEditorTab : AbstractEditorTab
 		IntPtr ppunkDocData2 = IntPtr.Zero;
 		Guid rguidLogicalView = GetLogicalView();
 		Guid pguidEditorType = GetEditorTabEditorFactoryGuid();
-		IDisposable disposable = WaitCursorHelper.NewWaitCursor();
+
+
+		DisposableWaitCursor = WaitCursorHelper.NewWaitCursor();
+
 		try
 		{
 			Microsoft.VisualStudio.OLE.Interop.IServiceProvider instance = Controller.OleServiceProvider;
@@ -88,21 +87,16 @@ public abstract class AbstractSqlEditorTab : AbstractEditorTab
 		}
 		finally
 		{
-			disposable?.Dispose();
+			DisposableWaitCursor = null;
+
 			if (ppunkDocData != IntPtr.Zero)
-			{
 				Marshal.Release(ppunkDocData);
-			}
 
 			if (ppunkDocView != IntPtr.Zero)
-			{
 				Marshal.Release(ppunkDocView);
-			}
 
 			if (ppunkDocData2 != IntPtr.Zero)
-			{
 				Marshal.Release(ppunkDocData2);
-			}
 		}
 	}
 

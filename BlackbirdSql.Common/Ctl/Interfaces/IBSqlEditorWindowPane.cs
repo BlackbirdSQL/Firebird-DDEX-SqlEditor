@@ -2,6 +2,7 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.Interfaces.ISqlEditorWindowPane
 
 using System;
+using System.Windows.Forms;
 using BlackbirdSql.Common.Controls.ResultsPane;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -18,6 +19,8 @@ public interface IBSqlEditorWindowPane : IBWindowPane
 	string FileName { get; }
 
 	string DocumentMoniker { get; }
+
+	IDisposable DisposableWaitCursor { get; set; }
 
 	bool IsResultsGridTabVisible { get; }
 

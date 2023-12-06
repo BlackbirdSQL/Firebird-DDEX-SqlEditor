@@ -34,8 +34,6 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
-using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
-
 
 namespace BlackbirdSql.Common.Controls;
 
@@ -93,6 +91,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 			return result;
 		}
 	}
+
 
 	public bool IsResultsGridTabVisible => GetSqlEditorResultsTab().IsVisible;
 
@@ -383,6 +382,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 			if (auxDocData != null && auxDocData.QryMgr != null)
 			{
 				auxDocData.QryMgr.StatusChangedEvent += OnUpdateTooltipAndWindowCaption;
+				auxDocData.QryMgr.ScriptExecutionCompletedEvent += OnQueryScriptExecutionCompleted;
 			}
 
 			UpdateWindowCaption();
@@ -883,6 +883,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 		// ------------------------------------------------------------------------------ //
 		// ******************** Execution Point (1) - ExecuteQuery() ******************** //
 		// ------------------------------------------------------------------------------ //
+
 		ExecuteOrParseQuery(true);
 	}
 
@@ -904,19 +905,28 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 			if (sqlTextSpan != null && !string.IsNullOrEmpty(sqlTextSpan.Text))
 			{
 				AuxiliaryDocData auxDocData = (((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(DocData));
+				QueryManager qryMgr = auxDocData.QryMgr;
 
 				// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteOrParseQuery", "AuxiliaryDocData.EstimatedExecutionPlanEnabled: " + auxDocData.EstimatedExecutionPlanEnabled);
 
-				QueryManager qryMgr = auxDocData.QryMgr;
 
+				DisposableWaitCursor = WaitCursorHelper.NewWaitCursor();
 
-				// ----------------------------------------------------------------------------------- //
-				// ******************** Execution Point (2) ExecuteOrParseQuery() ******************** //
-				// ----------------------------------------------------------------------------------- //
-				if (isExecute)
-					qryMgr.Run(sqlTextSpan);
-				else
-					qryMgr.Parse(sqlTextSpan);
+				try
+				{
+
+					// ----------------------------------------------------------------------------------- //
+					// ******************** Execution Point (2) ExecuteOrParseQuery() ******************** //
+					// ----------------------------------------------------------------------------------- //
+					if (isExecute)
+						qryMgr.Run(sqlTextSpan);
+					else
+						qryMgr.Parse(sqlTextSpan);
+				}
+				catch
+				{
+					DisposableWaitCursor = null;
+				}
 
 			}
 		}
@@ -933,6 +943,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 			if (auxDocData != null && auxDocData.QryMgr != null)
 			{
 				auxDocData.QryMgr.StatusChangedEvent -= OnUpdateTooltipAndWindowCaption;
+				auxDocData.QryMgr.ScriptExecutionCompletedEvent -= OnQueryScriptExecutionCompleted;
 			}
 
 			_ProperyWindowManager?.Dispose();
@@ -1383,6 +1394,8 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 			GridResultsPanel.GridContainers[GridResultsPanel.NumberOfGrids - 1].GridCtl.Focus();
 		}
 	}
+
+
 
 	int IVsFindTarget.Find(string pszSearch, uint grfOptions, int fResetStartPoint, IVsFindHelper pHelper, out uint pResult)
 	{

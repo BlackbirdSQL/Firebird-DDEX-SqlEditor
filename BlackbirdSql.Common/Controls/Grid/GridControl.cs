@@ -21,8 +21,10 @@ using BlackbirdSql.Common.Controls.Enums;
 using BlackbirdSql.Common.Controls.Events;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Ctl;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using Microsoft.VisualStudio;
 using Microsoft.Win32;
@@ -38,6 +40,7 @@ namespace BlackbirdSql.Common.Controls.Grid;
 [DefaultEvent("MouseButtonClicked")]
 public class GridControl : Control, ISupportInitialize, IBGridControl
 {
+
 	private class InvokerInOutArgs
 	{
 		public object InOutParam;
@@ -46,6 +49,9 @@ public class GridControl : Control, ISupportInitialize, IBGridControl
 
 		public object InOutParam3;
 	}
+
+
+
 
 	private delegate void UpdateGridInvoker(bool bRecalcRows);
 
@@ -292,21 +298,28 @@ public class GridControl : Control, ISupportInitialize, IBGridControl
 		}
 	}
 
-	protected class GridControlAccessibleObject : ControlAccessibleObject
+	protected class GridControlAccessibleObject(GridControl owner) : ControlAccessibleObject(owner)
 	{
+
 		protected class ColumnAccessibleObject : AccessibleObject
 		{
-			protected class CellAccessibleObject : AccessibleObject
+
+			protected class CellAccessibleObject(ColumnAccessibleObject parent,
+					long nRowIndex, int nColIndex)
+				: AccessibleObject
 			{
-				protected class EmbeddedEditOperationAccessibleObject : AccessibleObject
+
+				protected class EmbeddedEditOperationAccessibleObject(CellAccessibleObject parent,
+						long nRowIndex, int nColIndex, bool bCommit)
+					: AccessibleObject
 				{
-					protected bool m_commit;
+					protected bool m_commit = bCommit;
 
-					protected long m_rowIndex;
+					protected long m_rowIndex = nRowIndex;
 
-					protected int m_colIndex;
+					protected int m_colIndex = nColIndex;
 
-					protected CellAccessibleObject m_parent;
+					protected CellAccessibleObject m_parent = parent;
 
 					public override string Name
 					{
@@ -336,14 +349,6 @@ public class GridControl : Control, ISupportInitialize, IBGridControl
 						}
 					}
 
-					public EmbeddedEditOperationAccessibleObject(CellAccessibleObject parent, long nRowIndex, int nColIndex, bool bCommit)
-					{
-						m_parent = parent;
-						m_commit = bCommit;
-						m_rowIndex = nRowIndex;
-						m_colIndex = nColIndex;
-					}
-
 					public override void DoDefaultAction()
 					{
 						if (m_parent.IsCellBeingEdited)
@@ -353,11 +358,11 @@ public class GridControl : Control, ISupportInitialize, IBGridControl
 					}
 				}
 
-				private readonly ColumnAccessibleObject m_parent;
+				private readonly ColumnAccessibleObject m_parent = parent;
 
-				protected int m_colIndex = -1;
+				protected int m_colIndex = nColIndex;
 
-				protected long m_rowIndex = -1L;
+				protected long m_rowIndex = nRowIndex;
 
 				protected GridControl Grid => m_parent.Grid;
 
@@ -552,13 +557,6 @@ public class GridControl : Control, ISupportInitialize, IBGridControl
 					}
 				}
 
-				public CellAccessibleObject(ColumnAccessibleObject parent, long nRowIndex, int nColIndex)
-				{
-					m_parent = parent;
-					m_rowIndex = nRowIndex;
-					m_colIndex = nColIndex;
-				}
-
 				public override void Select(AccessibleSelection accessibleSelection)
 				{
 					if ((AccessibleSelection.TakeSelection & accessibleSelection) != 0)
@@ -676,11 +674,12 @@ public class GridControl : Control, ISupportInitialize, IBGridControl
 				}
 			}
 
-			protected class HeaderAccessibleObject : AccessibleObject
+			protected class HeaderAccessibleObject(ColumnAccessibleObject parent, int nColIndex)
+				: AccessibleObject
 			{
-				private readonly ColumnAccessibleObject m_parent;
+				private readonly ColumnAccessibleObject m_parent = parent;
 
-				private readonly int m_colIndex = -1;
+				private readonly int m_colIndex = nColIndex;
 
 				protected GridControl Grid => m_parent.Grid;
 
@@ -757,12 +756,6 @@ public class GridControl : Control, ISupportInitialize, IBGridControl
 
 						return accessibleStates;
 					}
-				}
-
-				public HeaderAccessibleObject(ColumnAccessibleObject parent, int nColIndex)
-				{
-					m_parent = parent;
-					m_colIndex = nColIndex;
 				}
 
 				public override void DoDefaultAction()
@@ -899,13 +892,22 @@ public class GridControl : Control, ISupportInitialize, IBGridControl
 			}
 		}
 
-		protected class AccessibleObjectOnIAccessible : AccessibleObject
+		protected class AccessibleObjectOnIAccessible(IAccessible acc, AccessibleObject parent, int nChildId)
+			: AccessibleObject
 		{
-			private readonly IAccessible m_acc;
 
-			private readonly AccessibleObject m_parent;
+			public AccessibleObjectOnIAccessible(IAccessible acc, AccessibleObject parent)
+				: this(acc, parent, 0)
+			{
+			}
 
-			private readonly int m_childID;
+
+
+			private readonly IAccessible m_acc = acc;
+
+			private readonly AccessibleObject m_parent = parent;
+
+			private readonly int m_childID = nChildId;
 
 			public override Rectangle Bounds
 			{
@@ -1144,17 +1146,6 @@ public class GridControl : Control, ISupportInitialize, IBGridControl
 				}
 			}
 
-			public AccessibleObjectOnIAccessible(IAccessible acc, AccessibleObject parent)
-				: this(acc, parent, 0)
-			{
-			}
-
-			public AccessibleObjectOnIAccessible(IAccessible acc, AccessibleObject parent, int nChildId)
-			{
-				m_acc = acc;
-				m_parent = parent;
-				m_childID = nChildId;
-			}
 
 			public override int GetHelpTopic(out string fileName)
 			{
@@ -1309,17 +1300,8 @@ public class GridControl : Control, ISupportInitialize, IBGridControl
 
 		public override Rectangle Bounds => Grid.RectangleToScreen(Grid.ClientRectangle);
 
-		public GridControlAccessibleObject(GridControl owner)
-			: base(owner)
-		{
-		}
-
 		protected AccessibleObject GetAccessibleForScrollBar(bool bHoriz)
 		{
-			//IL_0044: Unknown result type (might be due to invalid IL or missing references)
-			//IL_004f: Expected O, but got Unknown
-			//IL_006d: Unknown result type (might be due to invalid IL or missing references)
-			//IL_0078: Expected O, but got Unknown
 			if (m_cachedHandle != Handle)
 			{
 				m_cachedHandle = Handle;
@@ -4214,6 +4196,16 @@ public class GridControl : Control, ISupportInitialize, IBGridControl
 
 	protected virtual void SetCursorFromHitTest(EnHitTestResult ht, long nRowIndex, int nColumnIndex, Rectangle cellRect)
 	{
+		if (Controller.DisposableWaitCursor != null)
+		{
+			// Tracer.Trace(GetType(), "SetCursorFromHitTest()", "DisposableWaitCursor IS active");
+			Cursor = Cursors.WaitCursor;
+			return;
+		}
+
+		// Tracer.Trace(GetType(), "SetCursorFromHitTest()", "DisposableWaitCursor is NOT active");
+
+
 		switch (ht)
 		{
 			case EnHitTestResult.ColumnResize:
@@ -5398,7 +5390,9 @@ public class GridControl : Control, ISupportInitialize, IBGridControl
 		if (sender is Timer timer)
 		{
 			timer.Stop();
+
 			Cursor = Cursors.Arrow;
+
 			HandleStdCellLBtnDown(Keys.None);
 			m_captureTracker.CaptureHitTest = EnHitTestResult.TextCell;
 		}
@@ -6569,32 +6563,32 @@ public class GridControl : Control, ISupportInitialize, IBGridControl
 
 	private bool ShouldMakeControlVisible(KeyEventArgs ke)
 	{
-		Keys[] array = new Keys[13]
-		{
-			Keys.Escape,
-			Keys.Tab,
-			Keys.Capital,
-			Keys.Menu,
-			Keys.ShiftKey,
-			Keys.ControlKey,
-			Keys.Alt,
-			Keys.Home,
-			Keys.End,
-			Keys.Next,
-			Keys.Prior,
-			Keys.Snapshot,
-			Keys.Insert
-		};
+		Keys[] array =
+			[
+				Keys.Escape,
+				Keys.Tab,
+				Keys.Capital,
+				Keys.Menu,
+				Keys.ShiftKey,
+				Keys.ControlKey,
+				Keys.Alt,
+				Keys.Home,
+				Keys.End,
+				Keys.Next,
+				Keys.Prior,
+				Keys.Snapshot,
+				Keys.Insert
+			];
 		if (!FocusEditorOnNavigation)
 		{
-			Keys[] obj = new Keys[5]
-			{
-				Keys.Left,
-				Keys.Right,
-				Keys.Up,
-				Keys.Down,
-				Keys.Return
-			};
+			Keys[] obj =
+				[
+					Keys.Left,
+					Keys.Right,
+					Keys.Up,
+					Keys.Down,
+					Keys.Return
+				];
 			Keys[] array2 = new Keys[obj.Length + array.Length];
 			array.CopyTo(array2, 0);
 			obj.CopyTo(array2, array.Length - 1);

@@ -8,7 +8,9 @@ using System.Drawing.Imaging;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Config;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -17,18 +19,13 @@ namespace BlackbirdSql.Common.Controls.Widgets;
 
 public class SplitViewSplitterStrip : ToolStrip
 {
-	private class SplitBarRenderer : BarBackgroundRenderer
+	private class SplitBarRenderer(IServiceProvider provider) : BarBackgroundRenderer(provider)
 	{
 		private const int C_MINGRIPWIDTH = 4;
 
 		private const int C_GRIPHEIGHT = 6;
 
 		private const int C_GRIPLINESPACING = 3;
-
-		public SplitBarRenderer(IServiceProvider provider)
-			: base(provider)
-		{
-		}
 
 		protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
 		{
@@ -307,7 +304,7 @@ public class SplitViewSplitterStrip : ToolStrip
 			Point point5 = new Point(tabBounds.Left + height - S_FINASCENT, tabBounds.Top + S_FINASCENT);
 			Point point6 = new Point(tabBounds.Left, tabBounds.Bottom);
 			Point point7 = new Point(tabBounds.Left + height, tabBounds.Bottom);
-			Point[] points = new Point[8] { point, point2, point3, point4, point5, point6, point7, point };
+			Point[] points = [point, point2, point3, point4, point5, point6, point7, point];
 			if (!isActive)
 			{
 				using Brush brush = new LinearGradientBrush(tabBounds, VSCOLOR_FILETAB_GRADIENTDARK, VSCOLOR_FILETAB_GRADIENTHIGHLIGHT, LinearGradientMode.Vertical);
@@ -346,7 +343,7 @@ public class SplitViewSplitterStrip : ToolStrip
 			Point point5 = new Point(point3.X - 2, point3.Y + S_FINASCENT);
 			Point point6 = new Point(tabBounds.Left, tabBounds.Bottom - 2);
 			Point point7 = new Point(0, tabBounds.Bottom - width);
-			Point[] points = new Point[8] { point, point2, point4, point3, point5, point6, point7, point };
+			Point[] points = [point, point2, point4, point3, point5, point6, point7, point];
 			if (!isActive)
 			{
 				using Brush brush = new LinearGradientBrush(tabBounds, VSCOLOR_FILETAB_GRADIENTHIGHLIGHT, VSCOLOR_FILETAB_GRADIENTDARK, LinearGradientMode.Horizontal);
@@ -385,7 +382,7 @@ public class SplitViewSplitterStrip : ToolStrip
 			Point point5 = new Point(point3.X + 2, point3.Y - S_FINASCENT);
 			Point point6 = new Point(tabBounds.Right, tabBounds.Top + 2);
 			Point point7 = new Point(tabBounds.Right, tabBounds.Top + width);
-			Point[] points = new Point[8] { point, point2, point4, point3, point5, point6, point7, point };
+			Point[] points = [point, point2, point4, point3, point5, point6, point7, point];
 			if (!isActive)
 			{
 				using Brush brush = new LinearGradientBrush(tabBounds, VSCOLOR_FILETAB_GRADIENTDARK, VSCOLOR_FILETAB_GRADIENTHIGHLIGHT, LinearGradientMode.Horizontal);
@@ -466,7 +463,7 @@ public class SplitViewSplitterStrip : ToolStrip
 			Point point5 = new Point(tabBounds.Right - height + S_FINASCENT - 1, tabBounds.Bottom - S_FINASCENT + 1);
 			Point point6 = new Point(tabBounds.Right, tabBounds.Top);
 			Point point7 = new Point(tabBounds.Right - height, tabBounds.Top);
-			Point[] points = new Point[8] { point, point2, point3, point4, point5, point6, point7, point };
+			Point[] points = [point, point2, point3, point4, point5, point6, point7, point];
 			if (!isActive)
 			{
 				using Brush brush = new LinearGradientBrush(tabBounds, VSCOLOR_FILETAB_GRADIENTHIGHLIGHT, VSCOLOR_FILETAB_GRADIENTDARK, LinearGradientMode.Vertical);
@@ -612,10 +609,10 @@ public class SplitViewSplitterStrip : ToolStrip
 			if (e.Image != null)
 			{
 				bool flag3 = item is ToolStripButton toolStripButton && toolStripButton.Checked;
-				ColorMap[] array = new ColorMap[1]
-				{
+				ColorMap[] array =
+				[
 					new ColorMap()
-				};
+				];
 				array[0].OldColor = Color.Black;
 				array[0].NewColor = flag3 && SystemInformation.HighContrast ? VsColorUtilities.GetShellColor(__VSSYSCOLOREX3.VSCOLOR_HIGHLIGHTTEXT) : VsColorUtilities.GetShellColor(__VSSYSCOLOREX3.VSCOLOR_WINDOWTEXT);
 				using ImageAttributes imageAttributes = new ImageAttributes();
@@ -1518,6 +1515,7 @@ public class SplitViewSplitterStrip : ToolStrip
 	protected override void OnMouseMove(MouseEventArgs mea)
 	{
 		base.OnMouseMove(mea);
+
 		if (_splitterRectangle.Contains(mea.Location))
 		{
 			Cursor.Current = Orientation == Orientation.Vertical ? Cursors.VSplit : Cursors.HSplit;

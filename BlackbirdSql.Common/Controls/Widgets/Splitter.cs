@@ -33,14 +33,9 @@ public class Splitter : Control
 		public Control target;
 	}
 
-	private class SplitterMessageFilter : IMessageFilter
+	private class SplitterMessageFilter(Splitter splitter) : IMessageFilter
 	{
-		private readonly Splitter _Owner;
-
-		public SplitterMessageFilter(Splitter splitter)
-		{
-			_Owner = splitter;
-		}
+		private readonly Splitter _Owner = splitter;
 
 		[SecuritySafeCritical]
 		[SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.UnmanagedCode)]

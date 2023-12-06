@@ -1,6 +1,7 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
+using System;
 using System.Threading.Tasks;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Interfaces;
@@ -47,6 +48,11 @@ internal static class Controller
 
 	public static System.IServiceProvider ServiceProvider => (System.IServiceProvider)Instance.DdexPackage;
 
+	public static IDisposable DisposableWaitCursor
+	{
+		get { return DdexPackage.DisposableWaitCursor; }
+		set { DdexPackage.DisposableWaitCursor = value; }
+	}
 
 	public static IVsRunningDocumentTable DocTable => Instance.DocTable;
 

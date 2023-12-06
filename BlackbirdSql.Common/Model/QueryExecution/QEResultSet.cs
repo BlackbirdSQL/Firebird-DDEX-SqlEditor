@@ -194,7 +194,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 		_Script = script;
 	}
 
-	public void Initialize(bool textBased, bool forwardOnly)
+	public void Initialize(bool forwardOnly)
 	{
 		// Tracer.Trace(GetType(), "QEResultSet.Initialize", "", null);
 		if (_QeStorage != null)
@@ -204,7 +204,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 			throw ex;
 		}
 
-		StorageDataReader storageDataReader = new StorageDataReader(_DataReader, null);
+		StorageDataReader storageDataReader = new StorageDataReader(_DataReader);
 		_StorageReaderSchemaTable = storageDataReader.GetSchemaTable();
 		int fieldCount = storageDataReader.FieldCount;
 		_ColumnNames = [];
@@ -225,7 +225,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 			}
 		}
 
-		_QeStorage.InitStorage(_DataReader, textBased);
+		_QeStorage.InitStorage(_DataReader);
 		// _M_curRowsNum = 0L;
 		_NotifyDelegate = OnStorageNotify;
 		_QeStorage.StorageNotify += _NotifyDelegate;

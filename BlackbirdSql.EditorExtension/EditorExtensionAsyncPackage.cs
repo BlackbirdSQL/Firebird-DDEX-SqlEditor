@@ -141,21 +141,12 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 	// private static readonly string _TName = typeof(EditorExtensionAsyncPackage).Name;
 
-
 	private uint _VsBroadcastMessageEventsCookie;
-
 	private EditorEventsManager _EventsManager;
-
-
 	private EditorFactoryWithoutEncoding _SqlEditorFactory;
-
 	private EditorFactoryWithEncoding _SqlEditorFactoryWithEncoding;
-
 	private SqlResultsEditorFactory _SqlResultsEditorFactory;
-
-
 	private uint _MarkerServiceCookie;
-
 	private uint _FontAndColorServiceCookie;
 
 
@@ -174,11 +165,11 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 	public IBSqlEditorWindowPane LastFocusedSqlEditor { get; set; }
 
+
 	public Dictionary<object, AuxiliaryDocData> DocDataEditors => _DocDataEditors ??= [];
 
 
 	public bool EnableSpatialResultsTab { get; set; }
-
 
 
 	public override IBEventsManager EventsManager => _EventsManager ??= new EditorEventsManager(Controller);

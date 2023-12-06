@@ -22,34 +22,7 @@ public class QEDiskDataStorage : AbstractDiskDataStorage, IBQEStorage, IBDataSto
 		_DataStorageEnabled = true;
 	}
 
-	public virtual void InitStorage(IDataReader storageReader, bool textBased)
-	{
-		if (!textBased)
-		{
-			InitStorage(storageReader);
-			return;
-		}
 
-		if (storageReader == null)
-		{
-			throw new Exception(ControlsResources.ReaderCannotBeNull);
-		}
-		_StorageReader = new StorageDataReader(storageReader, this);
-		_FileName = Path.GetTempFileName();
-		if (_FileName.Length == 0)
-		{
-			throw new Exception(ControlsResources.FailedToGetTempFileName);
-		}
-		_FsWriter = new FileStreamWriter();
-		_FsWriter.Init(_FileName);
-
-		for (int i = 0; i < this._StorageReader.FieldCount; i++)
-		{
-			ColumnInfo columnInfo = new ColumnInfo(this._StorageReader, i);
-			_ColumnInfoArray.Add(columnInfo);
-			_HasBlobs |= columnInfo.IsBlobField;
-		}
-	}
 
 	public override void SerializeData()
 	{

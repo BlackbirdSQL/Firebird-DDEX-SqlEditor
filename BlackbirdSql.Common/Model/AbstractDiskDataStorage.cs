@@ -123,7 +123,8 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 		{
 			throw new Exception(ControlsResources.ReaderCannotBeNull);
 		}
-		_StorageReader = new StorageDataReader(storageReader, null);
+
+		_StorageReader = new StorageDataReader(storageReader);
 		_FileName = Path.GetTempFileName();
 		if (_FileName.Length == 0)
 		{
@@ -167,7 +168,7 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 		{
 			throw new Exception(ControlsResources.CannotAddReaderWhenStoringData);
 		}
-		_StorageReader = new StorageDataReader(storageReader, null);
+		_StorageReader = new StorageDataReader(storageReader);
 	}
 
 	public void StartStoringData()

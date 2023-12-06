@@ -27,14 +27,9 @@ namespace BlackbirdSql.Common.Controls;
 [DesignerCategory("code")]
 public class TabbedEditorUI : Control, IServiceProvider
 {
-	private class EditorTabCollection : Collection<AbstractEditorTab>
+	private class EditorTabCollection(TabbedEditorUI frame) : Collection<AbstractEditorTab>
 	{
-		private readonly TabbedEditorUI _TabbedEditorUI;
-
-		public EditorTabCollection(TabbedEditorUI frame)
-		{
-			_TabbedEditorUI = frame;
-		}
+		private readonly TabbedEditorUI _TabbedEditorUI = frame;
 
 		protected override void ClearItems()
 		{

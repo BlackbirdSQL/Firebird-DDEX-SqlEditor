@@ -9,6 +9,7 @@ using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Core;
 
 namespace BlackbirdSql.Common.Model;
 
@@ -164,7 +165,18 @@ public class DiskStorageView : AbstractStorageView, IDataReader, IDisposable, ID
 		{
 			if (StorageViewDataEntity.TypeString == type)
 			{
-				_CurrentOffset += _FsReader.ReadString(_CurrentOffset, bSkipValue, ref IsNull, ref StorageViewDataEntity.StringValue);
+				try
+				{
+					_CurrentOffset += _FsReader.ReadString(_CurrentOffset, bSkipValue, ref IsNull, ref StorageViewDataEntity.StringValue);
+				}
+				catch (Exception ex)
+				{
+
+					string str = $"Offset: {_CurrentOffset}, SkipValue: {bSkipValue}.\nColumnInfo:: ColumnName: {columnInfo.ColumnName}, DataTypeName: {columnInfo.DataTypeName}, ProviderSpecificDataTypeName: {columnInfo.ProviderSpecificDataTypeName}, FieldType: {columnInfo.FieldType}, IsBlobField: {columnInfo.IsBlobField}, IsCharsField: {columnInfo.IsCharsField}, IsBytesField: {columnInfo.IsBytesField}, IsXml: {columnInfo.IsXml}, IsSqlVariant: {columnInfo.IsSqlVariant}, IsUdtField: {columnInfo.IsUdtField}, Precision: {columnInfo.Precision}";
+
+					Diag.Dug(ex, str);
+					throw;
+				}
 				if (!IsNull && !bSkipValue)
 				{
 					result = StorageViewDataEntity.StringValue;

@@ -101,8 +101,8 @@ public sealed class QEStorageViewOnReader : AbstractStorageView, IBQEStorageView
 		{
 			if (_BytesGetFlags[iCol])
 			{
-				return _StorageReader.GetSerializedWithMaxCapacity(iCol, MaxNumBytesToDisplay);
-				// return _StorageReader.GetBytesWithMaxCapacity(iCol, MaxNumBytesToDisplay);
+				// return _StorageReader.GetSerializedWithMaxCapacity(iCol, MaxNumBytesToDisplay);
+				return _StorageReader.GetBytesWithMaxCapacity(iCol, MaxNumBytesToDisplay);
 			}
 
 			if (_CharsGetFlags[iCol])

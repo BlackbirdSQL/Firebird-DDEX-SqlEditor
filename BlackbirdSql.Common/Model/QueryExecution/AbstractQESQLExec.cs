@@ -7,12 +7,14 @@ using System.Globalization;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Config;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Enums;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using FirebirdSql.Data.FirebirdClient;
 
@@ -117,11 +119,11 @@ public abstract class AbstractQESQLExec : IDisposable
 		// ******************** Execution Point (5) - Execute() ******************** //
 		// ------------------------------------------------------------------------- //
 		_ExecThread = new(ProcessScript)
-			{
-				CurrentCulture = CultureInfo.CurrentCulture,
-				CurrentUICulture = CultureInfo.CurrentUICulture,
-				Name = "Batch Execution"
-			};
+		{
+			CurrentCulture = CultureInfo.CurrentCulture,
+			CurrentUICulture = CultureInfo.CurrentUICulture,
+			Name = "Batch Execution"
+		};
 
 		_ExecThread.Start();
 	}
@@ -203,6 +205,7 @@ public abstract class AbstractQESQLExec : IDisposable
 
 	private void ProcessScript()
 	{
+
 		try
 		{
 			// Tracer.Trace(GetType(), "QESQLExec.ProcessScript");
@@ -293,6 +296,7 @@ public abstract class AbstractQESQLExec : IDisposable
 			_ExecResult = EnScriptExecutionResult.Failure;
 			OnExecutionCompleted(_ExecResult);
 		}
+
 	}
 
 	private void StartCancelling()
@@ -574,7 +578,7 @@ public abstract class AbstractQESQLExec : IDisposable
 				withEstimatedPlan = ExecLiveSettings.WithEstimatedExecutionPlan;
 			}
 
-			BatchExecutionCompletedEvent(this, new (batchResult, batch, withEstimatedPlan, isParseOnly));
+			BatchExecutionCompletedEvent(this, new(batchResult, batch, withEstimatedPlan, isParseOnly));
 		}
 	}
 
