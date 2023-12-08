@@ -29,7 +29,7 @@ namespace BlackbirdSql.Common.Model;
 
 public abstract class AbstractConnectionStrategy : IDisposable
 {
-	protected DbConnectionStringBuilder _Csb = null;
+	protected CsbAgent _Csa = null;
 	protected string _LastDatasetKey = null;
 
 	public delegate void ConnectionChangedEvent(object sender, ConnectionChangedEventArgs args);
@@ -109,18 +109,14 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 				if (Connection != null)
 				{
-					csa = new(Connection);
-					csa.RegisterDataset();
-					if (!string.IsNullOrWhiteSpace(csa.DatasetId))
-						return csa.DatasetId;
+					csa = CsbAgent.CreateInstance(Connection);
+					return csa.DatasetId;
 				}
 
 				if (UiConnectionInfo != null)
 				{
-					csa = new(UiConnectionInfo);
-					csa.RegisterDataset();
-					if (!string.IsNullOrWhiteSpace(csa.DatasetId))
-						return csa.DatasetId;
+					csa = CsbAgent.CreateInstance(UiConnectionInfo);
+					return csa.DatasetId;
 				}
 
 				return string.Empty;
@@ -192,8 +188,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 			if (_Connection != null)
 			{
-				CsbAgent csa = new(_Connection);
-				csa.RegisterDataset();
+				CsbAgent csa = CsbAgent.CreateInstance(_Connection);
 				_LastDatasetKey = csa.DatasetKey;
 			}
 
@@ -401,25 +396,25 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		{
 			lock (_LockObject)
 			{
-				_Csb = csb;
-				_Csb ??= ConnectionLocator.GetCsbFromDatabases(selectedDatasetKey);
+				_Csa = (CsbAgent)csb;
+				_Csa ??= (CsbAgent)ConnectionLocator.GetCsaFromDatabases(selectedDatasetKey);
 
-				if (_Csb != null)
+				if (_Csa != null)
 				{
 					if (Connection == null)
-						SetDbConnection(new FbConnection(_Csb.ConnectionString));
+						SetDbConnection(new FbConnection(_Csa.ConnectionString));
 
 
 					bool isOpen = Connection.State == ConnectionState.Open;
 					if (isOpen)
 						Connection.Close();
 
-					Connection.ConnectionString = _Csb.ConnectionString;
+					Connection.ConnectionString = _Csa.ConnectionString;
 
 					if (UiConnectionInfo == null)
 						UiConnectionInfo = new();
 
-					UiConnectionInfo.Parse(_Csb);
+					UiConnectionInfo.Parse(_Csa);
 					DatabaseChanged?.Invoke(this, new EventArgs());
 					if (isOpen)
 						Connection.Open();

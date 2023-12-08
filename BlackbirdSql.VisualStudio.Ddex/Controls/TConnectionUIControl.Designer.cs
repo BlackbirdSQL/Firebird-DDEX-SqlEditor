@@ -56,6 +56,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			this.txtDatabase = new System.Windows.Forms.TextBox();
 			this.lblDatabaseBlank = new System.Windows.Forms.Label();
 			this.lblDataSourceBlank = new System.Windows.Forms.Label();
+			this.lblDatasetKeyDescription = new System.Windows.Forms.Label();
 			this.grbSettings.SuspendLayout();
 			this.grbLogin.SuspendLayout();
 			this.SuspendLayout();
@@ -98,7 +99,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			this.grbSettings.Controls.Add(this.lblCharset);
 			this.grbSettings.Controls.Add(this.cboDialect);
 			this.grbSettings.Controls.Add(this.lblDialect);
-			this.grbSettings.Location = new System.Drawing.Point(230, 89);
+			this.grbSettings.Location = new System.Drawing.Point(230, 120);
 			this.grbSettings.Name = "grbSettings";
 			this.grbSettings.Size = new System.Drawing.Size(180, 109);
 			this.grbSettings.TabIndex = 25;
@@ -191,7 +192,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			this.grbLogin.Controls.Add(this.txtPassword);
 			this.grbLogin.Controls.Add(this.lblUser);
 			this.grbLogin.Controls.Add(this.txtUserName);
-			this.grbLogin.Location = new System.Drawing.Point(0, 89);
+			this.grbLogin.Location = new System.Drawing.Point(0, 120);
 			this.grbLogin.Name = "grbLogin";
 			this.grbLogin.Size = new System.Drawing.Size(220, 109);
 			this.grbLogin.TabIndex = 24;
@@ -340,10 +341,21 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			this.lblDataSourceBlank.Size = new System.Drawing.Size(136, 17);
 			this.lblDataSourceBlank.TabIndex = 35;
 			// 
+			// lblDatasetKeyDescription
+			// 
+			this.lblDatasetKeyDescription.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+			this.lblDatasetKeyDescription.Location = new System.Drawing.Point(0, 82);
+			this.lblDatasetKeyDescription.Name = "lblDatasetKeyDescription";
+			this.lblDatasetKeyDescription.Size = new System.Drawing.Size(410, 30);
+			this.lblDatasetKeyDescription.TabIndex = 36;
+			this.lblDatasetKeyDescription.Text = "To assign a custom name to this connection specify a proposed Custom DatasetKey\r\n" +
+    "under Advanced Properties.";
+			// 
 			// TConnectionUIControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this.lblDatasetKeyDescription);
 			this.Controls.Add(this.txtDatabase);
 			this.Controls.Add(this.txtDataSource);
 			this.Controls.Add(this.lblDataSourceBlank);
@@ -363,7 +375,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			this.Margin = new System.Windows.Forms.Padding(0);
 			this.MinimumSize = new System.Drawing.Size(410, 198);
 			this.Name = "TConnectionUIControl";
-			this.Size = new System.Drawing.Size(410, 198);
+			this.Size = new System.Drawing.Size(410, 229);
 			this.grbSettings.ResumeLayout(false);
 			this.grbLogin.ResumeLayout(false);
 			this.grbLogin.PerformLayout();
@@ -401,5 +413,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 		private System.Windows.Forms.TextBox txtDatabase;
 		private System.Windows.Forms.Label lblDatabaseBlank;
 		private System.Windows.Forms.Label lblDataSourceBlank;
+		private System.Windows.Forms.Label lblDatasetKeyDescription;
 	}
 }

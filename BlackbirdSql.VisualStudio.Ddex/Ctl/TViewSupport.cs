@@ -4,6 +4,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
+using System.Security.Policy;
 using System.Threading.Tasks;
 
 using BlackbirdSql.Core;
@@ -100,6 +101,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 			ViewHierarchy.ExplorerConnection.NodeExpandedOrRefreshed -= OnNodeStateChanged;
 			ViewHierarchy.ExplorerConnection.NodeRemoving -= OnNodeRemoving;
 			ViewHierarchy.ExplorerConnection.NodeChanged -= OnNodeChanged;
+
 
 			IVsDataConnection connection = ViewHierarchy.ExplorerConnection.Connection;
 
@@ -523,12 +525,13 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 		{
 			site = ViewHierarchy.ExplorerConnection.Connection;
 			lockedProviderObject = site.GetLockedProviderObject();
+			if (lockedProviderObject == null)
+				throw new NotImplementedException("ViewHierarchy.ExplorerConnection.Connection.GetLockedProviderObject()");
 
-			if (lockedProviderObject == null || lockedProviderObject is not FbConnection connection)
-			{
-				NotImplementedException ex = new("ViewHierarchy.ExplorerConnection.Connection.GetLockedProviderObject()");
-				throw ex;
-			}
+			if (lockedProviderObject is not FbConnection connection)
+				throw new NotImplementedException($"GetLockedProviderObject() as FbConnection for object type: {lockedProviderObject.GetType().Name}.");
+
+			CsbAgent.EnsureInstance(ViewHierarchy.ExplorerConnection.ConnectionNode);
 
 			// We'll delay 25 cycles of 20ms each because this is a deadlock when
 			// preregistering the taskhandler and a node requiring completed linkage tables is already expanded.
@@ -577,6 +580,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 				return;
 			}
 
+			/*
 			string str = $"ItemId: {e.Node.ItemId}, NodeType: {e.Node}, " +
 				$"Name: {e.Node.Name} HasBeenExpanded: {e.Node.HasBeenExpanded}, " +
 				$"IsExpandable: {e.Node.IsExpandable}, IsExpanding: {e.Node.IsExpanding}, " +
@@ -588,17 +592,16 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 				str += $", Object.Name: {e.Node.Object.Name}, Object.Type: {e.Node.Object.Type.Name}, " +
 					$"Object.IsDeleted: {e.Node.Object.IsDeleted}.";
 			}
-
+			*/
 			// Tracer.Trace(GetType(), "OnNodeChanged()", str);
 
 			site = ViewHierarchy.ExplorerConnection.Connection;
 			lockedProviderObject = site.GetLockedProviderObject();
+			if (lockedProviderObject == null)
+				throw new NotImplementedException("ViewHierarchy.ExplorerConnection.Connection.GetLockedProviderObject()");
 
-			if (lockedProviderObject == null || lockedProviderObject is not FbConnection connection)
-			{
-				NotImplementedException ex = new("ViewHierarchy.ExplorerConnection.Connection.GetLockedProviderObject()");
-				throw ex;
-			}
+			if (lockedProviderObject is not FbConnection connection)
+				throw new NotImplementedException($"GetLockedProviderObject() as FbConnection for object type: {lockedProviderObject.GetType().Name}.");
 
 
 			if (e.Node.IsRefreshing && !_Refreshing)
@@ -642,6 +645,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 	{
 		try
 		{
+			/*
 			if (e.Node == null || e.Node.ExplorerConnection == null
 				|| e.Node.ExplorerConnection.Connection == null
 				|| e.Node.ExplorerConnection.ConnectionNode == null
@@ -661,6 +665,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 				str += $", Object.Name: {e.Node.Object.Name}, Object.Type: {e.Node.Object.Type.Name}, " +
 					$"Object.IsDeleted: {e.Node.Object.IsDeleted}.";
 			}
+			*/
 			// Tracer.Trace(GetType(), "OnNodeStateChanged()", str);
 		}
 		catch (Exception ex)

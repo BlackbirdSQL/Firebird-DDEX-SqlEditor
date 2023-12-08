@@ -51,6 +51,7 @@ public abstract class CorePropertySet : PropertySet
 		new Describer(C_KeyExDataset, typeof(string), C_DefaultExDataset),
 		new Describer(C_KeyExDatasetKey, typeof(string), C_DefaultExDatasetKey),
 		new Describer(C_KeyExDatasetId, typeof(string), C_DefaultExDatasetId),
+		new Describer(C_KeyExExternalKey, typeof(string), C_DefaultExExternalKey),
 		new Describer(C_KeyExServerEngine, typeof(EnEngineType), C_DefaultExServerEngine),
 		new Describer(C_KeyExServerVersion, typeof(Version), C_DefaultExServerVersion),
 		new Describer(C_KeyExPersistPassword, typeof(bool), C_DefaultExPersistPassword, false, false, false),

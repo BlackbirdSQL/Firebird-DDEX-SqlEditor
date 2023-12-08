@@ -177,12 +177,18 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		get { return (string)GetProperty("Dataset"); }
 		set { SetProperty("Dataset", value); }
 	}
+
 	public string DatasetId
 	{
 		get { return (string)GetProperty("DatasetId"); }
 		set { SetProperty("DatasetId", value); }
 	}
 
+	public string ExternalKey
+	{
+		get { return (string)GetProperty("ExternalKey"); }
+		set { SetProperty("ExternalKey", value); }
+	}
 
 	public string AdministratorLogin
 	{
@@ -332,9 +338,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		if (!IsComplete)
 			return (null, false);
 
-		CsbAgent csa = new(this);
-		csa.RegisterDataset();
-
+		CsbAgent csa = CsbAgent.CreateInstance(this);
 		string datasetKey = csa.DatasetKey;
 
 		if (string.IsNullOrEmpty(datasetKey))

@@ -7,7 +7,6 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 using System.IO;
-using System.Linq.Expressions;
 using System.Text;
 
 using BlackbirdSql.Core.Ctl;
@@ -67,27 +66,20 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	{
 	}
 
-	/// <summary>
-	/// .ctor for use only by ConnectionLocator for registering solution datasetKeys.
-	/// </summary>
-	protected AbstractCsbAgent(string datasetId, string connectionString) : base(connectionString)
-	{
-		DatasetId = datasetId;
-	}
 
 
 	public AbstractCsbAgent(IDbConnection connection) : base(connection.ConnectionString)
 	{
+		RegisterEquivalencyMoniker(connection);
 	}
 
-
-	public AbstractCsbAgent(IBPropertyAgent ci) : base()
+	protected AbstractCsbAgent(IBPropertyAgent ci) : base()
 	{
 		Parse(ci);
 	}
 
 
-	public AbstractCsbAgent(IVsDataExplorerNode node) : base()
+	protected AbstractCsbAgent(IVsDataExplorerNode node) : base()
 	{
 		Extract(node);
 	}
@@ -96,18 +88,17 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// <summary>
 	/// .ctor for use only by ConnectionLocator for registering FlameRobin datasetKeys.
 	/// </summary>
-	protected AbstractCsbAgent(string datasetId, string server, int port, string database, string user,
+	protected AbstractCsbAgent(string server, int port, string database, string user,
 				string password, string charset)
 	{
-		Initialize(datasetId, server, port, C_DefaultServerType, database, user, password,
+		Initialize(server, port, C_DefaultServerType, database, user, password,
 			C_DefaultRole, charset, C_DefaultDialect, C_DefaultNoDatabaseTriggers);
 	}
 
 
-	private void Initialize(string datasetId, string server, int port, FbServerType serverType, string database, string user,
+	private void Initialize(string server, int port, FbServerType serverType, string database, string user,
 		string password, string role, string charset, int dialect, bool noTriggers)
 	{
-		DatasetId = datasetId;
 		DataSource = server;
 		Port = port;
 		ServerType = serverType;
@@ -146,17 +137,27 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 
 	protected static IDictionary<string, string> _SDatasetKeys;
-	protected static IDictionary<string, string> _SConnectionMonikers;
+	protected static IDictionary<string, string> _SInternalDatasetKeys;
+
+	/// <summary>
+	/// Quaduple in form (DatasetKey, ExternalKey, DatasetId, ConnectionString)
+	/// </summary>
+	protected static IDictionary<string, (string, string, string, string)> _SConnectionMonikers;
 
 	private string _SafeDatasetMoniker = null;
 	private string _UnsafeDatasetMoniker = null;
 
+	// A static class lock
+	protected static object _LockClass = new ();
+
 	// A private 'this' object lock
-	private readonly object _LockLocal = new object();
+	private readonly object _LockLocal = new ();
+
 	private bool _IndexActive = false;
 
 	private string _EquivalencyConnectionString = null;
 	private string _EquivalencyMoniker = null;
+
 
 
 
@@ -173,12 +174,13 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 			new Describer(C_KeyExDatasetKey, typeof(string), C_DefaultExDatasetKey),
 			new Describer(C_KeyExDatasetId, typeof(string), C_DefaultExDatasetId),
 			new Describer(C_KeyExDataset, typeof(string), C_DefaultExDataset),
+			new Describer(C_KeyExExternalKey, typeof(string), C_DefaultExExternalKey),
 
 			new Describer(C_KeyDataSource, C_KeyFbDataSource, typeof(string), C_DefaultDataSource, true, false, true, true, true), // *
 			new Describer(C_KeyPort, C_KeyFbPort, typeof(int), C_DefaultPort, true, false, true, false, true), // *
 			new Describer(C_KeyServerType, C_KeyFbServerType, typeof(FbServerType), C_DefaultServerType, true, false, true, false, true), // *
 			new Describer(C_KeyDatabase, C_KeyFbDatabase, typeof(string), C_DefaultDatabase, true, false, true, true, true), // *
-			new Describer(C_KeyUserID ,C_KeyFbUserID, typeof(string), C_DefaultUserID, true, false, true, true, true), // *
+			new Describer(C_KeyUserID, C_KeyFbUserID, typeof(string), C_DefaultUserID, true, false, true, true, true), // *
 			new Describer(C_KeyPassword, C_KeyFbPassword, typeof(string), C_DefaultPassword, true, false, false, true),
 
 			new Describer(C_KeyRole, C_KeyFbRole, typeof(string), C_DefaultRole, true, false, true, false, true), // *
@@ -210,26 +212,26 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 			new Describer(C_KeyExActiveUsers, typeof(int), C_DefaultExActiveUsers, false, false)
 		],
 		[
-			StringPair( "server", C_KeyDataSource ),
-			StringPair( "host", C_KeyDataSource ),
-			StringPair( "uid", C_KeyUserID),
-			StringPair( "user", C_KeyUserID),
-			StringPair( "username", C_KeyUserID),
-			StringPair( "user name", C_KeyUserID),
-			StringPair( "userpassword", C_KeyPassword),
-			StringPair( "user password", C_KeyPassword),
-			StringPair( "no triggers", C_KeyNoDatabaseTriggers ),
-			StringPair( "nodbtriggers", C_KeyNoDatabaseTriggers ),
-			StringPair( "no dbtriggers", C_KeyNoDatabaseTriggers ),
-			StringPair( "no database triggers", C_KeyNoDatabaseTriggers ),
-			StringPair( "timeout", C_KeyConnectionTimeout ),
-			StringPair( "db cache pages", C_KeyDbCachePages ),
-			StringPair( "cachepages", C_KeyDbCachePages ),
-			StringPair( "pagebuffers", C_KeyDbCachePages ),
-			StringPair( "page buffers", C_KeyDbCachePages ),
-			StringPair( "wire compression", C_KeyCompression ),
-			StringPair( "app", C_KeyApplicationName ),
-			StringPair( "parallel", C_KeyParallelWorkers )
+			StringPair("server", C_KeyDataSource),
+			StringPair("host", C_KeyDataSource),
+			StringPair("uid", C_KeyUserID),
+			StringPair("user", C_KeyUserID),
+			StringPair("username", C_KeyUserID),
+			StringPair("user name", C_KeyUserID),
+			StringPair("userpassword", C_KeyPassword),
+			StringPair("user password", C_KeyPassword),
+			StringPair("no triggers", C_KeyNoDatabaseTriggers),
+			StringPair("nodbtriggers", C_KeyNoDatabaseTriggers),
+			StringPair("no dbtriggers", C_KeyNoDatabaseTriggers),
+			StringPair("no database triggers", C_KeyNoDatabaseTriggers),
+			StringPair("timeout", C_KeyConnectionTimeout),
+			StringPair("db cache pages", C_KeyDbCachePages),
+			StringPair("cachepages", C_KeyDbCachePages),
+			StringPair("pagebuffers", C_KeyDbCachePages),
+			StringPair("page buffers", C_KeyDbCachePages),
+			StringPair("wire compression", C_KeyCompression),
+			StringPair("app", C_KeyApplicationName),
+			StringPair("parallel", C_KeyParallelWorkers)
 		]
 	);
 
@@ -254,8 +256,8 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 		{
 			lock (_LockLocal)
 			{
-					if (_IndexActive)
-						return base[keyword];
+				if (_IndexActive)
+					return base[keyword];
 
 				try
 				{
@@ -266,6 +268,9 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 					switch (keyword)
 					{
+						case C_KeyExDataset:
+							result = Dataset;
+							break;
 						case C_KeyDataSource:
 							// case C_KeyFbDataSource:
 							result = DataSource;
@@ -433,6 +438,8 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 					switch (keyword)
 					{
+						case C_KeyExDataset:
+							break;
 						case C_KeyDataSource:
 							//  case C_KeyFbDataSource:
 							DataSource = (string)value;
@@ -598,12 +605,6 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	}
 
 
-	/// <summary>
-	/// Contains the list of registered connection dastasetKeys. This accessor may only be referenced inside of
-	/// RegisterUniqueConnectionDatsetKey().
-	/// </summary>
-	protected static IDictionary<string, string> SDatasetKeys => _SDatasetKeys ??= new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-	protected static IDictionary<string, string> SConnectionMonikers => _SConnectionMonikers ??= new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
 	[Category("Extended")]
 	[DisplayName("Dataset")]
@@ -670,6 +671,30 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 		set
 		{
 			this["DatasetId"] = value;
+		}
+	}
+
+
+	/// <summary>
+	/// The original proposed DatasetKey supplied by a preconfigured connection string or connection dialog.
+	/// If no proposed key is specified the auto-generated DatasetKey will be used on registration.
+	/// </summary>
+	[Category("Extended")]
+	[DisplayName("Custom DatasetKey")]
+	[Description("The proposed DatasetKey to be used for new unique connections. If not specified a generated key will be used.")]
+	[DefaultValue(C_DefaultExExternalKey)]
+	public string ExternalKey
+	{
+		get
+		{
+			if (TryGetValue("ExternalKey", out object value))
+				return (string)value;
+
+			return C_DefaultExExternalKey;
+		}
+		set
+		{
+			this["ExternalKey"] = value;
 		}
 	}
 
@@ -821,7 +846,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// We consider connections equivalent if they will produce the same results. The connection properties
 	/// that determine this equivalency are defined in <see cref="CoreProperties.EquivalencyKeys"/>.
 	/// </remarks>
-	public static bool AreEquivalent(DbConnectionStringBuilder csb1, DbConnectionStringBuilder csb2)
+	protected static bool AreEquivalent(DbConnectionStringBuilder csb1, DbConnectionStringBuilder csb2)
 	{
 		// Tracer.Trace(typeof(AbstractCsbAgent), "AreEquivalent(DbConnectionStringBuilder, DbConnectionStringBuilder)");
 
@@ -1033,19 +1058,6 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	}
 
 
-	public static object ParseEnum(Type enumType, object enumValue)
-	{
-		object value = null;
-
-		if (enumValue != null)
-		{
-			if (enumValue.GetType().IsSubclassOf(typeof(Enum)) || enumValue.GetType() == typeof(int))
-				value = Convert.ToInt32(enumValue);
-			else if (enumValue is string s)
-				value = Convert.ToInt32(Enum.Parse(enumType, s, true));
-		}
-		return value;
-	}
 
 
 	public override bool Remove(string keyword)
@@ -1087,7 +1099,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// Performs a stored equivalency check against connections. Many commands as well as
 	/// PropertyWindows use CsbAgent to do status validations and updates on pulsed events.
 	/// This can result in a very high volume of calls, so the agent stores the document
-	/// moniker and connection strings for low overhead respnses when the connection has not
+	/// moniker and connection strings for low overhead responses when the connection has not
 	/// changed.
 	/// </summary>
 	/// <param name="obj"></param>
@@ -1099,18 +1111,11 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 		if (connection == null) return false;
 
-		if (_EquivalencyConnectionString != null
-			&& _EquivalencyConnectionString == connection.ConnectionString)
-		{
-			return SafeDatasetMoniker.Equals(_EquivalencyMoniker, StringComparison.InvariantCulture);
-		}
+		if (_EquivalencyConnectionString == null)
+			RegisterEquivalencyMoniker(connection);
 
-		string datasetMoniker = BuildUniqueConnectionUrl(connection);
-
-		_EquivalencyConnectionString = connection.ConnectionString;
-		_EquivalencyMoniker = datasetMoniker;
-
-		return SafeDatasetMoniker.Equals(datasetMoniker, StringComparison.InvariantCulture);
+		return _EquivalencyConnectionString == connection.ConnectionString
+			&& SafeDatasetMoniker.Equals(_EquivalencyMoniker, StringComparison.InvariantCulture);
 	}
 
 
@@ -1205,7 +1210,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// fbsql://user_uc@server:port/database_lc_serialized/[role_uc.charset_uc.dialect.noTriggersTrueFalse]/
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static string BuildUniqueConnectionUrl(IDbConnection connection)
+	private void RegisterEquivalencyMoniker(IDbConnection connection)
 	{
 		// We'll use UriBuilder for the url.
 
@@ -1215,7 +1220,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 		string database = conn.Database;
 
 		if (string.IsNullOrWhiteSpace(server) || string.IsNullOrWhiteSpace(database))
-			return null;
+			return;
 
 		FbConnectionStringBuilder csb = new(connection.ConnectionString);
 
@@ -1258,8 +1263,8 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 		urlb.Path = stringBuilder.ToString();
 
-		return urlb.Uri.ToString();
-
+		_EquivalencyConnectionString = connection.ConnectionString;
+		_EquivalencyMoniker = urlb.Uri.ToString();
 	}
 
 
@@ -1316,100 +1321,56 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 					throw;
 				}
 			}
+			// Tracer.Trace(GetType(), "Extract()", "node.ExplorerConnection.DisplayName: {0}, node.ExplorerConnection.ConnectionNode.Name: {1}, dbObj.Name: {2}.", node.ExplorerConnection.DisplayName, node.ExplorerConnection.ConnectionNode.Name, dbObj.Name);
+
+			if (!string.IsNullOrWhiteSpace(DatasetKey) && node.ExplorerConnection.DisplayName != DatasetKey)
+			{
+				// There has been a name change.
+				DatasetKey = node.ExplorerConnection.DisplayName;
+			}
 		}
 	}
 
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Gets a registered database connection configuration.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected (string, string) GetConnectionDatasetKey(bool autoCreate)
-	{
-		// Tracer.Trace(GetType(), "GetConnectionDatsetKey()", "AutoCreate: {0}.", autoCreate);
-
-		LoadConfiguredConnections();
-
-
-		if (string.IsNullOrWhiteSpace(DataSource) || string.IsNullOrWhiteSpace(Database))
-		{
-			return (null, null);
-		}
-
-		string connectionUrl = BuildUniqueConnectionUrl(true);
-
-		// If the unique url exists, use its datasetkey. Otherwise create a new one,
-		// numbering it if duplicates exist.
-		if (_SConnectionMonikers == null || !SConnectionMonikers.TryGetValue(connectionUrl, out string connectionString))
-		{
-			if (autoCreate)
-				return RegisterUniqueConnectionDatasetKey(false);
-
-			return (null, null);
-		}
-
-		// Tracer.Trace(GetType(), "GetConnectionDatsetKey()", "connectionParameters: {0}.", connectionParameters);
-
-		// connectionParameters form:
-		// Server(uniqueDatasetId) \n User \n Password \n Port \n dbPath \n Role
-		// \n Charset \n Dialect \n NoDatabaseTriggers
-
-		FbConnectionStringBuilder csb = new(connectionString);
-
-		string uniqueDatasetKey = (string)csb["DatasetKey"];
-		string uniqueDatasetId = (string)csb["DatasetId"];
-
-		return (uniqueDatasetKey, uniqueDatasetId);
-	}
-
-
-
-	public static string GetDatasetConnectionString(string datasetKey)
-	{
-		return GetDatasetConnectionString(datasetKey, false);
-	}
-
-
-
-	private static string GetDatasetConnectionString(string datasetKey, bool initializing)
+	protected static (string, string, string, string) GetDatasetConnectionInfo(string datasetKey, bool initializing)
 	{
 		if (!initializing)
 			LoadConfiguredConnections();
 
 		if (_SDatasetKeys == null || !_SDatasetKeys.TryGetValue(datasetKey, out string connectionUrl))
-			return null;
+			return (null, null, null, null);
 
-		if (!_SConnectionMonikers.TryGetValue(connectionUrl, out string connectionString))
+		if (!_SConnectionMonikers.TryGetValue(connectionUrl, out (string, string, string, string) datasetInfo))
 		{
-			ArgumentException ex = new($"Connection string for DatasetKey {datasetKey} connectionUrl {connectionUrl} was not found.");
+			ArgumentException ex = new($"Connection info for DatasetKey {datasetKey} connectionUrl {connectionUrl} was not found.");
 			Diag.Dug(ex);
 			throw ex;
 		}
 
-		return connectionString;
+		return datasetInfo;
 	}
 
 
 	protected static IDictionary<string, string> LoadConfiguredConnections()
 	{
-		if (_SDatasetKeys == null)
-			ConnectionLocator.LoadConfiguredConnections();
+		// Tracer.Trace(typeof(AbstractCsbAgent), "LoadConfiguredConnections()");
 
+		lock (_LockClass)
+		{
+			if (_SDatasetKeys == null)
+				ConnectionLocator.LoadConfiguredConnections();
 
-		return _SDatasetKeys;
+			if (_SDatasetKeys == null)
+			{
+				_SDatasetKeys = new Dictionary<string, string>();
+				_SInternalDatasetKeys = new Dictionary<string, string>();
+				_SConnectionMonikers = new Dictionary<string, (string, string, string, string)>();
+			}
+
+			return _SDatasetKeys;
+		}
 	}
-
-
-	protected static IDictionary<string, string> LoadConfiguredConnectionMonikers()
-	{
-		if (_SDatasetKeys == null)
-			ConnectionLocator.LoadConfiguredConnections();
-
-		return _SConnectionMonikers;
-	}
-
 
 
 
@@ -1419,6 +1380,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 
 
+	/*
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Registers a dataset configuration for this csb if it does not exist or gets the
@@ -1429,8 +1391,9 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	// ---------------------------------------------------------------------------------
 	public void RegisterDataset()
 	{
-		RegisterUniqueConnectionDatasetKey(false);
+		RegisterUniqueConnectionDatasetKey(null, null, false);
 	}
+	*/
 
 
 	// ---------------------------------------------------------------------------------
@@ -1444,7 +1407,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// or Solution preconfigured connections else false.
 	/// </param>
 	/// <returns>
-	/// The unique connection DatsetKey.
+	/// The unique connection (ExternalKey, DatsetKey) tuple.
 	/// </returns>
 	/// <remarks>
 	/// Connection datasets are used for uniquely naming connections and are unique to
@@ -1461,94 +1424,115 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// value: The SConnectionMonikers url key.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	protected (string, string) RegisterUniqueConnectionDatasetKey(bool initializing = false)
+	protected string RegisterUniqueConnectionDatasetKey(string proposedDatasetKey, string proposedDatasetId)
 	{
 		// Tracer.Trace(GetType(), "RegisterUniqueConnectionDatsetKey()");
 
-		// If this is not a ConnectionLocator initialization then that has to be done first.
-		if (!initializing)
-			LoadConfiguredConnections();
 
-		string connectionString;
-		// If there is a DatasetKey then this csa has been registered and all that remains
-		// is to load any additional non-default properties from the register and return.
-		if (!string.IsNullOrWhiteSpace(DatasetKey))
-		{
-			connectionString = GetDatasetConnectionString(DatasetKey, initializing);
-
-			if (connectionString != null)
-			{
-				UpdateProperties(connectionString);
-				return (DatasetKey, DatasetId);
-			}
-		}
-
-
-		// At this point the only way to get or register a connection configuration
-		// is through a unique connection url, which requires at a minimum DataSource,
-		// Database and UserID.
+		// The only way to get or register a connection configuration is through a
+		// unique connection url, which requires at a minimum DataSource, Database and
+		// UserID.
 
 		string connectionUrl = BuildUniqueConnectionUrl(true);
 
 		if (connectionUrl == null)
-			return (null, null);
+			return null;
 
-		string uniqueDatasetId = null;
-		string uniqueDatasetKey = null;
-
-		// If the unique url exists, use its datasetkey. Otherwise create a new one,
-		// numbering it if duplicates exist.
-		if (_SConnectionMonikers == null || !SConnectionMonikers.TryGetValue(connectionUrl, out connectionString))
+		// If the unique url exists return null to indicate "not done", otherwise create a new one,
+		// numbering it's datasetid and or datasetkey if duplicates exist.
+		if (_SConnectionMonikers != null && _SConnectionMonikers.ContainsKey(connectionUrl))
 		{
-			// Unique connection url for the connection is not registered.
-			// Register it with the next available DatasetKey.
+			return null;
+		}
 
-			// Set the base for naming the DatasetId part of DatasetKey.
-			string datasetId = string.IsNullOrWhiteSpace(DatasetId) ? Dataset : DatasetId;
 
-			// Establish a unique key using i as the suffix.
+		_SDatasetKeys ??= new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+		_SInternalDatasetKeys ??= new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+		_SConnectionMonikers ??= new Dictionary<string, (string, string, string, string)>(StringComparer.InvariantCultureIgnoreCase);
+
+		// Also register it with the next available DatasetKey and ExternalKey.
+
+
+		string uniqueDatasetKey = null;
+		string uniqueExternalKey = null;
+		string uniqueDatasetId = null;
+
+		// Establish a unique DatasetId using i as the suffix.
+		// This loop will execute at least once.
+		for (int i = 0; i <= _SInternalDatasetKeys.Count; i++)
+		{
+			uniqueDatasetId = proposedDatasetId + (i == 0 ? "" : $"_{i + 1}");
+			uniqueDatasetKey = C_DatasetKeyFmt.FmtRes(DataSource, uniqueDatasetId);
+
+			if (!_SInternalDatasetKeys.ContainsKey(uniqueDatasetKey))
+				break;
+		}
+
+		// We have a unique DatasetId for a datasource
+		this["DatasetId"] = uniqueDatasetId;
+
+		// Add the generated DatasetKey to the list of internal unique keys
+		_SInternalDatasetKeys.Add(uniqueDatasetKey, connectionUrl);
+
+		// Now if there's a proposed external custom DatasetKey (ExternalKey) that doesn't match the
+		// generated DatasetKey, use it as the DatasetKey.
+		if (!string.IsNullOrWhiteSpace(proposedDatasetKey)
+			&& !proposedDatasetKey.Equals(uniqueDatasetKey, StringComparison.InvariantCultureIgnoreCase))
+		{
+			// Establish a unique external DatasetKey using i as the suffix.
 			// This loop will execute at least once.
-			for (int i = 0; i <= SDatasetKeys.Count; i++)
+			for (int i = 0; i <= _SInternalDatasetKeys.Count; i++)
 			{
-				uniqueDatasetId = datasetId + (i == 0 ? "" : $"_{i + 1}");
-				uniqueDatasetKey = C_DatasetKeyFmt.FmtRes(DataSource, uniqueDatasetId);
+				uniqueExternalKey = proposedDatasetKey + (i == 0 ? "" : $"_{i + 1}");
 
-				if (!_SDatasetKeys.ContainsKey(uniqueDatasetKey))
+				if (uniqueExternalKey.Equals(uniqueDatasetKey, StringComparison.InvariantCultureIgnoreCase))
+				{
+					// The key is equal to the generated key, so exit and ign0re.
+					uniqueExternalKey = null;
+					break;
+				}
+
+				if (!_SInternalDatasetKeys.ContainsKey(uniqueExternalKey))
 					break;
 			}
 
-			this["DatasetKey"] = uniqueDatasetKey;
-			this["DatasetId"] = uniqueDatasetId;
-
-			SConnectionMonikers.Add(connectionUrl, ConnectionString);
-			SDatasetKeys.Add(uniqueDatasetKey, connectionUrl);
-			// Tracer.Trace(GetType(), "RegisterUniqueDataset()", "ADDED uniqueDatasetKey: {0}, uniqueDatasetId: {1}, connectionUrl: {2}, ConnectionString: {3}.", uniqueDatasetKey, uniqueDatasetId, connectionUrl, ConnectionString);
-		}
-		else
-		{
-			if (initializing)
-				return (null, null);
-			// connectionParameters form:
-			// Server(uniqueDatasetId) \n User \n Password \n Port \n dbPath \n Role
-			// \n Charset \n Dialect \n NoDatabaseTriggers
-
-			UpdateProperties(connectionString);
-			uniqueDatasetKey = DatasetKey;
-			uniqueDatasetId = DatasetId;
-
-			// Tracer.Trace(GetType(), "RegisterUniqueDataset()", "FOUND uniqueDatasetKey: {0} uniqueDatasetId: {1}.", uniqueDatasetKey, uniqueDatasetId);
+			if (uniqueExternalKey != null)
+			{
+				// Add the proposed unique ExternalKey to the list of internal unique keys.
+				_SInternalDatasetKeys.Add(uniqueExternalKey, uniqueDatasetId);
+				// Accept the unique proposed key as the DatasetKey to be used.
+				uniqueDatasetKey = uniqueExternalKey;
+			}
 		}
 
+		// Add the unique DatasetKey to the list of connections.
+		_SDatasetKeys.Add(uniqueDatasetKey, connectionUrl);
 
-		return (uniqueDatasetKey, uniqueDatasetId);
+		string externalKey = !string.IsNullOrWhiteSpace(proposedDatasetKey) ? proposedDatasetKey : uniqueDatasetKey;
+
+		// The stored connection string will always have dataset id keys that match the derived ones.
+		this["DatasetKey"] = uniqueDatasetKey;
+		this["ExternalKey"] = externalKey;
+		this["DatasetId"] = uniqueDatasetId;
+
+		// Sanity check
+		Remove("Dataset");
+
+		_SConnectionMonikers.Add(connectionUrl, (uniqueDatasetKey, externalKey, uniqueDatasetId, ConnectionString));
+
+		// Tracer.Trace(GetType(), "RegisterUniqueDatasetKey()", "ADDED uniqueDatasetKey: {0}, dataset: {1}, externalKey: {2}, uniqueDatasetId: {3}, ConnectionString: {4}.", uniqueDatasetKey, Dataset, externalKey, uniqueDatasetId, ConnectionString);
+
+
+		return uniqueDatasetKey;
 	}
 
 
 
 	public static void Reset()
 	{
-		_SDatasetKeys = null;
 		_SConnectionMonikers = null;
+		_SInternalDatasetKeys = null;
+		_SDatasetKeys = null;
 	}
 
 
@@ -1559,29 +1543,9 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// Converts a key and value to a KeyValuePair<string, string>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static KeyValuePair<string, string> StringPair(string key, string value)
+	private static KeyValuePair<string, string> StringPair(string key, string value)
 	{
 		return new KeyValuePair<string, string>(key, value);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Updates any unset properties with properties in connectionString.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private void UpdateProperties(string connectionString)
-	{
-		CsbAgent csa = new(connectionString);
-
-		foreach (string key in CsbAgent.Describers.Keys)
-		{
-			if (!csa.ContainsKey(key) || ContainsKey(key))
-				continue;
-
-			this[key] = csa[key];
-		}
 	}
 
 

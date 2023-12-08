@@ -50,7 +50,7 @@ public abstract class ConnectionLocator
 
 	private static bool _Loading = false;
 	private static bool _HasLocal = false;
-	private static IDictionary<string, string> _TempServerNames = null;
+	private static IDictionary<string, string> _RegisteredServerNames = null;
 	private static DataTable _DataSources = null, _Databases = null;
 
 
@@ -119,6 +119,9 @@ public abstract class ConnectionLocator
 	private static IVsSolution DteSolution => Controller.Instance.DteSolution;
 
 
+	private static IDictionary<string, string> RegisteredServerNames =>
+		_RegisteredServerNames ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
 	#endregion Property accessors
 
 
@@ -130,27 +133,50 @@ public abstract class ConnectionLocator
 	// =========================================================================================================
 
 
+	public static void AddRegisteredDataset(CsbAgent csa)
+	{
+		// Tracer.Trace(typeof(ConnectionLocator), "AddRegisteredDataset()");
+		DataTable databases = Databases.Copy();
+
+		DataRow row = CreateConnectionNodeRow(databases, csa);
+
+		row["DataSourceLc"] = csa.DataSource.ToLower();
+		row["Name"] = csa.DatasetId;
+		row["DatabaseLc"] = csa.Database.ToLower();
+
+		if (csa.DataSource.ToLowerInvariant() == "localhost")
+			row["Orderer"] = 2;
+		else
+			row["Orderer"] = 3;
+
+		databases.Rows.Add(row);
+
+		databases.DefaultView.Sort = "Orderer,DataSource,DatasetId ASC";
+
+		_Databases = databases.DefaultView.ToTable(false);
+		_DataSources = null;
+	}
+
+
 	private static string AddServerRow(DataTable databases, string datasource, int port)
 	{
 		// To keep uniformity of server names, the case of the first connection
 		// discovered for a server name is the case that will be used for all
 		// connections for that server.
-		if (_TempServerNames.TryGetValue(datasource.ToLowerInvariant(), out string serverName))
+		if (RegisteredServerNames.TryGetValue(datasource.ToLowerInvariant(), out string serverName))
 			return serverName;
 
 		// No server row previously added so add one.
 
-		_TempServerNames.Add(datasource.ToLowerInvariant(), datasource);
+		_RegisteredServerNames.Add(datasource.ToLowerInvariant(), datasource);
 		serverName = datasource;
 
 
 		DataRow row = CreateConnectionNodeRow(databases);
 
-		row["Id"] = databases.Rows.Count;
 		row["DataSource"] = serverName;
 		row["DataSourceLc"] = serverName.ToLower();
 		row["Port"] = port;
-
 		row["Name"] = "";
 		row["DatabaseLc"] = "";
 
@@ -162,7 +188,7 @@ public abstract class ConnectionLocator
 		// string str = "AddServerRow: ";
 		// foreach (DataColumn col in databases.Columns)
 		//	str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
-		// Tracer.Trace(typeof(ConnectionLocator), "RegisterAppConnectionStrings()", str);
+		// Tracer.Trace(typeof(ConnectionLocator), "AddServerRow()", str);
 
 		databases.Rows.Add(row);
 
@@ -180,6 +206,8 @@ public abstract class ConnectionLocator
 	{
 		object value;
 		DataRow row = table.NewRow();
+
+		row["Id"] = table.Rows.Count;
 
 		foreach (Describer describer in CsbAgent.Describers.Values)
 		{
@@ -244,10 +272,14 @@ public abstract class ConnectionLocator
 
 
 
-	public static DbConnectionStringBuilder GetCsbFromDatabases(string datasetKey)
+	public static DbConnectionStringBuilder GetCsaFromDatabases(string datasetKey)
 	{
+		// Tracer.Trace(typeof(ConnectionLocator), "GetCsbFromDatabases()");
 		lock (_LockClass)
 		{
+			if (_Databases == null)
+				LoadConfiguredConnections();
+
 			foreach (DataRow row in Databases.Rows)
 			{
 				if ((string)row["Name"] == "")
@@ -255,7 +287,7 @@ public abstract class ConnectionLocator
 
 				if (datasetKey.Equals((string)row["DatasetKey"]))
 				{
-					DbConnectionStringBuilder csb = [];
+					CsbAgent csa = [];
 
 					foreach (Describer describer in CsbAgent.Describers.Values)
 					{
@@ -265,10 +297,10 @@ public abstract class ConnectionLocator
 							continue;
 						}
 
-						csb[describer.Name] = row[describer.Name];
+						csa[describer.Name] = row[describer.Name];
 					}
 
-					return csb;
+					return csa;
 				}
 			}
 		}
@@ -352,6 +384,7 @@ public abstract class ConnectionLocator
 	// ---------------------------------------------------------------------------------
 	public static void LoadConfiguredConnections()
 	{
+		// Tracer.Trace(typeof(ConnectionLocator), "LoadConfiguredConnections()");
 		lock (_LockClass)
 		{
 			if (_Databases != null)
@@ -385,15 +418,11 @@ public abstract class ConnectionLocator
 
 			try
 			{
-				_TempServerNames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
 				LoadConfiguredConnectionsImpl();
-
 			}
 			finally
 			{
 				_HasLocal = false;
-				_TempServerNames = null;
 				_Loading = false;
 			}
 		}
@@ -429,18 +458,15 @@ public abstract class ConnectionLocator
 		// selected will generate a CurrentChanged event.
 		DataRow row = CreateConnectionNodeRow(databases);
 
-		row["Id"] = databases.Rows.Count;
 		row["DataSourceLc"] = "";
 		row["Port"] = 0;
-
 		row["Name"] = "";
 		row["DatabaseLc"] = "";
-
 		row["Orderer"] = 0;
 
 		// string str = "AddGhostRow: ";
 		// foreach (DataColumn col in databases.Columns)
-		//	str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
+		// str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
 		// Tracer.Trace(typeof(ConnectionLocator), "LoadConfiguredConnectionsImpl()", str);
 
 		databases.Rows.Add(row);
@@ -450,7 +476,6 @@ public abstract class ConnectionLocator
 		// If selected will invoke a form reset the move the cursor back to the ghost row.
 		row = CreateConnectionNodeRow(databases);
 
-		row["Id"] = databases.Rows.Count;
 		row["Orderer"] = 1;
 		row["DataSource"] = Resources.ErmBindingSource_Reset;
 		row["DataSourceLc"] = Resources.ErmBindingSource_Reset.ToLowerInvariant();
@@ -460,7 +485,7 @@ public abstract class ConnectionLocator
 
 		// str = "AddResetRow: ";
 		// foreach (DataColumn col in databases.Columns)
-		//	str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
+		// str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
 		// Tracer.Trace(typeof(ConnectionLocator), "LoadConfiguredConnectionsImpl()", str);
 
 		databases.Rows.Add(row);
@@ -471,7 +496,6 @@ public abstract class ConnectionLocator
 		{
 			row = CreateConnectionNodeRow(databases);
 
-			row["Id"] = databases.Rows.Count;
 			row["Orderer"] = 2;
 			row["DataSource"] = "localhost";
 			row["DataSourceLc"] = "localhost";
@@ -480,7 +504,7 @@ public abstract class ConnectionLocator
 
 			// str = "AddLocalHostGhostRow: ";
 			// foreach (DataColumn col in databases.Columns)
-			//	str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
+			// str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
 			// Tracer.Trace(typeof(ConnectionLocator), "LoadConfiguredConnectionsImpl()", str);
 
 			databases.Rows.Add(row);
@@ -491,7 +515,6 @@ public abstract class ConnectionLocator
 
 
 		_Databases = databases.DefaultView.ToTable(false);
-
 	}
 
 
@@ -584,7 +607,7 @@ public abstract class ConnectionLocator
 		}
 
 
-		string datasetId, datasource;
+		string externalDatasetKey, datasetId, datasource;
 		string connectionString;
 		CsbAgent csa;
 		DataRow row;
@@ -610,7 +633,7 @@ public abstract class ConnectionLocator
 				continue;
 			}
 
-			// datasetKey = xmlNode.InnerText.Trim();
+			externalDatasetKey = xmlNode.InnerText.Trim();
 
 			xmlNode = xmlConnection.SelectSingleNode("EncryptedConnectionString", xmlNs);
 			if (xmlNode == null)
@@ -626,7 +649,6 @@ public abstract class ConnectionLocator
 			csa = new(connectionString);
 
 			datasource = csa.DataSource;
-			datasetId = csa.DatasetId;
 
 			if (datasource.ToLowerInvariant() == "localhost")
 			{
@@ -639,20 +661,24 @@ public abstract class ConnectionLocator
 			// connections for that server.
 			csa.DataSource = AddServerRow(databases, datasource, csa.Port);
 
-			
+
 			// Tracer.Trace(typeof(ConnectionLocator), "RegisterAppConnectionStrings()", "Updated csb datasource: {0}, serverName: {1}, connectionstring: {2}.", datasource, serverName, csa.ConnectionString);
 
-			// The datasetId may not be unique at this juncture and already registered.
-			csa = CsbAgent.CreateRegisteredDataset(datasetId, csa.ConnectionString);
+			datasetId = csa.DatasetId;
 
-			
+			if (string.IsNullOrWhiteSpace(datasetId))
+				datasetId = csa.Dataset;
+
+			// The datasetId may not be unique at this juncture and already registered.
+			csa = CsbAgent.CreateRegisteredDataset(externalDatasetKey, datasetId, csa);
+
+
 			if (csa == null)
 				continue;
 
 
 			row = CreateConnectionNodeRow(databases, csa);
 
-			row["Id"] = databases.Rows.Count;
 			row["DataSourceLc"] = csa.DataSource.ToLower();
 			row["Name"] = csa.DatasetId;
 			row["DatabaseLc"] = csa.Database.ToLower();
@@ -663,10 +689,10 @@ public abstract class ConnectionLocator
 				row["Orderer"] = 3;
 
 
-			// string str = "AddAppDbRow: ";
+			// string str = "AddSERow: ";
 			// foreach (DataColumn col in databases.Columns)
-			//	str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
-			// Tracer.Trace(typeof(ConnectionLocator), "RegisterAppConnectionStrings()", str);
+			// str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
+			// Tracer.Trace(typeof(ConnectionLocator), "LoadServerExplorerConfiguredConnectionsImpl()", str);
 
 			databases.Rows.Add(row);
 
@@ -769,34 +795,17 @@ public abstract class ConnectionLocator
 						continue;
 
 
-					// Add a ghost row to each database
-					// A binding source cannot have an invalidated state. ie. Position == -1 and Current == null,
-					// if it's List Count > 0. The ghost row is a placeholder for that state.
-
-					row = CreateConnectionNodeRow(databases);
-
-					row["Id"] = databases.Rows.Count;
-					row["DataSource"] = serverName;
-					row["DataSourceLc"] = serverName.ToLower();
-					row["Port"] = port;
-
 					datasetId = xmlNode.InnerText.Trim();
-					row["Name"] = datasetId;
 
 					if ((xmlNode = xmlDatabase.SelectSingleNode("path")) == null)
 						continue;
 
 					path = xmlNode.InnerText.Trim();
-					row["Database"] = path;
-					row["DatabaseLc"] = path.ToLower();
 
 					if ((xmlNode = xmlDatabase.SelectSingleNode("charset")) == null)
 						continue;
 
-
 					charset = xmlNode.InnerText.Trim();
-					row["Charset"] = charset;
-
 
 					user = "";
 					password = "";
@@ -821,10 +830,6 @@ public abstract class ConnectionLocator
 
 					}
 
-					row["UserID"] = user;
-					row["Password"] = password;
-
-
 					// Tracer.Trace(typeof(ConnectionLocator), "LoadConfiguredConnectionsImpl()", "Calling RegisterDatasetKey for datasetId: {0}.", datasetId);
 
 					// The datasetId may not be unique at this juncture and already registered.
@@ -835,6 +840,18 @@ public abstract class ConnectionLocator
 						continue;
 
 					// Tracer.Trace(typeof(ConnectionLocator), "LoadConfiguredConnectionsImpl()", "Database path: {0}.", path);
+
+					row = CreateConnectionNodeRow(databases);
+
+					row["Name"] = datasetId;
+					row["DataSource"] = serverName;
+					row["DataSourceLc"] = serverName.ToLower();
+					row["Port"] = port;
+					row["Database"] = path;
+					row["DatabaseLc"] = path.ToLower();
+					row["UserID"] = user;
+					row["Password"] = password;
+					row["Charset"] = charset;
 
 
 					// CsbAgent will return a new DatasetId if the supplied one was not unique.
@@ -849,10 +866,10 @@ public abstract class ConnectionLocator
 						row["Orderer"] = 3;
 
 
-					// string str = "AddDbRow: ";
+					// string str = "AddFlameRobinRow: ";
 					// foreach (DataColumn col in databases.Columns)
-					//	str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
-					// Tracer.Trace(typeof(ConnectionLocator), "LoadConfiguredConnectionsImpl()", str);
+					// str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
+					// Tracer.Trace(typeof(ConnectionLocator), "LoadUtilityConfiguredConnections()", str);
 
 					databases.Rows.Add(row);
 				}
@@ -1089,10 +1106,10 @@ public abstract class ConnectionLocator
 
 				csa.DataSource = serverName;
 
-				// Tracer.Trace(typeof(ConnectionLocator), "RegisterAppConnectionStrings()", "Updated csb datasource: {0}, serverName: {1}, connectionstring: {2}.", datasource, serverName, csa.ConnectionString);
+				// Tracer.Trace(typeof(ConnectionLocator), "RegisterAppConnectionStrings()", "datasource: {0}, dataset: {1}, serverName: {2}, ExternalKey: {3}, datasetId: {4}, Connectionstring: {5}, loadedConnectionString: {6}.", datasource, csa.Dataset, serverName, csa.ExternalKey, datasetId, csa.ConnectionString, connectionNode.Attributes["connectionString"].Value);
 
 				// The datasetId may not be unique at this juncture and already registered.
-				csa = CsbAgent.CreateRegisteredDataset(datasetId, csa.ConnectionString);
+				csa = CsbAgent.CreateRegisteredDataset(csa.ExternalKey, datasetId, csa);
 
 				if (csa == null)
 					continue;
@@ -1100,7 +1117,6 @@ public abstract class ConnectionLocator
 
 				row = CreateConnectionNodeRow(databases, csa);
 
-				row["Id"] = databases.Rows.Count;
 				row["DataSourceLc"] = csa.DataSource.ToLower();
 				row["Name"] = csa.DatasetId;
 				row["DatabaseLc"] = csa.Database.ToLower();
@@ -1112,7 +1128,7 @@ public abstract class ConnectionLocator
 
 				// string str = "AddAppDbRow: ";
 				// foreach (DataColumn col in databases.Columns)
-				// 	str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
+				// str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
 				// Tracer.Trace(typeof(ConnectionLocator), "RegisterAppConnectionStrings()", str);
 
 				databases.Rows.Add(row);
@@ -1129,12 +1145,38 @@ public abstract class ConnectionLocator
 	}
 
 
+
+	/// <summary>
+	/// Register the server name for a datasource if it does not exists and returns the registered
+	/// server name. This is to prevent name mangling of server names due to case discrepencies.
+	/// </summary>
+	public static string RegisterServerName(string datasource)
+	{
+		// Tracer.Trace(typeof(ConnectionLocator), "RegisterServerName()");
+
+		// To keep uniformity of server names, the case of the first connection
+		// discovered for a server name is the case that will be used for all
+		// connections for that server.
+		if (RegisteredServerNames.TryGetValue(datasource.ToLowerInvariant(), out string serverName))
+			return serverName;
+
+		// No server row previously added so add one.
+
+		_RegisteredServerNames.Add(datasource.ToLowerInvariant(), datasource);
+
+		return datasource;
+	}
+
+
 	public static void Reset()
 	{
 		lock (_LockClass)
 		{
+			_Loading = false;
+			_HasLocal = false;
 			_DataSources = null;
 			_Databases = null;
+			_RegisteredServerNames = null;
 		}
 	}
 

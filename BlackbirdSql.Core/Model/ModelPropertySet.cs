@@ -51,34 +51,34 @@ public abstract class ModelPropertySet : CorePropertySet
 	/// Equivalency describers are tagged with *.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public static readonly new Describer[] Describers = new Describer[24]
-	{
-		new Describer(C_KeyRole, C_KeyFbRole, typeof(string), C_DefaultRole, true, false, true, false, true), // *
-		new Describer(C_KeyDialect, C_KeyFbDialect, typeof(int), C_DefaultDialect, true, false, true, false, true), // *
-		new Describer(C_KeyCharset, C_KeyFbCharset, typeof(string), C_DefaultCharset, true, false, true, false, true), // *
-		new Describer(C_KeyNoDatabaseTriggers, C_KeyFbNoDatabaseTriggers, typeof(bool), C_DefaultNoDatabaseTriggers, true, true, true, false, true), // *
-		new Describer(C_KeyPacketSize, C_KeyFbPacketSize, typeof(int), C_DefaultPacketSize, true),
-		new Describer(C_KeyConnectionTimeout, C_KeyFbConnectionTimeout, typeof(int), C_DefaultConnectionTimeout, true),
-		new Describer(C_KeyPooling, C_KeyFbPooling, typeof(bool), C_DefaultPooling, true),
-		new Describer(C_KeyConnectionLifeTime, C_KeyFbConnectionLifeTime, typeof(int), C_DefaultConnectionLifeTime, true),
-		new Describer(C_KeyMinPoolSize, C_KeyFbMinPoolSize, typeof(int), C_DefaultMinPoolSize, true),
-		new Describer(C_KeyMaxPoolSize, C_KeyFbMaxPoolSize, typeof(int), C_DefaultMaxPoolSize, true),
-		new Describer(C_KeyFetchSize, C_KeyFbFetchSize, typeof(int), C_DefaultFetchSize, true),
-		new Describer(C_KeyIsolationLevel, C_KeyFbIsolationLevel, typeof(IsolationLevel), C_DefaultIsolationLevel, true),
-		new Describer(C_KeyReturnRecordsAffected, C_KeyFbReturnRecordsAffected, typeof(bool), C_DefaultReturnRecordsAffected, true),
-		new Describer(C_KeyEnlist, C_KeyFbEnlist, typeof(bool), C_DefaultEnlist, true),
-		new Describer(C_KeyClientLibrary, C_KeyFbClientLibrary, typeof(string), C_DefaultClientLibrary, true),
-		new Describer(C_KeyDbCachePages, C_KeyFbDbCachePages, typeof(int), C_DefaultDbCachePages, true),
-		new Describer(C_KeyNoGarbageCollect, C_KeyFbNoGarbageCollect, typeof(bool), C_DefaultNoGarbageCollect, true),
-		new Describer(C_KeyCompression, C_KeyFbCompression, typeof(bool), C_DefaultCompression, true),
-		new Describer(C_KeyCryptKey, C_KeyFbCryptKey, typeof(byte[]), C_DefaultCryptKey, true),
-		new Describer(C_KeyWireCrypt, C_KeyFbWireCrypt, typeof(FbWireCrypt), C_DefaultWireCrypt, true),
-		new Describer(C_KeyApplicationName, C_KeyFbApplicationName, typeof(string), C_DefaultApplicationName, true),
-		new Describer(C_KeyCommandTimeout, C_KeyFbCommandTimeout, typeof(int), C_DefaultCommandTimeout, true),
-		new Describer(C_KeyParallelWorkers, C_KeyFbParallelWorkers, typeof(int), C_DefaultParallelWorkers, true),
+	public static readonly new Describer[] Describers =
+		[
+			new Describer(C_KeyRole, C_KeyFbRole, typeof(string), C_DefaultRole, true, false, true, false, true), // *
+			new Describer(C_KeyDialect, C_KeyFbDialect, typeof(int), C_DefaultDialect, true, false, true, false, true), // *
+			new Describer(C_KeyCharset, C_KeyFbCharset, typeof(string), C_DefaultCharset, true, false, true, false, true), // *
+			new Describer(C_KeyNoDatabaseTriggers, C_KeyFbNoDatabaseTriggers, typeof(bool), C_DefaultNoDatabaseTriggers, true, true, true, false, true), // *
+			new Describer(C_KeyPacketSize, C_KeyFbPacketSize, typeof(int), C_DefaultPacketSize, true),
+			new Describer(C_KeyConnectionTimeout, C_KeyFbConnectionTimeout, typeof(int), C_DefaultConnectionTimeout, true),
+			new Describer(C_KeyPooling, C_KeyFbPooling, typeof(bool), C_DefaultPooling, true),
+			new Describer(C_KeyConnectionLifeTime, C_KeyFbConnectionLifeTime, typeof(int), C_DefaultConnectionLifeTime, true),
+			new Describer(C_KeyMinPoolSize, C_KeyFbMinPoolSize, typeof(int), C_DefaultMinPoolSize, true),
+			new Describer(C_KeyMaxPoolSize, C_KeyFbMaxPoolSize, typeof(int), C_DefaultMaxPoolSize, true),
+			new Describer(C_KeyFetchSize, C_KeyFbFetchSize, typeof(int), C_DefaultFetchSize, true),
+			new Describer(C_KeyIsolationLevel, C_KeyFbIsolationLevel, typeof(IsolationLevel), C_DefaultIsolationLevel, true),
+			new Describer(C_KeyReturnRecordsAffected, C_KeyFbReturnRecordsAffected, typeof(bool), C_DefaultReturnRecordsAffected, true),
+			new Describer(C_KeyEnlist, C_KeyFbEnlist, typeof(bool), C_DefaultEnlist, true),
+			new Describer(C_KeyClientLibrary, C_KeyFbClientLibrary, typeof(string), C_DefaultClientLibrary, true),
+			new Describer(C_KeyDbCachePages, C_KeyFbDbCachePages, typeof(int), C_DefaultDbCachePages, true),
+			new Describer(C_KeyNoGarbageCollect, C_KeyFbNoGarbageCollect, typeof(bool), C_DefaultNoGarbageCollect, true),
+			new Describer(C_KeyCompression, C_KeyFbCompression, typeof(bool), C_DefaultCompression, true),
+			new Describer(C_KeyCryptKey, C_KeyFbCryptKey, typeof(byte[]), C_DefaultCryptKey, true),
+			new Describer(C_KeyWireCrypt, C_KeyFbWireCrypt, typeof(FbWireCrypt), C_DefaultWireCrypt, true),
+			new Describer(C_KeyApplicationName, C_KeyFbApplicationName, typeof(string), C_DefaultApplicationName, true),
+			new Describer(C_KeyCommandTimeout, C_KeyFbCommandTimeout, typeof(int), C_DefaultCommandTimeout, true),
+			new Describer(C_KeyParallelWorkers, C_KeyFbParallelWorkers, typeof(int), C_DefaultParallelWorkers, true),
 
-		new Describer(C_KeyExClientVersion, typeof(Version), C_DefaultExClientVersion, false, false)
-	};
+			new Describer(C_KeyExClientVersion, typeof(Version), C_DefaultExClientVersion, false, false)
+		];
 
 
 
@@ -99,7 +99,7 @@ public abstract class ModelPropertySet : CorePropertySet
 		CorePropertySet.CreateAndPopulatePropertySetFromStatic(describers);
 
 		describers.AddRange(Describers);
-		describers.AddSynonyms(CsbAgent.Synonyms);
+		describers.AddSynonyms(CsbAgent.Describers.Synonyms);
 	}
 
 

@@ -486,11 +486,13 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 				if (connectionDialogHandler.ShowDialog())
 				{
 					string connectionString = DataProtection.DecryptString(connectionDialogHandler.EncryptedConnectionString);
-					CsbAgent csa = new(connectionString);
-					csa.RegisterDataset();
+
+					CsbAgent csa = CsbAgent.EnsureInstance(connectionString);
+
 					UIConnectionInfo connectionInfo = new ();
 					connectionInfo.Parse(csa);
 					connection = new FbConnection(csa.ConnectionString);
+
 					return connectionInfo;
 				}
 			}
@@ -738,17 +740,17 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 			{
 				try
 				{
-					_Csb = csb;
+					_Csa = (CsbAgent)csb;
 
-					_Csb ??= ConnectionLocator.GetCsbFromDatabases(selectedDatasetKey);
-					if (_Csb != null)
+					_Csa ??= (CsbAgent)ConnectionLocator.GetCsaFromDatabases(selectedDatasetKey);
+					if (_Csa != null)
 					{
 						if (Connection.State == ConnectionState.Open)
 							Connection.Close();
-						Connection.ConnectionString = _Csb.ConnectionString;
+						Connection.ConnectionString = _Csa.ConnectionString;
 						if (UiConnectionInfo == null)
 							UiConnectionInfo = new();
-						UiConnectionInfo.Parse(_Csb);
+						UiConnectionInfo.Parse(_Csa);
 						SetConnectionInfo(UiConnectionInfo);
 						Connection.Open();
 					}

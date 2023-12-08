@@ -24,6 +24,7 @@
 			</Identifier>
 			<Properties>
 				<Property name="DatasetKey" isIdentifierPart="true" />
+				<Property name="ExternalKey" type="System.String" />
 				<Property name="DataSource" type="System.String" />
 				<Property name="Dataset" type="System.String" />
 				<Property name="Port" type="System.Int32"/>

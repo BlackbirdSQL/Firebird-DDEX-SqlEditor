@@ -102,12 +102,10 @@ public class CsbAgent : AbstractCsbAgent
 	[Browsable(false)]
 	public static IDictionary<string, string> RegisteredDatasets => _SDatasetKeys ?? LoadConfiguredConnections();
 
-
-	[Browsable(false)]
-	public static IDictionary<string, string> RegisteredConnectionMonikers => _SConnectionMonikers ?? LoadConfiguredConnectionMonikers();
-
 	public static new DescriberDictionary Describers => AbstractCsbAgent.Describers;
-	public static IDictionary<string, Describer> Synonyms => Describers.Synonyms;
+
+	public static int Id => _SConnectionMonikers.Count;
+
 
 	#endregion Property accessors
 
@@ -128,20 +126,13 @@ public class CsbAgent : AbstractCsbAgent
 	{
 	}
 
-	/// <summary>
-	/// .ctor for use only by ConnectionLocator for registering solution datasetKeys.
-	/// </summary>
-	protected CsbAgent(string datasetId, string connectionString) : base(datasetId, connectionString)
-	{
-	}
-
 
 	public CsbAgent(IDbConnection connection) : base(connection)
 	{
 	}
 
 
-	public CsbAgent(IBPropertyAgent ci) : base(ci)
+	private CsbAgent(IBPropertyAgent ci) : base(ci)
 	{
 	}
 
@@ -154,23 +145,153 @@ public class CsbAgent : AbstractCsbAgent
 	/// <summary>
 	/// .ctor for use only by ConnectionLocator for registering FlameRobin datasetKeys.
 	/// </summary>
-	protected CsbAgent(string datasetId, string server, int port, string database,
+	private CsbAgent(string server, int port, string database,
 		string user, string password, string charset)
-		: base(datasetId, server, port, database, user, password, charset)
+		: base(server, port, database, user, password, charset)
 	{
+	}
+
+
+	/// <summary>
+	/// Creates an instance from a registered connection using a ConnectionInfo object.
+	/// </summary>
+	public static CsbAgent CreateInstance(IBPropertyAgent connectioInfo)
+	{
+		if (connectioInfo == null)
+		{
+			ArgumentNullException ex = new(nameof(connectioInfo));
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		LoadConfiguredConnections();
+
+		CsbAgent csa = new(connectioInfo);
+		string connectionUrl = csa.SafeDatasetMoniker;
+
+		if (!_SConnectionMonikers.TryGetValue(connectionUrl, out (string, string, string, string) datasetInfo))
+		{
+			KeyNotFoundException ex = new KeyNotFoundException($"Connection url not found in SConnectionMonikers for key: {connectionUrl}");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+
+		return new CsbAgent(datasetInfo.Item4);
+	}
+
+
+	/// <summary>
+	/// Creates an instance from a registered connection using an IDbConnection.
+	/// </summary>
+	public static CsbAgent CreateInstance(IDbConnection connection)
+	{
+		if (connection == null)
+		{
+			ArgumentNullException ex = new(nameof(connection));
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		LoadConfiguredConnections();
+
+		CsbAgent csa = new(connection);
+		string connectionUrl = csa.SafeDatasetMoniker;
+
+		if (!_SConnectionMonikers.TryGetValue(connectionUrl, out (string, string, string, string) datasetInfo))
+		{
+			KeyNotFoundException ex = new KeyNotFoundException($"Connection url not found in SConnectionMonikers for key: {connectionUrl}");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+
+		return new CsbAgent(datasetInfo.Item4);
+	}
+
+
+
+	/// <summary>
+	/// Creates an instance from a registered connection using a Server Explorer
+	/// node.
+	/// </summary>
+	public static CsbAgent CreateInstance(IVsDataExplorerNode node)
+	{
+		if (node == null)
+		{
+			ArgumentNullException ex = new(nameof(node));
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		LoadConfiguredConnections();
+
+		CsbAgent csa = new(node);
+		string connectionUrl = csa.SafeDatasetMoniker;
+
+		if (!_SConnectionMonikers.TryGetValue(connectionUrl, out (string, string, string, string) datasetInfo))
+		{
+			KeyNotFoundException ex = new KeyNotFoundException($"Connection url not found in SConnectionMonikers for key: {connectionUrl}");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+
+		return new CsbAgent(datasetInfo.Item4);
+	}
+
+
+	/// <summary>
+	/// Creates an instance from a registered connection using either a DatasetKey or
+	/// ConnectionString.
+	/// </summary>
+	/// <param name="connectionKey">
+	/// The DatasetKey or ConnectionString.
+	/// </param>
+	public static CsbAgent CreateInstance(string connectionKey)
+	{
+		if (connectionKey == null)
+		{
+			ArgumentNullException ex = new(nameof(connectionKey));
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		LoadConfiguredConnections();
+
+		(string, string, string, string) datasetInfo;
+
+		if (connectionKey.StartsWith("data source=", StringComparison.InvariantCultureIgnoreCase) || connectionKey.Contains(";data source="))
+		{
+			CsbAgent csa = new(connectionKey);
+			string connectionUrl = csa.SafeDatasetMoniker;
+
+			if (!_SConnectionMonikers.TryGetValue(connectionUrl, out datasetInfo))
+				return null;
+		}
+		else
+		{
+
+			datasetInfo = GetDatasetConnectionInfo(connectionKey, false);
+
+			if (datasetInfo.Item1 == null)
+				return null;
+		}
+
+		return new CsbAgent(datasetInfo.Item4);
 	}
 
 
 	/// <summary>
 	/// Reserved for the registration of FlameRobin datasetKeys.
 	/// </summary>
-	public static CsbAgent CreateRegisteredDataset(string datasetId, string server, int port, string database, string user,
+	public static CsbAgent CreateRegisteredDataset(string proposedDatasetId, string server, int port, string database, string user,
 		string password, string charset)
 	{
 		// Tracer.Trace(typeof(CsbAgent), "RegisterDatasetKey(datasetId, server, port, database, user, password, charset)", "datasetId: {0}, server: {1}, port: {2}, database: {3}, user: {4}, password: {5}, charset: {6}", datasetId, server, port, database, user, password, charset);
 
-		CsbAgent csa = new(datasetId, server, port, database, user, password, charset);
-		(string datasetKey, _) = csa.RegisterUniqueConnectionDatasetKey(true);
+		CsbAgent csa = new(server, port, database, user, password, charset);
+		string datasetKey = csa.RegisterUniqueConnectionDatasetKey(null, proposedDatasetId);
 
 		if (string.IsNullOrWhiteSpace(datasetKey))
 			return null;
@@ -180,18 +301,95 @@ public class CsbAgent : AbstractCsbAgent
 
 
 	/// <summary>
-	/// Reserved for the registration of solution datasetKeys.
+	/// Reserved for the registration of server explorer connection nodes and solution
+	/// project preconfigured connections.
 	/// </summary>
-	public static CsbAgent CreateRegisteredDataset(string datasetId, string connectionString)
+	public static CsbAgent CreateRegisteredDataset(string proposedDatasetKey, string proposedDatasetId, CsbAgent csa)
 	{
 		// Tracer.Trace(typeof(CsbAgent), "RegisterDatasetKey(datasetId, connectionString)");
 
-		CsbAgent csa = new(datasetId, connectionString);
-		(string datasetKey, _) = csa.RegisterUniqueConnectionDatasetKey(true);
+		string datasetKey = csa.RegisterUniqueConnectionDatasetKey(proposedDatasetKey, proposedDatasetId);
 
 		if (string.IsNullOrWhiteSpace(datasetKey))
 			return null;
 
+
+		return csa;
+	}
+
+
+
+	/// <summary>
+	/// Creates an instance from a registered connection using a ConnectionString else
+	/// registers a new connection if none exists.
+	/// </summary>
+	public static CsbAgent EnsureInstance(IVsDataExplorerNode node)
+	{
+		if (node == null)
+		{
+			ArgumentNullException ex = new(nameof(node));
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		LoadConfiguredConnections();
+
+		CsbAgent csa = CreateInstance(node);
+
+		if (csa != null)
+			return csa;
+
+		csa = new(node);
+
+		lock (_LockClass)
+			csa.DataSource = ConnectionLocator.RegisterServerName(csa.DataSource);
+
+		string datasetId = csa.DatasetId;
+		if (string.IsNullOrWhiteSpace(datasetId))
+			datasetId = csa.Dataset;
+
+		csa = CsbAgent.CreateRegisteredDataset(node.ExplorerConnection.DisplayName, datasetId, csa);
+
+		lock (_LockClass)
+			ConnectionLocator.AddRegisteredDataset(csa);
+
+		return csa;
+	}
+
+
+	/// <summary>
+	/// Creates an instance from a registered connection using a ConnectionString else
+	/// registers a new connection if none exists.
+	/// </summary>
+	public static CsbAgent EnsureInstance(string connectionString)
+	{
+		if (connectionString == null)
+		{
+			ArgumentNullException ex = new(nameof(connectionString));
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		LoadConfiguredConnections();
+
+		CsbAgent csa = CreateInstance(connectionString);
+
+		if (csa != null)
+			return csa;
+
+		csa = new(connectionString);
+
+		lock (_LockClass)
+			csa.DataSource = ConnectionLocator.RegisterServerName(csa.DataSource);
+
+		string datasetId = csa.DatasetId;
+		if (string.IsNullOrWhiteSpace(datasetId))
+			datasetId = csa.Dataset;
+
+		csa = CsbAgent.CreateRegisteredDataset(csa.ExternalKey, datasetId, csa);
+
+		lock (_LockClass)
+			ConnectionLocator.AddRegisteredDataset(csa);
 
 		return csa;
 	}
@@ -227,6 +425,7 @@ public class CsbAgent : AbstractCsbAgent
 		// Tracer.Trace(GetType(), "Parse(IBPropertyAgent)");
 
 		DatasetKey = (string)ci[CoreConstants.C_KeyExDatasetKey];
+		ExternalKey = (string)ci[CoreConstants.C_KeyExExternalKey];
 		DatasetId = (string)ci[CoreConstants.C_KeyExDatasetId];
 
 		DataSource = string.IsNullOrEmpty((string)ci[CoreConstants.C_KeyDataSource]) ? "localhost" : (string)ci[CoreConstants.C_KeyDataSource];

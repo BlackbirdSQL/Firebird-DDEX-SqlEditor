@@ -314,8 +314,7 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 			{
 				if (_Csa == null || !_Csa.Equals(Connection))
 				{
-					_Csa = new(Connection);
-					_Csa.RegisterDataset();
+					_Csa = CsbAgent.CreateInstance(Connection);
 
 					_ConnectionInfo = null;
 					_ServerVersion = null;

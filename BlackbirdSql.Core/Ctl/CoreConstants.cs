@@ -46,6 +46,7 @@ public static class CoreConstants
 	public const string C_KeyExDataset = "Dataset";
 	public const string C_KeyExDatasetKey = "DatasetKey";
 	public const string C_KeyExDatasetId = "DatasetId";
+	public const string C_KeyExExternalKey = "ExternalKey";
 
 
 	// External (non-paramameter) property descriptor
@@ -84,6 +85,7 @@ public static class CoreConstants
 	public const string C_DefaultExDataset = "";
 	public const string C_DefaultExDatasetKey = "";
 	public const string C_DefaultExDatasetId = "";
+	public const string C_DefaultExExternalKey = "";
 
 	// External (non-paramameter) property defaults 
 	public const EnEngineType C_DefaultExServerEngine = EnEngineType.Unknown;

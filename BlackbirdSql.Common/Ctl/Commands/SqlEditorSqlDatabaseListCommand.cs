@@ -16,27 +16,29 @@ using BlackbirdSql.Core.Model;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
+using Microsoft.VisualStudio.VSHelp80;
 
 
 namespace BlackbirdSql.Common.Ctl.Commands;
 
 public class SqlEditorSqlDatabaseListCommand : AbstractSqlEditorCommand
 {
-	private static DbConnectionStringBuilder _Csb = null;
+	private static CsbAgent _Csa = null;
 	private static string[] _DatabaseList = null;
+	private static int _Id = -1;
 
 	private static string[] DatabaseList
 	{
 		get
 		{
-			if (_DatabaseList == null)
+			if (_DatabaseList == null || _Id != CsbAgent.Id)
 			{
 				int k = 1;
 				int i = 1;
 				string nodeDisplayMember = null;
 
-				if (_Csb != null)
-					nodeDisplayMember = (string)_Csb["DatasetKey"];
+				if (_Csa != null)
+					nodeDisplayMember = _Csa.DatasetKey;
 
 				foreach (KeyValuePair<string, string> pair in CsbAgent.RegisteredDatasets)
 				{
@@ -56,14 +58,19 @@ public class SqlEditorSqlDatabaseListCommand : AbstractSqlEditorCommand
 				_DatabaseList = new string[k];
 
 				if (i > 0)
-					_DatabaseList[0] = (string)_Csb["DatasetKey"];
+					_DatabaseList[0] = _Csa.DatasetKey;
 
 				foreach (KeyValuePair<string, string> pair in CsbAgent.RegisteredDatasets)
 				{
 					_DatabaseList[i] = pair.Key;
 					i++;
 				}
+
+				_Id = CsbAgent.Id;
 			}
+
+			Array.Sort(_DatabaseList, StringComparer.InvariantCulture);
+
 			return _DatabaseList;
 		}
 	}
@@ -92,7 +99,7 @@ public class SqlEditorSqlDatabaseListCommand : AbstractSqlEditorCommand
 		{
 
 
-			if (EditorWindow != null && _Csb == null)
+			if (EditorWindow != null && (_Csa == null || _Id != CsbAgent.Id))
 			{
 				// Load csb derived from the ServerExplorer node if it is still available
 				// in IVsUserData.
@@ -109,7 +116,7 @@ public class SqlEditorSqlDatabaseListCommand : AbstractSqlEditorCommand
 							userData.GetData(ref clsid, out object objData);
 
 							if (objData != null)
-								_Csb = (DbConnectionStringBuilder)objData;
+								_Csa = (CsbAgent)objData;
 						}
 						catch (Exception) { }
 					}

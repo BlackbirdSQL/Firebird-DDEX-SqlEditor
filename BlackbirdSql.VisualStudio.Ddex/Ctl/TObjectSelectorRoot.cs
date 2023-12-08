@@ -124,13 +124,12 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		try
 		{
 			lockedProviderObject = Site.GetLockedProviderObject();
-			connection = lockedProviderObject as FbConnection;
+			if (lockedProviderObject == null)
+				throw new NotImplementedException("Site.GetLockedProviderObject()");
 
-			if (lockedProviderObject == null || connection == null)
-			{
-				NotImplementedException ex = new("Site.GetLockedProviderObject()");
-				throw ex;
-			}
+			connection = lockedProviderObject as FbConnection;
+			if (connection == null)
+				throw new NotImplementedException($"LockedProviderObject as FbConnection for object type: {lockedProviderObject.GetType().Name}.");
 
 			// Tracer.Trace(GetType(), "SelectObjects()", "Site type: {0}", Site.GetType().FullName);
 			Site.EnsureConnected();
@@ -142,10 +141,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			_Connection = connection;
 
 			if (_Csa == null || !_Csa.Equals(connection))
-			{
-				_Csa = new(connection);
-				_Csa.RegisterDataset();
-			}
+				_Csa = CsbAgent.EnsureInstance(connection.ConnectionString);
 
 			DataTable schema = CreateSchema(typeName, parameters);
 
@@ -313,7 +309,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 						retval = Convert.ToInt32(_Csa[describer.Name]);
 					else
 						retval = _Csa[describer.Name];
-					// Tracer.Trace(GetType(), "RetrieveValue()", "Name: {0}, CsbName: {1}, retval: {2}, ContainsKey(CsbName): {3}, _Csb[CsbName]: {4}.", name, describer.Name, retval, _Csa.ContainsKey(describer.Name), _Csa.ContainsKey(describer.Name) ? _Csa[describer.Name] : "NoExist");
+					// Tracer.Trace(GetType(), "RetrieveValue()", "Name: {0}, CsbName: {1}, retval: {2}, ContainsKey(CsbName): {3}, _Csa[CsbName]: {4}.", name, describer.Name, retval, _Csa.ContainsKey(describer.Name), _Csa.ContainsKey(describer.Name) ? _Csa[describer.Name] : "NoExist");
 
 					break;
 			}

@@ -4,7 +4,6 @@
 #endregion
 
 using System;
-using System.Data;
 using BlackbirdSql.Core;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
@@ -14,10 +13,9 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Utilities;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Model.Enums;
+
 
 namespace BlackbirdSql.Common.Ctl.Commands;
-
 
 public class SqlEditorNewQueryCommand : AbstractSqlEditorCommand
 {

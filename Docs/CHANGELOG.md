@@ -62,3 +62,6 @@ Resolved Blob handling exceptions and Readme update.
 
 #### v10.0.1.4
 Resolved Generic Blob handling exceptions.
+
+#### v10.0.1.5
+Implemented connection naming and resolved centralized connection issues.

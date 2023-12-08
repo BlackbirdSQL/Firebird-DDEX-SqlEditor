@@ -6,17 +6,15 @@
 using System;
 using System.Data;
 using System.Runtime.InteropServices;
-
-using BlackbirdSql.Core;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
-
+using BlackbirdSql.Core;
+using BlackbirdSql.Core.Model;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
-using BlackbirdSql.Common.Ctl.Interfaces;
-using BlackbirdSql.Core.Model;
-using BlackbirdSql.Core.Ctl.Diagnostics;
+
 
 namespace BlackbirdSql.Common.Ctl.Commands;
 
@@ -102,8 +100,7 @@ public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
 			{
 				if (_Csa == null || !_Csa.Equals(connection))
 				{
-					_Csa = new(connection);
-					_Csa.RegisterDataset();
+					_Csa = CsbAgent.CreateInstance(connection);
 				}
 
 				objDatasetKey = _Csa.DatasetKey;
@@ -130,7 +127,13 @@ public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
 		CsbAgent csa = (CsbAgent)docData.GetUserDataCsb();
 
 		if (csa != null && csa.DatasetKey == null)
-			csa.RegisterDataset();
+		{
+			// csa.RegisterDataset();
+			Exception ex = new Exception("CsbAgent from docData.GetUserDataCsb() has no DatasetKey.");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
 
 		string connectionString;
 
@@ -138,12 +141,7 @@ public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
 		{
 			try
 			{
-				connectionString = CsbAgent.GetDatasetConnectionString(selectedDatasetKey);
-				if (connectionString == null)
-					throw new ArgumentException($"DatasetKey {selectedDatasetKey} is not registered.");
-
-				csa = new(connectionString);
-				csa.RegisterDataset();
+				csa = CsbAgent.CreateInstance(selectedDatasetKey);
 			}
 			catch (Exception ex)
 			{

@@ -440,8 +440,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 			IBDesignerExplorerServices service = Controller.GetService<IBDesignerExplorerServices>()
 				?? throw Diag.ServiceUnavailable(typeof(IBDesignerExplorerServices));
 
-			CsbAgent csa = new(Site.ExplorerConnection.ConnectionNode);
-			csa.RegisterDataset();
+			CsbAgent csa = CsbAgent.CreateInstance(Site.ExplorerConnection.ConnectionNode);
 
 			service.NewSqlQuery(csa.DatasetKey);
 		}
@@ -477,7 +476,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 			IList<string> identifierList = moniker.Identifier.ToArray();
 			EnModelObjectType objectType = moniker.ObjectType;
 			string script = MonikerAgent.GetDecoratedDdlSource(node, targetType);
-			CsbAgent csb = new(node);
+			CsbAgent csb = CsbAgent.CreateInstance(node);
 
 			service.ViewCode(csb, objectType, identifierList, targetType, script);
 

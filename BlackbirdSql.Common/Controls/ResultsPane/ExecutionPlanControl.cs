@@ -42,17 +42,11 @@ namespace BlackbirdSql.Common.Controls.ResultsPane;
 
 public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.Interfaces.IBObjectWithSite // , IOleCommandTarget
 {
-	private class DataBinding
+	private class DataBinding(object dataSource, int dataIndex)
 	{
-		public readonly object DataSource;
+		public readonly object DataSource = dataSource;
 
-		public readonly int DataIndex;
-
-		public DataBinding(object dataSource, int dataIndex)
-		{
-			DataSource = dataSource;
-			DataIndex = dataIndex;
-		}
+		public readonly int DataIndex = dataIndex;
 	}
 
 	// private readonly Dictionary<GraphPanel, DataBinding> dataBindings;

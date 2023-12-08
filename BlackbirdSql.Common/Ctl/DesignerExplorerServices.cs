@@ -84,7 +84,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 		RaiseBeforeOpenDocument(mkDocument, dbl, identifierArray, objectType, targetType, S_BeforeOpenDocumentHandler);
 
-		CsbAgent csa = new(node);
+		CsbAgent csa = CsbAgent.CreateInstance(node);
 
 		OpenMiscDocument(mkDocument, csa, true, false, editorFactory, out uint docCookie, out IVsWindowFrame frame,
 			out bool editorAlreadyOpened, out bool documentAlreadyLoaded, physicalViewName);
@@ -161,7 +161,9 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		string mkDocument = null;
 		EnModelObjectType objectType = EnModelObjectType.NewSqlQuery;
 		EnModelObjectType elementType = objectType;
-		CsbAgent csa = new(CsbAgent.GetDatasetConnectionString(datasetKey));
+
+		CsbAgent csa = CsbAgent.CreateInstance(datasetKey);
+
 		DatabaseLocation dbl = new(csa, targetType);
 		HashSet<NodeElementDescriptor> originalObjects = null;
 		bool flag = false;
