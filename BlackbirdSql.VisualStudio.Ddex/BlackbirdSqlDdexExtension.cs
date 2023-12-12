@@ -90,6 +90,8 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 	SettingsProvider.SubCategoryName, SettingsProvider.GeneralSettingsPageName, 200, 201, 221)]
 [VsProvideOptionPage(typeof(SettingsProvider.DebugSettingsPage), SettingsProvider.CategoryName,
 	SettingsProvider.SubCategoryName, SettingsProvider.DebugSettingsPageName, 200, 201, 222)]
+[VsProvideOptionPage(typeof(SettingsProvider.EquivalencySettingsPage), SettingsProvider.CategoryName,
+	SettingsProvider.SubCategoryName, SettingsProvider.EquivalencySettingsPageName, 200, 201, 223)]
 
 
 #endregion Class Attributes
@@ -119,7 +121,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 	#region Property accessors - BlackbirdSqlDdexExtension
 	// =========================================================================================================
 
-	private UserSettings ExtensionSettings => (UserSettings)UserSettings.Instance;
+	private PersistentSettings ExtensionSettings => (PersistentSettings)PersistentSettings.Instance;
 
 	#endregion Property accessors
 
@@ -231,13 +233,12 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 			AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
 			{
 				if (args.Name == _InvariantAssembly.FullName)
-					return _InvariantAssembly;
-				/*
 				{
-					// Diag.Trace("Firebird assembly name: " + _InvariantAssembly.FullName + " assembly resolved: " + args.Name);
+					if (!_InvariantResolved)
+						Tracer.Information(GetType(), "InitializeAsync()", "Invariant assembly resolved: {0}.", _InvariantAssembly.FullName);
+					_InvariantResolved = true;
 					return _InvariantAssembly;
 				}
-				*/
 
 				return null;
 			};

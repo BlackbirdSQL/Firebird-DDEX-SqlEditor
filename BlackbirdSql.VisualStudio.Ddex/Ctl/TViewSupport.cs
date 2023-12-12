@@ -213,6 +213,12 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 
 		base.Initialize();
 
+		if (ViewHierarchy == null || ViewHierarchy.ExplorerConnection == null
+			|| ViewHierarchy.ExplorerConnection.Connection == null)
+		{
+			return;
+		}
+
 		IVsDataConnection site = ViewHierarchy.ExplorerConnection.Connection;
 
 		if (site.State == DataConnectionState.Open)
@@ -463,6 +469,12 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 	{
 		try
 		{
+			if (ViewHierarchy == null || ViewHierarchy.ExplorerConnection == null
+				|| ViewHierarchy.ExplorerConnection.Connection == null)
+			{
+				return;
+			}
+
 			IVsDataConnection connection = ViewHierarchy.ExplorerConnection.Connection;
 			if (connection != null && connection.State == DataConnectionState.Open)
 			{
@@ -523,6 +535,8 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 
 		try
 		{
+			CsbAgent.LoadConfiguredConnections();
+
 			site = ViewHierarchy.ExplorerConnection.Connection;
 			lockedProviderObject = site.GetLockedProviderObject();
 			if (lockedProviderObject == null)
@@ -531,7 +545,6 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 			if (lockedProviderObject is not FbConnection connection)
 				throw new NotImplementedException($"GetLockedProviderObject() as FbConnection for object type: {lockedProviderObject.GetType().Name}.");
 
-			CsbAgent.EnsureInstance(ViewHierarchy.ExplorerConnection.ConnectionNode);
 
 			// We'll delay 25 cycles of 20ms each because this is a deadlock when
 			// preregistering the taskhandler and a node requiring completed linkage tables is already expanded.
@@ -571,6 +584,22 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 
 		try
 		{
+			// This is proof that all is not what it seems. This condition is never true until
+			// you remove the assembly load statement.
+			// On startup of VS, if an xsd or edmx is in an open state or the SE is pinned
+			// on the first solution opened, there are instances where class references will
+			// exist but their assemblies are not yet loaded. This can happen here for the
+			// invariant.
+			// By simply placing a load statement here the runtime will resolve and load
+			// the assembly before we even reach this statement.
+
+			if (!Core.Controller.InvariantResolved)
+			{
+				Tracer.Information(GetType(), "OnNodeChanged()", "Invariant is unresolved. Loading: {0}", typeof(FirebirdClientFactory).Assembly.FullName);
+				Assembly.Load(typeof(FirebirdClientFactory).Assembly.FullName);
+			}
+
+
 			if (e.Node == null || ((!e.Node.IsRefreshing || _Refreshing) && !e.Node.IsExpanding)
 				|| e.Node.ExplorerConnection == null
 				|| e.Node.ExplorerConnection.Connection == null
@@ -592,10 +621,10 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 				str += $", Object.Name: {e.Node.Object.Name}, Object.Type: {e.Node.Object.Type.Name}, " +
 					$"Object.IsDeleted: {e.Node.Object.IsDeleted}.";
 			}
-			*/
 			// Tracer.Trace(GetType(), "OnNodeChanged()", str);
+			*/
 
-			site = ViewHierarchy.ExplorerConnection.Connection;
+			site = e.Node.ExplorerConnection.Connection;
 			lockedProviderObject = site.GetLockedProviderObject();
 			if (lockedProviderObject == null)
 				throw new NotImplementedException("ViewHierarchy.ExplorerConnection.Connection.GetLockedProviderObject()");

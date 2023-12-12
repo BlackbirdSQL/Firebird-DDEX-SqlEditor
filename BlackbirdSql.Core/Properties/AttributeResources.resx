@@ -135,11 +135,23 @@
   <data name="GlobalizedLiteralEnabled" xml:space="preserve">
     <value>☑ Enabled</value>
   </data>
+  <data name="GlobalizedLiteralExclude" xml:space="preserve">
+    <value>☐ Exclude</value>
+  </data>
+  <data name="GlobalizedLiteralExcluded" xml:space="preserve">
+    <value>☐ Excluded</value>
+  </data>
   <data name="GlobalizedLiteralFalse" xml:space="preserve">
     <value>☐ False</value>
   </data>
   <data name="GlobalizedLiteralHide" xml:space="preserve">
     <value>☐ Hidden</value>
+  </data>
+  <data name="GlobalizedLiteralInclude" xml:space="preserve">
+    <value>☑ Include</value>
+  </data>
+  <data name="GlobalizedLiteralIncluded" xml:space="preserve">
+    <value>☑ Included</value>
   </data>
   <data name="GlobalizedLiteralNo" xml:space="preserve">
     <value>☐ No</value>

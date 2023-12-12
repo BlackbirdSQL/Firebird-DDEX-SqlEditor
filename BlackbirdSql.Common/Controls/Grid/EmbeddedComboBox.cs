@@ -168,7 +168,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 		{
 			Keys keys = (Keys)(int)m.WParam;
 			_ = ModifierKeys;
-			if (m.Msg == 258)
+			if (m.Msg == Native.WM_CHAR)
 			{
 				return ProcessKeyEventArgs(ref m);
 			}
@@ -194,7 +194,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
 		protected override void WndProc(ref Message m)
 		{
-			if (m.Msg == 48)
+			if (m.Msg == Native.WM_SETFONT)
 			{
 				WmSetFont(ref m);
 			}

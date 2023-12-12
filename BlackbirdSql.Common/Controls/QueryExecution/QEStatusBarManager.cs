@@ -317,7 +317,7 @@ public sealed class QEStatusBarManager : IDisposable
 		void act()
 		{
 			_StatusStrip.Show();
-			if (UserSettings.EditorStatusBarExecutionTimeMethod == EnExecutionTimeMethod.Elapsed)
+			if (PersistentSettings.EditorStatusBarExecutionTimeMethod == EnExecutionTimeMethod.Elapsed)
 			{
 				((ToolStripItem)(object)_ExecutionTimePanel).Text = (DateTime.Now - DateTime.Now).FmtSqlStatus();
 				ExecutionStartTime = DateTime.Now;
@@ -355,7 +355,7 @@ public sealed class QEStatusBarManager : IDisposable
 				SetKnownState(EnQeStatusBarKnownStates.ExecutionOk);
 			}
 
-			if (UserSettings.EditorStatusBarExecutionTimeMethod == EnExecutionTimeMethod.Elapsed)
+			if (PersistentSettings.EditorStatusBarExecutionTimeMethod == EnExecutionTimeMethod.Elapsed)
 			{
 				if (_ElapsedExecutionTimer != null)
 				{
@@ -562,11 +562,11 @@ public sealed class QEStatusBarManager : IDisposable
 		}
 
 		if (_StatusStrip.Dock == DockStyle.Top
-			&& UserSettings.EditorContextStatusBarPosition != EnStatusBarPosition.Top
+			&& PersistentSettings.EditorContextStatusBarPosition != EnStatusBarPosition.Top
 			|| _StatusStrip.Dock == DockStyle.Bottom
-			&& UserSettings.EditorContextStatusBarPosition != EnStatusBarPosition.Bottom)
+			&& PersistentSettings.EditorContextStatusBarPosition != EnStatusBarPosition.Bottom)
 		{
-			switch (UserSettings.EditorContextStatusBarPosition)
+			switch (PersistentSettings.EditorContextStatusBarPosition)
 			{
 				case EnStatusBarPosition.Bottom:
 					_StatusStrip.Dock = DockStyle.Bottom;
@@ -577,10 +577,10 @@ public sealed class QEStatusBarManager : IDisposable
 			}
 		}
 
-		if (UserSettings.LayoutPropertyChanged)
+		if (PersistentSettings.LayoutPropertyChanged)
 		{
 			RebuildPanels();
-			UserSettings.LayoutPropertyChanged = false;
+			PersistentSettings.LayoutPropertyChanged = false;
 		}
 	}
 
@@ -588,37 +588,37 @@ public sealed class QEStatusBarManager : IDisposable
 	{
 		_StatusStrip.Items.Clear();
 		_StatusStrip.Items.Add((ToolStripItem)(object)_GeneralPanel);
-		if (UserSettings.EditorStatusBarIncludeServerName)
+		if (PersistentSettings.EditorStatusBarIncludeServerName)
 		{
 			_StatusStrip.Items.Add(new ToolStripSeparator());
 			_StatusStrip.Items.Add((ToolStripItem)(object)_ServerNamePanel);
 		}
 
-		if (UserSettings.EditorStatusBarIncludeLoginName)
+		if (PersistentSettings.EditorStatusBarIncludeLoginName)
 		{
 			_StatusStrip.Items.Add(new ToolStripSeparator());
 			_StatusStrip.Items.Add((ToolStripItem)(object)_UserNamePanel);
 		}
 
-		if (UserSettings.EditorStatusBarIncludeDatabaseName)
+		if (PersistentSettings.EditorStatusBarIncludeDatabaseName)
 		{
 			_StatusStrip.Items.Add(new ToolStripSeparator());
 			_StatusStrip.Items.Add((ToolStripItem)(object)_DatabaseNamePanel);
 		}
 
-		if (UserSettings.EditorStatusBarExecutionTimeMethod == EnExecutionTimeMethod.Elapsed)
+		if (PersistentSettings.EditorStatusBarExecutionTimeMethod == EnExecutionTimeMethod.Elapsed)
 		{
 			_StatusStrip.Items.Add(new ToolStripSeparator());
 			_StatusStrip.Items.Add((ToolStripItem)(object)_ExecutionTimePanel);
 		}
 
-		if (UserSettings.EditorStatusBarExecutionTimeMethod == EnExecutionTimeMethod.End)
+		if (PersistentSettings.EditorStatusBarExecutionTimeMethod == EnExecutionTimeMethod.End)
 		{
 			_StatusStrip.Items.Add(new ToolStripSeparator());
 			_StatusStrip.Items.Add((ToolStripItem)(object)_CompletedTimePanel);
 		}
 
-		if (_RowCountValid && UserSettings.EditorStatusBarIncludeRowCount)
+		if (_RowCountValid && PersistentSettings.EditorStatusBarIncludeRowCount)
 		{
 			_StatusStrip.Items.Add(new ToolStripSeparator());
 			_StatusStrip.Items.Add((ToolStripItem)(object)_NumOfRowsPanel);

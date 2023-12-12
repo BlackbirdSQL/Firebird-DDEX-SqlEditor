@@ -5,7 +5,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Reflection;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
@@ -18,7 +17,6 @@ using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
-using Microsoft.VisualStudio.LanguageServer.Client;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
@@ -123,6 +121,21 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 		try
 		{
+			// This is proof that all is not what it seems. This condition is never true until
+			// you remove the assembly load statement.
+			// On startup of VS, if an xsd or edmx is in an open state or the SE is pinned
+			// on the first solution opened, there are instances where class references will
+			// exist but their assemblies are not yet loaded. This can happen here for the
+			// invariant.
+			// By simply placing a load statement here the runtime will resolve and load
+			// the assembly before we even reach this statement.
+
+			if (!Core.Controller.InvariantResolved)
+			{
+				Tracer.Information(GetType(), "SelectObjects()", "Invariant is unresolved. Loading: {0}", typeof(FirebirdClientFactory).Assembly.FullName);
+				Assembly.Load(typeof(FirebirdClientFactory).Assembly.FullName);
+			}
+
 			lockedProviderObject = Site.GetLockedProviderObject();
 			if (lockedProviderObject == null)
 				throw new NotImplementedException("Site.GetLockedProviderObject()");
@@ -227,7 +240,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		{
 			txt += col.ColumnName + ":" + (schema.Rows[0][col.Ordinal] == null ? "null" : (schema.Rows[0][col.Ordinal] == DBNull.Value ? "DBNull" : schema.Rows[0][col.Ordinal].ToString())) + ", ";
 		}
-		Diag.Trace(txt);
+		// Tracer.Trace(GetType(), "CreateSchema()", "{0}", str);
 		*/
 
 		if (parameters != null && parameters.Length == 1 && parameters[0] is DictionaryEntry entry)

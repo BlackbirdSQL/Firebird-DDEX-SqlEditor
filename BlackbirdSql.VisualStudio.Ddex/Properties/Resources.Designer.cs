@@ -169,7 +169,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Events already enabled.
+        ///   Looks up a localized string similar to Events already enabled..
         /// </summary>
         public static string ExceptionEventsAlreadyEnabled {
             get {

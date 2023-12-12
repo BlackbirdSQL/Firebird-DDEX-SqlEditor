@@ -32,7 +32,7 @@ internal class GlobalsAgent : AbstractGlobalsAgent
 
 
 #if DEBUG
-	public override bool PersistentValidation => UserSettings.PersistentValidation;
+	public override bool PersistentValidation => PersistentSettings.PersistentValidation;
 #else
 	public override bool PersistentValidation => true;
 #endif
@@ -43,7 +43,7 @@ internal class GlobalsAgent : AbstractGlobalsAgent
 	/// Returns a boolean indicating whether or not the app.config may be validated
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public override bool ValidateConfig => UserSettings.ValidateConfig;
+	public override bool ValidateConfig => PersistentSettings.ValidateConfig;
 
 
 	// ---------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ internal class GlobalsAgent : AbstractGlobalsAgent
 	/// Returns a boolean indicating whether or not edmx files may be validated
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public override bool ValidateEdmx => UserSettings.ValidateEdmx;
+	public override bool ValidateEdmx => PersistentSettings.ValidateEdmx;
 
 	#endregion Property Accessors
 

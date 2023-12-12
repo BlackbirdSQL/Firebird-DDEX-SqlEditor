@@ -707,7 +707,7 @@ public abstract class ConnectionLocator
 
 	private static void LoadSolutionConfiguredConnections(DataTable databases)
 	{
-		if (!UserSettings.IncludeAppConnections || Controller.Instance.Dte.Solution.Projects.Count == 0)
+		if (!PersistentSettings.IncludeAppConnections || Controller.Instance.Dte.Solution.Projects.Count == 0)
 			return;
 
 		int projectCount = Controller.Instance.Dte.Solution.Projects.Count;

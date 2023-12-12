@@ -25,18 +25,54 @@ namespace BlackbirdSql.Core.Ctl;
 /// The events manager can handle an ide event by hooking onto Controller.On[event]. 
 /// </remarks>
 // =========================================================================================================
-public abstract class AbstractEventsManager : IBEventsManager
+public abstract class AbstractEventsManager(IBPackageController controller) : IBEventsManager
 {
 
+	private readonly IBPackageController _Controller = controller;
+
+
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - AbstractEventsManager
+	// ---------------------------------------------------------------------------------
+
+
+	/// <summary>
+	/// Placeholder for final instance descendent class CreateInstance
+	/// </summary>
+	public static AbstractEventsManager CreateInstance(IBPackageController controller)
+	{
+		// Format
+		// return _Instance = new(controller);
+
+		NotImplementedException ex = new("Static CreateInstance may only be called from the final class");
+		Diag.Dug(ex);
+		throw ex;
+	}
+
+
+	/// <summary>
+	/// AbstractEventsManager disposal
+	/// </summary>
+	/// <remarks>
+	/// Example
+	/// <code>_Controller.OnExampleEvent -= OnExample;</code>
+	/// </remarks>
+	public abstract void Dispose();
+
+
+	#endregion Constructors / Destructors
+
+
+
+
+	// =========================================================================================================
 	#region Variables - BlackbirdSqlDdexExtension
+	// =========================================================================================================
 
-
-	private readonly IBPackageController _Controller;
 
 	protected string _TaskHandlerTaskName = "Task";
 	protected TaskProgressData _ProgressData = default;
 	protected ITaskHandler _TaskHandler = null;
-
 
 
 	#endregion Variables
@@ -61,8 +97,6 @@ public abstract class AbstractEventsManager : IBEventsManager
 	public IBGlobalsAgent Uig => _Controller.Uig;
 
 
-
-
 	/// <summary>
 	/// The name of the running task if the object is currently using the task handler.
 	/// </summary>
@@ -70,59 +104,6 @@ public abstract class AbstractEventsManager : IBEventsManager
 
 
 	#endregion Property accessors
-
-
-
-
-
-	// =========================================================================================================
-	#region Constructors / Destructors - AbstractEventsManager
-	// =========================================================================================================
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Private singleton .ctor
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public AbstractEventsManager(IBPackageController controller)
-	{
-		_Controller = controller;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Placeholder for final instance descendent class CreateInstance
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static AbstractEventsManager CreateInstance(IBPackageController controller)
-	{
-		// Format
-		// return _Instance = new(controller);
-
-		NotImplementedException ex = new("Static CreateInstance may only be called from the final class");
-		Diag.Dug(ex);
-		throw ex;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// AbstractEventsManager disposal
-	/// </summary>
-	/// <remarks>
-	/// Example
-	/// <code>_Controller.OnExampleEvent -= OnExample;</code>
-	/// </remarks>
-	// ---------------------------------------------------------------------------------
-	public abstract void Dispose();
-
-
-	#endregion Constructors / Destructors
-
 
 
 
@@ -144,8 +125,8 @@ public abstract class AbstractEventsManager : IBEventsManager
 	public abstract void Initialize();
 
 
-
 	#endregion Methods
+
 
 
 

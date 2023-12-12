@@ -124,7 +124,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 		}
 	}
 
-	public IBLiveUserSettings LiveSettings => AuxDocData.LiveSettings;
+	public IBEditorTransientSettings LiveSettings => AuxDocData.LiveSettings;
 
 
 	public string DefaultResultsDirectory
@@ -1220,7 +1220,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 		}
 	}
 
-	private void ApplyLiveSettingsToBatchConsumer(AbstractQESQLBatchConsumer batchConsumer, IBLiveUserSettings liveSettings)
+	private void ApplyLiveSettingsToBatchConsumer(AbstractQESQLBatchConsumer batchConsumer, IBEditorTransientSettings liveSettings)
 	{
 		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.ApplyResSettingsToBatchConsumer", "", null);
 		batchConsumer.MaxCharsPerColumn = MaxCharsPerColumn;

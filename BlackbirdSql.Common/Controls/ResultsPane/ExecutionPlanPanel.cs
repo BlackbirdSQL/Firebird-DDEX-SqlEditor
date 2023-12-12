@@ -109,7 +109,7 @@ public class ExecutionPlanPanel : AbstractResultsPanel, IOleCommandTarget
 
 	protected override void WndProc(ref Message m)
 	{
-		if (m.Msg == 123)
+		if (m.Msg == Native.WM_CONTEXTMENU)
 		{
 			if (CommonUtils.GetCoordinatesForPopupMenuFromWM_Context(ref m, out var xPos, out var yPos, this))
 			{

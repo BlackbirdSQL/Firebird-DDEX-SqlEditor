@@ -110,7 +110,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		protected override void WndProc(ref Message m)
 		{
-			if (m.Msg == 123)
+			if (m.Msg == Native.WM_CONTEXTMENU)
 			{
 				if (FocusedGrid != null && CommonUtils.GetCoordinatesForPopupMenuFromWM_Context(ref m, out var x, out var y, (Control)(object)FocusedGrid))
 				{

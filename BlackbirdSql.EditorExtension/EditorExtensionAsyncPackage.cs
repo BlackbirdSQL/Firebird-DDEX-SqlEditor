@@ -74,7 +74,6 @@ namespace BlackbirdSql.EditorExtension;
 [VsProvideOptionPage(typeof(SettingsProvider.ExecutionAdvancedSettingsPage), SettingsProvider.CategoryName,
 	SettingsProvider.SubCategoryName, SettingsProvider.ExecutionSettingsPageName,
 	SettingsProvider.ExecutionAdvancedSettingsPageName, 300, 301, 323, 325)]
-
 [VsProvideOptionPage(typeof(SettingsProvider.ResultsSettingsPage), SettingsProvider.CategoryName,
 	SettingsProvider.SubCategoryName, SettingsProvider.ResultsSettingsPageName,
 	SettingsProvider.ResultsGeneralSettingsPageName, 300, 301, 326, 327)]
@@ -725,17 +724,28 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 	public DialogResult ShowExecutionSettingsDialogFrame(AuxiliaryDocData auxDocData,
 		FormStartPosition startPosition)
 	{
+		// Tracer.Trace(GetType(), "ShowExecutionSettingsDialogFrame()");
+
 		DialogResult result = DialogResult.Abort;
 
 		QueryManager qryMgr = auxDocData.QryMgr;
 		if (qryMgr == null)
 			return DialogResult.Abort;
 
+
 		using (CurrentWndOptionsDlg dlg = new(qryMgr.LiveSettings))
 		{
 			dlg.StartPosition = startPosition;
 
-			result = FormUtilities.ShowDialog(dlg);
+			try
+			{
+				result = FormUtilities.ShowDialog(dlg);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw;
+			}
 
 			if (result == DialogResult.OK)
 				auxDocData.UpdateLiveSettingsState(qryMgr.LiveSettings);

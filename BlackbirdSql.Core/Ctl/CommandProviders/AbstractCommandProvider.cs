@@ -380,7 +380,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 
 		// Show the diagram pane if enabled.
-		if (UserSettings.ShowDiagramPane)
+		if (PersistentSettings.ShowDiagramPane)
 		{
 			CommandID cmd = new CommandID(VSConstants.GUID_VSStandardCommandSet97, (int)VSConstants.VSStd97CmdID.ShowGraphicalPane);
 			// Delay 10 ms to give Editor WindowFrame and QueryDesignerDocument time to breath.

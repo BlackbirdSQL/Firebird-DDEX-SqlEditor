@@ -1661,7 +1661,7 @@ public class SplitViewSplitterStrip : ToolStrip
 
 	protected override void WndProc(ref Message m)
 	{
-		if (m.Msg == 33)
+		if (m.Msg == Native.WM_MOUSEACTIVATE)
 		{
 			DefWndProc(ref m);
 		}

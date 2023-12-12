@@ -144,6 +144,9 @@
   <data name="222" xml:space="preserve">
     <value>Debug</value>
   </data>
+  <data name="223" xml:space="preserve">
+    <value>Equivalency Keys</value>
+  </data>
   <data name="300" xml:space="preserve">
     <value>BlackbirdSQL Server Tools</value>
   </data>

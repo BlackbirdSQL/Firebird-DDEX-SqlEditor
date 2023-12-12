@@ -14,23 +14,23 @@ using BlackbirdSql.VisualStudio.Ddex.Properties;
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl.Config;
 
 // =========================================================================================================
-//										UserSettings Class
+//										PersistentSettings Class
 //
 /// <summary>
 /// Consolidated single access point for daisy-chained packages settings models (IBSettingsModel).
-/// As a rule we name descendent classes UserSettings as well. We hardcode bind the UserSettings descendent
+/// As a rule we name descendent classes PersistentSettings as well. We hardcode bind the PersistentSettings descendent
 /// tree from the top-level extension lib (this lib) down to the Core. There is no point using services as
 /// this configuration is fixed. ie:
 /// VisualStudio.Ddex > Controller > [Intermediate Libs] > Core.
 /// Current intermediate libs are: EditorExtension > Common.
 /// </summary>
 // =========================================================================================================
-public class UserSettings : Controller.Ctl.Config.UserSettings
+public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 {
 
 
 	// =========================================================================================================
-	#region Property Accessors - UserSettings
+	#region Property Accessors - PersistentSettings
 	// =========================================================================================================
 
 
@@ -50,7 +50,7 @@ public class UserSettings : Controller.Ctl.Config.UserSettings
 
 
 	// =========================================================================================================
-	#region Constructors / Destructors - UserSettings
+	#region Constructors / Destructors - PersistentSettings
 	// =========================================================================================================
 
 
@@ -59,7 +59,7 @@ public class UserSettings : Controller.Ctl.Config.UserSettings
 	/// Private singleton .ctor
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected UserSettings() : base()
+	protected PersistentSettings() : base()
 	{
 	}
 
@@ -67,10 +67,10 @@ public class UserSettings : Controller.Ctl.Config.UserSettings
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Gets the singleton UserSettings instance
+	/// Gets the singleton PersistentSettings instance
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public new static IBUserSettings Instance => _Instance ??= new UserSettings();
+	public new static IBPersistentSettings Instance => _Instance ??= new PersistentSettings();
 
 
 	#endregion Constructors / Destructors
@@ -78,7 +78,7 @@ public class UserSettings : Controller.Ctl.Config.UserSettings
 
 
 	// =========================================================================================================
-	#region Methods - UserSettings
+	#region Methods - PersistentSettings
 	// =========================================================================================================
 
 
@@ -87,7 +87,7 @@ public class UserSettings : Controller.Ctl.Config.UserSettings
 	/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
 	/// Only implemented by packages that have settings models.
 	/// </summary>
-	public override void RegisterSettingsEventHandlers(IBUserSettings.SettingsSavedDelegate onSettingsSavedDelegate)
+	public override void RegisterSettingsEventHandlers(IBPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate)
 	{
 		base.RegisterSettingsEventHandlers(onSettingsSavedDelegate);
 
@@ -95,6 +95,7 @@ public class UserSettings : Controller.Ctl.Config.UserSettings
 		{
 			GeneralSettingsModel.SettingsSavedEvent += new Action<GeneralSettingsModel>(onSettingsSavedDelegate);
 			DebugSettingsModel.SettingsSavedEvent += new Action<DebugSettingsModel>(onSettingsSavedDelegate);
+			EquivalencySettingsModel.SettingsSavedEvent += new Action<EquivalencySettingsModel>(onSettingsSavedDelegate);
 		}
 		catch (Exception ex)
 		{
@@ -132,6 +133,12 @@ public class UserSettings : Controller.Ctl.Config.UserSettings
 				e.AddRange(DebugSettingsModel.Instance);
 				result = true;
 			}
+
+			if (e.Group == null || e.Group == "Equivalency")
+			{
+				e.AddRange(EquivalencySettingsModel.Instance);
+				result = true;
+			}
 		}
 
 		return result;
@@ -144,7 +151,7 @@ public class UserSettings : Controller.Ctl.Config.UserSettings
 
 
 	// =========================================================================================================
-	#region Event handlers - UserSettings
+	#region Event handlers - PersistentSettings
 	// =========================================================================================================
 
 

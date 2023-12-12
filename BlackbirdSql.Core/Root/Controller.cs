@@ -46,6 +46,8 @@ internal static class Controller
 	// ---------------------------------------------------------------------------------
 	public static IBAsyncPackage DdexPackage => Instance.DdexPackage;
 
+	public static bool InvariantResolved => DdexPackage.InvariantResolved;
+
 	public static System.IServiceProvider ServiceProvider => (System.IServiceProvider)Instance.DdexPackage;
 
 	public static IDisposable DisposableWaitCursor

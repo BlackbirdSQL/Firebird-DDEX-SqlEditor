@@ -27,9 +27,9 @@ public sealed class AuxiliaryDocData(object docData)
 		public EnSqlOutputMode SqlOutputMode { get; private set; } = executionMode;
 	}
 
-	public class LiveSettingsChangedEventArgs(IBLiveUserSettings liveSettings) : EventArgs
+	public class LiveSettingsChangedEventArgs(IBEditorTransientSettings liveSettings) : EventArgs
 	{
-		public IBLiveUserSettings LiveSettings { get; private set; } = liveSettings;
+		public IBEditorTransientSettings LiveSettings { get; private set; } = liveSettings;
 	}
 
 	private QueryManager _QryMgr;
@@ -111,7 +111,7 @@ public sealed class AuxiliaryDocData(object docData)
 			lock (_LockLocal)
 			{
 				if (!_IntellisenseEnabled.HasValue)
-					_IntellisenseEnabled = UserSettings.EditorEnableIntellisense;
+					_IntellisenseEnabled = PersistentSettings.EditorEnableIntellisense;
 
 				return _IntellisenseEnabled;
 			}
@@ -186,7 +186,7 @@ public sealed class AuxiliaryDocData(object docData)
 	}
 
 
-	public IBLiveUserSettings LiveSettings => QryMgr.LiveSettings;
+	public IBEditorTransientSettings LiveSettings => QryMgr.LiveSettings;
 
 
 
@@ -316,7 +316,7 @@ public sealed class AuxiliaryDocData(object docData)
 		_DatabaseAtQueryExecutionStart = null;
 	}
 
-	public void UpdateLiveSettingsState(IBLiveUserSettings liveSettings)
+	public void UpdateLiveSettingsState(IBEditorTransientSettings liveSettings)
 	{
 		QryMgr.LiveSettingsApplied = false;
 		RaiseLiveSettingsChangedEvent(liveSettings);
@@ -404,7 +404,7 @@ public sealed class AuxiliaryDocData(object docData)
 	{
 		if (IsQueryWindow)
 		{
-			return !UserSettings.EditorPromptToSave;
+			return !PersistentSettings.EditorPromptToSave;
 		}
 
 		return false;
@@ -415,7 +415,7 @@ public sealed class AuxiliaryDocData(object docData)
 		SqlExecutionModeChangedEvent?.Invoke(this, new(newSqlExecMode));
 	}
 
-	public void RaiseLiveSettingsChangedEvent(IBLiveUserSettings liveSettings)
+	public void RaiseLiveSettingsChangedEvent(IBEditorTransientSettings liveSettings)
 	{
 		LiveSettingsChangedEvent?.Invoke(this, new(liveSettings));
 	}

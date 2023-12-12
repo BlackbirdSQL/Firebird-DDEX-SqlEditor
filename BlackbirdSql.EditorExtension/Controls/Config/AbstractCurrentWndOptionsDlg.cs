@@ -1,12 +1,10 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
-
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ToolsOptions.CurrentWndOptions
 using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl.Config;
+using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls.Interfaces;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.EditorExtension.Properties;
@@ -68,9 +66,11 @@ public partial class AbstractCurrentWndOptionsDlg : Form
 		Font = VsFontColorPreferences.EnvironmentFont;
 	}
 
+	[EditorBrowsable(EditorBrowsableState.Advanced)]
 	protected override void OnClosing(CancelEventArgs e)
 	{
 		base.OnClosing(e);
+
 		if (DialogResult == DialogResult.OK)
 		{
 			if (!ValidateCurrentView())
@@ -85,7 +85,20 @@ public partial class AbstractCurrentWndOptionsDlg : Form
 				}
 			}
 		}
+		else
+		{
+			e.Cancel = true;
+		}
+		// base.OnFormClosing
+		// base.OnClosing
 	}
+
+	[EditorBrowsable(EditorBrowsableState.Advanced)]
+	protected override void OnFormClosing(FormClosingEventArgs e)
+	{
+		base.OnFormClosing(e);
+	}
+
 
 	protected override void OnHelpRequested(HelpEventArgs hevent)
 	{
@@ -93,9 +106,10 @@ public partial class AbstractCurrentWndOptionsDlg : Form
 		hevent.Handled = true;
 	}
 
+
 	protected override bool ProcessKeyPreview(ref Message m)
 	{
-		if (m.Msg == 256)
+		if (m.Msg == Native.WM_KEYFIRST)
 		{
 			KeyEventArgs keyEventArgs = new KeyEventArgs((Keys)((int)m.WParam | (int)ModifierKeys));
 			if (keyEventArgs.KeyCode == Keys.Tab && (keyEventArgs.KeyData & Keys.Control) != 0)
@@ -262,14 +276,13 @@ public partial class AbstractCurrentWndOptionsDlg : Form
 		return true;
 	}
 
-	protected void SetControls(IBSettingsPage[] c)
+	protected void SetControls(IBSettingsPage[] pages)
 	{
-		_OptionViews = c;
-		_OptionViewsInitialized = new bool[c.Length];
+		_OptionViews = pages;
+		_OptionViewsInitialized = new bool[pages.Length];
+
 		for (int i = 0; i < _OptionViewsInitialized.Length; i++)
-		{
 			_OptionViewsInitialized[i] = false;
-		}
 	}
 
 	protected void AddTreeNodes(TreeNode[] nodes, TreeNode initialView)
@@ -295,4 +308,6 @@ public partial class AbstractCurrentWndOptionsDlg : Form
 	{
 		return node.Tag as TreeNodeContext;
 	}
+
+
 }

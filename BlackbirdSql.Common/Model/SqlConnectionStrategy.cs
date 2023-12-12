@@ -409,7 +409,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 			connection.Open();
 	}
 
-	public override void ApplyConnectionOptions(IDbConnection conn, IBLiveUserSettings s)
+	public override void ApplyConnectionOptions(IDbConnection conn, IBEditorTransientSettings s)
 	{
 		if (!IsDwConnection)
 		{
@@ -422,7 +422,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 	}
 
 
-	private void DwApplyConnectionOptions(IDbConnection conn, IBLiveUserSettings s)
+	private void DwApplyConnectionOptions(IDbConnection conn, IBEditorTransientSettings s)
 	{
 		return;
 

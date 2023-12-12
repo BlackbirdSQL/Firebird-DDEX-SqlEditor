@@ -16,20 +16,18 @@ namespace BlackbirdSql.Core.Model.Interfaces;
 public interface IBSettingsModel : IComponent
 {
 	// delegate void SelectedItemChangedEventHandler(object sender, SelectedGridItemChangedEventArgs e);
-	delegate void SelectedItemFocusEventHandler(object sender, SelectedGridItemFocusEventArgs e);
-	delegate void GridItemValueChangedEventHandler(object sender, GridItemValueChangedEventArgs e);
+	delegate void EditControlFocusEventHandler(object sender, EditControlFocusEventArgs e);
+	delegate void AutomationPropertyValueChangedEventHandler(object sender, AutomationPropertyValueChangedEventArgs e);
 
 	event AutomationVerbEventHandler SettingsResetEvent;
 	// event SelectedItemChangedEventHandler SelectedItemChangedEvent;
-	event SelectedItemFocusEventHandler GridEditBoxGotFocusEvent;
-	event SelectedItemFocusEventHandler GridEditBoxLostFocusEvent;
-	event GridItemValueChangedEventHandler GridItemValueChangedEvent;
+	event EditControlFocusEventHandler EditControlGotFocusEvent;
+	event EditControlFocusEventHandler EditControlLostFocusEvent;
+	event AutomationPropertyValueChangedEventHandler AutomationPropertyValueChangedEvent;
 
 	PropertyWrapper this[string propertyName] { get; }
 
 	string LivePrefix { get; }
-
-	object Owner { get; set; }
 
 	List<IBSettingsModelPropertyWrapper> PropertyWrappers { get; }
 
@@ -37,7 +35,7 @@ public interface IBSettingsModel : IComponent
 	string GetGroup();
 
 	// void OnSelectedItemChanged(object sender, SelectedGridItemChangedEventArgs e);
-	void OnGridEditBoxGotFocus(object sender, SelectedGridItemFocusEventArgs e);
-	void OnGridEditBoxLostFocus(object sender, SelectedGridItemFocusEventArgs e);
-	void OnGridItemValueChanged(object sender, GridItemValueChangedEventArgs e);
+	void OnEditControlGotFocus(object sender, EditControlFocusEventArgs e);
+	void OnEditControlLostFocus(object sender, EditControlFocusEventArgs e);
+	void OnAutomationPropertyValueChanged(object sender, AutomationPropertyValueChangedEventArgs e);
 }

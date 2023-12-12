@@ -1,7 +1,9 @@
 ﻿
 using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
+using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Model;
 
 
@@ -51,23 +53,17 @@ namespace BlackbirdSql.Core.Ctl;
 /// <param name="isMandatory">
 /// Returns true if the describer represents a connection property/parameter and is required.
 /// </param>
-/// <param name="isEquivalency">
-/// Determines if changes to the underlying connection property value will produce
-/// differing results from the database. For example UserID and NoDatabaseTriggers
-/// are equivalency properties whereas PacketSize is not.
-/// </param>
 // =========================================================================================================
 public class Describer(string name, string connectionParameter, Type propertyType, object defaultValue = null,
-	bool isConnectionProperty = false, bool isAdvanced = true, bool isPublic = true, bool isMandatory = false,
-	bool isEquivalency = false)
+	bool isConnectionProperty = false, bool isAdvanced = true, bool isPublic = true, bool isMandatory = false)
 {
 
 	/// <summary>
 	/// Shortened .ctor.
 	/// </summary>
 	public Describer(string name, Type propertyType, object defaultValue = null, bool isConnectionProperty = false,
-		bool isAdvanced = true, bool isPublic = true, bool isMandatory = false, bool isEquivalency = false)
-		: this(name, null, propertyType, defaultValue, isConnectionProperty, isAdvanced, isPublic, isMandatory, isEquivalency)
+		bool isAdvanced = true, bool isPublic = true, bool isMandatory = false)
+		: this(name, null, propertyType, defaultValue, isConnectionProperty, isAdvanced, isPublic, isMandatory)
 	{
 	}
 
@@ -76,6 +72,8 @@ public class Describer(string name, string connectionParameter, Type propertyTyp
 
 	private string _ConnectionParameter = connectionParameter;
 	public static PropertyDescriptorCollection _Descriptors = null;
+	private bool? _IsEquivalency;
+
 
 
 
@@ -153,7 +151,18 @@ public class Describer(string name, string connectionParameter, Type propertyTyp
 	/// differing results from the database. For example UserID and NoDatabaseTriggers
 	/// are equivalency properties whereas PacketSize is not.
 	/// </summary>
-	public bool IsEquivalency { get; set; } = isEquivalency;
+	public bool IsEquivalency
+	{
+		get
+		{
+			if (_IsEquivalency.HasValue)
+				return _IsEquivalency.Value;
+
+			_IsEquivalency = PersistentSettings.EquivalencyKeys.Contains(Name);
+
+			return _IsEquivalency.Value;
+		}
+	}
 
 
 	/// <summary>
@@ -291,10 +300,9 @@ public class Describer(string name, string connectionParameter, Type propertyTyp
 
 	/// <summary>
 	/// Compares equivalency to DefaultValue, accounting for null, DBNull and
-	/// empty string for tyes convertable to string types.
+	/// empty string for types convertable to string types.
 	/// </summary>
 	/// <param name="rhs"></param>
-	/// <returns></returns>
 	public bool DefaultEqualsOrEmptyString(object rhs)
 	{
 		if (DefaultValue == null)

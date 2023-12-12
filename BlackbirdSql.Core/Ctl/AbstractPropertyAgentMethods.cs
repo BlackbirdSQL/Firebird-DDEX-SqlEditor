@@ -164,8 +164,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 
 	public void Add(string name, string parameter, Type propertyType, object defaultValue = null,
-		bool isParameter = false, bool isAdvanced = true, bool isPublic = true, bool isMandatory = false,
-		bool isEquivalency = false)
+		bool isParameter = false, bool isAdvanced = true, bool isPublic = true, bool isMandatory = false)
 	{
 		if (!IsExtensible)
 		{
@@ -175,17 +174,16 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		}
 
 		Describers.Add(name, parameter, propertyType, defaultValue, isParameter,
-			isAdvanced, isPublic, isMandatory, isEquivalency);
+			isAdvanced, isPublic, isMandatory);
 	}
 
 
 
 	public void Add(string name, Type propertyType, object defaultValue = null,
-		bool isParameter = false, bool isAdvanced = true, bool isPublic = true, bool isMandatory = false,
-		bool isEquivalency = false)
+		bool isParameter = false, bool isAdvanced = true, bool isPublic = true, bool isMandatory = false)
 	{
 		Add(name, null, propertyType, defaultValue, isParameter,
-			isAdvanced, isPublic, isMandatory, isEquivalency);
+			isAdvanced, isPublic, isMandatory);
 	}
 
 

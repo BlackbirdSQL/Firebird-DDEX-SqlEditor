@@ -174,7 +174,7 @@ public static class DrawManager
 	{
 		bool result = false;
 		int num = Native.GetWindowLongPtrPtr(m.HWnd, -16).ToInt32();
-		if (m.Msg == 133 && ((uint)num & 0x800000u) != 0 && (Native.GetWindowLongPtrPtr(m.HWnd, -20).ToInt32() & 0x200) == 0)
+		if (m.Msg == Native.WM_NCPAINT && ((uint)num & 0x800000u) != 0 && (Native.GetWindowLongPtrPtr(m.HWnd, -20).ToInt32() & 0x200) == 0)
 		{
 			IntPtr intPtr = m.WParam != (IntPtr)1 ? m.WParam : IntPtr.Zero;
 			if (m.HWnd != IntPtr.Zero)

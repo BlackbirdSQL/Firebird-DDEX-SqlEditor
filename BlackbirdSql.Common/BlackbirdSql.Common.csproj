@@ -27,11 +27,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Include="Ctl\Config\LiveUserSettings.cs" />
+	  <Compile Include="Ctl\Config\TransientSettings.cs" />
 	  <Compile Include="Ctl\Commands\SqlEditorNewQueryCommand.cs" />
-	  <Compile Include="Ctl\Config\UserSettings.cs" />
+	  <Compile Include="Ctl\Config\PersistentSettings.cs" />
 	  <Compile Include="Ctl\Enums\EnDeadlockPriority.cs" />
-	  <Compile Include="Ctl\Interfaces\IBLiveUserSettings.cs" />
+	  <Compile Include="Ctl\Interfaces\IBEditorTransientSettings.cs" />
 	  <Compile Include="Properties\SqlResources.Designer.cs">
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>

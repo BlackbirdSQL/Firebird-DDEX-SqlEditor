@@ -11,26 +11,27 @@ using BlackbirdSql.Core.Ctl.Interfaces;
 namespace BlackbirdSql.Core.Ctl.Config;
 
 // =========================================================================================================
-//										UserSettings Class
+//										PersistentSettings Class
 //
 /// <summary>
 /// Consolidated single access point for daisy-chained packages settings models (IBSettingsModel).
-/// As a rule we name descendent classes UserSettings as well. We hardcode bind the UserSettings descendent
+/// As a rule we name descendent classes PersistentSettings as well. We hardcode bind the PersistentSettings descendent
 /// tree from the top-level extension lib down to the Core. There is no point using services as this
 /// configuration is fixed. ie:
 /// VisualStudio.Ddex > Controller > [Intermediate Libs] > Core.
 /// Current intermediate libs are: EditorExtension > Common.
 /// </summary>
 // =========================================================================================================
-public abstract class UserSettings : IBUserSettings
+public abstract class PersistentSettings : IBPersistentSettings
 {
 
 	// ---------------------------------------------------------------------------------
 	#region Variables
 	// ---------------------------------------------------------------------------------
 
-	protected static IBUserSettings _Instance = null;
+	protected static IBPersistentSettings _Instance = null;
 	protected static Dictionary<string, object> _SettingsStore;
+	protected static string[] _EquivalencyKeys = new string[0];
 
 	#endregion Variables
 
@@ -39,7 +40,7 @@ public abstract class UserSettings : IBUserSettings
 
 
 	// =========================================================================================================
-	#region Property Accessors - UserSettings
+	#region Property Accessors - PersistentSettings
 	// =========================================================================================================
 
 	public virtual object this[string name]
@@ -145,6 +146,15 @@ public abstract class UserSettings : IBUserSettings
 	public static bool EnableSaveExtrapolatedXml => (bool)GetSetting("DdexDebugEnableSaveExtrapolatedXml", false);
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Connection equivalency keys. Hardcoded for now.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static string[] EquivalencyKeys => _EquivalencyKeys;
+	// => ["DataSource", "Port", "Database",
+	//	"UserID", "ServerType", "Role", "Charset", "Dialect", "NoDatabaseTriggers"];
+
 	/// <summary>
 	/// Determines if configured connections in a solution's projects are included in selection lists when adding
 	/// a new connnection.
@@ -184,7 +194,7 @@ public abstract class UserSettings : IBUserSettings
 
 
 	// =========================================================================================================
-	#region Constructors / Destructors - UserSettings
+	#region Constructors / Destructors - PersistentSettings
 	// =========================================================================================================
 
 
@@ -193,11 +203,11 @@ public abstract class UserSettings : IBUserSettings
 	/// Private singleton .ctor
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected UserSettings()
+	protected PersistentSettings()
 	{
 		if (_Instance != null)
 		{
-			ArgumentException ex = new("Singleton UserSettings instance already created");
+			ArgumentException ex = new("Singleton PersistentSettings instance already created");
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -210,23 +220,23 @@ public abstract class UserSettings : IBUserSettings
 	/// Private live .ctor
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected UserSettings(bool live)
+	protected PersistentSettings(bool live)
 	{
 	}
 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Gets the singleton UserSettings instance
+	/// Gets the singleton PersistentSettings instance
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static IBUserSettings Instance
+	public static IBPersistentSettings Instance
 	{
 		get
 		{
 			if (_Instance == null)
 			{
-				NullReferenceException ex = new("Cannot instantiate UserSettings from abstract ancestor");
+				NullReferenceException ex = new("Cannot instantiate PersistentSettings from abstract ancestor");
 				Diag.Dug(ex);
 				throw ex;
 			}
@@ -241,7 +251,7 @@ public abstract class UserSettings : IBUserSettings
 
 
 	// =========================================================================================================
-	#region Methods - UserSettings
+	#region Methods - PersistentSettings
 	// =========================================================================================================
 
 
@@ -274,7 +284,7 @@ public abstract class UserSettings : IBUserSettings
 	/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
 	/// Only implemented by packages that have settings models.
 	/// </summary>
-	public abstract void RegisterSettingsEventHandlers(IBUserSettings.SettingsSavedDelegate onSettingsSavedDelegate);
+	public abstract void RegisterSettingsEventHandlers(IBPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate);
 
 
 	/// <summary>
@@ -294,7 +304,7 @@ public abstract class UserSettings : IBUserSettings
 
 
 	// =========================================================================================================
-	#region Event handlers - UserSettings
+	#region Event handlers - PersistentSettings
 	// =========================================================================================================
 
 
@@ -316,10 +326,18 @@ public abstract class UserSettings : IBUserSettings
 	/// </summary>
 	public virtual void PropagateSettings(PropagateSettingsEventArgs e)
 	{
+		List<string> equivalencyKeys = [];
+
 		foreach (MutablePair<string, object> pair in e.Arguments)
 		{
 			this[pair.Key] = pair.Value;
+			if (pair.Key.StartsWith("DdexEquivalency") && (bool)pair.Value)
+				equivalencyKeys.Add(pair.Key[15..]);
 		}
+
+		if (equivalencyKeys.Count > 0)
+			_EquivalencyKeys = [.. equivalencyKeys];
+
 	}
 
 	#endregion Event handlers

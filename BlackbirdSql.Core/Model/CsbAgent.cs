@@ -100,7 +100,8 @@ public class CsbAgent : AbstractCsbAgent
 
 
 	[Browsable(false)]
-	public static IDictionary<string, string> RegisteredDatasets => _SDatasetKeys ?? LoadConfiguredConnections();
+	public static IDictionary<string, string> RegisteredDatasets =>
+		_SDatasetKeys ?? AbstractCsbAgent.LoadConfiguredConnections();
 
 	public static new DescriberDictionary Describers => AbstractCsbAgent.Describers;
 
@@ -418,8 +419,14 @@ public class CsbAgent : AbstractCsbAgent
 	}
 
 
+	public static new void LoadConfiguredConnections() => AbstractCsbAgent.LoadConfiguredConnections();
+
+
 	// ---------------------------------------------------------------------------------
-	// ---------------------------------------------------------------------------------
+		/// <summary>
+		/// Parses a ConnectionInfo object.
+		/// </summary>
+		// ---------------------------------------------------------------------------------
 	protected override void Parse(IBPropertyAgent ci)
 	{
 		// Tracer.Trace(GetType(), "Parse(IBPropertyAgent)");

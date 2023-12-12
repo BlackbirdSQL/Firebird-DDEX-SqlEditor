@@ -1297,7 +1297,6 @@ public class ControllerEventsManager : AbstractEventsManager
 		}
 		else if (!Uig.IsValidatedStatus(SolutionGlobals))
 		{
-			// No -> Diag.Trace("The solution has no validation status set. Setting validated to on and valid to off");
 			Uig.SetIsValidStatus(SolutionGlobals, true);
 		}
 		else

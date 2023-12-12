@@ -3,15 +3,9 @@
 namespace BlackbirdSql.Core.Ctl;
 
 
-internal class EquivalencyDescribersEnumerator : AbstractDescribersEnumerator
+internal class EquivalencyDescribersEnumerator(PublicValueCollection<string, Describer> values)
+	: AbstractDescribersEnumerator(values)
 {
-
-	public EquivalencyDescribersEnumerator(PublicValueCollection<string, Describer> values)
-		: base(values)
-	{
-	}
-
-
 	public override bool IsValid(Describer descriptor)
 	{
 		return descriptor.IsEquivalency;

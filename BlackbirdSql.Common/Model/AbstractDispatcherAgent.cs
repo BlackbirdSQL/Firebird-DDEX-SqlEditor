@@ -20,10 +20,7 @@ using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 
 
-
 namespace BlackbirdSql.Common.Model;
-
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD001:Avoid legacy thread switching APIs")]
 
 // =========================================================================================================
 //									AbstractDispatcherAgent Class

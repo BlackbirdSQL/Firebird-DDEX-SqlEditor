@@ -41,11 +41,11 @@ public abstract class CorePropertySet : PropertySet
 	[
 		new Describer(C_KeyExIcon, typeof(object)),
 
-		new Describer(C_KeyDataSource, C_KeyFbDataSource, typeof(string), C_DefaultDataSource, true, false, true, true, true), // *
-		new Describer(C_KeyPort, C_KeyFbPort, typeof(int), C_DefaultPort, true, false, true, false, true), // *
-		new Describer(C_KeyServerType, C_KeyFbServerType, typeof(FbServerType), C_DefaultServerType, true, false, true, false, true), // *
-		new Describer(C_KeyDatabase, C_KeyFbDatabase, typeof(string), C_DefaultDatabase, true, false, true, true, true), // *
-		new Describer(C_KeyUserID ,C_KeyFbUserID, typeof(string), C_DefaultUserID, true, false, true, true, true), // *
+		new Describer(C_KeyDataSource, C_KeyFbDataSource, typeof(string), C_DefaultDataSource, true, false, true, true), // *
+		new Describer(C_KeyPort, C_KeyFbPort, typeof(int), C_DefaultPort, true, false), // *
+		new Describer(C_KeyServerType, C_KeyFbServerType, typeof(FbServerType), C_DefaultServerType, true, false), // *
+		new Describer(C_KeyDatabase, C_KeyFbDatabase, typeof(string), C_DefaultDatabase, true, false, true, true), // *
+		new Describer(C_KeyUserID ,C_KeyFbUserID, typeof(string), C_DefaultUserID, true, false, true, true), // *
 		new Describer(C_KeyPassword, C_KeyFbPassword, typeof(string), C_DefaultPassword, true, false, false, true),
 
 		new Describer(C_KeyExDataset, typeof(string), C_DefaultExDataset),

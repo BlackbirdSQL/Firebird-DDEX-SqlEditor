@@ -145,7 +145,7 @@ public static class XmlParser
 		if (updated)
 		{
 #if DEBUG
-			if (UserSettings.EnableSaveExtrapolatedXml)
+			if (PersistentSettings.EnableSaveExtrapolatedXml)
 			{
 				FileInfo info = new FileInfo(Diag.LogFile);
 				xmlDoc.Save(info.DirectoryName + "/" + xmlName + ".Extrapolated.xml");

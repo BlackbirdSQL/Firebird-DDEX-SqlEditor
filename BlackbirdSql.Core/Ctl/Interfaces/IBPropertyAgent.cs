@@ -109,14 +109,12 @@ public interface IBPropertyAgent : IDisposable, ICustomTypeDescriptor, IDataConn
 
 
 	void Add(string name, string parameter, Type propertyType, object defaultValue = null,
-		bool isParameter = false, bool isAdvanced = true, bool isPublic = true, bool isMandatory = false,
-		bool isEquivalency = false);
+		bool isParameter = false, bool isAdvanced = true, bool isPublic = true, bool isMandatory = false);
 
 
 
 	public void Add(string name, Type propertyType, object defaultValue = null,
-		bool isParameter = false, bool isAdvanced = true, bool isPublic = true, bool isMandatory = false,
-		bool isEquivalency = false);
+		bool isParameter = false, bool isAdvanced = true, bool isPublic = true, bool isMandatory = false);
 
 
 	bool AreEquivalent(IBPropertyAgent other);

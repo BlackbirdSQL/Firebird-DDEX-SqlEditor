@@ -27,6 +27,7 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	protected IVsSolution _DteSolution = null;
 	protected IVsRunningDocumentTable _DocTable = null;
 	protected System.Reflection.Assembly _InvariantAssembly = null;
+	protected bool _InvariantResolved = false;
 
 
 	#endregion Variables
@@ -128,6 +129,7 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 
 	public abstract IBEventsManager EventsManager { get; }
 
+	public bool InvariantResolved => _InvariantResolved;
 
 
 	public Microsoft.VisualStudio.OLE.Interop.IServiceProvider OleServiceProvider

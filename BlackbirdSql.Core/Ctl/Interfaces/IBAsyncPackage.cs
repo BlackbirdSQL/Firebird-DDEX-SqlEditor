@@ -30,6 +30,8 @@ public interface IBAsyncPackage
 
 	IBEventsManager EventsManager { get; }
 
+	bool InvariantResolved { get; }
+
 	Microsoft.VisualStudio.OLE.Interop.IServiceProvider OleServiceProvider { get; }
 
 	IAsyncServiceContainer ServiceContainer { get; }

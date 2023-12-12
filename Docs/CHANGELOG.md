@@ -65,3 +65,8 @@ Resolved Generic Blob handling exceptions.
 
 #### v10.0.1.5
 Implemented connection naming and resolved centralized connection issues.
+
+#### v10.0.2.0
+Implemented configurable equivalency keys.</br>
+Resolved bug in user options when collapsing then expanding a category.
+

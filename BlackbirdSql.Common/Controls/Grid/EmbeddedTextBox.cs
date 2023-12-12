@@ -104,7 +104,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 			Keys modifierKeys = ModifierKeys;
 			if ((keys | modifierKeys) == Keys.Return || (keys | modifierKeys) == Keys.Escape)
 			{
-				if (m.Msg == 258)
+				if (m.Msg == Native.WM_CHAR)
 				{
 					return true;
 				}
@@ -112,7 +112,7 @@ namespace BlackbirdSql.Common.Controls.Grid
 				return ProcessKeyPreview(ref m);
 			}
 
-			if (m.Msg == 258)
+			if (m.Msg == Native.WM_CHAR)
 			{
 				return ProcessKeyEventArgs(ref m);
 			}

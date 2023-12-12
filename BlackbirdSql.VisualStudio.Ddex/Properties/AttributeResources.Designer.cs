@@ -88,6 +88,33 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connection equivalency keys.
+        /// </summary>
+        public static string OptionCategoryEquivalency {
+            get {
+                return ResourceManager.GetString("OptionCategoryEquivalency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  Mandatory equivalency keys.
+        /// </summary>
+        public static string OptionCategoryEquivalencyMandatory {
+            get {
+                return ResourceManager.GetString("OptionCategoryEquivalencyMandatory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Optional equivalency keys (Requires IDE restart).
+        /// </summary>
+        public static string OptionCategoryEquivalencyOptional {
+            get {
+                return ResourceManager.GetString("OptionCategoryEquivalencyOptional", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to  General.
         /// </summary>
         public static string OptionCategoryGeneral {
@@ -174,6 +201,258 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDescriptionDebugSaveExtrapolatedXml {
             get {
                 return ResourceManager.GetString("OptionDescriptionDebugSaveExtrapolatedXml", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the application making the connection..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyApplicationName {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyApplicationName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The connection character set encoding..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyCharset {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyCharset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Client library for Firebird Embedded..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyClientLibrary {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyClientLibrary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The time (in seconds) for command execution..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyCommandTimeout {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyCommandTimeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enables or disables wire compression..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyCompression {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyCompression", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When a connection is returned to the pool, its creation time is compared with the current time, and the connection is destroyed if that time span (in seconds) exceeds the value specified by connection lifetime..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyConnectionLifeTime {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyConnectionLifeTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The time (in seconds) to wait for a connection to open..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyConnectionTimeout {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyConnectionTimeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Key used for database decryption..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyCryptKey {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyCryptKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the actual database or the database to be used when a connection is open. It is normally the path to an .FDB file or an alias..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyDatabase {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyDatabase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The name of the Firebird server to which to connect..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyDataSource {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyDataSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How many cache buffers to use for this session..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyDbCachePages {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyDbCachePages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The database SQL dialect..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyDialect {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyDialect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If true, enlists the connections in the current transaction..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyEnlist {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyEnlist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The maximum number of rows to be fetched in a single call to read into the internal row buffer..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyFetchSize {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyFetchSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The default Isolation Level for implicit transactions..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyIsolationLevel {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyIsolationLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The maximum number of connections allowed in the pool..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyMaxPoolSize {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyMaxPoolSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The minimun number of connections allowed in the pool..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyMinPoolSize {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyMinPoolSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disables database triggers for this connection..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyNoDatabaseTriggers {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyNoDatabaseTriggers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If true, disables sweeping the database upon attachment..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyNoGarbageCollect {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyNoGarbageCollect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The size (in bytes) of network packets. PacketSize may be in the range 512-32767 bytes..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyPacketSize {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyPacketSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enables the execution of Diagnostics calls. This option should remain enabled. Disabling does not disable Exceptions..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyParallelWorkers {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyParallelWorkers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to When true the connection is grabbed from a pool or, if necessary, created and added to the appropriate pool..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyPooling {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyPooling", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Port to use for TCP/IP connections..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyPort {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyPort", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Get the number of rows affected by a command when true..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyReturnRecordsAffected {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyReturnRecordsAffected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The user role..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyRole {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyRole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The type of server used..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyServerType {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyServerType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Indicates the User ID to be used when connecting to the data source..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyUserID {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyUserID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selection for wire encryption..
+        /// </summary>
+        public static string OptionDescriptionEquivalencyWireCrypt {
+            get {
+                return ResourceManager.GetString("OptionDescriptionEquivalencyWireCrypt", resourceCulture);
             }
         }
         
@@ -336,6 +615,258 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDisplayDebugPersistentValidation {
             get {
                 return ResourceManager.GetString("OptionDisplayDebugPersistentValidation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Application name.
+        /// </summary>
+        public static string OptionDisplayEquivalencyApplicationName {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyApplicationName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Character set.
+        /// </summary>
+        public static string OptionDisplayEquivalencyCharset {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyCharset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Client library.
+        /// </summary>
+        public static string OptionDisplayEquivalencyClientLibrary {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyClientLibrary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Command timeout.
+        /// </summary>
+        public static string OptionDisplayEquivalencyCommandTimeout {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyCommandTimeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Compression.
+        /// </summary>
+        public static string OptionDisplayEquivalencyCompression {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyCompression", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connection lifetime.
+        /// </summary>
+        public static string OptionDisplayEquivalencyConnectionLifeTime {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyConnectionLifeTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connection timeout.
+        /// </summary>
+        public static string OptionDisplayEquivalencyConnectionTimeout {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyConnectionTimeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crypt key.
+        /// </summary>
+        public static string OptionDisplayEquivalencyCryptKey {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyCryptKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database.
+        /// </summary>
+        public static string OptionDisplayEquivalencyDatabase {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyDatabase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DataSource.
+        /// </summary>
+        public static string OptionDisplayEquivalencyDataSource {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyDataSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Db cache pages.
+        /// </summary>
+        public static string OptionDisplayEquivalencyDbCachePages {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyDbCachePages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dialect.
+        /// </summary>
+        public static string OptionDisplayEquivalencyDialect {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyDialect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enlist.
+        /// </summary>
+        public static string OptionDisplayEquivalencyEnlist {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyEnlist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FetchSize.
+        /// </summary>
+        public static string OptionDisplayEquivalencyFetchSize {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyFetchSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IsolationLevel.
+        /// </summary>
+        public static string OptionDisplayEquivalencyIsolationLevel {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyIsolationLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MaxPoolSize.
+        /// </summary>
+        public static string OptionDisplayEquivalencyMaxPoolSize {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyMaxPoolSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MinPoolSize.
+        /// </summary>
+        public static string OptionDisplayEquivalencyMinPoolSize {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyMinPoolSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No triggers.
+        /// </summary>
+        public static string OptionDisplayEquivalencyNoDatabaseTriggers {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyNoDatabaseTriggers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No garbage collect.
+        /// </summary>
+        public static string OptionDisplayEquivalencyNoGarbageCollect {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyNoGarbageCollect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PacketSize.
+        /// </summary>
+        public static string OptionDisplayEquivalencyPacketSize {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyPacketSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parallel workers.
+        /// </summary>
+        public static string OptionDisplayEquivalencyParallelWorkers {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyParallelWorkers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pooling.
+        /// </summary>
+        public static string OptionDisplayEquivalencyPooling {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyPooling", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Port.
+        /// </summary>
+        public static string OptionDisplayEquivalencyPort {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyPort", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Records affected.
+        /// </summary>
+        public static string OptionDisplayEquivalencyReturnRecordsAffected {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyReturnRecordsAffected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Role.
+        /// </summary>
+        public static string OptionDisplayEquivalencyRole {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyRole", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ServerType.
+        /// </summary>
+        public static string OptionDisplayEquivalencyServerType {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyServerType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User ID.
+        /// </summary>
+        public static string OptionDisplayEquivalencyUserID {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyUserID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wire crypt.
+        /// </summary>
+        public static string OptionDisplayEquivalencyWireCrypt {
+            get {
+                return ResourceManager.GetString("OptionDisplayEquivalencyWireCrypt", resourceCulture);
             }
         }
         

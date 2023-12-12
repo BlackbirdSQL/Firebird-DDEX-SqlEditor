@@ -16,7 +16,7 @@ public interface IBSqlQueryExecutionHandler : IBQueryExecutionHandler
 	EnSqlOutputMode SqlOutputMode { get; set; }
 
 
-	IBLiveUserSettings LiveSettings { get; }
+	IBEditorTransientSettings LiveSettings { get; }
 
 	string DefaultResultsDirectory { get; set; }
 

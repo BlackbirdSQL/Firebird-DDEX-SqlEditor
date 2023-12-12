@@ -230,9 +230,9 @@ public class QESplitter : Control, IMessageFilter
 	[SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.UnmanagedCode)]
 	public bool PreFilterMessage(ref Message m)
 	{
-		if (m.Msg >= 256 && m.Msg <= 264)
+		if (m.Msg >= Native.WM_KEYFIRST && m.Msg <= Native.WM_KEYLAST)
 		{
-			if (m.Msg == 256 && (int)m.WParam == 27)
+			if (m.Msg == Native.WM_KEYFIRST && (int)m.WParam == 27)
 			{
 				SplitEnd(accept: false);
 			}

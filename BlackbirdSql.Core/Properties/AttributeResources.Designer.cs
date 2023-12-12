@@ -115,6 +115,24 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ☐ Exclude.
+        /// </summary>
+        internal static string GlobalizedLiteralExclude {
+            get {
+                return ResourceManager.GetString("GlobalizedLiteralExclude", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ☐ Excluded.
+        /// </summary>
+        internal static string GlobalizedLiteralExcluded {
+            get {
+                return ResourceManager.GetString("GlobalizedLiteralExcluded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ☐ False.
         /// </summary>
         internal static string GlobalizedLiteralFalse {
@@ -129,6 +147,24 @@ namespace BlackbirdSql.Core.Properties {
         internal static string GlobalizedLiteralHide {
             get {
                 return ResourceManager.GetString("GlobalizedLiteralHide", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ☑ Include.
+        /// </summary>
+        internal static string GlobalizedLiteralInclude {
+            get {
+                return ResourceManager.GetString("GlobalizedLiteralInclude", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ☑ Included.
+        /// </summary>
+        internal static string GlobalizedLiteralIncluded {
+            get {
+                return ResourceManager.GetString("GlobalizedLiteralIncluded", resourceCulture);
             }
         }
         

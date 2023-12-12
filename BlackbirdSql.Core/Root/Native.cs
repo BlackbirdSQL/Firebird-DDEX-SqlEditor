@@ -62,7 +62,44 @@ public abstract class Native
 	// Used for vertical scroll bar message.
 	public const int SB_LINEUP = 0;
 	public const int SB_LINEDOWN = 1;
-	public const int WM_VSCROLL = 0x115;
+
+	// Windows messages
+	public const int WM_CREATE = 1;
+	public const int WM_MOVE = 3;
+	public const int WM_SIZE = 5;
+	public const int WM_ACTIVATE = 6;
+	public const int WM_SETFOCUS = 7;
+	public const int WM_SETTEXT = 12;
+	public const int WM_GETTEXT = 13;
+	public const int WM_GETTEXTLENGTH = 14;
+	public const int WM_PAINT = 15;
+	public const int WM_ERASEBKGND = 20;
+	public const int WM_SHOWWINDOW = 24;
+	public const int WM_MOUSEACTIVATE = 33;
+	public const int WM_GETMINMAXINFO = 36;
+	public const int WM_SETFONT = 48;
+	public const int WM_WINDOWPOSCHANGING = 70;
+	public const int WM_WINDOWPOSCHANGED = 71;
+	public const int WM_NOTIFY = 78;
+	public const int WM_NOTIFYFORMAT = 85;
+	public const int WM_CONTEXTMENU = 123;
+	public const int WM_STYLECHANGING = 124;
+	public const int WM_STYLECHANGED = 125;
+	public const int WM_SETICON = 128;
+	public const int WM_NCCREATE = 129;
+	public const int WM_NCPAINT = 133;
+	public const int WM_NCACTIVATE = 134;
+	public const int WM_KEYFIRST = 256;
+	public const int WM_CHAR = 258;
+	public const int WM_KEYLAST = 264;
+	public const int WM_VSCROLL = 277;
+	public const int WM_CHANGEUISTATE = 295;
+	public const int WM_UPDATEUISTATE = 296;
+	public const int WM_QUERYUISTATE = 297;
+	public const int WM_CTLCOLORBTN = 309;
+	public const int WM_PARENTNOTIFY = 528;
+	public const int WM_PRINTCLIENT = 792;
+	
 
 
 	[StructLayout(LayoutKind.Sequential)]

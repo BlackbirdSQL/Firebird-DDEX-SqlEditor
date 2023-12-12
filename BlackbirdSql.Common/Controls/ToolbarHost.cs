@@ -39,7 +39,7 @@ public class ToolbarHost : Panel, IVsToolWindowToolbar
 
 	public ToolbarHost()
 	{
-		base.Margin = new Padding(0);
+		Margin = new Padding(0);
 		Dock = DockStyle.Top;
 	}
 
@@ -54,7 +54,7 @@ public class ToolbarHost : Panel, IVsToolWindowToolbar
 				throw exc;
 			}
 
-			Native.ThrowOnFailure(_VsToolbarHost.ProcessMouseActivation(h, 7u, IntPtr.Zero, IntPtr.Zero));
+			Core.Native.ThrowOnFailure(_VsToolbarHost.ProcessMouseActivation(h, 7u, IntPtr.Zero, IntPtr.Zero));
 		}
 	}
 
@@ -74,7 +74,7 @@ public class ToolbarHost : Panel, IVsToolWindowToolbar
 			throw ex;
 		}
 
-		if (base.IsHandleCreated)
+		if (IsHandleCreated)
 		{
 			InternalAssociateToolbarWithHandle();
 		}
@@ -111,20 +111,20 @@ public class ToolbarHost : Panel, IVsToolWindowToolbar
 				throw exc;
 			}
 
-			Native.ThrowOnFailure(_VsToolbarHost.BorderChanged());
+			Core.Native.ThrowOnFailure(_VsToolbarHost.BorderChanged());
 		}
 	}
 
 	protected override void WndProc(ref Message m)
 	{
-		if (m.Msg == 7 && base.Parent != null)
+		if (m.Msg == Core.Native.WM_SETFOCUS && Parent != null)
 		{
-			Control control = base.Parent;
+			Control control = Parent;
 			while (control != null && control is not ContainerControl)
 			{
 				control = control.Parent;
 			}
-			control ??= base.Parent;
+			control ??= Parent;
 			if (control != null)
 			{
 				Native.SetFocus(control.Handle);
@@ -147,16 +147,16 @@ public class ToolbarHost : Panel, IVsToolWindowToolbar
 
 	public int GetBorder(RECT[] borders)
 	{
-		borders[0].left = base.ClientRectangle.Left;
-		borders[0].top = base.ClientRectangle.Top;
-		borders[0].right = base.ClientRectangle.Right;
-		borders[0].bottom = base.ClientRectangle.Bottom;
+		borders[0].left = ClientRectangle.Left;
+		borders[0].top = ClientRectangle.Top;
+		borders[0].right = ClientRectangle.Right;
+		borders[0].bottom = ClientRectangle.Bottom;
 		return 0;
 	}
 
 	public int SetBorderSpace(RECT[] borders)
 	{
-		int num2 = (base.Height = borders[0].top - borders[0].bottom);
+		int num2 = (Height = borders[0].top - borders[0].bottom);
 		MinimumSize = new Size(0, num2);
 		return 0;
 	}
@@ -175,11 +175,11 @@ public class ToolbarHost : Panel, IVsToolWindowToolbar
 				throw exc;
 			}
 
-			Native.ThrowOnFailure(_UiShell.SetupToolbar2(base.Handle, this, _CommandTarget, out _VsToolbarHost));
+			Core.Native.ThrowOnFailure(_UiShell.SetupToolbar2(Handle, this, _CommandTarget, out _VsToolbarHost));
 
-			Native.ThrowOnFailure(_VsToolbarHost.AddToolbar(VSTWT_LOCATION.VSTWT_TOP, ref _ClsidCmdSet, _ToolbarMenuId));
+			Core.Native.ThrowOnFailure(_VsToolbarHost.AddToolbar(VSTWT_LOCATION.VSTWT_TOP, ref _ClsidCmdSet, _ToolbarMenuId));
 
-			Native.ThrowOnFailure(_VsToolbarHost.ShowHideToolbar(ref _ClsidCmdSet, _ToolbarMenuId, 1));
+			Core.Native.ThrowOnFailure(_VsToolbarHost.ShowHideToolbar(ref _ClsidCmdSet, _ToolbarMenuId, 1));
 
 			_AssociateToolbarOnHandleCreate = false;
 		}

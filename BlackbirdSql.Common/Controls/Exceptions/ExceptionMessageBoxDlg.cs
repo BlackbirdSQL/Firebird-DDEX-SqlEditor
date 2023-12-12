@@ -485,7 +485,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 
 	private void InitializeButtons()
 	{
-		Button[] array = new Button[5] { button1, button2, button3, button4, button5 };
+		Button[] array = [button1, button2, button3, button4, button5];
 		switch (buttons)
 		{
 			case EnExceptionMessageBoxButtons.OK:

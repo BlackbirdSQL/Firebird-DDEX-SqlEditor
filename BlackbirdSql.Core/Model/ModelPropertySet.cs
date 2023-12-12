@@ -6,18 +6,10 @@
 //$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
-
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Extensions;
-using BlackbirdSql.Core.Properties;
-
 using FirebirdSql.Data.FirebirdClient;
 
-using static BlackbirdSql.Core.Ctl.CoreConstants;
 using static BlackbirdSql.Core.Model.ModelConstants;
 
 
@@ -53,10 +45,10 @@ public abstract class ModelPropertySet : CorePropertySet
 	// ---------------------------------------------------------------------------------
 	public static readonly new Describer[] Describers =
 		[
-			new Describer(C_KeyRole, C_KeyFbRole, typeof(string), C_DefaultRole, true, false, true, false, true), // *
-			new Describer(C_KeyDialect, C_KeyFbDialect, typeof(int), C_DefaultDialect, true, false, true, false, true), // *
-			new Describer(C_KeyCharset, C_KeyFbCharset, typeof(string), C_DefaultCharset, true, false, true, false, true), // *
-			new Describer(C_KeyNoDatabaseTriggers, C_KeyFbNoDatabaseTriggers, typeof(bool), C_DefaultNoDatabaseTriggers, true, true, true, false, true), // *
+			new Describer(C_KeyRole, C_KeyFbRole, typeof(string), C_DefaultRole, true, false), // *
+			new Describer(C_KeyDialect, C_KeyFbDialect, typeof(int), C_DefaultDialect, true, false), // *
+			new Describer(C_KeyCharset, C_KeyFbCharset, typeof(string), C_DefaultCharset, true, false), // *
+			new Describer(C_KeyNoDatabaseTriggers, C_KeyFbNoDatabaseTriggers, typeof(bool), C_DefaultNoDatabaseTriggers, true, true), // *
 			new Describer(C_KeyPacketSize, C_KeyFbPacketSize, typeof(int), C_DefaultPacketSize, true),
 			new Describer(C_KeyConnectionTimeout, C_KeyFbConnectionTimeout, typeof(int), C_DefaultConnectionTimeout, true),
 			new Describer(C_KeyPooling, C_KeyFbPooling, typeof(bool), C_DefaultPooling, true),

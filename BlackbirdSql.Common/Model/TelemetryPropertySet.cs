@@ -30,9 +30,8 @@ public abstract class TelemetryPropertySet : CorePropertySet
 	/// FbStringBuilder Descriptor/Parameter Properties.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static readonly new Describer[] Describers
-		= new Describer[11]
-	{
+	public static readonly new Describer[] Describers =
+	[
 		new Describer(C_KeyCountConnections, typeof(int), 0),
 		new Describer(C_KeyEngineProduct, typeof(string), null),
 		new Describer(C_KeyEngineType, typeof(EnEngineType), EnEngineType.Unknown),
@@ -44,7 +43,7 @@ public abstract class TelemetryPropertySet : CorePropertySet
 		new Describer(C_KeyCountRecentConnections, typeof(int), 0),
 		new Describer(C_KeyCountFavoriteConnections, typeof(int), 0),
 		new Describer(C_KeyIsLocalDb, typeof(bool), 0)
-	};
+	];
 
 
 	#endregion

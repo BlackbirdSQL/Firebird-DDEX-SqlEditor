@@ -3,6 +3,7 @@
 
 using System.Runtime.InteropServices;
 using BlackbirdSql.Core.Controls.Config;
+using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.EditorExtension.Model.Config;
 using Microsoft.VisualStudio.Shell;
 
@@ -33,31 +34,58 @@ public class SettingsProvider
 
 	[ComVisible(true)]
 	[Guid(PackageData.GeneralSettingsGuid)]
-	public class GeneralSettingsPage : AbstractSettingsPage<GeneralSettingsPage, GeneralSettingsModel> { }
+	public class GeneralSettingsPage : AbstractPersistentSettingsPage<GeneralSettingsPage, GeneralSettingsModel> { }
 
 	[ComVisible(true)]
 	[Guid(PackageData.TabAndStatusBarSettingsGuid)]
-	public class TabAndStatusBarSettingsPage : AbstractSettingsPage<TabAndStatusBarSettingsPage, TabAndStatusBarSettingsModel> { }
+	public class TabAndStatusBarSettingsPage : AbstractPersistentSettingsPage<TabAndStatusBarSettingsPage, TabAndStatusBarSettingsModel> { }
 
 	[ComVisible(true)]
 	[Guid(PackageData.ExecutionSettingsGuid)]
-	public class ExecutionSettingsPage : AbstractSettingsPage<ExecutionSettingsPage, ExecutionSettingsModel> { }
+	public class ExecutionSettingsPage : AbstractPersistentSettingsPage<ExecutionSettingsPage, ExecutionSettingsModel> { }
 
 	[ComVisible(true)]
 	[Guid(PackageData.ExecutionAdvancedSettingsGuid)]
-	public class ExecutionAdvancedSettingsPage : AbstractSettingsPage<ExecutionAdvancedSettingsPage, ExecutionAdvancedSettingsModel> { }
+	public class ExecutionAdvancedSettingsPage : AbstractPersistentSettingsPage<ExecutionAdvancedSettingsPage, ExecutionAdvancedSettingsModel> { }
 
 	[ComVisible(true)]
 	[Guid(PackageData.ResultsSettingsGuid)]
-	public class ResultsSettingsPage : AbstractSettingsPage<ResultsSettingsPage, ResultsSettingsModel> { }
+	public class ResultsSettingsPage : AbstractPersistentSettingsPage<ResultsSettingsPage, ResultsSettingsModel> { }
 
 	[ComVisible(true)]
 	[Guid(PackageData.ResultsGridSettingsGuid)]
-	public class ResultsGridSettingsPage : AbstractSettingsPage<ResultsGridSettingsPage, ResultsGridSettingsModel> { }
+	public class ResultsGridSettingsPage : AbstractPersistentSettingsPage<ResultsGridSettingsPage, ResultsGridSettingsModel> { }
 
 	[ComVisible(true)]
 	[Guid(PackageData.ResultsTextSettingsGuid)]
-	public class ResultsTextSettingsPage : AbstractSettingsPage<ResultsTextSettingsPage, ResultsTextSettingsModel> { }
+	public class ResultsTextSettingsPage : AbstractPersistentSettingsPage<ResultsTextSettingsPage, ResultsTextSettingsModel> { }
+
+
+
+	[ComVisible(true)]
+	[Guid(PackageData.TransientExecutionSettingsGuid)]
+	public class TransientExecutionSettingsPage(IBTransientSettings transientSettings)
+		: AbstractTransientSettingsPage<TransientExecutionSettingsPage, ExecutionSettingsModel>(transientSettings) { }
+
+	[ComVisible(true)]
+	[Guid(PackageData.TransientExecutionAdvancedSettingsGuid)]
+	public class TransientExecutionAdvancedSettingsPage(IBTransientSettings transientSettings)
+		: AbstractTransientSettingsPage<TransientExecutionAdvancedSettingsPage, ExecutionAdvancedSettingsModel>(transientSettings) { }
+
+	[ComVisible(true)]
+	[Guid(PackageData.TransientResultsSettingsGuid)]
+	public class TransientResultsSettingsPage(IBTransientSettings transientSettings)
+		: AbstractTransientSettingsPage<TransientResultsSettingsPage, ResultsSettingsModel>(transientSettings)	{ }
+
+	[ComVisible(true)]
+	[Guid(PackageData.TransientResultsGridSettingsGuid)]
+	public class TransientResultsGridSettingsPage(IBTransientSettings transientSettings)
+		: AbstractTransientSettingsPage<TransientResultsGridSettingsPage, ResultsGridSettingsModel>(transientSettings) { }
+
+	[ComVisible(true)]
+	[Guid(PackageData.TransientResultsTextSettingsGuid)]
+	public class TransientResultsTextSettingsPage(IBTransientSettings transientSettings)
+		: AbstractTransientSettingsPage<TransientResultsTextSettingsPage, ResultsTextSettingsModel>(transientSettings) { }
 
 
 	// Custom defined page > DebugSettingsDialogPage.

@@ -145,7 +145,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		get
 		{
 			UIConnectionInfo connectionInfo = UiConnectionInfo;
-			Color result = UserSettings.EditorStatusBarBackgroundColor;
+			Color result = PersistentSettings.EditorStatusBarBackgroundColor;
 			if (connectionInfo != null && UseCustomColor(connectionInfo))
 			{
 				result = GetCustomColor(connectionInfo);
@@ -233,7 +233,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 	protected abstract IDbConnection CreateDbConnectionFromConnectionInfo(UIConnectionInfo uici, bool tryOpenConnection);
 
-	public virtual void ApplyConnectionOptions(IDbConnection connection, IBLiveUserSettings s)
+	public virtual void ApplyConnectionOptions(IDbConnection connection, IBEditorTransientSettings s)
 	{
 
 		lock (_LockObject)
@@ -438,12 +438,12 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	public virtual string GetEditorCaption(bool ignoreSettings)
 	{
 		StringBuilder stringBuilder = new StringBuilder(string.Empty, 80);
-		if (UserSettings.EditorStatusTabTextIncludeServerName || ignoreSettings)
+		if (PersistentSettings.EditorStatusTabTextIncludeServerName || ignoreSettings)
 		{
 			stringBuilder.Append(DisplayServerName);
 		}
 
-		if (UserSettings.EditorStatusTabTextIncludeDatabaseName || ignoreSettings)
+		if (PersistentSettings.EditorStatusTabTextIncludeDatabaseName || ignoreSettings)
 		{
 			if (stringBuilder.Length != 0)
 			{
@@ -453,7 +453,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 			stringBuilder.Append(DatasetId);
 		}
 
-		if ((UserSettings.EditorStatusTabTextIncludeLoginName || ignoreSettings) && !string.IsNullOrEmpty(DisplayUserName))
+		if ((PersistentSettings.EditorStatusTabTextIncludeLoginName || ignoreSettings) && !string.IsNullOrEmpty(DisplayUserName))
 		{
 			if (stringBuilder.Length != 0)
 			{

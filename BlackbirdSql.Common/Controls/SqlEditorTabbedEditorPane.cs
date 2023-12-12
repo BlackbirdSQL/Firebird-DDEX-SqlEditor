@@ -1194,7 +1194,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 				text = " ";
 			}
 
-			if (UserSettings.EditorStatusTabTextIncludeFileName)
+			if (PersistentSettings.EditorStatusTabTextIncludeFileName)
 			{
 				text = "%2" + text2 + text;
 			}
@@ -1267,8 +1267,8 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 			QueryManager qryMgr = auxDocData.QryMgr;
 			text = qryMgr.ConnectionStrategy.GetEditorCaption(toolTip);
 			// IBSqlEditorUserSettings current = SqlEditorUserSettings.Instance.Current;
-			if (!toolTip && (UserSettings.EditorStatusTabTextIncludeDatabaseName
-				|| UserSettings.EditorStatusTabTextIncludeLoginName || UserSettings.EditorStatusTabTextIncludeServerName))
+			if (!toolTip && (PersistentSettings.EditorStatusTabTextIncludeDatabaseName
+				|| PersistentSettings.EditorStatusTabTextIncludeLoginName || PersistentSettings.EditorStatusTabTextIncludeServerName))
 			{
 				if (qryMgr.IsConnected || qryMgr.IsConnecting)
 				{

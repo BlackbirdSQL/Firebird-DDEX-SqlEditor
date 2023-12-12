@@ -64,7 +64,7 @@ public sealed class QueryManager : IDisposable
 
 	private SqlConnectionStrategy _ConnectionStrategy;
 
-	private LiveUserSettings _LiveSettings;
+	private TransientSettings _LiveSettings;
 
 	private bool _LiveSettingsApplied;
 
@@ -76,13 +76,13 @@ public sealed class QueryManager : IDisposable
 
 	private QEOLESQLExec.GetCurrentWorkingDirectoryPath _currentWorkingDirectoryPath;
 
-	public LiveUserSettings LiveSettings
+	public TransientSettings LiveSettings
 	{
 		get
 		{
 			lock (_LockLocal)
 			{
-				return _LiveSettings ??= LiveUserSettings.CreateInstance();
+				return _LiveSettings ??= TransientSettings.CreateInstance();
 			}
 		}
 	}
@@ -534,7 +534,7 @@ public sealed class QueryManager : IDisposable
 			throw ex;
 		}
 
-		LiveUserSettings sqlLiveSettings = CreateLiveSettingsObject();
+		TransientSettings sqlLiveSettings = CreateLiveSettingsObject();
 
 		if (parseOnly)
 		{
@@ -571,9 +571,9 @@ public sealed class QueryManager : IDisposable
 		return true;
 	}
 
-	private LiveUserSettings CreateLiveSettingsObject()
+	private TransientSettings CreateLiveSettingsObject()
 	{
-		return (LiveUserSettings)LiveSettings.Clone();
+		return (TransientSettings)LiveSettings.Clone();
 
 	}
 

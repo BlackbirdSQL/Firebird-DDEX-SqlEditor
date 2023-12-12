@@ -20,8 +20,8 @@ namespace BlackbirdSql.EditorExtension.Model.Config;
 /// Option Model for General Results options
 /// </summary>
 // =========================================================================================================
-public class ResultsSettingsModel(IBLiveSettings liveSettings)
-	: AbstractSettingsModel<ResultsSettingsModel>(C_Package, C_Group, C_LivePrefix, liveSettings)
+public class ResultsSettingsModel(IBTransientSettings transientSettings)
+	: AbstractSettingsModel<ResultsSettingsModel>(C_Package, C_Group, C_LivePrefix, transientSettings)
 {
 
 	// ---------------------------------------------------------------------------------
@@ -76,9 +76,6 @@ public class ResultsSettingsModel(IBLiveSettings liveSettings)
 		ToFile
 	}
 
-
-
-
 	// General section
 
 	[GlobalizedCategory("OptionCategoryGeneral")]
@@ -100,8 +97,6 @@ public class ResultsSettingsModel(IBLiveSettings liveSettings)
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
 	[DefaultValue(false)]
 	public bool PlaySounds { get; set; } = false;
-
-
 
 
 	#endregion Property Accessors

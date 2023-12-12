@@ -78,7 +78,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 	private readonly ErmBindingSource _DataSources;
 
-	private int _EventsDisabled = 0;
+	private int _EventsCardinal = 0;
 
 
 	#endregion Variables
@@ -98,12 +98,12 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Returns true if when execution has enetered an event handler that may cause recursion
+	/// Returns true if when execution has entered an event handler that may cause recursion
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	private bool EventsDisabled
 	{
-		get { return _EventsDisabled > 0; }
+		get { return _EventsCardinal > 0; }
 	}
 
 
@@ -227,7 +227,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	// ---------------------------------------------------------------------------------
 	private void DisableEvents()
 	{
-		_EventsDisabled++;
+		_EventsCardinal++;
 	}
 
 
@@ -240,10 +240,10 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	// ---------------------------------------------------------------------------------
 	private void EnableEvents()
 	{
-		if (_EventsDisabled == 0)
+		if (_EventsCardinal == 0)
 			Diag.Dug(new InvalidOperationException(Resources.ExceptionEventsAlreadyEnabled));
 		else
-			_EventsDisabled--;
+			_EventsCardinal--;
 	}
 
 
@@ -253,10 +253,21 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		if (InvalidDependent)
 		{
 			DisableEvents();
-			Site.Remove("Dataset");
-			Site.Remove("DatasetId");
-			Site.Remove("DatasetKey");
-			EnableEvents();
+
+			try
+			{
+				Site.Remove("Dataset");
+				Site.Remove("DatasetId");
+				Site.Remove("DatasetKey");
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+			}
+			finally
+			{
+				EnableEvents();
+			}
 		}
 	}
 
@@ -346,16 +357,16 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	private void OnDatabasesCurrentChanged(object sender, EventArgs e)
 	{
 		// Diag.Trace("Databases CurrentChanged");
+		if (InvalidDependent)
+		{
+			ValidateDatasetKey();
+			return;
+		}
+
+		DisableEvents();
+
 		try
 		{
-			if (InvalidDependent)
-			{
-				ValidateDatasetKey();
-				return;
-			}
-
-			DisableEvents();
-
 			if (txtDatabase.Text.ToLower() != (string)_DataSources.DependentRow["DatabaseLc"])
 			{
 				txtDatabase.Text = ((string)_DataSources.DependentRow["Database"]).Trim();
@@ -418,12 +429,14 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				}
 			}
 
-			EnableEvents();
-
 		}
 		catch (Exception ex)
 		{
 			Diag.Dug(ex);
+		}
+		finally
+		{
+			EnableEvents();
 		}
 
 	}
@@ -494,22 +507,22 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	private void OnDataSourcesCurrentChanged(object sender, EventArgs e)
 	{
 		// Diag.Trace("_DataSources CurrentChanged");
+		try
+		{
+			if (_DataSources.Row == null || (int)_DataSources.Row["Orderer"] == 0)
+				return;
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			return;
+		}
+
+		DisableEvents();
 
 		try
 		{
 
-			try
-			{
-				if (_DataSources.Row == null || (int)_DataSources.Row["Orderer"] == 0)
-					return;
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-				return;
-			}
-
-			DisableEvents();
 
 			if ((int)_DataSources.Row["Orderer"] == 1)
 			{
@@ -564,11 +577,14 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				}
 			}
 
-			EnableEvents();
 		}
 		catch (Exception ex)
 		{
 			Diag.Dug(ex);
+		}
+		finally
+		{
+			EnableEvents();
 		}
 	}
 

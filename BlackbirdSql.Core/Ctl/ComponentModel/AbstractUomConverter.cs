@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using BlackbirdSql.Core.Controls.Events;
 using BlackbirdSql.Core.Ctl.Extensions;
+using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Interfaces;
 using BlackbirdSql.Core.Properties;
 
@@ -25,7 +26,7 @@ namespace BlackbirdSql.Core.Ctl.ComponentModel;
 /// accessing globalized strings in AttributeResources.resx.
 /// </summary>
 // =========================================================================================================
-public abstract class AbstractUomConverter : TypeConverter, IDisposable
+public abstract class AbstractUomConverter : TypeConverter, IBEditConverter, IDisposable
 {
 	private IBSettingsModel _Model = null;
 	private string _PropertyName = string.Empty;
@@ -55,8 +56,8 @@ public abstract class AbstractUomConverter : TypeConverter, IDisposable
 	{
 		if (_Model != null)
 		{
-			_Model.GridEditBoxGotFocusEvent -= OnGridEditBoxGotFocus;
-			_Model.GridEditBoxLostFocusEvent -= OnGridEditBoxLostFocus;
+			_Model.EditControlGotFocusEvent -= OnEditControlGotFocus;
+			_Model.EditControlLostFocusEvent -= OnEditControlLostFocus;
 			_Model = null;
 		}
 	}
@@ -171,8 +172,8 @@ public abstract class AbstractUomConverter : TypeConverter, IDisposable
 
 		_PropertyName = context.PropertyDescriptor.Name;
 
-		_Model.GridEditBoxGotFocusEvent += OnGridEditBoxGotFocus;
-		_Model.GridEditBoxLostFocusEvent += OnGridEditBoxLostFocus;
+		_Model.EditControlGotFocusEvent += OnEditControlGotFocus;
+		_Model.EditControlLostFocusEvent += OnEditControlLostFocus;
 
 		if (context.PropertyDescriptor.Attributes[typeof(LiteralRangeAttribute)] is LiteralRangeAttribute literalAttr)
 		{
@@ -241,7 +242,7 @@ public abstract class AbstractUomConverter : TypeConverter, IDisposable
 
 
 
-	public void OnGridEditBoxGotFocus(object sender, SelectedGridItemFocusEventArgs e)
+	public void OnEditControlGotFocus(object sender, EditControlFocusEventArgs e)
 	{
 		if (e.SelectionItem.PropertyDescriptor.Name != _PropertyName)
 			return;
@@ -263,7 +264,7 @@ public abstract class AbstractUomConverter : TypeConverter, IDisposable
 
 
 
-	public void OnGridEditBoxLostFocus(object sender, SelectedGridItemFocusEventArgs e)
+	public void OnEditControlLostFocus(object sender, EditControlFocusEventArgs e)
 	{
 		if (e.SelectionItem.PropertyDescriptor.Name == _PropertyName)
 			_EditActive = false;

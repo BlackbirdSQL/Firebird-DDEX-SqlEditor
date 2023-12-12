@@ -460,7 +460,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 	[SecurityPermission(SecurityAction.InheritanceDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
 	protected override void WndProc(ref Message m)
 	{
-		if (m.Msg != 133 || !DrawManager.DrawNCBorder(ref m))
+		if (m.Msg != Native.WM_NCPAINT || !DrawManager.DrawNCBorder(ref m))
 		{
 			base.WndProc(ref m);
 		}

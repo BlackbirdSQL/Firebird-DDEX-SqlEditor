@@ -1,7 +1,6 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
-using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using BlackbirdSql.Common.Ctl.Enums;
@@ -12,15 +11,15 @@ using FirebirdSql.Data.Isql;
 namespace BlackbirdSql.Common.Ctl.Interfaces;
 
 // =========================================================================================================
-//										IBLiveUserSettings Class
+//									IBEditorTransientSettings Interface
 //
 // =========================================================================================================
-public interface IBLiveUserSettings
+public interface IBEditorTransientSettings
 {
 
 
 	// =========================================================================================================
-	#region Property Accessors - LiveUserSettings
+	#region Property Accessors - IBEditorTransientSettings
 	// =========================================================================================================
 
 

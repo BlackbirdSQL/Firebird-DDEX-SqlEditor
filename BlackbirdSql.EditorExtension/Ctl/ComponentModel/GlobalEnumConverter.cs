@@ -13,9 +13,6 @@ namespace BlackbirdSql.EditorExtension.Ctl.ComponentModel;
 /// This is because the enum converter uses GlobalizedDescriptionAttribute
 /// for it's globalized resource strings.
 /// </summary>
-public class GlobalEnumConverter : AbstractEnumConverter
+public class GlobalEnumConverter(Type type) : AbstractEnumConverter(type)
 {
-	public GlobalEnumConverter(Type type) : base(type)
-	{
-	}
 }

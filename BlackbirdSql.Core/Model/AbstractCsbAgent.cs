@@ -10,6 +10,7 @@ using System.IO;
 using System.Text;
 
 using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
@@ -176,17 +177,17 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 			new Describer(C_KeyExDataset, typeof(string), C_DefaultExDataset),
 			new Describer(C_KeyExExternalKey, typeof(string), C_DefaultExExternalKey),
 
-			new Describer(C_KeyDataSource, C_KeyFbDataSource, typeof(string), C_DefaultDataSource, true, false, true, true, true), // *
-			new Describer(C_KeyPort, C_KeyFbPort, typeof(int), C_DefaultPort, true, false, true, false, true), // *
-			new Describer(C_KeyServerType, C_KeyFbServerType, typeof(FbServerType), C_DefaultServerType, true, false, true, false, true), // *
-			new Describer(C_KeyDatabase, C_KeyFbDatabase, typeof(string), C_DefaultDatabase, true, false, true, true, true), // *
-			new Describer(C_KeyUserID, C_KeyFbUserID, typeof(string), C_DefaultUserID, true, false, true, true, true), // *
+			new Describer(C_KeyDataSource, C_KeyFbDataSource, typeof(string), C_DefaultDataSource, true, false, true, true), // *
+			new Describer(C_KeyPort, C_KeyFbPort, typeof(int), C_DefaultPort, true, false), // *
+			new Describer(C_KeyServerType, C_KeyFbServerType, typeof(FbServerType), C_DefaultServerType, true, false), // *
+			new Describer(C_KeyDatabase, C_KeyFbDatabase, typeof(string), C_DefaultDatabase, true, false, true, true), // *
+			new Describer(C_KeyUserID, C_KeyFbUserID, typeof(string), C_DefaultUserID, true, false, true, true), // *
 			new Describer(C_KeyPassword, C_KeyFbPassword, typeof(string), C_DefaultPassword, true, false, false, true),
 
-			new Describer(C_KeyRole, C_KeyFbRole, typeof(string), C_DefaultRole, true, false, true, false, true), // *
-			new Describer(C_KeyDialect, C_KeyFbDialect, typeof(int), C_DefaultDialect, true, false, true, false, true), // *
-			new Describer(C_KeyCharset, C_KeyFbCharset, typeof(string), C_DefaultCharset, true, false, true, false, true), // *
-			new Describer(C_KeyNoDatabaseTriggers, C_KeyFbNoDatabaseTriggers, typeof(bool), C_DefaultNoDatabaseTriggers, true, true, true, false, true), // *
+			new Describer(C_KeyRole, C_KeyFbRole, typeof(string), C_DefaultRole, true, false), // *
+			new Describer(C_KeyDialect, C_KeyFbDialect, typeof(int), C_DefaultDialect, true, false), // *
+			new Describer(C_KeyCharset, C_KeyFbCharset, typeof(string), C_DefaultCharset, true, false), // *
+			new Describer(C_KeyNoDatabaseTriggers, C_KeyFbNoDatabaseTriggers, typeof(bool), C_DefaultNoDatabaseTriggers, true), // *
 			new Describer(C_KeyPacketSize, C_KeyFbPacketSize, typeof(int), C_DefaultPacketSize, true),
 			new Describer(C_KeyConnectionTimeout, C_KeyFbConnectionTimeout, typeof(int), C_DefaultConnectionTimeout, true),
 			new Describer(C_KeyPooling, C_KeyFbPooling, typeof(bool), C_DefaultPooling, true),
@@ -636,14 +637,14 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	{
 		get
 		{
-			if (TryGetValue("DatasetKey", out object value))
+			if (TryGetValue(C_KeyExDatasetKey, out object value))
 				return (string)value;
 
 			return C_DefaultExDatasetKey;
 		}
 		set
 		{
-			this["DatasetKey"] = value;
+			this[C_KeyExDatasetKey] = value;
 		}
 	}
 
@@ -663,14 +664,14 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	{
 		get
 		{
-			if (TryGetValue("DatasetId", out object value))
+			if (TryGetValue(C_KeyExDatasetId, out object value))
 				return (string)value;
 
 			return C_DefaultExDatasetId;
 		}
 		set
 		{
-			this["DatasetId"] = value;
+			this[C_KeyExDatasetId] = value;
 		}
 	}
 
@@ -681,20 +682,20 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// </summary>
 	[Category("Extended")]
 	[DisplayName("Custom DatasetKey")]
-	[Description("The proposed DatasetKey to be used for new unique connections. If not specified a generated key will be used.")]
+	[Description("The proposed DatasetKey to be used for NEW unique connections. To rename use Server Explorer.")]
 	[DefaultValue(C_DefaultExExternalKey)]
 	public string ExternalKey
 	{
 		get
 		{
-			if (TryGetValue("ExternalKey", out object value))
+			if (TryGetValue(C_KeyExExternalKey, out object value))
 				return (string)value;
 
 			return C_DefaultExExternalKey;
 		}
 		set
 		{
-			this["ExternalKey"] = value;
+			this[C_KeyExExternalKey] = value;
 		}
 	}
 
@@ -1098,7 +1099,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// <summary>
 	/// Performs a stored equivalency check against connections. Many commands as well as
 	/// PropertyWindows use CsbAgent to do status validations and updates on pulsed events.
-	/// This can result in a very high volume of calls, so the agent stores the document
+	/// This can result in a very high volume of calls, so the agent stores the database
 	/// moniker and connection strings for low overhead responses when the connection has not
 	/// changed.
 	/// </summary>
@@ -1111,6 +1112,9 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 		if (connection == null) return false;
 
+		// If this agent was not created with a connection no connection equivalency variables
+		// will exist on a first pass so we create them. This will be the connection against
+		// which all future connections will be compared.
 		if (_EquivalencyConnectionString == null)
 			RegisterEquivalencyMoniker(connection);
 
@@ -1139,10 +1143,18 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	// ---------------------------------------------------------------------------------
 	private string BuildUniqueConnectionUrl(bool safeUrl)
 	{
+		return BuildUniqueConnectionUrl(DataSource, Database, this, safeUrl);
+	}
+
+
+
+	private static string BuildUniqueConnectionUrl(string datasource, string database,
+		AbstractCsbAgent csa, bool safeUrl)
+	{
 		// We'll use UriBuilder for the url.
 
-		if (string.IsNullOrWhiteSpace(DataSource) || string.IsNullOrWhiteSpace(Database)
-			|| string.IsNullOrWhiteSpace(UserID))
+		if (string.IsNullOrWhiteSpace(datasource) || string.IsNullOrWhiteSpace(database)
+			|| string.IsNullOrWhiteSpace(csa.UserID))
 		{
 			return null;
 		}
@@ -1150,43 +1162,73 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 		UriBuilder urlb = new()
 		{
 			Scheme = C_Scheme,
-			Host = DataSource.ToLowerInvariant(),
-			UserName = UserID.ToLowerInvariant(),
-			Port = Port,
-			Password = safeUrl ? string.Empty : Password.ToLowerInvariant()
+			Host = datasource.ToLowerInvariant(),
+			UserName = csa.UserID.ToLowerInvariant(),
+			Port = csa.Port,
+			Password = safeUrl ? string.Empty : csa.Password.ToLowerInvariant()
 		};
-
 
 		// Append the serialized database path and dot separated equivalency connection properties as the url path.
 
 		// Serialize the db path.
-		string str = StringUtils.Serialize64(Database.ToLowerInvariant());
+		StringBuilder stringBuilder = new(StringUtils.Serialize64(csa.Database.ToLowerInvariant()));
 
-		// Tracer.Trace(GetType(), "BuildUniqueConnectionUrl(IDbConnection)", "database.ToLc: {0}, serialized: {1}.", Database.ToLowerInvariant(), str);
-
-		// string str = JsonConvert.SerializeObject(_Database.ToLowerInvariant());
-		// string str = JsonSerializer.Serialize(_Database.ToLowerInvariant(), typeof(string));
-
-		// Tracer.Trace(GetType(), "BuildUniqueConnectionUrl()", "Serialized dbpath: {0}", str);
-
-		StringBuilder stringBuilder = new(str);
 		stringBuilder.Append("/");
+
 
 		// Append equivalency properties composite as defined in the Describers Colleciton.
 
-		if (!string.IsNullOrWhiteSpace(Role) ||
-			!Charset.Equals(C_DefaultCharset)
-			|| Dialect != C_DefaultDialect || NoDatabaseTriggers)
+		int i;
+		bool hasEquivalencies = false;
+		string key;
+
+		for (i = 0; i < PersistentSettings.EquivalencyKeys.Length; i++)
 		{
-			stringBuilder.Append(Role.ToLowerInvariant());
-			stringBuilder.Append(C_CompositeSeparator);
-			stringBuilder.Append(Charset.ToLowerInvariant());
-			stringBuilder.Append(C_CompositeSeparator);
-			stringBuilder.Append(Dialect.ToString());
-			stringBuilder.Append(C_CompositeSeparator);
-			stringBuilder.Append(NoDatabaseTriggers.ToString().ToLowerInvariant());
+			key = PersistentSettings.EquivalencyKeys[i];
+
+			if (key == "DataSource" || key == "Port" || key == "Database" || key == "UserID")
+				continue;
+
+			if (csa.ContainsKey(key) && !Describers[key].DefaultEqualsOrEmptyString(csa[key]))
+			{
+				hasEquivalencies = true;
+				break;
+			}
 		}
 
+		if (hasEquivalencies)
+		{
+			object value;
+			string stringValue;
+			StringBuilder sb = new();
+
+			for (i = 0; i < PersistentSettings.EquivalencyKeys.Length; i++)
+			{
+				key = PersistentSettings.EquivalencyKeys[i];
+
+				if (key == "DataSource" || key == "Port" || key == "Database" || key == "UserID")
+					continue;
+
+				value = csa[key];
+
+				if (value == null)
+					stringValue = string.Empty;
+				else if (value.GetType() == typeof(byte[]))
+					stringValue = Encoding.Default.GetString((byte[])value);
+				else
+					stringValue = value.ToString().ToLowerInvariant();
+
+				sb.Append(stringValue);
+
+				if (i < (PersistentSettings.EquivalencyKeys.Length - 1))
+					sb.Append('\n');
+
+			}
+
+			stringBuilder.Append(StringUtils.Serialize64(sb.ToString()));
+		}
+
+		
 		stringBuilder.Append("/");
 
 		urlb.Path = stringBuilder.ToString();
@@ -1197,6 +1239,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 		// We have a unique connection url
 		return result;
+
 	}
 
 
@@ -1222,49 +1265,10 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 		if (string.IsNullOrWhiteSpace(server) || string.IsNullOrWhiteSpace(database))
 			return;
 
-		FbConnectionStringBuilder csb = new(connection.ConnectionString);
-
-		int port = csb.Port;
-		string user = csb.UserID;
-		// string password = csb.Password;
-		string role = csb.Role;
-		string charset = csb.Charset;
-		int dialect = csb.Dialect;
-		bool noTriggers = csb.NoDatabaseTriggers;
-
-
-		UriBuilder urlb = new()
-		{
-			Scheme = C_Scheme,
-			Host = server.ToLowerInvariant(),
-			UserName = user.ToLowerInvariant(),
-			Port = port,
-		};
-
-		string str = StringUtils.Serialize64(database.ToLowerInvariant());
-
-		StringBuilder stringBuilder = new(str);
-		stringBuilder.Append("/");
-
-		if (!string.IsNullOrWhiteSpace(role) ||
-			!charset.Equals(C_DefaultCharset)
-			|| dialect != C_DefaultDialect || noTriggers)
-		{
-			stringBuilder.Append(role.ToLowerInvariant());
-			stringBuilder.Append(C_CompositeSeparator);
-			stringBuilder.Append(charset.ToLowerInvariant());
-			stringBuilder.Append(C_CompositeSeparator);
-			stringBuilder.Append(dialect.ToString());
-			stringBuilder.Append(C_CompositeSeparator);
-			stringBuilder.Append(noTriggers.ToString().ToLowerInvariant());
-		}
-
-		stringBuilder.Append("/");
-
-		urlb.Path = stringBuilder.ToString();
+		CsbAgent csa = new(connection.ConnectionString);
+		_EquivalencyMoniker = BuildUniqueConnectionUrl(server, database, csa, true);
 
 		_EquivalencyConnectionString = connection.ConnectionString;
-		_EquivalencyMoniker = urlb.Uri.ToString();
 	}
 
 

@@ -18,17 +18,17 @@ using FirebirdSql.Data.Isql;
 namespace BlackbirdSql.Common.Ctl.Config;
 
 // =========================================================================================================
-//										LiveUserSettings Class
+//										TransientSettings Class
 //
 /// <summary>
 /// Consolidated single access point for daisy-chained packages settings models (IBSettingsModel).
-/// As a convention we name descendent classes UserSettings as well. We hardcode bind the UserSettings
+/// As a convention we name descendent classes PersistentSettings as well. We hardcode bind the PersistentSettings
 /// descendent tree from the top-level extension lib down to the Core. There is no point using services as
 /// this configuration is fixed. ie:
 /// VisualStudio.Ddex > Controller > EditorExtension > Common > Core.
 /// </summary>
 // =========================================================================================================
-public class LiveUserSettings : UserSettings, IBLiveUserSettings, IBLiveSettings, ICloneable
+public class TransientSettings : PersistentSettings, IBEditorTransientSettings, IBTransientSettings, ICloneable
 {
 
 	// ---------------------------------------------------------------------------------
@@ -46,7 +46,7 @@ public class LiveUserSettings : UserSettings, IBLiveUserSettings, IBLiveSettings
 
 
 	// =========================================================================================================
-	#region Property Accessors - LiveUserSettings
+	#region Property Accessors - TransientSettings
 	// =========================================================================================================
 
 
@@ -504,7 +504,7 @@ public class LiveUserSettings : UserSettings, IBLiveUserSettings, IBLiveSettings
 
 
 	// =========================================================================================================
-	#region Constructors / Destructors - UserSettings
+	#region Constructors / Destructors - TransientSettings
 	// =========================================================================================================
 
 
@@ -513,21 +513,21 @@ public class LiveUserSettings : UserSettings, IBLiveUserSettings, IBLiveSettings
 	/// Private singleton .ctor
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected LiveUserSettings() : base(true)
+	protected TransientSettings() : base(true)
 	{
 		_ExecOptions = new BitArray(16);
 	}
 
-	protected LiveUserSettings(BitArray execOptions) : base(true)
+	protected TransientSettings(BitArray execOptions) : base(true)
 	{
 		_ExecOptions = execOptions.Clone() as BitArray;
 	}
 
 
 
-	public static LiveUserSettings CreateInstance()
+	public static TransientSettings CreateInstance()
 	{
-		LiveUserSettings settings = new()
+		TransientSettings settings = new()
 		{
 			_LiveStore = new(_SettingsStore)
 		};
@@ -538,9 +538,9 @@ public class LiveUserSettings : UserSettings, IBLiveUserSettings, IBLiveSettings
 
 
 
-	public static LiveUserSettings CreateInstance(IDictionary<string, object> liveStore, BitArray execOptions)
+	public static TransientSettings CreateInstance(IDictionary<string, object> liveStore, BitArray execOptions)
 	{
-		LiveUserSettings settings = new(execOptions)
+		TransientSettings settings = new(execOptions)
 		{
 			_LiveStore = new(liveStore)
 		};
@@ -554,7 +554,7 @@ public class LiveUserSettings : UserSettings, IBLiveUserSettings, IBLiveSettings
 
 
 	// =========================================================================================================
-	#region Methods - LiveUserSettings
+	#region Methods - TransientSettings
 	// =========================================================================================================
 
 
@@ -611,7 +611,7 @@ public class LiveUserSettings : UserSettings, IBLiveUserSettings, IBLiveSettings
 	/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
 	/// Only implemented by packages that have settings models.
 	/// </summary>
-	public override void RegisterSettingsEventHandlers(IBUserSettings.SettingsSavedDelegate onSettingsSavedDelegate)
+	public override void RegisterSettingsEventHandlers(IBPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate)
 	{
 	}
 
@@ -636,7 +636,7 @@ public class LiveUserSettings : UserSettings, IBLiveUserSettings, IBLiveSettings
 
 
 	// =========================================================================================================
-	#region Event handlers - LiveUserSettings
+	#region Event handlers - TransientSettings
 	// =========================================================================================================
 
 

@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace BlackbirdSql.Core.Controls.Events;
 
-public class SelectedGridItemFocusEventArgs(GridItem selectionItem) : EventArgs
+public class EditControlFocusEventArgs(GridItem selectionItem) : EventArgs
 {
 	private bool _ValidateValue = false;
 	private string _Value = null;

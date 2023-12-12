@@ -11,6 +11,7 @@ using System.IO;
 using System.Reflection;
 
 using BlackbirdSql.Core.Ctl.ComponentModel;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Config;
@@ -174,68 +175,81 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 		Dictionary<EnNativeSettingsType, Action<WritableSettingsStore, string, string, object>> setDictionary = (Dictionary<EnNativeSettingsType, Action<WritableSettingsStore, string, string, object>>)(SettingStoreSetMethodsDict = new Dictionary<EnNativeSettingsType, Action<WritableSettingsStore, string, string, object>>(7));
 		Dictionary<EnNativeSettingsType, Func<SettingsStore, string, string, object>> getDictionary = (Dictionary<EnNativeSettingsType, Func<SettingsStore, string, string, object>>)(SettingStoreGetMethodsDict = new Dictionary<EnNativeSettingsType, Func<SettingsStore, string, string, object>>(7));
 		Type writableSettingsStoreType = typeof(WritableSettingsStore);
+
 		setDictionary[EnNativeSettingsType.String] = CreateSettingsStoreSetMethod<string>(writableSettingsStoreType.GetMethod("SetString",
 		[
 			typeof(string),
 			typeof(string),
 			typeof(string)
 		]));
+
 		setDictionary[EnNativeSettingsType.Int32] = CreateSettingsStoreSetMethod<int>(writableSettingsStoreType.GetMethod("SetInt32",
 		[
 			typeof(string),
 			typeof(string),
 			typeof(int)
 		]));
+
 		setDictionary[EnNativeSettingsType.UInt32] = CreateSettingsStoreSetMethod<uint>(writableSettingsStoreType.GetMethod("SetUInt32",
 		[
 			typeof(string),
 			typeof(string),
 			typeof(uint)
 		]));
+
 		setDictionary[EnNativeSettingsType.Int64] = CreateSettingsStoreSetMethod<long>(writableSettingsStoreType.GetMethod("SetInt64",
 		[
 			typeof(string),
 			typeof(string),
 			typeof(long)
 		]));
+
 		setDictionary[EnNativeSettingsType.UInt64] = CreateSettingsStoreSetMethod<ulong>(writableSettingsStoreType.GetMethod("SetUInt64",
 		[
 			typeof(string),
 			typeof(string),
 			typeof(ulong)
 		]));
+
 		setDictionary[EnNativeSettingsType.Binary] = CreateSettingsStoreSetMethod<MemoryStream>(writableSettingsStoreType.GetMethod("SetMemoryStream",
 		[
 			typeof(string),
 			typeof(string),
 			typeof(MemoryStream)
 		]));
+
 		Type settingsStoreType = typeof(SettingsStore);
+
 		getDictionary[EnNativeSettingsType.String] = CreateSettingsStoreGetMethod<string>(settingsStoreType.GetMethod("GetString",
 		[
 			typeof(string),
 			typeof(string)
 		]));
+
 		getDictionary[EnNativeSettingsType.Int32] = CreateSettingsStoreGetMethod<int>(settingsStoreType.GetMethod("GetInt32",
 		[
 			typeof(string),
 			typeof(string)
 		]));
+
 		getDictionary[EnNativeSettingsType.UInt32] = CreateSettingsStoreGetMethod<uint>(settingsStoreType.GetMethod("GetUInt32",
 		[
 			typeof(string),
 			typeof(string)
 		]));
+
 		getDictionary[EnNativeSettingsType.Int64] = CreateSettingsStoreGetMethod<long>(settingsStoreType.GetMethod("GetInt64",
 		[
 			typeof(string),
 			typeof(string)
 		]));
+
 		getDictionary[EnNativeSettingsType.UInt64] = CreateSettingsStoreGetMethod<ulong>(settingsStoreType.GetMethod("GetUInt64",
 		[
 			typeof(string),
 			typeof(string)
 		]));
+
 		getDictionary[EnNativeSettingsType.Binary] = CreateSettingsStoreGetMethod<MemoryStream>(settingsStoreType.GetMethod("GetMemoryStream",
 		[
 			typeof(string),
@@ -517,6 +531,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 	{
 		string collectionName = OverrideCollectionName ?? baseOptionModel.CollectionName;
 		object obj = null;
+
 		try
 		{
 			obj = WrappedPropertyGetMethod(baseOptionModel);
@@ -539,10 +554,11 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 		return false;
 	}
 
-	public virtual bool Save<TOptMdl>(AbstractSettingsModel<TOptMdl> baseOptionModel, IBLiveSettings liveSettings) where TOptMdl : AbstractSettingsModel<TOptMdl>
+	public virtual bool Save<TOptMdl>(AbstractSettingsModel<TOptMdl> baseOptionModel, IBTransientSettings transientSettings) where TOptMdl : AbstractSettingsModel<TOptMdl>
 	{
 		string collectionName = OverrideCollectionName ?? baseOptionModel.CollectionName;
 		object obj = null;
+
 		try
 		{
 			obj = WrappedPropertyGetMethod(baseOptionModel);
@@ -552,7 +568,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 				return false;
 			}
 
-			liveSettings[baseOptionModel.LivePrefix + PropertyName] = obj;
+			transientSettings[baseOptionModel.LivePrefix + PropertyName] = obj;
 			return true;
 		}
 		catch (Exception ex)
@@ -590,6 +606,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 	{
 		string text = OverrideCollectionName ?? baseOptionModel.CollectionName;
 		object obj = null;
+
 		try
 		{
 			if (!settingsStore.PropertyExists(text, PropertyName))
@@ -611,17 +628,18 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 		return false;
 	}
 
-	public virtual bool Load<TOptMdl>(AbstractSettingsModel<TOptMdl> baseOptionModel, IBLiveSettings liveSettings) where TOptMdl : AbstractSettingsModel<TOptMdl>
+	public virtual bool Load<TOptMdl>(AbstractSettingsModel<TOptMdl> baseOptionModel, IBTransientSettings transientSettings) where TOptMdl : AbstractSettingsModel<TOptMdl>
 	{
 		object obj = null;
+
 		try
 		{
-			if (!liveSettings.PropertyExists(baseOptionModel.LivePrefix + PropertyName))
+			if (!transientSettings.PropertyExists(baseOptionModel.LivePrefix + PropertyName))
 			{
 				return false;
 			}
 
-			obj = liveSettings[baseOptionModel.LivePrefix + PropertyName];
+			obj = transientSettings[baseOptionModel.LivePrefix + PropertyName];
 
 			WrappedPropertySetMethod(baseOptionModel, obj);
 			return true;
@@ -745,7 +763,6 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0038:Use pattern matching", Justification = "<Pending>")]
 	[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0019:Use pattern matching", Justification = "<Pending>")]
-
 	//
 	// Summary:
 	//     Convert the propertyValue retrieved from the property to the type it will be

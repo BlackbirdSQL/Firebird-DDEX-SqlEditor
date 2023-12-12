@@ -45,7 +45,7 @@
 		<Compile Include="Ctl\ComponentModel\UomConverter.cs" />
 		<Compile Include="Ctl\ComponentModel\RangeConverter.cs" />
 		<Compile Include="Ctl\Config\SettingsProvider.cs" />
-		<Compile Include="Ctl\Config\UserSettings.cs" />
+		<Compile Include="Ctl\Config\PersistentSettings.cs" />
 		<Compile Include="Ctl\ComponentModel\GlobalYesNoConverter.cs" />
 		<Compile Include="Ctl\ComponentModel\GlobalEnableDisableConverter.cs" />
 		<Compile Include="Ctl\ComponentModel\GlobalOnOffInverter.cs" />

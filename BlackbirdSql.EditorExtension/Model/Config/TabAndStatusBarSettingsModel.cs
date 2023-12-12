@@ -19,8 +19,8 @@ namespace BlackbirdSql.EditorExtension.Model.Config;
 /// Option Model for Tabs ad Statuc bar options
 /// </summary>
 // =========================================================================================================
-public class TabAndStatusBarSettingsModel(IBLiveSettings liveSettings)
-	: AbstractSettingsModel<TabAndStatusBarSettingsModel>(C_Package, C_Group, C_LivePrefix, liveSettings)
+public class TabAndStatusBarSettingsModel(IBTransientSettings transientSettings)
+	: AbstractSettingsModel<TabAndStatusBarSettingsModel>(C_Package, C_Group, C_LivePrefix, transientSettings)
 {
 
 	// ---------------------------------------------------------------------------------

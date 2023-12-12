@@ -9,19 +9,22 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace BlackbirdSql.Core.Ctl.ComponentModel;
 
-public class VerbSite : IMenuCommandService, ISite
+// =========================================================================================================
+//										VerbSite Class
+//
+/// <summary>
+/// Settings models Site for handling DialogPage verbs.
+/// </summary>
+// =========================================================================================================
+public class VerbSite(object component) : IMenuCommandService, ISite
 {
 
 	// our target object
-	protected object _Component;
+	protected object _Component = component;
+
 
 	public event AutomationVerbEventHandler AutomationVerbExecutedEvent;
 
-
-	public VerbSite(object component)
-	{
-		_Component = component;
-	}
 
 	#region IMenuCommandService Members
 	// IMenuCommandService provides DesignerVerbs, seen as commands in the PropertyGrid control
@@ -130,14 +133,8 @@ public class VerbSite : IMenuCommandService, ISite
 
 	public string Name
 	{
-		get
-		{
-			throw new NotImplementedException();
-		}
-		set
-		{
-			throw new NotImplementedException();
-		}
+		get { return null; }
+		set { throw new NotImplementedException(); }
 	}
 
 	#endregion

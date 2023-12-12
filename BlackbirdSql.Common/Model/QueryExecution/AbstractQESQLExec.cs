@@ -53,7 +53,7 @@ public abstract class AbstractQESQLExec : IDisposable
 	protected IDbConnection _SSconn;
 	protected EnQESQLBatchSpecialAction _SpecialActions;
 	protected int _ExecTimeout;
-	private LiveUserSettings _ExecLiveSettings;
+	private TransientSettings _ExecLiveSettings;
 	protected IBTextSpan _TextSpan;
 	private bool _ExecOptionHasBeenChanged;
 	protected int _CurBatchIndex = -1;
@@ -71,7 +71,7 @@ public abstract class AbstractQESQLExec : IDisposable
 
 	private AbstractConnectionStrategy ConnectionStrategy => QryMgr.ConnectionStrategy;
 
-	protected LiveUserSettings ExecLiveSettings => _ExecLiveSettings;
+	protected TransientSettings ExecLiveSettings => _ExecLiveSettings;
 
 	protected QueryManager QryMgr { get; set; }
 
@@ -96,13 +96,13 @@ public abstract class AbstractQESQLExec : IDisposable
 		};
 	}
 
-	public void Execute(IBTextSpan textSpan, IDbConnection conn, IBQESQLBatchConsumer batchConsumer, LiveUserSettings sqlLiveSettings)
+	public void Execute(IBTextSpan textSpan, IDbConnection conn, IBQESQLBatchConsumer batchConsumer, TransientSettings sqlLiveSettings)
 	{
 		_Conn = conn;
 		_BatchConsumer = batchConsumer;
 		_ExecTimeout = sqlLiveSettings.EditorExecutionTimeout;
 		// Tracer.Trace(GetType(), "QESQLExec.Execute", " execOptions.WithEstimatedExecutionPlan: " + execOptions.WithEstimatedExecutionPlan);
-		_ExecLiveSettings = sqlLiveSettings.Clone() as LiveUserSettings;
+		_ExecLiveSettings = sqlLiveSettings.Clone() as TransientSettings;
 		_TextSpan = textSpan;
 		_SpecialActions = EnQESQLBatchSpecialAction.None;
 
@@ -416,7 +416,7 @@ public abstract class AbstractQESQLExec : IDisposable
 
 			QESQLBatch qESQLBatch = qESQLBatchCollection[i];
 
-			if (!LiveUserSettings.IsSupported(qESQLBatch))
+			if (!TransientSettings.IsSupported(qESQLBatch))
 				continue;
 
 			HookupBatchWithConsumer(qESQLBatch, _BatchConsumer, bHookUp: true);

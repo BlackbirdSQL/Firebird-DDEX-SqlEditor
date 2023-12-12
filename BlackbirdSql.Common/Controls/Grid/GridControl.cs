@@ -2912,7 +2912,7 @@ public class GridControl : Control, ISupportInitialize, IBGridControl
 	[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
 	protected override bool ProcessKeyPreview(ref Message m)
 	{
-		if (m.Msg == 256)
+		if (m.Msg == Native.WM_KEYFIRST)
 		{
 			KeyEventArgs keyEventArgs = new KeyEventArgs((Keys)((int)m.WParam | (int)ModifierKeys));
 			switch (keyEventArgs.KeyCode)

@@ -199,13 +199,16 @@
     <Compile Include="Ctl\ComponentModel\GlobalOnOffConverter.cs" />
     <Compile Include="Ctl\ComponentModel\GlobalShowHideConverter.cs" />
     <Compile Include="Ctl\ComponentModel\GlobalYesNoConverter.cs" />
-    <Compile Include="Ctl\Config\UserSettings.cs" />
+    <Compile Include="Ctl\ComponentModel\GlobalIncludeExcludeConverter.cs" />
+    <Compile Include="Ctl\ComponentModel\GlobalIncludedExcludedConverter.cs" />
+    <Compile Include="Ctl\Config\PersistentSettings.cs" />
     <Compile Include="Ctl\DataTools\TDataProvider.cs" />
     <Compile Include="Ctl\DataTools\TDataSource.cs" />
     <Compile Include="Ctl\DataTools\TVsDataProvider.cs" />
     <Compile Include="Ctl\Interfaces\IBProviderObjectFactory.cs" />
     <Compile Include="Ctl\TAbstractConnectionProperties.cs" />
     <Compile Include="Ctl\TObjectSelectorTable.cs" />
+    <Compile Include="Model\Config\EquivalencySettingsModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Properties\BlackbirdSql.VisualStudio.Ddex.snk" />
   </ItemGroup>

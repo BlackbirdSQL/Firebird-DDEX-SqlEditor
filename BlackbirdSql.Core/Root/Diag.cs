@@ -101,7 +101,7 @@ public static class Diag
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static bool EnableTaskLog => _InternalActive == 0 && _TaskLogActive == 0
-		&& UserSettings.EnableTaskLog;
+		&& PersistentSettings.EnableTaskLog;
 
 
 
@@ -110,7 +110,7 @@ public static class Diag
 	/// Flag indicating whether or not <see cref="Diag.Trace"/> calls are logged
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool EnableTrace => UserSettings.EnableTrace;
+	public static bool EnableTrace => PersistentSettings.EnableTrace;
 
 
 	// ---------------------------------------------------------------------------------
@@ -121,7 +121,7 @@ public static class Diag
 	/// Exceptions are alweays logged.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public static bool EnableDiagnostics => UserSettings.EnableDiagnostics;
+	public static bool EnableDiagnostics => PersistentSettings.EnableDiagnostics;
 
 
 	// ---------------------------------------------------------------------------------
@@ -132,7 +132,7 @@ public static class Diag
 	/// Only applies to the Debug configuration. Debug Exceptions are always logged.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public static bool EnableFbDiagnostics => UserSettings.EnableFbDiagnostics;
+	public static bool EnableFbDiagnostics => PersistentSettings.EnableFbDiagnostics;
 
 
 	// ---------------------------------------------------------------------------------
@@ -143,7 +143,7 @@ public static class Diag
 	/// Only applies to the Debug configuration. Debug Exceptions are always logged.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public static bool EnableDiagnosticsLog => _InternalActive > 0 || UserSettings.EnableDiagnosticsLog;
+	public static bool EnableDiagnosticsLog => _InternalActive > 0 || PersistentSettings.EnableDiagnosticsLog;
 
 
 	// ---------------------------------------------------------------------------------
@@ -151,7 +151,7 @@ public static class Diag
 	/// The log file path
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string LogFile => UserSettings.LogFile;
+	public static string LogFile => PersistentSettings.LogFile;
 
 
 	// ---------------------------------------------------------------------------------
@@ -159,7 +159,7 @@ public static class Diag
 	/// The Firebird log file path
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string FbLogFile => UserSettings.FbLogFile;
+	public static string FbLogFile => PersistentSettings.FbLogFile;
 
 
 	#endregion Property accessors
@@ -385,6 +385,31 @@ public static class Diag
 
 		Dug(true, ex.Message + " " + message, memberName, sourceFilePath, sourceLineNumber);
 
+	}
+
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Temporary Diagnostics method for Exceptions only.
+	/// For easy identification of temporary try/catch statements during debugging.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+#if DEBUG
+	public static void Tug(Exception ex, string message = "",
+	[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+	[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+	[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
+#else
+	public static void Tug(Exception ex, string message = "",
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
+#endif
+	{
+		Dug(ex, message, memberName, sourceFilePath, sourceLineNumber);
 	}
 
 

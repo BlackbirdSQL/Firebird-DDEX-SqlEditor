@@ -41,9 +41,9 @@ public class Splitter : Control
 		[SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.UnmanagedCode)]
 		public bool PreFilterMessage(ref Message m)
 		{
-			if (m.Msg >= 256 && m.Msg <= 264)
+			if (m.Msg >= Native.WM_KEYFIRST && m.Msg <= Native.WM_KEYLAST)
 			{
-				if (m.Msg == 256 && (int)(long)m.WParam == 27)
+				if (m.Msg == Native.WM_KEYFIRST && (int)(long)m.WParam == 27)
 				{
 					_Owner.SplitEnd(accept: false);
 				}

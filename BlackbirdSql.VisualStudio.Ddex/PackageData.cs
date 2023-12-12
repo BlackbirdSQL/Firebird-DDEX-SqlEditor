@@ -48,6 +48,7 @@ static class PackageData
 	// Settings Guids
 	public const string GeneralSettingsGuid = "C76D0CE2-CB4D-4594-8A94-6E6833B4A160";
 	public const string DebugSettingsGuid = "7E2D7C87-1FAD-42D1-AE67-4EEA3281E52C";
+	public const string EquivalencySettingsGuid = "747AD10A-2475-4888-95C5-FECFD13979F0";
 
 
 

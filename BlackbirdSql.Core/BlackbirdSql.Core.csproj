@@ -31,9 +31,12 @@
 	<ItemGroup>
 	  <Compile Include="Controls\ComponentModel\AbstractFolderNameEditor.cs" />
 	  <Compile Include="Controls\ComponentModel\AbstractFileNameEditor.cs" />
+	  <Compile Include="Controls\Config\AbstruseSettingsPage.cs" />
+	  <Compile Include="Controls\Config\AbstractPersistentSettingsPage.cs" />
+	  <Compile Include="Controls\Config\AbstractTransientSettingsPage.cs" />
 	  <Compile Include="Controls\Interfaces\IBSettingsPage.cs" />
-	  <Compile Include="Controls\Events\GridItemValueChangedEventArgs.cs" />
-	  <Compile Include="Controls\Events\SelectedGridItemFocusEventArgs.cs" />
+	  <Compile Include="Controls\Events\AutomationPropertyValueChangedEventArgs.cs" />
+	  <Compile Include="Controls\Events\EditControlFocusEventArgs.cs" />
 	  <Compile Include="Controls\LinkageParserTaskHandler.cs" />
 	  <Compile Include="Ctl\AbstractPackageController.cs" />
 	  <Compile Include="Ctl\ComponentModel\AbstractGlobalizedRadioAttribute.cs" />
@@ -48,9 +51,11 @@
 	  <Compile Include="Ctl\ComponentModel\AbstractUomConverter.cs" />
 	  <Compile Include="Ctl\ComponentModel\VsProvideOptionPageAttribute.cs" />
 	  <Compile Include="Ctl\ComponentModel\VerbSite.cs" />
+	  <Compile Include="Ctl\Interfaces\IBAutomationConverter.cs" />
 	  <Compile Include="Ctl\ConnectionLocator.cs" />
 	  <Compile Include="Ctl\Extensions\Index.cs" />
 	  <Compile Include="Ctl\Extensions\Range.cs" />
+	  <Compile Include="Ctl\Interfaces\IBEditConverter.cs" />
 	  <Compile Include="Ctl\RdtManager.cs" />
 	  <Compile Include="Model\Enums\EnNodeSystemType.cs" />
 	  <Compile Include="Model\Enums\EnModelTargetType.cs" />
@@ -59,8 +64,8 @@
 	  <Compile Include="Ctl\Events\AutomationVerbEventHandler.cs" />
 	  <Compile Include="Ctl\ConnectionDescribersEnumerator.cs" />
 	  <Compile Include="Ctl\Interfaces\IBEnumerableConnectionDescriptors.cs" />
-	  <Compile Include="Ctl\Extensions\IBLiveSettings.cs" />
-	  <Compile Include="Ctl\Interfaces\IBUserSettings.cs" />
+	  <Compile Include="Ctl\Interfaces\IBTransientSettings.cs" />
+	  <Compile Include="Ctl\Interfaces\IBPersistentSettings.cs" />
 	  <Compile Include="Model\AbstractLinkageParser.cs" />
 	  <Compile Include="Model\BinaryEncoding.cs" />
 	  <Compile Include="Model\Charset.cs" />
@@ -177,7 +182,7 @@
 	  <Compile Include="Ctl\AbstractEventsManager.cs" />
 	  <Compile Include="Ctl\AbstractGlobalsAgent.cs" />
 	  <Compile Include="Ctl\AbstractHostess.cs" />
-	  <Compile Include="Ctl\Config\UserSettings.cs" />
+	  <Compile Include="Ctl\Config\PersistentSettings.cs" />
 	  <Compile Include="Ctl\Events\PropagateSettingsEventArgs.cs" />
 	  <Compile Include="Ctl\HashLog.cs" />
 	  <Compile Include="Ctl\Hostess.cs" />

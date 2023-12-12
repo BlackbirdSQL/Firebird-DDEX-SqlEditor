@@ -12,9 +12,35 @@ using BlackbirdSql.Core.Model.Interfaces;
 
 namespace BlackbirdSql.Core.Ctl.ComponentModel;
 
-public abstract class AbstractEnumConverter : EnumConverter, IDisposable
+public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IBAutomationConverter, IDisposable
 {
-	// A private 'this' object lock
+
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - AbstractEnumConverter
+	// ---------------------------------------------------------------------------------
+
+
+	public void Dispose()
+	{
+		if (_Model != null)
+		{
+			if (_IsAutomator)
+				_Model.AutomationPropertyValueChangedEvent -= OnAutomationPropertyValueChanged;
+			_Model = null;
+		}
+	}
+
+
+	#endregion Constructors / Destructors
+
+
+
+
+	// =========================================================================================================
+	#region Variables - AbstractEnumConverter
+	// =========================================================================================================
+
+
 	private readonly object _LockLocal = new object();
 
 	IBSettingsModel _Model;
@@ -27,29 +53,32 @@ public abstract class AbstractEnumConverter : EnumConverter, IDisposable
 	private PropertyInfo _PropInfo;
 
 	private IDictionary<string, int> _Dependents = null;
-	private readonly Dictionary<CultureInfo, Dictionary<string, object>> _LookupTables;
+	private readonly Dictionary<CultureInfo, Dictionary<string, object>> _LookupTables = [];
 
 
+	#endregion Variables
+
+
+
+
+
+	// =========================================================================================================
+	#region Property accessors - AbstractEnumConverter
+	// =========================================================================================================
 
 
 	private int CurrentValue => (int)_PropInfo.GetValue(_Model);
 
 
+	#endregion Property accessors
 
-	public AbstractEnumConverter(Type type) : base(type)
-	{
-		_LookupTables = [];
-	}
 
-	public void Dispose()
-	{
-		if (_Model != null)
-		{
-			if (_IsAutomator)
-				_Model.GridItemValueChangedEvent -= OnGridItemValueChanged;
-			_Model = null;
-		}
-	}
+
+
+	// =========================================================================================================
+	#region Methods - AbstractEnumConverter
+	// =========================================================================================================
+
 
 	private Dictionary<string, object> GetLookupTable(CultureInfo culture)
 	{
@@ -131,9 +160,12 @@ public abstract class AbstractEnumConverter : EnumConverter, IDisposable
 	}
 
 
-	private bool UpdateReadOnly(int oldValue, int newValue)
+	public bool UpdateReadOnly(object oldValue, object newValue)
 	{
-		if (oldValue == newValue)
+		int nOldValue = (int)oldValue;
+		int nNewValue = (int)newValue;
+
+		if (nOldValue == nNewValue)
 			return false;
 
 		bool result = false;
@@ -150,7 +182,7 @@ public abstract class AbstractEnumConverter : EnumConverter, IDisposable
 				FieldInfo fld = attr.GetType().GetField("isReadOnly",
 					BindingFlags.NonPublic | BindingFlags.Instance);
 
-				readOnly = pair.Value < 0 ? newValue == -pair.Value : newValue != pair.Value;
+				readOnly = pair.Value < 0 ? nNewValue == -pair.Value : nNewValue != pair.Value;
 
 				// Diag.Trace($"Automator {_PropertyName} with new value {newValue} updating dependent: {pair.Key} using {pair.Value} from {fld.GetValue(attr)} to {readOnly}.");
 
@@ -192,7 +224,7 @@ public abstract class AbstractEnumConverter : EnumConverter, IDisposable
 		// Diag.Trace($"Property {name} IS an automator.");
 
 		_IsAutomator = true;
-		_Model.GridItemValueChangedEvent += OnGridItemValueChanged;
+		_Model.AutomationPropertyValueChangedEvent += OnAutomationPropertyValueChanged;
 
 		// Diag.Trace($"Registering automator {_PropertyName}.");
 
@@ -214,7 +246,17 @@ public abstract class AbstractEnumConverter : EnumConverter, IDisposable
 	}
 
 
-	public void OnGridItemValueChanged(object sender, GridItemValueChangedEventArgs e)
+	#endregion Methods
+
+
+
+
+	// =========================================================================================================
+	#region Event Handling - AbstractEnumConverter
+	// =========================================================================================================
+
+
+	public void OnAutomationPropertyValueChanged(object sender, AutomationPropertyValueChangedEventArgs e)
 	{
 		if (e.ChangedItem.PropertyDescriptor.Name != _PropertyName)
 			return;
@@ -222,9 +264,14 @@ public abstract class AbstractEnumConverter : EnumConverter, IDisposable
 		e.ReadOnlyChanged = UpdateReadOnly((int)e.OldValue, (int)e.ChangedItem.Value);
 	}
 
+
+
 	public void OnModelDisposed(object sender, EventArgs e)
 	{
 		_Model = null;
 	}
+
+
+	#endregion Event Handling
 
 }

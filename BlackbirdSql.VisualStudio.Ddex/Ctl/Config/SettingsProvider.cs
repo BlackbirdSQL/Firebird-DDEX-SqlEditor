@@ -22,12 +22,18 @@ public class SettingsProvider
 	public const string SubCategoryName = "Ddex Provider";
 	public const string GeneralSettingsPageName = "General";
 	public const string DebugSettingsPageName = "Debugging";
+	public const string EquivalencySettingsPageName = "Equivalency";
 
 	[ComVisible(true)]
 	[Guid(PackageData.GeneralSettingsGuid)]
-	public class GeneralSettingsPage : AbstractSettingsPage<GeneralSettingsPage, GeneralSettingsModel> { }
+	public class GeneralSettingsPage : AbstractPersistentSettingsPage<GeneralSettingsPage, GeneralSettingsModel> { }
 
 	[ComVisible(true)]
 	[Guid(PackageData.DebugSettingsGuid)]
-	public class DebugSettingsPage : AbstractSettingsPage<DebugSettingsPage, DebugSettingsModel> { }
+	public class DebugSettingsPage : AbstractPersistentSettingsPage<DebugSettingsPage, DebugSettingsModel> { }
+
+	[ComVisible(true)]
+	[Guid(PackageData.EquivalencySettingsGuid)]
+	public class EquivalencySettingsPage : AbstractPersistentSettingsPage<EquivalencySettingsPage, EquivalencySettingsModel> { }
+
 }

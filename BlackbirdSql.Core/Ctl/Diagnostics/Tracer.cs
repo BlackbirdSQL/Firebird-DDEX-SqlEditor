@@ -174,7 +174,7 @@ internal class Tracer : IBTrace // , IBExportable
 		{
 			Trace(type, TraceEventType.Information, functionName, format, args);
 		}
-		else if (UserSettings.EnableTracer)
+		else if (PersistentSettings.EnableTracer)
 		{
 			StackFrame frame = null;
 
@@ -182,7 +182,8 @@ internal class Tracer : IBTrace // , IBExportable
 			{
 				frame = new StackTrace(i, true).GetFrame(0);
 				if (frame == null || !frame.GetFileName().EndsWith("\\Tracer.cs", StringComparison.OrdinalIgnoreCase)
-					|| frame.GetMethod().Name.ToLower() != "trace")
+					|| (frame.GetMethod().Name != "Trace" && frame.GetMethod().Name != "Warning"
+					&& frame.GetMethod().Name != "Information"))
 				{
 					break;
 				}
@@ -209,7 +210,7 @@ internal class Tracer : IBTrace // , IBExportable
 		{
 			Trace(type, traceEventTypeForTraceLevel, functionName, format, args);
 		}
-		else if (UserSettings.EnableTracer)
+		else if (PersistentSettings.EnableTracer)
 		{
 			StackFrame frame = null;
 
@@ -217,7 +218,8 @@ internal class Tracer : IBTrace // , IBExportable
 			{
 				frame = new StackTrace(i, true).GetFrame(0);
 				if (frame == null || !frame.GetFileName().EndsWith("\\Tracer.cs", StringComparison.OrdinalIgnoreCase)
-					|| frame.GetMethod().Name.ToLower() != "trace")
+					|| (frame.GetMethod().Name != "Trace" && frame.GetMethod().Name != "Warning"
+					&& frame.GetMethod().Name != "Information"))
 				{
 					break;
 				}
@@ -233,7 +235,7 @@ internal class Tracer : IBTrace // , IBExportable
 
 	private static void Trace(string type, TraceEventType eventType, string functionName, string format, params object[] args)
 	{
-		if (UserSettings.EnableTracer)
+		if (PersistentSettings.EnableTracer)
 		{
 			StackFrame frame = null;
 
@@ -241,7 +243,8 @@ internal class Tracer : IBTrace // , IBExportable
 			{
 				frame = new StackTrace(i, true).GetFrame(0);
 				if (frame == null || !frame.GetFileName().EndsWith("\\Tracer.cs", StringComparison.OrdinalIgnoreCase)
-					|| frame.GetMethod().Name.ToLower() != "trace")
+					|| (frame.GetMethod().Name != "Trace" && frame.GetMethod().Name != "Warning"
+					&& frame.GetMethod().Name != "Information"))
 				{
 					break;
 				}
@@ -298,7 +301,9 @@ internal class Tracer : IBTrace // , IBExportable
 
 	internal static bool TraceEvent(TraceEventType eventType, EnSqlTraceId traceId, string format, params object[] args)
 	{
-		return TraceEvent(eventType, traceId, HashLog.Format(CultureInfo.CurrentCulture, format, args));
+		Source.TraceEvent(eventType, (int)traceId, HashLog.Format(CultureInfo.CurrentCulture, format, args));
+		Source.Flush();
+		return true;
 	}
 
 

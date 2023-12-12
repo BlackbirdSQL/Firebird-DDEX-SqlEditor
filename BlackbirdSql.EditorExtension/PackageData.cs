@@ -34,14 +34,12 @@ static class PackageData
 	public const string ResultsGridSettingsGuid = "EC215887-72B8-428A-9CA5-6A6FF14CAAE7";
 	public const string ResultsTextSettingsGuid = "6BB319F9-DF44-4DBD-B9C4-B4E6258188BD";
 
-	public const string SqlEditorGeneralOptionsGuid = "FDE3AD9E-51F4-45FB-9706-99A470BD9C53";
-	public const string SqlEditorTabAndStatusBarOptionsGuid = "FF344DD3-79C5-4563-B45A-EE07CFA2B8F5";
-	public const string SqlExecutionAdvancedOptionsGuid = "7F2B377B-AFEA-4545-BDAC-69E5F348BE66";
-	public const string SqlExecutionAnsiOptionsGuid = "CF83838C-B3BE-49D2-9236-361133D09BAB";
-	public const string SqlExecutionGeneralOptionsGuid = "E1772E9C-9ECD-4CB6-85B4-DB411E97472A";
-	public const string SqlResultsGeneralOptionsGuid = "7B823EE3-B3CC-4423-A37E-DD250EB9233B";
-	public const string SqlResultsToGridOptionsGuid = "68ED5512-1DC7-4320-AB4D-F4D883C4DD42";
-	public const string SqlResultsToTextOptionsGuid = "71D54055-BA60-4389-AE22-FC2CCB9CF97E";
+	public const string TransientExecutionSettingsGuid = "8C719ABB-2F88-47F7-9663-0CD20FBF3757";
+	public const string TransientExecutionAdvancedSettingsGuid = "D73E05E2-3384-4CEA-85AB-D105ACB1FB6A";
+	public const string TransientResultsSettingsGuid = "1B4928F1-38D7-4DFA-8637-36BE9ACA3905";
+	public const string TransientResultsGridSettingsGuid = "C9456FF6-A97E-4F8E-9FF7-49ABFF4944B8";
+	public const string TransientResultsTextSettingsGuid = "4C3E170F-C567-442C-ABB4-559F43610AEC";
+
 
 
 	#endregion Package Guids - PackageData

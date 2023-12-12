@@ -2,30 +2,36 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Events;
-using BlackbirdSql.Core.Ctl.Extensions;
+using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.EditorExtension.Model.Config;
+using BlackbirdSql.EditorExtension.Properties;
 
-namespace BlackbirdSql.Controller.Ctl.Config;
+
+namespace BlackbirdSql.EditorExtension.Ctl.Config;
 
 // =========================================================================================================
-//										UserSettings Class
+//										PersistentSettings Class
 //
 /// <summary>
 /// Consolidated single access point for daisy-chained packages settings models (IBSettingsModel).
-/// As a rule we name descendent classes UserSettings as well. We hardcode bind the UserSettings descendent
+/// As a rule we name descendent classes PersistentSettings as well. We hardcode bind the PersistentSettings descendent
 /// tree from the top-level extension lib down to the Core. There is no point using services as this
 /// configuration is fixed. ie:
-/// VisualStudio.Ddex > Controller > [Intermediate Libs] > Core.
-/// Current intermediate libs are: EditorExtension > Common.
+/// VisualStudio.Ddex > Controller > EditorExtension > Common > Core.
 /// </summary>
 // =========================================================================================================
-public abstract class UserSettings : EditorExtension.Ctl.Config.UserSettings
+public abstract class PersistentSettings : Common.Ctl.Config.PersistentSettings
 {
 
 	// ---------------------------------------------------------------------------------
 	#region Variables
 	// ---------------------------------------------------------------------------------
+
+	// Editor GeneralSettingsModel
+	// static bool _PromptToSaveKey = false;
 
 
 	#endregion Variables
@@ -33,21 +39,13 @@ public abstract class UserSettings : EditorExtension.Ctl.Config.UserSettings
 
 
 
+
 	// =========================================================================================================
-	#region Property Accessors - UserSettings
+	#region Property Accessors - PersistentSettings
 	// =========================================================================================================
 
 
-	// Ddex GeneralSettingsModel
-	public static bool ValidateConfig => (bool)GetSetting("DdexValidateConfig", true);
-	public static bool ValidateEdmx => (bool)GetSetting("DdexValidateEdmx", true);
-
-	// Ddex DebugSettingsModel
-#if DEBUG
-	public static bool PersistentValidation => (bool)GetSetting("DdexDebugPersistentValidation", true);
-#else
-	public static bool PersistentValidation => (bool)GetSetting("DdexDebugPersistentValidation", false);
-#endif
+	// public static bool PromptToSaveKey => _PromptToSaveKey;
 
 
 	#endregion Property Accessors
@@ -57,7 +55,7 @@ public abstract class UserSettings : EditorExtension.Ctl.Config.UserSettings
 
 
 	// =========================================================================================================
-	#region Constructors / Destructors - UserSettings
+	#region Constructors / Destructors - PersistentSettings
 	// =========================================================================================================
 
 
@@ -66,7 +64,7 @@ public abstract class UserSettings : EditorExtension.Ctl.Config.UserSettings
 	/// Private singleton .ctor
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected UserSettings() : base()
+	protected PersistentSettings() : base()
 	{
 	}
 
@@ -76,7 +74,7 @@ public abstract class UserSettings : EditorExtension.Ctl.Config.UserSettings
 
 
 	// =========================================================================================================
-	#region Methods - UserSettings
+	#region Methods - PersistentSettings
 	// =========================================================================================================
 
 
@@ -85,7 +83,27 @@ public abstract class UserSettings : EditorExtension.Ctl.Config.UserSettings
 	/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
 	/// Only implemented by packages that have settings models.
 	/// </summary>
-	// public override void RegisterSettingsEventHandlers(IBUserSettings.SettingsSavedDelegate onSettingsSavedDelegate);
+	public override void RegisterSettingsEventHandlers(IBPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate)
+	{
+		// There is no base. We're the first.
+		// base.RegisterSettingsEventHandlers(onSettingsSavedDelegate);
+
+		try
+		{
+			GeneralSettingsModel.SettingsSavedEvent += new Action<GeneralSettingsModel>(onSettingsSavedDelegate);
+			ContextSettingsModel.SettingsSavedEvent += new Action<ContextSettingsModel>(onSettingsSavedDelegate);
+			TabAndStatusBarSettingsModel.SettingsSavedEvent += new Action<TabAndStatusBarSettingsModel>(onSettingsSavedDelegate);
+			ExecutionSettingsModel.SettingsSavedEvent += new Action<ExecutionSettingsModel>(onSettingsSavedDelegate);
+			ExecutionAdvancedSettingsModel.SettingsSavedEvent += new Action<ExecutionAdvancedSettingsModel>(onSettingsSavedDelegate);
+			ResultsSettingsModel.SettingsSavedEvent += new Action<ResultsSettingsModel>(onSettingsSavedDelegate);
+			ResultsGridSettingsModel.SettingsSavedEvent += new Action<ResultsGridSettingsModel>(onSettingsSavedDelegate);
+			ResultsTextSettingsModel.SettingsSavedEvent += new Action<ResultsTextSettingsModel>(onSettingsSavedDelegate);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex, Resources.ExceptionFailedToSubscribeSettingsEvents);
+		}
+	}
 
 
 	/// <summary>
@@ -96,7 +114,70 @@ public abstract class UserSettings : EditorExtension.Ctl.Config.UserSettings
 	/// PopulateSettingsEventArgs is also called on loading by the extension without
 	/// a specific model specified for a universal request for settings.
 	/// </summary>
-	// public override bool PopulateSettingsEventArgs(ref SettingsEventArgs args);
+	public override bool PopulateSettingsEventArgs(ref PropagateSettingsEventArgs e)
+	{
+		bool result = false;
+
+		// There is no base. We're the first.
+		// if (args.Package == null || args.Package != "Editor")
+		//	result = base.PopulateSettingsEventArgs(ref args);
+
+
+		if (e.Package == null || e.Package == "Editor")
+		{
+			if (e.Group == null || e.Group == "General")
+			{
+				e.AddRange(GeneralSettingsModel.Instance);
+				result = true;
+			}
+
+			if (e.Group == null || e.Group == "Context")
+			{
+				e.AddRange(ContextSettingsModel.Instance);
+				result = true;
+			}
+
+			if (e.Group == null || e.Group == "TabAndStatusBar")
+			{
+				e.AddRange(TabAndStatusBarSettingsModel.Instance);
+				result = true;
+			}
+
+			if (e.Group == null || e.Group == "Execution")
+			{
+				e.AddRange(ExecutionSettingsModel.Instance);
+				result = true;
+			}
+
+			if (e.Group == null || e.Group == "ExecutionAdvanced")
+			{
+				e.AddRange(ExecutionAdvancedSettingsModel.Instance);
+				result = true;
+			}
+
+			if (e.Group == null || e.Group == "Results")
+			{
+				e.AddRange(ResultsSettingsModel.Instance);
+				result = true;
+			}
+
+			if (e.Group == null || e.Group == "ResultsGrid")
+			{
+				e.AddRange(ResultsGridSettingsModel.Instance);
+				result = true;
+			}
+
+			if (e.Group == null || e.Group == "ResultsText")
+			{
+				e.AddRange(ResultsTextSettingsModel.Instance);
+				result = true;
+			}
+
+
+		}
+
+		return result;
+	}
 
 
 	#endregion Methods
@@ -105,7 +186,7 @@ public abstract class UserSettings : EditorExtension.Ctl.Config.UserSettings
 
 
 	// =========================================================================================================
-	#region Event handlers - UserSettings
+	#region Event handlers - PersistentSettings
 	// =========================================================================================================
 
 
@@ -114,7 +195,7 @@ public abstract class UserSettings : EditorExtension.Ctl.Config.UserSettings
 	/// Settings saved event handler - only the final descendent class implements this.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	// public abstract void OnSettingsSaved(object sender);
+	// public override void OnSettingsSaved(object sender);
 
 
 	/// <summary>

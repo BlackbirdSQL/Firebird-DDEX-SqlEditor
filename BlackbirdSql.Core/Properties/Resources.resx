@@ -219,6 +219,9 @@
   <data name="ExceptionConnectionNull" xml:space="preserve">
     <value>Connection is null</value>
   </data>
+  <data name="ExceptionEventsAlreadyEnabled" xml:space="preserve">
+    <value>Events already enabled.</value>
+  </data>
   <data name="ExceptionParameterDescriberNotFound" xml:space="preserve">
     <value>Could not locate Describer for connection parameter '{0}'.</value>
   </data>

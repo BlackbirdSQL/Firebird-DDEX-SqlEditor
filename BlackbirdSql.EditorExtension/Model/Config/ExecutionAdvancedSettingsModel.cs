@@ -18,8 +18,8 @@ namespace BlackbirdSql.EditorExtension.Model.Config;
 /// Option Model for Advanced execution options
 /// </summary>
 // =========================================================================================================
-public class ExecutionAdvancedSettingsModel(IBLiveSettings liveSettings)
-	: AbstractSettingsModel<ExecutionAdvancedSettingsModel>(C_Package, C_Group, C_LivePrefix, liveSettings)
+public class ExecutionAdvancedSettingsModel(IBTransientSettings transientSettings)
+	: AbstractSettingsModel<ExecutionAdvancedSettingsModel>(C_Package, C_Group, C_LivePrefix, transientSettings)
 {
 
 	// ---------------------------------------------------------------------------------

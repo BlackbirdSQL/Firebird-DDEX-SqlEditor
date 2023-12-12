@@ -13,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Threading;
+
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.ComponentModel;
@@ -20,14 +21,15 @@ using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
+
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
+
 
 namespace BlackbirdSql.Common.Model;
 
 [SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
 	Justification = "Class is UIThread compliant.")]
-[SuppressMessage("Usage", "VSTHRD001:Avoid legacy thread switching APIs")]
 
 // =========================================================================================================
 //									AbstractDispatcherConnection Class

@@ -126,6 +126,15 @@
   <data name="OptionCategoryEntityFramework" xml:space="preserve">
     <value>EntityFramework settings</value>
   </data>
+  <data name="OptionCategoryEquivalency" xml:space="preserve">
+    <value>Connection equivalency keys</value>
+  </data>
+  <data name="OptionCategoryEquivalencyMandatory" xml:space="preserve">
+    <value> Mandatory equivalency keys</value>
+  </data>
+  <data name="OptionCategoryEquivalencyOptional" xml:space="preserve">
+    <value>Optional equivalency keys (Requires IDE restart)</value>
+  </data>
   <data name="OptionCategoryGeneral" xml:space="preserve">
     <value> General</value>
   </data>
@@ -155,6 +164,90 @@
   </data>
   <data name="OptionDescriptionDebugSaveExtrapolatedXml" xml:space="preserve">
     <value>Saves the extrapolated IVsDataObjectSupport xml (TObjectSupport.xml), after imports, to the directory location of the diagnostics log file.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyApplicationName" xml:space="preserve">
+    <value>The name of the application making the connection.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyCharset" xml:space="preserve">
+    <value>The connection character set encoding.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyClientLibrary" xml:space="preserve">
+    <value>Client library for Firebird Embedded.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyCommandTimeout" xml:space="preserve">
+    <value>The time (in seconds) for command execution.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyCompression" xml:space="preserve">
+    <value>Enables or disables wire compression.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyConnectionLifeTime" xml:space="preserve">
+    <value>When a connection is returned to the pool, its creation time is compared with the current time, and the connection is destroyed if that time span (in seconds) exceeds the value specified by connection lifetime.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyConnectionTimeout" xml:space="preserve">
+    <value>The time (in seconds) to wait for a connection to open.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyCryptKey" xml:space="preserve">
+    <value>Key used for database decryption.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyDatabase" xml:space="preserve">
+    <value>The name of the actual database or the database to be used when a connection is open. It is normally the path to an .FDB file or an alias.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyDataSource" xml:space="preserve">
+    <value>The name of the Firebird server to which to connect.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyDbCachePages" xml:space="preserve">
+    <value>How many cache buffers to use for this session.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyDialect" xml:space="preserve">
+    <value>The database SQL dialect.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyEnlist" xml:space="preserve">
+    <value>If true, enlists the connections in the current transaction.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyFetchSize" xml:space="preserve">
+    <value>The maximum number of rows to be fetched in a single call to read into the internal row buffer.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyIsolationLevel" xml:space="preserve">
+    <value>The default Isolation Level for implicit transactions.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyMaxPoolSize" xml:space="preserve">
+    <value>The maximum number of connections allowed in the pool.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyMinPoolSize" xml:space="preserve">
+    <value>The minimun number of connections allowed in the pool.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyNoDatabaseTriggers" xml:space="preserve">
+    <value>Disables database triggers for this connection.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyNoGarbageCollect" xml:space="preserve">
+    <value>If true, disables sweeping the database upon attachment.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyPacketSize" xml:space="preserve">
+    <value>The size (in bytes) of network packets. PacketSize may be in the range 512-32767 bytes.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyParallelWorkers" xml:space="preserve">
+    <value>Enables the execution of Diagnostics calls. This option should remain enabled. Disabling does not disable Exceptions.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyPooling" xml:space="preserve">
+    <value>When true the connection is grabbed from a pool or, if necessary, created and added to the appropriate pool.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyPort" xml:space="preserve">
+    <value>Port to use for TCP/IP connections.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyReturnRecordsAffected" xml:space="preserve">
+    <value>Get the number of rows affected by a command when true.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyRole" xml:space="preserve">
+    <value>The user role.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyServerType" xml:space="preserve">
+    <value>The type of server used.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyUserID" xml:space="preserve">
+    <value>Indicates the User ID to be used when connecting to the data source.</value>
+  </data>
+  <data name="OptionDescriptionEquivalencyWireCrypt" xml:space="preserve">
+    <value>Selection for wire encryption.</value>
   </data>
   <data name="OptionDescriptionGeneralEnableDiagnostics" xml:space="preserve">
     <value>Enables the execution of Diagnostics calls. This option should remain enabled. Disabling does not disable Exceptions.</value>
@@ -209,6 +302,90 @@
   </data>
   <data name="OptionDisplayDebugPersistentValidation" xml:space="preserve">
     <value>Persistent validation flags</value>
+  </data>
+  <data name="OptionDisplayEquivalencyApplicationName" xml:space="preserve">
+    <value>Application name</value>
+  </data>
+  <data name="OptionDisplayEquivalencyCharset" xml:space="preserve">
+    <value>Character set</value>
+  </data>
+  <data name="OptionDisplayEquivalencyClientLibrary" xml:space="preserve">
+    <value>Client library</value>
+  </data>
+  <data name="OptionDisplayEquivalencyCommandTimeout" xml:space="preserve">
+    <value>Command timeout</value>
+  </data>
+  <data name="OptionDisplayEquivalencyCompression" xml:space="preserve">
+    <value>Compression</value>
+  </data>
+  <data name="OptionDisplayEquivalencyConnectionLifeTime" xml:space="preserve">
+    <value>Connection lifetime</value>
+  </data>
+  <data name="OptionDisplayEquivalencyConnectionTimeout" xml:space="preserve">
+    <value>Connection timeout</value>
+  </data>
+  <data name="OptionDisplayEquivalencyCryptKey" xml:space="preserve">
+    <value>Crypt key</value>
+  </data>
+  <data name="OptionDisplayEquivalencyDatabase" xml:space="preserve">
+    <value>Database</value>
+  </data>
+  <data name="OptionDisplayEquivalencyDataSource" xml:space="preserve">
+    <value>DataSource</value>
+  </data>
+  <data name="OptionDisplayEquivalencyDbCachePages" xml:space="preserve">
+    <value>Db cache pages</value>
+  </data>
+  <data name="OptionDisplayEquivalencyDialect" xml:space="preserve">
+    <value>Dialect</value>
+  </data>
+  <data name="OptionDisplayEquivalencyEnlist" xml:space="preserve">
+    <value>Enlist</value>
+  </data>
+  <data name="OptionDisplayEquivalencyFetchSize" xml:space="preserve">
+    <value>FetchSize</value>
+  </data>
+  <data name="OptionDisplayEquivalencyIsolationLevel" xml:space="preserve">
+    <value>IsolationLevel</value>
+  </data>
+  <data name="OptionDisplayEquivalencyMaxPoolSize" xml:space="preserve">
+    <value>MaxPoolSize</value>
+  </data>
+  <data name="OptionDisplayEquivalencyMinPoolSize" xml:space="preserve">
+    <value>MinPoolSize</value>
+  </data>
+  <data name="OptionDisplayEquivalencyNoDatabaseTriggers" xml:space="preserve">
+    <value>No triggers</value>
+  </data>
+  <data name="OptionDisplayEquivalencyNoGarbageCollect" xml:space="preserve">
+    <value>No garbage collect</value>
+  </data>
+  <data name="OptionDisplayEquivalencyPacketSize" xml:space="preserve">
+    <value>PacketSize</value>
+  </data>
+  <data name="OptionDisplayEquivalencyParallelWorkers" xml:space="preserve">
+    <value>Parallel workers</value>
+  </data>
+  <data name="OptionDisplayEquivalencyPooling" xml:space="preserve">
+    <value>Pooling</value>
+  </data>
+  <data name="OptionDisplayEquivalencyPort" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="OptionDisplayEquivalencyReturnRecordsAffected" xml:space="preserve">
+    <value>Records affected</value>
+  </data>
+  <data name="OptionDisplayEquivalencyRole" xml:space="preserve">
+    <value>Role</value>
+  </data>
+  <data name="OptionDisplayEquivalencyServerType" xml:space="preserve">
+    <value>ServerType</value>
+  </data>
+  <data name="OptionDisplayEquivalencyUserID" xml:space="preserve">
+    <value>User ID</value>
+  </data>
+  <data name="OptionDisplayEquivalencyWireCrypt" xml:space="preserve">
+    <value>Wire crypt</value>
   </data>
   <data name="OptionDisplayGeneralEnableDiagnostics" xml:space="preserve">
     <value>Enable diagnostics</value>

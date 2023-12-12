@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace BlackbirdSql.Core.Controls.Events;
 
-public class GridItemValueChangedEventArgs(GridItem changedItem, object oldValue) : EventArgs
+public class AutomationPropertyValueChangedEventArgs(GridItem changedItem, object oldValue) : EventArgs
 {
 	public GridItem ChangedItem { get; } = changedItem;
 

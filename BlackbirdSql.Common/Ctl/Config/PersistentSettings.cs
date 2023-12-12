@@ -19,40 +19,46 @@ using BlackbirdSql.Core.Model.Enums;
 namespace BlackbirdSql.Common.Ctl.Config;
 
 // =========================================================================================================
-//										UserSettings Class
+//										PersistentSettings Class
 //
 /// <summary>
 /// Consolidated single access point for daisy-chained packages settings models (IBSettingsModel).
-/// As a convention we name descendent classes UserSettings as well. We hardcode bind the UserSettings
+/// As a convention we name descendent classes PersistentSettings as well. We hardcode bind the PersistentSettings
 /// descendent tree from the top-level extension lib down to the Core. There is no point using services as
 /// this configuration is fixed. ie:
 /// VisualStudio.Ddex > Controller > EditorExtension > Common > Core.
 /// </summary>
 // =========================================================================================================
-public abstract class UserSettings : Core.Ctl.Config.UserSettings
+public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 {
-	public class CommandObject
+
+	// ---------------------------------------------------------------------------------
+	#region Sub-classes - PersistentSettings
+	// ---------------------------------------------------------------------------------
+
+
+	public class CommandObject(ResourceManager resMgr)
 	{
-		public ResourceManager ResMgr { get; }
+		public ResourceManager ResMgr { get; } = resMgr;
 		public string Name { get; set; }
-
-
-		public CommandObject(ResourceManager resMgr)
-		{
-			ResMgr = resMgr;
-		}
 	}
 
 
-	// ---------------------------------------------------------------------------------
-	#region Variables
-	// ---------------------------------------------------------------------------------
+	#endregion Sub-classes
+
+
+
+
+	// =========================================================================================================
+	#region Variables - PersistentSettings
+	// =========================================================================================================
 
 
 	// Tracking variables
 	protected static object _LockClass = new object();
 	private static bool _LayoutPropertyChanged = false;
 	private static CommandObject _CmdObject = null;
+
 
 	#endregion Variables
 
@@ -61,7 +67,7 @@ public abstract class UserSettings : Core.Ctl.Config.UserSettings
 
 
 	// =========================================================================================================
-	#region Property Accessors - UserSettings
+	#region Property Accessors - PersistentSettings
 	// =========================================================================================================
 
 
@@ -191,7 +197,7 @@ public abstract class UserSettings : Core.Ctl.Config.UserSettings
 
 
 	// =========================================================================================================
-	#region Constructors / Destructors - UserSettings
+	#region Constructors / Destructors - PersistentSettings
 	// =========================================================================================================
 
 
@@ -200,11 +206,11 @@ public abstract class UserSettings : Core.Ctl.Config.UserSettings
 	/// Private singleton .ctor
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected UserSettings() : base()
+	protected PersistentSettings() : base()
 	{
 	}
 
-	protected UserSettings(bool live) : base(live)
+	protected PersistentSettings(bool live) : base(live)
 	{
 	}
 
@@ -214,7 +220,7 @@ public abstract class UserSettings : Core.Ctl.Config.UserSettings
 
 
 	// =========================================================================================================
-	#region Methods - UserSettings
+	#region Methods - PersistentSettings
 	// =========================================================================================================
 
 
@@ -245,7 +251,7 @@ public abstract class UserSettings : Core.Ctl.Config.UserSettings
 	/// Adds the extension's SettingsSavedDelegate to a package settings models SettingsSavedEvents.
 	/// Only implemented by packages that have settings models.
 	/// </summary>
-	// public override void RegisterSettingsEventHandlers(IBUserSettings.SettingsSavedDelegate onSettingsSavedDelegate);
+	// public override void RegisterSettingsEventHandlers(IBPersistentSettings.SettingsSavedDelegate onSettingsSavedDelegate);
 
 
 	/// <summary>
@@ -265,7 +271,7 @@ public abstract class UserSettings : Core.Ctl.Config.UserSettings
 
 
 	// =========================================================================================================
-	#region Event handlers - UserSettings
+	#region Event handlers - PersistentSettings
 	// =========================================================================================================
 
 
@@ -314,18 +320,18 @@ public abstract class UserSettings : Core.Ctl.Config.UserSettings
 
 
 
-public static class UserSettingsExtensions
+public static class PersistentSettingsExtensions
 {
 	/// <summary>
-	/// Gets the SQL command string for a property that exists within the UserSettings
+	/// Gets the SQL command string for a property that exists within the PersistentSettings
 	/// hierarchy. The SQL statement is accessed from ResMgr using the property's name
 	/// as stored in LiveStore; which is the PropertyName prefixed with the LivePrefix
 	/// constant of the settings model. The default for ResMgr is
 	/// Properties\SqlResources.resx but this resource can be overriden.
 	/// </summary>
 	/// <param name="property">
-	/// The UserSettings instance property accessed directly by name or through the
-	/// UserSettings instance index accessor. This overload extension expects that
+	/// The PersistentSettings instance property accessed directly by name or through the
+	/// PersistentSettings instance index accessor. This overload extension expects that
 	/// the 'property' value passed is the result of a direct accessor get. Any
 	/// unsupported commands must either have string.Empty in the resource file or
 	/// nothing at all.
@@ -341,7 +347,7 @@ public static class UserSettingsExtensions
 	public static string SqlCmd(this object property, object value = null)
 	{
 
-		string name = UserSettings.CmdObject.Name;
+		string name = PersistentSettings.CmdObject.Name;
 		Type type = property.GetType();
 
 		if (name == null)
@@ -350,7 +356,7 @@ public static class UserSettingsExtensions
 			return string.Empty;
 		}
 
-		string cmd = UserSettings.CmdObject.ResMgr.GetString(name);
+		string cmd = PersistentSettings.CmdObject.ResMgr.GetString(name);
 
 		if (cmd == null)
 			return string.Empty;

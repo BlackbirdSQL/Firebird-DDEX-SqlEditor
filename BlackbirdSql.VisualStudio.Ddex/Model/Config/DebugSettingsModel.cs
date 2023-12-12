@@ -19,8 +19,8 @@ namespace BlackbirdSql.VisualStudio.Ddex.Model.Config;
 /// Settings Model for Debug options
 /// </summary>
 // =========================================================================================================
-public class DebugSettingsModel(IBLiveSettings liveSettings)
-	: AbstractSettingsModel<DebugSettingsModel>(C_Package, C_Group, C_LivePrefix, liveSettings)
+public class DebugSettingsModel(IBTransientSettings transientSettings)
+	: AbstractSettingsModel<DebugSettingsModel>(C_Package, C_Group, C_LivePrefix, transientSettings)
 {
 
 	// ---------------------------------------------------------------------------------

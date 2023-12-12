@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Security.Permissions;
 using BlackbirdSql.Core.Controls.Events;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Interfaces;
 using BlackbirdSql.Core.Properties;
@@ -15,7 +16,7 @@ using BlackbirdSql.Core.Properties;
 namespace BlackbirdSql.Core.Ctl.ComponentModel;
 
 [HostProtection(SecurityAction.LinkDemand, SharedState = true)]
-public abstract class AbstractBoolConverter : BooleanConverter, IDisposable
+public abstract class AbstractBoolConverter : BooleanConverter, IBAutomationConverter, IDisposable
 {
 	private IBSettingsModel _Model = null;
 	private string _PropertyName;
@@ -32,6 +33,7 @@ public abstract class AbstractBoolConverter : BooleanConverter, IDisposable
 
 	public AbstractBoolConverter()
 	{
+		// Tracer.Trace(GetType(), ".ctor");
 	}
 
 	public void Dispose()
@@ -39,7 +41,7 @@ public abstract class AbstractBoolConverter : BooleanConverter, IDisposable
 		if (_Model != null)
 		{
 			if (_IsAutomator)
-				_Model.GridItemValueChangedEvent -= OnGridItemValueChanged;
+				_Model.AutomationPropertyValueChangedEvent -= OnAutomationPropertyValueChanged;
 			_Model = null;
 		}
 	}
@@ -47,6 +49,7 @@ public abstract class AbstractBoolConverter : BooleanConverter, IDisposable
 	public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 	{
 		string text = value as string;
+
 		if (!string.IsNullOrEmpty(text))
 		{
 			if (ResMgr.GetResourceSet(culture, createIfNotExists: true, tryParents: true) != null)
@@ -67,7 +70,7 @@ public abstract class AbstractBoolConverter : BooleanConverter, IDisposable
 
 	public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 	{
-		if (value != null && value is bool bvalue)
+		if (destinationType != null && value != null && value is bool bvalue)
 		{
 			RegisterModel(context, bvalue);
 
@@ -87,15 +90,16 @@ public abstract class AbstractBoolConverter : BooleanConverter, IDisposable
 
 
 
-	private bool UpdateReadOnly(bool oldValue, bool newValue)
+	public bool UpdateReadOnly(object oldValue, object newValue)
 	{
-		if (oldValue == newValue)
+		bool bOldValue = (bool)oldValue;
+		bool bNewValue = (bool)newValue;
+
+		if (bOldValue == bNewValue)
 			return false;
 
 		bool result = false;
 		bool readOnly;
-
-		// Diag.Trace($"Automator {_PropertyName} updating dependents.");
 
 		PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(_Model);
 
@@ -108,7 +112,7 @@ public abstract class AbstractBoolConverter : BooleanConverter, IDisposable
 				FieldInfo fld = attr.GetType().GetField("isReadOnly",
 					BindingFlags.NonPublic | BindingFlags.Instance);
 
-				readOnly = pair.Value ? newValue : !newValue;
+				readOnly = pair.Value ? bNewValue : !bNewValue;
 
 				// Diag.Trace($"Automator {_PropertyName} updating dependent: {pair.Key} from {fld.GetValue(attr)} to {(pair.Value ? bvalue : !bvalue)}.");
 				if ((bool)fld.GetValue(attr) != readOnly)
@@ -142,7 +146,7 @@ public abstract class AbstractBoolConverter : BooleanConverter, IDisposable
 		}
 
 		_IsAutomator = true;
-		_Model.GridItemValueChangedEvent += OnGridItemValueChanged;
+		_Model.AutomationPropertyValueChangedEvent += OnAutomationPropertyValueChanged;
 
 		// Diag.Trace($"Registering automator {_PropertyName}.");
 
@@ -172,7 +176,7 @@ public abstract class AbstractBoolConverter : BooleanConverter, IDisposable
 		return ResMgr.GetString(LiteralFalseResource, culture);
 	}
 
-	public void OnGridItemValueChanged(object sender, GridItemValueChangedEventArgs e)
+	public void OnAutomationPropertyValueChanged(object sender, AutomationPropertyValueChangedEventArgs e)
 	{
 		if (e.ChangedItem.PropertyDescriptor.Name != _PropertyName)
 			return;

@@ -10,7 +10,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Xml.Serialization;
 using BlackbirdSql.Core.Controls.Events;
 using BlackbirdSql.Core.Ctl.CommandProviders;
@@ -26,6 +25,8 @@ using Microsoft.VisualStudio.Shell.Settings;
 using Microsoft.VisualStudio.Threading;
 using Microsoft.VisualStudio.Utilities;
 
+using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
+
 
 namespace BlackbirdSql.Core.Model.Config;
 
@@ -33,9 +34,8 @@ namespace BlackbirdSql.Core.Model.Config;
 
 public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : AbstractSettingsModel<T>
 {
-	private object _Owner = null;
 	private VerbSite _Site = null;
-	private readonly IBLiveSettings _LiveSettings = null;
+	private readonly IBTransientSettings _LiveSettings = null;
 
 	private readonly string _SettingsPackage;
 	private readonly string _SettingsGroup;
@@ -96,14 +96,6 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 
 	[Browsable(false)]
 	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-	public object Owner
-	{
-		get { return _Owner; }
-		set { _Owner = value; }
-	}
-
-	[Browsable(false)]
-	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 	public List<IBSettingsModelPropertyWrapper> PropertyWrappers
 	{
 		get
@@ -141,31 +133,20 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 	protected virtual IEnumerable<IBSettingsModelPropertyWrapper> PropertyWrappersEnumeration => PropertyWrappers.AsReadOnly();
 
 
-	private static AsyncLazy<ShellSettingsManager> SettingsManager
-	{
-		get
-		{
-			try
-			{
-				return _SettingsManager ??=
-					new AsyncLazy<ShellSettingsManager>(new Func<Task<ShellSettingsManager>>(GetSettingsManagerAsync),
-					ThreadHelper.JoinableTaskFactory);
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-				throw ex;
-			}
-		}
+	private static AsyncLazy<ShellSettingsManager> SettingsManager =>
+		_SettingsManager ??=
+			new AsyncLazy<ShellSettingsManager>(new Func<Task<ShellSettingsManager>>(GetSettingsManagerAsync),
+			ThreadHelper.JoinableTaskFactory);
 
-	}
 
 	public static event Action<T> SettingsSavedEvent;
+
 	public event AutomationVerbEventHandler SettingsResetEvent;
 	// public event IBSettingsModel.SelectedItemChangedEventHandler SelectedItemChangedEvent;
-	public event IBSettingsModel.SelectedItemFocusEventHandler GridEditBoxGotFocusEvent;
-	public event IBSettingsModel.SelectedItemFocusEventHandler GridEditBoxLostFocusEvent;
-	public event IBSettingsModel.GridItemValueChangedEventHandler GridItemValueChangedEvent;
+	public event IBSettingsModel.EditControlFocusEventHandler EditControlGotFocusEvent;
+	public event IBSettingsModel.EditControlFocusEventHandler EditControlLostFocusEvent;
+	public event IBSettingsModel.AutomationPropertyValueChangedEventHandler AutomationPropertyValueChangedEvent;
+
 	public event EventHandler BeforeLoadEvent;
 	public event EventHandler Disposed;
 
@@ -178,10 +159,10 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 		_LivePrefix = livePrefix;
 	}
 
-	protected AbstractSettingsModel(string package, string group, string livePrefix, IBLiveSettings liveSettings)
+	protected AbstractSettingsModel(string package, string group, string livePrefix, IBTransientSettings transientSettings)
 		: this(package, group, livePrefix)
 	{
-		_LiveSettings = liveSettings;
+		_LiveSettings = transientSettings;
 	}
 
 	public void Dispose()
@@ -215,9 +196,9 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 	// Summary:
 	//     Creates a new instance of the options class and loads the values from the store.
 	//     For internal use only
-	public static async Task<T> CreateAsync(IBLiveSettings liveSettings)
+	public static async Task<T> CreateAsync(IBTransientSettings transientSettings)
 	{
-		object[] args = new object[] { liveSettings };
+		object[] args = [transientSettings];
 		T instance = (T)Activator.CreateInstance(typeof(T), args);
 		await instance.LoadAsync();
 		return instance;
@@ -251,21 +232,21 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 
 
 
-	public void OnGridEditBoxGotFocus(object sender, SelectedGridItemFocusEventArgs e)
+	public void OnEditControlGotFocus(object sender, EditControlFocusEventArgs e)
 	{
-		GridEditBoxGotFocusEvent?.Invoke(sender, e);
+		EditControlGotFocusEvent?.Invoke(sender, e);
 	}
 
 
 
-	public void OnGridEditBoxLostFocus(object sender, SelectedGridItemFocusEventArgs e)
+	public void OnEditControlLostFocus(object sender, EditControlFocusEventArgs e)
 	{
-		GridEditBoxLostFocusEvent?.Invoke(sender, e);
+		EditControlLostFocusEvent?.Invoke(sender, e);
 	}
 
-	public void OnGridItemValueChanged(object sender, GridItemValueChangedEventArgs e)
+	public void OnAutomationPropertyValueChanged(object sender, AutomationPropertyValueChangedEventArgs e)
 	{
-		GridItemValueChangedEvent?.Invoke(sender, e);
+		AutomationPropertyValueChangedEvent?.Invoke(sender, e);
 	}
 
 
@@ -334,6 +315,7 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 		SettingsSavedEvent?.Invoke(liveModel);
 	}
 
+
 	protected internal virtual string SerializeValue(object value, Type type, string propertyName)
 	{
 		if (value == null)
@@ -346,6 +328,7 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 		val.Serialize(stringWriter, value);
 		return stringWriter.ToString();
 	}
+
 
 	protected internal virtual object DeserializeValue(string serializedData, Type type, string propertyName)
 	{
@@ -362,18 +345,11 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 		return new XmlSerializer(type).Deserialize(new StringReader(serializedData));
 	}
 
+
 	private static async Task<ShellSettingsManager> GetSettingsManagerAsync()
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-		try
-		{
-			return new ShellSettingsManager(ServiceProvider.GlobalProvider);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw ex;
-		}
+		return new ShellSettingsManager(ServiceProvider.GlobalProvider);
 	}
 
 	//
@@ -418,14 +394,6 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 		}
 
 		return settings;
-
-		/* Linq Readability??
-		return from p in GetType().GetProperties()
-			   where p.PropertyType.IsPublic && p.CanRead && p.CanWrite
-				&& ((visibility = (DesignerSerializationVisibilityAttribute)p.GetCustomAttribute(typeof(DesignerSerializationVisibilityAttribute))) == null
-				|| visibility.Visibility != DesignerSerializationVisibility.Hidden)
-			   select p;
-		*/
 	}
 
 	public virtual string GetPackage()
@@ -439,7 +407,7 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 	}
 
 
-	
+
 	[GlobalizedVerbText("GlobalizedDesignerVerbReset")]
 	[CommandId(CommandProperties.CommandSetGuid, (int)EnCommandSet.CmdIdResetPageOptions)]
 	public void VerbMethodReset()
