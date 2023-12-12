@@ -698,16 +698,6 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 
 		try
 		{
-			if (gridEntry == null || gridEntry.PropertyDescriptor == null || gridEntry.PropertyDescriptor.Converter == null)
-			{
-				throw new InvalidOperationException($"Aborting OnEditControlMouseDown() SelectedGridItem or SelectedGridItem.PropertyDescriptor is null.");
-			}
-
-			if (gridEntry.PropertyDescriptor.Converter is not IBAutomationConverter)
-			{
-				throw new InvalidOperationException($"Aborting OnEditControlMouseDown() Not IBAutomationConverter.");
-			}
-
 			Control gridView = GridView;
 			if (gridView == null)
 				return;
@@ -749,8 +739,9 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 		if (_Window == null)
 			return;
 
-		if (EventsDisabled)
+		if (!_ValidMouseEventCell)
 			return;
+
 
 		DisableEvents();
 
@@ -759,17 +750,8 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 		try
 		{
 			GridItem gridEntry = e.ChangedItem;
-
-			if (gridEntry == null || gridEntry.PropertyDescriptor == null
-				|| gridEntry.PropertyDescriptor.Converter == null)
-			{
-				return;
-			}
-
-			if (gridEntry.PropertyDescriptor.Converter is not IBAutomationConverter)
-				return;
-
 			evt = new(e.ChangedItem, e.OldValue);
+
 			AutomationPropertyValueChangedEvent?.Invoke(sender, evt);
 		}
 		catch (Exception ex)

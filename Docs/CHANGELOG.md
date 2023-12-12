@@ -70,3 +70,6 @@ Implemented connection naming and resolved centralized connection issues.
 Implemented configurable equivalency keys.</br>
 Resolved bug in user options when collapsing then expanding a category.
 
+#### v10.0.2.1
+Resolved bug where the readonly attribute of dependent properties were not being updated by their automator.
+

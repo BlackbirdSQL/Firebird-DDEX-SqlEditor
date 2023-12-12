@@ -174,7 +174,7 @@ public class ResultsTextSettingsModel(IBTransientSettings transientSettings)
 	[GlobalizedDescription("OptionDescriptionResultsTextDelimiter")]
 	[TypeConverter(typeof(UomConverter)), LiteralRange("Separator", 1, 1)]
 	[DefaultValue(",")]
-	[Automation("TextOutputFormat", (int)EnGlobalizedOutputFormat.Custom), ReadOnly(true)]
+	[Automation("OutputFormat", (int)EnGlobalizedOutputFormat.Custom), ReadOnly(true)]
 	public string Delimiter { get; set; } = ",";
 
 
