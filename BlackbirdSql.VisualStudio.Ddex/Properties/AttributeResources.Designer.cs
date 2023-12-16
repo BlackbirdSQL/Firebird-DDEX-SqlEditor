@@ -79,7 +79,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to EntityFramework settings.
+        ///   Looks up a localized string similar to Invariant and EntityFramework (IDE Restart).
         /// </summary>
         public static string OptionCategoryEntityFramework {
             get {
@@ -183,15 +183,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDescriptionDebugLogFile {
             get {
                 return ResourceManager.GetString("OptionDescriptionDebugLogFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enables persistent validation flags. If disabled the validation flag of solutions and projects will be repeated upon reopening if Validation is enabled. Only applicable to DEBUG builds..
-        /// </summary>
-        public static string OptionDescriptionDebugPersistentValidation {
-            get {
-                return ResourceManager.GetString("OptionDescriptionDebugPersistentValidation", resourceCulture);
             }
         }
         
@@ -484,6 +475,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enables once off validation. If disabled validation will be repeated each time a Solution is loaded. Only applicable if Invariant or Edmx validation is enabled..
+        /// </summary>
+        public static string OptionDescriptionGeneralPersistentValidation {
+            get {
+                return ResourceManager.GetString("OptionDescriptionGeneralPersistentValidation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sets the query designer diagram pane to visible when a table or view&apos;s data is initially retrieved..
         /// </summary>
         public static string OptionDescriptionGeneralShowDiagramPane {
@@ -493,7 +493,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enable this option to allow BlackbirdSql to ensure that Firebird EntityFramework is configured in your non-CPS projects&apos; App.config..
+        ///   Looks up a localized string similar to Enable this option to allow BlackbirdSql to ensure that the Firebird Client and EntityFramework are configured in your non-CPS projects&apos; App.config..
         /// </summary>
         public static string OptionDescriptionGeneralValidateConfig {
             get {
@@ -606,15 +606,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDisplayDebugLogFile {
             get {
                 return ResourceManager.GetString("OptionDisplayDebugLogFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Persistent validation flags.
-        /// </summary>
-        public static string OptionDisplayDebugPersistentValidation {
-            get {
-                return ResourceManager.GetString("OptionDisplayDebugPersistentValidation", resourceCulture);
             }
         }
         
@@ -894,6 +885,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDisplayGeneralIncludeAppConnections {
             get {
                 return ResourceManager.GetString("OptionDisplayGeneralIncludeAppConnections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Persistent validation flags.
+        /// </summary>
+        public static string OptionDisplayGeneralPersistentValidation {
+            get {
+                return ResourceManager.GetString("OptionDisplayGeneralPersistentValidation", resourceCulture);
             }
         }
         

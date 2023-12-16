@@ -26,12 +26,12 @@
 
 	<ItemGroup>
 		<Compile Include="Controls\Config\AbstractCurrentWndOptionsDlg.cs" />
+		<Compile Include="Controls\Config\CurrentWndOptionsDlg.cs" />
 		<Compile Include="Model\Config\ContextSettingsModel.cs" />
 		<None Include="..\BlackbirdSql.VisualStudio.Ddex\BlackbirdSqlDdexExtension.vsct" Link="BlackbirdSqlDdexExtension.vsct" />
 		<None Include="Properties\BlackbirdSql.EditorExtension.snk" />
 		<Compile Include="Controls\ComponentModel\AdvancedFolderNameEditor.cs" />
 		<None Include="Controls\ComponentModel\NumericUpDownPropertyEditor.cs" />
-		<Compile Include="Controls\Config\CurrentWndOptionsDlg.cs" />
 		<Compile Include="Model\Config\ExecutionAdvancedSettingsModel.cs" />
 		<Compile Include="Model\Config\ResultsGridSettingsModel.cs" />
 		<Compile Include="Model\Config\ResultsTextSettingsModel.cs" />
@@ -69,9 +69,7 @@
 			<DependentUpon>Resources.resx</DependentUpon>
 		</Compile>
 		<Resource Include="..\BlackbirdSql.VisualStudio.Ddex\VSPackage.resx" Link="VSPackage.resx" />
-		<EmbeddedResource Include="Controls\Config\AbstractCurrentWndOptionsDlg.resx">
-		  <SubType>Designer</SubType>
-		</EmbeddedResource>
+		<EmbeddedResource Include="Controls\Config\AbstractCurrentWndOptionsDlg.resx" />
 		<EmbeddedResource Include="Properties\AttributeResources.resx">
 		  <Generator>ResXFileCodeGenerator</Generator>
 		  <LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>

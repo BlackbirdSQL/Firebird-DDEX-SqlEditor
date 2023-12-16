@@ -12,18 +12,14 @@ using BlackbirdSql.Common.Properties;
 
 namespace BlackbirdSql.Common.Controls
 {
-	public class SqlEditorTabbedEditorUI : TabbedEditorUI
+	public class SqlEditorTabbedEditorUI(AbstractTabbedEditorPane tabbedEditorPane, Guid toolbarGuid, uint toolbarId)
+		: TabbedEditorUI(tabbedEditorPane, toolbarGuid, toolbarId)
 	{
 		private StatusStrip _StatusBar;
 
 		public QEStatusBarManager StatusBarManager { get; private set; }
 
 		public StatusStrip StatusBar => _StatusBar;
-
-		public SqlEditorTabbedEditorUI(AbstractTabbedEditorPane tabbedEditorPane, Guid toolbarGuid, uint toolbarId)
-			: base(tabbedEditorPane, toolbarGuid, toolbarId)
-		{
-		}
 
 		protected override void AddCustomControlsToPanel(Panel panel)
 		{

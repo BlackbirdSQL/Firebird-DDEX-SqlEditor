@@ -156,7 +156,8 @@ public class ColumnInfo : IBColumnInfo
 			_ProviderSpecificDataTypeName = reader.GetProviderSpecificDataTypeName(colIndex);
 			_FieldType = reader.GetFieldType(colIndex);
 
-			if (_IsBytesField && _ProviderSpecificDataTypeName.ToLowerInvariant() == "system.string")
+			if (_IsBytesField && _ProviderSpecificDataTypeName != null
+				&& _ProviderSpecificDataTypeName.ToLowerInvariant() == "system.string")
 			{
 				_IsBytesField = false;
 				_IsCharsField = true;
@@ -231,17 +232,19 @@ public class ColumnInfo : IBColumnInfo
 				break;
 			case "varbinary":
 			case "rowversion":
-			case "timestamp":
-			case "timestamptz":
-			case "timestamptzex":
-			case "timetz":
-			case "timetzex":
 				_IsBytesField = true;
 				if (MaxLength == int.MaxValue)
 				{
 					_IsBlobField = true;
 				}
 
+				break;
+			case "timestamp":
+			case "timestamptz":
+			case "timestamptzex":
+			case "timetz":
+			case "timetzex":
+				_IsCharsField = true;
 				break;
 			case "sql_variant":
 				_IsSqlVariant = true;
@@ -254,17 +257,15 @@ public class ColumnInfo : IBColumnInfo
 					_IsBytesField = true;
 					_IsBlobField = true;
 				}
-
 				break;
 		}
 
-		if (_IsBytesField && providerSpecificDataTypeName != null)
+
+		if (_IsBytesField && providerSpecificDataTypeName != null
+			&& providerSpecificDataTypeName == "system.string")
 		{
-			if (providerSpecificDataTypeName == "system.string")
-			{
-				_IsBytesField = false;
-				_IsCharsField = true;
-			}
+			_IsBytesField = false;
+			_IsCharsField = true;
 		}
 	}
 }

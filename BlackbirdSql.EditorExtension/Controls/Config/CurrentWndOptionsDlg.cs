@@ -1,11 +1,8 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ToolsOptions.CurrentWndOptions
 
-using System;
 using System.Windows.Forms;
-using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls.Interfaces;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.EditorExtension.Ctl.Config;
 using BlackbirdSql.EditorExtension.Properties;
@@ -27,17 +24,15 @@ public sealed class CurrentWndOptionsDlg : AbstractCurrentWndOptionsDlg
 
 	private void InitializeDialog(IBTransientSettings transientSettings)
 	{
-		IBSettingsPage[] pages = new IBSettingsPage[5];
+		IBSettingsPage[] pages = new IBSettingsPage[4];
 		SettingsProvider.TransientExecutionSettingsPage executionSettingsDlg = new(transientSettings);
 		pages[0] = executionSettingsDlg;
 		SettingsProvider.TransientExecutionAdvancedSettingsPage executionAdvancedSettingsDlg = new(transientSettings);
 		pages[1] = executionAdvancedSettingsDlg;
-		SettingsProvider.TransientResultsSettingsPage resultsSettingsDlg = new(transientSettings);
-		pages[2] = resultsSettingsDlg;
 		SettingsProvider.TransientResultsGridSettingsPage resultsGridSettingsDlg = new(transientSettings);
-		pages[3] = resultsGridSettingsDlg;
+		pages[2] = resultsGridSettingsDlg;
 		SettingsProvider.TransientResultsTextSettingsPage resultsTextSettingsDlg = new(transientSettings);
-		pages[4] = resultsTextSettingsDlg;
+		pages[3] = resultsTextSettingsDlg;
 
 
 		TreeNode[] rootNode = 
@@ -74,27 +69,20 @@ public sealed class CurrentWndOptionsDlg : AbstractCurrentWndOptionsDlg
 				
 		rootNode[1].Expand();
 		AssociateTreeNodeContext(rootNode[1], new TreeNodeContext(2, folder: true));
-		TreeNode treeNode10 = new(AttributeResources.OptionPageResultsGeneral)
+		TreeNode treeNode10 = new(AttributeResources.OptionPageResultsGrid)
 		{
 			ImageIndex = _LeafImageIndex,
 			SelectedImageIndex = _LeafSelectedImageIndex
 		};
 		AssociateTreeNodeContext(treeNode10, new TreeNodeContext(2, folder: false));
-		TreeNode treeNode11 = new(AttributeResources.OptionPageResultsGrid)
+		TreeNode treeNode11 = new(AttributeResources.OptionPageResultsText)
 		{
 			ImageIndex = _LeafImageIndex,
 			SelectedImageIndex = _LeafSelectedImageIndex
 		};
 		AssociateTreeNodeContext(treeNode11, new TreeNodeContext(3, folder: false));
-		TreeNode treeNode12 = new(AttributeResources.OptionPageResultsText)
-		{
-			ImageIndex = _LeafImageIndex,
-			SelectedImageIndex = _LeafSelectedImageIndex
-		};
-		AssociateTreeNodeContext(treeNode12, new TreeNodeContext(4, folder: false));
 		rootNode[1].Nodes.Add(treeNode10);
 		rootNode[1].Nodes.Add(treeNode11);
-		rootNode[1].Nodes.Add(treeNode12);
 
 		SetControls(pages);
 		AddTreeNodes(rootNode, treeNode00);

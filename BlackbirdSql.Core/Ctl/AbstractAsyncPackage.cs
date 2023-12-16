@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
 using BlackbirdSql.Core.Ctl.Interfaces;
 
 using EnvDTE;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -24,10 +26,14 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	protected IBPackageController _Controller;
 	private IDisposable _DisposableWaitCursor;
 	protected DTE _Dte = null;
-	protected IVsSolution _DteSolution = null;
+	protected IVsSolution _VsSolution = null;
 	protected IVsRunningDocumentTable _DocTable = null;
 	protected System.Reflection.Assembly _InvariantAssembly = null;
 	protected bool _InvariantResolved = false;
+	protected bool _Initialized = false;
+
+	protected IBAsyncPackage.LoadSolutionOptionsDelegate _OnLoadSolutionOptionsEvent;
+	protected IBAsyncPackage.SaveSolutionOptionsDelegate _OnSaveSolutionOptionsEvent;
 
 
 	#endregion Variables
@@ -108,21 +114,25 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	/// Accessor to the current <see cref="IVsSolution"/> instance.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public virtual IVsSolution DteSolution
+	public virtual IVsSolution VsSolution
 	{
 		get
 		{
-			_DteSolution ??= GetSolution();
-
-			// If it's null there's an issue. Possibly we've come in too early
-			if (_DteSolution == null)
+			if (_VsSolution == null)
 			{
-				NullReferenceException ex = new("SVsSolution is null");
-				Diag.Dug(ex);
+				if (GetService(typeof(SVsSolution)) is not IVsSolution service)
+					Diag.ServiceUnavailable(typeof(IVsSolution));
+				else
+					_VsSolution = service;
+
+				// If it's null there's an issue. Possibly we've come in too early
+				if (_VsSolution == null)
+				{
+					NullReferenceException ex = new("SVsSolution is null");
+					Diag.Dug(ex);
+				}
 			}
-
-			return _DteSolution;
-
+			return _VsSolution;
 		}
 	}
 
@@ -152,6 +162,25 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public virtual IAsyncServiceContainer ServiceContainer => this;
+
+
+	/// <summary>
+	/// Accessor to the <see cref="Package.OnLoadOptions"/> event.
+	/// </summary>
+	event IBAsyncPackage.LoadSolutionOptionsDelegate IBAsyncPackage.OnLoadSolutionOptionsEvent
+	{
+		add { _OnLoadSolutionOptionsEvent += value; }
+		remove { _OnLoadSolutionOptionsEvent -= value; }
+	}
+
+	/// <summary>
+	/// Accessor to the <see cref="Package.OnLoadOptions"/> event.
+	/// </summary>
+	event IBAsyncPackage.SaveSolutionOptionsDelegate IBAsyncPackage.OnSaveSolutionOptionsEvent
+	{
+		add { _OnSaveSolutionOptionsEvent += value; }
+		remove { _OnSaveSolutionOptionsEvent -= value; }
+	}
 
 
 	#endregion Property accessors
@@ -282,6 +311,8 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	public virtual Task<object> ServicesCreatorCallbackAsync(IAsyncServiceContainer container,
 		CancellationToken token, Type serviceType) => Task.FromResult<object>(null);
 
+	delegate void LoadSolutionOptionsDelegate(Stream stream);
+	delegate void SaveSolutionOptionsDelegate(Stream stream);
 
 
 	#endregion Method Implementations
@@ -317,24 +348,6 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 			Diag.Dug(ex);
 			return null;
 		}
-	}
-
-
-
-	private IVsSolution GetSolution()
-	{
-		try
-		{
-			if (GetService(typeof(SVsSolution)) is not IVsSolution service)
-				throw new ServiceUnavailableException(typeof(IVsSolution));
-			return service;
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return null;
-		}
-
 	}
 
 

@@ -187,6 +187,13 @@ public abstract class PersistentSettings : IBPersistentSettings
 	public static bool ShowDiagramPane => (bool)GetSetting("DdexGeneralShowDiagramPane", true);
 
 
+	// Ddex GeneralSettingsModel
+	public static bool PersistentValidation => (bool)GetSetting("DdexGeneralPersistentValidation", true);
+	public static bool ValidateConfig => (bool)GetSetting("DdexGeneralValidateConfig", true);
+	public static bool ValidateEdmx => (bool)GetSetting("DdexGeneralValidateEdmx", true);
+
+
+
 	#endregion Property Accessors
 
 
@@ -322,7 +329,7 @@ public abstract class PersistentSettings : IBPersistentSettings
 	/// extension package and passed down through the chain of dll's to the Core.
 	/// A dll will update settings relevant to itself from here.
 	/// IOW these are push notifications of any settings loaded or saved throughout the
-	/// extension.
+	/// extension and an opportunity to update any live settings.
 	/// </summary>
 	public virtual void PropagateSettings(PropagateSettingsEventArgs e)
 	{

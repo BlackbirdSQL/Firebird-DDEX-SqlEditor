@@ -5,12 +5,16 @@
 
 using System;
 using System.Windows.Forms;
+using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Enums;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell.Interop;
 
 
 namespace BlackbirdSql.Common.Ctl.Commands;
@@ -34,12 +38,14 @@ public class SqlEditorQuerySettingsCommand(IBSqlEditorWindowPane editorWindow)
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
 		AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
-		if (auxDocData != null)
-		{
-			IBEditorPackage editorPackage = (IBEditorPackage)Controller.DdexPackage;
-			editorPackage.ShowExecutionSettingsDialogFrame(auxDocData, FormStartPosition.CenterParent);
-		}
+		if (auxDocData == null)
+			return VSConstants.S_OK;
 
+		EnSqlOutputMode mode = auxDocData.QryMgr.LiveSettings.EditorResultsOutputMode;
+
+		IBEditorPackage editorPackage = (IBEditorPackage)Controller.DdexPackage;
+
+		editorPackage.ShowExecutionSettingsDialogFrame(auxDocData, FormStartPosition.CenterParent);
 
 		return VSConstants.S_OK;
 	}

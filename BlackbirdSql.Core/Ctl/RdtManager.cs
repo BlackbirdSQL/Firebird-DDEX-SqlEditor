@@ -13,7 +13,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
-using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Properties;
@@ -908,7 +907,7 @@ public sealed class RdtManager : IDisposable
 			int num = runningDocumentTable.QueryCloseRunningDocument(fullFileName, out foundAndClosed);
 			if (num != VSConstants.OLE_E_PROMPTSAVECANCELLED)
 			{
-				Native.WrapComCall(num, Array.Empty<int>());
+				Native.WrapComCall(num, []);
 			}
 		}
 	}

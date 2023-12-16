@@ -3,11 +3,10 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 
 
@@ -32,9 +31,6 @@ namespace BlackbirdSql.Controller;
 // =========================================================================================================
 internal class PackageController : AbstractPackageController
 {
-
-
-	public override IBGlobalsAgent Uig => GlobalsAgent.Instance;
 
 	// =========================================================================================================
 	#region Constructors / Destructors - PackageController
@@ -65,6 +61,15 @@ internal class PackageController : AbstractPackageController
 	}
 
 
+	public override void Dispose()
+	{
+		DdexPackage.OnLoadSolutionOptionsEvent -= OnLoadSolutionOptions;
+		DdexPackage.OnSaveSolutionOptionsEvent -= OnSaveSolutionOptions;
+
+		base.Dispose();
+	}
+
+
 	#endregion Constructors / Destructors
 
 
@@ -81,19 +86,33 @@ internal class PackageController : AbstractPackageController
 	/// Enables solution and running document table event handling
 	/// </summary>
 	// ---------------------------------------------------------------------------------
+	[SuppressMessage("Usage", "VSTHRD102:Implement internal logic asynchronously")]
 	public override void AdviseEvents()
 	{
 		if (_EventsAdvised)
 			return;
 
+		_EventsAdvised = true;
+
+		DdexPackage.OnLoadSolutionOptionsEvent += OnLoadSolutionOptions;
+		DdexPackage.OnSaveSolutionOptionsEvent += OnSaveSolutionOptions;
+
 		if (!ThreadHelper.CheckAccess())
 		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
+			ThreadHelper.JoinableTaskFactory.Run(async delegate
+			{
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+				AdviseEventsImpl();
+			});
+
+			return;
 		}
 
-		_EventsAdvised = true;
+		AdviseEventsImpl();
+	}
+
+	private void AdviseEventsImpl()
+	{ 
 
 		// Sanity check. Disable events if enabled
 		UnadviseEvents(false);
@@ -107,9 +126,8 @@ internal class PackageController : AbstractPackageController
 		// those, because they cannot work with newer versions of EntityFramework.Firebird.
 		// (This validation can be disabled in Visual Studio's options.)
 
-
 		// Enable solution event capture
-		DteSolution.AdviseSolutionEvents(this, out _HSolutionEvents);
+		VsSolution.AdviseSolutionEvents(this, out _HSolutionEvents);
 
 		try
 		{

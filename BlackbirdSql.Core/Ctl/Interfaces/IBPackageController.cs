@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using BlackbirdSql.Core.Model.Enums;
@@ -26,6 +27,8 @@ public interface IBPackageController : IVsSolutionEvents3, /* IVsSolutionEvents2
 
 	// Solution Event Delegates
 	delegate int AfterOpenProjectDelegate(IVsHierarchy pHierarchy, int fAdded);
+	delegate void LoadSolutionOptionsDelegate(Stream stream);
+	delegate void SaveSolutionOptionsDelegate(Stream stream);
 	delegate int AfterCloseSolutionDelegate(object pUnkReserved);
 	delegate int QueryCloseProjectDelegate(IVsHierarchy hierarchy, int removing, ref int cancel);
 	delegate int QueryCloseSolutionDelegate(object pUnkReserved, ref int pfCancel);
@@ -43,6 +46,10 @@ public interface IBPackageController : IVsSolutionEvents3, /* IVsSolutionEvents2
 
 	// Solution events
 	event AfterOpenProjectDelegate OnAfterOpenProjectEvent;
+
+	event LoadSolutionOptionsDelegate OnLoadSolutionOptionsEvent;
+	event SaveSolutionOptionsDelegate OnSaveSolutionOptionsEvent;
+
 	event AfterCloseSolutionDelegate OnAfterCloseSolutionEvent;
 	event QueryCloseProjectDelegate OnQueryCloseProjectEvent;
 	event QueryCloseSolutionDelegate OnQueryCloseSolutionEvent;
@@ -69,7 +76,7 @@ public interface IBPackageController : IVsSolutionEvents3, /* IVsSolutionEvents2
 
 	DTE Dte { get; }
 
-	IVsSolution DteSolution { get; }
+	IVsSolution VsSolution { get; }
 
 	public bool IsToolboxInitialized { get; }
 
@@ -89,13 +96,8 @@ public interface IBPackageController : IVsSolutionEvents3, /* IVsSolutionEvents2
 
 	IAsyncServiceContainer Services { get; }
 
-	Globals SolutionGlobals { get; }
 
 	uint ToolboxCmdUICookie { get; }
-
-	IBGlobalsAgent Uig { get; }
-
-
 
 	object LockGlobal { get; }
 

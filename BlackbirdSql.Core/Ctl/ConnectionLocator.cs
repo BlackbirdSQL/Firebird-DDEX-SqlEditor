@@ -116,7 +116,7 @@ public abstract class ConnectionLocator
 	}
 
 
-	private static IVsSolution DteSolution => Controller.Instance.DteSolution;
+	private static IVsSolution VsSolution => Controller.Instance.VsSolution;
 
 
 	private static IDictionary<string, string> RegisteredServerNames =>
@@ -920,7 +920,7 @@ public abstract class ConnectionLocator
 		{
 			// Diag.Trace("Recursive validate project: " + project.Name);
 
-			if (IsValidExecutableProjectType(DteSolution, project))
+			if (IsValidExecutableProjectType(VsSolution, project))
 			{
 
 				// VSProject projectObject = project.Object as VSProject;

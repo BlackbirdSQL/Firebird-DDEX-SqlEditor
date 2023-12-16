@@ -1,6 +1,7 @@
 ﻿
 
 using System;
+using System.IO;
 using BlackbirdSql.Core.Ctl.Events;
 using EnvDTE;
 
@@ -12,56 +13,30 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace BlackbirdSql.Core.Ctl.Interfaces;
 
 
-public interface IBGlobalsAgent
+public interface IBGlobalsAgent : IDisposable
 {
 
-	DTE Dte { get; }
+	bool IsConfiguredDbProviderStatus { get; }
+	bool IsConfiguredEFStatus { get; }
+	bool IsScannedStatus { get; set; }
+	bool IsUpdatedEdmxsStatus { get; set; }
+	bool IsValidatedStatus { get; }
+	bool IsValidStatus { get; set; }
+	bool IsValidatedDbProviderStatus { set; }
+	bool IsValidatedEFStatus { set; }
 
-	IBPackageController Controller { get; }
 
-	IBAsyncPackage DdexPackage { get; }
-
-	string GlobalsKey { get; }
-
-	bool ValidateConfig { get; }
-
-	bool PersistentValidation { get; }
-
-	bool ValidateEdmx { get; }
 
 	bool IsValidateFailedStatus { get; set; }
+	int Value { get; set; }
+	bool VariableExists { get; }
 
 
+	bool Flush();
+	bool Flush(Stream stream);
 
-	bool SetIsValidStatus(Globals globals, bool valid);
-
-	bool SetIsScannedStatus(Project project);
-
-	bool SetIsValidatedDbProviderStatus(Project project);
-
-	bool SetIsValidatedEFStatus(Project project);
-
-	bool SetIsUpdatedEdmxsStatus(Project project);
 
 	bool ClearValidateStatus();
-
-	bool ClearPersistentFlag(Globals globals, string key);
-
-	bool IsValidatedStatus(Globals globals);
-
-	bool IsValidExecutableProjectType(IVsSolution solution, Project project);
-
-	bool IsValidStatus(Globals globals);
-
-	bool IsScannedStatus(Project project);
-
-	bool IsConfiguredDbProviderStatus(Project project);
-
-	bool IsConfiguredEFStatus(Project project);
-
-	bool IsUpdatedEdmxsStatus(Project project);
-
-	bool SetFlagStatus(Globals globals, int flag, bool enabled, int flag2 = 0, bool enabled2 = false);
 
 }
 

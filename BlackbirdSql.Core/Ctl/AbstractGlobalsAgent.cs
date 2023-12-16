@@ -1,92 +1,35 @@
-﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
-// $Authors = GA Christos (greg@blackbirdsql.org)
-
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
-
+﻿using System;
+using System.IO;
+using System.Text;
+using System.Xml;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
-
-using EnvDTE;
-
-using Microsoft;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 
 
 namespace BlackbirdSql.Core.Ctl;
-
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
 
 // =========================================================================================================
 //											AbstractGlobalsAgent Class
 //
 /// <summary>
-/// Manages Globals and propagates Visual Studio Options events. This is the base class of GlobalsAgent.
+/// Replacement for solution and project globals using .sou and .user storage
+/// for a single integer value. The abstract definition deals with reading and writing to the solution
+/// stream and .user xml files.
 /// </summary>
 // =========================================================================================================
-internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
+public abstract class AbstractGlobalsAgent : IBGlobalsAgent
 {
 
-
-	// =========================================================================================================
+	// ---------------------------------------------------------------------------------
 	#region Constants - AbstractGlobalsAgent
-	// =========================================================================================================
+	// ---------------------------------------------------------------------------------
 
 
 	/// <summary>
-	/// This key is the globals persistent key. When running in debug mode
-	/// with PersistentValidation set to false any test solutions opened will have their persistent keys cleared
+	/// This key is the globals persistent key for the solution stream and .user xml
+	/// UserProperties node attribute.
 	/// </summary>
-	protected const string C_PersistentKey = "GlobalBlackbirdPersistent";
-
-	/// <summary>
-	/// This key is the globals non-persistent key.
-	/// </summary>
-	protected const string C_TransitoryKey = "GlobalBlackbirdTransitory";
-
-	/// <summary>
-	/// For Projects: has been validated as a valid project type (Once it's been validated it's always been
-	/// validated)
-	/// For Solutions: has been loaded and in a validation state if <see cref="G_Valid"/> is false else
-	/// validated
-	/// </summary>
-	const int G_Validated = 1;
-	/// <summary>
-	/// For Projects: Validated project is a valid executable C#/VB app (Project type). (Once [in]valid always
-	/// [in]valid)
-	/// For Solutions: Off: Solution has been loaded and is in a validation state. On: Validated
-	/// (Only applicable if <see cref="G_Validated"/> is set)
-	/// </summary>	
-	const int G_Valid = 2;
-	/// <summary>
-	/// The app.config and all edmxs for a project have been scanned and configured if required. (Once
-	/// successfully scanned always scanned)
-	/// </summary>
-	const int G_Scanned = 4;
-	/// <summary>
-	/// The app.config has the client system.data/DbProviderFactory configured and is good to go. (Once
-	/// successfully configured always configured)
-	/// </summary>
-	const int G_DbProviderConfigured = 8;
-	/// <summary>
-	/// The app.config has the EntityFramework provider services and connection factory configured and is
-	/// good to go. (Once successfully configured always configured)
-	/// </summary>
-	const int G_EFConfigured = 16;
-	/// <summary>
-	/// Existing legacy edmx's have been updated and are good to go. (Once all successfully updated always
-	/// updated)
-	/// </summary>
-	const int G_EdmxsUpdated = 32;
-	/// <summary>
-	///  If at any point in solution projects' validation there was a fail, this is set to true on the
-	///  solution and the solution Globals is reset to zero.
-	///  Validation on failed solution entities will resume the next time the solution is loaded.
-	/// </summary>
-	const int G_ValidateFailed = 64;
+	public const string C_PersistentKey = "GlobalBlackbirdPersistent";
 
 
 	#endregion Constants
@@ -94,19 +37,22 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 
 
 
-
 	// =========================================================================================================
-	#region Private Variables - AbstractGlobalsAgent
+	#region Variables - AbstractGlobalsAgent
 	// =========================================================================================================
 
-	protected static IBGlobalsAgent _Instance;
 
-	private IBPackageController _Controller = null;
+	protected static IBGlobalsAgent _SolutionGlobals = null;
+	protected static bool _PersistentValidation;
+	protected static bool _ValidateConfig;
+	protected static bool _ValidateEdmx;
 
-	private IBAsyncPackage _DdexPackage = null;
+	private readonly string _ProjectPath = null;
+	private int? _Value;
+	private int? _StoredValue;
 
 
-	#endregion
+	#endregion Variables
 
 
 
@@ -116,87 +62,44 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	// =========================================================================================================
 
 
-	public DTE Dte => Controller.Dte;
-
-
-	public IBPackageController Controller => _Controller ??= Core.Controller.Instance;
-
-	public IBAsyncPackage DdexPackage => _DdexPackage ??= Core.Controller.DdexPackage;
-
+	public abstract bool IsValidateFailedStatus { get; set; }
+	public abstract bool IsConfiguredDbProviderStatus { get; }
+	public abstract bool IsConfiguredEFStatus { get; }
+	public abstract bool IsScannedStatus { get; set; }
+	public abstract bool IsUpdatedEdmxsStatus { get; set; }
+	public abstract bool IsValidatedStatus { get; }
+	public abstract bool IsValidStatus { get; set; }
+	public abstract bool IsValidatedDbProviderStatus { set; }
+	public abstract bool IsValidatedEFStatus { set; }
 
 
 	/// <summary>
-	/// The project and solution globals validation key. A single int32 using binary bitwise for the
-	/// different status settings.
-	/// If the PersistentValidation is true the persistent key will be used.
+	/// The current validation Globals flags status of a Solution or Project
+	/// as defined under Constants in GlobalsAgent.
 	/// </summary>
-#if DEBUG
-	public virtual string GlobalsKey => C_TransitoryKey; // For non-persistent
-#else
-	public virtual string GlobalsKey => C_PersistentKey; // For persistent
-#endif
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Returns a boolean indicating whether or not the app.config may be validated
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public abstract bool ValidateConfig { get; }
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Returns a boolean indicating whether or not validation flags are persistent.
-	/// Validation flags are always persistent in Release builds.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public abstract bool PersistentValidation { get; }
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Returns a boolean indicating whether or not edmx files may be validated
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public abstract bool ValidateEdmx { get; }
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Get's or sets whether at any point a solution validation failed
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public bool IsValidateFailedStatus
+	public int Value
 	{
 		get
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
-
-			return GetFlagStatus(Dte.Solution.Globals, G_ValidateFailed);
+			if (!_Value.HasValue)
+				return 0;
+			return _Value.Value;
 		}
-
 		set
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
-
-			SetFlagStatus(Dte.Solution.Globals, G_ValidateFailed, value);
+			_Value = value;
 		}
+
 	}
 
 
-	#endregion Property accessors
+	/// <summary>
+	/// Shortcut for checking if the global has a value.
+	/// </summary>
+	public bool VariableExists => _Value.HasValue;
 
+
+	#endregion Property accessors
 
 
 
@@ -208,52 +111,84 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// AbstractGlobalsAgent .ctor
+	/// Project Globals .ctor.
 	/// </summary>
+	/// <param name="projectFilePath">Full file path including project type extension</param>
 	// ---------------------------------------------------------------------------------
-	protected AbstractGlobalsAgent()
+	public AbstractGlobalsAgent(string projectFilePath)
 	{
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Gets the Singleton GlobalsAgent instance
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static IBGlobalsAgent Instance
-	{
-		get
+		// project.Properties.Item("FullPath").Value, project.Properties.Item("FileName").Value
+		_ProjectPath = projectFilePath != null ? (projectFilePath + ".user") : null;
+		try
 		{
-			return GetInstance();
+			ReadProjectGlobal();
 		}
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Gets the existing Singleton GlobalsAgent instance
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static IBGlobalsAgent GetInstance()
-	{
-		// return ((IBGlobalsAgent)null).GetInstance();
-		if (_Instance == null)
+		catch (Exception ex)
 		{
-			NullReferenceException ex = new("Attempt to access uninitialized VsGlobalAgent instance");
 			Diag.Dug(ex);
-			throw ex;
+			throw;
 		}
-
-		return _Instance;
 	}
 
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Solution Globals .ctor.
+	/// </summary>
+	/// <param name="solution">The <see cref="EnvDTE.DTE.Solution"/> object</param>
+	/// <param name="stream">The stream from <see cref="Package.OnLoadOptions" event./></param>
+	// ---------------------------------------------------------------------------------
+	public AbstractGlobalsAgent(Stream stream, bool persistentValidation,
+		bool validateConfig, bool validateEdmx)
+	{
+		_PersistentValidation = persistentValidation;
+		_ValidateConfig = validateConfig;
+		_ValidateEdmx = validateEdmx;
+
+		try
+		{
+			long len = stream.Length;
+
+			if (len > 10)
+				len = 20;
+
+			byte[] buffer = new byte[len];
+
+			if (len > 0)
+			{
+				len = stream.Read(buffer, 0, (int)len);
+
+				if (len > 0)
+				{
+					if (!_PersistentValidation)
+					{
+						Tracer.Warning(GetType(), "AbstractGlobalsAgent(Stream)", "A validation status Global was found for the Solution but was not used because Persistent validation is disabled. Value: {0}", Encoding.Default.GetString(buffer));
+						_StoredValue = Convert.ToInt32(Encoding.Default.GetString(buffer));
+					}
+					else
+					{
+						_Value = _StoredValue = Convert.ToInt32(Encoding.Default.GetString(buffer));
+					}
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Destructor.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public abstract void Dispose();
 
 
 	#endregion Constructors / Destructors
-
 
 
 
@@ -263,533 +198,308 @@ internal abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	// =========================================================================================================
 
 
+	public abstract bool ClearValidateStatus();
+
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// For solutions: Sets a status indicator tagging it as previously validated or
-	/// validated and valid.
-	/// For projects: Sets a status indicator tagging it as previously validated for
-	/// it's validity as a valid C#/VB executable.
+	/// Flushes a project Globals to the .user file.
 	/// </summary>
-	/// <param name="globals"></param>
-	/// <param name="valid"></param>
-	/// <returns>True if the operation was successful else False</returns>
 	// ---------------------------------------------------------------------------------
-	public bool SetIsValidStatus(Globals globals, bool valid)
+	public bool Flush()
 	{
-		return SetFlagStatus(globals, G_Validated, true, G_Valid, valid);
+		return WriteProjectGlobal();
 	}
 
 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Sets a status indicator tagging a project as having been scanned and it's
-	/// app.config and edmxs validated.
+	/// Flushes a solution Globals to the solution stream.
 	/// </summary>
-	/// <param name="project"></param>
-	/// <returns>True if the operation was successful else False</returns>
 	// ---------------------------------------------------------------------------------
-	public bool SetIsScannedStatus(Project project)
+	public bool Flush(Stream stream)
 	{
-		if (!ThreadHelper.CheckAccess())
+		if (!_PersistentValidation || !_Value.HasValue || _Value == 0 || (!_ValidateConfig && !_ValidateEdmx))
 		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
+			// Tracer.Trace(GetType(), "Flush(Stream)", "Clearing solution Globals. Previous value: {0}.", _StoredValue ?? -1);
+			return false;
 		}
 
-		return SetFlagStatus(project.Globals, G_Scanned, true);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Sets status indicator tagging a project's app.config as having been validated
-	/// for the DBProvider
-	/// </summary>
-	/// <param name="project"></param>
-	/// <param name="valid"></param>
-	/// <returns>True if the operation was successful else False</returns>
-	// ---------------------------------------------------------------------------------
-	public bool SetIsValidatedDbProviderStatus(Project project)
-	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
-
-		return SetFlagStatus(project.Globals, G_DbProviderConfigured, true);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Sets status indicator tagging a project's app.config as having been validated
-	/// for EF.
-	/// By definition the app.config will also have been validated for 
-	/// </summary>
-	/// <param name="project"></param>
-	/// <param name="valid"></param>
-	/// <returns>True if the operation was successful else False</returns>
-	// ---------------------------------------------------------------------------------
-	public bool SetIsValidatedEFStatus(Project project)
-	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
-
-		return SetFlagStatus(project.Globals, G_EFConfigured, true, G_DbProviderConfigured, true);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Sets non-persistent status indicator tagging a project's existing edmx's as
-	/// having been validated/upgraded from legacy provider settings.
-	/// </summary>
-	/// <param name="project"></param>
-	/// <param name="valid"></param>
-	/// <returns>True if the operation was successful else False</returns>
-	// ---------------------------------------------------------------------------------
-	public bool SetIsUpdatedEdmxsStatus(Project project)
-	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
-		return SetFlagStatus(project.Globals, G_EdmxsUpdated, true);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Clears the status indicator of a solution.
-	/// </summary>
-	/// <param name="solution"></param>
-	/// <returns>True if the operation was successful else False</returns>
-	// ---------------------------------------------------------------------------------
-	public bool ClearValidateStatus()
-	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		// Tracer.Trace(GetType(), "Flush(Stream)", "Setting solution Globals to {0}.", _Value.Value);
 
 		try
 		{
-			if (Dte.Solution.Globals == null)
-			{
-				Diag.Stack(Dte.Solution.FullName + ": Solution.Globals is null");
+			byte[] buffer = Encoding.Default.GetBytes(_Value.Value.ToString());
+
+			stream.Write(buffer, 0, buffer.Length);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+
+		return true;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Reads and updates a project Globals from the .user file.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private bool ReadProjectGlobal()
+	{
+		if (_ProjectPath == null)
+		{
+			// Tracer.Trace(GetType(), "ReadProjectGlobal()", "Exiting. Project path is null.");
+			return false;
+		}
+
+
+		if (!File.Exists(_ProjectPath))
+		{
+			// Tracer.Trace(GetType(), "ReadProjectGlobal()", "Exiting. Project file not found: {0}.", _ProjectPath);
+			return false;
+		}
+
+
+		XmlDocument xmlDoc = new XmlDocument();
+		xmlDoc.Load(_ProjectPath);
+
+		XmlNode xmlRoot = xmlDoc.DocumentElement;
+		XmlNamespaceManager xmlNs = new XmlNamespaceManager(xmlDoc.NameTable);
+
+		if (!xmlNs.HasNamespace("bbxmlns"))
+			xmlNs.AddNamespace("bbxmlns", xmlRoot.NamespaceURI);
+
+
+		XmlNode xmlNode;
+		XmlNode xmlParent = xmlRoot.SelectSingleNode("//bbxmlns:ProjectExtensions", xmlNs);
+
+		if (xmlParent == null)
+		{
+			// Tracer.Trace(GetType(), "ReadProjectGlobal()", "Exiting. Node ProjectExtensions not found for project: {0}.", _ProjectPath);
+			return false;
+		}
+
+
+		xmlNode = xmlParent.SelectSingleNode("bbxmlns:VisualStudio", xmlNs);
+
+		if (xmlNode == null)
+		{
+			// Tracer.Trace(GetType(), "ReadProjectGlobal()", "Exiting. Node VisualStudio not found for project: {0}.", _ProjectPath);
+			return false;
+		}
+
+		xmlParent = xmlNode;
+
+
+		xmlNode = xmlParent.SelectSingleNode("bbxmlns:UserProperties", xmlNs);
+
+		if (xmlNode == null)
+		{
+			// Tracer.Trace(GetType(), "ReadProjectGlobal()", "Exiting. Node UserProperties not found for project: {0}.", _ProjectPath);
+			return false;
+		}
+
+
+		XmlAttribute xmlAttr = xmlNode.Attributes[C_PersistentKey];
+
+		if (xmlAttr == null)
+		{
+			// Tracer.Trace(GetType(), "ReadProjectGlobal()", "Exiting. Attribute {0} not found for project: {1}.", C_PersistentKey, _ProjectPath);
+			return false;
+		}
+
+		int value = Convert.ToInt32(xmlAttr.Value);
+
+
+
+		if (!_PersistentValidation)
+		{
+			// Tracer.Warning(GetType(), "ReadProjectGlobal()", "A validation status Global was found for project {0} but was not used because Persistent validation is disabled. Value: {1}", _ProjectPath, value);
+			_StoredValue = value;
+			return true;
+		}
+
+		_Value = _StoredValue = value;
+
+		return true;
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Writes a project Globals to the .user file.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private bool WriteProjectGlobal()
+	{
+		if (_ProjectPath == null)
+			return false;
+
+		bool save = false;
+		bool remove = false;
+		int value = _Value ?? 0;
+		int storedValue = _StoredValue ?? 0;
+
+		// For settings...
+		// _PersistentValidation applies here.
+		// if disabled and the value exists we must remove it
+		// else exit.
+
+
+		if (!_PersistentValidation)
+		{
+			// If not persistent
+			remove = _StoredValue.HasValue;
+		}
+		else if (value == 0)
+		{
+			// We don't store 0.
+			remove = _StoredValue.HasValue;
+		}
+		else if (value != storedValue)
+		{
+			save = true;
+		}
+
+
+		// No action so exit.
+		if (!save && !remove)
+		{
+			// Tracer.Trace(GetType(), "WriteProjectGlobal()", "No action for Project: {0}.", _ProjectPath);
+			return false;
+		}
+
+		if (remove)
+		{
+			// Tracer.Trace(GetType(), "WriteProjectGlobal()", "Clearing value {0} from Project: {1}.", _StoredValue.Value, _ProjectPath);
+		}
+		else
+		{
+			// Tracer.Trace(GetType(), "WriteProjectGlobal()", "Writing value {0} to Project: {1}.", _Value.Value, _ProjectPath);
+		}
+
+		if (!File.Exists(_ProjectPath))
+		{
+			// Not saving and nothing to remove so no need to create, so just exit.
+			if (!save || remove)
 				return false;
-			}
 
-			if (!Dte.Solution.Globals.get_VariableExists(GlobalsKey))
-			{
-				return true;
-			}
-
-			Dte.Solution.Globals[GlobalsKey] = 0.ToString();
-			Dte.Solution.Globals.set_VariablePersists(GlobalsKey, PersistentValidation);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
+			// If we're here the only action left is save, so we create the full content and exit.
+			string text = @"<?xml version=""1.0"" encoding=""utf-8""?>
+<Project ToolsVersion=""Current"" xmlns=""http://schemas.microsoft.com/developer/msbuild/2003"">
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties GlobalBlackbirdPersistent=""{0}"" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>";
 
 
-		return true;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Clears the the persistent flag of a globals.
-	/// </summary>
-	/// <param name="globals"></param>
-	/// <param name="key"></param>
-	/// <returns>True if the operation was successful else False</returns>
-	// ---------------------------------------------------------------------------------
-	public bool ClearPersistentFlag(Globals globals, string key)
-	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
-
-		try
-		{
-			if (!globals.get_VariableExists(key))
-				return true;
-
-			globals.set_VariablePersists(key, false);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
-
-
-		return true;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Verifies whether or not a solution is in a validation state (or previously
-	/// validated) or a project has been validated as being valid or not.
-	/// </summary>
-	/// <param name="globals"></param>
-	/// <returns></returns>
-	// ---------------------------------------------------------------------------------
-	public bool IsValidatedStatus(Globals globals)
-	{
-		if (globals == null)
+			StreamWriter sw = File.CreateText(_ProjectPath);
+			sw.Write(string.Format(text, _Value));
+			sw.Close();
 			return true;
-#if DEBUG
-		if (!PersistentValidation)
-			ClearPersistentFlag(globals, C_PersistentKey);
-#endif
-		return GetFlagStatus(globals, G_Validated);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Checks wether the project is a valid executable output type that requires
-	/// configuration of the app.config
-	/// </summary>
-	/// <param name="project"></param>
-	/// <returns>
-	/// True if the project is a valid C#/VB executable project else false.
-	/// </returns>
-	/// <remarks>
-	/// We're not going to worry about anything but C# and VB non=CSP projects
-	/// </remarks>
-	// ---------------------------------------------------------------------------------
-	public bool IsValidExecutableProjectType(IVsSolution solution, Project project)
-	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
 		}
 
-		if (IsValidatedStatus(project.Globals))
-			return IsValidStatus(project.Globals);
+		XmlDocument xmlDoc = new XmlDocument();
 
-		// We're only supporting C# and VB projects for this - a dict list is at the end of this class
-		if (project.Kind != "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
-			&& project.Kind != "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}")
+		xmlDoc.Load(_ProjectPath);
+
+		XmlNode xmlRoot = xmlDoc.DocumentElement;
+		XmlNamespaceManager xmlNs = new XmlNamespaceManager(xmlDoc.NameTable);
+
+
+		if (!xmlNs.HasNamespace("bbxmlns"))
+			xmlNs.AddNamespace("bbxmlns", xmlRoot.NamespaceURI);
+
+		XmlNode xmlNode;
+		XmlNode xmlParent = xmlRoot.SelectSingleNode("//bbxmlns:ProjectExtensions", xmlNs);
+
+		if (xmlParent == null)
 		{
-			SetIsValidStatus(project.Globals, false);
-			return false;
+			// Not saving and nothing to remove so no need to create, so just exit.
+			if (!save || remove)
+				return false;
+
+			// If we're here the only action left is save, so we create the node.
+			xmlNode = xmlDoc.CreateNode(XmlNodeType.Element, "ProjectExtensions", xmlRoot.NamespaceURI);
+			xmlParent = xmlRoot.AppendChild(xmlNode);
 		}
 
-		bool result = false;
+		xmlNode = xmlParent.SelectSingleNode("bbxmlns:VisualStudio", xmlNs);
 
-
-		// Don't process CPS projects
-		solution.GetProjectOfUniqueName(project.UniqueName, out IVsHierarchy hierarchy);
-
-
-		if (!IsCpsProject(hierarchy))
+		if (xmlNode == null)
 		{
-			int outputType = int.MaxValue;
+			// Not saving and nothing to remove so no need to create, so just exit.
+			if (!save || remove)
+				return false;
 
-			if (project.Properties != null && project.Properties.Count > 0)
+			// If we're here the only action left is save, so we create the node.
+			xmlNode = xmlDoc.CreateNode(XmlNodeType.Element, "VisualStudio", xmlRoot.NamespaceURI);
+			xmlNode = xmlParent.AppendChild(xmlNode);
+		}
+
+		xmlParent = xmlNode;
+
+		xmlNode = xmlParent.SelectSingleNode("bbxmlns:UserProperties", xmlNs);
+
+		if (xmlNode == null)
+		{
+			// Not saving and nothing to remove so no need to create, so just exit.
+			if (!save || remove)
+				return false;
+
+			// If we're here the only action left is save, so we create the node.
+			xmlNode = xmlDoc.CreateNode(XmlNodeType.Element, "UserProperties", xmlRoot.NamespaceURI);
+			xmlNode = xmlParent.AppendChild(xmlNode);
+		}
+
+
+		XmlAttribute xmlAttr = xmlNode.Attributes[C_PersistentKey];
+
+		if (xmlAttr == null)
+		{
+			// Not saving and nothing to remove so no need to create, so just exit.
+			if (!save || remove)
+				return false;
+		}
+
+		if (remove)
+		{
+			// If we're here the attribute must exist, so remove.
+			xmlNode.Attributes.Remove(xmlAttr);
+		}
+		else
+		{
+			// remove and save are mutually exclusive so we must be saving.
+			if (xmlAttr == null)
 			{
-				Property property = project.Properties.Item("OutputType");
-				if (property != null)
-					outputType = (int)property.Value;
+				// Create the attribute
+				xmlAttr = xmlDoc.CreateAttribute(C_PersistentKey);
+				xmlAttr.Value = _Value.ToString();
+				xmlNode.Attributes.Append(xmlAttr);
 			}
-
-
-			if (outputType < 2)
-				result = true;
-		}
-
-		SetIsValidStatus(project.Globals, result);
-
-		return result;
-
-	}
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Identifies whether or not a project is a CPS project
-	/// </summary>
-	/// <param name="hierarchy"></param>
-	/// <returns>true if project is CPS</returns>
-	// ---------------------------------------------------------------------------------
-	internal static bool IsCpsProject(IVsHierarchy hierarchy)
-	{
-		Requires.NotNull(hierarchy, "hierarchy");
-		return hierarchy.IsCapabilityMatch("CPS");
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Verifies whether or not a solution has been validated or a project is a valid
-	/// C#/VB executable. See remarks.
-	/// </summary>
-	/// <param name="globals"></param>
-	/// <returns></returns>
-	/// <remarks>
-	/// Callers must call IsValidatedProjectStatus() before checking if a project is
-	/// valid otherwise this indicator will be meaningless
-	/// </remarks>
-	// ---------------------------------------------------------------------------------
-	public bool IsValidStatus(Globals globals)
-	{
-		if (globals == null)
-			return true;
-		return GetFlagStatus(globals, G_Valid);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Verifies whether or not a project has been scanned and it's app.config and edmxs
-	/// validated.
-	/// </summary>
-	/// <param name="project"></param>
-	/// <returns></returns>
-	// ---------------------------------------------------------------------------------
-	public bool IsScannedStatus(Project project)
-	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
-
-		return GetFlagStatus(project.Globals, G_Scanned);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Verifies whether or not a project's App.config was validated for
-	/// FirebirdSql.Data.FirebirdClient
-	/// </summary>
-	/// <param name="project"></param>
-	/// <returns></returns>
-	// ---------------------------------------------------------------------------------
-	public bool IsConfiguredDbProviderStatus(Project project)
-	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
-
-		return GetFlagStatus(project.Globals, G_DbProviderConfigured);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Verifies whether or not a project's App.config was validated for
-	/// EntityFramework.Firebird
-	/// </summary>
-	/// <param name="project"></param>
-	/// <returns></returns>
-	// ---------------------------------------------------------------------------------
-	public bool IsConfiguredEFStatus(Project project)
-	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
-
-		return GetFlagStatus(project.Globals, G_EFConfigured);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Verifies whether or not a project's existing edmx models were updated from
-	/// using legacy data providers to current.
-	/// Firebird Client and EntityFramework providers.
-	/// </summary>
-	/// <param name="project"></param>
-	/// <returns></returns>
-	// ---------------------------------------------------------------------------------
-	public bool IsUpdatedEdmxsStatus(Project project)
-	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
-
-		return GetFlagStatus(project.Globals, G_EdmxsUpdated);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Sets a Globals indicator flag.
-	/// </summary>
-	/// <param name="globals"></param>
-	/// <param name="flag"></param>
-	/// <param name="enabled"></param>
-	/// <param name="flag2"></param>
-	/// <param name="enabled2"></param>
-	/// <returns>True if the operation was successful else False</returns>
-	// ---------------------------------------------------------------------------------
-	public bool SetFlagStatus(Globals globals, int flag, bool enabled, int flag2 = 0, bool enabled2 = false)
-	{
-		bool exists = false;
-		int value = 0;
-		string str;
-
-		try
-		{
-			if (globals == null)
-			{
-				ArgumentNullException ex = new("Globals is null");
-				Diag.Dug(ex);
-				throw ex;
-			}
-
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
-
-
-			if (globals.get_VariableExists(GlobalsKey))
-			{
-				str = (string)globals[GlobalsKey];
-				value = str == "" ? 0 : int.Parse(str);
-				exists = true;
-			}
-
-			if (exists && (value & flag) != 0 == enabled)
-			{
-				if (flag2 == 0 || (value & flag2) != 0 == enabled2)
-				{
-					return true;
-				}
-			}
-
-			if (enabled)
-				value |= flag;
 			else
-				value &= ~flag;
-
-			if (flag2 != 0)
 			{
-				if (enabled2)
-					value |= flag2;
-				else
-					value &= ~flag2;
+				// Update the existing attribute.
+				xmlAttr.Value = _Value.ToString();
 			}
-
-
-			globals[GlobalsKey] = value.ToString();
-
-			if (!exists && PersistentValidation)
-				globals.set_VariablePersists(GlobalsKey, PersistentValidation);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
 		}
 
+		xmlDoc.Save(_ProjectPath);
 
 		return true;
-	}
 
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Retrieves an indicator flag's status
-	/// </summary>
-	/// <param name="globals"></param>
-	/// <param name="flag"></param>
-	/// <returns></returns>
-	// ---------------------------------------------------------------------------------
-	protected bool GetFlagStatus(Globals globals, int flag)
-	{
-		int value;
-		string str;
-
-		try
-		{
-			if (globals == null)
-			{
-				ArgumentNullException ex = new("Globals is null");
-				Diag.Dug(ex);
-				throw ex;
-			}
-
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
-
-			if (globals.get_VariableExists(GlobalsKey))
-			{
-				str = (string)globals[GlobalsKey];
-				value = str == "" ? 0 : int.Parse(str);
-
-				return (value & flag) != 0;
-			}
-
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
-
-		return false;
 	}
 
 
 	#endregion Methods
-
 
 }

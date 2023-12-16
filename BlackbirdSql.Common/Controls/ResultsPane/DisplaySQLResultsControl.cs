@@ -14,7 +14,6 @@ using System.Windows.Forms;
 // using BlackbirdSql.Common.Controls.Graphing.Enums;
 // using BlackbirdSql.Common.Controls.Graphing.Interfaces;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Ctl.Config;
 using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
@@ -215,7 +214,8 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 	{
 		get
 		{
-			if (AuxDocData.SqlOutputMode != EnSqlOutputMode.ToText && AuxDocData.SqlOutputMode != EnSqlOutputMode.ToFile || !AuxDocData.LiveSettings.EditorResultsTextOutputQuery)
+			if ((AuxDocData.SqlOutputMode != EnSqlOutputMode.ToText && AuxDocData.SqlOutputMode != EnSqlOutputMode.ToFile)
+				|| !AuxDocData.LiveSettings.EditorResultsTextOutputQuery)
 			{
 				if (AuxDocData.SqlOutputMode == EnSqlOutputMode.ToGrid)
 				{

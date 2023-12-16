@@ -90,6 +90,13 @@ public class GeneralSettingsModel(IBTransientSettings transientSettings)
 	public bool EnableTaskLog { get; set; } = true;
 
 	[GlobalizedCategory("OptionCategoryEntityFramework")]
+	[GlobalizedDisplayName("OptionDisplayGeneralPersistentValidation")]
+	[GlobalizedDescription("OptionDescriptionGeneralPersistentValidation")]
+	[TypeConverter(typeof(GlobalBoolConverter))]
+	[DefaultValue(true)]
+	public bool PersistentValidation { get; set; } = true;
+
+	[GlobalizedCategory("OptionCategoryEntityFramework")]
 	[GlobalizedDisplayName("OptionDisplayGeneralValidateConfig")]
 	[GlobalizedDescription("OptionDescriptionGeneralValidateConfig")]
 	[TypeConverter(typeof(GlobalYesNoConverter))]

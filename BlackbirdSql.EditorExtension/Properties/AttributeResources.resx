@@ -616,7 +616,7 @@
     <value>The maximum number of characters for an XML data column.</value>
   </data>
   <data name="OptionDescriptionResultsGridOutputQuery" xml:space="preserve">
-    <value>Include the query script in grid result sets.</value>
+    <value>Include the query script in grid result sets. The SQL script will appear in the messages pane.</value>
   </data>
   <data name="OptionDescriptionResultsGridSaveIncludeHeaders" xml:space="preserve">
     <value>Include column headers when copying or saving a grid result set.</value>
@@ -655,7 +655,7 @@
     <value>The output format of text based results</value>
   </data>
   <data name="OptionDescriptionResultsTextOutputQuery" xml:space="preserve">
-    <value>Include the query script in text result sets.</value>
+    <value>Include the query script in result sets. For console results the SQL script will output to the message pane otherwise it is prefixed to saved results.</value>
   </data>
   <data name="OptionDescriptionResultsTextScrollingResults" xml:space="preserve">
     <value>Interactively scroll results as text results are received.</value>
@@ -793,7 +793,7 @@
     <value>XML data</value>
   </data>
   <data name="OptionDisplayResultsGridOutputQuery" xml:space="preserve">
-    <value>Include query script</value>
+    <value>Include SQL in result set</value>
   </data>
   <data name="OptionDisplayResultsGridSaveIncludeHeaders" xml:space="preserve">
     <value>Save with column headers</value>
@@ -832,7 +832,7 @@
     <value> Output format</value>
   </data>
   <data name="OptionDisplayResultsTextOutputQuery" xml:space="preserve">
-    <value>Include query script in results</value>
+    <value>Include SQL in result set</value>
   </data>
   <data name="OptionDisplayResultsTextScrollingResults" xml:space="preserve">
     <value>Interactively scroll received text</value>

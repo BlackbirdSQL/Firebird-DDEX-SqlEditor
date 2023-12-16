@@ -9,6 +9,8 @@ using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Data.Services;
+using static BlackbirdSql.Core.Ctl.Interfaces.IBPackageController;
+using System.IO;
 
 namespace BlackbirdSql.Core.Ctl.Interfaces;
 
@@ -25,7 +27,7 @@ public interface IBAsyncPackage
 
 	DTE Dte { get; }
 
-	IVsSolution DteSolution { get; }
+	IVsSolution VsSolution { get; }
 
 
 	IBEventsManager EventsManager { get; }
@@ -35,6 +37,12 @@ public interface IBAsyncPackage
 	Microsoft.VisualStudio.OLE.Interop.IServiceProvider OleServiceProvider { get; }
 
 	IAsyncServiceContainer ServiceContainer { get; }
+
+	delegate void LoadSolutionOptionsDelegate(Stream stream);
+	delegate void SaveSolutionOptionsDelegate(Stream stream);
+
+	event LoadSolutionOptionsDelegate OnLoadSolutionOptionsEvent;
+	event SaveSolutionOptionsDelegate OnSaveSolutionOptionsEvent;
 
 
 

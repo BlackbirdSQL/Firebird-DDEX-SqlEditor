@@ -4,11 +4,13 @@
 
 using System;
 using System.Data.Common;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
 using BlackbirdSql.Controller;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Events;
@@ -71,6 +73,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 
 // We start loading as soon as the VS shell is available.
 [ProvideAutoLoad(PackageData.ShellInitializedContextRuleGuid, PackageAutoLoadFlags.BackgroundLoad)]
+[ProvideAutoLoad(PackageData.SolutionExistsContextRuleGuid, PackageAutoLoadFlags.BackgroundLoad)]
 
 // Not used
 // [ProvideMenuResource(1000, 1)] TBC
@@ -121,6 +124,14 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 	#region Property accessors - BlackbirdSqlDdexExtension
 	// =========================================================================================================
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Accessor to the <see cref="IBPackageController"/> singleton instance
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public override IBPackageController Controller => _Controller
+		??= PackageController.CreateInstance(this);
+
 	private PersistentSettings ExtensionSettings => (PersistentSettings)PersistentSettings.Instance;
 
 	#endregion Property accessors
@@ -141,6 +152,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 	// ---------------------------------------------------------------------------------
 	public BlackbirdSqlDdexExtension() : base()
 	{
+		AddOptionKey(GlobalsAgent.C_PersistentKey);
 	}
 
 
@@ -221,6 +233,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 	{
 		await base.InitializeAsync(cancellationToken, progress);
 
+
 		// Moved to main thread
 		// Services.AddService(typeof(IBProviderObjectFactory), ServicesCreatorCallbackAsync, promote: true);
 
@@ -234,8 +247,8 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 			{
 				if (args.Name == _InvariantAssembly.FullName)
 				{
-					if (!_InvariantResolved)
-						Tracer.Information(GetType(), "InitializeAsync()", "Invariant assembly resolved: {0}.", _InvariantAssembly.FullName);
+					// if (!_InvariantResolved)
+					// 	Tracer.Information(GetType(), "InitializeAsync()", "Invariant assembly resolved: {0}.", _InvariantAssembly.FullName);
 					_InvariantResolved = true;
 					return _InvariantAssembly;
 				}
@@ -271,21 +284,18 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 			return;
 
 		// Load all packages settings models and propogate throughout the extension.
-		PropagateSettingsEventArgs e = new();
 
-		ExtensionSettings.PopulateSettingsEventArgs(ref e);
-		ExtensionSettings.PropagateSettings(e);
-		ExtensionSettings.RegisterSettingsEventHandlers(ExtensionSettings.OnSettingsSaved);
+		PropagateSettings();
 
 		// Add provider object and schema factories
 		ServiceContainer.AddService(typeof(IBProviderObjectFactory), ServicesCreatorCallbackAsync, promote: true);
 		ServiceContainer.AddService(typeof(IBProviderSchemaFactory), ServicesCreatorCallbackAsync, promote: true);
 		ServiceContainer.AddService(typeof(IVsDataConnectionDialog), ServicesCreatorCallbackAsync, promote: true);
 
-
 		_ = AdviseEventsAsync();
 
 		await base.FinalizeAsync(cancellationToken, progress);
+
 
 		// Descendents have completed their final async initialization now we perform ours.
 
@@ -361,18 +371,15 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 	// =========================================================================================================
 
 
-
-
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Enables solution and running document table event handling
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private async Task AdviseEventsAsync()
+	private void AdviseEvents()
 	{
-		await JoinableTaskFactory.SwitchToMainThreadAsync(DisposalToken);
-
+		if (_Initialized)
+			return;
 
 		try
 		{
@@ -380,7 +387,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 				throw new NullReferenceException(Resources.ExceptionDteIsNull);
 
 			// If it's null there's an issue. Possibly we've come in too early
-			if (DteSolution == null)
+			if (VsSolution == null)
 				throw new NullReferenceException(Resources.ExceptionSVsSolutionIsNull);
 
 			if (DocTable == null)
@@ -395,7 +402,41 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 			throw;
 		}
 
+		_Initialized = true;
+
 		Controller.AdviseEvents();
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Enables solution and running document table event handling
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private async Task AdviseEventsAsync()
+	{
+		if (_Initialized)
+			return;
+
+		await JoinableTaskFactory.SwitchToMainThreadAsync(DisposalToken);
+
+
+		AdviseEvents();
+	}
+
+
+
+	private void PropagateSettings()
+	{
+		if (_Initialized)
+			return;
+
+		PropagateSettingsEventArgs e = new();
+
+		ExtensionSettings.PopulateSettingsEventArgs(ref e);
+		ExtensionSettings.PropagateSettings(e);
+		ExtensionSettings.RegisterSettingsEventHandlers(ExtensionSettings.OnSettingsSaved);
 	}
 
 
@@ -407,6 +448,28 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 	// =========================================================================================================
 	#region Event handlers - BlackbirdSqlDdexExtension
 	// =========================================================================================================
+
+
+	protected override void OnLoadOptions(string key, Stream stream)
+	{
+		// If this is called early we have to initialize synchronously.
+		PropagateSettings();
+		AdviseEvents();
+
+		if (key == GlobalsAgent.C_PersistentKey)
+			_OnLoadSolutionOptionsEvent?.Invoke(stream);
+		else
+			base.OnLoadOptions(key, stream);
+	}
+
+
+	protected override void OnSaveOptions(string key, Stream stream)
+	{
+		if (key == GlobalsAgent.C_PersistentKey)
+			_OnSaveSolutionOptionsEvent?.Invoke(stream);
+		else
+			base.OnSaveOptions(key, stream);
+	}
 
 
 	#endregion Event handlers

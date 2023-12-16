@@ -62,7 +62,7 @@ public static class CommonUtils
 			x = (short)xPos,
 			y = (short)yPos
 		};
-		obj.ShowContextMenu(VS.dwReserved, ref rclsidActive, menuId, new POINTS[1] { pOINTS }, commandTarget);
+		obj.ShowContextMenu(VS.dwReserved, ref rclsidActive, menuId, [pOINTS], commandTarget);
 	}
 
 

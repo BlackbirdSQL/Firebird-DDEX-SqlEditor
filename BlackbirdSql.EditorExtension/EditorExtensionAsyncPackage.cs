@@ -732,7 +732,6 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 		if (qryMgr == null)
 			return DialogResult.Abort;
 
-
 		using (CurrentWndOptionsDlg dlg = new(qryMgr.LiveSettings))
 		{
 			dlg.StartPosition = startPosition;

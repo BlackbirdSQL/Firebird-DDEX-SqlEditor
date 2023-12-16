@@ -11,7 +11,6 @@ using System.Windows.Forms;
 
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Events;
-using BlackbirdSql.Common.Ctl.Structs;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Enums;
@@ -243,7 +242,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 				CreateHandle();
 			}
 
-			_ = Task.Run(() => ScrollTextViewToMaxScrollUnitAsync());
+			_ = Task.Run(ScrollTextViewToMaxScrollUnitAsync);
 		}
 
 

@@ -12,16 +12,12 @@ using Microsoft.VisualStudio.OLE.Interop;
 // namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration
 namespace BlackbirdSql.EditorExtension.Ctl
 {
-	public sealed class SqlEditorToolbarCommandHandler<T> : IBTabbedEditorToolbarCommandHandler where T : AbstractSqlEditorCommand, new()
+	public sealed class SqlEditorToolbarCommandHandler<T>(Guid clsidCmdSet, uint cmdId)
+		: IBTabbedEditorToolbarCommandHandler where T : AbstractSqlEditorCommand, new()
 	{
-		private readonly GuidId _GuidId;
+		private readonly GuidId _GuidId = new GuidId(clsidCmdSet, cmdId);
 
 		public GuidId GuidId => _GuidId;
-
-		public SqlEditorToolbarCommandHandler(Guid clsidCmdSet, uint cmdId)
-		{
-			_GuidId = new GuidId(clsidCmdSet, cmdId);
-		}
 
 		public int HandleQueryStatus(AbstractTabbedEditorPane editorPane, ref OLECMD prgCmd, IntPtr pCmdText)
 		{

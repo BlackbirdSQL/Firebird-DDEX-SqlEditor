@@ -369,7 +369,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 			}
 			Native.ThrowOnFailure(obj.GetExternalFilesProject(out IVsProject ppProject));
 			VSADDRESULT[] pResult = new VSADDRESULT[1];
-			Native.ThrowOnFailure(ppProject.AddItem(4294967294u, VSADDITEMOPERATION.VSADDITEMOP_CLONEFILE, pszItemName, 1u, new string[1] { text }, IntPtr.Zero, pResult));
+			Native.ThrowOnFailure(ppProject.AddItem(VSConstants.VSITEMID.Root, VSADDITEMOPERATION.VSADDITEMOP_CLONEFILE, pszItemName, 1u, new string[1] { text }, IntPtr.Zero, pResult));
 			if (Package.GetGlobalService(typeof(IVsMonitorSelection)) is not IVsMonitorSelection)
 			{
 				Exception ex2 = new InvalidOperationException();

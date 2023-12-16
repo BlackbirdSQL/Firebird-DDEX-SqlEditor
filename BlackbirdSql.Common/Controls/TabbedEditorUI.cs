@@ -147,6 +147,8 @@ public class TabbedEditorUI : Control, IServiceProvider
 	public Collection<AbstractEditorTab> Tabs => _Tabs ??= new EditorTabCollection(this);
 
 
+	public ToolbarHost ToolbarHost => _ToolbarHost;
+
 
 	public IWin32Window TopPanel
 	{

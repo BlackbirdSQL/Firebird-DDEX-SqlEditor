@@ -22,18 +22,9 @@ namespace BlackbirdSql.Core.Ctl.Interfaces;
 public interface IBEventsManager : IBTaskHandlerClient, IDisposable
 {
 
-	string UserDataDirectory { get; }
 	IBPackageController Controller { get; }
 	IBAsyncPackage DdexPackage { get; }
-	DTE Dte { get; }
-	IVsSolution DteSolution { get; }
 	IVsMonitorSelection SelectionMonitor { get; }
-	Globals SolutionGlobals { get; }
-	IBGlobalsAgent Uig { get; }
-
-
-
-
 
 
 	/// <summary>

@@ -32,22 +32,8 @@ public abstract class AbstractEventsManager(IBPackageController controller) : IB
 
 
 	// ---------------------------------------------------------------------------------
-	#region Constructors / Destructors - AbstractEventsManager
+	#region Other Constructors / Destructors - AbstractEventsManager
 	// ---------------------------------------------------------------------------------
-
-
-	/// <summary>
-	/// Placeholder for final instance descendent class CreateInstance
-	/// </summary>
-	public static AbstractEventsManager CreateInstance(IBPackageController controller)
-	{
-		// Format
-		// return _Instance = new(controller);
-
-		NotImplementedException ex = new("Static CreateInstance may only be called from the final class");
-		Diag.Dug(ex);
-		throw ex;
-	}
 
 
 	/// <summary>
@@ -60,7 +46,7 @@ public abstract class AbstractEventsManager(IBPackageController controller) : IB
 	public abstract void Dispose();
 
 
-	#endregion Constructors / Destructors
+	#endregion Other Constructors / Destructors
 
 
 
@@ -86,15 +72,9 @@ public abstract class AbstractEventsManager(IBPackageController controller) : IB
 	// =========================================================================================================
 
 
-	public string UserDataDirectory => _Controller.UserDataDirectory;
-
 	public IBPackageController Controller => _Controller;
 	public IBAsyncPackage DdexPackage => _Controller.DdexPackage;
-	public DTE Dte => Controller.Dte;
-	public IVsSolution DteSolution => _Controller.DteSolution;
 	public IVsMonitorSelection SelectionMonitor => _Controller.SelectionMonitor;
-	public Globals SolutionGlobals => _Controller.SolutionGlobals;
-	public IBGlobalsAgent Uig => _Controller.Uig;
 
 
 	/// <summary>

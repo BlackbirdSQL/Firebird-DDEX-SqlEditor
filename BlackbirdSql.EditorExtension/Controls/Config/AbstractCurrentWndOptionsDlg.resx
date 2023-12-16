@@ -125,12 +125,9 @@
     <value>NoControl</value>
   </data>
   <data name="&gt;&gt;_CancelButton.ZOrder" xml:space="preserve">
-    <value>4</value>
+    <value>3</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="_HelpButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>585, 333</value>
-  </data>
   <data name="_ViewSwitcherTree.Location" type="System.Drawing.Point, System.Drawing">
     <value>6, 7</value>
   </data>
@@ -145,10 +142,7 @@
     <value>Live Query Options</value>
   </data>
   <data name="_OkButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>423, 333</value>
-  </data>
-  <data name="_HelpButton.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
+    <value>454, 333</value>
   </data>
   <data name="&gt;&gt;_CurrentViewPanel.Name" xml:space="preserve">
     <value>_CurrentViewPanel</value>
@@ -157,19 +151,10 @@
     <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>670, 368</value>
-  </data>
-  <data name="_HelpButton.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
+    <value>620, 368</value>
   </data>
   <data name="_ViewSwitcherTree.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
-  </data>
-  <data name="&gt;&gt;_HelpButton.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;_HelpButton.Name" xml:space="preserve">
-    <value>_HelpButton</value>
   </data>
   <data name="_OkButton.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -192,14 +177,8 @@
   <data name="_OkButton.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Bottom, Right</value>
   </data>
-  <data name="_HelpButton.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Bottom, Right</value>
-  </data>
   <data name="_CurrentViewPanel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>432, 308</value>
-  </data>
-  <data name="&gt;&gt;_HelpButton.Parent" xml:space="preserve">
-    <value>$this</value>
+    <value>383, 308</value>
   </data>
   <data name="_CancelButton.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -216,11 +195,8 @@
   <data name="_ViewSwitcherTree.Indent" type="System.Int32, mscorlib">
     <value>19</value>
   </data>
-  <data name="&gt;&gt;_HelpButton.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
   <data name="_CancelButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>504, 333</value>
+    <value>536, 333</value>
   </data>
   <data name="_CancelButton.Text" xml:space="preserve">
     <value>Cancel</value>
@@ -253,13 +229,7 @@
     <value>6, 13</value>
   </data>
   <data name="&gt;&gt;_OkButton.ZOrder" xml:space="preserve">
-    <value>5</value>
-  </data>
-  <data name="_HelpButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>75, 23</value>
-  </data>
-  <data name="_HelpButton.Text" xml:space="preserve">
-    <value>Help</value>
+    <value>4</value>
   </data>
   <data name="&gt;&gt;_CurrentViewPanel.Parent" xml:space="preserve">
     <value>$this</value>

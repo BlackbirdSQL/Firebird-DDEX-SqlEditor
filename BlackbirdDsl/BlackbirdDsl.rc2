@@ -32,12 +32,12 @@ BLOCK "1c0904b0"
 BEGIN
 VALUE "CompanyName", "BlackbirdSql"
 VALUE "FileDescription", "Blackbird Dsl Parser"
-VALUE "FileVersion", "10.0.2.1"
+VALUE "FileVersion", "10.0.3.0"
 VALUE "InternalName", "BlackbirdDsl.dll"
 VALUE "LegalCopyright", "Copyright (C) 2023"
 VALUE "OriginalFilename", "BlackbirdDsl.dll"
 VALUE "ProductName", "BlackbirdDsl"
-VALUE "ProductVersion", "10.0.2.1"
+VALUE "ProductVersion", "10.0.3.0"
 END
 END
 BLOCK "VarFileInfo"

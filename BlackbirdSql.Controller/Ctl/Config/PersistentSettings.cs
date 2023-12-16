@@ -38,18 +38,6 @@ public abstract class PersistentSettings : EditorExtension.Ctl.Config.Persistent
 	// =========================================================================================================
 
 
-	// Ddex GeneralSettingsModel
-	public static bool ValidateConfig => (bool)GetSetting("DdexValidateConfig", true);
-	public static bool ValidateEdmx => (bool)GetSetting("DdexValidateEdmx", true);
-
-	// Ddex DebugSettingsModel
-#if DEBUG
-	public static bool PersistentValidation => (bool)GetSetting("DdexDebugPersistentValidation", true);
-#else
-	public static bool PersistentValidation => (bool)GetSetting("DdexDebugPersistentValidation", false);
-#endif
-
-
 	#endregion Property Accessors
 
 
@@ -122,7 +110,7 @@ public abstract class PersistentSettings : EditorExtension.Ctl.Config.Persistent
 	/// extension package and passed down through the chain of dll's to the Core.
 	/// A dll will update settings relevant to itself from here.
 	/// IOW these are push notifications of any settings loaded or saved throughout the
-	/// extension.
+	/// extension and an opportunity to update any live settings.
 	/// </summary>
 	public override void PropagateSettings(PropagateSettingsEventArgs e)
 	{

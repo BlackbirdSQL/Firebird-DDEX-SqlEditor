@@ -124,7 +124,7 @@
     <value>Diagnostics</value>
   </data>
   <data name="OptionCategoryEntityFramework" xml:space="preserve">
-    <value>EntityFramework settings</value>
+    <value>Invariant and EntityFramework (IDE Restart)</value>
   </data>
   <data name="OptionCategoryEquivalency" xml:space="preserve">
     <value>Connection equivalency keys</value>
@@ -158,9 +158,6 @@
   </data>
   <data name="OptionDescriptionDebugLogFile" xml:space="preserve">
     <value>Location of diagnostics log file.</value>
-  </data>
-  <data name="OptionDescriptionDebugPersistentValidation" xml:space="preserve">
-    <value>Enables persistent validation flags. If disabled the validation flag of solutions and projects will be repeated upon reopening if Validation is enabled. Only applicable to DEBUG builds.</value>
   </data>
   <data name="OptionDescriptionDebugSaveExtrapolatedXml" xml:space="preserve">
     <value>Saves the extrapolated IVsDataObjectSupport xml (TObjectSupport.xml), after imports, to the directory location of the diagnostics log file.</value>
@@ -258,11 +255,14 @@
   <data name="OptionDescriptionGeneralIncludeAppConnections" xml:space="preserve">
     <value>If enabled, includes any configured connection strings that exist in a solution's projects in the drop down selection lists when adding a new connection.</value>
   </data>
+  <data name="OptionDescriptionGeneralPersistentValidation" xml:space="preserve">
+    <value>Enables once off validation. If disabled validation will be repeated each time a Solution is loaded. Only applicable if Invariant or Edmx validation is enabled.</value>
+  </data>
   <data name="OptionDescriptionGeneralShowDiagramPane" xml:space="preserve">
     <value>Sets the query designer diagram pane to visible when a table or view's data is initially retrieved.</value>
   </data>
   <data name="OptionDescriptionGeneralValidateConfig" xml:space="preserve">
-    <value>Enable this option to allow BlackbirdSql to ensure that Firebird EntityFramework is configured in your non-CPS projects' App.config.</value>
+    <value>Enable this option to allow BlackbirdSql to ensure that the Firebird Client and EntityFramework are configured in your non-CPS projects' App.config.</value>
   </data>
   <data name="OptionDescriptionGeneralValidateEdmx" xml:space="preserve">
     <value>Enable this option to allow BlackbirdSql to update legacy edmx models to use EntityFramework 6.</value>
@@ -299,9 +299,6 @@
   </data>
   <data name="OptionDisplayDebugLogFile" xml:space="preserve">
     <value>Log file</value>
-  </data>
-  <data name="OptionDisplayDebugPersistentValidation" xml:space="preserve">
-    <value>Persistent validation flags</value>
   </data>
   <data name="OptionDisplayEquivalencyApplicationName" xml:space="preserve">
     <value>Application name</value>
@@ -395,6 +392,9 @@
   </data>
   <data name="OptionDisplayGeneralIncludeAppConnections" xml:space="preserve">
     <value>Include solution connections</value>
+  </data>
+  <data name="OptionDisplayGeneralPersistentValidation" xml:space="preserve">
+    <value>Persistent validation flags</value>
   </data>
   <data name="OptionDisplayGeneralShowDiagramPane" xml:space="preserve">
     <value>Initial state of Diagram Pane</value>

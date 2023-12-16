@@ -2,30 +2,14 @@
 // Plagiarized from Community.VisualStudio.Toolkit extension
 //
 using System;
-using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using System.Drawing;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-
-using BlackbirdSql.Core.Controls.Events;
-using BlackbirdSql.Core.Controls.Interfaces;
-using BlackbirdSql.Core.Ctl.ComponentModel;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Config;
-using BlackbirdSql.Core.Properties;
 using Microsoft.VisualStudio.Shell;
-
-using Control = System.Windows.Forms.Control;
-using TextBox = System.Windows.Forms.TextBox;
 
 
 namespace BlackbirdSql.Core.Controls.Config;
-
-[SuppressMessage("Usage", "VSTHRD104:Offer async methods")]
 
 // =========================================================================================================
 //										AbstractPersistentSettingsPage Class
@@ -40,6 +24,7 @@ namespace BlackbirdSql.Core.Controls.Config;
 /// </summary>
 // =========================================================================================================
 [ComVisible(true)]
+[SuppressMessage("Usage", "VSTHRD104:Offer async methods")]
 public abstract class AbstractPersistentSettingsPage<TPage, T> : AbstractSettingsPage<T>
 	where TPage : AbstractSettingsPage<T> where T : AbstractSettingsModel<T>, new()
 {

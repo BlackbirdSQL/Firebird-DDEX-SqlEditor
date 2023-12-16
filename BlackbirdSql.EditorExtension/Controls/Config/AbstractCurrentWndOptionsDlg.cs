@@ -1,14 +1,11 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ToolsOptions.CurrentWndOptions
-using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl.Config;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls.Interfaces;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.EditorExtension.Properties;
-using Microsoft.VisualStudio.VSHelp;
 
 
 
@@ -51,8 +48,6 @@ public partial class AbstractCurrentWndOptionsDlg : Form
 
 	private Button _OkButton;
 
-	private Button _HelpButton;
-
 	private TreeView _ViewSwitcherTree;
 
 	private Panel _CurrentViewPanel;
@@ -85,25 +80,6 @@ public partial class AbstractCurrentWndOptionsDlg : Form
 				}
 			}
 		}
-		else
-		{
-			e.Cancel = true;
-		}
-		// base.OnFormClosing
-		// base.OnClosing
-	}
-
-	[EditorBrowsable(EditorBrowsableState.Advanced)]
-	protected override void OnFormClosing(FormClosingEventArgs e)
-	{
-		base.OnFormClosing(e);
-	}
-
-
-	protected override void OnHelpRequested(HelpEventArgs hevent)
-	{
-		DisplayHelpTopicForCurrentView();
-		hevent.Handled = true;
 	}
 
 
@@ -135,7 +111,6 @@ public partial class AbstractCurrentWndOptionsDlg : Form
 		ComponentResourceManager resources = new ComponentResourceManager(typeof(AbstractCurrentWndOptionsDlg));
 		_OkButton = new Button();
 		_CancelButton = new Button();
-		_HelpButton = new Button();
 		_ViewSwitcherTree = new TreeView();
 		_CurrentViewPanel = new Panel();
 		SuspendLayout();
@@ -145,9 +120,6 @@ public partial class AbstractCurrentWndOptionsDlg : Form
 		resources.ApplyResources(_CancelButton, "_CancelButton");
 		_CancelButton.DialogResult = DialogResult.Cancel;
 		_CancelButton.Name = "_CancelButton";
-		resources.ApplyResources(_HelpButton, "_HelpButton");
-		_HelpButton.Name = "_HelpButton";
-		_HelpButton.Click += new EventHandler(HelpButton_Click);
 		_ViewSwitcherTree.HideSelection = false;
 		resources.ApplyResources(_ViewSwitcherTree, "_ViewSwitcherTree");
 		_ViewSwitcherTree.Name = "_ViewSwitcherTree";
@@ -163,7 +135,6 @@ public partial class AbstractCurrentWndOptionsDlg : Form
 		CancelButton = _CancelButton;
 		Controls.Add(_CurrentViewPanel);
 		Controls.Add(_ViewSwitcherTree);
-		Controls.Add(_HelpButton);
 		Controls.Add(_CancelButton);
 		Controls.Add(_OkButton);
 		FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -174,10 +145,6 @@ public partial class AbstractCurrentWndOptionsDlg : Form
 		ResumeLayout(false);
 	}
 
-	private void HelpButton_Click(object sender, EventArgs e)
-	{
-		DisplayHelpTopicForCurrentView();
-	}
 
 	private void ViewSwitcherTree_AfterSelect(object sender, TreeViewEventArgs e)
 	{
@@ -211,26 +178,6 @@ public partial class AbstractCurrentWndOptionsDlg : Form
 		}
 	}
 
-	private void DisplayHelpTopicForCurrentView()
-	{
-		string helpKeyword = null; // _OptionViews[_CurrentViewIndex].GetHelpKeyword();
-		if (!string.IsNullOrEmpty(helpKeyword))
-		{
-			DisplayHelpTopic(helpKeyword);
-		}
-	}
-
-	private void DisplayHelpTopic(string keyWord)
-	{
-		try
-		{
-			(Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(SVsHelp)) as Microsoft.VisualStudio.VSHelp.Help)?.DisplayTopicFromF1Keyword(keyWord);
-		}
-		catch (SystemException e)
-		{
-			Tracer.LogExCatch(GetType(), e);
-		}
-	}
 
 	private void ShowOptionsPage(TreeNodeContext cx)
 	{
@@ -251,18 +198,20 @@ public partial class AbstractCurrentWndOptionsDlg : Form
 			}
 
 			_CurrentViewPanel.Controls.Clear();
-			Control control = _OptionViews[_CurrentViewIndex].Grid;
+			PropertyGrid control = _OptionViews[_CurrentViewIndex].Grid;
 			_CurrentViewPanel.Controls.Add(control);
 			control.Visible = false;
-			if (!_OptionViewsInitialized[_CurrentViewIndex])
-			{
-				_OptionViewsInitialized[_CurrentViewIndex] = true;
-			}
-
 			control.Bounds = _CurrentViewPanel.DisplayRectangle;
 			control.Dock = DockStyle.Fill;
 			_CurrentViewPanel.ResumeLayout();
 			control.Visible = true;
+
+			if (!_OptionViewsInitialized[_CurrentViewIndex])
+			{
+				_OptionViewsInitialized[_CurrentViewIndex] = true;
+				ActiveControl = control;
+				_OptionViews[_CurrentViewIndex].ActivatePage();
+			}
 		}
 	}
 
@@ -293,8 +242,13 @@ public partial class AbstractCurrentWndOptionsDlg : Form
 		}
 
 		_CurrentViewIndex = -1;
+
+
 		TreeNodeContext nodeContext = GetNodeContext(initialView);
+		_OptionViewsInitialized[nodeContext.ControlIndex] = true;
+
 		ShowOptionsPage(nodeContext);
+
 		_ViewSwitcherTree.SelectedNode = initialView;
 		ActiveControl = _OptionViews[nodeContext.ControlIndex].Grid;
 	}

@@ -12,12 +12,13 @@ using System.Threading.Tasks;
 
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 
 using EnvDTE;
-
+using Microsoft;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -35,7 +36,7 @@ namespace BlackbirdSql.Controller;
 //											ControllerEventsManager Class
 //
 /// <summary>
-/// Performs validations and updates of solution project items.
+/// Performs validations and updates of solutions and project items.
 /// </summary>
 /// <remarks>
 /// Updates the app.config for DbProvider and EntityFramework and updates existing .edmx models that
@@ -46,17 +47,22 @@ namespace BlackbirdSql.Controller;
 public class ControllerEventsManager : AbstractEventsManager
 {
 
-	int _RefCnt = 0;
+	// ---------------------------------------------------------------------------------
+	#region Constants - ControllerEventsManager
+	// ---------------------------------------------------------------------------------
+
+
+	private int _RefCnt = 0;
 
 	// A sync call has taken over. Async is locked out or abort at the first opportunity.
 	protected CancellationTokenSource _ValidationTokenSource = null;
 	protected CancellationToken _ValidationToken;
-
 	protected Task<bool> _ValidationTask;
-
 
 	private _dispReferencesEvents_ReferenceAddedEventHandler _ReferenceAddedEventHandler = null;
 
+
+	#endregion Constants
 
 
 
@@ -64,8 +70,6 @@ public class ControllerEventsManager : AbstractEventsManager
 	// =========================================================================================================
 	#region Property accessors - SolutionEventsManager
 	// =========================================================================================================
-
-	protected ControllerAsyncPackage ControllerPackage => (ControllerAsyncPackage)DdexPackage;
 
 
 	#endregion Property accessors
@@ -81,7 +85,7 @@ public class ControllerEventsManager : AbstractEventsManager
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Private singleton .ctor
+	/// .ctor
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public ControllerEventsManager(IBPackageController controller) : base(controller)
@@ -100,6 +104,8 @@ public class ControllerEventsManager : AbstractEventsManager
 	{
 		// Controller.OnAfterDocumentWindowHideEvent -= OnAfterDocumentWindowHide;
 		// Controller.OnQueryCloseProjectEvent -= OnQueryCloseProject;
+		Controller.OnLoadSolutionOptionsEvent -= OnLoadSolutionOptions;
+		Controller.OnSaveSolutionOptionsEvent -= OnSaveSolutionOptions;
 		Controller.OnAfterCloseSolutionEvent -= OnAfterCloseSolution;
 		Controller.OnQueryCloseSolutionEvent -= OnQueryCloseSolution;
 	}
@@ -118,11 +124,182 @@ public class ControllerEventsManager : AbstractEventsManager
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Hooks onto the controller's solution events and performs a initial solution
-	/// validation.
+	/// Checks if a project has FirebirdSql.Data.FirebirdClient configured in the app.config and configures it if it doesn't
 	/// </summary>
+	/// <param name="project"></param>
+	/// <returns>true if completed successfully else false if there were errors.</returns>
 	// ---------------------------------------------------------------------------------
-	public override void Initialize()
+	private bool ConfigureDbProvider(ProjectItem config, IBGlobalsAgent globals, bool validatingSolution, bool invalidate)
+	{
+		if (validatingSolution)
+		{
+			if (_TaskHandler.UserCancellation.IsCancellationRequested)
+				_ValidationTokenSource.Cancel();
+			if (_ValidationToken.IsCancellationRequested)
+				return false;
+		}
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
+		if (globals.IsConfiguredDbProviderStatus)
+			return true;
+
+		bool modified;
+
+
+		try
+		{
+			if (config.IsOpen)
+			{
+				System.IO.IOException ex = new System.IO.IOException(config.ContainingProject.Name + " File is open: app.config");
+				Diag.Dug(ex);
+				return false;
+			}
+
+			if (config.FileCount == 0)
+				return false;
+
+			string path = config.FileNames[0];
+
+			try
+			{
+				modified = XmlParser.ConfigureDbProvider(path, SystemData.ProviderFactoryType);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				return false;
+			}
+
+			if (modified && invalidate)
+			{
+				try
+				{
+					config.ContainingProject.IsDirty = true;
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			return false;
+		}
+
+		globals.IsValidatedDbProviderStatus = true;
+
+		if (modified)
+		{
+			TaskHandlerProgress($">  {config.ContainingProject.Name} -> Updated App.config: DbProvider");
+		}
+
+		return true;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Checks if a project has EntityFramework.Firebird configured in the app.config and configures it if it doesn't
+	/// </summary>
+	/// <param name="project"></param>
+	/// <returns>true if completed successfully else false if there were errors.</returns>
+	// ---------------------------------------------------------------------------------
+	private bool ConfigureEntityFramework(ProjectItem config, IBGlobalsAgent globals, bool validatingSolution, bool invalidate)
+	{
+		if (validatingSolution)
+		{
+			if (_TaskHandler.UserCancellation.IsCancellationRequested)
+				_ValidationTokenSource.Cancel();
+			if (_ValidationToken.IsCancellationRequested)
+				return false;
+		}
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
+		if (globals.IsConfiguredEFStatus)
+			return true;
+
+
+		bool modified;
+
+
+		try
+		{
+			if (config.IsOpen)
+			{
+				Tracer.Warning(GetType(), "ConfigureEntityFramework()", "{0}: app.config file is open: app.config", config.ContainingProject.Name);
+				return false;
+			}
+
+			if (config.FileCount == 0)
+				return false;
+
+			string path = config.FileNames[0];
+
+			try
+			{
+				// If Entity framework must be configured then so must the client
+				modified = XmlParser.ConfigureEntityFramework(path, !globals.IsConfiguredDbProviderStatus, SystemData.ProviderFactoryType);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				return false;
+			}
+
+			if (modified && invalidate)
+			{
+				try
+				{
+					config.ContainingProject.IsDirty = true;
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			return false;
+		}
+
+		globals.IsValidatedEFStatus = true;
+
+		if (modified)
+		{
+			TaskHandlerProgress($">  {config.ContainingProject.Name} -> Updated App.config: DbProvider and EntityFramework");
+		}
+
+
+		return true;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the app.config <see cref="ProjectItem"/> of a <see cref="Project"/>
+	/// </summary>
+	/// <param name="project"></param>
+	/// <returns>true if app.config was updated else false</returns>
+	// ---------------------------------------------------------------------------------
+	private ProjectItem GetAppConfigProjectItem(Project project, bool createIfNotFound = false)
 	{
 		if (!ThreadHelper.CheckAccess())
 		{
@@ -131,136 +308,218 @@ public class ControllerEventsManager : AbstractEventsManager
 			throw exc;
 		}
 
-		// Controller.OnAfterDocumentWindowHideEvent += OnAfterDocumentWindowHide;
-		// Controller.OnQueryCloseProjectEvent += OnQueryCloseProject;
-		Controller.OnQueryCloseSolutionEvent += OnQueryCloseSolution;
-		Controller.OnAfterCloseSolutionEvent += OnAfterCloseSolution;
+		ProjectItem config = null;
 
-		// This is a once off procedure for solutions and their projects. (ie. Once validated always validated)
-		// We're going to check each project that gets loaded (or has a reference added) if it
-		// references EntityFramework.Firebird.dll else FirebirdSql.Data.FirebirdClient.dll.
-		// If it is we'll check the app.config DbProvider and EntityFramework sections and update if necessary.
-		// We also check (once and only once) within a project for any Firebird edmxs with legacy settings and update
-		// those, because they cannot work with newer versions of EntityFramework.Firebird.
-		// (This validation can be disabled in Visual Studio's options.)
-
-
-		if ((Uig.ValidateConfig || Uig.ValidateEdmx) && Dte.Solution.Projects != null
-			&& Dte.Solution.Projects.Count > 0)
+		try
 		{
-			// No projects loaded yet if Solution.Projects is null
-
-			// Everything is synchronous within this particular call stack.
-			// We cannot have projects being loaded while we're checking for any projects that may have been loaded.
-			//
-			// Also this condition is for a very particular set of circumstances:
-			//		1. The developer started up a fresh IDE instance and went straight into opening a solution before
-			//			the IDE shell was fully loaded.
-			//			ie. Our package had been given the ide context but was not yet sited.
-			//		2. Subsequent to installing our vsix, this particular solution had never before been opened.
-			//			ie. it's a first for this solution since installing our extension.
-			//		3. At least one of this solution's projects had been loaded before we were sited.
-			//			iow. Any projects whose OnAfterOpen events have already been fired.
-
-
-			// We only ever go through this once so if a solution was previously in a validation state
-			// it is now validated
-			/*
-			if (Uig.IsValidatedStatus(SolutionGlobals))
+			foreach (ProjectItem item in project.ProjectItems)
 			{
-				Uig.SetIsValidStatus(SolutionGlobals, true);
-			}
-			else
-			{
-				int projectCount = _Dte.Solution.Projects.Count;
-				_ = Task.Run(() => ValidateSolutionAsync(projectCount));
-			}
-			*/
-			if (!Uig.IsValidatedStatus(SolutionGlobals))
-			{
-				// Diag.Trace("Validating solution");
-				// To keep the UI thread free and to allow it to perform status
-				// updates we move off of the UI thread and then make calls back
-				// to the UI thread for each top-level project validation.
-				int projectCount = Dte.Solution.Projects.Count;
-				_ = Task.Run(() => ValidateSolutionAsync(projectCount));
+				if (item.Name.ToLower() == "app.config")
+				{
+					config = item;
+					break;
+				}
 			}
 		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			return null;
+		}
 
-		// Add ReferencesEvents event handling to C# and VB projects
-		/// AddReferenceAddedEventHandler(_Dte);
+		if (createIfNotFound && config == null)
+		{
+			FileInfo info = new FileInfo(project.FullName);
+			string filename = info.Directory.FullName + "\\App.config";
+			StreamWriter sw = File.CreateText(filename);
 
-		// Diag.Trace("Package Controller is ready");
+			string xml = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
+<configuration>
+</configuration>";
+
+			sw.Write(xml);
+			sw.Close();
+
+			config = project.ProjectItems.AddFromFile(filename);
+		}
+
+		return config;
 
 	}
 
 
 
+	private string GetProjectPath(Project project)
+	{
+		if (project.Properties == null || project.Properties.Count == 0)
+			return null;
+
+		Property fullPath = null;
+		Property filename = null;
+
+		try
+		{
+			fullPath = project.Properties.Item("FullPath");
+		}
+		catch
+		{
+		}
+
+		try
+		{
+			filename = project.Properties.Item("FileName");
+		}
+		catch
+		{
+		}
+
+		if (fullPath == null || filename == null)
+			return null;
+
+		return $"{fullPath.Value}{filename.Value}";
+
+	}
+
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Recursively makes calls to <see cref="RecursiveValidateProjectAsync"/>, which is
-	/// on the UI thread, from a thread in the thread pool. This is to ensure the UI
-	/// thread is not locked up processing validations.
+	/// Hooks onto the controller's solution events and performs a initial solution
+	/// validation.
 	/// </summary>
-	/// <param name="projectCount"></param>
 	// ---------------------------------------------------------------------------------
-	protected async Task<bool> ValidateSolutionAsync(int projectCount)
+	public override void Initialize()
 	{
-		if (projectCount == 0)
-			return true;
+		// Controller.OnAfterDocumentWindowHideEvent += OnAfterDocumentWindowHide;
+		// Controller.OnQueryCloseProjectEvent += OnQueryCloseProject;
+		Controller.OnLoadSolutionOptionsEvent += OnLoadSolutionOptions;
+		Controller.OnSaveSolutionOptionsEvent += OnSaveSolutionOptions;
+		Controller.OnQueryCloseSolutionEvent += OnQueryCloseSolution;
+		Controller.OnAfterCloseSolutionEvent += OnAfterCloseSolution;
+
+	}
 
 
-		await Task.Run(() => UpdateStatusBar("BlackbirdSql validating solution"));
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Identifies whether or not a project is a CPS project
+	/// </summary>
+	/// <param name="hierarchy"></param>
+	/// <returns>true if project is CPS</returns>
+	// ---------------------------------------------------------------------------------
+	internal static bool IsCpsProject(IVsHierarchy hierarchy)
+	{
+		Requires.NotNull(hierarchy, "hierarchy");
+		return hierarchy.IsCapabilityMatch("CPS");
+	}
 
 
-		TaskHandlerOptions options = default;
-		options.Title = "BlackbirdSql Solution Validaton";
-		options.ActionsAfterCompletion = CompletionActions.None;
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Checks wether the project is a valid executable output type that requires
+	/// configuration of the app.config and updates the globals.
+	/// </summary>
+	/// <param name="project"></param>
+	/// <returns>
+	/// True if the project is a valid C#/VB executable project else false.
+	/// </returns>
+	/// <remarks>
+	/// This method here to avoid 'not on main thread' in GlobalsAgent because in here
+	/// we know we're on main thread.
+	/// We're not going to worry about anything but C# and VB non=CSP projects
+	/// </remarks>
+	// ---------------------------------------------------------------------------------
+	public bool IsValidExecutableProjectType(Project project, IBGlobalsAgent globals)
+	{
+		if (globals.IsValidatedStatus)
+			return globals.IsValidStatus;
 
-		_ProgressData = default;
-		_ProgressData.CanBeCanceled = true;
-
-		_TaskHandler = Controller.StatusCenterService.PreRegister(options, _ProgressData);
-
-
-		_ValidationTokenSource?.Dispose();
-		_ValidationTokenSource = new();
-		_ValidationToken = _ValidationTokenSource.Token;
-
-
-		// Projects may have already been opened. They may be irrelevant eg. unloaded
-		// project items or other non-project files, but we have to check anyway.
-		// Performance is a priority here, not compact code, because we're synchronous on the main
-		// thread, so we stay within the: 
-		// Projects > Project > ProjectItems > SubProject > ProjectItems... structure.
-		// We want to be in and out of here as fast as possible so every possible low overhead check
-		// is done first to ensure that.
-		_ValidationTask = Task.Factory.StartNew(() =>
+		// We're only supporting C# and VB projects for this - a dict list is at the end of this class
+		if (project.Kind != "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
+			&& project.Kind != "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}")
 		{
-			Stopwatch stopwatch = new();
+			globals.IsValidStatus = false;
+			return false;
+		}
 
-			TaskHandlerProgress(0, 0);
+		bool result = false;
 
-			for (int i = 0; i < projectCount; i++)
+
+		// Don't process CPS projects
+		Controller.VsSolution.GetProjectOfUniqueName(project.UniqueName, out IVsHierarchy hierarchy);
+
+		if (!IsCpsProject(hierarchy))
+		{
+			int outputType = int.MaxValue;
+
+			if (project.Properties != null && project.Properties.Count > 0)
 			{
-				if (_TaskHandler.UserCancellation.IsCancellationRequested)
-					_ValidationTokenSource.Cancel();
-				if (_ValidationToken.IsCancellationRequested)
+				Property property = null;
+
+				try
 				{
-					// TaskHandlerProgress(100, stopwatch.Elapsed.Milliseconds);
-					break;
+					property = project.Properties.Item("OutputType");
+				}
+				catch
+				{
+					Tracer.Warning(GetType(), "IsValidExecutableProjectType()", "Project: {0}  has no OutputType property", project.Name);
 				}
 
-
-				// Go to back of UI thread.
-				if (!RecursiveValidateSolutionProjectAsync(i, stopwatch).Result)
-					i = projectCount - 1;
-				TaskHandlerProgress((i + 1) * 100 / projectCount, stopwatch.Elapsed.Milliseconds);
+				if (property != null)
+					outputType = (int)property.Value;
 			}
 
 
-			if (_TaskHandler.UserCancellation.IsCancellationRequested)
+			if (outputType < 2)
+				result = true;
+		}
+
+		globals.IsValidStatus = result;
+
+		return result;
+
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// The _AsyncPayloadLauncher payload.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected async Task<bool> PayloadTaskAsync(int projectCount, CancellationToken asyncCancellationToken,
+		CancellationToken userCancellationToken)
+	{
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		try
+		{
+			if (userCancellationToken.IsCancellationRequested || asyncCancellationToken.IsCancellationRequested)
+				return false;
+
+			Stopwatch stopwatch = new();
+
+			TaskHandlerProgress(0, 0);
+			int i = 0;
+
+			foreach (Project project in ((Solution)GlobalsAgent.SolutionObject).Projects)
+			{
+				// Go to back of UI thread.
+				RecursiveValidateSolutionProject(project, stopwatch);
+
+				if (userCancellationToken.IsCancellationRequested || asyncCancellationToken.IsCancellationRequested)
+					i = projectCount - 1;
+
+				TaskHandlerProgress((i + 1) * 100 / projectCount, stopwatch.Elapsed.Milliseconds);
+
+				if (userCancellationToken.IsCancellationRequested || asyncCancellationToken.IsCancellationRequested)
+					break;
+
+				i++;
+			}
+
+			if (userCancellationToken.IsCancellationRequested)
 			{
 				UpdateStatusBar("Cancelled BlackbirdSql solution validation", true);
 				return false;
@@ -268,59 +527,166 @@ public class ControllerEventsManager : AbstractEventsManager
 
 			UpdateStatusBar($"Completed BlackbirdSql solution validation in {stopwatch.ElapsedMilliseconds}ms", true);
 
-
-
 			// _TaskHandler = null;
 			// _ProgressData = default;
 
 			return true;
-		},
-		default, TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent, TaskScheduler.Default);
 
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			return false;
+		}
 
-		_TaskHandler.RegisterTask(_ValidationTask);
-
-		return true;
 	}
+
 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Moves back onto the UI thread and validates the next top-level project.
+	/// Recursively validates a project already opened before our package was sited
 	/// </summary>
-	/// <param name="index">Index of the next project</param>
+	/// <param name="projects"></param>
+	/// <remarks>
+	/// If the project is valid and has EntityFramework referenced, the app.config is checked.
+	/// If it doesn't an <see cref="OnGlobalReferenceAdded"/> event is attached.
+	/// Updates legacy edmxs in the project
+	/// If it's a folder project is checked for child projects
+	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	protected async Task<bool> RecursiveValidateSolutionProjectAsync(int index, System.Diagnostics.Stopwatch stopwatch)
+	private void RecursiveValidateProject(Project project, IBGlobalsAgent globals, bool validatingSolution)
 	{
-		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-		int i = 0;
-		Project project = null;
-
-		// The enumerator is not accessable thru GetEnumerator()
-		foreach (Project proj in Dte.Solution.Projects)
+		if (validatingSolution)
 		{
-			if (i == index)
+			if (_TaskHandler.UserCancellation.IsCancellationRequested)
+				_ValidationTokenSource.Cancel();
+			if (_ValidationToken.IsCancellationRequested)
+				return;
+		}
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
+		ProjectItem config = null;
+
+		// There's a dict list of these at the end of the class
+		if (Kind(project.Kind) == "ProjectFolder")
+		{
+			if (project.ProjectItems != null && project.ProjectItems.Count > 0)
 			{
-				project = proj;
-				break;
+				RecursiveValidateProject(project.ProjectItems, validatingSolution);
 			}
-			i++;
 		}
-		if (project == null)
-			return false;
-
-
-		if (project.Globals != null && !Uig.IsScannedStatus(project))
+		else
 		{
-			stopwatch.Start();
+			bool failed = false;
 
-			RecursiveValidateProject(project, true);
+			if (IsValidExecutableProjectType(project, globals))
+			{
+				if (GlobalsAgent.ValidateConfig)
+				{
+					bool isConfiguredEFStatus = globals.IsConfiguredEFStatus;
+					bool isConfiguredDbProviderStatus = globals.IsConfiguredDbProviderStatus;
 
-			stopwatch.Stop();
+					if (!isConfiguredEFStatus || !isConfiguredDbProviderStatus)
+					{
+						VSProject projectObject = project.Object as VSProject;
+
+						if (!isConfiguredEFStatus)
+						{
+							if (projectObject.References.Find(SystemData.EFProvider) != null)
+							{
+								isConfiguredEFStatus = true;
+								isConfiguredDbProviderStatus = true;
+
+								config ??= GetAppConfigProjectItem(project);
+								if (config != null)
+								{
+									failed |= !ConfigureEntityFramework(config, globals, validatingSolution, false);
+								}
+								else
+								{
+									failed = true;
+								}
+							}
+						}
+
+						if (!isConfiguredDbProviderStatus)
+						{
+							if (projectObject.References.Find(SystemData.Invariant) != null)
+							{
+								isConfiguredDbProviderStatus = true;
+
+								config ??= GetAppConfigProjectItem(project);
+								if (config != null)
+								{
+									failed |= !ConfigureDbProvider(config, globals, validatingSolution, false);
+								}
+								else
+								{
+									failed = true;
+								}
+							}
+						}
+
+						if (!isConfiguredEFStatus || !isConfiguredDbProviderStatus)
+						{
+							AddReferenceAddedEventHandler(/*projectObject4 != null ? projectObject4.Events :*/ projectObject.Events);
+						}
+
+
+					}
+				}
+
+				// Why SolutionGlobals check ????????????????????????
+				if (GlobalsAgent.ValidateEdmx && !GlobalsAgent.SolutionGlobals.IsValidStatus && !globals.IsUpdatedEdmxsStatus)
+				{
+					bool success = true;
+
+					try
+					{
+						foreach (ProjectItem item in project.ProjectItems)
+						{
+							if (validatingSolution)
+							{
+								if (_TaskHandler.UserCancellation.IsCancellationRequested)
+									_ValidationTokenSource.Cancel();
+								if (_ValidationToken.IsCancellationRequested)
+								{
+									success = false;
+									break;
+								}
+							}
+
+							if (!RecursiveValidateProjectItemEdmx(item, validatingSolution))
+								success = false;
+						}
+					}
+					catch (Exception ex)
+					{
+						success = false;
+						Diag.Dug(ex);
+					}
+
+					if (success)
+						globals.IsUpdatedEdmxsStatus = true;
+					else
+						GlobalsAgent.SolutionGlobals.IsValidateFailedStatus = true;
+
+				}
+
+			}
+
+			if (failed)
+				GlobalsAgent.SolutionGlobals.IsValidateFailedStatus = true;
+			else
+				globals.IsScannedStatus = true;
 		}
-
-		return true;
 	}
 
 
@@ -348,8 +714,13 @@ public class ControllerEventsManager : AbstractEventsManager
 
 			if (projectItem.SubProject != null && projectItem.SubProject.Globals != null)
 			{
-				if (!Uig.IsScannedStatus(projectItem.SubProject))
-					RecursiveValidateProject(projectItem.SubProject, validatingSolution);
+				IBGlobalsAgent globals = new GlobalsAgent(GetProjectPath(projectItem.SubProject));
+
+				if (!globals.IsScannedStatus)
+				{
+					RecursiveValidateProject(projectItem.SubProject, globals, validatingSolution);
+					globals.Flush();
+				}
 			}
 			else
 			{
@@ -368,7 +739,7 @@ public class ControllerEventsManager : AbstractEventsManager
 	/// <param name="item"></param>
 	/// <returns>true if completed successfully else false if there were errors.</returns>
 	// ---------------------------------------------------------------------------------
-	bool RecursiveValidateProjectItem(ProjectItem item, bool validatingSolution)
+	bool RecursiveValidateProjectItemEdmx(ProjectItem item, bool validatingSolution)
 	{
 		if (_TaskHandler != null && _TaskHandler.UserCancellation.IsCancellationRequested)
 			return false;
@@ -397,7 +768,7 @@ public class ControllerEventsManager : AbstractEventsManager
 					}
 				}
 
-				if (!RecursiveValidateProjectItem(subitem, validatingSolution))
+				if (!RecursiveValidateProjectItemEdmx(subitem, validatingSolution))
 					success = false;
 			}
 
@@ -479,444 +850,27 @@ public class ControllerEventsManager : AbstractEventsManager
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Recursively validates a project already opened before our package was sited
+	/// Moves back onto the UI thread and validates the next top-level project.
 	/// </summary>
-	/// <param name="projects"></param>
-	/// <remarks>
-	/// If the project is valid and has EntityFramework referenced, the app.config is checked.
-	/// If it doesn't an <see cref="OnGlobalReferenceAdded"/> event is attached.
-	/// Updates legacy edmxs in the project
-	/// If it's a folder project is checked for child projects
-	/// </remarks>
+	/// <param name="index">Index of the next project</param>
 	// ---------------------------------------------------------------------------------
-	private void RecursiveValidateProject(Project project, bool validatingSolution)
+	protected bool RecursiveValidateSolutionProject(Project project, Stopwatch stopwatch)
 	{
-		if (validatingSolution)
-		{
-			if (_TaskHandler.UserCancellation.IsCancellationRequested)
-				_ValidationTokenSource.Cancel();
-			if (_ValidationToken.IsCancellationRequested)
-				return;
-		}
 
-		if (!ThreadHelper.CheckAccess())
+		if (project.Globals != null)
 		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+			GlobalsAgent globals = new(GetProjectPath(project));
 
-		ProjectItem config = null;
-
-		// There's a dict list of these at the end of the class
-		if (Kind(project.Kind) == "ProjectFolder")
-		{
-			if (project.ProjectItems != null && project.ProjectItems.Count > 0)
+			if (!globals.IsScannedStatus)
 			{
-				// Diag.Trace("Recursing ProjectFolder: " + project.Name);
-				RecursiveValidateProject(project.ProjectItems, validatingSolution);
-			}
-			/*
-			else
-			{
-				// Diag.Trace("No items in ProjectFolder: " + project.Name);
-			}
-			*/
-		}
-		else
-		{
-			// Diag.Trace("Recursive validate project: " + project.Name);
+				stopwatch.Start();
 
-			bool failed = false;
+				RecursiveValidateProject(project, globals, true);
 
-			if (Uig.IsValidExecutableProjectType(DteSolution, project))
-			{
-				// Diag.Trace("ValidExecutable");
-				if (Uig.ValidateConfig)
-				{
-					bool isConfiguredEFStatus = Uig.IsConfiguredEFStatus(project);
-					bool isConfiguredDbProviderStatus = Uig.IsConfiguredDbProviderStatus(project);
-
-
-					if (!isConfiguredEFStatus || !isConfiguredDbProviderStatus)
-					{
-
-						VSProject projectObject = project.Object as VSProject;
-
-						if (!isConfiguredEFStatus)
-						{
-							if (projectObject.References.Find(SystemData.EFProvider) != null)
-							{
-								// Diag.Trace(project.Name + " FOUND REFERENCE:" + SystemData.EFProvider);
-
-								isConfiguredEFStatus = true;
-								isConfiguredDbProviderStatus = true;
-
-								config ??= GetAppConfigProjectItem(project);
-								if (config != null)
-								{
-									failed |= !ConfigureEntityFramework(config, validatingSolution, false);
-								}
-								else
-								{
-									failed = true;
-								}
-							}
-							/* else if ((projectObject4 ??= project.Object as VSProject4) != null && projectObject4.PackageReferences != null)
-							{
-								if (projectObject4.PackageReferences.TryGetReference(SystemData.EFProvider, null,
-									out string pkgVersion, out _, out _))
-								{
-									// A legacy CSProj must cast to VSProject4 to manipulate package references
-
-									// Diag.Trace(project.Name + " FOUND PACKAGE REFERENCE:" + SystemData.EFProvider);
-
-									isConfiguredEFStatus = true;
-									isConfiguredDbProviderStatus = true;
-
-									config ??= GetAppConfigProjectItem(project);
-									if (config != null)
-									{
-										failed |= !ConfigureEntityFramework(config, false);
-									}
-									else
-									{
-										failed = true;
-									}
-								}
-							}*/
-						}
-
-						if (!isConfiguredDbProviderStatus)
-						{
-							if (projectObject.References.Find(SystemData.Invariant) != null)
-							{
-								// Diag.Trace(project.Name + " FOUND REFERENCE:" + SystemData.Invariant);
-
-								isConfiguredDbProviderStatus = true;
-
-								config ??= GetAppConfigProjectItem(project);
-								if (config != null)
-								{
-									failed |= !ConfigureDbProvider(config, validatingSolution, false);
-								}
-								else
-								{
-									failed = true;
-								}
-							}
-							/* else if ((projectObject4 ??= project.Object as VSProject4) != null && projectObject4.PackageReferences != null)
-							{
-
-								if (projectObject4.PackageReferences.TryGetReference(SystemData.Invariant, null,
-									out string pkgVersion, out _, out _))
-								{
-									// Diag.Trace(project.Name + " FOUND PACKAGE REFERENCE:" + SystemData.Invariant);
-
-									isConfiguredDbProviderStatus = true;
-
-									config ??= GetAppConfigProjectItem(project);
-									if (config != null)
-									{
-										failed |= !ConfigureDbProvider(config, false);
-									}
-									else
-									{
-										failed = true;
-									}
-								}
-							} */
-						}
-
-						if (!isConfiguredEFStatus || !isConfiguredDbProviderStatus)
-						{
-							AddReferenceAddedEventHandler(/*projectObject4 != null ? projectObject4.Events :*/ projectObject.Events);
-						}
-
-
-					}
-				}
-
-
-
-				if (Uig.ValidateEdmx && !Uig.IsValidStatus(SolutionGlobals) && !Uig.IsUpdatedEdmxsStatus(project))
-				{
-					bool success = true;
-
-					try
-					{
-						foreach (ProjectItem item in project.ProjectItems)
-						{
-							if (validatingSolution)
-							{
-								if (_TaskHandler.UserCancellation.IsCancellationRequested)
-									_ValidationTokenSource.Cancel();
-								if (_ValidationToken.IsCancellationRequested)
-								{
-									success = false;
-									break;
-								}
-							}
-
-							if (!RecursiveValidateProjectItem(item, validatingSolution))
-								success = false;
-						}
-					}
-					catch (Exception ex)
-					{
-						success = false;
-						Diag.Dug(ex);
-					}
-
-					if (success)
-						Uig.SetIsUpdatedEdmxsStatus(project);
-					else
-						Uig.IsValidateFailedStatus = true;
-
-				}
-
-			}
-
-
-
-			if (failed)
-				Uig.IsValidateFailedStatus = true;
-			else
-				Uig.SetIsScannedStatus(project);
-
-
-		}
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Gets the app.config <see cref="ProjectItem"/> of a <see cref="Project"/>
-	/// </summary>
-	/// <param name="project"></param>
-	/// <returns>true if app.config was updated else false</returns>
-	// ---------------------------------------------------------------------------------
-	private ProjectItem GetAppConfigProjectItem(Project project, bool createIfNotFound = false)
-	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
-
-		ProjectItem config = null;
-
-		try
-		{
-			foreach (ProjectItem item in project.ProjectItems)
-			{
-				if (item.Name.ToLower() == "app.config")
-				{
-					config = item;
-					break;
-				}
+				globals.Flush();
+				stopwatch.Stop();
 			}
 		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return null;
-		}
-
-		if (createIfNotFound && config == null)
-		{
-			FileInfo info = new FileInfo(project.FullName);
-			string filename = info.Directory.FullName + "\\App.config";
-			StreamWriter sw = File.CreateText(filename);
-
-			string xml = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
-<configuration>
-</configuration>";
-
-			sw.Write(xml);
-			sw.Close();
-
-			config = project.ProjectItems.AddFromFile(filename);
-
-			// Diag.Trace("App.config is null. Added: " + filename);
-		}
-
-		// if (config == null)
-			// Diag.Trace(project.Name + ": app.config is null");
-
-		return config;
-
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Checks if a project has FirebirdSql.Data.FirebirdClient configured in the app.config and configures it if it doesn't
-	/// </summary>
-	/// <param name="project"></param>
-	/// <returns>true if completed successfully else false if there were errors.</returns>
-	// ---------------------------------------------------------------------------------
-	private bool ConfigureDbProvider(ProjectItem config, bool validatingSolution, bool invalidate)
-	{
-		if (validatingSolution)
-		{
-			if (_TaskHandler.UserCancellation.IsCancellationRequested)
-				_ValidationTokenSource.Cancel();
-			if (_ValidationToken.IsCancellationRequested)
-				return false;
-		}
-
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
-
-		if (Uig.IsConfiguredDbProviderStatus(config.ContainingProject))
-			return true;
-
-		bool modified;
-
-
-		try
-		{
-			if (config.IsOpen)
-			{
-				System.IO.IOException ex = new System.IO.IOException(config.ContainingProject.Name + " File is open: app.config");
-				Diag.Dug(ex);
-				return false;
-			}
-
-			if (config.FileCount == 0)
-				return false;
-
-			string path = config.FileNames[0];
-
-			try
-			{
-				modified = XmlParser.ConfigureDbProvider(path, SystemData.ProviderFactoryType);
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-				return false;
-			}
-
-			if (modified && invalidate)
-			{
-				try
-				{
-					config.ContainingProject.IsDirty = true;
-				}
-				catch (Exception ex)
-				{
-					Diag.Dug(ex);
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
-
-		Uig.SetIsValidatedDbProviderStatus(config.ContainingProject);
-
-		if (modified)
-		{
-			TaskHandlerProgress($">  {config.ContainingProject.Name} -> Updated App.config: DbProvider");
-		}
-
-		return true;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Checks if a project has EntityFramework.Firebird configured in the app.config and configures it if it doesn't
-	/// </summary>
-	/// <param name="project"></param>
-	/// <returns>true if completed successfully else false if there were errors.</returns>
-	// ---------------------------------------------------------------------------------
-	private bool ConfigureEntityFramework(ProjectItem config, bool validatingSolution, bool invalidate)
-	{
-		if (validatingSolution)
-		{
-			if (_TaskHandler.UserCancellation.IsCancellationRequested)
-				_ValidationTokenSource.Cancel();
-			if (_ValidationToken.IsCancellationRequested)
-				return false;
-		}
-
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
-
-		if (Uig.IsConfiguredEFStatus(config.ContainingProject))
-			return true;
-
-
-		bool modified;
-
-
-		try
-		{
-			if (config.IsOpen)
-			{
-				System.IO.IOException ex = new System.IO.IOException(config.ContainingProject.Name + " File is open: app.config");
-				Diag.Dug(ex);
-				return false;
-			}
-
-			if (config.FileCount == 0)
-				return false;
-
-			string path = config.FileNames[0];
-
-			try
-			{
-				// If Entity framework must be configured then so must the client
-				modified = XmlParser.ConfigureEntityFramework(path, !Uig.IsConfiguredDbProviderStatus(config.ContainingProject), SystemData.ProviderFactoryType);
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-				return false;
-			}
-
-			if (modified && invalidate)
-			{
-				try
-				{
-					config.ContainingProject.IsDirty = true;
-				}
-				catch (Exception ex)
-				{
-					Diag.Dug(ex);
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return false;
-		}
-
-		Uig.SetIsValidatedEFStatus(config.ContainingProject);
-
-		if (modified)
-		{
-			TaskHandlerProgress($">  {config.ContainingProject.Name} -> Updated App.config: DbProvider and EntityFramework");
-		}
-
 
 		return true;
 	}
@@ -952,8 +906,7 @@ public class ControllerEventsManager : AbstractEventsManager
 		{
 			if (edmx.IsOpen)
 			{
-				System.IO.IOException ex = new System.IO.IOException(edmx.ContainingProject.Name + "." + edmx.Name + ": File is open");
-				Diag.Dug(ex);
+				Tracer.Warning(GetType(), "UpdateEdmx()", "{0}: edmx file is open: {1}", edmx.ContainingProject.Name, edmx.Name);
 				return false;
 			}
 
@@ -991,6 +944,75 @@ public class ControllerEventsManager : AbstractEventsManager
 
 	}
 
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Recursively makes calls to <see cref="RecursiveValidateProjectAsync"/>, which is
+	/// on the UI thread, from a thread in the thread pool. This is to ensure the UI
+	/// thread is not locked up processing validations.
+	/// </summary>
+	/// <param name="projectCount"></param>
+	// ---------------------------------------------------------------------------------
+	protected async Task<bool> ValidateSolutionAsync(int projectCount)
+	{
+		if (projectCount == 0)
+			return true;
+
+
+		await Task.Run(() => UpdateStatusBar("BlackbirdSql validating solution"));
+
+
+		TaskHandlerOptions options = default;
+		options.Title = "BlackbirdSql Solution Validaton";
+		options.ActionsAfterCompletion = CompletionActions.None;
+
+		_ProgressData = default;
+		_ProgressData.CanBeCanceled = true;
+
+		_TaskHandler = Controller.StatusCenterService.PreRegister(options, _ProgressData);
+
+
+		_ValidationTokenSource?.Dispose();
+		_ValidationTokenSource = new();
+		_ValidationToken = _ValidationTokenSource.Token;
+
+		// The following for brevity.
+		CancellationToken asyncCancellationToken = _ValidationToken;
+		CancellationToken userCancellationToken = _TaskHandler.UserCancellation;
+		TaskCreationOptions creationOptions = TaskCreationOptions.PreferFairness
+			| TaskCreationOptions.AttachedToParent;
+		TaskScheduler scheduler = TaskScheduler.Default;
+
+		Task<bool> payload() =>
+			PayloadTaskAsync(projectCount, asyncCancellationToken, userCancellationToken);
+
+		// Projects may have already been opened. They may be irrelevant eg. unloaded
+		// project items or other non-project files, but we have to check anyway.
+		// Performance is a priority here, not compact code, because we're synchronous on the main
+		// thread, so we stay within the: 
+		// Projects > Project > ProjectItems > SubProject > ProjectItems... structure.
+		// We want to be in and out of here as fast as possible so every possible low overhead check
+		// is done first to ensure that.
+		// Start up the payload launcher with tracking.
+		_ValidationTask = await Task.Factory.StartNew(payload, default, creationOptions, scheduler);
+
+
+		_TaskHandler.RegisterTask(_ValidationTask);
+
+		return true;
+	}
+
+
+	#endregion Methods
+
+
+
+
+
+	// =========================================================================================================
+	#region Asynchronous event handlers - SolutionEventsManager
+	// =========================================================================================================
 
 
 	/*
@@ -1050,16 +1072,6 @@ public class ControllerEventsManager : AbstractEventsManager
 	}
 
 
-	#endregion Methods
-
-
-
-
-
-	// =========================================================================================================
-	#region Asynchronous event handlers - SolutionEventsManager
-	// =========================================================================================================
-
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -1072,7 +1084,7 @@ public class ControllerEventsManager : AbstractEventsManager
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(); // Debug
 
-		if (!Uig.ValidateConfig || reference.Type != prjReferenceType.prjReferenceTypeAssembly
+		if (!GlobalsAgent.ValidateConfig || reference.Type != prjReferenceType.prjReferenceTypeAssembly
 			|| (reference.Name.ToLower() != SystemData.EFProvider.ToLower()
 			&& reference.Name.ToLower() != SystemData.Invariant.ToLower()))
 		{
@@ -1103,47 +1115,56 @@ public class ControllerEventsManager : AbstractEventsManager
 		_RefCnt = 0;
 
 		ProjectItem config = null;
+		IBGlobalsAgent globals = null;
 
-		if (reference.Name.ToLower() == SystemData.EFProvider.ToLower() && !Uig.IsConfiguredEFStatus(reference.ContainingProject))
+		if (reference.Name.ToLower() == SystemData.EFProvider.ToLower()
+			|| reference.Name.ToLower() == SystemData.Invariant.ToLower())
+		{
+			globals = new GlobalsAgent(GetProjectPath(reference.ContainingProject));
+		}
+
+		if (reference.Name.ToLower() == SystemData.EFProvider.ToLower() && !globals.IsConfiguredEFStatus)
 		{
 			// Diag.Trace("HandleReferenceAddedAsync is through for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
 
 			// Check if is configured again if queue was not clear and there was a Wait()
-			if (ClearValidationQueue() || !Uig.IsConfiguredEFStatus(reference.ContainingProject))
+			if (ClearValidationQueue() || !globals.IsConfiguredEFStatus)
 			{
 				config ??= GetAppConfigProjectItem(reference.ContainingProject);
 
 				if (config != null)
 				{
-					if (!ConfigureEntityFramework(config, false, false))
-						Uig.IsValidateFailedStatus = true;
+					if (!ConfigureEntityFramework(config, globals, false, false))
+						GlobalsAgent.SolutionGlobals.IsValidateFailedStatus = true;
 				}
 				else
 				{
-					Uig.IsValidateFailedStatus = true;
+					GlobalsAgent.SolutionGlobals.IsValidateFailedStatus = true;
 				}
 			}
 		}
-		else if (reference.Name.ToLower() == SystemData.Invariant.ToLower() && !Uig.IsConfiguredDbProviderStatus(reference.ContainingProject))
+		else if (reference.Name.ToLower() == SystemData.Invariant.ToLower() && !globals.IsConfiguredDbProviderStatus)
 		{
 			// Diag.Trace("HandleReferenceAddedAsync is through for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
 
 			// Check if is configured again if queue was not clear and there was a Wait()
-			if (ClearValidationQueue() || !Uig.IsConfiguredDbProviderStatus(reference.ContainingProject))
+			if (ClearValidationQueue() || !globals.IsConfiguredDbProviderStatus)
 			{
 				config ??= GetAppConfigProjectItem(reference.ContainingProject);
 
 				if (config != null)
 				{
-					if (!ConfigureDbProvider(config, false, false))
-						Uig.IsValidateFailedStatus = true;
+					if (!ConfigureDbProvider(config, globals, false, false))
+						GlobalsAgent.SolutionGlobals.IsValidateFailedStatus = true;
 				}
 				else
 				{
-					Uig.IsValidateFailedStatus = true;
+					GlobalsAgent.SolutionGlobals.IsValidateFailedStatus = true;
 				}
 			}
 		}
+
+		globals?.Flush();
 	}
 
 
@@ -1178,14 +1199,17 @@ public class ControllerEventsManager : AbstractEventsManager
 		// to continue recycling
 		_RefCnt = 0;
 
-		if (Uig.IsScannedStatus(project) || !Uig.IsValidExecutableProjectType(DteSolution, project)
-			|| (Uig.IsConfiguredDbProviderStatus(project) && Uig.IsConfiguredEFStatus(project) && Uig.IsUpdatedEdmxsStatus(project)))
+		IBGlobalsAgent globals = new GlobalsAgent(GetProjectPath(project));
+
+		if (globals.IsScannedStatus || !IsValidExecutableProjectType(project, globals)
+			|| (globals.IsConfiguredDbProviderStatus && globals.IsConfiguredEFStatus && globals.IsUpdatedEdmxsStatus))
 		{
 			// Diag.Trace("Project no validation required");
 			return;
 		}
 
-		RecursiveValidateProject(project, false);
+		RecursiveValidateProject(project, globals, false);
+		globals.Flush();
 
 	}
 
@@ -1215,6 +1239,96 @@ public class ControllerEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	private void OnReferenceAdded(Reference reference) => _ = HandleReferenceAddedAsync(reference);
 
+
+
+	//	[SuppressMessage("Usage", "VSTHRD104:Offer async methods")]
+	public void OnLoadSolutionOptions(Stream stream)
+	{
+
+		GlobalsAgent.SolutionGlobals?.Dispose();
+		GlobalsAgent.SolutionGlobals = new GlobalsAgent(Controller.Dte.Solution, stream);
+
+		// This is a once off procedure for solutions and their projects. (ie. Once validated always validated)
+		// We're going to check each project that gets loaded (or has a reference added) if it
+		// references EntityFramework.Firebird.dll else FirebirdSql.Data.FirebirdClient.dll.
+		// If it is we'll check the app.config DbProvider and EntityFramework sections and update if necessary.
+		// We also check (once and only once) within a project for any Firebird edmxs with legacy settings and update
+		// those, because they cannot work with newer versions of EntityFramework.Firebird.
+		// (This validation can be disabled in Visual Studio's options.)
+
+		if ((GlobalsAgent.ValidateConfig || GlobalsAgent.ValidateEdmx) && !GlobalsAgent.SolutionGlobals.IsValidatedStatus)
+		{
+			if (!ThreadHelper.CheckAccess())
+			{
+				_ = Task.Run(OnLoadSolutionOptionsAsync);
+				return;
+			}
+
+			OnLoadSolutionOptionsImpl();
+		}
+	}
+
+	private async Task<bool> OnLoadSolutionOptionsAsync()
+	{
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+		OnLoadSolutionOptionsImpl();
+
+		return true;
+	}
+
+
+	private void OnLoadSolutionOptionsImpl()
+	{
+		// On main thread
+
+		if (((Solution)GlobalsAgent.SolutionObject).Projects == null
+			&& ((Solution)GlobalsAgent.SolutionObject).Projects.Count == 0)
+		{
+			return;
+		}
+
+		// No projects loaded yet if Solution.Projects is null
+
+		// Everything is synchronous within this particular call stack.
+		// We cannot have projects being loaded while we're checking for any projects that may have been loaded.
+		//
+		// Also this condition is for a very particular set of circumstances:
+		//		1. The developer started up a fresh IDE instance and went straight into opening a solution before
+		//			the IDE shell was fully loaded.
+		//			ie. Our package had been given the ide context but was not yet sited.
+		//		2. Subsequent to installing our vsix, this particular solution had never before been opened.
+		//			ie. it's a first for this solution since installing our extension.
+		//		3. At least one of this solution's projects had been loaded before we were sited.
+		//			iow. Any projects whose OnAfterOpen events have already been fired.
+
+		// To keep the UI thread free and to allow it to perform status
+		// updates we move off of the UI thread and then make calls back
+		// to the UI thread for each top-level project validation.
+		int projectCount = ((Solution)GlobalsAgent.SolutionObject).Projects.Count;
+		_ = Task.Run(() => ValidateSolutionAsync(projectCount));
+
+	}
+
+	public void OnSaveSolutionOptions(Stream stream)
+	{
+		_ValidationTokenSource?.Cancel();
+
+		if (GlobalsAgent.SolutionGlobals == null)
+			return;
+
+		if (GlobalsAgent.SolutionGlobals.IsValidateFailedStatus)
+		{
+			GlobalsAgent.SolutionGlobals.ClearValidateStatus();
+		}
+		else if (!GlobalsAgent.SolutionGlobals.IsValidatedStatus)
+		{
+			GlobalsAgent.SolutionGlobals.IsValidStatus = true;
+		}
+
+		GlobalsAgent.SolutionGlobals.Flush(stream);
+		GlobalsAgent.SolutionGlobals.Dispose();
+		GlobalsAgent.SolutionGlobals = null;
+	}
 
 
 	// ---------------------------------------------------------------------------------
@@ -1262,7 +1376,6 @@ public class ControllerEventsManager : AbstractEventsManager
 
 		if (objProj is not Project project)
 		{
-			// Diag.Trace("AfterOpenProject: Possible VS project. Could not get project object property from hierarchy: " + pHierarchy.ToString());
 			return VSConstants.S_OK;
 		}
 		else if (Kind(project.Kind) != "VbProject"
@@ -1286,27 +1399,7 @@ public class ControllerEventsManager : AbstractEventsManager
 	/// <param name="pfCancel"></param>
 	/// <returns></returns>
 	// ---------------------------------------------------------------------------------
-	public int OnQueryCloseSolution(object pUnkReserved, ref int pfCancel)
-	{
-		_ValidationTokenSource?.Cancel();
-
-		if (Uig.IsValidateFailedStatus)
-		{
-			// Diag.Trace("There was a failed solution validation. Clearing solution status flags");
-			Uig.ClearValidateStatus();
-		}
-		else if (!Uig.IsValidatedStatus(SolutionGlobals))
-		{
-			Uig.SetIsValidStatus(SolutionGlobals, true);
-		}
-		else
-		{
-			// Diag.Trace("The solution has it's validated flag set. Doing nothing.");
-		}
-
-		return VSConstants.S_OK;
-
-	}
+	public int OnQueryCloseSolution(object pUnkReserved, ref int pfCancel) => VSConstants.S_OK;
 
 
 	#endregion IVs Events Implementation and Event handling
@@ -1320,9 +1413,6 @@ public class ControllerEventsManager : AbstractEventsManager
 	// =========================================================================================================
 
 
-	// Deadlock warning message suppression
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
-		Justification = "Code logic ensures a deadlock cannot occur")]
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -1334,6 +1424,8 @@ public class ControllerEventsManager : AbstractEventsManager
 	/// clear
 	/// </returns>
 	// ---------------------------------------------------------------------------------
+	[SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
+		Justification = "Code logic ensures a deadlock cannot occur")]
 	public bool ClearValidationQueue()
 	{
 		if (_ValidationTask == null || _ValidationTask.IsCompleted)

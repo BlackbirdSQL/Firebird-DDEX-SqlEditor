@@ -129,16 +129,10 @@ internal static class PackageSupportedObjects
 	/// A container class for a registry value consisting of the value's name and value.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public readonly struct RegistryValue
+	public readonly struct RegistryValue(string name, Object value)
 	{
-		public readonly string Name;
-		public readonly Object Value;
-
-		public RegistryValue(string name, Object value)
-		{
-			Name = name;
-			Value = value;
-		}
+		public readonly string Name = name;
+		public readonly object Value = value;
 	}
 
 

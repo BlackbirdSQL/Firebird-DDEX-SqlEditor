@@ -470,6 +470,19 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 	public abstract void SaveSettings();
 
 
+	public void ActivatePage()
+	{
+		if (_Window != null)
+		{
+
+			CancelEventArgs e = new();
+			OnActivate(e);
+
+			// Control gridView = GridView;
+			// gridView?.Focus();
+		}
+	}
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Override of the DialogPage ResetSettings method.

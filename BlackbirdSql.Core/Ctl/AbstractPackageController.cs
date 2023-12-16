@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using BlackbirdSql.Core.Ctl.Interfaces;
@@ -38,6 +39,7 @@ namespace BlackbirdSql.Core.Ctl;
 internal abstract class AbstractPackageController : IBPackageController
 {
 
+
 	// ---------------------------------------------------------------------------------
 	#region Variables
 	// ---------------------------------------------------------------------------------
@@ -64,8 +66,6 @@ internal abstract class AbstractPackageController : IBPackageController
 
 	protected uint _ToolboxCmdUICookie;
 
-	protected IBGlobalsAgent _Uig;
-
 	private string _UserDataDirectory = null;
 
 
@@ -76,6 +76,8 @@ internal abstract class AbstractPackageController : IBPackageController
 	private IBPackageController.BeforeLastDocumentUnlockDelegate _OnBeforeLastDocumentUnlockEvent;
 
 	private IBPackageController.AfterOpenProjectDelegate _OnAfterOpenProjectEvent;
+	private IBPackageController.LoadSolutionOptionsDelegate _OnLoadSolutionOptionsEvent;
+	private IBPackageController.SaveSolutionOptionsDelegate _OnSaveSolutionOptionsEvent;
 	private IBPackageController.AfterCloseSolutionDelegate _OnAfterCloseSolutionEvent;
 	private IBPackageController.QueryCloseProjectDelegate _OnQueryCloseProjectEvent;
 	private IBPackageController.QueryCloseSolutionDelegate _OnQueryCloseSolutionEvent;
@@ -122,6 +124,25 @@ internal abstract class AbstractPackageController : IBPackageController
 	{
 		add { _OnAfterOpenProjectEvent += value; }
 		remove { _OnAfterOpenProjectEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="Package.OnLoadOptions"/> event.
+	/// </summary>
+	event IBPackageController.LoadSolutionOptionsDelegate IBPackageController.OnLoadSolutionOptionsEvent
+	{
+		add { _OnLoadSolutionOptionsEvent += value; }
+		remove { _OnLoadSolutionOptionsEvent -= value; }
+	}
+
+	/// <summary>
+	/// Accessor to the <see cref="Package.OnLoadOptions"/> event.
+	/// </summary>
+	event IBPackageController.SaveSolutionOptionsDelegate IBPackageController.OnSaveSolutionOptionsEvent
+	{
+		add { _OnSaveSolutionOptionsEvent += value; }
+		remove { _OnSaveSolutionOptionsEvent -= value; }
 	}
 
 
@@ -226,14 +247,6 @@ internal abstract class AbstractPackageController : IBPackageController
 
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Accessor to the singleton <see cref="GlobalsAgent"/> instance
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public abstract IBGlobalsAgent Uig { get; }
-
-
 	public IBAsyncPackage DdexPackage => _DdexPackage;
 
 
@@ -243,7 +256,7 @@ internal abstract class AbstractPackageController : IBPackageController
 	public DTE Dte => _DdexPackage.Dte;
 
 
-	public IVsSolution DteSolution => _DdexPackage.DteSolution;
+	public IVsSolution VsSolution => _DdexPackage.VsSolution;
 
 	public bool IsCmdLineBuild
 	{
@@ -379,15 +392,6 @@ internal abstract class AbstractPackageController : IBPackageController
 	/// The extension wide package instance lock.
 	/// </summary>
 	public object LockGlobal => _LockGlobal;
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Accessor to <see cref="_Solution.Globals"/>
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public Globals SolutionGlobals =>
-		(Dte != null && Dte.Solution != null) ? Dte.Solution.Globals : null;
 
 
 	#endregion Property Accessors
@@ -593,8 +597,8 @@ internal abstract class AbstractPackageController : IBPackageController
 	{
 		_ = disposing;
 
-		if (DteSolution != null && _HSolutionEvents != uint.MaxValue)
-			DteSolution.UnadviseSolutionEvents(_HSolutionEvents);
+		if (VsSolution != null && _HSolutionEvents != uint.MaxValue)
+			VsSolution.UnadviseSolutionEvents(_HSolutionEvents);
 
 		if (DocTable != null && _HDocTableEvents != uint.MaxValue)
 			DocTable.UnadviseRunningDocTableEvents(_HDocTableEvents);
@@ -620,7 +624,6 @@ internal abstract class AbstractPackageController : IBPackageController
 
 
 
-
 	// =========================================================================================================
 	#region IVsSolutionEvents Implementation and Event handling - AbstractPackageController
 	// =========================================================================================================
@@ -630,6 +633,12 @@ internal abstract class AbstractPackageController : IBPackageController
 
 	public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded) => _OnAfterOpenProjectEvent != null
 		? _OnAfterOpenProjectEvent(pHierarchy, fAdded) : VSConstants.E_NOTIMPL;
+
+	public void OnLoadSolutionOptions(Stream stream) =>
+		_OnLoadSolutionOptionsEvent?.Invoke(stream);
+
+	public void OnSaveSolutionOptions(Stream stream) =>
+		_OnSaveSolutionOptionsEvent?.Invoke(stream);
 
 	public int OnAfterCloseSolution(object pUnkReserved) => _OnAfterCloseSolutionEvent != null
 		? _OnAfterCloseSolutionEvent(pUnkReserved) : VSConstants.E_NOTIMPL;

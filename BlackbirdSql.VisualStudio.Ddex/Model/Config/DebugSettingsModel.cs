@@ -83,17 +83,6 @@ public class DebugSettingsModel(IBTransientSettings transientSettings)
 	[DefaultValue(false)]
 	public bool EnableTracer { get; set; } = false;
 
-	[GlobalizedCategory("OptionCategoryDebugging")]
-	[GlobalizedDisplayName("OptionDisplayDebugPersistentValidation")]
-	[GlobalizedDescription("OptionDescriptionDebugPersistentValidation")]
-	[TypeConverter(typeof(GlobalBoolConverter))]
-#if DEBUG
-	[DefaultValue(false)]
-	public bool PersistentValidation { get; set; } = false;
-#else
-	[DefaultValue(true)]
-	public bool PersistentValidation { get; set; } = true;
-#endif
 
 	[GlobalizedCategory("OptionCategoryDebugging")]
 	[GlobalizedDisplayName("OptionDisplayDebugEnableDiagnosticsLog")]

@@ -203,7 +203,7 @@ public abstract class PersistentSettings : Common.Ctl.Config.PersistentSettings
 	/// extension package and passed down through the chain of dll's to the Core.
 	/// A dll will update settings relevant to itself from here.
 	/// IOW these are push notifications of any settings loaded or saved throughout the
-	/// extension.
+	/// extension and an opportunity to update any live settings.
 	/// </summary>
 	public override void PropagateSettings(PropagateSettingsEventArgs e)
 	{

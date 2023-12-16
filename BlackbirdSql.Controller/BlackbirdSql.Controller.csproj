@@ -18,7 +18,6 @@
     <Compile Include="ControllerAsyncPackage.cs" />
     <Compile Include="ControllerEventsManager.cs" />
     <Compile Include="Ctl\Config\PersistentSettings.cs" />
-    <Compile Include="GlobalsAgent.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="PackageController.cs" />
     <Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />

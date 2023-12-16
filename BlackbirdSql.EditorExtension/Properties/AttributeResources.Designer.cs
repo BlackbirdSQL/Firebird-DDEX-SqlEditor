@@ -1555,7 +1555,7 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Include the query script in grid result sets..
+        ///   Looks up a localized string similar to Include the query script in grid result sets. The SQL script will appear in the messages pane..
         /// </summary>
         internal static string OptionDescriptionResultsGridOutputQuery {
             get {
@@ -1672,7 +1672,7 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Include the query script in text result sets..
+        ///   Looks up a localized string similar to Include the query script in result sets. For console results the SQL script will output to the message pane otherwise it is prefixed to saved results..
         /// </summary>
         internal static string OptionDescriptionResultsTextOutputQuery {
             get {
@@ -2086,7 +2086,7 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Include query script.
+        ///   Looks up a localized string similar to Include SQL in result set.
         /// </summary>
         internal static string OptionDisplayResultsGridOutputQuery {
             get {
@@ -2203,7 +2203,7 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Include query script in results.
+        ///   Looks up a localized string similar to Include SQL in result set.
         /// </summary>
         internal static string OptionDisplayResultsTextOutputQuery {
             get {

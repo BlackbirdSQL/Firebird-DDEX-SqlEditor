@@ -4,6 +4,8 @@
 using System;
 
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Interfaces;
@@ -176,13 +178,16 @@ public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 	/// extension package and passed down through the chain of dll's to the Core.
 	/// A dll will update settings relevant to itself from here.
 	/// IOW these are push notifications of any settings loaded or saved throughout the
-	/// extension.
+	/// extension and an opportunity to update any live settings.
 	/// </summary>
 	public override void PropagateSettings(PropagateSettingsEventArgs e)
 	{
 		try
 		{
 			base.PropagateSettings(e);
+
+			// GlobalsAgent requires the latest PersistentValidation if it's disabled.
+			GlobalsAgent.PersistentValidation &= PersistentValidation;
 		}
 		catch (Exception ex)
 		{
