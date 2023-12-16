@@ -4,8 +4,8 @@
 
 
 #### v10.0.3.0
-Moved validation Globals flag variable from Solution and Project Globals to user files.
-Resolved issues with User Options dialogs.
+Moved validation Globals flag variable from Solution and Project Globals to user files.</br>
+Resolved issues with User Options dialogs.</br>
 Resolved issue where SqlEditor text output of DateTime columns threw an exception.
 
 #### v10.0.2.1
@@ -52,7 +52,7 @@ Upgraded the FirebirdClient to 10.0.0.0.
 Centralized connection management and implemented outstanding connection features.
 
 #### v9.1.0.88-prelease
-Implemented single click check boxes and radio button into Visual Studio user settings Property grid.
+Implemented single click check boxes and radio button into Visual Studio user settings Property grid.</br>
 Streamlined and Centralized DocumentMoniker and ConnectionMoniker management.
 
 #### v9.1.0.87-prelease
