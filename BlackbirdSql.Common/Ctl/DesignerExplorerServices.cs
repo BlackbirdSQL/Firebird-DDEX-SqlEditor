@@ -84,7 +84,12 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 		RaiseBeforeOpenDocument(mkDocument, dbl, identifierArray, objectType, targetType, S_BeforeOpenDocumentHandler);
 
-		CsbAgent csa = CsbAgent.CreateInstance(node);
+		if (RctManager.ShutdownState)
+			return;
+
+		CsbAgent csa = RctManager.CloneRegistered(node);
+
+		// Tracer.Trace(typeof(DesignerExplorerServices), "OpenExplorerEditor()", "csa ConnectionString: {0}.", csa.ConnectionString);
 
 		OpenMiscDocument(mkDocument, csa, true, false, editorFactory, out uint docCookie, out IVsWindowFrame frame,
 			out bool editorAlreadyOpened, out bool documentAlreadyLoaded, physicalViewName);
@@ -162,7 +167,10 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		EnModelObjectType objectType = EnModelObjectType.NewSqlQuery;
 		EnModelObjectType elementType = objectType;
 
-		CsbAgent csa = CsbAgent.CreateInstance(datasetKey);
+		if (RctManager.ShutdownState)
+			return;
+
+		CsbAgent csa = RctManager.CloneRegistered(datasetKey);
 
 		DatabaseLocation dbl = new(csa, targetType);
 		HashSet<NodeElementDescriptor> originalObjects = null;
@@ -261,12 +269,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 	{
 		// Sanity check.
 		// Currently our only entry point to AbstractDesignerServices whose warnings are suppressed.
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(ex);
-			throw ex;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		Guid clsidEditorFactory = new Guid(SystemData.DslEditorFactoryGuid);
 
@@ -281,16 +284,21 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 			return;
 
 		IBSqlEditorWindowPane lastFocusedSqlEditor = ((IBEditorPackage)Controller.DdexPackage).LastFocusedSqlEditor;
+
+		// Tracer.Trace(GetType(), "OnSqlQueryLoaded()", "lastFocusedSqlEditor != null: {0}.", lastFocusedSqlEditor != null);
+
 		if (lastFocusedSqlEditor != null)
 		{
 			SqlEditorExecuteQueryCommand command = new (lastFocusedSqlEditor);
 
-			_ = Task.Run(() => OnSqlQueryLoadedAsync(command, 10));
+			_ = Task.Run(() => OnSqlQueryLoadedAsync(command, 50));
 		}
 	}
 
 	private async Task<bool> OnSqlQueryLoadedAsync(AbstractSqlEditorCommand command, int delay)
 	{
+		// Tracer.Trace(GetType(), "OnSqlQueryLoadedAsync()");
+
 		// Give editor time to breath.
 		if (delay > 0)
 			Thread.Sleep(delay);
@@ -311,12 +319,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 	{
 		// Sanity check.
 		// Currently our only entry point to AbstractDesignerServices whose warnings are suppressed.
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(ex);
-			throw ex;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		MonikerAgent moniker = new(node, targetType);
 
@@ -329,6 +332,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		if ((objectType == EnModelObjectType.Table || objectType == EnModelObjectType.View)
 			&& targetType == EnModelTargetType.QueryScript && PersistentSettings.EditorExecuteQueryOnOpen)
 		{
+			// Tracer.Trace(GetType(), "ViewCode()", "assigning OnSqlQueryLoaded.");
 			callback = OnSqlQueryLoaded;
 		}
 

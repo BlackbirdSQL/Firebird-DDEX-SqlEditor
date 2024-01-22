@@ -1,10 +1,12 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
+using System;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
-using BlackbirdSql.Core.Ctl.Extensions;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Properties;
@@ -27,7 +29,7 @@ public class LinkageParserTaskHandler : IBTaskHandlerClient
 {
 
 	// =========================================================================================================
-	#region Variables - LinkageParserTaskHandler
+	#region Fields - LinkageParserTaskHandler
 	// =========================================================================================================
 
 
@@ -46,7 +48,7 @@ public class LinkageParserTaskHandler : IBTaskHandlerClient
 	protected string _TaskHandlerTaskName = "Parsing";
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 
@@ -93,8 +95,8 @@ public class LinkageParserTaskHandler : IBTaskHandlerClient
 	public LinkageParserTaskHandler(DbConnection connection)
 	{
 		// Tracer.Trace(GetType(), "LinkageParserTaskHandle.LinkageParserTaskHandle");
-		CsbAgent csa = CsbAgent.CreateInstance(connection);
-		_DatasetKey = csa.DatasetKey;
+		CsbAgent csa = RctManager.CloneRegistered(connection);
+		_DatasetKey = csa == null ? CoreConstants.C_DefaultExDatasetKey : csa.DatasetKey;
 	}
 
 
@@ -138,7 +140,20 @@ public class LinkageParserTaskHandler : IBTaskHandlerClient
 
 	public void RegisterTask(Task<bool> asyncPayloadLauncher)
 	{
-		_TaskHandler.RegisterTask(asyncPayloadLauncher);
+		try
+		{
+			_TaskHandler.RegisterTask(asyncPayloadLauncher);
+		}
+#if DEBUG
+		catch (Exception ex)
+		{
+			Tracer.Information(GetType(), "RegisterTask()", "{0}", ex.Message);
+		}
+#else
+		catch
+		{
+		}
+#endif
 	}
 
 
@@ -351,7 +366,7 @@ public class LinkageParserTaskHandler : IBTaskHandlerClient
 	}
 
 
-	#endregion Taskhandler and Status Bar
+#endregion Taskhandler and Status Bar
 
 
 }

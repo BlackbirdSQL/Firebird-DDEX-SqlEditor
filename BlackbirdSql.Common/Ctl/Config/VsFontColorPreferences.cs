@@ -21,11 +21,6 @@ using Microsoft.Win32;
 
 namespace BlackbirdSql.Common.Ctl.Config;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
-[SuppressMessage("Usage", "VSTHRD001:Avoid legacy thread switching APIs")]
-[SuppressMessage("Usage", "VSTHRD110:Observe result of async calls")]
-
 public class VsFontColorPreferences : IVsTextManagerEvents, IDisposable
 {
 	private ConnectionPointCookie _TextManagerEventsCookie;
@@ -46,12 +41,7 @@ public class VsFontColorPreferences : IVsTextManagerEvents, IDisposable
 					return font;
 			}
 
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			if (Package.GetGlobalService(typeof(SUIHostLocale)) is IUIHostLocale2 iUIHostLocale)
 			{
@@ -133,16 +123,11 @@ public class VsFontColorPreferences : IVsTextManagerEvents, IDisposable
 		if (_IsFireEventPending)
 			return;
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		_IsFireEventPending = true;
 
-		Dispatcher.CurrentDispatcher.BeginInvoke((Action)delegate
+		_ = Dispatcher.CurrentDispatcher.BeginInvoke((Action)delegate
 		{
 			PreferencesChangedEvent?.Invoke(this, EventArgs.Empty);
 			_IsFireEventPending = false;

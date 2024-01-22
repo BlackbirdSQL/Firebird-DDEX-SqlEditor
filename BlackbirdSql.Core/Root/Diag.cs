@@ -2,27 +2,25 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Config;
-using BlackbirdSql.Core.Ctl.Extensions;
-
-#if BLACKBIRD
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Model.Enums;
 using FirebirdSql.Data.FirebirdClient;
-#endif
-using Microsoft;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TaskStatusCenter;
 
 
-#if BLACKBIRD
 namespace BlackbirdSql.Core;
-#else
-namespace FirebirdSql.Data;
-#endif
 
 // =========================================================================================================
 //											Diag Class
@@ -46,7 +44,7 @@ namespace FirebirdSql.Data;
 // =========================================================================================================
 public static class Diag
 {
-	#region Variables
+	#region Fields
 
 
 	// A static class lock
@@ -62,7 +60,7 @@ public static class Diag
 	static Guid _OutputPaneGuid = default;
 
 
-#endregion Variables
+#endregion Fields
 
 
 
@@ -126,17 +124,6 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Flag indicating whether or not Firebird debug library diagnostics calls are logged
-	/// </summary>
-	/// <remarks>
-	/// Only applies to the Debug configuration. Debug Exceptions are always logged.
-	/// </remarks>
-	// ---------------------------------------------------------------------------------
-	public static bool EnableFbDiagnostics => PersistentSettings.EnableFbDiagnostics;
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
 	/// Flag indicating whether or not diagnostics calls are logged to the log file.
 	/// </summary>
 	/// <remarks>
@@ -152,14 +139,6 @@ public static class Diag
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static string LogFile => PersistentSettings.LogFile;
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// The Firebird log file path
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static string FbLogFile => PersistentSettings.FbLogFile;
 
 
 	#endregion Property accessors
@@ -178,7 +157,7 @@ public static class Diag
 	/// The common Diag diagnostics method
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if DEBUG
+#if !NEWDEBUG
 	public static void Dug(bool isException, string message = "",
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
@@ -208,20 +187,7 @@ public static class Diag
 			try
 			{
 				if ((pos = sourceFilePath.IndexOf("\\BlackbirdSql")) == -1)
-				{
-					if ((pos = sourceFilePath.IndexOf("\\BlackbirdDsl")) == -1)
-					{
-						if ((pos = sourceFilePath.IndexOf("\\FirebirdSql")) == -1)
-							pos = sourceFilePath.IndexOf("\\EntityFramework.Firebird");
-
-						if (pos != -1)
-						{
-							if (!isException && !EnableFbDiagnostics)
-								return;
-							logfile = FbLogFile;
-						}
-					}
-				}
+					pos = sourceFilePath.IndexOf("\\BlackbirdDsl");
 
 
 				if (pos != -1)
@@ -257,7 +223,7 @@ public static class Diag
 		try
 		{
 			if (enableTaskLog)
-				OutputPaneWriteLine(str);
+				OutputPaneWriteLine(str, isException);
 		}
 		catch (Exception) { }
 
@@ -273,7 +239,7 @@ public static class Diag
 	/// parameter is null
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if DEBUG
+#if !NEWDEBUG
 	public static void Dug(bool isException, Exception ex, string message = "",
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
@@ -301,7 +267,7 @@ public static class Diag
 	/// Diagnostics method with formatting
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if DEBUG
+#if !NEWDEBUG
 	public static void Dug(string message, Exception ex,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
@@ -320,21 +286,18 @@ public static class Diag
 
 
 
-
-
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Diagnostics method for ServiceUnavailable
+	/// Diagnostics method for ServiceUnavailableException
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if DEBUG
-	public static ServiceUnavailableException ServiceUnavailable(Type type,
+#if !NEWDEBUG
+	public static ServiceUnavailableException ExceptionService(Type type,
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
 		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
 #else
-	public static ServiceUnavailableException ServiceUnavailable(Type type,
+	public static ServiceUnavailableException ExceptionService(Type type,
 		string memberName = "[Release: MemberName Unavailable]",
 		string sourceFilePath = "[Release: SourcePath Unavailable]",
 		int sourceLineNumber = -1)
@@ -348,13 +311,188 @@ public static class Diag
 
 
 
-		// ---------------------------------------------------------------------------------
-		/// <summary>
-		/// Diagnostics method for Exceptions only
-		/// </summary>
-		// ---------------------------------------------------------------------------------
-#if DEBUG
-		public static void Dug(Exception ex, string message = "",
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Raises excepton for ServiceUnavailableException
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+#if !NEWDEBUG
+	public static void ThrowIfServiceUnavailable(object service, Type type,
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
+#else
+	public static ServiceUnavailableException ExceptionService(Type type,
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
+#endif
+	{
+		if (service == null)
+			throw ExceptionService(type, memberName, sourceFilePath, sourceLineNumber);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Diagnostics method for TypeAccessException
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+#if !NEWDEBUG
+	public static TypeAccessException ExceptionInstance(Type type,
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
+#else
+	public static ServiceUnavailableException ExceptionService(Type type,
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
+#endif
+	{
+		TypeAccessException ex = new($"The singleton instance for {type.FullName} has not been initialized.");
+		Dug(ex, "", memberName, sourceFilePath, sourceLineNumber);
+
+		return ex;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Throws an exception for TypeAccessException
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+#if !NEWDEBUG
+	public static void ThrowIfInstanceNull(object instance, Type type,
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
+#else
+	public static ServiceUnavailableException ExceptionService(Type type,
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
+#endif
+	{
+		if (instance == null)
+			throw ExceptionInstance(type, memberName, sourceFilePath, sourceLineNumber);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Diagnostics method for OnUiThread
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+#if !NEWDEBUG
+	public static COMException ExceptionThreadOnUI(
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
+#else
+	public static ServiceUnavailableException ExceptionService(Type type,
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
+#endif
+	{
+		string message = string.Format(CultureInfo.CurrentCulture, "{0} may NOT be called on the UI thread.", memberName);
+		COMException ex = new(message, VSConstants.RPC_E_WRONG_THREAD);
+
+		Dug(ex, "", memberName, sourceFilePath, sourceLineNumber);
+
+		return ex;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Raises an exception if OnUiThread.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+#if !NEWDEBUG
+	public static void ThrowIfOnUIThread(
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
+#else
+	public static ServiceUnavailableException ExceptionService(Type type,
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
+#endif
+	{
+		if (ThreadHelper.CheckAccess())
+			throw ExceptionThreadOnUI(memberName, sourceFilePath, sourceLineNumber);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Diagnostics method for NotOnUiThread
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+#if !NEWDEBUG
+	public static COMException ExceptionThreadNotUI(
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
+#else
+	public static ServiceUnavailableException ExceptionService(Type type,
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
+#endif
+	{
+		string message = string.Format(CultureInfo.CurrentCulture, "{0} must be called on the UI thread.", memberName);
+		COMException ex = new(message, VSConstants.RPC_E_WRONG_THREAD);
+
+		Dug(ex, "", memberName, sourceFilePath, sourceLineNumber);
+
+		return ex;
+	}
+
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Throws an exception if NotOnUiThread
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+#if !NEWDEBUG
+	public static void ThrowIfNotOnUIThread(
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
+#else
+	public static ServiceUnavailableException ExceptionService(Type type,
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
+#endif
+	{
+		if (!ThreadHelper.CheckAccess())
+			throw ExceptionThreadNotUI(memberName, sourceFilePath, sourceLineNumber);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Diagnostics method for Exceptions only
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+#if !NEWDEBUG
+	public static void Dug(Exception ex, string message = "",
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
 		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
@@ -397,11 +535,11 @@ public static class Diag
 	/// For easy identification of temporary try/catch statements during debugging.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if DEBUG
+#if !NEWDEBUG
 	public static void Tug(Exception ex, string message = "",
-	[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
-	[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
-	[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
 #else
 	public static void Tug(Exception ex, string message = "",
 		string memberName = "[Release: MemberName Unavailable]",
@@ -420,7 +558,7 @@ public static class Diag
 	/// recursion or when package is not sited yet
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if DEBUG
+#if !NEWDEBUG
 	public static void DebugDug(Exception ex, string message = "",
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
@@ -457,10 +595,10 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Diagnostics method for full stack trace
+	/// Diagnostics method for full information stack trace
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if DEBUG
+#if !NEWDEBUG
 	public static void Stack(string message = "",
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
@@ -475,7 +613,35 @@ public static class Diag
 		if (message != "")
 			message += ":";
 
-		message += Environment.NewLine + "TRACE: " + Environment.StackTrace.ToString();
+		message += (message != "" ? Environment.NewLine : "") + "INFORMATION TRACE: " + Environment.StackTrace.ToString();
+
+		Dug(false, message, memberName, sourceFilePath, sourceLineNumber);
+
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Diagnostics method for full exception stack trace
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+#if !NEWDEBUG
+	public static void StackException(string message = "",
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
+#else
+	public static void Stack(string message = "",
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
+#endif
+	{
+		if (message != "")
+			message += ":";
+
+		message += (message != "" ? Environment.NewLine : "") + "TRACE: " + Environment.StackTrace.ToString();
 
 		Dug(true, message, memberName, sourceFilePath, sourceLineNumber);
 
@@ -489,7 +655,7 @@ public static class Diag
 	/// recursion or when package is not sited yet
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if DEBUG
+#if !NEWDEBUG
 	public static void DebugTrace(string message = "",
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
@@ -522,7 +688,7 @@ public static class Diag
 	/// Trace method for trace breadcrumbs during debug
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if DEBUG
+#if !NEWDEBUG
 	public static void Trace(string message = "",
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
@@ -538,6 +704,53 @@ public static class Diag
 			return;
 
 		Dug(false, message, memberName, sourceFilePath, sourceLineNumber);
+	}
+
+
+	public static void Trace(Type classType, string method, DataExplorerNodeEventArgs e)
+	{
+		if (e.Node != null && e.Node.ExplorerConnection != null
+			&& e.Node.ExplorerConnection.ConnectionNode != null
+			&& e.Node.Equals(e.Node.ExplorerConnection.ConnectionNode))
+		{
+			try
+			{
+				IVsDataExplorerNode node = e.Node;
+				IVsDataExplorerConnection explorerConnection = node.ExplorerConnection;
+
+				string str = $"\nExplorerConnection.DisplayName: {explorerConnection.DisplayName}, ExplorerConnection type: {explorerConnection.GetType().FullName}"
+					+ $"\n\tItemId: {node.ItemId}, Node.Name: {node.Name}, NodeType: {node},"
+					+ $"\n\t\tHasBeenExpanded: {node.HasBeenExpanded}, "
+					+ $"\n\t\tIsExpandable: {node.IsExpandable}, IsExpanding: {node.IsExpanding}, IsRefreshing: {node.IsRefreshing}, "
+					+ $"\n\t\tIsDiscarded: {node.IsDiscarded}, IsExpanded: {node.IsExpanded}, IsPlaced: {node.IsPlaced}, IsVisible: {node.IsVisible}";
+
+				if (node.Object != null)
+				{
+					string datasetKey = (string)(node.Object.Properties != null
+						&& node.Object.Properties.ContainsKey(CoreConstants.C_KeyExDatasetKey)
+						? node.Object.Properties[CoreConstants.C_KeyExDatasetKey] : "Null");
+					string connectionKey = (string)(node.Object.Properties != null
+						&& node.Object.Properties.ContainsKey(CoreConstants.C_KeyExConnectionKey)
+						? node.Object.Properties[CoreConstants.C_KeyExConnectionKey] : "Null");
+					EnConnectionSource connectionSource = (EnConnectionSource)(int)(node.Object.Properties != null
+						&& node.Object.Properties.ContainsKey(CoreConstants.C_KeyExConnectionSource)
+						? node.Object.Properties[CoreConstants.C_KeyExConnectionSource] : EnConnectionSource.Unknown);
+
+					str += $"\n\tObject.Name: {node.Object.Name}, Object.DatasetKey: {datasetKey}, Object.ConnectionSource: {connectionSource}, Object.ConnectionKey: {connectionKey}, Object.Type: {node.Object.Type.Name}, Object.IsDeleted: {node.Object.IsDeleted}.";
+				}
+				else
+				{
+					str += "\n\tNode.Object is null.";
+				}
+
+				Tracer.Information(classType, method, str);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+			}
+		}
+
 	}
 
 
@@ -621,7 +834,7 @@ public static class Diag
 						text += "\n" + sb + "\n";
 					}
 
-					_ = OutputPaneWriteLineAsync(text);
+					_ = OutputPaneWriteLineAsync(text, false);
 				}
 
 				// Check again.
@@ -730,9 +943,9 @@ public static class Diag
 	/// </summary>
 	/// <param name="value">The text value to write.</param>
 	// ---------------------------------------------------------------------------------
-	public static void OutputPaneWriteLine(string value)
+	public static void OutputPaneWriteLine(string value, bool isException)
 	{
-		_ = Task.Run(() => OutputPaneWriteLineAsync(value));
+		_ = Task.Run(() => OutputPaneWriteLineAsync(value, isException));
 	}
 
 
@@ -745,7 +958,7 @@ public static class Diag
 	/// The text value to write. May be an empty string, in which case a newline is written.
 	/// </param>
 	// ---------------------------------------------------------------------------------
-	public static async Task OutputPaneWriteLineAsync(string value = null)
+	public static async Task OutputPaneWriteLineAsync(string value, bool isException)
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -805,6 +1018,10 @@ public static class Diag
 				throw ex;
 			}
 		}
+
+		if (isException && _OutputPane != null)
+			_OutputPane.Activate();
+
 	}
 
 

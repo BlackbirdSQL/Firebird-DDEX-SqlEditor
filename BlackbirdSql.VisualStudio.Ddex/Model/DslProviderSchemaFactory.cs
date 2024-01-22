@@ -28,13 +28,13 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 
 using FirebirdSql.Data.FirebirdClient;
+
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model;
 
@@ -71,8 +71,6 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 		LinkageParser parser = null;
 		string schemaCollection;
 
-		int syncCardinal = 0;
-
 
 		switch (collectionName)
 		{
@@ -106,17 +104,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 				schemaCollection = "Triggers";
 				break;
 			default:
-				try
-				{
-					parser = LinkageParser.GetInstance(connection);
-					// Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchema()", "getting external schema: {0}. {1}.", collectionName, parser == null ? "no parser to pause" : "making linker pause request");
-					syncCardinal = parser != null ? parser.SyncEnter() : 0;
-					return connection.GetSchema(collectionName, restrictions);
-				}
-				finally
-				{
-					parser?.SyncExit(syncCardinal);
-				}
+				return connection.GetSchema(collectionName, restrictions);
 		}
 
 
@@ -159,12 +147,10 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 		}
 
 		// Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchema()", parser == null ? "no parser to pause" : "making linker pause request");
-		syncCardinal = parser != null ? parser.SyncEnter() : 0;
 
 		var xmlStream = assembly.GetManifestResourceStream(ResourceName);
 		if (xmlStream == null)
 		{
-			parser?.SyncExit(syncCardinal);
 			NullReferenceException ex = new("Resource not found: " + ResourceName);
 			Diag.Dug(ex);
 			throw ex;
@@ -181,7 +167,6 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 		}
 		catch
 		{
-			parser?.SyncExit(syncCardinal);
 			throw;
 		}
 		finally
@@ -193,7 +178,6 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 		if (collection.Length != 1)
 		{
-			parser?.SyncExit(syncCardinal);
 			NotSupportedException ex = new("Unsupported collection name " + schemaCollection);
 			Diag.Dug(ex);
 			throw ex;
@@ -201,7 +185,6 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 		if (restrictions != null && restrictions.Length > (int)collection[0]["NumberOfRestrictions"])
 		{
-			parser?.SyncExit(syncCardinal);
 			InvalidOperationException ex = new("The number of specified restrictions is not valid.");
 			Diag.Dug(ex);
 			throw ex;
@@ -209,7 +192,6 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 		if (ds.Tables[DbMetaDataCollectionNames.Restrictions].Select(filter).Length != (int)collection[0]["NumberOfRestrictions"])
 		{
-			parser?.SyncExit(syncCardinal);
 			InvalidOperationException ex = new("Incorrect restriction definition.");
 			Diag.Dug(ex);
 			throw ex;
@@ -229,13 +211,11 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 				schema = SqlCommandSchema(connection, collectionName, restrictions);
 				break;
 			default:
-				parser?.SyncExit(syncCardinal);
 				NotSupportedException ex = new("Unsupported population mechanism");
 				Diag.Dug(ex);
 				throw ex;
 		}
 
-		parser?.SyncExit(syncCardinal);
 		return schema;
 	}
 
@@ -251,7 +231,6 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 	{
 		// Tracer.Trace(typeof(DslProviderSchemaFactory), "DslProviderSchemaFactory.GetSchemaAsync", "collectionName: {0}", collectionName);
 
-		int syncCardinal = 0;
 		LinkageParser parser = null;
 		string schemaCollection;
 
@@ -289,9 +268,6 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 			default:
 				try
 				{
-					parser = LinkageParser.GetInstance(connection);
-					// Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchemaAsync()", parser == null ? "no parser to pause" : "making linker pause request");
-					syncCardinal = parser != null ? parser.SyncEnter() : 0;
 					return connection.GetSchemaAsync(collectionName, restrictions, cancellationToken);
 				}
 				catch (Exception)
@@ -299,10 +275,6 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 					if (cancellationToken.IsCancellationRequested)
 						return Task.FromResult(new DataTable());
 					throw;
-				}
-				finally
-				{
-					parser?.SyncExit(syncCardinal);
 				}
 		}
 
@@ -364,8 +336,6 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 		// Tracer.Trace(typeof(DslProviderSchemaFactory), "GetSchemaAsync()", parser == null ? "no parser to pause" : "making linker pause request");
 
-		syncCardinal = parser != null ? parser.SyncEnter() : 0;
-
 		try
 		{
 			Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
@@ -375,7 +345,6 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 		}
 		catch
 		{
-			parser?.SyncExit(syncCardinal);
 			throw;
 		}
 		finally
@@ -385,7 +354,6 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 		if (cancellationToken.IsCancellationRequested)
 		{
-			parser?.SyncExit(syncCardinal);
 			return Task.FromResult(new DataTable());
 		}
 
@@ -396,20 +364,17 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 		}
 		catch (Exception ex)
 		{
-			parser?.SyncExit(syncCardinal);
 			Diag.Dug(ex);
 			throw;
 		}
 
 		if (cancellationToken.IsCancellationRequested)
 		{
-			parser?.SyncExit(syncCardinal);
 			return Task.FromResult(new DataTable());
 		}
 
 		if (collection.Length != 1)
 		{
-			parser?.SyncExit(syncCardinal);
 			NotSupportedException ex = new(Resources.ExceptionCollectionNotSupported.FmtRes(schemaCollection));
 			Diag.Dug(ex);
 			throw ex;
@@ -417,7 +382,6 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 		if (restrictions != null && restrictions.Length != (int)collection[0]["NumberOfRestrictions"])
 		{
-			parser?.SyncExit(syncCardinal);
 			InvalidOperationException exbb =
 				new(Resources.ExceptionRestrictionsNotEqualToSpecified.FmtRes(restrictions.Length,
 				(int)collection[0]["NumberOfRestrictions"]));
@@ -440,13 +404,11 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 				task = SqlCommandSchemaAsync(connection, collectionName, restrictions, cancellationToken);
 				break;
 			default:
-				parser?.SyncExit(syncCardinal);
 				NotSupportedException ex = new(Resources.ExceptionUnsupportedPopulationMechanism.FmtRes(collection[0]["PopulationMechanism"].ToString()));
 				Diag.Dug(ex);
 				throw ex;
 		}
 
-		parser?.SyncExit(syncCardinal);
 		return task;
 	}
 

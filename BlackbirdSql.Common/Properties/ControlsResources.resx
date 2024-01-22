@@ -1133,6 +1133,9 @@ You can enable it again from Visual Studio Options -&gt; Environment-&gt;General
   <data name="ErrCannotInitNewEditorInst" xml:space="preserve">
     <value>Cannot initialize new instance of editor.</value>
   </data>
+  <data name="ErrDatabaseConnection" xml:space="preserve">
+    <value>Connection failed. ConnectionString: {0}. Error message: {1}.</value>
+  </data>
   <data name="ErrDatabaseNotAccessible" xml:space="preserve">
     <value>Database not accessible</value>
   </data>

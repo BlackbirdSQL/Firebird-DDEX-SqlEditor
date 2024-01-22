@@ -252,7 +252,7 @@ public class ColumnInfo : IBColumnInfo
 			default:
 				if (!_AllServerDataTypes.ContainsKey(dataTypeName))
 				{
-					Diag.Stack("Invalid DataTypeName _FieldType: " + dataTypeName);
+					Diag.StackException("Invalid DataTypeName _FieldType: " + dataTypeName);
 					_IsUdtField = true;
 					_IsBytesField = true;
 					_IsBlobField = true;

@@ -24,7 +24,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Variables
+	#region Fields
 	// ---------------------------------------------------------------------------------
 
 
@@ -42,7 +42,7 @@ internal class ErmBindingSource : BindingSource, System.Collections.IEnumerable
 	private static readonly object EVENT_DEPENDENCYLISTCHANGED = new object();
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 

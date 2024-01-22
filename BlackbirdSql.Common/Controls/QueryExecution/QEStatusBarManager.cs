@@ -23,8 +23,7 @@ using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Extensions;
-
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Win32;
@@ -205,7 +204,7 @@ public sealed class QEStatusBarManager : IDisposable
 		((ToolStripStatusLabel)(object)_GeneralPanel).Spring = true;
 		_StatusStrip.RenderMode = ToolStripRenderMode.Professional;
 		_StatusStrip.Renderer = new EditorStatusStripRenderer(_StatusStrip);
-		_ = QryMgr.ConnectionStrategy.UiConnectionInfo;
+		_ = QryMgr.ConnectionStrategy.ConnectionInfo;
 		IDbConnection connection = QryMgr.ConnectionStrategy.Connection;
 		if (connection != null && connection.State == ConnectionState.Open)
 		{
@@ -278,7 +277,7 @@ public sealed class QEStatusBarManager : IDisposable
 			_StatusBarUpdateActions.Enqueue(act);
 		}
 
-		if (DisplaySQLResultsControl.IsRunningOnUIThread())
+		if (ThreadHelper.CheckAccess())
 		{
 			ProcessStatusBarUpdateActions();
 			return;
@@ -381,7 +380,7 @@ public sealed class QEStatusBarManager : IDisposable
 	{
 		// Tracer.Trace(GetType(), "QEStatusBarManager.TransitionIntoOfflineMode", "", null);
 		AbstractConnectionStrategy connectionStrategy = QryMgr.ConnectionStrategy;
-		if (connectionStrategy != null && connectionStrategy.UiConnectionInfo != null)
+		if (connectionStrategy != null && connectionStrategy.ConnectionInfo != null)
 		{
 			ResetPanelsForOnlineMode();
 			SetKnownState(EnQeStatusBarKnownStates.ConnectionReady);
@@ -397,7 +396,7 @@ public sealed class QEStatusBarManager : IDisposable
 	private void TransitionIntoOnlineMode(bool useNewConnectionOpenedState)
 	{
 		AbstractConnectionStrategy connectionStrategy = QryMgr.ConnectionStrategy;
-		if (connectionStrategy.UiConnectionInfo != null)
+		if (connectionStrategy.ConnectionInfo != null)
 		{
 			ResetPanelsForOnlineMode();
 			if (useNewConnectionOpenedState)

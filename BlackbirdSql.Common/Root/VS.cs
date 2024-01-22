@@ -8,30 +8,64 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Windows.Data;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Forms;
-
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
-
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-
 using Point = System.Drawing.Point;
 
 
-namespace BlackbirdSql.Common.Ctl;
+namespace BlackbirdSql.Common;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "UIThread compliance is performed by applicable methods.")]
-
-public static class CommonUtils
+public abstract class VS : Core.VS
 {
+
+	// ---------------------------------------------------------------------------------
+	#region DataTools Members - VS
+	// ---------------------------------------------------------------------------------
+
+
+	public const string IVsDataConnectionInteropGuid = "902A17C6-B166-485F-A49F-9029549442DD";
+	public const string IVsDataConnectionManagerInteropGuid = "E7A0D4E0-D0E4-4AFA-A8A1-DD4636073D98";
+
+
+	#endregion DataTools Members
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	#region SqlEditor Members - VS
+	// ---------------------------------------------------------------------------------
+
+
+	/// <summary>
+	/// Visual Studio built-in Sql Editor Guid
+	/// </summary>
+	public const string SqlEditorFactoryGuid = "cc5d8df0-88f4-4bb2-9dbb-b48cee65c30a";
+
+	/// <summary>
+	/// Visual Studio built-in Encoded Sql Editor Guid
+	/// </summary>
+	public const string SqlEditorEncodedFactoryGuid = "F9D1E5B1-8A59-439C-9BB9-D5598B830ECB";
+
+	/// <summary>
+	/// Visual Studio built-in Sql Editor Command Set Guid
+	/// </summary>
+	public const string SqlEditorCommandsGuid = "52692960-56BC-4989-B5D3-94C47A513E8D";
+
+
+	#endregion SqlEditor Members
+
+
+
 
 	public static void BindProperty(FrameworkElement element, DependencyProperty property, string bindToProperty, BindingMode mode)
 	{
@@ -46,12 +80,7 @@ public static class CommonUtils
 
 	public static void ShowContextMenuEvent(int menuId, int xPos, int yPos, IOleCommandTarget commandTarget)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(ex);
-			throw ex;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		IVsUIShell obj = Package.GetGlobalService(typeof(IVsUIShell)) as IVsUIShell;
 		Guid rclsidActive = LibraryData.CLSID_CommandSet;
@@ -62,7 +91,7 @@ public static class CommonUtils
 			x = (short)xPos,
 			y = (short)yPos
 		};
-		obj.ShowContextMenu(VS.dwReserved, ref rclsidActive, menuId, [pOINTS], commandTarget);
+		obj.ShowContextMenu(Core.VS.dwReserved, ref rclsidActive, menuId, [pOINTS], commandTarget);
 	}
 
 
@@ -110,12 +139,7 @@ public static class CommonUtils
 
 	public static IEnumerable<IVsWindowFrame> GetWindowFramesForDocData(object existingDocData, System.IServiceProvider serviceProvider)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(ex);
-			throw ex;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		if (existingDocData == null)
 		{
@@ -168,12 +192,7 @@ public static class CommonUtils
 	{
 		// Tracer.Trace(typeof(CommonUtils), "CommonUtils.GetFileNameUsingSaveDialog", "strFilterString = {0}, strCaption = {1}", strFilterString, strCaption);
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(ex);
-			throw ex;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		filterIndex = 0;
 		if (Package.GetGlobalService(typeof(SVsUIShell)) is IVsUIShell vsUIShell)
@@ -188,7 +207,7 @@ public static class CommonUtils
 				intPtr = Marshal.AllocCoTaskMem(array2.Length * 2);
 				Marshal.Copy(array2, 0, intPtr, array2.Length);
 				array[0].lStructSize = (uint)Marshal.SizeOf(typeof(VSSAVEFILENAMEW));
-				Native.ThrowOnFailure(vsUIShell.GetDialogOwnerHwnd(out array[0].hwndOwner), (string)null);
+				Core.Native.ThrowOnFailure(vsUIShell.GetDialogOwnerHwnd(out array[0].hwndOwner), (string)null);
 				array[0].pwzFilter = strFilterString;
 				array[0].pwzFileName = intPtr;
 				array[0].nMaxFileName = (uint)num;
@@ -230,13 +249,13 @@ public static class CommonUtils
 				}
 				catch (Exception e)
 				{
-					Tracer.LogExCatch(typeof(CommonUtils), e);
+					Tracer.LogExCatch(typeof(VS), e);
 					return null;
 				}
 			}
 			catch (Exception e2)
 			{
-				Tracer.LogExCatch(typeof(CommonUtils), e2);
+				Tracer.LogExCatch(typeof(VS), e2);
 				Cmd.ShowExceptionInDialog(string.Empty, e2);
 				return null;
 			}

@@ -11,8 +11,6 @@ using Microsoft.VisualStudio.Shell;
 
 namespace BlackbirdSql.Core.Controls.Config;
 
-[SuppressMessage("Usage", "VSTHRD104:Offer async methods")]
-
 // =========================================================================================================
 //										AbstractLiveSettingsPage Class
 //

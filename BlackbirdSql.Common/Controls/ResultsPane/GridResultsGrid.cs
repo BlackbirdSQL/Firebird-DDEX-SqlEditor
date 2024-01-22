@@ -28,14 +28,11 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
-
 public class GridResultsGrid : GridControl, IBGridControl2, IBGridControl, IBStatusBarContributer
 {
 	private class GridHyperlinkColumnWithLimit : GridHyperlinkColumn
 	{
-		protected int m_maxNumOfChars = CommonUtils.DefaultMaxCharsPerColumnForGrid;
+		protected int m_maxNumOfChars = VS.DefaultMaxCharsPerColumnForGrid;
 
 		protected StringBuilder m_cellSB = new StringBuilder(256);
 
@@ -209,12 +206,7 @@ public class GridResultsGrid : GridControl, IBGridControl2, IBGridControl, IBSta
 
 		private Color GetVSHyperLinkColor()
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			if (Package.GetGlobalService(typeof(SVsUIShell)) is IVsUIShell2 vsUIShell
 				&& Native.Succeeded(vsUIShell.GetVSSysColorEx((int)__VSSYSCOLOREX.VSCOLOR_CONTROL_LINK_TEXT, out var pdwRGBval)))
@@ -244,9 +236,9 @@ public class GridResultsGrid : GridControl, IBGridControl2, IBGridControl, IBSta
 
 	private static string s_selectWholeColumnTooltip;
 
-	private int _NumberOfCharsToShow = CommonUtils.DefaultMaxCharsPerColumnForGrid;
+	private int _NumberOfCharsToShow = VS.DefaultMaxCharsPerColumnForGrid;
 
-	private readonly StringBuilder m_sbCustomClipboardText = new(CommonUtils.DefaultMaxCharsPerColumnForGrid);
+	private readonly StringBuilder m_sbCustomClipboardText = new(VS.DefaultMaxCharsPerColumnForGrid);
 
 	private bool m_includeColumnHeadersForDnD;
 
@@ -350,12 +342,12 @@ public class GridResultsGrid : GridControl, IBGridControl2, IBGridControl, IBSta
 			rowCount = 1L;
 		}
 
-		if (rowCount > CommonUtils.DefaultInitialMinNumberOfVisibleRows)
+		if (rowCount > VS.DefaultInitialMinNumberOfVisibleRows)
 		{
-			rowCount = CommonUtils.DefaultInitialMinNumberOfVisibleRows;
+			rowCount = VS.DefaultInitialMinNumberOfVisibleRows;
 		}
 
-		if (rowCount <= CommonUtils.DefaultInitialMinNumberOfVisibleRows)
+		if (rowCount <= VS.DefaultInitialMinNumberOfVisibleRows)
 		{
 			bool flag = false;
 			if (IsHandleCreated)
@@ -365,7 +357,7 @@ public class GridResultsGrid : GridControl, IBGridControl2, IBGridControl, IBSta
 				flag = sCROLLINFO.nMax > sCROLLINFO.nPage;
 			}
 
-			proposedSize.Height = (int)rowCount * (RowHeight + 1) + HeaderHeight + 1 + CommonUtils.GetExtraSizeForBorderStyle(BorderStyle);
+			proposedSize.Height = (int)rowCount * (RowHeight + 1) + HeaderHeight + 1 + VS.GetExtraSizeForBorderStyle(BorderStyle);
 			if (flag)
 			{
 				proposedSize.Height += SystemInformation.HorizontalScrollBarHeight;
@@ -668,7 +660,7 @@ public class GridResultsGrid : GridControl, IBGridControl2, IBGridControl, IBSta
 			}
 
 			int numberOfCharsToShow = NumberOfCharsToShow;
-			NumberOfCharsToShow = CommonUtils.DefaultInitialMaxCharsPerColumnForGrid;
+			NumberOfCharsToShow = VS.DefaultInitialMaxCharsPerColumnForGrid;
 			for (int i = 1; i < ColumnsNumber; i++)
 			{
 				ResizeColumnToShowAllContents(i);

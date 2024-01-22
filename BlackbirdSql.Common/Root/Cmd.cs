@@ -1,33 +1,21 @@
 ﻿
 using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Security;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
-
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Ctl.Exceptions;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Model;
-
-using Microsoft;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
 namespace BlackbirdSql.Common;
-
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "UIThread compliance is performed by applicable methods.")]
 
 // =========================================================================================================
 //												Cmd Class
@@ -57,12 +45,11 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 
 
 	// =========================================================================================================
-	#region Variables - Cmd
+	#region Fields - Cmd
 	// =========================================================================================================
 
 
 	private static string _AppTitle;
-	private static Control _MarshalingControl;
 
 	private delegate DialogResult SafeShowMessageBox(string title, string text, string helpKeyword, MessageBoxButtons buttons, MessageBoxIcon icon);
 
@@ -86,7 +73,7 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 
@@ -148,16 +135,11 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 
 	public static IVsProject3 GetMiscellaneousProject(IServiceProvider provider)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(ex);
-			throw ex;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		IVsExternalFilesManager obj = provider.GetService(typeof(SVsExternalFilesManager)) as IVsExternalFilesManager
-			?? throw Diag.ServiceUnavailable(typeof(IVsExternalFilesManager));
-		Native.WrapComCall(obj.GetExternalFilesProject(out IVsProject ppProject), Array.Empty<int>());
+			?? throw Diag.ExceptionService(typeof(IVsExternalFilesManager));
+		Native.WrapComCall(obj.GetExternalFilesProject(out IVsProject ppProject), []);
 
 		return (IVsProject3)ppProject;
 	}
@@ -167,12 +149,7 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 	// IsInAutomationFunction
 	public static bool IsInAutomationFunction()
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(ex);
-			throw ex;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		IVsExtensibility3 extensibility = GlobalServices.Extensibility;
 
@@ -191,12 +168,7 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 	{
 		// Tracer.Trace(typeof(Cmd), "OpenAsMiscellaneousFile()");
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(ex);
-			throw ex;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		try
 		{
@@ -212,8 +184,8 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 
 			Native.WrapComCall(miscellaneousProject.AddItemWithSpecific(grfEditorFlags: flags,
 				itemidLoc: uint.MaxValue, dwAddItemOperation: dwAddItemOperation, pszItemName: caption, cFilesToOpen: 1u,
-				rgpszFilesToOpen: new string[1] { path }, hwndDlgOwner: IntPtr.Zero, rguidEditorType: ref editor,
-				pszPhysicalView: physicalView, rguidLogicalView: ref logicalView, pResult: array), Array.Empty<int>());
+				rgpszFilesToOpen: [path], hwndDlgOwner: IntPtr.Zero, rguidEditorType: ref editor,
+				pszPhysicalView: physicalView, rguidLogicalView: ref logicalView, pResult: array), []);
 
 			if (array[0] != VSADDRESULT.ADDRESULT_Success)
 			{
@@ -233,12 +205,7 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 	{
 		// Tracer.Trace(typeof(Cmd), "OpenAsMiscellaneousFile()");
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(ex);
-			throw ex;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		IVsProject3 miscellaneousProject = GetMiscellaneousProject(provider);
 		miscellaneousProject.GenerateUniqueItemName(VSConstants.VSITEMID_ROOT, MonikerAgent.C_SqlExtension, "SQLQuery", out string pbstrItemName);
@@ -374,70 +341,11 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 	public static DialogResult ShowMessageBoxEx(string title, string text,
 		string helpKeyword, MessageBoxButtons buttons, MessageBoxIcon icon)
 	{
-		return ShowMessageBoxEx(title, text, helpKeyword, buttons, MessageBoxDefaultButton.Button1, icon);
+		return VS.ShowMessageBoxEx(title, text, helpKeyword, buttons, MessageBoxDefaultButton.Button1, icon);
 	}
 
 
 
-	// ShowMessageBoxEx
-	public static DialogResult ShowMessageBoxEx(string title, string text, string helpKeyword,
-		MessageBoxButtons buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcon icon)
-	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		_MarshalingControl ??= new Control();
-
-		if (_MarshalingControl.InvokeRequired)
-		{
-			return (DialogResult)_MarshalingControl.Invoke(new SafeShowMessageBox(ShowMessageBoxEx),
-				title, text, helpKeyword, buttons, icon);
-		}
-
-		int pnResult = 1;
-		if (Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(SVsUIShell)) is IVsUIShell vsUIShell)
-		{
-			Guid rclsidComp = Guid.Empty;
-			OLEMSGICON msgicon = OLEMSGICON.OLEMSGICON_INFO;
-			switch (icon)
-			{
-				case MessageBoxIcon.Hand:
-					msgicon = OLEMSGICON.OLEMSGICON_CRITICAL;
-					break;
-				case MessageBoxIcon.Asterisk:
-					msgicon = OLEMSGICON.OLEMSGICON_INFO;
-					break;
-				case MessageBoxIcon.None:
-					msgicon = OLEMSGICON.OLEMSGICON_NOICON;
-					break;
-				case MessageBoxIcon.Question:
-					msgicon = OLEMSGICON.OLEMSGICON_QUERY;
-					break;
-				case MessageBoxIcon.Exclamation:
-					msgicon = OLEMSGICON.OLEMSGICON_WARNING;
-					break;
-			}
-
-			OLEMSGDEFBUTTON msgdefbtn = OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST;
-			switch (defaultButton)
-			{
-				case MessageBoxDefaultButton.Button2:
-					msgdefbtn = OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND;
-					break;
-				case MessageBoxDefaultButton.Button3:
-					msgdefbtn = OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_THIRD;
-					break;
-			}
-
-			Native.WrapComCall(vsUIShell.ShowMessageBox(0u, ref rclsidComp, title, string.IsNullOrEmpty(text) ? null : text, helpKeyword, 0u, (OLEMSGBUTTON)buttons, msgdefbtn, msgicon, 0, out pnResult));
-		}
-
-		return (DialogResult)pnResult;
-	}
 
 
 	#endregion Static Methods

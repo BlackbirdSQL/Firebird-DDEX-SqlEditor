@@ -168,6 +168,15 @@
   <data name="String9" xml:space="preserve">
     <value>For more information, please see &lt;a href="https://aka.ms/VSDataProviders"&gt;https://aka.ms/VSDataProviders&lt;/a&gt;.</value>
   </data>
+  <data name="TConnectionUIControl_ConnectionFailed" xml:space="preserve">
+    <value>Connect failed. Could not verify connection parameters.</value>
+  </data>
+  <data name="TConnectionUIControl_DatasetKeyDescription" xml:space="preserve">
+    <value>To assign a custom name to this connection specify a Proposed Connection Name or a Proposed Database Name under Advanced Properties.</value>
+  </data>
+  <data name="TConnectionUIControl_DatasetKeyDescription_Application" xml:space="preserve">
+    <value>Project connections are not synchronized with the Running Connection Table. Synchronization requires a Solution reload.</value>
+  </data>
   <data name="TDataConnectionAdvancedDlg_Add" xml:space="preserve">
     <value>&amp;Add...</value>
   </data>

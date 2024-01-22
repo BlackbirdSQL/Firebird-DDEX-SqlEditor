@@ -214,6 +214,33 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connect failed. Could not verify connection parameters..
+        /// </summary>
+        internal static string TConnectionUIControl_ConnectionFailed {
+            get {
+                return ResourceManager.GetString("TConnectionUIControl_ConnectionFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To assign a custom name to this connection specify a Proposed Connection Name or a Proposed Database Name under Advanced Properties..
+        /// </summary>
+        internal static string TConnectionUIControl_DatasetKeyDescription {
+            get {
+                return ResourceManager.GetString("TConnectionUIControl_DatasetKeyDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project connections are not synchronized with the Running Connection Table. Synchronization requires a Solution reload..
+        /// </summary>
+        internal static string TConnectionUIControl_DatasetKeyDescription_Application {
+            get {
+                return ResourceManager.GetString("TConnectionUIControl_DatasetKeyDescription_Application", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &amp;Add....
         /// </summary>
         internal static string TDataConnectionAdvancedDlg_Add {

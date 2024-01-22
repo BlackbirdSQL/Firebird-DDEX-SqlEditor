@@ -4,22 +4,16 @@
 #endregion
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-
 using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Core;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 
 namespace BlackbirdSql.Common.Ctl.Commands;
-
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
 
 [ComVisible(false)]
 public sealed class TextViewCommandFilter : IOleCommandTarget, IDisposable
@@ -83,12 +77,7 @@ public sealed class TextViewCommandFilter : IOleCommandTarget, IDisposable
 			return (int)Constants.MSOCMDERR_E_NOTSUPPORTED;
 		}
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		return _NextTarget.QueryStatus(ref guidGroup, nCmdId, oleCmd, oleText);
 	}
@@ -117,12 +106,7 @@ public sealed class TextViewCommandFilter : IOleCommandTarget, IDisposable
 		if (_NextTarget == null)
 			return (int)Constants.MSOCMDERR_E_NOTSUPPORTED;
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		return _NextTarget.Exec(ref guidGroup, nCmdId, nCmdExcept, vIn, vOut);
 	}

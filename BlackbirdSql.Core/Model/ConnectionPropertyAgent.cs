@@ -9,12 +9,25 @@ using BlackbirdSql.Core.Ctl.Interfaces;
 
 namespace BlackbirdSql.Core.Model;
 
-#pragma warning disable CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
-#pragma warning disable CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
-public class UIConnectionInfo : AbstractModelPropertyAgent
-#pragma warning restore CS0661 // Type defines operator == or operator != but does not override Object.GetHashCode()
-#pragma warning restore CS0660 // Type defines operator == or operator != but does not override Object.Equals(object o)
+// Type defines operator == or operator != but does not override Object.Equals(object o)
+#pragma warning disable CS0660
+// Type defines operator == or operator != but does not override Object.GetHashCode()
+#pragma warning disable CS0661 
+public class ConnectionPropertyAgent(IBPropertyAgent lhs, bool generateNewId)
+	: AbstractModelPropertyAgent(lhs, generateNewId)
 {
+
+	public ConnectionPropertyAgent() : this(null, true)
+	{
+	}
+
+	public ConnectionPropertyAgent(IBPropertyAgent lhs) : this(lhs, true)
+	{
+	}
+
+
+
+
 	// private const string XmlStart = "ConnectionInformation";
 
 	// private const string XmlServerType = "ServerType";
@@ -37,7 +50,7 @@ public class UIConnectionInfo : AbstractModelPropertyAgent
 
 
 
-	public static bool operator ==(UIConnectionInfo infoA, UIConnectionInfo infoB)
+	public static bool operator ==(ConnectionPropertyAgent infoA, ConnectionPropertyAgent infoB)
 	{
 		bool result = false;
 		bool flag = infoA is null;
@@ -54,7 +67,7 @@ public class UIConnectionInfo : AbstractModelPropertyAgent
 		return result;
 	}
 
-	public static bool operator ==(UIConnectionInfo infoA, object infoB)
+	public static bool operator ==(ConnectionPropertyAgent infoA, object infoB)
 	{
 		bool result = false;
 		bool flag = infoA is null;
@@ -71,7 +84,7 @@ public class UIConnectionInfo : AbstractModelPropertyAgent
 		return result;
 	}
 
-	public static bool operator ==(object infoA, UIConnectionInfo infoB)
+	public static bool operator ==(object infoA, ConnectionPropertyAgent infoB)
 	{
 		bool result = false;
 		bool flag = infoA == null;
@@ -88,41 +101,26 @@ public class UIConnectionInfo : AbstractModelPropertyAgent
 		return result;
 	}
 
-	public static bool operator !=(UIConnectionInfo infoA, UIConnectionInfo infoB)
+	public static bool operator !=(ConnectionPropertyAgent infoA, ConnectionPropertyAgent infoB)
 	{
 		return !(infoA == infoB);
 	}
 
-	public static bool operator !=(UIConnectionInfo infoA, object infoB)
+	public static bool operator !=(ConnectionPropertyAgent infoA, object infoB)
 	{
 		return !(infoA == infoB);
 	}
 
-	public static bool operator !=(object infoA, UIConnectionInfo infoB)
+	public static bool operator !=(object infoA, ConnectionPropertyAgent infoB)
 	{
 		return !(infoA == infoB);
-	}
-
-
-
-
-	public UIConnectionInfo() : this(null, true)
-	{
-	}
-
-	public UIConnectionInfo(IBPropertyAgent lhs, bool generateNewId) : base(lhs, generateNewId)
-	{
-	}
-
-	public UIConnectionInfo(IBPropertyAgent lhs) : this(lhs, true)
-	{
 	}
 
 
 
 	public override IBPropertyAgent Copy()
 	{
-		return new UIConnectionInfo(this, generateNewId: true);
+		return new ConnectionPropertyAgent(this, generateNewId: true);
 	}
 
 
@@ -135,9 +133,9 @@ public class UIConnectionInfo : AbstractModelPropertyAgent
 
 
 
-	public static UIConnectionInfo CreateFromStream(XmlReader reader)
+	public static ConnectionPropertyAgent CreateFromStream(XmlReader reader)
 	{
-		UIConnectionInfo connectionInfo = new UIConnectionInfo();
+		ConnectionPropertyAgent connectionInfo = new ConnectionPropertyAgent();
 
 		connectionInfo.LoadFromStream(reader);
 
@@ -147,3 +145,5 @@ public class UIConnectionInfo : AbstractModelPropertyAgent
 
 
 }
+#pragma warning restore CS0661
+#pragma warning restore CS0660

@@ -6,49 +6,45 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
+using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
+using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 
 /// <summary>
-/// Replacement for Framework.AdoDotNet.AdoDotNetConnectionProperties implementation of the
+/// Replacement for <see cref="AdoDotNetConnectionProperties"/> implementation of the
 /// IVsDataConnectionProperties and IVsDataConnectionUIProperties interfaces using CsbAgent
 /// instead of FbConnectionStringBuilder.
 /// </summary>
-public class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>, IVsDataConnectionProperties, IDictionary<string, object>, ICollection<KeyValuePair<string, object>>, IEnumerable<KeyValuePair<string, object>>, IEnumerable, IVsDataConnectionUIProperties, ICustomTypeDescriptor, INotifyPropertyChanged
+public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>,
+	IVsDataConnectionProperties, IDictionary<string, object>,
+	ICollection<KeyValuePair<string, object>>, IEnumerable<KeyValuePair<string, object>>,
+	IEnumerable, IVsDataConnectionUIProperties, ICustomTypeDescriptor, INotifyPropertyChanged
 {
-	private DbConnectionStringBuilder _ConnectionStringBuilder;
+	private CsbAgent _ConnectionStringBuilder;
 
 	private readonly object _LockObject = new object();
+
 
 	public virtual object this[string key]
 	{
 		[SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations")]
 		get
 		{
-			if (key == null)
-			{
-				throw new ArgumentNullException("key");
-			}
-
-			if (!ConnectionStringBuilder.TryGetValue(key, out object value))
-			{
-				throw new KeyNotFoundException(string.Format(null, "Resources.DataConnectionProperties_PropertyNotFound: {0}", key));
-			}
-
-			return value;
+			return ConnectionStringBuilder[key];
 		}
 		set
 		{
 			if (key == null)
-				throw new ArgumentNullException("key");
+				throw new ArgumentNullException(nameof(key));
 
 			bool changed = false;
 
@@ -57,11 +53,9 @@ public class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>
 				if (!ContainsKey(key))
 				{
 					if (!IsExtensible)
-					{
 						throw new KeyNotFoundException(Resources.IVsDataConnectionProperties_PropertyInvalid.FmtRes(key));
-					}
 
-					((CsbAgent)ConnectionStringBuilder).Add(key, value);
+					ConnectionStringBuilder.Add(key, value);
 					changed = ContainsKey(key);
 				}
 				else
@@ -87,11 +81,13 @@ public class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>
 		}
 	}
 
+	
+
 	public virtual bool IsExtensible => !ConnectionStringBuilder.IsFixedSize;
 
 	public virtual bool IsComplete => true;
 
-	public virtual int Count => ((ICustomTypeDescriptor)this).GetProperties().Count;
+	public virtual int Count => TypeDescriptor.GetProperties(ConnectionStringBuilder).Count;
 
 	public virtual ICollection<string> Keys
 	{
@@ -117,7 +113,7 @@ public class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>
 
 	bool ICollection<KeyValuePair<string, object>>.IsReadOnly => ConnectionStringBuilder.IsReadOnly;
 
-	protected DbConnectionStringBuilder ConnectionStringBuilder
+	protected CsbAgent ConnectionStringBuilder
 	{
 		get
 		{
@@ -135,19 +131,17 @@ public class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>
 	public virtual void Reset()
 	{
 		lock (_LockObject)
-		{
 			ConnectionStringBuilder.Clear();
-		}
 
 		OnPropertyChanged(new PropertyChangedEventArgs(string.Empty));
 	}
 
 	public virtual void Parse(string connectionString)
 	{
+		// Tracer.Trace(GetType(), "Parse()", "connectionString: {0}", connectionString);
+
 		lock (_LockObject)
-		{
 			ConnectionStringBuilder.ConnectionString = connectionString;
-		}
 
 		OnPropertyChanged(new PropertyChangedEventArgs(string.Empty));
 	}
@@ -164,7 +158,9 @@ public class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>
 			throw new ArgumentNullException("key");
 		}
 
-		PropertyDescriptorCollection properties = ((ICustomTypeDescriptor)this).GetProperties([PasswordPropertyTextAttribute.Yes]);
+		PropertyDescriptorCollection properties =
+			TypeDescriptor.GetProperties(ConnectionStringBuilder, [PasswordPropertyTextAttribute.Yes]);
+
 		foreach (PropertyDescriptor item in properties)
 		{
 			if (item.Name.Equals(key, StringComparison.OrdinalIgnoreCase))
@@ -195,27 +191,23 @@ public class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>
 	public virtual void Add(string key, object value)
 	{
 		if (key == null)
-		{
 			throw new ArgumentNullException("key");
-		}
 
 		if (!IsExtensible)
-		{
 			throw new NotSupportedException("Resources.DataConnectionProperties_NotExtensible");
-		}
 
 		lock (_LockObject)
 		{
 			if (ContainsKey(key))
-			{
 				throw new ArgumentException(string.Format(null, "Resources.DataConnectionProperties_PropertyAlreadyExists: {0}", key), "key");
-			}
 
-			((CsbAgent)ConnectionStringBuilder).Add(key, value);
+			ConnectionStringBuilder.Add(key, value);
 		}
 
 		OnPropertyChanged(new PropertyChangedEventArgs(key));
 	}
+
+
 
 	public virtual void Add(string key, Type type, object value)
 	{
@@ -227,21 +219,19 @@ public class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>
 		return ConnectionStringBuilder.TryGetValue(key, out value);
 	}
 
+
+
 	public virtual bool Reset(string key)
 	{
 		bool flag = false;
 		lock (_LockObject)
 		{
 			if (ConnectionStringBuilder.ContainsKey(key))
-			{
 				flag = ConnectionStringBuilder.Remove(key);
-			}
 		}
 
 		if (flag)
-		{
 			OnPropertyChanged(new PropertyChangedEventArgs(key));
-		}
 
 		return flag;
 	}
@@ -249,14 +239,10 @@ public class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>
 	public virtual bool Remove(string key)
 	{
 		if (key == null)
-		{
 			throw new ArgumentNullException("key");
-		}
 
 		if (!IsExtensible)
-		{
 			throw new NotSupportedException("Resources.DataConnectionProperties_NotExtensible");
-		}
 
 		return Reset(key);
 	}
@@ -264,11 +250,15 @@ public class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>
 
 	public virtual string ToDisplayString()
 	{
-		PropertyDescriptorCollection properties = ((ICustomTypeDescriptor)this).GetProperties([PasswordPropertyTextAttribute.Yes]);
+		PropertyDescriptorCollection properties =
+			TypeDescriptor.GetProperties(ConnectionStringBuilder, [PasswordPropertyTextAttribute.Yes]);
+
 		IList<KeyValuePair<string, object>> list = new List<KeyValuePair<string, object>>();
+
 		foreach (PropertyDescriptor item in properties)
 		{
 			string displayName = item.DisplayName;
+
 			if (ConnectionStringBuilder.ShouldSerialize(displayName))
 			{
 				object value = ConnectionStringBuilder[displayName];
@@ -286,20 +276,24 @@ public class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>
 			foreach (KeyValuePair<string, object> item2 in list)
 			{
 				if (item2.Value != null)
-				{
 					ConnectionStringBuilder[item2.Key] = item2.Value;
-				}
 			}
 		}
 	}
 
+
+
 	public virtual string ToSafeString()
 	{
-		PropertyDescriptorCollection properties = ((ICustomTypeDescriptor)this).GetProperties([PasswordPropertyTextAttribute.Yes]);
+		PropertyDescriptorCollection properties = TypeDescriptor
+			.GetProperties(ConnectionStringBuilder, [PasswordPropertyTextAttribute.Yes]);
+
 		IList<KeyValuePair<string, object>> list = new List<KeyValuePair<string, object>>();
+
 		foreach (PropertyDescriptor item in properties)
 		{
 			string displayName = item.DisplayName;
+
 			if (ConnectionStringBuilder.ShouldSerialize(displayName))
 			{
 				list.Add(new KeyValuePair<string, object>(displayName, ConnectionStringBuilder[displayName]));
@@ -316,9 +310,7 @@ public class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>
 			foreach (KeyValuePair<string, object> item2 in list)
 			{
 				if (item2.Value != null)
-				{
 					ConnectionStringBuilder[item2.Key] = item2.Value;
-				}
 			}
 		}
 	}
@@ -327,11 +319,11 @@ public class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>
 
 	public virtual void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
 	{
-		// Tracer.Trace(GetType(), "CopyTo()");
 		lock (_LockObject)
 		{
 			KeyValuePair<string, object>[] array2 = new KeyValuePair<string, object>[Keys.Count];
 			int num = 0;
+
 			foreach (string key in Keys)
 			{
 				array2[num] = new KeyValuePair<string, object>(key, this[key]);
@@ -344,118 +336,106 @@ public class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>
 
 	public override string ToString()
 	{
-		// Tracer.Trace(GetType(), "ToString()");
 		return ConnectionStringBuilder.ToString();
 	}
 
 	string ICustomTypeDescriptor.GetClassName()
 	{
-		// Tracer.Trace(GetType(), "ICustomTypeDescriptor.GetClassName()");
 		return TypeDescriptor.GetClassName(ConnectionStringBuilder, noCustomTypeDesc: true);
 	}
 
 	string ICustomTypeDescriptor.GetComponentName()
 	{
-		// Tracer.Trace(GetType(), "ICustomTypeDescriptor.GetComponentName()");
 		return TypeDescriptor.GetComponentName(ConnectionStringBuilder, noCustomTypeDesc: true);
 	}
 
 	AttributeCollection ICustomTypeDescriptor.GetAttributes()
 	{
-		// Tracer.Trace(GetType(), "GetAttributes()");
 		return TypeDescriptor.GetAttributes(ConnectionStringBuilder, noCustomTypeDesc: true);
 	}
 
 	object ICustomTypeDescriptor.GetEditor(Type editorBaseType)
 	{
-		// Tracer.Trace(GetType(), "GetEditor()");
 		return TypeDescriptor.GetEditor(ConnectionStringBuilder, editorBaseType, noCustomTypeDesc: true);
 	}
 
 	TypeConverter ICustomTypeDescriptor.GetConverter()
 	{
-		// Tracer.Trace(GetType(), "GetConvertor()", "Conevertor: {0}", TypeDescriptor.GetConverter(ConnectionStringBuilder, noCustomTypeDesc: true));
 		return new CsbAgent.CsbConverter();
 	}
 
 	PropertyDescriptor ICustomTypeDescriptor.GetDefaultProperty()
 	{
-		// Tracer.Trace(GetType(), "GetDefaultProperty()");
 		return TypeDescriptor.GetDefaultProperty(ConnectionStringBuilder, noCustomTypeDesc: true);
 	}
 
+	protected abstract PropertyDescriptorCollection GetCsbProperties(DbConnectionStringBuilder csb);
+
+
 	PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties()
 	{
-		// Tracer.Trace(GetType(), "ICustomTypeDescriptor.GetProperties()");
-		return TypeDescriptor.GetProperties(ConnectionStringBuilder);
+		return GetCsbProperties(ConnectionStringBuilder);
 	}
+
+	protected abstract PropertyDescriptorCollection GetCsbAttributesProperties(Attribute[] attributes);
+
 
 	PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties(Attribute[] attributes)
 	{
-		// Tracer.Trace(GetType(), "ICustomTypeDescriptor.GetProperties(Attribute[])");
-		return TypeDescriptor.GetProperties(ConnectionStringBuilder, attributes);
+		return GetCsbAttributesProperties(attributes);
 	}
 
 	EventDescriptor ICustomTypeDescriptor.GetDefaultEvent()
 	{
-		// Tracer.Trace(GetType(), "ICustomTypeDescriptor.GetDefaultEvent()");
 		return TypeDescriptor.GetDefaultEvent(ConnectionStringBuilder, noCustomTypeDesc: true);
 	}
 
 	EventDescriptorCollection ICustomTypeDescriptor.GetEvents()
 	{
-		// Tracer.Trace(GetType(), "ICustomTypeDescriptor.GetEvents()");
 		return TypeDescriptor.GetEvents(ConnectionStringBuilder, noCustomTypeDesc: true);
 	}
 
 	EventDescriptorCollection ICustomTypeDescriptor.GetEvents(Attribute[] attributes)
 	{
-		// Tracer.Trace(GetType(), "ICustomTypeDescriptor.GetEvents(Attribute[])");
 		return TypeDescriptor.GetEvents(ConnectionStringBuilder, attributes, noCustomTypeDesc: true);
 	}
 
 	object ICustomTypeDescriptor.GetPropertyOwner(PropertyDescriptor pd)
 	{
-		// Tracer.Trace(GetType(), "ICustomTypeDescriptor.GetPropertyOwner()");
 		return ConnectionStringBuilder;
 	}
 
 	void ICollection<KeyValuePair<string, object>>.Add(KeyValuePair<string, object> item)
 	{
-		// Tracer.Trace(GetType(), "ICollection<KeyValuePair<string, object>>.Add(KeyValuePair<string, object>)");
 		Add(item.Key, item.Value);
 	}
 
 	bool ICollection<KeyValuePair<string, object>>.Remove(KeyValuePair<string, object> item)
 	{
-		// Tracer.Trace(GetType(), "ICollection<KeyValuePair<string, object>>.Remove(KeyValuePair<string, object>)");
 		if (!Contains(item))
-		{
 			return false;
-		}
 
 		return Remove(item.Key);
 	}
 
 	void ICollection<KeyValuePair<string, object>>.Clear()
 	{
-		// Tracer.Trace(GetType(), "ICollection<KeyValuePair<string, object>>.Clear()");
 		throw new NotSupportedException();
 	}
 
 	IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator()
 	{
-		// Tracer.Trace(GetType(), "IEnumerable<KeyValuePair<string, object>>.GetEnumerator()");
 		KeyValuePair<string, object>[] array = new KeyValuePair<string, object>[Keys.Count];
 		CopyTo(array, 0);
+
 		return ((IEnumerable<KeyValuePair<string, object>>)array).GetEnumerator();
 	}
 
 	IEnumerator IEnumerable.GetEnumerator()
 	{
-		// Tracer.Trace(GetType(), "IEnumerable.GetEnumerator()");
 		KeyValuePair<string, object>[] array = new KeyValuePair<string, object>[Keys.Count];
 		CopyTo(array, 0);
+
 		return array.GetEnumerator();
 	}
 
@@ -463,17 +443,15 @@ public class TAbstractConnectionProperties : DataSiteableObject<IVsDataProvider>
 	{
 		if (Site != null)
 		{
-			// Tracer.Trace(GetType(), "OnSiteChanged()", "TYPE IVsDataProvider Site type: {0}", Site.GetType().FullName);
-			_ConnectionStringBuilder = new CsbAgent();
+			_ConnectionStringBuilder = [];
 
 			Reset();
 		}
 
 		base.OnSiteChanged(e);
+
 		if (Site == null)
-		{
 			_ConnectionStringBuilder = null;
-		}
 	}
 
 	protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)

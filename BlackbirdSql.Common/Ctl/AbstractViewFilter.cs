@@ -16,9 +16,6 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace BlackbirdSql.Common.Ctl;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
-
 public abstract class AbstractViewFilter : IOleCommandTarget, IDisposable
 {
 	private IOleCommandTarget _nextTarget;
@@ -45,12 +42,7 @@ public abstract class AbstractViewFilter : IOleCommandTarget, IDisposable
 	{
 		if (_nextTarget != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			return _nextTarget.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 		}
@@ -62,12 +54,7 @@ public abstract class AbstractViewFilter : IOleCommandTarget, IDisposable
 	{
 		if (_nextTarget != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			return _nextTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
 		}

@@ -10,6 +10,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
+
 // using BlackbirdSql.Common.Controls.Graphing;
 // using BlackbirdSql.Common.Controls.Graphing.Enums;
 // using BlackbirdSql.Common.Controls.Graphing.Interfaces;
@@ -36,9 +37,6 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
-
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
 
 public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecutionHandler, IDisposable
 {
@@ -375,12 +373,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 	{
 		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.SetSite", "", null);
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		if (_ServiceProvider != null)
 			_ServiceProvider = null;
@@ -442,7 +435,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 		if (AuxDocData.SqlOutputMode == EnSqlOutputMode.ToFile && !prepareForParse
 			&& !AuxDocData.LiveSettings.EditorResultsTextDiscardResults && !WithEstimatedExecutionPlan)
 		{
-			StreamWriter textWriterForQueryResultsToFile = CommonUtils.GetTextWriterForQueryResultsToFile(xmlResults: false, ref _DefaultResultsDirectory);
+			StreamWriter textWriterForQueryResultsToFile = VS.GetTextWriterForQueryResultsToFile(xmlResults: false, ref _DefaultResultsDirectory);
 			if (textWriterForQueryResultsToFile == null)
 			{
 				return false;
@@ -640,7 +633,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 		IVsFontAndColorStorage vsFontAndColorStorage = Controller.GetService<SVsFontAndColorStorage, IVsFontAndColorStorage>();
 
-		if (AbstractFontAndColorProvider.GetFontAndColorSettingsForCategory(VS.CLSID_FontAndColorsSqlResultsGridCategory,
+		if (AbstractFontAndColorProvider.GetFontAndColorSettingsForCategory(Core.VS.CLSID_FontAndColorsSqlResultsGridCategory,
 			FontAndColorProviderGridResults.GridCell, vsFontAndColorStorage, out var categoryFont, out var foreColor,
 			out var bkColor, readFont: true))
 		{
@@ -652,28 +645,28 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 			SetGridResultsColors(bkColor, foreColor);
 		}
 
-		if (AbstractFontAndColorProvider.GetFontAndColorSettingsForCategory(VS.CLSID_FontAndColorsSqlResultsGridCategory,
+		if (AbstractFontAndColorProvider.GetFontAndColorSettingsForCategory(Core.VS.CLSID_FontAndColorsSqlResultsGridCategory,
 			FontAndColorProviderGridResults.SelectedCell, vsFontAndColorStorage, out _, out _,
 			out bkColor, readFont: false))
 		{
 			SetGridSelectedCellColor(bkColor);
 		}
 
-		if (AbstractFontAndColorProvider.GetFontAndColorSettingsForCategory(VS.CLSID_FontAndColorsSqlResultsGridCategory,
+		if (AbstractFontAndColorProvider.GetFontAndColorSettingsForCategory(Core.VS.CLSID_FontAndColorsSqlResultsGridCategory,
 			FontAndColorProviderGridResults.SelectedCellInactive, vsFontAndColorStorage, out _, out _,
 			out bkColor, readFont: false))
 		{
 			SetGridInactiveSelectedCellColor(bkColor);
 		}
 
-		if (AbstractFontAndColorProvider.GetFontAndColorSettingsForCategory(VS.CLSID_FontAndColorsSqlResultsGridCategory,
+		if (AbstractFontAndColorProvider.GetFontAndColorSettingsForCategory(Core.VS.CLSID_FontAndColorsSqlResultsGridCategory,
 			FontAndColorProviderGridResults.NullValueCell, vsFontAndColorStorage, out _, out _,
 			out bkColor, readFont: false))
 		{
 			SetGridNullValueColor(bkColor);
 		}
 
-		if (AbstractFontAndColorProvider.GetFontAndColorSettingsForCategory(VS.CLSID_FontAndColorsSqlResultsGridCategory,
+		if (AbstractFontAndColorProvider.GetFontAndColorSettingsForCategory(Core.VS.CLSID_FontAndColorsSqlResultsGridCategory,
 			FontAndColorProviderGridResults.HeaderRow, vsFontAndColorStorage, out _, out _,
 			out bkColor, readFont: false))
 		{
@@ -1365,10 +1358,6 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 		_ResultsWriter = _MessagesWriter = _ErrorsWriter = null;
 	}
 
-	public static bool IsRunningOnUIThread()
-	{
-		return ThreadHelper.CheckAccess();
-	}
 
 	public void RegisterToQueryExecutorEvents(QueryManager qryMgr)
 	{

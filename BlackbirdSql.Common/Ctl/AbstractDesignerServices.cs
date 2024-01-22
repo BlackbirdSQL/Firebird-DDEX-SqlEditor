@@ -30,9 +30,6 @@ using IServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 namespace BlackbirdSql.Common.Ctl;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Callers using this class must ensure compliance")]
-
 public abstract class AbstractDesignerServices
 {
 
@@ -108,6 +105,9 @@ public abstract class AbstractDesignerServices
 			vsTextLines = CreateTextLinesInstance<IVsTextLines>(OleProvider, localRegistry);
 
 			IVsUserData obj = (IVsUserData)vsTextLines;
+
+			// Tracer.Trace(typeof(AbstractDesignerServices), "CreateTextLines()", "csa.ConnectionString: {0}", csb.ConnectionString);
+
 			Guid clsid = new(LibraryData.SqlEditorConnectionStringGuid);
 			obj.SetData(clsid, (object)csb);
 
@@ -264,7 +264,7 @@ public abstract class AbstractDesignerServices
 
 		if (vsUIShellOpenDocument == null)
 		{
-			Diag.ServiceUnavailable(typeof(IVsUIShellOpenDocument));
+			Diag.ExceptionService(typeof(IVsUIShellOpenDocument));
 			SqlTracer.TraceEvent(TraceEventType.Error, EnSqlTraceId.CoreServices, "Could not get uiOpenDocument");
 			return VSConstants.E_FAIL;
 		}
@@ -317,7 +317,7 @@ public abstract class AbstractDesignerServices
 
 		if (vsUIShellOpenDocument == null)
 		{
-			Diag.ServiceUnavailable(typeof(IVsUIShellOpenDocument));
+			Diag.ExceptionService(typeof(IVsUIShellOpenDocument));
 			SqlTracer.TraceEvent(TraceEventType.Error, EnSqlTraceId.CoreServices, "Could not get uiOpenDocument");
 			return;
 		}

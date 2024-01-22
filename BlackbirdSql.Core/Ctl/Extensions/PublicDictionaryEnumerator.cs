@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using BlackbirdSql.Core.Ctl.Extensions;
 
-namespace BlackbirdSql.Core.Ctl;
 
+namespace BlackbirdSql.Core.Ctl.Extensions;
 
 public struct PublicDictionaryEnumerator<TKey, TValue> : IEnumerator<KeyValuePair<TKey, TValue>>, IDisposable, IEnumerator, IDictionaryEnumerator
 {

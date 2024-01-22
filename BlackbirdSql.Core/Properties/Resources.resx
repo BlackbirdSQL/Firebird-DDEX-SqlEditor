@@ -138,6 +138,12 @@
   <data name="CommandProvider_CancelExecution" xml:space="preserve">
     <value>SqlViewTextObjectCommandProvider_CancelExecution</value>
   </data>
+  <data name="CommandProvider_DeleteDatabaseConnection" xml:space="preserve">
+    <value>Remove Connection</value>
+  </data>
+  <data name="CommandProvider_EditDatabaseLabel" xml:space="preserve">
+    <value>&amp;Rename Connection</value>
+  </data>
   <data name="CommandProvider_NewGlobalDesigner" xml:space="preserve">
     <value>&amp;New Designer Query</value>
   </data>
@@ -198,9 +204,6 @@
   <data name="CommandProvider_RetrieveViewDesignerData" xml:space="preserve">
     <value>Open View in &amp;Designer</value>
   </data>
-  <data name="ConnectionLocatorProjectDatasetId" xml:space="preserve">
-    <value>Project[{0}] {1}</value>
-  </data>
   <data name="EngineTypeIconNotfound" xml:space="preserve">
     <value>Could not locate icon for Server Engine Type {0}.</value>
   </data>
@@ -218,6 +221,9 @@
   </data>
   <data name="ExceptionConnectionNull" xml:space="preserve">
     <value>Connection is null</value>
+  </data>
+  <data name="ExceptionDuplicateSingletonInstances" xml:space="preserve">
+    <value>Singleton instance already exists. Attempt to create duplicate {0} instances.</value>
   </data>
   <data name="ExceptionEventsAlreadyEnabled" xml:space="preserve">
     <value>Events already enabled.</value>
@@ -324,6 +330,14 @@ Linkage completed in {2}ms.</value>
   </data>
   <data name="RetryOnException" xml:space="preserve">
     <value>Retry number {0}. Delaying {1} ms before next retry. Exception: {2}</value>
+  </data>
+  <data name="RunningConnectionTableEdmDataset" xml:space="preserve">
+    <value>⛮[{0}] {1}</value>
+    <comment>Globalized values must always have the glyph on the left irrespective of ltr or rtl.</comment>
+  </data>
+  <data name="RunningConnectionTableProjectDatasetId" xml:space="preserve">
+    <value>⚙[{0}] {1}</value>
+    <comment>Globalized values must always have the glyph on the left irrespective of ltr or rtl.</comment>
   </data>
   <data name="TextBoxRequiredFieldToolTip" xml:space="preserve">
     <value>This field cannot be empty</value>

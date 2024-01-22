@@ -37,9 +37,6 @@ using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "UIThread compliance is performed by the class.")]
-
 public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.Interfaces.IBObjectWithSite // , IOleCommandTarget
 {
 	private class DataBinding(object dataSource, int dataIndex)
@@ -325,12 +322,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 
 	private void OnExecutionPlanXml(object sender, EventArgs a)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		string text = string.Empty;
 		try
@@ -388,12 +380,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 
 	internal void OnMissingIndexDetails(object sender, EventArgs a)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		if (!currentGraphPanel.DescriptionCtl.HasMissingIndex)
 			return;
@@ -757,12 +744,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 
 	private Font GetExecutionPlanFont()
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		IVsFontAndColorStorage vsFontAndColorStorage = (IVsFontAndColorStorage)GetService(typeof(SVsFontAndColorStorage));
 		if (AbstractFontAndColorProvider.GetFontAndColorSettingsForCategory(VS.CLSID_FontAndColorsSqlResultsExecutionPlanCategory, FontAndColorProviderExecutionPlan.Text, vsFontAndColorStorage, out var categoryFont, out var _, out var _, readFont: true))

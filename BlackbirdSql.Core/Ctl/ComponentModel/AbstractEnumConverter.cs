@@ -37,7 +37,7 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 
 
 	// =========================================================================================================
-	#region Variables - AbstractEnumConverter
+	#region Fields - AbstractEnumConverter
 	// =========================================================================================================
 
 
@@ -56,7 +56,7 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 	private readonly Dictionary<CultureInfo, Dictionary<string, object>> _LookupTables = [];
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 
@@ -179,17 +179,17 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 
 			if (descriptor.Attributes[typeof(ReadOnlyAttribute)] is ReadOnlyAttribute attr)
 			{
-				FieldInfo fld = attr.GetType().GetField("isReadOnly",
+				FieldInfo fieldInfo = Reflect.GetFieldInfo(attr, "isReadOnly",
 					BindingFlags.NonPublic | BindingFlags.Instance);
 
 				readOnly = pair.Value < 0 ? nNewValue == -pair.Value : nNewValue != pair.Value;
 
 				// Diag.Trace($"Automator {_PropertyName} with new value {newValue} updating dependent: {pair.Key} using {pair.Value} from {fld.GetValue(attr)} to {readOnly}.");
 
-				if ((bool)fld.GetValue(attr) != readOnly)
+				if ((bool)Reflect.GetFieldInfoValue(attr, fieldInfo) != readOnly)
 				{
 					result = true;
-					fld.SetValue(attr, readOnly);
+					Reflect.SetFieldInfoValue(attr, fieldInfo, readOnly);
 				}
 			}
 		}

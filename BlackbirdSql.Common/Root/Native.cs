@@ -25,7 +25,7 @@ public abstract class Native : BlackbirdSql.Core.Native
 
 
 	// ---------------------------------------------------------------------------------
-	#region Constants and Static Variables - Native
+	#region Constants and Static Fields - Native
 	// ---------------------------------------------------------------------------------
 
 	public const uint COLORREF_WHITE = 0xFFFFFFu;
@@ -37,7 +37,7 @@ public abstract class Native : BlackbirdSql.Core.Native
 	public static readonly Guid IID_IAccessible = new("618736E0-3C3D-11CF-810C-00AA00389B71");
 
 
-	#endregion Constants and Static Variables
+	#endregion Constants and Static Fields
 
 
 
@@ -482,7 +482,7 @@ public abstract class Native : BlackbirdSql.Core.Native
 		if (ptr != IntPtr.Zero)
 		{
 			object objectForNativeVariant = Marshal.GetObjectForNativeVariant(ptr);
-			result = ((objectForNativeVariant is Array) ? ((object[])objectForNativeVariant) : new object[1] { objectForNativeVariant });
+			result = ((objectForNativeVariant is Array) ? ((object[])objectForNativeVariant) : [objectForNativeVariant]);
 		}
 
 		return result;

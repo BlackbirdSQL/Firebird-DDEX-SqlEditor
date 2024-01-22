@@ -14,7 +14,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-
 using BlackbirdSql.Common.Controls.Enums;
 using BlackbirdSql.Common.Controls.Events;
 using BlackbirdSql.Common.Controls.Grid;
@@ -36,9 +35,6 @@ using Constants = Microsoft.VisualStudio.OLE.Interop.Constants;
 
 namespace BlackbirdSql.Common.Controls.ResultsPane
 {
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-		Justification = "Class is UIThread compliant.")]
-
 	public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 	{
 		private ResultSetAndGridContainerCollection m_gridContainers = [];
@@ -112,9 +108,9 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 		{
 			if (m.Msg == Native.WM_CONTEXTMENU)
 			{
-				if (FocusedGrid != null && CommonUtils.GetCoordinatesForPopupMenuFromWM_Context(ref m, out var x, out var y, (Control)(object)FocusedGrid))
+				if (FocusedGrid != null && VS.GetCoordinatesForPopupMenuFromWM_Context(ref m, out var x, out var y, (Control)(object)FocusedGrid))
 				{
-					CommonUtils.ShowContextMenuEvent((int)EnCommandSet.ContextIdResultsWindow, x, y, this);
+					VS.ShowContextMenuEvent((int)EnCommandSet.ContextIdResultsWindow, x, y, this);
 				}
 			}
 			else
@@ -315,7 +311,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			gridResultsGrid.SetIncludeHeadersOnDragAndDrop(m_includeColumnHeaders);
 			if (_FirstGridPanel.HostedControlsCount == 0)
 			{
-				_FirstGridPanel.HostedControlsMinInitialSize = CommonUtils.DefaultInitialMinNumberOfVisibleRows * (gridResultsGrid.RowHeight + 1) + gridResultsGrid.HeaderHeight + 1 + CommonUtils.GetExtraSizeForBorderStyle(gridResultsGrid.BorderStyle);
+				_FirstGridPanel.HostedControlsMinInitialSize = VS.DefaultInitialMinNumberOfVisibleRows * (gridResultsGrid.RowHeight + 1) + gridResultsGrid.HeaderHeight + 1 + VS.GetExtraSizeForBorderStyle(gridResultsGrid.BorderStyle);
 				_FirstGridPanel.HostedControlsMinSize = ((Control)(object)gridResultsGrid).GetPreferredSize(((Control)(object)gridResultsGrid).Size).Height;
 			}
 
@@ -485,12 +481,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 		{
 			// Tracer.Trace(GetType(), "GridResultsTabPanel.HandleXMLCellClick", "", null);
 
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			Cursor current = Cursor.Current;
 			string text = null;
@@ -823,7 +814,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			saveFormat = EnGridSaveFormats.CommaSeparated;
 			FileEncodingDlg fileEncodingDialog = new FileEncodingDlg();
 			SaveFormats saveFormats = new SaveFormats();
-			string fileNameUsingSaveDialog = CommonUtils.GetFileNameUsingSaveDialog(CommonUtils.MakeVsFilterString(saveFormats.FilterString), ControlsResources.SaveGridResults, DefaultResultsDirectory, fileEncodingDialog, out int filterIndex);
+			string fileNameUsingSaveDialog = VS.GetFileNameUsingSaveDialog(VS.MakeVsFilterString(saveFormats.FilterString), ControlsResources.SaveGridResults, DefaultResultsDirectory, fileEncodingDialog, out int filterIndex);
 			if (fileNameUsingSaveDialog != null)
 			{
 				DefaultResultsDirectory = Path.GetDirectoryName(fileNameUsingSaveDialog);

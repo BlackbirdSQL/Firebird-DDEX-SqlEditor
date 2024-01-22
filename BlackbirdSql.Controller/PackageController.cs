@@ -3,6 +3,8 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
+using BlackbirdSql.Controller.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
@@ -11,10 +13,6 @@ using Microsoft.VisualStudio.Shell;
 
 
 namespace BlackbirdSql.Controller;
-
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
-
 
 // =========================================================================================================
 //										PackageController Class
@@ -29,7 +27,7 @@ namespace BlackbirdSql.Controller;
 /// Aslo performs cleanups of any sql editor documents that may be left dangling on solution close.
 /// </remarks>
 // =========================================================================================================
-internal class PackageController : AbstractPackageController
+public sealed class PackageController : AbstractPackageController
 {
 
 	// =========================================================================================================
@@ -42,8 +40,8 @@ internal class PackageController : AbstractPackageController
 	/// Private singleton .ctor
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected PackageController(IBAsyncPackage package)
-		: base(package)
+	private PackageController(IBAsyncPackage ddex)
+		: base(ddex)
 	{
 	}
 
@@ -51,27 +49,40 @@ internal class PackageController : AbstractPackageController
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Gets or creates the singleton PackageController instance. This may only be
-	/// called from <see cref="ControllerAsyncPackage.CreateServiceInstanceAsync"/>.
+	/// Gets or creates the singleton PackageController instance. This should only
+	/// be called in the .ctor of <see cref="AbstractAsyncPackage"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static IBPackageController CreateInstance(IBAsyncPackage package)
-	{
-		return _Instance ??= new PackageController(package);
-	}
+	public static IBPackageController CreateInstance(IBAsyncPackage ddex) =>
+		new PackageController(ddex);
 
 
-	public override void Dispose()
-	{
-		DdexPackage.OnLoadSolutionOptionsEvent -= OnLoadSolutionOptions;
-		DdexPackage.OnSaveSolutionOptionsEvent -= OnSaveSolutionOptions;
 
-		base.Dispose();
-	}
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the singleton PackageController instance..
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static new IBPackageController Instance =>
+		_Instance ?? throw Diag.ExceptionInstance(typeof(IBPackageController));
+
+
 
 
 	#endregion Constructors / Destructors
 
+
+
+
+	// =========================================================================================================
+	#region Property Accessors - PackageController
+	// =========================================================================================================
+
+
+	public ControllerAsyncPackage ControllerPackage => (ControllerAsyncPackage)DdexPackage;
+
+
+	#endregion Property Accessors
 
 
 
@@ -81,54 +92,103 @@ internal class PackageController : AbstractPackageController
 	// =========================================================================================================
 
 
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Enables solution and running document table event handling
+	/// Enables unsafe solution, running document table and selection monitor event handling
+	/// on the UI and safe solution OnLoadOptions and OnSaveOptions event handling.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	[SuppressMessage("Usage", "VSTHRD102:Implement internal logic asynchronously")]
-	public override void AdviseEvents()
+	public override bool AdviseEvents()
 	{
-		if (_EventsAdvised)
-			return;
 
-		_EventsAdvised = true;
+		if (_EventsAdvisedUnsafe)
+			return false;
 
-		DdexPackage.OnLoadSolutionOptionsEvent += OnLoadSolutionOptions;
-		DdexPackage.OnSaveSolutionOptionsEvent += OnSaveSolutionOptions;
+		_EventsAdvisedUnsafe = true;
+
+		// Ensure UI thread call is made for unsafe events.
 
 		if (!ThreadHelper.CheckAccess())
 		{
-			ThreadHelper.JoinableTaskFactory.Run(async delegate
+			bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate
 			{
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-				AdviseEventsImpl();
+				return AdviseUnsafeEvents();
 			});
 
-			return;
+			return result;
 		}
 
-		AdviseEventsImpl();
+		return AdviseUnsafeEvents();
 	}
 
-	private void AdviseEventsImpl()
-	{ 
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Enables unsafe solution, running document table and selection monitor event handling
+	/// on the UI and safe solution OnLoadOptions and OnSaveOptions event handling.
+	/// Only calls unsafe if on ui thread. Does not attempt switch.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public override async Task<bool> AdviseEventsAsync()
+	{
+		if (_EventsAdvisedUnsafe)
+			return false;
+
+
+		// Check we're on ui thread for async advising of unsafe events.
+
+		if (!ThreadHelper.CheckAccess())
+			return false;
+
+		// Warning suppression.
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		_EventsAdvisedUnsafe = true;
+
+		return AdviseUnsafeEvents();
+
+	}
+
+
+
+	protected override bool AdviseUnsafeEvents()
+	{
+		Diag.ThrowIfNotOnUIThread();
+
 
 		// Sanity check. Disable events if enabled
 		UnadviseEvents(false);
 
+		try
+		{
+			if (Dte == null)
+				throw new NullReferenceException(Resources.ExceptionDteIsNull);
 
-		// This is a once off procedure for solutions and their projects. (ie. Once validated always validated)
-		// We're going to check each project that gets loaded (or has a reference added) if it
-		// references EntityFramework.Firebird.dll else FirebirdSql.Data.FirebirdClient.dll.
-		// If it is we'll check the app.config DbProvider and EntityFramework sections and update if necessary.
-		// We also check (once and only once) within a project for any Firebird edmxs with legacy settings and update
-		// those, because they cannot work with newer versions of EntityFramework.Firebird.
-		// (This validation can be disabled in Visual Studio's options.)
+			// If it's null there's an issue. Possibly we've come in too early
+			if (VsSolution == null)
+				throw new NullReferenceException(Resources.ExceptionSVsSolutionIsNull);
+
+			if (DocTable == null)
+				throw new NullReferenceException(Resources.ExceptionIVsRunningDocumentTableIsNull);
+
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+
+		// Tracer.Trace(GetType(), "AdviseUnsafeEvents()", "AdviseSolutionEvents.");
 
 		// Enable solution event capture
 		VsSolution.AdviseSolutionEvents(this, out _HSolutionEvents);
 
+		// Enable rdt events.
 		try
 		{
 			DocTable.AdviseRunningDocTableEvents(this, out _HDocTableEvents);
@@ -139,17 +199,7 @@ internal class PackageController : AbstractPackageController
 		}
 
 
-		// Raise open project event handler for projects that are already loaded
-		// This can happen on IDE startup and a solution was opened with some projects
-		// loaded before our package was sited.
-		if (Dte == null || Dte.Solution == null || Dte.Solution.Globals == null)
-		{
-			InvalidOperationException ex = new("DTE.Solution is invalid");
-			Diag.Dug(ex);
-		}
-
-		RegisterEventsManager(((ControllerAsyncPackage)DdexPackage).EventsManager);
-
+		return true;
 	}
 
 

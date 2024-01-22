@@ -11,26 +11,127 @@ using Microsoft.Data.ConnectionUI;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools;
 
-public class TDataProvider
+// =========================================================================================================
+//
+//											TDataProvider Class
+//
+// =========================================================================================================
+public class TDataProvider(string name, string displayName, string shortDisplayName, string description, Type targetConnectionType)
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Constructor Arguments - TDataProvider
+	// ---------------------------------------------------------------------------------
+
+
+	private readonly string _Name = name ?? throw new ArgumentNullException("nameGuid");
+
+	private readonly string _DisplayName = displayName;
+
+	private readonly string _ShortDisplayName = shortDisplayName;
+
+	private readonly string _Description = description;
+
+	private readonly Type _TargetConnectionType = targetConnectionType;
+
+
+	#endregion Constructor Arguments
+
+
+
+
+	// =====================================================================================================
+	#region Additional Constructors / Destructors - TDataProvider
+	// =====================================================================================================
+
+
+	public TDataProvider(string name, string displayName, string shortDisplayName)
+	: this(name, displayName, shortDisplayName, null, null)
+	{
+	}
+
+	public TDataProvider(string name, string displayName, string shortDisplayName, string description)
+		: this(name, displayName, shortDisplayName, description, null)
+	{
+	}
+
+	public TDataProvider(string name, string displayName, string shortDisplayName, string description, Type targetConnectionType, Type connectionPropertiesType)
+		: this(name, displayName, shortDisplayName, description, targetConnectionType)
+	{
+		if (connectionPropertiesType == null)
+		{
+			throw new ArgumentNullException("connectionPropertiesType");
+		}
+		_ConnectionPropertiesTypes = new Dictionary<string, Type>
+		{
+			{ string.Empty, connectionPropertiesType }
+		};
+	}
+
+	public TDataProvider(string name, string displayName, string shortDisplayName, string description, Type targetConnectionType, Type connectionUIControlType, Type connectionPropertiesType)
+		: this(name, displayName, shortDisplayName, description, targetConnectionType, connectionPropertiesType)
+	{
+		if (connectionUIControlType == null)
+		{
+			throw new ArgumentNullException("connectionUIControlType");
+		}
+		_ConnectionUIControlTypes = new Dictionary<string, Type>
+		{
+			{ string.Empty, connectionUIControlType }
+		};
+	}
+
+	public TDataProvider(string name, string displayName, string shortDisplayName, string description, Type targetConnectionType, IDictionary<string, Type> connectionUIControlTypes, Type connectionPropertiesType)
+		: this(name, displayName, shortDisplayName, description, targetConnectionType, connectionPropertiesType)
+	{
+		_ConnectionUIControlTypes = connectionUIControlTypes;
+	}
+
+	public TDataProvider(string name, string displayName, string shortDisplayName, string description, Type targetConnectionType, IDictionary<string, string> dataSourceDescriptions, IDictionary<string, Type> connectionUIControlTypes, Type connectionPropertiesType)
+		: this(name, displayName, shortDisplayName, description, targetConnectionType, connectionUIControlTypes, connectionPropertiesType)
+	{
+		_DataSourceDescriptions = dataSourceDescriptions;
+	}
+
+	public TDataProvider(string name, string displayName, string shortDisplayName, string description,
+			Type targetConnectionType, IDictionary<string, string> dataSourceDescriptions,
+			IDictionary<string, Type> connectionUIControlTypes, IDictionary<string, Type> connectionPropertiesTypes)
+		: this(name, displayName, shortDisplayName, description, targetConnectionType)
+	{
+		_DataSourceDescriptions = dataSourceDescriptions;
+		_ConnectionUIControlTypes = connectionUIControlTypes;
+		_ConnectionPropertiesTypes = connectionPropertiesTypes;
+	}
+
+
+	#endregion Additional Constructors / Destructors
+
+
+
+
+	// =====================================================================================================
+	#region Fields - TDataProvider
+	// =====================================================================================================
+
+
 	private static TDataProvider _BlackbirdSqlDataProvider;
-
-
-	private readonly string _Name;
-
-	private readonly string _DisplayName;
-
-	private readonly string _ShortDisplayName;
-
-	private readonly string _Description;
-
-	private readonly Type _TargetConnectionType;
 
 	private readonly IDictionary<string, string> _DataSourceDescriptions;
 
 	private readonly IDictionary<string, Type> _ConnectionUIControlTypes;
 
 	private readonly IDictionary<string, Type> _ConnectionPropertiesTypes;
+
+
+	#endregion Fields
+
+
+
+
+	// =====================================================================================================
+	#region Property Accessors - TDataProvider
+	// =====================================================================================================
+
 
 	public static TDataProvider BlackbirdSqlDataProvider
 	{
@@ -83,72 +184,16 @@ public class TDataProvider
 
 	public Type TargetConnectionType => _TargetConnectionType;
 
-	public TDataProvider(string name, string displayName, string shortDisplayName)
-		: this(name, displayName, shortDisplayName, null, null)
-	{
-	}
 
-	public TDataProvider(string name, string displayName, string shortDisplayName, string description)
-		: this(name, displayName, shortDisplayName, description, null)
-	{
-	}
+	#endregion Property Accessors
 
-	public TDataProvider(string name, string displayName, string shortDisplayName, string description, Type targetConnectionType)
-	{
-		_Name = name ?? throw new ArgumentNullException("nameGuid");
-		_DisplayName = displayName;
-		_ShortDisplayName = shortDisplayName;
-		_Description = description;
-		_TargetConnectionType = targetConnectionType;
-	}
 
-	public TDataProvider(string name, string displayName, string shortDisplayName, string description, Type targetConnectionType, Type connectionPropertiesType)
-		: this(name, displayName, shortDisplayName, description, targetConnectionType)
-	{
-		if (connectionPropertiesType == null)
-		{
-			throw new ArgumentNullException("connectionPropertiesType");
-		}
-		_ConnectionPropertiesTypes = new Dictionary<string, Type>
-		{
-			{ string.Empty, connectionPropertiesType }
-		};
-	}
 
-	public TDataProvider(string name, string displayName, string shortDisplayName, string description, Type targetConnectionType, Type connectionUIControlType, Type connectionPropertiesType)
-		: this(name, displayName, shortDisplayName, description, targetConnectionType, connectionPropertiesType)
-	{
-		if (connectionUIControlType == null)
-		{
-			throw new ArgumentNullException("connectionUIControlType");
-		}
-		_ConnectionUIControlTypes = new Dictionary<string, Type>
-		{
-			{ string.Empty, connectionUIControlType }
-		};
-	}
 
-	public TDataProvider(string name, string displayName, string shortDisplayName, string description, Type targetConnectionType, IDictionary<string, Type> connectionUIControlTypes, Type connectionPropertiesType)
-		: this(name, displayName, shortDisplayName, description, targetConnectionType, connectionPropertiesType)
-	{
-		_ConnectionUIControlTypes = connectionUIControlTypes;
-	}
+	// =====================================================================================================
+	#region Methods - TDataProvider
+	// =====================================================================================================
 
-	public TDataProvider(string name, string displayName, string shortDisplayName, string description, Type targetConnectionType, IDictionary<string, string> dataSourceDescriptions, IDictionary<string, Type> connectionUIControlTypes, Type connectionPropertiesType)
-		: this(name, displayName, shortDisplayName, description, targetConnectionType, connectionUIControlTypes, connectionPropertiesType)
-	{
-		_DataSourceDescriptions = dataSourceDescriptions;
-	}
-
-	public TDataProvider(string name, string displayName, string shortDisplayName, string description,
-			Type targetConnectionType, IDictionary<string, string> dataSourceDescriptions,
-			IDictionary<string, Type> connectionUIControlTypes, IDictionary<string, Type> connectionPropertiesTypes)
-		: this(name, displayName, shortDisplayName, description, targetConnectionType)
-	{
-		_DataSourceDescriptions = dataSourceDescriptions;
-		_ConnectionUIControlTypes = connectionUIControlTypes;
-		_ConnectionPropertiesTypes = connectionPropertiesTypes;
-	}
 
 	public virtual string GetDescription(TDataSource dataSource)
 	{
@@ -195,4 +240,7 @@ public class TDataProvider
 		}
 		return null;
 	}
+
+	#endregion Methods
+
 }

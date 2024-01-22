@@ -25,7 +25,6 @@ using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Extensions;
 using Microsoft.VisualStudio;
 using Microsoft.Win32;
 

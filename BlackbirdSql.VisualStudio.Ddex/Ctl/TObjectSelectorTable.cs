@@ -25,11 +25,11 @@ public class TObjectSelectorTable : AdoDotNetObjectSelector
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Variables - TObjectSelector
+	#region Fields - TObjectSelector
 	// ---------------------------------------------------------------------------------
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 

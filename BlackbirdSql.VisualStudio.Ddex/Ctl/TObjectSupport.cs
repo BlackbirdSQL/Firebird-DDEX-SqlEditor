@@ -8,7 +8,6 @@ using System.IO;
 using System.Reflection;
 
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Core;
@@ -78,11 +77,7 @@ public class TObjectSupport : DataObjectSupport, IVsDataSupportImportResolver
 	/// According to xsd 
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public override Stream OpenSupportStream()
-	{
-		// Diag.Stack();
-		return OpenSupportStream(CultureInfo.InvariantCulture);
-	}
+	public override Stream OpenSupportStream() => OpenSupportStream(CultureInfo.InvariantCulture);
 
 
 
@@ -111,7 +106,6 @@ public class TObjectSupport : DataObjectSupport, IVsDataSupportImportResolver
 	// ---------------------------------------------------------------------------------
 	protected override Stream OpenSupportStream(CultureInfo culture)
 	{
-		// Diag.Stack();
 		Stream stream = base.OpenSupportStream(culture);
 
 		return XmlParser.ExtrapolateXmlImports(GetType().Name, stream, this);
@@ -141,7 +135,7 @@ public class TObjectSupport : DataObjectSupport, IVsDataSupportImportResolver
 
 		if (!name.EndsWith("Definitions"))
 		{
-			Diag.Stack(Resources.ExceptionImportResourceNotFound.FmtRes(name));
+			Diag.StackException(Resources.ExceptionImportResourceNotFound.FmtRes(name));
 			return null;
 		}
 

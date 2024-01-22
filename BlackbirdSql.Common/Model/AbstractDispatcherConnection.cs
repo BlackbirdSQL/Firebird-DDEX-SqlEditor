@@ -8,10 +8,8 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Windows.Threading;
 
 using BlackbirdSql.Core;
@@ -22,14 +20,8 @@ using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell;
-
 
 namespace BlackbirdSql.Common.Model;
-
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
 
 // =========================================================================================================
 //									AbstractDispatcherConnection Class
@@ -43,7 +35,7 @@ public class AbstractDispatcherConnection : AbstractModelPropertyAgent
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Variables - AbstractDispatcherConnection
+	#region Fields - AbstractDispatcherConnection
 	// ---------------------------------------------------------------------------------
 
 
@@ -60,7 +52,7 @@ public class AbstractDispatcherConnection : AbstractModelPropertyAgent
 	private readonly Dispatcher _Dispatcher;
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 
@@ -72,9 +64,6 @@ public class AbstractDispatcherConnection : AbstractModelPropertyAgent
 
 
 	public Dispatcher Dispatcher => _Dispatcher;
-
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	public bool IsUIThread => Dispatcher.CheckAccess();
 
 
 	#endregion Property Accessors
@@ -138,12 +127,7 @@ public class AbstractDispatcherConnection : AbstractModelPropertyAgent
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	protected void VerifyAccess()
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		Dispatcher.VerifyAccess();
 	}
@@ -154,7 +138,7 @@ public class AbstractDispatcherConnection : AbstractModelPropertyAgent
 	{
 		Cmd.CheckForNull(action, "action");
 
-		if (IsUIThread)
+		if (Dispatcher.CheckAccess())
 			action();
 		else
 			Dispatcher.Invoke(action, DispatcherPriority.Normal);
@@ -168,7 +152,7 @@ public class AbstractDispatcherConnection : AbstractModelPropertyAgent
 
 #pragma warning disable VSTHRD110 // Observe result of async calls
 
-		if (IsUIThread)
+		if (Dispatcher.CheckAccess())
 			action();
 		else
 			Dispatcher.BeginInvoke(action, DispatcherPriority.Normal);
@@ -180,7 +164,7 @@ public class AbstractDispatcherConnection : AbstractModelPropertyAgent
 	{
 		Cmd.CheckForNull(func, "action");
 
-		if (IsUIThread)
+		if (Dispatcher.CheckAccess())
 			return func();
 
 		return Dispatcher.Invoke(func, DispatcherPriority.Normal);
@@ -405,7 +389,7 @@ public class AbstractDispatcherConnection : AbstractModelPropertyAgent
 
 	protected static new void CreateAndPopulatePropertySet(DescriberDictionary describers = null)
 	{
-		// This class does not have private descriptors. Just pass request on.
+		// This class does not have private describers. Just pass request on.
 		AbstractPropertyAgent.CreateAndPopulatePropertySet(describers);
 	}
 

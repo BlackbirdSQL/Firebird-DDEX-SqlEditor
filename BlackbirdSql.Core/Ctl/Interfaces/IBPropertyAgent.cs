@@ -173,7 +173,7 @@ public interface IBPropertyAgent : IDisposable, ICustomTypeDescriptor, IDataConn
 
 	string ToFullString(bool secure);
 
-	IBPropertyAgent ToUiConnectionInfo();
+	IBPropertyAgent ToConnectionInfo();
 
 	bool TryGetDefaultValue(string name, out object value);
 

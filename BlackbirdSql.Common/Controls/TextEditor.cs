@@ -20,9 +20,6 @@ using OleConstants = Microsoft.VisualStudio.OLE.Interop.Constants;
 
 namespace BlackbirdSql.Common.Controls;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
-
 public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEvents, IBTextEditor, IVsToolboxActiveUserHook, IVsToolboxUser, IDisposable
 {
 	private readonly IVsHierarchy _Hierarchy;
@@ -144,12 +141,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 		_TextEditorProxy = new TextEditorProxy(this);
 		if (tabbedEditorServices != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			_TabbedEditorService = tabbedEditorServices.GetService(typeof(IBTabbedEditorService)) as IBTabbedEditorService;
 			if (_TabbedEditorService != null)
@@ -174,12 +166,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 
 	private void ReplacePropGrid(object sender, EventArgs e)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 #pragma warning disable IDE0059 // Unnecessary assignment of a value
 		IVsTrackSelectionEx vsTrackSelectionEx = _Services.GetService(typeof(SVsTrackSelectionEx)) as IVsTrackSelectionEx;
@@ -232,12 +219,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 	{
 		if (_CmdTarget != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			int num = _CmdTarget.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 			if (num == (int)OleConstants.OLECMDERR_E_NOTSUPPORTED || num == (int)OleConstants.OLECMDERR_E_UNKNOWNGROUP)
@@ -258,12 +240,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 	{
 		if (_CmdTarget != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			int num = _CmdTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
 			if ((num == (int)OleConstants.OLECMDERR_E_NOTSUPPORTED || num == (int)OleConstants.OLECMDERR_E_UNKNOWNGROUP) && VSConstants.GUID_VSStandardCommandSet97.Equals(pguidCmdGroup))

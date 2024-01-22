@@ -4,7 +4,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Core;
@@ -15,9 +14,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 
 namespace BlackbirdSql.Common.Controls;
-
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
 
 public abstract class AbstractSqlEditorTab(AbstractTabbedEditorPane editorPane,
 		Guid logicalView, EnEditorTabType editorTabType)
@@ -40,28 +36,24 @@ public abstract class AbstractSqlEditorTab(AbstractTabbedEditorPane editorPane,
 		Guid pguidEditorType = GetEditorTabEditorFactoryGuid();
 
 
-		DisposableWaitCursor = WaitCursorHelper.NewWaitCursor();
+
+		Microsoft.VisualStudio.OLE.Interop.IServiceProvider instance = Controller.OleServiceProvider;
+
+		if (WindowPaneServiceProvider.GetService(typeof(SVsUIShellOpenDocument)) is not IVsUIShellOpenDocument shell)
+			throw Diag.ExceptionService(typeof(IVsUIShellOpenDocument));
+
+		if (WindowPaneServiceProvider.GetService(typeof(SVsUIShell)) is not IVsUIShell vsUIShell)
+			throw Diag.ExceptionService(typeof(IVsUIShell));
+
+		Diag.ThrowIfNotOnUIThread();
+
+		IVsRunningDocumentTable vsRunningDocumentTable =
+			WindowPaneServiceProvider.GetService(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable
+			?? throw Diag.ExceptionService(typeof(IVsRunningDocumentTable));
 
 		try
 		{
-			Microsoft.VisualStudio.OLE.Interop.IServiceProvider instance = Controller.OleServiceProvider;
-
-			if (WindowPaneServiceProvider.GetService(typeof(SVsUIShellOpenDocument)) is not IVsUIShellOpenDocument shell)
-				throw new ServiceUnavailableException(typeof(IVsUIShellOpenDocument));
-
-			if (WindowPaneServiceProvider.GetService(typeof(SVsUIShell)) is not IVsUIShell vsUIShell)
-				throw new ServiceUnavailableException(typeof(IVsUIShell));
-
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
-
-			IVsRunningDocumentTable vsRunningDocumentTable =
-				WindowPaneServiceProvider.GetService(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable
-				?? throw new ServiceUnavailableException(typeof(IVsRunningDocumentTable));
+			DisposableWaitCursor = WaitCursorHelper.NewWaitCursor();
 
 			uint[] array = new uint[1];
 			string documentMoniker = DocumentMoniker;

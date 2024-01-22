@@ -34,7 +34,7 @@ public class AbstractDispatcherAgent : AbstractPropertyAgent
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Variables - AbstractDispatcherAgent
+	#region Fields - AbstractDispatcherAgent
 	// ---------------------------------------------------------------------------------
 
 
@@ -51,7 +51,7 @@ public class AbstractDispatcherAgent : AbstractPropertyAgent
 	private readonly Dispatcher _Dispatcher;
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 
@@ -123,11 +123,6 @@ public class AbstractDispatcherAgent : AbstractPropertyAgent
 	// =========================================================================================================
 
 
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	public bool CheckAccess()
-	{
-		return Dispatcher.CheckAccess();
-	}
 
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	protected void VerifyAccess()
@@ -141,7 +136,7 @@ public class AbstractDispatcherAgent : AbstractPropertyAgent
 	{
 		Cmd.CheckForNull(action, "action");
 
-		if (CheckAccess())
+		if (Dispatcher.CheckAccess())
 			action();
 		else
 			Dispatcher.Invoke(action, DispatcherPriority.Normal);
@@ -156,7 +151,7 @@ public class AbstractDispatcherAgent : AbstractPropertyAgent
 
 #pragma warning disable VSTHRD110 // Observe result of async calls
 
-		if (CheckAccess())
+		if (Dispatcher.CheckAccess())
 			action();
 		else
 			Dispatcher.BeginInvoke(action, DispatcherPriority.Normal);
@@ -168,7 +163,7 @@ public class AbstractDispatcherAgent : AbstractPropertyAgent
 	{
 		Cmd.CheckForNull(func, "action");
 
-		if (CheckAccess())
+		if (Dispatcher.CheckAccess())
 			return func();
 
 
@@ -394,7 +389,7 @@ public class AbstractDispatcherAgent : AbstractPropertyAgent
 
 	protected static new void CreateAndPopulatePropertySet(DescriberDictionary describers = null)
 	{
-		// This class does not have private descriptors. Just pass request on.
+		// This class does not have private describers. Just pass request on.
 		AbstractPropertyAgent.CreateAndPopulatePropertySet(describers);
 	}
 

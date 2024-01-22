@@ -538,7 +538,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 			obj = ConvertPropertyTypeToStorageType(obj, baseOptionModel);
 			if (obj == null)
 			{
-				Diag.Stack(string.Format("Cannot store null in settings store. AbstractSettingsModel<{0}>.{1} CollectionName:{2} PropertyName:{3} dataType:{4} PropertyType:{5} Value:{6}", baseOptionModel.GetType().FullName, "Load", collectionName, PropertyName, DataType, PropInfo.PropertyType, obj ?? "[NULL]"));
+				Diag.StackException(string.Format("Cannot store null in settings store. AbstractSettingsModel<{0}>.{1} CollectionName:{2} PropertyName:{3} dataType:{4} PropertyType:{5} Value:{6}", baseOptionModel.GetType().FullName, "Load", collectionName, PropertyName, DataType, PropInfo.PropertyType, obj ?? "[NULL]"));
 				return false;
 			}
 
@@ -564,7 +564,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 			obj = WrappedPropertyGetMethod(baseOptionModel);
 			if (obj == null)
 			{
-				Diag.Stack(string.Format("Cannot store null in settings store. AbstractSettingsModel<{0}>.{1} CollectionName:{2} PropertyName:{3} dataType:{4} PropertyType:{5} Value:{6}", baseOptionModel.GetType().FullName, "Save", collectionName, PropertyName, DataType, PropInfo.PropertyType, obj ?? "[NULL]"));
+				Diag.StackException(string.Format("Cannot store null in settings store. AbstractSettingsModel<{0}>.{1} CollectionName:{2} PropertyName:{3} dataType:{4} PropertyType:{5} Value:{6}", baseOptionModel.GetType().FullName, "Save", collectionName, PropertyName, DataType, PropInfo.PropertyType, obj ?? "[NULL]"));
 				return false;
 			}
 

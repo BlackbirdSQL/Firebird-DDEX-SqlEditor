@@ -8,7 +8,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
@@ -21,9 +20,6 @@ using Constants = Microsoft.VisualStudio.OLE.Interop.Constants;
 
 
 namespace BlackbirdSql.Common.Ctl.Commands;
-
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
 
 public class MenuCommandsService : Collection<MenuCommand>, IDisposable, IMenuCommandService, Microsoft.VisualStudio.OLE.Interop.IOleCommandTarget
 {
@@ -107,12 +103,7 @@ public class MenuCommandsService : Collection<MenuCommand>, IDisposable, IMenuCo
 
 		if (_CachedServiceProvider != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			IVsUIShell vsUIShell = (IVsUIShell)_CachedServiceProvider.GetService(typeof(SVsUIShell));
 			if (vsUIShell != null)
@@ -164,12 +155,7 @@ public class MenuCommandsService : Collection<MenuCommand>, IDisposable, IMenuCo
 			throw ex;
 		}
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		IOleComponentUIManager oleComponentUIManager = (IOleComponentUIManager)sp.GetService(typeof(SOleComponentUIManager));
 		if (oleComponentUIManager != null)

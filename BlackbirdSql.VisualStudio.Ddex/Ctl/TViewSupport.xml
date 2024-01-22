@@ -12,23 +12,25 @@
 		<View name="ByType">
 			<DisplayName>By Type</DisplayName>
 			<GlobalCommands>
-				<CommandRef name="CommandNewSqlQueryUniversal" />
-				<CommandRef name="CommandNewDesignerQueryUniversal" />
-				<CommandRef name="CommandNewQueryGlobal" />
-				<CommandRef name="CommandOverrideNewQueryLocal" />
-				<CommandRef name="CommandRetrieveDesignerUniversal" />
-				<CommandRef name="CommandRetrieveDataGlobal" />
-				<CommandRef name="CommandTextOpenScriptUniversal" />
-				<CommandRef name="CommandTextOpenAlterScriptUniversal" />
-				<!-- <CommandRef name="CommandCopyUniversal" /> -->
+				<CommandListRef name="TplGlobalCommands" />
 			</GlobalCommands>
 			<ConnectionNode nodeId="Database" type="Database">
-				<InitialDisplayName>{Root.DatasetKey}</InitialDisplayName>
+				<InitialDisplayName>{Root.ConnectionKey}</InitialDisplayName>
 				<Properties>
+					<Property name="DataSource">
+						<DisplayName resource="Identifier_Name_DataSource" />
+						<Category resource="Category_Connection" />
+						<Description resource="Identifier_Desc_DataSource" />
+					</Property>
 					<Property name="Database">
 						<DisplayName resource="Identifier_Name_DatabasePath" />
 						<Category resource="Category_Connection" />
 						<Description resource="Identifier_Desc_DatabasePath" />
+					</Property>
+					<Property name="DatasetId">
+						<DisplayName resource="Identifier_Name_DatasetId" />
+						<Category resource="Category_Connection" />
+						<Description resource="Identifier_Desc_DatasetId" />
 					</Property>
 					<Property name="UserID">
 						<DisplayName resource="Identifier_Name_UserId" />

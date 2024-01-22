@@ -27,14 +27,14 @@ public abstract class AbstractTelemetryPropertyAgent : AbstractDispatcherConnect
 
 
 	// ---------------------------------------------------------------------------------
-	#region Variables - AbstractConnectionDlgPropertyAgent
+	#region Fields - AbstractConnectionDlgPropertyAgent
 	// ---------------------------------------------------------------------------------
 
 
 	protected static new DescriberDictionary _Describers = null;
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 

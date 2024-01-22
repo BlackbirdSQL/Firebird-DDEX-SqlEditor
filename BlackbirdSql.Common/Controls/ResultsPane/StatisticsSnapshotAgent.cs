@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Extensions;
 using FirebirdSql.Data.FirebirdClient;
 
 

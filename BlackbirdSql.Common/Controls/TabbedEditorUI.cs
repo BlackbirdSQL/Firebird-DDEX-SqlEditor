@@ -21,9 +21,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace BlackbirdSql.Common.Controls;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
-
 [DesignerCategory("code")]
 public class TabbedEditorUI : Control, IServiceProvider
 {
@@ -238,12 +235,7 @@ public class TabbedEditorUI : Control, IServiceProvider
 	{
 		if (_ToolbarHost == null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			_ToolbarHost = new ToolbarHost();
 			_ToolbarHost.SuspendLayout();

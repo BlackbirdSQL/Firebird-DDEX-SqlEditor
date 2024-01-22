@@ -9,6 +9,9 @@ using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.VisualStudio.Ddex.Controls.ComponentModel;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
 
+using GlobalizedCategoryAttribute = BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel.GlobalizedCategoryAttribute;
+using GlobalizedDisplayNameAttribute = BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel.GlobalizedDisplayNameAttribute;
+
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model.Config;
 
@@ -68,13 +71,9 @@ public class DebugSettingsModel(IBTransientSettings transientSettings)
 	[GlobalizedDisplayName("OptionDisplayDebugEnableTrace")]
 	[GlobalizedDescription("OptionDescriptionDebugEnableTrace")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
-#if DEBUG
-	[DefaultValue(true)]
-	public bool EnableTrace { get; set; } = true;
-#else
 	[DefaultValue(false)]
 	public bool EnableTrace { get; set; } = false;
-#endif
+
 
 	[GlobalizedCategory("OptionCategoryDebugging")]
 	[GlobalizedDisplayName("OptionDisplayDebugEnableTracer")]
@@ -88,13 +87,8 @@ public class DebugSettingsModel(IBTransientSettings transientSettings)
 	[GlobalizedDisplayName("OptionDisplayDebugEnableDiagnosticsLog")]
 	[GlobalizedDescription("OptionDescriptionDebugEnableDiagnosticsLog")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
-#if DEBUG
-	[DefaultValue(true)]
-	public bool EnableDiagnosticsLog { get; set; } = true;
-#else
 	[DefaultValue(false)]
 	public bool EnableDiagnosticsLog { get; set; } = false;
-#endif
 
 	[GlobalizedCategory("OptionCategoryDebugging")]
 	[GlobalizedDisplayName("OptionDisplayDebugEnableSaveExtrapolatedXml")]
@@ -110,20 +104,6 @@ public class DebugSettingsModel(IBTransientSettings transientSettings)
 	[Editor(typeof(AdvancedFileNameEditor), typeof(UITypeEditor)), Parameters("OptionDialogLogFile", "OptionDialogFilterLogFile")]
 	[DefaultValue("/temp/vsdiag.log")]
 	public string LogFile { get; set; } = "/temp/vsdiag.log";
-
-	[GlobalizedCategory("OptionCategoryDebugging")]
-	[GlobalizedDisplayName("OptionDisplayDebugEnableFbDiagnostics")]
-	[GlobalizedDescription("OptionDescriptionDebugEnableFbDiagnostics")]
-	[TypeConverter(typeof(GlobalEnableDisableConverter))]
-	[DefaultValue(false)]
-	public bool EnableFbDiagnostics { get; set; } = false;
-
-	[GlobalizedCategory("OptionCategoryDebugging")]
-	[GlobalizedDisplayName("OptionDisplayDebugFbLogFile")]
-	[GlobalizedDescription("OptionDescriptionDebugFbLogFile")]
-	[Editor(typeof(AdvancedFileNameEditor), typeof(UITypeEditor)), Parameters("OptionDialogFbLogFile", "OptionDialogFilterFbLogFile")]
-	[DefaultValue("/temp/vsdiagfb.log")]
-	public string FbLogFile { get; set; } = "/temp/vsdiagfb.log";
 
 
 	#endregion Property Accessors

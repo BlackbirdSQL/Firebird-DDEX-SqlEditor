@@ -26,9 +26,6 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace BlackbirdSql.Common.Controls;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
-
 public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Guid logicalView, EnEditorTabType editorTabType)
 	: IDisposable, IVsDesignerInfo, IVsMultiViewDocumentView, IVsWindowFrameNotify3, IOleCommandTarget,
 		IVsToolboxActiveUserHook, IVsToolboxPageChooser, IVsDefaultToolboxTabState, IVsToolboxUser
@@ -58,12 +55,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 	{
 		get
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			Guid pguid = Guid.Empty;
 			_CurrentFrame?.GetGuidProperty((int)__VSFPROPID.VSFPROPID_CmdUIGuid, out pguid);
@@ -108,12 +100,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 	{
 		get
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			IVsWindowFrame vsWindowFrame = _CurrentFrame ?? WindowPaneServiceProvider.GetService(typeof(SVsWindowFrame)) as IVsWindowFrame;
 			if (!(vsWindowFrame != null))
@@ -140,12 +127,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 	{
 		get
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			if (_TrackSelection == null && GetView() is System.IServiceProvider serviceProvider)
 			{
@@ -165,12 +147,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 		{
 			if (TrackSelection != null)
 			{
-				if (!ThreadHelper.CheckAccess())
-				{
-					COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-					Diag.Dug(exc);
-					throw exc;
-				}
+				Diag.ThrowIfNotOnUIThread();
 
 				SelectionContainer selectionContainer = new SelectionContainer(selectableReadOnly: true, selectedReadOnly: false)
 				{
@@ -283,12 +260,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 		}
 		set
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			_Owner = value;
 			_CurrentFrame?.SetProperty((int)__VSFPROPID2.VSFPROPID_ParentHwnd, _Owner.Handle);
@@ -317,12 +289,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 
 	protected Panel GetPanelForCurrentFrame()
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		ErrorHandler.ThrowOnFailure(CurrentFrame.GetProperty((int)__VSFPROPID2.VSFPROPID_ParentHwnd, out var pvar));
 
@@ -347,12 +314,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 			UpdateActive(isActive: true);
 			if (setFocus)
 			{
-				if (!ThreadHelper.CheckAccess())
-				{
-					COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-					Diag.Dug(exc);
-					throw exc;
-				}
+				Diag.ThrowIfNotOnUIThread();
 
 				((IVsWindowFrame2)Frame).ActivateOwnerDockedWindow();
 			}
@@ -366,12 +328,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 		if (_TextEditor != null)
 			return;
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		if (_CurrentFrame == null)
 		{
@@ -396,12 +353,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 
 	protected void SetFrameProperties(IVsWindowFrame parentFrame, IVsWindowFrame frame)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		if (parentFrame != frame)
 			frame.SetProperty((int)__VSFPROPID2.VSFPROPID_ParentFrame, parentFrame);
@@ -444,12 +396,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 	{
 		if (_CurrentFrame != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			try
 			{
@@ -478,20 +425,15 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 
 	public void Hide()
 	{
+		_Visible = false;
+
+		if (_CurrentFrame == null)
+			return;
+
+		Diag.ThrowIfNotOnUIThread();
+
 		try
 		{
-			_Visible = false;
-
-			if (_CurrentFrame == null)
-				return;
-
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
-
 			_SavedSelection = null;
 			if (Native.Succeeded(_CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_SPFrame, out var pvar)))
 			{
@@ -528,12 +470,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 	{
 		if (_CurrentFrame != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			_CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar);
 
@@ -563,12 +500,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 			Guid rguidRelativeTo = Guid.Empty;
 			if (panelForCurrentFrame.Width >= 0 && panelForCurrentFrame.Height >= 0)
 			{
-				if (!ThreadHelper.CheckAccess())
-				{
-					COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-					Diag.Dug(exc);
-					throw exc;
-				}
+				Diag.ThrowIfNotOnUIThread();
 
 				_CurrentFrame.SetFramePos((VSSETFRAMEPOS)(-1073741824), ref rguidRelativeTo, 0, 0, panelForCurrentFrame.Width, panelForCurrentFrame.Height);
 			}
@@ -581,15 +513,10 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 
 	public void Show()
 	{
+		Diag.ThrowIfNotOnUIThread();
+
 		try
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
-
 			_Showing = true;
 			Frame.ShowNoActivate();
 			_Showing = false;
@@ -666,12 +593,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 
 	int IVsMultiViewDocumentView.ActivateLogicalView(ref Guid rguidLogicalView)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		if (_WindowPaneServiceProvider is IVsMultiViewDocumentView vsMultiViewDocumentView)
 		{
@@ -682,12 +604,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 
 	int IVsMultiViewDocumentView.GetActiveLogicalView(out Guid pguidLogicalView)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		if (_WindowPaneServiceProvider is IVsMultiViewDocumentView vsMultiViewDocumentView)
 		{
@@ -699,12 +616,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 
 	int IVsMultiViewDocumentView.IsLogicalViewActive(ref Guid rguidLogicalView, out int pIsActive)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		if (_WindowPaneServiceProvider is IVsMultiViewDocumentView vsMultiViewDocumentView)
 		{
@@ -719,12 +631,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 		IsClosed = true;
 		if (_CurrentFrame != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			int num = _CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar);
 			if (Native.Succeeded(num))
@@ -766,12 +673,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 		if (_CurrentFrame == null)
 			return result;
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		result = _CurrentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar);
 		AbstractTabbedEditorPane AbstractTabbedEditorPane = pvar as AbstractTabbedEditorPane;
@@ -809,12 +711,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 		if (_CmdTarget == null || _CmdTarget is AbstractTabbedEditorPane)
 			return 0;
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		return _CmdTarget.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 	}
@@ -865,12 +762,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 			}
 			else
 			{
-				if (!ThreadHelper.CheckAccess())
-				{
-					COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-					Diag.Dug(exc);
-					throw exc;
-				}
+				Diag.ThrowIfNotOnUIThread();
 
 				num = _CmdTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
 			}
@@ -880,12 +772,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 
 	int IVsToolboxActiveUserHook.InterceptDataObject(Microsoft.VisualStudio.OLE.Interop.IDataObject pIn, out Microsoft.VisualStudio.OLE.Interop.IDataObject ppOut)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		IVsToolboxActiveUserHook textEditor = _TextEditor;
 		if (textEditor != null && textEditor.InterceptDataObject(pIn, out ppOut) == 0)
@@ -902,12 +789,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 
 	int IVsToolboxActiveUserHook.ToolboxSelectionChanged(Microsoft.VisualStudio.OLE.Interop.IDataObject pSelected)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		IVsToolboxActiveUserHook textEditor = _TextEditor;
 
@@ -924,12 +806,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 
 	int IVsToolboxUser.IsSupported(Microsoft.VisualStudio.OLE.Interop.IDataObject pDO)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		IVsToolboxUser textEditor = TextEditor;
 		if (textEditor != null && textEditor.IsSupported(pDO) == 0)
@@ -954,12 +831,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 				return toolboxEventArgs.HResult;
 		}
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		IVsToolboxUser textEditor = TextEditor;
 		if (textEditor != null && textEditor.ItemPicked(pDO) == 0)

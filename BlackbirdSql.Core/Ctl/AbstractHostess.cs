@@ -4,14 +4,11 @@
 using System;
 using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using Microsoft;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -21,15 +18,12 @@ using Microsoft.VisualStudio.Shell.Interop;
 using IServiceProvider = System.IServiceProvider;
 
 
-
 namespace BlackbirdSql.Core.Ctl;
-
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
 
 /// <summary>
 /// Core Host services are defined in this class,
 /// </summary>
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
 public abstract class AbstractHostess : IDisposable
 {
 	private Guid _MandatedSqlEditorFactoryClsid = Guid.Empty;
@@ -54,7 +48,7 @@ public abstract class AbstractHostess : IDisposable
 			_HostService ??= _ServiceProvider.GetService<IVsDataHostService, IVsDataHostService>();
 
 			if (_HostService == null)
-				throw Diag.ServiceUnavailable(typeof(IVsDataHostService));
+				throw Diag.ExceptionService(typeof(IVsDataHostService));
 
 			return _HostService;
 		}
@@ -70,19 +64,14 @@ public abstract class AbstractHostess : IDisposable
 			if (_ShellService != null)
 				return _ShellService;
 
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			_ShellService = HostService.GetService<SVsUIShell, IVsUIShell>();
 
 			_ShellService ??= Package.GetGlobalService(typeof(SVsUIShell)) as IVsUIShell;
 
 			if (_ShellService == null)
-				throw Diag.ServiceUnavailable(typeof(IVsUIShell));
+				throw Diag.ExceptionService(typeof(IVsUIShell));
 
 			return _ShellService;
 		}
@@ -143,6 +132,7 @@ public abstract class AbstractHostess : IDisposable
 	public bool ActivateDocumentIfOpen(string documentMoniker)
 	{
 		// Tracer.Trace(GetType(), "AbstractHostess.ActivateDocumentIfOpen", "documentMoniker: {0}", documentMoniker);
+		Diag.ThrowIfNotOnUIThread();
 
 		return ActivateDocumentIfOpen(documentMoniker, false) != null;
 	}
@@ -154,14 +144,9 @@ public abstract class AbstractHostess : IDisposable
 		// Tracer.Trace(GetType(), "AbstractHostess.ActivateDocumentIfOpen", "mkDocument: {0}, doNotShowWindowFrame: {1}", mkDocument, doNotShowWindowFrame);
 
 		IVsUIShellOpenDocument service = HostService.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>()
-			?? throw Diag.ServiceUnavailable(typeof(IVsUIShellOpenDocument));
+			?? throw Diag.ExceptionService(typeof(IVsUIShellOpenDocument));
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		IVsWindowFrame ppWindowFrame;
 
@@ -196,14 +181,9 @@ public abstract class AbstractHostess : IDisposable
 	private object CreateLocalInstanceImpl(Guid classId)
 	{
 		ILocalRegistry2 service = HostService.GetService<SLocalRegistry, ILocalRegistry2>()
-			?? throw Diag.ServiceUnavailable(typeof(ILocalRegistry2));
+			?? throw Diag.ExceptionService(typeof(ILocalRegistry2));
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		object result = null;
 		try
@@ -234,14 +214,9 @@ public abstract class AbstractHostess : IDisposable
 		int pDocInProj;
 
 		IVsUIShellOpenDocument service = HostService.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>()
-			?? throw Diag.ServiceUnavailable(typeof(IVsUIShellOpenDocument));
+			?? throw Diag.ExceptionService(typeof(IVsUIShellOpenDocument));
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		try
 		{
@@ -293,12 +268,7 @@ public abstract class AbstractHostess : IDisposable
 
 	private void PostExecuteCommandImpl(CommandID command)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		Guid pguidCmdGroup = command.Guid;
 		uint iD = (uint)command.ID;
@@ -316,14 +286,9 @@ public abstract class AbstractHostess : IDisposable
 	public void RenameDocument(string oldDocumentMoniker, int newItemId, string newDocumentMoniker)
 	{
 		IVsRunningDocumentTable service = HostService.GetService<SVsRunningDocumentTable, IVsRunningDocumentTable>()
-			?? throw Diag.ServiceUnavailable(typeof(IVsRunningDocumentTable));
+			?? throw Diag.ExceptionService(typeof(IVsRunningDocumentTable));
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		try
 		{
@@ -352,7 +317,7 @@ public abstract class AbstractHostess : IDisposable
 	private void ShowMessageImpl(string message)
 	{
 		IUIService service = HostService.GetService<IUIService>()
-			?? throw Diag.ServiceUnavailable(typeof(IUIService));
+			?? throw Diag.ExceptionService(typeof(IUIService));
 		service.ShowMessage(message);
 	}
 
@@ -383,12 +348,7 @@ public abstract class AbstractHostess : IDisposable
 	}
 	private DialogResult ShowQuestionImpl(string question, MessageBoxButtons buttons, MessageBoxDefaultButton defaultButton, string helpId)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		Guid rclsidComp = Guid.Empty;
 		OLEMSGDEFBUTTON msgdefbtn = OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST;
@@ -414,7 +374,7 @@ public abstract class AbstractHostess : IDisposable
 	public T TryGetService<T>()
 	{
 		T service = HostService.TryGetService<T>();
-		return service == null ? throw Diag.ServiceUnavailable(typeof(T)) : service;
+		return service == null ? throw Diag.ExceptionService(typeof(T)) : service;
 	}
 
 	public TInterface TryGetService<TService, TInterface>()
@@ -446,19 +406,19 @@ public abstract class AbstractHostess : IDisposable
 		// Tracer.Trace(GetType(), "AbstractHostess.GetService<T>", "T: {0}", typeof(T).FullName);
 
 		T service = HostService.GetService<T>();
-		return service == null ? throw Diag.ServiceUnavailable(typeof(T)) : service;
+		return service == null ? throw Diag.ExceptionService(typeof(T)) : service;
 	}
 
 	public TInterface GetService<TService, TInterface>()
 	{
 		TInterface service = HostService.GetService<TService, TInterface>();
-		return service == null ? throw Diag.ServiceUnavailable(typeof(TInterface)) : service;
+		return service == null ? throw Diag.ExceptionService(typeof(TInterface)) : service;
 	}
 
 	public T GetService<T>(Guid serviceGuid)
 	{
 		T service = HostService.GetService<T>(serviceGuid);
-		return service == null ? throw Diag.ServiceUnavailable(typeof(T)) : service;
+		return service == null ? throw Diag.ExceptionService(typeof(T)) : service;
 	}
 
 	void IDisposable.Dispose()

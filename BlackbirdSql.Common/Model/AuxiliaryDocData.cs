@@ -270,15 +270,11 @@ public sealed class AuxiliaryDocData(object docData)
 	private bool QueryManagerScriptExecutionStartedHandler(object sender, QueryManager.ScriptExecutionStartedEventArgs args)
 	{
 		IDbConnection connection = QryMgr.ConnectionStrategy.Connection;
+
 		if (connection != null)
-		{
-			CsbAgent csa = new(connection);
-			_DatabaseAtQueryExecutionStart = csa.SafeDatasetMoniker;
-		}
+			_DatabaseAtQueryExecutionStart = CsbAgent.CreateConnectionUrl(connection);
 		else
-		{
 			_DatabaseAtQueryExecutionStart = null;
-		}
 
 		return true;
 	}
@@ -287,11 +283,9 @@ public sealed class AuxiliaryDocData(object docData)
 	{
 		string connectionUrl = null;
 		IDbConnection connection = QryMgr.ConnectionStrategy.Connection;
+
 		if (connection != null)
-		{
-			CsbAgent csa = new(connection);
-			connectionUrl = csa.SafeDatasetMoniker;
-		}
+			connectionUrl = CsbAgent.CreateConnectionUrl(connection); 
 
 		bool flag = false;
 		if (connectionUrl != null && _DatabaseAtQueryExecutionStart == null || connectionUrl == null && _DatabaseAtQueryExecutionStart != null)

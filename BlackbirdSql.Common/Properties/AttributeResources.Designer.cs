@@ -97,6 +97,24 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The database connection string for the connection.
+        /// </summary>
+        internal static string PropertyWindowConnectionStringDescription {
+            get {
+                return ResourceManager.GetString("PropertyWindowConnectionStringDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connection String.
+        /// </summary>
+        internal static string PropertyWindowConnectionStringDisplayName {
+            get {
+                return ResourceManager.GetString("PropertyWindowConnectionStringDisplayName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name of the connection containing server name and login.
         /// </summary>
         internal static string PropertyWindowConnInfoDescription {

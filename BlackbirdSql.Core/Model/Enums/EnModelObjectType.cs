@@ -241,12 +241,16 @@ public static class EnModelObjectTypeExtensions
 	// ---------------------------------------------------------------------------------
 	public static EnModelObjectType NodeBaseType(this IVsDataExplorerNode node)
 	{
+		if (node == null)
+			return EnModelObjectType.Unknown;
+
 		if (node.Object == null)
 			return EnModelObjectType.Unknown;
 
 		if (node.ModelObjectTypeIn(EnModelObjectType.Table, EnModelObjectType.Index,
 			EnModelObjectType.ForeignKey, EnModelObjectType.View,
-			EnModelObjectType.StoredProcedure, EnModelObjectType.Function))
+			EnModelObjectType.StoredProcedure, EnModelObjectType.Function,
+			EnModelObjectType.Database))
 		{
 			return node.ModelObjectType();
 		}

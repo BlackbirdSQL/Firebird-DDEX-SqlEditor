@@ -6,6 +6,7 @@ using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 
 using FirebirdSql.Data.FirebirdClient;
+using BlackbirdSql.Core.Model.Enums;
 
 
 namespace BlackbirdSql.Core.Ctl;
@@ -45,8 +46,11 @@ public static class CoreConstants
 	public const string C_KeyExIcon = "Icon";
 	public const string C_KeyExDataset = "Dataset";
 	public const string C_KeyExDatasetKey = "DatasetKey";
+	public const string C_KeyExConnectionKey = "ConnectionKey";
 	public const string C_KeyExDatasetId = "DatasetId";
-	public const string C_KeyExExternalKey = "ExternalKey";
+	public const string C_KeyExConnectionName = "ConnectionName";
+	public const string C_KeyExConnectionSource = "ConnectionSource";
+	public const string C_KeyExDisplayName = "DisplayName";
 
 
 	// External (non-paramameter) property descriptor
@@ -60,6 +64,10 @@ public static class CoreConstants
 	// Internal (hidden) property keys
 	public const string C_KeyExInMemoryPassword = "InMemoryPassword";
 
+
+	// Other connection constants.
+	public const string C_KeyExConnectionUrl = "ConnectionUrl";
+	public const string C_KeyExConnectionString = "ConnectionString";
 
 	#endregion Property Names
 
@@ -84,8 +92,10 @@ public static class CoreConstants
 	public const IBIconType C_DefaultExIcon = null;
 	public const string C_DefaultExDataset = "";
 	public const string C_DefaultExDatasetKey = "";
+	public const string C_DefaultExConnectionKey = "";
 	public const string C_DefaultExDatasetId = "";
-	public const string C_DefaultExExternalKey = "";
+	public const string C_DefaultExConnectionName = "";
+	public const EnConnectionSource C_DefaultExConnectionSource = EnConnectionSource.Unknown;
 
 	// External (non-paramameter) property defaults 
 	public const EnEngineType C_DefaultExServerEngine = EnEngineType.Unknown;

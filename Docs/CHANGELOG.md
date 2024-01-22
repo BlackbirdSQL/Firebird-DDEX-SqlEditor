@@ -3,6 +3,12 @@
 ### Change log
 
 
+#### v10.1.0.0
+Full integration of Server Explorer and RunningConnectionTable connection management.</br>
+Improved asynchronous loading of trigger linkage tables.</br>
+Defaulted ApplicationName as a weak equivalency connection property for loading multiple equivalent connections.</br>
+Resolved several Server Explorer synchronization issues.
+
 #### v10.0.3.0
 Moved validation Globals flag variable from Solution and Project Globals to user files.</br>
 Resolved issues with User Options dialogs.</br>

@@ -4,24 +4,24 @@ using System.Collections;
 using System.Collections.Generic;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Model;
 
 
 namespace BlackbirdSql.Core.Ctl;
 
-public class DescriberDictionary : PublicDictionary<string, Describer>, IBEnumerableAdvancedDescriptors,
-	IBEnumerableEquivalencyDescriptors, IBEnumerableMandatoryDescriptors, IBEnumerableConnectionDescriptors
+public class DescriberDictionary : PublicDictionary<string, Describer>
 {
 
-	private int _EquivalencyCount = -1;
 	private IDictionary<string, Describer> _Synonyms;
-	
 
 
-
-	public IBEnumerableAdvancedDescriptors Advanced => this;
-	public IBEnumerableEquivalencyDescriptors Equivalency => this;
-	public IBEnumerableMandatoryDescriptors Mandatory => this;
-	public IBEnumerableConnectionDescriptors ConnectionProperties => this;
+	public IEnumerable<Describer> AdvancedKeys => new EnumerableAdvanced(this);
+	public IEnumerable<Describer> ConnectionKeys => new EnumerableConnection(this);
+	public IEnumerable<Describer> DescriberKeys => new EnumerableDescribers(this);
+	public IEnumerable<Describer> EquivalencyKeys => new EnumerableEquivalencyDescribers(this);
+	public IEnumerable<Describer> MandatoryKeys => new EnumerableMandatory(this);
+	public IEnumerable<Describer> PublicMandatoryKeys => new EnumerablePublicMandatory(this);
+	public IEnumerable<Describer> WeakEquivalencyKeys => new EnumerableWeakEquivalencyDescribers(this);
 
 
 	public override Describer this[string key]
@@ -45,20 +45,6 @@ public class DescriberDictionary : PublicDictionary<string, Describer>, IBEnumer
 
 	}
 
-	public int EquivalencyCount
-	{
-		get
-		{
-			if (_EquivalencyCount == -1)
-			{
-				_EquivalencyCount = 0;
-
-				foreach (Describer _ in Equivalency)
-					_EquivalencyCount++;
-			}
-			return _EquivalencyCount;
-		}
-	}
 
 
 	public IDictionary<string, Describer> Synonyms => _Synonyms;
@@ -70,14 +56,6 @@ public class DescriberDictionary : PublicDictionary<string, Describer>, IBEnumer
 	public DescriberDictionary(Describer[] describers, KeyValuePair<string, string>[] synonyms) : base(StringComparer.OrdinalIgnoreCase)
 	{
 		AddRange(describers);
-		foreach (Describer describer in describers)
-		{
-			if (describer.ConnectionParameter != null
-				&& describer.Name.ToLowerInvariant() != describer.ConnectionParameter.ToLowerInvariant())
-			{
-				AddSynonym(describer.ConnectionParameter.ToLowerInvariant(), describer.Name);
-			}
-		}
 		AddSynonyms(synonyms);
 	}
 
@@ -100,8 +78,6 @@ public class DescriberDictionary : PublicDictionary<string, Describer>, IBEnumer
 			throw ex;
 		}
 
-		_EquivalencyCount = -1;
-
 		Describer describer = new(name, parameter, propertyType, defaultValue, isParameter,
 			isAdvanced, isPublic, isMandatory);
 
@@ -123,6 +99,25 @@ public class DescriberDictionary : PublicDictionary<string, Describer>, IBEnumer
 	}
 
 
+	public void AddRange(Describer[] describers)
+	{
+		base.AddRange(describers);
+
+
+		foreach (Describer describer in describers)
+		{
+			AddSynonym(describer.Name.ToLowerInvariant(), describer.Name);
+
+			if (describer.ConnectionParameter != null
+				&& describer.Name.ToLowerInvariant() != describer.ConnectionParameter.ToLowerInvariant())
+			{
+				AddSynonym(describer.ConnectionParameter.ToLowerInvariant(), describer.Name);
+			}
+		}
+
+	}
+
+
 
 	public void AddRange(DescriberDictionary rhs)
 	{
@@ -130,8 +125,6 @@ public class DescriberDictionary : PublicDictionary<string, Describer>, IBEnumer
 
 		if (rhs._Synonyms != null)
 			AddSynonyms(rhs._Synonyms);
-
-		_EquivalencyCount = -1;
 	}
 
 
@@ -145,12 +138,11 @@ public class DescriberDictionary : PublicDictionary<string, Describer>, IBEnumer
 			throw ex;
 		}
 
-		_EquivalencyCount = -1;
-
 		_Synonyms ??= new Dictionary<string, Describer>(StringComparer.OrdinalIgnoreCase);
 		try
 		{
-			_Synonyms.Add(synonym, descriptor);
+			if (!_Synonyms.ContainsKey(synonym))
+				_Synonyms.Add(synonym, descriptor);
 		}
 		catch (Exception ex)
 		{
@@ -203,28 +195,6 @@ public class DescriberDictionary : PublicDictionary<string, Describer>, IBEnumer
 
 		return value.DerivedConnectionParameter;
 
-	}
-
-
-
-	IEnumerator IBEnumerableAdvancedDescriptors.GetEnumerator()
-	{
-		return new AdvancedDescribersEnumerator(Values);
-	}
-
-	IEnumerator IBEnumerableEquivalencyDescriptors.GetEnumerator()
-	{
-		return new EquivalencyDescribersEnumerator(Values);
-	}
-
-	IEnumerator IBEnumerableMandatoryDescriptors.GetEnumerator()
-	{
-		return new MandatoryDescribersEnumerator(Values);
-	}
-
-	IEnumerator IBEnumerableConnectionDescriptors.GetEnumerator()
-	{
-		return new ConnectionDescribersEnumerator(Values);
 	}
 
 
@@ -357,8 +327,6 @@ public class DescriberDictionary : PublicDictionary<string, Describer>, IBEnumer
 		if (!base.Remove(key))
 			return false;
 
-		_EquivalencyCount = -1;
-
 		if (_Synonyms == null)
 			return true;
 
@@ -386,4 +354,205 @@ public class DescriberDictionary : PublicDictionary<string, Describer>, IBEnumer
 		return true;
 	}
 
+
+
+	public class EnumerableAdvanced(DescriberDictionary owner)
+	: IBEnumerableDescribers<EnumeratorAdvanced>
+	{
+		private readonly DescriberDictionary _Owner = owner;
+
+		// public IEnumerable<Describer> DescriberEnumerator => _Owner;
+
+		public IEnumerator<Describer> GetEnumerator()
+		{
+			return (IEnumerator<Describer>)new EnumeratorAdvanced(_Owner.Values);
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return new EnumeratorAdvanced(_Owner.Values);
+		}
+	}
+
+
+
+	public class EnumerableEquivalencyDescribers(DescriberDictionary owner)
+	: IBEnumerableDescribers<EnumeratorEquivalency>
+	{
+		private readonly DescriberDictionary _Owner = owner;
+
+		// public IEnumerable<Describer> DescriberEnumerator => _Owner;
+
+		public IEnumerator<Describer> GetEnumerator()
+		{
+			return (IEnumerator<Describer>)new EnumeratorEquivalency(_Owner.Values);
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return new EnumeratorEquivalency(_Owner.Values);
+		}
+	}
+
+
+	public class EnumerableWeakEquivalencyDescribers(DescriberDictionary owner)
+		: IBEnumerableDescribers<EnumeratorWeakEquivalency>
+	{
+		private readonly DescriberDictionary _Owner = owner;
+
+		public IEnumerator<Describer> GetEnumerator()
+		{
+			return (IEnumerator<Describer>)new EnumeratorWeakEquivalency(_Owner.Values);
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return new EnumeratorWeakEquivalency(_Owner.Values);
+		}
+	}
+
+
+
+	public class EnumerableMandatory(DescriberDictionary owner)
+	: IBEnumerableDescribers<EnumeratorMandatory>
+	{
+		private readonly DescriberDictionary _Owner = owner;
+
+		// public IEnumerable<Describer> DescriberEnumerator => _Owner;
+
+		public IEnumerator<Describer> GetEnumerator()
+		{
+			return (IEnumerator<Describer>)new EnumeratorMandatory(_Owner.Values);
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return new EnumeratorMandatory(_Owner.Values);
+		}
+	}
+
+
+
+	public class EnumerablePublicMandatory(DescriberDictionary owner)
+		: IBEnumerableDescribers<EnumeratorPublicMandatory>
+	{
+		private readonly DescriberDictionary _Owner = owner;
+
+		// public IEnumerable<Describer> DescriberEnumerator => _Owner;
+
+		public IEnumerator<Describer> GetEnumerator()
+		{
+			return (IEnumerator<Describer>)new EnumeratorPublicMandatory(_Owner.Values);
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return new EnumeratorPublicMandatory(_Owner.Values);
+		}
+	}
+
+
+
+	public class EnumerableConnection(DescriberDictionary owner)
+	: IBEnumerableDescribers<EnumeratorConnection>
+	{
+		private readonly DescriberDictionary _Owner = owner;
+
+		// public IEnumerable<Describer> DescriberEnumerator => _Owner;
+
+		public IEnumerator<Describer> GetEnumerator()
+		{
+			return (IEnumerator<Describer>)new EnumeratorConnection(_Owner.Values);
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return new EnumeratorConnection(_Owner.Values);
+		}
+	}
+
+	public class EnumerableDescribers(DescriberDictionary owner)
+		: IBEnumerableDescribers<EnumeratorDescribers>
+	{
+		private readonly DescriberDictionary _Owner = owner;
+
+		// public IEnumerable<Describer> DescriberEnumerator => _Owner;
+
+		public IEnumerator<Describer> GetEnumerator()
+		{
+			return (IEnumerator<Describer>)new EnumeratorDescribers(_Owner.Values);
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return new EnumeratorDescribers(_Owner.Values);
+		}
+	}
+
+
+
+	public class EnumeratorAdvanced(PublicValueCollection<string, Describer> values)
+		: EnumeratorDescribers(values)
+	{
+		public override bool IsValid(Describer describer)
+		{
+			return describer.IsAdvanced && !describer.IsInternalStore;
+		}
+
+	}
+
+	public class EnumeratorConnection(PublicValueCollection<string, Describer> values)
+		: EnumeratorDescribers(values)
+	{
+		public override bool IsValid(Describer describer)
+		{
+			return describer.IsConnectionParameter && !describer.IsInternalStore;
+		}
+
+	}
+
+
+	public class EnumeratorEquivalency(PublicValueCollection<string, Describer> values)
+		: EnumeratorDescribers(values)
+	{
+		public override bool IsValid(Describer describer)
+		{
+			return describer.IsEquivalency && !describer.IsInternalStore;
+		}
+
+	}
+
+	public class EnumeratorWeakEquivalency(PublicValueCollection<string, Describer> values)
+		: EnumeratorDescribers(values)
+	{
+		public override bool IsValid(Describer describer)
+		{
+			return describer.IsEquivalency && !describer.IsInternalStore
+				&& describer.Name != ModelConstants.C_KeyApplicationName;
+		}
+
+	}
+
+
+	public class EnumeratorMandatory(PublicValueCollection<string, Describer> values)
+		: EnumeratorDescribers(values)
+	{
+		public override bool IsValid(Describer describer)
+		{
+			return describer.IsMandatory && !describer.IsInternalStore;
+		}
+
+	}
+
+	public class EnumeratorPublicMandatory(PublicValueCollection<string, Describer> values)
+		: EnumeratorDescribers(values)
+	{
+		public override bool IsValid(Describer describer)
+		{
+			return describer.IsPublicMandatory && !describer.IsInternalStore;
+		}
+
+	}
+
 }
+

@@ -151,15 +151,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DTE is null.
-        /// </summary>
-        public static string ExceptionDteIsNull {
-            get {
-                return ResourceManager.GetString("ExceptionDteIsNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Source information for site already exists.
         /// </summary>
         public static string ExceptionDuplicatingSiteInformation {
@@ -192,15 +183,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string ExceptionFailedToSubscribeSettingsEvents {
             get {
                 return ResourceManager.GetString("ExceptionFailedToSubscribeSettingsEvents", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to IBPackageController is null.
-        /// </summary>
-        public static string ExceptionIBPackageControllerIsNull {
-            get {
-                return ResourceManager.GetString("ExceptionIBPackageControllerIsNull", resourceCulture);
             }
         }
         
@@ -259,15 +241,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to IVsRunningDocumentTable is null.
-        /// </summary>
-        public static string ExceptionIVsRunningDocumentTableIsNull {
-            get {
-                return ResourceManager.GetString("ExceptionIVsRunningDocumentTableIsNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Resource not found: {0}.
         /// </summary>
         public static string ExceptionResourceNotFound {
@@ -291,15 +264,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string ExceptionSiteIsNull {
             get {
                 return ResourceManager.GetString("ExceptionSiteIsNull", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SVsSolution is null.
-        /// </summary>
-        public static string ExceptionSVsSolutionIsNull {
-            get {
-                return ResourceManager.GetString("ExceptionSVsSolutionIsNull", resourceCulture);
             }
         }
         

@@ -36,13 +36,8 @@ public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 	// =========================================================================================================
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Sets the query designer diagram pane to visible when a table or view's data
-	/// is initially retrieved.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static new bool ShowDiagramPane => (bool)GetSetting("DdexGeneralShowDiagramPane", true);
+
+	public static bool ValidateConnectionOnFormAccept => (bool)GetSetting("DdexGeneralValidateConnectionOnFormAccept", true);
 
 
 	#endregion Property Accessors

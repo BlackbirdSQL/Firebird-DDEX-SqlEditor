@@ -44,24 +44,13 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 		{
 			try
 			{
-				foreach (Describer descriptor in CorePropertySet.Describers)
+				foreach (Describer describer in CsbAgent.DescriberKeys)
 				{
-					if (!descriptor.IsPublicMandatory)
+					if (!describer.IsPublicMandatory)
 						continue;
-					if (!ConnectionUIProperties.ContainsKey(descriptor.DerivedConnectionParameter))
+					if (!ConnectionUIProperties.ContainsKey(describer.DerivedConnectionParameter))
 					{
-						Diag.Stack("ConnectionUIProperties public mandatory core property missing: " + descriptor.DerivedConnectionParameter);
-						return false;
-					}
-				}
-
-				foreach (Describer descriptor in ModelPropertySet.Describers)
-				{
-					if (!descriptor.IsPublicMandatory)
-						continue;
-					if (!ConnectionUIProperties.ContainsKey(descriptor.DerivedConnectionParameter))
-					{
-						Diag.Stack("ConnectionUIProperties public mandatory schema property missing: " + descriptor.DerivedConnectionParameter);
+						Diag.StackException("ConnectionUIProperties public mandatory property missing: " + describer.DerivedConnectionParameter);
 						return false;
 					}
 				}
@@ -127,29 +116,6 @@ public partial class TConnectionPromptDialog : DataConnectionPromptDialog
 	// =========================================================================================================
 	#region Method Implementations & Overloads - TConnectionPromptDialog
 	// =========================================================================================================
-
-
-#if DEBUG
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Overloads the password prompt dialog [For debug exception tracking]
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public new string ShowDialog(IVsDataConnectionSupport dataConnectionSupport)
-	{
-		// Tracer.Trace(GetType(), "ShowDialog()");
-
-		try
-		{
-			return base.ShowDialog(dataConnectionSupport);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw;
-		}
-	}
-#endif
 
 
 	// ---------------------------------------------------------------------------------

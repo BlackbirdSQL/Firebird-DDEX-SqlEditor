@@ -128,86 +128,32 @@ namespace BlackbirdSql.EditorExtension;
 // =========================================================================================================
 #region							EditorExtensionAsyncPackage Class Declaration
 // =========================================================================================================
-
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
-
-public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEditorPackage, IVsTextMarkerTypeProvider, Microsoft.VisualStudio.OLE.Interop.IServiceProvider, IVsFontAndColorDefaultsProvider, IVsBroadcastMessageEvents
+public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEditorPackage,
+	IVsTextMarkerTypeProvider, Microsoft.VisualStudio.OLE.Interop.IServiceProvider,
+	IVsFontAndColorDefaultsProvider, IVsBroadcastMessageEvents
 {
 
-	#region Variables - EditorExtensionAsyncPackage
-
-
-	// private static readonly string _TName = typeof(EditorExtensionAsyncPackage).Name;
-
-	private uint _VsBroadcastMessageEventsCookie;
-	private EditorEventsManager _EventsManager;
-	private EditorFactoryWithoutEncoding _SqlEditorFactory;
-	private EditorFactoryWithEncoding _SqlEditorFactoryWithEncoding;
-	private SqlResultsEditorFactory _SqlResultsEditorFactory;
-	private uint _MarkerServiceCookie;
-	private uint _FontAndColorServiceCookie;
-
-
-	#endregion Variables
-
-
-
-
-
-	// =========================================================================================================
-	#region Property accessors - EditorExtensionAsyncPackage
-	// =========================================================================================================
-
-
-	private Dictionary<object, AuxiliaryDocData> _DocDataEditors = null;
-
-	public IBSqlEditorWindowPane LastFocusedSqlEditor { get; set; }
-
-
-	public Dictionary<object, AuxiliaryDocData> DocDataEditors => _DocDataEditors ??= [];
-
-
-	public bool EnableSpatialResultsTab { get; set; }
-
-
-	public override IBEventsManager EventsManager => _EventsManager ??= new EditorEventsManager(Controller);
-
-
-	#endregion Property accessors
-
-
-
-
-
-	// =========================================================================================================
+	// ---------------------------------------------------------------------------------
 	#region Constructors / Destructors - EditorExtensionAsyncPackage
-	// =========================================================================================================
+	// ---------------------------------------------------------------------------------
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// EditorExtensionAsyncPackage package .ctor
-	/// </summary>
-	// ---------------------------------------------------------------------------------
 	public EditorExtensionAsyncPackage() : base()
 	{
+		_EventsManager = EditorEventsManager.CreateInstance(_Controller);
 	}
 
 
-
-	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Gets the singleton AbstractPackageController instance
 	/// </summary>
-	// ---------------------------------------------------------------------------------
 	public static EditorExtensionAsyncPackage Instance
 	{
 		get
 		{
 			if (_Instance == null)
 			{
-				NullReferenceException ex = new(Resources.ErrCannotInstantiateFromAbstractAncestor);
+				TypeAccessException ex = new(Resources.ErrCannotInstantiateFromAbstractAncestor);
 				Diag.Dug(ex);
 				throw ex;
 			}
@@ -217,12 +163,9 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 	}
 
 
-
-	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// EditorExtensionAsyncPackage package disposal
 	/// </summary>
-	// ---------------------------------------------------------------------------------
 	protected override void Dispose(bool disposing)
 	{
 		if (disposing)
@@ -248,8 +191,54 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 	}
 
 
-	#endregion Constructors / Destructors
+	#endregion Additional Constructors / Destructors
 
+
+
+
+	// =========================================================================================================
+	#region Fields - EditorExtensionAsyncPackage
+	// =========================================================================================================
+
+
+	// private static readonly string _TName = typeof(EditorExtensionAsyncPackage).Name;
+
+	private readonly EditorEventsManager _EventsManager;
+	private uint _VsBroadcastMessageEventsCookie;
+	private EditorFactoryWithoutEncoding _SqlEditorFactory;
+	private EditorFactoryWithEncoding _SqlEditorFactoryWithEncoding;
+	private SqlResultsEditorFactory _SqlResultsEditorFactory;
+	private uint _MarkerServiceCookie;
+	private uint _FontAndColorServiceCookie;
+
+
+	#endregion Fields
+
+
+
+
+
+	// =========================================================================================================
+	#region Property accessors - EditorExtensionAsyncPackage
+	// =========================================================================================================
+
+
+	private Dictionary<object, AuxiliaryDocData> _DocDataEditors = null;
+
+	public IBSqlEditorWindowPane LastFocusedSqlEditor { get; set; }
+
+
+	public Dictionary<object, AuxiliaryDocData> DocDataEditors => _DocDataEditors ??= [];
+
+
+	public bool EnableSpatialResultsTab { get; set; }
+
+
+	public override IBEventsManager EventsManager => _EventsManager;
+
+
+
+	#endregion Property accessors
 
 
 
@@ -280,13 +269,15 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 	// ---------------------------------------------------------------------------------
 	public override async Task FinalizeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 	{
+		Diag.ThrowIfNotOnUIThread();
+
 		if (cancellationToken.IsCancellationRequested)
 			return;
 
 		await base.FinalizeAsync(cancellationToken, progress);
 
 		if (await GetServiceAsync(typeof(IProfferService)) is not IProfferService obj)
-			throw Diag.ServiceUnavailable(typeof(OleMenuCommandService));
+			throw Diag.ExceptionService(typeof(OleMenuCommandService));
 
 		Guid rguidMarkerService = LibraryData.CLSID_EditorMarkerService;
 		Native.ThrowOnFailure(
@@ -319,8 +310,6 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 		await DefineCommandsAsync();
 
-		Controller.RegisterEventsManager(EventsManager);
-
 	}
 
 
@@ -344,14 +333,14 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 		else if (serviceType == typeof(IBDesignerExplorerServices))
 		{
 			object service = new DesignerExplorerServices()
-				?? throw Diag.ServiceUnavailable(serviceType);
+				?? throw Diag.ExceptionService(serviceType);
 
 			return service;
 		}
 		else if (serviceType == typeof(IBDesignerOnlineServices))
 		{
 			object service = new DesignerOnlineServices()
-				?? throw Diag.ServiceUnavailable(serviceType);
+				?? throw Diag.ExceptionService(serviceType);
 
 			return service;
 		}
@@ -397,9 +386,9 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 			Guid clsid = LibraryData.CLSID_CommandSet;
 
 			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
-				new SqlEditorToolbarCommandHandler<SqlEditorSqlDatabaseCommand>(clsid, (uint)EnCommandSet.CmbIdSqlDatabases));
+				new SqlEditorToolbarCommandHandler<SqlEditorDatabaseCommand>(clsid, (uint)EnCommandSet.CmbIdSqlDatabases));
 			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
-				new SqlEditorToolbarCommandHandler<SqlEditorSqlDatabaseListCommand>(clsid, (uint)EnCommandSet.CmbIdSqlDatabasesGetList));
+				new SqlEditorToolbarCommandHandler<SqlEditorDatabaseListCommand>(clsid, (uint)EnCommandSet.CmbIdSqlDatabasesGetList));
 			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorExecuteQueryCommand>(clsid, (uint)EnCommandSet.CmdIdExecuteQuery));
 			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
@@ -434,7 +423,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 	private async Task DefineCommandsAsync()
 	{
 		if (await GetServiceAsync(typeof(IMenuCommandService)) is not OleMenuCommandService oleMenuCommandService)
-			throw Diag.ServiceUnavailable(typeof(OleMenuCommandService));
+			throw Diag.ExceptionService(typeof(OleMenuCommandService));
 
 		// Tracer.Trace(GetType(), "DefineCommandsAsync()", "OleCommandService class: {0}.", oleMenuCommandService.GetType().FullName);
 
@@ -548,7 +537,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 
 	int IVsTextMarkerTypeProvider.GetTextMarkerType(ref Guid markerGuid, out IVsPackageDefinedTextMarkerType vsTextMarker)
 	{
-		if (markerGuid == VS.CLSID_TSqlEditorMessageErrorMarker)
+		if (markerGuid == Core.VS.CLSID_TSqlEditorMessageErrorMarker)
 		{
 			vsTextMarker = new VsTextMarker((uint)MARKERVISUAL.MV_COLOR_ALWAYS, COLORINDEX.CI_RED, COLORINDEX.CI_USERTEXT_BK, Resources.ErrorMarkerDisplayName, Resources.ErrorMarkerDescription, "Error Message");
 			return VSConstants.S_OK;
@@ -584,15 +573,15 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 	int IVsFontAndColorDefaultsProvider.GetObject(ref Guid rguidCategory, out object ppObj)
 	{
 		ppObj = null;
-		if (rguidCategory == VS.CLSID_FontAndColorsSqlResultsTextCategory)
+		if (rguidCategory == Core.VS.CLSID_FontAndColorsSqlResultsTextCategory)
 		{
 			ppObj = FontAndColorProviderTextResults.Instance;
 		}
-		else if (rguidCategory == VS.CLSID_FontAndColorsSqlResultsGridCategory)
+		else if (rguidCategory == Core.VS.CLSID_FontAndColorsSqlResultsGridCategory)
 		{
 			ppObj = FontAndColorProviderGridResults.Instance;
 		}
-		else if (rguidCategory == VS.CLSID_FontAndColorsSqlResultsExecutionPlanCategory)
+		else if (rguidCategory == Core.VS.CLSID_FontAndColorsSqlResultsExecutionPlanCategory)
 		{
 			ppObj = FontAndColorProviderExecutionPlan.Instance;
 		}
@@ -754,8 +743,8 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 	}
 
 	public bool? ShowConnectionDialogFrame(IntPtr parent, EventsChannel channel,
-		UIConnectionInfo ci, VerifyConnectionDelegate verifierDelegate, ConnectionDialogConfiguration config,
-		ref UIConnectionInfo uIConnectionInfo)
+		ConnectionPropertyAgent ci, VerifyConnectionDelegate verifierDelegate, ConnectionDialogConfiguration config,
+		ref ConnectionPropertyAgent connectionInfo)
 	{
 		// Tracer.Trace(GetType(), "ShowConnectionDialogFrame()");
 
@@ -763,7 +752,7 @@ public abstract class EditorExtensionAsyncPackage : AbstractAsyncPackage, IBEdit
 		ConnectionDialogFrame connectionDialogFrame = new ConnectionDialogFrame(channel, ci, verifierDelegate, config);
 
 		connectionDialogFrame.ShowModal(parent);
-		uIConnectionInfo = connectionDialogFrame.UIConnectionInfo;
+		connectionInfo = connectionDialogFrame.ConnectionInfo;
 		connectionDialogFrame.ViewModel.CloseSections();
 
 		return connectionDialogFrame.DialogResult;

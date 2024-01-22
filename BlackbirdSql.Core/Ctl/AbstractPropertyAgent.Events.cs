@@ -23,7 +23,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Event Variables - AbstractPropertyAgent
+	#region Event Fields - AbstractPropertyAgent
 	// ---------------------------------------------------------------------------------
 
 
@@ -35,7 +35,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	protected IBEventsChannel _Channel;
 
 
-	#endregion Event Variables
+	#endregion Event Fields
 
 
 

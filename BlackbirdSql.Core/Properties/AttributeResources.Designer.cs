@@ -223,6 +223,42 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Extended.
+        /// </summary>
+        internal static string PropertyCategoryExtended {
+            get {
+                return ResourceManager.GetString("PropertyCategoryExtended", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  Identifiers.
+        /// </summary>
+        internal static string PropertyCategoryIdentifiers {
+            get {
+                return ResourceManager.GetString("PropertyCategoryIdentifiers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to   Proposed Name.
+        /// </summary>
+        internal static string PropertyDisplayConnectionName {
+            get {
+                return ResourceManager.GetString("PropertyDisplayConnectionName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  Proposed Dataset Id.
+        /// </summary>
+        internal static string PropertyDisplayDatasetId {
+            get {
+                return ResourceManager.GetString("PropertyDisplayDatasetId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Option Page:      {0}\{1}\{2}.
         /// </summary>
         internal static string Reg_NotifyOptionPage {

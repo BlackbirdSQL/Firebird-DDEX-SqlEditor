@@ -6,12 +6,9 @@ using System.IO;
 using System.Xml;
 using BlackbirdSql.Core.Ctl.Config;
 using Microsoft.VisualStudio.Data.Core;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 
 
 namespace BlackbirdSql.Core.Ctl.Extensions;
-
 
 // =========================================================================================================
 //											XmlParser Class
@@ -22,10 +19,10 @@ namespace BlackbirdSql.Core.Ctl.Extensions;
 // =========================================================================================================
 public static class XmlParser
 {
-	#region Variables
+	#region Fields
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 
@@ -144,13 +141,12 @@ public static class XmlParser
 
 		if (updated)
 		{
-#if DEBUG
 			if (PersistentSettings.EnableSaveExtrapolatedXml)
 			{
 				FileInfo info = new FileInfo(Diag.LogFile);
 				xmlDoc.Save(info.DirectoryName + "/" + xmlName + ".Extrapolated.xml");
 			}
-#endif
+
 			MemoryStream xmlStream = new MemoryStream();
 
 			xmlDoc.Save(xmlStream);

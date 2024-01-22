@@ -16,9 +16,9 @@ public interface IBServerConnectionProvider // : IBExportable
 {
 	Guid ServerType { get; }
 
-	string GetConnectionString(UIConnectionInfo ci, EnEngineType serverEngine);
+	string GetConnectionString(ConnectionPropertyAgent ci, EnEngineType serverEngine);
 
-	IDbConnection CreateConnection(UIConnectionInfo ci, EnEngineType serverEngine);
+	IDbConnection CreateConnection(ConnectionPropertyAgent ci, EnEngineType serverEngine);
 
 	IDbConnection CreateConnection(string connectionString);
 }

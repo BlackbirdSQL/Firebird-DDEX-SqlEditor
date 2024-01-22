@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model.Enums;
 using Microsoft.VisualStudio.Data.Services;
 
@@ -49,7 +48,7 @@ public class MonikerAgent
 
 
 	// =========================================================================================================
-	#region Variables - MonikerAgent
+	#region Fields - MonikerAgent
 	// =========================================================================================================
 
 
@@ -64,7 +63,7 @@ public class MonikerAgent
 	private EnModelTargetType _TargetType = ModelConstants.C_DefaultExTargetType;
 	private long _UniqueId;
 
-	#endregion Variables
+	#endregion Fields
 
 
 

@@ -334,54 +334,70 @@ public class TDataConnectionAdvancedDlg : Form
 
 	private void InitializeComponent()
 	{
-		this.components = new System.ComponentModel.Container();
-		System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BlackbirdSql.VisualStudio.Ddex.Controls.DataTools.TDataConnectionAdvancedDlg));
-		this.propertyGrid = new BlackbirdSql.VisualStudio.Ddex.Controls.DataTools.TDataConnectionAdvancedDlg.TiSpecializedPropertyGrid();
-		this.textBox = new System.Windows.Forms.TextBox();
-		this.buttonsTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
-		this.okButton = new System.Windows.Forms.Button();
-		this.cancelButton = new System.Windows.Forms.Button();
-		this.buttonsTableLayoutPanel.SuspendLayout();
-		base.SuspendLayout();
-		resources.ApplyResources(this.propertyGrid, "propertyGrid");
-		this.propertyGrid.CommandsActiveLinkColor = System.Drawing.SystemColors.ActiveCaption;
-		this.propertyGrid.CommandsDisabledLinkColor = System.Drawing.SystemColors.ControlDark;
-		this.propertyGrid.CommandsLinkColor = System.Drawing.SystemColors.ActiveCaption;
-		this.propertyGrid.MinimumSize = new System.Drawing.Size(270, 250);
-		this.propertyGrid.Name = "propertyGrid";
-		this.propertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(SetTextBox);
-		resources.ApplyResources(this.textBox, "textBox");
-		this.textBox.Name = "textBox";
-		this.textBox.ReadOnly = true;
-		resources.ApplyResources(this.buttonsTableLayoutPanel, "buttonsTableLayoutPanel");
-		this.buttonsTableLayoutPanel.Controls.Add(this.okButton, 0, 0);
-		this.buttonsTableLayoutPanel.Controls.Add(this.cancelButton, 1, 0);
-		this.buttonsTableLayoutPanel.Name = "buttonsTableLayoutPanel";
-		resources.ApplyResources(this.okButton, "okButton");
-		this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-		this.okButton.MinimumSize = new System.Drawing.Size(75, 23);
-		this.okButton.Name = "okButton";
-		resources.ApplyResources(this.cancelButton, "cancelButton");
-		this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-		this.cancelButton.MinimumSize = new System.Drawing.Size(75, 23);
-		this.cancelButton.Name = "cancelButton";
-		this.cancelButton.Click += new System.EventHandler(RevertProperties);
-		base.AcceptButton = this.okButton;
-		resources.ApplyResources(this, "$this");
-		base.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-		base.CancelButton = this.cancelButton;
-		base.Controls.Add(this.buttonsTableLayoutPanel);
-		base.Controls.Add(this.textBox);
-		base.Controls.Add(this.propertyGrid);
-		base.HelpButton = true;
-		base.MaximizeBox = false;
-		base.MinimizeBox = false;
-		base.Name = "DataConnectionAdvancedDlg";
-		base.ShowIcon = false;
-		base.ShowInTaskbar = false;
-		this.buttonsTableLayoutPanel.ResumeLayout(false);
-		this.buttonsTableLayoutPanel.PerformLayout();
-		base.ResumeLayout(false);
-		base.PerformLayout();
+			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TDataConnectionAdvancedDlg));
+			this.propertyGrid = new BlackbirdSql.VisualStudio.Ddex.Controls.DataTools.TDataConnectionAdvancedDlg.TiSpecializedPropertyGrid();
+			this.textBox = new System.Windows.Forms.TextBox();
+			this.buttonsTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+			this.okButton = new System.Windows.Forms.Button();
+			this.cancelButton = new System.Windows.Forms.Button();
+			this.buttonsTableLayoutPanel.SuspendLayout();
+			this.SuspendLayout();
+			// 
+			// propertyGrid
+			// 
+			resources.ApplyResources(this.propertyGrid, "propertyGrid");
+			this.propertyGrid.CommandsActiveLinkColor = System.Drawing.SystemColors.ActiveCaption;
+			this.propertyGrid.CommandsDisabledLinkColor = System.Drawing.SystemColors.ControlDark;
+			this.propertyGrid.CommandsLinkColor = System.Drawing.SystemColors.ActiveCaption;
+			this.propertyGrid.Name = "propertyGrid";
+			this.propertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.SetTextBox);
+			// 
+			// textBox
+			// 
+			resources.ApplyResources(this.textBox, "textBox");
+			this.textBox.Name = "textBox";
+			this.textBox.ReadOnly = true;
+			// 
+			// buttonsTableLayoutPanel
+			// 
+			resources.ApplyResources(this.buttonsTableLayoutPanel, "buttonsTableLayoutPanel");
+			this.buttonsTableLayoutPanel.Controls.Add(this.okButton, 0, 0);
+			this.buttonsTableLayoutPanel.Controls.Add(this.cancelButton, 1, 0);
+			this.buttonsTableLayoutPanel.Name = "buttonsTableLayoutPanel";
+			// 
+			// okButton
+			// 
+			resources.ApplyResources(this.okButton, "okButton");
+			this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+			this.okButton.Name = "okButton";
+			// 
+			// cancelButton
+			// 
+			resources.ApplyResources(this.cancelButton, "cancelButton");
+			this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.cancelButton.Name = "cancelButton";
+			this.cancelButton.Click += new System.EventHandler(this.RevertProperties);
+			// 
+			// TDataConnectionAdvancedDlg
+			// 
+			this.AcceptButton = this.okButton;
+			resources.ApplyResources(this, "$this");
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.CancelButton = this.cancelButton;
+			this.Controls.Add(this.buttonsTableLayoutPanel);
+			this.Controls.Add(this.textBox);
+			this.Controls.Add(this.propertyGrid);
+			this.HelpButton = true;
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
+			this.Name = "TDataConnectionAdvancedDlg";
+			this.ShowIcon = false;
+			this.ShowInTaskbar = false;
+			this.buttonsTableLayoutPanel.ResumeLayout(false);
+			this.buttonsTableLayoutPanel.PerformLayout();
+			this.ResumeLayout(false);
+			this.PerformLayout();
+
 	}
 }

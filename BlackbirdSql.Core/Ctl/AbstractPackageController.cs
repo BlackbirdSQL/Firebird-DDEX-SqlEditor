@@ -7,8 +7,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using BlackbirdSql.Core.Ctl.Config;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.Core.Properties;
 using EnvDTE;
 
 using Microsoft.VisualStudio;
@@ -20,8 +24,6 @@ using Microsoft.VisualStudio.TaskStatusCenter;
 
 namespace BlackbirdSql.Core.Ctl;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
 
 // =========================================================================================================
 //										AbstractPackageController Class
@@ -36,15 +38,101 @@ namespace BlackbirdSql.Core.Ctl;
 /// Aslo performs cleanups of any sql editor documents that may be left dangling on solution close.
 /// </remarks>
 // =========================================================================================================
-internal abstract class AbstractPackageController : IBPackageController
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
+public abstract class AbstractPackageController : IBPackageController
 {
 
 
 	// ---------------------------------------------------------------------------------
-	#region Variables
+	#region Constructors / Destructors - AbstractPackageController
 	// ---------------------------------------------------------------------------------
 
-	protected static bool _EventsAdvised = false;
+
+	/// <summary>
+	/// Private singleton .ctor
+	/// </summary>
+	protected AbstractPackageController(IBAsyncPackage ddex)
+	{
+		if (_Instance != null)
+		{
+			TypeAccessException ex = new(Resources.ExceptionDuplicateSingletonInstances.FmtRes(GetType().FullName));
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+
+		_Instance = this;
+		_DdexPackage = ddex;
+
+		ddex.OnLoadSolutionOptionsEvent += OnLoadSolutionOptions;
+		ddex.OnSaveSolutionOptionsEvent += OnSaveSolutionOptions;
+
+	}
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the singleton AbstractPackageController instance
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static IBPackageController Instance
+	{
+		get
+		{
+			if (_Instance == null)
+			{
+				_ = (IBPackageController)Package.GetGlobalService(typeof(IBPackageController));
+
+				if (_Instance == null)
+				{
+					TypeAccessException ex = new("Cannot instantiate PackageController service from abstract ancestor");
+					Diag.Dug(ex);
+					throw ex;
+				}
+			}
+
+			return _Instance;
+		}
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// AbstractPackageController disposal
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public virtual void Dispose()
+	{
+		_DdexPackage.OnLoadSolutionOptionsEvent -= OnLoadSolutionOptions;
+		_DdexPackage.OnSaveSolutionOptionsEvent -= OnSaveSolutionOptions;
+
+		UnadviseEvents(true);
+
+		if (_EventsManagers != null)
+		{
+			foreach (IBEventsManager manager in _EventsManagers)
+				manager.Dispose();
+		}
+	}
+
+
+	#endregion Constructors / Destructors
+
+
+
+
+	// =========================================================================================================
+	#region Fields - AbstractPackageController
+	// =========================================================================================================
+
+	private bool _ProjectEvents = false;
+
+	protected static bool _EventsAdvisedUnsafe = false;
+	protected static bool _SolutionLoaded = false;
+	protected int _RefCnt = 0;
 
 	protected static IBPackageController _Instance = null;
 	protected static List<IBEventsManager> _EventsManagers = null;
@@ -55,7 +143,7 @@ internal abstract class AbstractPackageController : IBPackageController
 	private static IVsUIHierarchy _MiscHierarchy = null;
 
 
-	private readonly IBAsyncPackage _DdexPackage;
+	private IBAsyncPackage _DdexPackage;
 
 	protected IVsMonitorSelection _MonitorSelection = null;
 	private IVsTaskStatusCenterService _StatusCenterService = null;
@@ -91,8 +179,7 @@ internal abstract class AbstractPackageController : IBPackageController
 	private IBPackageController.NewQueryRequestedDelegate _OnNewQueryRequestedEvent;
 
 
-	#endregion Variables
-
+	#endregion Fields
 
 
 
@@ -191,7 +278,7 @@ internal abstract class AbstractPackageController : IBPackageController
 	/// </summary>
 	event IBPackageController.CmdUIContextChangedDelegate IBPackageController.OnCmdUIContextChangedEvent
 	{
-		add { EnsureMonitorSelection(); _OnCmdUIContextChangedEvent += value; }
+		add { _OnCmdUIContextChangedEvent += value; }
 		remove { _OnCmdUIContextChangedEvent -= value; }
 	}
 
@@ -201,7 +288,7 @@ internal abstract class AbstractPackageController : IBPackageController
 	/// </summary>
 	event IBPackageController.ElementValueChangedDelegate IBPackageController.OnElementValueChangedEvent
 	{
-		add { EnsureMonitorSelection(); _OnElementValueChangedEvent += value; }
+		add { _OnElementValueChangedEvent += value; }
 		remove { _OnElementValueChangedEvent -= value; }
 	}
 
@@ -231,7 +318,7 @@ internal abstract class AbstractPackageController : IBPackageController
 	/// </summary>
 	event IBPackageController.SelectionChangedDelegate IBPackageController.OnSelectionChangedEvent
 	{
-		add { EnsureMonitorSelection(); _OnSelectionChangedEvent += value; }
+		add { _OnSelectionChangedEvent += value; }
 		remove { _OnSelectionChangedEvent -= value; }
 	}
 
@@ -247,7 +334,11 @@ internal abstract class AbstractPackageController : IBPackageController
 
 
 
-	public IBAsyncPackage DdexPackage => _DdexPackage;
+	public IBAsyncPackage DdexPackage
+	{
+		get { return _DdexPackage; }
+		set { _DdexPackage = value;  }
+	}
 
 
 	public IVsRunningDocumentTable DocTable => _DdexPackage.DocTable;
@@ -262,12 +353,7 @@ internal abstract class AbstractPackageController : IBPackageController
 	{
 		get
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			try
 			{
@@ -294,12 +380,7 @@ internal abstract class AbstractPackageController : IBPackageController
 		{
 			if (SelectionMonitor != null)
 			{
-				if (!ThreadHelper.CheckAccess())
-				{
-					COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-					Diag.Dug(exc);
-					throw exc;
-				}
+				Diag.ThrowIfNotOnUIThread();
 
 				Native.ThrowOnFailure(SelectionMonitor.IsCmdUIContextActive(ToolboxCmdUICookie, out int pfActive));
 
@@ -317,6 +398,8 @@ internal abstract class AbstractPackageController : IBPackageController
 	{
 		get
 		{
+			Diag.ThrowIfNotOnUIThread();
+
 			if (_MonitorSelection == null)
 				EnsureMonitorSelection();
 			return _MonitorSelection;
@@ -373,12 +456,7 @@ internal abstract class AbstractPackageController : IBPackageController
 		{
 			if (_ToolboxCmdUICookie == 0 && SelectionMonitor != null)
 			{
-				if (!ThreadHelper.CheckAccess())
-				{
-					COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-					Diag.Dug(exc);
-					throw exc;
-				}
+				Diag.ThrowIfNotOnUIThread();
 
 				Guid rguidCmdUI = new Guid(VSConstants.UICONTEXT.ToolboxInitialized_string);
 				SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _ToolboxCmdUICookie);
@@ -399,92 +477,6 @@ internal abstract class AbstractPackageController : IBPackageController
 
 
 
-
-	// =========================================================================================================
-	#region Constructors / Destructors - AbstractPackageController
-	// =========================================================================================================
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Private singleton .ctor
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected AbstractPackageController(IBAsyncPackage package)
-	{
-		if (_Instance != null)
-		{
-			ArgumentException ex = new("Singleton PackageController instance already created");
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		_DdexPackage = package;
-	}
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Private .ctor purely for calling instance methods intended to be static from
-	/// a dummy instance of this class.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected AbstractPackageController()
-	{
-	}
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Gets the singleton AbstractPackageController instance
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static IBPackageController Instance
-	{
-		get
-		{
-			if (_Instance == null)
-			{
-				_ = (IBPackageController)Package.GetGlobalService(typeof(IBPackageController));
-
-				if (_Instance == null)
-				{
-					NullReferenceException ex = new("Cannot instantiate PackageController service from abstract ancestor");
-					Diag.Dug(ex);
-					throw ex;
-				}
-			}
-
-			return _Instance;
-		}
-	}
-
-
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// AbstractPackageController disposal
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public virtual void Dispose()
-	{
-		UnadviseEvents(true);
-
-		if (_EventsManagers != null)
-		{
-			foreach (IBEventsManager manager in _EventsManagers)
-				manager.Dispose();
-		}
-	}
-
-
-	#endregion Constructors / Destructors
-
-
-
-
-
 	// =========================================================================================================
 	#region Methods - AbstractPackageController
 	// =========================================================================================================
@@ -495,9 +487,25 @@ internal abstract class AbstractPackageController : IBPackageController
 	/// Enables solution and running document table event handling
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public abstract void AdviseEvents();
+	public abstract bool AdviseEvents();
 
 
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Asynchronously enables solution and running document table event handling
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public abstract Task<bool> AdviseEventsAsync();
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Enables UI thread event handling
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected abstract bool AdviseUnsafeEvents();
 
 
 	// ---------------------------------------------------------------------------------
@@ -513,17 +521,12 @@ internal abstract class AbstractPackageController : IBPackageController
 
 
 
-	protected void EnsureMonitorSelection()
+	public void EnsureMonitorSelection()
 	{
 		if (_MonitorSelection != null)
 			return;
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		_MonitorSelection = Package.GetGlobalService(typeof(IVsMonitorSelection)) as IVsMonitorSelection;
 
@@ -562,13 +565,16 @@ internal abstract class AbstractPackageController : IBPackageController
 
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Registers events managers for future disposal.
+	/// </summary>
+	/// <param name="manager"></param>
+	// ---------------------------------------------------------------------------------
 	public void RegisterEventsManager(IBEventsManager manager)
 	{
 		_EventsManagers ??= [];
-
 		_EventsManagers.Add(manager);
-
-		manager.Initialize();
 	}
 
 
@@ -595,6 +601,8 @@ internal abstract class AbstractPackageController : IBPackageController
 	// ---------------------------------------------------------------------------------
 	public void UnadviseEvents(bool disposing)
 	{
+		Diag.ThrowIfNotOnUIThread();
+
 		_ = disposing;
 
 		if (VsSolution != null && _HSolutionEvents != uint.MaxValue)
@@ -631,17 +639,104 @@ internal abstract class AbstractPackageController : IBPackageController
 
 	// Events that we handle are listed first
 
-	public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded) => _OnAfterOpenProjectEvent != null
-		? _OnAfterOpenProjectEvent(pHierarchy, fAdded) : VSConstants.E_NOTIMPL;
+	public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
+	{
+		if (!_ProjectEvents)
+			return VSConstants.S_OK;
 
-	public void OnLoadSolutionOptions(Stream stream) =>
-		_OnLoadSolutionOptionsEvent?.Invoke(stream);
+		if (_OnAfterOpenProjectEvent == null)
+			return VSConstants.E_NOTIMPL;
+
+		// Get the root (project) node. 
+		var itemid = VSConstants.VSITEMID_ROOT;
+
+		pHierarchy.GetProperty(itemid, (int)__VSHPROPID.VSHPROPID_ExtObject, out object objProj);
+
+
+		if (objProj is not Project project)
+			return VSConstants.S_OK;
+
+		if (project.Properties == null)
+			_ = OnAfterOpenProjectAsync(project, fAdded);
+		else
+			return _OnAfterOpenProjectEvent.Invoke(project, fAdded);
+
+		return VSConstants.S_OK;
+	}
+
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Ensure project is fully loaded.
+	/// </summary>
+	/// <param name="project"></param>
+	/// <returns></returns>
+	// ---------------------------------------------------------------------------------
+	private async Task OnAfterOpenProjectAsync(Project project, int fAdded)
+	{
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+		// Recycle until project object is complete if necessary
+		if (project.Properties == null)
+		{
+			if (++_RefCnt < 1000)
+			{
+				await Task.Delay(200);
+
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+				ThreadHelper.JoinableTaskFactory.RunAsync(() => OnAfterOpenProjectAsync(project, fAdded));
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+			}
+			return;
+		}
+
+		// Diag.Trace("Project opened");
+		// If anything gets through things are still happening so we can reset and allow events with incomplete project objects
+		// to continue recycling
+		_RefCnt = 0;
+
+		_OnAfterOpenProjectEvent?.Invoke(project, fAdded);
+
+		return;
+	}
+
+
+
+
+	public void OnLoadSolutionOptions(Stream stream)
+	{
+		if (_SolutionLoaded)
+			return;
+
+		_SolutionLoaded = true;
+
+		try
+		{
+			_OnLoadSolutionOptionsEvent?.Invoke(stream);
+		}
+		finally
+		{
+			_ProjectEvents = true;
+		}
+
+	}
 
 	public void OnSaveSolutionOptions(Stream stream) =>
 		_OnSaveSolutionOptionsEvent?.Invoke(stream);
 
-	public int OnAfterCloseSolution(object pUnkReserved) => _OnAfterCloseSolutionEvent != null
-		? _OnAfterCloseSolutionEvent(pUnkReserved) : VSConstants.E_NOTIMPL;
+	public int OnAfterCloseSolution(object pUnkReserved)
+	{
+		_SolutionLoaded = false;
+		_ProjectEvents = false;
+
+		if (_OnAfterCloseSolutionEvent != null)
+			return _OnAfterCloseSolutionEvent(pUnkReserved);
+		else
+			return VSConstants.E_NOTIMPL;
+	}
 
 	public int OnQueryCloseProject(IVsHierarchy pHierarchy, int fRemoving, ref int pfCancel) => _OnQueryCloseProjectEvent != null
 		? _OnQueryCloseProjectEvent(pHierarchy, fRemoving, ref pfCancel) : VSConstants.E_NOTIMPL;

@@ -59,5 +59,41 @@ namespace BlackbirdSql.Controller.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DTE is null.
+        /// </summary>
+        public static string ExceptionDteIsNull {
+            get {
+                return ResourceManager.GetString("ExceptionDteIsNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IBPackageController is null.
+        /// </summary>
+        public static string ExceptionIBPackageControllerIsNull {
+            get {
+                return ResourceManager.GetString("ExceptionIBPackageControllerIsNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IVsRunningDocumentTable is null.
+        /// </summary>
+        public static string ExceptionIVsRunningDocumentTableIsNull {
+            get {
+                return ResourceManager.GetString("ExceptionIVsRunningDocumentTableIsNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SVsSolution is null.
+        /// </summary>
+        public static string ExceptionSVsSolutionIsNull {
+            get {
+                return ResourceManager.GetString("ExceptionSVsSolutionIsNull", resourceCulture);
+            }
+        }
     }
 }

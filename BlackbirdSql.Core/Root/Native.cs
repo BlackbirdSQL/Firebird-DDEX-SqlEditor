@@ -3,6 +3,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Security;
+using Microsoft.VisualStudio.OLE.Interop;
 
 
 
@@ -23,7 +24,7 @@ public abstract class Native
 
 
 	// ---------------------------------------------------------------------------------
-	#region Enums, Constants and Static Variables - Native
+	#region Enums, Constants and Static Fields - Native
 	// ---------------------------------------------------------------------------------
 
 
@@ -133,7 +134,7 @@ public abstract class Native
 		}
 	}
 
-	#endregion Enums, Constants and Static Variables
+	#endregion Enums, Constants and Static Fields
 
 
 
@@ -142,6 +143,10 @@ public abstract class Native
 	// =========================================================================================================
 	#region Static Methods - Native
 	// =========================================================================================================
+
+
+	[DllImport("user32", CharSet = CharSet.Auto)]
+	public static extern int DispatchMessage([In] ref MSG msg);
 
 
 	[DllImport("user32.dll")]
@@ -154,12 +159,25 @@ public abstract class Native
 		return hr < 0;
 	}
 
+	public static bool Failed(int hr, params int[] expectedFailures)
+	{
+		if (Failed(hr) && (expectedFailures == null || Array.IndexOf(expectedFailures, hr) < 0))
+		{
+			return true;
+		}
+
+		return false;
+	}
+
 
 	// FindWindowEx
 	[DllImport("user32.dll", SetLastError = true)]
 	public static extern IntPtr FindWindowEx(IntPtr parentHandle, IntPtr childAfter, string className, string windowTitle);
 
 
+	// GetMessage
+	[DllImport("user32", CharSet = CharSet.Auto)]
+	public static extern bool GetMessage([In][Out] ref MSG msg, int hWnd, int uMsgFilterMin, int uMsgFilterMax);
 
 
 	// GetScrollInfo
@@ -254,6 +272,9 @@ public abstract class Native
 	}
 
 
+	// TranslateMessage
+	[DllImport("user32", CharSet = CharSet.Auto)]
+	public static extern bool TranslateMessage([In][Out] ref MSG msg);
 
 	// WrapComCall
 	public static int WrapComCall(int hr)

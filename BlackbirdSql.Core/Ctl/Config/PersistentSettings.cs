@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Properties;
+using FbConnectionStringBuilder = FirebirdSql.Data.FirebirdClient.FbConnectionStringBuilder;
 
 
 namespace BlackbirdSql.Core.Ctl.Config;
@@ -26,14 +28,14 @@ public abstract class PersistentSettings : IBPersistentSettings
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Variables
+	#region Fields
 	// ---------------------------------------------------------------------------------
 
 	protected static IBPersistentSettings _Instance = null;
 	protected static Dictionary<string, object> _SettingsStore;
 	protected static string[] _EquivalencyKeys = new string[0];
 
-	#endregion Variables
+	#endregion Fields
 
 
 
@@ -72,11 +74,7 @@ public abstract class PersistentSettings : IBPersistentSettings
 	/// Exceptions are always logged.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-#if DEBUG
 	public static bool EnableDiagnostics => (bool)GetSetting("DdexGeneralEnableDiagnostics", true);
-#else
-	public static bool EnableDiagnostics => (bool)GetSetting("DdexGeneralEnableDiagnostics", false);
-#endif
 
 
 	// ---------------------------------------------------------------------------------
@@ -93,33 +91,15 @@ public abstract class PersistentSettings : IBPersistentSettings
 	/// Flag indicating whether or not Tracer calls are logged
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if BLACKBIRD
 	public static bool EnableTracer => (bool)GetSetting("DdexDebugEnableTracer", false);
-#else
-	public static bool EnableTracer => (bool)GetSetting("DdexDebugEnableTracer", true);
-#endif
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Flag indicating whether or not <see cref="Diag.Trace"/> calls are logged
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#if DEBUG
-	public static bool EnableTrace => (bool)GetSetting("DdexDebugEnableTrace", true) | EnableTracer;
-#else
 	public static bool EnableTrace => (bool)GetSetting("DdexDebugEnableTrace", false) | EnableTracer;
-#endif
 
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Flag indicating whether or not Firebird debug library diagnostics calls are logged
-	/// </summary>
-	/// <remarks>
-	/// Only applies to the Debug configuration. Debug Exceptions are always logged.
-	/// </remarks>
-	// ---------------------------------------------------------------------------------
-	public static bool EnableFbDiagnostics => (bool)GetSetting("DdexDebugEnableFbDiagnostics", false);
 
 
 	// ---------------------------------------------------------------------------------
@@ -130,11 +110,7 @@ public abstract class PersistentSettings : IBPersistentSettings
 	/// Only applies to the Debug configuration. Debug Exceptions are always logged.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-#if DEBUG
-	public static bool EnableDiagnosticsLog => (bool)GetSetting("DdexDebugEnableDiagnosticsLog", true);
-#else
 	public static bool EnableDiagnosticsLog => (bool)GetSetting("DdexDebugEnableDiagnosticsLog", false);
-#endif
 
 
 	// ---------------------------------------------------------------------------------
@@ -148,12 +124,16 @@ public abstract class PersistentSettings : IBPersistentSettings
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Connection equivalency keys. Hardcoded for now.
+	/// Equivalency keys are comprised of the mandatory connection properties
+	/// <see cref="FbConnectionStringBuilder.DataSource"/>, <see cref="FbConnectionStringBuilder.Port"/>,
+	/// <see cref="FbConnectionStringBuilder.Database"/>, <see cref="FbConnectionStringBuilder.UserID"/>,
+	/// <see cref="FbConnectionStringBuilder.ServerType"/>, <see cref="FbConnectionStringBuilder.Role"/>,
+	/// <see cref="FbConnectionStringBuilder.Charset"/>, <see cref="FbConnectionStringBuilder.Dialect"/>
+	/// and <see cref="FbConnectionStringBuilder.NoDatabaseTriggers"/>, and any additional optional
+	/// properties defined in the BlackbirdSql Server Tools user options.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static string[] EquivalencyKeys => _EquivalencyKeys;
-	// => ["DataSource", "Port", "Database",
-	//	"UserID", "ServerType", "Role", "Charset", "Dialect", "NoDatabaseTriggers"];
 
 	/// <summary>
 	/// Determines if configured connections in a solution's projects are included in selection lists when adding
@@ -172,14 +152,6 @@ public abstract class PersistentSettings : IBPersistentSettings
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// The Firebird log file path
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static string FbLogFile => (string)GetSetting("DdexDebugFbLogFile", "/temp/vsdiagfb.log");
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
 	/// Sets the query designer diagram pane to visible when a table or view's data
 	/// is initially retrieved.
 	/// </summary>
@@ -188,6 +160,7 @@ public abstract class PersistentSettings : IBPersistentSettings
 
 
 	// Ddex GeneralSettingsModel
+	public static bool ValidateSolution => (bool)GetSetting("DdexGeneralValidateSolution", true);
 	public static bool PersistentValidation => (bool)GetSetting("DdexGeneralPersistentValidation", true);
 	public static bool ValidateConfig => (bool)GetSetting("DdexGeneralValidateConfig", true);
 	public static bool ValidateEdmx => (bool)GetSetting("DdexGeneralValidateEdmx", true);
@@ -214,10 +187,11 @@ public abstract class PersistentSettings : IBPersistentSettings
 	{
 		if (_Instance != null)
 		{
-			ArgumentException ex = new("Singleton PersistentSettings instance already created");
+			TypeAccessException ex = new(Resources.ExceptionDuplicateSingletonInstances.FmtRes(GetType().FullName));
 			Diag.Dug(ex);
 			throw ex;
 		}
+
 
 		_Instance = this;
 	}

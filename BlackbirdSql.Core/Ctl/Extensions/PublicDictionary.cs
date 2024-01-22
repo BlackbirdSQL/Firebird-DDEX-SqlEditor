@@ -6,8 +6,9 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Threading;
-namespace BlackbirdSql.Core.Ctl.Extensions;
 
+
+namespace BlackbirdSql.Core.Ctl.Extensions;
 
 /// <summary>
 /// Exposed replica of <see cref="Dictionary{TKey, TValue}"/>.
@@ -521,6 +522,29 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 		}
 	}
 
+
+	//
+	// Summary:
+	//		Non-overridable ContainsKey() method.
+	//     Determines whether the System.Collections.Generic.Dictionary`2 contains the specified
+	//     key.
+	//
+	// Parameters:
+	//   key:
+	//     The key to locate in the System.Collections.Generic.Dictionary`2.
+	//
+	// Returns:
+	//     true if the System.Collections.Generic.Dictionary`2 contains an element with
+	//     the specified key; otherwise, false.
+	//
+	// Exceptions:
+	//   T:System.ArgumentNullException:
+	//     key is null.
+	public bool ContainsEntry(TKey key)
+	{
+		return FindEntry(key) >= 0;
+	}
+
 	//
 	// Summary:
 	//     Determines whether the System.Collections.Generic.Dictionary`2 contains the specified
@@ -537,7 +561,7 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 	// Exceptions:
 	//   T:System.ArgumentNullException:
 	//     key is null.
-	public bool ContainsKey(TKey key)
+	public virtual bool ContainsKey(TKey key)
 	{
 		return FindEntry(key) >= 0;
 	}
@@ -671,7 +695,7 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 		}
 	}
 
-	private int FindEntry(TKey key)
+	protected int FindEntry(TKey key)
 	{
 		if (key == null)
 		{
@@ -883,6 +907,7 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 
 	//
 	// Summary:
+	//     Non-overridable Remove.
 	//     Removes the value with the specified key from the System.Collections.Generic.Dictionary`2.
 	//
 	// Parameters:
@@ -896,7 +921,7 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 	// Exceptions:
 	//   T:System.ArgumentNullException:
 	//     key is null.
-	public virtual bool Remove(TKey key)
+	public bool RemoveEntry(TKey key)
 	{
 		if (key == null)
 		{
@@ -942,6 +967,28 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 
 	//
 	// Summary:
+	//     Removes the value with the specified key from the System.Collections.Generic.Dictionary`2.
+	//
+	// Parameters:
+	//   key:
+	//     The key of the element to remove.
+	//
+	// Returns:
+	//     true if the element is successfully found and removed; otherwise, false. This
+	//     method returns false if key is not found in the System.Collections.Generic.Dictionary`2.
+	//
+	// Exceptions:
+	//   T:System.ArgumentNullException:
+	//     key is null.
+	public virtual bool Remove(TKey key)
+	{
+		return RemoveEntry(key);
+	}
+
+
+	//
+	// Summary:
+	//		Non-overridable TryGetValue method.
 	//     Gets the value associated with the specified key.
 	//
 	// Parameters:
@@ -960,7 +1007,7 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 	// Exceptions:
 	//   T:System.ArgumentNullException:
 	//     key is null.
-	public bool TryGetValue(TKey key, out TValue value)
+	public bool TryGetEntry(TKey key, out TValue value)
 	{
 		int num = FindEntry(key);
 		if (num >= 0)
@@ -971,6 +1018,31 @@ public class PublicDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollec
 
 		value = default;
 		return false;
+	}
+
+	//
+	// Summary:
+	//     Gets the value associated with the specified key.
+	//
+	// Parameters:
+	//   key:
+	//     The key of the value to get.
+	//
+	//   value:
+	//     When this method returns, contains the value associated with the specified key,
+	//     if the key is found; otherwise, the default value for the type of the value parameter.
+	//     This parameter is passed uninitialized.
+	//
+	// Returns:
+	//     true if the System.Collections.Generic.Dictionary`2 contains an element with
+	//     the specified key; otherwise, false.
+	//
+	// Exceptions:
+	//   T:System.ArgumentNullException:
+	//     key is null.
+	public virtual bool TryGetValue(TKey key, out TValue value)
+	{
+		return TryGetEntry(key, out value);
 	}
 
 	internal TValue GetValueOrDefault(TKey key)

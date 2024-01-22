@@ -13,8 +13,8 @@ using System.Text;
 using System.Threading;
 using System.Xml;
 using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Properties;
@@ -33,7 +33,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Variables - AbstractPropertyAgent
+	#region Fields - AbstractPropertyAgent
 	// ---------------------------------------------------------------------------------
 
 	protected static DescriberDictionary _Describers = null;
@@ -54,7 +54,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	protected IDictionary<string, string> _ValidationErrors = null;
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 
@@ -105,7 +105,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 	protected static void CreateAndPopulatePropertySet(DescriberDictionary describers = null)
 	{
-		// This property agent does not have it's own private descriptors so if called
+		// This property agent does not have it's own private describers so if called
 		// from .ctor, exit.
 		if (describers == null)
 		{
@@ -221,11 +221,11 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 
 
-			foreach (Describer descriptor in Describers.Equivalency)
+			foreach (Describer describer in Describers.EquivalencyKeys)
 			{
 
-				value1 = this[descriptor.Name];
-				value2 = other[descriptor.Name];
+				value1 = this[describer.Name];
+				value2 = other[describer.Name];
 
 				nullEquality = Cmd.NullEquality(value1, value2);
 
@@ -236,7 +236,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 					return false;
 
 
-				type = descriptor.PropertyType;
+				type = describer.PropertyType;
 
 				if (type.IsSubclassOf(typeof(Enum)))
 					typeName = "int";
@@ -261,7 +261,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 					case "byte[]":
 						return Compare(value1, value2) == 0;
 					default:
-						ArgumentException ex = new($"Property type {typeName} for property {descriptor.Name} is not supported");
+						ArgumentException ex = new($"Property type {typeName} for property {describer.Name} is not supported");
 						Diag.Dug(ex);
 						throw ex;
 				}
@@ -691,11 +691,15 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		bool changed = false;
 		Describer describer;
 
+		// Tracer.Trace(GetType(), "Parse()", "csa.ConnectionString: {0}", csb.ConnectionString);
+
+		Clear();
+
 		foreach (KeyValuePair<string, object> pair in csb)
 		{
 			string lckey = pair.Key.ToLower();
-			if (lckey == "displaymember") // || lckey == "datasetkey" || lckey == "dataset")
-				continue;
+			// if (lckey == "displaymember") // || lckey == "datasetkey" || lckey == "dataset")
+			//	continue;
 
 			describer = Describers.GetSynonymDescriber(pair.Key);
 
@@ -703,11 +707,11 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 			{
 				// It could be a connection dataset which includes DatasetKey, DatasetId etc. so don't
 				// report an exception if it is.
-				if (CsbAgent.Describers[pair.Key] == null)
-				{
+				// if (CsbAgent.Describers[pair.Key] == null)
+				// {
 					NotSupportedException ex = new($"Connection parameter '{pair.Key}' has no descriptor property configured.");
 					Diag.Dug(ex);
-				}
+				// }
 				continue;
 			}
 
@@ -938,9 +942,9 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 
 
-	public virtual IBPropertyAgent ToUiConnectionInfo()
+	public virtual IBPropertyAgent ToConnectionInfo()
 	{
-		return new UIConnectionInfo(this);
+		return new ConnectionPropertyAgent(this);
 	}
 
 

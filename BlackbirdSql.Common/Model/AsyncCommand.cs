@@ -12,23 +12,19 @@ using EnvDTE;
 
 namespace BlackbirdSql.Common.Model;
 
-public class AsyncCommand<TResult> : AbstractCommand, IBAsyncCommand, IBOwnedCommand, ICommand
+public class AsyncCommand<TResult>(Func<object, Task<TResult>> command, Predicate<object> canExecute)
+	: AbstractCommand(canExecute), IBAsyncCommand, IBOwnedCommand, ICommand
 {
-	private readonly Func<object, Task<TResult>> _Command;
-
-	public NotifyTaskCompletion<TResult> Execution { get; private set; }
-
 	public AsyncCommand(Func<object, Task<TResult>> command)
 		: this(command, null)
 	{
 	}
 
-	public AsyncCommand(Func<object, Task<TResult>> command, Predicate<object> canExecute)
-		: base(canExecute)
-	{
-		_Command = command;
-	}
 
+
+	private readonly Func<object, Task<TResult>> _Command = command;
+
+	public NotifyTaskCompletion<TResult> Execution { get; private set; }
 
 
 	public override IBPropertyAgent Copy()
@@ -50,7 +46,7 @@ public class AsyncCommand<TResult> : AbstractCommand, IBAsyncCommand, IBOwnedCom
 		{
 			await Execution.TaskCompletion;
 		}
-		if (IsUIThread)
+		if (Dispatcher.CheckAccess())
 		{
 			IsExecuting = false;
 			RaiseCanExecuteChanged();

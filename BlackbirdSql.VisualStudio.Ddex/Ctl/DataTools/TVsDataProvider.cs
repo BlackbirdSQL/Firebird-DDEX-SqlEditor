@@ -8,7 +8,6 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.Interfaces;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
@@ -17,47 +16,47 @@ using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools;
 
-public class TVsDataProvider : IVsDataProvider // , IVsDataInternalProvider, IVsDataInternalDataProviderDescriptionEx
+public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalProvider, IVsDataInternalDataProviderDescriptionEx
 {
 	private delegate void GetEditionSupportDelegate();
 
-	private class TiClientProviderObjectFactory : DataProviderObjectFactory, IVsDataSourceSpecializer, IVsDataSiteableObject<IVsDataSourceSpecializer>
+	private class TiClientProviderObjectFactory(IVsDataProviderObjectFactory packageProviderObjectFactory)
+		: DataProviderObjectFactory, IVsDataSourceSpecializer, IVsDataSiteableObject<IVsDataSourceSpecializer>
 	{
-		private class TiiTypeActivator
+
+		public TiClientProviderObjectFactory()
+			: this(null)
 		{
-			private readonly TiClientProviderObjectFactory _Factory;
+		}
 
-			private readonly Type _ObjType;
 
-			private readonly string _CodeBase;
 
-			private readonly string _Assembly;
+		private class TiiTypeActivator(TiClientProviderObjectFactory factory, Type objType, string codeBase,
+			string assembly, string typeName, string xmlPath, string xmlFileName, string xmlCodeBase,
+			string xmlAssembly, string xmlResourceName)
+		{
+			private readonly TiClientProviderObjectFactory _Factory = factory;
 
-			private readonly string _TypeName;
+			private readonly Type _ObjType = objType;
 
-			private readonly string _XmlPath;
+			private readonly string _CodeBase = codeBase;
 
-			private readonly string _XmlFileName;
+			private readonly string _Assembly = assembly;
 
-			private readonly string _XmlCodeBase;
+			private readonly string _TypeName = typeName;
 
-			private readonly string _XmlAssembly;
+			private readonly string _XmlPath = xmlPath;
 
-			private readonly string _XmlResourceName;
+			private readonly string _XmlFileName = xmlFileName;
 
-			public TiiTypeActivator(TiClientProviderObjectFactory factory, Type objType, string codeBase, string assembly, string typeName, string xmlPath, string xmlFileName, string xmlCodeBase, string xmlAssembly, string xmlResourceName)
-			{
-				_Factory = factory;
-				_ObjType = objType;
-				_CodeBase = codeBase;
-				_Assembly = assembly;
-				_TypeName = typeName;
-				_XmlPath = xmlPath;
-				_XmlFileName = xmlFileName;
-				_XmlCodeBase = xmlCodeBase;
-				_XmlAssembly = xmlAssembly;
-				_XmlResourceName = xmlResourceName;
-			}
+			private readonly string _XmlCodeBase = xmlCodeBase;
+
+			private readonly string _XmlAssembly = xmlAssembly;
+
+			private readonly string _XmlResourceName = xmlResourceName;
+
+
+
 
 			public object CreateInstance()
 			{
@@ -80,16 +79,16 @@ public class TVsDataProvider : IVsDataProvider // , IVsDataInternalProvider, IVs
 					Diag.Dug(ex);
 					throw ex;
 				}
-				object[] array = new object[0];
+				object[] array = [];
 				if (_XmlFileName != null || _XmlResourceName != null)
 				{
 					if (_XmlFileName != null)
 					{
-						array = new object[2] { _XmlFileName, _XmlPath };
+						array = [_XmlFileName, _XmlPath];
 					}
 					else
 					{
-						array = new object[2] { _XmlResourceName, null };
+						array = [_XmlResourceName, null];
 						Assembly assembly2 = ((_XmlCodeBase != null) ? Hostess.LoadAssemblyFrom(_XmlCodeBase) : ((_XmlAssembly == null) ? _Factory.Site.GetMainAssembly() : _Factory.Site.GetAssembly(_XmlAssembly)));
 						if (assembly2 == null)
 						{
@@ -128,7 +127,7 @@ public class TVsDataProvider : IVsDataProvider // , IVsDataInternalProvider, IVs
 
 		private IVsDataSourceSpecializer _SourceSpecializer;
 
-		private readonly Microsoft.VisualStudio.Data.Core.IVsDataProviderObjectFactory _PackageProviderObjectFactory;
+		private readonly Microsoft.VisualStudio.Data.Core.IVsDataProviderObjectFactory _PackageProviderObjectFactory = packageProviderObjectFactory;
 
 		private IDictionary<Guid, IDictionary<Type, TiiTypeActivator>> _TypeActivators;
 
@@ -175,15 +174,6 @@ public class TVsDataProvider : IVsDataProvider // , IVsDataInternalProvider, IVs
 			}
 		}
 
-		public TiClientProviderObjectFactory()
-			: this(null)
-		{
-		}
-
-		public TiClientProviderObjectFactory(Microsoft.VisualStudio.Data.Core.IVsDataProviderObjectFactory packageProviderObjectFactory)
-		{
-			_PackageProviderObjectFactory = packageProviderObjectFactory;
-		}
 
 		public override object CreateObject(Type objType)
 		{
@@ -424,7 +414,7 @@ public class TVsDataProvider : IVsDataProvider // , IVsDataInternalProvider, IVs
 	}
 
 
-	private Guid _Guid;
+	private Guid _Guid = clsid;
 
 	private string _Name;
 
@@ -665,7 +655,7 @@ public class TVsDataProvider : IVsDataProvider // , IVsDataInternalProvider, IVs
 		}
 	}
 
-	private Microsoft.VisualStudio.Data.Core.IVsDataProviderObjectFactory ProviderObjectFactory
+	private IVsDataProviderObjectFactory ProviderObjectFactory
 	{
 		get
 		{
@@ -724,29 +714,12 @@ public class TVsDataProvider : IVsDataProvider // , IVsDataInternalProvider, IVs
 		}
 	}
 
-	/*
-	private NativeMethods.IVsDataEditionSupport EditionSupport
-	{
-		get
-		{
-			if (_EditionSupport == null)
-			{
-				Host.Environment.DangerousInvokeOnUIThread(new GetEditionSupportDelegate(GetEditionSupport));
-			}
-			return _EditionSupport;
-		}
-	}
-	*/
-
-	public TVsDataProvider(Guid clsid)
-	{
-		_Guid = clsid;
-	}
-
-
 	public object CreateRawObject<TSite>(Guid clsid, Type objType, TSite site)
 	{
+		#region Constructor Arguments - CreateRawObject
+
 		object obj = null;
+
 		if (IsLegacyProvider && objType == typeof(IVsDataViewSupport))
 		{
 			if ((object)site is IVsDataViewHierarchy vsDataViewHierarchy)
@@ -760,8 +733,9 @@ public class TVsDataProvider : IVsDataProvider // , IVsDataInternalProvider, IVs
 		}
 		if (clsid != Guid.Empty)
 		{
-			obj = SourceSpecializer.CreateObject(clsid, objType);
-			if (!objType.IsInstanceOfType(obj))
+			obj = SourceSpecializer?.CreateObject(clsid, objType);
+
+			if (obj == null || !objType.IsInstanceOfType(obj))
 			{
 				obj = null;
 			}
@@ -778,7 +752,7 @@ public class TVsDataProvider : IVsDataProvider // , IVsDataInternalProvider, IVs
 		{
 			try
 			{
-				obj = typeof(DataDefaultObject).GetMethod("Create").MakeGenericMethod(objType).Invoke(null, new object[1] { Core.Controller.ServiceProvider });
+				obj = typeof(DataDefaultObject).GetMethod("Create").MakeGenericMethod(objType).Invoke(null, [Core.Controller.ServiceProvider]);
 			}
 			catch (TargetInvocationException ex)
 			{
@@ -810,6 +784,10 @@ public class TVsDataProvider : IVsDataProvider // , IVsDataInternalProvider, IVs
 			vsDataSiteableObject4.Site = site;
 		}
 		return obj;
+
+
+		#endregion Constructor Arguments - CreateRawObject
+
 	}
 
 
@@ -1020,7 +998,7 @@ public class TVsDataProvider : IVsDataProvider // , IVsDataInternalProvider, IVs
 	/// </summary>
 	public Guid DeriveSource(string connectionString)
 	{
-		return SourceSpecializer.DeriveSource(connectionString);
+		return SourceSpecializer != null ? SourceSpecializer.DeriveSource(connectionString) : Guid.Empty;
 	}
 
 
@@ -1195,11 +1173,13 @@ public class TVsDataProvider : IVsDataProvider // , IVsDataInternalProvider, IVs
 		{
 			try
 			{
-				object obj2 = typeof(DataClientObject<>).MakeGenericType(objType).GetMethod("Create", BindingFlags.Static | BindingFlags.Public).Invoke(null, new object[2]
-				{
+				object obj2 = typeof(DataClientObject<>).MakeGenericType(objType).GetMethod("Create",
+					BindingFlags.Static | BindingFlags.Public).Invoke(null,
+				[
 					Core.Controller.ServiceProvider,
 					obj
-				});
+				]);
+
 				if (obj2 != obj && site != null && obj is IVsDataSiteableObject<TSite> vsDataSiteableObject)
 				{
 					vsDataSiteableObject.Site = site;
@@ -1301,13 +1281,11 @@ public class TVsDataProvider : IVsDataProvider // , IVsDataInternalProvider, IVs
 		}
 		Type type = null;
 		if (clsid != Guid.Empty)
-		{
-			type = SourceSpecializer.GetType(clsid, typeName);
-		}
+			type = SourceSpecializer?.GetType(clsid, typeName);
+
 		if (type == null)
-		{
 			type = ProviderObjectFactory.GetType(typeName);
-		}
+
 		return type;
 	}
 
@@ -1342,15 +1320,15 @@ public class TVsDataProvider : IVsDataProvider // , IVsDataInternalProvider, IVs
 		{
 			throw new ArgumentNullException("assemblyString");
 		}
+
 		Assembly assembly = null;
+
 		if (clsid != Guid.Empty)
-		{
-			assembly = SourceSpecializer.GetAssembly(clsid, assemblyString);
-		}
+			assembly = SourceSpecializer?.GetAssembly(clsid, assemblyString);
+
 		if (assembly == null)
-		{
 			assembly = ProviderObjectFactory.GetAssembly(assemblyString);
-		}
+
 		return assembly;
 	}
 
@@ -1492,7 +1470,7 @@ public class TVsDataProvider : IVsDataProvider // , IVsDataInternalProvider, IVs
 		{
 			array = new string[subKeyCount-1];
 			for (int i = 1; i < subKeyCount; i++)
-				array[i-1] = PackageSupportedObjects.Values[$"{typeName}:{i}"].Name ?? string.Empty;
+				array[i-1] = PackageSupportedObjects.Values[$"{typeName}{(i==0?"":i)}"].Name ?? string.Empty;
 		}
 		if (array == null || array.Length == 0)
 		{

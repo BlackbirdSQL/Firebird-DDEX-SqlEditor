@@ -124,7 +124,7 @@
     <value>Diagnostics</value>
   </data>
   <data name="OptionCategoryEntityFramework" xml:space="preserve">
-    <value>Invariant and EntityFramework (IDE Restart)</value>
+    <value>Validation (Requires solution reload)</value>
   </data>
   <data name="OptionCategoryEquivalency" xml:space="preserve">
     <value>Connection equivalency keys</value>
@@ -144,17 +144,11 @@
   <data name="OptionDescriptionDebugEnableDiagnosticsLog" xml:space="preserve">
     <value>Enables diagnostics logging to a log file.</value>
   </data>
-  <data name="OptionDescriptionDebugEnableFbDiagnostics" xml:space="preserve">
-    <value>Enables the execution of Firebird Debug.Dug()/Debug.Trace() calls. Only applicable to builds that include the debug Firebird library.</value>
-  </data>
   <data name="OptionDescriptionDebugEnableTrace" xml:space="preserve">
     <value>Enables the execution of Diag.Trace() calls.</value>
   </data>
   <data name="OptionDescriptionDebugEnableTracer" xml:space="preserve">
     <value>Enables Sql Tracer output to be directed to Diag.Trace().</value>
-  </data>
-  <data name="OptionDescriptionDebugFbLogFile" xml:space="preserve">
-    <value>Location of Firebird diagnostics log file. Note: Only applicable to builds that include the debug Firerbird library.</value>
   </data>
   <data name="OptionDescriptionDebugLogFile" xml:space="preserve">
     <value>Location of diagnostics log file.</value>
@@ -264,26 +258,23 @@
   <data name="OptionDescriptionGeneralValidateConfig" xml:space="preserve">
     <value>Enable this option to allow BlackbirdSql to ensure that the Firebird Client and EntityFramework are configured in your non-CPS projects' App.config.</value>
   </data>
+  <data name="OptionDescriptionGeneralValidateConnectionOnFormAccept" xml:space="preserve">
+    <value>Enable this option to allow BlackbirdSql to ensure a connection is valid before accepting Connection Dialog information.</value>
+  </data>
   <data name="OptionDescriptionGeneralValidateEdmx" xml:space="preserve">
     <value>Enable this option to allow BlackbirdSql to update legacy edmx models to use EntityFramework 6.</value>
   </data>
-  <data name="OptionDialogDebugFbLogFile" xml:space="preserve">
-    <value>Select the folder to be used for the Firebird diagnostics log file.</value>
+  <data name="OptionDescriptionGeneralValidateSolution" xml:space="preserve">
+    <value>Enable this option to allow BlackbirdSql to validate your solution's Invariant, EntityFramework and Edmx settings.</value>
   </data>
   <data name="OptionDialogDebugLogFile" xml:space="preserve">
     <value>Select the folder to be used for the diagnostics log file.</value>
-  </data>
-  <data name="OptionDialogFilterFbLogFile" xml:space="preserve">
-    <value>All Files(*.*)|*.*</value>
   </data>
   <data name="OptionDialogFilterLogFile" xml:space="preserve">
     <value>All Files(*.*)|*.*</value>
   </data>
   <data name="OptionDisplayDebugEnableDiagnosticsLog" xml:space="preserve">
     <value>Enable diagnostics logging</value>
-  </data>
-  <data name="OptionDisplayDebugEnableFbDiagnostics" xml:space="preserve">
-    <value>Enable Firebird diagnostics</value>
   </data>
   <data name="OptionDisplayDebugEnableSaveExtrapolatedXml" xml:space="preserve">
     <value>Save extrapolated xml</value>
@@ -293,9 +284,6 @@
   </data>
   <data name="OptionDisplayDebugEnableTracer" xml:space="preserve">
     <value>Enable tracer</value>
-  </data>
-  <data name="OptionDisplayDebugFbLogFile" xml:space="preserve">
-    <value>Firebird Log file</value>
   </data>
   <data name="OptionDisplayDebugLogFile" xml:space="preserve">
     <value>Log file</value>
@@ -394,16 +382,22 @@
     <value>Include solution connections</value>
   </data>
   <data name="OptionDisplayGeneralPersistentValidation" xml:space="preserve">
-    <value>Persistent validation flags</value>
+    <value>  Persistent validation flags</value>
   </data>
   <data name="OptionDisplayGeneralShowDiagramPane" xml:space="preserve">
     <value>Initial state of Diagram Pane</value>
   </data>
   <data name="OptionDisplayGeneralValidateConfig" xml:space="preserve">
-    <value>Validate App.config</value>
+    <value>  Validate App.config</value>
+  </data>
+  <data name="OptionDisplayGeneralValidateConnectionOnFormAccept" xml:space="preserve">
+    <value>Validate dialog connections</value>
   </data>
   <data name="OptionDisplayGeneralValidateEdmx" xml:space="preserve">
-    <value>Update legacy edmx models</value>
+    <value>  Update legacy edmx models</value>
+  </data>
+  <data name="OptionDisplayGeneralValidateSolution" xml:space="preserve">
+    <value> Validate Solution Configuration</value>
   </data>
   <data name="OptionPageCategory" xml:space="preserve">
     <value>BlackbirdSql DDEX 2.0</value>

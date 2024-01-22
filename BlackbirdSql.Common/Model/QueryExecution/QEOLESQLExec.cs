@@ -670,12 +670,13 @@ public class QEOLESQLExec(QEOLESQLExec.ResolveSqlCmdVariable sqlCmdVariableResol
 				if (_CurrentConnInfo.UserID != null && _CurrentConnInfo.UserID.Length != 0)
 				{
 					OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoDisconnectingFromSvrAsUser,
-						_CurrentConnInfo.DatasetId, _CurrentConnInfo.UserID));
+						string.IsNullOrWhiteSpace(_CurrentConnInfo.DatasetId) ? _CurrentConnInfo.Dataset : _CurrentConnInfo.DatasetId,
+						_CurrentConnInfo.UserID));
 				}
 				else
 				{
 					OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoDisconnectingFromSvr,
-						_CurrentConnInfo.DatasetId));
+						string.IsNullOrWhiteSpace(_CurrentConnInfo.DatasetId) ? _CurrentConnInfo.Dataset : _CurrentConnInfo.DatasetId));
 				}
 			}
 
@@ -737,15 +738,17 @@ public class QEOLESQLExec(QEOLESQLExec.ResolveSqlCmdVariable sqlCmdVariableResol
 
 			if (ci.UserID != null && ci.UserID.Length != 0)
 			{
-				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoConnectingToSvrAsUser, ci.DatasetId, ci.UserID));
+				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoConnectingToSvrAsUser,
+					string.IsNullOrWhiteSpace(ci.DatasetId) ? ci.Dataset : ci.DatasetId, ci.UserID));
 			}
 			else
 			{
-				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoConnectingToSvr, ci.DatasetId));
+				OnInfoMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.InfoConnectingToSvr,
+					string.IsNullOrWhiteSpace(ci.DatasetId) ? ci.Dataset : ci.DatasetId));
 			}
 
 			// ci.Pooling = false;
-			ci.ApplicationName = LibraryData.ApplicationName;
+			// ci.ApplicationName = LibraryData.ApplicationName;
 			string connectionString = ci.PropertyString;
 			// connectionString += ";Pooling=false";
 			/*

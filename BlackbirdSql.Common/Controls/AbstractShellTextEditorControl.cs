@@ -24,12 +24,10 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 using Constants = Microsoft.VisualStudio.OLE.Interop.Constants;
+using VS = BlackbirdSql.Core.VS;
 
 
 namespace BlackbirdSql.Common.Controls;
-
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
 
 public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOleCommandTarget, IVsWindowFrameNotify, IVsTextViewEvents
 {
@@ -277,12 +275,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 	{
 		if (_TextCmdTarget != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			return _TextCmdTarget.QueryStatus(ref guidGroup, nCmdId, oleCmd, oleText);
 		}
@@ -294,12 +287,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 	{
 		if (_TextCmdTarget != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			return _TextCmdTarget.Exec(ref guidGroup, nCmdId, nCmdExcept, pobIn, pvaOut);
 		}
@@ -340,12 +328,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 		if (_TextWndFrameNotify != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			return _TextWndFrameNotify.OnShow(frameShow);
 		}
@@ -359,12 +342,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 		if (_TextWndFrameNotify != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			return _TextWndFrameNotify.OnMove();
 		}
@@ -378,12 +356,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 		if (_TextWndFrameNotify != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			return _TextWndFrameNotify.OnSize();
 		}
@@ -397,12 +370,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 		if (_TextWndFrameNotify != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			return _TextWndFrameNotify.OnDockableChange(fDockable);
 		}
@@ -414,12 +382,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 	{
 		if (_TextWindowPane != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			return _TextWindowPane.LoadViewState(state);
 		}
@@ -431,12 +394,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 	{
 		if (_TextWindowPane != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			return _TextWindowPane.SaveViewState(state);
 		}
@@ -487,12 +445,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 		{
 			// Tracer.Trace(GetType(), "AbstractShellTextEditorControl.OnSizeChanged", "adjusting text view size");
 
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			Rectangle clientRectangle = ClientRectangle;
 			Native.SetWindowPos(_EditorHandle, IntPtr.Zero, clientRectangle.X, clientRectangle.Y, clientRectangle.Width, clientRectangle.Height, 4);
@@ -572,12 +525,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 			CreateAndInitTextBuffer(serviceProvider, null);
 		}
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		_OleServiceProvider = new ServiceProvider(serviceProvider as Microsoft.VisualStudio.OLE.Interop.IServiceProvider);
 		bool flag = true;
@@ -635,12 +583,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 		if (_VsTextManager != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			IConnectionPointContainer connectionPointContainer = _VsTextManager as IConnectionPointContainer;
 			Microsoft.VisualStudio.OLE.Interop.CONNECTDATA[] array = new Microsoft.VisualStudio.OLE.Interop.CONNECTDATA[1];

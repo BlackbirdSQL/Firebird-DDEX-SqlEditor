@@ -11,6 +11,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Controls.Interfaces;
 using BlackbirdSql.VisualStudio.Ddex.Controls.Events;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
@@ -21,7 +22,7 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace BlackbirdSql.VisualStudio.Ddex.Controls.DataTools;
 
-public class TDataConnectionDlg : Form
+public partial class TDataConnectionDlg : Form, IBDataConnectionDlg
 {
 	private class TiDataSourceCollection(TDataConnectionDlg dialog)
 		: ICollection<TDataSource>, IEnumerable<TDataSource>, IEnumerable
@@ -254,31 +255,6 @@ public class TDataConnectionDlg : Form
 
 	private readonly IDictionary<TDataSource, IDictionary<TDataProvider, IDataConnectionProperties>> _ConnectionPropertiesTable = new Dictionary<TDataSource, IDictionary<TDataProvider, IDataConnectionProperties>>();
 
-	private IContainer components;
-
-	private Label dataSourceLabel;
-
-	private TableLayoutPanel dataSourceTableLayoutPanel;
-
-	private TextBox dataSourceTextBox;
-
-	private ToolTip dataProviderToolTip;
-
-	private Button changeDataSourceButton;
-
-	private ContainerControl containerControl;
-
-	private Button advancedButton;
-
-	private Panel separatorPanel;
-
-	private Button testConnectionButton;
-
-	private TableLayoutPanel buttonsTableLayoutPanel;
-
-	private ExceptionSafeButton acceptButton;
-
-	private Button cancelButton;
 
 	public string Title
 	{
@@ -634,12 +610,14 @@ public class TDataConnectionDlg : Form
 				UserControl userControl = null;
 				try
 				{
-					dataConnectionUIControl = ((SelectedDataSource != UnspecifiedDataSource) ? SelectedDataProvider.CreateConnectionUIControl(SelectedDataSource) : SelectedDataProvider.CreateConnectionUIControl());
+					dataConnectionUIControl = ((SelectedDataSource != UnspecifiedDataSource)
+						? SelectedDataProvider.CreateConnectionUIControl(SelectedDataSource)
+						: SelectedDataProvider.CreateConnectionUIControl());
+
 					userControl = dataConnectionUIControl as UserControl;
+
 					if (userControl == null && dataConnectionUIControl is IContainerControl containerControl)
-					{
 						userControl = containerControl.ActiveControl as UserControl;
-					}
 				}
 				catch
 				{
@@ -709,6 +687,9 @@ public class TDataConnectionDlg : Form
 		}
 	}
 
+
+	public bool UpdateServerExplorer => chkUpdateServerExplorer.Checked; 
+
 	public event EventHandler VerifySettings;
 
 	public event EventHandler<ContextHelpEventArgs> ContextHelpRequested;
@@ -750,8 +731,11 @@ public class TDataConnectionDlg : Form
 				throw new InvalidOperationException(string.Format(CultureInfo.CurrentCulture, ControlsResources.TDataConnectionDlg_NoDataProvidersForDataSource, dataSource.DisplayName.Replace("'", "''")));
 			}
 		}
+
 		Application.ThreadException += dialog.HandleDialogException;
+
 		dialog._ShowingDialog = true;
+
 		try
 		{
 			if (dialog.SelectedDataSource == null || dialog.SelectedDataProvider == null)
@@ -800,7 +784,9 @@ public class TDataConnectionDlg : Form
 			{
 				dialog.StartPosition = FormStartPosition.CenterScreen;
 			}
+
 			DialogResult dialogResult;
+
 			while (true)
 			{
 				dialogResult = DialogResult.None;
@@ -1358,7 +1344,7 @@ public class TDataConnectionDlg : Form
 		}
 		else
 		{
-			Diag.ServiceUnavailable(typeof(IUIService));
+			Diag.ExceptionService(typeof(IUIService));
 			// RTLAwareMessageBox.Show(title, message, MessageBoxIcon.Asterisk);
 		}
 	}
@@ -1371,7 +1357,7 @@ public class TDataConnectionDlg : Form
 		}
 		else
 		{
-			Diag.ServiceUnavailable(typeof(IUIService));
+			Diag.ExceptionService(typeof(IUIService));
 			// RTLAwareMessageBox.Show(title, ex.Message, MessageBoxIcon.Exclamation);
 		}
 	}
@@ -1401,104 +1387,11 @@ public class TDataConnectionDlg : Form
 		}
 		else
 		{
-			Diag.ServiceUnavailable(typeof(IUIService));
+			Diag.ExceptionService(typeof(IUIService));
 			// RTLAwareMessageBox.Show(title, message, MessageBoxIcon.Exclamation);
 		}
 	}
 
-	protected override void Dispose(bool disposing)
-	{
-		if (disposing && components != null)
-		{
-			components.Dispose();
-		}
-		base.Dispose(disposing);
-	}
-
-	private void InitializeComponent()
-	{
-		components = new System.ComponentModel.Container();
-		System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BlackbirdSql.VisualStudio.Ddex.Controls.DataTools.TDataConnectionDlg));
-		dataSourceLabel = new System.Windows.Forms.Label();
-		dataSourceTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
-		dataSourceTextBox = new System.Windows.Forms.TextBox();
-		changeDataSourceButton = new System.Windows.Forms.Button();
-		containerControl = new System.Windows.Forms.ContainerControl();
-		advancedButton = new System.Windows.Forms.Button();
-		separatorPanel = new System.Windows.Forms.Panel();
-		testConnectionButton = new System.Windows.Forms.Button();
-		buttonsTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
-		acceptButton = new BlackbirdSql.VisualStudio.Ddex.Controls.DataTools.ExceptionSafeButton();
-		cancelButton = new System.Windows.Forms.Button();
-		dataProviderToolTip = new System.Windows.Forms.ToolTip(components);
-		dataSourceTableLayoutPanel.SuspendLayout();
-		buttonsTableLayoutPanel.SuspendLayout();
-		SuspendLayout();
-		resources.ApplyResources(dataSourceLabel, "dataSourceLabel");
-		dataSourceLabel.FlatStyle = FlatStyle.System;
-		dataSourceLabel.Name = "dataSourceLabel";
-		resources.ApplyResources(dataSourceTableLayoutPanel, "dataSourceTableLayoutPanel");
-		dataSourceTableLayoutPanel.Controls.Add(dataSourceTextBox, 0, 0);
-		dataSourceTableLayoutPanel.Controls.Add(changeDataSourceButton, 1, 0);
-		dataSourceTableLayoutPanel.Name = "dataSourceTableLayoutPanel";
-		resources.ApplyResources(dataSourceTextBox, "dataSourceTextBox");
-		dataSourceTextBox.Name = "dataSourceTextBox";
-		dataSourceTextBox.ReadOnly = true;
-		resources.ApplyResources(changeDataSourceButton, "changeDataSourceButton");
-		changeDataSourceButton.MinimumSize = new System.Drawing.Size(75, 23);
-		changeDataSourceButton.Name = "changeDataSourceButton";
-		changeDataSourceButton.Click += new System.EventHandler(ChangeDataSource);
-		resources.ApplyResources(containerControl, "containerControl");
-		containerControl.Name = "containerControl";
-		containerControl.SizeChanged += new System.EventHandler(SetConnectionUIControlDockStyle);
-		resources.ApplyResources(advancedButton, "advancedButton");
-		advancedButton.MinimumSize = new System.Drawing.Size(81, 23);
-		advancedButton.Name = "advancedButton";
-		advancedButton.Click += new System.EventHandler(ShowAdvanced);
-		resources.ApplyResources(separatorPanel, "separatorPanel");
-		separatorPanel.Name = "separatorPanel";
-		separatorPanel.Paint += new System.Windows.Forms.PaintEventHandler(PaintSeparator);
-		resources.ApplyResources(testConnectionButton, "testConnectionButton");
-		testConnectionButton.MinimumSize = new System.Drawing.Size(101, 23);
-		testConnectionButton.Name = "testConnectionButton";
-		testConnectionButton.Click += new System.EventHandler(TestConnection);
-		resources.ApplyResources(buttonsTableLayoutPanel, "buttonsTableLayoutPanel");
-		buttonsTableLayoutPanel.Controls.Add(acceptButton, 0, 0);
-		buttonsTableLayoutPanel.Controls.Add(cancelButton, 1, 0);
-		buttonsTableLayoutPanel.Name = "buttonsTableLayoutPanel";
-		resources.ApplyResources(acceptButton, "acceptButton");
-		acceptButton.DialogResult = DialogResult.OK;
-		acceptButton.MinimumSize = new System.Drawing.Size(75, 23);
-		acceptButton.Name = "acceptButton";
-		acceptButton.Click += new System.EventHandler(HandleAccept);
-		resources.ApplyResources(cancelButton, "cancelButton");
-		cancelButton.DialogResult = DialogResult.Cancel;
-		cancelButton.MinimumSize = new System.Drawing.Size(75, 23);
-		cancelButton.Name = "cancelButton";
-		AcceptButton = acceptButton;
-		resources.ApplyResources(this, "$this");
-		AutoScaleMode = AutoScaleMode.Font;
-		CancelButton = cancelButton;
-		Controls.Add(buttonsTableLayoutPanel);
-		Controls.Add(testConnectionButton);
-		Controls.Add(separatorPanel);
-		Controls.Add(advancedButton);
-		Controls.Add(containerControl);
-		Controls.Add(dataSourceTableLayoutPanel);
-		Controls.Add(dataSourceLabel);
-		HelpButton = true;
-		MaximizeBox = false;
-		MinimizeBox = false;
-		Name = "DataConnectionDlg";
-		ShowIcon = false;
-		ShowInTaskbar = false;
-		dataSourceTableLayoutPanel.ResumeLayout(false);
-		dataSourceTableLayoutPanel.PerformLayout();
-		buttonsTableLayoutPanel.ResumeLayout(false);
-		buttonsTableLayoutPanel.PerformLayout();
-		ResumeLayout(false);
-		PerformLayout();
-	}
 
 	private void ChangeDataSource(object sender, EventArgs e)
 	{

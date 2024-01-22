@@ -255,8 +255,8 @@ public class EquivalencySettingsModel(IBTransientSettings transientSettings)
 	[GlobalizedDisplayName("OptionDisplayEquivalencyApplicationName")]
 	[GlobalizedDescription("OptionDescriptionEquivalencyApplicationName")]
 	[TypeConverter(typeof(GlobalIncludeExcludeConverter))]
-	[DefaultValue(false)]
-	public bool ApplicationName { get; set; } = false;
+	[DefaultValue(true)]
+	public bool ApplicationName { get; set; } = true;
 
 	[GlobalizedCategory("OptionCategoryEquivalencyOptional")]
 	[GlobalizedDisplayName("OptionDisplayEquivalencyCommandTimeout")]

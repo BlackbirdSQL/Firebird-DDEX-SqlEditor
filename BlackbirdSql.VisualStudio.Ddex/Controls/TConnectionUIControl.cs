@@ -3,19 +3,29 @@
 
 
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Windows.Forms.Design;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Controls.Interfaces;
 using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
+using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
+using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
-
+using Microsoft.VisualStudio.LanguageServer.Client;
+using Microsoft.VisualStudio.Shell;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Controls;
-
 
 // =========================================================================================================
 //										TConnectionUIControl Class
@@ -24,6 +34,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls;
 /// Implementation of <see cref="IVsDataConnectionUIControl"/> interface
 /// </summary>
 // =========================================================================================================
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
 public partial class TConnectionUIControl : DataConnectionUIControl
 {
 
@@ -33,19 +44,60 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	// -----------------------------------------------------------------------------------------------------
 
 
-	public TConnectionUIControl() : base()
+	public TConnectionUIControl() : this(false)
 	{
-		// Tracer.Trace(GetType(), "TConnectionUIControl.TConnectionUIControl");
+	}
+
+	public TConnectionUIControl(bool isInternal) : base()
+	{
+		Diag.ThrowIfNotOnUIThread();
+
+		if (isInternal)
+		{
+			_ConnectionSource = EnConnectionSource.Session;
+		}
+		else
+		{
+			string objectKind = Core.Controller.Instance.Dte.ActiveWindow.ObjectKind;
+			string objectType = Core.Controller.Instance.Dte.ActiveWindow.Object.GetType().FullName;
+			string appGuid = VSConstants.CLSID.VsTextBuffer_string;
+			string seGuid = VSConstants.StandardToolWindows.ServerExplorer.ToString("B", CultureInfo.InvariantCulture);
+
+			if (objectKind.Equals(seGuid, StringComparison.InvariantCultureIgnoreCase))
+			{
+				_ConnectionSource = EnConnectionSource.ServerExplorer;
+			}
+			else if (objectKind.Equals(appGuid, StringComparison.InvariantCultureIgnoreCase)
+				&& objectType.Equals("System.ComponentModel.Design.DesignerHost",
+					StringComparison.InvariantCultureIgnoreCase))
+			{
+				_ConnectionSource = EnConnectionSource.Application;
+			}
+			else
+			{
+				COMException ex = new COMException($"Invalid ConnectionSource. ObjectKind: {objectKind}, ObjectType: {objectType}.");
+				Diag.Dug(ex);
+				throw ex;
+			}
+		}
 
 		try
 		{
+			if (RctManager.ShutdownState || !RctManager.LoadConfiguredConnections(false))
+				return;
+
 			InitializeComponent();
+
+			if (_ConnectionSource == EnConnectionSource.Application)
+				lblDatasetKeyDescription.Text = ControlsResources.TConnectionUIControl_DatasetKeyDescription_Application;
+			else
+				lblDatasetKeyDescription.Text = ControlsResources.TConnectionUIControl_DatasetKeyDescription;
 
 			// Diag.Trace("Creating erd");
 			_DataSources = new()
 			{
-				DataSource = ConnectionLocator.DataSources,
-				DependentSource = ConnectionLocator.Databases,
+				DataSource = RctManager.DataSources,
+				DependentSource = RctManager.Databases,
 				PrimaryKey = "DataSourceLc",
 				ForeignKey = "DataSourceLc"
 			};
@@ -56,7 +108,8 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 			cmbDatabase.DataSource = _DataSources.Dependent;
 			cmbDatabase.ValueMember = "DatabaseLc";
-			cmbDatabase.DisplayMember = "DatasetId";
+			cmbDatabase.DisplayMember = "DisplayName";
+
 		}
 		catch (Exception ex)
 		{
@@ -66,22 +119,64 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	}
 
 
+	/// <summary> 
+	/// Clean up any resources being used.
+	/// </summary>
+	/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+	protected override void Dispose(bool disposing)
+	{
+		if (disposing && (components != null))
+		{
+			_DataSources.CurrentChanged -= OnDataSourcesCurrentChanged;
+			_DataSources.DependencyCurrentChanged -= OnDatabasesCurrentChanged;
+
+			if (Parent != null && Parent.Parent is Form form)
+			{
+				form.FormClosing -= OnFormClosing;
+				form.FormClosed -= OnFormClosed;
+
+				Reflect.RemoveEventHandler(form, "VerifySettings", _OnVerifySettingsDelegate,
+					BindingFlags.Instance | BindingFlags.Public);
+
+				Button btnAccept = (Button)Reflect.GetFieldValue(form, "acceptButton",
+					BindingFlags.Instance | BindingFlags.NonPublic);
+
+				Reflect.RemoveEventHandler(btnAccept, "Click", _OnAcceptDelegate,
+					BindingFlags.Instance | BindingFlags.Public);
+			}
+
+			components.Dispose();
+		}
+		base.Dispose(disposing);
+	}
+
+
 	#endregion Constructors / Destructors
 
 
 
 
 	// =========================================================================================================
-	#region Variables - TConnectionUIControl
+	#region Fields - TConnectionUIControl
 	// =========================================================================================================
 
 
 	private readonly ErmBindingSource _DataSources;
-
 	private int _EventsCardinal = 0;
+	protected readonly EnConnectionSource _ConnectionSource = EnConnectionSource.Unknown;
+	private bool _EventsLoaded = false;
+
+	private Delegate _OnVerifySettingsDelegate;
+	private Delegate _OnAcceptDelegate;
+
+	private bool _InsertMode = false;
+	private string _OriginalConnectionString = null;
+
+	private bool _HandleNewInternally = false;
+	private bool _HandleModifyInternally = false;
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 
@@ -197,8 +292,32 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			else
 				_DataSources.Position = -1;
 
-			_DataSources.CurrentChanged += OnDataSourcesCurrentChanged;
-			_DataSources.DependencyCurrentChanged += OnDatabasesCurrentChanged;
+			if (!_EventsLoaded)
+			{
+				_EventsLoaded = true;
+
+				_DataSources.CurrentChanged += OnDataSourcesCurrentChanged;
+				_DataSources.DependencyCurrentChanged += OnDatabasesCurrentChanged;
+
+				if (Parent != null && Parent.Parent is Form form)
+				{
+					form.FormClosing += OnFormClosing;
+					form.FormClosed += OnFormClosed;
+
+					_OnVerifySettingsDelegate = Reflect.AddEventHandler(this, nameof(OnVerifySettings),
+						BindingFlags.Instance | BindingFlags.NonPublic, form, "VerifySettings",
+						BindingFlags.Instance | BindingFlags.Public);
+
+					Button btnAccept = (Button)Reflect.GetFieldValue(form, "acceptButton",
+						BindingFlags.Instance | BindingFlags.NonPublic);
+
+					_OnAcceptDelegate = Reflect.AddEventHandler(this, nameof(OnAccept),
+						BindingFlags.Instance | BindingFlags.NonPublic, btnAccept, "Click",
+						BindingFlags.Instance | BindingFlags.Public);
+				}
+			}
+
+
 		}
 		catch (Exception ex)
 		{
@@ -248,6 +367,37 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 
 
+	public void ShowError(IUIService uiService, string title, Exception ex)
+	{
+		if (uiService != null)
+		{
+			uiService.ShowError(ex);
+		}
+		else
+		{
+			Diag.ExceptionService(typeof(IUIService));
+			// RTLAwareMessageBox.Show(title, ex.Message, MessageBoxIcon.Exclamation);
+		}
+	}
+
+	public void ShowError(string title, Exception ex)
+	{
+		IUIService uiService = Package.GetGlobalService(typeof(IUIService)) as IUIService;
+		if (ex is AggregateException ex2)
+		{
+			ex2.Flatten().Handle(delegate (Exception e)
+			{
+				ShowError(uiService, title, e);
+				return true;
+			});
+		}
+		else
+		{
+			ShowError(uiService, title, ex);
+		}
+	}
+
+
 	private void ValidateDatasetKey()
 	{
 		if (InvalidDependent)
@@ -256,9 +406,13 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 			try
 			{
-				Site.Remove("Dataset");
-				Site.Remove("DatasetId");
-				Site.Remove("DatasetKey");
+				Site.Remove(CoreConstants.C_KeyExDatasetKey);
+				Site.Remove(CoreConstants.C_KeyExConnectionKey);
+				Site.Remove(CoreConstants.C_KeyExDatasetId);
+				Site.Remove(CoreConstants.C_KeyExDataset);
+				Site.Remove(CoreConstants.C_KeyExConnectionName);
+				if (_ConnectionSource == EnConnectionSource.Application)
+					Site[CoreConstants.C_KeyExConnectionSource] = EnConnectionSource.Application;
 			}
 			catch (Exception ex)
 			{
@@ -318,7 +472,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				// if (txtDatabase.Text.Trim() == "")
 				//	Site.Remove("Database");
 				// else
-					Site["Database"] = txtDatabase.Text.Trim();
+				Site["Database"] = txtDatabase.Text.Trim();
 			}
 
 			if (!_DataSources.IsReady)
@@ -375,7 +529,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 					// if (txtDatabase.Text == "")
 					//	Site.Remove("Database");
 					// else
-						Site["Database"] = txtDatabase.Text;
+					Site["Database"] = txtDatabase.Text;
 				}
 			}
 
@@ -406,26 +560,56 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 					// if (txtUserName.Text == "")
 					//	Site.Remove("User ID");
 					// else
-						Site["User ID"] = txtUserName.Text;
+					Site["User ID"] = txtUserName.Text;
 					// if (txtPassword.Text == "")
 					// 	Site.Remove("Password");
 					// else
-						Site["Password"] = txtPassword.Text;
+					Site["Password"] = txtPassword.Text;
 					if (txtRole.Text == "")
 						Site.Remove("Role");
-					 else
+					else
 						Site["Role"] = txtRole.Text;
 				}
 			}
 
 			if (Site != null)
 			{
-				foreach (Describer describer in CsbAgent.Describers.Advanced)
+				foreach (Describer describer in CsbAgent.AdvancedKeys)
 				{
 					if (!describer.DefaultEqualsOrEmpty(_DataSources.DependentRow[describer.Name]))
-						Site[describer.Key] = _DataSources.DependentRow[describer.Name];
+					{
+						Site[describer.Key] = describer.DataType == typeof(int)
+							? Convert.ToInt32(_DataSources.DependentRow[describer.Name])
+							: _DataSources.DependentRow[describer.Name];
+					}
 					else
+					{
 						Site.Remove(describer.Key);
+					}
+				}
+
+				Site.ValidateKeys();
+
+				// Take the glyph out of Application and EntityDataModel source dataset ids.
+				// Globalized values must always have the glyph on the left irrespective of ltr or rtl.
+				if (_ConnectionSource != EnConnectionSource.Application
+					&& Site.ContainsKey(CoreConstants.C_KeyExDatasetId)
+					&& Site.ContainsKey(CoreConstants.C_KeyExConnectionSource))
+				{
+					EnConnectionSource source = (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource];
+
+					if (source == EnConnectionSource.EntityDataModel || source == EnConnectionSource.Application)
+					{
+						string datasetId = (string)Site[CoreConstants.C_KeyExDatasetId];
+
+						if (datasetId[0] == RctManager.EdmDatasetGlyph
+							|| datasetId[0] == RctManager.ProjectDatasetGlyph)
+						{
+							Site[CoreConstants.C_KeyExDatasetId] = datasetId[1..];
+							Site[CoreConstants.C_KeyExDatasetKey] =
+								CsbAgent.C_DatasetKeyFmt.FmtRes((string)Site[CoreConstants.C_KeyDataSource], datasetId[1..]);
+						}
+					}
 				}
 			}
 
@@ -462,7 +646,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				// if (txtDataSource.Text.Trim() == "")
 				//	Site.Remove("DataSource");
 				// else
-					Site["DataSource"] = txtDataSource.Text.Trim();
+				Site["DataSource"] = txtDataSource.Text.Trim();
 			}
 
 			if (!_DataSources.IsReady)
@@ -538,7 +722,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 				if (Site != null)
 				{
-					foreach (Describer describer in CsbAgent.Describers.Values)
+					foreach (Describer describer in CsbAgent.Describers.DescriberKeys)
 					{
 						if (describer.IsAdvanced || describer.IsConnectionParameter)
 							Site.Remove(describer.Key);
@@ -559,7 +743,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 						// if (txtDataSource.Text.Trim() == "")
 						//	Site.Remove("DataSource");
 						// else
-							Site["DataSource"] = txtDataSource.Text.Trim();
+						Site["DataSource"] = txtDataSource.Text.Trim();
 					}
 				}
 
@@ -611,20 +795,20 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 					// if (txtUserName.Text.Trim() == "")
 					//	Site.Remove("User ID");
 					// else
-						Site["User ID"] = txtUserName.Text.Trim();
+					Site["User ID"] = txtUserName.Text.Trim();
 				}
 				else if (sender.Equals(txtPassword))
 				{
 					// if (txtPassword.Text.Trim() == "")
 					//	Site.Remove("Password");
 					// else
-						Site["Password"] = txtPassword.Text.Trim();
+					Site["Password"] = txtPassword.Text.Trim();
 				}
 				else if (sender.Equals(txtRole))
 				{
 					if (txtRole.Text.Trim() == "")
 						Site.Remove("Role");
-					 else
+					else
 						Site["Role"] = txtRole.Text.Trim();
 				}
 				else if (sender.Equals(cboCharset))
@@ -665,6 +849,200 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	}
 
 
-	#endregion Event handlers
 
+	protected override void OnSiteChanged(EventArgs e)
+	{
+		// Tracer.Trace(GetType(), "OnSiteChanged()", "Site.ToString(): {0}, Site.Count: {1}", Site != null ? Site.ToString() : "Null",
+		//	Site != null ? Site.Count : -1);
+
+		if (Site != null)
+		{
+			_OriginalConnectionString = Site.ToString();
+			if (string.IsNullOrWhiteSpace(_OriginalConnectionString))
+				_OriginalConnectionString = null;
+
+			_InsertMode = _OriginalConnectionString == null;
+
+			if (_ConnectionSource == EnConnectionSource.Application)
+			{
+				foreach (Describer describer in CsbAgent.AdvancedKeys)
+				{
+					if (!describer.IsConnectionParameter && describer.Key != CoreConstants.C_KeyExConnectionSource)
+						Site.Remove(describer.Key);
+				}
+				if (!Site.ContainsKey(CoreConstants.C_KeyExConnectionSource)
+					|| (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource] == EnConnectionSource.Unknown)
+				{
+					Site[CoreConstants.C_KeyExConnectionSource] = EnConnectionSource.Application;
+				}
+			}
+			else
+			{
+				if (_ConnectionSource == EnConnectionSource.ServerExplorer
+					|| (Site.ContainsKey(CoreConstants.C_KeyExConnectionSource)
+					&& (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource] == EnConnectionSource.ServerExplorer))
+				{
+					Site[CoreConstants.C_KeyExConnectionKey] = Site.ConnectionKey();
+				}
+			}
+
+			Site.ValidateKeys();
+		}
+
+		base.OnSiteChanged(e);
+	}
+
+
+	private void OnFormClosed(object sender, FormClosedEventArgs e)
+	{
+		// Tracer.Trace(GetType(), "OnFormClosed()", "Sender type: {0}, Parent type: {1}.", sender.GetType().FullName, Parent.GetType().FullName);
+	}
+
+
+
+	private void OnFormClosing(object sender, FormClosingEventArgs e)
+	{
+		// Tracer.Trace(GetType(), "OnFormClosing()", "Sender type: {0}, Parent type: {1}.", sender.GetType().FullName, Parent.GetType().FullName);
+
+		/*
+		if (!PersistentSettings.ValidateConnectionOnFormAccept)
+			return;
+
+
+		Cursor current = Cursor.Current;
+		Cursor.Current = Cursors.WaitCursor;
+
+		FbConnection connection = null;
+
+		try
+		{
+			string connectionString = Site.ToString();
+			connection = new(connectionString);
+
+			connection.Open();
+
+			if ((connection.State & System.Data.ConnectionState.Open) == 0)
+				throw new Microsoft.VisualStudio.Data.DataProviderException("BlackbirdSql", "Failed to connect to database.");
+			else
+				connection.Close();
+		}
+		catch (Exception ex3)
+		{
+			// string dataSource = ConnectionProperties["Data Source"] as string;
+			Cursor.Current = current;
+			ShowError(ControlsResources.TConnectionUIControl_ConnectionFailed, ex3);
+
+			e.Cancel = true;
+			return;
+		}
+		finally
+		{
+			connection?.Dispose();
+		}
+
+		Cursor.Current = current;
+		*/
+	}
+
+
+	/// <summary>
+	/// On this event we simply validate the form settings. If there's an issue we either
+	/// resolve it auto or request approval to continue or abort the save.
+	/// No updating will take place. Only site properties may be updated.
+	/// </summary>
+	/// <param name="sender"></param>
+	/// <param name="e"></param>
+	private void OnAccept(object sender, EventArgs e)
+	{
+		_HandleNewInternally = false;
+		_HandleModifyInternally = false;
+
+		if (_ConnectionSource == EnConnectionSource.Application)
+		{
+			foreach (Describer describer in CsbAgent.AdvancedKeys)
+			{
+				if (!describer.IsConnectionParameter)
+					Site.Remove(describer.Key);
+			}
+			return;
+		}
+
+		if (RctManager.ShutdownState)
+			return;
+
+		try
+		{
+			if (Site is not IVsDataConnectionProperties site)
+			{
+				InvalidCastException ex = new($"Cannot cast IVsDataConnectionUIProperties Site to IVsDataConnectionProperties.");
+				throw ex;
+			}
+
+			// Tracer.Trace(GetType(), "OnAccept()", "Before validate - _InsertMode: {0}, _ConnectionSource: {1}\nSite.ToString(): {2}\n_OriginalConnectionString: {3}", _InsertMode, _ConnectionSource, Site.ToString(), _OriginalConnectionString ?? "Null");
+
+			(bool success, bool addInternally, bool modifyInternally)
+				= RctManager.ValidateSiteProperties(site, _ConnectionSource, _InsertMode, _OriginalConnectionString);
+
+			// Tracer.Trace(GetType(), "OnAccept()", "After validate - success: {0}, addInternally: {1}, modifyInternally: {2}, _InsertMode: {3}, _ConnectionSource: {4}\nSite.ToString(): {5}", success, addInternally, modifyInternally, _InsertMode, _ConnectionSource, Site.ToString());
+
+			_HandleNewInternally = addInternally;
+			_HandleModifyInternally = modifyInternally;
+
+			// This only applies if the _ConnectionSource is SqlEditor and a new unique connection
+			// is going to be created.
+			if (_ConnectionSource == EnConnectionSource.Session
+				&& Parent != null && Parent.Parent is IBDataConnectionDlg dlg)
+			{
+				_HandleNewInternally &= dlg.UpdateServerExplorer;
+			}
+
+			if (!success)
+			{
+				(Parent.Parent as Form).DialogResult = DialogResult.None;
+				return;
+			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+	}
+
+
+	/// <summary>
+	/// Apply any changes to the Rct and SE.
+	/// </summary>
+	private void OnVerifySettings(object sender, EventArgs e)
+	{
+		// Validate the new parse request connection string and then apply.
+
+		// Tracer.Trace(GetType(), "OnVerifySettings()", "Verifying - _ConnectionSource: {0}.", _ConnectionSource);
+
+		if (_ConnectionSource == EnConnectionSource.Application || RctManager.ShutdownState)
+			return;
+
+
+		// Tracer.Trace(GetType(), "OnVerifySettings()", "Before UpdateOrRegisterConnection Site.ToString(): {0}.", Site.ToString());
+
+		// Try to update an existing instance.
+		RctManager.UpdateOrRegisterConnection(Site.ToString(), _ConnectionSource, _HandleNewInternally, _HandleModifyInternally);
+
+		// Tracer.Trace(GetType(), "OnVerifySettings()", "After UpdateOrRegisterConnection Site.ToString(): {0}.", Site.ToString());
+
+		if (_ConnectionSource == EnConnectionSource.ServerExplorer)
+		{
+			if (_HandleNewInternally || _HandleModifyInternally)
+			{
+				(Parent.Parent as Form).DialogResult = DialogResult.Cancel;
+			}
+			else if (_InsertMode && !_HandleNewInternally)
+			{
+				RctManager.StoreUnadvisedConnection(Site.ToString());
+			}
+		}
+	}
+
+
+	#endregion Event handlers
 }

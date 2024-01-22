@@ -4,8 +4,6 @@
 using System;
 using BlackbirdDsl;
 using C5;
-using FirebirdSql.Data.FirebirdClient;
-using Microsoft.VisualStudio.Shell;
 
 
 namespace BlackbirdSql.Core.Model;
@@ -22,7 +20,7 @@ public abstract class AbstruseLinkageParser : IDisposable
 
 
 	// -----------------------------------------------------------------------------------------------------
-	#region Variables - AbstruseLinkageParser
+	#region Fields - AbstruseLinkageParser
 	// -----------------------------------------------------------------------------------------------------
 
 
@@ -40,7 +38,7 @@ public abstract class AbstruseLinkageParser : IDisposable
 	protected Parser _DslParser = null;
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 
@@ -79,7 +77,25 @@ public abstract class AbstruseLinkageParser : IDisposable
 
 
 
+	/// <summary>
+	/// Disposes of a parser.
+	/// </summary>
+	/// <param name="disposing">
+	/// True if this is a permanent disposal and a transient
+	/// parser should not be stored else false.
+	/// </param>
+	/// <returns>True of the parser was found and disposed else false.</returns>
 	public abstract void Dispose();
+
+
+	/// <summary>
+	/// Disposes of a parser.
+	/// </summary>
+	/// <param name="disposing">
+	/// True if this is a permanent disposal and a transient
+	/// parser should not be stored else false.
+	/// </param>
+	/// <returns>True of the parser was found and disposed else false.</returns>
 
 	protected abstract bool Dispose(bool disposing);
 
@@ -148,26 +164,26 @@ public abstract class AbstruseLinkageParser : IDisposable
 		string token, sequenceToken;
 
 		string[][] _Sequences =
-		{
-			new string[] { "CREATE", "TRIGGER", "_TRIGGER_", "FOR", "_TABLE_",
-				"AS", "BEGIN", "_COLUMN_", "=", "GEN_ID", "_GENPARAM_" },
-			new string[] { "CREATE", "TRIGGER", "_TRIGGER_", "FOR", "_TABLE_",
-				"AS", "BEGIN", "_COLUMN_", "=", "NEXT", "VALUE", "FOR", "_GENERATOR_" },
+		[
+			[ "CREATE", "TRIGGER", "_TRIGGER_", "FOR", "_TABLE_",
+				"AS", "BEGIN", "_COLUMN_", "=", "GEN_ID", "_GENPARAM_" ],
+			[ "CREATE", "TRIGGER", "_TRIGGER_", "FOR", "_TABLE_",
+				"AS", "BEGIN", "_COLUMN_", "=", "NEXT", "VALUE", "FOR", "_GENERATOR_" ],
 			// new string[] { "SET", "GENERATOR", "_GENERATOR_", "TO", "_SEED_" },
 			// new string[] { "ALTER", "SEQUENCE", "_GENERATOR_", "RESTART", "WITH", "_SEED_" }
-		};
+		];
 
-		bool[] _Completed = { false, false /*, false, false */ };
+		bool[] _Completed = [false, false /*, false, false */];
 
 		bool[][] _Sequencing =
-		{
-			new bool[] { false, true, true, true, true,
-				false, false, false, true, true, true },
-			new bool[] { false, true, true, true, true,
-				false, false, false, true, true, true, true, true },
+		[
+			[ false, true, true, true, true,
+				false, false, false, true, true, true ],
+			[ false, true, true, true, true,
+				false, false, false, true, true, true, true, true ],
 			// new bool[] { false, true, true, true, true },
 			// new bool[] { false, true, true, true, true, true }
-		};
+		];
 
 
 
@@ -305,7 +321,7 @@ public abstract class AbstruseLinkageParser : IDisposable
 		int increment = -1;
 		string generator = null;
 
-		char[] chrs = { '(', ')', ' ' };
+		char[] chrs = ['(', ')', ' '];
 
 		string[] parameters = param.Trim(chrs).Split(',');
 

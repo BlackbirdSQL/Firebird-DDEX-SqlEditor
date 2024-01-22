@@ -61,7 +61,7 @@
 			<!-- Explorer scope -->
 			<Group guid="CommandSetGuid" id="MenuIdSeRootGroup" priority="0x0600">
 				<!--<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />-->
-				<Parent guid="SeRootGuid" id="IDMX_DV_SERVER_NODE" />
+				<Parent guid="guid_SE_MenuGroup" id="IDM_SE_CONTEXT_STANDARD" />
 			</Group>
 
 			<!-- Object Node scope -->
@@ -137,6 +137,13 @@
 					<ButtonText>Disconnect</ButtonText>
 				</Strings>
 			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdChangeConnection" priority="0x0070" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
+				<Icon guid="ImagesGuid" id="ImgChangeConnection" />
+				<Strings>
+					<ButtonText>Modify Connection</ButtonText>
+				</Strings>
+			</Button>
 			<!--
 			<Button guid="CommandSetGuid" id="CmdIdChangeConnection" priority="0x0080" type="Button">
 				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
@@ -157,14 +164,14 @@
 				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
 				<Icon guid="ImagesGuid" id="ImgToggleExecutionPlan" />
 				<Strings>
-					<ButtonText>Include Actual Execution Plan</ButtonText>
+					<ButtonText>Include Actual Execution Plan on next Execution</ButtonText>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdToggleClientStatistics" priority="0x0150" type="Button">
 				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
 				<Icon guid="ImagesGuid" id="ImgToggleClientStatistics" />
 				<Strings>
-					<ButtonText>Include Client Statistics on next Query Execution</ButtonText>
+					<ButtonText>Include Client Statistics on next Execution</ButtonText>
 				</Strings>
 			</Button>
 
@@ -195,7 +202,7 @@
 			</Button>
 
 
-			
+
 			<!-- MenuIdEditorContextGroup -->
 			<Button guid="CommandSetGuid" id="CmdIdToggleIntellisense" priority="0x0040" type="Button">
 				<!-- <Parent guid="CommandSetGuid" id="MenuIdEditorContextGroup" /> -->
@@ -214,6 +221,21 @@
 				<CommandFlag>DynamicVisibility</CommandFlag>
 				<Strings>
 					<ButtonText>Execution Settings...</ButtonText>
+				</Strings>
+			</Button>
+
+
+
+			<!-- MenuIdSeRootGroup -->
+			<Button guid="CommandSetGuid" id="CmdIdTraceRct" priority="0x0120" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdSeRootGroup" />
+				<Icon guid="ImagesGuid" id="ImgExecuteQuery" />
+				<CommandFlag>TextChanges</CommandFlag>
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<Strings>
+					<ButtonText>Debug Trace Rct</ButtonText>
+					<CommandName>CommandTraceRctUniversal</CommandName>
 				</Strings>
 			</Button>
 
@@ -340,15 +362,16 @@
 
 		<!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
 		<Bitmaps>
-			<Bitmap guid="ImagesGuid" href="Resources\ToolbarImageStrip.png" usedList="ImgExecuteQuery, ImgRunQuery, ImgCancelQuery, ImgConnect, ImgDisconnect, ImgNewSqlQuery, ImgResultsAsGrid, ImgResultsAsText, ImgDownGlygh, ImgOpenScript, ImgParseQuery, ImgToggleExecutionPlan, ImgShowEstimatedPlan, ImgToggleClientStatistics, ImgToggleIntellisense, ImgOpenQuery, ImgCopy, ImgOpenAlterQuery, ImgOpenDesignerQuery, ImgNewDesignerQuery, ImgResultsAsFile" />
+			<Bitmap guid="ImagesGuid" href="Resources\ToolbarImageStrip.png" usedList="ImgExecuteQuery, ImgRunQuery, ImgCancelQuery, ImgConnect, ImgDisconnect, ImgNewSqlQuery, ImgResultsAsGrid, ImgResultsAsText, ImgDownGlygh, ImgOpenScript, ImgParseQuery, ImgToggleExecutionPlan, ImgShowEstimatedPlan, ImgToggleClientStatistics, ImgToggleIntellisense, ImgOpenQuery, ImgCopy, ImgOpenAlterQuery, ImgOpenDesignerQuery, ImgNewDesignerQuery, ImgResultsAsFile, ImgEditLabel, ImgChangeConnection, ImgDeleteConnection" />
 		</Bitmaps>
 	</Commands>
 
 
+	
 	<CommandPlacements>
 
 		<!-- Placement for group. The parent of a group is a menu, context menu or toolbar. 
-           The priority sets the position of the group compared to the priority of other existing groups in the menu.    
+		   The priority sets the position of the group compared to the priority of other existing groups in the menu.    
 		-->
 
 		<!-- Context menu external group -->
@@ -367,7 +390,6 @@
 			<Parent guid="CommandSetGuid" id="MenuIdEditorContextGroup"/>
 		</CommandPlacement>
 	</CommandPlacements>
-
 	<Symbols>
 		<!-- This is the package guid. -->
 		<GuidSymbol name="PackageGuid" value="{0B100D64-7249-4208-8748-2810B511E90C}" />
@@ -386,11 +408,16 @@
 			<IDSymbol name="IDMX_DV_STATIC_NODE" value="0x8100" />
 		</GuidSymbol>
 
+
 		<!-- Server Explorer data commands guid -->
 		<GuidSymbol name="SeDataCommandSetGuid" value="{501822E1-B5AF-11d0-B4DC-00A0C91506EF}">
 			<IDSymbol name="CmdIdNewQueryLocal" value="0x3528" />
 		</GuidSymbol>
 
+		<GuidSymbol name="SeInterfaceCommandSetGuid" value="{74d21311-2aee-11d1-8bfb-00a0c90f26f7}">
+			<!-- server explorer interface commands guid -->
+			<IDSymbol name="CmdIdEditLabel" value="0x2101" />
+		</GuidSymbol>
 
 		<!-- This is the guid used to group the menu commands together -->
 		<GuidSymbol name="CommandSetGuid" value="{13CD7876-FC84-4DDA-91BF-4CDBF893B134}">
@@ -504,6 +531,7 @@
 			<IDSymbol name="CmdIdResetPageOptions" value="0x0337" />
 			<!-- 824 -->
 			<IDSymbol name="CmdIdNewDesignerQuery" value="0x0338" />
+			<IDSymbol name="CmdIdTraceRct" value="0x0339" />
 		</GuidSymbol>
 
 		<GuidSymbol name="ImagesGuid" value="{b9096f40-3268-4397-a5ec-8827624c447d}" >
@@ -528,6 +556,9 @@
 			<IDSymbol name="ImgOpenDesignerQuery" value="19" />
 			<IDSymbol name="ImgNewDesignerQuery" value="20" />
 			<IDSymbol name="ImgResultsAsFile" value="21" />
+			<IDSymbol name="ImgEditLabel" value="22" />
+			<IDSymbol name="ImgChangeConnection" value="23" />
+			<IDSymbol name="ImgDeleteConnection" value="24" />
 		</GuidSymbol>
 
 	</Symbols>

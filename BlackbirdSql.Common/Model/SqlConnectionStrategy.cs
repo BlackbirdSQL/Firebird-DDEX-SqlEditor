@@ -6,13 +6,10 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
-
 using BlackbirdSql.Common.Controls.PropertiesWindow;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Events;
@@ -21,23 +18,15 @@ using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Model;
-
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Services;
-
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
-using Microsoft.VisualStudio.Shell;
 
 
 namespace BlackbirdSql.Common.Model;
-
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
 
 public class SqlConnectionStrategy : AbstractConnectionStrategy
 {
@@ -243,35 +232,35 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 	}
 
 
-	protected override IDbConnection CreateDbConnectionFromConnectionInfo(UIConnectionInfo uici, bool openConnection)
+	protected override IDbConnection CreateDbConnectionFromConnectionInfo(ConnectionPropertyAgent ci, bool openConnection)
 	{
-		if (uici != null)
+		if (ci != null)
 		{
-			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "CreateDbConnectionFromConnectionInfo", "UIConnectionInfo is not null");
+			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "CreateDbConnectionFromConnectionInfo", "ConnectionPropertyAgent is not null");
 			if (openConnection)
 			{
-				CreateAndOpenDbConnectionFromConnectionInfo(uici, out var connection);
+				CreateAndOpenDbConnectionFromConnectionInfo(ci, out var connection);
 				return connection;
 			}
 
 			CsbAgent csa = [];
-			PopulateConnectionStringBuilder(csa, uici);
+			PopulateConnectionStringBuilder(csa, ci);
 			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "CreateDbConnectionFromConnectionInfo", "Csb connectionString: {0}", csa.ConnectionString);
 
 			return new FbConnection(csa.ConnectionString);
 		}
 
-		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "CreateDbConnectionFromConnectionInfo", "ERROR UIConnectionInfois null.");
+		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "CreateDbConnectionFromConnectionInfo", "ERROR ConnectionInfo is null.");
 
 		return null;
 	}
 
-	protected virtual void CreateAndOpenDbConnectionFromConnectionInfo(UIConnectionInfo uici, out IDbConnection connection)
+	protected virtual void CreateAndOpenDbConnectionFromConnectionInfo(ConnectionPropertyAgent ci, out IDbConnection connection)
 	{
 		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "CreateAndOpenDbConnectionFromConnectionInfo", "Enter");
 
 		CsbAgent csa = [];
-		PopulateConnectionStringBuilder(csa, uici);
+		PopulateConnectionStringBuilder(csa, ci);
 
 		connection = new FbConnection(csa.ToString());
 
@@ -281,15 +270,16 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
-			throw ex;
+			Tracer.LogExCatch(GetType(), ex);
+			Cmd.ShowMessageBoxEx(null, ControlsResources.ErrDatabaseConnection.FmtRes(connection.ConnectionString, ex.Message), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			return;
 		}
 
 		if (connection.State != ConnectionState.Open)
 		{
-			DataException ex = new($"Failed to open connection using ConnectionString: {connection.ConnectionString}");
-			Diag.Dug(ex);
-			throw ex;
+			DataException ex = new("Failed to open connection");
+			Tracer.LogExCatch(GetType(), ex);
+			Cmd.ShowMessageBoxEx(null, ControlsResources.ErrDatabaseConnection.FmtRes(connection.ConnectionString, ex.Message), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 		}
 		/*
 		if (ReliableConnectionHelper.OpenConnection(sqlConnectionStringBuilder, useRetry: true) is ReliableSqlConnection reliableSqlConnection && !string.IsNullOrEmpty(reliableSqlConnection.Database) && reliableSqlConnection.State == ConnectionState.Open)
@@ -385,26 +375,26 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 
 
 
-	protected override void AcquireConnectionInfo(bool tryOpenConnection, out UIConnectionInfo uici, out IDbConnection connection)
+	protected override void AcquireConnectionInfo(bool tryOpenConnection, out ConnectionPropertyAgent ci, out IDbConnection connection)
 	{
-		if (UiConnectionInfo != null)
+		if (ConnectionInfo != null)
 		{
-			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "AcquireConnectionInfo", "UiConnectionInfo is not null");
-			uici = UiConnectionInfo;
-			connection = CreateDbConnectionFromConnectionInfo(uici, tryOpenConnection);
+			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "AcquireConnectionInfo", "ConnectionInfo is not null");
+			ci = ConnectionInfo;
+			connection = CreateDbConnectionFromConnectionInfo(ci, tryOpenConnection);
 		}
 		else
 		{
-			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "AcquireConnectionInfo", "UiConnectionInfo is null. Prompting");
-			uici = PromptForConnectionForEditor(out connection);
+			// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "AcquireConnectionInfo", "ConnectionInfo is null. Prompting");
+			ci = PromptForConnectionForEditor(out connection);
 			if (tryOpenConnection && connection != null && connection.State != ConnectionState.Open)
 				connection.Open();
 		}
 	}
 
-	protected override void ChangeConnectionInfo(bool tryOpenConnection, out UIConnectionInfo uici, out IDbConnection connection)
+	protected override void ChangeConnectionInfo(bool tryOpenConnection, out ConnectionPropertyAgent ci, out IDbConnection connection)
 	{
-		uici = PromptForConnectionForEditor(out connection);
+		ci = PromptForConnectionForEditor(out connection);
 		if (tryOpenConnection && connection != null && connection.State != ConnectionState.Open)
 			connection.Open();
 	}
@@ -453,29 +443,29 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 	}
 
 
-	private UIConnectionInfo PromptForConnectionForEditor(out IDbConnection connection)
+	private ConnectionPropertyAgent PromptForConnectionForEditor(out IDbConnection connection)
 	{
-		return PromptForConnection(out connection, ValidateConnectionForEditor);
+		if (Connection != null)
+			connection = new FbConnection(Connection.ConnectionString);
+		else
+			connection = null;
+
+		return PromptForConnection(ref connection, ValidateConnectionForEditor);
 	}
 
-	public static UIConnectionInfo PromptForConnection(out IDbConnection connection)
+	public static ConnectionPropertyAgent PromptForConnection(ref IDbConnection connection)
 	{
-		return PromptForConnection(out connection, ValidateConnection);
+		return PromptForConnection(ref connection, ValidateConnection);
 	}
 
-	private static UIConnectionInfo PromptForConnection(out IDbConnection connection, VerifyConnectionDelegate validateConnectionDelegate)
+	private static ConnectionPropertyAgent PromptForConnection(ref IDbConnection connection, VerifyConnectionDelegate validateConnectionDelegate)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
-		// Tracer.Trace(typeof(UIConnectionInfo), "PromptForConnection()");
+		// Tracer.Trace(typeof(SqlConnectionStrategy), "PromptForConnection()");
 
 		IVsDataConnectionDialog connectionDialogHandler = Controller.GetService<IVsDataConnectionDialog>()
-			?? throw Diag.ServiceUnavailable(typeof(IVsDataConnectionDialog));
+			?? throw Diag.ExceptionService(typeof(IVsDataConnectionDialog));
 
 		using (connectionDialogHandler)
 		{
@@ -483,15 +473,33 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 			{
 				connectionDialogHandler.AddSources(new Guid(VS.AdoDotNetTechnologyGuid));
 
+				if (connection != null)
+				{
+					if (RctManager.ShutdownState)
+						return null;
+
+					string connectionString = RctManager.UpdateConnectionFromRegistration(connection);
+
+					connectionDialogHandler.Title = "Modify SqlEditor Connection";
+					connectionDialogHandler.EncryptedConnectionString = DataProtection.EncryptString(connectionString);
+				}
+				else
+				{
+					connectionDialogHandler.Title = "Configure SqlEditor Connection";
+				}
+
 				if (connectionDialogHandler.ShowDialog())
 				{
 					string connectionString = DataProtection.DecryptString(connectionDialogHandler.EncryptedConnectionString);
 
-					CsbAgent csa = CsbAgent.EnsureInstance(connectionString);
+					if (RctManager.ShutdownState)
+						return null;
 
-					UIConnectionInfo connectionInfo = new ();
-					connectionInfo.Parse(csa);
-					connection = new FbConnection(csa.ConnectionString);
+					// Tracer.Trace(typeof(SqlConnectionStrategy), "PromptForConnection()", "ConnectionString reult: {0}.", connectionString);
+
+					ConnectionPropertyAgent connectionInfo = new ();
+					connectionInfo.Parse(connectionString);
+					connection = new FbConnection(connectionString);
 
 					return connectionInfo;
 				}
@@ -507,18 +515,18 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 
 		using (ConnectionDialogWrapper connectionDialogWrapper = new ConnectionDialogWrapper())
 		{
-			UIConnectionInfo uIConnectionInfo = new UIConnectionInfo();
+			ConnectionInfo connectionInfo = new ConnectionPropertyAgent();
 			connectionDialogWrapper.ConnectionVerifier = validateConnectionDelegate;
 
 			IVsUIShell uiShell = Package.GetGlobalService(typeof(IVsUIShell)) as IVsUIShell
-				?? throw Diag.ServiceUnavailable(typeof(IVsUIShell));
+				?? throw Diag.ExceptionService(typeof(IVsUIShell));
 
 			try
 			{
 				Native.ThrowOnFailure(uiShell.GetDialogOwnerHwnd(out var phwnd));
 
-				if (connectionDialogWrapper.ShowDialogValidateConnection(phwnd, uIConnectionInfo, out connection) == true)
-					return uIConnectionInfo;
+				if (connectionDialogWrapper.ShowDialogValidateConnection(phwnd, connectionInfo, out connection) == true)
+					return connectionInfo;
 			}
 			catch (Exception ex)
 			{
@@ -534,7 +542,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 		return null;
 	}
 
-	protected virtual IDbConnection ValidateConnectionForEditor(UIConnectionInfo ci /*, IServerConnectionProvider server*/)
+	protected virtual IDbConnection ValidateConnectionForEditor(ConnectionPropertyAgent ci /*, IServerConnectionProvider server*/)
 	{
 		IDbConnection dbConnection = ValidateConnection(ci /*, server*/);
 
@@ -550,13 +558,15 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 		return dbConnection;
 	}
 
-	public static IDbConnection ValidateConnection(UIConnectionInfo ci /* , IServerConnectionProvider server */)
+	public static IDbConnection ValidateConnection(ConnectionPropertyAgent ci /* , IServerConnectionProvider server */)
 	{
 		ci.DataSource = ci.DataSource.Trim();
+		/*
 		if (string.IsNullOrWhiteSpace(ci.ApplicationName) || string.Equals(BuilderWithDefaultApplicationName.ApplicationName, ci.ApplicationName, StringComparison.Ordinal))
 		{
 			ci.ApplicationName = C_ApplicationName;
 		}
+		*/
 
 		CsbAgent csa = [];
 
@@ -577,9 +587,12 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 	{
 		List<string> list = [];
 
-		foreach (KeyValuePair<string, string> pair in CsbAgent.RegisteredDatasets)
+		if (RctManager.ShutdownState)
+			return list;
+
+		foreach (string dataset in RctManager.RegisteredDatasets)
 		{
-			list.Add(pair.Key);
+			list.Add(dataset);
 		}
 
 		return list;
@@ -734,6 +747,8 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 
 	public override void SetDatasetKeyOnConnection(string selectedDatasetKey, DbConnectionStringBuilder csb)
 	{
+		// Tracer.Trace(GetType(), "SetDatasetKeyOnConnection()", "selectedDatasetKey: {0}, ConnectionString: {1}.", selectedDatasetKey, csb.ConnectionString);
+
 		lock (_LockObject)
 		{
 			if (Connection != null /* && Connection.State == ConnectionState.Open */ && IsCloudConnection)
@@ -741,17 +756,23 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 				try
 				{
 					_Csa = (CsbAgent)csb;
+					_Seed = RctManager.Seed;
 
-					_Csa ??= (CsbAgent)ConnectionLocator.GetCsaFromDatabases(selectedDatasetKey);
+					if (csb == null || _Csa.DatasetKey != selectedDatasetKey)
+					{
+						_Csa = RctManager.ShutdownState ? null : RctManager.CloneRegistered(selectedDatasetKey);
+						_Seed = RctManager.Seed;
+					}
+
 					if (_Csa != null)
 					{
 						if (Connection.State == ConnectionState.Open)
 							Connection.Close();
 						Connection.ConnectionString = _Csa.ConnectionString;
-						if (UiConnectionInfo == null)
-							UiConnectionInfo = new();
-						UiConnectionInfo.Parse(_Csa);
-						SetConnectionInfo(UiConnectionInfo);
+						if (ConnectionInfo == null)
+							ConnectionInfo = new();
+						ConnectionInfo.Parse(_Csa);
+						SetConnectionInfo(ConnectionInfo);
 						Connection.Open();
 					}
 				}
@@ -772,7 +793,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 	{
 		// return null;
 
-		if (UiConnectionInfo == null)
+		if (ConnectionInfo == null)
 		{
 			return DisconnectedPropertiesWindow.Instance;
 		}

@@ -2,15 +2,14 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Data.Services;
-using static BlackbirdSql.Core.Ctl.Interfaces.IBPackageController;
-using System.IO;
+
 
 namespace BlackbirdSql.Core.Ctl.Interfaces;
 

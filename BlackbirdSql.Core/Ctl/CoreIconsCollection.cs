@@ -87,15 +87,8 @@ public class CoreIconsCollection : AbstractIconsCollection
 
 
 
-	public static CoreIconsCollection Instance
-	{
-		get
-		{
-			_Instance ??= new CoreIconsCollection();
+	public static CoreIconsCollection Instance => _Instance ??= new CoreIconsCollection();
 
-			return _Instance;
-		}
-	}
 
 
 

@@ -14,4 +14,4 @@ namespace BlackbirdSql.Common.Ctl.Events;
 // namespace Microsoft.SqlServer.ConnectionDlg.UI
 
 
-public delegate IDbConnection VerifyConnectionDelegate(UIConnectionInfo ci /*, IServerConnectionProvider serverType */);
+public delegate IDbConnection VerifyConnectionDelegate(ConnectionPropertyAgent ci /*, IServerConnectionProvider serverType */);

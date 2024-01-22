@@ -5,20 +5,11 @@
 
 using System;
 using System.Globalization;
-using System.Runtime.InteropServices;
 using BlackbirdSql.Core;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.Shell;
 
 
-
-
-// namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration
 namespace BlackbirdSql.Common.Ctl;
-
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "UIThread compliance is performed by the class.")]
 
 public sealed class ConnectionPointCookie : IDisposable
 {
@@ -68,12 +59,7 @@ public sealed class ConnectionPointCookie : IDisposable
 
 	public ConnectionPointCookie(object source, object sink, Type eventInterface, bool throwException)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		Exception ex = null;
 		if (source is IConnectionPointContainer container)

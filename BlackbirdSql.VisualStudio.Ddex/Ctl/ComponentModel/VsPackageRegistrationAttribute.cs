@@ -9,7 +9,6 @@ using System.Runtime.InteropServices;
 using System.Threading;
 
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.Interfaces;
 
 using FirebirdSql.Data.FirebirdClient;
@@ -130,7 +129,7 @@ internal sealed class VsPackageRegistrationAttribute: RegistrationAttribute
 
 				for (int i = 0; i < implementation.Value; i++)
 				{
-					registryValue = PackageSupportedObjects.Values[implementation.Key + ":" + i.ToString()];
+					registryValue = PackageSupportedObjects.Values[implementation.Key + (i==0?"":i.ToString())];
 
 					// Diag.Trace(implementation.Key + ": " + (registryValue.Name == null ? "null" : registryValue.Name) + ":" + registryValue.Value);
 					key3.SetValue(registryValue.Name, registryValue.Value);

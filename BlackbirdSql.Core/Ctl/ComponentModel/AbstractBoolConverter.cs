@@ -109,16 +109,16 @@ public abstract class AbstractBoolConverter : BooleanConverter, IBAutomationConv
 
 			if (descriptor.Attributes[typeof(ReadOnlyAttribute)] is ReadOnlyAttribute attr)
 			{
-				FieldInfo fld = attr.GetType().GetField("isReadOnly",
-					BindingFlags.NonPublic | BindingFlags.Instance);
+				// Diag.Trace($"Automator {_PropertyName} updating dependent: {pair.Key} from {fld.GetValue(attr)} to {(pair.Value ? bvalue : !bvalue)}.");
 
 				readOnly = pair.Value ? bNewValue : !bNewValue;
 
-				// Diag.Trace($"Automator {_PropertyName} updating dependent: {pair.Key} from {fld.GetValue(attr)} to {(pair.Value ? bvalue : !bvalue)}.");
-				if ((bool)fld.GetValue(attr) != readOnly)
+				FieldInfo fieldInfo = Reflect.GetFieldInfo(attr, "isReadOnly", BindingFlags.NonPublic | BindingFlags.Instance);
+
+				if ((bool)Reflect.GetFieldInfoValue(attr, fieldInfo) != readOnly)
 				{
 					result = true;
-					fld.SetValue(attr, readOnly);
+					Reflect.SetFieldInfoValue(attr, fieldInfo, readOnly);
 				}
 
 			}

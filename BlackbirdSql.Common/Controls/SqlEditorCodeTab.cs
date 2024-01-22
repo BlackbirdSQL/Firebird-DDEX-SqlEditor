@@ -18,9 +18,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace BlackbirdSql.Common.Controls;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
-
 public class SqlEditorCodeTab(AbstractTabbedEditorPane editorPane, Guid logicalView,
 		Guid editorLogicalView, EnEditorTabType editorTabType)
 	: AbstractSqlEditorTab(editorPane, logicalView, editorTabType)
@@ -47,17 +44,13 @@ public class SqlEditorCodeTab(AbstractTabbedEditorPane editorPane, Guid logicalV
 
 	protected override IVsWindowFrame CreateWindowFrame()
 	{
-		if (WindowPaneServiceProvider.GetService(typeof(SVsUIShellOpenDocument)) is not IVsUIShellOpenDocument vsUIShellOpenDocument)
+		if (WindowPaneServiceProvider.GetService(typeof(SVsUIShellOpenDocument))
+			is not IVsUIShellOpenDocument vsUIShellOpenDocument)
 		{
-			throw Diag.ServiceUnavailable(typeof(IVsUIShellOpenDocument));
+			throw Diag.ExceptionService(typeof(IVsUIShellOpenDocument));
 		}
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		uint[] array = new uint[1];
 		string documentMoniker = DocumentMoniker;

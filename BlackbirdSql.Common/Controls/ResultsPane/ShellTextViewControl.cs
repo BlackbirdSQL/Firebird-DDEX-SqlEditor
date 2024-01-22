@@ -6,7 +6,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-
 using BlackbirdSql.Common.Controls.Events;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Commands;
@@ -23,9 +22,6 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace BlackbirdSql.Common.Controls.ResultsPane
 {
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-		Justification = "Class is UIThread compliant.")]
-
 	public class ShellTextViewControl : AbstractShellTextEditorControl, VsCodeWindow, IVsCodeWindow
 	{
 		protected IVsTextView m_textView;
@@ -247,12 +243,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		protected override void SinkEventsAndCacheInterfaces()
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			SinkEditorEvents(bSink: true);
 			_TextWindowPane = (IVsWindowPane)m_textView;
@@ -296,12 +287,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 		{
 			// Tracer.Trace(GetType(), "ShellTextViewControl.CreateEditorWindow", "", null);
 
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			ILocalRegistry localRegistry = (ILocalRegistry)_OleServiceProvider.GetService(typeof(ILocalRegistry));
 			if (localRegistry == null)
@@ -398,7 +384,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			OnSizeChanged(new EventArgs());
 			if (_WantCustomPopupMenu)
 			{
-				_CommandFilter = new TextViewCommandFilter(m_textView, new int[1] { 102 });
+				_CommandFilter = new TextViewCommandFilter(m_textView, [102]);
 				_CommandFilter.SpecialEditorCommand += base.OnSpecialEditorCommandEventHandler;
 			}
 		}

@@ -4,8 +4,6 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-
-using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Commands;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
@@ -16,9 +14,6 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
-
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "UIThread compliance is performed by the class.")]
 
 public class ExecutionPlanPanel : AbstractResultsPanel, IOleCommandTarget
 {
@@ -85,24 +80,14 @@ public class ExecutionPlanPanel : AbstractResultsPanel, IOleCommandTarget
 
 	int IOleCommandTarget.QueryStatus(ref Guid guidGroup, uint cmdID, OLECMD[] oleCmd, IntPtr oleText)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		return ((IOleCommandTarget)ExecutionPlanCtl).QueryStatus(ref guidGroup, cmdID, oleCmd, oleText);
 	}
 
 	int IOleCommandTarget.Exec(ref Guid guidGroup, uint nCmdId, uint nCmdExcept, IntPtr vIn, IntPtr vOut)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		return ((IOleCommandTarget)ExecutionPlanCtl).Exec(ref guidGroup, nCmdId, nCmdExcept, vIn, vOut);
 	}
@@ -111,9 +96,9 @@ public class ExecutionPlanPanel : AbstractResultsPanel, IOleCommandTarget
 	{
 		if (m.Msg == Native.WM_CONTEXTMENU)
 		{
-			if (CommonUtils.GetCoordinatesForPopupMenuFromWM_Context(ref m, out var xPos, out var yPos, this))
+			if (VS.GetCoordinatesForPopupMenuFromWM_Context(ref m, out var xPos, out var yPos, this))
 			{
-				CommonUtils.ShowContextMenuEvent(264, xPos, yPos, this);
+				VS.ShowContextMenuEvent(264, xPos, yPos, this);
 			}
 		}
 		else

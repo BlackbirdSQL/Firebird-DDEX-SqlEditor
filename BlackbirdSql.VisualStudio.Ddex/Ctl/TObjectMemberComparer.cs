@@ -70,7 +70,7 @@ public class TObjectMemberComparer : DataObjectMemberComparer
 		}
 		catch (Exception e)
 		{
-			Diag.Stack(String.Format("Compare({0},propertyName={1}, {2}, {3}) | {4} - {5}.",
+			Diag.StackException(String.Format("Compare({0},propertyName={1}, {2}, {3}) | {4} - {5}.",
 				typeName, propertyName, value1, value2, e.Source, e.Message));
 			throw;
 		}
@@ -156,7 +156,7 @@ public class TObjectMemberComparer : DataObjectMemberComparer
 		}
 		catch (Exception e)
 		{
-			Diag.Stack(String.Format("Compare({0},identifier={1},{2},{3}) | {4} - {5}.",
+			Diag.StackException(String.Format("Compare({0},identifier={1},{2},{3}) | {4} - {5}.",
 				typeName, identifier, identifierPart, value, e.Source, e.Message));
 			throw;
 		}

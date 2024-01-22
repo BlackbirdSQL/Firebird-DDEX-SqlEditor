@@ -695,6 +695,15 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connection failed. ConnectionString: {0}. Error message: {1}..
+        /// </summary>
+        public static string ErrDatabaseConnection {
+            get {
+                return ResourceManager.GetString("ErrDatabaseConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Database not accessible.
         /// </summary>
         public static string ErrDatabaseNotAccessible {

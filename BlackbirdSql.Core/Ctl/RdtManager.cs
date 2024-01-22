@@ -1,7 +1,5 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.Design.Common, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.VisualStudio.Data.Tools.Design.Common, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.Design.Common.RdtManager
 
 using System;
 using System.Collections.Generic;
@@ -27,10 +25,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace BlackbirdSql.Core.Ctl;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
-[SuppressMessage("Usage", "VSTHRD104:Offer async methods")]
-
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
 public sealed class RdtManager : IDisposable
 {
 	private static volatile RdtManager _Instance;
@@ -52,52 +47,17 @@ public sealed class RdtManager : IDisposable
 
 	private readonly RunningDocumentTable _ShellRunningDocumentTable;
 
-	public static RdtManager Instance
-	{
-		get
-		{
-			if (_Instance == null)
-			{
-				lock (_LockClass)
-				{
-					if (_Instance == null)
-					{
-						InitializeInstance();
-					}
-				}
-			}
 
-			return _Instance;
-		}
-	}
-
-	public static void InitializeInstance()
-	{
-		if (_Instance != null)
-		{
-			return;
-		}
-
-		lock (_LockClass)
-		{
-			_Instance ??= new RdtManager();
-		}
-	}
 
 	private RdtManager()
 	{
 		if (!Application.MessageLoop)
 		{
-			InvalidOperationException ex = new("Must create EventsManager on the UI Thread");
+			InvalidOperationException ex = new("Must create Events Manager on the UI Thread");
 			Diag.Dug(ex);
 			throw ex;
 		}
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		_ShellRunningDocumentTable = new RunningDocumentTable();
 		_InvisibleEditorManager = Package.GetGlobalService(typeof(SVsInvisibleEditorManager)) as IVsInvisibleEditorManager;
@@ -112,6 +72,14 @@ public sealed class RdtManager : IDisposable
 		}
 	}
 
+	/// <summary>
+	/// Gets or creates the instance of the RdtManager for this session.
+	/// </summary>
+	public static RdtManager Instance => _Instance ??= new RdtManager();
+
+
+
+
 	public void AddKeepDocDataAliveOnCloseReference(uint docCookie)
 	{
 		lock (_KeepAliveLockLocal)
@@ -122,12 +90,7 @@ public sealed class RdtManager : IDisposable
 				return;
 			}
 
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			_DocDataToKeepAliveOnClose.Add(docCookie, 1);
 			GetRunningDocumentTable().LockDocument((uint)_VSRDTFLAGS.RDT_EditLock, docCookie);
@@ -142,12 +105,7 @@ public sealed class RdtManager : IDisposable
 			{
 				if (value == 1)
 				{
-					if (!ThreadHelper.CheckAccess())
-					{
-						COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-						Diag.Dug(exc);
-						throw exc;
-					}
+					Diag.ThrowIfNotOnUIThread();
 
 					_DocDataToKeepAliveOnClose.Remove(docCookie);
 					GetRunningDocumentTable().UnlockDocument((uint)_VSRDTFLAGS.RDT_EditLock, docCookie);
@@ -178,12 +136,7 @@ public sealed class RdtManager : IDisposable
 		pdwCookie = 0u;
 		if (runningDocumentTable != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			num = runningDocumentTable.FindAndLockDocument(rdtLockType, fullPathFileName, out ppHier, out pitemid, out ppunkDocData, out pdwCookie);
 			if (Cmd.Failed(num))
@@ -274,12 +227,7 @@ public sealed class RdtManager : IDisposable
 			IVsWindowFrame windowFrame = Instance.GetWindowFrame(documentFullPath);
 			if (windowFrame != null)
 			{
-				if (!ThreadHelper.CheckAccess())
-				{
-					COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-					Diag.Dug(exc);
-					throw exc;
-				}
+				Diag.ThrowIfNotOnUIThread();
 
 				Native.ThrowOnFailure(windowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar));
 				if (pvar != null)
@@ -307,12 +255,7 @@ public sealed class RdtManager : IDisposable
 		Guid riid = typeof(IVsTextLines).GUID;
 		try
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			Native.ThrowOnFailure(_InvisibleEditorManager.RegisterInvisibleEditor(fullPathFileName, project, (uint)_EDITORREGFLAGS.RIEF_ENABLECACHING, null, out spEditor));
 			if (spEditor != null)
@@ -417,12 +360,7 @@ public sealed class RdtManager : IDisposable
 			ppenum = null;
 		}
 		*/
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		Native.ThrowOnFailure(runningDocumentTable.RenameDocument(oldMkDoc, newMkDoc, ppv, newNodeId));
 	}
@@ -437,12 +375,7 @@ public sealed class RdtManager : IDisposable
 			throw ex;
 		}
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		Native.ThrowOnFailure(frame.GetProperty((int)__VSFPROPID.VSFPROPID_pszMkDocument, out var pvar));
 		if (pvar != null)
@@ -464,12 +397,7 @@ public sealed class RdtManager : IDisposable
 	{
 		Cmd.CheckForNullReference((object)dirtyFiles, "dirtyFiles");
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		IVsRunningDocumentTable runningDocumentTable = _RunningDocumentTable;
 		int count = dirtyFiles.Count;
@@ -543,12 +471,7 @@ public sealed class RdtManager : IDisposable
 
 	public IVsRunningDocumentTable2 GetRunningDocumentTable2()
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		return _RunningDocumentTable as IVsRunningDocumentTable2;
 	}
@@ -558,12 +481,7 @@ public sealed class RdtManager : IDisposable
 		_DTE dte = _Dte;
 		if (dte != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			Document activeDocument = dte.ActiveDocument;
 			if (activeDocument != null)
@@ -577,12 +495,7 @@ public sealed class RdtManager : IDisposable
 
 	public void SetFocusToActiveDocument()
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		_Dte?.ActiveDocument?.Activate();
 	}
@@ -616,12 +529,7 @@ public sealed class RdtManager : IDisposable
 
 	public IVsHierarchy GetHierarchyFromDocCookie(uint docCookie)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		IntPtr ppunkDocData = IntPtr.Zero;
 		try
@@ -640,12 +548,7 @@ public sealed class RdtManager : IDisposable
 
 	public bool TryGetDocDataFromCookie(uint cookie, out object docData)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		docData = null;
 		IVsRunningDocumentTable runningDocumentTable = Instance.GetRunningDocumentTable();
@@ -676,12 +579,7 @@ public sealed class RdtManager : IDisposable
 						return false;
 					}
 
-					if (!ThreadHelper.CheckAccess())
-					{
-						COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-						Diag.Dug(exc);
-						throw exc;
-					}
+					Diag.ThrowIfNotOnUIThread();
 
 					if (!Native.Succeeded(runningDocumentTable.UnlockDocument((uint)_VSRDTFLAGS.RDT_ReadLock, pdwCookie)))
 					{
@@ -735,12 +633,7 @@ public sealed class RdtManager : IDisposable
 
 	public bool IsDirty(string docFullPath)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		if (Instance.GetDocData(docFullPath) is IVsPersistDocData vsPersistDocData)
 		{
@@ -763,12 +656,7 @@ public sealed class RdtManager : IDisposable
 
 	public bool IsDirty(object docData)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		if (docData is IVsPersistDocData vsPersistDocData)
 		{
@@ -803,12 +691,7 @@ public sealed class RdtManager : IDisposable
 
 				if (Native.Succeeded(result))
 				{
-					if (!ThreadHelper.CheckAccess())
-					{
-						COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-						Diag.Dug(exc);
-						throw exc;
-					}
+					Diag.ThrowIfNotOnUIThread();
 
 					try
 					{
@@ -848,12 +731,7 @@ public sealed class RdtManager : IDisposable
 					result = FindAndLockDocument((uint)_VSRDTFLAGS.RDT_ReadLock, fileName, out var _, out var _, out ppunkDocData, out var pdwCookie);
 					if (Native.Succeeded(result))
 					{
-						if (!ThreadHelper.CheckAccess())
-						{
-							COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-							Diag.Dug(exc);
-							throw exc;
-						}
+						Diag.ThrowIfNotOnUIThread();
 
 						try
 						{
@@ -897,12 +775,7 @@ public sealed class RdtManager : IDisposable
 		IVsRunningDocumentTable2 runningDocumentTable = GetRunningDocumentTable2();
 		if (runningDocumentTable != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			int num = runningDocumentTable.QueryCloseRunningDocument(fullFileName, out foundAndClosed);
 			if (num != VSConstants.OLE_E_PROMPTSAVECANCELLED)
@@ -920,12 +793,7 @@ public sealed class RdtManager : IDisposable
 			IVsWindowFrame windowFrame = Instance.GetWindowFrame(fullFileName);
 			if (windowFrame != null)
 			{
-				if (!ThreadHelper.CheckAccess())
-				{
-					COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-					Diag.Dug(exc);
-					throw exc;
-				}
+				Diag.ThrowIfNotOnUIThread();
 
 				result = true;
 			}
@@ -951,12 +819,7 @@ public sealed class RdtManager : IDisposable
 			return null;
 		}
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		int property = frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar);
 		if (property != 0)
@@ -978,12 +841,7 @@ public sealed class RdtManager : IDisposable
 		IVsWindowFrame result = null;
 		if (Instance.GetRunningDocumentTable() != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			Native.ThrowOnFailure(_UiShell.GetDocumentWindowEnum(out var ppenum));
 			IVsWindowFrame[] array = new IVsWindowFrame[1];
@@ -1090,12 +948,7 @@ public sealed class RdtManager : IDisposable
 		IVsRunningDocumentTable runningDocumentTable = Instance.GetRunningDocumentTable();
 		if (runningDocumentTable != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			IntPtr ppunkDocData = IntPtr.Zero;
 			try
@@ -1237,7 +1090,7 @@ public sealed class RdtManager : IDisposable
 	{
 		lock (_KeepAliveLockLocal)
 		{
-			SqlTracer.AssertTraceEvent(_DocDataToKeepAliveOnClose.Keys.Count == 0, TraceEventType.Error, (EnSqlTraceId)3, "EventsManager is still trying to keep doc data alive on dispose, this could be a symptom of memory leak from invisible doc data.");
+			SqlTracer.AssertTraceEvent(_DocDataToKeepAliveOnClose.Keys.Count == 0, TraceEventType.Error, (EnSqlTraceId)3, "Events Manager is still trying to keep doc data alive on dispose, this could be a symptom of memory leak from invisible doc data.");
 		}
 	}
 }

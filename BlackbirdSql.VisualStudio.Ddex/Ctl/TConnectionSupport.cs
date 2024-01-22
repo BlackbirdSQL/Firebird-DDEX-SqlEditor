@@ -177,9 +177,7 @@ public class TConnectionSupport : AdoDotNetConnectionSupport
 		// Tracer.Trace(GetType(), "TConnectionSupport.CreateService()", "Service requested: {0}", serviceType.Name);
 
 		if (serviceType == typeof(IVsDataCommand))
-		{
 			return new TCommand(Site);
-		}
 
 
 		/* Uncomment this and change PackageSupportedObjects._UseFactoryOnly to true to debug implementations

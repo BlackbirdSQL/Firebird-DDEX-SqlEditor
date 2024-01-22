@@ -18,7 +18,6 @@ using BlackbirdSql.Common.Ctl.Exceptions;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Events;
-using BlackbirdSql.Core.Ctl.Extensions;
 using FirebirdSql.Data.FirebirdClient;
 
 

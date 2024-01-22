@@ -11,7 +11,6 @@ using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Events;
-using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
 
@@ -50,7 +49,7 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 
 
 	// =========================================================================================================
-	#region Variables - PersistentSettings
+	#region Fields - PersistentSettings
 	// =========================================================================================================
 
 
@@ -60,7 +59,7 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 	private static CommandObject _CmdObject = null;
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 

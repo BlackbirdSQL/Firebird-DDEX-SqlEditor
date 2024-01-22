@@ -30,7 +30,7 @@ namespace C5 {
 template<typename T> public ref class AbstruseReplicant abstract : IReplicant<T>
 {
 
-#pragma region Variables
+#pragma region Fields
 
 protected:
 
@@ -86,7 +86,7 @@ protected:
 	T _UnaryValue = nullptr;
 
 
-#pragma endregion Variables
+#pragma endregion Fields
 
 
 

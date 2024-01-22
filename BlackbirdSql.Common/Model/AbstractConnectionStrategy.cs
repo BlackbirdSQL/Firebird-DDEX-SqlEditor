@@ -30,6 +30,7 @@ namespace BlackbirdSql.Common.Model;
 public abstract class AbstractConnectionStrategy : IDisposable
 {
 	protected CsbAgent _Csa = null;
+	protected long _Seed = -1;
 	protected string _LastDatasetKey = null;
 
 	public delegate void ConnectionChangedEvent(object sender, ConnectionChangedEventArgs args);
@@ -45,7 +46,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 	private IDbConnection _Connection;
 
-	protected UIConnectionInfo _UiConnectionInfo;
+	protected ConnectionPropertyAgent _ConnectionInfo;
 
 	// A protected 'this' object lock
 	protected readonly object _LockObject = new object();
@@ -56,20 +57,20 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	public string LastDatasetKey => _LastDatasetKey;
 
 
-	public virtual UIConnectionInfo UiConnectionInfo
+	public virtual ConnectionPropertyAgent ConnectionInfo
 	{
 		get
 		{
 			lock (_LockObject)
 			{
-				return _UiConnectionInfo;
+				return _ConnectionInfo;
 			}
 		}
 		protected set
 		{
 			lock (_LockObject)
 			{
-				_UiConnectionInfo = value;
+				_ConnectionInfo = value;
 			}
 		}
 	}
@@ -89,7 +90,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	{
 		get
 		{
-			UIConnectionInfo connectionInfo = UiConnectionInfo;
+			ConnectionPropertyAgent connectionInfo = ConnectionInfo;
 			if (connectionInfo != null && !string.IsNullOrEmpty(connectionInfo.DataSource))
 			{
 				return connectionInfo.ServerNameNoDot;
@@ -109,14 +110,20 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 				if (Connection != null)
 				{
-					csa = CsbAgent.CreateInstance(Connection);
-					return csa.DatasetId;
+					csa = RctManager.ShutdownState ? null : RctManager.CloneRegistered(Connection);
+					return csa == null
+						? CoreConstants.C_DefaultExDatasetId
+						: (string.IsNullOrWhiteSpace(csa.DatasetId)
+							? csa.Dataset : csa.DatasetId);
 				}
 
-				if (UiConnectionInfo != null)
+				if (ConnectionInfo != null)
 				{
-					csa = CsbAgent.CreateInstance(UiConnectionInfo);
-					return csa.DatasetId;
+					csa = RctManager.ShutdownState ? null : RctManager.CloneRegistered(ConnectionInfo);
+					return csa == null
+						? CoreConstants.C_DefaultExDatasetId
+						: (string.IsNullOrWhiteSpace(csa.DatasetId)
+							? csa.Dataset : csa.DatasetId);
 				}
 
 				return string.Empty;
@@ -129,7 +136,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		get
 		{
 			string text = string.Empty;
-			UIConnectionInfo connectionInfo = UiConnectionInfo;
+			ConnectionPropertyAgent connectionInfo = ConnectionInfo;
 			if (connectionInfo != null)
 			{
 				text = connectionInfo.UserID;
@@ -144,7 +151,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	{
 		get
 		{
-			UIConnectionInfo connectionInfo = UiConnectionInfo;
+			ConnectionPropertyAgent connectionInfo = ConnectionInfo;
 			Color result = PersistentSettings.EditorStatusBarBackgroundColor;
 			if (connectionInfo != null && UseCustomColor(connectionInfo))
 			{
@@ -188,7 +195,10 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 			if (_Connection != null)
 			{
-				CsbAgent csa = CsbAgent.CreateInstance(_Connection);
+				CsbAgent csa = RctManager.CloneRegistered(_Connection);
+				if (csa == null)
+					return;
+
 				_LastDatasetKey = csa.DatasetKey;
 			}
 
@@ -197,15 +207,15 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		}
 	}
 
-	public void SetConnectionInfo(UIConnectionInfo uici)
+	public void SetConnectionInfo(ConnectionPropertyAgent ci)
 	{
-		IDbConnection connection = CreateDbConnectionFromConnectionInfo(uici, tryOpenConnection: false);
-		SetConnectionInfo(uici, connection);
+		IDbConnection connection = CreateDbConnectionFromConnectionInfo(ci, tryOpenConnection: false);
+		SetConnectionInfo(ci, connection);
 	}
 
-	public void SetConnectionInfo(UIConnectionInfo uici, IDbConnection connection)
+	public void SetConnectionInfo(ConnectionPropertyAgent ci, IDbConnection connection)
 	{
-		if (uici != null && connection == null)
+		if (ci != null && connection == null)
 		{
 			ArgumentNullException ex = new("connection");
 			Diag.Dug(ex);
@@ -214,24 +224,24 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 		lock (_LockObject)
 		{
-			UiConnectionInfo = uici;
+			ConnectionInfo = ci;
 			SetDbConnection(connection);
 		}
 	}
 
 
-	protected virtual void AcquireConnectionInfo(bool tryOpenConnection, out UIConnectionInfo uici, out IDbConnection connection)
+	protected virtual void AcquireConnectionInfo(bool tryOpenConnection, out ConnectionPropertyAgent ci, out IDbConnection connection)
 	{
-		uici = new UIConnectionInfo();
-		connection = CreateDbConnectionFromConnectionInfo(uici, tryOpenConnection);
+		ci = new ConnectionPropertyAgent();
+		connection = CreateDbConnectionFromConnectionInfo(ci, tryOpenConnection);
 	}
 
-	protected virtual void ChangeConnectionInfo(bool tryOpenConnection, out UIConnectionInfo uici, out IDbConnection connection)
+	protected virtual void ChangeConnectionInfo(bool tryOpenConnection, out ConnectionPropertyAgent ci, out IDbConnection connection)
 	{
-		AcquireConnectionInfo(tryOpenConnection, out uici, out connection);
+		AcquireConnectionInfo(tryOpenConnection, out ci, out connection);
 	}
 
-	protected abstract IDbConnection CreateDbConnectionFromConnectionInfo(UIConnectionInfo uici, bool tryOpenConnection);
+	protected abstract IDbConnection CreateDbConnectionFromConnectionInfo(ConnectionPropertyAgent ci, bool tryOpenConnection);
 
 	public virtual void ApplyConnectionOptions(IDbConnection connection, IBEditorTransientSettings s)
 	{
@@ -292,8 +302,8 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	{
 		int result = 0;
 
-		if (UiConnectionInfo != null)
-			return UiConnectionInfo.CommandTimeout;
+		if (ConnectionInfo != null)
+			return ConnectionInfo.CommandTimeout;
 
 		return result;
 	}
@@ -309,12 +319,12 @@ public abstract class AbstractConnectionStrategy : IDisposable
 			if (Connection == null || (tryOpenConnection && Connection.State != ConnectionState.Open))
 			{
 				// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "EnsureConnection", "Connection is null or not open");
-				AcquireConnectionInfo(tryOpenConnection, out var uici, out var connection);
+				AcquireConnectionInfo(tryOpenConnection, out var ci, out var connection);
 
-				if (uici != null && connection == null)
-					connection = CreateDbConnectionFromConnectionInfo(uici, tryOpenConnection);
+				if (ci != null && connection == null)
+					connection = CreateDbConnectionFromConnectionInfo(ci, tryOpenConnection);
 
-				UiConnectionInfo = uici;
+				ConnectionInfo = ci;
 				SetDbConnection(connection);
 			}
 
@@ -328,12 +338,12 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		{
 			if (tryOpenConnection)
 			{
-				ChangeConnectionInfo(tryOpenConnection, out var uici, out var connection);
-				if (uici != null)
+				ChangeConnectionInfo(tryOpenConnection, out var ci, out var connection);
+				if (ci != null)
 				{
-					connection ??= CreateDbConnectionFromConnectionInfo(uici, tryOpenConnection: false);
+					connection ??= CreateDbConnectionFromConnectionInfo(ci, tryOpenConnection: false);
 
-					UiConnectionInfo = uici;
+					ConnectionInfo = ci;
 					SetDbConnection(connection);
 				}
 			}
@@ -346,7 +356,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	{
 		lock (_LockObject)
 		{
-			UiConnectionInfo = null;
+			ConnectionInfo = null;
 			SetDbConnection(null);
 		}
 	}
@@ -397,7 +407,13 @@ public abstract class AbstractConnectionStrategy : IDisposable
 			lock (_LockObject)
 			{
 				_Csa = (CsbAgent)csb;
-				_Csa ??= (CsbAgent)ConnectionLocator.GetCsaFromDatabases(selectedDatasetKey);
+				_Seed = RctManager.Seed;
+
+				if (csb == null || _Csa.DatasetKey != selectedDatasetKey)
+				{
+					_Csa = RctManager.ShutdownState ? null : RctManager.CloneRegistered(selectedDatasetKey);
+					_Seed = RctManager.Seed;
+				}
 
 				if (_Csa != null)
 				{
@@ -411,10 +427,10 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 					Connection.ConnectionString = _Csa.ConnectionString;
 
-					if (UiConnectionInfo == null)
-						UiConnectionInfo = new();
+					if (ConnectionInfo == null)
+						ConnectionInfo = new();
 
-					UiConnectionInfo.Parse(_Csa);
+					ConnectionInfo.Parse(_Csa);
 					DatabaseChanged?.Invoke(this, new EventArgs());
 					if (isOpen)
 						Connection.Open();
@@ -473,14 +489,14 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		return stringBuilder.ToString();
 	}
 
-	private static bool UseCustomColor(UIConnectionInfo uici)
+	private static bool UseCustomColor(ConnectionPropertyAgent ci)
 	{
 		return false;
 		/*
 		bool result = false;
-		if (uici != null)
+		if (ci != null)
 		{
-			object obj = uici.AdvancedOptions["USE_CUSTOM_CONNECTION_COLOR"];
+			object obj = ci.AdvancedOptions["USE_CUSTOM_CONNECTION_COLOR"];
 			if (obj != null)
 			{
 				if (obj is string text && bool.TryParse(text, out var result2))
@@ -494,13 +510,13 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		*/
 	}
 
-	private static Color GetCustomColor(UIConnectionInfo uici)
+	private static Color GetCustomColor(ConnectionPropertyAgent ci)
 	{
 		Color result = DefaultColor;
 		/*
-		if (uici != null)
+		if (ci != null)
 		{
-			object obj = uici.AdvancedOptions["CUSTOM_CONNECTION_COLOR"];
+			object obj = ci.AdvancedOptions["CUSTOM_CONNECTION_COLOR"];
 			if (obj != null)
 			{
 				if (obj is string text)
@@ -516,7 +532,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		return result;
 	}
 
-	protected void CreateAndOpenConnectionWithCommonMessageLoop(UIConnectionInfo uici, string connectingInfoMessage, string errorPrescription, out IDbConnection connection)
+	protected void CreateAndOpenConnectionWithCommonMessageLoop(ConnectionPropertyAgent ci, string connectingInfoMessage, string errorPrescription, out IDbConnection connection)
 	{
 		connection = null;
 		IDbConnection testConnection = null;
@@ -526,7 +542,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		{
 			try
 			{
-				testConnection = CreateDbConnectionFromConnectionInfo(uici, false);
+				testConnection = CreateDbConnectionFromConnectionInfo(ci, false);
 				testConnection.Open();
 			}
 			catch (Exception ex)
@@ -546,7 +562,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 			WaitTitle = ControlsResources.CommonMessageLoopConnecting
 		};
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.CommonMessageLoopAttemptingToConnect, uici.DataSource));
+		stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.CommonMessageLoopAttemptingToConnect, ci.DataSource));
 		if (connectingInfoMessage != null)
 		{
 			stringBuilder.Append(Environment.NewLine + Environment.NewLine);
@@ -559,7 +575,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		{
 			((Action)delegate
 			{
-				int connectionTimeout = 15; // Ns2.SqlServerConnectionService.GetConnectionTimeout(uici);
+				int connectionTimeout = 15; // Ns2.SqlServerConnectionService.GetConnectionTimeout(ci);
 				if (resetEvent.WaitOne(2 * connectionTimeout) && testConnection != null)
 				{
 					testConnection.Close();
@@ -580,7 +596,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		Tracer.LogExCatch(typeof(AbstractConnectionStrategy), exception);
 		if (!Cmd.IsInAutomationFunction())
 		{
-			string value = string.Format(CultureInfo.CurrentCulture, ControlsResources.CommonMessageLoopFailedToOpenConnection, uici.DataSource);
+			string value = string.Format(CultureInfo.CurrentCulture, ControlsResources.CommonMessageLoopFailedToOpenConnection, ci.DataSource);
 			string value2 = string.Format(CultureInfo.CurrentCulture, ControlsResources.CommonMessageLoopErrorMessage, exception.Message);
 			StringBuilder stringBuilder2 = new StringBuilder();
 			stringBuilder2.Append(value);
@@ -609,7 +625,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 
 
-	public static void PopulateConnectionStringBuilder(DbConnectionStringBuilder scsb, UIConnectionInfo connectionInfo)
+	public static void PopulateConnectionStringBuilder(DbConnectionStringBuilder scsb, ConnectionPropertyAgent connectionInfo)
 	{
 		if (connectionInfo.Database != null)
 		{

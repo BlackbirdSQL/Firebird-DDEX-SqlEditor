@@ -16,8 +16,6 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace BlackbirdSql.Common.Controls.ResultsPane
 {
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-		Justification = "Class is UIThread compliant.")]
 
 	public class TextResultsViewContol : ShellTextViewControl, IOleCommandTarget, IVsTextViewEvents
 	{
@@ -79,12 +77,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 			if (nextTarget != null)
 			{
-				if (!ThreadHelper.CheckAccess())
-				{
-					COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-					Diag.Dug(exc);
-					throw exc;
-				}
+				Diag.ThrowIfNotOnUIThread();
 
 				return nextTarget.QueryStatus(ref guidGroup, commandNumber, commands, oleText);
 			}
@@ -143,12 +136,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 			if (nextTarget != null)
 			{
-				if (!ThreadHelper.CheckAccess())
-				{
-					COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-					Diag.Dug(exc);
-					throw exc;
-				}
+				Diag.ThrowIfNotOnUIThread();
 
 				return nextTarget.Exec(ref guidGroup, commandId, nCmdExcept, vIn, vOut);
 			}

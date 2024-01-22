@@ -23,12 +23,10 @@ using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 namespace BlackbirdSql.Core.Ctl;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
-
 /// <summary>
 /// Editor related Host services.
 /// </summary>
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
 public class Hostess : AbstractHostess
 {
 	public Hostess() : base()
@@ -81,14 +79,9 @@ public class Hostess : AbstractHostess
 			grfIDO = 0u;
 
 		IVsUIShellOpenDocument service = HostService.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>()
-			?? throw Diag.ServiceUnavailable(typeof(IVsUIShellOpenDocument));
+			?? throw Diag.ExceptionService(typeof(IVsUIShellOpenDocument));
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		// Check if the document is already open.
 		try
@@ -216,6 +209,21 @@ public class Hostess : AbstractHostess
 	}
 
 
+	public static IVsWindowFrame FindToolWindow(Guid toolWindowGuid)
+	{
+		Diag.ThrowIfNotOnUIThread();
+
+		IVsUIShell uiShell = Package.GetGlobalService(typeof(IVsUIShell)) as IVsUIShell
+			?? throw Diag.ExceptionService(typeof(IVsUIShell));
+
+		int hr = uiShell.FindToolWindow(0u, ref toolWindowGuid, out IVsWindowFrame ppWindowFrame);
+
+		if (Native.Failed(hr, -2147467259))
+			return null;
+
+		return ppWindowFrame;
+	}
+
 	public static Type GetManagedTypeFromCLSID(Guid classId)
 	{
 		Type type = Type.GetTypeFromCLSID(classId);
@@ -240,7 +248,7 @@ public class Hostess : AbstractHostess
 	internal void RegisterHierarchy(IVsUIHierarchy hierarchy)
 	{
 		IBPackageController controller = GetService<IBPackageController>()
-			?? throw Diag.ServiceUnavailable(typeof(IBPackageController));
+			?? throw Diag.ExceptionService(typeof(IBPackageController));
 
 		controller.RegisterMiscHierarchy(hierarchy);
 	}
@@ -253,12 +261,7 @@ public class Hostess : AbstractHostess
 	/// </summary>
 	protected int CreateDocDataFromText(Package package, Guid langGuid, string text, out IntPtr docData)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		// Create a new IVsTextLines buffer.
 		Type persistDocDataType = typeof(IVsPersistDocData);
@@ -294,14 +297,9 @@ public class Hostess : AbstractHostess
 		object documentData, int owningItemId, IVsUIHierarchy owningHierarchy, IOleServiceProvider serviceProvider)
 	{
 		IVsUIShell service = HostService.GetService<SVsUIShell, IVsUIShell>()
-			?? throw Diag.ServiceUnavailable(typeof(IVsUIShell));
+			?? throw Diag.ExceptionService(typeof(IVsUIShell));
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		IntPtr intPtrUnknown = IntPtr.Zero;
 		IntPtr intPtrUnknown2 = IntPtr.Zero;

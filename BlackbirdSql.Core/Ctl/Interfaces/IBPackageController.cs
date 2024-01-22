@@ -13,7 +13,7 @@ using Microsoft.VisualStudio.TaskStatusCenter;
 namespace BlackbirdSql.Core.Ctl.Interfaces;
 
 [Guid(SystemData.PackageControllerGuid)]
-public interface IBPackageController : IVsSolutionEvents3, /* IVsSolutionEvents2, IVsSolutionEvents, */
+public interface IBPackageController : IVsSolutionEvents3, // IVsSolutionEvents2, IVsSolutionEvents, */
 	IVsSelectionEvents, IVsRunningDocTableEvents, IVsRunningDocTableEvents4, IDisposable
 {
 
@@ -26,7 +26,7 @@ public interface IBPackageController : IVsSolutionEvents3, /* IVsSolutionEvents2
 		uint dwEditLocksRemaining);
 
 	// Solution Event Delegates
-	delegate int AfterOpenProjectDelegate(IVsHierarchy pHierarchy, int fAdded);
+	delegate int AfterOpenProjectDelegate(Project project, int fAdded);
 	delegate void LoadSolutionOptionsDelegate(Stream stream);
 	delegate void SaveSolutionOptionsDelegate(Stream stream);
 	delegate int AfterCloseSolutionDelegate(object pUnkReserved);
@@ -70,7 +70,7 @@ public interface IBPackageController : IVsSolutionEvents3, /* IVsSolutionEvents2
 
 	string UserDataDirectory { get; }
 
-	IBAsyncPackage DdexPackage { get; }
+	IBAsyncPackage DdexPackage { get; set; }
 
 	IVsRunningDocumentTable DocTable { get; }
 
@@ -104,10 +104,12 @@ public interface IBPackageController : IVsSolutionEvents3, /* IVsSolutionEvents2
 
 
 
-	void AdviseEvents();
+	abstract bool AdviseEvents();
+	Task<bool> AdviseEventsAsync();
 
 	void DeregisterMiscHierarchy();
 
+	void EnsureMonitorSelection();
 
 	TInterface GetService<TService, TInterface>() where TInterface : class;
 
@@ -115,6 +117,10 @@ public interface IBPackageController : IVsSolutionEvents3, /* IVsSolutionEvents2
 
 	void RegisterMiscHierarchy(IVsUIHierarchy hierarchy);
 
+	void OnLoadSolutionOptions(Stream stream);
+
+
 	int OnNewQueryRequested(IVsDataViewHierarchy site, EnNodeSystemType nodeSystemType);
+	void OnSaveSolutionOptions(Stream stream);
 
 }

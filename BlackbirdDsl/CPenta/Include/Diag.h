@@ -20,7 +20,7 @@ public ref class Diag abstract sealed
 
 public:
 
-#pragma region Variables
+#pragma region Fields
 
 
 	// Specify your own trace log file and settings here or override in VS options
@@ -55,17 +55,6 @@ public:
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Flag indicating whether or not Firebird debug library diagnostics calls are logged
-	/// </summary>
-	/// <remarks>
-	/// Only applies to the Debug configuration. Debug Exceptions are always logged.
-	/// </remarks>
-	// ---------------------------------------------------------------------------------
-	static bool EnableFbDiagnostics = false;
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
 	/// Flag indicating whether or not diagnostics calls are logged to the log file.
 	/// </summary>
 	/// <remarks>
@@ -87,15 +76,7 @@ public:
 	static SysStr^ LogFile = "/temp/vsdiag.log";
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// The Firebird log file path
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	static SysStr^ FbLogFile = "/temp/vsdiagfb.log";
-
-
-#pragma endregion Variables
+#pragma endregion Fields
 
 
 
@@ -156,18 +137,7 @@ private:
 
 
 		if ((pos = sourceFilePath->IndexOf("\\BlackbirdSql")) == -1)
-		{
-			if ((pos = sourceFilePath->IndexOf("\\FirebirdSql")) == -1)
-				pos = sourceFilePath->IndexOf("\\EntityFramework.Firebird");
-
-			if (pos != -1)
-			{
-				if (!isException && !EnableFbDiagnostics)
-					return;
-				logfile = FbLogFile;
-			}
-		}
-
+			pos = sourceFilePath->IndexOf("\\BlackbirdDsl");
 
 		if (pos != -1)
 			sourceFilePath = sourceFilePath->Substring(pos + 1);

@@ -24,17 +24,16 @@ namespace BlackbirdSql.Core.Controls.Config;
 /// </summary>
 // =========================================================================================================
 [ComVisible(true)]
-[SuppressMessage("Usage", "VSTHRD104:Offer async methods")]
 public abstract class AbstractPersistentSettingsPage<TPage, T> : AbstractSettingsPage<T>
 	where TPage : AbstractSettingsPage<T> where T : AbstractSettingsModel<T>, new()
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Variables - AbstractPersistentSettingsPage
+	#region Fields - AbstractPersistentSettingsPage
 	// ---------------------------------------------------------------------------------
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 

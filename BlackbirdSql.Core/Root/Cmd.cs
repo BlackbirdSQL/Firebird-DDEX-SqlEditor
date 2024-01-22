@@ -5,11 +5,15 @@ using System.Globalization;
 using System.IO;
 using System.Security;
 using System.Text;
+using System.Windows.Forms.Design;
+using System.Windows.Forms;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Ctl.Extensions;
 using FirebirdSql.Data.FirebirdClient;
+using Microsoft.VisualStudio.Shell;
+using EnvDTE;
+using System.Diagnostics.CodeAnalysis;
 
 
 
@@ -24,7 +28,6 @@ namespace BlackbirdSql.Core;
 /// Central location for implementation of utility static methods. 
 /// </summary>
 // =========================================================================================================
-
 public abstract class Cmd
 {
 
@@ -42,12 +45,12 @@ public abstract class Cmd
 
 
 	// =========================================================================================================
-	#region Variables - Cmd
+	#region Fields - Cmd
 	// =========================================================================================================
 
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 
@@ -184,6 +187,10 @@ public abstract class Cmd
 
 
 
+
+
+
+
 	// GetDetailedException
 	public static string GetDetailedException(Exception e)
 	{
@@ -286,6 +293,16 @@ public abstract class Cmd
 
 		return EnNullEquality.NotNulls;
 
+	}
+
+
+
+	public static DialogResult ShowMessage(string message, string caption, MessageBoxButtons buttons)
+	{
+		if (Package.GetGlobalService(typeof(IUIService)) is not IUIService iUIService)
+			throw Diag.ExceptionService(typeof(IUIService));
+
+		return iUIService.ShowMessage(message, caption, buttons);
 	}
 
 

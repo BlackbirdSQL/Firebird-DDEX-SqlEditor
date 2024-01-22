@@ -33,9 +33,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace BlackbirdSql.Common.Controls.Graphing;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
-
 public class GraphControl : GraphCtrl
 {
 	private struct PointD
@@ -649,12 +646,7 @@ public class GraphControl : GraphCtrl
 
 	protected override void WndProc(ref Message m)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		if (m.Msg == 522)
 		{

@@ -7,15 +7,14 @@ using System.ComponentModel.Design;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
-
 using BlackbirdSql.Common.Controls.Enums;
 using BlackbirdSql.Common.Controls.Events;
 using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Ctl.Extensions;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 
@@ -112,9 +111,9 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 	{
 		if (m.Msg == Native.WM_CONTEXTMENU)
 		{
-			if (FocusedGrid != null && CommonUtils.GetCoordinatesForPopupMenuFromWM_Context(ref m, out var xPos, out var yPos, FocusedGrid))
+			if (FocusedGrid != null && VS.GetCoordinatesForPopupMenuFromWM_Context(ref m, out var xPos, out var yPos, FocusedGrid))
 			{
-				CommonUtils.ShowContextMenuEvent((int)EnCommandSet.ContextIdResultsWindow, xPos, yPos, this);
+				VS.ShowContextMenuEvent((int)EnCommandSet.ContextIdResultsWindow, xPos, yPos, this);
 			}
 		}
 		else
@@ -153,8 +152,8 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		}
 		if (_FirstGridPanel.HostedControlsCount == 0)
 		{
-			_FirstGridPanel.HostedControlsMinInitialSize = C_MinNumberOfVisibleRows * (statisticsDlgGridControl.RowHeight + 1) + statisticsDlgGridControl.HeaderHeight + 1 + CommonUtils.GetExtraSizeForBorderStyle(statisticsDlgGridControl.BorderStyle);
-			_FirstGridPanel.HostedControlsMinSize = statisticsDlgGridControl.RowHeight + 1 + statisticsDlgGridControl.HeaderHeight + 1 + CommonUtils.GetExtraSizeForBorderStyle(statisticsDlgGridControl.BorderStyle);
+			_FirstGridPanel.HostedControlsMinInitialSize = C_MinNumberOfVisibleRows * (statisticsDlgGridControl.RowHeight + 1) + statisticsDlgGridControl.HeaderHeight + 1 + VS.GetExtraSizeForBorderStyle(statisticsDlgGridControl.BorderStyle);
+			_FirstGridPanel.HostedControlsMinSize = statisticsDlgGridControl.RowHeight + 1 + statisticsDlgGridControl.HeaderHeight + 1 + VS.GetExtraSizeForBorderStyle(statisticsDlgGridControl.BorderStyle);
 		}
 		statisticsDlgGridControl.EndInit();
 		_FirstGridPanel.AddControl(statisticsDlgGridControl, limitMaxControlHeightToClientArea: false);

@@ -32,7 +32,7 @@ public class TransientSettings : PersistentSettings, IBEditorTransientSettings, 
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Variables
+	#region Fields
 	// ---------------------------------------------------------------------------------
 
 
@@ -40,7 +40,7 @@ public class TransientSettings : PersistentSettings, IBEditorTransientSettings, 
 	protected Dictionary<string, object> _LiveStore;
 	
 
-	#endregion Variables
+	#endregion Fields
 
 
 

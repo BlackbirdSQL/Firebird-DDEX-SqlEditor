@@ -17,7 +17,7 @@ namespace BlackbirdSql.Common.Ctl;
 
 
 // =========================================================================================================
-//										EventsManager Class
+//										AbstractEditorEventsManager Class
 //
 /// <summary>
 /// Manages Solution, RDT and Selection events for the editor extension.
@@ -29,7 +29,7 @@ public abstract class AbstractEditorEventsManager : AbstractEventsManager
 
 
 	// =========================================================================================================
-	#region Constructors / Destructors - EventsManager
+	#region Constructors / Destructors - AbstractEditorEventsManager
 	// =========================================================================================================
 
 
@@ -38,7 +38,7 @@ public abstract class AbstractEditorEventsManager : AbstractEventsManager
 	/// Private singleton .ctor
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public AbstractEditorEventsManager(IBPackageController controller) : base(controller)
+	protected AbstractEditorEventsManager(IBPackageController controller) : base(controller)
 	{
 	}
 
@@ -50,7 +50,7 @@ public abstract class AbstractEditorEventsManager : AbstractEventsManager
 
 
 	// =========================================================================================================
-	#region Methods - EventsManager
+	#region Methods - AbstractEditorEventsManager
 	// =========================================================================================================
 
 

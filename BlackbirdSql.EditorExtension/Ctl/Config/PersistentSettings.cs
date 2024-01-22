@@ -27,14 +27,14 @@ public abstract class PersistentSettings : Common.Ctl.Config.PersistentSettings
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Variables
+	#region Fields
 	// ---------------------------------------------------------------------------------
 
 	// Editor GeneralSettingsModel
 	// static bool _PromptToSaveKey = false;
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 

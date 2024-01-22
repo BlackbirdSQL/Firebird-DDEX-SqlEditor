@@ -9,10 +9,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 
 
-
-
 namespace BlackbirdSql.Common.Ctl.Commands;
-
 
 public class SqlEditorChangeConnectionCommand : AbstractSqlEditorCommand
 {
@@ -28,31 +25,38 @@ public class SqlEditorChangeConnectionCommand : AbstractSqlEditorCommand
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-		QueryManager qryMgrForEditor = GetQueryManagerForEditor();
-		if (qryMgrForEditor != null && qryMgrForEditor.IsConnected && !qryMgrForEditor.IsExecuting)
-		{
+
+		if (GetQueryManager() != null)
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
-		}
 
 		return VSConstants.S_OK;
 	}
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		QueryManager qryMgrForEditor = GetQueryManagerForEditor();
-		if (qryMgrForEditor != null)
+		QueryManager qryMgr = GetQueryManager();
+
+		if (qryMgr != null)
 		{
 			try
 			{
-				qryMgrForEditor.IsConnecting = true;
-				qryMgrForEditor.ConnectionStrategy.ChangeConnection(tryOpenConnection: true);
+				qryMgr.IsConnecting = true;
+				qryMgr.ConnectionStrategy.ChangeConnection(tryOpenConnection: true);
 			}
 			finally
 			{
-				qryMgrForEditor.IsConnecting = false;
+				qryMgr.IsConnecting = false;
 			}
 		}
 
 		return VSConstants.S_OK;
 	}
+
+	private QueryManager GetQueryManager()
+	{
+		QueryManager qryMgr = GetQueryManagerForEditor();
+
+		return qryMgr != null && (qryMgr.IsExecuting || !qryMgr.IsConnected) ? null : qryMgr;
+	}
+
 }

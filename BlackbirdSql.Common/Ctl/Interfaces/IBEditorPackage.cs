@@ -21,6 +21,6 @@ public interface IBEditorPackage
 		FormStartPosition startPosition);
 
 	bool? ShowConnectionDialogFrame(IntPtr parent, EventsChannel channel,
-		UIConnectionInfo ci, VerifyConnectionDelegate verifierDelegate,
-		ConnectionDialogConfiguration config, ref UIConnectionInfo uIConnectionInfo);
+		ConnectionPropertyAgent ci, VerifyConnectionDelegate verifierDelegate,
+		ConnectionDialogConfiguration config, ref ConnectionPropertyAgent connectionInfo);
 }

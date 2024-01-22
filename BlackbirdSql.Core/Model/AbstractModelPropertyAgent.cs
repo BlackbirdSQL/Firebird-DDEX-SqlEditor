@@ -141,14 +141,14 @@ public abstract class AbstractModelPropertyAgent(IBEventsChannel channel, IBProp
 
 
 	// =========================================================================================================
-	#region Variables - AbstractModelPropertyAgent
+	#region Fields - AbstractModelPropertyAgent
 	// =========================================================================================================
 
 
 	protected static new DescriberDictionary _Describers = null;
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 
@@ -584,9 +584,9 @@ public abstract class AbstractModelPropertyAgent(IBEventsChannel channel, IBProp
 
 
 
-	public override IBPropertyAgent ToUiConnectionInfo()
+	public override IBPropertyAgent ToConnectionInfo()
 	{
-		return new UIConnectionInfo(this);
+		return new ConnectionPropertyAgent(this);
 	}
 
 

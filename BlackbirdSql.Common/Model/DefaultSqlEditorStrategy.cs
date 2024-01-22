@@ -16,7 +16,7 @@ namespace BlackbirdSql.Common.Model;
 
 public sealed class DefaultSqlEditorStrategy : IBSqlEditorStrategy, IDisposable
 {
-	private readonly UIConnectionInfo _DefaultUiConnectionInfo;
+	private readonly ConnectionPropertyAgent _DefaultConnectionInfo;
 
 	private readonly bool _isOnline;
 
@@ -44,21 +44,21 @@ public sealed class DefaultSqlEditorStrategy : IBSqlEditorStrategy, IDisposable
 	{
 	}
 
-	public DefaultSqlEditorStrategy(UIConnectionInfo defaultUiConnectionInfo)
-		: this(defaultUiConnectionInfo, isOnline: false)
+	public DefaultSqlEditorStrategy(ConnectionPropertyAgent defaultConnectionInfo)
+		: this(defaultConnectionInfo, isOnline: false)
 	{
 	}
 
-	public DefaultSqlEditorStrategy(UIConnectionInfo defaultUiConnectionInfo, bool isOnline)
+	public DefaultSqlEditorStrategy(ConnectionPropertyAgent defaultConnectionInfo, bool isOnline)
 	{
-		if (defaultUiConnectionInfo == null)
+		if (defaultConnectionInfo == null)
 		{
 			ArgumentNullException ex = new("defaultUiConnectionInfo");
 			Diag.Dug(ex);
 			throw ex;
 		}
 
-		_DefaultUiConnectionInfo = defaultUiConnectionInfo;
+		_DefaultConnectionInfo = defaultConnectionInfo;
 		_isOnline = isOnline;
 	}
 
@@ -71,8 +71,8 @@ public sealed class DefaultSqlEditorStrategy : IBSqlEditorStrategy, IDisposable
 			throw ex;
 		}
 
-		_DefaultUiConnectionInfo = new UIConnectionInfo();
-		_DefaultUiConnectionInfo.Parse(csb.ConnectionString);
+		_DefaultConnectionInfo = new ConnectionPropertyAgent();
+		_DefaultConnectionInfo.Parse(csb.ConnectionString);
 		_isOnline = isOnline;
 	}
 
@@ -94,9 +94,9 @@ public sealed class DefaultSqlEditorStrategy : IBSqlEditorStrategy, IDisposable
 	public SqlConnectionStrategy CreateConnectionStrategy()
 	{
 		SqlConnectionStrategy sqlConnectionStrategy = new SqlConnectionStrategy();
-		if (_DefaultUiConnectionInfo != null)
+		if (_DefaultConnectionInfo != null)
 		{
-			sqlConnectionStrategy.SetConnectionInfo(_DefaultUiConnectionInfo);
+			sqlConnectionStrategy.SetConnectionInfo(_DefaultConnectionInfo);
 		}
 
 		return sqlConnectionStrategy;

@@ -17,9 +17,6 @@ using Microsoft.VisualStudio.Shell;
 
 namespace BlackbirdSql.Common.Controls;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
-
 public class ResultWindowPane : WindowPane, IOleCommandTarget
 {
 	private readonly Panel _WindowPanel = new Panel();
@@ -55,12 +52,7 @@ public class ResultWindowPane : WindowPane, IOleCommandTarget
 
 	public int QueryStatus(ref Guid guidGroup, uint cmdId, OLECMD[] oleCmd, IntPtr oleText)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		if (_CmdTarget != null)
 			return _CmdTarget.QueryStatus(ref guidGroup, cmdId, oleCmd, oleText);
@@ -70,12 +62,7 @@ public class ResultWindowPane : WindowPane, IOleCommandTarget
 
 	public int Exec(ref Guid guidGroup, uint nCmdId, uint nCmdExcept, IntPtr variantIn, IntPtr variantOut)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		if (_CmdTarget != null)
 			return _CmdTarget.Exec(ref guidGroup, nCmdId, nCmdExcept, variantIn, variantOut);
@@ -98,12 +85,7 @@ public class ResultWindowPane : WindowPane, IOleCommandTarget
 	{
 		if (_WindowPanel != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			_WindowPanel.Controls.Add(resultsTabPanel);
 			if (resultsTabPanel is IOleCommandTarget)

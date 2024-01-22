@@ -12,21 +12,16 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools;
 
 public class TDataSource
 {
-	private class TiDataProviderCollection : ICollection<TDataProvider>, IEnumerable<TDataProvider>, IEnumerable
+	private class TiDataProviderCollection(TDataSource owningDataSource) : ICollection<TDataProvider>, IEnumerable<TDataProvider>, IEnumerable
 	{
-		private readonly ICollection<TDataProvider> _DataProviders;
+		private readonly TDataSource _OwningDataSource = owningDataSource;
 
-		private readonly TDataSource _OwningDataSource;
+
+		private readonly ICollection<TDataProvider> _DataProviders = new List<TDataProvider>();
 
 		public int Count => _DataProviders.Count;
 
 		public bool IsReadOnly => false;
-
-		public TiDataProviderCollection(TDataSource owningDataSource)
-		{
-			_DataProviders = new List<TDataProvider>();
-			_OwningDataSource = owningDataSource;
-		}
 
 		public void Add(TDataProvider item)
 		{

@@ -28,9 +28,6 @@ using OleConstants = Microsoft.VisualStudio.OLE.Interop.Constants;
 
 namespace BlackbirdSql.Common.Controls;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is guarded in .ctor.")]
-
 public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IOleCommandTarget, IVsWindowFrameNotify3, IVsMultiViewDocumentView, IVsHasRelatedSaveItems, IVsDocumentLockHolder, IVsBroadcastMessageEvents, IBDesignerDocumentService, IBTabbedEditorService, IVsDocOutlineProvider, IVsDocOutlineProvider2, IVsToolboxActiveUserHook, IVsToolboxUser, IVsToolboxPageChooser, IVsDefaultToolboxTabState, IVsCodeWindow, IVsExtensibleObject
 {
 	private static TabbedEditorToolbarHandlerManager _ToolbarManager;
@@ -154,12 +151,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 	public AbstractTabbedEditorPane(System.IServiceProvider provider, Package package, object docData, Guid toolbarGuid, uint toolbarID)
 		: base(provider)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		_Package = package;
 		_ = _Package; // Suppression

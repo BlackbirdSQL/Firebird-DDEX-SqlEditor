@@ -2,9 +2,13 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System.ComponentModel;
+using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
+
+using GlobalizedCategoryAttribute = BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel.GlobalizedCategoryAttribute;
+using GlobalizedDisplayNameAttribute = BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel.GlobalizedDisplayNameAttribute;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model.Config;
@@ -89,10 +93,27 @@ public class GeneralSettingsModel(IBTransientSettings transientSettings)
 	[DefaultValue(true)]
 	public bool EnableTaskLog { get; set; } = true;
 
+
+	[GlobalizedCategory("OptionCategoryEntityFramework")]
+	[GlobalizedDisplayName("OptionDisplayGeneralValidateConnectionOnFormAccept")]
+	[GlobalizedDescription("OptionDescriptionGeneralValidateConnectionOnFormAccept")]
+	[TypeConverter(typeof(GlobalYesNoConverter))]
+	[DefaultValue(true)]
+	public bool ValidateConnectionOnFormAccept { get; set; } = true;
+
+	[GlobalizedCategory("OptionCategoryEntityFramework")]
+	[GlobalizedDisplayName("OptionDisplayGeneralValidateSolution")]
+	[GlobalizedDescription("OptionDescriptionGeneralValidateSolution")]
+	[TypeConverter(typeof(GlobalEnableDisableConverter))]
+	[DefaultValue(true)]
+	[Automation, RefreshProperties(RefreshProperties.All)]
+	public bool ValidateSolution { get; set; } = true;
+
 	[GlobalizedCategory("OptionCategoryEntityFramework")]
 	[GlobalizedDisplayName("OptionDisplayGeneralPersistentValidation")]
 	[GlobalizedDescription("OptionDescriptionGeneralPersistentValidation")]
 	[TypeConverter(typeof(GlobalBoolConverter))]
+	[Automation("ValidateSolution"), ReadOnly(true)]
 	[DefaultValue(true)]
 	public bool PersistentValidation { get; set; } = true;
 
@@ -100,6 +121,7 @@ public class GeneralSettingsModel(IBTransientSettings transientSettings)
 	[GlobalizedDisplayName("OptionDisplayGeneralValidateConfig")]
 	[GlobalizedDescription("OptionDescriptionGeneralValidateConfig")]
 	[TypeConverter(typeof(GlobalYesNoConverter))]
+	[Automation("ValidateSolution"), ReadOnly(true)]
 	[DefaultValue(true)]
 	public bool ValidateConfig { get; set; } = true;
 
@@ -107,6 +129,7 @@ public class GeneralSettingsModel(IBTransientSettings transientSettings)
 	[GlobalizedDisplayName("OptionDisplayGeneralValidateEdmx")]
 	[GlobalizedDescription("OptionDescriptionGeneralValidateEdmx")]
 	[TypeConverter(typeof(GlobalYesNoConverter))]
+	[Automation("ValidateSolution"), ReadOnly(true)]
 	[DefaultValue(true)]
 	public bool ValidateEdmx { get; set; } = true;
 

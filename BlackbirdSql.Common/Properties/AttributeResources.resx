@@ -129,6 +129,12 @@
   <data name="PropertyWindowConnectionDetails" xml:space="preserve">
     <value>Connection Details</value>
   </data>
+  <data name="PropertyWindowConnectionStringDescription" xml:space="preserve">
+    <value>The database connection string for the connection</value>
+  </data>
+  <data name="PropertyWindowConnectionStringDisplayName" xml:space="preserve">
+    <value>Connection String</value>
+  </data>
   <data name="PropertyWindowConnInfoDescription" xml:space="preserve">
     <value>Name of the connection containing server name and login</value>
   </data>

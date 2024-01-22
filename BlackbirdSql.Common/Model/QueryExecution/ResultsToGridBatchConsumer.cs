@@ -41,7 +41,7 @@ public class ResultsToGridBatchConsumer : AbstractQESQLBatchConsumer
 			}
 			if (DiscardResults || _CouldNotAddGrid)
 			{
-				Diag.Stack("ERROR or DISCARD: Could not add more grids");
+				Diag.StackException("ERROR or DISCARD: Could not add more grids");
 				args.ResultSet.Initialize(true);
 				HandleNewResultSetForDiscard(args);
 				return;

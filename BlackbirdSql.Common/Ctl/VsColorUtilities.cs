@@ -17,9 +17,6 @@ using Microsoft.Win32;
 
 namespace BlackbirdSql.Common.Ctl;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
-
 public static class VsColorUtilities
 {
 	private static System.Drawing.Pen _PanelBorderPen;
@@ -61,12 +58,7 @@ public static class VsColorUtilities
 	{
 		get
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			return _UiShell ??= Package.GetGlobalService(typeof(SVsUIShell)) as IVsUIShell2;
 
@@ -77,12 +69,7 @@ public static class VsColorUtilities
 	{
 		get
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			return _FontAndColorUtilities ??= Package.GetGlobalService(typeof(SVsFontAndColorStorage)) as IVsFontAndColorUtilities;
 		}
@@ -167,12 +154,7 @@ public static class VsColorUtilities
 		if (fontAndColorUtilities == null)
 			return empty;
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		fontAndColorUtilities.GetRGBOfIndex(colorIndex, out var pcrResult);
 
@@ -201,12 +183,7 @@ public static class VsColorUtilities
 		if (uiShell == null)
 			return empty;
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		Native.ThrowOnFailure(uiShell.GetVSSysColorEx(color, out uint pdwRGBval));
 
@@ -225,12 +202,7 @@ public static class VsColorUtilities
 		if (UiShell == null)
 			throw new InvalidOperationException();
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		ErrorHandler.ThrowOnFailure(UiShell.GetVSSysColorEx(colorIndex, out var pdwRGBval));
 		System.Drawing.Color color = ColorTranslator.FromWin32((int)pdwRGBval);

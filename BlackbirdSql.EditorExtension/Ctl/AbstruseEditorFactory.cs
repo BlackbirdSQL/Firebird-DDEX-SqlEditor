@@ -49,7 +49,7 @@ public abstract class AbstruseEditorFactory(bool withEncoding) : IVsEditorFactor
 		// Tracer.Trace(GetType(), "IVsEditorFactory.MapLogicalView", "logicalView = {0}", logicalView.ToString());
 		if (logicalView.Equals(VSConstants.LOGVIEWID_Debugging))
 		{
-			Diag.Stack("Debugging view not supported");
+			Diag.StackException("Debugging view not supported");
 			strLogicalView = null;
 			return VSConstants.S_OK;
 		}

@@ -74,5 +74,6 @@ public enum EnCommandSet
 	CmdIdRetrieveDesignerData = 0x0336, // 822
 	CmdIdResetPageOptions = 0x0337, // 823
 	CmdIdNewDesignerQuery = 0x0338, // 824
+	CmdIdTraceRct = 0x0339 // 825
 
 }

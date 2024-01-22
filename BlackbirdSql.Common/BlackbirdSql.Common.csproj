@@ -40,6 +40,7 @@
 	  <Compile Include="Ctl\Interfaces\IBWindowPane.cs" />
 	  <Compile Include="Controls\ResultsPane\StatisticsSnapshotAgent.cs" />
 	  <Compile Include="Controls\ResultsPane\StatisticsPropertySet.cs" />
+	  <Compile Include="Root\VS.cs" />
 	  <None Include="Controls\Graphing\ActualPlanDataReaderNodeBuilder.cs" />
 	  <None Include="Controls\Graphing\CursorPlanTypeOperation.cs" />
 	  <None Include="Controls\Graphing\CustomZoomDlg.cs" />
@@ -259,7 +260,6 @@
 	  <None Include="Controls\Graphing\Parsers\XmlPlanParserFactory.cs" />
 	  <Compile Include="Ctl\DataTools\Events\IVsDataConnectionEvents.cs" />
 	  <Compile Include="Ctl\DataTools\Interfaces\IVsDataConnection.cs" />
-	  <Compile Include="Ctl\DataTools\Interfaces\IVsDataConnectionManager.cs" />
 	  <Compile Include="Ctl\Parser\Enums\EnBindMode.cs" />
 	  <Compile Include="Ctl\Parser\Interfaces\IBBinder.cs" />
 	  <Compile Include="Ctl\Parser\ParseResult.cs" />
@@ -488,15 +488,14 @@
 	  <Compile Include="Ctl\Commands\SqlEditorResultsAsGridCommand.cs" />
 	  <Compile Include="Ctl\Commands\SqlEditorResultsAsTextCommand.cs" />
 	  <Compile Include="Ctl\Commands\SqlEditorShowEstimatedPlanCommand.cs" />
-	  <Compile Include="Ctl\Commands\SqlEditorSqlDatabaseCommand.cs" />
-	  <Compile Include="Ctl\Commands\SqlEditorSqlDatabaseListCommand.cs" />
+	  <Compile Include="Ctl\Commands\SqlEditorDatabaseCommand.cs" />
+	  <Compile Include="Ctl\Commands\SqlEditorDatabaseListCommand.cs" />
 	  <Compile Include="Ctl\Commands\SqlEditorToggleClientStatisticsCommand.cs" />
 	  <Compile Include="Ctl\Commands\SqlEditorToggleExecutionPlanCommand.cs" />
 	  <Compile Include="Ctl\Commands\SqlEditorToggleIntellisenseCommand.cs" />
 	  <Compile Include="Ctl\Commands\SqlEditorToggleResultsPaneCommand.cs" />
 	  <Compile Include="Ctl\Commands\SqlEditorToggleSqlCmdModeCommand.cs" />
 	  <Compile Include="Ctl\CommonHandles.cs" />
-	  <Compile Include="Ctl\CommonUtils.cs" />
 	  <Compile Include="Ctl\CommonVsUtilities.cs" />
 	  <Compile Include="Ctl\ConnectionDialogConfiguration.cs" />
 	  <Compile Include="Ctl\ConnectionDialogService.cs" />

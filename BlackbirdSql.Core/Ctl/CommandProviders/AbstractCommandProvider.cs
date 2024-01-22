@@ -6,16 +6,12 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Reflection;
-using System.Security.Policy;
 using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Properties;
-using EnvDTE;
-using EnvDTE80;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
@@ -48,6 +44,11 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	#endregion Constructors / Destructors
 
 
+	// A private 'this' object lock
+	private readonly object _LockLocal = new object();
+
+
+
 
 
 	// =========================================================================================================
@@ -71,7 +72,55 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		IVsDataExplorerNode node;
 
 
-		if (commandId.Equals(CommandProperties.NewSqlQuery))
+		if (commandId.Equals(CommandProperties.TraceRct))
+		{
+			cmd = new DataViewMenuCommand(itemId, commandId, delegate
+			{
+#if DEBUG
+				cmd.Visible = cmd.Enabled = true;
+#else
+				cmd.Visible = cmd.Enabled = false;
+#endif
+
+				if (cmd.Visible && !command.Properties.Contains("GotText"))
+				{
+					cmd.Properties["GotText"] = true;
+					cmd.Properties["Text"] = "Debug Trace Rct";
+				}
+
+			}, delegate
+			{
+				OnTraceRct(itemId);
+			});
+			command = cmd;
+		}
+		else if (commandId.Equals(CommandProperties.EditLabel))
+		{
+			cmd = new DataViewMenuCommand(itemId, commandId, delegate
+			{
+				// Tracer.Trace(GetType(), "CreateCommand()", "LabelEdit");
+
+				node = Site.ExplorerConnection.FindNode(itemId);
+				nodeSystemType = node.NodeSystemType();
+
+				// Tracer.Trace(GetType(), "CreateCommand()", "NewDesignerQuery itemid: {0}, commandid: {1} systemType {2}.", itemId, commandId.ID, nodeSystemType.ToString());
+
+				cmd.Visible = cmd.Enabled = (node == node.ExplorerConnection.ConnectionNode);
+
+				if (cmd.Visible && !command.Properties.Contains("GotText")
+					&& (label = GlobalizeLabel(cmd, nodeSystemType)) != string.Empty)
+				{
+					cmd.Properties["GotText"] = true;
+					cmd.Properties["Text"] = label;
+				}
+
+			}, delegate
+			{
+				OnInterceptorEditLabel(itemId);
+			});
+			command = cmd;
+		}
+		else if (commandId.Equals(CommandProperties.NewSqlQuery))
 		{
 			cmd = new DataViewMenuCommand(itemId, commandId, delegate
 			{
@@ -247,6 +296,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 
 
+
 	public static string GetResourceString(string commandFunction, string nodeType, string targetType)
 	{
 		string resource = $"CommandProvider_{commandFunction}{nodeType}{targetType}";
@@ -265,6 +315,17 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 
 
+	private IVsDataViewSupport GetViewSupport(IVsDataExplorerConnection explorerConnection)
+	{
+		lock (_LockLocal)
+		{
+			return Reflect.GetField(explorerConnection, "viewSupport",
+				BindingFlags.NonPublic | BindingFlags.Instance) as IVsDataViewSupport;
+		}
+	}
+
+
+
 	public static string GlobalizeLabel(DataViewMenuCommand cmd, IVsDataExplorerNode node)
 	{
 		if (!cmd.Visible)
@@ -275,12 +336,14 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 		if (cmd.CommandID.Equals(CommandProperties.NewSqlQuery))
 			text = GetResourceString("New", "Sql", "Query");
-		if (cmd.CommandID.Equals(CommandProperties.OpenTextObject))
+		else if (cmd.CommandID.Equals(CommandProperties.OpenTextObject))
 			text = GetResourceString("Open", type.ToString(), "Script");
 		else if (cmd.CommandID.Equals(CommandProperties.OpenAlterTextObject))
 			text = GetResourceString("Alter", type.ToString(), "Script");
 		else if (cmd.CommandID.Equals(CommandProperties.RetrieveDesignerData))
 			text = GetResourceString("Retrieve", type.ToString(), "DesignerData");
+		else if (cmd.CommandID.Equals(CommandProperties.EditLabel))
+			text = GetResourceString("Edit", type.ToString(), "Label");
 
 		return text;
 	}
@@ -303,7 +366,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	}
 
 
-	#endregion Methods
+#endregion Methods
 
 
 
@@ -347,26 +410,20 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 			return;
 		}
 
-		// The retrieve data command we've retrieved belongs to the connection node so we use reflection
-		// to create a new command using it's command provider.
-
-		Type typeCommand = globalCommand.GetType();
-
-		FieldInfo commandProviderInfo = typeCommand.GetField("_commandProvider",
-			BindingFlags.NonPublic | BindingFlags.Instance);
-
-		if (commandProviderInfo == null)
-		{
-			ArgumentException ex = new($"ProviderMenuCommand GetField(_commandProvider) returned null. Command type: {globalCommand.GetType().FullName}");
-			Diag.Dug(ex);
-			return;
-		}
 
 
 		try
 		{
+			// The retrieve data command we've retrieved belongs to the connection node so we use reflection
+			// to create a new command using it's command provider.
+
 			// Get the connection node RetrieveData command's command provider.
-			IVsDataViewCommandProvider commandProvider = (IVsDataViewCommandProvider)commandProviderInfo.GetValue(globalCommand);
+			IVsDataViewCommandProvider commandProvider = (IVsDataViewCommandProvider)Reflect.GetFieldValue(globalCommand,
+				"_commandProvider", BindingFlags.NonPublic | BindingFlags.Instance);
+
+			if (commandProvider == null)
+				return;
+
 			// Use the provider to create a new retrieve data command at the local node level.
 			DataViewMenuCommand command = (DataViewMenuCommand)commandProvider.CreateCommand(itemId, CommandProperties.OverrideRetrieveDataLocal);
 
@@ -389,6 +446,23 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 
 	}
+
+
+	
+	protected virtual void OnInterceptorEditLabel(int itemId)
+	{
+		// Tracer.Trace(GetType(), "OnInterceptorEditLabel()", "itemId: {0}.", itemId);
+
+		IVsDataExplorerNode node = Site.ExplorerConnection.FindNode(itemId);
+
+		IBDataViewSupport viewSupport = GetViewSupport(node.ExplorerConnection) as IBDataViewSupport;
+
+		viewSupport.EditNodeLabel(node);
+
+	}
+
+
+
 
 
 
@@ -437,10 +511,13 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 		if (SystemData.MandatedSqlEditorFactoryGuid.Equals(SystemData.DslEditorFactoryGuid, StringComparison.OrdinalIgnoreCase))
 		{
-			IBDesignerExplorerServices service = Controller.GetService<IBDesignerExplorerServices>()
-				?? throw Diag.ServiceUnavailable(typeof(IBDesignerExplorerServices));
+			if (RctManager.ShutdownState)
+				return;
 
-			CsbAgent csa = CsbAgent.CreateInstance(Site.ExplorerConnection.ConnectionNode);
+			IBDesignerExplorerServices service = Controller.GetService<IBDesignerExplorerServices>()
+				?? throw Diag.ExceptionService(typeof(IBDesignerExplorerServices));
+
+			CsbAgent csa = RctManager.CloneRegistered(Site.ExplorerConnection.ConnectionNode);
 
 			service.NewSqlQuery(csa.DatasetKey);
 		}
@@ -457,32 +534,42 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	{
 		// Tracer.Trace(GetType(), "OnOpen()", "itemId: {0}, alternate: {1}", itemId, alternate);
 
+		if (RctManager.ShutdownState)
+			return;
+
 		IVsDataExplorerNode node = Site.ExplorerConnection.FindNode(itemId);
 
 		if (SystemData.MandatedSqlEditorFactoryGuid.Equals(SystemData.DslEditorFactoryGuid, StringComparison.OrdinalIgnoreCase))
 		{
 			IBDesignerExplorerServices service = Controller.GetService<IBDesignerExplorerServices>()
-				?? throw Diag.ServiceUnavailable(typeof(IBDesignerExplorerServices));
+				?? throw Diag.ExceptionService(typeof(IBDesignerExplorerServices));
 
 			service.ViewCode(node, targetType);
 		}
 		else
 		{
 			IBDesignerOnlineServices service = Controller.GetService<IBDesignerOnlineServices>()
-				?? throw Diag.ServiceUnavailable(typeof(IBDesignerOnlineServices));
+				?? throw Diag.ExceptionService(typeof(IBDesignerOnlineServices));
 
 			MonikerAgent moniker = new(node, targetType);
 
 			IList<string> identifierList = moniker.Identifier.ToArray();
 			EnModelObjectType objectType = moniker.ObjectType;
 			string script = MonikerAgent.GetDecoratedDdlSource(node, targetType);
-			CsbAgent csb = CsbAgent.CreateInstance(node);
 
-			service.ViewCode(csb, objectType, identifierList, targetType, script);
+			CsbAgent csa = RctManager.CloneRegistered(node);
+
+			service.ViewCode(csa, objectType, identifierList, targetType, script);
 
 		}
 
 		// Hostess.ActivateOrOpenVirtualDocument(node, false);
+	}
+
+
+	protected virtual void OnTraceRct(int itemId)
+	{
+		RctManager.TraceRct();
 	}
 
 

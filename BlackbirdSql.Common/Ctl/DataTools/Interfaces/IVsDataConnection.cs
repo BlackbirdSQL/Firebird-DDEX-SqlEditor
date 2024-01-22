@@ -9,7 +9,7 @@ using BlackbirdSql.Common.Ctl.DataTools.Events.Interop;
 namespace BlackbirdSql.Common.Ctl.DataTools.Interfaces.Interop;
 
 [ComImport]
-[Guid("902A17C6-B166-485F-A49F-9029549442DD")]
+[Guid(VS.IVsDataConnectionInteropGuid)]
 [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
 internal interface IVsDataConnection
 {

@@ -6,11 +6,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Text;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model.Interfaces;
 using BlackbirdSql.Core.Properties;
-
 using FirebirdSql.Data.FirebirdClient;
 
 
@@ -26,219 +23,28 @@ namespace BlackbirdSql.Core.Model;
 public abstract class AbstractLinkageParser : AbstruseLinkageParser
 {
 
-
-	// -----------------------------------------------------------------------------------------------------
-	#region Internal types - AbstractLinkageParser
-	// -----------------------------------------------------------------------------------------------------
-
-
 	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Enum of the linkage build stages. After each stage cancellation tokens are
-	/// checked.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public enum EnLinkStage
-	{
-		Start = 0,
-		GeneratorsLoaded = 1,
-		TriggerDependenciesLoaded = 2,
-		TriggersLoaded = 3,
-		SequencesPopulated = 4,
-		LinkageCompleted = 5,
-		Completed = 6
-	}
-
-
-	#endregion Internal types
-
-
-
-
-	// =========================================================================================================
-	#region Variables - AbstractLinkageParser
-	// =========================================================================================================
-
-
-	protected static IBProviderSchemaFactory _SchemaFactory = null;
-	protected static Type _SchemaFactoryType = null;
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// The db connection asociated with this LinkageParser
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected FbConnection _Connection = null;
-
-	protected bool _Disposing = false;
-
-	/// <summary>
-	/// Parser status inidicator that is set to false if the user cancels async
-	/// operations in the IDE task handler.
-	/// </summary>
-	protected bool _Enabled = true;
-
-
-	/// <summary>
-	/// The total elapsed time in milliseconds that the parser was actively
-	/// building the linkage tables. 
-	/// </summary>
-	protected long _TotalElapsed = 0;
-
-	/// <summary>
-	/// Per connection LinkageParser instances xref.
-	/// _Instances must be accessed within _LockClass code logic.
-	/// </summary>
-	protected static Dictionary<FbConnection, object> _Instances = null;
-
-
-	/// <summary>
-	/// The tracked linkage build process stage.
-	/// </summary>
-	/// <remarks>
-	/// The async linkage process can be interrupted by either a user TaskHandler
-	/// cancellation or when the UI thread requires the trigger or sequence tables,
-	/// in which case the UI thread takes over the linkage process.
-	/// </remarks>
-	protected EnLinkStage _LinkStage = EnLinkStage.Start;
-
-	/// <summary>
-	/// The intermediate full SELECT of the system generator table.
-	/// </summary>
-	protected DataTable _RawGenerators = null;
-
-	/// <summary>
-	/// The intermediate full SELECT of the system trigger table.
-	/// </summary>
-	protected DataTable _RawTriggers = null;
-
-	/// <summary>
-	/// The intermediate full SELECT of the system trigger table dependencies.
-	/// </summary>
-	/// <remarks>
-	/// Dependent on network speed, splitting the trigger and trigger dependencies
-	/// SELECT statements is up to +- 80% faster than a combined statement.
-	/// </remarks>
-	protected DataTable _RawTriggerDependencies = null;
-
-	/// <summary>
-	/// Set to true when the parser is making an external database request and then back
-	/// to false once the request is completed.
-	/// </summary>
-	protected bool _Requesting = false;
-
-	/// <summary>
-	/// The final populated generator table with trigger linkage.
-	/// </summary>
-	protected DataTable _Sequences = null;
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Stopwatch instance used to report total time and times taken to complete
-	/// individual tasks to the IDE task handler and status bar.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected System.Diagnostics.Stopwatch _Stopwatch;
-
-
-	/// <summary>
-	/// The final populated trigger table with generator linkage.
-	/// </summary>
-	protected DataTable _Triggers = null;
-
-
-	#endregion Variables
-
-
-
-
-
-	// =========================================================================================================
-	#region Property accessors - AbstractLinkageParser
-	// =========================================================================================================
-
-
-	/// <summary>
-	/// Getter inidicating whether or not the parser's db connection is active and open.
-	/// </summary>
-	protected bool ConnectionActive => _Connection != null && !_Disposing
-		&& (_Connection.State & ConnectionState.Open) != 0
-		&& (_Connection.State & (ConnectionState.Closed | ConnectionState.Broken)) == 0;
-
-	/// <summary>
-	/// Getter indicating whether or not linkage has completed. !Loaded differs
-	/// from Incomplete in that !Incomplete may be because the linker has
-	/// been disabled.
-	/// </summary>
-	protected bool Loaded => _LinkStage >= EnLinkStage.Completed;
-
-	/// <summary>
-	/// Sets the start and end of an external db request.
-	/// </summary>
-	protected bool Requesting
-	{
-		get
-		{
-			return _Requesting;
-		}
-		set
-		{
-			lock (_LockObject)
-			{
-				if (value)
-				{
-					Stopwatch.Reset();
-					Stopwatch.Start();
-				}
-				else
-				{
-					Stopwatch.Stop();
-					_TotalElapsed += Stopwatch.ElapsedMilliseconds;
-				}
-				_Requesting = value;
-			}
-		}
-	}
-
-
-	/// <summary>
-	/// Gets an instance of DslProviderSchemaFactory. Async operations must always be
-	/// passed an instance of DslProviderSchemaFactory and set _SchemaFactory because
-	/// GetService() will deadlock behind any sync operation that may occur while an
-	/// async task is busy launching.
-	/// </summary>
-	/// <remarks>
-	/// Deadlocks are still happening on GetService() calls on a ConectionNode refresh
-	/// where LinkageParser dependent nodes are in an expanded state, so we are
-	/// going to keep a permanent instance of IBProviderSchemaFactory, because tracing
-	/// of threads is inconsistent in debug vs normal runs.
-	/// </remarks>
-	protected static IBProviderSchemaFactory SchemaFactory => _SchemaFactory ??=
-		(IBProviderSchemaFactory)Activator.CreateInstance(_SchemaFactoryType);
-
-
-
-	/// <summary>
-	/// Getter indicating whether or not the parser has fetched the generators.
-	/// </summary>
-	protected bool SequencesPopulated => _LinkStage >= EnLinkStage.SequencesPopulated;
-
-
-	/// <summary>
-	/// Timer for VS taskhandler .
-	/// </summary>
-	public Stopwatch Stopwatch => _Stopwatch ??= new();
-
-
-	#endregion Property accessors
-
-
-
-
-
-	// =========================================================================================================
 	#region Constructors / Destructors - AbstractLinkageParser
-	// =========================================================================================================
+	// ---------------------------------------------------------------------------------
+
+
+	/// <summary>
+	/// Protected default .ctor for creating an unregistered clone.
+	/// Callers must make a call to EnsureLoaded() for rhs beforehand.
+	/// </summary>
+	protected AbstractLinkageParser(AbstractLinkageParser rhs) : base()
+	{
+		// Tracer.Trace(typeof(AbstractLinkageParser), $"AbstractLinkageParser(FbConnection, AbstractLinkageParser)");
+
+		// Callers must EnsureLoaded().
+
+		_ConnectionUrl = rhs._ConnectionUrl;
+		_Sequences = rhs._Sequences.Copy();
+		_Triggers = rhs._Triggers.Copy();
+
+		_LinkStage = EnLinkStage.Completed;
+	}
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -251,26 +57,38 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	{
 		// Tracer.Trace(typeof(AbstractLinkageParser), $"AbstractLinkageParser(FbConnection, AbstractLinkageParser)");
 
-		_Connection = connection;
-		_Instances ??= [];
+		bool rhsValid = rhs != null && rhs.Loaded;
 
-		_Instances.Add(_Connection, this);
+		_Instances ??= [];
+		_Instances.Add(connection, this);
 
 		// _Connection.StateChange += OnConnectionStateChanged;
-		_Connection.Disposed += OnConnectionDisposed;
+		connection.Disposed += OnConnectionDisposed;
+		_InstanceConnection = connection;
 
-		if (rhs == null)
+
+		if (!rhsValid)
 		{
+			_DbConnection = new(connection.ConnectionString);
+			_ConnectionUrl = CsbAgent.CreateConnectionUrl(_DbConnection);
+
+			_DbConnection.Open();
+
 			CreateLinkTables();
 		}
 		else
 		{
+			_ConnectionUrl = rhs._ConnectionUrl;
 			_Sequences = rhs._Sequences.Copy();
 			_Triggers = rhs._Triggers.Copy();
 
 			_LinkStage = EnLinkStage.Completed;
 		}
 	}
+
+
+
+	protected abstract object Clone();
 
 
 	// ---------------------------------------------------------------------------------
@@ -321,26 +139,293 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	}
 
 
+	/// <summary>
+	/// Disposes of a parser..
+	/// </summary>
+	/// <param name="disposing">
+	/// True if this is a permanent disposal and a transient
+	/// parser should not be stored else false.
+	/// </param>
+	/// <returns>True of the parser was found and disposed else false.</returns>
 	protected override bool Dispose(bool disposing)
 	{
 		// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "Disabling instance");
 
-		if (_Connection == null || _Instances == null)
+		if (_InstanceConnection == null || _Instances == null)
 			return false;
 
-		Disable();
+		if (!disposing && _Enabled &&  (Loaded || _LinkStage >= EnLinkStage.TriggerDependenciesLoaded))
+		{
+			// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "Removing instance and cloning to Transient");
+			if (!Loaded)
+				EnsureLoaded();
 
-		// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "Removing instance");
+			_TransientParser = (AbstractLinkageParser)Clone();
 
-		_Instances.Remove(_Connection);
+		}
+		else
+		{
+			Disable();
+		}
+
+		_Instances.Remove(_InstanceConnection);
+
 		if (_Instances.Count == 0)
 			_Instances = null;
-		_Connection = null;
+
+		_InstanceConnection = null;
+		_DbConnection = null;
 
 		return true;
 	}
 
+
+
+	/// <summary>
+	/// Disposes of a parser given a DBConnection connection.
+	/// </summary>
+	/// <param name="site">
+	/// The IVsDataConnection explorer connection object
+	/// </param>
+	/// <param name="disposing">
+	/// True if this is a permanent disposal and a transient parser should not
+	/// be stored else false.
+	/// </param>
+	/// <returns>True of the parser was found and disposed else false.</returns>
+	protected static bool DisposeInstance(FbConnection connection, bool disposing)
+	{
+		// Tracer.Trace(typeof(AbstractLinkageParser), "DisposeInstance(FbConnection)");
+
+		lock (_LockClass)
+		{
+			if (_Instances == null || !_Instances.TryGetValue(connection, out object obj))
+				return false;
+
+
+			if (obj is not AbstractLinkageParser parser)
+				return false;
+
+			parser.Dispose(disposing);
+		}
+
+		return true;
+	}
+
+
 	#endregion Constructors / Destructors
+
+
+
+
+	// -----------------------------------------------------------------------------------------------------
+	#region Internal types - AbstractLinkageParser
+	// -----------------------------------------------------------------------------------------------------
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Enum of the linkage build stages. After each stage cancellation tokens are
+	/// checked.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public enum EnLinkStage
+	{
+		Start = 0,
+		GeneratorsLoaded = 1,
+		TriggerDependenciesLoaded = 2,
+		TriggersLoaded = 3,
+		SequencesPopulated = 4,
+		LinkageCompleted = 5,
+		Completed = 6
+	}
+
+
+	#endregion Internal types
+
+
+
+
+	// =========================================================================================================
+	#region Fields - AbstractLinkageParser
+	// =========================================================================================================
+
+
+	private static IBProviderSchemaFactory _SchemaFactory = null;
+	protected static Type _SchemaFactoryType = null;
+
+	protected static AbstractLinkageParser _TransientParser = null;
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// The db connection asociated with this LinkageParser
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected FbConnection _DbConnection = null;
+	protected FbConnection _InstanceConnection = null;
+
+
+	protected string _ConnectionUrl = null;
+
+
+	/// <summary>
+	/// Parser status inidicator that is set to false if the user cancels async
+	/// operations in the IDE task handler.
+	/// </summary>
+	protected bool _Enabled = true;
+
+
+	/// <summary>
+	/// The total elapsed time in milliseconds that the parser was actively
+	/// building the linkage tables. 
+	/// </summary>
+	protected long _TotalElapsed = 0;
+
+	/// <summary>
+	/// Per connection LinkageParser instances xref.
+	/// _Instances must be accessed within _LockClass code logic.
+	/// </summary>
+	private static Dictionary<FbConnection, object> _Instances = null;
+
+
+	/// <summary>
+	/// The tracked linkage build process stage.
+	/// </summary>
+	/// <remarks>
+	/// The async linkage process can be interrupted by either a user TaskHandler
+	/// cancellation or when the UI thread requires the trigger or sequence tables,
+	/// in which case the UI thread takes over the linkage process.
+	/// </remarks>
+	protected EnLinkStage _LinkStage = EnLinkStage.Start;
+
+	/// <summary>
+	/// The intermediate full SELECT of the system generator table.
+	/// </summary>
+	private DataTable _RawGenerators = null;
+
+	/// <summary>
+	/// The intermediate full SELECT of the system trigger table.
+	/// </summary>
+	private DataTable _RawTriggers = null;
+
+	/// <summary>
+	/// The intermediate full SELECT of the system trigger table dependencies.
+	/// </summary>
+	/// <remarks>
+	/// Dependent on network speed, splitting the trigger and trigger dependencies
+	/// SELECT statements is up to +- 80% faster than a combined statement.
+	/// </remarks>
+	private DataTable _RawTriggerDependencies = null;
+
+	/// <summary>
+	/// Set to true when the parser is making an external database request and then back
+	/// to false once the request is completed.
+	/// </summary>
+	private bool _Requesting = false;
+
+	/// <summary>
+	/// The final populated generator table with trigger linkage.
+	/// </summary>
+	private DataTable _Sequences = null;
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Stopwatch instance used to report total time and times taken to complete
+	/// individual tasks to the IDE task handler and status bar.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected System.Diagnostics.Stopwatch _Stopwatch;
+
+
+	/// <summary>
+	/// The final populated trigger table with generator linkage.
+	/// </summary>
+	protected DataTable _Triggers = null;
+
+
+	#endregion Fields
+
+
+
+
+
+	// =========================================================================================================
+	#region Property accessors - AbstractLinkageParser
+	// =========================================================================================================
+
+
+	/// <summary>
+	/// Getter inidicating whether or not the parser's db connection is active and open.
+	/// </summary>
+	protected bool ConnectionActive => _DbConnection != null
+		&& (_DbConnection.State & ConnectionState.Open) != 0
+		&& (_DbConnection.State & (ConnectionState.Closed | ConnectionState.Broken)) == 0;
+
+	/// <summary>
+	/// Getter indicating whether or not linkage has completed. !Loaded differs
+	/// from Incomplete in that !Incomplete may be because the linker has
+	/// been disabled.
+	/// </summary>
+	protected bool Loaded => _LinkStage >= EnLinkStage.Completed;
+
+	/// <summary>
+	/// Sets the start and end of an external db request.
+	/// </summary>
+	private bool Requesting
+	{
+		get
+		{
+			return _Requesting;
+		}
+		set
+		{
+			lock (_LockObject)
+			{
+				if (value)
+				{
+					Stopwatch.Reset();
+					Stopwatch.Start();
+				}
+				else
+				{
+					Stopwatch.Stop();
+					_TotalElapsed += Stopwatch.ElapsedMilliseconds;
+				}
+				_Requesting = value;
+			}
+		}
+	}
+
+
+	/// <summary>
+	/// Gets an instance of DslProviderSchemaFactory. Async operations must always be
+	/// passed an instance of DslProviderSchemaFactory and set _SchemaFactory because
+	/// GetService() will deadlock behind any sync operation that may occur while an
+	/// async task is busy launching.
+	/// </summary>
+	/// <remarks>
+	/// Deadlocks are still happening on GetService() calls on a ConectionNode refresh
+	/// where LinkageParser dependent nodes are in an expanded state, so we are
+	/// going to keep a permanent instance of IBProviderSchemaFactory, because tracing
+	/// of threads is inconsistent in debug vs normal runs.
+	/// </remarks>
+	private static IBProviderSchemaFactory SchemaFactory => _SchemaFactory ??=
+		(IBProviderSchemaFactory)Activator.CreateInstance(_SchemaFactoryType);
+
+
+
+	/// <summary>
+	/// Getter indicating whether or not the parser has fetched the generators.
+	/// </summary>
+	protected bool SequencesPopulated => _LinkStage >= EnLinkStage.SequencesPopulated;
+
+
+	/// <summary>
+	/// Timer for VS taskhandler .
+	/// </summary>
+	protected Stopwatch Stopwatch => _Stopwatch ??= new();
+
+
+	#endregion Property accessors
 
 
 
@@ -683,28 +768,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 
 
-	public abstract bool Disable();
-
-
-
-	protected static bool DisposeInstance(FbConnection connection)
-	{
-		// Tracer.Trace(typeof(AbstractLinkageParser), "DisposeInstance(FbConnection)");
-
-		lock (_LockClass)
-		{
-			if (_Instances == null || !_Instances.TryGetValue(connection, out object obj))
-				return false;
-
-
-			if (obj is not AbstractLinkageParser parser)
-				return false;
-
-			parser.Dispose(true);
-		}
-
-		return true;
-	}
+	protected abstract bool Disable();
 
 
 
@@ -719,7 +783,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 		try
 		{
-			_RawGenerators = SchemaFactory.GetSchema(_Connection, "RawGenerators", null);
+			_RawGenerators = SchemaFactory.GetSchema(_DbConnection, "RawGenerators", null);
 		}
 		catch (Exception ex)
 		{
@@ -753,7 +817,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 		try
 		{
-			_RawTriggerDependencies = SchemaFactory.GetSchema(_Connection, "RawTriggerDependencies", null);
+			_RawTriggerDependencies = SchemaFactory.GetSchema(_DbConnection, "RawTriggerDependencies", null);
 		}
 		catch (Exception ex)
 		{
@@ -785,7 +849,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 		try
 		{
-			_RawTriggers = SchemaFactory.GetSchema(_Connection, "RawTriggers", null);
+			_RawTriggers = SchemaFactory.GetSchema(_DbConnection, "RawTriggers", null);
 		}
 		catch (Exception ex)
 		{
@@ -811,7 +875,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// Updates a row of the internal trigger table with identity linkage information.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	protected void UpdateTriggerData(DataRow trig, string genId, bool isIdentity, int dependencyCount)
+	private void UpdateTriggerData(DataRow trig, string genId, bool isIdentity, int dependencyCount)
 	{
 
 		trig["DEPENDENCY_COUNT"] = dependencyCount;
@@ -842,7 +906,33 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// =========================================================================================================
 
 
+
 	protected static AbstractLinkageParser FindEquivalentParser(FbConnection connection)
+	{
+		if (_TransientParser != null)
+		{			
+			if (CsbAgent.CreateConnectionUrl(connection) == _TransientParser._ConnectionUrl)
+			{
+				// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Using up _TransientParser.");
+
+				AbstractLinkageParser parser = _TransientParser;
+				_TransientParser = null;
+
+				return parser;
+			}
+		}
+
+		// if (_TransientParser != null)
+		//	Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Clearing unused _TransientParser");
+
+		_TransientParser = null;
+
+		return FindEquivalentParser(connection.ConnectionString);
+	}
+
+
+
+	protected static AbstractLinkageParser FindEquivalentParser(string connectionString)
 	{
 		// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()");
 
@@ -855,14 +945,19 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		CsbAgent csa1 = null;
 		CsbAgent csa2;
 
+		// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Searching instances. Count: {0}.", _Instances.Count);
+
+		int i = -1;
+
 		foreach (KeyValuePair<FbConnection, object> pair in _Instances)
 		{
+			i++;
 			AbstractLinkageParser parser = (AbstractLinkageParser)pair.Value;
 
-			if (!parser.Loaded)
+			if (!parser._Enabled)
 				continue;
 
-			csa1 ??= new(connection);
+			csa1 ??= new(connectionString);
 
 			try
 			{
@@ -874,14 +969,11 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 				continue;
 			}
 
-			if (CsbAgent.AreEquivalent(csa1, csa2))
-			{
-				// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Found equivalent.");
+			if (CsbAgent.AreEquivalent(csa1, csa2, CsbAgent.WeakEquivalencyKeys))
 				return parser;
-			}
 		}
 
-		// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "No equivalent found.");
+		// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "No equivalent found in instances. Count: {0}", _Instances.Count);
 
 		return null;
 	}
@@ -1093,9 +1185,6 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	protected abstract void OnConnectionDisposed(object sender, EventArgs e);
-
-
-	protected abstract void OnConnectionStateChanged(object sender, StateChangeEventArgs e);
 
 
 	#endregion Event handlers

@@ -11,9 +11,9 @@ using System.ComponentModel;
 // namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.PropertyGridUtilities
 namespace BlackbirdSql.Core.Ctl.ComponentModel;
 
-public abstract class AbstractGlobalizedDisplayNameAttribute : DisplayNameAttribute
+public abstract class AbstractGlobalizedDisplayNameAttribute(string resourceName) : DisplayNameAttribute
 {
-	private readonly string _ResourceName;
+	private readonly string _ResourceName = resourceName;
 
 	public abstract System.Resources.ResourceManager ResMgr { get; }
 
@@ -30,10 +30,5 @@ public abstract class AbstractGlobalizedDisplayNameAttribute : DisplayNameAttrib
 				return string.Empty;
 			}
 		}
-	}
-
-	public AbstractGlobalizedDisplayNameAttribute(string resourceName)
-	{
-		_ResourceName = resourceName;
 	}
 }

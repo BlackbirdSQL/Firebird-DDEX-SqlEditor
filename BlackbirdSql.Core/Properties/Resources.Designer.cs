@@ -124,6 +124,24 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remove Connection.
+        /// </summary>
+        public static string CommandProvider_DeleteDatabaseConnection {
+            get {
+                return ResourceManager.GetString("CommandProvider_DeleteDatabaseConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Rename Connection.
+        /// </summary>
+        public static string CommandProvider_EditDatabaseLabel {
+            get {
+                return ResourceManager.GetString("CommandProvider_EditDatabaseLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &amp;New Designer Query.
         /// </summary>
         public static string CommandProvider_NewGlobalDesigner {
@@ -304,15 +322,6 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Project[{0}] {1}.
-        /// </summary>
-        public static string ConnectionLocatorProjectDatasetId {
-            get {
-                return ResourceManager.GetString("ConnectionLocatorProjectDatasetId", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Could not locate icon for Server Engine Type {0}..
         /// </summary>
         public static string EngineTypeIconNotfound {
@@ -372,6 +381,15 @@ namespace BlackbirdSql.Core.Properties {
         public static string ExceptionConnectionNull {
             get {
                 return ResourceManager.GetString("ExceptionConnectionNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Singleton instance already exists. Attempt to create duplicate {0} instances..
+        /// </summary>
+        public static string ExceptionDuplicateSingletonInstances {
+            get {
+                return ResourceManager.GetString("ExceptionDuplicateSingletonInstances", resourceCulture);
             }
         }
         
@@ -679,6 +697,24 @@ namespace BlackbirdSql.Core.Properties {
         public static string RetryOnException {
             get {
                 return ResourceManager.GetString("RetryOnException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ⛮[{0}] {1}.
+        /// </summary>
+        public static string RunningConnectionTableEdmDataset {
+            get {
+                return ResourceManager.GetString("RunningConnectionTableEdmDataset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ⚙[{0}] {1}.
+        /// </summary>
+        public static string RunningConnectionTableProjectDatasetId {
+            get {
+                return ResourceManager.GetString("RunningConnectionTableProjectDatasetId", resourceCulture);
             }
         }
         

@@ -1,44 +1,87 @@
 ﻿
-
 using System;
-using System.ComponentModel.Design;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.EditorExtension;
-
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
 namespace BlackbirdSql.Controller;
 
-
 // =========================================================================================================
 //										ControllerAsyncPackage Class 
 //
 /// <summary>
-/// BlackbirdSql.Data.Ddex DDEX 2.0 <see cref="IVsPackage"/> class implementation. Implements support for
-/// IVsSolution, IVsRunningDocumentTable events through the PackageController.
+/// BlackbirdSql.Data.Ddex DDEX 2.0 <see cref="IVsPackage"/> controller class implementation. Implements
+/// support for SolutionOption, IVsSolution, IVsRunningDocumentTable events through the PackageController.
 /// </summary>
 /// <remarks>
-/// Implements the package exposed by this assembly and registers itself with the shell.
+/// This is a multi-Extension class implementation of <see cref="IBAsyncPackage"/>.
+/// The current package hieararchy is BlackbirdSqlDdexExtension > <see cref="ControllerAsyncPackage"/> >
+/// <see cref="EditorExtension.EditorExtensionAsyncPackage"/> > <see cref="AbstractAsyncPackage"/>.
 /// </remarks>
 // =========================================================================================================
 public abstract class ControllerAsyncPackage : EditorExtensionAsyncPackage
 {
 
-	#region Variables - ControllerAsyncPackage
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - ControllerAsyncPackage
+	// ---------------------------------------------------------------------------------
 
 
-	private ControllerEventsManager _EventsManager;
+	/// <summary>
+	/// AbstractAsyncPackage package .ctor
+	/// </summary>
+	public ControllerAsyncPackage() : base()
+	{
+		// Enable solution open/close event handling.
+		AddOptionKey(GlobalsAgent.C_PersistentKey);
+
+		// Create the Controller.
+		// Create the Controller Events Manager. 
+		_EventsManager = ControllerEventsManager.CreateInstance(_Controller);
+
+	}
 
 
-	#endregion Variables
+	/// <summary>
+	/// Instance disposal.
+	/// </summary>
+	protected override void Dispose(bool disposing)
+	{
+		try
+		{
+			Controller.Dispose();
+			EventsManager.Dispose();
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+		}
+
+		base.Dispose(disposing);
+	}
 
 
+	#endregion Constructors / Destructors
+
+
+
+
+	// =========================================================================================================
+	#region Fields - ControllerAsyncPackage
+	// =========================================================================================================
+
+
+	private readonly ControllerEventsManager _EventsManager;
+
+
+	#endregion Fields
 
 
 
@@ -48,32 +91,25 @@ public abstract class ControllerAsyncPackage : EditorExtensionAsyncPackage
 	// =========================================================================================================
 
 
-	public new IBEventsManager EventsManager => _EventsManager ??= new ControllerEventsManager(Controller);
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Accessor to the events manager at this level of the <see cref="IBAsyncPackage"/>
+	/// class hierarchy.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public new IBEventsManager EventsManager => _EventsManager;
 
-
-	#endregion Property accessors
-
-
-
-
-
-	// =========================================================================================================
-	#region Constructors / Destructors - ControllerAsyncPackage
-	// =========================================================================================================
 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// AbstractAsyncPackage package .ctor
+	/// Accessor to the <see cref="IBPackageController"/> singleton instance
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public ControllerAsyncPackage() : base()
-	{
-	}
+	public override IBPackageController Controller => _Controller;
 
 
-	#endregion Constructors / Destructors
-
+	#endregion Property accessors
 
 
 
@@ -93,6 +129,10 @@ public abstract class ControllerAsyncPackage : EditorExtensionAsyncPackage
 		if (cancellationToken.IsCancellationRequested)
 			return;
 
+		// First try.
+		await Controller.AdviseEventsAsync();
+
+
 		await base.InitializeAsync(cancellationToken, progress);
 
 		ServiceContainer.AddService(typeof(IBPackageController), ServicesCreatorCallbackAsync, promote: true);
@@ -110,8 +150,13 @@ public abstract class ControllerAsyncPackage : EditorExtensionAsyncPackage
 	/// </summary>
 	public override async Task FinalizeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 	{
+		Diag.ThrowIfNotOnUIThread();
+
 		if (cancellationToken.IsCancellationRequested)
 			return;
+
+		// Second try.
+		_Controller.AdviseEvents();
 
 		await base.FinalizeAsync(cancellationToken, progress);
 
@@ -140,8 +185,7 @@ public abstract class ControllerAsyncPackage : EditorExtensionAsyncPackage
 		{
 			try
 			{
-				object service = PackageController.CreateInstance(this);
-				return service ?? throw new TypeAccessException(serviceType.FullName);
+				return PackageController.Instance;
 			}
 			catch (Exception ex)
 			{
@@ -179,22 +223,56 @@ public abstract class ControllerAsyncPackage : EditorExtensionAsyncPackage
 	}
 
 
+	#endregion Method Implementations
 
-	protected override void Dispose(bool disposing)
+
+
+
+	// =========================================================================================================
+	#region Methods - ControllerAsyncPackage
+	// =========================================================================================================
+
+
+	protected override IBPackageController CreateController()
 	{
-		try
-		{
-			((PackageController)_Controller)?.Dispose();
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-		}
+		return PackageController.CreateInstance(this);
+	}
 
-		base.Dispose(disposing);
+	#endregion Methods
+
+
+
+
+	// =========================================================================================================
+	#region Event handlers - ControllerAsyncPackage
+	// =========================================================================================================
+
+
+
+	protected override void OnLoadOptions(string key, Stream stream)
+	{
+		// If this is called early we have to initialize user option push notifications
+		// and environment events synchronously.
+		PropagateSettings();
+		Controller.AdviseEvents();
+
+		if (key == GlobalsAgent.C_PersistentKey)
+			_OnLoadSolutionOptionsEvent?.Invoke(stream);
+		else
+			base.OnLoadOptions(key, stream);
 	}
 
 
-	#endregion Method Implementations
+	protected override void OnSaveOptions(string key, Stream stream)
+	{
+		if (key == GlobalsAgent.C_PersistentKey)
+			_OnSaveSolutionOptionsEvent?.Invoke(stream);
+		else
+			base.OnSaveOptions(key, stream);
+	}
+
+
+	#endregion Event handlers
+
 
 }

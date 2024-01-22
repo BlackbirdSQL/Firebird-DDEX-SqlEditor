@@ -171,6 +171,18 @@
   <data name="GlobalizedLiteralYes" xml:space="preserve">
     <value>☑ Yes</value>
   </data>
+  <data name="PropertyCategoryExtended" xml:space="preserve">
+    <value>Extended</value>
+  </data>
+  <data name="PropertyCategoryIdentifiers" xml:space="preserve">
+    <value> Identifiers</value>
+  </data>
+  <data name="PropertyDisplayConnectionName" xml:space="preserve">
+    <value>  Proposed Name</value>
+  </data>
+  <data name="PropertyDisplayDatasetId" xml:space="preserve">
+    <value> Proposed Dataset Id</value>
+  </data>
   <data name="Reg_NotifyOptionPage" xml:space="preserve">
     <value>Option Page:      {0}\{1}\{2}</value>
   </data>

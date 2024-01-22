@@ -4,9 +4,6 @@
 using System;
 using System.Collections.Generic;
 using BlackbirdSql.Core.Ctl.Interfaces;
-
-using EnvDTE;
-
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TaskStatusCenter;
 
@@ -25,15 +22,28 @@ namespace BlackbirdSql.Core.Ctl;
 /// The events manager can handle an ide event by hooking onto Controller.On[event]. 
 /// </remarks>
 // =========================================================================================================
-public abstract class AbstractEventsManager(IBPackageController controller) : IBEventsManager
+public abstract class AbstractEventsManager : IBEventsManager
 {
 
-	private readonly IBPackageController _Controller = controller;
-
-
 	// ---------------------------------------------------------------------------------
-	#region Other Constructors / Destructors - AbstractEventsManager
+	#region Constructors / Destructors - AbstractEventsManager
 	// ---------------------------------------------------------------------------------
+
+	protected AbstractEventsManager(IBPackageController controller)
+	{
+		if (InternalInstance != null)
+		{
+			TypeInitializationException ex = new TypeInitializationException(GetType().FullName, new ArgumentException("Instance already exists."));
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		InternalInstance = this;
+		_Controller = controller;
+
+		controller.RegisterEventsManager(this);
+		Initialize();
+	}
 
 
 	/// <summary>
@@ -46,22 +56,23 @@ public abstract class AbstractEventsManager(IBPackageController controller) : IB
 	public abstract void Dispose();
 
 
-	#endregion Other Constructors / Destructors
+	#endregion Constructors / Destructors
 
 
 
 
 	// =========================================================================================================
-	#region Variables - BlackbirdSqlDdexExtension
+	#region Fields - BlackbirdSqlDdexExtension
 	// =========================================================================================================
 
+	private readonly IBPackageController _Controller;
 
 	protected string _TaskHandlerTaskName = "Task";
 	protected TaskProgressData _ProgressData = default;
 	protected ITaskHandler _TaskHandler = null;
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 
@@ -71,6 +82,11 @@ public abstract class AbstractEventsManager(IBPackageController controller) : IB
 	#region Property accessors - AbstractEventsManager
 	// =========================================================================================================
 
+	/// <summary>
+	/// Access to the static at the instance local level. This allows the base class to access and update
+	/// the localized static instance.
+	/// </summary>
+	protected abstract IBEventsManager InternalInstance { get; set; }
 
 	public IBPackageController Controller => _Controller;
 	public IBAsyncPackage DdexPackage => _Controller.DdexPackage;

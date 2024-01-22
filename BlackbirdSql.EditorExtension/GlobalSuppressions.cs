@@ -11,4 +11,5 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Usage", "VSTHRD110:Observe result of async calls", Justification = "<Pending>")]
 [assembly: SuppressMessage("Usage", "VSTHRD001:Avoid legacy thread switching APIs", Justification = "<Pending>")]
 [assembly: SuppressMessage("Performance", "VSSDK003:Support async tool windows", Justification = "<Pending>")]
+[assembly: SuppressMessage("Usage", "VSTHRD104:Offer async methods")]
 // [assembly: SuppressMessage("Usage", "VSTHRD108:Assert thread affinity unconditionally")]

@@ -10,6 +10,7 @@ using BlackbirdSql.Common.Model.QueryExecution;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 namespace BlackbirdSql.Common.Ctl.Commands;
 
@@ -41,9 +42,7 @@ public class SqlEditorExecuteQueryCommand : AbstractSqlEditorCommand
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
 		if (ShouldRunCommand())
-		{
 			EditorWindow.ExecuteQuery();
-		}
 
 		return VSConstants.S_OK;
 	}

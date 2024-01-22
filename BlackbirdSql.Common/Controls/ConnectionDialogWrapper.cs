@@ -53,7 +53,7 @@ public class ConnectionDialogWrapper : IDisposable
 		GC.SuppressFinalize(this);
 	}
 
-	public bool? ShowDialogValidateConnection(IntPtr parent, UIConnectionInfo ci, out IDbConnection connection)
+	public bool? ShowDialogValidateConnection(IntPtr parent, ConnectionPropertyAgent ci, out IDbConnection connection)
 	{
 		// Tracer.Trace(GetType(), "ShowDialogValidateConnection()");
 
@@ -65,7 +65,7 @@ public class ConnectionDialogWrapper : IDisposable
 		return result;
 	}
 
-	public bool? ShowDialog(IntPtr parent, UIConnectionInfo ci, ConnectionDialogConfiguration config)
+	public bool? ShowDialog(IntPtr parent, ConnectionPropertyAgent ci, ConnectionDialogConfiguration config)
 	{
 		ShowDialog(parent, ci, out var connection, out var result, config);
 		if (connection != null)
@@ -78,21 +78,21 @@ public class ConnectionDialogWrapper : IDisposable
 		return result;
 	}
 
-	private UIConnectionInfo ShowDialog(IntPtr parent, UIConnectionInfo ci, out IDbConnection connection, out bool? result, ConnectionDialogConfiguration config)
+	private ConnectionPropertyAgent ShowDialog(IntPtr parent, ConnectionPropertyAgent ci, out IDbConnection connection, out bool? result, ConnectionDialogConfiguration config)
 	{
 		// Tracer.Trace(GetType(), "ShowDialog()");
 
-		UIConnectionInfo uIConnectionInfo = ci;
-		Cmd.CheckForNull(ci, "uiConnectionInfo");
+		ConnectionPropertyAgent connectionInfo = ci;
+		Cmd.CheckForNull(ci, "connectionInfo");
 		Cmd.CheckForNull(parent, "parent");
 
 		IBEditorPackage editorPackage = (IBEditorPackage)Controller.DdexPackage;
 
-		result = editorPackage.ShowConnectionDialogFrame(parent, _Channel, ci, ConnectionVerifier, config, ref uIConnectionInfo);
+		result = editorPackage.ShowConnectionDialogFrame(parent, _Channel, ci, ConnectionVerifier, config, ref connectionInfo);
 
 		connection = _Connection;
 
-		return uIConnectionInfo;
+		return connectionInfo;
 	}
 
 	private void GetConnectionObject(object sender, MakeConnectionCompletedEventArgs e)

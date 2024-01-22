@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Interfaces;
 
-namespace BlackbirdSql.Core.Ctl.Events;
 
+namespace BlackbirdSql.Core.Ctl.Events;
 
 /// <summary>
 /// Contains the package settings/options payload used by GlobalsAgent

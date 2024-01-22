@@ -77,7 +77,7 @@ public class SqlEditorNewQueryCommand : AbstractSqlEditorCommand
 			}
 
 			IBDesignerExplorerServices service = Controller.GetService<IBDesignerExplorerServices>()
-				?? throw Diag.ServiceUnavailable(typeof(IBDesignerExplorerServices));
+				?? throw Diag.ExceptionService(typeof(IBDesignerExplorerServices));
 
 			service.NewSqlQuery(qryMgr.ConnectionStrategy.LastDatasetKey);
 		}

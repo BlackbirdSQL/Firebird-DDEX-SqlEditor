@@ -12,8 +12,6 @@ using BlackbirdSql.Core.Ctl.Interfaces;
 namespace BlackbirdSql.Common.Model;
 
 [SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits")]
-[SuppressMessage("Usage", "VSTHRD104:Offer async methods")]
-
 public sealed class NotifyTaskCompletion<TResult> : AbstractDispatcherConnection
 {
 	public Task TaskCompletion { get; private set; }
@@ -78,7 +76,7 @@ public sealed class NotifyTaskCompletion<TResult> : AbstractDispatcherConnection
 		Task = task;
 		if (!task.IsCompleted)
 		{
-			if (IsUIThread)
+			if (Dispatcher.CheckAccess())
 			{
 				RaisePropertyChanged("IsCompleted");
 				RaisePropertyChanged("IsNotCompleted");
@@ -108,7 +106,7 @@ public sealed class NotifyTaskCompletion<TResult> : AbstractDispatcherConnection
 		{
 			UiTracer.TraceSource.DebugTraceException(TraceEventType.Error, 12, ex, ex.Message);
 		}
-		if (IsUIThread)
+		if (Dispatcher.CheckAccess())
 		{
 			RaisePropertyChanged("Status");
 			RaisePropertyChanged("IsCompleted");

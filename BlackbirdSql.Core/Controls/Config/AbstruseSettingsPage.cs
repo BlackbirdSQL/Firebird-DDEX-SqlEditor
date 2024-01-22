@@ -39,7 +39,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Variables - AbstruseSettingsPage
+	#region Fields - AbstruseSettingsPage
 	// ---------------------------------------------------------------------------------
 
 
@@ -57,7 +57,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 
@@ -83,28 +83,8 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 				if (gridView == null)
 					return null;
 
-				Type typeGridView = gridView.GetType();
-
-				FieldInfo editFieldInfo = typeGridView.GetField("edit",
-					BindingFlags.NonPublic | BindingFlags.Instance);
-
-				if (editFieldInfo == null)
-				{
-					COMException ex = new("Could not get edit info.");
-					Diag.Dug(ex);
-					return null;
-				}
-
-				object obj = editFieldInfo.GetValue(gridView);
-
-				if (obj == null)
-				{
-					COMException ex = new("edit field is not yet initialized.");
-					Diag.Dug(ex);
-					return null;
-				}
-
-				return obj as TextBox;
+				return Reflect.GetField(gridView, "edit", BindingFlags.NonPublic | BindingFlags.Instance)
+					as TextBox;
 			}
 		}
 	}
@@ -124,18 +104,9 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 			{
 				if (_Window == null)
 					return null;
-				Type t = _Window.GetType();
-				FieldInfo fInfo = t.GetField("gridView",
+
+				return (Control)Reflect.GetFieldValue(_Window, "gridView",
 					BindingFlags.NonPublic | BindingFlags.Instance);
-
-				if (fInfo == null)
-				{
-					COMException ex = new("Could not get gridView info.");
-					Diag.Dug(ex);
-					return null;
-				}
-
-				return (Control)fInfo.GetValue(_Window);
 			}
 		}
 	}
@@ -158,18 +129,8 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 				Control gridview = GridView;
 				if (gridview != null)
 				{
-					Type t = gridview.GetType();
-					FieldInfo fInfo = t.GetField("originalTextValue",
+					return (string)Reflect.GetFieldValue(gridview, "originalTextValue",
 						BindingFlags.NonPublic | BindingFlags.Instance);
-
-					if (fInfo == null)
-					{
-						COMException ex = new("Could not get originalTextValue info.");
-						Diag.Dug(ex);
-						return null;
-					}
-
-					return (string)fInfo.GetValue(gridview);
 				}
 				return null;
 			}
@@ -181,18 +142,8 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 				Control gridview = GridView;
 				if (gridview != null)
 				{
-					Type t = gridview.GetType();
-					FieldInfo fInfo = t.GetField("originalTextValue",
-						BindingFlags.NonPublic | BindingFlags.Instance);
-
-					if (fInfo == null)
-					{
-						COMException ex = new("Could not get originalTextValue info.");
-						Diag.Dug(ex);
-						return;
-					}
-
-					fInfo?.SetValue(gridview, value);
+					Reflect.SetFieldValue(gridview, "originalTextValue",
+						BindingFlags.NonPublic | BindingFlags.Instance, value);
 				}
 			}
 		}
@@ -216,18 +167,8 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 				if (gridView == null)
 					return -1;
 
-				Type t = gridView.GetType();
-				FieldInfo fInfo = t.GetField("selectedRow",
+				return (int)Reflect.GetFieldValue(gridView, "selectedRow",
 					BindingFlags.NonPublic | BindingFlags.Instance);
-
-				if (fInfo == null)
-				{
-					COMException ex = new("Could not get selectedRow info.");
-					Diag.Dug(ex);
-					return -1;
-				}
-
-				return (int)fInfo.GetValue(gridView);
 			}
 		}
 	}
@@ -424,37 +365,6 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Invokes methodinfo method synchronously.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private bool InvokeMethod(object obj, string method, BindingFlags bindings, object[] parameters, bool resetFocus = false)
-	{
-		// Tracer.Trace(GetType(), "InvokeMethod()", "Method: {0}", method);
-
-		lock (_LockObject)
-		{
-			Type t = obj.GetType();
-
-			MethodInfo methodInfo = t.GetMethod(method, bindings);
-
-			if (methodInfo == null)
-			{
-				COMException ex = new($"Could not find method info for {method}(). Aborting.");
-				Diag.Dug(ex);
-				return false;
-			}
-
-			methodInfo.Invoke(obj, parameters);
-
-		}
-
-		return true;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
 	/// Loads the settings from live storage. TBC!!!
 	/// </summary>
 	// ---------------------------------------------------------------------------------
@@ -506,6 +416,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// *** Exposes the hidden GridView SetScrollOffset() and SelectRow() methods.
 	/// OnActivate handler. Fixes a glitch in VS initial display - incorrect scroll and
 	/// focus.
 	/// This method and OnEditControlMouseDown are currently the only methods that invoke
@@ -538,10 +449,11 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 			if (gridView == null)
 				return;
 
-			InvokeMethod(gridView, "SetScrollOffset", BindingFlags.Public | BindingFlags.Instance, [0]);
-
-			InvokeMethod(gridView, "SelectRow", BindingFlags.NonPublic | BindingFlags.Instance,
-				 [SortedByCategories ? 1 : 0]);
+			if (Reflect.InvokeMethod(gridView, "SetScrollOffset", BindingFlags.Public | BindingFlags.Instance, [0]))
+			{
+				Reflect.InvokeMethod(gridView, "SelectRow", BindingFlags.NonPublic | BindingFlags.Instance,
+					[SortedByCategories ? 1 : 0]);
+			}
 		}
 		catch (Exception ex)
 		{
@@ -682,6 +594,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// *** Exposes the hidden GridView DoubleClickRow() and OnBtnClick() methods.
 	/// Overload for PropertyGridView.OnEditMouseDown. Invokes double click for boolean
 	/// converters and drop down for enum converters.
 	/// We're keeping any access or updating of inaccessible members that are exposed
@@ -719,16 +632,15 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 			{
 				int row = SelectedRow;
 
-				InvokeMethod(gridView, "DoubleClickRow", BindingFlags.Public | BindingFlags.Instance,
-					[row, false, 2], true);
+				Reflect.InvokeMethod(gridView, "DoubleClickRow",
+					BindingFlags.Public | BindingFlags.Instance, [row, false, 2]);
 
 				return;
 			}
 
 
-			InvokeMethod(gridView, "OnBtnClick", BindingFlags.NonPublic | BindingFlags.Instance,
+			Reflect.InvokeMethod(gridView, "OnBtnClick", BindingFlags.NonPublic | BindingFlags.Instance,
 				[this, new EventArgs()]);
-
 
 			// Sample for using async calls.
 			// _ = Task.Run(() => InvokeMethodAsync("OnBtnClick",

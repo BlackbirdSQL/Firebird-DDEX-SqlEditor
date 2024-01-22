@@ -9,13 +9,12 @@ using System.Reflection;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model;
+using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.VisualStudio.Ddex.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
-using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
@@ -32,17 +31,13 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Variables - TObjectSelectorRoot
+	#region Fields - TObjectSelectorRoot
 	// ---------------------------------------------------------------------------------
-
-	// Sanity checker.
-	private readonly bool _Ctor = false;
-	private FbConnection _Connection;
 
 	private CsbAgent _Csa = null;
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 
@@ -53,20 +48,12 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	// =========================================================================================================
 
 
+	/*
 	public TObjectSelectorRoot() : base()
 	{
 		// Tracer.Trace(GetType(), "TObjectSelectorRoot.TObjectSelectorRoot()");
 	}
-
-	public TObjectSelectorRoot(IVsDataConnection connection) : base()
-	{
-		// Tracer.Trace(GetType(), "TObjectSelectorRoot(IVsDataConnection)", "NOTE THIS!!!");
-
-		_Ctor = true;
-		Site = connection;
-		_Ctor = false;
-	}
-
+	*/
 
 	#endregion Constructors / Destructors
 
@@ -113,7 +100,6 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 		// Tracer.Trace(GetType(), "SelectObjects()", "TYPE IVsDataConnection: {0}.", Site.GetType().FullName);
 
-		int syncCardinal = 0;
 		object lockedProviderObject = null;
 		FbConnection connection = null;
 		LinkageParser parser = null;
@@ -136,6 +122,9 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 				Assembly.Load(typeof(FirebirdClientFactory).Assembly.FullName);
 			}
 
+			if (RctManager.ShutdownState)
+				return null;
+
 			lockedProviderObject = Site.GetLockedProviderObject();
 			if (lockedProviderObject == null)
 				throw new NotImplementedException("Site.GetLockedProviderObject()");
@@ -148,21 +137,13 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			Site.EnsureConnected();
 			parser = LinkageParser.GetInstance(connection);
 
-			// Tracer.Trace(GetType(), "SelectObjects()", parser == null ? "no parser to pause" : "making linker pause request");
-			syncCardinal = parser != null ? parser.SyncEnter() : 0;
+			if (_Csa == null || _Csa.Invalidated(connection))
+				_Csa = RctManager.EnsureVolatileInstance(connection, EnConnectionSource.ServerExplorer);
 
-			_Connection = connection;
+			DataTable schema = CreateSchema(connection, typeName, parameters);
 
-			if (_Csa == null || !_Csa.Equals(connection))
-				_Csa = CsbAgent.EnsureInstance(connection.ConnectionString);
-
-			DataTable schema = CreateSchema(typeName, parameters);
-
-			_Connection = null;
 
 			reader = new AdoDotNetTableReader(schema);
-
-
 		}
 		catch (Exception ex)
 		{
@@ -171,8 +152,6 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		}
 		finally
 		{
-			parser?.SyncExit(syncCardinal);
-
 			// Only force create the parser 2nd time in.
 			if (parser == null && connection != null)
 				LinkageParser.EnsureInstance(connection, typeof(DslProviderSchemaFactory));
@@ -206,15 +185,18 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	/// <param name="parameters"></param>
 	/// <returns>Thr root node ready DataSourceInformation schema.</returns>
 	// ---------------------------------------------------------------------------------
-	private DataTable CreateSchema(string typeName, object[] parameters)
+	private DataTable CreateSchema(FbConnection connection, string typeName, object[] parameters)
 	{
 		// Tracer.Trace(GetType(), "CreateSchema()", "typename: {0}", typeName);
 
 		DataTable schema = new DataTable();
 
+		if (string.IsNullOrWhiteSpace(typeName))
+			typeName = "Root";
+
 		Describer[] describers = typeName == "Database"
-			? [.. CsbAgent.Describers.Values]
-			: [CsbAgent.Describers[CoreConstants.C_KeyExDatasetKey]];
+			? [.. CsbAgent.Describers.DescriberKeys]
+			: [CsbAgent.Describers[CoreConstants.C_KeyExDatasetKey], CsbAgent.Describers[CoreConstants.C_KeyExConnectionKey]];
 
 
 		foreach (Describer describer in describers)
@@ -222,26 +204,28 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 		schema.AcceptChanges();
 
+		schema.BeginLoadData();
+
 		DataRow row = schema.NewRow();
 
 		foreach (DataColumn column in schema.Columns)
-			row[column.Ordinal] = RetrieveValue(column.ColumnName);
+			row[column.ColumnName] = RetrieveValue(connection, column.ColumnName);
 
 
-		schema.BeginLoadData();
 		schema.Rows.Add(row);
+
 		schema.EndLoadData();
 		schema.AcceptChanges();
 
 		/*
-		string txt = $"Data row for {typeName}: ";
+		string str = $"Data row for {typeName}: ";
 
 		foreach (DataColumn col in schema.Columns)
 		{
-			txt += col.ColumnName + ":" + (schema.Rows[0][col.Ordinal] == null ? "null" : (schema.Rows[0][col.Ordinal] == DBNull.Value ? "DBNull" : schema.Rows[0][col.Ordinal].ToString())) + ", ";
+			str += col.ColumnName + ":" + (schema.Rows[0][col.Ordinal] == null ? "null" : (schema.Rows[0][col.Ordinal] == DBNull.Value ? "DBNull" : schema.Rows[0][col.Ordinal].ToString())) + ", ";
 		}
-		// Tracer.Trace(GetType(), "CreateSchema()", "{0}", str);
 		*/
+		// Tracer.Trace(GetType(), "CreateSchema()", "{0}", str);
 
 		if (parameters != null && parameters.Length == 1 && parameters[0] is DictionaryEntry entry)
 		{
@@ -267,10 +251,10 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	/// <param name="name"></param>
 	/// <returns></returns>
 	// ---------------------------------------------------------------------------------
-	private object RetrieveValue(string name)
+	private object RetrieveValue(FbConnection connection, string name)
 	{
-		string strval;
 		object retval;
+		string strval;
 		object errval = DBNull.Value;
 
 
@@ -281,36 +265,54 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 				case CoreConstants.C_KeyExDatasetKey:
 					retval = _Csa.DatasetKey;
 					break;
+				case CoreConstants.C_KeyExConnectionKey:
+					retval = _Csa.ConnectionKey;
+					break;
+				case CoreConstants.C_KeyExConnectionSource:
+					retval = EnConnectionSource.ServerExplorer;
+					break;
 				case CoreConstants.C_KeyDataSource:
-					retval = _Connection.DataSource;
+					retval = connection.DataSource;
 					break;
 				case CoreConstants.C_KeyExDataset:
 					retval = _Csa.Dataset;
 					break;
 				case CoreConstants.C_KeyDatabase:
-					retval = _Connection.Database;
+					retval = connection.Database;
 					break;
 				case CoreConstants.C_KeyExDatasetId:
-					retval = _Csa.DatasetId;
+					strval = _Csa.DatasetId;
+					if (string.IsNullOrWhiteSpace(strval))
+						strval = _Csa.Dataset;
+					retval = strval;
+					break;
+				case CoreConstants.C_KeyExDisplayName:
+					strval = _Csa.DatasetId;
+					if (string.IsNullOrWhiteSpace(strval))
+						strval = _Csa.Dataset;
+					if (!string.IsNullOrWhiteSpace(_Csa.ConnectionName))
+						strval = _Csa.ConnectionName + " | " + strval;
+					retval = strval;
 					break;
 				case ModelConstants.C_KeyExClientVersion:
 					retval = $"FirebirdSql {typeof(FbConnection).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version}";
 					break;
 				case ModelConstants.C_KeyExMemoryUsage:
+					errval = -1;
 					retval = ModelConstants.C_DefaultExMemoryUsage;
-					if ((_Connection.State & ConnectionState.Open) > 0)
+					if ((connection.State & ConnectionState.Open) > 0)
 					{
-						FbDatabaseInfo info = new(_Connection);
+						FbDatabaseInfo info = new(connection);
 						(strval, _) = ((long)info.GetCurrentMemory()).FmtByteSize();
 						retval = strval;
 					}
 					break;
 				case ModelConstants.C_KeyExActiveUsers:
-					errval = 0;
+					errval = -1;
 					retval = ModelConstants.C_DefaultExActiveUsers;
-					if ((_Connection.State & ConnectionState.Open) != 0)
+					if ((connection.State & ConnectionState.Open) != 0)
 					{
-						FbDatabaseInfo info = new(_Connection);
+						FbDatabaseInfo info = new(connection);
 						retval = info.GetActiveUsers().Count;
 					}
 					break;
@@ -329,7 +331,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex, $"PropertyName: '{name}'");
+			Diag.Dug(ex, $"Error retrieving PropertyName: '{name}'");
 			return errval;
 		}
 
@@ -353,8 +355,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	{
 		// Tracer.Trace(GetType(), "OnSiteChanged()");
 
-		if (!_Ctor)
-			base.OnSiteChanged(e);
+		base.OnSiteChanged(e);
 	}
 
 

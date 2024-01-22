@@ -165,12 +165,7 @@ public class DesignerOnlineServices : AbstractDesignerServices, IBDesignerOnline
 	{
 		// Sanity check.
 		// Currently our only entry point to AbstractDesignerServices whose warnings are suppressed.
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(ex);
-			throw ex;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		EnsureConnectionSpecifiesDatabase(csb);
 

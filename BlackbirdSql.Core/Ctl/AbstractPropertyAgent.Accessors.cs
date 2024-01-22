@@ -4,22 +4,24 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security;
 using System.Text;
 using System.Windows;
 using System.Windows.Media.Imaging;
-
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
+using BlackbirdSql.Core.Model.Enums;
 
 using FirebirdSql.Data.FirebirdClient;
 
 using Microsoft.Data.ConnectionUI;
+
+using static BlackbirdSql.Core.Ctl.CoreConstants;
 
 
 namespace BlackbirdSql.Core;
@@ -56,7 +58,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Accessor Variables - AbstractPropertyAgent
+	#region Accessor Fields - AbstractPropertyAgent
 	// ---------------------------------------------------------------------------------
 
 
@@ -64,7 +66,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	protected int _GetSetCardinal = 0;
 
 
-	#endregion Accessor Variables
+	#endregion Accessor Fields
 
 
 
@@ -132,9 +134,9 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	{
 		get
 		{
-			foreach (string name in Describers.Mandatory)
+			foreach (Describer describer in Describers.MandatoryKeys)
 			{
-				if (!_AssignedConnectionProperties.TryGetValue(name,
+				if (!_AssignedConnectionProperties.TryGetValue(describer.Name,
 					out object value) || string.IsNullOrEmpty((string)value))
 				{
 					return false;
@@ -172,22 +174,47 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 		set { SetProperty("DatasetKey", value); }
 	}
 
+	public string ConnectionKey
+	{
+		get { return (string)GetProperty("ConnectionKey"); }
+		set { SetProperty("ConnectionKey", value); }
+	}
+
 	public string Dataset
 	{
-		get { return (string)GetProperty("Dataset"); }
-		set { SetProperty("Dataset", value); }
+		get
+		{
+			string value = (string)GetProperty("Dataset");
+			if (string.IsNullOrWhiteSpace(value))
+			{
+				value = Database;
+				if (!string.IsNullOrWhiteSpace(value))
+					value = Path.GetFileNameWithoutExtension(value);
+			}
+			return value;
+		}
+		set
+		{
+			SetProperty("Dataset", value);
+		}
 	}
 
 	public string DatasetId
 	{
-		get { return (string)GetProperty("DatasetId"); }
-		set { SetProperty("DatasetId", value); }
+		get { return (string)GetProperty(C_KeyExDatasetId); }
+		set { SetProperty(C_KeyExDatasetId, value); }
 	}
 
-	public string ExternalKey
+	public string ConnectionName
 	{
-		get { return (string)GetProperty("ExternalKey"); }
-		set { SetProperty("ExternalKey", value); }
+		get { return (string)GetProperty(C_KeyExConnectionName); }
+		set { SetProperty(C_KeyExConnectionName, value); }
+	}
+
+	public EnConnectionSource ConnectionSource
+	{
+		get { return (EnConnectionSource)GetProperty("ConnectionSource"); }
+		set { SetProperty("ConnectionSource", value); }
 	}
 
 	public string AdministratorLogin
@@ -221,7 +248,7 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	public EnEngineType ServerEngine
 	{
 		get { return (EnEngineType)GetProperty("ServerEngine"); }
-		set { SetProperty("ServerEngine", value); }
+		set { SetProperty("ServerEngine", (int)value); }
 	}
 
 
@@ -331,14 +358,17 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 	/// Gets the DatsetKey property and sets and registers it if successful.
 	/// </summary>
 	/// <returns>Returns the value tuple of the derived DatasetKey else null and
-	/// a boolean indicating wehther or not a connection was opened.</returns>
+	/// a boolean indicating wether or not a connection was opened.</returns>
 	// ---------------------------------------------------------------------------------
 	public virtual (string, bool) GetSet_DatasetKey()
 	{
 		if (!IsComplete)
 			return (null, false);
 
-		CsbAgent csa = CsbAgent.CreateInstance(this);
+		CsbAgent csa = RctManager.ShutdownState ? null : RctManager.CloneRegistered(this);
+		if (csa == null)
+			return (null, false);
+
 		string datasetKey = csa.DatasetKey;
 
 		if (string.IsNullOrEmpty(datasetKey))
@@ -511,10 +541,12 @@ public abstract partial class AbstractPropertyAgent : IBPropertyAgent
 
 		if (enumValue != null)
 		{
-			if (enumValue.GetType().IsSubclassOf(typeof(Enum)) || enumValue.GetType() == typeof(int))
-				value = Convert.ToInt32(enumValue);
-			else if (enumValue is string s)
-				value = Convert.ToInt32(Enum.Parse(Describers[name].PropertyType, s, true));
+			if (enumValue is Enum enumType)
+				value = enumType;
+			else if (value is string s)
+				value = Enum.Parse(Describers[name].PropertyType, s, true);
+			else
+				value = (Enum)value;
 		}
 
 

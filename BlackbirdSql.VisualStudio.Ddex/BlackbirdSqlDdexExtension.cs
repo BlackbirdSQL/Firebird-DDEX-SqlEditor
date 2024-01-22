@@ -4,7 +4,6 @@
 
 using System;
 using System.Data.Common;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,7 +11,6 @@ using BlackbirdSql.Controller;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.ComponentModel;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
@@ -26,6 +24,8 @@ using BlackbirdSql.VisualStudio.Ddex.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 
 using FirebirdSql.Data.FirebirdClient;
+
+using Microsoft.VisualStudio;
 
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Services;
@@ -41,10 +41,13 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 //										BlackbirdSqlDdexExtension Class 
 //
 /// <summary>
-/// BlackbirdSql.Data.Ddex DDEX 2.0 <see cref="IVsPackage"/> class implementation
+/// BlackbirdSql.Data.Ddex DDEX 2.0 <see cref="IVsPackage"/> class implementation.
 /// </summary>
 /// <remarks>
 /// Implements the package exposed by this assembly and registers itself with the shell.
+/// This is a multi-Extension class implementation of <see cref="IBAsyncPackage"/>.
+/// The current package hieararchy is BlackbirdSqlDdexExtension > <see cref="ControllerAsyncPackage"/> >
+/// <see cref="EditorExtension.EditorExtensionAsyncPackage"/> > <see cref="AbstractAsyncPackage"/>.
 /// </remarks>
 // =========================================================================================================
 
@@ -72,8 +75,8 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 // [ProvideLoadKey("Standard", "1.0", "DDEX Provider for BlackbirdClient", "..", 999)]
 
 // We start loading as soon as the VS shell is available.
-[ProvideAutoLoad(PackageData.ShellInitializedContextRuleGuid, PackageAutoLoadFlags.BackgroundLoad)]
-[ProvideAutoLoad(PackageData.SolutionExistsContextRuleGuid, PackageAutoLoadFlags.BackgroundLoad)]
+[ProvideAutoLoad(VSConstants.UICONTEXT.ShellInitialized_string, PackageAutoLoadFlags.BackgroundLoad)]
+[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.BackgroundLoad)]
 
 // Not used
 // [ProvideMenuResource(1000, 1)] TBC
@@ -109,60 +112,23 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 {
 
-
-
-	#region Variables - BlackbirdSqlDdexExtension
-
-
-	#endregion Variables
-
-
-
-
-
-	// =========================================================================================================
-	#region Property accessors - BlackbirdSqlDdexExtension
-	// =========================================================================================================
-
 	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Accessor to the <see cref="IBPackageController"/> singleton instance
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public override IBPackageController Controller => _Controller
-		??= PackageController.CreateInstance(this);
-
-	private PersistentSettings ExtensionSettings => (PersistentSettings)PersistentSettings.Instance;
-
-	#endregion Property accessors
-
-
-
-
-
-	// =========================================================================================================
 	#region Constructors / Destructors - BlackbirdSqlDdexExtension
-	// =========================================================================================================
-
-
 	// ---------------------------------------------------------------------------------
+
+
 	/// <summary>
 	/// BlackbirdSqlDdexExtension package .ctor
 	/// </summary>
-	// ---------------------------------------------------------------------------------
 	public BlackbirdSqlDdexExtension() : base()
 	{
-		AddOptionKey(GlobalsAgent.C_PersistentKey);
 	}
 
 
-
-	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// BlackbirdSqlDdexExtension package disposal 
 	/// </summary>
 	/// <param name="disposing"></param>
-	// ---------------------------------------------------------------------------------
 	protected override void Dispose(bool disposing)
 	{
 		base.Dispose(disposing);
@@ -174,19 +140,32 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 
 
 
+	// =========================================================================================================
+	#region Property accessors - BlackbirdSqlDdexExtension
+	// =========================================================================================================
+
+
+	/// <summary>
+	/// Accessor to user options at this level of the <see cref="IBAsyncPackage"/> class hierarchy.
+	/// </summary>
+	private PersistentSettings ExtensionSettings => (PersistentSettings)PersistentSettings.Instance;
+
+
+	#endregion Property accessors
+
+
+
 
 	// =========================================================================================================
 	#region Method Implementations - BlackbirdSqlDdexExtension
 	// =========================================================================================================
 
 
-	/*
-	public override IVsDataConnectionDialog CreateConnectionDialogHandler()
-	{
-		return new TDataConnectionDlgHandler();
-	}
-	*/
-
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets a service interface from this service provider.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public override TInterface GetService<TService, TInterface>()
 	{
 		TInterface instance = null;
@@ -205,6 +184,13 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 		return instance;
 	}
 
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets a service interface from this service provider asynchronously.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public override Task<TInterface> GetServiceAsync<TService, TInterface>()
 	{
 		Type type = typeof(TService);
@@ -216,6 +202,8 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 
 		return task as Task<TInterface>;
 	}
+
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -278,12 +266,15 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 	/// It is the final descendent package class's responsibility to initiate the call
 	/// to FinalizeAsync.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public override async Task FinalizeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 	{
+		Diag.ThrowIfNotOnUIThread();
+
 		if (cancellationToken.IsCancellationRequested)
 			return;
 
-		// Load all packages settings models and propogate throughout the extension.
+		// Load all packages settings models and propogate throughout the extension hierarchy.
 
 		PropagateSettings();
 
@@ -292,13 +283,8 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 		ServiceContainer.AddService(typeof(IBProviderSchemaFactory), ServicesCreatorCallbackAsync, promote: true);
 		ServiceContainer.AddService(typeof(IVsDataConnectionDialog), ServicesCreatorCallbackAsync, promote: true);
 
-		_ = AdviseEventsAsync();
-
-		await base.FinalizeAsync(cancellationToken, progress);
-
-
 		// Descendents have completed their final async initialization now we perform ours.
-
+		await base.FinalizeAsync(cancellationToken, progress);
 
 	}
 
@@ -329,11 +315,11 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 		{
 			return new DslProviderSchemaFactory();
 		}
-		// IVsDataConnectionDialog
 		if (serviceType == typeof(IVsDataConnectionDialog))
 		{
 			return new TDataConnectionDlgHandler();
 		}
+
 
 		return await base.CreateServiceInstanceAsync(serviceType, token);
 
@@ -365,7 +351,6 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 
 
 
-
 	// =========================================================================================================
 	#region Methods - BlackbirdSqlDdexExtension
 	// =========================================================================================================
@@ -373,64 +358,16 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Enables solution and running document table event handling
+	/// Starts up extension user options push notifications. Only the final class in
+	/// the <see cref="IBAsyncPackage"/> class hierarchy should implement the method.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private void AdviseEvents()
+	protected override void PropagateSettings()
 	{
 		if (_Initialized)
 			return;
-
-		try
-		{
-			if (Dte == null)
-				throw new NullReferenceException(Resources.ExceptionDteIsNull);
-
-			// If it's null there's an issue. Possibly we've come in too early
-			if (VsSolution == null)
-				throw new NullReferenceException(Resources.ExceptionSVsSolutionIsNull);
-
-			if (DocTable == null)
-				throw new NullReferenceException(Resources.ExceptionIVsRunningDocumentTableIsNull);
-
-			if (Controller == null)
-				throw new NullReferenceException(Resources.ExceptionIBPackageControllerIsNull);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw;
-		}
 
 		_Initialized = true;
-
-		Controller.AdviseEvents();
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Enables solution and running document table event handling
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private async Task AdviseEventsAsync()
-	{
-		if (_Initialized)
-			return;
-
-		await JoinableTaskFactory.SwitchToMainThreadAsync(DisposalToken);
-
-
-		AdviseEvents();
-	}
-
-
-
-	private void PropagateSettings()
-	{
-		if (_Initialized)
-			return;
 
 		PropagateSettingsEventArgs e = new();
 
@@ -448,28 +385,6 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 	// =========================================================================================================
 	#region Event handlers - BlackbirdSqlDdexExtension
 	// =========================================================================================================
-
-
-	protected override void OnLoadOptions(string key, Stream stream)
-	{
-		// If this is called early we have to initialize synchronously.
-		PropagateSettings();
-		AdviseEvents();
-
-		if (key == GlobalsAgent.C_PersistentKey)
-			_OnLoadSolutionOptionsEvent?.Invoke(stream);
-		else
-			base.OnLoadOptions(key, stream);
-	}
-
-
-	protected override void OnSaveOptions(string key, Stream stream)
-	{
-		if (key == GlobalsAgent.C_PersistentKey)
-			_OnSaveSolutionOptionsEvent?.Invoke(stream);
-		else
-			base.OnSaveOptions(key, stream);
-	}
 
 
 	#endregion Event handlers

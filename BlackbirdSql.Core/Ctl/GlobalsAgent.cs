@@ -2,19 +2,10 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Runtime.InteropServices;
 using BlackbirdSql.Core.Ctl.Config;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
-
-using EnvDTE;
-
-using Microsoft;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 
 
 namespace BlackbirdSql.Core.Ctl;
@@ -84,14 +75,14 @@ public class GlobalsAgent : AbstractGlobalsAgent
 
 
 	// =========================================================================================================
-	#region Variables - GlobalsAgent
+	#region Fields - GlobalsAgent
 	// =========================================================================================================
 
 
 	private static object _SolutionObject;
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 
@@ -242,6 +233,14 @@ public class GlobalsAgent : AbstractGlobalsAgent
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Returns a boolean indicating whether or not a solution may be validated
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool ValidateSolution => _ValidateSolution;
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Returns a boolean indicating whether or not the app.config may be validated
 	/// </summary>
 	// ---------------------------------------------------------------------------------
@@ -338,7 +337,7 @@ public class GlobalsAgent : AbstractGlobalsAgent
 	/// <param name="stream">The stream from <see cref="Package.OnLoadOptions" event./></param>
 	// ---------------------------------------------------------------------------------
 	public GlobalsAgent(object solution, Stream stream) :
-		base(stream, PersistentSettings.PersistentValidation,
+		base(stream, PersistentSettings.ValidateSolution, PersistentSettings.PersistentValidation,
 			PersistentSettings.ValidateConfig, PersistentSettings.ValidateEdmx)
 	{
 		_SolutionObject = solution;
@@ -380,7 +379,7 @@ public class GlobalsAgent : AbstractGlobalsAgent
 		{
 			if (_SolutionGlobals == null)
 			{
-				Diag.Stack("_SolutionGlobals is null");
+				Diag.StackException("_SolutionGlobals is null");
 				return false;
 			}
 
@@ -445,7 +444,6 @@ public class GlobalsAgent : AbstractGlobalsAgent
 				else
 					value &= ~flag2;
 			}
-
 
 			Value = value;
 

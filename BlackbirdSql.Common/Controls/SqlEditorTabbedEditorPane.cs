@@ -37,10 +37,6 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace BlackbirdSql.Common.Controls;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
-// [SuppressMessage("Usage", "VSTHRD104:Offer async methods")]
-
 public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWindowPane, IVsFindTarget, IVsFindTarget2, IBVsFindTarget3
 {
 
@@ -73,12 +69,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 	{
 		get
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			string result = null;
 
@@ -768,12 +759,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 		SqlEditorCodeTab sqlEditorCodeTab = GetSqlEditorCodeTab();
 		if (sqlEditorCodeTab != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			IVsWindowFrame currentFrame = sqlEditorCodeTab.CurrentFrame;
 			Native.ThrowOnFailure(currentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar));
@@ -853,7 +839,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 			return tab as T;
 		}
 
-		Diag.Stack($"Could not get editor tab type: {typeof(T)}  Guid:{rguidLogicalView}");
+		Diag.StackException($"Could not get editor tab type: {typeof(T)}  Guid:{rguidLogicalView}");
 		return result;
 	}
 
@@ -1175,12 +1161,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 
 	private void UpdateWindowCaption()
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		IVsWindowFrame vsWindowFrame = (IVsWindowFrame)GetService(typeof(IVsWindowFrame));
 		if (vsWindowFrame != null)
@@ -1205,12 +1186,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 
 	private void UpdateToolTip()
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		IVsWindowFrame vsWindowFrame = (IVsWindowFrame)GetService(typeof(IVsWindowFrame));
 		if (vsWindowFrame == null)
@@ -1311,12 +1287,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 			throw ex;
 		}
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		frame.GetProperty((int)__VSFPROPID.VSFPROPID_SPFrame, out object pvar);
 		Microsoft.VisualStudio.OLE.Interop.IServiceProvider site = pvar as Microsoft.VisualStudio.OLE.Interop.IServiceProvider;

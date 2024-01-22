@@ -2,6 +2,7 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.PropertyWindow.SqlConnectionPropertiesDisplay
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
@@ -12,8 +13,9 @@ using BlackbirdSql.Common.Ctl.ComponentModel;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Services;
@@ -137,6 +139,27 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 					return _Csa.Port;
 
 				return 0;
+			}
+		}
+
+		[GlobalizedCategory("PropertyWindowConnectionDetails")]
+		[GlobalizedDescription("PropertyWindowConnectionStringDescription")]
+		[GlobalizedDisplayName("PropertyWindowConnectionStringDisplayName")]
+		public string ConnectionString
+		{
+			get
+			{
+				ValidateStoredConnection();
+
+				if (_Csa == null)
+					return string.Empty;
+
+				CsbAgent csa = new(_Csa.ConnectionString);
+
+				if (csa.ContainsKey(CoreConstants.C_KeyPassword))
+					csa.Password = "********";
+
+				return csa.ConnectionString;
 			}
 		}
 
@@ -312,9 +335,9 @@ namespace BlackbirdSql.Common.Controls.PropertiesWindow
 		{
 			if (Connection != null)
 			{
-				if (_Csa == null || !_Csa.Equals(Connection))
+				if (_Csa == null || _Csa.Invalidated(Connection))
 				{
-					_Csa = CsbAgent.CreateInstance(Connection);
+					_Csa = RctManager.ShutdownState ? null : RctManager.CloneVolatile(Connection);
 
 					_ConnectionInfo = null;
 					_ServerVersion = null;

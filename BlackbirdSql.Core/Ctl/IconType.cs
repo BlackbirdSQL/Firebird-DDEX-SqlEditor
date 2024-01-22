@@ -2,25 +2,19 @@
 
 namespace BlackbirdSql.Core.Ctl;
 
-public class IconType : IBIconType
+public class IconType(string name, string prefix) : IBIconType
 {
-	protected static int _Seed = -1;
+	private readonly string _Name = name;
+	private readonly string _Prefix = prefix;
 
-	private readonly int _Id;
-	private readonly string _Name;
-	private readonly string _Prefix;
+
+
+	protected static int _Seed = -1;
+	private readonly int _Id = ++_Seed;
 
 
 	public int Id => _Id;
 	public string Name => _Name;
-
-
-	public IconType(string name, string prefix)
-	{
-		_Id = ++_Seed;
-		_Name = name;
-		_Prefix = prefix;
-	}
 
 	public override string ToString() => $"{_Prefix}{Name}x";
 }

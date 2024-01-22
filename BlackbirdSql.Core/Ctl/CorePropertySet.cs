@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Model.Enums;
 using FirebirdSql.Data.FirebirdClient;
 
 using static BlackbirdSql.Core.Ctl.CoreConstants;
@@ -50,8 +51,10 @@ public abstract class CorePropertySet : PropertySet
 
 		new Describer(C_KeyExDataset, typeof(string), C_DefaultExDataset),
 		new Describer(C_KeyExDatasetKey, typeof(string), C_DefaultExDatasetKey),
+		new Describer(C_KeyExConnectionKey, typeof(string), C_DefaultExConnectionKey),
 		new Describer(C_KeyExDatasetId, typeof(string), C_DefaultExDatasetId),
-		new Describer(C_KeyExExternalKey, typeof(string), C_DefaultExExternalKey),
+		new Describer(C_KeyExConnectionName, typeof(string), C_DefaultExConnectionName),
+		new Describer(C_KeyExConnectionSource, typeof(EnConnectionSource), C_DefaultExConnectionSource),
 		new Describer(C_KeyExServerEngine, typeof(EnEngineType), C_DefaultExServerEngine),
 		new Describer(C_KeyExServerVersion, typeof(Version), C_DefaultExServerVersion),
 		new Describer(C_KeyExPersistPassword, typeof(bool), C_DefaultExPersistPassword, false, false, false),
@@ -59,6 +62,17 @@ public abstract class CorePropertySet : PropertySet
 		new Describer(C_KeyExServerFullyQualifiedDomainName, typeof(string), C_DefaultExServerFullyQualifiedDomainName),
 		new Describer(C_KeyExOtherParams, typeof(string))
 	];
+	public static readonly KeyValuePair<string, string>[] Synonyms =
+		[
+			StringPair("server", C_KeyDataSource),
+			StringPair("host", C_KeyDataSource),
+			StringPair("uid", C_KeyUserID),
+			StringPair("user", C_KeyUserID),
+			StringPair("username", C_KeyUserID),
+			StringPair("user name", C_KeyUserID),
+			StringPair("userpassword", C_KeyPassword),
+			StringPair("user password", C_KeyPassword),
+		];
 
 
 	#endregion Constants
@@ -73,6 +87,7 @@ public abstract class CorePropertySet : PropertySet
 	public static void CreateAndPopulatePropertySetFromStatic(DescriberDictionary describers)
 	{
 		describers.AddRange(Describers);
+		describers.AddSynonyms(Synonyms);
 	}
 
 

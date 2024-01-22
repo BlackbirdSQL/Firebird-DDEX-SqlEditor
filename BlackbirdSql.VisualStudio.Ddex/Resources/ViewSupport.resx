@@ -987,4 +987,16 @@
   <data name="Identifier_Name_ClientVersion" xml:space="preserve">
     <value>Client Version</value>
   </data>
+  <data name="Identifier_Desc_DataSource" xml:space="preserve">
+    <value>The Server / DataSource of the database.</value>
+  </data>
+  <data name="Identifier_Name_DataSource" xml:space="preserve">
+    <value>Server</value>
+  </data>
+  <data name="Identifier_Desc_DatasetId" xml:space="preserve">
+    <value>The database unique short name or trimmed database file name</value>
+  </data>
+  <data name="Identifier_Name_DatasetId" xml:space="preserve">
+    <value>Dataset Id</value>
+  </data>
 </root>

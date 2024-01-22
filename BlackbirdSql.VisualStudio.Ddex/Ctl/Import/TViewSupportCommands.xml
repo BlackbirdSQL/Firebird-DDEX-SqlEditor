@@ -1,8 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <DataViewSupport xmlns="http://schemas.microsoft.com/VisualStudio/2007/07/Data/DataViewSupport">
 
-	<!-- Commands -->
+	<!-- Root commands list -->
+	<Define name="TplRootCommands" >
+		<CommandRef name="CommandOverrideEditLabel" />
+	</Define>
 
+	<!-- Global commands list -->
+	<Define name="TplGlobalCommands" >
+		<CommandRef name="CommandTraceRctUniversal" />
+		<CommandRef name="CommandNewSqlQueryUniversal" />
+		<CommandRef name="CommandNewDesignerQueryUniversal" />
+		<CommandRef name="CommandNewQueryGlobal" />
+		<CommandRef name="CommandOverrideNewQueryLocal" />
+		<CommandRef name="CommandRetrieveDesignerUniversal" />
+		<CommandRef name="CommandRetrieveDataGlobal" />
+		<CommandRef name="CommandTextOpenScriptUniversal" />
+		<CommandRef name="CommandTextOpenAlterScriptUniversal" />
+	</Define>
+
+
+	
+	<!-- Commands -->
 	
 	<!-- Original built-in commands -->
 	<Define name="CommandNewQueryGlobal" >
@@ -29,8 +48,15 @@
 	<Define name="CommandOverrideNewQueryLocal">
 		<CommandRef name="CommandHookSeDataCommandSetUniversal" arguments="0x3528" />
 	</Define>
+	<Define name="CommandOverrideEditLabel">
+		<CommandRef name="CommandHookSeInterfaceCommandSetUniversal" arguments="0x2102" />
+	</Define>
+
 
 	<!-- BlackbirdSql custom commands (Universal Suffix) -->
+	<Define name="CommandTraceRctUniversal">
+		<CommandRef name="CommandHookCommandSetUniversal" arguments="0x0339" />
+	</Define>
 	<Define name="CommandNewSqlQueryUniversal">
 		<CommandRef name="CommandHookCommandSetUniversal" arguments="0x0310" />
 	</Define>
@@ -48,6 +74,12 @@
 	</Define>
 
 
+	<!-- Standard Command Set 97 commands hook -->
+	<Define name="CommandHookVsStd97CommandSetUniversal" parameters="cmdid">
+		<Command guid="5EFC7975-14BC-11CF-9B2B-00AA00573819" cmdid="$(cmdid)"
+				 provider="BlackbirdSql.VisualStudio.Ddex.Ctl.CommandProviders.UniversalCommandProvider"  isDefault="true" />
+	</Define>
+
 	<!-- Built-in SE DataTools commands hook -->
 	<Define name="CommandHookSeDataCommandSet" parameters="cmdid">
 		<Command guid="501822E1-B5AF-11d0-B4DC-00A0C91506EF" cmdid="$(cmdid)"
@@ -64,6 +96,18 @@
 	<!-- Overriden SE CommandSet for Universal nodes hook -->
 	<Define name="CommandHookSeDataCommandSetUniversal" parameters="cmdid">
 		<Command guid="501822E1-B5AF-11d0-B4DC-00A0C91506EF" cmdid="$(cmdid)"
+				 provider="BlackbirdSql.VisualStudio.Ddex.Ctl.CommandProviders.UniversalCommandProvider" isDefault="true" />
+	</Define>
+
+	<!-- Overriden SE Interfave CommandSet for Universal nodes hook -->
+	<Define name="CommandHookSeInterfaceCommandSetUniversal" parameters="cmdid">
+		<Command guid="74d21311-2aee-11d1-8bfb-00a0c90f26f7" cmdid="$(cmdid)"
+				 provider="BlackbirdSql.VisualStudio.Ddex.Ctl.CommandProviders.UniversalCommandProvider" isDefault="true" />
+	</Define>
+
+	<!-- Overriden SE Hierarchy Window CommandSet for Universal nodes hook -->
+	<Define name="CommandHookSeHierarchyCommandSetUniversal" parameters="cmdid">
+		<Command guid="60481700-078B-11D1-AAF8-00A0C9055A90" cmdid="$(cmdid)"
 				 provider="BlackbirdSql.VisualStudio.Ddex.Ctl.CommandProviders.UniversalCommandProvider" isDefault="true" />
 	</Define>
 

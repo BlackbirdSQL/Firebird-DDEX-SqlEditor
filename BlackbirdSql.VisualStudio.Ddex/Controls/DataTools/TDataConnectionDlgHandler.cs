@@ -22,590 +22,70 @@ using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.Win32;
 
+
 namespace BlackbirdSql.VisualStudio.Ddex.Controls.DataTools;
 
+// =========================================================================================================
+//										TDataConnectionDlgHandler Class
+//
+// =========================================================================================================
 public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 {
-	/// <summary>
-	/// Orignal class: Microsoft.VisualStudio.Data.HostServices.Environment.ConnectionDialogContainer.
-	/// </summary>
-	private class TiConnectionDialogContainer(IUIService uiService, IServiceProvider serviceProvider) : Container
+
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - TDataConnectionDlgHandler
+	// ---------------------------------------------------------------------------------
+
+
+	public TDataConnectionDlgHandler()
 	{
-		private ProfessionalColorTable _ProfessionalColorTable;
-
-		private AmbientProperties _AmbientProperties;
-
-		private readonly IUIService _UiService = uiService;
-
-		private readonly IServiceProvider _ServiceProvider = serviceProvider;
-
-		protected override object GetService(Type serviceType)
+		try
 		{
-			if (serviceType == typeof(AmbientProperties))
-			{
-				_AmbientProperties ??= new AmbientProperties
-					{
-						Font = _UiService.Styles["DialogFont"] as Font
-					};
-				return _AmbientProperties;
-			}
-			if (serviceType == typeof(ProfessionalColorTable))
-			{
-				_ProfessionalColorTable ??= _UiService.Styles["VsColorTable"] as ProfessionalColorTable;
-				return _ProfessionalColorTable;
-			}
-			object service = _ServiceProvider.GetService(serviceType);
-			if (service != null)
-			{
-				return service;
-			}
-			return base.GetService(serviceType);
+			_ConnectionDlg = (TDataConnectionDlg)Activator.CreateInstance(typeof(TDataConnectionDlg),
+				BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, [], null);
+		}
+		catch (TargetInvocationException ex)
+		{
+			throw ex.InnerException;
+		}
+		_ConnectionDlg.HeaderLabel = ControlsResources.TDataConnectionDlgHandler_HeaderLabel;
+		_ConnectionDlg.ChooseDataSourceAcceptText = ControlsResources.TDataConnectionDlgHandler_ChooseSourceAcceptText;
+		_ConnectionDlg.ContextHelpRequested += HandleContextHelpRequested;
+		_ConnectionDlg.VerifySettings += HandleVerifySettings;
+		_ConnectionDlg.LinkClicked += HandleLinkClicked;
+	}
+
+
+	~TDataConnectionDlgHandler()
+	{
+		Dispose(disposing: false);
+	}
+
+
+	public void Dispose()
+	{
+		Dispose(disposing: true);
+		GC.SuppressFinalize(this);
+	}
+
+
+	protected virtual void Dispose(bool disposing)
+	{
+		if (disposing)
+		{
+			_ConnectionDlg.Dispose();
 		}
 	}
 
 
-	/// <summary>
-	/// Original name: DataSourceCollection.
-	/// </summary>
-	private class TiDataSourceCollection(TDataConnectionDlgHandler dialog) : ICollection<Guid>, IEnumerable<Guid>, IEnumerable
-	{
-		private readonly IDictionary<Guid, TDataSource> _GuidDataSourceMapping = new Dictionary<Guid, TDataSource>();
+	#endregion Constructors / Destructors
 
-		private readonly TDataConnectionDlgHandler _DlgHandler = dialog;
 
-		public int Count => _DlgHandler._ConnectionDlg.DataSources.Count;
 
-		public bool IsReadOnly => _DlgHandler._ConnectionDlg.DataSources.IsReadOnly;
 
-		internal IDictionary<Guid, TDataSource> GuidDataSourceMapping => _GuidDataSourceMapping;
-
-		public void Add(Guid clsidItem)
-		{
-			if (clsidItem == Guid.Empty)
-			{
-				throw new ArgumentNullException("item");
-			}
-			if (!_GuidDataSourceMapping.ContainsKey(clsidItem))
-			{
-				_GuidDataSourceMapping.Add(clsidItem, CreateSource(clsidItem));
-				_DlgHandler._ConnectionDlg.DataSources.Add(_GuidDataSourceMapping[clsidItem]);
-			}
-		}
-
-		public void Add(IVsDataSource vsDataSource)
-		{
-			Guid clsid = vsDataSource.Guid;
-			if (!_GuidDataSourceMapping.ContainsKey(clsid))
-			{
-				_GuidDataSourceMapping.Add(clsid, CreateSource(clsid, vsDataSource));
-				_DlgHandler._ConnectionDlg.DataSources.Add(_GuidDataSourceMapping[clsid]);
-			}
-		}
-
-
-		public bool Contains(Guid clsidItem)
-		{
-			return _GuidDataSourceMapping.ContainsKey(clsidItem);
-		}
-
-		public bool Remove(Guid clsidItem)
-		{
-			if (_GuidDataSourceMapping.ContainsKey(clsidItem))
-			{
-				_DlgHandler._ConnectionDlg.DataSources.Remove(_GuidDataSourceMapping[clsidItem]);
-				_GuidDataSourceMapping.Remove(clsidItem);
-				return true;
-			}
-			return false;
-		}
-
-		public void Clear()
-		{
-			_DlgHandler._ConnectionDlg.DataSources.Clear();
-			_GuidDataSourceMapping.Clear();
-		}
-
-		public void CopyTo(Guid[] array, int arrayIndex)
-		{
-			_GuidDataSourceMapping.Keys.CopyTo(array, arrayIndex);
-		}
-
-		public IEnumerator<Guid> GetEnumerator()
-		{
-			return _GuidDataSourceMapping.Keys.GetEnumerator();
-		}
-
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return _GuidDataSourceMapping.Keys.GetEnumerator();
-		}
-
-		private TDataSource CreateSource(Guid clsidSource)
-		{
-			if (clsidSource == TDataSource.FbDataSource.NameClsid)
-				return TDataSource.FbDataSource;
-
-			if (clsidSource == _DlgHandler.UnspecifiedSource)
-			{
-				return _DlgHandler._ConnectionDlg.UnspecifiedDataSource;
-			}
-
-			IVsDataSourceManager sourceManager = Core.Controller.GetService<IVsDataSourceManager>();
-
-			if (!sourceManager.Sources.TryGetValue(clsidSource, out IVsDataSource value))
-			{
-				ArgumentException ex = new($"Unknown Source guid: {clsidSource}.");
-				Diag.Dug(ex);
-			}
-			return CreateSource(clsidSource, value);
-		}
-
-
-		private static TDataSource CreateSource(Guid clsidSource, IVsDataSource vsDataSource)
-		{
-			return new TDataSource(clsidSource.ToString(null, CultureInfo.InvariantCulture), vsDataSource.DisplayName);
-		}
-
-	}
-
-
-	/// <summary>
-	/// Orignal name: DataProviderCollection.
-	/// </summary>
-	private class TiDataProviderCollection(TDataSource source) : ICollection<Guid>, IEnumerable<Guid>, IEnumerable
-	{
-		private readonly IDictionary<Guid, BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools.TDataProvider> _GuidDataSourceMapping = new Dictionary<Guid, BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools.TDataProvider>();
-
-		private readonly TDataSource _DataSource = source;
-
-		public int Count => _DataSource.Providers.Count;
-
-		public bool IsReadOnly => _DataSource.Providers.IsReadOnly;
-
-		internal IDictionary<Guid, BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools.TDataProvider> Mapping => _GuidDataSourceMapping;
-
-		public void Add(Guid item)
-		{
-			if (item == Guid.Empty)
-			{
-				throw new ArgumentNullException("item");
-			}
-			if (!_GuidDataSourceMapping.ContainsKey(item))
-			{
-				_GuidDataSourceMapping.Add(item, CreateProvider(item));
-				_DataSource.Providers.Add(_GuidDataSourceMapping[item]);
-			}
-		}
-
-		public void Add(IVsDataProvider item)
-		{
-			Guid guid = item.Guid;
-			if (!_GuidDataSourceMapping.ContainsKey(guid))
-			{
-				_GuidDataSourceMapping.Add(guid, CreateProvider(item));
-				_DataSource.Providers.Add(_GuidDataSourceMapping[guid]);
-			}
-		}
-
-		public bool Contains(Guid item)
-		{
-			return _GuidDataSourceMapping.ContainsKey(item);
-		}
-
-		public bool Remove(Guid item)
-		{
-			if (_GuidDataSourceMapping.ContainsKey(item))
-			{
-				_DataSource.Providers.Remove(_GuidDataSourceMapping[item]);
-				_GuidDataSourceMapping.Remove(item);
-				return true;
-			}
-			return false;
-		}
-
-		public void Clear()
-		{
-			_DataSource.Providers.Clear();
-			_GuidDataSourceMapping.Clear();
-		}
-
-		public void CopyTo(Guid[] array, int arrayIndex)
-		{
-			_GuidDataSourceMapping.Keys.CopyTo(array, arrayIndex);
-		}
-
-		public IEnumerator<Guid> GetEnumerator()
-		{
-			return _GuidDataSourceMapping.Keys.GetEnumerator();
-		}
-
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return _GuidDataSourceMapping.Keys.GetEnumerator();
-		}
-
-		private static TDataProvider CreateProvider(Guid providerClsid)
-		{
-			// Always going to be BlackbirdSql.
-			TVsDataProvider value = new(providerClsid);
-			return new TiUIDataProvider(value);
-			/*
-			IVsDataProvider value = null;
-			if (!DataPackage.ProviderManager.Providers.TryGetValue(provider, out value))
-			{
-				throw new ArgumentException(ControlsResources.DataConnectionDlgHandler_UnknownProvider);
-			}
-			*/
-		}
-
-		private static TDataProvider CreateProvider(IVsDataProvider vsDataProvider)
-		{
-			return new TiUIDataProvider(vsDataProvider);
-		}
-	}
-
-
-	/// <summary>
-	/// Orignal name: UIDataProvider.
-	/// </summary>
-	private class TiUIDataProvider(IVsDataProvider vsDataProvider) : TDataProvider(vsDataProvider.Guid.ToString(null, CultureInfo.InvariantCulture), vsDataProvider.DisplayName, vsDataProvider.ShortDisplayName)
-	{
-		private readonly IVsDataProvider _VsDataProvider = vsDataProvider;
-
-		public Guid Clsid => new Guid(Name);
-
-		public override string GetDescription(TDataSource dataSource)
-		{
-			if (dataSource != null)
-			{
-				IVsDataSourceManager sourceManager = Core.Controller.GetService<IVsDataSourceManager>();
-
-				IVsDataSource vsDataSource = sourceManager.Sources[dataSource.NameClsid];
-
-				string description = vsDataSource.GetDescription(_VsDataProvider.Guid);
-				if (description != null)
-					return description;
-			}
-			return _VsDataProvider.Description;
-		}
-
-
-		
-		public override string GetDescriptionEx(TDataSource dataSource)
-		{
-			string text = $"Extended TDataSource Description for guid {dataSource.NameClsid}.";
-			/*
-			if (dataSource != null)
-			{
-				IVsDataSource vsDataSource = null; // DataPackage.SourceManager.Sources[new Guid(dataSource.Name)];
-				if (vsDataSource is IVsDataInternalDataSourceDescriptionEx vsDataInternalDataSourceDescriptionEx)
-				{
-					text = vsDataInternalDataSourceDescriptionEx.GetDescriptionEx(_VsDataProvider.Guid);
-					if (text != null)
-					{
-						return text;
-					}
-				}
-			}
-			IVsDataInternalDataProviderDescriptionEx vsDataInternalDataProviderDescriptionEx = _VsDataProvider as IVsDataInternalDataProviderDescriptionEx;
-			if (_VsDataProvider != null)
-			{
-				text = vsDataInternalDataProviderDescriptionEx.DescriptionEx;
-			}
-			*/
-			return text;
-		}
-
-		public override IDataConnectionUIControl CreateConnectionUIControl(TDataSource dataSource)
-		{
-			// Guid dataSourceGuid = ((dataSource != null) ? new Guid(dataSource.Guid) : Guid.Empty);
-			IDataConnectionUIControl dataConnectionUIControl = null; //  _VsDataProvider.TryCreateObject<IDataConnectionUIControl>(dataSourceGuid);
-			if (dataConnectionUIControl == null)
-			{
-				IVsDataConnectionUIControl vsDataConnectionUIControl = new TConnectionUIControl(); // _VsDataProvider.TryCreateObject<IVsDataConnectionUIControl>(dataSourceGuid);
-				if (vsDataConnectionUIControl != null)
-				{
-					dataConnectionUIControl = new TiDataConnectionUIControl(vsDataConnectionUIControl);
-				}
-			}
-			return dataConnectionUIControl;
-		}
-
-
-		public override IDataConnectionProperties CreateConnectionProperties(TDataSource dataSource)
-		{
-			Guid source = dataSource != null ? dataSource.NameClsid : Guid.Empty;
-			IDataConnectionProperties dataConnectionProperties = _VsDataProvider.TryCreateObject<IDataConnectionProperties>(source);
-			if (dataConnectionProperties == null)
-			{
-				IVsDataConnectionUIProperties vsDataConnectionUIProperties = _VsDataProvider.TryCreateObject<IVsDataConnectionUIProperties>(source);
-				if (vsDataConnectionUIProperties != null)
-				{
-					dataConnectionProperties = new TiDataConnectionUIProperties(source, vsDataConnectionUIProperties, _VsDataProvider);
-				}
-			}
-			return dataConnectionProperties;
-		}
-
-	}
-
-
-	/// <summary>
-	/// Orignal name: UIDataConnectionUIControl.
-	/// </summary>
-	private class TiDataConnectionUIControl(IVsDataConnectionUIControl connectionUIControl) : IDataConnectionUIControl, IContainerControl
-	{
-		private readonly IVsDataConnectionUIControl _ConnectionUIControl = connectionUIControl;
-
-		public Control ActiveControl
-		{
-			get
-			{
-				return _ConnectionUIControl.Control;
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
-
-		public void Initialize(IDataConnectionProperties connectionProperties)
-		{
-			IVsDataConnectionUIProperties vsDataConnectionUIProperties = connectionProperties as IVsDataConnectionUIProperties;
-			if (vsDataConnectionUIProperties == null && connectionProperties is TiDataConnectionUIProperties uIDataConnectionProperties)
-			{
-				vsDataConnectionUIProperties = uIDataConnectionProperties.InnerProperties;
-			}
-
-			_ConnectionUIControl.Site = vsDataConnectionUIProperties ?? throw new NotSupportedException();
-		}
-
-		public void LoadProperties()
-		{
-			_ConnectionUIControl.LoadProperties();
-		}
-
-		public bool ActivateControl(Control active)
-		{
-			throw new NotImplementedException();
-		}
-	}
-
-
-	/// <summary>
-	/// Orignal name: UIDataConnectionProperties.
-	/// </summary>
-	private class TiDataConnectionUIProperties : IDataConnectionProperties, ICustomTypeDescriptor
-	{
-		private class DefaultConnectionUITester(Guid provider) : IVsDataConnectionUITester
-		{
-			private Guid _Provider = provider;
-
-			public void Test(IVsDataConnectionUIProperties connectionUIProperties)
-			{
-				IVsDataConnectionFactory factory = Package.GetGlobalService(typeof(IVsDataConnectionFactory)) as IVsDataConnectionFactory
-					?? throw Diag.ServiceUnavailable(typeof(IVsDataConnectionFactory));
-				IVsDataConnection vsDataConnection = factory.CreateConnection(_Provider, connectionUIProperties.ToString(), encryptedString: false);
-				using (vsDataConnection)
-				{
-					IVsDataConnectionSupport vsDataConnectionSupport
-						= vsDataConnection.GetService(typeof(IVsDataConnectionSupport)) as IVsDataConnectionSupport
-						?? throw Diag.ServiceUnavailable(typeof(IVsDataConnectionSupport));
-
-					vsDataConnectionSupport.Open(doPromptCheck: false);
-				}
-			}
-		}
-
-		private Guid _DataSource;
-
-		private readonly IVsDataConnectionUIProperties _DataConnectionUiProperties;
-
-		private IVsDataConnectionUITester _DataConnectionUiTester;
-
-		private readonly IVsDataProvider _Provider;
-
-		public IVsDataConnectionUIProperties InnerProperties => _DataConnectionUiProperties;
-
-		public bool IsExtensible => _DataConnectionUiProperties.IsExtensible;
-
-		public object this[string propertyName]
-		{
-			get
-			{
-				if (_DataConnectionUiProperties.ContainsKey(propertyName))
-				{
-					object obj = _DataConnectionUiProperties[propertyName];
-					if (obj == null)
-					{
-						return DBNull.Value;
-					}
-					return obj;
-				}
-				return null;
-			}
-			set
-			{
-				if (value != null && value != DBNull.Value)
-				{
-					_DataConnectionUiProperties[propertyName] = value;
-					return;
-				}
-				Reset(propertyName);
-				if (value == null)
-				{
-					Remove(propertyName);
-				}
-			}
-		}
-
-		public bool IsComplete => _DataConnectionUiProperties.IsComplete;
-
-		public event EventHandler PropertyChanged;
-
-		public TiDataConnectionUIProperties(Guid source, IVsDataConnectionUIProperties connectionUIProperties, IVsDataProvider provider)
-		{
-			_DataSource = source;
-			_DataConnectionUiProperties = connectionUIProperties;
-			_DataConnectionUiProperties.PropertyChanged += HandlePropertyChanged;
-			_Provider = provider;
-		}
-
-		public void Reset()
-		{
-			_DataConnectionUiProperties.Reset();
-		}
-
-		public void Parse(string s)
-		{
-			_DataConnectionUiProperties.Parse(s);
-		}
-
-		public void Add(string propertyName)
-		{
-			try
-			{
-				_DataConnectionUiProperties.Add(propertyName, null);
-			}
-			catch (NotSupportedException ex)
-			{
-				throw new InvalidOperationException(ex.Message);
-			}
-		}
-
-		public bool Contains(string propertyName)
-		{
-			return _DataConnectionUiProperties.ContainsKey(propertyName);
-		}
-
-		public void Remove(string propertyName)
-		{
-			try
-			{
-				_DataConnectionUiProperties.Remove(propertyName);
-			}
-			catch (NotSupportedException)
-			{
-			}
-		}
-
-		public void Reset(string propertyName)
-		{
-			_DataConnectionUiProperties.Reset(propertyName);
-		}
-
-		public void Test()
-		{
-			if (_DataConnectionUiTester == null)
-			{
-				_DataConnectionUiTester = _Provider.TryCreateObject<IVsDataConnectionUITester>(_DataSource);
-				_DataConnectionUiTester ??= new DefaultConnectionUITester(_Provider.Guid);
-			}
-			_DataConnectionUiTester.Test(_DataConnectionUiProperties);
-		}
-
-		public override string ToString()
-		{
-			return ToFullString();
-		}
-
-		public string ToFullString()
-		{
-			return _DataConnectionUiProperties.ToString();
-		}
-
-		public string ToDisplayString()
-		{
-			return _DataConnectionUiProperties.ToDisplayString();
-		}
-
-		string ICustomTypeDescriptor.GetClassName()
-		{
-			return _DataConnectionUiProperties.GetClassName();
-		}
-
-		string ICustomTypeDescriptor.GetComponentName()
-		{
-			return _DataConnectionUiProperties.GetComponentName();
-		}
-
-		AttributeCollection ICustomTypeDescriptor.GetAttributes()
-		{
-			return _DataConnectionUiProperties.GetAttributes();
-		}
-
-		object ICustomTypeDescriptor.GetEditor(Type editorBaseType)
-		{
-			return _DataConnectionUiProperties.GetEditor(editorBaseType);
-		}
-
-		TypeConverter ICustomTypeDescriptor.GetConverter()
-		{
-			return _DataConnectionUiProperties.GetConverter();
-		}
-
-		PropertyDescriptor ICustomTypeDescriptor.GetDefaultProperty()
-		{
-			return _DataConnectionUiProperties.GetDefaultProperty();
-		}
-
-		PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties()
-		{
-			return _DataConnectionUiProperties.GetProperties();
-		}
-
-		PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties(Attribute[] attributes)
-		{
-			return _DataConnectionUiProperties.GetProperties(attributes);
-		}
-
-		EventDescriptor ICustomTypeDescriptor.GetDefaultEvent()
-		{
-			return _DataConnectionUiProperties.GetDefaultEvent();
-		}
-
-		EventDescriptorCollection ICustomTypeDescriptor.GetEvents()
-		{
-			return _DataConnectionUiProperties.GetEvents();
-		}
-
-		EventDescriptorCollection ICustomTypeDescriptor.GetEvents(Attribute[] attributes)
-		{
-			return _DataConnectionUiProperties.GetEvents(attributes);
-		}
-
-		object ICustomTypeDescriptor.GetPropertyOwner(PropertyDescriptor pd)
-		{
-			return _DataConnectionUiProperties.GetPropertyOwner(pd);
-		}
-
-		private void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			PropertyChanged?.Invoke(this, e);
-		}
-	}
-
-
+	// =========================================================================================================
+	#region Fields - TDataConnectionDlgHandler 
+	// =========================================================================================================
 
 
 	private bool _IsConnectMode;
@@ -623,6 +103,14 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 	private readonly TDataConnectionDlg _ConnectionDlg;
 
 
+	#endregion Fields
+
+
+
+
+	// =========================================================================================================
+	#region Property accessors - TDataConnectionDlgHandler
+	// =========================================================================================================
 
 
 	public string Title
@@ -904,6 +392,10 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 		}
 	}
 
+
+	public bool UpdateServerExplorer => _ConnectionDlg.UpdateServerExplorer;
+
+
 	/*
 	private static IDictionary<Guid, Guid> ProviderSelections
 	{
@@ -922,28 +414,16 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 
 	public event EventHandler VerifyConfiguration;
 
-	public TDataConnectionDlgHandler()
-	{
-		// v_form = Host.System.CreateInstance<DataConnectionDlg>(Array.Empty<object>());
-		try
-		{
-			_ConnectionDlg = (TDataConnectionDlg)Activator.CreateInstance(typeof(TDataConnectionDlg), BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, [], null);
-		}
-		catch (TargetInvocationException ex)
-		{
-			throw ex.InnerException;
-		}
-		_ConnectionDlg.HeaderLabel = ControlsResources.TDataConnectionDlgHandler_HeaderLabel;
-		_ConnectionDlg.ChooseDataSourceAcceptText = ControlsResources.TDataConnectionDlgHandler_ChooseSourceAcceptText;
-		_ConnectionDlg.ContextHelpRequested += HandleContextHelpRequested;
-		_ConnectionDlg.VerifySettings += HandleVerifySettings;
-		_ConnectionDlg.LinkClicked += HandleLinkClicked;
-	}
 
-	~TDataConnectionDlgHandler()
-	{
-		Dispose(disposing: false);
-	}
+	#endregion Property accessors
+
+
+
+
+	// =========================================================================================================
+	#region Methods - TDataConnectionDlgHandler
+	// =========================================================================================================
+
 
 	public void AddAllSources()
 	{
@@ -1155,10 +635,14 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 		SelectedSource = Guid.Empty;
 	}
 
+
+
 	public bool ShowDialog()
 	{
 		return ShowDialog(_ConnectionDlg) == System.Windows.Forms.DialogResult.OK;
 	}
+
+
 
 	public virtual System.Windows.Forms.DialogResult ShowDialog(Form form)
 	{
@@ -1191,6 +675,8 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 			SystemEvents.UserPreferenceChanged -= onPreferencesChanged;
 		}
 	}
+
+
 
 	public IVsDataConnection ShowDialog(bool connect)
 	{
@@ -1230,6 +716,8 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 		}
 	}
 
+
+
 	public void SaveProviderSelections()
 	{
 		/*
@@ -1259,6 +747,8 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 		}
 		*/
 	}
+
+
 
 	public void SaveSourceSelection()
 	{
@@ -1296,11 +786,16 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 		*/
 	}
 
-	public void Dispose()
-	{
-		Dispose(disposing: true);
-		GC.SuppressFinalize(this);
-	}
+
+	#endregion Methods
+
+
+
+
+	// =========================================================================================================
+	#region Event Handling - TDataConnectionDlgHandler
+	// =========================================================================================================
+
 
 	protected virtual void OnVerifyConfiguration(EventArgs e)
 	{
@@ -1341,13 +836,7 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 		*/
 	}
 
-	protected virtual void Dispose(bool disposing)
-	{
-		if (disposing)
-		{
-			_ConnectionDlg.Dispose();
-		}
-	}
+
 
 	private void HandleContextHelpRequested(object sender, ContextHelpEventArgs e)
 	{
@@ -1378,6 +867,7 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 
 	private void HandleVerifySettings(object sender, EventArgs e)
 	{
+
 		OnVerifyConfiguration(e);
 	}
 
@@ -1394,4 +884,630 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 			}
 		}
 	}
+
+
+	#endregion Event Handling
+
+
+
+
+	// =========================================================================================================
+	#region						Sub-Classes - TDataConnectionDlgHandler
+	// =========================================================================================================
+
+
+	// ---------------------------------------------------------------------------------
+	//					   Internal Class TiConnectionDialogContainer
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Orignal class: Microsoft.VisualStudio.Data.HostServices.Environment.ConnectionDialogContainer.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private class TiConnectionDialogContainer(IUIService uiService, IServiceProvider serviceProvider) : Container
+	{
+		private ProfessionalColorTable _ProfessionalColorTable;
+
+		private AmbientProperties _AmbientProperties;
+
+		private readonly IUIService _UiService = uiService;
+
+		private readonly IServiceProvider _ServiceProvider = serviceProvider;
+
+		protected override object GetService(Type serviceType)
+		{
+			if (serviceType == typeof(AmbientProperties))
+			{
+				_AmbientProperties ??= new AmbientProperties
+				{
+					Font = _UiService.Styles["DialogFont"] as Font
+				};
+				return _AmbientProperties;
+			}
+			if (serviceType == typeof(ProfessionalColorTable))
+			{
+				_ProfessionalColorTable ??= _UiService.Styles["VsColorTable"] as ProfessionalColorTable;
+				return _ProfessionalColorTable;
+			}
+			object service = _ServiceProvider.GetService(serviceType);
+			if (service != null)
+			{
+				return service;
+			}
+			return base.GetService(serviceType);
+		}
+	}
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	//						Internal Class TiDataSourceCollection
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Original name: DataSourceCollection.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private class TiDataSourceCollection(TDataConnectionDlgHandler dialog) : ICollection<Guid>, IEnumerable<Guid>, IEnumerable
+	{
+		private readonly IDictionary<Guid, TDataSource> _GuidDataSourceMapping = new Dictionary<Guid, TDataSource>();
+
+		private readonly TDataConnectionDlgHandler _DlgHandler = dialog;
+
+		public int Count => _DlgHandler._ConnectionDlg.DataSources.Count;
+
+		public bool IsReadOnly => _DlgHandler._ConnectionDlg.DataSources.IsReadOnly;
+
+		internal IDictionary<Guid, TDataSource> GuidDataSourceMapping => _GuidDataSourceMapping;
+
+		public void Add(Guid clsidItem)
+		{
+			if (clsidItem == Guid.Empty)
+			{
+				throw new ArgumentNullException("item");
+			}
+			if (!_GuidDataSourceMapping.ContainsKey(clsidItem))
+			{
+				_GuidDataSourceMapping.Add(clsidItem, CreateSource(clsidItem));
+				_DlgHandler._ConnectionDlg.DataSources.Add(_GuidDataSourceMapping[clsidItem]);
+			}
+		}
+
+		public void Add(IVsDataSource vsDataSource)
+		{
+			Guid clsid = vsDataSource.Guid;
+			if (!_GuidDataSourceMapping.ContainsKey(clsid))
+			{
+				_GuidDataSourceMapping.Add(clsid, CreateSource(clsid, vsDataSource));
+				_DlgHandler._ConnectionDlg.DataSources.Add(_GuidDataSourceMapping[clsid]);
+			}
+		}
+
+
+		public bool Contains(Guid clsidItem)
+		{
+			return _GuidDataSourceMapping.ContainsKey(clsidItem);
+		}
+
+		public bool Remove(Guid clsidItem)
+		{
+			if (_GuidDataSourceMapping.ContainsKey(clsidItem))
+			{
+				_DlgHandler._ConnectionDlg.DataSources.Remove(_GuidDataSourceMapping[clsidItem]);
+				_GuidDataSourceMapping.Remove(clsidItem);
+				return true;
+			}
+			return false;
+		}
+
+		public void Clear()
+		{
+			_DlgHandler._ConnectionDlg.DataSources.Clear();
+			_GuidDataSourceMapping.Clear();
+		}
+
+		public void CopyTo(Guid[] array, int arrayIndex)
+		{
+			_GuidDataSourceMapping.Keys.CopyTo(array, arrayIndex);
+		}
+
+		public IEnumerator<Guid> GetEnumerator()
+		{
+			return _GuidDataSourceMapping.Keys.GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return _GuidDataSourceMapping.Keys.GetEnumerator();
+		}
+
+		private TDataSource CreateSource(Guid clsidSource)
+		{
+			if (clsidSource == TDataSource.FbDataSource.NameClsid)
+				return TDataSource.FbDataSource;
+
+			if (clsidSource == _DlgHandler.UnspecifiedSource)
+			{
+				return _DlgHandler._ConnectionDlg.UnspecifiedDataSource;
+			}
+
+			IVsDataSourceManager sourceManager = Core.Controller.GetService<IVsDataSourceManager>();
+
+			if (!sourceManager.Sources.TryGetValue(clsidSource, out IVsDataSource value))
+			{
+				ArgumentException ex = new($"Unknown Source guid: {clsidSource}.");
+				Diag.Dug(ex);
+			}
+			return CreateSource(clsidSource, value);
+		}
+
+
+		private static TDataSource CreateSource(Guid clsidSource, IVsDataSource vsDataSource)
+		{
+			return new TDataSource(clsidSource.ToString(null, CultureInfo.InvariantCulture), vsDataSource.DisplayName);
+		}
+
+	}
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	//					    Internal Class TiDataProviderCollection
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Orignal name: DataProviderCollection.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private class TiDataProviderCollection(TDataSource source) : ICollection<Guid>, IEnumerable<Guid>, IEnumerable
+	{
+		private readonly IDictionary<Guid, BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools.TDataProvider> _GuidDataSourceMapping = new Dictionary<Guid, BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools.TDataProvider>();
+
+		private readonly TDataSource _DataSource = source;
+
+		public int Count => _DataSource.Providers.Count;
+
+		public bool IsReadOnly => _DataSource.Providers.IsReadOnly;
+
+		internal IDictionary<Guid, BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools.TDataProvider> Mapping => _GuidDataSourceMapping;
+
+		public void Add(Guid item)
+		{
+			if (item == Guid.Empty)
+			{
+				throw new ArgumentNullException("item");
+			}
+			if (!_GuidDataSourceMapping.ContainsKey(item))
+			{
+				_GuidDataSourceMapping.Add(item, CreateProvider(item));
+				_DataSource.Providers.Add(_GuidDataSourceMapping[item]);
+			}
+		}
+
+		public void Add(IVsDataProvider item)
+		{
+			Guid guid = item.Guid;
+			if (!_GuidDataSourceMapping.ContainsKey(guid))
+			{
+				_GuidDataSourceMapping.Add(guid, CreateProvider(item));
+				_DataSource.Providers.Add(_GuidDataSourceMapping[guid]);
+			}
+		}
+
+		public bool Contains(Guid item)
+		{
+			return _GuidDataSourceMapping.ContainsKey(item);
+		}
+
+		public bool Remove(Guid item)
+		{
+			if (_GuidDataSourceMapping.ContainsKey(item))
+			{
+				_DataSource.Providers.Remove(_GuidDataSourceMapping[item]);
+				_GuidDataSourceMapping.Remove(item);
+				return true;
+			}
+			return false;
+		}
+
+		public void Clear()
+		{
+			_DataSource.Providers.Clear();
+			_GuidDataSourceMapping.Clear();
+		}
+
+		public void CopyTo(Guid[] array, int arrayIndex)
+		{
+			_GuidDataSourceMapping.Keys.CopyTo(array, arrayIndex);
+		}
+
+		public IEnumerator<Guid> GetEnumerator()
+		{
+			return _GuidDataSourceMapping.Keys.GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return _GuidDataSourceMapping.Keys.GetEnumerator();
+		}
+
+		private static TDataProvider CreateProvider(Guid providerClsid)
+		{
+			// Always going to be BlackbirdSql.
+			TVsDataProvider value = new(providerClsid);
+			return new TiUIDataProvider(value);
+			/*
+			IVsDataProvider value = null;
+			if (!DataPackage.ProviderManager.Providers.TryGetValue(provider, out value))
+			{
+				throw new ArgumentException(ControlsResources.DataConnectionDlgHandler_UnknownProvider);
+			}
+			*/
+		}
+
+		private static TDataProvider CreateProvider(IVsDataProvider vsDataProvider)
+		{
+			return new TiUIDataProvider(vsDataProvider);
+		}
+	}
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	//						   Internal Class TiUIDataProvider
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Orignal name: UIDataProvider.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private class TiUIDataProvider(IVsDataProvider vsDataProvider) : TDataProvider(vsDataProvider.Guid.ToString(null, CultureInfo.InvariantCulture), vsDataProvider.DisplayName, vsDataProvider.ShortDisplayName)
+	{
+		private readonly IVsDataProvider _VsDataProvider = vsDataProvider;
+
+		public Guid Clsid => new Guid(Name);
+
+		public override string GetDescription(TDataSource dataSource)
+		{
+			if (dataSource != null)
+			{
+				IVsDataSourceManager sourceManager = Core.Controller.GetService<IVsDataSourceManager>();
+
+				IVsDataSource vsDataSource = sourceManager.Sources[dataSource.NameClsid];
+
+				string description = vsDataSource.GetDescription(_VsDataProvider.Guid);
+				if (description != null)
+					return description;
+			}
+			return _VsDataProvider.Description;
+		}
+
+
+
+		public override string GetDescriptionEx(TDataSource dataSource)
+		{
+			string text = $"Extended TDataSource Description for guid {dataSource.NameClsid}.";
+			/*
+			if (dataSource != null)
+			{
+				IVsDataSource vsDataSource = null; // DataPackage.SourceManager.Sources[new Guid(dataSource.Name)];
+				if (vsDataSource is IVsDataInternalDataSourceDescriptionEx vsDataInternalDataSourceDescriptionEx)
+				{
+					text = vsDataInternalDataSourceDescriptionEx.GetDescriptionEx(_VsDataProvider.Guid);
+					if (text != null)
+					{
+						return text;
+					}
+				}
+			}
+			IVsDataInternalDataProviderDescriptionEx vsDataInternalDataProviderDescriptionEx = _VsDataProvider as IVsDataInternalDataProviderDescriptionEx;
+			if (_VsDataProvider != null)
+			{
+				text = vsDataInternalDataProviderDescriptionEx.DescriptionEx;
+			}
+			*/
+			return text;
+		}
+
+		public override IDataConnectionUIControl CreateConnectionUIControl(TDataSource dataSource)
+		{
+			// Guid dataSourceGuid = ((dataSource != null) ? new Guid(dataSource.Guid) : Guid.Empty);
+			IDataConnectionUIControl dataConnectionUIControl = null; //  _VsDataProvider.TryCreateObject<IDataConnectionUIControl>(dataSourceGuid);
+			if (dataConnectionUIControl == null)
+			{
+				IVsDataConnectionUIControl vsDataConnectionUIControl = new TConnectionUIControl(true);
+				// _VsDataProvider.TryCreateObject<IVsDataConnectionUIControl>(dataSourceGuid);
+
+				if (vsDataConnectionUIControl != null)
+					dataConnectionUIControl = new TiDataConnectionUIControl(vsDataConnectionUIControl);
+			}
+
+			return dataConnectionUIControl;
+		}
+
+
+		public override IDataConnectionProperties CreateConnectionProperties(TDataSource dataSource)
+		{
+			Guid source = dataSource != null ? dataSource.NameClsid : Guid.Empty;
+			IDataConnectionProperties dataConnectionProperties = _VsDataProvider.TryCreateObject<IDataConnectionProperties>(source);
+			if (dataConnectionProperties == null)
+			{
+				IVsDataConnectionUIProperties vsDataConnectionUIProperties = _VsDataProvider.TryCreateObject<IVsDataConnectionUIProperties>(source);
+				if (vsDataConnectionUIProperties != null)
+				{
+					dataConnectionProperties = new TiDataConnectionUIProperties(source, vsDataConnectionUIProperties, _VsDataProvider);
+				}
+			}
+			return dataConnectionProperties;
+		}
+
+	}
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	//						Internal Class TiDataConnectionUIControl
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Orignal name: UIDataConnectionUIControl.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private class TiDataConnectionUIControl(IVsDataConnectionUIControl connectionUIControl)
+		: IDataConnectionUIControl, IContainerControl
+	{
+		private readonly IVsDataConnectionUIControl _ConnectionUIControl = connectionUIControl;
+
+
+		public Control ActiveControl
+		{
+			get { return _ConnectionUIControl.Control; }
+			set { throw new NotImplementedException(); }
+		}
+
+		public void Initialize(IDataConnectionProperties connectionProperties)
+		{
+			IVsDataConnectionUIProperties vsDataConnectionUIProperties = connectionProperties as IVsDataConnectionUIProperties;
+			if (vsDataConnectionUIProperties == null && connectionProperties is TiDataConnectionUIProperties uIDataConnectionProperties)
+			{
+				vsDataConnectionUIProperties = uIDataConnectionProperties.InnerProperties;
+			}
+
+			_ConnectionUIControl.Site = vsDataConnectionUIProperties ?? throw new NotSupportedException();
+		}
+
+		public void LoadProperties()
+		{
+			_ConnectionUIControl.LoadProperties();
+		}
+
+		public bool ActivateControl(Control active)
+		{
+			throw new NotImplementedException();
+		}
+	}
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	//					   Internal Class TiDataConnectionUIProperties
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Orignal name: UIDataConnectionProperties.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private class TiDataConnectionUIProperties : IDataConnectionProperties, ICustomTypeDescriptor
+	{
+		private class DefaultConnectionUITester(Guid provider) : IVsDataConnectionUITester
+		{
+			private Guid _Provider = provider;
+
+			public void Test(IVsDataConnectionUIProperties connectionUIProperties)
+			{
+				IVsDataConnectionFactory factory = Package.GetGlobalService(typeof(IVsDataConnectionFactory)) as IVsDataConnectionFactory
+					?? throw Diag.ExceptionService(typeof(IVsDataConnectionFactory));
+				IVsDataConnection vsDataConnection = factory.CreateConnection(_Provider, connectionUIProperties.ToString(), encryptedString: false);
+				using (vsDataConnection)
+				{
+					IVsDataConnectionSupport vsDataConnectionSupport
+						= vsDataConnection.GetService(typeof(IVsDataConnectionSupport)) as IVsDataConnectionSupport
+						?? throw Diag.ExceptionService(typeof(IVsDataConnectionSupport));
+
+					vsDataConnectionSupport.Open(doPromptCheck: false);
+				}
+			}
+		}
+
+		private Guid _DataSource;
+
+		private readonly IVsDataConnectionUIProperties _DataConnectionUiProperties;
+
+		private IVsDataConnectionUITester _DataConnectionUiTester;
+
+		private readonly IVsDataProvider _Provider;
+
+		public IVsDataConnectionUIProperties InnerProperties => _DataConnectionUiProperties;
+
+		public bool IsExtensible => _DataConnectionUiProperties.IsExtensible;
+
+		public object this[string propertyName]
+		{
+			get
+			{
+				if (_DataConnectionUiProperties.ContainsKey(propertyName))
+				{
+					object obj = _DataConnectionUiProperties[propertyName];
+					if (obj == null)
+					{
+						return DBNull.Value;
+					}
+					return obj;
+				}
+				return null;
+			}
+			set
+			{
+				if (value != null && value != DBNull.Value)
+				{
+					_DataConnectionUiProperties[propertyName] = value;
+					return;
+				}
+				Reset(propertyName);
+				if (value == null)
+				{
+					Remove(propertyName);
+				}
+			}
+		}
+
+		public bool IsComplete => _DataConnectionUiProperties.IsComplete;
+
+		public event EventHandler PropertyChanged;
+
+		public TiDataConnectionUIProperties(Guid source, IVsDataConnectionUIProperties connectionUIProperties, IVsDataProvider provider)
+		{
+			_DataSource = source;
+			_DataConnectionUiProperties = connectionUIProperties;
+			_DataConnectionUiProperties.PropertyChanged += HandlePropertyChanged;
+			_Provider = provider;
+		}
+
+		public void Reset()
+		{
+			_DataConnectionUiProperties.Reset();
+		}
+
+		public void Parse(string s)
+		{
+			_DataConnectionUiProperties.Parse(s);
+		}
+
+		public void Add(string propertyName)
+		{
+			try
+			{
+				_DataConnectionUiProperties.Add(propertyName, null);
+			}
+			catch (NotSupportedException ex)
+			{
+				throw new InvalidOperationException(ex.Message);
+			}
+		}
+
+		public bool Contains(string propertyName)
+		{
+			return _DataConnectionUiProperties.ContainsKey(propertyName);
+		}
+
+		public void Remove(string propertyName)
+		{
+			try
+			{
+				_DataConnectionUiProperties.Remove(propertyName);
+			}
+			catch (NotSupportedException)
+			{
+			}
+		}
+
+		public void Reset(string propertyName)
+		{
+			_DataConnectionUiProperties.Reset(propertyName);
+		}
+
+		public void Test()
+		{
+			if (_DataConnectionUiTester == null)
+			{
+				_DataConnectionUiTester = _Provider.TryCreateObject<IVsDataConnectionUITester>(_DataSource);
+				_DataConnectionUiTester ??= new DefaultConnectionUITester(_Provider.Guid);
+			}
+			_DataConnectionUiTester.Test(_DataConnectionUiProperties);
+		}
+
+		public override string ToString()
+		{
+			return ToFullString();
+		}
+
+		public string ToFullString()
+		{
+			return _DataConnectionUiProperties.ToString();
+		}
+
+		public string ToDisplayString()
+		{
+			return _DataConnectionUiProperties.ToDisplayString();
+		}
+
+		string ICustomTypeDescriptor.GetClassName()
+		{
+			return _DataConnectionUiProperties.GetClassName();
+		}
+
+		string ICustomTypeDescriptor.GetComponentName()
+		{
+			return _DataConnectionUiProperties.GetComponentName();
+		}
+
+		AttributeCollection ICustomTypeDescriptor.GetAttributes()
+		{
+			return _DataConnectionUiProperties.GetAttributes();
+		}
+
+		object ICustomTypeDescriptor.GetEditor(Type editorBaseType)
+		{
+			return _DataConnectionUiProperties.GetEditor(editorBaseType);
+		}
+
+		TypeConverter ICustomTypeDescriptor.GetConverter()
+		{
+			return _DataConnectionUiProperties.GetConverter();
+		}
+
+		PropertyDescriptor ICustomTypeDescriptor.GetDefaultProperty()
+		{
+			return _DataConnectionUiProperties.GetDefaultProperty();
+		}
+
+		PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties()
+		{
+			return _DataConnectionUiProperties.GetProperties();
+		}
+
+		PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties(Attribute[] attributes)
+		{
+			return _DataConnectionUiProperties.GetProperties(attributes);
+		}
+
+		EventDescriptor ICustomTypeDescriptor.GetDefaultEvent()
+		{
+			return _DataConnectionUiProperties.GetDefaultEvent();
+		}
+
+		EventDescriptorCollection ICustomTypeDescriptor.GetEvents()
+		{
+			return _DataConnectionUiProperties.GetEvents();
+		}
+
+		EventDescriptorCollection ICustomTypeDescriptor.GetEvents(Attribute[] attributes)
+		{
+			return _DataConnectionUiProperties.GetEvents(attributes);
+		}
+
+		object ICustomTypeDescriptor.GetPropertyOwner(PropertyDescriptor pd)
+		{
+			return _DataConnectionUiProperties.GetPropertyOwner(pd);
+		}
+
+		private void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			PropertyChanged?.Invoke(this, e);
+		}
+	}
+
+
+	#endregion Sub-Classes
+
+
 }

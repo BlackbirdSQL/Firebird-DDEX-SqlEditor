@@ -17,9 +17,6 @@ using Microsoft.VisualStudio.OLE.Interop;
 
 namespace BlackbirdSql.Common.Ctl.Commands;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Base class is UIThread compliant.")]
-
 public class SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow) : AbstractViewFilter
 {
 	public IBSqlEditorWindowPane Editor { get; private set; } = editorWindow;
@@ -86,10 +83,10 @@ public class SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow) : AbstractV
 					sqlEditorCommand = new SqlEditorToggleResultsPaneCommand(Editor);
 					break;
 				case EnCommandSet.CmbIdSqlDatabases:
-					sqlEditorCommand = new SqlEditorSqlDatabaseCommand(Editor);
+					sqlEditorCommand = new SqlEditorDatabaseCommand(Editor);
 					break;
 				case EnCommandSet.CmbIdSqlDatabasesGetList:
-					sqlEditorCommand = new SqlEditorSqlDatabaseListCommand(Editor);
+					sqlEditorCommand = new SqlEditorDatabaseListCommand(Editor);
 					break;
 				case EnCommandSet.CmdIdNewSqlQuery:
 					sqlEditorCommand = new SqlEditorNewQueryCommand(Editor);
@@ -168,10 +165,10 @@ public class SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow) : AbstractV
 						sqlEditorCommand = new SqlEditorToggleResultsPaneCommand(Editor);
 						break;
 					case EnCommandSet.CmbIdSqlDatabases:
-						sqlEditorCommand = new SqlEditorSqlDatabaseCommand(Editor);
+						sqlEditorCommand = new SqlEditorDatabaseCommand(Editor);
 						break;
 					case EnCommandSet.CmbIdSqlDatabasesGetList:
-						sqlEditorCommand = new SqlEditorSqlDatabaseListCommand(Editor);
+						sqlEditorCommand = new SqlEditorDatabaseListCommand(Editor);
 						break;
 					case EnCommandSet.CmdIdCloneQuery:
 						sqlEditorCommand = new SqlEditorCloneQueryWindowCommand(Editor);

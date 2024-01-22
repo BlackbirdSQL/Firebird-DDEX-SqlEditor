@@ -7,6 +7,7 @@ using System.Data;
 using System.Data.Common;
 using System.Reflection;
 
+
 namespace BlackbirdSql.Core.Ctl.Extensions;
 
 /// <summary>
@@ -74,12 +75,9 @@ public static class DbProviderFactoriesEx
 		table.EndLoadData();
 		table.AcceptChanges();
 
-		Type dbProviderFactories = typeof(DbProviderFactories);
-		FieldInfo fieldInfo = dbProviderFactories.GetField("_providerTable", BindingFlags.Static | BindingFlags.NonPublic);
+		return Reflect.SetFieldValue(typeof(DbProviderFactories), "_providerTable",
+			BindingFlags.Static | BindingFlags.NonPublic, table);
 
-		fieldInfo?.SetValue(null, table);
-
-		return true;
 	}
 
 

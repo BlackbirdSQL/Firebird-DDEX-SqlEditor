@@ -4,19 +4,14 @@
 #endregion
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
 
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Formatting;
@@ -24,9 +19,6 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 
 namespace BlackbirdSql.Common.Model;
-
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
 
 public sealed class FontAndColorProviderTextResults : AbstractFontAndColorProvider
 {
@@ -91,12 +83,7 @@ public sealed class FontAndColorProviderTextResults : AbstractFontAndColorProvid
 
 	private FontAndColorProviderTextResults()
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		CategoryName = ControlsResources.FontAndColorCategorySqlResultsText;
 		Guid = VS.CLSID_FontAndColorsSqlResultsTextCategory;
@@ -177,12 +164,7 @@ public sealed class FontAndColorProviderTextResults : AbstractFontAndColorProvid
 
 	public override void OnItemChanged(ref Guid guid, string itemName, int itemID, ColorableItemInfo[] itemInfo, uint literalForeground, uint literalBackground)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		if (!itemName.Equals(PlainText, StringComparison.OrdinalIgnoreCase))
 		{

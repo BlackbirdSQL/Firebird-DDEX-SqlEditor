@@ -6,6 +6,7 @@
 //$OriginalAuthors = Carlos Guzman Alvarez, Jiri Cincura (jiri@cincura.net)
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using BlackbirdSql.Core.Ctl;
 using FirebirdSql.Data.FirebirdClient;
@@ -71,6 +72,21 @@ public abstract class ModelPropertySet : CorePropertySet
 
 			new Describer(C_KeyExClientVersion, typeof(Version), C_DefaultExClientVersion, false, false)
 		];
+	public static readonly new KeyValuePair<string, string>[] Synonyms =
+		[
+			StringPair("no triggers", C_KeyNoDatabaseTriggers),
+			StringPair("nodbtriggers", C_KeyNoDatabaseTriggers),
+			StringPair("no dbtriggers", C_KeyNoDatabaseTriggers),
+			StringPair("no database triggers", C_KeyNoDatabaseTriggers),
+			StringPair("timeout", C_KeyConnectionTimeout),
+			StringPair("db cache pages", C_KeyDbCachePages),
+			StringPair("cachepages", C_KeyDbCachePages),
+			StringPair("pagebuffers", C_KeyDbCachePages),
+			StringPair("page buffers", C_KeyDbCachePages),
+			StringPair("wire compression", C_KeyCompression),
+			StringPair("app", C_KeyApplicationName),
+			StringPair("parallel", C_KeyParallelWorkers)
+		];
 
 
 
@@ -91,7 +107,7 @@ public abstract class ModelPropertySet : CorePropertySet
 		CorePropertySet.CreateAndPopulatePropertySetFromStatic(describers);
 
 		describers.AddRange(Describers);
-		describers.AddSynonyms(CsbAgent.Describers.Synonyms);
+		describers.AddSynonyms(Synonyms);
 	}
 
 

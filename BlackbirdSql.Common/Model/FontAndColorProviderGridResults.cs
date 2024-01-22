@@ -2,24 +2,16 @@
 // C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\Microsoft\SQLEditor\Microsoft.VisualStudio.Data.Tools.SqlEditor.dll
 // Decompiled with ICSharpCode.Decompiler 7.1.0.6543
 #endregion
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 
 namespace BlackbirdSql.Common.Model;
-
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
 
 public sealed class FontAndColorProviderGridResults : AbstractFontAndColorProvider
 {
@@ -62,12 +54,7 @@ public sealed class FontAndColorProviderGridResults : AbstractFontAndColorProvid
 
 	private FontAndColorProviderGridResults()
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		CategoryName = ControlsResources.FontAndColorCategorySqlResultsGrid;
 		Guid = VS.CLSID_FontAndColorsSqlResultsGridCategory;

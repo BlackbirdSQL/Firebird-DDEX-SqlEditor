@@ -2,11 +2,18 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data.Common;
+using System.Globalization;
+using System.Runtime.InteropServices;
+using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
-using Microsoft.VisualStudio.Data.Core;
+using BlackbirdSql.Core.Model.Enums;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
@@ -19,16 +26,61 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 /// Implementation of <see cref="IVsDataConnectionProperties"/> interface.
 /// </summary>
 // =========================================================================================================
-public class TConnectionProperties : TAbstractConnectionProperties
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
+public class TConnectionProperties : TAbstractConnectionProperties, IBDataConnectionProperties
 {
-	// Sanity checker.
-	private readonly bool _Ctor = false;
-	protected IVsDataProvider _InstanceSite = null;
+
 
 	// ---------------------------------------------------------------------------------
+	#region Fields - TConnectionProperties
+	// ---------------------------------------------------------------------------------
+
+
+	#endregion Fields
+
+
+
+
+
+	// =================================================================================
 	#region Property Accessors - TConnectionProperties
-	// ---------------------------------------------------------------------------------
+	// =================================================================================
 
+
+	public CsbAgent Csa => ConnectionStringBuilder;
+
+	public EnConnectionSource ConnectionSource
+	{
+		get
+		{
+			try
+			{
+				Diag.ThrowIfNotOnUIThread();
+
+				string objectKind = Core.Controller.Instance.Dte.ActiveWindow.ObjectKind;
+				string objectType = Core.Controller.Instance.Dte.ActiveWindow.Object.GetType().FullName;
+				string appGuid = VSConstants.CLSID.VsTextBuffer_string;
+				string seGuid = VSConstants.StandardToolWindows.ServerExplorer.ToString("B", CultureInfo.InvariantCulture);
+
+				if (objectKind.Equals(seGuid, StringComparison.InvariantCultureIgnoreCase))
+				{
+					return EnConnectionSource.ServerExplorer;
+				}
+				else if (objectKind.Equals(appGuid, StringComparison.InvariantCultureIgnoreCase)
+					&& objectType.Equals("System.ComponentModel.Design.DesignerHost",
+						StringComparison.InvariantCultureIgnoreCase))
+				{
+					return EnConnectionSource.Application;
+				}
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+			}
+
+			return EnConnectionSource.Session;
+		}
+	}
 
 	/// <summary>
 	/// Determines if the connection properties object is sufficiently complete (inclusive of password)
@@ -38,7 +90,10 @@ public class TConnectionProperties : TAbstractConnectionProperties
 	{
 		get
 		{
-			foreach (Describer describer in CsbAgent.Describers.Mandatory)
+			IEnumerable<Describer> describers = ConnectionSource == EnConnectionSource.Application
+				? CsbAgent.PublicMandatoryKeys : CsbAgent.MandatoryKeys;
+
+			foreach (Describer describer in describers)
 			{
 				if (!base.TryGetValue(describer.Key, out object value) || string.IsNullOrEmpty((string)value))
 				{
@@ -58,28 +113,19 @@ public class TConnectionProperties : TAbstractConnectionProperties
 
 
 
-	// ---------------------------------------------------------------------------------
+	// =================================================================================
 	#region Constructors / Destructors - TConnectionProperties
+	// =================================================================================
+
+
 	// ---------------------------------------------------------------------------------
-
-
 	/// <summary>
 	/// TConnectionProperties .ctor
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public TConnectionProperties() : base()
 	{
 		// Tracer.Trace(GetType(), "TConnectionProperties.TConnectionProperties()");
-	}
-
-	public TConnectionProperties(IVsDataProvider site) : base()
-	{
-		// Tracer.Trace(GetType(), "TConnectionProperties.TConnectionProperties(IVsDataProvider)");
-
-		_InstanceSite = site;
-
-		_Ctor = true;
-		Site = site;
-		_Ctor = false;
 	}
 
 
@@ -88,59 +134,21 @@ public class TConnectionProperties : TAbstractConnectionProperties
 
 
 
-	public override void Reset()
-	{
-		// Tracer.Trace(GetType(), "Reset()");
+	// =================================================================================
+	#region Methods - TConnectionProperties
+	// =================================================================================
 
-		base.Reset();
+	protected override PropertyDescriptorCollection GetCsbAttributesProperties(Attribute[] attributes)
+	{
+		return TypeDescriptor.GetProperties(ConnectionStringBuilder, attributes);
+	}
+
+	protected override PropertyDescriptorCollection GetCsbProperties(DbConnectionStringBuilder csb)
+	{
+		return TypeDescriptor.GetProperties(csb);
 	}
 
 
-
-	protected override void OnSiteChanged(EventArgs e)
-	{
-		// Tracer.Trace(GetType(), "OnSiteChanged()");
-
-		if (!_Ctor)
-		{
-			base.OnSiteChanged(e);
-
-			_InstanceSite = Site;
-		}
-	}
-
-
-
-	public override object this[string key]
-	{
-		get
-		{
-			// Tracer.Trace(GetType(), "get this[]", "key: {0}, get value: {1}, csb type: {2}", key, base[key], ConnectionStringBuilder.GetType().FullName);
-			return base[key];
-		}
-		set
-		{
-			// Tracer.Trace(GetType(), "set this[]", "key: {0} set value: {1}, csb type: {2}", key, value, ConnectionStringBuilder.GetType().FullName);
-			base[key] = value;
-		}
-	}
-
-	/*
-	public override string[] GetSynonyms(string key)
-	{
-		// Tracer.Trace(GetType(), "GetSynonyms()", "key: {0}", key);
-		return CsbAgent.Describers.GetSynonyms(key).ToArray();
-	}
-	*/
-
-	public object GetEditor(Type editorBaseType)
-	{
-		return TypeDescriptor.GetEditor(ConnectionStringBuilder, editorBaseType, noCustomTypeDesc: true);
-	}
-
-	public TypeConverter GetConverter()
-	{
-		return TypeDescriptor.GetConverter(ConnectionStringBuilder, noCustomTypeDesc: true);
-	}
+	#endregion Methods
 
 }

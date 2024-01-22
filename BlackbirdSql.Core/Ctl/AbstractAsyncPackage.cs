@@ -3,11 +3,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-
 using BlackbirdSql.Core.Ctl.Interfaces;
-
+using BlackbirdSql.Core.Model;
+using BlackbirdSql.Core.Properties;
 using EnvDTE;
-using Microsoft.VisualStudio;
+
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -19,11 +19,12 @@ namespace BlackbirdSql.Core.Ctl;
 public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 {
 
-	#region Variables - AbstractAsyncPackage
+	#region Fields - AbstractAsyncPackage
+
 
 
 	protected static Package _Instance = null;
-	protected IBPackageController _Controller;
+	protected IBPackageController _Controller = null;
 	private IDisposable _DisposableWaitCursor;
 	protected DTE _Dte = null;
 	protected IVsSolution _VsSolution = null;
@@ -36,7 +37,7 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	protected IBAsyncPackage.SaveSolutionOptionsDelegate _OnSaveSolutionOptionsEvent;
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 
@@ -121,7 +122,7 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 			if (_VsSolution == null)
 			{
 				if (GetService(typeof(SVsSolution)) is not IVsSolution service)
-					Diag.ServiceUnavailable(typeof(IVsSolution));
+					Diag.ExceptionService(typeof(IVsSolution));
 				else
 					_VsSolution = service;
 
@@ -149,7 +150,7 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 			if (GetService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider))
 				is not Microsoft.VisualStudio.OLE.Interop.IServiceProvider provider)
 			{
-				throw Diag.ServiceUnavailable(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider));
+				throw Diag.ExceptionService(typeof(Microsoft.VisualStudio.OLE.Interop.IServiceProvider));
 			}
 
 			return provider;
@@ -203,13 +204,17 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	{
 		if (_Instance != null)
 		{
-			InvalidOperationException ex = new("Attempt to create duplicate Ddex extension package instances");
+			TypeAccessException ex = new(Resources.ExceptionDuplicateSingletonInstances.FmtRes("Ddex extension package instances"));
 			Diag.Dug(ex);
 			throw ex;
 		}
 
 		Diag.Context = "IDE";
 		_Instance = this;
+
+		_Controller = CreateController();
+
+		RctManager.CreateInstance();
 	}
 
 
@@ -222,6 +227,8 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	// ---------------------------------------------------------------------------------
 	protected override void Dispose(bool disposing)
 	{
+		RctManager.Instance?.Dispose();
+
 		base.Dispose(disposing);
 	}
 
@@ -236,8 +243,6 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	#region Method Implementations - AbstractAsyncPackage
 	// =========================================================================================================
 
-
-	// public abstract IVsDataConnectionDialog CreateConnectionDialogHandler();
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -259,9 +264,10 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	/// to FinalizeAsync.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 	public virtual async Task FinalizeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 	{
+		await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+
 		// Sample format of FinalizeAsync in descendents
 
 		// if (cancellationToken.IsCancellationRequested)
@@ -274,8 +280,6 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 
 		// ServiceContainer.AddService(typeof(ICustomService), ServiceCreatorCallbackMethod, promote: true);
 	}
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-
 
 	public abstract TInterface GetService<TService, TInterface>() where TInterface : class;
 	public abstract Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class;
@@ -326,12 +330,14 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	// =========================================================================================================
 
 
+	protected abstract IBPackageController CreateController();
+
 
 	private IVsRunningDocumentTable GetDocTable()
 	{
 		if (GetService(typeof(SVsRunningDocumentTable)) is not IVsRunningDocumentTable service)
 		{
-			Diag.ServiceUnavailable(typeof(IVsRunningDocumentTable));
+			Diag.ExceptionService(typeof(IVsRunningDocumentTable));
 			return null;
 		}
 		return service;
@@ -351,6 +357,13 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	}
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Starts up extension user options push notifications. Only the final class in
+	/// the <see cref="IBAsyncPackage"/> class hierarchy should implement the method.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected abstract void PropagateSettings();
 
 	protected static T UiInvoke<T>(Func<T> function, int uiInvokeTimeoutSeconds = 5)
 	{

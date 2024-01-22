@@ -43,14 +43,14 @@ public abstract class AbstractSettingsPage<T> : AbstruseSettingsPage where T : A
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Variables - AbstractSettingsPage
+	#region Fields - AbstractSettingsPage
 	// ---------------------------------------------------------------------------------
 
 
 	protected AbstractSettingsModel<T> _Model;
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 

@@ -58,7 +58,7 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 
 
 	// =========================================================================================================
-	#region Variables - ResultsToTextOrFileBatchConsumer
+	#region Fields - ResultsToTextOrFileBatchConsumer
 	// =========================================================================================================
 
 
@@ -78,7 +78,7 @@ public sealed class ResultsToTextOrFileBatchConsumer : AbstractQESQLBatchConsume
 	private readonly IList<int> _MaxColSizes = new List<int>();
 
 
-	#endregion Varibles
+	#endregion Fields
 
 
 

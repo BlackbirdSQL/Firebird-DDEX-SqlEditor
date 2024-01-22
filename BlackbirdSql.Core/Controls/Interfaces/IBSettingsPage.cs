@@ -17,7 +17,7 @@ public interface IBSettingsPage
 
 	PropertyGrid Grid { get; }
 
-	public void ActivatePage();
-	public void LoadSettings();
-	public void SaveSettings();
+	void ActivatePage();
+	void LoadSettings();
+	void SaveSettings();
 }

@@ -3,10 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Core;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -14,12 +12,8 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace BlackbirdSql.Common.Ctl;
 
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "UIThread compliance is performed by applicable methods.")]
-
 public static class CommonVsUtilities
 {
-	private delegate DialogResult SafeShowMessageBox(string title, string text, string helpKeyword, MessageBoxButtons buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcon icon);
 
 	public enum EnDocumentsFlag
 	{
@@ -29,59 +23,7 @@ public static class CommonVsUtilities
 		AllDocuments
 	}
 
-	private static Control _marshalingControl;
 
-	public static DialogResult ShowMessageBoxEx(string title, string text, string helpKeyword, MessageBoxButtons buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcon icon)
-	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		_marshalingControl ??= new Control();
-		if (_marshalingControl.InvokeRequired)
-		{
-			return (DialogResult)_marshalingControl.Invoke(new SafeShowMessageBox(ShowMessageBoxEx), title, text, helpKeyword, defaultButton, buttons, icon);
-		}
-		int pnResult = 1;
-		if (Package.GetGlobalService(typeof(SVsUIShell)) is IVsUIShell vsUIShell)
-		{
-			Guid rclsidComp = Guid.Empty;
-			OLEMSGICON msgicon = OLEMSGICON.OLEMSGICON_INFO;
-			switch (icon)
-			{
-				case MessageBoxIcon.Hand:
-					msgicon = OLEMSGICON.OLEMSGICON_CRITICAL;
-					break;
-				case MessageBoxIcon.Asterisk:
-					msgicon = OLEMSGICON.OLEMSGICON_INFO;
-					break;
-				case MessageBoxIcon.None:
-					msgicon = OLEMSGICON.OLEMSGICON_NOICON;
-					break;
-				case MessageBoxIcon.Question:
-					msgicon = OLEMSGICON.OLEMSGICON_QUERY;
-					break;
-				case MessageBoxIcon.Exclamation:
-					msgicon = OLEMSGICON.OLEMSGICON_WARNING;
-					break;
-			}
-			OLEMSGDEFBUTTON msgdefbtn = OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST;
-			switch (defaultButton)
-			{
-				case MessageBoxDefaultButton.Button2:
-					msgdefbtn = OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND;
-					break;
-				case MessageBoxDefaultButton.Button3:
-					msgdefbtn = OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_THIRD;
-					break;
-			}
-			Native.WrapComCall(vsUIShell.ShowMessageBox(0u, ref rclsidComp, title, string.IsNullOrEmpty(text) ? null : text, helpKeyword, 0u, (OLEMSGBUTTON)buttons, msgdefbtn, msgicon, 0, out pnResult));
-		}
-		return (DialogResult)pnResult;
-	}
 
 	internal static IEnumerable<uint> EnumerateOpenedDocuments(IBDesignerDocumentService designerService, __VSRDTSAVEOPTIONS rdtSaveOptions)
 	{
@@ -134,12 +76,7 @@ public static class CommonVsUtilities
 
 	public static bool IsDirty(object docData)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(ex);
-			throw ex;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		if (docData is IVsPersistDocData vsPersistDocData)
 		{
@@ -151,12 +88,7 @@ public static class CommonVsUtilities
 
 	public static bool TryGetDocDataFromCookie(uint cookie, out object docData)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException ex = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(ex);
-			throw ex;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		docData = null;
 		bool result = false;

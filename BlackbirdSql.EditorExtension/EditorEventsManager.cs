@@ -3,8 +3,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
-
+using System.Threading.Tasks;
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Model;
@@ -28,12 +27,6 @@ using Native = BlackbirdSql.Core.Native;
 
 namespace BlackbirdSql.EditorExtension;
 
-/// <summary>
-/// Private singleton .ctor
-/// </summary>
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
-
 // =========================================================================================================
 //										EditorEventsManager Class
 //
@@ -41,12 +34,50 @@ namespace BlackbirdSql.EditorExtension;
 /// Manages Solution, RDT and Selection events for the editor extension.
 /// </summary>
 // =========================================================================================================
-public class EditorEventsManager(IBPackageController controller) : AbstractEditorEventsManager(controller)
+public sealed class EditorEventsManager : AbstractEditorEventsManager
 {
 
 	// ---------------------------------------------------------------------------------
 	#region Constructors / Destructors - EditorEventsManager
 	// ---------------------------------------------------------------------------------
+
+
+	/// <summary>
+	/// .ctor
+	/// </summary>
+	private EditorEventsManager(IBPackageController controller) : base(controller)
+	{
+	}
+
+
+	/// <summary>
+	/// Access to the static at the instance local level. This allows the base class to access and update
+	/// the localized static instance.
+	/// </summary>
+	protected override IBEventsManager InternalInstance
+	{
+		get { return _Instance; }
+		set { _Instance = value; }
+	}
+
+
+	/// <summary>
+	/// Gets the instance of the Events Manager for this assembly.
+	/// We do not auto-create to avoid instantiation confusion.
+	/// Use CreateInstance() to instantiate.
+	/// </summary>
+	public static IBEventsManager Instance => _Instance ??
+		throw Diag.ExceptionInstance(typeof(EditorEventsManager));
+
+
+	/// <summary>
+	/// Creates the singleton instance of the Events Manager for this assembly.
+	/// Instantiation must always occur here and not by the Instance accessor to avoid
+	/// confusion.
+	/// </summary>
+	public static EditorEventsManager CreateInstance(IBPackageController controller) =>
+		new EditorEventsManager(controller);
+
 
 
 	public override void Dispose()
@@ -68,9 +99,9 @@ public class EditorEventsManager(IBPackageController controller) : AbstractEdito
 
 
 
-	// ---------------------------------------------------------------------------------
-	#region Variables
-	// ---------------------------------------------------------------------------------
+	// =========================================================================================================
+	#region Constants and Fields - EditorEventsManager
+	// =========================================================================================================
 
 
 	public const int C_EID_UndoManager = 0;
@@ -83,6 +114,7 @@ public class EditorEventsManager(IBPackageController controller) : AbstractEdito
 	public const int C_EID_LastWindowFrame = 7;
 
 
+	private static IBEventsManager _Instance;
 
 	private uint _PublishingPreviewCommitOffCookie;
 	// private uint _PreviewCommitOffCookie;
@@ -94,7 +126,7 @@ public class EditorEventsManager(IBPackageController controller) : AbstractEdito
 	private uint _ServerExplorerCookie;
 
 
-	#endregion Variables
+	#endregion Constants and Fields
 
 
 
@@ -157,12 +189,7 @@ public class EditorEventsManager(IBPackageController controller) : AbstractEdito
 
 			if (CurrentDocumentFrame != null)
 			{
-				if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+				Diag.ThrowIfNotOnUIThread();
 
 				ErrorHandler.ThrowOnFailure(CurrentDocumentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out pvar));
 			}
@@ -180,12 +207,7 @@ public class EditorEventsManager(IBPackageController controller) : AbstractEdito
 
 			if (CurrentDocumentFrame != null)
 			{
-				if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+				Diag.ThrowIfNotOnUIThread();
 
 				ErrorHandler.ThrowOnFailure(CurrentDocumentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out pvar));
 			}
@@ -203,12 +225,7 @@ public class EditorEventsManager(IBPackageController controller) : AbstractEdito
 
 			if (CurrentWindowFrame != null)
 			{
-				if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+				Diag.ThrowIfNotOnUIThread();
 
 				ErrorHandler.ThrowOnFailure(CurrentWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out pvar));
 			}
@@ -246,12 +263,7 @@ public class EditorEventsManager(IBPackageController controller) : AbstractEdito
 	// ---------------------------------------------------------------------------------
 	private int CleanupTemporarySqlItems(IVsUIHierarchy miscHierarchy)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		bool deleted = false;
 		var itemid = VSConstants.VSITEMID_ROOT;
@@ -295,12 +307,7 @@ public class EditorEventsManager(IBPackageController controller) : AbstractEdito
 
 	private bool GetUiContextValue(uint cookie)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		SelectionMonitor.IsCmdUIContextActive(cookie, out var pfActive);
 
@@ -318,12 +325,7 @@ public class EditorEventsManager(IBPackageController controller) : AbstractEdito
 	// ---------------------------------------------------------------------------------
 	private bool RemoveTemporarySqlItem(ProjectItem projectItem)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		if (projectItem.FileCount == 0 || Kind(projectItem.Kind) != "MiscItem")
 			return false;
@@ -361,12 +363,7 @@ public class EditorEventsManager(IBPackageController controller) : AbstractEdito
 
 	private void SetUiContextValue(uint cookie, bool value)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		SelectionMonitor.SetCmdUIContext(cookie, value ? 1 : 0);
 	}
@@ -376,12 +373,7 @@ public class EditorEventsManager(IBPackageController controller) : AbstractEdito
 		int pfActive = 0;
 		if (SelectionMonitor != null)
 		{
-			if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+			Diag.ThrowIfNotOnUIThread();
 
 			ErrorHandler.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref commandContext, out var pdwCmdUICookie));
 			ErrorHandler.ThrowOnFailure(SelectionMonitor.IsCmdUIContextActive(pdwCmdUICookie, out pfActive));
@@ -399,13 +391,6 @@ public class EditorEventsManager(IBPackageController controller) : AbstractEdito
 	// ---------------------------------------------------------------------------------
 	public override void Initialize()
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
-
 		Controller.OnAfterDocumentWindowHideEvent += OnAfterDocumentWindowHide;
 		Controller.OnAfterSaveEvent += OnAfterSave;
 		Controller.OnBeforeDocumentWindowShowEvent += OnBeforeDocumentWindowShow;
@@ -416,6 +401,28 @@ public class EditorEventsManager(IBPackageController controller) : AbstractEdito
 		Controller.OnSelectionChangedEvent += OnSelectionChanged;
 		Controller.OnNewQueryRequestedEvent += OnNewQueryRequested;
 
+		if (!ThreadHelper.CheckAccess())
+		{
+			bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate
+			{
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+				InitializeUnsafe();
+				return true;
+			});
+
+			return;
+		}
+
+		InitializeUnsafe();
+
+	}
+
+
+	private void InitializeUnsafe()
+	{
+		Diag.ThrowIfNotOnUIThread();
+
+		Controller.EnsureMonitorSelection();
 
 		Native.ThrowOnFailure(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_DocumentFrame, out var pvarValue));
 		CurrentDocumentFrame = pvarValue as IVsWindowFrame;
@@ -426,7 +433,7 @@ public class EditorEventsManager(IBPackageController controller) : AbstractEdito
 		Native.ThrowOnFailure(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_UndoManager, out pvarValue));
 		CurrentUndoManager = pvarValue as IOleUndoManager;
 
-		Guid rguidCmdUI = VS.UICONTEXT_PublishingPreviewCommitOff;
+		Guid rguidCmdUI = Core.VS.UICONTEXT_PublishingPreviewCommitOff;
 		Native.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _PublishingPreviewCommitOffCookie));
 
 		// rguidCmdUI = new(ServiceData.PreviewCommitOffGuid);
@@ -505,12 +512,7 @@ public class EditorEventsManager(IBPackageController controller) : AbstractEdito
 
 	public int OnAfterDocumentWindowHide(uint docCookie, IVsWindowFrame pFrame)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		lock (Controller.LockGlobal)
 		{
@@ -553,12 +555,7 @@ public class EditorEventsManager(IBPackageController controller) : AbstractEdito
 
 	public int OnBeforeDocumentWindowShow(uint docCookie, int fFirstShow, IVsWindowFrame pFrame)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		if (new RunningDocumentTable(EditorPackage).GetDocumentInfo(docCookie).IsDocumentInitialized
 			&& Native.Succeeded(pFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar)))
@@ -614,12 +611,7 @@ public class EditorEventsManager(IBPackageController controller) : AbstractEdito
 
 	public int OnElementValueChanged(uint elementid, object oldValue, object newValue)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		switch ((VSConstants.VSSELELEMID)elementid)
 		{
@@ -667,12 +659,7 @@ public class EditorEventsManager(IBPackageController controller) : AbstractEdito
 
 	public int OnQueryCloseProject(IVsHierarchy hierarchy, int removing, ref int cancel)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		if (!Native.Succeeded(hierarchy.GetGuidProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_TypeGuid, out var pguid))
 			|| !(pguid == VSConstants.GUID_ItemType_VirtualFolder))

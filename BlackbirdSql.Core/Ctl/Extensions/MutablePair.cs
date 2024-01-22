@@ -1,10 +1,9 @@
 ﻿
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
-namespace BlackbirdSql.Core.Ctl.Extensions;
 
+namespace BlackbirdSql.Core.Ctl.Extensions;
 
 /// <summary>
 /// Defines a mutable key/value pair that can be set or retrieved.

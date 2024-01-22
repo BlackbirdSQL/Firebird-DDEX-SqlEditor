@@ -10,6 +10,9 @@ using BlackbirdSql.Core.Model.Config;
 using BlackbirdSql.EditorExtension.Controls.ComponentModel;
 using BlackbirdSql.EditorExtension.Ctl.ComponentModel;
 
+using GlobalizedCategoryAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedCategoryAttribute;
+using GlobalizedDisplayNameAttribute = BlackbirdSql.EditorExtension.Ctl.ComponentModel.GlobalizedDisplayNameAttribute;
+
 
 namespace BlackbirdSql.EditorExtension.Model.Config;
 

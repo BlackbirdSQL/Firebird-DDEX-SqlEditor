@@ -79,7 +79,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invariant and EntityFramework (IDE Restart).
+        ///   Looks up a localized string similar to Validation (Requires solution reload).
         /// </summary>
         public static string OptionCategoryEntityFramework {
             get {
@@ -142,15 +142,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enables the execution of Firebird Debug.Dug()/Debug.Trace() calls. Only applicable to builds that include the debug Firebird library..
-        /// </summary>
-        public static string OptionDescriptionDebugEnableFbDiagnostics {
-            get {
-                return ResourceManager.GetString("OptionDescriptionDebugEnableFbDiagnostics", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Enables the execution of Diag.Trace() calls..
         /// </summary>
         public static string OptionDescriptionDebugEnableTrace {
@@ -165,15 +156,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDescriptionDebugEnableTracer {
             get {
                 return ResourceManager.GetString("OptionDescriptionDebugEnableTracer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Location of Firebird diagnostics log file. Note: Only applicable to builds that include the debug Firerbird library..
-        /// </summary>
-        public static string OptionDescriptionDebugFbLogFile {
-            get {
-                return ResourceManager.GetString("OptionDescriptionDebugFbLogFile", resourceCulture);
             }
         }
         
@@ -502,6 +484,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enable this option to allow BlackbirdSql to ensure a connection is valid before accepting Connection Dialog information..
+        /// </summary>
+        public static string OptionDescriptionGeneralValidateConnectionOnFormAccept {
+            get {
+                return ResourceManager.GetString("OptionDescriptionGeneralValidateConnectionOnFormAccept", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enable this option to allow BlackbirdSql to update legacy edmx models to use EntityFramework 6..
         /// </summary>
         public static string OptionDescriptionGeneralValidateEdmx {
@@ -511,11 +502,11 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Select the folder to be used for the Firebird diagnostics log file..
+        ///   Looks up a localized string similar to Enable this option to allow BlackbirdSql to validate your solution&apos;s Invariant, EntityFramework and Edmx settings..
         /// </summary>
-        public static string OptionDialogDebugFbLogFile {
+        public static string OptionDescriptionGeneralValidateSolution {
             get {
-                return ResourceManager.GetString("OptionDialogDebugFbLogFile", resourceCulture);
+                return ResourceManager.GetString("OptionDescriptionGeneralValidateSolution", resourceCulture);
             }
         }
         
@@ -525,15 +516,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDialogDebugLogFile {
             get {
                 return ResourceManager.GetString("OptionDialogDebugLogFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to All Files(*.*)|*.*.
-        /// </summary>
-        public static string OptionDialogFilterFbLogFile {
-            get {
-                return ResourceManager.GetString("OptionDialogFilterFbLogFile", resourceCulture);
             }
         }
         
@@ -552,15 +534,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDisplayDebugEnableDiagnosticsLog {
             get {
                 return ResourceManager.GetString("OptionDisplayDebugEnableDiagnosticsLog", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Enable Firebird diagnostics.
-        /// </summary>
-        public static string OptionDisplayDebugEnableFbDiagnostics {
-            get {
-                return ResourceManager.GetString("OptionDisplayDebugEnableFbDiagnostics", resourceCulture);
             }
         }
         
@@ -588,15 +561,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDisplayDebugEnableTracer {
             get {
                 return ResourceManager.GetString("OptionDisplayDebugEnableTracer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Firebird Log file.
-        /// </summary>
-        public static string OptionDisplayDebugFbLogFile {
-            get {
-                return ResourceManager.GetString("OptionDisplayDebugFbLogFile", resourceCulture);
             }
         }
         
@@ -889,7 +853,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Persistent validation flags.
+        ///   Looks up a localized string similar to   Persistent validation flags.
         /// </summary>
         public static string OptionDisplayGeneralPersistentValidation {
             get {
@@ -907,7 +871,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Validate App.config.
+        ///   Looks up a localized string similar to   Validate App.config.
         /// </summary>
         public static string OptionDisplayGeneralValidateConfig {
             get {
@@ -916,11 +880,29 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Update legacy edmx models.
+        ///   Looks up a localized string similar to Validate dialog connections.
+        /// </summary>
+        public static string OptionDisplayGeneralValidateConnectionOnFormAccept {
+            get {
+                return ResourceManager.GetString("OptionDisplayGeneralValidateConnectionOnFormAccept", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to   Update legacy edmx models.
         /// </summary>
         public static string OptionDisplayGeneralValidateEdmx {
             get {
                 return ResourceManager.GetString("OptionDisplayGeneralValidateEdmx", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  Validate Solution Configuration.
+        /// </summary>
+        public static string OptionDisplayGeneralValidateSolution {
+            get {
+                return ResourceManager.GetString("OptionDisplayGeneralValidateSolution", resourceCulture);
             }
         }
         

@@ -4,16 +4,26 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Security.Policy;
 using System.Windows.Forms;
+using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Model;
 using FirebirdSql.Data.FirebirdClient;
+using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
+using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.Shell;
 
 
-namespace BlackbirdSql.Core.Ctl.Extensions;
+namespace BlackbirdSql.Core;
 
 // =========================================================================================================
 //											ExtensionMembers Class
@@ -27,11 +37,121 @@ static class ExtensionMembers
 	private static readonly string[] S_ByteSizeSuffixes =
 		["bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 	private static readonly string[] S_SIExponents =
-		[ null, "\x00b9", "\x00b2", "\x00b3", "\x2074", "\x2075", "\x2076", "\x2077", "\x2078", "\x2079",
-			"\x00b9\x2070", "\x00b9\x00b9", "\x00b9\x00b2", "\x00b9\x00b3", "\x00b9\x2074", "\x00b9\x2075",
-			"\x00b9\x2076", "\x00b9\x2077", "\x00b9\x2078", "\x00b9\x2079", "\x00b2\x2070", "\x00b2\x00b9",
-			"\x00b2\x00b2", "\x00b2\x00b3", "\x00b2\x2074", "\x00b2\x2075", "\x00b2\x2076", "\x00b2\x2077",
-			"\x00b2\x2078", "\x00b2\x2079"];
+		[null,
+			"\x00b9",
+			"\x00b2",
+			"\x00b3",
+			"\x2074",
+			"\x2075",
+			"\x2076",
+			"\x2077",
+			"\x2078",
+			"\x2079",
+			"\x00b9\x2070",
+			"\x00b9\x00b9",
+			"\x00b9\x00b2",
+			"\x00b9\x00b3",
+			"\x00b9\x2074",
+			"\x00b9\x2075",
+			"\x00b9\x2076",
+			"\x00b9\x2077",
+			"\x00b9\x2078",
+			"\x00b9\x2079",
+			"\x00b2\x2070",
+			"\x00b2\x00b9",
+			"\x00b2\x00b2",
+			"\x00b2\x00b3",
+			"\x00b2\x2074",
+			"\x00b2\x2075",
+			"\x00b2\x2076",
+			"\x00b2\x2077",
+			"\x00b2\x2078",
+			"\x00b2\x2079"];
+
+
+	// IVsDataConnectionProperties
+
+
+
+	public static string ConnectionKey(this IDbConnection value)
+	{
+		IVsDataExplorerConnectionManager manager =
+			(Core.Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
+			as IVsDataExplorerConnectionManager)
+		?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
+
+
+		return manager.ConnectionKey(value.ConnectionString);
+	}
+
+
+	public static string ConnectionKey(this IVsDataConnectionProperties value)
+	{
+		IVsDataExplorerConnectionManager manager =
+			(Core.Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
+			as IVsDataExplorerConnectionManager)
+		?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
+
+
+		return manager.ConnectionKey(value.ToString());
+	}
+
+
+
+	public static string ConnectionKey(this IVsDataExplorerConnection value)
+	{
+		if (value.ConnectionNode == null)
+		{
+			ArgumentException ex = new($"Failed to retrieve ConnectionKey. Connection Node for IVsDataExplorerConnection {value.DisplayName} is null");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		string retval;
+		IVsDataObject @object = value.ConnectionNode.Object;
+
+		if (@object == null)
+		{
+			string connectionSring = DataProtection.DecryptString(value.EncryptedConnectionString);
+
+			retval = RctManager.GetConnectionKey(CsbAgent.CreateConnectionUrl(connectionSring));
+
+			retval ??= value.DisplayName;
+
+			return retval;
+		}
+
+		object leaf = Reflect.GetFieldValue(@object, "_leaf", BindingFlags.Instance | BindingFlags.NonPublic);
+
+		retval = (string)Reflect.GetPropertyValue(leaf, "Id", BindingFlags.Instance | BindingFlags.Public);
+
+		// Tracer.Trace(typeof(IVsDataExplorerConnection), "ConnectionKey()", "Retrieved ConnectionKey: {0}.", retval);
+
+		return retval;
+	}
+
+
+
+	public static string ConnectionKey(this IVsDataExplorerConnectionManager value, string connectionString)
+	{
+		string encryptedConnectionString = DataProtection.EncryptString(connectionString);
+
+		Guid clsidProvider = new(SystemData.ProviderGuid);
+		IVsDataExplorerConnection explorerConnection = value.FindConnection(clsidProvider, encryptedConnectionString, true);
+
+		if (explorerConnection == null)
+			return null;
+
+		return explorerConnection.ConnectionKey();
+
+	}
+
+
+
+	public static string ConnectionKey(this IVsDataExplorerNode value)
+	{
+		return value.ExplorerConnection.ConnectionKey();
+	}
 
 
 
@@ -536,6 +656,113 @@ static class ExtensionMembers
 
 
 		return exception.TargetSite.Name;
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Validates the IVsDataConnectionProperties Site for redundant or required
+	/// registration properties.
+	/// Determines if the ConnectionName (proposed DatsetKey) and DatasetId (proposed
+	/// database name) are required in the Site.
+	/// This cleanup ensures that proposed keys do not appear in connection dialogs
+	/// and strings if they will have no impact on the final DatsetKey. 
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool ValidateKeys(this IVsDataConnectionProperties site)
+	{
+		bool modified = false;
+		// First the DatasetId. If it's equal to the Dataset we clear it because, by
+		// default the trimmed filepath (Dataset) can be used.
+
+		string database = site.ContainsKey(CoreConstants.C_KeyDatabase)
+			? (string)site[CoreConstants.C_KeyDatabase] : null;
+
+		if (database != null && string.IsNullOrWhiteSpace(database))
+		{
+			modified = true;
+			database = null;
+			site.Remove(CoreConstants.C_KeyDatabase);
+		}
+
+		string dataset = database != null
+			? Path.GetFileNameWithoutExtension(database) : null;
+
+		string datasetId = site.ContainsKey(CoreConstants.C_KeyExDatasetId)
+			? (string)site[CoreConstants.C_KeyExDatasetId] : null;
+
+		if (datasetId != null)
+		{
+			if (string.IsNullOrWhiteSpace(datasetId))
+			{
+				// DatasetId exists and is invalid (empty). Delete it.
+				modified = true;
+				datasetId = null;
+				site.Remove(CoreConstants.C_KeyExDatasetId);
+			}
+
+			if (datasetId != null && dataset != null && datasetId == dataset)
+			{
+				// If the DatasetId is equal to the Dataset it's also not needed. Delete it.
+				modified = true;
+				datasetId = null;
+				site.Remove(CoreConstants.C_KeyExDatasetId);
+			}
+		}
+
+		// Now that the datasetId is established, we can determined its default derived value
+		// and the default derived value of the datasetKey.
+		string derivedDatasetId = datasetId ?? (dataset ?? null);
+
+		string dataSource = site.ContainsKey(CoreConstants.C_KeyDataSource)
+			? (string)site[CoreConstants.C_KeyDataSource] : null;
+
+		if (dataSource != null && string.IsNullOrWhiteSpace(dataSource))
+		{
+			modified = true;
+			dataSource = null;
+			site.Remove(CoreConstants.C_KeyDataSource);
+		}
+
+
+		string derivedConnectionName = (dataSource != null && derivedDatasetId != null)
+			? CsbAgent.C_DatasetKeyFmt.FmtRes(dataSource, derivedDatasetId) : null;
+
+
+		// Now the proposed DatasetKey, ConnectionName. If it exists and is equal to the derived
+		// Datsetkey, it's also not needed.
+
+		string connectionName = site.ContainsKey(CoreConstants.C_KeyExConnectionName)
+			? (string)site[CoreConstants.C_KeyExConnectionName] : null;
+
+		if (connectionName != null && string.IsNullOrWhiteSpace(connectionName))
+		{
+			modified = true;
+			connectionName = null;
+			site.Remove(CoreConstants.C_KeyExConnectionName);
+		}
+
+		if (connectionName != null)
+		{
+			// If the ConnectionName (proposed DatsetKey) is equal to the default
+			// derived datasetkey it also won't be needed, so delete it,
+			// else the ConnectionName still exists and is the determinant, so
+			// any existing proposed DatasetId is not required.
+			if (connectionName == derivedConnectionName)
+			{
+				modified = true;
+				site.Remove(CoreConstants.C_KeyExConnectionName);
+			}
+			else if (datasetId != null)
+			{
+				// If ConnectionName exists the DatasetId is not needed. Delete it.
+				modified = true;
+				site.Remove(CoreConstants.C_KeyExDatasetId);
+			}
+		}
+
+		return modified;
+
 	}
 
 }

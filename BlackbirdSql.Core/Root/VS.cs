@@ -1,6 +1,10 @@
 ﻿
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Windows.Forms;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 
 
@@ -15,14 +19,38 @@ namespace BlackbirdSql.Core;
 /// Central location for accessing of Visual Studio, SSDT and ScopeStudio members. 
 /// </summary>
 // =========================================================================================================
-
-public static class VS
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
+public abstract class VS
 {
+
+	// ---------------------------------------------------------------------------------
+	#region Constants - VS
+	// ---------------------------------------------------------------------------------
+
+
 	public const uint dwReserved = 0u;
 
 	public const int STG_E_FILEALREADYEXISTS = -2147286960; // 0x80030050
 	public const int STG_E_NOTCURRENT = -2147286783; // 0x80030101
 	public const int OLE_E_NOTIFYCANCELLED = -2147217842; // 0x80040E4E
+
+
+	#endregion Constants
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	#region Fields - VS
+	// ---------------------------------------------------------------------------------
+
+
+	private static Control _MarshalingControl;
+
+
+	#endregion Fields
+
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -31,9 +59,6 @@ public static class VS
 
 
 	public const string AdoDotNetTechnologyGuid = "77AB9A9D-78B9-4ba7-91AC-873F5338F1D2";
-
-	public const string IVsDataConnectionManagerInteropGuid = "E7A0D4E0-D0E4-4AFA-A8A1-DD4636073D98";
-	public const string IVsDataConnectionInteropGuid = "902A17C6-B166-485F-A49F-9029549442DD";
 
 
 	public static readonly IntPtr DSREFNODEID_NIL = (IntPtr)0;
@@ -44,6 +69,7 @@ public static class VS
 	public static Guid CLSID_DSRefProperty_PreciseType = new Guid("39A5A7E7-513F-44a4-B79D-7652CD8962D9");
 
 	public static Guid CLSID_Mode_QueryDesigner = new Guid("B2C40B32-3A37-4ca9-97B9-FA44248B69FF");
+
 
 	#endregion DataTools Members
 
@@ -57,8 +83,8 @@ public static class VS
 
 	// Microsoft.VSDesigner.ServerExplorer.Constants.guidDataCmdId
 	public const string SeDataCommandSetGuid = "501822E1-B5AF-11d0-B4DC-00A0C91506EF";
+	public const string SeInterfaceCommandSetGuid = "74d21311-2aee-11d1-8bfb-00a0c90f26f7";
 	public const string DavCommandSetGuid = "732ABE75-CD80-11d0-A2DB-00AA00A3EFFF";
-	public const string VSStandardCommandSet97Guid = "5efc7975-14bc-11cf-9b2b-00aa00573819";
 	public const string DetachCommandProviderGuid = "8C591813-BB90-4B5C-BD7B-5A286D130D2E";
 
 
@@ -66,33 +92,8 @@ public static class VS
 	public const string SeRootGuid = "74d21310-2aee-11d1-8bfb-00a0c90f26f7";
 	public const string SeObjectNodesGuid = "d4f02a6a-c5ae-4bf2-938d-f1625bdca0e2";
 
+
 	#endregion ServerExplorer Members
-
-
-
-
-	// ---------------------------------------------------------------------------------
-	#region SqlEditor Members - VS
-	// ---------------------------------------------------------------------------------
-
-
-	/// <summary>
-	/// Visual Studio built-in Sql Editor Guid
-	/// </summary>
-	public const string SqlEditorFactoryGuid = "cc5d8df0-88f4-4bb2-9dbb-b48cee65c30a";
-
-	/// <summary>
-	/// Visual Studio built-in Encoded Sql Editor Guid
-	/// </summary>
-	public const string SqlEditorEncodedFactoryGuid = "F9D1E5B1-8A59-439C-9BB9-D5598B830ECB";
-
-	/// <summary>
-	/// Visual Studio built-in Sql Editor Command Set Guid
-	/// </summary>
-	public const string SqlEditorCommandsGuid = "52692960-56BC-4989-B5D3-94C47A513E8D";
-
-
-	#endregion SqlEditor Members
 
 
 
@@ -259,6 +260,56 @@ public static class VS
 	#region Static Methods - VS
 	// =========================================================================================================
 
+
+	private delegate DialogResult SafeShowMessageBox(string title, string text, string helpKeyword, MessageBoxButtons buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcon icon);
+
+
+	public static DialogResult ShowMessageBoxEx(string title, string text, string helpKeyword, MessageBoxButtons buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcon icon)
+	{
+		Diag.ThrowIfNotOnUIThread();
+
+		_MarshalingControl ??= new Control();
+		if (_MarshalingControl.InvokeRequired)
+		{
+			return (DialogResult)_MarshalingControl.Invoke(new SafeShowMessageBox(ShowMessageBoxEx), title, text, helpKeyword, defaultButton, buttons, icon);
+		}
+		int pnResult = 1;
+		if (Package.GetGlobalService(typeof(SVsUIShell)) is IVsUIShell vsUIShell)
+		{
+			Guid rclsidComp = Guid.Empty;
+			OLEMSGICON msgicon = OLEMSGICON.OLEMSGICON_INFO;
+			switch (icon)
+			{
+				case MessageBoxIcon.Hand:
+					msgicon = OLEMSGICON.OLEMSGICON_CRITICAL;
+					break;
+				case MessageBoxIcon.Asterisk:
+					msgicon = OLEMSGICON.OLEMSGICON_INFO;
+					break;
+				case MessageBoxIcon.None:
+					msgicon = OLEMSGICON.OLEMSGICON_NOICON;
+					break;
+				case MessageBoxIcon.Question:
+					msgicon = OLEMSGICON.OLEMSGICON_QUERY;
+					break;
+				case MessageBoxIcon.Exclamation:
+					msgicon = OLEMSGICON.OLEMSGICON_WARNING;
+					break;
+			}
+			OLEMSGDEFBUTTON msgdefbtn = OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST;
+			switch (defaultButton)
+			{
+				case MessageBoxDefaultButton.Button2:
+					msgdefbtn = OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND;
+					break;
+				case MessageBoxDefaultButton.Button3:
+					msgdefbtn = OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_THIRD;
+					break;
+			}
+			Native.WrapComCall(vsUIShell.ShowMessageBox(0u, ref rclsidComp, title, string.IsNullOrEmpty(text) ? null : text, helpKeyword, 0u, (OLEMSGBUTTON)buttons, msgdefbtn, msgicon, 0, out pnResult));
+		}
+		return (DialogResult)pnResult;
+	}
 
 
 

@@ -7,7 +7,6 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using BlackbirdSql.Core.Controls.Events;
-using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Interfaces;
 using BlackbirdSql.Core.Properties;
@@ -249,11 +248,11 @@ public abstract class AbstractUomConverter : TypeConverter, IBEditConverter, IDi
 
 		if (e.SelectionItem.PropertyDescriptor.Attributes[typeof(ReadOnlyAttribute)] is ReadOnlyAttribute attr)
 		{
-			FieldInfo fld = attr.GetType().GetField("isReadOnly",
-				BindingFlags.NonPublic | BindingFlags.Instance);
-
-			if ((bool)fld.GetValue(attr))
+			if ((bool)Reflect.GetFieldValue(attr, "isReadOnly",
+				BindingFlags.NonPublic | BindingFlags.Instance))
+			{
 				return;
+			}
 		}
 
 		_EditActive = true;

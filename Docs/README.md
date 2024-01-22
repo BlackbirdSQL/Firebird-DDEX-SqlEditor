@@ -2,7 +2,7 @@
 
 The BlackbirdSQL DDEX 2.0 .NET with SqlEditor Provider extension for Firebird, `BlackbirdSql.VisualStudio.Ddex`, implements most DDEX 2.0 interfaces prevalent in the SqlServer DDEX and SqlEditor extensions.
 
-[Download BlackbirdSql DDEX with SqlEditor Extension (Release v10.0.3.0)](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v10.0.3.0/BlackbirdSql.VisualStudio.Ddex.vsix) ([Change Log](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/blob/master/Docs/CHANGELOG.md))
+[Download BlackbirdSql DDEX with SqlEditor Extension (Release v10.1.0.0)](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v10.1.0.0/BlackbirdSql.VisualStudio.Ddex.vsix) ([Change Log](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/blob/master/Docs/CHANGELOG.md))
 
 #### Screenshots
 ![ReadMe](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/assets/120905720/8c2515a0-6ee2-49f5-8293-3dba1b51f3b5)
@@ -11,15 +11,20 @@ The BlackbirdSQL DDEX 2.0 .NET with SqlEditor Provider extension for Firebird, `
 
 This extension goes a long way towards cracking the nut that is the Visual Studio extensions interface. For example, using the existing VS Options PropertyGrid and GridView implementations to set non-persistent live user settings in an editor pane, and calling the extension's existing IVsDataConnectionUIProperties and IVsDataConnectionUIControl implementations through an IVsDataConnectionDialog implementation when a connection needs to be configured in custom contexts.</br>
 By accessing and reusing IVs implementations alreaded coded within the extension and Visual Studio, the need for custom classes can by and large be eliminated.</br></br>
-Also, a __disclaimer/warning__ regarding exposing members with hidden access modifiers. The private edit field of the VS User Options PropertyGrid GridView is accessed to overcome a long-time irritant and implement radio buttons and check boxes into the grid by utilizing type converters and attributes.</br>
-This all occurs in the first 5 `AbstractSettingsPage` property accessors. The code performing this access is 100% stable, using standard calls included in Visual Studio's Reflection. If you object to this practice, do not install this extension.</br></br>
+Also, a __disclaimer/warning__ regarding exposing members with hidden access modifiers. The private edit field of the VS User Options PropertyGrid GridView is accessed to overcome a long-time irritant and implement radio buttons and check boxes into the grid by utilizing type converters and attributes. There are several other locations where hidden members are also exposed.</br>
+All access of this nature take place in the BlackbirdSql.Core.Reflect class. As a rule no other code within the extension may expose hidden members. The code performing this access is 100% stable, using standard calls included in Visual Studio's Reflection. If you object to this practice, do not install this extension.</br></br>
 *The first tenet of this package is `small footprint, low overhead`, and to be as unobtrusive as possible. It is installed as a standard VSIX extension. If you uninstall it is is gone. It does not leave it's fingerprints in either your computer system or your Visual Studio installation.*
+</br></br>
+
+### Deconstructing Connection Naming, Equivalency and SE Integration
+If you're finding BlackbirdSql's RunningConnectionTable management of connections confusing, insight into it's basic rules of operation can be found [here...](RunningConnectionTable.md)
+</br></br>
 
 ### Features
 * Firebird DDEX provider support for most of the DDEX 2.0 IVs DML interfaces utilizing FirebirdSql.Data.FirebirdClient version 10.0.0.
 * SqlServer SqlEditor port for Firebird for editing Computed columns, Triggers, Views, Procedures, Functions and SQL scripts.</br>__Note:__ The editor service execution plan visualizer is not currently functional. Execution plans are text based.
 * Trigger/Generator auto-increment linkage.
-* Host and database drop-down selection within connection dialogs; derived from Server Explorer, FlameRobin and the current solution projects' connection strings.
+* Full integration of Server Explorer. Connection dialogs include Host and Database drop-down selection; derived from Server Explorer, FlameRobin and the current solution projects' settings and EDM connection strings.
 * SqlEditor text-based execution plans and statistics snapshot comparer.
 * Configurable connection equivalency keys under `BlackbirdSql Server Tools` DDEX user options.
 * Within Server Explorer, top level folders for Tables, Views, Stored procedures, Functions, Sequence Generators, Triggers and Domains.
@@ -35,10 +40,11 @@ This all occurs in the first 5 `AbstractSettingsPage` property accessors. The co
 * All exception, task progress and task status reporting logged to the output window accessible under *BlackbirdSql* in the dropdown (Enabled by default under Options).
 * The connection node `Refresh` command option in the SE will, in most instances, successfully recover from a connection timeout shutdown exception, to the node's previous state, otherwise a disconnect/connect should restore the connection.
 
+
 ### AutoIncrement Identity Fields
 There is a simple parser coded in C++/Cli which parses the Trigger source for linkage to the auto-increment sequence generator. The original parser code was ported from the pgsql LISP con-cell parser but then scrapped in favor of the [greenlion/PHP-SQL-Parser](https://github.com/greenlion/PHP-SQL-Parser) PHP parser, which meant adapting the BlackbirdSql Cell class library so that it could imitate PHP style arrays/variables. This library is fully functional but the port of the parser itself was not completed because the partial port satisfied the needs for parsing the Trigger DDL.</br>
 The parser itself is reasonably fast (+- 0.1 milliseconds per trigger), but SQL SELECT commands on a large number of rows, in this case for triggers and generators, may take some time, so building of the Trigger/Generator linkage tables for a connection is initiated asynchronously as soon as the connection is established.
-
+</br></br>
 
 ## Known issues
 * The Language service for the SqlEditor service is still under development and has not been linked into the extension. When opening scripts for Triggers, Views, Procedures, Funtions, Computed columns or SQL statements, the SqlEditor uses the Visual Studio built-in T-SQL Language service. This means that Intellisense may mark incompatible SQL and DDL as errors. The scripts will still successfully execute.
@@ -51,13 +57,13 @@ We want to be as unobtrusive as possible so load delays are just a reality if we
 * If you have a huge number of triggers then rendering of the triggers in the SE, or any other collection for that matter, may take some time. This has nothing to do with the parser but is simply down to network and database server performance. To minimize the effect of this, Trigger/Generator linkage is built asynchronously as soon as a connection is established.
 * There seems to be an issue with drag and drop on procedures and functions which hasn't been looked at. It's likely something trivial but not sure if this functionality is available to SqlServer so may be another rabbit hole.</br>
 The same applies to drag and drop from the SE directly into the edmx, not available on SqlServer but I don't see why it cannot be done.
-
+</br>
 
 ## Documentation
 
 * [ADO.NET provider](ado-net.md)
 * [Using ADO.NET edmx with .NET](edmx-NET.md)
-
+</br>
 
 ## FirebirdSQL Packages
 BlackbirdSql utilizes the [FirebirdSQL/NETProvider](https://github.com/FirebirdSQL/NETProvider) FirebirdSql.Data.FirebirdClient package for client access to Firebird. The package source is included in the BlackbirdSql source for debug and tracing purposes, however BlackbirdSql is not associated with FirebirdSql in any form and the Firebird source will be removed once testing is complete. Links to the FirebirdSql nuget packages are provided below.
@@ -67,19 +73,20 @@ BlackbirdSql utilizes the [FirebirdSQL/NETProvider](https://github.com/FirebirdS
 | [FirebirdSql.Data.FireClient](https://www.nuget.org/packages/FirebirdSql.Data.FirebirdClient) | ![FirebirdSql.Data.FireClient](https://img.shields.io/nuget/v/FirebirdSql.Data.FirebirdClient.svg) | ![FirebirdSql.Data.FireClient](https://img.shields.io/nuget/dt/FirebirdSql.Data.FirebirdClient.svg) |
 | [EntityFramework.Firebird](https://www.nuget.org/packages/EntityFramework.Firebird) | ![EntityFramework.Firebird](https://img.shields.io/nuget/v/EntityFramework.Firebird.svg) | ![EntityFramework.Firebird](https://img.shields.io/nuget/dt/EntityFramework.Firebird.svg) |
 | [FirebirdSql.EntityFrameworkCore.Firebird](https://www.nuget.org/packages/FirebirdSql.EntityFrameworkCore.Firebird) | ![FirebirdSql.EntityFrameworkCore.Firebird](https://img.shields.io/nuget/v/FirebirdSql.EntityFrameworkCore.Firebird.svg) | ![FirebirdSql.EntityFrameworkCore.Firebird](https://img.shields.io/nuget/dt/FirebirdSql.EntityFrameworkCore.Firebird.svg) |
-
+</br>
 
 ## Resources
 
 * [Downloads](https://github.com/BlackbirdSQL/NETProvider-DDEX/releases)
 * [Issue tracker](https://github.com/BlackbirdSQL/NETProvider-DDEX/issues)
-
+</br>
 
 ## Builds
 
 If you're planning on testing this solution (Blackbird.sln) preferably DO NOT use test projects within Blackbird.sln.</br>
 Rather fire up the experimental instance of Visual Studio with Blackbird.sln remaining open and test within the experimental instance. If you have successfully built Blackbird.sln you won't need to install the vsix. VS will automatically detect it in the experimental instance.</br>
 To fire up an experimental instance of Visual Studio outside of the IDE, create a shortcut of Visual Studio with the experimental suffix. eg. `"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\devenv.exe" /RootSuffix Exp`
+</br></br>
 
 ## Extended Description
 

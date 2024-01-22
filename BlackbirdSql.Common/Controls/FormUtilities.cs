@@ -18,9 +18,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace BlackbirdSql.Common.Controls;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
-
 public static class FormUtilities
 {
 	public static DialogResult ShowDialog(Form form)
@@ -35,12 +32,7 @@ public static class FormUtilities
 
 	private static DialogResult ShowDialogOrForm(Form form, CommonDialog dialog)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		if (form != null && dialog != null)
 		{

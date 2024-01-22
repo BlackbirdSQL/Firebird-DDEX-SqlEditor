@@ -34,11 +34,11 @@ public class TObjectSelector : TObjectSelectorTable
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Variables - TObjectSelector
+	#region Fields - TObjectSelector
 	// ---------------------------------------------------------------------------------
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 

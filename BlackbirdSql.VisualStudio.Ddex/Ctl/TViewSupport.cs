@@ -1,26 +1,29 @@
 // $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
-using System.Security.Policy;
 using System.Threading.Tasks;
 
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Extensions;
+using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.VisualStudio.Ddex.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 
 using FirebirdSql.Data.FirebirdClient;
-
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
+using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
@@ -34,15 +37,44 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 /// Partly plagiarized off of Microsoft.VisualStudio.Data.Providers.SqlServer.SqlViewSupport.
 /// </summary>
 // =========================================================================================================
-public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDataViewIconProvider
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
+public class TViewSupport : DataViewSupport,
+	IVsDataSupportImportResolver, IVsDataViewIconProvider, IBDataViewSupport
 {
 	private bool _Loaded = false;
 	private bool _Initialized = false;
 	private bool _Refreshing = false;
+	private bool _LabelEditing = false;
 
 	private static string _IconName = null;
 	private static string _IconPrefix = null;
 	private static Icon _Icon = null;
+
+	private IVsUIHierarchyWindow _HierarchyWindow;
+
+
+
+
+	public IVsUIHierarchyWindow HierarchyWindow
+	{
+		get
+		{
+			Diag.ThrowIfNotOnUIThread();
+
+			if (_HierarchyWindow == null)
+			{
+				IVsWindowFrame vsWindowFrame = Hostess.FindToolWindow(VSConstants.StandardToolWindows.ServerExplorer);
+
+				if (vsWindowFrame != null)
+				{
+					Native.WrapComCall(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar));
+					_HierarchyWindow = pvar as IVsUIHierarchyWindow;
+				}
+			}
+			return _HierarchyWindow;
+		}
+	}
+
 
 
 	string IconPrefix
@@ -98,22 +130,18 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 		{
 			// Tracer.Trace(GetType(), "Close()", "Disassociating from ExplorerConnection.");
 
-			ViewHierarchy.ExplorerConnection.NodeExpandedOrRefreshed -= OnNodeStateChanged;
-			ViewHierarchy.ExplorerConnection.NodeRemoving -= OnNodeRemoving;
 			ViewHierarchy.ExplorerConnection.NodeChanged -= OnNodeChanged;
+			ViewHierarchy.ExplorerConnection.NodeExpandedOrRefreshed -= OnNodeExpandedOrRefreshed;
+			ViewHierarchy.ExplorerConnection.NodeInserted -= OnNodeInserted;
+			ViewHierarchy.ExplorerConnection.NodeRemoving -= OnNodeRemoving;
+
+			RctManager.OnExplorerConnectionClose(this, ViewHierarchy.ExplorerConnection);
+
+			IVsDataConnection site = ViewHierarchy.ExplorerConnection.Connection;
 
 
-			IVsDataConnection connection = ViewHierarchy.ExplorerConnection.Connection;
-
-			if (connection != null)
-			{
-				// Tracer.Trace(GetType(), "Close()", "Disposing of site objects");
-
-				connection.StateChanged -= OnConnectionStateChanged;
-
-				// Perform a cleanup of linkage tables.
-				LinkageParser.DisposeInstance(connection);
-			}
+			if (site != null)
+				site.StateChanged -= OnConnectionStateChanged;
 		}
 
 		base.Close();
@@ -129,21 +157,6 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 	{
 		// Tracer.Trace(GetType(), "CreateService()", "serviceType: {0}", serviceType.Name);
 
-
-		// If it's asking for a visibility provider it means the tree must be opening so it's
-		// our opportunity to async start the parser if it's not up already.
-		/*
-		if (serviceType == typeof(IVsDataViewVisibilityProvider))
-		{
-
-			IVsDataConnection connection = ViewHierarchy.ExplorerConnection.Connection;
-			if (connection.State == DataConnectionState.Open)
-			{
-				LinkageParser parser = LinkageParser.EnsureInstance(connection, typeof(DslProviderSchemaFactory));
-				parser?.AsyncExecute();
-			}
-		}
-		*/
 		/*
 		if (serviceType == typeof(IVsDataViewCommandProvider))
 		{
@@ -169,6 +182,48 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 	}
 
 
+	public void EditNodeLabel(IVsDataExplorerNode node)
+	{
+		ExpandItemWrapper(node, EXPANDFLAGS.EXPF_SelectItem);
+		ExpandItemWrapper(node, EXPANDFLAGS.EXPF_EditItemLabel);
+		_LabelEditing = true;
+		while (_LabelEditing)
+		{
+			MSG msg = default;
+			if (Native.GetMessage(ref msg, 0, 0, 0))
+			{
+				Native.TranslateMessage(ref msg);
+				Native.DispatchMessage(ref msg);
+			}
+		}
+	}
+
+
+	public void StartEditNodeLabel(IVsDataExplorerNode node)
+	{
+		_LabelEditing = true;
+	}
+
+	public void CancelEditNodeLabel(IVsDataExplorerNode node)
+	{
+		_LabelEditing = false;
+	}
+
+	public void CommitEditNodeLabel(IVsDataExplorerNode node)
+	{
+		_LabelEditing = false;
+	}
+
+	private void ExpandItemWrapper(IVsDataExplorerNode node, EXPANDFLAGS expfFlag)
+	{
+		if (!(node == node.ExplorerConnection.ConnectionNode) && HierarchyWindow != null /* && synchronizeWithShell */)
+		{
+			Diag.ThrowIfNotOnUIThread();
+
+			IVsUIHierarchy uiHierarchy = ViewHierarchy.ServiceProvider as IVsUIHierarchy;
+			HierarchyWindow.ExpandItem(uiHierarchy, (uint)node.ItemId, expfFlag);
+		}
+	}
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -192,7 +247,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 
 		if (!name.EndsWith("Definitions"))
 		{
-			Diag.Stack(Resources.ExceptionImportResourceNotFound.FmtRes(name));
+			Diag.StackException(Resources.ExceptionImportResourceNotFound.FmtRes(name));
 			return null;
 		}
 
@@ -228,9 +283,15 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 
 		site.StateChanged += OnConnectionStateChanged;
 
-		ViewHierarchy.ExplorerConnection.NodeExpandedOrRefreshed += OnNodeStateChanged;
-		ViewHierarchy.ExplorerConnection.NodeRemoving += OnNodeRemoving;
 		ViewHierarchy.ExplorerConnection.NodeChanged += OnNodeChanged;
+		ViewHierarchy.ExplorerConnection.NodeExpandedOrRefreshed += OnNodeExpandedOrRefreshed;
+		ViewHierarchy.ExplorerConnection.NodeInserted += OnNodeInserted;
+		ViewHierarchy.ExplorerConnection.NodeRemoving += OnNodeRemoving;
+
+		// Perform a single pass check to ensure this SE connection has had it's events
+		// advised. This will occur if the SE was adding a new conection and we
+		// registered it with the Rct before it was registered with Server Explorer.
+		RctManager.RegisterUnadvisedConnection(ViewHierarchy.ExplorerConnection);
 
 	}
 
@@ -406,7 +467,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 			Stream stream = GetType().Assembly.GetManifestResourceStream(name);
 			if (stream == null)
 			{
-				Diag.Stack(Resources.ExceptionIconResourceNotFound.FmtRes(name));
+				Diag.StackException(Resources.ExceptionIconResourceNotFound.FmtRes(name));
 				return null;
 			}
 
@@ -431,7 +492,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 			}
 			else
 			{
-				Diag.Stack(Resources.ExceptionIconResourceInvalid.FmtRes(name));
+				Diag.StackException(Resources.ExceptionIconResourceInvalid.FmtRes(name));
 			}
 		}
 		catch (Exception ex)
@@ -494,6 +555,8 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 		}
 	}
 
+
+
 	#endregion Methods
 
 
@@ -515,14 +578,22 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 
 	private void OnConnectionStateChanged(object sender, DataConnectionStateChangedEventArgs e)
 	{
+		// Tracer.Trace(GetType(), "OnConnectionStateChanged()", "Old: {0} new:{1}.", e.OldState, e.NewState);
+
 		if (!_Initialized && e.NewState == DataConnectionState.Open)
 			InitializeProperties();
 
-		// Tracer.Trace(GetType(), "OnNodeChanged()", "Old: {0} new:{1}.", e.OldState, e.NewState);
 
-		if (!_Refreshing || e.OldState == DataConnectionState.Open || e.NewState != DataConnectionState.Open
-			|| ViewHierarchy == null || ViewHierarchy.ExplorerConnection == null
-			|| ViewHierarchy.ExplorerConnection.Connection == null)
+		if (ViewHierarchy != null && ViewHierarchy.ExplorerConnection != null
+			&& ViewHierarchy.ExplorerConnection.Connection != null)
+		{
+			if (RctManager.ShutdownState || !RctManager.LoadConfiguredConnections(false))
+				return;
+
+			if (!_Refreshing || e.OldState == DataConnectionState.Open || e.NewState != DataConnectionState.Open)
+				return;
+		}
+		else
 		{
 			return;
 		}
@@ -530,13 +601,15 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 		_Refreshing = false;
 
 		// Attempt linkage startup on a refresh.
+
+		if (!RctManager.Available)
+			return;
+
 		IVsDataConnection site = null;
 		object lockedProviderObject = null;
 
 		try
 		{
-			CsbAgent.LoadConfiguredConnections();
-
 			site = ViewHierarchy.ExplorerConnection.Connection;
 			lockedProviderObject = site.GetLockedProviderObject();
 			if (lockedProviderObject == null)
@@ -549,7 +622,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 			// We'll delay 25 cycles of 20ms each because this is a deadlock when
 			// preregistering the taskhandler and a node requiring completed linkage tables is already expanded.
 			LinkageParser parser = LinkageParser.EnsureInstance(connection, typeof(DslProviderSchemaFactory));
-			parser?.AsyncExecute(20, 50);
+			parser?.AsyncExecute(25, 20);
 		}
 		catch (Exception ex)
 		{
@@ -576,9 +649,13 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 	}
 
 
-
+	/// <summary>
+	/// Node renames occur here.
+	/// </summary>
 	private void OnNodeChanged(object sender, DataExplorerNodeEventArgs e)
 	{
+		// Tracer.Trace(GetType(), "OnNodeChanged()");
+
 		IVsDataConnection site = null;
 		object lockedProviderObject = null;
 
@@ -599,6 +676,7 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 				Assembly.Load(typeof(FirebirdClientFactory).Assembly.FullName);
 			}
 
+			// Trace("OnNodeChanged()", e);
 
 			if (e.Node == null || ((!e.Node.IsRefreshing || _Refreshing) && !e.Node.IsExpanding)
 				|| e.Node.ExplorerConnection == null
@@ -609,43 +687,31 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 				return;
 			}
 
-			/*
-			string str = $"ItemId: {e.Node.ItemId}, NodeType: {e.Node}, " +
-				$"Name: {e.Node.Name} HasBeenExpanded: {e.Node.HasBeenExpanded}, " +
-				$"IsExpandable: {e.Node.IsExpandable}, IsExpanding: {e.Node.IsExpanding}, " +
-				$"IsRefreshing: {e.Node.IsRefreshing}, IsDiscarded: {e.Node.IsDiscarded}, " +
-				$"IsExpanded: {e.Node.IsExpanded}, IsPlaced: {e.Node.IsPlaced}, IsVisible: {e.Node.IsVisible}";
-
-			if (e.Node.Object != null)
-			{
-				str += $", Object.Name: {e.Node.Object.Name}, Object.Type: {e.Node.Object.Type.Name}, " +
-					$"Object.IsDeleted: {e.Node.Object.IsDeleted}.";
-			}
-			// Tracer.Trace(GetType(), "OnNodeChanged()", str);
-			*/
-
 			site = e.Node.ExplorerConnection.Connection;
-			lockedProviderObject = site.GetLockedProviderObject();
-			if (lockedProviderObject == null)
-				throw new NotImplementedException("ViewHierarchy.ExplorerConnection.Connection.GetLockedProviderObject()");
-
-			if (lockedProviderObject is not FbConnection connection)
-				throw new NotImplementedException($"GetLockedProviderObject() as FbConnection for object type: {lockedProviderObject.GetType().Name}.");
 
 
 			if (e.Node.IsRefreshing && !_Refreshing)
 			{
-				if (connection != null)
-					LinkageParser.DisposeInstance(connection);
-				_Refreshing = true;
+				// Tracer.Trace(GetType(), "OnNodeChanged()", "Node is refreshing - Disposing of site objects");
 
+				LinkageParser.DisposeInstance(site, true);
+				_Refreshing = true;
 			}
 			else if (e.Node.IsExpanding)
 			{
-				if (site.State == DataConnectionState.Open)
+				if (site.State == DataConnectionState.Open && RctManager.Available)
 				{
+
+					lockedProviderObject = site.GetLockedProviderObject();
+
+					if (lockedProviderObject == null)
+						throw new NotImplementedException("ViewHierarchy.ExplorerConnection.Connection.GetLockedProviderObject()");
+
+					if (lockedProviderObject is not FbConnection connection)
+						throw new NotImplementedException($"GetLockedProviderObject() as FbConnection for object type: {lockedProviderObject.GetType().Name}.");
+
 					LinkageParser parser = LinkageParser.EnsureInstance(connection, typeof(DslProviderSchemaFactory));
-					parser?.AsyncExecute();
+					parser?.AsyncExecute(20, 20);
 				}
 			}
 		}
@@ -663,46 +729,24 @@ public class TViewSupport : DataViewSupport, IVsDataSupportImportResolver, IVsDa
 
 
 
+	private void OnNodeExpandedOrRefreshed(object sender, DataExplorerNodeEventArgs e)
+	{
+		// Tracer.Trace(GetType(), "OnNodeExpandedOrRefreshed()");
+	}
+
+
+
+	private void OnNodeInserted(object sender, DataExplorerNodeEventArgs e)
+	{
+		// Trace("OnNodeInserted()", e);
+	}
+
+
+
 	private void OnNodeRemoving(object sender, DataExplorerNodeEventArgs e)
 	{
-		// Tracer.Trace(GetType(), "OnNodeRemoving()", "Node: {0}.", e.Node != null ? e.Node.ToString() : "null");
+		// Tracer.Trace(GetType(), "OnNodeRemoving()");
 	}
-
-
-
-	private void OnNodeStateChanged(object sender, DataExplorerNodeEventArgs e)
-	{
-		try
-		{
-			/*
-			if (e.Node == null || e.Node.ExplorerConnection == null
-				|| e.Node.ExplorerConnection.Connection == null
-				|| e.Node.ExplorerConnection.ConnectionNode == null
-				|| !e.Node.Equals(e.Node.ExplorerConnection.ConnectionNode))
-			{
-				return;
-			}
-
-			string str = $"ItemId: {e.Node.ItemId}, NodeType: {e.Node}, " +
-				$"Name: {e.Node.Name} HasBeenExpanded: {e.Node.HasBeenExpanded}, " +
-				$"IsExpandable: {e.Node.IsExpandable}, IsExpanding: {e.Node.IsExpanding}, " +
-				$"IsRefreshing: {e.Node.IsRefreshing}, IsDiscarded: {e.Node.IsDiscarded}, " +
-				$"IsExpanded: {e.Node.IsExpanded}, IsPlaced: {e.Node.IsPlaced}, IsVisible: {e.Node.IsVisible}";
-
-			if (e.Node.Object != null)
-			{
-				str += $", Object.Name: {e.Node.Object.Name}, Object.Type: {e.Node.Object.Type.Name}, " +
-					$"Object.IsDeleted: {e.Node.Object.IsDeleted}.";
-			}
-			*/
-			// Tracer.Trace(GetType(), "OnNodeStateChanged()", str);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-		}
-	}
-
 
 
 	#endregion Events

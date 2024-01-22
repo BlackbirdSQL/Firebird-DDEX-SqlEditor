@@ -25,9 +25,6 @@ using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 namespace BlackbirdSql.EditorExtension.Ctl;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
-
 public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorFactory(withEncoding)
 {
 
@@ -44,12 +41,7 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 		{
 			if (_monitorSelection == null)
 			{
-				if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+				Diag.ThrowIfNotOnUIThread();
 
 				Microsoft.VisualStudio.OLE.Interop.IServiceProvider oleServiceProvider = OleServiceProvider;
 
@@ -221,12 +213,7 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 				IVsTextLines vsTextLines2 = null;
 				if (vsTextLines == null)
 				{
-					if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+					Diag.ThrowIfNotOnUIThread();
 
 					Guid clsid = typeof(VsTextBufferClass).GUID;
 					Guid iid = VSConstants.IID_IUnknown;
@@ -303,12 +290,7 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 
 	private static Guid GetProjectGuid(IVsHierarchy hierarchy)
 	{
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		Native.ThrowOnFailure(hierarchy.GetGuidProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_TypeGuid, out var pguid));
 
@@ -330,12 +312,7 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 		if (ServiceProvider.GetService(typeof(IVsSolution)) is not IVsSolution vsSolution)
 			return;
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		Guid rguidEnumOnlyThisType = Guid.Empty;
 		int projectEnum = vsSolution.GetProjectEnum((uint)__VSENUMPROJFLAGS.EPF_ALLINSOLUTION, ref rguidEnumOnlyThisType, out IEnumHierarchies ppenum);

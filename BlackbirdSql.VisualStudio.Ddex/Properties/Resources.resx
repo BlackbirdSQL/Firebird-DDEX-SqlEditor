@@ -147,9 +147,6 @@
   <data name="ExceptionCollectionNotSupported" xml:space="preserve">
     <value>The metadata collection {0} is not supported.</value>
   </data>
-  <data name="ExceptionDteIsNull" xml:space="preserve">
-    <value>DTE is null</value>
-  </data>
   <data name="ExceptionDuplicatingSiteInformation" xml:space="preserve">
     <value>Source information for site already exists</value>
   </data>
@@ -161,9 +158,6 @@
   </data>
   <data name="ExceptionFailedToSubscribeSettingsEvents" xml:space="preserve">
     <value>Failed to subscribe to Settings events</value>
-  </data>
-  <data name="ExceptionIBPackageControllerIsNull" xml:space="preserve">
-    <value>IBPackageController is null</value>
   </data>
   <data name="ExceptionIconResourceInvalid" xml:space="preserve">
     <value>Icon resource invalid: {0}.</value>
@@ -183,9 +177,6 @@
   <data name="ExceptionInvalidRawMetadataCall" xml:space="preserve">
     <value>The raw metadata collection {0} may not be called from here.</value>
   </data>
-  <data name="ExceptionIVsRunningDocumentTableIsNull" xml:space="preserve">
-    <value>IVsRunningDocumentTable is null</value>
-  </data>
   <data name="ExceptionResourceNotFound" xml:space="preserve">
     <value>Resource not found: {0}</value>
   </data>
@@ -194,9 +185,6 @@
   </data>
   <data name="ExceptionSiteIsNull" xml:space="preserve">
     <value>Site is null</value>
-  </data>
-  <data name="ExceptionSVsSolutionIsNull" xml:space="preserve">
-    <value>SVsSolution is null</value>
   </data>
   <data name="ExceptionSyncTokenSourceNull" xml:space="preserve">
     <value>SyncTokenSource was found to be null when exiting sync</value>

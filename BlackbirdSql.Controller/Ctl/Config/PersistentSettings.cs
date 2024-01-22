@@ -1,10 +1,7 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
-using System;
-using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Events;
-using BlackbirdSql.Core.Ctl.Extensions;
 
 namespace BlackbirdSql.Controller.Ctl.Config;
 
@@ -24,11 +21,11 @@ public abstract class PersistentSettings : EditorExtension.Ctl.Config.Persistent
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Variables
+	#region Fields
 	// ---------------------------------------------------------------------------------
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 

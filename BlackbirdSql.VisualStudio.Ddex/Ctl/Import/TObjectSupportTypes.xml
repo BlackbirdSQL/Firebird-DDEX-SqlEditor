@@ -6,6 +6,7 @@
 		<!-- Root -->
 		<RootType>
 			<Properties>
+				<Property name="ConnectionKey" type="System.String"/>
 				<Property name="DatasetKey" type="System.String"/>
 			</Properties>
 			<Services>
@@ -20,11 +21,13 @@
 		<!-- Database -->
 		<Type name="Database">
 			<Identifier>
-				<Part name="DatasetKey" type="System.String" />
+				<Part name="ConnectionKey" type="System.String" />
 			</Identifier>
 			<Properties>
-				<Property name="DatasetKey" isIdentifierPart="true" />
-				<Property name="ExternalKey" type="System.String" />
+				<Property name="ConnectionKey" isIdentifierPart="true" />
+				<Property name="DatasetKey" type="System.String" />
+				<Property name="ConnectionSource" type="System.Int32" />
+				<Property name="ConnectionName" type="System.String" />
 				<Property name="DataSource" type="System.String" />
 				<Property name="Dataset" type="System.String" />
 				<Property name="Port" type="System.Int32"/>

@@ -89,7 +89,7 @@ internal static class DslObjectTypes
 				return 5;
 
 			default:
-				Diag.Stack("DslObjectType not found: " + typeName);
+				Diag.StackException("DslObjectType not found: " + typeName);
 				return -1;
 		}
 	}

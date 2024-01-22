@@ -10,6 +10,7 @@ using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -18,7 +19,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace BlackbirdSql.Common.Ctl.Commands;
 
-public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
+public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 {
 	/// <summary>
 	/// Records the last moniker created so that we can do a fast equivalency comparison
@@ -28,12 +29,15 @@ public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
 	/// </summary>
 	private static CsbAgent _Csa = null;
 
-	public SqlEditorSqlDatabaseCommand()
+	public static CsbAgent Csa => _Csa;
+
+
+	public SqlEditorDatabaseCommand()
 	{
 		// Diag.Trace();
 	}
 
-	public SqlEditorSqlDatabaseCommand(IBSqlEditorWindowPane editorWindow)
+	public SqlEditorDatabaseCommand(IBSqlEditorWindowPane editorWindow)
 		: base(editorWindow)
 	{
 		// Diag.Trace();
@@ -73,6 +77,7 @@ public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
 		if (pvaIn != IntPtr.Zero)
 		{
 			string selectedDatasetKey = (string)Marshal.GetObjectForNativeVariant(pvaIn);
+
 			// Tracer.Trace(GetType(), "HandleExec()", "pvaIn selectedDatasetKey: {0}", selectedDatasetKey);
 
 			try
@@ -98,13 +103,17 @@ public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
 			}
 			else
 			{
-				if (_Csa == null || !_Csa.Equals(connection))
+				if (_Csa == null || _Csa.Invalidated(connection))
 				{
-					_Csa = CsbAgent.CreateInstance(connection);
+					if (RctManager.ShutdownState)
+						return VSConstants.S_OK;
+
+					_Csa = RctManager.CloneVolatile(connection);
 				}
 
+				// Tracer.Trace(GetType(), "HandleExec()", "pvaOut Current selection DatasetKey: {0}.", _Csa == null ? "Csa is null" : _Csa.DatasetKey);
+
 				objDatasetKey = _Csa.DatasetKey;
-				// Tracer.Trace(GetType(), "HandleExec()", "pvaOut Current selection objDatasetKey: {0}.", objDatasetKey);
 			}
 			Marshal.GetNativeVariantForObject(objDatasetKey, pvaOut);
 		}
@@ -124,6 +133,8 @@ public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
 			throw ex;
 		}
 
+		RctManager.Invalidate();
+
 		CsbAgent csa = (CsbAgent)docData.GetUserDataCsb();
 
 		if (csa != null && csa.DatasetKey == null)
@@ -139,9 +150,12 @@ public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
 
 		if (csa == null || csa.DatasetKey != selectedDatasetKey)
 		{
+			if (RctManager.ShutdownState)
+				return;
+
 			try
 			{
-				csa = CsbAgent.CreateInstance(selectedDatasetKey);
+				csa = RctManager.CloneRegistered(selectedDatasetKey);
 			}
 			catch (Exception ex)
 			{
@@ -170,10 +184,13 @@ public class SqlEditorSqlDatabaseCommand : AbstractSqlEditorCommand
 		Guid clsid = LibraryData.CLSID_PropertyDatabaseConnectionChanged;
 		Core.Native.ThrowOnFailure(userData.SetData(ref clsid, connectionString), (string)null);
 
+		// Tracer.Trace(GetType(), "SetDatasetKeyDisplayMember()", "csa.ConnectionString: {0}", csa.ConnectionString);
+
 		Guid clsid2 = new(LibraryData.SqlEditorConnectionStringGuid);
 		Core.Native.ThrowOnFailure(userData.SetData(ref clsid2, (object)csa), (string)null);
 
 		_Csa = csa;
+		_Csa.RegisterValidationState(connectionString);
 		// }
 	}
 }

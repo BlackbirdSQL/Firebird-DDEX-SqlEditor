@@ -30,8 +30,6 @@ using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 namespace BlackbirdSql.Core.Model.Config;
 
-[SuppressMessage("Usage", "VSTHRD104:Offer async methods")]
-
 public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : AbstractSettingsModel<T>
 {
 	private VerbSite _Site = null;

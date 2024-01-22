@@ -16,9 +16,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Class is UIThread compliant.")]
-
 public abstract class AbstractResultsPanel : Panel
 {
 	public const string C_TName = "DispSQLResults";
@@ -83,12 +80,7 @@ public abstract class AbstractResultsPanel : Panel
 	{
 		// Tracer.Trace(GetType(), "DisplaySqlResultsBaseTabPage.Initialize", "", null);
 
-		if (!ThreadHelper.CheckAccess())
-		{
-			COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-			Diag.Dug(exc);
-			throw exc;
-		}
+		Diag.ThrowIfNotOnUIThread();
 
 		_ObjServiceProvider = oleServiceProvider;
 		_ServiceProvider = new ServiceProvider((Microsoft.VisualStudio.OLE.Interop.IServiceProvider)oleServiceProvider);

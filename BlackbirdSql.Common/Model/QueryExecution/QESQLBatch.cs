@@ -1,7 +1,5 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// location unknown
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution.QESQLBatch
 
 using System;
 using System.Data;
@@ -755,7 +753,7 @@ public class QESQLBatch : IDisposable
 		}
 		catch (FbException exf)
 		{
-			Tracer.Warning(GetType(), "ExecuteStatement()", "Firebird exception: {0}\nCommand: {1}.", exf.Message, _Command.CommandText);
+			Tracer.LogExThrow(GetType(), "Firebird exception: {0}\nCommand: {1}.".FmtRes(exf.Message, _Command.CommandText));
 
 			lock (this)
 				result = _State != EnBatchState.Cancelling ? EnScriptExecutionResult.Failure : EnScriptExecutionResult.Cancel;

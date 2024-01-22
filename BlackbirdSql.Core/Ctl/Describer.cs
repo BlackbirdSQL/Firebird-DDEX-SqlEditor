@@ -55,7 +55,7 @@ namespace BlackbirdSql.Core.Ctl;
 /// </param>
 // =========================================================================================================
 public class Describer(string name, string connectionParameter, Type propertyType, object defaultValue = null,
-	bool isConnectionProperty = false, bool isAdvanced = true, bool isPublic = true, bool isMandatory = false)
+	bool isConnectionProperty = false, bool isAdvanced = true, bool isPublic = true, bool isMandatory = false, bool isInternalStore = false)
 {
 
 	/// <summary>
@@ -120,7 +120,14 @@ public class Describer(string name, string connectionParameter, Type propertyTyp
 	/// must be determined at runtime, for strings use null and for
 	/// cardinals use int.MinValue.
 	/// </summary>
-	public object DefaultValue { get; set; } = defaultValue;
+	public object DefaultValue { get; set; } = propertyType.IsSubclassOf(typeof(Enum))
+		? (int)defaultValue : defaultValue;
+
+	/// <summary>
+	/// True if this describer is a valid browsable property else false
+	/// if it's for internal storage.
+	/// </summary>
+	public bool IsInternalStore { get; set; } = isInternalStore;
 
 	/// <summary>
 	/// True if this describer represents a Firebird connection property/parameter.
@@ -137,7 +144,7 @@ public class Describer(string name, string connectionParameter, Type propertyTyp
 	public bool IsAdvanced { get; set; } = isAdvanced;
 
 	/// <summary>
-	/// Returns false if the descripber is a secure value else false.
+	/// Returns false if the describer is a secure value else true.
 	/// </summary>
 	public bool IsPublic { get; set; } = isPublic;
 
@@ -226,10 +233,10 @@ public class Describer(string name, string connectionParameter, Type propertyTyp
 	}
 
 	/// <summary>
-	/// Returns true is this describer is a connection property/parameter and is a mandatory
+	/// Returns true if this describer is a connection property/parameter and is a mandatory
 	/// property and is a public property.
 	/// </summary>
-	public bool IsPublicMandatory => IsMandatory && !IsPublic;
+	public bool IsPublicMandatory => IsMandatory && IsPublic;
 
 
 	/// <summary>

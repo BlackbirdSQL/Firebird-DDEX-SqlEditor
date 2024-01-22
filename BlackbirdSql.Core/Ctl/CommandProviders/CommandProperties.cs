@@ -5,6 +5,7 @@ using System;
 using System.ComponentModel.Design;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Model.Enums;
+using Microsoft.VisualStudio;
 
 namespace BlackbirdSql.Core.Ctl.CommandProviders;
 
@@ -67,10 +68,11 @@ public static class CommandProperties
 	// =========================================================================================================
 
 
-	private const int _CmdIdSENewQueryGlobal = 0x3513; // 13587;
-	private const int _CmdIdSENewQueryLocal = 0x3528; // 13608;
-	private const int _CmdIdAddTableViewForQRY = 0x0027; // 39;
-	private const int _CmdIdSERetrieveData = 0x3060; // 12384;
+	private const int C_CmdIdSENewQueryGlobal = 0x3513; // 13587;
+	private const int C_CmdIdSENewQueryLocal = 0x3528; // 13608;
+	private const int C_CmdIdAddTableViewForQRY = 0x0027; // 39;
+	public const int C_CmdIdSERetrieveData = 0x3060; // 12384;
+	public const int C_CmdIdEditLabel = 0x2101; // 8449;
 	// private const int _CmdIdSERun = 0x3062; // 12386;
 	// private const int _CmdIdSEDetachDatabase = 0x3517; // 13591;
 	// private const int _CmdIdUpdateScript = 0x3039; // 12345;
@@ -91,18 +93,27 @@ public static class CommandProperties
 
 
 	// public static CommandID DetachDatabase = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdSEDetachDatabase);
-	public static CommandID NewQueryGlobal = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdSENewQueryGlobal);
-	public static CommandID OverrideNewQueryLocal = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdSENewQueryLocal);
+	public static CommandID NewQueryGlobal = new CommandID(new Guid(VS.SeDataCommandSetGuid), C_CmdIdSENewQueryGlobal);
+	public static CommandID OverrideNewQueryLocal = new CommandID(new Guid(VS.SeDataCommandSetGuid), C_CmdIdSENewQueryLocal);
 	public static CommandID NewSqlQuery = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdNewSqlQuery);
 	public static CommandID NewDesignerQuery = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdNewDesignerQuery);
-	public static CommandID ShowAddTableDialog = new CommandID(new Guid(VS.DavCommandSetGuid), _CmdIdAddTableViewForQRY);
+	public static CommandID ShowAddTableDialog = new CommandID(new Guid(VS.DavCommandSetGuid), C_CmdIdAddTableViewForQRY);
 	public static CommandID OpenTextObject = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdOpenTextObject);
 	public static CommandID OpenAlterTextObject = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdOpenAlterTextObject);
-	public static CommandID OverrideRetrieveDataLocal = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdSERetrieveData);
+	public static CommandID OverrideRetrieveDataLocal = new CommandID(new Guid(VS.SeDataCommandSetGuid), C_CmdIdSERetrieveData);
 	public static CommandID RetrieveDesignerData = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdRetrieveDesignerData);
+	public static CommandID EditLabel = new CommandID(new Guid(VS.SeInterfaceCommandSetGuid), C_CmdIdEditLabel);
+	public static CommandID TraceRct = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdTraceRct);
 
 	// Unsupported
 	/*
+	public static CommandID StartLabelEdit = new CommandID(new Guid(VSConstants.CMDSETID.UIHierarchyWindowCommandSet_string),
+		(int)VSConstants.VsUIHierarchyWindowCmdIds.UIHWCMDID_StartLabelEdit);
+	public static CommandID CommitLabelEdit = new CommandID(new Guid(VSConstants.CMDSETID.UIHierarchyWindowCommandSet_string),
+		(int)VSConstants.VsUIHierarchyWindowCmdIds.UIHWCMDID_CommitLabelEdit);
+	public static CommandID CancelLabelEdit = new CommandID(new Guid(VSConstants.CMDSETID.UIHierarchyWindowCommandSet_string),
+		(int)VSConstants.VsUIHierarchyWindowCmdIds.UIHWCMDID_CancelLabelEdit);
+
 	public static CommandID ExecuteTextObject = new CommandID(new Guid(VS.SeDataCommandSetGuid), _CmdIdSERun);
 	public static CommandID GlobalNewDiagram = new CommandID(new Guid(VS.SeDataCommandSetGuid), 12352);
 	public static CommandID GlobalNewTable = new CommandID(new Guid(VS.SeDataCommandSetGuid), 12353);

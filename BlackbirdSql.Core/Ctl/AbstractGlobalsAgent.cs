@@ -38,11 +38,12 @@ public abstract class AbstractGlobalsAgent : IBGlobalsAgent
 
 
 	// =========================================================================================================
-	#region Variables - AbstractGlobalsAgent
+	#region Fields - AbstractGlobalsAgent
 	// =========================================================================================================
 
 
 	protected static IBGlobalsAgent _SolutionGlobals = null;
+	protected static bool _ValidateSolution;
 	protected static bool _PersistentValidation;
 	protected static bool _ValidateConfig;
 	protected static bool _ValidateEdmx;
@@ -52,7 +53,7 @@ public abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	private int? _StoredValue;
 
 
-	#endregion Variables
+	#endregion Fields
 
 
 
@@ -138,12 +139,16 @@ public abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	/// <param name="solution">The <see cref="EnvDTE.DTE.Solution"/> object</param>
 	/// <param name="stream">The stream from <see cref="Package.OnLoadOptions" event./></param>
 	// ---------------------------------------------------------------------------------
-	public AbstractGlobalsAgent(Stream stream, bool persistentValidation,
+	public AbstractGlobalsAgent(Stream stream, bool validateSolution, bool persistentValidation,
 		bool validateConfig, bool validateEdmx)
 	{
+		_ValidateSolution = validateSolution && (validateConfig || validateEdmx);
 		_PersistentValidation = persistentValidation;
 		_ValidateConfig = validateConfig;
 		_ValidateEdmx = validateEdmx;
+
+		if (!_ValidateSolution)
+			return;
 
 		try
 		{
@@ -177,6 +182,7 @@ public abstract class AbstractGlobalsAgent : IBGlobalsAgent
 			Diag.Dug(ex);
 			throw;
 		}
+
 	}
 
 
@@ -221,24 +227,34 @@ public abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	public bool Flush(Stream stream)
 	{
-		if (!_PersistentValidation || !_Value.HasValue || _Value == 0 || (!_ValidateConfig && !_ValidateEdmx))
-		{
-			// Tracer.Trace(GetType(), "Flush(Stream)", "Clearing solution Globals. Previous value: {0}.", _StoredValue ?? -1);
+		if (!_ValidateSolution)
 			return false;
-		}
 
-		// Tracer.Trace(GetType(), "Flush(Stream)", "Setting solution Globals to {0}.", _Value.Value);
+		int? runningValue = _Value;
+
+		if (IsValidateFailedStatus)
+			ClearValidateStatus();
+		else if (!IsValidatedStatus)
+			IsValidStatus = true;
+
 
 		try
 		{
-			byte[] buffer = Encoding.Default.GetBytes(_Value.Value.ToString());
+			if (_PersistentValidation && _Value.HasValue && _Value.Value != 0)
+			{
+				byte[] buffer = Encoding.Default.GetBytes(_Value.Value.ToString());
 
-			stream.Write(buffer, 0, buffer.Length);
+				stream.Write(buffer, 0, buffer.Length);
+			}
 		}
 		catch (Exception ex)
 		{
 			Diag.Dug(ex);
 			throw;
+		}
+		finally
+		{
+			_Value = runningValue;
 		}
 
 		return true;

@@ -8,8 +8,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
-using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
@@ -26,8 +24,6 @@ using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 namespace BlackbirdSql.Common.Controls.ResultsPane
 {
-	[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-		Justification = "Class is UIThread compliant.")]
 
 	public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 	{
@@ -178,45 +174,40 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 		{
 			// Tracer.Trace(GetType(), "VSTextEditorTabPage.Initialize", "", null);
 
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			base.Initialize(sp);
 			if (_ClsidLanguageService != Guid.Empty)
 			{
 				_TextViewCtl.ClsidLanguageService = _ClsidLanguageService;
 				TextResultsViewContol textView = _TextViewCtl;
-				Guid fontAndColorCategoryStandardTextEditor = VS.CLSID_FontAndColorsTextEditorCategory;
+				Guid fontAndColorCategoryStandardTextEditor = Core.VS.CLSID_FontAndColorsTextEditorCategory;
 				textView.ColorCategoryGuid = "{" + fontAndColorCategoryStandardTextEditor.ToString() + "}";
 				TextResultsViewContol textView2 = _TextViewCtl;
-				fontAndColorCategoryStandardTextEditor = VS.CLSID_FontAndColorsTextEditorCategory;
+				fontAndColorCategoryStandardTextEditor = Core.VS.CLSID_FontAndColorsTextEditorCategory;
 				textView2.FontCategoryGuid = "{" + fontAndColorCategoryStandardTextEditor.ToString() + "}";
 			}
 			else
 			{
 				TextResultsViewContol textView3 = _TextViewCtl;
-				Guid fontAndColorCategoryStandardTextEditor = VS.CLSID_FontAndColorsSqlResultsTextCategory;
+				Guid fontAndColorCategoryStandardTextEditor = Core.VS.CLSID_FontAndColorsSqlResultsTextCategory;
 				textView3.ColorCategoryGuid = "{" + fontAndColorCategoryStandardTextEditor.ToString() + "}";
 				TextResultsViewContol textView4 = _TextViewCtl;
-				fontAndColorCategoryStandardTextEditor = VS.CLSID_FontAndColorsSqlResultsTextCategory;
+				fontAndColorCategoryStandardTextEditor = Core.VS.CLSID_FontAndColorsSqlResultsTextCategory;
 				textView4.FontCategoryGuid = "{" + fontAndColorCategoryStandardTextEditor.ToString() + "}";
 			}
 
 			_TextViewCtl.CreateAndInitTextBuffer(sp, null);
 			_TextWriter = new ShellBufferWriter(_TextViewCtl.TextBuffer);
 			CreateAndInitVSTextEditor();
-			if (_ServiceProvider.GetService(VS.CLSID_TextManager) is not IVsTextManager vsTextManager)
+			if (_ServiceProvider.GetService(Core.VS.CLSID_TextManager) is not IVsTextManager vsTextManager)
 			{
 				return;
 			}
 
 			try
 			{
-				_ = Native.ThrowOnFailure(vsTextManager.GetRegisteredMarkerTypeID(ref VS.CLSID_TSqlEditorMessageErrorMarker, out ShellTextBuffer.markerTypeError));
+				_ = Native.ThrowOnFailure(vsTextManager.GetRegisteredMarkerTypeID(ref Core.VS.CLSID_TSqlEditorMessageErrorMarker, out ShellTextBuffer.markerTypeError));
 			}
 			catch
 			{
@@ -288,7 +279,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 		private void OnShowPopupMenu(object sender, SpecialEditorCommandEventArgs a)
 		{
 			_TextViewCtl.GetCoordinatesForPopupMenu(a.VariantIn, out var x, out var y);
-			CommonUtils.ShowContextMenuEvent((int)EnCommandSet.ContextIdMessageWindow, x, y, this);
+			VS.ShowContextMenuEvent((int)EnCommandSet.ContextIdMessageWindow, x, y, this);
 		}
 
 		private void CreateAndInitVSTextEditor()
@@ -304,12 +295,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		public int QueryStatus(ref Guid guidGroup, uint cmdId, OLECMD[] oleCmd, IntPtr oleText)
 		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			int num = TextViewCtl.QueryStatus(ref guidGroup, cmdId, oleCmd, oleText);
 
@@ -349,12 +335,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 				return VSConstants.S_OK;
 			}
 
-			if (!ThreadHelper.CheckAccess())
-			{
-				COMException exc = new("Not on UI thread", VSConstants.RPC_E_WRONG_THREAD);
-				Diag.Dug(exc);
-				throw exc;
-			}
+			Diag.ThrowIfNotOnUIThread();
 
 			return _TextViewCtl.Exec(ref guidGroup, nCmdId, nCmdExcept, variantIn, variantOut);
 		}
@@ -372,7 +353,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 				}
 
 				string intialDirectory = DefaultResultsDirectory;
-				TextWriter textWriterForQueryResultsToFile = CommonUtils.GetTextWriterForQueryResultsToFile(_xmlEditor, ref intialDirectory);
+				TextWriter textWriterForQueryResultsToFile = VS.GetTextWriterForQueryResultsToFile(_xmlEditor, ref intialDirectory);
 				if (textWriterForQueryResultsToFile != null)
 				{
 					try
