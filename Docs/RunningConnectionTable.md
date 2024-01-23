@@ -1,4 +1,4 @@
-﻿﻿# Deconstructing connection naming, equivalency and SE integration
+# Deconstructing connection naming, equivalency and SE integration
 
 If you're finding BlackbirdSql's RunningConnectionTable management of connections confusing, this document will go some way towards explaining some of the behaviour.
 </br></br>
