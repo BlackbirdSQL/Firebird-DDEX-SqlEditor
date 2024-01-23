@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Config;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Model.Interfaces;
@@ -258,6 +259,51 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// =========================================================================================================
 
 
+	private bool AdviseServerExplorerConnectionsEvents()
+	{
+		// Tracer.Trace(GetType(), "LoadServerExplorerConfiguredConnections()", "Executing Siting connections");
+
+		IVsDataExplorerConnectionManager manager =
+			(Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
+			as IVsDataExplorerConnectionManager)
+		?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
+
+		Guid clsidProvider = new(SystemData.ProviderGuid);
+		IVsDataExplorerConnection explorerConnection;
+
+
+		foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in manager.Connections)
+		{
+			if (pair.Value.Provider != clsidProvider)
+				continue;
+
+			explorerConnection = pair.Value;
+
+			try
+			{
+				object viewSupport = Reflect.GetPropertyValue(explorerConnection, "ViewSupport",
+					System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+
+				if (viewSupport == null)
+				{
+					COMException ex = new("IVsDataExplorerConnection ViewSupport is not ready");
+					throw ex;
+				}
+
+				AdviseEvents(explorerConnection);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+			}
+		}
+
+		return true;
+
+	}
+
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Appends a single row to the internal connections datatable and resets the
@@ -298,6 +344,66 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		{
 			EndLoadData();
 		}
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Launches an async task to perform explorer cnnection advise events if no async
+	/// load occured.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public bool AsyncAdviseServerExplorerConnectionsEvents()
+	{
+		// Tracer.Trace(GetType(), "AsyncLoadConfiguredConnections()", "Probject? {0}, _LoadingAsyncCardinal: {1}.",
+		//	probject == null ? "probject == null" : "probject != null", _LoadingAsyncCardinal);
+
+		// Sanity checks.
+
+		lock (_LockObject)
+		{
+			if (_InternalConnectionsTable == null)
+				return false;
+		}
+
+		if (_AsyncPayloadLauncherLaunchState != EnLauncherPayloadLaunchState.Inactive)
+		{
+			// We create an awaiter which blocks entry so this should never happen.
+			COMException exc = new($"Recursive call: Async Launch State: {_AsyncPayloadLauncherLaunchState}.", VSConstants.RPC_E_CANTCALLOUT_AGAIN);
+			Diag.Dug(exc);
+			throw exc;
+		}
+
+
+		// Prep the launcher.
+		PrepAsyncPayloadLauncher();
+
+		// The following for brevity.
+		CancellationToken cancellationToken = _AsyncPayloadLauncherToken;
+		TaskCreationOptions creationOptions = TaskCreationOptions.PreferFairness
+			| TaskCreationOptions.AttachedToParent;
+		TaskScheduler scheduler = TaskScheduler.Default;
+		// For brevity.
+
+		// For brevity. Create the payload.
+		bool payload() =>
+			LoadAdviseServerExplorerConnectionsEvents();
+
+
+		// Start up the payload launcher with tracking.
+		// Tracer.Trace(GetType(), "AsyncAdviseServerExplorerConnectionsEvents()", "Calling startnew.");
+
+		_AsyncPayloadLauncher?.Dispose();
+		_AsyncPayloadLauncher = Task.Factory.StartNew(payload, default, creationOptions, scheduler);
+
+		// Tracer.Trace(GetType(), "AsyncAdviseServerExplorerConnectionsEvents()", "Done called startnew.");
+
+		// We may do this for the async task.
+		// _TaskHandler.RegisterTask(_ASyncPayloadLauncher);
+
+
+		return true;
 	}
 
 
@@ -578,6 +684,51 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Loads explorer advise connections asynchronously.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private bool LoadAdviseServerExplorerConnectionsEvents()
+	{
+		return ThreadHelper.JoinableTaskFactory.Run(() => LoadAdviseServerExplorerConnectionsEventsAsync());
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Loads explorer advise connections asynchronously.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+	private async Task<bool> LoadAdviseServerExplorerConnectionsEventsAsync()
+	{
+		// Tracer.Trace(GetType(), "LoadAdviseServerExplorerConnectionsEventsAsync()");
+
+		bool result = true;
+
+		try
+		{
+			_AsyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Launching;
+			AdviseServerExplorerConnectionsEvents();
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			ClearAsyncPayloadLauncher();
+			throw ex;
+		}
+
+		ClearAsyncPayloadLauncher();
+
+		return result;
+
+	}
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Loads ServerExplorer, FlameRobin and Application connection configurations from
 	/// OnSolutionLoad, package initialization, ServerExplorer or any other applicable
 	/// activation event.
@@ -628,8 +779,10 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			// Load the Application connections asynchronously if we're not on the main thread
 			// with a fire and forget async task.
 
-			if (!ThreadHelper.CheckAccess())
+			if (PersistentSettings.IncludeAppConnections && !ThreadHelper.CheckAccess())
 				AsyncLoadConfiguredConnections(null);
+			else
+				AsyncAdviseServerExplorerConnectionsEvents();
 
 		}
 		finally
@@ -771,24 +924,14 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		Guid clsidProvider = new(SystemData.ProviderGuid);
 
-		IDictionary<string, IVsDataExplorerConnection> explorerConnections = new Dictionary<string, IVsDataExplorerConnection>();
-
 		foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in manager.Connections)
 		{
-			if (pair.Value.Provider == clsidProvider)
-				explorerConnections.Add(pair.Key, pair.Value);
-		}
+			if (pair.Value.Provider != clsidProvider)
+				continue;
 
-		if (explorerConnections.Count == 0)
-			return;
-
-		foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in explorerConnections)
-		{
 			try
 			{
-				// Tracer.Trace(GetType(), "LoadServerExplorerConfiguredConnections()", "Connection name: {0}", pair.Key);
-
-				LoadServerExplorerConfiguredConnectionImpl(pair.Key,
+				LoadServerExplorerConfiguredConnectionImpl(pair.Value.ConnectionNode.Name,
 					DataProtection.DecryptString(pair.Value.EncryptedConnectionString));
 			}
 			catch (Exception ex)
@@ -797,48 +940,6 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				throw;
 			}
 		}
-
-		_LoadingSyncCardinal++;
-
-		// Execute a fire and forget siting of the connection so that the rct can begin receiving
-		// explorer connection NodeChanged and NodeRemoving events to maintain synchronization.
-		// The connection will be sited by performing a dummy read of it's 'ViewSupport' property.
-		_ = Task.Run(() =>
-		{
-			try
-			{
-				// Tracer.Trace(GetType(), "LoadServerExplorerConfiguredConnections()", "Executing Siting connections");
-
-				foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in explorerConnections)
-				{
-					IVsDataExplorerConnection explorerConnection = pair.Value;
-
-					try
-					{
-						_ = Reflect.GetPropertyValue(explorerConnection, "ViewSupport",
-							System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-
-						AdviseEvents(explorerConnection);
-					}
-					catch (Exception ex)
-					{
-						Diag.Dug(ex);
-					}
-				}
-
-			}
-			finally
-			{
-				// Tracer.Trace(GetType(), "LoadServerExplorerConfiguredConnections()", "Sited all connections");
-
-				if (_LoadingSyncCardinal == 1)
-					SyncExit();
-
-				_LoadingSyncCardinal--;
-			}
-		});
-
-		// Tracer.Trace(GetType(), "LoadServerExplorerConfiguredConnections()", "Launched Siting connections");
 
 	}
 
@@ -976,6 +1077,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				current = (Project)_Probjects[0];
 			}
 		}
+		
 	}
 
 
@@ -1018,6 +1120,10 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 				// We must be off of the ui thread here
 				Diag.ThrowIfOnUIThread();
+
+
+				AdviseServerExplorerConnectionsEvents();
+
 
 				// Now onto main thread.
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -2120,7 +2226,11 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 			// Tracer.Trace(GetType(), "WaitForAsyncLoadConfiguredConnections()", "WAITING");
 
-			_AsyncPayloadLauncher.Wait(100);
+			try
+			{
+				_AsyncPayloadLauncher.Wait(100, _AsyncPayloadLauncherToken);
+			}
+			catch { }
 
 			waitTime += 100;
 		}

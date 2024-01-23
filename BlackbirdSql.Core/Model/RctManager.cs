@@ -191,7 +191,14 @@ public sealed class RctManager : IDisposable
 				return null;
 
 			if (_Instance._Rct == null)
+			{
 				LoadConfiguredConnections(false);
+			}
+			else if (Loading)
+			{
+				_Instance._Rct.WaitForSyncLoad();
+				_Instance._Rct.WaitForAsyncLoad();
+			}
 
 			return _Instance._Rct;
 		}
@@ -223,7 +230,7 @@ public sealed class RctManager : IDisposable
 	/// Returns the seed of the last connection registered or updated.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool ShutdownState => (_Instance == null || _Instance._Rct == null || Rct.ShutdownState);
+	public static bool ShutdownState => (_Instance == null || _Instance._Rct == null || _Instance._Rct.ShutdownState);
 
 
 	#endregion Property accessors
@@ -774,10 +781,14 @@ public sealed class RctManager : IDisposable
 	// ---------------------------------------------------------------------------------
 	public static string RegisterServer(string serverName, int port)
 	{
-		if (ShutdownState)
-			return serverName;
+		if (ShutdownState || _Instance == null || _Instance._Rct == null)
+		{
+			InvalidOperationException ex = new("RctManager.RegisterServer called before LoadConfiguredConnections().");
+			Diag.Dug(ex);
+			throw ex;
+		}
 
-		return Rct.RegisterServer(serverName, port);
+		return _Instance._Rct.RegisterServer(serverName, port);
 	}
 
 
@@ -1312,8 +1323,11 @@ public sealed class RctManager : IDisposable
 	public static void OnExplorerConnectionClose(object sender, IVsDataExplorerConnection explorerConnection)
 	{
 		// Tracer.Trace(GetType(), "OnNodeRemoving()", "Node: {0}.", e.Node != null ? e.Node.ToString() : "null");
-		if (Rct == null || explorerConnection.ConnectionNode == null)
+		if (ShutdownState || _Instance == null || _Instance._Rct == null
+			|| _Instance._Rct.Loading || explorerConnection.ConnectionNode == null)
+		{
 			return;
+		}
 
 		DataExplorerNodeEventArgs eventArgs = new(explorerConnection.ConnectionNode);
 		Rct.OnExplorerConnectionNodeRemoving(sender, eventArgs);

@@ -117,7 +117,7 @@ internal static class PackageSupportedObjects
 
 		{ nameof(IVsDataViewSupport), new(null, typeof(TViewSupport).FullName) },
 		{ nameof(IVsDataViewSupport)+1, new("XmlResource", typeof(TViewSupport).FullName + ".xml") },
-		{ nameof(IVsDataViewSupport)+2, new("AllowAsynchronousEnumerations", "false") },
+		{ nameof(IVsDataViewSupport)+2, new("AllowAsynchronousEnumerations", "true") },
 		{ nameof(IVsDataViewSupport)+3, new("HasDocumentProvider", 0) },
 		{ nameof(IVsDataViewSupport)+4, new("PersistentCommands", $"{VS.SeDataCommandSetGuid},{CommandProperties.C_CmdIdSERetrieveData},3") }
 	};

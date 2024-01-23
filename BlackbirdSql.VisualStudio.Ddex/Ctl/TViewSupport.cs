@@ -587,9 +587,6 @@ public class TViewSupport : DataViewSupport,
 		if (ViewHierarchy != null && ViewHierarchy.ExplorerConnection != null
 			&& ViewHierarchy.ExplorerConnection.Connection != null)
 		{
-			if (RctManager.ShutdownState || !RctManager.LoadConfiguredConnections(false))
-				return;
-
 			if (!_Refreshing || e.OldState == DataConnectionState.Open || e.NewState != DataConnectionState.Open)
 				return;
 		}

@@ -2,6 +2,9 @@
 
 ### Change log
 
+#### v10.1.0.1
+Implemented asynchronous Server Explorer enumerations.
+Resolved early load deadlock issue.
 
 #### v10.1.0.0
 Full integration of Server Explorer and RunningConnectionTable connection management.</br>
