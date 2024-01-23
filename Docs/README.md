@@ -41,7 +41,7 @@ All access of this nature take place in the BlackbirdSql.Core.Reflect class. As 
 *The first tenet of this package is `small footprint, low overhead`, and to be as unobtrusive as possible. It is installed as a standard VSIX extension. If you uninstall it is is gone. It does not leave it's fingerprints in either your computer system or your Visual Studio installation.*
 </br></br>
 
-### Deconstructing Connection Naming, Equivalency and SE Integration
+### Deconstructing connection naming, equivalency and SE integration
 If you're finding BlackbirdSql's RunningConnectionTable management of connections confusing, insight into it's basic rules of operation can be found [here...](RunningConnectionTable.md)
 </br></br>
 

@@ -2,8 +2,11 @@
 
 ### Change log
 
+#### v10.1.0.2
+Prevented transient LinkageParser deletion and relink during SE connection modification.
+
 #### v10.1.0.1
-Implemented asynchronous Server Explorer enumerations.
+Implemented asynchronous Server Explorer enumerations.</br>
 Resolved early load deadlock issue.
 
 #### v10.1.0.0

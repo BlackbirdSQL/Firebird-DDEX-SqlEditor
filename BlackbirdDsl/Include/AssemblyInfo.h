@@ -2,9 +2,9 @@
 
 #define Assembly_Copyright L"Copyright © BlackbirdSql 2023"
 #define Assembly_Description L"BlackbirdSql DSL Parser"
-#define File_Version 10,1,0,1
-#define File_Version_Str "10.1.0.1"
+#define File_Version 10,1,0,2
+#define File_Version_Str "10.1.0.2"
 
 //CLR assembly version
-#define Assembly_Version L"10.1.0.1"
+#define Assembly_Version L"10.1.0.2"
 

@@ -388,7 +388,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		// For brevity. Create the payload.
 		bool payload() =>
-			LoadAdviseServerExplorerConnectionsEvents();
+			PayloadAdviseServerExplorerConnectionsEvents();
 
 
 		// Start up the payload launcher with tracking.
@@ -461,7 +461,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		// For brevity. Create the payload.
 		bool payload() =>
-			LoadUnsafeConfiguredConnections(cancellationToken, probject);
+			PayloadLoadUnsafeConfiguredConnections(cancellationToken, probject);
 
 
 		// Start up the payload launcher with tracking.
@@ -679,51 +679,6 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	{
 		return ++_Seed;
 	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Loads explorer advise connections asynchronously.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private bool LoadAdviseServerExplorerConnectionsEvents()
-	{
-		return ThreadHelper.JoinableTaskFactory.Run(() => LoadAdviseServerExplorerConnectionsEventsAsync());
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Loads explorer advise connections asynchronously.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-	private async Task<bool> LoadAdviseServerExplorerConnectionsEventsAsync()
-	{
-		// Tracer.Trace(GetType(), "LoadAdviseServerExplorerConnectionsEventsAsync()");
-
-		bool result = true;
-
-		try
-		{
-			_AsyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Launching;
-			AdviseServerExplorerConnectionsEvents();
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			ClearAsyncPayloadLauncher();
-			throw ex;
-		}
-
-		ClearAsyncPayloadLauncher();
-
-		return result;
-
-	}
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
 
 
@@ -1081,108 +1036,6 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	}
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Searches for application configured connections and performs registration
-	/// asynchronously.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private bool LoadUnsafeConfiguredConnections(CancellationToken cancellationToken, object probject)
-	{
-		return ThreadHelper.JoinableTaskFactory.Run(() => LoadUnsafeConfiguredConnectionsAsync(cancellationToken, probject));
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Searches for application configured connections and performs registration
-	/// asynchronously.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private async Task<bool> LoadUnsafeConfiguredConnectionsAsync(CancellationToken cancellationToken, object probject)
-	{
-		// Tracer.Trace(GetType(), "LoadUnsafeConfiguredConnectionsAsync()");
-
-		bool result = true;
-
-		try
-		{
-
-			if (cancellationToken.IsCancellationRequested)
-			{
-				result = false;
-			}
-			else
-			{
-
-				_AsyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Launching;
-
-				// We must be off of the ui thread here
-				Diag.ThrowIfOnUIThread();
-
-
-				AdviseServerExplorerConnectionsEvents();
-
-
-				// Now onto main thread.
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-
-
-				if (probject == null && (Controller.Instance.Dte == null || Controller.Instance.Dte.Solution == null
-					|| Controller.Instance.Dte.Solution.Projects == null))
-				{
-					COMException exc = new("DTE.Solution.Projects is not available", VSConstants.RPC_E_INVALID_DATA);
-					Diag.Dug(exc);
-					throw exc;
-				}
-
-				// Build an object list of top level projects for the solution, then launch a non-block thread on
-				// the thread pool that will recursively call an async method that switches back to the ui
-				// thread to register connections for each project.
-
-
-				// Tracer.Trace(GetType(), "LoadUnsafeConfiguredConnectionsAsync()", "Calling LoadSolutionConfiguredConnections(), _AsyncPayloadLauncherToken.IsCancellationRequested: {0}.", _AsyncPayloadLauncherToken.IsCancellationRequested);
-
-
-				BeginLoadData(true);
-
-				try
-				{
-					LoadSolutionConfiguredConnections(_AsyncPayloadLauncherToken, false, probject);
-
-					if (_Instance == null || _AsyncPayloadLauncherLaunchState == EnLauncherPayloadLaunchState.Shutdown)
-						result = false;
-
-					// finally{} just will not work here. This must have something to do with how
-					// this async task was formed.
-				}
-				catch
-				{
-					EndLoadData();
-					throw;
-				}
-
-				EndLoadData();
-			}
-
-			// finally{} just will not work here. This must have something to do with how
-			// this async task was formed.
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			ClearAsyncPayloadLauncher();
-			throw ex;
-		}
-
-		ClearAsyncPayloadLauncher();
-
-		return result;
-
-	}
-
-
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -1324,6 +1177,172 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			EndLoadData();
 		}
 
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Loads explorer advise connections on thread pool.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private bool PayloadAdviseServerExplorerConnectionsEvents()
+	{
+		// Tracer.Trace(GetType(), "PayloadAdviseServerExplorerConnectionsEvents()");
+
+		// Sanity check.
+		Diag.ThrowIfOnUIThread();
+
+		bool result = true;
+
+		try
+		{
+			_AsyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Launching;
+			AdviseServerExplorerConnectionsEvents();
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			ClearAsyncPayloadLauncher();
+			throw ex;
+		}
+
+		ClearAsyncPayloadLauncher();
+
+		return result;
+
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Searches for application configured connections and performs registration
+	/// asynchronously.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private bool PayloadLoadUnsafeConfiguredConnections(CancellationToken cancellationToken, object probject)
+	{
+		return ThreadHelper.JoinableTaskFactory.Run(() => PayloadLoadUnsafeConfiguredConnectionsAsync(cancellationToken, probject));
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Searches for application configured connections and performs registration
+	/// asynchronously.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private async Task<bool> PayloadLoadUnsafeConfiguredConnectionsAsync(CancellationToken cancellationToken, object probject)
+	{
+		// Tracer.Trace(GetType(), "PayloadLoadUnsafeConfiguredConnectionsAsync()");
+
+		bool result = true;
+
+		try
+		{
+
+			if (cancellationToken.IsCancellationRequested)
+			{
+				result = false;
+			}
+			else
+			{
+
+				_AsyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Launching;
+
+				// We must be off of the ui thread here
+				Diag.ThrowIfOnUIThread();
+
+
+				AdviseServerExplorerConnectionsEvents();
+
+
+				// Now onto main thread.
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+
+				if (probject == null && (Controller.Instance.Dte == null || Controller.Instance.Dte.Solution == null
+					|| Controller.Instance.Dte.Solution.Projects == null))
+				{
+					COMException exc = new("DTE.Solution.Projects is not available", VSConstants.RPC_E_INVALID_DATA);
+					Diag.Dug(exc);
+					throw exc;
+				}
+
+				// Build an object list of top level projects for the solution, then launch a non-block thread on
+				// the thread pool that will recursively call an async method that switches back to the ui
+				// thread to register connections for each project.
+
+
+				// Tracer.Trace(GetType(), "PayloadLoadUnsafeConfiguredConnectionsAsync()", "Calling LoadSolutionConfiguredConnections(), _AsyncPayloadLauncherToken.IsCancellationRequested: {0}.", _AsyncPayloadLauncherToken.IsCancellationRequested);
+
+
+				BeginLoadData(true);
+
+				try
+				{
+					LoadSolutionConfiguredConnections(_AsyncPayloadLauncherToken, false, probject);
+
+					if (_Instance == null || _AsyncPayloadLauncherLaunchState == EnLauncherPayloadLaunchState.Shutdown)
+						result = false;
+
+					// finally{} just will not work here. This must have something to do with how
+					// this async task was formed.
+				}
+				catch
+				{
+					EndLoadData();
+					throw;
+				}
+
+				EndLoadData();
+			}
+
+			// finally{} just will not work here. This must have something to do with how
+			// this async task was formed.
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			ClearAsyncPayloadLauncher();
+			throw ex;
+		}
+
+		ClearAsyncPayloadLauncher();
+
+		return result;
+
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Executes the sync configuration loader's wait task.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private bool PayloadSyncWaiter(CancellationToken cancellationToken)
+	{
+		// Tracer.Trace(GetType(), "SyncPayloadTask()");
+
+		if (_SyncPayloadLauncher == null || cancellationToken.IsCancellationRequested)
+			return false;
+
+		_SyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Launching;
+
+		while (!cancellationToken.IsCancellationRequested)
+		{
+			System.Threading.Thread.Sleep(50);
+		}
+
+		if (_SyncPayloadLauncherLaunchState == EnLauncherPayloadLaunchState.Shutdown)
+			return false;
+
+		_SyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Inactive;
+
+		return true;
 	}
 
 
@@ -1925,7 +1944,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		// For brevity. Create the payload.
 		bool payload() =>
-			SyncPayloadTask(cancellationToken);
+			PayloadSyncWaiter(cancellationToken);
 
 		// Start up the payload launcher with tracking.
 		_SyncPayloadLauncher = Task.Factory.StartNew(payload, default, creationOptions, scheduler);
@@ -1969,35 +1988,6 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		return true;
 
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Executes the sync configuration loader's wait task.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private bool SyncPayloadTask(CancellationToken cancellationToken)
-	{
-		// Tracer.Trace(GetType(), "SyncPayloadTask()");
-
-		if (_SyncPayloadLauncher == null || cancellationToken.IsCancellationRequested)
-			return false;
-
-		_SyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Launching;
-
-		while (!cancellationToken.IsCancellationRequested)
-		{
-			System.Threading.Thread.Sleep(50);
-		}
-
-		if (_SyncPayloadLauncherLaunchState == EnLauncherPayloadLaunchState.Shutdown)
-			return false;
-
-		_SyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Inactive;
-
-		return true;
 	}
 
 

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Core.Controls;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Properties;
 using FirebirdSql.Data.FirebirdClient;
@@ -168,6 +169,7 @@ public class LinkageParser : AbstractLinkageParser
 		_AsyncLauncherTokenSource?.Dispose();
 		_SyncWaitOnAsyncTokenSource?.Cancel();
 		_SyncWaitOnAsyncTokenSource?.Dispose();
+		_TransientParser = null;
 	}
 
 
@@ -345,11 +347,7 @@ public class LinkageParser : AbstractLinkageParser
 		_TransientMultiplier = 0;
 
 		if (!ClearToLoadAsync)
-		{
-			// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] AsyncExecute()", "ENTERED then exited because !ClearToLoadAsync - _AsyncPayloadLaunchState: {0}", _AsyncPayloadLaunchState);
 			return false;
-		}
-
 
 		int asyncProcessId = _AsyncProcessSeed < 99990 ? ++_AsyncProcessSeed : 90001;
 		_AsyncProcessSeed = asyncProcessId;
@@ -381,7 +379,7 @@ public class LinkageParser : AbstractLinkageParser
 
 		// For brevity.
 		bool payload() =>
-			AsyncPayloadTask(asyncProcessId, asyncCancellationToken, userCancellationToken, delay, multiplier);
+			PayloadAsyncExecute(asyncProcessId, asyncCancellationToken, userCancellationToken, delay, multiplier);
 
 		// Start up the payload launcher with tracking.
 		_AsyncPayloadLauncher = Task.Factory.StartNew(payload, default, creationOptions, scheduler);
@@ -472,10 +470,83 @@ public class LinkageParser : AbstractLinkageParser
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Disable future async operations and suspends any current async tasks.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	protected override bool Disable()
+	{
+		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] Disable()");
+
+		if (!_Enabled)
+			return false;
+
+		int syncCardinal = SyncEnter();
+
+		_Enabled = false;
+
+		SyncExit(syncCardinal);
+
+		return true;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Disposes of a parser given an IVsDataConnection site.
+	/// </summary>
+	/// <param name="site">
+	/// The IVsDataConnection explorer connection object
+	/// </param>
+	/// <param name="disposing">
+	/// True if this is a permanent disposal and a transient parser should not
+	/// be stored else false.
+	/// </param>
+	/// <returns>True of the parser was found and disposed else false.</returns>
+	// ---------------------------------------------------------------------------------
+	public static bool DisposeInstance(IVsDataConnection site, bool disposing)
+	{
+		// Tracer.Trace(typeof(LinkageParser), "DisposeInstance(IVsDataConnection)", "!Refreshing = disposing: {0}.", disposing);
+
+		if (site == null)
+			return false;
+
+		if (site.GetService(typeof(IVsDataConnectionSupport)) is not IVsDataConnectionSupport vsDataConnectionSupport)
+			return false;
+
+		if (vsDataConnectionSupport.ProviderObject is not FbConnection connection)
+			return false;
+
+		return AbstractLinkageParser.DisposeInstance(connection, disposing);
+	}
+
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Launches the UI thread build of the linkage tables if the UI requires them.
+	/// If an async build is in progress, waits for the active operation to complete and
+	/// then switches over to a UI thread build for the remaining tasks.
+	/// </summary>
+	/// <returns>True if successfully loaded or already loaded else false</returns>
+	// ---------------------------------------------------------------------------------
+	protected override bool EnsureLoaded()
+	{
+		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] EnsureLoaded() not pausing, calling SyncExecute()");
+
+		return SyncExecute();
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// The _AsyncPayloadLauncher payload.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private bool AsyncPayloadTask(int asyncProcessId, CancellationToken asyncCancellationToken,
+	private bool PayloadAsyncExecute(int asyncProcessId, CancellationToken asyncCancellationToken,
 		CancellationToken userCancellationToken, int delay, int multiplier)
 	{
 		bool result = false;
@@ -522,77 +593,6 @@ public class LinkageParser : AbstractLinkageParser
 
 
 		return result;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Disable future async operations and suspends any current async tasks.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected override bool Disable()
-	{
-		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] Disable()");
-
-		if (!_Enabled)
-			return false;
-
-		int syncCardinal = SyncEnter();
-
-		_Enabled = false;
-
-		SyncExit(syncCardinal);
-
-		return true;
-	}
-
-
-
-	/// <summary>
-	/// Disposes of a parser given an IVsDataConnection site.
-	/// </summary>
-	/// <param name="site">
-	/// The IVsDataConnection explorer connection object
-	/// </param>
-	/// <param name="disposing">
-	/// True if this is a permanent disposal and a transient parser should not
-	/// be stored else false.
-	/// </param>
-	/// <returns>True of the parser was found and disposed else false.</returns>
-	public static bool DisposeInstance(IVsDataConnection site, bool disposing)
-	{
-		// Tracer.Trace(typeof(LinkageParser), "DisposeInstance(IVsDataConnection)", "!Refreshing = disposing: {0}.", disposing);
-
-		if (site == null)
-			return false;
-
-		if (site.GetService(typeof(IVsDataConnectionSupport)) is not IVsDataConnectionSupport vsDataConnectionSupport)
-			return false;
-
-		if (vsDataConnectionSupport.ProviderObject is not FbConnection connection)
-			return false;
-
-		return AbstractLinkageParser.DisposeInstance(connection, disposing);
-	}
-
-
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Launches the UI thread build of the linkage tables if the UI requires them.
-	/// If an async build is in progress, waits for the active operation to complete and
-	/// then switches over to a UI thread build for the remaining tasks.
-	/// </summary>
-	/// <returns>True if successfully loaded or already loaded else false</returns>
-	// ---------------------------------------------------------------------------------
-	protected override bool EnsureLoaded()
-	{
-		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] EnsureLoaded() not pausing, calling SyncExecute()");
-
-		return SyncExecute();
 	}
 
 
@@ -922,10 +922,7 @@ public class LinkageParser : AbstractLinkageParser
 	protected override bool SyncExecute()
 	{
 		if (!ClearToLoadSync)
-		{
-			// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] SyncExecute()", "ENTER and EXIT - Loaded or !_Enabled - _SyncCardinal: {0}", _SyncCardinal);
 			return _Enabled;
-		}
 
 		if (_DbConnection == null)
 		{
@@ -956,14 +953,10 @@ public class LinkageParser : AbstractLinkageParser
 			}
 		}
 
-
 		int syncCardinal = SyncEnter(false);
 
 		if (syncCardinal >= 0)
-		{
-			// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{syncCardinal}]  SyncExecute()", "Exiting - SyncEnter returned loaded}");
 			return true;
-		}
 
 		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{syncCardinal}]  SyncExecute()", "Ready to prepare for sync execution");
 
@@ -977,14 +970,9 @@ public class LinkageParser : AbstractLinkageParser
 			try
 			{
 				if (!ClearToLoadSync)
-				{
-					// Tracer.Trace("<SyncExecute>.task", $"ParserId:[{_InstanceId}->S {syncCardinal}]  SyncExecute()", "Thread aborted PopulateLinkageTables() because ClearToLoadSync state change");
 					return false;
-				}
-				// Tracer.Trace("<AsyncExecute>.task", $"ParserId:[{_InstanceId}->S {syncCardinal}]  SyncExecute()", "Calling PopulateLinkageTables()");
-				bool result = PopulateLinkageTables(default, default, "SyncCardinal", syncCardinal);
-				// Tracer.Trace("<SyncExecute>.task", $"ParserId:[{_InstanceId}->S {syncCardinal}] SyncExecute()", "Done PopulateLinkageTables() Success: {0}", result.ToString());
-				return result;
+
+				return PopulateLinkageTables(default, default, "SyncCardinal", syncCardinal);
 			}
 			catch (Exception ex)
 			{
@@ -1098,7 +1086,7 @@ public class LinkageParser : AbstractLinkageParser
 			return;
 
 
-		Dispose(false);
+		Dispose(true);
 	}
 
 

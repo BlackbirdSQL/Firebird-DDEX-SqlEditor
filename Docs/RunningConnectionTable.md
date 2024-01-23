@@ -1,4 +1,4 @@
-﻿# Deconstructing Connection Naming, Equivalency and SE Integration
+﻿﻿# Deconstructing connection naming, equivalency and SE integration
 
 If you're finding BlackbirdSql's RunningConnectionTable management of connections confusing, this document will go some way towards explaining some of the behaviour.
 </br></br>
@@ -32,19 +32,20 @@ Load precedence is as follows:
 If you do not want Application and EntityDataModel connections loaded into the Rct, you can disable this feature under the BlackbirdSql > Ddex Provider > General user options.
 </br>
 
-#### Configured Connections, MRU Connections and Ownership
+#### Configured Connections, Session Connections and Ownership
 Configured connections are connections with persistence. These include connections with owner ServerExplorer, Utility, EntityDataModel and Application.</br>
-MRU connections are connections that have been accessed by SqlEditor or the SE. By default SE connections are all considered MRU connections. Whenever a connection is either an SE connection or a connection not in it's persistent state of ownership, and that has actively been used or modified during a solution session, it converts to an MRU.
-Whenever an EDM or Application configured connection is used or alternatively updated by the SE or SqlEditor in a connection dialog, ownership is transferred and the connection converts to an MRU. The glyph is dropped to denote the connection is no longer just a configured connection for use in the connection dialog drop-down list.</br>
-If the SE takes ownership, ownership is persistent, but if the SqlEditor/Session takes ownership, ownership is volatile, reverting back on a solution reload. The same applies to Utility/FlameRobin persistent connections.</br>
-If a unique connection is created in SqlEditor (Session), that new connection will be added to the SE unless the `Update Server Explorer` checkbox is unchecked.</br>
-If an attempt is made to add a connection in the SE that is equivalent to an existing connection, the SE will revert back to the existing connection.</br>
-Any changes to connections in Entity Data Models or within Application settings will not update the Rct. To have those connections updated to the Rct requires a solution reload.</br>
-If a connection is deleted in the SE, ownership of the connection will revert to `Session` and still appear in dropdowns and editor windows, but will be dropped on a solution reload.</br>
-</br>
+Session connections are connections that are owned by SqlEditor or the SE. Whenever a connection is either an SE connection or a connection not in it's persistent state of ownership, ie. that has been modified during a solution session, it converts to a Session connection.</br>
+The distinction between Configured and Session connections is unimportant and has no effect on a connection's behavior, but it does effect it's DatasetKey format.
+</br></br>
 
-It is always preferable to use DatsetId's for custom naming of DatasetKeys, rather than a global ConnectionName, because connection names do not differentiate by Server/DataSource.</br>
-Renaming a connection using the SE `Rename` option creates a global ConnectionName. Rather use the `Modify Connection` and rename the DatasetId under 'Advanced', because this allows BlackbirdSql to name connections using the `Server (DatasetId)` format.</br>
-</br>
-Whenever a connection is modified in the SE or Sqleditor, those changes will be reflected globally.</br>
+#### Summary
+* Whenever an EDM or Application configured connection is updated by the SE or SqlEditor in a connection dialog, ownership is transferred and the connection converts to a Session connection. The glyph is dropped to denote the connection is no longer in it's original state.
+* If the SE takes ownership, ownership is persistent, but if the SqlEditor/Session takes ownership, ownership is volatile, reverting back on a solution reload. The same applies to Utility/FlameRobin persistent connections.
+* If a unique connection is created in SqlEditor (Session), that new connection will be added to the SE unless the `Update Server Explorer` checkbox is unchecked.
+* If an attempt is made to add a connection in the SE that is equivalent to an existing connection, the SE will revert back to the existing connection.
+* Any changes to connections in Entity Data Models or within Application settings connection dialogs will not update the Rct. To have those connections updated to the Rct requires a solution reload.
+* If a connection is deleted in the SE, ownership of the connection will revert to `Session` and still appear in dropdowns and editor windows, but will be dropped on a solution reload.
+* It is always preferable to use DatsetId's for custom naming of DatasetKeys, rather than a global ConnectionName, because connection names do not differentiate by Server/DataSource.
+* Renaming a connection using the SE `Rename` option creates a global ConnectionName. Rather use the `Modify Connection` and rename the DatasetId under 'Advanced', because this allows BlackbirdSql to name connections using the `Server (DatasetId)` format.
+* Whenever a connection is modified in the SE or Sqleditor, those changes will be reflected globally.</br>
 Specifically, changes made in the SE will reflect in SqlEditor, but changes made in SqlEditor will reflect in the SE only if they exist in the SE.

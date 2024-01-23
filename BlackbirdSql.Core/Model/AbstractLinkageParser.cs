@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Text;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model.Interfaces;
 using BlackbirdSql.Core.Properties;
 using FirebirdSql.Data.FirebirdClient;
@@ -62,7 +63,6 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		_Instances ??= [];
 		_Instances.Add(connection, this);
 
-		// _Connection.StateChange += OnConnectionStateChanged;
 		connection.Disposed += OnConnectionDisposed;
 		_InstanceConnection = connection;
 
@@ -154,9 +154,10 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		if (_InstanceConnection == null || _Instances == null)
 			return false;
 
-		if (!disposing && _Enabled &&  (Loaded || _LinkStage >= EnLinkStage.TriggerDependenciesLoaded))
+		if (_Enabled &&  (Loaded || _LinkStage >= EnLinkStage.TriggerDependenciesLoaded))
 		{
 			// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "Removing instance and cloning to Transient");
+
 			if (!Loaded)
 				EnsureLoaded();
 
@@ -165,6 +166,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		}
 		else
 		{
+			// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "Removing instance WITHOUT cloning to Transient");
 			Disable();
 		}
 

@@ -389,7 +389,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	/// The _AsyncPayloadLauncher payload.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private async Task<bool> PayloadTaskAsync(int projectCount, CancellationToken asyncCancellationToken,
+	private async Task<bool> PayloadValidateSolutionAsync(int projectCount, CancellationToken asyncCancellationToken,
 		CancellationToken userCancellationToken)
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
@@ -870,7 +870,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		TaskScheduler scheduler = TaskScheduler.Default;
 
 		Task<bool> payload() =>
-			PayloadTaskAsync(projectCount, asyncCancellationToken, userCancellationToken);
+			PayloadValidateSolutionAsync(projectCount, asyncCancellationToken, userCancellationToken);
 
 		// Projects may have already been opened. They may be irrelevant eg. unloaded
 		// project items or other non-project files, but we have to check anyway.
