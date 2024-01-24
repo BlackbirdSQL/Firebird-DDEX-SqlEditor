@@ -42,7 +42,7 @@ All access of this nature take place in the BlackbirdSql.Core.Reflect class. As 
 </br></br>
 
 ### Deconstructing connection naming, equivalency and SE integration
-If you're finding BlackbirdSql's RunningConnectionTable management of connections confusing, insight into it's basic rules of operation can be found [here...](RunningConnectionTable.md)
+For a clearer understanding of BlackbirdSql's RunningConnectionTable management of connections, insight into it's basic rules of operation can be found [here...](RunningConnectionTable.md)
 </br></br>
 
 ## Known issues
