@@ -46,6 +46,6 @@ The distinction between Configured and Session connections is unimportant and ha
 * Any changes to connections in Entity Data Models or within Application settings connection dialogs will not update the Rct. To have those connections updated to the Rct requires a solution reload. The same applies to changes made within FlameRobin.
 * If a connection is deleted in the SE, ownership of the connection will revert to `Session` and still appear in dropdowns and editor windows, but will be dropped on a solution reload.
 * It is always preferable to use DatsetId's for custom naming of DatasetKeys, rather than a global ConnectionName, because connection names do not differentiate by Server/DataSource.
-* Renaming a connection using the SE `Rename` option creates a global ConnectionName. Rather use the `Modify Connection` and rename the DatasetId under 'Advanced', because this allows BlackbirdSql to name connections using the `Server (DatasetId)` format.
+* Renaming a connection using the SE `Rename` option creates a global ConnectionName. Rather use the `Modify Connection` option and rename the DatasetId under 'Advanced', because this allows BlackbirdSql to name connections using the `Server (DatasetId)` format.
 * Whenever a connection is modified in the SE or Sqleditor, those changes will be reflected globally.</br>
 Specifically, changes made in the SE will reflect in SqlEditor, but changes made in SqlEditor will reflect in the SE only if they exist in the SE.
