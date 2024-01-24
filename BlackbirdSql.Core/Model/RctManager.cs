@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Runtime;
 using System.Windows.Forms;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
@@ -10,6 +11,7 @@ using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Properties;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
+using Microsoft.VisualStudio.LanguageServer.Client;
 using Microsoft.VisualStudio.Shell;
 
 using CoreConstants = BlackbirdSql.Core.Ctl.CoreConstants;
@@ -93,8 +95,9 @@ public sealed class RctManager : IDisposable
 	private static readonly string _Scheme = $"{CsbAgent.C_Scheme}://";
 	private static string _UnadvisedConnectionString = null;
 
-	private static char _EdmDatasetGlyph = '\0';
-	private static char _ProjectDatasetGlyph = '\0';
+	private static readonly char _EdmDatasetGlyph = '\u26ee';
+	private static readonly char _ProjectDatasetGlyph = '\u2699';
+	private static readonly char _UtilityDatasetGlyph = '\u058e';
 
 
 	#endregion Fields and Constants
@@ -139,16 +142,7 @@ public sealed class RctManager : IDisposable
 	/// The glyph used to identify connections derived from Project EDM connections.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static char EdmDatasetGlyph
-	{
-		get
-		{
-			if (_EdmDatasetGlyph == '\0')
-				_EdmDatasetGlyph = Properties.Resources.RunningConnectionTableEdmDataset[0];
-
-			return _EdmDatasetGlyph;
-		}
-	}
+	public static char EdmDatasetGlyph => _EdmDatasetGlyph;
 
 
 	// ---------------------------------------------------------------------------------
@@ -165,16 +159,7 @@ public sealed class RctManager : IDisposable
 	/// The glyph used to identify connections derived from Project connections
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static char ProjectDatasetGlyph
-	{
-		get
-		{
-			if (_ProjectDatasetGlyph == '\0')
-				_ProjectDatasetGlyph = Resources.RunningConnectionTableProjectDatasetId[0];
-
-			return _ProjectDatasetGlyph;
-		}
-	}
+	public static char ProjectDatasetGlyph => _ProjectDatasetGlyph;
 
 
 
@@ -231,6 +216,15 @@ public sealed class RctManager : IDisposable
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static bool ShutdownState => (_Instance == null || _Instance._Rct == null || _Instance._Rct.ShutdownState);
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// The glyph used to identify connections derived from External utility (Firebird)
+	/// connections.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static char UtilityDatasetGlyph => _UtilityDatasetGlyph;
 
 
 	#endregion Property accessors
@@ -1042,8 +1036,8 @@ public sealed class RctManager : IDisposable
 			explorerConnection.DisplayName = csa.DatasetKey;
 			Rct.EnableEvents();
 
-			caption = "Invalid connection name";
-			msg = $"Connection names beginning with '{_Scheme}' are reserved for connection monikers. The ConnectionName '{proposedConnectionName}' is not permitted.";
+			caption = Resources.RctManager_CaptionInvalidConnectionName;
+			msg = Resources.RctManager_TextInvalidConnectionName.FmtRes(_Scheme, proposedConnectionName);
 			Cmd.ShowMessage(msg, caption, MessageBoxButtons.OK);
 
 			return;
@@ -1062,8 +1056,8 @@ public sealed class RctManager : IDisposable
 
 		if (!string.IsNullOrEmpty(uniqueConnectionName))
 		{
-			caption = "ConnectionName conflict";
-			msg = $"The Name '{proposedConnectionName}' is already allocated to another connection.\nUse '{uniqueConnectionName}' instead?\n\n(Note: The RunningConnectionTable keeps track of all connections and connection names, even if they are deleted or renamed in Server Explorer, so that windows that may be using them can still be serviced. Reload the solution to refresh the Rct.) ";
+			caption = Resources.RctManager_CaptionConnectionNameConflict;
+			msg = Resources.RctManager_TextConnectionNameConflictLong.FmtRes(proposedConnectionName, uniqueConnectionName);
 
 			if (msg != null && Cmd.ShowMessage(msg, caption, MessageBoxButtons.YesNo) == DialogResult.No)
 			{
@@ -1153,8 +1147,8 @@ public sealed class RctManager : IDisposable
 
 		if (proposedConnectionName != null && proposedConnectionName.StartsWith(_Scheme))
 		{
-			caption = "Invalid connection name";
-			msg = $"Connection names beginning with '{_Scheme}' are reserved for connection monikers. The ConnectionName '{proposedConnectionName}' is not permitted.";
+			caption = Resources.RctManager_CaptionInvalidConnectionName;
+			msg = Resources.RctManager_TextInvalidConnectionName.FmtRes(_Scheme, proposedConnectionName);
 
 			Cmd.ShowMessage(msg, caption, MessageBoxButtons.OK);
 
@@ -1179,48 +1173,48 @@ public sealed class RctManager : IDisposable
 		{
 			if (createNew)
 			{
-				caption = "New connection ConnectionName conflict";
-				msg = $"The settings provided will create a new connection. The Proposed Connection Name '{proposedConnectionName}' is already allocated.\nUse '{uniqueConnectionName}' instead?";
+				caption = Resources.RctManager_CaptionNewConnectionNameConflict;
+				msg = Resources.RctManager_TextNewConnectionNameConflict.FmtRes(proposedConnectionName, uniqueConnectionName);
 			}
 			else if (originalConnectionUrl == null || originalConnectionUrl == connectionUrl)
 			{
-				caption = "ConnectionName conflict";
-				msg = $"The Proposed Connection Name '{proposedConnectionName}' is already allocated to another connection.\nUse '{uniqueConnectionName}' instead?";
+				caption = Resources.RctManager_CaptionConnectionNameConflict;
+				msg = Resources.RctManager_TextConnectionNameConflict.FmtRes(proposedConnectionName, uniqueConnectionName);
 			}
 			else
 			{
-				caption = "Connection change ConnectionName conflict";
-				msg = $"The modifed settings are allocated to connection '{changedTarget}', and will be applied to it instead.. The Proposed Connection Name '{proposedConnectionName}' is already allocated.\nUse '{uniqueConnectionName}' instead?";
+				caption = Resources.RctManager_CaptionConnectionChangeNameConflict;
+				msg = Resources.RctManager_TextConnectionChangeNameConflict.FmtRes(changedTarget, proposedConnectionName, uniqueConnectionName);
 			}
 		}
 		else if (!string.IsNullOrEmpty(uniqueDatasetId))
 		{
 			if (createNew)
 			{
-				caption = "New connection Database name conflict";
-				msg = $"The settings provided will create a new connection. The Proposed Database Name '{proposedDatasetId}' is already allocated.\nUse '{uniqueDatasetId}' instead?";
+				caption = Resources.RctManager_CaptionNewConnectionDatabaseNameConflict;
+				msg = Resources.RctManager_TextNewConnectionDatabaseNameConflict.FmtRes(proposedDatasetId, uniqueDatasetId);
 			}
 			else if (originalConnectionUrl == null || originalConnectionUrl == connectionUrl)
 			{
-				caption = "Database name conflict";
-				msg = $"The Proposed Database Name '{proposedDatasetId}' is already allocated to another connection.\nUse '{uniqueDatasetId}' instead?";
+				caption = Resources.RctManager_CaptionDatabaseNameConflict;
+				msg = Resources.RctManager_TextNewConnectionDatabaseNameConflict.FmtRes(proposedDatasetId, uniqueDatasetId);
 			}
 			else
 			{
-				caption = "Connection change Database name conflict";
-				msg = $"The modifed settings are allocated to connection '{changedTarget}', and will be applied to it instead. The Proposed Database Name '{proposedDatasetId}' is already allocated.\nUse '{uniqueDatasetId}' instead?";
+				caption = Resources.RctManager_CaptionConnectionChangeDatabaseNameConflict;
+				msg = Resources.RctManager_TextConnectionChangeDatabaseNameConflict.FmtRes(changedTarget, proposedDatasetId, uniqueDatasetId);
 			}
 		}
 		else if (changedTarget != null)
 		{
 			// The target connection will change.
-			caption = "Connection changed";
-			msg = $"The modifed settings are allocated to connection '{changedTarget}', and will be applied to it instead. Continue?";
+			caption = Resources.RctManager_CaptionConnectionChanged;
+			msg = Resources.RctManager_TextConnectionChanged.FmtRes(changedTarget);
 		}
-		else if (createNew)
+		else if (createNew && !insertMode && source != EnConnectionSource.ServerExplorer)
 		{
-			caption = "New connection";
-			msg = $"The settings provided will create a new connection. Continue?";
+			caption = Resources.RctManager_CaptionNewConnection;
+			msg = Resources.RctManager_TextNewConnection;
 		}
 
 		if (msg != null && Cmd.ShowMessage(msg, caption, MessageBoxButtons.YesNo) == DialogResult.No)

@@ -2,8 +2,10 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 using System;
 using System.Diagnostics;
+using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media.Converters;
 using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model.Enums;
@@ -103,7 +105,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	private static LinkageParser CreateInstance(FbConnection connection, bool canCreate)
 	{
-		// Tracer.Trace(typeof(LinkageParser), "CreateInstance(FbConnection, bool)", "canCreate: {0}. This static or GetInstance() will always provide a trace of it's result.", canCreate);
+		// Tracer.Trace(typeof(LinkageParser), "CreateInstance(FbConnection, bool)", "canCreate: {0}.", canCreate);
 
 		LinkageParser parser;
 
@@ -143,6 +145,75 @@ public class LinkageParser : AbstractLinkageParser
 
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Retrieves or creates the parser instance of a Site.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static LinkageParser EnsureInstance(IVsDataConnection site, Type schemaFactoryType)
+	{
+		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(IVsDataConnection, Type)");
+
+		if (site == null)
+			return null;
+
+		if (site.GetService(typeof(IVsDataConnectionSupport)) is not IVsDataConnectionSupport vsDataConnectionSupport)
+			return null;
+
+		if (vsDataConnectionSupport.ProviderObject is not FbConnection connection)
+			return null;
+
+		return EnsureInstance(connection, schemaFactoryType);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Retrieves or creates the parser instance of a connection.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static LinkageParser EnsureLoaded(FbConnection connection, Type schemaFactoryType)
+	{
+		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
+
+		_SchemaFactoryType = schemaFactoryType;
+		LinkageParser parser = CreateInstance(connection, true);
+
+		if (parser == null)
+			return null;
+
+		if (!parser.Loading && !parser.Loaded && parser._Enabled)
+			parser.AsyncExecute();
+
+		return parser;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Retrieves or creates the parser instance of a Site.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static LinkageParser EnsureLoaded(IVsDataConnection site, Type schemaFactoryType)
+	{
+		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
+
+		if (site == null)
+			return null;
+
+		if (site.GetService(typeof(IVsDataConnectionSupport)) is not IVsDataConnectionSupport vsDataConnectionSupport)
+			return null;
+
+		if (vsDataConnectionSupport.ProviderObject is not FbConnection connection)
+			return null;
+
+		return EnsureLoaded(connection, schemaFactoryType);
+	}
+
+
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -154,6 +225,29 @@ public class LinkageParser : AbstractLinkageParser
 		// Tracer.Trace(typeof(LinkageParser), "GetInstance(FbConnection)");
 
 		return CreateInstance(connection, false);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Retrieves an existing parser for a Site.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static LinkageParser GetInstance(IVsDataConnection site)
+	{
+		// Tracer.Trace(typeof(LinkageParser), "GetInstance(IVsDataConnection)");
+
+		if (site == null)
+			return null;
+
+		if (site.GetService(typeof(IVsDataConnectionSupport)) is not IVsDataConnectionSupport vsDataConnectionSupport)
+			return null;
+
+		if (vsDataConnectionSupport.ProviderObject is not FbConnection connection)
+			return null;
+
+		return GetInstance(connection);
 	}
 
 
@@ -257,6 +351,9 @@ public class LinkageParser : AbstractLinkageParser
 	/// </summary>
 	private bool Incomplete => _LinkStage < EnLinkStage.Completed && _Enabled;
 
+	public bool Loading => AsyncActive || SyncActive;
+
+
 	private bool SyncActive => _SyncCardinal != 0;
 
 
@@ -343,11 +440,11 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public override bool AsyncExecute(int delay = 0, int multiplier = 0)
 	{
-		_TransientDelay = 0;
-		_TransientMultiplier = 0;
-
 		if (!ClearToLoadAsync)
 			return false;
+
+		_TransientDelay = 0;
+		_TransientMultiplier = 0;
 
 		int asyncProcessId = _AsyncProcessSeed < 99990 ? ++_AsyncProcessSeed : 90001;
 		_AsyncProcessSeed = asyncProcessId;
@@ -852,10 +949,18 @@ public class LinkageParser : AbstractLinkageParser
 
 			// Tracer.Trace(GetType(), "SyncEnter()", "Entering possible wait. AsyncActive: {0}, UIThread? {1}.", AsyncActive, ThreadHelper.CheckAccess());
 
+			int waitTime = 0;
 			int pendingTimeout = 3000;
 
 			while (AsyncActive)
 			{
+				if (waitTime >= 25000)
+				{
+					TimeoutException ex = new($"Timed out waiting for AsyncPayloadLauncher to complete. Timeout (ms): {waitTime}.");
+					Diag.Dug(ex);
+					throw ex;
+				}
+
 				try
 				{
 					_AsyncPayloadLauncher.Wait(50, _SyncWaitOnAsyncToken);
@@ -879,6 +984,9 @@ public class LinkageParser : AbstractLinkageParser
 						AsyncExit(_AsyncProcessSeed, _AsyncLauncherToken, _TaskHandler.UserCancellation);
 					}
 				}
+
+				waitTime += 100;
+
 				// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S {_SyncCardinal}] SyncEnter()", "Wait loop _AsyncPayloadLaunchState: {0}, _SyncWaitOnAsyncToken.IsCancellationRequested: {1}, UIThread: {2}.", _AsyncPayloadLaunchState, _SyncWaitOnAsyncToken.IsCancellationRequested, ThreadHelper.CheckAccess());
 			}
 
@@ -985,8 +1093,29 @@ public class LinkageParser : AbstractLinkageParser
 		_TaskHandler.RegisterTask(task);
 
 		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{syncCardinal}]  SyncExecute()", "Sync thread for PopulateLinkageTables() loaded. Waiting for it to complete...");
+		int waitTime = 0;
 
-		task.Wait();
+		while (!task.IsCompleted)
+		{
+			if (waitTime >= 30000)
+			{
+				TimeoutException ex = new($"Timed out waiting for Sync Task to complete. Timeout (ms): {waitTime}.");
+				Diag.Dug(ex);
+				throw ex;
+			}
+
+			// Tracer.Trace(GetType(), "WaitForAsyncLoadConfiguredConnections()", "WAITING");
+
+			try
+			{
+				if (task.Wait(100))
+					break;
+			}
+			catch { }
+
+			waitTime += 100;
+		}
+
 
 		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{syncCardinal}]  SyncExecute()", "Done waiting for thread - calling SyncExit.");
 

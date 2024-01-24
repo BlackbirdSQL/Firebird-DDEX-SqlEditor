@@ -325,6 +325,72 @@ Linkage completed in {2}ms.</value>
   <data name="Properties_NotExtensible" xml:space="preserve">
     <value>The properties are not extensible.</value>
   </data>
+  <data name="RctManager_CaptionConnectionChanged" xml:space="preserve">
+    <value>Connection changed</value>
+  </data>
+  <data name="RctManager_CaptionConnectionChangeDatabaseNameConflict" xml:space="preserve">
+    <value>Connection change Database name conflict</value>
+  </data>
+  <data name="RctManager_CaptionConnectionChangeNameConflict" xml:space="preserve">
+    <value>Connection change ConnectionName conflict</value>
+  </data>
+  <data name="RctManager_CaptionConnectionNameConflict" xml:space="preserve">
+    <value>ConnectionName conflict</value>
+  </data>
+  <data name="RctManager_CaptionDatabaseNameConflict" xml:space="preserve">
+    <value>Database name conflict</value>
+  </data>
+  <data name="RctManager_CaptionInvalidConnectionName" xml:space="preserve">
+    <value>Invalid connection name</value>
+  </data>
+  <data name="RctManager_CaptionNewConnection" xml:space="preserve">
+    <value>New connection</value>
+  </data>
+  <data name="RctManager_CaptionNewConnectionDatabaseNameConflict" xml:space="preserve">
+    <value>New connection Database name conflict</value>
+  </data>
+  <data name="RctManager_CaptionNewConnectionNameConflict" xml:space="preserve">
+    <value>New connection ConnectionName conflict</value>
+  </data>
+  <data name="RctManager_TextConnectionChanged" xml:space="preserve">
+    <value>The modifed settings are allocated to connection '{0}', and will be applied to it instead. Continue?</value>
+  </data>
+  <data name="RctManager_TextConnectionChangeDatabaseNameConflict" xml:space="preserve">
+    <value>The modifed settings are allocated to connection '{0}', and will be applied to it instead. The Proposed Database Name '{1}' is already allocated.
+Use '{2}' instead?</value>
+  </data>
+  <data name="RctManager_TextConnectionChangeNameConflict" xml:space="preserve">
+    <value>The modifed settings are allocated to connection '{0}', and will be applied to it instead. The Proposed Connection Name '{1}' is already allocated.
+Use '{2}' instead?</value>
+  </data>
+  <data name="RctManager_TextConnectionNameConflict" xml:space="preserve">
+    <value>The Proposed Connection Name '{0}' is already allocated to another connection.
+Use '{1}' instead?</value>
+  </data>
+  <data name="RctManager_TextConnectionNameConflictLong" xml:space="preserve">
+    <value>The Name '{0}' is already allocated to another connection.
+Use '{1}' instead?
+
+(Note: The RunningConnectionTable keeps track of all connections and connection names, even if they are deleted or renamed in Server Explorer, so that windows that may be using them can still be serviced. Reload the solution to refresh the Rct.)</value>
+  </data>
+  <data name="RctManager_TextDatabaseNameConflict" xml:space="preserve">
+    <value>The Proposed Database Name '{0}' is already allocated to another connection.
+Use '{1}' instead?</value>
+  </data>
+  <data name="RctManager_TextInvalidConnectionName" xml:space="preserve">
+    <value>Connection names beginning with '{0}' are reserved for connection monikers. The ConnectionName '{1}' is not permitted.</value>
+  </data>
+  <data name="RctManager_TextNewConnection" xml:space="preserve">
+    <value>The settings provided will create a new connection. Continue?</value>
+  </data>
+  <data name="RctManager_TextNewConnectionDatabaseNameConflict" xml:space="preserve">
+    <value>The settings provided will create a new connection. The Proposed Database Name '{0}' is already allocated.
+Use '{1}' instead?</value>
+  </data>
+  <data name="RctManager_TextNewConnectionNameConflict" xml:space="preserve">
+    <value>The settings provided will create a new connection. The Proposed Connection Name '{0}' is already allocated.
+Use '{1}' instead?</value>
+  </data>
   <data name="Remove_Failed_Property_NotFound" xml:space="preserve">
     <value>Remove failed. Property {0} does not exist.</value>
   </data>
@@ -332,12 +398,13 @@ Linkage completed in {2}ms.</value>
     <value>Retry number {0}. Delaying {1} ms before next retry. Exception: {2}</value>
   </data>
   <data name="RunningConnectionTableEdmDataset" xml:space="preserve">
-    <value>⛮[{0}] {1}</value>
-    <comment>Globalized values must always have the glyph on the left irrespective of ltr or rtl.</comment>
+    <value>{0}[{1}] {2}</value>
   </data>
   <data name="RunningConnectionTableProjectDatasetId" xml:space="preserve">
-    <value>⚙[{0}] {1}</value>
-    <comment>Globalized values must always have the glyph on the left irrespective of ltr or rtl.</comment>
+    <value>{0}[{1}] {2}</value>
+  </data>
+  <data name="RunningConnectionTableUtilityDatasetId" xml:space="preserve">
+    <value>{0}{1}</value>
   </data>
   <data name="TextBoxRequiredFieldToolTip" xml:space="preserve">
     <value>This field cannot be empty</value>

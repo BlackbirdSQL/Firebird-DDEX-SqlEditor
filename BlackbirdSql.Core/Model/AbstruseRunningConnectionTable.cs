@@ -7,9 +7,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Ctl.Diagnostics;
@@ -1111,8 +1113,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 					if ((xmlNode = xmlDatabase.SelectSingleNode("name")) == null)
 						continue;
 
-
-					datasetId = xmlNode.InnerText.Trim();
+					datasetId = Resources.RunningConnectionTableUtilityDatasetId.FmtRes(RctManager.UtilityDatasetGlyph, xmlNode.InnerText.Trim());
 
 					if ((xmlNode = xmlDatabase.SelectSingleNode("path")) == null)
 						continue;
@@ -1332,9 +1333,20 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		_SyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Launching;
 
+		int waitTime = 0;
+
 		while (!cancellationToken.IsCancellationRequested)
 		{
+			if (waitTime >= 15000)
+			{
+				TimeoutException ex = new($"Timed out waiting for SyncPayload Task to complete. Timeout (ms): {waitTime}.");
+				Diag.Dug(ex);
+				throw ex;
+			}
+
 			System.Threading.Thread.Sleep(50);
+
+			waitTime += 50;
 		}
 
 		if (_SyncPayloadLauncherLaunchState == EnLauncherPayloadLaunchState.Shutdown)
@@ -1521,7 +1533,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				foreach (XmlNode connectionNode in xmlNodes)
 				{
 					name = connectionNode.Attributes["name"].Value;
-					datasetId = Resources.RunningConnectionTableEdmDataset.FmtRes(projectName, name);
+					datasetId = Resources.RunningConnectionTableEdmDataset.FmtRes(RctManager.EdmDatasetGlyph, projectName, name);
 
 					csb = new()
 					{
@@ -1575,7 +1587,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			foreach (XmlNode connectionNode in xmlNodes)
 			{
 				arr = connectionNode.Attributes["name"].Value.Split('.');
-				datasetId = Resources.RunningConnectionTableProjectDatasetId.FmtRes(projectName, arr[^1]);
+				datasetId = Resources.RunningConnectionTableProjectDatasetId.FmtRes(RctManager.ProjectDatasetGlyph, projectName, arr[^1]);
 
 				csa = new(connectionNode.Attributes["connectionString"].Value);
 
@@ -1782,17 +1794,22 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		{
 			// Sanity checks.
 
-			// Take the glyph out of Application and EntityDataModel source dataset ids if the
-			// new source is not Application or EntityDataModel.
-			// Globalized values must always have the glyph on the left irrespective of ltr or rtl.
+			// Take the glyph out of Application, EntityDataModel and External utility source dataset
+			// ids if the new source is not Application, EntityDataModel or ExternalUtility.
 			if (source != EnConnectionSource.Application && source != EnConnectionSource.EntityDataModel
-				&& (proposedDatasetId[0] == RctManager.EdmDatasetGlyph
-				|| proposedDatasetId[0] == RctManager.ProjectDatasetGlyph))
+				&& source != EnConnectionSource.ExternalUtility)
 			{
-				proposedDatasetId = proposedDatasetId[1..];
+				int pos;
+
+				if ((pos = proposedDatasetId.IndexOf(RctManager.EdmDatasetGlyph)) != -1)
+					proposedDatasetId = proposedDatasetId.Remove(pos, 1);
+				else if ((pos = proposedDatasetId.IndexOf(RctManager.ProjectDatasetGlyph)) != -1)
+					proposedDatasetId = proposedDatasetId.Remove(pos, 1);
+				else if ((pos = proposedDatasetId.IndexOf(RctManager.UtilityDatasetGlyph)) != -1)
+					proposedDatasetId = proposedDatasetId.Remove(pos, 1);
 			}
 
-			(bool newConnection, string uniqueDatasetKey, string uniqueConnectionName, string uniqueDatasetId, _) =
+			(_, string uniqueDatasetKey, string uniqueConnectionName, string uniqueDatasetId, _) =
 				GenerateUniqueDatasetKey(proposedConnectionName, proposedDatasetId, csa.DataSource, csa.Dataset, connectionUrl, null);
 
 			csa.DatasetKey = uniqueDatasetKey;
@@ -2218,7 +2235,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 			try
 			{
-				_AsyncPayloadLauncher.Wait(100, _AsyncPayloadLauncherToken);
+				if (_AsyncPayloadLauncher.Wait(100, _AsyncPayloadLauncherToken))
+					break;
 			}
 			catch { }
 
@@ -2264,7 +2282,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 			try
 			{
-				_SyncPayloadLauncher.Wait(100, _SyncPayloadLauncherToken);
+				if (_SyncPayloadLauncher.Wait(100, _SyncPayloadLauncherToken))
+					break;
 			}
 			catch { }
 

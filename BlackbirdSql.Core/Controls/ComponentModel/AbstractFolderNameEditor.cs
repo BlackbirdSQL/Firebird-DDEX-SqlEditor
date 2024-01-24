@@ -166,7 +166,7 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 					lpfn = lpBrowserCallback,
 					pidlRoot = ppIdl,
 					lParam = IntPtr.Zero,
-					lpszTitle = string.IsNullOrWhiteSpace(_Title) ? "Select folder" : _Title,
+					lpszTitle = string.IsNullOrWhiteSpace(_Title) ? AttributeResources.EditorFolderName_SelectFolder : _Title,
 					ulFlags = flags,
 					iImage = 0,
 					pszDisplayName = Marshal.AllocHGlobal(256)

@@ -258,8 +258,6 @@
 	  <None Include="Controls\Graphing\XmlPlanNodeBuilder.cs" />
 	  <None Include="Controls\Graphing\Parsers\AbstractXmlPlanParser.cs" />
 	  <None Include="Controls\Graphing\Parsers\XmlPlanParserFactory.cs" />
-	  <Compile Include="Ctl\DataTools\Events\IVsDataConnectionEvents.cs" />
-	  <Compile Include="Ctl\DataTools\Interfaces\IVsDataConnection.cs" />
 	  <Compile Include="Ctl\Parser\Enums\EnBindMode.cs" />
 	  <Compile Include="Ctl\Parser\Interfaces\IBBinder.cs" />
 	  <Compile Include="Ctl\Parser\ParseResult.cs" />

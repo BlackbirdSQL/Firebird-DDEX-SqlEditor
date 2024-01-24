@@ -143,8 +143,8 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// Disposes of a parser..
 	/// </summary>
 	/// <param name="disposing">
-	/// True if this is a permanent disposal and a transient
-	/// parser should not be stored else false.
+	/// True if this is a normal disposal and a transient
+	/// parser should be stored else false.
 	/// </param>
 	/// <returns>True of the parser was found and disposed else false.</returns>
 	protected override bool Dispose(bool disposing)
@@ -154,7 +154,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		if (_InstanceConnection == null || _Instances == null)
 			return false;
 
-		if (_Enabled &&  (Loaded || _LinkStage >= EnLinkStage.TriggerDependenciesLoaded))
+		if (disposing && _Enabled &&  (Loaded || _LinkStage >= EnLinkStage.TriggerDependenciesLoaded))
 		{
 			// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "Removing instance and cloning to Transient");
 
@@ -169,6 +169,9 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 			// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "Removing instance WITHOUT cloning to Transient");
 			Disable();
 		}
+
+		if (!disposing)
+			_TransientParser = null;
 
 		_Instances.Remove(_InstanceConnection);
 
@@ -367,7 +370,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// from Incomplete in that !Incomplete may be because the linker has
 	/// been disabled.
 	/// </summary>
-	protected bool Loaded => _LinkStage >= EnLinkStage.Completed;
+	public bool Loaded => _LinkStage >= EnLinkStage.Completed;
 
 	/// <summary>
 	/// Sets the start and end of an external db request.

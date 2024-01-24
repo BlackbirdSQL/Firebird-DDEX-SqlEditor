@@ -795,7 +795,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			}
 
 			if (edmx.FileCount == 0)
-				return true;
+				return true; 
 
 			string path = edmx.FileNames[0];
 

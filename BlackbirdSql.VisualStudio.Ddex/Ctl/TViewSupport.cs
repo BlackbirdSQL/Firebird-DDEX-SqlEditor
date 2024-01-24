@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
+using System.Security.Policy;
 using System.Threading.Tasks;
 
 using BlackbirdSql.Core;
@@ -21,6 +22,7 @@ using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
+using Microsoft.VisualStudio.LanguageServer.Client;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -43,7 +45,6 @@ public class TViewSupport : DataViewSupport,
 {
 	private bool _Loaded = false;
 	private bool _Initialized = false;
-	private bool _Refreshing = false;
 	private bool _LabelEditing = false;
 
 	private static string _IconName = null;
@@ -583,54 +584,21 @@ public class TViewSupport : DataViewSupport,
 		if (!_Initialized && e.NewState == DataConnectionState.Open)
 			InitializeProperties();
 
-
-		if (ViewHierarchy != null && ViewHierarchy.ExplorerConnection != null
-			&& ViewHierarchy.ExplorerConnection.Connection != null)
-		{
-			if (!_Refreshing || e.OldState == DataConnectionState.Open || e.NewState != DataConnectionState.Open)
-				return;
-		}
-		else
+		if (e.OldState == DataConnectionState.Open || e.NewState != DataConnectionState.Open
+			|| !RctManager.Available || ViewHierarchy == null || ViewHierarchy.ExplorerConnection == null
+			|| ViewHierarchy.ExplorerConnection.Connection == null)
 		{
 			return;
 		}
-
-		_Refreshing = false;
 
 		// Attempt linkage startup on a refresh.
 
-		if (!RctManager.Available)
-			return;
+		IVsDataConnection site = ViewHierarchy.ExplorerConnection.Connection;
 
-		IVsDataConnection site = null;
-		object lockedProviderObject = null;
-
-		try
-		{
-			site = ViewHierarchy.ExplorerConnection.Connection;
-			lockedProviderObject = site.GetLockedProviderObject();
-			if (lockedProviderObject == null)
-				throw new NotImplementedException("ViewHierarchy.ExplorerConnection.Connection.GetLockedProviderObject()");
-
-			if (lockedProviderObject is not FbConnection connection)
-				throw new NotImplementedException($"GetLockedProviderObject() as FbConnection for object type: {lockedProviderObject.GetType().Name}.");
-
-
-			// We'll delay 25 cycles of 20ms each because this is a deadlock when
-			// preregistering the taskhandler and a node requiring completed linkage tables is already expanded.
-			LinkageParser parser = LinkageParser.EnsureInstance(connection, typeof(DslProviderSchemaFactory));
-			parser?.AsyncExecute(25, 20);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-		}
-		finally
-		{
-			if (lockedProviderObject != null)
-				site.UnlockProviderObject();
-		}
-
+		// We'll delay 25 cycles of 20ms each because this is a deadlock when
+		// preregistering the taskhandler and a node requiring completed linkage tables is already expanded.
+		LinkageParser parser = LinkageParser.EnsureInstance(site, typeof(DslProviderSchemaFactory));
+		parser?.AsyncExecute(25, 20);
 	}
 
 
@@ -653,73 +621,58 @@ public class TViewSupport : DataViewSupport,
 	{
 		// Tracer.Trace(GetType(), "OnNodeChanged()");
 
-		IVsDataConnection site = null;
-		object lockedProviderObject = null;
+		// This is proof that all is not what it seems. This condition is never true until
+		// you remove the assembly load statement.
+		// On startup of VS, if an xsd or edmx is in an open state or the SE is pinned
+		// on the first solution opened, there are instances where class references will
+		// exist but their assemblies are not yet loaded. This can happen here for the
+		// invariant.
+		// By simply placing a load statement here the runtime will resolve and load
+		// the assembly before we even reach this statement.
 
-		try
+		if (!Core.Controller.InvariantResolved)
 		{
-			// This is proof that all is not what it seems. This condition is never true until
-			// you remove the assembly load statement.
-			// On startup of VS, if an xsd or edmx is in an open state or the SE is pinned
-			// on the first solution opened, there are instances where class references will
-			// exist but their assemblies are not yet loaded. This can happen here for the
-			// invariant.
-			// By simply placing a load statement here the runtime will resolve and load
-			// the assembly before we even reach this statement.
+			Tracer.Information(GetType(), "OnNodeChanged()", "Invariant is unresolved. Loading: {0}", typeof(FirebirdClientFactory).Assembly.FullName);
+			Assembly.Load(typeof(FirebirdClientFactory).Assembly.FullName);
+		}
 
-			if (!Core.Controller.InvariantResolved)
+		if (e.Node == null || (!e.Node.IsRefreshing && !e.Node.IsExpanding)
+			|| e.Node.ExplorerConnection == null
+			|| e.Node.ExplorerConnection.Connection == null
+			|| e.Node.ExplorerConnection.ConnectionNode == null
+			|| !e.Node.Equals(e.Node.ExplorerConnection.ConnectionNode))
+		{
+			return;
+		}
+
+
+		IVsDataConnection site = e.Node.ExplorerConnection.Connection;
+
+		// Couple of caveats when refreshing.
+		// We need to delete the LinkageParser if it exists but only if it's not loading.
+		// If it's loading it will already be busy loading a refreshed instance so do nothing.
+		// If it doesn't exist we can start linkage.
+		if (e.Node.IsRefreshing)
+		{
+			LinkageParser parser = LinkageParser.GetInstance(site);
+
+			if (parser != null)
 			{
-				Tracer.Information(GetType(), "OnNodeChanged()", "Invariant is unresolved. Loading: {0}", typeof(FirebirdClientFactory).Assembly.FullName);
-				Assembly.Load(typeof(FirebirdClientFactory).Assembly.FullName);
+				if (parser.Loaded)
+					LinkageParser.DisposeInstance(site, false);
 			}
-
-			// Trace("OnNodeChanged()", e);
-
-			if (e.Node == null || ((!e.Node.IsRefreshing || _Refreshing) && !e.Node.IsExpanding)
-				|| e.Node.ExplorerConnection == null
-				|| e.Node.ExplorerConnection.Connection == null
-				|| e.Node.ExplorerConnection.ConnectionNode == null
-				|| !e.Node.Equals(e.Node.ExplorerConnection.ConnectionNode))
+			else
 			{
-				return;
-			}
-
-			site = e.Node.ExplorerConnection.Connection;
-
-
-			if (e.Node.IsRefreshing && !_Refreshing)
-			{
-				// Tracer.Trace(GetType(), "OnNodeChanged()", "Node is refreshing - Disposing of site objects");
-
-				LinkageParser.DisposeInstance(site, true);
-				_Refreshing = true;
-			}
-			else if (e.Node.IsExpanding)
-			{
-				if (site.State == DataConnectionState.Open && RctManager.Available)
-				{
-
-					lockedProviderObject = site.GetLockedProviderObject();
-
-					if (lockedProviderObject == null)
-						throw new NotImplementedException("ViewHierarchy.ExplorerConnection.Connection.GetLockedProviderObject()");
-
-					if (lockedProviderObject is not FbConnection connection)
-						throw new NotImplementedException($"GetLockedProviderObject() as FbConnection for object type: {lockedProviderObject.GetType().Name}.");
-
-					LinkageParser parser = LinkageParser.EnsureInstance(connection, typeof(DslProviderSchemaFactory));
-					parser?.AsyncExecute(20, 20);
-				}
+				LinkageParser.EnsureLoaded(site, typeof(DslProviderSchemaFactory));
 			}
 		}
-		catch (Exception ex)
+		else if (e.Node.IsExpanding)
 		{
-			Diag.Dug(ex);
-		}
-		finally
-		{
-			if (site != null && lockedProviderObject != null)
-				site.UnlockProviderObject();
+			if (site.State == DataConnectionState.Open && RctManager.Available)
+			{
+				LinkageParser parser = LinkageParser.EnsureInstance(site, typeof(DslProviderSchemaFactory));
+				parser?.AsyncExecute(20, 20);
+			}
 		}
 
 	}
@@ -728,14 +681,29 @@ public class TViewSupport : DataViewSupport,
 
 	private void OnNodeExpandedOrRefreshed(object sender, DataExplorerNodeEventArgs e)
 	{
-		// Tracer.Trace(GetType(), "OnNodeExpandedOrRefreshed()");
+		if (!e.Node.HasBeenExpanded || e.Node.ExplorerConnection == null
+			|| e.Node.ExplorerConnection.Connection == null
+			|| e.Node.ExplorerConnection.ConnectionNode == null
+			|| e.Node.Equals(e.Node.ExplorerConnection.ConnectionNode))
+		{
+			return;
+		}
+
+		// Tracer.Trace(GetType(), "OnNodeExpandedOrRefreshed");
+
+		IVsDataConnection site = e.Node.ExplorerConnection.Connection;
+
+		if (site.State != DataConnectionState.Open || !RctManager.Available)
+			return;
+
+		LinkageParser.EnsureLoaded(site, typeof(DslProviderSchemaFactory));
 	}
 
 
 
 	private void OnNodeInserted(object sender, DataExplorerNodeEventArgs e)
 	{
-		// Trace("OnNodeInserted()", e);
+		// Tracer.Trace(GetType(), "OnNodeInserted()");
 	}
 
 

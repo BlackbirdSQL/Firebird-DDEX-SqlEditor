@@ -19,28 +19,28 @@ Because there is ambiguity in the naming conventions of a database's identity co
 * __ConnectionName__: If you do not want to use the DatasetKey form `Server (DatasetId)` you can propose a name for the DatasetKey. This is the value used by the SE when you rename a connection and will override any name you may have defined in DatasetId. Again this name may be suffixed with a numeric if it is not unique. Using this method to name a connection is not recommended.
 * __DisplayName__: This is the displayed value of the DatasetId. This is necessary because dropdown values for the database name (DatasetId) within the scope of a Server/DataSource may not be uniquely identifiable if a ConnectionName has been used. In these instances the DatasetId will include a ConnectionName qualifier.
 * __ConnectionKey__: This is the original internal DatasetKey of a Server Explorer connection. This key does not change for the duration of an IDE session, even if a connection is renamed.
-* __ConnectionSource__: This is the connection owner of a connection and may be any one of `ServerExplorer`, `Session` (a connection created by BlackbirdSql's SqlEditor), `EntityDataModel` (a connection created for an EDMX), `Application` (a connection created in a project's settings) or `Utility` (a connection created by FlameRobin).
+* __ConnectionSource__: This is the connection owner of a connection and may be any one of `ServerExplorer`, `Session` (a connection created by BlackbirdSql's SqlEditor), `EntityDataModel` (a connection created for an EDMX), `Application` (a connection created in a project's settings) or `ExternalUtility` (a connection created by FlameRobin).
 </br>
 
 #### Precedence and loading of the RunningConnectionTable (Rct)
 Whenever a solution is loaded the Rct is reloaded. This is a relatively fast process, usually taking only a few ms.</br>
 Load precedence is as follows:
 * Loading begins with the SE (Owner type ServerExplorer).
-* Following that FlameRobin connections are loaded (Owner type Utility). If a FlameRobin connection is not unique by equivalency against already loaded connections, it is ignored. If it's Database name (DatasetId) is not unique it is numerically suffixed.
+* Following that FlameRobin connections are loaded (Owner type ExternalUtility). If a FlameRobin connection is not unique by equivalency against already loaded connections, it is ignored. If it's Database name (DatasetId) is not unique it is numerically suffixed. The format of an EDM connection DatasetId is `֎DatabaseName` and it's full DatasetKey is `Server (֎DatabaseName)`. The identifying glyph is the unicode `Eternity sign`, code 0x058E.
 * Next connections defined in project Entity Data Model's are loaded (Owner type EntityDataModel). Again, duplicate equivalent connections are ignored. The format of an EDM connection DatasetId is `⛮[ProjectName] Name` and it's full DatasetKey is `Server (⛮[ProjectName] Name)`. The identifying glyph is the unicode `Gear with handles`, code 0x26EE.
-* Finally connections defined in a project's settings (App.Config) are loaded (Owner type Application). As with Utility and EDM connections, equivalency duplicates are ignored. The format of an application connection DatasetId is `⚙[ProjectName] SettingName` and it's full DatasetKey is `Server (⚙[ProjectName] SettingName)`. The identifying glyph is the unicode `Gear`, code 0x2699.</br>
+* Finally connections defined in a project's settings (App.Config) are loaded (Owner type Application). As with ExternalUtility and EDM connections, equivalency duplicates are ignored. The format of an application connection DatasetId is `⚙[ProjectName] SettingName` and it's full DatasetKey is `Server (⚙[ProjectName] SettingName)`. The identifying glyph is the unicode `Gear`, code 0x2699.</br>
 If you do not want Application and EntityDataModel connections loaded into the Rct, you can disable this feature under the BlackbirdSql > Ddex Provider > General user options.
 </br>
 
 #### Configured Connections, Session Connections and Ownership
-Configured connections are connections with persistence. These include connections with owner ServerExplorer, Utility, EntityDataModel and Application.</br>
+Configured connections are connections with persistence. These include connections with owner ServerExplorer, ExternalUtility, EntityDataModel and Application.</br>
 Session connections are connections that are owned by SqlEditor or the SE. Whenever a connection is either an SE connection or a connection not in it's persistent state of ownership, ie. that has been modified during a solution session, it converts to a Session connection.</br>
 The distinction between Configured and Session connections is unimportant and has no effect on a connection's behavior, but it does effect it's DatasetKey format.
 </br></br>
 
 #### Summary
 * Whenever an EDM or Application configured connection is updated by the SE or SqlEditor in a connection dialog, ownership is transferred and the connection converts to a Session connection. The glyph is dropped to denote the connection is no longer in it's original state.
-* If the SE takes ownership, ownership is persistent, but if the SqlEditor/Session takes ownership, ownership is volatile, reverting back on a solution reload. The same applies to Utility/FlameRobin persistent connections.
+* If the SE takes ownership, ownership is persistent, but if the SqlEditor/Session takes ownership, ownership is volatile, reverting back on a solution reload. The same applies to ExternalUtility/FlameRobin persistent connections.
 * If a unique connection is created in SqlEditor (Session), that new connection will be added to the SE unless the `Update Server Explorer` checkbox is unchecked.
 * If an attempt is made to add a connection in the SE that is equivalent to an existing connection, the SE will revert back to the existing connection.
 * Any changes to connections in Entity Data Models or within Application settings connection dialogs will not update the Rct. To have those connections updated to the Rct requires a solution reload.

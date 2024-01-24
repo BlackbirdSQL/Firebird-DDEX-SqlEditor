@@ -2,6 +2,9 @@
 
 ### Change log
 
+#### v10.1.1.0
+Final preview version. Implemented wait timeouts on all possible deadlock logic.
+
 #### v10.1.0.2
 Prevented transient LinkageParser deletion and relink during SE connection modification.
 

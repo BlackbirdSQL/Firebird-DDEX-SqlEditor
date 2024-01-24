@@ -683,6 +683,186 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connection changed.
+        /// </summary>
+        public static string RctManager_CaptionConnectionChanged {
+            get {
+                return ResourceManager.GetString("RctManager_CaptionConnectionChanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connection change Database name conflict.
+        /// </summary>
+        public static string RctManager_CaptionConnectionChangeDatabaseNameConflict {
+            get {
+                return ResourceManager.GetString("RctManager_CaptionConnectionChangeDatabaseNameConflict", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connection change ConnectionName conflict.
+        /// </summary>
+        public static string RctManager_CaptionConnectionChangeNameConflict {
+            get {
+                return ResourceManager.GetString("RctManager_CaptionConnectionChangeNameConflict", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ConnectionName conflict.
+        /// </summary>
+        public static string RctManager_CaptionConnectionNameConflict {
+            get {
+                return ResourceManager.GetString("RctManager_CaptionConnectionNameConflict", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Database name conflict.
+        /// </summary>
+        public static string RctManager_CaptionDatabaseNameConflict {
+            get {
+                return ResourceManager.GetString("RctManager_CaptionDatabaseNameConflict", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid connection name.
+        /// </summary>
+        public static string RctManager_CaptionInvalidConnectionName {
+            get {
+                return ResourceManager.GetString("RctManager_CaptionInvalidConnectionName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New connection.
+        /// </summary>
+        public static string RctManager_CaptionNewConnection {
+            get {
+                return ResourceManager.GetString("RctManager_CaptionNewConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New connection Database name conflict.
+        /// </summary>
+        public static string RctManager_CaptionNewConnectionDatabaseNameConflict {
+            get {
+                return ResourceManager.GetString("RctManager_CaptionNewConnectionDatabaseNameConflict", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New connection ConnectionName conflict.
+        /// </summary>
+        public static string RctManager_CaptionNewConnectionNameConflict {
+            get {
+                return ResourceManager.GetString("RctManager_CaptionNewConnectionNameConflict", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The modifed settings are allocated to connection &apos;{0}&apos;, and will be applied to it instead. Continue?.
+        /// </summary>
+        public static string RctManager_TextConnectionChanged {
+            get {
+                return ResourceManager.GetString("RctManager_TextConnectionChanged", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The modifed settings are allocated to connection &apos;{0}&apos;, and will be applied to it instead. The Proposed Database Name &apos;{1}&apos; is already allocated.
+        ///Use &apos;{2}&apos; instead?.
+        /// </summary>
+        public static string RctManager_TextConnectionChangeDatabaseNameConflict {
+            get {
+                return ResourceManager.GetString("RctManager_TextConnectionChangeDatabaseNameConflict", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The modifed settings are allocated to connection &apos;{0}&apos;, and will be applied to it instead. The Proposed Connection Name &apos;{1}&apos; is already allocated.
+        ///Use &apos;{2}&apos; instead?.
+        /// </summary>
+        public static string RctManager_TextConnectionChangeNameConflict {
+            get {
+                return ResourceManager.GetString("RctManager_TextConnectionChangeNameConflict", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Proposed Connection Name &apos;{0}&apos; is already allocated to another connection.
+        ///Use &apos;{1}&apos; instead?.
+        /// </summary>
+        public static string RctManager_TextConnectionNameConflict {
+            get {
+                return ResourceManager.GetString("RctManager_TextConnectionNameConflict", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Name &apos;{0}&apos; is already allocated to another connection.
+        ///Use &apos;{1}&apos; instead?
+        ///
+        ///(Note: The RunningConnectionTable keeps track of all connections and connection names, even if they are deleted or renamed in Server Explorer, so that windows that may be using them can still be serviced. Reload the solution to refresh the Rct.).
+        /// </summary>
+        public static string RctManager_TextConnectionNameConflictLong {
+            get {
+                return ResourceManager.GetString("RctManager_TextConnectionNameConflictLong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Proposed Database Name &apos;{0}&apos; is already allocated to another connection.
+        ///Use &apos;{1}&apos; instead?.
+        /// </summary>
+        public static string RctManager_TextDatabaseNameConflict {
+            get {
+                return ResourceManager.GetString("RctManager_TextDatabaseNameConflict", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connection names beginning with &apos;{0}&apos; are reserved for connection monikers. The ConnectionName &apos;{1}&apos; is not permitted..
+        /// </summary>
+        public static string RctManager_TextInvalidConnectionName {
+            get {
+                return ResourceManager.GetString("RctManager_TextInvalidConnectionName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The settings provided will create a new connection. Continue?.
+        /// </summary>
+        public static string RctManager_TextNewConnection {
+            get {
+                return ResourceManager.GetString("RctManager_TextNewConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The settings provided will create a new connection. The Proposed Database Name &apos;{0}&apos; is already allocated.
+        ///Use &apos;{1}&apos; instead?.
+        /// </summary>
+        public static string RctManager_TextNewConnectionDatabaseNameConflict {
+            get {
+                return ResourceManager.GetString("RctManager_TextNewConnectionDatabaseNameConflict", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The settings provided will create a new connection. The Proposed Connection Name &apos;{0}&apos; is already allocated.
+        ///Use &apos;{1}&apos; instead?.
+        /// </summary>
+        public static string RctManager_TextNewConnectionNameConflict {
+            get {
+                return ResourceManager.GetString("RctManager_TextNewConnectionNameConflict", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remove failed. Property {0} does not exist..
         /// </summary>
         public static string Remove_Failed_Property_NotFound {
@@ -701,7 +881,7 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ⛮[{0}] {1}.
+        ///   Looks up a localized string similar to {0}[{1}] {2}.
         /// </summary>
         public static string RunningConnectionTableEdmDataset {
             get {
@@ -710,11 +890,20 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ⚙[{0}] {1}.
+        ///   Looks up a localized string similar to {0}[{1}] {2}.
         /// </summary>
         public static string RunningConnectionTableProjectDatasetId {
             get {
                 return ResourceManager.GetString("RunningConnectionTableProjectDatasetId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0}{1}.
+        /// </summary>
+        public static string RunningConnectionTableUtilityDatasetId {
+            get {
+                return ResourceManager.GetString("RunningConnectionTableUtilityDatasetId", resourceCulture);
             }
         }
         

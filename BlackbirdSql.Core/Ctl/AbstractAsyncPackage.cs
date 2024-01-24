@@ -365,33 +365,6 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	// ---------------------------------------------------------------------------------
 	protected abstract void PropagateSettings();
 
-	protected static T UiInvoke<T>(Func<T> function, int uiInvokeTimeoutSeconds = 5)
-	{
-		// If we’re already on the UI thread, just execute the method directly.
-		if (ThreadHelper.CheckAccess())
-			return function();
-
-
-		T result = default;
-		// Prefer BeginInvoke over Invoke since BeginInvoke is potentially saver than Invoke.
-		using (ManualResetEventSlim eventHandle = new ManualResetEventSlim(false))
-		{
-			ThreadHelper.Generic.BeginInvoke(() => { result = function(); eventHandle.Set(); });
-			// Wait for the invoke to complete.
-			var success = eventHandle.Wait(TimeSpan.FromSeconds(uiInvokeTimeoutSeconds));
-			// If the operation timed out, fail.
-			if (!success)
-			{
-				TimeoutException ex = new();
-				Diag.Dug(ex);
-				throw ex;
-			}
-
-			return result;
-		}
-
-	}
-
 
 	#endregion Methods
 

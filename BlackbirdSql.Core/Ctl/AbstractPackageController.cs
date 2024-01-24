@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using BlackbirdSql.Core.Ctl.Config;
@@ -14,7 +15,7 @@ using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Properties;
 using EnvDTE;
-
+using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;

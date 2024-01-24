@@ -61,6 +61,15 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select folder.
+        /// </summary>
+        internal static string EditorFolderName_SelectFolder {
+            get {
+                return ResourceManager.GetString("EditorFolderName_SelectFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reset To Defaults  ↩.
         /// </summary>
         internal static string GlobalizedDesignerVerbReset {

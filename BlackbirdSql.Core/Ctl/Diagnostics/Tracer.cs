@@ -153,6 +153,39 @@ internal class Tracer : IBTrace // , IBExportable
 	}
 
 
+
+	private static void LogTrace(string type, string traceLevel, string functionName, string format, params object[] args)
+	{
+		string method = null;
+		string filename = null;
+		int lineno = int.MinValue;
+
+		for (int i = 1; i < 4; i++)
+		{
+			StackFrame frame = new StackTrace(i, true).GetFrame(0);
+			if (frame == null)
+				break;
+
+			if (frame.GetMethod() == null || frame.GetFileName() == null)
+				break;
+
+			method = frame.GetMethod().Name;
+			filename = frame.GetFileName();
+			lineno = frame.GetFileLineNumber();
+
+			if (!filename.EndsWith("\\Tracer.cs", StringComparison.OrdinalIgnoreCase)
+				|| (method != "Trace" && method != "Warning" && method != "Information"))
+			{
+				break;
+			}
+		}
+
+		Diag.Dug(false, $"[{traceLevel.ToUpperInvariant()}] {type} func: {functionName}"
+			+ (format != null ? args != null ? (" " + string.Format(format, args)) : (" " + format) : ""),
+			method ?? "ERRNULLMETHOD", filename ?? "ERRNULLFILE", lineno);
+	}
+
+
 	public static void Trace(Type t, string functionName)
 	{
 		Trace(t, functionName, "");
@@ -176,27 +209,10 @@ internal class Tracer : IBTrace // , IBExportable
 		}
 		else if (PersistentSettings.EnableTracer)
 		{
-			StackFrame frame = null;
-
-			for (int i = 1; i < 4; i++)
-			{
-				frame = new StackTrace(i, true).GetFrame(0);
-				if (frame == null || !frame.GetFileName().EndsWith("\\Tracer.cs", StringComparison.OrdinalIgnoreCase)
-					|| (frame.GetMethod().Name != "Trace" && frame.GetMethod().Name != "Warning"
-					&& frame.GetMethod().Name != "Information"))
-				{
-					break;
-				}
-			}
-
-			Diag.Dug(false, type + " func: " + functionName
-				+ (format != null ? args != null ? (" " + string.Format(format, args)) : (" " + format) : ""),
-				frame == null ? "ERRNULL" : frame.GetMethod().Name, frame == null ? "ERRNULL" : frame.GetFileName(),
-				frame == null ? int.MinValue : frame.GetFileLineNumber());
+			LogTrace(type, EnLevel.Information.ToString(), functionName, format, args);
 		}
 
 	}
-
 
 	public static void Trace(Type t, EnLevel traceLevel, string functionName, string format, params object[] args)
 	{
@@ -212,23 +228,7 @@ internal class Tracer : IBTrace // , IBExportable
 		}
 		else if (PersistentSettings.EnableTracer)
 		{
-			StackFrame frame = null;
-
-			for (int i = 1; i < 4; i++)
-			{
-				frame = new StackTrace(i, true).GetFrame(0);
-				if (frame == null || !frame.GetFileName().EndsWith("\\Tracer.cs", StringComparison.OrdinalIgnoreCase)
-					|| (frame.GetMethod().Name != "Trace" && frame.GetMethod().Name != "Warning"
-					&& frame.GetMethod().Name != "Information"))
-				{
-					break;
-				}
-			}
-
-			Diag.Dug(false, type + " func: " + functionName
-				+ (format != null ? args != null ? (" " + string.Format(format, args)) : (" " + format) : ""),
-				frame == null ? "ERRNULL" : frame.GetMethod().Name, frame == null ? "ERRNULL" : frame.GetFileName(),
-				frame == null ? int.MinValue : frame.GetFileLineNumber());
+			LogTrace(type, traceLevel.ToString(), functionName, format, args);
 		}
 	}
 
@@ -237,23 +237,7 @@ internal class Tracer : IBTrace // , IBExportable
 	{
 		if (PersistentSettings.EnableTracer)
 		{
-			StackFrame frame = null;
-
-			for (int i = 1; i < 4; i++)
-			{
-				frame = new StackTrace(i, true).GetFrame(0);
-				if (frame == null || !frame.GetFileName().EndsWith("\\Tracer.cs", StringComparison.OrdinalIgnoreCase)
-					|| (frame.GetMethod().Name != "Trace" && frame.GetMethod().Name != "Warning"
-					&& frame.GetMethod().Name != "Information"))
-				{
-					break;
-				}
-			}
-
-			Diag.Dug(false, type + " func: " + functionName
-				+ (format != null ? args != null ? (" " + string.Format(format, args)) : (" " + format) : ""),
-				frame == null ? "ERRNULL" : frame.GetMethod().Name, frame == null ? "ERRNULL" : frame.GetFileName(),
-				frame == null ? int.MinValue : frame.GetFileLineNumber());
+			LogTrace(type, eventType.ToString(), functionName, format, args);
 		}
 
 		if (SqlTracer.ShouldTrace(eventType))

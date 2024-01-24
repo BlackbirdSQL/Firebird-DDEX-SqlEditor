@@ -102,7 +102,6 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 		object lockedProviderObject = null;
 		FbConnection connection = null;
-		LinkageParser parser = null;
 		IVsDataReader reader = null;
 
 		try
@@ -135,7 +134,6 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 			// Tracer.Trace(GetType(), "SelectObjects()", "Site type: {0}", Site.GetType().FullName);
 			Site.EnsureConnected();
-			parser = LinkageParser.GetInstance(connection);
 
 			if (_Csa == null || _Csa.Invalidated(connection))
 				_Csa = RctManager.EnsureVolatileInstance(connection, EnConnectionSource.ServerExplorer);
@@ -153,8 +151,8 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		finally
 		{
 			// Only force create the parser 2nd time in.
-			if (parser == null && connection != null)
-				LinkageParser.EnsureInstance(connection, typeof(DslProviderSchemaFactory));
+			if (connection != null)
+				LinkageParser.EnsureLoaded(connection, typeof(DslProviderSchemaFactory));
 
 			if (lockedProviderObject != null)
 				Site.UnlockProviderObject();

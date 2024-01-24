@@ -12,16 +12,13 @@ using System.Windows.Forms.Design;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls.Interfaces;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
-using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
-using Microsoft.VisualStudio.LanguageServer.Client;
 using Microsoft.VisualStudio.Shell;
 
 
@@ -590,24 +587,32 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 				Site.ValidateKeys();
 
-				// Take the glyph out of Application and EntityDataModel source dataset ids.
-				// Globalized values must always have the glyph on the left irrespective of ltr or rtl.
+				// Take the glyph out of Application, EntityDataModel andExternalUtility source
+				// dataset ids.
 				if (_ConnectionSource != EnConnectionSource.Application
 					&& Site.ContainsKey(CoreConstants.C_KeyExDatasetId)
 					&& Site.ContainsKey(CoreConstants.C_KeyExConnectionSource))
 				{
 					EnConnectionSource source = (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource];
 
-					if (source == EnConnectionSource.EntityDataModel || source == EnConnectionSource.Application)
+					if (source == EnConnectionSource.EntityDataModel || source == EnConnectionSource.Application
+						|| source == EnConnectionSource.ExternalUtility)
 					{
+						int pos;
 						string datasetId = (string)Site[CoreConstants.C_KeyExDatasetId];
 
-						if (datasetId[0] == RctManager.EdmDatasetGlyph
-							|| datasetId[0] == RctManager.ProjectDatasetGlyph)
+						if ((pos = datasetId.IndexOf(RctManager.EdmDatasetGlyph)) != -1)
+							datasetId = datasetId.Remove(pos, 1);
+						else if ((pos = datasetId.IndexOf(RctManager.ProjectDatasetGlyph)) != -1)
+							datasetId = datasetId.Remove(pos, 1);
+						else if ((pos = datasetId.IndexOf(RctManager.UtilityDatasetGlyph)) != -1)
+							datasetId = datasetId.Remove(pos, 1);
+
+						if (pos != -1)
 						{
-							Site[CoreConstants.C_KeyExDatasetId] = datasetId[1..];
+							Site[CoreConstants.C_KeyExDatasetId] = datasetId;
 							Site[CoreConstants.C_KeyExDatasetKey] =
-								CsbAgent.C_DatasetKeyFmt.FmtRes((string)Site[CoreConstants.C_KeyDataSource], datasetId[1..]);
+								CsbAgent.C_DatasetKeyFmt.FmtRes((string)Site[CoreConstants.C_KeyDataSource], datasetId);
 						}
 					}
 				}

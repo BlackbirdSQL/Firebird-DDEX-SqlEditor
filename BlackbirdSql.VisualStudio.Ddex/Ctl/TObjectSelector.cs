@@ -133,7 +133,6 @@ public class TObjectSelector : TObjectSelectorTable
 		{
 			Diag.Dug(ex);
 			throw;
-
 		}
 		finally
 		{
@@ -164,31 +163,13 @@ public class TObjectSelector : TObjectSelectorTable
 			}
 		}
 
-		// Tracer.Trace(GetType(), "TObjectSelector.GetSchema", "Ensuring connection typeName: {0}", typeName);
-
-		try
-		{
-			Site.EnsureConnected();
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-
-		// Tracer.Trace(GetType(), "TObjectSelector.GetSchema", "Calling GetSchema params.ToString, typeName: {0}", typeName);
-
 		DataTable schema = DslProviderSchemaFactory.GetSchema((FbConnection)connection, parameters[0].ToString(), array);
-
-		// Tracer.Trace(GetType(), "TObjectSelector.GetSchema", "Returned from GetSchema params.ToString, typeName: {0}", typeName);
 
 
 		if (parameters.Length == 2 && parameters[1] is DictionaryEntry entry)
 		{
 			if (entry.Value is object[] array2)
 			{
-				// Diag.Trace();
 				IDictionary<string, object> mappings = GetMappings(array2);
 				ApplyMappings(schema, mappings);
 			}
