@@ -4,10 +4,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model.Enums;
 using Microsoft.VisualStudio.Data.Services;
 
@@ -38,7 +36,6 @@ public class MonikerAgent
 	public const string C_SqlExtension = ".fbsql";
 	protected const string C_ServiceFolder = "ServerxExplorer";
 	protected const string C_TempSqlFolder = "SqlTemporaryFiles";
-	private const string C_Scheme = "fbsql";
 	protected const string C_DatasetKeyFmt = "{0} ({1})";
 	private const char C_CompositeSeparator = '.';
 
@@ -319,7 +316,7 @@ public class MonikerAgent
 
 		UriBuilder urlb = new()
 		{
-			Scheme = C_Scheme,
+			Scheme = CsbAgent.C_Scheme,
 			Host = DataSource.ToLowerInvariant(),
 		};
 
@@ -332,12 +329,10 @@ public class MonikerAgent
 
 		// Tracer.Trace(GetType(), "BuildUniqueDatabaseUrl()", "Serialized dbpath: {0}", str);
 
-		StringBuilder stringBuilder = new(str);
-		stringBuilder.Append("//");
-
-		urlb.Path = stringBuilder.ToString();
+		urlb.Path = str + "//";
 
 		string result = urlb.Uri.ToString();
+
 
 		// Tracer.Trace(GetType(), "BuildUniqueDatabaseUrl()", "Url: {0}", result);
 
@@ -727,21 +722,14 @@ public class MonikerAgent
 
 			if (includeExtension)
 				stringBuilder.Append(C_SqlExtension);
-
-			len = stringBuilder.Length;
-
-			for (int j = 0; j < len; j++)
-			{
-				char c = stringBuilder[j];
-				if (!char.IsLetterOrDigit(c) && c != C_CompositeSeparator && c != '/')
-				{
-					stringBuilder[j] = '_';
-				}
-			}
 		}
+
+		stringBuilder.Replace("//", "\\");
+		stringBuilder.Replace("/", "\\");
 
 		string result = stringBuilder.ToString();
 
+		
 		// Tracer.Trace(GetType(), "BuildUnsafeDocumentMoniker()", "DocumentMoniker: {0}", result);
 
 		return result;

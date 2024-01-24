@@ -160,6 +160,7 @@ public class CsbAgent : AbstractCsbAgent, ICloneable
 	public static IEnumerable<Describer> PublicMandatoryKeys => Describers.PublicMandatoryKeys;
 	public static IEnumerable<Describer> WeakEquivalencyKeys => Describers.WeakEquivalencyKeys;
 
+	[Browsable(false)]
 	public long Id => _Id;
 
 	#endregion Property accessors

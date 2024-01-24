@@ -887,6 +887,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	}
 
 
+	[Browsable (false)]
 	public string DisplayName
 	{
 		get

@@ -269,8 +269,11 @@ public abstract class AbstractDesignerServices
 			return VSConstants.E_FAIL;
 		}
 
+
 		int hr = vsUIShellOpenDocument.OpenDocumentViaProjectWithSpecific(mkDocument, (uint)editorFlags, ref guidEditorType,
 			physicalViewName, ref guidLogicalView, out sp, out hier, out itemid, out frame);
+
+		// Tracer.Trace(typeof(AbstractDesignerServices), "OpenMiscDocumentWithSpecific()", "Moniker: {0}, itemid: {1}.", mkDocument, itemid);
 
 		if (hr < 0 && (editorFlags & __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_UseView) > 0)
 		{

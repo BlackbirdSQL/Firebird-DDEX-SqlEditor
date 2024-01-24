@@ -2,6 +2,9 @@
 
 ### Change log
 
+#### v10.1.1.1
+Final preview version. Synchronized Intellisense and RdtManager.
+
 #### v10.1.1.0
 Final preview version. Implemented wait timeouts on all possible deadlock logic.
 

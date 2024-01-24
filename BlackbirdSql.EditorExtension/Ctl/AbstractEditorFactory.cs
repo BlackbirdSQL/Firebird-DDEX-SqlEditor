@@ -3,7 +3,6 @@
 
 using System;
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -20,7 +19,6 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
 using Cmd = BlackbirdSql.Common.Cmd;
-using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 
 namespace BlackbirdSql.EditorExtension.Ctl;
@@ -114,7 +112,6 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 			Cursor current = Cursor.Current;
 			try
 			{
-				// Tracer.Trace(GetType(), "IVsEditorFactory.CreateEditorInstance", "nCreateFlags = {0}, strMoniker = {1}, strPhysicalView = {2}, itemid = {3}", createFlags, moniker, physicalView, itemId);
 				SqlEtwProvider.EventWriteTSqlEditorLaunch(IsStart: true, EditorId ?? string.Empty);
 				if ((createFlags & 0x10) != 16)
 				{
@@ -144,7 +141,7 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 					}
 				}
 
-				if (!string.IsNullOrEmpty(physicalView) /* && physicalView != "CodeFrame" */)
+				if (!string.IsNullOrEmpty(physicalView) && physicalView != "CodeFrame")
 				{
 					ArgumentException ex = new("physicalView is not CodeFrame or empty: " + physicalView);
 					Diag.Dug(ex);
