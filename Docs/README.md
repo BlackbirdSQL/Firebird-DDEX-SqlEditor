@@ -2,7 +2,7 @@
 
 The BlackbirdSQL DDEX 2.0 .NET with SqlEditor Provider extension for Firebird, `BlackbirdSql.VisualStudio.Ddex`, implements most DDEX 2.0 interfaces prevalent in the SqlServer DDEX and SqlEditor extensions.
 
-[Download BlackbirdSql DDEX with SqlEditor Extension (Release v10.1.0.2)](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v10.1.0.2/BlackbirdSql.VisualStudio.Ddex.vsix) ([Change Log](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/blob/master/Docs/CHANGELOG.md))
+[Download BlackbirdSql DDEX with SqlEditor Extension (Release v10.1.1.0)](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v10.1.1.0/BlackbirdSql.VisualStudio.Ddex.vsix) ([Change Log](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/blob/master/Docs/CHANGELOG.md))
 
 #### Screenshots
 ![ReadMe](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/assets/120905720/8c2515a0-6ee2-49f5-8293-3dba1b51f3b5)
@@ -11,10 +11,10 @@ The BlackbirdSQL DDEX 2.0 .NET with SqlEditor Provider extension for Firebird, `
 
 
 ### Features
-* Firebird DDEX provider support for most of the DDEX 2.0 IVs DML interfaces utilizing FirebirdSql.Data.FirebirdClient version 10.0.0.
+* Firebird DDEX provider support for Visual Studio's DDEX 2.0 IVs DML interfaces utilizing FirebirdSql.Data.FirebirdClient version 10.0.0.
 * SqlServer SqlEditor port for Firebird for editing Computed columns, Triggers, Views, Procedures, Functions and SQL scripts.</br>__Note:__ The editor service execution plan visualizer is not currently functional. Execution plans are text based.
 * Trigger/Generator auto-increment linkage.
-* Full integration of Server Explorer. Connection dialogs include Host and Database drop-down selection; derived from Server Explorer, FlameRobin and the current solution projects' settings and EDM connection strings.
+* Full integration of Server Explorer with asynchronous loading. Connection dialogs include Host and Database drop-down selection; derived from Server Explorer, FlameRobin and the current solution projects' settings and EDM connection strings.
 * SqlEditor text-based execution plans and statistics snapshot comparer.
 * Configurable connection equivalency keys under `BlackbirdSql Server Tools` DDEX user options.
 * Within Server Explorer, top level folders for Tables, Views, Stored procedures, Functions, Sequence Generators, Triggers and Domains.
@@ -47,8 +47,8 @@ If you're finding BlackbirdSql's RunningConnectionTable management of connection
 
 ## Known issues
 * The Language service for the SqlEditor service is still under development and has not been linked into the extension. When opening scripts for Triggers, Views, Procedures, Funtions, Computed columns or SQL statements, the SqlEditor uses the Visual Studio built-in T-SQL Language service. This means that Intellisense may mark incompatible SQL and DDL as errors. The scripts will still successfully execute.
-* The SqlEditor port does not currently support the script parameter loading feature.
-* The BlackbirdSql Editor settings in Visual Studio Options has been ported as is from the Microsoft SqlServer SqlEditor settings. This means that many of the options are not currently being used or are not applicable.
+* The SqlEditor port does not currently support script parameter loading.
+* The BlackbirdSql Editor settings in Visual Studio Options has been ported as is from the Microsoft SqlServer SqlEditor settings. This means that several options are not currently being used or are not applicable.
 * If on startup of the Visual Studio IDE, and only on startup, an EDMX model has been left open within a solution, Visual Studio may flag the provider as unavailable. The model will need to be closed and reopened to be activated.</br>
 Unless we're missing a trick here this seems to be unavoidable. Loading is asynchronous, so the provider needs time to register and load. This same glitch occurs in Microsoft's SqlServer extension.</br>
 We want to be as unobtrusive as possible so load delays are just a reality if we go the asynchronous route. (*Loading is initiated at the earliest possible, which is as soon as the IDE shell context is available.*)
