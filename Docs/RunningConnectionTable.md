@@ -41,7 +41,7 @@ The distinction between Configured and Session connections is unimportant and ha
 #### Summary
 * Whenever a FlameRobin, EDM or Application configured connection is updated by the SE or SqlEditor in a connection dialog, ownership is transferred and the connection converts to a Session connection. The glyph is dropped to denote the connection is no longer in it's original state.
 * If the SE takes ownership, ownership is persistent, but if the SqlEditor/Session takes ownership, ownership is volatile, reverting back on a solution reload.
-* If a unique connection is created in SqlEditor (Session), that new connection will be added to the SE unless the `Update Server Explorer` checkbox is unchecked.
+* If a unique connection is created in SqlEditor (Session), that new connection will be added to the SE unless the `Add New Connections to Server Explorer` checkbox is unchecked.
 * If an attempt is made to add a connection in the SE that is equivalent to an existing connection, the SE will revert back to the existing connection.
 * Any changes to connections in Entity Data Models or within Application settings connection dialogs will not update the Rct. To have those connections updated to the Rct requires a solution reload. The same applies to changes made within FlameRobin.
 * If a connection is deleted in the SE, ownership of the connection will revert to `Session` and still appear in dropdowns and editor windows, but will be dropped on a solution reload.
