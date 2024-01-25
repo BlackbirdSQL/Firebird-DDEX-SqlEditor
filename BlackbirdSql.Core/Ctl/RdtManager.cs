@@ -41,7 +41,7 @@ public sealed class RdtManager : IDisposable
 
 	private readonly IVsUIShell _UiShell;
 
-	private readonly Dictionary<uint, int> _DocDataToKeepAliveOnClose = [];
+	private readonly Dictionary<uint, int> _KeepAliveDocCookies = [];
 
 	private readonly object _KeepAliveLockLocal = new object();
 
@@ -80,39 +80,39 @@ public sealed class RdtManager : IDisposable
 
 
 
-	public void AddKeepDocDataAliveOnCloseReference(uint docCookie)
+	public void AddKeepAlive(uint docCookie)
 	{
 		lock (_KeepAliveLockLocal)
 		{
-			if (_DocDataToKeepAliveOnClose.TryGetValue(docCookie, out var value))
+			if (_KeepAliveDocCookies.TryGetValue(docCookie, out var value))
 			{
-				_DocDataToKeepAliveOnClose[docCookie] = value + 1;
+				_KeepAliveDocCookies[docCookie] = value + 1;
 				return;
 			}
 
 			Diag.ThrowIfNotOnUIThread();
 
-			_DocDataToKeepAliveOnClose.Add(docCookie, 1);
+			_KeepAliveDocCookies.Add(docCookie, 1);
 			GetRunningDocumentTable().LockDocument((uint)_VSRDTFLAGS.RDT_EditLock, docCookie);
 		}
 	}
 
-	public void RemoveKeepDocDataAliveOnCloseReference(uint docCookie)
+	public void RemoveKeepAlive(uint docCookie)
 	{
 		lock (_KeepAliveLockLocal)
 		{
-			if (_DocDataToKeepAliveOnClose.TryGetValue(docCookie, out var value))
+			if (_KeepAliveDocCookies.TryGetValue(docCookie, out var value))
 			{
 				if (value == 1)
 				{
 					Diag.ThrowIfNotOnUIThread();
 
-					_DocDataToKeepAliveOnClose.Remove(docCookie);
+					_KeepAliveDocCookies.Remove(docCookie);
 					GetRunningDocumentTable().UnlockDocument((uint)_VSRDTFLAGS.RDT_EditLock, docCookie);
 				}
 				else
 				{
-					_DocDataToKeepAliveOnClose[docCookie] = value - 1;
+					_KeepAliveDocCookies[docCookie] = value - 1;
 				}
 			}
 		}
@@ -122,7 +122,7 @@ public sealed class RdtManager : IDisposable
 	{
 		lock (_KeepAliveLockLocal)
 		{
-			return _DocDataToKeepAliveOnClose.ContainsKey(docCookie);
+			return _KeepAliveDocCookies.ContainsKey(docCookie);
 		}
 	}
 
@@ -1090,7 +1090,7 @@ public sealed class RdtManager : IDisposable
 	{
 		lock (_KeepAliveLockLocal)
 		{
-			SqlTracer.AssertTraceEvent(_DocDataToKeepAliveOnClose.Keys.Count == 0, TraceEventType.Error, (EnSqlTraceId)3, "Events Manager is still trying to keep doc data alive on dispose, this could be a symptom of memory leak from invisible doc data.");
+			SqlTracer.AssertTraceEvent(_KeepAliveDocCookies.Keys.Count == 0, TraceEventType.Error, (EnSqlTraceId)3, "Events Manager is still trying to keep doc data alive on dispose, this could be a symptom of memory leak from invisible doc data.");
 		}
 	}
 }

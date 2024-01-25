@@ -32,7 +32,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.VisualStudio.Utilities;
 
 
 namespace BlackbirdSql.Common.Controls;
@@ -574,8 +573,9 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 
 	protected override int HandleCloseEditorOrDesigner()
 	{
-		int result = 0;
+		// Tracer.Trace(GetType(), "HandleCloseEditorOrDesigner()");
 
+		int result = 0;
 
 		if (AbstractEditorEventsManager.ShouldStopClose(((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(DocData), GetType()))
 		{
@@ -587,7 +587,10 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 
 	protected override int SaveFiles(ref uint pgrfSaveOptions)
 	{
+		// Tracer.Trace(GetType(), "SaveFiles()");
+
 		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(DocData);
+
 		if (pgrfSaveOptions == (uint)__FRAMECLOSE.FRAMECLOSE_PromptSave && auxDocData.SuppressSavePromptWhenClosingEditor())
 		{
 			pgrfSaveOptions = (uint)__FRAMECLOSE.FRAMECLOSE_NoSave;
@@ -880,7 +883,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 
 	private void ExecuteOrParseQuery(bool isExecute)
 	{
-		using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
+		using (Microsoft.VisualStudio.Utilities.DpiAwareness.EnterDpiScope(Microsoft.VisualStudio.Utilities.DpiAwarenessContext.SystemAware))
 		{
 			SqlTextSpan sqlTextSpan = GetSelectedCodeEditorTextSpan2();
 			if (sqlTextSpan.Text == null || sqlTextSpan.Text.Length == 0)

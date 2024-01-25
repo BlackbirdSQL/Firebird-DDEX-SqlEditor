@@ -274,16 +274,18 @@ public abstract class VS : Core.VS
 
 	public static StreamWriter GetTextWriterForQueryResultsToFile(bool xmlResults, ref string intialDirectory)
 	{
-		// Tracer.Trace(typeof(CommonUtils), "CommonUtils.GetTextWriterForQueryResultsToFile", "", null);
+		// Tracer.Trace(typeof(VS), "GetTextWriterForQueryResultsToFile()");
+
 		FileEncodingDlg fileEncodingDialog = new FileEncodingDlg();
 		string text = Properties.ControlsResources.SqlExportFromGridFilterTabDelimitted;
+
 		if (xmlResults)
-		{
 			text = Properties.ControlsResources.SqlXMLFileFilter;
-		}
+
 
 		text = text + "|" + Properties.ControlsResources.SqlExportFromGridFilterAllFiles;
 		string fileNameUsingSaveDialog = GetFileNameUsingSaveDialog(MakeVsFilterString(text), Properties.ControlsResources.SaveResults, intialDirectory, fileEncodingDialog);
+
 		if (fileNameUsingSaveDialog != null)
 		{
 			intialDirectory = Path.GetDirectoryName(fileNameUsingSaveDialog);

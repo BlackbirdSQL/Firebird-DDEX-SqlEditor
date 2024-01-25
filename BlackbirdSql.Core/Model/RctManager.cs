@@ -92,7 +92,7 @@ public sealed class RctManager : IDisposable
 
 	private static RctManager _Instance;
 	private RunningConnectionTable _Rct;
-	private static readonly string _Scheme = $"{CsbAgent.C_Scheme}://";
+	private static readonly string _Scheme = SystemData.Scheme;
 	private static string _UnadvisedConnectionString = null;
 
 	private static readonly char _EdmDatasetGlyph = '\u26ee';

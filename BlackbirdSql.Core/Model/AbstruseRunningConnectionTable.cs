@@ -169,7 +169,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	private readonly object _LockObject = new();
 	private int _LoadingSyncCardinal = 0;
 	private int _LoadingAsyncCardinal = 0;
-	protected static string _Scheme = $"{CsbAgent.C_Scheme}://";
+	protected static string _Scheme = SystemData.Scheme;
 
 	protected DataTable _Databases = null, _DataSources = null;
 	protected DataTable _InternalConnectionsTable = null;
@@ -1050,7 +1050,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		DataRow row;
 
-		string xmlPath = SystemData.UtilityConfigurationPath;
+		string xmlPath = SystemData.ExternalUtilityConfigurationPath;
 
 		if (!File.Exists(xmlPath))
 			return;

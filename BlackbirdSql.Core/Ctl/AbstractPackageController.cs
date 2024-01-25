@@ -158,7 +158,7 @@ public abstract class AbstractPackageController : IBPackageController
 	private string _UserDataDirectory = null;
 
 
-
+	private IBPackageController.AfterAttributeChangeDelegate _OnAfterAttributeChangeEvent;
 	private IBPackageController.AfterDocumentWindowHideDelegate _OnAfterDocumentWindowHideEvent;
 	private IBPackageController.AfterSaveDelegate _OnAfterSaveEvent;
 	private IBPackageController.BeforeDocumentWindowShowDelegate _OnBeforeDocumentWindowShowEvent;
@@ -193,6 +193,15 @@ public abstract class AbstractPackageController : IBPackageController
 	public string UserDataDirectory => _UserDataDirectory ??=
 		Environment.GetFolderPath(Environment.SpecialFolder.Personal);
 
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsRunningDocTableEvents.OnAfterAttributeChange"/> event.
+	/// </summary>
+	event IBPackageController.AfterAttributeChangeDelegate IBPackageController.OnAfterAttributeChangeEvent
+	{
+		add { _OnAfterAttributeChangeEvent += value; }
+		remove { _OnAfterAttributeChangeEvent -= value; }
+	}
 
 
 	/// <summary>
@@ -775,6 +784,10 @@ public abstract class AbstractPackageController : IBPackageController
 	// Events that we handle are listed first
 
 
+	public int OnAfterAttributeChange(uint docCookie, uint grfAttribs) => _OnAfterAttributeChangeEvent != null
+		? _OnAfterAttributeChangeEvent(docCookie, grfAttribs) : VSConstants.E_NOTIMPL;
+
+
 	public int OnAfterDocumentWindowHide(uint docCookie, IVsWindowFrame pFrame) => _OnAfterDocumentWindowHideEvent != null
 		? _OnAfterDocumentWindowHideEvent(docCookie, pFrame) : VSConstants.E_NOTIMPL;
 
@@ -796,7 +809,6 @@ public abstract class AbstractPackageController : IBPackageController
 
 	// Unhandled events follow
 
-	public int OnAfterAttributeChange(uint docCookie, uint grfAttribs) => VSConstants.E_NOTIMPL;
 	public int OnAfterFirstDocumentLock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining,
 		uint dwEditLocksRemaining) => VSConstants.E_NOTIMPL;
 	public int OnAfterLastDocumentUnlock(IVsHierarchy pHier, uint itemid, string pszMkDocument,

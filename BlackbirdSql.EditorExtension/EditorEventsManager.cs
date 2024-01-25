@@ -9,6 +9,7 @@ using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
@@ -327,15 +328,17 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 	{
 		Diag.ThrowIfNotOnUIThread();
 
+		// Tracer.Trace(GetType(), "RemoveTemporarySqlItem()");
+
 		if (projectItem.FileCount == 0 || Kind(projectItem.Kind) != "MiscItem")
 			return false;
 
 		bool deleted = false;
 		// FileNames is 1 based indexing - How/Why??? - A VB team did this!
 		string path = projectItem.FileNames[1];
+		
 
-
-		if (path.EndsWith(MonikerAgent.C_SqlExtension, StringComparison.InvariantCultureIgnoreCase))
+		if (path.EndsWith(SystemData.Extension, StringComparison.InvariantCultureIgnoreCase))
 		{
 			try
 			{
@@ -391,6 +394,7 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 	// ---------------------------------------------------------------------------------
 	public override void Initialize()
 	{
+		Controller.OnAfterAttributeChangeEvent += OnAfterAttributeChange;
 		Controller.OnAfterDocumentWindowHideEvent += OnAfterDocumentWindowHide;
 		Controller.OnAfterSaveEvent += OnAfterSave;
 		Controller.OnBeforeDocumentWindowShowEvent += OnBeforeDocumentWindowShow;
@@ -482,7 +486,7 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 		foreach (RunningDocumentInfo item in new RunningDocumentTable(EditorPackage))
 		{
 			if (item.Hierarchy == hierarchy && !string.IsNullOrWhiteSpace(item.Moniker)
-				&& item.Moniker.EndsWith(MonikerAgent.C_SqlExtension, StringComparison.OrdinalIgnoreCase)
+				&& item.Moniker.EndsWith(SystemData.Extension, StringComparison.OrdinalIgnoreCase)
 				&& item.DocData != null)
 			{
 				AuxiliaryDocData docData = EditorPackage.GetAuxiliaryDocData(item.DocData);
@@ -510,6 +514,45 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 	// =========================================================================================================
 
 
+	public int OnAfterAttributeChange(uint docCookie, uint grfAttribs)
+	{
+		Diag.ThrowIfNotOnUIThread();
+
+		if ((grfAttribs & (uint)__VSRDTATTRIB.RDTA_MkDocument) == 0)
+			return VSConstants.S_OK;
+
+		// Reset Intellisense when document is saved to disk.
+
+		RunningDocumentInfo documentInfo = new RunningDocumentTable(EditorPackage).GetDocumentInfo(docCookie);
+
+		if (!documentInfo.IsDocumentInitialized)
+			return VSConstants.S_OK;
+
+		string moniker = documentInfo.Moniker;
+
+		if (moniker.StartsWith(SystemData.WinScheme, StringComparison.InvariantCultureIgnoreCase)
+			|| !moniker.EndsWith(SystemData.Extension, StringComparison.InvariantCultureIgnoreCase))
+		{
+			return VSConstants.S_OK;
+		}
+
+
+		AuxiliaryDocData auxDocData = EditorPackage.GetAuxiliaryDocData(documentInfo.DocData);
+
+		if (auxDocData == null)
+			return VSConstants.S_OK;
+
+		if (auxDocData.IntellisenseEnabled.HasValue && auxDocData.IntellisenseEnabled.Value)
+		{
+			auxDocData.IntellisenseEnabled = false;
+			auxDocData.IntellisenseEnabled = true;
+		}
+
+		return VSConstants.S_OK;
+	}
+
+
+
 	public int OnAfterDocumentWindowHide(uint docCookie, IVsWindowFrame pFrame)
 	{
 		Diag.ThrowIfNotOnUIThread();
@@ -528,7 +571,6 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 			}
 
 			return VSConstants.S_OK;
-
 		}
 
 	}
@@ -537,15 +579,18 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 
 	public int OnAfterSave(uint docCookie)
 	{
+		// Tracer.Trace(GetType(), "OnAfterSave()");
+
 		RunningDocumentInfo documentInfo = new RunningDocumentTable(EditorPackage).GetDocumentInfo(docCookie);
 
 		if (documentInfo.IsDocumentInitialized && documentInfo.DocData != null)
 		{
 			AuxiliaryDocData auxDocData = EditorPackage.GetAuxiliaryDocData(documentInfo.DocData);
+
 			if (auxDocData != null)
-			{
 				auxDocData.IsQueryWindow = false;
-			}
+
+			// Tracer.Trace(GetType(), "OnAfterSave()", "IsQueryWindow: {0}", auxDocData == null ? "Null" : auxDocData.IsQueryWindow.ToString());
 		}
 
 		return VSConstants.S_OK;

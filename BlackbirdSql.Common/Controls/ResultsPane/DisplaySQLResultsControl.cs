@@ -1321,7 +1321,8 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 
 	private void CheckAndCloseTextWriters()
 	{
-		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.CheckAndCloseTextWriters", "", null);
+		// Tracer.Trace(GetType(), "CheckAndCloseTextWriters()");
+
 		if (_ResultsWriter != null && _ResultsWriter is FileStreamResultsWriter)
 		{
 			try

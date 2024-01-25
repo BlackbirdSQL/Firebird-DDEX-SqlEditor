@@ -12,7 +12,8 @@ using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
-
+using BlackbirdSql.Core.Ctl.Diagnostics;
+using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -45,7 +46,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 	// private Guid _toolbarGuid;
 	// private readonly uint _toolbarID;
 	private IVsTextLines _DocData;
-	private IList<uint> _OverrideSaveFileList;
+	private IList<uint> _OverrideSaveDocCookieList;
 	// private bool _FirstTimeShowEventHandled;
 	private bool _IsHelpInitialized;
 
@@ -238,7 +239,10 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	protected override void OnClose()
 	{
+		// Tracer.Trace(GetType(), "OnClose()");
+
 		_IsClosing = true;
+
 		base.OnClose();
 	}
 
@@ -457,10 +461,10 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	private void OnSaveOptions(object sender, EventArgs e)
 	{
+		// Tracer.Trace(GetType(), "OnSaveOptions()");
+
 		if (_TabbedEditorUI != null)
-		{
 			_ = _TabbedEditorUI.TopEditorTab;
-		}
 	}
 
 	protected void OnQueryScriptExecutionCompleted(object sender, ScriptExecutionCompletedEventArgs args)
@@ -505,31 +509,40 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	protected virtual int SaveFiles(ref uint saveFlags)
 	{
+		// Tracer.Trace(GetType(), "SaveFiles()");
+
 		if (VsShellUtilities.IsInAutomationFunction(this))
-		{
 			saveFlags = (uint)__FRAMECLOSE.FRAMECLOSE_NoSave;
-		}
-		int num = 0;
+
+		int hresult = 0;
+
 		if (saveFlags != (uint)__FRAMECLOSE.FRAMECLOSE_NoSave)
 		{
 			if ((IVsWindowFrame)GetService(typeof(SVsWindowFrame)) == null)
 			{
 				return 0;
 			}
+
 			uint saveOpts = (__FRAMECLOSE)saveFlags switch
 			{
-				__FRAMECLOSE.FRAMECLOSE_PromptSave => (uint)__VSRDTSAVEOPTIONS.RDTSAVEOPT_PromptSave,
-				__FRAMECLOSE.FRAMECLOSE_SaveIfDirty => (uint)__VSRDTSAVEOPTIONS.RDTSAVEOPT_SaveIfDirty,
+				__FRAMECLOSE.FRAMECLOSE_PromptSave
+					=> (uint)__VSRDTSAVEOPTIONS.RDTSAVEOPT_PromptSave,
+
+				__FRAMECLOSE.FRAMECLOSE_SaveIfDirty
+					=> (uint)__VSRDTSAVEOPTIONS.RDTSAVEOPT_SaveIfDirty,
+
 				_ => (uint)__VSRDTSAVEOPTIONS.RDTSAVEOPT_DocClose,
 			};
+
 			uint primaryDocCookie = GetPrimaryDocCookie();
-			num = (GetService(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable).SaveDocuments(saveOpts, null, uint.MaxValue, primaryDocCookie);
-			if (Native.Succeeded(num))
-			{
+
+			hresult = (GetService(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable).SaveDocuments(saveOpts, null, uint.MaxValue, primaryDocCookie);
+
+			if (Native.Succeeded(hresult))
 				saveFlags = (uint)__FRAMECLOSE.FRAMECLOSE_NoSave;
-			}
 		}
-		return num;
+
+		return hresult;
 	}
 
 	public IEnumerable<uint> GetEditableDocuments()
@@ -766,70 +779,148 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		return 0;
 	}
 
-	int IVsWindowFrameNotify3.OnClose(ref uint pgrfSaveOptions)
+	int IVsWindowFrameNotify3.OnClose(ref uint frameSaveOptions)
 	{
-		int num = 0;
-		uint num2 = (uint)__FRAMECLOSE.FRAMECLOSE_NoSave;
+		// Tracer.Trace(GetType(), "OnClose()");
+
+		int hresult = 0;
 		IEnumerable<uint> enumerable = null;
-		if ((pgrfSaveOptions & num2) == num2)
+
+		if ((frameSaveOptions & (uint)__FRAMECLOSE.FRAMECLOSE_NoSave) > 0)
 		{
 			enumerable = CommonVsUtilities.EnumerateOpenedDocuments(this, CommonVsUtilities.EnDocumentsFlag.DirtyExceptPrimary);
+
 			if (enumerable.Any())
-			{
-				pgrfSaveOptions = (uint)__FRAMECLOSE.FRAMECLOSE_PromptSave;
-			}
+				frameSaveOptions = (uint)__FRAMECLOSE.FRAMECLOSE_PromptSave;
 		}
-		if ((pgrfSaveOptions & num2) != num2)
+
+		bool keepDocAlive = false;
+		uint primaryDocCookie = GetPrimaryDocCookie();
+
+		if ((frameSaveOptions & (uint)__FRAMECLOSE.FRAMECLOSE_NoSave) == 0)
 		{
-			bool flag = false;
-			List<uint> list = [];
-			uint primaryDocCookie = GetPrimaryDocCookie();
+			List<uint> saveDocCookieList = [];
+
 			enumerable ??= CommonVsUtilities.EnumerateOpenedDocuments(this, CommonVsUtilities.EnDocumentsFlag.DirtyExceptPrimary);
-			foreach (uint item in new List<uint>(enumerable) { primaryDocCookie })
+			List<uint> docCookieList = new List<uint>(enumerable) { primaryDocCookie };
+
+
+
+			foreach (uint docCookie in docCookieList)
 			{
-				if (RdtManager.Instance.ShouldKeepDocDataAliveOnClose(item))
-				{
-					flag = true;
-				}
+				if (RdtManager.Instance.ShouldKeepDocDataAliveOnClose(docCookie))
+					keepDocAlive = true;
 				else
-				{
-					list.Add(item);
-				}
+					saveDocCookieList.Add(docCookie);
 			}
-			if (flag)
+
+
+			if (keepDocAlive)
 			{
-				if (list.Count == 0)
+				if (saveDocCookieList.Count == 0)
 				{
-					num = 0;
+					hresult = VSConstants.S_OK;
 				}
 				else
 				{
 					try
 					{
-						_OverrideSaveFileList = list;
-						num = SaveFiles(ref pgrfSaveOptions);
+						_OverrideSaveDocCookieList = saveDocCookieList;
+						hresult = SaveFiles(ref frameSaveOptions);
 					}
 					finally
 					{
-						_OverrideSaveFileList = null;
+						_OverrideSaveDocCookieList = null;
 					}
 				}
 			}
 			else
 			{
-				num = SaveFiles(ref pgrfSaveOptions);
+				hresult = SaveFiles(ref frameSaveOptions);
 			}
+
 		}
-		if (Native.Succeeded(num))
+
+		if (Native.Succeeded(hresult))
 		{
-			num = HandleCloseEditorOrDesigner();
-			if (Native.Succeeded(num))
+			hresult = HandleCloseEditorOrDesigner();
+
+			if (Native.Succeeded(hresult))
 			{
 				_IsClosing = true;
+
+				// Remove documents the user may have saved to disk from the misc project
+				// so that they're not deleted.
+				if (!keepDocAlive)
+				{
+					IVsRunningDocumentTable rdt = RdtManager.Instance.GetRunningDocumentTable();
+					rdt.GetDocumentInfo(primaryDocCookie, out _, out _, out _, out string moniker, out IVsHierarchy ppHier, out uint pitemid, out _);
+
+					if (!moniker.StartsWith(SystemData.WinScheme, StringComparison.InvariantCultureIgnoreCase)
+						&& moniker.EndsWith(SystemData.Extension, StringComparison.InvariantCultureIgnoreCase))
+					{
+						RemovePhysicalDocumentFromMiscProject(ppHier, pitemid);
+					}
+				}
 			}
 		}
-		return num;
+
+		return hresult;
+
 	}
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Cleans up any SE sql editor documents that may have been left dangling.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private int RemovePhysicalDocumentFromMiscProject(IVsHierarchy ppHier, uint itemId)
+	{
+		Diag.ThrowIfNotOnUIThread();
+
+		object objProj;
+
+		try
+		{
+			ppHier.GetProperty(itemId, (int)__VSHPROPID.VSHPROPID_ExtObject, out objProj);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		// Tracer.Trace(GetType(), "RemovePhysicalDocumentFromMiscProject()", "Item type: {0}.", objProj.GetType().FullName);
+
+		if (objProj == null || objProj is not ProjectItem projectItem)
+		{
+			ArgumentException ex = new($"Could not get project item in hierarchy {ppHier}, itemId: {itemId}.");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+
+		// Diag.Trace("Validating project item: " + projectItem.Name + ":  Kind: " + Kind(projectItem.Kind) + " FileCount: "
+		//	+ projectItem.FileCount);
+
+		string path = projectItem.FileNames[1];
+
+		if (!path.StartsWith(SystemData.WinScheme, StringComparison.InvariantCultureIgnoreCase)
+			&& path.EndsWith(SystemData.Extension, StringComparison.InvariantCultureIgnoreCase))
+		{
+			try
+			{
+				projectItem.Remove();
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+			}
+		}
+
+		return VSConstants.S_OK;
+	}
+
 
 	int IVsWindowFrameNotify3.OnDockableChange(int fDockable, int x, int y, int w, int h)
 	{
@@ -960,6 +1051,8 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	int IVsCodeWindow.Close()
 	{
+		// Tracer.Trace(GetType(), "Close()");
+
 		return XamlCodeWindow?.Close() ?? (VSConstants.E_NOTIMPL);
 	}
 
@@ -1144,7 +1237,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	int IVsHasRelatedSaveItems.GetRelatedSaveTreeItems(VSSAVETREEITEM saveItem, uint celt, VSSAVETREEITEM[] rgSaveTreeItems, out uint pcActual)
 	{
-		if (_OverrideSaveFileList == null)
+		if (_OverrideSaveDocCookieList == null)
 		{
 			IEnumerable<uint> enumerable = CommonVsUtilities.EnumerateOpenedDocuments(this, (__VSRDTSAVEOPTIONS)saveItem.grfSave);
 			pcActual = 0u;
@@ -1159,12 +1252,12 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		}
 		else
 		{
-			pcActual = (uint)_OverrideSaveFileList.Count;
+			pcActual = (uint)_OverrideSaveDocCookieList.Count;
 			if (rgSaveTreeItems != null)
 			{
-				for (int i = 0; i < _OverrideSaveFileList.Count; i++)
+				for (int i = 0; i < _OverrideSaveDocCookieList.Count; i++)
 				{
-					rgSaveTreeItems[i].docCookie = _OverrideSaveFileList[i];
+					rgSaveTreeItems[i].docCookie = _OverrideSaveDocCookieList[i];
 				}
 			}
 		}
@@ -1173,10 +1266,13 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	int IVsDocumentLockHolder.CloseDocumentHolder(uint dwSaveOptions)
 	{
+		// Tracer.Trace(GetType(), "CloseDocumentHolder()");
+
 		if (_LockHolderCookie != 0)
 		{
 			(GetService(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable).UnregisterDocumentLockHolder(_LockHolderCookie);
 		}
+
 		return 0;
 	}
 

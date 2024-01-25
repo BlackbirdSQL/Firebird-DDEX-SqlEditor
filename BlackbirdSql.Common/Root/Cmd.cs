@@ -208,7 +208,7 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 		Diag.ThrowIfNotOnUIThread();
 
 		IVsProject3 miscellaneousProject = GetMiscellaneousProject(provider);
-		miscellaneousProject.GenerateUniqueItemName(VSConstants.VSITEMID_ROOT, MonikerAgent.C_SqlExtension, "SQLQuery", out string pbstrItemName);
+		miscellaneousProject.GenerateUniqueItemName(VSConstants.VSITEMID_ROOT, SystemData.Extension, "SQLQuery", out string pbstrItemName);
 		string tempFileName = Path.GetTempFileName();
 		if (tempFileName == null)
 		{

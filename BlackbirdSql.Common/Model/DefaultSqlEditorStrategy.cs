@@ -64,15 +64,20 @@ public sealed class DefaultSqlEditorStrategy : IBSqlEditorStrategy, IDisposable
 
 	public DefaultSqlEditorStrategy(DbConnectionStringBuilder csb, bool isOnline = false)
 	{
+		/*
 		if (csb == null)
 		{
 			ArgumentNullException ex = new("csb");
 			Diag.Dug(ex);
 			throw ex;
 		}
+		*/
 
-		_DefaultConnectionInfo = new ConnectionPropertyAgent();
-		_DefaultConnectionInfo.Parse(csb.ConnectionString);
+		if (csb != null)
+		{
+			_DefaultConnectionInfo = new ConnectionPropertyAgent();
+			_DefaultConnectionInfo.Parse(csb.ConnectionString);
+		}
 		_isOnline = isOnline;
 	}
 

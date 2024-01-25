@@ -88,7 +88,7 @@ namespace BlackbirdSql.EditorExtension;
 [VsProvideEditorFactory(typeof(EditorFactoryWithoutEncoding), 311, false, DefaultName = "BlackbirdSql Editor",
 	CommonPhysicalViewAttributes = (int)__VSPHYSICALVIEWATTRIBUTES.PVA_SupportsPreview,
 	TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
-[ProvideEditorExtension(typeof(EditorFactoryWithoutEncoding), MonikerAgent.C_SqlExtension, 110,
+[ProvideEditorExtension(typeof(EditorFactoryWithoutEncoding), SystemData.Extension, 110,
 	DefaultName = "BlackbirdSql Editor", NameResourceID = 311, RegisterFactory = true)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithoutEncoding), VSConstants.LOGVIEWID.Debugging_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithoutEncoding), VSConstants.LOGVIEWID.Code_string)]
@@ -100,7 +100,7 @@ namespace BlackbirdSql.EditorExtension;
 	DefaultName = "BlackbirdSql Editor with Encoding",
 	CommonPhysicalViewAttributes = (int)__VSPHYSICALVIEWATTRIBUTES.PVA_SupportsPreview,
 	TrustLevel = __VSEDITORTRUSTLEVEL.ETL_AlwaysTrusted)]
-[ProvideEditorExtension(typeof(EditorFactoryWithEncoding), MonikerAgent.C_SqlExtension, 100,
+[ProvideEditorExtension(typeof(EditorFactoryWithEncoding), SystemData.Extension, 100,
 	DefaultName = "BlackbirdSql Editor with Encoding", NameResourceID = 312, RegisterFactory = true)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.Debugging_string)]
 [ProvideEditorLogicalView(typeof(EditorFactoryWithEncoding), VSConstants.LOGVIEWID.Code_string)]

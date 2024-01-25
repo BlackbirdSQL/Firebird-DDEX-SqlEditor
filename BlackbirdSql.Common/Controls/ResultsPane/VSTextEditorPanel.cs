@@ -342,9 +342,11 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 
 		private void OnSaveAs(object sender, EventArgs a)
 		{
-			// Tracer.Trace(GetType(), "VSTextEditorTabPage.OnSaveAs", "", null);
+			// Tracer.Trace(GetType(), "OnSaveAs()");
+
 			Control textView = _TextViewCtl;
 			Cursor current = Cursor.Current;
+
 			try
 			{
 				if (textView == null)

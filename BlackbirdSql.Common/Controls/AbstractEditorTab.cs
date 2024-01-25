@@ -21,7 +21,7 @@ using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.VisualStudio.Utilities;
+// using Microsoft.VisualStudio.Utilities;
 
 
 namespace BlackbirdSql.Common.Controls;
@@ -300,7 +300,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 	{
 		if (_CurrentFrame == null)
 		{
-			using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
+			using (Microsoft.VisualStudio.Utilities.DpiAwareness.EnterDpiScope(Microsoft.VisualStudio.Utilities.DpiAwarenessContext.SystemAware))
 			{
 				_CurrentFrame = CreateWindowFrame();
 			}
@@ -332,7 +332,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 
 		if (_CurrentFrame == null)
 		{
-			using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
+			using (Microsoft.VisualStudio.Utilities.DpiAwareness.EnterDpiScope(Microsoft.VisualStudio.Utilities.DpiAwarenessContext.SystemAware))
 			{
 				_CurrentFrame = CreateWindowFrame();
 			}
@@ -628,6 +628,8 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 
 	int IVsWindowFrameNotify3.OnClose(ref uint pgrfSaveOptions)
 	{
+		// Tracer.Trace(GetType(), "OnClose()");
+
 		IsClosed = true;
 		if (_CurrentFrame != null)
 		{

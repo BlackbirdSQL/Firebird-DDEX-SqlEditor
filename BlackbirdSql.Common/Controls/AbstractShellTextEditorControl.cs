@@ -392,6 +392,8 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 
 	public int SaveViewState(IStream state)
 	{
+		// Tracer.Trace(GetType(), "SaveViewState()");
+
 		if (_TextWindowPane != null)
 		{
 			Diag.ThrowIfNotOnUIThread();

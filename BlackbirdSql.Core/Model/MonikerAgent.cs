@@ -33,7 +33,6 @@ public class MonikerAgent
 	#region Constants - MonikerAgent
 	// ---------------------------------------------------------------------------------
 
-	public const string C_SqlExtension = ".fbsql";
 	protected const string C_ServiceFolder = "ServerxExplorer";
 	protected const string C_TempSqlFolder = "SqlTemporaryFiles";
 	protected const string C_DatasetKeyFmt = "{0} ({1})";
@@ -316,7 +315,7 @@ public class MonikerAgent
 
 		UriBuilder urlb = new()
 		{
-			Scheme = CsbAgent.C_Scheme,
+			Scheme = SystemData.Protocol,
 			Host = DataSource.ToLowerInvariant(),
 		};
 
@@ -721,7 +720,7 @@ public class MonikerAgent
 			}
 
 			if (includeExtension)
-				stringBuilder.Append(C_SqlExtension);
+				stringBuilder.Append(SystemData.Extension);
 		}
 
 		stringBuilder.Replace("//", "\\");
@@ -765,7 +764,7 @@ public class MonikerAgent
 		moniker = moniker.Replace(">", "{closebracket}");
 		moniker = moniker.Replace("|", "{bar}");
 
-		moniker = $"{ObjectName}[{moniker}.{ObjectType}]{C_SqlExtension}";
+		moniker = $"{ObjectName}[{moniker}.{ObjectType}]{SystemData.Extension}";
 
 		string path = ConstructFullTemporaryDirectory(appDataPath);
 

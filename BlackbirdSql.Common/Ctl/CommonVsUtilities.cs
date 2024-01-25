@@ -31,34 +31,34 @@ public static class CommonVsUtilities
 		return EnumerateOpenedDocuments(designerService, enumerateDocumentsFlag);
 	}
 
-	internal static IEnumerable<uint> EnumerateOpenedDocuments(IBDesignerDocumentService designerService, EnDocumentsFlag flag)
+	internal static IEnumerable<uint> EnumerateOpenedDocuments(IBDesignerDocumentService designerService, EnDocumentsFlag requestedDocumentsFlag)
 	{
 		foreach (uint editableDocument in designerService.GetEditableDocuments())
 		{
 			if (TryGetDocDataFromCookie(editableDocument, out var docData))
 			{
-				bool flag2 = IsDirty(docData);
-				bool flag3 = editableDocument == designerService.GetPrimaryDocCookie();
-				bool flag4 = false;
-				switch (flag)
+				bool isDirty = IsDirty(docData);
+				bool isPrimary = editableDocument == designerService.GetPrimaryDocCookie();
+				bool validEnumerableDocument = false;
+
+				switch (requestedDocumentsFlag)
 				{
 					case EnDocumentsFlag.DirtyDocuments:
-						flag4 = flag2;
+						validEnumerableDocument = isDirty;
 						break;
 					case EnDocumentsFlag.DirtyOrPrimary:
-						flag4 = flag2 || flag3;
+						validEnumerableDocument = isDirty || isPrimary;
 						break;
 					case EnDocumentsFlag.DirtyExceptPrimary:
-						flag4 = flag2 && !flag3;
+						validEnumerableDocument = isDirty && !isPrimary;
 						break;
 					case EnDocumentsFlag.AllDocuments:
-						flag4 = true;
+						validEnumerableDocument = true;
 						break;
 				}
-				if (flag4)
-				{
+
+				if (validEnumerableDocument)
 					yield return editableDocument;
-				}
 			}
 		}
 	}

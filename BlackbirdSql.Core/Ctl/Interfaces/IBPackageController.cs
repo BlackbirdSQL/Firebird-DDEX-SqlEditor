@@ -19,6 +19,7 @@ public interface IBPackageController : IVsSolutionEvents3, // IVsSolutionEvents2
 
 	// Rdt Event Delegates
 
+	delegate int AfterAttributeChangeDelegate(uint docCookie, uint grfAttribs);
 	delegate int AfterDocumentWindowHideDelegate(uint docCookie, IVsWindowFrame pFrame);
 	delegate int AfterSaveDelegate(uint docCookie);
 	delegate int BeforeDocumentWindowShowDelegate(uint docCookie, int fFirstShow, IVsWindowFrame pFrame);
@@ -55,6 +56,7 @@ public interface IBPackageController : IVsSolutionEvents3, // IVsSolutionEvents2
 	event QueryCloseSolutionDelegate OnQueryCloseSolutionEvent;
 
 	// Rdt events
+	event AfterAttributeChangeDelegate OnAfterAttributeChangeEvent;
 	event AfterDocumentWindowHideDelegate OnAfterDocumentWindowHideEvent;
 	event AfterSaveDelegate OnAfterSaveEvent;
 	event BeforeDocumentWindowShowDelegate OnBeforeDocumentWindowShowEvent;

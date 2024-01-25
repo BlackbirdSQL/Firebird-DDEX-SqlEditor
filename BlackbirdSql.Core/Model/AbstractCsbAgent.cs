@@ -122,7 +122,6 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	#region Constants - AbstractCsbAgent
 	// =====================================================================================================
 
-	public const string C_Scheme = "fbsql";
 	public const string C_DatasetKeyFmt = "{0} ({1})";
 	private const char C_CompositeSeparator = '.';
 
@@ -1102,7 +1101,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 		UriBuilder urlb = new()
 		{
-			Scheme = C_Scheme,
+			Scheme = SystemData.Protocol,
 			Host = datasource.ToLowerInvariant(),
 			UserName = csa.UserID.ToLowerInvariant(),
 			Port = csa.Port,
@@ -1111,7 +1110,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 		UriBuilder testurlb = new()
 		{
-			Scheme = C_Scheme,
+			Scheme = SystemData.Protocol,
 			Host = datasource.ToLowerInvariant(),
 			UserName = csa.UserID.ToLowerInvariant(),
 			Port = csa.Port,

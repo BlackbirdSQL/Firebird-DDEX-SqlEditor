@@ -32,9 +32,15 @@ public static class SystemData
 	/// <summary>
 	/// The path to the provider's configured connections xml (in this case FlameRobin for Firebird).
 	/// </summary>
-	public static string UtilityConfigurationPath
+	public static string ExternalUtilityConfigurationPath
 		= Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
 		+ "\\flamerobin\\fr_databases.conf";
+
+	public const string Protocol = "fbsql";
+	public const string Scheme = Protocol + "://";
+	public const string WinScheme = Protocol + ":\\";
+	public const string Extension = "." + Protocol;
+
 
 
 

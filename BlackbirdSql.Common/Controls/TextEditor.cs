@@ -2,13 +2,12 @@
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Controls.TabbedEditor.TextEditor
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -374,11 +373,14 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 
 	int IVsCodeWindowEvents.OnCloseView(IVsTextView pView)
 	{
+		// Tracer.Trace(GetType(), "OnCloseView()");
+
 		if (_ConnectedViews != null && _ConnectedViews.TryGetValue(pView, out var value))
 		{
 			value.Dispose();
 			_ConnectedViews.Remove(pView);
 		}
+
 		return 0;
 	}
 

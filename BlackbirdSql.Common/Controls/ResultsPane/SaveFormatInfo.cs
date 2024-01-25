@@ -11,15 +11,9 @@ using BlackbirdSql.Common.Controls.Enums;
 namespace BlackbirdSql.Common.Controls.ResultsPane;
 
 
-public class SaveFormatInfo
+public class SaveFormatInfo(EnGridSaveFormats saveFormat, string description)
 {
-	public EnGridSaveFormats SaveFormat { get; set; }
+	public EnGridSaveFormats SaveFormat { get; set; } = saveFormat;
 
-	public string Description { get; set; }
-
-	public SaveFormatInfo(EnGridSaveFormats saveFormat, string description)
-	{
-		SaveFormat = saveFormat;
-		Description = description;
-	}
+	public string Description { get; set; } = description;
 }

@@ -2,6 +2,9 @@
 
 ### Change log
 
+#### v10.1.2.0
+Final preview version. Implemented SqlEditor and Intellisense support for `.fbsql` disk files.
+
 #### v10.1.1.1
 Final preview version. Synchronized Intellisense and RdtManager.
 
