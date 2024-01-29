@@ -194,7 +194,9 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 
 		// If there's a proposed ConnectionName and it's the same as the derived ConnectionName,
 		// it's also not needed.
-		if (proposedConnectionName != null && proposedConnectionName == CsbAgent.C_DatasetKeyFmt.FmtRes(dataSource, derivedDatasetId))
+		if (proposedConnectionName != null &&
+			(proposedConnectionName == SystemData.DatasetKeyFmt.FmtRes(dataSource, derivedDatasetId)
+			|| proposedConnectionName == SystemData.DatasetKeyAlternateFmt.FmtRes(dataSource, derivedDatasetId)))
 		{
 			proposedConnectionNameIsDerived = true;
 			proposedConnectionName = null;
@@ -280,7 +282,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 					? derivedDatasetId
 					: (derivedDatasetIdPrefix + $"_{i + 1}");
 
-				rUniqueDatasetKey = CsbAgent.C_DatasetKeyFmt.FmtRes(dataSource, rUniqueDatasetId);
+				rUniqueDatasetKey = SystemData.DatasetKeyFmt.FmtRes(dataSource, rUniqueDatasetId);
 
 				if (!TryGetEntry(rUniqueDatasetKey, out int index))
 					break;
@@ -395,11 +397,11 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 			}
 			else if (csa.ContainsKey(C_KeyExDatasetId) && !string.IsNullOrWhiteSpace(csa.DatasetId))
 			{
-				csa.DatasetKey = CsbAgent.C_DatasetKeyFmt.FmtRes(csa.DataSource, csa.DatasetId);
+				csa.DatasetKey = SystemData.DatasetKeyFmt.FmtRes(csa.DataSource, csa.DatasetId);
 			}
 			else
 			{
-				csa.DatasetKey = CsbAgent.C_DatasetKeyFmt.FmtRes(csa.DataSource, csa.Dataset);
+				csa.DatasetKey = SystemData.DatasetKeyFmt.FmtRes(csa.DataSource, csa.Dataset);
 			}
 		}
 

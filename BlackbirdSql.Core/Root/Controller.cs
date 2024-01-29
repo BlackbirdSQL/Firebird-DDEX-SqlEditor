@@ -2,6 +2,7 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Interfaces;
@@ -20,6 +21,8 @@ namespace BlackbirdSql.Core;
 /// Placeholder for AbstractPackageController static members for consistency.
 /// </summary>
 // =========================================================================================================
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
+	Justification = "Only checking for null")]
 internal static class Controller
 {
 
@@ -29,6 +32,10 @@ internal static class Controller
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static IBPackageController Instance => AbstractPackageController.Instance;
+
+	public static bool CanValidateSolution => Instance.Dte.Solution != null
+		&& Instance.Dte.Solution.Projects != null
+		&& Instance.Dte.Solution.Projects.Count > 0;
 
 
 	// ---------------------------------------------------------------------------------
@@ -63,6 +70,8 @@ internal static class Controller
 
 	public static IVsMonitorSelection SelectionMonitor => Instance.SelectionMonitor;
 
+	public static bool SolutionValidating => Instance.SolutionValidating;
+
 	public static IVsTaskStatusCenterService StatusCenterService => Instance.StatusCenterService;
 
 	public static TInterface GetService<TService, TInterface>() where TInterface : class
@@ -74,5 +83,9 @@ internal static class Controller
 	public static async Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class
 		=> await Instance.GetServiceAsync<TService, TInterface>();
 
+	public static void ValidateSolution()
+	{
+		Instance.ValidateSolution();
+	}
 
 }

@@ -61,27 +61,27 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 	public AbstractCsbAgent(string connectionString) : base(connectionString)
 	{
-		ValidateDataSource();
+		ValidateServerName();
 	}
 
 
 
 	public AbstractCsbAgent(IDbConnection connection) : base(connection.ConnectionString)
 	{
-		ValidateDataSource();
+		ValidateServerName();
 	}
 
 	public AbstractCsbAgent(IBPropertyAgent ci) : base()
 	{
 		Parse(ci);
-		ValidateDataSource();
+		ValidateServerName();
 	}
 
 
 	protected AbstractCsbAgent(IVsDataExplorerNode node) : base()
 	{
 		Extract(node);
-		ValidateDataSource();
+		ValidateServerName();
 	}
 
 
@@ -93,7 +93,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	{
 		Initialize(server, port, C_DefaultServerType, database, user, password,
 			C_DefaultRole, charset, C_DefaultDialect, C_DefaultNoDatabaseTriggers);
-		ValidateDataSource();
+		ValidateServerName();
 	}
 
 
@@ -121,9 +121,6 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	// =====================================================================================================
 	#region Constants - AbstractCsbAgent
 	// =====================================================================================================
-
-	public const string C_DatasetKeyFmt = "{0} ({1})";
-	private const char C_CompositeSeparator = '.';
 
 
 	#endregion Constants
@@ -899,11 +896,35 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 			return retval;
 		}
 	}
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Returns a uniquely identifiable connection url. Connection urls are used for
-	/// uniquely naming connections and are unique to equivalent connections according
-	/// to describer equivalency.
+	/// Builds and returns a uniquely identifiable connection url. Connection urls
+	/// are used for uniquely naming connections and are unique to equivalent
+	/// connections according to describer equivalency.
+	/// </summary>
+	/// <returns>
+	/// The unique connection url in format:
+	/// fbsql://user_uc@server:port/Serilize64(databasepath_lc)/[Serilize64(newline_delimited_equivalencykeys)]/
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	[Browsable(false)]
+	public string DatasetMoniker
+	{
+		get
+		{
+			_SafeDatasetMoniker = BuildUniqueConnectionUrl(true);
+			return _SafeDatasetMoniker;
+		}
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns a stored uniquely identifiable connection url. Connection urls are used
+	/// for uniquely naming connections and are unique to equivalent connections
+	/// according to describer equivalency.
 	/// </summary>
 	/// <returns>
 	/// The unique connection url in format:
@@ -916,9 +937,9 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Builds a uniquely identifiable connection url. Connection urls are used for
-	/// uniquely naming connections and are unique to equivalent connections according
-	/// to describer equivalency.
+	/// Returns a stored uniquely identifiable connection url. Connection urls are used
+	/// for uniquely naming connections and are unique to equivalent connections
+	/// according to describer equivalency.
 	/// </summary>
 	/// <returns>
 	/// The unique connection url in format:
@@ -1016,6 +1037,20 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 		// 	"TConnectionEquivalencyComparer.AreEquivalent(IDictionary, IDictionary)", "Connections are equivalent");
 
 		return true;
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Checks whether or not the emumerator property/parameter objects of a connection
+	/// string are equivalent.
+	/// </summary>
+	public static bool AreEquivalent(string connectionString1, string connectionString2, IEnumerable<Describer> enumerator)
+	{
+		CsbAgent csa1 = new(connectionString1);
+		CsbAgent csa2 = new(connectionString2);
+
+		return AreEquivalent(csa1, csa2, enumerator);
 	}
 
 
@@ -1350,7 +1385,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// Validates the DataSource for case name mangling.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private void ValidateDataSource()
+	private void ValidateServerName()
 	{
 		string dataSource, server;
 

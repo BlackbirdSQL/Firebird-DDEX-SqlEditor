@@ -146,7 +146,7 @@ public class TConnectionSupport : AdoDotNetConnectionSupport
 
 	public TConnectionSupport() : base()
 	{
-		// Tracer.Trace(GetType(), "TConnectionSupport.TConnectionSupport()");
+		// Tracer.Trace(GetType(), "TConnectionSupport()");
 	}
 
 

@@ -204,6 +204,9 @@
   <data name="CommandProvider_RetrieveViewDesignerData" xml:space="preserve">
     <value>Open View in &amp;Designer</value>
   </data>
+  <data name="CommandProvider_ValidateGlobalSolution" xml:space="preserve">
+    <value>Validate Solution Config</value>
+  </data>
   <data name="EngineTypeIconNotfound" xml:space="preserve">
     <value>Could not locate icon for Server Engine Type {0}.</value>
   </data>

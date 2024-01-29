@@ -12,6 +12,7 @@ using System.Windows.Forms.Design;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls.Interfaces;
 using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
@@ -81,7 +82,16 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		try
 		{
 			if (RctManager.ShutdownState || !RctManager.LoadConfiguredConnections(false))
-				return;
+			{
+				ApplicationException ex;
+
+				if (RctManager.ShutdownState)
+					ex = new("RunningConnectionTable is in a shutdown state. Aborting.");
+				else
+						ex = new("RunningConnectionTable is not loaded.");
+				Diag.Dug(ex);
+				throw ex;
+			}
 
 			InitializeComponent();
 
@@ -612,7 +622,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 						{
 							Site[CoreConstants.C_KeyExDatasetId] = datasetId;
 							Site[CoreConstants.C_KeyExDatasetKey] =
-								CsbAgent.C_DatasetKeyFmt.FmtRes((string)Site[CoreConstants.C_KeyDataSource], datasetId);
+								SystemData.DatasetKeyFmt.FmtRes((string)Site[CoreConstants.C_KeyDataSource], datasetId);
 						}
 					}
 				}
@@ -1030,8 +1040,15 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 		// Tracer.Trace(GetType(), "OnVerifySettings()", "Before UpdateOrRegisterConnection Site.ToString(): {0}.", Site.ToString());
 
-		// Try to update an existing instance.
-		RctManager.UpdateOrRegisterConnection(Site.ToString(), _ConnectionSource, _HandleNewInternally, _HandleModifyInternally);
+		try
+		{
+			// Try to update an existing instance.
+			RctManager.UpdateOrRegisterConnection(Site.ToString(), _ConnectionSource, _HandleNewInternally, _HandleModifyInternally);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+		}
 
 		// Tracer.Trace(GetType(), "OnVerifySettings()", "After UpdateOrRegisterConnection Site.ToString(): {0}.", Site.ToString());
 

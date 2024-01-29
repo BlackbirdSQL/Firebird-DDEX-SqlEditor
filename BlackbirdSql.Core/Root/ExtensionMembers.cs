@@ -107,6 +107,9 @@ static class ExtensionMembers
 			throw ex;
 		}
 
+		if (!Controller.InvariantResolved)
+			return null;
+
 		string retval;
 		IVsDataObject @object = value.ConnectionNode.Object;
 
@@ -726,7 +729,9 @@ static class ExtensionMembers
 
 
 		string derivedConnectionName = (dataSource != null && derivedDatasetId != null)
-			? CsbAgent.C_DatasetKeyFmt.FmtRes(dataSource, derivedDatasetId) : null;
+			? SystemData.DatasetKeyFmt.FmtRes(dataSource, derivedDatasetId) : null;
+		string derivedAlternateConnectionName = (dataSource != null && derivedDatasetId != null)
+			? SystemData.DatasetKeyAlternateFmt.FmtRes(dataSource, derivedDatasetId) : null;
 
 
 		// Now the proposed DatasetKey, ConnectionName. If it exists and is equal to the derived
@@ -748,7 +753,7 @@ static class ExtensionMembers
 			// derived datasetkey it also won't be needed, so delete it,
 			// else the ConnectionName still exists and is the determinant, so
 			// any existing proposed DatasetId is not required.
-			if (connectionName == derivedConnectionName)
+			if (connectionName == derivedConnectionName || connectionName == derivedAlternateConnectionName)
 			{
 				modified = true;
 				site.Remove(CoreConstants.C_KeyExConnectionName);

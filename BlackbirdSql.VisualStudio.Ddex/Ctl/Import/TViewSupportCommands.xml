@@ -9,6 +9,7 @@
 	<!-- Global commands list -->
 	<Define name="TplGlobalCommands" >
 		<CommandRef name="CommandTraceRctUniversal" />
+		<CommandRef name="CommandValidateSolutionUniversal" />
 		<CommandRef name="CommandNewSqlQueryUniversal" />
 		<CommandRef name="CommandNewDesignerQueryUniversal" />
 		<CommandRef name="CommandNewQueryGlobal" />
@@ -56,6 +57,9 @@
 	<!-- BlackbirdSql custom commands (Universal Suffix) -->
 	<Define name="CommandTraceRctUniversal">
 		<CommandRef name="CommandHookCommandSetUniversal" arguments="0x0339" />
+	</Define>
+	<Define name="CommandValidateSolutionUniversal">
+		<CommandRef name="CommandHookCommandSetUniversal" arguments="0x033A" />
 	</Define>
 	<Define name="CommandNewSqlQueryUniversal">
 		<CommandRef name="CommandHookCommandSetUniversal" arguments="0x0310" />

@@ -3,6 +3,7 @@
 
 using System;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 
@@ -26,7 +27,7 @@ public class TConnectionUIConnector : DataConnectionUIConnector
 
 	public TConnectionUIConnector() :base()
 	{
-		// Tracer.Trace(GetType(), "TConnectionUIConnector.TConnectionUIConnector()");
+		// Tracer.Trace(GetType(), "TConnectionUIConnector()");
 	}
 
 

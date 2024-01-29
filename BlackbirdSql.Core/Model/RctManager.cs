@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Runtime;
 using System.Windows.Forms;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
@@ -11,7 +10,6 @@ using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Properties;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
-using Microsoft.VisualStudio.LanguageServer.Client;
 using Microsoft.VisualStudio.Shell;
 
 using CoreConstants = BlackbirdSql.Core.Ctl.CoreConstants;
@@ -215,8 +213,8 @@ public sealed class RctManager : IDisposable
 	/// Returns the seed of the last connection registered or updated.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool ShutdownState => (_Instance == null || _Instance._Rct == null || _Instance._Rct.ShutdownState);
-
+	public static bool ShutdownState => (_Instance != null && _Instance._Rct != null && _Instance._Rct.ShutdownState);
+		
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -490,7 +488,8 @@ public sealed class RctManager : IDisposable
 
 		if (csa.ContainsKey(CoreConstants.C_KeyExConnectionName)
 			&& !string.IsNullOrWhiteSpace(csa.ConnectionName)
-			&& CsbAgent.C_DatasetKeyFmt.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName)
+			&& (SystemData.DatasetKeyFmt.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName
+			|| SystemData.DatasetKeyAlternateFmt.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName))
 		{
 			csa.Remove(CoreConstants.C_KeyExConnectionName);
 		}
@@ -547,7 +546,8 @@ public sealed class RctManager : IDisposable
 			datasetId = csa.Dataset;
 
 		if (!string.IsNullOrWhiteSpace(csa.ConnectionName)
-			&& CsbAgent.C_DatasetKeyFmt.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName)
+			&& (SystemData.DatasetKeyFmt.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName
+			|| SystemData.DatasetKeyAlternateFmt.FmtRes(csa.DataSource, datasetId) == csa.ConnectionName))
 		{
 			csa.ConnectionName = CoreConstants.C_DefaultExConnectionName;
 		}
@@ -776,11 +776,7 @@ public sealed class RctManager : IDisposable
 	public static string RegisterServer(string serverName, int port)
 	{
 		if (ShutdownState || _Instance == null || _Instance._Rct == null)
-		{
-			InvalidOperationException ex = new("RctManager.RegisterServer called before LoadConfiguredConnections().");
-			Diag.Dug(ex);
-			throw ex;
-		}
+			return serverName;
 
 		return _Instance._Rct.RegisterServer(serverName, port);
 	}
@@ -1162,7 +1158,7 @@ public sealed class RctManager : IDisposable
 		string dataSource = (string)site[CoreConstants.C_KeyDataSource];
 		string dataset = (string)site[CoreConstants.C_KeyExDataset];
 
-		string connectionUrl = (site as IBDataConnectionProperties).Csa.SafeDatasetMoniker;
+		string connectionUrl = (site as IBDataConnectionProperties).Csa.DatasetMoniker;
 
 		// Check whether the connection name will change.
 		(bool createNew, string uniqueDatasetKey, string uniqueConnectionName, string uniqueDatasetId, string changedTarget) =

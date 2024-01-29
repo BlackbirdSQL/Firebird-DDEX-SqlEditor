@@ -180,9 +180,6 @@ public class PersistentSettings : Controller.Ctl.Config.PersistentSettings
 		try
 		{
 			base.PropagateSettings(e);
-
-			// GlobalsAgent requires the latest PersistentValidation if it's disabled.
-			GlobalsAgent.PersistentValidation &= PersistentValidation;
 		}
 		catch (Exception ex)
 		{

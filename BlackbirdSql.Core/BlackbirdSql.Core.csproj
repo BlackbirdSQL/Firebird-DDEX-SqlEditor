@@ -222,7 +222,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="10.0.0" />
+		<PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="10.0.0"  />
 		<PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
 	</ItemGroup>
 

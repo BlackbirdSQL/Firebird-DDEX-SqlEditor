@@ -2,6 +2,12 @@
 
 ### Change log
 
+#### v10.1.2.1
+Included handling of IDE `no solution` state and early loading of the connection dialog.</br>
+Prevented LinkageParser replication when a weak equivalency has been refreshed.</br>
+Handle asynchronous VS load glitch referencing incorrect invariant assembly when an edmx is open on load.</br>
+Validation of Solution's configuration settings can now only be launched from an open SE node's context menu.
+
 #### v10.1.2.0
 Final preview version. Implemented SqlEditor and Intellisense support for `.fbsql` disk files.
 

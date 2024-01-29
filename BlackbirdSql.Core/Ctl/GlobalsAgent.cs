@@ -79,9 +79,6 @@ public class GlobalsAgent : AbstractGlobalsAgent
 	// =========================================================================================================
 
 
-	private static object _SolutionObject;
-
-
 	#endregion Fields
 
 
@@ -228,7 +225,7 @@ public class GlobalsAgent : AbstractGlobalsAgent
 	/// The <see cref="EnvDTE.DTE.Solution"/> object.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static object SolutionObject => _SolutionObject;
+	public static object SolutionObject => Controller.Instance.SolutionObject;
 
 
 	// ---------------------------------------------------------------------------------
@@ -336,11 +333,9 @@ public class GlobalsAgent : AbstractGlobalsAgent
 	/// <param name="solution">The <see cref="EnvDTE.DTE.Solution"/> object</param>
 	/// <param name="stream">The stream from <see cref="Package.OnLoadOptions" event./></param>
 	// ---------------------------------------------------------------------------------
-	public GlobalsAgent(object solution, Stream stream) :
-		base(stream, PersistentSettings.ValidateSolution, PersistentSettings.PersistentValidation,
-			PersistentSettings.ValidateConfig, PersistentSettings.ValidateEdmx)
+	public GlobalsAgent(Stream stream) :
+		base(stream)
 	{
-		_SolutionObject = solution;
 	}
 
 
@@ -351,8 +346,6 @@ public class GlobalsAgent : AbstractGlobalsAgent
 	// ---------------------------------------------------------------------------------
 	public override void Dispose()
 	{
-		if (_SolutionGlobals != null && _SolutionGlobals.Equals(this))
-			_SolutionObject = null;
 	}
 
 	#endregion Constructors / Destructors

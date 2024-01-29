@@ -13,8 +13,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace BlackbirdSql.Core.Ctl.Interfaces;
 
-[Guid(SystemData.PackageGuid)]
-
+[Guid(SystemData.PackageServiceGuid)]
 public interface IBAsyncPackage
 {
 

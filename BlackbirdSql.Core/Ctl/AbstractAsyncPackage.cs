@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,14 +6,12 @@ using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Properties;
 using EnvDTE;
-
+using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
 namespace BlackbirdSql.Core.Ctl;
-
-[SuppressMessage("Usage", "VSTHRD001:Avoid legacy thread switching APIs")]
 
 public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 {
@@ -29,13 +26,11 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	protected DTE _Dte = null;
 	protected IVsSolution _VsSolution = null;
 	protected IVsRunningDocumentTable _DocTable = null;
-	protected System.Reflection.Assembly _InvariantAssembly = null;
-	protected bool _InvariantResolved = false;
 	protected bool _Initialized = false;
+	protected static bool _InvariantResolved = false;
 
 	protected IBAsyncPackage.LoadSolutionOptionsDelegate _OnLoadSolutionOptionsEvent;
 	protected IBAsyncPackage.SaveSolutionOptionsDelegate _OnSaveSolutionOptionsEvent;
-
 
 	#endregion Fields
 
@@ -140,7 +135,7 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 
 	public abstract IBEventsManager EventsManager { get; }
 
-	public bool InvariantResolved => _InvariantResolved;
+	public abstract bool InvariantResolved { get; }
 
 
 	public Microsoft.VisualStudio.OLE.Interop.IServiceProvider OleServiceProvider

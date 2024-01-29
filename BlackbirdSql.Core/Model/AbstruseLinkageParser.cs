@@ -97,7 +97,7 @@ public abstract class AbstruseLinkageParser : IDisposable
 	/// </param>
 	/// <returns>True of the parser was found and disposed else false.</returns>
 
-	protected abstract bool Dispose(bool disposing);
+	protected abstract bool Dispose(bool isValidTransient);
 
 
 	#endregion Constructors / Destructors

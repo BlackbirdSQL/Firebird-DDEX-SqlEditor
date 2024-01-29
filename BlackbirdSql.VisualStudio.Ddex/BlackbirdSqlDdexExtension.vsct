@@ -227,7 +227,18 @@
 
 
 			<!-- MenuIdSeRootGroup -->
-			<Button guid="CommandSetGuid" id="CmdIdTraceRct" priority="0x0120" type="Button">
+			<Button guid="CommandSetGuid" id="CmdIdValidateSolution" priority="0x0120" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdSeRootGroup" />
+				<Icon guid="ImagesGuid" id="ImgExecuteQuery" />
+				<CommandFlag>TextChanges</CommandFlag>
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<Strings>
+					<ButtonText>Validate Solution Configurations</ButtonText>
+					<CommandName>CommandValidateSolutionUniversal</CommandName>
+				</Strings>
+			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdTraceRct" priority="0x0130" type="Button">
 				<Parent guid="CommandSetGuid" id="MenuIdSeRootGroup" />
 				<Icon guid="ImagesGuid" id="ImgExecuteQuery" />
 				<CommandFlag>TextChanges</CommandFlag>
@@ -532,6 +543,7 @@
 			<!-- 824 -->
 			<IDSymbol name="CmdIdNewDesignerQuery" value="0x0338" />
 			<IDSymbol name="CmdIdTraceRct" value="0x0339" />
+			<IDSymbol name="CmdIdValidateSolution" value="0x033A" />
 		</GuidSymbol>
 
 		<GuidSymbol name="ImagesGuid" value="{b9096f40-3268-4397-a5ec-8827624c447d}" >

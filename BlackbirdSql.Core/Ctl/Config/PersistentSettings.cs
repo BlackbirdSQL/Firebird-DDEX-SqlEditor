@@ -159,14 +159,6 @@ public abstract class PersistentSettings : IBPersistentSettings
 	public static bool ShowDiagramPane => (bool)GetSetting("DdexGeneralShowDiagramPane", true);
 
 
-	// Ddex GeneralSettingsModel
-	public static bool ValidateSolution => (bool)GetSetting("DdexGeneralValidateSolution", true);
-	public static bool PersistentValidation => (bool)GetSetting("DdexGeneralPersistentValidation", true);
-	public static bool ValidateConfig => (bool)GetSetting("DdexGeneralValidateConfig", true);
-	public static bool ValidateEdmx => (bool)GetSetting("DdexGeneralValidateEdmx", true);
-
-
-
 	#endregion Property Accessors
 
 

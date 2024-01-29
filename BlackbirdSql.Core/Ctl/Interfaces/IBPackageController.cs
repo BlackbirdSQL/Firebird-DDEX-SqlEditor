@@ -78,6 +78,10 @@ public interface IBPackageController : IVsSolutionEvents3, // IVsSolutionEvents2
 
 	DTE Dte { get; }
 
+	object SolutionObject { get; }
+
+	bool SolutionValidating {  get; }
+
 	IVsSolution VsSolution { get; }
 
 	public bool IsToolboxInitialized { get; }
@@ -118,6 +122,8 @@ public interface IBPackageController : IVsSolutionEvents3, // IVsSolutionEvents2
 	Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class;
 
 	void RegisterMiscHierarchy(IVsUIHierarchy hierarchy);
+
+	void ValidateSolution();
 
 	void OnLoadSolutionOptions(Stream stream);
 

@@ -4,6 +4,7 @@
 
 using System;
 using System.Data.Common;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,6 +12,7 @@ using BlackbirdSql.Controller;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.ComponentModel;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
@@ -75,8 +77,14 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 // [ProvideLoadKey("Standard", "1.0", "DDEX Provider for BlackbirdClient", "..", 999)]
 
 // We start loading as soon as the VS shell is available.
-[ProvideAutoLoad(VSConstants.UICONTEXT.ShellInitialized_string, PackageAutoLoadFlags.BackgroundLoad)]
-[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.BackgroundLoad)]
+// [ProvideAutoLoad(VSConstants.UICONTEXT.ShellInitialized_string, PackageAutoLoadFlags.BackgroundLoad)]
+
+[ProvideAutoLoad(SystemData.UIContextGuid, PackageAutoLoadFlags.BackgroundLoad)]
+[ProvideUIContextRule(SystemData.UIContextGuid,
+	name: "BlackbirdSql UIContext Autoload",
+	expression: "(ShellInit | SolutionModal)",
+	termNames: ["ShellInit", "SolutionModal"],
+	termValues: [VSConstants.UICONTEXT.ShellInitialized_string, VSConstants.UICONTEXT.SolutionOpening_string])]
 
 // Not used
 // [ProvideMenuResource(1000, 1)] TBC
@@ -109,6 +117,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 #region							BlackbirdSqlDdexExtension Class Declaration
 //
 // =========================================================================================================
+[Guid(SystemData.PackageGuid)]
 public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 {
 
@@ -135,6 +144,13 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 	}
 
 
+
+	static BlackbirdSqlDdexExtension()
+	{
+		CacheInvariant();
+	}
+
+
 	#endregion Constructors / Destructors
 
 
@@ -144,6 +160,8 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 	#region Property accessors - BlackbirdSqlDdexExtension
 	// =========================================================================================================
 
+
+	public override bool InvariantResolved => _InvariantResolved;
 
 	/// <summary>
 	/// Accessor to user options at this level of the <see cref="IBAsyncPackage"/> class hierarchy.
@@ -159,6 +177,39 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 	// =========================================================================================================
 	#region Method Implementations - BlackbirdSqlDdexExtension
 	// =========================================================================================================
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Adds FirebirdClient to assembly cache
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private static void CacheInvariant()
+	{
+		if (!DbProviderFactoriesEx.AddAssemblyToCache(SystemData.Invariant, 
+			Resources.Provider_ShortDisplayName, Resources.Provider_DisplayName,
+			typeof(FirebirdClientFactory).AssemblyQualifiedName))
+		{
+			_InvariantResolved = true;
+			return;
+		}
+
+		AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
+		{
+			if (args.Name == typeof(FirebirdClientFactory).Assembly.FullName)
+			{
+				// if (!_InvariantResolved)
+				//	Tracer.Trace(typeof(BlackbirdSqlDdexExtension), "CacheInvariant()", "Assembly resolved: {0}.", args.Name);
+
+				_InvariantResolved = true;
+				return typeof(FirebirdClientFactory).Assembly;
+			}
+
+			return null;
+		};
+
+	}
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -205,6 +256,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 
 
 
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Asynchronous initialization of the package
@@ -221,29 +273,8 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 	{
 		await base.InitializeAsync(cancellationToken, progress);
 
-
 		// Moved to main thread
 		// Services.AddService(typeof(IBProviderObjectFactory), ServicesCreatorCallbackAsync, promote: true);
-
-		// Add FirebirdClient to assembly cache
-		if (_InvariantAssembly == null && DbProviderFactoriesEx.AddAssemblyToCache(typeof(FirebirdClientFactory),
-			Resources.Provider_ShortDisplayName, Resources.Provider_DisplayName))
-		{
-			_InvariantAssembly = typeof(FirebirdClientFactory).Assembly;
-
-			AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
-			{
-				if (args.Name == _InvariantAssembly.FullName)
-				{
-					// if (!_InvariantResolved)
-					// 	Tracer.Information(GetType(), "InitializeAsync()", "Invariant assembly resolved: {0}.", _InvariantAssembly.FullName);
-					_InvariantResolved = true;
-					return _InvariantAssembly;
-				}
-
-				return null;
-			};
-		}
 
 
 		// Perform any final initialization tasks.
@@ -275,7 +306,6 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 			return;
 
 		// Load all packages settings models and propogate throughout the extension hierarchy.
-
 		PropagateSettings();
 
 		// Add provider object and schema factories

@@ -33,10 +33,6 @@ public class MonikerAgent
 	#region Constants - MonikerAgent
 	// ---------------------------------------------------------------------------------
 
-	protected const string C_ServiceFolder = "ServerxExplorer";
-	protected const string C_TempSqlFolder = "SqlTemporaryFiles";
-	protected const string C_DatasetKeyFmt = "{0} ({1})";
-	private const char C_CompositeSeparator = '.';
 
 	#endregion Constants
 
@@ -126,7 +122,7 @@ public class MonikerAgent
 
 
 
-	public string[] Identifier => ObjectName.Split(C_CompositeSeparator);
+	public string[] Identifier => ObjectName.Split(SystemData.CompositeSeparator);
 
 
 	/// <summary>
@@ -354,8 +350,8 @@ public class MonikerAgent
 	{
 		string path = appDataPath;
 
-		path = Path.Combine(path, C_ServiceFolder);
-		path = Path.Combine(path, C_TempSqlFolder);
+		path = Path.Combine(path, SystemData.ServiceFolder);
+		path = Path.Combine(path, SystemData.TempSqlFolder);
 
 		// Tracer.Trace(typeof(MonikerAgent), "ConstructFullTemporaryDirectory()", "TemporaryDirectory: {0}", path);
 
@@ -411,10 +407,10 @@ public class MonikerAgent
 				_ObjectName = identifier[0] != null ? identifier[0].ToString() : "";
 				for (int i = 1; i < identifier.Length; i++)
 				{
-					_ObjectName += C_CompositeSeparator
+					_ObjectName += SystemData.CompositeSeparator
 						+ (identifier[i] != null ? identifier[i].ToString() : "");
 				}
-				_ObjectName = _ObjectName.Trim(C_CompositeSeparator);
+				_ObjectName = _ObjectName.Trim(SystemData.CompositeSeparator);
 			}
 		}
 	}
@@ -682,7 +678,7 @@ public class MonikerAgent
 			_ObjectName = identifier[0] != null ? identifier[0].ToString() : "";
 			for (int i = 1; i < identifier.Length; i++)
 			{
-				_ObjectName += C_CompositeSeparator
+				_ObjectName += SystemData.CompositeSeparator
 					+ (identifier[i] != null ? identifier[i].ToString() : "");
 			}
 		}
@@ -752,7 +748,7 @@ public class MonikerAgent
 		string str = StringUtils.Serialize64(Database.ToLowerInvariant());
 		// string str = JsonConvert.SerializeObject(Database.ToLowerInvariant());
 
-		string moniker = C_DatasetKeyFmt.FmtRes(DataSource, str);
+		string moniker = SystemData.DatasetKeyFmt.FmtRes(DataSource, str);
 
 		moniker = moniker.Replace("\\", "."); // "{backslash}");
 		moniker = moniker.Replace("/", "."); // "{slash}");

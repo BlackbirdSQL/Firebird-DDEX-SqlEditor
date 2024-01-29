@@ -6,6 +6,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.Common;
 using System.Reflection;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 
 namespace BlackbirdSql.Core.Ctl.Extensions;
@@ -20,8 +21,7 @@ public static class DbProviderFactoriesEx
 	/// Adds the Firebird client FirebirdSql.Data.FirebirdClient as a DotNet DBProviderFactory
 	/// in the local assembly cache to avoid the gac using DbProviderFactories directly
 	/// </summary>
-
-	public static bool AddAssemblyToCache(Type factoryClass, string factoryName, string factoryDescription)
+	public static bool AddAssemblyToCache(string invariant, string factoryName, string factoryDescription, string assemblyQualifiedName)
 	{
 		/*
 		 * Spreading this code out for brevity
@@ -46,31 +46,31 @@ public static class DbProviderFactoriesEx
 		 *										FirebirdSql.Data.FirebirdClient, Version=9.1.1.0, Culture=neutral,
 		 *										PublicKeyToken=3750abcc3150b00c
 		*/
+
+
 		DataTable table = DbProviderFactories.GetFactoryClasses();
 
-		string invariantName = factoryClass.Assembly.GetName().Name;
+		DataRow row = table.Rows.Find(invariant);
 
-		if ((_ = table.Rows.Find(invariantName)) != null)
+		if (row != null)
 		{
-			/*
-			// Diag.Trace(
-				String.Format("'DbProviderFactories' section (Columns:{0}) aready contains [{1}:{2}:{3}:{4}] as [{5}:{6}:{7}:{8}]",
-				table.Columns.Count, invariantName, factoryName, factoryDescription, factoryClass.AssemblyQualifiedName,
+			Diag.DebugTrace("DbProviderFactoriesEx::AddAssemblyToCache()\n"
+				+ string.Format("'DbProviderFactories' section (Columns:{0}) aready contains [{1}::{2}::{3}::{4}] as [{5}::{6}::{7}::{8}]",
+				table.Columns.Count, invariant, factoryName, factoryDescription, assemblyQualifiedName,
 				row[2].ToString(), row[0].ToString(), row[1].ToString(), row[3].ToString()));
-			*/
 
 			table.Dispose();
 
 			return false;
 		}
 
-		// Diag.Trace(
-		//	string.Format("Adding FirebirdSql in DbProviderFactories section (Columns:{0}) [{1}:{2}:{3}:{4}]",
-		//	table.Columns.Count, invariantName, factoryName, factoryDescription, factoryClass.AssemblyQualifiedName));
+		// Diag.DebugTrace(String.Format("Adding FirebirdSql in DbProviderFactories section (Columns:{0}) [{1}::{2}::{3}::{4}]",
+		//	table.Columns.Count, invariant, factoryName, factoryDescription, assemblyQualifiedName));
+
 		table.BeginLoadData();
 
 
-		table.Rows.Add(factoryName, factoryDescription, invariantName, factoryClass.AssemblyQualifiedName);
+		table.Rows.Add(factoryName, factoryDescription, invariant, assemblyQualifiedName);
 
 		table.EndLoadData();
 		table.AcceptChanges();
@@ -83,9 +83,9 @@ public static class DbProviderFactoriesEx
 
 
 	/// <summary>
-	/// Another way of adding to local assembly cache using ConfigurationManager
+	/// Another way of adding to local assembly cache using ConfigurationManager.
 	/// </summary>
-	public static bool AddAssemblyToCache2(Type factoryClass, string factoryName, string factoryDescription)
+	public static bool AddAssemblyInConfigurationManager(string invariant, string factoryName, string factoryDescription, string assemblyQualifiedName)
 	{
 		// Diag.Trace();
 
@@ -108,35 +108,36 @@ public static class DbProviderFactoriesEx
 		 *										PublicKeyToken=3750abcc3150b00c
 		*/
 
-		string invariantName = factoryClass.Assembly.GetName().Name;
-
 		if (ConfigurationManager.GetSection("system.data") is not DataSet dataSet)
 		{
 			Exception ex = new Exception("No \"system.data\" section found in configuration manager!");
-			Diag.Dug(ex);
+			Diag.DebugDug(ex);
 			throw ex;
 		}
 
 		int num = dataSet.Tables.IndexOf("DbProviderFactories");
-		// DataRow row;
 
 		DataTable table;
+		DataRow row;
+
+
 		if (num == -1)
 		{
-			// Diag.Trace(string.Format("Adding \"{0}\" section to assembly cache", "DbProviderFactories"));
+			Diag.DebugTrace(string.Format("Adding \"{0}\" section to assembly cache", "DbProviderFactories"));
 			table = dataSet.Tables.Add("DbProviderFactories");
 			dataSet.AcceptChanges();
 		}
 		else
 		{
 			table = dataSet.Tables[num];
-			// if ((row = table.Rows.Find(invariantName)) != null)
-			if (table.Rows.Find(invariantName) != null)
+			row = table.Rows.Find(invariant);
+
+			if (row != null)
 			{
-				// Diag.Trace(
-				//	string.Format("'DbProviderFactories' section (Columns:{0}) aready contains [{1}:{2}:{3}:{4}] as [{5}:{6}:{7}:{8}]",
-				//	table.Columns.Count, invariantName, factoryName, factoryDescription, factoryClass.AssemblyQualifiedName,
-				//	row[2].ToString(), row[0].ToString(), row[1].ToString(), row[3].ToString()));
+				Diag.DebugTrace("DbProviderFactoriesEx::AddAssemblyInConfigurationManager()\n"
+					+ string.Format("'DbProviderFactories' section (Columns:{0}) already contains [{1}::{2}::{3}::{4}] as [{5}::{6}::{7}::{8}]",
+					table.Columns.Count, invariant, factoryName, factoryDescription, assemblyQualifiedName,
+					row[2].ToString(), row[0].ToString(), row[1].ToString(), row[3].ToString()));
 
 				table.Dispose();
 
@@ -146,20 +147,19 @@ public static class DbProviderFactoriesEx
 
 		}
 
-		// Diag.Trace(
-		//	String.Format("Adding FirebirdSql in DbProviderFactories section (Columns:{0}) [{1}:{2}:{3}:{4}]",
-		// 	table.Columns.Count, invariantName, factoryName, factoryDescription, factoryClass.AssemblyQualifiedName));
+		// Diag.DebugTrace(String.Format("Adding FirebirdSql in DbProviderFactories section (Columns:{0}) [{1}:{2}:{3}:{4}]",
+		//	table.Columns.Count, invariant, factoryName, factoryDescription, assemblyQualifiedName));
 
 		table.BeginLoadData();
 
-		table.Rows.Add(factoryName, factoryDescription, invariantName, factoryClass.AssemblyQualifiedName);
+		table.Rows.Add(factoryName, factoryDescription, invariant, assemblyQualifiedName);
 
 		table.EndLoadData();
 		table.AcceptChanges();
+		dataSet.AcceptChanges();
 
 		table.Dispose();
-
-		dataSet.AcceptChanges();
+		dataSet.Dispose();
 
 		return true;
 	}

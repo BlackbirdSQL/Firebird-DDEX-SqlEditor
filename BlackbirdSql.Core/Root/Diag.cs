@@ -4,6 +4,7 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -51,7 +52,7 @@ public static class Diag
 	private static readonly object _LockClass = new();
 	private static int _InternalActive = 0;
 	private static int _TaskLogActive = 0;
-
+	private static int _IgnoreSettings = 0;
 
 	static string _Context = "APP";
 
@@ -169,7 +170,7 @@ public static class Diag
 		int sourceLineNumber = -1)
 #endif
 	{
-		if (!isException && !EnableDiagnostics && !EnableTrace)
+		if (_IgnoreSettings == 0 && !isException && !EnableDiagnostics && !EnableTrace)
 			return;
 
 		int pos;
@@ -181,8 +182,12 @@ public static class Diag
 
 		lock (_LockClass)
 		{
+#if DEBUG
+			enableDiagnosticsLog = EnableDiagnosticsLog || (_IgnoreSettings > 0);
+#else
 			enableDiagnosticsLog = EnableDiagnosticsLog;
-			enableTaskLog = EnableTaskLog;
+#endif
+			enableTaskLog = EnableTaskLog || (_IgnoreSettings > 0);
 
 			try
 			{
@@ -585,7 +590,15 @@ public static class Diag
 		lock (_LockClass)
 			_InternalActive++;
 
-		Dug(true, ex.Message + " " + message, memberName, sourceFilePath, sourceLineNumber);
+		_IgnoreSettings++;
+
+		try
+		{
+			Dug(true, ex.Message + " " + message, memberName, sourceFilePath, sourceLineNumber);
+		}
+		catch { }
+
+		_IgnoreSettings--;
 
 		lock (_LockClass)
 			_InternalActive--;
@@ -667,14 +680,22 @@ public static class Diag
 		int sourceLineNumber = -1)
 #endif
 	{
-		if (!EnableTrace)
-			return;
+		// if (!EnableTrace)
+		//	return;
 
 
 		lock (_LockClass)
 			_InternalActive++;
 
-		Dug(false, message, memberName, sourceFilePath, sourceLineNumber);
+		_IgnoreSettings++;
+
+		try
+		{
+			Dug(false, message, memberName, sourceFilePath, sourceLineNumber);
+		}
+		catch { }
+
+		_IgnoreSettings--;
 
 		lock (_LockClass)
 			_InternalActive--;
@@ -724,7 +745,7 @@ public static class Diag
 					+ $"\n\t\tIsExpandable: {node.IsExpandable}, IsExpanding: {node.IsExpanding}, IsRefreshing: {node.IsRefreshing}, "
 					+ $"\n\t\tIsDiscarded: {node.IsDiscarded}, IsExpanded: {node.IsExpanded}, IsPlaced: {node.IsPlaced}, IsVisible: {node.IsVisible}";
 
-				if (node.Object != null)
+				if (Reflect.GetFieldValue(node, "_object", BindingFlags.Instance | BindingFlags.NonPublic) != null)
 				{
 					string datasetKey = (string)(node.Object.Properties != null
 						&& node.Object.Properties.ContainsKey(CoreConstants.C_KeyExDatasetKey)
@@ -967,6 +988,9 @@ public static class Diag
 
 		if (_OutputPane == null)
 		{
+			if (_IgnoreSettings > 0)
+				return;
+
 			NullReferenceException ex = new("OutputWindowPane is null");
 
 			lock (_LockClass)
@@ -990,6 +1014,9 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
+				if (_IgnoreSettings > 0)
+					return;
+
 				lock (_LockClass)
 				{
 					_TaskLogActive++;
@@ -1008,6 +1035,9 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
+				if (_IgnoreSettings > 0)
+					return;
+
 				lock (_LockClass)
 				{
 					_TaskLogActive++;
@@ -1095,6 +1125,6 @@ public static class Diag
 		}
 	}
 
-	#endregion Methods
+#endregion Methods
 
 }

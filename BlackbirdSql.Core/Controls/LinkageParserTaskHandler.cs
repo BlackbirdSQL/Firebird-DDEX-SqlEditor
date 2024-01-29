@@ -2,6 +2,7 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+using System.Data;
 using System.Data.Common;
 using System.Threading;
 using System.Threading.Tasks;
@@ -92,7 +93,7 @@ public class LinkageParserTaskHandler : IBTaskHandlerClient
 	/// Instance() static to create or retrieve a parser for a connection or Site.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public LinkageParserTaskHandler(DbConnection connection)
+	public LinkageParserTaskHandler(IDbConnection connection)
 	{
 		// Tracer.Trace(GetType(), "LinkageParserTaskHandle.LinkageParserTaskHandle");
 		CsbAgent csa = RctManager.CloneRegistered(connection);

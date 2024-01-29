@@ -8,11 +8,14 @@ using System;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Globalization;
+using System.Reflection;
 using System.Text;
 
 using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Model;
+using static System.Windows.Forms.AxHost;
 
 
 namespace BlackbirdSql.Core.Ctl.Diagnostics;
@@ -156,25 +159,26 @@ internal class Tracer : IBTrace // , IBExportable
 
 	private static void LogTrace(string type, string traceLevel, string functionName, string format, params object[] args)
 	{
+		MethodBase methodBase;
 		string method = null;
 		string filename = null;
 		int lineno = int.MinValue;
 
-		for (int i = 1; i < 4; i++)
+		for (int i = 1; i < 8; i++)
 		{
 			StackFrame frame = new StackTrace(i, true).GetFrame(0);
-			if (frame == null)
-				break;
 
-			if (frame.GetMethod() == null || frame.GetFileName() == null)
-				break;
+			methodBase = frame?.GetMethod();
+			method = methodBase?.Name;
+			filename = frame?.GetFileName();
+			lineno = frame != null ? frame.GetFileLineNumber() : int.MinValue;
 
-			method = frame.GetMethod().Name;
-			filename = frame.GetFileName();
-			lineno = frame.GetFileLineNumber();
+			if (frame == null || methodBase == null || method == null || filename == null)
+				break;
 
 			if (!filename.EndsWith("\\Tracer.cs", StringComparison.OrdinalIgnoreCase)
-				|| (method != "Trace" && method != "Warning" && method != "Information"))
+				|| (method != "Trace" && method != "Warning" && method != "Information"
+				 && method != "LogTrace"))
 			{
 				break;
 			}
@@ -226,7 +230,7 @@ internal class Tracer : IBTrace // , IBExportable
 		{
 			Trace(type, traceEventTypeForTraceLevel, functionName, format, args);
 		}
-		else if (PersistentSettings.EnableTracer)
+		else if (PersistentSettings.EnableTracer || traceLevel < EnLevel.Information)
 		{
 			LogTrace(type, traceLevel.ToString(), functionName, format, args);
 		}
@@ -235,7 +239,7 @@ internal class Tracer : IBTrace // , IBExportable
 
 	private static void Trace(string type, TraceEventType eventType, string functionName, string format, params object[] args)
 	{
-		if (PersistentSettings.EnableTracer)
+		if (PersistentSettings.EnableTracer || eventType < TraceEventType.Information)
 		{
 			LogTrace(type, eventType.ToString(), functionName, format, args);
 		}

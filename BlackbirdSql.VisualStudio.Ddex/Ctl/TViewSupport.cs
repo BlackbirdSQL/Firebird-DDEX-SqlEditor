@@ -621,21 +621,6 @@ public class TViewSupport : DataViewSupport,
 	{
 		// Tracer.Trace(GetType(), "OnNodeChanged()");
 
-		// This is proof that all is not what it seems. This condition is never true until
-		// you remove the assembly load statement.
-		// On startup of VS, if an xsd or edmx is in an open state or the SE is pinned
-		// on the first solution opened, there are instances where class references will
-		// exist but their assemblies are not yet loaded. This can happen here for the
-		// invariant.
-		// By simply placing a load statement here the runtime will resolve and load
-		// the assembly before we even reach this statement.
-
-		if (!Core.Controller.InvariantResolved)
-		{
-			Tracer.Information(GetType(), "OnNodeChanged()", "Invariant is unresolved. Loading: {0}", typeof(FirebirdClientFactory).Assembly.FullName);
-			Assembly.Load(typeof(FirebirdClientFactory).Assembly.FullName);
-		}
-
 		if (e.Node == null || (!e.Node.IsRefreshing && !e.Node.IsExpanding)
 			|| e.Node.ExplorerConnection == null
 			|| e.Node.ExplorerConnection.Connection == null
@@ -658,8 +643,14 @@ public class TViewSupport : DataViewSupport,
 
 			if (parser != null)
 			{
-				if (parser.Loaded)
+				// Not guaranteed but if all properties are the same it's 99% likely
+				// this is a user refresh. For the 1% the linkage tables will be redundantly rebuilt.
+				if (parser.Loaded &&
+					CsbAgent.AreEquivalent(DataProtection.DecryptString(site.EncryptedConnectionString),
+						parser.ConnectionString, CsbAgent.DescriberKeys))
+				{
 					LinkageParser.DisposeInstance(site, false);
+				}
 			}
 			else
 			{
@@ -681,6 +672,8 @@ public class TViewSupport : DataViewSupport,
 
 	private void OnNodeExpandedOrRefreshed(object sender, DataExplorerNodeEventArgs e)
 	{
+		// Tracer.Trace(GetType(), "OnNodeExpandedOrRefreshed");
+
 		if (!e.Node.HasBeenExpanded || e.Node.ExplorerConnection == null
 			|| e.Node.ExplorerConnection.Connection == null
 			|| e.Node.ExplorerConnection.ConnectionNode == null
@@ -689,7 +682,6 @@ public class TViewSupport : DataViewSupport,
 			return;
 		}
 
-		// Tracer.Trace(GetType(), "OnNodeExpandedOrRefreshed");
 
 		IVsDataConnection site = e.Node.ExplorerConnection.Connection;
 

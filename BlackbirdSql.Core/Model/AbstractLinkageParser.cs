@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Reflection;
 using System.Text;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model.Interfaces;
@@ -54,7 +55,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// </summary>
 	/// <param name="connection"></param>
 	// ---------------------------------------------------------------------------------
-	protected AbstractLinkageParser(FbConnection connection, AbstractLinkageParser rhs) : base()
+	protected AbstractLinkageParser(IDbConnection connection, AbstractLinkageParser rhs) : base()
 	{
 		// Tracer.Trace(typeof(AbstractLinkageParser), $"AbstractLinkageParser(FbConnection, AbstractLinkageParser)");
 
@@ -63,7 +64,11 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		_Instances ??= [];
 		_Instances.Add(connection, this);
 
-		connection.Disposed += OnConnectionDisposed;
+		// Use reflection. The connection may not be in our app domain.
+		Reflect.AddEventHandler(this, "OnConnectionDisposed", BindingFlags.Instance | BindingFlags.NonPublic,
+			connection, "Disposed", BindingFlags.Instance | BindingFlags.Public);
+		// connection.Disposed += OnConnectionDisposed;
+
 		_InstanceConnection = connection;
 
 
@@ -102,7 +107,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// </param>
 	/// <returns>The distinctly unique parser associated with the db connection.</returns>
 	// ---------------------------------------------------------------------------------
-	protected static AbstractLinkageParser GetInstance(FbConnection connection)
+	protected static AbstractLinkageParser GetInstance(IDbConnection connection)
 	{
 		// Tracer.Trace(typeof(AbstractLinkageParser), "GetInstance(FbConnection)");
 
@@ -142,19 +147,20 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// <summary>
 	/// Disposes of a parser..
 	/// </summary>
-	/// <param name="disposing">
-	/// True if this is a normal disposal and a transient
-	/// parser should be stored else false.
+	/// <param name="isValidTransient">
+	/// False if this is a user refresh and a transient parser should not be stored else
+	/// True.
 	/// </param>
 	/// <returns>True of the parser was found and disposed else false.</returns>
-	protected override bool Dispose(bool disposing)
+	protected override bool Dispose(bool isValidTransient)
 	{
 		// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "Disabling instance");
 
 		if (_InstanceConnection == null || _Instances == null)
 			return false;
 
-		if (disposing && _Enabled &&  (Loaded || _LinkStage >= EnLinkStage.TriggerDependenciesLoaded))
+		if (isValidTransient && _Enabled && !_IsIntransient
+			&&  (Loaded || _LinkStage >= EnLinkStage.TriggerDependenciesLoaded))
 		{
 			// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "Removing instance and cloning to Transient");
 
@@ -170,8 +176,11 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 			Disable();
 		}
 
-		if (!disposing)
+		if (!isValidTransient)
+		{
 			_TransientParser = null;
+			InvalidateEquivalentParsers(_InstanceConnection.ConnectionString);
+		}
 
 		_Instances.Remove(_InstanceConnection);
 
@@ -192,12 +201,12 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// <param name="site">
 	/// The IVsDataConnection explorer connection object
 	/// </param>
-	/// <param name="disposing">
-	/// True if this is a permanent disposal and a transient parser should not
-	/// be stored else false.
+	/// <param name="isValidTransient">
+	/// False if this is a user refresh and a transient parser should not be stored else
+	/// True.
 	/// </param>
 	/// <returns>True of the parser was found and disposed else false.</returns>
-	protected static bool DisposeInstance(FbConnection connection, bool disposing)
+	protected static bool DisposeInstance(FbConnection connection, bool isValidTransient)
 	{
 		// Tracer.Trace(typeof(AbstractLinkageParser), "DisposeInstance(FbConnection)");
 
@@ -210,7 +219,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 			if (obj is not AbstractLinkageParser parser)
 				return false;
 
-			parser.Dispose(disposing);
+			parser.Dispose(isValidTransient);
 		}
 
 		return true;
@@ -259,14 +268,22 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	protected static Type _SchemaFactoryType = null;
 
 	protected static AbstractLinkageParser _TransientParser = null;
+	protected bool _IsIntransient = false;
 
-	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// The db connection asociated with this LinkageParser
+	/// The working db connection associated with this LinkageParser
 	/// </summary>
-	// ---------------------------------------------------------------------------------
 	protected FbConnection _DbConnection = null;
-	protected FbConnection _InstanceConnection = null;
+
+	/// <summary>
+	/// The SE db connection associated with this LinkageParser. This object may be
+	/// incorrectly created by the ide from a user project invariant assembly if an
+	/// edmx is open on ide startup, so it's primary purpose is to serve as an index
+	/// to the instance table and supply a connection string.
+	/// Also, because of the possible assembly mismatch, subscribing to it's dispose
+	/// event has to done through Reflection.
+	/// </summary>
+	protected IDbConnection _InstanceConnection = null;
 
 
 	protected string _ConnectionUrl = null;
@@ -289,7 +306,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// Per connection LinkageParser instances xref.
 	/// _Instances must be accessed within _LockClass code logic.
 	/// </summary>
-	private static Dictionary<FbConnection, object> _Instances = null;
+	private static Dictionary<IDbConnection, object> _Instances = null;
 
 
 	/// <summary>
@@ -364,6 +381,10 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	protected bool ConnectionActive => _DbConnection != null
 		&& (_DbConnection.State & ConnectionState.Open) != 0
 		&& (_DbConnection.State & (ConnectionState.Closed | ConnectionState.Broken)) == 0;
+
+
+	public string ConnectionString => _InstanceConnection?.ConnectionString;
+
 
 	/// <summary>
 	/// Getter indicating whether or not linkage has completed. !Loaded differs
@@ -912,9 +933,9 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 
 
-	protected static AbstractLinkageParser FindEquivalentParser(FbConnection connection)
+	protected static AbstractLinkageParser FindEquivalentParser(IDbConnection connection)
 	{
-		if (_TransientParser != null)
+		if (_TransientParser != null && !_TransientParser._IsIntransient)
 		{			
 			if (CsbAgent.CreateConnectionUrl(connection) == _TransientParser._ConnectionUrl)
 			{
@@ -954,12 +975,12 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 		int i = -1;
 
-		foreach (KeyValuePair<FbConnection, object> pair in _Instances)
+		foreach (KeyValuePair<IDbConnection, object> pair in _Instances)
 		{
 			i++;
 			AbstractLinkageParser parser = (AbstractLinkageParser)pair.Value;
 
-			if (!parser._Enabled)
+			if (!parser._Enabled || parser._IsIntransient)
 				continue;
 
 			csa1 ??= new(connectionString);
@@ -1146,6 +1167,54 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 		return _Triggers;
 
+	}
+
+
+
+	// If a parser has been refreshed all other parsers with weak equivalency must be invalidated
+	// as potential transients so that they cannot be used.
+	protected static void InvalidateEquivalentParsers(string connectionString)
+	{
+		// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()");
+
+		if (_Instances == null)
+		{
+			// Tracer.Trace(typeof(AbstractLinkageParser), "InvalidateEquivalentParsers()", "Not found. _Instances is null.");
+			return;
+		}
+
+		CsbAgent csa1 = null;
+		CsbAgent csa2;
+
+		// Tracer.Trace(typeof(AbstractLinkageParser), "InvalidateEquivalentParsers()", "Searching instances. Count: {0}.", _Instances.Count);
+
+		int i = -1;
+
+		foreach (KeyValuePair<IDbConnection, object> pair in _Instances)
+		{
+			i++;
+			AbstractLinkageParser parser = (AbstractLinkageParser)pair.Value;
+
+			if (!parser._Enabled)
+				continue;
+
+			csa1 ??= new(connectionString);
+
+			try
+			{
+				csa2 = new(pair.Key.ConnectionString);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				continue;
+			}
+
+			if (CsbAgent.AreEquivalent(csa1, csa2, CsbAgent.WeakEquivalencyKeys))
+				parser._IsIntransient = true;
+		}
+
+		return;
 	}
 
 

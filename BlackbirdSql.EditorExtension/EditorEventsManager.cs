@@ -330,13 +330,13 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 
 		// Tracer.Trace(GetType(), "RemoveTemporarySqlItem()");
 
-		if (projectItem.FileCount == 0 || Kind(projectItem.Kind) != "MiscItem")
+		if (projectItem.FileCount == 0 || UnsafeCmd.Kind(projectItem.Kind) != "MiscItem")
 			return false;
 
 		bool deleted = false;
 		// FileNames is 1 based indexing - How/Why??? - A VB team did this!
 		string path = projectItem.FileNames[1];
-		
+
 
 		if (path.EndsWith(SystemData.Extension, StringComparison.InvariantCultureIgnoreCase))
 		{

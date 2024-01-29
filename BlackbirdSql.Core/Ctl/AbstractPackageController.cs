@@ -356,6 +356,10 @@ public abstract class AbstractPackageController : IBPackageController
 
 	public DTE Dte => _DdexPackage.Dte;
 
+	public object SolutionObject => Dte.Solution;
+
+	public abstract bool SolutionValidating { get; }
+
 
 	public IVsSolution VsSolution => _DdexPackage.VsSolution;
 
@@ -632,12 +636,26 @@ public abstract class AbstractPackageController : IBPackageController
 	}
 
 
+	public abstract void ValidateSolution();
+
+
+	#endregion Methods
+
+
+
+
+
+	// =========================================================================================================
+	#region General Event handling - AbstractPackageController
+	// =========================================================================================================
+
 
 	public int OnNewQueryRequested(IVsDataViewHierarchy site, EnNodeSystemType nodeSystemType) => _OnNewQueryRequestedEvent != null
 	? _OnNewQueryRequestedEvent(site, nodeSystemType) : VSConstants.E_NOTIMPL;
 
 
-	#endregion Methods
+	#endregion General Event handling
+
 
 
 

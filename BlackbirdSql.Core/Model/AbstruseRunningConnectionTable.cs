@@ -6,12 +6,11 @@ using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Linq;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Ctl.Diagnostics;
@@ -263,7 +262,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 	private bool AdviseServerExplorerConnectionsEvents()
 	{
-		// Tracer.Trace(GetType(), "LoadServerExplorerConfiguredConnections()", "Executing Siting connections");
+		// Tracer.Trace(GetType(), "AdviseServerExplorerConnectionsEvents()");
 
 		IVsDataExplorerConnectionManager manager =
 			(Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
@@ -283,6 +282,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 			try
 			{
+				// Tracer.Trace(GetType(), "AdviseServerExplorerConnectionsEvents()", "Advising SE events for: {0}.", pair.Key);
+
 				object viewSupport = Reflect.GetPropertyValue(explorerConnection, "ViewSupport",
 					System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
 
@@ -358,8 +359,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	public bool AsyncAdviseServerExplorerConnectionsEvents()
 	{
-		// Tracer.Trace(GetType(), "AsyncLoadConfiguredConnections()", "Probject? {0}, _LoadingAsyncCardinal: {1}.",
-		//	probject == null ? "probject == null" : "probject != null", _LoadingAsyncCardinal);
+		// Tracer.Trace(GetType(), "AsyncAdviseServerExplorerConnectionsEvents()");
 
 		// Sanity checks.
 
@@ -420,7 +420,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	public bool AsyncLoadConfiguredConnections(object probject)
 	{
 		// Tracer.Trace(GetType(), "AsyncLoadConfiguredConnections()", "Probject? {0}, _LoadingAsyncCardinal: {1}.",
-		//	probject == null ? "probject == null" : "probject != null", _LoadingAsyncCardinal);
+		// 	probject == null ? "probject == null" : "probject != null", _LoadingAsyncCardinal);
 
 		if (!PersistentSettings.IncludeAppConnections)
 			return false;
@@ -526,6 +526,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			_AsyncPayloadLauncherTokenSource = null;
 			_LoadingAsyncCardinal--;
 			_AsyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Inactive;
+
+			// Tracer.Trace(GetType(), "ClearAsyncPayloadLauncher()", "_LoadingAsyncCardinal is {0}.", _LoadingAsyncCardinal);
 		}
 	}
 
@@ -922,6 +924,9 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			ConnectionKey = connectionName
 		};
 
+		if (connectionName.StartsWith("Database[\"") && connectionName.EndsWith("\"]"))
+			connectionName = connectionName[10..^2];
+
 
 		// Tracer.Trace(GetType(), "RegisterAppConnectionStrings()", "Updated csb datasource: {0}, serverName: {1}, connectionstring: {2}.", datasource, serverName, csa.ConnectionString);
 
@@ -976,8 +981,12 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		Diag.ThrowIfNotOnUIThread();
 
 
-		if (probject == null && Controller.Instance.Dte.Solution.Projects.Count == 0)
+		if (probject == null && (Controller.Instance.Dte.Solution == null
+			|| Controller.Instance.Dte.Solution.Projects == null
+			|| Controller.Instance.Dte.Solution.Projects.Count == 0))
+		{
 			return;
+		}
 
 		int count;
 		Project current;
@@ -1374,6 +1383,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			_AsyncPayloadLauncherTokenSource?.Dispose();
 			_AsyncPayloadLauncherTokenSource = new();
 			_AsyncPayloadLauncherToken = _AsyncPayloadLauncherTokenSource.Token;
+
+			// Tracer.Trace(GetType(), "PrepAsyncPayloadLauncher()", "_LoadingAsyncCardinal is {0}.", _LoadingAsyncCardinal);
 		}
 	}
 
@@ -1775,7 +1786,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		// unique connection url, which requires at a minimum DataSource, Database and
 		// UserID.
 
-		string connectionUrl = csa.SafeDatasetMoniker;
+		string connectionUrl = csa.DatasetMoniker;
 
 		// Sanity check.
 		if (connectionUrl == null)
@@ -2376,7 +2387,10 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			return;
 		}
 
-		IVsDataObject @object = e.Node.Object;
+
+		bool objectExists = (bool)Reflect.GetFieldValue(sender, "_gotRootObject", BindingFlags.Instance | BindingFlags.NonPublic);
+
+		IVsDataObject @object = objectExists ? e.Node.Object : null;
 
 		string datasetKey = @object != null && @object.Properties != null
 			&& @object.Properties.ContainsKey(CoreConstants.C_KeyExDatasetKey)
@@ -2384,9 +2398,6 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		if (datasetKey != null && datasetKey == e.Node.ExplorerConnection.DisplayName)
 			return;
-
-		// Tracer.Trace(GetType(), "OnExplorerConnectionNodeChanged()", "Renaming");
-
 
 		RctManager.ValidateAndUpdateExplorerConnectionRename(e.Node.ExplorerConnection, e.Node.ExplorerConnection.DisplayName);
 	}

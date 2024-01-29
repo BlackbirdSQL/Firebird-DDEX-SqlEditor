@@ -72,7 +72,31 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		IVsDataExplorerNode node;
 
 
-		if (commandId.Equals(CommandProperties.TraceRct))
+		if (commandId.Equals(CommandProperties.ValidateSolution))
+		{
+			cmd = new DataViewMenuCommand(itemId, commandId, delegate
+			{
+				// Tracer.Trace(GetType(), "CreateCommand()", "ValidateSolution");
+
+				// Tracer.Trace(GetType(), "CreateCommand()", "NewDesignerQuery itemid: {0}, commandid: {1} systemType {2}.", itemId, commandId.ID, nodeSystemType.ToString());
+
+				cmd.Visible = true;
+				cmd.Enabled = Controller.CanValidateSolution && !Controller.SolutionValidating;
+
+				if (cmd.Visible && !command.Properties.Contains("GotText")
+					&& (label = GlobalizeLabel(cmd, EnNodeSystemType.Global)) != string.Empty)
+				{
+					cmd.Properties["GotText"] = true;
+					cmd.Properties["Text"] = label;
+				}
+
+			}, delegate
+			{
+				OnValidateSolution(itemId);
+			});
+			command = cmd;
+		}
+		else if (commandId.Equals(CommandProperties.TraceRct))
 		{
 			cmd = new DataViewMenuCommand(itemId, commandId, delegate
 			{
@@ -358,6 +382,8 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 		if (cmd.CommandID.Equals(CommandProperties.NewDesignerQuery))
 			text = GetResourceString("New", type, "Designer");
+		else if (cmd.CommandID.Equals(CommandProperties.ValidateSolution))
+			text = GetResourceString("Validate", type, "Solution");
 
 		// Tracer.Trace(typeof(AbstractCommandProvider), "GlobalizeLabel(EnNodeSystemType)", "text: {0}", text);
 
@@ -570,6 +596,12 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	protected virtual void OnTraceRct(int itemId)
 	{
 		RctManager.TraceRct();
+	}
+
+
+	protected virtual void OnValidateSolution(int itemId)
+	{
+		Controller.ValidateSolution();
 	}
 
 

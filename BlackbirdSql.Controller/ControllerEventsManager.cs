@@ -110,14 +110,16 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 	private static IBEventsManager _Instance;
 
-	private int _RefCnt = 0;
+	// private int _RefCnt = 0;
 
 	// A sync call has taken over. Async is locked out or abort at the first opportunity.
 	private CancellationTokenSource _ValidationTokenSource = null;
 	private CancellationToken _ValidationToken;
 	private Task<bool> _ValidationTask;
 
-	private _dispReferencesEvents_ReferenceAddedEventHandler _ReferenceAddedEventHandler = null;
+	private static int _ValidationCardinal = 0;
+
+	// private _dispReferencesEvents_ReferenceAddedEventHandler _ReferenceAddedEventHandler = null;
 
 
 
@@ -129,6 +131,9 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	// =========================================================================================================
 	#region Property accessors - ControllerEventsManager
 	// =========================================================================================================
+
+
+	public static bool Validating => _ValidationCardinal > 0;
 
 
 	#endregion Property accessors
@@ -397,7 +402,10 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		try
 		{
 			if (userCancellationToken.IsCancellationRequested || asyncCancellationToken.IsCancellationRequested)
+			{
+				_ValidationCardinal--;
 				return false;
+			}
 
 			Stopwatch stopwatch = new();
 
@@ -423,6 +431,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			if (userCancellationToken.IsCancellationRequested)
 			{
 				UpdateStatusBar("Cancelled BlackbirdSql solution validation", true);
+				_ValidationCardinal--;
 				return false;
 			}
 
@@ -433,11 +442,14 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			// _TaskHandler = null;
 			// _ProgressData = default;
 
+			_ValidationCardinal--;
+
 			return true;
 
 		}
 		catch (Exception ex)
 		{
+			_ValidationCardinal--;
 			Diag.Dug(ex);
 			return false;
 		}
@@ -473,7 +485,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		ProjectItem config = null;
 
 		// There's a dict list of these at the end of the class
-		if (Kind(project.Kind) == "ProjectFolder")
+		if (UnsafeCmd.Kind(project.Kind) == "ProjectFolder")
 		{
 			if (project.ProjectItems != null && project.ProjectItems.Count > 0)
 			{
@@ -600,6 +612,8 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		Diag.ThrowIfNotOnUIThread();
 
+		IBGlobalsAgent globals;
+
 		foreach (ProjectItem projectItem in projectItems)
 		{
 			if (_TaskHandler != null && _TaskHandler.UserCancellation.IsCancellationRequested)
@@ -607,12 +621,15 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 			if (projectItem.SubProject != null && projectItem.SubProject.Globals != null)
 			{
-				IBGlobalsAgent globals = new GlobalsAgent(GetProjectPath(projectItem.SubProject));
+				if (UnsafeCmd.IsProjectKind(projectItem.SubProject.Kind))
+					globals = new GlobalsAgent(GetProjectPath(projectItem.SubProject));
+				else
+					globals = null;
 
-				if (!globals.IsScannedStatus)
+				if (globals == null || !globals.IsScannedStatus)
 				{
 					RecursiveValidateProject(projectItem.SubProject, globals, validatingSolution);
-					globals.Flush();
+					globals?.Flush();
 				}
 			}
 			else
@@ -639,7 +656,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 		Diag.ThrowIfNotOnUIThread();
 
-		if (Kind(item.Kind) == "PhysicalFolder")
+		if (UnsafeCmd.Kind(item.Kind) == "PhysicalFolder")
 		{
 			bool success = true;
 
@@ -745,18 +762,21 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	// ---------------------------------------------------------------------------------
 	private bool RecursiveValidateSolutionProject(Project project, Stopwatch stopwatch)
 	{
+		GlobalsAgent globals = null;
 
 		if (project.Globals != null)
 		{
-			GlobalsAgent globals = new(GetProjectPath(project));
+			if (UnsafeCmd.IsProjectKind(project.Kind))
+				globals = new(GetProjectPath(project));
 
-			if (!globals.IsScannedStatus)
+
+			if (globals == null || !globals.IsScannedStatus)
 			{
 				stopwatch.Start();
 
 				RecursiveValidateProject(project, globals, true);
 
-				globals.Flush();
+				globals?.Flush();
 				stopwatch.Stop();
 			}
 		}
@@ -830,6 +850,51 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 
 
+	public void ValidateSolution(Stream stream = null)
+	{
+		if (Validating)
+			return;
+
+		GlobalsAgent.SolutionGlobals?.Dispose();
+
+		GlobalsAgent.SolutionGlobals = new GlobalsAgent(stream);
+
+		if (!GlobalsAgent.ValidateSolution)
+		{
+			GlobalsAgent.SolutionGlobals = null;
+			return;
+		}
+
+		// This is a once off procedure for solutions and their projects. (ie. Once validated always validated)
+		// We're going to check each project that gets loaded (or has a reference added) if it
+		// references EntityFramework.Firebird.dll else FirebirdSql.Data.FirebirdClient.dll.
+		// If it is we'll check the app.config DbProvider and EntityFramework sections and update if necessary.
+		// We also check (once and only once) within a project for any Firebird edmxs with legacy settings and update
+		// those, because they cannot work with newer versions of EntityFramework.Firebird.
+		// (This validation can be disabled in Visual Studio's options.)
+
+		if (!GlobalsAgent.SolutionGlobals.IsValidatedStatus)
+		{
+			_ValidationCardinal++;
+
+			if (!ThreadHelper.CheckAccess())
+			{
+				bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate
+				{
+					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+					OnLoadSolutionOptionsImpl();
+					return true;
+				});
+
+				return;
+			}
+
+			OnLoadSolutionOptionsImpl();
+		}
+	}
+
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Recursively makes calls to <see cref="RecursiveValidateProjectAsync"/>, which is
@@ -842,7 +907,10 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	private async Task<bool> ValidateSolutionAsync(string solutionName, int projectCount)
 	{
 		if (projectCount == 0)
+		{
+			_ValidationCardinal--;
 			return true;
+		}
 
 
 		await Task.Run(() => UpdateStatusBar("BlackbirdSql validating solution: " + solutionName));
@@ -945,12 +1013,14 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Deprecated.
 	/// Adds <see cref="OnReferenceAdded"> event handler to the Project <see cref="_dispReferencesEvents_Event.ReferenceAdded"/> event
 	/// </summary>
 	/// <param name="dte"></param>
 	// ---------------------------------------------------------------------------------
 	private void AddReferenceAddedEventHandler(VSProjectEvents events)
 	{
+		/*
 		try
 		{
 			_ReferenceAddedEventHandler ??= new _dispReferencesEvents_ReferenceAddedEventHandler(OnReferenceAdded);
@@ -964,6 +1034,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			Diag.Dug(ex);
 			throw;
 		}
+		*/
 	}
 
 
@@ -985,21 +1056,24 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Deprecated.
 	/// /// Event handler for the Project
 	/// <see cref="_dispReferencesEvents_Event.ReferenceAdded"/> event
 	/// </summary>
 	/// <param name="reference"></param>
 	// ---------------------------------------------------------------------------------
-	private void OnReferenceAdded(Reference reference) => _ = OnReferenceAddedAsync(reference);
+	// private void OnReferenceAdded(Reference reference) => _ = OnReferenceAddedAsync(reference);
 
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Deprecated.
 	/// Performs asynchronous operations on <see cref="OnReferenceAdded(Reference)"/>
 	/// </summary>
 	/// <param name="reference"></param>
 	/// <returns></returns>
 	// ---------------------------------------------------------------------------------
+	/*
 	private async Task OnReferenceAddedAsync(Reference reference)
 	{
 
@@ -1009,6 +1083,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(); // Debug
 
 		if (!GlobalsAgent.ValidateConfig || reference.Type != prjReferenceType.prjReferenceTypeAssembly
+			|| !UnsafeCmd.IsProjectKind(reference.ContainingProject.Kind)
 			|| (reference.Name.ToLower() != SystemData.EFProvider.ToLower()
 			&& reference.Name.ToLower() != SystemData.Invariant.ToLower()))
 		{
@@ -1096,7 +1171,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 		globals?.Flush();
 	}
-
+	*/
 
 
 	public void OnLoadSolutionOptions(Stream stream)
@@ -1106,43 +1181,16 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		// Register configured connections.
 		// Check for loading here otherwise an exception will be thrown.
 		if (!RctManager.Loading)
+		{
+			RctManager.Delete();
 			RctManager.LoadConfiguredConnections(true);
+		}
 
-		GlobalsAgent.SolutionGlobals?.Dispose();
-
-		GlobalsAgent.SolutionGlobals = new GlobalsAgent(Controller.Dte.Solution, stream);
-
-		if (!GlobalsAgent.ValidateSolution)
-		{
-			GlobalsAgent.SolutionGlobals = null;
+		// Deprecated. Exit.
+		if (!GlobalsAgent.PersistentValidation)
 			return;
-		}
 
-
-		// This is a once off procedure for solutions and their projects. (ie. Once validated always validated)
-		// We're going to check each project that gets loaded (or has a reference added) if it
-		// references EntityFramework.Firebird.dll else FirebirdSql.Data.FirebirdClient.dll.
-		// If it is we'll check the app.config DbProvider and EntityFramework sections and update if necessary.
-		// We also check (once and only once) within a project for any Firebird edmxs with legacy settings and update
-		// those, because they cannot work with newer versions of EntityFramework.Firebird.
-		// (This validation can be disabled in Visual Studio's options.)
-
-		if (!GlobalsAgent.SolutionGlobals.IsValidatedStatus)
-		{
-			if (!ThreadHelper.CheckAccess())
-			{
-				bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate
-				{
-					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-					OnLoadSolutionOptionsImpl();
-					return true;
-				});
-
-				return;
-			}
-
-			OnLoadSolutionOptionsImpl();
-		}
+		ValidateSolution(stream);
 	}
 
 
@@ -1153,7 +1201,10 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		Solution solution = ((Solution)GlobalsAgent.SolutionObject);
 
 		if (solution.Projects == null && solution.Projects.Count == 0)
+		{
+			_ValidationCardinal--;
 			return;
+		}
 
 		// No projects loaded yet if Solution.Projects is null
 
@@ -1236,11 +1287,9 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		if (!GlobalsAgent.ValidateSolution && !PersistentSettings.IncludeAppConnections)
 			return VSConstants.S_OK;
 
-		if (Kind(project.Kind) != "VbProject"
-			&& Kind(project.Kind) != "C#Project")
-		{
+		if (!UnsafeCmd.IsProjectKind(project.Kind))
 			return VSConstants.S_OK;
-		}
+
 				
 		if (PersistentSettings.IncludeAppConnections)
 			RctManager.LoadProjectConnections(project);

@@ -15,6 +15,7 @@ using BlackbirdSql.VisualStudio.Ddex.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
+using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
@@ -101,42 +102,32 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		// Tracer.Trace(GetType(), "SelectObjects()", "TYPE IVsDataConnection: {0}.", Site.GetType().FullName);
 
 		object lockedProviderObject = null;
-		FbConnection connection = null;
 		IVsDataReader reader = null;
 
 		try
 		{
-			// This is proof that all is not what it seems. This condition is never true until
-			// you remove the assembly load statement.
-			// On startup of VS, if an xsd or edmx is in an open state or the SE is pinned
-			// on the first solution opened, there are instances where class references will
-			// exist but their assemblies are not yet loaded. This can happen here for the
-			// invariant.
-			// By simply placing a load statement here the runtime will resolve and load
-			// the assembly before we even reach this statement.
-
-			if (!Core.Controller.InvariantResolved)
-			{
-				Tracer.Information(GetType(), "SelectObjects()", "Invariant is unresolved. Loading: {0}", typeof(FirebirdClientFactory).Assembly.FullName);
-				Assembly.Load(typeof(FirebirdClientFactory).Assembly.FullName);
-			}
-
 			if (RctManager.ShutdownState)
 				return null;
+
+			Site.EnsureConnected();
 
 			lockedProviderObject = Site.GetLockedProviderObject();
 			if (lockedProviderObject == null)
 				throw new NotImplementedException("Site.GetLockedProviderObject()");
 
-			connection = lockedProviderObject as FbConnection;
+			FbConnection connection = lockedProviderObject as FbConnection;
+
+			// VS glitch. Null if ado has picked up a project data model firebird assembly.
 			if (connection == null)
-				throw new NotImplementedException($"LockedProviderObject as FbConnection for object type: {lockedProviderObject.GetType().Name}.");
+			{
+				connection = new(DataProtection.DecryptString(Site.EncryptedConnectionString));
+				connection.Open();
+			}
 
 			// Tracer.Trace(GetType(), "SelectObjects()", "Site type: {0}", Site.GetType().FullName);
-			Site.EnsureConnected();
 
 			if (_Csa == null || _Csa.Invalidated(connection))
-				_Csa = RctManager.EnsureVolatileInstance(connection, EnConnectionSource.ServerExplorer);
+				_Csa = RctManager.EnsureVolatileInstance((IDbConnection)lockedProviderObject, EnConnectionSource.ServerExplorer);
 
 			DataTable schema = CreateSchema(connection, typeName, parameters);
 
@@ -151,11 +142,11 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		finally
 		{
 			// Only force create the parser 2nd time in.
-			if (connection != null)
-				LinkageParser.EnsureLoaded(connection, typeof(DslProviderSchemaFactory));
-
 			if (lockedProviderObject != null)
+			{
+				LinkageParser.EnsureLoaded((IDbConnection)lockedProviderObject, typeof(DslProviderSchemaFactory));
 				Site.UnlockProviderObject();
+			}
 		}
 
 		return reader;
@@ -249,11 +240,22 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	/// <param name="name"></param>
 	/// <returns></returns>
 	// ---------------------------------------------------------------------------------
-	private object RetrieveValue(FbConnection connection, string name)
+	private object RetrieveValue(FbConnection connection, string name, bool retrying = false)
 	{
 		object retval;
 		string strval;
 		object errval = DBNull.Value;
+
+		if (retrying)
+		{
+			// Tracer.Trace(GetType(), "RetrieveValue()", "Retrying");
+			try
+			{
+				connection.Close();
+				connection.Open();
+			}
+			catch { }
+		}
 
 
 		try
@@ -329,6 +331,9 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 		}
 		catch (Exception ex)
 		{
+			if (!retrying)
+				return RetrieveValue(connection, name, true);
+
 			Diag.Dug(ex, $"Error retrieving PropertyName: '{name}'");
 			return errval;
 		}

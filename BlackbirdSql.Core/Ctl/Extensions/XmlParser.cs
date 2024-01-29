@@ -529,7 +529,7 @@ public static class XmlParser
 				else if (xmlAttr.Value.Replace(" ", "") != factoryNameType.Replace(" ", ""))
 				{
 					// Check if it's not using the fully qualified name - must be current latest version (build is 9.1.1)
-					factoryQualifiedNameType = SystemData.ProviderFactoryClassName + ", " + factoryClass.AssemblyQualifiedName;
+					factoryQualifiedNameType = factoryClass.AssemblyQualifiedName;
 
 					if (xmlAttr.Value.Replace(" ", "") != factoryQualifiedNameType.Replace(" ", ""))
 					{

@@ -4,7 +4,9 @@
 using System;
 using System.Reflection;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.Interfaces;
+using BlackbirdSql.VisualStudio.Ddex.Properties;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
@@ -42,8 +44,6 @@ public sealed class TProviderObjectFactory : DataProviderObjectFactory, IBProvid
 
 
 
-
-
 	// =========================================================================================================
 	#region Method Implementations - TProviderObjectFactory
 	// =========================================================================================================
@@ -61,7 +61,6 @@ public sealed class TProviderObjectFactory : DataProviderObjectFactory, IBProvid
 	// ---------------------------------------------------------------------------------
 	public override object CreateObject(Type objType)
 	{
-
 		// Tracer.Trace(GetType(), "TProviderObjectFactory.CreateObject", "objType: {0}", objType.Name);
 
 		/* Uncomment this and change PackageSupportedObjects._UseFactoryOnly to true to debug implementations

@@ -208,7 +208,7 @@ public class CsbAgent : AbstractCsbAgent, ICloneable
 		}
 		else if (!string.IsNullOrWhiteSpace(datasetId))
 		{
-			string derivedConnectionName = C_DatasetKeyFmt.FmtRes(DataSource, datasetId);
+			string derivedConnectionName = SystemData.DatasetKeyFmt.FmtRes(DataSource, datasetId);
 
 			if (!derivedConnectionName.Equals(datasetKey))
 				Remove(C_KeyExDatasetKey);
@@ -450,7 +450,8 @@ public class CsbAgent : AbstractCsbAgent, ICloneable
 		// Now that the datasetId is established, we can determined its default derived value
 		// and the default derived value of the datasetKey.
 		string derivedDatasetId = string.IsNullOrEmpty(datasetId) ? dataset : datasetId;
-		string derivedConnectionName = C_DatasetKeyFmt.FmtRes(DataSource, derivedDatasetId);
+		string derivedConnectionName = SystemData.DatasetKeyFmt.FmtRes(DataSource, derivedDatasetId);
+		string derivedAlternateConnectionName = SystemData.DatasetKeyAlternateFmt.FmtRes(DataSource, derivedDatasetId);
 
 
 		// Now the proposed DatasetKey, ConnectionName. If it exists and is equal to the derived
@@ -471,7 +472,7 @@ public class CsbAgent : AbstractCsbAgent, ICloneable
 				// derived datasetkey it also won't be needed, so delete it,
 				// else the ConnectionName still exists and is the determinant, so
 				// any existing proposed DatasetId is not required.
-				if (connectionName == derivedConnectionName)
+				if (connectionName == derivedConnectionName || connectionName == derivedAlternateConnectionName)
 					connectionName = string.Empty;
 				else if (!string.IsNullOrWhiteSpace(datasetId))
 					datasetId = string.Empty;

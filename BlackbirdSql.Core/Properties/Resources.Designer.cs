@@ -322,6 +322,15 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Validate Solution Config.
+        /// </summary>
+        public static string CommandProvider_ValidateGlobalSolution {
+            get {
+                return ResourceManager.GetString("CommandProvider_ValidateGlobalSolution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not locate icon for Server Engine Type {0}..
         /// </summary>
         public static string EngineTypeIconNotfound {

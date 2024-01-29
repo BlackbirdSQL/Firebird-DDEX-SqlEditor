@@ -1,15 +1,14 @@
 ﻿
 using System;
 using System.IO;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Model;
 using BlackbirdSql.EditorExtension;
-using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -59,8 +58,8 @@ public abstract class ControllerAsyncPackage : EditorExtensionAsyncPackage
 	{
 		try
 		{
-			Controller.Dispose();
-			EventsManager.Dispose();
+			_Controller?.Dispose();
+			_EventsManager?.Dispose();
 		}
 		catch (Exception ex)
 		{
@@ -163,6 +162,9 @@ public abstract class ControllerAsyncPackage : EditorExtensionAsyncPackage
 
 		await base.FinalizeAsync(cancellationToken, progress);
 
+		// If we get here and the Rct is not loaded/loading it means "no solution".
+		if (!RctManager.Loading)
+			RctManager.LoadConfiguredConnections(true);
 	}
 
 

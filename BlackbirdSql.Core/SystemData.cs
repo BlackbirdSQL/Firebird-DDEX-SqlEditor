@@ -29,6 +29,7 @@ public static class SystemData
 
 	public static Type ProviderFactoryType = typeof(FirebirdSql.Data.FirebirdClient.FirebirdClientFactory);
 
+
 	/// <summary>
 	/// The path to the provider's configured connections xml (in this case FlameRobin for Firebird).
 	/// </summary>
@@ -36,11 +37,28 @@ public static class SystemData
 		= Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData)
 		+ "\\flamerobin\\fr_databases.conf";
 
+
+
+
+
+	// ---------------------------------------------------------------------------------------------------------
+	#region Extension wide constants - SystemData
+	// ---------------------------------------------------------------------------------------------------------
+
+
 	public const string Protocol = "fbsql";
 	public const string Scheme = Protocol + "://";
 	public const string WinScheme = Protocol + ":\\";
 	public const string Extension = "." + Protocol;
+	public const string ServiceFolder = "ServerxExplorer";
+	public const string TempSqlFolder = "SqlTemporaryFiles";
 
+	public const string DatasetKeyFmt = "{0} ({1})";
+	public const string DatasetKeyAlternateFmt = "Database[\"{0} ({1})\"]";
+	public const char CompositeSeparator = '.';
+
+
+	#endregion Extension wide constants
 
 
 
@@ -52,7 +70,8 @@ public static class SystemData
 
 
 	public const string PackageGuid = "0B100D64-7249-4208-8748-2810B511E90C";
-	public const string PackageGuideNET = "7787981E-E42A-412F-A42B-9AD07A7DE169";
+	public const string PackageServiceGuid = "7787981E-E42A-412F-A42B-9AD07A7DE169";
+	public const string UIContextGuid = "8838E01E-D709-486D-A933-46D30A864D51";
 
 	public const string ProviderGuid = "43015F6E-757F-408B-966E-C2BCE34686BA";
 

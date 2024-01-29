@@ -204,6 +204,20 @@ public abstract class UnsafeCmd
 	}
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns True if project is VB or C#.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool IsProjectKind(string kind)
+	{
+		if (!ProjectGuids.TryGetValue(kind, out string name))
+			return false;
+
+		return name.EndsWith("Project");
+	}
+
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>

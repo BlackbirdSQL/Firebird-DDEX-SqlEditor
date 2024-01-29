@@ -2,12 +2,10 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using BlackbirdSql.Controller.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using Microsoft.VisualStudio.Shell;
 
@@ -80,6 +78,8 @@ public sealed class PackageController : AbstractPackageController
 
 
 	public ControllerAsyncPackage ControllerPackage => (ControllerAsyncPackage)DdexPackage;
+
+	public override bool SolutionValidating => ControllerEventsManager.Validating;
 
 
 	#endregion Property Accessors
@@ -202,6 +202,11 @@ public sealed class PackageController : AbstractPackageController
 		return true;
 	}
 
+
+	public override void ValidateSolution()
+	{
+		((ControllerEventsManager)ControllerPackage.EventsManager).ValidateSolution();
+	}
 
 	#endregion Methods
 

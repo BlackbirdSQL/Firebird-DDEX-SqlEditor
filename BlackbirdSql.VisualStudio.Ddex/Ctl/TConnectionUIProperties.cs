@@ -27,7 +27,7 @@ public class TConnectionUIProperties : TConnectionProperties
 
 	public TConnectionUIProperties() : base()
 	{
-		// Tracer.Trace(GetType(), "TConnectionUIProperties.TConnectionUIProperties()");
+		// Tracer.Trace(GetType(), "TConnectionUIProperties()");
 	}
 
 

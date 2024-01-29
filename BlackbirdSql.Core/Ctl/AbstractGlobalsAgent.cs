@@ -139,16 +139,17 @@ public abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	/// <param name="solution">The <see cref="EnvDTE.DTE.Solution"/> object</param>
 	/// <param name="stream">The stream from <see cref="Package.OnLoadOptions" event./></param>
 	// ---------------------------------------------------------------------------------
-	public AbstractGlobalsAgent(Stream stream, bool validateSolution, bool persistentValidation,
-		bool validateConfig, bool validateEdmx)
+	public AbstractGlobalsAgent(Stream stream)
 	{
-		_ValidateSolution = validateSolution && (validateConfig || validateEdmx);
-		_PersistentValidation = persistentValidation;
-		_ValidateConfig = validateConfig;
-		_ValidateEdmx = validateEdmx;
+		_ValidateSolution = true;
+		_PersistentValidation = false;
+		_ValidateConfig = true;
+		_ValidateEdmx = true;
 
-		if (!_ValidateSolution)
+		if (!_ValidateSolution || !_PersistentValidation)
 			return;
+
+		// Deprecated.
 
 		try
 		{
@@ -210,6 +211,7 @@ public abstract class AbstractGlobalsAgent : IBGlobalsAgent
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Deprecated.
 	/// Flushes a project Globals to the .user file.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
@@ -222,6 +224,7 @@ public abstract class AbstractGlobalsAgent : IBGlobalsAgent
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Deprecated.
 	/// Flushes a solution Globals to the solution stream.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
@@ -229,6 +232,10 @@ public abstract class AbstractGlobalsAgent : IBGlobalsAgent
 	{
 		if (!_ValidateSolution)
 			return false;
+
+		// Deprecated. Exit.
+		if (!_PersistentValidation)
+			return true;
 
 		int? runningValue = _Value;
 
@@ -264,11 +271,20 @@ public abstract class AbstractGlobalsAgent : IBGlobalsAgent
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Deprecated.
 	/// Reads and updates a project Globals from the .user file.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	private bool ReadProjectGlobal()
 	{
+
+		// Deprecated.
+		if (!_PersistentValidation)
+		{
+			_Value = _StoredValue = 0;
+			return true;
+		}
+
 		if (_ProjectPath == null)
 		{
 			// Tracer.Trace(GetType(), "ReadProjectGlobal()", "Exiting. Project path is null.");
@@ -350,11 +366,16 @@ public abstract class AbstractGlobalsAgent : IBGlobalsAgent
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Deperecated.
 	/// Writes a project Globals to the .user file.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	private bool WriteProjectGlobal()
 	{
+		// Deprecated.
+		if (!_PersistentValidation)
+			return true;
+
 		if (_ProjectPath == null)
 			return false;
 

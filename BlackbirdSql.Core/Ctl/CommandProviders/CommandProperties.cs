@@ -5,7 +5,6 @@ using System;
 using System.ComponentModel.Design;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Model.Enums;
-using Microsoft.VisualStudio;
 
 namespace BlackbirdSql.Core.Ctl.CommandProviders;
 
@@ -104,6 +103,7 @@ public static class CommandProperties
 	public static CommandID RetrieveDesignerData = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdRetrieveDesignerData);
 	public static CommandID EditLabel = new CommandID(new Guid(VS.SeInterfaceCommandSetGuid), C_CmdIdEditLabel);
 	public static CommandID TraceRct = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdTraceRct);
+	public static CommandID ValidateSolution = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdValidateSolution);
 
 	// Unsupported
 	/*

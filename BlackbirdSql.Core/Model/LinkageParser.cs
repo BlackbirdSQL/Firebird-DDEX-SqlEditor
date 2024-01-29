@@ -1,13 +1,11 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 using System;
+using System.Data;
 using System.Diagnostics;
-using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Media.Converters;
 using BlackbirdSql.Core.Controls;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Properties;
 using FirebirdSql.Data.FirebirdClient;
@@ -63,7 +61,7 @@ public class LinkageParser : AbstractLinkageParser
 	/// Instance() static to create or retrieve a parser for a connection.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private LinkageParser(FbConnection connection) : this(connection, null)
+	private LinkageParser(IDbConnection connection) : this(connection, null)
 	{
 		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] _LinkageParser(FbConnection)");
 	}
@@ -76,7 +74,7 @@ public class LinkageParser : AbstractLinkageParser
 	/// Instance() static to create or retrieve a parser for a connection.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private LinkageParser(FbConnection connection, LinkageParser rhs) : base(connection, rhs)
+	private LinkageParser(IDbConnection connection, LinkageParser rhs) : base(connection, rhs)
 	{
 		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] _LinkageParser(FbConnection, LinkageParser)");
 		_TaskHandler = new(_InstanceConnection);
@@ -103,7 +101,7 @@ public class LinkageParser : AbstractLinkageParser
 	/// Retrieves or creates a distinct unique parser for a connection.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private static LinkageParser CreateInstance(FbConnection connection, bool canCreate)
+	private static LinkageParser CreateInstance(IDbConnection connection, bool canCreate)
 	{
 		// Tracer.Trace(typeof(LinkageParser), "CreateInstance(FbConnection, bool)", "canCreate: {0}.", canCreate);
 
@@ -173,7 +171,7 @@ public class LinkageParser : AbstractLinkageParser
 	/// Retrieves or creates the parser instance of a connection.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static LinkageParser EnsureLoaded(FbConnection connection, Type schemaFactoryType)
+	public static LinkageParser EnsureLoaded(IDbConnection connection, Type schemaFactoryType)
 	{
 		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
 
@@ -220,7 +218,7 @@ public class LinkageParser : AbstractLinkageParser
 	/// Retrieves an existing parser for a connection.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static new LinkageParser GetInstance(FbConnection connection)
+	public static new LinkageParser GetInstance(IDbConnection connection)
 	{
 		// Tracer.Trace(typeof(LinkageParser), "GetInstance(FbConnection)");
 
@@ -279,16 +277,7 @@ public class LinkageParser : AbstractLinkageParser
 
 
 	// Threading / multi process control variables.
-	// A quick double tap on an unopened SE connection can cause a deadlong hang.
-	// This happens when the async task (payload) launcher task, _AsyncPayloadLauncher, is created, and then
-	// a sync process returns and needs to terminate it in order to execute sync db commands. (Note: The Fb
-	// client cannot execute sync commands simultaneously with an async process.) Cancelling and placing a
-	// wait on the async launcher process will cause a deadlock because _AsyncPayloadLauncher queues the launching
-	// of it's payload in behind the current sync process.
-	// To overcome this we signal a cancel to the launcher, and then treat it as "launch cancelled", because we
-	// know it will cancel the payload launch once it is clear to execute.
-
-
+	
 	// The async process thread id / index for tracing
 	private static int _AsyncProcessSeed = 90000;
 
@@ -595,13 +584,13 @@ public class LinkageParser : AbstractLinkageParser
 	/// <param name="site">
 	/// The IVsDataConnection explorer connection object
 	/// </param>
-	/// <param name="disposing">
-	/// True if this is a permanent disposal and a transient parser should not
-	/// be stored else false.
+	/// <param name="isValidTransient">
+	/// False if this is a user refresh and a transient parser should not be stored else
+	/// True.
 	/// </param>
 	/// <returns>True of the parser was found and disposed else false.</returns>
 	// ---------------------------------------------------------------------------------
-	public static bool DisposeInstance(IVsDataConnection site, bool disposing)
+	public static bool DisposeInstance(IVsDataConnection site, bool isValidTransient)
 	{
 		// Tracer.Trace(typeof(LinkageParser), "DisposeInstance(IVsDataConnection)", "!Refreshing = disposing: {0}.", disposing);
 
@@ -614,7 +603,7 @@ public class LinkageParser : AbstractLinkageParser
 		if (vsDataConnectionSupport.ProviderObject is not FbConnection connection)
 			return false;
 
-		return AbstractLinkageParser.DisposeInstance(connection, disposing);
+		return AbstractLinkageParser.DisposeInstance(connection, isValidTransient);
 	}
 
 
