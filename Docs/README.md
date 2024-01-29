@@ -25,6 +25,7 @@ The BlackbirdSQL DDEX 2.0 .NET with SqlEditor Provider extension for Firebird, `
 * Procedures, functions, views, triggers and computed columns display the decoded blr if no source exists.
 * Display of initial value (seed), increment and next value within column primary key, trigger and sequence generator property windows.
 * New query and data retrieval for both user and system tables.
+* Automated DbProviderFactories and EDM validation and update of a Solution's App.Config and EDMX models. This procedure can be run from the context menu of any open node in Server Explorer.
 * Plug and play. No configuration of the .csproj, app.config or machine.config files and no GAC registration.
 * BlackbirdSql background and UI thread tasks compliant with the IDE TaskHandler and implements the user cancel feature for background tasks from the TaskHandler window.
 * All exception, task progress and task status reporting logged to the output window accessible under *BlackbirdSql* in the dropdown (Enabled by default under Options).
