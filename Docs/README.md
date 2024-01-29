@@ -46,15 +46,14 @@ For a clearer understanding of BlackbirdSql's RunningConnectionTable management 
 </br></br>
 
 ## Known issues
+* If on startup of the Visual Studio IDE, and only on startup, an EDMX model has been left open within a solution, Visual Studio may flag the provider as unavailable and then load the invariant assembly from the incorrect domain. BlackbirdSql will automatically recover but the EDMX model will need to be closed and reopened to be activated.</br>
+Unless we're missing a trick here this seems to be unavoidable. Loading is asynchronous, so provider registration and loading is delayed by the IDE.</br>
+We want to be as unobtrusive as possible so load delays are just a reality if we go the asynchronous route. (*Loading is initiated at the earliest possible, which is as soon as the IDE shell context is available.*)
+* Operations within the EDMX UI can take some time. For even a single table the wizard executes over 100 SELECT statements with the primary SELECT statement having 20+ JOINS and 5+ UNIONS. Even a Cancel request can lock up the IDE for some time. Be patient.
 * The Language service for the SqlEditor service is still under development and has not been linked into the extension. When opening scripts for Triggers, Views, Procedures, Funtions, Computed columns or SQL statements, the SqlEditor uses the Visual Studio built-in T-SQL Language service. This means that Intellisense may mark incompatible SQL and DDL as errors. The scripts will still successfully execute.
 * The SqlEditor port does not currently support script parameter loading.
-* The BlackbirdSql Editor settings in Visual Studio Options has been ported as is from the Microsoft SqlServer SqlEditor settings. This means that several options are not currently being used or are not applicable.
-* If on startup of the Visual Studio IDE, and only on startup, an EDMX model has been left open within a solution, Visual Studio may flag the provider as unavailable. The model will need to be closed and reopened to be activated.</br>
-Unless we're missing a trick here this seems to be unavoidable. Loading is asynchronous, so the provider needs time to register and load. This same glitch occurs in Microsoft's SqlServer extension.</br>
-We want to be as unobtrusive as possible so load delays are just a reality if we go the asynchronous route. (*Loading is initiated at the earliest possible, which is as soon as the IDE shell context is available.*)
+* The BlackbirdSql Editor settings in Visual Studio Options have been ported as is from the Microsoft SqlServer SqlEditor settings. This means that several options are not currently being used or are not applicable.
 * If you have a huge number of triggers then rendering of the triggers in the SE, or any other collection for that matter, may take some time. This has nothing to do with the parser but is simply down to network and database server performance. To minimize the effect of this, Trigger/Generator linkage is built asynchronously as soon as a connection is established.
-* There seems to be an issue with drag and drop on procedures and functions which hasn't been looked at. It's likely something trivial but not sure if this functionality is available to SqlServer so may be another rabbit hole.</br>
-The same applies to drag and drop from the SE directly into the edmx, not available on SqlServer but I don't see why it cannot be done.
 </br>
 
 ## Documentation
