@@ -3,9 +3,11 @@
 using System;
 using System.Data;
 using System.Diagnostics;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Core.Controls;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Properties;
 using FirebirdSql.Data.FirebirdClient;
@@ -133,11 +135,10 @@ public class LinkageParser : AbstractLinkageParser
 	/// Retrieves or creates the parser instance of a connection.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static LinkageParser EnsureInstance(FbConnection connection, Type schemaFactoryType)
+	public static LinkageParser EnsureInstance(IDbConnection connection)
 	{
-		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
+		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection)");
 
-		_SchemaFactoryType = schemaFactoryType;
 		return CreateInstance(connection, true);
 	}
 
@@ -148,7 +149,7 @@ public class LinkageParser : AbstractLinkageParser
 	/// Retrieves or creates the parser instance of a Site.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static LinkageParser EnsureInstance(IVsDataConnection site, Type schemaFactoryType)
+	public static LinkageParser EnsureInstance(IVsDataConnection site)
 	{
 		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(IVsDataConnection, Type)");
 
@@ -161,7 +162,7 @@ public class LinkageParser : AbstractLinkageParser
 		if (vsDataConnectionSupport.ProviderObject is not FbConnection connection)
 			return null;
 
-		return EnsureInstance(connection, schemaFactoryType);
+		return EnsureInstance(connection);
 	}
 
 
@@ -171,11 +172,10 @@ public class LinkageParser : AbstractLinkageParser
 	/// Retrieves or creates the parser instance of a connection.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static LinkageParser EnsureLoaded(IDbConnection connection, Type schemaFactoryType)
+	public static LinkageParser EnsureLoaded(IDbConnection connection)
 	{
 		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
 
-		_SchemaFactoryType = schemaFactoryType;
 		LinkageParser parser = CreateInstance(connection, true);
 
 		if (parser == null)
@@ -194,7 +194,7 @@ public class LinkageParser : AbstractLinkageParser
 	/// Retrieves or creates the parser instance of a Site.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static LinkageParser EnsureLoaded(IVsDataConnection site, Type schemaFactoryType)
+	public static LinkageParser EnsureLoaded(IVsDataConnection site)
 	{
 		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
 
@@ -207,7 +207,27 @@ public class LinkageParser : AbstractLinkageParser
 		if (vsDataConnectionSupport.ProviderObject is not FbConnection connection)
 			return null;
 
-		return EnsureLoaded(connection, schemaFactoryType);
+		return EnsureLoaded(connection);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Retrieves or creates the parser instance of a Site.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static LinkageParser EnsureLoaded(IVsDataExplorerNode node)
+	{
+		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
+
+		if (node == null || node.Object == null
+			|| node.ExplorerConnection.Connection == null || !RequiresTriggers(node.Object.Type.Name))
+		{
+			return null;
+		}
+
+		return EnsureLoaded(node.ExplorerConnection.Connection);
 	}
 
 
@@ -823,6 +843,31 @@ public class LinkageParser : AbstractLinkageParser
 		{
 			Diag.Dug(ex);
 			throw ex;
+		}
+
+		return true;
+	}
+
+
+	public static bool RequiresTriggers(string collection)
+	{
+		// Tracer.Trace(typeof(LinkageParser), "RequiresTriggers()", "Collection: {0}.", collection);
+
+		switch (collection)
+		{
+			case "ForeignKeys":
+			case "Functions":
+			case "Indexes":
+			case "Procedures":
+			case "Tables":
+			case "RawGenerators":
+			case "RawTriggerDependencies":
+			case "RawTriggers":
+			case "Views":
+			case "ViewColumns":
+				return false;
+			default:
+				break;
 		}
 
 		return true;

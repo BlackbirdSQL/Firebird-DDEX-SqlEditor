@@ -1,11 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <DataViewSupport xmlns="http://schemas.microsoft.com/VisualStudio/2007/07/Data/DataViewSupport">
 
-	<!-- Root commands list -->
-	<Define name="TplRootCommands" >
-		<CommandRef name="CommandOverrideEditLabel" />
-	</Define>
-
 	<!-- Global commands list -->
 	<Define name="TplGlobalCommands" >
 		<CommandRef name="CommandTraceRctUniversal" />
@@ -48,9 +43,6 @@
 	</Define>
 	<Define name="CommandOverrideNewQueryLocal">
 		<CommandRef name="CommandHookSeDataCommandSetUniversal" arguments="0x3528" />
-	</Define>
-	<Define name="CommandOverrideEditLabel">
-		<CommandRef name="CommandHookSeInterfaceCommandSetUniversal" arguments="0x2102" />
 	</Define>
 
 

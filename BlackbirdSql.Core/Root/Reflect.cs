@@ -199,6 +199,34 @@ public abstract class Reflect
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Get a class object base's field FieldInfo given the containing class object,
+	/// the field name and access modifier binding flags.
+	/// </summary>
+	/// <returns>
+	/// Returns the field's FieldInfo object else logs a diagnostics exception and
+	/// returns null on error
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	public static FieldInfo GetFieldInfoBase(object containerClassInstance, string fieldName, BindingFlags bindingFlags)
+	{
+		Type typeContainerClassInstance = containerClassInstance.GetType().BaseType;
+
+		FieldInfo fieldInfo = typeContainerClassInstance.GetField(fieldName, bindingFlags);
+
+		if (fieldInfo == null)
+		{
+			COMException ex = new($"Could not get FieldInfo for field '{fieldName}' in container class '{typeContainerClassInstance}'.");
+			Diag.Dug(ex);
+			return null;
+		}
+
+		return fieldInfo;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Gets a class object field's value given the containing class object and the
 	/// FieldInfo object.
 	/// </summary>
@@ -248,6 +276,26 @@ public abstract class Reflect
 	}
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Get a class object base's field value given the containing class object, the field
+	/// name and access modifier binding flags.
+	/// </summary>
+	/// <returns>
+	/// Returns the field's value else logs a diagnostics exception and returns null
+	/// on error
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	public static object GetFieldValueBase(object containerClassInstance, string fieldName,
+		BindingFlags bindingFlags)
+	{
+		FieldInfo fieldInfo = GetFieldInfoBase(containerClassInstance, fieldName, bindingFlags);
+
+		if (fieldInfo == null)
+			return null;
+
+		return GetFieldInfoValue(containerClassInstance, fieldInfo);
+	}
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -563,6 +611,39 @@ public abstract class Reflect
 		catch (Exception ex)
 		{
 			Diag.Dug(ex, $"Could not set Field Value for static field '{fieldInfo.Name}' in container class '{typeContainerClass}'.");
+			return false;
+		}
+
+		return true;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Sets a class base field's value given the containing class instance, the field name,
+	/// access modifier binding flags and the value.
+	/// </summary>
+	/// <returns>
+	/// Returns true if successful else Logs a diagnostics exception on error and
+	/// returns false.
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	public static bool SetFieldValueBase(object containerClassInstance, string fieldName,
+		BindingFlags bindingFlags, object value)
+	{
+		FieldInfo fieldInfo = GetFieldInfoBase(containerClassInstance, fieldName, bindingFlags);
+
+		if (fieldInfo == null)
+			return false;
+
+		try
+		{
+			fieldInfo.SetValue(containerClassInstance, value);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex, $"Could not set Field Value for static field '{fieldInfo.Name}' in container class '{containerClassInstance.GetType()}'.");
 			return false;
 		}
 

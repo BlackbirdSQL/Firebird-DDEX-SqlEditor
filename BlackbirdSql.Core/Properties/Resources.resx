@@ -394,6 +394,9 @@ Use '{1}' instead?</value>
     <value>The settings provided will create a new connection. The Proposed Connection Name '{0}' is already allocated.
 Use '{1}' instead?</value>
   </data>
+  <data name="RctManager_TextNewSEConnection" xml:space="preserve">
+    <value>A new Server Explorer Connection will be created. Continue?</value>
+  </data>
   <data name="Remove_Failed_Property_NotFound" xml:space="preserve">
     <value>Remove failed. Property {0} does not exist.</value>
   </data>

@@ -722,7 +722,7 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Number of server roundtrips.
+        ///   Looks up a localized string similar to Number of server fetches.
         /// </summary>
         internal static string StatisticsPanelStatServerRoundtrips {
             get {

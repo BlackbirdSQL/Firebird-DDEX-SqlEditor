@@ -177,6 +177,9 @@
   <data name="TConnectionUIControl_DatasetKeyDescription_Application" xml:space="preserve">
     <value>Project connections are not synchronized with the Running Connection Table. Synchronization requires a Solution reload.</value>
   </data>
+  <data name="TConnectionUIControl_DatasetKeyDescription_EntityDataModel" xml:space="preserve">
+    <value>The edmx wizard is slow. Procedures may take a long time to complete on slow networks.</value>
+  </data>
   <data name="TDataConnectionAdvancedDlg_Add" xml:space="preserve">
     <value>&amp;Add...</value>
   </data>

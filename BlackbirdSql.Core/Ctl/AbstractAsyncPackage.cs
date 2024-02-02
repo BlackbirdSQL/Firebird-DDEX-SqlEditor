@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Management.Instrumentation;
 using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Core.Ctl.Interfaces;
@@ -136,6 +137,8 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	public abstract IBEventsManager EventsManager { get; }
 
 	public abstract bool InvariantResolved { get; }
+
+	public abstract Type SchemaFactoryType { get; }
 
 
 	public Microsoft.VisualStudio.OLE.Interop.IServiceProvider OleServiceProvider

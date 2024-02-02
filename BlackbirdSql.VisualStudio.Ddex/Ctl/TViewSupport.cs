@@ -13,6 +13,7 @@ using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
+using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.VisualStudio.Ddex.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 
@@ -41,40 +42,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 // =========================================================================================================
 [SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
 public class TViewSupport : DataViewSupport,
-	IVsDataSupportImportResolver, IVsDataViewIconProvider, IBDataViewSupport
+	IVsDataSupportImportResolver, IVsDataViewIconProvider
 {
 	private bool _Loaded = false;
 	private bool _Initialized = false;
-	private bool _LabelEditing = false;
 
 	private static string _IconName = null;
 	private static string _IconPrefix = null;
 	private static Icon _Icon = null;
 
-	private IVsUIHierarchyWindow _HierarchyWindow;
-
-
-
-
-	public IVsUIHierarchyWindow HierarchyWindow
-	{
-		get
-		{
-			Diag.ThrowIfNotOnUIThread();
-
-			if (_HierarchyWindow == null)
-			{
-				IVsWindowFrame vsWindowFrame = Hostess.FindToolWindow(VSConstants.StandardToolWindows.ServerExplorer);
-
-				if (vsWindowFrame != null)
-				{
-					Native.WrapComCall(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar));
-					_HierarchyWindow = pvar as IVsUIHierarchyWindow;
-				}
-			}
-			return _HierarchyWindow;
-		}
-	}
 
 
 
@@ -183,48 +159,6 @@ public class TViewSupport : DataViewSupport,
 	}
 
 
-	public void EditNodeLabel(IVsDataExplorerNode node)
-	{
-		ExpandItemWrapper(node, EXPANDFLAGS.EXPF_SelectItem);
-		ExpandItemWrapper(node, EXPANDFLAGS.EXPF_EditItemLabel);
-		_LabelEditing = true;
-		while (_LabelEditing)
-		{
-			MSG msg = default;
-			if (Native.GetMessage(ref msg, 0, 0, 0))
-			{
-				Native.TranslateMessage(ref msg);
-				Native.DispatchMessage(ref msg);
-			}
-		}
-	}
-
-
-	public void StartEditNodeLabel(IVsDataExplorerNode node)
-	{
-		_LabelEditing = true;
-	}
-
-	public void CancelEditNodeLabel(IVsDataExplorerNode node)
-	{
-		_LabelEditing = false;
-	}
-
-	public void CommitEditNodeLabel(IVsDataExplorerNode node)
-	{
-		_LabelEditing = false;
-	}
-
-	private void ExpandItemWrapper(IVsDataExplorerNode node, EXPANDFLAGS expfFlag)
-	{
-		if (!(node == node.ExplorerConnection.ConnectionNode) && HierarchyWindow != null /* && synchronizeWithShell */)
-		{
-			Diag.ThrowIfNotOnUIThread();
-
-			IVsUIHierarchy uiHierarchy = ViewHierarchy.ServiceProvider as IVsUIHierarchy;
-			HierarchyWindow.ExpandItem(uiHierarchy, (uint)node.ItemId, expfFlag);
-		}
-	}
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -579,10 +513,11 @@ public class TViewSupport : DataViewSupport,
 
 	private void OnConnectionStateChanged(object sender, DataConnectionStateChangedEventArgs e)
 	{
-		// Tracer.Trace(GetType(), "OnConnectionStateChanged()", "Old: {0} new:{1}.", e.OldState, e.NewState);
+		// Tracer.Trace(GetType(), "OnConnectionStateChanged()", "Sender: {0}, Old: {1}, new:{2}.", sender.GetType().FullName, e.OldState, e.NewState);
 
 		if (!_Initialized && e.NewState == DataConnectionState.Open)
 			InitializeProperties();
+
 
 		if (e.OldState == DataConnectionState.Open || e.NewState != DataConnectionState.Open
 			|| !RctManager.Available || ViewHierarchy == null || ViewHierarchy.ExplorerConnection == null
@@ -593,11 +528,15 @@ public class TViewSupport : DataViewSupport,
 
 		// Attempt linkage startup on a refresh.
 
+		if (UnsafeCmd.GetConnectionSource() == EnConnectionSource.EntityDataModel)
+			return;
+
 		IVsDataConnection site = ViewHierarchy.ExplorerConnection.Connection;
+
 
 		// We'll delay 25 cycles of 20ms each because this is a deadlock when
 		// preregistering the taskhandler and a node requiring completed linkage tables is already expanded.
-		LinkageParser parser = LinkageParser.EnsureInstance(site, typeof(DslProviderSchemaFactory));
+		LinkageParser parser = LinkageParser.EnsureInstance(site);
 		parser?.AsyncExecute(25, 20);
 	}
 
@@ -619,7 +558,7 @@ public class TViewSupport : DataViewSupport,
 	/// </summary>
 	private void OnNodeChanged(object sender, DataExplorerNodeEventArgs e)
 	{
-		// Tracer.Trace(GetType(), "OnNodeChanged()");
+		// Tracer.Trace(GetType(), "OnNodeChanged()", "Sender: {0}, node: {1}.", sender.GetType().Name, e.Node.Name);
 
 		if (e.Node == null || (!e.Node.IsRefreshing && !e.Node.IsExpanding)
 			|| e.Node.ExplorerConnection == null
@@ -629,7 +568,6 @@ public class TViewSupport : DataViewSupport,
 		{
 			return;
 		}
-
 
 		IVsDataConnection site = e.Node.ExplorerConnection.Connection;
 
@@ -649,19 +587,26 @@ public class TViewSupport : DataViewSupport,
 					CsbAgent.AreEquivalent(DataProtection.DecryptString(site.EncryptedConnectionString),
 						parser.ConnectionString, CsbAgent.DescriberKeys))
 				{
+					if (UnsafeCmd.GetConnectionSource() == EnConnectionSource.EntityDataModel)
+						return;
+					// Tracer.Trace(GetType(), "OnNodeChanged()", "IsRefreshing && Disposing Linkage");
 					LinkageParser.DisposeInstance(site, false);
 				}
 			}
 			else
 			{
-				LinkageParser.EnsureLoaded(site, typeof(DslProviderSchemaFactory));
+				if (UnsafeCmd.GetConnectionSource() == EnConnectionSource.EntityDataModel)
+					return;
+				// Tracer.Trace(GetType(), "OnNodeChanged()", "IsRefreshing && Ensuring Linkage Loaded");
+				LinkageParser.EnsureLoaded(site);
 			}
 		}
 		else if (e.Node.IsExpanding)
 		{
 			if (site.State == DataConnectionState.Open && RctManager.Available)
 			{
-				LinkageParser parser = LinkageParser.EnsureInstance(site, typeof(DslProviderSchemaFactory));
+				// Tracer.Trace(GetType(), "OnNodeChanged()", "IsExpanding && AsyncExecuting Linkage");
+				LinkageParser parser = LinkageParser.EnsureInstance(site);
 				parser?.AsyncExecute(20, 20);
 			}
 		}
@@ -688,7 +633,12 @@ public class TViewSupport : DataViewSupport,
 		if (site.State != DataConnectionState.Open || !RctManager.Available)
 			return;
 
-		LinkageParser.EnsureLoaded(site, typeof(DslProviderSchemaFactory));
+		if (UnsafeCmd.GetConnectionSource() == EnConnectionSource.EntityDataModel)
+			return;
+
+		// Tracer.Trace(GetType(), "OnNodeExpandedOrRefreshed", "EnsuringLoaded Linkage. Node: {0}.", e.Node.Name);
+
+		LinkageParser.EnsureLoaded(e.Node);
 	}
 
 

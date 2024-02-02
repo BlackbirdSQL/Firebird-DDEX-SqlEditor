@@ -108,14 +108,8 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 		}
 
 
-		if (RequiresTriggers(collectionName))
-		{
-			parser = LinkageParser.EnsureInstance(connection, typeof(DslProviderSchemaFactory));
-		}
-		else if (RequiresSyncControl(collectionName))
-		{
-			parser = LinkageParser.GetInstance(connection);
-		}
+		if (LinkageParser.RequiresTriggers(collectionName))
+			parser = LinkageParser.EnsureInstance(connection);
 
 
 		switch (collectionName)
@@ -282,14 +276,8 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 			return Task.FromResult(new DataTable());
 
 
-		if (RequiresTriggers(collectionName))
-		{
-			parser = LinkageParser.EnsureInstance(connection, typeof(DslProviderSchemaFactory));
-		}
-		else if (RequiresSyncControl(collectionName))
-		{
-			parser = LinkageParser.GetInstance(connection);
-		}
+		if (LinkageParser.RequiresTriggers(collectionName))
+			parser = LinkageParser.EnsureInstance(connection);
 
 
 		switch (collectionName)
@@ -422,28 +410,27 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 		AbstractDslSchema dslSchema;
 		NotSupportedException ex;
-		Type schemaFactoryType = typeof(DslProviderSchemaFactory);
 
 
 		switch (collectionName.ToUpperInvariant())
 		{
 			case "COLUMNS":
-				dslSchema = new DslColumns(LinkageParser.EnsureInstance(connection, schemaFactoryType));
+				dslSchema = new DslColumns(LinkageParser.EnsureInstance(connection));
 				break;
 			case "FOREIGNKEYCOLUMNS":
-				dslSchema = new DslForeignKeyColumns(LinkageParser.EnsureInstance(connection, schemaFactoryType));
+				dslSchema = new DslForeignKeyColumns(LinkageParser.EnsureInstance(connection));
 				break;
 			case "FOREIGNKEYS":
 				dslSchema = new DslForeignKeys();
 				break;
 			case "FUNCTIONARGUMENTS":
-				dslSchema = new DslFunctionArguments(LinkageParser.EnsureInstance(connection, schemaFactoryType));
+				dslSchema = new DslFunctionArguments(LinkageParser.EnsureInstance(connection));
 				break;
 			case "FUNCTIONS":
 				dslSchema = new DslFunctions();
 				break;
 			case "INDEXCOLUMNS":
-				dslSchema = new DslIndexColumns(LinkageParser.EnsureInstance(connection, schemaFactoryType));
+				dslSchema = new DslIndexColumns(LinkageParser.EnsureInstance(connection));
 				break;
 			case "INDEXES":
 				dslSchema = new DslIndexes();
@@ -452,7 +439,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 				dslSchema = new DslProcedures();
 				break;
 			case "PROCEDUREPARAMETERS":
-				dslSchema = new DslProcedureParameters(LinkageParser.EnsureInstance(connection, schemaFactoryType));
+				dslSchema = new DslProcedureParameters(LinkageParser.EnsureInstance(connection));
 				break;
 			case "RAWGENERATORS":
 				dslSchema = new DslRawGenerators();
@@ -467,7 +454,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 				dslSchema = new DslTables();
 				break;
 			case "TRIGGERCOLUMNS":
-				dslSchema = new DslTriggerColumns(LinkageParser.EnsureInstance(connection, schemaFactoryType));
+				dslSchema = new DslTriggerColumns(LinkageParser.EnsureInstance(connection));
 				break;
 			case "VIEWCOLUMNS":
 				dslSchema = new DslViewColumns();
@@ -498,28 +485,27 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 		AbstractDslSchema dslSchema;
 		NotSupportedException ex;
-		Type schemaFactoryType = typeof(DslProviderSchemaFactory);
 
 
 		switch (collectionName.ToUpperInvariant())
 		{
 			case "COLUMNS":
-				dslSchema = new DslColumns(LinkageParser.EnsureInstance(connection, schemaFactoryType));
+				dslSchema = new DslColumns(LinkageParser.EnsureInstance(connection));
 				break;
 			case "FOREIGNKEYCOLUMNS":
-				dslSchema = new DslForeignKeyColumns(LinkageParser.EnsureInstance(connection, schemaFactoryType));
+				dslSchema = new DslForeignKeyColumns(LinkageParser.EnsureInstance(connection));
 				break;
 			case "FOREIGNKEYS":
 				dslSchema = new DslForeignKeys();
 				break;
 			case "FUNCTIONARGUMENTS":
-				dslSchema = new DslFunctionArguments(LinkageParser.EnsureInstance(connection, schemaFactoryType));
+				dslSchema = new DslFunctionArguments(LinkageParser.EnsureInstance(connection));
 				break;
 			case "FUNCTIONS":
 				dslSchema = new DslFunctions();
 				break;
 			case "INDEXCOLUMNS":
-				dslSchema = new DslIndexColumns(LinkageParser.EnsureInstance(connection, schemaFactoryType));
+				dslSchema = new DslIndexColumns(LinkageParser.EnsureInstance(connection));
 				break;
 			case "INDEXES":
 				dslSchema = new DslIndexes();
@@ -528,7 +514,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 				dslSchema = new DslProcedures();
 				break;
 			case "PROCEDUREPARAMETERS":
-				dslSchema = new DslProcedureParameters(LinkageParser.EnsureInstance(connection, schemaFactoryType));
+				dslSchema = new DslProcedureParameters(LinkageParser.EnsureInstance(connection));
 				break;
 			case "RAWGENERATORS":
 				dslSchema = new DslRawGenerators();
@@ -543,7 +529,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 				dslSchema = new DslTables();
 				break;
 			case "TRIGGERCOLUMNS":
-				dslSchema = new DslTriggerColumns(LinkageParser.EnsureInstance(connection, schemaFactoryType));
+				dslSchema = new DslTriggerColumns(LinkageParser.EnsureInstance(connection));
 				break;
 			case "VIEWCOLUMNS":
 				dslSchema = new DslViewColumns();
@@ -579,44 +565,6 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 		throw exbb;
 	}
 
-
-	static bool RequiresTriggers(string collection)
-	{
-		switch (collection)
-		{
-			case "ForeignKeys":
-			case "Functions":
-			case "Indexes":
-			case "Procedures":
-			case "Tables":
-			case "RawGenerators":
-			case "RawTriggerDependencies":
-			case "RawTriggers":
-			case "Views":
-			case "ViewColumns":
-				return false;
-			default:
-				break;
-		}
-
-		return true;
-	}
-
-
-	static bool RequiresSyncControl(string collection)
-	{
-		switch (collection)
-		{
-			case "RawGenerators":
-			case "RawTriggers":
-			case "RawTriggerDependencies":
-				return false;
-			default:
-				break;
-		}
-
-		return true;
-	}
 
 	#endregion
 }

@@ -79,7 +79,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Validation (Requires solution reload).
+        ///   Looks up a localized string similar to Validation.
         /// </summary>
         public static string OptionCategoryEntityFramework {
             get {
@@ -358,7 +358,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enables the execution of Diagnostics calls. This option should remain enabled. Disabling does not disable Exceptions..
+        ///   Looks up a localized string similar to Maximum number of parallel workers to use for operations in Firebird..
         /// </summary>
         public static string OptionDescriptionEquivalencyParallelWorkers {
             get {

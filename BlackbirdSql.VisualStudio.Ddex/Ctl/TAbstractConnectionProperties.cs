@@ -6,10 +6,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
+using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
@@ -31,7 +32,10 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 {
 	private CsbAgent _ConnectionStringBuilder;
 
-	private readonly object _LockObject = new object();
+	protected readonly object _LockObject = new object();
+
+	// private static int _StaticCardinal = -1;
+	// private int _InstanceCardinal = -1;
 
 
 	public virtual object this[string key]
@@ -113,6 +117,14 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 
 	bool ICollection<KeyValuePair<string, object>>.IsReadOnly => ConnectionStringBuilder.IsReadOnly;
 
+	protected EnConnectionSource ConnectionSource
+	{
+		get
+		{
+			return UnsafeCmd.GetConnectionSource();
+		}
+	}
+
 	protected CsbAgent ConnectionStringBuilder
 	{
 		get
@@ -138,10 +150,28 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 
 	public virtual void Parse(string connectionString)
 	{
-		// Tracer.Trace(GetType(), "Parse()", "connectionString: {0}", connectionString);
-
 		lock (_LockObject)
+		{
 			ConnectionStringBuilder.ConnectionString = connectionString;
+
+			if (ConnectionSource == EnConnectionSource.Application
+				|| ConnectionSource == EnConnectionSource.EntityDataModel)
+			{
+				foreach (Describer describer in CsbAgent.AdvancedKeys)
+				{
+					if (!describer.IsConnectionParameter)
+						ConnectionStringBuilder.Remove(describer.Key);
+				}
+
+				if (ConnectionSource == EnConnectionSource.EntityDataModel)
+				{
+					ConnectionStringBuilder["edmx"] = true;
+					ConnectionStringBuilder.Remove("edmu");
+				}
+			}
+
+			// Tracer.Trace(GetType(), "Parse()", "ConnectionSource: {0}, connectionString: {1}", ConnectionSource, ConnectionStringBuilder.ConnectionString);
+		}
 
 		OnPropertyChanged(new PropertyChangedEventArgs(string.Empty));
 	}

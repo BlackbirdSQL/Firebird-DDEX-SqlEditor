@@ -241,6 +241,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The edmx wizard is slow. Procedures may take a long time to complete on slow networks..
+        /// </summary>
+        internal static string TConnectionUIControl_DatasetKeyDescription_EntityDataModel {
+            get {
+                return ResourceManager.GetString("TConnectionUIControl_DatasetKeyDescription_EntityDataModel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &amp;Add....
         /// </summary>
         internal static string TDataConnectionAdvancedDlg_Add {

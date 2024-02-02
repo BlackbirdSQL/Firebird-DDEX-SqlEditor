@@ -111,13 +111,14 @@ static class ExtensionMembers
 			return null;
 
 		string retval;
-		IVsDataObject @object = value.ConnectionNode.Object;
+		IVsDataObject @object = (IVsDataObject)Reflect.GetFieldValueBase(value.ConnectionNode, "_object", BindingFlags.Instance | BindingFlags.NonPublic);
+
 
 		if (@object == null)
 		{
-			string connectionSring = DataProtection.DecryptString(value.EncryptedConnectionString);
+			string connectionString = DataProtection.DecryptString(value.EncryptedConnectionString);
 
-			retval = RctManager.GetConnectionKey(CsbAgent.CreateConnectionUrl(connectionSring));
+			retval = RctManager.GetConnectionKey(CsbAgent.CreateConnectionUrl(connectionString));
 
 			retval ??= value.DisplayName;
 

@@ -50,35 +50,6 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		if (isInternal)
-		{
-			_ConnectionSource = EnConnectionSource.Session;
-		}
-		else
-		{
-			string objectKind = Core.Controller.Instance.Dte.ActiveWindow.ObjectKind;
-			string objectType = Core.Controller.Instance.Dte.ActiveWindow.Object.GetType().FullName;
-			string appGuid = VSConstants.CLSID.VsTextBuffer_string;
-			string seGuid = VSConstants.StandardToolWindows.ServerExplorer.ToString("B", CultureInfo.InvariantCulture);
-
-			if (objectKind.Equals(seGuid, StringComparison.InvariantCultureIgnoreCase))
-			{
-				_ConnectionSource = EnConnectionSource.ServerExplorer;
-			}
-			else if (objectKind.Equals(appGuid, StringComparison.InvariantCultureIgnoreCase)
-				&& objectType.Equals("System.ComponentModel.Design.DesignerHost",
-					StringComparison.InvariantCultureIgnoreCase))
-			{
-				_ConnectionSource = EnConnectionSource.Application;
-			}
-			else
-			{
-				COMException ex = new COMException($"Invalid ConnectionSource. ObjectKind: {objectKind}, ObjectType: {objectType}.");
-				Diag.Dug(ex);
-				throw ex;
-			}
-		}
-
 		try
 		{
 			if (RctManager.ShutdownState || !RctManager.LoadConfiguredConnections(false))
@@ -88,17 +59,25 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				if (RctManager.ShutdownState)
 					ex = new("RunningConnectionTable is in a shutdown state. Aborting.");
 				else
-						ex = new("RunningConnectionTable is not loaded.");
+					ex = new("RunningConnectionTable is not loaded.");
 				Diag.Dug(ex);
 				throw ex;
 			}
 
 			InitializeComponent();
 
-			if (_ConnectionSource == EnConnectionSource.Application)
+			if (ConnectionSource == EnConnectionSource.Application)
+			{
 				lblDatasetKeyDescription.Text = ControlsResources.TConnectionUIControl_DatasetKeyDescription_Application;
+			}
+			else if (ConnectionSource == EnConnectionSource.EntityDataModel)
+			{
+				lblDatasetKeyDescription.Text = ControlsResources.TConnectionUIControl_DatasetKeyDescription_EntityDataModel;
+			}
 			else
+			{
 				lblDatasetKeyDescription.Text = ControlsResources.TConnectionUIControl_DatasetKeyDescription;
+			}
 
 			// Diag.Trace("Creating erd");
 			_DataSources = new()
@@ -170,7 +149,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 	private readonly ErmBindingSource _DataSources;
 	private int _EventsCardinal = 0;
-	protected readonly EnConnectionSource _ConnectionSource = EnConnectionSource.Unknown;
+	private EnConnectionSource _ConnectionSource = EnConnectionSource.Unknown;
 	private bool _EventsLoaded = false;
 
 	private Delegate _OnVerifySettingsDelegate;
@@ -192,6 +171,18 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	// =========================================================================================================
 	#region Property Accessors - TConnectionUIControl
 	// =========================================================================================================
+
+
+	private EnConnectionSource ConnectionSource
+	{
+		get
+		{
+			if (_ConnectionSource == EnConnectionSource.Unknown)
+				_ConnectionSource = UnsafeCmd.GetConnectionSource();
+
+			return _ConnectionSource;
+		}
+	}
 
 
 	private bool InvalidDependent => _DataSources.DependentRow == null
@@ -322,6 +313,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 						BindingFlags.Instance | BindingFlags.NonPublic, btnAccept, "Click",
 						BindingFlags.Instance | BindingFlags.Public);
 				}
+
 			}
 
 
@@ -373,6 +365,33 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	}
 
 
+	private void RemoveGlyph()
+	{
+		EnConnectionSource source = (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource];
+
+		if (source == EnConnectionSource.EntityDataModel || source == EnConnectionSource.Application
+			|| source == EnConnectionSource.ExternalUtility)
+		{
+			int pos;
+			string datasetId = (string)Site[CoreConstants.C_KeyExDatasetId];
+
+			if ((pos = datasetId.IndexOf(RctManager.EdmDatasetGlyph)) != -1)
+				datasetId = datasetId.Remove(pos, 1);
+			else if ((pos = datasetId.IndexOf(RctManager.ProjectDatasetGlyph)) != -1)
+				datasetId = datasetId.Remove(pos, 1);
+			else if ((pos = datasetId.IndexOf(RctManager.UtilityDatasetGlyph)) != -1)
+				datasetId = datasetId.Remove(pos, 1);
+
+			if (pos != -1)
+			{
+				Site[CoreConstants.C_KeyExDatasetId] = datasetId;
+				Site[CoreConstants.C_KeyExDatasetKey] =
+					SystemData.DatasetKeyFmt.FmtRes((string)Site[CoreConstants.C_KeyDataSource], datasetId);
+			}
+		}
+	}
+
+
 
 	public void ShowError(IUIService uiService, string title, Exception ex)
 	{
@@ -418,8 +437,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				Site.Remove(CoreConstants.C_KeyExDatasetId);
 				Site.Remove(CoreConstants.C_KeyExDataset);
 				Site.Remove(CoreConstants.C_KeyExConnectionName);
-				if (_ConnectionSource == EnConnectionSource.Application)
-					Site[CoreConstants.C_KeyExConnectionSource] = EnConnectionSource.Application;
+				Site[CoreConstants.C_KeyExConnectionSource] = ConnectionSource;
 			}
 			catch (Exception ex)
 			{
@@ -597,34 +615,13 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 				Site.ValidateKeys();
 
-				// Take the glyph out of Application, EntityDataModel andExternalUtility source
+				// Take the glyph out of Application, EntityDataModel and ExternalUtility source
 				// dataset ids.
-				if (_ConnectionSource != EnConnectionSource.Application
+				if ((ConnectionSource != EnConnectionSource.Application)
 					&& Site.ContainsKey(CoreConstants.C_KeyExDatasetId)
 					&& Site.ContainsKey(CoreConstants.C_KeyExConnectionSource))
 				{
-					EnConnectionSource source = (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource];
-
-					if (source == EnConnectionSource.EntityDataModel || source == EnConnectionSource.Application
-						|| source == EnConnectionSource.ExternalUtility)
-					{
-						int pos;
-						string datasetId = (string)Site[CoreConstants.C_KeyExDatasetId];
-
-						if ((pos = datasetId.IndexOf(RctManager.EdmDatasetGlyph)) != -1)
-							datasetId = datasetId.Remove(pos, 1);
-						else if ((pos = datasetId.IndexOf(RctManager.ProjectDatasetGlyph)) != -1)
-							datasetId = datasetId.Remove(pos, 1);
-						else if ((pos = datasetId.IndexOf(RctManager.UtilityDatasetGlyph)) != -1)
-							datasetId = datasetId.Remove(pos, 1);
-
-						if (pos != -1)
-						{
-							Site[CoreConstants.C_KeyExDatasetId] = datasetId;
-							Site[CoreConstants.C_KeyExDatasetKey] =
-								SystemData.DatasetKeyFmt.FmtRes((string)Site[CoreConstants.C_KeyDataSource], datasetId);
-						}
-					}
+					RemoveGlyph();
 				}
 			}
 
@@ -741,10 +738,10 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 					{
 						if (describer.IsAdvanced || describer.IsConnectionParameter)
 							Site.Remove(describer.Key);
-						else if (describer.IsConnectionParameter)
-							Site[describer.Key] = describer.DefaultValue;
 					}
 				}
+
+				Site[CoreConstants.C_KeyExConnectionSource] = ConnectionSource;
 
 				_DataSources.Position = -1;
 			}
@@ -876,9 +873,9 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			if (string.IsNullOrWhiteSpace(_OriginalConnectionString))
 				_OriginalConnectionString = null;
 
-			_InsertMode = _OriginalConnectionString == null;
+			_InsertMode = ConnectionSource == EnConnectionSource.ServerExplorer && _OriginalConnectionString == null;
 
-			if (_ConnectionSource == EnConnectionSource.Application)
+			if (ConnectionSource == EnConnectionSource.Application)
 			{
 				foreach (Describer describer in CsbAgent.AdvancedKeys)
 				{
@@ -888,12 +885,12 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				if (!Site.ContainsKey(CoreConstants.C_KeyExConnectionSource)
 					|| (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource] == EnConnectionSource.Unknown)
 				{
-					Site[CoreConstants.C_KeyExConnectionSource] = EnConnectionSource.Application;
+					Site[CoreConstants.C_KeyExConnectionSource] = ConnectionSource;
 				}
 			}
 			else
 			{
-				if (_ConnectionSource == EnConnectionSource.ServerExplorer
+				if (ConnectionSource == EnConnectionSource.ServerExplorer
 					|| (Site.ContainsKey(CoreConstants.C_KeyExConnectionSource)
 					&& (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource] == EnConnectionSource.ServerExplorer))
 				{
@@ -918,45 +915,6 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	private void OnFormClosing(object sender, FormClosingEventArgs e)
 	{
 		// Tracer.Trace(GetType(), "OnFormClosing()", "Sender type: {0}, Parent type: {1}.", sender.GetType().FullName, Parent.GetType().FullName);
-
-		/*
-		if (!PersistentSettings.ValidateConnectionOnFormAccept)
-			return;
-
-
-		Cursor current = Cursor.Current;
-		Cursor.Current = Cursors.WaitCursor;
-
-		FbConnection connection = null;
-
-		try
-		{
-			string connectionString = Site.ToString();
-			connection = new(connectionString);
-
-			connection.Open();
-
-			if ((connection.State & System.Data.ConnectionState.Open) == 0)
-				throw new Microsoft.VisualStudio.Data.DataProviderException("BlackbirdSql", "Failed to connect to database.");
-			else
-				connection.Close();
-		}
-		catch (Exception ex3)
-		{
-			// string dataSource = ConnectionProperties["Data Source"] as string;
-			Cursor.Current = current;
-			ShowError(ControlsResources.TConnectionUIControl_ConnectionFailed, ex3);
-
-			e.Cancel = true;
-			return;
-		}
-		finally
-		{
-			connection?.Dispose();
-		}
-
-		Cursor.Current = current;
-		*/
 	}
 
 
@@ -972,15 +930,9 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		_HandleNewInternally = false;
 		_HandleModifyInternally = false;
 
-		if (_ConnectionSource == EnConnectionSource.Application)
-		{
-			foreach (Describer describer in CsbAgent.AdvancedKeys)
-			{
-				if (!describer.IsConnectionParameter)
-					Site.Remove(describer.Key);
-			}
+		if (ConnectionSource == EnConnectionSource.Application)
 			return;
-		}
+
 
 		if (RctManager.ShutdownState)
 			return;
@@ -993,19 +945,16 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				throw ex;
 			}
 
-			// Tracer.Trace(GetType(), "OnAccept()", "Before validate - _InsertMode: {0}, _ConnectionSource: {1}\nSite.ToString(): {2}\n_OriginalConnectionString: {3}", _InsertMode, _ConnectionSource, Site.ToString(), _OriginalConnectionString ?? "Null");
-
 			(bool success, bool addInternally, bool modifyInternally)
-				= RctManager.ValidateSiteProperties(site, _ConnectionSource, _InsertMode, _OriginalConnectionString);
+				= RctManager.ValidateSiteProperties(site, ConnectionSource, _InsertMode, _OriginalConnectionString);
 
-			// Tracer.Trace(GetType(), "OnAccept()", "After validate - success: {0}, addInternally: {1}, modifyInternally: {2}, _InsertMode: {3}, _ConnectionSource: {4}\nSite.ToString(): {5}", success, addInternally, modifyInternally, _InsertMode, _ConnectionSource, Site.ToString());
 
 			_HandleNewInternally = addInternally;
 			_HandleModifyInternally = modifyInternally;
 
-			// This only applies if the _ConnectionSource is SqlEditor and a new unique connection
+			// This only applies if the ConnectionSource is SqlEditor and a new unique connection
 			// is going to be created.
-			if (_ConnectionSource == EnConnectionSource.Session
+			if (ConnectionSource == EnConnectionSource.Session
 				&& Parent != null && Parent.Parent is IBDataConnectionDlg dlg)
 			{
 				_HandleNewInternally &= dlg.UpdateServerExplorer;
@@ -1016,6 +965,8 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				(Parent.Parent as Form).DialogResult = DialogResult.None;
 				return;
 			}
+
+
 		}
 		catch (Exception ex)
 		{
@@ -1032,27 +983,34 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	{
 		// Validate the new parse request connection string and then apply.
 
-		// Tracer.Trace(GetType(), "OnVerifySettings()", "Verifying - _ConnectionSource: {0}.", _ConnectionSource);
 
-		if (_ConnectionSource == EnConnectionSource.Application || RctManager.ShutdownState)
+		if (RctManager.ShutdownState)
 			return;
 
+		if (ConnectionSource == EnConnectionSource.Application
+			|| (ConnectionSource == EnConnectionSource.EntityDataModel && !_HandleNewInternally
+			&& !_HandleModifyInternally))
+		{
+			return;
+		}
 
-		// Tracer.Trace(GetType(), "OnVerifySettings()", "Before UpdateOrRegisterConnection Site.ToString(): {0}.", Site.ToString());
+		// Tracer.Trace(GetType(), "OnVerifySettings()", "Before Verify - ConnectionSource: {0}, _HandleNewInternally: {1}, _HandleModifyInternally: {2}, Site.ToString(): {3}.", ConnectionSource, _HandleNewInternally, _HandleModifyInternally, Site.ToString());
+
+
+		EnConnectionSource registrationSource = ConnectionSource == EnConnectionSource.EntityDataModel
+			? EnConnectionSource.ServerExplorer : ConnectionSource;
 
 		try
 		{
 			// Try to update an existing instance.
-			RctManager.UpdateOrRegisterConnection(Site.ToString(), _ConnectionSource, _HandleNewInternally, _HandleModifyInternally);
+			RctManager.UpdateOrRegisterConnection(Site.ToString(), registrationSource, _HandleNewInternally, _HandleModifyInternally);
 		}
 		catch (Exception ex)
 		{
 			Diag.Dug(ex);
 		}
 
-		// Tracer.Trace(GetType(), "OnVerifySettings()", "After UpdateOrRegisterConnection Site.ToString(): {0}.", Site.ToString());
-
-		if (_ConnectionSource == EnConnectionSource.ServerExplorer)
+		if (ConnectionSource == EnConnectionSource.ServerExplorer)
 		{
 			if (_HandleNewInternally || _HandleModifyInternally)
 			{
@@ -1063,6 +1021,9 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 				RctManager.StoreUnadvisedConnection(Site.ToString());
 			}
 		}
+
+		// Tracer.Trace(GetType(), "OnVerifySettings()", "After Verify - ConnectionSource: {0}, Site.ToString(): {1}.", ConnectionSource, Site.ToString());
+
 	}
 
 

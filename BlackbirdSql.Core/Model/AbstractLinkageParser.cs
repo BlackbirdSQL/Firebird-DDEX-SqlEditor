@@ -265,7 +265,6 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 
 	private static IBProviderSchemaFactory _SchemaFactory = null;
-	protected static Type _SchemaFactoryType = null;
 
 	protected static AbstractLinkageParser _TransientParser = null;
 	protected bool _IsIntransient = false;
@@ -435,7 +434,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// of threads is inconsistent in debug vs normal runs.
 	/// </remarks>
 	private static IBProviderSchemaFactory SchemaFactory => _SchemaFactory ??=
-		(IBProviderSchemaFactory)Activator.CreateInstance(_SchemaFactoryType);
+		(IBProviderSchemaFactory)Activator.CreateInstance(Controller.SchemaFactoryType);
 
 
 

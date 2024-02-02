@@ -17,6 +17,10 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft;
 using System.Collections.Generic;
+using BlackbirdSql.Core.Model.Enums;
+using Microsoft.VisualStudio.RpcContracts.RemoteUI;
+using Microsoft.VisualStudio;
+using System.Runtime.InteropServices;
 
 
 
@@ -116,6 +120,69 @@ public abstract class UnsafeCmd
 	}
 
 
+	public static EnConnectionSource GetConnectionSource()
+	{
+		EnConnectionSource source;
+
+		Window window = Controller.Instance.Dte.ActiveWindow;
+		if (window == null)
+			return EnConnectionSource.Unknown;
+
+		string objectKind = window.ObjectKind;
+		if (objectKind == null)
+			return EnConnectionSource.Unknown;
+
+		object @object = window.Object;
+		if (@object == null)
+			return EnConnectionSource.Unknown;
+
+
+		string objectType = @object.GetType().FullName;
+
+		string appGuid = VSConstants.CLSID.VsTextBuffer_string;
+		string solutionExplorerGuid
+			= VSConstants.StandardToolWindows.SolutionExplorer.ToString("B", CultureInfo.InvariantCulture);
+		string outputToolWindowGuid = VSConstants.StandardToolWindows.Output_string;
+		string seGuid = VSConstants.StandardToolWindows.ServerExplorer.ToString("B", CultureInfo.InvariantCulture);
+
+		if (objectKind.Equals(outputToolWindowGuid, StringComparison.InvariantCultureIgnoreCase)
+			&& objectType.Equals("System.__ComObject", StringComparison.InvariantCultureIgnoreCase))
+		{
+			source = EnConnectionSource.Unknown;
+		}
+		else if (objectKind.Equals(seGuid, StringComparison.InvariantCultureIgnoreCase))
+		{
+			source = EnConnectionSource.ServerExplorer;
+		}
+		else if (objectKind.Equals(appGuid, StringComparison.InvariantCultureIgnoreCase)
+			&& objectType.Equals("System.__ComObject", StringComparison.InvariantCultureIgnoreCase))
+		{
+			source = EnConnectionSource.Session;
+		}
+		else if (objectKind.Equals(appGuid, StringComparison.InvariantCultureIgnoreCase)
+			&& objectType.Equals("System.ComponentModel.Design.DesignerHost",
+			StringComparison.InvariantCultureIgnoreCase))
+		{
+			source = EnConnectionSource.Application;
+		}
+		else if (objectKind.Equals(solutionExplorerGuid, StringComparison.InvariantCultureIgnoreCase)
+			&& objectType.Equals("Microsoft.VisualStudio.PlatformUI.UIHierarchyMarshaler",
+			StringComparison.InvariantCultureIgnoreCase))
+		{
+			source = EnConnectionSource.EntityDataModel;
+		}
+		else
+		{
+			COMException ex = new COMException($"Unknown ConnectionSource. ObjectKind: {objectKind}, ObjectType: {objectType}.");
+			Diag.Dug(ex);
+			source = EnConnectionSource.Unknown;
+		}
+
+		// Tracer.Trace(typeof(UnsafeCmd), "GetConnectionSource()", "ConnectionSource: {0}, objectKind: {1}, objectType: {2}.", source.ToString(), objectKind, Core.Controller.Instance.Dte.ActiveWindow.Object.GetType().AssemblyQualifiedName);
+
+		return source;
+	}
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -125,114 +192,115 @@ public abstract class UnsafeCmd
 	/// <returns>true if project is CPS</returns>
 	// ---------------------------------------------------------------------------------
 	public static bool IsCpsProject(IVsHierarchy hierarchy)
+{
+	Requires.NotNull(hierarchy, "hierarchy");
+	return hierarchy.IsCapabilityMatch("CPS");
+}
+
+
+
+
+
+// ---------------------------------------------------------------------------------
+/// <summary>
+/// Checks wether the project is a valid executable output type that requires
+/// configuration of the app.config
+/// </summary>
+/// <param name="project"></param>
+/// <returns>
+/// True if the project is a valid C#/VB executable project else false.
+/// </returns>
+/// <remarks>
+/// We're not going to worry about anything but C# and VB non=CSP projects
+/// </remarks>
+// ---------------------------------------------------------------------------------
+public static bool IsValidExecutableProjectType(Project project, bool validateCps = true)
+{
+	Diag.ThrowIfNotOnUIThread();
+
+	// We're only supporting C# and VB projects for this - a dict list is at the end of this class
+	if (project.Kind != "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
+		&& project.Kind != "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}")
 	{
-		Requires.NotNull(hierarchy, "hierarchy");
-		return hierarchy.IsCapabilityMatch("CPS");
+		return false;
+	}
+
+	bool result = false;
+
+
+	// Don't process CPS projects
+	Controller.Instance.VsSolution.GetProjectOfUniqueName(project.UniqueName, out IVsHierarchy hierarchy);
+
+
+	if (validateCps && UnsafeCmd.IsCpsProject(hierarchy))
+		return false;
+
+	int outputType = int.MaxValue;
+
+	if (project.Properties != null && project.Properties.Count > 0)
+	{
+		Property property = project.Properties.Item("OutputType");
+		if (property != null)
+			outputType = (int)property.Value;
 	}
 
 
+	if (outputType < 3)
+		result = true;
+
+
+	return result;
+
+}
 
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Checks wether the project is a valid executable output type that requires
-	/// configuration of the app.config
-	/// </summary>
-	/// <param name="project"></param>
-	/// <returns>
-	/// True if the project is a valid C#/VB executable project else false.
-	/// </returns>
-	/// <remarks>
-	/// We're not going to worry about anything but C# and VB non=CSP projects
-	/// </remarks>
-	// ---------------------------------------------------------------------------------
-	public static bool IsValidExecutableProjectType(Project project, bool validateCps = true)
-	{
-		Diag.ThrowIfNotOnUIThread();
+// ---------------------------------------------------------------------------------
+/// <summary>
+/// Gets the descriptive name for a DTE object Kind guid string
+/// </summary>
+/// <param name="kind"></param>
+/// <returns>The descriptive name from <see cref="ProjectGuids"/></returns>
+// ---------------------------------------------------------------------------------
+public static string Kind(string kind)
+{
+	if (!ProjectGuids.TryGetValue(kind, out string name))
+		name = kind;
 
-		// We're only supporting C# and VB projects for this - a dict list is at the end of this class
-		if (project.Kind != "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
-			&& project.Kind != "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}")
-		{
-			return false;
-		}
-
-		bool result = false;
+	return name;
+}
 
 
-		// Don't process CPS projects
-		Controller.Instance.VsSolution.GetProjectOfUniqueName(project.UniqueName, out IVsHierarchy hierarchy);
+// ---------------------------------------------------------------------------------
+/// <summary>
+/// Returns True if project is VB or C#.
+/// </summary>
+// ---------------------------------------------------------------------------------
+public static bool IsProjectKind(string kind)
+{
+	if (!ProjectGuids.TryGetValue(kind, out string name))
+		return false;
 
-
-		if (validateCps && UnsafeCmd.IsCpsProject(hierarchy))
-			return false;
-
-		int outputType = int.MaxValue;
-
-		if (project.Properties != null && project.Properties.Count > 0)
-		{
-			Property property = project.Properties.Item("OutputType");
-			if (property != null)
-				outputType = (int)property.Value;
-		}
-
-
-		if (outputType < 3)
-			result = true;
-
-
-		return result;
-
-	}
+	return name.EndsWith("Project");
+}
 
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Gets the descriptive name for a DTE object Kind guid string
-	/// </summary>
-	/// <param name="kind"></param>
-	/// <returns>The descriptive name from <see cref="ProjectGuids"/></returns>
-	// ---------------------------------------------------------------------------------
-	public static string Kind(string kind)
-	{
-		if (!ProjectGuids.TryGetValue(kind, out string name))
-			name = kind;
-
-		return name;
-	}
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Returns True if project is VB or C#.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static bool IsProjectKind(string kind)
-	{
-		if (!ProjectGuids.TryGetValue(kind, out string name))
-			return false;
-
-		return name.EndsWith("Project");
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// DTE object Kind guid string descriptive name dictionary
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private static readonly Dictionary<string, string> ProjectGuids =
-		new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-	{
+// ---------------------------------------------------------------------------------
+/// <summary>
+/// DTE object Kind guid string descriptive name dictionary
+/// </summary>
+// ---------------------------------------------------------------------------------
+private static readonly Dictionary<string, string> ProjectGuids =
+	new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+{
 		{ "{2150E333-8FDC-42A3-9474-1A3956D46DE8}", "SolutionFolder" },
 		{ "{66A26720-8FB5-11D2-AA7E-00C04F688DDE}", "ProjectFolder" },
 		{ "{6BB5F8EF-4483-11D3-8BCF-00C04F8EC28C}", "PhysicalFolder" },
 		{ "{66A2671F-8FB5-11D2-AA7E-00C04F688DDE}", "MiscItem" },
 		{ "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}", "VbProject" },
-		{ "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", "C#Project" }
+		{ "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", "C#Project" },
+		{ "{3AE79031-E1BC-11D0-8F78-00A0C9110057}", "SolutionExplorer"}
 		/* The above the only one's we care about ATM
 		{ "{06A35CCD-C46D-44D5-987B-CF40FF872267}", "DeploymentMergeModule" },
 		{ "{14822709-B5A1-4724-98CA-57A101D1B079}", "Workflow(C#)" },
@@ -242,7 +310,6 @@ public abstract class UnsafeCmd
 		{ "{32F31D43-81CC-4C15-9DE6-3FC5453562B6}", "WorkflowFoundation" },
 		{ "{349C5851-65DF-11DA-9384-00065B846F21}", "WebApplicationProject" },
 		{ "{3AC096D0-A1C2-E12C-1390-A8335801FDAB}", "Test" },
-		{ "{3AE79031-E1BC-11D0-8F78-00A0C9110057}", "SolutionExplorer"},
 		{ "{3D9AD99F-2412-4246-B90B-4EAA41C64699}", "WCF" },
 		{ "{3EA9E505-35AC-4774-B492-AD1749C4943A}", "DeploymentCab" },
 		{ "{4B160523-D178-4405-B438-79FB67C8D499}", "NomadVSProject" },
@@ -297,7 +364,7 @@ public abstract class UnsafeCmd
 		{ "{FBB4BD86-BF63-432a-A6FB-6CF3A1288F83}", "InstallShieldLimitedEdition" },
 		{ ".nuget", "SettingsNuget" }
 		*/
-	};
+};
 
 
 

@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
@@ -19,6 +21,7 @@ using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Model.Interfaces;
 using BlackbirdSql.Core.Properties;
 using EnvDTE;
+using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell;
@@ -294,6 +297,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				}
 
 				AdviseEvents(explorerConnection);
+
 			}
 			catch (Exception ex)
 			{
@@ -632,7 +636,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// <seealso cref="AbstractRunningConnectionTable.GenerateUniqueDatasetKey"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public abstract (bool, string, string, string, string) GenerateUniqueDatasetKey(string proposedConnectionName,
+	public abstract (bool, EnConnectionSource, string, string, string, CsbAgent) GenerateUniqueDatasetKey(string proposedConnectionName,
 		string proposedDatasetId, string dataSource, string dataset, string connectionUrl, string originalConnectionUrl);
 
 
@@ -804,7 +808,6 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 			row["DataSourceLc"] = "";
 			row["Port"] = 0;
-			row["Name"] = "";
 			row["DatabaseLc"] = "";
 			row["Orderer"] = 0;
 
@@ -824,7 +827,6 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			row["Orderer"] = 1;
 			row["DataSource"] = Resources.ErmBindingSource_Reset;
 			row["DataSourceLc"] = Resources.ErmBindingSource_Reset.ToLowerInvariant();
-			row["Name"] = "";
 			row["Port"] = 0;
 			row["DatabaseLc"] = "";
 
@@ -844,7 +846,6 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				row["Orderer"] = 2;
 				row["DataSource"] = "localhost";
 				row["DataSourceLc"] = "localhost";
-				row["Name"] = "";
 				row["DatabaseLc"] = "";
 
 				// str = "AddLocalHostGhostRow: ";
@@ -882,15 +883,74 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
 
 		Guid clsidProvider = new(SystemData.ProviderGuid);
+		object @object;
+
+		IDictionary<string, IVsDataExplorerConnection> renewableConnections = new Dictionary<string, IVsDataExplorerConnection>();
+
+		// If the connection is open repair SE glitch by renewing connection.
+		foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in manager.Connections)
+		{
+			if (pair.Value.Provider != clsidProvider)
+				continue;
+
+			// ConnectionNode.Object != null implies connection was sited. We don't use the property accessor
+			// because that would create node.Object.
+			try
+			{
+				@object = Reflect.GetFieldValueBase(pair.Value.ConnectionNode, "_object", BindingFlags.Instance | BindingFlags.NonPublic);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				continue;
+			}
+
+			if (@object == null)
+				continue;
+
+			try
+			{
+				// Tracer.Trace(GetType(), "LoadServerExplorerConfiguredConnections()", "RenewableConnection: {0}.", pair.Value.DisplayName);
+				renewableConnections[pair.Key] = pair.Value;
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+			}
+
+		}
+
+		if (renewableConnections.Count > 0)
+		{
+			string encryptedConnectionString;
+
+			foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in renewableConnections)
+			{
+				encryptedConnectionString = pair.Value.EncryptedConnectionString;
+
+				// Remove and recreate the corrupted SE connecton.
+				manager.RemoveConnection(pair.Value);
+				LinkageParser.DisposeInstance(pair.Value.Connection, true);
+
+				manager.AddConnection(pair.Key, clsidProvider, encryptedConnectionString, true);
+			}
+		}
+
+		string connectionName;
 
 		foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in manager.Connections)
 		{
 			if (pair.Value.Provider != clsidProvider)
 				continue;
 
+			connectionName = pair.Value.ConnectionNode.Name;
+
+			if (connectionName.Equals("Database", StringComparison.OrdinalIgnoreCase))
+				connectionName = pair.Key;
+
 			try
 			{
-				LoadServerExplorerConfiguredConnectionImpl(pair.Value.ConnectionNode.Name,
+				LoadServerExplorerConfiguredConnectionImpl(connectionName,
 					DataProtection.DecryptString(pair.Value.EncryptedConnectionString));
 			}
 			catch (Exception ex)
@@ -928,7 +988,6 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			connectionName = connectionName[10..^2];
 
 
-		// Tracer.Trace(GetType(), "RegisterAppConnectionStrings()", "Updated csb datasource: {0}, serverName: {1}, connectionstring: {2}.", datasource, serverName, csa.ConnectionString);
 
 		datasetId = csa.DatasetId;
 
@@ -939,6 +998,9 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		try
 		{
+			// Tracer.Trace(GetType(), "LoadServerExplorerConfiguredConnectionImpl()",
+			//	"ConnectionName: {0}, datasetId: {1}, csa: {2}.", connectionName, datasetId, csa.ConnectionString);
+
 			// The datasetId may not be unique at this juncture and already registered.
 			row = RegisterUniqueConnectionImpl(connectionName, datasetId,
 				EnConnectionSource.ServerExplorer, ref csa);
@@ -1043,7 +1105,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				current = (Project)_Probjects[0];
 			}
 		}
-		
+
 	}
 
 
@@ -1219,6 +1281,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		ClearAsyncPayloadLauncher();
 
+		LinkSitedServerExplorerConnections();
+
 		return result;
 
 	}
@@ -1322,10 +1386,49 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		ClearAsyncPayloadLauncher();
 
+
+		LinkSitedServerExplorerConnections();
+
 		return result;
 
 	}
 
+
+	private void LinkSitedServerExplorerConnections()
+	{
+		IVsDataExplorerConnectionManager manager =
+			(Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
+			as IVsDataExplorerConnectionManager)
+		?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
+
+		Guid clsidProvider = new(SystemData.ProviderGuid);
+		IVsDataExplorerConnection explorerConnection;
+
+
+		foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in manager.Connections)
+		{
+			if (pair.Value.Provider != clsidProvider)
+				continue;
+
+			explorerConnection = pair.Value;
+
+			try
+			{
+				// Tracer.Trace(GetType(), "AdviseServerExplorerConnectionsEvents()", "Advising SE events for: {0}.", pair.Key);
+
+				if (explorerConnection.Connection != null && explorerConnection.Connection.State == DataConnectionState.Open)
+				{
+					LinkageParser.EnsureLoaded(explorerConnection.Connection);
+				}
+
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+			}
+		}
+
+	}
 
 
 	// ---------------------------------------------------------------------------------
@@ -1551,8 +1654,11 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 						ConnectionString = connectionNode.Attributes["connectionString"].Value
 					};
 
-					if (!csb.ContainsKey("provider") || !((string)csb["provider"]).Equals(SystemData.Invariant, StringComparison.InvariantCultureIgnoreCase))
+					if (!csb.ContainsKey("provider")
+						|| !((string)csb["provider"]).Equals(SystemData.Invariant, StringComparison.InvariantCultureIgnoreCase))
+					{
 						continue;
+					}
 
 					connectionString = csb.ContainsKey("provider connection string")
 						? (string)csb["provider connection string"] : null;
@@ -1564,6 +1670,14 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 					csa = new(connectionString);
 
+					foreach (Describer describer in CsbAgent.AdvancedKeys)
+					{
+						if (!describer.IsConnectionParameter)
+							csa.Remove(describer.Key);
+					}
+
+					csa.Remove("edmx");
+					csa.Remove("edmu");
 
 					// The datasetId may not be unique at this juncture and already registered.
 					row = RegisterUniqueConnectionImpl(null, datasetId,
@@ -1602,6 +1716,11 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 				csa = new(connectionNode.Attributes["connectionString"].Value);
 
+				foreach (Describer describer in CsbAgent.AdvancedKeys)
+				{
+					if (!describer.IsConnectionParameter)
+						csa.Remove(describer.Key);
+				}
 
 				// Tracer.Trace(GetType(), "RegisterAppConnectionStrings()", "datasource: {0}, dataset: {1}, serverName: {2}, ConnectionName: {3}, datasetId: {4}, Connectionstring: {5}, storedConnectionString: {6}.", datasource, csa.Dataset, serverName, csa.ConnectionName, datasetId, csa.ConnectionString, connectionNode.Attributes["connectionString"].Value);
 
@@ -1678,7 +1797,6 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			row["DataSource"] = serverName;
 			row["DataSourceLc"] = serverName.ToLower();
 			row["Port"] = port;
-			row["Name"] = "";
 			row["DatabaseLc"] = "";
 
 			if (serverName == "localhost")
@@ -1820,7 +1938,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 					proposedDatasetId = proposedDatasetId.Remove(pos, 1);
 			}
 
-			(_, string uniqueDatasetKey, string uniqueConnectionName, string uniqueDatasetId, _) =
+			(_, _, string uniqueDatasetKey, string uniqueConnectionName, string uniqueDatasetId, _) =
 				GenerateUniqueDatasetKey(proposedConnectionName, proposedDatasetId, csa.DataSource, csa.Dataset, connectionUrl, null);
 
 			csa.DatasetKey = uniqueDatasetKey;
@@ -1862,7 +1980,6 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 			DataRow row = CreateDataRow(csa);
 
-			row["Name"] = csa.DatasetId;
 			row["DataSourceLc"] = csa.DataSource.ToLower();
 			row["DatabaseLc"] = csa.Database.ToLower();
 			row[C_KeyExConnectionUrl] = connectionUrl;
@@ -2160,6 +2277,9 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 						}
 						updated = true;
 						row[describer.Name] = csaValue;
+						if (describer.Name == C_KeyExDatasetId)
+							row["Name"] = csaValue;
+
 					}
 					continue;
 				}
@@ -2175,6 +2295,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 					}
 					updated = true;
 					row[describer.Name] = DBNull.Value;
+					if (describer.Name == C_KeyExDatasetId)
+						row["Name"] = "";
 					continue;
 				}
 
@@ -2188,6 +2310,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 					}
 					updated = true;
 					row[describer.Name] = DBNull.Value;
+					if (describer.Name == C_KeyExDatasetId)
+						row["Name"] = "";
 				}
 			}
 
@@ -2366,40 +2490,59 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 
 	/// <summary>
-	/// Node renames occur here.
+	/// Node renames occur here and a sanity check that the edmx wizard has not corrupted
+	/// the root node.
 	/// </summary>
 	private void OnExplorerConnectionNodeChanged(object sender, DataExplorerNodeEventArgs e)
 	{
 		if (_Instance != null && _EventsCardinal != 0)
 			return;
 
-		// Tracer.Trace(GetType(), "OnExplorerConnectionNodeChanged()");
-
-		if (e.Node.IsExpanding || e.Node.IsRefreshing || e.Node.ExplorerConnection == null
+		// We're only interested in node value changes.
+		if (e.Node == null || e.Node.IsExpanding || e.Node.IsRefreshing || e.Node.ExplorerConnection == null
+			|| e.Node.ExplorerConnection.ConnectionNode == null
+			|| e.Node.ExplorerConnection.DisplayName == null
+			|| e.Node.ExplorerConnection.EncryptedConnectionString == null
 			|| e.Node != e.Node.ExplorerConnection.ConnectionNode)
 		{
 			return;
 		}
 
+
+		// Tracer.Trace(GetType(), "OnExplorerConnectionNodeChanged()");
+
+		// If instance is null there's been a shutdown and we've been left dangling.
 		if (_Instance == null)
 		{
 			UnadviseEvents(e.Node.ExplorerConnection);
 			return;
 		}
 
+		CsbAgent csa = new(DataProtection.DecryptString(e.Node.ExplorerConnection.EncryptedConnectionString));
 
-		bool objectExists = (bool)Reflect.GetFieldValue(sender, "_gotRootObject", BindingFlags.Instance | BindingFlags.NonPublic);
+		if (!csa.ContainsKey("edmx") && !csa.ContainsKey("edmu") && csa.ContainsKey(CoreConstants.C_KeyExDatasetKey))
+		{
 
-		IVsDataObject @object = objectExists ? e.Node.Object : null;
+			// Check if node.Object exists before accessing it otherwise the root node will be initialized
+			// with a call to TObjectSelectorRoot.SelectObjects.
 
-		string datasetKey = @object != null && @object.Properties != null
-			&& @object.Properties.ContainsKey(CoreConstants.C_KeyExDatasetKey)
-			? (string)@object.Properties[CoreConstants.C_KeyExDatasetKey] : null;
+			string datasetKey = csa.DatasetKey;
 
-		if (datasetKey != null && datasetKey == e.Node.ExplorerConnection.DisplayName)
-			return;
+			// DatasetKey will be null if the edmx has corrupted the root node.
+			if (!string.IsNullOrEmpty(datasetKey) && datasetKey == e.Node.ExplorerConnection.DisplayName)
+				return;
+		}
 
-		RctManager.ValidateAndUpdateExplorerConnectionRename(e.Node.ExplorerConnection, e.Node.ExplorerConnection.DisplayName);
+		try
+		{
+			// Tracer.Trace(GetType(), "OnExplorerConnectionNodeChanged()", "Calling rename: csa.DatasetKey: {0}, e.Node.ExplorerConnection.DisplayName: {1}, csa.ContainsKey(edmu): {2}, csa.ContainsKey(edmu): {3}.", csa.DatasetKey, e.Node.ExplorerConnection.DisplayName, csa.ContainsKey("edmx"), csa.ContainsKey("edmu"));
+			RctManager.ValidateAndUpdateExplorerConnectionRename(e.Node.ExplorerConnection, e.Node.ExplorerConnection.DisplayName, csa);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
 	}
 
 

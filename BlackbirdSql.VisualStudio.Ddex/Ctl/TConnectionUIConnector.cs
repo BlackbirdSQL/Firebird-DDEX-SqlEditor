@@ -27,7 +27,7 @@ public class TConnectionUIConnector : DataConnectionUIConnector
 
 	public TConnectionUIConnector() :base()
 	{
-		// Tracer.Trace(GetType(), "TConnectionUIConnector()");
+		// Tracer.Trace(typeof(TConnectionUIConnector), "TConnectionUIConnector()");
 	}
 
 

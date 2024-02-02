@@ -6,12 +6,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Common;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
+using BlackbirdSql.VisualStudio.Ddex.Controls;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
@@ -29,10 +31,29 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 public class TConnectionProperties : TAbstractConnectionProperties, IBDataConnectionProperties
 {
 
+	// ---------------------------------------------------------------------------------
+	#region Constructors / Destructors - TConnectionProperties
+	// ---------------------------------------------------------------------------------
 
-	// ---------------------------------------------------------------------------------
+
+	/// <summary>
+	/// TConnectionProperties .ctor
+	/// </summary>
+	public TConnectionProperties() : base()
+	{
+		// Tracer.Trace(GetType(), "TConnectionProperties.TConnectionProperties()");
+	}
+
+
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =================================================================================
 	#region Fields - TConnectionProperties
-	// ---------------------------------------------------------------------------------
+	// =================================================================================
 
 
 	#endregion Fields
@@ -48,38 +69,6 @@ public class TConnectionProperties : TAbstractConnectionProperties, IBDataConnec
 
 	public CsbAgent Csa => ConnectionStringBuilder;
 
-	public EnConnectionSource ConnectionSource
-	{
-		get
-		{
-			try
-			{
-				Diag.ThrowIfNotOnUIThread();
-
-				string objectKind = Core.Controller.Instance.Dte.ActiveWindow.ObjectKind;
-				string objectType = Core.Controller.Instance.Dte.ActiveWindow.Object.GetType().FullName;
-				string appGuid = VSConstants.CLSID.VsTextBuffer_string;
-				string seGuid = VSConstants.StandardToolWindows.ServerExplorer.ToString("B", CultureInfo.InvariantCulture);
-
-				if (objectKind.Equals(seGuid, StringComparison.InvariantCultureIgnoreCase))
-				{
-					return EnConnectionSource.ServerExplorer;
-				}
-				else if (objectKind.Equals(appGuid, StringComparison.InvariantCultureIgnoreCase)
-					&& objectType.Equals("System.ComponentModel.Design.DesignerHost",
-						StringComparison.InvariantCultureIgnoreCase))
-				{
-					return EnConnectionSource.Application;
-				}
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-			}
-
-			return EnConnectionSource.Session;
-		}
-	}
 
 	/// <summary>
 	/// Determines if the connection properties object is sufficiently complete (inclusive of password)
@@ -89,7 +78,7 @@ public class TConnectionProperties : TAbstractConnectionProperties, IBDataConnec
 	{
 		get
 		{
-			IEnumerable<Describer> describers = ConnectionSource == EnConnectionSource.Application
+			IEnumerable<Describer> describers = (ConnectionSource == EnConnectionSource.Application)
 				? CsbAgent.PublicMandatoryKeys : CsbAgent.MandatoryKeys;
 
 			foreach (Describer describer in describers)
@@ -107,28 +96,6 @@ public class TConnectionProperties : TAbstractConnectionProperties, IBDataConnec
 
 
 	#endregion Property Accessors
-
-
-
-
-
-	// =================================================================================
-	#region Constructors / Destructors - TConnectionProperties
-	// =================================================================================
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// TConnectionProperties .ctor
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public TConnectionProperties() : base()
-	{
-		// Tracer.Trace(GetType(), "TConnectionProperties.TConnectionProperties()");
-	}
-
-
-	#endregion Constructors / Destructors
 
 
 

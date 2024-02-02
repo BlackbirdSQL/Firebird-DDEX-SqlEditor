@@ -1,4 +1,5 @@
-﻿using BlackbirdSql.Core.Ctl.Diagnostics;
+﻿using System.Reflection;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using Microsoft.VisualStudio.Data.Services;
 
 
@@ -180,7 +181,7 @@ public static class EnModelObjectTypeExtensions
 
 	public static EnModelObjectType ModelObjectType(this IVsDataExplorerNode node)
 	{
-		if (node.Object == null)
+		if (node == null || node.Object == null)
 			return EnModelObjectType.Unknown;
 
 		// Tracer.Trace(typeof(EnModelObjectTypeExtensions), "ModelObjectType", "Node type for node '{0}' is {1}.", node.Name, node.Object.Type.Name.ToUpperInvariant());

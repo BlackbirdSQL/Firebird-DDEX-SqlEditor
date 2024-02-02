@@ -4,13 +4,13 @@
 
 using System;
 using System.ComponentModel;
-using BlackbirdSql.Core;
+using System.Data.Common;
 using System.Reflection;
+using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
-using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model.Enums;
-using System.Data.Common;
+using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
@@ -30,6 +30,8 @@ public class TConnectionUIProperties : TConnectionProperties
 		// Tracer.Trace(GetType(), "TConnectionUIProperties()");
 	}
 
+	// private static int _StaticCardinal = -1;
+	// private int _InstanceCardinal = -1;
 
 
 	/// <summary>
@@ -65,6 +67,26 @@ public class TConnectionUIProperties : TConnectionProperties
 		// Tracer.Trace(GetType(), "Reset()");
 
 		base.Reset();
+	}
+
+
+
+	public override void Parse(string connectionString)
+	{
+		lock (_LockObject)
+		{
+			ConnectionStringBuilder.ConnectionString = connectionString;
+
+			if (ConnectionSource == EnConnectionSource.EntityDataModel)
+			{
+				ConnectionStringBuilder.Remove("edmx");
+				ConnectionStringBuilder["edmu"] = true;
+			}
+
+			// Tracer.Trace(GetType(), "Parse()", "ConnectionSource: {0}, connectionString: {1}", ConnectionSource, ConnectionStringBuilder.ConnectionString);
+		}
+
+		OnPropertyChanged(new PropertyChangedEventArgs(string.Empty));
 	}
 
 

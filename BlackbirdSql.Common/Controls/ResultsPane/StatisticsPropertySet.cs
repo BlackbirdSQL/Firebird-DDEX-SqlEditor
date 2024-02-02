@@ -23,24 +23,17 @@ public class StatisticsPropertySet
 
 
 
-	public struct StatisticEntity
+	public struct StatisticEntity(string name, EnStatisticSpecialAction specialAction, bool calculateAverage = true)
 	{
-		public static ResourceManager ResMgr => AttributeResources.ResourceManager;
+		public string Name = name;
+		public EnStatisticSpecialAction SpecialAction = specialAction;
+		public bool CalculateAverage = calculateAverage;
 
-		public string Name;
+
+		public static ResourceManager ResMgr => AttributeResources.ResourceManager;
 
 		public readonly string DisplayName => ResMgr.GetString("StatisticsPanelStat" + Name);
 
-		public EnStatisticSpecialAction SpecialAction;
-
-		public bool CalculateAverage;
-
-		public StatisticEntity(string name, EnStatisticSpecialAction specialAction, bool calculateAverage = true)
-		{
-			Name = name;
-			SpecialAction = specialAction;
-			CalculateAverage = calculateAverage;
-		}
 	}
 
 
@@ -52,27 +45,27 @@ public class StatisticsPropertySet
 	/// <summary>
 	/// Array of statistics categories
 	/// </summary>
-	public static readonly string[] SCategoryNames = new string[5]
-	{
+	public static readonly string[] SCategoryNames =
+	[
 		AttributeResources.StatisticsPanelCategorySnapshotTimestamp,
 		AttributeResources.StatisticsPanelCategoryQueryProfileStats,
 		AttributeResources.StatisticsPanelCategoryNetworkStats,
 		AttributeResources.StatisticsPanelCategoryTimeStats,
 		AttributeResources.StatisticsPanelCategoryServerStats
-	};
+	];
 
 
 	/// <summary>
 	/// Delegates for generating Statistic category values.
 	/// </summary>
-	public static readonly GetCategoryValueDelegate[] SCategoryValueDelegates = new GetCategoryValueDelegate[5]
-	{
+	public static readonly GetCategoryValueDelegate[] SCategoryValueDelegates =
+	[
 		new GetCategoryValueDelegate(GetTimeOfExecution),
 		null,
 		null,
 		null,
 		null,
-	};
+	];
 
 
 	/// <summary>
@@ -84,54 +77,52 @@ public class StatisticsPropertySet
 	/// 3. Including it in the StatisticsConnection.Load() method, and
 	/// 4. Including it in StatisticsControl.RetrieveStatisticsIfNeeded()
 	/// </summary>
-	public static readonly StatisticEntity[][] SStatisticEntities = new StatisticEntity[5][]
-	{
+	public static readonly StatisticEntity[][] SStatisticEntities =
+	[
 		// ClientExecutionTime
 		new StatisticEntity[0],
 
 		// QueryProfileStatistics
-		new StatisticEntity[6]
-		{
+		[
 			new StatisticEntity("IduRowCount", EnStatisticSpecialAction.SIFormat),
 			new StatisticEntity("InsRowCount", EnStatisticSpecialAction.SIFormat),
 			new StatisticEntity("UpdRowCount", EnStatisticSpecialAction.SIFormat),
 			new StatisticEntity("DelRowCount", EnStatisticSpecialAction.SIFormat),
 			new StatisticEntity("SelectRowCount", EnStatisticSpecialAction.SIFormat),
 			new StatisticEntity("Transactions", EnStatisticSpecialAction.SIFormat)
-		},
+		],
 
 		// NetworkStatistics
-		new StatisticEntity[8]
-		{
+		[
 			new StatisticEntity("ServerRoundtrips", EnStatisticSpecialAction.SIFormat),
 			new StatisticEntity("BufferCount", EnStatisticSpecialAction.SIFormat, false),
 			new StatisticEntity("ReadCount", EnStatisticSpecialAction.SIFormat),
 			new StatisticEntity("WriteCount", EnStatisticSpecialAction.SIFormat),
+			// new StatisticEntity("ReadIdxCount", EnStatisticSpecialAction.SIFormat),
+			// new StatisticEntity("ReadSeqCount", EnStatisticSpecialAction.SIFormat),
 			new StatisticEntity("PurgeCount", EnStatisticSpecialAction.SIFormat),
 			new StatisticEntity("ExpungeCount", EnStatisticSpecialAction.SIFormat),
 			new StatisticEntity("Marks", EnStatisticSpecialAction.SIFormat),
 			new StatisticEntity("PacketSize", EnStatisticSpecialAction.ByteFormat, false)
-		},
+		],
 
 		// TimeStatistics
-		new StatisticEntity[3]
-		{
+		[
 			new StatisticEntity("ExecutionStartTimeEpoch", EnStatisticSpecialAction.DateTimeFormat, false),
 			new StatisticEntity("ExecutionEndTimeEpoch", EnStatisticSpecialAction.DateTimeFormat, false),
 			new StatisticEntity("ExecutionTimeTicks", EnStatisticSpecialAction.ElapsedTimeFormat),
-		},
+		],
 
 		// ServerStatistics
-		new StatisticEntity[6]
-		{
+		[
 			new StatisticEntity("AllocationPages", EnStatisticSpecialAction.SIFormat, false),
 			new StatisticEntity("CurrentMemory", EnStatisticSpecialAction.ByteFormat),
 			new StatisticEntity("MaxMemory", EnStatisticSpecialAction.ByteFormat),
 			new StatisticEntity("DatabaseSizeInPages", EnStatisticSpecialAction.SIFormat, false),
 			new StatisticEntity("PageSize", EnStatisticSpecialAction.ByteFormat, false),
 			new StatisticEntity("ActiveUserCount", EnStatisticSpecialAction.SIFormat)
-		}
-	};
+		]
+	];
 
 
 

@@ -872,6 +872,15 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to A new Server Explorer Connection will be created. Continue?.
+        /// </summary>
+        public static string RctManager_TextNewSEConnection {
+            get {
+                return ResourceManager.GetString("RctManager_TextNewSEConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remove failed. Property {0} does not exist..
         /// </summary>
         public static string Remove_Failed_Property_NotFound {

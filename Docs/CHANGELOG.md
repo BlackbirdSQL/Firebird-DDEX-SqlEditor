@@ -2,6 +2,10 @@
 
 ### Change log
 
+#### v10.1.2.2
+Synchronized edmx with RunningConnectionTable connection management.</br>
+Implemented recovery procedures for SE glitch that leaves a sited explorer connection corrupted and dangling after loading another solution.
+
 #### v10.1.2.1
 Included handling of IDE `no solution` state and early loading of the connection dialog.</br>
 Prevented LinkageParser replication when a weak equivalency has been refreshed.</br>

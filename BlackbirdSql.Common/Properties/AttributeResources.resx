@@ -401,7 +401,7 @@
     <value>Rows returned by SELECT statements</value>
   </data>
   <data name="StatisticsPanelStatServerRoundtrips" xml:space="preserve">
-    <value>Number of server roundtrips</value>
+    <value>Number of server fetches</value>
   </data>
   <data name="StatisticsPanelStatTransactions" xml:space="preserve">
     <value>Number of transactions </value>

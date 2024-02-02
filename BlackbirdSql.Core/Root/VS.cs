@@ -83,7 +83,6 @@ public abstract class VS
 
 	// Microsoft.VSDesigner.ServerExplorer.Constants.guidDataCmdId
 	public const string SeDataCommandSetGuid = "501822E1-B5AF-11d0-B4DC-00A0C91506EF";
-	public const string SeInterfaceCommandSetGuid = "74d21311-2aee-11d1-8bfb-00a0c90f26f7";
 	public const string DavCommandSetGuid = "732ABE75-CD80-11d0-A2DB-00AA00A3EFFF";
 	public const string DetachCommandProviderGuid = "8C591813-BB90-4B5C-BD7B-5A286D130D2E";
 

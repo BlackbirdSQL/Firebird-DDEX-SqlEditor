@@ -317,23 +317,52 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		// Currently our only entry point to AbstractDesignerServices whose warnings are suppressed.
 		Diag.ThrowIfNotOnUIThread();
 
-		MonikerAgent moniker = new(node, targetType);
+		// Tracer.Trace(GetType(), "ViewCode()");
 
-		IList<string> identifierList = moniker.Identifier.ToArray();
-		EnModelObjectType objectType = moniker.ObjectType;
-		Guid clsidEditorFactory = new Guid(SystemData.DslEditorFactoryGuid);
-
+		MonikerAgent moniker = null;
+		IList<string> identifierList = null;
+		EnModelObjectType objectType = EnModelObjectType.Unknown;
 		Action<DatabaseLocation, bool> callback = null;
 
-		if ((objectType == EnModelObjectType.Table || objectType == EnModelObjectType.View)
-			&& targetType == EnModelTargetType.QueryScript && PersistentSettings.EditorExecuteQueryOnOpen)
+		Guid clsidEditorFactory = new Guid(SystemData.DslEditorFactoryGuid);
+
+		try
 		{
-			// Tracer.Trace(GetType(), "ViewCode()", "assigning OnSqlQueryLoaded.");
-			callback = OnSqlQueryLoaded;
+			moniker = new(node, targetType);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
 		}
 
 
-		OpenExplorerEditor(node, objectType, identifierList, targetType, clsidEditorFactory, callback, null);
+		try
+		{ 
+			identifierList = moniker.Identifier.ToArray();
+			objectType = moniker.ObjectType;
+			
+			if ((objectType == EnModelObjectType.Table || objectType == EnModelObjectType.View)
+				&& targetType == EnModelTargetType.QueryScript && PersistentSettings.EditorExecuteQueryOnOpen)
+			{
+				callback = OnSqlQueryLoaded;
+			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+
+		try
+		{ 
+			OpenExplorerEditor(node, objectType, identifierList, targetType, clsidEditorFactory, callback, null);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
 	}
 
 

@@ -425,11 +425,6 @@
 			<IDSymbol name="CmdIdNewQueryLocal" value="0x3528" />
 		</GuidSymbol>
 
-		<GuidSymbol name="SeInterfaceCommandSetGuid" value="{74d21311-2aee-11d1-8bfb-00a0c90f26f7}">
-			<!-- server explorer interface commands guid -->
-			<IDSymbol name="CmdIdEditLabel" value="0x2101" />
-		</GuidSymbol>
-
 		<!-- This is the guid used to group the menu commands together -->
 		<GuidSymbol name="CommandSetGuid" value="{13CD7876-FC84-4DDA-91BF-4CDBF893B134}">
 			<!-- 49665 -->

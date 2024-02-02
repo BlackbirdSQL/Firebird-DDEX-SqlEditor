@@ -432,6 +432,27 @@ public sealed class RctManager : IDisposable
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Gets a connection string given the ConnectionUrl or DatasetKey
+	/// or DatsetKey synonym.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static string GetConnectionString(string connectionValue)
+	{
+		if (Rct == null)
+			return null;
+
+		if (!Rct.TryGetHybridRowValue(connectionValue, out DataRow row))
+			return null;
+
+		object @object = row[CoreConstants.C_KeyExConnectionString];
+
+		return (@object == DBNull.Value || @object == null) ? null : (string)@object;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Gets a connection DatasetKey given the ConnectionUrl or DatasetKey
 	/// or DatsetKey synonym.
 	/// </summary>
@@ -792,9 +813,17 @@ public sealed class RctManager : IDisposable
 		if (_UnadvisedConnectionString == null)
 			return;
 
-		if (_UnadvisedConnectionString == DataProtection.DecryptString(explorerConnection.EncryptedConnectionString))
+		try
 		{
-			Rct.AdviseEvents(explorerConnection);
+			if (_UnadvisedConnectionString == DataProtection.DecryptString(explorerConnection.EncryptedConnectionString))
+			{
+				Rct.AdviseEvents(explorerConnection);
+			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
 		}
 
 		_UnadvisedConnectionString = null;
@@ -1006,37 +1035,105 @@ public sealed class RctManager : IDisposable
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Validates IVsDataExplorerConnection to establish if it's DisplayName matches
-	/// a proposed ConnectionName and updates the Server Explorer internal table if it
-	/// doesn't.
+	/// Validates IVsDataExplorerConnection to establish if it's stored DatasetKey
+	/// matches the DisplayName (proposed ConnectionName) and updates the Server
+	/// Explorer internal table if it doesn't. Also checks if the edmx wizard has
+	/// corrupted the root node.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static void ValidateAndUpdateExplorerConnectionRename(IVsDataExplorerConnection explorerConnection,
-		string proposedConnectionName)
+		string proposedConnectionName, CsbAgent csa)
 	{
 		if (Rct == null)
 			return;
 
-		string connectionString = DataProtection.DecryptString(explorerConnection.EncryptedConnectionString);
-		CsbAgent csa = new(connectionString);
+
+		// The edmx wizard will corrupt our node's values if it uses a stored connection.
+		// If the connection exists it will replace the node's properties - we tag the
+		// connection string in our IVsDataConnectionProperties implementation with "edmx".
+		// If the connection doesn't exist in the SE we have to create it on the fly else
+		// the wizard will throw an exception - we tag this new connection in our
+		// IVsDataConnectionUIProperties implementation with "edmu".
+		// In either case it will then rename the connection name and we lose the
+		// DatasetId if it existed.
+		// A node changed event is raised which we pick up here, and we perform a repair.
+
+		if (csa.ContainsKey("edmx") || csa.ContainsKey("edmu"))
+		{
+			string storedConnectionString = GetConnectionString(csa.SafeDatasetMoniker);
+
+			if (storedConnectionString == null)
+			{
+				ApplicationException ex = new($"ExplorerConnection rename failed. Possibly corrupted by the EDMX wizard. Proposed connection name: {proposedConnectionName}, Explorer connection string: {csa.ConnectionString}.");
+				Diag.Dug(ex);
+				throw ex;
+			}
+
+			if (csa.ContainsKey("edmu"))
+			{
+				CsbAgent storedCsa = new(storedConnectionString);
+
+				csa.DatasetKey = storedCsa.DatasetKey;
+
+				if (storedCsa.ContainsKey(CoreConstants.C_KeyExConnectionName))
+					csa.ConnectionName = storedCsa.ConnectionName;
+				else
+					csa.Remove(CoreConstants.C_KeyExConnectionName);
+
+				if (storedCsa.ContainsKey(CoreConstants.C_KeyExDatasetId))
+					csa.DatasetId = storedCsa.DatasetId;
+				else
+					csa.Remove(CoreConstants.C_KeyExDatasetId);
+
+				if (storedCsa.ContainsKey(CoreConstants.C_KeyExConnectionKey))
+					csa.ConnectionKey = storedCsa.ConnectionKey;
+				else
+					csa.Remove(CoreConstants.C_KeyExConnectionKey);
+
+				csa.Remove("edmu");
+				csa.Remove("edmx");
+
+				// Tracer.Trace(typeof(RctManager), "ValidateAndUpdateExplorerConnectionRename()", "EDMU repairString: {0}.", csa.ConnectionString);
+
+				UpdateOrRegisterConnection(csa.ConnectionString, EnConnectionSource.ServerExplorer, false, true);
+			}
+			else
+			{
+				// Tracer.Trace(typeof(RctManager), "ValidateAndUpdateExplorerConnectionRename()", "EDMX repairString: {0}.", storedConnectionString);
+
+				UpdateOrRegisterConnection(storedConnectionString, EnConnectionSource.ServerExplorer, false, true);
+			}
+
+			return;
+
+		}
 
 		if (proposedConnectionName == csa.DatasetKey)
 			return;
 
+
+		// Tracer.Trace(typeof(RctManager), "ValidateAndUpdateExplorerConnectionRename()", "proposedConnectionName: {0}, connectionString: {1}.", proposedConnectionName, csa.ConnectionString);
+
 		string msg;
 		string caption;
 
+		// Sanity check.
 		if (proposedConnectionName.StartsWith(_Scheme))
 		{
-			Rct.DisableEvents();
-			explorerConnection.DisplayName = csa.DatasetKey;
-			Rct.EnableEvents();
+			if (csa.ContainsKey(CoreConstants.C_DefaultExDatasetKey))
+			{
+				Rct.DisableEvents();
+				explorerConnection.DisplayName = csa.DatasetKey;
+				Rct.EnableEvents();
 
-			caption = Resources.RctManager_CaptionInvalidConnectionName;
-			msg = Resources.RctManager_TextInvalidConnectionName.FmtRes(_Scheme, proposedConnectionName);
-			Cmd.ShowMessage(msg, caption, MessageBoxButtons.OK);
+				caption = Resources.RctManager_CaptionInvalidConnectionName;
+				msg = Resources.RctManager_TextInvalidConnectionName.FmtRes(_Scheme, proposedConnectionName);
+				Cmd.ShowMessage(msg, caption, MessageBoxButtons.OK);
 
-			return;
+				return;
+			}
+
+			proposedConnectionName = null;
 		}
 
 
@@ -1047,7 +1144,7 @@ public sealed class RctManager : IDisposable
 
 
 		// Check whether the connection name will change.
-		(_, string uniqueDatasetKey, string uniqueConnectionName, string uniqueDatasetId, _) =
+		(_, _, string uniqueDatasetKey, string uniqueConnectionName, string uniqueDatasetId, _) =
 			Rct.GenerateUniqueDatasetKey(proposedConnectionName, proposedDatasetId, dataSource, dataset, connectionUrl, connectionUrl);
 
 		if (!string.IsNullOrEmpty(uniqueConnectionName))
@@ -1055,7 +1152,7 @@ public sealed class RctManager : IDisposable
 			caption = Resources.RctManager_CaptionConnectionNameConflict;
 			msg = Resources.RctManager_TextConnectionNameConflictLong.FmtRes(proposedConnectionName, uniqueConnectionName);
 
-			if (msg != null && Cmd.ShowMessage(msg, caption, MessageBoxButtons.YesNo) == DialogResult.No)
+			if (Cmd.ShowMessage(msg, caption, MessageBoxButtons.YesNo) == DialogResult.No)
 			{
 				Rct.DisableEvents();
 				explorerConnection.DisplayName = GetDatasetKey(connectionUrl);
@@ -1073,8 +1170,6 @@ public sealed class RctManager : IDisposable
 			csa.Remove(CoreConstants.C_KeyExConnectionName);
 		else if (uniqueConnectionName != null)
 			csa.ConnectionName = uniqueConnectionName;
-		else
-			csa.ConnectionName = proposedConnectionName;
 
 		if (uniqueDatasetId == string.Empty)
 			csa.Remove(CoreConstants.C_KeyExDatasetId);
@@ -1119,7 +1214,7 @@ public sealed class RctManager : IDisposable
 	/// The original ConnectionString before any editing of the Site took place.
 	/// </param>
 	// ---------------------------------------------------------------------------------
-	public static (bool, bool, bool) ValidateSiteProperties(IVsDataConnectionProperties site, EnConnectionSource source,
+	public static (bool, bool, bool) ValidateSiteProperties(IVsDataConnectionProperties site, EnConnectionSource connectionSource,
 		bool insertMode, string originalConnectionString)
 	{
 		bool rSuccess = true;
@@ -1161,9 +1256,13 @@ public sealed class RctManager : IDisposable
 		string connectionUrl = (site as IBDataConnectionProperties).Csa.DatasetMoniker;
 
 		// Check whether the connection name will change.
-		(bool createNew, string uniqueDatasetKey, string uniqueConnectionName, string uniqueDatasetId, string changedTarget) =
-			Rct.GenerateUniqueDatasetKey(proposedConnectionName, proposedDatasetId, dataSource, dataset, connectionUrl, originalConnectionUrl);
+		(bool createNew, EnConnectionSource currentSource, string uniqueDatasetKey, string uniqueConnectionName,
+			string uniqueDatasetId, CsbAgent changedTarget)
+			= Rct.GenerateUniqueDatasetKey(proposedConnectionName, proposedDatasetId, dataSource, dataset, connectionUrl, originalConnectionUrl);
 
+		// If we're in the EDM and the current source is not ServerExplorer we have to create it in the SE to get pass the EDM bug.
+		if (!createNew && connectionSource == EnConnectionSource.EntityDataModel && currentSource != EnConnectionSource.ServerExplorer)
+			createNew = true;
 
 		if (!string.IsNullOrEmpty(uniqueConnectionName))
 		{
@@ -1207,7 +1306,12 @@ public sealed class RctManager : IDisposable
 			caption = Resources.RctManager_CaptionConnectionChanged;
 			msg = Resources.RctManager_TextConnectionChanged.FmtRes(changedTarget);
 		}
-		else if (createNew && !insertMode && source != EnConnectionSource.ServerExplorer)
+		else if (createNew && !insertMode && connectionSource == EnConnectionSource.EntityDataModel)
+		{
+			caption = Resources.RctManager_CaptionNewConnection;
+			msg = Resources.RctManager_TextNewSEConnection;
+		}
+		else if (createNew && !insertMode && connectionSource != EnConnectionSource.ServerExplorer)
 		{
 			caption = Resources.RctManager_CaptionNewConnection;
 			msg = Resources.RctManager_TextNewConnection;
@@ -1241,15 +1345,16 @@ public sealed class RctManager : IDisposable
 
 
 		// Establish the connection owner.
-		// if the explorer connection exists or if it's the source it automatically is the owner.
+		// if the explorer connection exists or if it's the source (or EntityDataModel) it automatically is the owner.
 		string connectionKey = site.ConnectionKey();
 
-		if (connectionKey == null && source == EnConnectionSource.ServerExplorer)
+		if (connectionKey == null && (connectionSource == EnConnectionSource.ServerExplorer
+			|| connectionSource == EnConnectionSource.EntityDataModel))
+		{
 			connectionKey = uniqueDatasetKey;
+		}
 
 		// Tracer.Trace(typeof(RctManager), "ValidateSiteProperties()", "Retrieved ConnectionKey: {0}.", connectionKey ?? "Null");
-
-		EnConnectionSource enConnectionSource = (EnConnectionSource)site[CoreConstants.C_KeyExConnectionSource];
 
 		if (connectionKey != null)
 		{
@@ -1260,17 +1365,17 @@ public sealed class RctManager : IDisposable
 			if (strValue != connectionKey)
 				site[CoreConstants.C_KeyExConnectionKey] = connectionKey;
 
-			if (enConnectionSource != EnConnectionSource.ServerExplorer)
-			{
-				enConnectionSource = EnConnectionSource.ServerExplorer;
-				site[CoreConstants.C_KeyExConnectionSource] = enConnectionSource;
-			}
+			EnConnectionSource siteConnectionSource = (EnConnectionSource)site[CoreConstants.C_KeyExConnectionSource];
+
+			if (siteConnectionSource != EnConnectionSource.ServerExplorer)
+				site[CoreConstants.C_KeyExConnectionSource] = EnConnectionSource.ServerExplorer;
 		}
 
 		if (!insertMode && createNew)
 			rAddInternally = true;
 
-		rModifyInternally = changedTarget != null || (!rAddInternally && source != EnConnectionSource.ServerExplorer);
+		rModifyInternally = changedTarget != null || (!rAddInternally
+			&& connectionSource != EnConnectionSource.ServerExplorer && connectionSource != EnConnectionSource.EntityDataModel);
 
 		rSuccess = true;
 

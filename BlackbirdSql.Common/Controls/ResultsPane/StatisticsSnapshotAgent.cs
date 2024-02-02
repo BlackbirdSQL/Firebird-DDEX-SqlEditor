@@ -10,10 +10,10 @@ using FirebirdSql.Data.FirebirdClient;
 
 namespace BlackbirdSql.Common.Controls.ResultsPane;
 
-public class StatisticsSnapshotAgent
+public class StatisticsSnapshotAgent(FbConnection connection, StatisticsSnapshotAgent statisticsSnapShotBase = null)
 {
-	private readonly FbConnection _InternalConnection;
-	private readonly StatisticsSnapshotAgent _StatisticsSnapShotBase = null;
+	private readonly FbConnection _InternalConnection = connection;
+	private readonly StatisticsSnapshotAgent _StatisticsSnapShotBase = statisticsSnapShotBase;
 
 
 	// QueryProfileStatistics
@@ -92,27 +92,20 @@ public class StatisticsSnapshotAgent
 	public List<string> ActiveUsers => _ActiveUsers;
 	public long ActiveUserCount => _ActiveUsers == null ? 0L : _ActiveUsers.Count;
 
-
-
-	public StatisticsSnapshotAgent(FbConnection connection, StatisticsSnapshotAgent statisticsSnapShotBase = null)
-	{
-		_InternalConnection = connection;
-		_StatisticsSnapShotBase = statisticsSnapShotBase;
-	}
-
 	public void Load(QueryManager qryMgr, long rowCount, long recordsAffected, DateTime executionEndTime)
 	{
+		_SelectRowCount = rowCount;
+		_IduRowCount = recordsAffected;
+
+
 
 		try
 		{
 			FbDatabaseInfo info = new(_InternalConnection);
 
-			// QueryProfileStatistics
-			_IduRowCount = recordsAffected;
 			_InsRowCount = info.GetInsertCount();
 			_UpdRowCount = info.GetUpdateCount();
 			_DelRowCount = info.GetDeleteCount();
-			_SelectRowCount = rowCount;
 			_Transactions = info.GetActiveTransactionsCount();
 
 			// NetworkStatistics
@@ -121,10 +114,10 @@ public class StatisticsSnapshotAgent
 			_ReadCount = info.GetReads() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ReadCount : 0);
 			_WriteCount = info.GetWrites() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._WriteCount : 0);
 
-			// _ReadIdxCount = info.GetReadIdxCount() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ReadIdxCount : 0);
-			// _ReadSeqCount = info.GetReadSeqCount() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ReadSeqCount : 0);
-			_ReadIdxCount = 0 - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ReadIdxCount : 0);
-			_ReadSeqCount = 0 - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ReadSeqCount : 0);
+			_ReadIdxCount = info.GetReadIdxCount() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ReadIdxCount : 0);
+			_ReadSeqCount = info.GetReadSeqCount() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ReadSeqCount : 0);
+			// _ReadIdxCount = 0 - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ReadIdxCount : 0);
+			// _ReadSeqCount = 0 - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ReadSeqCount : 0);
 
 			_PurgeCount = info.GetPurgeCount() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._PurgeCount : 0);
 			_ExpungeCount = info.GetExpungeCount() - (_StatisticsSnapShotBase != null ? _StatisticsSnapShotBase._ExpungeCount : 0);

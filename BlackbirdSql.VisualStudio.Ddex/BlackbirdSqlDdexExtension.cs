@@ -163,6 +163,8 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 
 	public override bool InvariantResolved => _InvariantResolved;
 
+	public override Type SchemaFactoryType => typeof(DslProviderSchemaFactory);
+
 	/// <summary>
 	/// Accessor to user options at this level of the <see cref="IBAsyncPackage"/> class hierarchy.
 	/// </summary>

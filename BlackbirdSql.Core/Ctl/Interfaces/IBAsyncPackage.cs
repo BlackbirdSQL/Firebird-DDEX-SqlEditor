@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using System.Management.Instrumentation;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +19,8 @@ public interface IBAsyncPackage
 {
 
 	IBPackageController Controller { get; }
+
+	Type SchemaFactoryType { get; }
 
 	IDisposable DisposableWaitCursor { get; set; }
 

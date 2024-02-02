@@ -3,6 +3,7 @@ using System;
 using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model.Enums;
 using Microsoft.VisualStudio.Shell;
 
@@ -116,8 +117,9 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Generates a unique DatasetKey or DatasetId from the proposedConnectionName
-	/// or proposedDatasetId. At most one may be specified, the other null. If both are
-	/// null the readonly Dataset property will be used.
+	/// or proposedDatasetId. At most one may be specified, the other must be null.
+	/// If both are null the caller's data will be considered corrupted and rebuilt
+	/// either from the stored connection or the readonly Dataset property.
 	/// </summary>
 	/// <param name="proposedConnectionName">
 	/// The proposed ConnectionName property if specified in the csa, else null.
@@ -135,26 +137,33 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	/// The readonly SafeDatasetMoniker property of the csa.
 	/// </param>
 	/// <returns>
-	/// A tuple of a boolean indicating whether or not a new connection would be created
-	/// for Item1 and the final unique datasetKey for Item2.
-	/// For Item3 and Item4 the proposed ConnectionName or unique proposed DatasetId
-	/// if either overrides the provided values else null or string.Empty if the
-	/// proposed value should be removed.
-	/// At most only one of 3 and 4 will contain a value. If either contains a value the user
-	/// should be warned that the proposed value will be overridden with a unique value.
-	/// Item5 returns the connection to be modified if the site properties refer to
-	/// another unique connection (changedTargetDatasetKey).
+	/// A tuple of - 
+	/// Item1: a boolean indicating whether or not a new connection would be created,
+	/// Item2: the stored ConnectionSource if the connection is already registerered.
+	/// Item3: the final unique datasetKey.
+	/// For Item4 and Item5 the unique proposed ConnectionName or unique proposed
+	/// DatasetId.
+	/// If either has a value they represent the final proposed value to be applied to
+	/// the Rct, else null for no change else string.Empty if the proposed value should
+	/// be removed from the Rct.
+	/// At most only one of 4 and 5 will contain a value. If either contains a value the
+	/// user should be warned that the proposed value will be overridden with a new
+	/// unique value.
+	/// Item5 returns the Csa of the Rct connection to be modified if the
+	/// provided properties refer to another unique connection (changedTargetCsa).
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public override (bool, string, string, string, string) GenerateUniqueDatasetKey(string proposedConnectionName,
-		string proposedDatasetId, string dataSource, string dataset, string connectionUrl, string originalConnectionUrl)
+	public override (bool, EnConnectionSource, string, string, string, CsbAgent)
+		GenerateUniqueDatasetKey(string proposedConnectionName, string proposedDatasetId,
+		string dataSource, string dataset, string connectionUrl, string originalConnectionUrl)
 	{
 		// These are the 5 values in the tuple to be returned.
 		bool rNewConnection = true;
+		EnConnectionSource rCurrentSource = EnConnectionSource.Unknown;
 		string rUniqueDatasetKey = null;
 		string rUniqueConnectionName = null;
 		string rUniqueDatasetId = null;
-		string rChangedTarget = null;
+		CsbAgent rChangedTarget = null;
 
 
 		int connectionIndex = -1;
@@ -165,16 +174,18 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		if (proposedDatasetId == string.Empty)
 			proposedDatasetId = null;
 
-
 		// Get the index if the connection already exists.
 		if (TryGetHybridInternalRowValue(connectionUrl, out DataRow row))
 		{
 			rNewConnection = false;
 			connectionIndex = Convert.ToInt32(row["Id"]);
 
+			rCurrentSource = (EnConnectionSource)(int)row[CoreConstants.C_KeyExConnectionSource];
+
 			if (originalConnectionUrl != null && originalConnectionUrl != connectionUrl)
-				rChangedTarget = (string)(row[CoreConstants.C_KeyExDatasetKey]);
+				rChangedTarget = new((string)row[CoreConstants.C_KeyExConnectionString]);
 		}
+
 
 		bool proposedDatasetIdIsDerived = false;
 		bool proposedConnectionNameIsDerived = false;
@@ -303,13 +314,14 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		if (rUniqueDatasetId == null && proposedDatasetIdIsDerived)
 			rUniqueDatasetId = string.Empty;
 
+		
+		// Tracer.Trace(GetType(), "GenerateUniqueDatasetKey()", "DataSource: {0}, Dataset: {1},
+		//		proposedConnectionName: {2}, proposedDatasetId: {3},  rNewConnection: {4}, rUniqueDatasetKey: {5},
+		//		rUniqueConnectionName: {6}, rUniqueDatasetId: {7}", dataSource ?? "Null", dataset ?? "Null", 
+		//		proposedConnectionName ?? "Null", proposedDatasetId ?? "Null", rNewConnection,
+		//		rUniqueDatasetKey ?? "Null", rUniqueConnectionName ?? "Null", rUniqueDatasetId ?? "Null");
 
-		// Tracer.Trace(GetType(), "GenerateUniqueDatasetKey()", "DataSource: {0}, Dataset: {1}, proposedConnectionName: {2},
-		//	proposedDatasetId: {3}, newConnection: {4}, uniqueDatasetKey: {5}, uniqueConnectionName: {6}, uniqueDatasetId: {7}",
-		//	dataSource ?? "Null", dataset ?? "Null", proposedConnectionName ?? "Null", proposedDatasetId ?? "Null",
-		//	newConnection, uniqueDatasetKey ?? "Null", uniqueConnectionName ?? "Null", uniqueDatasetId ?? "Null");
-
-		return (rNewConnection, rUniqueDatasetKey, rUniqueConnectionName, rUniqueDatasetId, rChangedTarget);
+		return (rNewConnection, rCurrentSource, rUniqueDatasetKey, rUniqueConnectionName, rUniqueDatasetId, rChangedTarget);
 	}
 
 
@@ -379,9 +391,9 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		// We have a connection.
 
 		// Firstly establish if we may update the stored connection.
-		EnConnectionSource destinationSource = (EnConnectionSource)(int)row[C_KeyExConnectionSource];
+		EnConnectionSource rowConnectionSource = (EnConnectionSource)(int)row[C_KeyExConnectionSource];
 
-		bool canTakeOwnerShip = forceOwnership || VerifyUpdateRights(source, destinationSource);
+		bool canTakeOwnerShip = forceOwnership || VerifyUpdateRights(source, rowConnectionSource);
 
 		// Sanity check.
 		csa.ValidateKeys(true, true);
@@ -483,8 +495,8 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 
 		// Tracer.Trace(GetType(), "UpdateRegisteredConnection()", "Updateable - Updating row.");
 
-		if (!csa.ContainsKey(C_KeyExConnectionSource) || csa.ConnectionSource != (canTakeOwnerShip ? source : destinationSource))
-			csa.ConnectionSource = (canTakeOwnerShip ? source : destinationSource);
+		if (!csa.ContainsKey(C_KeyExConnectionSource) || csa.ConnectionSource != (canTakeOwnerShip ? source : rowConnectionSource))
+			csa.ConnectionSource = (canTakeOwnerShip ? source : rowConnectionSource);
 
 		// If it's owned by the SE it must have a ConnectionKey.
 		if (csa.ConnectionSource == EnConnectionSource.ServerExplorer)

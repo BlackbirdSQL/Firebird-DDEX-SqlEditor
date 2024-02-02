@@ -58,7 +58,6 @@
 	  <Compile Include="Ctl\Diagnostics\IBEnumerableDescribers.cs" />
 	  <Compile Include="Ctl\Interfaces\IBDataConnectionProperties.cs" />
 	  <Compile Include="Model\AbstractRunningConnectionTable.cs" />
-	  <Compile Include="Ctl\Interfaces\IBDataViewSupport.cs" />
 	  <Compile Include="Ctl\Interfaces\IBAutomationConverter.cs" />
 	  <Compile Include="Ctl\Extensions\Index.cs" />
 	  <Compile Include="Ctl\Extensions\Range.cs" />
@@ -222,7 +221,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="10.0.0"  />
+		<PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="10.0.0" />
 		<PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
 	</ItemGroup>
 

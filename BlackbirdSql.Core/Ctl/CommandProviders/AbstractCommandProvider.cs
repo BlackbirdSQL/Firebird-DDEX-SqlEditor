@@ -44,10 +44,6 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	#endregion Constructors / Destructors
 
 
-	// A private 'this' object lock
-	private readonly object _LockLocal = new object();
-
-
 
 
 
@@ -112,35 +108,10 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 					cmd.Properties["Text"] = "Debug Trace Rct";
 				}
 
+				return;
 			}, delegate
 			{
 				OnTraceRct(itemId);
-			});
-			command = cmd;
-		}
-		else if (commandId.Equals(CommandProperties.EditLabel))
-		{
-			cmd = new DataViewMenuCommand(itemId, commandId, delegate
-			{
-				// Tracer.Trace(GetType(), "CreateCommand()", "LabelEdit");
-
-				node = Site.ExplorerConnection.FindNode(itemId);
-				nodeSystemType = node.NodeSystemType();
-
-				// Tracer.Trace(GetType(), "CreateCommand()", "NewDesignerQuery itemid: {0}, commandid: {1} systemType {2}.", itemId, commandId.ID, nodeSystemType.ToString());
-
-				cmd.Visible = cmd.Enabled = (node == node.ExplorerConnection.ConnectionNode);
-
-				if (cmd.Visible && !command.Properties.Contains("GotText")
-					&& (label = GlobalizeLabel(cmd, nodeSystemType)) != string.Empty)
-				{
-					cmd.Properties["GotText"] = true;
-					cmd.Properties["Text"] = label;
-				}
-
-			}, delegate
-			{
-				OnInterceptorEditLabel(itemId);
 			});
 			command = cmd;
 		}
@@ -338,7 +309,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	}
 
 
-
+	/*
 	private IVsDataViewSupport GetViewSupport(IVsDataExplorerConnection explorerConnection)
 	{
 		lock (_LockLocal)
@@ -347,6 +318,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 				BindingFlags.NonPublic | BindingFlags.Instance) as IVsDataViewSupport;
 		}
 	}
+	*/
 
 
 
@@ -366,8 +338,6 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 			text = GetResourceString("Alter", type.ToString(), "Script");
 		else if (cmd.CommandID.Equals(CommandProperties.RetrieveDesignerData))
 			text = GetResourceString("Retrieve", type.ToString(), "DesignerData");
-		else if (cmd.CommandID.Equals(CommandProperties.EditLabel))
-			text = GetResourceString("Edit", type.ToString(), "Label");
 
 		return text;
 	}
@@ -475,23 +445,6 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 
 	
-	protected virtual void OnInterceptorEditLabel(int itemId)
-	{
-		// Tracer.Trace(GetType(), "OnInterceptorEditLabel()", "itemId: {0}.", itemId);
-
-		IVsDataExplorerNode node = Site.ExplorerConnection.FindNode(itemId);
-
-		IBDataViewSupport viewSupport = GetViewSupport(node.ExplorerConnection) as IBDataViewSupport;
-
-		viewSupport.EditNodeLabel(node);
-
-	}
-
-
-
-
-
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// New query intercept system command event handler.
@@ -558,7 +511,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 	// ---------------------------------------------------------------------------------
 	protected void OnOpenScript(int itemId, EnModelTargetType targetType)
 	{
-		// Tracer.Trace(GetType(), "OnOpen()", "itemId: {0}, alternate: {1}", itemId, alternate);
+		// Tracer.Trace(GetType(), "OnOpen()", "itemId: {0}.", itemId);
 
 		if (RctManager.ShutdownState)
 			return;

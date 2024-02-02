@@ -124,7 +124,7 @@
     <value>Diagnostics</value>
   </data>
   <data name="OptionCategoryEntityFramework" xml:space="preserve">
-    <value>Validation (Requires solution reload)</value>
+    <value>Validation</value>
   </data>
   <data name="OptionCategoryEquivalency" xml:space="preserve">
     <value>Connection equivalency keys</value>
@@ -217,7 +217,7 @@
     <value>The size (in bytes) of network packets. PacketSize may be in the range 512-32767 bytes.</value>
   </data>
   <data name="OptionDescriptionEquivalencyParallelWorkers" xml:space="preserve">
-    <value>Enables the execution of Diagnostics calls. This option should remain enabled. Disabling does not disable Exceptions.</value>
+    <value>Maximum number of parallel workers to use for operations in Firebird.</value>
   </data>
   <data name="OptionDescriptionEquivalencyPooling" xml:space="preserve">
     <value>When true the connection is grabbed from a pool or, if necessary, created and added to the appropriate pool.</value>

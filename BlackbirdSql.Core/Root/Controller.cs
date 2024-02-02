@@ -53,6 +53,7 @@ internal static class Controller
 	// ---------------------------------------------------------------------------------
 	public static IBAsyncPackage DdexPackage => Instance.DdexPackage;
 
+	public static Type SchemaFactoryType => Instance.DdexPackage.SchemaFactoryType;
 	public static bool InvariantResolved => DdexPackage.InvariantResolved;
 
 	public static System.IServiceProvider ServiceProvider => (System.IServiceProvider)Instance.DdexPackage;

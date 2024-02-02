@@ -71,7 +71,6 @@ public static class CommandProperties
 	private const int C_CmdIdSENewQueryLocal = 0x3528; // 13608;
 	private const int C_CmdIdAddTableViewForQRY = 0x0027; // 39;
 	public const int C_CmdIdSERetrieveData = 0x3060; // 12384;
-	public const int C_CmdIdEditLabel = 0x2101; // 8449;
 	// private const int _CmdIdSERun = 0x3062; // 12386;
 	// private const int _CmdIdSEDetachDatabase = 0x3517; // 13591;
 	// private const int _CmdIdUpdateScript = 0x3039; // 12345;
@@ -101,7 +100,6 @@ public static class CommandProperties
 	public static CommandID OpenAlterTextObject = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdOpenAlterTextObject);
 	public static CommandID OverrideRetrieveDataLocal = new CommandID(new Guid(VS.SeDataCommandSetGuid), C_CmdIdSERetrieveData);
 	public static CommandID RetrieveDesignerData = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdRetrieveDesignerData);
-	public static CommandID EditLabel = new CommandID(new Guid(VS.SeInterfaceCommandSetGuid), C_CmdIdEditLabel);
 	public static CommandID TraceRct = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdTraceRct);
 	public static CommandID ValidateSolution = new CommandID(new Guid(CommandSetGuid), (int)EnCommandSet.CmdIdValidateSolution);
 

@@ -8,10 +8,8 @@ using System.Data;
 using System.Reflection;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
-using BlackbirdSql.VisualStudio.Ddex.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
@@ -38,6 +36,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	private CsbAgent _Csa = null;
 
 
+
 	#endregion Fields
 
 
@@ -57,6 +56,20 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	*/
 
 	#endregion Constructors / Destructors
+
+
+
+
+
+	// =================================================================================
+	#region Property Accessors - TConnectionProperties
+	// =================================================================================
+
+
+	public EnConnectionSource ConnectionSource => UnsafeCmd.GetConnectionSource();
+
+
+	#endregion Property Accessors
 
 
 
@@ -115,10 +128,9 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			if (lockedProviderObject == null)
 				throw new NotImplementedException("Site.GetLockedProviderObject()");
 
-			FbConnection connection = lockedProviderObject as FbConnection;
 
 			// VS glitch. Null if ado has picked up a project data model firebird assembly.
-			if (connection == null)
+			if (lockedProviderObject is not FbConnection connection)
 			{
 				connection = new(DataProtection.DecryptString(Site.EncryptedConnectionString));
 				connection.Open();
@@ -126,8 +138,10 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 			// Tracer.Trace(GetType(), "SelectObjects()", "Site type: {0}", Site.GetType().FullName);
 
-			if (_Csa == null || _Csa.Invalidated(connection))
-				_Csa = RctManager.EnsureVolatileInstance((IDbConnection)lockedProviderObject, EnConnectionSource.ServerExplorer);
+			if (_Csa == null || _Csa.Invalidated((IDbConnection)lockedProviderObject))
+			{
+				_Csa = RctManager.EnsureVolatileInstance((IDbConnection)lockedProviderObject, UnsafeCmd.GetConnectionSource());
+			}
 
 			DataTable schema = CreateSchema(connection, typeName, parameters);
 
@@ -144,7 +158,8 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			// Only force create the parser 2nd time in.
 			if (lockedProviderObject != null)
 			{
-				LinkageParser.EnsureLoaded((IDbConnection)lockedProviderObject, typeof(DslProviderSchemaFactory));
+				if (UnsafeCmd.GetConnectionSource() != EnConnectionSource.EntityDataModel)
+					LinkageParser.EnsureLoaded((IDbConnection)lockedProviderObject);
 				Site.UnlockProviderObject();
 			}
 		}
