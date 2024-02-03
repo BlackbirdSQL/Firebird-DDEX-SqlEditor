@@ -90,20 +90,15 @@ To fire up an experimental instance of Visual Studio outside of the IDE, create 
 
 BlackbirdSql.VisualStudio.Ddex is DDEX 2.0 compliant and is click and go using VSIX and autoload, and requires no additional setup either in the app.config, csproj or machine.config.</br>
 
-If enabled (the default), there will be a once-off validation of a solution's projects' app.config's and edmx models. Legacy edmx models won't work with Firebird's latest EntityFramework version so an update is required.</br>
-This is a once off validation on each `existing` solution the first time it is opened after installing the VSIX.
+There is an option available in the context menu of any sited node of Server Explorer to perform a validation of a solution's projects' app.config and edmx models. Legacy edmx models won't work with DDEX 2.0 so an update is required. An edmx model can also be manually updated by clicking on an open model and setting `Use Legacy Provider' to false in the properties window.</br>
 The goal is that you don't have to do any configuring of the .csproj, app.config, machine.config or any legacy edmx models, and eliminate using the GAC.</br>
-This feature can be disabled in the Visual Studio options, but each individual task in the validation process is spawned asynchronously so the overhead is miniscual.</br>
+Each individual task in the validation process is spawned asynchronously so the overhead is miniscual.</br>
 
 `In performance tests on a 64-bit Windows 10 I7-4500U (1.80GHz) machine with 16GB RAM and a 1TB SSD, a solution with 40MB of source code, and that included 6 projects with 3 EDMX models and 3 XSD models, validated in under 300ms on a low-priority background task.`
 
-The validation process will not validate any open app.config or edmx models. You will need to close them first and then reopen your solution for the once-off validation to complete.</br>
+The validation process will not validate any open app.config or edmx models. You will need to close them first and then rerun the validation process.</br>
 
-If the validation option is enabled (the default) and you add Firebird.Data.FirebirdClient or EntityFramework.Firebird to a project, the project will be validated and the app.config updated correctly if required. If the app.config is open the update will be skipped and you will need to reopen your solution for the validation to complete.
-
-__Note:__ If you wish to clear the peristent flag for a solution, you can set `Persistent Flags` to false under the IDE BlackbirdSql Debug options.
-
-The intention is to maintain a small footprint. Wth the exception of the IDE Options menu, we are not going to begin altering VS menus and taking over your Visual Studio IDE workspace. It is a data source UI provider for Firebird and the benchmark is the SqlServer provider, so whatever UI functionality is available for SqlServer is on the todo list for Firebird provided it does not directly interfere with the developer's active UI.
+The intention is to maintain a small footprint. With the exception of the IDE Options menu, we are not going to begin altering VS menus and taking over your Visual Studio IDE workspace. It is a data source UI provider for Firebird and the benchmark is the SqlServer provider, so whatever UI functionality is available for SqlServer is on the todo list for Firebird provided it does not directly interfere with the developer's active UI.
 
 
 If you're planning on using EF Core and/or .NET, VS does not have wizard support for edmx which makes no sense to me.
