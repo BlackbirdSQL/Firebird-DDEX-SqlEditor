@@ -43,7 +43,7 @@ The distinction between Configured and Session connections is unimportant and ha
 * If the SE takes ownership, ownership is persistent, but if the SqlEditor/Session takes ownership, ownership is volatile, reverting back on a solution reload.
 * If a unique connection is created in SqlEditor (Session), that new connection will be added to the SE unless the `Add New Connections to Server Explorer` checkbox is unchecked.
 * If an attempt is made to add a connection in the SE that is equivalent to an existing connection, the SE will revert back to the existing connection.
-* Any changes to connections in Entity Data Models or within Application settings connection dialogs will not update the Rct. To have those connections updated to the Rct requires a solution reload. The same applies to changes made within FlameRobin.
+* Any changes to connections within Application settings connection dialogs will not update the Rct. To have those connections updated to the Rct requires a solution reload. The same applies to changes made within FlameRobin.
 * If a connection is deleted in the SE, ownership of the connection will revert to `Session` and still appear in dropdowns and editor windows, but will be dropped on a solution reload.
 * It is always preferable to use DatsetId's for custom naming of DatasetKeys, rather than a global ConnectionName, because connection names do not differentiate by Server/DataSource.
 * Renaming a connection using the SE `Rename` option creates a global ConnectionName. Rather use the `Modify Connection` option and rename the DatasetId under 'Advanced', because this allows BlackbirdSql to name connections using the `Server (DatasetId)` format.
