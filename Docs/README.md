@@ -38,7 +38,7 @@ The parser itself is reasonably fast (+- 0.1 milliseconds per trigger), but SQL 
 </br></br>
 
 __Disclaimer/Warning__ regarding exposing members with hidden access modifiers. The private edit field of the VS User Options PropertyGrid GridView is accessed to overcome a long-time irritant and implement radio buttons and check boxes into the grid by utilizing type converters and attributes. There are several other locations where hidden members are also exposed.</br>
-All access of this nature take place in the BlackbirdSql.Core.Reflect class. As a rule no other code within the extension may expose hidden members. The code performing this access is 100% stable, using standard calls included in Visual Studio's Reflection. If you object to this practice, do not install this extension.</br></br>
+All access of this nature takes place in the BlackbirdSql.Core.Reflect class. As a rule no other code within the extension may expose hidden members. The code performing this access is 100% stable, using standard calls included in Visual Studio's Reflection. If you object to this practice, do not install this extension.</br></br>
 *The first tenet of this package is `small footprint, low overhead`, and to be as unobtrusive as possible. It is installed as a standard VSIX extension. If you uninstall it is is gone. It does not leave it's fingerprints in either your computer system or your Visual Studio installation.*
 </br></br>
 
