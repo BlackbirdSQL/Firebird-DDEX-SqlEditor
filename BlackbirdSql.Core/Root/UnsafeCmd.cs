@@ -148,6 +148,7 @@ public abstract class UnsafeCmd
 		if (objectKind.Equals(outputToolWindowGuid, StringComparison.InvariantCultureIgnoreCase)
 			&& objectType.Equals("System.__ComObject", StringComparison.InvariantCultureIgnoreCase))
 		{
+			// AbstruseRunningConnectionTable.AdviseServerExplorerConnectionsEvents siting ExplorerConnection with "ViewSupport".
 			source = EnConnectionSource.Unknown;
 		}
 		else if (objectKind.Equals(seGuid, StringComparison.InvariantCultureIgnoreCase))

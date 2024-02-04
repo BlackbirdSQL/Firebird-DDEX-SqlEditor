@@ -356,29 +356,32 @@ Linkage completed in {2}ms.</value>
     <value>New connection ConnectionName conflict</value>
   </data>
   <data name="RctManager_TextConnectionChanged" xml:space="preserve">
-    <value>The modifed settings are allocated to connection '{0}', and will be applied to it instead. Continue?</value>
+    <value>The modifed settings are allocated to connection '{0}', and will be applied to it instead.
+Continue?</value>
   </data>
   <data name="RctManager_TextConnectionChangeDatabaseNameConflict" xml:space="preserve">
-    <value>The modifed settings are allocated to connection '{0}', and will be applied to it instead. The Proposed Database Name '{1}' is already allocated.
-Use '{2}' instead?</value>
+    <value>The modifed settings are allocated to connection '{0}', and will be applied to it instead.
+The Proposed Database Name '{1}' is already allocated  and '{2}' will be used instead.
+Continue?</value>
   </data>
   <data name="RctManager_TextConnectionChangeNameConflict" xml:space="preserve">
-    <value>The modifed settings are allocated to connection '{0}', and will be applied to it instead. The Proposed Connection Name '{1}' is already allocated.
-Use '{2}' instead?</value>
+    <value>The modifed settings are allocated to connection '{0}', and will be applied to it instead.
+The Proposed Connection Name '{1}' is already allocated and '{2}' will be used instead.
+Continue?</value>
   </data>
   <data name="RctManager_TextConnectionNameConflict" xml:space="preserve">
-    <value>The Proposed Connection Name '{0}' is already allocated to another connection.
-Use '{1}' instead?</value>
+    <value>The Proposed Connection Name '{0}' is already allocated to another connection and '{1}' will be used instead.
+Continue?</value>
   </data>
   <data name="RctManager_TextConnectionNameConflictLong" xml:space="preserve">
-    <value>The Name '{0}' is already allocated to another connection.
-Use '{1}' instead?
+    <value>The Name '{0}' is already allocated to another connection and '{1}' will be used instead.
+Continue?
 
 (Note: The RunningConnectionTable keeps track of all connections and connection names, even if they are deleted or renamed in Server Explorer, so that windows that may be using them can still be serviced. Reload the solution to refresh the Rct.)</value>
   </data>
   <data name="RctManager_TextDatabaseNameConflict" xml:space="preserve">
-    <value>The Proposed Database Name '{0}' is already allocated to another connection.
-Use '{1}' instead?</value>
+    <value>The Proposed Database Name '{0}' is already allocated to another connection and '{1}' will be used instead.
+Continue?</value>
   </data>
   <data name="RctManager_TextInvalidConnectionName" xml:space="preserve">
     <value>Connection names beginning with '{0}' are reserved for connection monikers. The ConnectionName '{1}' is not permitted.</value>
@@ -387,15 +390,23 @@ Use '{1}' instead?</value>
     <value>The settings provided will create a new connection. Continue?</value>
   </data>
   <data name="RctManager_TextNewConnectionDatabaseNameConflict" xml:space="preserve">
-    <value>The settings provided will create a new connection. The Proposed Database Name '{0}' is already allocated.
-Use '{1}' instead?</value>
+    <value>The settings provided will create a new connection. The Proposed Database Name '{0}' is already allocated and '{1}' will be used instead.
+Continue?</value>
   </data>
   <data name="RctManager_TextNewConnectionNameConflict" xml:space="preserve">
-    <value>The settings provided will create a new connection. The Proposed Connection Name '{0}' is already allocated.
-Use '{1}' instead?</value>
+    <value>The settings provided will create a new connection. The Proposed Connection Name '{0}' is already allocated and '{1}' will be used instead.
+Continue?</value>
   </data>
   <data name="RctManager_TextNewSEConnection" xml:space="preserve">
     <value>A new Server Explorer Connection will be created. Continue?</value>
+  </data>
+  <data name="RctManager_TextNewSEConnectionDatabaseNameConflict" xml:space="preserve">
+    <value>The settings provided will create a new Server Explorer connection. The Proposed Database Name '{0}' is already allocated and '{1}' will be used instead.
+Continue?</value>
+  </data>
+  <data name="RctManager_TextNewSEConnectionNameConflict" xml:space="preserve">
+    <value>The settings provided will create a new Server Explorer connection. The Proposed Connection Name '{0}' is already allocated and '{1}' will be used instead.
+Continue?</value>
   </data>
   <data name="Remove_Failed_Property_NotFound" xml:space="preserve">
     <value>Remove failed. Property {0} does not exist.</value>

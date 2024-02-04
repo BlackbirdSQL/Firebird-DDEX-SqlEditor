@@ -773,7 +773,8 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The modifed settings are allocated to connection &apos;{0}&apos;, and will be applied to it instead. Continue?.
+        ///   Looks up a localized string similar to The modifed settings are allocated to connection &apos;{0}&apos;, and will be applied to it instead.
+        ///Continue?.
         /// </summary>
         public static string RctManager_TextConnectionChanged {
             get {
@@ -782,8 +783,9 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The modifed settings are allocated to connection &apos;{0}&apos;, and will be applied to it instead. The Proposed Database Name &apos;{1}&apos; is already allocated.
-        ///Use &apos;{2}&apos; instead?.
+        ///   Looks up a localized string similar to The modifed settings are allocated to connection &apos;{0}&apos;, and will be applied to it instead.
+        ///The Proposed Database Name &apos;{1}&apos; is already allocated  and &apos;{2}&apos; will be used instead.
+        ///Continue?.
         /// </summary>
         public static string RctManager_TextConnectionChangeDatabaseNameConflict {
             get {
@@ -792,8 +794,9 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The modifed settings are allocated to connection &apos;{0}&apos;, and will be applied to it instead. The Proposed Connection Name &apos;{1}&apos; is already allocated.
-        ///Use &apos;{2}&apos; instead?.
+        ///   Looks up a localized string similar to The modifed settings are allocated to connection &apos;{0}&apos;, and will be applied to it instead.
+        ///The Proposed Connection Name &apos;{1}&apos; is already allocated and &apos;{2}&apos; will be used instead.
+        ///Continue?.
         /// </summary>
         public static string RctManager_TextConnectionChangeNameConflict {
             get {
@@ -802,8 +805,8 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Proposed Connection Name &apos;{0}&apos; is already allocated to another connection.
-        ///Use &apos;{1}&apos; instead?.
+        ///   Looks up a localized string similar to The Proposed Connection Name &apos;{0}&apos; is already allocated to another connection and &apos;{1}&apos; will be used instead.
+        ///Continue?.
         /// </summary>
         public static string RctManager_TextConnectionNameConflict {
             get {
@@ -812,8 +815,8 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Name &apos;{0}&apos; is already allocated to another connection.
-        ///Use &apos;{1}&apos; instead?
+        ///   Looks up a localized string similar to The Name &apos;{0}&apos; is already allocated to another connection and &apos;{1}&apos; will be used instead.
+        ///Continue?
         ///
         ///(Note: The RunningConnectionTable keeps track of all connections and connection names, even if they are deleted or renamed in Server Explorer, so that windows that may be using them can still be serviced. Reload the solution to refresh the Rct.).
         /// </summary>
@@ -824,8 +827,8 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The Proposed Database Name &apos;{0}&apos; is already allocated to another connection.
-        ///Use &apos;{1}&apos; instead?.
+        ///   Looks up a localized string similar to The Proposed Database Name &apos;{0}&apos; is already allocated to another connection and &apos;{1}&apos; will be used instead.
+        ///Continue?.
         /// </summary>
         public static string RctManager_TextDatabaseNameConflict {
             get {
@@ -852,8 +855,8 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The settings provided will create a new connection. The Proposed Database Name &apos;{0}&apos; is already allocated.
-        ///Use &apos;{1}&apos; instead?.
+        ///   Looks up a localized string similar to The settings provided will create a new connection. The Proposed Database Name &apos;{0}&apos; is already allocated and &apos;{1}&apos; will be used instead.
+        ///Continue?.
         /// </summary>
         public static string RctManager_TextNewConnectionDatabaseNameConflict {
             get {
@@ -862,8 +865,8 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The settings provided will create a new connection. The Proposed Connection Name &apos;{0}&apos; is already allocated.
-        ///Use &apos;{1}&apos; instead?.
+        ///   Looks up a localized string similar to The settings provided will create a new connection. The Proposed Connection Name &apos;{0}&apos; is already allocated and &apos;{1}&apos; will be used instead.
+        ///Continue?.
         /// </summary>
         public static string RctManager_TextNewConnectionNameConflict {
             get {
@@ -877,6 +880,26 @@ namespace BlackbirdSql.Core.Properties {
         public static string RctManager_TextNewSEConnection {
             get {
                 return ResourceManager.GetString("RctManager_TextNewSEConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The settings provided will create a new Server Explorer connection. The Proposed Database Name &apos;{0}&apos; is already allocated and &apos;{1}&apos; will be used instead.
+        ///Continue?.
+        /// </summary>
+        public static string RctManager_TextNewSEConnectionDatabaseNameConflict {
+            get {
+                return ResourceManager.GetString("RctManager_TextNewSEConnectionDatabaseNameConflict", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The settings provided will create a new Server Explorer connection. The Proposed Connection Name &apos;{0}&apos; is already allocated and &apos;{1}&apos; will be used instead.
+        ///Continue?.
+        /// </summary>
+        public static string RctManager_TextNewSEConnectionNameConflict {
+            get {
+                return ResourceManager.GetString("RctManager_TextNewSEConnectionNameConflict", resourceCulture);
             }
         }
         

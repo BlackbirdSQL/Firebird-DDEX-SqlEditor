@@ -83,7 +83,7 @@ public class TConnectionUIProperties : TConnectionProperties
 				ConnectionStringBuilder["edmu"] = true;
 			}
 
-			// Tracer.Trace(GetType(), "Parse()", "ConnectionSource: {0}, connectionString: {1}", ConnectionSource, ConnectionStringBuilder.ConnectionString);
+			// Tracer.Trace(GetType(), "Parse()", "ConnectionSource: {0}", ConnectionSource);
 		}
 
 		OnPropertyChanged(new PropertyChangedEventArgs(string.Empty));

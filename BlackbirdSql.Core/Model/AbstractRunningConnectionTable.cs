@@ -114,56 +114,85 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	// =========================================================================================================
 
 
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Generates a unique DatasetKey or DatasetId from the proposedConnectionName
-	/// or proposedDatasetId. At most one may be specified, the other must be null.
+	/// Generates a unique DatasetKey (ConnectionName) or DatasetId (DatabaseName)
+	/// from the proposedConnectionName or proposedDatasetId, usually supplied by a
+	/// connection dialog's underlying site or csa, or from a connection rename.
+	/// At most one should be specified. If both are specified there will be a
+	/// redundancy check of the connection name otherwise the connection name takes
+	/// precedence.
 	/// If both are null the caller's data will be considered corrupted and rebuilt
-	/// either from the stored connection or the readonly Dataset property.
+	/// either from the stored connection if it exists else from the DataSource and
+	/// readonly Dataset arguments.
 	/// </summary>
 	/// <param name="proposedConnectionName">
-	/// The proposed ConnectionName property if specified in the csa, else null.
+	/// The proposed DatasetKey (ConnectionName) property else null.
 	/// </param>
 	/// <param name="proposedDatasetId">
-	/// The proposed DatasetId property if specified in the csa, else null.
+	/// The proposed DatasetId (DatabaseName) property else null.
 	/// </param>
 	/// <param name="dataSource">
-	/// The DataSource (server name) property in the csa.
+	/// The DataSource (server name) property to be used in constructing the DatasetKey.
 	/// </param>
 	/// <param name="dataset">
-	/// The readonly Dataset property of the csa.
+	/// The readonly Dataset property to be used in constructing a DatasetId if the
+	/// proposed DatasetId is null.
 	/// </param>
 	/// <param name="connectionUrl">
-	/// The readonly SafeDatasetMoniker property of the csa.
+	/// The readonly SafeDatasetMoniker property of the underlying csa.
+	/// </param>
+	/// <param name="originalConnectionUrl">
+	/// If a stored connection is being modified, the connectionUrl of the stored
+	/// connection, else null. If originalConnectionUrl matches connectionUrl they will
+	/// be considered equal and it will be ignored.</param>
+	/// <param name="oStoredConnectionSource">
+	/// Out | The ConnectionSource of connectionUrl if the connection exists in the rct
+	/// else EnConnectionSource.Unknown.
+	/// </param>
+	/// <param name="oChangedTargetDatasetKey">
+	/// Out | If a connection is being modified (originalConnectionUrl is not null) and
+	/// connectionUrl points to an existing connection, then the target has changed and
+	/// changedTargetDatasetKey refers to the changed target's DatasetKey, else null.
+	/// </param>
+	/// <param name="oUniqueDatasetKey">Out | The final unique DatasetKey.</param>
+	/// <param name="oUniqueConnectionName">
+	/// Out | The unique proposed ConnectionName. If null is returned then whatever was
+	/// provided in proposedConnectionName is correct remains as is. If string.Empty is
+	/// returned then whatever was provided in proposedConnectionName is redundant and
+	/// should be removed. If a value is returned then proposedConnectionName was
+	/// ambiguous and uniqueConnectionName must be used in it's place.
+	/// uniqueConnectionName and uniqueDatasetId are mutually exclusive.
+	/// </param>
+	/// <param name="oUniqueDatasetId">
+	/// Out | The unique proposed DatsetId. If null is returned then whatever was
+	/// provided in proposedDatasetId is correct and remains as is. If string.Empty is
+	/// returned then whatever was provided in proposedDatasetId is redundant and should
+	/// be removed. If a value is returned then proposedDatasetId was ambiguous and
+	/// uniqueDatasetId must be used in it's place. uniqueConnectionName and
+	/// uniqueDatasetId are mutually exclusive.
 	/// </param>
 	/// <returns>
-	/// A tuple of - 
-	/// Item1: a boolean indicating whether or not a new connection would be created,
-	/// Item2: the stored ConnectionSource if the connection is already registerered.
-	/// Item3: the final unique datasetKey.
-	/// For Item4 and Item5 the unique proposed ConnectionName or unique proposed
-	/// DatasetId.
-	/// If either has a value they represent the final proposed value to be applied to
-	/// the Rct, else null for no change else string.Empty if the proposed value should
-	/// be removed from the Rct.
-	/// At most only one of 4 and 5 will contain a value. If either contains a value the
-	/// user should be warned that the proposed value will be overridden with a new
-	/// unique value.
-	/// Item5 returns the Csa of the Rct connection to be modified if the
-	/// provided properties refer to another unique connection (changedTargetCsa).
+	/// A boolean indicating whether or not the provided arguments would cause a new
+	/// connection to be registered in the rct. This only applies to registration in
+	/// the rct and does not determine whether or not a new connection would be created
+	/// in the SE. The caller must determine that.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public override (bool, EnConnectionSource, string, string, string, CsbAgent)
-		GenerateUniqueDatasetKey(string proposedConnectionName, string proposedDatasetId,
-		string dataSource, string dataset, string connectionUrl, string originalConnectionUrl)
+	public override bool GenerateUniqueDatasetKey(string proposedConnectionName,
+		string proposedDatasetId, string dataSource, string dataset, string connectionUrl,
+		string originalConnectionUrl, out EnConnectionSource oStoredConnectionSource,
+		out string oChangedTargetDatasetKey, out string oUniqueDatasetKey,
+		out string oUniqueConnectionName, out string oUniqueDatasetId)
 	{
 		// These are the 5 values in the tuple to be returned.
-		bool rNewConnection = true;
-		EnConnectionSource rCurrentSource = EnConnectionSource.Unknown;
-		string rUniqueDatasetKey = null;
-		string rUniqueConnectionName = null;
-		string rUniqueDatasetId = null;
-		CsbAgent rChangedTarget = null;
+		bool rNewRctConnection = true;
+		oStoredConnectionSource = EnConnectionSource.Unknown;
+		oUniqueDatasetKey = null;
+		oUniqueConnectionName = null;
+		oUniqueDatasetId = null;
+		oChangedTargetDatasetKey = null;
 
 
 		int connectionIndex = -1;
@@ -174,16 +203,19 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		if (proposedDatasetId == string.Empty)
 			proposedDatasetId = null;
 
+		if (originalConnectionUrl != null && originalConnectionUrl == connectionUrl)
+			originalConnectionUrl = null;
+
 		// Get the index if the connection already exists.
 		if (TryGetHybridInternalRowValue(connectionUrl, out DataRow row))
 		{
-			rNewConnection = false;
+			rNewRctConnection = false;
 			connectionIndex = Convert.ToInt32(row["Id"]);
 
-			rCurrentSource = (EnConnectionSource)(int)row[CoreConstants.C_KeyExConnectionSource];
+			oStoredConnectionSource = (EnConnectionSource)(int)row[CoreConstants.C_KeyExConnectionSource];
 
-			if (originalConnectionUrl != null && originalConnectionUrl != connectionUrl)
-				rChangedTarget = new((string)row[CoreConstants.C_KeyExConnectionString]);
+			if (originalConnectionUrl != null)
+				oChangedTargetDatasetKey = (string)row[CoreConstants.C_KeyExDatasetKey];
 		}
 
 
@@ -240,6 +272,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 
 		// It's always preferable to propose a datasetId.
 		// If there's a proposed DatasetKey (ConnectionName), it takes precedence, so ensure uniqueness.
+		int index;
 
 		if (proposedConnectionName != null)
 		{
@@ -268,34 +301,56 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 
 			// Establish a unique DatasetKey using i as the suffix.
 			// This loop will execute at least once.
-			for (int i = 0; i <= Count; i++)
+			for (int i = -1; i <= Count; i++)
 			{
-				rUniqueConnectionName = i == 0
-					? proposedConnectionName
-					: (proposedConnectionNamePrefix + $"_{i + 1}");
+				// Try the original proposed first.
+				if (i == -1)
+				{
+					if (proposedConnectionName == proposedConnectionNamePrefix)
+						continue;
 
-				if (!TryGetEntry(rUniqueConnectionName, out int index))
+					oUniqueConnectionName = proposedConnectionName;
+				}
+				else
+				{
+					oUniqueConnectionName = (i == 0)
+					? proposedConnectionNamePrefix
+					: (proposedConnectionNamePrefix + $"_{i + 1}");
+				}
+
+				if (!TryGetEntry(oUniqueConnectionName, out index))
 					break;
 
 				if (connectionIndex > -1 && connectionIndex == index)
 					break;
 			}
-			rUniqueDatasetKey = rUniqueConnectionName;
+			oUniqueDatasetKey = oUniqueConnectionName;
 		}
 		else
 		{
 			// Establish a unique DatasetId using i as the suffix.
 			// This loop will execute at least once.
 
-			for (int i = 0; i <= Count; i++)
+			for (int i = -1; i <= Count; i++)
 			{
-				rUniqueDatasetId = i == 0
-					? derivedDatasetId
-					: (derivedDatasetIdPrefix + $"_{i + 1}");
+				// Try the original first.
+				if (i == -1)
+				{
+					if (derivedDatasetId == derivedDatasetIdPrefix)
+						continue;
 
-				rUniqueDatasetKey = SystemData.DatasetKeyFmt.FmtRes(dataSource, rUniqueDatasetId);
+					oUniqueDatasetId = derivedDatasetId;
+				}
+				else
+				{
+					oUniqueDatasetId = (i == 0)
+						? derivedDatasetIdPrefix
+						: (derivedDatasetIdPrefix + $"_{i + 1}");
+				}
 
-				if (!TryGetEntry(rUniqueDatasetKey, out int index))
+				oUniqueDatasetKey = SystemData.DatasetKeyFmt.FmtRes(dataSource, oUniqueDatasetId);
+
+				if (!TryGetEntry(oUniqueDatasetKey, out index))
 					break;
 
 				if (connectionIndex > -1 && connectionIndex == index)
@@ -303,16 +358,16 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 			}
 		}
 
-		if (proposedConnectionName != null && proposedConnectionName == rUniqueConnectionName)
-			rUniqueConnectionName = null;
+		if (proposedConnectionName != null && proposedConnectionName == oUniqueConnectionName)
+			oUniqueConnectionName = null;
 
-		if (proposedDatasetId != null && proposedDatasetId == rUniqueDatasetId)
-			rUniqueDatasetId = null;
+		if (proposedDatasetId != null && proposedDatasetId == oUniqueDatasetId)
+			oUniqueDatasetId = null;
 
-		if (rUniqueConnectionName == null && proposedConnectionNameIsDerived)
-			rUniqueConnectionName = string.Empty;
-		if (rUniqueDatasetId == null && proposedDatasetIdIsDerived)
-			rUniqueDatasetId = string.Empty;
+		if (oUniqueConnectionName == null && proposedConnectionNameIsDerived)
+			oUniqueConnectionName = string.Empty;
+		if (oUniqueDatasetId == null && proposedDatasetIdIsDerived)
+			oUniqueDatasetId = string.Empty;
 
 		
 		// Tracer.Trace(GetType(), "GenerateUniqueDatasetKey()", "DataSource: {0}, Dataset: {1},
@@ -321,7 +376,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		//		proposedConnectionName ?? "Null", proposedDatasetId ?? "Null", rNewConnection,
 		//		rUniqueDatasetKey ?? "Null", rUniqueConnectionName ?? "Null", rUniqueDatasetId ?? "Null");
 
-		return (rNewConnection, rCurrentSource, rUniqueDatasetKey, rUniqueConnectionName, rUniqueDatasetId, rChangedTarget);
+		return rNewRctConnection;
 	}
 
 

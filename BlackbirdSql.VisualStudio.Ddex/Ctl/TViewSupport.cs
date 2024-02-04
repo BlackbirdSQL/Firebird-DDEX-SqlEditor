@@ -5,28 +5,18 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
-using System.Security.Policy;
 using System.Threading.Tasks;
 
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
-using BlackbirdSql.VisualStudio.Ddex.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
-
-using FirebirdSql.Data.FirebirdClient;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
-using Microsoft.VisualStudio.LanguageServer.Client;
-using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
@@ -589,6 +579,7 @@ public class TViewSupport : DataViewSupport,
 				{
 					if (UnsafeCmd.GetConnectionSource() == EnConnectionSource.EntityDataModel)
 						return;
+
 					// Tracer.Trace(GetType(), "OnNodeChanged()", "IsRefreshing && Disposing Linkage");
 					LinkageParser.DisposeInstance(site, false);
 				}

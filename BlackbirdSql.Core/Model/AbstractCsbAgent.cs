@@ -978,16 +978,13 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 	public new void Add(string keyword, object value)
 	{
+		string key = keyword;
 		Describer describer = Describers[keyword];
 
-		if (describer == null)
-		{
-			KeyNotFoundException ex = new($"Describer key: {keyword}.");
-			Diag.Dug(ex);
-			throw ex;
-		}
+		if (describer != null)
+			key = describer.Key;
 
-		this[describer.Key] = value;
+		this[key] = value;
 	}
 
 
@@ -1014,7 +1011,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// <summary>
 	/// Checks whether or not the emumerator property/parameter objects are equivalent.
 	/// </summary>
-	public static bool AreEquivalent(DbConnectionStringBuilder csb1, DbConnectionStringBuilder csb2, IEnumerable<Describer> enumerator)
+	public static bool AreEquivalent(DbConnectionStringBuilder csb1, DbConnectionStringBuilder csb2, IEnumerable<Describer> enumerator, bool deep = false)
 	{
 		// Tracer.Trace(typeof(AbstractCsbAgent), "AreEquivalent(DbConnectionStringBuilder, DbConnectionStringBuilder)");
 
@@ -1022,6 +1019,8 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 		CsbAgent csa1 = (CsbAgent)csb1;
 		CsbAgent csa2 = (CsbAgent)csb2;
+
+
 
 		try
 		{
@@ -1046,6 +1045,40 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 		{
 			Diag.Dug(ex);
 			return false;
+		}
+
+
+		if (deep)
+		{
+			Describer describer;
+
+			foreach (KeyValuePair<string, object> pair in csa1)
+			{
+				describer = Describers[pair.Key];
+
+				if (describer != null)
+					continue;
+
+				if (!csa2.ContainsKey(pair.Key))
+					return false;
+
+				value1 = csa1[pair.Key];
+				value2 = csa2[pair.Key];
+
+				if (!AreEquivalent(pair.Key, value1, value2))
+					return false;
+			}
+
+			foreach (KeyValuePair<string, object> pair in csa2)
+			{
+				describer = Describers[pair.Key];
+
+				if (describer != null)
+					continue;
+
+				if (!csa1.ContainsKey(pair.Key))
+					return false;
+			}
 		}
 
 		// Tracer.Trace(typeof(TConnectionEquivalencyComparer),
@@ -1095,9 +1128,19 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 		if (value2 == null)
 			return false;
 
-		string text1 = value1.ToString().Trim();
-		string text2 = value2.ToString().Trim();
 
+		string text1;
+		string text2;
+
+		if (value1 is byte[] bytes1)
+			text1 = Encoding.Default.GetString(bytes1);
+		else
+			text1 = value1.ToString().Trim();
+
+		if (value2 is byte[] bytes2)
+			text2 = Encoding.Default.GetString(bytes2);
+		else
+			text2 = value2.ToString().Trim();
 
 		if (!string.Equals(text1, text2, StringComparison.OrdinalIgnoreCase))
 		{

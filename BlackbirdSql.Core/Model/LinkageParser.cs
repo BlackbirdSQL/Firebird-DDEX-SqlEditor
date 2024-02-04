@@ -39,8 +39,6 @@ public class LinkageParser : AbstractLinkageParser
 {
 
 
-
-
 	// -----------------------------------------------------------------------------------------------------
 	#region Constructors - LinkageParser
 	// -----------------------------------------------------------------------------------------------------
@@ -49,7 +47,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Protected .ctor. for creating an unregistered clone.
-	/// Callers must make a call to EnsureLoaded() for rhs beforehand.
+	/// Callers must make a call to EnsureLoaded() for the rhs beforehand.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	private LinkageParser(LinkageParser rhs) : base(rhs)
@@ -83,11 +81,12 @@ public class LinkageParser : AbstractLinkageParser
 	}
 
 
-
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Creates an unregistered clone of a parser.
 	/// </summary>
 	/// <returns></returns>
+	// ---------------------------------------------------------------------------------
 	protected override object Clone()
 	{
 		if (_Enabled && Loaded)
@@ -169,7 +168,7 @@ public class LinkageParser : AbstractLinkageParser
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Retrieves or creates the parser instance of a connection.
+	/// Retrieves or creates the parser instance of a connection and initiates linkage.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static LinkageParser EnsureLoaded(IDbConnection connection)
@@ -191,7 +190,7 @@ public class LinkageParser : AbstractLinkageParser
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Retrieves or creates the parser instance of a Site.
+	/// Retrieves or creates the parser instance of a Site and initiates linkage.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static LinkageParser EnsureLoaded(IVsDataConnection site)
@@ -214,7 +213,8 @@ public class LinkageParser : AbstractLinkageParser
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Retrieves or creates the parser instance of a Site.
+	/// Retrieves or creates the parser instance of a node's ConnectionNode and
+	/// initiates linkage.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static LinkageParser EnsureLoaded(IVsDataExplorerNode node)
@@ -235,7 +235,8 @@ public class LinkageParser : AbstractLinkageParser
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Retrieves an existing parser for a connection.
+	/// Retrieves an existing parser for a connection else null if no LinkageParser
+	/// exists.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static new LinkageParser GetInstance(IDbConnection connection)
@@ -249,7 +250,7 @@ public class LinkageParser : AbstractLinkageParser
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Retrieves an existing parser for a Site.
+	/// Retrieves an existing parser for a Site else null if no LinkageParser exists.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static LinkageParser GetInstance(IVsDataConnection site)
@@ -330,8 +331,8 @@ public class LinkageParser : AbstractLinkageParser
 	private CancellationTokenSource _SyncWaitOnAsyncTokenSource = null;
 
 
-
 	#endregion Fields
+
 
 
 
@@ -849,6 +850,16 @@ public class LinkageParser : AbstractLinkageParser
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns true if an SE node's collection requires completed Trigger/Generator
+	/// linkage tables in order to render, else false.
+	/// If true and linkage is incomplete or non-existent, the caller will first
+	/// initiate linkage, if required, and wait for the owning Explorer ConnectionNode's
+	/// linkage tables to be prepared before allowing a node to be rendered.
+	/// </summary>
+	// ----------------------------------------------------------------------------------
 	public static bool RequiresTriggers(string collection)
 	{
 		// Tracer.Trace(typeof(LinkageParser), "RequiresTriggers()", "Collection: {0}.", collection);
@@ -1220,9 +1231,10 @@ public class LinkageParser : AbstractLinkageParser
 
 
 
-		// =========================================================================================================
-		#region Taskhandler and Status Bar - LinkageParser
-		// =========================================================================================================
+
+	// =========================================================================================================
+	#region Taskhandler and Status Bar - LinkageParser
+	// =========================================================================================================
 
 
 	private int Percent(EnLinkStage stage, bool starting = false)
@@ -1232,6 +1244,7 @@ public class LinkageParser : AbstractLinkageParser
 
 
 	#endregion Taskhandler and Status Bar
+
 
 
 

@@ -973,6 +973,8 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			Diag.Dug(ex);
 			throw;
 		}
+
+		// Tracer.Trace(GetType(), "OnAccept()", "Exiting Site.ToString(): {0}.", Site.ToString());
 	}
 
 
@@ -991,10 +993,11 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			|| (ConnectionSource == EnConnectionSource.EntityDataModel && !_HandleNewInternally
 			&& !_HandleModifyInternally))
 		{
+			// Tracer.Trace(GetType(), "OnVerifySettings()", "Not handling internally.");
 			return;
 		}
 
-		// Tracer.Trace(GetType(), "OnVerifySettings()", "Before Verify - ConnectionSource: {0}, _HandleNewInternally: {1}, _HandleModifyInternally: {2}, Site.ToString(): {3}.", ConnectionSource, _HandleNewInternally, _HandleModifyInternally, Site.ToString());
+		// Tracer.Trace(GetType(), "OnVerifySettings()", "Before Verify - ConnectionSource: {0}, _HandleNewInternally: {1}, _HandleModifyInternally: {2}.", ConnectionSource, _HandleNewInternally, _HandleModifyInternally);
 
 
 		EnConnectionSource registrationSource = ConnectionSource == EnConnectionSource.EntityDataModel

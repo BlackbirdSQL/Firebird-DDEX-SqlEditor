@@ -2,6 +2,9 @@
 
 ### Change log
 
+#### v10.1.2.3
+Resolved several SE, edmx and RunningConnectionTable sync issues.
+
 #### v10.1.2.2
 Synchronized edmx with RunningConnectionTable connection management.</br>
 Implemented recovery procedures for SE glitch that leaves a sited explorer connection corrupted and dangling after loading another solution.

@@ -4,28 +4,23 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Config;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Model.Interfaces;
 using BlackbirdSql.Core.Properties;
 using EnvDTE;
-using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell;
-
 using static BlackbirdSql.Core.Ctl.CoreConstants;
 
 
@@ -631,13 +626,16 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Generates a unique DatasetKey or DatasetId from the proposedConnectionName
-	/// or proposedDatasetId. At most one may be specified, the other null. If both are
-	/// null the readonly Dataset property will be used.
+	/// or proposedDatasetId. At most one should be specified, the other null. If both
+	/// are null the DataSource and readonly Dataset property will be used.
 	/// <seealso cref="AbstractRunningConnectionTable.GenerateUniqueDatasetKey"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public abstract (bool, EnConnectionSource, string, string, string, CsbAgent) GenerateUniqueDatasetKey(string proposedConnectionName,
-		string proposedDatasetId, string dataSource, string dataset, string connectionUrl, string originalConnectionUrl);
+	public abstract bool GenerateUniqueDatasetKey(string proposedConnectionName,
+		string proposedDatasetId, string dataSource, string dataset, string connectionUrl,
+		string originalConnectionUrl, out EnConnectionSource oStoredConnectionSource,
+		out string oChangedTargetDatasetKey, out string oUniqueDatasetKey,
+		out string oUniqueConnectionName, out string oUniqueDatasetId);
 
 
 
@@ -1938,8 +1936,9 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 					proposedDatasetId = proposedDatasetId.Remove(pos, 1);
 			}
 
-			(_, _, string uniqueDatasetKey, string uniqueConnectionName, string uniqueDatasetId, _) =
-				GenerateUniqueDatasetKey(proposedConnectionName, proposedDatasetId, csa.DataSource, csa.Dataset, connectionUrl, null);
+			GenerateUniqueDatasetKey(proposedConnectionName, proposedDatasetId, csa.DataSource, csa.Dataset,
+				connectionUrl, null, out _, out _, out string uniqueDatasetKey, out string uniqueConnectionName,
+				out string uniqueDatasetId);
 
 			csa.DatasetKey = uniqueDatasetKey;
 
@@ -2468,7 +2467,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	public void DisableEvents()
 	{
-		_EventsCardinal++;
+		lock (_LockObject)
+			_EventsCardinal++;
 	}
 
 
@@ -2482,9 +2482,14 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	public void EnableEvents()
 	{
 		if (_EventsCardinal == 0)
+		{
 			Diag.Dug(new InvalidOperationException(Resources.ExceptionEventsAlreadyEnabled));
+		}
 		else
-			_EventsCardinal--;
+		{
+			lock (_LockObject)
+				_EventsCardinal--;
+		}
 	}
 
 
@@ -2498,6 +2503,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		if (_Instance != null && _EventsCardinal != 0)
 			return;
 
+		DisableEvents();
+
 		// We're only interested in node value changes.
 		if (e.Node == null || e.Node.IsExpanding || e.Node.IsRefreshing || e.Node.ExplorerConnection == null
 			|| e.Node.ExplorerConnection.ConnectionNode == null
@@ -2505,6 +2512,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			|| e.Node.ExplorerConnection.EncryptedConnectionString == null
 			|| e.Node != e.Node.ExplorerConnection.ConnectionNode)
 		{
+			EnableEvents();
 			return;
 		}
 
@@ -2514,6 +2522,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		// If instance is null there's been a shutdown and we've been left dangling.
 		if (_Instance == null)
 		{
+			EnableEvents();
 			UnadviseEvents(e.Node.ExplorerConnection);
 			return;
 		}
@@ -2530,7 +2539,10 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 			// DatasetKey will be null if the edmx has corrupted the root node.
 			if (!string.IsNullOrEmpty(datasetKey) && datasetKey == e.Node.ExplorerConnection.DisplayName)
+			{
+				EnableEvents();
 				return;
+			}
 		}
 
 		try
@@ -2541,8 +2553,10 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		catch (Exception ex)
 		{
 			Diag.Dug(ex);
+			EnableEvents();
 			throw;
 		}
+		EnableEvents();
 	}
 
 
@@ -2551,10 +2565,15 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		if (_Instance != null && _EventsCardinal != 0)
 			return;
 
+		DisableEvents();
+
 		// Tracer.Trace(GetType(), "OnExplorerConnectionNodeRemoving()", "Sender type: {0}.", sender.GetType().FullName);
 
 		if (e.Node == null || e.Node.ExplorerConnection == null)
+		{
+			EnableEvents();
 			return;
+		}
 
 		try
 		{
@@ -2566,10 +2585,24 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		}
 
 		if (_Instance == null)
+		{
+			EnableEvents();
 			return;
+		}
 
-		UpdateRegisteredConnection(DataProtection.DecryptString(e.Node.ExplorerConnection.EncryptedConnectionString),
-			EnConnectionSource.Session, true);
+		try
+		{
+			UpdateRegisteredConnection(DataProtection.DecryptString(e.Node.ExplorerConnection.EncryptedConnectionString),
+				EnConnectionSource.Session, true);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			EnableEvents();
+			throw;
+		}
+
+		EnableEvents();
 	}
 
 
