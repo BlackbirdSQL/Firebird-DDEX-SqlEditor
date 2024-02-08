@@ -12,7 +12,7 @@ The BlackbirdSQL DDEX 2.0 .NET with SqlEditor Provider extension for Firebird, `
 
 ### Features
 * Firebird DDEX provider support for Visual Studio's DDEX 2.0 IVs DML interfaces utilizing FirebirdSql.Data.FirebirdClient version 10.0.0.0.
-* Microsoft SqlServer SqlEditor port for Firebird for editing Computed columns, Triggers, Views, Procedures, Functions, SQL scripts and `.fbsql` files.</br>__Note:__ The editor service execution plan visualizer is not currently functional. Execution plans are text based.
+* Microsoft SqlServer SqlEditor port for Firebird for editing Computed columns, Triggers, Views, Procedures, Functions, SQL scripts and `.fbsql` files.</br>__Note:__ The editor service execution plan visualizer is not currently functional. Execution plans are text based.</br>Intellisense is based on Microsoft's Transaction-SQL language service. Firebird specific grammar may be reported as errors or warnings but still successfully execute.
 * Trigger/Generator auto-increment linkage.
 * Full integration of Server Explorer with asynchronous loading. Connection dialogs include Host and Database drop-down selection; derived from Server Explorer, FlameRobin and the current solution projects' settings and EDM connection strings.
 * SqlEditor text-based execution plans and statistics snapshot comparer.
@@ -52,6 +52,7 @@ Unless we're missing a trick here this seems to be unavoidable. Loading is async
 We want to be as unobtrusive as possible so load delays are just a reality if we go the asynchronous route. (*Loading is initiated at the earliest possible, which is as soon as the IDE shell context is available.*)
 * Operations within the EDMX UI can take some time. For even a single table the wizard executes over 100 SELECT statements with the primary SELECT statement having 20+ JOINS and 5+ UNIONS. Even a Cancel request can lock up the IDE for some time. Be patient.
 * Intellisense and Firebird grammar: The Language service for the SqlEditor service is still under development and has not been linked into the extension. When opening scripts for Triggers, Views, Procedures, Functions, Computed columns or SQL statements, the SqlEditor uses the Visual Studio built-in T-SQL Language service. This means that Intellisense may mark incompatible SQL and DDL as errors. The scripts will still successfully execute.
+* Support for embedded databases: BlackbirdSql uses the FirebirdSql.Data.FirebirdClient client, so embedded databases 'should' work, however no testing has been performed on embedded databases as of this writing.
 * The SqlEditor port does not currently support script parameter loading.
 * The BlackbirdSql Editor settings in Visual Studio Options have been ported as is from the Microsoft SqlServer SqlEditor settings. This means that several options are not currently being used or are not applicable.
 * If you have a huge number of triggers then rendering of the triggers in the SE, or any other collection for that matter, may take some time. This has nothing to do with the parser but is simply down to network and database server performance. To minimize the effect of this, Trigger/Generator linkage is built asynchronously as soon as a connection is established.
