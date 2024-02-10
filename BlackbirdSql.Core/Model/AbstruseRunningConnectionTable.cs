@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Config;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Model.Interfaces;
@@ -91,8 +92,11 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 			bool launchersActive = false;
 
+
 			lock (_LockObject)
 			{
+				_AsyncEventsTokenSource?.Cancel();
+
 				UnloadServerExplorerConfiguredConnections();
 
 				if (_SyncPayloadLauncherLaunchState != EnLauncherPayloadLaunchState.Inactive
@@ -106,6 +110,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				{
 					launchersActive = true;
 					_AsyncPayloadLauncherTokenSource?.Cancel();
+					_AsyncEventsTokenSource?.Cancel();
 				}
 			}
 
@@ -182,7 +187,9 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// Task handling fields.
 
 	private CancellationToken _AsyncPayloadLauncherToken;
+	private CancellationToken _AsyncEventsToken;
 	private CancellationTokenSource _AsyncPayloadLauncherTokenSource = null;
+	private CancellationTokenSource _AsyncEventsTokenSource = null;
 	private CancellationToken _SyncPayloadLauncherToken;
 	private CancellationTokenSource _SyncPayloadLauncherTokenSource = null;
 
@@ -230,6 +237,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			&& !_AsyncPayloadLauncherToken.IsCancellationRequested;
 
 
+	public bool AsyncPending => _AsyncPayloadLauncherLaunchState == EnLauncherPayloadLaunchState.Pending;
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// This internal table storing all registered connections and datasources/servers.
@@ -244,7 +253,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// async tasks are not in Inactive or Shutdown states.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public bool Loading => _LoadingSyncCardinal > 0 || _LoadingAsyncCardinal > 0;
+	public bool Loading => _LoadingSyncCardinal > 0 ||
+		(_LoadingAsyncCardinal > 0 && !_AsyncPayloadLauncherToken.IsCancellationRequested);
 
 
 	#endregion Property accessors
@@ -283,7 +293,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				// Tracer.Trace(GetType(), "AdviseServerExplorerConnectionsEvents()", "Advising SE events for: {0}.", pair.Key);
 
 				object viewSupport = Reflect.GetPropertyValue(explorerConnection, "ViewSupport",
-					System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+					BindingFlags.Instance | BindingFlags.NonPublic);
 
 				if (viewSupport == null)
 				{
@@ -349,6 +359,51 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	}
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Initiates asynchronous linkage of all sited Server Explorer connections.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private void AsyncLinkSitedServerExplorerConnections()
+	{
+		IVsDataExplorerConnectionManager manager =
+			(Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
+			as IVsDataExplorerConnectionManager)
+		?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
+
+		Guid clsidProvider = new(SystemData.ProviderGuid);
+		IVsDataExplorerConnection explorerConnection;
+
+
+		foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in manager.Connections)
+		{
+			if (pair.Value.Provider != clsidProvider)
+				continue;
+
+			explorerConnection = pair.Value;
+
+			try
+			{
+				// Tracer.Trace(GetType(), "LinkSitedServerExplorerConnections()", "Advising SE events for: {0}.", pair.Key);
+				if (explorerConnection.Connection != null)
+				{
+					if (explorerConnection.Connection.State == DataConnectionState.Open
+						|| (explorerConnection.ConnectionNode != null && explorerConnection.ConnectionNode.IsExpanded))
+					{
+						LinkageParser.AsyncEnsureLoaded(explorerConnection.Connection);
+					}
+				}
+
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+			}
+		}
+
+	}
+
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -378,10 +433,13 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 
 		// Prep the launcher.
-		PrepAsyncPayloadLauncher();
+		_AsyncEventsToken = default;
+		_AsyncEventsTokenSource?.Dispose();
+		_AsyncEventsTokenSource = new();
+		_AsyncEventsToken = _AsyncEventsTokenSource.Token;
 
 		// The following for brevity.
-		CancellationToken cancellationToken = _AsyncPayloadLauncherToken;
+		CancellationToken cancellationToken = _AsyncEventsToken;
 		TaskCreationOptions creationOptions = TaskCreationOptions.PreferFairness
 			| TaskCreationOptions.AttachedToParent;
 		TaskScheduler scheduler = TaskScheduler.Default;
@@ -389,14 +447,14 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		// For brevity. Create the payload.
 		bool payload() =>
-			PayloadAdviseServerExplorerConnectionsEvents();
+			PayloadAdviseServerExplorerConnectionsEvents(cancellationToken);
 
 
 		// Start up the payload launcher with tracking.
 		// Tracer.Trace(GetType(), "AsyncAdviseServerExplorerConnectionsEvents()", "Calling startnew.");
 
-		_AsyncPayloadLauncher?.Dispose();
-		_AsyncPayloadLauncher = Task.Factory.StartNew(payload, default, creationOptions, scheduler);
+		// _AsyncPayloadLauncher?.Dispose();
+		_ = Task.Factory.StartNew(payload, default, creationOptions, scheduler);
 
 		// Tracer.Trace(GetType(), "AsyncAdviseServerExplorerConnectionsEvents()", "Done called startnew.");
 
@@ -431,7 +489,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			if (_InternalConnectionsTable == null)
 				return false;
 
-			if (_LoadingAsyncCardinal > 0 && probject != null)
+			if (_LoadingAsyncCardinal > 0 && !_AsyncPayloadLauncherToken.IsCancellationRequested && probject != null)
 			{
 				_Probjects.Add(probject);
 				return true;
@@ -794,6 +852,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 			if (PersistentSettings.IncludeAppConnections && ThreadHelper.CheckAccess())
 			{
+				// Tracer.Trace(GetType(), "LoadSafeConfiguredConnections()", "Loading Unsafe Solution Connections on Safe");
 				LoadSolutionConfiguredConnections(_SyncPayloadLauncherToken, true, null);
 				if (_Instance == null)
 					return false;
@@ -1080,9 +1139,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				throw ex;
 			}
 
-			if ((!isSync && (_AsyncPayloadLauncher == null || _AsyncPayloadLauncher.IsCompleted))
-				|| (isSync && (_SyncPayloadLauncher == null || _SyncPayloadLauncher.IsCompleted))
-				|| cancellationToken.IsCancellationRequested)
+			if (!isSync && (_AsyncPayloadLauncher == null || cancellationToken.IsCancellationRequested))
 			{
 				lock (_LockObject)
 					_Probjects.Clear();
@@ -1103,6 +1160,85 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				current = (Project)_Probjects[0];
 			}
 		}
+
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Searches for application configured connections and performs registration
+	/// synchronously.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public bool LoadUnsafeConfiguredConnectionsSync()
+	{
+		// Tracer.Trace(GetType(), "PayloadLoadUnsafeConfiguredConnectionsSync()");
+
+		bool result = true;
+
+		_AsyncPayloadLauncherTokenSource?.Cancel();
+
+
+		try
+		{
+			// We must be on the ui thread here
+			Diag.ThrowIfNotOnUIThread();
+
+			AdviseServerExplorerConnectionsEvents();
+
+
+			if (Controller.Instance.Dte == null || Controller.Instance.Dte.Solution == null
+				|| Controller.Instance.Dte.Solution.Projects == null)
+			{
+				COMException exc = new("DTE.Solution.Projects is not available", VSConstants.RPC_E_INVALID_DATA);
+				Diag.Dug(exc);
+				throw exc;
+			}
+
+			// Build an object list of top level projects for the solution, then launch a non-block thread on
+			// the thread pool that will recursively call an async method that switches back to the ui
+			// thread to register connections for each project.
+
+
+			// Tracer.Trace(GetType(), "PayloadLoadUnsafeConfiguredConnectionsAsync()", "Calling LoadSolutionConfiguredConnections(), _AsyncPayloadLauncherToken.IsCancellationRequested: {0}.", _AsyncPayloadLauncherToken.IsCancellationRequested);
+
+
+			BeginLoadData(true);
+
+			try
+			{
+				LoadSolutionConfiguredConnections(default, true, null);
+
+				if (_Instance == null)
+					result = false;
+
+				// finally{} just will not work here. This must have something to do with how
+				// this async task was formed.
+			}
+			catch
+			{
+				EndLoadData();
+				throw;
+			}
+
+			EndLoadData();
+
+
+			// finally{} just will not work here. This must have something to do with how
+			// this async task was formed.
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+
+		if (result)
+			AsyncLinkSitedServerExplorerConnections();
+
+		return result;
 
 	}
 
@@ -1256,7 +1392,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// Loads explorer advise connections on thread pool.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private bool PayloadAdviseServerExplorerConnectionsEvents()
+	private bool PayloadAdviseServerExplorerConnectionsEvents(CancellationToken cancellationToken)
 	{
 		// Tracer.Trace(GetType(), "PayloadAdviseServerExplorerConnectionsEvents()");
 
@@ -1265,21 +1401,34 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		bool result = true;
 
+		if (cancellationToken.IsCancellationRequested)
+		{
+			_AsyncEventsToken = default;
+			_AsyncEventsTokenSource?.Dispose();
+			_AsyncEventsTokenSource = null;
+			return false;
+		}
+
+
 		try
 		{
-			_AsyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Launching;
+			// _AsyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Launching;
 			AdviseServerExplorerConnectionsEvents();
 		}
 		catch (Exception ex)
 		{
 			Diag.Dug(ex);
-			ClearAsyncPayloadLauncher();
+			_AsyncEventsToken = default;
+			_AsyncEventsTokenSource?.Dispose();
+			_AsyncEventsTokenSource = null;
 			throw ex;
 		}
 
-		ClearAsyncPayloadLauncher();
+		_AsyncEventsToken = default;
+		_AsyncEventsTokenSource?.Dispose();
+		_AsyncEventsTokenSource = null;
 
-		LinkSitedServerExplorerConnections();
+		AsyncLinkSitedServerExplorerConnections();
 
 		return result;
 
@@ -1312,6 +1461,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		bool result = true;
 
+		System.Threading.Thread.Sleep(10000);
+
 		try
 		{
 
@@ -1322,17 +1473,27 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			else
 			{
 
-				_AsyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Launching;
-
 				// We must be off of the ui thread here
 				Diag.ThrowIfOnUIThread();
 
-
-				AdviseServerExplorerConnectionsEvents();
-
-
 				// Now onto main thread.
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
+			}
+
+			// Check again.
+			if (cancellationToken.IsCancellationRequested)
+			{
+				result = false;
+			}
+			else
+			{
+
+
+				_AsyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Launching;
+
+				if (probject == null)
+					AdviseServerExplorerConnectionsEvents();
 
 
 				if (probject == null && (Controller.Instance.Dte == null || Controller.Instance.Dte.Solution == null
@@ -1384,49 +1545,13 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		ClearAsyncPayloadLauncher();
 
-
-		LinkSitedServerExplorerConnections();
+		if (result && probject == null)
+			AsyncLinkSitedServerExplorerConnections();
 
 		return result;
 
 	}
 
-
-	private void LinkSitedServerExplorerConnections()
-	{
-		IVsDataExplorerConnectionManager manager =
-			(Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
-			as IVsDataExplorerConnectionManager)
-		?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
-
-		Guid clsidProvider = new(SystemData.ProviderGuid);
-		IVsDataExplorerConnection explorerConnection;
-
-
-		foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in manager.Connections)
-		{
-			if (pair.Value.Provider != clsidProvider)
-				continue;
-
-			explorerConnection = pair.Value;
-
-			try
-			{
-				// Tracer.Trace(GetType(), "AdviseServerExplorerConnectionsEvents()", "Advising SE events for: {0}.", pair.Key);
-
-				if (explorerConnection.Connection != null && explorerConnection.Connection.State == DataConnectionState.Open)
-				{
-					LinkageParser.EnsureLoaded(explorerConnection.Connection);
-				}
-
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-			}
-		}
-
-	}
 
 
 	// ---------------------------------------------------------------------------------
@@ -1526,19 +1651,19 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		{
 			if (project.ProjectItems != null && project.ProjectItems.Count > 0)
 			{
-				// Diag.Trace("Recursing ProjectFolder: " + project.Name);
+				// Tracer.Trace("Recursing ProjectFolder: " + project.Name);
 				RecursiveScanProject(project.ProjectItems);
 			}
 			/*
 			else
 			{
-				// Diag.Trace("No items in ProjectFolder: " + project.Name);
+				// Tracer.Trace("No items in ProjectFolder: " + project.Name);
 			}
 			*/
 		}
 		else
 		{
-			// Diag.Trace("Recursive validate project: " + project.Name);
+			// Tracer.Trace("Recursive validate project: " + project.Name);
 
 			if (UnsafeCmd.IsValidExecutableProjectType(project, false))
 			{
@@ -1575,7 +1700,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			}
 			else
 			{
-				// Diag.Trace(projectItem.Name + " projectItem.SubProject is null (Possible Unloaded project or document)");
+				// Tracer.Trace(projectItem.Name + " projectItem.SubProject is null (Possible Unloaded project or document)");
 			}
 		}
 	}

@@ -208,7 +208,7 @@ public static class XmlParser
 				try
 				{
 					xmlDoc.Save(xmlPath);
-					// Diag.Trace("app.config save: " + xmlPath);
+					// Tracer.Trace("app.config save: " + xmlPath);
 				}
 				catch (Exception ex)
 				{
@@ -284,7 +284,7 @@ public static class XmlParser
 				try
 				{
 					xmlDoc.Save(xmlPath);
-					// Diag.Trace("app.config save: " + xmlPath);
+					// Tracer.Trace("app.config save: " + xmlPath);
 				}
 				catch (Exception ex)
 				{
@@ -635,7 +635,7 @@ public static class XmlParser
 			try
 			{
 				xmlDoc.Save(xmlPath);
-				// Diag.Trace("edmx Xml saved: " + xmlPath);
+				// Tracer.Trace("edmx Xml saved: " + xmlPath);
 			}
 			catch (Exception ex)
 			{

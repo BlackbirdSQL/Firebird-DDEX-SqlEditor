@@ -108,7 +108,7 @@ internal class DslRawTriggers : AbstractDslSchema
 FROM rdb$triggers trg
 ORDER BY trg.rdb$trigger_name");
 
-		// Diag.Trace(sql.ToString());
+		// Tracer.Trace(sql.ToString());
 
 		return sql;
 	}

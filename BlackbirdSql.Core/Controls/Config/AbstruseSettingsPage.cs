@@ -539,7 +539,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 			}
 		}
 
-		// Diag.Trace("Done OnEditBoxGotFocus().");
+		// Tracer.Trace("Done OnEditBoxGotFocus().");
 	}
 
 
@@ -587,7 +587,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 			EnableEvents();
 		}
 
-		// Diag.Trace("Done OnEditControlLostFocus().");
+		// Tracer.Trace("Done OnEditControlLostFocus().");
 	}
 
 

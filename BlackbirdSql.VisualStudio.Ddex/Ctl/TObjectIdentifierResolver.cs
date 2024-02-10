@@ -98,7 +98,7 @@ public class TObjectIdentifierResolver : DataObjectIdentifierResolver
 			identifier[1] = null;
 		}
 
-		// Diag.Trace("typeName: " + typeName + " Dsl length: " + length + " Supplied length: " + fullIdentifier.Length + " Copy length:" + (length - fullIdentifier.Length));
+		// Tracer.Trace("typeName: " + typeName + " Dsl length: " + length + " Supplied length: " + fullIdentifier.Length + " Copy length:" + (length - fullIdentifier.Length));
 		return identifier;
 	}
 

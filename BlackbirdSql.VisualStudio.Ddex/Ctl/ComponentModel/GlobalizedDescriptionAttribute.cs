@@ -10,11 +10,8 @@ using BlackbirdSql.VisualStudio.Ddex.Properties;
 // namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.PropertyGridUtilities
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
 
-public sealed class GlobalizedDescriptionAttribute : AbstractGlobalizedDescriptionAttribute
+public sealed class GlobalizedDescriptionAttribute(string resourceName)
+	: AbstractGlobalizedDescriptionAttribute(resourceName)
 {
 	public override System.Resources.ResourceManager ResMgr => AttributeResources.ResourceManager;
-
-	public GlobalizedDescriptionAttribute(string resourceName) :base(resourceName)
-	{
-	}
 }

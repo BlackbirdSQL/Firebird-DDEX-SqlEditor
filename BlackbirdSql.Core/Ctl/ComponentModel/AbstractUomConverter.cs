@@ -65,7 +65,7 @@ public abstract class AbstractUomConverter : TypeConverter, IBEditConverter, IDi
 
 	public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
 	{
-		// Diag.Trace("CanConvertFrom: " + context.PropertyDescriptor.Name);
+		// Tracer.Trace("CanConvertFrom: " + context.PropertyDescriptor.Name);
 		RegisterModel(context);
 
 		if (sourceType == typeof(string))
@@ -78,7 +78,7 @@ public abstract class AbstractUomConverter : TypeConverter, IBEditConverter, IDi
 
 	public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 	{
-		// Diag.Trace("ConvertFrom: " + context.PropertyDescriptor.Name);
+		// Tracer.Trace("ConvertFrom: " + context.PropertyDescriptor.Name);
 		RegisterModel(context);
 
 		if (value is string text)
@@ -132,7 +132,7 @@ public abstract class AbstractUomConverter : TypeConverter, IBEditConverter, IDi
 		if (destinationType == null)
 			throw new ArgumentNullException("destinationType");
 
-		// Diag.Trace("ConvertTo: " + context.PropertyDescriptor.Name);
+		// Tracer.Trace("ConvertTo: " + context.PropertyDescriptor.Name);
 
 		RegisterModel(context);
 
@@ -141,12 +141,12 @@ public abstract class AbstractUomConverter : TypeConverter, IBEditConverter, IDi
 			_CurrentValue = IsCardinal ? (int)value : (string)value;
 			if (string.IsNullOrEmpty(_UomFmt) || _EditActive)
 			{
-				// Diag.Trace("Converted To: " + _CurrentValue.ToString(CultureInfo.CurrentCulture));
+				// Tracer.Trace("Converted To: " + _CurrentValue.ToString(CultureInfo.CurrentCulture));
 				return !IsCardinal ? StringValue : IntValue.ToString(CultureInfo.CurrentCulture);
 			}
 			else
 			{
-				// Diag.Trace("Converted To: " + string.Format(_UomFmt, _CurrentValue));
+				// Tracer.Trace("Converted To: " + string.Format(_UomFmt, _CurrentValue));
 				if (_UomFmtMin != null && IntValue == _Min)
 					return _UomFmtMin;
 				else if (_UomFmtMax != null && IntValue == _Max)

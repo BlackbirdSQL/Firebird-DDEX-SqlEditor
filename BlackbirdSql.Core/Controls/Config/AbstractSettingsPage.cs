@@ -104,7 +104,7 @@ public abstract class AbstractSettingsPage<T> : AbstruseSettingsPage where T : A
 			{
 				if (customAttribute is DefaultValueAttribute defaultAttr)
 				{
-					// Diag.Trace($"Getting default for {property.Name}: {defaultAttr.Value}.");
+					// Tracer.Trace($"Getting default for {property.Name}: {defaultAttr.Value}.");
 					return defaultAttr.Value;
 				}
 			}

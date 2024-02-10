@@ -25,7 +25,7 @@ public static class SystemData
 	public const string EFProviderServices = "EntityFramework.Firebird.FbProviderServices";
 	public const string EFConnectionFactory = "EntityFramework.Firebird.FbConnectionFactory";
 
-	public const string DataProviderName = "Firebird SQL Server"; // Firebird
+	public const string DataProviderName = "Firebird Server"; // Firebird
 
 	public static Type ProviderFactoryType = typeof(FirebirdSql.Data.FirebirdClient.FirebirdClientFactory);
 

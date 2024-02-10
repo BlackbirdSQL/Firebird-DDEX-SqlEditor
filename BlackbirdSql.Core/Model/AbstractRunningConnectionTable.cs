@@ -197,10 +197,10 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 
 		int connectionIndex = -1;
 
-		if (proposedConnectionName == string.Empty)
+		if (string.IsNullOrWhiteSpace(proposedConnectionName))
 			proposedConnectionName = null;
 
-		if (proposedDatasetId == string.Empty)
+		if (string.IsNullOrWhiteSpace(proposedDatasetId))
 			proposedDatasetId = null;
 
 		if (originalConnectionUrl != null && originalConnectionUrl == connectionUrl)
@@ -324,7 +324,11 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 				if (connectionIndex > -1 && connectionIndex == index)
 					break;
 			}
+
 			oUniqueDatasetKey = oUniqueConnectionName;
+
+			if (proposedConnectionName != null && proposedConnectionName == oUniqueConnectionName)
+				oUniqueConnectionName = null;
 		}
 		else
 		{
@@ -356,13 +360,15 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 				if (connectionIndex > -1 && connectionIndex == index)
 					break;
 			}
+
+			// Special case to take care of here. If nothing is proposed and oUniqueDatasetId
+			// is directly derived then oUniqueDatasetId is not needed but will have been
+			// generated.
+			if (proposedDatasetId == null && oUniqueDatasetId == dataset)
+				oUniqueDatasetId = null;
+			else if (proposedDatasetId != null && proposedDatasetId == oUniqueDatasetId)
+				oUniqueDatasetId = null;
 		}
-
-		if (proposedConnectionName != null && proposedConnectionName == oUniqueConnectionName)
-			oUniqueConnectionName = null;
-
-		if (proposedDatasetId != null && proposedDatasetId == oUniqueDatasetId)
-			oUniqueDatasetId = null;
 
 		if (oUniqueConnectionName == null && proposedConnectionNameIsDerived)
 			oUniqueConnectionName = string.Empty;
@@ -633,7 +639,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	public static bool VerifyUpdateRights(EnConnectionSource updater,
 		EnConnectionSource owner)
 	{
-		if (owner == EnConnectionSource.Unknown || updater <= owner)
+		if (owner <= EnConnectionSource.Unknown || updater <= owner)
 			return true;
 
 		return false;

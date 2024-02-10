@@ -721,7 +721,7 @@ public abstract class AbstractPackageController : IBPackageController
 			return;
 		}
 
-		// Diag.Trace("Project opened");
+		// Tracer.Trace("Project opened");
 		// If anything gets through things are still happening so we can reset and allow events with incomplete project objects
 		// to continue recycling
 		_RefCnt = 0;

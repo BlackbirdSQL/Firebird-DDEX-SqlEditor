@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
 
 using Microsoft.VisualStudio.Shell;
@@ -25,6 +26,37 @@ namespace BlackbirdSql.Core;
 	Justification = "Only checking for null")]
 internal static class Controller
 {
+	public static string ActiveWindowObjectKind
+	{
+		get
+		{
+			EnvDTE.Window window = Instance.Dte.ActiveWindow;
+
+			if (window == null)
+				return null;
+
+			return window.ObjectKind;
+		}
+	}
+
+	public static string ActiveWindowObjectType
+	{
+		get
+		{
+			EnvDTE.Window window = Instance.Dte.ActiveWindow;
+
+			if (window == null)
+				return null;
+
+			object @object = window.Object;
+			if (@object == null)
+				return null;
+
+
+			return @object.GetType().FullName;
+		}
+	}
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>

@@ -2,7 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Xml.Linq;
+using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
@@ -173,15 +176,8 @@ public sealed class RctManager : IDisposable
 			if (_Instance == null)
 				return null;
 
-			if (_Instance._Rct == null)
-			{
-				LoadConfiguredConnections(false);
-			}
-			else if (Loading)
-			{
-				_Instance._Rct.WaitForSyncLoad();
-				_Instance._Rct.WaitForAsyncLoad();
-			}
+			if (_Instance._Rct == null || Loading)
+				EnsureLoaded();
 
 			return _Instance._Rct;
 		}
@@ -214,7 +210,7 @@ public sealed class RctManager : IDisposable
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static bool ShutdownState => (_Instance != null && _Instance._Rct != null && _Instance._Rct.ShutdownState);
-		
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -253,7 +249,7 @@ public sealed class RctManager : IDisposable
 		if (Rct == null)
 			return null;
 
-		CsbAgent csa = new(connectionInfo);
+		CsbAgent csa = new(connectionInfo, false);
 		string connectionUrl = csa.SafeDatasetMoniker;
 
 
@@ -319,7 +315,7 @@ public sealed class RctManager : IDisposable
 		if (Rct == null)
 			return null;
 
-		CsbAgent csa = new(node);
+		CsbAgent csa = new(node, false);
 		string connectionUrl = csa.SafeDatasetMoniker;
 
 
@@ -415,7 +411,7 @@ public sealed class RctManager : IDisposable
 	/// or DatsetKey synonym.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static string GetConnectionKey(string connectionValue)
+	public static string GetStoredConnectionKey(string connectionValue)
 	{
 		if (Rct == null)
 			return null;
@@ -586,47 +582,6 @@ public sealed class RctManager : IDisposable
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Finds an explorer connection given a ConnectionString.
-	/// </summary>
-	/// <returns>
-	/// The tuple (label, explorerConnection)
-	/// </returns>
-	// ---------------------------------------------------------------------------------
-	private static (string, IVsDataExplorerConnection) FindServerExplorerConnection(string connectionString)
-	{
-		IVsDataExplorerConnectionManager manager =
-			(Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
-			as IVsDataExplorerConnectionManager)
-			?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
-
-		Guid clsidProvider = new(SystemData.ProviderGuid);
-		string connectionUrl = CsbAgent.CreateConnectionUrl(connectionString);
-
-
-		CsbAgent csa;
-
-		foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in manager.Connections)
-		{
-			if (pair.Value.Provider != clsidProvider)
-				continue;
-
-			csa = new(DataProtection.DecryptString(pair.Value.EncryptedConnectionString));
-
-			if (csa.SafeDatasetMoniker == connectionUrl)
-			{
-
-				// Tracer.Trace(typeof(RctManager), "FindServerExplorerConnection()", "Found pair.Key: {0}: pair.Value.DisplayName: {1}", pair.Key, pair.Value.DisplayName);
-				return (pair.Key, pair.Value);
-			}
-		}
-
-		return (null, null);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
 	/// Invalidates the Rct for active static CsbAgents so that they can preform
 	/// validation checkS.
 	/// </summary>
@@ -642,13 +597,48 @@ public sealed class RctManager : IDisposable
 	}
 
 
-
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Initiates loading of the RunningConnectionTable.
 	/// Loads ServerExplorer, FlameRobin and Application connection configurations from
 	/// OnSolutionLoad, package initialization, ServerExplorer or any other applicable
 	/// activation event.
 	/// </summary>
+	/// <returns>
+	/// True if the load succeeded or connections were already loaded else false if the
+	/// rct is in a shutdown state.
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	public static bool LoadConfiguredConnections()
+	{
+		return ResolveDeadlocks(true);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Ensures the rct is loaded, waiting or synchronoulsy loading if required.
+	/// </summary>
+	/// <returns>
+	/// True if the load succeeded or connections were already loaded else false if the
+	/// rct is in a shutdown state.
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	public static bool EnsureLoaded()
+	{
+		return ResolveDeadlocks(false);
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Resolves red zone deadlocks then loads the Rct if neccesary.
+	/// </summary>
+	/// <param name="asynchronous" >
+	/// True is the caller is making an async request to ensure the rct is loaded or in
+	/// a loaing state, else False if the loaded rct is required.
+	/// </param>
 	/// <returns>
 	/// True if the load succeeded or connections were already loaded else false if the
 	/// rct is in a shutdown state.
@@ -660,44 +650,62 @@ public sealed class RctManager : IDisposable
 	/// 2. UICONTEXT.SolutionExists also before async initialization.
 	/// 3. Extension async initialization.
 	/// 4. Any of 1, 2 or 3 after LoadConfiguredConnections() is already activated.
-	/// The only way to control this is to create a managed awaitable.
+	/// The only way to control this is to create a managed awaitable or sync process to
+	/// take over loading because switching between the ui and threadpool occurs
+	/// several times during the load.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
-	public static bool LoadConfiguredConnections(bool initializer)
+	private static bool ResolveDeadlocks(bool asynchronous)
 	{
 		// Tracer.Trace(typeof(RctManager), "LoadConfiguredConnections()", "Instance._Rct == null: {0}", Instance._Rct == null);
 
+		// Shutdown state.
 		if (_Instance == null)
 			return false;
 
+		// Rct has not been initialized.
 		if (!Loading && Instance._Rct == null)
 		{
 			Instance._Rct = RunningConnectionTable.CreateInstance();
 			Instance._Rct.LoadConfiguredConnections();
-			if (initializer)
+
+			if (asynchronous)
 				return true;
 
-			Instance._Rct.WaitForSyncLoad();
-			initializer = true;
+			if (PersistentSettings.IncludeAppConnections && !ThreadHelper.CheckAccess())
+				Instance._Rct.WaitForAsyncLoad();
+
+			return true;
 		}
-		else if (initializer)
+		// Aynchronous request. Rct has been initialized or is loading, so just exit.
+		else if (asynchronous)
 		{
 			return false;
 		}
+		// Synchronous request and loading - deadlock red zone.
 		else if (Loading)
 		{
-			if (initializer)
-				return false;
-
+			// If sync loads are still active we're safe and can wait because no switching
+			// of threads takes place here.
 			Instance._Rct.WaitForSyncLoad();
+
+			// If we're not on the main thread or the async payload is not in a
+			// pending state we can safely wait.
+			if (!ThreadHelper.CheckAccess() || !Instance._Rct.AsyncPending)
+			{
+				Instance._Rct.WaitForAsyncLoad();
+			}
+			else
+			{
+				// Tracer.Trace(typeof(RctManager), "LoadConfiguredConnections()", "Cancelling Async and switching to sync");
+
+				// We're on the main thread and async is pending. This is a deadlock red zone.
+				// Send the async payload a cancel notification and execute the cancelled
+				// async task on the main thread.
+				Instance._Rct.LoadUnsafeConfiguredConnectionsSync();
+			}
 		}
 
-
-		// If we initialized then UIThread means something otherwise check async anyway.
-		if (!initializer || !ThreadHelper.CheckAccess())
-		{
-			Instance._Rct.WaitForAsyncLoad();
-		}
 
 		return Instance._Rct != null;
 	}
@@ -728,7 +736,7 @@ public sealed class RctManager : IDisposable
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Modifies the name and connection information of Server Explorers internal
+	/// Modifies the name and connection information of Server Explorer's internal
 	/// IVsDataExplorerConnectionManager connection entry.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
@@ -743,8 +751,8 @@ public sealed class RctManager : IDisposable
 		try
 		{
 
-			CsbAgent seCsa = new(DataProtection.DecryptString(explorerConnection.Connection.EncryptedConnectionString));
-			string connectionKey = explorerConnection.ConnectionKey();
+			CsbAgent seCsa = new(DataProtection.DecryptString(explorerConnection.Connection.EncryptedConnectionString), false);
+			string connectionKey = explorerConnection.GetConnectionKey(true);
 
 			if (string.IsNullOrWhiteSpace(csa.ConnectionKey) || csa.ConnectionKey != connectionKey)
 			{
@@ -1019,7 +1027,12 @@ public sealed class RctManager : IDisposable
 
 		csa.ConnectionSource = EnConnectionSource.ServerExplorer;
 
-		(_, IVsDataExplorerConnection explorerConnection) = FindServerExplorerConnection(csa.ConnectionString);
+		IVsDataExplorerConnectionManager manager =
+			(Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
+				as IVsDataExplorerConnectionManager)
+			?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
+
+		(_, IVsDataExplorerConnection explorerConnection) = manager.SearchExplorerConnectionEntry(csa.ConnectionString, false);
 
 		if (explorerConnection != null)
 			return ModifyServerExplorerConnection(explorerConnection, ref csa, modifyExplorerConnection);
@@ -1029,11 +1042,6 @@ public sealed class RctManager : IDisposable
 
 
 		csa.ConnectionKey = csa.DatasetKey;
-
-		IVsDataExplorerConnectionManager manager =
-			(Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
-			as IVsDataExplorerConnectionManager)
-			?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
 
 		Rct.DisableEvents();
 
@@ -1225,7 +1233,7 @@ public sealed class RctManager : IDisposable
 	/// <param name="source">
 	/// The source requesting the validation.
 	/// </param>
-	/// <param name="insertMode">
+	/// <param name="serverExplorerInsertMode">
 	/// Boolean indicating wehther or not a connection is being added or modified.
 	/// </param>
 	/// <param name="originalConnectionString">
@@ -1234,7 +1242,7 @@ public sealed class RctManager : IDisposable
 	/// </param>
 	// ---------------------------------------------------------------------------------
 	public static (bool, bool, bool) ValidateSiteProperties(IVsDataConnectionProperties site, EnConnectionSource connectionSource,
-		bool insertMode, string originalConnectionString)
+		bool serverExplorerInsertMode, string originalConnectionString)
 	{
 		bool rSuccess = true;
 		bool rAddInternally = false;
@@ -1255,7 +1263,7 @@ public sealed class RctManager : IDisposable
 		string msg = null;
 		string caption = null;
 
-		if (proposedConnectionName != null && proposedConnectionName.StartsWith(_Scheme))
+		if (!string.IsNullOrWhiteSpace(proposedConnectionName) && proposedConnectionName.StartsWith(_Scheme))
 		{
 			caption = Resources.RctManager_CaptionInvalidConnectionName;
 			msg = Resources.RctManager_TextInvalidConnectionName.FmtRes(_Scheme, proposedConnectionName);
@@ -1297,19 +1305,19 @@ public sealed class RctManager : IDisposable
 
 
 
-		if (!string.IsNullOrEmpty(uniqueConnectionName))
+		if (!string.IsNullOrEmpty(uniqueConnectionName) && !string.IsNullOrEmpty(proposedConnectionName))
 		{
 			// Handle all cases where there's a connection name conflict.
 
 			// The settings provided will create a new SE connection with a connection name conflict.
-			if (createNew && !insertMode && (connectionSource == EnConnectionSource.ServerExplorer
+			if (createNew && !serverExplorerInsertMode && (connectionSource == EnConnectionSource.ServerExplorer
 				|| connectionSource == EnConnectionSource.EntityDataModel))
 			{
 				caption = Resources.RctManager_CaptionNewConnectionNameConflict;
-				msg = Resources.RctManager_TextNewSEConnectionNameConflict.FmtRes(proposedConnectionName, uniqueConnectionName); 
+				msg = Resources.RctManager_TextNewSEConnectionNameConflict.FmtRes(proposedConnectionName, uniqueConnectionName);
 			}
 			// The settings provided will create a new Session connection as well as a new SE connection with a connection name conflict.
-			else if (createNew && !insertMode)
+			else if (createNew && !serverExplorerInsertMode)
 			{
 				caption = Resources.RctManager_CaptionNewConnectionNameConflict;
 				msg = Resources.RctManager_TextNewConnectionNameConflict.FmtRes(proposedConnectionName, uniqueConnectionName);
@@ -1327,19 +1335,19 @@ public sealed class RctManager : IDisposable
 				msg = Resources.RctManager_TextConnectionNameConflict.FmtRes(proposedConnectionName, uniqueConnectionName);
 			}
 		}
-		else if (!string.IsNullOrEmpty(uniqueDatasetId))
+		else if (!string.IsNullOrEmpty(uniqueDatasetId) && !string.IsNullOrEmpty(proposedDatasetId))
 		{
 			// Handle all cases where there's a DatasetId conflict.
 
 			// The settings provided will create a new SE connection with a DatasetId conflict.
-			if (createNew && !insertMode && (connectionSource == EnConnectionSource.ServerExplorer
+			if (createNew && !serverExplorerInsertMode && (connectionSource == EnConnectionSource.ServerExplorer
 				|| connectionSource == EnConnectionSource.EntityDataModel))
 			{
 				caption = Resources.RctManager_CaptionNewConnectionDatabaseNameConflict;
 				msg = Resources.RctManager_TextNewSEConnectionDatabaseNameConflict.FmtRes(proposedDatasetId, uniqueDatasetId);
 			}
 			// The settings provided will create a new Session connection as well as a new SE connection with a DatasetId conflict.
-			else if (createNew && !insertMode)
+			else if (createNew && !serverExplorerInsertMode)
 			{
 				caption = Resources.RctManager_CaptionNewConnectionDatabaseNameConflict;
 				msg = Resources.RctManager_TextNewConnectionDatabaseNameConflict.FmtRes(proposedDatasetId, uniqueDatasetId);
@@ -1359,14 +1367,14 @@ public sealed class RctManager : IDisposable
 		}
 		// Handle all case where there is no conflict.
 		// The settings provided will create a new SE connection.
-		else if (createNew && !insertMode &&
+		else if (createNew && !serverExplorerInsertMode &&
 			(connectionSource == EnConnectionSource.ServerExplorer || connectionSource == EnConnectionSource.EntityDataModel))
 		{
 			caption = Resources.RctManager_CaptionNewConnection;
 			msg = Resources.RctManager_TextNewSEConnection;
 		}
 		// The settings provided will create a new Session connection as well as a new SE connection.
-		else if (createNew && !insertMode)
+		else if (createNew && !serverExplorerInsertMode)
 		{
 			caption = Resources.RctManager_CaptionNewConnection;
 			msg = Resources.RctManager_TextNewConnection;
@@ -1412,7 +1420,7 @@ public sealed class RctManager : IDisposable
 
 		// Establish the connection owner.
 		// if the explorer connection exists or if it's the source (or EntityDataModel) it automatically is the owner.
-		string connectionKey = site.ConnectionKey();
+		string connectionKey = site.FindConnectionKey();
 
 		if (connectionKey == null && (connectionSource == EnConnectionSource.ServerExplorer
 			|| connectionSource == EnConnectionSource.EntityDataModel))
@@ -1437,7 +1445,7 @@ public sealed class RctManager : IDisposable
 				site[CoreConstants.C_KeyExConnectionSource] = EnConnectionSource.ServerExplorer;
 		}
 
-		if (!insertMode && createNew)
+		if (!serverExplorerInsertMode && createNew)
 			rAddInternally = true;
 
 		rModifyInternally = changedTargetDatasetKey != null || (!rAddInternally

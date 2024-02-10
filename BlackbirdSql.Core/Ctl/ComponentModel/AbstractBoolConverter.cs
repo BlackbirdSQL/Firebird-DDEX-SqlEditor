@@ -109,7 +109,7 @@ public abstract class AbstractBoolConverter : BooleanConverter, IBAutomationConv
 
 			if (descriptor.Attributes[typeof(ReadOnlyAttribute)] is ReadOnlyAttribute attr)
 			{
-				// Diag.Trace($"Automator {_PropertyName} updating dependent: {pair.Key} from {fld.GetValue(attr)} to {(pair.Value ? bvalue : !bvalue)}.");
+				// Tracer.Trace($"Automator {_PropertyName} updating dependent: {pair.Key} from {fld.GetValue(attr)} to {(pair.Value ? bvalue : !bvalue)}.");
 
 				readOnly = pair.Value ? bNewValue : !bNewValue;
 
@@ -148,7 +148,7 @@ public abstract class AbstractBoolConverter : BooleanConverter, IBAutomationConv
 		_IsAutomator = true;
 		_Model.AutomationPropertyValueChangedEvent += OnAutomationPropertyValueChanged;
 
-		// Diag.Trace($"Registering automator {_PropertyName}.");
+		// Tracer.Trace($"Registering automator {_PropertyName}.");
 
 		_Dependents = new Dictionary<string, bool>(model.PropertyWrappers.Count);
 
@@ -156,7 +156,7 @@ public abstract class AbstractBoolConverter : BooleanConverter, IBAutomationConv
 		{
 			if (property.Automator != null && property.Automator == _PropertyName)
 			{
-				// Diag.Trace($"Registering automation dependent for {_PropertyName}: Dependent: {property.PropertyName}.");
+				// Tracer.Trace($"Registering automation dependent for {_PropertyName}: Dependent: {property.PropertyName}.");
 				_Dependents.Add(property.PropertyName, property.InvertAutomation);
 			}
 		}

@@ -114,7 +114,7 @@ internal class DslTables : AbstractDslSchema
 
 		sql.Append(" ORDER BY IS_SYSTEM_FLAG, OWNER_NAME, TABLE_NAME");
 
-		// Diag.Trace(sql.ToString());
+		// Tracer.Trace(sql.ToString());
 		return sql;
 	}
 

@@ -19,13 +19,13 @@ public class SqlEditorExecuteQueryCommand : AbstractSqlEditorCommand
 {
 	public SqlEditorExecuteQueryCommand()
 	{
-		// Diag.Trace();
+		// Tracer.Trace();
 	}
 
 	public SqlEditorExecuteQueryCommand(IBSqlEditorWindowPane editorWindow)
 		: base(editorWindow)
 	{
-		// Diag.Trace();
+		// Tracer.Trace();
 	}
 
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)

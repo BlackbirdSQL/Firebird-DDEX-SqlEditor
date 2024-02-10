@@ -10,7 +10,7 @@
 <p style="font-size:1.1em;margin-bottom:-8px">For an xsd dataset:</p>
 
 * Install the Nuget FirebirdSql.Data.FirebirdClient package if you haven't already and `rebuild` your project.
-* You can add your Firebird database to the server explorer (SE) (*or add a Settings connection string*) using the `Firebird SQL Server` data source and selecting the `BlackbirdSql DDEX 2.0` provider.</br>Using the SE is the easiest. From there you can just drag and drop your Firebird database entities onto the xsd.
+* You can add your Firebird database to the server explorer (SE) (*or add a Settings connection string*) using the `Firebird` data source and selecting the `BlackbirdSql DDEX 2.0` provider.</br>Using the SE is the easiest. From there you can just drag and drop your Firebird database entities onto the xsd.
 
 <p style="font-size:1.1em;margin-bottom:-8px">For an ADO.NET edmx:</p>
 

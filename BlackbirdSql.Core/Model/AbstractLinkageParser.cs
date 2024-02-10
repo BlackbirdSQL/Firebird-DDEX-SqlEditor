@@ -982,11 +982,11 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 			if (!parser._Enabled || parser._IsIntransient)
 				continue;
 
-			csa1 ??= new(connectionString);
+			csa1 ??= new(connectionString, false);
 
 			try
 			{
-				csa2 = new(pair.Key.ConnectionString);
+				csa2 = new(pair.Key.ConnectionString, false);
 			}
 			catch (Exception ex)
 			{
@@ -1197,11 +1197,11 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 			if (!parser._Enabled)
 				continue;
 
-			csa1 ??= new(connectionString);
+			csa1 ??= new(connectionString, false);
 
 			try
 			{
-				csa2 = new(pair.Key.ConnectionString);
+				csa2 = new(pair.Key.ConnectionString, false);
 			}
 			catch (Exception ex)
 			{

@@ -259,7 +259,7 @@
     <value>Enable this option to allow BlackbirdSql to ensure that the Firebird Client and EntityFramework are configured in your non-CPS projects' App.config.</value>
   </data>
   <data name="OptionDescriptionGeneralValidateConnectionOnFormAccept" xml:space="preserve">
-    <value>Enable this option to allow BlackbirdSql to ensure a connection is valid before accepting Connection Dialog information.</value>
+    <value>Enable this option to allow BlackbirdSql to ensure a Session connection is valid before accepting Connection Dialog information.</value>
   </data>
   <data name="OptionDescriptionGeneralValidateEdmx" xml:space="preserve">
     <value>Enable this option to allow BlackbirdSql to update legacy edmx models to use EntityFramework 6.</value>
@@ -391,7 +391,7 @@
     <value>  Validate App.config</value>
   </data>
   <data name="OptionDisplayGeneralValidateConnectionOnFormAccept" xml:space="preserve">
-    <value>Validate dialog connections</value>
+    <value>Validate session connections</value>
   </data>
   <data name="OptionDisplayGeneralValidateEdmx" xml:space="preserve">
     <value>  Update legacy edmx models</value>

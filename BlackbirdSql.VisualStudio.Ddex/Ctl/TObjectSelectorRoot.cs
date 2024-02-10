@@ -62,11 +62,8 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 
 	// =================================================================================
-	#region Property Accessors - TConnectionProperties
+	#region Property Accessors - TObjectSelectorRoot
 	// =================================================================================
-
-
-	public EnConnectionSource ConnectionSource => UnsafeCmd.GetConnectionSource();
 
 
 	#endregion Property Accessors
@@ -140,7 +137,8 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 			if (_Csa == null || _Csa.Invalidated((IDbConnection)lockedProviderObject))
 			{
-				_Csa = RctManager.EnsureVolatileInstance((IDbConnection)lockedProviderObject, UnsafeCmd.GetConnectionSource());
+				_Csa = RctManager.EnsureVolatileInstance((IDbConnection)lockedProviderObject,
+					UnsafeCmd.GetConnectionSource());
 			}
 
 			DataTable schema = CreateSchema(connection, typeName, parameters);
@@ -158,8 +156,8 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			// Only force create the parser 2nd time in.
 			if (lockedProviderObject != null)
 			{
-				if (UnsafeCmd.GetConnectionSource() != EnConnectionSource.EntityDataModel)
-					LinkageParser.EnsureLoaded((IDbConnection)lockedProviderObject);
+				if (!UnsafeCmd.IsEdmConnectionSource)
+					LinkageParser.AsyncEnsureLoaded((IDbConnection)lockedProviderObject);
 				Site.UnlockProviderObject();
 			}
 		}

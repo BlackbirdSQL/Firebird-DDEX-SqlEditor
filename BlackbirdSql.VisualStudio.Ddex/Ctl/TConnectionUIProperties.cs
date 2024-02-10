@@ -9,6 +9,7 @@ using System.Reflection;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
@@ -38,11 +39,11 @@ public class TConnectionUIProperties : TConnectionProperties
 	/// Overloads <see cref="ICustomTypeDescriptor.GetProperties"/> to change readonly on
 	/// dataset key properties for application connection sources.
 	/// </summary>
-	protected override PropertyDescriptorCollection GetCsbAttributesProperties(Attribute[] attributes)
+	protected override PropertyDescriptorCollection GetCsbProperties(DbConnectionStringBuilder csb, Attribute[] attributes)
 	{
-		PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(ConnectionStringBuilder, attributes);
+		PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(csb, attributes);
 
-		UpdatePropertiesReadOnlyAttribute(ref descriptors);
+		CsbAgent.UpdateDatasetKeysReadOnlyAttribute(ref descriptors, ConnectionSource == EnConnectionSource.Application);
 
 		return descriptors;
 
@@ -57,7 +58,7 @@ public class TConnectionUIProperties : TConnectionProperties
 	{
 		PropertyDescriptorCollection descriptors = TypeDescriptor.GetProperties(csb);
 
-		UpdatePropertiesReadOnlyAttribute(ref descriptors);
+		CsbAgent.UpdateDatasetKeysReadOnlyAttribute(ref descriptors, ConnectionSource == EnConnectionSource.Application);
 
 		return descriptors;
 	}
@@ -87,55 +88,6 @@ public class TConnectionUIProperties : TConnectionProperties
 		}
 
 		OnPropertyChanged(new PropertyChangedEventArgs(string.Empty));
-	}
-
-
-
-	/// <summary>
-	/// Updates descriptor collection readonly on dataset key properties for application
-	/// connection sources.
-	/// </summary>
-	private void UpdatePropertiesReadOnlyAttribute(ref PropertyDescriptorCollection descriptors)
-	{
-		if (descriptors == null || descriptors.Count == 0)
-			return;
-
-		bool readOnly = ConnectionSource == EnConnectionSource.Application;
-
-		try
-		{
-			FieldInfo fieldInfo;
-
-			PropertyDescriptor descriptor = descriptors[CoreConstants.C_KeyExConnectionName];
-
-			if (descriptor != null && descriptor.Attributes[typeof(ReadOnlyAttribute)] is ReadOnlyAttribute attr)
-			{
-				fieldInfo = Reflect.GetFieldInfo(attr, "isReadOnly", BindingFlags.NonPublic | BindingFlags.Instance);
-
-				if ((bool)Reflect.GetFieldInfoValue(attr, fieldInfo) != readOnly)
-				{
-					Reflect.SetFieldInfoValue(attr, fieldInfo, readOnly);
-				}
-			}
-
-			descriptor = descriptors[CoreConstants.C_KeyExDatasetId];
-
-			if (descriptor != null && descriptor.Attributes[typeof(ReadOnlyAttribute)] is ReadOnlyAttribute attr2)
-			{
-				fieldInfo = Reflect.GetFieldInfo(attr2, "isReadOnly", BindingFlags.NonPublic | BindingFlags.Instance);
-
-				if ((bool)Reflect.GetFieldInfoValue(attr2, fieldInfo) != readOnly)
-				{
-					Reflect.SetFieldInfoValue(attr2, fieldInfo, readOnly);
-				}
-			}
-
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-		}
-
 	}
 
 

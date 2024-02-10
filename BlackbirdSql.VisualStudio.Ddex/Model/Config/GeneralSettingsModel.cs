@@ -9,6 +9,7 @@ using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
 
 using GlobalizedCategoryAttribute = BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel.GlobalizedCategoryAttribute;
 using GlobalizedDisplayNameAttribute = BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel.GlobalizedDisplayNameAttribute;
+using GlobalizedDescriptionAttribute = BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel.GlobalizedDescriptionAttribute;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Model.Config;

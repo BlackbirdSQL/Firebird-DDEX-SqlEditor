@@ -180,11 +180,59 @@
   <data name="PropertyCategoryIdentifiers" xml:space="preserve">
     <value> Identifiers</value>
   </data>
+  <data name="PropertyDescriptionActiveUsers" xml:space="preserve">
+    <value>Applicable to live connections only. The number of server connected users (Firebird 3+ only).</value>
+  </data>
+  <data name="PropertyDescriptionClientVersion" xml:space="preserve">
+    <value>The FirbirdSql.Data.FirebirdClient library version.</value>
+  </data>
+  <data name="PropertyDescriptionConnectionKey" xml:space="preserve">
+    <value>The internal Server Explorer connection id for Server Explorer connections.</value>
+  </data>
+  <data name="PropertyDescriptionConnectionName" xml:space="preserve">
+    <value>The proposed unique connection name. (Not recommended. Use Database name instead.) Defaults to 'ServerName (DatabaseName)'.</value>
+  </data>
+  <data name="PropertyDescriptionConnectionSource" xml:space="preserve">
+    <value>The creator of this connection or the last service with sufficient rights to succesfully modify it.</value>
+  </data>
+  <data name="PropertyDescriptionDataset" xml:space="preserve">
+    <value>The stripped file name excluding extension of the database file path.</value>
+  </data>
+  <data name="PropertyDescriptionDatasetId" xml:space="preserve">
+    <value>The proposed server scope unique name for a database to construct a connection name. Defaults to Dataset.</value>
+  </data>
+  <data name="PropertyDescriptionDatasetKey" xml:space="preserve">
+    <value>The current unique name (DatasetKey) of a connection. Defaults to 'Server (DatabaseName)'.</value>
+  </data>
+  <data name="PropertyDescriptionMemoryUsage" xml:space="preserve">
+    <value>Applicable to live connections only. The database memory usage.</value>
+  </data>
+  <data name="PropertyDisplayActiveUsers" xml:space="preserve">
+    <value>Active users</value>
+  </data>
+  <data name="PropertyDisplayClientVersion" xml:space="preserve">
+    <value>Client version</value>
+  </data>
+  <data name="PropertyDisplayConnectionKey" xml:space="preserve">
+    <value>ConnectionKey</value>
+  </data>
   <data name="PropertyDisplayConnectionName" xml:space="preserve">
-    <value>  Proposed Name</value>
+    <value> Proffered Connection Name</value>
+  </data>
+  <data name="PropertyDisplayConnectionSource" xml:space="preserve">
+    <value>Connection owner</value>
+  </data>
+  <data name="PropertyDisplayDataset" xml:space="preserve">
+    <value>Dataset</value>
   </data>
   <data name="PropertyDisplayDatasetId" xml:space="preserve">
-    <value> Proposed Dataset Id</value>
+    <value> Proffered  Database Name</value>
+  </data>
+  <data name="PropertyDisplayDatasetKey" xml:space="preserve">
+    <value>ConnectionName</value>
+  </data>
+  <data name="PropertyDisplayMemoryUsage" xml:space="preserve">
+    <value>Memory usage</value>
   </data>
   <data name="Reg_NotifyOptionPage" xml:space="preserve">
     <value>Option Page:      {0}\{1}\{2}</value>

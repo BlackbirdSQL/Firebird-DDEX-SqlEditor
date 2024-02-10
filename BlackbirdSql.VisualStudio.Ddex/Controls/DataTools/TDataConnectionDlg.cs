@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls.Interfaces;
+using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.VisualStudio.Ddex.Controls.Events;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
@@ -254,6 +255,14 @@ public partial class TDataConnectionDlg : Form, IBDataConnectionDlg
 	private readonly IDictionary<TDataSource, IDictionary<TDataProvider, IDataConnectionUIControl>> _ConnectionUIControlTable = new Dictionary<TDataSource, IDictionary<TDataProvider, IDataConnectionUIControl>>();
 
 	private readonly IDictionary<TDataSource, IDictionary<TDataProvider, IDataConnectionProperties>> _ConnectionPropertiesTable = new Dictionary<TDataSource, IDictionary<TDataProvider, IDataConnectionProperties>>();
+
+	private EventHandler _UpdateServerExplorerChangedEvent;
+
+	public event EventHandler UpdateServerExplorerChangedEvent
+	{
+		add { _UpdateServerExplorerChangedEvent += value; }
+		remove { _UpdateServerExplorerChangedEvent -= value; }
+	}
 
 
 	public string Title
@@ -1489,5 +1498,11 @@ public partial class TDataConnectionDlg : Form, IBDataConnectionDlg
 		}
 		Cursor.Current = current;
 		ShowMessage(ControlsResources.TDataConnectionDlg_TestResults, ControlsResources.TDataConnectionDlg_TestConnectionSucceeded);
+	}
+
+
+	private void ChkUpdateServerExplorer_CheckedChanged(object sender, EventArgs e)
+	{
+		_UpdateServerExplorerChangedEvent?.Invoke(sender, e);
 	}
 }

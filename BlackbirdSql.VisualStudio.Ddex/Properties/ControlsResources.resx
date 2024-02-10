@@ -171,14 +171,37 @@
   <data name="TConnectionUIControl_ConnectionFailed" xml:space="preserve">
     <value>Connect failed. Could not verify connection parameters.</value>
   </data>
+  <data name="TConnectionUIControl_ConnectionFailedCaption" xml:space="preserve">
+    <value>Verification Failed</value>
+  </data>
+  <data name="TConnectionUIControl_ConnectionFailedException" xml:space="preserve">
+    <value>Connect failed. Could not verify connection parameters.
+Exception message: {0}</value>
+  </data>
+  <data name="TConnectionUIControl_Database.ToolTip" xml:space="preserve">
+    <value>The dropdown list displays the Database Names of configured connections for the selected Server.
+Glyph prefix legend:
+ ⛭ Project Settings (App.Config) connections.
+ ⛮ Entity Data Model (edmx) connections.
+ ֎ FlameRobin connections.
+Server Explorer connections and connections modified during a Session have no glyph.
+</value>
+  </data>
   <data name="TConnectionUIControl_DatasetKeyDescription" xml:space="preserve">
-    <value>To assign a custom name to this connection specify a Proposed Connection Name or a Proposed Database Name under Advanced Properties.</value>
+    <value>To assign a custom name to this connection specify a Proposed Database Name or a Proposed Connection Name under Advanced Properties.</value>
   </data>
   <data name="TConnectionUIControl_DatasetKeyDescription_Application" xml:space="preserve">
     <value>Project connections are not synchronized with the Running Connection Table. Synchronization requires a Solution reload.</value>
   </data>
   <data name="TConnectionUIControl_DatasetKeyDescription_EntityDataModel" xml:space="preserve">
-    <value>The edmx wizard is slow. Procedures may take a long time to complete on slow networks.</value>
+    <value>WARNING: The edmx wizard is slow. Procedures may take a long time to complete on slow networks.</value>
+  </data>
+  <data name="TConnectionUIControl_DisplayName.ToolTip" xml:space="preserve">
+    <value>The Database Name of the registered connection that the current input of the Connection dialog matches.
+If the current input does not match any registered connection '*New Connection' will be displayed.</value>
+  </data>
+  <data name="TConnectionUIControl_NewDatabaseConnection" xml:space="preserve">
+    <value>*New Connection</value>
   </data>
   <data name="TDataConnectionAdvancedDlg_Add" xml:space="preserve">
     <value>&amp;Add...</value>

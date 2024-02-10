@@ -575,7 +575,7 @@ END",
 		schema.Columns.Remove("CHARACTER_MAX_LENGTH");
 
 		_LinkageParser = null;
-		// Diag.Trace("Rows returned: " + schema.Rows.Count);
+		// Tracer.Trace("Rows returned: " + schema.Rows.Count);
 
 	}
 

@@ -87,7 +87,7 @@ public static class DbProviderFactoriesEx
 	/// </summary>
 	public static bool AddAssemblyInConfigurationManager(string invariant, string factoryName, string factoryDescription, string assemblyQualifiedName)
 	{
-		// Diag.Trace();
+		// Tracer.Trace();
 
 		/*
 		 * ConfigurationManager.GetSection()

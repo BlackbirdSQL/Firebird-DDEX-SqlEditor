@@ -136,14 +136,14 @@ public class TViewSupport : DataViewSupport,
 		}
 		*/
 
-		// Diag.Trace(serviceType.FullName + " is not supported");
+		// Tracer.Trace(serviceType.FullName + " is not supported");
 
 		object service = base.CreateService(serviceType);
 
 		// if (service == null)
-		//	Diag.Trace(serviceType.FullName + " is not supported");
+		//	Tracer.Trace(GetType(), "CreateService()", serviceType.FullName + " is not supported");
 		// else
-		//	Diag.Trace(serviceType.FullName + " is indirectly supported");
+		//	Tracer.Trace(GetType(), "CreateService()", serviceType.FullName + " is indirectly supported");
 
 		return service;
 	}
@@ -180,7 +180,7 @@ public class TViewSupport : DataViewSupport,
 		Type type = GetType();
 		string resource = type.FullName + name[..^11] + ".xml";
 
-		// Diag.Trace(resource);
+		// Tracer.Trace(resource);
 
 		return type.Assembly.GetManifestResourceStream(resource);
 	}
@@ -315,7 +315,7 @@ public class TViewSupport : DataViewSupport,
 		if (node == null)
 			return null;
 
-		// Diag.Trace((expanded ? "Expanded" : "Closed") + " icon requested id: " + itemId + ":" + node.Name + ":" + node.FullName);
+		// Tracer.Trace((expanded ? "Expanded" : "Closed") + " icon requested id: " + itemId + ":" + node.Name + ":" + node.FullName);
 
 		string name = null;
 		string[] nodes = node.FullName.Split('/');
@@ -361,7 +361,7 @@ public class TViewSupport : DataViewSupport,
 
 		if (name == null)
 		{
-			// Diag.Trace((expanded ? "Expanded" : "Closed") + " icon not defined id: " + itemId + ":" + node.Name + ":" + node.FullName);
+			// Tracer.Trace((expanded ? "Expanded" : "Closed") + " icon not defined id: " + itemId + ":" + node.Name + ":" + node.FullName);
 			return null;
 		}
 
@@ -387,7 +387,7 @@ public class TViewSupport : DataViewSupport,
 
 		try
 		{
-			// Diag.Trace("Loading Icon: " + name);
+			// Tracer.Trace("Loading Icon: " + name);
 
 			Stream stream = GetType().Assembly.GetManifestResourceStream(name);
 			if (stream == null)
@@ -518,7 +518,7 @@ public class TViewSupport : DataViewSupport,
 
 		// Attempt linkage startup on a refresh.
 
-		if (UnsafeCmd.GetConnectionSource() == EnConnectionSource.EntityDataModel)
+		if (UnsafeCmd.IsEdmConnectionSource)
 			return;
 
 		IVsDataConnection site = ViewHierarchy.ExplorerConnection.Connection;
@@ -577,19 +577,22 @@ public class TViewSupport : DataViewSupport,
 					CsbAgent.AreEquivalent(DataProtection.DecryptString(site.EncryptedConnectionString),
 						parser.ConnectionString, CsbAgent.DescriberKeys))
 				{
-					if (UnsafeCmd.GetConnectionSource() == EnConnectionSource.EntityDataModel)
+					if (UnsafeCmd.IsEdmConnectionSource)
 						return;
 
 					// Tracer.Trace(GetType(), "OnNodeChanged()", "IsRefreshing && Disposing Linkage");
+
 					LinkageParser.DisposeInstance(site, false);
 				}
 			}
 			else
 			{
-				if (UnsafeCmd.GetConnectionSource() == EnConnectionSource.EntityDataModel)
+				if (UnsafeCmd.IsEdmConnectionSource)
 					return;
+
 				// Tracer.Trace(GetType(), "OnNodeChanged()", "IsRefreshing && Ensuring Linkage Loaded");
-				LinkageParser.EnsureLoaded(site);
+
+				LinkageParser.AsyncEnsureLoaded(site);
 			}
 		}
 		else if (e.Node.IsExpanding)
@@ -597,6 +600,7 @@ public class TViewSupport : DataViewSupport,
 			if (site.State == DataConnectionState.Open && RctManager.Available)
 			{
 				// Tracer.Trace(GetType(), "OnNodeChanged()", "IsExpanding && AsyncExecuting Linkage");
+
 				LinkageParser parser = LinkageParser.EnsureInstance(site);
 				parser?.AsyncExecute(20, 20);
 			}
@@ -608,8 +612,9 @@ public class TViewSupport : DataViewSupport,
 
 	private void OnNodeExpandedOrRefreshed(object sender, DataExplorerNodeEventArgs e)
 	{
-		// Tracer.Trace(GetType(), "OnNodeExpandedOrRefreshed");
+		// Tracer.Trace(GetType(), "OnNodeExpandedOrRefreshed", "e.Node.HasBeenExpanded: {0}, e.Node.IsExpanded: {1}, e.Node.IsExpanding: {2}.", e.Node.HasBeenExpanded, e.Node.IsExpanded, e.Node.IsExpanding);
 
+		
 		if (!e.Node.HasBeenExpanded || e.Node.ExplorerConnection == null
 			|| e.Node.ExplorerConnection.Connection == null
 			|| e.Node.ExplorerConnection.ConnectionNode == null
@@ -624,12 +629,14 @@ public class TViewSupport : DataViewSupport,
 		if (site.State != DataConnectionState.Open || !RctManager.Available)
 			return;
 
-		if (UnsafeCmd.GetConnectionSource() == EnConnectionSource.EntityDataModel)
+		// If the refresh is the result of the EDMX wizard making an illegal name
+		// change, exit. We'll handle this in OnNodeChanged().
+		if (UnsafeCmd.IsEdmConnectionSource)
 			return;
 
 		// Tracer.Trace(GetType(), "OnNodeExpandedOrRefreshed", "EnsuringLoaded Linkage. Node: {0}.", e.Node.Name);
 
-		LinkageParser.EnsureLoaded(e.Node);
+		LinkageParser.AsyncEnsureLoaded(e.Node);
 	}
 
 

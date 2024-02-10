@@ -121,13 +121,12 @@ public class RunningConnectionTable : AbstractRunningConnectionTable
 	{
 		get
 		{
-			WaitForSyncLoad();
-			WaitForAsyncLoad();
-
 			if (_Databases == null)
 			{
 				if (_Instance == null)
 					return null;
+
+				RctManager.EnsureLoaded();
 
 				if (_LoadDataCardinal > 0)
 				{
@@ -277,7 +276,7 @@ public class RunningConnectionTable : AbstractRunningConnectionTable
 			(hybridKey.StartsWith("data source=", StringComparison.InvariantCultureIgnoreCase)
 			|| hybridKey.ToLowerInvariant().Contains(";data source=")))
 		{
-			CsbAgent csa = new(hybridKey);
+			CsbAgent csa = new(hybridKey, false);
 			hybridKey = csa.SafeDatasetMoniker;
 			isConnectionUrl = true;
 		}

@@ -73,13 +73,13 @@ public class SqlEditorDatabaseListCommand : AbstractSqlEditorCommand
 
 	public SqlEditorDatabaseListCommand()
 	{
-		// Diag.Trace();
+		// Tracer.Trace();
 	}
 
 	public SqlEditorDatabaseListCommand(IBSqlEditorWindowPane editorWindow)
 		: base(editorWindow)
 	{
-		// Diag.Trace();
+		// Tracer.Trace();
 	}
 
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)

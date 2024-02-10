@@ -104,6 +104,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls.DataTools
 			this.chkUpdateServerExplorer.Name = "chkUpdateServerExplorer";
 			this.dataProviderToolTip.SetToolTip(this.chkUpdateServerExplorer, resources.GetString("chkUpdateServerExplorer.ToolTip"));
 			this.chkUpdateServerExplorer.UseVisualStyleBackColor = true;
+			this.chkUpdateServerExplorer.CheckedChanged += new System.EventHandler(this.ChkUpdateServerExplorer_CheckedChanged);
 			// 
 			// changeDataSourceButton
 			// 

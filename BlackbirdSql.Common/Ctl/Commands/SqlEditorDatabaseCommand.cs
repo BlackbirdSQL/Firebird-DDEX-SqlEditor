@@ -34,13 +34,13 @@ public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 
 	public SqlEditorDatabaseCommand()
 	{
-		// Diag.Trace();
+		// Tracer.Trace();
 	}
 
 	public SqlEditorDatabaseCommand(IBSqlEditorWindowPane editorWindow)
 		: base(editorWindow)
 	{
-		// Diag.Trace();
+		// Tracer.Trace();
 	}
 
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
@@ -48,7 +48,7 @@ public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
 		if (!IsEditorExecuting())
 		{
-			// Diag.Trace("SqlEditorSqlDatabaseCommand:HandleQueryStatus enabled");
+			// Tracer.Trace("SqlEditorSqlDatabaseCommand:HandleQueryStatus enabled");
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 		}
 

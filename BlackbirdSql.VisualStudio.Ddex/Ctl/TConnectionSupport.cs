@@ -185,7 +185,7 @@ public class TConnectionSupport : AdoDotNetConnectionSupport
 		 * 
 		if (serviceType == typeof(IVsDataSourceInformation))
 		{
-			// Diag.Trace();
+			// Tracer.Trace();
 			return new TSourceInformation(Site);
 		}
 		else if (serviceType == typeof(IVsDataObjectSelector))
@@ -194,24 +194,24 @@ public class TConnectionSupport : AdoDotNetConnectionSupport
 		}
 		else if (serviceType == typeof(IVsDataObjectMemberComparer))
 		{
-			// Diag.Trace();
+			// Tracer.Trace();
 			return new TObjectMemberComparer(Site);
 		}
 		else if (serviceType == typeof(IVsDataObjectIdentifierConverter))
 		{
-			// Diag.Trace();
+			// Tracer.Trace();
 			return new TObjectIdentifierConverter(Site);
 		}
 		else if (serviceType == typeof(IVsDataMappedObjectConverter))
 		{
-			// Diag.Trace();
+			// Tracer.Trace();
 			return new TMappedObjectConverter(Site);
 		}
 		*/
 
 
 
-		// Diag.Trace(serviceType.FullName + " is not directly supported");
+		// Tracer.Trace(serviceType.FullName + " is not directly supported");
 
 		return base.CreateService(container, serviceType);
 	}
@@ -238,7 +238,7 @@ public class TConnectionSupport : AdoDotNetConnectionSupport
 
 		try
 		{
-			// Diag.Trace("Prompt: " + doPromptCheck + " IsOpen: " + State + " ConnectionString: " + ConnectionString);
+			// Tracer.Trace("Prompt: " + doPromptCheck + " IsOpen: " + State + " ConnectionString: " + ConnectionString);
 			if (State == DataConnectionState.Open)
 				return true;
 

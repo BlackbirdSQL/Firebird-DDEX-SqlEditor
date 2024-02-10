@@ -5,17 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Common;
-using System.Globalization;
-using System.Runtime.InteropServices;
 using BlackbirdSql.Core;
+using System.Reflection;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
-using BlackbirdSql.VisualStudio.Ddex.Controls;
-using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
@@ -104,15 +101,16 @@ public class TConnectionProperties : TAbstractConnectionProperties, IBDataConnec
 	#region Methods - TConnectionProperties
 	// =================================================================================
 
-	protected override PropertyDescriptorCollection GetCsbAttributesProperties(Attribute[] attributes)
+	protected override PropertyDescriptorCollection GetCsbProperties(DbConnectionStringBuilder csb, Attribute[] attributes)
 	{
-		return TypeDescriptor.GetProperties(ConnectionStringBuilder, attributes);
+		throw new NotImplementedException("TConnectionProperties.GetCsbProperties(DbConnectionStringBuilder, Attribute[])");
 	}
 
 	protected override PropertyDescriptorCollection GetCsbProperties(DbConnectionStringBuilder csb)
 	{
-		return TypeDescriptor.GetProperties(csb);
+		throw new NotImplementedException("TConnectionProperties.GetCsbProperties(DbConnectionStringBuilder)");
 	}
+
 
 
 	#endregion Methods

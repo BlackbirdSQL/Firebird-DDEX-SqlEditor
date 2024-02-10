@@ -2,6 +2,15 @@
 
 ### Change log
 
+#### v11.0.0.0
+First official full release of BlackbirdSql.</br>
+Improved interactive synchronization between Connection Dialog and RunningConnectionTable.
+Resolved RunningConnectionTable deadlock red zone issues.</br>
+Removed redundant CsbAgent DataSource Case name mangling validations.</br>
+Resolved several SE, edmx and RunningConnectionTable sync issues.</br>
+Removed ConnectionSource debug messages.</br>
+Prevented DatasetId glyph removal in Session connection dialogs when connection has not changed.
+
 #### v10.1.2.3
 Resolved several SE, edmx and RunningConnectionTable sync issues.
 

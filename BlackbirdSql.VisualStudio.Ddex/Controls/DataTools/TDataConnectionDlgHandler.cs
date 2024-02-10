@@ -1214,7 +1214,7 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 			IDataConnectionUIControl dataConnectionUIControl = null; //  _VsDataProvider.TryCreateObject<IDataConnectionUIControl>(dataSourceGuid);
 			if (dataConnectionUIControl == null)
 			{
-				IVsDataConnectionUIControl vsDataConnectionUIControl = new TConnectionUIControl(true);
+				IVsDataConnectionUIControl vsDataConnectionUIControl = new TConnectionUIControl();
 				// _VsDataProvider.TryCreateObject<IVsDataConnectionUIControl>(dataSourceGuid);
 
 				if (vsDataConnectionUIControl != null)

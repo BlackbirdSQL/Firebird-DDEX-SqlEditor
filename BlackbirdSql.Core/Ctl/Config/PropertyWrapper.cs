@@ -323,12 +323,12 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 
 		foreach (Attribute customAttribute in propInfo.GetCustomAttributes())
 		{
-			// Diag.Trace($"Validating {PropertyName} custom attribute: {customAttribute.GetType().FullName}.");
+			// Tracer.Trace($"Validating {PropertyName} custom attribute: {customAttribute.GetType().FullName}.");
 
 			if (customAttribute is DefaultValueAttribute defaultValue)
 			{
 				DefaultValue = defaultValue.Value;
-				// Diag.Trace($"Loaded default for {PropertyName}: {DefaultValue}.");
+				// Tracer.Trace($"Loaded default for {PropertyName}: {DefaultValue}.");
 				continue;
 			}
 			if (customAttribute is AutomationAttribute autoAttr)
@@ -338,7 +338,7 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 				InvertAutomation = autoAttr.Invert;
 				AutomationEnableValue = autoAttr.EnableValue;
 
-				// Diag.Trace($"Loaded automation for {PropertyName}: Automator: {Automator} IsAutomator: {IsAutomator} InvertAutomation: {InvertAutomation}.");
+				// Tracer.Trace($"Loaded automation for {PropertyName}: Automator: {Automator} IsAutomator: {IsAutomator} InvertAutomation: {InvertAutomation}.");
 				continue;
 			}
 			if (customAttribute is DisplayOrderAttribute displayOrder)

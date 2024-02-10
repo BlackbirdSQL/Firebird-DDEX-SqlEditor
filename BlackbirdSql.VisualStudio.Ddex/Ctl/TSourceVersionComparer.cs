@@ -56,7 +56,7 @@ public class TSourceVersionComparer : DataSourceVersionComparer, IComparer<strin
 	/// <returns>-1: x < y; 0 x == y and 1: x > y</returns>
 	public int Compare(string x, string y)
 	{
-		// Diag.Trace();
+		// Tracer.Trace();
 		try
 		{
 			if (x == null && y == null)

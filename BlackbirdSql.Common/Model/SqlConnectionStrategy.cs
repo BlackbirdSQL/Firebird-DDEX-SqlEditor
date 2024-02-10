@@ -71,7 +71,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 
 	private string _ProductLevel;
 
-	public static readonly CsbAgent BuilderWithDefaultApplicationName = new("server=localhost;");
+	public static readonly CsbAgent BuilderWithDefaultApplicationName = new("server=localhost;", false);
 
 	public const string C_ApplicationName = LibraryData.ApplicationName;
 
@@ -99,7 +99,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 						// FbConnection sqlConnection = (FbConnection)Connection;
 						try
 						{
-							CsbAgent csa = new(Connection);
+							CsbAgent csa = new(Connection, false);
 							_IsCloudConnection = result = csa.ServerType == FbServerType.Default;
 						}
 						catch (Exception e)

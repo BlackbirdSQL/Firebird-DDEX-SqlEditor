@@ -60,11 +60,11 @@ public class TObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 	// ---------------------------------------------------------------------------------
 	protected override string FormatPart(string typeName, object identifierPart, DataObjectIdentifierFormat format)
 	{
-		// Diag.Trace();
+		// Tracer.Trace();
 
 		if (identifierPart is null or DBNull)
 		{
-			// Diag.Trace(typeName + ": Identifier is null");
+			// Tracer.Trace(typeName + ": Identifier is null");
 			return null;
 		}
 
@@ -83,7 +83,7 @@ public class TObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 			identifierPartString = openQuote + identifierPartString + closeQuote;
 		}
 
-		// Diag.Trace("typeName: " + typeName + " DataObjectIdentifierFormat: " + format + " Converted identifier: " + identifierPartString);
+		// Tracer.Trace("typeName: " + typeName + " DataObjectIdentifierFormat: " + format + " Converted identifier: " + identifierPartString);
 
 		return identifierPartString;
 	}
@@ -107,7 +107,7 @@ public class TObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 	//     input string.
 	protected override string[] SplitIntoParts(string typeName, string identifier)
 	{
-		// Diag.Trace("typeName: " + typeName + " identifier: " + identifier);
+		// Tracer.Trace("typeName: " + typeName + " identifier: " + identifier);
 		return base.SplitIntoParts(typeName, identifier);
 	}
 
@@ -127,7 +127,7 @@ public class TObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 	//     The new identifier part, without its formatting.
 	protected override object UnformatPart(string typeName, string identifierPart)
 	{
-		// Diag.Trace("typeName: " + typeName + " identifier: " + identifierPart);
+		// Tracer.Trace("typeName: " + typeName + " identifier: " + identifierPart);
 		return base.UnformatPart(typeName, identifierPart);
 	}
 
@@ -173,7 +173,7 @@ public class TObjectIdentifierConverter : AdoDotNetObjectIdentifierConverter
 	{
 		string str = base.BuildString(typeName, identifierParts, format);
 
-		// Diag.Trace("typeName: " + typeName + " DataObjectIdentifierFormat: " + format + " Result: " + str);
+		// Tracer.Trace("typeName: " + typeName + " DataObjectIdentifierFormat: " + format + " Result: " + str);
 		return str;
 	}
 

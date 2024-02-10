@@ -135,7 +135,7 @@
     <value>270, 250</value>
   </data>
   <data name="propertyGrid.Size" type="System.Drawing.Size, System.Drawing">
-    <value>270, 250</value>
+    <value>325, 297</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="propertyGrid.TabIndex" type="System.Int32, mscorlib">
@@ -145,7 +145,7 @@
     <value>propertyGrid</value>
   </data>
   <data name="&gt;&gt;propertyGrid.Type" xml:space="preserve">
-    <value>BlackbirdSql.VisualStudio.Ddex.Controls.DataTools.TDataConnectionAdvancedDlg+TiSpecializedPropertyGrid, BlackbirdSql.VisualStudio.Ddex, Version=10.1.2.3, Culture=neutral, PublicKeyToken=d39a163eb11ac91a</value>
+    <value>BlackbirdSql.VisualStudio.Ddex.Controls.DataTools.TDataConnectionAdvancedDlg+TiSpecializedPropertyGrid, BlackbirdSql.VisualStudio.Ddex, Version=11.0.0.0, Culture=neutral, PublicKeyToken=d39a163eb11ac91a</value>
   </data>
   <data name="&gt;&gt;propertyGrid.Parent" xml:space="preserve">
     <value>$this</value>
@@ -160,10 +160,10 @@
     <value>Bottom, Left, Right</value>
   </data>
   <data name="textBox.Location" type="System.Drawing.Point, System.Drawing">
-    <value>12, 265</value>
+    <value>12, 312</value>
   </data>
   <data name="textBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>270, 20</value>
+    <value>325, 20</value>
   </data>
   <data name="textBox.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -268,7 +268,7 @@
     <value>1</value>
   </data>
   <data name="buttonsTableLayoutPanel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>126, 294</value>
+    <value>181, 341</value>
   </data>
   <data name="buttonsTableLayoutPanel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>3, 6, 3, 3</value>
@@ -304,10 +304,10 @@
     <value>6, 13</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>294, 329</value>
+    <value>349, 376</value>
   </data>
   <data name="$this.MinimumSize" type="System.Drawing.Size, System.Drawing">
-    <value>302, 353</value>
+    <value>365, 415</value>
   </data>
   <data name="$this.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>9, 9, 9, 9</value>

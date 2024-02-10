@@ -20,7 +20,7 @@ public class RangeConverter : TypeConverter
 
 	public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
 	{
-		// Diag.Trace("CanConvertFrom: " + context.PropertyDescriptor.Name);
+		// Tracer.Trace("CanConvertFrom: " + context.PropertyDescriptor.Name);
 		RegisterModel(context);
 
 		if (sourceType == typeof(string))
@@ -33,7 +33,7 @@ public class RangeConverter : TypeConverter
 
 	public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
 	{
-		// Diag.Trace("ConvertFrom: " + context.PropertyDescriptor.Name);
+		// Tracer.Trace("ConvertFrom: " + context.PropertyDescriptor.Name);
 		RegisterModel(context);
 
 		if (value is string text)
@@ -58,7 +58,7 @@ public class RangeConverter : TypeConverter
 		if (destinationType == null)
 			throw new ArgumentNullException("destinationType");
 
-		// Diag.Trace("ConvertTo: " + context.PropertyDescriptor.Name);
+		// Tracer.Trace("ConvertTo: " + context.PropertyDescriptor.Name);
 
 		RegisterModel(context);
 

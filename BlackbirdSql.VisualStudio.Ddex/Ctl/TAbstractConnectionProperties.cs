@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Framework.AdoDotNet;
@@ -31,6 +32,8 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 	IEnumerable, IVsDataConnectionUIProperties, ICustomTypeDescriptor, INotifyPropertyChanged
 {
 	private CsbAgent _ConnectionStringBuilder;
+	private EnConnectionSource _ConnectionSource = EnConnectionSource.None;
+
 
 	protected readonly object _LockObject = new object();
 
@@ -117,11 +120,75 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 
 	bool ICollection<KeyValuePair<string, object>>.IsReadOnly => ConnectionStringBuilder.IsReadOnly;
 
+
+	/// <summary>
+	/// For connection properties we don't care about any other Connection Sources
+	/// except Application and EntityDataModel being correct.
+	/// </summary>
 	protected EnConnectionSource ConnectionSource
 	{
 		get
 		{
-			return UnsafeCmd.GetConnectionSource();
+			if (_ConnectionSource == EnConnectionSource.None)
+			{
+				_ConnectionSource = EnConnectionSource.Unknown;
+
+				string objectKind = Core.Controller.ActiveWindowObjectKind;
+				if (objectKind == null)
+					return _ConnectionSource;
+
+				string objectType = Core.Controller.ActiveWindowObjectType;
+				if (objectType == null)
+					return _ConnectionSource;
+
+				string appGuid = VSConstants.CLSID.VsTextBuffer_string;
+				string solutionExplorerGuid
+					= VSConstants.StandardToolWindows.SolutionExplorer.ToString("B", CultureInfo.InvariantCulture);
+				string outputToolWindowGuid = VSConstants.StandardToolWindows.Output_string;
+				string seGuid = VSConstants.StandardToolWindows.ServerExplorer.ToString("B", CultureInfo.InvariantCulture);
+
+				// Definitely ServerExplorer
+				if (objectKind.Equals(seGuid, StringComparison.InvariantCultureIgnoreCase))
+				{
+					_ConnectionSource = EnConnectionSource.ServerExplorer;
+				}
+				// Probably ServerExplorer
+				else if (objectKind.Equals(outputToolWindowGuid, StringComparison.InvariantCultureIgnoreCase)
+					&& objectType.Equals("System.__ComObject", StringComparison.InvariantCultureIgnoreCase))
+				{
+					_ConnectionSource = EnConnectionSource.ServerExplorer;
+				}
+				// Probably Session
+				else if (objectKind.Equals(appGuid, StringComparison.InvariantCultureIgnoreCase)
+					&& objectType.Equals("System.__ComObject", StringComparison.InvariantCultureIgnoreCase))
+				{
+					_ConnectionSource = EnConnectionSource.Session;
+				}
+				// Definitely Session
+				else if (objectKind.Equals(appGuid, StringComparison.InvariantCultureIgnoreCase)
+					&& objectType.StartsWith("BlackbirdSql.", StringComparison.InvariantCultureIgnoreCase))
+				{
+					_ConnectionSource = EnConnectionSource.Session;
+				}
+				// Most likely Application.
+				else if (objectKind.Equals(appGuid, StringComparison.InvariantCultureIgnoreCase)
+					&& objectType.Equals("System.ComponentModel.Design.DesignerHost",
+					StringComparison.InvariantCultureIgnoreCase))
+				{
+					_ConnectionSource = EnConnectionSource.Application;
+				}
+				// Most likely EntityDataModel
+				else if (objectKind.Equals(solutionExplorerGuid, StringComparison.InvariantCultureIgnoreCase)
+					&& objectType.Equals("Microsoft.VisualStudio.PlatformUI.UIHierarchyMarshaler",
+					StringComparison.InvariantCultureIgnoreCase))
+				{
+					_ConnectionSource = EnConnectionSource.EntityDataModel;
+				}
+
+				// Else Unknown
+			}
+
+			return _ConnectionSource;
 		}
 	}
 
@@ -243,6 +310,8 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 	{
 		Add(key, value);
 	}
+
+
 
 	public virtual bool TryGetValue(string key, out object value)
 	{
@@ -407,12 +476,12 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 		return GetCsbProperties(ConnectionStringBuilder);
 	}
 
-	protected abstract PropertyDescriptorCollection GetCsbAttributesProperties(Attribute[] attributes);
+	protected abstract PropertyDescriptorCollection GetCsbProperties(DbConnectionStringBuilder csb, Attribute[] attributes);
 
 
 	PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties(Attribute[] attributes)
 	{
-		return GetCsbAttributesProperties(attributes);
+		return GetCsbProperties(ConnectionStringBuilder, attributes);
 	}
 
 	EventDescriptor ICustomTypeDescriptor.GetDefaultEvent()

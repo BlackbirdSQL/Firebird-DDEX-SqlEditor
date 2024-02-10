@@ -156,7 +156,7 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 
 			UnsafeNative.BROWSEINFO browseInfo = null;
 
-			// Diag.Trace("Title: " + (string.IsNullOrWhiteSpace(_Title) ? "Select folder" : _Title));
+			// Tracer.Trace("Title: " + (string.IsNullOrWhiteSpace(_Title) ? "Select folder" : _Title));
 
 			try
 			{
@@ -365,7 +365,7 @@ public abstract class AbstractFolderNameEditor : FolderNameEditor
 
 		if (_Context.PropertyDescriptor.Attributes[typeof(ParametersAttribute)] is ParametersAttribute paramsAttr)
 		{
-			// Diag.Trace($"ParametersAttribute found for {context.PropertyDescriptor.Name}: {paramsAttr.Value1}.");
+			// Tracer.Trace($"ParametersAttribute found for {context.PropertyDescriptor.Name}: {paramsAttr.Value1}.");
 			if (paramsAttr.Length > 0)
 			{
 				localTitle = false;

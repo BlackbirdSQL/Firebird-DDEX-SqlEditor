@@ -1,8 +1,7 @@
-﻿using BlackbirdSql.Core.Ctl.ComponentModel;
-using BlackbirdSql.EditorExtension.Properties;
+﻿using BlackbirdSql.Core.Properties;
 
 
-namespace BlackbirdSql.EditorExtension.Ctl.ComponentModel;
+namespace BlackbirdSql.Core.Ctl.ComponentModel;
 
 public sealed class GlobalizedDescriptionAttribute(string resourceName)
 	: AbstractGlobalizedDescriptionAttribute(resourceName)

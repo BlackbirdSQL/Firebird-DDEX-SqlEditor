@@ -241,7 +241,7 @@ internal abstract class AbstractDslSchema
 
 	protected virtual string[] ParseRestrictions(string[] restrictions)
 	{
-		// Diag.Trace();
+		// Tracer.Trace();
 		return restrictions;
 	}
 

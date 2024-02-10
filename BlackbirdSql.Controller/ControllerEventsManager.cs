@@ -634,7 +634,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			}
 			else
 			{
-				// Diag.Trace(projectItem.Name + " projectItem.SubProject is null (Possible Unloaded project or document)");
+				// Tracer.Trace(projectItem.Name + " projectItem.SubProject is null (Possible Unloaded project or document)");
 			}
 		}
 	}
@@ -680,7 +680,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			return success;
 		}
 
-		// Diag.Trace(item.ContainingProject.Name + " checking projectitem: " + item.Name + ":" + item.Kind);
+		// Tracer.Trace(item.ContainingProject.Name + " checking projectitem: " + item.Name + ":" + item.Kind);
 
 		if (validatingSolution)
 		{
@@ -859,6 +859,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 		GlobalsAgent.SolutionGlobals = new GlobalsAgent(stream);
 
+		// This is now always a manual invoke so GlobalsAgent.ValidateSolution is always true.
 		if (!GlobalsAgent.ValidateSolution)
 		{
 			GlobalsAgent.SolutionGlobals = null;
@@ -999,7 +1000,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			_CSharpReferencesEvents.ReferenceAdded += _ReferenceAddedEventHandler;
 			_VBReferencesEvents.ReferenceAdded += _ReferenceAddedEventHandler;
 
-			// Diag.Trace("Added _ReferenceAddedEventHandler for DTE");
+			// Tracer.Trace("Added _ReferenceAddedEventHandler for DTE");
 		}
 		catch (Exception ex)
 		{
@@ -1027,7 +1028,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 			events.ReferencesEvents.ReferenceAdded += _ReferenceAddedEventHandler;
 
-			// Diag.Trace("Added _ReferenceAddedEventHandler");
+			// Tracer.Trace("Added _ReferenceAddedEventHandler");
 		}
 		catch (Exception ex)
 		{
@@ -1102,7 +1103,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		{
 			if (++_RefCnt < 1000)
 			{
-				Diag.Trace("RECYCLING HandleReferenceAddedAsync for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
+				// Tracer.Trace(GetType(), "OnReferenceAddedAsync()", "RECYCLING HandleReferenceAddedAsync for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
 
 				await Task.Delay(200);
 
@@ -1129,7 +1130,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 		if (reference.Name.ToLower() == SystemData.EFProvider.ToLower() && !globals.IsConfiguredEFStatus)
 		{
-			// Diag.Trace("HandleReferenceAddedAsync is through for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
+			// Tracer.Trace("HandleReferenceAddedAsync is through for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
 
 			// Check if is configured again if queue was not clear and there was a Wait()
 			// Should never happen.
@@ -1150,7 +1151,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		}
 		else if (reference.Name.ToLower() == SystemData.Invariant.ToLower() && !globals.IsConfiguredDbProviderStatus)
 		{
-			// Diag.Trace("HandleReferenceAddedAsync is through for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
+			// Tracer.Trace("HandleReferenceAddedAsync is through for Project: " + reference.ContainingProject.Name + " for Reference: " + reference.Name);
 
 			// Check if is configured again if queue was not clear and there was a Wait()
 			if (!ClearValidationQueue() || !globals.IsConfiguredDbProviderStatus)
@@ -1183,11 +1184,11 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		if (!RctManager.Loading)
 		{
 			RctManager.Delete();
-			RctManager.LoadConfiguredConnections(true);
+			RctManager.LoadConfiguredConnections();
 		}
 
 		// Deprecated. Exit.
-		if (!GlobalsAgent.PersistentValidation)
+		if (true || !GlobalsAgent.ValidateSolution)
 			return;
 
 		ValidateSolution(stream);
@@ -1240,6 +1241,10 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 		_ValidationTokenSource?.Cancel();
 
+		// Deprecated.
+		if (true || !GlobalsAgent.ValidateSolution)
+			return;
+
 		if (GlobalsAgent.SolutionGlobals == null)
 			return;
 
@@ -1284,7 +1289,8 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	{
 		// Tracer.Trace(GetType(), "OnAfterOpenProject()");
 
-		if (!GlobalsAgent.ValidateSolution && !PersistentSettings.IncludeAppConnections)
+		// Auto ValidateSolution is deprecated.
+		if ((true || !GlobalsAgent.ValidateSolution) && !PersistentSettings.IncludeAppConnections)
 			return VSConstants.S_OK;
 
 		if (!UnsafeCmd.IsProjectKind(project.Kind))
@@ -1294,7 +1300,8 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		if (PersistentSettings.IncludeAppConnections)
 			RctManager.LoadProjectConnections(project);
 
-		if (!GlobalsAgent.ValidateSolution)
+		// Deprecated.
+		if (true || !GlobalsAgent.ValidateSolution)
 			return VSConstants.S_OK;
 
 		ClearValidationQueue();
@@ -1304,7 +1311,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		if (globals.IsScannedStatus || !IsValidExecutableProjectType(project, globals)
 			|| (globals.IsConfiguredDbProviderStatus && globals.IsConfiguredEFStatus && globals.IsUpdatedEdmxsStatus))
 		{
-			// Diag.Trace("Project no validation required");
+			// Tracer.Trace("Project no validation required");
 			return VSConstants.S_OK;
 		}
 

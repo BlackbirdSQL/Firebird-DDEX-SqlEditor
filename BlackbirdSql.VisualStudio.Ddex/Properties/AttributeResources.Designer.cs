@@ -484,7 +484,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enable this option to allow BlackbirdSql to ensure a connection is valid before accepting Connection Dialog information..
+        ///   Looks up a localized string similar to Enable this option to allow BlackbirdSql to ensure a Session connection is valid before accepting Connection Dialog information..
         /// </summary>
         public static string OptionDescriptionGeneralValidateConnectionOnFormAccept {
             get {
@@ -880,7 +880,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Validate dialog connections.
+        ///   Looks up a localized string similar to Validate session connections.
         /// </summary>
         public static string OptionDisplayGeneralValidateConnectionOnFormAccept {
             get {

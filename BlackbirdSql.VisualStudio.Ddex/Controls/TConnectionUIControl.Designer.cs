@@ -17,6 +17,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TConnectionUIControl));
 			this.cmdTest = new System.Windows.Forms.Button();
 			this.lblDataSource = new System.Windows.Forms.Label();
@@ -25,6 +26,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			this.cboCharset = new System.Windows.Forms.ComboBox();
 			this.lblCharset = new System.Windows.Forms.Label();
 			this.lblDialect = new System.Windows.Forms.Label();
+			this.lblCurrentDisplayName = new System.Windows.Forms.Label();
 			this.cboServerType = new System.Windows.Forms.ComboBox();
 			this.lblServerType = new System.Windows.Forms.Label();
 			this.grbLogin = new System.Windows.Forms.GroupBox();
@@ -46,6 +48,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			this.lblDatabaseBlank = new System.Windows.Forms.Label();
 			this.lblDataSourceBlank = new System.Windows.Forms.Label();
 			this.lblDatasetKeyDescription = new System.Windows.Forms.Label();
+			this.connectionUIControlToolTip = new System.Windows.Forms.ToolTip(this.components);
 			this.grbSettings.SuspendLayout();
 			this.grbLogin.SuspendLayout();
 			this.SuspendLayout();
@@ -70,15 +73,16 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
             resources.GetString("cboDialect.Items1")});
 			resources.ApplyResources(this.cboDialect, "cboDialect");
 			this.cboDialect.Name = "cboDialect";
-			this.cboDialect.TextChanged += new System.EventHandler(this.OnSetProperty);
+			this.cboDialect.TextChanged += new System.EventHandler(this.OnInputChanged);
 			// 
 			// grbSettings
 			// 
+			resources.ApplyResources(this.grbSettings, "grbSettings");
 			this.grbSettings.Controls.Add(this.cboCharset);
 			this.grbSettings.Controls.Add(this.lblCharset);
 			this.grbSettings.Controls.Add(this.cboDialect);
 			this.grbSettings.Controls.Add(this.lblDialect);
-			resources.ApplyResources(this.grbSettings, "grbSettings");
+			this.grbSettings.Controls.Add(this.lblCurrentDisplayName);
 			this.grbSettings.Name = "grbSettings";
 			this.grbSettings.TabStop = false;
 			// 
@@ -116,7 +120,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
             resources.GetString("cboCharset.Items26")});
 			resources.ApplyResources(this.cboCharset, "cboCharset");
 			this.cboCharset.Name = "cboCharset";
-			this.cboCharset.TextChanged += new System.EventHandler(this.OnSetProperty);
+			this.cboCharset.TextChanged += new System.EventHandler(this.OnInputChanged);
 			// 
 			// lblCharset
 			// 
@@ -130,21 +134,30 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			resources.ApplyResources(this.lblDialect, "lblDialect");
 			this.lblDialect.Name = "lblDialect";
 			// 
+			// lblCurrentDisplayName
+			// 
+			resources.ApplyResources(this.lblCurrentDisplayName, "lblCurrentDisplayName");
+			this.lblCurrentDisplayName.CausesValidation = false;
+			this.lblCurrentDisplayName.ForeColor = System.Drawing.SystemColors.HotTrack;
+			this.lblCurrentDisplayName.Name = "lblCurrentDisplayName";
+			this.connectionUIControlToolTip.SetToolTip(this.lblCurrentDisplayName, resources.GetString("lblCurrentDisplayName.ToolTip"));
+			this.lblCurrentDisplayName.UseMnemonic = false;
+			// 
 			// cboServerType
 			// 
+			resources.ApplyResources(this.cboServerType, "cboServerType");
 			this.cboServerType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.cboServerType.FormattingEnabled = true;
 			this.cboServerType.Items.AddRange(new object[] {
             resources.GetString("cboServerType.Items"),
             resources.GetString("cboServerType.Items1")});
-			resources.ApplyResources(this.cboServerType, "cboServerType");
 			this.cboServerType.Name = "cboServerType";
-			this.cboServerType.TextChanged += new System.EventHandler(this.OnSetProperty);
+			this.cboServerType.TextChanged += new System.EventHandler(this.OnInputChanged);
 			// 
 			// lblServerType
 			// 
-			this.lblServerType.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			resources.ApplyResources(this.lblServerType, "lblServerType");
+			this.lblServerType.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.lblServerType.Name = "lblServerType";
 			// 
 			// grbLogin
@@ -169,7 +182,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			// 
 			resources.ApplyResources(this.txtRole, "txtRole");
 			this.txtRole.Name = "txtRole";
-			this.txtRole.TextChanged += new System.EventHandler(this.OnSetProperty);
+			this.txtRole.TextChanged += new System.EventHandler(this.OnInputChanged);
 			// 
 			// lblPassword
 			// 
@@ -181,7 +194,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			// 
 			resources.ApplyResources(this.txtPassword, "txtPassword");
 			this.txtPassword.Name = "txtPassword";
-			this.txtPassword.TextChanged += new System.EventHandler(this.OnSetProperty);
+			this.txtPassword.TextChanged += new System.EventHandler(this.OnInputChanged);
 			// 
 			// lblUser
 			// 
@@ -193,7 +206,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			// 
 			resources.ApplyResources(this.txtUserName, "txtUserName");
 			this.txtUserName.Name = "txtUserName";
-			this.txtUserName.TextChanged += new System.EventHandler(this.OnSetProperty);
+			this.txtUserName.TextChanged += new System.EventHandler(this.OnInputChanged);
 			// 
 			// cmdGetFile
 			// 
@@ -205,6 +218,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			// 
 			resources.ApplyResources(this.cmbDatabase, "cmbDatabase");
 			this.cmbDatabase.Name = "cmbDatabase";
+			this.connectionUIControlToolTip.SetToolTip(this.cmbDatabase, resources.GetString("cmbDatabase.ToolTip"));
 			// 
 			// lblDatabase
 			// 
@@ -216,12 +230,12 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			// 
 			resources.ApplyResources(this.txtPort, "txtPort");
 			this.txtPort.Name = "txtPort";
-			this.txtPort.TextChanged += new System.EventHandler(this.OnSetProperty);
+			this.txtPort.TextChanged += new System.EventHandler(this.OnInputChanged);
 			// 
 			// lblPort
 			// 
-			this.lblPort.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			resources.ApplyResources(this.lblPort, "lblPort");
+			this.lblPort.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.lblPort.Name = "lblPort";
 			// 
 			// cmbDataSource
@@ -236,28 +250,29 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			// 
 			// txtDataSource
 			// 
-			this.txtDataSource.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			resources.ApplyResources(this.txtDataSource, "txtDataSource");
+			this.txtDataSource.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.txtDataSource.Name = "txtDataSource";
-			this.txtDataSource.TextChanged += new System.EventHandler(this.OnDataSourceTextChanged);
+			this.txtDataSource.TextChanged += new System.EventHandler(this.OnInputChanged);
 			// 
 			// txtDatabase
 			// 
-			this.txtDatabase.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			resources.ApplyResources(this.txtDatabase, "txtDatabase");
+			this.txtDatabase.BorderStyle = System.Windows.Forms.BorderStyle.None;
 			this.txtDatabase.Name = "txtDatabase";
-			this.txtDatabase.TextChanged += new System.EventHandler(this.OnDatabaseTextChanged);
+			this.connectionUIControlToolTip.SetToolTip(this.txtDatabase, resources.GetString("txtDatabase.ToolTip"));
+			this.txtDatabase.TextChanged += new System.EventHandler(this.OnInputChanged);
 			// 
 			// lblDatabaseBlank
 			// 
-			this.lblDatabaseBlank.BackColor = System.Drawing.Color.White;
 			resources.ApplyResources(this.lblDatabaseBlank, "lblDatabaseBlank");
+			this.lblDatabaseBlank.BackColor = System.Drawing.Color.White;
 			this.lblDatabaseBlank.Name = "lblDatabaseBlank";
 			// 
 			// lblDataSourceBlank
 			// 
-			this.lblDataSourceBlank.BackColor = System.Drawing.Color.White;
 			resources.ApplyResources(this.lblDataSourceBlank, "lblDataSourceBlank");
+			this.lblDataSourceBlank.BackColor = System.Drawing.Color.White;
 			this.lblDataSourceBlank.Name = "lblDataSourceBlank";
 			// 
 			// lblDatasetKeyDescription
@@ -265,6 +280,12 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 			resources.ApplyResources(this.lblDatasetKeyDescription, "lblDatasetKeyDescription");
 			this.lblDatasetKeyDescription.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
 			this.lblDatasetKeyDescription.Name = "lblDatasetKeyDescription";
+			// 
+			// connectionUIControlToolTip
+			// 
+			this.connectionUIControlToolTip.AutoPopDelay = 12000;
+			this.connectionUIControlToolTip.InitialDelay = 500;
+			this.connectionUIControlToolTip.ReshowDelay = 100;
 			// 
 			// TConnectionUIControl
 			// 
@@ -326,5 +347,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls
 		private System.Windows.Forms.Label lblDatabaseBlank;
 		private System.Windows.Forms.Label lblDataSourceBlank;
 		private System.Windows.Forms.Label lblDatasetKeyDescription;
+		private System.Windows.Forms.Label lblCurrentDisplayName;
+		private System.Windows.Forms.ToolTip connectionUIControlToolTip;
 	}
 }

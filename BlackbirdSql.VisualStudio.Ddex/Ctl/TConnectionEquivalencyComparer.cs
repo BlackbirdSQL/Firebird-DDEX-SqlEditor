@@ -75,8 +75,8 @@ public class TConnectionEquivalencyComparer : DataConnectionEquivalencyComparer
 			return false;
 		}
 
-		CsbAgent csa1 = new(connectionProperties1.ToString());
-		CsbAgent csa2 = new(connectionProperties2.ToString());
+		CsbAgent csa1 = new(connectionProperties1.ToString(), false);
+		CsbAgent csa2 = new(connectionProperties2.ToString(), false);
 
 		return CsbAgent.AreEquivalent(csa1, csa2);
 

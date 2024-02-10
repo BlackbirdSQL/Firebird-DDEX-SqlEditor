@@ -51,11 +51,11 @@ public sealed class AdvancedDefaultValueAttribute : DefaultValueAttribute
 		{
 			case "system.environment+specialfolder":
 				result = Environment.GetFolderPath((Environment.SpecialFolder)value);
-				// Diag.Trace("Default for Environment.SpecialFolder: " + result);
+				// Tracer.Trace("Default for Environment.SpecialFolder: " + result);
 				break;
 			default:
 				result = value;
-				// Diag.Trace($"Default for Type {type.FullName.ToLower()}: {result}.");
+				// Tracer.Trace($"Default for Type {type.FullName.ToLower()}: {result}.");
 				break;
 		}
 

@@ -79,7 +79,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Use this data provider to connect to Firebird SQL Server..
+        ///   Looks up a localized string similar to Use this data provider to connect to a Firebird database..
         /// </summary>
         public static string DataProvider_Ddex_Description {
             get {
@@ -106,11 +106,11 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Firebird SQL Server.
+        ///   Looks up a localized string similar to Firebird Server.
         /// </summary>
-        public static string DataSource_FirebirdSqlServer {
+        public static string DataSource_FirebirdServer {
             get {
-                return ResourceManager.GetString("DataSource_FirebirdSqlServer", resourceCulture);
+                return ResourceManager.GetString("DataSource_FirebirdServer", resourceCulture);
             }
         }
         

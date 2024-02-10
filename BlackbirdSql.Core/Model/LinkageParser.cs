@@ -166,72 +166,6 @@ public class LinkageParser : AbstractLinkageParser
 
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Retrieves or creates the parser instance of a connection and initiates linkage.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static LinkageParser EnsureLoaded(IDbConnection connection)
-	{
-		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
-
-		LinkageParser parser = CreateInstance(connection, true);
-
-		if (parser == null)
-			return null;
-
-		if (!parser.Loading && !parser.Loaded && parser._Enabled)
-			parser.AsyncExecute();
-
-		return parser;
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Retrieves or creates the parser instance of a Site and initiates linkage.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static LinkageParser EnsureLoaded(IVsDataConnection site)
-	{
-		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
-
-		if (site == null)
-			return null;
-
-		if (site.GetService(typeof(IVsDataConnectionSupport)) is not IVsDataConnectionSupport vsDataConnectionSupport)
-			return null;
-
-		if (vsDataConnectionSupport.ProviderObject is not FbConnection connection)
-			return null;
-
-		return EnsureLoaded(connection);
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Retrieves or creates the parser instance of a node's ConnectionNode and
-	/// initiates linkage.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public static LinkageParser EnsureLoaded(IVsDataExplorerNode node)
-	{
-		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
-
-		if (node == null || node.Object == null
-			|| node.ExplorerConnection.Connection == null || !RequiresTriggers(node.Object.Type.Name))
-		{
-			return null;
-		}
-
-		return EnsureLoaded(node.ExplorerConnection.Connection);
-	}
-
-
-
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -435,6 +369,74 @@ public class LinkageParser : AbstractLinkageParser
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Retrieves or creates the parser instance of a connection and initiates
+	/// asynchronous linkage.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static LinkageParser AsyncEnsureLoaded(IDbConnection connection)
+	{
+		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
+
+		LinkageParser parser = CreateInstance(connection, true);
+
+		if (parser == null)
+			return null;
+
+		if (!parser.Loading && !parser.Loaded && parser._Enabled)
+			parser.AsyncExecute();
+
+		return parser;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Retrieves or creates the parser instance of a Site and initiates asynchronous
+	/// linkage.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static LinkageParser AsyncEnsureLoaded(IVsDataConnection site)
+	{
+		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
+
+		if (site == null)
+			return null;
+
+		if (site.GetService(typeof(IVsDataConnectionSupport)) is not IVsDataConnectionSupport vsDataConnectionSupport)
+			return null;
+
+		if (vsDataConnectionSupport.ProviderObject is not FbConnection connection)
+			return null;
+
+		return AsyncEnsureLoaded(connection);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Retrieves or creates the parser instance of a node's ConnectionNode and
+	/// initiates asynchronous linkage.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static LinkageParser AsyncEnsureLoaded(IVsDataExplorerNode node)
+	{
+		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection, Type)");
+
+		if (node == null || node.Object == null
+			|| node.ExplorerConnection.Connection == null || !RequiresTriggers(node.Object.Type.Name))
+		{
+			return null;
+		}
+
+		return AsyncEnsureLoaded(node.ExplorerConnection.Connection);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Begins or resumes asynchronous linkage build operations.
 	/// </summary>
 	/// <param name="delay">
@@ -624,7 +626,7 @@ public class LinkageParser : AbstractLinkageParser
 		if (vsDataConnectionSupport.ProviderObject is not FbConnection connection)
 			return false;
 
-		return AbstractLinkageParser.DisposeInstance(connection, isValidTransient);
+		return DisposeInstance(connection, isValidTransient);
 	}
 
 

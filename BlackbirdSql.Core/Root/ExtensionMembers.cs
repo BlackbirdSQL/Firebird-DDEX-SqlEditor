@@ -11,15 +11,12 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Security.Policy;
 using System.Windows.Forms;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
-using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 
 
@@ -69,11 +66,15 @@ static class ExtensionMembers
 			"\x00b2\x2079"];
 
 
-	// IVsDataConnectionProperties
 
 
-
-	public static string ConnectionKey(this IDbConnection value)
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Finds the ExplorerConnection ConnectionKey of an IVsDataConnectionProperties Site
+	/// else null if not found.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static string FindConnectionKey(this IVsDataConnectionProperties value)
 	{
 		IVsDataExplorerConnectionManager manager =
 			(Core.Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
@@ -81,64 +82,20 @@ static class ExtensionMembers
 		?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
 
 
-		return manager.ConnectionKey(value.ConnectionString);
-	}
-
-
-	public static string ConnectionKey(this IVsDataConnectionProperties value)
-	{
-		IVsDataExplorerConnectionManager manager =
-			(Core.Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
-			as IVsDataExplorerConnectionManager)
-		?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
-
-
-		return manager.ConnectionKey(value.ToString());
+		return manager.FindConnectionKey(value.ToString(), false);
 	}
 
 
 
-	public static string ConnectionKey(this IVsDataExplorerConnection value)
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Finds a DataExplorerConnectionManager Connection's  ConnectionKey given a ConnectionString
+	/// else null if not found.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static string FindConnectionKey(this IVsDataExplorerConnectionManager value, string connectionString, bool encrypted)
 	{
-		if (value.ConnectionNode == null)
-		{
-			ArgumentException ex = new($"Failed to retrieve ConnectionKey. Connection Node for IVsDataExplorerConnection {value.DisplayName} is null");
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		if (!Controller.InvariantResolved)
-			return null;
-
-		string retval;
-		IVsDataObject @object = (IVsDataObject)Reflect.GetFieldValueBase(value.ConnectionNode, "_object", BindingFlags.Instance | BindingFlags.NonPublic);
-
-
-		if (@object == null)
-		{
-			string connectionString = DataProtection.DecryptString(value.EncryptedConnectionString);
-
-			retval = RctManager.GetConnectionKey(CsbAgent.CreateConnectionUrl(connectionString));
-
-			retval ??= value.DisplayName;
-
-			return retval;
-		}
-
-		object leaf = Reflect.GetFieldValue(@object, "_leaf", BindingFlags.Instance | BindingFlags.NonPublic);
-
-		retval = (string)Reflect.GetPropertyValue(leaf, "Id", BindingFlags.Instance | BindingFlags.Public);
-
-		// Tracer.Trace(typeof(IVsDataExplorerConnection), "ConnectionKey()", "Retrieved ConnectionKey: {0}.", retval);
-
-		return retval;
-	}
-
-
-
-	public static string ConnectionKey(this IVsDataExplorerConnectionManager value, string connectionString)
-	{
-		string encryptedConnectionString = DataProtection.EncryptString(connectionString);
+		string encryptedConnectionString = encrypted ? connectionString : DataProtection.EncryptString(connectionString);
 
 		Guid clsidProvider = new(SystemData.ProviderGuid);
 		IVsDataExplorerConnection explorerConnection = value.FindConnection(clsidProvider, encryptedConnectionString, true);
@@ -146,31 +103,171 @@ static class ExtensionMembers
 		if (explorerConnection == null)
 			return null;
 
-		return explorerConnection.ConnectionKey();
+		return explorerConnection.GetConnectionKey();
 
 	}
 
 
 
-	public static string ConnectionKey(this IVsDataExplorerNode value)
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Finds the ExplorerConnection ConnectionKey of an IDbConnection
+	/// else null if not found.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static string FindConnectionKey(this IDbConnection value)
 	{
-		return value.ExplorerConnection.ConnectionKey();
+		IVsDataExplorerConnectionManager manager =
+			(Core.Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
+			as IVsDataExplorerConnectionManager)
+		?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
+
+
+		return manager.FindConnectionKey(value.ConnectionString, false);
 	}
 
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the ExplorerConnection ConnectionKey of an IVsDataConnectionProperties Site
+	/// else throws an exception.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static string GetConnectionKey(this IVsDataConnectionProperties value)
+	{
+		IVsDataExplorerConnectionManager manager =
+			(Core.Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
+			as IVsDataExplorerConnectionManager)
+		?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
+
+
+		(_, IVsDataExplorerConnection explorerConnection) = manager.SearchExplorerConnectionEntry(value.ToString(), false);
+
+		if (explorerConnection == null)
+		{
+			COMException ex = new($"Failed to find ExplorerConnection for IVsDataConnectionProperties ConnectionString: {value.ToString()}.");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		return explorerConnection.GetConnectionKey();
+	}
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the ConnectionKey  of an IVsDataExplorerConnection. 
+	/// else throws a COMException if not found.
+	/// Throws an ArgumentException if the XonnectionNode returns null.
+	/// </summary>
+	/// <param name="deepSearch">
+	/// If true (the default) and the ConnectionKey cannot be found within the connection,
+	/// will use the connection's ExplorerConnectionManager entry key as the ConnectionKey.
+	/// </param>
+	/// <exception cref="COMException" />
+	// ---------------------------------------------------------------------------------
+	public static string GetConnectionKey(this IVsDataExplorerConnection value, bool deepSearch = true)
+	{
+		if (value.ConnectionNode == null)
+		{
+			ArgumentException exa = new($"Failed to retrieve ConnectionKey. Connection Node for IVsDataExplorerConnection {value.DisplayName} is null");
+			Diag.Dug(exa);
+			throw exa;
+		}
+
+		string retval;
+		IVsDataObject @object = (IVsDataObject)Reflect.GetFieldValueBase(value.ConnectionNode, "_object", BindingFlags.Instance | BindingFlags.NonPublic);
+
+		COMException ex;
+
+		if (!deepSearch && @object == null)
+		{
+			ex = new($"Failed to get ConnectionKey for ExplorerConnection {value.DisplayName}. ConnectionNode._object returned null");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		if (@object != null)
+		{
+			object leaf = Reflect.GetFieldValue(@object, "_leaf", BindingFlags.Instance | BindingFlags.NonPublic);
+
+			if (!deepSearch && leaf == null)
+			{
+				ex = new($"Failed to get ConnectionKey for ExplorerConnection {value.DisplayName}. ConnectionNode.Object._leaf returned null");
+				Diag.Dug(ex);
+				throw ex;
+			}
+
+			if (leaf != null)
+			{
+				retval = (string)Reflect.GetPropertyValue(leaf, "Id", BindingFlags.Instance | BindingFlags.Public);
+
+				if (!deepSearch && retval == null)
+				{
+					ex = new($"Failed to get ConnectionKey for ExplorerConnection {value.DisplayName}. ConnectionNode.Object._leaf.Id returned null");
+					Diag.Dug(ex);
+					throw ex;
+				}
+
+				return retval;
+			}
+		}
+
+		// deepSearch == true.
+
+		IVsDataExplorerConnectionManager manager =
+			(Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
+				as IVsDataExplorerConnectionManager)
+			?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
+
+		(retval, _) = manager.SearchExplorerConnectionEntry(value.EncryptedConnectionString, true);
+
+		if (retval == null)
+		{
+			ex = new($"Failed to get ConnectionKey for ExplorerConnection {value.DisplayName}. No entry exists in the ExplorerConnectionManager.");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		// Tracer.Trace(typeof(IVsDataExplorerConnection), "GetConnectionKey()", "Retrieved ConnectionKey: {0}.", retval);
+
+		return retval;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the ConnectionKey of node else throws an exception.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static string GetConnectionKey(this IVsDataExplorerNode value)
+	{
+		return value.ExplorerConnection.GetConnectionKey();
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Formats time span for display in an sql window statusbar.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static string FmtSqlStatus(this TimeSpan value)
 	{
 		return new TimeSpan(value.Days, value.Hours, value.Minutes, value.Seconds, 0).ToString();
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Formats time ticks for display in an sql window statusbar.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static string FmtSqlStatus(this long ticks)
 	{
 		TimeSpan value = new(ticks);
@@ -179,9 +276,12 @@ static class ExtensionMembers
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Formats time span for display in sql statistics output.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static string FmtSqlStats(this TimeSpan value)
 	{
 		string empty = value.ToString();
@@ -202,9 +302,13 @@ static class ExtensionMembers
 		return empty;
 	}
 
+
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Formats time span ticks for display in sql statistics output.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static string FmtSqlStats(this long ticks)
 	{
 		TimeSpan value = new(ticks);
@@ -213,9 +317,12 @@ static class ExtensionMembers
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Format a long byte size down to it's byte unit by decimal places.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static (string, float) FmtByteSize(this long value, int decimalPlaces = 3)
 	{
 		string str;
@@ -248,9 +355,11 @@ static class ExtensionMembers
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Format a float byte size down to it's byte unit by decimal places.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static (string, float) FmtByteSize(this float value, int decimalPlaces = 3)
 	{
 		string str;
@@ -282,9 +391,12 @@ static class ExtensionMembers
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Formats a long into superscipt exponential notation by decimal places
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static (string, float) FmtExpSize(this long value, int maxDigits = 4, int decimalPlaces = 3)
 	{
 		string str;
@@ -318,9 +430,13 @@ static class ExtensionMembers
 
 	}
 
+
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Formats a float into superscipt exponential notation by decimal places
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static (string, float) FmtExpSize(this float value, int maxDigits = 4, int decimalPlaces = 3)
 	{
 		string str;
@@ -355,9 +471,12 @@ static class ExtensionMembers
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Concatenates exception message with inner exception.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	internal static string GetExceptionMessage(this Exception ex)
 	{
 		string text = string.Empty;
@@ -371,6 +490,7 @@ static class ExtensionMembers
 		}
 		return text;
 	}
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -395,10 +515,12 @@ static class ExtensionMembers
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Checks if an exception or aggregate exception or it's inner exception
 	/// is of a specific type.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	internal static bool IsExceptionType(this Exception ex, Type type)
 	{
 		if (ex == null)
@@ -421,9 +543,12 @@ static class ExtensionMembers
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Checks if an exception is a Firebird exception.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	internal static bool IsSqlException(this Exception ex)
 	{
 		return ex.IsExceptionType(typeof(FbException));
@@ -431,9 +556,11 @@ static class ExtensionMembers
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Formats a resource string format string given arguments.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static string FmtRes(this string value, params object[] args)
 	{
 		return string.Format(CultureInfo.CurrentCulture, value, args);
@@ -492,29 +619,38 @@ static class ExtensionMembers
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Converts a secure string to it's readable string.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static string ToReadable(this SecureString secureString)
 	{
 		return new string(secureString.ToCharArray());
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Converts a string to a SecureString.
 	/// </summary>
 	/// <param name="unsecureString"></param>
 	/// <returns></returns>
+	// ---------------------------------------------------------------------------------
 	public static SecureString ToSecure(this string unsecureString)
 	{
 		return unsecureString.ToCharArray().ToSecure();
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Converts a SecureString to a char array.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	private static char[] ToCharArray(this SecureString secureString)
 	{
 		char[] array = new char[secureString.Length];
@@ -531,9 +667,12 @@ static class ExtensionMembers
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Converts a long timestamp to a UTC DateTime.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static DateTime ToUtcDateTime(this long timestamp)
 	{
 		DateTimeOffset offset = DateTimeOffset.FromUnixTimeMilliseconds(timestamp);
@@ -541,18 +680,24 @@ static class ExtensionMembers
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Converts a DateTime to it's long unix milliseconds timestamp.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static long UnixMilliseconds(this DateTime value)
 	{
 		return ((DateTimeOffset)value).ToUnixTimeMilliseconds();
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Converts an IEnumerable char array to a SecureString.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	private static SecureString ToSecure(this IEnumerable<char> charArray)
 	{
 		SecureString secureString = new SecureString();
@@ -566,9 +711,12 @@ static class ExtensionMembers
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Gets the server name from a Firebird exception.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static string GetServer(this FbException exception)
 	{
 		if (exception == null)
@@ -582,9 +730,11 @@ static class ExtensionMembers
 
 
 
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Sets the server name in a Firebird exception.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static void SetServer(this FbException exception, string value)
 	{
 		if (exception == null)
@@ -594,9 +744,12 @@ static class ExtensionMembers
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Gets the error number from a Firebird exception.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static int GetErrorCode(this FbException exception)
 	{
 		if (exception == null)
@@ -609,9 +762,12 @@ static class ExtensionMembers
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Gets the class byte value from a Firebird exception.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static byte GetClass(this FbException exception)
 	{
 		if (exception == null)
@@ -623,9 +779,13 @@ static class ExtensionMembers
 		return exception.Errors.ElementAt(0).Class;
 	}
 
+
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Gets the source line number of a Firebird exception.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static int GetLineNumber(this FbException exception)
 	{
 		if (exception == null)
@@ -638,9 +798,12 @@ static class ExtensionMembers
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Returns the sql exception state of a Firebird exception.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static string GetState(this FbException exception)
 	{
 		if (exception == null)
@@ -650,9 +813,13 @@ static class ExtensionMembers
 		return exception.SQLSTATE;
 	}
 
+
+
+	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Gets the method name of a Firebird excerption.
 	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static string GetProcedure(this FbException exception)
 	{
 		if (exception == null)
@@ -661,6 +828,51 @@ static class ExtensionMembers
 
 		return exception.TargetSite.Name;
 	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Searches an ExplorerConnection entry from the ConnectionUrl of a provided
+	/// ConnectionString.
+	/// </summary>
+	/// <returns>
+	/// The tuple (label, explorerConnection)
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	public static (string, IVsDataExplorerConnection)
+		SearchExplorerConnectionEntry(this IVsDataExplorerConnectionManager value,
+		string connectionString, bool encrypted)
+	{
+		IVsDataExplorerConnectionManager manager =
+			(Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
+			as IVsDataExplorerConnectionManager)
+			?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
+
+		string unencryptedConnectionString = encrypted ? DataProtection.DecryptString(connectionString) : connectionString;
+
+		Guid clsidProvider = new(SystemData.ProviderGuid);
+		string connectionUrl = CsbAgent.CreateConnectionUrl(unencryptedConnectionString);
+
+
+		CsbAgent csa;
+
+		foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in manager.Connections)
+		{
+			if (pair.Value.Provider != clsidProvider)
+				continue;
+
+			csa = new(DataProtection.DecryptString(pair.Value.EncryptedConnectionString), false);
+
+			if (csa.SafeDatasetMoniker == connectionUrl)
+			{
+				return (pair.Key, pair.Value);
+			}
+		}
+
+		return (null, null);
+	}
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -770,5 +982,6 @@ static class ExtensionMembers
 		return modified;
 
 	}
+
 
 }

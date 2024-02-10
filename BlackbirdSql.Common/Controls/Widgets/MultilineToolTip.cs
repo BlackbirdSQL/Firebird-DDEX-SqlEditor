@@ -84,9 +84,11 @@ public class MultilineToolTip : ToolTip
 		public LOGFONT lfMessageFont = new LOGFONT();
 	}
 
-	internal class ControlData
+	internal class ControlData(Control control)
 	{
-		private readonly Control control;
+		private readonly Control control = control;
+
+
 
 		private string text;
 
@@ -102,11 +104,6 @@ public class MultilineToolTip : ToolTip
 			{
 				text = value;
 			}
-		}
-
-		public ControlData(Control control)
-		{
-			this.control = control;
 		}
 	}
 

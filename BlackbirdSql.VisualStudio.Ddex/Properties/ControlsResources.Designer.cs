@@ -223,7 +223,41 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to To assign a custom name to this connection specify a Proposed Connection Name or a Proposed Database Name under Advanced Properties..
+        ///   Looks up a localized string similar to Verification Failed.
+        /// </summary>
+        internal static string TConnectionUIControl_ConnectionFailedCaption {
+            get {
+                return ResourceManager.GetString("TConnectionUIControl_ConnectionFailedCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connect failed. Could not verify connection parameters.
+        ///Exception message: {0}.
+        /// </summary>
+        internal static string TConnectionUIControl_ConnectionFailedException {
+            get {
+                return ResourceManager.GetString("TConnectionUIControl_ConnectionFailedException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The dropdown list displays the Database Names of configured connections for the selected Server.
+        ///Glyph prefix legend:
+        /// ⛭ Project Settings (App.Config) connections.
+        /// ⛮ Entity Data Model (edmx) connections.
+        /// ֎ FlameRobin connections.
+        ///Server Explorer connections and connections modified during a Session have no glyph.
+        ///.
+        /// </summary>
+        internal static string TConnectionUIControl_Database_ToolTip {
+            get {
+                return ResourceManager.GetString("TConnectionUIControl_Database.ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To assign a custom name to this connection specify a Proposed Database Name or a Proposed Connection Name under Advanced Properties..
         /// </summary>
         internal static string TConnectionUIControl_DatasetKeyDescription {
             get {
@@ -241,11 +275,30 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The edmx wizard is slow. Procedures may take a long time to complete on slow networks..
+        ///   Looks up a localized string similar to WARNING: The edmx wizard is slow. Procedures may take a long time to complete on slow networks..
         /// </summary>
         internal static string TConnectionUIControl_DatasetKeyDescription_EntityDataModel {
             get {
                 return ResourceManager.GetString("TConnectionUIControl_DatasetKeyDescription_EntityDataModel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Database Name of the registered connection that the current input of the Connection dialog matches.
+        ///If the current input does not match any registered connection &apos;*New Connection&apos; will be displayed..
+        /// </summary>
+        internal static string TConnectionUIControl_DisplayName_ToolTip {
+            get {
+                return ResourceManager.GetString("TConnectionUIControl_DisplayName.ToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to *New Connection.
+        /// </summary>
+        internal static string TConnectionUIControl_NewDatabaseConnection {
+            get {
+                return ResourceManager.GetString("TConnectionUIControl_NewDatabaseConnection", resourceCulture);
             }
         }
         

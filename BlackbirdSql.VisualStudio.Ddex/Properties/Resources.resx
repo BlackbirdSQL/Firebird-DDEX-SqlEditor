@@ -124,7 +124,7 @@
     <value>Use this selection to connect to Firebird using the DDEX 2.0 BlackbirdSql Provider.</value>
   </data>
   <data name="DataProvider_Ddex_Description" xml:space="preserve">
-    <value>Use this data provider to connect to Firebird SQL Server.</value>
+    <value>Use this data provider to connect to a Firebird database.</value>
   </data>
   <data name="DataProvider_Ddex_Short" xml:space="preserve">
     <value>FirebirdClient [BlackbirdSql]</value>
@@ -132,8 +132,8 @@
   <data name="DataProvider_Name" xml:space="preserve">
     <value>BlackbirdSql .NET Framework Data Provider for Firebird {0}</value>
   </data>
-  <data name="DataSource_FirebirdSqlServer" xml:space="preserve">
-    <value>Firebird SQL Server</value>
+  <data name="DataSource_FirebirdServer" xml:space="preserve">
+    <value>Firebird Server</value>
   </data>
   <data name="ExceptionAddingNullSite" xml:space="preserve">
     <value>Attempt to add a null site</value>

@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Globalization;
+using System.Xml.Linq;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Config;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Enums;
 using FirebirdSql.Data.FirebirdClient;
@@ -59,25 +61,34 @@ public class CsbAgent : AbstractCsbAgent, ICloneable
 	}
 
 
-	public CsbAgent(string connectionString) : base(connectionString)
+	/// <summary>
+	/// .ctor from ConnectionString.
+	/// </summary>
+	/// <param name="connectionString">The db connection string.</param>
+	/// <param name="validateServerName">
+	/// If true will ensure against Case name mangling of the DataSource property.
+	/// Typically Csa's only required for equivalency checks or ConnectionUrl monikers
+	/// should set this argument to false.
+	/// </param>
+	public CsbAgent(string connectionString, bool validateServerName = true) : base(connectionString, validateServerName)
 	{
 		_Id = RctManager.Seed;
 	}
 
 
-	public CsbAgent(IDbConnection connection) : base(connection)
+	public CsbAgent(IDbConnection connection, bool validateServerName = true) : base(connection, validateServerName)
 	{
 		_Id = RctManager.Seed;
 	}
 
 
-	public CsbAgent(IBPropertyAgent ci) : base(ci)
+	public CsbAgent(IBPropertyAgent ci, bool validateServerName = true) : base(ci, validateServerName)
 	{
 		_Id = RctManager.Seed;
 	}
 
 
-	public CsbAgent(IVsDataExplorerNode node) : base(node)
+	public CsbAgent(IVsDataExplorerNode node, bool validateServerName = true) : base(node, validateServerName)
 	{
 		_Id = RctManager.Seed;
 	}
@@ -230,7 +241,7 @@ public class CsbAgent : AbstractCsbAgent, ICloneable
 	// ---------------------------------------------------------------------------------
 	public static string CreateConnectionUrl(IDbConnection connection)
 	{
-		return (new CsbAgent(connection.ConnectionString)).SafeDatasetMoniker;
+		return (new CsbAgent(connection.ConnectionString, false)).SafeDatasetMoniker;
 	}
 
 
@@ -251,7 +262,7 @@ public class CsbAgent : AbstractCsbAgent, ICloneable
 		if (string.IsNullOrWhiteSpace(connectionString))
 			return connectionString;
 
-		return (new CsbAgent(connectionString)).SafeDatasetMoniker;
+		return (new CsbAgent(connectionString, false)).SafeDatasetMoniker;
 	}
 
 
@@ -530,6 +541,8 @@ public class CsbAgent : AbstractCsbAgent, ICloneable
 
 		public override PropertyDescriptorCollection GetProperties(ITypeDescriptorContext context, object value, Attribute[] attributes)
 		{
+			// Tracer.Trace(GetType(), "GetProperties()");
+
 			return TypeDescriptor.GetProperties(typeof(CsbAgent), attributes);
 		}
 

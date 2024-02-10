@@ -28,7 +28,7 @@ namespace BlackbirdSql.EditorExtension.Controls.ComponentModel
 
 		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
 		{
-			// Diag.Trace("Getting editor style");
+			// Tracer.Trace("Getting editor style");
 			return UITypeEditorEditStyle.DropDown;
 		}
 
@@ -115,7 +115,7 @@ namespace BlackbirdSql.EditorExtension.Controls.ComponentModel
 					Value = value
 				};
 
-				// Diag.Trace("Paint bounds: " + e.Bounds);
+				// Tracer.Trace("Paint bounds: " + e.Bounds);
 
 				Bitmap bitmap = new(e.Bounds.Width, e.Bounds.Height);
 

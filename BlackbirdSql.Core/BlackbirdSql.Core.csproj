@@ -45,6 +45,7 @@
 	  <Compile Include="Ctl\ComponentModel\AutomationAttribute.cs" />
 	  <Compile Include="Ctl\ComponentModel\AdvancedDefaultValueAttribute.cs" />
 	  <Compile Include="Ctl\ComponentModel\GlobalizedCategoryAttribute.cs" />
+	  <Compile Include="Ctl\ComponentModel\GlobalizedDescriptionAttribute.cs" />
 	  <Compile Include="Ctl\ComponentModel\GlobalizedDisplayNameAttribute.cs" />
 	  <Compile Include="Ctl\ComponentModel\ParametersAttribute.cs" />
 	  <Compile Include="Ctl\ComponentModel\LiteralRangeAttribute.cs" />

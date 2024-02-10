@@ -296,7 +296,7 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 
 		foreach (ProjectItem projectItem in project.ProjectItems)
 		{
-			// Diag.Trace("Validating project item: " + projectItem.Name + ":  Kind: " + Kind(projectItem.Kind) + " FileCount: "
+			// Tracer.Trace("Validating project item: " + projectItem.Name + ":  Kind: " + Kind(projectItem.Kind) + " FileCount: "
 			//	+ projectItem.FileCount);
 			deleted |= RemoveTemporarySqlItem(projectItem);
 		}

@@ -364,12 +364,12 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 
 		foreach (PropertyInfo property in properties)
 		{
-			// Diag.Trace($"Validating property for model {typeof(T).Name} property: {property.Name}.");
+			// Tracer.Trace($"Validating property for model {typeof(T).Name} property: {property.Name}.");
 
 			if ((!property.PropertyType.IsPublic && !property.PropertyType.IsNestedPublic)
 				|| !property.CanWrite || !property.CanRead)
 			{
-				// Diag.Trace($"Ignored property for model {typeof(T).Name} property {property.Name} - IsPublic: {property.PropertyType.IsPublic} CanWrite: {property.CanWrite} CanRead: {property.CanRead}.");
+				// Tracer.Trace($"Ignored property for model {typeof(T).Name} property {property.Name} - IsPublic: {property.PropertyType.IsPublic} CanWrite: {property.CanWrite} CanRead: {property.CanRead}.");
 				continue;
 			}
 
@@ -381,14 +381,14 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 
 				if (visibility.Visibility == DesignerSerializationVisibility.Hidden)
 				{
-					// Diag.Trace($"IGNORED property for model {typeof(T).Name} property {property.Name} because Hidden.");
+					// Tracer.Trace($"IGNORED property for model {typeof(T).Name} property {property.Name} because Hidden.");
 					continue;
 				}
 			}
 
 			settings.Add(property);
 
-			// Diag.Trace($"ADDED property for model {typeof(T).Name} property: {property.Name}.");
+			// Tracer.Trace($"ADDED property for model {typeof(T).Name} property: {property.Name}.");
 		}
 
 		return settings;

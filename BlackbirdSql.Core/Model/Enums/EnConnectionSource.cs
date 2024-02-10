@@ -3,7 +3,8 @@ namespace BlackbirdSql.Core.Model.Enums;
 
 public enum EnConnectionSource
 {
-	Unknown,
+	None = -1,
+	Unknown = 0,
 	ServerExplorer,
 	EntityDataModel,
 	Application,

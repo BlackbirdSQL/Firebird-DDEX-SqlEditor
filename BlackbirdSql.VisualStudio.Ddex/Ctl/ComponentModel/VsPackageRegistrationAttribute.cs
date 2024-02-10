@@ -69,7 +69,7 @@ internal sealed class VsPackageRegistrationAttribute: RegistrationAttribute
 			// Add this package as a provider for the Firebird data source
 			key2 = key.CreateSubkey("SupportingProviders");
 			key3 = key2.CreateSubkey(providerGuid);
-			key3.SetValue("DisplayName", "DataSource_FirebirdSqlServer, "
+			key3.SetValue("DisplayName", "DataSource_FirebirdServer, "
 				+ "BlackbirdSql.VisualStudio.Ddex.Properties.Resources, " + providerObjectFactoryAssembly);
 			key3.SetValue("UsingDescription", "DataProvider_Ddex_DataSource_Description, "
 				+ "BlackbirdSql.VisualStudio.Ddex.Properties.Resources, " + providerObjectFactoryAssembly);
@@ -131,7 +131,7 @@ internal sealed class VsPackageRegistrationAttribute: RegistrationAttribute
 				{
 					registryValue = PackageSupportedObjects.Values[implementation.Key + (i==0?"":i.ToString())];
 
-					// Diag.Trace(implementation.Key + ": " + (registryValue.Name == null ? "null" : registryValue.Name) + ":" + registryValue.Value);
+					// Tracer.Trace(implementation.Key + ": " + (registryValue.Name == null ? "null" : registryValue.Name) + ":" + registryValue.Value);
 					key3.SetValue(registryValue.Name, registryValue.Value);
 				}
 
@@ -222,7 +222,7 @@ internal sealed class VsPackageRegistrationAttribute: RegistrationAttribute
 		Type providerFactoryClass = typeof(FirebirdClientFactory);
 
 
-		// Diag.Trace("GAC Install: " + providerFactoryClass.Assembly.Location);
+		// Tracer.Trace("GAC Install: " + providerFactoryClass.Assembly.Location);
 
 		Publish publisher = new Publish();
 		publisher.GacInstall(factoryClass.Assembly.Location);
@@ -232,7 +232,7 @@ internal sealed class VsPackageRegistrationAttribute: RegistrationAttribute
 	{
 		Type providerFactoryClass = typeof(FirebirdClientFactory);
 
-		// Diag.Trace("GAC Uninstall: " + providerFactoryClass.Assembly.Location);
+		// Tracer.Trace("GAC Uninstall: " + providerFactoryClass.Assembly.Location);
 		Publish publisher = new Publish();
 
 		try

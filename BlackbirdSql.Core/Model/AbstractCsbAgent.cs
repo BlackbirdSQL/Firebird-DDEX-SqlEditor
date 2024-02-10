@@ -5,11 +5,14 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.Common;
 using System.IO;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Ctl.Config;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Enums;
 
@@ -59,29 +62,34 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	{
 	}
 
-	public AbstractCsbAgent(string connectionString) : base(connectionString)
+	public AbstractCsbAgent(string connectionString, bool validateServerName) : base(connectionString)
 	{
-		ValidateServerName();
+		if (validateServerName)
+			ValidateServerName();
 	}
 
 
 
-	public AbstractCsbAgent(IDbConnection connection) : base(connection.ConnectionString)
+	public AbstractCsbAgent(IDbConnection connection, bool validateServerName) : base(connection.ConnectionString)
 	{
-		ValidateServerName();
+		if (validateServerName)
+			ValidateServerName();
 	}
 
-	public AbstractCsbAgent(IBPropertyAgent ci) : base()
+	public AbstractCsbAgent(IBPropertyAgent ci, bool validateServerName) : base()
 	{
 		Parse(ci);
-		ValidateServerName();
+
+		if (validateServerName)
+			ValidateServerName();
 	}
 
 
-	protected AbstractCsbAgent(IVsDataExplorerNode node) : base()
+	protected AbstractCsbAgent(IVsDataExplorerNode node, bool validateServerName) : base()
 	{
 		Extract(node);
-		ValidateServerName();
+		if (validateServerName)
+			ValidateServerName();
 	}
 
 
@@ -113,7 +121,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	}
 
 
-	#endregion Property Constructors / Destructors
+	#endregion Constructors / Destructors
 
 
 
@@ -143,6 +151,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	protected readonly object _LockObject = new();
 
 	private bool _IndexActive = false;
+
 
 
 
@@ -659,8 +668,8 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// </summary>
 	[GlobalizedCategory("PropertyCategoryIdentifiers")]
 	[GlobalizedDisplayName("PropertyDisplayConnectionName")]
-	[Description("The proposed unique connection name. If unspecified defaults to 'ServerName (DatasetId)'.")]
-	[ReadOnly(false)]
+	[GlobalizedDescription("PropertyDescriptionConnectionName")]
+	[ReadOnly(true)]
 	[DefaultValue(C_DefaultExConnectionName)]
 	public string ConnectionName
 	{
@@ -687,8 +696,8 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// </summary>
 	[GlobalizedCategory("PropertyCategoryIdentifiers")]
 	[GlobalizedDisplayName("PropertyDisplayDatasetId")]
-	[Description("The server scope unique name for a database to construct a generated connection name. Defaults to the stripped file name of the database path.")]
-	[ReadOnly(false)]
+	[GlobalizedDescription("PropertyDescriptionDatasetId")]
+	[ReadOnly(true)]
 	[DefaultValue(C_DefaultExDatasetId)]
 	public string DatasetId
 	{
@@ -712,8 +721,8 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// access DatasetKey or DatasetId.
 	/// </summary>
 	[GlobalizedCategory("PropertyCategoryIdentifiers")]
-	[DisplayName(C_KeyExDatasetKey)]
-	[Description("The unique connection name of a connection. Defaults to the generated name in the form 'Server (DatasetId)'.")]
+	[GlobalizedDisplayName("PropertyDisplayDatasetKey")]
+	[GlobalizedDescription("PropertyDescriptionDatasetKey")]
 	[ReadOnly(true)]
 	[DefaultValue(C_DefaultExDatasetKey)]
 	public string DatasetKey
@@ -737,8 +746,8 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// The internal Server Explorer connection id for Server Explorer connections.
 	/// </summary>
 	[GlobalizedCategory("PropertyCategoryIdentifiers")]
-	[DisplayName(C_KeyExConnectionKey)]
-	[Description("The internal Server Explorer connection id for Server Explorer connections.")]
+	[GlobalizedDisplayName("PropertyDisplayConnectionKey")]
+	[GlobalizedDescription("PropertyDescriptionConnectionKey")]
 	[ReadOnly(true)]
 	[DefaultValue(C_DefaultExConnectionKey)]
 	public string ConnectionKey
@@ -759,8 +768,8 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 
 	[GlobalizedCategory("PropertyCategoryIdentifiers")]
-	[DisplayName("Dataset")]
-	[Description("The stripped file name of the database file")]
+	[GlobalizedDisplayName("PropertyDisplayDataset")]
+	[GlobalizedDescription("PropertyDescriptionDataset")]
 	[ReadOnly(true)]
 	[DefaultValue(C_DefaultExDataset)]
 	public string Dataset
@@ -779,8 +788,8 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// If no proposed key is specified the auto-generated DatasetKey will be used on registration.
 	/// </summary>
 	[GlobalizedCategory("PropertyCategoryIdentifiers")]
-	[DisplayName("Connection owner")]
-	[Description("The creator of this connection or the last service with sufficient rights to succesfully modify it.")]
+	[GlobalizedDisplayName("PropertyDisplayConnectionSource")]
+	[GlobalizedDescription("PropertyDescriptionConnectionSource")]
 	[ReadOnly(true)]
 	[DefaultValue(C_DefaultExConnectionSource)]
 	public EnConnectionSource ConnectionSource
@@ -813,9 +822,9 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// The server memory usage.
 	/// </summary>
 	[Browsable(false)]
-	[Category("PropertyCategoryExtended")]
-	[DisplayName("Client version")]
-	[Description("The FirbirdSql.Data.Firebird library version.")]
+	[GlobalizedCategory("PropertyCategoryExtended")]
+	[GlobalizedDisplayName("PropertyDisplayClientVersion")]
+	[GlobalizedDescription("PropertyDescriptionClientVersion")]
 	[ReadOnly(true)]
 	[DefaultValue(C_DefaultExClientVersion)]
 	public Version ClientVersion
@@ -837,9 +846,9 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// The server memory usage.
 	/// </summary>
 	[Browsable(false)]
-	[Category("PropertyCategoryExtended")]
-	[DisplayName("Memory usage")]
-	[Description("Applicable to live connections only. The server memory usage.")]
+	[GlobalizedCategory("PropertyCategoryExtended")]
+	[GlobalizedDisplayName("PropertyDisplayMemoryUsage")]
+	[GlobalizedDescription("PropertyDescriptionMemoryUsage")]
 	[ReadOnly(true)]
 	[DefaultValue("")]
 	public string MemoryUsage
@@ -862,9 +871,9 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// Server connected users.
 	/// </summary>
 	[Browsable(false)]
-	[Category("PropertyCategoryExtended")]
-	[DisplayName("Server connected users.")]
-	[Description("Applicable to live connections only. The number of connected users (Firebird 3 only).")]
+	[GlobalizedCategory("PropertyCategoryExtended")]
+	[GlobalizedDisplayName("PropertyDisplayActiveUsers")]
+	[GlobalizedDescription("PropertyDescriptionActiveUsers")]
 	[ReadOnly(true)]
 	[DefaultValue(0)]
 	public int ActiveUsers
@@ -1095,8 +1104,8 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	/// </summary>
 	public static bool AreEquivalent(string connectionString1, string connectionString2, IEnumerable<Describer> enumerator)
 	{
-		CsbAgent csa1 = new(connectionString1);
-		CsbAgent csa2 = new(connectionString2);
+		CsbAgent csa1 = new(connectionString1, false);
+		CsbAgent csa2 = new(connectionString2, false);
 
 		return AreEquivalent(csa1, csa2, enumerator);
 	}
@@ -1115,7 +1124,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	// ---------------------------------------------------------------------------------
 	public static bool AreEquivalent(string key, object value1, object value2)
 	{
-		// Diag.Trace();
+		// Tracer.Trace();
 
 		if (value1 == null)
 		{
@@ -1327,7 +1336,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 		if (@object == null)
 		{
-			ArgumentNullException ex = new($"Connection node object for node {node.ExplorerConnection.DisplayName} is null");
+			COMException ex = new($"Connection node object for node {node.ExplorerConnection.DisplayName} is null");
 			Diag.Dug(ex);
 			return;
 		}
@@ -1364,13 +1373,20 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 			}
 			catch (Exception ex)
 			{
-				Diag.Dug(ex, $"Node property: {pair.Key}");
+				Diag.Dug(ex, $"Error retrieving node {node.Name} property: {pair.Key}");
 				throw;
 			}
 		}
 		// Tracer.Trace(GetType(), "Extract()", "node.ExplorerConnection./DisplayName: {0}, node.ExplorerConnection.ConnectionNode.Name: {1}, dbObj.Name: {2}.", node.ExplorerConnection.DisplayName, node.ExplorerConnection.ConnectionNode.Name, dbObj.Name);
 
-		ConnectionKey = connectionNode.ConnectionKey();
+		ConnectionKey = connectionNode.GetConnectionKey();
+		if (ConnectionKey == null)
+		{
+			COMException ex = new($"ConnectionKey for explorer connection {node.ExplorerConnection.DisplayName} for node {node.Name} is null");
+			Diag.Dug(ex);
+			throw ex;
+		}
+
 		ConnectionSource = EnConnectionSource.ServerExplorer;
 
 		if (!string.IsNullOrWhiteSpace(DatasetKey) && connectionNode.ExplorerConnection.DisplayName != DatasetKey)
@@ -1452,6 +1468,56 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 		{
 			DataSource = server;
 		}
+	}
+
+
+
+
+
+	/// <summary>
+	/// Updates descriptor collection readonly on dataset key properties for application
+	/// connection sources.
+	/// </summary>
+	public static bool UpdateDatasetKeysReadOnlyAttribute(ref PropertyDescriptorCollection descriptors, bool readOnly)
+	{
+		if (descriptors == null || descriptors.Count == 0)
+			return false;
+
+		bool value;
+		bool updated = false;
+		string[] descriptorList = [CoreConstants.C_KeyExConnectionName, CoreConstants.C_KeyExDatasetId];
+
+		try
+		{
+			foreach (string name in descriptorList)
+			{
+				PropertyDescriptor descriptor = descriptors.Find(name, false);
+
+				if (descriptor == null)
+					continue;
+
+				if (descriptor.Attributes[typeof(ReadOnlyAttribute)] is not ReadOnlyAttribute attr)
+					throw new IndexOutOfRangeException($"ReadOnlyAttribute not found in PropertyDescriptor for {name}.");
+
+				FieldInfo fieldInfo = Reflect.GetFieldInfo(attr, "isReadOnly", BindingFlags.NonPublic | BindingFlags.Instance);
+
+				value = readOnly;
+
+				if ((bool)Reflect.GetFieldInfoValue(attr, fieldInfo) != value)
+				{
+					// Tracer.Trace(typeof(AbstractCsbAgent), "UpdatePropertiesReadOnlyAttribute()", "Setting ReadOnlyAttribute for PropertyDescriptor {0} to readonly: {1}.", name, readOnly);
+
+					updated = true;
+					Reflect.SetFieldInfoValue(attr, fieldInfo, value);
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+		}
+
+		return updated;
 	}
 
 

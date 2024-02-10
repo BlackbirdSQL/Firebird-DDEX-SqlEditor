@@ -184,7 +184,7 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 
 				readOnly = pair.Value < 0 ? nNewValue == -pair.Value : nNewValue != pair.Value;
 
-				// Diag.Trace($"Automator {_PropertyName} with new value {newValue} updating dependent: {pair.Key} using {pair.Value} from {fld.GetValue(attr)} to {readOnly}.");
+				// Tracer.Trace($"Automator {_PropertyName} with new value {newValue} updating dependent: {pair.Key} using {pair.Value} from {fld.GetValue(attr)} to {readOnly}.");
 
 				if ((bool)Reflect.GetFieldInfoValue(attr, fieldInfo) != readOnly)
 				{
@@ -217,16 +217,16 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 		if (context.PropertyDescriptor.Attributes[typeof(AutomationAttribute)] is not AutomationAttribute attr
 			|| attr.Automator != null)
 		{
-			// Diag.Trace($"Property {name} is not an automator.");
+			// Tracer.Trace($"Property {name} is not an automator.");
 			return true;
 		}
 
-		// Diag.Trace($"Property {name} IS an automator.");
+		// Tracer.Trace($"Property {name} IS an automator.");
 
 		_IsAutomator = true;
 		_Model.AutomationPropertyValueChangedEvent += OnAutomationPropertyValueChanged;
 
-		// Diag.Trace($"Registering automator {_PropertyName}.");
+		// Tracer.Trace($"Registering automator {_PropertyName}.");
 
 		_Dependents = new Dictionary<string, int>(model.PropertyWrappers.Count);
 
@@ -234,7 +234,7 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 		{
 			if (property.Automator != null && property.Automator == _PropertyName)
 			{
-				// Diag.Trace($"Registering automation dependent for {_PropertyName}: Dependent: {property.PropertyName}.");
+				// Tracer.Trace($"Registering automation dependent for {_PropertyName}: Dependent: {property.PropertyName}.");
 				_Dependents.Add(property.PropertyName, property.AutomationEnableValue);
 			}
 		}

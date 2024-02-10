@@ -250,7 +250,115 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to   Proposed Name.
+        ///   Looks up a localized string similar to Applicable to live connections only. The number of server connected users (Firebird 3+ only)..
+        /// </summary>
+        internal static string PropertyDescriptionActiveUsers {
+            get {
+                return ResourceManager.GetString("PropertyDescriptionActiveUsers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The FirbirdSql.Data.FirebirdClient library version..
+        /// </summary>
+        internal static string PropertyDescriptionClientVersion {
+            get {
+                return ResourceManager.GetString("PropertyDescriptionClientVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The internal Server Explorer connection id for Server Explorer connections..
+        /// </summary>
+        internal static string PropertyDescriptionConnectionKey {
+            get {
+                return ResourceManager.GetString("PropertyDescriptionConnectionKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The proposed unique connection name. (Not recommended. Use Database name instead.) Defaults to &apos;ServerName (DatabaseName)&apos;..
+        /// </summary>
+        internal static string PropertyDescriptionConnectionName {
+            get {
+                return ResourceManager.GetString("PropertyDescriptionConnectionName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The creator of this connection or the last service with sufficient rights to succesfully modify it..
+        /// </summary>
+        internal static string PropertyDescriptionConnectionSource {
+            get {
+                return ResourceManager.GetString("PropertyDescriptionConnectionSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The stripped file name excluding extension of the database file path..
+        /// </summary>
+        internal static string PropertyDescriptionDataset {
+            get {
+                return ResourceManager.GetString("PropertyDescriptionDataset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The proposed server scope unique name for a database to construct a connection name. Defaults to Dataset..
+        /// </summary>
+        internal static string PropertyDescriptionDatasetId {
+            get {
+                return ResourceManager.GetString("PropertyDescriptionDatasetId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The current unique name (DatasetKey) of a connection. Defaults to &apos;Server (DatabaseName)&apos;..
+        /// </summary>
+        internal static string PropertyDescriptionDatasetKey {
+            get {
+                return ResourceManager.GetString("PropertyDescriptionDatasetKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Applicable to live connections only. The database memory usage..
+        /// </summary>
+        internal static string PropertyDescriptionMemoryUsage {
+            get {
+                return ResourceManager.GetString("PropertyDescriptionMemoryUsage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Active users.
+        /// </summary>
+        internal static string PropertyDisplayActiveUsers {
+            get {
+                return ResourceManager.GetString("PropertyDisplayActiveUsers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Client version.
+        /// </summary>
+        internal static string PropertyDisplayClientVersion {
+            get {
+                return ResourceManager.GetString("PropertyDisplayClientVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ConnectionKey.
+        /// </summary>
+        internal static string PropertyDisplayConnectionKey {
+            get {
+                return ResourceManager.GetString("PropertyDisplayConnectionKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  Proffered Connection Name.
         /// </summary>
         internal static string PropertyDisplayConnectionName {
             get {
@@ -259,11 +367,47 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to  Proposed Dataset Id.
+        ///   Looks up a localized string similar to Connection owner.
+        /// </summary>
+        internal static string PropertyDisplayConnectionSource {
+            get {
+                return ResourceManager.GetString("PropertyDisplayConnectionSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dataset.
+        /// </summary>
+        internal static string PropertyDisplayDataset {
+            get {
+                return ResourceManager.GetString("PropertyDisplayDataset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  Proffered  Database Name.
         /// </summary>
         internal static string PropertyDisplayDatasetId {
             get {
                 return ResourceManager.GetString("PropertyDisplayDatasetId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ConnectionName.
+        /// </summary>
+        internal static string PropertyDisplayDatasetKey {
+            get {
+                return ResourceManager.GetString("PropertyDisplayDatasetKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Memory usage.
+        /// </summary>
+        internal static string PropertyDisplayMemoryUsage {
+            get {
+                return ResourceManager.GetString("PropertyDisplayMemoryUsage", resourceCulture);
             }
         }
         

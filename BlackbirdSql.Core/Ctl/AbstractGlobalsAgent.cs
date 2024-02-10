@@ -43,7 +43,7 @@ public abstract class AbstractGlobalsAgent : IBGlobalsAgent
 
 
 	protected static IBGlobalsAgent _SolutionGlobals = null;
-	protected static bool _ValidateSolution;
+	protected static bool _ValidateSolution = true;
 	protected static bool _PersistentValidation;
 	protected static bool _ValidateConfig;
 	protected static bool _ValidateEdmx;

@@ -164,7 +164,7 @@ public abstract class ControllerAsyncPackage : EditorExtensionAsyncPackage
 
 		// If we get here and the Rct is not loaded/loading it means "no solution".
 		if (!RctManager.Loading)
-			RctManager.LoadConfiguredConnections(true);
+			RctManager.LoadConfiguredConnections();
 	}
 
 

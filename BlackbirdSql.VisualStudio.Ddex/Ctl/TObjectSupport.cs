@@ -144,7 +144,7 @@ public class TObjectSupport : DataObjectSupport, IVsDataSupportImportResolver
 		Type type = GetType();
 		string resource = type.FullName + name[..^11] + ".xml";
 
-		// Diag.Trace("Importing resource: " + resource);
+		// Tracer.Trace("Importing resource: " + resource);
 
 
 		return type.Assembly.GetManifestResourceStream(resource);

@@ -312,11 +312,28 @@ public abstract class Reflect
 	{
 		Type typeContainerClassInstance = containerClassInstance.GetType();
 
-		PropertyInfo propertyInfo = typeContainerClassInstance.GetProperty(propertyName, bindingFlags);
+		return GetPropertyInfo(typeContainerClassInstance, propertyName, bindingFlags);
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Get a class object property's PropertyInfo given the containing class Type,
+	/// the property name and access modifier binding flags.
+	/// </summary>
+	/// <returns>
+	/// Returns the property's PropertyInfo object else logs a diagnostics exception and
+	/// returns null on error
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	public static PropertyInfo GetPropertyInfo(Type typeContainerClass,
+		string propertyName, BindingFlags bindingFlags)
+	{
+		PropertyInfo propertyInfo = typeContainerClass.GetProperty(propertyName, bindingFlags);
 
 		if (propertyInfo == null)
 		{
-			COMException ex = new($"Could not get PropertyInfo for property '{propertyName}' in container class '{typeContainerClassInstance}'.");
+			COMException ex = new($"Could not get PropertyInfo for property '{propertyName}' in container class '{typeContainerClass}'.");
 			Diag.Dug(ex);
 			return null;
 		}

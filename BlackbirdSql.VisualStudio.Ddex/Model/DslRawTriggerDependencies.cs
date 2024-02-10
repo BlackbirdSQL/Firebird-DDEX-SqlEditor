@@ -80,7 +80,7 @@ LEFT OUTER JOIN rdb$generators fd_gen
 GROUP BY TRIGGER_NAME, SEQUENCE_GENERATOR
 ORDER BY trg.rdb$trigger_name", identityType, generatorSelector);
 
-		// Diag.Trace(sql.ToString());
+		// Tracer.Trace(sql.ToString());
 
 		return sql;
 	}
