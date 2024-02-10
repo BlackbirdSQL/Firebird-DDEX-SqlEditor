@@ -200,8 +200,23 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 
 	private bool RegisterModel(ITypeDescriptorContext context, int value)
 	{
-		if (_Model != null || context.Instance is not IBSettingsModel model)
+		if (context == null || context.Instance is not IBSettingsModel model)
 			return false;
+
+		// The model instance may have changed on the same property between
+		// persistent and transient models, which will require a reset.
+
+		if (_Model != null && object.ReferenceEquals(_Model, model))
+			return false;
+
+		IBSettingsModel prevModel = null;
+
+		if (_Model != null)
+		{
+			_Model.Disposed -= OnModelDisposed;
+			prevModel = _Model;
+		}
+
 
 		_Model = model;
 		_Model.Disposed += OnModelDisposed;
@@ -222,6 +237,9 @@ public abstract class AbstractEnumConverter(Type type) : EnumConverter(type), IB
 		}
 
 		// Tracer.Trace($"Property {name} IS an automator.");
+
+		if (prevModel != null)
+			prevModel.AutomationPropertyValueChangedEvent -= OnAutomationPropertyValueChanged;
 
 		_IsAutomator = true;
 		_Model.AutomationPropertyValueChangedEvent += OnAutomationPropertyValueChanged;

@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using BlackbirdSql.Core.Controls.Events;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Interfaces;
 using BlackbirdSql.Core.Properties;
@@ -130,7 +131,7 @@ public abstract class AbstractUomConverter : TypeConverter, IBEditConverter, IDi
 	public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
 	{
 		if (destinationType == null)
-			throw new ArgumentNullException("destinationType");
+			Diag.ThrowException(new ArgumentNullException("destinationType"));
 
 		// Tracer.Trace("ConvertTo: " + context.PropertyDescriptor.Name);
 
@@ -163,13 +164,30 @@ public abstract class AbstractUomConverter : TypeConverter, IBEditConverter, IDi
 
 	private void RegisterModel(ITypeDescriptorContext context)
 	{
-		if (_Model != null || context.Instance is not IBSettingsModel model)
+
+		if (context == null || context.Instance is not IBSettingsModel model)
 			return;
+
+		// The model instance may have changed on the same property between
+		// persistent and transient models, which will require a reset.
+
+		if (_Model != null && object.ReferenceEquals(_Model, model))
+			return;
+
+		if (_Model != null)
+		{
+			_Model.Disposed -= OnModelDisposed;
+			_Model.EditControlGotFocusEvent -= OnEditControlGotFocus;
+			_Model.EditControlLostFocusEvent -= OnEditControlLostFocus;
+		}
+
 
 		_Model = model;
 		_Model.Disposed += OnModelDisposed;
 
 		_PropertyName = context.PropertyDescriptor.Name;
+
+		// Tracer.Trace(GetType(), "RegisterModel()", "Model: {0}.", _Model.GetType().FullName);
 
 		_Model.EditControlGotFocusEvent += OnEditControlGotFocus;
 		_Model.EditControlLostFocusEvent += OnEditControlLostFocus;
@@ -243,6 +261,8 @@ public abstract class AbstractUomConverter : TypeConverter, IBEditConverter, IDi
 
 	public void OnEditControlGotFocus(object sender, EditControlFocusEventArgs e)
 	{
+		// Tracer.Trace(GetType(), "OnEditControlGotFocus()");
+
 		if (e.SelectionItem.PropertyDescriptor.Name != _PropertyName)
 			return;
 

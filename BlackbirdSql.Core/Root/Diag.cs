@@ -395,6 +395,30 @@ public static class Diag
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 #if !NEWDEBUG
+	public static void ThrowException(Exception ex,
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
+#else
+	public static void ThrowException(Exception ex,
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
+#endif
+	{
+		Dug(ex, "", memberName, sourceFilePath, sourceLineNumber);
+
+		throw ex;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Diagnostics method for OnUiThread
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+#if !NEWDEBUG
 	public static COMException ExceptionThreadOnUI(
 		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
 		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",

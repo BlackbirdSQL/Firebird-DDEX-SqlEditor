@@ -1461,8 +1461,6 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		bool result = true;
 
-		System.Threading.Thread.Sleep(10000);
-
 		try
 		{
 

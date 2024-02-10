@@ -2,6 +2,10 @@
 
 ### Change log
 
+#### v11.0.0.1
+Some convertors were going idle when switching between persistent and transient instances of the same settings model.</br>
+Removed a 10 second debugging test Thread.Sleep() that was left in the AbstractRunningConnection async payload.
+
 #### v11.0.0.0
 First official full release of BlackbirdSql.</br>
 Improved interactive synchronization between Connection Dialog and RunningConnectionTable.

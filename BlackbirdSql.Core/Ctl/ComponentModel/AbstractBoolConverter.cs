@@ -130,8 +130,24 @@ public abstract class AbstractBoolConverter : BooleanConverter, IBAutomationConv
 
 	private bool RegisterModel(ITypeDescriptorContext context, bool value)
 	{
-		if (_Model != null || context.Instance is not IBSettingsModel model)
+
+		if (context == null || context.Instance is not IBSettingsModel model)
 			return false;
+
+		// The model instance may have changed on the same property between
+		// persistent and transient models, which will require a reset.
+
+		if (_Model != null && object.ReferenceEquals(_Model, model))
+			return false;
+
+		IBSettingsModel prevModel = null;
+
+		if (_Model != null)
+		{
+			_Model.Disposed -= OnModelDisposed;
+			prevModel = _Model;
+		}
+
 
 		_Model = model;
 		_Model.Disposed += OnModelDisposed;
@@ -144,6 +160,9 @@ public abstract class AbstractBoolConverter : BooleanConverter, IBAutomationConv
 		{
 			return true;
 		}
+
+		if (prevModel != null)
+			prevModel.AutomationPropertyValueChangedEvent -= OnAutomationPropertyValueChanged;
 
 		_IsAutomator = true;
 		_Model.AutomationPropertyValueChangedEvent += OnAutomationPropertyValueChanged;
