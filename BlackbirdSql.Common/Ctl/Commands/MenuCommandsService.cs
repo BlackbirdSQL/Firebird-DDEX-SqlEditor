@@ -151,8 +151,7 @@ public class MenuCommandsService : Collection<MenuCommand>, IDisposable, IMenuCo
 		if (sp == null)
 		{
 			Exception ex = new ArgumentException("service provider cannot be null", "sp");
-			Tracer.LogExThrow(GetType(), ex);
-			throw ex;
+			Diag.ThrowException(ex);
 		}
 
 		Diag.ThrowIfNotOnUIThread();

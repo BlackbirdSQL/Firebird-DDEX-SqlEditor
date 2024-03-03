@@ -13,15 +13,24 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace BlackbirdSql.Common.Ctl.ComponentModel;
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
-public sealed class VsProvideEditorFactoryAttribute : RegistrationAttribute
+public sealed class VsProvideEditorFactoryAttribute(Type factoryType, short nameResourceID) : RegistrationAttribute
 {
-	private readonly Type _factoryType;
+	private readonly Type _factoryType = factoryType ?? throw new ArgumentNullException("factoryType");
 
-	private readonly short _nameResourceID;
+	private readonly short _nameResourceID = nameResourceID;
+
+
+	public VsProvideEditorFactoryAttribute(Type factoryType, short nameResourceID, bool deferUntilIntellisenseIsReady)
+	: this(factoryType, nameResourceID)
+	{
+		DeferUntilIntellisenseIsReady = deferUntilIntellisenseIsReady;
+	}
+
+
 
 	private string _DefaultName = null;
 
-	private __VSEDITORTRUSTLEVEL _trustLevel;
+	private __VSEDITORTRUSTLEVEL _trustLevel = __VSEDITORTRUSTLEVEL.ETL_NeverTrusted;
 
 	public Type FactoryType => _factoryType;
 
@@ -50,28 +59,14 @@ public sealed class VsProvideEditorFactoryAttribute : RegistrationAttribute
 		}
 	}
 
-	public bool? DeferUntilIntellisenseIsReady { get; }
+	public bool? DeferUntilIntellisenseIsReady { get; } = null;
 
-	public int CommonPhysicalViewAttributes { get; set; }
+	public int CommonPhysicalViewAttributes { get; set; } = 0;
 
 	public short NameResourceID => _nameResourceID;
 
 	private string EditorRegKey => string.Format(CultureInfo.InvariantCulture, "Editors\\{0}", FactoryType.GUID.ToString("B"));
 
-	public VsProvideEditorFactoryAttribute(Type factoryType, short nameResourceID)
-	{
-		_factoryType = factoryType ?? throw new ArgumentNullException("factoryType");
-		_nameResourceID = nameResourceID;
-		_trustLevel = __VSEDITORTRUSTLEVEL.ETL_NeverTrusted;
-		DeferUntilIntellisenseIsReady = null;
-		CommonPhysicalViewAttributes = 0;
-	}
-
-	public VsProvideEditorFactoryAttribute(Type factoryType, short nameResourceID, bool deferUntilIntellisenseIsReady)
-		: this(factoryType, nameResourceID)
-	{
-		DeferUntilIntellisenseIsReady = deferUntilIntellisenseIsReady;
-	}
 
 	public override void Register(RegistrationContext context)
 	{

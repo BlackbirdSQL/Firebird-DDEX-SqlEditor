@@ -5,17 +5,18 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
-using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Properties;
 using EnvDTE;
-using FirebirdSql.Data.FirebirdClient;
+using EnvDTE80;
+using EnvDTE90a;
+using Microsoft.ServiceHub.Framework;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
@@ -39,7 +40,7 @@ namespace BlackbirdSql.Core.Ctl;
 /// Aslo performs cleanups of any sql editor documents that may be left dangling on solution close.
 /// </remarks>
 // =========================================================================================================
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification="Using Diag.ThrowIfNotOnUIThread()")]
 public abstract class AbstractPackageController : IBPackageController
 {
 
@@ -64,6 +65,15 @@ public abstract class AbstractPackageController : IBPackageController
 
 		_Instance = this;
 		_DdexPackage = ddex;
+
+		if (Package.GetGlobalService(typeof(DTE)) is DTE2 dte)
+		{
+			dte.Events.DTEEvents.OnBeginShutdown += OnBeginShutdown;
+		}
+		else
+		{
+			throw new NullReferenceException("DTE2 is not initialized");
+		}
 
 		ddex.OnLoadSolutionOptionsEvent += OnLoadSolutionOptions;
 		ddex.OnSaveSolutionOptionsEvent += OnSaveSolutionOptions;
@@ -130,6 +140,8 @@ public abstract class AbstractPackageController : IBPackageController
 	// =========================================================================================================
 
 	private bool _ProjectEvents = false;
+	private bool _ShutdownState = false;
+	private static int _RdtEventsCardinal = 0;
 
 	protected static bool _EventsAdvisedUnsafe = false;
 	protected static bool _SolutionLoaded = false;
@@ -159,10 +171,14 @@ public abstract class AbstractPackageController : IBPackageController
 
 
 	private IBPackageController.AfterAttributeChangeDelegate _OnAfterAttributeChangeEvent;
+	private IBPackageController.AfterAttributeChangeExDelegate _OnAfterAttributeChangeExEvent;
 	private IBPackageController.AfterDocumentWindowHideDelegate _OnAfterDocumentWindowHideEvent;
 	private IBPackageController.AfterSaveDelegate _OnAfterSaveEvent;
+	private IBPackageController.AfterSaveAsyncDelegate _OnAfterSaveAsyncEvent;
 	private IBPackageController.BeforeDocumentWindowShowDelegate _OnBeforeDocumentWindowShowEvent;
 	private IBPackageController.BeforeLastDocumentUnlockDelegate _OnBeforeLastDocumentUnlockEvent;
+	private IBPackageController.BeforeSaveDelegate _OnBeforeSaveEvent;
+	private IBPackageController.BeforeSaveAsyncDelegate _OnBeforeSaveAsyncEvent;
 
 	private IBPackageController.AfterOpenProjectDelegate _OnAfterOpenProjectEvent;
 	private IBPackageController.LoadSolutionOptionsDelegate _OnLoadSolutionOptionsEvent;
@@ -193,170 +209,28 @@ public abstract class AbstractPackageController : IBPackageController
 	public string UserDataDirectory => _UserDataDirectory ??=
 		Environment.GetFolderPath(Environment.SpecialFolder.Personal);
 
-
-	/// <summary>
-	/// Accessor to the <see cref="IVsRunningDocTableEvents.OnAfterAttributeChange"/> event.
-	/// </summary>
-	event IBPackageController.AfterAttributeChangeDelegate IBPackageController.OnAfterAttributeChangeEvent
+	public bool ShutdownState
 	{
-		add { _OnAfterAttributeChangeEvent += value; }
-		remove { _OnAfterAttributeChangeEvent -= value; }
+		get { return _ShutdownState; }
+		set { _ShutdownState = value; }
 	}
 
 
-	/// <summary>
-	/// Accessor to the <see cref="IVsRunningDocTableEvents.OnAfterDocumentWindowHide"/> event.
-	/// </summary>
-	event IBPackageController.AfterDocumentWindowHideDelegate IBPackageController.OnAfterDocumentWindowHideEvent
-	{
-		add { _OnAfterDocumentWindowHideEvent += value; }
-		remove { _OnAfterDocumentWindowHideEvent -= value; }
-	}
-
-
-	/// <summary>
-	/// Accessor to the <see cref="IVsSolutionEvents.OnAfterOpenProject"/> event.
-	/// </summary>
-	event IBPackageController.AfterOpenProjectDelegate IBPackageController.OnAfterOpenProjectEvent
-	{
-		add { _OnAfterOpenProjectEvent += value; }
-		remove { _OnAfterOpenProjectEvent -= value; }
-	}
-
-
-	/// <summary>
-	/// Accessor to the <see cref="Package.OnLoadOptions"/> event.
-	/// </summary>
-	event IBPackageController.LoadSolutionOptionsDelegate IBPackageController.OnLoadSolutionOptionsEvent
-	{
-		add { _OnLoadSolutionOptionsEvent += value; }
-		remove { _OnLoadSolutionOptionsEvent -= value; }
-	}
-
-	/// <summary>
-	/// Accessor to the <see cref="Package.OnLoadOptions"/> event.
-	/// </summary>
-	event IBPackageController.SaveSolutionOptionsDelegate IBPackageController.OnSaveSolutionOptionsEvent
-	{
-		add { _OnSaveSolutionOptionsEvent += value; }
-		remove { _OnSaveSolutionOptionsEvent -= value; }
-	}
-
-
-	/// <summary>
-	/// Accessor to the <see cref="IVsSolutionEvents.OnAfterCloseSolution"/> event.
-	/// </summary>
-	event IBPackageController.AfterCloseSolutionDelegate IBPackageController.OnAfterCloseSolutionEvent
-	{
-		add { _OnAfterCloseSolutionEvent += value; }
-		remove { _OnAfterCloseSolutionEvent -= value; }
-	}
-
-
-	/// <summary>
-	/// Accessor to the <see cref="IVsRunningDocTableEvents.OnAfterSave"/> event.
-	/// </summary>
-	event IBPackageController.AfterSaveDelegate IBPackageController.OnAfterSaveEvent
-	{
-		add { _OnAfterSaveEvent += value; }
-		remove { _OnAfterSaveEvent -= value; }
-	}
-
-
-	/// <summary>
-	/// Accessor to the <see cref="IVsRunningDocTableEvents.OnBeforeDocumentWindowShow"/> event.
-	/// </summary>
-	event IBPackageController.BeforeDocumentWindowShowDelegate IBPackageController.OnBeforeDocumentWindowShowEvent
-	{
-		add { _OnBeforeDocumentWindowShowEvent += value; }
-		remove { _OnBeforeDocumentWindowShowEvent -= value; }
-	}
-
-
-	/// <summary>
-	/// Accessor to the <see cref="IVsRunningDocTableEvents.OnBeforeLastDocumentUnlock"/> event.
-	/// </summary>
-	event IBPackageController.BeforeLastDocumentUnlockDelegate IBPackageController.OnBeforeLastDocumentUnlockEvent
-	{
-		add { _OnBeforeLastDocumentUnlockEvent += value; }
-		remove { _OnBeforeLastDocumentUnlockEvent -= value; }
-	}
-
-
-	/// <summary>
-	/// Accessor to the <see cref="IVsSelectionEvents.OnCmdUIContextChanged"/> event.
-	/// </summary>
-	event IBPackageController.CmdUIContextChangedDelegate IBPackageController.OnCmdUIContextChangedEvent
-	{
-		add { _OnCmdUIContextChangedEvent += value; }
-		remove { _OnCmdUIContextChangedEvent -= value; }
-	}
-
-
-	/// <summary>
-	/// Accessor to the <see cref="IVsSelectionEvents.OnElementValueChangedEvent"/> event.
-	/// </summary>
-	event IBPackageController.ElementValueChangedDelegate IBPackageController.OnElementValueChangedEvent
-	{
-		add { _OnElementValueChangedEvent += value; }
-		remove { _OnElementValueChangedEvent -= value; }
-	}
-
-
-	/// <summary>
-	/// Accessor to the <see cref="IVsSolutionEvents.OnQueryCloseProject"/> event.
-	/// </summary>
-	event IBPackageController.QueryCloseProjectDelegate IBPackageController.OnQueryCloseProjectEvent
-	{
-		add { _OnQueryCloseProjectEvent += value; }
-		remove { _OnQueryCloseProjectEvent -= value; }
-	}
-
-
-	/// <summary>
-	/// Accessor to the <see cref="IVsSolutionEvents.OnQueryCloseSolutionEvent"/> event.
-	/// </summary>
-	event IBPackageController.QueryCloseSolutionDelegate IBPackageController.OnQueryCloseSolutionEvent
-	{
-		add { _OnQueryCloseSolutionEvent += value; }
-		remove { _OnQueryCloseSolutionEvent -= value; }
-	}
-
-
-	/// <summary>
-	/// Accessor to the <see cref="IVsSelectionEvents.OnSelectionChangedEvent"/> event.
-	/// </summary>
-	event IBPackageController.SelectionChangedDelegate IBPackageController.OnSelectionChangedEvent
-	{
-		add { _OnSelectionChangedEvent += value; }
-		remove { _OnSelectionChangedEvent -= value; }
-	}
-
-
-	/// <summary>
-	/// Accessor to the <see cref="IVsSelectionEvents.OnSelectionChangedEvent"/> event.
-	/// </summary>
-	event IBPackageController.NewQueryRequestedDelegate IBPackageController.OnNewQueryRequestedEvent
-	{
-		add { _OnNewQueryRequestedEvent += value; }
-		remove { _OnNewQueryRequestedEvent -= value; }
-	}
-
+	public abstract ServiceRpcDescriptor FileSystemRpcDescriptor2 { get; }
 
 
 	public IBAsyncPackage DdexPackage
 	{
 		get { return _DdexPackage; }
-		set { _DdexPackage = value;  }
+		set { _DdexPackage = value; }
 	}
 
 
-	public IVsRunningDocumentTable DocTable => _DdexPackage.DocTable;
+	public DTE Dte => !_ShutdownState ? _DdexPackage.Dte : null;
 
+	private bool RdtEventsEnabled =>  _RdtEventsCardinal == 0;
 
-	public DTE Dte => _DdexPackage.Dte;
-
-	public object SolutionObject => Dte.Solution;
+	public object SolutionObject => !_ShutdownState ? Dte.Solution : null;
 
 	public abstract bool SolutionValidating { get; }
 
@@ -492,6 +366,204 @@ public abstract class AbstractPackageController : IBPackageController
 
 
 	// =========================================================================================================
+	#region Event Property Accessors - AbstractPackageController
+	// =========================================================================================================
+
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsRunningDocTableEvents.OnAfterAttributeChange"/> event.
+	/// </summary>
+	event IBPackageController.AfterAttributeChangeDelegate IBPackageController.OnAfterAttributeChangeEvent
+	{
+		add { _OnAfterAttributeChangeEvent += value; }
+		remove { _OnAfterAttributeChangeEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsRunningDocTableEvents3.OnAfterAttributeChangeEx"/> event.
+	/// </summary>
+	event IBPackageController.AfterAttributeChangeExDelegate IBPackageController.OnAfterAttributeChangeExEvent
+	{
+		add { _OnAfterAttributeChangeExEvent += value; }
+		remove { _OnAfterAttributeChangeExEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsRunningDocTableEvents.OnAfterDocumentWindowHide"/> event.
+	/// </summary>
+	event IBPackageController.AfterDocumentWindowHideDelegate IBPackageController.OnAfterDocumentWindowHideEvent
+	{
+		add { _OnAfterDocumentWindowHideEvent += value; }
+		remove { _OnAfterDocumentWindowHideEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsSolutionEvents.OnAfterOpenProject"/> event.
+	/// </summary>
+	event IBPackageController.AfterOpenProjectDelegate IBPackageController.OnAfterOpenProjectEvent
+	{
+		add { _OnAfterOpenProjectEvent += value; }
+		remove { _OnAfterOpenProjectEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="Package.OnLoadOptions"/> event.
+	/// </summary>
+	event IBPackageController.LoadSolutionOptionsDelegate IBPackageController.OnLoadSolutionOptionsEvent
+	{
+		add { _OnLoadSolutionOptionsEvent += value; }
+		remove { _OnLoadSolutionOptionsEvent -= value; }
+	}
+
+	/// <summary>
+	/// Accessor to the <see cref="Package.OnLoadOptions"/> event.
+	/// </summary>
+	event IBPackageController.SaveSolutionOptionsDelegate IBPackageController.OnSaveSolutionOptionsEvent
+	{
+		add { _OnSaveSolutionOptionsEvent += value; }
+		remove { _OnSaveSolutionOptionsEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsSolutionEvents.OnAfterCloseSolution"/> event.
+	/// </summary>
+	event IBPackageController.AfterCloseSolutionDelegate IBPackageController.OnAfterCloseSolutionEvent
+	{
+		add { _OnAfterCloseSolutionEvent += value; }
+		remove { _OnAfterCloseSolutionEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsRunningDocTableEvents.OnAfterSave"/> event.
+	/// </summary>
+	event IBPackageController.AfterSaveDelegate IBPackageController.OnAfterSaveEvent
+	{
+		add { _OnAfterSaveEvent += value; }
+		remove { _OnAfterSaveEvent -= value; }
+	}
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsRunningDocTableEvents7.OnAfterSaveAsync"/> event.
+	/// Comment out and remove IVsRunningDocTableEvents7 interface to enable OnAfterSave.
+	/// </summary>
+	event IBPackageController.AfterSaveAsyncDelegate IBPackageController.OnAfterSaveAsyncEvent
+	{
+		add { _OnAfterSaveAsyncEvent += value; }
+		remove { _OnAfterSaveAsyncEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsRunningDocTableEvents.OnBeforeDocumentWindowShow"/> event.
+	/// </summary>
+	event IBPackageController.BeforeDocumentWindowShowDelegate IBPackageController.OnBeforeDocumentWindowShowEvent
+	{
+		add { _OnBeforeDocumentWindowShowEvent += value; }
+		remove { _OnBeforeDocumentWindowShowEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsRunningDocTableEvents.OnBeforeLastDocumentUnlock"/> event.
+	/// </summary>
+	event IBPackageController.BeforeLastDocumentUnlockDelegate IBPackageController.OnBeforeLastDocumentUnlockEvent
+	{
+		add { _OnBeforeLastDocumentUnlockEvent += value; }
+		remove { _OnBeforeLastDocumentUnlockEvent -= value; }
+	}
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsRunningDocTableEvents3.OnBeforeSave"/> event.
+	/// </summary>
+	event IBPackageController.BeforeSaveDelegate IBPackageController.OnBeforeSaveEvent
+	{
+		add { _OnBeforeSaveEvent += value; }
+		remove { _OnBeforeSaveEvent -= value; }
+	}
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsRunningDocTableEvents7.OnBeforeSaveAsync"/> event.
+	/// Comment out and remove IVsRunningDocTableEvents7 interface to enable OnAfterSave.
+	/// </summary>
+	event IBPackageController.BeforeSaveAsyncDelegate IBPackageController.OnBeforeSaveAsyncEvent
+	{
+		add { _OnBeforeSaveAsyncEvent += value; }
+		remove { _OnBeforeSaveAsyncEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsSelectionEvents.OnCmdUIContextChanged"/> event.
+	/// </summary>
+	event IBPackageController.CmdUIContextChangedDelegate IBPackageController.OnCmdUIContextChangedEvent
+	{
+		add { _OnCmdUIContextChangedEvent += value; }
+		remove { _OnCmdUIContextChangedEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsSelectionEvents.OnElementValueChangedEvent"/> event.
+	/// </summary>
+	event IBPackageController.ElementValueChangedDelegate IBPackageController.OnElementValueChangedEvent
+	{
+		add { _OnElementValueChangedEvent += value; }
+		remove { _OnElementValueChangedEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsSolutionEvents.OnQueryCloseProject"/> event.
+	/// </summary>
+	event IBPackageController.QueryCloseProjectDelegate IBPackageController.OnQueryCloseProjectEvent
+	{
+		add { _OnQueryCloseProjectEvent += value; }
+		remove { _OnQueryCloseProjectEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsSolutionEvents.OnQueryCloseSolutionEvent"/> event.
+	/// </summary>
+	event IBPackageController.QueryCloseSolutionDelegate IBPackageController.OnQueryCloseSolutionEvent
+	{
+		add { _OnQueryCloseSolutionEvent += value; }
+		remove { _OnQueryCloseSolutionEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsSelectionEvents.OnSelectionChangedEvent"/> event.
+	/// </summary>
+	event IBPackageController.SelectionChangedDelegate IBPackageController.OnSelectionChangedEvent
+	{
+		add { _OnSelectionChangedEvent += value; }
+		remove { _OnSelectionChangedEvent -= value; }
+	}
+
+
+	/// <summary>
+	/// Accessor to the <see cref="IVsSelectionEvents.OnSelectionChangedEvent"/> event.
+	/// </summary>
+	event IBPackageController.NewQueryRequestedDelegate IBPackageController.OnNewQueryRequestedEvent
+	{
+		add { _OnNewQueryRequestedEvent += value; }
+		remove { _OnNewQueryRequestedEvent -= value; }
+	}
+
+
+	#endregion Event Property Accessors
+
+
+
+
+	// =========================================================================================================
 	#region Methods - AbstractPackageController
 	// =========================================================================================================
 
@@ -534,6 +606,37 @@ public abstract class AbstractPackageController : IBPackageController
 	}
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Increments the <see cref="RdtEventsDisabled"/> counter when execution enters
+	/// an Rdt event handler to prevent recursion
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public void DisableRdtEvents()
+	{
+		lock (_LockGlobal)
+			_RdtEventsCardinal++;
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Decrements the <see cref="RdtEventsDisabled"/> counter that was previously
+	/// incremented by <see cref="DisableRdtEvents"/>.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public void EnableRdtEvents()
+	{
+		lock (_LockGlobal)
+		{
+			if (_RdtEventsCardinal == 0)
+				Diag.Dug(new InvalidOperationException(Resources.ExceptionEventsAlreadyEnabled));
+			else
+				_RdtEventsCardinal--;
+		}
+	}
+
+
 
 	public void EnsureMonitorSelection()
 	{
@@ -552,6 +655,13 @@ public abstract class AbstractPackageController : IBPackageController
 
 	}
 
+	public TInterface EnsureService<TService, TInterface>() where TInterface : class
+	{
+		TInterface @interface = DdexPackage.GetService<TService, TInterface>();
+		Diag.ThrowIfServiceUnavailable(@interface, typeof(TInterface));
+
+		return @interface;
+	}
 
 
 	public TInterface GetService<TInterface>() where TInterface : class
@@ -571,7 +681,7 @@ public abstract class AbstractPackageController : IBPackageController
 
 
 
-	private async Task<IVsTaskStatusCenterService> GetStatusCenterServiceAsync()
+	public async Task<IVsTaskStatusCenterService> GetStatusCenterServiceAsync()
 	{
 		return await ServiceProvider.GetGlobalServiceAsync<SVsTaskStatusCenterService,
 						IVsTaskStatusCenterService>(swallowExceptions: false);
@@ -607,6 +717,14 @@ public abstract class AbstractPackageController : IBPackageController
 
 
 
+	public bool ShutdownDte()
+	{
+		_ShutdownState = true;
+
+		return false;
+	}
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Disables solution event invocation
@@ -620,10 +738,20 @@ public abstract class AbstractPackageController : IBPackageController
 		_ = disposing;
 
 		if (VsSolution != null && _HSolutionEvents != uint.MaxValue)
+		{
 			VsSolution.UnadviseSolutionEvents(_HSolutionEvents);
 
-		if (DocTable != null && _HDocTableEvents != uint.MaxValue)
-			DocTable.UnadviseRunningDocTableEvents(_HDocTableEvents);
+
+			Events2 events2 = Dte.Events as Events2;
+
+			events2.ProjectItemsEvents.ItemAdded -= OnProjectItemAdded;
+			events2.ProjectItemsEvents.ItemRemoved -= OnProjectItemRemoved;
+			events2.ProjectItemsEvents.ItemRenamed -= OnProjectItemRenamed;
+		}
+
+
+		if (RdtManager.ServiceAvailable && _HDocTableEvents != uint.MaxValue)
+			RdtManager.UnadviseRunningDocTableEvents(_HDocTableEvents);
 
 		if (_MonitorSelection != null && _HSelectionEvents != uint.MaxValue)
 			_MonitorSelection.UnadviseSelectionEvents(_HSelectionEvents);
@@ -661,12 +789,34 @@ public abstract class AbstractPackageController : IBPackageController
 
 
 	// =========================================================================================================
-	#region IVsSolutionEvents Implementation and Event handling - AbstractPackageController
+	#region IVsSolutionEvents/2/3 Implementation and Event handling - AbstractPackageController
 	// =========================================================================================================
 
 
 	// Events that we handle are listed first
 
+
+	protected void OnProjectItemAdded(ProjectItem projectItem)
+	{
+		// Tracer.Trace(GetType(), "OnProjectItemAdded()", "Added misc ProjectItem: {0}.", projectItem.Name);
+	} 
+
+
+	protected void OnProjectItemRemoved(ProjectItem projectItem)
+	{
+		// Tracer.Trace(GetType(), "OnProjectItemRemoved()", "Removed misc ProjectItem: {0}.", projectItem.Name);
+	}
+
+	protected void OnProjectItemRenamed(ProjectItem projectItem, string oldName)
+	{
+		// Tracer.Trace(GetType(), "OnProjectItemRenamed()", "Renamed misc ProjectItem: {0}, oldname: {1}.", projectItem.Name, oldName);
+	}
+
+
+	/// <summary>
+	/// Implements <see cref="IVsSolutionEvents.OnAfterOpenProject"/>,
+	/// <see cref="IVsSolutionEvents2.OnAfterOpenProject"/> and <see cref="IVsSolutionEvents3.OnAfterOpenProject"/>
+	/// </summary>
 	public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
 	{
 		if (!_ProjectEvents)
@@ -732,6 +882,11 @@ public abstract class AbstractPackageController : IBPackageController
 	}
 
 
+	protected void OnBeginShutdown()
+	{
+		ShutdownDte();
+	}
+
 
 
 	public void OnLoadSolutionOptions(Stream stream)
@@ -755,6 +910,11 @@ public abstract class AbstractPackageController : IBPackageController
 	public void OnSaveSolutionOptions(Stream stream) =>
 		_OnSaveSolutionOptionsEvent?.Invoke(stream);
 
+
+	/// <summary>
+	/// Implements <see cref="IVsSolutionEvents.OnAfterCloseSolution"/>,
+	/// <see cref="IVsSolutionEvents2.OnAfterCloseSolution"/> and <see cref="IVsSolutionEvents3.OnAfterCloseSolution"/>
+	/// </summary>
 	public int OnAfterCloseSolution(object pUnkReserved)
 	{
 		_SolutionLoaded = false;
@@ -766,24 +926,34 @@ public abstract class AbstractPackageController : IBPackageController
 			return VSConstants.E_NOTIMPL;
 	}
 
+
+	/// <summary>
+	/// Implements <see cref="IVsSolutionEvents.OnQueryCloseProject"/>,
+	/// <see cref="IVsSolutionEvents2.OnQueryCloseProject"/> and <see cref="IVsSolutionEvents3.OnQueryCloseProject"/>
+	/// </summary>
 	public int OnQueryCloseProject(IVsHierarchy pHierarchy, int fRemoving, ref int pfCancel) => _OnQueryCloseProjectEvent != null
 		? _OnQueryCloseProjectEvent(pHierarchy, fRemoving, ref pfCancel) : VSConstants.E_NOTIMPL;
 
+
+	/// <summary>
+	/// Implements <see cref="IVsSolutionEvents.OnQueryCloseSolution"/>,
+	/// <see cref="IVsSolutionEvents2.OnQueryCloseSolution"/> and <see cref="IVsSolutionEvents3.OnQueryCloseSolution"/>
+	/// </summary>
 	public int OnQueryCloseSolution(object pUnkReserved, ref int pfCancel) => _OnQueryCloseSolutionEvent != null
 		? _OnQueryCloseSolutionEvent(pUnkReserved, ref pfCancel) : VSConstants.E_NOTIMPL;
 
 
 	// Unhandled events follow
 
-	public int OnAfterClosingChildren(IVsHierarchy hierarchy) => VSConstants.E_NOTIMPL;
+	int IVsSolutionEvents3.OnAfterClosingChildren(IVsHierarchy hierarchy) => VSConstants.E_NOTIMPL;
 	public int OnAfterLoadProject(IVsHierarchy pStubHierarchy, IVsHierarchy pRealHierarchy) => VSConstants.E_NOTIMPL;
 	public int OnAfterMergeSolution(object pUnkReserved) => VSConstants.E_NOTIMPL;
-	public int OnAfterOpeningChildren(IVsHierarchy hierarchy) => VSConstants.E_NOTIMPL;
+	int IVsSolutionEvents3.OnAfterOpeningChildren(IVsHierarchy hierarchy) => VSConstants.E_NOTIMPL;
 	public int OnAfterOpenSolution(object pUnkReserved, int fNewSolution) => VSConstants.E_NOTIMPL;
 	public int OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved) => VSConstants.E_NOTIMPL;
 	public int OnBeforeCloseSolution(object pUnkReserved) => VSConstants.E_NOTIMPL;
-	public int OnBeforeClosingChildren(IVsHierarchy hierarchy) => VSConstants.E_NOTIMPL;
-	public int OnBeforeOpeningChildren(IVsHierarchy hierarchy) => VSConstants.E_NOTIMPL;
+	int IVsSolutionEvents3.OnBeforeClosingChildren(IVsHierarchy hierarchy) => VSConstants.E_NOTIMPL;
+	int IVsSolutionEvents3.OnBeforeOpeningChildren(IVsHierarchy hierarchy) => VSConstants.E_NOTIMPL;
 	public int OnBeforeUnloadProject(IVsHierarchy pRealHierarchy, IVsHierarchy pStubHierarchy) => VSConstants.E_NOTIMPL;
 	public int OnQueryUnloadProject(IVsHierarchy pRealHierarchy, ref int pfCancel) => VSConstants.E_NOTIMPL;
 
@@ -802,26 +972,49 @@ public abstract class AbstractPackageController : IBPackageController
 	// Events that we handle are listed first
 
 
-	public int OnAfterAttributeChange(uint docCookie, uint grfAttribs) => _OnAfterAttributeChangeEvent != null
+	public int OnAfterAttributeChange(uint docCookie, uint grfAttribs) =>
+		_OnAfterAttributeChangeEvent != null && RdtEventsEnabled
 		? _OnAfterAttributeChangeEvent(docCookie, grfAttribs) : VSConstants.E_NOTIMPL;
 
 
-	public int OnAfterDocumentWindowHide(uint docCookie, IVsWindowFrame pFrame) => _OnAfterDocumentWindowHideEvent != null
+	public int OnAfterAttributeChangeEx(uint docCookie, uint grfAttribs, IVsHierarchy pHierOld, uint itemidOld,
+		string pszMkDocumentOld, IVsHierarchy pHierNew, uint itemidNew, string pszMkDocumentNew) =>
+			_OnAfterAttributeChangeExEvent != null && RdtEventsEnabled
+				? _OnAfterAttributeChangeExEvent(docCookie, grfAttribs, pHierOld, itemidOld,
+					pszMkDocumentOld, pHierNew, itemidNew, pszMkDocumentNew)
+				: VSConstants.E_NOTIMPL;
+
+	public int OnAfterDocumentWindowHide(uint docCookie, IVsWindowFrame pFrame) =>
+		_OnAfterDocumentWindowHideEvent != null && RdtEventsEnabled
 		? _OnAfterDocumentWindowHideEvent(docCookie, pFrame) : VSConstants.E_NOTIMPL;
 
-	public int OnAfterSave(uint docCookie) => _OnAfterSaveEvent != null ? _OnAfterSaveEvent(docCookie) : VSConstants.E_NOTIMPL;
+	public int OnAfterSave(uint docCookie) =>
+		_OnAfterSaveEvent != null && RdtEventsEnabled
+		? _OnAfterSaveEvent(docCookie) : VSConstants.E_NOTIMPL;
+
+	public IVsTask OnAfterSaveAsync(uint cookie, uint flags) =>
+		_OnAfterSaveAsyncEvent != null && RdtEventsEnabled
+		? _OnAfterSaveAsyncEvent(cookie, flags) : null;
 
 	public int OnBeforeDocumentWindowShow(uint docCookie, int fFirstShow, IVsWindowFrame pFrame)
-		=> _OnBeforeDocumentWindowShowEvent != null
+		=> _OnBeforeDocumentWindowShowEvent != null && RdtEventsEnabled
 		? _OnBeforeDocumentWindowShowEvent(docCookie, fFirstShow, pFrame)
 		: VSConstants.E_NOTIMPL;
 
 	public int OnBeforeLastDocumentUnlock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining,
 		uint dwEditLocksRemaining)
-		=> _OnBeforeLastDocumentUnlockEvent != null
+		=> _OnBeforeLastDocumentUnlockEvent != null && RdtEventsEnabled
 		? _OnBeforeLastDocumentUnlockEvent(docCookie, dwRDTLockType, dwReadLocksRemaining, dwEditLocksRemaining)
 		: VSConstants.E_NOTIMPL;
 
+	int IVsRunningDocTableEvents3.OnBeforeSave(uint docCookie)
+		=> _OnBeforeSaveEvent != null && RdtEventsEnabled
+		? _OnBeforeSaveEvent(docCookie)
+		: VSConstants.E_NOTIMPL;
+
+	public IVsTask OnBeforeSaveAsync(uint cookie, uint flags, IVsTask saveTask) =>
+		_OnBeforeSaveAsyncEvent != null && RdtEventsEnabled
+		? _OnBeforeSaveAsyncEvent(cookie, flags, saveTask) : null;
 
 
 
@@ -829,10 +1022,10 @@ public abstract class AbstractPackageController : IBPackageController
 
 	public int OnAfterFirstDocumentLock(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining,
 		uint dwEditLocksRemaining) => VSConstants.E_NOTIMPL;
-	public int OnAfterLastDocumentUnlock(IVsHierarchy pHier, uint itemid, string pszMkDocument,
+	int IVsRunningDocTableEvents4.OnAfterLastDocumentUnlock(IVsHierarchy pHier, uint itemid, string pszMkDocument,
 		int fClosedWithoutSaving) => VSConstants.E_NOTIMPL;
-	public int OnAfterSaveAll() => VSConstants.E_NOTIMPL;
-	public int OnBeforeFirstDocumentLock(IVsHierarchy pHier, uint itemid, string pszMkDocument) => VSConstants.E_NOTIMPL;
+	int IVsRunningDocTableEvents4.OnAfterSaveAll() => VSConstants.E_NOTIMPL;
+	int IVsRunningDocTableEvents4.OnBeforeFirstDocumentLock(IVsHierarchy pHier, uint itemid, string pszMkDocument) => VSConstants.E_NOTIMPL;
 
 
 	#endregion IVsRunningDocTableEvents Implementation and Event handling

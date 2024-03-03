@@ -246,7 +246,7 @@ public class QESQLBatch : IDisposable
 					}
 					catch (Exception e)
 					{
-						Tracer.LogExCatch(GetType(), e);
+						Diag.Dug(e);
 					}
 				}
 			}
@@ -259,7 +259,7 @@ public class QESQLBatch : IDisposable
 				}
 				catch (Exception e2)
 				{
-					Tracer.LogExCatch(GetType(), e2);
+					Diag.Dug(e2);
 				}
 
 				// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "QESQLBatch.Cancel: Cancel command returned", "", null);
@@ -454,12 +454,14 @@ public class QESQLBatch : IDisposable
 		}
 		catch (ThreadAbortException e)
 		{
-			Tracer.LogExThrow(GetType(), e /*, "ThreadAbortException was raised during QESqlBatch::ProcessResultSetForExecutionPlan()" */);
+			Diag.ThrowException(e);
+			// Tracer.LogExThrow(GetType(), e, "ThreadAbortException was raised during QESqlBatch::ProcessResultSetForExecutionPlan()");
 			throw;
 		}
 		catch (Exception e2)
 		{
-			Tracer.LogExThrow(GetType(), e2 /*, "Exception  was raised raised during QESqlBatch::ProcessResultSetForExecutionPlan()" */);
+			Diag.ThrowException(e2);
+			// Tracer.LogExThrow(GetType(), e2, "Exception  was raised raised during QESqlBatch::ProcessResultSetForExecutionPlan()");
 			throw;
 		}
 	}
@@ -736,24 +738,24 @@ public class QESQLBatch : IDisposable
 		}
 		catch (IOException ex)
 		{
-			Tracer.LogExCatch(GetType(), ex);
+			Diag.Dug(ex);
 			result = EnScriptExecutionResult.Failure;
 			HandleExceptionMessage(ex);
 		}
 		catch (OverflowException ex2)
 		{
-			Tracer.LogExCatch(GetType(), ex2);
+			Diag.Dug(ex2);
 			result = EnScriptExecutionResult.Failure;
 			HandleExceptionMessage(ex2);
 		}
 		catch (ThreadAbortException e)
 		{
-			Tracer.LogExCatch(GetType(), e);
+			Diag.Dug(e);
 			result = EnScriptExecutionResult.Failure;
 		}
 		catch (FbException exf)
 		{
-			Tracer.LogExThrow(GetType(), "Firebird exception: {0}\nCommand: {1}.".FmtRes(exf.Message, _Command.CommandText));
+			Diag.Dug(exf, "Firebird exception: {0}\nCommand: {1}.".FmtRes(exf.Message, _Command.CommandText));
 
 			lock (this)
 				result = _State != EnBatchState.Cancelling ? EnScriptExecutionResult.Failure : EnScriptExecutionResult.Cancel;
@@ -764,19 +766,19 @@ public class QESQLBatch : IDisposable
 		}
 		catch (SystemException ex3)
 		{
-			Tracer.LogExCatch(GetType(), ex3);
+			Diag.Dug(ex3);
 			lock (this)
 				result = _State != EnBatchState.Cancelling ? EnScriptExecutionResult.Failure : EnScriptExecutionResult.Cancel;
 
 			if (result != EnScriptExecutionResult.Cancel)
 			{
-				Tracer.LogExCatch(GetType(), ex3);
+				Diag.Dug(ex3);
 				HandleExceptionMessage(ex3);
 			}
 		}
 		catch (Exception ex4)
 		{
-			Tracer.LogExCatch(GetType(), ex4);
+			Diag.Dug(ex4);
 			HandleExceptionMessage(ex4);
 			result = EnScriptExecutionResult.Failure;
 		}
@@ -794,15 +796,15 @@ public class QESQLBatch : IDisposable
 				}
 				catch (ThreadAbortException e2)
 				{
-					Tracer.LogExCatch(GetType(), e2);
+					Diag.Dug(e2);
 				}
 				catch (SystemException e3)
 				{
-					Tracer.LogExCatch(GetType(), e3);
+					Diag.Dug(e3);
 				}
 				catch (Exception e4)
 				{
-					Tracer.LogExCatch(GetType(), e4);
+					Diag.Dug(e4);
 				}
 			}
 

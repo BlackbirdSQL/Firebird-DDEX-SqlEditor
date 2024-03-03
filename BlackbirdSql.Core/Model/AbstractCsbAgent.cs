@@ -1225,8 +1225,8 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 		StringBuilder stringBuilder = new(StringUtils.Serialize64(csa.Database.ToLowerInvariant()));
 		StringBuilder testsb = new(csa.Database.ToLowerInvariant());
 
-		stringBuilder.Append('/');
-		testsb.Append('/');
+		stringBuilder.Append(SystemData.UnixFieldSeparator);
+		testsb.Append(SystemData.UnixFieldSeparator);
 
 
 		// Append equivalency properties composite as defined in the Describers Colleciton.
@@ -1286,8 +1286,8 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 		}
 
 
-		stringBuilder.Append('/');
-		testsb.Append('/');
+		stringBuilder.Append(SystemData.UnixFieldSeparator);
+		testsb.Append(SystemData.UnixFieldSeparator);
 
 		urlb.Path = stringBuilder.ToString();
 		testurlb.Path = testsb.ToString();

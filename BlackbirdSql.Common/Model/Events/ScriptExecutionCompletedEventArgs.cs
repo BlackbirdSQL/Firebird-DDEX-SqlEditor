@@ -13,13 +13,15 @@ using BlackbirdSql.Common.Model.Enums;
 // namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution
 namespace BlackbirdSql.Common.Model.Events
 {
-	public class ScriptExecutionCompletedEventArgs : EventArgs
+	public class ScriptExecutionCompletedEventArgs(EnScriptExecutionResult executionResult,
+		bool withEstimatedPlan, bool isParseOnly) : EventArgs
 	{
-		public EnScriptExecutionResult ExecutionResult { get; private set; }
+		public EnScriptExecutionResult ExecutionResult { get; private set; } = executionResult;
 
-		public bool WithEstimatedPlan { get; private set; }
 
-		public bool IsParseOnly { get; private set; }
+		public bool WithEstimatedPlan { get; private set; } = withEstimatedPlan;
+
+		public bool IsParseOnly { get; private set; } = isParseOnly;
 
 
 		public ScriptExecutionCompletedEventArgs(EnScriptExecutionResult executionResult)
@@ -27,12 +29,5 @@ namespace BlackbirdSql.Common.Model.Events
 		{
 		}
 
-		public ScriptExecutionCompletedEventArgs(EnScriptExecutionResult executionResult,
-			bool withEstimatedPlan, bool isParseOnly)
-		{
-			ExecutionResult = executionResult;
-			WithEstimatedPlan = withEstimatedPlan;
-			IsParseOnly = isParseOnly;
-		}
 	}
 }

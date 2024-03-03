@@ -6,12 +6,14 @@ using BlackbirdSql.Core.Ctl.Interfaces;
 
 namespace BlackbirdSql.Core.Ctl.Diagnostics;
 
-public class Traceable : AbstractTraceableBase
+public class Traceable(IBTrace trace) : AbstractTraceableBase
 {
-	// private readonly IBDependencyManager _DependencyManager;
 	
-	private IBTrace _trace;
+	private IBTrace _Trace = trace;
 
+
+
+	// private readonly IBDependencyManager _DependencyManager;
 	// public IBDependencyManager DependencyManager => _DependencyManager;
 
 	public override IBTrace Trace
@@ -19,31 +21,19 @@ public class Traceable : AbstractTraceableBase
 		get
 		{
 			/*
-			if (_trace == null && _DependencyManager != null)
+			if (_Trace == null && _DependencyManager != null)
 			{
 				// ServiceManager<IBTrace> serviceManager = new ServiceManager<IBTrace>(_DependencyManager);
-				// _trace = serviceManager.GetService(null);
+				// _Trace = serviceManager.GetService(null);
 			}
 			*/
 
-			return _trace;
+			return _Trace;
 		}
 		set
 		{
-			_trace = value;
+			_Trace = value;
 		}
-	}
-
-	/*
-	public Traceable(IBDependencyManager dependencyManager)
-	{
-		_DependencyManager = dependencyManager;
-	}
-	*/
-
-	public Traceable(IBTrace trace)
-	{
-		_trace = trace;
 	}
 
 

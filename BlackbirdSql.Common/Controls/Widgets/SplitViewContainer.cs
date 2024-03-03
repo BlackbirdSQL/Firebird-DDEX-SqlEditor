@@ -408,29 +408,21 @@ public class SplitViewContainer : Control, IServiceProvider
 
 	private void DesignerXamlButton_Click(object sender, EventArgs e)
 	{
-		ToolStripButton toolStripButton = sender as ToolStripButton;
-		SqlEtwProvider.EventWriteTSqlEditorTabSwitch(IsStart: true, toolStripButton.Name ?? string.Empty);
-		if (toolStripButton == null)
-		{
+		if (sender is not ToolStripButton toolStripButton)
 			return;
-		}
+
 		if (!UseCustomTabActivation && !toolStripButton.Checked)
 		{
 			UpdateActiveTab((Guid)toolStripButton.Tag);
+
 			if (!IsSplitterVisible)
-			{
 				SwapPanels();
-			}
 		}
+
 		if (!IsSplitterVisible)
-		{
 			TabActivationRequestEvent?.Invoke(sender, new TabActivationEventArgs((Guid)toolStripButton.Tag, true));
-		}
 		else
-		{
 			TabActivationRequestEvent?.Invoke(sender, new TabActivationEventArgs((Guid)toolStripButton.Tag));
-		}
-		SqlEtwProvider.EventWriteTSqlEditorTabSwitch(IsStart: false, toolStripButton.Name ?? string.Empty);
 	}
 
 	public void CycleToNextButton()

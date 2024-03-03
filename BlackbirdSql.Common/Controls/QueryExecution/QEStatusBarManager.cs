@@ -10,8 +10,7 @@ using System.Globalization;
 using System.Media;
 using System.Timers;
 using System.Windows.Forms;
-
-using BlackbirdSql.Common.Controls.ResultsPane;
+using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Controls.Widgets;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Config;
@@ -27,8 +26,6 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Utilities;
 using Microsoft.Win32;
-
-using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
 
 namespace BlackbirdSql.Common.Controls.QueryExecution;

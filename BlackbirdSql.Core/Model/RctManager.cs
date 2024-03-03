@@ -95,7 +95,7 @@ public sealed class RctManager : IDisposable
 	private RunningConnectionTable _Rct;
 	private static readonly string _Scheme = SystemData.Scheme;
 	private static string _UnadvisedConnectionString = null;
-
+	private static bool _AdvisingExplorerEvents = false;
 	private static readonly char _EdmDatasetGlyph = '\u26ee';
 	private static readonly char _ProjectDatasetGlyph = '\u2699';
 	private static readonly char _UtilityDatasetGlyph = '\u058e';
@@ -113,6 +113,12 @@ public sealed class RctManager : IDisposable
 
 	public static bool Available => _Instance != null && _Instance._Rct != null
 		&& !_Instance._Rct.ShutdownState && !_Instance._Rct.Loading;
+
+	public static bool AdvisingExplorerEvents
+	{
+		get { return _AdvisingExplorerEvents; }
+		set { _AdvisingExplorerEvents = value; }
+	}
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -1027,10 +1033,7 @@ public sealed class RctManager : IDisposable
 
 		csa.ConnectionSource = EnConnectionSource.ServerExplorer;
 
-		IVsDataExplorerConnectionManager manager =
-			(Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
-				as IVsDataExplorerConnectionManager)
-			?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
+		IVsDataExplorerConnectionManager manager = Controller.ExplorerConnectionManager;
 
 		(_, IVsDataExplorerConnection explorerConnection) = manager.SearchExplorerConnectionEntry(csa.ConnectionString, false);
 

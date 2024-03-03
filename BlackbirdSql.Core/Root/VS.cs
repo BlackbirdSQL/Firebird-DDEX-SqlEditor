@@ -19,7 +19,7 @@ namespace BlackbirdSql.Core;
 /// Central location for accessing of Visual Studio, SSDT and ScopeStudio members. 
 /// </summary>
 // =========================================================================================================
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification="Using Diag.ThrowIfNotOnUIThread()")]
 public abstract class VS
 {
 
@@ -149,6 +149,7 @@ public abstract class VS
 	#region Miscellaneous Visual Studio Members - VS
 	// ---------------------------------------------------------------------------------
 
+	public const string SqlEventProviderGuid = "77142e1c-50fe-42cc-8a75-00c27af955c0";
 
 	public static Guid CLSID_CTextViewCommandGroup => new(VSConstants.CMDSETID.StandardCommandSet2K_guid.ToString());
 

@@ -64,14 +64,13 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 	{
 		get
 		{
-			if (_ColumnNames != null)
+			if (_ColumnNames == null)
 			{
-				return _ColumnNames.Count;
+				Exception ex = new InvalidOperationException();
+				Diag.ThrowException(ex);
 			}
+			return _ColumnNames.Count;
 
-			Exception ex = new InvalidOperationException();
-			Tracer.LogExThrow(GetType(), ex);
-			throw ex;
 		}
 	}
 
@@ -120,24 +119,23 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 	{
 		get
 		{
-			if (_ColumnNames != null)
+			if (_ColumnNames == null)
 			{
-				if (_ColumnNames.Count == 1)
-				{
-					if (string.Compare(_ColumnNames[0], _SNameOfXMLColumn, StringComparison.Ordinal) != 0)
-					{
-						return string.Compare(_ColumnNames[0], _SNameOfJSONColumn, StringComparison.Ordinal) == 0;
-					}
-
-					return true;
-				}
-
-				return false;
+				Exception ex = new InvalidOperationException();
+				Diag.ThrowException(ex);
 			}
 
-			Exception ex = new InvalidOperationException();
-			Tracer.LogExThrow(GetType(), ex);
-			throw ex;
+			if (_ColumnNames.Count == 1)
+			{
+				if (string.Compare(_ColumnNames[0], _SNameOfXMLColumn, StringComparison.Ordinal) != 0)
+				{
+					return string.Compare(_ColumnNames[0], _SNameOfJSONColumn, StringComparison.Ordinal) == 0;
+				}
+
+				return true;
+			}
+
+			return false;
 		}
 	}
 
@@ -145,19 +143,19 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 	{
 		get
 		{
-			if (_ColumnNames != null)
+			if (_ColumnNames == null)
 			{
-				if (_ColumnNames.Count == 1)
-				{
-					return string.Compare(_ColumnNames[0], LibraryData.C_YukonXmlExecutionPlanColumn, StringComparison.Ordinal) == 0;
-				}
-
-				return false;
+				Exception ex = new InvalidOperationException();
+				Diag.ThrowException(ex);
 			}
 
-			Exception ex = new InvalidOperationException();
-			Tracer.LogExThrow(GetType(), ex);
-			throw ex;
+			if (_ColumnNames.Count == 1)
+			{
+				return string.Compare(_ColumnNames[0], LibraryData.C_YukonXmlExecutionPlanColumn, StringComparison.Ordinal) == 0;
+			}
+
+			return false;
+
 		}
 	}
 
@@ -185,8 +183,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 		if (reader == null)
 		{
 			Exception ex = new ArgumentNullException("reader");
-			Tracer.LogExThrow(GetType(), ex);
-			throw ex;
+			Diag.ThrowException(ex);
 		}
 
 		_DataReader = reader;
@@ -200,8 +197,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 		if (_QeStorage != null)
 		{
 			Exception ex = new InvalidOperationException(QEResources.ErrQEResultSetAlreadyInited);
-			Tracer.LogExThrow(GetType(), ex);
-			throw ex;
+			Diag.ThrowException(ex);
 		}
 
 		StorageDataReader storageDataReader = new StorageDataReader(_DataReader);
@@ -288,8 +284,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 		if (_QeStorage == null)
 		{
 			Exception ex = new InvalidOperationException();
-			Tracer.LogExThrow(GetType(), ex);
-			throw ex;
+			Diag.ThrowException(ex);
 		}
 
 		return _QeStorage.GetColumnInfo(columnIndex).DataTypeName;
@@ -300,8 +295,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 		if (_QeStorage == null)
 		{
 			Exception ex = new InvalidOperationException();
-			Tracer.LogExThrow(GetType(), ex);
-			throw ex;
+			Diag.ThrowException(ex);
 		}
 
 		return _QeStorage.GetColumnInfo(columnIndex).FieldType;
@@ -312,8 +306,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 		if (_QeStorage == null)
 		{
 			Exception ex = new InvalidOperationException();
-			Tracer.LogExThrow(GetType(), ex);
-			throw ex;
+			Diag.ThrowException(ex);
 		}
 
 		return _QeStorage.GetColumnInfo(columnIndex).ProviderSpecificDataTypeName;
@@ -334,8 +327,7 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 		if (nColNum < 0 || nColNum >= TotalNumberOfColumns)
 		{
 			Exception ex = new ArgumentOutOfRangeException("nColNum");
-			Tracer.LogExThrow(GetType(), ex);
-			throw ex;
+			Diag.ThrowException(ex);
 		}
 
 		if (string.Compare(SXmlTypeNameOnServer, GetServerDataTypeName(nColNum), StringComparison.OrdinalIgnoreCase) == 0)
@@ -352,22 +344,20 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 		if (_QeStorage == null)
 		{
 			Exception ex = new InvalidOperationException(QEResources.ErrQEResultSetNotInited);
-			Tracer.LogExThrow(GetType(), ex);
-			throw ex;
+			Diag.ThrowException(ex);
 		}
 
 		if (!_QeStorage.IsClosed())
 		{
 			Exception ex2 = new InvalidOperationException(QEResources.ErrQEResultSetAlreadyStoring);
-			Tracer.LogExThrow(GetType(), ex2);
-			throw ex2;
+			Diag.ThrowException(ex2);
 		}
 
 		if (_QeStorage is not QEReaderDataStorage obj)
 		{
+			obj = null;
 			Exception ex3 = new InvalidOperationException();
-			Tracer.LogExThrow(GetType(), ex3);
-			throw ex3;
+			Diag.ThrowException(ex3);
 		}
 
 		obj.StartConsumingDataWithoutStoring();
@@ -379,15 +369,13 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 		if (_QeStorage == null)
 		{
 			Exception ex = new InvalidOperationException(QEResources.ErrQEResultSetNotInited);
-			Tracer.LogExThrow(GetType(), ex);
-			throw ex;
+			Diag.ThrowException(ex);
 		}
 
 		if (!_QeStorage.IsClosed())
 		{
 			Exception ex2 = new InvalidOperationException(QEResources.ErrQEResultSetAlreadyStoring);
-			Tracer.LogExThrow(GetType(), ex2);
-			throw ex2;
+			Diag.ThrowException(ex2);
 		}
 
 		_QeStorage.MaxCharsToStore = Math.Max(nMaxNumCharsToDisplay, C_MaxCharsToStore);
@@ -492,15 +480,14 @@ public sealed class QEResultSet : IDisposable, IBGridStorage
 	public void FillControlWithData(long nRowIndex, int nColIndex, IBGridEmbeddedControl control)
 	{
 		Exception ex = new NotImplementedException();
-		Tracer.LogExThrow(GetType(), ex);
-		throw ex;
+		Diag.ThrowException(ex);
 	}
 
 	public bool SetCellDataFromControl(long nRowIndex, int nColIndex, IBGridEmbeddedControl control)
 	{
 		Exception ex = new NotImplementedException();
-		Tracer.LogExThrow(GetType(), ex);
-		throw ex;
+		Diag.ThrowException(ex);
+		return false;
 	}
 
 	private void OnStorageNotify(long storageRowCount, bool storedAllData)

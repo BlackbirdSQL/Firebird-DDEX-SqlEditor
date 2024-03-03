@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using EnvDTE;
+using Microsoft.VisualStudio.RpcContracts.FileSystem;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -24,8 +25,6 @@ public interface IBAsyncPackage
 
 	IDisposable DisposableWaitCursor { get; set; }
 
-	IVsRunningDocumentTable DocTable { get; }
-
 	DTE Dte { get; }
 
 	IVsSolution VsSolution { get; }
@@ -38,6 +37,8 @@ public interface IBAsyncPackage
 	Microsoft.VisualStudio.OLE.Interop.IServiceProvider OleServiceProvider { get; }
 
 	IAsyncServiceContainer ServiceContainer { get; }
+
+	IFileSystemProvider FileSystemBrokeredService { get; }
 
 	delegate void LoadSolutionOptionsDelegate(Stream stream);
 	delegate void SaveSolutionOptionsDelegate(Stream stream);
@@ -57,9 +58,6 @@ public interface IBAsyncPackage
 
 	Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class;
 
-
-
-
-Task<object> ServicesCreatorCallbackAsync(IAsyncServiceContainer container, CancellationToken token, Type serviceType);
+	Task<object> ServicesCreatorCallbackAsync(IAsyncServiceContainer container, CancellationToken token, Type serviceType);
 
 }

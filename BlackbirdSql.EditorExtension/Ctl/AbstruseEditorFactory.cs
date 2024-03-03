@@ -5,7 +5,6 @@ using System;
 
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -17,13 +16,15 @@ namespace BlackbirdSql.EditorExtension.Ctl;
 public abstract class AbstruseEditorFactory(bool withEncoding) : IVsEditorFactory
 {
 
+	public bool WithEncoding { get; private set; } = withEncoding;
+
+
+
 	protected static readonly string traceName = "BlackbirdSql.EditorExtension.AbstruseEditorFactory";
 
 	private Guid _MandatedSqlLanguageServiceClsid = Guid.Empty;
 
 	public uint Cookie { get; set; }
-
-	public bool WithEncoding { get; private set; } = withEncoding;
 
 	public abstract Guid ClsidEditorFactory { get; }
 

@@ -73,6 +73,13 @@ public class GeneralSettingsModel(IBTransientSettings transientSettings)
 	[DefaultValue(true)]
 	public bool IncludeAppConnections { get; set; } = true;
 
+	[GlobalizedCategory("OptionCategoryGeneral")]
+	[GlobalizedDisplayName("OptionDisplayGeneralOnDemandLinkage")]
+	[GlobalizedDescription("OptionDescriptionGeneralOnDemandLinkage")]
+	[TypeConverter(typeof(GlobalYesNoConverter))]
+	[DefaultValue(false)]
+	public bool OnDemandLinkage { get; set; } = false;
+
 	[GlobalizedCategory("OptionCategoryQueryDesigner")]
 	[GlobalizedDisplayName("OptionDisplayGeneralShowDiagramPane")]
 	[GlobalizedDescription("OptionDescriptionGeneralShowDiagramPane")]

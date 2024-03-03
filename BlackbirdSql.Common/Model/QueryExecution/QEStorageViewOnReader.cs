@@ -69,15 +69,14 @@ public sealed class QEStorageViewOnReader : AbstractStorageView, IBQEStorageView
 	public override long EnsureRowsInBuf(long startRow, long totalRowCount)
 	{
 		Exception ex = new NotImplementedException();
-		Tracer.LogExThrow(GetType(), ex);
-		throw ex;
+		Diag.ThrowException(ex);
+		return -1;
 	}
 
 	public override void DeleteRow(long iRow)
 	{
 		Exception ex = new NotImplementedException();
-		Tracer.LogExThrow(GetType(), ex);
-		throw ex;
+		Diag.ThrowException(ex);
 	}
 
 	public override long RowCount => _QeReaderStorage.RowCount;

@@ -9,8 +9,8 @@ using BlackbirdSql.Common.Model.QueryExecution;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Common.Controls.Interfaces;
 
 namespace BlackbirdSql.Common.Ctl.Commands;
 

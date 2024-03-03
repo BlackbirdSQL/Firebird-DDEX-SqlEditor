@@ -8,8 +8,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.InteropServices;
-
-using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;

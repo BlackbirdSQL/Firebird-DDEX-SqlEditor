@@ -26,17 +26,12 @@ public class SqlEditorMessageTab(AbstractTabbedEditorPane editorPane, Guid logic
 
 	private Guid _ClsidLogicalView = VSConstants.LOGVIEWID_Designer;
 
-	private Guid _ClsidEditorFactory = new(LibraryData.SqlResultsEditorFactoryGuid);
+	private Guid _ClsidTabEditorFactory = new Guid(LibraryData.SqlResultsEditorFactoryGuid);
 
-	protected override Guid GetEditorTabEditorFactoryGuid()
-	{
-		return _ClsidEditorFactory;
-	}
+	protected override Guid ClsidEditorTabEditorFactory => _ClsidTabEditorFactory;
 
-	protected override Guid GetLogicalView()
-	{
-		return _ClsidLogicalView;
-	}
+	protected override Guid ClsidLogicalView => _ClsidLogicalView;
+
 
 	public override IVsFindTarget GetFindTarget()
 	{

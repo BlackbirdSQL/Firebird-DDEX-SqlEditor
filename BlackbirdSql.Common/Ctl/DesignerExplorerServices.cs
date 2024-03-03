@@ -3,23 +3,25 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using System.Windows.Forms;
+using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Ctl.Commands;
 using BlackbirdSql.Common.Ctl.Config;
 using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -35,6 +37,48 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 	{
 	}
 
+	private static int _ExplorerMonikerEntry = -1;
+	private static int _ExplorerMonikerSeed = -1;
+	private static Dictionary<int, string> _ExplorerMonikers = null;
+	private static Dictionary<string, object> _MonikerCsaTable = null;
+
+
+	public static string ExplorerMonikerStack
+	{
+		get
+		{
+			if (_ExplorerMonikerEntry == -1)
+				return null;
+
+			string moniker = _ExplorerMonikers[_ExplorerMonikerEntry];
+
+			_ExplorerMonikers.Remove(_ExplorerMonikerEntry);
+
+			_ExplorerMonikerEntry++;
+
+			if (_ExplorerMonikerEntry > _ExplorerMonikerSeed)
+			{
+				_ExplorerMonikerEntry = _ExplorerMonikerSeed = -1;
+				_ExplorerMonikers = null;
+			}
+
+			return moniker;
+		}
+		set
+		{
+			_ExplorerMonikers ??= [];
+
+			if (_ExplorerMonikerEntry == -1)
+				_ExplorerMonikerEntry = 0;
+
+			_ExplorerMonikerSeed++;
+
+			_ExplorerMonikers[_ExplorerMonikerSeed] = value;
+
+		}
+	}
+
+	public static Dictionary<string, object> MonikerCsaTable => _MonikerCsaTable ??= [];
 
 
 	// Microsoft.VisualStudio.Data.Tools.Package, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
@@ -42,124 +86,236 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 	// combined with local methods
 	public static void OpenExplorerEditor(IVsDataExplorerNode node, EnModelObjectType objectType,
 		IList<string> identifierList, EnModelTargetType targetType, Guid editorFactory,
-		Action<DatabaseLocation, bool> documentLoadedCallback, string physicalViewName = null)
+		Action<DbConnectionStringBuilder, bool> documentLoadedCallback, string physicalViewName = null)
 	{
-		bool result = false;
-
 		if (editorFactory == Guid.Empty)
 			editorFactory = new(SystemData.MandatedSqlEditorFactoryGuid);
 
-		string mkDocument = null;
 		EnModelObjectType elementType = objectType;
-		DatabaseLocation dbl = new(node, targetType);
-		HashSet<NodeElementDescriptor> originalObjects = null;
-		bool flag = false;
+
 		IList<string> identifierArray = null;
 
 
 		if (identifierList != null)
-		{
 			identifierArray = new List<string>(identifierList);
-			mkDocument = LookupObjectMoniker(dbl, elementType, identifierArray);
-			if (objectType != EnModelObjectType.Unknown)
-			{
-				originalObjects = 
-				[
-					new (objectType, identifierArray)
-				];
-			}
-		}
-		if (string.IsNullOrEmpty(mkDocument))
-		{
-			mkDocument = MonikerAgent.BuildMiscDocumentMonikerPath(node, ref identifierArray, targetType, false);
 
 
-			flag = true;
-			AddInflightOpen(dbl, new NodeElementDescriptor(elementType, identifierArray), mkDocument);
-		}
+		string mkDocument = Moniker.BuildDocumentMoniker(node, ref identifierArray, targetType, false);
 
-		RaiseBeforeOpenDocument(mkDocument, dbl, identifierArray, objectType, targetType, S_BeforeOpenDocumentHandler);
 
 		if (RctManager.ShutdownState)
 			return;
 
 		CsbAgent csa = RctManager.CloneRegistered(node);
 
-		// Tracer.Trace(typeof(DesignerExplorerServices), "OpenExplorerEditor()", "csa ConnectionString: {0}.", csa.ConnectionString);
+		RaiseBeforeOpenDocument(mkDocument, csa, identifierArray, objectType, targetType, S_BeforeOpenDocumentHandler);
 
-		OpenMiscDocument(mkDocument, csa, true, false, editorFactory, out uint docCookie, out IVsWindowFrame frame,
-			out bool editorAlreadyOpened, out bool documentAlreadyLoaded, physicalViewName);
 
-		
-		_ = frame; // Suppression
-		result = true;
-		bool flag2 = false;
 
-		if (editorAlreadyOpened)
-		{
-			ExecuteDocumentLoadedCallback(documentLoadedCallback, dbl, true);
-		}
-		else if (docCookie == 0)
-		{
-			ApplicationException ex = new($"Failed to open or create the document: {mkDocument}.");
-			Diag.Dug(ex);
-			SqlTracer.TraceException(EnSqlTraceId.CoreServices, ex);
-		}
-		else if (documentAlreadyLoaded)
-		{
-			ExecuteDocumentLoadedCallback(documentLoadedCallback, dbl, true);
-		}
-		else
-		{
-			flag2 = true;
-			SuppressChangeTracking(mkDocument, suppress: true);
-			SetTextIntoTextBuffer(docCookie, string.Format(CultureInfo.CurrentCulture, "/*\n\r{0}\n\r*/",
-				ControlsResources.PowerBuffer_RetrievingDefinitionFromServer));
+		bool editorAlreadyOpened = !OpenMiscellaneousSqlFile(mkDocument, node, targetType, csa);
 
-			try
-			{
-				string script = MonikerAgent.GetDecoratedDdlSource(node, targetType);
+		ExecuteDocumentLoadedCallback(documentLoadedCallback, csa, editorAlreadyOpened);
 
-				PopulateEditorWithObject(false, mkDocument, docCookie, script, originalObjects);
-				ExecuteDocumentLoadedCallback(documentLoadedCallback, dbl, false);
-				RemoveInflightOpen(dbl, new NodeElementDescriptor(elementType, identifierArray));
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-				SqlTracer.TraceException(TraceEventType.Critical, EnSqlTraceId.CoreServices, new InvalidDataException("Could not get script"), "DesignerExplorerServices:OpenExplorerEditor");
-				string text = ex.ToString();
-				SetTextIntoTextBuffer(docCookie, text);
-			}
-		}
+		return;
 
-		if (flag && !flag2)
-		{
-			RemoveInflightOpen(dbl, new NodeElementDescriptor(elementType, identifierArray));
-		}
-
-		if (!result)
-		{
-
-			InvalidOperationException ex = new(ControlsResources.OpenOnlineEditorException);
-			Diag.Dug(ex);
-			throw ex;
-		}
 
 	}
 
 
+	public static void OpenAsMiscellaneousFile(string path, string caption,
+	Guid editor, string physicalView, Guid logicalView)
+	{
+		// Tracer.Trace(typeof(Cmd), "OpenAsMiscellaneousFile()");
 
-	public static void OpenNewQueryEditor(string datasetKey, Guid editorFactory, Action<DatabaseLocation> documentLoadedCallback,
+		Diag.ThrowIfNotOnUIThread();
+
+		try
+		{
+			IVsProject3 miscellaneousProject = Cmd.GetMiscellaneousProject();
+
+			VSADDRESULT[] array = new VSADDRESULT[1];
+			VSADDITEMOPERATION dwAddItemOperation = VSADDITEMOPERATION.VSADDITEMOP_CLONEFILE;
+
+			uint flags = (uint)__VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_DoOpen;
+
+			flags |= (uint)(!(editor == Guid.Empty)
+				? __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_UseEditor
+				: __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_UseView);
+
+			Native.WrapComCall(miscellaneousProject.AddItemWithSpecific(grfEditorFlags: flags,
+				itemidLoc: uint.MaxValue, dwAddItemOperation: dwAddItemOperation, pszItemName: caption, cFilesToOpen: 1u,
+				rgpszFilesToOpen: [path], hwndDlgOwner: IntPtr.Zero, rguidEditorType: ref editor,
+				pszPhysicalView: physicalView, rguidLogicalView: ref logicalView, pResult: array), []);
+
+			if (array[0] != VSADDRESULT.ADDRESULT_Success)
+			{
+				throw new ApplicationException(array[0].ToString());
+			}
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw ex;
+		}
+	}
+
+
+	public static bool OpenMiscellaneousSqlFile(string explorerMoniker, IVsDataExplorerNode node, EnModelTargetType targetType, CsbAgent csa)
+	{
+		// Tracer.Trace(typeof(DesignerExplorerServices), "OpenMiscellaneousSqlFile()", "ExplorerMoniker: {0}.", explorerMoniker);
+
+		Diag.ThrowIfNotOnUIThread();
+
+		uint documentCookie = 0;
+
+		if (MonikerCsaTable.ContainsKey(explorerMoniker))
+		{
+			foreach (KeyValuePair<object, AuxiliaryDocData> pair in ((IBEditorPackage)Controller.DdexPackage).AuxiliaryDocDataTable)
+			{
+				if (pair.Value.ExplorerMoniker == null)
+					continue;
+
+				if (explorerMoniker.Equals(pair.Value.ExplorerMoniker))
+				{
+					documentCookie = pair.Value.DocCookie;
+					break;
+				}
+			}
+
+			if (documentCookie == 0)
+				MonikerCsaTable.Remove(explorerMoniker);
+		}
+
+		if (documentCookie != 0)
+		{
+			string documentMoniker = RdtManager.GetDocumentMoniker(documentCookie);
+
+
+			IVsUIShellOpenDocument vsUIShellOpenDocument = Controller.EnsureService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
+			Guid rguidEditorType = new(SystemData.MandatedSqlEditorFactoryGuid); 
+			uint[] array = new uint[1];
+			IVsUIHierarchy pHierCaller = null;
+
+			int hresult = vsUIShellOpenDocument.IsSpecificDocumentViewOpen(pHierCaller, uint.MaxValue,
+				documentMoniker, ref rguidEditorType, null, (uint)__VSIDOFLAGS.IDO_ActivateIfOpen,
+				out IVsUIHierarchy ppHierOpen, out array[0], out IVsWindowFrame ppWindowFrame, out int pfOpen);
+
+			_ = ppHierOpen; // Suppress
+
+			bool editorAlreadyOpened = ErrorHandler.Succeeded(hresult) && pfOpen.AsBool();
+
+			if (editorAlreadyOpened && ppWindowFrame != null)
+			{
+				ppWindowFrame.Show();
+				return false;
+			}
+		}
+
+
+		string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+		Directory.CreateDirectory(tempDirectory);
+
+		// Tracer.Trace(typeof(DesignerExplorerServices), "OpenMiscellaneousSqlFile()", "Created directory: {0} for explorerMoniker: {1}.", tempDirectory, explorerMoniker);
+
+		string filename = Path.GetFileNameWithoutExtension(explorerMoniker);
+
+		string tempFilename = tempDirectory + "\\" + filename + SystemData.Extension;
+
+
+		if (tempFilename == null)
+		{
+			Cmd.ShowMessageBoxEx(string.Empty, ControlsResources.ErrCannotCreateTempFile, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			return false;
+		}
+
+		// Tracer.Trace(typeof(DesignerExplorerServices), "OpenMiscellaneousSqlFile()", "Writing to temp file: {0}.", tempFilename);
+
+		StreamWriter streamWriter = null;
+		try
+		{
+			string script = node != null
+				? Moniker.GetDecoratedDdlSource(node, targetType)
+				: Resources.DesignerExplorerServices_DecoratedNewQuery + "\r\n";
+
+			streamWriter = new StreamWriter(tempFilename);
+			streamWriter.Write(script);
+			streamWriter.Flush();
+			streamWriter.Close();
+			streamWriter = null;
+
+			ExplorerMonikerStack = explorerMoniker;
+			MonikerCsaTable.Add(explorerMoniker, csa);
+
+			OpenAsMiscellaneousFile(tempFilename, filename + SystemData.Extension, new Guid(SystemData.DslEditorFactoryGuid),
+				string.Empty, VSConstants.LOGVIEWID_Primary);
+		}
+		catch
+		{
+			_ = ExplorerMonikerStack;
+			MonikerCsaTable.Remove(explorerMoniker);
+		}
+		finally
+		{
+			streamWriter?.Close();
+			File.Delete(tempFilename);
+			Directory.Delete(tempDirectory);
+		}
+
+		foreach (KeyValuePair<object, AuxiliaryDocData> pair in ((IBEditorPackage)Controller.DdexPackage).AuxiliaryDocDataTable)
+		{
+			if (explorerMoniker.Equals(pair.Value.ExplorerMoniker) && pair.Value.DocCookie == 0)
+			{
+				pair.Value.DocCookie = RdtManager.GetRdtCookie(pair.Value.OriginalDocumentMoniker);
+				break;
+			}
+		}
+
+		return true;
+	}
+
+
+
+	public static void OpenNewMiscellaneousSqlFile(string initialContent = "")
+	{
+		// Tracer.Trace(typeof(Cmd), "OpenAsMiscellaneousFile()");
+
+		Diag.ThrowIfNotOnUIThread();
+
+		IVsProject3 miscellaneousProject = Cmd.GetMiscellaneousProject();
+
+		miscellaneousProject.GenerateUniqueItemName(VSConstants.VSITEMID_ROOT, SystemData.Extension, "NewQuery", out string pbstrItemName);
+		string tempFileName = Path.GetTempFileName();
+		if (tempFileName == null)
+		{
+			Cmd.ShowMessageBoxEx(string.Empty, ControlsResources.ErrCannotCreateTempFile, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			return;
+		}
+		StreamWriter streamWriter = null;
+		try
+		{
+			streamWriter = new StreamWriter(tempFileName);
+			streamWriter.Write(initialContent);
+			streamWriter.Flush();
+			streamWriter.Close();
+			streamWriter = null;
+			OpenAsMiscellaneousFile(tempFileName, pbstrItemName, new Guid(SystemData.DslEditorFactoryGuid),
+				string.Empty, VSConstants.LOGVIEWID_Primary);
+		}
+		finally
+		{
+			streamWriter?.Close();
+			File.Delete(tempFileName);
+		}
+	}
+
+
+	public static void OpenNewQueryEditor(string datasetKey, Guid editorFactory, Action<DbConnectionStringBuilder> documentLoadedCallback,
 		string physicalViewName = null)
 	{
-		bool result = false;
-
 		if (editorFactory == Guid.Empty)
 			editorFactory = new(SystemData.MandatedSqlEditorFactoryGuid);
 
 		EnModelTargetType targetType = EnModelTargetType.QueryScript;
-		string mkDocument = null;
 		EnModelObjectType objectType = EnModelObjectType.NewSqlQuery;
 		EnModelObjectType elementType = objectType;
 
@@ -168,95 +324,38 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 		CsbAgent csa = RctManager.CloneRegistered(datasetKey);
 
-		DatabaseLocation dbl = new(csa, targetType);
-		HashSet<NodeElementDescriptor> originalObjects = null;
-		bool flag = false;
-
 		IList<string> identifierList = new List<string>() { "NewQuery" };
 		IList<string> identifierArray = null;
 
 
 		if (identifierList != null)
-		{
 			identifierArray = new List<string>(identifierList);
-			mkDocument = LookupObjectMoniker(dbl, elementType, identifierArray);
-			if (objectType != EnModelObjectType.Unknown)
-			{
-				originalObjects =
-				[
-					new (objectType, identifierArray)
-				];
-			}
-		}
-		if (string.IsNullOrEmpty(mkDocument))
+
+		string mkDocument = Moniker.BuildDocumentMoniker(csa.DataSource, csa.Database, elementType, ref identifierArray, targetType, true);
+		string newMoniker = null;
+
+		for (int i = 0; i < 9999; i++)
 		{
-			mkDocument = MonikerAgent.BuildMiscDocumentMonikerPath(csa.DataSource, csa.Database, elementType, ref identifierArray, targetType, true);
+			if (i == 0)
+				newMoniker = mkDocument;
+			else
+				newMoniker = mkDocument + "." + i;
 
-
-			flag = true;
-			AddInflightOpen(dbl, new NodeElementDescriptor(elementType, identifierArray), mkDocument);
+			if (!MonikerCsaTable.ContainsKey(newMoniker))
+				break;
 		}
 
-		RaiseBeforeOpenDocument(mkDocument, dbl, identifierArray, objectType, targetType, S_BeforeOpenDocumentHandler);
+		RaiseBeforeOpenDocument(newMoniker, csa, identifierArray, objectType, targetType, S_BeforeOpenDocumentHandler);
 
-		OpenMiscDocument(mkDocument, csa, true, false, editorFactory, out uint docCookie, out IVsWindowFrame frame,
-			out bool editorAlreadyOpened, out bool documentAlreadyLoaded, physicalViewName);
+		// OpenMiscDocument(mkDocument, csa, true, false, editorFactory, out uint docCookie, out IVsWindowFrame frame,
+		//	out bool editorAlreadyOpened, out bool documentAlreadyLoaded, physicalViewName);
 
 
-		_ = frame; // Suppression
-		result = true;
-		bool flag2 = false;
+		bool editorAlreadyOpened = !OpenMiscellaneousSqlFile(newMoniker, null, targetType, csa);
 
-		if (editorAlreadyOpened)
-		{
-			ExecuteDocumentLoadedCallback(documentLoadedCallback, dbl);
-		}
-		else if (docCookie == 0)
-		{
-			ApplicationException ex = new($"Failed to open or create the document: {mkDocument}.");
-			Diag.Dug(ex);
-			SqlTracer.TraceException(EnSqlTraceId.CoreServices, ex);
-		}
-		else if (documentAlreadyLoaded)
-		{
-			ExecuteDocumentLoadedCallback(documentLoadedCallback, dbl);
-		}
-		else
-		{
-			flag2 = true;
-			SuppressChangeTracking(mkDocument, suppress: true);
-			SetTextIntoTextBuffer(docCookie, string.Format(CultureInfo.CurrentCulture, "/*\n\r{0}\n\r*/",
-				ControlsResources.PowerBuffer_RetrievingDefinitionFromServer));
+		ExecuteDocumentLoadedCallback(documentLoadedCallback, csa, editorAlreadyOpened);
 
-			try
-			{
-				string script = Resources.DesignerExplorerServices_DecoratedNewQuery + "\r\n";
-
-				PopulateEditorWithObject(false, mkDocument, docCookie, script, originalObjects);
-				ExecuteDocumentLoadedCallback(documentLoadedCallback, dbl);
-				RemoveInflightOpen(dbl, new NodeElementDescriptor(elementType, identifierArray));
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-				SqlTracer.TraceException(TraceEventType.Critical, EnSqlTraceId.CoreServices, new InvalidDataException("Could not get script"), "DesignerExplorerServices:OpenNewQueryEditor");
-				string text = ex.ToString();
-				SetTextIntoTextBuffer(docCookie, text);
-			}
-		}
-
-		if (flag && !flag2)
-		{
-			RemoveInflightOpen(dbl, new NodeElementDescriptor(elementType, identifierArray));
-		}
-
-		if (!result)
-		{
-
-			InvalidOperationException ex = new(ControlsResources.OpenOnlineEditorException);
-			Diag.Dug(ex);
-			throw ex;
-		}
+		return;
 
 	}
 
@@ -274,7 +373,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 
 
-	public void OnSqlQueryLoaded(DatabaseLocation dbl, bool alreadyLoaded)
+	public void OnSqlQueryLoaded(DbConnectionStringBuilder csb, bool alreadyLoaded)
 	{
 		if (alreadyLoaded)
 			return;
@@ -319,10 +418,10 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 		// Tracer.Trace(GetType(), "ViewCode()");
 
-		MonikerAgent moniker = null;
+		Moniker moniker = null;
 		IList<string> identifierList = null;
 		EnModelObjectType objectType = EnModelObjectType.Unknown;
-		Action<DatabaseLocation, bool> callback = null;
+		Action<DbConnectionStringBuilder, bool> callback = null;
 
 		Guid clsidEditorFactory = new Guid(SystemData.DslEditorFactoryGuid);
 
@@ -335,6 +434,8 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 			Diag.Dug(ex);
 			throw;
 		}
+
+		// Tracer.Trace(GetType(), "ViewCode()", "\nDocumentMoniker: {0}.", moniker.DocumentMoniker);
 
 
 		try

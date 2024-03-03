@@ -2,12 +2,9 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.QueryExecution.QESQLExec
 using System;
 using System.Data;
-using System.Data.Common;
 using System.Globalization;
-using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Config;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Enums;
@@ -109,8 +106,7 @@ public abstract class AbstractQESQLExec : IDisposable
 		if (_ExecState == EnExecState.Executing || _ExecState == EnExecState.ExecutingBatch)
 		{
 			InvalidOperationException ex = new(ControlsResources.ExecutionNotCompleted);
-			Tracer.LogExThrow(GetType(), ex);
-			throw ex;
+			Diag.ThrowException(ex);
 		}
 
 		_ExecState = EnExecState.Initial;
@@ -287,14 +283,22 @@ public abstract class AbstractQESQLExec : IDisposable
 
 			if (_ExecResult == EnScriptExecutionResult.Halted)
 				_ExecResult = EnScriptExecutionResult.Failure;
+		}
+		catch (Exception e)
+		{
+			Diag.Dug(e);
+			_ExecResult = EnScriptExecutionResult.Failure;
+		}
 
+		try
+		{
 			OnExecutionCompleted(_ExecResult);
 		}
 		catch (Exception e)
 		{
-			Tracer.LogExCatch(GetType(), e);
+			Diag.Dug(e);
 			_ExecResult = EnScriptExecutionResult.Failure;
-			OnExecutionCompleted(_ExecResult);
+			throw;
 		}
 
 	}
@@ -358,7 +362,7 @@ public abstract class AbstractQESQLExec : IDisposable
 		}
 		catch (Exception e)
 		{
-			Tracer.LogExCatch(GetType(), e);
+			Diag.Dug(e);
 			_ExecResult = EnScriptExecutionResult.Failure;
 		}
 		finally
@@ -608,9 +612,11 @@ public abstract class AbstractQESQLExec : IDisposable
 
 	protected virtual void OnExecutionCompleted(EnScriptExecutionResult execResult)
 	{
-		// Tracer.Trace(GetType(), "QESQLExec::OnExecutionCompleted():  QESQLExec.OnExecutionCompleted", "execResult = {0}", execResult);
+		// Tracer.Trace(GetType(), "OnExecutionCompleted()", "execResult = {0}", execResult);
+
 		bool withEstimatedPlan = false;
 		bool isParseOnly = false;
+
 		if (ExecLiveSettings != null)
 		{
 			withEstimatedPlan = ExecLiveSettings.WithEstimatedExecutionPlan;
@@ -620,11 +626,28 @@ public abstract class AbstractQESQLExec : IDisposable
 		try
 		{
 			HookupBatchWithConsumer(_CurBatch, _BatchConsumer, bHookUp: false);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+		}
+
+		try
+		{
 			Cleanup();
 		}
-		finally
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+		}
+
+		try
 		{
 			ExecutionCompletedEvent?.Invoke(this, new ScriptExecutionCompletedEventArgs(execResult, withEstimatedPlan, isParseOnly));
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
 		}
 	}
 

@@ -457,6 +457,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to If enabled, disables asynchronous Trigger/Generator linkage and linkage will only be performed when it is actually required..
+        /// </summary>
+        public static string OptionDescriptionGeneralOnDemandLinkage {
+            get {
+                return ResourceManager.GetString("OptionDescriptionGeneralOnDemandLinkage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enables once off validation. If disabled validation will be repeated each time a Solution is loaded. Only applicable if Invariant or Edmx validation is enabled..
         /// </summary>
         public static string OptionDescriptionGeneralPersistentValidation {
@@ -849,6 +858,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDisplayGeneralIncludeAppConnections {
             get {
                 return ResourceManager.GetString("OptionDisplayGeneralIncludeAppConnections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to On-demand linkage.
+        /// </summary>
+        public static string OptionDisplayGeneralOnDemandLinkage {
+            get {
+                return ResourceManager.GetString("OptionDisplayGeneralOnDemandLinkage", resourceCulture);
             }
         }
         

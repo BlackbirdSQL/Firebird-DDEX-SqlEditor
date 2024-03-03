@@ -16,6 +16,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
+using Microsoft.VisualStudio.Shell;
 
 
 
@@ -493,8 +494,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 			if (RctManager.ShutdownState)
 				return;
 
-			IBDesignerExplorerServices service = Controller.GetService<IBDesignerExplorerServices>()
-				?? throw Diag.ExceptionService(typeof(IBDesignerExplorerServices));
+			IBDesignerExplorerServices service = Controller.EnsureService<IBDesignerExplorerServices>();
 
 			CsbAgent csa = RctManager.CloneRegistered(Site.ExplorerConnection.ConnectionNode);
 
@@ -520,26 +520,27 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 		if (SystemData.MandatedSqlEditorFactoryGuid.Equals(SystemData.DslEditorFactoryGuid, StringComparison.OrdinalIgnoreCase))
 		{
-			IBDesignerExplorerServices service = Controller.GetService<IBDesignerExplorerServices>()
-				?? throw Diag.ExceptionService(typeof(IBDesignerExplorerServices));
+			IBDesignerExplorerServices service = Controller.EnsureService<IBDesignerExplorerServices>();
 
 			service.ViewCode(node, targetType);
 		}
 		else
 		{
-			IBDesignerOnlineServices service = Controller.GetService<IBDesignerOnlineServices>()
-				?? throw Diag.ExceptionService(typeof(IBDesignerOnlineServices));
+			Diag.ThrowException(new Exception("DesignerOnlineServices are not yet available"));
 
-			MonikerAgent moniker = new(node, targetType);
+			/*
+			IBDesignerOnlineServices service = Controller.EnsureService<IBDesignerOnlineServices>();
+
+			Moniker moniker = new(node, targetType);
 
 			IList<string> identifierList = moniker.Identifier.ToArray();
 			EnModelObjectType objectType = moniker.ObjectType;
-			string script = MonikerAgent.GetDecoratedDdlSource(node, targetType);
+			string script = Moniker.GetDecoratedDdlSource(node, targetType);
 
 			CsbAgent csa = RctManager.CloneRegistered(node);
 
 			service.ViewCode(csa, objectType, identifierList, targetType, script);
-
+			*/
 		}
 
 		// Hostess.ActivateOrOpenVirtualDocument(node, false);

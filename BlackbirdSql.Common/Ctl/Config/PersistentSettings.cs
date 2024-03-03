@@ -54,7 +54,7 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 
 
 	// Tracking variables
-	protected static object _LockClass = new object();
+	protected static object _LockGlobal = new object();
 	private static bool _LayoutPropertyChanged = false;
 	private static CommandObject _CmdObject = null;
 

@@ -580,7 +580,16 @@ public sealed class QueryManager : IDisposable
 	private void OnExecutionCompleted(object sender, ScriptExecutionCompletedEventArgs args)
 	{
 		QueryExecutionEndTime = DateTime.Now;
-		ScriptExecutionCompletedEvent?.Invoke(this, args);
+
+		try
+		{
+			ScriptExecutionCompletedEvent?.Invoke(this, args);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
 
 		IsExecuting = false;
 		IsCancelling = false;

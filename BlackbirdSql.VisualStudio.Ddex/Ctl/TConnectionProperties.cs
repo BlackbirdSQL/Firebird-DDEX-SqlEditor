@@ -24,7 +24,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 /// Implementation of <see cref="IVsDataConnectionProperties"/> interface.
 /// </summary>
 // =========================================================================================================
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
 public class TConnectionProperties : TAbstractConnectionProperties, IBDataConnectionProperties
 {
 

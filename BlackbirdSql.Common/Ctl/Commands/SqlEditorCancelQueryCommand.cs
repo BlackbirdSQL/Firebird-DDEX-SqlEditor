@@ -4,17 +4,13 @@
 #endregion
 
 using System;
-using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
 using Microsoft.VisualStudio;
-
 using Microsoft.VisualStudio.OLE.Interop;
 
 
-
-
 namespace BlackbirdSql.Common.Ctl.Commands;
-
 
 public class SqlEditorCancelQueryCommand : AbstractSqlEditorCommand
 {

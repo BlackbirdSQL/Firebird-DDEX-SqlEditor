@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 using BlackbirdSql.Common.Ctl;
@@ -11,13 +12,18 @@ using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Controls.Interfaces;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Model;
 using EnvDTE;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 using DpiAwareness = Microsoft.VisualStudio.Utilities.DpiAwareness;
@@ -27,8 +33,16 @@ using OleConstants = Microsoft.VisualStudio.OLE.Interop.Constants;
 
 namespace BlackbirdSql.Common.Controls;
 
-public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IOleCommandTarget, IVsWindowFrameNotify3, IVsMultiViewDocumentView, IVsHasRelatedSaveItems, IVsDocumentLockHolder, IVsBroadcastMessageEvents, IBDesignerDocumentService, IBTabbedEditorService, IVsDocOutlineProvider, IVsDocOutlineProvider2, IVsToolboxActiveUserHook, IVsToolboxUser, IVsToolboxPageChooser, IVsDefaultToolboxTabState, IVsCodeWindow, IVsExtensibleObject
+public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IOleCommandTarget, IVsWindowFrameNotify3, IVsMultiViewDocumentView, IVsHasRelatedSaveItems, IVsDocumentLockHolder, IVsBroadcastMessageEvents, IBTabbedEditorService, IVsDocOutlineProvider, IVsDocOutlineProvider2, IVsToolboxActiveUserHook, IVsToolboxUser, IVsToolboxPageChooser, IVsDefaultToolboxTabState, IVsCodeWindow, IVsExtensibleObject
 {
+	public enum EnDocumentsFlag
+	{
+		DirtyDocuments,
+		DirtyOrPrimary,
+		DirtyExceptPrimary,
+		AllDocuments
+	}
+
 	private static TabbedEditorToolbarHandlerManager _ToolbarManager;
 
 	private Package _Package;
@@ -114,7 +128,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	AbstractEditorTab IBTabbedEditorService.ActiveTab => _TabbedEditorUI.TopEditorTab;
 
-	IVsWindowFrame IBTabbedEditorService.TabFrame => GetService(typeof(IVsWindowFrame)) as IVsWindowFrame;
+	IVsWindowFrame IBTabbedEditorService.TabFrame => Frame;
 
 	public TabbedEditorUI TabbedEditorControl => _TabbedEditorUI;
 
@@ -183,7 +197,19 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	protected override void OnCreate()
 	{
-		(GetService(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable).RegisterDocumentLockHolder(0u, GetPrimaryDocCookie(), this, out _LockHolderCookie);
+		RdtManager.RegisterDocumentLockHolder(0u, GetPrimaryDocCookie(), this, out _LockHolderCookie);
+	}
+
+	private static bool IsDirty(object docData)
+	{
+		Diag.ThrowIfNotOnUIThread();
+
+		if (docData is IVsPersistDocData vsPersistDocData)
+		{
+			Native.ThrowOnFailure(vsPersistDocData.IsDocDataDirty(out var pfDirty));
+			return pfDirty != 0;
+		}
+		return false;
 	}
 
 	bool IBTabbedEditorService.IsTabVisible(Guid logicalView)
@@ -206,7 +232,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 			{
 				if (_LockHolderCookie != 0)
 				{
-					(GetService(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable).UnregisterDocumentLockHolder(_LockHolderCookie);
+					RdtManager.UnregisterDocumentLockHolder(_LockHolderCookie);
 					_LockHolderCookie = 0u;
 				}
 
@@ -272,6 +298,54 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 	protected virtual TabbedEditorUI CreateTabbedEditorUI(Guid toolbarGuid, uint toolbarId)
 	{
 		return new TabbedEditorUI(this, toolbarGuid, toolbarId);
+	}
+
+	private static IEnumerable<uint> EnumerateOpenedDocuments(IBTabbedEditorService designerService, __VSRDTSAVEOPTIONS rdtSaveOptions)
+	{
+		EnDocumentsFlag enumerateDocumentsFlag = GetDesignerDocumentFlagFromSaveOption(rdtSaveOptions);
+		return EnumerateOpenedDocuments(designerService, enumerateDocumentsFlag);
+	}
+
+	private static IEnumerable<uint> EnumerateOpenedDocuments(IBTabbedEditorService designerService, EnDocumentsFlag requestedDocumentsFlag)
+	{
+		foreach (uint editableDocument in designerService.GetEditableDocuments())
+		{
+			if (TryGetDocDataFromCookie(editableDocument, out var docData))
+			{
+				bool isDirty = IsDirty(docData);
+				bool isPrimary = editableDocument == designerService.GetPrimaryDocCookie();
+				bool validEnumerableDocument = false;
+
+				switch (requestedDocumentsFlag)
+				{
+					case EnDocumentsFlag.DirtyDocuments:
+						validEnumerableDocument = isDirty;
+						break;
+					case EnDocumentsFlag.DirtyOrPrimary:
+						validEnumerableDocument = isDirty || isPrimary;
+						break;
+					case EnDocumentsFlag.DirtyExceptPrimary:
+						validEnumerableDocument = isDirty && !isPrimary;
+						break;
+					case EnDocumentsFlag.AllDocuments:
+						validEnumerableDocument = true;
+						break;
+				}
+
+				if (validEnumerableDocument)
+					yield return editableDocument;
+			}
+		}
+	}
+
+	private static EnDocumentsFlag GetDesignerDocumentFlagFromSaveOption(__VSRDTSAVEOPTIONS saveOption)
+	{
+		if ((saveOption & __VSRDTSAVEOPTIONS.RDTSAVEOPT_ForceSave) == 0)
+		{
+			return EnDocumentsFlag.DirtyDocuments;
+		}
+
+		return EnDocumentsFlag.DirtyOrPrimary;
 	}
 
 	public virtual string GetHelpKeywordForCodeWindowTextView()
@@ -477,10 +551,9 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 	private void OnTabActivated(object sender, EventArgs e)
 	{
 		_RequestedView = Guid.Empty;
-		if (GetService(typeof(SVsWindowFrame)) is not IVsWindowFrame vsWindowFrame)
-		{
+		if (Frame == null)
 			return;
-		}
+
 		Guid rguid = Guid.Empty;
 		if (sender is AbstractEditorTab editorTab)
 		{
@@ -490,7 +563,8 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 			}
 			rguid = editorTab.CommandUIGuid;
 		}
-		vsWindowFrame.SetGuidProperty((int)__VSFPROPID.VSFPROPID_CmdUIGuid, ref rguid);
+
+		Frame.SetGuidProperty((int)__VSFPROPID.VSFPROPID_CmdUIGuid, ref rguid);
 	}
 
 	private void OnToolboxItemPicked(object sender, ToolboxEventArgs e)
@@ -519,24 +593,28 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		if (saveFlags != (uint)__FRAMECLOSE.FRAMECLOSE_NoSave)
 		{
 			if ((IVsWindowFrame)GetService(typeof(SVsWindowFrame)) == null)
-			{
 				return 0;
-			}
 
-			uint saveOpts = (__FRAMECLOSE)saveFlags switch
+			uint saveOpts;
+
+			switch ((__FRAMECLOSE)saveFlags)
 			{
-				__FRAMECLOSE.FRAMECLOSE_PromptSave
-					=> (uint)__VSRDTSAVEOPTIONS.RDTSAVEOPT_PromptSave,
+				case __FRAMECLOSE.FRAMECLOSE_PromptSave:
+					saveOpts = (uint)__VSRDTSAVEOPTIONS.RDTSAVEOPT_PromptSave;
+					break;
 
-				__FRAMECLOSE.FRAMECLOSE_SaveIfDirty
-					=> (uint)__VSRDTSAVEOPTIONS.RDTSAVEOPT_SaveIfDirty,
+				case __FRAMECLOSE.FRAMECLOSE_SaveIfDirty:
+					saveOpts = (uint)__VSRDTSAVEOPTIONS.RDTSAVEOPT_SaveIfDirty;
+					break;
 
-				_ => (uint)__VSRDTSAVEOPTIONS.RDTSAVEOPT_DocClose,
-			};
+				default:
+					saveOpts = (uint)__VSRDTSAVEOPTIONS.RDTSAVEOPT_DocClose;
+					break;
+			}
 
 			uint primaryDocCookie = GetPrimaryDocCookie();
 
-			hresult = (GetService(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable).SaveDocuments(saveOpts, null, uint.MaxValue, primaryDocCookie);
+			hresult = RdtManager.SaveDocuments(saveOpts, null, uint.MaxValue, primaryDocCookie);
 
 			if (Native.Succeeded(hresult))
 				saveFlags = (uint)__FRAMECLOSE.FRAMECLOSE_NoSave;
@@ -567,12 +645,12 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	public uint GetPrimaryDocCookie()
 	{
-		if (GetService(typeof(SVsWindowFrame)) is not IVsWindowFrame frame)
-		{
+		if (Frame == null)
 			return 0u;
-		}
-		return GetFrameDocument(frame);
+
+		return GetFrameDocument(Frame);
 	}
+
 
 	private void TrackTabSwitches(bool track)
 	{
@@ -584,6 +662,37 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		{
 			_TabbedEditorUI.TabActivatedEvent -= OnTabActivated;
 		}
+	}
+
+	private static bool TryGetDocDataFromCookie(uint cookie, out object docData)
+	{
+		Diag.ThrowIfNotOnUIThread();
+
+		docData = null;
+		bool result = false;
+
+		if (!RdtManager.ServiceAvailable)
+			return result;
+
+		IntPtr ppunkDocData = IntPtr.Zero;
+
+		try
+		{
+			if (Native.Succeeded(RdtManager.GetDocumentInfo(cookie, out var _, out var _, out var _, out var _, out var _, out var _, out ppunkDocData)))
+			{
+				docData = Marshal.GetObjectForIUnknown(ppunkDocData);
+				result = true;
+			}
+		}
+		finally
+		{
+			if (ppunkDocData != IntPtr.Zero)
+			{
+				Marshal.Release(ppunkDocData);
+			}
+		}
+
+		return result;
 	}
 
 	private void UpdateCmdUIContext()
@@ -788,7 +897,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 		if ((frameSaveOptions & (uint)__FRAMECLOSE.FRAMECLOSE_NoSave) > 0)
 		{
-			enumerable = CommonVsUtilities.EnumerateOpenedDocuments(this, CommonVsUtilities.EnDocumentsFlag.DirtyExceptPrimary);
+			enumerable = EnumerateOpenedDocuments(this, EnDocumentsFlag.DirtyExceptPrimary);
 
 			if (enumerable.Any())
 				frameSaveOptions = (uint)__FRAMECLOSE.FRAMECLOSE_PromptSave;
@@ -801,14 +910,14 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		{
 			List<uint> saveDocCookieList = [];
 
-			enumerable ??= CommonVsUtilities.EnumerateOpenedDocuments(this, CommonVsUtilities.EnDocumentsFlag.DirtyExceptPrimary);
+			enumerable ??= EnumerateOpenedDocuments(this, EnDocumentsFlag.DirtyExceptPrimary);
 			List<uint> docCookieList = new List<uint>(enumerable) { primaryDocCookie };
 
 
 
 			foreach (uint docCookie in docCookieList)
 			{
-				if (RdtManager.Instance.ShouldKeepDocDataAliveOnClose(docCookie))
+				if (RdtManager.ShouldKeepDocDataAliveOnClose(docCookie))
 					keepDocAlive = true;
 				else
 					saveDocCookieList.Add(docCookie);
@@ -853,11 +962,10 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 				// so that they're not deleted.
 				if (!keepDocAlive)
 				{
-					IVsRunningDocumentTable rdt = RdtManager.Instance.GetRunningDocumentTable();
-					rdt.GetDocumentInfo(primaryDocCookie, out _, out _, out _, out string moniker, out IVsHierarchy ppHier, out uint pitemid, out _);
+					RdtManager.GetDocumentInfo(primaryDocCookie, out _, out _, out _, out string mkDocument, out IVsHierarchy ppHier, out uint pitemid, out _);
 
-					if (!moniker.StartsWith(SystemData.WinScheme, StringComparison.InvariantCultureIgnoreCase)
-						&& moniker.EndsWith(SystemData.Extension, StringComparison.InvariantCultureIgnoreCase))
+					if (!mkDocument.StartsWith(SystemData.Scheme, StringComparison.InvariantCulture)
+						&& mkDocument.EndsWith(SystemData.Extension, StringComparison.InvariantCultureIgnoreCase))
 					{
 						RemovePhysicalDocumentFromMiscProject(ppHier, pitemid);
 					}
@@ -903,19 +1011,15 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		// Tracer.Trace("Validating project item: " + projectItem.Name + ":  Kind: " + Kind(projectItem.Kind) + " FileCount: "
 		//	+ projectItem.FileCount);
 
-		string path = projectItem.FileNames[1];
+		// string path = projectItem.FileNames[1];
 
-		if (!path.StartsWith(SystemData.WinScheme, StringComparison.InvariantCultureIgnoreCase)
-			&& path.EndsWith(SystemData.Extension, StringComparison.InvariantCultureIgnoreCase))
+		try
 		{
-			try
-			{
-				projectItem.Remove();
-			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-			}
+			projectItem.Remove();
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
 		}
 
 		return VSConstants.S_OK;
@@ -986,6 +1090,8 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	int OnElementValueChanged(uint elementid, object varValueOld, object varValueNew)
 	{
+		// Tracer.Trace(GetType(), "OnElementValueChanged()", "ElementId: {0}.", elementid);
+
 		if (_IsLoading || _IsInUpdateCmdUIContext || !_IsAppActivated)
 		{
 			return 0;
@@ -1212,7 +1318,7 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 	/// </summary>
 	/// <param name="pbstrTechnology"></param>
 	/// <returns></returns>
-	public int get_DesignerTechnology(out string pbstrTechnology)
+	int IVsDesignerInfo.get_DesignerTechnology(out string pbstrTechnology)
 	{
 		pbstrTechnology = string.Empty;
 		return 0;
@@ -1237,9 +1343,11 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 
 	int IVsHasRelatedSaveItems.GetRelatedSaveTreeItems(VSSAVETREEITEM saveItem, uint celt, VSSAVETREEITEM[] rgSaveTreeItems, out uint pcActual)
 	{
+		// Tracer.Trace(GetType(), "GetRelatedSaveTreeItems()", "SaveOptFald: {0}.", saveItem.grfSave);
+
 		if (_OverrideSaveDocCookieList == null)
 		{
-			IEnumerable<uint> enumerable = CommonVsUtilities.EnumerateOpenedDocuments(this, (__VSRDTSAVEOPTIONS)saveItem.grfSave);
+			IEnumerable<uint> enumerable = EnumerateOpenedDocuments(this, (__VSRDTSAVEOPTIONS)saveItem.grfSave);
 			pcActual = 0u;
 			foreach (uint item in enumerable)
 			{
@@ -1269,12 +1377,73 @@ public abstract class AbstractTabbedEditorPane : WindowPane, IVsDesignerInfo, IO
 		// Tracer.Trace(GetType(), "CloseDocumentHolder()");
 
 		if (_LockHolderCookie != 0)
-		{
-			(GetService(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable).UnregisterDocumentLockHolder(_LockHolderCookie);
-		}
+			RdtManager.UnregisterDocumentLockHolder(_LockHolderCookie);
 
 		return 0;
 	}
+
+
+
+	private bool GetChangeTrackingStatus()
+	{
+		Native.ThrowOnFailure(Frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar));
+
+		if (pvar is not IVsCodeWindow codeWindow)
+			throw Diag.ExceptionInstance(typeof(IVsCodeWindow));
+
+
+		IVsTextView ppView = ((IBEditorWindowPane)codeWindow).GetCodeEditorTextView();
+
+		// Tracer.Trace(typeof(AbstractDesignerServices), "SuppressChangeTracking()", "CodeWindow primary view found for mkDocument: {0}.", mkDocument);
+
+		if (Controller.GetService<SComponentModel>() is not IComponentModel componentModel)
+			return false;
+
+		IVsEditorAdaptersFactoryService service = componentModel.GetService<IVsEditorAdaptersFactoryService>();
+		if (service == null)
+			return false;
+
+		IWpfTextViewHost wpfTextViewHost = service.GetWpfTextViewHost(ppView);
+		if (wpfTextViewHost == null)
+			return false;
+
+		return wpfTextViewHost.TextView.Options.GetOptionValue(DefaultTextViewHostOptions.ChangeTrackingId);
+	}
+
+
+	public void SuppressChangeTracking(bool suppress)
+	{
+		Native.ThrowOnFailure(Frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar));
+
+		if (pvar is not IVsCodeWindow codeWindow)
+			throw Diag.ExceptionInstance(typeof(IVsCodeWindow));
+
+		IVsTextView ppView = ((IBEditorWindowPane)codeWindow).GetCodeEditorTextView();
+
+
+		if (Controller.GetService<SComponentModel>() is not IComponentModel componentModel)
+			return;
+
+		IVsEditorAdaptersFactoryService service = componentModel.GetService<IVsEditorAdaptersFactoryService>();
+		if (service == null)
+			return;
+
+		IWpfTextViewHost wpfTextViewHost = service.GetWpfTextViewHost(ppView);
+		if (wpfTextViewHost == null)
+			return;
+
+		if (suppress)
+		{
+			wpfTextViewHost.TextView.Options.SetOptionValue(DefaultTextViewHostOptions.ChangeTrackingId, value: false);
+		}
+		else
+		{
+			wpfTextViewHost.TextView.Options.ClearOptionValue(DefaultTextViewHostOptions.ChangeTrackingId);
+		}
+
+	}
+
+
 
 	int IVsDocumentLockHolder.ShowDocumentHolder()
 	{

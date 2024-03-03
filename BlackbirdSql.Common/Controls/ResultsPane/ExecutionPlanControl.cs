@@ -245,7 +245,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 			}
 			catch (Exception e)
 			{
-				Tracer.LogExCatch(GetType(), e);
+				Diag.Dug(e);
 				Cmd.ShowExceptionInDialog(string.Empty, e);
 			}
 			return 0;
@@ -356,8 +356,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 			if (Package.GetGlobalService(typeof(IVsExternalFilesManager)) is not IVsExternalFilesManager obj)
 			{
 				Exception ex = new InvalidOperationException(ControlsResources.ErrCannotGetExternalFilesManager);
-				Tracer.LogExThrow(GetType(), ex);
-				throw ex;
+				Diag.ThrowException(ex);
 			}
 			Native.ThrowOnFailure(obj.GetExternalFilesProject(out IVsProject ppProject));
 			VSADDRESULT[] pResult = new VSADDRESULT[1];
@@ -365,8 +364,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 			if (Package.GetGlobalService(typeof(IVsMonitorSelection)) is not IVsMonitorSelection)
 			{
 				Exception ex2 = new InvalidOperationException();
-				Tracer.LogExThrow(GetType(), ex2);
-				throw ex2;
+				Diag.ThrowException(ex2);
 			}
 		}
 		finally
@@ -394,8 +392,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 			if (pvarValue == null)
 			{
 				Exception ex = new NullReferenceException("DocumentFrame");
-				Tracer.LogExThrow(GetType(), ex);
-				throw ex;
+				Diag.ThrowException(ex);
 			}
 			IVsWindowFrame obj = (IVsWindowFrame)pvarValue;
 			Native.ThrowOnFailure(obj.GetProperty(-3004, out object pvar));
@@ -443,7 +440,7 @@ public class ExecutionPlanControl : UserControl, BlackbirdSql.Common.Controls.In
 		}
 		catch (Exception e)
 		{
-			Tracer.LogExCatch(GetType(), e);
+			Diag.Dug(e);
 			Cmd.ShowExceptionInDialog(ControlsResources.ErrorWhileSavingExecutionPlan, e);
 		}
 	}

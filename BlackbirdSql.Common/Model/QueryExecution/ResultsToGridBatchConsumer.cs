@@ -63,7 +63,7 @@ public class ResultsToGridBatchConsumer : AbstractQESQLBatchConsumer
 		}
 		catch (QESQLBatchConsumerException ex)
 		{
-			Tracer.LogExCatch(GetType(), ex);
+			Diag.Dug(ex);
 			if (ex.ExtraInfo == QESQLBatchConsumerException.EnErrorType.CannotShowMoreResults)
 			{
 				_CouldNotAddGrid = true;

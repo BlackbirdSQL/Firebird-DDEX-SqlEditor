@@ -38,7 +38,6 @@ namespace BlackbirdSql.Core.Model;
 /// in the Rct.
 /// </remarks>
 // =========================================================================================================
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
 public abstract class AbstractRunningConnectionTable : AbstruseRunningConnectionTable
 {
 

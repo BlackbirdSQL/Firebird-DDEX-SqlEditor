@@ -14,11 +14,15 @@ using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Shell;
 using EnvDTE;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.VisualStudio.Shell.Interop;
 
 
 
 
 namespace BlackbirdSql.Core;
+
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification="Using Diag.ThrowIfNotOnUIThread()")]
 
 
 // =========================================================================================================
@@ -206,6 +210,31 @@ public abstract class Cmd
 		}
 
 		return stringBuilder.ToString();
+	}
+
+
+	public static IVsProject3 GetMiscellaneousProject(IServiceProvider provider = null)
+	{
+		Diag.ThrowIfNotOnUIThread();
+
+		provider ??= new ServiceProvider(Controller.OleServiceProvider);
+
+		IVsExternalFilesManager vsExternalFilesManager = provider.GetService(typeof(SVsExternalFilesManager)) as IVsExternalFilesManager
+			?? throw Diag.ExceptionService(typeof(IVsExternalFilesManager));
+
+		Native.WrapComCall(vsExternalFilesManager.GetExternalFilesProject(out IVsProject ppProject), []);
+
+		return (IVsProject3)ppProject;
+	}
+
+
+	public static IVsProject3 GetMiscellaneousProject(IVsExternalFilesManager vsExternalFilesManager)
+	{
+		Diag.ThrowIfNotOnUIThread();
+
+		Native.WrapComCall(vsExternalFilesManager.GetExternalFilesProject(out IVsProject ppProject), []);
+
+		return (IVsProject3)ppProject;
 	}
 
 

@@ -1,13 +1,11 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.TabbedEditor.SqlEditorTabbedEditorPane
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Controls.PropertiesWindow;
 using BlackbirdSql.Common.Controls.ResultsPane;
 using BlackbirdSql.Common.Controls.Widgets;
@@ -20,6 +18,7 @@ using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Controls.Interfaces;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 
@@ -36,7 +35,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace BlackbirdSql.Common.Controls;
 
-public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWindowPane, IVsFindTarget, IVsFindTarget2, IBVsFindTarget3
+public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWindowPane, IBEditorWindowPane, IVsFindTarget, IVsFindTarget2, IBVsFindTarget3
 {
 
 	private DisplaySQLResultsControl _ResultsControl;
@@ -58,7 +57,7 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 
 	public string FileName { get; private set; }
 
-	private string EditorId { get; set; }
+	protected string EditorId { get; set; }
 
 	protected override Guid PrimaryViewGuid => VSConstants.LOGVIEWID_TextView;
 
@@ -468,7 +467,6 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 		}
 
 
-		SqlEtwProvider.EventWriteTSqlEditorFrameCreate(IsStart: true, EditorId ?? string.Empty);
 		if (!base.EnsureTabs(activateTextView))
 		{
 			return false;
@@ -591,35 +589,22 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 
 		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(DocData);
 
-		if (pgrfSaveOptions == (uint)__FRAMECLOSE.FRAMECLOSE_PromptSave && auxDocData.SuppressSavePromptWhenClosingEditor())
+		if (pgrfSaveOptions == (uint)__FRAMECLOSE.FRAMECLOSE_PromptSave && auxDocData.SuppressSavePrompt)
 		{
 			pgrfSaveOptions = (uint)__FRAMECLOSE.FRAMECLOSE_NoSave;
 		}
-
+		
 		return base.SaveFiles(ref pgrfSaveOptions);
 	}
 
 	protected override void OnShow(int fShow)
 	{
 		base.OnShow(fShow);
-		switch (fShow)
-		{
-			case 1:
-				SqlEtwProvider.EventWriteTSqlEditorFrameCreate(IsStart: false, EditorId ?? string.Empty);
-				break;
-			case 2:
-				SqlEtwProvider.EventWriteTSqlEditorActivate(IsStart: false, EditorId ?? string.Empty);
-				break;
-			case 3:
-				SqlEtwProvider.EventWriteTSqlEditorActivate(IsStart: true, EditorId ?? string.Empty);
-				break;
-		}
 
 		if (_IsFirstTimeToShow && fShow == 1)
 		{
 			SetupUI();
 			_IsFirstTimeToShow = false;
-			SqlEtwProvider.EventWriteTSqlEditorLaunch(IsStart: false, EditorId ?? string.Empty);
 		}
 	}
 
@@ -651,6 +636,8 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 				return sqlEditorCommand.Exec(nCmdexecopt, pvaIn, pvaOut);
 			}
 		}
+
+		// Tracer.Trace(GetType(), "HandleExec()", "pguidCmdGroup: {0}, nCmdId: {1}.", pguidCmdGroup, nCmdID);
 
 		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(DocData);
 		if (auxDocData != null && auxDocData.Strategy != null)
@@ -879,6 +866,20 @@ public class SqlEditorTabbedEditorPane : AbstractTabbedEditorPane, IBSqlEditorWi
 	public void ParseQuery()
 	{
 		ExecuteOrParseQuery(false);
+	}
+
+	public string GetCodeText()
+	{
+		SqlTextSpan sqlTextSpan = GetSelectedCodeEditorTextSpan2();
+		if (sqlTextSpan.Text == null || sqlTextSpan.Text.Length == 0)
+		{
+			sqlTextSpan = GetAllCodeEditorTextSpan2();
+		}
+
+		if (sqlTextSpan == null || string.IsNullOrEmpty(sqlTextSpan.Text))
+			return string.Empty;
+
+		return sqlTextSpan.Text;
 	}
 
 	private void ExecuteOrParseQuery(bool isExecute)

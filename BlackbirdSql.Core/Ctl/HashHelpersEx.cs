@@ -44,7 +44,7 @@ internal static class HashHelpersEx
 	private static int S_CurrentIndex = C_BufferSize;
 
 	// A static class lock
-	private static readonly object _LockClass = new object();
+	private static readonly object _LockGlobal = new object();
 
 	internal static ConditionalWeakTable<object, SerializationInfo> SerializationInfoTable
 	{
@@ -165,7 +165,7 @@ internal static class HashHelpersEx
 
 	internal static long GetEntropy()
 	{
-		lock (_LockClass)
+		lock (_LockGlobal)
 		{
 			if (S_CurrentIndex == C_BufferSize)
 			{

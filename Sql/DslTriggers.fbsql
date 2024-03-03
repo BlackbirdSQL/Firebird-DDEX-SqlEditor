@@ -1,6 +1,5 @@
-SET TERM ^ ;
-
 -- Begin section 1 - Main Select
+
 
 EXECUTE BLOCK
 	RETURNS (
@@ -131,6 +130,3 @@ ORDER BY trg.rdb$trigger_name
 
 	END
 END
-                
-^
-SET TERM ; ^

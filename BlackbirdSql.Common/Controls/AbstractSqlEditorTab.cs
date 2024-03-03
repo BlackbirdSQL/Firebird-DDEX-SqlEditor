@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Core;
-
+using BlackbirdSql.Core.Ctl;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -21,6 +21,11 @@ public abstract class AbstractSqlEditorTab(AbstractTabbedEditorPane editorPane,
 {
 	public static readonly string S_PhysicalViewString = "ResultFrame";
 
+	protected virtual Guid ClsidEditorTabEditorFactory => Guid.Empty;
+	protected override Guid ClsidEditorFactory => new(SystemData.DslEditorFactoryGuid);
+	protected abstract Guid ClsidLogicalView { get; }
+
+
 	protected override string GetPhysicalViewString()
 	{
 		return S_PhysicalViewString;
@@ -28,42 +33,65 @@ public abstract class AbstractSqlEditorTab(AbstractTabbedEditorPane editorPane,
 
 	protected override IVsWindowFrame CreateWindowFrame()
 	{
+		Diag.ThrowIfNotOnUIThread();
+
+		if (WindowPaneServiceProvider.GetService(typeof(SVsUIShellOpenDocument)) is not IVsUIShellOpenDocument shellOpenDocumentSvc)
+			throw Diag.ExceptionService(typeof(IVsUIShellOpenDocument));
+
+		if (WindowPaneServiceProvider.GetService(typeof(SVsUIShell)) is not IVsUIShell shellSvc)
+			throw Diag.ExceptionService(typeof(IVsUIShell));
+
+		if (!RdtManager.ServiceAvailable)
+			throw Diag.ExceptionService(typeof(IVsRunningDocumentTable));
+
 		_ = Cursor.Current;
 		IntPtr ppunkDocData = IntPtr.Zero;
 		IntPtr ppunkDocView = IntPtr.Zero;
-		IntPtr ppunkDocData2 = IntPtr.Zero;
-		Guid rguidLogicalView = GetLogicalView();
-		Guid pguidEditorType = GetEditorTabEditorFactoryGuid();
+		IntPtr ppunkDocDataExisting = IntPtr.Zero;
+		Guid rguidLogicalView = ClsidLogicalView;
+		Guid pguidEditorType = ClsidEditorTabEditorFactory;
 
-
-
-		Microsoft.VisualStudio.OLE.Interop.IServiceProvider instance = Controller.OleServiceProvider;
-
-		if (WindowPaneServiceProvider.GetService(typeof(SVsUIShellOpenDocument)) is not IVsUIShellOpenDocument shell)
-			throw Diag.ExceptionService(typeof(IVsUIShellOpenDocument));
-
-		if (WindowPaneServiceProvider.GetService(typeof(SVsUIShell)) is not IVsUIShell vsUIShell)
-			throw Diag.ExceptionService(typeof(IVsUIShell));
-
-		Diag.ThrowIfNotOnUIThread();
-
-		IVsRunningDocumentTable vsRunningDocumentTable =
-			WindowPaneServiceProvider.GetService(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable
-			?? throw Diag.ExceptionService(typeof(IVsRunningDocumentTable));
 
 		try
 		{
 			DisposableWaitCursor = WaitCursorHelper.NewWaitCursor();
 
-			uint[] array = new uint[1];
+			int hresult;
+			uint[] pitemidOpen = new uint[1];
 			string documentMoniker = DocumentMoniker;
 			Guid rguidLogicalView2 = rguidLogicalView;
-			Native.ThrowOnFailure(shell.IsDocumentOpen(null, 0u, documentMoniker, ref rguidLogicalView2, 0u, out var ppHierOpen, array, out IVsWindowFrame ppWindowFrame, out _), (string)null);
-			ErrorHandler.ThrowOnFailure(vsRunningDocumentTable.FindAndLockDocument((uint)_VSRDTFLAGS.RDT_NoLock, documentMoniker, out var ppHier, out var pitemid, out ppunkDocData, out _));
 
-			Native.ThrowOnFailure(shell.GetStandardEditorFactory(VS.dwReserved, ref pguidEditorType, null, ref rguidLogicalView, out var pbstrPhysicalView, out var ppEF), (string)null);
-			Native.ThrowOnFailure(ppEF.CreateEditorInstance((uint)(__VSCREATEEDITORFLAGS.CEF_OPENFILE | __VSCREATEEDITORFLAGS.CEF_SILENT), documentMoniker, pbstrPhysicalView, ppHierOpen, array[0], ppunkDocData2, out ppunkDocView, out ppunkDocData2, out _, out var pguidCmdUI, out var pgrfCDW), (string)null);
-			Native.ThrowOnFailure(vsUIShell.CreateDocumentWindow((uint)((ulong)pgrfCDW | 0x20uL | 0xFFFFF | 0x400000), documentMoniker, ppHierOpen ?? ppHier as IVsUIHierarchy, pitemid, ppunkDocView, ppunkDocData2, ref pguidEditorType, pbstrPhysicalView, ref pguidCmdUI, instance, string.Empty, string.Empty, null, out ppWindowFrame), (string)null);
+
+			hresult = shellOpenDocumentSvc.IsDocumentOpen(null, 0u, documentMoniker, ref rguidLogicalView2,
+				0u, out IVsUIHierarchy ppHierOpen, pitemidOpen, out IVsWindowFrame ppWindowFrame, out _);
+			ErrorHandler.ThrowOnFailure(hresult);
+
+			hresult = RdtManager.FindAndLockDocument((uint)_VSRDTFLAGS.RDT_NoLock, documentMoniker,
+				out IVsHierarchy ppHier, out uint pitemid, out ppunkDocData, out _);
+			ErrorHandler.ThrowOnFailure(hresult);
+
+			hresult = shellOpenDocumentSvc.GetStandardEditorFactory(VS.dwReserved, ref pguidEditorType, null,
+				ref rguidLogicalView, out string pbstrPhysicalView, out IVsEditorFactory ppEditorFactory);
+			ErrorHandler.ThrowOnFailure(hresult);
+
+
+			uint createFlags = (uint)(__VSCREATEEDITORFLAGS.CEF_OPENFILE | __VSCREATEEDITORFLAGS.CEF_SILENT);
+
+			hresult = ppEditorFactory.CreateEditorInstance(createFlags, documentMoniker, pbstrPhysicalView,
+				ppHierOpen, pitemidOpen[0], ppunkDocDataExisting, out ppunkDocView, out ppunkDocDataExisting,
+				out _, out Guid pguidCmdUI, out int pgrfCDW);
+			ErrorHandler.ThrowOnFailure(hresult);
+
+
+
+			createFlags = (uint)((ulong)pgrfCDW | (ulong)_VSRDTFLAGS.RDT_DontSave
+				| (ulong)__VSCREATEDOCWIN.CDW_RDTFLAGS_MASK | (ulong)__VSCREATEDOCWIN.CDW_fCreateNewWindow);
+			IVsUIHierarchy uiHierarchy = ppHierOpen ?? ppHier as IVsUIHierarchy;
+
+			hresult = shellSvc.CreateDocumentWindow(createFlags, documentMoniker, uiHierarchy, pitemid, ppunkDocView,
+				ppunkDocDataExisting, ref pguidEditorType, pbstrPhysicalView, ref pguidCmdUI, Controller.OleServiceProvider,
+				string.Empty, string.Empty, null, out ppWindowFrame);
+			ErrorHandler.ThrowOnFailure(hresult);
 
 			IVsWindowFrame vsWindowFrame = WindowPaneServiceProvider.GetService(typeof(SVsWindowFrame)) as IVsWindowFrame
 				?? throw new ServiceUnavailableException(typeof(IVsWindowFrame));
@@ -87,20 +115,11 @@ public abstract class AbstractSqlEditorTab(AbstractTabbedEditorPane editorPane,
 			if (ppunkDocView != IntPtr.Zero)
 				Marshal.Release(ppunkDocView);
 
-			if (ppunkDocData2 != IntPtr.Zero)
-				Marshal.Release(ppunkDocData2);
+			if (ppunkDocDataExisting != IntPtr.Zero)
+				Marshal.Release(ppunkDocDataExisting);
 		}
 	}
 
-	protected virtual Guid GetEditorTabEditorFactoryGuid()
-	{
-		return Guid.Empty;
-	}
 
-	protected override Guid GetEditorFactoryGuid()
-	{
-		return new Guid(SystemData.DslEditorFactoryGuid);
-	}
 
-	protected abstract Guid GetLogicalView();
 }

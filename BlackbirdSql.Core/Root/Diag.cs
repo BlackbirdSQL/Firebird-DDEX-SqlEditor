@@ -49,7 +49,7 @@ public static class Diag
 
 
 	// A static class lock
-	private static readonly object _LockClass = new();
+	private static readonly object _LockGlobal = new();
 	private static int _InternalActive = 0;
 	private static int _TaskLogActive = 0;
 	private static int _IgnoreSettings = 0;
@@ -180,7 +180,7 @@ public static class Diag
 		bool enableDiagnosticsLog;
 		bool enableTaskLog;
 
-		lock (_LockClass)
+		lock (_LockGlobal)
 		{
 #if DEBUG
 			enableDiagnosticsLog = EnableDiagnosticsLog || (_IgnoreSettings > 0);
@@ -494,7 +494,8 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Throws an exception if NotOnUiThread
+	/// Logs and throws an exception if NotOnUiThread and prevents an unecessary UI
+	/// thread trail by Intellisense.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 #if !NEWDEBUG
@@ -611,7 +612,7 @@ public static class Diag
 			message += " NO STACKTRACE";
 		}
 
-		lock (_LockClass)
+		lock (_LockGlobal)
 			_InternalActive++;
 
 		_IgnoreSettings++;
@@ -624,7 +625,7 @@ public static class Diag
 
 		_IgnoreSettings--;
 
-		lock (_LockClass)
+		lock (_LockGlobal)
 			_InternalActive--;
 	}
 
@@ -708,7 +709,7 @@ public static class Diag
 		//	return;
 
 
-		lock (_LockClass)
+		lock (_LockGlobal)
 			_InternalActive++;
 
 		_IgnoreSettings++;
@@ -721,7 +722,7 @@ public static class Diag
 
 		_IgnoreSettings--;
 
-		lock (_LockClass)
+		lock (_LockGlobal)
 			_InternalActive--;
 
 	}
@@ -809,6 +810,8 @@ public static class Diag
 	// ---------------------------------------------------------------------------------
 	public static bool TaskHandlerProgress(IBTaskHandlerClient client, string text, bool completed = false)
 	{
+		// Fire and forget.
+
 		_ = Task.Factory.StartNew(() => TaskHandlerProgressAsync(client, text, completed),
 			default, TaskCreationOptions.PreferFairness | TaskCreationOptions.DenyChildAttach,
 			TaskScheduler.Default);
@@ -829,7 +832,7 @@ public static class Diag
 		bool enableDiagnosticsLog;
 		bool enableTaskLog;
 
-		lock (_LockClass)
+		lock (_LockGlobal)
 		{
 			enableDiagnosticsLog = EnableDiagnosticsLog;
 			enableTaskLog = EnableTaskLog;
@@ -845,7 +848,7 @@ public static class Diag
 			TaskProgressData progressData = client.GetProgressData();
 			string title;
 
-			lock (_LockClass)
+			lock (_LockGlobal)
 			{
 				title = enableTaskLog && taskHandler != null ? taskHandler.Options.Title.Replace("BlackbirdSql", "").Trim() + ": " : "";
 
@@ -898,7 +901,7 @@ public static class Diag
 		}
 		catch (Exception ex)
 		{
-			lock (_LockClass)
+			lock (_LockGlobal)
 			{
 				_TaskLogActive++;
 				Dug(ex);
@@ -921,6 +924,8 @@ public static class Diag
 	// ---------------------------------------------------------------------------------
 	public static bool UpdateStatusBar(string value, bool clear)
 	{
+		// Fire and discard remember.
+
 		_ = Task.Factory.StartNew(() => UpdateStatusBarAsync(value, clear), default,
 			TaskCreationOptions.PreferFairness | TaskCreationOptions.AttachedToParent,
 			TaskScheduler.Default);
@@ -957,6 +962,8 @@ public static class Diag
 
 				if (clear)
 				{
+					// Fire and wait.
+
 					_ = Task.Run(async delegate
 					{
 						await Task.Delay(4000);
@@ -967,7 +974,7 @@ public static class Diag
 		}
 		catch (Exception ex)
 		{
-			lock (_LockClass)
+			lock (_LockGlobal)
 			{
 				_TaskLogActive++;
 				Dug(ex);
@@ -1017,7 +1024,7 @@ public static class Diag
 
 			NullReferenceException ex = new("OutputWindowPane is null");
 
-			lock (_LockClass)
+			lock (_LockGlobal)
 			{
 				_TaskLogActive++;
 				Dug(ex);
@@ -1041,7 +1048,7 @@ public static class Diag
 				if (_IgnoreSettings > 0)
 					return;
 
-				lock (_LockClass)
+				lock (_LockGlobal)
 				{
 					_TaskLogActive++;
 					Dug(ex);
@@ -1062,7 +1069,7 @@ public static class Diag
 				if (_IgnoreSettings > 0)
 					return;
 
-				lock (_LockClass)
+				lock (_LockGlobal)
 				{
 					_TaskLogActive++;
 					Dug(ex);
@@ -1102,7 +1109,7 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				lock (_LockClass)
+				lock (_LockGlobal)
 				{
 					_TaskLogActive++;
 					Dug(ex);
@@ -1123,7 +1130,7 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				lock (_LockClass)
+				lock (_LockGlobal)
 				{
 					_TaskLogActive++;
 					Dug(ex);
@@ -1138,7 +1145,7 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				lock (_LockClass)
+				lock (_LockGlobal)
 				{
 					_TaskLogActive++;
 					Dug(ex);

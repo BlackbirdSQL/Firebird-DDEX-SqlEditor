@@ -27,10 +27,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Include="Ctl\AbstractDesignerServices.cs" />
 	  <Compile Include="Ctl\Config\TransientSettings.cs" />
 	  <Compile Include="Ctl\Commands\SqlEditorNewQueryCommand.cs" />
 	  <Compile Include="Ctl\Config\PersistentSettings.cs" />
+	  <Compile Include="Ctl\DesignerExplorerServices.cs" />
 	  <Compile Include="Ctl\Enums\EnDeadlockPriority.cs" />
+	  <Compile Include="Ctl\Events\BeforeOpenDocumentEventArgs.cs" />
 	  <Compile Include="Ctl\Interfaces\IBEditorTransientSettings.cs" />
 	  <Compile Include="Properties\SqlResources.Designer.cs">
 	    <DesignTime>True</DesignTime>
@@ -494,16 +497,12 @@
 	  <Compile Include="Ctl\Commands\SqlEditorToggleResultsPaneCommand.cs" />
 	  <Compile Include="Ctl\Commands\SqlEditorToggleSqlCmdModeCommand.cs" />
 	  <Compile Include="Ctl\CommonHandles.cs" />
-	  <Compile Include="Ctl\CommonVsUtilities.cs" />
 	  <Compile Include="Ctl\ConnectionDialogConfiguration.cs" />
 	  <Compile Include="Ctl\ConnectionDialogService.cs" />
 	  <Compile Include="Ctl\ConnectionPointCookie.cs" />
 	  <Compile Include="Ctl\ConnectionResponse.cs" />
-	  <Compile Include="Ctl\DatabaseLocation.cs" />
 	  <Compile Include="Ctl\DbCommandWrapper.cs" />
 	  <Compile Include="Ctl\DbConnectionWrapper.cs" />
-	  <Compile Include="Ctl\DesignerExplorerServices.cs" />
-	  <Compile Include="Ctl\DesignerOnlineServices.cs" />
 	  <Compile Include="Ctl\EventsChannel.cs" />
 	  <Compile Include="Ctl\FindTargetAdapter.cs" />
 	  <Compile Include="Ctl\GuidId.cs" />
@@ -512,7 +511,6 @@
 	  <Compile Include="Ctl\Commands\MenuCommandsService.cs" />
 	  <Compile Include="Ctl\Commands\MenuCommandTextChanges.cs" />
 	  <Compile Include="Ctl\MruInfo.cs" />
-	  <Compile Include="Ctl\NodeElementDescriptor.cs" />
 	  <Compile Include="Ctl\SortingArray.cs" />
 	  <Compile Include="Ctl\SqlDebugBatchContext.cs" />
 	  <Compile Include="Ctl\Commands\SqlEditorViewFilter.cs" />
@@ -527,7 +525,6 @@
 	  <Compile Include="Ctl\Win32WindowWrapper.cs" />
 	  <Compile Include="Ctl\WindowHelper.cs" />
 	  <Compile Include="Ctl\WindowWithFocusRestorer.cs" />
-	  <Compile Include="Ctl\AbstractDesignerServices.cs" />
 	  <Compile Include="Ctl\Enums\EnAdvancedInfoType.cs" />
 	  <Compile Include="Ctl\Enums\EnArithmeticOperator.cs" />
 	  <Compile Include="Ctl\Enums\EnConnectionDialogTab.cs" />
@@ -547,7 +544,6 @@
 	  <Compile Include="Ctl\Enums\EnStatusBarPosition.cs" />
 	  <Compile Include="Ctl\Enums\EnTabViewMode.cs" />
 	  <Compile Include="Ctl\Exceptions\ParserException.cs" />
-	  <Compile Include="Ctl\Events\BeforeOpenDocumentEventArgs.cs" />
 	  <Compile Include="Ctl\Events\ColorChangedEventArgs.cs" />
 	  <Compile Include="Ctl\Events\ColorChangedEventHandler.cs" />
 	  <Compile Include="Ctl\Events\FontChangedEventArgs.cs" />
@@ -569,13 +565,11 @@
 	  <Compile Include="Ctl\Exceptions\SqlError.cs" />
 	  <Compile Include="Ctl\Exceptions\SqlErrorCollection.cs" />
 	  <Compile Include="Ctl\Exceptions\SqlException.cs" />
-	  <Compile Include="Ctl\GlobalServices.cs" />
 	  <Compile Include="Ctl\Interfaces\IBAsyncCommand.cs" />
 	  <Compile Include="Ctl\Interfaces\IBEditorPackage.cs" />
 	  <Compile Include="Ctl\Interfaces\IBinderQueue.cs" />
 	  <Compile Include="Controls\Interfaces\IBSectionControl.cs" />
 	  <Compile Include="Ctl\Interfaces\IBConnectionMruManager.cs" />
-	  <Compile Include="Ctl\Interfaces\IBDesignerDocumentService.cs" />
 	  <Compile Include="Ctl\Interfaces\IBListViewHelperFilterProvider.cs" />
 	  <Compile Include="Ctl\Interfaces\IBMenuCommandTextChanges.cs" />
 	  <Compile Include="Ctl\Interfaces\IBMetadataProviderProvider.cs" />
@@ -585,7 +579,7 @@
 	  <Compile Include="Ctl\Interfaces\IBSqlEditorErrorTaskFactory.cs" />
 	  <Compile Include="Ctl\Interfaces\IBSqlEditorExtendedCommandHandler.cs" />
 	  <Compile Include="Ctl\Interfaces\IBSqlEditorStrategyProvider.cs" />
-	  <Compile Include="Ctl\Interfaces\IBSqlEditorWindowPane.cs" />
+	  <Compile Include="Controls\Interfaces\IBSqlEditorWindowPane.cs" />
 	  <Compile Include="Ctl\Interfaces\IBTabbedEditorService.cs" />
 	  <Compile Include="Ctl\Interfaces\IBTabbedEditorToolbarCommandHandler.cs" />
 	  <Compile Include="Ctl\Interfaces\IBTextEditor.cs" />

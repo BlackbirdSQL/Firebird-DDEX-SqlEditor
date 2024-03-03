@@ -1,32 +1,97 @@
 ﻿using System;
 using System.IO;
-using System.Management.Instrumentation;
 using System.Threading;
 using System.Threading.Tasks;
+using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Properties;
 using EnvDTE;
-using FirebirdSql.Data.FirebirdClient;
+using Microsoft.VisualStudio.RpcContracts.FileSystem;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
-namespace BlackbirdSql.Core.Ctl;
+namespace BlackbirdSql.Core;
 
-public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
+// =========================================================================================================
+//										AbstractCorePackage Class 
+//
+/// <summary>
+/// BlackbirdSql <see cref="AsyncPackage"/> base class
+/// </summary>
+// =========================================================================================================
+public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 {
 
-	#region Fields - AbstractAsyncPackage
+	// -----------------------------------------------------------------------------------------------------
+	#region Constructors / Destructors - AbstractCorePackage
+	// -----------------------------------------------------------------------------------------------------
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// AbstractCorePackage package .ctor
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public AbstractCorePackage()
+	{
+		if (_Instance != null)
+		{
+			TypeAccessException ex = new(Resources.ExceptionDuplicateSingletonInstances.FmtRes("Ddex extension package instances"));
+			Diag.Dug(ex);
+			throw ex;
+		}
+
+		Diag.Context = "IDE";
+		_Instance = this;
+
+		try
+		{
+			UriParser.Register(new FbsqlStyleUriParser(SystemData.UriParserOptions), SystemData.Protocol, 0);
+		}
+		catch (Exception ex)
+		{
+			Diag.ThrowException(ex);
+		}
+
+		_Controller = CreateController();
+
+		RctManager.CreateInstance();
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// AbstractCorePackage package destructor 
+	/// </summary>
+	/// <param name="disposing"></param>
+	// ---------------------------------------------------------------------------------
+	protected override void Dispose(bool disposing)
+	{
+		RctManager.Instance?.Dispose();
+
+		base.Dispose(disposing);
+	}
+
+
+	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields - AbstractCorePackage
+	// =========================================================================================================
 
 
 
 	protected static Package _Instance = null;
 	protected IBPackageController _Controller = null;
 	private IDisposable _DisposableWaitCursor;
-	protected DTE _Dte = null;
 	protected IVsSolution _VsSolution = null;
-	protected IVsRunningDocumentTable _DocTable = null;
 	protected bool _Initialized = false;
 	protected static bool _InvariantResolved = false;
 
@@ -40,7 +105,7 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 
 
 	// =========================================================================================================
-	#region Property accessors - AbstractAsyncPackage
+	#region Property accessors - AbstractCorePackage
 	// =========================================================================================================
 
 
@@ -60,50 +125,31 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	}
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Accessor to the <see cref="IVsRunningDocumentTable"/> instance
-	/// </summary>
-	public virtual IVsRunningDocumentTable DocTable
-	{
-		get
-		{
-			_DocTable ??= GetDocTable();
-
-			// If it's null there's an issue. Possibly we've come in too early
-			if (_DocTable == null)
-			{
-				NullReferenceException ex = new("SVsRunningDocumentTable is null");
-				Diag.Dug(ex);
-			}
-
-			return _DocTable;
-
-		}
-	}
-
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Accessor to the <see cref="DTE"/> instance.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Using Diag.ThrowIfNotOnUIThread()")]
 	public virtual DTE Dte
 	{
 		get
 		{
-			_Dte ??= GetDte();
+			if (Controller.ShutdownState)
+				return null;
 
-			// If it's null there's an issue. Possibly we've come in too early
-			if (_Dte == null)
-			{
-				NullReferenceException ex = new("DTE is null");
-				Diag.Dug(ex);
-			}
+			Diag.ThrowIfNotOnUIThread();
 
-			return _Dte;
+			DTE dte = GetService(typeof(DTE)) as DTE;
+
+			if (dte == null)
+				Controller.ShutdownState = true;
+
+			return dte;
 		}
 	}
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -155,6 +201,8 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 		}
 	}
 
+	public abstract IFileSystemProvider FileSystemBrokeredService { get; }
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Accessor to the 'this' cast as the <see cref="IAsyncServiceContainer"/>.
@@ -189,56 +237,7 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 
 
 	// =========================================================================================================
-	#region Constructors / Destructors - AbstractAsyncPackage
-	// =========================================================================================================
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// AbstractAsyncPackage package .ctor
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	public AbstractAsyncPackage()
-	{
-		if (_Instance != null)
-		{
-			TypeAccessException ex = new(Resources.ExceptionDuplicateSingletonInstances.FmtRes("Ddex extension package instances"));
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		Diag.Context = "IDE";
-		_Instance = this;
-
-		_Controller = CreateController();
-
-		RctManager.CreateInstance();
-	}
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// AbstractAsyncPackage package destructor 
-	/// </summary>
-	/// <param name="disposing"></param>
-	// ---------------------------------------------------------------------------------
-	protected override void Dispose(bool disposing)
-	{
-		RctManager.Instance?.Dispose();
-
-		base.Dispose(disposing);
-	}
-
-
-	#endregion Constructors / Destructors
-
-
-
-
-
-	// =========================================================================================================
-	#region Method Implementations - AbstractAsyncPackage
+	#region Method Implementations - AbstractCorePackage
 	// =========================================================================================================
 
 
@@ -266,6 +265,7 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	{
 		await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
+
 		// Sample format of FinalizeAsync in descendents
 
 		// if (cancellationToken.IsCancellationRequested)
@@ -291,7 +291,7 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 	/// </summary>
 	protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 	{
-		if (cancellationToken.IsCancellationRequested)
+		if (cancellationToken.IsCancellationRequested || Controller.ShutdownState)
 			return;
 
 		await base.InitializeAsync(cancellationToken, progress);
@@ -324,35 +324,13 @@ public abstract class AbstractAsyncPackage : AsyncPackage, IBAsyncPackage
 
 
 	// =========================================================================================================
-	#region Methods - AbstractAsyncPackage
+	#region Methods - AbstractCorePackage
 	// =========================================================================================================
 
 
 	protected abstract IBPackageController CreateController();
 
 
-	private IVsRunningDocumentTable GetDocTable()
-	{
-		if (GetService(typeof(SVsRunningDocumentTable)) is not IVsRunningDocumentTable service)
-		{
-			Diag.ExceptionService(typeof(IVsRunningDocumentTable));
-			return null;
-		}
-		return service;
-	}
-
-	private DTE GetDte()
-	{
-		try
-		{
-			return GetService(typeof(DTE)) is not DTE service ? throw new ServiceUnavailableException(typeof(DTE)) : service;
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			return null;
-		}
-	}
 
 
 	// ---------------------------------------------------------------------------------

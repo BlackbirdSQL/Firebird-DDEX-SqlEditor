@@ -4,13 +4,15 @@
 using System;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Controls.ResultsPane;
+using BlackbirdSql.Common.Ctl;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 
-namespace BlackbirdSql.Common.Ctl.Interfaces;
+namespace BlackbirdSql.Common.Controls.Interfaces;
 
 public interface IBSqlEditorWindowPane : IBWindowPane
 {
@@ -102,7 +104,7 @@ public interface IBSqlEditorWindowPane : IBWindowPane
 
 	SqlTextSpan GetAllCodeEditorTextSpan2();
 
-	IVsTextView GetCodeEditorTextView();
+	string GetCodeText();
 
 	void ConfigureTextViewForAutonomousFind(IVsWindowFrame frame, IVsTextView textView);
 

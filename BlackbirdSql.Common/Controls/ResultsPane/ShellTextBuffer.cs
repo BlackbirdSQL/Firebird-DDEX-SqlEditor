@@ -226,15 +226,13 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 		if (serviceProvider == null)
 		{
 			Exception ex = new ArgumentNullException("serviceProvider");
-			Tracer.LogExThrow(GetType(), ex);
-			throw ex;
+			Diag.ThrowException(ex);
 		}
 
 		if (serviceProvider is not Microsoft.VisualStudio.OLE.Interop.IServiceProvider)
 		{
 			Exception ex2 = new ArgumentException("", "serviceProvider");
-			Tracer.LogExThrow(GetType(), ex2);
-			throw ex2;
+			Diag.ThrowException(ex2);
 		}
 
 		Diag.ThrowIfNotOnUIThread();
@@ -244,8 +242,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 		if (obj == null)
 		{
 			ServiceUnavailableException ex3 = new(typeof(ILocalRegistry));
-			Tracer.LogExThrow(GetType(), ex3);
-			throw ex3;
+			Diag.ThrowException(ex3);
 		}
 
 		Guid riid = typeof(IVsTextStream).GUID;
@@ -324,8 +321,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 		if (obj == null)
 		{
 			ServiceUnavailableException ex = new (typeof(IVsUIShellOpenDocument));
-			Tracer.LogExThrow(GetType(), ex);
-			throw ex;
+			Diag.ThrowException(ex);
 		}
 
 		Native.ThrowOnFailure(obj.OpenDocumentViaProject(FileName, ref logview, out _, out _, out _, out IVsWindowFrame ppWindowFrame), (string)null);
@@ -468,11 +464,9 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 				Native.ThrowOnFailure(vsTextStream.CreateStreamMarker(1, position, length, marker, array), (string)null);
 				break;
 			default:
-				{
-					Exception ex = new ArgumentException("Unknown marker type: " + markerType);
-					Tracer.LogExThrow(GetType(), ex);
-					throw ex;
-				}
+				Exception ex = new ArgumentException("Unknown marker type: " + markerType);
+				Diag.ThrowException(ex);
+				break;
 		}
 
 		marker.VsMarker = array[0];
@@ -511,7 +505,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 			}
 			catch (Exception ex)
 			{
-				Tracer.LogExCatch(GetType(), ex);
+				Diag.Dug(ex);
 				Exception exo = new("Couldn't replace text", ex);
 				throw exo;
 			}
@@ -560,7 +554,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 		}
 		catch (Exception e)
 		{
-			Tracer.LogExCatch(GetType(), e);
+			Diag.Dug(e);
 		}
 	}
 

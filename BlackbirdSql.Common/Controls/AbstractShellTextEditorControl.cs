@@ -547,8 +547,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 		if (_TextCmdTarget == null || _TextWindowPane == null || _VsTextManager == null)
 		{
 			Exception ex = new InvalidOperationException(ControlsResources.ErrCannotInitNewEditorInst);
-			Tracer.LogExThrow(GetType(), ex);
-			throw ex;
+			Diag.ThrowException(ex);
 		}
 	}
 
@@ -621,7 +620,7 @@ public abstract class AbstractShellTextEditorControl : Control, IDisposable, IOl
 			}
 			catch (Exception e)
 			{
-				Tracer.LogExCatch(typeof(AbstractShellTextEditorControl), e);
+				Diag.Dug(e);
 			}
 			finally
 			{

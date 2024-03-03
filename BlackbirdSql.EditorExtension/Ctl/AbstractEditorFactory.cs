@@ -33,55 +33,6 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 
 	protected static IVsMonitorSelection _monitorSelection;
 
-	protected bool IsOpeningViaTsdataButton
-	{
-		get
-		{
-			if (_monitorSelection == null)
-			{
-				Diag.ThrowIfNotOnUIThread();
-
-				Microsoft.VisualStudio.OLE.Interop.IServiceProvider oleServiceProvider = OleServiceProvider;
-
-				Guid guidService = typeof(IVsMonitorSelection).GUID;
-				Guid riid = VSConstants.IID_IUnknown;
-
-				int num = oleServiceProvider.QueryService(ref guidService, ref riid, out IntPtr ppvObject);
-
-				if (Native.Failed(num) && num != VSConstants.E_FAIL && num != VSConstants.E_NOINTERFACE)
-				{
-					if (ppvObject != IntPtr.Zero)
-					{
-						Marshal.Release(ppvObject);
-					}
-
-					return false;
-				}
-
-				if (ppvObject != IntPtr.Zero)
-				{
-					try
-					{
-						_monitorSelection = (IVsMonitorSelection)Marshal.GetObjectForIUnknown(ppvObject);
-						Guid rguidCmdUI = VS.UICONTEXT_DacTSqlEditorLaunching;
-						_monitorSelection.GetCmdUIContextCookie(ref rguidCmdUI, out dacTSqlEditorLaunchingCookie);
-					}
-					finally
-					{
-						Marshal.Release(ppvObject);
-					}
-				}
-			}
-
-			if (_monitorSelection != null)
-			{
-				_monitorSelection.IsCmdUIContextActive(dacTSqlEditorLaunchingCookie, out var pfActive);
-				return pfActive == 1;
-			}
-
-			return false;
-		}
-	}
 
 	public override Guid ClsidEditorFactory
 	{
@@ -96,7 +47,8 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 		}
 	}
 
-	private string EditorId { get; set; }
+	protected string EditorId { get; set; }
+
 
 	public override int CreateEditorInstance(uint createFlags, string moniker, string physicalView, IVsHierarchy hierarchy, uint itemId, IntPtr existingDocData, out IntPtr intPtrDocView, out IntPtr intPtrDocData, out string caption, out Guid cmdUIGuid, out int result)
 	{
@@ -105,6 +57,7 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 		caption = "";
 		cmdUIGuid = Guid.Empty;
 		result = 1;
+
 		EditorId = "Editor" + _EditorId++;
 
 		using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
@@ -112,35 +65,6 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 			Cursor current = Cursor.Current;
 			try
 			{
-				SqlEtwProvider.EventWriteTSqlEditorLaunch(IsStart: true, EditorId ?? string.Empty);
-				if ((createFlags & 0x10) != 16)
-				{
-					if (IsOpeningViaTsdataButton)
-					{
-						PlatformNotSupportedException ex = new("TsData");
-						Diag.Dug(ex);
-						result = 0;
-						return VSConstants.VS_E_UNSUPPORTEDFORMAT;
-					}
-
-					GetCurrentHierarchies(out var foundTsData, out var foundSqlStudio);
-					if (foundTsData && !foundSqlStudio)
-					{
-						PlatformNotSupportedException ex = new("SqlStudio");
-						Diag.Dug(ex);
-						result = 0;
-						return VSConstants.VS_E_UNSUPPORTEDFORMAT;
-					}
-
-					if (IsTsDataProject(hierarchy))
-					{
-						PlatformNotSupportedException ex = new("TsData project");
-						Diag.Dug(ex);
-						result = 0;
-						return VSConstants.VS_E_UNSUPPORTEDFORMAT;
-					}
-				}
-
 				if (!string.IsNullOrEmpty(physicalView) && physicalView != "CodeFrame")
 				{
 					ArgumentException ex = new("physicalView is not CodeFrame or empty: " + physicalView);
@@ -149,7 +73,9 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 					return VSConstants.E_INVALIDARG;
 				}
 
-				if ((createFlags & 6) == 0)
+				uint flagSilentOrOpen = (uint)(__VSCREATEEDITORFLAGS.CEF_OPENFILE | __VSCREATEEDITORFLAGS.CEF_SILENT);
+
+				if ((createFlags & flagSilentOrOpen) == 0)
 				{
 					ArgumentException ex = new("invalid create flags: " + createFlags);
 					Diag.Dug(ex);
@@ -194,20 +120,14 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 						return VSConstants.VS_E_INCOMPATIBLEDOCDATA;
 					}
 
-					/*
-					if (IsDocDataOpenByDev10SqlEditor(objectForIUnknown))
-					{
-						InvalidOperationException ex = new("Invalid editor VS10");
-						Diag.Dug(ex);
-						return VSConstants.VS_E_INCOMPATIBLEDOCDATA;
-					}
-					*/
 				}
 
 				result = 0;
 				int result2 = VSConstants.E_FAIL;
+
 				Cursor.Current = Cursors.WaitCursor;
 				IVsTextLines vsTextLines2 = null;
+
 				if (vsTextLines == null)
 				{
 					Diag.ThrowIfNotOnUIThread();
@@ -230,25 +150,25 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 					vsTextLines2 = vsTextLines;
 				}
 
-				if (vsTextLines2 != null)
-				{
-					EnsureAuxilliaryDocData(hierarchy, moniker, vsTextLines2);
-					SqlEditorTabbedEditorPane editorPane = CreateTabbedEditorPane(vsTextLines2, moniker);
-					intPtrDocView = Marshal.GetIUnknownForObject(editorPane);
-					intPtrDocData = Marshal.GetIUnknownForObject(vsTextLines2);
-					caption = string.Empty;
-					cmdUIGuid = VSConstants.GUID_TextEditorFactory;
-					Guid guidLangService = MandatedSqlLanguageServiceClsid;
-					if (guidLangService != Guid.Empty)
-					{
-						vsTextLines2.SetLanguageServiceID(ref guidLangService);
-						IVsUserData obj3 = (IVsUserData)vsTextLines2;
-						Guid riidKey2 = VSConstants.VsTextBufferUserDataGuid.VsBufferDetectLangSID_guid;
-						Native.ThrowOnFailure(obj3.SetData(ref riidKey2, false));
-					}
+				if (vsTextLines2 == null)
+					return result2;
 
-					result2 = 0;
+				EnsureAuxilliaryDocData(hierarchy, moniker, vsTextLines2);
+				SqlEditorTabbedEditorPane editorPane = CreateTabbedEditorPane(vsTextLines2, moniker);
+				intPtrDocView = Marshal.GetIUnknownForObject(editorPane);
+				intPtrDocData = Marshal.GetIUnknownForObject(vsTextLines2);
+				caption = string.Empty;
+				cmdUIGuid = VSConstants.GUID_TextEditorFactory;
+				Guid guidLangService = MandatedSqlLanguageServiceClsid;
+				if (guidLangService != Guid.Empty)
+				{
+					vsTextLines2.SetLanguageServiceID(ref guidLangService);
+					IVsUserData obj3 = (IVsUserData)vsTextLines2;
+					Guid riidKey2 = VSConstants.VsTextBufferUserDataGuid.VsBufferDetectLangSID_guid;
+					Native.ThrowOnFailure(obj3.SetData(ref riidKey2, false));
 				}
+
+				result2 = 0;
 
 				return result2;
 			}
@@ -272,73 +192,13 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 
 	protected virtual SqlEditorTabbedEditorPane CreateTabbedEditorPane(IVsTextLines vsTextLines, string moniker)
 	{
-		return new SqlEditorTabbedEditorPane(ServiceProvider, EditorExtensionAsyncPackage.Instance, vsTextLines, moniker);
+		return new SqlEditorTabbedEditorPane(ServiceProvider, EditorExtensionPackage.Instance, vsTextLines, moniker);
 	}
 
 	protected virtual void EnsureAuxilliaryDocData(IVsHierarchy hierarchy, string documentMoniker, object docData)
 	{
-		EditorExtensionAsyncPackage.Instance.EnsureAuxilliaryDocData(hierarchy, documentMoniker, docData);
+		EditorExtensionPackage.Instance.EnsureAuxilliaryDocData(hierarchy, documentMoniker, docData);
 	}
 
-	private static bool IsTsDataProject(IVsHierarchy hierarchy)
-	{
-		return GetProjectGuid(hierarchy) == VS.CLSID_TSqlDataProjectNode;
-	}
 
-	private static Guid GetProjectGuid(IVsHierarchy hierarchy)
-	{
-		Diag.ThrowIfNotOnUIThread();
-
-		Native.ThrowOnFailure(hierarchy.GetGuidProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_TypeGuid, out var pguid));
-
-		return pguid;
-	}
-
-	public static bool IsDocDataOpenByDev10SqlEditor(object existingDocData)
-	{
-		return false;
-	}
-
-	private void GetCurrentHierarchies(out bool foundTsData, out bool foundSqlStudio)
-	{
-		foundTsData = false;
-		foundSqlStudio = false;
-		Guid clsidSSDTProjectNodeFactory = VS.CLSID_SSDTProjectNode;
-		Guid clsidTsDataProject = VS.CLSID_TSqlDataProjectNode;
-
-		if (ServiceProvider.GetService(typeof(IVsSolution)) is not IVsSolution vsSolution)
-			return;
-
-		Diag.ThrowIfNotOnUIThread();
-
-		Guid rguidEnumOnlyThisType = Guid.Empty;
-		int projectEnum = vsSolution.GetProjectEnum((uint)__VSENUMPROJFLAGS.EPF_ALLINSOLUTION, ref rguidEnumOnlyThisType, out IEnumHierarchies ppenum);
-
-		ErrorHandler.ThrowOnFailure(projectEnum);
-		if (projectEnum != 0 || ppenum == null)
-		{
-			return;
-		}
-
-		IVsHierarchy[] array = new IVsHierarchy[1];
-		while (ppenum.Next(1u, array, out uint pceltFetched) == 0 && pceltFetched == 1)
-		{
-			if (Native.Succeeded(array[0].GetGuidProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_TypeGuid, out rguidEnumOnlyThisType)))
-			{
-				if (rguidEnumOnlyThisType == clsidSSDTProjectNodeFactory)
-				{
-					foundSqlStudio = true;
-				}
-				else if (rguidEnumOnlyThisType == clsidTsDataProject)
-				{
-					foundTsData = true;
-				}
-
-				if (foundTsData & foundSqlStudio)
-				{
-					break;
-				}
-			}
-		}
-	}
 }

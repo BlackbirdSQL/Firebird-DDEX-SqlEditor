@@ -27,6 +27,8 @@ public static class SystemData
 
 	public const string DataProviderName = "Firebird Server"; // Firebird
 
+	public const string UIContextName = "BlackbirdSql UIContext Autoload";
+
 	public static Type ProviderFactoryType = typeof(FirebirdSql.Data.FirebirdClient.FirebirdClientFactory);
 
 
@@ -42,23 +44,37 @@ public static class SystemData
 
 
 	// ---------------------------------------------------------------------------------------------------------
-	#region Extension wide constants - SystemData
+	#region Extension wide constants & statics - SystemData
 	// ---------------------------------------------------------------------------------------------------------
 
 
-	public const string Protocol = "fbsql";
+	/// <summary>
+	/// The base protocol used by monikers
+	/// </summary>
+	public const string Protocol = "fbsql++";
 	public const string Scheme = Protocol + "://";
-	public const string WinScheme = Protocol + ":\\";
-	public const string Extension = "." + Protocol;
-	public const string ServiceFolder = "ServerxExplorer";
-	public const string TempSqlFolder = "SqlTemporaryFiles";
+	public const string Extension = ".fbsql";
 
-	public const string DatasetKeyFmt = "{0} ({1})";
-	public const string DatasetKeyAlternateFmt = "Database[\"{0} ({1})\"]";
+	public const char UnixFieldSeparator = '/';
+	public const char WinFieldSeparator = '\\';
 	public const char CompositeSeparator = '.';
 
 
-	#endregion Extension wide constants
+	public const string DatasetKeyFmt = "{0} ({1})";
+	public const string DatasetKeyAlternateFmt = "Database[\"{0} ({1})\"]";
+
+	public const string ServiceFolder = "ServerxExplorer";
+	public const string TempSqlFolder = "SqlTemporaryFiles";
+
+
+	public const GenericUriParserOptions UriParserOptions =
+		GenericUriParserOptions.AllowEmptyAuthority | GenericUriParserOptions.NoPort
+		| GenericUriParserOptions.NoQuery | GenericUriParserOptions.NoFragment
+		| GenericUriParserOptions.DontCompressPath
+		| GenericUriParserOptions.DontUnescapePathDotsAndSlashes;
+
+
+	#endregion Extension wide constants & statics
 
 
 
@@ -87,7 +103,6 @@ public static class SystemData
 	public const string DesignerExplorerServicesGuid = "4D30B519-9FB6-4FFD-A0CE-92863B1C37EA";
 	public const string DesignerOnlineServicesGuid = "27F3F968-74EB-46B7-A1FF-6CCA57C0D894";
 
-	public const string EventProviderGuid = "C8333EC7-A86E-40AB-AD3C-405C97DC876B";
 	
 	// BlackbirdSql Output pane
 	public const string OutputPaneGuid = "9E2B946C-4D46-4067-ABEB-E181F3B3768E";
@@ -111,6 +126,7 @@ public static class SystemData
 	public const string MandatedSqlLanguageServiceGuid = VS.SSDTLanguageServiceGuid;
 	public const string MandatedXmlLanguageServiceGuid = VS.XmlLanguageServiceGuid;
 	public const string MandatedExpressionEvaluatorGuid = VS.TSqlExpressionEvaluatorGuid;
+	public const string MandatedEventProviderGuid = VS.SqlEventProviderGuid;
 
 	// BlackbirdSql Guids
 	public const string DslEditorFactoryGuid = "D5797F62-22B1-41BC-9B8C-E248EE895966";

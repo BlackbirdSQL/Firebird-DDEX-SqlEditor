@@ -50,7 +50,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 	private bool _Initialized = false;
 	private int _EventsCardinal = 0;
 
-	protected static object _LockClass = new object();
+	protected static object _LockGlobal = new object();
 	private PropertyGrid _Window = null;
 	private bool _ValidFocusCell = false;
 	private bool _ValidMouseEventCell = false;

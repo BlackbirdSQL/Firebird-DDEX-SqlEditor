@@ -4,6 +4,8 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using BlackbirdSql.Core.Model.Enums;
 using EnvDTE;
+using Microsoft.ServiceHub.Framework;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -13,18 +15,30 @@ using Microsoft.VisualStudio.TaskStatusCenter;
 namespace BlackbirdSql.Core.Ctl.Interfaces;
 
 [Guid(SystemData.PackageControllerGuid)]
+#if ASYNCRDTEVENTS_ENABLED
+public interface IBPackageController : IVsSolutionEvents3,
+	IVsSelectionEvents, IVsRunningDocTableEvents3, IVsRunningDocTableEvents4, IVsRunningDocTableEvents7, IDisposable
+#else
 public interface IBPackageController : IVsSolutionEvents3, // IVsSolutionEvents2, IVsSolutionEvents, */
-	IVsSelectionEvents, IVsRunningDocTableEvents, IVsRunningDocTableEvents4, IDisposable
+	IVsSelectionEvents, IVsRunningDocTableEvents3, IVsRunningDocTableEvents4, IDisposable
+#endif
 {
 
 	// Rdt Event Delegates
 
 	delegate int AfterAttributeChangeDelegate(uint docCookie, uint grfAttribs);
+	delegate int AfterAttributeChangeExDelegate(uint docCookie, uint grfAttribs, IVsHierarchy pHierOld,
+		uint itemidOld, string pszMkDocumentOld, IVsHierarchy pHierNew, uint itemidNew, string pszMkDocumentNew);
+
 	delegate int AfterDocumentWindowHideDelegate(uint docCookie, IVsWindowFrame pFrame);
 	delegate int AfterSaveDelegate(uint docCookie);
+	delegate IVsTask AfterSaveAsyncDelegate(uint cookie, uint flags);
+
 	delegate int BeforeDocumentWindowShowDelegate(uint docCookie, int fFirstShow, IVsWindowFrame pFrame);
 	delegate int BeforeLastDocumentUnlockDelegate(uint docCookie, uint dwRDTLockType, uint dwReadLocksRemaining,
 		uint dwEditLocksRemaining);
+	delegate int BeforeSaveDelegate(uint docCookie);
+	delegate IVsTask BeforeSaveAsyncDelegate(uint cookie, uint flags, IVsTask saveTask);
 
 	// Solution Event Delegates
 	delegate int AfterOpenProjectDelegate(Project project, int fAdded);
@@ -57,10 +71,14 @@ public interface IBPackageController : IVsSolutionEvents3, // IVsSolutionEvents2
 
 	// Rdt events
 	event AfterAttributeChangeDelegate OnAfterAttributeChangeEvent;
+	event AfterAttributeChangeExDelegate OnAfterAttributeChangeExEvent;
 	event AfterDocumentWindowHideDelegate OnAfterDocumentWindowHideEvent;
 	event AfterSaveDelegate OnAfterSaveEvent;
+	event AfterSaveAsyncDelegate OnAfterSaveAsyncEvent;
 	event BeforeDocumentWindowShowDelegate OnBeforeDocumentWindowShowEvent;
 	event BeforeLastDocumentUnlockDelegate OnBeforeLastDocumentUnlockEvent;
+	event BeforeSaveDelegate OnBeforeSaveEvent;
+	event BeforeSaveAsyncDelegate OnBeforeSaveAsyncEvent;
 
 	// Selection Events
 	event CmdUIContextChangedDelegate OnCmdUIContextChangedEvent;
@@ -74,9 +92,11 @@ public interface IBPackageController : IVsSolutionEvents3, // IVsSolutionEvents2
 
 	IBAsyncPackage DdexPackage { get; set; }
 
-	IVsRunningDocumentTable DocTable { get; }
-
 	DTE Dte { get; }
+
+	ServiceRpcDescriptor FileSystemRpcDescriptor2 { get; }
+
+	bool ShutdownState { get; set; }
 
 	object SolutionObject { get; }
 
@@ -115,19 +135,29 @@ public interface IBPackageController : IVsSolutionEvents3, // IVsSolutionEvents2
 
 	void DeregisterMiscHierarchy();
 
+	void DisableRdtEvents();
+
+	void EnableRdtEvents();
+
 	void EnsureMonitorSelection();
+
+	TInterface EnsureService<TService, TInterface>() where TInterface : class;
 
 	TInterface GetService<TService, TInterface>() where TInterface : class;
 
 	Task<TInterface> GetServiceAsync<TService, TInterface>() where TInterface : class;
 
+	Task<IVsTaskStatusCenterService> GetStatusCenterServiceAsync();
+
+
 	void RegisterMiscHierarchy(IVsUIHierarchy hierarchy);
 
+	bool ShutdownDte();
+	
 	void ValidateSolution();
 
+
 	void OnLoadSolutionOptions(Stream stream);
-
-
 	int OnNewQueryRequested(IVsDataViewHierarchy site, EnNodeSystemType nodeSystemType);
 	void OnSaveSolutionOptions(Stream stream);
 

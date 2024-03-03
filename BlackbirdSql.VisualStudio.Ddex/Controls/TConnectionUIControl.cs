@@ -33,7 +33,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls;
 /// Implementation of <see cref="IVsDataConnectionUIControl"/> interface
 /// </summary>
 // =========================================================================================================
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
 public partial class TConnectionUIControl : DataConnectionUIControl
 {
 

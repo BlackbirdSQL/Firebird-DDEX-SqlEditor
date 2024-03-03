@@ -164,31 +164,6 @@ public class PropertiesWindowManager : IDisposable
 			});
 		}).BeginInvoke(null, null);
 
-		/*
-		_ = ((Action)delegate
-		{
-			Task task = Task.Factory.StartNew(delegate
-			{
-				lock (_LockLocal)
-				{
-					if (_Disposed || _SingleAsyncUpdate == null)
-					{
-						return;
-					}
-
-					_SingleAsyncUpdate.Release();
-				}
-
-				ICollection propertyWindowObjects = GetPropertyWindowObjects();
-				if (propertyWindowObjects != null && EditorUI.ActiveTab != null)
-				{
-					EditorUI.ActiveTab.PropertyWindowSelectedObjects = propertyWindowObjects;
-				}
-			},
-			default, TaskCreationOptions.PreferFairness, TaskScheduler.Current);
-
-		}).BeginInvoke(null, null);
-		*/
 	}
 
 	private void EnsurePropertyWindowObjectIsLatest()

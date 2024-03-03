@@ -13,14 +13,11 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace BlackbirdSql.Common.Ctl;
 
-public class FindTargetAdapter : IVsFindTarget, IVsFindTarget2, IBVsFindTarget3
+public class FindTargetAdapter(AbstractTabbedEditorPane editorPane) : IVsFindTarget, IVsFindTarget2, IBVsFindTarget3
 {
-	protected AbstractTabbedEditorPane TabbedEditorPane { get; set; }
+	protected AbstractTabbedEditorPane TabbedEditorPane { get; set; } = editorPane;
 
-	public FindTargetAdapter(AbstractTabbedEditorPane editorPane)
-	{
-		TabbedEditorPane = editorPane;
-	}
+
 
 	public int Find(string pszSearch, uint grfOptions, int fResetStartPoint, IVsFindHelper pHelper, out uint pResult)
 	{

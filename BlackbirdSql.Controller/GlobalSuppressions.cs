@@ -5,7 +5,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-// [assembly: SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
 [assembly: SuppressMessage("Style", "IDE0060:Remove unused parameter")]
 [assembly: SuppressMessage("Usage", "VSTHRD104:Offer async methods")]
 [assembly: SuppressMessage("Usage", "VSTHRD103:Call async methods when in an async method")]

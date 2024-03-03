@@ -5,7 +5,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-
+using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Core;

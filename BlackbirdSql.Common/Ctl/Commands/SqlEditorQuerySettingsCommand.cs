@@ -6,6 +6,7 @@
 using System;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Controls;
+using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;

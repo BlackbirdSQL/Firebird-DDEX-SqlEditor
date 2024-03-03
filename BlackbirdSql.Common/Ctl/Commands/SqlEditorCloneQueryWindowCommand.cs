@@ -5,6 +5,7 @@
 
 using System;
 using System.Data;
+using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
@@ -40,7 +41,8 @@ public class SqlEditorCloneQueryWindowCommand : AbstractSqlEditorCommand
 	{
 		using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
 		{
-			Cmd.OpenNewMiscellaneousSqlFile(new ServiceProvider(Controller.OleServiceProvider));
+			DesignerExplorerServices.OpenNewMiscellaneousSqlFile();
+
 			AuxiliaryDocData auxiliaryDocDataForEditor = GetAuxiliaryDocDataForEditor();
 			IBSqlEditorWindowPane lastFocusedSqlEditor = ((IBEditorPackage)Controller.DdexPackage).LastFocusedSqlEditor;
 			if (lastFocusedSqlEditor != null)
@@ -57,7 +59,7 @@ public class SqlEditorCloneQueryWindowCommand : AbstractSqlEditorCommand
 						connection.Open();
 					}
 
-					auxDocData.IsQueryWindow = auxiliaryDocDataForEditor.IsQueryWindow;
+					// auxDocData.IsVirtualWindow = auxiliaryDocDataForEditor.IsVirtualWindow;
 				}
 			}
 		}

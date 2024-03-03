@@ -129,6 +129,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Originals", "Originals", "{
 		Originals\WorkFile.txt = Originals\WorkFile.txt
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIP.NET", "Private\CustomUriParser\SIP.NET.csproj", "{301BF3DA-EAD4-4A74-B191-623E534F4EBD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -281,6 +283,22 @@ Global
 		{A17289FA-EFEF-49AA-8757-296447C2C1BE}.Release|x64.Build.0 = Release|Any CPU
 		{A17289FA-EFEF-49AA-8757-296447C2C1BE}.Release|x86.ActiveCfg = Release|Any CPU
 		{A17289FA-EFEF-49AA-8757-296447C2C1BE}.Release|x86.Build.0 = Release|Any CPU
+		{301BF3DA-EAD4-4A74-B191-623E534F4EBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{301BF3DA-EAD4-4A74-B191-623E534F4EBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{301BF3DA-EAD4-4A74-B191-623E534F4EBD}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{301BF3DA-EAD4-4A74-B191-623E534F4EBD}.Debug|arm64.Build.0 = Debug|Any CPU
+		{301BF3DA-EAD4-4A74-B191-623E534F4EBD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{301BF3DA-EAD4-4A74-B191-623E534F4EBD}.Debug|x64.Build.0 = Debug|Any CPU
+		{301BF3DA-EAD4-4A74-B191-623E534F4EBD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{301BF3DA-EAD4-4A74-B191-623E534F4EBD}.Debug|x86.Build.0 = Debug|Any CPU
+		{301BF3DA-EAD4-4A74-B191-623E534F4EBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{301BF3DA-EAD4-4A74-B191-623E534F4EBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{301BF3DA-EAD4-4A74-B191-623E534F4EBD}.Release|arm64.ActiveCfg = Release|Any CPU
+		{301BF3DA-EAD4-4A74-B191-623E534F4EBD}.Release|arm64.Build.0 = Release|Any CPU
+		{301BF3DA-EAD4-4A74-B191-623E534F4EBD}.Release|x64.ActiveCfg = Release|Any CPU
+		{301BF3DA-EAD4-4A74-B191-623E534F4EBD}.Release|x64.Build.0 = Release|Any CPU
+		{301BF3DA-EAD4-4A74-B191-623E534F4EBD}.Release|x86.ActiveCfg = Release|Any CPU
+		{301BF3DA-EAD4-4A74-B191-623E534F4EBD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -289,6 +307,7 @@ Global
 		{CE045B2F-CD19-48EE-8CCC-89A02206BB33} = {172C8E85-C9A4-4387-8CE7-D9A533F4FA8F}
 		{4CED057D-6DC6-47E0-AC9C-878664C9F4DD} = {172C8E85-C9A4-4387-8CE7-D9A533F4FA8F}
 		{661A1BA1-5E54-4774-8422-C0361FD2BC46} = {172C8E85-C9A4-4387-8CE7-D9A533F4FA8F}
+		{301BF3DA-EAD4-4A74-B191-623E534F4EBD} = {172C8E85-C9A4-4387-8CE7-D9A533F4FA8F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {39854CA8-D6FF-4E02-879D-704FC2E136D4}

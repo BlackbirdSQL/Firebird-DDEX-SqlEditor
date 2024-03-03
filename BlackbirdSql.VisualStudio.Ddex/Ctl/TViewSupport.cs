@@ -30,7 +30,6 @@ namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
 /// Partly plagiarized off of Microsoft.VisualStudio.Data.Providers.SqlServer.SqlViewSupport.
 /// </summary>
 // =========================================================================================================
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
 public class TViewSupport : DataViewSupport,
 	IVsDataSupportImportResolver, IVsDataViewIconProvider
 {
@@ -206,6 +205,7 @@ public class TViewSupport : DataViewSupport,
 
 		_Loaded = true;
 
+
 		site.StateChanged += OnConnectionStateChanged;
 
 		ViewHierarchy.ExplorerConnection.NodeChanged += OnNodeChanged;
@@ -318,7 +318,7 @@ public class TViewSupport : DataViewSupport,
 		// Tracer.Trace((expanded ? "Expanded" : "Closed") + " icon requested id: " + itemId + ":" + node.Name + ":" + node.FullName);
 
 		string name = null;
-		string[] nodes = node.FullName.Split('/');
+		string[] nodes = node.FullName.Split(SystemData.UnixFieldSeparator);
 
 		switch (nodes.Length)
 		{
@@ -469,7 +469,7 @@ public class TViewSupport : DataViewSupport,
 				// IVsDataSourceInformation vsDataSourceInformation = connection.GetService(typeof(IVsDataSourceInformation)) as IVsDataSourceInformation;
 				// ViewHierarchy.PersistentProperties["BackendType"] = vsDataSourceInformation["BackendType"];
 
-				// MonikerAgent sqlMoniker = new(ViewHierarchy.ExplorerConnection.ConnectionNode);
+				// Moniker sqlMoniker = new(ViewHierarchy.ExplorerConnection.ConnectionNode);
 				// ViewHierarchy.PersistentProperties["MkDocumentPrefix"] = sqlMoniker.ToDocumentMoniker(true);
 			}
 		}
@@ -517,6 +517,7 @@ public class TViewSupport : DataViewSupport,
 		}
 
 		// Attempt linkage startup on a refresh.
+		// Tracer.Trace(GetType(), "OnConnectionStateChanged()", "Calling IsEdm.");
 
 		if (UnsafeCmd.IsEdmConnectionSource)
 			return;
@@ -577,6 +578,8 @@ public class TViewSupport : DataViewSupport,
 					CsbAgent.AreEquivalent(DataProtection.DecryptString(site.EncryptedConnectionString),
 						parser.ConnectionString, CsbAgent.DescriberKeys))
 				{
+					// Tracer.Trace(GetType(), "OnNodeChanged()", "Calling IsEdm for Dispose.");
+
 					if (UnsafeCmd.IsEdmConnectionSource)
 						return;
 
@@ -587,6 +590,8 @@ public class TViewSupport : DataViewSupport,
 			}
 			else
 			{
+				// Tracer.Trace(GetType(), "OnNodeChanged()", "Calling IsEdm for parser == null.");
+
 				if (UnsafeCmd.IsEdmConnectionSource)
 					return;
 
@@ -629,12 +634,13 @@ public class TViewSupport : DataViewSupport,
 		if (site.State != DataConnectionState.Open || !RctManager.Available)
 			return;
 
+		// Tracer.Trace(GetType(), "OnNodeExpandedOrRefreshed", "Calling IsEdm.");
+
 		// If the refresh is the result of the EDMX wizard making an illegal name
 		// change, exit. We'll handle this in OnNodeChanged().
 		if (UnsafeCmd.IsEdmConnectionSource)
 			return;
 
-		// Tracer.Trace(GetType(), "OnNodeExpandedOrRefreshed", "EnsuringLoaded Linkage. Node: {0}.", e.Node.Name);
 
 		LinkageParser.AsyncEnsureLoaded(e.Node);
 	}

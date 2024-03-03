@@ -7,8 +7,8 @@ using System;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using BlackbirdSql.Common.Model;
-using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Common.Controls.Interfaces;
 
 
 namespace BlackbirdSql.Common.Ctl.Commands;

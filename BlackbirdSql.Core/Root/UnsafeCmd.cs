@@ -21,6 +21,7 @@ using BlackbirdSql.Core.Model.Enums;
 using Microsoft.VisualStudio.RpcContracts.RemoteUI;
 using Microsoft.VisualStudio;
 using System.Runtime.InteropServices;
+using BlackbirdSql.Core.Model;
 
 
 
@@ -35,7 +36,7 @@ namespace BlackbirdSql.Core;
 /// Central location for implementation of unsafe utility static methods. 
 /// </summary>
 // =========================================================================================================
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification="Using Diag.ThrowIfNotOnUIThread()")]
 public abstract class UnsafeCmd
 {
 
@@ -122,6 +123,32 @@ public abstract class UnsafeCmd
 
 	public static EnConnectionSource GetConnectionSource()
 	{
+		if (RctManager.AdvisingExplorerEvents || Controller.ShutdownState)
+			return EnConnectionSource.ServerExplorer;
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			// Fire and wait.
+
+			EnConnectionSource result = ThreadHelper.JoinableTaskFactory.Run(async delegate
+			{
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+				return GetConnectionSourceImpl();
+			});
+
+			return result;
+		}
+
+		return GetConnectionSourceImpl();
+
+	}
+
+
+	private static EnConnectionSource GetConnectionSourceImpl()
+	{
+		Diag.ThrowIfNotOnUIThread();
+
+
 		EnConnectionSource source;
 
 		string textBufferGuid = VSConstants.CLSID.VsTextBuffer_string;
@@ -131,8 +158,13 @@ public abstract class UnsafeCmd
 		string seGuid = VSConstants.StandardToolWindows.ServerExplorer.ToString("B", CultureInfo.InvariantCulture);
 
 
-		string objectKind = Controller.ActiveWindowObjectKind;
-		string objectType = Controller.ActiveWindowObjectType;
+		string objectKind = Core.Controller.ActiveWindowObjectKind;
+		if (objectKind == null)
+			return Controller.ShutdownState ? EnConnectionSource.ServerExplorer : EnConnectionSource.Unknown;
+
+		string objectType = Core.Controller.ActiveWindowObjectType;
+		if (objectType == null)
+			return Controller.ShutdownState ? EnConnectionSource.ServerExplorer : EnConnectionSource.Unknown;
 
 		// Definitely ServerExplorer
 		if (objectKind != null && objectKind.Equals(seGuid, StringComparison.InvariantCultureIgnoreCase))
@@ -289,6 +321,20 @@ public abstract class UnsafeCmd
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Returns True if project is external files project.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool IsMiscProjectKind(string kind)
+	{
+		if (!ProjectGuids.TryGetValue(kind, out string name))
+			return false;
+
+		return name == "MiscProject";
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Returns True if project is VB or C#.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
@@ -300,7 +346,15 @@ public abstract class UnsafeCmd
 		return name.EndsWith("Project");
 	}
 
-
+	public static string GetProjectKind(string name)
+	{
+		foreach (KeyValuePair<string, string> pair in ProjectGuids)
+		{
+			if (name.Equals(pair.Value, StringComparison.OrdinalIgnoreCase))
+				return pair.Key;
+		}
+		return null;
+	}
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
@@ -316,6 +370,7 @@ public abstract class UnsafeCmd
 		{ "{66A2671F-8FB5-11D2-AA7E-00C04F688DDE}", "MiscItem" },
 		{ "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}", "VbProject" },
 		{ "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", "C#Project" },
+		{ "{66A2671D-8FB5-11D2-AA7E-00C04F688DDE}", "MiscProject" },
 		{ "{3AE79031-E1BC-11D0-8F78-00A0C9110057}", "SolutionExplorer"}
 			/* The above the only one's we care about ATM
 			{ "{06A35CCD-C46D-44D5-987B-CF40FF872267}", "DeploymentMergeModule" },
@@ -336,7 +391,6 @@ public abstract class UnsafeCmd
 			{ "{603C0E0B-DB56-11DC-BE95-000D561079B0}", "ASP.NET(MVC 1.0)" },
 			{ "{60DC8134-EBA5-43B8-BCC9-BB4BC16C2548}", "WPF" },
 			{ "{68B1623D-7FB9-47D8-8664-7ECEA3297D4F}", "SmartDevice(VB.NET)" },
-			{ "{66A2671D-8FB5-11D2-AA7E-00C04F688DDE}", "MiscProject" },
 			{ "{66A26722-8FB5-11D2-AA7E-00C04F688DDE}", "SolutionItem" },
 			{ "{67294A52-A4F0-11D2-AA88-00C04F688DDE}", "UnloadedProject" },
 			{ "{6BB5F8EE-4483-11D3-8BCF-00C04F8EC28C}", "ProjectFile" },

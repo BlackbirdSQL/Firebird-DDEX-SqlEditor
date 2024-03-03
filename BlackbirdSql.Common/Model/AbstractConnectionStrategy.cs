@@ -274,7 +274,6 @@ public abstract class AbstractConnectionStrategy : IDisposable
 			catch (Exception ex)
 			{
 				Diag.Dug(ex, script.ToString());
-				Tracer.LogExCatch(typeof(SqlConnectionStrategy), ex);
 				StringBuilder sb = new StringBuilder(100);
 				sb.AppendFormat(ControlsResources.UnableToApplyConnectionSettings, ex.Message);
 				Cmd.ShowMessageBoxEx(string.Empty, sb.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Hand);
@@ -439,7 +438,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		}
 		catch (FbException e)
 		{
-			Tracer.LogExCatch(typeof(AbstractConnectionStrategy), e);
+			Diag.Dug(e);
 			Cmd.ShowMessageBoxEx(null, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrDatabaseNotAccessible, selectedDatasetKey), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 		}
 	}
@@ -593,7 +592,8 @@ public abstract class AbstractConnectionStrategy : IDisposable
 			return;
 		}
 
-		Tracer.LogExCatch(typeof(AbstractConnectionStrategy), exception);
+		Diag.Dug(exception);
+
 		if (!Cmd.IsInAutomationFunction())
 		{
 			string value = string.Format(CultureInfo.CurrentCulture, ControlsResources.CommonMessageLoopFailedToOpenConnection, ci.DataSource);

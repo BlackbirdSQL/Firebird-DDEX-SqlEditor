@@ -82,11 +82,11 @@ public class FileEncodingDlg : Form, IVsSaveOptionsDlg
 			this.m_encodingCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.m_encodingCombo.DropDownWidth = 136;
 			resources.ApplyResources(this.m_encodingCombo, "m_encodingCombo");
-			this.m_encodingCombo.Items.AddRange(new object[] {
-            resources.GetString("m_encodingCombo.Items"),
-            resources.GetString("m_encodingCombo.Items1"),
-            resources.GetString("m_encodingCombo.Items2"),
-            resources.GetString("m_encodingCombo.Items3")});
+			this.m_encodingCombo.Items.AddRange([
+				resources.GetString("m_encodingCombo.Items"),
+				resources.GetString("m_encodingCombo.Items1"),
+				resources.GetString("m_encodingCombo.Items2"),
+				resources.GetString("m_encodingCombo.Items3")]);
 			this.m_encodingCombo.Name = "m_encodingCombo";
 			// 
 			// m_OKButton

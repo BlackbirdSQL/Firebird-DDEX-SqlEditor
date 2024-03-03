@@ -18,24 +18,16 @@ using BlackbirdSql.Common.Ctl.Enums;
 namespace BlackbirdSql.Common.Controls;
 
 
-public class SqlEditorResultsTab : AbstractSqlEditorTab
+#pragma warning disable CS9113 // Parameter is unread.
+public class SqlEditorResultsTab(AbstractTabbedEditorPane editorPane, Guid logicalView, Guid editorLogicalView, EnEditorTabType editorTabType)
+	: AbstractSqlEditorTab(editorPane, logicalView, editorTabType)
 {
 	private Guid _ClsidLogicalView = VSConstants.LOGVIEWID_Designer;
 
-	private Guid _ClsidEditorFactory = new(LibraryData.SqlResultsEditorFactoryGuid);
+	private Guid _ClsidTabEditorFactory = new(LibraryData.SqlResultsEditorFactoryGuid);
 
-	public SqlEditorResultsTab(AbstractTabbedEditorPane editorPane, Guid logicalView, Guid editorLogicalView, EnEditorTabType editorTabType)
-		: base(editorPane, logicalView, editorTabType)
-	{
-	}
+	protected override Guid ClsidEditorTabEditorFactory => _ClsidTabEditorFactory;
 
-	protected override Guid GetEditorTabEditorFactoryGuid()
-	{
-		return _ClsidEditorFactory;
-	}
-
-	protected override Guid GetLogicalView()
-	{
-		return _ClsidLogicalView;
-	}
+	protected override Guid ClsidLogicalView => _ClsidLogicalView;
 }
+#pragma warning restore CS9113 // Parameter is unread.

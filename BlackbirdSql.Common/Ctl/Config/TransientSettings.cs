@@ -54,7 +54,7 @@ public class TransientSettings : PersistentSettings, IBEditorTransientSettings, 
 	{
 		get
 		{
-			lock (_LockClass)
+			lock (_LockGlobal)
 			{
 				if (!_LiveStore.TryGetValue(name, out object value))
 				{
@@ -70,7 +70,7 @@ public class TransientSettings : PersistentSettings, IBEditorTransientSettings, 
 
 		set
 		{
-			lock (_LockClass)
+			lock (_LockGlobal)
 				_LiveStore[name] = value;
 		}
 	}
@@ -560,7 +560,7 @@ public class TransientSettings : PersistentSettings, IBEditorTransientSettings, 
 
 	public virtual object Clone()
 	{
-		lock (_LockClass)
+		lock (_LockGlobal)
 			return CreateInstance(_LiveStore, _ExecOptions);
 	}
 
@@ -603,7 +603,7 @@ public class TransientSettings : PersistentSettings, IBEditorTransientSettings, 
 
 	public bool PropertyExists(string name)
 	{
-		lock (_LockClass)
+		lock (_LockGlobal)
 			return _LiveStore.ContainsKey(name);
 	}
 

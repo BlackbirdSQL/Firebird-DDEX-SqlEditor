@@ -7,7 +7,11 @@ using BlackbirdSql.Controller.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using EnvDTE;
+using EnvDTE80;
+using Microsoft.ServiceHub.Framework;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 
 namespace BlackbirdSql.Controller;
@@ -48,7 +52,7 @@ public sealed class PackageController : AbstractPackageController
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Gets or creates the singleton PackageController instance. This should only
-	/// be called in the .ctor of <see cref="AbstractAsyncPackage"/>.
+	/// be called in the .ctor of <see cref="AbstractCorePackage"/>.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static IBPackageController CreateInstance(IBAsyncPackage ddex) =>
@@ -77,7 +81,10 @@ public sealed class PackageController : AbstractPackageController
 	// =========================================================================================================
 
 
-	public ControllerAsyncPackage ControllerPackage => (ControllerAsyncPackage)DdexPackage;
+	public ControllerPackage ControllerPackage => (ControllerPackage)DdexPackage;
+
+	public override ServiceRpcDescriptor FileSystemRpcDescriptor2 =>
+		EditorExtension.PackageData.FileSystemRpcDescriptor2;
 
 	public override bool SolutionValidating => ControllerEventsManager.Validating;
 
@@ -108,6 +115,7 @@ public sealed class PackageController : AbstractPackageController
 		_EventsAdvisedUnsafe = true;
 
 		// Ensure UI thread call is made for unsafe events.
+		// Fire and wait.
 
 		if (!ThreadHelper.CheckAccess())
 		{
@@ -173,7 +181,7 @@ public sealed class PackageController : AbstractPackageController
 			if (VsSolution == null)
 				throw new NullReferenceException(Resources.ExceptionSVsSolutionIsNull);
 
-			if (DocTable == null)
+			if (!RdtManager.ServiceAvailable)
 				throw new NullReferenceException(Resources.ExceptionIVsRunningDocumentTableIsNull);
 
 		}
@@ -185,13 +193,24 @@ public sealed class PackageController : AbstractPackageController
 
 		// Tracer.Trace(GetType(), "AdviseUnsafeEvents()", "AdviseSolutionEvents.");
 
+
 		// Enable solution event capture
 		VsSolution.AdviseSolutionEvents(this, out _HSolutionEvents);
+
+
+		Events2 events2 = Dte.Events as Events2;
+
+		events2.ProjectItemsEvents.ItemAdded += OnProjectItemAdded;
+		events2.ProjectItemsEvents.ItemRemoved += OnProjectItemRemoved;
+		events2.ProjectItemsEvents.ItemRenamed += OnProjectItemRenamed;
+
+
+
 
 		// Enable rdt events.
 		try
 		{
-			DocTable.AdviseRunningDocTableEvents(this, out _HDocTableEvents);
+			RdtManager.AdviseRunningDocTableEvents(this, out _HDocTableEvents);
 		}
 		catch (Exception ex)
 		{
@@ -201,6 +220,7 @@ public sealed class PackageController : AbstractPackageController
 
 		return true;
 	}
+
 
 
 	public override void ValidateSolution()

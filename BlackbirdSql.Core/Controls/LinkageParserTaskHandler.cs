@@ -3,14 +3,14 @@
 
 using System;
 using System.Data;
-using System.Data.Common;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Properties;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.TaskStatusCenter;
 
 using static BlackbirdSql.Core.Model.AbstractLinkageParser;
@@ -28,59 +28,6 @@ namespace BlackbirdSql.Core.Controls;
 // =========================================================================================================
 public class LinkageParserTaskHandler : IBTaskHandlerClient
 {
-
-	// =========================================================================================================
-	#region Fields - LinkageParserTaskHandler
-	// =========================================================================================================
-
-
-	private readonly string _DatasetKey;
-	/// <summary>
-	/// Handle to the ITaskHandler ProgressData.
-	/// </summary>
-	protected TaskProgressData _ProgressData = default;
-
-
-	/// <summary>
-	/// Handle to the IDE ITaskHandler.
-	/// </summary>
-	protected ITaskHandler _TaskHandler = null;
-
-	protected string _TaskHandlerTaskName = "Parsing";
-
-
-	#endregion Fields
-
-
-
-
-	// =========================================================================================================
-	#region Property accessors - LinkageParserTaskHandler
-	// =========================================================================================================
-
-
-	
-	/// <summary>
-	/// The name of the running task if the object is currently using the task handler.
-	/// </summary>
-	public string TaskHandlerTaskName => _TaskHandlerTaskName;
-
-
-	public CancellationToken UserCancellation
-	{
-		get
-		{
-			if (_TaskHandler == null)
-				return default;
-			return _TaskHandler.UserCancellation;
-		}
-	}
-
-
-	#endregion Property accessors
-
-
-
 
 	// -----------------------------------------------------------------------------------------------------
 	#region Constructors - LinkageParserTaskHandler
@@ -102,6 +49,65 @@ public class LinkageParserTaskHandler : IBTaskHandlerClient
 
 
 	#endregion Constructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields - LinkageParserTaskHandler
+	// =========================================================================================================
+
+
+	private readonly string _DatasetKey;
+	/// <summary>
+	/// Handle to the ITaskHandler ProgressData.
+	/// </summary>
+	protected TaskProgressData _ProgressData = default;
+
+
+
+	/// <summary>
+	/// Handle to the IDE ITaskHandler.
+	/// </summary>
+	protected ITaskHandler _TaskHandler = null;
+
+	protected string _TaskHandlerTaskName = "Parsing";
+
+
+
+	#endregion Fields
+
+
+
+
+	// =========================================================================================================
+	#region Property accessors - LinkageParserTaskHandler
+	// =========================================================================================================
+
+
+	
+	/// <summary>
+	/// The name of the running task if the object is currently using the task handler.
+	/// </summary>
+	public string TaskHandlerTaskName => _TaskHandlerTaskName;
+
+	[SuppressMessage("Usage", "VSTHRD102:Implement internal logic asynchronously")]
+	private IVsTaskStatusCenterService StatusCenterService =>
+		ThreadHelper.JoinableTaskFactory.Run(Controller.GetStatusCenterServiceAsync);
+
+	public CancellationToken UserCancellation
+	{
+		get
+		{
+			if (_TaskHandler == null)
+				return default;
+			return _TaskHandler.UserCancellation;
+		}
+	}
+
+
+	#endregion Property accessors
 
 
 
@@ -134,27 +140,22 @@ public class LinkageParserTaskHandler : IBTaskHandlerClient
 		_ProgressData = default;
 		_ProgressData.CanBeCanceled = canBeCancelled;
 
-		_TaskHandler = Controller.StatusCenterService.PreRegister(options, _ProgressData);
+		
+		_TaskHandler = StatusCenterService.PreRegister(options, _ProgressData);
 
 	}
 
 
-	public void RegisterTask(Task<bool> asyncPayloadLauncher)
+	public void RegisterTask(Task<bool> payloadLauncher)
 	{
 		try
 		{
-			_TaskHandler.RegisterTask(asyncPayloadLauncher);
+			_TaskHandler.RegisterTask(payloadLauncher);
 		}
-#if DEBUG
 		catch (Exception ex)
 		{
-			Tracer.Information(GetType(), "RegisterTask()", "{0}", ex.Message);
+			Diag.Dug(ex);
 		}
-#else
-		catch
-		{
-		}
-#endif
 	}
 
 

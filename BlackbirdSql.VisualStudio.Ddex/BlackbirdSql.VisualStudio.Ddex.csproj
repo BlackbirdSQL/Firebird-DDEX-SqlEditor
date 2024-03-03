@@ -424,7 +424,6 @@
     <Compile Include="BlackbirdSqlDdexExtension.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="PackageData.cs" />
-    <Compile Include="PackageSupportedObjects.cs" />
     <None Include="Controls\Config\DebugSettingsControl.xaml.cs">
       <DependentUpon>DebugSettingsControl.xaml</DependentUpon>
     </None>

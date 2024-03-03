@@ -1,12 +1,13 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.SqlEditorCommand
 using System;
+using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core;
-
+using BlackbirdSql.Core.Controls.Interfaces;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
@@ -45,7 +46,7 @@ public abstract class AbstractSqlEditorCommand
 		AuxiliaryDocData result = null;
 		if (EditorWindow != null)
 		{
-			IVsTextView codeEditorTextView = EditorWindow.GetCodeEditorTextView();
+			IVsTextView codeEditorTextView = ((IBEditorWindowPane)EditorWindow).GetCodeEditorTextView();
 			if (codeEditorTextView != null)
 			{
 				IVsTextLines textLinesForTextView = GetTextLinesForTextView(codeEditorTextView);

@@ -8,10 +8,12 @@ using System.Windows.Forms;
 using BlackbirdSql.Common;
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Properties;
-
+using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
 using Cmd = BlackbirdSql.Common.Cmd;
@@ -66,7 +68,19 @@ public sealed class SqlResultsEditorFactory : AbstruseEditorFactory
 			ResultWindowPane resultWindowPane = CreateResultsWindowPane();
 			caption = SharedResx.SqlResultsEditorFactory_Caption;
 			intPtrDocView = Marshal.GetIUnknownForObject(resultWindowPane);
-			intPtrDocData = Marshal.GetIUnknownForObject(resultWindowPane);
+
+
+			Guid clsid = typeof(VsTextBufferClass).GUID;
+			Guid iid = VSConstants.IID_IUnknown;
+			object obj = ((AsyncPackage)Controller.DdexPackage).CreateInstance(ref clsid, ref iid, typeof(object));
+			(obj as IObjectWithSite)?.SetSite(OleServiceProvider);
+			IVsTextLines vsTextLines = obj as IVsTextLines;
+			intPtrDocData = Marshal.GetIUnknownForObject(vsTextLines);
+
+
+
+
+			// intPtrDocData = Marshal.GetIUnknownForObject(resultWindowPane); SqlEditor bug!!!
 			cmdUIGuid = VSConstants.GUID_TextEditorFactory;
 			return VSConstants.S_OK;
 		}

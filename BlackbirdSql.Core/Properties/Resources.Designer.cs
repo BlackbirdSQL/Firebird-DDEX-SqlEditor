@@ -412,6 +412,15 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to UriComponents.SerializationInfoString must not be combined with other UriComponents..
+        /// </summary>
+        public static string ExceptionNetUriNotJustSerialization {
+            get {
+                return ResourceManager.GetString("ExceptionNetUriNotJustSerialization", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not locate Describer for connection parameter &apos;{0}&apos;..
         /// </summary>
         public static string ExceptionParameterDescriberNotFound {

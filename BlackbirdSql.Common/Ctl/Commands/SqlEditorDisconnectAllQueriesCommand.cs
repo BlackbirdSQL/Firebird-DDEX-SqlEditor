@@ -12,6 +12,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Common.Controls.Interfaces;
 
 namespace BlackbirdSql.Common.Ctl.Commands;
 
@@ -39,7 +40,7 @@ public class SqlEditorDisconnectAllQueriesCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		foreach (AuxiliaryDocData value in ((IBEditorPackage)Controller.DdexPackage).DocDataEditors.Values)
+		foreach (AuxiliaryDocData value in ((IBEditorPackage)Controller.DdexPackage).AuxiliaryDocDataTable.Values)
 		{
 			QueryManager qryMgr = value.QryMgr;
 			if (qryMgr != null && qryMgr.IsConnected)

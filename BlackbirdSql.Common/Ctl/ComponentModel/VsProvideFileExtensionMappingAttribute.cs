@@ -12,12 +12,13 @@ namespace BlackbirdSql.Common.Ctl.ComponentModel;
 
 
 [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
-class VsProvideFileExtensionMappingAttribute : RegistrationAttribute
+class VsProvideFileExtensionMappingAttribute(Type factoryType, string defaultName, short nameResourceID, int sortPriority = 0) : RegistrationAttribute
 {
-	private readonly string _DefaultName;
-	private readonly Type _FactoryType;
-	private readonly short _NameResourceID;
-	private readonly int _SortPriority;
+	private readonly string _DefaultName = defaultName;
+	private readonly Type _FactoryType = factoryType;
+	private readonly short _NameResourceID = nameResourceID;
+	private readonly int _SortPriority = sortPriority;
+
 
 
 
@@ -25,16 +26,6 @@ class VsProvideFileExtensionMappingAttribute : RegistrationAttribute
 
 	public Type FactoryType => _FactoryType;
 	public short NameResourceID => _NameResourceID;
-
-
-
-	public VsProvideFileExtensionMappingAttribute(Type factoryType, string defaultName, short nameResourceID, int sortPriority = 0)
-	{
-		_FactoryType = factoryType;
-		_DefaultName = defaultName;
-		_NameResourceID = nameResourceID;
-		_SortPriority = sortPriority;
-	}
 
 	public override void Register(RegistrationContext context)
 	{

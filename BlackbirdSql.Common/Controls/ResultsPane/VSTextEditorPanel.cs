@@ -61,8 +61,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 				if (_TextWriter == null)
 				{
 					Exception ex = new InvalidOperationException(ControlsResources.ErrTextWriterNull);
-					Tracer.LogExThrow(GetType(), ex);
-					throw ex;
+					Diag.ThrowException(ex);
 				}
 
 				return _TextWriter;
@@ -368,7 +367,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 					}
 					catch (Exception e)
 					{
-						Tracer.LogExCatch(GetType(), e);
+						Diag.Dug(e);
 						Cmd.ShowExceptionInDialog(ControlsResources.ErrWhileSavingResults, e);
 					}
 				}

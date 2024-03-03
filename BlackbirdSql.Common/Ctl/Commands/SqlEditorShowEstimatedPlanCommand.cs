@@ -4,7 +4,7 @@
 #endregion
 
 using System;
-using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core.Ctl.Diagnostics;

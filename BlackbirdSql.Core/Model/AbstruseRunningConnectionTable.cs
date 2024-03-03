@@ -22,6 +22,7 @@ using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Threading;
 using static BlackbirdSql.Core.Ctl.CoreConstants;
 
 
@@ -52,7 +53,7 @@ namespace BlackbirdSql.Core.Model;
 /// in the Rct.
 /// </remarks>
 // =========================================================================================================
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification="Using Diag.ThrowIfNotOnUIThread()")]
 [SuppressMessage("Usage", "VSTHRD102:Implement internal logic asynchronously")]
 public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, int>, IBRunningConnectionTable
 {
@@ -272,45 +273,52 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	{
 		// Tracer.Trace(GetType(), "AdviseServerExplorerConnectionsEvents()");
 
-		IVsDataExplorerConnectionManager manager =
-			(Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
-			as IVsDataExplorerConnectionManager)
-		?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
+		RctManager.AdvisingExplorerEvents = true;
 
-		Guid clsidProvider = new(SystemData.ProviderGuid);
-		IVsDataExplorerConnection explorerConnection;
-
-
-		foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in manager.Connections)
+		try
 		{
-			if (pair.Value.Provider != clsidProvider)
-				continue;
 
-			explorerConnection = pair.Value;
+			IVsDataExplorerConnectionManager manager = Controller.ExplorerConnectionManager;
 
-			try
+			Guid clsidProvider = new(SystemData.ProviderGuid);
+			IVsDataExplorerConnection explorerConnection;
+
+
+			foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in manager.Connections)
 			{
-				// Tracer.Trace(GetType(), "AdviseServerExplorerConnectionsEvents()", "Advising SE events for: {0}.", pair.Key);
+				if (pair.Value.Provider != clsidProvider)
+					continue;
 
-				object viewSupport = Reflect.GetPropertyValue(explorerConnection, "ViewSupport",
-					BindingFlags.Instance | BindingFlags.NonPublic);
+				explorerConnection = pair.Value;
 
-				if (viewSupport == null)
+				try
 				{
-					COMException ex = new("IVsDataExplorerConnection ViewSupport is not ready");
-					throw ex;
+					// Tracer.Trace(GetType(), "AdviseServerExplorerConnectionsEvents()", "Advising SE events for: {0}.", pair.Key);
+
+					object viewSupport = Reflect.GetPropertyValue(explorerConnection, "ViewSupport",
+						BindingFlags.Instance | BindingFlags.NonPublic);
+
+					if (viewSupport == null)
+					{
+						COMException ex = new("IVsDataExplorerConnection ViewSupport is not ready");
+						throw ex;
+					}
+
+					AdviseEvents(explorerConnection);
+
 				}
-
-				AdviseEvents(explorerConnection);
-
+				catch (Exception ex)
+				{
+					Diag.Dug(ex);
+				}
 			}
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-			}
+
+			return true;
 		}
-
-		return true;
+		finally
+		{
+			RctManager.AdvisingExplorerEvents = false;
+		}
 
 	}
 
@@ -366,10 +374,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	private void AsyncLinkSitedServerExplorerConnections()
 	{
-		IVsDataExplorerConnectionManager manager =
-			(Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
-			as IVsDataExplorerConnectionManager)
-		?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
+		IVsDataExplorerConnectionManager manager = Controller.ExplorerConnectionManager;
 
 		Guid clsidProvider = new(SystemData.ProviderGuid);
 		IVsDataExplorerConnection explorerConnection;
@@ -440,27 +445,15 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		// The following for brevity.
 		CancellationToken cancellationToken = _AsyncEventsToken;
-		TaskCreationOptions creationOptions = TaskCreationOptions.PreferFairness
-			| TaskCreationOptions.AttachedToParent;
-		TaskScheduler scheduler = TaskScheduler.Default;
-		// For brevity.
 
 		// For brevity. Create the payload.
-		bool payload() =>
-			PayloadAdviseServerExplorerConnectionsEvents(cancellationToken);
+		Task<bool> payload() =>
+			PayloadAdviseServerExplorerConnectionsEventsAsync(cancellationToken);
 
+		// Run on new thread in thread pool.
+		// Fire and forget with token tracking.
 
-		// Start up the payload launcher with tracking.
-		// Tracer.Trace(GetType(), "AsyncAdviseServerExplorerConnectionsEvents()", "Calling startnew.");
-
-		// _AsyncPayloadLauncher?.Dispose();
-		_ = Task.Factory.StartNew(payload, default, creationOptions, scheduler);
-
-		// Tracer.Trace(GetType(), "AsyncAdviseServerExplorerConnectionsEvents()", "Done called startnew.");
-
-		// We may do this for the async task.
-		// _TaskHandler.RegisterTask(_ASyncPayloadLauncher);
-
+		_ = Task.Factory.StartNew(payload, default, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
 
 		return true;
 	}
@@ -525,6 +518,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		// Start up the payload launcher with tracking.
 		// Tracer.Trace(GetType(), "AsyncLoadConfiguredConnections()", "Calling startnew.");
+		
+		// Fire and forget with task tracking
 
 		_AsyncPayloadLauncher?.Dispose();
 		_AsyncPayloadLauncher = Task.Factory.StartNew(payload, default, creationOptions, scheduler);
@@ -599,7 +594,13 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	{
 		lock (_LockObject)
 		{
-			_SyncPayloadLauncher?.Dispose();
+			// Fix as per MagicAndre1981.
+			if (_SyncPayloadLauncher != null && (_SyncPayloadLauncher.IsCompleted
+				|| _SyncPayloadLauncher.IsCanceled || _SyncPayloadLauncher.IsFaulted))
+			{
+				_SyncPayloadLauncher.Dispose();
+			}
+
 			_SyncPayloadLauncher = null;
 			_SyncPayloadLauncherTokenSource?.Dispose();
 			_SyncPayloadLauncherTokenSource = null;
@@ -934,10 +935,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	{
 		// Tracer.Trace(GetType(), "LoadServerExplorerConfiguredConnections()");
 
-		IVsDataExplorerConnectionManager manager =
-			(Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
-			as IVsDataExplorerConnectionManager)
-			?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
+		IVsDataExplorerConnectionManager manager = Controller.ExplorerConnectionManager;
 
 		Guid clsidProvider = new(SystemData.ProviderGuid);
 		object @object;
@@ -1100,7 +1098,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		Diag.ThrowIfNotOnUIThread();
 
 
-		if (probject == null && (Controller.Instance.Dte.Solution == null
+		if (probject == null && (Controller.Instance.Dte == null
+			|| Controller.Instance.Dte.Solution == null
 			|| Controller.Instance.Dte.Solution.Projects == null
 			|| Controller.Instance.Dte.Solution.Projects.Count == 0))
 		{
@@ -1179,6 +1178,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		_AsyncPayloadLauncherTokenSource?.Cancel();
 
+		if (Controller.Instance.Dte == null)
+			return false;
 
 		try
 		{
@@ -1188,7 +1189,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			AdviseServerExplorerConnectionsEvents();
 
 
-			if (Controller.Instance.Dte == null || Controller.Instance.Dte.Solution == null
+			if (Controller.Instance.Dte.Solution == null
 				|| Controller.Instance.Dte.Solution.Projects == null)
 			{
 				COMException exc = new("DTE.Solution.Projects is not available", VSConstants.RPC_E_INVALID_DATA);
@@ -1392,12 +1393,13 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// Loads explorer advise connections on thread pool.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private bool PayloadAdviseServerExplorerConnectionsEvents(CancellationToken cancellationToken)
+	private async Task<bool> PayloadAdviseServerExplorerConnectionsEventsAsync(CancellationToken cancellationToken)
 	{
-		// Tracer.Trace(GetType(), "PayloadAdviseServerExplorerConnectionsEvents()");
+		// Tracer.Trace(GetType(), "PayloadAdviseServerExplorerConnectionsEventsAsync()");
 
-		// Sanity check.
-		Diag.ThrowIfOnUIThread();
+
+		// Move back onto main thread.
+		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
 		bool result = true;
 
@@ -1480,7 +1482,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			}
 
 			// Check again.
-			if (cancellationToken.IsCancellationRequested)
+			if (cancellationToken.IsCancellationRequested || Controller.Instance.Dte == null)
 			{
 				result = false;
 			}
@@ -1494,7 +1496,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 					AdviseServerExplorerConnectionsEvents();
 
 
-				if (probject == null && (Controller.Instance.Dte == null || Controller.Instance.Dte.Solution == null
+				if (probject == null && (Controller.Instance.Dte.Solution == null
 					|| Controller.Instance.Dte.Solution.Projects == null))
 				{
 					COMException exc = new("DTE.Solution.Projects is not available", VSConstants.RPC_E_INVALID_DATA);
@@ -2214,6 +2216,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			PayloadSyncWaiter(cancellationToken);
 
 		// Start up the payload launcher with tracking.
+		// Fire and forget with task tracking
+
 		_SyncPayloadLauncher = Task.Factory.StartNew(payload, default, creationOptions, scheduler);
 
 		// We're not doing this for a sync task.
@@ -2233,7 +2237,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	private bool SyncExit()
 	{
-		_SyncPayloadLauncherTokenSource.Cancel();
+		_SyncPayloadLauncherTokenSource?.Cancel();
 
 		System.Threading.Thread.Sleep(50);
 
@@ -2316,10 +2320,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	{
 		// Tracer.Trace(GetType(), "UnloadServerExplorerConfiguredConnections()");
 
-		IVsDataExplorerConnectionManager manager =
-			(Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
-			as IVsDataExplorerConnectionManager)
-			?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
+		IVsDataExplorerConnectionManager manager = Controller.ExplorerConnectionManager;
 
 		Guid clsidProvider = new(SystemData.ProviderGuid);
 
@@ -2528,7 +2529,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		while (_SyncPayloadLauncherLaunchState != EnLauncherPayloadLaunchState.Inactive
 			&& _SyncPayloadLauncherLaunchState != EnLauncherPayloadLaunchState.Shutdown
 			&& _SyncPayloadLauncher != null && !_SyncPayloadLauncher.IsCompleted
-			&& !_SyncPayloadLauncherToken.IsCancellationRequested)
+			&& !_SyncPayloadLauncher.IsCanceled && !_SyncPayloadLauncher.IsFaulted
+			&& _SyncPayloadLauncherTokenSource != null && !_SyncPayloadLauncherToken.IsCancellationRequested)
 		{
 			if (waitTime >= 15000)
 			{

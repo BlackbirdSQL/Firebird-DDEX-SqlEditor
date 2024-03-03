@@ -5,12 +5,10 @@ using System.IO;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
-using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Ctl.Exceptions;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Model;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -133,25 +131,13 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 
 
 
-	public static IVsProject3 GetMiscellaneousProject(IServiceProvider provider)
-	{
-		Diag.ThrowIfNotOnUIThread();
-
-		IVsExternalFilesManager obj = provider.GetService(typeof(SVsExternalFilesManager)) as IVsExternalFilesManager
-			?? throw Diag.ExceptionService(typeof(IVsExternalFilesManager));
-		Native.WrapComCall(obj.GetExternalFilesProject(out IVsProject ppProject), []);
-
-		return (IVsProject3)ppProject;
-	}
-
-
 
 	// IsInAutomationFunction
 	public static bool IsInAutomationFunction()
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		IVsExtensibility3 extensibility = GlobalServices.Extensibility;
+		IVsExtensibility3 extensibility = VS.GetExtensibility(); 
 
 		if (extensibility == null)
 			return true;
@@ -163,75 +149,6 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 
 
 
-	public static void OpenAsMiscellaneousFile(IServiceProvider provider, string path, string caption,
-		Guid editor, string physicalView, Guid logicalView)
-	{
-		// Tracer.Trace(typeof(Cmd), "OpenAsMiscellaneousFile()");
-
-		Diag.ThrowIfNotOnUIThread();
-
-		try
-		{
-			IVsProject3 miscellaneousProject = GetMiscellaneousProject(provider);
-			VSADDRESULT[] array = new VSADDRESULT[1];
-			VSADDITEMOPERATION dwAddItemOperation = VSADDITEMOPERATION.VSADDITEMOP_CLONEFILE;
-
-			uint flags = (uint)__VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_DoOpen;
-
-			flags |= (uint)(!(editor == Guid.Empty)
-				? __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_UseEditor
-				: __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_UseView);
-
-			Native.WrapComCall(miscellaneousProject.AddItemWithSpecific(grfEditorFlags: flags,
-				itemidLoc: uint.MaxValue, dwAddItemOperation: dwAddItemOperation, pszItemName: caption, cFilesToOpen: 1u,
-				rgpszFilesToOpen: [path], hwndDlgOwner: IntPtr.Zero, rguidEditorType: ref editor,
-				pszPhysicalView: physicalView, rguidLogicalView: ref logicalView, pResult: array), []);
-
-			if (array[0] != VSADDRESULT.ADDRESULT_Success)
-			{
-				throw new ApplicationException(array[0].ToString());
-			}
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw ex;
-		}
-	}
-
-
-
-	public static void OpenNewMiscellaneousSqlFile(IServiceProvider provider, string initialContent = "")
-	{
-		// Tracer.Trace(typeof(Cmd), "OpenAsMiscellaneousFile()");
-
-		Diag.ThrowIfNotOnUIThread();
-
-		IVsProject3 miscellaneousProject = GetMiscellaneousProject(provider);
-		miscellaneousProject.GenerateUniqueItemName(VSConstants.VSITEMID_ROOT, SystemData.Extension, "SQLQuery", out string pbstrItemName);
-		string tempFileName = Path.GetTempFileName();
-		if (tempFileName == null)
-		{
-			ShowMessageBoxEx(string.Empty, ControlsResources.ErrCannotCreateTempFile, MessageBoxButtons.OK, MessageBoxIcon.Hand);
-			return;
-		}
-		StreamWriter streamWriter = null;
-		try
-		{
-			streamWriter = new StreamWriter(tempFileName);
-			streamWriter.Write(initialContent);
-			streamWriter.Flush();
-			streamWriter.Close();
-			streamWriter = null;
-			OpenAsMiscellaneousFile(provider, tempFileName, pbstrItemName, new Guid(SystemData.DslEditorFactoryGuid),
-				string.Empty, VSConstants.LOGVIEWID_Primary);
-		}
-		finally
-		{
-			streamWriter?.Close();
-			File.Delete(tempFileName);
-		}
-	}
 
 
 

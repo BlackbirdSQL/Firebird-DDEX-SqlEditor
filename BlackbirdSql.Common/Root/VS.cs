@@ -61,6 +61,8 @@ public abstract class VS : Core.VS
 	/// </summary>
 	public const string SqlEditorCommandsGuid = "52692960-56BC-4989-B5D3-94C47A513E8D";
 
+	private static IVsExtensibility3 _S_Extensibility;
+
 
 	#endregion SqlEditor Members
 
@@ -137,11 +139,31 @@ public abstract class VS : Core.VS
 		return c.ClientRectangle.Contains(pt);
 	}
 
-	public static IEnumerable<IVsWindowFrame> GetWindowFramesForDocData(object existingDocData, System.IServiceProvider serviceProvider)
+	public static IVsExtensibility3 GetExtensibility()
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		if (existingDocData == null)
+		return _S_Extensibility ??= (IVsExtensibility3)Package.GetGlobalService(typeof(IVsExtensibility3));
+	}
+
+
+	public static IVsWindowFrame GetWindowFrameForDocData(object docData, System.IServiceProvider serviceProvider)
+	{
+		Diag.ThrowIfNotOnUIThread();
+
+		foreach (IVsWindowFrame frame in GetWindowFramesForDocData(docData, serviceProvider))
+			return frame;
+
+		return null;
+	}
+
+
+
+	public static IEnumerable<IVsWindowFrame> GetWindowFramesForDocData(object docData, System.IServiceProvider serviceProvider)
+	{
+		Diag.ThrowIfNotOnUIThread();
+
+		if (docData == null)
 		{
 			ArgumentException ex = new("docData");
 			Diag.Dug(ex);
@@ -155,7 +177,7 @@ public abstract class VS : Core.VS
 		{
 			IVsWindowFrame vsWindowFrame = windowFrames[0];
 			ErrorHandler.ThrowOnFailure(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out var pvar));
-			if (pvar == existingDocData)
+			if (pvar == docData)
 			{
 				yield return vsWindowFrame;
 			}
@@ -249,13 +271,13 @@ public abstract class VS : Core.VS
 				}
 				catch (Exception e)
 				{
-					Tracer.LogExCatch(typeof(VS), e);
+					Diag.Dug(e);
 					return null;
 				}
 			}
 			catch (Exception e2)
 			{
-				Tracer.LogExCatch(typeof(VS), e2);
+				Diag.Dug(e2);
 				Cmd.ShowExceptionInDialog(string.Empty, e2);
 				return null;
 			}

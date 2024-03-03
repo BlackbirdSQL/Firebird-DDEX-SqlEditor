@@ -46,7 +46,7 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 	private static List<IBSettingsModelPropertyWrapper> _PropertyWrappers = null;
 
 	// A static class lock
-	private static readonly object _LockClass = new object();
+	private static readonly object _LockGlobal = new object();
 
 
 	[Browsable(false)]
@@ -98,7 +98,7 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 	{
 		get
 		{
-			lock (_LockClass)
+			lock (_LockGlobal)
 			{
 				if (_PropertyWrappers != null)
 					return _PropertyWrappers;
@@ -205,7 +205,7 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 
 	public virtual object GetDefaultValue(string propertyName)
 	{
-		lock (_LockClass)
+		lock (_LockGlobal)
 		{
 			PropertyWrapper wrapper = this[propertyName];
 
@@ -269,7 +269,7 @@ public abstract class AbstractSettingsModel<T> : IBSettingsModel where T : Abstr
 	{
 		BeforeLoadEvent?.Invoke(this, EventArgs.Empty);
 
-		lock (_LockClass)
+		lock (_LockGlobal)
 		{
 			foreach (IBSettingsModelPropertyWrapper propertyWrapper in PropertyWrappersEnumeration)
 			{

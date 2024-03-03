@@ -1051,7 +1051,7 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 			throw ex;
 		}
 
-		foreach (KeyValuePair<string, int> implementation in PackageSupportedObjects.Implementations)
+		foreach (KeyValuePair<string, int> implementation in PackageData.Implementations)
 		{
 			if (implementation.Value == 0)
 				continue;
@@ -1470,7 +1470,7 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 		{
 			array = new string[subKeyCount-1];
 			for (int i = 1; i < subKeyCount; i++)
-				array[i-1] = PackageSupportedObjects.Values[$"{typeName}{(i==0?"":i)}"].Name ?? string.Empty;
+				array[i-1] = PackageData.ImplementationValues[$"{typeName}{(i==0?"":i)}"].Name ?? string.Empty;
 		}
 		if (array == null || array.Length == 0)
 		{

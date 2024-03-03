@@ -220,16 +220,14 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			if (writer == null)
 			{
 				Exception ex = new ArgumentNullException("writer");
-				Tracer.LogExThrow(GetType(), ex);
-				throw ex;
+				Diag.ThrowException(ex);
 			}
 
 			QEResultSet gridResultSet = GetGridResultSet(grid);
 			if (gridResultSet == null)
 			{
 				Exception ex2 = new ArgumentException("", "grid");
-				Tracer.LogExThrow(GetType(), ex2);
-				throw ex2;
+				Diag.ThrowException(ex2);
 			}
 
 			int numberOfDataColumns = gridResultSet.NumberOfDataColumns;
@@ -743,7 +741,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 				}
 				catch (Exception e)
 				{
-					Tracer.LogExCatch(GetType(), e);
+					Diag.Dug(e);
 					Cmd.ShowExceptionInDialog(ControlsResources.ErrWhileSavingResults, e);
 				}
 				finally

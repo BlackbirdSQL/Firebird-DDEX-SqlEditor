@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Core.Controls;
+using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Properties;
@@ -47,7 +48,7 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Protected .ctor. for creating an unregistered clone.
-	/// Callers must make a call to EnsureLoaded() for the rhs beforehand.
+	/// Callers must make a call to EnsureLoadedImpl() for the rhs beforehand.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	private LinkageParser(LinkageParser rhs) : base(rhs)
@@ -108,7 +109,7 @@ public class LinkageParser : AbstractLinkageParser
 
 		LinkageParser parser;
 
-		lock (_LockClass)
+		lock (_LockGlobal)
 		{
 			parser = (LinkageParser)AbstractLinkageParser.GetInstance(connection);
 
@@ -162,6 +163,25 @@ public class LinkageParser : AbstractLinkageParser
 			return null;
 
 		return EnsureInstance(connection);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Retrieves or creates the parser instance of a connection, ensuring it has
+	/// linked.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static LinkageParser EnsureLoaded(IDbConnection connection)
+	{
+		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection)");
+
+		LinkageParser parser = CreateInstance(connection, true);
+
+		parser.EnsureLoadedImpl();
+
+		return parser;
 	}
 
 
@@ -281,7 +301,7 @@ public class LinkageParser : AbstractLinkageParser
 	/// <summary>
 	/// Getter inidicating whether or not async linkage can and should begin or resume operations.
 	/// </summary>
-	private bool ClearToLoadAsync => _Enabled && !AsyncActive && !Loaded && !SyncActive;
+	private bool ClearToLoadAsync => _Enabled && !AsyncActive && !Loaded && !SyncActive && !PersistentSettings.OnDemandLinkage;
 
 	/// <summary>
 	/// Getter indicating wether or not the UI thread can and should resume linkage operations.
@@ -491,6 +511,7 @@ public class LinkageParser : AbstractLinkageParser
 			PayloadAsyncExecute(asyncProcessId, asyncCancellationToken, userCancellationToken, delay, multiplier);
 
 		// Start up the payload launcher with tracking.
+		// Fire and remember.
 		_AsyncPayloadLauncher = Task.Factory.StartNew(payload, default, creationOptions, scheduler);
 
 		_TaskHandler.RegisterTask(_AsyncPayloadLauncher);
@@ -641,9 +662,9 @@ public class LinkageParser : AbstractLinkageParser
 	/// </summary>
 	/// <returns>True if successfully loaded or already loaded else false</returns>
 	// ---------------------------------------------------------------------------------
-	protected override bool EnsureLoaded()
+	protected override bool EnsureLoadedImpl()
 	{
-		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] EnsureLoaded() not pausing, calling SyncExecute()");
+		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] EnsureLoadedImpl() not pausing, calling SyncExecute()");
 
 		return SyncExecute();
 	}
@@ -1119,6 +1140,7 @@ public class LinkageParser : AbstractLinkageParser
 		_TaskHandler.Status(_LinkStage, _TotalElapsed, _Enabled, AsyncActive);
 		_TaskHandler.PreRegister(false);
 
+		// Fire and remember.
 
 		Task<bool> task = Task.Factory.StartNew(() =>
 		{

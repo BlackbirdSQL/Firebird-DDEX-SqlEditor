@@ -10,25 +10,21 @@ namespace BlackbirdSql.Common.Ctl;
 
 public sealed class HandleCollector
 {
-	private class HandleType
+	private class HandleType(string name, int expense, int initialThreshHold)
 	{
-		public readonly string name;
+		public readonly string name = name;
 
-		private readonly int initialThreshHold;
+		private readonly int deltaPercent = 100 - expense;
 
-		private int threshHold;
+		private readonly int initialThreshHold = initialThreshHold;
+
+		private int threshHold = initialThreshHold;
+
+
+
 
 		private int handleCount;
 
-		private readonly int deltaPercent;
-
-		public HandleType(string name, int expense, int initialThreshHold)
-		{
-			this.name = name;
-			this.initialThreshHold = initialThreshHold;
-			threshHold = initialThreshHold;
-			deltaPercent = 100 - expense;
-		}
 
 		public void Add(IntPtr handle)
 		{
@@ -44,7 +40,7 @@ public sealed class HandleCollector
 				flag = NeedCollection();
 				currentHandleCount = handleCount;
 			}
-			lock (_LockClass)
+			lock (_LockGlobal)
 			{
 				HandleAddedEvent?.Invoke(name, handle, currentHandleCount);
 			}
@@ -98,7 +94,7 @@ public sealed class HandleCollector
 				}
 				currentHandleCount = handleCount;
 			}
-			lock (_LockClass)
+			lock (_LockGlobal)
 			{
 				HandleRemovedEvent?.Invoke(name, handle, currentHandleCount);
 			}
@@ -113,7 +109,7 @@ public sealed class HandleCollector
 	private static int suspendCount;
 
 	// A static class lock
-	private static readonly object _LockClass = new object();
+	private static readonly object _LockGlobal = new object();
 
 	public static event HandleChangeEventHandler HandleAddedEvent;
 
@@ -127,7 +123,7 @@ public sealed class HandleCollector
 
 	public static void SuspendCollect()
 	{
-		lock (_LockClass)
+		lock (_LockGlobal)
 		{
 			suspendCount++;
 		}
@@ -136,7 +132,7 @@ public sealed class HandleCollector
 	public static void ResumeCollect()
 	{
 		bool flag = false;
-		lock (_LockClass)
+		lock (_LockGlobal)
 		{
 			if (suspendCount > 0)
 			{
@@ -164,7 +160,7 @@ public sealed class HandleCollector
 
 	public static int RegisterType(string typeName, int expense, int initialThreshold)
 	{
-		lock (_LockClass)
+		lock (_LockGlobal)
 		{
 			if (handleTypeCount == 0 || handleTypeCount == handleTypes.Length)
 			{

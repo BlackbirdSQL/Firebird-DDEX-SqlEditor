@@ -115,7 +115,7 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 			}
 			catch (Exception e)
 			{
-				Tracer.LogExCatch(GetType(), e);
+				Diag.Dug(e);
 				Cmd.ShowExceptionInDialog(string.Empty, e);
 			}
 		}
@@ -144,7 +144,7 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 		}
 		catch (Exception e)
 		{
-			Tracer.LogExCatch(GetType(), e);
+			Diag.Dug(e);
 			Cmd.ShowExceptionInDialog(string.Empty, e);
 		}
 		finally
@@ -173,7 +173,7 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 		}
 		catch (Exception e)
 		{
-			Tracer.LogExCatch(GetType(), e);
+			Diag.Dug(e);
 			Cmd.ShowExceptionInDialog(ControlsResources.ErrUnableToPrintResults, e);
 		}
 	}
@@ -195,7 +195,7 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 		}
 		catch (Exception e)
 		{
-			Tracer.LogExCatch(GetType(), e);
+			Diag.Dug(e);
 			Cmd.ShowExceptionInDialog(ControlsResources.ErrUnableToPageSetup, e);
 		}
 	}

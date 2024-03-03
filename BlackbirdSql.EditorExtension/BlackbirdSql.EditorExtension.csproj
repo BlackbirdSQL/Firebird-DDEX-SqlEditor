@@ -19,16 +19,24 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="blackbirdsql.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Reference Include="PresentationFramework" />
 		<Reference Include="System" />
 		<Reference Include="System.ComponentModel.DataAnnotations" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Include="BrokeredServices\ComponentModel\Microsoft.VisualStudio.LiveShare.FileSystemProvider.CustomProvideFileSystemProviderAttribute.cs" />
+		<Compile Include="BrokeredServices\ComponentModel\VsProvideFileSystemProviderAttribute.cs" />
 		<Compile Include="Controls\Config\AbstractCurrentWndOptionsDlg.cs" />
 		<Compile Include="Controls\Config\CurrentWndOptionsDlg.cs" />
+		<Compile Include="BrokeredServices\EnumerableExtensions.cs" />
+		<Compile Include="BrokeredServices\WatchResultComparer.cs" />
+		<Compile Include="BrokeredServices\FbsqlPlusFileSystemProvider.cs" />
 		<Compile Include="Model\Config\ContextSettingsModel.cs" />
-		<None Include="..\BlackbirdSql.VisualStudio.Ddex\BlackbirdSqlDdexExtension.vsct" Link="BlackbirdSqlDdexExtension.vsct" />
 		<None Include="Properties\BlackbirdSql.EditorExtension.snk" />
 		<Compile Include="Controls\ComponentModel\AdvancedFolderNameEditor.cs" />
 		<None Include="Controls\ComponentModel\NumericUpDownPropertyEditor.cs" />
@@ -68,7 +76,6 @@
 			<DesignTime>True</DesignTime>
 			<DependentUpon>Resources.resx</DependentUpon>
 		</Compile>
-		<Resource Include="..\BlackbirdSql.VisualStudio.Ddex\VSPackage.resx" Link="VSPackage.resx" />
 		<EmbeddedResource Include="Controls\Config\AbstractCurrentWndOptionsDlg.resx" />
 		<EmbeddedResource Include="Properties\AttributeResources.resx">
 		  <Generator>ResXFileCodeGenerator</Generator>
@@ -117,7 +124,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Compile Include="EditorExtensionAsyncPackage.cs" />
+		<Compile Include="EditorExtensionPackage.cs" />
 		<Compile Include="GlobalSuppressions.cs" />
 		<Compile Include="EditorEventsManager.cs" />
 		<Compile Include="Ctl\AbstractEditorFactory.cs" />

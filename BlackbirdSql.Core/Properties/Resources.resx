@@ -231,6 +231,9 @@
   <data name="ExceptionEventsAlreadyEnabled" xml:space="preserve">
     <value>Events already enabled.</value>
   </data>
+  <data name="ExceptionNetUriNotJustSerialization" xml:space="preserve">
+    <value>UriComponents.SerializationInfoString must not be combined with other UriComponents.</value>
+  </data>
   <data name="ExceptionParameterDescriberNotFound" xml:space="preserve">
     <value>Could not locate Describer for connection parameter '{0}'.</value>
   </data>

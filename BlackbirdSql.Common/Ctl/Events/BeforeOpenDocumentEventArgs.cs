@@ -9,49 +9,18 @@ using BlackbirdSql.Core.Model.Enums;
 
 namespace BlackbirdSql.Common.Ctl.Events;
 
-public class BeforeOpenDocumentEventArgs : EventArgs
+public class BeforeOpenDocumentEventArgs(string mkDocument, DbConnectionStringBuilder scsb,
+	IList<string> identifierList, EnModelObjectType elementType, EnModelTargetType targetType) : EventArgs
 {
-	public string Moniker { get; private set; }
+	public string MkDocument { get; private set; } = mkDocument;
 
-	public DbConnectionStringBuilder ConnectionString { get; private set; }
+	public DbConnectionStringBuilder ConnectionString { get; private set; } = scsb;
 
-	public DatabaseLocation Location { get; private set; }
+	public IList<string> IdentifierList { get; private set; } = identifierList;
 
-	public IList<string> IdentifierList { get; private set; }
+	public EnModelObjectType ElementType { get; private set; } = elementType;
+	public EnModelTargetType TargetType { get; private set; } = targetType;
 
-	public EnModelObjectType ElementType { get; private set; }
-	public EnModelTargetType TargetType { get; private set; }
 
-	public BeforeOpenDocumentEventArgs(string mkDocument, DbConnectionStringBuilder scsb,
-		IList<string> identifierList, EnModelObjectType elementType, EnModelTargetType targetType)
-	{
-		/*
-		if (string.IsNullOrWhiteSpace(mkDocument))
-		{
-			throw ExceptionFactory.CreateArgumentException("mkDocument");
-		}
-		if (scsb == null)
-		{
-			throw ExceptionFactory.CreateArgumentException("scsb");
-		}
-		*/
-		Moniker = mkDocument;
-		ConnectionString = scsb;
-		IdentifierList = identifierList;
-		ElementType = elementType;
-		Location = default;
-		TargetType = targetType;
-	}
-
-	public BeforeOpenDocumentEventArgs(string mkDocument, DatabaseLocation dbl,
-		IList<string> identifierList, EnModelObjectType elementType, EnModelTargetType targetType)
-	{
-		Moniker = mkDocument;
-		ConnectionString = null;
-		IdentifierList = identifierList;
-		ElementType = elementType;
-		Location = dbl;
-		TargetType = targetType;
-	}
 
 }

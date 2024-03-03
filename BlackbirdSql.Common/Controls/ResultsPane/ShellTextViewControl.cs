@@ -162,14 +162,14 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 		{
 			get
 			{
-				if (m_textView != null)
+				if (m_textView == null)
 				{
-					return (IVsFindTarget)m_textView;
+					Exception ex = new COMException("", VSConstants.E_NOINTERFACE);
+					Diag.ThrowException(ex);
 				}
 
-				Exception ex = new COMException("", VSConstants.E_NOINTERFACE);
-				Tracer.LogExThrow(GetType(), ex);
-				throw ex;
+				return (IVsFindTarget)m_textView;
+
 			}
 		}
 
@@ -177,14 +177,14 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 		{
 			get
 			{
-				if (m_textView != null)
+				if (m_textView == null)
 				{
-					return m_textView;
+					Exception ex = new COMException("", VSConstants.E_NOINTERFACE);
+					Diag.ThrowException(ex);
 				}
 
-				Exception ex = new COMException("", VSConstants.E_NOINTERFACE);
-				Tracer.LogExThrow(GetType(), ex);
-				throw ex;
+				return m_textView;
+
 			}
 		}
 
@@ -206,7 +206,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 				}
 				catch (Exception e)
 				{
-					Tracer.LogExCatch(GetType(), e);
+					Diag.Dug(e);
 				}
 
 				Release(vsCodeWindowManager);
@@ -290,12 +290,8 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			Diag.ThrowIfNotOnUIThread();
 
 			ILocalRegistry localRegistry = (ILocalRegistry)_OleServiceProvider.GetService(typeof(ILocalRegistry));
-			if (localRegistry == null)
-			{
-				ServiceUnavailableException ex = new(typeof(ILocalRegistry));
-				Tracer.LogExThrow(GetType(), ex);
-				throw ex;
-			}
+			Diag.ThrowIfServiceUnavailable(localRegistry, typeof(ILocalRegistry));
+
 
 			Guid riid = typeof(IVsTextView).GUID;
 			Native.ThrowOnFailure(localRegistry.CreateInstance(DefGuidList.CLSID_VsTextView, null, ref riid, (uint)CLSCTX.CLSCTX_INPROC_SERVER, out IntPtr ppvObj));
@@ -374,7 +370,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 			}
 			catch (Exception ex)
 			{
-				Tracer.LogExCatch(GetType(), ex);
+				Diag.Dug(ex);
 			}
 		}
 
@@ -413,7 +409,7 @@ namespace BlackbirdSql.Common.Controls.ResultsPane
 				}
 				catch (Exception e)
 				{
-					Tracer.LogExCatch(GetType(), e);
+					Diag.Dug(e);
 				}
 			}
 			finally

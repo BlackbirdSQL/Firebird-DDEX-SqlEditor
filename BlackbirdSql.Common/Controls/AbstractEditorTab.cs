@@ -63,6 +63,9 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 		}
 	}
 
+	protected abstract Guid ClsidEditorFactory { get; }
+
+
 	public IVsWindowFrame CurrentFrame => _CurrentFrame;
 
 	public IDisposable DisposableWaitCursor
@@ -103,10 +106,10 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 			Diag.ThrowIfNotOnUIThread();
 
 			IVsWindowFrame vsWindowFrame = _CurrentFrame ?? WindowPaneServiceProvider.GetService(typeof(SVsWindowFrame)) as IVsWindowFrame;
+
 			if (!(vsWindowFrame != null))
-			{
 				return null;
-			}
+
 			vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_pszMkDocument, out var pvar);
 			return (string)pvar;
 		}
@@ -349,8 +352,6 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 
 	protected abstract IVsWindowFrame CreateWindowFrame();
 
-	protected abstract Guid GetEditorFactoryGuid();
-
 	protected void SetFrameProperties(IVsWindowFrame parentFrame, IVsWindowFrame frame)
 	{
 		Diag.ThrowIfNotOnUIThread();
@@ -360,7 +361,7 @@ public abstract class AbstractEditorTab(AbstractTabbedEditorPane editorPane, Gui
 
 		frame.SetProperty((int)__VSFPROPID.VSFPROPID_ViewHelper, this);
 		frame.SetProperty((int)__VSFPROPID3.VSFPROPID_NotifyOnActivate, true);
-		Guid rguid = GetEditorFactoryGuid();
+		Guid rguid = ClsidEditorFactory;
 		frame.SetGuidProperty(-4009, ref rguid);
 		string physicalViewString = GetPhysicalViewString();
 		frame.SetProperty((int)__VSFPROPID.VSFPROPID_pszPhysicalView, physicalViewString);

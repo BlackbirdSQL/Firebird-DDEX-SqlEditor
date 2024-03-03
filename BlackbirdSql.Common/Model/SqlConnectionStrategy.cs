@@ -104,7 +104,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 						}
 						catch (Exception e)
 						{
-							Tracer.LogExCatch(typeof(SqlConnectionStrategy), e);
+							Diag.Dug(e);
 						}
 						/*
 						finally
@@ -270,7 +270,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 		}
 		catch (Exception ex)
 		{
-			Tracer.LogExCatch(GetType(), ex);
+			Diag.Dug(ex);
 			Cmd.ShowMessageBoxEx(null, ControlsResources.ErrDatabaseConnection.FmtRes(connection.ConnectionString, ex.Message), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			return;
 		}
@@ -278,7 +278,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 		if (connection.State != ConnectionState.Open)
 		{
 			DataException ex = new("Failed to open connection");
-			Tracer.LogExCatch(GetType(), ex);
+			Diag.Dug(ex);
 			Cmd.ShowMessageBoxEx(null, ControlsResources.ErrDatabaseConnection.FmtRes(connection.ConnectionString, ex.Message), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 		}
 		/*
@@ -368,7 +368,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 		}
 		catch (Exception e)
 		{
-			Tracer.LogExCatch(GetType(), e);
+			Diag.Dug(e);
 		}
 		*/
 	}
@@ -464,8 +464,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 
 		// Tracer.Trace(typeof(SqlConnectionStrategy), "PromptForConnection()");
 
-		IVsDataConnectionDialog connectionDialogHandler = Controller.GetService<IVsDataConnectionDialog>()
-			?? throw Diag.ExceptionService(typeof(IVsDataConnectionDialog));
+		IVsDataConnectionDialog connectionDialogHandler = Controller.EnsureService<IVsDataConnectionDialog>();
 
 		using (connectionDialogHandler)
 		{
@@ -778,7 +777,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 				}
 				catch (FbException e)
 				{
-					Tracer.LogExCatch(typeof(AbstractConnectionStrategy), e);
+					Diag.Dug(e);
 					Cmd.ShowMessageBoxEx(null, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrDatabaseNotAccessible, selectedDatasetKey), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 				}
 			}

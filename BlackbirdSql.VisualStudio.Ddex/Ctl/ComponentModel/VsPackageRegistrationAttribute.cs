@@ -38,7 +38,7 @@ internal sealed class VsPackageRegistrationAttribute: RegistrationAttribute
 		Key key = null;
 		Key key2 = null;
 		Key key3;
-		PackageSupportedObjects.RegistryValue registryValue;
+		PackageData.RegistryValue registryValue;
 
 		try
 		{
@@ -123,13 +123,13 @@ internal sealed class VsPackageRegistrationAttribute: RegistrationAttribute
 			// Add in the supported sevices
 			key2 = key.CreateSubkey("SupportedObjects");
 			
-			foreach (KeyValuePair<string, int> implementation in PackageSupportedObjects.Implementations)
+			foreach (KeyValuePair<string, int> implementation in PackageData.Implementations)
 			{
 				key3 = key2.CreateSubkey(implementation.Key);
 
 				for (int i = 0; i < implementation.Value; i++)
 				{
-					registryValue = PackageSupportedObjects.Values[implementation.Key + (i==0?"":i.ToString())];
+					registryValue = PackageData.ImplementationValues[implementation.Key + (i==0?"":i.ToString())];
 
 					// Tracer.Trace(implementation.Key + ": " + (registryValue.Name == null ? "null" : registryValue.Name) + ":" + registryValue.Value);
 					key3.SetValue(registryValue.Name, registryValue.Value);

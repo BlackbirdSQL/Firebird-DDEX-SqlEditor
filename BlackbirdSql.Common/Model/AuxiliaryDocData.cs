@@ -20,8 +20,31 @@ using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace BlackbirdSql.Common.Model;
 
-public sealed class AuxiliaryDocData(object docData)
+public sealed class AuxiliaryDocData(string documentMoniker, string explorerMoniker, object docData)
 {
+
+	private readonly string _OriginalDocumentMoniker = documentMoniker;
+	private string _ExplorerMoniker = explorerMoniker;
+	public object DocData { get; set; } = docData;
+
+
+
+	private uint _DocCookie;
+
+	public uint DocCookie
+	{
+		get { return  _DocCookie; }
+		set { _DocCookie =  value; }
+	}
+	public string ExplorerMoniker
+	{
+		get { return _ExplorerMoniker; }
+		set { _ExplorerMoniker = value; }
+	}
+
+	public string OriginalDocumentMoniker => _OriginalDocumentMoniker;
+
+
 	public class SqlExecutionModeChangedEventArgs(EnSqlOutputMode executionMode) : EventArgs
 	{
 		public EnSqlOutputMode SqlOutputMode { get; private set; } = executionMode;
@@ -45,7 +68,6 @@ public sealed class AuxiliaryDocData(object docData)
 
 	private string _DatabaseAtQueryExecutionStart;
 
-	private object DocData { get; set; } = docData;
 
 	public IBSqlEditorStrategy Strategy
 	{
@@ -120,7 +142,7 @@ public sealed class AuxiliaryDocData(object docData)
 		{
 			lock (_LockLocal)
 			{
-				IVsUserData iVsUserData = GetIVsUserData();
+				IVsUserData iVsUserData = VsUserData;
 				if (iVsUserData != null)
 				{
 					Guid riidKey = LibraryData.CLSID_IntelliSenseEnabled;
@@ -202,8 +224,7 @@ public sealed class AuxiliaryDocData(object docData)
 			if (QryMgr.IsExecuting)
 			{
 				InvalidOperationException ex = new(ControlsResources.SqlExecutionModeChangeFailed);
-				Tracer.LogExThrow(GetType(), ex);
-				throw ex;
+				Diag.ThrowException(ex);
 			}
 
 			if (LiveSettings.EditorResultsOutputMode != value)
@@ -214,7 +235,29 @@ public sealed class AuxiliaryDocData(object docData)
 		}
 	}
 
-	public bool IsQueryWindow { get; set; }
+	/// <summary>
+	/// True if underlying document is virtual else false. (Was IsQueryWindow)
+	/// </summary>
+	public bool IsVirtualWindow { get; set; }
+
+
+	public bool SuppressSavePrompt => IsVirtualWindow && !PersistentSettings.EditorPromptToSave;
+
+
+	public IVsUserData VsUserData
+	{
+		get
+		{
+			lock (_LockLocal)
+			{
+				IVsUserData vsUserData = DocData as IVsUserData;
+				// Tracer.Trace(GetType(), "AuxiliaryDocData.GetIVsUserData", "value of IVsUserData returned is {0}", vsUserData);
+				return vsUserData;
+			}
+		}
+	}
+
+
 
 	public event EventHandler<SqlExecutionModeChangedEventArgs> SqlExecutionModeChangedEvent;
 
@@ -235,7 +278,7 @@ public sealed class AuxiliaryDocData(object docData)
 					return;
 				}
 
-				IVsUserData iVsUserData = GetIVsUserData();
+				IVsUserData iVsUserData = VsUserData;
 				if (QryMgr.IsConnected)
 				{
 					IDbConnection connection = QryMgr.ConnectionStrategy.Connection;
@@ -299,7 +342,7 @@ public sealed class AuxiliaryDocData(object docData)
 
 		if (flag)
 		{
-			IVsUserData iVsUserData = GetIVsUserData();
+			IVsUserData iVsUserData = VsUserData;
 			if (iVsUserData != null)
 			{
 				Guid riidKey = LibraryData.CLSID_PropertyDatabaseConnectionChanged;
@@ -316,21 +359,12 @@ public sealed class AuxiliaryDocData(object docData)
 		RaiseLiveSettingsChangedEvent(liveSettings);
 	}
 
-	public IVsUserData GetIVsUserData()
-	{
-		lock (_LockLocal)
-		{
-			IVsUserData vsUserData = DocData as IVsUserData;
-			// Tracer.Trace(GetType(), "AuxiliaryDocData.GetIVsUserData", "value of IVsUserData returned is {0}", vsUserData);
-			return vsUserData;
-		}
-	}
 
 	public DbConnectionStringBuilder GetUserDataCsb()
 	{
 		DbConnectionStringBuilder csb = null;
 
-		IVsUserData userData = GetIVsUserData();
+		IVsUserData userData = VsUserData;
 		if (userData != null)
 		{
 			Guid clsid = new(LibraryData.SqlEditorConnectionStringGuid);
@@ -357,6 +391,31 @@ public sealed class AuxiliaryDocData(object docData)
 
 	}
 
+
+	public void SetUserDataCsb(DbConnectionStringBuilder csb)
+	{
+
+		IVsUserData userData = VsUserData;
+		if (userData != null)
+		{
+			Guid clsid = new(LibraryData.SqlEditorConnectionStringGuid);
+			try
+			{
+				userData.SetData(ref clsid, csb);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+			}
+		}
+		else
+		{
+			ArgumentNullException ex = new("IVsUserData is null");
+			Diag.Dug(ex);
+			throw ex;
+		}
+	}
+
 	public void SetResultsAsTextExecutionMode()
 	{
 		SqlOutputMode = EnSqlOutputMode.ToText;
@@ -366,7 +425,7 @@ public sealed class AuxiliaryDocData(object docData)
 	{
 		lock (_LockLocal)
 		{
-			IVsUserData iVsUserData = GetIVsUserData();
+			IVsUserData iVsUserData = VsUserData;
 			if (iVsUserData != null)
 			{
 				Guid riidKey = LibraryData.CLSID_PropertyOleSql;
@@ -394,15 +453,6 @@ public sealed class AuxiliaryDocData(object docData)
 		}
 	}
 
-	public bool SuppressSavePromptWhenClosingEditor()
-	{
-		if (IsQueryWindow)
-		{
-			return !PersistentSettings.EditorPromptToSave;
-		}
-
-		return false;
-	}
 
 	public void RaiseSqlExecutionModeChangedEvent(EnSqlOutputMode newSqlExecMode)
 	{

@@ -141,6 +141,12 @@ public abstract class PersistentSettings : IBPersistentSettings
 	/// </summary>
 	public static bool IncludeAppConnections => (bool)GetSetting("DdexGeneralIncludeAppConnections", true);
 
+	/// <summary>
+	/// If enabled, disables asynchronous Trigger/Generator linkage and linkage will
+	/// only performed when it is actually required.
+	/// </summary>
+	public static bool OnDemandLinkage => (bool)GetSetting("DdexGeneralOnDemandLinkage", false);
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>

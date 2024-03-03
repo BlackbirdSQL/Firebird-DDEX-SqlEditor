@@ -198,7 +198,7 @@
     <value>You must specify a column delimiter.</value>
   </data>
   <data name="ErrCannotInstantiateFromAbstractAncestor" xml:space="preserve">
-    <value>Cannot instantiate EditorExtensionAsyncPackage from abstract ancestor</value>
+    <value>Cannot instantiate EditorExtensionPackage from abstract ancestor</value>
   </data>
   <data name="ErrInvalidExecutionTimeout" xml:space="preserve">
     <value>Execution time-out value should be an integer between {0} and {1}.</value>

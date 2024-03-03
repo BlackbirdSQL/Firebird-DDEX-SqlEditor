@@ -1,9 +1,9 @@
 ﻿// $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
-
-
-using BlackbirdSql.Core.Ctl.CommandProviders;
+using System;
+using Microsoft.ServiceHub.Framework;
+using Microsoft.VisualStudio;
 
 namespace BlackbirdSql.EditorExtension;
 
@@ -17,13 +17,22 @@ namespace BlackbirdSql.EditorExtension;
 // =========================================================================================================
 static class PackageData
 {
-	public const string ServiceName = "Blackbird SQL Editor Service";
+	public const string ServiceName = "BlackbirdSql Editor";
+	public const string FileSystemBrokeredServiceName = "BlackbirdSql.BrokeredServices.FileSystemProvider";
+	public const string ServiceVersion2 = "2.0";
+
+
+	private static ServiceMoniker FileSystemBrokeredServiceMoniker2 =>
+		new ServiceMoniker(FileSystemBrokeredServiceName, Version.Parse(ServiceVersion2));
+
+
+	public static ServiceRpcDescriptor FileSystemRpcDescriptor2 =>
+		VisualStudioServices.VS2022_6.CreateFileSystemProviderServiceDescriptor(FileSystemBrokeredServiceMoniker2);
 
 
 	// ---------------------------------------------------------------------------------------------------------
 	#region Package Guids - PackageData
 	// ---------------------------------------------------------------------------------------------------------
-
 
 	// Settings Guids
 	public const string GeneralSettingsGuid = "8D99B934-CBF9-4C90-B937-458D032D557D";

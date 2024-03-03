@@ -14,7 +14,7 @@ namespace BlackbirdSql.EditorExtension.Ctl.Config;
 //										OptionsProvider Class
 //
 /// <summary>
-/// Provider for <see cref="ProvideOptionPageAttribute"/> in <see cref="EditorExtensionAsyncPackage"/>
+/// Provider for <see cref="ProvideOptionPageAttribute"/> in <see cref="EditorExtensionPackage"/>
 /// </summary>
 // =========================================================================================================
 public class SettingsProvider

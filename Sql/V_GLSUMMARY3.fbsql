@@ -1,0 +1,21 @@
+﻿SELECT
+  extract(month from GL_summary_day.GLDATE) as month_,
+  extract(year from GL_summary_day.GLDATE) as year_,
+  Sum(GL_summary_day.DEBIT) as debits,
+  Sum(GL_summary_day.CREDIT) as credits,
+  GL_summary_day.GLDATE - EXTRACT(DAY FROM GL_summary_day.GLDATE) + 32 - EXTRACT(DAY FROM GL_summary_day.GLDATE - EXTRACT(DAY FROM GL_summary_day.GLDATE) + 32) as lastdate,
+  CAST(1 ||'.'|| extract(month from GL_summary_day.GLDATE) ||'.'|| extract(year from GL_summary_day.GLDATE) AS DATE) as firstdate,
+  GL_summary_day.ACCOUNTNO,
+  count(GL_summary_day.GLSUMMARYDAY_NO) as rc,
+  v_glaccount_roots.ROOTPARENTNO,
+  v_glaccount_roots.PARENTACCNO
+FROM
+  GL_summary_day
+INNER JOIN v_glaccount_roots ON  v_glaccount_roots.accountno = GL_summary_day.ACCOUNTNO 
+GROUP BY
+  extract(month from GL_summary_day.GLDATE),  
+  extract(year from GL_summary_day.GLDATE),
+  GL_summary_day.ACCOUNTNO,
+  GL_summary_day.GLDATE - EXTRACT(DAY FROM GL_summary_day.GLDATE) + 32 - EXTRACT(DAY FROM GL_summary_day.GLDATE - EXTRACT(DAY FROM GL_summary_day.GLDATE) + 32),
+  v_glaccount_roots.ROOTPARENTNO,
+  v_glaccount_roots.PARENTACCNO

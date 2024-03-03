@@ -23,22 +23,19 @@ public class SqlEditorCodeTab(AbstractTabbedEditorPane editorPane, Guid logicalV
 	protected Guid _EditorLogicalView = editorLogicalView;
 
 
-
 	private Guid _ClsidLogicalView = VSConstants.LOGVIEWID_TextView;
 
 	public static readonly string S_FramePhysicalViewString = "CodeFrame";
 
 	private Guid _ClsidEditorFactory = VSConstants.GUID_TextEditorFactory;
 
+	protected override Guid ClsidLogicalView => Guid.Empty;
+
 	protected override string GetPhysicalViewString()
 	{
 		return S_FramePhysicalViewString;
 	}
 
-	protected override Guid GetLogicalView()
-	{
-		return Guid.Empty;
-	}
 
 	protected override IVsWindowFrame CreateWindowFrame()
 	{

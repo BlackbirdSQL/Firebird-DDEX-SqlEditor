@@ -109,7 +109,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 
 		if (LinkageParser.RequiresTriggers(collectionName))
-			parser = LinkageParser.EnsureInstance(connection);
+			parser = LinkageParser.EnsureLoaded(connection);
 
 
 		switch (collectionName)
@@ -277,7 +277,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 
 
 		if (LinkageParser.RequiresTriggers(collectionName))
-			parser = LinkageParser.EnsureInstance(connection);
+			parser = LinkageParser.EnsureLoaded(connection);
 
 
 		switch (collectionName)

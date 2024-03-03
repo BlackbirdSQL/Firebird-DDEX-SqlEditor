@@ -9,6 +9,8 @@ using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.EditorExtension;
+using EnvDTE80;
+using Microsoft.VisualStudio.RpcContracts;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -16,7 +18,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace BlackbirdSql.Controller;
 
 // =========================================================================================================
-//										ControllerAsyncPackage Class 
+//										ControllerPackage Class 
 //
 /// <summary>
 /// BlackbirdSql.Data.Ddex DDEX 2.0 <see cref="IVsPackage"/> controller class implementation. Implements
@@ -24,22 +26,22 @@ namespace BlackbirdSql.Controller;
 /// </summary>
 /// <remarks>
 /// This is a multi-Extension class implementation of <see cref="IBAsyncPackage"/>.
-/// The current package hieararchy is BlackbirdSqlDdexExtension > <see cref="ControllerAsyncPackage"/> >
-/// <see cref="EditorExtension.EditorExtensionAsyncPackage"/> > <see cref="AbstractAsyncPackage"/>.
+/// The current package hieararchy is BlackbirdSqlDdexExtension > <see cref="ControllerPackage"/> >
+/// <see cref="EditorExtension.EditorExtensionPackage"/> > <see cref="AbstractCorePackage"/>.
 /// </remarks>
 // =========================================================================================================
-public abstract class ControllerAsyncPackage : EditorExtensionAsyncPackage
+public abstract class ControllerPackage : EditorExtensionPackage
 {
 
 	// ---------------------------------------------------------------------------------
-	#region Constructors / Destructors - ControllerAsyncPackage
+	#region Constructors / Destructors - ControllerPackage
 	// ---------------------------------------------------------------------------------
 
 
 	/// <summary>
-	/// AbstractAsyncPackage package .ctor
+	/// ControllerPackage .ctor
 	/// </summary>
-	public ControllerAsyncPackage() : base()
+	public ControllerPackage() : base()
 	{
 		// Enable solution open/close event handling.
 		AddOptionKey(GlobalsAgent.C_PersistentKey);
@@ -76,7 +78,7 @@ public abstract class ControllerAsyncPackage : EditorExtensionAsyncPackage
 
 
 	// =========================================================================================================
-	#region Fields - ControllerAsyncPackage
+	#region Fields - ControllerPackage
 	// =========================================================================================================
 
 
@@ -89,7 +91,7 @@ public abstract class ControllerAsyncPackage : EditorExtensionAsyncPackage
 
 
 	// =========================================================================================================
-	#region Property accessors - ControllerAsyncPackage
+	#region Property accessors - ControllerPackage
 	// =========================================================================================================
 
 
@@ -117,7 +119,7 @@ public abstract class ControllerAsyncPackage : EditorExtensionAsyncPackage
 
 
 	// =========================================================================================================
-	#region Method Implementations - ControllerAsyncPackage
+	#region Method Implementations - ControllerPackage
 	// =========================================================================================================
 
 
@@ -128,16 +130,29 @@ public abstract class ControllerAsyncPackage : EditorExtensionAsyncPackage
 	/// </summary>
 	protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 	{
-		if (cancellationToken.IsCancellationRequested)
+		if (cancellationToken.IsCancellationRequested || Controller.ShutdownState)
 			return;
+
+		await base.InitializeAsync(cancellationToken, progress);
+
+		ServiceProgressData progressData = new("Loading BlackbirdSql", "Loading Controller Event Manager", 2, 15);
+		progress.Report(progressData);
 
 		// First try.
 		await Controller.AdviseEventsAsync();
 
+		progressData = new("Loading BlackbirdSql", "Done Loading Controller Event Manager", 3, 15);
+		progress.Report(progressData);
 
-		await base.InitializeAsync(cancellationToken, progress);
+
+
+		progressData = new("Loading BlackbirdSql", "Loading Controller Service", 4, 15);
+		progress.Report(progressData);
 
 		ServiceContainer.AddService(typeof(IBPackageController), ServicesCreatorCallbackAsync, promote: true);
+
+		progressData = new("Loading BlackbirdSql", "Done Loading Controller Service", 5, 15);
+		progress.Report(progressData);
 
 	}
 
@@ -154,17 +169,33 @@ public abstract class ControllerAsyncPackage : EditorExtensionAsyncPackage
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		if (cancellationToken.IsCancellationRequested)
+		if (cancellationToken.IsCancellationRequested || Controller.ShutdownState)
 			return;
+
+		ServiceProgressData progressData = new("Loading BlackbirdSql", "Finalizing: Advising Controller Events", 8, 15);
+		progress.Report(progressData);
 
 		// Second try.
 		_Controller.AdviseEvents();
 
+		progressData = new("Loading BlackbirdSql", "Finalizing: Done Advising Controller Events", 9, 15);
+		progress.Report(progressData);
+
 		await base.FinalizeAsync(cancellationToken, progress);
+
 
 		// If we get here and the Rct is not loaded/loading it means "no solution".
 		if (!RctManager.Loading)
+		{
+			progressData = new("Loading BlackbirdSql", "Finalizing: Loading Running Connection Table", 13, 15);
+			progress.Report(progressData);
+
 			RctManager.LoadConfiguredConnections();
+
+			progressData = new("Loading BlackbirdSql", "Finalizing: Loaded Running Connection Table", 14, 15);
+			progress.Report(progressData);
+		}
+
 	}
 
 
@@ -234,7 +265,7 @@ public abstract class ControllerAsyncPackage : EditorExtensionAsyncPackage
 
 
 	// =========================================================================================================
-	#region Methods - ControllerAsyncPackage
+	#region Methods - ControllerPackage
 	// =========================================================================================================
 
 
@@ -249,7 +280,7 @@ public abstract class ControllerAsyncPackage : EditorExtensionAsyncPackage
 
 
 	// =========================================================================================================
-	#region Event handlers - ControllerAsyncPackage
+	#region Event handlers - ControllerPackage
 	// =========================================================================================================
 
 

@@ -68,6 +68,31 @@ static class ExtensionMembers
 
 
 
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns the int boolean value.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool AsBool(this int flag)
+	{
+		return flag != 0;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns the uint boolean value.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool AsBool(this uint flag)
+	{
+		return flag != 0;
+	}
+
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Finds the ExplorerConnection ConnectionKey of an IVsDataConnectionProperties Site
@@ -76,13 +101,7 @@ static class ExtensionMembers
 	// ---------------------------------------------------------------------------------
 	public static string FindConnectionKey(this IVsDataConnectionProperties value)
 	{
-		IVsDataExplorerConnectionManager manager =
-			(Core.Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
-			as IVsDataExplorerConnectionManager)
-		?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
-
-
-		return manager.FindConnectionKey(value.ToString(), false);
+		return Controller.ExplorerConnectionManager.FindConnectionKey(value.ToString(), false);
 	}
 
 
@@ -117,13 +136,7 @@ static class ExtensionMembers
 	// ---------------------------------------------------------------------------------
 	public static string FindConnectionKey(this IDbConnection value)
 	{
-		IVsDataExplorerConnectionManager manager =
-			(Core.Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
-			as IVsDataExplorerConnectionManager)
-		?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
-
-
-		return manager.FindConnectionKey(value.ConnectionString, false);
+		return Controller.ExplorerConnectionManager.FindConnectionKey(value.ConnectionString, false);
 	}
 
 
@@ -136,11 +149,7 @@ static class ExtensionMembers
 	// ---------------------------------------------------------------------------------
 	public static string GetConnectionKey(this IVsDataConnectionProperties value)
 	{
-		IVsDataExplorerConnectionManager manager =
-			(Core.Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
-			as IVsDataExplorerConnectionManager)
-		?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
-
+		IVsDataExplorerConnectionManager manager = Controller.ExplorerConnectionManager;
 
 		(_, IVsDataExplorerConnection explorerConnection) = manager.SearchExplorerConnectionEntry(value.ToString(), false);
 
@@ -218,10 +227,7 @@ static class ExtensionMembers
 
 		// deepSearch == true.
 
-		IVsDataExplorerConnectionManager manager =
-			(Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
-				as IVsDataExplorerConnectionManager)
-			?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
+		IVsDataExplorerConnectionManager manager = Controller.ExplorerConnectionManager;
 
 		(retval, _) = manager.SearchExplorerConnectionEntry(value.EncryptedConnectionString, true);
 
@@ -844,16 +850,11 @@ static class ExtensionMembers
 		SearchExplorerConnectionEntry(this IVsDataExplorerConnectionManager value,
 		string connectionString, bool encrypted)
 	{
-		IVsDataExplorerConnectionManager manager =
-			(Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
-			as IVsDataExplorerConnectionManager)
-			?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
-
+		IVsDataExplorerConnectionManager manager = Controller.ExplorerConnectionManager;
 		string unencryptedConnectionString = encrypted ? DataProtection.DecryptString(connectionString) : connectionString;
 
 		Guid clsidProvider = new(SystemData.ProviderGuid);
 		string connectionUrl = CsbAgent.CreateConnectionUrl(unencryptedConnectionString);
-
 
 		CsbAgent csa;
 

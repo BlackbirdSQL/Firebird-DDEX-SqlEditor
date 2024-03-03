@@ -6,27 +6,23 @@ using System.Runtime.InteropServices;
 
 namespace BlackbirdSql.Core.Ctl.Diagnostics;
 
-internal class EventProviderVersionTwo : EventProvider
+public class EventProviderVersionTwo(Guid id) : EventProvider(id)
 {
+
 	[StructLayout(LayoutKind.Explicit, Size = 16)]
 	private struct EventData
 	{
 		[FieldOffset(0)]
-		internal ulong DataPointer;
+		public ulong DataPointer;
 
 		[FieldOffset(8)]
-		internal uint Size;
+		public uint Size;
 
 		[FieldOffset(12)]
-		internal int Reserved;
+		public int Reserved;
 	}
 
-	internal EventProviderVersionTwo(Guid id)
-		: base(id)
-	{
-	}
-
-	internal unsafe bool TemplateGenericBeginEndMessage(ref EventDescriptor eventDescriptor, bool IsStart, string EventContext)
+	public unsafe bool TemplateGenericBeginEndMessage(ref EventDescriptor eventDescriptor, bool IsStart, string EventContext)
 	{
 		int num = 2;
 		bool result = true;
@@ -47,7 +43,7 @@ internal class EventProviderVersionTwo : EventProvider
 		return result;
 	}
 
-	internal unsafe bool TemplateEmptyBeginEndMessage(ref EventDescriptor eventDescriptor, bool IsStart)
+	public unsafe bool TemplateEmptyBeginEndMessage(ref EventDescriptor eventDescriptor, bool IsStart)
 	{
 		int num = 1;
 		bool result = true;
@@ -63,7 +59,7 @@ internal class EventProviderVersionTwo : EventProvider
 		return result;
 	}
 
-	internal unsafe bool TemplateLoggingMessage(ref EventDescriptor eventDescriptor, uint traceId, string message)
+	public unsafe bool TemplateLoggingMessage(ref EventDescriptor eventDescriptor, uint traceId, string message)
 	{
 		int num = 2;
 		bool result = true;
@@ -83,7 +79,7 @@ internal class EventProviderVersionTwo : EventProvider
 		return result;
 	}
 
-	internal bool TemplateEventDescriptor(ref EventDescriptor eventDescriptor)
+	public bool TemplateEventDescriptor(ref EventDescriptor eventDescriptor)
 	{
 		if (IsEnabled(eventDescriptor.Level, eventDescriptor.Keywords))
 		{

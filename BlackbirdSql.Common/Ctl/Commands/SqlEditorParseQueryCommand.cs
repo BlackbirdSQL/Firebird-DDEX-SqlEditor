@@ -8,7 +8,7 @@ using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
 using BlackbirdSql.Common.Model;
 using Microsoft.VisualStudio.OLE.Interop;
-using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Common.Controls.Interfaces;
 
 // using Microsoft.VisualStudio.Data.Tools.SqlEditor.Interfaces;
 

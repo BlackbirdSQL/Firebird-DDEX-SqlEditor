@@ -17,17 +17,48 @@ namespace BlackbirdSql.Common.Ctl;
 
 
 [ComVisible(false)]
-public class Marker : IVsTextMarkerClient
+public class Marker(IDictionary markers) : IVsTextMarkerClient
 {
-	private readonly int _Id;
+	private readonly IDictionary _markers = markers;
+
+
+	public Marker(IDictionary markers, int mtype)
+		: this(markers)
+	{
+		_markerType = mtype;
+	}
+
+	public Marker(IDictionary markers, int mtype, int doubleClickLine, SqlTextSpan textSpan)
+		: this(markers, mtype)
+	{
+		_doubleClickLine = doubleClickLine;
+		_TextSpan = textSpan;
+	}
+
+	public Marker(IDictionary markers, int mtype, string toolTip)
+		: this(markers, mtype)
+	{
+		SetMarkerTooltip(toolTip);
+	}
+
+	public Marker(IDictionary markers, int mtype, string toolTip, int doubleClickLine, SqlTextSpan textSpan)
+		: this(markers, mtype, toolTip)
+	{
+		_doubleClickLine = doubleClickLine;
+		_TextSpan = textSpan;
+	}
+
+
+
+
+
+	private readonly int _Id = _nextMarkerId++;
 
 	private int _markerType;
 
 	private string _markerTooltip = "";
 
 	private IVsTextStreamMarker _marker;
-
-	private readonly IDictionary _markers;
 
 	private static int _nextMarkerId;
 
@@ -85,37 +116,6 @@ public class Marker : IVsTextMarkerClient
 		}
 	}
 
-	public Marker(IDictionary markers)
-	{
-		_Id = _nextMarkerId++;
-		_markers = markers;
-	}
-
-	public Marker(IDictionary markers, int mtype)
-		: this(markers)
-	{
-		_markerType = mtype;
-	}
-
-	public Marker(IDictionary markers, int mtype, int doubleClickLine, SqlTextSpan textSpan)
-		: this(markers, mtype)
-	{
-		_doubleClickLine = doubleClickLine;
-		_TextSpan = textSpan;
-	}
-
-	public Marker(IDictionary markers, int mtype, string toolTip)
-		: this(markers, mtype)
-	{
-		SetMarkerTooltip(toolTip);
-	}
-
-	public Marker(IDictionary markers, int mtype, string toolTip, int doubleClickLine, SqlTextSpan textSpan)
-		: this(markers, mtype, toolTip)
-	{
-		_doubleClickLine = doubleClickLine;
-		_TextSpan = textSpan;
-	}
 
 	public void SetMarkerTooltip(string newToolTip)
 	{
@@ -142,7 +142,7 @@ public class Marker : IVsTextMarkerClient
 		}
 		catch (Exception e)
 		{
-			Tracer.LogExCatch(GetType(), e);
+			Diag.Dug(e);
 		}
 	}
 

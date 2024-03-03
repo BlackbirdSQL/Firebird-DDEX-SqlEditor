@@ -51,8 +51,7 @@ public sealed class QEReaderDataStorage : IBQEStorage, IBDataStorage, IDisposabl
 			if (value < -1)
 			{
 				Exception ex = new ArgumentOutOfRangeException("value");
-				Tracer.LogExThrow(GetType(), ex);
-				throw ex;
+				Diag.ThrowException(ex);
 			}
 
 			_MaxCharsToStore = value;
@@ -70,8 +69,7 @@ public sealed class QEReaderDataStorage : IBQEStorage, IBDataStorage, IDisposabl
 			if (value < 1)
 			{
 				Exception ex = new ArgumentOutOfRangeException("value");
-				Tracer.LogExThrow(GetType(), ex);
-				throw ex;
+				Diag.ThrowException(ex);
 			}
 
 			_MaxXmlCharsToStore = value;
@@ -120,8 +118,8 @@ public sealed class QEReaderDataStorage : IBQEStorage, IBDataStorage, IDisposabl
 	public IBSortView GetSortView()
 	{
 		Exception ex = new NotImplementedException();
-		Tracer.LogExThrow(GetType(), ex);
-		throw ex;
+		Diag.ThrowException(ex);
+		return null;
 	}
 
 	public long RowCount => _RowCount;
@@ -210,8 +208,7 @@ public sealed class QEReaderDataStorage : IBQEStorage, IBDataStorage, IDisposabl
 		}
 		catch (Exception ex)
 		{
-			Tracer.LogExCatch(GetType(), ex);
-			throw;
+			Diag.ThrowException(ex);
 		}
 
 		_DataStorageEnabled = false;

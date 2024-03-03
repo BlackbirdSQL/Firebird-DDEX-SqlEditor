@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 using BlackbirdSql.Controller;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Events;
@@ -26,11 +25,12 @@ using BlackbirdSql.VisualStudio.Ddex.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 
 using FirebirdSql.Data.FirebirdClient;
-
+using Microsoft.Build.Framework;
 using Microsoft.VisualStudio;
 
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Services;
+using Microsoft.VisualStudio.RpcContracts;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -48,8 +48,8 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 /// <remarks>
 /// Implements the package exposed by this assembly and registers itself with the shell.
 /// This is a multi-Extension class implementation of <see cref="IBAsyncPackage"/>.
-/// The current package hieararchy is BlackbirdSqlDdexExtension > <see cref="ControllerAsyncPackage"/> >
-/// <see cref="EditorExtension.EditorExtensionAsyncPackage"/> > <see cref="AbstractAsyncPackage"/>.
+/// The current package hieararchy is BlackbirdSqlDdexExtension > <see cref="ControllerPackage"/> >
+/// <see cref="EditorExtension.EditorExtensionPackage"/> > <see cref="AbstractCorePackage"/>.
 /// </remarks>
 // =========================================================================================================
 
@@ -81,7 +81,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 
 [ProvideAutoLoad(SystemData.UIContextGuid, PackageAutoLoadFlags.BackgroundLoad)]
 [ProvideUIContextRule(SystemData.UIContextGuid,
-	name: "BlackbirdSql UIContext Autoload",
+	name: SystemData.UIContextName,
 	expression: "(ShellInit | SolutionModal)",
 	termNames: ["ShellInit", "SolutionModal"],
 	termValues: [VSConstants.UICONTEXT.ShellInitialized_string, VSConstants.UICONTEXT.SolutionOpening_string])]
@@ -118,7 +118,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 //
 // =========================================================================================================
 [Guid(SystemData.PackageGuid)]
-public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
+public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 {
 
 	// ---------------------------------------------------------------------------------
@@ -224,6 +224,8 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 		TInterface instance = null;
 		Type type = typeof(TService);
 
+		// Fire and wait
+
 		ThreadHelper.JoinableTaskFactory.Run(async delegate
 		{
 			instance = await CreateServiceInstanceAsync(type, default) as TInterface;
@@ -244,17 +246,20 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 	/// Gets a service interface from this service provider asynchronously.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
+#pragma warning disable VSTHRD103 // Call async methods when in an async method
 	public override Task<TInterface> GetServiceAsync<TService, TInterface>()
 	{
 		Type type = typeof(TService);
 
 		Task<object> task = CreateServiceInstanceAsync(type, default);
 
-		if (task == null || task == Task.FromResult<object>(null))
+		
+		if (task == null || task.Result == null)
 			return ((AsyncPackage)this).GetServiceAsync<TService, TInterface>();
 
 		return task as Task<TInterface>;
 	}
+#pragma warning restore VSTHRD103 // Call async methods when in an async method
 
 
 
@@ -275,14 +280,24 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 	{
 		await base.InitializeAsync(cancellationToken, progress);
 
-		// Moved to main thread
-		// Services.AddService(typeof(IBProviderObjectFactory), ServicesCreatorCallbackAsync, promote: true);
+		ServiceProgressData progressData = new("Loading BlackbirdSql", "Loading DDEX Provider Factories", 5, 15);
+		progress.Report(progressData);
+
+		if (Controller.ShutdownState)
+			return;
+
+		// Add provider object and schema factories
+		ServiceContainer.AddService(typeof(IBProviderObjectFactory), ServicesCreatorCallbackAsync, promote: true);
+		ServiceContainer.AddService(typeof(IBProviderSchemaFactory), ServicesCreatorCallbackAsync, promote: true);
+		ServiceContainer.AddService(typeof(IVsDataConnectionDialog), ServicesCreatorCallbackAsync, promote: true);
+
+		progressData = new("Loading BlackbirdSql", "Done Loading DDEX Provider Factories", 6, 15);
+		progress.Report(progressData);
 
 
 		// Perform any final initialization tasks.
 		// It is the final descendent package class's responsibility to initiate the call to FinalizeAsync.
 		await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-
 
 		// We are the final descendent package class so call FinalizeAsync().
 		await FinalizeAsync(cancellationToken, progress);
@@ -304,19 +319,24 @@ public sealed class BlackbirdSqlDdexExtension : ControllerAsyncPackage
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		if (cancellationToken.IsCancellationRequested)
+		if (cancellationToken.IsCancellationRequested || Controller.ShutdownState)
 			return;
+
+		ServiceProgressData progressData = new("Loading BlackbirdSql", "Finalizing: Propagating User Settings", 7, 15);
+		progress.Report(progressData);
+
 
 		// Load all packages settings models and propogate throughout the extension hierarchy.
 		PropagateSettings();
 
-		// Add provider object and schema factories
-		ServiceContainer.AddService(typeof(IBProviderObjectFactory), ServicesCreatorCallbackAsync, promote: true);
-		ServiceContainer.AddService(typeof(IBProviderSchemaFactory), ServicesCreatorCallbackAsync, promote: true);
-		ServiceContainer.AddService(typeof(IVsDataConnectionDialog), ServicesCreatorCallbackAsync, promote: true);
+		progressData = new("Loading BlackbirdSql", "Finalizing: Done Propagating User Settings", 8, 15);
+		progress.Report(progressData);
 
 		// Descendents have completed their final async initialization now we perform ours.
 		await base.FinalizeAsync(cancellationToken, progress);
+
+		progressData = new("Loading BlackbirdSql", "Finalizing: Load completed", 15, 15);
+		progress.Report(progressData);
 
 	}
 

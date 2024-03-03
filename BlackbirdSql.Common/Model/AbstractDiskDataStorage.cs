@@ -56,8 +56,7 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 			if (value < -1)
 			{
 				Exception ex = new ArgumentOutOfRangeException("value");
-				Tracer.LogExThrow(GetType(), ex);
-				throw ex;
+				Diag.ThrowException(ex);
 			}
 			_MaxCharsToStore = value;
 		}
@@ -74,8 +73,7 @@ public abstract class AbstractDiskDataStorage : IBDiskDataStorage, IBDataStorage
 			if (value < 1)
 			{
 				Exception ex = new ArgumentOutOfRangeException("value");
-				Tracer.LogExThrow(GetType(), ex);
-				throw ex;
+				Diag.ThrowException(ex);
 			}
 			_MaxXmlCharsToStore = value;
 		}

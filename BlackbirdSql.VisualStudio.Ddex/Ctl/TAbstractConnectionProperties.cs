@@ -129,17 +129,20 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 	{
 		get
 		{
+			if (RctManager.AdvisingExplorerEvents || Core.Controller.ShutdownState)
+				return EnConnectionSource.ServerExplorer;
+
 			if (_ConnectionSource == EnConnectionSource.None)
 			{
 				_ConnectionSource = EnConnectionSource.Unknown;
 
 				string objectKind = Core.Controller.ActiveWindowObjectKind;
 				if (objectKind == null)
-					return _ConnectionSource;
+					return Core.Controller.ShutdownState ? EnConnectionSource.ServerExplorer : _ConnectionSource;
 
 				string objectType = Core.Controller.ActiveWindowObjectType;
 				if (objectType == null)
-					return _ConnectionSource;
+					return Core.Controller.ShutdownState ? EnConnectionSource.ServerExplorer : _ConnectionSource;
 
 				string appGuid = VSConstants.CLSID.VsTextBuffer_string;
 				string solutionExplorerGuid

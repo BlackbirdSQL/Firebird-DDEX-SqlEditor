@@ -6,7 +6,7 @@
 using System;
 using System.Data;
 using System.Runtime.InteropServices;
-using BlackbirdSql.Common.Ctl.Interfaces;
+using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core;
@@ -24,7 +24,7 @@ public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 	/// <summary>
 	/// Records the last moniker created so that we can do a fast equivalency comparison
 	/// on the connection and use this static for the DatasetKey if they are equivalent.
-	/// This avoids repeatedly creating a new MonikerAgent and going through the
+	/// This avoids repeatedly creating a new Moniker and going through the
 	/// registration process each time.
 	/// </summary>
 	private static CsbAgent _Csa = null;
@@ -124,7 +124,7 @@ public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 
 	private void SetDatasetKeyDisplayMember(AuxiliaryDocData docData, string selectedDatasetKey)
 	{
-		IVsUserData userData = docData.GetIVsUserData();
+		IVsUserData userData = docData.VsUserData;
 
 		if (userData == null)
 		{

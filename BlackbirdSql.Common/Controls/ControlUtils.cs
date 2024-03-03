@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using BlackbirdSql.Core;
 using Microsoft.VisualStudio.Utilities;
 using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
 
@@ -70,7 +71,7 @@ public static class ControlUtils
 			}
 			catch (Exception e)
 			{
-				Tracer.LogExCatch(typeof(ControlUtils), e);
+				Diag.Dug(e);
 				return false;
 			}
 		}

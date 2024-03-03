@@ -16,12 +16,12 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
 	  <NoWarn>1701;1702</NoWarn>
-	  <DefineConstants>$(DefineConstants);BLACKBIRD</DefineConstants>
+	  <DefineConstants>$(DefineConstants);BLACKBIRD;ASYNCRDTEVENTS_ENABLED</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
 	  <NoWarn>1701;1702</NoWarn>
-	  <DefineConstants>$(DefineConstants);BLACKBIRD</DefineConstants>
+	  <DefineConstants>$(DefineConstants);BLACKBIRD;ASYNCRDTEVENTS_ENABLED</DefineConstants>
 	</PropertyGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
@@ -38,6 +38,7 @@
 	  <Compile Include="Controls\Events\AutomationPropertyValueChangedEventArgs.cs" />
 	  <Compile Include="Controls\Events\EditControlFocusEventArgs.cs" />
 	  <Compile Include="Controls\Interfaces\IBSettingsPage.cs" />
+	  <Compile Include="Controls\Interfaces\IBEditorWindowPane.cs" />
 	  <Compile Include="Controls\LinkageParserTaskHandler.cs" />
 	  <Compile Include="Ctl\AbstractGlobalsAgent.cs" />
 	  <Compile Include="Ctl\AbstractPackageController.cs" />
@@ -56,7 +57,10 @@
 	  <Compile Include="Ctl\ComponentModel\AbstractUomConverter.cs" />
 	  <Compile Include="Ctl\ComponentModel\VsProvideOptionPageAttribute.cs" />
 	  <Compile Include="Ctl\ComponentModel\VerbSite.cs" />
+	  <Compile Include="Ctl\AbstractRdtManager.cs" />
 	  <Compile Include="Ctl\Diagnostics\IBEnumerableDescribers.cs" />
+	  <Compile Include="Ctl\Diagnostics\SqlEtwProvider.cs" />
+	  <Compile Include="Ctl\FbsqlStyleUriParser.cs" />
 	  <Compile Include="Ctl\Interfaces\IBDataConnectionProperties.cs" />
 	  <Compile Include="Model\AbstractRunningConnectionTable.cs" />
 	  <Compile Include="Ctl\Interfaces\IBAutomationConverter.cs" />
@@ -126,7 +130,6 @@
 	  <Compile Include="Ctl\Interfaces\IBTrace.cs" />
 	  <Compile Include="Ctl\Interfaces\IBSqlTraceTelemetryProvider.cs" />
 	  <Compile Include="Ctl\Diagnostics\LogObject.cs" />
-	  <Compile Include="Ctl\Diagnostics\SqlEtwProvider.cs" />
 	  <Compile Include="Ctl\Diagnostics\SqlTracer.cs" />
 	  <Compile Include="Ctl\Diagnostics\Traceable.cs" />
 	  <Compile Include="Ctl\Diagnostics\AbstractTraceableBase.cs" />
@@ -155,7 +158,6 @@
 	  <Compile Include="GlobalSuppressions.cs" />
 	  <Compile Include="Ctl\Interfaces\IBAsyncPackage.cs" />
 	  <Compile Include="Ctl\Interfaces\IBDesignerExplorerServices.cs" />
-	  <Compile Include="Ctl\Interfaces\IBDesignerOnlineServices.cs" />
 	  <Compile Include="Ctl\Interfaces\IBEventsChannel.cs" />
 	  <Compile Include="Ctl\Interfaces\IBEventsManager.cs" />
 	  <Compile Include="Ctl\Interfaces\IBGlobalsAgent.cs" />
@@ -171,7 +173,7 @@
 	  <Compile Include="Model\ModelConstants.cs" />
 	  <Compile Include="Model\ModelIconsCollection.cs" />
 	  <Compile Include="Model\ModelPropertySet.cs" />
-	  <Compile Include="Model\MonikerAgent.cs" />
+	  <Compile Include="Model\Moniker.cs" />
 	  <Compile Include="Model\ConnectionPropertyAgent.cs" />
 	  <Compile Include="Model\Config\AbstractSettingsModel.cs" />
 	  <Compile Include="Controls\Config\AbstractSettingsPage.cs" />
@@ -183,7 +185,7 @@
 	  <Compile Include="Ctl\Enums\EnSettingDataType.cs" />
 	  <Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
 	  <Compile Include="Properties\Resources.Designer.cs" />
-	  <Compile Include="Ctl\AbstractAsyncPackage.cs" />
+	  <Compile Include="AbstractCorePackage.cs" />
 	  <Compile Include="Ctl\AbstractEventsManager.cs" />
 	  <Compile Include="Ctl\GlobalsAgent.cs" />
 	  <Compile Include="Ctl\AbstractHostess.cs" />

@@ -80,7 +80,7 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot instantiate EditorExtensionAsyncPackage from abstract ancestor.
+        ///   Looks up a localized string similar to Cannot instantiate EditorExtensionPackage from abstract ancestor.
         /// </summary>
         public static string ErrCannotInstantiateFromAbstractAncestor {
             get {

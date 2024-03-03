@@ -32,13 +32,13 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 	/// <summary>
 	/// Protected default .ctor for creating an unregistered clone.
-	/// Callers must make a call to EnsureLoaded() for rhs beforehand.
+	/// Callers must make a call to EnsureLoadedImpl() for rhs beforehand.
 	/// </summary>
 	protected AbstractLinkageParser(AbstractLinkageParser rhs) : base()
 	{
 		// Tracer.Trace(typeof(AbstractLinkageParser), $"AbstractLinkageParser(FbConnection, AbstractLinkageParser)");
 
-		// Callers must EnsureLoaded().
+		// Callers must EnsureLoadedImpl().
 
 		_ConnectionUrl = rhs._ConnectionUrl;
 		_Sequences = rhs._Sequences.Copy();
@@ -165,7 +165,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 			// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "Removing instance and cloning to Transient");
 
 			if (!Loaded)
-				EnsureLoaded();
+				EnsureLoadedImpl();
 
 			_TransientParser = (AbstractLinkageParser)Clone();
 
@@ -210,7 +210,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	{
 		// Tracer.Trace(typeof(AbstractLinkageParser), "DisposeInstance(FbConnection)");
 
-		lock (_LockClass)
+		lock (_LockGlobal)
 		{
 			if (_Instances == null || !_Instances.TryGetValue(connection, out object obj))
 				return false;
@@ -303,7 +303,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 	/// <summary>
 	/// Per connection LinkageParser instances xref.
-	/// _Instances must be accessed within _LockClass code logic.
+	/// _Instances must be accessed within _LockGlobal code logic.
 	/// </summary>
 	private static Dictionary<IDbConnection, object> _Instances = null;
 
@@ -487,7 +487,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// </summary>
 	/// <returns>True if successfully loaded or already loaded else false</returns>
 	// ---------------------------------------------------------------------------------
-	protected abstract bool EnsureLoaded();
+	protected abstract bool EnsureLoadedImpl();
 
 
 
@@ -1013,7 +1013,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// ---------------------------------------------------------------------------------
 	public DataRow FindTrigger(object name)
 	{
-		EnsureLoaded();
+		EnsureLoadedImpl();
 
 		return _Triggers.Rows.Find(name);
 	}
@@ -1028,7 +1028,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// ---------------------------------------------------------------------------------
 	public DataTable GetSequenceSchema(string[] restrictions)
 	{
-		EnsureLoaded();
+		EnsureLoadedImpl();
 
 		var where = new StringBuilder();
 
@@ -1091,7 +1091,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// ---------------------------------------------------------------------------------
 	public DataTable GetTriggerSchema(string[] restrictions, int systemFlag, int identityFlag)
 	{
-		EnsureLoaded();
+		EnsureLoadedImpl();
 
 		var where = new StringBuilder();
 
@@ -1226,7 +1226,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	// ---------------------------------------------------------------------------------
 	public DataRow LocateIdentityTrigger(object objTable, object objField)
 	{
-		EnsureLoaded();
+		EnsureLoadedImpl();
 
 		string table = objTable.ToString();
 		string field = objField.ToString();

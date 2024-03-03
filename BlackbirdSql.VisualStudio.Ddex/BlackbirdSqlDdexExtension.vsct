@@ -378,7 +378,7 @@
 	</Commands>
 
 
-	
+
 	<CommandPlacements>
 
 		<!-- Placement for group. The parent of a group is a menu, context menu or toolbar. 

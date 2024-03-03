@@ -23,13 +23,44 @@ namespace BlackbirdSql.Core.Ctl;
 /// <summary>
 /// Core Host services are defined in this class,
 /// </summary>
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
-public abstract class AbstractHostess : IDisposable
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification="Using Diag.ThrowIfNotOnUIThread()")]
+public abstract class AbstractHostess(IServiceProvider dataViewHierarchyServiceProvider) : IDisposable
 {
-	private Guid _MandatedSqlEditorFactoryClsid = Guid.Empty;
-	private Guid _MandatedSqlLanguageServiceClsid = Guid.Empty;
 
-	private readonly IServiceProvider _ServiceProvider;
+	private readonly IServiceProvider _ServiceProvider = dataViewHierarchyServiceProvider;
+
+	~AbstractHostess()
+	{
+		Dispose(disposing: false);
+	}
+
+
+	void IDisposable.Dispose()
+	{
+		Dispose(disposing: true);
+		GC.SuppressFinalize(this);
+	}
+
+
+	private void Dispose(bool disposing)
+	{
+		if (disposing && _HostService != null)
+		{
+			/*
+			if (_environment != null)
+			{
+				((IDisposable)_environment).Dispose();
+				_environment = null;
+			}
+			*/
+
+			_HostService = null;
+			// _ServiceProvider = null;
+		}
+	}
+
+
+
 	private IVsDataHostService _HostService;
 	private IVsUIShell _ShellService;
 
@@ -78,55 +109,6 @@ public abstract class AbstractHostess : IDisposable
 	}
 
 
-	public string UserDataDirectory => Controller.Instance.UserDataDirectory;
-
-
-	protected virtual Guid MandatedSqlEditorFactoryClsid
-	{
-		get
-		{
-			if (_MandatedSqlEditorFactoryClsid == Guid.Empty)
-				_MandatedSqlEditorFactoryClsid = new(SystemData.MandatedSqlEditorFactoryGuid);
-
-			return _MandatedSqlEditorFactoryClsid;
-		}
-	}
-
-	protected virtual Guid MandatedSqlLanguageServiceClsid
-	{
-		get
-		{
-			if (_MandatedSqlLanguageServiceClsid == Guid.Empty)
-				_MandatedSqlLanguageServiceClsid = new(SystemData.MandatedSqlLanguageServiceGuid);
-
-			return _MandatedSqlLanguageServiceClsid;
-		}
-	}
-
-
-	public AbstractHostess()
-	{
-		// Tracer.Trace(GetType(), "AbstractHostess.AbstractHostess()");
-
-		_ServiceProvider = Controller.ServiceProvider;
-	}
-
-	public AbstractHostess(IServiceProvider dataViewHierarchyServiceProvider)
-	{
-		// Tracer.Trace(GetType(), "AbstractHostess.AbstractHostess(IServiceProvider dataViewHierarchyServiceProvider)");
-
-		_ServiceProvider = dataViewHierarchyServiceProvider;
-	}
-
-
-
-	~AbstractHostess()
-	{
-		Dispose(disposing: false);
-	}
-
-
-
 
 
 	public bool ActivateDocumentIfOpen(string documentMoniker)
@@ -168,68 +150,6 @@ public abstract class AbstractHostess : IDisposable
 
 	}
 
-	public object CreateLocalInstance(Guid classId)
-	{
-		if (IsUIThread)
-			return CreateLocalInstanceImpl(classId);
-
-		return HostService.InvokeOnUIThread(new CreateLocalInstanceDelegate(CreateLocalInstanceImpl), classId);
-	}
-
-
-
-	private object CreateLocalInstanceImpl(Guid classId)
-	{
-		ILocalRegistry2 service = HostService.GetService<SLocalRegistry, ILocalRegistry2>()
-			?? throw Diag.ExceptionService(typeof(ILocalRegistry2));
-
-		Diag.ThrowIfNotOnUIThread();
-
-		object result = null;
-		try
-		{
-			Guid riid = VSConstants.IID_IUnknown;
-
-			Native.WrapComCall(service.CreateInstance(classId, null, ref riid, (uint)CLSCTX.CLSCTX_INPROC_SERVER, out IntPtr ppvObj));
-			if (ppvObj != IntPtr.Zero)
-			{
-				result = Marshal.GetObjectForIUnknown(ppvObj);
-				Marshal.Release(ppvObj);
-			}
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		return result;
-	}
-
-
-
-
-	public bool IsDocumentInAProject(string documentMoniker)
-	{
-		int pDocInProj;
-
-		IVsUIShellOpenDocument service = HostService.GetService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>()
-			?? throw Diag.ExceptionService(typeof(IVsUIShellOpenDocument));
-
-		Diag.ThrowIfNotOnUIThread();
-
-		try
-		{
-			_ = Native.WrapComCall(service.IsDocumentInAProject(documentMoniker, out _, out _, out _, out pDocInProj));
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		return pDocInProj != 0;
-	}
 
 
 
@@ -255,6 +175,8 @@ public abstract class AbstractHostess : IDisposable
 		HostService.BeginInvokeOnUIThread(new PostExecuteCommandDelegate(PostExecuteCommandImpl), command);
 	}
 
+
+
 	private async Task<bool> PostExecuteCommandAsync(CommandID command, int delay)
 	{
 		if (delay > 0)
@@ -276,172 +198,5 @@ public abstract class AbstractHostess : IDisposable
 		Native.WrapComCall(ShellService.PostExecCommand(ref pguidCmdGroup, iD, 0u, ref pvaIn));
 	}
 
-
-
-	public void RenameDocument(string oldDocumentMoniker, string newDocumentMoniker)
-	{
-		RenameDocument(oldDocumentMoniker, -1, newDocumentMoniker);
-	}
-
-	public void RenameDocument(string oldDocumentMoniker, int newItemId, string newDocumentMoniker)
-	{
-		IVsRunningDocumentTable service = HostService.GetService<SVsRunningDocumentTable, IVsRunningDocumentTable>()
-			?? throw Diag.ExceptionService(typeof(IVsRunningDocumentTable));
-
-		Diag.ThrowIfNotOnUIThread();
-
-		try
-		{
-			Native.WrapComCall(service.RenameDocument(oldDocumentMoniker, newDocumentMoniker,
-				VSConstants.HIERARCHY_DONTCHANGE, (uint)newItemId));
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw ex;
-		}
-	}
-
-	public void ShowMessage(string message)
-	{
-		if (IsUIThread)
-		{
-			ShowMessageImpl(message);
-			return;
-		}
-
-
-		HostService.InvokeOnUIThread(new ShowMessageDelegate(ShowMessageImpl), message);
-	}
-
-	private void ShowMessageImpl(string message)
-	{
-		IUIService service = HostService.GetService<IUIService>()
-			?? throw Diag.ExceptionService(typeof(IUIService));
-		service.ShowMessage(message);
-	}
-
-
-	public DialogResult ShowQuestion(string question, MessageBoxDefaultButton defaultButton)
-	{
-		return ShowQuestion(question, defaultButton, null);
-	}
-
-	public DialogResult ShowQuestion(string question, string helpId)
-	{
-		return ShowQuestion(question, MessageBoxDefaultButton.Button2, helpId);
-	}
-
-	public DialogResult ShowQuestion(string question, MessageBoxDefaultButton defaultButton, string helpId)
-	{
-		return ShowQuestion(question, MessageBoxButtons.YesNo, defaultButton, helpId);
-	}
-
-
-
-	public DialogResult ShowQuestion(string question, MessageBoxButtons buttons, MessageBoxDefaultButton defaultButton, string helpId)
-	{
-		if (IsUIThread)
-			return ShowQuestionImpl(question, buttons, defaultButton, helpId);
-
-		return (DialogResult)HostService.InvokeOnUIThread(new ShowQuestionDelegate(ShowQuestionImpl), question, buttons, defaultButton, helpId);
-	}
-	private DialogResult ShowQuestionImpl(string question, MessageBoxButtons buttons, MessageBoxDefaultButton defaultButton, string helpId)
-	{
-		Diag.ThrowIfNotOnUIThread();
-
-		Guid rclsidComp = Guid.Empty;
-		OLEMSGDEFBUTTON msgdefbtn = OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST;
-		if (defaultButton == MessageBoxDefaultButton.Button2)
-		{
-			msgdefbtn = OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_SECOND;
-		}
-
-		int pnResult;
-
-		try
-		{
-			Native.WrapComCall(ShellService.ShowMessageBox(0u, ref rclsidComp, null, question, helpId, 0u, (OLEMSGBUTTON)buttons, msgdefbtn, OLEMSGICON.OLEMSGICON_QUERY, 0, out pnResult));
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-			throw ex;
-		}
-		return (DialogResult)pnResult;
-	}
-
-	public T TryGetService<T>()
-	{
-		T service = HostService.TryGetService<T>();
-		return service == null ? throw Diag.ExceptionService(typeof(T)) : service;
-	}
-
-	public TInterface TryGetService<TService, TInterface>()
-	{
-		TInterface service = HostService.TryGetService<TService, TInterface>();
-		if (service == null)
-		{
-			InvalidOperationException ex = new($"{typeof(TService).Name} : {typeof(TInterface).Name} service not found");
-			Diag.Dug(ex);
-			throw ex;
-		}
-		return service;
-	}
-
-	public T TryGetService<T>(Guid serviceGuid)
-	{
-		T service = HostService.TryGetService<T>(serviceGuid);
-		if (service == null)
-		{
-			InvalidOperationException ex = new($"{typeof(T).Name} service (Guid: {serviceGuid}) not found");
-			Diag.Dug(ex);
-			throw ex;
-		}
-		return service;
-	}
-
-	public T GetService<T>()
-	{
-		// Tracer.Trace(GetType(), "AbstractHostess.GetService<T>", "T: {0}", typeof(T).FullName);
-
-		T service = HostService.GetService<T>();
-		return service == null ? throw Diag.ExceptionService(typeof(T)) : service;
-	}
-
-	public TInterface GetService<TService, TInterface>()
-	{
-		TInterface service = HostService.GetService<TService, TInterface>();
-		return service == null ? throw Diag.ExceptionService(typeof(TInterface)) : service;
-	}
-
-	public T GetService<T>(Guid serviceGuid)
-	{
-		T service = HostService.GetService<T>(serviceGuid);
-		return service == null ? throw Diag.ExceptionService(typeof(T)) : service;
-	}
-
-	void IDisposable.Dispose()
-	{
-		Dispose(disposing: true);
-		GC.SuppressFinalize(this);
-	}
-
-	private void Dispose(bool disposing)
-	{
-		if (disposing && _HostService != null)
-		{
-			/*
-			if (_environment != null)
-			{
-				((IDisposable)_environment).Dispose();
-				_environment = null;
-			}
-			*/
-
-			_HostService = null;
-			// _ServiceProvider = null;
-		}
-	}
 
 }

@@ -26,7 +26,7 @@ public abstract class AbstruseLinkageParser : IDisposable
 
 
 	// A static class lock
-	protected static object _LockClass = new object();
+	protected static object _LockGlobal = new object();
 	// A protected 'this' object lock
 	protected object _LockObject = new();
 

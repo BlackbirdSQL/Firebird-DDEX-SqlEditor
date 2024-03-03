@@ -2,6 +2,11 @@
 
 ### Change log
 
+#### v11.1.0.0
+Added on-demand synchronous Trigger/Generator linkage user option.</br>
+Resolved ussue where malformed DocumentMoniker was causing Editor Save to corrupt document locks. Monikers were deliberately malformed for Intellisense to function after a moniker name change. To resolve this issue virtual project items have been shelved in favour of passing it over to VS and maintaining an xref table to the original explorer moniker. This approach is far more efficient and faster.</br>
+Renamed several classes and consolidated classes. Also began process of clearing out redundant SqlServer specific code.
+
 #### v11.0.0.1
 Some convertors were going idle when switching between persistent and transient instances of the same settings model.</br>
 Removed a 10 second debugging test Thread.Sleep() that was left in the AbstractRunningConnection async payload.

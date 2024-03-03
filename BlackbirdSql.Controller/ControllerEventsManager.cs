@@ -401,7 +401,8 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 		try
 		{
-			if (userCancellationToken.IsCancellationRequested || asyncCancellationToken.IsCancellationRequested)
+			if (userCancellationToken.IsCancellationRequested || asyncCancellationToken.IsCancellationRequested
+				|| GlobalsAgent.SolutionObject == null)
 			{
 				_ValidationCardinal--;
 				return false;
@@ -412,21 +413,21 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			TaskHandlerProgress(0, 0);
 			int i = 0;
 
-			foreach (Project project in ((Solution)GlobalsAgent.SolutionObject).Projects)
-			{
-				// Go to back of UI thread.
-				RecursiveValidateSolutionProject(project, stopwatch);
+				foreach (Project project in ((Solution)GlobalsAgent.SolutionObject).Projects)
+				{
+					// Go to back of UI thread.
+					RecursiveValidateSolutionProject(project, stopwatch);
 
-				if (userCancellationToken.IsCancellationRequested || asyncCancellationToken.IsCancellationRequested)
-					i = projectCount - 1;
+					if (userCancellationToken.IsCancellationRequested || asyncCancellationToken.IsCancellationRequested)
+						i = projectCount - 1;
 
-				TaskHandlerProgress((i + 1) * 100 / projectCount, stopwatch.Elapsed.Milliseconds);
+					TaskHandlerProgress((i + 1) * 100 / projectCount, stopwatch.Elapsed.Milliseconds);
 
-				if (userCancellationToken.IsCancellationRequested || asyncCancellationToken.IsCancellationRequested)
-					break;
+					if (userCancellationToken.IsCancellationRequested || asyncCancellationToken.IsCancellationRequested)
+						break;
 
-				i++;
-			}
+					i++;
+				}
 
 			if (userCancellationToken.IsCancellationRequested)
 			{
@@ -878,6 +879,8 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		{
 			_ValidationCardinal++;
 
+			// Fire and wait.
+
 			if (!ThreadHelper.CheckAccess())
 			{
 				bool result = ThreadHelper.JoinableTaskFactory.Run(async delegate
@@ -950,7 +953,9 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		// is done first to ensure that.
 		// Start up the payload launcher with tracking.
 
-		// _ValidationTask = Task.Run(payload);
+
+		// Fire and remember
+
 		_ValidationTask = await Task.Factory.StartNew(payload, default, creationOptions, scheduler);
 
 
@@ -1201,7 +1206,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 		Solution solution = ((Solution)GlobalsAgent.SolutionObject);
 
-		if (solution.Projects == null && solution.Projects.Count == 0)
+		if (solution == null || solution.Projects == null && solution.Projects.Count == 0)
 		{
 			_ValidationCardinal--;
 			return;

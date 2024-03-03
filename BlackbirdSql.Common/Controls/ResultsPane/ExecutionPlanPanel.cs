@@ -54,8 +54,7 @@ public class ExecutionPlanPanel : AbstractResultsPanel, IOleCommandTarget
 		}
 		catch (Exception e)
 		{
-			Tracer.LogExCatch(GetType(), e);
-			throw;
+			Diag.ThrowException(e);
 		}
 	}
 	*/

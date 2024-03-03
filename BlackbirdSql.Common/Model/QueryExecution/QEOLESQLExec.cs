@@ -17,6 +17,7 @@ using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.Parser;
 using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 
@@ -173,7 +174,7 @@ public class QEOLESQLExec(QEOLESQLExec.ResolveSqlCmdVariable sqlCmdVariableResol
 		}
 		catch (ParserException ex)
 		{
-			Tracer.LogExCatch(GetType(), ex);
+			Diag.Dug(ex);
 			ParserState parserState = ex.ParserStateValue;
 			if (parserState.ErrorTypeValue != ParserState.EnErrorType.CommandAborted)
 			{
@@ -187,12 +188,11 @@ public class QEOLESQLExec(QEOLESQLExec.ResolveSqlCmdVariable sqlCmdVariableResol
 		}
 		catch (ThreadAbortException e)
 		{
-			Tracer.LogExCatch(GetType(), e);
-			throw;
+			Diag.ThrowException(e);
 		}
 		catch (Exception e2)
 		{
-			Tracer.LogExCatch(GetType(), e2);
+			Diag.Dug(e2);
 			_ExecResult = EnScriptExecutionResult.Failure;
 		}
 	}
@@ -229,7 +229,7 @@ public class QEOLESQLExec(QEOLESQLExec.ResolveSqlCmdVariable sqlCmdVariableResol
 				}
 				catch (Exception e)
 				{
-					Tracer.LogExCatch(GetType(), e);
+					Diag.Dug(e);
 					scriptExecutionResult = EnScriptExecutionResult.Failure;
 				}
 
@@ -268,19 +268,22 @@ public class QEOLESQLExec(QEOLESQLExec.ResolveSqlCmdVariable sqlCmdVariableResol
 		}
 		catch (Exception e2)
 		{
-			Tracer.LogExCatch(GetType(), e2);
+			Diag.Dug(e2);
 			return EnScriptExecutionResult.Failure;
 		}
 	}
 
 	protected override void OnExecutionCompleted(EnScriptExecutionResult execResult)
 	{
+		// Tracer.Trace(GetType(), "OnExecutionCompleted()", "execResult = {0}", execResult);
+
 		try
 		{
 			CloseCurrentConnIfNeeded();
 		}
-		catch
+		catch (Exception ex)
 		{
+			Tracer.Warning(GetType(), "OnExecutionCompleted()", "Exception: {0}.", ex.Message);
 		}
 
 		base.OnExecutionCompleted(execResult);
@@ -650,7 +653,7 @@ public class QEOLESQLExec(QEOLESQLExec.ResolveSqlCmdVariable sqlCmdVariableResol
 		}
 		catch (Exception ex)
 		{
-			Tracer.LogExCatch(GetType(), ex);
+			Diag.Dug(ex);
 			OnQEOLESQLErrorMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrUnableToRedirOutput, text), ex.Message, EnQESQLScriptProcessingMessageType.Error);
 		}
 	}
@@ -686,7 +689,7 @@ public class QEOLESQLExec(QEOLESQLExec.ResolveSqlCmdVariable sqlCmdVariableResol
 		}
 		catch (Exception ex)
 		{
-			Tracer.LogExCatch(GetType(), ex);
+			Diag.Dug(ex);
 			OnQEOLESQLErrorMessage(ControlsResources.ErrUnableToCloseCon, ex.Message, EnQESQLScriptProcessingMessageType.Error);
 		}
 	}
@@ -720,7 +723,7 @@ public class QEOLESQLExec(QEOLESQLExec.ResolveSqlCmdVariable sqlCmdVariableResol
 		}
 		catch (Exception ex)
 		{
-			Tracer.LogExCatch(GetType(), ex);
+			Diag.Dug(ex);
 			OnQEOLESQLErrorMessage(ControlsResources.ErrUnableToCloseCon, ex.Message, EnQESQLScriptProcessingMessageType.Error);
 		}
 	}
@@ -774,7 +777,7 @@ public class QEOLESQLExec(QEOLESQLExec.ResolveSqlCmdVariable sqlCmdVariableResol
 		}
 		catch (Exception ex)
 		{
-			Tracer.LogExCatch(GetType(), ex);
+			Diag.Dug(ex);
 			OnQEOLESQLErrorMessage(ControlsResources.ErrUnableToConnect, ex.Message, EnQESQLScriptProcessingMessageType.FatalError);
 			return null;
 		}
@@ -824,7 +827,7 @@ public class QEOLESQLExec(QEOLESQLExec.ResolveSqlCmdVariable sqlCmdVariableResol
 		}
 		catch (Exception ex)
 		{
-			Tracer.LogExCatch(GetType(), ex);
+			Diag.Dug(ex);
 			OnQEOLESQLErrorMessage(ControlsResources.ErrUnableToConnect, ex.Message, EnQESQLScriptProcessingMessageType.FatalError);
 			return null;
 		}
@@ -923,12 +926,12 @@ public class QEOLESQLExec(QEOLESQLExec.ResolveSqlCmdVariable sqlCmdVariableResol
 		}
 		catch (Win32Exception ex)
 		{
-			Tracer.LogExCatch(GetType(), ex);
+			Diag.Dug(ex);
 			OnQEOLESQLErrorMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrUnableToLaunchProcesss, fileName, commandLine), ex.Message, EnQESQLScriptProcessingMessageType.Error);
 		}
 		catch (Exception ex2)
 		{
-			Tracer.LogExCatch(GetType(), ex2);
+			Diag.Dug(ex2);
 			OnQEOLESQLErrorMessage(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrUnableToExecProcess, fileName, commandLine), ex2.Message, EnQESQLScriptProcessingMessageType.Error);
 		}
 		finally
@@ -1025,17 +1028,17 @@ public class QEOLESQLExec(QEOLESQLExec.ResolveSqlCmdVariable sqlCmdVariableResol
 		}
 		catch (FileNotFoundException e)
 		{
-			Tracer.LogExCatch(GetType(), e);
+			Diag.Dug(e);
 			OnScriptProcessingError(ControlsResources.ErrFileWasnotFoundForRCmd, EnQESQLScriptProcessingMessageType.FatalError);
 		}
 		catch (DirectoryNotFoundException e2)
 		{
-			Tracer.LogExCatch(GetType(), e2);
+			Diag.Dug(e2);
 			OnScriptProcessingError(ControlsResources.ErrDirWasnotFoundForRCmd, EnQESQLScriptProcessingMessageType.FatalError);
 		}
 		catch (Exception ex4)
 		{
-			Tracer.LogExCatch(GetType(), ex4);
+			Diag.Dug(ex4);
 			OnScriptProcessingError(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrGenericRCmdError, ex4.Message), EnQESQLScriptProcessingMessageType.FatalError);
 		}
 		finally

@@ -8,6 +8,7 @@ using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using System.IO;
+using BlackbirdSql.Core;
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 
@@ -34,7 +35,7 @@ public class QEDiskDataStorage : AbstractDiskDataStorage, IBQEStorage, IBDataSto
 		}
 		catch (Exception e)
 		{
-			Tracer.LogExCatch(GetType(), e);
+			Diag.Dug(e);
 			long rowCount = RowCount;
 			if (rowCount > 0)
 			{

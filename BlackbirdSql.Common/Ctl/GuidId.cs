@@ -7,25 +7,19 @@ using System.Globalization;
 
 namespace BlackbirdSql.Common.Ctl;
 
-public sealed class GuidId
+public sealed class GuidId(Guid guid, uint id)
 {
-	private Guid _Clsid = Guid.Empty;
+	private Guid _Clsid = guid;
+	private readonly uint _Id = id;
 
-	private readonly uint _id;
 
 	public Guid Clsid => _Clsid;
 
-	public uint Id => _id;
-
-	public GuidId(Guid guid, uint id)
-	{
-		_Clsid = guid;
-		_id = id;
-	}
+	public uint Id => _Id;
 
 	public override string ToString()
 	{
-		return _Clsid.ToString() + "/" + _id.ToString(CultureInfo.InvariantCulture);
+		return _Clsid.ToString() + "/" + _Id.ToString(CultureInfo.InvariantCulture);
 	}
 
 	public override bool Equals(object o)

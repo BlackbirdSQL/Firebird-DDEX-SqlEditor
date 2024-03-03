@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Model.Events;
+using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 
 
@@ -167,8 +168,7 @@ namespace BlackbirdSql.Common.Controls.QueryExecution
 			if (controlToHost == null)
 			{
 				Exception ex = new ArgumentNullException("controlToHost");
-				Tracer.LogExThrow(GetType(), ex);
-				throw ex;
+				Diag.ThrowException(ex);
 			}
 
 			int count = hostPanel.Controls.Count;
@@ -203,15 +203,13 @@ namespace BlackbirdSql.Common.Controls.QueryExecution
 			if (hostPanel.Controls.Count == 0)
 			{
 				Exception ex = new InvalidOperationException();
-				Tracer.LogExThrow(GetType(), ex);
-				throw ex;
+				Diag.ThrowException(ex);
 			}
 
 			if (controlIndex < 0 || controlIndex > HostedControlsCount - 1)
 			{
 				Exception ex2 = new ArgumentOutOfRangeException("controlIndex");
-				Tracer.LogExThrow(GetType(), ex2);
-				throw ex2;
+				Diag.ThrowException(ex2);
 			}
 
 			return hostPanel.Controls[controlIndex * 2];
