@@ -2,7 +2,7 @@
 
 The BlackbirdSQL DDEX 2.0 .NET with SqlEditor Provider extension for Firebird, `BlackbirdSql.VisualStudio.Ddex`, implements most DDEX 2.0 interfaces prevalent in the Microsoft SqlServer DDEX and SqlEditor extensions.
 
-[Download BlackbirdSql DDEX with SqlEditor Extension (First Official Release v11.0.0.1)](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v11.0.0.1/BlackbirdSql.VisualStudio.Ddex.vsix) ([Change Log](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/blob/master/Docs/CHANGELOG.md))
+[Download BlackbirdSql DDEX with SqlEditor Extension (Release v11.1.0.0)](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v11.1.0.0/BlackbirdSql.VisualStudio.Ddex.vsix) ([Change Log](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/blob/master/Docs/CHANGELOG.md))
 
 #### Screenshots
 ![ReadMe](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/assets/120905720/8c2515a0-6ee2-49f5-8293-3dba1b51f3b5)
@@ -13,7 +13,7 @@ The BlackbirdSQL DDEX 2.0 .NET with SqlEditor Provider extension for Firebird, `
 ### Features
 * Firebird DDEX provider support for Visual Studio's DDEX 2.0 IVs DML interfaces utilizing FirebirdSql.Data.FirebirdClient version 10.0.0.0.
 * Microsoft SqlServer SqlEditor port for Firebird for editing Computed columns, Triggers, Views, Procedures, Functions, SQL scripts and `.fbsql` files.</br>__Note:__ The editor service execution plan visualizer is not currently functional. Execution plans are text based.</br>Intellisense is based on Microsoft's Transaction-SQL language service. Firebird specific grammar may be reported as errors or warnings but still successfully execute.
-* Trigger/Generator auto-increment linkage.
+* Trigger/Generator auto-increment linkage. __New:__ Linkage can now be set to *On Demand* in user options. If enabled linkage will only take place when actually required. 
 * Full integration of Server Explorer with asynchronous loading. Connection dialogs include Host and Database drop-down selection; derived from Server Explorer, FlameRobin and the current solution projects' settings and EDM connection strings.
 * SqlEditor text-based execution plans and statistics snapshot comparer.
 * Configurable connection equivalency keys under `BlackbirdSql Server Tools` DDEX user options.
