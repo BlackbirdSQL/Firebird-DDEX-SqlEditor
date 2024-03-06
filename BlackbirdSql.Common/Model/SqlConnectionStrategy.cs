@@ -55,7 +55,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 				}
 				else
 				{
-					SqlTracer.AssertTraceEvent(condition: false, TraceEventType.Error, EnSqlTraceId.CoreServices, "Supported connection, but not supported command?");
+					Diag.Dug(new DataException("Supported connection, but not supported command?"));
 				}
 			}
 		}
@@ -123,7 +123,10 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 				}
 				else
 				{
-					SqlTracer.AssertTraceEvent(!_IsCloudConnection.HasValue, TraceEventType.Error, EnSqlTraceId.VSShell, "connection is not open, but _IsCloudConnection has a value.  This value should be cleared when we disconnect");
+					if (_IsCloudConnection.HasValue)
+					{
+						Diag.Dug(new DataException("connection is not open, but _IsCloudConnection has a value.  This value should be cleared when we disconnect"));
+					}
 				}
 
 				return result;
@@ -522,7 +525,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 
 			try
 			{
-				Native.ThrowOnFailure(uiShell.GetDialogOwnerHwnd(out var phwnd));
+				Exf(uiShell.GetDialogOwnerHwnd(out var phwnd));
 
 				if (connectionDialogWrapper.ShowDialogValidateConnection(phwnd, connectionInfo, out connection) == true)
 					return connectionInfo;
@@ -843,9 +846,9 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 					_TracingId = dataReader.GetValue(0).ToString();
 				}
 			}
-			catch (Exception exception)
+			catch (Exception ex)
 			{
-				SqlTracer.TraceException((TraceEventType)869, EnSqlTraceId.VSShell, exception, "QueryServerSideProperties");
+				Diag.Dug(ex);
 				_ = Connection.State;
 				_ = 1;
 			}
@@ -925,7 +928,10 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 			{
 			}
 
-			SqlTracer.AssertTraceEvent(!version.Equals(new Version()), TraceEventType.Error, EnSqlTraceId.CoreServices, "GetServerVersion is returning version (0,0).  Something is wrong!!");
+			if (version.Equals(new Version()))
+			{
+				Diag.Dug(new DataException("GetServerVersion is returning version (0,0).  Something is wrong!!"));
+			}
 		}
 
 		return version;

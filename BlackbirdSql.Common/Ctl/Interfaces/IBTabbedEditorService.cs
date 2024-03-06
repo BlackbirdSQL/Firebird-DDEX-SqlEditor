@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using BlackbirdSql.Common.Controls;
+using BlackbirdSql.Common.Controls.Tabs;
 using BlackbirdSql.Common.Ctl.Enums;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -13,7 +14,7 @@ public interface IBTabbedEditorService
 {
 	AbstractEditorTab ActiveTab { get; }
 
-	TabbedEditorUI TabbedEditorControl { get; }
+	AbstractTabbedEditorUIControl TabbedEditorControl { get; }
 
 	IVsWindowFrame TabFrame { get; }
 

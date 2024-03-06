@@ -3,9 +3,9 @@
 using System;
 using System.Data;
 using System.Diagnostics;
-using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Ctl.Diagnostics;
@@ -14,6 +14,7 @@ using BlackbirdSql.Core.Properties;
 using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 
 namespace BlackbirdSql.Core.Model;
@@ -175,7 +176,8 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public static LinkageParser EnsureLoaded(IDbConnection connection)
 	{
-		// Tracer.Trace(typeof(LinkageParser), "EnsureInstance(FbConnection)");
+		// Diag.Stack();
+		// Tracer.Trace(typeof(LinkageParser), "EnsureLoaded(IDbConnection)");
 
 		LinkageParser parser = CreateInstance(connection, true);
 
@@ -1019,14 +1021,27 @@ public class LinkageParser : AbstractLinkageParser
 
 			int waitTime = 0;
 			int pendingTimeout = 3000;
+			int timeout = PersistentSettings.LinkageTimeout * 1000;
 
-			while (AsyncActive)
+			while (AsyncActive && !Loaded)
 			{
-				if (waitTime >= 25000)
+				if (waitTime >= timeout)
 				{
-					TimeoutException ex = new($"Timed out waiting for AsyncPayloadLauncher to complete. Timeout (ms): {waitTime}.");
-					Diag.Dug(ex);
-					throw ex;
+					string caption = Resources.LinkageParser_CaptionLinkageTimeout;
+					string msg = Resources.LinkageParser_TextLinkageParser.FmtRes(PersistentSettings.LinkageTimeout);
+					if (Cmd.ShowMessage(msg, caption, MessageBoxButtons.YesNo) == DialogResult.Yes)
+					{
+						waitTime = 0;
+					}
+					else
+					{
+						if (AsyncActive)
+						{
+							TimeoutException ex = new($"Timed out waiting for AsyncPayloadLauncher to complete. Timeout (ms): {waitTime}.");
+							Diag.Dug(ex);
+							throw ex;
+						}
+					}
 				}
 
 				try
@@ -1041,6 +1056,8 @@ public class LinkageParser : AbstractLinkageParser
 				if (!_SyncWaitOnAsyncToken.IsCancellationRequested)
 				{
 					Thread.Sleep(50);
+					if ((waitTime % 1000) == 0)
+						Thread.Yield();
 
 					pendingTimeout -= 100;
 
@@ -1097,6 +1114,9 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	protected override bool SyncExecute()
 	{
+		// Tracer.Trace(GetType(), "SyncExecute()", "_Loaded: {0}, _Id: {1}, Connection: {2}.", _LinkStage, _Id,
+		//	_DbConnection == null ? "Disposed" : _DbConnection.ConnectionString);
+
 		if (!ClearToLoadSync)
 			return _Enabled;
 
@@ -1163,14 +1183,27 @@ public class LinkageParser : AbstractLinkageParser
 
 		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}->S{syncCardinal}]  SyncExecute()", "Sync thread for PopulateLinkageTables() loaded. Waiting for it to complete...");
 		int waitTime = 0;
+		int timeout = PersistentSettings.LinkageTimeout * 1000;
 
-		while (!task.IsCompleted)
+		while (!task.IsCompleted && !Loaded)
 		{
-			if (waitTime >= 30000)
+			if (waitTime >= timeout)
 			{
-				TimeoutException ex = new($"Timed out waiting for Sync Task to complete. Timeout (ms): {waitTime}.");
-				Diag.Dug(ex);
-				throw ex;
+				string caption = Resources.LinkageParser_CaptionLinkageTimeout;
+				string msg = Resources.LinkageParser_TextLinkageParser.FmtRes(PersistentSettings.LinkageTimeout);
+				if (Cmd.ShowMessage(msg, caption, MessageBoxButtons.YesNo) == DialogResult.Yes)
+				{
+					waitTime = 0;
+				}
+				else
+				{
+					if (!task.IsCompleted)
+					{
+						TimeoutException ex = new($"Timed out waiting for Sync Task to complete. Timeout (ms): {waitTime}.");
+						Diag.Dug(ex);
+						throw ex;
+					}
+				}
 			}
 
 			// Tracer.Trace(GetType(), "WaitForAsyncLoadConfiguredConnections()", "WAITING");
@@ -1181,6 +1214,9 @@ public class LinkageParser : AbstractLinkageParser
 					break;
 			}
 			catch { }
+
+			if ((waitTime % 1000) == 0)
+				Thread.Yield();
 
 			waitTime += 100;
 		}

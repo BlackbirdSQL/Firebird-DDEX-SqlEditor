@@ -45,6 +45,8 @@ public interface IBPackageController : IVsSolutionEvents3, // IVsSolutionEvents2
 	delegate void LoadSolutionOptionsDelegate(Stream stream);
 	delegate void SaveSolutionOptionsDelegate(Stream stream);
 	delegate int AfterCloseSolutionDelegate(object pUnkReserved);
+	delegate int BeforeCloseProjectDelegate(IVsHierarchy pHierarchy, int fRemoved);
+	delegate int BeforeCloseSolutionDelegate(object pUnkReserved);
 	delegate int QueryCloseProjectDelegate(IVsHierarchy hierarchy, int removing, ref int cancel);
 	delegate int QueryCloseSolutionDelegate(object pUnkReserved, ref int pfCancel);
 
@@ -66,6 +68,8 @@ public interface IBPackageController : IVsSolutionEvents3, // IVsSolutionEvents2
 	event SaveSolutionOptionsDelegate OnSaveSolutionOptionsEvent;
 
 	event AfterCloseSolutionDelegate OnAfterCloseSolutionEvent;
+	event BeforeCloseProjectDelegate OnBeforeCloseProjectEvent;
+	event BeforeCloseSolutionDelegate OnBeforeCloseSolutionEvent;
 	event QueryCloseProjectDelegate OnQueryCloseProjectEvent;
 	event QueryCloseSolutionDelegate OnQueryCloseSolutionEvent;
 
@@ -110,8 +114,6 @@ public interface IBPackageController : IVsSolutionEvents3, // IVsSolutionEvents2
 	bool IsCmdLineBuild { get; }
 
 
-	IVsUIHierarchy MiscHierarchy { get; }
-
 	IVsMonitorSelection SelectionMonitor { get; }
 
 	IVsTaskStatusCenterService StatusCenterService { get; }
@@ -133,7 +135,6 @@ public interface IBPackageController : IVsSolutionEvents3, // IVsSolutionEvents2
 	abstract bool AdviseEvents();
 	Task<bool> AdviseEventsAsync();
 
-	void DeregisterMiscHierarchy();
 
 	void DisableRdtEvents();
 
@@ -149,8 +150,6 @@ public interface IBPackageController : IVsSolutionEvents3, // IVsSolutionEvents2
 
 	Task<IVsTaskStatusCenterService> GetStatusCenterServiceAsync();
 
-
-	void RegisterMiscHierarchy(IVsUIHierarchy hierarchy);
 
 	bool ShutdownDte();
 	

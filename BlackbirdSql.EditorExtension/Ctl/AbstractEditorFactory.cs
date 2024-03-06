@@ -5,12 +5,9 @@ using System;
 using System.Data;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -21,7 +18,9 @@ using Microsoft.VisualStudio.Utilities;
 using Cmd = BlackbirdSql.Common.Cmd;
 
 
+
 namespace BlackbirdSql.EditorExtension.Ctl;
+
 
 public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorFactory(withEncoding)
 {
@@ -135,6 +134,7 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 					Guid clsid = typeof(VsTextBufferClass).GUID;
 					Guid iid = VSConstants.IID_IUnknown;
 					object obj = ((AsyncPackage)Controller.DdexPackage).CreateInstance(ref clsid, ref iid, typeof(object));
+
 					if (WithEncoding)
 					{
 						IVsUserData obj2 = obj as IVsUserData;
@@ -154,19 +154,23 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 					return result2;
 
 				EnsureAuxilliaryDocData(hierarchy, moniker, vsTextLines2);
-				SqlEditorTabbedEditorPane editorPane = CreateTabbedEditorPane(vsTextLines2, moniker);
+
+
+				TabbedEditorWindowPane editorPane = CreateTabbedEditorPane(vsTextLines2, moniker);
+
+
 				intPtrDocView = Marshal.GetIUnknownForObject(editorPane);
 				intPtrDocData = Marshal.GetIUnknownForObject(vsTextLines2);
 				caption = string.Empty;
+
 				cmdUIGuid = VSConstants.GUID_TextEditorFactory;
-				Guid guidLangService = MandatedSqlLanguageServiceClsid;
-				if (guidLangService != Guid.Empty)
-				{
-					vsTextLines2.SetLanguageServiceID(ref guidLangService);
-					IVsUserData obj3 = (IVsUserData)vsTextLines2;
-					Guid riidKey2 = VSConstants.VsTextBufferUserDataGuid.VsBufferDetectLangSID_guid;
-					Native.ThrowOnFailure(obj3.SetData(ref riidKey2, false));
-				}
+
+				Guid clsidLangService = MandatedSqlLanguageServiceClsid;
+
+				vsTextLines2.SetLanguageServiceID(ref clsidLangService);
+				IVsUserData obj3 = (IVsUserData)vsTextLines2;
+				Guid riidKey2 = VSConstants.VsTextBufferUserDataGuid.VsBufferDetectLangSID_guid;
+				Exf(obj3.SetData(ref riidKey2, false));
 
 				result2 = 0;
 
@@ -190,9 +194,9 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 		}
 	}
 
-	protected virtual SqlEditorTabbedEditorPane CreateTabbedEditorPane(IVsTextLines vsTextLines, string moniker)
+	protected virtual TabbedEditorWindowPane CreateTabbedEditorPane(IVsTextLines vsTextLines, string moniker)
 	{
-		return new SqlEditorTabbedEditorPane(ServiceProvider, EditorExtensionPackage.Instance, vsTextLines, moniker);
+		return new TabbedEditorWindowPane(ServiceProvider, EditorExtensionPackage.Instance, vsTextLines, moniker);
 	}
 
 	protected virtual void EnsureAuxilliaryDocData(IVsHierarchy hierarchy, string documentMoniker, object docData)

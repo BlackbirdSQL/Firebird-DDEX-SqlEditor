@@ -61,6 +61,258 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to seconds.
+        /// </summary>
+        public static string ConverterUom_Seconds {
+            get {
+                return ResourceManager.GetString("ConverterUom_Seconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to seconds.
+        /// </summary>
+        public static string ConverterUom_SecondsDisabled {
+            get {
+                return ResourceManager.GetString("ConverterUom_SecondsDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to seconds.
+        /// </summary>
+        public static string ConverterUom_SecondsUnlimited {
+            get {
+                return ResourceManager.GetString("ConverterUom_SecondsUnlimited", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to separator.
+        /// </summary>
+        public static string ConverterUom_Separator {
+            get {
+                return ResourceManager.GetString("ConverterUom_Separator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to default.
+        /// </summary>
+        public static string ConverterUomDefault_Seconds {
+            get {
+                return ResourceManager.GetString("ConverterUomDefault_Seconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to default.
+        /// </summary>
+        public static string ConverterUomDefault_SecondsDisabled {
+            get {
+                return ResourceManager.GetString("ConverterUomDefault_SecondsDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to default.
+        /// </summary>
+        public static string ConverterUomDefault_SecondsUnlimited {
+            get {
+                return ResourceManager.GetString("ConverterUomDefault_SecondsUnlimited", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to default.
+        /// </summary>
+        public static string ConverterUomDefault_Separator {
+            get {
+                return ResourceManager.GetString("ConverterUomDefault_Separator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} seconds.
+        /// </summary>
+        public static string ConverterUomFormat_Seconds {
+            get {
+                return ResourceManager.GetString("ConverterUomFormat_Seconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} seconds.
+        /// </summary>
+        public static string ConverterUomFormat_SecondsDisabled {
+            get {
+                return ResourceManager.GetString("ConverterUomFormat_SecondsDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} seconds.
+        /// </summary>
+        public static string ConverterUomFormat_SecondsUnlimited {
+            get {
+                return ResourceManager.GetString("ConverterUomFormat_SecondsUnlimited", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [{0}].
+        /// </summary>
+        public static string ConverterUomFormat_Separator {
+            get {
+                return ResourceManager.GetString("ConverterUomFormat_Separator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default [{0} seconds].
+        /// </summary>
+        public static string ConverterUomFormatDefault_Seconds {
+            get {
+                return ResourceManager.GetString("ConverterUomFormatDefault_Seconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default [{0} seconds].
+        /// </summary>
+        public static string ConverterUomFormatDefault_SecondsDisabled {
+            get {
+                return ResourceManager.GetString("ConverterUomFormatDefault_SecondsDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default [{0} seconds].
+        /// </summary>
+        public static string ConverterUomFormatDefault_SecondsUnlimited {
+            get {
+                return ResourceManager.GetString("ConverterUomFormatDefault_SecondsUnlimited", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Default [{0}].
+        /// </summary>
+        public static string ConverterUomFormatDefault_Separator {
+            get {
+                return ResourceManager.GetString("ConverterUomFormatDefault_Separator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum [{0} seconds].
+        /// </summary>
+        public static string ConverterUomFormatMax_Seconds {
+            get {
+                return ResourceManager.GetString("ConverterUomFormatMax_Seconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum [{0} seconds].
+        /// </summary>
+        public static string ConverterUomFormatMax_SecondsDisabled {
+            get {
+                return ResourceManager.GetString("ConverterUomFormatMax_SecondsDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum [{0} seconds].
+        /// </summary>
+        public static string ConverterUomFormatMax_SecondsUnlimited {
+            get {
+                return ResourceManager.GetString("ConverterUomFormatMax_SecondsUnlimited", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum [{0} seconds].
+        /// </summary>
+        public static string ConverterUomFormatMin_Seconds {
+            get {
+                return ResourceManager.GetString("ConverterUomFormatMin_Seconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disabled [{0} seconds].
+        /// </summary>
+        public static string ConverterUomFormatMin_SecondsDisabled {
+            get {
+                return ResourceManager.GetString("ConverterUomFormatMin_SecondsDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unlimited [{0} seconds].
+        /// </summary>
+        public static string ConverterUomFormatMin_SecondsUnlimited {
+            get {
+                return ResourceManager.GetString("ConverterUomFormatMin_SecondsUnlimited", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to max,maximum.
+        /// </summary>
+        public static string ConverterUomMax_Seconds {
+            get {
+                return ResourceManager.GetString("ConverterUomMax_Seconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to max,maximum.
+        /// </summary>
+        public static string ConverterUomMax_SecondsDisabled {
+            get {
+                return ResourceManager.GetString("ConverterUomMax_SecondsDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to max,maximum.
+        /// </summary>
+        public static string ConverterUomMax_SecondsUnlimited {
+            get {
+                return ResourceManager.GetString("ConverterUomMax_SecondsUnlimited", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to min,minimum.
+        /// </summary>
+        public static string ConverterUomMin_Seconds {
+            get {
+                return ResourceManager.GetString("ConverterUomMin_Seconds", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to min,minimum,unlimited,disabled.
+        /// </summary>
+        public static string ConverterUomMin_SecondsDisabled {
+            get {
+                return ResourceManager.GetString("ConverterUomMin_SecondsDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to min,minimum,unlimited.
+        /// </summary>
+        public static string ConverterUomMin_SecondsUnlimited {
+            get {
+                return ResourceManager.GetString("ConverterUomMin_SecondsUnlimited", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Debugging.
         /// </summary>
         public static string OptionCategoryDebugging {
@@ -453,6 +705,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDescriptionGeneralIncludeAppConnections {
             get {
                 return ResourceManager.GetString("OptionDescriptionGeneralIncludeAppConnections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The maximum time a trigger linkage parser will wait for completion before requesting a time extension. Range: 10 - 120 seconds..
+        /// </summary>
+        public static string OptionDescriptionGeneralLinkageTimeout {
+            get {
+                return ResourceManager.GetString("OptionDescriptionGeneralLinkageTimeout", resourceCulture);
             }
         }
         
@@ -858,6 +1119,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDisplayGeneralIncludeAppConnections {
             get {
                 return ResourceManager.GetString("OptionDisplayGeneralIncludeAppConnections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trigger linkage timeout.
+        /// </summary>
+        public static string OptionDisplayGeneralLinkageTimeout {
+            get {
+                return ResourceManager.GetString("OptionDisplayGeneralLinkageTimeout", resourceCulture);
             }
         }
         

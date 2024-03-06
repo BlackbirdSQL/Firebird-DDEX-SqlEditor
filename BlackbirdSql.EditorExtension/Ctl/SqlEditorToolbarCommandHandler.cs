@@ -6,43 +6,50 @@ using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Commands;
 using BlackbirdSql.Common.Ctl.Interfaces;
-
 using Microsoft.VisualStudio.OLE.Interop;
 
-// namespace Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration
-namespace BlackbirdSql.EditorExtension.Ctl
+
+
+namespace BlackbirdSql.EditorExtension.Ctl;
+
+
+public sealed class SqlEditorToolbarCommandHandler<T> : IBTabbedEditorToolbarCommandHandler where T : AbstractSqlEditorCommand, new()
 {
-	public sealed class SqlEditorToolbarCommandHandler<T>(Guid clsidCmdSet, uint cmdId)
-		: IBTabbedEditorToolbarCommandHandler where T : AbstractSqlEditorCommand, new()
+
+	public SqlEditorToolbarCommandHandler(Guid clsidCmdSet, uint cmdId)
 	{
-		private readonly GuidId _GuidId = new GuidId(clsidCmdSet, cmdId);
+		_GuidId = new GuidId(clsidCmdSet, cmdId);
+	}
 
-		public GuidId GuidId => _GuidId;
 
-		public int HandleQueryStatus(AbstractTabbedEditorPane editorPane, ref OLECMD prgCmd, IntPtr pCmdText)
+
+	private readonly GuidId _GuidId;
+
+	public GuidId GuidId => _GuidId;
+
+	public int HandleQueryStatus(AbstractTabbedEditorWindowPane editorPane, ref OLECMD prgCmd, IntPtr pCmdText)
+	{
+		if (editorPane is TabbedEditorWindowPane sqlEditorTabbedEditorPane)
 		{
-			if (editorPane is SqlEditorTabbedEditorPane sqlEditorTabbedEditorPane)
+			return new T
 			{
-				return new T
-				{
-					EditorWindow = sqlEditorTabbedEditorPane
-				}.QueryStatus(ref prgCmd, pCmdText);
-			}
-
-			return (int)Constants.MSOCMDERR_E_NOTSUPPORTED;
+				EditorWindow = sqlEditorTabbedEditorPane
+			}.QueryStatus(ref prgCmd, pCmdText);
 		}
 
-		public int HandleExec(AbstractTabbedEditorPane editorPane, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
-		{
-			if (editorPane is SqlEditorTabbedEditorPane sqlEditorTabbedEditorPane)
-			{
-				return new T
-				{
-					EditorWindow = sqlEditorTabbedEditorPane
-				}.Exec(nCmdexecopt, pvaIn, pvaOut);
-			}
+		return (int)Constants.MSOCMDERR_E_NOTSUPPORTED;
+	}
 
-			return (int)Constants.MSOCMDERR_E_NOTSUPPORTED;
+	public int HandleExec(AbstractTabbedEditorWindowPane editorPane, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
+	{
+		if (editorPane is TabbedEditorWindowPane sqlEditorTabbedEditorPane)
+		{
+			return new T
+			{
+				EditorWindow = sqlEditorTabbedEditorPane
+			}.Exec(nCmdexecopt, pvaIn, pvaOut);
 		}
+
+		return (int)Constants.MSOCMDERR_E_NOTSUPPORTED;
 	}
 }

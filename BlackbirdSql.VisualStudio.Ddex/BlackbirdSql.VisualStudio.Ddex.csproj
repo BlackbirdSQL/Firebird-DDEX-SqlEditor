@@ -205,6 +205,7 @@
     <Compile Include="Ctl\ComponentModel\GlobalYesNoConverter.cs" />
     <Compile Include="Ctl\ComponentModel\GlobalIncludeExcludeConverter.cs" />
     <Compile Include="Ctl\ComponentModel\GlobalIncludedExcludedConverter.cs" />
+    <Compile Include="Ctl\ComponentModel\UomConverter.cs" />
     <Compile Include="Ctl\Config\PersistentSettings.cs" />
     <Compile Include="Ctl\DataTools\TDataProvider.cs" />
     <Compile Include="Ctl\DataTools\TDataSource.cs" />
@@ -223,7 +224,6 @@
       <LastGenOutput>ControlsResources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <None Include="Properties\Internal\Microsoft.Data.ConnectionUI.Dialog.SR.resx" />
     <EmbeddedResource Include="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>

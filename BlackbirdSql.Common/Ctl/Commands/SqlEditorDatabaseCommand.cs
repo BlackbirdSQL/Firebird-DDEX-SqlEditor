@@ -182,12 +182,12 @@ public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 		// {
 
 		Guid clsid = LibraryData.CLSID_PropertyDatabaseConnectionChanged;
-		Core.Native.ThrowOnFailure(userData.SetData(ref clsid, connectionString), (string)null);
+		Exf(userData.SetData(ref clsid, connectionString), (string)null);
 
 		// Tracer.Trace(GetType(), "SetDatasetKeyDisplayMember()", "csa.ConnectionString: {0}", csa.ConnectionString);
 
 		Guid clsid2 = new(LibraryData.SqlEditorConnectionStringGuid);
-		Core.Native.ThrowOnFailure(userData.SetData(ref clsid2, (object)csa), (string)null);
+		Exf(userData.SetData(ref clsid2, (object)csa), (string)null);
 
 		_Csa = csa;
 		_Csa.RegisterValidationState(connectionString);

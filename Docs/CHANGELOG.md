@@ -2,6 +2,13 @@
 
 ### Change log
 
+#### v11.1.0.1
+Added parser linkage timeout user option. Parsers that exceed the timeout will now prompt the user for a time extension.</br>
+Fixed several unhandled NotOnUIThread exceptions. In most cases the processes now switch over to the ui thread if they're not already on it, rather than throwing an exception.</br>
+Fixed issue where a saved query only began displaying it's dirty state caption after a few minutes. This is a Visual Studio internal anomaly so the document is force saved a second time to kickstart dirty state notifications.</br>
+Fixed the exception message dialog which had been corrupted during porting.</br>
+Began a cleanup of redundant classes.
+
 #### v11.1.0.0
 Added on-demand synchronous Trigger/Generator linkage user option.</br>
 Resolved ussue where malformed DocumentMoniker was causing Editor Save to corrupt document locks. Monikers were deliberately malformed for Intellisense to function after a moniker name change. To resolve this issue virtual project items have been shelved in favour of passing it over to VS and maintaining an xref table to the original explorer moniker. This approach is far more efficient and faster.</br>

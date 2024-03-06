@@ -147,6 +147,11 @@ public abstract class PersistentSettings : IBPersistentSettings
 	/// </summary>
 	public static bool OnDemandLinkage => (bool)GetSetting("DdexGeneralOnDemandLinkage", false);
 
+	/// <summary>
+	/// The maximum time a trigger linkage parser will wait before requesting an extension.
+	/// </summary>
+	public static int LinkageTimeout => (int)GetSetting("DdexGeneralLinkageTimeout", 30);
+
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>

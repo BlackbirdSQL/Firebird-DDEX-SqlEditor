@@ -331,6 +331,9 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 	protected abstract IBPackageController CreateController();
 
 
+	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+
+
 
 
 	// ---------------------------------------------------------------------------------

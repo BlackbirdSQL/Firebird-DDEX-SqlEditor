@@ -35,7 +35,7 @@ public sealed class TextViewCommandFilter : IOleCommandTarget, IDisposable
 	{
 		if (view != null)
 		{
-			Core.Native.ThrowOnFailure(view.AddCommandFilter(this, out _NextTarget), (string)null);
+			Exf(view.AddCommandFilter(this, out _NextTarget), (string)null);
 			_MyTextView = view;
 			_RecongizableCommands = recongizableCommands;
 		}
@@ -45,7 +45,7 @@ public sealed class TextViewCommandFilter : IOleCommandTarget, IDisposable
 	{
 		if (_MyTextView != null)
 		{
-			Core.Native.ThrowOnFailure(_MyTextView.RemoveCommandFilter(this), (string)null);
+			Exf(_MyTextView.RemoveCommandFilter(this), (string)null);
 			_MyTextView = null;
 		}
 
@@ -56,6 +56,8 @@ public sealed class TextViewCommandFilter : IOleCommandTarget, IDisposable
 
 		GC.SuppressFinalize(this);
 	}
+
+	private static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
 
 	public int QueryStatus(ref Guid guidGroup, uint nCmdId, OLECMD[] oleCmd, IntPtr oleText)
 	{

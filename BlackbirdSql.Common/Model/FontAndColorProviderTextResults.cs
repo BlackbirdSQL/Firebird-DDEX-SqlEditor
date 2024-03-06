@@ -171,8 +171,8 @@ public sealed class FontAndColorProviderTextResults : AbstractFontAndColorProvid
 			return;
 		}
 
-		Native.ThrowOnFailure(FontAndColorUtilities.GetColorType(itemInfo[0].crBackground, out var pctType));
-		Native.ThrowOnFailure(FontAndColorUtilities.GetColorType(itemInfo[0].crForeground, out var pctType2));
+		Exf(FontAndColorUtilities.GetColorType(itemInfo[0].crBackground, out var pctType));
+		Exf(FontAndColorUtilities.GetColorType(itemInfo[0].crForeground, out var pctType2));
 		if ((long)pctType == 3)
 		{
 			itemInfo[0].crBackground = DecodeSystemColor(itemInfo[0].crBackground);

@@ -1,9 +1,8 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.Design.Core, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Common.VsColorUtilities
+
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using System.Windows.Media;
@@ -15,7 +14,9 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.Win32;
 
 
+
 namespace BlackbirdSql.Common.Ctl;
+
 
 public static class VsColorUtilities
 {
@@ -185,7 +186,7 @@ public static class VsColorUtilities
 
 		Diag.ThrowIfNotOnUIThread();
 
-		Native.ThrowOnFailure(uiShell.GetVSSysColorEx(color, out uint pdwRGBval));
+		Exf(uiShell.GetVSSysColorEx(color, out uint pdwRGBval));
 
 		return ColorTranslator.FromWin32((int)pdwRGBval);
 	}
@@ -197,6 +198,8 @@ public static class VsColorUtilities
 		linkLabel.VisitedLinkColor = GetShellColor(__VSSYSCOLOREX.VSCOLOR_CONTROL_LINK_TEXT_PRESSED);
 	}
 
+	private static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+
 	private static System.Windows.Media.Color GetMediaColor(int colorIndex)
 	{
 		if (UiShell == null)
@@ -204,7 +207,7 @@ public static class VsColorUtilities
 
 		Diag.ThrowIfNotOnUIThread();
 
-		ErrorHandler.ThrowOnFailure(UiShell.GetVSSysColorEx(colorIndex, out var pdwRGBval));
+		Exf(UiShell.GetVSSysColorEx(colorIndex, out var pdwRGBval));
 		System.Drawing.Color color = ColorTranslator.FromWin32((int)pdwRGBval);
 
 		return System.Windows.Media.Color.FromArgb(color.A, color.R, color.G, color.B);

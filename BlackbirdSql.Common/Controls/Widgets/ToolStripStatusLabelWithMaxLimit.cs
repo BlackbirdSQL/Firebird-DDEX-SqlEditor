@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl.Config;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core;
 
 namespace BlackbirdSql.Common.Controls.Widgets;
 
@@ -38,7 +39,11 @@ public sealed class ToolStripStatusLabelWithMaxLimit : ToolStripStatusLabel
 
 	public ToolStripStatusLabelWithMaxLimit(int maxCharacters, int initialWidth)
 	{
-		SqlTracer.AssertTraceEvent(4 < maxCharacters, TraceEventType.Error, EnSqlTraceId.VSShell, "minimum number of characters is 4, otherwise truncation results in just \"...\"");
+		if (maxCharacters < 4)
+		{
+			Diag.Dug(new ArgumentException("minimum number of characters is 4, otherwise truncation results in just \"...\""));
+		}
+
 		this.maxCharacters = maxCharacters;
 		Width = initialWidth;
 		AutoToolTip = false;

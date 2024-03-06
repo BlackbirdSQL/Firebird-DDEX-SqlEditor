@@ -117,6 +117,90 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ConverterUomDefault_Seconds" xml:space="preserve">
+    <value>default</value>
+  </data>
+  <data name="ConverterUomDefault_SecondsDisabled" xml:space="preserve">
+    <value>default</value>
+  </data>
+  <data name="ConverterUomDefault_SecondsUnlimited" xml:space="preserve">
+    <value>default</value>
+  </data>
+  <data name="ConverterUomDefault_Separator" xml:space="preserve">
+    <value>default</value>
+  </data>
+  <data name="ConverterUomFormatDefault_Seconds" xml:space="preserve">
+    <value>Default [{0} seconds]</value>
+  </data>
+  <data name="ConverterUomFormatDefault_SecondsDisabled" xml:space="preserve">
+    <value>Default [{0} seconds]</value>
+  </data>
+  <data name="ConverterUomFormatDefault_SecondsUnlimited" xml:space="preserve">
+    <value>Default [{0} seconds]</value>
+  </data>
+  <data name="ConverterUomFormatDefault_Separator" xml:space="preserve">
+    <value>Default [{0}]</value>
+  </data>
+  <data name="ConverterUomFormatMax_Seconds" xml:space="preserve">
+    <value>Maximum [{0} seconds]</value>
+  </data>
+  <data name="ConverterUomFormatMax_SecondsDisabled" xml:space="preserve">
+    <value>Maximum [{0} seconds]</value>
+  </data>
+  <data name="ConverterUomFormatMax_SecondsUnlimited" xml:space="preserve">
+    <value>Maximum [{0} seconds]</value>
+  </data>
+  <data name="ConverterUomFormatMin_Seconds" xml:space="preserve">
+    <value>Minimum [{0} seconds]</value>
+  </data>
+  <data name="ConverterUomFormatMin_SecondsDisabled" xml:space="preserve">
+    <value>Disabled [{0} seconds]</value>
+  </data>
+  <data name="ConverterUomFormatMin_SecondsUnlimited" xml:space="preserve">
+    <value>Unlimited [{0} seconds]</value>
+  </data>
+  <data name="ConverterUomFormat_Seconds" xml:space="preserve">
+    <value>{0} seconds</value>
+  </data>
+  <data name="ConverterUomFormat_SecondsDisabled" xml:space="preserve">
+    <value>{0} seconds</value>
+  </data>
+  <data name="ConverterUomFormat_SecondsUnlimited" xml:space="preserve">
+    <value>{0} seconds</value>
+  </data>
+  <data name="ConverterUomFormat_Separator" xml:space="preserve">
+    <value>[{0}]</value>
+  </data>
+  <data name="ConverterUomMax_Seconds" xml:space="preserve">
+    <value>max,maximum</value>
+  </data>
+  <data name="ConverterUomMax_SecondsDisabled" xml:space="preserve">
+    <value>max,maximum</value>
+  </data>
+  <data name="ConverterUomMax_SecondsUnlimited" xml:space="preserve">
+    <value>max,maximum</value>
+  </data>
+  <data name="ConverterUomMin_Seconds" xml:space="preserve">
+    <value>min,minimum</value>
+  </data>
+  <data name="ConverterUomMin_SecondsDisabled" xml:space="preserve">
+    <value>min,minimum,unlimited,disabled</value>
+  </data>
+  <data name="ConverterUomMin_SecondsUnlimited" xml:space="preserve">
+    <value>min,minimum,unlimited</value>
+  </data>
+  <data name="ConverterUom_Seconds" xml:space="preserve">
+    <value>seconds</value>
+  </data>
+  <data name="ConverterUom_SecondsDisabled" xml:space="preserve">
+    <value>seconds</value>
+  </data>
+  <data name="ConverterUom_SecondsUnlimited" xml:space="preserve">
+    <value>seconds</value>
+  </data>
+  <data name="ConverterUom_Separator" xml:space="preserve">
+    <value>separator</value>
+  </data>
   <data name="OptionCategoryDebugging" xml:space="preserve">
     <value>Debugging</value>
   </data>
@@ -248,6 +332,9 @@
   </data>
   <data name="OptionDescriptionGeneralIncludeAppConnections" xml:space="preserve">
     <value>If enabled, includes any configured connection strings that exist in a solution's projects in the drop down selection lists when adding a new connection.</value>
+  </data>
+  <data name="OptionDescriptionGeneralLinkageTimeout" xml:space="preserve">
+    <value>The maximum time a trigger linkage parser will wait for completion before requesting a time extension. Range: 10 - 120 seconds.</value>
   </data>
   <data name="OptionDescriptionGeneralOnDemandLinkage" xml:space="preserve">
     <value>If enabled, disables asynchronous Trigger/Generator linkage and linkage will only be performed when it is actually required.</value>
@@ -383,6 +470,9 @@
   </data>
   <data name="OptionDisplayGeneralIncludeAppConnections" xml:space="preserve">
     <value>Include solution connections</value>
+  </data>
+  <data name="OptionDisplayGeneralLinkageTimeout" xml:space="preserve">
+    <value>Trigger linkage timeout</value>
   </data>
   <data name="OptionDisplayGeneralOnDemandLinkage" xml:space="preserve">
     <value>On-demand linkage</value>

@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using BlackbirdSql.Common.Ctl.Interfaces;
-using BlackbirdSql.Common.Model;
+using BlackbirdSql.Common.Model.IO;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 

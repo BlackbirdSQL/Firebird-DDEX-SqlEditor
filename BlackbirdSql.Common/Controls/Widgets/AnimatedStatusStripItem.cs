@@ -1,20 +1,21 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.Design.Core, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.Data.Tools.Design.Core.Controls.AnimatedStatusStripItem
+
 using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl.Config;
-using BlackbirdSql.Core.Ctl.Enums;
-using BlackbirdSql.Core.Ctl.Diagnostics;
+
+
 
 namespace BlackbirdSql.Common.Controls.Widgets;
+
 
 public sealed class AnimatedStatusStripItem : ToolStripStatusLabel
 {
 	// private static string TName = typeof(AnimatedStatusStripItem).Name;
 
-	private Image[] images;
+	private Image[] _Images;
 
 	private readonly int _Interval;
 
@@ -40,7 +41,7 @@ public sealed class AnimatedStatusStripItem : ToolStripStatusLabel
 		{
 			if (value != _CurrentImage)
 			{
-				if (value < 0 || value >= images.Length)
+				if (value < 0 || value >= _Images.Length)
 				{
 					value = 0;
 				}
@@ -78,26 +79,23 @@ public sealed class AnimatedStatusStripItem : ToolStripStatusLabel
 		_VsFontColorPreferences.PreferencesChangedEvent += VsFontColorPreferences_PreferencesChanged;
 	}
 
-	public void SetImages(Image[] images)
+	public void SetImages(Image[] _Images)
 	{
-		SqlTracer.TraceEvent(TraceEventType.Information, EnSqlTraceId.VSShell, "AnimatedStatusStripItem.SetImages");
-		this.images = images;
+		this._Images = _Images;
 		CurrentImageIndex = 0;
 		parentStatusStrip.Invalidate(invalidateChildren: true);
 	}
 
 	public void SetOneImage(Image image)
 	{
-		SqlTracer.TraceEvent(TraceEventType.Information, EnSqlTraceId.VSShell, "AnimatedStatusStripItem.SetOneImage");
 		StopAnimate();
-		images = new Image[1] { image };
+		_Images = [image];
 		CurrentImageIndex = 0;
 		parentStatusStrip.Invalidate(invalidateChildren: true);
 	}
 
 	public void SetParent(StatusStrip parent)
 	{
-		SqlTracer.TraceEvent(TraceEventType.Information, EnSqlTraceId.VSShell, "AnimatedStatusStripItem.SetParent");
 		parentStatusStrip = parent;
 		parentStatusStrip.Font = VsFontColorPreferences.EnvironmentFont;
 	}
@@ -105,9 +103,9 @@ public sealed class AnimatedStatusStripItem : ToolStripStatusLabel
 	public void StartAnimate()
 	{
 		invalidateRect.Height = parentStatusStrip.Height;
-		if (images != null && images.Length != 0)
+		if (_Images != null && _Images.Length != 0)
 		{
-			invalidateRect.Width = images[0].Width + 4 + 2;
+			invalidateRect.Width = _Images[0].Width + 4 + 2;
 		}
 		else
 		{
@@ -118,11 +116,8 @@ public sealed class AnimatedStatusStripItem : ToolStripStatusLabel
 
 	public void StopAnimate()
 	{
-		SqlTracer.TraceEvent(TraceEventType.Information, EnSqlTraceId.VSShell, "AnimatedStatusStripItem.StopAnimate");
 		if (_Timer.Enabled)
-		{
 			_Timer.Stop();
-		}
 	}
 
 	public void BeginInit()
@@ -139,7 +134,6 @@ public sealed class AnimatedStatusStripItem : ToolStripStatusLabel
 	{
 		if (disposing)
 		{
-			SqlTracer.TraceEvent(TraceEventType.Information, EnSqlTraceId.VSShell, "AnimatedStatusStripItem.Dispose");
 			if (_Timer != null)
 			{
 				_Timer.Dispose();
@@ -154,7 +148,7 @@ public sealed class AnimatedStatusStripItem : ToolStripStatusLabel
 				_VsFontColorPreferences.PreferencesChangedEvent -= VsFontColorPreferences_PreferencesChanged;
 				_VsFontColorPreferences.Dispose();
 			}
-			images = null;
+			_Images = null;
 		}
 		base.Dispose(disposing);
 	}
@@ -173,9 +167,9 @@ public sealed class AnimatedStatusStripItem : ToolStripStatusLabel
 		contentRectangle.Offset(C_BorderOffset, C_BorderOffset);
 		contentRectangle.Width -= 4;
 		contentRectangle.Height -= 4;
-		if (images != null)
+		if (_Images != null)
 		{
-			Image image = images[_CurrentImage];
+			Image image = _Images[_CurrentImage];
 			if (image != null)
 			{
 				int y = (contentRectangle.Height - image.Size.Height) / 2 + contentRectangle.Top;
@@ -200,7 +194,7 @@ public sealed class AnimatedStatusStripItem : ToolStripStatusLabel
 
 	private void ChangeImage(object sender, EventArgs e)
 	{
-		_CurrentImage = (_CurrentImage + 1) % images.Length;
+		_CurrentImage = (_CurrentImage + 1) % _Images.Length;
 		parentStatusStrip.Invalidate(invalidateRect, invalidateChildren: true);
 	}
 

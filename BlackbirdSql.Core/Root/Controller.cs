@@ -5,9 +5,9 @@ using System;
 using System.CodeDom;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using EnvDTE;
 using Microsoft.ServiceHub.Framework;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
@@ -34,71 +34,50 @@ internal static class Controller
 	{
 		get
 		{
-			EnvDTE.Window window;
-
-			// On shutdown an exception will be thrown here and the extension
-			// will be in a shutdown state.
-			try
+			/*
+			 * Deprecated. We're just peeking.
+			 * 
+			// Fire and wait.
+			if (!ThreadHelper.CheckAccess())
 			{
-				window = Instance.Dte?.ActiveWindow;
+				string result = ThreadHelper.JoinableTaskFactory.Run(async delegate
+				{
+					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+					return GetActiveWindowObjectKind();
+				});
+
+				return result;
 			}
-			catch (InvalidCastException ex)
-			{
-				if (ex.HResult != VSConstants.E_NOINTERFACE)
-					throw;
+			*/
+			return GetActiveWindowObjectKind();
 
-				Instance.ShutdownDte();
-
-				return null;
-			}
-			catch
-			{
-				window = null;
-			}
-
-
-			if (window == null)
-				return null;
-
-			return window.ObjectKind;
 		}
 	}
+
+
 
 	public static string ActiveWindowObjectType
 	{
 		get
 		{
-			EnvDTE.Window window;
-
-			// On shutdown an exception will be thrown here and the extension
-			// will be in a shutdown state.
-			try
+			/*
+			 * Deprecated. We're just peeking.
+			 * 
+			// Fire and wait.
+			if (!ThreadHelper.CheckAccess())
 			{
-				window = Instance.Dte?.ActiveWindow;
+				string result = ThreadHelper.JoinableTaskFactory.Run(async delegate
+				{
+					await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+					return GetActiveWindowObjectType();
+				});
+
+				return result;
 			}
-			catch (InvalidCastException ex)
-			{
-				if (ex.HResult != VSConstants.E_NOINTERFACE)
-					throw;
+			*/
 
-				Instance.ShutdownDte();
+			return GetActiveWindowObjectType();
 
-				return null;
-			}
-			catch
-			{
-				window = null;
-			}
-
-			if (window == null)
-				return null;
-
-			object @object = window.Object;
-			if (@object == null)
-				return null;
-
-
-			return @object.GetType().FullName;
 		}
 	}
 
@@ -188,6 +167,82 @@ internal static class Controller
 		return @interface;
 	}
 
+
+	private static string GetActiveWindowObjectKind()
+	{
+		// We're just peeking at stored values.
+		// Diag.ThrowIfNotOnUIThread();
+
+		if (ShutdownState)
+			return null;
+
+		EnvDTE.Window window = null;
+
+		try
+		{
+			DTE dte = GetService<DTE>();
+			window = dte?.ActiveWindow;
+		}
+		catch (InvalidCastException ex)
+		{
+			if (ex.HResult == VSConstants.E_NOINTERFACE)
+			{
+				Instance.ShutdownState = true;
+				return null;
+			}
+		}
+		catch
+		{
+			window = null;
+		}
+
+
+		if (window == null)
+			return null;
+
+		return window.ObjectKind;
+	}
+
+
+	private static string GetActiveWindowObjectType()
+	{
+		// We're just peeking at stored values.
+		// Diag.ThrowIfNotOnUIThread();
+
+		if (ShutdownState)
+			return null;
+
+		EnvDTE.Window window = null;
+
+		try
+		{
+			DTE dte = GetService<DTE>();
+			window = dte?.ActiveWindow;
+		}
+		catch (InvalidCastException ex)
+		{
+			if (ex.HResult == VSConstants.E_NOINTERFACE)
+			{
+				Instance.ShutdownState = true;
+				return null;
+			}
+		}
+		catch
+		{
+			window = null;
+		}
+
+
+		if (window == null)
+			return null;
+
+		object @object = window.Object;
+		if (@object == null)
+			return null;
+
+
+		return @object.GetType().FullName;
+	}
 
 	public static TInterface GetService<TService, TInterface>() where TInterface : class
 		=> Instance.GetService<TService, TInterface>();

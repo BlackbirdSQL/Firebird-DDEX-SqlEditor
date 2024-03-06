@@ -27,6 +27,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Include="Controls\Dialogs\AdvancedInformationDlg.cs" />
+	  <Compile Include="Controls\Dialogs\ExceptionMessageBoxDlg.cs" />
 	  <Compile Include="Ctl\AbstractDesignerServices.cs" />
 	  <Compile Include="Ctl\Config\TransientSettings.cs" />
 	  <Compile Include="Ctl\Commands\SqlEditorNewQueryCommand.cs" />
@@ -35,14 +37,17 @@
 	  <Compile Include="Ctl\Enums\EnDeadlockPriority.cs" />
 	  <Compile Include="Ctl\Events\BeforeOpenDocumentEventArgs.cs" />
 	  <Compile Include="Ctl\Interfaces\IBEditorTransientSettings.cs" />
+	  <Compile Include="Controls\Dialogs\FileEncodingDlg.Designer.cs">
+	    <SubType>Form</SubType>
+	  </Compile>
 	  <Compile Include="Properties\SqlResources.Designer.cs">
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>SqlResources.resx</DependentUpon>
 	  </Compile>
 	  <Compile Include="Ctl\Interfaces\IBWindowPane.cs" />
-	  <Compile Include="Controls\ResultsPane\StatisticsSnapshotAgent.cs" />
-	  <Compile Include="Controls\ResultsPane\StatisticsPropertySet.cs" />
+	  <Compile Include="Controls\ResultsPanels\StatisticsSnapshotAgent.cs" />
+	  <Compile Include="Controls\ResultsPanels\StatisticsPropertySet.cs" />
 	  <Compile Include="Root\VS.cs" />
 	  <None Include="Controls\Graphing\ActualPlanDataReaderNodeBuilder.cs" />
 	  <None Include="Controls\Graphing\CursorPlanTypeOperation.cs" />
@@ -280,8 +285,8 @@
 	  <Compile Include="Controls\Interfaces\IBObjectWithSite.cs" />
 	  <None Include="Controls\Graphing\Interfaces\IRenderable.cs" />
 	  <None Include="Controls\Graphing\DescriptionControl.cs" />
-	  <Compile Include="Controls\ResultsPane\ExecutionPlanControl.cs" />
-	  <Compile Include="Controls\ResultsPane\ExecutionPlanPanel.cs" />
+	  <Compile Include="Controls\ResultsPanels\ExecutionPlanControl.cs" />
+	  <Compile Include="Controls\ResultsPanels\ExecutionPlanPanel.cs" />
 	  <None Include="Controls\Graphing\GraphControl.cs" />
 	  <None Include="Controls\Graphing\GraphPanel.cs" />
 	  <None Include="Controls\Graphing\NodeDisplay.cs" />
@@ -299,15 +304,14 @@
 	  <Compile Include="Ctl\Config\VsFontColorPreferences.cs" />
 	  <Compile Include="Ctl\ComponentModel\VsProvideEditorFactoryAttribute.cs" />
 	  <Compile Include="Ctl\ComponentModel\VsProvideFileExtensionMappingAttribute.cs" />
-	  <Compile Include="Controls\AbstractEditorTab.cs" />
-	  <Compile Include="Controls\AbstractSqlEditorTab.cs" />
-	  <Compile Include="Controls\AbstractTabbedEditorPane.cs" />
+	  <Compile Include="Controls\Tabs\AbstractEditorTab.cs" />
+	  <Compile Include="Controls\Tabs\AbstractSqlEditorTab.cs" />
+	  <Compile Include="Controls\AbstractTabbedEditorWindowPane.cs" />
 	  <Compile Include="Controls\Widgets\AnimatedStatusStripItem.cs" />
-	  <Compile Include="Controls\BarBackgroundRenderer.cs" />
-	  <Compile Include="Controls\ConnectionDialogWrapper.cs" />
+	  <Compile Include="Controls\Widgets\BarBackgroundRenderer.cs" />
 	  <Compile Include="Properties\ControlsResources.Designer.cs" />
 	  <Compile Include="Controls\ControlUtils.cs" />
-	  <Compile Include="Controls\EditorStatusStripRenderer.cs" />
+	  <Compile Include="Controls\Widgets\EditorStatusStripRenderer.cs" />
 	  <Compile Include="Controls\Enums\EnButtonCellState.cs" />
 	  <Compile Include="Controls\Enums\EnGridButtonArea.cs" />
 	  <Compile Include="Controls\Enums\EnGridButtonType.cs" />
@@ -354,17 +358,17 @@
 	  <Compile Include="Controls\Events\SetCellDataFromControlEventHandler.cs" />
 	  <Compile Include="Controls\Events\StandardKeyProcessingEventArgs.cs" />
 	  <Compile Include="Controls\Events\StandardKeyProcessingEventHandler.cs" />
-	  <Compile Include="Ctl\FileStreamReader.cs" />
-	  <Compile Include="Ctl\FileStreamWrapper.cs" />
-	  <Compile Include="Ctl\FileStreamWriter.cs" />
-	  <Compile Include="Ctl\Exceptions\DefaultMessageBoxProvider.cs" />
+	  <Compile Include="Ctl\IO\FileStreamReader.cs" />
+	  <Compile Include="Ctl\IO\FileStreamWrapper.cs" />
+	  <Compile Include="Ctl\IO\FileStreamWriter.cs" />
+	  <Compile Include="Ctl\Dialogs\DefaultMessageBoxProvider.cs" />
 	  <Compile Include="Ctl\Interfaces\IBFileStreamReader.cs" />
 	  <Compile Include="Ctl\Interfaces\IBFileStreamWrapper.cs" />
 	  <Compile Include="Model\Events\StorageNotifyDelegate.cs" />
 	  <Compile Include="Controls\Events\TooltipDataNeededEventArgs.cs" />
 	  <Compile Include="Controls\Events\TooltipDataNeededEventHandler.cs" />
-	  <Compile Include="Controls\FileEncodingDlg.cs" />
-	  <Compile Include="Controls\FormUtilities.cs" />
+	  <Compile Include="Controls\Dialogs\FileEncodingDlg.cs" />
+	  <Compile Include="Controls\FormUtils.cs" />
 	  <Compile Include="Controls\Grid\BlockOfCells.cs" />
 	  <Compile Include="Controls\Grid\ButtonInfo.cs" />
 	  <Compile Include="Controls\Grid\CaptureTracker.cs" />
@@ -397,15 +401,15 @@
 	  <Compile Include="Controls\Grid\GridPrintDocument.cs" />
 	  <Compile Include="Controls\Grid\GridTextColumn.cs" />
 	  <Compile Include="Controls\Grid\HitTestInfo.cs" />
-	  <Compile Include="Model\AbstractMemDataStorage.cs" />
-	  <Compile Include="Model\MemStorageView.cs" />
+	  <Compile Include="Model\IO\AbstractMemDataStorage.cs" />
+	  <Compile Include="Model\IO\MemStorageView.cs" />
 	  <Compile Include="Controls\Grid\ScrollManager.cs" />
 	  <Compile Include="Controls\Grid\SelectionManager.cs" />
-	  <Compile Include="Model\QueryExecution\QEDiskStorageView.cs" />
-	  <Compile Include="Model\SortView.cs" />
-	  <Compile Include="Model\StorageDataReader.cs" />
-	  <Compile Include="Model\StorageDataEntity.cs" />
-	  <Compile Include="Model\AbstractStorageView.cs" />
+	  <Compile Include="Model\IO\QEDiskStorageView.cs" />
+	  <Compile Include="Model\IO\SortView.cs" />
+	  <Compile Include="Model\IO\StorageDataReader.cs" />
+	  <Compile Include="Model\IO\StorageDataEntity.cs" />
+	  <Compile Include="Model\IO\AbstractStorageView.cs" />
 	  <Compile Include="Ctl\Interfaces\IBColumnInfo.cs" />
 	  <Compile Include="Model\Interfaces\IBDataStorage.cs" />
 	  <Compile Include="Controls\Interfaces\IBDlgGridControl.cs" />
@@ -428,51 +432,48 @@
 	  <Compile Include="Controls\PropertiesWindow\DisconnectedPropertiesWindow.cs" />
 	  <Compile Include="Controls\PropertiesWindow\PropertiesWindowManager.cs" />
 	  <Compile Include="Controls\PropertiesWindow\ConnectedPropertiesWindow.cs" />
-	  <Compile Include="Controls\QueryExecution\QEStatusBarManager.cs" />
-	  <Compile Include="Controls\QueryExecution\MultiControlPanel.cs" />
-	  <Compile Include="Controls\QueryExecution\QESplitter.cs" />
-	  <Compile Include="Controls\ResultsPane\AbstractGridResultsPanel.cs" />
-	  <Compile Include="Controls\ResultsPane\AbstractResultsPanel.cs" />
-	  <Compile Include="Controls\ResultsPane\DisplaySQLResultsControl.cs" />
-	  <Compile Include="Ctl\FileStreamResultsWriter.cs" />
-	  <Compile Include="Controls\ResultsPane\GridResultsGrid.cs" />
-	  <Compile Include="Controls\ResultsPane\GridResultsPanel.cs" />
-	  <Compile Include="Ctl\AbstractResultsWriter.cs" />
-	  <Compile Include="Controls\ResultsPane\SaveFormatInfo.cs" />
-	  <Compile Include="Controls\ResultsPane\SaveFormats.cs" />
-	  <Compile Include="Controls\ResultsPane\ShellBufferWriter.cs" />
-	  <Compile Include="Controls\ResultsPane\ShellTextBuffer.cs" />
-	  <Compile Include="Controls\ResultsPane\ShellTextViewControl.cs" />
-	  <Compile Include="Controls\ResultsPane\StatisticsConnection.cs" />
-	  <Compile Include="Controls\ResultsPane\StatisticsControl.cs" />
-	  <Compile Include="Controls\ResultsPane\StatisticsDlgGridControl.cs" />
-	  <Compile Include="Controls\ResultsPane\StatisticsGridsCollection.cs" />
-	  <Compile Include="Controls\ResultsPane\StatisticsPanel.cs" />
-	  <Compile Include="Controls\ResultsPane\StatisticsSnapshot.cs" />
-	  <Compile Include="Controls\ResultsPane\TextResultsViewContol.cs" />
-	  <Compile Include="Controls\ResultsPane\VSTextEditorPanel.cs" />
+	  <Compile Include="Controls\Widgets\QEStatusBarManager.cs" />
+	  <Compile Include="Controls\Widgets\MultiControlPanel.cs" />
+	  <Compile Include="Controls\Widgets\QESplitter.cs" />
+	  <Compile Include="Controls\ResultsPanels\AbstractGridResultsPanel.cs" />
+	  <Compile Include="Controls\ResultsPanels\AbstractResultsPanel.cs" />
+	  <Compile Include="Controls\ResultsPanels\DisplaySQLResultsControl.cs" />
+	  <Compile Include="Ctl\IO\FileStreamResultsWriter.cs" />
+	  <Compile Include="Controls\ResultsPanels\GridResultsGrid.cs" />
+	  <Compile Include="Controls\ResultsPanels\GridResultsPanel.cs" />
+	  <Compile Include="Ctl\IO\AbstractResultsWriter.cs" />
+	  <Compile Include="Controls\ResultsPanels\SaveFormatInfo.cs" />
+	  <Compile Include="Controls\ResultsPanels\SaveFormats.cs" />
+	  <Compile Include="Ctl\IO\ShellBufferWriter.cs" />
+	  <Compile Include="Ctl\IO\ShellTextBuffer.cs" />
+	  <Compile Include="Controls\ResultsPanels\ShellTextViewControl.cs" />
+	  <Compile Include="Controls\ResultsPanels\StatisticsConnection.cs" />
+	  <Compile Include="Controls\ResultsPanels\StatisticsControl.cs" />
+	  <Compile Include="Controls\ResultsPanels\StatisticsDlgGridControl.cs" />
+	  <Compile Include="Controls\ResultsPanels\StatisticsGridsCollection.cs" />
+	  <Compile Include="Controls\ResultsPanels\StatisticsPanel.cs" />
+	  <Compile Include="Controls\ResultsPanels\StatisticsSnapshot.cs" />
+	  <Compile Include="Controls\ResultsPanels\TextResultsViewContol.cs" />
+	  <Compile Include="Controls\ResultsPanels\VSTextEditorPanel.cs" />
 	  <Compile Include="Controls\ResultWindowPane.cs" />
-	  <Compile Include="Controls\AbstractShellTextEditorControl.cs" />
+	  <Compile Include="Controls\AbstractTextEditorControl.cs" />
 	  <Compile Include="Controls\Widgets\Splitter.cs" />
 	  <Compile Include="Controls\Widgets\SplitViewContainer.cs" />
 	  <Compile Include="Controls\Widgets\SplitViewSplitterStrip.cs" />
-	  <Compile Include="Controls\SqlEditorCodeTab.cs" />
-	  <Compile Include="Controls\SqlEditorMessageTab.cs" />
+	  <Compile Include="Controls\Tabs\SqlEditorCodeTab.cs" />
+	  <Compile Include="Controls\Tabs\SqlEditorMessageTab.cs" />
 	  <Compile Include="Controls\PropertiesWindow\AbstractPropertiesWindow.cs" />
-	  <Compile Include="Controls\SqlEditorResultsTab.cs" />
-	  <Compile Include="Controls\SqlEditorTabbedEditorPane.cs" />
-	  <Compile Include="Controls\SqlEditorTabbedEditorUI.cs" />
-	  <Compile Include="Controls\TabbedEditorUI.cs" />
+	  <Compile Include="Controls\Tabs\SqlEditorResultsTab.cs" />
+	  <Compile Include="Controls\TabbedEditorWindowPane.cs" />
+	  <Compile Include="Controls\TabbedEditorUIControl.cs" />
+	  <Compile Include="Controls\AbstractTabbedEditorUIControl.cs" />
 	  <Compile Include="Controls\TextEditor.cs" />
 	  <Compile Include="Ctl\Commands\TextViewCommandFilter.cs" />
 	  <Compile Include="Controls\ToolbarHost.cs" />
 	  <Compile Include="Controls\Widgets\ToolStripStatusLabelWithMaxLimit.cs" />
-	  <Compile Include="Controls\Widgets\WrappingCheckBox.cs" />
-	  <Compile Include="Ctl\AbstractEditorEventsManager.cs" />
-	  <Compile Include="Ctl\AbstractTextBuffer.cs" />
+	  <Compile Include="Ctl\IO\AbstractTextBuffer.cs" />
 	  <Compile Include="Ctl\AbstractViewFilter.cs" />
-	  <Compile Include="Ctl\ArrayList64.cs" />
-	  <Compile Include="Ctl\AutoLock.cs" />
+	  <Compile Include="Ctl\IO\ArrayList64.cs" />
 	  <Compile Include="Ctl\BitArrayCollection.cs" />
 	  <Compile Include="Ctl\BlockOfCellsCollection.cs" />
 	  <Compile Include="Ctl\Commands\AbstractSqlEditorCommand.cs" />
@@ -496,7 +497,6 @@
 	  <Compile Include="Ctl\Commands\SqlEditorToggleIntellisenseCommand.cs" />
 	  <Compile Include="Ctl\Commands\SqlEditorToggleResultsPaneCommand.cs" />
 	  <Compile Include="Ctl\Commands\SqlEditorToggleSqlCmdModeCommand.cs" />
-	  <Compile Include="Ctl\CommonHandles.cs" />
 	  <Compile Include="Ctl\ConnectionDialogConfiguration.cs" />
 	  <Compile Include="Ctl\ConnectionDialogService.cs" />
 	  <Compile Include="Ctl\ConnectionPointCookie.cs" />
@@ -506,25 +506,17 @@
 	  <Compile Include="Ctl\EventsChannel.cs" />
 	  <Compile Include="Ctl\FindTargetAdapter.cs" />
 	  <Compile Include="Ctl\GuidId.cs" />
-	  <Compile Include="Ctl\HandleCollector.cs" />
 	  <Compile Include="Ctl\Marker.cs" />
 	  <Compile Include="Ctl\Commands\MenuCommandsService.cs" />
 	  <Compile Include="Ctl\Commands\MenuCommandTextChanges.cs" />
-	  <Compile Include="Ctl\MruInfo.cs" />
-	  <Compile Include="Ctl\SortingArray.cs" />
-	  <Compile Include="Ctl\SqlDebugBatchContext.cs" />
+	  <Compile Include="Ctl\IO\SortingArray.cs" />
 	  <Compile Include="Ctl\Commands\SqlEditorViewFilter.cs" />
 	  <Compile Include="Ctl\SqlTextSpan.cs" />
-	  <Compile Include="Ctl\SQL_DEBUG_BATCH_CONTEXT.cs" />
 	  <Compile Include="Ctl\TabbedEditorToolbarHandlerManager.cs" />
 	  <Compile Include="Ctl\TextEditorProxy.cs" />
-	  <Compile Include="Ctl\ThreadSafeCollection.cs" />
 	  <Compile Include="Ctl\VsColorUtilities.cs" />
 	  <Compile Include="Ctl\VsTextMarker.cs" />
 	  <Compile Include="Ctl\WaitCursorHelper.cs" />
-	  <Compile Include="Ctl\Win32WindowWrapper.cs" />
-	  <Compile Include="Ctl\WindowHelper.cs" />
-	  <Compile Include="Ctl\WindowWithFocusRestorer.cs" />
 	  <Compile Include="Ctl\Enums\EnAdvancedInfoType.cs" />
 	  <Compile Include="Ctl\Enums\EnArithmeticOperator.cs" />
 	  <Compile Include="Ctl\Enums\EnConnectionDialogTab.cs" />
@@ -554,14 +546,12 @@
 	  <Compile Include="Ctl\Events\TabActivationEventArgs.cs" />
 	  <Compile Include="Ctl\Events\ToolboxEventArgs.cs" />
 	  <Compile Include="Ctl\Events\VerifyConnectionDelegate.cs" />
-	  <Compile Include="Controls\Exceptions\AdvancedInformationDlg.cs" />
-	  <Compile Include="Ctl\Exceptions\ExceptionMessageBoxCtl.cs" />
-	  <Compile Include="Controls\Exceptions\ExceptionMessageBoxDlg.cs" />
-	  <Compile Include="Ctl\Exceptions\ExceptionMessageBoxParent.cs" />
+	  <Compile Include="Ctl\Dialogs\ExceptionMessageBoxCtl.cs" />
+	  <Compile Include="Ctl\Dialogs\ExceptionMessageBoxParent.cs" />
 	  <Compile Include="Properties\ExceptionsResources.Designer.cs" />
 	  <Compile Include="GlobalSuppressions.cs" />
-	  <Compile Include="Controls\Exceptions\PrivacyConfirmationDlg.cs" />
-	  <Compile Include="Ctl\Exceptions\PrivateRenderer.cs" />
+	  <Compile Include="Controls\Dialogs\PrivacyConfirmationDlg.cs" />
+	  <Compile Include="Controls\Widgets\PrivateRenderer.cs" />
 	  <Compile Include="Ctl\Exceptions\SqlError.cs" />
 	  <Compile Include="Ctl\Exceptions\SqlErrorCollection.cs" />
 	  <Compile Include="Ctl\Exceptions\SqlException.cs" />
@@ -569,7 +559,6 @@
 	  <Compile Include="Ctl\Interfaces\IBEditorPackage.cs" />
 	  <Compile Include="Ctl\Interfaces\IBinderQueue.cs" />
 	  <Compile Include="Controls\Interfaces\IBSectionControl.cs" />
-	  <Compile Include="Ctl\Interfaces\IBConnectionMruManager.cs" />
 	  <Compile Include="Ctl\Interfaces\IBListViewHelperFilterProvider.cs" />
 	  <Compile Include="Ctl\Interfaces\IBMenuCommandTextChanges.cs" />
 	  <Compile Include="Ctl\Interfaces\IBMetadataProviderProvider.cs" />
@@ -597,8 +586,8 @@
 	  <Compile Include="Model\AbstractConnectionStrategy.cs" />
 	  <Compile Include="Model\DataConnectionProperties.cs" />
 	  <Compile Include="Model\DefaultSqlEditorStrategy.cs" />
-	  <Compile Include="Model\AbstractDiskDataStorage.cs" />
-	  <Compile Include="Model\DiskStorageView.cs" />
+	  <Compile Include="Model\IO\AbstractDiskDataStorage.cs" />
+	  <Compile Include="Model\IO\DiskStorageView.cs" />
 	  <Compile Include="Model\DslConnectionInfo.cs" />
 	  <Compile Include="Model\Enums\EnErrorAction.cs" />
 	  <Compile Include="Model\Enums\EnOutputDestination.cs" />
@@ -657,10 +646,10 @@
 	  <Compile Include="Model\Parser\ManagedBatchParser.cs" />
 	  <Compile Include="Model\NotifyTaskCompletion.cs" />
 	  <Compile Include="Model\ParserState.cs" />
-	  <Compile Include="Model\QueryExecution\OLECMDTEXT.cs" />
-	  <Compile Include="Model\QueryExecution\QEDiskDataStorage.cs" />
+	  <Compile Include="Ctl\Commands\OLECMDTEXT.cs" />
+	  <Compile Include="Model\IO\QEDiskDataStorage.cs" />
 	  <Compile Include="Model\QueryExecution\QEOLESQLExec.cs" />
-	  <Compile Include="Model\QueryExecution\QEReaderDataStorage.cs" />
+	  <Compile Include="Model\IO\QEReaderDataStorage.cs" />
 	  <Compile Include="Properties\QEResources.Designer.cs" />
 	  <Compile Include="Model\QueryExecution\QEResultSet.cs" />
 	  <Compile Include="Model\QueryExecution\QESQLBatch.cs" />
@@ -668,7 +657,7 @@
 	  <Compile Include="Model\QueryExecution\AbstractQESQLBatchConsumer.cs" />
 	  <Compile Include="Model\QueryExecution\QESQLBatchConsumerException.cs" />
 	  <Compile Include="Model\QueryExecution\AbstractQESQLExec.cs" />
-	  <Compile Include="Model\QueryExecution\QEStorageViewOnReader.cs" />
+	  <Compile Include="Model\IO\QEStorageViewOnReader.cs" />
 	  <Compile Include="Model\QueryExecution\QueryManager.cs" />
 	  <Compile Include="Model\QueryExecution\ResultSetAndGridContainer.cs" />
 	  <Compile Include="Model\QueryExecution\ResultSetAndGridContainerCollection.cs" />
@@ -695,17 +684,17 @@
 
 	<ItemGroup>
 	  <None Include="Controls\Graphing\CustomZoomDlg.resx" />
+	  <EmbeddedResource Include="Controls\Dialogs\AdvancedInformationDlg.resx" />
+	  <EmbeddedResource Include="Controls\Dialogs\ExceptionMessageBoxDlg.resx" />
 	  <EmbeddedResource Include="Controls\Graphing\PropertyViewDlg.resx" />
 	  <EmbeddedResource Include="Properties\AttributeResources.resx">
 	    <Generator>ResXFileCodeGenerator</Generator>
 	    <LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
 	  <EmbeddedResource Include="Properties\ControlsResources.resx" />
-	  <EmbeddedResource Include="Controls\FileEncodingDlg.resx" />
-	  <EmbeddedResource Include="Controls\Exceptions\AdvancedInformationDlg.resx" />
-	  <EmbeddedResource Include="Controls\Exceptions\ExceptionMessageBoxDlg.resx" />
+	  <EmbeddedResource Include="Controls\Dialogs\FileEncodingDlg.resx" />
 	  <EmbeddedResource Include="Properties\ExceptionsResources.resx" />
-	  <EmbeddedResource Include="Controls\Exceptions\PrivacyConfirmationDlg.resx" />
+	  <EmbeddedResource Include="Controls\Dialogs\PrivacyConfirmationDlg.resx" />
 	  <EmbeddedResource Include="Properties\SqlResources.resx">
 	    <Generator>ResXFileCodeGenerator</Generator>
 	    <LastGenOutput>SqlResources.Designer.cs</LastGenOutput>
@@ -742,28 +731,25 @@
 	  <Compile Update="Controls\Grid\GridPrintDocument.cs">
 	    <SubType>Component</SubType>
 	  </Compile>
-	  <Compile Update="Controls\AbstractShellTextEditorControl.cs" />
-	  <Compile Update="Controls\ResultsPane\AbstractResultsPanel.cs" />
-	  <Compile Update="Controls\ResultsPane\GridResultsGrid.cs" />
-	  <Compile Update="Controls\ResultsPane\GridResultsPanel.cs" />
-	  <Compile Update="Controls\ResultsPane\AbstractGridResultsPanel.cs" />
-	  <Compile Update="Controls\ResultsPane\ShellTextViewControl.cs" />
-	  <Compile Update="Controls\ResultsPane\StatisticsDlgGridControl.cs" />
-	  <Compile Update="Controls\ResultsPane\StatisticsPanel.cs" />
-	  <Compile Update="Controls\ResultsPane\TextResultsViewContol.cs" />
-	  <Compile Update="Controls\ResultsPane\VSTextEditorPanel.cs" />
-	  <Compile Update="Controls\Widgets\WrappingCheckBox.cs" />
-	  <Compile Update="Controls\Exceptions\AdvancedInformationDlg.cs" />
-	  <Compile Update="Controls\Exceptions\ExceptionMessageBoxDlg.cs" />
+	  <Compile Update="Controls\AbstractTextEditorControl.cs" />
+	  <Compile Update="Controls\ResultsPanels\AbstractResultsPanel.cs" />
+	  <Compile Update="Controls\ResultsPanels\GridResultsGrid.cs" />
+	  <Compile Update="Controls\ResultsPanels\GridResultsPanel.cs" />
+	  <Compile Update="Controls\ResultsPanels\AbstractGridResultsPanel.cs" />
+	  <Compile Update="Controls\ResultsPanels\ShellTextViewControl.cs" />
+	  <Compile Update="Controls\ResultsPanels\StatisticsDlgGridControl.cs" />
+	  <Compile Update="Controls\ResultsPanels\StatisticsPanel.cs" />
+	  <Compile Update="Controls\ResultsPanels\TextResultsViewContol.cs" />
+	  <Compile Update="Controls\ResultsPanels\VSTextEditorPanel.cs" />
 	  <Compile Update="Properties\ExceptionsResources.Designer.cs">
 	    <DependentUpon>ExceptionsResources.resx</DependentUpon>
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
 	  </Compile>
-	  <Compile Update="Controls\Exceptions\PrivacyConfirmationDlg.cs" />
-	  <Compile Update="Controls\FileEncodingDlg.cs" />
-	  <Compile Update="Controls\QueryExecution\MultiControlPanel.cs" />
-	  <Compile Update="Controls\QueryExecution\QESplitter.cs" />
+	  <Compile Update="Controls\Dialogs\PrivacyConfirmationDlg.cs" />
+	  <Compile Update="Controls\Dialogs\FileEncodingDlg.cs" />
+	  <Compile Update="Controls\Widgets\MultiControlPanel.cs" />
+	  <Compile Update="Controls\Widgets\QESplitter.cs" />
 	  <Compile Update="Properties\QEResources.Designer.cs">
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
@@ -791,7 +777,7 @@
 	    <LastGenOutput>ExceptionsResources.Designer.cs</LastGenOutput>
 	    <Generator>PublicResXFileCodeGenerator</Generator>
 	  </EmbeddedResource>
-	  <EmbeddedResource Update="Controls\FileEncodingDlg.resx">
+	  <EmbeddedResource Update="Controls\Dialogs\FileEncodingDlg.resx">
 	    <SubType>Designer</SubType>
 	  </EmbeddedResource>
 	  <EmbeddedResource Update="Properties\QEResources.resx">

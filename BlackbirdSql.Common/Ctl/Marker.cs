@@ -6,12 +6,12 @@
 using System;
 using System.Collections;
 using System.Runtime.InteropServices;
-using BlackbirdSql.Core;
 using BlackbirdSql.Common.Properties;
-
+using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.TextManager.Interop;
-using BlackbirdSql.Core.Ctl.Diagnostics;
+
+
 
 namespace BlackbirdSql.Common.Ctl;
 
@@ -116,6 +116,8 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 		}
 	}
 
+	private static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+
 
 	public void SetMarkerTooltip(string newToolTip)
 	{
@@ -214,9 +216,9 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 		int num;
 		if (_TextSpan.Offset > 0)
 		{
-			Native.ThrowOnFailure(_TextSpan.VsTextView.GetNearestPosition(_TextSpan.AnchorLine, _TextSpan.AnchorCol, out var piPos, out _), (string)null);
+			Exf(_TextSpan.VsTextView.GetNearestPosition(_TextSpan.AnchorLine, _TextSpan.AnchorCol, out var piPos, out _), (string)null);
 			piPos += _TextSpan.Offset;
-			Native.ThrowOnFailure(_TextSpan.VsTextView.GetLineAndColumn(piPos, out var piLine, out _), (string)null);
+			Exf(_TextSpan.VsTextView.GetLineAndColumn(piPos, out var piLine, out _), (string)null);
 			piLine += _doubleClickLine - 1;
 			num = piLine;
 		}
@@ -237,21 +239,21 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 
 		if (num > -1)
 		{
-			Native.ThrowOnFailure(_TextSpan.VsTextView.GetBuffer(out var ppBuffer), (string)null);
+			Exf(_TextSpan.VsTextView.GetBuffer(out var ppBuffer), (string)null);
 			if (ppBuffer != null)
 			{
-				Native.ThrowOnFailure(ppBuffer.GetLineCount(out var piLineCount), (string)null);
+				Exf(ppBuffer.GetLineCount(out var piLineCount), (string)null);
 				if (num > piLineCount)
 				{
 					return;
 				}
 
-				Native.ThrowOnFailure(ppBuffer.GetLengthOfLine(num, out var piLength), (string)null);
-				Native.ThrowOnFailure(_TextSpan.VsTextView.SetSelection(num, 0, num, piLength), (string)null);
+				Exf(ppBuffer.GetLengthOfLine(num, out var piLength), (string)null);
+				Exf(_TextSpan.VsTextView.SetSelection(num, 0, num, piLength), (string)null);
 			}
 			else
 			{
-				Native.ThrowOnFailure(_TextSpan.VsTextView.SetCaretPos(num, 0), (string)null);
+				Exf(_TextSpan.VsTextView.SetCaretPos(num, 0), (string)null);
 			}
 		}
 

@@ -1,17 +1,18 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.Design.Common, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.Design.Controls.ControlUtils
+
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Globalization;
-using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using BlackbirdSql.Core;
 using Microsoft.VisualStudio.Utilities;
-using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
+
+
 
 namespace BlackbirdSql.Common.Controls;
+
 
 public static class ControlUtils
 {

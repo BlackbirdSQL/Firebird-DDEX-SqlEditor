@@ -42,9 +42,11 @@ public class ToolbarHost : Panel, IVsToolWindowToolbar
 		{
 			Diag.ThrowIfNotOnUIThread();
 
-			Core.Native.ThrowOnFailure(_VsToolbarHost.ProcessMouseActivation(h, 7u, IntPtr.Zero, IntPtr.Zero));
+			Exf(_VsToolbarHost.ProcessMouseActivation(h, 7u, IntPtr.Zero, IntPtr.Zero));
 		}
 	}
+
+	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
 
 	public void SetToolbar(IVsUIShell4 uiShell, Guid clsidCmdSet, uint menuId, IOleCommandTarget commandTarget)
 	{
@@ -94,7 +96,7 @@ public class ToolbarHost : Panel, IVsToolWindowToolbar
 		{
 			Diag.ThrowIfNotOnUIThread();
 
-			Core.Native.ThrowOnFailure(_VsToolbarHost.BorderChanged());
+			Exf(_VsToolbarHost.BorderChanged());
 		}
 	}
 
@@ -153,11 +155,11 @@ public class ToolbarHost : Panel, IVsToolWindowToolbar
 
 			Diag.ThrowIfNotOnUIThread();
 
-			Core.Native.ThrowOnFailure(_UiShell.SetupToolbar2(Handle, this, _CommandTarget, out _VsToolbarHost));
+			Exf(_UiShell.SetupToolbar2(Handle, this, _CommandTarget, out _VsToolbarHost));
 
-			Core.Native.ThrowOnFailure(_VsToolbarHost.AddToolbar(VSTWT_LOCATION.VSTWT_TOP, ref _ClsidCmdSet, _ToolbarMenuId));
+			Exf(_VsToolbarHost.AddToolbar(VSTWT_LOCATION.VSTWT_TOP, ref _ClsidCmdSet, _ToolbarMenuId));
 
-			Core.Native.ThrowOnFailure(_VsToolbarHost.ShowHideToolbar(ref _ClsidCmdSet, _ToolbarMenuId, 1));
+			Exf(_VsToolbarHost.ShowHideToolbar(ref _ClsidCmdSet, _ToolbarMenuId, 1));
 
 			_AssociateToolbarOnHandleCreate = false;
 		}

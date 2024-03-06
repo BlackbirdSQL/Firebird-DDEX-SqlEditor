@@ -8,7 +8,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 
@@ -62,6 +61,9 @@ public class MenuCommandsService : Collection<MenuCommand>, IDisposable, IMenuCo
 		throw ex;
 	}
 
+	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+
+
 	void IMenuCommandService.RemoveVerb(DesignerVerb verb)
 	{
 		NotSupportedException ex = new();
@@ -112,7 +114,7 @@ public class MenuCommandsService : Collection<MenuCommand>, IDisposable, IMenuCo
 				{
 					object pvaIn = null;
 					Guid pguidCmdGroup = commandID.Guid;
-					Core.Native.ThrowOnFailure(vsUIShell.PostExecCommand(ref pguidCmdGroup, (uint)commandID.ID, 0u, ref pvaIn), (string)null);
+					Exf(vsUIShell.PostExecCommand(ref pguidCmdGroup, (uint)commandID.ID, 0u, ref pvaIn), (string)null);
 					return true;
 				}
 				catch (Exception)
@@ -163,7 +165,7 @@ public class MenuCommandsService : Collection<MenuCommand>, IDisposable, IMenuCo
 			pOINTS.x = (short)x;
 			pOINTS.y = (short)y;
 			Guid rclsidActive = menuID.Guid;
-			Core.Native.ThrowOnFailure(oleComponentUIManager.ShowContextMenu(VS.dwReserved, ref rclsidActive, menuID.ID, [pOINTS], this), (string)null);
+			Exf(oleComponentUIManager.ShowContextMenu(VS.dwReserved, ref rclsidActive, menuID.ID, [pOINTS], this), (string)null);
 		}
 	}
 

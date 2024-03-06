@@ -1,7 +1,8 @@
 // Microsoft.VisualStudio.Data.Tools.Design.Core, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Controls.TabbedEditor.FindTargetAdapter
-using System.Diagnostics.CodeAnalysis;
+
 using BlackbirdSql.Common.Controls;
+using BlackbirdSql.Common.Controls.Tabs;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Core;
@@ -11,11 +12,14 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 
+
 namespace BlackbirdSql.Common.Ctl;
 
-public class FindTargetAdapter(AbstractTabbedEditorPane editorPane) : IVsFindTarget, IVsFindTarget2, IBVsFindTarget3
+
+public class FindTargetAdapter(AbstractTabbedEditorWindowPane editorPane) : IVsFindTarget, IVsFindTarget2, IBVsFindTarget3
 {
-	protected AbstractTabbedEditorPane TabbedEditorPane { get; set; } = editorPane;
+
+	protected AbstractTabbedEditorWindowPane TabbedEditorPane { get; set; } = editorPane;
 
 
 
@@ -125,7 +129,7 @@ public class FindTargetAdapter(AbstractTabbedEditorPane editorPane) : IVsFindTar
 
 	protected virtual void ActivateTabForNavigateTo()
 	{
-		TabbedEditorUI tabControl = TabbedEditorPane.TabbedEditorControl;
+		AbstractTabbedEditorUIControl tabControl = TabbedEditorPane.TabbedEditorControl;
 		foreach (AbstractEditorTab tab in tabControl.Tabs)
 		{
 			if (tab.LogicalView == VSConstants.LOGVIEWID_TextView)
@@ -158,7 +162,7 @@ public class FindTargetAdapter(AbstractTabbedEditorPane editorPane) : IVsFindTar
 
 	private IVsFindTarget GetFindTarget(bool ensureTabs)
 	{
-		TabbedEditorUI tabControl = TabbedEditorPane.TabbedEditorControl;
+		AbstractTabbedEditorUIControl tabControl = TabbedEditorPane.TabbedEditorControl;
 		if (tabControl == null || tabControl.Tabs == null)
 		{
 			return null;

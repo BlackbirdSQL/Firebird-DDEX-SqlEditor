@@ -328,6 +328,14 @@ Linkage completed in {2}ms.</value>
   <data name="LinkageParserUpdatingCatalog" xml:space="preserve">
     <value>Updating {0} sequence linkage.</value>
   </data>
+  <data name="LinkageParser_CaptionLinkageTimeout" xml:space="preserve">
+    <value>Trigger linkage parser timeout</value>
+  </data>
+  <data name="LinkageParser_TextLinkageParser" xml:space="preserve">
+    <value>A trigger linkage parser has exceeded the configured timeout period for linking it's triggers and generators. 
+Extend the allotted linkage time by {0} seconds?
+(Aborting may result in invalid trigger information)</value>
+  </data>
   <data name="Properties_NotExtensible" xml:space="preserve">
     <value>The properties are not extensible.</value>
   </data>

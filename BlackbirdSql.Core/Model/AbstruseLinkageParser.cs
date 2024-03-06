@@ -73,6 +73,7 @@ public abstract class AbstruseLinkageParser : IDisposable
 	protected AbstruseLinkageParser()
 	{
 		// Tracer.Trace(typeof(AbstruseLinkageParser), $"StaticId:[{"0000"}] AbstruseLinkageParser(FbConnection)");
+		_Id = ++_IdSeed;
 	}
 
 
@@ -101,6 +102,22 @@ public abstract class AbstruseLinkageParser : IDisposable
 
 
 	#endregion Constructors / Destructors
+
+
+
+
+
+	// =========================================================================================================
+	#region Fields - AbstruseLinkageParser
+	// =========================================================================================================
+
+
+	private static int _IdSeed = -1;
+	protected int _Id = -1;
+
+
+
+	#endregion Fields
 
 
 

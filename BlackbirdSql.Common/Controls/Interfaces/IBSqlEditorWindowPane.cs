@@ -3,7 +3,7 @@
 
 using System;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Controls.ResultsPane;
+using BlackbirdSql.Common.Controls.ResultsPanels;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using Microsoft.VisualStudio.OLE.Interop;

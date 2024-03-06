@@ -4,8 +4,8 @@
 using System;
 using System.Collections;
 using BlackbirdSql.Common.Controls.Interfaces;
-using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.Interfaces;
+using BlackbirdSql.Common.Model.IO;
 
 
 

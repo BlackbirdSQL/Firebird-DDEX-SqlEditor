@@ -5,8 +5,9 @@ using System.IO;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
+using BlackbirdSql.Common.Ctl.Dialogs;
 using BlackbirdSql.Common.Ctl.Enums;
-using BlackbirdSql.Common.Ctl.Exceptions;
+using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
@@ -142,13 +143,58 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 		if (extensibility == null)
 			return true;
 
-		Native.ThrowOnFailure(extensibility.IsInAutomationFunction(out int pfInAutoFunc));
+		Exf(extensibility.IsInAutomationFunction(out int pfInAutoFunc));
 
 		return pfInAutoFunc != 0;
 	}
 
 
 
+	public static bool ShouldStopCloseDialog(AuxiliaryDocData add, Type type)
+	{
+		DialogResult dialogResult = DialogResult.Yes;
+		bool flag = Cmd.IsInAutomationFunction();
+		if (add.QryMgr.IsExecuting)
+		{
+			if (!flag)
+			{
+				dialogResult = Cmd.ShowMessageBoxEx("", ControlsResources.ScriptIsStillBeingExecuted, "", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+			}
+
+			if (dialogResult == DialogResult.No)
+			{
+				return true;
+			}
+
+			add.QryMgr.Cancel(bSync: true);
+		}
+		else if (add.QryMgr.ConnectionStrategy.IsTransactionOpen())
+		{
+			if (!flag)
+			{
+				dialogResult = Cmd.ShowMessageBoxEx("", ControlsResources.UncommittedTransactionsWarning, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
+			}
+
+			switch (dialogResult)
+			{
+				case DialogResult.Cancel:
+					return true;
+				case DialogResult.Yes:
+					try
+					{
+						add.QryMgr.ConnectionStrategy.CommitOpenTransactions();
+					}
+					catch (Exception ex)
+					{
+						Cmd.ShowMessageBoxEx("", ex.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+					}
+
+					break;
+			}
+		}
+
+		return false;
+	}
 
 
 

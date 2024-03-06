@@ -41,7 +41,7 @@
 	  <Compile Include="Controls\Interfaces\IBEditorWindowPane.cs" />
 	  <Compile Include="Controls\LinkageParserTaskHandler.cs" />
 	  <Compile Include="Ctl\AbstractGlobalsAgent.cs" />
-	  <Compile Include="Ctl\AbstractPackageController.cs" />
+	  <Compile Include="AbstractPackageController.cs" />
 	  <Compile Include="Ctl\ComponentModel\AbstractGlobalizedRadioAttribute.cs" />
 	  <Compile Include="Ctl\ComponentModel\AutomationAttribute.cs" />
 	  <Compile Include="Ctl\ComponentModel\AdvancedDefaultValueAttribute.cs" />
@@ -186,7 +186,7 @@
 	  <Compile Include="Properties\InternalsVisibleToAssemblyInfo.cs" />
 	  <Compile Include="Properties\Resources.Designer.cs" />
 	  <Compile Include="AbstractCorePackage.cs" />
-	  <Compile Include="Ctl\AbstractEventsManager.cs" />
+	  <Compile Include="AbstractEventsManager.cs" />
 	  <Compile Include="Ctl\GlobalsAgent.cs" />
 	  <Compile Include="Ctl\AbstractHostess.cs" />
 	  <Compile Include="Ctl\Config\PersistentSettings.cs" />

@@ -457,6 +457,26 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Trigger linkage parser timeout.
+        /// </summary>
+        public static string LinkageParser_CaptionLinkageTimeout {
+            get {
+                return ResourceManager.GetString("LinkageParser_CaptionLinkageTimeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A trigger linkage parser has exceeded the configured timeout period for linking it&apos;s triggers and generators. 
+        ///Extend the allotted linkage time by {0} seconds?
+        ///(Aborting may result in invalid trigger information).
+        /// </summary>
+        public static string LinkageParser_TextLinkageParser {
+            get {
+                return ResourceManager.GetString("LinkageParser_TextLinkageParser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &gt;  Cancelled. {0}% completed. {1} took {2}ms..
         /// </summary>
         public static string LinkageParserCancelled {

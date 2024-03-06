@@ -77,7 +77,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 		{
 			if (Native.Failed(_CodeWindow.GetLastActiveView(out var ppView)))
 			{
-				Native.ThrowOnFailure(_CodeWindow.GetPrimaryView(out ppView));
+				Exf(_CodeWindow.GetPrimaryView(out ppView));
 			}
 			return ppView;
 		}
@@ -162,6 +162,8 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 		ConnectionPointCookie value = new ConnectionPointCookie(view, this, typeof(IVsTextViewEvents));
 		_ConnectedViews.Add(view, value);
 	}
+
+	private static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
 
 	private void ReplacePropGrid(object sender, EventArgs e)
 	{

@@ -28,6 +28,8 @@ public abstract class AbstractSqlEditorCommand
 		return HandleExec(nCmdexecopt, pvaIn, pvaOut);
 	}
 
+	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+
 	protected abstract int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText);
 
 	protected abstract int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut);
@@ -70,7 +72,7 @@ public abstract class AbstractSqlEditorCommand
 		IVsTextLines ppBuffer = null;
 		if (textView != null)
 		{
-			Core.Native.ThrowOnFailure(textView.GetBuffer(out ppBuffer));
+			Exf(textView.GetBuffer(out ppBuffer));
 		}
 
 		return ppBuffer;

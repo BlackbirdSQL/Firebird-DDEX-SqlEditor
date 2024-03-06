@@ -10,7 +10,6 @@ using BlackbirdSql.Common.Model.QueryExecution;
 
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Controls.Interfaces;
 
@@ -47,7 +46,7 @@ public class SqlEditorDisconnectAllQueriesCommand : AbstractSqlEditorCommand
 			{
 				if (qryMgr.IsExecuting)
 				{
-					AbstractEditorEventsManager.ShouldStopClose(value, GetType());
+					Cmd.ShouldStopCloseDialog(value, GetType());
 				}
 				else
 				{

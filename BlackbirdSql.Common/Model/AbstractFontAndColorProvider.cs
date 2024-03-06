@@ -92,6 +92,8 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 		fontColorDefaults = [];
 	}
 
+	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+
 	int IVsFontAndColorDefaults.GetFlags(out uint flags)
 	{
 		flags = FontColorFlags;
@@ -242,10 +244,10 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 				{
 					if (readFont)
 					{
-						Native.ThrowOnFailure(vsFontAndColorStorage.GetFont(pLOGFONT, array));
+						Exf(vsFontAndColorStorage.GetFont(pLOGFONT, array));
 					}
 
-					Native.ThrowOnFailure(vsFontAndColorStorage.GetItem(itemName, array2));
+					Exf(vsFontAndColorStorage.GetItem(itemName, array2));
 				}
 			}
 			catch (Exception)
@@ -255,14 +257,14 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 
 			if (flag)
 			{
-				Native.ThrowOnFailure(vsFontAndColorStorage.CloseCategory());
-				Native.ThrowOnFailure(vsFontAndColorStorage.OpenCategory(ref categoryGuid, (uint)(__FCSTORAGEFLAGS.FCSF_READONLY | __FCSTORAGEFLAGS.FCSF_LOADDEFAULTS)));
+				Exf(vsFontAndColorStorage.CloseCategory());
+				Exf(vsFontAndColorStorage.OpenCategory(ref categoryGuid, (uint)(__FCSTORAGEFLAGS.FCSF_READONLY | __FCSTORAGEFLAGS.FCSF_LOADDEFAULTS)));
 				if (readFont)
 				{
-					Native.ThrowOnFailure(vsFontAndColorStorage.GetFont(pLOGFONT, array));
+					Exf(vsFontAndColorStorage.GetFont(pLOGFONT, array));
 				}
 
-				Native.ThrowOnFailure(vsFontAndColorStorage.GetItem(itemName, array2));
+				Exf(vsFontAndColorStorage.GetItem(itemName, array2));
 			}
 
 			if (readFont && array[0].bFaceNameValid != 0 && array[0].bPointSizeValid != 0)
@@ -285,7 +287,7 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 		}
 		finally
 		{
-			Native.ThrowOnFailure(vsFontAndColorStorage.CloseCategory());
+			Exf(vsFontAndColorStorage.CloseCategory());
 		}
 
 		return true;
@@ -300,7 +302,7 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		Native.ThrowOnFailure(FontAndColorUtilities.GetEncodedSysColor(systemColorReference, out int piSysColor));
+		Exf(FontAndColorUtilities.GetEncodedSysColor(systemColorReference, out int piSysColor));
 
 		return Native.GetSysColor(piSysColor);
 	}

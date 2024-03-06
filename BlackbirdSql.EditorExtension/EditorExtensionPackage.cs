@@ -1,5 +1,6 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.SqlEditorPackage
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -23,7 +24,6 @@ using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.ComponentModel;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
@@ -43,11 +43,12 @@ using Microsoft.VisualStudio.Shell.ServiceBroker;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Threading;
 
-using Cmd = BlackbirdSql.Common.Cmd;
 using Native = BlackbirdSql.Common.Native;
 
 
+
 namespace BlackbirdSql.EditorExtension;
+
 
 // =========================================================================================================
 //										EditorExtensionPackage Class 
@@ -179,7 +180,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 
 			if (ThreadHelper.CheckAccess() && GetGlobalService(typeof(SVsShell)) is IVsShell vsShell)
 			{
-				Native.ThrowOnFailure(vsShell.UnadviseBroadcastMessages(_VsBroadcastMessageEventsCookie));
+				Exf(vsShell.UnadviseBroadcastMessages(_VsBroadcastMessageEventsCookie));
 			}
 
 			_EventsManager?.Dispose();
@@ -189,8 +190,8 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 
 			if (GetGlobalService(typeof(SProfferService)) is IProfferService profferService)
 			{
-				Native.ThrowOnFailure(profferService.RevokeService(_MarkerServiceCookie));
-				Native.ThrowOnFailure(profferService.RevokeService(_FontAndColorServiceCookie));
+				Exf(profferService.RevokeService(_MarkerServiceCookie));
+				Exf(profferService.RevokeService(_FontAndColorServiceCookie));
 			}
 		}
 	}
@@ -344,12 +345,12 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 			throw Diag.ExceptionService(typeof(OleMenuCommandService));
 
 		Guid rguidMarkerService = LibraryData.CLSID_EditorMarkerService;
-		Native.ThrowOnFailure(
+		Exf(
 			profferSvc.ProfferService(ref rguidMarkerService, this, out _MarkerServiceCookie),
 			(string)null);
 
 		Guid rguidService = LibraryData.CLSID_FontAndColorService;
-		Native.ThrowOnFailure(profferSvc.ProfferService(ref rguidService, this, out _FontAndColorServiceCookie));
+		Exf(profferSvc.ProfferService(ref rguidService, this, out _FontAndColorServiceCookie));
 
 
 		ServiceContainer.AddService(typeof(IBDesignerExplorerServices), ServicesCreatorCallbackAsync, promote: true);
@@ -371,7 +372,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 		RegisterEditorFactory(_SqlResultsEditorFactory);
 
 
-		Native.ThrowOnFailure(
+		Exf(
 			(GetGlobalService(typeof(SVsShell)) as IVsShell).AdviseBroadcastMessages(this, out _VsBroadcastMessageEventsCookie),
 			(string)null);
 
@@ -664,40 +665,40 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 
 	private static void InitializeTabbedEditorToolbarHandlerManager()
 	{
-		TabbedEditorToolbarHandlerManager toolbarMgr = AbstractTabbedEditorPane.ToolbarManager;
+		TabbedEditorToolbarHandlerManager toolbarMgr = AbstractTabbedEditorWindowPane.ToolbarManager;
 		if (toolbarMgr != null)
 		{
 			Guid clsid = LibraryData.CLSID_CommandSet;
 
-			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
+			toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorDatabaseCommand>(clsid, (uint)EnCommandSet.CmbIdSqlDatabases));
-			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
+			toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorDatabaseListCommand>(clsid, (uint)EnCommandSet.CmbIdSqlDatabasesGetList));
-			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
+			toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorExecuteQueryCommand>(clsid, (uint)EnCommandSet.CmdIdExecuteQuery));
-			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
+			toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorParseQueryCommand>(clsid, (uint)EnCommandSet.CmdIdParseQuery));
-			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
+			toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorCancelQueryCommand>(clsid, (uint)EnCommandSet.CmdIdCancelQuery));
-			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
+			toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorConnectCommand>(clsid, (uint)EnCommandSet.CmdIdConnect));
-			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
+			toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorDisconnectCommand>(clsid, (uint)EnCommandSet.CmdIdDisconnect));
-			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
+			toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorDisconnectAllQueriesCommand>(clsid, (uint)EnCommandSet.CmdIdDisconnectAllQueries));
-			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
+			toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorChangeConnectionCommand>(clsid, (uint)EnCommandSet.CmdIdChangeConnection));
-			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
+			toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorShowEstimatedPlanCommand>(clsid, (uint)EnCommandSet.CmdIdShowEstimatedPlan));
-			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
+			toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorCloneQueryWindowCommand>(clsid, (uint)EnCommandSet.CmdIdCloneQuery));
-			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
+			toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorToggleSqlCmdModeCommand>(clsid, (uint)EnCommandSet.CmdIdToggleSQLCMDMode));
-			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
+			toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorToggleExecutionPlanCommand>(clsid, (uint)EnCommandSet.CmdIdToggleExecutionPlan));
-			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
+			toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorToggleClientStatisticsCommand>(clsid, (uint)EnCommandSet.CmdIdToggleClientStatistics));
-			toolbarMgr.AddMapping(typeof(SqlEditorTabbedEditorPane),
+			toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorNewQueryCommand>(clsid, (uint)EnCommandSet.CmdIdNewSqlQuery));
 		}
 	}
@@ -852,7 +853,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 
 			try
 			{
-				result = FormUtilities.ShowDialog(dlg);
+				result = FormUtils.ShowDialog(dlg);
 			}
 			catch (Exception ex)
 			{

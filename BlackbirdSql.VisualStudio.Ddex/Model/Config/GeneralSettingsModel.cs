@@ -80,6 +80,15 @@ public class GeneralSettingsModel(IBTransientSettings transientSettings)
 	[DefaultValue(false)]
 	public bool OnDemandLinkage { get; set; } = false;
 
+	[GlobalizedCategory("OptionCategoryGeneral")]
+	[GlobalizedDisplayName("OptionDisplayGeneralLinkageTimeout")]
+	[GlobalizedDescription("OptionDescriptionGeneralLinkageTimeout")]
+	[TypeConverter(typeof(UomConverter)), LiteralRange(10, 120, "Seconds")]
+	[DefaultValue(30)]
+	public int LinkageTimeout { get; set; } = 30;
+
+
+
 	[GlobalizedCategory("OptionCategoryQueryDesigner")]
 	[GlobalizedDisplayName("OptionDisplayGeneralShowDiagramPane")]
 	[GlobalizedDescription("OptionDescriptionGeneralShowDiagramPane")]

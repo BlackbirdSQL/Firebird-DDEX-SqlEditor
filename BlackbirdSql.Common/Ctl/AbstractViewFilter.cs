@@ -28,7 +28,7 @@ public abstract class AbstractViewFilter : IOleCommandTarget, IDisposable
 	{
 		if (view != null)
 		{
-			Native.ThrowOnFailure(view.AddCommandFilter(this, out _nextTarget), (string)null);
+			Exf(view.AddCommandFilter(this, out _nextTarget), (string)null);
 			_TextView = view;
 		}
 	}
@@ -37,6 +37,8 @@ public abstract class AbstractViewFilter : IOleCommandTarget, IDisposable
 	{
 		filter.SetView(view);
 	}
+
+	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
 
 	public virtual int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{

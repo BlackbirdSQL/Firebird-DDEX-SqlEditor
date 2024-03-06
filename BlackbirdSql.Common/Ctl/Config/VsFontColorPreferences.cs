@@ -46,7 +46,7 @@ public class VsFontColorPreferences : IVsTextManagerEvents, IDisposable
 			if (Package.GetGlobalService(typeof(SUIHostLocale)) is IUIHostLocale2 iUIHostLocale)
 			{
 				UIDLGLOGFONT[] array = new UIDLGLOGFONT[1];
-				ErrorHandler.ThrowOnFailure(iUIHostLocale.GetDialogFont(array));
+				Exf(iUIHostLocale.GetDialogFont(array));
 
 				if (array.Length != 0)
 					font = FontFromUIDLGLOGFONT(array[0]);
@@ -67,7 +67,7 @@ public class VsFontColorPreferences : IVsTextManagerEvents, IDisposable
 
 	~VsFontColorPreferences()
 	{
-		SqlTracer.AssertTraceEvent(condition: false, TraceEventType.Warning, EnSqlTraceId.VSShell, "VsFontColorPreferences must be explictly disposed");
+		Diag.Dug(new ApplicationException("VsFontColorPreferences must be explictly disposed"));
 		Dispose(disposing: false);
 	}
 
@@ -89,6 +89,8 @@ public class VsFontColorPreferences : IVsTextManagerEvents, IDisposable
 			SystemEvents.UserPreferenceChanged -= SystemEvents_UserPreferenceChanged;
 		}
 	}
+
+	private static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
 
 	void IVsTextManagerEvents.OnRegisterMarkerType(int iMarkerType)
 	{

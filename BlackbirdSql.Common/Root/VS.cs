@@ -12,6 +12,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Controls;
+using BlackbirdSql.Common.Controls.Dialogs;
 using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
@@ -170,13 +171,13 @@ public abstract class VS : Core.VS
 			throw ex;
 		}
 
-		ErrorHandler.ThrowOnFailure((serviceProvider.GetService(typeof(SVsUIShell)) as IVsUIShell).GetDocumentWindowEnum(out var windowFramesEnum));
+		Exf((serviceProvider.GetService(typeof(SVsUIShell)) as IVsUIShell).GetDocumentWindowEnum(out var windowFramesEnum));
 		IVsWindowFrame[] windowFrames = new IVsWindowFrame[1];
 
 		while (windowFramesEnum.Next(1u, windowFrames, out uint pceltFetched) == 0 && pceltFetched == 1)
 		{
 			IVsWindowFrame vsWindowFrame = windowFrames[0];
-			ErrorHandler.ThrowOnFailure(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out var pvar));
+			Exf(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out var pvar));
 			if (pvar == docData)
 			{
 				yield return vsWindowFrame;
@@ -229,7 +230,7 @@ public abstract class VS : Core.VS
 				intPtr = Marshal.AllocCoTaskMem(array2.Length * 2);
 				Marshal.Copy(array2, 0, intPtr, array2.Length);
 				array[0].lStructSize = (uint)Marshal.SizeOf(typeof(VSSAVEFILENAMEW));
-				Core.Native.ThrowOnFailure(vsUIShell.GetDialogOwnerHwnd(out array[0].hwndOwner), (string)null);
+				Exf(vsUIShell.GetDialogOwnerHwnd(out array[0].hwndOwner), (string)null);
 				array[0].pwzFilter = strFilterString;
 				array[0].pwzFileName = intPtr;
 				array[0].nMaxFileName = (uint)num;

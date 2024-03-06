@@ -261,6 +261,9 @@ public abstract class VS
 	// =========================================================================================================
 
 
+	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+
+
 	private delegate DialogResult SafeShowMessageBox(string title, string text, string helpKeyword, MessageBoxButtons buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcon icon);
 
 

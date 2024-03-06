@@ -227,7 +227,7 @@ public sealed class RdtManager : AbstractRdtManager
 			{
 				Diag.ThrowIfNotOnUIThread();
 
-				Native.ThrowOnFailure(windowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar));
+				Exf(windowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar));
 				if (pvar != null)
 				{
 					codeWindow = pvar as IVsCodeWindow;

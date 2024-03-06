@@ -181,6 +181,7 @@ public abstract class Cmd
 		return result;
 	}
 
+	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
 
 	// Failed
 	public static bool Failed(int hr)
@@ -305,8 +306,7 @@ public abstract class Cmd
 		}
 		catch (UriFormatException ex5)
 		{
-			SqlTracer.TraceEvent(TraceEventType.Verbose, EnSqlTraceId.CoreServices,
-				string.Format(CultureInfo.CurrentCulture, "IsSamePath exception: {0}", ex5.Message));
+			Tracer.Warning(typeof(Cmd), "IsSamePath()", "IsSamePath exception: {0}", ex5.Message);
 		}
 
 		return false;
@@ -327,6 +327,24 @@ public abstract class Cmd
 
 
 	public static DialogResult ShowMessage(string message, string caption, MessageBoxButtons buttons)
+	{
+		// Fire and wait.
+
+		if (!ThreadHelper.CheckAccess())
+		{
+			DialogResult result = ThreadHelper.JoinableTaskFactory.Run(async delegate
+			{
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+				return ShowMessageImpl(message, caption, buttons);
+			});
+
+			return result;
+		}
+
+		return ShowMessageImpl(message, caption, buttons);
+	}
+
+	private static DialogResult ShowMessageImpl(string message, string caption, MessageBoxButtons buttons)
 	{
 		if (Package.GetGlobalService(typeof(IUIService)) is not IUIService iUIService)
 			throw Diag.ExceptionService(typeof(IUIService));

@@ -4,7 +4,6 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-
 using BlackbirdSql.Common;
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Properties;
@@ -17,23 +16,24 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
 using Cmd = BlackbirdSql.Common.Cmd;
-using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
+
+
 
 namespace BlackbirdSql.EditorExtension.Ctl;
 
-
 [Guid(LibraryData.SqlResultsEditorFactoryGuid)]
 [ProvideMenuResource("Menus.ctmenu", 1)]
-
 [Name("BlackbirdSql Results")]
+
+
 public sealed class SqlResultsEditorFactory : AbstruseEditorFactory
 {
-	public override Guid ClsidEditorFactory => new(LibraryData.SqlResultsEditorFactoryGuid);
-
-	public SqlResultsEditorFactory()
-		: base(withEncoding: false)
+	public SqlResultsEditorFactory() : base(withEncoding: false)
 	{
 	}
+
+
+	public override Guid ClsidEditorFactory => new(LibraryData.SqlResultsEditorFactoryGuid);
 
 	public override int CreateEditorInstance(uint createFlags, string moniker, string physicalView, IVsHierarchy hierarchy, uint itemId, IntPtr existingDocData, out IntPtr intPtrDocView, out IntPtr intPtrDocData, out string caption, out Guid cmdUIGuid, out int result)
 	{

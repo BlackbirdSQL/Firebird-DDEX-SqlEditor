@@ -134,7 +134,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 			IVsProject3 miscellaneousProject = Cmd.GetMiscellaneousProject();
 
 			VSADDRESULT[] array = new VSADDRESULT[1];
-			VSADDITEMOPERATION dwAddItemOperation = VSADDITEMOPERATION.VSADDITEMOP_CLONEFILE;
+			VSADDITEMOPERATION addItemOperation = VSADDITEMOPERATION.VSADDITEMOP_CLONEFILE;
 
 			uint flags = (uint)__VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_DoOpen;
 
@@ -143,7 +143,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 				: __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_UseView);
 
 			Native.WrapComCall(miscellaneousProject.AddItemWithSpecific(grfEditorFlags: flags,
-				itemidLoc: uint.MaxValue, dwAddItemOperation: dwAddItemOperation, pszItemName: caption, cFilesToOpen: 1u,
+				itemidLoc: uint.MaxValue, dwAddItemOperation: addItemOperation, pszItemName: caption, cFilesToOpen: 1u,
 				rgpszFilesToOpen: [path], hwndDlgOwner: IntPtr.Zero, rguidEditorType: ref editor,
 				pszPhysicalView: physicalView, rguidLogicalView: ref logicalView, pResult: array), []);
 

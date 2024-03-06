@@ -218,7 +218,7 @@ internal sealed class DslProviderSchemaFactory : IBProviderSchemaFactory
 	Task<DataTable> IBProviderSchemaFactory.GetSchemaAsync(FbConnection connection, string collectionName,
 		string[] restrictions, CancellationToken cancellationToken)
 	{
-		return DslProviderSchemaFactory.GetSchemaAsync(connection, collectionName, restrictions, cancellationToken);
+		return GetSchemaAsync(connection, collectionName, restrictions, cancellationToken);
 	}
 
 	public static Task<DataTable> GetSchemaAsync(FbConnection connection, string collectionName, string[] restrictions, CancellationToken cancellationToken = default)

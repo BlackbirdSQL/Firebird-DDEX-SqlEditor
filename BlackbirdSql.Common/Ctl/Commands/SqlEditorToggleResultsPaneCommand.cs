@@ -3,9 +3,9 @@
 using System;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Controls.Interfaces;
+using BlackbirdSql.Common.Controls.Tabs;
 
 
 namespace BlackbirdSql.Common.Ctl.Commands;

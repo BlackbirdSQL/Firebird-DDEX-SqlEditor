@@ -4,10 +4,9 @@
 using System;
 using System.Collections;
 using System.Threading;
-
 using BlackbirdSql.Common.Controls.Events;
 using BlackbirdSql.Common.Controls.Interfaces;
-using BlackbirdSql.Common.Controls.ResultsPane;
+using BlackbirdSql.Common.Controls.ResultsPanels;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
@@ -27,28 +26,28 @@ public class PropertiesWindowManager : IDisposable
 	// A private 'this' object lock
 	private readonly object _LockLocal = new object();
 
-	public SqlEditorTabbedEditorPane EditorPane { get; private set; }
+	private TabbedEditorWindowPane EditorPane { get; set; }
 
-	public SqlEditorTabbedEditorUI EditorUI { get; private set; }
+	private TabbedEditorUIControl TabbedEditorUiCtl { get; set; }
 
 	public QueryManager QryMgr { get; private set; }
 
-	public PropertiesWindowManager(SqlEditorTabbedEditorPane editorPane)
+	public PropertiesWindowManager(TabbedEditorWindowPane editorPane)
 	{
 		EditorPane = editorPane;
 		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(editorPane.DocData);
 		QryMgr = auxDocData.QryMgr;
-		EditorUI = editorPane.TabbedEditorUI;
+		TabbedEditorUiCtl = editorPane.TabbedEditorUiCtl;
 		RegistererEventHandlers();
 	}
 
 	private void RegistererEventHandlers()
 	{
-		SqlEditorTabbedEditorUI editorUI = EditorUI;
+		TabbedEditorUIControl editorUI = TabbedEditorUiCtl;
 		editorUI.OnFocusHandler = (EventHandler)Delegate.Combine(editorUI.OnFocusHandler, new EventHandler(OnFocusReceived));
 		QryMgr.ScriptExecutionCompletedEvent += OnScriptExecutionCompleted;
 		QryMgr.StatusChangedEvent += OnConnectionChanged;
-		EditorUI.TabActivatedEvent += OnTabActivated;
+		TabbedEditorUiCtl.TabActivatedEvent += OnTabActivated;
 		DisplaySQLResultsControl displaySQLResultsControl = EditorPane.EnsureDisplayResultsControl();
 		displaySQLResultsControl.ExecutionPlanWindowPane.PanelAddedEvent += OnExecutionPlanPanelAdded;
 		displaySQLResultsControl.ExecutionPlanWindowPane.PanelRemovedEvent += OnExecutionPlanPanelRemoved;
@@ -56,11 +55,11 @@ public class PropertiesWindowManager : IDisposable
 
 	private void UnRegisterEventHandlers()
 	{
-		SqlEditorTabbedEditorUI editorUI = EditorUI;
+		TabbedEditorUIControl editorUI = TabbedEditorUiCtl;
 		editorUI.OnFocusHandler = (EventHandler)Delegate.Remove(editorUI.OnFocusHandler, new EventHandler(OnFocusReceived));
 		QryMgr.ScriptExecutionCompletedEvent -= OnScriptExecutionCompleted;
 		QryMgr.StatusChangedEvent -= OnConnectionChanged;
-		EditorUI.TabActivatedEvent -= OnTabActivated;
+		TabbedEditorUiCtl.TabActivatedEvent -= OnTabActivated;
 		DisplaySQLResultsControl displaySQLResultsControl = EditorPane.EnsureDisplayResultsControl();
 		displaySQLResultsControl.ExecutionPlanWindowPane.PanelAddedEvent -= OnExecutionPlanPanelAdded;
 		displaySQLResultsControl.ExecutionPlanWindowPane.PanelRemovedEvent -= OnExecutionPlanPanelRemoved;
@@ -123,13 +122,13 @@ public class PropertiesWindowManager : IDisposable
 	private void OnGraphSelectionChanged(object sender, GraphEventArgs e)
 	{
 		IDisplay displayObject = e.DisplayObject;
-		if (displayObject != null && displayObject.Selected && EditorUI.ActiveTab == EditorPane.GetSqlExecutionPlanTab())
+		if (displayObject != null && displayObject.Selected && TabbedEditorUiCtl.ActiveTab == EditorPane.GetSqlExecutionPlanTab())
 		{
 			ArrayList arrayList = new(1)
 			{
 				displayObject
 			};
-			EditorUI.ActiveTab.PropertyWindowSelectedObjects = arrayList;
+			TabbedEditorUiCtl.ActiveTab.PropertyWindowSelectedObjects = arrayList;
 		}
 	}
 	*/
@@ -157,9 +156,9 @@ public class PropertiesWindowManager : IDisposable
 					_SingleAsyncUpdate.Release();
 				}
 				ICollection propertyWindowObjects = GetPropertyWindowObjects();
-				if (propertyWindowObjects != null && EditorUI.ActiveTab != null)
+				if (propertyWindowObjects != null && TabbedEditorUiCtl.ActiveTab != null)
 				{
-					EditorUI.ActiveTab.PropertyWindowSelectedObjects = propertyWindowObjects;
+					TabbedEditorUiCtl.ActiveTab.PropertyWindowSelectedObjects = propertyWindowObjects;
 				}
 			});
 		}).BeginInvoke(null, null);
@@ -171,7 +170,7 @@ public class PropertiesWindowManager : IDisposable
 		ArrayList propertyWindowObjects = GetPropertyWindowObjects();
 		if (propertyWindowObjects != null && propertyWindowObjects.Count > 0)
 		{
-			if (EditorUI.ActiveTab.PropertyWindowSelectedObjects is not ArrayList arrayList
+			if (TabbedEditorUiCtl.ActiveTab.PropertyWindowSelectedObjects is not ArrayList arrayList
 				|| !arrayList[0].Equals(propertyWindowObjects[0]))
 			{
 				RefreshPropertyWindow();

@@ -16,6 +16,7 @@ using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Common.Model.IO;
 
 namespace BlackbirdSql.Common.Model.QueryExecution;
 

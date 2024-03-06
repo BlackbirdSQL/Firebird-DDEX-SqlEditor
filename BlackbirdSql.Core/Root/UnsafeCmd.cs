@@ -36,7 +36,7 @@ namespace BlackbirdSql.Core;
 /// Central location for implementation of unsafe utility static methods. 
 /// </summary>
 // =========================================================================================================
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification="Using Diag.ThrowIfNotOnUIThread()")]
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Using Diag.ThrowIfNotOnUIThread()")]
 public abstract class UnsafeCmd
 {
 
@@ -126,6 +126,7 @@ public abstract class UnsafeCmd
 		if (RctManager.AdvisingExplorerEvents || Controller.ShutdownState)
 			return EnConnectionSource.ServerExplorer;
 
+		/*
 		if (!ThreadHelper.CheckAccess())
 		{
 			// Fire and wait.
@@ -138,6 +139,7 @@ public abstract class UnsafeCmd
 
 			return result;
 		}
+		*/
 
 		return GetConnectionSourceImpl();
 
@@ -146,8 +148,7 @@ public abstract class UnsafeCmd
 
 	private static EnConnectionSource GetConnectionSourceImpl()
 	{
-		Diag.ThrowIfNotOnUIThread();
-
+		// Diag.ThrowIfNotOnUIThread();
 
 		EnConnectionSource source;
 
@@ -158,13 +159,13 @@ public abstract class UnsafeCmd
 		string seGuid = VSConstants.StandardToolWindows.ServerExplorer.ToString("B", CultureInfo.InvariantCulture);
 
 
-		string objectKind = Core.Controller.ActiveWindowObjectKind;
+		string objectKind = Controller.ActiveWindowObjectKind;
 		if (objectKind == null)
-			return Controller.ShutdownState ? EnConnectionSource.ServerExplorer : EnConnectionSource.Unknown;
+			return EnConnectionSource.ServerExplorer;
 
 		string objectType = Core.Controller.ActiveWindowObjectType;
 		if (objectType == null)
-			return Controller.ShutdownState ? EnConnectionSource.ServerExplorer : EnConnectionSource.Unknown;
+			return EnConnectionSource.ServerExplorer;
 
 		// Definitely ServerExplorer
 		if (objectKind != null && objectKind.Equals(seGuid, StringComparison.InvariantCultureIgnoreCase))
@@ -246,7 +247,7 @@ public abstract class UnsafeCmd
 
 	public static bool IsEdmConnectionSource =>
 		GetConnectionSource() == EnConnectionSource.EntityDataModel;
-	
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -319,17 +320,80 @@ public abstract class UnsafeCmd
 	}
 
 
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Returns True if project is external files project.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool IsMiscProjectKind(string kind)
+	public static bool IsVirtualProjectKind(IVsHierarchy hierarchy)
 	{
-		if (!ProjectGuids.TryGetValue(kind, out string name))
+		int hresult = hierarchy.GetGuidProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_TypeGuid, out Guid guid);
+
+		if (!Native.Succeeded(hresult))
 			return false;
 
-		return name == "MiscProject";
+		return IsVirtualProjectKind(guid);
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns True if project is external files project.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool IsVirtualProjectKind(string kind)
+	{
+		return VSConstants.ItemTypeGuid.VirtualFolder_string.Trim(['{', '}']).Equals(kind.Trim(['{', '}']), StringComparison.OrdinalIgnoreCase);
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns True if project is external files project.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool IsVirtualProjectKind(Guid clsid)
+	{
+		return clsid == VSConstants.GUID_ItemType_VirtualFolder;
+	}
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns True if project is misc files project.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool IsMiscFilesProject(IVsHierarchy hierarchy)
+	{
+		int hresult = hierarchy.GetGuidProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ProjectIDGuid, out Guid clsid);
+
+		if (!Native.Succeeded(hresult))
+			return false;
+
+		return IsMiscFilesProject(clsid);
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns True if project is misc files project.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool IsMiscFilesProject(string kind)
+	{
+		return kind.Trim(['{', '}']).Equals(VSConstants.CLSID.MiscellaneousFilesProject_string.Trim(['{', '}']),
+			StringComparison.OrdinalIgnoreCase);
+	}
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns True if project is misc files project.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool IsMiscFilesProject(Guid clsid)
+	{
+		return clsid == VSConstants.CLSID.MiscellaneousFilesProject_guid;
 	}
 
 
@@ -370,7 +434,7 @@ public abstract class UnsafeCmd
 		{ "{66A2671F-8FB5-11D2-AA7E-00C04F688DDE}", "MiscItem" },
 		{ "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}", "VbProject" },
 		{ "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}", "C#Project" },
-		{ "{66A2671D-8FB5-11D2-AA7E-00C04F688DDE}", "MiscProject" },
+		{ "{A2FE74E1-B743-11d0-AE1A-00A0C90FFFC3}", "MiscFilesProject" },
 		{ "{3AE79031-E1BC-11D0-8F78-00A0C9110057}", "SolutionExplorer"}
 			/* The above the only one's we care about ATM
 			{ "{06A35CCD-C46D-44D5-987B-CF40FF872267}", "DeploymentMergeModule" },
@@ -391,6 +455,7 @@ public abstract class UnsafeCmd
 			{ "{603C0E0B-DB56-11DC-BE95-000D561079B0}", "ASP.NET(MVC 1.0)" },
 			{ "{60DC8134-EBA5-43B8-BCC9-BB4BC16C2548}", "WPF" },
 			{ "{68B1623D-7FB9-47D8-8664-7ECEA3297D4F}", "SmartDevice(VB.NET)" },
+			{ "{66A2671D-8FB5-11D2-AA7E-00C04F688DDE}", "MiscProject" },
 			{ "{66A26722-8FB5-11D2-AA7E-00C04F688DDE}", "SolutionItem" },
 			{ "{67294A52-A4F0-11D2-AA88-00C04F688DDE}", "UnloadedProject" },
 			{ "{6BB5F8EE-4483-11D3-8BCF-00C04F8EC28C}", "ProjectFile" },
@@ -438,6 +503,6 @@ public abstract class UnsafeCmd
 
 
 
-#endregion Static Methods
+	#endregion Static Methods
 
 }

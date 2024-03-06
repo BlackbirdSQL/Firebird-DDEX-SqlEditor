@@ -4,16 +4,17 @@
 #endregion
 
 using System;
-
 using BlackbirdSql.Common.Controls;
 using Microsoft.VisualStudio.OLE.Interop;
 
 
+
 namespace BlackbirdSql.Common.Ctl.Interfaces;
+
 
 public interface IBSqlEditorExtendedCommandHandler
 {
-	int HandleExec(AbstractTabbedEditorPane editor, ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut);
+	int HandleExec(AbstractTabbedEditorWindowPane editor, ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut);
 
-	int HandleQueryStatus(AbstractTabbedEditorPane editor, ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText);
+	int HandleQueryStatus(AbstractTabbedEditorWindowPane editor, ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText);
 }

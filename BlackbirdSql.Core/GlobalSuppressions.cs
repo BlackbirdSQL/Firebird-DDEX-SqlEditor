@@ -11,5 +11,6 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Usage", "VSTHRD104:Offer async methods")]
 [assembly: SuppressMessage("Usage", "VSTHRD003:Avoid awaiting foreign Tasks")]
 [assembly: SuppressMessage("Usage", "VSTHRD108:Assert thread affinity unconditionally")]
+[assembly: SuppressMessage("Usage", "VSTHRD102:Implement internal logic asynchronously")]
 // [assembly: SuppressMessage("Usage", "VSTHRD110:Observe result of async calls")]
 // [assembly: SuppressMessage("Usage", "VSTHRD001:Avoid legacy thread switching APIs")]

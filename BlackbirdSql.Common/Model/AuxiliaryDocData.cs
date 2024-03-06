@@ -146,7 +146,7 @@ public sealed class AuxiliaryDocData(string documentMoniker, string explorerMoni
 				if (iVsUserData != null)
 				{
 					Guid riidKey = LibraryData.CLSID_IntelliSenseEnabled;
-					Native.ThrowOnFailure(iVsUserData.SetData(ref riidKey, value));
+					Exf(iVsUserData.SetData(ref riidKey, value));
 					_IntellisenseEnabled = value;
 				}
 			}
@@ -263,6 +263,8 @@ public sealed class AuxiliaryDocData(string documentMoniker, string explorerMoni
 
 	public event EventHandler<LiveSettingsChangedEventArgs> LiveSettingsChangedEvent;
 
+	private static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+
 	private void QueryManagerStatusChangedEventHandler(object sender, QueryManager.StatusChangedEventArgs args)
 	{
 		lock (_LockLocal)
@@ -346,7 +348,7 @@ public sealed class AuxiliaryDocData(string documentMoniker, string explorerMoni
 			if (iVsUserData != null)
 			{
 				Guid riidKey = LibraryData.CLSID_PropertyDatabaseConnectionChanged;
-				Native.ThrowOnFailure(iVsUserData.SetData(ref riidKey, connectionUrl));
+				Exf(iVsUserData.SetData(ref riidKey, connectionUrl));
 			}
 		}
 
@@ -429,7 +431,7 @@ public sealed class AuxiliaryDocData(string documentMoniker, string explorerMoni
 			if (iVsUserData != null)
 			{
 				Guid riidKey = LibraryData.CLSID_PropertyOleSql;
-				Native.ThrowOnFailure(iVsUserData.SetData(ref riidKey, on));
+				Exf(iVsUserData.SetData(ref riidKey, on));
 			}
 		}
 	}

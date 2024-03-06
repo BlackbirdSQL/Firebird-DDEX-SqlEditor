@@ -109,6 +109,8 @@ public abstract class AbstractRdtManager : IDisposable
 		}
 	}
 
+	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+
 	protected void RemoveKeepAlive(uint docCookie)
 	{
 		lock (_KeepAliveLockLocal)
@@ -158,7 +160,7 @@ public abstract class AbstractRdtManager : IDisposable
 			IntPtr ppunkDocData = IntPtr.Zero;
 			try
 			{
-				Native.ThrowOnFailure(FindAndLockDocumentImpl((uint)_VSRDTFLAGS.RDT_NoLock, mkDocument, out var _, out var _, out ppunkDocData, out var pdwCookie));
+				Exf(FindAndLockDocumentImpl((uint)_VSRDTFLAGS.RDT_NoLock, mkDocument, out var _, out var _, out ppunkDocData, out var pdwCookie));
 
 				if (pdwCookie != 0)
 				{
@@ -222,7 +224,7 @@ public abstract class AbstractRdtManager : IDisposable
 		{
 			Diag.ThrowIfNotOnUIThread();
 
-			Native.ThrowOnFailure(_InvisibleEditorManager.RegisterInvisibleEditor(mkDocument, project, (uint)_EDITORREGFLAGS.RIEF_ENABLECACHING, null, out spEditor));
+			Exf(_InvisibleEditorManager.RegisterInvisibleEditor(mkDocument, project, (uint)_EDITORREGFLAGS.RIEF_ENABLECACHING, null, out spEditor));
 			if (spEditor != null)
 			{
 				if (spEditor.GetDocData(0, ref riid, out ppDocData) == 0)
@@ -244,11 +246,10 @@ public abstract class AbstractRdtManager : IDisposable
 		}
 		catch (Exception ex)
 		{
-			SqlTracer.TraceException((TraceEventType)356, (EnSqlTraceId)3, ex);
+			Diag.Dug(ex);
+
 			if (Cmd.IsCriticalException(ex))
-			{
 				throw;
-			}
 
 			return result;
 		}
@@ -326,7 +327,7 @@ public abstract class AbstractRdtManager : IDisposable
 		*/
 		Diag.ThrowIfNotOnUIThread();
 
-		Native.ThrowOnFailure(RdtSvc.RenameDocument(oldMkDoc, newMkDoc, ppv, newNodeId));
+		Exf(RdtSvc.RenameDocument(oldMkDoc, newMkDoc, ppv, newNodeId));
 	}
 
 
@@ -343,7 +344,7 @@ public abstract class AbstractRdtManager : IDisposable
 
 		Diag.ThrowIfNotOnUIThread();
 
-		Native.ThrowOnFailure(frame.GetProperty((int)__VSFPROPID.VSFPROPID_pszMkDocument, out var pvar));
+		Exf(frame.GetProperty((int)__VSFPROPID.VSFPROPID_pszMkDocument, out var pvar));
 		if (pvar != null)
 		{
 			mkDoc = pvar as string;
@@ -372,7 +373,7 @@ public abstract class AbstractRdtManager : IDisposable
 			if (GetDocData(mkDocument) is IVsPersistDocData vsPersistDocData)
 			{
 				uint rdtCookie = GetRdtCookieImpl(mkDocument);
-				Native.ThrowOnFailure(RdtSvc.NotifyOnBeforeSave(rdtCookie));
+				Exf(RdtSvc.NotifyOnBeforeSave(rdtCookie));
 				if (vsPersistDocData.SaveDocData(VSSAVEFLAGS.VSSAVE_Save, out var _, out var pfSaveCanceled) != 0 || pfSaveCanceled != 0)
 				{
 					InvalidOperationException ex = new(string.Format(CultureInfo.CurrentCulture, Resources.Exception_FailedToSaveFile, mkDocument));
@@ -380,7 +381,7 @@ public abstract class AbstractRdtManager : IDisposable
 					throw ex;
 				}
 
-				Native.ThrowOnFailure(RdtSvc.NotifyOnAfterSave(rdtCookie));
+				Exf(RdtSvc.NotifyOnAfterSave(rdtCookie));
 			}
 		}
 	}
@@ -404,20 +405,20 @@ public abstract class AbstractRdtManager : IDisposable
 		ThreadHelper.JoinableTaskFactory.Run(async delegate
 			{
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-				Native.ThrowOnFailure(UiShell.GetDocumentWindowEnum(out var ppenum));
+				Exf(UiShell.GetDocumentWindowEnum(out var ppenum));
 				IVsWindowFrame[] array = new IVsWindowFrame[1];
 				while (ppenum.Next(1u, array, out uint pceltFetched) == 0 && pceltFetched == 1)
 				{
-					Native.ThrowOnFailure(array[0].GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out var pvar));
+					Exf(array[0].GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out var pvar));
 					if (pvar is IPersistFileFormat persistFileFormat)
 					{
 						int num = persistFileFormat.IsDirty(out int pfIsDirty);
 						if (num != VSConstants.E_NOTIMPL)
 						{
-							Native.ThrowOnFailure(num);
+							Exf(num);
 							if (pfIsDirty == 1)
 							{
-								Native.ThrowOnFailure(persistFileFormat.GetCurFile(out var ppszFilename, out var _));
+								Exf(persistFileFormat.GetCurFile(out var ppszFilename, out var _));
 
 								if (!string.IsNullOrEmpty(ppszFilename) && shouldHandle(ppszFilename))
 								{
@@ -492,7 +493,7 @@ public abstract class AbstractRdtManager : IDisposable
 		IntPtr ppunkDocData = IntPtr.Zero;
 		try
 		{
-			Native.ThrowOnFailure(RdtSvc.GetDocumentInfo(docCookie, out var _, out var _, out var _, out var _, out var ppHier, out var _, out ppunkDocData));
+			Exf(RdtSvc.GetDocumentInfo(docCookie, out var _, out var _, out var _, out var _, out var ppHier, out var _, out ppunkDocData));
 			return ppHier;
 		}
 		finally
@@ -535,7 +536,7 @@ public abstract class AbstractRdtManager : IDisposable
 				{
 					if (!Native.Succeeded(FindAndLockDocumentImpl((uint)_VSRDTFLAGS.RDT_ReadLock, fileName, out var ppHier, out var pitemid, out ppunkDocData, out var pdwCookie)))
 					{
-						SqlTracer.TraceEvent(TraceEventType.Warning, (EnSqlTraceId)0, "Failed to find document " + fileName);
+						Tracer.Warning(GetType(), "TrySetDocDataDirty()", "Failed to find document {0}.", fileName);
 						return false;
 					}
 
@@ -543,13 +544,13 @@ public abstract class AbstractRdtManager : IDisposable
 
 					if (!Native.Succeeded(RdtSvc.UnlockDocument((uint)_VSRDTFLAGS.RDT_ReadLock, pdwCookie)))
 					{
-						SqlTracer.TraceEvent(TraceEventType.Warning, (EnSqlTraceId)0, "Failed to unlock document " + fileName);
+						Tracer.Warning(GetType(), "TrySetDocDataDirty()", "Failed to unlock document {0}.", fileName);
 						return false;
 					}
 
 					if (!Native.Succeeded(RdtSvc.GetDocumentInfo(pdwCookie, out var _, out var _, out var _, out var _, out ppHier, out pitemid, out var ppunkDocData2)))
 					{
-						SqlTracer.TraceEvent(TraceEventType.Warning, (EnSqlTraceId)0, "Failed to get document info " + fileName);
+						Tracer.Warning(GetType(), "TrySetDocDataDirty()", "Failed to get document info {0}.", fileName);
 						return false;
 					}
 
@@ -564,7 +565,7 @@ public abstract class AbstractRdtManager : IDisposable
 									return true;
 								}
 
-								SqlTracer.TraceEvent(TraceEventType.Warning, (EnSqlTraceId)0, "Failed to set docData dirty " + fileName);
+								Tracer.Warning(GetType(), "TrySetDocDataDirty()", "Failed to set docData dirty {0}.", fileName);
 								return false;
 							}
 
@@ -597,7 +598,7 @@ public abstract class AbstractRdtManager : IDisposable
 
 		if (GetDocData(docFullPath) is IVsPersistDocData vsPersistDocData)
 		{
-			Native.ThrowOnFailure(vsPersistDocData.IsDocDataDirty(out var pfDirty));
+			Exf(vsPersistDocData.IsDocDataDirty(out var pfDirty));
 			return pfDirty != 0;
 		}
 
@@ -620,7 +621,7 @@ public abstract class AbstractRdtManager : IDisposable
 
 		if (docData is IVsPersistDocData vsPersistDocData)
 		{
-			Native.ThrowOnFailure(vsPersistDocData.IsDocDataDirty(out var pfDirty));
+			Exf(vsPersistDocData.IsDocDataDirty(out var pfDirty));
 			return pfDirty != 0;
 		}
 
@@ -658,7 +659,7 @@ public abstract class AbstractRdtManager : IDisposable
 					}
 					finally
 					{
-						Native.ThrowOnFailure(RdtSvc.UnlockDocument((uint)_VSRDTFLAGS.RDT_ReadLock, pdwCookie));
+						Exf(RdtSvc.UnlockDocument((uint)_VSRDTFLAGS.RDT_ReadLock, pdwCookie));
 					}
 				}
 
@@ -697,7 +698,7 @@ public abstract class AbstractRdtManager : IDisposable
 						}
 						finally
 						{
-							Native.ThrowOnFailure(RdtSvc.UnlockDocument((uint)_VSRDTFLAGS.RDT_ReadLock, pdwCookie));
+							Exf(RdtSvc.UnlockDocument((uint)_VSRDTFLAGS.RDT_ReadLock, pdwCookie));
 						}
 					}
 
@@ -791,7 +792,7 @@ public abstract class AbstractRdtManager : IDisposable
 		if (property != 0)
 		{
 			pvar = null;
-			SqlTracer.TraceEvent(TraceEventType.Warning, (EnSqlTraceId)3, "Could not retrieve docView from frame " + property);
+			Tracer.Warning(GetType(), "GetWindowDocView()", "Could not retrieve docView from frame {0}.", property);
 		}
 
 		return pvar;
@@ -806,17 +807,17 @@ public abstract class AbstractRdtManager : IDisposable
 
 		IVsWindowFrame result = null;
 
-		Native.ThrowOnFailure(UiShell.GetDocumentWindowEnum(out IEnumWindowFrames ppenum));
+		Exf(UiShell.GetDocumentWindowEnum(out IEnumWindowFrames ppenum));
 		IVsWindowFrame[] array = new IVsWindowFrame[1];
 
 		while (ppenum.Next(1u, array, out uint pceltFetched) == 0 && pceltFetched == 1)
 		{
 			IVsWindowFrame vsWindowFrame = array[0];
-			Native.ThrowOnFailure(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out object pvar));
+			Exf(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out object pvar));
 
 			if (pvar is IPersistFileFormat persistFileFormat)
 			{
-				Native.ThrowOnFailure(persistFileFormat.GetCurFile(out string ppszFilename, out _));
+				Exf(persistFileFormat.GetCurFile(out string ppszFilename, out _));
 
 				if (!string.IsNullOrEmpty(ppszFilename) && (string.Compare(ppszFilename, mkDocument,
 					ignoreCase: true, CultureInfo.CurrentCulture) == 0 || Cmd.IsSamePath(ppszFilename, mkDocument)))
@@ -1045,7 +1046,10 @@ public abstract class AbstractRdtManager : IDisposable
 	{
 		lock (_KeepAliveLockLocal)
 		{
-			SqlTracer.AssertTraceEvent(_KeepAliveDocCookies.Keys.Count == 0, TraceEventType.Error, (EnSqlTraceId)3, "Events Manager is still trying to keep doc data alive on dispose, this could be a symptom of memory leak from invisible doc data.");
+			if (_KeepAliveDocCookies.Keys.Count != 0)
+			{
+				Diag.Dug(new ApplicationException("Events Manager is still trying to keep doc data alive on dispose, this could be a symptom of memory leak from invisible doc data."));
+			}
 		}
 	}
 }

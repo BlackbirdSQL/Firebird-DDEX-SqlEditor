@@ -235,7 +235,7 @@ public abstract class AbstractUomConverter : TypeConverter, IBEditConverter, IDi
 				if (fmt != null)
 					_UomFmtMax = fmt.FmtRes(_Max);
 
-				_DefaultValue = (int)model[_PropertyName].DefaultValue;
+				_DefaultValue = model[_PropertyName].DefaultValue;
 
 				// The formatted display string of the default value in the current culture.
 				fmt = ResMgr.GetString("ConverterUomFormatDefault_" + _UomKey);

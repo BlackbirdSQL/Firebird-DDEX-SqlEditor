@@ -2,9 +2,12 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Ctl;
+using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
@@ -12,19 +15,24 @@ using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.EditorExtension.Ctl.Events;
-
 using EnvDTE;
-
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
+using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.TextManager.Interop;
 
+using Cmd = BlackbirdSql.Common.Cmd;
 using IOleUndoManager = Microsoft.VisualStudio.OLE.Interop.IOleUndoManager;
 using Native = BlackbirdSql.Core.Native;
 
 
+
 namespace BlackbirdSql.EditorExtension;
+
 
 // =========================================================================================================
 //										EditorEventsManager Class
@@ -33,7 +41,7 @@ namespace BlackbirdSql.EditorExtension;
 /// Manages Solution, RDT and Selection events for the editor extension.
 /// </summary>
 // =========================================================================================================
-public sealed class EditorEventsManager : AbstractEditorEventsManager
+public sealed class EditorEventsManager : AbstractEventsManager
 {
 
 	// ---------------------------------------------------------------------------------
@@ -91,6 +99,7 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 		Controller.OnBeforeSaveAsyncEvent -= OnBeforeSaveAsync;
 		Controller.OnCmdUIContextChangedEvent -= OnCmdUIContextChanged;
 		Controller.OnElementValueChangedEvent -= OnElementValueChanged;
+		Controller.OnBeforeCloseProjectEvent -= OnBeforeCloseProject;
 		Controller.OnQueryCloseProjectEvent -= OnQueryCloseProject;
 		Controller.OnSelectionChangedEvent -= OnSelectionChanged;
 		Controller.OnNewQueryRequestedEvent -= OnNewQueryRequested;
@@ -194,7 +203,7 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 			{
 				Diag.ThrowIfNotOnUIThread();
 
-				ErrorHandler.ThrowOnFailure(CurrentDocumentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out pvar));
+				Exf(CurrentDocumentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out pvar));
 			}
 
 			return pvar;
@@ -212,7 +221,7 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 			{
 				Diag.ThrowIfNotOnUIThread();
 
-				ErrorHandler.ThrowOnFailure(CurrentDocumentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out pvar));
+				Exf(CurrentDocumentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out pvar));
 			}
 
 			return pvar;
@@ -230,7 +239,7 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 			{
 				Diag.ThrowIfNotOnUIThread();
 
-				ErrorHandler.ThrowOnFailure(CurrentWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out pvar));
+				Exf(CurrentWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out pvar));
 			}
 
 			return pvar;
@@ -264,50 +273,73 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 	/// Cleans up any SE sql editor documents that may have been left dangling.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private int CleanupTemporarySqlItems(IVsUIHierarchy miscHierarchy)
+	private int CleanupTemporarySqlItems(IVsUIHierarchy projectHierarchy)
 	{
-		if (Controller.ShutdownState)
-			return VSConstants.S_OK;
 
-		Diag.ThrowIfNotOnUIThread();
-
-		bool deleted = false;
 		var itemid = VSConstants.VSITEMID_ROOT;
-		object objProj;
+		object objProj = null;
 
 		// Get the hierarchy root node.
 		try
 		{
-			miscHierarchy.GetProperty(itemid, (int)__VSHPROPID.VSHPROPID_ExtObject, out objProj);
+			projectHierarchy.GetProperty(itemid, (int)__VSHPROPID.VSHPROPID_ExtObject, out objProj);
 		}
 		catch (Exception ex)
 		{
-			Diag.Dug(ex);
-			throw ex;
+			Diag.ThrowException(ex);
 		}
 
 		if (objProj == null || objProj is not Project project)
 		{
-			ArgumentException ex = new($"Could not get hierarchy root for {miscHierarchy}");
-			Diag.Dug(ex);
-			throw ex;
+			project = null;
+			Diag.ThrowException(new ApplicationException("Hierarchy is not a project"));
 		}
 
 
 		if (project.ProjectItems == null || project.ProjectItems.Count == 0)
-		{
 			return VSConstants.S_OK;
-		}
 
-		foreach (ProjectItem projectItem in project.ProjectItems)
+
+
+
+		foreach (RunningDocumentInfo docInfo in RdtManager.Enumerator)
 		{
-			// Tracer.Trace("Validating project item: " + projectItem.Name + ":  Kind: " + Kind(projectItem.Kind) + " FileCount: "
-			//	+ projectItem.FileCount);
+			if (!(docInfo.Hierarchy == projectHierarchy) ||
+				string.IsNullOrWhiteSpace(docInfo.Moniker) || docInfo.DocData == null)
+			{
+				continue;
+			}
+			AuxiliaryDocData docData = EditorPackage.GetAuxiliaryDocData(docInfo.DocData);
 
-			if (Controller.ShutdownState)
-				break;
+			if (docData == null)
+				continue;
 
-			deleted |= RemoveTemporarySqlItem(projectItem);
+			try
+			{
+				projectHierarchy.GetProperty(docInfo.ItemId, (int)__VSHPROPID.VSHPROPID_ExtObject, out objProj);
+			}
+			catch (Exception ex)
+			{
+				Diag.Dug(ex);
+				throw ex;
+			}
+
+			if (objProj == null || objProj is not ProjectItem projectItem)
+			{
+				ArgumentException ex = new($"Could not get project item in hierarchy {projectHierarchy}, itemId: {docInfo.ItemId}.");
+				Diag.Dug(ex);
+				throw ex;
+			}
+
+			// Tracer.Trace(GetType(), "CleanupTemporarySqlItems()", "Found project item: {0}.", projectItem.Name);
+
+			try
+			{
+				RemoveTemporarySqlItem(projectItem);
+			}
+			catch { }
+
+
 		}
 
 
@@ -319,12 +351,35 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		SelectionMonitor.IsCmdUIContextActive(cookie, out var pfActive);
+		SelectionMonitor.IsCmdUIContextActive(cookie, out int pfActive);
 
 		if (pfActive != 1)
 			return false;
 
 		return true;
+	}
+
+
+	public static void RegisterForDirtyChangeNotification(uint docCookie)
+	{
+		if (!RdtManager.TryGetDocDataFromCookie(docCookie, out object docData))
+			return;
+
+		IComponentModel componentModel = Core.Controller.GetService<SComponentModel, IComponentModel>();
+		if (componentModel == null)
+			return;
+
+		IVsEditorAdaptersFactoryService service = componentModel.GetService<IVsEditorAdaptersFactoryService>();
+		if (service == null)
+			return;
+
+		ITextBuffer documentBuffer = service.GetDocumentBuffer((IVsTextBuffer)docData);
+		ITextDocumentFactoryService service2 = componentModel.GetService<ITextDocumentFactoryService>();
+		if (service2 != null)
+		{
+			service2.TryGetTextDocument(documentBuffer, out ITextDocument textDocument);
+			textDocument.DirtyStateChanged += OnTextDocumentDirtyStateChanged;
+		}
 	}
 
 
@@ -335,23 +390,37 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 	// ---------------------------------------------------------------------------------
 	private bool RemoveTemporarySqlItem(ProjectItem projectItem)
 	{
-		Diag.ThrowIfNotOnUIThread();
-
 		// Tracer.Trace(GetType(), "RemoveTemporarySqlItem()");
 
 		if (projectItem.FileCount == 0 || UnsafeCmd.Kind(projectItem.Kind) != "MiscItem")
 			return false;
 
-		bool deleted = false;
 		// FileNames is 1 based indexing - How/Why??? - A VB team did this!
-		string path = projectItem.FileNames[1];
+		string filepath = projectItem.FileNames[1];
+
+		if (!filepath.StartsWith(Path.GetTempPath(), StringComparison.OrdinalIgnoreCase))
+			return false;
 
 		try
 		{
-			uint docCookie = RdtManager.GetRdtCookie(path);
+			projectItem.Delete();
+			return true;
+		}
+#if DEBUG
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+		}
+#else
+		catch
+		{
+		}
+#endif
 
-			if (docCookie != 0)
-				RdtManager.CloseDocument(__FRAMECLOSE.FRAMECLOSE_NoSave, docCookie);
+		try
+		{
+			File.Delete(filepath);
+			return true;
 		}
 #if DEBUG
 		catch (Exception ex)
@@ -365,43 +434,7 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 #endif
 
 
-		if (path.StartsWith(SystemData.Scheme) || path.EndsWith(SystemData.Extension, StringComparison.InvariantCultureIgnoreCase))
-		{
-			try
-			{
-				projectItem.Remove();
-				return deleted;
-
-			}
-#if DEBUG
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-			}
-#else
-			catch
-			{
-			}
-#endif
-
-			try
-			{
-				projectItem.Delete();
-				deleted = true;
-			}
-#if DEBUG
-			catch (Exception ex)
-			{
-				Diag.Dug(ex);
-			}
-#else
-			catch
-			{
-			}
-#endif
-		}
-
-		return deleted;
+		return false;
 	}
 
 
@@ -420,8 +453,8 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 		{
 			Diag.ThrowIfNotOnUIThread();
 
-			ErrorHandler.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref commandContext, out var pdwCmdUICookie));
-			ErrorHandler.ThrowOnFailure(SelectionMonitor.IsCmdUIContextActive(pdwCmdUICookie, out pfActive));
+			Exf(SelectionMonitor.GetCmdUIContextCookie(ref commandContext, out var pdwCmdUICookie));
+			Exf(SelectionMonitor.IsCmdUIContextActive(pdwCmdUICookie, out pfActive));
 		}
 
 		return pfActive == 1;
@@ -447,6 +480,7 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 		Controller.OnBeforeSaveAsyncEvent += OnBeforeSaveAsync;
 		Controller.OnCmdUIContextChangedEvent += OnCmdUIContextChanged;
 		Controller.OnElementValueChangedEvent += OnElementValueChanged;
+		Controller.OnBeforeCloseProjectEvent += OnBeforeCloseProject;
 		Controller.OnQueryCloseProjectEvent += OnQueryCloseProject;
 		Controller.OnSelectionChangedEvent += OnSelectionChanged;
 		Controller.OnNewQueryRequestedEvent += OnNewQueryRequested;
@@ -476,33 +510,33 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 
 		Controller.EnsureMonitorSelection();
 
-		Native.ThrowOnFailure(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_DocumentFrame, out var pvarValue));
+		Exf(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_DocumentFrame, out var pvarValue));
 		CurrentDocumentFrame = pvarValue as IVsWindowFrame;
 
-		Native.ThrowOnFailure(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_WindowFrame, out pvarValue));
+		Exf(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_WindowFrame, out pvarValue));
 		CurrentWindowFrame = pvarValue as IVsWindowFrame;
 
-		Native.ThrowOnFailure(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_UndoManager, out pvarValue));
+		Exf(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_UndoManager, out pvarValue));
 		CurrentUndoManager = pvarValue as IOleUndoManager;
 
 		Guid rguidCmdUI = Core.VS.UICONTEXT_PublishingPreviewCommitOff;
-		Native.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _PublishingPreviewCommitOffCookie));
+		Exf(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _PublishingPreviewCommitOffCookie));
 
 		// rguidCmdUI = new(ServiceData.PreviewCommitOffGuid);
-		// Native.ThrowOnFailure(MonitorSelection.GetCmdUIContextCookie(ref rguidCmdUI, out _PreviewCommitOffCookie));
+		// Exf(MonitorSelection.GetCmdUIContextCookie(ref rguidCmdUI, out _PreviewCommitOffCookie));
 
 
 		rguidCmdUI = VSConstants.StandardToolWindows.ServerExplorer;
-		Native.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _ServerExplorerCookie));
+		Exf(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _ServerExplorerCookie));
 
 		rguidCmdUI = VSConstants.UICONTEXT.NotBuildingAndNotDebugging_guid;
-		Native.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _NotBuildingCookie));
+		Exf(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _NotBuildingCookie));
 
 		rguidCmdUI = VSConstants.UICONTEXT.SolutionOpening_guid;
-		Native.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _SolutionOpeningCookie));
+		Exf(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _SolutionOpeningCookie));
 
 		rguidCmdUI = VSConstants.UICONTEXT.SolutionOrProjectUpgrading_guid;
-		Native.ThrowOnFailure(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _SolutionOrProjectUpgradingCookie));
+		Exf(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _SolutionOrProjectUpgradingCookie));
 
 	}
 
@@ -516,17 +550,28 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 
 
 
-	private async Task<bool> ResetDocumentStatusAsync(AuxiliaryDocData auxDocData)
+	private async Task<bool> ResetDocumentStatusAsync(AuxiliaryDocData auxDocData, bool resetIntellisense)
 	{
 		try
 		{
 			// Tracer.Trace(GetType(), "ResetDocumentStatusAsync()", "ENTER!!!");
 
-			// await TaskScheduler.Default;
 			await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-			auxDocData.IntellisenseEnabled = true;
+			// Hack to correct intellisense target. 
+			if (resetIntellisense)
+				auxDocData.IntellisenseEnabled = true;
 
+			// Hack to kickstart dirty state title update.
+			uint saveOpts = (uint)__VSRDTSAVEOPTIONS.RDTSAVEOPT_ForceSave;
+			RdtManager.SaveDocuments(saveOpts, null, uint.MaxValue, auxDocData.DocCookie);
+
+			// RegisterForDirtyChangeNotification(auxDocData.DocCookie);
+
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
 		}
 		finally
 		{
@@ -546,22 +591,17 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 	/// Cleans up any SE sql editor documents that may have been left dangling.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	private bool ShouldStopClose(IVsHierarchy hierarchy)
+	private bool QueryAbortClose(IVsHierarchy hierarchy)
 	{
-		if (!HasAnyAuxiliaryDocData())
-		{
-			return false;
-		}
-
 
 		foreach (RunningDocumentInfo item in RdtManager.Enumerator)
 		{
-			if (item.Hierarchy == hierarchy && !string.IsNullOrWhiteSpace(item.Moniker) && item.DocData != null
-				&& item.Moniker.EndsWith(SystemData.Extension, StringComparison.OrdinalIgnoreCase))
+			if (item.Hierarchy == hierarchy && !string.IsNullOrWhiteSpace(item.Moniker)
+				&& item.DocData != null)
 			{
 				AuxiliaryDocData docData = EditorPackage.GetAuxiliaryDocData(item.DocData);
 
-				if (docData != null && ShouldStopClose(docData, GetType()))
+				if (docData != null && Cmd.ShouldStopCloseDialog(docData, GetType()))
 				{
 					return true;
 				}
@@ -595,15 +635,10 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 		uint itemidOld, string pszMkDocumentOld, IVsHierarchy pHierNew, uint itemidNew,
 		string pszMkDocumentNew)
 	{
-		Diag.ThrowIfNotOnUIThread();
 
 
-		// Tracer.Trace(GetType(), "OnAfterAttributeChangeEx()", "hierOld: {0}, hiernew: {1}, Cookie: {2}, attribs: {3}, olditemid: {4}, newitemid: {5}. \nOld mk: {6}\nNew mk: {7}",
-		//	pHierOld, pHierNew, docCookie, grfAttribs, itemidOld, itemidNew, pszMkDocumentOld, pszMkDocumentNew);
-
-
-
-		// The following code kickstarts Intellisense after a moniker rename.
+		// The following code corrects the Intellisense target and kickstarts dirty state title update after a save (moniker rename).
+		// If we don't kickstart, dirty state title updates take +- 120 seconds to resume. This is a strange anomaly.
 
 		// If it's not a name change, exit.
 		if ((grfAttribs & (uint)__VSRDTATTRIB.RDTA_MkDocument) == 0)
@@ -611,7 +646,6 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 
 
 		RunningDocumentInfo docInfo = RdtManager.GetDocumentInfo(docCookie);
-
 		docInfo.Sync();
 
 		object docData = docInfo.DocData;
@@ -622,7 +656,11 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 		if (auxDocData == null)
 			return VSConstants.S_OK;
 
-		// Break the link between auxdocdata and the explorer moniker, if it exists.
+		// Set the auxdocdata cookie if it was never set. 
+		if (auxDocData.DocCookie != docCookie)
+			auxDocData.DocCookie = docCookie;
+
+		// Break the link between auxdocdata and the explorer moniker, if it exists, because this is now a disk file.
 		if (auxDocData.ExplorerMoniker != null)
 		{
 			DesignerExplorerServices.MonikerCsaTable.Remove(auxDocData.ExplorerMoniker);
@@ -631,23 +669,21 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 
 
 
-		// If no intellisense, no need to kickstart again.
-		if (!auxDocData.IntellisenseEnabled.HasValue || !auxDocData.IntellisenseEnabled.Value)
-			return VSConstants.S_OK;
+		// If no intellisense, no need to fix targeting.
+		bool resetIntellisense = auxDocData.IntellisenseEnabled.HasValue && auxDocData.IntellisenseEnabled.Value;
 
 		// Tracer.Trace(GetType(), "OnAfterAttributeChangeEx()", "AuxiliaryDocData exists. \nOld mk: {0}\nNew mk: {1}",
 		//	pszMkDocumentOld, pszMkDocumentNew);
 
-
-
+		// Disable rdt events to avoid any recursion.
 		Controller.DisableRdtEvents();
 
-		auxDocData.IntellisenseEnabled = false;
+		if (resetIntellisense)
+			auxDocData.IntellisenseEnabled = false;
 
 		// Fire and forget.
-
 		Task<bool> payload() =>
-			ResetDocumentStatusAsync(auxDocData);
+			ResetDocumentStatusAsync(auxDocData, resetIntellisense);
 
 		_ = Task.Factory.StartNew(payload, default, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
 
@@ -659,8 +695,6 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 
 	public int OnAfterDocumentWindowHide(uint docCookie, IVsWindowFrame pFrame)
 	{
-		Diag.ThrowIfNotOnUIThread();
-
 		// Tracer.Trace(GetType(), "OnAfterDocumentWindowHide()");
 
 		RunningDocumentInfo docInfo;
@@ -671,7 +705,7 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 		if (docInfo.IsDocumentInitialized
 			&& Native.Succeeded(pFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar)))
 		{
-			if (pvar is SqlEditorTabbedEditorPane sqlEditorTabbedEditorPane
+			if (pvar is TabbedEditorWindowPane sqlEditorTabbedEditorPane
 				&& sqlEditorTabbedEditorPane == EditorPackage.LastFocusedSqlEditor)
 			{
 				EditorPackage.LastFocusedSqlEditor = null;
@@ -707,10 +741,17 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 
 		AuxiliaryDocData auxDocData = EditorPackage.GetAuxiliaryDocData(documentInfo.DocData);
 
-		if (auxDocData == null || !auxDocData.IsVirtualWindow)
+		if (auxDocData == null)
+			return null;
+
+		if (auxDocData.DocCookie != cookie)
+			auxDocData.DocCookie = cookie;
+
+		if (!auxDocData.IsVirtualWindow)
 			return null;
 
 		auxDocData.IsVirtualWindow = false;
+
 
 		return null;
 	}
@@ -731,7 +772,7 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 			return VSConstants.S_OK;
 
 
-		if (pvar is SqlEditorTabbedEditorPane sqlEditorTabbedEditorPane)
+		if (pvar is TabbedEditorWindowPane sqlEditorTabbedEditorPane)
 			EditorPackage.LastFocusedSqlEditor = sqlEditorTabbedEditorPane;
 
 		return VSConstants.S_OK;
@@ -791,8 +832,6 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 
 	public int OnElementValueChanged(uint elementid, object oldValue, object newValue)
 	{
-		Diag.ThrowIfNotOnUIThread();
-
 		switch ((VSConstants.VSSELELEMID)elementid)
 		{
 			case VSConstants.VSSELELEMID.SEID_WindowFrame:
@@ -809,13 +848,13 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 					object pvar = null;
 					if (oldValue is IVsWindowFrame vsWindowFrame)
 					{
-						ErrorHandler.ThrowOnFailure(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out pvar));
+						Exf(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out pvar));
 					}
 
 					object pvar2 = null;
 					if (CurrentDocumentFrame != null)
 					{
-						ErrorHandler.ThrowOnFailure(CurrentDocumentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out pvar2));
+						Exf(CurrentDocumentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out pvar2));
 					}
 
 					if (pvar != pvar2)
@@ -837,22 +876,31 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 
 
 
+	public int OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved)
+	{
+		// This event is fired after the project's items are no longer available. ?????????
+
+		return VSConstants.S_OK;
+
+	}
+
+
+
 	public int OnQueryCloseProject(IVsHierarchy hierarchy, int removing, ref int cancel)
 	{
 		// Tracer.Trace(GetType(), "OnQueryCloseProject()");
 
-		Diag.ThrowIfNotOnUIThread();
-
-		if (!Native.Succeeded(hierarchy.GetGuidProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_TypeGuid, out var pguid))
-			|| !(pguid == VSConstants.GUID_ItemType_VirtualFolder))
-		{
+		if (!UnsafeCmd.IsVirtualProjectKind(hierarchy))
 			return VSConstants.S_OK;
-		}
 
-		if (ShouldStopClose(hierarchy))
+		if (!HasAnyAuxiliaryDocData())
+			return VSConstants.S_OK;
+
+		if (QueryAbortClose(hierarchy))
 			cancel = 1;
-		else
-			CleanupTemporarySqlItems((IVsUIHierarchy)hierarchy);
+		else if (UnsafeCmd.IsMiscFilesProject(hierarchy))
+			CleanupTemporarySqlItems(hierarchy as IVsUIHierarchy);
+
 
 		return VSConstants.S_OK;
 
@@ -882,5 +930,35 @@ public sealed class EditorEventsManager : AbstractEditorEventsManager
 	}
 
 	#endregion IVs Events Implementation and Event handling
+
+
+
+
+
+	// =========================================================================================================
+	#region Event handling - EditorEventsManager
+	// =========================================================================================================
+
+
+	private static void OnTextDocumentDirtyStateChanged(object sender, EventArgs e)
+	{
+		try
+		{
+			ITextDocument textDocument = (ITextDocument)sender;
+			uint docCookie = RdtManager.GetRdtCookie(textDocument.FilePath);
+
+			// Tracer.Trace(typeof(EditorEventsManager), "OnTextDocumentDirtyStateChanged()", "DocCookie: {0}, Filepath: {1}.", docCookie, textDocument.FilePath);
+
+			// RdtManager.UpdateDirtyState(docCookie);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+		}
+	}
+
+
+
+	#endregion Event handling
 
 }

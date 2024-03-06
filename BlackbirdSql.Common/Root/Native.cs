@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows.Automation.Provider;
-using BlackbirdSql.Common.Ctl;
+using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Common.Ctl.Structs;
 
-using HandleCollector = BlackbirdSql.Common.Ctl.HandleCollector;
 using OLERECT = Microsoft.VisualStudio.OLE.Interop.RECT;
 
 
@@ -77,6 +77,206 @@ public abstract class Native : BlackbirdSql.Core.Native
 	// =========================================================================================================
 	#region Internal Classes and Structs - Native
 	// =========================================================================================================
+
+
+	private sealed class CommonHandles
+	{
+		public static readonly int Accelerator = HandleCollector.RegisterType("Accelerator", 80, 50);
+
+		public static readonly int Cursor = HandleCollector.RegisterType("Cursor", 20, 500);
+
+		public static readonly int EMF = HandleCollector.RegisterType("EnhancedMetaFile", 20, 500);
+
+		public static readonly int Find = HandleCollector.RegisterType("Find", 0, 1000);
+
+		public static readonly int GDI = HandleCollector.RegisterType("GDI", 50, 500);
+
+		public static readonly int HDC = HandleCollector.RegisterType("HDC", 100, 2);
+
+		public static readonly int CompatibleHDC = HandleCollector.RegisterType("ComptibleHDC", 50, 50);
+
+		public static readonly int Icon = HandleCollector.RegisterType("Icon", 20, 500);
+
+		public static readonly int Kernel = HandleCollector.RegisterType("Kernel", 0, 1000);
+
+		public static readonly int Menu = HandleCollector.RegisterType("Menu", 30, 1000);
+
+		public static readonly int Window = HandleCollector.RegisterType("Window", 5, 1000);
+	}
+
+	private sealed class HandleCollector
+	{
+		private class HandleType(string name, int expense, int initialThreshHold)
+		{
+			public readonly string name = name;
+
+			private readonly int deltaPercent = 100 - expense;
+
+			private readonly int initialThreshHold = initialThreshHold;
+
+			private int threshHold = initialThreshHold;
+
+
+
+
+			private int handleCount;
+
+
+			public void Add(IntPtr handle)
+			{
+				if (handle == IntPtr.Zero)
+				{
+					return;
+				}
+				bool flag = false;
+				int currentHandleCount = 0;
+				lock (this)
+				{
+					handleCount++;
+					flag = NeedCollection();
+					currentHandleCount = handleCount;
+				}
+				lock (_LockGlobal)
+				{
+					HandleAddedEvent?.Invoke(name, handle, currentHandleCount);
+				}
+				if (flag && flag)
+				{
+					GC.Collect();
+					Thread.Sleep((100 - deltaPercent) / 4);
+				}
+			}
+
+			public int GetHandleCount()
+			{
+				lock (this)
+				{
+					return handleCount;
+				}
+			}
+
+			public bool NeedCollection()
+			{
+				if (suspendCount > 0)
+				{
+					return false;
+				}
+				if (handleCount > threshHold)
+				{
+					threshHold = handleCount + handleCount * deltaPercent / 100;
+					return true;
+				}
+				int num = 100 * threshHold / (100 + deltaPercent);
+				if (num >= initialThreshHold && handleCount < (int)((float)num * 0.9f))
+				{
+					threshHold = num;
+				}
+				return false;
+			}
+
+			public IntPtr Remove(IntPtr handle)
+			{
+				if (handle == IntPtr.Zero)
+				{
+					return handle;
+				}
+				int currentHandleCount = 0;
+				lock (this)
+				{
+					handleCount--;
+					if (handleCount < 0)
+					{
+						handleCount = 0;
+					}
+					currentHandleCount = handleCount;
+				}
+				lock (_LockGlobal)
+				{
+					HandleRemovedEvent?.Invoke(name, handle, currentHandleCount);
+				}
+				return handle;
+			}
+		}
+
+		private static HandleType[] handleTypes;
+
+		private static int handleTypeCount;
+
+		private static int suspendCount;
+
+		// A static class lock
+		private static readonly object _LockGlobal = new object();
+
+		public static event HandleChangeEventHandler HandleAddedEvent;
+
+		public static event HandleChangeEventHandler HandleRemovedEvent;
+
+		public static IntPtr Add(IntPtr handle, int type)
+		{
+			handleTypes[type - 1].Add(handle);
+			return handle;
+		}
+
+		public static void SuspendCollect()
+		{
+			lock (_LockGlobal)
+			{
+				suspendCount++;
+			}
+		}
+
+		public static void ResumeCollect()
+		{
+			bool flag = false;
+			lock (_LockGlobal)
+			{
+				if (suspendCount > 0)
+				{
+					suspendCount--;
+				}
+				if (suspendCount == 0)
+				{
+					for (int i = 0; i < handleTypeCount; i++)
+					{
+						lock (handleTypes[i])
+						{
+							if (handleTypes[i].NeedCollection())
+							{
+								flag = true;
+							}
+						}
+					}
+				}
+			}
+			if (flag)
+			{
+				GC.Collect();
+			}
+		}
+
+		public static int RegisterType(string typeName, int expense, int initialThreshold)
+		{
+			lock (_LockGlobal)
+			{
+				if (handleTypeCount == 0 || handleTypeCount == handleTypes.Length)
+				{
+					HandleType[] destinationArray = new HandleType[handleTypeCount + 10];
+					if (handleTypes != null)
+					{
+						Array.Copy(handleTypes, 0, destinationArray, 0, handleTypeCount);
+					}
+					handleTypes = destinationArray;
+				}
+				handleTypes[handleTypeCount++] = new HandleType(typeName, expense, initialThreshold);
+				return handleTypeCount;
+			}
+		}
+
+		public static IntPtr Remove(IntPtr handle, int type)
+		{
+			return handleTypes[type - 1].Remove(handle);
+		}
+	}
 
 
 	[StructLayout(LayoutKind.Sequential)]
