@@ -29,17 +29,36 @@
 	</Target>
 
 	<ItemGroup>
+	  <Compile Include="Controls\AdvancedInformationDialog.cs">
+	    <SubType>Form</SubType>
+	  </Compile>
 	  <Compile Include="Controls\ComponentModel\AbstractFolderNameEditor.cs" />
 	  <Compile Include="Controls\ComponentModel\AbstractFileNameEditor.cs" />
+	  <Compile Include="Controls\Enums\EnAdvancedInfoType.cs" />
+	  <Compile Include="Controls\MessageBoxDialog.cs">
+	    <SubType>Form</SubType>
+	  </Compile>
+	  <Compile Include="Controls\MessageBoxParent.cs" />
 	  <Compile Include="Controls\Config\AbstruseSettingsPage.cs" />
 	  <Compile Include="Controls\Config\AbstractPersistentSettingsPage.cs" />
 	  <Compile Include="Controls\Config\AbstractTransientSettingsPage.cs" />
+	  <Compile Include="Controls\Enums\EnMessageBoxDefaultButton.cs" />
+	  <Compile Include="Controls\Enums\EnMessageBoxDialogResult.cs" />
+	  <Compile Include="Controls\Enums\EnMessageBoxOptions.cs" />
+	  <Compile Include="Controls\Enums\EnMessageBoxSymbol.cs" />
+	  <Compile Include="Controls\Enums\EnMessageBoxButtons.cs" />
+	  <Compile Include="Controls\MessageCtl.cs" />
+	  <Compile Include="Controls\FormHost.cs" />
 	  <Compile Include="Controls\Interfaces\IBDataConnectionDlg.cs" />
 	  <Compile Include="Controls\Events\AutomationPropertyValueChangedEventArgs.cs" />
 	  <Compile Include="Controls\Events\EditControlFocusEventArgs.cs" />
 	  <Compile Include="Controls\Interfaces\IBSettingsPage.cs" />
 	  <Compile Include="Controls\Interfaces\IBEditorWindowPane.cs" />
 	  <Compile Include="Controls\LinkageParserTaskHandler.cs" />
+	  <Compile Include="Controls\PrivacyConfirmationDialog.cs">
+	    <SubType>Form</SubType>
+	  </Compile>
+	  <Compile Include="Controls\Widgets\PrivateRenderer.cs" />
 	  <Compile Include="Ctl\AbstractGlobalsAgent.cs" />
 	  <Compile Include="AbstractPackageController.cs" />
 	  <Compile Include="Ctl\ComponentModel\AbstractGlobalizedRadioAttribute.cs" />
@@ -67,10 +86,10 @@
 	  <Compile Include="Ctl\Extensions\Index.cs" />
 	  <Compile Include="Ctl\Extensions\Range.cs" />
 	  <Compile Include="Ctl\Interfaces\IBEditConverter.cs" />
-	  <Compile Include="Ctl\RdtManager.cs" />
+	  <Compile Include="Root\RdtManager.cs" />
 	  <Compile Include="Model\AbstruseRunningConnectionTable.cs" />
 	  <Compile Include="Model\Interfaces\IBRunningConnectionTable.cs" />
-	  <Compile Include="Model\RctManager.cs" />
+	  <Compile Include="Root\RctManager.cs" />
 	  <Compile Include="Model\RunningConnectionTable.cs" />
 	  <Compile Include="Model\Enums\EnConnectionSource.cs" />
 	  <Compile Include="Model\Enums\EnLauncherPayloadLaunchState.cs" />
@@ -104,8 +123,13 @@
 	  <Compile Include="Ctl\ComponentModel\AbstractGlobalizedCategoryAttribute.cs" />
 	  <Compile Include="Ctl\ComponentModel\AbstractGlobalizedDescriptionAttribute.cs" />
 	  <Compile Include="Ctl\ComponentModel\AbstractGlobalizedDisplayNameAttribute.cs" />
+	  <Compile Include="Properties\ControlsResources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>ControlsResources.resx</DependentUpon>
+	  </Compile>
 	  <Compile Include="Root\UnsafeCmd.cs" />
-	  <Compile Include="Root\Controller.cs" />
+	  <Compile Include="Root\ApcManager.cs" />
 	  <Compile Include="Ctl\EnumeratorDescribers.cs" />
 	  <Compile Include="Ctl\AbstractIconsCollection.cs" />
 	  <Compile Include="Ctl\AbstractPropertyAgent.Accessors.cs" />
@@ -216,9 +240,18 @@
 
 
 	<ItemGroup>
+	  <EmbeddedResource Include="Controls\AdvancedInformationDialog.resx" />
+	  <EmbeddedResource Include="Controls\MessageBoxDialog.resx" />
+	  <EmbeddedResource Include="Controls\PrivacyConfirmationDialog.resx">
+	    <SubType>Designer</SubType>
+	  </EmbeddedResource>
 	  <EmbeddedResource Include="Properties\AttributeResources.resx">
 	    <Generator>ResXFileCodeGenerator</Generator>
 	    <LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="Properties\ControlsResources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>ControlsResources.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
 	  <EmbeddedResource Include="Properties\Resources.resx" />
 	</ItemGroup>

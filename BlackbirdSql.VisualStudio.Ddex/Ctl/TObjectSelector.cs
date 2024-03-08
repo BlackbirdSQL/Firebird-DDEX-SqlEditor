@@ -85,6 +85,7 @@ public class TObjectSelector : TObjectSelectorTable
 		string[] properties, object[] parameters)
 	{
 		// Tracer.Trace(GetType(), "SelectObjects()", "typeName: {0}", typeName);
+		
 
 		try
 		{

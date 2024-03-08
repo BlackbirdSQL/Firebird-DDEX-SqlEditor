@@ -1,20 +1,18 @@
 ﻿
 using System;
-using System.Globalization;
-using System.IO;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Media;
-using BlackbirdSql.Common.Ctl.Dialogs;
-using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using Microsoft.VisualStudio;
+using BlackbirdSql.Core.Controls;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
+
 namespace BlackbirdSql.Common;
+
 
 // =========================================================================================================
 //												Cmd Class
@@ -46,30 +44,6 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 	// =========================================================================================================
 	#region Fields - Cmd
 	// =========================================================================================================
-
-
-	private static string _AppTitle;
-
-	private delegate DialogResult SafeShowMessageBox(string title, string text, string helpKeyword, MessageBoxButtons buttons, MessageBoxIcon icon);
-
-
-	public static string ApplicationTitle
-	{
-		get
-		{
-			if (string.IsNullOrWhiteSpace(_AppTitle))
-			{
-				return ControlsResources.ConnectToServer;
-			}
-
-			return _AppTitle;
-		}
-		set
-		{
-			_AppTitle = value;
-		}
-	}
-
 
 
 	#endregion Fields
@@ -143,7 +117,7 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 		if (extensibility == null)
 			return true;
 
-		Exf(extensibility.IsInAutomationFunction(out int pfInAutoFunc));
+		___(extensibility.IsInAutomationFunction(out int pfInAutoFunc));
 
 		return pfInAutoFunc != 0;
 	}
@@ -157,14 +131,10 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 		if (add.QryMgr.IsExecuting)
 		{
 			if (!flag)
-			{
-				dialogResult = Cmd.ShowMessageBoxEx("", ControlsResources.ScriptIsStillBeingExecuted, "", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
-			}
+				dialogResult = MessageCtl.ShowEx(ControlsResources.ScriptIsStillBeingExecuted, "", "", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
 
 			if (dialogResult == DialogResult.No)
-			{
 				return true;
-			}
 
 			add.QryMgr.Cancel(bSync: true);
 		}
@@ -172,7 +142,7 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 		{
 			if (!flag)
 			{
-				dialogResult = Cmd.ShowMessageBoxEx("", ControlsResources.UncommittedTransactionsWarning, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
+				dialogResult = MessageCtl.ShowEx(ControlsResources.UncommittedTransactionsWarning, "", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Exclamation);
 			}
 
 			switch (dialogResult)
@@ -186,7 +156,7 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 					}
 					catch (Exception ex)
 					{
-						Cmd.ShowMessageBoxEx("", ex.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+						MessageCtl.ShowEx("", ex.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 					}
 
 					break;
@@ -195,120 +165,6 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 
 		return false;
 	}
-
-
-
-	public static DialogResult ShowException(Exception e)
-	{
-		Diag.Dug(e);
-		return DialogResult.OK;
-	}
-
-
-
-	// ShowExceptionInDialog
-	public static void ShowExceptionInDialog(string message, Exception e)
-	{
-		ShowMessageBoxEx(null, string.Format(CultureInfo.CurrentCulture, "{0} {1}", message, e.Message), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
-	}
-
-
-
-	public static DialogResult ShowMessage(Exception ex, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, IWin32Window owner)
-	{
-		return ShowMessage(ex, caption, buttons, icon, owner, -1);
-	}
-
-	public static DialogResult ShowMessage(Exception ex, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, IWin32Window owner, int exceptionLevel)
-	{
-		if (caption == null || caption == "")
-		{
-			caption = ApplicationTitle;
-		}
-
-		EnExceptionMessageBoxSymbol symbol = EnExceptionMessageBoxSymbol.Information;
-		switch (icon)
-		{
-			case MessageBoxIcon.None:
-				symbol = EnExceptionMessageBoxSymbol.None;
-				break;
-			case MessageBoxIcon.Hand:
-				symbol = EnExceptionMessageBoxSymbol.Error;
-				break;
-			case MessageBoxIcon.Question:
-				symbol = EnExceptionMessageBoxSymbol.Question;
-				break;
-			case MessageBoxIcon.Exclamation:
-				symbol = EnExceptionMessageBoxSymbol.Warning;
-				break;
-			case MessageBoxIcon.Asterisk:
-				symbol = EnExceptionMessageBoxSymbol.Information;
-				break;
-		}
-
-		EnExceptionMessageBoxButtons buttons2 = EnExceptionMessageBoxButtons.OK;
-		switch (buttons)
-		{
-			case MessageBoxButtons.AbortRetryIgnore:
-				buttons2 = EnExceptionMessageBoxButtons.AbortRetryIgnore;
-				break;
-			case MessageBoxButtons.OKCancel:
-				buttons2 = EnExceptionMessageBoxButtons.OKCancel;
-				break;
-			case MessageBoxButtons.RetryCancel:
-				buttons2 = EnExceptionMessageBoxButtons.RetryCancel;
-				break;
-			case MessageBoxButtons.YesNo:
-				buttons2 = EnExceptionMessageBoxButtons.YesNo;
-				break;
-			case MessageBoxButtons.YesNoCancel:
-				buttons2 = EnExceptionMessageBoxButtons.YesNoCancel;
-				break;
-		}
-
-		ExceptionMessageBoxCtl exceptionMessageBox = new(ex, buttons2, symbol)
-		{
-			Caption = caption,
-			MessageLevelDefault = exceptionLevel
-		};
-
-		if (buttons == MessageBoxButtons.YesNo)
-			exceptionMessageBox.DefaultButton = EnExceptionMessageBoxDefaultButton.Button2;
-
-		return exceptionMessageBox.Show(owner);
-	}
-
-	public static DialogResult ShowMessage(string message, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, IWin32Window owner)
-	{
-		return ShowMessage(new Exception(message), caption, buttons, icon, owner);
-	}
-
-
-
-	// ShowMessageBox
-	public static DialogResult ShowMessageBox(string title, string text, string helpKeyword)
-	{
-		return ShowMessageBoxEx(title, text, helpKeyword, MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-	}
-
-
-
-	// ShowMessageBoxEx
-	public static DialogResult ShowMessageBoxEx(string title, string text,
-		MessageBoxButtons buttons, MessageBoxIcon icon)
-	{
-		return ShowMessageBoxEx(title, text, string.Empty, buttons, icon);
-	}
-
-	// ShowMessageBoxEx
-	public static DialogResult ShowMessageBoxEx(string title, string text,
-		string helpKeyword, MessageBoxButtons buttons, MessageBoxIcon icon)
-	{
-		return VS.ShowMessageBoxEx(title, text, helpKeyword, buttons, MessageBoxDefaultButton.Button1, icon);
-	}
-
-
-
 
 
 	#endregion Static Methods

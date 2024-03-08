@@ -136,11 +136,11 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 			{
 				_ConnectionSource = EnConnectionSource.Unknown;
 
-				string objectKind = Core.Controller.ActiveWindowObjectKind;
+				string objectKind = ApcManager.ActiveWindowObjectKind;
 				if (objectKind == null)
 					return EnConnectionSource.ServerExplorer;
 
-				string objectType = Core.Controller.ActiveWindowObjectType;
+				string objectType = ApcManager.ActiveWindowObjectType;
 				if (objectType == null)
 					return EnConnectionSource.ServerExplorer;
 

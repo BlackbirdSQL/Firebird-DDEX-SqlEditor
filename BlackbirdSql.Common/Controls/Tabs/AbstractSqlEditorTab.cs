@@ -7,7 +7,6 @@ using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -72,15 +71,15 @@ public abstract class AbstractSqlEditorTab : AbstractEditorTab
 
 			hresult = shellOpenDocumentSvc.IsDocumentOpen(null, 0u, documentMoniker, ref rguidLogicalView2,
 				0u, out IVsUIHierarchy ppHierOpen, pitemidOpen, out IVsWindowFrame ppWindowFrame, out _);
-			Exf(hresult);
+			___(hresult);
 
 			hresult = RdtManager.FindAndLockDocument((uint)_VSRDTFLAGS.RDT_NoLock, documentMoniker,
 				out IVsHierarchy ppHier, out uint pitemid, out ppunkDocData, out _);
-			Exf(hresult);
+			___(hresult);
 
 			hresult = shellOpenDocumentSvc.GetStandardEditorFactory(Core.VS.dwReserved, ref pguidEditorType, null,
 				ref rguidLogicalView, out string pbstrPhysicalView, out IVsEditorFactory ppEditorFactory);
-			Exf(hresult);
+			___(hresult);
 
 
 			uint createFlags = (uint)(__VSCREATEEDITORFLAGS.CEF_OPENFILE | __VSCREATEEDITORFLAGS.CEF_SILENT);
@@ -88,7 +87,7 @@ public abstract class AbstractSqlEditorTab : AbstractEditorTab
 			hresult = ppEditorFactory.CreateEditorInstance(createFlags, documentMoniker, pbstrPhysicalView,
 				ppHierOpen, pitemidOpen[0], ppunkDocDataExisting, out ppunkDocView, out ppunkDocDataExisting,
 				out _, out Guid pguidCmdUI, out int pgrfCDW);
-			Exf(hresult);
+			___(hresult);
 
 
 
@@ -97,9 +96,9 @@ public abstract class AbstractSqlEditorTab : AbstractEditorTab
 			IVsUIHierarchy uiHierarchy = ppHierOpen ?? ppHier as IVsUIHierarchy;
 
 			hresult = shellSvc.CreateDocumentWindow(createFlags, documentMoniker, uiHierarchy, pitemid, ppunkDocView,
-				ppunkDocDataExisting, ref pguidEditorType, pbstrPhysicalView, ref pguidCmdUI, Controller.OleServiceProvider,
+				ppunkDocDataExisting, ref pguidEditorType, pbstrPhysicalView, ref pguidCmdUI, ApcManager.OleServiceProvider,
 				string.Empty, string.Empty, null, out ppWindowFrame);
-			Exf(hresult);
+			___(hresult);
 
 			IVsWindowFrame vsWindowFrame = WindowPaneServiceProvider.GetService(typeof(SVsWindowFrame)) as IVsWindowFrame
 				?? throw new ServiceUnavailableException(typeof(IVsWindowFrame));

@@ -13,6 +13,7 @@ using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using Microsoft.VisualStudio;
@@ -23,7 +24,9 @@ using OleConstants = Microsoft.VisualStudio.OLE.Interop.Constants;
 using StatisticEntity = BlackbirdSql.Common.Controls.ResultsPanels.StatisticsPropertySet.StatisticEntity;
 
 
+
 namespace BlackbirdSql.Common.Controls.ResultsPanels;
+
 
 public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 {
@@ -148,8 +151,9 @@ public class StatisticsPanel : AbstractGridResultsPanel, IOleCommandTarget
 		}
 		catch (Exception ex)
 		{
-			Cmd.ShowMessageBoxEx(string.Empty, ex.Message, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			MessageCtl.ShowEx(ex, string.Empty, MessageBoxButtons.OK, MessageBoxIcon.Hand, null);
 		}
+
 		if (_FirstGridPanel.HostedControlsCount == 0)
 		{
 			_FirstGridPanel.HostedControlsMinInitialSize = C_MinNumberOfVisibleRows * (statisticsDlgGridControl.RowHeight + 1) + statisticsDlgGridControl.HeaderHeight + 1 + VS.GetExtraSizeForBorderStyle(statisticsDlgGridControl.BorderStyle);

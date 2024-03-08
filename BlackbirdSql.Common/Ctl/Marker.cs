@@ -116,7 +116,10 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 		}
 	}
 
-	private static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	private static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 
 	public void SetMarkerTooltip(string newToolTip)
@@ -216,9 +219,9 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 		int num;
 		if (_TextSpan.Offset > 0)
 		{
-			Exf(_TextSpan.VsTextView.GetNearestPosition(_TextSpan.AnchorLine, _TextSpan.AnchorCol, out var piPos, out _), (string)null);
+			___(_TextSpan.VsTextView.GetNearestPosition(_TextSpan.AnchorLine, _TextSpan.AnchorCol, out var piPos, out _));
 			piPos += _TextSpan.Offset;
-			Exf(_TextSpan.VsTextView.GetLineAndColumn(piPos, out var piLine, out _), (string)null);
+			___(_TextSpan.VsTextView.GetLineAndColumn(piPos, out var piLine, out _));
 			piLine += _doubleClickLine - 1;
 			num = piLine;
 		}
@@ -239,21 +242,21 @@ public class Marker(IDictionary markers) : IVsTextMarkerClient
 
 		if (num > -1)
 		{
-			Exf(_TextSpan.VsTextView.GetBuffer(out var ppBuffer), (string)null);
+			___(_TextSpan.VsTextView.GetBuffer(out var ppBuffer));
 			if (ppBuffer != null)
 			{
-				Exf(ppBuffer.GetLineCount(out var piLineCount), (string)null);
+				___(ppBuffer.GetLineCount(out var piLineCount));
 				if (num > piLineCount)
 				{
 					return;
 				}
 
-				Exf(ppBuffer.GetLengthOfLine(num, out var piLength), (string)null);
-				Exf(_TextSpan.VsTextView.SetSelection(num, 0, num, piLength), (string)null);
+				___(ppBuffer.GetLengthOfLine(num, out var piLength));
+				___(_TextSpan.VsTextView.SetSelection(num, 0, num, piLength));
 			}
 			else
 			{
-				Exf(_TextSpan.VsTextView.SetCaretPos(num, 0), (string)null);
+				___(_TextSpan.VsTextView.SetCaretPos(num, 0));
 			}
 		}
 

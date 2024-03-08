@@ -182,12 +182,12 @@ public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 		// {
 
 		Guid clsid = LibraryData.CLSID_PropertyDatabaseConnectionChanged;
-		Exf(userData.SetData(ref clsid, connectionString), (string)null);
+		___(userData.SetData(ref clsid, connectionString));
 
 		// Tracer.Trace(GetType(), "SetDatasetKeyDisplayMember()", "csa.ConnectionString: {0}", csa.ConnectionString);
 
 		Guid clsid2 = new(LibraryData.SqlEditorConnectionStringGuid);
-		Exf(userData.SetData(ref clsid2, (object)csa), (string)null);
+		___(userData.SetData(ref clsid2, (object)csa));
 
 		_Csa = csa;
 		_Csa.RegisterValidationState(connectionString);

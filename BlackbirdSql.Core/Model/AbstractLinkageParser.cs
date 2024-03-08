@@ -159,20 +159,16 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		if (_InstanceConnection == null || _Instances == null)
 			return false;
 
-		if (isValidTransient && _Enabled && !_IsIntransient
+		if (!ApcManager.IdeShutdownState && isValidTransient && _Enabled && !_IsIntransient
 			&&  (Loaded || _LinkStage >= EnLinkStage.TriggerDependenciesLoaded))
 		{
-			// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "Removing instance and cloning to Transient");
-
 			if (!Loaded)
 				EnsureLoadedImpl();
 
 			_TransientParser = (AbstractLinkageParser)Clone();
-
 		}
 		else
 		{
-			// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "Removing instance WITHOUT cloning to Transient");
 			Disable();
 		}
 
@@ -434,7 +430,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// of threads is inconsistent in debug vs normal runs.
 	/// </remarks>
 	private static IBProviderSchemaFactory SchemaFactory => _SchemaFactory ??=
-		(IBProviderSchemaFactory)Activator.CreateInstance(Controller.SchemaFactoryType);
+		(IBProviderSchemaFactory)Activator.CreateInstance(ApcManager.SchemaFactoryType);
 
 
 
@@ -475,7 +471,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// cancellation tokens during the total delay time of 'delay * multiplier'.
 	/// </param>
 	/// <returns>True if the linkage was successfully completed, else false.</returns>
-	public abstract bool AsyncExecute(int delay = 0, int multiplier = 1);
+	protected abstract bool AsyncExecute(int delay, int multiplier);
 
 
 
@@ -488,17 +484,6 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// <returns>True if successfully loaded or already loaded else false</returns>
 	// ---------------------------------------------------------------------------------
 	protected abstract bool EnsureLoadedImpl();
-
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Launches the UI thread build of the linkage tables if the UI requires them. If
-	/// an async build is in progress, waits for the active operation to complete and
-	/// then switches over to a UI thread build for the remaining tasks.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	protected abstract bool SyncExecute();
 
 
 
@@ -972,11 +957,9 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 		// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Searching instances. Count: {0}.", _Instances.Count);
 
-		int i = -1;
 
 		foreach (KeyValuePair<IDbConnection, object> pair in _Instances)
 		{
-			i++;
 			AbstractLinkageParser parser = (AbstractLinkageParser)pair.Value;
 
 			if (!parser._Enabled || parser._IsIntransient)

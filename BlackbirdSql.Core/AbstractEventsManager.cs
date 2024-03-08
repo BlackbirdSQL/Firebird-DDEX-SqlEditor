@@ -3,11 +3,14 @@
 
 using System;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TaskStatusCenter;
 
 
+
 namespace BlackbirdSql.Core;
+
 
 // =========================================================================================================
 //										AbstractEventsManager Class
@@ -108,7 +111,10 @@ public abstract class AbstractEventsManager : IBEventsManager
 	// =========================================================================================================
 
 
-	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 
 	// ---------------------------------------------------------------------------------

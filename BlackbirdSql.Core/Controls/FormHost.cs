@@ -3,19 +3,22 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using BlackbirdSql.Core;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
 
-namespace BlackbirdSql.Common.Controls;
+namespace BlackbirdSql.Core.Controls;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Using Diag.ThrowIfNotOnUIThread()")]
 
 
-public static class FormUtils
+public static class FormHost
 {
 	private class WindowWithFocusRestorer : IDisposable
 	{
@@ -53,7 +56,10 @@ public static class FormUtils
 		}
 	}
 
-	private static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	private static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 
 	public static DialogResult ShowDialog(Form form)
@@ -85,8 +91,8 @@ public static class FormUtils
 			vsUIShell = Package.GetGlobalService(typeof(SVsUIShell)) as IVsUIShell;
 			if (vsUIShell != null)
 			{
-				Exf(vsUIShell.EnableModeless(0));
-				Exf(vsUIShell.GetDialogOwnerHwnd(out var phwnd));
+				___(vsUIShell.EnableModeless(0));
+				___(vsUIShell.GetDialogOwnerHwnd(out var phwnd));
 				if (phwnd != (IntPtr)0)
 				{
 					nativeWindow.AssignHandle(phwnd);
@@ -102,7 +108,7 @@ public static class FormUtils
 		{
 			if (vsUIShell != null)
 			{
-				Exf(vsUIShell.EnableModeless(1));
+				___(vsUIShell.EnableModeless(1));
 			}
 		}
 	}

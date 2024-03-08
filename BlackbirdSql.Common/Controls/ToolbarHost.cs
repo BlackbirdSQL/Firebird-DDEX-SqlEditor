@@ -1,15 +1,18 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.Design.Core, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Controls.ToolbarHost
+
 using System;
 using System.Drawing;
 using System.Windows.Forms;
 using BlackbirdSql.Core;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
 
 namespace BlackbirdSql.Common.Controls;
+
 
 public class ToolbarHost : Panel, IVsToolWindowToolbar
 {
@@ -42,11 +45,14 @@ public class ToolbarHost : Panel, IVsToolWindowToolbar
 		{
 			Diag.ThrowIfNotOnUIThread();
 
-			Exf(_VsToolbarHost.ProcessMouseActivation(h, 7u, IntPtr.Zero, IntPtr.Zero));
+			___(_VsToolbarHost.ProcessMouseActivation(h, 7u, IntPtr.Zero, IntPtr.Zero));
 		}
 	}
 
-	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 	public void SetToolbar(IVsUIShell4 uiShell, Guid clsidCmdSet, uint menuId, IOleCommandTarget commandTarget)
 	{
@@ -96,7 +102,7 @@ public class ToolbarHost : Panel, IVsToolWindowToolbar
 		{
 			Diag.ThrowIfNotOnUIThread();
 
-			Exf(_VsToolbarHost.BorderChanged());
+			___(_VsToolbarHost.BorderChanged());
 		}
 	}
 
@@ -155,11 +161,11 @@ public class ToolbarHost : Panel, IVsToolWindowToolbar
 
 			Diag.ThrowIfNotOnUIThread();
 
-			Exf(_UiShell.SetupToolbar2(Handle, this, _CommandTarget, out _VsToolbarHost));
+			___(_UiShell.SetupToolbar2(Handle, this, _CommandTarget, out _VsToolbarHost));
 
-			Exf(_VsToolbarHost.AddToolbar(VSTWT_LOCATION.VSTWT_TOP, ref _ClsidCmdSet, _ToolbarMenuId));
+			___(_VsToolbarHost.AddToolbar(VSTWT_LOCATION.VSTWT_TOP, ref _ClsidCmdSet, _ToolbarMenuId));
 
-			Exf(_VsToolbarHost.ShowHideToolbar(ref _ClsidCmdSet, _ToolbarMenuId, 1));
+			___(_VsToolbarHost.ShowHideToolbar(ref _ClsidCmdSet, _ToolbarMenuId, 1));
 
 			_AssociateToolbarOnHandleCreate = false;
 		}

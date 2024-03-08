@@ -174,6 +174,9 @@ public abstract class Native
 	[DllImport("user32.dll", SetLastError = true)]
 	public static extern IntPtr FindWindowEx(IntPtr parentHandle, IntPtr childAfter, string className, string windowTitle);
 
+	// GetFocus
+	[DllImport("user32.dll")]
+	public static extern IntPtr GetFocus();
 
 	// GetMessage
 	[DllImport("user32", CharSet = CharSet.Auto)]
@@ -190,6 +193,12 @@ public abstract class Native
 	[return: MarshalAs(UnmanagedType.Bool)]
 	public static extern bool GetScrollInfo(IntPtr hwnd, int fnBar, ref SCROLLINFO lpsi);
 	*/
+
+
+	// IsWindow
+	[DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+	[return: MarshalAs(UnmanagedType.Bool)]
+	public static extern bool IsWindow(IntPtr hWnd);
 
 
 
@@ -222,13 +231,18 @@ public abstract class Native
 		return SendMessage(hwnd, msg, wParam, IntPtr.Zero);
 	}
 
-	
+
 	/*
 	[DllImport("QCall", CharSet = CharSet.Unicode)]
 	[SecurityCritical]
 	[SuppressUnmanagedCodeSecurity]
 	public static extern bool InternalUseRandomizedHashing();
 	*/
+
+
+	// SetFocus
+	[DllImport("user32.dll", CharSet = CharSet.Auto)]
+	public static extern IntPtr SetFocus(IntPtr hWnd);
 
 
 	[DllImport("User32.dll", CharSet = CharSet.Unicode)]

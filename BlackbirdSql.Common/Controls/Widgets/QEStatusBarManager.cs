@@ -128,7 +128,7 @@ public sealed class QEStatusBarManager : IDisposable
 		get
 		{
 			QueryManager result = null;
-			AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(EditorWindowPane.DocData);
+			AuxiliaryDocData auxDocData = ((IBEditorPackage)ApcManager.DdexPackage).GetAuxiliaryDocData(EditorWindowPane.DocData);
 			if (auxDocData != null)
 			{
 				result = auxDocData.QryMgr;
@@ -512,7 +512,7 @@ public sealed class QEStatusBarManager : IDisposable
 				}
 
 				SetRowsAffected(QryMgr.RowsAffected);
-				AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(EditorWindowPane.DocData);
+				AuxiliaryDocData auxDocData = ((IBEditorPackage)ApcManager.DdexPackage).GetAuxiliaryDocData(EditorWindowPane.DocData);
 				if (auxDocData != null && auxDocData.LiveSettings.EditorResultsPlaySounds)
 				{
 					new SoundPlayer().Play();

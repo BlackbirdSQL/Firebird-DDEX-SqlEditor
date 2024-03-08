@@ -39,7 +39,7 @@ public class SqlEditorDisconnectAllQueriesCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		foreach (AuxiliaryDocData value in ((IBEditorPackage)Controller.DdexPackage).AuxiliaryDocDataTable.Values)
+		foreach (AuxiliaryDocData value in ((IBEditorPackage)ApcManager.DdexPackage).AuxiliaryDocDataTable.Values)
 		{
 			QueryManager qryMgr = value.QryMgr;
 			if (qryMgr != null && qryMgr.IsConnected)

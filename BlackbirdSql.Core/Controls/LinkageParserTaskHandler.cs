@@ -92,9 +92,8 @@ public class LinkageParserTaskHandler : IBTaskHandlerClient
 	/// </summary>
 	public string TaskHandlerTaskName => _TaskHandlerTaskName;
 
-	[SuppressMessage("Usage", "VSTHRD102:Implement internal logic asynchronously")]
 	private IVsTaskStatusCenterService StatusCenterService =>
-		ThreadHelper.JoinableTaskFactory.Run(Controller.GetStatusCenterServiceAsync);
+		ApcManager.StatusCenterService;
 
 	public CancellationToken UserCancellation
 	{
@@ -223,14 +222,17 @@ public class LinkageParserTaskHandler : IBTaskHandlerClient
 
 		// These calls occur immediately after a previous call to TaskHandlerProgress()
 		// so we need to ensure output is contiguous.
-		if (asyncActive && (elapsed == -3 || progress == 100))
+		if (asyncActive && (elapsed == LinkageParser.C_Elapsed_StageCompleted || progress == 100))
+		{
 			Thread.Sleep(10);
+			Thread.Yield();
+		}
 
 
 		if (progress == 0)
 		{
 			// If we're pausing async and nothing has happened just exit.
-			if (elapsed == -2)
+			if (elapsed == LinkageParser.C_Elapsed_Disabling)
 				return true;
 
 			text = Resources.LinkageParserUpdating;
@@ -252,11 +254,11 @@ public class LinkageParserTaskHandler : IBTaskHandlerClient
 				}
 				else
 				{
-					if (elapsed == -1)
+					if (elapsed == LinkageParser.C_Elapsed_Resuming)
 						text = Resources.LinkageParserResumingAsync;
-					else if (elapsed == -2)
+					else if (elapsed == LinkageParser.C_Elapsed_Disabling)
 						text = Resources.LinkageParserPausingAsync;
-					else if (elapsed == -3)
+					else if (elapsed == LinkageParser.C_Elapsed_StageCompleted)
 						text = Resources.LinkageParserPercentCompletedStage.FmtRes(progress, stage);
 					else
 						text = Resources.LinkageParserPercentCompletedStageElapsed.FmtRes(progress, stage, elapsed);
@@ -265,9 +267,9 @@ public class LinkageParserTaskHandler : IBTaskHandlerClient
 			}
 			else
 			{
-				if (elapsed == -1)
+				if (elapsed == LinkageParser.C_Elapsed_Resuming)
 					text = Resources.LinkageParserSwitchedToUiThread;
-				else if (elapsed == -3)
+				else if (elapsed == LinkageParser.C_Elapsed_StageCompleted)
 					text = Resources.LinkageParserPercentCompletedStage.FmtRes(progress, stage);
 				else
 					text = Resources.LinkageParserPercentCompletedStageElapsed.FmtRes(progress, stage, elapsed);

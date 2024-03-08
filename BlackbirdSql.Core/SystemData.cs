@@ -106,6 +106,7 @@ public static class SystemData
 	
 	// BlackbirdSql Output pane
 	public const string OutputPaneGuid = "9E2B946C-4D46-4067-ABEB-E181F3B3768E";
+	public const string MessageBoxParentGuid = "4BE829EA-E33E-49AB-BE5C-ADC6E6DE8AA7";
 
 
 

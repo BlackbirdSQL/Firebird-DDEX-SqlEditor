@@ -2,6 +2,11 @@
 
 ### Change log
 
+#### v11.1.0.2
+Added edmx and xsd auto-close on solution close user options. Closing prevents potential load errors and drag-drop clipboard errors.</br>
+Streamlined asynchronous building of trigger linkage tables.
+
+
 #### v11.1.0.1
 Added parser linkage timeout user option. Parsers that exceed the timeout will now prompt the user for a time extension.</br>
 Fixed several unhandled NotOnUIThread exceptions. In most cases the processes now switch over to the ui thread if they're not already on it, rather than throwing an exception.</br>

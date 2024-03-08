@@ -12,13 +12,15 @@ using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Model;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 
+
 namespace BlackbirdSql.Common.Model;
+
 
 public sealed class AuxiliaryDocData(string documentMoniker, string explorerMoniker, object docData)
 {
@@ -146,7 +148,7 @@ public sealed class AuxiliaryDocData(string documentMoniker, string explorerMoni
 				if (iVsUserData != null)
 				{
 					Guid riidKey = LibraryData.CLSID_IntelliSenseEnabled;
-					Exf(iVsUserData.SetData(ref riidKey, value));
+					___(iVsUserData.SetData(ref riidKey, value));
 					_IntellisenseEnabled = value;
 				}
 			}
@@ -263,7 +265,10 @@ public sealed class AuxiliaryDocData(string documentMoniker, string explorerMoni
 
 	public event EventHandler<LiveSettingsChangedEventArgs> LiveSettingsChangedEvent;
 
-	private static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	private static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 	private void QueryManagerStatusChangedEventHandler(object sender, QueryManager.StatusChangedEventArgs args)
 	{
@@ -348,7 +353,7 @@ public sealed class AuxiliaryDocData(string documentMoniker, string explorerMoni
 			if (iVsUserData != null)
 			{
 				Guid riidKey = LibraryData.CLSID_PropertyDatabaseConnectionChanged;
-				Exf(iVsUserData.SetData(ref riidKey, connectionUrl));
+				___(iVsUserData.SetData(ref riidKey, connectionUrl));
 			}
 		}
 
@@ -431,7 +436,7 @@ public sealed class AuxiliaryDocData(string documentMoniker, string explorerMoni
 			if (iVsUserData != null)
 			{
 				Guid riidKey = LibraryData.CLSID_PropertyOleSql;
-				Exf(iVsUserData.SetData(ref riidKey, on));
+				___(iVsUserData.SetData(ref riidKey, on));
 			}
 		}
 	}

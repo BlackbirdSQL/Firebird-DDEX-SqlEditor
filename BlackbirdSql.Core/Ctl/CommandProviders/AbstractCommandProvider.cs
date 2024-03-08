@@ -78,7 +78,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 				// Tracer.Trace(GetType(), "CreateCommand()", "NewDesignerQuery itemid: {0}, commandid: {1} systemType {2}.", itemId, commandId.ID, nodeSystemType.ToString());
 
 				cmd.Visible = true;
-				cmd.Enabled = Controller.CanValidateSolution && !Controller.SolutionValidating;
+				cmd.Enabled = ApcManager.CanValidateSolution && !ApcManager.SolutionValidating;
 
 				if (cmd.Visible && !command.Properties.Contains("GotText")
 					&& (label = GlobalizeLabel(cmd, EnNodeSystemType.Global)) != string.Empty)
@@ -494,7 +494,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 			if (RctManager.ShutdownState)
 				return;
 
-			IBDesignerExplorerServices service = Controller.EnsureService<IBDesignerExplorerServices>();
+			IBDesignerExplorerServices service = ApcManager.EnsureService<IBDesignerExplorerServices>();
 
 			CsbAgent csa = RctManager.CloneRegistered(Site.ExplorerConnection.ConnectionNode);
 
@@ -520,7 +520,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 		if (SystemData.MandatedSqlEditorFactoryGuid.Equals(SystemData.DslEditorFactoryGuid, StringComparison.OrdinalIgnoreCase))
 		{
-			IBDesignerExplorerServices service = Controller.EnsureService<IBDesignerExplorerServices>();
+			IBDesignerExplorerServices service = ApcManager.EnsureService<IBDesignerExplorerServices>();
 
 			service.ViewCode(node, targetType);
 		}
@@ -555,7 +555,7 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 	protected virtual void OnValidateSolution(int itemId)
 	{
-		Controller.ValidateSolution();
+		ApcManager.ValidateSolution();
 	}
 
 

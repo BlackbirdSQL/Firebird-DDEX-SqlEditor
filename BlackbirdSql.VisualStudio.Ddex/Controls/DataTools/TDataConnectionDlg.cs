@@ -11,6 +11,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Controls.Interfaces;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.VisualStudio.Ddex.Controls.Events;
@@ -1345,18 +1346,6 @@ public partial class TDataConnectionDlg : Form, IBDataConnectionDlg
 		OnDialogException(e);
 	}
 
-	private void ShowMessage(string title, string message)
-	{
-		if (Package.GetGlobalService(typeof(IUIService)) is IUIService iUIService)
-		{
-			iUIService.ShowMessage(message);
-		}
-		else
-		{
-			Diag.ExceptionService(typeof(IUIService));
-			// RTLAwareMessageBox.Show(title, message, MessageBoxIcon.Asterisk);
-		}
-	}
 
 	internal void ShowError(IUIService uiService, string title, Exception ex)
 	{
@@ -1497,7 +1486,7 @@ public partial class TDataConnectionDlg : Form, IBDataConnectionDlg
 			return;
 		}
 		Cursor.Current = current;
-		ShowMessage(ControlsResources.TDataConnectionDlg_TestResults, ControlsResources.TDataConnectionDlg_TestConnectionSucceeded);
+		MessageCtl.ShowEx(ControlsResources.TDataConnectionDlg_TestConnectionSucceeded, ControlsResources.TDataConnectionDlg_TestResults);
 	}
 
 

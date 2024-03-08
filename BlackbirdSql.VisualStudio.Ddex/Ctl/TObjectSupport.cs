@@ -6,11 +6,9 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
-
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
-using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;

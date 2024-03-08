@@ -202,7 +202,7 @@ public class ShellTextViewControl : AbstractTextEditorControl, VsCodeWindow, IVs
 		{
 			try
 			{
-				Exf(vsCodeWindowManager.RemoveAdornments());
+				___(vsCodeWindowManager.RemoveAdornments());
 			}
 			catch (Exception e)
 			{
@@ -277,7 +277,7 @@ public class ShellTextViewControl : AbstractTextEditorControl, VsCodeWindow, IVs
 
 		if (m_textView != null)
 		{
-			Exf(m_textView.CloseView());
+			___(m_textView.CloseView());
 			Release(m_textView);
 			m_textView = null;
 		}
@@ -294,37 +294,37 @@ public class ShellTextViewControl : AbstractTextEditorControl, VsCodeWindow, IVs
 
 
 		Guid riid = typeof(IVsTextView).GUID;
-		Exf(localRegistry.CreateInstance(DefGuidList.CLSID_VsTextView, null, ref riid, (uint)CLSCTX.CLSCTX_INPROC_SERVER, out IntPtr ppvObj));
+		___(localRegistry.CreateInstance(DefGuidList.CLSID_VsTextView, null, ref riid, (uint)CLSCTX.CLSCTX_INPROC_SERVER, out IntPtr ppvObj));
 		m_textView = (IVsTextView)Marshal.GetObjectForIUnknown(ppvObj);
 		Marshal.Release(ppvObj);
 		((IObjectWithSite)m_textView).SetSite(nativeSP);
-		Exf(m_textView.Initialize(_TextBuffer.TextStream as IVsTextLines, Handle, (uint)textViewFlags, textViewInit));
+		___(m_textView.Initialize(_TextBuffer.TextStream as IVsTextLines, Handle, (uint)textViewFlags, textViewInit));
 		IVsTextEditorPropertyCategoryContainer obj2 = (IVsTextEditorPropertyCategoryContainer)m_textView;
 		Guid rguidCategory = VSConstants.EditPropyCategoryGuid.ViewMasterSettings_guid;
-		Exf(obj2.GetPropertyCategory(ref rguidCategory, out IVsTextEditorPropertyContainer ppProp));
+		___(obj2.GetPropertyCategory(ref rguidCategory, out IVsTextEditorPropertyContainer ppProp));
 
 		if (codeWindowStyle)
 		{
 			object var = true;
-			Exf(ppProp.SetProperty(VSEDITPROPID.VSEDITPROPID_ViewComposite_AllCodeWindowDefaults, var));
+			___(ppProp.SetProperty(VSEDITPROPID.VSEDITPROPID_ViewComposite_AllCodeWindowDefaults, var));
 		}
 		else
 		{
 			if (m_strFontCategoryGuid != null && m_strFontCategoryGuid.Length != 0)
 			{
-				Exf(ppProp.SetProperty(VSEDITPROPID.VSEDITPROPID_ViewGeneral_FontCategory, m_strFontCategoryGuid));
+				___(ppProp.SetProperty(VSEDITPROPID.VSEDITPROPID_ViewGeneral_FontCategory, m_strFontCategoryGuid));
 			}
 
 			if (colorCategoryGuid != null && colorCategoryGuid.Length != 0)
 			{
-				Exf(ppProp.SetProperty(VSEDITPROPID.VSEDITPROPID_ViewGeneral_ColorCategory, colorCategoryGuid));
+				___(ppProp.SetProperty(VSEDITPROPID.VSEDITPROPID_ViewGeneral_ColorCategory, colorCategoryGuid));
 			}
 		}
 
-		Exf(m_textView.GetScrollInfo(1, out _, out _, out _, out var piFirstVisibleUnit));
-		Exf(m_textView.SetScrollPosition(1, piFirstVisibleUnit));
-		Exf(m_textView.GetScrollInfo(0, out _, out _, out _, out piFirstVisibleUnit));
-		Exf(m_textView.SetScrollPosition(0, piFirstVisibleUnit));
+		___(m_textView.GetScrollInfo(1, out _, out _, out _, out var piFirstVisibleUnit));
+		___(m_textView.SetScrollPosition(1, piFirstVisibleUnit));
+		___(m_textView.GetScrollInfo(0, out _, out _, out _, out piFirstVisibleUnit));
+		___(m_textView.SetScrollPosition(0, piFirstVisibleUnit));
 		EditorHandle = m_textView.GetWindowHandle();
 		ApplyInitialLanguageService();
 		DoPostCreationInit();
@@ -355,7 +355,7 @@ public class ShellTextViewControl : AbstractTextEditorControl, VsCodeWindow, IVs
 			}
 
 			Guid pguidLangService = Guid.Empty;
-			Exf(((IVsTextBuffer)_TextBuffer.TextStream).GetLanguageServiceID(out pguidLangService));
+			___(((IVsTextBuffer)_TextBuffer.TextStream).GetLanguageServiceID(out pguidLangService));
 			if (pguidLangService == Guid.Empty)
 				throw new InvalidOperationException("IVsTextBuffer:GetLanguageServiceID");
 
@@ -404,8 +404,8 @@ public class ShellTextViewControl : AbstractTextEditorControl, VsCodeWindow, IVs
 			DisposeCodeWindowManager();
 			try
 			{
-				Exf(vsLanguageInfo.GetCodeWindowManager(this, out vsCodeWindowManager));
-				Exf(vsCodeWindowManager.OnNewView((VsTextView)m_textView));
+				___(vsLanguageInfo.GetCodeWindowManager(this, out vsCodeWindowManager));
+				___(vsCodeWindowManager.OnNewView((VsTextView)m_textView));
 			}
 			catch (Exception e)
 			{

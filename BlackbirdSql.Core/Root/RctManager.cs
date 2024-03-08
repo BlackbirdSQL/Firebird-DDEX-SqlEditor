@@ -2,13 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using System.Xml.Linq;
+using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Properties;
 using Microsoft.VisualStudio.Data.Services;
@@ -18,7 +18,9 @@ using Microsoft.VisualStudio.Shell;
 using CoreConstants = BlackbirdSql.Core.Ctl.CoreConstants;
 
 
-namespace BlackbirdSql.Core.Model;
+
+namespace BlackbirdSql.Core;
+
 
 // =========================================================================================================
 //											RctManager Class
@@ -215,7 +217,7 @@ public sealed class RctManager : IDisposable
 	/// Returns the seed of the last connection registered or updated.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool ShutdownState => (_Instance != null && _Instance._Rct != null && _Instance._Rct.ShutdownState);
+	public static bool ShutdownState => _Instance != null && _Instance._Rct != null && _Instance._Rct.ShutdownState;
 
 
 	// ---------------------------------------------------------------------------------
@@ -427,7 +429,7 @@ public sealed class RctManager : IDisposable
 
 		object @object = row[CoreConstants.C_KeyExConnectionKey];
 
-		return (@object == DBNull.Value || @object == null) ? null : (string)@object;
+		return @object == DBNull.Value || @object == null ? null : (string)@object;
 	}
 
 
@@ -448,7 +450,7 @@ public sealed class RctManager : IDisposable
 
 		object @object = row[CoreConstants.C_KeyExConnectionString];
 
-		return (@object == DBNull.Value || @object == null) ? null : (string)@object;
+		return @object == DBNull.Value || @object == null ? null : (string)@object;
 	}
 
 
@@ -469,7 +471,7 @@ public sealed class RctManager : IDisposable
 
 		object @object = row[CoreConstants.C_KeyExDatasetKey];
 
-		return (@object == DBNull.Value || @object == null) ? null : (string)@object;
+		return @object == DBNull.Value || @object == null ? null : (string)@object;
 	}
 
 
@@ -769,7 +771,7 @@ public sealed class RctManager : IDisposable
 			// Sanity check. Should already be done.
 			// Perform a deep validation of the updated csa to ensure an update
 			// is in fact required.
-			bool updateRequired = !CsbAgent.AreEquivalent(csa, seCsa, CsbAgent.DescriberKeys, true);
+			bool updateRequired = !AbstractCsbAgent.AreEquivalent(csa, seCsa, CsbAgent.DescriberKeys, true);
 
 			if (explorerConnection.DisplayName.Equals(csa.DatasetKey))
 			{
@@ -897,7 +899,7 @@ public sealed class RctManager : IDisposable
 				if (datasetKey == DBNull.Value || string.IsNullOrWhiteSpace((string)datasetKey))
 					continue;
 				str += "\n--------------------------------------------------------------------------------------";
-				str += $"\nDATASETKEY: {((string)row[CoreConstants.C_KeyExDatasetKey])}, ConnectionUrl: {((string)row[CoreConstants.C_KeyExConnectionUrl])}";
+				str += $"\nDATASETKEY: {(string)row[CoreConstants.C_KeyExDatasetKey]}, ConnectionUrl: {(string)row[CoreConstants.C_KeyExConnectionUrl]}";
 				str += "\n\t------------------------------------------";
 				str += "\n\t";
 
@@ -907,10 +909,10 @@ public sealed class RctManager : IDisposable
 					{
 						continue;
 					}
-					str += $"{col.ColumnName}: {(row[col.ColumnName] == null ? "null" : (row[col.ColumnName] == DBNull.Value ? "DBNull" : row[col.ColumnName].ToString()))}, ";
+					str += $"{col.ColumnName}: {(row[col.ColumnName] == null ? "null" : row[col.ColumnName] == DBNull.Value ? "DBNull" : row[col.ColumnName].ToString())}, ";
 				}
 				str += "\n\t------------------------------------------";
-				str += $"\n\tConnectionString: {((string)row[CoreConstants.C_KeyExConnectionString])}";
+				str += $"\n\tConnectionString: {(string)row[CoreConstants.C_KeyExConnectionString]}";
 			}
 
 			str += "\n--------------------------------------------------------------------------------------";
@@ -1023,7 +1025,7 @@ public sealed class RctManager : IDisposable
 	/// connection, we will be unable to update it here because it will not yet exist
 	/// in the SE connection table.
 	/// In that case the <see cref="RctManager"/> will tag it for updating using
-	/// <see cref="RctManager.StoreUnadvisedConnection"/>.
+	/// <see cref="StoreUnadvisedConnection"/>.
 	/// </remarks>
 	// ---------------------------------------------------------------------------------
 	private static bool UpdateServerExplorer(ref CsbAgent csa,
@@ -1033,7 +1035,7 @@ public sealed class RctManager : IDisposable
 
 		csa.ConnectionSource = EnConnectionSource.ServerExplorer;
 
-		IVsDataExplorerConnectionManager manager = Controller.ExplorerConnectionManager;
+		IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
 
 		(_, IVsDataExplorerConnection explorerConnection) = manager.SearchExplorerConnectionEntry(csa.ConnectionString, false);
 
@@ -1145,9 +1147,9 @@ public sealed class RctManager : IDisposable
 				explorerConnection.DisplayName = csa.DatasetKey;
 				Rct.EnableEvents();
 
-				caption = Resources.RctManager_CaptionInvalidConnectionName;
-				msg = Resources.RctManager_TextInvalidConnectionName.FmtRes(_Scheme, proposedConnectionName);
-				Cmd.ShowMessage(msg, caption, MessageBoxButtons.OK);
+				caption = ControlsResources.RctManager_CaptionInvalidConnectionName;
+				msg = ControlsResources.RctManager_TextInvalidConnectionName.FmtRes(_Scheme, proposedConnectionName);
+				MessageCtl.ShowEx(msg, caption, MessageBoxButtons.OK);
 
 				return;
 			}
@@ -1172,10 +1174,10 @@ public sealed class RctManager : IDisposable
 
 		if (!string.IsNullOrEmpty(uniqueConnectionName))
 		{
-			caption = Resources.RctManager_CaptionConnectionNameConflict;
-			msg = Resources.RctManager_TextConnectionNameConflictLong.FmtRes(proposedConnectionName, uniqueConnectionName);
+			caption = ControlsResources.RctManager_CaptionConnectionNameConflict;
+			msg = ControlsResources.RctManager_TextConnectionNameConflictLong.FmtRes(proposedConnectionName, uniqueConnectionName);
 
-			if (Cmd.ShowMessage(msg, caption, MessageBoxButtons.YesNo) == DialogResult.No)
+			if (MessageCtl.ShowEx(msg, caption, MessageBoxButtons.YesNo) == DialogResult.No)
 			{
 				Rct.DisableEvents();
 				explorerConnection.DisplayName = GetDatasetKey(connectionUrl);
@@ -1268,10 +1270,10 @@ public sealed class RctManager : IDisposable
 
 		if (!string.IsNullOrWhiteSpace(proposedConnectionName) && proposedConnectionName.StartsWith(_Scheme))
 		{
-			caption = Resources.RctManager_CaptionInvalidConnectionName;
-			msg = Resources.RctManager_TextInvalidConnectionName.FmtRes(_Scheme, proposedConnectionName);
+			caption = ControlsResources.RctManager_CaptionInvalidConnectionName;
+			msg = ControlsResources.RctManager_TextInvalidConnectionName.FmtRes(_Scheme, proposedConnectionName);
 
-			Cmd.ShowMessage(msg, caption, MessageBoxButtons.OK);
+			MessageCtl.ShowEx(msg, caption, MessageBoxButtons.OK);
 
 			rSuccess = false;
 			return (rSuccess, rAddInternally, rModifyInternally);
@@ -1316,26 +1318,26 @@ public sealed class RctManager : IDisposable
 			if (createNew && !serverExplorerInsertMode && (connectionSource == EnConnectionSource.ServerExplorer
 				|| connectionSource == EnConnectionSource.EntityDataModel))
 			{
-				caption = Resources.RctManager_CaptionNewConnectionNameConflict;
-				msg = Resources.RctManager_TextNewSEConnectionNameConflict.FmtRes(proposedConnectionName, uniqueConnectionName);
+				caption = ControlsResources.RctManager_CaptionNewConnectionNameConflict;
+				msg = ControlsResources.RctManager_TextNewSEConnectionNameConflict.FmtRes(proposedConnectionName, uniqueConnectionName);
 			}
 			// The settings provided will create a new Session connection as well as a new SE connection with a connection name conflict.
 			else if (createNew && !serverExplorerInsertMode)
 			{
-				caption = Resources.RctManager_CaptionNewConnectionNameConflict;
-				msg = Resources.RctManager_TextNewConnectionNameConflict.FmtRes(proposedConnectionName, uniqueConnectionName);
+				caption = ControlsResources.RctManager_CaptionNewConnectionNameConflict;
+				msg = ControlsResources.RctManager_TextNewConnectionNameConflict.FmtRes(proposedConnectionName, uniqueConnectionName);
 			}
 			// The settings provided will switch connections with a connection name conflict.
 			else if (changedTargetDatasetKey != null)
 			{
-				caption = Resources.RctManager_CaptionConnectionChangeNameConflict;
-				msg = Resources.RctManager_TextConnectionChangeNameConflict.FmtRes(changedTargetDatasetKey, proposedConnectionName, uniqueConnectionName);
+				caption = ControlsResources.RctManager_CaptionConnectionChangeNameConflict;
+				msg = ControlsResources.RctManager_TextConnectionChangeNameConflict.FmtRes(changedTargetDatasetKey, proposedConnectionName, uniqueConnectionName);
 			}
 			// The settings provided will cause a connection name conflict.
 			else
 			{
-				caption = Resources.RctManager_CaptionConnectionNameConflict;
-				msg = Resources.RctManager_TextConnectionNameConflict.FmtRes(proposedConnectionName, uniqueConnectionName);
+				caption = ControlsResources.RctManager_CaptionConnectionNameConflict;
+				msg = ControlsResources.RctManager_TextConnectionNameConflict.FmtRes(proposedConnectionName, uniqueConnectionName);
 			}
 		}
 		else if (!string.IsNullOrEmpty(uniqueDatasetId) && !string.IsNullOrEmpty(proposedDatasetId))
@@ -1346,26 +1348,26 @@ public sealed class RctManager : IDisposable
 			if (createNew && !serverExplorerInsertMode && (connectionSource == EnConnectionSource.ServerExplorer
 				|| connectionSource == EnConnectionSource.EntityDataModel))
 			{
-				caption = Resources.RctManager_CaptionNewConnectionDatabaseNameConflict;
-				msg = Resources.RctManager_TextNewSEConnectionDatabaseNameConflict.FmtRes(proposedDatasetId, uniqueDatasetId);
+				caption = ControlsResources.RctManager_CaptionNewConnectionDatabaseNameConflict;
+				msg = ControlsResources.RctManager_TextNewSEConnectionDatabaseNameConflict.FmtRes(proposedDatasetId, uniqueDatasetId);
 			}
 			// The settings provided will create a new Session connection as well as a new SE connection with a DatasetId conflict.
 			else if (createNew && !serverExplorerInsertMode)
 			{
-				caption = Resources.RctManager_CaptionNewConnectionDatabaseNameConflict;
-				msg = Resources.RctManager_TextNewConnectionDatabaseNameConflict.FmtRes(proposedDatasetId, uniqueDatasetId);
+				caption = ControlsResources.RctManager_CaptionNewConnectionDatabaseNameConflict;
+				msg = ControlsResources.RctManager_TextNewConnectionDatabaseNameConflict.FmtRes(proposedDatasetId, uniqueDatasetId);
 			}
 			// The settings provided will switch connections with a DatasetId conflict.
 			else if (changedTargetDatasetKey != null)
 			{
-				caption = Resources.RctManager_CaptionConnectionChangeDatabaseNameConflict;
-				msg = Resources.RctManager_TextConnectionChangeDatabaseNameConflict.FmtRes(changedTargetDatasetKey, proposedDatasetId, uniqueDatasetId);
+				caption = ControlsResources.RctManager_CaptionConnectionChangeDatabaseNameConflict;
+				msg = ControlsResources.RctManager_TextConnectionChangeDatabaseNameConflict.FmtRes(changedTargetDatasetKey, proposedDatasetId, uniqueDatasetId);
 			}
 			// The settings provided will cause a DatasetId conflict.
 			else
 			{
-				caption = Resources.RctManager_CaptionDatabaseNameConflict;
-				msg = Resources.RctManager_TextDatabaseNameConflict.FmtRes(proposedDatasetId, uniqueDatasetId);
+				caption = ControlsResources.RctManager_CaptionDatabaseNameConflict;
+				msg = ControlsResources.RctManager_TextDatabaseNameConflict.FmtRes(proposedDatasetId, uniqueDatasetId);
 			}
 		}
 		// Handle all case where there is no conflict.
@@ -1373,24 +1375,24 @@ public sealed class RctManager : IDisposable
 		else if (createNew && !serverExplorerInsertMode &&
 			(connectionSource == EnConnectionSource.ServerExplorer || connectionSource == EnConnectionSource.EntityDataModel))
 		{
-			caption = Resources.RctManager_CaptionNewConnection;
-			msg = Resources.RctManager_TextNewSEConnection;
+			caption = ControlsResources.RctManager_CaptionNewConnection;
+			msg = ControlsResources.RctManager_TextNewSEConnection;
 		}
 		// The settings provided will create a new Session connection as well as a new SE connection.
 		else if (createNew && !serverExplorerInsertMode)
 		{
-			caption = Resources.RctManager_CaptionNewConnection;
-			msg = Resources.RctManager_TextNewConnection;
+			caption = ControlsResources.RctManager_CaptionNewConnection;
+			msg = ControlsResources.RctManager_TextNewConnection;
 		}
 		// The settings provided will switch connections.
 		else if (changedTargetDatasetKey != null)
 		{
 			// The target connection will change.
-			caption = Resources.RctManager_CaptionConnectionChanged;
-			msg = Resources.RctManager_TextConnectionChanged.FmtRes(changedTargetDatasetKey);
+			caption = ControlsResources.RctManager_CaptionConnectionChanged;
+			msg = ControlsResources.RctManager_TextConnectionChanged.FmtRes(changedTargetDatasetKey);
 		}
 
-		if (msg != null && Cmd.ShowMessage(msg, caption, MessageBoxButtons.YesNo) == DialogResult.No)
+		if (msg != null && MessageCtl.ShowEx(msg, caption, MessageBoxButtons.YesNo) == DialogResult.No)
 			return (false, false, false);
 
 
@@ -1451,8 +1453,8 @@ public sealed class RctManager : IDisposable
 		if (!serverExplorerInsertMode && createNew)
 			rAddInternally = true;
 
-		rModifyInternally = changedTargetDatasetKey != null || (!rAddInternally
-			&& connectionSource != EnConnectionSource.ServerExplorer && connectionSource != EnConnectionSource.EntityDataModel);
+		rModifyInternally = changedTargetDatasetKey != null || !rAddInternally
+			&& connectionSource != EnConnectionSource.ServerExplorer && connectionSource != EnConnectionSource.EntityDataModel;
 
 		// Tag the site as being updated by the edmx wizard if it's not being done internally, which will
 		// use IVsDataConnectionUIProperties.Parse().
@@ -1480,7 +1482,7 @@ public sealed class RctManager : IDisposable
 	public static bool VerifyUpdateRights(EnConnectionSource updater,
 		EnConnectionSource owner)
 	{
-		return RunningConnectionTable.VerifyUpdateRights(updater, owner);
+		return AbstractRunningConnectionTable.VerifyUpdateRights(updater, owner);
 	}
 
 

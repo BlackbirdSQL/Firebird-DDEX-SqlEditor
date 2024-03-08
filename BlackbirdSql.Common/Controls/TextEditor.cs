@@ -7,7 +7,6 @@ using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Enums;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -77,7 +76,7 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 		{
 			if (Native.Failed(_CodeWindow.GetLastActiveView(out var ppView)))
 			{
-				Exf(_CodeWindow.GetPrimaryView(out ppView));
+				___(_CodeWindow.GetPrimaryView(out ppView));
 			}
 			return ppView;
 		}
@@ -163,7 +162,11 @@ public class TextEditor : IOleCommandTarget, IVsTextViewEvents, IVsCodeWindowEve
 		_ConnectedViews.Add(view, value);
 	}
 
-	private static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	private static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 	private void ReplacePropGrid(object sender, EventArgs e)
 	{

@@ -76,7 +76,7 @@ public class SqlEditorNewQueryCommand : AbstractSqlEditorCommand
 				return VSConstants.S_OK;
 			}
 
-			IBDesignerExplorerServices service = Controller.EnsureService<IBDesignerExplorerServices>();
+			IBDesignerExplorerServices service = ApcManager.EnsureService<IBDesignerExplorerServices>();
 
 			service.NewSqlQuery(qryMgr.ConnectionStrategy.LastDatasetKey);
 		}

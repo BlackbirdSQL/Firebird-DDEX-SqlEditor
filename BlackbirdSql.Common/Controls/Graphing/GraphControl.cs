@@ -1213,7 +1213,7 @@ public class GraphControl : GraphCtrl
 	private void ShowExceptionMessage(Exception exception)
 	{
 		// Use something else.
-		((IBMessageBoxProvider)new DefaultMessageBoxProvider(this)).ShowMessage(exception, (string)null, EnExceptionMessageBoxButtons.OK, EnExceptionMessageBoxSymbol.Error, (IWin32Window)this);
+		MessageCtl.ShowEx(exception, (string)null, EnMessageBoxButtons.OK, EnMessageBoxSymbol.Error, (IWin32Window)this);
 	}
 
 	private void OnHelpRequested()

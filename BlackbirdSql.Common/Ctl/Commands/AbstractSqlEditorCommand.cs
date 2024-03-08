@@ -1,5 +1,6 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.SqlEditorCommand
+
 using System;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Ctl.Enums;
@@ -8,11 +9,14 @@ using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls.Interfaces;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 
+
 namespace BlackbirdSql.Common.Ctl.Commands;
+
 
 public abstract class AbstractSqlEditorCommand
 {
@@ -28,7 +32,10 @@ public abstract class AbstractSqlEditorCommand
 		return HandleExec(nCmdexecopt, pvaIn, pvaOut);
 	}
 
-	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 	protected abstract int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText);
 
@@ -54,7 +61,7 @@ public abstract class AbstractSqlEditorCommand
 				IVsTextLines textLinesForTextView = GetTextLinesForTextView(codeEditorTextView);
 				if (textLinesForTextView != null)
 				{
-					result = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(textLinesForTextView);
+					result = ((IBEditorPackage)ApcManager.DdexPackage).GetAuxiliaryDocData(textLinesForTextView);
 				}
 			}
 		}
@@ -72,7 +79,7 @@ public abstract class AbstractSqlEditorCommand
 		IVsTextLines ppBuffer = null;
 		if (textView != null)
 		{
-			Exf(textView.GetBuffer(out ppBuffer));
+			___(textView.GetBuffer(out ppBuffer));
 		}
 
 		return ppBuffer;
@@ -90,7 +97,7 @@ public abstract class AbstractSqlEditorCommand
 
 	protected bool IsDwEditorConnection()
 	{
-		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(EditorWindow.DocData);
+		AuxiliaryDocData auxDocData = ((IBEditorPackage)ApcManager.DdexPackage).GetAuxiliaryDocData(EditorWindow.DocData);
 		if (auxDocData != null)
 		{
 			IBSqlEditorStrategy strategy = auxDocData.Strategy;

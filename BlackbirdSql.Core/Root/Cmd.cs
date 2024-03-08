@@ -1,26 +1,21 @@
 ﻿
 using System;
-using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Security;
 using System.Text;
-using System.Windows.Forms.Design;
-using System.Windows.Forms;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using FirebirdSql.Data.FirebirdClient;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
-using EnvDTE;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
 
-
 namespace BlackbirdSql.Core;
-
 
 [SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification="Using Diag.ThrowIfNotOnUIThread()")]
 
@@ -41,7 +36,6 @@ public abstract class Cmd
 	// ---------------------------------------------------------------------------------
 
 
-
 	#endregion Constants
 
 
@@ -53,8 +47,18 @@ public abstract class Cmd
 	// =========================================================================================================
 
 
-
 	#endregion Fields
+
+
+
+
+
+	// =========================================================================================================
+	#region Property Accessors - Cmd
+	// =========================================================================================================
+
+
+	#endregion Property accessors
 
 
 
@@ -181,7 +185,10 @@ public abstract class Cmd
 		return result;
 	}
 
-	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 	// Failed
 	public static bool Failed(int hr)
@@ -218,7 +225,7 @@ public abstract class Cmd
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		provider ??= new ServiceProvider(Controller.OleServiceProvider);
+		provider ??= new ServiceProvider(ApcManager.OleServiceProvider);
 
 		IVsExternalFilesManager vsExternalFilesManager = provider.GetService(typeof(SVsExternalFilesManager)) as IVsExternalFilesManager
 			?? throw Diag.ExceptionService(typeof(IVsExternalFilesManager));
@@ -239,6 +246,28 @@ public abstract class Cmd
 	}
 
 
+	/*
+	public static Type GetTypeFromProject(string typeName, Project project, IServiceProvider serviceProvider)
+	{
+		DynamicTypeService typeSvc = serviceProvider.GetService(typeof(DynamicTypeService)) as DynamicTypeService;
+		IVsHierarchy vsHierarchy = GetVsHierarchy(serviceProvider, project);
+
+		return typeSvc.GetTypeResolutionService(vsHierarchy).GetType(typeName);
+	}
+
+
+	private static IVsHierarchy GetVsHierarchy(IServiceProvider provider, Project project)
+	{
+		IVsSolution vsSolution = (IVsSolution)provider.GetService(typeof(IVsSolution));
+
+		if (vsSolution == null)
+			return null;
+
+		Native.ThrowOnFailure(vsSolution.GetProjectOfUniqueName(project.UniqueName, out IVsHierarchy ppHierarchy));
+
+		return ppHierarchy;
+	}
+	*/
 
 	// IsCriticalException
 	public static bool IsCriticalException(Exception ex)
@@ -326,31 +355,6 @@ public abstract class Cmd
 
 
 
-	public static DialogResult ShowMessage(string message, string caption, MessageBoxButtons buttons)
-	{
-		// Fire and wait.
-
-		if (!ThreadHelper.CheckAccess())
-		{
-			DialogResult result = ThreadHelper.JoinableTaskFactory.Run(async delegate
-			{
-				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-				return ShowMessageImpl(message, caption, buttons);
-			});
-
-			return result;
-		}
-
-		return ShowMessageImpl(message, caption, buttons);
-	}
-
-	private static DialogResult ShowMessageImpl(string message, string caption, MessageBoxButtons buttons)
-	{
-		if (Package.GetGlobalService(typeof(IUIService)) is not IUIService iUIService)
-			throw Diag.ExceptionService(typeof(IUIService));
-
-		return iUIService.ShowMessage(message, caption, buttons);
-	}
 
 
 	/*

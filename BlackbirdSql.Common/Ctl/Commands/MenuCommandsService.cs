@@ -1,16 +1,13 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.MenuCommandsService
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.Design;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -61,7 +58,10 @@ public class MenuCommandsService : Collection<MenuCommand>, IDisposable, IMenuCo
 		throw ex;
 	}
 
-	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 
 	void IMenuCommandService.RemoveVerb(DesignerVerb verb)
@@ -114,7 +114,7 @@ public class MenuCommandsService : Collection<MenuCommand>, IDisposable, IMenuCo
 				{
 					object pvaIn = null;
 					Guid pguidCmdGroup = commandID.Guid;
-					Exf(vsUIShell.PostExecCommand(ref pguidCmdGroup, (uint)commandID.ID, 0u, ref pvaIn), (string)null);
+					___(vsUIShell.PostExecCommand(ref pguidCmdGroup, (uint)commandID.ID, 0u, ref pvaIn));
 					return true;
 				}
 				catch (Exception)
@@ -165,7 +165,7 @@ public class MenuCommandsService : Collection<MenuCommand>, IDisposable, IMenuCo
 			pOINTS.x = (short)x;
 			pOINTS.y = (short)y;
 			Guid rclsidActive = menuID.Guid;
-			Exf(oleComponentUIManager.ShowContextMenu(VS.dwReserved, ref rclsidActive, menuID.ID, [pOINTS], this), (string)null);
+			___(oleComponentUIManager.ShowContextMenu(VS.dwReserved, ref rclsidActive, menuID.ID, [pOINTS], this));
 		}
 	}
 

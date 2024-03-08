@@ -9,9 +9,12 @@ using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 
 
+
 namespace BlackbirdSql.Common.Model;
 
 [SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits")]
+
+
 public sealed class NotifyTaskCompletion<TResult> : AbstractDispatcherConnection
 {
 	public Task TaskCompletion { get; private set; }

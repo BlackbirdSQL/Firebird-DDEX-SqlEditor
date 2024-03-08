@@ -27,8 +27,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Include="Controls\Dialogs\AdvancedInformationDlg.cs" />
-	  <Compile Include="Controls\Dialogs\ExceptionMessageBoxDlg.cs" />
 	  <Compile Include="Ctl\AbstractDesignerServices.cs" />
 	  <Compile Include="Ctl\Config\TransientSettings.cs" />
 	  <Compile Include="Ctl\Commands\SqlEditorNewQueryCommand.cs" />
@@ -281,7 +279,6 @@
 	    <AutoGen>True</AutoGen>
 	    <DependentUpon>AttributeResources.resx</DependentUpon>
 	  </Compile>
-	  <Compile Include="Ctl\Interfaces\IBMessageBoxProvider.cs" />
 	  <Compile Include="Controls\Interfaces\IBObjectWithSite.cs" />
 	  <None Include="Controls\Graphing\Interfaces\IRenderable.cs" />
 	  <None Include="Controls\Graphing\DescriptionControl.cs" />
@@ -361,14 +358,12 @@
 	  <Compile Include="Ctl\IO\FileStreamReader.cs" />
 	  <Compile Include="Ctl\IO\FileStreamWrapper.cs" />
 	  <Compile Include="Ctl\IO\FileStreamWriter.cs" />
-	  <Compile Include="Ctl\Dialogs\DefaultMessageBoxProvider.cs" />
 	  <Compile Include="Ctl\Interfaces\IBFileStreamReader.cs" />
 	  <Compile Include="Ctl\Interfaces\IBFileStreamWrapper.cs" />
 	  <Compile Include="Model\Events\StorageNotifyDelegate.cs" />
 	  <Compile Include="Controls\Events\TooltipDataNeededEventArgs.cs" />
 	  <Compile Include="Controls\Events\TooltipDataNeededEventHandler.cs" />
 	  <Compile Include="Controls\Dialogs\FileEncodingDlg.cs" />
-	  <Compile Include="Controls\FormUtils.cs" />
 	  <Compile Include="Controls\Grid\BlockOfCells.cs" />
 	  <Compile Include="Controls\Grid\ButtonInfo.cs" />
 	  <Compile Include="Controls\Grid\CaptureTracker.cs" />
@@ -523,11 +518,6 @@
 	  <Compile Include="Ctl\Enums\EnExecutionTimeMethod.cs" />
 	  <Compile Include="Ctl\Enums\EnEditorMode.cs" />
 	  <Compile Include="Ctl\Enums\EnEditorTabType.cs" />
-	  <Compile Include="Ctl\Enums\EnExceptionMessageBoxButtons.cs" />
-	  <Compile Include="Ctl\Enums\EnExceptionMessageBoxDefaultButton.cs" />
-	  <Compile Include="Ctl\Enums\EnExceptionMessageBoxDialogResult.cs" />
-	  <Compile Include="Ctl\Enums\EnExceptionMessageBoxOptions.cs" />
-	  <Compile Include="Ctl\Enums\EnExceptionMessageBoxSymbol.cs" />
 	  <Compile Include="Ctl\Enums\EnNodeElementDescriptorVolatility.cs" />
 	  <Compile Include="Ctl\Enums\EnPageWindowState.cs" />
 	  <Compile Include="Ctl\Enums\EnQuoteType.cs" />
@@ -546,11 +536,8 @@
 	  <Compile Include="Ctl\Events\TabActivationEventArgs.cs" />
 	  <Compile Include="Ctl\Events\ToolboxEventArgs.cs" />
 	  <Compile Include="Ctl\Events\VerifyConnectionDelegate.cs" />
-	  <Compile Include="Ctl\Dialogs\ExceptionMessageBoxCtl.cs" />
-	  <Compile Include="Ctl\Dialogs\ExceptionMessageBoxParent.cs" />
 	  <Compile Include="Properties\ExceptionsResources.Designer.cs" />
 	  <Compile Include="GlobalSuppressions.cs" />
-	  <Compile Include="Controls\Dialogs\PrivacyConfirmationDlg.cs" />
 	  <Compile Include="Controls\Widgets\PrivateRenderer.cs" />
 	  <Compile Include="Ctl\Exceptions\SqlError.cs" />
 	  <Compile Include="Ctl\Exceptions\SqlErrorCollection.cs" />
@@ -684,8 +671,6 @@
 
 	<ItemGroup>
 	  <None Include="Controls\Graphing\CustomZoomDlg.resx" />
-	  <EmbeddedResource Include="Controls\Dialogs\AdvancedInformationDlg.resx" />
-	  <EmbeddedResource Include="Controls\Dialogs\ExceptionMessageBoxDlg.resx" />
 	  <EmbeddedResource Include="Controls\Graphing\PropertyViewDlg.resx" />
 	  <EmbeddedResource Include="Properties\AttributeResources.resx">
 	    <Generator>ResXFileCodeGenerator</Generator>
@@ -694,7 +679,6 @@
 	  <EmbeddedResource Include="Properties\ControlsResources.resx" />
 	  <EmbeddedResource Include="Controls\Dialogs\FileEncodingDlg.resx" />
 	  <EmbeddedResource Include="Properties\ExceptionsResources.resx" />
-	  <EmbeddedResource Include="Controls\Dialogs\PrivacyConfirmationDlg.resx" />
 	  <EmbeddedResource Include="Properties\SqlResources.resx">
 	    <Generator>ResXFileCodeGenerator</Generator>
 	    <LastGenOutput>SqlResources.Designer.cs</LastGenOutput>
@@ -746,7 +730,6 @@
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
 	  </Compile>
-	  <Compile Update="Controls\Dialogs\PrivacyConfirmationDlg.cs" />
 	  <Compile Update="Controls\Dialogs\FileEncodingDlg.cs" />
 	  <Compile Update="Controls\Widgets\MultiControlPanel.cs" />
 	  <Compile Update="Controls\Widgets\QESplitter.cs" />
@@ -793,6 +776,11 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\BlackbirdSql.Core\BlackbirdSql.Core.csproj" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Folder Include="Ctl\Dialogs\" />
 	</ItemGroup>
 
 </Project>

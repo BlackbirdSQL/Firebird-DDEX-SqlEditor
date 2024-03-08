@@ -15,6 +15,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace BlackbirdSql.Common.Model;
 
+
 public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IVsFontAndColorEvents
 {
 	private readonly ArrayList fontColorDefaults;
@@ -92,7 +93,10 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 		fontColorDefaults = [];
 	}
 
-	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 	int IVsFontAndColorDefaults.GetFlags(out uint flags)
 	{
@@ -244,10 +248,10 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 				{
 					if (readFont)
 					{
-						Exf(vsFontAndColorStorage.GetFont(pLOGFONT, array));
+						___(vsFontAndColorStorage.GetFont(pLOGFONT, array));
 					}
 
-					Exf(vsFontAndColorStorage.GetItem(itemName, array2));
+					___(vsFontAndColorStorage.GetItem(itemName, array2));
 				}
 			}
 			catch (Exception)
@@ -257,14 +261,14 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 
 			if (flag)
 			{
-				Exf(vsFontAndColorStorage.CloseCategory());
-				Exf(vsFontAndColorStorage.OpenCategory(ref categoryGuid, (uint)(__FCSTORAGEFLAGS.FCSF_READONLY | __FCSTORAGEFLAGS.FCSF_LOADDEFAULTS)));
+				___(vsFontAndColorStorage.CloseCategory());
+				___(vsFontAndColorStorage.OpenCategory(ref categoryGuid, (uint)(__FCSTORAGEFLAGS.FCSF_READONLY | __FCSTORAGEFLAGS.FCSF_LOADDEFAULTS)));
 				if (readFont)
 				{
-					Exf(vsFontAndColorStorage.GetFont(pLOGFONT, array));
+					___(vsFontAndColorStorage.GetFont(pLOGFONT, array));
 				}
 
-				Exf(vsFontAndColorStorage.GetItem(itemName, array2));
+				___(vsFontAndColorStorage.GetItem(itemName, array2));
 			}
 
 			if (readFont && array[0].bFaceNameValid != 0 && array[0].bPointSizeValid != 0)
@@ -287,7 +291,7 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 		}
 		finally
 		{
-			Exf(vsFontAndColorStorage.CloseCategory());
+			___(vsFontAndColorStorage.CloseCategory());
 		}
 
 		return true;
@@ -302,7 +306,7 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		Exf(FontAndColorUtilities.GetEncodedSysColor(systemColorReference, out int piSysColor));
+		___(FontAndColorUtilities.GetEncodedSysColor(systemColorReference, out int piSysColor));
 
 		return Native.GetSysColor(piSysColor);
 	}

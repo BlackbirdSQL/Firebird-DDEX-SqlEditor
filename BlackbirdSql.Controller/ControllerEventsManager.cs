@@ -14,18 +14,17 @@ using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Model;
-
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TaskStatusCenter;
-
 using VSLangProj;
 
 
+
 namespace BlackbirdSql.Controller;
+
 
 // =========================================================================================================
 //											ControllerEventsManager Class
@@ -95,6 +94,8 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		Controller.OnSaveSolutionOptionsEvent -= OnSaveSolutionOptions;
 		Controller.OnAfterOpenProjectEvent -= OnAfterOpenProject;
 		Controller.OnAfterCloseSolutionEvent -= OnAfterCloseSolution;
+		Controller.OnQueryCloseProjectEvent -= OnQueryCloseProject;
+
 	}
 
 
@@ -355,6 +356,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		Controller.OnSaveSolutionOptionsEvent += OnSaveSolutionOptions;
 		Controller.OnAfterOpenProjectEvent += OnAfterOpenProject;
 		Controller.OnAfterCloseSolutionEvent += OnAfterCloseSolution;
+		Controller.OnQueryCloseProjectEvent += OnQueryCloseProject;
 
 	}
 
@@ -1328,6 +1330,144 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	}
 
 
+	public int OnQueryCloseProject(IVsHierarchy hierarchy, int removing, ref int cancel)
+	{
+		// Tracer.Trace(GetType(), "OnBeforeCloseProject()");
+
+		if (!PersistentSettings.AutoCloseEdmxModels && !PersistentSettings.AutoCloseXsdDatasets)
+			return VSConstants.S_OK;
+
+		if (removing.AsBool() || UnsafeCmd.IsVirtualProjectKind(hierarchy))
+			return VSConstants.S_OK;
+
+
+		var itemid = VSConstants.VSITEMID_ROOT;
+
+		hierarchy.GetProperty(itemid, (int)__VSHPROPID.VSHPROPID_ExtObject, out object objProj);
+
+
+		if (objProj is not Project project)
+		{
+			return VSConstants.S_OK;
+		}
+
+		if (UnsafeCmd.Kind(project.Kind) == "ProjectFolder" || UnsafeCmd.Kind(project.Kind) == "PhysicalFolder" || project.ProjectItems == null
+			|| project.ProjectItems.Count == 0)
+		{
+			return VSConstants.S_OK;
+		}
+
+
+
+		foreach (ProjectItem projectItem in project.ProjectItems)
+		{
+			RecursiveCheckOpenProjectItem(projectItem);
+		}
+
+		return VSConstants.S_OK;
+
+	}
+
+
+
+	bool RecursiveCheckOpenProjectItem(ProjectItem item)
+	{
+
+		if (UnsafeCmd.Kind(item.Kind) == "PhysicalFolder")
+		{
+			bool success = true;
+
+			foreach (ProjectItem subitem in item.ProjectItems)
+			{
+				if (!RecursiveCheckOpenProjectItem(subitem))
+					success = false;
+			}
+
+			return success;
+		}
+
+		if (!item.IsOpen || item.IsDirty)
+			return true;
+
+
+		try
+		{
+			if (item.FileCount < 1)
+				return true;
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex, item.ContainingProject.Name + ":" + item.Name);
+			return false;
+		}
+
+
+		Property link;
+
+		try
+		{
+			link = item.Properties.Item("IsLink");
+		}
+		catch
+		{
+			Diag.StackException(item.ContainingProject.Name + ":" + item.Name + " has no link property");
+			return false;
+		}
+
+		try
+		{
+			if (link == null || (bool)link.Value == true)
+				return true;
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex, item.ContainingProject.Name + ":" + item.Name);
+			return false;
+		}
+
+		string filename = item.FileNames[0].ToLowerInvariant();
+
+		if ((!filename.EndsWith(".edmx") || !PersistentSettings.AutoCloseEdmxModels)
+			&& (!filename.EndsWith(".xsd") || !PersistentSettings.AutoCloseXsdDatasets))
+		{
+			return true;
+		}
+
+		uint docCookie = 0;
+
+		try
+		{
+			docCookie = RdtManager.GetRdtCookie(item.FileNames[0]);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+		}
+
+
+
+		if (docCookie == 0)
+			return true;
+
+		// Tracer.Trace(GetType(), "RecursiveCheckOpenProjectItem()", "OPEN projitem: {0}, cookie: {1}, kind: {2}.",
+		//	item.FileNames[0], docCookie, item.Kind);
+
+		Controller.DisableRdtEvents();
+
+		try
+		{
+			RdtManager.HandsOffDocument(docCookie, null);
+			RdtManager.CloseDocument(__FRAMECLOSE.FRAMECLOSE_NoSave, docCookie);
+		}
+		finally
+		{
+			Controller.EnableRdtEvents();
+		}
+
+		return true;
+	}
+
+
 	#endregion IVs Events Implementation and Event handling
 
 
@@ -1340,6 +1480,9 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 
 
+	[SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
+		Justification = "Code logic ensures a deadlock cannot occur")]
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Ensures the validation queue is cleared out before passing control back to any
@@ -1350,8 +1493,6 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	/// clear
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	[SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
-		Justification = "Code logic ensures a deadlock cannot occur")]
 	public bool ClearValidationQueue()
 	{
 		if (_ValidationTask == null || _ValidationTask.IsCompleted

@@ -24,14 +24,14 @@ namespace BlackbirdSql.Common.Controls.ResultsPanels
 		protected override void CreateEditorWindow(object nativeServiceProvier)
 		{
 			base.CreateEditorWindow(nativeServiceProvier);
-			Exf(TextView.AddCommandFilter(this, out nextTarget));
+			___(TextView.AddCommandFilter(this, out nextTarget));
 		}
 
 		protected override void Dispose(bool disposing)
 		{
 			if (TextView != null)
 			{
-				Exf(TextView.RemoveCommandFilter(this));
+				___(TextView.RemoveCommandFilter(this));
 				nextTarget = null;
 			}
 

@@ -3,12 +3,9 @@
 // Decompiled with ICSharpCode.Decompiler 7.1.0.6543
 #endregion
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
 using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 
@@ -28,7 +25,7 @@ public abstract class AbstractViewFilter : IOleCommandTarget, IDisposable
 	{
 		if (view != null)
 		{
-			Exf(view.AddCommandFilter(this, out _nextTarget), (string)null);
+			___(view.AddCommandFilter(this, out _nextTarget));
 			_TextView = view;
 		}
 	}
@@ -38,7 +35,10 @@ public abstract class AbstractViewFilter : IOleCommandTarget, IDisposable
 		filter.SetView(view);
 	}
 
-	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 	public virtual int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{

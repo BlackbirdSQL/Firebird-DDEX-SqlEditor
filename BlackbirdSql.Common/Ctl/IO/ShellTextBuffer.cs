@@ -60,7 +60,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 			IVsUserData obj = vsTextStream as IVsUserData;
 			Guid riidKey = VSConstants.VsTextBufferUserDataGuid.VsBufferDetectLangSID_guid;
 
-			Exf(obj.GetData(ref riidKey, out var pvtData), null);
+			___(obj.GetData(ref riidKey, out var pvtData));
 
 			return (bool)pvtData;
 		}
@@ -69,7 +69,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 			IVsUserData obj = vsTextStream as IVsUserData;
 			Guid riidKey = VSConstants.VsTextBufferUserDataGuid.VsBufferDetectLangSID_guid;
 
-			Exf(obj.SetData(ref riidKey, value), null);
+			___(obj.SetData(ref riidKey, value));
 		}
 	}
 
@@ -85,7 +85,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 			if (vsTextStream is IVsUserData data)
 			{
 				Guid riidKey = typeof(IVsUserData).GUID;
-				Exf(data.GetData(ref riidKey, out object pvtData), null);
+				___(data.GetData(ref riidKey, out object pvtData));
 				result = pvtData as string;
 			}
 
@@ -110,7 +110,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 		get
 		{
 			bool result = false;
-			Exf(vsTextBuffer.GetStateFlags(out uint pdwReadOnlyFlags), null);
+			___(vsTextBuffer.GetStateFlags(out uint pdwReadOnlyFlags));
 
 			if ((pdwReadOnlyFlags & (uint)BUFFERSTATEFLAGS.BSF_FILESYS_READONLY) != 0)
 				result = true;
@@ -125,7 +125,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 		{
 			bool result = false;
 
-			Exf(vsTextBuffer.GetStateFlags(out uint pdwReadOnlyFlags));
+			___(vsTextBuffer.GetStateFlags(out uint pdwReadOnlyFlags));
 
 			if ((pdwReadOnlyFlags & (uint)BUFFERSTATEFLAGS.BSF_MODIFIED) != 0)
 				result = true;
@@ -150,7 +150,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 	{
 		get
 		{
-			Exf(vsTextStream.GetSize(out var piLength), null);
+			___(vsTextStream.GetSize(out var piLength));
 			return piLength;
 		}
 	}
@@ -183,7 +183,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 			if (vsTextStream != null)
 			{
 
-				Exf(vsTextStream.GetUndoManager(out IOleUndoManager ppUndoManager), null);
+				___(vsTextStream.GetUndoManager(out IOleUndoManager ppUndoManager));
 				if (ppUndoManager != null)
 				{
 					Diag.ThrowIfNotOnUIThread();
@@ -245,8 +245,8 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 		}
 
 		Guid riid = typeof(IVsTextStream).GUID;
-		Exf(obj.CreateInstance(DefGuidList.CLSID_VsTextBuffer, null,
-			ref riid, (uint)CLSCTX.CLSCTX_INPROC_SERVER, out IntPtr ppvObj), null);
+		___(obj.CreateInstance(DefGuidList.CLSID_VsTextBuffer, null,
+			ref riid, (uint)CLSCTX.CLSCTX_INPROC_SERVER, out IntPtr ppvObj));
 		IVsTextStream vsTextStream = (IVsTextStream)Marshal.GetObjectForIUnknown(ppvObj);
 		Marshal.Release(ppvObj);
 
@@ -260,7 +260,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 			uint num = 1u;
 			IVsUserData obj2 = vsTextStream as IVsUserData;
 			Guid riidKey = VSConstants.VsTextBufferUserDataGuid.VsBufferEncodingPromptOnLoad_guid;
-			Exf(obj2.SetData(ref riidKey, num), null);
+			___(obj2.SetData(ref riidKey, num));
 		}
 
 		IVsTextStream vsTextStream2 = vsTextStream;
@@ -308,8 +308,8 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 
 	public override void Dirty()
 	{
-		Exf(vsTextBuffer.GetStateFlags(out uint pdwReadOnlyFlags), null);
-		Exf(vsTextBuffer.SetStateFlags(pdwReadOnlyFlags | (uint)BUFFERSTATEFLAGS.BSF_MODIFIED), null);
+		___(vsTextBuffer.GetStateFlags(out uint pdwReadOnlyFlags));
+		___(vsTextBuffer.SetStateFlags(pdwReadOnlyFlags | (uint)BUFFERSTATEFLAGS.BSF_MODIFIED));
 	}
 
 	private IVsWindowFrame GetWindowFrame(Guid logview)
@@ -323,7 +323,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 			Diag.ThrowException(ex);
 		}
 
-		Exf(obj.OpenDocumentViaProject(FileName, ref logview, out _, out _, out _, out IVsWindowFrame ppWindowFrame), null);
+		___(obj.OpenDocumentViaProject(FileName, ref logview, out _, out _, out _, out IVsWindowFrame ppWindowFrame));
 
 		return ppWindowFrame;
 	}
@@ -340,7 +340,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 		IntPtr intPtr = Marshal.AllocCoTaskMem((chars + 1) * 2);
 		try
 		{
-			Exf(vsTextStream.GetStream(startPosition, chars, intPtr), null);
+			___(vsTextStream.GetStream(startPosition, chars, intPtr));
 			return Marshal.PtrToStringUni(intPtr);
 		}
 		finally
@@ -435,7 +435,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 			Marker marker = (Marker)array2[i];
 			if (marker.MarkerType == markerType)
 			{
-				Exf(marker.VsMarker.Invalidate(), null);
+				___(marker.VsMarker.Invalidate());
 			}
 		}
 	}
@@ -454,13 +454,13 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 		switch (markerType)
 		{
 			case 1:
-				Exf(vsTextStream.CreateStreamMarker(markerTypeError, position, length, marker, array), null);
+				___(vsTextStream.CreateStreamMarker(markerTypeError, position, length, marker, array));
 				break;
 			case 2:
-				Exf(vsTextStream.CreateStreamMarker(markerTypeTemplateParam, position, length, marker, array), null);
+				___(vsTextStream.CreateStreamMarker(markerTypeTemplateParam, position, length, marker, array));
 				break;
 			case 3:
-				Exf(vsTextStream.CreateStreamMarker(1, position, length, marker, array), null);
+				___(vsTextStream.CreateStreamMarker(1, position, length, marker, array));
 				break;
 			default:
 				Exception ex = new ArgumentException("Unknown marker type: " + markerType);
@@ -477,13 +477,13 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 
 	public override void ReplaceText(int startPosition, int count, string text)
 	{
-		Exf(vsTextStream.GetStateFlags(out uint pdwReadOnlyFlags), null);
+		___(vsTextStream.GetStateFlags(out uint pdwReadOnlyFlags));
 		try
 		{
-			Exf(vsTextStream.SetStateFlags(pdwReadOnlyFlags & 0xFFFFFFFEu), null);
+			___(vsTextStream.SetStateFlags(pdwReadOnlyFlags & 0xFFFFFFFEu));
 			int length = text.Length;
 			int textLength = TextLength;
-			Exf(vsTextStream.CanReplaceStream(startPosition, count, length), null);
+			___(vsTextStream.CanReplaceStream(startPosition, count, length));
 			count = Math.Min(count, textLength);
 			changingText = true;
 			try
@@ -515,7 +515,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 		}
 		finally
 		{
-			Exf(vsTextStream.SetStateFlags(pdwReadOnlyFlags), null);
+			___(vsTextStream.SetStateFlags(pdwReadOnlyFlags));
 		}
 	}
 
@@ -523,7 +523,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		Exf(GetWindowFrame(VSConstants.LOGVIEWID_Code).Show(), null);
+		___(GetWindowFrame(VSConstants.LOGVIEWID_Code).Show());
 	}
 
 	public override void ShowCode(int lineNum)
@@ -533,11 +533,11 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 		try
 		{
 			IVsWindowFrame windowFrame = GetWindowFrame(VSConstants.LOGVIEWID_Code);
-			Exf(windowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar), null);
+			___(windowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out object pvar));
 			IVsCodeWindow vsCodeWindow = (IVsCodeWindow)pvar;
 			if (vsCodeWindow != null)
 			{
-				Exf(vsCodeWindow.GetBuffer(out var ppBuffer), null);
+				___(vsCodeWindow.GetBuffer(out var ppBuffer));
 				IVsTextManager vsTextManager = (IVsTextManager)serviceProvider.GetService(Core.VS.CLSID_TextManager);
 				if (lineNum > 0)
 				{
@@ -547,7 +547,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 				if (vsTextManager != null)
 				{
 					Guid guidDocViewType = VSConstants.LOGVIEWID_Code;
-					Exf(vsTextManager.NavigateToLineAndColumn((VsTextBuffer)ppBuffer, ref guidDocViewType, lineNum, 0, lineNum, 0), null);
+					___(vsTextManager.NavigateToLineAndColumn((VsTextBuffer)ppBuffer, ref guidDocViewType, lineNum, 0, lineNum, 0));
 				}
 			}
 		}
@@ -567,7 +567,7 @@ public sealed class ShellTextBuffer : AbstractTextBuffer, IVsTextStreamEvents, I
 
 			if (clusterEventCookie == null)
 			{
-				Exf(vsTextStream.GetUndoManager(out IOleUndoManager ppUndoManager), null);
+				___(vsTextStream.GetUndoManager(out IOleUndoManager ppUndoManager));
 				clusterEventCookie = new ConnectionPointCookie(ppUndoManager, this, typeof(IVsChangeClusterEvents));
 			}
 

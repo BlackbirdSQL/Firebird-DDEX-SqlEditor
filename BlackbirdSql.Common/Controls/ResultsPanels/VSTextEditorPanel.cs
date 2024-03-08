@@ -11,6 +11,7 @@ using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Common.Ctl.IO;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Ctl.Enums;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -160,11 +161,11 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 			_shouldBeReadOnly = value;
 			if (_TextViewCtl.IsHandleCreated)
 			{
-				_ = Exf(_TextViewCtl.TextBuffer.TextStream.GetStateFlags(out uint pdwReadOnlyFlags));
+				_ = ___(_TextViewCtl.TextBuffer.TextStream.GetStateFlags(out uint pdwReadOnlyFlags));
 				uint num = !value ? pdwReadOnlyFlags & 0xFFFFFFFEu : pdwReadOnlyFlags | (uint)BUFFERSTATEFLAGS.BSF_USER_READONLY;
 				if (num != pdwReadOnlyFlags)
 				{
-					_ = Exf(_TextViewCtl.TextBuffer.TextStream.SetStateFlags(num));
+					_ = ___(_TextViewCtl.TextBuffer.TextStream.SetStateFlags(num));
 				}
 			}
 		}
@@ -208,7 +209,7 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 
 		try
 		{
-			_ = Exf(vsTextManager.GetRegisteredMarkerTypeID(ref Core.VS.CLSID_TSqlEditorMessageErrorMarker, out ShellTextBuffer.markerTypeError));
+			_ = ___(vsTextManager.GetRegisteredMarkerTypeID(ref Core.VS.CLSID_TSqlEditorMessageErrorMarker, out ShellTextBuffer.markerTypeError));
 		}
 		catch
 		{
@@ -243,11 +244,11 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-		Exf(_TextViewCtl.TextView.GetScrollInfo(1, out _, out var piMaxUnit, out var piVisibleUnits, out _));
+		___(_TextViewCtl.TextView.GetScrollInfo(1, out _, out var piMaxUnit, out var piVisibleUnits, out _));
 
 		int iFirstVisibleUnit = Math.Max(0, piMaxUnit - piVisibleUnits);
 
-		Exf(_TextViewCtl.TextView.SetScrollPosition(1, iFirstVisibleUnit));
+		___(_TextViewCtl.TextView.SetScrollPosition(1, iFirstVisibleUnit));
 
 		return true;
 	}
@@ -270,7 +271,7 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-		Exf(_TextViewCtl.TextView.SetScrollPosition(1, 0));
+		___(_TextViewCtl.TextView.SetScrollPosition(1, 0));
 
 		return true;
 	}
@@ -289,8 +290,8 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 		_TextViewCtl.CreateAndInitEditorWindow(_ObjServiceProvider);
 		if (_shouldBeReadOnly)
 		{
-			_ = Exf(_TextViewCtl.TextBuffer.TextStream.GetStateFlags(out uint pdwReadOnlyFlags));
-			_ = Exf(_TextViewCtl.TextBuffer.TextStream.SetStateFlags(pdwReadOnlyFlags | (uint)BUFFERSTATEFLAGS.BSF_USER_READONLY));
+			_ = ___(_TextViewCtl.TextBuffer.TextStream.GetStateFlags(out uint pdwReadOnlyFlags));
+			_ = ___(_TextViewCtl.TextBuffer.TextStream.SetStateFlags(pdwReadOnlyFlags | (uint)BUFFERSTATEFLAGS.BSF_USER_READONLY));
 		}
 	}
 
@@ -370,7 +371,7 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 				catch (Exception e)
 				{
 					Diag.Dug(e);
-					Cmd.ShowExceptionInDialog(ControlsResources.ErrWhileSavingResults, e);
+					MessageCtl.ShowEx(ControlsResources.ErrWhileSavingResults, e);
 				}
 			}
 		}

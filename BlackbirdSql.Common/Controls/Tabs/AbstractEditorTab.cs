@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections;
-using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -92,12 +91,12 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 				_DisposableWaitCursor.Dispose();
 				_DisposableWaitCursor = value;
 
-				Controller.DisposableWaitCursor = value;
+				ApcManager.DisposableWaitCursor = value;
 			}
-			else if (Controller.DisposableWaitCursor == null)
+			else if (ApcManager.DisposableWaitCursor == null)
 			{
 				_DisposableWaitCursor = value;
-				Controller.DisposableWaitCursor = value;
+				ApcManager.DisposableWaitCursor = value;
 			}
 			else
 			{
@@ -302,14 +301,17 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 	public event EventHandler<ToolboxEventArgs> ToolboxItemPickedEvent;
 
 
-	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 
 	protected Panel GetPanelForCurrentFrame()
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		Exf(CurrentFrame.GetProperty((int)__VSFPROPID2.VSFPROPID_ParentHwnd, out var pvar));
+		___(CurrentFrame.GetProperty((int)__VSFPROPID2.VSFPROPID_ParentHwnd, out var pvar));
 
 		return Control.FromHandle((IntPtr)(int)pvar) as Panel;
 	}

@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Model.Enums;
@@ -48,9 +48,6 @@ public abstract class AbstractDesignerServices
 
 
 	protected static Guid _DslEditorFactoryClsid = Guid.Empty;
-
-
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
 	protected static event EventHandler<BeforeOpenDocumentEventArgs> _S_BeforeOpenDocumentEvent;
 
 
@@ -72,7 +69,6 @@ public abstract class AbstractDesignerServices
 	}
 
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
 	protected static EventHandler<BeforeOpenDocumentEventArgs> S_BeforeOpenDocumentHandler => _S_BeforeOpenDocumentEvent;
 
 	

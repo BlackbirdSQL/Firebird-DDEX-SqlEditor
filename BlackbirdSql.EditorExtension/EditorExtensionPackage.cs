@@ -22,7 +22,7 @@ using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Ctl.ComponentModel;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Ctl.Interfaces;
@@ -143,7 +143,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 
 	public EditorExtensionPackage() : base()
 	{
-		_EventsManager = EditorEventsManager.CreateInstance(_Controller);
+		_EventsManager = EditorEventsManager.CreateInstance(_ApcInstance);
 	}
 
 
@@ -180,7 +180,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 
 			if (ThreadHelper.CheckAccess() && GetGlobalService(typeof(SVsShell)) is IVsShell vsShell)
 			{
-				Exf(vsShell.UnadviseBroadcastMessages(_VsBroadcastMessageEventsCookie));
+				___(vsShell.UnadviseBroadcastMessages(_VsBroadcastMessageEventsCookie));
 			}
 
 			_EventsManager?.Dispose();
@@ -190,8 +190,8 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 
 			if (GetGlobalService(typeof(SProfferService)) is IProfferService profferService)
 			{
-				Exf(profferService.RevokeService(_MarkerServiceCookie));
-				Exf(profferService.RevokeService(_FontAndColorServiceCookie));
+				___(profferService.RevokeService(_MarkerServiceCookie));
+				___(profferService.RevokeService(_FontAndColorServiceCookie));
 			}
 		}
 	}
@@ -260,7 +260,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 			ThreadHelper.JoinableTaskFactory.Run(async delegate
 			{
 				IBrokeredServiceContainer brokeredServiceContainer =
-					await Controller.GetServiceAsync<SVsBrokeredServiceContainer, IBrokeredServiceContainer>();
+					await GetServiceAsync<SVsBrokeredServiceContainer, IBrokeredServiceContainer>();
 
 				Diag.ThrowIfServiceUnavailable(brokeredServiceContainer, typeof(IBrokeredServiceContainer));
 
@@ -332,7 +332,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		if (cancellationToken.IsCancellationRequested || Controller.ShutdownState)
+		if (cancellationToken.IsCancellationRequested || ApcManager.IdeShutdownState)
 			return;
 
 		await base.FinalizeAsync(cancellationToken, progress);
@@ -345,12 +345,10 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 			throw Diag.ExceptionService(typeof(OleMenuCommandService));
 
 		Guid rguidMarkerService = LibraryData.CLSID_EditorMarkerService;
-		Exf(
-			profferSvc.ProfferService(ref rguidMarkerService, this, out _MarkerServiceCookie),
-			(string)null);
+		___(profferSvc.ProfferService(ref rguidMarkerService, this, out _MarkerServiceCookie));
 
 		Guid rguidService = LibraryData.CLSID_FontAndColorService;
-		Exf(profferSvc.ProfferService(ref rguidService, this, out _FontAndColorServiceCookie));
+		___(profferSvc.ProfferService(ref rguidService, this, out _FontAndColorServiceCookie));
 
 
 		ServiceContainer.AddService(typeof(IBDesignerExplorerServices), ServicesCreatorCallbackAsync, promote: true);
@@ -372,9 +370,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 		RegisterEditorFactory(_SqlResultsEditorFactory);
 
 
-		Exf(
-			(GetGlobalService(typeof(SVsShell)) as IVsShell).AdviseBroadcastMessages(this, out _VsBroadcastMessageEventsCookie),
-			(string)null);
+		___((GetGlobalService(typeof(SVsShell)) as IVsShell).AdviseBroadcastMessages(this, out _VsBroadcastMessageEventsCookie));
 
 		progressData = new("Loading BlackbirdSql", "Finalizing: Done Registering Editor Factories", 11, 15);
 		progress.Report(progressData);
@@ -853,7 +849,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 
 			try
 			{
-				result = FormUtils.ShowDialog(dlg);
+				result = FormHost.ShowDialog(dlg);
 			}
 			catch (Exception ex)
 			{
@@ -874,7 +870,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 	{
 		// Tracer.Trace(GetType(), "TryGetTabbedEditorService()", "ENTER!!!");
 
-		IVsUIShellOpenDocument shellOpenDocumentSvc = Controller.EnsureService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
+		IVsUIShellOpenDocument shellOpenDocumentSvc = ApcInstance.EnsureService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
 
 		
 		Guid rguidEditorType = new(SystemData.MandatedSqlEditorFactoryGuid);

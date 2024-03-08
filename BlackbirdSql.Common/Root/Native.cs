@@ -571,11 +571,6 @@ public abstract class Native : BlackbirdSql.Core.Native
 
 
 
-	// GetFocus
-	[DllImport("user32.dll")]
-	public static extern IntPtr GetFocus();
-
-
 	// GetMonitorInfo
 	[DllImport("user32.dll")]
 	[return: MarshalAs(UnmanagedType.Bool)]
@@ -690,12 +685,6 @@ public abstract class Native : BlackbirdSql.Core.Native
 
 
 
-	// IsWindow
-	[DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
-	[return: MarshalAs(UnmanagedType.Bool)]
-	public static extern bool IsWindow(IntPtr hWnd);
-
-
 	// LineTo
 	[DllImport("Gdi32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
 	public static extern bool LineTo(HandleRef hdc, int x, int y);
@@ -760,12 +749,6 @@ public abstract class Native : BlackbirdSql.Core.Native
 	// SelectObject
 	[DllImport("Gdi32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
 	public static extern IntPtr SelectObject(HandleRef hDC, HandleRef hObject);
-
-
-
-	// SetFocus
-	[DllImport("user32.dll", CharSet = CharSet.Auto)]
-	public static extern IntPtr SetFocus(IntPtr hWnd);
 
 
 

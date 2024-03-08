@@ -44,10 +44,10 @@ public class SqlEditorCloneQueryWindowCommand : AbstractSqlEditorCommand
 			DesignerExplorerServices.OpenNewMiscellaneousSqlFile();
 
 			AuxiliaryDocData auxiliaryDocDataForEditor = GetAuxiliaryDocDataForEditor();
-			IBSqlEditorWindowPane lastFocusedSqlEditor = ((IBEditorPackage)Controller.DdexPackage).LastFocusedSqlEditor;
+			IBSqlEditorWindowPane lastFocusedSqlEditor = ((IBEditorPackage)ApcManager.DdexPackage).LastFocusedSqlEditor;
 			if (lastFocusedSqlEditor != null)
 			{
-				AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(lastFocusedSqlEditor.DocData);
+				AuxiliaryDocData auxDocData = ((IBEditorPackage)ApcManager.DdexPackage).GetAuxiliaryDocData(lastFocusedSqlEditor.DocData);
 				if (auxDocData != null)
 				{
 					QueryManager qryMgr = auxiliaryDocDataForEditor.QryMgr;

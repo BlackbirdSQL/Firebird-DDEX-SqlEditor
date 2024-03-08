@@ -225,7 +225,7 @@ public class GlobalsAgent : AbstractGlobalsAgent
 	/// The <see cref="EnvDTE.DTE.Solution"/> object.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static object SolutionObject => Controller.Instance.SolutionObject;
+	public static object SolutionObject => ApcManager.Instance.SolutionObject;
 
 
 	// ---------------------------------------------------------------------------------

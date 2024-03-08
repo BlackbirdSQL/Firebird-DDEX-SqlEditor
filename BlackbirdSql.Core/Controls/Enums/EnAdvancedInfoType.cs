@@ -3,17 +3,14 @@
 // Decompiled with ICSharpCode.Decompiler 7.1.0.6543
 #endregion
 
-// namespace Microsoft.SqlServer.Data.Tools.ExceptionMessageBox
 
-namespace BlackbirdSql.Common.Ctl.Enums
+namespace BlackbirdSql.Core.Controls.Enums;
+
+public enum EnAdvancedInfoType
 {
-	public enum EnExceptionMessageBoxDialogResult
-	{
-		None,
-		Button1,
-		Button2,
-		Button3,
-		Button4,
-		Button5
-	}
+	Message,
+	HelpLink,
+	Data,
+	StackTrace,
+	All
 }

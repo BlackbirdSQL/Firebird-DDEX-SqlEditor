@@ -7,15 +7,17 @@ using System;
 using System.Runtime.InteropServices;
 using BlackbirdSql.Common.Ctl.Events;
 using BlackbirdSql.Core;
-
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 
+
 namespace BlackbirdSql.Common.Ctl.Commands;
 
 [ComVisible(false)]
+
+
 public sealed class TextViewCommandFilter : IOleCommandTarget, IDisposable
 {
 	private IOleCommandTarget _NextTarget;
@@ -35,7 +37,7 @@ public sealed class TextViewCommandFilter : IOleCommandTarget, IDisposable
 	{
 		if (view != null)
 		{
-			Exf(view.AddCommandFilter(this, out _NextTarget), (string)null);
+			___(view.AddCommandFilter(this, out _NextTarget));
 			_MyTextView = view;
 			_RecongizableCommands = recongizableCommands;
 		}
@@ -45,7 +47,7 @@ public sealed class TextViewCommandFilter : IOleCommandTarget, IDisposable
 	{
 		if (_MyTextView != null)
 		{
-			Exf(_MyTextView.RemoveCommandFilter(this), (string)null);
+			___(_MyTextView.RemoveCommandFilter(this));
 			_MyTextView = null;
 		}
 
@@ -57,7 +59,10 @@ public sealed class TextViewCommandFilter : IOleCommandTarget, IDisposable
 		GC.SuppressFinalize(this);
 	}
 
-	private static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	private static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 	public int QueryStatus(ref Guid guidGroup, uint nCmdId, OLECMD[] oleCmd, IntPtr oleText)
 	{

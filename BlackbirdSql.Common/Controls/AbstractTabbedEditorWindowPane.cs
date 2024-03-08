@@ -13,7 +13,6 @@ using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls.Interfaces;
-using BlackbirdSql.Core.Ctl;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
@@ -105,12 +104,12 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 				_DisposableWaitCursor.Dispose();
 				_DisposableWaitCursor = value;
 
-				Controller.DisposableWaitCursor = value;
+				ApcManager.DisposableWaitCursor = value;
 			}
-			else if (Controller.DisposableWaitCursor == null)
+			else if (ApcManager.DisposableWaitCursor == null)
 			{
 				_DisposableWaitCursor = value;
-				Controller.DisposableWaitCursor = value;
+				ApcManager.DisposableWaitCursor = value;
 			}
 			else
 			{
@@ -123,7 +122,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 	public virtual IVsTextLines DocData => _DocData;
 
-	public bool IsToolboxInitialized => Controller.Instance.IsToolboxInitialized;
+	public bool IsToolboxInitialized => ApcManager.Instance.IsToolboxInitialized;
 
 
 	IBTextEditor IBTabbedEditorService.TextEditor
@@ -185,7 +184,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 		base.Initialize();
 
-		Controller.Instance.OnElementValueChangedEvent += OnElementValueChanged;
+		ApcManager.Instance.OnElementValueChangedEvent += OnElementValueChanged;
 
 		if (GetService(typeof(SVsTrackSelectionEx)) is IVsTrackSelectionEx vsTrackSelectionEx)
 		{
@@ -195,7 +194,11 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		_ = GetService(typeof(SVsWindowFrame)) is IVsWindowFrame;
 	}
 
-	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 	protected override void OnCreate()
 	{
@@ -208,7 +211,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 		if (docData is IVsPersistDocData vsPersistDocData)
 		{
-			Exf(vsPersistDocData.IsDocDataDirty(out var pfDirty));
+			___(vsPersistDocData.IsDocDataDirty(out var pfDirty));
 			return pfDirty != 0;
 		}
 		return false;
@@ -238,7 +241,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 					_LockHolderCookie = 0u;
 				}
 
-				Controller.Instance.OnElementValueChangedEvent -= OnElementValueChanged;
+				ApcManager.Instance.OnElementValueChangedEvent -= OnElementValueChanged;
 
 				if (_TabbedEditorUI != null)
 				{
@@ -631,7 +634,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 	private static uint GetFrameDocument(IVsWindowFrame frame)
 	{
-		Exf(frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocCookie, out var pvar));
+		___(frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocCookie, out var pvar));
 		return (uint)(int)pvar;
 	}
 
@@ -702,7 +705,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 			Guid rguidCmdUI = activeTab.CommandUIGuid;
 
-			IVsMonitorSelection selectionMonitor = Controller.SelectionMonitor;
+			IVsMonitorSelection selectionMonitor = ApcManager.SelectionMonitor;
 
 			if (selectionMonitor == null)
 				return;
@@ -1366,7 +1369,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 	private bool GetChangeTrackingStatus()
 	{
-		Exf(Frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar));
+		___(Frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar));
 
 		if (pvar is not IVsCodeWindow codeWindow)
 			throw Diag.ExceptionInstance(typeof(IVsCodeWindow));
@@ -1376,7 +1379,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 		// Tracer.Trace(typeof(AbstractDesignerServices), "SuppressChangeTracking()", "CodeWindow primary view found for mkDocument: {0}.", mkDocument);
 
-		if (Controller.GetService<SComponentModel>() is not IComponentModel componentModel)
+		if (ApcManager.GetService<SComponentModel>() is not IComponentModel componentModel)
 			return false;
 
 		IVsEditorAdaptersFactoryService service = componentModel.GetService<IVsEditorAdaptersFactoryService>();
@@ -1393,7 +1396,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 	public void SuppressChangeTracking(bool suppress)
 	{
-		Exf(Frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar));
+		___(Frame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar));
 
 		if (pvar is not IVsCodeWindow codeWindow)
 			throw Diag.ExceptionInstance(typeof(IVsCodeWindow));
@@ -1401,7 +1404,7 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		IVsTextView ppView = ((IBEditorWindowPane)codeWindow).GetCodeEditorTextView();
 
 
-		if (Controller.GetService<SComponentModel>() is not IComponentModel componentModel)
+		if (ApcManager.GetService<SComponentModel>() is not IComponentModel componentModel)
 			return;
 
 		IVsEditorAdaptersFactoryService service = componentModel.GetService<IVsEditorAdaptersFactoryService>();
@@ -1436,9 +1439,9 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 
 		if (GetService(typeof(IVsMonitorUserContext)) is IVsMonitorUserContext vsMonitorUserContext)
 		{
-			Exf(vsMonitorUserContext.CreateEmptyContext(out ppContext));
+			___(vsMonitorUserContext.CreateEmptyContext(out ppContext));
 			string helpKeywordForCodeWindowTextView = GetHelpKeywordForCodeWindowTextView();
-			Exf(ppContext.AddAttribute(VSUSERCONTEXTATTRIBUTEUSAGE.VSUC_Usage_LookupF1, "keyword", helpKeywordForCodeWindowTextView));
+			___(ppContext.AddAttribute(VSUSERCONTEXTATTRIBUTEUSAGE.VSUC_Usage_LookupF1, "keyword", helpKeywordForCodeWindowTextView));
 		}
 
 		return ppContext;
@@ -1456,10 +1459,10 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 		{
 			((IVsCodeWindow)this).GetPrimaryView(out IVsTextView ppView);
 
-			Exf((ppView as IVsProvideUserContext).GetUserContext(out var ppctx));
+			___((ppView as IVsProvideUserContext).GetUserContext(out var ppctx));
 
 			if (vsUserContext != null)
-				Exf(ppctx.AddSubcontext(vsUserContext, 500, out _));
+				___(ppctx.AddSubcontext(vsUserContext, 500, out _));
 
 			_IsHelpInitialized = true;
 		}

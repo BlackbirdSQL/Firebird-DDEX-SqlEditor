@@ -145,7 +145,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;cmdTest.ZOrder" xml:space="preserve">
-    <value>16</value>
+    <value>13</value>
   </data>
   <data name="lblDataSource.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
@@ -172,7 +172,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;lblDataSource.ZOrder" xml:space="preserve">
-    <value>7</value>
+    <value>5</value>
   </data>
   <data name="cboDialect.Items" xml:space="preserve">
     <value>1</value>
@@ -422,7 +422,7 @@ If the current input does not match any registered connection '*New Connection' 
     <value>$this</value>
   </data>
   <data name="&gt;&gt;grbSettings.ZOrder" xml:space="preserve">
-    <value>8</value>
+    <value>6</value>
   </data>
   <data name="cboServerType.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Right</value>
@@ -452,7 +452,7 @@ If the current input does not match any registered connection '*New Connection' 
     <value>$this</value>
   </data>
   <data name="&gt;&gt;cboServerType.ZOrder" xml:space="preserve">
-    <value>6</value>
+    <value>4</value>
   </data>
   <data name="lblServerType.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Right</value>
@@ -479,7 +479,7 @@ If the current input does not match any registered connection '*New Connection' 
     <value>$this</value>
   </data>
   <data name="&gt;&gt;lblServerType.ZOrder" xml:space="preserve">
-    <value>5</value>
+    <value>3</value>
   </data>
   <data name="lblRole.Location" type="System.Drawing.Point, System.Drawing">
     <value>8, 86</value>
@@ -641,7 +641,7 @@ If the current input does not match any registered connection '*New Connection' 
     <value>$this</value>
   </data>
   <data name="&gt;&gt;grbLogin.ZOrder" xml:space="preserve">
-    <value>9</value>
+    <value>7</value>
   </data>
   <data name="cmdGetFile.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Right</value>
@@ -671,7 +671,7 @@ If the current input does not match any registered connection '*New Connection' 
     <value>$this</value>
   </data>
   <data name="&gt;&gt;cmdGetFile.ZOrder" xml:space="preserve">
-    <value>10</value>
+    <value>8</value>
   </data>
   <data name="cmbDatabase.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Left, Right</value>
@@ -703,7 +703,7 @@ Server Explorer connections and connections modified during a Session have no gl
     <value>$this</value>
   </data>
   <data name="&gt;&gt;cmbDatabase.ZOrder" xml:space="preserve">
-    <value>11</value>
+    <value>16</value>
   </data>
   <data name="lblDatabase.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 41</value>
@@ -727,7 +727,7 @@ Server Explorer connections and connections modified during a Session have no gl
     <value>$this</value>
   </data>
   <data name="&gt;&gt;lblDatabase.ZOrder" xml:space="preserve">
-    <value>12</value>
+    <value>9</value>
   </data>
   <data name="txtPort.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Right</value>
@@ -754,7 +754,7 @@ Server Explorer connections and connections modified during a Session have no gl
     <value>$this</value>
   </data>
   <data name="&gt;&gt;txtPort.ZOrder" xml:space="preserve">
-    <value>13</value>
+    <value>10</value>
   </data>
   <data name="lblPort.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Right</value>
@@ -781,7 +781,7 @@ Server Explorer connections and connections modified during a Session have no gl
     <value>$this</value>
   </data>
   <data name="&gt;&gt;lblPort.ZOrder" xml:space="preserve">
-    <value>14</value>
+    <value>11</value>
   </data>
   <data name="cmbDataSource.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Left, Right</value>
@@ -805,7 +805,7 @@ Server Explorer connections and connections modified during a Session have no gl
     <value>$this</value>
   </data>
   <data name="&gt;&gt;cmbDataSource.ZOrder" xml:space="preserve">
-    <value>15</value>
+    <value>12</value>
   </data>
   <metadata name="openFileDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
@@ -835,7 +835,7 @@ Server Explorer connections and connections modified during a Session have no gl
     <value>$this</value>
   </data>
   <data name="&gt;&gt;txtDataSource.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>1</value>
   </data>
   <data name="txtDatabase.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Left, Right</value>
@@ -867,7 +867,7 @@ Server Explorer connections and connections modified during a Session have no gl
     <value>$this</value>
   </data>
   <data name="&gt;&gt;txtDatabase.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>14</value>
   </data>
   <data name="lblDatabaseBlank.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Left, Right</value>
@@ -875,8 +875,11 @@ Server Explorer connections and connections modified during a Session have no gl
   <data name="lblDatabaseBlank.Location" type="System.Drawing.Point, System.Drawing">
     <value>2, 60</value>
   </data>
+  <data name="lblDatabaseBlank.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 0</value>
+  </data>
   <data name="lblDatabaseBlank.Size" type="System.Drawing.Size, System.Drawing">
-    <value>360, 17</value>
+    <value>364, 17</value>
   </data>
   <data name="lblDatabaseBlank.TabIndex" type="System.Int32, mscorlib">
     <value>34</value>
@@ -891,7 +894,7 @@ Server Explorer connections and connections modified during a Session have no gl
     <value>$this</value>
   </data>
   <data name="&gt;&gt;lblDatabaseBlank.ZOrder" xml:space="preserve">
-    <value>4</value>
+    <value>15</value>
   </data>
   <data name="lblDataSourceBlank.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Left, Right</value>
@@ -899,8 +902,11 @@ Server Explorer connections and connections modified during a Session have no gl
   <data name="lblDataSourceBlank.Location" type="System.Drawing.Point, System.Drawing">
     <value>2, 19</value>
   </data>
+  <data name="lblDataSourceBlank.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 0</value>
+  </data>
   <data name="lblDataSourceBlank.Size" type="System.Drawing.Size, System.Drawing">
-    <value>136, 17</value>
+    <value>140, 17</value>
   </data>
   <data name="lblDataSourceBlank.TabIndex" type="System.Int32, mscorlib">
     <value>35</value>
@@ -915,7 +921,7 @@ Server Explorer connections and connections modified during a Session have no gl
     <value>$this</value>
   </data>
   <data name="&gt;&gt;lblDataSourceBlank.ZOrder" xml:space="preserve">
-    <value>3</value>
+    <value>2</value>
   </data>
   <data name="lblDatasetKeyDescription.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Left, Right</value>

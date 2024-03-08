@@ -5,7 +5,6 @@ using System;
 using System.Threading.Tasks;
 using BlackbirdSql.Controller.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using EnvDTE80;
 using Microsoft.ServiceHub.Framework;

@@ -100,8 +100,6 @@ public interface IBPackageController : IVsSolutionEvents3, // IVsSolutionEvents2
 
 	ServiceRpcDescriptor FileSystemRpcDescriptor2 { get; }
 
-	bool ShutdownState { get; set; }
-
 	object SolutionObject { get; }
 
 	bool SolutionValidating {  get; }
@@ -151,8 +149,6 @@ public interface IBPackageController : IVsSolutionEvents3, // IVsSolutionEvents2
 	Task<IVsTaskStatusCenterService> GetStatusCenterServiceAsync();
 
 
-	bool ShutdownDte();
-	
 	void ValidateSolution();
 
 

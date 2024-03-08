@@ -8,6 +8,7 @@ using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Common.Controls.Widgets;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Controls;
 
 
 
@@ -119,7 +120,7 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 			catch (Exception e)
 			{
 				Diag.Dug(e);
-				Cmd.ShowExceptionInDialog(string.Empty, e);
+				MessageCtl.ShowEx(string.Empty, e);
 			}
 		}
 	}
@@ -148,7 +149,7 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 		catch (Exception e)
 		{
 			Diag.Dug(e);
-			Cmd.ShowExceptionInDialog(string.Empty, e);
+			MessageCtl.ShowEx(string.Empty, e);
 		}
 		finally
 		{
@@ -169,7 +170,7 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 		};
 		try
 		{
-			if (FormUtils.ShowDialog(printDialog) == DialogResult.OK)
+			if (FormHost.ShowDialog(printDialog) == DialogResult.OK)
 			{
 				printDialog.Document.Print();
 			}
@@ -177,7 +178,7 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 		catch (Exception e)
 		{
 			Diag.Dug(e);
-			Cmd.ShowExceptionInDialog(ControlsResources.ErrUnableToPrintResults, e);
+			MessageCtl.ShowEx(ControlsResources.ErrUnableToPrintResults, e);
 		}
 	}
 
@@ -194,12 +195,12 @@ public abstract class AbstractGridResultsPanel : AbstractResultsPanel
 			pageSetupDialog.PageSettings = _cachedPageSettings;
 			pageSetupDialog.PrinterSettings = _cachedPrinterSettings;
 			pageSetupDialog.AllowPrinter = true;
-			FormUtils.ShowDialog(pageSetupDialog);
+			FormHost.ShowDialog(pageSetupDialog);
 		}
 		catch (Exception e)
 		{
 			Diag.Dug(e);
-			Cmd.ShowExceptionInDialog(ControlsResources.ErrUnableToPageSetup, e);
+			MessageCtl.ShowEx(ControlsResources.ErrUnableToPageSetup, e);
 		}
 	}
 

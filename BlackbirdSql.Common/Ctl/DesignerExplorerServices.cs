@@ -16,7 +16,7 @@ using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
@@ -28,7 +28,9 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
+
 namespace BlackbirdSql.Common.Ctl;
+
 
 public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExplorerServices
 {
@@ -170,7 +172,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 		if (MonikerCsaTable.ContainsKey(explorerMoniker))
 		{
-			foreach (KeyValuePair<object, AuxiliaryDocData> pair in ((IBEditorPackage)Controller.DdexPackage).AuxiliaryDocDataTable)
+			foreach (KeyValuePair<object, AuxiliaryDocData> pair in ((IBEditorPackage)ApcManager.DdexPackage).AuxiliaryDocDataTable)
 			{
 				if (pair.Value.ExplorerMoniker == null)
 					continue;
@@ -191,7 +193,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 			string documentMoniker = RdtManager.GetDocumentMoniker(documentCookie);
 
 
-			IVsUIShellOpenDocument vsUIShellOpenDocument = Controller.EnsureService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
+			IVsUIShellOpenDocument vsUIShellOpenDocument = ApcManager.EnsureService<SVsUIShellOpenDocument, IVsUIShellOpenDocument>();
 			Guid rguidEditorType = new(SystemData.MandatedSqlEditorFactoryGuid); 
 			uint[] array = new uint[1];
 			IVsUIHierarchy pHierCaller = null;
@@ -224,7 +226,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 		if (tempFilename == null)
 		{
-			Cmd.ShowMessageBoxEx(string.Empty, ControlsResources.ErrCannotCreateTempFile, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			MessageCtl.ShowEx(string.Empty, ControlsResources.ErrCannotCreateTempFile, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			return false;
 		}
 
@@ -261,7 +263,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 			Directory.Delete(tempDirectory);
 		}
 
-		foreach (KeyValuePair<object, AuxiliaryDocData> pair in ((IBEditorPackage)Controller.DdexPackage).AuxiliaryDocDataTable)
+		foreach (KeyValuePair<object, AuxiliaryDocData> pair in ((IBEditorPackage)ApcManager.DdexPackage).AuxiliaryDocDataTable)
 		{
 			if (explorerMoniker.Equals(pair.Value.ExplorerMoniker) && pair.Value.DocCookie == 0)
 			{
@@ -287,7 +289,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		string tempFileName = Path.GetTempFileName();
 		if (tempFileName == null)
 		{
-			Cmd.ShowMessageBoxEx(string.Empty, ControlsResources.ErrCannotCreateTempFile, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			MessageCtl.ShowEx(string.Empty, ControlsResources.ErrCannotCreateTempFile, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			return;
 		}
 		StreamWriter streamWriter = null;
@@ -378,7 +380,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		if (alreadyLoaded)
 			return;
 
-		IBSqlEditorWindowPane lastFocusedSqlEditor = ((IBEditorPackage)Controller.DdexPackage).LastFocusedSqlEditor;
+		IBSqlEditorWindowPane lastFocusedSqlEditor = ((IBEditorPackage)ApcManager.DdexPackage).LastFocusedSqlEditor;
 
 		// Tracer.Trace(GetType(), "OnSqlQueryLoaded()", "lastFocusedSqlEditor != null: {0}.", lastFocusedSqlEditor != null);
 

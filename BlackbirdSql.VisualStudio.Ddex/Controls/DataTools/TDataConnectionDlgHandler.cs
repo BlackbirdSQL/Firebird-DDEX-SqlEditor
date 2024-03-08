@@ -436,7 +436,7 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 		if (providerTechnology != Guid.Empty)
 		{
 
-			IVsDataProviderManager providerManager = Core.Controller.GetService<IVsDataProviderManager>();
+			IVsDataProviderManager providerManager = ApcManager.GetService<IVsDataProviderManager>();
 			callback = delegate(Guid source, Guid provider)
 			{
 				IVsDataProvider vsDataProvider = providerManager.Providers[provider];
@@ -450,7 +450,7 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 	{
 		AvailableSources.Clear();
 
-		IVsDataSourceManager sourceManager = Core.Controller.GetService<IVsDataSourceManager>();
+		IVsDataSourceManager sourceManager = ApcManager.GetService<IVsDataSourceManager>();
 
 		foreach (IVsDataSource value in sourceManager.Sources.Values)
 		{
@@ -648,7 +648,7 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 	{
 		if (form is TDataConnectionDlg)
 		{
-			Container container = new TiConnectionDialogContainer(UiService, Core.Controller.ServiceProvider);
+			Container container = new TiConnectionDialogContainer(UiService, ApcManager.ServiceProvider);
 			container.Add(form);
 			try
 			{
@@ -693,12 +693,12 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 				{
 					if (!_CreateNewConnection)
 					{
-						IVsDataConnectionManager connectionManager = Core.Controller.GetService<IVsDataConnectionManager>();
+						IVsDataConnectionManager connectionManager = ApcManager.GetService<IVsDataConnectionManager>();
 						_Connection = connectionManager.GetConnection(SelectedProvider, EncryptedConnectionString, encryptedString: true);
 					}
 					else
 					{
-						IVsDataConnectionFactory connectionFactory = Core.Controller.GetService<IVsDataConnectionFactory>();
+						IVsDataConnectionFactory connectionFactory = ApcManager.GetService<IVsDataConnectionFactory>();
 						_Connection = connectionFactory.CreateConnection(SelectedProvider, EncryptedConnectionString, encryptedString: true);
 					}
 				}
@@ -1030,7 +1030,7 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 				return _DlgHandler._ConnectionDlg.UnspecifiedDataSource;
 			}
 
-			IVsDataSourceManager sourceManager = Core.Controller.GetService<IVsDataSourceManager>();
+			IVsDataSourceManager sourceManager = ApcManager.GetService<IVsDataSourceManager>();
 
 			if (!sourceManager.Sources.TryGetValue(clsidSource, out IVsDataSource value))
 			{
@@ -1170,7 +1170,7 @@ public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
 		{
 			if (dataSource != null)
 			{
-				IVsDataSourceManager sourceManager = Core.Controller.GetService<IVsDataSourceManager>();
+				IVsDataSourceManager sourceManager = ApcManager.GetService<IVsDataSourceManager>();
 
 				IVsDataSource vsDataSource = sourceManager.Sources[dataSource.NameClsid];
 

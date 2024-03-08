@@ -682,6 +682,24 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to If enabled, closes edmx data models that have been left open when a solution closes. Enable this option to avoid potential model load errors..
+        /// </summary>
+        public static string OptionDescriptionGeneralAutoCloseEdmxModels {
+            get {
+                return ResourceManager.GetString("OptionDescriptionGeneralAutoCloseEdmxModels", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to If enabled, closes xsd datasets that have been left open when a solution closes. Enable this option to avoid potential dataset load errors..
+        /// </summary>
+        public static string OptionDescriptionGeneralAutoCloseXsdDatasets {
+            get {
+                return ResourceManager.GetString("OptionDescriptionGeneralAutoCloseXsdDatasets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enables the execution of Diagnostics calls. This option should remain enabled. Disabling does not disable Exceptions..
         /// </summary>
         public static string OptionDescriptionGeneralEnableDiagnostics {
@@ -1092,6 +1110,24 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDisplayEquivalencyWireCrypt {
             get {
                 return ResourceManager.GetString("OptionDisplayEquivalencyWireCrypt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Auto-close edmx models.
+        /// </summary>
+        public static string OptionDisplayGeneralAutoCloseEdmxModels {
+            get {
+                return ResourceManager.GetString("OptionDisplayGeneralAutoCloseEdmxModels", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Auto-close xsd datasets.
+        /// </summary>
+        public static string OptionDisplayGeneralAutoCloseXsdDatasets {
+            get {
+                return ResourceManager.GetString("OptionDisplayGeneralAutoCloseXsdDatasets", resourceCulture);
             }
         }
         

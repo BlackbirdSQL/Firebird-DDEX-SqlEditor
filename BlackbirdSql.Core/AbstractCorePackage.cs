@@ -4,15 +4,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Model;
-using BlackbirdSql.Core.Properties;
-using EnvDTE;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.RpcContracts.FileSystem;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 
+
 namespace BlackbirdSql.Core;
+
 
 // =========================================================================================================
 //										AbstractCorePackage Class 
@@ -36,15 +36,16 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 	// ---------------------------------------------------------------------------------
 	public AbstractCorePackage()
 	{
+		/*
 		if (_Instance != null)
 		{
 			TypeAccessException ex = new(Resources.ExceptionDuplicateSingletonInstances.FmtRes("Ddex extension package instances"));
 			Diag.Dug(ex);
 			throw ex;
 		}
+		*/
 
 		Diag.Context = "IDE";
-		_Instance = this;
 
 		try
 		{
@@ -55,7 +56,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 			Diag.ThrowException(ex);
 		}
 
-		_Controller = CreateController();
+		_ApcInstance = CreateController();
 
 		RctManager.CreateInstance();
 	}
@@ -89,7 +90,9 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 
 
 	protected static Package _Instance = null;
-	protected IBPackageController _Controller = null;
+	protected static bool _PackageLoaded;
+
+	protected IBPackageController _ApcInstance = null;
 	private IDisposable _DisposableWaitCursor;
 	protected IVsSolution _VsSolution = null;
 	protected bool _Initialized = false;
@@ -114,7 +117,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 	/// Accessor to the <see cref="IBPackageController"/> singleton instance
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public virtual IBPackageController Controller => _Controller
+	public virtual IBPackageController ApcInstance => _ApcInstance
 		??= (IBPackageController)GetGlobalService(typeof(IBPackageController));
 
 
@@ -126,29 +129,6 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 
 
 
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Accessor to the <see cref="DTE"/> instance.
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Using Diag.ThrowIfNotOnUIThread()")]
-	public virtual DTE Dte
-	{
-		get
-		{
-			if (Controller.ShutdownState)
-				return null;
-
-			Diag.ThrowIfNotOnUIThread();
-
-			DTE dte = GetService(typeof(DTE)) as DTE;
-
-			if (dte == null)
-				Controller.ShutdownState = true;
-
-			return dte;
-		}
-	}
 
 
 
@@ -291,7 +271,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 	/// </summary>
 	protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 	{
-		if (cancellationToken.IsCancellationRequested || Controller.ShutdownState)
+		if (cancellationToken.IsCancellationRequested || ApcManager.IdeShutdownState)
 			return;
 
 		await base.InitializeAsync(cancellationToken, progress);
@@ -331,7 +311,10 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 	protected abstract IBPackageController CreateController();
 
 
-	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 
 

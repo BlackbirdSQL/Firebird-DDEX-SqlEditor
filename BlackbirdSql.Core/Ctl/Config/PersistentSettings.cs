@@ -136,6 +136,16 @@ public abstract class PersistentSettings : IBPersistentSettings
 	public static string[] EquivalencyKeys => _EquivalencyKeys;
 
 	/// <summary>
+	/// If enabled, closes edmx data models that have been left open when a solution closes.
+	/// </summary>
+	public static bool AutoCloseEdmxModels => (bool)GetSetting("DdexGeneralAutoCloseEdmxModels", true);
+
+	/// <summary>
+	/// If enabled, closes xsd datasets that have been left open when a solution closes.
+	/// </summary>
+	public static bool AutoCloseXsdDatasets => (bool)GetSetting("DdexGeneralAutoCloseXsdDatasets", false);
+
+	/// <summary>
 	/// Determines if configured connections in a solution's projects are included in selection lists when adding
 	/// a new connnection.
 	/// </summary>

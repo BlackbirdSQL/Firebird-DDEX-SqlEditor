@@ -4195,7 +4195,7 @@ public class GridControl : Control, ISupportInitialize, IBGridControl
 
 	protected virtual void SetCursorFromHitTest(EnHitTestResult ht, long nRowIndex, int nColumnIndex, Rectangle cellRect)
 	{
-		if (Controller.DisposableWaitCursor != null)
+		if (ApcManager.DisposableWaitCursor != null)
 		{
 			// Tracer.Trace(GetType(), "SetCursorFromHitTest()", "DisposableWaitCursor IS active");
 			Cursor = Cursors.WaitCursor;

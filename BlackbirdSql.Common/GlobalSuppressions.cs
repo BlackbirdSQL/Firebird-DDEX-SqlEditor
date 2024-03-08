@@ -11,3 +11,4 @@ using System.Diagnostics.CodeAnalysis;
 [assembly: SuppressMessage("Usage", "VSTHRD104:Offer async methods")]
 [assembly: SuppressMessage("Build", "VSSDK006:Check whether the result of GetService calls is null.")]
 [assembly: SuppressMessage("Style", "IDE0290:Use primary constructor", Justification = "Readability")]
+[assembly: SuppressMessage("Style", "IDE1006:Naming Styles")]

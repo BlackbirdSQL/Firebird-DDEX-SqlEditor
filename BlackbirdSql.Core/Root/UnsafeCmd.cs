@@ -1,32 +1,22 @@
 ﻿
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
-using System.Security;
-using System.Text;
-using System.Windows.Forms.Design;
-using System.Windows.Forms;
-using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Enums;
-using FirebirdSql.Data.FirebirdClient;
-using Microsoft.VisualStudio.Shell;
-using EnvDTE;
-using System.Diagnostics.CodeAnalysis;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft;
-using System.Collections.Generic;
 using BlackbirdSql.Core.Model.Enums;
-using Microsoft.VisualStudio.RpcContracts.RemoteUI;
+using EnvDTE;
+using Microsoft;
 using Microsoft.VisualStudio;
-using System.Runtime.InteropServices;
-using BlackbirdSql.Core.Model;
-
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 
 
 namespace BlackbirdSql.Core;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Using Diag.ThrowIfNotOnUIThread()")]
 
 
 // =========================================================================================================
@@ -36,7 +26,6 @@ namespace BlackbirdSql.Core;
 /// Central location for implementation of unsafe utility static methods. 
 /// </summary>
 // =========================================================================================================
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Using Diag.ThrowIfNotOnUIThread()")]
 public abstract class UnsafeCmd
 {
 
@@ -123,7 +112,7 @@ public abstract class UnsafeCmd
 
 	public static EnConnectionSource GetConnectionSource()
 	{
-		if (RctManager.AdvisingExplorerEvents || Controller.ShutdownState)
+		if (RctManager.AdvisingExplorerEvents || ApcManager.IdeShutdownState)
 			return EnConnectionSource.ServerExplorer;
 
 		/*
@@ -159,11 +148,11 @@ public abstract class UnsafeCmd
 		string seGuid = VSConstants.StandardToolWindows.ServerExplorer.ToString("B", CultureInfo.InvariantCulture);
 
 
-		string objectKind = Controller.ActiveWindowObjectKind;
+		string objectKind = ApcManager.ActiveWindowObjectKind;
 		if (objectKind == null)
 			return EnConnectionSource.ServerExplorer;
 
-		string objectType = Core.Controller.ActiveWindowObjectType;
+		string objectType = ApcManager.ActiveWindowObjectType;
 		if (objectType == null)
 			return EnConnectionSource.ServerExplorer;
 
@@ -278,7 +267,7 @@ public abstract class UnsafeCmd
 
 
 		// Don't process CPS projects
-		Controller.Instance.VsSolution.GetProjectOfUniqueName(project.UniqueName, out IVsHierarchy hierarchy);
+		ApcManager.Instance.VsSolution.GetProjectOfUniqueName(project.UniqueName, out IVsHierarchy hierarchy);
 
 
 		if (validateCps && UnsafeCmd.IsCpsProject(hierarchy))

@@ -5,14 +5,14 @@
 
 // namespace Microsoft.SqlServer.Data.Tools.ExceptionMessageBox
 
-namespace BlackbirdSql.Common.Ctl.Enums
+namespace BlackbirdSql.Core.Controls.Enums;
+
+public enum EnMessageBoxDialogResult
 {
-	public enum EnExceptionMessageBoxDefaultButton
-	{
-		Button1,
-		Button2,
-		Button3,
-		Button4,
-		Button5
-	}
+	None,
+	Button1,
+	Button2,
+	Button3,
+	Button4,
+	Button5
 }

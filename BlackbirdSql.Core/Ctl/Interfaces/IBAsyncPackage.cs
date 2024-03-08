@@ -19,13 +19,11 @@ namespace BlackbirdSql.Core.Ctl.Interfaces;
 public interface IBAsyncPackage
 {
 
-	IBPackageController Controller { get; }
+	IBPackageController ApcInstance { get; }
 
 	Type SchemaFactoryType { get; }
 
 	IDisposable DisposableWaitCursor { get; set; }
-
-	DTE Dte { get; }
 
 	IVsSolution VsSolution { get; }
 

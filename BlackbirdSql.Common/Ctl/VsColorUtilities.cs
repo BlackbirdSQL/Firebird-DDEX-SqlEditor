@@ -186,7 +186,7 @@ public static class VsColorUtilities
 
 		Diag.ThrowIfNotOnUIThread();
 
-		Exf(uiShell.GetVSSysColorEx(color, out uint pdwRGBval));
+		___(uiShell.GetVSSysColorEx(color, out uint pdwRGBval));
 
 		return ColorTranslator.FromWin32((int)pdwRGBval);
 	}
@@ -198,7 +198,10 @@ public static class VsColorUtilities
 		linkLabel.VisitedLinkColor = GetShellColor(__VSSYSCOLOREX.VSCOLOR_CONTROL_LINK_TEXT_PRESSED);
 	}
 
-	private static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	private static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 	private static System.Windows.Media.Color GetMediaColor(int colorIndex)
 	{
@@ -207,7 +210,7 @@ public static class VsColorUtilities
 
 		Diag.ThrowIfNotOnUIThread();
 
-		Exf(UiShell.GetVSSysColorEx(colorIndex, out var pdwRGBval));
+		___(UiShell.GetVSSysColorEx(colorIndex, out var pdwRGBval));
 		System.Drawing.Color color = ColorTranslator.FromWin32((int)pdwRGBval);
 
 		return System.Windows.Media.Color.FromArgb(color.A, color.R, color.G, color.B);

@@ -7,7 +7,6 @@ using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using BlackbirdSql.Core.Model;
 using BlackbirdSql.EditorExtension;
 using EnvDTE80;
 using Microsoft.VisualStudio.RpcContracts;
@@ -48,7 +47,7 @@ public abstract class ControllerPackage : EditorExtensionPackage
 
 		// Create the Controller.
 		// Create the Controller Events Manager. 
-		_EventsManager = ControllerEventsManager.CreateInstance(_Controller);
+		_EventsManager = ControllerEventsManager.CreateInstance(_ApcInstance);
 
 	}
 
@@ -60,8 +59,12 @@ public abstract class ControllerPackage : EditorExtensionPackage
 	{
 		try
 		{
-			_Controller?.Dispose();
+			ApcManager.ResetDte();
+
+			_ApcInstance?.Dispose();
+			_ApcInstance = null;
 			_EventsManager?.Dispose();
+			_EventsManager = null;
 		}
 		catch (Exception ex)
 		{
@@ -82,7 +85,7 @@ public abstract class ControllerPackage : EditorExtensionPackage
 	// =========================================================================================================
 
 
-	private readonly ControllerEventsManager _EventsManager;
+	private ControllerEventsManager _EventsManager;
 
 
 	#endregion Fields
@@ -110,7 +113,7 @@ public abstract class ControllerPackage : EditorExtensionPackage
 	/// Accessor to the <see cref="IBPackageController"/> singleton instance
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public override IBPackageController Controller => _Controller;
+	public override IBPackageController ApcInstance => _ApcInstance;
 
 
 	#endregion Property accessors
@@ -130,7 +133,7 @@ public abstract class ControllerPackage : EditorExtensionPackage
 	/// </summary>
 	protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
 	{
-		if (cancellationToken.IsCancellationRequested || Controller.ShutdownState)
+		if (cancellationToken.IsCancellationRequested || ApcManager.IdeShutdownState)
 			return;
 
 		await base.InitializeAsync(cancellationToken, progress);
@@ -139,7 +142,7 @@ public abstract class ControllerPackage : EditorExtensionPackage
 		progress.Report(progressData);
 
 		// First try.
-		await Controller.AdviseEventsAsync();
+		await ApcInstance.AdviseEventsAsync();
 
 		progressData = new("Loading BlackbirdSql", "Done Loading Controller Event Manager", 3, 15);
 		progress.Report(progressData);
@@ -169,14 +172,14 @@ public abstract class ControllerPackage : EditorExtensionPackage
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		if (cancellationToken.IsCancellationRequested || Controller.ShutdownState)
+		if (cancellationToken.IsCancellationRequested || ApcManager.IdeShutdownState)
 			return;
 
 		ServiceProgressData progressData = new("Loading BlackbirdSql", "Finalizing: Advising Controller Events", 8, 15);
 		progress.Report(progressData);
 
 		// Second try.
-		_Controller.AdviseEvents();
+		_ApcInstance.AdviseEvents();
 
 		progressData = new("Loading BlackbirdSql", "Finalizing: Done Advising Controller Events", 9, 15);
 		progress.Report(progressData);
@@ -290,7 +293,7 @@ public abstract class ControllerPackage : EditorExtensionPackage
 		// If this is called early we have to initialize user option push notifications
 		// and environment events synchronously.
 		PropagateSettings();
-		Controller.AdviseEvents();
+		ApcInstance.AdviseEvents();
 
 		if (key == GlobalsAgent.C_PersistentKey)
 			_OnLoadSolutionOptionsEvent?.Invoke(stream);

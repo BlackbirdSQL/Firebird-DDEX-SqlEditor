@@ -5,16 +5,14 @@
 using System;
 using System.ComponentModel;
 using System.Data.Common;
-using System.Reflection;
-using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 
 
+
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;
+
 
 // =========================================================================================================
 //										TConnectionUIProperties Class

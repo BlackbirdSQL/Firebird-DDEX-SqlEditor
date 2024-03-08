@@ -661,7 +661,7 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 		{
 			if (_ProviderObjectFactory == null)
 			{
-				Core.Controller.GetService<IVsDataProviderManager>();
+				ApcManager.GetService<IVsDataProviderManager>();
 				IVsDataProviderObjectFactory vsDataProviderObjectFactory;
 				if (IsLegacyProvider)
 				{
@@ -692,7 +692,7 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 					}
 					try
 					{
-						vsDataProviderObjectFactory = Core.Controller.GetService<IVsDataProviderObjectFactory>();
+						vsDataProviderObjectFactory = ApcManager.GetService<IVsDataProviderObjectFactory>();
 					}
 					catch (Exception ex2)
 					{
@@ -752,7 +752,7 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 		{
 			try
 			{
-				obj = typeof(DataDefaultObject).GetMethod("Create").MakeGenericMethod(objType).Invoke(null, [Core.Controller.ServiceProvider]);
+				obj = typeof(DataDefaultObject).GetMethod("Create").MakeGenericMethod(objType).Invoke(null, [ApcManager.ServiceProvider]);
 			}
 			catch (TargetInvocationException ex)
 			{
@@ -761,7 +761,7 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 		}
 		if (obj != null && obj is IVsDataSiteableObject<IServiceProvider> vsDataSiteableObject)
 		{
-			vsDataSiteableObject.Site = Core.Controller.ServiceProvider;
+			vsDataSiteableObject.Site = ApcManager.ServiceProvider;
 		}
 		if (obj != null && obj is IVsDataSiteableObject<IVsDataProvider> vsDataSiteableObject2)
 		{
@@ -1176,7 +1176,7 @@ public class TVsDataProvider(Guid clsid) : IVsDataProvider // , IVsDataInternalP
 				object obj2 = typeof(DataClientObject<>).MakeGenericType(objType).GetMethod("Create",
 					BindingFlags.Static | BindingFlags.Public).Invoke(null,
 				[
-					Core.Controller.ServiceProvider,
+					ApcManager.ServiceProvider,
 					obj
 				]);
 

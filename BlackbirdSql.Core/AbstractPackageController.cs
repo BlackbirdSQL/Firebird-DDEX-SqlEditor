@@ -7,7 +7,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Properties;
@@ -21,7 +20,11 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TaskStatusCenter;
 
 
+
 namespace BlackbirdSql.Core;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Using Diag.ThrowIfNotOnUIThread()")]
+
 
 
 // =========================================================================================================
@@ -37,7 +40,6 @@ namespace BlackbirdSql.Core;
 /// Aslo performs cleanups of any sql editor documents that may be left dangling on solution close.
 /// </remarks>
 // =========================================================================================================
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Using Diag.ThrowIfNotOnUIThread()")]
 public abstract class AbstractPackageController : IBPackageController
 {
 
@@ -124,6 +126,8 @@ public abstract class AbstractPackageController : IBPackageController
 			foreach (IBEventsManager manager in _EventsManagers)
 				manager.Dispose();
 		}
+
+		
 	}
 
 
@@ -136,8 +140,10 @@ public abstract class AbstractPackageController : IBPackageController
 	#region Fields - AbstractPackageController
 	// =========================================================================================================
 
+
+	private DTE _Dte = null;
 	private bool _ProjectEvents = false;
-	private bool _ShutdownState = false;
+	private static bool _IdeShutdownState = false;
 	private static int _RdtEventsCardinal = 0;
 
 	protected static bool _EventsAdvisedUnsafe = false;
@@ -206,11 +212,7 @@ public abstract class AbstractPackageController : IBPackageController
 	public string UserDataDirectory => _UserDataDirectory ??=
 		Environment.GetFolderPath(Environment.SpecialFolder.Personal);
 
-	public bool ShutdownState
-	{
-		get { return _ShutdownState; }
-		set { _ShutdownState = value; }
-	}
+	public static bool IdeShutdownState => _IdeShutdownState;
 
 
 	public abstract ServiceRpcDescriptor FileSystemRpcDescriptor2 { get; }
@@ -223,11 +225,31 @@ public abstract class AbstractPackageController : IBPackageController
 	}
 
 
-	public DTE Dte => !_ShutdownState ? _DdexPackage.Dte : null;
+	public DTE Dte
+	{
+		get
+		{
+			if (_IdeShutdownState)
+				return null;
+
+			if (_Dte != null)
+				return _Dte;
+
+			_Dte = DdexPackage.GetService<DTE, DTE>();
+
+			if (_Dte == null)
+				ResetDte();
+
+			return _Dte;
+		}
+	}
+
+
+
 
 	private bool RdtEventsEnabled => _RdtEventsCardinal == 0;
 
-	public object SolutionObject => !_ShutdownState ? Dte.Solution : null;
+	public object SolutionObject => !_IdeShutdownState ? Dte.Solution : null;
 
 	public abstract bool SolutionValidating { get; }
 
@@ -267,7 +289,7 @@ public abstract class AbstractPackageController : IBPackageController
 			{
 				Diag.ThrowIfNotOnUIThread();
 
-				Exf(SelectionMonitor.IsCmdUIContextActive(ToolboxCmdUICookie, out int pfActive));
+				___(SelectionMonitor.IsCmdUIContextActive(ToolboxCmdUICookie, out int pfActive));
 
 				return pfActive != 0;
 			}
@@ -328,8 +350,10 @@ public abstract class AbstractPackageController : IBPackageController
 	/// the need for GetService during processing/linkage/building.
 	/// </remarks>
 
-	public IVsTaskStatusCenterService StatusCenterService => _StatusCenterService ??=
-		ThreadHelper.JoinableTaskFactory.Run(new Func<Task<IVsTaskStatusCenterService>>(GetStatusCenterServiceAsync));
+	public IVsTaskStatusCenterService StatusCenterService => _StatusCenterService
+		??= GetService<SVsTaskStatusCenterService, IVsTaskStatusCenterService>();
+	
+	//	ThreadHelper.JoinableTaskFactory.Run(new Func<Task<IVsTaskStatusCenterService>>(GetStatusCenterServiceAsync));
 
 
 
@@ -652,7 +676,7 @@ public abstract class AbstractPackageController : IBPackageController
 		_MonitorSelection = Package.GetGlobalService(typeof(IVsMonitorSelection)) as IVsMonitorSelection;
 
 		if (_MonitorSelection != null && !IsCmdLineBuild)
-			Exf(_MonitorSelection.AdviseSelectionEvents(this, out _HSelectionEvents));
+			___(_MonitorSelection.AdviseSelectionEvents(this, out _HSelectionEvents));
 
 
 		return;
@@ -668,7 +692,10 @@ public abstract class AbstractPackageController : IBPackageController
 	}
 
 
-	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 
 	public TInterface GetService<TInterface>() where TInterface : class
@@ -709,13 +736,14 @@ public abstract class AbstractPackageController : IBPackageController
 	}
 
 
-
-	public bool ShutdownDte()
+	public static void ResetDte()
 	{
-		_ShutdownState = true;
+		if (_Instance != null)
+			((AbstractPackageController)_Instance)._Dte = null;
 
-		return false;
+		_IdeShutdownState = true;
 	}
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -895,7 +923,7 @@ public abstract class AbstractPackageController : IBPackageController
 
 	protected void OnBeginShutdown()
 	{
-		ShutdownDte();
+		ResetDte();
 	}
 
 

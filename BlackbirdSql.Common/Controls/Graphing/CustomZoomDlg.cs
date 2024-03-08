@@ -113,7 +113,7 @@ public class CustomZoomDlg : Form
 		{
 			if (ex is OverflowException || ex is InvalidCastException || ex is FormatException)
 			{
-				ExceptionMessageBoxCtl exceptionMessageBox = new(new ApplicationException(string.Format(ControlsResources.ZoomLevelShouldBeBetween, (int)zoomNumber.Minimum, (int)zoomNumber.Maximum)))
+				MessageBoxCtl exceptionMessageBox = new(new ApplicationException(string.Format(ControlsResources.ZoomLevelShouldBeBetween, (int)zoomNumber.Minimum, (int)zoomNumber.Maximum)))
 				{
 					Caption = ControlsResources.MessageBoxCaption
 				};

@@ -8,14 +8,13 @@ using System.Windows.Forms;
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Controls;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
-
-using Cmd = BlackbirdSql.Common.Cmd;
 
 
 
@@ -133,7 +132,7 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 
 					Guid clsid = typeof(VsTextBufferClass).GUID;
 					Guid iid = VSConstants.IID_IUnknown;
-					object obj = ((AsyncPackage)Controller.DdexPackage).CreateInstance(ref clsid, ref iid, typeof(object));
+					object obj = ((AsyncPackage)ApcManager.DdexPackage).CreateInstance(ref clsid, ref iid, typeof(object));
 
 					if (WithEncoding)
 					{
@@ -170,7 +169,7 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 				vsTextLines2.SetLanguageServiceID(ref clsidLangService);
 				IVsUserData obj3 = (IVsUserData)vsTextLines2;
 				Guid riidKey2 = VSConstants.VsTextBufferUserDataGuid.VsBufferDetectLangSID_guid;
-				Exf(obj3.SetData(ref riidKey2, false));
+				___(obj3.SetData(ref riidKey2, false));
 
 				result2 = 0;
 
@@ -181,7 +180,7 @@ public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorF
 				Diag.Dug(ex);
 				if (ex is NullReferenceException || ex is ApplicationException || ex is ArgumentException || ex is InvalidOperationException)
 				{
-					Cmd.ShowExceptionInDialog(SharedResx.BaseEditorFactory_FailedToCreateEditor, ex);
+					MessageCtl.ShowEx(SharedResx.BaseEditorFactory_FailedToCreateEditor, ex);
 					return VSConstants.E_FAIL;
 				}
 

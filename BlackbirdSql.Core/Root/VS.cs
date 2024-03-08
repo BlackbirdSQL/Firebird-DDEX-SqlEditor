@@ -1,15 +1,13 @@
 ﻿
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Windows.Forms;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
-
 
 
 
 namespace BlackbirdSql.Core;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Using Diag.ThrowIfNotOnUIThread()")]
 
 
 // =========================================================================================================
@@ -19,7 +17,6 @@ namespace BlackbirdSql.Core;
 /// Central location for accessing of Visual Studio, SSDT and ScopeStudio members. 
 /// </summary>
 // =========================================================================================================
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification="Using Diag.ThrowIfNotOnUIThread()")]
 public abstract class VS
 {
 
@@ -45,7 +42,7 @@ public abstract class VS
 	// ---------------------------------------------------------------------------------
 
 
-	private static Control _MarshalingControl;
+	// private static Control _MarshalingControl;
 
 
 	#endregion Fields
@@ -261,20 +258,39 @@ public abstract class VS
 	// =========================================================================================================
 
 
-	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 
-	private delegate DialogResult SafeShowMessageBox(string title, string text, string helpKeyword, MessageBoxButtons buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcon icon);
+	/*
+	 * 
+	private delegate DialogResult SafeShowMessageBoxDelegate(string title, string text, string helpKeyword,
+		MessageBoxButtons buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcon icon);
+
+	public static DialogResult SafeShowMessageBox(string title, string text,
+		string helpKeyword, MessageBoxButtons buttons, MessageBoxIcon icon)
+	{
+		return SafeShowMessageBox(title, text, helpKeyword, buttons, MessageBoxDefaultButton.Button1, icon);
+	}
+
+	public static DialogResult SafeShowMessageBox(string title, string text,
+		MessageBoxButtons buttons, MessageBoxIcon icon)
+	{
+		return SafeShowMessageBox(title, text, string.Empty, buttons, icon);
+	}
 
 
-	public static DialogResult ShowMessageBoxEx(string title, string text, string helpKeyword, MessageBoxButtons buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcon icon)
+	public static DialogResult SafeShowMessageBox(string title, string text, string helpKeyword,
+		MessageBoxButtons buttons, MessageBoxDefaultButton defaultButton, MessageBoxIcon icon)
 	{
 		Diag.ThrowIfNotOnUIThread();
 
 		_MarshalingControl ??= new Control();
 		if (_MarshalingControl.InvokeRequired)
 		{
-			return (DialogResult)_MarshalingControl.Invoke(new SafeShowMessageBox(ShowMessageBoxEx), title, text, helpKeyword, defaultButton, buttons, icon);
+			return (DialogResult)_MarshalingControl.Invoke(new SafeShowMessageBoxDelegate(SafeShowMessageBox), title, text, helpKeyword, defaultButton, buttons, icon);
 		}
 		int pnResult = 1;
 		if (Package.GetGlobalService(typeof(SVsUIShell)) is IVsUIShell vsUIShell)
@@ -313,7 +329,7 @@ public abstract class VS
 		}
 		return (DialogResult)pnResult;
 	}
-
+	*/
 
 
 	#endregion Static Methods

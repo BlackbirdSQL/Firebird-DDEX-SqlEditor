@@ -11,15 +11,17 @@ using System.Globalization;
 using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core.Properties;
 
 
-namespace BlackbirdSql.Common.Controls.Dialogs;
+
+namespace BlackbirdSql.Core.Controls;
+
 
 [GeneratedCode("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
 [DebuggerNonUserCode]
 [CompilerGenerated]
-public class PrivacyConfirmationDlg : Form
+public class PrivacyConfirmationDialog : Form
 {
 	private IContainer components;
 
@@ -50,7 +52,7 @@ public class PrivacyConfirmationDlg : Form
 		{
 			if (resourceMan == null)
 			{
-				resourceMan = new ResourceManager("Microsoft.SqlServer.Data.Tools.ExceptionMessageBox.PrivacyConfirmation", typeof(PrivacyConfirmationDlg).Assembly);
+				resourceMan = new ResourceManager("Microsoft.SqlServer.Data.Tools.ExceptionMessageBox.PrivacyConfirmation", typeof(PrivacyConfirmationDialog).Assembly);
 			}
 
 			return resourceMan;
@@ -132,7 +134,7 @@ public class PrivacyConfirmationDlg : Form
 
 	public static string para1_Text => ResourceManager.GetString("para1.Text", resourceCulture);
 
-	public PrivacyConfirmationDlg(string title, string url)
+	public PrivacyConfirmationDialog(string title, string url)
 	{
 		InitializeComponent();
 		Text = title;
@@ -324,19 +326,19 @@ public class PrivacyConfirmationDlg : Form
 			array[0] = Uri.UnescapeDataString(stringToUnescape);
 			if (string.Compare((string)array[0], "ProdName", ignoreCase: false, CultureInfo.CurrentCulture) == 0)
 			{
-				array[0] = ExceptionsResources.ProductName;
+				array[0] = ControlsResources.ProductName;
 			}
 			else if (string.Compare((string)array[0], "ProdVer", ignoreCase: false, CultureInfo.CurrentCulture) == 0)
 			{
-				array[0] = ExceptionsResources.ProductVersion;
+				array[0] = ControlsResources.ProductVersion;
 			}
 			else if (string.Compare((string)array[0], "EvtSrc", ignoreCase: false, CultureInfo.CurrentCulture) == 0)
 			{
-				array[0] = ExceptionsResources.MessageSource;
+				array[0] = ControlsResources.MessageSource;
 			}
 			else if (string.Compare((string)array[0], "EvtID", ignoreCase: false, CultureInfo.CurrentCulture) == 0)
 			{
-				array[0] = ExceptionsResources.MessageID;
+				array[0] = ControlsResources.MessageID;
 			}
 
 			array[1] = Uri.UnescapeDataString(stringToUnescape2);
@@ -346,8 +348,8 @@ public class PrivacyConfirmationDlg : Form
 
 	private void PrivacyConfirmation_Load(object sender, EventArgs e)
 	{
-		m_table.Columns.Add(new DataColumn(ExceptionsResources.PrivacyItemName, typeof(string)));
-		m_table.Columns.Add(new DataColumn(ExceptionsResources.PrivacyItemValue, typeof(string)));
+		m_table.Columns.Add(new DataColumn(ControlsResources.PrivacyItemName, typeof(string)));
+		m_table.Columns.Add(new DataColumn(ControlsResources.PrivacyItemValue, typeof(string)));
 		dataGridView1.DataSource = m_table;
 		dataGridView1.Columns[0].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
 		dataGridView1.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
@@ -381,7 +383,7 @@ public class PrivacyConfirmationDlg : Form
 		*/
 	}
 
-	public PrivacyConfirmationDlg()
+	public PrivacyConfirmationDialog()
 	{
 	}
 }

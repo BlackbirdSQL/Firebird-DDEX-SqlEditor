@@ -2,15 +2,10 @@
 // Microsoft.VisualStudio.Data.Tools.Design.Core.Integration.VsFontColorPreferences
 
 using System;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
-using System.Runtime.InteropServices;
 using System.Windows.Forms.Design;
 using System.Windows.Threading;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Enums;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -20,6 +15,7 @@ using Microsoft.Win32;
 
 
 namespace BlackbirdSql.Common.Ctl.Config;
+
 
 public class VsFontColorPreferences : IVsTextManagerEvents, IDisposable
 {
@@ -46,7 +42,7 @@ public class VsFontColorPreferences : IVsTextManagerEvents, IDisposable
 			if (Package.GetGlobalService(typeof(SUIHostLocale)) is IUIHostLocale2 iUIHostLocale)
 			{
 				UIDLGLOGFONT[] array = new UIDLGLOGFONT[1];
-				Exf(iUIHostLocale.GetDialogFont(array));
+				___(iUIHostLocale.GetDialogFont(array));
 
 				if (array.Length != 0)
 					font = FontFromUIDLGLOGFONT(array[0]);
@@ -90,7 +86,10 @@ public class VsFontColorPreferences : IVsTextManagerEvents, IDisposable
 		}
 	}
 
-	private static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	private static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 	void IVsTextManagerEvents.OnRegisterMarkerType(int iMarkerType)
 	{

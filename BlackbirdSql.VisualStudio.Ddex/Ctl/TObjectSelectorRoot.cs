@@ -8,6 +8,7 @@ using System.Data;
 using System.Reflection;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
@@ -92,6 +93,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 	{
 		// Tracer.Trace(GetType(), "SelectObjects()", "typeName: {0}.", typeName);
 
+
 		try
 		{
 			if (typeName == null)
@@ -156,8 +158,11 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			// Only force create the parser 2nd time in.
 			if (lockedProviderObject != null)
 			{
+				// Tracer.Trace(GetType(), "SelectObjects()", "Finally.");
+
 				if (!UnsafeCmd.IsEdmConnectionSource)
-					LinkageParser.AsyncEnsureLoaded((IDbConnection)lockedProviderObject);
+					LinkageParser.AsyncEnsureLoading((IDbConnection)lockedProviderObject);
+
 				Site.UnlockProviderObject();
 			}
 		}

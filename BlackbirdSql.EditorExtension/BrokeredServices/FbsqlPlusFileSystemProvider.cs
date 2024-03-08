@@ -17,7 +17,6 @@ using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 using Microsoft;
@@ -380,7 +379,7 @@ public class FbsqlPlusFileSystemProvider : IFileSystemProvider, IRemoteFileSyste
 				Diag.ThrowException(new FileNotFoundException($"File '{remoteUri}' could not be downloaded as '{localUri.LocalPath}' because document cookie could not be retrieved for document moniker '{mkDocument}'"));
 			}
 
-			if (!((IBEditorPackage)Controller.DdexPackage).TryGetTabbedEditorService(docCookie, false,
+			if (!((IBEditorPackage)ApcManager.DdexPackage).TryGetTabbedEditorService(docCookie, false,
 				out IBTabbedEditorService tabbedEditorService))
 			{
 				Diag.ThrowException(new COMException($"Could not find tabbed editor service for document cookie '{docCookie}', and document moniker '{mkDocument}'"));

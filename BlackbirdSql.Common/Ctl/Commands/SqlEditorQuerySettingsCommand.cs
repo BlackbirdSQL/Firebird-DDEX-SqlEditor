@@ -42,9 +42,9 @@ public class SqlEditorQuerySettingsCommand(IBSqlEditorWindowPane editorWindow)
 		if (auxDocData == null)
 			return VSConstants.S_OK;
 
-		EnSqlOutputMode mode = auxDocData.QryMgr.LiveSettings.EditorResultsOutputMode;
+		// EnSqlOutputMode mode = auxDocData.QryMgr.LiveSettings.EditorResultsOutputMode;
 
-		IBEditorPackage editorPackage = (IBEditorPackage)Controller.DdexPackage;
+		IBEditorPackage editorPackage = (IBEditorPackage)ApcManager.DdexPackage;
 
 		editorPackage.ShowExecutionSettingsDialogFrame(auxDocData, FormStartPosition.CenterParent);
 

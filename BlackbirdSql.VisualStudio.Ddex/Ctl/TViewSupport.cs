@@ -1,16 +1,13 @@
 // $License = https://github.com/BlackbirdSQL/NETProvider-DDEX/blob/master/Docs/license.txt
 // $Authors = GA Christos (greg@blackbirdsql.org)
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
-using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
@@ -527,8 +524,7 @@ public class TViewSupport : DataViewSupport,
 
 		// We'll delay 25 cycles of 20ms each because this is a deadlock when
 		// preregistering the taskhandler and a node requiring completed linkage tables is already expanded.
-		LinkageParser parser = LinkageParser.EnsureInstance(site);
-		parser?.AsyncExecute(25, 20);
+		LinkageParser.AsyncEnsureLoading(site, 25, 20);
 	}
 
 
@@ -583,8 +579,6 @@ public class TViewSupport : DataViewSupport,
 					if (UnsafeCmd.IsEdmConnectionSource)
 						return;
 
-					// Tracer.Trace(GetType(), "OnNodeChanged()", "IsRefreshing && Disposing Linkage");
-
 					LinkageParser.DisposeInstance(site, false);
 				}
 			}
@@ -595,20 +589,13 @@ public class TViewSupport : DataViewSupport,
 				if (UnsafeCmd.IsEdmConnectionSource)
 					return;
 
-				// Tracer.Trace(GetType(), "OnNodeChanged()", "IsRefreshing && Ensuring Linkage Loaded");
-
-				LinkageParser.AsyncEnsureLoaded(site);
+				LinkageParser.AsyncEnsureLoading(site);
 			}
 		}
 		else if (e.Node.IsExpanding)
 		{
 			if (site.State == DataConnectionState.Open && RctManager.Available)
-			{
-				// Tracer.Trace(GetType(), "OnNodeChanged()", "IsExpanding && AsyncExecuting Linkage");
-
-				LinkageParser parser = LinkageParser.EnsureInstance(site);
-				parser?.AsyncExecute(20, 20);
-			}
+				LinkageParser.AsyncEnsureLoading(site);
 		}
 
 	}
@@ -619,7 +606,6 @@ public class TViewSupport : DataViewSupport,
 	{
 		// Tracer.Trace(GetType(), "OnNodeExpandedOrRefreshed", "e.Node.HasBeenExpanded: {0}, e.Node.IsExpanded: {1}, e.Node.IsExpanding: {2}.", e.Node.HasBeenExpanded, e.Node.IsExpanded, e.Node.IsExpanding);
 
-		
 		if (!e.Node.HasBeenExpanded || e.Node.ExplorerConnection == null
 			|| e.Node.ExplorerConnection.Connection == null
 			|| e.Node.ExplorerConnection.ConnectionNode == null
@@ -634,15 +620,12 @@ public class TViewSupport : DataViewSupport,
 		if (site.State != DataConnectionState.Open || !RctManager.Available)
 			return;
 
-		// Tracer.Trace(GetType(), "OnNodeExpandedOrRefreshed", "Calling IsEdm.");
-
 		// If the refresh is the result of the EDMX wizard making an illegal name
 		// change, exit. We'll handle this in OnNodeChanged().
 		if (UnsafeCmd.IsEdmConnectionSource)
 			return;
 
-
-		LinkageParser.AsyncEnsureLoaded(e.Node);
+		LinkageParser.AsyncEnsureLoading(e.Node);
 	}
 
 

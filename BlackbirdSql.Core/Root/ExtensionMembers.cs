@@ -101,7 +101,7 @@ static class ExtensionMembers
 	// ---------------------------------------------------------------------------------
 	public static string FindConnectionKey(this IVsDataConnectionProperties value)
 	{
-		return Controller.ExplorerConnectionManager.FindConnectionKey(value.ToString(), false);
+		return ApcManager.ExplorerConnectionManager.FindConnectionKey(value.ToString(), false);
 	}
 
 
@@ -136,7 +136,7 @@ static class ExtensionMembers
 	// ---------------------------------------------------------------------------------
 	public static string FindConnectionKey(this IDbConnection value)
 	{
-		return Controller.ExplorerConnectionManager.FindConnectionKey(value.ConnectionString, false);
+		return ApcManager.ExplorerConnectionManager.FindConnectionKey(value.ConnectionString, false);
 	}
 
 
@@ -149,7 +149,7 @@ static class ExtensionMembers
 	// ---------------------------------------------------------------------------------
 	public static string GetConnectionKey(this IVsDataConnectionProperties value)
 	{
-		IVsDataExplorerConnectionManager manager = Controller.ExplorerConnectionManager;
+		IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
 
 		(_, IVsDataExplorerConnection explorerConnection) = manager.SearchExplorerConnectionEntry(value.ToString(), false);
 
@@ -227,7 +227,7 @@ static class ExtensionMembers
 
 		// deepSearch == true.
 
-		IVsDataExplorerConnectionManager manager = Controller.ExplorerConnectionManager;
+		IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
 
 		(retval, _) = manager.SearchExplorerConnectionEntry(value.EncryptedConnectionString, true);
 
@@ -850,7 +850,7 @@ static class ExtensionMembers
 		SearchExplorerConnectionEntry(this IVsDataExplorerConnectionManager value,
 		string connectionString, bool encrypted)
 	{
-		IVsDataExplorerConnectionManager manager = Controller.ExplorerConnectionManager;
+		IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
 		string unencryptedConnectionString = encrypted ? DataProtection.DecryptString(connectionString) : connectionString;
 
 		Guid clsidProvider = new(SystemData.ProviderGuid);

@@ -1,11 +1,11 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.DataModel.SqlConnectionStrategy
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.Common;
-using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -18,15 +18,16 @@ using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Core.Ctl.Enums;
+using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Model;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Services;
 using Microsoft.VisualStudio.Data.Services;
 
 
+
 namespace BlackbirdSql.Common.Model;
+
 
 public class SqlConnectionStrategy : AbstractConnectionStrategy
 {
@@ -274,7 +275,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 		catch (Exception ex)
 		{
 			Diag.Dug(ex);
-			Cmd.ShowMessageBoxEx(null, ControlsResources.ErrDatabaseConnection.FmtRes(connection.ConnectionString, ex.Message), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			MessageCtl.ShowEx(ex, ControlsResources.ErrDatabaseConnection.FmtRes(connection.ConnectionString, ex.Message), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			return;
 		}
 
@@ -282,7 +283,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 		{
 			DataException ex = new("Failed to open connection");
 			Diag.Dug(ex);
-			Cmd.ShowMessageBoxEx(null, ControlsResources.ErrDatabaseConnection.FmtRes(connection.ConnectionString, ex.Message), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			MessageCtl.ShowEx(ex, ControlsResources.ErrDatabaseConnection.FmtRes(connection.ConnectionString, ex.Message), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 		}
 		/*
 		if (ReliableConnectionHelper.OpenConnection(sqlConnectionStringBuilder, useRetry: true) is ReliableSqlConnection reliableSqlConnection && !string.IsNullOrEmpty(reliableSqlConnection.Database) && reliableSqlConnection.State == ConnectionState.Open)
@@ -467,7 +468,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 
 		// Tracer.Trace(typeof(SqlConnectionStrategy), "PromptForConnection()");
 
-		IVsDataConnectionDialog connectionDialogHandler = Controller.EnsureService<IVsDataConnectionDialog>();
+		IVsDataConnectionDialog connectionDialogHandler = ApcManager.EnsureService<IVsDataConnectionDialog>();
 
 		using (connectionDialogHandler)
 		{
@@ -525,7 +526,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 
 			try
 			{
-				Exf(uiShell.GetDialogOwnerHwnd(out var phwnd));
+				___(uiShell.GetDialogOwnerHwnd(out var phwnd));
 
 				if (connectionDialogWrapper.ShowDialogValidateConnection(phwnd, connectionInfo, out connection) == true)
 					return connectionInfo;
@@ -778,10 +779,10 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 						Connection.Open();
 					}
 				}
-				catch (FbException e)
+				catch (FbException ex)
 				{
-					Diag.Dug(e);
-					Cmd.ShowMessageBoxEx(null, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrDatabaseNotAccessible, selectedDatasetKey), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+					Diag.Dug(ex);
+					MessageCtl.ShowEx(ex, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrDatabaseNotAccessible, selectedDatasetKey), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 				}
 			}
 			else

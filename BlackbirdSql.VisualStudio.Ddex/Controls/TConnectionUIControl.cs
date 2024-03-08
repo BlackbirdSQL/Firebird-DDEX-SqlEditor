@@ -46,6 +46,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	{
 		Diag.ThrowIfNotOnUIThread();
 
+
 		try
 		{
 			if (RctManager.ShutdownState || !RctManager.EnsureLoaded())

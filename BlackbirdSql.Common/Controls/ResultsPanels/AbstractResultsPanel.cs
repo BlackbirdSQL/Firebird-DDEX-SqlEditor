@@ -1,13 +1,9 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.UI.ResultPane.DisplaySqlResultsBasePanel
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Ctl.Commands;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -70,7 +66,10 @@ public abstract class AbstractResultsPanel : Panel
 		base.Dispose(disposing);
 	}
 
-	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 	protected new object GetService(Type serviceType)
 	{

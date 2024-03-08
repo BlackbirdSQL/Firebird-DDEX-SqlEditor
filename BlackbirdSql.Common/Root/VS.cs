@@ -11,19 +11,20 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Controls.Dialogs;
 using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using Microsoft.VisualStudio;
+using BlackbirdSql.Core.Controls;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+
 using Point = System.Drawing.Point;
 
 
+
 namespace BlackbirdSql.Common;
+
 
 public abstract class VS : Core.VS
 {
@@ -171,13 +172,13 @@ public abstract class VS : Core.VS
 			throw ex;
 		}
 
-		Exf((serviceProvider.GetService(typeof(SVsUIShell)) as IVsUIShell).GetDocumentWindowEnum(out var windowFramesEnum));
+		___((serviceProvider.GetService(typeof(SVsUIShell)) as IVsUIShell).GetDocumentWindowEnum(out var windowFramesEnum));
 		IVsWindowFrame[] windowFrames = new IVsWindowFrame[1];
 
 		while (windowFramesEnum.Next(1u, windowFrames, out uint pceltFetched) == 0 && pceltFetched == 1)
 		{
 			IVsWindowFrame vsWindowFrame = windowFrames[0];
-			Exf(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out var pvar));
+			___(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out var pvar));
 			if (pvar == docData)
 			{
 				yield return vsWindowFrame;
@@ -230,7 +231,7 @@ public abstract class VS : Core.VS
 				intPtr = Marshal.AllocCoTaskMem(array2.Length * 2);
 				Marshal.Copy(array2, 0, intPtr, array2.Length);
 				array[0].lStructSize = (uint)Marshal.SizeOf(typeof(VSSAVEFILENAMEW));
-				Exf(vsUIShell.GetDialogOwnerHwnd(out array[0].hwndOwner), (string)null);
+				___(vsUIShell.GetDialogOwnerHwnd(out array[0].hwndOwner));
 				array[0].pwzFilter = strFilterString;
 				array[0].pwzFileName = intPtr;
 				array[0].nMaxFileName = (uint)num;
@@ -279,7 +280,7 @@ public abstract class VS : Core.VS
 			catch (Exception e2)
 			{
 				Diag.Dug(e2);
-				Cmd.ShowExceptionInDialog(string.Empty, e2);
+				MessageCtl.ShowEx(string.Empty, e2);
 				return null;
 			}
 			finally

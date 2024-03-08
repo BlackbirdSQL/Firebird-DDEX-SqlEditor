@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using BlackbirdSql.Core.Controls.Interfaces;
+using BlackbirdSql.Core.Ctl;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
 using Microsoft.VisualStudio.Shell;
@@ -13,9 +14,19 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 
-namespace BlackbirdSql.Core.Ctl;
 
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification="Using Diag.ThrowIfNotOnUIThread()")]
+namespace BlackbirdSql.Core;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Using Diag.ThrowIfNotOnUIThread()")]
+
+
+// =========================================================================================================
+//											RdtManager Class
+//
+/// <summary>
+/// Provides application-wide static member access to the RunningDocumentTable.
+/// </summary>
+// =========================================================================================================
 public sealed class RdtManager : AbstractRdtManager
 {
 
@@ -77,7 +88,7 @@ public sealed class RdtManager : AbstractRdtManager
 
 		// Tracer.Trace(typeof(AbstractDesignerServices), "SuppressChangeTracking()", "CodeWindow primary view found for mkDocument: {0}.", mkDocument);
 
-		if (Controller.GetService<SComponentModel>() is not IComponentModel componentModel)
+		if (ApcManager.GetService<SComponentModel>() is not IComponentModel componentModel)
 			return false;
 
 		IVsEditorAdaptersFactoryService service = componentModel.GetService<IVsEditorAdaptersFactoryService>();
@@ -117,11 +128,21 @@ public sealed class RdtManager : AbstractRdtManager
 		Instance.GetRdtCookieImpl(mkDocument);
 
 
+	public static void HandsOffDocument(uint cookie, string moniker) =>
+		Instance.HandsOffDocumentImpl(cookie, moniker);
+
+
+	public static void HandsOnDocument(uint cookie, string moniker) =>
+		Instance.HandsOnDocumentImpl(cookie, moniker);
 
 
 
 	public static bool IsFileInRdt(string mkDocument) =>
 		Instance.IsFileInRdtImpl(mkDocument);
+
+
+	public static int QueryCloseRunningDocument(string pszMkDocument, out int pfFoundAndClosed) =>
+		Instance.QueryCloseRunningDocumentImpl(pszMkDocument, out pfFoundAndClosed);
 
 
 
@@ -168,7 +189,7 @@ public sealed class RdtManager : AbstractRdtManager
 	{
 		// Tracer.Trace(typeof(AbstractDesignerServices), "SuppressChangeTracking()", "mkDocument: {0}.", mkDocument);
 
-		if (!RdtManager.TryGetCodeWindow(mkDocument, out IVsCodeWindow codeWindow) || codeWindow == null)
+		if (!TryGetCodeWindow(mkDocument, out IVsCodeWindow codeWindow) || codeWindow == null)
 		{
 			return;
 		}
@@ -186,7 +207,7 @@ public sealed class RdtManager : AbstractRdtManager
 
 		// Tracer.Trace(typeof(AbstractDesignerServices), "SuppressChangeTracking()", "CodeWindow primary view found for mkDocument: {0}.", mkDocument);
 
-		if (Controller.GetService<SComponentModel>() is not IComponentModel componentModel)
+		if (ApcManager.GetService<SComponentModel>() is not IComponentModel componentModel)
 			return;
 
 		IVsEditorAdaptersFactoryService service = componentModel.GetService<IVsEditorAdaptersFactoryService>();
@@ -227,7 +248,7 @@ public sealed class RdtManager : AbstractRdtManager
 			{
 				Diag.ThrowIfNotOnUIThread();
 
-				Exf(windowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar));
+				___(windowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar));
 				if (pvar != null)
 				{
 					codeWindow = pvar as IVsCodeWindow;

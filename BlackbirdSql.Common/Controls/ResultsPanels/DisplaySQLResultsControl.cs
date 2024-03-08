@@ -103,7 +103,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 		{
 			if (_AuxDocData == null && SqlEditorPane != null)
 			{
-				_AuxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(SqlEditorPane.DocData);
+				_AuxDocData = ((IBEditorPackage)ApcManager.DdexPackage).GetAuxiliaryDocData(SqlEditorPane.DocData);
 			}
 
 			return _AuxDocData;
@@ -429,7 +429,7 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 	public bool PrepareForExecution(bool prepareForParse)
 	{
 		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.PrepareForExecution", "prepareForParse = {0}", prepareForParse);
-		((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(SqlEditorPane.DocData).QryMgr.ResultsHandler = BatchConsumer;
+		((IBEditorPackage)ApcManager.DdexPackage).GetAuxiliaryDocData(SqlEditorPane.DocData).QryMgr.ResultsHandler = BatchConsumer;
 		AbstractResultsWriter resultsWriter = null;
 		if (AuxDocData.SqlOutputMode == EnSqlOutputMode.ToFile && !prepareForParse
 			&& !AuxDocData.LiveSettings.EditorResultsTextDiscardResults && !WithEstimatedExecutionPlan)
@@ -626,10 +626,10 @@ public class DisplaySQLResultsControl : IBSqlQueryExecutionHandler, IBQueryExecu
 		{
 			Name = "_TextMessagesPage"
 		};
-		AuxiliaryDocData auxDocData = ((IBEditorPackage)Controller.DdexPackage).GetAuxiliaryDocData(SqlEditorPane.DocData);
+		AuxiliaryDocData auxDocData = ((IBEditorPackage)ApcManager.DdexPackage).GetAuxiliaryDocData(SqlEditorPane.DocData);
 		RegisterToQueryExecutorEvents(auxDocData.QryMgr);
 
-		IVsFontAndColorStorage vsFontAndColorStorage = Controller.GetService<SVsFontAndColorStorage, IVsFontAndColorStorage>();
+		IVsFontAndColorStorage vsFontAndColorStorage = ApcManager.GetService<SVsFontAndColorStorage, IVsFontAndColorStorage>();
 
 		if (AbstractFontAndColorProvider.GetFontAndColorSettingsForCategory(Core.VS.CLSID_FontAndColorsSqlResultsGridCategory,
 			FontAndColorProviderGridResults.GridCell, vsFontAndColorStorage, out var categoryFont, out var foreColor,

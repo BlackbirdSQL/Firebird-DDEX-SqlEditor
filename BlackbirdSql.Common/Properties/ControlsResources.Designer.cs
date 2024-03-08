@@ -468,15 +468,6 @@ namespace BlackbirdSql.Common.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connect to Server.
-        /// </summary>
-        public static string ConnectToServer {
-            get {
-                return ResourceManager.GetString("ConnectToServer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Cost: {0} %.
         /// </summary>
         public static string CostFormat {

@@ -6,15 +6,14 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Controls.Widgets;
-using BlackbirdSql.Common.Ctl.Enums;
-using BlackbirdSql.Common.Ctl.Exceptions;
-using BlackbirdSql.Common.Properties;
+using BlackbirdSql.Core.Controls.Enums;
+using BlackbirdSql.Core.Controls.Widgets;
+using BlackbirdSql.Core.Properties;
 
 
-namespace BlackbirdSql.Common.Controls.Dialogs;
+namespace BlackbirdSql.Core.Controls;
 
-public class AdvancedInformationDlg : Form
+public class AdvancedInformationDialog : Form
 {
 	private IContainer components;
 
@@ -38,9 +37,9 @@ public class AdvancedInformationDlg : Form
 
 	private TableLayoutPanel tableLayoutPanel2;
 
-	public ExceptionMessageBoxDlg MessageBoxForm { get; set; }
+	public MessageBoxDialog MessageBoxForm { get; set; }
 
-	public AdvancedInformationDlg()
+	public AdvancedInformationDialog()
 	{
 		InitializeComponent();
 		Icon = null;
@@ -49,8 +48,8 @@ public class AdvancedInformationDlg : Form
 
 	private void AdvancedInformation_Load(object sender, EventArgs e)
 	{
-		TreeNode treeNode = new TreeNode(ExceptionsResources.AdvInfoAllMessages);
-		for (Exception ex = MessageBoxForm.Message; ex != null; ex = ex.InnerException)
+		TreeNode treeNode = new TreeNode(ControlsResources.AdvInfoAllMessages);
+		for (Exception ex = MessageBoxForm.ExMessage; ex != null; ex = ex.InnerException)
 		{
 			try
 			{
@@ -58,7 +57,7 @@ public class AdvancedInformationDlg : Form
 				{
 					Tag = MessageBoxForm.BuildAdvancedInfo(ex, EnAdvancedInfoType.All)
 				};
-				TreeNode treeNode2 = new(ExceptionsResources.AdvInfoMessage)
+				TreeNode treeNode2 = new(ControlsResources.AdvInfoMessage)
 				{
 					Tag = MessageBoxForm.BuildAdvancedInfo(ex, EnAdvancedInfoType.Message)
 				};
@@ -70,7 +69,7 @@ public class AdvancedInformationDlg : Form
 					text = MessageBoxForm.BuildAdvancedInfo(ex, EnAdvancedInfoType.HelpLink);
 					if (text != null && text.Length > 0)
 					{
-						treeNode2 = new(ExceptionsResources.AdvInfoHelpLink)
+						treeNode2 = new(ControlsResources.AdvInfoHelpLink)
 						{
 							Tag = text
 						};
@@ -86,7 +85,7 @@ public class AdvancedInformationDlg : Form
 					text = MessageBoxForm.BuildAdvancedInfo(ex, EnAdvancedInfoType.Data);
 					if (text != null && text.Length > 0)
 					{
-						treeNode2 = new(ExceptionsResources.ADvInfoData)
+						treeNode2 = new(ControlsResources.AdvInfoData)
 						{
 							Tag = text
 						};
@@ -104,7 +103,7 @@ public class AdvancedInformationDlg : Form
 						text = MessageBoxForm.BuildAdvancedInfo(ex, EnAdvancedInfoType.StackTrace);
 						if (text != null && text.Length > 0)
 						{
-							treeNode2 = new(ExceptionsResources.CodeLocation[..^1])
+							treeNode2 = new(ControlsResources.CodeLocation[..^1])
 							{
 								Tag = text
 							};
@@ -161,7 +160,7 @@ public class AdvancedInformationDlg : Form
 		}
 		catch (Exception exError)
 		{
-			MessageBoxForm.ShowError(ExceptionsResources.CopyToClipboardError, exError);
+			MessageBoxForm.ShowError(ControlsResources.CopyToClipboardError, exError);
 		}
 	}
 
@@ -173,7 +172,7 @@ public class AdvancedInformationDlg : Form
 	private void InitializeComponent()
 	{
 		components = new Container();
-		ComponentResourceManager resources = new ComponentResourceManager(typeof(AdvancedInformationDlg));
+		ComponentResourceManager resources = new ComponentResourceManager(typeof(AdvancedInformationDialog));
 		label1 = new Label();
 		tree = new TreeView();
 		label2 = new Label();

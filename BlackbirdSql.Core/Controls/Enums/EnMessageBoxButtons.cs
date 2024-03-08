@@ -3,19 +3,17 @@
 // Decompiled with ICSharpCode.Decompiler 7.1.0.6543
 #endregion
 
+// namespace Microsoft.SqlServer.Data.Tools.ExceptionMessageBox
 
-namespace BlackbirdSql.Common.Ctl.Enums;
+namespace BlackbirdSql.Core.Controls.Enums;
 
-
-public enum EnExceptionMessageBoxSymbol
+public enum EnMessageBoxButtons
 {
-	None = 0,
-	Warning = 1,
-	Information = 2,
-	Error = 3,
-	Exclamation = 4,
-	Asterisk = 5,
-	Question = 6,
-	Hand = 7,
-	Stop = 3
+	OK,
+	OKCancel,
+	YesNoCancel,
+	YesNo,
+	AbortRetryIgnore,
+	RetryCancel,
+	Custom
 }

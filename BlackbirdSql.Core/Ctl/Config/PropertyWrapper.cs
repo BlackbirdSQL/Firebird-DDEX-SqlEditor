@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
@@ -761,8 +762,10 @@ public class PropertyWrapper : IBSettingsModelPropertyWrapper
 	}
 
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0038:Use pattern matching", Justification = "<Pending>")]
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0019:Use pattern matching", Justification = "<Pending>")]
+
+	[SuppressMessage("Style", "IDE0038:Use pattern matching", Justification = "<Pending>")]
+	[SuppressMessage("Style", "IDE0019:Use pattern matching", Justification = "<Pending>")]
+
 	//
 	// Summary:
 	//     Convert the propertyValue retrieved from the property to the type it will be

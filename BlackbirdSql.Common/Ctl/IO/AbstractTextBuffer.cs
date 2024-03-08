@@ -2,6 +2,7 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.TextBuffer
 
 using System;
+using Microsoft.VisualStudio;
 
 
 
@@ -72,7 +73,10 @@ public abstract class AbstractTextBuffer
 	{
 	}
 
-	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 	public abstract string GetText(int startPosition, int chars);
 

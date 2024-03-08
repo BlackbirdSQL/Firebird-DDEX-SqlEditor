@@ -33,6 +33,7 @@ public class TSourceVersionComparer : DataSourceVersionComparer, IComparer<strin
 	public TSourceVersionComparer()
 	{
 		// Tracer.Trace(GetType(), "TSourceVersionComparer.TSourceVersionComparer");
+
 		base.Comparer = this;
 	}
 

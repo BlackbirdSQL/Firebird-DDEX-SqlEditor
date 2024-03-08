@@ -27,8 +27,6 @@ public static class LibraryData
 	#region Package Guids - LibraryData
 	// ---------------------------------------------------------------------------------------------------------
 
-	public const string ExceptionMessageBoxParentGuid = "998E39AD-042D-484C-B462-0FB3F6536DE9";
-
 
 	#endregion Package Guids
 

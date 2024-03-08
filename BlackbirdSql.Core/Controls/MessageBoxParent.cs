@@ -9,18 +9,13 @@ using System.Windows.Forms;
 
 
 // namespace Microsoft.SqlServer.Data.Tools.ExceptionMessageBox
-namespace BlackbirdSql.Common.Ctl.Dialogs
+namespace BlackbirdSql.Core.Controls;
+
+
+[Guid(SystemData.MessageBoxParentGuid)]
+public sealed class MessageBoxParent(IntPtr HWnd) : IWin32Window
 {
-	[Guid(LibraryData.ExceptionMessageBoxParentGuid)]
-	public sealed class ExceptionMessageBoxParent : IWin32Window
-	{
-		private readonly IntPtr HWnd;
+	private readonly IntPtr _Handle = HWnd;
 
-		public IntPtr Handle => HWnd;
-
-		public ExceptionMessageBoxParent(IntPtr HWnd)
-		{
-			this.HWnd = HWnd;
-		}
-	}
+	public IntPtr Handle => _Handle;
 }

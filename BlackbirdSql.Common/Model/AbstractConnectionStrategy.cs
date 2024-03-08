@@ -1,5 +1,6 @@
 ﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.DataModel.ConnectionStrategy
+
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,23 +10,22 @@ using System.Globalization;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
-
 using BlackbirdSql.Common.Ctl.Config;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
-
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Isql;
-
 using Microsoft.VisualStudio.Shell;
 
 
+
 namespace BlackbirdSql.Common.Model;
+
 
 public abstract class AbstractConnectionStrategy : IDisposable
 {
@@ -276,7 +276,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 				Diag.Dug(ex, script.ToString());
 				StringBuilder sb = new StringBuilder(100);
 				sb.AppendFormat(ControlsResources.UnableToApplyConnectionSettings, ex.Message);
-				Cmd.ShowMessageBoxEx(string.Empty, sb.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Hand);
+				MessageCtl.ShowEx(sb.ToString(), string.Empty, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			}
 			finally
 			{
@@ -436,10 +436,10 @@ public abstract class AbstractConnectionStrategy : IDisposable
 				}
 			}
 		}
-		catch (FbException e)
+		catch (FbException ex)
 		{
-			Diag.Dug(e);
-			Cmd.ShowMessageBoxEx(null, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrDatabaseNotAccessible, selectedDatasetKey), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			Diag.Dug(ex);
+			MessageCtl.ShowEx(ex, string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrDatabaseNotAccessible, selectedDatasetKey), null, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 		}
 	}
 
@@ -608,7 +608,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 			}
 
 			stringBuilder2.Append(value2);
-			Cmd.ShowMessageBoxEx(string.Empty, stringBuilder2.ToString(), MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			MessageCtl.ShowEx(stringBuilder2.ToString(), string.Empty, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 		}
 	}
 

@@ -67,6 +67,21 @@ public class GeneralSettingsModel(IBTransientSettings transientSettings)
 
 
 	[GlobalizedCategory("OptionCategoryGeneral")]
+	[GlobalizedDisplayName("OptionDisplayGeneralAutoCloseEdmxModels")]
+	[GlobalizedDescription("OptionDescriptionGeneralAutoCloseEdmxModels")]
+	[TypeConverter(typeof(GlobalEnableDisableConverter))]
+	[DefaultValue(true)]
+	public bool AutoCloseEdmxModels { get; set; } = true;
+
+	[GlobalizedCategory("OptionCategoryGeneral")]
+	[GlobalizedDisplayName("OptionDisplayGeneralAutoCloseXsdDatasets")]
+	[GlobalizedDescription("OptionDescriptionGeneralAutoCloseXsdDatasets")]
+	[TypeConverter(typeof(GlobalEnableDisableConverter))]
+	[DefaultValue(false)]
+	public bool AutoCloseXsdDatasets { get; set; } = false;
+
+
+	[GlobalizedCategory("OptionCategoryGeneral")]
 	[GlobalizedDisplayName("OptionDisplayGeneralIncludeAppConnections")]
 	[GlobalizedDescription("OptionDescriptionGeneralIncludeAppConnections")]
 	[TypeConverter(typeof(GlobalYesNoConverter))]
@@ -83,7 +98,11 @@ public class GeneralSettingsModel(IBTransientSettings transientSettings)
 	[GlobalizedCategory("OptionCategoryGeneral")]
 	[GlobalizedDisplayName("OptionDisplayGeneralLinkageTimeout")]
 	[GlobalizedDescription("OptionDescriptionGeneralLinkageTimeout")]
+#if DEBUG
+	[TypeConverter(typeof(UomConverter)), LiteralRange(3, 120, "Seconds")]
+#else
 	[TypeConverter(typeof(UomConverter)), LiteralRange(10, 120, "Seconds")]
+#endif
 	[DefaultValue(30)]
 	public int LinkageTimeout { get; set; } = 30;
 
@@ -119,6 +138,6 @@ public class GeneralSettingsModel(IBTransientSettings transientSettings)
 	public bool ValidateConnectionOnFormAccept { get; set; } = true;
 
 
-	#endregion Property Accessors
+#endregion Property Accessors
 
 }

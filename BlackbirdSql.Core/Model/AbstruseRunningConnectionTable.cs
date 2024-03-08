@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 using System.Xml;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Config;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Model.Interfaces;
@@ -23,10 +22,15 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Threading;
+
 using static BlackbirdSql.Core.Ctl.CoreConstants;
 
 
+
 namespace BlackbirdSql.Core.Model;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Using Diag.ThrowIfNotOnUIThread()")]
+
 
 // =========================================================================================================
 //									AbstruseRunningConnectionTable Class
@@ -53,8 +57,6 @@ namespace BlackbirdSql.Core.Model;
 /// in the Rct.
 /// </remarks>
 // =========================================================================================================
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification="Using Diag.ThrowIfNotOnUIThread()")]
-[SuppressMessage("Usage", "VSTHRD102:Implement internal logic asynchronously")]
 public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, int>, IBRunningConnectionTable
 {
 
@@ -116,7 +118,10 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			}
 
 			if (launchersActive)
+			{
 				System.Threading.Thread.Sleep(50);
+				System.Threading.Thread.Yield();
+			}
 
 			launchersActive = false;
 
@@ -146,7 +151,10 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			}
 
 			if (launchersActive)
+			{
 				System.Threading.Thread.Sleep(50);
+				System.Threading.Thread.Yield();
+			}
 
 			_SyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Shutdown;
 			_AsyncPayloadLauncherLaunchState = EnLauncherPayloadLaunchState.Shutdown;
@@ -278,7 +286,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		try
 		{
 
-			IVsDataExplorerConnectionManager manager = Controller.ExplorerConnectionManager;
+			IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
 
 			Guid clsidProvider = new(SystemData.ProviderGuid);
 			IVsDataExplorerConnection explorerConnection;
@@ -374,7 +382,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	private void AsyncLinkSitedServerExplorerConnections()
 	{
-		IVsDataExplorerConnectionManager manager = Controller.ExplorerConnectionManager;
+		IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
 
 		Guid clsidProvider = new(SystemData.ProviderGuid);
 		IVsDataExplorerConnection explorerConnection;
@@ -395,7 +403,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 					if (explorerConnection.Connection.State == DataConnectionState.Open
 						|| (explorerConnection.ConnectionNode != null && explorerConnection.ConnectionNode.IsExpanded))
 					{
-						LinkageParser.AsyncEnsureLoaded(explorerConnection.Connection);
+						LinkageParser.AsyncRequestLoading(explorerConnection.Connection);
 					}
 				}
 
@@ -935,7 +943,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	{
 		// Tracer.Trace(GetType(), "LoadServerExplorerConfiguredConnections()");
 
-		IVsDataExplorerConnectionManager manager = Controller.ExplorerConnectionManager;
+		IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
 
 		Guid clsidProvider = new(SystemData.ProviderGuid);
 		object @object;
@@ -1098,10 +1106,10 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		Diag.ThrowIfNotOnUIThread();
 
 
-		if (probject == null && (Controller.Instance.Dte == null
-			|| Controller.Instance.Dte.Solution == null
-			|| Controller.Instance.Dte.Solution.Projects == null
-			|| Controller.Instance.Dte.Solution.Projects.Count == 0))
+		if (probject == null && (ApcManager.Instance.Dte == null
+			|| ApcManager.Instance.Dte.Solution == null
+			|| ApcManager.Instance.Dte.Solution.Projects == null
+			|| ApcManager.Instance.Dte.Solution.Projects.Count == 0))
 		{
 			return;
 		}
@@ -1117,7 +1125,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			}
 			else
 			{
-				foreach (Project project in Controller.Instance.Dte.Solution.Projects)
+				foreach (Project project in ApcManager.Instance.Dte.Solution.Projects)
 					_Probjects.Add(project);
 			}
 
@@ -1178,7 +1186,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		_AsyncPayloadLauncherTokenSource?.Cancel();
 
-		if (Controller.Instance.Dte == null)
+		if (ApcManager.Instance.Dte == null)
 			return false;
 
 		try
@@ -1189,8 +1197,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			AdviseServerExplorerConnectionsEvents();
 
 
-			if (Controller.Instance.Dte.Solution == null
-				|| Controller.Instance.Dte.Solution.Projects == null)
+			if (ApcManager.Instance.Dte.Solution == null
+				|| ApcManager.Instance.Dte.Solution.Projects == null)
 			{
 				COMException exc = new("DTE.Solution.Projects is not available", VSConstants.RPC_E_INVALID_DATA);
 				Diag.Dug(exc);
@@ -1482,7 +1490,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			}
 
 			// Check again.
-			if (cancellationToken.IsCancellationRequested || Controller.Instance.Dte == null)
+			if (cancellationToken.IsCancellationRequested || ApcManager.Instance.Dte == null)
 			{
 				result = false;
 			}
@@ -1496,8 +1504,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 					AdviseServerExplorerConnectionsEvents();
 
 
-				if (probject == null && (Controller.Instance.Dte.Solution == null
-					|| Controller.Instance.Dte.Solution.Projects == null))
+				if (probject == null && (ApcManager.Instance.Dte.Solution == null
+					|| ApcManager.Instance.Dte.Solution.Projects == null))
 				{
 					COMException exc = new("DTE.Solution.Projects is not available", VSConstants.RPC_E_INVALID_DATA);
 					Diag.Dug(exc);
@@ -1580,6 +1588,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			}
 
 			System.Threading.Thread.Sleep(50);
+			System.Threading.Thread.Yield();
 
 			waitTime += 50;
 		}
@@ -2240,6 +2249,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		_SyncPayloadLauncherTokenSource?.Cancel();
 
 		System.Threading.Thread.Sleep(50);
+		System.Threading.Thread.Yield();
 
 		// Kill SyncPayloadTask.
 
@@ -2320,7 +2330,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	{
 		// Tracer.Trace(GetType(), "UnloadServerExplorerConfiguredConnections()");
 
-		IVsDataExplorerConnectionManager manager = Controller.ExplorerConnectionManager;
+		IVsDataExplorerConnectionManager manager = ApcManager.ExplorerConnectionManager;
 
 		Guid clsidProvider = new(SystemData.ProviderGuid);
 

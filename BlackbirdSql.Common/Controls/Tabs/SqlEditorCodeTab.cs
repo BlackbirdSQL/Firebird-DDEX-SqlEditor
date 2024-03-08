@@ -56,7 +56,7 @@ public class SqlEditorCodeTab : AbstractSqlEditorTab
 		string documentMoniker = DocumentMoniker;
 
 		int hresult = vsUIShellOpenDocument.IsDocumentOpen(null, 0u, documentMoniker, ref _ClsidLogicalView, 0u, out var _, array, out var _, out var _);
-		Exf(hresult);
+		___(hresult);
 
 		IVsWindowFrame vsWindowFrame = WindowPaneServiceProvider.GetService(typeof(SVsWindowFrame)) as IVsWindowFrame;
 
@@ -71,7 +71,7 @@ public class SqlEditorCodeTab : AbstractSqlEditorTab
 			__VSSPECIFICEDITORFLAGS flags = __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_DoOpen
 				| __VSSPECIFICEDITORFLAGS.VSSPECIFICEDITOR_UseEditor;
 
-			Exf(vsUIShellOpenDocument.OpenDocumentViaProjectWithSpecific(documentMoniker, (uint)flags, ref editorGuid, null, ref rguidLogicalView, out Microsoft.VisualStudio.OLE.Interop.IServiceProvider ppSP, out IVsUIHierarchy ppHierOpen, out array[0], out IVsWindowFrame ppWindowFrame), (string)null);
+			___(vsUIShellOpenDocument.OpenDocumentViaProjectWithSpecific(documentMoniker, (uint)flags, ref editorGuid, null, ref rguidLogicalView, out Microsoft.VisualStudio.OLE.Interop.IServiceProvider ppSP, out IVsUIHierarchy ppHierOpen, out array[0], out IVsWindowFrame ppWindowFrame));
 
 			SetFrameProperties(vsWindowFrame, ppWindowFrame);
 

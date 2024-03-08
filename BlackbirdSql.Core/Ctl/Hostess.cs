@@ -6,12 +6,15 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 
+
 namespace BlackbirdSql.Core.Ctl;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Using Diag.ThrowIfNotOnUIThread()")]
+
 
 /// <summary>
 /// Editor related Host services.
 /// </summary>
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification="Using Diag.ThrowIfNotOnUIThread()")]
 public class Hostess(IServiceProvider dataViewHierarchyServiceProvider)
 	: AbstractHostess(dataViewHierarchyServiceProvider)
 {

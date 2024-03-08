@@ -8,6 +8,7 @@ using BlackbirdSql.Common;
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Controls;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -15,11 +16,10 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
 
-using Cmd = BlackbirdSql.Common.Cmd;
-
 
 
 namespace BlackbirdSql.EditorExtension.Ctl;
+
 
 [Guid(LibraryData.SqlResultsEditorFactoryGuid)]
 [ProvideMenuResource("Menus.ctmenu", 1)]
@@ -72,7 +72,7 @@ public sealed class SqlResultsEditorFactory : AbstruseEditorFactory
 
 			Guid clsid = typeof(VsTextBufferClass).GUID;
 			Guid iid = VSConstants.IID_IUnknown;
-			object obj = ((AsyncPackage)Controller.DdexPackage).CreateInstance(ref clsid, ref iid, typeof(object));
+			object obj = ((AsyncPackage)ApcManager.DdexPackage).CreateInstance(ref clsid, ref iid, typeof(object));
 			(obj as IObjectWithSite)?.SetSite(OleServiceProvider);
 			IVsTextLines vsTextLines = obj as IVsTextLines;
 			intPtrDocData = Marshal.GetIUnknownForObject(vsTextLines);
@@ -88,7 +88,7 @@ public sealed class SqlResultsEditorFactory : AbstruseEditorFactory
 		{
 			if (ex is NullReferenceException || ex is ApplicationException || ex is ArgumentException || ex is InvalidOperationException)
 			{
-				Cmd.ShowExceptionInDialog(SharedResx.BaseEditorFactory_FailedToCreateEditor, ex);
+				MessageCtl.ShowEx(SharedResx.BaseEditorFactory_FailedToCreateEditor, ex);
 				return VSConstants.E_FAIL;
 			}
 

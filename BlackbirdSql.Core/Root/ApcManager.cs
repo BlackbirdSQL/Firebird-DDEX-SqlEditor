@@ -2,12 +2,9 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using System.CodeDom;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
-using EnvDTE;
 using Microsoft.ServiceHub.Framework;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
@@ -16,19 +13,21 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TaskStatusCenter;
 
+
+
 namespace BlackbirdSql.Core;
 
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Only checking for null")]
+
 
 // =========================================================================================================
-//										Controller Class
+//											ApcManager Class
 //
 /// <summary>
-/// Placeholder for AbstractPackageController static members for consistency.
+/// Provides application-wide static member access to the PackageController singleton instance.
 /// </summary>
 // =========================================================================================================
-[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread",
-	Justification = "Only checking for null")]
-internal static class Controller
+internal static class ApcManager
 {
 	public static string ActiveWindowObjectKind
 	{
@@ -48,8 +47,37 @@ internal static class Controller
 
 				return result;
 			}
-			*/
+
 			return GetActiveWindowObjectKind();
+			*/
+
+			if (IdeShutdownState)
+				return null;
+
+			EnvDTE.Window window = null;
+
+			try
+			{
+				window = Instance.Dte?.ActiveWindow;
+			}
+			catch (InvalidCastException ex)
+			{
+				if (ex.HResult == VSConstants.E_NOINTERFACE)
+				{
+					ResetDte();
+					return null;
+				}
+			}
+			catch
+			{
+				window = null;
+			}
+
+
+			if (window == null)
+				return null;
+
+			return window.ObjectKind;
 
 		}
 	}
@@ -76,7 +104,41 @@ internal static class Controller
 			}
 			*/
 
-			return GetActiveWindowObjectType();
+			// We're just peeking at stored values.
+			// Diag.ThrowIfNotOnUIThread();
+
+			if (IdeShutdownState)
+				return null;
+
+			EnvDTE.Window window = null;
+
+			try
+			{
+				window = Instance.Dte?.ActiveWindow;
+			}
+			catch (InvalidCastException ex)
+			{
+				if (ex.HResult == VSConstants.E_NOINTERFACE)
+				{
+					ResetDte();
+					return null;
+				}
+			}
+			catch
+			{
+				window = null;
+			}
+
+
+			if (window == null)
+				return null;
+
+			object @object = window.Object;
+			if (@object == null)
+				return null;
+
+
+			return @object.GetType().FullName;
 
 		}
 	}
@@ -113,18 +175,20 @@ internal static class Controller
 
 	public static Type SchemaFactoryType => Instance.DdexPackage.SchemaFactoryType;
 
-	public static bool ShutdownState => Instance.ShutdownState;
+	public static bool IdeShutdownState => AbstractPackageController.IdeShutdownState;
 
 	public static bool InvariantResolved => DdexPackage.InvariantResolved;
 
 	public static System.IServiceProvider ServiceProvider => (System.IServiceProvider)Instance.DdexPackage;
+
+	public static IVsTaskStatusCenterService StatusCenterService => Instance.StatusCenterService;
 
 	public static IVsDataExplorerConnectionManager ExplorerConnectionManager
 	{
 		get
 		{
 			IVsDataExplorerConnectionManager manager =
-			(Controller.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
+			(ApcManager.OleServiceProvider.QueryService<IVsDataExplorerConnectionManager>()
 				as IVsDataExplorerConnectionManager)
 			?? throw Diag.ExceptionService(typeof(IVsDataExplorerConnectionManager));
 
@@ -168,81 +232,7 @@ internal static class Controller
 	}
 
 
-	private static string GetActiveWindowObjectKind()
-	{
-		// We're just peeking at stored values.
-		// Diag.ThrowIfNotOnUIThread();
 
-		if (ShutdownState)
-			return null;
-
-		EnvDTE.Window window = null;
-
-		try
-		{
-			DTE dte = GetService<DTE>();
-			window = dte?.ActiveWindow;
-		}
-		catch (InvalidCastException ex)
-		{
-			if (ex.HResult == VSConstants.E_NOINTERFACE)
-			{
-				Instance.ShutdownState = true;
-				return null;
-			}
-		}
-		catch
-		{
-			window = null;
-		}
-
-
-		if (window == null)
-			return null;
-
-		return window.ObjectKind;
-	}
-
-
-	private static string GetActiveWindowObjectType()
-	{
-		// We're just peeking at stored values.
-		// Diag.ThrowIfNotOnUIThread();
-
-		if (ShutdownState)
-			return null;
-
-		EnvDTE.Window window = null;
-
-		try
-		{
-			DTE dte = GetService<DTE>();
-			window = dte?.ActiveWindow;
-		}
-		catch (InvalidCastException ex)
-		{
-			if (ex.HResult == VSConstants.E_NOINTERFACE)
-			{
-				Instance.ShutdownState = true;
-				return null;
-			}
-		}
-		catch
-		{
-			window = null;
-		}
-
-
-		if (window == null)
-			return null;
-
-		object @object = window.Object;
-		if (@object == null)
-			return null;
-
-
-		return @object.GetType().FullName;
-	}
 
 	public static TInterface GetService<TService, TInterface>() where TInterface : class
 		=> Instance.GetService<TService, TInterface>();
@@ -256,9 +246,9 @@ internal static class Controller
 	public static async Task<IVsTaskStatusCenterService> GetStatusCenterServiceAsync()
 		=> await Instance.GetStatusCenterServiceAsync();
 
-	public static void ValidateSolution()
-	{
-		Instance.ValidateSolution();
-	}
+	public static void ResetDte() => AbstractPackageController.ResetDte();
+
+
+	public static void ValidateSolution() => Instance.ValidateSolution();
 
 }

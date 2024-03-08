@@ -6,13 +6,13 @@
 using System;
 
 // namespace Microsoft.SqlServer.Data.Tools.ExceptionMessageBox
-namespace BlackbirdSql.Common.Ctl.Enums
+namespace BlackbirdSql.Core.Controls.Enums;
+
+
+[Flags]
+public enum EnMessageBoxOptions
 {
-	[Flags]
-	public enum EnExceptionMessageBoxOptions
-	{
-		None = 0x0,
-		RightAlign = 0x1,
-		RtlReading = 0x2
-	}
+	None = 0x0,
+	RightAlign = 0x1,
+	RtlReading = 0x2
 }

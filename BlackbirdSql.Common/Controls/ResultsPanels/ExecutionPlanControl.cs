@@ -346,9 +346,9 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBObjectWithSite // 
 				Exception ex = new InvalidOperationException(ControlsResources.ErrCannotGetExternalFilesManager);
 				Diag.ThrowException(ex);
 			}
-			Exf(obj.GetExternalFilesProject(out IVsProject ppProject));
+			___(obj.GetExternalFilesProject(out IVsProject ppProject));
 			VSADDRESULT[] pResult = new VSADDRESULT[1];
-			Exf(ppProject.AddItem(VSConstants.VSITEMID.Root, VSADDITEMOPERATION.VSADDITEMOP_CLONEFILE, pszItemName, 1u, new string[1] { text }, IntPtr.Zero, pResult));
+			___(ppProject.AddItem(VSConstants.VSITEMID.Root, VSADDITEMOPERATION.VSADDITEMOP_CLONEFILE, pszItemName, 1u, new string[1] { text }, IntPtr.Zero, pResult));
 			if (Package.GetGlobalService(typeof(IVsMonitorSelection)) is not IVsMonitorSelection)
 			{
 				Exception ex2 = new InvalidOperationException();
@@ -383,7 +383,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBObjectWithSite // 
 				Diag.ThrowException(ex);
 			}
 			IVsWindowFrame obj = (IVsWindowFrame)pvarValue;
-			Exf(obj.GetProperty(-3004, out object pvar));
+			___(obj.GetProperty(-3004, out object pvar));
 			string text = pvar.ToString();
 			text = text.Replace("*", "");
 			StringBuilder stringBuilder = new StringBuilder();

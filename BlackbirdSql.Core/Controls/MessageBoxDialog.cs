@@ -12,19 +12,16 @@ using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Text;
 using System.Windows.Forms;
-using BlackbirdSql.Common.Controls.Widgets;
-using BlackbirdSql.Common.Ctl.Dialogs;
-using BlackbirdSql.Common.Ctl.Enums;
-using BlackbirdSql.Common.Ctl.Exceptions;
-using BlackbirdSql.Common.Properties;
-using BlackbirdSql.Core;
+using BlackbirdSql.Core.Controls.Enums;
+using BlackbirdSql.Core.Controls.Widgets;
 using BlackbirdSql.Core.Ctl.Events;
+using BlackbirdSql.Core.Properties;
 using FirebirdSql.Data.FirebirdClient;
 
 
-namespace BlackbirdSql.Common.Controls.Dialogs;
+namespace BlackbirdSql.Core.Controls;
 
-public sealed class ExceptionMessageBoxDlg : Form
+public sealed class MessageBoxDialog : Form
 {
 	public enum EnBeepType
 	{
@@ -97,15 +94,15 @@ public sealed class ExceptionMessageBoxDlg : Form
 
 
 
-	private Exception exMessage;
+	private Exception _ExMessage = null;
 
-	private EnExceptionMessageBoxDefaultButton defButton;
+	private EnMessageBoxDefaultButton defButton;
 
-	private EnExceptionMessageBoxSymbol symbol = EnExceptionMessageBoxSymbol.Warning;
+	private EnMessageBoxSymbol symbol = EnMessageBoxSymbol.Warning;
 
-	private EnExceptionMessageBoxButtons buttons;
+	private EnMessageBoxButtons buttons;
 
-	private EnExceptionMessageBoxOptions options;
+	private EnMessageBoxOptions options;
 
 	// private readonly ArrayList lnkArray = new ArrayList();
 
@@ -125,7 +122,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 
 	private int m_helpUrlCount;
 
-	private EnExceptionMessageBoxDialogResult m_customDR;
+	private EnMessageBoxDialogResult m_customDR;
 
 	private Bitmap m_customSymbol;
 
@@ -205,15 +202,15 @@ public sealed class ExceptionMessageBoxDlg : Form
 		}
 	}
 
-	public Exception Message
+	public Exception ExMessage
 	{
 		get
 		{
-			return exMessage;
+			return _ExMessage;
 		}
 		set
 		{
-			exMessage = value;
+			_ExMessage = value;
 		}
 	}
 
@@ -229,7 +226,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 		}
 	}
 
-	public EnExceptionMessageBoxSymbol Symbol
+	public EnMessageBoxSymbol Symbol
 	{
 		get
 		{
@@ -241,7 +238,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 		}
 	}
 
-	public EnExceptionMessageBoxButtons Buttons
+	public EnMessageBoxButtons Buttons
 	{
 		get
 		{
@@ -253,7 +250,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 		}
 	}
 
-	public EnExceptionMessageBoxOptions Options
+	public EnMessageBoxOptions Options
 	{
 		get
 		{
@@ -265,9 +262,9 @@ public sealed class ExceptionMessageBoxDlg : Form
 		}
 	}
 
-	public EnExceptionMessageBoxDialogResult CustomDialogResult => m_customDR;
+	public EnMessageBoxDialogResult CustomDialogResult => m_customDR;
 
-	public EnExceptionMessageBoxDefaultButton DefaultButton
+	public EnMessageBoxDefaultButton DefaultButton
 	{
 		get
 		{
@@ -365,7 +362,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 
 	public event CopyToClipboardEventHandler CopyToClipboardInternalEvent;
 
-	public ExceptionMessageBoxDlg()
+	public MessageBoxDialog()
 	{
 		InitializeComponent();
 		tbBtnHelp.DropDown = m_dropdown;
@@ -387,7 +384,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 				Visible = true,
 				ImageList = imgIcons
 			};
-			if ((options & EnExceptionMessageBoxOptions.RtlReading) != 0)
+			if ((options & EnMessageBoxOptions.RtlReading) != 0)
 			{
 				label.ImageIndex = 1;
 			}
@@ -477,7 +474,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 
 	public void PrepareToShow()
 	{
-		if (exMessage == null)
+		if (_ExMessage == null)
 		{
 			Exception ex = new();
 			Diag.Dug(ex);
@@ -486,21 +483,21 @@ public sealed class ExceptionMessageBoxDlg : Form
 
 		if (m_buttonTextArray == null || m_buttonTextArray.Length < 5)
 		{
-			ApplicationException ex = new(ExceptionsResources.CantComplete);
+			ApplicationException ex = new(ControlsResources.CantComplete);
 			Diag.Dug(ex);
 			throw ex;
 		}
 
 		if (isButtonPressed)
 		{
-			ApplicationException ex = new(ExceptionsResources.CantReuseObject);
+			ApplicationException ex = new(ControlsResources.CantReuseObject);
 			Diag.Dug(ex);
 			throw ex;
 		}
 
 		if (Caption == null || Caption.Length == 0)
 		{
-			Caption = exMessage.Source;
+			Caption = _ExMessage.Source;
 		}
 
 		SuspendLayout();
@@ -534,7 +531,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 			}
 		}
 
-		if ((options & EnExceptionMessageBoxOptions.RtlReading) != 0)
+		if ((options & EnMessageBoxOptions.RtlReading) != 0)
 		{
 			RightToLeft = RightToLeft.Yes;
 			RightToLeftLayout = true;
@@ -549,59 +546,59 @@ public sealed class ExceptionMessageBoxDlg : Form
 		Button[] array = [button1, button2, button3, button4, button5];
 		switch (buttons)
 		{
-			case EnExceptionMessageBoxButtons.OK:
-				m_buttonTextArray[0] = ExceptionsResources.OKButton;
+			case EnMessageBoxButtons.OK:
+				m_buttonTextArray[0] = ControlsResources.OKButton;
 				button1.DialogResult = DialogResult.OK;
 				AcceptButton = button1;
 				CancelButton = button1;
 				m_buttonCount = 1;
 				break;
-			case EnExceptionMessageBoxButtons.OKCancel:
-				m_buttonTextArray[0] = ExceptionsResources.OKButton;
-				m_buttonTextArray[1] = ExceptionsResources.CancelButton;
+			case EnMessageBoxButtons.OKCancel:
+				m_buttonTextArray[0] = ControlsResources.OKButton;
+				m_buttonTextArray[1] = ControlsResources.CancelButton;
 				button1.DialogResult = DialogResult.OK;
 				button2.DialogResult = DialogResult.Cancel;
 				AcceptButton = button1;
 				CancelButton = button2;
 				m_buttonCount = 2;
 				break;
-			case EnExceptionMessageBoxButtons.YesNo:
-				m_buttonTextArray[0] = ExceptionsResources.YesButton;
-				m_buttonTextArray[1] = ExceptionsResources.NoButton;
+			case EnMessageBoxButtons.YesNo:
+				m_buttonTextArray[0] = ControlsResources.YesButton;
+				m_buttonTextArray[1] = ControlsResources.NoButton;
 				button1.DialogResult = DialogResult.Yes;
 				button2.DialogResult = DialogResult.No;
 				m_buttonCount = 2;
 				ControlBox = false;
 				break;
-			case EnExceptionMessageBoxButtons.YesNoCancel:
-				m_buttonTextArray[0] = ExceptionsResources.YesButton;
-				m_buttonTextArray[1] = ExceptionsResources.NoButton;
-				m_buttonTextArray[2] = ExceptionsResources.CancelButton;
+			case EnMessageBoxButtons.YesNoCancel:
+				m_buttonTextArray[0] = ControlsResources.YesButton;
+				m_buttonTextArray[1] = ControlsResources.NoButton;
+				m_buttonTextArray[2] = ControlsResources.CancelButton;
 				button1.DialogResult = DialogResult.Yes;
 				button2.DialogResult = DialogResult.No;
 				button3.DialogResult = DialogResult.Cancel;
 				m_buttonCount = 3;
 				CancelButton = button3;
 				break;
-			case EnExceptionMessageBoxButtons.AbortRetryIgnore:
-				m_buttonTextArray[0] = ExceptionsResources.AbortButton;
-				m_buttonTextArray[1] = ExceptionsResources.RetryButton;
-				m_buttonTextArray[2] = ExceptionsResources.IgnoreButton;
+			case EnMessageBoxButtons.AbortRetryIgnore:
+				m_buttonTextArray[0] = ControlsResources.AbortButton;
+				m_buttonTextArray[1] = ControlsResources.RetryButton;
+				m_buttonTextArray[2] = ControlsResources.IgnoreButton;
 				button1.DialogResult = DialogResult.Abort;
 				button2.DialogResult = DialogResult.Retry;
 				button3.DialogResult = DialogResult.Ignore;
 				m_buttonCount = 3;
 				ControlBox = false;
 				break;
-			case EnExceptionMessageBoxButtons.RetryCancel:
-				m_buttonTextArray[0] = ExceptionsResources.RetryButton;
-				m_buttonTextArray[1] = ExceptionsResources.CancelButton;
+			case EnMessageBoxButtons.RetryCancel:
+				m_buttonTextArray[0] = ControlsResources.RetryButton;
+				m_buttonTextArray[1] = ControlsResources.CancelButton;
 				button1.DialogResult = DialogResult.Retry;
 				button2.DialogResult = DialogResult.Cancel;
 				CancelButton = button2;
 				m_buttonCount = 2;
 				break;
-			case EnExceptionMessageBoxButtons.Custom:
+			case EnMessageBoxButtons.Custom:
 				ControlBox = false;
 				break;
 		}
@@ -617,7 +614,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 		AdjustDialogWidth(pnlButtons.GetPreferredSize(Size.Empty).Width - width, isAdjustingForButtons: true);
 		if ((int)defButton >= m_buttonCount)
 		{
-			InvalidEnumArgumentException ex = new("DefaultButton", (int)defButton, typeof(EnExceptionMessageBoxDefaultButton));
+			InvalidEnumArgumentException ex = new("DefaultButton", (int)defButton, typeof(EnMessageBoxDefaultButton));
 			Diag.Dug(ex);
 			throw ex;
 		}
@@ -639,22 +636,22 @@ public sealed class ExceptionMessageBoxDlg : Form
 
 		switch (symbol)
 		{
-			case EnExceptionMessageBoxSymbol.None:
+			case EnMessageBoxSymbol.None:
 				pnlIcon.Visible = false;
 				break;
-			case EnExceptionMessageBoxSymbol.Warning:
-			case EnExceptionMessageBoxSymbol.Exclamation:
+			case EnMessageBoxSymbol.Warning:
+			case EnMessageBoxSymbol.Exclamation:
 				m_iconSymbol = SystemIcons.Warning;
 				break;
-			case EnExceptionMessageBoxSymbol.Information:
-			case EnExceptionMessageBoxSymbol.Asterisk:
+			case EnMessageBoxSymbol.Information:
+			case EnMessageBoxSymbol.Asterisk:
 				m_iconSymbol = SystemIcons.Information;
 				break;
-			case EnExceptionMessageBoxSymbol.Error:
-			case EnExceptionMessageBoxSymbol.Hand:
+			case EnMessageBoxSymbol.Error:
+			case EnMessageBoxSymbol.Hand:
 				m_iconSymbol = SystemIcons.Error;
 				break;
-			case EnExceptionMessageBoxSymbol.Question:
+			case EnMessageBoxSymbol.Question:
 				m_iconSymbol = SystemIcons.Question;
 				break;
 		}
@@ -693,7 +690,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 		}
 		else if (chkDontShow.Text.Length == 0)
 		{
-			chkDontShow.Text = ExceptionsResources.DefaultCheckboxText;
+			chkDontShow.Text = ControlsResources.DefaultCheckboxText;
 		}
 	}
 
@@ -738,7 +735,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 		int num = 0;
 		int num2 = 0;
 		m_dropdown.Items.Clear();
-		for (Exception innerException = exMessage.InnerException; innerException != null; innerException = innerException.InnerException)
+		for (Exception innerException = _ExMessage.InnerException; innerException != null; innerException = innerException.InnerException)
 		{
 			num2++;
 		}
@@ -763,26 +760,26 @@ public sealed class ExceptionMessageBoxDlg : Form
 		Label label = lblAdditionalInfo;
 		bool visible = pnlAdditional.Visible = num2 > 0;
 		label.Visible = visible;
-		Exception innerException2 = exMessage;
+		Exception innerException2 = _ExMessage;
 		while (innerException2 != null && (m_messageLimitCount < 0 || num < m_messageLimitCount))
 		{
 			StringBuilder stringBuilder = new StringBuilder();
-			string text = innerException2.Message != null && innerException2.Message.Length != 0 ? innerException2.Message : ExceptionsResources.CantComplete;
+			string text = innerException2.Message != null && innerException2.Message.Length != 0 ? innerException2.Message : ControlsResources.CantComplete;
 			if (m_showHelpButton)
 			{
 				string text2 = BuildHelpURL(innerException2);
 				bool num3 = text2.Length > 0;
 				m_helpUrlArray.Add(text2);
-				text2 = text.Length <= 50 ? text : string.Format(CultureInfo.CurrentCulture, ExceptionsResources.AddEllipsis, text[..50]);
+				text2 = text.Length <= 50 ? text : string.Format(CultureInfo.CurrentCulture, ControlsResources.AddEllipsis, text[..50]);
 				ToolStripItem toolStripItem;
 				if (num3)
 				{
-					toolStripItem = m_dropdown.Items.Add(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.HelpMenuText, text2), null, ItemHelp_Click);
+					toolStripItem = m_dropdown.Items.Add(string.Format(CultureInfo.CurrentCulture, ControlsResources.HelpMenuText, text2), null, ItemHelp_Click);
 					m_helpUrlCount++;
 				}
 				else
 				{
-					toolStripItem = m_dropdown.Items.Add(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.NoHelpMenuText, text2), null, ItemHelp_Click);
+					toolStripItem = m_dropdown.Items.Add(string.Format(CultureInfo.CurrentCulture, ControlsResources.NoHelpMenuText, text2), null, ItemHelp_Click);
 					toolStripItem.Enabled = false;
 				}
 
@@ -802,20 +799,20 @@ public sealed class ExceptionMessageBoxDlg : Form
 			if (innerException2.Source != null && innerException2.Source.Length > 0 && (num != 0 || Caption != innerException2.Source))
 			{
 				stringBuilder.Append(' ');
-				string arg = !(innerException2.GetType() == typeof(FbException)) && !(innerException2.GetType() == typeof(FbException)) ? innerException2.Source : ExceptionsResources.SqlServerSource;
+				string arg = !(innerException2.GetType() == typeof(FbException)) && !(innerException2.GetType() == typeof(FbException)) ? innerException2.Source : ControlsResources.SqlServerSource;
 				if (num4 > 0)
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.ErrorSourceNumber, arg, num4));
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrorSourceNumber, arg, num4));
 				}
 				else
 				{
-					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.ErrorSource, arg));
+					stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrorSource, arg));
 				}
 			}
 			else if (num4 > 0)
 			{
 				stringBuilder.Append(' ');
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.ErrorNumber, num4));
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrorNumber, num4));
 			}
 
 			if (num == 0)
@@ -841,7 +838,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 
 	private bool HasTechnicalDetails()
 	{
-		for (Exception innerException = exMessage; innerException != null; innerException = innerException.InnerException)
+		for (Exception innerException = _ExMessage; innerException != null; innerException = innerException.InnerException)
 		{
 			if (innerException.StackTrace != null && innerException.StackTrace.Length > 0 || innerException.GetType() == typeof(FbException) || innerException.GetType() == typeof(FbException))
 			{
@@ -869,32 +866,32 @@ public sealed class ExceptionMessageBoxDlg : Form
 			stringBuilder.Append(Environment.NewLine);
 			stringBuilder.Append("---------------");
 			stringBuilder.Append(Environment.NewLine);
-			stringBuilder.Append(ExceptionsResources.SqlServerInfo);
+			stringBuilder.Append(ControlsResources.SqlServerInfo);
 			stringBuilder.Append(Environment.NewLine);
 			stringBuilder.Append(Environment.NewLine);
 
 			if (ex2.GetServer() != null && ex2.GetServer().Length > 0)
 			{
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.SqlServerName, ex2.GetServer()));
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlServerName, ex2.GetServer()));
 				stringBuilder.Append(Environment.NewLine);
 			}
 
-			stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.SqlError, ex2.GetErrorCode().ToString(CultureInfo.CurrentCulture)));
+			stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlError, ex2.GetErrorCode().ToString(CultureInfo.CurrentCulture)));
 			stringBuilder.Append(Environment.NewLine);
-			stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.SqlSeverity, ex2.GetClass().ToString(CultureInfo.CurrentCulture)));
+			stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlSeverity, ex2.GetClass().ToString(CultureInfo.CurrentCulture)));
 			stringBuilder.Append(Environment.NewLine);
-			stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.SqlState, ex2.SQLSTATE.ToString(CultureInfo.CurrentCulture)));
+			stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlState, ex2.SQLSTATE.ToString(CultureInfo.CurrentCulture)));
 			stringBuilder.Append(Environment.NewLine);
 
 			if (ex2.GetProcedure() != null && ex2.GetProcedure().Length > 0)
 			{
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.SqlProcedure, ex2.GetProcedure()));
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlProcedure, ex2.GetProcedure()));
 				stringBuilder.Append(Environment.NewLine);
 			}
 
 			if (ex2.GetLineNumber() != 0)
 			{
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.SqlLineNumber, ex2.GetLineNumber().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlLineNumber, ex2.GetLineNumber().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
 			}
 		}
@@ -904,7 +901,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 			stringBuilder.Append(Environment.NewLine);
 			stringBuilder.Append("---------------");
 			stringBuilder.Append(Environment.NewLine);
-			stringBuilder.Append(ExceptionsResources.CodeLocation);
+			stringBuilder.Append(ControlsResources.CodeLocation);
 			stringBuilder.Append(Environment.NewLine);
 			stringBuilder.Append(Environment.NewLine);
 			stringBuilder.Append(ex.StackTrace);
@@ -933,23 +930,23 @@ public sealed class ExceptionMessageBoxDlg : Form
 
 		switch (defButton)
 		{
-			case EnExceptionMessageBoxDefaultButton.Button1:
+			case EnMessageBoxDefaultButton.Button1:
 				button1.Focus();
 				ActiveControl = button1;
 				break;
-			case EnExceptionMessageBoxDefaultButton.Button2:
+			case EnMessageBoxDefaultButton.Button2:
 				button2.Focus();
 				ActiveControl = button2;
 				break;
-			case EnExceptionMessageBoxDefaultButton.Button3:
+			case EnMessageBoxDefaultButton.Button3:
 				button3.Focus();
 				ActiveControl = button3;
 				break;
-			case EnExceptionMessageBoxDefaultButton.Button4:
+			case EnMessageBoxDefaultButton.Button4:
 				button4.Focus();
 				ActiveControl = button4;
 				break;
-			case EnExceptionMessageBoxDefaultButton.Button5:
+			case EnMessageBoxDefaultButton.Button5:
 				button5.Focus();
 				ActiveControl = button5;
 				break;
@@ -1047,7 +1044,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 
 	public string BuildMessageText(bool isForEmail, bool isInternal)
 	{
-		if (exMessage == null)
+		if (_ExMessage == null)
 		{
 			return string.Empty;
 		}
@@ -1057,16 +1054,16 @@ public sealed class ExceptionMessageBoxDlg : Form
 		stringBuilder.Append("------------------------------");
 		stringBuilder.Append(Environment.NewLine);
 		string value = stringBuilder.ToString();
-		bool flag = exMessage.InnerException != null;
+		bool flag = _ExMessage.InnerException != null;
 		int num = 1;
 		StringBuilder stringBuilder2 = new StringBuilder();
 		if (isInternal)
 		{
-			stringBuilder2.Append(ExceptionsResources.MessageTitle);
+			stringBuilder2.Append(ControlsResources.MessageTitle);
 			stringBuilder2.Append(Caption);
 		}
 
-		for (Exception innerException = exMessage; innerException != null; innerException = innerException.InnerException)
+		for (Exception innerException = _ExMessage; innerException != null; innerException = innerException.InnerException)
 		{
 			if (isInternal || num > 1)
 			{
@@ -1075,7 +1072,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 
 			if (flag && num == 2)
 			{
-				stringBuilder2.Append(ExceptionsResources.AdditionalInfo);
+				stringBuilder2.Append(ControlsResources.AdditionalInfo);
 				stringBuilder2.Append(Environment.NewLine);
 			}
 
@@ -1086,7 +1083,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 
 			if (innerException.Message == null || innerException.Message.Length == 0)
 			{
-				stringBuilder2.Append(ExceptionsResources.CantComplete);
+				stringBuilder2.Append(ControlsResources.CantComplete);
 			}
 			else
 			{
@@ -1098,11 +1095,11 @@ public sealed class ExceptionMessageBoxDlg : Form
 				stringBuilder2.Append(' ');
 				if (innerException.GetType() == typeof(FbException) || innerException.GetType() == typeof(FbException))
 				{
-					stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.ErrorSourceNumber, ExceptionsResources.SqlServerSource, ((FbException)innerException).GetErrorCode()));
+					stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrorSourceNumber, ControlsResources.SqlServerSource, ((FbException)innerException).GetErrorCode()));
 				}
 				else
 				{
-					stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.ErrorSource, innerException.Source));
+					stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ErrorSource, innerException.Source));
 				}
 			}
 
@@ -1111,7 +1108,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 			if (text.Length > 0)
 			{
 				stringBuilder2.Append(Environment.NewLine);
-				stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.ClipboardOrEmailHelpLink, text));
+				stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ClipboardOrEmailHelpLink, text));
 				stringBuilder2.Append(Environment.NewLine);
 			}
 
@@ -1121,7 +1118,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 		if (isInternal)
 		{
 			stringBuilder2.Append(value);
-			stringBuilder2.Append(ExceptionsResources.Buttons);
+			stringBuilder2.Append(ControlsResources.Buttons);
 			stringBuilder2.Append(Environment.NewLine);
 			for (int i = 0; i < m_buttonCount; i++)
 			{
@@ -1181,7 +1178,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 
 			if (type == EnAdvancedInfoType.All || type == EnAdvancedInfoType.HelpLink)
 			{
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.ClipboardOrEmailHelpLink, text));
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ClipboardOrEmailHelpLink, text));
 			}
 
 			if (type == EnAdvancedInfoType.All)
@@ -1218,7 +1215,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 			{
 				stringBuilder.Append("------------------------------");
 				stringBuilder.Append(Environment.NewLine);
-				stringBuilder.Append(ExceptionsResources.CodeLocation);
+				stringBuilder.Append(ControlsResources.CodeLocation);
 				stringBuilder.Append(Environment.NewLine);
 				stringBuilder.Append(Environment.NewLine);
 			}
@@ -1247,25 +1244,25 @@ public sealed class ExceptionMessageBoxDlg : Form
 			FbException ex2 = (FbException)ex;
 			if (ex2.GetServer() != null && ex2.GetServer().Length > 0)
 			{
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.SqlServerName, ex2.GetServer()));
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlServerName, ex2.GetServer()));
 				stringBuilder.Append(Environment.NewLine);
 			}
 
-			stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.SqlError, ex2.GetErrorCode().ToString(CultureInfo.CurrentCulture)));
+			stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlError, ex2.GetErrorCode().ToString(CultureInfo.CurrentCulture)));
 			stringBuilder.Append(Environment.NewLine);
-			stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.SqlSeverity, ex2.GetClass().ToString(CultureInfo.CurrentCulture)));
+			stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlSeverity, ex2.GetClass().ToString(CultureInfo.CurrentCulture)));
 			stringBuilder.Append(Environment.NewLine);
-			stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.SqlState, ex2.GetState().ToString(CultureInfo.CurrentCulture)));
+			stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlState, ex2.GetState().ToString(CultureInfo.CurrentCulture)));
 			stringBuilder.Append(Environment.NewLine);
 			if (ex2.GetProcedure() != null && ex2.GetProcedure().Length > 0)
 			{
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.SqlProcedure, ex2.GetProcedure()));
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlProcedure, ex2.GetProcedure()));
 				stringBuilder.Append(Environment.NewLine);
 			}
 
 			if (ex2.GetLineNumber() != 0)
 			{
-				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.SqlLineNumber, ex2.GetLineNumber().ToString(CultureInfo.CurrentCulture)));
+				stringBuilder.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.SqlLineNumber, ex2.GetLineNumber().ToString(CultureInfo.CurrentCulture)));
 				stringBuilder.Append(Environment.NewLine);
 			}
 
@@ -1292,7 +1289,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 
 	public string BuildAdvancedInfo()
 	{
-		if (exMessage == null)
+		if (_ExMessage == null)
 		{
 			return string.Empty;
 		}
@@ -1302,24 +1299,24 @@ public sealed class ExceptionMessageBoxDlg : Form
 		stringBuilder.Append("------------------------------");
 		stringBuilder.Append(Environment.NewLine);
 		string value = stringBuilder.ToString();
-		bool flag = exMessage.InnerException != null;
+		bool flag = _ExMessage.InnerException != null;
 		int num = 1;
 		StringBuilder stringBuilder2 = new StringBuilder();
-		stringBuilder2.Append(ExceptionsResources.MessageTitle);
+		stringBuilder2.Append(ControlsResources.MessageTitle);
 		stringBuilder2.Append(Caption);
-		for (Exception innerException = exMessage; innerException != null; innerException = innerException.InnerException)
+		for (Exception innerException = _ExMessage; innerException != null; innerException = innerException.InnerException)
 		{
 			stringBuilder2.Append(value);
 			if (flag && num == 2)
 			{
-				stringBuilder2.Append(ExceptionsResources.AdditionalInfo);
+				stringBuilder2.Append(ControlsResources.AdditionalInfo);
 				stringBuilder2.Append(Environment.NewLine);
 			}
 
 			stringBuilder2.Append(Environment.NewLine);
 			if (innerException.Message == null || innerException.Message.Length == 0)
 			{
-				stringBuilder2.Append(ExceptionsResources.CantComplete);
+				stringBuilder2.Append(ControlsResources.CantComplete);
 			}
 			else
 			{
@@ -1336,7 +1333,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 			if (text.Length > 0)
 			{
 				stringBuilder2.Append(Environment.NewLine);
-				stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.ClipboardOrEmailHelpLink, text));
+				stringBuilder2.Append(string.Format(CultureInfo.CurrentCulture, ControlsResources.ClipboardOrEmailHelpLink, text));
 				stringBuilder2.Append(Environment.NewLine);
 			}
 
@@ -1371,7 +1368,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 			}
 			catch (Exception exError)
 			{
-				ShowError(ExceptionsResources.CopyToClipboardError, exError);
+				ShowError(ControlsResources.CopyToClipboardError, exError);
 			}
 		}
 	}
@@ -1379,32 +1376,32 @@ public sealed class ExceptionMessageBoxDlg : Form
 	private void Btn_Click(object sender, EventArgs e)
 	{
 		ShowBorderLines(-1);
-		if (buttons == EnExceptionMessageBoxButtons.Custom)
+		if (buttons == EnMessageBoxButtons.Custom)
 		{
 			if (sender == button1)
 			{
-				m_customDR = EnExceptionMessageBoxDialogResult.Button1;
+				m_customDR = EnMessageBoxDialogResult.Button1;
 			}
 			else if (sender == button2)
 			{
-				m_customDR = EnExceptionMessageBoxDialogResult.Button2;
+				m_customDR = EnMessageBoxDialogResult.Button2;
 			}
 			else if (sender == button3)
 			{
-				m_customDR = EnExceptionMessageBoxDialogResult.Button3;
+				m_customDR = EnMessageBoxDialogResult.Button3;
 			}
 			else if (sender == button4)
 			{
-				m_customDR = EnExceptionMessageBoxDialogResult.Button4;
+				m_customDR = EnMessageBoxDialogResult.Button4;
 			}
 			else
 			{
-				m_customDR = EnExceptionMessageBoxDialogResult.Button5;
+				m_customDR = EnMessageBoxDialogResult.Button5;
 			}
 		}
 		else
 		{
-			m_customDR = EnExceptionMessageBoxDialogResult.None;
+			m_customDR = EnMessageBoxDialogResult.None;
 		}
 
 		isButtonPressed = true;
@@ -1431,7 +1428,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 		try
 		{
 			DialogResult dialogResult;
-			using (PrivacyConfirmationDlg privacyConfirmation = new PrivacyConfirmationDlg(Text, text))
+			using (PrivacyConfirmationDialog privacyConfirmation = new PrivacyConfirmationDialog(Text, text))
 			{
 				if (Parent == null)
 				{
@@ -1453,7 +1450,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 		}
 		catch (Exception)
 		{
-			ShowError(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.CantStartHelpLink, text), null);
+			ShowError(string.Format(CultureInfo.CurrentCulture, ControlsResources.CantStartHelpLink, text), null);
 			return;
 		}
 
@@ -1465,7 +1462,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 		}
 		catch (Exception exError)
 		{
-			ShowError(string.Format(CultureInfo.CurrentCulture, ExceptionsResources.CantStartHelpLink, text), exError);
+			ShowError(string.Format(CultureInfo.CurrentCulture, ControlsResources.CantStartHelpLink, text), exError);
 		}
 	}
 
@@ -1477,7 +1474,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 
 	public void ShowError(string str, Exception exError)
 	{
-		ExceptionMessageBoxCtl exceptionMessageBox = new(new Exception(str, exError)
+		MessageCtl exceptionMessageBox = new(new Exception(str, exError)
 		{
 			Source = Text
 		})
@@ -1491,12 +1488,12 @@ public sealed class ExceptionMessageBoxDlg : Form
 	{
 		switch (buttons)
 		{
-			case EnExceptionMessageBoxButtons.OK:
+			case EnMessageBoxButtons.OK:
 				DialogResult = DialogResult.OK;
 				break;
-			case EnExceptionMessageBoxButtons.YesNo:
-			case EnExceptionMessageBoxButtons.AbortRetryIgnore:
-			case EnExceptionMessageBoxButtons.Custom:
+			case EnMessageBoxButtons.YesNo:
+			case EnMessageBoxButtons.AbortRetryIgnore:
+			case EnMessageBoxButtons.Custom:
 				if (!isButtonPressed)
 				{
 					e.Cancel = true;
@@ -1504,9 +1501,9 @@ public sealed class ExceptionMessageBoxDlg : Form
 				}
 
 				break;
-			case EnExceptionMessageBoxButtons.OKCancel:
-			case EnExceptionMessageBoxButtons.YesNoCancel:
-			case EnExceptionMessageBoxButtons.RetryCancel:
+			case EnMessageBoxButtons.OKCancel:
+			case EnMessageBoxButtons.YesNoCancel:
+			case EnMessageBoxButtons.RetryCancel:
 				break;
 		}
 	}
@@ -1515,9 +1512,9 @@ public sealed class ExceptionMessageBoxDlg : Form
 	{
 		try
 		{
-			using AdvancedInformationDlg advancedInformation = new AdvancedInformationDlg();
+			using AdvancedInformationDialog advancedInformation = new AdvancedInformationDialog();
 			advancedInformation.MessageBoxForm = this;
-			if ((options & EnExceptionMessageBoxOptions.RtlReading) != 0)
+			if ((options & EnMessageBoxOptions.RtlReading) != 0)
 			{
 				advancedInformation.RightToLeft = RightToLeft.Yes;
 				advancedInformation.RightToLeftLayout = true;
@@ -1537,7 +1534,7 @@ public sealed class ExceptionMessageBoxDlg : Form
 		}
 		catch (Exception exError)
 		{
-			ShowError(ExceptionsResources.CantShowTechnicalDetailsError, exError);
+			ShowError(ControlsResources.CantShowTechnicalDetailsError, exError);
 		}
 	}
 
@@ -1548,14 +1545,14 @@ public sealed class ExceptionMessageBoxDlg : Form
 	{
 		switch (symbol)
 		{
-			case EnExceptionMessageBoxSymbol.None:
-			case EnExceptionMessageBoxSymbol.Warning:
+			case EnMessageBoxSymbol.None:
+			case EnMessageBoxSymbol.Warning:
 				MessageBeep(EnBeepType.Asterisk);
 				break;
-			case EnExceptionMessageBoxSymbol.Information:
+			case EnMessageBoxSymbol.Information:
 				MessageBeep(EnBeepType.Exclamation);
 				break;
-			case EnExceptionMessageBoxSymbol.Error:
+			case EnMessageBoxSymbol.Error:
 				MessageBeep(EnBeepType.Hand);
 				break;
 		}
@@ -1662,149 +1659,217 @@ public sealed class ExceptionMessageBoxDlg : Form
 
 	private void InitializeComponent()
 	{
-		components = new Container();
-		ComponentResourceManager resources = new ComponentResourceManager(typeof(ExceptionMessageBoxDlg));
-		pnlForm = new TableLayoutPanel();
-		pnlIcon = new Panel();
-		pnlMessage = new TableLayoutPanel();
-		lblTopMessage = new LinkLabel();
-		lblAdditionalInfo = new Label();
-		pnlAdditional = new TableLayoutPanel();
-		grpSeparator = new GroupBox();
-		pnlButtons = new TableLayoutPanel();
-		toolStrip1 = new ToolStrip();
-		tbBtnHelp = new ToolStripDropDownButton();
-		tbBtnHelpSingle = new ToolStripButton();
-		tbBtnCopy = new ToolStripButton();
-		tbBtnAdvanced = new ToolStripButton();
-		button1 = new Button();
-		button2 = new Button();
-		button3 = new Button();
-		button4 = new Button();
-		button5 = new Button();
-		imgIcons = new ImageList(components);
-		chkDontShow = new WrappingCheckBox();
-		pnlForm.SuspendLayout();
-		pnlMessage.SuspendLayout();
-		pnlButtons.SuspendLayout();
-		toolStrip1.SuspendLayout();
-		SuspendLayout();
-		resources.ApplyResources(pnlForm, "pnlForm");
-		pnlForm.Controls.Add(pnlIcon, 0, 0);
-		pnlForm.Controls.Add(pnlMessage, 1, 0);
-		pnlForm.Controls.Add(chkDontShow, 1, 1);
-		pnlForm.Controls.Add(grpSeparator, 0, 2);
-		pnlForm.Controls.Add(pnlButtons, 0, 3);
-		pnlForm.Name = "pnlForm";
-		pnlForm.Click += new EventHandler(HideBorderLines);
-		resources.ApplyResources(pnlIcon, "pnlIcon");
-		pnlIcon.Name = "pnlIcon";
-		pnlIcon.Click += new EventHandler(HideBorderLines);
-		pnlIcon.Paint += new PaintEventHandler(PnlIcon_Paint);
-		resources.ApplyResources(pnlMessage, "pnlMessage");
-		pnlMessage.Controls.Add(lblTopMessage, 0, 0);
-		pnlMessage.Controls.Add(lblAdditionalInfo, 0, 1);
-		pnlMessage.Controls.Add(pnlAdditional, 0, 2);
-		pnlMessage.Name = "pnlMessage";
-		pnlMessage.Click += new EventHandler(HideBorderLines);
-		resources.ApplyResources(lblTopMessage, "lblTopMessage");
-		lblTopMessage.Name = "lblTopMessage";
-		lblTopMessage.Click += new EventHandler(HideBorderLines);
-		resources.ApplyResources(lblAdditionalInfo, "lblAdditionalInfo");
-		lblAdditionalInfo.Name = "lblAdditionalInfo";
-		lblAdditionalInfo.Click += new EventHandler(HideBorderLines);
-		resources.ApplyResources(pnlAdditional, "pnlAdditional");
-		pnlAdditional.Name = "pnlAdditional";
-		pnlAdditional.Click += new EventHandler(HideBorderLines);
-		resources.ApplyResources(grpSeparator, "grpSeparator");
-		pnlForm.SetColumnSpan(grpSeparator, 2);
-		grpSeparator.Name = "grpSeparator";
-		grpSeparator.TabStop = false;
-		resources.ApplyResources(pnlButtons, "pnlButtons");
-		pnlForm.SetColumnSpan(pnlButtons, 2);
-		pnlButtons.Controls.Add(toolStrip1, 0, 0);
-		pnlButtons.Controls.Add(button1, 1, 0);
-		pnlButtons.Controls.Add(button2, 2, 0);
-		pnlButtons.Controls.Add(button3, 3, 0);
-		pnlButtons.Controls.Add(button4, 4, 0);
-		pnlButtons.Controls.Add(button5, 5, 0);
-		pnlButtons.Name = "pnlButtons";
-		pnlButtons.Click += new EventHandler(HideBorderLines);
-		toolStrip1.AllowMerge = false;
-		toolStrip1.CanOverflow = false;
-		resources.ApplyResources(toolStrip1, "toolStrip1");
-		toolStrip1.GripStyle = ToolStripGripStyle.Hidden;
-		toolStrip1.Items.AddRange(new ToolStripItem[4] { tbBtnHelp, tbBtnHelpSingle, tbBtnCopy, tbBtnAdvanced });
-		toolStrip1.LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow;
-		toolStrip1.Name = "toolStrip1";
-		toolStrip1.RenderMode = ToolStripRenderMode.System;
-		toolStrip1.TabStop = true;
-		tbBtnHelp.DisplayStyle = ToolStripItemDisplayStyle.Image;
-		resources.ApplyResources(tbBtnHelp, "tbBtnHelp");
-		tbBtnHelp.Name = "tbBtnHelp";
-		tbBtnHelp.Click += new EventHandler(TbBtnHelp_Click);
-		tbBtnHelpSingle.DisplayStyle = ToolStripItemDisplayStyle.Image;
-		resources.ApplyResources(tbBtnHelpSingle, "tbBtnHelpSingle");
-		tbBtnHelpSingle.Margin = new Padding(1, 1, 0, 2);
-		tbBtnHelpSingle.Name = "tbBtnHelpSingle";
-		tbBtnHelpSingle.Click += new EventHandler(TbBtnHelp_Click);
-		tbBtnCopy.DisplayStyle = ToolStripItemDisplayStyle.Image;
-		resources.ApplyResources(tbBtnCopy, "tbBtnCopy");
-		tbBtnCopy.Margin = new Padding(1, 1, 0, 2);
-		tbBtnCopy.Name = "tbBtnCopy";
-		tbBtnCopy.Click += new EventHandler(ItemCopy_Click);
-		tbBtnAdvanced.DisplayStyle = ToolStripItemDisplayStyle.Image;
-		resources.ApplyResources(tbBtnAdvanced, "tbBtnAdvanced");
-		tbBtnAdvanced.Margin = new Padding(1, 1, 0, 2);
-		tbBtnAdvanced.Name = "tbBtnAdvanced";
-		tbBtnAdvanced.Click += new EventHandler(ItemShowDetails_Click);
-		resources.ApplyResources(button1, "button1");
-		button1.Name = "button1";
-		button1.Click += new EventHandler(Btn_Click);
-		resources.ApplyResources(button2, "button2");
-		button2.Name = "button2";
-		button2.Click += new EventHandler(Btn_Click);
-		resources.ApplyResources(button3, "button3");
-		button3.Name = "button3";
-		button3.Click += new EventHandler(Btn_Click);
-		resources.ApplyResources(button4, "button4");
-		button4.Name = "button4";
-		button4.Tag = "z";
-		button4.Click += new EventHandler(Btn_Click);
-		resources.ApplyResources(button5, "button5");
-		button5.Name = "button5";
-		button5.Click += new EventHandler(Btn_Click);
-		imgIcons.ImageStream = (ImageListStreamer)resources.GetObject("imgIcons.ImageStream");
-		imgIcons.TransparentColor = Color.Transparent;
-		imgIcons.Images.SetKeyName(0, "indentarrow.bmp");
-		imgIcons.Images.SetKeyName(1, "indentarrow_right.bmp");
-		resources.ApplyResources(chkDontShow, "chkDontShow");
-		chkDontShow.Name = "chkDontShow";
-		chkDontShow.Click += new EventHandler(HideBorderLines);
-		AccessibleRole = AccessibleRole.Alert;
-		resources.ApplyResources(this, "$this");
-		AutoScaleMode = AutoScaleMode.Font;
-		Controls.Add(pnlForm);
-		DoubleBuffered = true;
-		FormBorderStyle = FormBorderStyle.FixedDialog;
-		KeyPreview = true;
-		MaximizeBox = false;
-		MinimizeBox = false;
-		Name = "ExceptionMessageBoxForm";
-		ShowInTaskbar = false;
-		Load += new EventHandler(NewMessageBoxForm_Load);
-		Click += new EventHandler(NewMessageBoxForm_Click);
-		HelpRequested += new HelpEventHandler(NewMessageBoxForm_HelpRequested);
-		KeyDown += new KeyEventHandler(NewMessageBoxForm_KeyDown);
-		pnlForm.ResumeLayout(false);
-		pnlForm.PerformLayout();
-		pnlMessage.ResumeLayout(false);
-		pnlMessage.PerformLayout();
-		pnlButtons.ResumeLayout(false);
-		pnlButtons.PerformLayout();
-		toolStrip1.ResumeLayout(false);
-		toolStrip1.PerformLayout();
-		ResumeLayout(false);
-		PerformLayout();
+			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MessageBoxDialog));
+			this.pnlForm = new System.Windows.Forms.TableLayoutPanel();
+			this.pnlIcon = new System.Windows.Forms.Panel();
+			this.pnlMessage = new System.Windows.Forms.TableLayoutPanel();
+			this.lblTopMessage = new System.Windows.Forms.LinkLabel();
+			this.lblAdditionalInfo = new System.Windows.Forms.Label();
+			this.pnlAdditional = new System.Windows.Forms.TableLayoutPanel();
+			this.chkDontShow = new BlackbirdSql.Core.Controls.MessageBoxDialog.WrappingCheckBox();
+			this.grpSeparator = new System.Windows.Forms.GroupBox();
+			this.pnlButtons = new System.Windows.Forms.TableLayoutPanel();
+			this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+			this.tbBtnHelp = new System.Windows.Forms.ToolStripDropDownButton();
+			this.tbBtnHelpSingle = new System.Windows.Forms.ToolStripButton();
+			this.tbBtnCopy = new System.Windows.Forms.ToolStripButton();
+			this.tbBtnAdvanced = new System.Windows.Forms.ToolStripButton();
+			this.button1 = new System.Windows.Forms.Button();
+			this.button2 = new System.Windows.Forms.Button();
+			this.button3 = new System.Windows.Forms.Button();
+			this.button4 = new System.Windows.Forms.Button();
+			this.button5 = new System.Windows.Forms.Button();
+			this.imgIcons = new System.Windows.Forms.ImageList(this.components);
+			this.pnlForm.SuspendLayout();
+			this.pnlMessage.SuspendLayout();
+			this.pnlButtons.SuspendLayout();
+			this.toolStrip1.SuspendLayout();
+			this.SuspendLayout();
+			// 
+			// pnlForm
+			// 
+			resources.ApplyResources(this.pnlForm, "pnlForm");
+			this.pnlForm.Controls.Add(this.pnlIcon, 0, 0);
+			this.pnlForm.Controls.Add(this.pnlMessage, 1, 0);
+			this.pnlForm.Controls.Add(this.chkDontShow, 1, 1);
+			this.pnlForm.Controls.Add(this.grpSeparator, 0, 2);
+			this.pnlForm.Controls.Add(this.pnlButtons, 0, 3);
+			this.pnlForm.Name = "pnlForm";
+			this.pnlForm.Click += new System.EventHandler(this.HideBorderLines);
+			// 
+			// pnlIcon
+			// 
+			resources.ApplyResources(this.pnlIcon, "pnlIcon");
+			this.pnlIcon.Name = "pnlIcon";
+			this.pnlIcon.Click += new System.EventHandler(this.HideBorderLines);
+			this.pnlIcon.Paint += new System.Windows.Forms.PaintEventHandler(this.PnlIcon_Paint);
+			// 
+			// pnlMessage
+			// 
+			resources.ApplyResources(this.pnlMessage, "pnlMessage");
+			this.pnlMessage.Controls.Add(this.lblTopMessage, 0, 0);
+			this.pnlMessage.Controls.Add(this.lblAdditionalInfo, 0, 1);
+			this.pnlMessage.Controls.Add(this.pnlAdditional, 0, 2);
+			this.pnlMessage.Name = "pnlMessage";
+			this.pnlMessage.Click += new System.EventHandler(this.HideBorderLines);
+			// 
+			// lblTopMessage
+			// 
+			resources.ApplyResources(this.lblTopMessage, "lblTopMessage");
+			this.lblTopMessage.Name = "lblTopMessage";
+			this.lblTopMessage.Click += new System.EventHandler(this.HideBorderLines);
+			// 
+			// lblAdditionalInfo
+			// 
+			resources.ApplyResources(this.lblAdditionalInfo, "lblAdditionalInfo");
+			this.lblAdditionalInfo.Name = "lblAdditionalInfo";
+			this.lblAdditionalInfo.Click += new System.EventHandler(this.HideBorderLines);
+			// 
+			// pnlAdditional
+			// 
+			resources.ApplyResources(this.pnlAdditional, "pnlAdditional");
+			this.pnlAdditional.Name = "pnlAdditional";
+			this.pnlAdditional.Click += new System.EventHandler(this.HideBorderLines);
+			// 
+			// chkDontShow
+			// 
+			resources.ApplyResources(this.chkDontShow, "chkDontShow");
+			this.chkDontShow.Name = "chkDontShow";
+			this.chkDontShow.Click += new System.EventHandler(this.HideBorderLines);
+			// 
+			// grpSeparator
+			// 
+			resources.ApplyResources(this.grpSeparator, "grpSeparator");
+			this.pnlForm.SetColumnSpan(this.grpSeparator, 2);
+			this.grpSeparator.Name = "grpSeparator";
+			this.grpSeparator.TabStop = false;
+			// 
+			// pnlButtons
+			// 
+			resources.ApplyResources(this.pnlButtons, "pnlButtons");
+			this.pnlForm.SetColumnSpan(this.pnlButtons, 2);
+			this.pnlButtons.Controls.Add(this.toolStrip1, 0, 0);
+			this.pnlButtons.Controls.Add(this.button1, 1, 0);
+			this.pnlButtons.Controls.Add(this.button2, 2, 0);
+			this.pnlButtons.Controls.Add(this.button3, 3, 0);
+			this.pnlButtons.Controls.Add(this.button4, 4, 0);
+			this.pnlButtons.Controls.Add(this.button5, 5, 0);
+			this.pnlButtons.Name = "pnlButtons";
+			this.pnlButtons.Click += new System.EventHandler(this.HideBorderLines);
+			// 
+			// toolStrip1
+			// 
+			this.toolStrip1.AllowMerge = false;
+			this.toolStrip1.CanOverflow = false;
+			resources.ApplyResources(this.toolStrip1, "toolStrip1");
+			this.toolStrip1.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.tbBtnHelp,
+            this.tbBtnHelpSingle,
+            this.tbBtnCopy,
+            this.tbBtnAdvanced});
+			this.toolStrip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
+			this.toolStrip1.Name = "toolStrip1";
+			this.toolStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+			this.toolStrip1.TabStop = true;
+			// 
+			// tbBtnHelp
+			// 
+			this.tbBtnHelp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			resources.ApplyResources(this.tbBtnHelp, "tbBtnHelp");
+			this.tbBtnHelp.Name = "tbBtnHelp";
+			this.tbBtnHelp.Click += new System.EventHandler(this.TbBtnHelp_Click);
+			// 
+			// tbBtnHelpSingle
+			// 
+			this.tbBtnHelpSingle.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			resources.ApplyResources(this.tbBtnHelpSingle, "tbBtnHelpSingle");
+			this.tbBtnHelpSingle.Margin = new System.Windows.Forms.Padding(1, 1, 0, 2);
+			this.tbBtnHelpSingle.Name = "tbBtnHelpSingle";
+			this.tbBtnHelpSingle.Click += new System.EventHandler(this.TbBtnHelp_Click);
+			// 
+			// tbBtnCopy
+			// 
+			this.tbBtnCopy.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			resources.ApplyResources(this.tbBtnCopy, "tbBtnCopy");
+			this.tbBtnCopy.Margin = new System.Windows.Forms.Padding(1, 1, 0, 2);
+			this.tbBtnCopy.Name = "tbBtnCopy";
+			this.tbBtnCopy.Click += new System.EventHandler(this.ItemCopy_Click);
+			// 
+			// tbBtnAdvanced
+			// 
+			this.tbBtnAdvanced.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			resources.ApplyResources(this.tbBtnAdvanced, "tbBtnAdvanced");
+			this.tbBtnAdvanced.Margin = new System.Windows.Forms.Padding(1, 1, 0, 2);
+			this.tbBtnAdvanced.Name = "tbBtnAdvanced";
+			this.tbBtnAdvanced.Click += new System.EventHandler(this.ItemShowDetails_Click);
+			// 
+			// button1
+			// 
+			resources.ApplyResources(this.button1, "button1");
+			this.button1.Name = "button1";
+			this.button1.Click += new System.EventHandler(this.Btn_Click);
+			// 
+			// button2
+			// 
+			resources.ApplyResources(this.button2, "button2");
+			this.button2.Name = "button2";
+			this.button2.Click += new System.EventHandler(this.Btn_Click);
+			// 
+			// button3
+			// 
+			resources.ApplyResources(this.button3, "button3");
+			this.button3.Name = "button3";
+			this.button3.Click += new System.EventHandler(this.Btn_Click);
+			// 
+			// button4
+			// 
+			resources.ApplyResources(this.button4, "button4");
+			this.button4.Name = "button4";
+			this.button4.Tag = "z";
+			this.button4.Click += new System.EventHandler(this.Btn_Click);
+			// 
+			// button5
+			// 
+			resources.ApplyResources(this.button5, "button5");
+			this.button5.Name = "button5";
+			this.button5.Click += new System.EventHandler(this.Btn_Click);
+			// 
+			// imgIcons
+			// 
+			this.imgIcons.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imgIcons.ImageStream")));
+			this.imgIcons.TransparentColor = System.Drawing.Color.Transparent;
+			this.imgIcons.Images.SetKeyName(0, "indentarrow.bmp");
+			this.imgIcons.Images.SetKeyName(1, "indentarrow_right.bmp");
+			// 
+			// MessageBoxDialog
+			// 
+			this.AccessibleRole = System.Windows.Forms.AccessibleRole.Alert;
+			resources.ApplyResources(this, "$this");
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this.pnlForm);
+			this.DoubleBuffered = true;
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+			this.KeyPreview = true;
+			this.MaximizeBox = false;
+			this.MinimizeBox = false;
+			this.Name = "MessageBoxDialog";
+			this.ShowInTaskbar = false;
+			this.Load += new System.EventHandler(this.NewMessageBoxForm_Load);
+			this.Click += new System.EventHandler(this.NewMessageBoxForm_Click);
+			this.HelpRequested += new System.Windows.Forms.HelpEventHandler(this.NewMessageBoxForm_HelpRequested);
+			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.NewMessageBoxForm_KeyDown);
+			this.pnlForm.ResumeLayout(false);
+			this.pnlForm.PerformLayout();
+			this.pnlMessage.ResumeLayout(false);
+			this.pnlMessage.PerformLayout();
+			this.pnlButtons.ResumeLayout(false);
+			this.pnlButtons.PerformLayout();
+			this.toolStrip1.ResumeLayout(false);
+			this.toolStrip1.PerformLayout();
+			this.ResumeLayout(false);
+			this.PerformLayout();
+
 	}
 }

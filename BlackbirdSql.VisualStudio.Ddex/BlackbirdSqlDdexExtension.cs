@@ -161,6 +161,19 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	// =========================================================================================================
 
 
+	public static new BlackbirdSqlDdexExtension Instance
+	{
+		get
+		{
+			if (_Instance == null || !_PackageLoaded)
+			{
+				DemandLoadPackage(SystemData.PackageGuid, out var _);
+				_PackageLoaded = true;
+			}
+			return (BlackbirdSqlDdexExtension)_Instance;
+		}
+	}
+
 	public override bool InvariantResolved => _InvariantResolved;
 
 	public override Type SchemaFactoryType => typeof(DslProviderSchemaFactory);
@@ -283,7 +296,9 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 		ServiceProgressData progressData = new("Loading BlackbirdSql", "Loading DDEX Provider Factories", 5, 15);
 		progress.Report(progressData);
 
-		if (Controller.ShutdownState)
+		_Instance = this;
+
+		if (ApcManager.IdeShutdownState)
 			return;
 
 		// Add provider object and schema factories
@@ -319,7 +334,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	{
 		Diag.ThrowIfNotOnUIThread();
 
-		if (cancellationToken.IsCancellationRequested || Controller.ShutdownState)
+		if (cancellationToken.IsCancellationRequested || ApcManager.IdeShutdownState)
 			return;
 
 		ServiceProgressData progressData = new("Loading BlackbirdSql", "Finalizing: Propagating User Settings", 7, 15);
@@ -406,6 +421,30 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	// =========================================================================================================
 	#region Methods - BlackbirdSqlDdexExtension
 	// =========================================================================================================
+
+
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
+	public static void DemandLoadPackage(string packageGuidString, out IVsPackage package, bool checkIfInstalled = false)
+	{
+		package = null;
+		if (GetGlobalService(typeof(SVsShell)) is IVsShell vsShell)
+		{
+			Guid guidPackage = new Guid(packageGuidString);
+			bool isInstalled = true;
+
+			if (checkIfInstalled)
+			{
+				vsShell.IsPackageInstalled(ref guidPackage, out var pfInstalled);
+				isInstalled = Convert.ToBoolean(pfInstalled);
+			}
+
+			if (isInstalled)
+			{
+				Native.ThrowOnFailure(vsShell.LoadPackage(ref guidPackage, out package));
+			}
+		}
+	}
+
 
 
 	// ---------------------------------------------------------------------------------

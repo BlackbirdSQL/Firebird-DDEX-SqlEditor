@@ -13,7 +13,6 @@ using BlackbirdSql.Common.Ctl.IO;
 using BlackbirdSql.Common.Ctl.Structs;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
@@ -274,7 +273,10 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 		// Tracer.Trace(GetType(), "AbstractShellTextEditorControl.Dispose", "returning");
 	}
 
-	protected static int Exf(int hr, string context = null) => Native.ThrowOnFailure(hr, context);
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
 
 
 	public virtual int QueryStatus(ref Guid guidGroup, uint nCmdId, OLECMD[] oleCmd, IntPtr oleText)
@@ -499,9 +501,9 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 			try
 			{
 				IVsTextView currentView = CurrentView;
-				Exf(currentView.GetCaretPos(out var piLine, out var piColumn), (string)null);
+				___(currentView.GetCaretPos(out var piLine, out var piColumn));
 				POINT[] array = new POINT[1];
-				Exf(currentView.GetPointOfLineColumn(piLine, piColumn, array), (string)null);
+				___(currentView.GetPointOfLineColumn(piLine, piColumn, array));
 
 				if (Native.GetClientRect(currentView.GetWindowHandle(), out UIRECT val)
 					&& (array[0].y < val.Top || array[0].x > val.Bottom || array[0].x < val.Left || array[0].y > val.Right))
@@ -617,7 +619,7 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 
 				while (pcFetched == 1)
 				{
-					Exf(ppEnum.Next(1u, array, out pcFetched), (string)null);
+					___(ppEnum.Next(1u, array, out pcFetched));
 					if (pcFetched == 1)
 					{
 						(array[0].punk as IVsTextManagerEvents).OnUserPreferencesChanged(null, null, null, [fONTCOLORPREFERENCES]);
@@ -722,13 +724,13 @@ public abstract class AbstractTextEditorControl : Control, IDisposable, IOleComm
 			if (_TextBuffer.TextStream is IVsUserData vsUserData)
 			{
 				Guid riidKey = LibraryData.CLSID_PropertyDisableXmlEditorPropertyWindowIntegration;
-				Exf(vsUserData.SetData(ref riidKey, true), (string)null);
+				___(vsUserData.SetData(ref riidKey, true));
 				riidKey = LibraryData.CLSID_PropertyOverrideXmlEditorSaveAsFileFilter;
-				Exf(vsUserData.SetData(ref riidKey, ControlsResources.SaveAsXmlaFilterString), (string)null);
+				___(vsUserData.SetData(ref riidKey, ControlsResources.SaveAsXmlaFilterString));
 			}
 		}
 
-		Exf(_TextBuffer.TextStream.SetLanguageServiceID(ref lsGuid), (string)null);
+		___(_TextBuffer.TextStream.SetLanguageServiceID(ref lsGuid));
 	}
 
 	protected abstract void CreateEditorWindow(object nativeSP);

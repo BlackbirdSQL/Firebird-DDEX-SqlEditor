@@ -3,15 +3,11 @@
 
 using System;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Ctl;
-using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.EditorExtension.Ctl.Events;
@@ -203,7 +199,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 			{
 				Diag.ThrowIfNotOnUIThread();
 
-				Exf(CurrentDocumentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out pvar));
+				___(CurrentDocumentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out pvar));
 			}
 
 			return pvar;
@@ -221,7 +217,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 			{
 				Diag.ThrowIfNotOnUIThread();
 
-				Exf(CurrentDocumentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out pvar));
+				___(CurrentDocumentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out pvar));
 			}
 
 			return pvar;
@@ -239,7 +235,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 			{
 				Diag.ThrowIfNotOnUIThread();
 
-				Exf(CurrentWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out pvar));
+				___(CurrentWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out pvar));
 			}
 
 			return pvar;
@@ -365,7 +361,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		if (!RdtManager.TryGetDocDataFromCookie(docCookie, out object docData))
 			return;
 
-		IComponentModel componentModel = Core.Controller.GetService<SComponentModel, IComponentModel>();
+		IComponentModel componentModel = ApcManager.GetService<SComponentModel, IComponentModel>();
 		if (componentModel == null)
 			return;
 
@@ -453,8 +449,8 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		{
 			Diag.ThrowIfNotOnUIThread();
 
-			Exf(SelectionMonitor.GetCmdUIContextCookie(ref commandContext, out var pdwCmdUICookie));
-			Exf(SelectionMonitor.IsCmdUIContextActive(pdwCmdUICookie, out pfActive));
+			___(SelectionMonitor.GetCmdUIContextCookie(ref commandContext, out var pdwCmdUICookie));
+			___(SelectionMonitor.IsCmdUIContextActive(pdwCmdUICookie, out pfActive));
 		}
 
 		return pfActive == 1;
@@ -510,33 +506,33 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 		Controller.EnsureMonitorSelection();
 
-		Exf(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_DocumentFrame, out var pvarValue));
+		___(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_DocumentFrame, out var pvarValue));
 		CurrentDocumentFrame = pvarValue as IVsWindowFrame;
 
-		Exf(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_WindowFrame, out pvarValue));
+		___(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_WindowFrame, out pvarValue));
 		CurrentWindowFrame = pvarValue as IVsWindowFrame;
 
-		Exf(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_UndoManager, out pvarValue));
+		___(SelectionMonitor.GetCurrentElementValue((uint)VSConstants.VSSELELEMID.SEID_UndoManager, out pvarValue));
 		CurrentUndoManager = pvarValue as IOleUndoManager;
 
 		Guid rguidCmdUI = Core.VS.UICONTEXT_PublishingPreviewCommitOff;
-		Exf(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _PublishingPreviewCommitOffCookie));
+		___(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _PublishingPreviewCommitOffCookie));
 
 		// rguidCmdUI = new(ServiceData.PreviewCommitOffGuid);
-		// Exf(MonitorSelection.GetCmdUIContextCookie(ref rguidCmdUI, out _PreviewCommitOffCookie));
+		// ___(MonitorSelection.GetCmdUIContextCookie(ref rguidCmdUI, out _PreviewCommitOffCookie));
 
 
 		rguidCmdUI = VSConstants.StandardToolWindows.ServerExplorer;
-		Exf(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _ServerExplorerCookie));
+		___(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _ServerExplorerCookie));
 
 		rguidCmdUI = VSConstants.UICONTEXT.NotBuildingAndNotDebugging_guid;
-		Exf(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _NotBuildingCookie));
+		___(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _NotBuildingCookie));
 
 		rguidCmdUI = VSConstants.UICONTEXT.SolutionOpening_guid;
-		Exf(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _SolutionOpeningCookie));
+		___(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _SolutionOpeningCookie));
 
 		rguidCmdUI = VSConstants.UICONTEXT.SolutionOrProjectUpgrading_guid;
-		Exf(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _SolutionOrProjectUpgradingCookie));
+		___(SelectionMonitor.GetCmdUIContextCookie(ref rguidCmdUI, out _SolutionOrProjectUpgradingCookie));
 
 	}
 
@@ -771,7 +767,6 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		if (!Native.Succeeded(pFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocView, out var pvar)))
 			return VSConstants.S_OK;
 
-
 		if (pvar is TabbedEditorWindowPane sqlEditorTabbedEditorPane)
 			EditorPackage.LastFocusedSqlEditor = sqlEditorTabbedEditorPane;
 
@@ -848,13 +843,13 @@ public sealed class EditorEventsManager : AbstractEventsManager
 					object pvar = null;
 					if (oldValue is IVsWindowFrame vsWindowFrame)
 					{
-						Exf(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out pvar));
+						___(vsWindowFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out pvar));
 					}
 
 					object pvar2 = null;
 					if (CurrentDocumentFrame != null)
 					{
-						Exf(CurrentDocumentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out pvar2));
+						___(CurrentDocumentFrame.GetProperty((int)__VSFPROPID.VSFPROPID_DocData, out pvar2));
 					}
 
 					if (pvar != pvar2)
@@ -878,7 +873,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 
 	public int OnBeforeCloseProject(IVsHierarchy pHierarchy, int fRemoved)
 	{
-		// This event is fired after the project's items are no longer available. ?????????
+		// This event is fired after the misc project's items are no longer available. ?????????
 
 		return VSConstants.S_OK;
 
