@@ -20,6 +20,21 @@ namespace BlackbirdSql.Core;
 public abstract class Reflect
 {
 
+
+	public static T CreateInstance<T>(params object[] args)
+	{
+		var type = typeof(T);
+		var instance = type.Assembly.CreateInstance(
+			type.FullName, false,
+			BindingFlags.Instance | BindingFlags.NonPublic,
+			null, args, null, null);
+		return (T)instance;
+	}
+
+
+
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Creates and adds an event handler delegate to a class object event handler given

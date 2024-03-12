@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Controls.Interfaces;
 using BlackbirdSql.VisualStudio.Ddex.Controls.Enums;
 using BlackbirdSql.VisualStudio.Ddex.Controls.Events;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools;
@@ -29,7 +30,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Controls.DataTools;
 //										TDataConnectionDlgHandler Class
 //
 // =========================================================================================================
-public class TDataConnectionDlgHandler : IVsDataConnectionDialog, IDisposable
+public class TDataConnectionDlgHandler : IBDataConnectionDlgHandler
 {
 
 	// ---------------------------------------------------------------------------------

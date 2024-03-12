@@ -2,9 +2,13 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+using BlackbirdSql.Core.Ctl.Extensions;
+using BlackbirdSql.Core;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.Interfaces;
+using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio.Data.Core;
 using Microsoft.VisualStudio.Data.Framework;
+using BlackbirdSql.VisualStudio.Ddex.Properties;
 
 
 
@@ -35,6 +39,8 @@ public sealed class TProviderObjectFactory : DataProviderObjectFactory, IBProvid
 		// Tracer.Trace(GetType(), "TProviderObjectFactory.TProviderObjectFactory");
 		_ = BlackbirdSqlDdexExtension.Instance;
 	}
+
+
 
 	#endregion Constructors / Destructors
 

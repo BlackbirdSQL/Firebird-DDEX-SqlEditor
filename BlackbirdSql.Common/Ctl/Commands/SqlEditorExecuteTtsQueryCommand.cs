@@ -5,33 +5,30 @@
 
 using System;
 using BlackbirdSql.Common.Controls.Interfaces;
-using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-
-
-
 
 namespace BlackbirdSql.Common.Ctl.Commands;
 
 
-public class SqlEditorShowEstimatedPlanCommand : AbstractSqlEditorCommand
+public class SqlEditorExecuteTtsQueryCommand : AbstractSqlEditorCommand
 {
-	public SqlEditorShowEstimatedPlanCommand()
+	public SqlEditorExecuteTtsQueryCommand()
 	{
+		// Tracer.Trace();
 	}
 
-	public SqlEditorShowEstimatedPlanCommand(IBSqlEditorWindowPane editorWindow)
+	public SqlEditorExecuteTtsQueryCommand(IBSqlEditorWindowPane editorWindow)
 		: base(editorWindow)
 	{
+		// Tracer.Trace();
 	}
 
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-		if (!IsEditorExecuting())
+		if (ShouldRunCommand())
 		{
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 		}
@@ -41,26 +38,16 @@ public class SqlEditorShowEstimatedPlanCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
-		if (auxDocData != null)
-		{
-			QueryManager qryMgr = auxDocData.QryMgr;
-			if (qryMgr != null && !qryMgr.IsExecuting)
-			{
-				try
-				{
-					// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "HandleExec", "calling ISqlEditorWindowPane.HandleExec");
-					auxDocData.EstimatedExecutionPlanEnabled = true;
-
-					EditorWindow.ExecuteQuery(false);
-				}
-				finally
-				{
-					auxDocData.EstimatedExecutionPlanEnabled = false;
-				}
-			}
-		}
+		if (ShouldRunCommand())
+			EditorWindow.ExecuteQuery(true);
 
 		return VSConstants.S_OK;
+	}
+
+	protected bool ShouldRunCommand()
+	{
+		QueryManager qryMgrForEditor = GetQueryManagerForEditor();
+
+		return (qryMgrForEditor != null && !qryMgrForEditor.IsExecuting);
 	}
 }

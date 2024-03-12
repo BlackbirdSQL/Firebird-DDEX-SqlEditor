@@ -86,6 +86,14 @@ public class ExecutionSettingsModel(IBTransientSettings transientSettings)
 
 
 	[GlobalizedCategory("OptionCategoryGeneral")]
+	[GlobalizedDisplayName("OptionDisplayExecutionAutoDdlTts")]
+	[GlobalizedDescription("OptionDescriptionExecutionAutoDdlTts")]
+	[TypeConverter(typeof(GlobalEnableDisableConverter))]
+	[DefaultValue(true)]
+	public bool AutoDdlTts { get; set; } = true;
+
+
+	[GlobalizedCategory("OptionCategoryGeneral")]
 	[GlobalizedDisplayName("OptionDisplayExecutionSetRowCount")]
 	[GlobalizedDescription("OptionDescriptionExecutionSetRowCount")]
 	[TypeConverter(typeof(RangeConverter)), Range(0, 999999999)]

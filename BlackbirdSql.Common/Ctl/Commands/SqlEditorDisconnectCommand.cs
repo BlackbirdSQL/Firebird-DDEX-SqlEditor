@@ -41,11 +41,13 @@ public class SqlEditorDisconnectCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		QueryManager qryMgrForEditor = GetQueryManagerForEditor();
-		if (qryMgrForEditor != null)
+		QueryManager qryMgr = GetQueryManagerForEditor();
+		if (qryMgr != null)
 		{
-			qryMgrForEditor.ConnectionStrategy.Connection?.Close();
-			qryMgrForEditor.ConnectionStrategy.ResetConnection();
+			qryMgr.ConnectionStrategy.Transaction?.Dispose();
+			qryMgr.ConnectionStrategy.Transaction = null;
+			qryMgr.ConnectionStrategy.Connection?.Close();
+			qryMgr.ConnectionStrategy.ResetConnection();
 		}
 
 		return VSConstants.S_OK;

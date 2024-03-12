@@ -126,4 +126,5 @@ public abstract class AbstractSqlEditorCommand
 
 		return false;
 	}
+
 }

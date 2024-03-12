@@ -2,7 +2,7 @@
 // Microsoft.SqlServer.Management.SqlParser.Binder.IBinder
 using System.Collections.Generic;
 using BlackbirdSql.Common.Ctl.Parser.Enums;
-using BlackbirdSql.Common.Model.Parser.Interfaces;
+using BlackbirdSql.Common.Model.Parsers.Interfaces;
 
 namespace BlackbirdSql.Common.Ctl.Parser.Interfaces;
 

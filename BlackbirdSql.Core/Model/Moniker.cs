@@ -150,7 +150,8 @@ public class Moniker
 
 		_ExplorerTreeName = node.ExplorerConnection.DisplayName;
 
-		if (@dbObj != null && @nodeObj != null)
+
+		if (@dbObj != null && @nodeObj != null && @dbObj.Properties != null)
 		{
 			_DataSource = (string)@dbObj.Properties[CoreConstants.C_KeyDataSource];
 			_Database = (string)@dbObj.Properties[CoreConstants.C_KeyDatabase];

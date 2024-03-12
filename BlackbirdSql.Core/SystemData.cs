@@ -85,29 +85,48 @@ public static class SystemData
 	// ---------------------------------------------------------------------------------------------------------
 
 
+	/// <summary>
+	/// The Package guid for DemandLoadPackage().
+	/// </summary>
 	public const string PackageGuid = "0B100D64-7249-4208-8748-2810B511E90C";
-	public const string PackageServiceGuid = "7787981E-E42A-412F-A42B-9AD07A7DE169";
+
+	/// <summary>
+	/// The AsyncPackage guid for IBAsyncPackage.
+	/// </summary>
+	public const string AsyncPackageGuid = "7787981E-E42A-412F-A42B-9AD07A7DE169";
+
+	/// <summary>
+	/// The UIContext for autoload.
+	/// </summary>
 	public const string UIContextGuid = "8838E01E-D709-486D-A933-46D30A864D51";
 
-	public const string ProviderGuid = "43015F6E-757F-408B-966E-C2BCE34686BA";
+	/// <summary>
+	/// The DataProvider registration guid.
+	/// </summary>
+	public const string ProviderGuid = "43015f6e-757f-408b-966e-c2bce34686ba";
+
+	/// <summary>
+	/// The factory service guid.
+	/// </summary>
+	public const string ProviderObjectFactoryServiceGuid = "B0640FC7-F798-4CC0-81F9-2587762D4957";
+
+	/// <summary>
+	/// FirebirdClient.
+	/// </summary>
+	public const string DataSourceGuid = "2979569E-416D-4DD8-B06B-EBCB70DE7A4E";
+
+	/// <summary>
+	/// BlackbirdSql Output pane.
+	/// </summary>
+	public const string OutputPaneGuid = "9E2B946C-4D46-4067-ABEB-E181F3B3768E";
 
 	public const string PackageControllerGuid = "CF77D510-C1DB-44EA-85F5-8201089D6FAF";
-
-	public const string ProviderObjectFactoryGuid = "B0640FC7-F798-4CC0-81F9-2587762D4957";
-	public const string ProviderObjectFactoryGuidNET = "AE2CB68C-0AA2-46A7-910A-CBDA1464DCB0";
-
 	public const string ProviderSchemaFactoryGuid = "9FDE2679-7080-4C88-A734-71AEC4CB099A";
-
-	public const string DataSourceGuid = "2979569E-416D-4DD8-B06B-EBCB70DE7A4E"; // Firebird
-
+	
 	public const string DesignerExplorerServicesGuid = "4D30B519-9FB6-4FFD-A0CE-92863B1C37EA";
 	public const string DesignerOnlineServicesGuid = "27F3F968-74EB-46B7-A1FF-6CCA57C0D894";
-
 	
-	// BlackbirdSql Output pane
-	public const string OutputPaneGuid = "9E2B946C-4D46-4067-ABEB-E181F3B3768E";
 	public const string MessageBoxParentGuid = "4BE829EA-E33E-49AB-BE5C-ADC6E6DE8AA7";
-
 
 
 	#endregion Package Guids

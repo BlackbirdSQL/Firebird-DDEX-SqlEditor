@@ -103,6 +103,7 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 
 	// Editor ExecutionSettingsModel
 
+	public static bool EditorExecutionAutoDdlTts => (bool)GetSetting("EditorExecutionGeneralAutoDdlTts", true);
 	public static int EditorExecutionSetRowCount => (int)GetSetting("EditorExecutionGeneralSetRowCount", ModelConstants.C_DefaultSetRowCount);
 	public static EnBlobSubType EditorExecutionSetBlobDisplay => (EnBlobSubType)GetSetting("EditorExecutionGeneralSetBlobDisplay", ModelConstants.C_DefaultSetBlobDisplay);
 	public static bool EditorExecutionDefaultOleScripting => (bool)GetSetting("EditorExecutionGeneralDefaultOleScripting",
@@ -137,7 +138,7 @@ public abstract class PersistentSettings : Core.Ctl.Config.PersistentSettings
 
 	// Editor ResultsSettingsModel
 	public static EnSqlOutputMode EditorResultsOutputMode
-		=> (EnSqlOutputMode)(int)GetSetting("EditorResultsGeneralIsolationLevel", EnSqlOutputMode.ToGrid);
+		=> (EnSqlOutputMode)(int)GetSetting("EditorResultsGeneralOutputMode", EnSqlOutputMode.ToGrid);
 	public static string EditorResultsDirectory
 		=> (string)GetSetting("EditorResultsGeneralDirectory", Environment.GetFolderPath(Environment.SpecialFolder.Personal));
 	public static bool EditorResultsPlaySounds => (bool)GetSetting("EditorResultsGeneralPlaySounds", false);

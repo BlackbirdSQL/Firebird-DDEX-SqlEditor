@@ -127,10 +127,10 @@
     <value>BlackbirdSql, Results Editor</value>
   </data>
   <data name="100" xml:space="preserve">
-    <value>IVs provider for Firebird (BlackbirdSql)</value>
+    <value>BlackbirdSql Data Tools</value>
   </data>
   <data name="102" xml:space="preserve">
-    <value>IVs Provider for FirebirdClient (BlackbirdSql)</value>
+    <value>BlackbirdSql DDEX 2.0 and SqlEditor Data Tools for Firebird Server</value>
   </data>
   <data name="200" xml:space="preserve">
     <value>BlackbirdSQL Server Tools</value>

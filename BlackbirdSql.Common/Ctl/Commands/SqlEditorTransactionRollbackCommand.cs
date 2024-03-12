@@ -7,7 +7,7 @@ using System;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Common.Model.QueryExecution;
-using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 
@@ -17,13 +17,13 @@ using Microsoft.VisualStudio.OLE.Interop;
 namespace BlackbirdSql.Common.Ctl.Commands;
 
 
-public class SqlEditorShowEstimatedPlanCommand : AbstractSqlEditorCommand
+public class SqlEditorTransactionRollbackCommand : AbstractSqlEditorCommand
 {
-	public SqlEditorShowEstimatedPlanCommand()
+	public SqlEditorTransactionRollbackCommand()
 	{
 	}
 
-	public SqlEditorShowEstimatedPlanCommand(IBSqlEditorWindowPane editorWindow)
+	public SqlEditorTransactionRollbackCommand(IBSqlEditorWindowPane editorWindow)
 		: base(editorWindow)
 	{
 	}
@@ -31,7 +31,11 @@ public class SqlEditorShowEstimatedPlanCommand : AbstractSqlEditorCommand
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-		if (!IsEditorExecuting())
+
+		QueryManager qryMgr = GetQueryManagerForEditor();
+
+		if (qryMgr != null && qryMgr.IsConnected && !qryMgr.IsExecuting
+			&& qryMgr.ConnectionStrategy != null && qryMgr.ConnectionStrategy.HasTransactions)
 		{
 			prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 		}
@@ -41,26 +45,11 @@ public class SqlEditorShowEstimatedPlanCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
-		if (auxDocData != null)
-		{
-			QueryManager qryMgr = auxDocData.QryMgr;
-			if (qryMgr != null && !qryMgr.IsExecuting)
-			{
-				try
-				{
-					// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "HandleExec", "calling ISqlEditorWindowPane.HandleExec");
-					auxDocData.EstimatedExecutionPlanEnabled = true;
+		AuxiliaryDocData docData = GetAuxiliaryDocDataForEditor();
 
-					EditorWindow.ExecuteQuery(false);
-				}
-				finally
-				{
-					auxDocData.EstimatedExecutionPlanEnabled = false;
-				}
-			}
-		}
+		docData.RollbackTransactions();
 
 		return VSConstants.S_OK;
+
 	}
 }

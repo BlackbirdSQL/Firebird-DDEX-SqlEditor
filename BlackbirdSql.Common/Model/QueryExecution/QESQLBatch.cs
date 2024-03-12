@@ -3,13 +3,16 @@
 
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Globalization;
 using System.IO;
 using System.Threading;
+using BlackbirdSql.Common.Ctl.Config;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Enums;
 using BlackbirdSql.Common.Model.Events;
 using BlackbirdSql.Common.Model.Interfaces;
+using BlackbirdSql.Common.Model.Parsers;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Diagnostics;
@@ -554,10 +557,35 @@ public class QESQLBatch : IDisposable
 		// Tracer.Trace(GetType(), "QESQLBatch.ExecuteStatement", " Creating command - _SpecialActions: " + _SpecialActions);
 		IDbCommand dbCommand = conn.CreateCommand();
 
+		_NoResultsExpected = false;
+
 		if (text.Length < 18 || text[..18].ToLower() != "select @@showplan:")
 		{
 			dbCommand.CommandText = text;
+
+			SqlParser parser = new();
+
+			(string ddlCommand, _, _) = parser.ParseDSL(text);
+
+			// TBC!!! Parser only checks for ALTER and CREATE atm.
+
+			if (ddlCommand != null && (ddlCommand.Equals("ALTER") || ddlCommand.Equals("CREATE")))
+				_NoResultsExpected = true;
+
 		}
+
+		if (_NoResultsExpected && PersistentSettings.EditorExecutionAutoDdlTts && !QryMgr.ConnectionStrategy.TtsActive)
+		{
+			FbConnection connection = conn as FbConnection;
+			FbTransaction transaction = connection.BeginTransaction(QryMgr.LiveSettings.EditorExecutionIsolationLevel);
+
+			QryMgr.ConnectionStrategy.Transaction = transaction;
+		}
+
+
+		if (QryMgr.ConnectionStrategy.TtsActive)
+			dbCommand.Transaction = QryMgr.ConnectionStrategy.Transaction;
+
 
 		dbCommand.CommandTimeout = _ExecTimeout;
 		IBBatchExecutionHandler batchExecutionHandler = ConnectionStrategy.CreateBatchExecutionHandler();
@@ -573,6 +601,9 @@ public class QESQLBatch : IDisposable
 			dbCommand = null;
 		}
 
+		bool executedReader = false;
+
+
 		try
 		{
 			bool expectEstimatedPlan = (_SpecialActions & EnQESQLBatchSpecialAction.ExpectEstimatedYukonXmlExecutionPlan) > 0
@@ -584,33 +615,7 @@ public class QESQLBatch : IDisposable
 			// ----------------------------------------------------------------------------------------- //
 
 
-			if (_NoResultsExpected && !expectEstimatedPlan)
-			{
-
-				int i;
-
-
-				i = _Command.ExecuteNonQuery();
-
-
-				QESQLStatementCompletedEventArgs args = new(i, false);
-				OnSqlStatementCompleted(_Command, args);
-
-				// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ExecuteStatement()", " ExecuteNonQuery returned!");
-				lock (this)
-				{
-					if (_State == EnBatchState.Cancelling)
-					{
-						result = EnScriptExecutionResult.Cancel;
-					}
-					else
-					{
-						result = EnScriptExecutionResult.Success;
-						_State = EnBatchState.Executed;
-					}
-				}
-			}
-			else
+			if (!_NoResultsExpected || expectEstimatedPlan)
 			{
 				if (expectEstimatedPlan)
 				{
@@ -648,15 +653,146 @@ public class QESQLBatch : IDisposable
 				else
 				{
 					// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteStatement()", ": calling ExecuteReader: " + _SpecialActions);
+
 					dataReader = _Command.ExecuteReader(CommandBehavior.SequentialAccess);
 
-					OnSqlStatementCompleted(_Command, new(dataReader == null ? 0 : dataReader.RecordsAffected, false));
+					executedReader = true;
+
+					if (dataReader.FieldCount > 0)
+						OnSqlStatementCompleted(_Command, new(dataReader == null ? 0 : dataReader.RecordsAffected, false));
+				}
+
+				if (executedReader && dataReader.FieldCount <= 0)
+				{
+					_NoResultsExpected = true;
+				}
+				else
+				{
+					// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ExecuteStatement()", ": got the reader!");
+					lock (this)
+					{
+						if (_State == EnBatchState.Cancelling)
+						{
+							result = EnScriptExecutionResult.Cancel;
+						}
+						else
+						{
+							_State = EnBatchState.ProcessingResults;
+						}
+					}
+
+					/*
+					if (dataReader != null)
+					{
+						Type type = dataReader.GetType();
+						if (type.FullName.Equals("Microsoft.SqlServerCe.Client.SqlCeDataReader", StringComparison.OrdinalIgnoreCase))
+						{
+							PropertyInfo property = type.GetProperty("HideSystemColumns");
+							property?.SetValue(dataReader, false, null);
+						}
+					}
+					*/
+
+					if (NewResultSetEvent != null && result != EnScriptExecutionResult.Cancel)
+					{
+						EnScriptExecutionResult processingResult = EnScriptExecutionResult.Success;
+						bool hasMoreRows = false;
+
+						do
+						{
+							if (dataReader.FieldCount <= 0)
+							{
+								Tracer.Warning(GetType(), "ExecuteStatement()", "Result set is empty.");
+								hasMoreRows = dataReader.NextResult();
+								continue;
+							}
+
+							// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ExecuteStatement()", ": processing result set");
+
+							// ------------------------------------------------------------------------------- //
+							// ******************** Output Point (1) - ExecuteStatement() ******************** //
+							// ------------------------------------------------------------------------------- //
+							processingResult = ProcessResultSet(dataReader, script);
+
+							if (processingResult != EnScriptExecutionResult.Success)
+							{
+								// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteStatement()", ": something wrong while processing the result set: {0}", processingResult);
+								result = processingResult;
+								break;
+							}
+
+							// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteStatement()", ": successfully processed the result set");
+							FinishedResultSetEvent?.Invoke(this, new EventArgs());
+
+							hasMoreRows = dataReader.NextResult();
+						}
+						while (hasMoreRows);
+
+						if (ContainsErrors)
+						{
+							Tracer.Warning(GetType(), "ExecuteStatement()", "Successfully processed result set, but there were errors shown to the user.");
+							result = EnScriptExecutionResult.Failure;
+						}
+
+						if (result != EnScriptExecutionResult.Cancel)
+						{
+							lock (this)
+							{
+								_State = EnBatchState.Executed;
+							}
+						}
+					}
+					else
+					{
+						Tracer.Warning(GetType(), "ExecuteStatement()", "No NewResultSet handler was specified or Cancel was received!");
+					}
+				}
+			}
+
+			if (_NoResultsExpected && !expectEstimatedPlan)
+			{
+
+				if (executedReader)
+				{
+					dataReader.Close();
+					dataReader.Dispose();
+					dataReader = null;
+
+					dbCommand = conn.CreateCommand();
+					dbCommand.CommandText = _Command.CommandText;
+
+					if (QryMgr.ConnectionStrategy.TtsActive)
+						_Command.Transaction = null;
+
+
+					if (PersistentSettings.EditorExecutionAutoDdlTts && !QryMgr.ConnectionStrategy.TtsActive)
+					{
+						FbConnection connection = conn as FbConnection;
+						FbTransaction transaction = connection.BeginTransaction(QryMgr.LiveSettings.EditorExecutionIsolationLevel);
+
+						QryMgr.ConnectionStrategy.Transaction = transaction;
+					}
+
+					if (QryMgr.ConnectionStrategy.TtsActive)
+						dbCommand.Transaction = QryMgr.ConnectionStrategy.Transaction;
+
+
+					batchExecutionHandler?.UnRegister(conn, _Command, this);
+					_Command.Dispose();
+
+					dbCommand.CommandTimeout = _ExecTimeout;
+					_Command = dbCommand;
+
+					dbCommand = null;
 				}
 
 
+				int i = _Command.ExecuteNonQuery();
 
+				QESQLStatementCompletedEventArgs args = new(i, false);
+				OnSqlStatementCompleted(_Command, args);
 
-				// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ExecuteStatement()", ": got the reader!");
+				// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ExecuteStatement()", " ExecuteNonQuery returned!");
 				lock (this)
 				{
 					if (_State == EnBatchState.Cancelling)
@@ -665,76 +801,12 @@ public class QESQLBatch : IDisposable
 					}
 					else
 					{
-						_State = EnBatchState.ProcessingResults;
+						result = EnScriptExecutionResult.Success;
+						_State = EnBatchState.Executed;
 					}
-				}
-
-				/*
-				if (dataReader != null)
-				{
-					Type type = dataReader.GetType();
-					if (type.FullName.Equals("Microsoft.SqlServerCe.Client.SqlCeDataReader", StringComparison.OrdinalIgnoreCase))
-					{
-						PropertyInfo property = type.GetProperty("HideSystemColumns");
-						property?.SetValue(dataReader, false, null);
-					}
-				}
-				*/
-
-				if (NewResultSetEvent != null && result != EnScriptExecutionResult.Cancel)
-				{
-					EnScriptExecutionResult processingResult = EnScriptExecutionResult.Success;
-					bool hasMoreRows = false;
-
-					do
-					{
-						if (dataReader.FieldCount <= 0)
-						{
-							Tracer.Warning(GetType(), "ExecuteStatement()", "Result set is empty.");
-							hasMoreRows = dataReader.NextResult();
-							continue;
-						}
-
-						// Tracer.Trace(GetType(), Tracer.EnLevel.Information, "ExecuteStatement()", ": processing result set");
-
-						// ------------------------------------------------------------------------------- //
-						// ******************** Output Point (1) - ExecuteStatement() ******************** //
-						// ------------------------------------------------------------------------------- //
-						processingResult = ProcessResultSet(dataReader, script);
-
-						if (processingResult != EnScriptExecutionResult.Success)
-						{
-							// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteStatement()", ": something wrong while processing the result set: {0}", processingResult);
-							result = processingResult;
-							break;
-						}
-
-						// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteStatement()", ": successfully processed the result set");
-						FinishedResultSetEvent?.Invoke(this, new EventArgs());
-
-						hasMoreRows = dataReader.NextResult();
-					}
-					while (hasMoreRows);
-
-					if (ContainsErrors)
-					{
-						Tracer.Warning(GetType(), "ExecuteStatement()", "Successfully processed result set, but there were errors shown to the user.");
-						result = EnScriptExecutionResult.Failure;
-					}
-
-					if (result != EnScriptExecutionResult.Cancel)
-					{
-						lock (this)
-						{
-							_State = EnBatchState.Executed;
-						}
-					}
-				}
-				else
-				{
-					Tracer.Warning(GetType(), "ExecuteStatement()", "No NewResultSet handler was specified or Cancel was received!");
 				}
 			}
+
 		}
 		catch (IOException ex)
 		{
@@ -813,6 +885,9 @@ public class QESQLBatch : IDisposable
 				_State = EnBatchState.Initial;
 				_Command.Dispose();
 				_Command = null;
+
+				if (executedReader)
+					_NoResultsExpected = false;
 			}
 		}
 

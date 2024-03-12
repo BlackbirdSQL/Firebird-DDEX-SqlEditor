@@ -35,6 +35,7 @@
 	  <Compile Include="Controls\ComponentModel\AbstractFolderNameEditor.cs" />
 	  <Compile Include="Controls\ComponentModel\AbstractFileNameEditor.cs" />
 	  <Compile Include="Controls\Enums\EnAdvancedInfoType.cs" />
+	  <Compile Include="Controls\Interfaces\IBDataConnectionDlgHandler.cs" />
 	  <Compile Include="Controls\MessageBoxDialog.cs">
 	    <SubType>Form</SubType>
 	  </Compile>
@@ -79,6 +80,7 @@
 	  <Compile Include="Ctl\AbstractRdtManager.cs" />
 	  <Compile Include="Ctl\Diagnostics\IBEnumerableDescribers.cs" />
 	  <Compile Include="Ctl\Diagnostics\SqlEtwProvider.cs" />
+	  <Compile Include="Ctl\Extensions\DbProviderFactoriesEx.cs" />
 	  <Compile Include="Ctl\FbsqlStyleUriParser.cs" />
 	  <Compile Include="Ctl\Interfaces\IBDataConnectionProperties.cs" />
 	  <Compile Include="Model\AbstractRunningConnectionTable.cs" />
@@ -171,7 +173,6 @@
 	  <Compile Include="Ctl\Events\MakeConnectionCompletedEventArgs.cs" />
 	  <Compile Include="Ctl\Events\MessageEventArgs.cs" />
 	  <Compile Include="Ctl\Events\SelectedConnectionChangedEventArgs.cs" />
-	  <Compile Include="Ctl\Extensions\DbProviderFactoriesEx.cs" />
 	  <Compile Include="Ctl\Extensions\ErmBindingSource.cs" />
 	  <Compile Include="Root\ExtensionMembers.cs" />
 	  <Compile Include="Ctl\Extensions\MutablePair.cs" />

@@ -384,6 +384,13 @@ public abstract class AbstractQESQLExec : IDisposable
 		_ExecOptionHasBeenChanged = true;
 		_SpecialActions = EnQESQLBatchSpecialAction.None;
 
+		if (_ExecLiveSettings.WithTransactionTracking && !QryMgr.ConnectionStrategy.TtsActive)
+		{
+			FbConnection connection = dbConnection as FbConnection;
+
+			FbTransaction transaction = connection.BeginTransaction(_ExecLiveSettings.EditorExecutionIsolationLevel);
+			QryMgr.ConnectionStrategy.Transaction = transaction;
+		}
 
 		/*
 			This is a sample of what used to be here but isql is not available to us.

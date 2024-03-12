@@ -5,7 +5,7 @@ using BlackbirdSql.Common.Model.Enums;
 using BlackbirdSql.Common.Model.Interfaces;
 
 
-namespace BlackbirdSql.Common.Model.Parser;
+namespace BlackbirdSql.Common.Model.Parsers;
 
 public class ManagedBatchParser : IDisposable
 {

@@ -4,6 +4,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using System.Transactions;
 using BlackbirdSql.Common.Ctl.Config;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Enums;
@@ -12,6 +13,7 @@ using BlackbirdSql.Common.Model.Interfaces;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Enums;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Utilities;
 
 using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
@@ -21,6 +23,17 @@ namespace BlackbirdSql.Common.Model.QueryExecution;
 
 public sealed class QueryManager : IDisposable
 {
+	public QueryManager(SqlConnectionStrategy connectionStrategy, QEOLESQLExec.ResolveSqlCmdVariable sqlCmdVarResolver)
+	{
+		ConnectionStrategy = connectionStrategy;
+		_SqlExec = new QEOLESQLExec(SqlCmdVariableResolver, this);
+		SqlCmdVariableResolver = sqlCmdVarResolver;
+
+		RegisterSqlExecWithEvenHandlers();
+	}
+
+
+
 	[Flags]
 	public enum EnStatusType
 	{
@@ -173,6 +186,9 @@ public sealed class QueryManager : IDisposable
 		}
 	}
 
+
+
+
 	public QEOLESQLExec.ResolveSqlCmdVariable SqlCmdVariableResolver
 	{
 		get
@@ -281,30 +297,22 @@ public sealed class QueryManager : IDisposable
 	public event QESQLStatementCompletedEventHandler StatementCompletedEvent;
 
 
-	public QueryManager(SqlConnectionStrategy connectionStrategy, QEOLESQLExec.ResolveSqlCmdVariable sqlCmdVarResolver)
-	{
-		ConnectionStrategy = connectionStrategy;
-		_SqlExec = new QEOLESQLExec(SqlCmdVariableResolver, this);
-		SqlCmdVariableResolver = sqlCmdVarResolver;
-
-		RegisterSqlExecWithEvenHandlers();
-	}
 
 
 
-	public bool Run(IBTextSpan textSpan)
+	public bool Run(IBTextSpan textSpan, bool withTts)
 	{
 		// --------------------------------------------------------------------- //
 		// ******************** Execution Point (3) - Run() ******************** //
 		// --------------------------------------------------------------------- //
-		return ValidateAndRun(textSpan, false);
+		return ValidateAndRun(textSpan, false, withTts);
 	}
 
 
 
 	public void Parse(IBTextSpan textSpan)
 	{
-		ValidateAndRun(textSpan, true);
+		ValidateAndRun(textSpan, true, false);
 	}
 
 
@@ -388,6 +396,8 @@ public sealed class QueryManager : IDisposable
 			ConnectionStrategy?.Dispose();
 		}
 	}
+
+
 
 	private void ConnectionStateChangedEventHandler(object sender, StateChangeEventArgs args)
 	{
@@ -494,7 +504,7 @@ public sealed class QueryManager : IDisposable
 		ConnectionStrategy.ApplyConnectionOptions(args.Connection, LiveSettings);
 	}
 
-	private bool ValidateAndRun(IBTextSpan textSpan, bool parseOnly)
+	private bool ValidateAndRun(IBTextSpan textSpan, bool parseOnly, bool withTts)
 	{
 		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ValidateAndRun()", " Enter. : ExecutionOptions.WithEstimatedExecutionPlan: " + LiveSettings.WithEstimatedExecutionPlan);
 		
@@ -543,10 +553,15 @@ public sealed class QueryManager : IDisposable
 			sqlLiveSettings.SuppressProviderMessageHeaders = true;
 			// sqlLiveSettings.WithOleSqlScripting = SqlLiveSettings.WithOleSqlScripting;
 		}
-		else if (sqlLiveSettings.WithClientStats)
+		else
 		{
-			ConnectionStrategy.ResetAndEnableConnectionStatistics();
+			if (sqlLiveSettings.WithClientStats)
+			{
+				ConnectionStrategy.ResetAndEnableConnectionStatistics();
+			}
 		}
+
+		sqlLiveSettings.WithTransactionTracking = withTts;
 
 
 		if (!OnScriptExecutionStarted(textSpan.Text, parseOnly, connection))
@@ -596,6 +611,8 @@ public sealed class QueryManager : IDisposable
 
 		if (LiveSettings.EditorExecutionDisconnectOnCompletion)
 		{
+			ConnectionStrategy.Transaction?.Dispose();
+			ConnectionStrategy.Transaction = null;
 			ConnectionStrategy.Connection.Close();
 			ConnectionStrategy.SetConnectionInfo(null);
 		}

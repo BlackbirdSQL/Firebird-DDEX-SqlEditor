@@ -20,6 +20,15 @@
 				</Strings>
 			</Menu>
 
+			<Menu guid="CommandSetGuid" id="MenuIdExecuteGroup" priority="0x0000" type="MenuController">
+				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
+				<CommandFlag>TextChanges</CommandFlag>
+				<CommandFlag>TextIsAnchorCommand</CommandFlag>
+				<Strings>
+					<ButtonText>Execute Menu Controller</ButtonText>
+					<CommandName>ExecuteMenuController</CommandName>
+				</Strings>
+			</Menu>
 
 			<Menu guid="CommandSetGuid" id="MenuIdResultsToGroup" priority="0x0150" type="MenuController">
 				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
@@ -81,6 +90,10 @@
 				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbar"/>
 			</Group>
 
+			<Group guid="CommandSetGuid" id="CtlrIdExecuteGroup" priority="0x0000">
+				<Parent guid="CommandSetGuid" id="MenuIdExecuteGroup" />
+			</Group>
+
 			<Group guid="CommandSetGuid" id="CtlrIdResultsToGroup" priority="0x0220">
 				<Parent guid="CommandSetGuid" id="MenuIdResultsToGroup" />
 			</Group>
@@ -95,13 +108,29 @@
 		<Buttons>
 
 			<!-- MenuIdEditorToolbarGroup -->
+
+			<!-- MenuIdEditorToolbarGroup : CtlrIdExecuteGroup -->
 			<Button guid="CommandSetGuid" id="CmdIdExecuteQuery" priority="0x0000" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
+				<Parent guid="CommandSetGuid" id="CtlrIdExecuteGroup" />
 				<Icon guid="ImagesGuid" id="ImgExecuteQuery" />
 				<Strings>
 					<ButtonText>Execute Query</ButtonText>
+					<CommandName>ExecuteQuery</CommandName>
 				</Strings>
 			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdExecuteTtsQuery" priority="0x0020" type="Button">
+				<Parent guid="CommandSetGuid" id="CtlrIdExecuteGroup" />
+				<Icon guid="ImagesGuid" id="ImgExecuteTtsQuery" />
+				<Strings>
+					<ButtonText>Execute with TTS</ButtonText>
+					<CommandName>ExecuteTransactionQuery</CommandName>
+				</Strings>
+			</Button>
+
+
+
+
+
 			<Button guid="CommandSetGuid" id="CmdIdCancelQuery" priority="0x0020" type="Button">
 				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
 				<Icon guid="ImagesGuid" id="ImgCancelQuery" />
@@ -109,11 +138,20 @@
 					<ButtonText>Cancel Query</ButtonText>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdParseQuery" priority="0x0030" type="Button">
+			<Button guid="CommandSetGuid" id="CmdIdTransactionCommit" priority="0x0030" type="Button">
 				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
-				<Icon guid="ImagesGuid" id="ImgParseQuery" />
+				<Icon guid="ImagesGuid" id="ImgTransactionCommit" />
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
-					<ButtonText>Parse Query</ButtonText>
+					<ButtonText>Commit</ButtonText>
+				</Strings>
+			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdTransactionRollback" priority="0x0035" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
+				<Icon guid="ImagesGuid" id="ImgTransactionRollback" />
+				<CommandFlag>DefaultDisabled</CommandFlag>
+				<Strings>
+					<ButtonText>Rollback</ButtonText>
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdShowEstimatedPlan" priority="0x0040" type="Button">
@@ -373,7 +411,7 @@
 
 		<!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
 		<Bitmaps>
-			<Bitmap guid="ImagesGuid" href="Resources\ToolbarImageStrip.png" usedList="ImgExecuteQuery, ImgRunQuery, ImgCancelQuery, ImgConnect, ImgDisconnect, ImgNewSqlQuery, ImgResultsAsGrid, ImgResultsAsText, ImgDownGlygh, ImgOpenScript, ImgParseQuery, ImgToggleExecutionPlan, ImgShowEstimatedPlan, ImgToggleClientStatistics, ImgToggleIntellisense, ImgOpenQuery, ImgCopy, ImgOpenAlterQuery, ImgOpenDesignerQuery, ImgNewDesignerQuery, ImgResultsAsFile, ImgEditLabel, ImgChangeConnection, ImgDeleteConnection" />
+			<Bitmap guid="ImagesGuid" href="Resources\ToolbarImageStrip.png" usedList="ImgExecuteQuery, ImgExecuteTtsQuery, ImgCancelQuery, ImgConnect, ImgDisconnect, ImgNewSqlQuery, ImgResultsAsGrid, ImgResultsAsText, ImgDownGlygh, ImgOpenScript, ImgParseQuery, ImgToggleExecutionPlan, ImgShowEstimatedPlan, ImgToggleClientStatistics, ImgToggleIntellisense, ImgOpenQuery, ImgCopy, ImgOpenAlterQuery, ImgOpenDesignerQuery, ImgNewDesignerQuery, ImgResultsAsFile, ImgEditLabel, ImgChangeConnection, ImgDeleteConnection, ImgTransactionCommit, ImgTransactionRollback" />
 		</Bitmaps>
 	</Commands>
 
@@ -452,7 +490,10 @@
 			<!-- 20996 -->
 			<IDSymbol name="MenuIdEditorContextGroup" value="0x5204" />
 
+			<IDSymbol name="MenuIdExecuteGroup" value="0x5205" />
+
 			<IDSymbol name="CtlrIdResultsToGroup" value="0x5300" />
+			<IDSymbol name="CtlrIdExecuteGroup" value="0x5301" />
 
 			<IDSymbol name="ContextIdExecutionSettings" value="0x5400" />
 			<IDSymbol name="ContextIdConnection" value="0x5401" />
@@ -471,6 +512,7 @@
 			<!-- 770 -->
 			<IDSymbol name="CmdIdCloneQuery" value="0x0302" />
 			<!-- 772 -->
+			<IDSymbol name="CmdIdExecuteTtsQuery" value="0x0303" />
 			<IDSymbol name="CmdIdExecuteQuery" value="0x0304" />
 			<!-- 773 -->
 			<IDSymbol name="CmdIdCancelQuery" value="0x0305" />
@@ -539,11 +581,13 @@
 			<IDSymbol name="CmdIdNewDesignerQuery" value="0x0338" />
 			<IDSymbol name="CmdIdTraceRct" value="0x0339" />
 			<IDSymbol name="CmdIdValidateSolution" value="0x033A" />
+			<IDSymbol name="CmdIdTransactionCommit" value="0x033B" />
+			<IDSymbol name="CmdIdTransactionRollback" value="0x033C" />
 		</GuidSymbol>
 
 		<GuidSymbol name="ImagesGuid" value="{b9096f40-3268-4397-a5ec-8827624c447d}" >
 			<IDSymbol name="ImgExecuteQuery" value="1" />
-			<IDSymbol name="ImgRunQuery" value="2" />
+			<IDSymbol name="ImgExecuteTtsQuery" value="2" />
 			<IDSymbol name="ImgCancelQuery" value="3" />
 			<IDSymbol name="ImgConnect" value="4" />
 			<IDSymbol name="ImgDisconnect" value="5" />
@@ -566,6 +610,8 @@
 			<IDSymbol name="ImgEditLabel" value="22" />
 			<IDSymbol name="ImgChangeConnection" value="23" />
 			<IDSymbol name="ImgDeleteConnection" value="24" />
+			<IDSymbol name="ImgTransactionCommit" value="25" />
+			<IDSymbol name="ImgTransactionRollback" value="26" />
 		</GuidSymbol>
 
 	</Symbols>

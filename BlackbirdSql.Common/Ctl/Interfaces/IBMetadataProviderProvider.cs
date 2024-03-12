@@ -3,7 +3,7 @@
 using System;
 using System.Threading;
 using BlackbirdSql.Common.Ctl.Parser.Interfaces;
-using BlackbirdSql.Common.Model.Parser.Interfaces;
+using BlackbirdSql.Common.Model.Parsers.Interfaces;
 
 namespace BlackbirdSql.Common.Ctl.Interfaces;
 

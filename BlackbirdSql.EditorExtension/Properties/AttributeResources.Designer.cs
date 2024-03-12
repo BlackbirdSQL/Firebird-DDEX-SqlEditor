@@ -1294,6 +1294,15 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to If enabled will enable TTS on queries that may be DDL statements. This includes all statements that do not return a result set..
+        /// </summary>
+        internal static string OptionDescriptionExecutionAutoDdlTts {
+            get {
+                return ResourceManager.GetString("OptionDescriptionExecutionAutoDdlTts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Overrides the currently configured query governor cost limit value for the current connection. Valid range: &apos;Min[imum]&apos;, &apos;Default&apos; or 0 to &apos;Max[imum]&apos; or 100000. (Case insensitive).
         /// </summary>
         internal static string OptionDescriptionExecutionCostLimit {
@@ -1330,7 +1339,7 @@ namespace BlackbirdSql.EditorExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Specifies the transaction locking behavior for a commond..
+        ///   Looks up a localized string similar to Specifies the transaction locking behavior for a command..
         /// </summary>
         internal static string OptionDescriptionExecutionIsolationLevel {
             get {
@@ -1821,6 +1830,15 @@ namespace BlackbirdSql.EditorExtension.Properties {
         internal static string OptionDisplayContextStatusBarPosition {
             get {
                 return ResourceManager.GetString("OptionDisplayContextStatusBarPosition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Auto TTS on DDL.
+        /// </summary>
+        internal static string OptionDisplayExecutionAutoDdlTts {
+            get {
+                return ResourceManager.GetString("OptionDisplayExecutionAutoDdlTts", resourceCulture);
             }
         }
         

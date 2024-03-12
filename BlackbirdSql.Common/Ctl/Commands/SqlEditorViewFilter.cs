@@ -43,6 +43,9 @@ public class SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow) : AbstractV
 				case EnCommandSet.CmdIdChangeConnection:
 					sqlEditorCommand = new SqlEditorChangeConnectionCommand(Editor);
 					break;
+				case EnCommandSet.CmdIdExecuteTtsQuery:
+					sqlEditorCommand = new SqlEditorExecuteTtsQueryCommand(Editor);
+					break;
 				case EnCommandSet.CmdIdExecuteQuery:
 					sqlEditorCommand = new SqlEditorExecuteQueryCommand(Editor);
 					break;
@@ -91,6 +94,9 @@ public class SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow) : AbstractV
 				case EnCommandSet.CmdIdNewSqlQuery:
 					sqlEditorCommand = new SqlEditorNewQueryCommand(Editor);
 					break;
+				case EnCommandSet.CmdIdTransactionCommit:
+					sqlEditorCommand = new SqlEditorTransactionCommitCommand(Editor);
+					break;
 			}
 
 			if (sqlEditorCommand != null)
@@ -124,6 +130,9 @@ public class SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow) : AbstractV
 						break;
 					case EnCommandSet.CmdIdChangeConnection:
 						sqlEditorCommand = new SqlEditorChangeConnectionCommand(Editor);
+						break;
+					case EnCommandSet.CmdIdExecuteTtsQuery:
+						sqlEditorCommand = new SqlEditorExecuteTtsQueryCommand(Editor);
 						break;
 					case EnCommandSet.CmdIdExecuteQuery:
 						sqlEditorCommand = new SqlEditorExecuteQueryCommand(Editor);
@@ -175,6 +184,9 @@ public class SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow) : AbstractV
 						break;
 					case EnCommandSet.CmdIdNewSqlQuery:
 						sqlEditorCommand = new SqlEditorNewQueryCommand(Editor);
+						break;
+					case EnCommandSet.CmdIdTransactionCommit:
+						sqlEditorCommand = new SqlEditorTransactionCommitCommand(Editor);
 						break;
 				}
 

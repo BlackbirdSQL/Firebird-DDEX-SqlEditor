@@ -852,7 +852,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 		return _ResultsControl;
 	}
 
-	public void ExecuteQuery()
+	public void ExecuteQuery(bool withTts)
 	{
 		// Tracer.Trace(GetType(), Tracer.EnLevel.Verbose, "ExecuteQuery", "calling ExecuteOrParseQuery");
 
@@ -860,12 +860,12 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 		// ******************** Execution Point (1) - ExecuteQuery() ******************** //
 		// ------------------------------------------------------------------------------ //
 
-		ExecuteOrParseQuery(true);
+		ExecuteOrParseQuery(true, withTts);
 	}
 
 	public void ParseQuery()
 	{
-		ExecuteOrParseQuery(false);
+		ExecuteOrParseQuery(false, false);
 	}
 
 	public string GetCodeText()
@@ -882,7 +882,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 		return sqlTextSpan.Text;
 	}
 
-	private void ExecuteOrParseQuery(bool isExecute)
+	private void ExecuteOrParseQuery(bool isExecute, bool withTts)
 	{
 		using (Microsoft.VisualStudio.Utilities.DpiAwareness.EnterDpiScope(Microsoft.VisualStudio.Utilities.DpiAwarenessContext.SystemAware))
 		{
@@ -909,7 +909,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 					// ******************** Execution Point (2) ExecuteOrParseQuery() ******************** //
 					// ----------------------------------------------------------------------------------- //
 					if (isExecute)
-						qryMgr.Run(sqlTextSpan);
+						qryMgr.Run(sqlTextSpan, withTts);
 					else
 						qryMgr.Parse(sqlTextSpan);
 				}

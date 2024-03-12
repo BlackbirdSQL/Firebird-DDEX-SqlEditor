@@ -177,8 +177,6 @@ internal static class ApcManager
 
 	public static bool IdeShutdownState => AbstractPackageController.IdeShutdownState;
 
-	public static bool InvariantResolved => DdexPackage.InvariantResolved;
-
 	public static System.IServiceProvider ServiceProvider => (System.IServiceProvider)Instance.DdexPackage;
 
 	public static IVsTaskStatusCenterService StatusCenterService => Instance.StatusCenterService;

@@ -734,7 +734,7 @@ public sealed class RctManager : IDisposable
 	{
 		// Tracer.Trace(typeof(RctManager), "LoadProjectConnections()");
 
-		if (_Instance == null || Instance._Rct == null || ShutdownState)
+		if (!PersistentSettings.IncludeAppConnections || _Instance == null || Instance._Rct == null || ShutdownState)
 			return false;
 
 		return Instance._Rct.AsyncLoadConfiguredConnections(probject);

@@ -138,7 +138,7 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 
 			add.QryMgr.Cancel(bSync: true);
 		}
-		else if (add.QryMgr.ConnectionStrategy.IsTransactionOpen())
+		else if (add.QryMgr.ConnectionStrategy.HasTransactions)
 		{
 			if (!flag)
 			{
@@ -152,7 +152,7 @@ public abstract class Cmd : BlackbirdSql.Core.Cmd
 				case DialogResult.Yes:
 					try
 					{
-						add.QryMgr.ConnectionStrategy.CommitOpenTransactions();
+						add.CommitTransactions();
 					}
 					catch (Exception ex)
 					{

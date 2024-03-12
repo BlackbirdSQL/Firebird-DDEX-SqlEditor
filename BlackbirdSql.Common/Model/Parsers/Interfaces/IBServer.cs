@@ -1,8 +1,7 @@
 // Microsoft.SqlServer.Management.SqlParser, Version=16.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91
 // Microsoft.SqlServer.Management.SqlParser.Metadata.IServer
 
-
-namespace BlackbirdSql.Common.Model.Parser.Interfaces;
+namespace BlackbirdSql.Common.Model.Parsers.Interfaces;
 
 /// <summary>
 /// Interim Placeholder

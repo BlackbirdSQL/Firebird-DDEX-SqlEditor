@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="BlackbirdSql.VisualStudio.Ddex.bb045ad5-6038-4963-aa12-e4a5262eecaa" Version="11.1.0.2" Language="en-US" Publisher="BlackbirdSql" />
+        <Identity Id="BlackbirdSql.VisualStudio.Ddex.bb045ad5-6038-4963-aa12-e4a5262eecaa" Version="11.1.0.2001" Language="en-US" Publisher="BlackbirdSql" />
         <DisplayName>BlackbirdSql DDEX and SqlEditor for Firebird</DisplayName>
         <Description xml:space="preserve"> BlackbirdSql DDEX 2.0 Provider and SqlEditor for Firebird</Description>
         <License>license.txt</License>

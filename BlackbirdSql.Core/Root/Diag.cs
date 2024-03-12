@@ -731,6 +731,48 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Trace method for trace breadcrumbs during debug WITHOUT tasklog to prevent
+	/// recursion or when package is not sited yet
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+#if !NEWDEBUG
+	public static void DebugWarning(string message = "",
+		[System.Runtime.CompilerServices.CallerMemberName] string memberName = "",
+		[System.Runtime.CompilerServices.CallerFilePath] string sourceFilePath = "",
+		[System.Runtime.CompilerServices.CallerLineNumber] int sourceLineNumber = -1)
+#else
+	public static void DebugWarning(string message = "Debug trace",
+		string memberName = "[Release: MemberName Unavailable]",
+		string sourceFilePath = "[Release: SourcePath Unavailable]",
+		int sourceLineNumber = -1)
+#endif
+	{
+		// if (!EnableTrace)
+		//	return;
+
+
+		lock (_LockGlobal)
+			_InternalActive++;
+
+		_IgnoreSettings++;
+
+		try
+		{
+			Dug(false, "WARNING: " + message, memberName, sourceFilePath, sourceLineNumber);
+		}
+		catch { }
+
+		_IgnoreSettings--;
+
+		lock (_LockGlobal)
+			_InternalActive--;
+
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Trace method for trace breadcrumbs during debug
 	/// </summary>
 	// ---------------------------------------------------------------------------------

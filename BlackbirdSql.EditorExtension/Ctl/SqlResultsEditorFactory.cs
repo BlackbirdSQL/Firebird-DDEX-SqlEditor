@@ -37,6 +37,8 @@ public sealed class SqlResultsEditorFactory : AbstruseEditorFactory
 
 	public override int CreateEditorInstance(uint createFlags, string moniker, string physicalView, IVsHierarchy hierarchy, uint itemId, IntPtr existingDocData, out IntPtr intPtrDocView, out IntPtr intPtrDocData, out string caption, out Guid cmdUIGuid, out int result)
 	{
+		RctManager.EnsureLoaded();
+
 		intPtrDocView = IntPtr.Zero;
 		intPtrDocData = IntPtr.Zero;
 		caption = "";

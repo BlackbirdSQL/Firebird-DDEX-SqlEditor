@@ -75,7 +75,7 @@ public interface IBSqlEditorWindowPane : IBWindowPane
 	GridResultsPanel GridResultsPanel { get; }
 
 
-	void ExecuteQuery();
+	void ExecuteQuery(bool withTts);
 
 	void ParseQuery();
 

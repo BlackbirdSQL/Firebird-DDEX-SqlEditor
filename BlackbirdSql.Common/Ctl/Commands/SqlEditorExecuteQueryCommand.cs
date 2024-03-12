@@ -4,13 +4,10 @@
 #endregion
 
 using System;
-using BlackbirdSql.Core;
+using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
-
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-using BlackbirdSql.Core.Ctl.Diagnostics;
-using BlackbirdSql.Common.Controls.Interfaces;
 
 namespace BlackbirdSql.Common.Ctl.Commands;
 
@@ -42,7 +39,7 @@ public class SqlEditorExecuteQueryCommand : AbstractSqlEditorCommand
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
 		if (ShouldRunCommand())
-			EditorWindow.ExecuteQuery();
+			EditorWindow.ExecuteQuery(false);
 
 		return VSConstants.S_OK;
 	}

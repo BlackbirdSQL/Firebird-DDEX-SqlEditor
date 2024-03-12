@@ -217,6 +217,13 @@ public class TViewSupport : DataViewSupport,
 
 	}
 
+	public override Stream OpenSupportStream()
+	{
+		// Tracer.Trace(GetType(), "OpenSupportStream()");
+
+		return base.OpenSupportStream();
+	}
+
 
 	#endregion Method Implementations
 

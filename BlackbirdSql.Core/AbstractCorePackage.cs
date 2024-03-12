@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Interfaces;
+using BlackbirdSql.Core.Properties;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.RpcContracts.FileSystem;
 using Microsoft.VisualStudio.Shell;
@@ -36,14 +37,14 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 	// ---------------------------------------------------------------------------------
 	public AbstractCorePackage()
 	{
-		/*
 		if (_Instance != null)
 		{
 			TypeAccessException ex = new(Resources.ExceptionDuplicateSingletonInstances.FmtRes("Ddex extension package instances"));
 			Diag.Dug(ex);
 			throw ex;
 		}
-		*/
+
+		_Instance = this;
 
 		Diag.Context = "IDE";
 
@@ -90,13 +91,11 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 
 
 	protected static Package _Instance = null;
-	protected static bool _PackageLoaded;
 
 	protected IBPackageController _ApcInstance = null;
 	private IDisposable _DisposableWaitCursor;
 	protected IVsSolution _VsSolution = null;
 	protected bool _Initialized = false;
-	protected static bool _InvariantResolved = false;
 
 	protected IBAsyncPackage.LoadSolutionOptionsDelegate _OnLoadSolutionOptionsEvent;
 	protected IBAsyncPackage.SaveSolutionOptionsDelegate _OnSaveSolutionOptionsEvent;
@@ -162,7 +161,6 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 
 	public abstract IBEventsManager EventsManager { get; }
 
-	public abstract bool InvariantResolved { get; }
 
 	public abstract Type SchemaFactoryType { get; }
 
@@ -315,6 +313,30 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 	/// ThrowOnFailure token
 	/// </summary>
 	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+
+
+
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
+	protected static void DemandLoadPackage(string packageGuidString, out IVsPackage package, bool checkIfInstalled = false)
+	{
+		package = null;
+		if (GetGlobalService(typeof(SVsShell)) is IVsShell vsShell)
+		{
+			Guid guidPackage = new Guid(packageGuidString);
+			bool isInstalled = true;
+
+			if (checkIfInstalled)
+			{
+				vsShell.IsPackageInstalled(ref guidPackage, out var pfInstalled);
+				isInstalled = Convert.ToBoolean(pfInstalled);
+			}
+
+			if (isInstalled)
+			{
+				Native.ThrowOnFailure(vsShell.LoadPackage(ref guidPackage, out package));
+			}
+		}
+	}
 
 
 

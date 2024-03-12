@@ -155,12 +155,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 		get
 		{
 			if (_Instance == null)
-			{
-				TypeAccessException ex = new(Resources.ErrCannotInstantiateFromAbstractAncestor);
-				Diag.Dug(ex);
-				throw ex;
-			}
-
+				DemandLoadPackage(SystemData.PackageGuid, out _);
 			return (EditorExtensionPackage)_Instance;
 		}
 	}
@@ -671,6 +666,8 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 			toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorDatabaseListCommand>(clsid, (uint)EnCommandSet.CmbIdSqlDatabasesGetList));
 			toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
+				new SqlEditorToolbarCommandHandler<SqlEditorExecuteTtsQueryCommand>(clsid, (uint)EnCommandSet.CmdIdExecuteTtsQuery));
+			toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorExecuteQueryCommand>(clsid, (uint)EnCommandSet.CmdIdExecuteQuery));
 			toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorParseQueryCommand>(clsid, (uint)EnCommandSet.CmdIdParseQuery));
@@ -696,6 +693,10 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 				new SqlEditorToolbarCommandHandler<SqlEditorToggleClientStatisticsCommand>(clsid, (uint)EnCommandSet.CmdIdToggleClientStatistics));
 			toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
 				new SqlEditorToolbarCommandHandler<SqlEditorNewQueryCommand>(clsid, (uint)EnCommandSet.CmdIdNewSqlQuery));
+			toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
+				new SqlEditorToolbarCommandHandler<SqlEditorTransactionCommitCommand>(clsid, (uint)EnCommandSet.CmdIdTransactionCommit));
+			toolbarMgr.AddMapping(typeof(TabbedEditorWindowPane),
+				new SqlEditorToolbarCommandHandler<SqlEditorTransactionRollbackCommand>(clsid, (uint)EnCommandSet.CmdIdTransactionRollback));
 		}
 	}
 
@@ -981,6 +982,8 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 			QueryManager qryMgr = value.QryMgr;
 			if (qryMgr != null && qryMgr.IsConnected)
 			{
+				qryMgr.ConnectionStrategy.Transaction?.Dispose();
+				qryMgr.ConnectionStrategy.Transaction = null;
 				qryMgr.ConnectionStrategy.Connection?.Close();
 			}
 		}

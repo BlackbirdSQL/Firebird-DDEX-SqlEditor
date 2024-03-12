@@ -38,6 +38,10 @@
 	  <Compile Include="Controls\Dialogs\FileEncodingDlg.Designer.cs">
 	    <SubType>Form</SubType>
 	  </Compile>
+	  <Compile Include="Ctl\Commands\SqlEditorTransactionCommitCommand.cs" />
+	  <Compile Include="Ctl\Commands\SqlEditorTransactionRollbackCommand.cs" />
+	  <Compile Include="Ctl\Commands\SqlEditorExecuteTtsQueryCommand.cs" />
+	  <Compile Include="Model\Parsers\SqlParser.cs" />
 	  <Compile Include="Properties\SqlResources.Designer.cs">
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
@@ -272,8 +276,8 @@
 	  <Compile Include="Model\Events\QESQLStatementCompletedEventArgs.cs" />
 	  <Compile Include="Model\Events\QESQLBatchSpecialActionEventHandler.cs" />
 	  <Compile Include="Model\Events\QESQLStatementCompletedEventHandler.cs" />
-	  <Compile Include="Model\Parser\Interfaces\IBMetadataProvider.cs" />
-	  <Compile Include="Model\Parser\Interfaces\IBServer.cs" />
+	  <Compile Include="Model\Parsers\Interfaces\IBMetadataProvider.cs" />
+	  <Compile Include="Model\Parsers\Interfaces\IBServer.cs" />
 	  <Compile Include="Properties\AttributeResources.Designer.cs">
 	    <DesignTime>True</DesignTime>
 	    <AutoGen>True</AutoGen>
@@ -630,7 +634,7 @@
 	  <Compile Include="Ctl\Interfaces\IBSqlEditorStrategy.cs" />
 	  <Compile Include="Model\Interfaces\IBSqlQueryExecutionHandler.cs" />
 	  <Compile Include="Model\Interfaces\IBVariableResolver.cs" />
-	  <Compile Include="Model\Parser\ManagedBatchParser.cs" />
+	  <Compile Include="Model\Parsers\ManagedBatchParser.cs" />
 	  <Compile Include="Model\NotifyTaskCompletion.cs" />
 	  <Compile Include="Model\ParserState.cs" />
 	  <Compile Include="Ctl\Commands\OLECMDTEXT.cs" />
@@ -781,6 +785,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Ctl\Dialogs\" />
+	  <Folder Include="Model\Parser\Interfaces\" />
 	</ItemGroup>
 
 </Project>

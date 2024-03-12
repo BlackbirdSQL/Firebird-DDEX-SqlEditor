@@ -46,6 +46,7 @@ public interface IBEditorTransientSettings
 
 
 	// Editor ExecutionSettingsModel
+	bool EditorExecutionAutoDdlTts { get; set; }
 	int EditorExecutionSetRowCount { get; set; }
 	EnBlobSubType EditorExecutionSetBlobDisplay { get; set; }
 	bool EditorExecutionDefaultOleScripting { get; set; }
@@ -111,6 +112,7 @@ public interface IBEditorTransientSettings
 	bool WithStatisticsTime { get; set; }
 	bool WithStatisticsIO { get; set; }
 	bool WithStatisticsProfile { get; set; }
+	bool WithTransactionTracking{ get; set; }
 	bool WithEstimatedExecutionPlan { get; set; }
 	bool WithOleSqlScripting { get; set; }
 	public bool SuppressProviderMessageHeaders { get; set; }

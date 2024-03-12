@@ -4,14 +4,12 @@
 
 using System;
 using System.Data.Common;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-
 using BlackbirdSql.Controller;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Controls.Interfaces;
 using BlackbirdSql.Core.Ctl.ComponentModel;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
@@ -23,21 +21,18 @@ using BlackbirdSql.VisualStudio.Ddex.Ctl.Config;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.Interfaces;
 using BlackbirdSql.VisualStudio.Ddex.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
-
 using FirebirdSql.Data.FirebirdClient;
-using Microsoft.Build.Framework;
 using Microsoft.VisualStudio;
-
 using Microsoft.VisualStudio.Data.Core;
-using Microsoft.VisualStudio.Data.Services;
-using Microsoft.VisualStudio.RpcContracts;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 using Task = System.Threading.Tasks.Task;
 
 
+
 namespace BlackbirdSql.VisualStudio.Ddex;
+
 
 // =========================================================================================================
 //										BlackbirdSqlDdexExtension Class 
@@ -47,7 +42,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 /// </summary>
 /// <remarks>
 /// Implements the package exposed by this assembly and registers itself with the shell.
-/// This is a multi-Extension class implementation of <see cref="IBAsyncPackage"/>.
+/// This is a multi-Package daisy-chaned class implementation of <see cref="IBAsyncPackage"/>.
 /// The current package hieararchy is BlackbirdSqlDdexExtension > <see cref="ControllerPackage"/> >
 /// <see cref="EditorExtension.EditorExtensionPackage"/> > <see cref="AbstractCorePackage"/>.
 /// </remarks>
@@ -63,34 +58,32 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 // Register this class as a VS package.
 [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
 
-// A Visual Studio component can be registered under different regitry roots; for instance
-// when you debug your package you want to register it in the experimental hive. This
-// attribute specifies the registry root to use if no one is provided to regpkg.exe with
-// the /root switch.
-// [DefaultRegistryRoot("Software\\Microsoft\\VisualStudio\\15.0")]
 
 // 'Help About' registration
-[InstalledProductRegistration("#100", "#102", "1.0", IconResourceID = 400)]
+[InstalledProductRegistration("#100", "#102", "11.1.0.2001", IconResourceID = 400)]
 
-// Valid load key for devices without the VS SDK installed. (Possibly deprecated)
-// Load key request site (http://msdn.microsoft.com/vstudio/extend/) no longer exists.
-// [ProvideLoadKey("Standard", "1.0", "DDEX Provider for BlackbirdClient", "..", 999)]
 
 // We start loading as soon as the VS shell is available.
-// [ProvideAutoLoad(VSConstants.UICONTEXT.ShellInitialized_string, PackageAutoLoadFlags.BackgroundLoad)]
+// We may be loaded sooner than this UIContext if (on IDE startup) VS requests our editor on
+// a document that was left open. In that case we use the static property accessor "Instance"
+// to load our package ourselves.
 
-[ProvideAutoLoad(SystemData.UIContextGuid, PackageAutoLoadFlags.BackgroundLoad)]
 [ProvideUIContextRule(SystemData.UIContextGuid,
 	name: SystemData.UIContextName,
 	expression: "(ShellInit | SolutionModal)",
 	termNames: ["ShellInit", "SolutionModal"],
 	termValues: [VSConstants.UICONTEXT.ShellInitialized_string, VSConstants.UICONTEXT.SolutionOpening_string])]
 
+[ProvideAutoLoad(SystemData.UIContextGuid, PackageAutoLoadFlags.BackgroundLoad)]
+
+
 // Not used
 // [ProvideMenuResource(1000, 1)] TBC
 
+
 // Register the DDEX as a data provider
 [VsPackageRegistration]
+
 
 // Register services
 [ProvideService(typeof(IBPackageController), IsAsyncQueryable = true,
@@ -113,11 +106,11 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 
 
 
+
 // =========================================================================================================
 #region							BlackbirdSqlDdexExtension Class Declaration
 //
 // =========================================================================================================
-[Guid(SystemData.PackageGuid)]
 public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 {
 
@@ -127,10 +120,19 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 
 
 	/// <summary>
-	/// BlackbirdSqlDdexExtension package .ctor
+	/// BlackbirdSqlDdexExtension default .ctor
 	/// </summary>
 	public BlackbirdSqlDdexExtension() : base()
 	{
+	}
+
+
+	/// <summary>
+	/// BlackbirdSqlDdexExtension static .ctor
+	/// </summary>
+	static BlackbirdSqlDdexExtension()
+	{
+		RegisterInvariant();
 	}
 
 
@@ -144,13 +146,6 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	}
 
 
-
-	static BlackbirdSqlDdexExtension()
-	{
-		CacheInvariant();
-	}
-
-
 	#endregion Constructors / Destructors
 
 
@@ -161,22 +156,26 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	// =========================================================================================================
 
 
+	/// <summary>
+	/// Performs a DemandLoadPackage() when we don't exist. This can occur where
+	/// VS has requested our editor on an open document before we were loaded.
+	/// </summary>
 	public static new BlackbirdSqlDdexExtension Instance
 	{
 		get
 		{
-			if (_Instance == null || !_PackageLoaded)
-			{
-				DemandLoadPackage(SystemData.PackageGuid, out var _);
-				_PackageLoaded = true;
-			}
+			if (_Instance == null)
+				DemandLoadPackage(SystemData.PackageGuid, out _);
 			return (BlackbirdSqlDdexExtension)_Instance;
 		}
 	}
 
-	public override bool InvariantResolved => _InvariantResolved;
 
+	/// <summary>
+	/// Provides access to our schema factory type by ancestor classes.
+	/// </summary>
 	public override Type SchemaFactoryType => typeof(DslProviderSchemaFactory);
+
 
 	/// <summary>
 	/// Accessor to user options at this level of the <see cref="IBAsyncPackage"/> class hierarchy.
@@ -192,39 +191,6 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	// =========================================================================================================
 	#region Method Implementations - BlackbirdSqlDdexExtension
 	// =========================================================================================================
-
-
-	// ---------------------------------------------------------------------------------
-	/// <summary>
-	/// Adds FirebirdClient to assembly cache
-	/// </summary>
-	// ---------------------------------------------------------------------------------
-	private static void CacheInvariant()
-	{
-		if (!DbProviderFactoriesEx.AddAssemblyToCache(SystemData.Invariant, 
-			Resources.Provider_ShortDisplayName, Resources.Provider_DisplayName,
-			typeof(FirebirdClientFactory).AssemblyQualifiedName))
-		{
-			_InvariantResolved = true;
-			return;
-		}
-
-		AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
-		{
-			if (args.Name == typeof(FirebirdClientFactory).Assembly.FullName)
-			{
-				// if (!_InvariantResolved)
-				//	Tracer.Trace(typeof(BlackbirdSqlDdexExtension), "CacheInvariant()", "Assembly resolved: {0}.", args.Name);
-
-				_InvariantResolved = true;
-				return typeof(FirebirdClientFactory).Assembly;
-			}
-
-			return null;
-		};
-
-	}
-
 
 
 	// ---------------------------------------------------------------------------------
@@ -296,15 +262,13 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 		ServiceProgressData progressData = new("Loading BlackbirdSql", "Loading DDEX Provider Factories", 5, 15);
 		progress.Report(progressData);
 
-		_Instance = this;
-
 		if (ApcManager.IdeShutdownState)
 			return;
 
 		// Add provider object and schema factories
 		ServiceContainer.AddService(typeof(IBProviderObjectFactory), ServicesCreatorCallbackAsync, promote: true);
 		ServiceContainer.AddService(typeof(IBProviderSchemaFactory), ServicesCreatorCallbackAsync, promote: true);
-		ServiceContainer.AddService(typeof(IVsDataConnectionDialog), ServicesCreatorCallbackAsync, promote: true);
+		ServiceContainer.AddService(typeof(IBDataConnectionDlgHandler), ServicesCreatorCallbackAsync, promote: true);
 
 		progressData = new("Loading BlackbirdSql", "Done Loading DDEX Provider Factories", 6, 15);
 		progress.Report(progressData);
@@ -382,7 +346,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 		{
 			return new DslProviderSchemaFactory();
 		}
-		if (serviceType == typeof(IVsDataConnectionDialog))
+		if (serviceType == typeof(IBDataConnectionDlgHandler))
 		{
 			return new TDataConnectionDlgHandler();
 		}
@@ -423,26 +387,26 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 	// =========================================================================================================
 
 
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread")]
-	public static void DemandLoadPackage(string packageGuidString, out IVsPackage package, bool checkIfInstalled = false)
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Adds FirebirdClient to assembly factory register.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private static void RegisterInvariant()
 	{
-		package = null;
-		if (GetGlobalService(typeof(SVsShell)) is IVsShell vsShell)
+		DbProviderFactoriesEx.RegisterAssemblyDirect(SystemData.Invariant,
+			Resources.Provider_ShortDisplayName, Resources.Provider_DisplayName,
+			typeof(FirebirdClientFactory).AssemblyQualifiedName);
+
+		AppDomain.CurrentDomain.AssemblyResolve += (_, args) =>
 		{
-			Guid guidPackage = new Guid(packageGuidString);
-			bool isInstalled = true;
-
-			if (checkIfInstalled)
+			if (args.Name == typeof(FirebirdClientFactory).Assembly.FullName)
 			{
-				vsShell.IsPackageInstalled(ref guidPackage, out var pfInstalled);
-				isInstalled = Convert.ToBoolean(pfInstalled);
+				return typeof(FirebirdClientFactory).Assembly;
 			}
 
-			if (isInstalled)
-			{
-				Native.ThrowOnFailure(vsShell.LoadPackage(ref guidPackage, out package));
-			}
-		}
+			return null;
+		};
 	}
 
 

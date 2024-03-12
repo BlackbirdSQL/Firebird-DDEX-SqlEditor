@@ -19,6 +19,7 @@ using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls;
+using BlackbirdSql.Core.Controls.Interfaces;
 using BlackbirdSql.Core.Model;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Services;
@@ -468,7 +469,7 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 
 		// Tracer.Trace(typeof(SqlConnectionStrategy), "PromptForConnection()");
 
-		IVsDataConnectionDialog connectionDialogHandler = ApcManager.EnsureService<IVsDataConnectionDialog>();
+		IBDataConnectionDlgHandler connectionDialogHandler = ApcManager.EnsureService<IBDataConnectionDlgHandler>();
 
 		using (connectionDialogHandler)
 		{
@@ -946,60 +947,88 @@ public class SqlConnectionStrategy : AbstractConnectionStrategy
 		}
 	}
 
-	public override bool IsTransactionOpen()
+	public override bool HasTransactions
 	{
-		FbConnection connection = (FbConnection)Connection;
-		bool flag = false;
-		if (connection != null && connection.State == ConnectionState.Open)
+		get
 		{
-			try
-			{
-				FbDatabaseInfo databaseInfo = new(connection);
+			if (!TtsActive)
+				return false;
 
-				flag = databaseInfo.GetActiveTransactions().Count > 0;
-			}
-			catch // (Exception ex)
+			FbDatabaseInfo dbInfo = new((FbConnection)Connection);
+
+			if (dbInfo.GetActiveTransactionsCount() == 0)
 			{
-				// Tracer.Trace(GetType(), "AreTransactionsOpen", ex.ToString());
-				return flag;
+				Transaction.Dispose();
+				Transaction = null;
+				return false;
 			}
+
+			return true;
 		}
-
-		return flag;
 	}
 
-	public override void CommitOpenTransactions()
+	public override bool TtsActive
 	{
-		/*
-		FbConnection connection = (FbConnection)Connection;
-		if (connection == null || connection.State != ConnectionState.Open)
+		get
 		{
-			return;
-		}
+			if (Transaction == null)
+				return false;
 
-		IDbCommand dbCommand = null;
-		try
-		{
-			FbDatabaseInfo databaseInfo = new(connection);
-
-			List<long> transactions = databaseInfo.GetActiveTransactions();
-
-			foreach (long transaction in transactions)
+			if (Connection == null || Connection.State != ConnectionState.Open)
 			{
-				databaseInfo.
+				Transaction.Dispose();
+				Transaction = null;
+				return false;
 			}
 
-			dbCommand = connection.CreateCommand();
-			dbCommand.CommandType = CommandType.Text;
-			dbCommand.CommandText = "while (@@trancount > 0) begin commit transaction; end";
-			dbCommand.ExecuteNonQuery();
+			return true;
+		}
+	}
+
+
+	public override bool CommitTransactions()
+	{
+		if (!HasTransactions)
+			return false;
+
+		try
+		{
+			Transaction.Commit();
+			return true;
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
 		}
 		finally
 		{
-			dbCommand?.Dispose();
+			Transaction.Dispose();
+			Transaction = null;
 		}
-		*/
 	}
+
+	public override void RollbackTransactions()
+	{
+		if (!HasTransactions)
+			return;
+
+		try
+		{
+			Transaction.Rollback();
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+		finally
+		{
+			Transaction.Dispose();
+			Transaction = null;
+		}
+	}
+
 
 	public override IBBatchExecutionHandler CreateBatchExecutionHandler()
 	{

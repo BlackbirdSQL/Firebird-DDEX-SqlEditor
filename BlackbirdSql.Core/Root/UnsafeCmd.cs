@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model.Enums;
 using EnvDTE;
@@ -257,8 +258,7 @@ public abstract class UnsafeCmd
 		Diag.ThrowIfNotOnUIThread();
 
 		// We're only supporting C# and VB projects for this - a dict list is at the end of this class
-		if (project.Kind != "{F184B08F-C81C-45F6-A57F-5ABD9991F28F}"
-			&& project.Kind != "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}")
+		if (Kind(project.Kind) != "VbProject" && Kind(project.Kind) != "C#Project")
 		{
 			return false;
 		}
@@ -266,20 +266,58 @@ public abstract class UnsafeCmd
 		bool result = false;
 
 
-		// Don't process CPS projects
-		ApcManager.Instance.VsSolution.GetProjectOfUniqueName(project.UniqueName, out IVsHierarchy hierarchy);
+		if (validateCps)
+		{
+			// Don't process CPS projects
+
+			ApcManager.Instance.VsSolution.GetProjectOfUniqueName(project.UniqueName, out IVsHierarchy hierarchy);
 
 
-		if (validateCps && UnsafeCmd.IsCpsProject(hierarchy))
-			return false;
+			if (UnsafeCmd.IsCpsProject(hierarchy))
+				return false;
+		}
 
 		int outputType = int.MaxValue;
+		Property property = null;
 
 		if (project.Properties != null && project.Properties.Count > 0)
 		{
-			Property property = project.Properties.Item("OutputType");
-			if (property != null)
-				outputType = (int)property.Value;
+			try
+			{
+				property = project.Properties.Item("OutputType");
+
+				if (property != null && property.Value != null)
+				{
+					if (property.Value is int ival)
+					{
+						outputType = ival;
+					}
+					else if (property.Value is long lval)
+					{
+						outputType = (int)lval;
+					}
+					else if (property.Value is string sval)
+					{
+						if (int.TryParse(sval, out int value))
+							outputType = value;
+					}
+				}
+			}
+			catch { }
+
+		}
+
+		try
+		{
+			// Temporary debug message.
+			Tracer.Trace(typeof(UnsafeCmd), "IsValidExecutableProjectType()", "Project: {0}, OutputType property {1}, Type: {2}, Value: {3}.",
+				project.Name, property == null ? "does not exist" : "exists",
+				property != null && property.Value != null ? property.Value.GetType().Name : "NULL Type",
+				property?.Value);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
 		}
 
 

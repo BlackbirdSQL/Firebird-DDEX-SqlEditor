@@ -6,6 +6,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
+using System.Transactions;
 using BlackbirdSql.Common.Ctl.Config;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model.Events;
@@ -15,6 +16,8 @@ using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.Enums;
 using BlackbirdSql.Core.Model;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 
@@ -191,6 +194,25 @@ public sealed class AuxiliaryDocData(string documentMoniker, string explorerMoni
 		}
 	}
 
+
+	public bool TransactionTrackingEnabled
+	{
+		get
+		{
+			lock (_LockLocal)
+			{
+				return QryMgr.LiveSettings.WithTransactionTracking;
+			}
+		}
+		set
+		{
+			lock (_LockLocal)
+			{
+				QryMgr.LiveSettings.WithTransactionTracking = value;
+			}
+		}
+	}
+
 	public bool EstimatedExecutionPlanEnabled
 	{
 		get
@@ -358,6 +380,55 @@ public sealed class AuxiliaryDocData(string documentMoniker, string explorerMoni
 		}
 
 		_DatabaseAtQueryExecutionStart = null;
+	}
+
+	public void CommitTransactions()
+	{
+		if (QryMgr == null || !QryMgr.IsConnected || QryMgr.IsExecuting || QryMgr.ConnectionStrategy == null
+			|| !QryMgr.ConnectionStrategy.HasTransactions)
+		{
+			return;
+		}
+
+		bool result;
+
+		try
+		{
+			result = QryMgr.ConnectionStrategy.CommitTransactions();
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
+
+		if (!result)
+			return;
+
+		if (DocData is not IVsPersistDocData2 persistData)
+			return;
+
+		persistData.SetDocDataDirty(0);
+	}
+
+
+	public void RollbackTransactions()
+	{
+		if (QryMgr == null || !QryMgr.IsConnected || QryMgr.IsExecuting || QryMgr.ConnectionStrategy == null
+			|| !QryMgr.ConnectionStrategy.HasTransactions)
+		{
+			return;
+		}
+
+		try
+		{
+			QryMgr.ConnectionStrategy.RollbackTransactions();
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+			throw;
+		}
 	}
 
 	public void UpdateLiveSettingsState(IBEditorTransientSettings liveSettings)

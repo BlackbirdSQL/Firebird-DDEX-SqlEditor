@@ -6,20 +6,18 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Runtime.InteropServices;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Core;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
-
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.TextManager.Interop;
+
 
 
 namespace BlackbirdSql.Common.Ctl.Commands;
+
 
 public class SqlEditorDatabaseListCommand : AbstractSqlEditorCommand
 {

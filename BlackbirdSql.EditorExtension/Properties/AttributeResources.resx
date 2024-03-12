@@ -528,6 +528,9 @@
   <data name="OptionDescriptionContextStatusBarPosition" xml:space="preserve">
     <value>The position of the status base in the editor window.</value>
   </data>
+  <data name="OptionDescriptionExecutionAutoDdlTts" xml:space="preserve">
+    <value>If enabled will enable TTS on queries that may be DDL statements. This includes all statements that do not return a result set.</value>
+  </data>
   <data name="OptionDescriptionExecutionCostLimit" xml:space="preserve">
     <value>Overrides the currently configured query governor cost limit value for the current connection. Valid range: 'Min[imum]', 'Default' or 0 to 'Max[imum]' or 100000. (Case insensitive)</value>
   </data>
@@ -541,7 +544,7 @@
     <value>If enabled, disconnects the connection once query execution is complete.</value>
   </data>
   <data name="OptionDescriptionExecutionIsolationLevel" xml:space="preserve">
-    <value>Specifies the transaction locking behavior for a commond.</value>
+    <value>Specifies the transaction locking behavior for a command.</value>
   </data>
   <data name="OptionDescriptionExecutionLockTimeout" xml:space="preserve">
     <value>The maximum transaction lock conflict wait timeout for WAIT transactions. Valid range: 'Default', 'Min[imum]', 'Unlimited' or 0 to 'Max[imum]' (MaxInt). (Case insensitive)</value>
@@ -704,6 +707,9 @@
   </data>
   <data name="OptionDisplayContextStatusBarPosition" xml:space="preserve">
     <value>Status bar position</value>
+  </data>
+  <data name="OptionDisplayExecutionAutoDdlTts" xml:space="preserve">
+    <value>Auto TTS on DDL</value>
   </data>
   <data name="OptionDisplayExecutionCostLimit" xml:space="preserve">
     <value>SET QUERY_GOVERNOR_COST_LIMIT</value>

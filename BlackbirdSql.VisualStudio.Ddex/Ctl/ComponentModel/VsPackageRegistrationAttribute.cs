@@ -188,7 +188,7 @@ internal sealed class VsPackageRegistrationAttribute: RegistrationAttribute
 			Diag.Dug(ex);
 			throw ex;
 		}
-		Debug.Assert(guidAttribute.Value == SystemData.ProviderObjectFactoryGuid);
+		Debug.Assert(guidAttribute.Value == SystemData.ProviderObjectFactoryServiceGuid);
 
 		context.RemoveValue("DataSources\\" + dataSourceGuid, "DefaultProvider");
 		context.RemoveKey("DataSources\\" + dataSourceGuid + "\\SupportingProviders\\" + providerGuid);

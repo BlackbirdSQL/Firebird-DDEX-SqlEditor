@@ -166,6 +166,11 @@ public class TransientSettings : PersistentSettings, IBEditorTransientSettings, 
 
 
 	// Editor ExecutionSettingsModel
+	public new bool EditorExecutionAutoDdlTts
+	{
+		get { return (bool)this["EditorExecutionGeneralAutoDdlTts"]; }
+		set { this["EditorExecutionGeneralAutoDdlTts"] = value; }
+	}
 	public new int EditorExecutionSetRowCount
 	{
 		get { return (int)this["EditorExecutionGeneralSetRowCount"]; }
@@ -482,6 +487,12 @@ public class TransientSettings : PersistentSettings, IBEditorTransientSettings, 
 	{
 		get { return _ExecOptions[9]; }
 		set { _ExecOptions[9] = value; }
+	}
+
+	public bool WithTransactionTracking
+	{
+		get { return _ExecOptions[10] && !WithEstimatedExecutionPlan; }
+		set { _ExecOptions[10] = value; }
 	}
 
 	public bool WithOleSqlScripting

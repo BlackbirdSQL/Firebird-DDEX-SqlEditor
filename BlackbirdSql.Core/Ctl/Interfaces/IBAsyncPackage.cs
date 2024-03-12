@@ -15,7 +15,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace BlackbirdSql.Core.Ctl.Interfaces;
 
-[Guid(SystemData.PackageServiceGuid)]
+[Guid(SystemData.AsyncPackageGuid)]
 public interface IBAsyncPackage
 {
 
@@ -30,8 +30,7 @@ public interface IBAsyncPackage
 
 	IBEventsManager EventsManager { get; }
 
-	bool InvariantResolved { get; }
-
+	
 	Microsoft.VisualStudio.OLE.Interop.IServiceProvider OleServiceProvider { get; }
 
 	IAsyncServiceContainer ServiceContainer { get; }

@@ -24,8 +24,10 @@ public enum EnCommandSet
 	MenuIdSeStaticGroup = 0x5202, // 20994
 	MenuIdResultsToGroup = 0x5203, // 20995
 	MenuIdEditorContextGroup = 0x5204, // 20996
+	MenuIdExecuteGroup = 0x5205, // 20997
 
 	CtlrIdResultsToGroup = 0x5300,
+	CtlrIdExecuteGroup = 0x5301,
 
 	ContextIdExecutionSettings = 0x5400,
 	ContextIdConnection = 0x5401,
@@ -40,6 +42,7 @@ public enum EnCommandSet
 	CmdIdConnect = 0x0300, // 768
 	CmdIdDisconnect = 0x0301, // 769
 	CmdIdCloneQuery = 0x0302, // 770
+	CmdIdExecuteTtsQuery = 0x0303, // 771
 	CmdIdExecuteQuery = 0x0304, // 772
 	CmdIdCancelQuery = 0x0305, // 773
 	CmdIdShowEstimatedPlan = 0x0306, // 774
@@ -75,6 +78,7 @@ public enum EnCommandSet
 	CmdIdResetPageOptions = 0x0337, // 823
 	CmdIdNewDesignerQuery = 0x0338, // 824
 	CmdIdTraceRct = 0x0339, // 825
-	CmdIdValidateSolution = 0x033A // 826
-
+	CmdIdValidateSolution = 0x033A, // 826
+	CmdIdTransactionCommit = 0x033B, // 827
+	CmdIdTransactionRollback = 0x033C // 829
 }

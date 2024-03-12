@@ -2,6 +2,13 @@
 
 ### Change log
 
+#### v11.1.1.0 (build 11.1.0.2001)
+Implemented recovery procedure for provider factories arriving late and were invalidated by VS after BlackbirdSql loaded it's running connection table.</br>
+Resolved issue where SqlEditor DDL query commands were failing.</br>
+Added `Execute with TTS` as a selectable dropdown button for the `Execute` command in SqlEditor.</br>
+Added user option for auto-enabling TTS for DDL statements under `Query Execution > General` user options.
+
+
 #### v11.1.0.2
 Added edmx and xsd auto-close on solution close user options. Closing prevents potential load errors and drag-drop clipboard errors.</br>
 Streamlined asynchronous building of trigger linkage tables.

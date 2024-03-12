@@ -45,6 +45,8 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	private static readonly Color DefaultColor = SystemColors.Control;
 
 	private IDbConnection _Connection;
+	private IDbTransaction _Transaction = null;
+
 
 	protected ConnectionPropertyAgent _ConnectionInfo;
 
@@ -82,6 +84,24 @@ public abstract class AbstractConnectionStrategy : IDisposable
 			lock (_LockObject)
 			{
 				return _Connection;
+			}
+		}
+	}
+
+	public IDbTransaction Transaction
+	{
+		get
+		{
+			lock (_LockObject)
+			{
+				return _Transaction;
+			}
+		}
+		set
+		{
+			lock (_LockObject)
+			{
+				_Transaction = value;
 			}
 		}
 	}
@@ -164,6 +184,10 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 	public virtual bool IsExecutionPlanAndQueryStatsSupported => true;
 
+	public abstract bool TtsActive { get; }
+
+	public abstract bool HasTransactions { get; }
+
 	public event ConnectionChangedEvent ConnectionChanged;
 
 	protected event ConnectionChangedEvent ConnectionChangedPriority;
@@ -182,6 +206,9 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 			if (connection == value)
 				return;
+
+			_Transaction?.Dispose();
+			_Transaction = null;
 
 			if (_Connection != null)
 			{
@@ -307,9 +334,10 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		return result;
 	}
 
-	public abstract bool IsTransactionOpen();
 
-	public abstract void CommitOpenTransactions();
+	public abstract bool CommitTransactions();
+
+	public abstract void RollbackTransactions();
 
 	public IDbConnection EnsureConnection(bool tryOpenConnection)
 	{
@@ -392,6 +420,11 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		{
 			if (disposing && Connection != null)
 			{
+				if (_Transaction != null)
+				{
+					_Transaction.Dispose();
+					_Transaction = null;
+				}
 				Connection.Close();
 				Connection.Dispose();
 				SetDbConnection(null);
@@ -422,7 +455,11 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 					bool isOpen = Connection.State == ConnectionState.Open;
 					if (isOpen)
+					{
+						_Transaction?.Dispose();
+						_Transaction = null;
 						Connection.Close();
+					}
 
 					Connection.ConnectionString = _Csa.ConnectionString;
 

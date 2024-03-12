@@ -3,8 +3,6 @@
 
 
 using System;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
@@ -109,20 +107,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			// if (Site != null)
 			//	Site.PropertiesChanged -= OnPropertyChanged;
 
-			if (Parent != null && Parent.Parent is Form form)
-			{
-				// form.FormClosing -= OnFormClosing;
-				// form.FormClosed -= OnFormClosed;
-
-				Reflect.RemoveEventHandler(form, "VerifySettings", _OnVerifySettingsDelegate,
-					BindingFlags.Instance | BindingFlags.Public);
-
-				Button btnAccept = (Button)Reflect.GetFieldValue(form, "acceptButton",
-					BindingFlags.Instance | BindingFlags.NonPublic);
-
-				Reflect.RemoveEventHandler(btnAccept, "Click", _OnAcceptDelegate,
-					BindingFlags.Instance | BindingFlags.Public);
-			}
+			RemoveEventHandlers();
 
 			components.Dispose();
 		}
@@ -146,10 +131,11 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	private int _PropertyEventsCardinal = 0;
 	private EnConnectionSource _ConnectionSource = EnConnectionSource.None;
 	private bool _EventsLoaded = false;
+	private Form _ParentParentForm = null;
 	private bool _SiteChanged = true;
 
-	private Delegate _OnVerifySettingsDelegate;
-	private Delegate _OnAcceptDelegate;
+	private Delegate _OnVerifySettingsDelegate = null;
+	private Delegate _OnAcceptDelegate = null;
 
 	private bool _InsertMode = false;
 	private string _OriginalConnectionString = null;
@@ -280,30 +266,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 		// Tracer.Trace(GetType(), "LoadProperties()");
 
-		if (!_EventsLoaded && Parent != null && Parent.Parent is Form form)
-		{
-			_EventsLoaded = true;
-
-			// form.FormClosing += OnFormClosing;
-			// form.FormClosed += OnFormClosed;
-
-			_OnVerifySettingsDelegate = Reflect.AddEventHandler(this, nameof(OnVerifySettings),
-				BindingFlags.Instance | BindingFlags.NonPublic, form, "VerifySettings",
-				BindingFlags.Instance | BindingFlags.Public);
-
-			Button btnAccept = (Button)Reflect.GetFieldValue(form, "acceptButton",
-				BindingFlags.Instance | BindingFlags.NonPublic);
-
-			_OnAcceptDelegate = Reflect.AddEventHandler(this, nameof(OnAccept),
-				BindingFlags.Instance | BindingFlags.NonPublic, btnAccept, "Click",
-				BindingFlags.Instance | BindingFlags.Public);
-
-			if (ConnectionSource == EnConnectionSource.Session)
-			{
-				SessionDlg.UpdateServerExplorerChangedEvent += OnUpdateServerExplorerChanged;
-			}
-		}
-
+		AddEventHandlers();
 
 		DisableInputEvents();
 
@@ -473,6 +436,37 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	// =========================================================================================================
 
 
+	private void AddEventHandlers()
+	{
+		if (_EventsLoaded || Parent == null || Parent.Parent is not Form form)
+			return;
+
+		// Tracer.Trace(GetType(), "AddEventHandlers()", "Container: {0}, Parent: {1}, ParentForm: {2}, Enabled: {3}, Visible: {4}.",
+		//	Container, Parent, ParentForm, Enabled, Visible);
+
+		_EventsLoaded = true;
+		_ParentParentForm = form;
+
+		// form.FormClosing += OnFormClosing;
+		// form.FormClosed += OnFormClosed;
+
+		_OnVerifySettingsDelegate = Reflect.AddEventHandler(this, nameof(OnVerifySettings),
+			BindingFlags.Instance | BindingFlags.NonPublic, form, "VerifySettings",
+			BindingFlags.Instance | BindingFlags.Public);
+
+		Button btnAccept = (Button)Reflect.GetFieldValue(form, "acceptButton",
+			BindingFlags.Instance | BindingFlags.NonPublic);
+
+		_OnAcceptDelegate = Reflect.AddEventHandler(this, nameof(OnAccept),
+			BindingFlags.Instance | BindingFlags.NonPublic, btnAccept, "Click",
+			BindingFlags.Instance | BindingFlags.Public);
+
+		if (ConnectionSource == EnConnectionSource.Session)
+			SessionDlg.UpdateServerExplorerChangedEvent += OnUpdateServerExplorerChanged;
+
+	}
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Increments the <see cref="CursorEventsDisabled"/> counter when execution enters
@@ -560,6 +554,35 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		else
 			_PropertyEventsCardinal--;
 	}
+
+
+
+	private void RemoveEventHandlers()
+	{
+		if (!_EventsLoaded)
+			return;
+
+		// Tracer.Trace(GetType(), "RemoveEventHandlers()", "Container: {0}, Parent: {1}, ParentForm: {2}, Enabled: {3}, Visible: {4}.",
+		//	Container, Parent, ParentForm, Enabled, Visible);
+
+		Reflect.RemoveEventHandler(_ParentParentForm, "VerifySettings", _OnVerifySettingsDelegate,
+			BindingFlags.Instance | BindingFlags.Public);
+
+		Button btnAccept = (Button)Reflect.GetFieldValue(_ParentParentForm, "acceptButton",
+			BindingFlags.Instance | BindingFlags.NonPublic);
+
+		Reflect.RemoveEventHandler(btnAccept, "Click", _OnAcceptDelegate,
+			BindingFlags.Instance | BindingFlags.Public);
+
+		if (ConnectionSource == EnConnectionSource.Session)
+			SessionDlg.UpdateServerExplorerChangedEvent -= OnUpdateServerExplorerChanged;
+
+		_EventsLoaded = false;
+		_ParentParentForm = null;
+		_OnVerifySettingsDelegate = null;
+		_OnAcceptDelegate = null;
+	}
+
 
 
 
@@ -799,6 +822,9 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	/// <param name="e"></param>
 	private void OnAccept(object sender, EventArgs e)
 	{
+		// Tracer.Trace(GetType(), "OnAccept()", "Container: {0}, Parent: {1}, ParentForm: {2}, Enabled: {3}, Visible: {4}.",
+		// 	Container, Parent, ParentForm, Enabled, Visible);
+
 		_HandleNewInternally = false;
 		_HandleModifyInternally = false;
 		_HandleVerification = true;
@@ -1174,6 +1200,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		if (Site == null || InputEventsDisabled)
 			return;
 
+		// Tracer.Trace(GetType(), "OnInputChanged()", "Container: {0}.", Container);
 
 		// Disable property property events because we're going to invoke
 		// OnPropertyChanged afterwards.
@@ -1267,6 +1294,16 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 	}
 
+
+	protected override void OnParentChanged(EventArgs e)
+	{
+		if (Parent != null)
+			AddEventHandlers();
+		else
+			RemoveEventHandlers();
+
+		base.OnParentChanged(e);
+	}
 
 
 	protected override void OnSiteChanged(EventArgs e)
@@ -1372,6 +1409,9 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	/// </summary>
 	private void OnVerifySettings(object sender, EventArgs e)
 	{
+		// Tracer.Trace(GetType(), "OnVerifySettings()", "Container: {0}, Parent: {1}, ParentForm: {2}, Enabled: {3}, Visible: {4}.",
+		//	Container, Parent, ParentForm, Enabled, Visible);
+
 		// Validate the new parse request connection string and then apply.
 
 

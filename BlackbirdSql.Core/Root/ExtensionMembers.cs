@@ -860,7 +860,7 @@ static class ExtensionMembers
 
 		foreach (KeyValuePair<string, IVsDataExplorerConnection> pair in manager.Connections)
 		{
-			if (pair.Value.Provider != clsidProvider)
+			if (!(clsidProvider == pair.Value.Provider))
 				continue;
 
 			csa = new(DataProtection.DecryptString(pair.Value.EncryptedConnectionString), false);

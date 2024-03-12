@@ -5,14 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Common;
-using BlackbirdSql.Core;
-using System.Reflection;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 
 
 namespace BlackbirdSql.VisualStudio.Ddex.Ctl;

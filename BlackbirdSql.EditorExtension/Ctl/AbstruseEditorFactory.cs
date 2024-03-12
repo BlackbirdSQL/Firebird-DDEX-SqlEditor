@@ -11,10 +11,16 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace BlackbirdSql.EditorExtension.Ctl;
 
-public abstract class AbstruseEditorFactory(bool withEncoding) : IVsEditorFactory
+public abstract class AbstruseEditorFactory : IVsEditorFactory
 {
+	public AbstruseEditorFactory(bool withEncoding)
+	{
+		WithEncoding = withEncoding;
+	}
 
-	public bool WithEncoding { get; private set; } = withEncoding;
+
+
+	public bool WithEncoding { get; private set; }
 
 
 
