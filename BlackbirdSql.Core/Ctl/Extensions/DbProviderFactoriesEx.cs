@@ -287,7 +287,10 @@ public static class DbProviderFactoriesEx
 
 					// If it succeeds move onto the next provider.
 					if (providerFactory != null)
+					{
+						remainingProviders.Remove(pair.Key);
 						continue;
+					}
 
 					if (first)
 						Tracer.Warning(typeof(DbProviderFactoriesEx), "LateProviderFactoryRecovery()", "Bad Invariant: {0}.", invariant);
