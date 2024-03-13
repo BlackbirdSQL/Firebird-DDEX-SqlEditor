@@ -278,10 +278,13 @@ public abstract class UnsafeCmd
 		}
 
 		int outputType = int.MaxValue;
+
 		Property property = null;
 
 		if (project.Properties != null && project.Properties.Count > 0)
 		{
+			bool invalidOutputType = true;
+
 			try
 			{
 				property = project.Properties.Item("OutputType");
@@ -290,6 +293,7 @@ public abstract class UnsafeCmd
 				{
 					if (property.Value is int ival)
 					{
+						invalidOutputType = false;
 						outputType = ival;
 					}
 					else if (property.Value is long lval)
@@ -305,19 +309,22 @@ public abstract class UnsafeCmd
 			}
 			catch { }
 
-		}
+			if (invalidOutputType)
+			{
+				try
+				{
+					// Temporary debug message.
+					Tracer.Warning(typeof(UnsafeCmd), "IsValidExecutableProjectType()", "Project: {0}, OutputType property {1}, Type: {2}, Value: {3}.",
+						project.Name, property == null ? "does not exist" : "exists",
+						property != null && property.Value != null ? property.Value.GetType().Name : "NULL Type",
+						property?.Value);
+				}
+				catch (Exception ex)
+				{
+					Diag.Dug(ex);
+				}
+			}
 
-		try
-		{
-			// Temporary debug message.
-			Tracer.Trace(typeof(UnsafeCmd), "IsValidExecutableProjectType()", "Project: {0}, OutputType property {1}, Type: {2}, Value: {3}.",
-				project.Name, property == null ? "does not exist" : "exists",
-				property != null && property.Value != null ? property.Value.GetType().Name : "NULL Type",
-				property?.Value);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
 		}
 
 

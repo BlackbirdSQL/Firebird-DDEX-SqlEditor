@@ -86,9 +86,9 @@ public static class SystemData
 
 
 	/// <summary>
-	/// The Package guid for DemandLoadPackage().
+	/// The underlying package guid (Not used).
 	/// </summary>
-	public const string PackageGuid = "0B100D64-7249-4208-8748-2810B511E90C";
+	public const string PackageGuid = "0eb9ba1b-3114-397d-822f-2d306db02058";
 
 	/// <summary>
 	/// The AsyncPackage guid for IBAsyncPackage.

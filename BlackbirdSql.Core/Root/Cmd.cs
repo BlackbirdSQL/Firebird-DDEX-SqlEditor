@@ -263,7 +263,7 @@ public abstract class Cmd
 		if (vsSolution == null)
 			return null;
 
-		Native.ThrowOnFailure(vsSolution.GetProjectOfUniqueName(project.UniqueName, out IVsHierarchy ppHierarchy));
+		___(vsSolution.GetProjectOfUniqueName(project.UniqueName, out IVsHierarchy ppHierarchy));
 
 		return ppHierarchy;
 	}

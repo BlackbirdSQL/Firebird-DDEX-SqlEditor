@@ -442,14 +442,14 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		// The following for brevity.
 		CancellationToken cancellationToken = default;
 
-		async Task<bool> payload() => await LinkServerExplorerConnectionsAsync(cancellationToken);
+		async Task<bool> payloadAsync() => await LinkServerExplorerConnectionsAsync(cancellationToken);
 
 		// Tracer.Trace(GetType(), "AsyncLinkServerExplorerConnections()", "Queueing LinkServerExplorerConnectionsAsync.");
 
 		// Run on new thread in thread pool.
 		// Fire and remember with token tracking.
 
-		_ = Task.Run(payload, default);
+		_ = Task.Run(payloadAsync, default);
 
 		// Tracer.Trace(GetType(), "AsyncLinkServerExplorerConnections()", "Queued LinkServerExplorerConnectionsAsync.");
 
@@ -519,12 +519,12 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		// Run on new thread in thread pool.
 		// Fire and forget with token tracking.
 
-		async Task<bool> payload() => await LoadUnsafeConfiguredConnectionsAsync(cancellationToken, probject);
+		async Task<bool> payloadAsync() => await LoadUnsafeConfiguredConnectionsAsync(cancellationToken, probject);
 
 
 		// Tracer.Trace(GetType(), "AsyncLoadConfiguredConnections()", "Queueing LoadUnsafeConfiguredConnectionsAsync.");
 
-		_AsyncPayloadLauncher = Task.Run(payload, default);
+		_AsyncPayloadLauncher = Task.Run(payloadAsync, default);
 
 		// Tracer.Trace(GetType(), "AsyncLoadConfiguredConnections()", "Queued LoadUnsafeConfiguredConnectionsAsync.");
 
@@ -1637,7 +1637,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		ProjectItem config = null;
 
-		// There's a dict list of these at the end of the class
+		// There's a dict list of these at the end of the UnsafeCmd class
 		if (UnsafeCmd.Kind(project.Kind) == "ProjectFolder")
 		{
 			if (project.ProjectItems != null && project.ProjectItems.Count > 0)
@@ -1658,9 +1658,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 			if (UnsafeCmd.IsValidExecutableProjectType(project, false))
 			{
-
-				// VSProject projectObject = project.Object as VSProject;
-
+				// Tracer.Trace(GetType(), "RecursiveScanProject()", "IsValidExecutableProjectType: " + project.Name);
 
 				config ??= UnsafeCmd.GetAppConfigProjectItem(project);
 				if (config != null)

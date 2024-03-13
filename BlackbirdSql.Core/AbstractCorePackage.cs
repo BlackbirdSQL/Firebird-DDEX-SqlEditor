@@ -333,7 +333,7 @@ public abstract class AbstractCorePackage : AsyncPackage, IBAsyncPackage
 
 			if (isInstalled)
 			{
-				Native.ThrowOnFailure(vsShell.LoadPackage(ref guidPackage, out package));
+				___(vsShell.LoadPackage(ref guidPackage, out package));
 			}
 		}
 	}

@@ -22,8 +22,8 @@
   <!-- Project Properties (VSIX) -->
   <PropertyGroup>
     <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
-    <IncludeDebugSymbolsInVSIXContainer>true</IncludeDebugSymbolsInVSIXContainer>
-    <IncludeDebugSymbolsInLocalVSIXDeployment>false</IncludeDebugSymbolsInLocalVSIXDeployment>
+    <IncludeDebugSymbolsInVSIXContainer>false</IncludeDebugSymbolsInVSIXContainer>
+    <IncludeDebugSymbolsInLocalVSIXDeployment>true</IncludeDebugSymbolsInLocalVSIXDeployment>
   </PropertyGroup>
   <!-- Project Properties (Build) -->
   <PropertyGroup>
@@ -142,10 +142,6 @@
   </ItemGroup>
   <!-- References (Packages) -->
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.SDK" ExcludeAssets="runtime">
-      <Version>17.8.37222</Version>
-      <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.VSSDK.BuildTools">
       <Version>17.9.3168</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -508,13 +504,12 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>
-			set DestFolder="%25LocalAppData%25\Microsoft\VisualStudio\17.0_5d5e49fcExp\Extensions\$(Company)\BlackbirdSql DDEX and SqlEditor for Firebird\$(VersionPrefix)\"
-			echo %25DestFolder%25
-			if exist %25DestFolder%25 (
-			copy /v /y /b $(ProjectDir)$(OutDir)*.pdb %25DestFolder%25
-			)
-		</PostBuildEvent>
+    <PostBuildEvent>:: set DestFolder="%25LocalAppData%25\Microsoft\VisualStudio\17.0_5d5e49fcExp\Extensions\$(Company)\BlackbirdSql DDEX and SqlEditor for Firebird\$(VersionPrefix)\"
+:: echo %25DestFolder%25
+:: if exist %25DestFolder%25
+:: (
+:: 	copy /v /y /b $(ProjectDir)$(OutDir)*.pdb %25DestFolder%25
+:: )</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

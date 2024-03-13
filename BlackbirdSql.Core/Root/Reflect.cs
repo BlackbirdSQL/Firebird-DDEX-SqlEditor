@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 
@@ -430,11 +429,11 @@ public abstract class Reflect
 	/// The argument modifiers else defaults to null if no modifiers exist.
 	/// </param>
 	/// <returns>
-	/// True if method completed successfully else logs a diagnostics exception and
-	/// returns false on error.
+	///  An object containing the return value of the invoked method, or null on error
+	///  or void.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static bool InvokeAmbiguousMethod(object containerClassInstance, string method,
+	public static object InvokeAmbiguousMethod(object containerClassInstance, string method,
 		BindingFlags bindingFlags, object[] args = null, Type[] argTypes = null,
 		ParameterModifier[] argModifiers = null)
 	{
@@ -462,19 +461,18 @@ public abstract class Reflect
 			{
 				COMException ex = new($"Could not find ambiguous method info for '{method}()' in container class '{containerClassInstance.GetType()}'. Aborting.");
 				Diag.Dug(ex);
-				return false;
+				return null;
 			}
 
-			methodInfo.Invoke(containerClassInstance, args);
+			return methodInfo.Invoke(containerClassInstance, args);
 
 		}
 		catch (Exception ex)
 		{
 			Diag.Dug(ex, $"Could not invoke ambiguous method for '{method}()' in container class '{containerClassInstance.GetType()}'.");
-			return false;
 		}
 
-		return true;
+		return null;
 	}
 
 
@@ -485,11 +483,11 @@ public abstract class Reflect
 	/// containing parameter modifiers use <see cref="InvokeAmbiguousMethod"/>.
 	/// </summary>
 	/// <returns>
-	/// True if method completed successfully else logs a diagnostics exception and
-	/// returns false on error.
+	///  An object containing the return value of the invoked method, or null on error
+	///  or void.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static bool InvokeMethod(object containerClassInstance, string method,
+	public static object InvokeMethod(object containerClassInstance, string method,
 		BindingFlags bindingFlags, object[] args = null)
 	{
 		// Tracer.Trace(GetType(), "InvokeMethod()", "Method: {0}", method);
@@ -506,19 +504,59 @@ public abstract class Reflect
 			{
 				COMException ex = new($"Could not find method info for '{method}()' in container class '{containerClassInstance.GetType()}'. Aborting.");
 				Diag.Dug(ex);
-				return false;
+				return null;
 			}
 
-			methodInfo.Invoke(containerClassInstance, args);
+			return methodInfo.Invoke(containerClassInstance, args);
 
 		}
 		catch (Exception ex)
 		{
 			Diag.Dug(ex, $"Could not invoke method for '{method}()' in container class '{containerClassInstance.GetType()}'.");
-			return false;
 		}
 
-		return true;
+		return null;
+	}
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Invokes a restricted static method synchronously. For ambiguous methods or
+	/// methods containing parameter modifiers use <see cref="InvokeAmbiguousMethod"/>.
+	/// </summary>
+	/// <returns>
+	/// True if method completed successfully else logs a diagnostics exception and
+	/// returns false on error.
+	/// </returns>
+	// ---------------------------------------------------------------------------------
+	public static object InvokeMethod(Type typeContainerClass, string method,
+		BindingFlags bindingFlags, object[] args = null)
+	{
+		try
+		{
+			args ??= [];
+
+			MethodInfo methodInfo = typeContainerClass.GetMethod(method, bindingFlags);
+
+
+			if (methodInfo == null)
+			{
+				COMException ex = new($"Could not find method info for '{method}()' in container class '{typeContainerClass}'. Aborting.");
+				Diag.Dug(ex);
+				return null;
+			}
+
+			return methodInfo.Invoke(typeContainerClass, args);
+
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex, $"Could not invoke method for '{method}()' in container class '{typeContainerClass}'.");
+		}
+
+		return null;
 	}
 
 

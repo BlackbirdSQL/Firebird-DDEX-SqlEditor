@@ -37,6 +37,7 @@ public class AsyncCommand<TResult>(Func<object, Task<TResult>> command, Predicat
 		_ = Task.Run(() => ExecuteAsync(parameter));
 	}
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD003:Avoid awaiting foreign Tasks")]
 	public async Task ExecuteAsync(object parameter)
 	{
 		IsExecuting = true;

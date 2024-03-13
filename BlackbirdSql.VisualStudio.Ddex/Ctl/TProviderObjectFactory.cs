@@ -37,7 +37,7 @@ public sealed class TProviderObjectFactory : DataProviderObjectFactory, IBProvid
 	public TProviderObjectFactory() : base()
 	{
 		// Tracer.Trace(GetType(), "TProviderObjectFactory.TProviderObjectFactory");
-		_ = BlackbirdSqlDdexExtension.Instance;
+		// _ = BlackbirdSqlDdexExtension.Instance;
 	}
 
 

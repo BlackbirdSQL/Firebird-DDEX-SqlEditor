@@ -2,6 +2,7 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+using System.Windows;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -45,6 +46,7 @@ public abstract class AbstractEventsManager : IBEventsManager
 
 		controller.RegisterEventsManager(this);
 		Initialize();
+
 	}
 
 

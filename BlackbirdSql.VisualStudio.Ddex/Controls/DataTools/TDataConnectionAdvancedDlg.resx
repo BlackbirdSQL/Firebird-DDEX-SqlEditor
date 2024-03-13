@@ -145,7 +145,7 @@
     <value>propertyGrid</value>
   </data>
   <data name="&gt;&gt;propertyGrid.Type" xml:space="preserve">
-    <value>BlackbirdSql.VisualStudio.Ddex.Controls.DataTools.TDataConnectionAdvancedDlg+TiSpecializedPropertyGrid, BlackbirdSql.VisualStudio.Ddex, Version=11.1.0.2001, Culture=neutral, PublicKeyToken=d39a163eb11ac91a</value>
+    <value>BlackbirdSql.VisualStudio.Ddex.Controls.DataTools.TDataConnectionAdvancedDlg+TiSpecializedPropertyGrid, BlackbirdSql.VisualStudio.Ddex, Version=11.1.1.0, Culture=neutral, PublicKeyToken=d39a163eb11ac91a</value>
   </data>
   <data name="&gt;&gt;propertyGrid.Parent" xml:space="preserve">
     <value>$this</value>

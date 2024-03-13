@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics;
 using System.Reflection;
 using Microsoft.VisualStudio.Data.Core;
 
@@ -32,10 +33,44 @@ public static class DbProviderFactoriesEx
 	// ---------------------------------------------------------------------------------
 
 
-	private const int C_MaxLateGracePeriod = 15000;
+	private const long C_MaxLateGracePeriod = 15000L;
 
 
 	#endregion Constants
+
+
+
+	// =====================================================================================================
+	#region Property accessors - DbProviderFactoriesEx
+	// =====================================================================================================
+
+
+	public static IDictionary<Guid, IVsDataSource> DataSources
+	{
+		get
+		{
+			IVsDataSourceManager sourceManager = ApcManager.GetService<IVsDataSourceManager>();
+
+			return sourceManager.Sources;
+		}
+	}
+
+
+
+	public static IDictionary<Guid, IVsDataProvider> Providers
+	{
+		get
+		{
+			IVsDataProviderManager providerManager = ApcManager.GetService<IVsDataProviderManager>();
+
+			return providerManager.Providers;
+		}
+	}
+
+
+
+
+	#endregion Property accessors
 
 
 
@@ -220,13 +255,16 @@ public static class DbProviderFactoriesEx
 
 		int waitTime = 0;
 
+		Stopwatch stopwatch = new();
+		stopwatch.Start();
 
 		try
 		{
 			IVsDataProviderManager vsDataProviderMgr = ApcManager.GetService<IVsDataProviderManager>();
+
 			IDictionary<Guid, IVsDataProvider> providers = vsDataProviderMgr.Providers;
-			Dictionary<Guid, IVsDataProvider> unverifiedProviders = new(providers.Count);
-			Dictionary<Guid, IVsDataProvider> remainingProviders;
+			Dictionary<Guid, IVsDataProvider> remainingProviders = new(providers.Count);
+			Dictionary<Guid, IVsDataProvider> unverifiedProviders;
 
 			// List of known safe providers. (SqlServer, Oracle, BlackbirdSql etc)
 			List<string> verifiedProviderGuids = [SystemData.ProviderGuid,
@@ -244,18 +282,21 @@ public static class DbProviderFactoriesEx
 			{
 				if (verifiedProviderGuids.Contains(pair.Key.ToString()))
 					continue;
-				unverifiedProviders.Add(pair.Key, pair.Value);
+				remainingProviders.Add(pair.Key, pair.Value);
 			}
 
-			if (unverifiedProviders.Count == 0)
+			if (remainingProviders.Count == 0)
 				return true;
 
-			remainingProviders = new(unverifiedProviders);
-
-			bool first = true;
+			bool firstCycle = true;
+			int badCount = 0;
+			string invariant = string.Empty;
 			DbProviderFactory providerFactory = null;
 
-			while (waitTime <= C_MaxLateGracePeriod && remainingProviders.Count > 0)
+			DataTable providerTable = (DataTable)Reflect.InvokeMethod(typeof(DbProviderFactories), "GetProviderTable",
+				BindingFlags.Static | BindingFlags.NonPublic);
+
+			while (stopwatch.ElapsedMilliseconds <= C_MaxLateGracePeriod && remainingProviders.Count > 0)
 			{
 				// Loop through each unverified provider and try to load.
 				// If it fails try and remove it in configuraton manager.
@@ -264,25 +305,31 @@ public static class DbProviderFactoriesEx
 				// if there's a fail start all over again and keep retrying.
 				// We'll give late loading providers up to 15 seconds to arrive.
 
+				unverifiedProviders = new(remainingProviders);
+
 				foreach (KeyValuePair<Guid, IVsDataProvider> pair in unverifiedProviders)
 				{
 					// Get the next provider's invariant name.
-					string invariant = (string)pair.Value.GetProperty("InvariantName");
+					invariant = (string)pair.Value.GetProperty("InvariantName");
 
-					if (first)
+					if (firstCycle)
 					{
 						// Tracer.Trace(typeof(DbProviderFactoriesEx), "LateProviderFactoryRecovery()", "Verifying Invariant: {0}, Guid: {1}.", invariant, pair.Key);
 					}
 
 
 					// Try and load the factory.
+
+					providerFactory = null;
+					DataRow dataRow = providerTable.Rows.Find(invariant);
+
 					try
 					{
-						providerFactory = DbProviderFactories.GetFactory(invariant);
+						if (dataRow != null)
+							providerFactory = DbProviderFactories.GetFactory(dataRow);
 					}
 					catch
 					{
-						providerFactory = null;
 					}
 
 					// If it succeeds move onto the next provider.
@@ -292,22 +339,43 @@ public static class DbProviderFactoriesEx
 						continue;
 					}
 
-					if (first)
-						Tracer.Warning(typeof(DbProviderFactoriesEx), "LateProviderFactoryRecovery()", "Bad Invariant: {0}.", invariant);
+					if (firstCycle)
+					{
+						badCount++;
+
+						Tracer.Warning(typeof(DbProviderFactoriesEx), "LateProviderFactoryRecovery()", "\n\tBad Invariant: {0}. Attempting recovery...", invariant);
+					}
 
 
 
-					// Try and remove the factory using configuration manager.
 					try
 					{
-						if (ConfigurationManagerRemoveAssembly(invariant,
-							out string factoryName, out string factoryDescription, out string assemblyQualifiedName))
+						// Try and remove the factory using configuration manager.
+						bool directRemoval = false;
+
+						bool result = ConfigurationManagerRemoveAssembly(invariant,
+							out string factoryName, out string factoryDescription, out string assemblyQualifiedName);
+
+						// If that fails try and remove it directly.
+
+						if (!result)
+						{
+							directRemoval = true;
+
+							result = RemoveAssemblyDirect(invariant, out factoryName, out factoryDescription,
+								out assemblyQualifiedName);
+						}
+
+						if (result)
 						{
 							// If the removal succeeds add it back using direct table updates and move onto next provider.
 							RegisterAssemblyDirect(invariant, factoryName, factoryDescription, assemblyQualifiedName);
 							remainingProviders.Remove(pair.Key);
 
-							Tracer.Warning(typeof(DbProviderFactoriesEx), "LateProviderFactoryRecovery()", "Recovered invariant: {0}.", invariant);
+							Tracer.Warning(typeof(DbProviderFactoriesEx), "LateProviderFactoryRecovery()",
+								"\n\tRecovered invariant '{0}' using {1} removal after {2}.", invariant,
+								directRemoval ? "direct" : "ConfigurationManager",
+								dataRow == null ? "failed ConfigurationManager registration" : "being invalidated");
 
 							continue;
 						}
@@ -317,30 +385,37 @@ public static class DbProviderFactoriesEx
 						Diag.Dug(ex);
 					}
 
-
-					System.Threading.Thread.Sleep(50);
-					if ((waitTime % 500) == 0)
-						System.Threading.Thread.Yield();
-
-					waitTime += 50;
-
-					// If total wait time is greater than 15 seconds we're done trying.
-					if (waitTime >= C_MaxLateGracePeriod)
-					{
-						TimeoutException ex = new($"Timed out waiting for invariant: {invariant} to load. Timeout (ms): {waitTime}.");
-						Diag.Dug(ex);
-					}
-
 				}
 
-				// If total wait time is greater than 15 seconds we're done trying.
-				if (waitTime < C_MaxLateGracePeriod && remainingProviders.Count > 0)
-					unverifiedProviders = new(remainingProviders);
+				waitTime += 50;
 
-				first = false;
+				// If total wait time is greater than 15 seconds we're done trying.
+				if (stopwatch.ElapsedMilliseconds > C_MaxLateGracePeriod)
+				{
+					stopwatch.Stop();
+
+					Tracer.Warning(typeof(DbProviderFactoriesEx), "LateProviderFactoryRecovery()",
+						"\n\tTimed out waiting for invariant '{0}' to appear during recovery. Timeout: {1}ms.", invariant, stopwatch.ElapsedMilliseconds);
+					break;
+				}
+
+				System.Threading.Thread.Sleep(50);
+				if ((waitTime % 500) == 0)
+					System.Threading.Thread.Yield();
+
+
+				firstCycle = false;
 			}
 
-			Tracer.Warning(typeof(DbProviderFactoriesEx), "LateProviderFactoryRecovery()", "Total time trying to recover bad invariants (ms): {0}.", waitTime);
+			if (stopwatch.IsRunning)
+				stopwatch.Stop();
+
+			if (badCount > 0)
+			{
+				Tracer.Warning(typeof(DbProviderFactoriesEx), "LateProviderFactoryRecovery()",
+					"\n\tProvider recovery - Bad invariants: {0}, Recovered invariants: {1}, Total recovery time: {2}ms.",
+					badCount, badCount - remainingProviders.Count, stopwatch.ElapsedMilliseconds);
+			}
 
 		}
 		catch (Exception ex)
@@ -349,7 +424,10 @@ public static class DbProviderFactoriesEx
 			throw;
 		}
 
-		return (waitTime < C_MaxLateGracePeriod);
+		if (stopwatch.IsRunning)
+			stopwatch.Stop();
+
+		return (stopwatch.ElapsedMilliseconds < C_MaxLateGracePeriod);
 	}
 
 
@@ -412,6 +490,46 @@ public static class DbProviderFactoriesEx
 		return Reflect.SetFieldValue(typeof(DbProviderFactories), "_providerTable",
 			BindingFlags.Static | BindingFlags.NonPublic, table);
 
+	}
+
+
+
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Directly removes factory. (For recovery)
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private static bool RemoveAssemblyDirect(string invariant, out string factoryName,
+		out string factoryDescription, out string assemblyQualifiedName)
+	{
+
+		DataTable table = DbProviderFactories.GetFactoryClasses();
+
+		factoryName = factoryDescription = assemblyQualifiedName = null;
+
+		DataRow row = table.Rows.Find(invariant);
+
+		if (row == null)
+			return false;
+
+
+		object @object = row[0] == DBNull.Value ? null : row[0];
+		factoryName = @object?.ToString();
+
+		@object = row[1] == DBNull.Value ? null : row[1];
+		factoryDescription = @object?.ToString();
+
+		@object = row[3] == DBNull.Value ? null : row[3];
+		assemblyQualifiedName = @object?.ToString();
+
+		table.Rows.Remove(row);
+		table.AcceptChanges();
+
+		return Reflect.SetFieldValue(typeof(DbProviderFactories), "_providerTable",
+			BindingFlags.Static | BindingFlags.NonPublic, table);
 	}
 
 

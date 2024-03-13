@@ -449,7 +449,7 @@ public abstract class AbstruseSettingsPage : DialogPage, IBSettingsPage
 			if (gridView == null)
 				return;
 
-			if (Reflect.InvokeMethod(gridView, "SetScrollOffset", BindingFlags.Public | BindingFlags.Instance, [0]))
+			if (Reflect.InvokeMethod(gridView, "SetScrollOffset", BindingFlags.Public | BindingFlags.Instance, [0]) != null)
 			{
 				Reflect.InvokeMethod(gridView, "SelectRow", BindingFlags.NonPublic | BindingFlags.Instance,
 					[SortedByCategories ? 1 : 0]);

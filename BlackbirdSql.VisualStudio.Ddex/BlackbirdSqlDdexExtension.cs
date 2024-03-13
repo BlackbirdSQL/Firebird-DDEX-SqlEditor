@@ -60,7 +60,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 
 
 // 'Help About' registration
-[InstalledProductRegistration("#100", "#102", "11.1.0.2001", IconResourceID = 400)]
+[InstalledProductRegistration("#100", "#102", "11.1.1.0", IconResourceID = 400)]
 
 
 // We start loading as soon as the VS shell is available.
@@ -165,7 +165,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 		get
 		{
 			if (_Instance == null)
-				DemandLoadPackage(SystemData.PackageGuid, out _);
+				DemandLoadPackage(SystemData.AsyncPackageGuid, out _);
 			return (BlackbirdSqlDdexExtension)_Instance;
 		}
 	}

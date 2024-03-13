@@ -155,7 +155,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 		get
 		{
 			if (_Instance == null)
-				DemandLoadPackage(SystemData.PackageGuid, out _);
+				DemandLoadPackage(SystemData.AsyncPackageGuid, out _);
 			return (EditorExtensionPackage)_Instance;
 		}
 	}

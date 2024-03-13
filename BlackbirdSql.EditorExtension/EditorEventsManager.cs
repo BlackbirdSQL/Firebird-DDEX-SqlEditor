@@ -20,6 +20,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.TextManager.Interop;
+using Microsoft.VisualStudio.Threading;
 
 using Cmd = BlackbirdSql.Common.Cmd;
 using IOleUndoManager = Microsoft.VisualStudio.OLE.Interop.IOleUndoManager;
@@ -678,10 +679,10 @@ public sealed class EditorEventsManager : AbstractEventsManager
 			auxDocData.IntellisenseEnabled = false;
 
 		// Fire and forget.
-		Task<bool> payload() =>
+		Task<bool> payloadAsync() =>
 			ResetDocumentStatusAsync(auxDocData, resetIntellisense);
 
-		_ = Task.Factory.StartNew(payload, default, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
+		_ = Task.Factory.StartNew(payloadAsync, default, TaskCreationOptions.PreferFairness, TaskScheduler.Default);
 
 		// Tracer.Trace(GetType(), "OnAfterAttributeChangeEx()", "DONE!!! Intellisense and RdtEvents disabled");
 

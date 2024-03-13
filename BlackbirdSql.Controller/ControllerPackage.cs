@@ -48,7 +48,6 @@ public abstract class ControllerPackage : EditorExtensionPackage
 		// Create the Controller.
 		// Create the Controller Events Manager. 
 		_EventsManager = ControllerEventsManager.CreateInstance(_ApcInstance);
-
 	}
 
 

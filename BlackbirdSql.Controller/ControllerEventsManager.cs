@@ -943,7 +943,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			| TaskCreationOptions.AttachedToParent;
 		TaskScheduler scheduler = TaskScheduler.Default;
 
-		Task<bool> payload() =>
+		Task<bool> payloadAsync() =>
 			PayloadValidateSolutionAsync(projectCount, asyncCancellationToken, userCancellationToken);
 
 		// Projects may have already been opened. They may be irrelevant eg. unloaded
@@ -958,7 +958,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 		// Fire and remember
 
-		_ValidationTask = await Task.Factory.StartNew(payload, default, creationOptions, scheduler);
+		_ValidationTask = await Task.Factory.StartNew(payloadAsync, default, creationOptions, scheduler);
 
 
 		try

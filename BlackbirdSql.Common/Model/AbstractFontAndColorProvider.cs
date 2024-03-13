@@ -1,7 +1,5 @@
-﻿#region Assembly Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-// C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\Extensions\Microsoft\SQLEditor\Microsoft.VisualStudio.Data.Tools.SqlEditor.dll
-// Decompiled with ICSharpCode.Decompiler 7.1.0.6543
-#endregion
+﻿// Microsoft.VisualStudio.Data.Tools.SqlEditor, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+// Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.FontAndColorProviderBase
 
 using System;
 using System.Collections;
@@ -238,35 +236,30 @@ public abstract class AbstractFontAndColorProvider : IVsFontAndColorDefaults, IV
 		bkColor = null;
 		try
 		{
-			bool flag = vsFontAndColorStorage.OpenCategory(ref categoryGuid, (uint)__FCSTORAGEFLAGS.FCSF_READONLY) != 0;
+			bool success = vsFontAndColorStorage.OpenCategory(ref categoryGuid, (uint)__FCSTORAGEFLAGS.FCSF_READONLY) == VSConstants.S_OK;
+
 			LOGFONTW[] pLOGFONT = new LOGFONTW[1];
 			FontInfo[] array = new FontInfo[1];
 			ColorableItemInfo[] array2 = new ColorableItemInfo[1];
-			try
-			{
-				if (!flag)
-				{
-					if (readFont)
-					{
-						___(vsFontAndColorStorage.GetFont(pLOGFONT, array));
-					}
 
-					___(vsFontAndColorStorage.GetItem(itemName, array2));
-				}
-			}
-			catch (Exception)
+			if (success)
 			{
-				flag = true;
+				if (readFont)
+					success = vsFontAndColorStorage.GetFont(pLOGFONT, array) == VSConstants.S_OK;
+
+				if (success)
+					success = vsFontAndColorStorage.GetItem(itemName, array2) == VSConstants.S_OK;
 			}
 
-			if (flag)
+			if (!success)
 			{
 				___(vsFontAndColorStorage.CloseCategory());
-				___(vsFontAndColorStorage.OpenCategory(ref categoryGuid, (uint)(__FCSTORAGEFLAGS.FCSF_READONLY | __FCSTORAGEFLAGS.FCSF_LOADDEFAULTS)));
+
+				___(vsFontAndColorStorage.OpenCategory(ref categoryGuid,
+					(uint)(__FCSTORAGEFLAGS.FCSF_READONLY | __FCSTORAGEFLAGS.FCSF_LOADDEFAULTS)));
+
 				if (readFont)
-				{
 					___(vsFontAndColorStorage.GetFont(pLOGFONT, array));
-				}
 
 				___(vsFontAndColorStorage.GetItem(itemName, array2));
 			}

@@ -257,35 +257,6 @@ public abstract class Native
 
 
 
-	// ThrowOnFailure
-	public static int ThrowOnFailure(int hr)
-	{
-		return ThrowOnFailure(hr, (string)null);
-	}
-
-	// ThrowOnFailure
-	public static int ThrowOnFailure(int hr, string context = null)
-	{
-		if (Failed(hr))
-			Marshal.ThrowExceptionForHR(hr);
-
-		return hr;
-	}
-
-	// ThrowOnFailure
-	public static int ThrowOnFailure(int hr, params int[] expectedFailures)
-	{
-		if (Failed(hr) && (expectedFailures == null || Array.IndexOf(expectedFailures, hr) < 0))
-		{
-			Exception ex = Marshal.GetExceptionForHR(hr);
-			Diag.Dug(ex);
-			throw ex;
-		}
-
-		return hr;
-	}
-
-
 	// TranslateMessage
 	[DllImport("user32", CharSet = CharSet.Auto)]
 	public static extern bool TranslateMessage([In][Out] ref MSG msg);

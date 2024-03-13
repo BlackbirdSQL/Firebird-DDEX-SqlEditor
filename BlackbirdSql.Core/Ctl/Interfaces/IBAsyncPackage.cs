@@ -3,11 +3,9 @@
 
 using System;
 using System.IO;
-using System.Management.Instrumentation;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using EnvDTE;
 using Microsoft.VisualStudio.RpcContracts.FileSystem;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;

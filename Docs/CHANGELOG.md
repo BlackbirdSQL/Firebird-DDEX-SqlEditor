@@ -2,12 +2,14 @@
 
 ### Change log
 
-#### v11.1.1.0 (build 11.1.0.2001)
-Implemented recovery procedure for provider factories arriving late and were invalidated by VS after BlackbirdSql loaded it's running connection table.</br>
-Resolved issue where SqlEditor DDL query commands were failing.</br>
+#### v11.1.1.0
+__New__</br>
+Implemented recovery procedure for provider factories that arrived late or used ConfigurationManager registration and were invalidated by VS after BlackbirdSql loaded it's running connection table.</br>
 Added `Execute with TTS` as a selectable dropdown button for the `Execute` command in SqlEditor.</br>
-Added user option for auto-enabling TTS for DDL statements under `Query Execution > General` user options.
-
+Added user option for auto-enabling TTS for DDL statements under `Query Execution > General` user options.</br>
+__Fixes__</br>
+Implemented validation and trace warning of the project property `OutputType` for types other than Int32 for [EFCorePowerTools](https://github.com/ErikEJ/EFCorePowerTools).</br>
+Resolved issue where SqlEditor DDL query commands were failing.
 
 #### v11.1.0.2
 Added edmx and xsd auto-close on solution close user options. Closing prevents potential load errors and drag-drop clipboard errors.</br>
