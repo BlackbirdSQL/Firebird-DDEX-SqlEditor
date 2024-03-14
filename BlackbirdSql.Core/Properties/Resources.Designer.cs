@@ -331,6 +331,78 @@ namespace BlackbirdSql.Core.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to DbProviderFactory recovery -&gt; Validating {0} factories....
+        /// </summary>
+        public static string DbProviderFactoriesEx_Recovery {
+            get {
+                return ResourceManager.GetString("DbProviderFactoriesEx_Recovery", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DbProviderFactory recovery -&gt; Invariant &apos;{0}&apos; recovered using ConfigurationManager removal after registration failure..
+        /// </summary>
+        public static string DbProviderFactoriesEx_RecoveryConfigurationManagerConfigurationManager {
+            get {
+                return ResourceManager.GetString("DbProviderFactoriesEx_RecoveryConfigurationManagerConfigurationManager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DbProviderFactory recovery -&gt; Invariant &apos;{0}&apos; recovered using ConfigurationManager removal after load error..
+        /// </summary>
+        public static string DbProviderFactoriesEx_RecoveryConfigurationManagerInvalidated {
+            get {
+                return ResourceManager.GetString("DbProviderFactoriesEx_RecoveryConfigurationManagerInvalidated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DbProviderFactory recovery -&gt; Invariant &apos;{0}&apos; recovered using direct removal after registration failure..
+        /// </summary>
+        public static string DbProviderFactoriesEx_RecoveryDirectConfigurationManager {
+            get {
+                return ResourceManager.GetString("DbProviderFactoriesEx_RecoveryDirectConfigurationManager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DbProviderFactory recovery -&gt; Invariant &apos;{0}&apos; recovered using direct removal after load error..
+        /// </summary>
+        public static string DbProviderFactoriesEx_RecoveryDirectInvalidated {
+            get {
+                return ResourceManager.GetString("DbProviderFactoriesEx_RecoveryDirectInvalidated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DbProviderFactory recovery -&gt; Invariant &apos;{0}&apos; error. Timed out waiting for factory to appear..
+        /// </summary>
+        public static string DbProviderFactoriesEx_RecoveryInvariantFailed {
+            get {
+                return ResourceManager.GetString("DbProviderFactoriesEx_RecoveryInvariantFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DbProviderFactory recovery -&gt; Invariant &apos;{0}&apos; has faulted. Attempting recovery....
+        /// </summary>
+        public static string DbProviderFactoriesEx_RecoveryInvariantFaulted {
+            get {
+                return ResourceManager.GetString("DbProviderFactoriesEx_RecoveryInvariantFaulted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DbProviderFactory recovery completed: Found {0} faulted invariants, {1} recovered. Total recovery time was {2}ms..
+        /// </summary>
+        public static string DbProviderFactoriesEx_RecoveryResult {
+            get {
+                return ResourceManager.GetString("DbProviderFactoriesEx_RecoveryResult", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not locate icon for Server Engine Type {0}..
         /// </summary>
         public static string EngineTypeIconNotfound {

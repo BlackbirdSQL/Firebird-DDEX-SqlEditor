@@ -790,6 +790,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to If enabled, BlackbirdSql will perform a recovery of provider factories that have been placed into an error state by the IDE after loading too late..
+        /// </summary>
+        public static string OptionDescriptionGeneralValidateProviderFactories {
+            get {
+                return ResourceManager.GetString("OptionDescriptionGeneralValidateProviderFactories", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enable this option to allow BlackbirdSql to validate your solution&apos;s Invariant, EntityFramework and Edmx settings..
         /// </summary>
         public static string OptionDescriptionGeneralValidateSolution {
@@ -1218,6 +1227,15 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         public static string OptionDisplayGeneralValidateEdmx {
             get {
                 return ResourceManager.GetString("OptionDisplayGeneralValidateEdmx", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Validate provider factories.
+        /// </summary>
+        public static string OptionDisplayGeneralValidateProviderFactories {
+            get {
+                return ResourceManager.GetString("OptionDisplayGeneralValidateProviderFactories", resourceCulture);
             }
         }
         

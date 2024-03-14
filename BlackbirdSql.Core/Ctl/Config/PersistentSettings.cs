@@ -135,15 +135,17 @@ public abstract class PersistentSettings : IBPersistentSettings
 	// ---------------------------------------------------------------------------------
 	public static string[] EquivalencyKeys => _EquivalencyKeys;
 
+
 	/// <summary>
 	/// If enabled, closes edmx data models that have been left open when a solution closes.
 	/// </summary>
-	public static bool AutoCloseEdmxModels => (bool)GetSetting("DdexGeneralAutoCloseEdmxModels", true);
+	public static bool AutoCloseEdmxModels => (bool)GetSetting("DdexGeneralAutoCloseEdmxModels", false);
 
 	/// <summary>
 	/// If enabled, closes xsd datasets that have been left open when a solution closes.
 	/// </summary>
 	public static bool AutoCloseXsdDatasets => (bool)GetSetting("DdexGeneralAutoCloseXsdDatasets", false);
+
 
 	/// <summary>
 	/// Determines if configured connections in a solution's projects are included in selection lists when adding
@@ -178,6 +180,14 @@ public abstract class PersistentSettings : IBPersistentSettings
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static bool ShowDiagramPane => (bool)GetSetting("DdexGeneralShowDiagramPane", true);
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// If enabled performs a recovery of late loading provider factories.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool ValidateProviderFactories => (bool)GetSetting("DdexGeneralValidateProviderFactories", true);
 
 
 	#endregion Property Accessors

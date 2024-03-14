@@ -65,13 +65,12 @@ public class GeneralSettingsModel(IBTransientSettings transientSettings)
 	public override string CollectionName { get; } = "\\BlackbirdSql\\Ddex.GeneralSettings";
 
 
-
 	[GlobalizedCategory("OptionCategoryGeneral")]
 	[GlobalizedDisplayName("OptionDisplayGeneralAutoCloseEdmxModels")]
 	[GlobalizedDescription("OptionDescriptionGeneralAutoCloseEdmxModels")]
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
-	[DefaultValue(true)]
-	public bool AutoCloseEdmxModels { get; set; } = true;
+	[DefaultValue(false)]
+	public bool AutoCloseEdmxModels { get; set; } = false;
 
 	[GlobalizedCategory("OptionCategoryGeneral")]
 	[GlobalizedDisplayName("OptionDisplayGeneralAutoCloseXsdDatasets")]
@@ -79,7 +78,6 @@ public class GeneralSettingsModel(IBTransientSettings transientSettings)
 	[TypeConverter(typeof(GlobalEnableDisableConverter))]
 	[DefaultValue(false)]
 	public bool AutoCloseXsdDatasets { get; set; } = false;
-
 
 	[GlobalizedCategory("OptionCategoryGeneral")]
 	[GlobalizedDisplayName("OptionDisplayGeneralIncludeAppConnections")]
@@ -118,14 +116,14 @@ public class GeneralSettingsModel(IBTransientSettings transientSettings)
 	[GlobalizedCategory("OptionCategoryDiagnostics")]
 	[GlobalizedDisplayName("OptionDisplayGeneralEnableDiagnostics")]
 	[GlobalizedDescription("OptionDescriptionGeneralEnableDiagnostics")]
-	[TypeConverter(typeof(GlobalEnableDisableConverter))]
+	[TypeConverter(typeof(GlobalYesNoConverter))]
 	[DefaultValue(true)]
 	public bool EnableDiagnostics { get; set; } = true;
 
 	[GlobalizedCategory("OptionCategoryDiagnostics")]
 	[GlobalizedDisplayName("OptionDisplayGeneralEnableTaskLog")]
 	[GlobalizedDescription("OptionDescriptionGeneralEnableTaskLog")]
-	[TypeConverter(typeof(GlobalEnableDisableConverter))]
+	[TypeConverter(typeof(GlobalYesNoConverter))]
 	[DefaultValue(true)]
 	public bool EnableTaskLog { get; set; } = true;
 
@@ -133,11 +131,19 @@ public class GeneralSettingsModel(IBTransientSettings transientSettings)
 	[GlobalizedCategory("OptionCategoryEntityFramework")]
 	[GlobalizedDisplayName("OptionDisplayGeneralValidateConnectionOnFormAccept")]
 	[GlobalizedDescription("OptionDescriptionGeneralValidateConnectionOnFormAccept")]
-	[TypeConverter(typeof(GlobalYesNoConverter))]
+	[TypeConverter(typeof(GlobalEnableDisableConverter))]
 	[DefaultValue(true)]
 	public bool ValidateConnectionOnFormAccept { get; set; } = true;
 
+	// To be defaulted to false once Npgsql is fixed.
+	[GlobalizedCategory("OptionCategoryEntityFramework")]
+	[GlobalizedDisplayName("OptionDisplayGeneralValidateProviderFactories")]
+	[GlobalizedDescription("OptionDescriptionGeneralValidateProviderFactories")]
+	[TypeConverter(typeof(GlobalEnableDisableConverter))]
+	[DefaultValue(true)]
+	public bool ValidateProviderFactories { get; set; } = true;
 
-#endregion Property Accessors
+
+	#endregion Property Accessors
 
 }

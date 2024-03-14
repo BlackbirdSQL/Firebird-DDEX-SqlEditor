@@ -19,6 +19,7 @@ using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TaskStatusCenter;
+using Microsoft.VisualStudio.Threading;
 
 
 namespace BlackbirdSql.Core;
@@ -867,9 +868,7 @@ public static class Diag
 	/// Moves back onto the UI thread and updates the IDE task handler progress bar.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 	public static async Task<bool> TaskHandlerProgressAsync(IBTaskHandlerClient client, string text, bool completed = false)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 	{
 		bool enableDiagnosticsLog;
 		bool enableTaskLog;
@@ -879,6 +878,8 @@ public static class Diag
 			enableDiagnosticsLog = EnableDiagnosticsLog;
 			enableTaskLog = EnableTaskLog;
 		}
+
+		await TaskScheduler.Default;
 
 		try
 		{
@@ -1134,7 +1135,7 @@ public static class Diag
 	/// Creates the BlackbirdSql output pane.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	static async Task EnsureOutputPaneAsync()
+	private static async Task EnsureOutputPaneAsync()
 	{
 		await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 

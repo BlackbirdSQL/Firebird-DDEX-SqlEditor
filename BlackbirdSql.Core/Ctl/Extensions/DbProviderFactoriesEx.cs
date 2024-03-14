@@ -8,6 +8,10 @@ using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Reflection;
+using System.Security.Policy;
+using System.Text;
+using BlackbirdSql.Core.Ctl.Config;
+using BlackbirdSql.Core.Properties;
 using Microsoft.VisualStudio.Data.Core;
 
 using Tracer = BlackbirdSql.Core.Ctl.Diagnostics.Tracer;
@@ -246,9 +250,12 @@ public static class DbProviderFactoriesEx
 	/// True if successful else false if grace period expired and gave up waiting.
 	/// </returns>
 	// ---------------------------------------------------------------------------------
-	public static bool LateProviderFactoryRecovery()
+	public static bool InvalidatedProviderFactoryRecovery()
 	{
-		// Tracer.Trace(typeof(DbProviderFactoriesEx), "LateProviderFactoryRecovery()");
+		// Tracer.Trace(typeof(DbProviderFactoriesEx), "InvalidatedProviderFactoryRecovery()");
+
+		if (!PersistentSettings.ValidateProviderFactories)
+			return true;
 
 		// Only allowed to run in thread pool
 		Diag.ThrowIfOnUIThread();
@@ -290,8 +297,11 @@ public static class DbProviderFactoriesEx
 
 			bool firstCycle = true;
 			int badCount = 0;
+			int validationCount = remainingProviders.Count;
 			string invariant = string.Empty;
 			DbProviderFactory providerFactory = null;
+
+			string fmt;
 
 			DataTable providerTable = (DataTable)Reflect.InvokeMethod(typeof(DbProviderFactories), "GetProviderTable",
 				BindingFlags.Static | BindingFlags.NonPublic);
@@ -312,10 +322,12 @@ public static class DbProviderFactoriesEx
 					// Get the next provider's invariant name.
 					invariant = (string)pair.Value.GetProperty("InvariantName");
 
-					if (firstCycle)
-					{
-						// Tracer.Trace(typeof(DbProviderFactoriesEx), "LateProviderFactoryRecovery()", "Verifying Invariant: {0}, Guid: {1}.", invariant, pair.Key);
-					}
+
+					// if (firstCycle)
+					// {
+						// Tracer.Trace(typeof(DbProviderFactoriesEx), "InvalidatedProviderFactoryRecovery()",
+						//	"Verifying Invariant: {0}, Guid: {1}.", invariant, pair.Key);
+					// }
 
 
 					// Try and load the factory.
@@ -339,11 +351,23 @@ public static class DbProviderFactoriesEx
 						continue;
 					}
 
+
 					if (firstCycle)
 					{
+						// Tracer.Warning(typeof(DbProviderFactoriesEx), "InvalidatedProviderFactoryRecovery()", "\n\tBad Invariant: {0}. Attempting recovery...", invariant);
+
+						if (badCount == 0)
+						{
+							Diag.OutputPaneWriteLine(Resources.DbProviderFactoriesEx_Recovery.FmtRes(validationCount), false);
+
+							// Give output time to breath.
+                            System.Threading.Thread.Sleep(10);
+							System.Threading.Thread.Yield();
+						}
+
 						badCount++;
 
-						Tracer.Warning(typeof(DbProviderFactoriesEx), "LateProviderFactoryRecovery()", "\n\tBad Invariant: {0}. Attempting recovery...", invariant);
+						Diag.OutputPaneWriteLine(Resources.DbProviderFactoriesEx_RecoveryInvariantFaulted.FmtRes(invariant), false);
 					}
 
 
@@ -372,10 +396,22 @@ public static class DbProviderFactoriesEx
 							RegisterAssemblyDirect(invariant, factoryName, factoryDescription, assemblyQualifiedName);
 							remainingProviders.Remove(pair.Key);
 
-							Tracer.Warning(typeof(DbProviderFactoriesEx), "LateProviderFactoryRecovery()",
-								"\n\tRecovered invariant '{0}' using {1} removal after {2}.", invariant,
-								directRemoval ? "direct" : "ConfigurationManager",
-								dataRow == null ? "failed ConfigurationManager registration" : "being invalidated");
+							// Tracer.Warning(typeof(DbProviderFactoriesEx), "InvalidatedProviderFactoryRecovery()",
+							//	"\n\tRecovered invariant '{0}' using {1} removal after {2}.", invariant,
+							//	directRemoval ? "direct" : "ConfigurationManager",
+							//	dataRow == null ? "failed ConfigurationManager registration" : "being invalidated");
+
+							if (directRemoval && dataRow == null)
+								fmt = Resources.DbProviderFactoriesEx_RecoveryDirectConfigurationManager;
+							else if (directRemoval && dataRow != null)
+								fmt = Resources.DbProviderFactoriesEx_RecoveryDirectInvalidated;
+							else if (!directRemoval && dataRow == null)
+								fmt = Resources.DbProviderFactoriesEx_RecoveryConfigurationManagerConfigurationManager;
+							else
+								fmt = Resources.DbProviderFactoriesEx_RecoveryConfigurationManagerInvalidated;
+
+							Diag.OutputPaneWriteLine(fmt.FmtRes(invariant), false);
+
 
 							continue;
 						}
@@ -391,13 +427,7 @@ public static class DbProviderFactoriesEx
 
 				// If total wait time is greater than 15 seconds we're done trying.
 				if (stopwatch.ElapsedMilliseconds > C_MaxLateGracePeriod)
-				{
-					stopwatch.Stop();
-
-					Tracer.Warning(typeof(DbProviderFactoriesEx), "LateProviderFactoryRecovery()",
-						"\n\tTimed out waiting for invariant '{0}' to appear during recovery. Timeout: {1}ms.", invariant, stopwatch.ElapsedMilliseconds);
 					break;
-				}
 
 				System.Threading.Thread.Sleep(50);
 				if ((waitTime % 500) == 0)
@@ -412,9 +442,33 @@ public static class DbProviderFactoriesEx
 
 			if (badCount > 0)
 			{
-				Tracer.Warning(typeof(DbProviderFactoriesEx), "LateProviderFactoryRecovery()",
-					"\n\tProvider recovery - Bad invariants: {0}, Recovered invariants: {1}, Total recovery time: {2}ms.",
-					badCount, badCount - remainingProviders.Count, stopwatch.ElapsedMilliseconds);
+				if (remainingProviders.Count > 0)
+				{
+					foreach (KeyValuePair<Guid, IVsDataProvider> pair in remainingProviders)
+					{
+						invariant = (string)pair.Value.GetProperty("InvariantName");
+
+						Diag.OutputPaneWriteLine(Resources.DbProviderFactoriesEx_RecoveryInvariantFailed.FmtRes(invariant), false);
+					}
+				}
+
+				// Tracer.Warning(typeof(DbProviderFactoriesEx), "InvalidatedProviderFactoryRecovery()",
+				//	"\n\tProvider recovery - Bad invariants: {0}, Recovered invariants: {1}, Total recovery time: {2}ms.",
+				//	badCount, badCount - remainingProviders.Count, stopwatch.ElapsedMilliseconds);
+
+
+				fmt = Resources.DbProviderFactoriesEx_RecoveryResult.FmtRes(badCount,
+					badCount - remainingProviders.Count, stopwatch.ElapsedMilliseconds);
+
+				StringBuilder sb = new(fmt.Length);
+
+				sb.Append('=', (fmt.Length - 10) / 2);
+				sb.Append(" Done ");
+				sb.Append('=', fmt.Length - sb.Length);
+
+				fmt += "\n" + sb + "\n";
+
+				Diag.OutputPaneWriteLine(fmt, false);
 			}
 
 		}

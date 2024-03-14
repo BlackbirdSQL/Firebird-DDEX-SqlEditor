@@ -207,6 +207,30 @@
   <data name="CommandProvider_ValidateGlobalSolution" xml:space="preserve">
     <value>Validate Solution Config</value>
   </data>
+  <data name="DbProviderFactoriesEx_Recovery" xml:space="preserve">
+    <value>DbProviderFactory recovery -&gt; Validating {0} factories...</value>
+  </data>
+  <data name="DbProviderFactoriesEx_RecoveryConfigurationManagerConfigurationManager" xml:space="preserve">
+    <value>DbProviderFactory recovery -&gt; Invariant '{0}' recovered using ConfigurationManager removal after registration failure.</value>
+  </data>
+  <data name="DbProviderFactoriesEx_RecoveryConfigurationManagerInvalidated" xml:space="preserve">
+    <value>DbProviderFactory recovery -&gt; Invariant '{0}' recovered using ConfigurationManager removal after load error.</value>
+  </data>
+  <data name="DbProviderFactoriesEx_RecoveryDirectConfigurationManager" xml:space="preserve">
+    <value>DbProviderFactory recovery -&gt; Invariant '{0}' recovered using direct removal after registration failure.</value>
+  </data>
+  <data name="DbProviderFactoriesEx_RecoveryDirectInvalidated" xml:space="preserve">
+    <value>DbProviderFactory recovery -&gt; Invariant '{0}' recovered using direct removal after load error.</value>
+  </data>
+  <data name="DbProviderFactoriesEx_RecoveryInvariantFailed" xml:space="preserve">
+    <value>DbProviderFactory recovery -&gt; Invariant '{0}' error. Timed out waiting for factory to appear.</value>
+  </data>
+  <data name="DbProviderFactoriesEx_RecoveryInvariantFaulted" xml:space="preserve">
+    <value>DbProviderFactory recovery -&gt; Invariant '{0}' has faulted. Attempting recovery...</value>
+  </data>
+  <data name="DbProviderFactoriesEx_RecoveryResult" xml:space="preserve">
+    <value>DbProviderFactory recovery completed: Found {0} faulted invariants, {1} recovered. Total recovery time was {2}ms.</value>
+  </data>
   <data name="EngineTypeIconNotfound" xml:space="preserve">
     <value>Could not locate icon for Server Engine Type {0}.</value>
   </data>

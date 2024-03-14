@@ -360,6 +360,9 @@
   <data name="OptionDescriptionGeneralValidateEdmx" xml:space="preserve">
     <value>Enable this option to allow BlackbirdSql to update legacy edmx models to use EntityFramework 6.</value>
   </data>
+  <data name="OptionDescriptionGeneralValidateProviderFactories" xml:space="preserve">
+    <value>If enabled, BlackbirdSql will perform a recovery of provider factories that have been placed into an error state by the IDE after loading too late.</value>
+  </data>
   <data name="OptionDescriptionGeneralValidateSolution" xml:space="preserve">
     <value>Enable this option to allow BlackbirdSql to validate your solution's Invariant, EntityFramework and Edmx settings.</value>
   </data>
@@ -503,6 +506,9 @@
   </data>
   <data name="OptionDisplayGeneralValidateEdmx" xml:space="preserve">
     <value>  Update legacy edmx models</value>
+  </data>
+  <data name="OptionDisplayGeneralValidateProviderFactories" xml:space="preserve">
+    <value>Validate provider factories</value>
   </data>
   <data name="OptionDisplayGeneralValidateSolution" xml:space="preserve">
     <value> Validate Solution Configuration</value>

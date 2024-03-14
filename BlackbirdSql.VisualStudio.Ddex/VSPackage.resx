@@ -127,10 +127,10 @@
     <value>BlackbirdSql, Results Editor</value>
   </data>
   <data name="100" xml:space="preserve">
-    <value>BlackbirdSql Data Tools</value>
+    <value>BlackbirdSQL Server Data Tools</value>
   </data>
   <data name="102" xml:space="preserve">
-    <value>BlackbirdSql DDEX 2.0 and SqlEditor Data Tools for Firebird Server</value>
+    <value>BlackbirdSQL DDEX 2.0 and SqlEditor Data Tools for Firebird Server</value>
   </data>
   <data name="200" xml:space="preserve">
     <value>BlackbirdSQL Server Tools</value>
@@ -154,25 +154,25 @@
     <value>SqlEditor</value>
   </data>
   <data name="311" xml:space="preserve">
-    <value>BlackbirdSql Server Data Tools, SQL Editor</value>
+    <value>BlackbirdSQL Server Data Tools, SQL Editor</value>
   </data>
   <data name="312" xml:space="preserve">
-    <value>BlackbirdSql Server Data Tools, Results Editor</value>
+    <value>BlackbirdSQL Server Data Tools, Results Editor</value>
   </data>
   <data name="313" xml:space="preserve">
-    <value>BlackbirdSql Server Data Tools, Message Editor</value>
+    <value>BlackbirdSQL Server Data Tools, Message Editor</value>
   </data>
   <data name="314" xml:space="preserve">
-    <value>BlackbirdSql Server Data Tools, Statistics Editor</value>
+    <value>BlackbirdSQL Server Data Tools, Statistics Editor</value>
   </data>
   <data name="315" xml:space="preserve">
-    <value>BlackbirdSql Server Data Tools, Showplan Editor</value>
+    <value>BlackbirdSQL Server Data Tools, Showplan Editor</value>
   </data>
   <data name="317" xml:space="preserve">
-    <value>BlackbirdSql Server Data Tools, FB-SQL Editor (with Encoding)</value>
+    <value>BlackbirdSQL Server Data Tools, FB-SQL Editor (with Encoding)</value>
   </data>
   <data name="318" xml:space="preserve">
-    <value>BlackbirdSql Server Data Tools, Spatial Results Editor</value>
+    <value>BlackbirdSQL Server Data Tools, Spatial Results Editor</value>
   </data>
   <data name="321" xml:space="preserve">
     <value>General</value>

@@ -13,16 +13,12 @@ using System.Threading.Tasks;
 using System.Xml;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Config;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Model.Interfaces;
 using BlackbirdSql.Core.Properties;
 using EnvDTE;
-using FirebirdSql.Data.FirebirdClient;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Data.Core;
-using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Threading;
@@ -185,7 +181,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 	protected DataTable _Databases = null, _DataSources = null;
 	protected DataTable _InternalConnectionsTable = null;
-	private readonly IList<object> _Probjects = new List<object>();
+	private IList<object> _Probjects = null;
 	private IList<string> _RegisteredServerNames = new List<string>();
 
 	/// <summary>
@@ -263,6 +259,9 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	// ---------------------------------------------------------------------------------
 	public bool Loading => _LoadingSyncCardinal > 0 ||
 		(_LoadingAsyncCardinal > 0 && !_AsyncPayloadLauncherToken.IsCancellationRequested);
+
+
+	private IList<object> Probjects => _Probjects ??= new List<object>();
 
 
 	#endregion Property accessors
@@ -486,7 +485,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			{
 				// Tracer.Trace(GetType(), "AsyncLoadConfiguredConnections()", "Abort - is probject.");
 
-				_Probjects.Add(probject);
+				Probjects.Add(probject);
 
 				return true;
 			}
@@ -1126,16 +1125,16 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		{
 			if (probject != null)
 			{
-				_Probjects.Add(probject);
+				Probjects.Add(probject);
 			}
 			else
 			{
 				foreach (Project project in ApcManager.Instance.Dte.Solution.Projects)
-					_Probjects.Add(project);
+					Probjects.Add(project);
 			}
 
-			count = _Probjects.Count;
-			current = (Project)_Probjects[0];
+			count = _Probjects != null ? _Probjects.Count : 0;
+			current = count > 0 ? (Project)_Probjects[0] : null;
 		}
 
 		while (count > 0)
@@ -1433,7 +1432,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		ParseSitedServerExplorerConnections();
 
-		DbProviderFactoriesEx.LateProviderFactoryRecovery();
+		DbProviderFactoriesEx.InvalidatedProviderFactoryRecovery();
 
 		return result;
 

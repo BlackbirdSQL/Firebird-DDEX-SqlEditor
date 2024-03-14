@@ -80,7 +80,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 	/// confusion.
 	/// </summary>
 	public static ControllerEventsManager CreateInstance(IBPackageController controller) =>
-		new (controller);
+		new(controller);
 
 
 	// ---------------------------------------------------------------------------------
@@ -415,21 +415,21 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			TaskHandlerProgress(0, 0);
 			int i = 0;
 
-				foreach (Project project in ((Solution)GlobalsAgent.SolutionObject).Projects)
-				{
-					// Go to back of UI thread.
-					RecursiveValidateSolutionProject(project, stopwatch);
+			foreach (Project project in ((Solution)GlobalsAgent.SolutionObject).Projects)
+			{
+				// Go to back of UI thread.
+				RecursiveValidateSolutionProject(project, stopwatch);
 
-					if (userCancellationToken.IsCancellationRequested || asyncCancellationToken.IsCancellationRequested)
-						i = projectCount - 1;
+				if (userCancellationToken.IsCancellationRequested || asyncCancellationToken.IsCancellationRequested)
+					i = projectCount - 1;
 
-					TaskHandlerProgress((i + 1) * 100 / projectCount, stopwatch.Elapsed.Milliseconds);
+				TaskHandlerProgress((i + 1) * 100 / projectCount, stopwatch.Elapsed.Milliseconds);
 
-					if (userCancellationToken.IsCancellationRequested || asyncCancellationToken.IsCancellationRequested)
-						break;
+				if (userCancellationToken.IsCancellationRequested || asyncCancellationToken.IsCancellationRequested)
+					break;
 
-					i++;
-				}
+				i++;
+			}
 
 			if (userCancellationToken.IsCancellationRequested)
 			{
@@ -818,7 +818,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			}
 
 			if (edmx.FileCount == 0)
-				return true; 
+				return true;
 
 			string path = edmx.FileNames[0];
 
@@ -1303,7 +1303,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		if (!UnsafeCmd.IsProjectKind(project.Kind))
 			return VSConstants.S_OK;
 
-				
+
 		if (PersistentSettings.IncludeAppConnections)
 			RctManager.LoadProjectConnections(project);
 
@@ -1365,14 +1365,12 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		}
 
 		return VSConstants.S_OK;
-
 	}
 
 
 
 	bool RecursiveCheckOpenProjectItem(ProjectItem item)
 	{
-
 		if (UnsafeCmd.Kind(item.Kind) == "PhysicalFolder")
 		{
 			bool success = true;
@@ -1465,6 +1463,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		}
 
 		return true;
+
 	}
 
 
@@ -1481,7 +1480,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 
 
 	[SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits",
-		Justification = "Code logic ensures a deadlock cannot occur")]
+			Justification = "Code logic ensures a deadlock cannot occur")]
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>

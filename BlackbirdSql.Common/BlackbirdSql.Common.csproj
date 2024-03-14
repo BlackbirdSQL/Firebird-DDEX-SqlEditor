@@ -23,6 +23,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Ctl\Dialogs\**" />
+	  <None Remove="Model\Parser\**" />
 	  <None Remove="Properties\Originals\**" />
 	</ItemGroup>
 
@@ -780,12 +782,6 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\BlackbirdSql.Core\BlackbirdSql.Core.csproj" />
-	</ItemGroup>
-
-
-	<ItemGroup>
-	  <Folder Include="Ctl\Dialogs\" />
-	  <Folder Include="Model\Parser\Interfaces\" />
 	</ItemGroup>
 
 </Project>

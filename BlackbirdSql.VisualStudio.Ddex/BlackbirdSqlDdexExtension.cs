@@ -59,8 +59,8 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
 
 
-// 'Help About' registration
-[InstalledProductRegistration("#100", "#102", "11.1.1.0", IconResourceID = 400)]
+// 'Help About' registration. productName & productDetails resource integers must be prefixed with #.
+[InstalledProductRegistration("#100", "#102", "11.1.1.1", IconResourceID = 400)]
 
 
 // We start loading as soon as the VS shell is available.
@@ -70,9 +70,12 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 
 [ProvideUIContextRule(SystemData.UIContextGuid,
 	name: SystemData.UIContextName,
-	expression: "(ShellInit | SolutionModal)",
-	termNames: ["ShellInit", "SolutionModal"],
-	termValues: [VSConstants.UICONTEXT.ShellInitialized_string, VSConstants.UICONTEXT.SolutionOpening_string])]
+	expression: "(ShellInit | SolutionOpening | DesignMode | DataSourceWindowVisible | DataSourceWindowSupported)",
+	termNames: ["ShellInit", "SolutionOpening", "DesignMode", "DataSourceWindowVisible", "DataSourceWindowSupported"],
+	termValues: [VSConstants.UICONTEXT.ShellInitialized_string, VSConstants.UICONTEXT.SolutionOpening_string,
+		VSConstants.UICONTEXT.DesignMode_string, UIContextGuids80.DataSourceWindowAutoVisible,
+		UIContextGuids80.DataSourceWindowSupported])]
+
 
 [ProvideAutoLoad(SystemData.UIContextGuid, PackageAutoLoadFlags.BackgroundLoad)]
 
