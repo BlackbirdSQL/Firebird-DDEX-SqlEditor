@@ -313,7 +313,7 @@
     <value>acceptButton</value>
   </data>
   <data name="&gt;&gt;acceptButton.Type" xml:space="preserve">
-    <value>BlackbirdSql.VisualStudio.Ddex.Controls.DataTools.ExceptionSafeButton, BlackbirdSql.VisualStudio.Ddex, Version=11.1.1.1, Culture=neutral, PublicKeyToken=d39a163eb11ac91a</value>
+    <value>BlackbirdSql.VisualStudio.Ddex.Controls.DataTools.ExceptionSafeButton, BlackbirdSql.VisualStudio.Ddex, Version=11.1.1.1001, Culture=neutral, PublicKeyToken=d39a163eb11ac91a</value>
   </data>
   <data name="&gt;&gt;acceptButton.Parent" xml:space="preserve">
     <value>buttonsTableLayoutPanel</value>

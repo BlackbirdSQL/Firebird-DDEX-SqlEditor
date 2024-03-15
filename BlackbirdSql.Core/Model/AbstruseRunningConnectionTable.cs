@@ -1746,40 +1746,25 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			xmlParent = xmlNode;
 
 
-			XmlNodeList xmlNodes = xmlParent.SelectNodes($"confBlackbirdNs:add[@providerName='System.Data.EntityClient']", xmlNs);
+			// Sort by datasetkey length first to try and avoid the long connection names created by edmx.
+
+			int i = 0;
+			string sortkey;
+			List<string> sortlist = [];
+			Dictionary<string, CsbAgent> sortdict = [];
+
+
+			XmlNodeList xmlNodes = xmlParent.SelectNodes($"confBlackbirdNs:add[@providerName='{SystemData.Invariant}']", xmlNs);
+
 
 			if (xmlNodes.Count > 0)
 			{
-
-				string name;
-				string connectionString;
-				DbConnectionStringBuilder csb;
-
 				foreach (XmlNode connectionNode in xmlNodes)
 				{
-					name = connectionNode.Attributes["name"].Value;
-					datasetId = Resources.RunningConnectionTableEdmDataset.FmtRes(RctManager.EdmDatasetGlyph, projectName, name);
+					arr = connectionNode.Attributes["name"].Value.Split('.');
+					datasetId = Resources.RunningConnectionTableProjectDatasetId.FmtRes(RctManager.ProjectDatasetGlyph, projectName, arr[^1]);
 
-					csb = new()
-					{
-						ConnectionString = connectionNode.Attributes["connectionString"].Value
-					};
-
-					if (!csb.ContainsKey("provider")
-						|| !((string)csb["provider"]).Equals(SystemData.Invariant, StringComparison.InvariantCultureIgnoreCase))
-					{
-						continue;
-					}
-
-					connectionString = csb.ContainsKey("provider connection string")
-						? (string)csb["provider connection string"] : null;
-
-					if (string.IsNullOrWhiteSpace(connectionString))
-						continue;
-
-					// Tracer.Trace(GetType(), "RegisterAppConnectionStrings()", "Entity connectionString: {0}", connectionString);
-
-					csa = new(connectionString);
+					csa = new(connectionNode.Attributes["connectionString"].Value);
 
 					foreach (Describer describer in CsbAgent.AdvancedKeys)
 					{
@@ -1787,45 +1772,51 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 							csa.Remove(describer.Key);
 					}
 
-					csa.Remove("edmx");
-					csa.Remove("edmu");
+					// Add in now to store. Will be retrieved and removed when we actually load.
+					csa.DatasetId = datasetId;
+					csa.ConnectionSource = EnConnectionSource.Application;
 
-					// The datasetId may not be unique at this juncture and already registered.
-					row = RegisterUniqueConnectionImpl(null, datasetId,
-						EnConnectionSource.EntityDataModel, ref csa);
-
-					if (row == null)
-						continue;
-
-					// string str = "AddAppDbRow: ";
-					// foreach (DataColumn col in _InternalConnectionsTable.Columns)
-					// str += col.ColumnName + ": " + row[col.ColumnName] + ", ";
-					// Tracer.Trace(GetType(), "RegisterAppConnectionStrings()", str);
-
-
-					if (_Instance == null)
-						return;
-
-					// Tracer.Trace(GetType(), "RegisterAppConnectionStrings()", "Adding row: {0}", row["DatasetKey"]);
-					AppendSingleConnectionRow(row);
-
+					sortkey = csa.DataSource + datasetId + "\n" + (i++).ToString("D4");
+					sortlist.Add(sortkey);
+					sortdict[sortkey] = csa;
 				}
 			}
 
+			string name;
+			string connectionString;
+			DbConnectionStringBuilder csb;
 
 
+			xmlNodes = xmlParent.SelectNodes($"confBlackbirdNs:add[@providerName='System.Data.EntityClient']", xmlNs);
 
-			xmlNodes = xmlParent.SelectNodes($"confBlackbirdNs:add[@providerName='{SystemData.Invariant}']", xmlNs);
-
-			if (xmlNodes.Count == 0)
+			if (sortlist.Count == 0 && xmlNodes.Count == 0)
 				return;
 
 			foreach (XmlNode connectionNode in xmlNodes)
 			{
-				arr = connectionNode.Attributes["name"].Value.Split('.');
-				datasetId = Resources.RunningConnectionTableProjectDatasetId.FmtRes(RctManager.ProjectDatasetGlyph, projectName, arr[^1]);
+				name = connectionNode.Attributes["name"].Value;
+				datasetId = Resources.RunningConnectionTableEdmDataset.FmtRes(RctManager.EdmDatasetGlyph, projectName, name);
 
-				csa = new(connectionNode.Attributes["connectionString"].Value);
+				csb = new()
+				{
+					ConnectionString = connectionNode.Attributes["connectionString"].Value
+				};
+
+				if (!csb.ContainsKey("provider")
+					|| !((string)csb["provider"]).Equals(SystemData.Invariant, StringComparison.InvariantCultureIgnoreCase))
+				{
+					continue;
+				}
+
+				connectionString = csb.ContainsKey("provider connection string")
+					? (string)csb["provider connection string"] : null;
+
+				if (string.IsNullOrWhiteSpace(connectionString))
+					continue;
+
+				// Tracer.Trace(GetType(), "RegisterAppConnectionStrings()", "Entity connectionString: {0}", connectionString);
+
+				csa = new(connectionString);
 
 				foreach (Describer describer in CsbAgent.AdvancedKeys)
 				{
@@ -1833,11 +1824,40 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 						csa.Remove(describer.Key);
 				}
 
+				csa.Remove("edmx");
+				csa.Remove("edmu");
+
+				// Add in now to store. Will be retrieved and removed when we actually load.
+				csa.DatasetId = datasetId;
+				csa.ConnectionSource = EnConnectionSource.Application;
+
+				sortkey = csa.DataSource + datasetId + "\n" + (i++).ToString("D4");
+				sortlist.Add(sortkey);
+				sortdict[sortkey] = csa;
+			}
+
+
+			// Sort as alpha then string length.
+
+			sortlist.Sort(StringComparer.OrdinalIgnoreCase);
+			sortlist.Sort((x, y) => x.Length.CompareTo(y.Length));
+
+			EnConnectionSource connectionSource;
+
+			foreach (string sortlistkey in sortlist)
+			{
+				csa = sortdict[sortlistkey];
+
+				datasetId = csa.DatasetId;
+				connectionSource = csa.ConnectionSource;
+
+				csa.Remove(CoreConstants.C_KeyExDatasetId);
+				csa.Remove(CoreConstants.C_KeyExConnectionSource);
+
 				// Tracer.Trace(GetType(), "RegisterAppConnectionStrings()", "datasource: {0}, dataset: {1}, serverName: {2}, ConnectionName: {3}, datasetId: {4}, Connectionstring: {5}, storedConnectionString: {6}.", datasource, csa.Dataset, serverName, csa.ConnectionName, datasetId, csa.ConnectionString, connectionNode.Attributes["connectionString"].Value);
 
 				// The datasetId may not be unique at this juncture and already registered.
-				row = RegisterUniqueConnectionImpl(null, datasetId,
-					EnConnectionSource.Application, ref csa);
+				row = RegisterUniqueConnectionImpl(null, datasetId, connectionSource, ref csa);
 
 				if (row == null)
 					continue;
@@ -1855,7 +1875,6 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 				AppendSingleConnectionRow(row);
 
 			}
-
 
 		}
 		catch (Exception ex)

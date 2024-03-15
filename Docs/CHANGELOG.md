@@ -2,6 +2,12 @@
 
 ## Change log
 
+### v11.1.1.1001 (build for v11.1.1.2)
+__New__</br>
+-- Equivalent connections with shorter names in project app.configs are given precedence when loading connections into the running connection table. This is to try and avoid equivalent connections with long names allocated by the edmx wizard.</br>
+__Fixes__</br>
+-- 
+
 ### v11.1.1.1
 __New__</br>
 -- Implemented a user option under `DDEX Provider > General > Validation` to Enable/Disable the recovery procedure for provider factories that have been placed into an error state by the IDE after loading late (Defaults to `Enabled`. This will revert to `Disabled` once Npgsql is fixed.).</br>
