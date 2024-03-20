@@ -194,7 +194,7 @@ Server Explorer connections and connections modified during a Session have no gl
     <value>Project connections are not synchronized with the Running Connection Table. Synchronization requires a Solution reload.</value>
   </data>
   <data name="TConnectionUIControl_DatasetKeyDescription_EntityDataModel" xml:space="preserve">
-    <value>WARNING: The edmx wizard is slow. Procedures may take a long time to complete on slow networks.</value>
+    <value>WARNING: The wizard is slow. Design procedures may take a long time to complete on slow networks. Modifying connections here can take up to 90 seconds.</value>
   </data>
   <data name="TConnectionUIControl_DisplayName.ToolTip" xml:space="preserve">
     <value>The Database Name of the registered connection that the current input of the Connection dialog matches.

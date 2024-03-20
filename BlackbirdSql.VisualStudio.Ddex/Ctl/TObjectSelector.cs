@@ -123,7 +123,7 @@ public class TObjectSelector : TObjectSelectorTable
 			// VS glitch. Null if ado has picked up a project data model firebird assembly.
 			if (lockedProviderObject is not FbConnection connection)
 			{
-				connection = new(DataProtection.DecryptString(Site.EncryptedConnectionString));
+				connection = new(Site.DecryptedConnectionString());
 				connection.Open();
 			}
 			else

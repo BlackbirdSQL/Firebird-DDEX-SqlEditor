@@ -84,7 +84,7 @@ public abstract class VS
 	public const string DetachCommandProviderGuid = "8C591813-BB90-4B5C-BD7B-5A286D130D2E";
 
 
-	// Server explorer tree object guids
+	// Server explorer tree object guids (FYI)
 	public const string SeRootGuid = "74d21310-2aee-11d1-8bfb-00a0c90f26f7";
 	public const string SeObjectNodesGuid = "d4f02a6a-c5ae-4bf2-938d-f1625bdca0e2";
 

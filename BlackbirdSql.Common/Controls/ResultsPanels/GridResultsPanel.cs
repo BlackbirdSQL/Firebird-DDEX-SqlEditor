@@ -22,6 +22,7 @@ using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls;
+using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Ctl.Enums;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -82,7 +83,8 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 	public GridResultsPanel(string defaultResultsDirectory)
 		: base(defaultResultsDirectory)
 	{
-		Guid clsid = LibraryData.CLSID_CommandSet;
+		Guid clsid = CommandProperties.ClsidCommandSet;
+
 		MenuCommand menuCommand = new MenuCommand(OnSelectAll,
 			new CommandID(VSConstants.CMDSETID.StandardCommandSet97_guid,
 			(int)VSConstants.VSStd97CmdID.SelectAll));
@@ -870,7 +872,7 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 					}
 			}
 		}
-		else if (guidGroup.Equals(LibraryData.CLSID_CommandSet))
+		else if (guidGroup.Equals(CommandProperties.ClsidCommandSet))
 		{
 			bool visible = menuCommand.Supported = true;
 			menuCommand.Visible = visible;
@@ -905,7 +907,7 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 					return VSConstants.S_OK;
 				}
 			}
-			else if (guidGroup.Equals(LibraryData.CLSID_CommandSet))
+			else if (guidGroup.Equals(CommandProperties.ClsidCommandSet))
 			{
 				menuCommand.Invoke();
 				return VSConstants.S_OK;

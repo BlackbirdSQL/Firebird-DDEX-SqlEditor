@@ -1017,8 +1017,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 			try
 			{
-				LoadServerExplorerConfiguredConnectionImpl(connectionName,
-					DataProtection.DecryptString(pair.Value.EncryptedConnectionString));
+				LoadServerExplorerConfiguredConnectionImpl(connectionName, pair.Value.DecryptedConnectionString());
 			}
 			catch (Exception ex)
 			{
@@ -1824,6 +1823,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 						csa.Remove(describer.Key);
 				}
 
+				// Clear out any UIHierarchyMarshaler ConnectionString identifiers.
 				csa.Remove("edmx");
 				csa.Remove("edmu");
 
@@ -1971,6 +1971,9 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		if (_Instance == null)
 			return false;
 
+		if (source <= EnConnectionSource.None)
+			source = EnConnectionSource.Session;
+
 		BeginLoadData(true);
 
 		try
@@ -2053,9 +2056,9 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		{
 			// Sanity checks.
 
-			// Take the glyph out of Application, EntityDataModel and External utility source dataset
-			// ids if the new source is not Application, EntityDataModel or ExternalUtility.
-			if (source != EnConnectionSource.Application && source != EnConnectionSource.EntityDataModel
+			// Take the glyph out of Application, HierarchyMarshaler and External utility source dataset
+			// ids if the new source is not Application, HierarchyMarshaler or ExternalUtility.
+			if (source != EnConnectionSource.Application && source != EnConnectionSource.HierarchyMarshaler
 				&& source != EnConnectionSource.ExternalUtility)
 			{
 				int pos;
@@ -2659,11 +2662,12 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			return;
 		}
 
-		CsbAgent csa = new(DataProtection.DecryptString(e.Node.ExplorerConnection.EncryptedConnectionString));
+		CsbAgent csa = new(e.Node.ExplorerConnection.DecryptedConnectionString());
 
+		// If the ConnectionString contains any UIHierarchyMarshaler identifiers we skip the
+		// DatasetKey check because the Connection is earmarked for repair.
 		if (!csa.ContainsKey("edmx") && !csa.ContainsKey("edmu") && csa.ContainsKey(CoreConstants.C_KeyExDatasetKey))
 		{
-
 			// Check if node.Object exists before accessing it otherwise the root node will be initialized
 			// with a call to TObjectSelectorRoot.SelectObjects.
 
@@ -2679,8 +2683,8 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		try
 		{
-			// Tracer.Trace(GetType(), "OnExplorerConnectionNodeChanged()", "Calling rename: csa.DatasetKey: {0}, e.Node.ExplorerConnection.DisplayName: {1}, csa.ContainsKey(edmu): {2}, csa.ContainsKey(edmu): {3}.", csa.DatasetKey, e.Node.ExplorerConnection.DisplayName, csa.ContainsKey("edmx"), csa.ContainsKey("edmu"));
-			RctManager.ValidateAndUpdateExplorerConnectionRename(e.Node.ExplorerConnection, e.Node.ExplorerConnection.DisplayName, csa);
+			RctManager.ValidateAndUpdateExplorerConnectionRename(e.Node.ExplorerConnection,
+				e.Node.ExplorerConnection.DisplayName, csa);
 		}
 		catch (Exception ex)
 		{
@@ -2724,7 +2728,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		try
 		{
-			UpdateRegisteredConnection(DataProtection.DecryptString(e.Node.ExplorerConnection.EncryptedConnectionString),
+			UpdateRegisteredConnection(e.Node.ExplorerConnection.DecryptedConnectionString(),
 				EnConnectionSource.Session, true);
 		}
 		catch (Exception ex)

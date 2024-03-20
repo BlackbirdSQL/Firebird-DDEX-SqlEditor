@@ -148,7 +148,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	/// be considered equal and it will be ignored.</param>
 	/// <param name="oStoredConnectionSource">
 	/// Out | The ConnectionSource of connectionUrl if the connection exists in the rct
-	/// else EnConnectionSource.Unknown.
+	/// else EnConnectionSource.None.
 	/// </param>
 	/// <param name="oChangedTargetDatasetKey">
 	/// Out | If a connection is being modified (originalConnectionUrl is not null) and
@@ -187,7 +187,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	{
 		// These are the 5 values in the tuple to be returned.
 		bool rNewRctConnection = true;
-		oStoredConnectionSource = EnConnectionSource.Unknown;
+		oStoredConnectionSource = EnConnectionSource.None;
 		oUniqueDatasetKey = null;
 		oUniqueConnectionName = null;
 		oUniqueDatasetId = null;
@@ -453,6 +453,9 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 		// Firstly establish if we may update the stored connection.
 		EnConnectionSource rowConnectionSource = (EnConnectionSource)(int)row[C_KeyExConnectionSource];
 
+		if (source <= EnConnectionSource.None)
+			source = EnConnectionSource.Session;
+
 		bool canTakeOwnerShip = forceOwnership || VerifyUpdateRights(source, rowConnectionSource);
 
 		// Sanity check.
@@ -638,7 +641,7 @@ public abstract class AbstractRunningConnectionTable : AbstruseRunningConnection
 	public static bool VerifyUpdateRights(EnConnectionSource updater,
 		EnConnectionSource owner)
 	{
-		if (owner <= EnConnectionSource.Unknown || updater <= owner)
+		if (owner <= EnConnectionSource.None || updater <= owner)
 			return true;
 
 		return false;

@@ -12,6 +12,7 @@ using BlackbirdSql.Common.Ctl.IO;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls;
+using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Ctl.Enums;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
@@ -47,7 +48,7 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 		Controls.Add(_TextViewCtl);
 		ResumeLayout(performLayout: false);
 		MenuCommand menuCommand = new MenuCommand(OnSaveAs,
-			new CommandID(LibraryData.CLSID_CommandSet,
+			new CommandID(CommandProperties.ClsidCommandSet,
 			(int)EnCommandSet.CmdIdSaveResultsAs));
 		MenuService.AddRange(new MenuCommand[1] { menuCommand });
 	}
@@ -311,7 +312,7 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 			return (int)Constants.MSOCMDERR_E_UNKNOWNGROUP;
 		}
 
-		if (guidGroup.Equals(LibraryData.CLSID_CommandSet))
+		if (guidGroup.Equals(CommandProperties.ClsidCommandSet))
 		{
 			bool visible = menuCommand.Supported = true;
 			menuCommand.Visible = visible;
@@ -331,7 +332,7 @@ public class VSTextEditorPanel : AbstractResultsPanel, IOleCommandTarget
 	{
 		MenuCommand menuCommand = MenuService.FindCommand(new CommandID(guidGroup, (int)nCmdId));
 
-		if (menuCommand != null && guidGroup.Equals(LibraryData.CLSID_CommandSet))
+		if (menuCommand != null && guidGroup.Equals(CommandProperties.ClsidCommandSet))
 		{
 			menuCommand.Invoke();
 			return VSConstants.S_OK;

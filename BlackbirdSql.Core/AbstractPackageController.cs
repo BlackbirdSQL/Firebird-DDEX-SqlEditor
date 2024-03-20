@@ -208,7 +208,6 @@ public abstract class AbstractPackageController : IBPackageController
 	#region Property Accessors - AbstractPackageController
 	// =========================================================================================================
 
-
 	public string UserDataDirectory => _UserDataDirectory ??=
 		Environment.GetFolderPath(Environment.SpecialFolder.Personal);
 

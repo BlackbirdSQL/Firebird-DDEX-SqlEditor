@@ -3,6 +3,7 @@
 
 using System;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using BlackbirdSql.Common.Controls;
@@ -19,6 +20,8 @@ using Microsoft.VisualStudio.Utilities;
 
 
 namespace BlackbirdSql.EditorExtension.Ctl;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Uses Diag.ThrowIfNotOnUIThread()")]
 
 
 public abstract class AbstractEditorFactory(bool withEncoding) : AbstruseEditorFactory(withEncoding)

@@ -186,7 +186,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBObjectWithSite // 
 					return 0;
 				}
 			}
-			else if (guidGroup.Equals(LibraryData.CLSID_CommandSet))
+			else if (guidGroup.Equals(CommandProperties.ClsidCommandSet))
 			{
 				bool enabled = false;
 				if (dataBindings != null && dataBindings.TryGetValue(GetGraphPanel(0), out DataBinding value))
@@ -624,7 +624,7 @@ public class ExecutionPlanControl : UserControl, Interfaces.IBObjectWithSite // 
 	private void InitializeMenuCommands()
 	{
 		/*
-		Guid clsid = LibraryData.CLSID_CommandSet;
+		Guid clsid = CommandProperties.ClsidCommandSet;
 		MenuCommand[] cmds = new MenuCommand[10]
 		{
 			new MenuCommand(OnSave, new CommandID(clsid, (int)EnCommandSet.CmdIdExecutionPlanSave)),

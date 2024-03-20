@@ -5,6 +5,7 @@
 using System;
 using System.ComponentModel;
 using System.Data.Common;
+using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
@@ -76,7 +77,13 @@ public class TConnectionUIProperties : TConnectionProperties
 		{
 			ConnectionStringBuilder.ConnectionString = connectionString;
 
-			if (ConnectionSource == EnConnectionSource.EntityDataModel)
+			// Connection dialogs spawned from a UIHierarchyMarshaler can misbehave and
+			// corrupt our connection nodes, which we repair. So the
+			// IVsDataConnectionUIProperties implementation of this class is identified
+			// with an "edmu" property.
+			// The ancestor IVsDataConnectionProperties implementation is identified
+			// with an "edmx" property.
+			if (ConnectionSource == EnConnectionSource.HierarchyMarshaler)
 			{
 				ConnectionStringBuilder.Remove("edmx");
 				ConnectionStringBuilder["edmu"] = true;

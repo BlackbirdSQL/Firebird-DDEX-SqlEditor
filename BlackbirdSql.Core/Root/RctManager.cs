@@ -14,7 +14,6 @@ using BlackbirdSql.Core.Properties;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
-
 using CoreConstants = BlackbirdSql.Core.Ctl.CoreConstants;
 
 
@@ -95,7 +94,6 @@ public sealed class RctManager : IDisposable
 
 	private static RctManager _Instance;
 	private RunningConnectionTable _Rct;
-	private static readonly string _Scheme = SystemData.Scheme;
 	private static string _UnadvisedConnectionString = null;
 	private static bool _AdvisingExplorerEvents = false;
 	private static readonly char _EdmDatasetGlyph = '\u26ee';
@@ -205,8 +203,19 @@ public sealed class RctManager : IDisposable
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Returns the sequential seed of the last attempt to modify the
-	/// <see cref="RunningConnectionTable"/>.
+	/// <see cref="RunningConnectionTable"/> and is used to ensure uniformity of
+	/// connections and <see cref="CsbAgent"/>s globally across the extension.
 	/// </summary>
+	/// <remarks>
+	/// Objects that use connections or <see cref="CsbAgent"/>s record the seed at the
+	/// time their connection or Csa is created.
+	/// Whenever the connection or Csa is accessed it must compare it's saved seed value
+	/// against the Rct's seed. If they differ it must check if it's connection requires
+	/// updating or Csa requires renewing and also always update it's seed irrelevant of
+	/// any updates.
+	/// If a Csa requires tracking the built-in seed tracking should be enabled and
+	/// used.
+	/// </remarks>
 	// ---------------------------------------------------------------------------------
 	public static long Seed => RunningConnectionTable.Seed;
 
@@ -499,7 +508,6 @@ public sealed class RctManager : IDisposable
 		if (Rct.TryGetHybridRowValue(connectionString, out DataRow row))
 			return new CsbAgent((string)row[CoreConstants.C_KeyExConnectionString]);
 
-
 		// Calls to this method expect a registered connection. If it doesn't exist it means
 		// we're creating a new configured connection.
 
@@ -759,7 +767,7 @@ public sealed class RctManager : IDisposable
 		try
 		{
 
-			CsbAgent seCsa = new(DataProtection.DecryptString(explorerConnection.Connection.EncryptedConnectionString), false);
+			CsbAgent seCsa = new(explorerConnection.Connection.DecryptedConnectionString(), false);
 			string connectionKey = explorerConnection.GetConnectionKey(true);
 
 			if (string.IsNullOrWhiteSpace(csa.ConnectionKey) || csa.ConnectionKey != connectionKey)
@@ -802,7 +810,7 @@ public sealed class RctManager : IDisposable
 			// An update is required...
 
 
-			explorerConnection.Connection.EncryptedConnectionString = DataProtection.EncryptString(csa.ConnectionString);
+			explorerConnection.Connection.SetConnectionString(csa.ConnectionString);
 			explorerConnection.ConnectionNode.Select();
 
 			Rct?.EnableEvents();
@@ -848,7 +856,7 @@ public sealed class RctManager : IDisposable
 
 		try
 		{
-			if (_UnadvisedConnectionString == DataProtection.DecryptString(explorerConnection.EncryptedConnectionString))
+			if (_UnadvisedConnectionString == explorerConnection.DecryptedConnectionString())
 			{
 				Rct.AdviseEvents(explorerConnection);
 			}
@@ -1050,7 +1058,7 @@ public sealed class RctManager : IDisposable
 
 		Rct.DisableEvents();
 
-		explorerConnection = manager.AddConnection(csa.DatasetKey, new(SystemData.ProviderGuid), DataProtection.EncryptString(csa.ConnectionString), true);
+		explorerConnection = manager.AddConnection(csa.DatasetKey, new(SystemData.ProviderGuid), csa.ConnectionString, false);
 
 		Rct.AdviseEvents(explorerConnection);
 
@@ -1077,8 +1085,8 @@ public sealed class RctManager : IDisposable
 	/// <summary>
 	/// Validates IVsDataExplorerConnection to establish if it's stored DatasetKey
 	/// matches the DisplayName (proposed ConnectionName) and updates the Server
-	/// Explorer internal table if it doesn't. Also checks if the edmx wizard has
-	/// corrupted the root node.
+	/// Explorer internal table if it doesn't. Also checks if a wizard spawned from a
+	/// UIHierarchyMarshaler has corrupted the root node.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public static void ValidateAndUpdateExplorerConnectionRename(IVsDataExplorerConnection explorerConnection,
@@ -1088,20 +1096,24 @@ public sealed class RctManager : IDisposable
 			return;
 
 
-		// The edmx wizard will corrupt our node's values if it uses a stored connection.
-		// If the connection exists it will replace the node's properties - we tag the
-		// connection string in our IVsDataConnectionProperties implementation with "edmx".
-		// If the connection doesn't exist in the SE we have to create it on the fly else
-		// the wizard will throw an exception - we tag this new connection in our
-		// IVsDataConnectionUIProperties implementation with "edmu".
-		// In either case it will then rename the connection name and we lose the
-		// DatasetId if it existed.
-		// A node changed event is raised which we pick up here, and we perform a repair.
+		// Wizards spawned from a UIHierarchyMarshaler will likely misbehave and corrupt
+		// our connection node if it uses a 'New Connection' dialog.
+		// We tag the connection string in our IVsDataConnectionProperties and
+		// IVsDataConnectionUIProperties implementations with "edmx" and "edmu"
+		// respectively, to identify it as a connection created or selected in a dialog
+		// spawned from UIHierarchyMarshaler.
+		// If the connection doesn't exist in the SE we will have created it on the fly
+		// to prevent the wizard throwing an exception.
+		// Whether created or selected, the wizard will misbehave and rename the
+		// connection, and we lose the DatasetId if it existed.
+		// A node changed event is raised which we pick up here, and we perform a
+		// reverse repair.
 
 		if (csa.ContainsKey("edmx") || csa.ContainsKey("edmu"))
 		{
 			if (csa.ContainsKey("edmu"))
 			{
+				// Clear out any UIHierarchyMarshaler ConnectionString identifiers.
 				csa.Remove("edmu");
 				csa.Remove("edmx");
 
@@ -1139,7 +1151,7 @@ public sealed class RctManager : IDisposable
 		string caption;
 
 		// Sanity check.
-		if (proposedConnectionName.StartsWith(_Scheme))
+		if (proposedConnectionName.StartsWith(SystemData.Scheme))
 		{
 			if (csa.ContainsKey(CoreConstants.C_DefaultExDatasetKey))
 			{
@@ -1148,7 +1160,7 @@ public sealed class RctManager : IDisposable
 				Rct.EnableEvents();
 
 				caption = ControlsResources.RctManager_CaptionInvalidConnectionName;
-				msg = ControlsResources.RctManager_TextInvalidConnectionName.FmtRes(_Scheme, proposedConnectionName);
+				msg = ControlsResources.RctManager_TextInvalidConnectionName.FmtRes(SystemData.Scheme, proposedConnectionName);
 				MessageCtl.ShowEx(msg, caption, MessageBoxButtons.OK);
 
 				return;
@@ -1268,10 +1280,10 @@ public sealed class RctManager : IDisposable
 		string msg = null;
 		string caption = null;
 
-		if (!string.IsNullOrWhiteSpace(proposedConnectionName) && proposedConnectionName.StartsWith(_Scheme))
+		if (!string.IsNullOrWhiteSpace(proposedConnectionName) && proposedConnectionName.StartsWith(SystemData.Scheme))
 		{
 			caption = ControlsResources.RctManager_CaptionInvalidConnectionName;
-			msg = ControlsResources.RctManager_TextInvalidConnectionName.FmtRes(_Scheme, proposedConnectionName);
+			msg = ControlsResources.RctManager_TextInvalidConnectionName.FmtRes(SystemData.Scheme, proposedConnectionName);
 
 			MessageCtl.ShowEx(msg, caption, MessageBoxButtons.OK);
 
@@ -1299,7 +1311,7 @@ public sealed class RctManager : IDisposable
 		// If we're in the EDM and the stored connection source is not ServerExplorer we have to create it in the SE to get past the EDM bug.
 		// Also, if we're in the SE and the stored connection source is not ServerExplorer we have to create it in the SE.
 		if (!createNew && storedConnectionSource != EnConnectionSource.ServerExplorer
-			&& (connectionSource == EnConnectionSource.ServerExplorer || connectionSource == EnConnectionSource.EntityDataModel))
+			&& (connectionSource == EnConnectionSource.ServerExplorer || connectionSource == EnConnectionSource.HierarchyMarshaler))
 		{
 			createNew = true;
 		}
@@ -1316,7 +1328,7 @@ public sealed class RctManager : IDisposable
 
 			// The settings provided will create a new SE connection with a connection name conflict.
 			if (createNew && !serverExplorerInsertMode && (connectionSource == EnConnectionSource.ServerExplorer
-				|| connectionSource == EnConnectionSource.EntityDataModel))
+				|| connectionSource == EnConnectionSource.HierarchyMarshaler))
 			{
 				caption = ControlsResources.RctManager_CaptionNewConnectionNameConflict;
 				msg = ControlsResources.RctManager_TextNewSEConnectionNameConflict.FmtRes(proposedConnectionName, uniqueConnectionName);
@@ -1346,7 +1358,7 @@ public sealed class RctManager : IDisposable
 
 			// The settings provided will create a new SE connection with a DatasetId conflict.
 			if (createNew && !serverExplorerInsertMode && (connectionSource == EnConnectionSource.ServerExplorer
-				|| connectionSource == EnConnectionSource.EntityDataModel))
+				|| connectionSource == EnConnectionSource.HierarchyMarshaler))
 			{
 				caption = ControlsResources.RctManager_CaptionNewConnectionDatabaseNameConflict;
 				msg = ControlsResources.RctManager_TextNewSEConnectionDatabaseNameConflict.FmtRes(proposedDatasetId, uniqueDatasetId);
@@ -1373,7 +1385,7 @@ public sealed class RctManager : IDisposable
 		// Handle all case where there is no conflict.
 		// The settings provided will create a new SE connection.
 		else if (createNew && !serverExplorerInsertMode &&
-			(connectionSource == EnConnectionSource.ServerExplorer || connectionSource == EnConnectionSource.EntityDataModel))
+			(connectionSource == EnConnectionSource.ServerExplorer || connectionSource == EnConnectionSource.HierarchyMarshaler))
 		{
 			caption = ControlsResources.RctManager_CaptionNewConnection;
 			msg = ControlsResources.RctManager_TextNewSEConnection;
@@ -1424,11 +1436,11 @@ public sealed class RctManager : IDisposable
 
 
 		// Establish the connection owner.
-		// if the explorer connection exists or if it's the source (or EntityDataModel) it automatically is the owner.
+		// if the explorer connection exists or if it's the source (or HierarchyMarshaler) it automatically is the owner.
 		string connectionKey = site.FindConnectionKey();
 
 		if (connectionKey == null && (connectionSource == EnConnectionSource.ServerExplorer
-			|| connectionSource == EnConnectionSource.EntityDataModel))
+			|| connectionSource == EnConnectionSource.HierarchyMarshaler))
 		{
 			connectionKey = uniqueDatasetKey;
 		}
@@ -1454,13 +1466,13 @@ public sealed class RctManager : IDisposable
 			rAddInternally = true;
 
 		rModifyInternally = changedTargetDatasetKey != null || !rAddInternally
-			&& connectionSource != EnConnectionSource.ServerExplorer && connectionSource != EnConnectionSource.EntityDataModel;
+			&& connectionSource != EnConnectionSource.ServerExplorer && connectionSource != EnConnectionSource.HierarchyMarshaler;
 
 		// Tag the site as being updated by the edmx wizard if it's not being done internally, which will
 		// use IVsDataConnectionUIProperties.Parse().
 		// We do this because the wizard will attempt to rename the connection and we'll pick it up in
 		// the rct on an IVsDataExplorerConnection.NodeChanged event, and reverse the rename and drop the tag.
-		if (connectionSource == EnConnectionSource.EntityDataModel && !rAddInternally && !rModifyInternally)
+		if (connectionSource == EnConnectionSource.HierarchyMarshaler && !rAddInternally && !rModifyInternally)
 			site["edmu"] = true;
 
 

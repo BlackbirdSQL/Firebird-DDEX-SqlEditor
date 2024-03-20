@@ -100,8 +100,8 @@ public static class Diag
 	/// output window.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static bool EnableTaskLog => _InternalActive == 0 && _TaskLogActive == 0
-		&& PersistentSettings.EnableTaskLog;
+	public static bool EnableTaskLog => _TaskLogActive == 0
+		&& (_InternalActive > 0 || PersistentSettings.EnableTaskLog);
 
 
 
@@ -585,8 +585,8 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Diagnostics method for Exceptions only during debug WITHOUT tasklog to prevent
-	/// recursion or when package is not sited yet
+	/// Diagnostics method for Exceptions only during debug WITHOUT secondary exceptions
+	/// to prevent recursion or when package is not sited yet.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 #if !NEWDEBUG
@@ -690,8 +690,8 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Trace method for trace breadcrumbs during debug WITHOUT tasklog to prevent
-	/// recursion or when package is not sited yet
+	/// Trace method for trace breadcrumbs during debug WITHOUT secondary exceptions
+	/// to prevent recursion or when package is not sited yet
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 #if !NEWDEBUG
@@ -732,8 +732,8 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Trace method for trace breadcrumbs during debug WITHOUT tasklog to prevent
-	/// recursion or when package is not sited yet
+	/// Trace method for trace breadcrumbs during debug WITHOUT secondary exceptions to
+	/// prevent recursion or when package is not sited yet
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 #if !NEWDEBUG
@@ -774,7 +774,7 @@ public static class Diag
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Trace method for trace breadcrumbs during debug
+	/// Trace method for trace breadcrumbs during debug.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 #if !NEWDEBUG
@@ -823,7 +823,7 @@ public static class Diag
 						? node.Object.Properties[CoreConstants.C_KeyExConnectionKey] : "Null");
 					EnConnectionSource connectionSource = (EnConnectionSource)(int)(node.Object.Properties != null
 						&& node.Object.Properties.ContainsKey(CoreConstants.C_KeyExConnectionSource)
-						? node.Object.Properties[CoreConstants.C_KeyExConnectionSource] : EnConnectionSource.Unknown);
+						? node.Object.Properties[CoreConstants.C_KeyExConnectionSource] : EnConnectionSource.None);
 
 					str += $"\n\tObject.Name: {node.Object.Name}, Object.DatasetKey: {datasetKey}, Object.ConnectionSource: {connectionSource}, Object.ConnectionKey: {connectionKey}, Object.Type: {node.Object.Type.Name}, Object.IsDeleted: {node.Object.IsDeleted}.";
 				}
@@ -1062,16 +1062,16 @@ public static class Diag
 
 		if (_OutputPane == null)
 		{
-			if (_IgnoreSettings > 0)
-				return;
-
 			NullReferenceException ex = new("OutputWindowPane is null");
 
-			lock (_LockGlobal)
+			if (_IgnoreSettings == 0)
 			{
-				_TaskLogActive++;
-				Dug(ex);
-				_TaskLogActive--;
+				lock (_LockGlobal)
+				{
+					_TaskLogActive++;
+					Dug(ex);
+					_TaskLogActive--;
+				}
 			}
 
 			throw ex;
@@ -1088,14 +1088,15 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				if (_IgnoreSettings > 0)
-					return;
-
-				lock (_LockGlobal)
+				if (_IgnoreSettings == 0)
 				{
-					_TaskLogActive++;
-					Dug(ex);
-					_TaskLogActive--;
+
+					lock (_LockGlobal)
+					{
+						_TaskLogActive++;
+						Dug(ex);
+						_TaskLogActive--;
+					}
 				}
 
 				throw ex;
@@ -1109,14 +1110,14 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				if (_IgnoreSettings > 0)
-					return;
-
-				lock (_LockGlobal)
+				if (_IgnoreSettings == 0)
 				{
-					_TaskLogActive++;
-					Dug(ex);
-					_TaskLogActive--;
+					lock (_LockGlobal)
+					{
+						_TaskLogActive++;
+						Dug(ex);
+						_TaskLogActive--;
+					}
 				}
 
 				throw ex;
@@ -1152,11 +1153,14 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				lock (_LockGlobal)
+				if (_IgnoreSettings == 0)
 				{
-					_TaskLogActive++;
-					Dug(ex);
-					_TaskLogActive--;
+					lock (_LockGlobal)
+					{
+						_TaskLogActive++;
+						Dug(ex);
+						_TaskLogActive--;
+					}
 				}
 				throw;
 			}
@@ -1173,11 +1177,14 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				lock (_LockGlobal)
+				if (_IgnoreSettings == 0)
 				{
-					_TaskLogActive++;
-					Dug(ex);
-					_TaskLogActive--;
+					lock (_LockGlobal)
+					{
+						_TaskLogActive++;
+						Dug(ex);
+						_TaskLogActive--;
+					}
 				}
 				throw;
 			}
@@ -1188,11 +1195,14 @@ public static class Diag
 			}
 			catch (Exception ex)
 			{
-				lock (_LockGlobal)
+				if (_IgnoreSettings == 0)
 				{
-					_TaskLogActive++;
-					Dug(ex);
-					_TaskLogActive--;
+					lock (_LockGlobal)
+					{
+						_TaskLogActive++;
+						Dug(ex);
+						_TaskLogActive--;
+					}
 				}
 				throw;
 			}

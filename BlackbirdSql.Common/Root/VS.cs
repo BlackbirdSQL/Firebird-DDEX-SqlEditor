@@ -15,6 +15,7 @@ using BlackbirdSql.Common.Controls.Dialogs;
 using BlackbirdSql.Common.Controls.Grid;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls;
+using BlackbirdSql.Core.Ctl.CommandProviders;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -87,7 +88,7 @@ public abstract class VS : Core.VS
 		Diag.ThrowIfNotOnUIThread();
 
 		IVsUIShell obj = Package.GetGlobalService(typeof(IVsUIShell)) as IVsUIShell;
-		Guid rclsidActive = LibraryData.CLSID_CommandSet;
+		Guid rclsidActive = CommandProperties.ClsidCommandSet;
 
 		_ = Control.MousePosition;
 		POINTS pOINTS = new POINTS

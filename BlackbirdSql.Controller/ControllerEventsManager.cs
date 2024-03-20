@@ -3,6 +3,7 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -95,6 +96,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		Controller.OnAfterOpenProjectEvent -= OnAfterOpenProject;
 		Controller.OnAfterCloseSolutionEvent -= OnAfterCloseSolution;
 		Controller.OnQueryCloseProjectEvent -= OnQueryCloseProject;
+		Controller.OnCmdUIContextChangedEvent -= OnCmdUIContextChanged;
 
 	}
 
@@ -357,6 +359,7 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		Controller.OnAfterOpenProjectEvent += OnAfterOpenProject;
 		Controller.OnAfterCloseSolutionEvent += OnAfterCloseSolution;
 		Controller.OnQueryCloseProjectEvent += OnQueryCloseProject;
+		Controller.OnCmdUIContextChangedEvent += OnCmdUIContextChanged;
 
 	}
 
@@ -456,6 +459,105 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 			Diag.Dug(ex);
 			return false;
 		}
+
+	}
+
+
+
+	bool RecursiveCheckOpenProjectItem(ProjectItem item)
+	{
+		if (UnsafeCmd.Kind(item.Kind) == "PhysicalFolder")
+		{
+			bool success = true;
+
+			foreach (ProjectItem subitem in item.ProjectItems)
+			{
+				if (!RecursiveCheckOpenProjectItem(subitem))
+					success = false;
+			}
+
+			return success;
+		}
+
+		if (!item.IsOpen || item.IsDirty)
+			return true;
+
+
+		try
+		{
+			if (item.FileCount < 1)
+				return true;
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex, item.ContainingProject.Name + ":" + item.Name);
+			return false;
+		}
+
+
+		Property link;
+
+		try
+		{
+			link = item.Properties.Item("IsLink");
+		}
+		catch
+		{
+			Diag.StackException(item.ContainingProject.Name + ":" + item.Name + " has no link property");
+			return false;
+		}
+
+		try
+		{
+			if (link == null || (bool)link.Value == true)
+				return true;
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex, item.ContainingProject.Name + ":" + item.Name);
+			return false;
+		}
+
+		string filename = item.FileNames[0].ToLowerInvariant();
+
+		if ((!filename.EndsWith(".edmx") || !PersistentSettings.AutoCloseEdmxModels)
+			&& (!filename.EndsWith(".xsd") || !PersistentSettings.AutoCloseXsdDatasets))
+		{
+			return true;
+		}
+
+		uint docCookie = 0;
+
+		try
+		{
+			docCookie = RdtManager.GetRdtCookie(item.FileNames[0]);
+		}
+		catch (Exception ex)
+		{
+			Diag.Dug(ex);
+		}
+
+
+
+		if (docCookie == 0)
+			return true;
+
+		// Tracer.Trace(GetType(), "RecursiveCheckOpenProjectItem()", "OPEN projitem: {0}, cookie: {1}, kind: {2}.",
+		//	item.FileNames[0], docCookie, item.Kind);
+
+		Controller.DisableRdtEvents();
+
+		try
+		{
+			RdtManager.HandsOffDocument(docCookie, null);
+			RdtManager.CloseDocument(__FRAMECLOSE.FRAMECLOSE_NoSave, docCookie);
+		}
+		finally
+		{
+			Controller.EnableRdtEvents();
+		}
+
+		return true;
 
 	}
 
@@ -1367,103 +1469,12 @@ public sealed class ControllerEventsManager : AbstractEventsManager
 		return VSConstants.S_OK;
 	}
 
-
-
-	bool RecursiveCheckOpenProjectItem(ProjectItem item)
+	public int OnCmdUIContextChanged(uint cookie, int fActive)
 	{
-		if (UnsafeCmd.Kind(item.Kind) == "PhysicalFolder")
-		{
-			bool success = true;
+		// Tracer.Trace(GetType(), "OnCmdUIContextChanged()", "Listing registered. SelectionMonitor: {0}, Cookie: {1}, Active: {2}.",
+		//	Controller.SelectionMonitor, cookie, fActive);
 
-			foreach (ProjectItem subitem in item.ProjectItems)
-			{
-				if (!RecursiveCheckOpenProjectItem(subitem))
-					success = false;
-			}
-
-			return success;
-		}
-
-		if (!item.IsOpen || item.IsDirty)
-			return true;
-
-
-		try
-		{
-			if (item.FileCount < 1)
-				return true;
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex, item.ContainingProject.Name + ":" + item.Name);
-			return false;
-		}
-
-
-		Property link;
-
-		try
-		{
-			link = item.Properties.Item("IsLink");
-		}
-		catch
-		{
-			Diag.StackException(item.ContainingProject.Name + ":" + item.Name + " has no link property");
-			return false;
-		}
-
-		try
-		{
-			if (link == null || (bool)link.Value == true)
-				return true;
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex, item.ContainingProject.Name + ":" + item.Name);
-			return false;
-		}
-
-		string filename = item.FileNames[0].ToLowerInvariant();
-
-		if ((!filename.EndsWith(".edmx") || !PersistentSettings.AutoCloseEdmxModels)
-			&& (!filename.EndsWith(".xsd") || !PersistentSettings.AutoCloseXsdDatasets))
-		{
-			return true;
-		}
-
-		uint docCookie = 0;
-
-		try
-		{
-			docCookie = RdtManager.GetRdtCookie(item.FileNames[0]);
-		}
-		catch (Exception ex)
-		{
-			Diag.Dug(ex);
-		}
-
-
-
-		if (docCookie == 0)
-			return true;
-
-		// Tracer.Trace(GetType(), "RecursiveCheckOpenProjectItem()", "OPEN projitem: {0}, cookie: {1}, kind: {2}.",
-		//	item.FileNames[0], docCookie, item.Kind);
-
-		Controller.DisableRdtEvents();
-
-		try
-		{
-			RdtManager.HandsOffDocument(docCookie, null);
-			RdtManager.CloseDocument(__FRAMECLOSE.FRAMECLOSE_NoSave, docCookie);
-		}
-		finally
-		{
-			Controller.EnableRdtEvents();
-		}
-
-		return true;
-
+		return VSConstants.S_OK;
 	}
 
 

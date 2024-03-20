@@ -92,9 +92,12 @@ public class VerbSite(object component) : IMenuCommandService, ISite
 
 				// Add a DesignerVerb with our VerbEventHandler
 				// The method name will appear in the command pane
+
 				cmdIdAttr = (CommandIdAttribute)cmdIdAttrs[0];
 				cmdId = new CommandID(new Guid(cmdIdAttr.CommandSetGuid), cmdIdAttr.CommandId);
-				verbs.Add(new DesignerVerb(cmdText, new EventHandler(OnDesignerVerbInvoked), cmdId));
+				DesignerVerb cmd = new(cmdText, new EventHandler(OnDesignerVerbInvoked), cmdId);
+
+				verbs.Add(cmd);
 			}
 
 			return verbs;

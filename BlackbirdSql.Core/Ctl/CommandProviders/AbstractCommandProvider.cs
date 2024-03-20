@@ -2,9 +2,7 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.Design;
-using System.Linq;
 using System.Reflection;
 using BlackbirdSql.Core.Ctl.Config;
 using BlackbirdSql.Core.Ctl.Diagnostics;
@@ -16,7 +14,6 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Framework;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
-using Microsoft.VisualStudio.Shell;
 
 
 
@@ -120,7 +117,6 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		{
 			cmd = new DataViewMenuCommand(itemId, commandId, delegate
 			{
-				// Tracer.Trace(GetType(), "CreateCommand()", "NewSqlQuery");
 				cmd.Visible = cmd.Enabled = true;
 
 				node = Site.ExplorerConnection.ConnectionNode;
@@ -131,7 +127,6 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 					cmd.Properties["GotText"] = true;
 					cmd.Properties["Text"] = label;
 				}
-
 			}, delegate
 			{
 				OnNewSqlQuery();

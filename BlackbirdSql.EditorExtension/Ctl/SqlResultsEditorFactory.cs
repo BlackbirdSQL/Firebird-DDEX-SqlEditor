@@ -2,6 +2,7 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.SqlResultsEditorFactory
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using BlackbirdSql.Common;
@@ -20,10 +21,10 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace BlackbirdSql.EditorExtension.Ctl;
 
-
 [Guid(LibraryData.SqlResultsEditorFactoryGuid)]
 [ProvideMenuResource("Menus.ctmenu", 1)]
 [Name("BlackbirdSql Results")]
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Uses Diag.ThrowIfNotOnUIThread()")]
 
 
 public sealed class SqlResultsEditorFactory : AbstruseEditorFactory

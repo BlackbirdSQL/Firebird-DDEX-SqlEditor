@@ -5,11 +5,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
-using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.EditorExtension;
-using EnvDTE80;
-using Microsoft.VisualStudio.RpcContracts;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 

@@ -6,11 +6,15 @@
 	<Extern href="vsshlids.h"/>
 
 
-
-
-	<Commands package="PackageGuid">
+	<Commands package="AsyncPackageGuid">
 
 		<Menus>
+			<Menu guid="CommandSetGuid" id="MenuIdToplevelMenu" type="Menu">
+				<Strings>
+					<ButtonText>Top Level Menu</ButtonText>
+				</Strings>
+			</Menu>
+
 			<!-- The SqlEditor Toolbar -->
 			<Menu guid="CommandSetGuid" id="MenuIdEditorToolbar" type="Toolbar">
 				<CommandFlag>DefaultDocked</CommandFlag>
@@ -70,7 +74,7 @@
 			<!-- Explorer scope -->
 			<Group guid="CommandSetGuid" id="MenuIdSeRootGroup" priority="0x0600">
 				<!--<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />-->
-				<Parent guid="guid_SE_MenuGroup" id="IDM_SE_CONTEXT_STANDARD" />
+				<Parent guid="SeRootGuid" id="IDM_SE_CONTEXT_STANDARD" />
 			</Group>
 
 			<!-- Object Node scope -->
@@ -98,7 +102,8 @@
 				<Parent guid="CommandSetGuid" id="MenuIdResultsToGroup" />
 			</Group>
 
-			<Group guid="CommandSetGuid" id="MenuIdReusableGroup" priority="0x0600">
+			
+			<Group guid="CommandSetGuid" id="MenuIdReusableGroup" priority="0xf600">
 				<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
 			</Group>
 		</Groups>
@@ -113,6 +118,9 @@
 			<Button guid="CommandSetGuid" id="CmdIdExecuteQuery" priority="0x0000" type="Button">
 				<Parent guid="CommandSetGuid" id="CtlrIdExecuteGroup" />
 				<Icon guid="ImagesGuid" id="ImgExecuteQuery" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Execute Query</ButtonText>
 					<CommandName>ExecuteQuery</CommandName>
@@ -121,19 +129,21 @@
 			<Button guid="CommandSetGuid" id="CmdIdExecuteTtsQuery" priority="0x0020" type="Button">
 				<Parent guid="CommandSetGuid" id="CtlrIdExecuteGroup" />
 				<Icon guid="ImagesGuid" id="ImgExecuteTtsQuery" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Execute with TTS</ButtonText>
 					<CommandName>ExecuteTransactionQuery</CommandName>
 				</Strings>
 			</Button>
 
-
-
-
-
 			<Button guid="CommandSetGuid" id="CmdIdCancelQuery" priority="0x0020" type="Button">
 				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
 				<Icon guid="ImagesGuid" id="ImgCancelQuery" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Cancel Query</ButtonText>
 				</Strings>
@@ -141,6 +151,8 @@
 			<Button guid="CommandSetGuid" id="CmdIdTransactionCommit" priority="0x0030" type="Button">
 				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
 				<Icon guid="ImagesGuid" id="ImgTransactionCommit" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Commit</ButtonText>
@@ -149,6 +161,8 @@
 			<Button guid="CommandSetGuid" id="CmdIdTransactionRollback" priority="0x0035" type="Button">
 				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
 				<Icon guid="ImagesGuid" id="ImgTransactionRollback" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
 				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Rollback</ButtonText>
@@ -157,6 +171,9 @@
 			<Button guid="CommandSetGuid" id="CmdIdShowEstimatedPlan" priority="0x0040" type="Button">
 				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
 				<Icon guid="ImagesGuid" id="ImgShowEstimatedPlan" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Show Estimated Execution Plan</ButtonText>
 				</Strings>
@@ -164,6 +181,9 @@
 			<Button guid="CommandSetGuid" id="CmdIdConnect" priority="0x0050" type="Button">
 				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
 				<Icon guid="ImagesGuid" id="ImgConnect" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Connect</ButtonText>
 				</Strings>
@@ -171,6 +191,9 @@
 			<Button guid="CommandSetGuid" id="CmdIdDisconnect" priority="0x0060" type="Button">
 				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
 				<Icon guid="ImagesGuid" id="ImgDisconnect" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Disconnect</ButtonText>
 				</Strings>
@@ -178,22 +201,19 @@
 			<Button guid="CommandSetGuid" id="CmdIdChangeConnection" priority="0x0070" type="Button">
 				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
 				<Icon guid="ImagesGuid" id="ImgChangeConnection" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Modify Connection</ButtonText>
 				</Strings>
 			</Button>
-			<!--
-			<Button guid="CommandSetGuid" id="CmdIdChangeConnection" priority="0x0080" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
-				<Icon guid="ImagesGuid" id="ImgConnect" />
-				<Strings>
-					<ButtonText>Change Connection</ButtonText>
-				</Strings>
-			</Button>
-			-->
 			<Button guid="CommandSetGuid" id="CmdIdNewSqlQuery" priority="0x0120" type="Button">
 				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
 				<Icon guid="ImagesGuid" id="ImgNewSqlQuery" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>New Query</ButtonText>
 				</Strings>
@@ -201,6 +221,9 @@
 			<Button guid="CommandSetGuid" id="CmdIdToggleExecutionPlan" priority="0x0140" type="Button">
 				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
 				<Icon guid="ImagesGuid" id="ImgToggleExecutionPlan" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Include Actual Execution Plan on next Execution</ButtonText>
 				</Strings>
@@ -208,6 +231,9 @@
 			<Button guid="CommandSetGuid" id="CmdIdToggleClientStatistics" priority="0x0150" type="Button">
 				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
 				<Icon guid="ImagesGuid" id="ImgToggleClientStatistics" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Include Client Statistics on next Execution</ButtonText>
 				</Strings>
@@ -217,6 +243,9 @@
 			<Button guid="CommandSetGuid" id="CmdIdResultsAsGrid" priority="0x0000" type="Button">
 				<Parent guid="CommandSetGuid" id="CtlrIdResultsToGroup" />
 				<Icon guid="ImagesGuid" id="ImgResultsAsGrid" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Results As Grid</ButtonText>
 					<CommandName>ResultsAsGrid</CommandName>
@@ -225,6 +254,9 @@
 			<Button guid="CommandSetGuid" id="CmdIdResultsAsText" priority="0x0020" type="Button">
 				<Parent guid="CommandSetGuid" id="CtlrIdResultsToGroup" />
 				<Icon guid="ImagesGuid" id="ImgResultsAsText" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Results As Text</ButtonText>
 					<CommandName>ResultsAsText</CommandName>
@@ -233,6 +265,9 @@
 			<Button guid="CommandSetGuid" id="CmdIdResultsAsFile" priority="0x0040" type="Button">
 				<Parent guid="CommandSetGuid" id="CtlrIdResultsToGroup" />
 				<Icon guid="ImagesGuid" id="ImgResultsAsFile" />
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Results As File</ButtonText>
 					<CommandName>ResultsAsFile</CommandName>
@@ -249,6 +284,7 @@
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Intellisense Enabled</ButtonText>
 				</Strings>
@@ -257,6 +293,7 @@
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Execution Settings...</ButtonText>
 				</Strings>
@@ -265,23 +302,49 @@
 
 
 			<!-- MenuIdSeRootGroup -->
-			<Button guid="CommandSetGuid" id="CmdIdValidateSolution" priority="0x0120" type="Button">
+			<Button guid="CommandSetGuid" id="CmdIdNewSqlQuery" priority="0x0120" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdSeRootGroup" />
+				<Icon guid="ImagesGuid" id="ImgNewSqlQuery" />
+				<CommandFlag>TextChanges</CommandFlag>
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
+				<Strings>
+					<ButtonText>New Sql Query</ButtonText>
+					<CommandName>CommandNewSqlQueryUniversal</CommandName>
+				</Strings>
+			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdNewDesignerQuery" priority="0x0125" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdSeRootGroup" />
+				<Icon guid="ImagesGuid" id="ImgNewDesignerQuery" />
+				<CommandFlag>TextChanges</CommandFlag>
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
+				<Strings>
+					<ButtonText>New Designer Query</ButtonText>
+					<CommandName>CommandNewDesignerQueryUniversal</CommandName>
+				</Strings>
+			</Button>
+			<Button guid="CommandSetGuid" id="CmdIdValidateSolution" priority="0x0130" type="Button">
 				<Parent guid="CommandSetGuid" id="MenuIdSeRootGroup" />
 				<Icon guid="ImagesGuid" id="ImgExecuteQuery" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Validate Solution Configurations</ButtonText>
 					<CommandName>CommandValidateSolutionUniversal</CommandName>
 				</Strings>
 			</Button>
-			<Button guid="CommandSetGuid" id="CmdIdTraceRct" priority="0x0130" type="Button">
+			<Button guid="CommandSetGuid" id="CmdIdTraceRct" priority="0x0135" type="Button">
 				<Parent guid="CommandSetGuid" id="MenuIdSeRootGroup" />
 				<Icon guid="ImagesGuid" id="ImgExecuteQuery" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Debug Trace Rct</ButtonText>
 					<CommandName>CommandTraceRctUniversal</CommandName>
@@ -297,6 +360,7 @@
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Open SQL Query</ButtonText>
 					<CommandName>CommandTextOpenScriptUniversal</CommandName>
@@ -308,6 +372,7 @@
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Open Alter SQL Query</ButtonText>
 					<CommandName>CommandTextOpenAlterScriptUniversal</CommandName>
@@ -319,6 +384,7 @@
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>New Sql Query</ButtonText>
 					<CommandName>CommandNewSqlQueryUniversal</CommandName>
@@ -330,6 +396,7 @@
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Retrieve Design Data</ButtonText>
 					<CommandName>CommandRetrieveDesignerUniversal</CommandName>
@@ -341,6 +408,7 @@
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>New Designer Query</ButtonText>
 					<CommandName>CommandNewDesignerQueryUniversal</CommandName>
@@ -356,6 +424,7 @@
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Open SQL Query</ButtonText>
 					<CommandName>CommandTextOpenScriptUniversal</CommandName>
@@ -367,6 +436,7 @@
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>New Sql Query</ButtonText>
 					<CommandName>CommandNewSqlQueryUniversal</CommandName>
@@ -378,6 +448,7 @@
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>Retrieve Design Data</ButtonText>
 					<CommandName>CommandRetrieveDesignerUniversal</CommandName>
@@ -389,22 +460,43 @@
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultDisabled</CommandFlag>
 				<Strings>
 					<ButtonText>New Designer Query</ButtonText>
 					<CommandName>CommandNewDesignerQueryUniversal</CommandName>
 				</Strings>
 			</Button>
 
+		<!-- MenuIdReusableGroup -->
 
-
-			<!-- Reset User Options verb -->
-			<Button guid="CommandSetGuid" id="CmdIdResetPageOptions" priority="0x0100" type="Button">
+			<Button guid="CommandSetGuid" id="CmdIdCycleToNextTab" priority="0x0110" type="Button">
 				<Parent guid="CommandSetGuid" id="MenuIdReusableGroup" />
+				<CommandFlag>CommandWellOnly</CommandFlag>
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<!-- 
+				<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />
+				<CommandFlag>DefaultDisabled</CommandFlag>
+				-->
 				<Strings>
-					<ButtonText>Reset</ButtonText>
+					<ButtonText>CycleToNextTab</ButtonText>
+					<CommandName>CommandCycleToNextEditorTab</CommandName>
 				</Strings>
 			</Button>
-
+			<Button guid="CommandSetGuid" id="CmdIdCycleToPrevious" priority="0x0120" type="Button">
+				<Parent guid="CommandSetGuid" id="MenuIdReusableGroup" />
+				<CommandFlag>CommandWellOnly</CommandFlag>
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<!-- 
+				<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />
+				<CommandFlag>DefaultDisabled</CommandFlag>
+				-->
+				<Strings>
+					<ButtonText>CycleToPreviousTab</ButtonText>
+					<CommandName>CommandCycleToPreviousEditorTab</CommandName>
+				</Strings>
+			</Button>
 
 		</Buttons>
 
@@ -415,7 +507,12 @@
 		</Bitmaps>
 	</Commands>
 
-
+	<KeyBindings>
+		<KeyBinding guid="CommandSetGuid" id="CmdIdExecuteQuery" key1="E" mod1="Control Shift" editor="DslEditorFactoryGuid" />
+		<KeyBinding guid="CommandSetGuid" id="CmdIdExecuteTtsQuery" key1="VK_F5" mod1="Alt" editor="DslEditorFactoryGuid" />
+		<KeyBinding guid="CommandSetGuid" id="CmdIdCycleToNextTab" key1="VK_F6" editor="DslEditorFactoryGuid" />
+		<KeyBinding guid="CommandSetGuid" id="CmdIdCycleToPrevious" key1="VK_F6" mod1="Shift" editor="DslEditorFactoryGuid" />
+	</KeyBindings>
 
 	<CommandPlacements>
 
@@ -438,16 +535,27 @@
 		<CommandPlacement guid="CommandSetGuid" id="CmdIdQuerySettings" priority="0x0002" >
 			<Parent guid="CommandSetGuid" id="MenuIdEditorContextGroup"/>
 		</CommandPlacement>
+
+		<!-- 
+		<CommandPlacement guid="CommandSetGuid" id="MenuIdReusableGroup" priority="0xf600">
+			<Parent guid="CommandSetGuid" id="MenuIdToplevelMenu" />
+		</CommandPlacement>
+		-->
 	</CommandPlacements>
+
+
 	<Symbols>
 		<!-- This is the package guid. -->
-		<GuidSymbol name="PackageGuid" value="{0B100D64-7249-4208-8748-2810B511E90C}" />
+		<GuidSymbol name="AsyncPackageGuid" value="{7787981E-E42A-412F-A42B-9AD07A7DE169}" />
 
+		<!-- Editor guids -->
+		<GuidSymbol name="DslEditorFactoryGuid" value="{D5797F62-22B1-41BC-9B8C-E248EE895966}" />
+		<GuidSymbol name="DslEditorEncodedFactoryGuid" value="{A548D241-D8B6-4219-9B07-C69733805F73}" />
 
 		<!-- Server Explorer guid -->
 		<GuidSymbol name="SeRootGuid" value="{74D21310-2AEE-11D1-8BFB-00A0C90F26F7}">
 			<!-- server explorer - root node -->
-			<IDSymbol name="IDMX_DV_SERVER_NODE" value="0x503" />
+			<IDSymbol name="IDM_SE_CONTEXT_STANDARD" value="0x503" />
 		</GuidSymbol>
 
 		<!-- Server Explorer nodes guid -->
@@ -464,7 +572,7 @@
 		</GuidSymbol>
 
 		<!-- This is the guid used to group the menu commands together -->
-		<GuidSymbol name="CommandSetGuid" value="{13CD7876-FC84-4DDA-91BF-4CDBF893B134}">
+		<GuidSymbol name="CommandSetGuid" value="{C6972FD9-9586-438A-800E-1E72AC1FE4E6}">
 			<!-- 49665 -->
 			<IDSymbol name="MenuIdToplevelMenu" value="0xC201" />
 			<!-- 20480 -->

@@ -2,17 +2,20 @@
 
 ## Change log
 
-### v11.1.1.1001 (build for v11.1.1.2)
-__New__</br>
+### v11.1.1.1002 (build for v11.1.1.2)
+__New/ Enhancements__</br>
+-- Linkage tables are no longer rebuilt if modifications to a connection will have no affect on them.</br> 
 -- Equivalent connections with shorter names in project app.configs are given precedence when loading connections into the running connection table. This is to try and avoid equivalent connections with long names allocated by the edmx wizard.</br>
+-- For the SqlEditor, implemented some shortcut key combinations that correspond with the SqlServer SqlEditor shortcut keys.</br>
 __Fixes__</br>
--- 
+-- Fixed issue where the `New Query` command was appearing in non-Firebird Server Explorer nodes and the `Reset to defaults` user options command was appearing in the VS Tools menu.</br>
+-- Fixed issue where active connections in SqlEditor documents were not being updated if the connection was modified outside of an editor document. __Warning__: Any modifications to connections will cause the connection to be renewed in all documents where it is active. This includes modifying the connection through Server Explorer, an SqlEditor window and the `New connection` option in the edmx wizard, but does not include connections modified within Project Settings. Any active TTS transactions where the connection is active will be cleared on renewal. 
 
 ### v11.1.1.1
 __New__</br>
 -- Implemented a user option under `DDEX Provider > General > Validation` to Enable/Disable the recovery procedure for provider factories that have been placed into an error state by the IDE after loading late (Defaults to `Enabled`. This will revert to `Disabled` once Npgsql is fixed.).</br>
 __Fixes__</br>
--- Implemented autoload UIContext for edmx models and xsd datasets that have been left open when a project is closed. The design interfaces should no longer require reopening due to an early load error.
+-- Implemented autoload DesignMode UIContext for edmx models and xsd datasets that have been left open when a project is closed. The design interfaces should no longer require reopening due to an early load error.
 
 ### v11.1.1.0
 __New__</br>

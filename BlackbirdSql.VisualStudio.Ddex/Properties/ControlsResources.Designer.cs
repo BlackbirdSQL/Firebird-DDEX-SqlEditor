@@ -275,7 +275,7 @@ namespace BlackbirdSql.VisualStudio.Ddex.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to WARNING: The edmx wizard is slow. Procedures may take a long time to complete on slow networks..
+        ///   Looks up a localized string similar to WARNING: The wizard is slow. Design procedures may take a long time to complete on slow networks. Modifying connections here can take up to 90 seconds..
         /// </summary>
         internal static string TConnectionUIControl_DatasetKeyDescription_EntityDataModel {
             get {

@@ -358,7 +358,7 @@
     <value>chkDontShow</value>
   </data>
   <data name="&gt;&gt;chkDontShow.Type" xml:space="preserve">
-    <value>BlackbirdSql.Core.Controls.MessageBoxDialog+WrappingCheckBox, BlackbirdSql.Core, Version=11.1.1.1001, Culture=neutral, PublicKeyToken=92bb64ec985b4c9d</value>
+    <value>BlackbirdSql.Core.Controls.MessageBoxDialog+WrappingCheckBox, BlackbirdSql.Core, Version=11.1.1.1002, Culture=neutral, PublicKeyToken=92bb64ec985b4c9d</value>
   </data>
   <data name="&gt;&gt;chkDontShow.Parent" xml:space="preserve">
     <value>pnlForm</value>

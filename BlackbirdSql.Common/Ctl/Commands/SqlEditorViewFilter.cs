@@ -9,13 +9,15 @@ using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Ctl.Interfaces;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Ctl.Enums;
-
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 
 
+
 namespace BlackbirdSql.Common.Ctl.Commands;
+
 
 public class SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow) : AbstractViewFilter
 {
@@ -27,7 +29,7 @@ public class SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow) : AbstractV
 		AbstractSqlEditorCommand sqlEditorCommand = null;
 
 		EnCommandSet cmd = (EnCommandSet)cmdId;
-		if (pguidCmdGroup == LibraryData.CLSID_CommandSet)
+		if (pguidCmdGroup == CommandProperties.ClsidCommandSet)
 		{
 			switch (cmd)
 			{
@@ -114,7 +116,7 @@ public class SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow) : AbstractV
 		for (int i = 0; i < cCmds; i++)
 		{
 			EnCommandSet cmdID = (EnCommandSet)prgCmds[i].cmdID;
-			if (pguidCmdGroup == LibraryData.CLSID_CommandSet)
+			if (pguidCmdGroup == CommandProperties.ClsidCommandSet)
 			{
 				AbstractSqlEditorCommand sqlEditorCommand = null;
 				switch (cmdID)

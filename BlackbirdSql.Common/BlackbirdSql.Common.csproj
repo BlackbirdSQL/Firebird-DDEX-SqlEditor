@@ -669,11 +669,9 @@
 	  <Compile Include="Ctl\Structs\UIRECT.cs" />
 	</ItemGroup>
 
-
 	<ItemGroup>
 	  <Content Include="blackbirdsql.ico" />
 	</ItemGroup>
-
 
 	<ItemGroup>
 	  <None Include="Controls\Graphing\CustomZoomDlg.resx" />
@@ -697,88 +695,12 @@
 	  <EmbeddedResource Include="Properties\SharedResx.resx" />
 	</ItemGroup>
 
-
 	<ItemGroup>
 	  <Reference Include="Accessibility" />
 	  <Reference Include="PresentationFramework" />
 	  <Reference Include="UIAutomationProvider" />
 	  <Reference Include="UIAutomationTypes" />
 	</ItemGroup>
-
-
-	<ItemGroup>
-	  <Compile Update="Properties\ControlsResources.Designer.cs">
-	    <DependentUpon>ControlsResources.resx</DependentUpon>
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	  </Compile>
-	  <Compile Update="Controls\Widgets\AnimatedStatusStripItem.cs" />
-	  <Compile Update="Controls\Grid\DlgGridControl.cs" />
-	  <Compile Update="Controls\Grid\EmbeddedComboBox.cs" />
-	  <Compile Update="Controls\Grid\EmbeddedSpinBox.cs" />
-	  <Compile Update="Controls\Grid\EmbeddedTextBox.cs" />
-	  <Compile Update="Controls\Grid\GridControl.cs" />
-	  <Compile Update="Controls\Grid\GridPrintDocument.cs">
-	    <SubType>Component</SubType>
-	  </Compile>
-	  <Compile Update="Controls\AbstractTextEditorControl.cs" />
-	  <Compile Update="Controls\ResultsPanels\AbstractResultsPanel.cs" />
-	  <Compile Update="Controls\ResultsPanels\GridResultsGrid.cs" />
-	  <Compile Update="Controls\ResultsPanels\GridResultsPanel.cs" />
-	  <Compile Update="Controls\ResultsPanels\AbstractGridResultsPanel.cs" />
-	  <Compile Update="Controls\ResultsPanels\ShellTextViewControl.cs" />
-	  <Compile Update="Controls\ResultsPanels\StatisticsDlgGridControl.cs" />
-	  <Compile Update="Controls\ResultsPanels\StatisticsPanel.cs" />
-	  <Compile Update="Controls\ResultsPanels\TextResultsViewContol.cs" />
-	  <Compile Update="Controls\ResultsPanels\VSTextEditorPanel.cs" />
-	  <Compile Update="Properties\ExceptionsResources.Designer.cs">
-	    <DependentUpon>ExceptionsResources.resx</DependentUpon>
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	  </Compile>
-	  <Compile Update="Controls\Dialogs\FileEncodingDlg.cs" />
-	  <Compile Update="Controls\Widgets\MultiControlPanel.cs" />
-	  <Compile Update="Controls\Widgets\QESplitter.cs" />
-	  <Compile Update="Properties\QEResources.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>QEResources.resx</DependentUpon>
-	  </Compile>
-	  <Compile Update="Properties\SharedResx.Designer.cs">
-	    <DependentUpon>SharedResx.resx</DependentUpon>
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	  </Compile>
-	  <Compile Update="Controls\Widgets\SplitViewSplitterStrip.cs" />
-	  <Compile Update="Controls\ToolbarHost.cs" />
-	  <Compile Update="Controls\Widgets\Splitter.cs" />
-	  <Compile Update="Controls\Widgets\ToolStripStatusLabelWithMaxLimit.cs" />
-	</ItemGroup>
-
-
-	<ItemGroup>
-	  <EmbeddedResource Update="Properties\ControlsResources.resx">
-	    <SubType>Designer</SubType>
-	    <LastGenOutput>ControlsResources.Designer.cs</LastGenOutput>
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Properties\ExceptionsResources.resx">
-	    <LastGenOutput>ExceptionsResources.Designer.cs</LastGenOutput>
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Controls\Dialogs\FileEncodingDlg.resx">
-	    <SubType>Designer</SubType>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Properties\QEResources.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>QEResources.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	  <EmbeddedResource Update="Properties\SharedResx.resx">
-	    <LastGenOutput>SharedResx.Designer.cs</LastGenOutput>
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	  </EmbeddedResource>
-	</ItemGroup>
-
 
 	<ItemGroup>
 	  <ProjectReference Include="..\BlackbirdSql.Core\BlackbirdSql.Core.csproj" />

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Model;
@@ -32,7 +31,7 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 	IEnumerable, IVsDataConnectionUIProperties, ICustomTypeDescriptor, INotifyPropertyChanged
 {
 	private CsbAgent _ConnectionStringBuilder;
-	private EnConnectionSource _ConnectionSource = EnConnectionSource.None;
+	private EnConnectionSource _ConnectionSource = EnConnectionSource.Undefined;
 
 
 	protected readonly object _LockObject = new object();
@@ -88,7 +87,7 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 		}
 	}
 
-	
+
 
 	public virtual bool IsExtensible => !ConnectionStringBuilder.IsFixedSize;
 
@@ -123,77 +122,22 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 
 	/// <summary>
 	/// For connection properties we don't care about any other Connection Sources
-	/// except Application and EntityDataModel being correct.
+	/// except Application and HierarchyMarshaler being correct.
 	/// </summary>
 	protected EnConnectionSource ConnectionSource
 	{
 		get
 		{
-			if (RctManager.AdvisingExplorerEvents)
-				return EnConnectionSource.ServerExplorer;
 
-			if (_ConnectionSource == EnConnectionSource.None)
-			{
-				_ConnectionSource = EnConnectionSource.Unknown;
+			if (_ConnectionSource != EnConnectionSource.Undefined)
+				return _ConnectionSource;
 
-				string objectKind = ApcManager.ActiveWindowObjectKind;
-				if (objectKind == null)
-					return EnConnectionSource.ServerExplorer;
-
-				string objectType = ApcManager.ActiveWindowObjectType;
-				if (objectType == null)
-					return EnConnectionSource.ServerExplorer;
-
-				string appGuid = VSConstants.CLSID.VsTextBuffer_string;
-				string solutionExplorerGuid
-					= VSConstants.StandardToolWindows.SolutionExplorer.ToString("B", CultureInfo.InvariantCulture);
-				string outputToolWindowGuid = VSConstants.StandardToolWindows.Output_string;
-				string seGuid = VSConstants.StandardToolWindows.ServerExplorer.ToString("B", CultureInfo.InvariantCulture);
-
-				// Definitely ServerExplorer
-				if (objectKind.Equals(seGuid, StringComparison.InvariantCultureIgnoreCase))
-				{
-					_ConnectionSource = EnConnectionSource.ServerExplorer;
-				}
-				// Probably ServerExplorer
-				else if (objectKind.Equals(outputToolWindowGuid, StringComparison.InvariantCultureIgnoreCase)
-					&& objectType.Equals("System.__ComObject", StringComparison.InvariantCultureIgnoreCase))
-				{
-					_ConnectionSource = EnConnectionSource.ServerExplorer;
-				}
-				// Probably Session
-				else if (objectKind.Equals(appGuid, StringComparison.InvariantCultureIgnoreCase)
-					&& objectType.Equals("System.__ComObject", StringComparison.InvariantCultureIgnoreCase))
-				{
-					_ConnectionSource = EnConnectionSource.Session;
-				}
-				// Definitely Session
-				else if (objectKind.Equals(appGuid, StringComparison.InvariantCultureIgnoreCase)
-					&& objectType.StartsWith("BlackbirdSql.", StringComparison.InvariantCultureIgnoreCase))
-				{
-					_ConnectionSource = EnConnectionSource.Session;
-				}
-				// Most likely Application.
-				else if (objectKind.Equals(appGuid, StringComparison.InvariantCultureIgnoreCase)
-					&& objectType.Equals("System.ComponentModel.Design.DesignerHost",
-					StringComparison.InvariantCultureIgnoreCase))
-				{
-					_ConnectionSource = EnConnectionSource.Application;
-				}
-				// Most likely EntityDataModel
-				else if (objectKind.Equals(solutionExplorerGuid, StringComparison.InvariantCultureIgnoreCase)
-					&& objectType.Equals("Microsoft.VisualStudio.PlatformUI.UIHierarchyMarshaler",
-					StringComparison.InvariantCultureIgnoreCase))
-				{
-					_ConnectionSource = EnConnectionSource.EntityDataModel;
-				}
-
-				// Else Unknown
-			}
+			_ConnectionSource = UnsafeCmd.GetConnectionSource();
 
 			return _ConnectionSource;
 		}
 	}
+
 
 	protected CsbAgent ConnectionStringBuilder
 	{
@@ -210,6 +154,15 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 
 	public event PropertyChangedEventHandler PropertyChanged;
 
+
+
+	public void SetConnectionSource(EnConnectionSource connectionSource)
+	{
+		_ConnectionSource = connectionSource;
+	}
+
+
+
 	public virtual void Reset()
 	{
 		lock (_LockObject)
@@ -218,6 +171,13 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 		OnPropertyChanged(new PropertyChangedEventArgs(string.Empty));
 	}
 
+
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+
+
 	public virtual void Parse(string connectionString)
 	{
 		lock (_LockObject)
@@ -225,7 +185,7 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 			ConnectionStringBuilder.ConnectionString = connectionString;
 
 			if (ConnectionSource == EnConnectionSource.Application
-				|| ConnectionSource == EnConnectionSource.EntityDataModel)
+				|| ConnectionSource == EnConnectionSource.HierarchyMarshaler)
 			{
 				foreach (Describer describer in CsbAgent.AdvancedKeys)
 				{
@@ -233,7 +193,13 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 						ConnectionStringBuilder.Remove(describer.Key);
 				}
 
-				if (ConnectionSource == EnConnectionSource.EntityDataModel)
+				// Connection dialogs spawned from a UIHierarchyMarshaler can misbehave and
+				// corrupt our connection nodes, which we repair. So the
+				// IVsDataConnectionProperties implementation of this class is identified
+				// with an "edmx" property.
+				// The descendant IVsDataConnectionUIProperties implementation will be
+				// identified with an "edmu" property.
+				if (ConnectionSource == EnConnectionSource.HierarchyMarshaler)
 				{
 					ConnectionStringBuilder["edmx"] = true;
 					ConnectionStringBuilder.Remove("edmu");

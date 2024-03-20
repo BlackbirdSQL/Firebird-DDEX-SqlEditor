@@ -95,6 +95,29 @@ static class ExtensionMembers
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Returns the decrypted ConnectionString of an <see cref="IVsDataConnection"/>.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static string DecryptedConnectionString(this IVsDataConnection value)
+	{
+		return DataProtection.DecryptString(value.EncryptedConnectionString);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns the decrypted ConnectionString of an
+	/// <see cref="IVsDataExplorerConnection"/>.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static string DecryptedConnectionString(this IVsDataExplorerConnection value)
+	{
+		return DataProtection.DecryptString(value.EncryptedConnectionString);
+	}
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Finds the ExplorerConnection ConnectionKey of an IVsDataConnectionProperties Site
 	/// else null if not found.
 	/// </summary>
@@ -114,16 +137,12 @@ static class ExtensionMembers
 	// ---------------------------------------------------------------------------------
 	public static string FindConnectionKey(this IVsDataExplorerConnectionManager value, string connectionString, bool encrypted)
 	{
-		string encryptedConnectionString = encrypted ? connectionString : DataProtection.EncryptString(connectionString);
-
-		Guid clsidProvider = new(SystemData.ProviderGuid);
-		IVsDataExplorerConnection explorerConnection = value.FindConnection(clsidProvider, encryptedConnectionString, true);
+		(_, IVsDataExplorerConnection explorerConnection) = value.SearchExplorerConnectionEntry(connectionString, encrypted);
 
 		if (explorerConnection == null)
 			return null;
 
 		return explorerConnection.GetConnectionKey();
-
 	}
 
 
@@ -577,6 +596,19 @@ static class ExtensionMembers
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
+	/// Sets the encrypted ConnectionString of an <see cref="IVsDataConnection"/> using
+	/// an unencrypted string.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static void SetConnectionString(this IVsDataConnection value, string connectionString)
+	{
+		value.EncryptedConnectionString = DataProtection.EncryptString(connectionString);
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
 	/// Mimicks the search performed by assignment to <see cref="ListControl.SelectedValue"/> where no <see cref="ListControl.ValueMember"/> exists.
 	/// </summary>
 	/// <param name="comboBox"></param>
@@ -863,7 +895,7 @@ static class ExtensionMembers
 			if (!(clsidProvider == pair.Value.Provider))
 				continue;
 
-			csa = new(DataProtection.DecryptString(pair.Value.EncryptedConnectionString), false);
+			csa = new(pair.Value.DecryptedConnectionString(), false);
 
 			if (csa.SafeDatasetMoniker == connectionUrl)
 			{

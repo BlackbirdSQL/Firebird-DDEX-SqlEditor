@@ -21,9 +21,9 @@ using BlackbirdSql.Common.Model.QueryExecution;
 using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls.Interfaces;
+using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Enums;
-
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Editor;
@@ -610,7 +610,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 
 	public override int HandleExec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (pguidCmdGroup == LibraryData.CLSID_CommandSet)
+		if (pguidCmdGroup == CommandProperties.ClsidCommandSet)
 		{
 			AbstractSqlEditorCommand sqlEditorCommand = null;
 
@@ -657,7 +657,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 		for (int i = 0; i < cCmds; i++)
 		{
 			uint cmdID = prgCmds[i].cmdID;
-			if (pguidCmdGroup == LibraryData.CLSID_CommandSet)
+			if (pguidCmdGroup == CommandProperties.ClsidCommandSet)
 			{
 				AbstractSqlEditorCommand sqlEditorCommand = null;
 				EnCommandSet cmd = (EnCommandSet)cmdID;
@@ -1108,7 +1108,7 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 				throw ex;
 			}
 
-			Guid clsidCmdSet = LibraryData.CLSID_CommandSet;
+			Guid clsidCmdSet = CommandProperties.ClsidCommandSet;
 			uint menuId;
 
 

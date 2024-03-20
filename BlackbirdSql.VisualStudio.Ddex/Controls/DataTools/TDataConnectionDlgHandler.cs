@@ -12,8 +12,10 @@ using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls.Interfaces;
+using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.VisualStudio.Ddex.Controls.Enums;
 using BlackbirdSql.VisualStudio.Ddex.Controls.Events;
+using BlackbirdSql.VisualStudio.Ddex.Ctl;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.DataTools;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using Microsoft.Data.ConnectionUI;
@@ -1215,7 +1217,7 @@ public class TDataConnectionDlgHandler : IBDataConnectionDlgHandler
 			IDataConnectionUIControl dataConnectionUIControl = null; //  _VsDataProvider.TryCreateObject<IDataConnectionUIControl>(dataSourceGuid);
 			if (dataConnectionUIControl == null)
 			{
-				IVsDataConnectionUIControl vsDataConnectionUIControl = new TConnectionUIControl();
+				IVsDataConnectionUIControl vsDataConnectionUIControl = new TConnectionUIControl(EnConnectionSource.Session);
 				// _VsDataProvider.TryCreateObject<IVsDataConnectionUIControl>(dataSourceGuid);
 
 				if (vsDataConnectionUIControl != null)
@@ -1235,9 +1237,21 @@ public class TDataConnectionDlgHandler : IBDataConnectionDlgHandler
 				IVsDataConnectionUIProperties vsDataConnectionUIProperties = _VsDataProvider.TryCreateObject<IVsDataConnectionUIProperties>(source);
 				if (vsDataConnectionUIProperties != null)
 				{
+					if (vsDataConnectionUIProperties is TConnectionUIProperties uiConnectionProperties)
+						uiConnectionProperties.SetConnectionSource(EnConnectionSource.Session);
+
 					dataConnectionProperties = new TiDataConnectionUIProperties(source, vsDataConnectionUIProperties, _VsDataProvider);
 				}
 			}
+			else
+			{
+				IVsDataConnectionUIProperties vsDataConnectionUIProperties = (IVsDataConnectionUIProperties)Reflect.GetFieldValue(dataConnectionProperties,
+					"_connectionUIProperties", BindingFlags.Instance | BindingFlags.NonPublic);
+
+				if (vsDataConnectionUIProperties is TConnectionUIProperties uiConnectionProperties)
+					uiConnectionProperties.SetConnectionSource(EnConnectionSource.Session);
+			}
+
 			return dataConnectionProperties;
 		}
 

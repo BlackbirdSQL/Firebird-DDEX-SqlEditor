@@ -485,6 +485,28 @@ public class Moniker
 
 
 
+	public static string BuildDocumentMoniker(IVsDataExplorerNode node,
+	ref IList<string> identifierArray, EnModelTargetType targetType, bool isUnique)
+	{
+		Moniker moniker = new(node, targetType, isUnique);
+		identifierArray = moniker.Identifier;
+
+		return moniker.BuildDocumentMoniker(true, true);
+	}
+
+
+
+	public static string BuildDocumentMoniker(string server, string database, EnModelObjectType elementType,
+	ref IList<string> identifierArray, EnModelTargetType targetType, bool isUnique)
+	{
+		Moniker moniker = new(server, database, elementType, identifierArray, targetType, isUnique);
+		identifierArray = moniker.Identifier;
+
+		return moniker.BuildDocumentMoniker(true, true);
+	}
+
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Appends the ServerExplorer and SqlTemporaryFiles folders to the provided
@@ -504,28 +526,6 @@ public class Moniker
 		// Tracer.Trace(typeof(Moniker), "ConstructFullTemporaryDirectory()", "TemporaryDirectory: {0}", path);
 
 		return path;
-	}
-
-
-
-	public static string BuildDocumentMoniker(IVsDataExplorerNode node,
-	ref IList<string> identifierArray, EnModelTargetType targetType, bool isUnique)
-	{
-		Moniker moniker = new(node, targetType, isUnique);
-		identifierArray = moniker.Identifier;
-
-		return moniker.BuildDocumentMoniker(true, true);
-	}
-
-
-
-	public static string BuildDocumentMoniker(string server, string database, EnModelObjectType elementType,
-	ref IList<string> identifierArray, EnModelTargetType targetType, bool isUnique)
-	{
-		Moniker moniker = new(server, database, elementType, identifierArray, targetType, isUnique);
-		identifierArray = moniker.Identifier;
-
-		return moniker.BuildDocumentMoniker(true, true);
 	}
 
 

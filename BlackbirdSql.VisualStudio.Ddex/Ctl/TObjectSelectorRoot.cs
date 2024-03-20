@@ -131,7 +131,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			// VS glitch. Null if ado has picked up a project data model firebird assembly.
 			if (lockedProviderObject is not FbConnection connection)
 			{
-				connection = new(DataProtection.DecryptString(Site.EncryptedConnectionString));
+				connection = new(Site.DecryptedConnectionString());
 				connection.Open();
 			}
 
@@ -160,7 +160,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			{
 				// Tracer.Trace(GetType(), "SelectObjects()", "Finally.");
 
-				if (!UnsafeCmd.IsEdmConnectionSource)
+				if (!UnsafeCmd.IsUIHierarchyConnectionSource)
 					LinkageParser.AsyncEnsureLoading((IDbConnection)lockedProviderObject);
 
 				Site.UnlockProviderObject();

@@ -3,7 +3,9 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Management.Instrumentation;
 using System.Threading.Tasks;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using Microsoft.ServiceHub.Framework;
 using Microsoft.VisualStudio;
@@ -50,6 +52,9 @@ internal static class ApcManager
 
 			return GetActiveWindowObjectKind();
 			*/
+
+			// We're just peeking at stored values.
+			// Diag.ThrowIfNotOnUIThread();
 
 			if (IdeShutdownState)
 				return null;
@@ -132,6 +137,7 @@ internal static class ApcManager
 
 			if (window == null)
 				return null;
+
 
 			object @object = window.Object;
 			if (@object == null)

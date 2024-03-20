@@ -11,6 +11,8 @@ using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model.Interfaces;
 using BlackbirdSql.Core.Properties;
 using FirebirdSql.Data.FirebirdClient;
+using Microsoft.VisualStudio.LanguageServer.Client;
+using Microsoft.VisualStudio.Package;
 
 
 namespace BlackbirdSql.Core.Model;
@@ -44,6 +46,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		_Sequences = rhs._Sequences.Copy();
 		_Triggers = rhs._Triggers.Copy();
 
+		_TransientString = rhs._TransientString;
 		_LinkStage = EnLinkStage.Completed;
 	}
 
@@ -70,7 +73,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		// connection.Disposed += OnConnectionDisposed;
 
 		_InstanceConnection = connection;
-
+		_TransientString = connection.ConnectionString;
 
 		if (!rhsValid)
 		{
@@ -154,7 +157,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// <returns>True of the parser was found and disposed else false.</returns>
 	protected override bool Dispose(bool isValidTransient)
 	{
-		// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "Disabling instance");
+		// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "isValidTransient: {0}.", isValidTransient);
 
 		if (_InstanceConnection == null || _Instances == null)
 			return false;
@@ -164,6 +167,8 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		{
 			if (!Loaded)
 				EnsureLoadedImpl();
+
+			// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "Creating _TransientParser.");
 
 			_TransientParser = (AbstractLinkageParser)Clone();
 		}
@@ -263,7 +268,9 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	private static IBProviderSchemaFactory _SchemaFactory = null;
 
 	protected static AbstractLinkageParser _TransientParser = null;
+
 	protected bool _IsIntransient = false;
+	protected string _TransientString = null;
 
 	/// <summary>
 	/// The working db connection associated with this LinkageParser
@@ -379,6 +386,8 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 
 	public string ConnectionString => _InstanceConnection?.ConnectionString;
+
+	public string TransientString => string.IsNullOrEmpty(ConnectionString) ? _TransientString : ConnectionString;
 
 
 	/// <summary>
@@ -920,7 +929,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	protected static AbstractLinkageParser FindEquivalentParser(IDbConnection connection)
 	{
 		if (_TransientParser != null && !_TransientParser._IsIntransient)
-		{			
+		{
 			if (CsbAgent.CreateConnectionUrl(connection) == _TransientParser._ConnectionUrl)
 			{
 				// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "Using up _TransientParser.");
@@ -982,6 +991,49 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		}
 
 		// Tracer.Trace(typeof(AbstractLinkageParser), "FindEquivalentParser()", "No equivalent found in instances. Count: {0}", _Instances.Count);
+
+		return null;
+	}
+
+
+
+	protected static AbstractLinkageParser FindInstanceOrTransient(string connectionString)
+	{
+		// Tracer.Trace(typeof(AbstractLinkageParser), "FindParser()", "connectionString: {0}.", connectionString);
+
+		string connectionUrl = null;
+
+		if (_TransientParser != null && !_TransientParser._IsIntransient)
+		{
+			connectionUrl = CsbAgent.CreateConnectionUrl(connectionString);
+
+			if (connectionUrl == _TransientParser._ConnectionUrl)
+				return _TransientParser;
+		}
+
+
+		if (_Instances == null)
+			return null;
+
+		connectionUrl ??= CsbAgent.CreateConnectionUrl(connectionString);
+
+		// Tracer.Trace(typeof(AbstractLinkageParser), "FindParser()", "Searching instances. connectionUrl: {0}.", connectionUrl);
+
+
+		foreach (KeyValuePair<IDbConnection, object> pair in _Instances)
+		{
+			AbstractLinkageParser parser = (AbstractLinkageParser)pair.Value;
+
+			if (!parser._Enabled || parser._IsIntransient)
+				continue;
+
+			// Tracer.Trace(typeof(AbstractLinkageParser), "FindParser()", "Comparing instance. parser._ConnectionUrl: {0}.", parser._ConnectionUrl);
+
+			if (connectionUrl.Equals(parser._ConnectionUrl))
+				return parser;
+		}
+
+		// Tracer.Trace(typeof(AbstractLinkageParser), "FindParser()", "No parser found in instances. Count: {0}", _Instances.Count);
 
 		return null;
 	}

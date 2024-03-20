@@ -17,9 +17,11 @@ using BlackbirdSql.Common.Properties;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Ctl;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model;
 using FirebirdSql.Data.FirebirdClient;
 using FirebirdSql.Data.Isql;
+using Microsoft.VisualStudio.LanguageServer.Client;
 using Microsoft.VisualStudio.Shell;
 
 
@@ -31,6 +33,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 {
 	protected CsbAgent _Csa = null;
 	protected long _Seed = -1;
+	protected long _ConnectionSeed = -1;
 	protected string _LastDatasetKey = null;
 
 	public delegate void ConnectionChangedEvent(object sender, ConnectionChangedEventArgs args);
@@ -83,6 +86,38 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		{
 			lock (_LockObject)
 			{
+				if (_Connection == null || _ConnectionSeed == RctManager.Seed)
+					return _Connection;
+
+				// We have to ensure the connection hasn't changed.
+
+				// Get the connection string of the current connection adorned with the additional Csa properties
+				// so that we don't get a negative equivalency because of missing stripped Csa properties in the
+				// connection's connection string.
+				string connectionString = RctManager.UpdateConnectionFromRegistration(_Connection);
+
+				CsbAgent csaCurrent = new(connectionString, false);
+				CsbAgent csaRegistered = RctManager.CloneRegistered(_ConnectionInfo);
+
+				// Compare the current connection with the registered connection.
+				if (CsbAgent.AreEquivalent(csaRegistered, csaCurrent, CsbAgent.DescriberKeys))
+				{
+					_ConnectionSeed = RctManager.Seed;
+					return _Connection;
+				}
+
+				// Tracer.Trace(GetType(), "get_Connection()", "Connections are not equivalent: \nCurrent: {0}\nRegistered: {1}",
+				//	csaCurrent.ConnectionString, csaRegistered.ConnectionString);
+
+				ConnectionPropertyAgent connectionInfo = new();
+				connectionInfo.Parse(csaRegistered.ConnectionString);
+				IDbConnection connection = new FbConnection(csaRegistered.ConnectionString);
+
+				if (_Connection.State == ConnectionState.Open)
+					connection.Open();
+
+				SetConnectionInfo(connectionInfo, connection);
+
 				return _Connection;
 			}
 		}
@@ -212,7 +247,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 			if (_Connection != null)
 			{
-				if (_Connection.State != 0)
+				if (_Connection.State != ConnectionState.Closed)
 					_Connection.Close();
 
 				_Connection.Dispose();
@@ -251,6 +286,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 
 		lock (_LockObject)
 		{
+			_ConnectionSeed = RctManager.Seed;
 			ConnectionInfo = ci;
 			SetDbConnection(connection);
 		}
@@ -351,8 +387,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 				if (ci != null && connection == null)
 					connection = CreateDbConnectionFromConnectionInfo(ci, tryOpenConnection);
 
-				ConnectionInfo = ci;
-				SetDbConnection(connection);
+				SetConnectionInfo(ci, connection);
 			}
 
 			return Connection;
@@ -370,8 +405,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 				{
 					connection ??= CreateDbConnectionFromConnectionInfo(ci, tryOpenConnection: false);
 
-					ConnectionInfo = ci;
-					SetDbConnection(connection);
+					SetConnectionInfo(ci, connection);
 				}
 			}
 
@@ -383,6 +417,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 	{
 		lock (_LockObject)
 		{
+			_ConnectionSeed = -1;
 			ConnectionInfo = null;
 			SetDbConnection(null);
 		}
@@ -466,6 +501,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 					if (ConnectionInfo == null)
 						ConnectionInfo = new();
 
+					_ConnectionSeed = RctManager.Seed;
 					ConnectionInfo.Parse(_Csa);
 					DatabaseChanged?.Invoke(this, new EventArgs());
 					if (isOpen)

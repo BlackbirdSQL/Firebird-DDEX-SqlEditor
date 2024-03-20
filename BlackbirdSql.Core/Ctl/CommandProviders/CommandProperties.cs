@@ -48,12 +48,16 @@ public static class CommandProperties
 	// =========================================================================================================
 	#region GUIDs - CommandProperties
 	// =========================================================================================================
-	
+
+	// Provider Clsid.
+	public static Guid ClsidProvider = new Guid(SystemData.ProviderGuid);
+
 	// VS DataToolsCommands providers
 	public const string UniversalCommandProviderGuid = "CD332A3B-B404-45B7-988F-587672086727";
 
 	// Command sets
-	public const string CommandSetGuid = "13CD7876-FC84-4DDA-91BF-4CDBF893B134";
+	public const string CommandSetGuid = "C6972FD9-9586-438A-800E-1E72AC1FE4E6";
+	public static readonly Guid ClsidCommandSet = new(CommandSetGuid);
 
 
 	#endregion GUIDs

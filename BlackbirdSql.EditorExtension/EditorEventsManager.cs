@@ -2,12 +2,14 @@
 // $Authors = GA Christos (greg@blackbirdsql.org)
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using BlackbirdSql.Common.Controls;
 using BlackbirdSql.Common.Ctl;
 using BlackbirdSql.Common.Model;
 using BlackbirdSql.Core;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.EditorExtension.Ctl.Events;
@@ -29,6 +31,8 @@ using Native = BlackbirdSql.Core.Native;
 
 
 namespace BlackbirdSql.EditorExtension;
+
+[SuppressMessage("Usage", "VSTHRD010:Invoke single-threaded types on Main thread", Justification = "Uses Diag.ThrowIfNotOnUIThread()")]
 
 
 // =========================================================================================================
@@ -94,7 +98,6 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		Controller.OnBeforeLastDocumentUnlockEvent -= OnBeforeLastDocumentUnlock;
 		Controller.OnBeforeSaveEvent -= OnBeforeSave;
 		Controller.OnBeforeSaveAsyncEvent -= OnBeforeSaveAsync;
-		Controller.OnCmdUIContextChangedEvent -= OnCmdUIContextChanged;
 		Controller.OnElementValueChangedEvent -= OnElementValueChanged;
 		Controller.OnBeforeCloseProjectEvent -= OnBeforeCloseProject;
 		Controller.OnQueryCloseProjectEvent -= OnQueryCloseProject;
@@ -475,7 +478,6 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		Controller.OnBeforeLastDocumentUnlockEvent += OnBeforeLastDocumentUnlock;
 		Controller.OnBeforeSaveEvent += OnBeforeSave;
 		Controller.OnBeforeSaveAsyncEvent += OnBeforeSaveAsync;
-		Controller.OnCmdUIContextChangedEvent += OnCmdUIContextChanged;
 		Controller.OnElementValueChangedEvent += OnElementValueChanged;
 		Controller.OnBeforeCloseProjectEvent += OnBeforeCloseProject;
 		Controller.OnQueryCloseProjectEvent += OnQueryCloseProject;
@@ -815,13 +817,6 @@ public sealed class EditorEventsManager : AbstractEventsManager
 	IVsTask OnBeforeSaveAsync(uint cookie, uint flags, IVsTask saveTask)
 	{
 		return null;
-	}
-
-
-
-	public int OnCmdUIContextChanged(uint cookie, int fActive)
-	{
-		return VSConstants.S_OK;
 	}
 
 

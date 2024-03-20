@@ -459,23 +459,27 @@ public class TViewSupport : DataViewSupport,
 	{
 		try
 		{
-			if (ViewHierarchy == null || ViewHierarchy.ExplorerConnection == null
-				|| ViewHierarchy.ExplorerConnection.Connection == null)
+			if (ViewHierarchy == null || ViewHierarchy.ExplorerConnection == null)
 			{
 				return;
 			}
 
-			IVsDataConnection connection = ViewHierarchy.ExplorerConnection.Connection;
-			if (connection != null && connection.State == DataConnectionState.Open)
+			if (ViewHierarchy.PersistentProperties != null)
 			{
-				_Initialized = true;
+				CsbAgent csa = new(ViewHierarchy.ExplorerConnection.DecryptedConnectionString(), true);
 
-				// IVsDataSourceInformation vsDataSourceInformation = connection.GetService(typeof(IVsDataSourceInformation)) as IVsDataSourceInformation;
-				// ViewHierarchy.PersistentProperties["BackendType"] = vsDataSourceInformation["BackendType"];
-
-				// Moniker sqlMoniker = new(ViewHierarchy.ExplorerConnection.ConnectionNode);
-				// ViewHierarchy.PersistentProperties["MkDocumentPrefix"] = sqlMoniker.ToDocumentMoniker(true);
+				ViewHierarchy.PersistentProperties["MkDocumentPrefix"] = csa.DatasetMoniker;
 			}
+
+
+			if (ViewHierarchy.ExplorerConnection.Connection == null
+				|| ViewHierarchy.ExplorerConnection.Connection.State != DataConnectionState.Open)
+			{
+				return;
+			}
+
+			_Initialized = true;
+
 		}
 		catch (Exception ex)
 		{
@@ -507,7 +511,8 @@ public class TViewSupport : DataViewSupport,
 
 	private void OnConnectionStateChanged(object sender, DataConnectionStateChangedEventArgs e)
 	{
-		// Tracer.Trace(GetType(), "OnConnectionStateChanged()", "Sender: {0}, Old: {1}, new:{2}.", sender.GetType().FullName, e.OldState, e.NewState);
+		// Tracer.Trace(GetType(), "OnConnectionStateChanged()", "Sender: {0}, Old state: {1}, new state:{2}.",
+		//	sender.GetType().Name, e.OldState, e.NewState);
 
 		if (!_Initialized && e.NewState == DataConnectionState.Open)
 			InitializeProperties();
@@ -520,10 +525,12 @@ public class TViewSupport : DataViewSupport,
 			return;
 		}
 
+		LinkageParser.UnlockLoadedParser();
+
 		// Attempt linkage startup on a refresh.
 		// Tracer.Trace(GetType(), "OnConnectionStateChanged()", "Calling IsEdm.");
 
-		if (UnsafeCmd.IsEdmConnectionSource)
+		if (UnsafeCmd.IsUIHierarchyConnectionSource)
 			return;
 
 		IVsDataConnection site = ViewHierarchy.ExplorerConnection.Connection;
@@ -552,7 +559,10 @@ public class TViewSupport : DataViewSupport,
 	/// </summary>
 	private void OnNodeChanged(object sender, DataExplorerNodeEventArgs e)
 	{
-		// Tracer.Trace(GetType(), "OnNodeChanged()", "Sender: {0}, node: {1}.", sender.GetType().Name, e.Node.Name);
+		// Tracer.Trace(GetType(), "OnNodeChanged()", "connectionMoniker: {0}, nodeName: {1}, nodeMoniker: {2}.",
+		//	e.Node.ExplorerConnection != null && e.Node.ExplorerConnection.ConnectionNode != null
+		//		? e.Node.ExplorerConnection.ConnectionNode.DocumentMoniker : "Null",
+		//	e.Node.Name, e.Node.DocumentMoniker);
 
 		if (e.Node == null || (!e.Node.IsRefreshing && !e.Node.IsExpanding)
 			|| e.Node.ExplorerConnection == null
@@ -573,18 +583,22 @@ public class TViewSupport : DataViewSupport,
 		{
 			LinkageParser parser = LinkageParser.GetInstance(site);
 
+
 			if (parser != null)
 			{
 				// Not guaranteed but if all properties are the same it's 99% likely
 				// this is a user refresh. For the 1% the linkage tables will be redundantly rebuilt.
-				if (parser.Loaded &&
-					CsbAgent.AreEquivalent(DataProtection.DecryptString(site.EncryptedConnectionString),
+				if (parser.Loaded && !LinkageParser.IsLockedLoadedParser(parser)
+					&& CsbAgent.AreEquivalent(site.DecryptedConnectionString(),
 						parser.ConnectionString, CsbAgent.DescriberKeys))
 				{
 					// Tracer.Trace(GetType(), "OnNodeChanged()", "Calling IsEdm for Dispose.");
 
-					if (UnsafeCmd.IsEdmConnectionSource)
+					if (UnsafeCmd.IsUIHierarchyConnectionSource)
 						return;
+
+					// Tracer.Trace(GetType(), "OnNodeChanged()", "Calling destructive Dispose.\nParser ConnectionString: {0}\nSE ConnectionString: {1}",
+					//	parser.ConnectionString, DataProtection.DecryptString(site.EncryptedConnectionString));
 
 					LinkageParser.DisposeInstance(site, false);
 				}
@@ -592,8 +606,9 @@ public class TViewSupport : DataViewSupport,
 			else
 			{
 				// Tracer.Trace(GetType(), "OnNodeChanged()", "Calling IsEdm for parser == null.");
+				LinkageParser.UnlockLoadedParser();
 
-				if (UnsafeCmd.IsEdmConnectionSource)
+				if (UnsafeCmd.IsUIHierarchyConnectionSource)
 					return;
 
 				LinkageParser.AsyncEnsureLoading(site);
@@ -601,6 +616,11 @@ public class TViewSupport : DataViewSupport,
 		}
 		else if (e.Node.IsExpanding)
 		{
+			LinkageParser.UnlockLoadedParser();
+
+			if (UnsafeCmd.IsUIHierarchyConnectionSource)
+				return;
+
 			if (site.State == DataConnectionState.Open && RctManager.Available)
 				LinkageParser.AsyncEnsureLoading(site);
 		}
@@ -621,7 +641,6 @@ public class TViewSupport : DataViewSupport,
 			return;
 		}
 
-
 		IVsDataConnection site = e.Node.ExplorerConnection.Connection;
 
 		if (site.State != DataConnectionState.Open || !RctManager.Available)
@@ -629,7 +648,7 @@ public class TViewSupport : DataViewSupport,
 
 		// If the refresh is the result of the EDMX wizard making an illegal name
 		// change, exit. We'll handle this in OnNodeChanged().
-		if (UnsafeCmd.IsEdmConnectionSource)
+		if (UnsafeCmd.IsUIHierarchyConnectionSource)
 			return;
 
 		LinkageParser.AsyncEnsureLoading(e.Node);

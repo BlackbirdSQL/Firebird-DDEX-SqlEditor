@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
-using System.Runtime.InteropServices;
 using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Model.Enums;
 using EnvDTE;
@@ -49,7 +48,31 @@ public abstract class UnsafeCmd
 
 
 
+
+
 	#endregion Fields
+
+
+
+
+
+	// =========================================================================================================
+	#region Property Accessors - Cmd
+	// =========================================================================================================
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns true if a connection dialog exists and has been activated through a
+	/// UIHierarchy marshaler else false.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool IsUIHierarchyConnectionSource =>
+		GetConnectionSource() == EnConnectionSource.HierarchyMarshaler;
+
+
+
+	#endregion Property Accessors
 
 
 
@@ -58,6 +81,13 @@ public abstract class UnsafeCmd
 	// =========================================================================================================
 	#region Static Methods - Cmd
 	// =========================================================================================================
+
+
+	/// <summary>
+	/// ThrowOnFailure token
+	/// </summary>
+	protected static int ___(int hr) => ErrorHandler.ThrowOnFailure(hr);
+
 
 
 	// ---------------------------------------------------------------------------------
@@ -111,12 +141,30 @@ public abstract class UnsafeCmd
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the current connection dialog that is active else EnConnectionSource.None.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	public static EnConnectionSource GetConnectionSource()
 	{
-		if (RctManager.AdvisingExplorerEvents || ApcManager.IdeShutdownState)
+		if (ApcManager.IdeShutdownState)
+		{
+			// Tracer.Trace(typeof(UnsafeCmd), $"GetConnectionSource({caller})", "\nProbably EnConnectionSource.None: ApcManager.IdeShutdownState.");
+			return EnConnectionSource.None;
+		}
+
+		// Definitely ServerExplorer
+		if (RctManager.AdvisingExplorerEvents)
+		{
+			 // Tracer.Trace(typeof(UnsafeCmd), $"GetConnectionSource({caller})", "\nDefinitely EnConnectionSource.ServerExplorer: RctManager.AdvisingExplorerEvents.");
 			return EnConnectionSource.ServerExplorer;
+		}
 
 		/*
+		 * We're just peeking.
+		 * 
 		if (!ThreadHelper.CheckAccess())
 		{
 			// Fire and wait.
@@ -124,7 +172,7 @@ public abstract class UnsafeCmd
 			EnConnectionSource result = ThreadHelper.JoinableTaskFactory.Run(async delegate
 			{
 				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-				return GetConnectionSourceImpl();
+				return GetConnectionSourceImpl(caller);
 			});
 
 			return result;
@@ -132,91 +180,85 @@ public abstract class UnsafeCmd
 		*/
 
 		return GetConnectionSourceImpl();
-
 	}
 
 
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets (on the ui thread) the current connection dialog that is active else
+	/// EnConnectionSource.None.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
 	private static EnConnectionSource GetConnectionSourceImpl()
 	{
+		// We're just peeking.
 		// Diag.ThrowIfNotOnUIThread();
 
-		EnConnectionSource source;
-
 		string textBufferGuid = VSConstants.CLSID.VsTextBuffer_string;
-		string solutionExplorerGuid
-			= VSConstants.StandardToolWindows.SolutionExplorer.ToString("B", CultureInfo.InvariantCulture);
-		string outputToolWindowGuid = VSConstants.StandardToolWindows.Output_string;
+		// string solutionExplorerGuid
+		//	= VSConstants.StandardToolWindows.SolutionExplorer.ToString("B", CultureInfo.InvariantCulture);
+		// string outputToolWindowGuid = VSConstants.StandardToolWindows.Output_string;
 		string seGuid = VSConstants.StandardToolWindows.ServerExplorer.ToString("B", CultureInfo.InvariantCulture);
 
 
 		string objectKind = ApcManager.ActiveWindowObjectKind;
-		if (objectKind == null)
-			return EnConnectionSource.ServerExplorer;
 
-		string objectType = ApcManager.ActiveWindowObjectType;
-		if (objectType == null)
-			return EnConnectionSource.ServerExplorer;
+		// Probably nothing
+		if (objectKind == null)
+		{
+			// Tracer.Trace(typeof(UnsafeCmd), $"GetConnectionSource({caller})", "\nProbably EnConnectionSource.None: ActiveWindowObjectKind is null.");
+			return EnConnectionSource.None;
+		}
 
 		// Definitely ServerExplorer
 		if (objectKind != null && objectKind.Equals(seGuid, StringComparison.InvariantCultureIgnoreCase))
 		{
-			source = EnConnectionSource.ServerExplorer;
+			// Tracer.Trace(typeof(UnsafeCmd), $"GetConnectionSource({caller})", "\nDefinitely EnConnectionSource.ServerExplorer: ActiveWindowObjectKind is ServerExplorer ToolWindow.");
+			return EnConnectionSource.ServerExplorer;
 		}
+
+
+		string objectType = ApcManager.ActiveWindowObjectType;
+
+		// Probably nothing
+		if (objectType == null)
+		{
+			// Tracer.Trace(typeof(UnsafeCmd), $"GetConnectionSource({caller})", "\nProbably EnConnectionSource.None: ActiveWindowObjectType is null.");
+			return EnConnectionSource.None;
+		}
+
 		// Definitely Session
-		else if (objectType != null && objectType.StartsWith("BlackbirdSql.", StringComparison.InvariantCultureIgnoreCase))
+		if (objectType.StartsWith("BlackbirdSql.", StringComparison.InvariantCultureIgnoreCase))
 		{
-			source = EnConnectionSource.Session;
+			// Tracer.Trace(typeof(UnsafeCmd), $"GetConnectionSource({caller})", "\nDefinitely EnConnectionSource.Session: ActiveWindowObjectType StartsWith 'BlackbirdSql'.");
+			return EnConnectionSource.Session;
 		}
-		else if (objectKind == null || objectType == null)
-		{
-			source = EnConnectionSource.Unknown;
-		}
-		// Probably ServerExplorer accessed by RunningConnectionTable loading
-		else if (objectKind.Equals(outputToolWindowGuid, StringComparison.InvariantCultureIgnoreCase)
-			&& objectType.Equals("System.__ComObject", StringComparison.InvariantCultureIgnoreCase))
-		{
-			source = EnConnectionSource.ServerExplorer;
-		}
-		// Probably Session which will never be called here
-		else if (objectKind.Equals(textBufferGuid, StringComparison.InvariantCultureIgnoreCase)
-			&& objectType.Equals("System.__ComObject", StringComparison.InvariantCultureIgnoreCase))
-		{
-			source = EnConnectionSource.Session;
-		}
+
 		// Most likely Application.
-		else if (objectKind.Equals(textBufferGuid, StringComparison.InvariantCultureIgnoreCase)
+		if (objectKind.Equals(textBufferGuid, StringComparison.InvariantCultureIgnoreCase)
 			&& objectType.Equals("System.ComponentModel.Design.DesignerHost",
 			StringComparison.InvariantCultureIgnoreCase))
 		{
-			source = EnConnectionSource.Application;
-		}
-		// Most likely EntityDataModel
-		else if (objectKind.Equals(solutionExplorerGuid, StringComparison.InvariantCultureIgnoreCase)
-			&& objectType.Equals("Microsoft.VisualStudio.PlatformUI.UIHierarchyMarshaler",
-			StringComparison.InvariantCultureIgnoreCase))
-		{
-			source = EnConnectionSource.EntityDataModel;
-		}
-		// Unknown
-		else
-		{
-			source = EnConnectionSource.Unknown;
+			// Tracer.Trace(typeof(UnsafeCmd), $"GetConnectionSource({caller})", "\nLikely EnConnectionSource.Application: ActiveWindowObjectType is ComponentModel.Design.DesignerHost, ActiveWindowObjectKind is VsTextBuffer.");
+			return EnConnectionSource.Application;
 		}
 
-		if (source == EnConnectionSource.Unknown)
+		// Most likely EntityDataModel or some other design model document initialized from
+		// Solution Explorer that opens the connection dialog.
+		// (Removed solution explorer as the kind to include other possible hierarchy launch locations.)
+		if (objectType.Equals("Microsoft.VisualStudio.PlatformUI.UIHierarchyMarshaler", StringComparison.InvariantCultureIgnoreCase)
+			/* && objectKind.Equals(solutionExplorerGuid, StringComparison.InvariantCultureIgnoreCase) */)
 		{
-#if DEBUG
-			COMException ex = new COMException($"Unknown ConnectionSource. ObjectKind: {objectKind}, ObjectType: {objectType}.");
-			Diag.Dug(ex);
-#else
-			Tracer.Warning(typeof(UnsafeCmd), "GetConnectionSource()", "Unknown ConnectionSource. ObjectKind: {0}, ObjectType: {1}.", objectKind, objectType);
-#endif
+			// Tracer.Trace(typeof(UnsafeCmd), $"GetConnectionSource({caller})", "\nLikely EnConnectionSource.HierarchyMarshaler: ActiveWindowObjectType is Microsoft.VisualStudio.PlatformUI.UIHierarchyMarshaler, ActiveWindowObjectKind is SolutionExplorer ToolWindow.");
+			return EnConnectionSource.HierarchyMarshaler;
 		}
 
-		// Tracer.Trace(typeof(UnsafeCmd), "GetConnectionSource()", "ConnectionSource: {0}, objectKind: {1}, WindowObjectType: {2}.",
-		//	source.ToString(), objectKind, objectType);
 
-		return source;
+		// No known connection source
+		// Tracer.Trace(typeof(UnsafeCmd), $"GetConnectionSource({caller})", "No known ConnectionSource. ObjectType: {0}, ObjectKind: {1}.",
+		//	objectType, objectKind);
+
+		return EnConnectionSource.None;
 	}
 
 
@@ -232,11 +274,6 @@ public abstract class UnsafeCmd
 		Requires.NotNull(hierarchy, "hierarchy");
 		return hierarchy.IsCapabilityMatch("CPS");
 	}
-
-
-
-	public static bool IsEdmConnectionSource =>
-		GetConnectionSource() == EnConnectionSource.EntityDataModel;
 
 
 

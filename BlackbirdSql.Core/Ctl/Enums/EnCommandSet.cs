@@ -7,7 +7,7 @@ using BlackbirdSql.Core.Ctl.CommandProviders;
 
 namespace BlackbirdSql.Core.Ctl.Enums;
 
-[Guid(CommandProperties.CommandSetGuid)]
+// [Guid(CommandProperties.CommandSetGuid)]
 
 public enum EnCommandSet
 {

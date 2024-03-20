@@ -1229,12 +1229,13 @@ public abstract class AbstractTabbedEditorWindowPane : WindowPane, IVsDesignerIn
 	int IVsDocOutlineProvider.GetOutline(out IntPtr phwnd, out IOleCommandTarget ppCmdTarget)
 	{
 		IVsDocOutlineProvider vsDocOutlineProvider = ActiveTab<IVsDocOutlineProvider>();
+
 		if (vsDocOutlineProvider != null)
-		{
 			return vsDocOutlineProvider.GetOutline(out phwnd, out ppCmdTarget);
-		}
+
 		phwnd = IntPtr.Zero;
 		ppCmdTarget = null;
+
 		return VSConstants.E_NOTIMPL;
 	}
 

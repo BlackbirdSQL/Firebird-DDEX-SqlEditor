@@ -229,17 +229,9 @@
 	  <Compile Include="Ctl\Extensions\PublicDictionaryEnumerator.cs" />
 	  <Compile Include="SystemData.cs" />
 	</ItemGroup>
-
-
-
-
 	<ItemGroup>
 	  <Content Include="blackbirdsql.ico" />
 	</ItemGroup>
-
-
-
-
 	<ItemGroup>
 	  <EmbeddedResource Include="Controls\AdvancedInformationDialog.resx" />
 	  <EmbeddedResource Include="Controls\MessageBoxDialog.resx" />
@@ -256,14 +248,10 @@
 	  </EmbeddedResource>
 	  <EmbeddedResource Include="Properties\Resources.resx" />
 	</ItemGroup>
-
 	<ItemGroup>
-		<PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="10.0.0" />
-		<PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)'=='net48'">
-		<PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.8.37222" />
+	  <PackageReference Include="FirebirdSql.Data.FirebirdClient" Version="10.0.0" />
+	  <PackageReference Include="Microsoft.VisualStudio.Data" Version="17.5.33428.388" />
+	  <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.8.37222" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -287,13 +275,6 @@
 		  <AutoGen>True</AutoGen>
 		  <DependentUpon>Resources.resx</DependentUpon>
 		</Compile>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <EmbeddedResource Update="Properties\Resources.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
 	</ItemGroup>
 
 

@@ -14,6 +14,7 @@ using BlackbirdSql.Core.Ctl.Events;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model.Interfaces;
+using BlackbirdSql.EditorExtension;
 using BlackbirdSql.VisualStudio.Ddex.Controls.DataTools;
 using BlackbirdSql.VisualStudio.Ddex.Ctl;
 using BlackbirdSql.VisualStudio.Ddex.Ctl.ComponentModel;
@@ -42,9 +43,9 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 /// </summary>
 /// <remarks>
 /// Implements the package exposed by this assembly and registers itself with the shell.
-/// This is a multi-Package daisy-chaned class implementation of <see cref="IBAsyncPackage"/>.
-/// The current package hieararchy is BlackbirdSqlDdexExtension > <see cref="ControllerPackage"/> >
-/// <see cref="EditorExtension.EditorExtensionPackage"/> > <see cref="AbstractCorePackage"/>.
+/// This is a multi-Package daisy-chained class implementation of <see cref="IBAsyncPackage"/>.
+/// The current hierarchy is <see cref="BlackbirdSqlDdexExtension"/> >> <see cref="ControllerPackage"/> >>
+/// <see cref="EditorExtensionPackage"/> >> <see cref="AbstractCorePackage"/>.
 /// </remarks>
 // =========================================================================================================
 
@@ -60,7 +61,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 
 
 // 'Help About' registration. productName & productDetails resource integers must be prefixed with #.
-[InstalledProductRegistration("#100", "#102", "11.1.1.1001", IconResourceID = 400)]
+[InstalledProductRegistration("#100", "#102", "11.1.1.1002", IconResourceID = 400)]
 
 
 // We start loading as soon as the VS shell is available.
@@ -72,28 +73,26 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 	name: SystemData.UIContextName,
 	expression: "(ShellInit | SolutionOpening | DesignMode | DataSourceWindowVisible | DataSourceWindowSupported)",
 	termNames: ["ShellInit", "SolutionOpening", "DesignMode", "DataSourceWindowVisible", "DataSourceWindowSupported"],
-	termValues: [VSConstants.UICONTEXT.ShellInitialized_string, VSConstants.UICONTEXT.SolutionOpening_string,
-		VSConstants.UICONTEXT.DesignMode_string, UIContextGuids80.DataSourceWindowAutoVisible,
+	termValues: [VSConstants.UICONTEXT.ShellInitialized_string,
+		VSConstants.UICONTEXT.SolutionOpening_string,
+		VSConstants.UICONTEXT.DesignMode_string,
+		UIContextGuids80.DataSourceWindowAutoVisible,
 		UIContextGuids80.DataSourceWindowSupported])]
 
 
 [ProvideAutoLoad(SystemData.UIContextGuid, PackageAutoLoadFlags.BackgroundLoad)]
 
 
-// Not used
-// [ProvideMenuResource(1000, 1)] TBC
-
+[ProvideMenuResource("Menus.ctmenu", 1)]
 
 // Register the DDEX as a data provider
 [VsPackageRegistration]
-
 
 // Register services
 [ProvideService(typeof(IBPackageController), IsAsyncQueryable = true,
 	ServiceName = PackageData.PackageControllerServiceName)]
 [ProvideService(typeof(IBProviderObjectFactory), IsAsyncQueryable = true,
 	ServiceName = PackageData.ProviderObjectFactoryServiceName)]
-
 
 // Implement Visual studio options/settings
 [VsProvideOptionPage(typeof(SettingsProvider.GeneralSettingsPage), SettingsProvider.CategoryName,
@@ -235,7 +234,7 @@ public sealed class BlackbirdSqlDdexExtension : ControllerPackage
 
 		Task<object> task = CreateServiceInstanceAsync(type, default);
 
-		
+
 		if (task == null || task.Result == null)
 			return ((AsyncPackage)this).GetServiceAsync<TService, TInterface>();
 

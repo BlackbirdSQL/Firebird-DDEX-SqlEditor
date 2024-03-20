@@ -4,6 +4,7 @@
 
 using System;
 using System.Reflection;
+using System.Web.UI.Design.WebControls;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using BlackbirdSql.Core;
@@ -40,10 +41,16 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	// -----------------------------------------------------------------------------------------------------
 
 
-	public TConnectionUIControl() : base()
+	public TConnectionUIControl() : this(EnConnectionSource.Undefined)
+	{
+	}
+
+
+	public TConnectionUIControl(EnConnectionSource connectionSource) : base()
 	{
 		Diag.ThrowIfNotOnUIThread();
 
+		_ConnectionSource = connectionSource;
 
 		try
 		{
@@ -65,7 +72,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			{
 				lblDatasetKeyDescription.Text = ControlsResources.TConnectionUIControl_DatasetKeyDescription_Application;
 			}
-			else if (ConnectionSource == EnConnectionSource.EntityDataModel)
+			else if (ConnectionSource == EnConnectionSource.HierarchyMarshaler)
 			{
 				lblDatasetKeyDescription.Text = ControlsResources.TConnectionUIControl_DatasetKeyDescription_EntityDataModel;
 			}
@@ -129,7 +136,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	private int _InputEventsCardinal = 0;
 	private int _CursorEventsCardinal = 0;
 	private int _PropertyEventsCardinal = 0;
-	private EnConnectionSource _ConnectionSource = EnConnectionSource.None;
+	private EnConnectionSource _ConnectionSource = EnConnectionSource.Undefined;
 	private bool _EventsLoaded = false;
 	private Form _ParentParentForm = null;
 	private bool _SiteChanged = true;
@@ -164,10 +171,11 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	{
 		get
 		{
-			if (_ConnectionSource == EnConnectionSource.None)
+			if (_ConnectionSource == EnConnectionSource.Undefined)
 			{
 				_ConnectionSource = SessionDlg != null
-					? EnConnectionSource.Session : UnsafeCmd.GetConnectionSource();
+					? EnConnectionSource.Session
+					: UnsafeCmd.GetConnectionSource();
 			}
 
 			return _ConnectionSource;
@@ -397,7 +405,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 					Site.Remove(CoreConstants.C_KeyExDataset);
 
 				@object = DataSources.DependentRow[CoreConstants.C_KeyExConnectionSource];
-				if (@object != DBNull.Value && @object != null && (EnConnectionSource)(int)@object > EnConnectionSource.Unknown)
+				if (@object != DBNull.Value && @object != null && (EnConnectionSource)(int)@object > EnConnectionSource.None)
 					Site[CoreConstants.C_KeyExConnectionSource] = (int)@object;
 				else
 					Site.Remove(CoreConstants.C_KeyExConnectionSource);
@@ -594,7 +602,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		{
 			EnConnectionSource source = (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource];
 
-			if (source == EnConnectionSource.EntityDataModel || source == EnConnectionSource.Application
+			if (source == EnConnectionSource.HierarchyMarshaler || source == EnConnectionSource.Application
 				|| source == EnConnectionSource.ExternalUtility)
 			{
 				int pos;
@@ -779,7 +787,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 			lblCurrentDisplayName.Text = ControlsResources.TConnectionUIControl_NewDatabaseConnection;
 
-			EnConnectionSource connectionSource = ConnectionSource == EnConnectionSource.EntityDataModel
+			EnConnectionSource connectionSource = ConnectionSource == EnConnectionSource.HierarchyMarshaler
 				? EnConnectionSource.ServerExplorer : ConnectionSource;
 
 			if (connectionSource == EnConnectionSource.Session
@@ -822,8 +830,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 	/// <param name="e"></param>
 	private void OnAccept(object sender, EventArgs e)
 	{
-		// Tracer.Trace(GetType(), "OnAccept()", "Container: {0}, Parent: {1}, ParentForm: {2}, Enabled: {3}, Visible: {4}.",
-		// 	Container, Parent, ParentForm, Enabled, Visible);
+		// Tracer.Trace(GetType(), "OnAccept()", "ConnectionSource: {0}.", ConnectionSource);
 
 		_HandleNewInternally = false;
 		_HandleModifyInternally = false;
@@ -1065,7 +1072,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 				Site.ValidateKeys();
 
-				// Take the glyph out of Application, EntityDataModel and ExternalUtility source
+				// Take the glyph out of Application, HierarchyMarshaler and ExternalUtility source
 				// dataset ids.
 				if ((ConnectionSource != EnConnectionSource.Application)
 					&& Site.ContainsKey(CoreConstants.C_KeyExDatasetId)
@@ -1327,7 +1334,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			_InsertMode = _OriginalConnectionString == null;
 
 			EnConnectionSource storedConnectionSource = Site.ContainsKey(CoreConstants.C_KeyExConnectionSource)
-				? (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource] : EnConnectionSource.None;
+				? (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource] : EnConnectionSource.Undefined;
 
 			DisablePropertyEvents();
 
@@ -1342,7 +1349,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 							Site.Remove(describer.Key);
 					}
 
-					if (storedConnectionSource <= EnConnectionSource.Unknown)
+					if (storedConnectionSource <= EnConnectionSource.None)
 						Site[CoreConstants.C_KeyExConnectionSource] = ConnectionSource;
 				}
 				else
@@ -1360,7 +1367,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 					if (Site.ContainsKey(CoreConstants.C_KeyExDatasetId)
 						&& (storedConnectionSource == EnConnectionSource.Application
-						|| storedConnectionSource == EnConnectionSource.EntityDataModel
+						|| storedConnectionSource == EnConnectionSource.HierarchyMarshaler
 						|| storedConnectionSource == EnConnectionSource.ExternalUtility))
 					{
 						RemoveGlyph(true);
@@ -1371,9 +1378,9 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 
 					if (!Site.ContainsKey(CoreConstants.C_KeyExConnectionSource)
-						|| (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource] <= EnConnectionSource.Unknown)
+						|| (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource] <= EnConnectionSource.None)
 					{
-						EnConnectionSource connectionSource = ConnectionSource == EnConnectionSource.EntityDataModel
+						EnConnectionSource connectionSource = ConnectionSource == EnConnectionSource.HierarchyMarshaler
 							? EnConnectionSource.ServerExplorer : ConnectionSource;
 
 						if (connectionSource == EnConnectionSource.Session
@@ -1419,7 +1426,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			return;
 
 		if (ConnectionSource == EnConnectionSource.Application || !_HandleVerification
-			|| (ConnectionSource == EnConnectionSource.EntityDataModel && !_HandleNewInternally
+			|| (ConnectionSource == EnConnectionSource.HierarchyMarshaler && !_HandleNewInternally
 			&& !_HandleModifyInternally))
 		{
 			// Tracer.Trace(GetType(), "OnVerifySettings()", "Not handling internally.");
@@ -1430,9 +1437,20 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 
 		EnConnectionSource registrationSource =
-			(ConnectionSource == EnConnectionSource.EntityDataModel
+			(ConnectionSource == EnConnectionSource.HierarchyMarshaler
 			|| (ConnectionSource == EnConnectionSource.Session && _HandleNewInternally))
 			? EnConnectionSource.ServerExplorer : ConnectionSource;
+
+
+
+		// Special case. If an existing connection is updated we lock it's parser against
+		// disposal in IVsDataViewSupport.
+		if (ConnectionSource == EnConnectionSource.ServerExplorer
+			&& !_HandleNewInternally && !_HandleModifyInternally && !_InsertMode)
+		{
+			// Lock the parser if properties that have been changed don't affect the parser.
+			LinkageParser.LockLoadedParser(Site.ToString());
+		}
 
 		try
 		{
@@ -1450,7 +1468,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			{
 				(Parent.Parent as Form).DialogResult = DialogResult.Cancel;
 			}
-			else if (_InsertMode && !_HandleNewInternally)
+			else if (_InsertMode)
 			{
 				RctManager.StoreUnadvisedConnection(Site.ToString());
 			}

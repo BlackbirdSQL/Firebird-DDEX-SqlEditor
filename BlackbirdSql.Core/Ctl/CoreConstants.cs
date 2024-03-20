@@ -95,7 +95,7 @@ public static class CoreConstants
 	public const string C_DefaultExConnectionKey = "";
 	public const string C_DefaultExDatasetId = "";
 	public const string C_DefaultExConnectionName = "";
-	public const EnConnectionSource C_DefaultExConnectionSource = EnConnectionSource.Unknown;
+	public const EnConnectionSource C_DefaultExConnectionSource = EnConnectionSource.None;
 
 	// External (non-paramameter) property defaults 
 	public const EnEngineType C_DefaultExServerEngine = EnEngineType.Unknown;

@@ -1096,6 +1096,25 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 	}
 
 
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Checks whether or not connection property/parameter equivalency objects of
+	/// a connection string are equivalent.
+	/// </summary>
+	/// <remarks>
+	/// We consider connections equivalent if they will produce the same results. The connection properties
+	/// that determine this equivalency are defined in <see cref="CoreProperties.EquivalencyKeys"/>.
+	/// </remarks>
+	public static bool AreEquivalent(string connectionString1, string connectionString2)
+	{
+		// Tracer.Trace(typeof(AbstractCsbAgent), "AreEquivalent(DbConnectionStringBuilder, DbConnectionStringBuilder)");
+
+		return AreEquivalent(connectionString1, connectionString2, Describers.EquivalencyKeys);
+	}
+
+
+
 	// ---------------------------------------------------------------------------------
 	/// <summary>
 	/// Checks whether or not the emumerator property/parameter objects of a connection
@@ -1209,23 +1228,12 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 			Password = safeUrl ? string.Empty : csa.Password.ToLowerInvariant()
 		};
 
-		UriBuilder testurlb = new()
-		{
-			Scheme = SystemData.Protocol,
-			Host = datasource.ToLowerInvariant(),
-			UserName = csa.UserID.ToLowerInvariant(),
-			Port = csa.Port,
-			Password = safeUrl ? string.Empty : csa.Password.ToLowerInvariant()
-		};
-
 		// Append the serialized database path and dot separated equivalency connection properties as the url path.
 
 		// Serialize the db path.
 		StringBuilder stringBuilder = new(StringUtils.Serialize64(csa.Database.ToLowerInvariant()));
-		StringBuilder testsb = new(csa.Database.ToLowerInvariant());
 
 		stringBuilder.Append(SystemData.UnixFieldSeparator);
-		testsb.Append(SystemData.UnixFieldSeparator);
 
 
 		// Append equivalency properties composite as defined in the Describers Colleciton.
@@ -1271,12 +1279,10 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 					stringValue = value.ToString().ToLowerInvariant();
 
 				sb.Append(stringValue);
-				testsb.Append(stringValue);
 
 				if (i < (PersistentSettings.EquivalencyKeys.Length - 1))
 				{
 					sb.Append('\n');
-					testsb.Append('|');
 				}
 
 			}
@@ -1286,10 +1292,8 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 
 		stringBuilder.Append(SystemData.UnixFieldSeparator);
-		testsb.Append(SystemData.UnixFieldSeparator);
 
 		urlb.Path = stringBuilder.ToString();
-		testurlb.Path = testsb.ToString();
 
 		string result = urlb.Uri.ToString();
 
