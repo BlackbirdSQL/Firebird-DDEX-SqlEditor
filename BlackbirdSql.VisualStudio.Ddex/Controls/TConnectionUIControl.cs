@@ -72,7 +72,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			{
 				lblDatasetKeyDescription.Text = ControlsResources.TConnectionUIControl_DatasetKeyDescription_Application;
 			}
-			else if (ConnectionSource == EnConnectionSource.HierarchyMarshaler)
+			else if (ConnectionSource == EnConnectionSource.EntityDataModel)
 			{
 				lblDatasetKeyDescription.Text = ControlsResources.TConnectionUIControl_DatasetKeyDescription_EntityDataModel;
 			}
@@ -175,7 +175,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			{
 				_ConnectionSource = SessionDlg != null
 					? EnConnectionSource.Session
-					: UnsafeCmd.GetConnectionSource();
+					: RctManager.GetConnectionSource();
 			}
 
 			return _ConnectionSource;
@@ -602,13 +602,13 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 		{
 			EnConnectionSource source = (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource];
 
-			if (source == EnConnectionSource.HierarchyMarshaler || source == EnConnectionSource.Application
+			if (source == EnConnectionSource.EntityDataModel || source == EnConnectionSource.Application
 				|| source == EnConnectionSource.ExternalUtility)
 			{
 				int pos;
 				string datasetId = (string)Site[CoreConstants.C_KeyExDatasetId];
 
-				if ((pos = datasetId.IndexOf(RctManager.EdmDatasetGlyph)) != -1)
+				if ((pos = datasetId.IndexOf(RctManager.EdmGlyph)) != -1)
 					datasetId = datasetId.Remove(pos, 1);
 				else if ((pos = datasetId.IndexOf(RctManager.ProjectDatasetGlyph)) != -1)
 					datasetId = datasetId.Remove(pos, 1);
@@ -787,7 +787,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 			lblCurrentDisplayName.Text = ControlsResources.TConnectionUIControl_NewDatabaseConnection;
 
-			EnConnectionSource connectionSource = ConnectionSource == EnConnectionSource.HierarchyMarshaler
+			EnConnectionSource connectionSource = ConnectionSource == EnConnectionSource.EntityDataModel
 				? EnConnectionSource.ServerExplorer : ConnectionSource;
 
 			if (connectionSource == EnConnectionSource.Session
@@ -1072,7 +1072,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 				Site.ValidateKeys();
 
-				// Take the glyph out of Application, HierarchyMarshaler and ExternalUtility source
+				// Take the glyph out of Application, DataSources and ExternalUtility source
 				// dataset ids.
 				if ((ConnectionSource != EnConnectionSource.Application)
 					&& Site.ContainsKey(CoreConstants.C_KeyExDatasetId)
@@ -1367,7 +1367,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 					if (Site.ContainsKey(CoreConstants.C_KeyExDatasetId)
 						&& (storedConnectionSource == EnConnectionSource.Application
-						|| storedConnectionSource == EnConnectionSource.HierarchyMarshaler
+						|| storedConnectionSource == EnConnectionSource.EntityDataModel
 						|| storedConnectionSource == EnConnectionSource.ExternalUtility))
 					{
 						RemoveGlyph(true);
@@ -1380,7 +1380,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 					if (!Site.ContainsKey(CoreConstants.C_KeyExConnectionSource)
 						|| (EnConnectionSource)Site[CoreConstants.C_KeyExConnectionSource] <= EnConnectionSource.None)
 					{
-						EnConnectionSource connectionSource = ConnectionSource == EnConnectionSource.HierarchyMarshaler
+						EnConnectionSource connectionSource = ConnectionSource == EnConnectionSource.EntityDataModel
 							? EnConnectionSource.ServerExplorer : ConnectionSource;
 
 						if (connectionSource == EnConnectionSource.Session
@@ -1426,7 +1426,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 			return;
 
 		if (ConnectionSource == EnConnectionSource.Application || !_HandleVerification
-			|| (ConnectionSource == EnConnectionSource.HierarchyMarshaler && !_HandleNewInternally
+			|| (ConnectionSource == EnConnectionSource.EntityDataModel && !_HandleNewInternally
 			&& !_HandleModifyInternally))
 		{
 			// Tracer.Trace(GetType(), "OnVerifySettings()", "Not handling internally.");
@@ -1437,7 +1437,7 @@ public partial class TConnectionUIControl : DataConnectionUIControl
 
 
 		EnConnectionSource registrationSource =
-			(ConnectionSource == EnConnectionSource.HierarchyMarshaler
+			(ConnectionSource == EnConnectionSource.EntityDataModel
 			|| (ConnectionSource == EnConnectionSource.Session && _HandleNewInternally))
 			? EnConnectionSource.ServerExplorer : ConnectionSource;
 

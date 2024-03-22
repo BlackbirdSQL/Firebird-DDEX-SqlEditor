@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Windows.Forms;
 using BlackbirdSql.Core.Controls;
 using BlackbirdSql.Core.Ctl.Config;
@@ -11,9 +12,11 @@ using BlackbirdSql.Core.Ctl.Interfaces;
 using BlackbirdSql.Core.Model;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Properties;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Data.Services;
 using Microsoft.VisualStudio.Data.Services.SupportEntities;
 using Microsoft.VisualStudio.Shell;
+
 using CoreConstants = BlackbirdSql.Core.Ctl.CoreConstants;
 
 
@@ -96,7 +99,7 @@ public sealed class RctManager : IDisposable
 	private RunningConnectionTable _Rct;
 	private static string _UnadvisedConnectionString = null;
 	private static bool _AdvisingExplorerEvents = false;
-	private static readonly char _EdmDatasetGlyph = '\u26ee';
+	private static readonly char _EdmGlyph = '\u26ee';
 	private static readonly char _ProjectDatasetGlyph = '\u2699';
 	private static readonly char _UtilityDatasetGlyph = '\u058e';
 
@@ -149,7 +152,17 @@ public sealed class RctManager : IDisposable
 	/// The glyph used to identify connections derived from Project EDM connections.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
-	public static char EdmDatasetGlyph => _EdmDatasetGlyph;
+	public static char EdmGlyph => _EdmGlyph;
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Returns true if a connection dialog exists and has been activated through a
+	/// UIHierarchy marshaler or the DataSources Explorer else false.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static bool IsEdmConnectionSource =>
+		GetConnectionSource() == EnConnectionSource.EntityDataModel;
 
 
 	// ---------------------------------------------------------------------------------
@@ -439,6 +452,123 @@ public sealed class RctManager : IDisposable
 		object @object = row[CoreConstants.C_KeyExConnectionKey];
 
 		return @object == DBNull.Value || @object == null ? null : (string)@object;
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets the current connection dialog that is active else EnConnectionSource.None.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	public static EnConnectionSource GetConnectionSource()
+	{
+		// Definitely None
+		if (ApcManager.IdeShutdownState)
+			return EnConnectionSource.None;
+
+		// Definitely ServerExplorer
+		if (RctManager.AdvisingExplorerEvents)
+			return EnConnectionSource.ServerExplorer;
+
+		/*
+		 * We're just peeking.
+		 * 
+		if (!ThreadHelper.CheckAccess())
+		{
+			// Fire and wait.
+
+			EnConnectionSource result = ThreadHelper.JoinableTaskFactory.Run(async delegate
+			{
+				await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+				return GetConnectionSourceImpl(caller);
+			});
+
+			return result;
+		}
+		*/
+
+		return GetConnectionSourceImpl();
+	}
+
+
+
+	// ---------------------------------------------------------------------------------
+	/// <summary>
+	/// Gets (on the ui thread) the current connection dialog that is active else
+	/// EnConnectionSource.None.
+	/// </summary>
+	// ---------------------------------------------------------------------------------
+	private static EnConnectionSource GetConnectionSourceImpl()
+	{
+		// We're just peeking.
+		// Diag.ThrowIfNotOnUIThread();
+
+		string objectKind = ApcManager.ActiveWindowObjectKind;
+
+		// Probably nothing
+		if (objectKind == null)
+		{
+			// Tracer.Trace(typeof(UnsafeCmd), $"GetConnectionSource({caller})", "\nProbably EnConnectionSource.None: ActiveWindowObjectKind is null.");
+			return EnConnectionSource.None;
+		}
+
+		string seGuid = VSConstants.StandardToolWindows.ServerExplorer.ToString("B", CultureInfo.InvariantCulture);
+
+		// Definitely ServerExplorer
+		if (objectKind != null && objectKind.Equals(seGuid, StringComparison.InvariantCultureIgnoreCase))
+		{
+			// Tracer.Trace(typeof(UnsafeCmd), "GetConnectionSource()", "\nDefinitely EnConnectionSource.ServerExplorer: ActiveWindowObjectKind is ServerExplorer ToolWindow.");
+			return EnConnectionSource.ServerExplorer;
+		}
+
+		string datasourceGuid = VSConstants.StandardToolWindows.DataSource.ToString("B", CultureInfo.InvariantCulture);
+
+		// Definitely EntityDataModel 
+		if (objectKind != null && objectKind.Equals(datasourceGuid, StringComparison.InvariantCultureIgnoreCase))
+		{
+			// Tracer.Trace(typeof(UnsafeCmd), "GetConnectionSource()", "\nDefinitely EnConnectionSource.EntityDataModel: ActiveWindowObjectKind is DataSource ToolWindow.");
+			return EnConnectionSource.EntityDataModel;
+		}
+
+
+		string objectType = ApcManager.ActiveWindowObjectType;
+
+		// Probably nothing
+		if (objectType == null)
+		{
+			// Tracer.Trace(typeof(UnsafeCmd), "GetConnectionSource()", "\nProbably EnConnectionSource.None: ActiveWindowObjectType is null, ObjectKind: {0}.", objectKind);
+			return EnConnectionSource.None;
+		}
+
+		// Definitely Session
+		if (objectType.StartsWith("BlackbirdSql.", StringComparison.InvariantCultureIgnoreCase))
+		{
+			// Tracer.Trace(typeof(UnsafeCmd), "GetConnectionSource()", "\nDefinitely EnConnectionSource.Session: ActiveWindowObjectType StartsWith 'BlackbirdSql'.");
+			return EnConnectionSource.Session;
+		}
+
+		// Most likely Application.
+		if (objectType.Equals("System.ComponentModel.Design.DesignerHost", StringComparison.InvariantCultureIgnoreCase))
+		{
+			// Tracer.Trace(typeof(UnsafeCmd), "GetConnectionSource()", "\nLikely EnConnectionSource.Application: ActiveWindowObjectType is ComponentModel.Design.DesignerHost.");
+			return EnConnectionSource.Application;
+		}
+
+		// Most likely EntityDataModel or some other design model document initialized from
+		// Solution Explorer that opens the connection dialog.
+		// (Removed solution explorer as the kind to include other possible hierarchy launch locations.)
+		if (objectType.Equals("Microsoft.VisualStudio.PlatformUI.UIHierarchyMarshaler", StringComparison.InvariantCultureIgnoreCase))
+		{
+			// Tracer.Trace(typeof(UnsafeCmd), "GetConnectionSource()", "\nLikely EnConnectionSource.EntityDataModel: ActiveWindowObjectType is Microsoft.VisualStudio.PlatformUI.UIHierarchyMarshaler.");
+			return EnConnectionSource.EntityDataModel;
+		}
+
+
+		// No known connection source
+		// Tracer.Trace(typeof(UnsafeCmd), "GetConnectionSource()", "No known ConnectionSource. ObjectType: {0}, ObjectKind: {1}.", objectType, objectKind);
+
+		return EnConnectionSource.None;
 	}
 
 
@@ -1101,7 +1231,7 @@ public sealed class RctManager : IDisposable
 		// We tag the connection string in our IVsDataConnectionProperties and
 		// IVsDataConnectionUIProperties implementations with "edmx" and "edmu"
 		// respectively, to identify it as a connection created or selected in a dialog
-		// spawned from UIHierarchyMarshaler.
+		// spawned from UIHierarchyMarshaler or DataSources ToolWindow.
 		// If the connection doesn't exist in the SE we will have created it on the fly
 		// to prevent the wizard throwing an exception.
 		// Whether created or selected, the wizard will misbehave and rename the
@@ -1113,7 +1243,7 @@ public sealed class RctManager : IDisposable
 		{
 			if (csa.ContainsKey("edmu"))
 			{
-				// Clear out any UIHierarchyMarshaler ConnectionString identifiers.
+				// Clear out any UIHierarchyMarshaler or DataSources ToolWindow ConnectionString identifiers.
 				csa.Remove("edmu");
 				csa.Remove("edmx");
 
@@ -1311,7 +1441,7 @@ public sealed class RctManager : IDisposable
 		// If we're in the EDM and the stored connection source is not ServerExplorer we have to create it in the SE to get past the EDM bug.
 		// Also, if we're in the SE and the stored connection source is not ServerExplorer we have to create it in the SE.
 		if (!createNew && storedConnectionSource != EnConnectionSource.ServerExplorer
-			&& (connectionSource == EnConnectionSource.ServerExplorer || connectionSource == EnConnectionSource.HierarchyMarshaler))
+			&& (connectionSource == EnConnectionSource.ServerExplorer || connectionSource == EnConnectionSource.EntityDataModel))
 		{
 			createNew = true;
 		}
@@ -1328,7 +1458,7 @@ public sealed class RctManager : IDisposable
 
 			// The settings provided will create a new SE connection with a connection name conflict.
 			if (createNew && !serverExplorerInsertMode && (connectionSource == EnConnectionSource.ServerExplorer
-				|| connectionSource == EnConnectionSource.HierarchyMarshaler))
+				|| connectionSource == EnConnectionSource.EntityDataModel))
 			{
 				caption = ControlsResources.RctManager_CaptionNewConnectionNameConflict;
 				msg = ControlsResources.RctManager_TextNewSEConnectionNameConflict.FmtRes(proposedConnectionName, uniqueConnectionName);
@@ -1358,7 +1488,7 @@ public sealed class RctManager : IDisposable
 
 			// The settings provided will create a new SE connection with a DatasetId conflict.
 			if (createNew && !serverExplorerInsertMode && (connectionSource == EnConnectionSource.ServerExplorer
-				|| connectionSource == EnConnectionSource.HierarchyMarshaler))
+				|| connectionSource == EnConnectionSource.EntityDataModel))
 			{
 				caption = ControlsResources.RctManager_CaptionNewConnectionDatabaseNameConflict;
 				msg = ControlsResources.RctManager_TextNewSEConnectionDatabaseNameConflict.FmtRes(proposedDatasetId, uniqueDatasetId);
@@ -1385,7 +1515,7 @@ public sealed class RctManager : IDisposable
 		// Handle all case where there is no conflict.
 		// The settings provided will create a new SE connection.
 		else if (createNew && !serverExplorerInsertMode &&
-			(connectionSource == EnConnectionSource.ServerExplorer || connectionSource == EnConnectionSource.HierarchyMarshaler))
+			(connectionSource == EnConnectionSource.ServerExplorer || connectionSource == EnConnectionSource.EntityDataModel))
 		{
 			caption = ControlsResources.RctManager_CaptionNewConnection;
 			msg = ControlsResources.RctManager_TextNewSEConnection;
@@ -1436,11 +1566,11 @@ public sealed class RctManager : IDisposable
 
 
 		// Establish the connection owner.
-		// if the explorer connection exists or if it's the source (or HierarchyMarshaler) it automatically is the owner.
+		// if the explorer connection exists or if it's the source (or EntityDataModel) it automatically is the owner.
 		string connectionKey = site.FindConnectionKey();
 
 		if (connectionKey == null && (connectionSource == EnConnectionSource.ServerExplorer
-			|| connectionSource == EnConnectionSource.HierarchyMarshaler))
+			|| connectionSource == EnConnectionSource.EntityDataModel))
 		{
 			connectionKey = uniqueDatasetKey;
 		}
@@ -1466,13 +1596,13 @@ public sealed class RctManager : IDisposable
 			rAddInternally = true;
 
 		rModifyInternally = changedTargetDatasetKey != null || !rAddInternally
-			&& connectionSource != EnConnectionSource.ServerExplorer && connectionSource != EnConnectionSource.HierarchyMarshaler;
+			&& connectionSource != EnConnectionSource.ServerExplorer && connectionSource != EnConnectionSource.EntityDataModel;
 
 		// Tag the site as being updated by the edmx wizard if it's not being done internally, which will
 		// use IVsDataConnectionUIProperties.Parse().
 		// We do this because the wizard will attempt to rename the connection and we'll pick it up in
 		// the rct on an IVsDataExplorerConnection.NodeChanged event, and reverse the rename and drop the tag.
-		if (connectionSource == EnConnectionSource.HierarchyMarshaler && !rAddInternally && !rModifyInternally)
+		if (connectionSource == EnConnectionSource.EntityDataModel && !rAddInternally && !rModifyInternally)
 			site["edmu"] = true;
 
 

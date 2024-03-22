@@ -27,15 +27,15 @@ public class SqlEditorResultsAsFileCommand : AbstractSqlEditorCommand
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-		AuxiliaryDocData auxiliaryDocDataForEditor = GetAuxiliaryDocDataForEditor();
-		if (auxiliaryDocDataForEditor != null)
+		AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
+		if (auxDocData != null)
 		{
 			if (!IsEditorExecuting())
 			{
 				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 			}
 
-			if (auxiliaryDocDataForEditor.SqlOutputMode == EnSqlOutputMode.ToFile)
+			if (auxDocData.SqlOutputMode == EnSqlOutputMode.ToFile)
 			{
 				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
 			}
@@ -46,10 +46,10 @@ public class SqlEditorResultsAsFileCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		AuxiliaryDocData auxiliaryDocDataForEditor = GetAuxiliaryDocDataForEditor();
-		if (auxiliaryDocDataForEditor != null)
+		AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
+		if (auxDocData != null)
 		{
-			auxiliaryDocDataForEditor.SqlOutputMode = EnSqlOutputMode.ToFile;
+			auxDocData.SqlOutputMode = EnSqlOutputMode.ToFile;
 		}
 
 		return VSConstants.S_OK;

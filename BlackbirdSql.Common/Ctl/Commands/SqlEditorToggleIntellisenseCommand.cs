@@ -29,24 +29,24 @@ public class SqlEditorToggleIntellisenseCommand : AbstractSqlEditorCommand
 
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
-		AuxiliaryDocData auxiliaryDocDataForEditor = GetAuxiliaryDocDataForEditor();
+		AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
 		if (IsDwEditorConnection())
 		{
-			if (auxiliaryDocDataForEditor != null)
+			if (auxDocData != null)
 			{
-				auxiliaryDocDataForEditor.IntellisenseEnabled = false;
+				auxDocData.IntellisenseEnabled = false;
 			}
 
 			return (int)Constants.MSOCMDERR_E_NOTSUPPORTED;
 		}
 
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-		if (auxiliaryDocDataForEditor != null)
+		if (auxDocData != null)
 		{
 			if (!IsEditorExecuting())
 				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 
-			if (auxiliaryDocDataForEditor.IntellisenseEnabled.HasValue && auxiliaryDocDataForEditor.IntellisenseEnabled.Value)
+			if (auxDocData.IntellisenseEnabled.HasValue && auxDocData.IntellisenseEnabled.Value)
 			{
 				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
 			}
@@ -57,11 +57,11 @@ public class SqlEditorToggleIntellisenseCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		AuxiliaryDocData auxiliaryDocDataForEditor = GetAuxiliaryDocDataForEditor();
+		AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
 
-		if (auxiliaryDocDataForEditor != null && auxiliaryDocDataForEditor.IntellisenseEnabled.HasValue)
+		if (auxDocData != null && auxDocData.IntellisenseEnabled.HasValue)
 		{
-			auxiliaryDocDataForEditor.IntellisenseEnabled = !auxiliaryDocDataForEditor.IntellisenseEnabled.Value;
+			auxDocData.IntellisenseEnabled = !auxDocData.IntellisenseEnabled.Value;
 		}
 
 		return VSConstants.S_OK;

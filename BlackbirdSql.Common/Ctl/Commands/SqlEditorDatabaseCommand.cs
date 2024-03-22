@@ -57,15 +57,15 @@ public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		AuxiliaryDocData auxiliaryDocDataForEditor = GetAuxiliaryDocDataForEditor();
-		if (auxiliaryDocDataForEditor == null)
+		AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
+		if (auxDocData == null)
 		{
 			Exception ex = new("AuxiliaryDocData NOT FOUND");
 			Diag.Dug(ex);
 			return VSConstants.S_OK;
 		}
 
-		QueryManager qryMgr = auxiliaryDocDataForEditor.QryMgr;
+		QueryManager qryMgr = auxDocData.QryMgr;
 
 		if (qryMgr == null)
 		{
@@ -82,7 +82,7 @@ public class SqlEditorDatabaseCommand : AbstractSqlEditorCommand
 
 			try
 			{
-				SetDatasetKeyDisplayMember(auxiliaryDocDataForEditor, selectedDatasetKey);
+				SetDatasetKeyDisplayMember(auxDocData, selectedDatasetKey);
 			}
 			catch (Exception ex)
 			{

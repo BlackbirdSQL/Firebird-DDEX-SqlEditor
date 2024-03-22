@@ -1795,7 +1795,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 			foreach (XmlNode connectionNode in xmlNodes)
 			{
 				name = connectionNode.Attributes["name"].Value;
-				datasetId = Resources.RunningConnectionTableEdmDataset.FmtRes(RctManager.EdmDatasetGlyph, projectName, name);
+				datasetId = Resources.RunningConnectionTableEdmDataset.FmtRes(RctManager.EdmGlyph, projectName, name);
 
 				csb = new()
 				{
@@ -1824,7 +1824,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 						csa.Remove(describer.Key);
 				}
 
-				// Clear out any UIHierarchyMarshaler ConnectionString identifiers.
+				// Clear out any UIHierarchyMarshaler or DataSources ToolWindow ConnectionString identifiers.
 				csa.Remove("edmx");
 				csa.Remove("edmu");
 
@@ -2057,14 +2057,14 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		{
 			// Sanity checks.
 
-			// Take the glyph out of Application, HierarchyMarshaler and External utility source dataset
-			// ids if the new source is not Application, HierarchyMarshaler or ExternalUtility.
-			if (source != EnConnectionSource.Application && source != EnConnectionSource.HierarchyMarshaler
+			// Take the glyph out of Application, EntityDataModel and External utility source dataset
+			// ids if the new source is not Application, EntityDataModel or ExternalUtility.
+			if (source != EnConnectionSource.Application && source != EnConnectionSource.EntityDataModel
 				&& source != EnConnectionSource.ExternalUtility)
 			{
 				int pos;
 
-				if ((pos = proposedDatasetId.IndexOf(RctManager.EdmDatasetGlyph)) != -1)
+				if ((pos = proposedDatasetId.IndexOf(RctManager.EdmGlyph)) != -1)
 					proposedDatasetId = proposedDatasetId.Remove(pos, 1);
 				else if ((pos = proposedDatasetId.IndexOf(RctManager.ProjectDatasetGlyph)) != -1)
 					proposedDatasetId = proposedDatasetId.Remove(pos, 1);
@@ -2687,7 +2687,7 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 
 		CsbAgent csa = new(e.Node.ExplorerConnection.DecryptedConnectionString());
 
-		// If the ConnectionString contains any UIHierarchyMarshaler identifiers we skip the
+		// If the ConnectionString contains any UIHierarchyMarshaler or DataSources ToolWindow identifiers we skip the
 		// DatasetKey check because the Connection is earmarked for repair.
 		if (!csa.ContainsKey("edmx") && !csa.ContainsKey("edmu") && csa.ContainsKey(CoreConstants.C_KeyExDatasetKey))
 		{

@@ -131,6 +131,6 @@
     <value>LiveSettingsDialog</value>
   </data>
   <data name="&gt;&gt;$this.Type" xml:space="preserve">
-    <value>BlackbirdSql.EditorExtension.Controls.Config.AbstractLiveSettingsDialog, BlackbirdSql.EditorExtension, Version=11.2.0.0, Culture=neutral, PublicKeyToken=9b15e08ce0093b93</value>
+    <value>BlackbirdSql.EditorExtension.Controls.Config.AbstractLiveSettingsDialog, BlackbirdSql.EditorExtension</value>
   </data>
 </root>

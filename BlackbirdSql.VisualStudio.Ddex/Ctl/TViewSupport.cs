@@ -544,7 +544,7 @@ public class TViewSupport : DataViewSupport,
 		// Attempt linkage startup on a refresh.
 		// Tracer.Trace(GetType(), "OnConnectionStateChanged()", "Calling IsEdm.");
 
-		if (UnsafeCmd.IsUIHierarchyConnectionSource)
+		if (RctManager.IsEdmConnectionSource)
 			return;
 
 		IVsDataConnection site = ViewHierarchy.ExplorerConnection.Connection;
@@ -608,7 +608,7 @@ public class TViewSupport : DataViewSupport,
 				{
 					// Tracer.Trace(GetType(), "OnNodeChanged()", "Calling IsEdm for Dispose.");
 
-					if (UnsafeCmd.IsUIHierarchyConnectionSource)
+					if (RctManager.IsEdmConnectionSource)
 						return;
 
 					// Tracer.Trace(GetType(), "OnNodeChanged()", "Refreshing & Parser Exists: Calling destructive Dispose.");
@@ -625,7 +625,7 @@ public class TViewSupport : DataViewSupport,
 				// Tracer.Trace(GetType(), "OnNodeChanged()", "Calling IsEdm for parser == null.");
 				LinkageParser.UnlockLoadedParser();
 
-				if (UnsafeCmd.IsUIHierarchyConnectionSource)
+				if (RctManager.IsEdmConnectionSource)
 					return;
 
 				LinkageParser.AsyncEnsureLoading(site, 10, 10);
@@ -635,7 +635,7 @@ public class TViewSupport : DataViewSupport,
 		{
 			LinkageParser.UnlockLoadedParser();
 
-			if (UnsafeCmd.IsUIHierarchyConnectionSource)
+			if (RctManager.IsEdmConnectionSource)
 				return;
 
 			if (site.State == DataConnectionState.Open && RctManager.Available)
@@ -665,7 +665,7 @@ public class TViewSupport : DataViewSupport,
 
 		// If the refresh is the result of the EDMX wizard making an illegal name
 		// change, exit. We'll handle this in OnNodeChanged().
-		if (UnsafeCmd.IsUIHierarchyConnectionSource)
+		if (RctManager.IsEdmConnectionSource)
 			return;
 
 		LinkageParser.AsyncEnsureLoading(e.Node, 10, 10);

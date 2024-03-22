@@ -140,7 +140,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			if (_Csa == null || _Csa.Invalidated((IDbConnection)lockedProviderObject))
 			{
 				_Csa = RctManager.EnsureVolatileInstance((IDbConnection)lockedProviderObject,
-					UnsafeCmd.GetConnectionSource());
+					RctManager.GetConnectionSource());
 			}
 
 			DataTable schema = CreateSchema(connection, typeName, parameters);
@@ -175,7 +175,7 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 			{
 				// Tracer.Trace(GetType(), "SelectObjects()", "Finally.");
 
-				if (!UnsafeCmd.IsUIHierarchyConnectionSource)
+				if (!RctManager.IsEdmConnectionSource)
 					LinkageParser.AsyncEnsureLoading((IDbConnection)lockedProviderObject);
 
 				Site.UnlockProviderObject();

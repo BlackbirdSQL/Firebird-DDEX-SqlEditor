@@ -369,9 +369,7 @@
 	  <Compile Include="Model\Events\StorageNotifyDelegate.cs" />
 	  <Compile Include="Controls\Events\TooltipDataNeededEventArgs.cs" />
 	  <Compile Include="Controls\Events\TooltipDataNeededEventHandler.cs" />
-	  <Compile Include="Controls\Dialogs\FileEncodingDialog.cs">
-		  <SubType>Form</SubType>
-	  </Compile>
+	  <Compile Include="Controls\Dialogs\FileEncodingDialog.cs" />
 	  <Compile Include="Controls\Grid\BlockOfCells.cs" />
 	  <Compile Include="Controls\Grid\ButtonInfo.cs" />
 	  <Compile Include="Controls\Grid\CaptureTracker.cs" />

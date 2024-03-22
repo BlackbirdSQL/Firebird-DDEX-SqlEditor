@@ -183,7 +183,7 @@ public class RunningConnectionTable : AbstractRunningConnectionTable
 
 	// ---------------------------------------------------------------------------------
 	/// <summary>
-	/// Restruns a string enumerable of the Rct's registered DatasetKeys.
+	/// Returns a strings enumerable of the Rct's registered DatasetKeys.
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	public IEnumerable<string> RegisteredDatasets

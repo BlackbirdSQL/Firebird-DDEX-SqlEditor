@@ -43,15 +43,15 @@ public class SqlEditorCloneQueryWindowCommand : AbstractSqlEditorCommand
 		{
 			DesignerExplorerServices.OpenNewMiscellaneousSqlFile();
 
-			AuxiliaryDocData auxiliaryDocDataForEditor = GetAuxiliaryDocDataForEditor();
+			AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
 			IBSqlEditorWindowPane lastFocusedSqlEditor = ((IBEditorPackage)ApcManager.DdexPackage).LastFocusedSqlEditor;
 			if (lastFocusedSqlEditor != null)
 			{
-				AuxiliaryDocData auxDocData = ((IBEditorPackage)ApcManager.DdexPackage).GetAuxiliaryDocData(lastFocusedSqlEditor.DocData);
-				if (auxDocData != null)
+				AuxiliaryDocData newAuxDocData = ((IBEditorPackage)ApcManager.DdexPackage).GetAuxiliaryDocData(lastFocusedSqlEditor.DocData);
+				if (newAuxDocData != null)
 				{
-					QueryManager qryMgr = auxiliaryDocDataForEditor.QryMgr;
-					AbstractConnectionStrategy connectionStrategy = auxDocData.QryMgr.ConnectionStrategy;
+					QueryManager qryMgr = auxDocData.QryMgr;
+					AbstractConnectionStrategy connectionStrategy = newAuxDocData.QryMgr.ConnectionStrategy;
 					connectionStrategy.SetConnectionInfo(qryMgr.ConnectionStrategy.ConnectionInfo);
 					IDbConnection connection = connectionStrategy.Connection;
 					if (qryMgr.IsConnected && connection.State != ConnectionState.Open)
@@ -59,7 +59,7 @@ public class SqlEditorCloneQueryWindowCommand : AbstractSqlEditorCommand
 						connection.Open();
 					}
 
-					// auxDocData.IsVirtualWindow = auxiliaryDocDataForEditor.IsVirtualWindow;
+					// auxDocData.IsVirtualWindow = auxDocData.IsVirtualWindow;
 				}
 			}
 		}

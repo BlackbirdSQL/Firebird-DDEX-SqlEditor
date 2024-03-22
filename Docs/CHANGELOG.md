@@ -2,6 +2,12 @@
 
 ## Change log
 
+### v11.2.0.2
+__New/ Enhancements__</br>
+-- None.</br>
+__Fixes__</br>
+-- Fixed bug introduced in V11.2.0.0 where a query without a connection crashed the IDE when a connection was selected from the dropdown.
+
 ### v11.2.0.0
 __New/ Enhancements__</br>
 -- Implemented advanced handling of lost connections and recovery.</br>

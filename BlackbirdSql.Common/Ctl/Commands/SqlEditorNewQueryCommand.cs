@@ -30,15 +30,15 @@ public class SqlEditorNewQueryCommand : AbstractSqlEditorCommand
 
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
-		AuxiliaryDocData auxiliaryDocDataForEditor = GetAuxiliaryDocDataForEditor();
-		if (auxiliaryDocDataForEditor == null)
+		AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
+		if (auxDocData == null)
 		{
 			Exception ex = new("AuxiliaryDocData NOT FOUND");
 			Diag.Dug(ex);
 			return VSConstants.S_OK;
 		}
 
-		QueryManager qryMgr = auxiliaryDocDataForEditor.QryMgr;
+		QueryManager qryMgr = auxDocData.QryMgr;
 
 		if (qryMgr == null)
 		{
@@ -59,15 +59,15 @@ public class SqlEditorNewQueryCommand : AbstractSqlEditorCommand
 	{
 		using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
 		{
-			AuxiliaryDocData auxiliaryDocDataForEditor = GetAuxiliaryDocDataForEditor();
-			if (auxiliaryDocDataForEditor == null)
+			AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
+			if (auxDocData == null)
 			{
 				Exception ex = new("AuxiliaryDocData NOT FOUND");
 				Diag.Dug(ex);
 				return VSConstants.S_OK;
 			}
 
-			QueryManager qryMgr = auxiliaryDocDataForEditor.QryMgr;
+			QueryManager qryMgr = auxDocData.QryMgr;
 
 			if (qryMgr == null)
 			{

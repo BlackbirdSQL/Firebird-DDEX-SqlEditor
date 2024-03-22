@@ -83,7 +83,7 @@ public class TConnectionUIProperties : TConnectionProperties
 			// with an "edmu" property.
 			// The ancestor IVsDataConnectionProperties implementation is identified
 			// with an "edmx" property.
-			if (ConnectionSource == EnConnectionSource.HierarchyMarshaler)
+			if (ConnectionSource == EnConnectionSource.EntityDataModel)
 			{
 				ConnectionStringBuilder.Remove("edmx");
 				ConnectionStringBuilder["edmu"] = true;

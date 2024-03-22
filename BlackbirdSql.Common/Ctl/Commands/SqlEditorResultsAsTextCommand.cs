@@ -27,15 +27,15 @@ public class SqlEditorResultsAsTextCommand : AbstractSqlEditorCommand
 	protected override int HandleQueryStatus(ref OLECMD prgCmd, IntPtr pCmdText)
 	{
 		prgCmd.cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED;
-		AuxiliaryDocData auxiliaryDocDataForEditor = GetAuxiliaryDocDataForEditor();
-		if (auxiliaryDocDataForEditor != null)
+		AuxiliaryDocData auxDocData = GetAuxiliaryDocDataForEditor();
+		if (auxDocData != null)
 		{
 			if (!IsEditorExecuting())
 			{
 				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_ENABLED;
 			}
 
-			if (auxiliaryDocDataForEditor.SqlOutputMode == EnSqlOutputMode.ToText)
+			if (auxDocData.SqlOutputMode == EnSqlOutputMode.ToText)
 			{
 				prgCmd.cmdf |= (uint)OLECMDF.OLECMDF_LATCHED;
 			}

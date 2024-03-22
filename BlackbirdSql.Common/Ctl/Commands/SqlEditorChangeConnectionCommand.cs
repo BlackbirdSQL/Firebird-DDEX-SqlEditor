@@ -2,6 +2,7 @@
 // Microsoft.VisualStudio.Data.Tools.SqlEditor.VSIntegration.SqlEditorChangeConnectionCommand
 
 using System;
+using System.Data;
 using BlackbirdSql.Common.Controls.Interfaces;
 using BlackbirdSql.Common.Model.QueryExecution;
 using Microsoft.VisualStudio;
@@ -34,17 +35,21 @@ public class SqlEditorChangeConnectionCommand : AbstractSqlEditorCommand
 	protected override int HandleExec(uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
 		QueryManager qryMgr = GetQueryManager();
+		IDbConnection newConnection = null;
 
 		if (qryMgr != null)
 		{
 			try
 			{
-				qryMgr.IsConnecting = true;
-				qryMgr.ConnectionStrategy.ChangeConnection(tryOpenConnection: true);
+				newConnection = qryMgr.ConnectionStrategy.ChangeConnection(tryOpenConnection: true);
 			}
 			finally
 			{
-				qryMgr.IsConnecting = false;
+				if (newConnection != null)
+				{
+					qryMgr.IsConnecting = true;
+					qryMgr.IsConnecting = false;
+				}
 			}
 		}
 

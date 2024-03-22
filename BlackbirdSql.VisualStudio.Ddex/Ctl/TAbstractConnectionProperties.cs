@@ -122,7 +122,7 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 
 	/// <summary>
 	/// For connection properties we don't care about any other Connection Sources
-	/// except Application and HierarchyMarshaler being correct.
+	/// except Application and EntityDataModel being correct.
 	/// </summary>
 	protected EnConnectionSource ConnectionSource
 	{
@@ -132,7 +132,7 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 			if (_ConnectionSource != EnConnectionSource.Undefined)
 				return _ConnectionSource;
 
-			_ConnectionSource = UnsafeCmd.GetConnectionSource();
+			_ConnectionSource = RctManager.GetConnectionSource();
 
 			return _ConnectionSource;
 		}
@@ -185,7 +185,7 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 			ConnectionStringBuilder.ConnectionString = connectionString;
 
 			if (ConnectionSource == EnConnectionSource.Application
-				|| ConnectionSource == EnConnectionSource.HierarchyMarshaler)
+				|| ConnectionSource == EnConnectionSource.EntityDataModel)
 			{
 				foreach (Describer describer in CsbAgent.AdvancedKeys)
 				{
@@ -199,7 +199,7 @@ public abstract class TAbstractConnectionProperties : DataSiteableObject<IVsData
 				// with an "edmx" property.
 				// The descendant IVsDataConnectionUIProperties implementation will be
 				// identified with an "edmu" property.
-				if (ConnectionSource == EnConnectionSource.HierarchyMarshaler)
+				if (ConnectionSource == EnConnectionSource.EntityDataModel)
 				{
 					ConnectionStringBuilder["edmx"] = true;
 					ConnectionStringBuilder.Remove("edmu");

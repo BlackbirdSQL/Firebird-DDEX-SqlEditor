@@ -86,7 +86,7 @@ public abstract class AbstractConnectionStrategy : IDisposable
 		{
 			lock (_LockObject)
 			{
-				if (_Connection == null || _ConnectionSeed == RctManager.Seed)
+				if (_Connection == null || _ConnectionInfo == null || _ConnectionSeed == RctManager.Seed)
 					return _Connection;
 
 				// We have to ensure the connection hasn't changed.
@@ -406,10 +406,11 @@ public abstract class AbstractConnectionStrategy : IDisposable
 					connection ??= CreateDbConnectionFromConnectionInfo(ci, tryOpenConnection: false);
 
 					SetConnectionInfo(ci, connection);
+					return Connection;
 				}
 			}
 
-			return Connection;
+			return null;
 		}
 	}
 
