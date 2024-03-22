@@ -11,8 +11,19 @@ using BlackbirdSql.EditorExtension.Properties;
 
 namespace BlackbirdSql.EditorExtension.Controls.Config;
 
-public partial class AbstractCurrentWndOptionsDlg : Form
+public partial class AbstractLiveSettingsDialog : Form
 {
+
+	public AbstractLiveSettingsDialog()
+	{
+		InitializeComponent();
+		Icon = AttributeResources.Properties_16x;
+		Font = VsFontColorPreferences.EnvironmentFont;
+	}
+
+
+
+
 	protected class TreeNodeContext
 	{
 		private readonly int _ControlIndex = -1;
@@ -34,32 +45,19 @@ public partial class AbstractCurrentWndOptionsDlg : Form
 		}
 	}
 
+
+
+
+
 	protected int _FolderImageIndex;
-
 	protected int _LeafSelectedImageIndex = 1;
-
 	protected int _LeafImageIndex = 2;
-
 	protected IBSettingsPage[] _OptionViews;
-
 	private bool[] _OptionViewsInitialized;
-
 	private int _CurrentViewIndex;
 
-	private Button _OkButton;
 
-	private TreeView _ViewSwitcherTree;
 
-	private Panel _CurrentViewPanel;
-
-	private Button _CancelButton;
-
-	public AbstractCurrentWndOptionsDlg()
-	{
-		InitializeComponent();
-		Icon = AttributeResources.Properties_16x;
-		Font = VsFontColorPreferences.EnvironmentFont;
-	}
 
 	[EditorBrowsable(EditorBrowsableState.Advanced)]
 	protected override void OnClosing(CancelEventArgs e)
@@ -106,44 +104,6 @@ public partial class AbstractCurrentWndOptionsDlg : Form
 		return base.ProcessKeyPreview(ref m);
 	}
 
-	private void InitializeComponent()
-	{
-		ComponentResourceManager resources = new ComponentResourceManager(typeof(AbstractCurrentWndOptionsDlg));
-		_OkButton = new Button();
-		_CancelButton = new Button();
-		_ViewSwitcherTree = new TreeView();
-		_CurrentViewPanel = new Panel();
-		SuspendLayout();
-		resources.ApplyResources(_OkButton, "_OkButton");
-		_OkButton.DialogResult = DialogResult.OK;
-		_OkButton.Name = "_OkButton";
-		resources.ApplyResources(_CancelButton, "_CancelButton");
-		_CancelButton.DialogResult = DialogResult.Cancel;
-		_CancelButton.Name = "_CancelButton";
-		_ViewSwitcherTree.HideSelection = false;
-		resources.ApplyResources(_ViewSwitcherTree, "_ViewSwitcherTree");
-		_ViewSwitcherTree.Name = "_ViewSwitcherTree";
-		_ViewSwitcherTree.Scrollable = false;
-		_ViewSwitcherTree.BeforeCollapse += new TreeViewCancelEventHandler(ViewSwitcherTree_BeforeCollapse);
-		_ViewSwitcherTree.BeforeSelect += new TreeViewCancelEventHandler(ViewSwitcherTree_BeforeSelect);
-		_ViewSwitcherTree.AfterSelect += new TreeViewEventHandler(ViewSwitcherTree_AfterSelect);
-		resources.ApplyResources(_CurrentViewPanel, "_CurrentViewPanel");
-		_CurrentViewPanel.Name = "_CurrentViewPanel";
-		AcceptButton = _OkButton;
-		resources.ApplyResources(this, "$this");
-		AutoScaleMode = AutoScaleMode.Font;
-		CancelButton = _CancelButton;
-		Controls.Add(_CurrentViewPanel);
-		Controls.Add(_ViewSwitcherTree);
-		Controls.Add(_CancelButton);
-		Controls.Add(_OkButton);
-		FormBorderStyle = FormBorderStyle.FixedDialog;
-		MaximizeBox = false;
-		MinimizeBox = false;
-		Name = "CurrentWndOptions";
-		ShowInTaskbar = false;
-		ResumeLayout(false);
-	}
 
 
 	private void ViewSwitcherTree_AfterSelect(object sender, TreeViewEventArgs e)

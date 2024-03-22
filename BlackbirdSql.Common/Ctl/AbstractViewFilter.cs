@@ -15,7 +15,7 @@ namespace BlackbirdSql.Common.Ctl;
 
 public abstract class AbstractViewFilter : IOleCommandTarget, IDisposable
 {
-	private IOleCommandTarget _nextTarget;
+	private IOleCommandTarget _NextTarget;
 
 	private IVsTextView _TextView;
 
@@ -25,7 +25,7 @@ public abstract class AbstractViewFilter : IOleCommandTarget, IDisposable
 	{
 		if (view != null)
 		{
-			___(view.AddCommandFilter(this, out _nextTarget));
+			___(view.AddCommandFilter(this, out _NextTarget));
 			_TextView = view;
 		}
 	}
@@ -42,11 +42,11 @@ public abstract class AbstractViewFilter : IOleCommandTarget, IDisposable
 
 	public virtual int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
 	{
-		if (_nextTarget != null)
+		if (_NextTarget != null)
 		{
 			Diag.ThrowIfNotOnUIThread();
 
-			return _nextTarget.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
+			return _NextTarget.Exec(ref pguidCmdGroup, nCmdID, nCmdexecopt, pvaIn, pvaOut);
 		}
 
 		return (int)Constants.MSOCMDERR_E_NOTSUPPORTED;
@@ -54,11 +54,11 @@ public abstract class AbstractViewFilter : IOleCommandTarget, IDisposable
 
 	public virtual int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
 	{
-		if (_nextTarget != null)
+		if (_NextTarget != null)
 		{
 			Diag.ThrowIfNotOnUIThread();
 
-			return _nextTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
+			return _NextTarget.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
 		}
 
 		return (int)Constants.MSOCMDERR_E_NOTSUPPORTED;

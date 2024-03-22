@@ -1115,11 +1115,11 @@ public class TabbedEditorWindowPane : AbstractTabbedEditorWindowPane, IBSqlEdito
 			switch (auxDocData.Strategy.Mode)
 			{
 				case EnEditorMode.CustomOnline:
-					menuId = (uint)EnCommandSet.MenuIdOnlineToolbar;
+					menuId = (uint)EnCommandSet.ToolbarIdOnlineWindow;
 					TabbedEditorUiCtl.InitializeToolbarHost(this, clsidCmdSet, menuId);
 					break;
 				case EnEditorMode.Standard:
-					menuId = (uint)EnCommandSet.MenuIdEditorToolbar;
+					menuId = (uint)EnCommandSet.ToolbarIdEditorWindow;
 					TabbedEditorUiCtl.InitializeToolbarHost(this, clsidCmdSet, menuId);
 					break;
 				default:

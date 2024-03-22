@@ -2,12 +2,17 @@
 
 ## Change log
 
-### v11.1.1.1002 (build for v11.1.1.2)
+### v11.2.0.0
 __New/ Enhancements__</br>
+-- Implemented advanced handling of lost connections and recovery.</br>
+-- Forced final extension package assembly to use Nuget packages installed in referenced projects. This circumvents the mess ToolsVersion 15.0 projects cause with package referencing.</br>
+-- Added selection and print commands to grid results and statistics context menus.</br>
 -- Linkage tables are no longer rebuilt if modifications to a connection will have no affect on them.</br> 
 -- Equivalent connections with shorter names in project app.configs are given precedence when loading connections into the running connection table. This is to try and avoid equivalent connections with long names allocated by the edmx wizard.</br>
--- For the SqlEditor, implemented some shortcut key combinations that correspond with the SqlServer SqlEditor shortcut keys.</br>
+-- For the SqlEditor, implemented several shortcut key combinations that correspond with the SqlServer SqlEditor shortcut keys.</br>
 __Fixes__</br>
+-- Fixed issue where a lost connection did not correctly dispose of a LinkageParser.</br>
+-- Removed debug commands from Editor context menu.</br>
 -- Fixed issue where the `New Query` command was appearing in non-Firebird Server Explorer nodes and the `Reset to defaults` user options command was appearing in the VS Tools menu.</br>
 -- Fixed issue where active connections in SqlEditor documents were not being updated if the connection was modified outside of an editor document. __Warning__: Any modifications to connections will cause the connection to be renewed in all documents where it is active. This includes modifying the connection through Server Explorer, an SqlEditor window and the `New connection` option in the edmx wizard, but does not include connections modified within Project Settings. Any active TTS transactions where the connection is active will be cleared on renewal. 
 

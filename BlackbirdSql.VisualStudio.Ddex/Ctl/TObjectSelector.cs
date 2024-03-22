@@ -11,6 +11,7 @@ using System.Data.Common;
 using BlackbirdSql.Core;
 using BlackbirdSql.Core.Ctl.CommandProviders;
 using BlackbirdSql.Core.Ctl.Diagnostics;
+using BlackbirdSql.Core.Model;
 using BlackbirdSql.VisualStudio.Ddex.Model;
 using BlackbirdSql.VisualStudio.Ddex.Properties;
 using FirebirdSql.Data.FirebirdClient;
@@ -135,6 +136,18 @@ public class TObjectSelector : TObjectSelectorTable
 			schema = GetSchema(connection, typeName, ref restrictions, parameters);
 
 			reader = new AdoDotNetTableReader(schema);
+		}
+		catch (FbException exf)
+		{
+			Tracer.Warning(GetType(), "SelectObjects", "Firebird error: {0}.", exf.Message);
+
+			LinkageParser parser = LinkageParser.GetInstance((IDbConnection)lockedProviderObject);
+			if (parser != null)
+				LinkageParser.DisposeInstance((IDbConnection)lockedProviderObject, parser.Loaded);
+
+			Site.Close();
+
+			reader = new AdoDotNetTableReader(new DataTable());
 		}
 		catch (Exception ex)
 		{

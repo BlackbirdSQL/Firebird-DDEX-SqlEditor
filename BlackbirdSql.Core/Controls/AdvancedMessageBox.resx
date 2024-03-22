@@ -168,6 +168,294 @@
   <data name="pnlMessage.ColumnCount" type="System.Int32, mscorlib">
     <value>1</value>
   </data>
+  <data name="&gt;&gt;lblTopMessage.Name" xml:space="preserve">
+    <value>lblTopMessage</value>
+  </data>
+  <data name="&gt;&gt;lblTopMessage.Type" xml:space="preserve">
+    <value>System.Windows.Forms.LinkLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblTopMessage.Parent" xml:space="preserve">
+    <value>pnlMessage</value>
+  </data>
+  <data name="&gt;&gt;lblTopMessage.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;lblAdditionalInfo.Name" xml:space="preserve">
+    <value>lblAdditionalInfo</value>
+  </data>
+  <data name="&gt;&gt;lblAdditionalInfo.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lblAdditionalInfo.Parent" xml:space="preserve">
+    <value>pnlMessage</value>
+  </data>
+  <data name="&gt;&gt;lblAdditionalInfo.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;pnlAdditional.Name" xml:space="preserve">
+    <value>pnlAdditional</value>
+  </data>
+  <data name="&gt;&gt;pnlAdditional.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;pnlAdditional.Parent" xml:space="preserve">
+    <value>pnlMessage</value>
+  </data>
+  <data name="&gt;&gt;pnlAdditional.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="pnlAdditional.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls /&gt;&lt;Columns Styles="AutoSize,0" /&gt;&lt;Rows Styles="AutoSize,0" /&gt;&lt;/TableLayoutSettings&gt;</value>
+  </data>
+  <data name="pnlMessage.Location" type="System.Drawing.Point, System.Drawing">
+    <value>58, 12</value>
+  </data>
+  <data name="pnlMessage.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 12, 16, 8</value>
+  </data>
+  <data name="pnlMessage.RowCount" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="pnlMessage.Size" type="System.Drawing.Size, System.Drawing">
+    <value>531, 38</value>
+  </data>
+  <data name="pnlMessage.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;pnlMessage.Name" xml:space="preserve">
+    <value>pnlMessage</value>
+  </data>
+  <data name="&gt;&gt;pnlMessage.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;pnlMessage.Parent" xml:space="preserve">
+    <value>pnlForm</value>
+  </data>
+  <data name="&gt;&gt;pnlMessage.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="pnlMessage.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="lblTopMessage" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="lblAdditionalInfo" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="pnlAdditional" Row="2" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,100" /&gt;&lt;Rows Styles="AutoSize,0,AutoSize,0,AutoSize,0" /&gt;&lt;/TableLayoutSettings&gt;</value>
+  </data>
+  <data name="chkDontShow.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Bottom, Left, Right</value>
+  </data>
+  <data name="chkDontShow.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="chkDontShow.CheckAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>TopLeft</value>
+  </data>
+  <data name="chkDontShow.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="chkDontShow.Location" type="System.Drawing.Point, System.Drawing">
+    <value>58, 58</value>
+  </data>
+  <data name="chkDontShow.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 8</value>
+  </data>
+  <data name="chkDontShow.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 30, 0</value>
+  </data>
+  <data name="chkDontShow.Size" type="System.Drawing.Size, System.Drawing">
+    <value>547, 14</value>
+  </data>
+  <data name="chkDontShow.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="chkDontShow.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
+    <value>TopLeft</value>
+  </data>
+  <data name="&gt;&gt;chkDontShow.Name" xml:space="preserve">
+    <value>chkDontShow</value>
+  </data>
+  <data name="&gt;&gt;chkDontShow.Type" xml:space="preserve">
+    <value>BlackbirdSql.Core.Controls.Widgets.WrappingCheckBox, BlackbirdSql.Core, Version=11.2.0.0, Culture=neutral, PublicKeyToken=92bb64ec985b4c9d</value>
+  </data>
+  <data name="&gt;&gt;chkDontShow.Parent" xml:space="preserve">
+    <value>pnlForm</value>
+  </data>
+  <data name="&gt;&gt;chkDontShow.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="grpSeparator.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Left, Right</value>
+  </data>
+  <data name="grpSeparator.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 80</value>
+  </data>
+  <data name="grpSeparator.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 6</value>
+  </data>
+  <data name="grpSeparator.Size" type="System.Drawing.Size, System.Drawing">
+    <value>605, 2</value>
+  </data>
+  <data name="grpSeparator.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="grpSeparator.Text" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;grpSeparator.Name" xml:space="preserve">
+    <value>grpSeparator</value>
+  </data>
+  <data name="&gt;&gt;grpSeparator.Type" xml:space="preserve">
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;grpSeparator.Parent" xml:space="preserve">
+    <value>pnlForm</value>
+  </data>
+  <data name="&gt;&gt;grpSeparator.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <metadata name="toolStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
+  <data name="pnlButtons.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Left, Right</value>
+  </data>
+  <data name="pnlButtons.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="pnlButtons.ColumnCount" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="&gt;&gt;toolStrip1.Name" xml:space="preserve">
+    <value>toolStrip1</value>
+  </data>
+  <data name="&gt;&gt;toolStrip1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStrip1.Parent" xml:space="preserve">
+    <value>pnlButtons</value>
+  </data>
+  <data name="&gt;&gt;toolStrip1.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;button1.Name" xml:space="preserve">
+    <value>button1</value>
+  </data>
+  <data name="&gt;&gt;button1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;button1.Parent" xml:space="preserve">
+    <value>pnlButtons</value>
+  </data>
+  <data name="&gt;&gt;button1.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;button2.Name" xml:space="preserve">
+    <value>button2</value>
+  </data>
+  <data name="&gt;&gt;button2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;button2.Parent" xml:space="preserve">
+    <value>pnlButtons</value>
+  </data>
+  <data name="&gt;&gt;button2.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;button3.Name" xml:space="preserve">
+    <value>button3</value>
+  </data>
+  <data name="&gt;&gt;button3.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;button3.Parent" xml:space="preserve">
+    <value>pnlButtons</value>
+  </data>
+  <data name="&gt;&gt;button3.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;button4.Name" xml:space="preserve">
+    <value>button4</value>
+  </data>
+  <data name="&gt;&gt;button4.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;button4.Parent" xml:space="preserve">
+    <value>pnlButtons</value>
+  </data>
+  <data name="&gt;&gt;button4.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;button5.Name" xml:space="preserve">
+    <value>button5</value>
+  </data>
+  <data name="&gt;&gt;button5.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;button5.Parent" xml:space="preserve">
+    <value>pnlButtons</value>
+  </data>
+  <data name="&gt;&gt;button5.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="pnlButtons.Location" type="System.Drawing.Point, System.Drawing">
+    <value>16, 88</value>
+  </data>
+  <data name="pnlButtons.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>16, 0, 16, 0</value>
+  </data>
+  <data name="pnlButtons.MinimumSize" type="System.Drawing.Size, System.Drawing">
+    <value>562, 0</value>
+  </data>
+  <data name="pnlButtons.RowCount" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="pnlButtons.Size" type="System.Drawing.Size, System.Drawing">
+    <value>573, 29</value>
+  </data>
+  <data name="pnlButtons.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;pnlButtons.Name" xml:space="preserve">
+    <value>pnlButtons</value>
+  </data>
+  <data name="&gt;&gt;pnlButtons.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;pnlButtons.Parent" xml:space="preserve">
+    <value>pnlForm</value>
+  </data>
+  <data name="&gt;&gt;pnlButtons.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="pnlButtons.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="toolStrip1" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="button1" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="button2" Row="0" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="button3" Row="0" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="button4" Row="0" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="button5" Row="0" RowSpan="1" Column="5" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="AutoSize,0,Percent,100,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0" /&gt;&lt;Rows Styles="AutoSize,0" /&gt;&lt;/TableLayoutSettings&gt;</value>
+  </data>
+  <data name="pnlForm.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="pnlForm.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 8</value>
+  </data>
+  <data name="pnlForm.RowCount" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="pnlForm.Size" type="System.Drawing.Size, System.Drawing">
+    <value>605, 117</value>
+  </data>
+  <data name="pnlForm.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;pnlForm.Name" xml:space="preserve">
+    <value>pnlForm</value>
+  </data>
+  <data name="&gt;&gt;pnlForm.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;pnlForm.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;pnlForm.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="pnlForm.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
+    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="pnlIcon" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="pnlMessage" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="chkDontShow" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="grpSeparator" Row="2" RowSpan="1" Column="0" ColumnSpan="2" /&gt;&lt;Control Name="pnlButtons" Row="3" RowSpan="1" Column="0" ColumnSpan="2" /&gt;&lt;/Controls&gt;&lt;Columns Styles="AutoSize,0,Percent,100" /&gt;&lt;Rows Styles="AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,Absolute,20" /&gt;&lt;/TableLayoutSettings&gt;</value>
+  </data>
   <data name="lblTopMessage.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
@@ -294,122 +582,35 @@
   <data name="pnlAdditional.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
     <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls /&gt;&lt;Columns Styles="AutoSize,0" /&gt;&lt;Rows Styles="AutoSize,0" /&gt;&lt;/TableLayoutSettings&gt;</value>
   </data>
-  <data name="pnlMessage.Location" type="System.Drawing.Point, System.Drawing">
-    <value>58, 12</value>
-  </data>
-  <data name="pnlMessage.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 12, 16, 8</value>
-  </data>
-  <data name="pnlMessage.RowCount" type="System.Int32, mscorlib">
-    <value>3</value>
-  </data>
-  <data name="pnlMessage.Size" type="System.Drawing.Size, System.Drawing">
-    <value>531, 38</value>
-  </data>
-  <data name="pnlMessage.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="&gt;&gt;pnlMessage.Name" xml:space="preserve">
-    <value>pnlMessage</value>
-  </data>
-  <data name="&gt;&gt;pnlMessage.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;pnlMessage.Parent" xml:space="preserve">
-    <value>pnlForm</value>
-  </data>
-  <data name="&gt;&gt;pnlMessage.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="pnlMessage.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="lblTopMessage" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="lblAdditionalInfo" Row="1" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="pnlAdditional" Row="2" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="Percent,100" /&gt;&lt;Rows Styles="AutoSize,0,AutoSize,0,AutoSize,0" /&gt;&lt;/TableLayoutSettings&gt;</value>
-  </data>
-  <data name="chkDontShow.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Bottom, Left, Right</value>
-  </data>
-  <data name="chkDontShow.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="chkDontShow.CheckAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopLeft</value>
-  </data>
-  <data name="chkDontShow.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="chkDontShow.Location" type="System.Drawing.Point, System.Drawing">
-    <value>58, 58</value>
-  </data>
-  <data name="chkDontShow.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 0, 0, 8</value>
-  </data>
-  <data name="chkDontShow.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 0, 30, 0</value>
-  </data>
-  <data name="chkDontShow.Size" type="System.Drawing.Size, System.Drawing">
-    <value>547, 14</value>
-  </data>
-  <data name="chkDontShow.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
-  </data>
-  <data name="chkDontShow.TextAlign" type="System.Drawing.ContentAlignment, System.Drawing">
-    <value>TopLeft</value>
-  </data>
-  <data name="&gt;&gt;chkDontShow.Name" xml:space="preserve">
-    <value>chkDontShow</value>
-  </data>
-  <data name="&gt;&gt;chkDontShow.Type" xml:space="preserve">
-    <value>BlackbirdSql.Core.Controls.MessageBoxDialog+WrappingCheckBox, BlackbirdSql.Core, Version=11.1.1.1002, Culture=neutral, PublicKeyToken=92bb64ec985b4c9d</value>
-  </data>
-  <data name="&gt;&gt;chkDontShow.Parent" xml:space="preserve">
-    <value>pnlForm</value>
-  </data>
-  <data name="&gt;&gt;chkDontShow.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="grpSeparator.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Left, Right</value>
-  </data>
-  <data name="grpSeparator.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 80</value>
-  </data>
-  <data name="grpSeparator.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 0, 0, 6</value>
-  </data>
-  <data name="grpSeparator.Size" type="System.Drawing.Size, System.Drawing">
-    <value>605, 2</value>
-  </data>
-  <data name="grpSeparator.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="grpSeparator.Text" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;grpSeparator.Name" xml:space="preserve">
-    <value>grpSeparator</value>
-  </data>
-  <data name="&gt;&gt;grpSeparator.Type" xml:space="preserve">
-    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;grpSeparator.Parent" xml:space="preserve">
-    <value>pnlForm</value>
-  </data>
-  <data name="&gt;&gt;grpSeparator.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="pnlButtons.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Left, Right</value>
-  </data>
-  <data name="pnlButtons.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="pnlButtons.ColumnCount" type="System.Int32, mscorlib">
-    <value>6</value>
-  </data>
   <metadata name="toolStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
   <data name="toolStrip1.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>None</value>
+  </data>
+  <data name="toolStrip1.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="toolStrip1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>80, 25</value>
+  </data>
+  <data name="toolStrip1.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="toolStrip1.Text" xml:space="preserve">
+    <value>toolStrip1</value>
+  </data>
+  <data name="&gt;&gt;toolStrip1.Name" xml:space="preserve">
+    <value>toolStrip1</value>
+  </data>
+  <data name="&gt;&gt;toolStrip1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;toolStrip1.Parent" xml:space="preserve">
+    <value>pnlButtons</value>
+  </data>
+  <data name="&gt;&gt;toolStrip1.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
   <data name="tbBtnHelp.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -511,30 +712,6 @@
   </data>
   <data name="tbBtnAdvanced.Text" xml:space="preserve">
     <value>Show technical details</value>
-  </data>
-  <data name="toolStrip1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
-  </data>
-  <data name="toolStrip1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>80, 25</value>
-  </data>
-  <data name="toolStrip1.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
-  </data>
-  <data name="toolStrip1.Text" xml:space="preserve">
-    <value>toolStrip1</value>
-  </data>
-  <data name="&gt;&gt;toolStrip1.Name" xml:space="preserve">
-    <value>toolStrip1</value>
-  </data>
-  <data name="&gt;&gt;toolStrip1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ToolStrip, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;toolStrip1.Parent" xml:space="preserve">
-    <value>pnlButtons</value>
-  </data>
-  <data name="&gt;&gt;toolStrip1.ZOrder" xml:space="preserve">
-    <value>0</value>
   </data>
   <data name="button1.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Bottom, Right</value>
@@ -746,69 +923,6 @@
   <data name="&gt;&gt;button5.ZOrder" xml:space="preserve">
     <value>5</value>
   </data>
-  <data name="pnlButtons.Location" type="System.Drawing.Point, System.Drawing">
-    <value>16, 88</value>
-  </data>
-  <data name="pnlButtons.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>16, 0, 16, 0</value>
-  </data>
-  <data name="pnlButtons.MinimumSize" type="System.Drawing.Size, System.Drawing">
-    <value>562, 0</value>
-  </data>
-  <data name="pnlButtons.RowCount" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="pnlButtons.Size" type="System.Drawing.Size, System.Drawing">
-    <value>573, 29</value>
-  </data>
-  <data name="pnlButtons.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;pnlButtons.Name" xml:space="preserve">
-    <value>pnlButtons</value>
-  </data>
-  <data name="&gt;&gt;pnlButtons.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;pnlButtons.Parent" xml:space="preserve">
-    <value>pnlForm</value>
-  </data>
-  <data name="&gt;&gt;pnlButtons.ZOrder" xml:space="preserve">
-    <value>4</value>
-  </data>
-  <data name="pnlButtons.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="toolStrip1" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="button1" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="button2" Row="0" RowSpan="1" Column="2" ColumnSpan="1" /&gt;&lt;Control Name="button3" Row="0" RowSpan="1" Column="3" ColumnSpan="1" /&gt;&lt;Control Name="button4" Row="0" RowSpan="1" Column="4" ColumnSpan="1" /&gt;&lt;Control Name="button5" Row="0" RowSpan="1" Column="5" ColumnSpan="1" /&gt;&lt;/Controls&gt;&lt;Columns Styles="AutoSize,0,Percent,100,AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0" /&gt;&lt;Rows Styles="AutoSize,0" /&gt;&lt;/TableLayoutSettings&gt;</value>
-  </data>
-  <data name="pnlForm.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
-  </data>
-  <data name="pnlForm.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 0, 0, 8</value>
-  </data>
-  <data name="pnlForm.RowCount" type="System.Int32, mscorlib">
-    <value>4</value>
-  </data>
-  <data name="pnlForm.Size" type="System.Drawing.Size, System.Drawing">
-    <value>605, 117</value>
-  </data>
-  <data name="pnlForm.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;pnlForm.Name" xml:space="preserve">
-    <value>pnlForm</value>
-  </data>
-  <data name="&gt;&gt;pnlForm.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TableLayoutPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;pnlForm.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;pnlForm.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="pnlForm.LayoutSettings" type="System.Windows.Forms.TableLayoutSettings, System.Windows.Forms">
-    <value>&lt;?xml version="1.0" encoding="utf-16"?&gt;&lt;TableLayoutSettings&gt;&lt;Controls&gt;&lt;Control Name="pnlIcon" Row="0" RowSpan="1" Column="0" ColumnSpan="1" /&gt;&lt;Control Name="pnlMessage" Row="0" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="chkDontShow" Row="1" RowSpan="1" Column="1" ColumnSpan="1" /&gt;&lt;Control Name="grpSeparator" Row="2" RowSpan="1" Column="0" ColumnSpan="2" /&gt;&lt;Control Name="pnlButtons" Row="3" RowSpan="1" Column="0" ColumnSpan="2" /&gt;&lt;/Controls&gt;&lt;Columns Styles="AutoSize,0,Percent,100" /&gt;&lt;Rows Styles="AutoSize,0,AutoSize,0,AutoSize,0,AutoSize,0,Absolute,20" /&gt;&lt;/TableLayoutSettings&gt;</value>
-  </data>
   <metadata name="imgIcons.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>122, 17</value>
   </metadata>
@@ -817,7 +931,7 @@
         AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
         LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
         ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAABW
-        BwAAAk1TRnQBSQFMAgEBAgEAARwBAAEcAQABEAEAARABAAT/AQkBAAj/AUIBTQE2AQQGAAE2AQQCAAEo
+        BwAAAk1TRnQBSQFMAgEBAgEAASQBAAEkAQABEAEAARABAAT/AQkBAAj/AUIBTQE2AQQGAAE2AQQCAAEo
         AwABQAMAARADAAEBAQABCAYAAQQYAAGAAgABgAMAAoABAAGAAwABgAEAAYABAAKAAgADwAEAAcAB3AHA
         AQAB8AHKAaYBAAEzBQABMwEAATMBAAEzAQACMwIAAxYBAAMcAQADIgEAAykBAANVAQADTQEAA0IBAAM5
         AQABgAF8Af8BAAJQAf8BAAGTAQAB1gEAAf8B7AHMAQABxgHWAe8BAAHWAucBAAGQAakBrQIAAf8BMwMA
@@ -909,7 +1023,7 @@
     <value>System.Windows.Forms.ImageList, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
-    <value>MessageBoxDialog</value>
+    <value>AdvancedMessageBox</value>
   </data>
   <data name="&gt;&gt;$this.Type" xml:space="preserve">
     <value>System.Windows.Forms.Form, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>

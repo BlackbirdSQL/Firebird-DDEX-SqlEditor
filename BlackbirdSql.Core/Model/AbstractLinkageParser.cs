@@ -68,9 +68,14 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 		_Instances.Add(connection, this);
 
 		// Use reflection. The connection may not be in our app domain.
+
+		// connection.Disposed += OnConnectionDisposed;
 		Reflect.AddEventHandler(this, "OnConnectionDisposed", BindingFlags.Instance | BindingFlags.NonPublic,
 			connection, "Disposed", BindingFlags.Instance | BindingFlags.Public);
-		// connection.Disposed += OnConnectionDisposed;
+
+		// ((FbConnection)connection).StateChange += OnConnectionStateChange;
+		Reflect.AddEventHandler(this, "OnConnectionStateChange", BindingFlags.Instance | BindingFlags.NonPublic,
+			connection, "StateChange", BindingFlags.Instance | BindingFlags.Public);
 
 		_InstanceConnection = connection;
 		_TransientString = connection.ConnectionString;
@@ -163,7 +168,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 			return false;
 
 		if (!ApcManager.IdeShutdownState && isValidTransient && _Enabled && !_IsIntransient
-			&&  (Loaded || _LinkStage >= EnLinkStage.TriggerDependenciesLoaded))
+			&&  (Loaded  || (!_Disabling && _LinkStage >= EnLinkStage.TriggerDependenciesLoaded)))
 		{
 			if (!Loaded)
 				EnsureLoadedImpl();
@@ -182,6 +187,8 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 			_TransientParser = null;
 			InvalidateEquivalentParsers(_InstanceConnection.ConnectionString);
 		}
+
+		// Tracer.Trace(typeof(AbstractLinkageParser), "Dispose(bool)", "DISPOSING OF PARSER. isValidTransient: {0}.", isValidTransient);
 
 		_Instances.Remove(_InstanceConnection);
 
@@ -207,7 +214,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// True.
 	/// </param>
 	/// <returns>True of the parser was found and disposed else false.</returns>
-	protected static bool DisposeInstance(FbConnection connection, bool isValidTransient)
+	public static bool DisposeInstance(IDbConnection connection, bool isValidTransient)
 	{
 		// Tracer.Trace(typeof(AbstractLinkageParser), "DisposeInstance(FbConnection)");
 
@@ -219,6 +226,8 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 
 			if (obj is not AbstractLinkageParser parser)
 				return false;
+
+			// Tracer.Trace(typeof(AbstractLinkageParser), "DisposeInstance(FbConnection)", "isValidTransient: {0}.", isValidTransient);
 
 			parser.Dispose(isValidTransient);
 		}
@@ -297,6 +306,7 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// </summary>
 	protected bool _Enabled = true;
 
+	protected bool _Disabling = false;
 
 	/// <summary>
 	/// The total elapsed time in milliseconds that the parser was actively
@@ -1293,6 +1303,8 @@ public abstract class AbstractLinkageParser : AbstruseLinkageParser
 	/// </summary>
 	// ---------------------------------------------------------------------------------
 	protected abstract void OnConnectionDisposed(object sender, EventArgs e);
+
+	protected abstract void OnConnectionStateChange(object sender, StateChangeEventArgs e);
 
 
 	#endregion Event handlers

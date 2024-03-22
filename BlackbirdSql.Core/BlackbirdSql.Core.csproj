@@ -30,14 +30,17 @@
 
 	<ItemGroup>
 	  <Compile Include="Controls\AdvancedInformationDialog.cs">
-	    <SubType>Form</SubType>
+		  <SubType>Form</SubType>
 	  </Compile>
 	  <Compile Include="Controls\ComponentModel\AbstractFolderNameEditor.cs" />
 	  <Compile Include="Controls\ComponentModel\AbstractFileNameEditor.cs" />
 	  <Compile Include="Controls\Enums\EnAdvancedInfoType.cs" />
 	  <Compile Include="Controls\Interfaces\IBDataConnectionDlgHandler.cs" />
-	  <Compile Include="Controls\MessageBoxDialog.cs">
+	  <Compile Include="Controls\AdvancedMessageBox.cs">
 	    <SubType>Form</SubType>
+	  </Compile>
+	  <Compile Include="Controls\AdvancedMessageBox.Designer.cs">
+		  <DependentUpon>AdvancedMessageBox.cs</DependentUpon>
 	  </Compile>
 	  <Compile Include="Controls\MessageBoxParent.cs" />
 	  <Compile Include="Controls\Config\AbstruseSettingsPage.cs" />
@@ -57,9 +60,16 @@
 	  <Compile Include="Controls\Interfaces\IBEditorWindowPane.cs" />
 	  <Compile Include="Controls\LinkageParserTaskHandler.cs" />
 	  <Compile Include="Controls\PrivacyConfirmationDialog.cs">
-	    <SubType>Form</SubType>
+		  <SubType>Form</SubType>
+	  </Compile>
+	  <Compile Include="Controls\AdvancedInformationDialog.Designer.cs">
+		  <DependentUpon>AdvancedInformationDialog.cs</DependentUpon>
+	  </Compile>
+	  <Compile Include="Controls\PrivacyConfirmationDialog.Designer.cs">
+		  <DependentUpon>PrivacyConfirmationDialog.cs</DependentUpon>
 	  </Compile>
 	  <Compile Include="Controls\Widgets\PrivateRenderer.cs" />
+	  <Compile Include="Controls\Widgets\WrappingCheckBox.cs" />
 	  <Compile Include="Ctl\AbstractGlobalsAgent.cs" />
 	  <Compile Include="AbstractPackageController.cs" />
 	  <Compile Include="Ctl\ComponentModel\AbstractGlobalizedRadioAttribute.cs" />
@@ -233,10 +243,14 @@
 	  <Content Include="blackbirdsql.ico" />
 	</ItemGroup>
 	<ItemGroup>
-	  <EmbeddedResource Include="Controls\AdvancedInformationDialog.resx" />
-	  <EmbeddedResource Include="Controls\MessageBoxDialog.resx" />
+	  <EmbeddedResource Include="Controls\AdvancedInformationDialog.resx">
+		  <DependentUpon>AdvancedInformationDialog.cs</DependentUpon>
+	  </EmbeddedResource>
+	  <EmbeddedResource Include="Controls\AdvancedMessageBox.resx">
+		  <DependentUpon>AdvancedMessageBox.cs</DependentUpon>
+	  </EmbeddedResource>
 	  <EmbeddedResource Include="Controls\PrivacyConfirmationDialog.resx">
-	    <SubType>Designer</SubType>
+		  <DependentUpon>PrivacyConfirmationDialog.cs</DependentUpon>
 	  </EmbeddedResource>
 	  <EmbeddedResource Include="Properties\AttributeResources.resx">
 	    <Generator>ResXFileCodeGenerator</Generator>

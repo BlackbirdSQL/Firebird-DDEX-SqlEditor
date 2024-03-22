@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using BlackbirdSql.Core.Ctl;
 using BlackbirdSql.Core.Ctl.Config;
+using BlackbirdSql.Core.Ctl.Diagnostics;
 using BlackbirdSql.Core.Ctl.Extensions;
 using BlackbirdSql.Core.Model.Enums;
 using BlackbirdSql.Core.Model.Interfaces;
@@ -2635,15 +2636,38 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 	/// </summary>
 	private void OnExplorerConnectionNodeChanged(object sender, DataExplorerNodeEventArgs e)
 	{
+		if (e.Node == null || e.Node.ExplorerConnection == null)
+			return;
+
+
+		if (e.Node.ExplorerConnection.Connection != null
+			&& e.Node.ExplorerConnection.Connection.State != DataConnectionState.Open)
+		{
+			LinkageParser parser = LinkageParser.GetInstance(e.Node.ExplorerConnection.Connection);
+
+			if (parser != null)
+			{
+				// Tracer.Trace(GetType(), "OnExplorerConnectionNodeChanged()", "Disposing of parser");
+				LinkageParser.DisposeInstance(e.Node.ExplorerConnection.Connection, parser.Loaded);
+			}
+
+			// else
+			//	Tracer.Trace(GetType(), "OnExplorerConnectionNodeChanged()", "Parser not found. Could not dispose");
+
+			return;
+		}
+
+
+		// Tracer.Trace(GetType(), "OnExplorerConnectionNodeChanged()");
+
 		if (_Instance != null && _EventsCardinal != 0)
 			return;
 
 		DisableEvents();
 
 		// We're only interested in node value changes.
-		if (e.Node == null || e.Node.IsExpanding || e.Node.IsRefreshing || e.Node.ExplorerConnection == null
-			|| e.Node.ExplorerConnection.ConnectionNode == null
-			|| e.Node.ExplorerConnection.DisplayName == null
+		if (e.Node.IsExpanding || e.Node.IsRefreshing || e.Node.ExplorerConnection.ConnectionNode == null
+			|| e.Node.ExplorerConnection.DisplayName == null 
 			|| e.Node.ExplorerConnection.EncryptedConnectionString == null
 			|| e.Node != e.Node.ExplorerConnection.ConnectionNode)
 		{
@@ -2652,7 +2676,6 @@ public abstract class AbstruseRunningConnectionTable : PublicDictionary<string, 
 		}
 
 
-		// Tracer.Trace(GetType(), "OnExplorerConnectionNodeChanged()");
 
 		// If instance is null there's been a shutdown and we've been left dangling.
 		if (_Instance == null)

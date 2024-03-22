@@ -64,6 +64,11 @@ public abstract class VS : Core.VS
 	/// </summary>
 	public const string SqlEditorCommandsGuid = "52692960-56BC-4989-B5D3-94C47A513E8D";
 
+	public const string VSDebugCommandGuid = "C9DD4A59-47FB-11d2-83E7-00C04F9902C1";
+
+	public static readonly Guid ClsidVSDebugCommand = new Guid(VSDebugCommandGuid);
+
+
 	private static IVsExtensibility3 _S_Extensibility;
 
 
@@ -301,7 +306,7 @@ public abstract class VS : Core.VS
 	{
 		// Tracer.Trace(typeof(VS), "GetTextWriterForQueryResultsToFile()");
 
-		FileEncodingDlg fileEncodingDialog = new FileEncodingDlg();
+		FileEncodingDialog fileEncodingDlg = new FileEncodingDialog();
 		string text = Properties.ControlsResources.SqlExportFromGridFilterTabDelimitted;
 
 		if (xmlResults)
@@ -309,12 +314,12 @@ public abstract class VS : Core.VS
 
 
 		text = text + "|" + Properties.ControlsResources.SqlExportFromGridFilterAllFiles;
-		string fileNameUsingSaveDialog = GetFileNameUsingSaveDialog(MakeVsFilterString(text), Properties.ControlsResources.SaveResults, intialDirectory, fileEncodingDialog);
+		string fileNameUsingSaveDialog = GetFileNameUsingSaveDialog(MakeVsFilterString(text), Properties.ControlsResources.SaveResults, intialDirectory, fileEncodingDlg);
 
 		if (fileNameUsingSaveDialog != null)
 		{
 			intialDirectory = Path.GetDirectoryName(fileNameUsingSaveDialog);
-			return new StreamWriter(fileNameUsingSaveDialog, append: false, fileEncodingDialog.Encoding, 8192)
+			return new StreamWriter(fileNameUsingSaveDialog, append: false, fileEncodingDlg.Encoding, 8192)
 			{
 				AutoFlush = false
 			};

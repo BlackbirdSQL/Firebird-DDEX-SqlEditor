@@ -70,9 +70,8 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		{
 			cmd = new DataViewMenuCommand(itemId, commandId, delegate
 			{
-				// Tracer.Trace(GetType(), "CreateCommand()", "ValidateSolution");
-
-				// Tracer.Trace(GetType(), "CreateCommand()", "NewDesignerQuery itemid: {0}, commandid: {1} systemType {2}.", itemId, commandId.ID, nodeSystemType.ToString());
+				// if (!command.Properties.Contains("GotText"))
+				//	Tracer.Trace(GetType(), "CreateCommand()", "ValidateSolution");
 
 				cmd.Visible = true;
 				cmd.Enabled = ApcManager.CanValidateSolution && !ApcManager.SolutionValidating;
@@ -94,6 +93,9 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		{
 			cmd = new DataViewMenuCommand(itemId, commandId, delegate
 			{
+				// if (!command.Properties.Contains("GotText"))
+				//	Tracer.Trace(GetType(), "CreateCommand()", "TraceRct");
+
 #if DEBUG
 				cmd.Visible = cmd.Enabled = true;
 #else
@@ -117,6 +119,9 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		{
 			cmd = new DataViewMenuCommand(itemId, commandId, delegate
 			{
+				// if (!command.Properties.Contains("GotText"))
+				//	Tracer.Trace(GetType(), "CreateCommand()", "NewSqlQuery");
+
 				cmd.Visible = cmd.Enabled = true;
 
 				node = Site.ExplorerConnection.ConnectionNode;
@@ -137,13 +142,13 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		{
 			cmd = new DataViewMenuCommand(itemId, commandId, delegate
 			{
-				// Tracer.Trace(GetType(), "CreateCommand()", "NewDesignerQuery");
+				// if (!command.Properties.Contains("GotText"))
+				//	Tracer.Trace(GetType(), "CreateCommand()", "NewDesignerQuery");
+
 				cmd.Visible = cmd.Enabled = true;
 
 				node = Site.ExplorerConnection.FindNode(itemId);
 				nodeSystemType = node.NodeSystemType();
-
-				// Tracer.Trace(GetType(), "CreateCommand()", "NewDesignerQuery itemid: {0}, commandid: {1} systemType {2}.", itemId, commandId.ID, nodeSystemType.ToString());
 
 				if (cmd.Visible && !command.Properties.Contains("GotText")
 					&& (label = GlobalizeLabel(cmd, nodeSystemType)) != string.Empty)
@@ -180,6 +185,9 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		{
 			cmd = new DataViewMenuCommand(itemId, commandId, delegate
 			{
+				// if (!command.Properties.Contains("GotText"))
+				//	Tracer.Trace(GetType(), "CreateCommand()", "OpenTextObject");
+
 				node = Site.ExplorerConnection.FindNode(itemId);
 
 				IVsDataExplorerNode scriptNode = node.ScriptNode();
@@ -207,6 +215,9 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		{
 			cmd = new DataViewMenuCommand(itemId, commandId, delegate
 			{
+				// if (!command.Properties.Contains("GotText"))
+				//	Tracer.Trace(GetType(), "CreateCommand()", "OpenAlterTextObject");
+
 				node = Site.ExplorerConnection.FindNode(itemId);
 
 				IVsDataExplorerNode scriptNode = node.ScriptNode();
@@ -231,9 +242,9 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		}
 		else if (commandId.Equals(CommandProperties.OverrideRetrieveDataLocal))
 		{
+
 			// We're hiding the retrieve data command at the local node level so that we can use
 			// our retrieve data command with the correct text.
-			node = Site.ExplorerConnection.FindNode(itemId);
 
 			cmd = new DataViewMenuCommand(itemId, commandId,
 				delegate
@@ -249,6 +260,9 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 		}
 		else if (commandId.Equals(CommandProperties.RetrieveDesignerData))
 		{
+			// if (!command.Properties.Contains("GotText"))
+			//	Tracer.Trace(GetType(), "CreateCommand()", "RetrieveDesignerData");
+
 			node = Site.ExplorerConnection.FindNode(itemId);
 
 			cmd = new DataViewMenuCommand(itemId, commandId, delegate

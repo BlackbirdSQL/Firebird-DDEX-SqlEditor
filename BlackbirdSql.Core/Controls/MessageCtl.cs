@@ -560,7 +560,7 @@ public class MessageCtl
 			m_caption = form.Text;
 		}
 
-		using MessageBoxDialog messageBoxForm = new MessageBoxDialog();
+		using AdvancedMessageBox messageBoxForm = new AdvancedMessageBox();
 		messageBoxForm.SetButtonText(m_buttonTextArray);
 		messageBoxForm.Buttons = m_buttons;
 		messageBoxForm.Caption = m_caption;
@@ -572,7 +572,7 @@ public class MessageCtl
 		messageBoxForm.CheckBoxText = m_checkBoxText;
 		messageBoxForm.IsCheckBoxChecked = m_isCheckBoxChecked;
 		messageBoxForm.ShowCheckBox = m_showCheckBox;
-		messageBoxForm.MessageLevelCount = m_messageLevelCount;
+		messageBoxForm.MaxMessages = m_messageLevelCount;
 		messageBoxForm.ShowHelpButton = m_showHelpButton;
 		messageBoxForm.CopyToClipboardInternalEvent += OnCopyToClipboardEventInternal;
 		if (m_customSymbol != null)
@@ -651,7 +651,7 @@ public class MessageCtl
 
 	public static string GetMessageText(Exception exception)
 	{
-		using MessageBoxDialog messageBoxForm = new MessageBoxDialog();
+		using AdvancedMessageBox messageBoxForm = new AdvancedMessageBox();
 		messageBoxForm.ExMessage = exception;
 		return messageBoxForm.BuildMessageText(isForEmail: false, isInternal: false);
 	}

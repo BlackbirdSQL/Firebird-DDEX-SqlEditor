@@ -757,7 +757,7 @@ public abstract class AbstractEditorTab : IDisposable, IVsDesignerInfo, IVsMulti
 		{
 			for (int j = 0; j < cCmds; j++)
 			{
-				if (prgCmds[j].cmdID == (uint)EnCommandSet.MenuIdOnlineToolbar)
+				if (prgCmds[j].cmdID == (uint)EnCommandSet.ToolbarIdOnlineWindow)
 				{
 					prgCmds[j].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);
 					num = 0;

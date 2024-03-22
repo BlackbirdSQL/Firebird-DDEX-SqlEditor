@@ -148,8 +148,23 @@ public class TObjectSelectorRoot : AdoDotNetRootObjectSelector
 
 			reader = new AdoDotNetTableReader(schema);
 		}
+		catch (FbException exf)
+		{
+			Tracer.Warning(GetType(), "SelectObjects", "Firebird error: {0}.", exf.Message);
+
+			LinkageParser parser = LinkageParser.GetInstance((IDbConnection)lockedProviderObject);
+			if (parser != null)
+				LinkageParser.DisposeInstance((IDbConnection)lockedProviderObject, parser.Loaded);
+
+			lockedProviderObject = null;
+			Site.UnlockProviderObject();
+			Site.Close();
+
+			reader = new AdoDotNetTableReader(new DataTable());
+		}
 		catch (Exception ex)
 		{
+			lockedProviderObject = null;
 			Diag.Dug(ex);
 			throw ex;
 		}

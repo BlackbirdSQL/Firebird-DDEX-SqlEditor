@@ -9,29 +9,32 @@ namespace BlackbirdSql.Core.Ctl.Enums;
 
 // [Guid(CommandProperties.CommandSetGuid)]
 
+/// <summary>
+/// When specifiec, suffix is the parent/owner.
+/// </summary>
 public enum EnCommandSet
 {
-	MenuIdToplevelMenu = 0xC201, // 49665
-	MenuIdEditorToolbar = 0x5000, // 20480
-	MenuIdOnlineToolbar = 0x5001, // 20481
+	MenuIdToplevel = 0xC201, // 49665
+	ToolbarIdEditorWindow = 0x5000, // 20480
+	ToolbarIdOnlineWindow = 0x5001, // 20481
 
-	MenuIdEditorToolbarGroup = 0x5100, // 20736
-	MenuIdOnlineToolbarGroup = 0x5101, // 20737
-	MenuIdReusableGroup = 0x5102, // 20738
+	GrpIdEditorToolbar = 0x5100, // 20736
+	GrpIdOnlineToolbar = 0x5101, // 20737
+	GrpIdReusableWell = 0x5102, // 20738
 
-	MenuIdSeRootGroup = 0x5200, // 20992
-	MenuIdSeNodeGroup = 0x5201, // 20993
-	MenuIdSeStaticGroup = 0x5202, // 20994
-	MenuIdResultsToGroup = 0x5203, // 20995
-	MenuIdEditorContextGroup = 0x5204, // 20996
-	MenuIdExecuteGroup = 0x5205, // 20997
+	GrpIdSeRootContext = 0x5200, // 20992
+	GrpIdSeNodeContext = 0x5201, // 20993
+	GrpIdSeStaticContext = 0x5202, // 20994
+	CtlrIdResultsToToolbar = 0x5203, // 20995
+	CtlrIdExecuteToolbar = 0x5205, // 20997
 
-	CtlrIdResultsToGroup = 0x5300,
-	CtlrIdExecuteGroup = 0x5301,
+	GrpIdResultsToController = 0x5300,
+	GrpIdExecuteController = 0x5301,
 
-	ContextIdExecutionSettings = 0x5400,
-	ContextIdConnection = 0x5401,
-	ContextIdResultsTo = 0x5402,
+	GrpIdEditorWindowContext = 0x5400,
+	GrpIdResultsWindowContextSelect = 0x5401,
+	GrpIdResultsWindowContextPrint = 0x5402,
+
 	ContextIdResultsWindow = 0x5403,
 	ContextIdMessageWindow = 0x5404,
 	ContextIdExecutionPlanWindow = 0x5405,

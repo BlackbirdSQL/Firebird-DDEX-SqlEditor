@@ -31,8 +31,15 @@
 	<ItemGroup>
 		<None Include="BrokeredServices\ComponentModel\Microsoft.VisualStudio.LiveShare.FileSystemProvider.CustomProvideFileSystemProviderAttribute.cs" />
 		<Compile Include="BrokeredServices\ComponentModel\VsProvideFileSystemProviderAttribute.cs" />
-		<Compile Include="Controls\Config\AbstractCurrentWndOptionsDlg.cs" />
-		<Compile Include="Controls\Config\CurrentWndOptionsDlg.cs" />
+		<Compile Include="Controls\Config\AbstractLiveSettingsDialog.cs">
+			<SubType>Form</SubType>
+		</Compile>
+		<Compile Include="Controls\Config\AbstractLiveSettingsDialog.Designer.cs">
+			<DependentUpon>AbstractLiveSettingsDialog.cs</DependentUpon>
+		</Compile>
+		<Compile Include="Controls\Config\LiveSettingsDialog.cs">
+			<SubType>Form</SubType>
+		</Compile>
 		<Compile Include="BrokeredServices\EnumerableExtensions.cs" />
 		<Compile Include="BrokeredServices\WatchResultComparer.cs" />
 		<Compile Include="BrokeredServices\FbsqlPlusFileSystemProvider.cs" />
@@ -76,7 +83,12 @@
 			<DesignTime>True</DesignTime>
 			<DependentUpon>Resources.resx</DependentUpon>
 		</Compile>
-		<EmbeddedResource Include="Controls\Config\AbstractCurrentWndOptionsDlg.resx" />
+		<EmbeddedResource Include="Controls\Config\AbstractLiveSettingsDialog.resx">
+			<DependentUpon>AbstractLiveSettingsDialog.cs</DependentUpon>
+		</EmbeddedResource>
+		<EmbeddedResource Include="Controls\Config\LiveSettingsDialog.resx">
+			<DependentUpon>LiveSettingsDialog.cs</DependentUpon>
+		</EmbeddedResource>
 		<EmbeddedResource Include="Properties\AttributeResources.resx">
 		  <Generator>ResXFileCodeGenerator</Generator>
 		  <LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>

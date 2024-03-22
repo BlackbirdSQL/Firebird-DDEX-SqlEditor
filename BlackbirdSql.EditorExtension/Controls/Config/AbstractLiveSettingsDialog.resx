@@ -117,56 +117,26 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="&gt;&gt;_CurrentViewPanel.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="_OkButton.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Bottom, Right</value>
+  </data>
   <data name="_OkButton.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
-  <data name="&gt;&gt;_CancelButton.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="_ViewSwitcherTree.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 7</value>
-  </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="_CurrentViewPanel.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="_ViewSwitcherTree.Size" type="System.Drawing.Size, System.Drawing">
-    <value>207, 308</value>
-  </data>
-  <data name="$this.Text" xml:space="preserve">
-    <value>Live Query Options</value>
-  </data>
   <data name="_OkButton.Location" type="System.Drawing.Point, System.Drawing">
     <value>454, 333</value>
   </data>
-  <data name="&gt;&gt;_CurrentViewPanel.Name" xml:space="preserve">
-    <value>_CurrentViewPanel</value>
+  <data name="_OkButton.Size" type="System.Drawing.Size, System.Drawing">
+    <value>75, 23</value>
   </data>
-  <data name="&gt;&gt;_CurrentViewPanel.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>620, 368</value>
-  </data>
-  <data name="_ViewSwitcherTree.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="_OkButton.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
   </data>
-  <data name="_CancelButton.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="&gt;&gt;_ViewSwitcherTree.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TreeView, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;_ViewSwitcherTree.Name" xml:space="preserve">
-    <value>_ViewSwitcherTree</value>
+  <data name="_OkButton.Text" xml:space="preserve">
+    <value>OK</value>
   </data>
   <data name="&gt;&gt;_OkButton.Name" xml:space="preserve">
     <value>_OkButton</value>
@@ -174,17 +144,29 @@
   <data name="&gt;&gt;_OkButton.Type" xml:space="preserve">
     <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="_OkButton.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+  <data name="&gt;&gt;_OkButton.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;_OkButton.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="_CancelButton.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Bottom, Right</value>
   </data>
-  <data name="_CurrentViewPanel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>383, 308</value>
+  <data name="_CancelButton.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="_CancelButton.Location" type="System.Drawing.Point, System.Drawing">
+    <value>536, 333</value>
+  </data>
+  <data name="_CancelButton.Size" type="System.Drawing.Size, System.Drawing">
+    <value>75, 23</value>
   </data>
   <data name="_CancelButton.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
   </data>
-  <data name="_CurrentViewPanel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>227, 7</value>
+  <data name="_CancelButton.Text" xml:space="preserve">
+    <value>Cancel</value>
   </data>
   <data name="&gt;&gt;_CancelButton.Name" xml:space="preserve">
     <value>_CancelButton</value>
@@ -192,55 +174,76 @@
   <data name="&gt;&gt;_CancelButton.Type" xml:space="preserve">
     <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="&gt;&gt;_CancelButton.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;_CancelButton.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
   <data name="_ViewSwitcherTree.Indent" type="System.Int32, mscorlib">
     <value>19</value>
   </data>
-  <data name="_CancelButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>536, 333</value>
+  <data name="_ViewSwitcherTree.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 7</value>
   </data>
-  <data name="_CancelButton.Text" xml:space="preserve">
-    <value>Cancel</value>
+  <data name="_ViewSwitcherTree.Size" type="System.Drawing.Size, System.Drawing">
+    <value>207, 308</value>
   </data>
-  <data name="_CancelButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>75, 23</value>
+  <data name="_ViewSwitcherTree.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
   </data>
-  <data name="&gt;&gt;$this.Name" xml:space="preserve">
-    <value>CurrentWndOptions</value>
+  <data name="&gt;&gt;_ViewSwitcherTree.Name" xml:space="preserve">
+    <value>_ViewSwitcherTree</value>
   </data>
-  <data name="&gt;&gt;$this.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Form, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="_CurrentViewPanel.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Bottom, Right</value>
-  </data>
-  <data name="&gt;&gt;_ViewSwitcherTree.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="_CancelButton.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Bottom, Right</value>
-  </data>
-  <data name="&gt;&gt;_OkButton.Parent" xml:space="preserve">
-    <value>$this</value>
+  <data name="&gt;&gt;_ViewSwitcherTree.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TreeView, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;_ViewSwitcherTree.Parent" xml:space="preserve">
     <value>$this</value>
   </data>
-  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
-    <value>6, 13</value>
+  <data name="&gt;&gt;_ViewSwitcherTree.ZOrder" xml:space="preserve">
+    <value>1</value>
   </data>
-  <data name="&gt;&gt;_OkButton.ZOrder" xml:space="preserve">
-    <value>4</value>
+  <data name="_CurrentViewPanel.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Bottom, Right</value>
+  </data>
+  <data name="_CurrentViewPanel.Location" type="System.Drawing.Point, System.Drawing">
+    <value>227, 7</value>
+  </data>
+  <data name="_CurrentViewPanel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>383, 308</value>
+  </data>
+  <data name="_CurrentViewPanel.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="&gt;&gt;_CurrentViewPanel.Name" xml:space="preserve">
+    <value>_CurrentViewPanel</value>
+  </data>
+  <data name="&gt;&gt;_CurrentViewPanel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;_CurrentViewPanel.Parent" xml:space="preserve">
     <value>$this</value>
   </data>
-  <data name="_OkButton.Text" xml:space="preserve">
-    <value>OK</value>
+  <data name="&gt;&gt;_CurrentViewPanel.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
-  <data name="_OkButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>75, 23</value>
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
+    <value>6, 13</value>
   </data>
-  <data name="&gt;&gt;_CancelButton.Parent" xml:space="preserve">
-    <value>$this</value>
+  <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
+    <value>620, 368</value>
+  </data>
+  <data name="$this.Text" xml:space="preserve">
+    <value>Live Query Options</value>
+  </data>
+  <data name="&gt;&gt;$this.Name" xml:space="preserve">
+    <value>AbstractLiveSettingsDialog</value>
+  </data>
+  <data name="&gt;&gt;$this.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Form, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

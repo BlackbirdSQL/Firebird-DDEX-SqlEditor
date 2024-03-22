@@ -9,10 +9,10 @@ using BlackbirdSql.EditorExtension.Properties;
 
 namespace BlackbirdSql.EditorExtension.Controls.Config;
 
-public sealed class CurrentWndOptionsDlg : AbstractCurrentWndOptionsDlg
+public sealed class LiveSettingsDialog : AbstractLiveSettingsDialog
 {
 
-	public CurrentWndOptionsDlg(IBTransientSettings settings)
+	public LiveSettingsDialog(IBTransientSettings settings)
 	{
 		InitializeDialog(settings);
 	}
@@ -88,4 +88,16 @@ public sealed class CurrentWndOptionsDlg : AbstractCurrentWndOptionsDlg
 		AddTreeNodes(rootNode, treeNode00);
 	}
 
+	private void InitializeComponent()
+	{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LiveSettingsDialog));
+			this.SuspendLayout();
+			// 
+			// LiveSettingsDialog
+			// 
+			resources.ApplyResources(this, "$this");
+			this.Name = "LiveSettingsDialog";
+			this.ResumeLayout(false);
+
+	}
 }

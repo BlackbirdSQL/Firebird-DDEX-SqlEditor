@@ -118,11 +118,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Originals", "Originals", "{
 		Originals\SqlExecutionAnsiSettingsDlg_Ref.resx = Originals\SqlExecutionAnsiSettingsDlg_Ref.resx
 		Originals\SqlGuidList_Ref.cs = Originals\SqlGuidList_Ref.cs
 		Originals\SqlPackageResource.resx = Originals\SqlPackageResource.resx
+		Originals\stdidcmd_Ref.h = Originals\stdidcmd_Ref.h
 		Originals\TabbedEditorResources_Ref.resx = Originals\TabbedEditorResources_Ref.resx
 		Originals\Using WPF with EDMX.txt = Originals\Using WPF with EDMX.txt
 		Originals\VSConstants_Ref.cs = Originals\VSConstants_Ref.cs
-		Originals\VSPackage_Ref.resx = Originals\VSPackage_Ref.resx
 		Originals\VSCT_Ref.xsd = Originals\VSCT_Ref.xsd
+		Originals\VSPackage_Ref.resx = Originals\VSPackage_Ref.resx
 		Originals\WorkFile.cs = Originals\WorkFile.cs
 		Originals\WorkFile.txt = Originals\WorkFile.txt
 	EndProjectSection

@@ -60,15 +60,8 @@ internal abstract class AbstractDslSchema
 		{
 			using (var adapter = new FbDataAdapter(command))
 			{
-				try
-				{
-					adapter.Fill(dataTable);
-				}
-				catch (Exception ex)
-				{
-					Diag.Dug(ex);
-					throw;
-				}
+				// Exceptions will be handled in SelectObjects();
+				adapter.Fill(dataTable);
 			}
 		}
 		finally

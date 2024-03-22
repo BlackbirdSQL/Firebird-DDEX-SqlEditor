@@ -821,7 +821,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 		if (qryMgr == null)
 			return DialogResult.Abort;
 
-		using (CurrentWndOptionsDlg dlg = new(qryMgr.LiveSettings))
+		using (LiveSettingsDialog dlg = new(qryMgr.LiveSettings))
 		{
 			dlg.StartPosition = startPosition;
 
@@ -944,7 +944,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 
 	private void OnCycleToNextEditorTab(object sender, EventArgs e)
 	{
-		Tracer.Trace(GetType(), "OnCycleToNextEditorTab()");
+		// Tracer.Trace(GetType(), "OnCycleToNextEditorTab()");
 		LastFocusedSqlEditor?.ActivateNextTab();
 	}
 
@@ -952,7 +952,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 
 	private void OnCycleToPreviousEditorTab(object sender, EventArgs e)
 	{
-		Tracer.Trace(GetType(), "OnCycleToPreviousEditorTab()");
+		// Tracer.Trace(GetType(), "OnCycleToPreviousEditorTab()");
 		LastFocusedSqlEditor?.ActivatePreviousTab();
 	}
 

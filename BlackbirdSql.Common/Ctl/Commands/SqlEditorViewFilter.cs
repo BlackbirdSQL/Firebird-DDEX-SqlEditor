@@ -259,13 +259,18 @@ public class SqlEditorViewFilter(IBSqlEditorWindowPane editorWindow) : AbstractV
 				}
 			}
 
-			/*
-			if (pguidCmdGroup == VSConstantsInternal.GuidDebugCommandSet && cmdID == 65)
+			if (pguidCmdGroup == VS.ClsidVSDebugCommand)
 			{
 				prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);
 				num = 0;
 			}
-			else if (pguidCmdGroup == SqlGuidList.cmdSetGuidTeamSystemData && cmdID == EnCommandSet.MenuIdToplevelMenu)
+			else if (pguidCmdGroup == VSConstants.VsStd14 && prgCmds[i].cmdID == (uint)VSConstants.VSStd14CmdID.ShowQuickFixesForPosition)
+			{
+				prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_INVISIBLE);
+				num = 0;
+			}
+			/*
+			else if (pguidCmdGroup == SqlGuidList.cmdSetGuidTeamSystemData && cmdID == EnCommandSet.MenuIdToplevel)
 			{
 				prgCmds[i].cmdf = (uint)(OLECMDF.OLECMDF_SUPPORTED | OLECMDF.OLECMDF_ENABLED);
 				num = 0;

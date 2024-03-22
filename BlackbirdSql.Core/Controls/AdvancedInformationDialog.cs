@@ -2,8 +2,6 @@
 // Microsoft.SqlServer.Data.Tools.ExceptionMessageBox.AdvancedInformation
 
 using System;
-using System.ComponentModel;
-using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using BlackbirdSql.Core.Controls.Enums;
@@ -11,34 +9,28 @@ using BlackbirdSql.Core.Controls.Widgets;
 using BlackbirdSql.Core.Properties;
 
 
+
 namespace BlackbirdSql.Core.Controls;
 
-public class AdvancedInformationDialog : Form
+
+// =========================================================================================================
+//									AdvancedInformationDialog Class 
+//
+/// <summary>
+/// Advanced info dialog for the Universal MessageBox <see cref="AdvancedMessageBox"/>.
+/// </summary>
+// =========================================================================================================
+public partial class AdvancedInformationDialog : Form
 {
-	private IContainer components;
 
-	private Label label1;
+	// -----------------------------------------------------------
+	#region Constructors / Destructors - AdvancedInformationDialog
+	// -----------------------------------------------------------
 
-	private Label label2;
 
-	private ImageList imgButtons;
-
-	private TreeView tree;
-
-	private TextBox txtDetails;
-
-	private Button btnClose;
-
-	private ToolStrip toolStrip1;
-
-	private ToolStripButton tbBtnCopy;
-
-	private TableLayoutPanel tableLayoutPanel1;
-
-	private TableLayoutPanel tableLayoutPanel2;
-
-	public MessageBoxDialog MessageBoxForm { get; set; }
-
+	/// <summary>
+	/// AdvancedInformationDialog .ctor
+	/// </summary>
 	public AdvancedInformationDialog()
 	{
 		InitializeComponent();
@@ -46,7 +38,68 @@ public class AdvancedInformationDialog : Form
 		toolStrip1.Renderer = new PrivateRenderer();
 	}
 
-	private void AdvancedInformation_Load(object sender, EventArgs e)
+
+	#endregion Fields
+
+
+
+
+
+	// =========================================================================================================
+	#region Property Accessors - AdvancedInformationDialog
+	// =========================================================================================================
+
+
+	public AdvancedMessageBox MessageBoxForm { get; set; }
+
+
+	#endregion Property Accessors
+
+
+
+
+
+	// =========================================================================================================
+	#region Methods - AdvancedInformationDialog
+	// =========================================================================================================
+
+
+	private void CopyToClipboard()
+	{
+		try
+		{
+			Clipboard.SetDataObject(txtDetails.SelectionLength == 0 ? txtDetails.Text : txtDetails.SelectedText, copy: true);
+		}
+		catch (Exception exError)
+		{
+			MessageBoxForm.ShowError(ControlsResources.CopyToClipboardError, exError);
+		}
+	}
+
+
+	#endregion Methods
+
+
+
+
+
+	// =========================================================================================================
+	#region Event Handling - AdvancedInformationDialog
+	// =========================================================================================================
+
+
+	private void AdvancedInformation_KeyDown(object sender, KeyEventArgs e)
+	{
+		if (e.Modifiers == Keys.Control && (e.KeyData & Keys.C) == Keys.C || (e.KeyData & Keys.Insert) == Keys.Insert)
+		{
+			CopyToClipboard();
+			e.Handled = true;
+		}
+	}
+
+
+
+	private void AdvancedInformationDialog_Load(object sender, EventArgs e)
 	{
 		TreeNode treeNode = new TreeNode(ControlsResources.AdvInfoAllMessages);
 		for (Exception ex = MessageBoxForm.ExMessage; ex != null; ex = ex.InnerException)
@@ -138,126 +191,21 @@ public class AdvancedInformationDialog : Form
 		tree.SelectedNode = treeNode;
 	}
 
-	private void Tree_AfterSelect(object sender, TreeViewEventArgs e)
-	{
-		txtDetails.Text = (string)e.Node.Tag;
-	}
 
-	private void AdvancedInformation_KeyDown(object sender, KeyEventArgs e)
-	{
-		if (e.Modifiers == Keys.Control && (e.KeyData & Keys.C) == Keys.C || (e.KeyData & Keys.Insert) == Keys.Insert)
-		{
-			CopyToClipboard();
-			e.Handled = true;
-		}
-	}
 
-	private void CopyToClipboard()
-	{
-		try
-		{
-			Clipboard.SetDataObject(txtDetails.SelectionLength == 0 ? txtDetails.Text : txtDetails.SelectedText, copy: true);
-		}
-		catch (Exception exError)
-		{
-			MessageBoxForm.ShowError(ControlsResources.CopyToClipboardError, exError);
-		}
-	}
-
-	private void TbBtnCopy_Click(object sender, EventArgs e)
+	private void tbBtnCopy_Click(object sender, EventArgs e)
 	{
 		CopyToClipboard();
 	}
 
-	private void InitializeComponent()
+
+
+	private void tree_AfterSelect(object sender, TreeViewEventArgs e)
 	{
-		components = new Container();
-		ComponentResourceManager resources = new ComponentResourceManager(typeof(AdvancedInformationDialog));
-		label1 = new Label();
-		tree = new TreeView();
-		label2 = new Label();
-		txtDetails = new TextBox();
-		imgButtons = new ImageList(components);
-		btnClose = new Button();
-		toolStrip1 = new ToolStrip();
-		tbBtnCopy = new ToolStripButton();
-		tableLayoutPanel1 = new TableLayoutPanel();
-		tableLayoutPanel2 = new TableLayoutPanel();
-		toolStrip1.SuspendLayout();
-		tableLayoutPanel1.SuspendLayout();
-		tableLayoutPanel2.SuspendLayout();
-		SuspendLayout();
-		resources.ApplyResources(label1, "label1");
-		label1.Name = "label1";
-		resources.ApplyResources(tree, "tree");
-		tree.Name = "tree";
-		tree.AfterSelect += new TreeViewEventHandler(Tree_AfterSelect);
-		resources.ApplyResources(label2, "label2");
-		label2.Name = "label2";
-		resources.ApplyResources(txtDetails, "txtDetails");
-		txtDetails.Name = "txtDetails";
-		txtDetails.ReadOnly = true;
-		imgButtons.ImageStream = (ImageListStreamer)resources.GetObject("imgButtons.ImageStream");
-		imgButtons.TransparentColor = Color.Transparent;
-		imgButtons.Images.SetKeyName(0, "");
-		imgButtons.Images.SetKeyName(1, "SaveTextAsEmail.ico");
-		imgButtons.Images.SetKeyName(2, "");
-		imgButtons.Images.SetKeyName(3, "");
-		resources.ApplyResources(btnClose, "btnClose");
-		btnClose.DialogResult = DialogResult.Cancel;
-		btnClose.Name = "btnClose";
-		toolStrip1.AllowMerge = false;
-		toolStrip1.CanOverflow = false;
-		resources.ApplyResources(toolStrip1, "toolStrip1");
-		toolStrip1.GripStyle = ToolStripGripStyle.Hidden;
-		toolStrip1.Items.AddRange(new ToolStripItem[1] { tbBtnCopy });
-		toolStrip1.LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow;
-		toolStrip1.Name = "toolStrip1";
-		toolStrip1.RenderMode = ToolStripRenderMode.System;
-		toolStrip1.TabStop = true;
-		tbBtnCopy.DisplayStyle = ToolStripItemDisplayStyle.Image;
-		resources.ApplyResources(tbBtnCopy, "tbBtnCopy");
-		tbBtnCopy.Name = "tbBtnCopy";
-		tbBtnCopy.Click += new EventHandler(TbBtnCopy_Click);
-		resources.ApplyResources(tableLayoutPanel1, "tableLayoutPanel1");
-		tableLayoutPanel1.Controls.Add(label1, 0, 0);
-		tableLayoutPanel1.Controls.Add(label2, 1, 0);
-		tableLayoutPanel1.Controls.Add(tree, 0, 1);
-		tableLayoutPanel1.Controls.Add(txtDetails, 1, 1);
-		tableLayoutPanel1.Controls.Add(tableLayoutPanel2, 1, 2);
-		tableLayoutPanel1.Name = "tableLayoutPanel1";
-		resources.ApplyResources(tableLayoutPanel2, "tableLayoutPanel2");
-		tableLayoutPanel2.Controls.Add(toolStrip1, 0, 0);
-		tableLayoutPanel2.Controls.Add(btnClose, 1, 0);
-		tableLayoutPanel2.Name = "tableLayoutPanel2";
-		AcceptButton = btnClose;
-		resources.ApplyResources(this, "$this");
-		AutoScaleMode = AutoScaleMode.Font;
-		CancelButton = btnClose;
-		Controls.Add(tableLayoutPanel1);
-		DoubleBuffered = true;
-		MaximizeBox = false;
-		MinimizeBox = false;
-		Name = "AdvancedInformation";
-		ShowInTaskbar = false;
-		Load += new EventHandler(AdvancedInformation_Load);
-		KeyDown += new KeyEventHandler(AdvancedInformation_KeyDown);
-		toolStrip1.ResumeLayout(false);
-		toolStrip1.PerformLayout();
-		tableLayoutPanel1.ResumeLayout(false);
-		tableLayoutPanel1.PerformLayout();
-		tableLayoutPanel2.ResumeLayout(false);
-		tableLayoutPanel2.PerformLayout();
-		ResumeLayout(false);
+		txtDetails.Text = (string)e.Node.Tag;
 	}
 
-	protected override void Dispose(bool disposing)
-	{
-		if (disposing && components != null)
-		{
-			components.Dispose();
-		}
 
-		base.Dispose(disposing);
-	}
+	#endregion Event Handling
+
 }

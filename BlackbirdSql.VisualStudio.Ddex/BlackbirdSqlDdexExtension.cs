@@ -61,7 +61,7 @@ namespace BlackbirdSql.VisualStudio.Ddex;
 
 
 // 'Help About' registration. productName & productDetails resource integers must be prefixed with #.
-[InstalledProductRegistration("#100", "#102", "11.1.1.1002", IconResourceID = 400)]
+[InstalledProductRegistration("#100", "#102", "11.2.0.0", IconResourceID = 400)]
 
 
 // We start loading as soon as the VS shell is available.

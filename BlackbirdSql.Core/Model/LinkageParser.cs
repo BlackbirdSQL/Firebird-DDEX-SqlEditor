@@ -322,7 +322,7 @@ public class LinkageParser : AbstractLinkageParser
 	private static int _AsyncProcessSeed = 90000;
 
 	private static string _LockedLoadedConnectionString = null;
-	private MessageBoxDialog _MessageBoxDlg = null;
+	private AdvancedMessageBox _MessageBoxDlg = null;
 
 	/// <summary>
 	/// The async process state, 0 = No async process, 1 = Async launch queued, 2 = Async Active.
@@ -496,6 +496,9 @@ public class LinkageParser : AbstractLinkageParser
 			return null;
 
 		if (vsDataConnectionSupport.ProviderObject is not FbConnection connection)
+			return null;
+
+		if (connection.State != ConnectionState.Open)
 			return null;
 
 		return AsyncEnsureLoading(connection, delay, multiplier);
@@ -845,8 +848,16 @@ public class LinkageParser : AbstractLinkageParser
 	{
 		// Tracer.Trace(GetType(), $"ParserId:[{_InstanceId}] Disable()");
 
-		if (!_Enabled)
+		if (_Disabling)
 			return false;
+
+		if (Completed || !Loading)
+		{
+			_Enabled = false;
+			return false;
+		}
+
+		_Disabling = true; 
 
 		AsyncWait(true);
 
@@ -872,15 +883,16 @@ public class LinkageParser : AbstractLinkageParser
 	// ---------------------------------------------------------------------------------
 	public static bool DisposeInstance(IVsDataConnection site, bool isValidTransient)
 	{
-		// Tracer.Trace(typeof(LinkageParser), "DisposeInstance(IVsDataConnection)", "!Refreshing = disposing: {0}.", disposing);
 
 		if (site == null)
 			return false;
 
+		// Tracer.Trace(typeof(AbstractLinkageParser), "DisposeInstance(IVsDataConnection)", "isValidTransient: {0}.", isValidTransient);
+
 		if (site.GetService(typeof(IVsDataConnectionSupport)) is not IVsDataConnectionSupport vsDataConnectionSupport)
 			return false;
 
-		if (vsDataConnectionSupport.ProviderObject is not FbConnection connection)
+		if (vsDataConnectionSupport.ProviderObject is not IDbConnection connection)
 			return false;
 
 		return DisposeInstance(connection, isValidTransient);
@@ -1241,16 +1253,16 @@ public class LinkageParser : AbstractLinkageParser
 
 		// Tracer.Trace(GetType(), "OnMessageBoxShown()", "Sender type: {0}", sender);
 
-		if (((MessageBoxDialog)sender).InvokeRequired)
+		if (((AdvancedMessageBox)sender).InvokeRequired)
 		{
 			Action safeInitialize = delegate { ThreadSafeInitializeMessageBox(sender); };
-			((MessageBoxDialog)sender).Invoke(safeInitialize);
+			((AdvancedMessageBox)sender).Invoke(safeInitialize);
 		}
 		else
 		{
 			lock (_LockObject)
 			{
-				_MessageBoxDlg = (MessageBoxDialog)sender;
+				_MessageBoxDlg = (AdvancedMessageBox)sender;
 				_MessageBoxDlg.FormClosed += OnMessageBoxClose;
 
 				_MessageBoxDlg.Activate();
@@ -1303,15 +1315,25 @@ public class LinkageParser : AbstractLinkageParser
 
 	protected override void OnConnectionDisposed(object sender, EventArgs e)
 	{
-		// Tracer.Trace(GetType(), "OnConnectionDisposed()", "Sender: {0}.", sender.GetType().FullName);
-
 		if (_InstanceConnection == null)
 			return;
 
+		// Tracer.Trace(GetType(), "OnConnectionDisposed()", "Sender: {0}.", sender.GetType().Name);
 
-		Dispose(true);
+
+		Dispose(!_Disabling && Loaded);
 	}
 
+	protected override void OnConnectionStateChange(object sender, StateChangeEventArgs e)
+	{
+		if (e.OriginalState == ConnectionState.Closed || e.CurrentState == ConnectionState.Open || _InstanceConnection == null)
+			return;
+
+		// Tracer.Trace(GetType(), "OnConnectionStateChange()", "Sender: {0}.", sender.GetType().Name);
+
+
+		Dispose(!_Disabling && Loaded);
+	}
 
 
 	public void OnMessageBoxClose(object sender, FormClosedEventArgs e)

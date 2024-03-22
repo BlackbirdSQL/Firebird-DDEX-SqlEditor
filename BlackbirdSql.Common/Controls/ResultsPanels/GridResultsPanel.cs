@@ -811,13 +811,13 @@ public class GridResultsPanel : AbstractGridResultsPanel, IOleCommandTarget
 	{
 		// Tracer.Trace(GetType(), "DisplaySQLResultsControl.GetTextWriterForSaveResultsFromGrid", "", null);
 		saveFormat = EnGridSaveFormats.CommaSeparated;
-		FileEncodingDlg fileEncodingDialog = new FileEncodingDlg();
+		FileEncodingDialog fileEncodingDlg = new FileEncodingDialog();
 		SaveFormats saveFormats = new SaveFormats();
-		string fileNameUsingSaveDialog = VS.GetFileNameUsingSaveDialog(VS.MakeVsFilterString(saveFormats.FilterString), ControlsResources.SaveGridResults, DefaultResultsDirectory, fileEncodingDialog, out int filterIndex);
+		string fileNameUsingSaveDialog = VS.GetFileNameUsingSaveDialog(VS.MakeVsFilterString(saveFormats.FilterString), ControlsResources.SaveGridResults, DefaultResultsDirectory, fileEncodingDlg, out int filterIndex);
 		if (fileNameUsingSaveDialog != null)
 		{
 			DefaultResultsDirectory = Path.GetDirectoryName(fileNameUsingSaveDialog);
-			StreamWriter result = new StreamWriter(fileNameUsingSaveDialog, append: false, fileEncodingDialog.Encoding)
+			StreamWriter result = new StreamWriter(fileNameUsingSaveDialog, append: false, fileEncodingDlg.Encoding)
 			{
 				AutoFlush = false
 			};

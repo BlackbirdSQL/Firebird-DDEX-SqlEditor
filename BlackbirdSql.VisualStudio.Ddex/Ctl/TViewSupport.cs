@@ -517,10 +517,24 @@ public class TViewSupport : DataViewSupport,
 		if (!_Initialized && e.NewState == DataConnectionState.Open)
 			InitializeProperties();
 
-
-		if (e.OldState == DataConnectionState.Open || e.NewState != DataConnectionState.Open
-			|| !RctManager.Available || ViewHierarchy == null || ViewHierarchy.ExplorerConnection == null
+		if (ViewHierarchy == null || ViewHierarchy.ExplorerConnection == null
 			|| ViewHierarchy.ExplorerConnection.Connection == null)
+		{
+			return;
+		}
+
+		if (e.NewState != DataConnectionState.Open)
+		{
+			LinkageParser parser = LinkageParser.GetInstance(ViewHierarchy.ExplorerConnection.Connection);
+
+			if (parser != null)
+				LinkageParser.DisposeInstance(ViewHierarchy.ExplorerConnection.Connection, parser.Loaded);
+
+			return;
+		}
+
+
+		if (e.OldState == DataConnectionState.Open || !RctManager.Available)
 		{
 			return;
 		}
@@ -597,11 +611,14 @@ public class TViewSupport : DataViewSupport,
 					if (UnsafeCmd.IsUIHierarchyConnectionSource)
 						return;
 
-					// Tracer.Trace(GetType(), "OnNodeChanged()", "Calling destructive Dispose.\nParser ConnectionString: {0}\nSE ConnectionString: {1}",
-					//	parser.ConnectionString, DataProtection.DecryptString(site.EncryptedConnectionString));
+					// Tracer.Trace(GetType(), "OnNodeChanged()", "Refreshing & Parser Exists: Calling destructive Dispose.");
 
 					LinkageParser.DisposeInstance(site, false);
 				}
+
+				// else
+				//	Tracer.Trace(GetType(), "OnNodeChanged()", "Refreshing & Parser Exists: NOT calling destructive Dispose.");
+
 			}
 			else
 			{
@@ -611,7 +628,7 @@ public class TViewSupport : DataViewSupport,
 				if (UnsafeCmd.IsUIHierarchyConnectionSource)
 					return;
 
-				LinkageParser.AsyncEnsureLoading(site);
+				LinkageParser.AsyncEnsureLoading(site, 10, 10);
 			}
 		}
 		else if (e.Node.IsExpanding)
@@ -651,7 +668,7 @@ public class TViewSupport : DataViewSupport,
 		if (UnsafeCmd.IsUIHierarchyConnectionSource)
 			return;
 
-		LinkageParser.AsyncEnsureLoading(e.Node);
+		LinkageParser.AsyncEnsureLoading(e.Node, 10, 10);
 	}
 
 

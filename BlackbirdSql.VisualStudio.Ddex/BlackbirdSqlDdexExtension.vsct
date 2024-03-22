@@ -9,23 +9,31 @@
 	<Commands package="AsyncPackageGuid">
 
 		<Menus>
-			<Menu guid="CommandSetGuid" id="MenuIdToplevelMenu" type="Menu">
+			<Menu guid="CommandSetGuid" id="MenuIdToplevel" type="Menu">
 				<Strings>
 					<ButtonText>Top Level Menu</ButtonText>
 				</Strings>
 			</Menu>
 
 			<!-- The SqlEditor Toolbar -->
-			<Menu guid="CommandSetGuid" id="MenuIdEditorToolbar" type="Toolbar">
+			<Menu guid="CommandSetGuid" id="ToolbarIdEditorWindow" type="Toolbar">
 				<CommandFlag>DefaultDocked</CommandFlag>
 				<Strings>
-					<ButtonText>Script Toolbar</ButtonText>
-					<CommandName>ScriptToolbar</CommandName>
+					<ButtonText>Editor Toolbar</ButtonText>
+					<CommandName>EditorToolbar</CommandName>
 				</Strings>
 			</Menu>
 
-			<Menu guid="CommandSetGuid" id="MenuIdExecuteGroup" priority="0x0000" type="MenuController">
-				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
+			<!-- The Results context menu -->
+			<Menu guid="CommandSetGuid" id="ContextIdResultsWindow" type="Context">
+				<Strings>
+					<ButtonText>Results Context Menu</ButtonText>
+					<CommandName>Results Context</CommandName>
+				</Strings>
+			</Menu>
+
+			<Menu guid="CommandSetGuid" id="CtlrIdExecuteToolbar" priority="0x0000" type="MenuController">
+				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>TextIsAnchorCommand</CommandFlag>
 				<Strings>
@@ -34,8 +42,8 @@
 				</Strings>
 			</Menu>
 
-			<Menu guid="CommandSetGuid" id="MenuIdResultsToGroup" priority="0x0150" type="MenuController">
-				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
+			<Menu guid="CommandSetGuid" id="CtlrIdResultsToToolbar" priority="0x0150" type="MenuController">
+				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>TextIsAnchorCommand</CommandFlag>
 				<Strings>
@@ -49,7 +57,7 @@
 
 		<Combos>
 			<Combo guid="CommandSetGuid" id="CmbIdSqlDatabases" priority="0x0100" type="DropDownCombo" defaultWidth="280" idCommandList="CmbIdSqlDatabasesGetList">
-				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup"/>
+				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar"/>
 				<CommandFlag>IconAndText</CommandFlag>
 				<CommandFlag>CommandWellOnly</CommandFlag>
 				<Strings>
@@ -67,43 +75,51 @@
 
 		<Groups>
 			<!-- Edit window context menu -->
-			<Group guid="CommandSetGuid" id="MenuIdEditorContextGroup" priority="0x0600">
+			<Group guid="CommandSetGuid" id="GrpIdEditorWindowContext" priority="0x0600">
 				<!-- <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_WINDOW" /> -->
 			</Group>
 
+			<!-- Results window context menu -->
+			<Group guid="CommandSetGuid" id="GrpIdResultsWindowContextSelect" priority="0x0101">
+				<!-- <Parent guid="CommandSetGuid" id="ContextIdResultsWindow" /> -->
+			</Group>
+			<Group guid="CommandSetGuid" id="GrpIdResultsWindowContextPrint" priority="0x0102">
+				<!-- <Parent guid="CommandSetGuid" id="ContextIdResultsWindow" /> -->
+			</Group>
+
 			<!-- Explorer scope -->
-			<Group guid="CommandSetGuid" id="MenuIdSeRootGroup" priority="0x0600">
+			<Group guid="CommandSetGuid" id="GrpIdSeRootContext" priority="0x0600">
 				<!--<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />-->
 				<Parent guid="SeRootGuid" id="IDM_SE_CONTEXT_STANDARD" />
 			</Group>
 
 			<!-- Object Node scope -->
-			<Group guid="CommandSetGuid" id="MenuIdSeNodeGroup" priority="0x0600">
+			<Group guid="CommandSetGuid" id="GrpIdSeNodeContext" priority="0x0600">
 				<!--<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />-->
 				<Parent guid="SeObjectNodesGuid" id="IDMX_DV_OBJECT_NODE" />
 			</Group>
 
 			<!-- Static Node scope -->
-			<Group guid="CommandSetGuid" id="MenuIdSeStaticGroup" priority="0x0600">
+			<Group guid="CommandSetGuid" id="GrpIdSeStaticContext" priority="0x0600">
 				<!--<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS" />-->
 				<Parent guid="SeObjectNodesGuid" id="IDMX_DV_STATIC_NODE" />
 			</Group>
 
 
-			<Group guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" priority="0x0600">
-				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbar"/>
+			<Group guid="CommandSetGuid" id="GrpIdEditorToolbar" priority="0x0600">
+				<Parent guid="CommandSetGuid" id="ToolbarIdEditorWindow"/>
 			</Group>
 
-			<Group guid="CommandSetGuid" id="CtlrIdExecuteGroup" priority="0x0000">
-				<Parent guid="CommandSetGuid" id="MenuIdExecuteGroup" />
+			<Group guid="CommandSetGuid" id="GrpIdExecuteController" priority="0x0000">
+				<Parent guid="CommandSetGuid" id="CtlrIdExecuteToolbar" />
 			</Group>
 
-			<Group guid="CommandSetGuid" id="CtlrIdResultsToGroup" priority="0x0220">
-				<Parent guid="CommandSetGuid" id="MenuIdResultsToGroup" />
+			<Group guid="CommandSetGuid" id="GrpIdResultsToController" priority="0x0220">
+				<Parent guid="CommandSetGuid" id="CtlrIdResultsToToolbar" />
 			</Group>
 
 			
-			<Group guid="CommandSetGuid" id="MenuIdReusableGroup" priority="0xf600">
+			<Group guid="CommandSetGuid" id="GrpIdReusableWell" priority="0xf600">
 				<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
 			</Group>
 		</Groups>
@@ -112,11 +128,11 @@
 
 		<Buttons>
 
-			<!-- MenuIdEditorToolbarGroup -->
+			<!-- GrpIdEditorToolbar -->
 
-			<!-- MenuIdEditorToolbarGroup : CtlrIdExecuteGroup -->
+			<!-- GrpIdEditorToolbar : GrpIdExecuteController -->
 			<Button guid="CommandSetGuid" id="CmdIdExecuteQuery" priority="0x0000" type="Button">
-				<Parent guid="CommandSetGuid" id="CtlrIdExecuteGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdExecuteController" />
 				<Icon guid="ImagesGuid" id="ImgExecuteQuery" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -127,7 +143,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdExecuteTtsQuery" priority="0x0020" type="Button">
-				<Parent guid="CommandSetGuid" id="CtlrIdExecuteGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdExecuteController" />
 				<Icon guid="ImagesGuid" id="ImgExecuteTtsQuery" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -139,7 +155,7 @@
 			</Button>
 
 			<Button guid="CommandSetGuid" id="CmdIdCancelQuery" priority="0x0020" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
 				<Icon guid="ImagesGuid" id="ImgCancelQuery" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -149,7 +165,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdTransactionCommit" priority="0x0030" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
 				<Icon guid="ImagesGuid" id="ImgTransactionCommit" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -159,7 +175,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdTransactionRollback" priority="0x0035" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
 				<Icon guid="ImagesGuid" id="ImgTransactionRollback" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -169,7 +185,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdShowEstimatedPlan" priority="0x0040" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
 				<Icon guid="ImagesGuid" id="ImgShowEstimatedPlan" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -179,7 +195,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdConnect" priority="0x0050" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
 				<Icon guid="ImagesGuid" id="ImgConnect" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -189,7 +205,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdDisconnect" priority="0x0060" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
 				<Icon guid="ImagesGuid" id="ImgDisconnect" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -199,7 +215,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdChangeConnection" priority="0x0070" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
 				<Icon guid="ImagesGuid" id="ImgChangeConnection" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -209,7 +225,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdNewSqlQuery" priority="0x0120" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
 				<Icon guid="ImagesGuid" id="ImgNewSqlQuery" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -219,7 +235,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdToggleExecutionPlan" priority="0x0140" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
 				<Icon guid="ImagesGuid" id="ImgToggleExecutionPlan" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -229,7 +245,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdToggleClientStatistics" priority="0x0150" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdEditorToolbarGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdEditorToolbar" />
 				<Icon guid="ImagesGuid" id="ImgToggleClientStatistics" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -239,9 +255,9 @@
 				</Strings>
 			</Button>
 
-			<!-- MenuIdEditorToolbarGroup : CtlrIdResultsToGroup -->
+			<!-- GrpIdEditorToolbar : GrpIdResultsToController -->
 			<Button guid="CommandSetGuid" id="CmdIdResultsAsGrid" priority="0x0000" type="Button">
-				<Parent guid="CommandSetGuid" id="CtlrIdResultsToGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdResultsToController" />
 				<Icon guid="ImagesGuid" id="ImgResultsAsGrid" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -252,7 +268,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdResultsAsText" priority="0x0020" type="Button">
-				<Parent guid="CommandSetGuid" id="CtlrIdResultsToGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdResultsToController" />
 				<Icon guid="ImagesGuid" id="ImgResultsAsText" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -263,7 +279,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdResultsAsFile" priority="0x0040" type="Button">
-				<Parent guid="CommandSetGuid" id="CtlrIdResultsToGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdResultsToController" />
 				<Icon guid="ImagesGuid" id="ImgResultsAsFile" />
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -276,9 +292,9 @@
 
 
 
-			<!-- MenuIdEditorContextGroup -->
+			<!-- GrpIdEditorWindowContext -->
 			<Button guid="CommandSetGuid" id="CmdIdToggleIntellisense" priority="0x0040" type="Button">
-				<!-- <Parent guid="CommandSetGuid" id="MenuIdEditorContextGroup" /> -->
+				<!-- <Parent guid="CommandSetGuid" id="GrpIdEditorWindowContext" /> -->
 				<!-- <CommandFlag>TextChanges</CommandFlag> -->
 				<Icon guid="ImagesGuid" id="ImgToggleIntellisense" />
 				<CommandFlag>TextChanges</CommandFlag>
@@ -300,10 +316,9 @@
 			</Button>
 
 
-
-			<!-- MenuIdSeRootGroup -->
+			<!-- GrpIdSeRootContext -->
 			<Button guid="CommandSetGuid" id="CmdIdNewSqlQuery" priority="0x0120" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdSeRootGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdSeRootContext" />
 				<Icon guid="ImagesGuid" id="ImgNewSqlQuery" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
@@ -315,7 +330,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdNewDesignerQuery" priority="0x0125" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdSeRootGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdSeRootContext" />
 				<Icon guid="ImagesGuid" id="ImgNewDesignerQuery" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
@@ -327,7 +342,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdValidateSolution" priority="0x0130" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdSeRootGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdSeRootContext" />
 				<Icon guid="ImagesGuid" id="ImgExecuteQuery" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
@@ -339,7 +354,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdTraceRct" priority="0x0135" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdSeRootGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdSeRootContext" />
 				<Icon guid="ImagesGuid" id="ImgExecuteQuery" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
@@ -353,9 +368,9 @@
 
 
 
-			<!-- MenuIdSeNodeGroup -->
+			<!-- GrpIdSeNodeContext -->
 			<Button guid="CommandSetGuid" id="CmdIdOpenTextObject" priority="0x0120" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdSeNodeGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdSeNodeContext" />
 				<Icon guid="ImagesGuid" id="ImgOpenScript" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
@@ -367,7 +382,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdOpenAlterTextObject" priority="0x0130" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdSeNodeGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdSeNodeContext" />
 				<Icon guid="ImagesGuid" id="ImgOpenAlterQuery" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
@@ -379,7 +394,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdNewSqlQuery" priority="0x0135" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdSeNodeGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdSeNodeContext" />
 				<Icon guid="ImagesGuid" id="ImgNewSqlQuery" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
@@ -391,7 +406,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdRetrieveDesignerData" priority="0x0150" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdSeNodeGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdSeNodeContext" />
 				<Icon guid="ImagesGuid" id="ImgOpenDesignerQuery" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
@@ -403,7 +418,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdNewDesignerQuery" priority="0x0160" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdSeNodeGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdSeNodeContext" />
 				<Icon guid="ImagesGuid" id="ImgNewDesignerQuery" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
@@ -417,9 +432,9 @@
 
 
 
-			<!-- MenuIdSeStaticGroup -->
+			<!-- GrpIdSeStaticContext -->
 			<Button guid="CommandSetGuid" id="CmdIdOpenTextObject" priority="0x0120" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdSeStaticGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdSeStaticContext" />
 				<Icon guid="ImagesGuid" id="ImgOpenScript" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
@@ -431,7 +446,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdNewSqlQuery" priority="0x0135" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdSeStaticGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdSeStaticContext" />
 				<Icon guid="ImagesGuid" id="ImgNewSqlQuery" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
@@ -443,7 +458,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdRetrieveDesignerData" priority="0x0150" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdSeStaticGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdSeStaticContext" />
 				<Icon guid="ImagesGuid" id="ImgOpenDesignerQuery" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
@@ -455,7 +470,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdNewDesignerQuery" priority="0x0170" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdSeStaticGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdSeStaticContext" />
 				<Icon guid="ImagesGuid" id="ImgNewDesignerQuery" />
 				<CommandFlag>TextChanges</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
@@ -467,10 +482,10 @@
 				</Strings>
 			</Button>
 
-		<!-- MenuIdReusableGroup -->
+		<!-- GrpIdReusableWell -->
 
 			<Button guid="CommandSetGuid" id="CmdIdCycleToNextTab" priority="0x0110" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdReusableGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdReusableWell" />
 				<CommandFlag>CommandWellOnly</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -484,7 +499,7 @@
 				</Strings>
 			</Button>
 			<Button guid="CommandSetGuid" id="CmdIdCycleToPrevious" priority="0x0120" type="Button">
-				<Parent guid="CommandSetGuid" id="MenuIdReusableGroup" />
+				<Parent guid="CommandSetGuid" id="GrpIdReusableWell" />
 				<CommandFlag>CommandWellOnly</CommandFlag>
 				<CommandFlag>DefaultInvisible</CommandFlag>
 				<CommandFlag>DynamicVisibility</CommandFlag>
@@ -520,25 +535,57 @@
 		   The priority sets the position of the group compared to the priority of other existing groups in the menu.    
 		-->
 
-		<!-- Context menu external group -->
-		<CommandPlacement guid="CommandSetGuid" id="MenuIdEditorContextGroup" priority="0xFFFF" >
+		<!-- Context menu editor window -->
+		<CommandPlacement guid="CommandSetGuid" id="GrpIdEditorWindowContext" priority="0xFFFF" >
 			<!-- The parent of the group will be the code window context menu -->
 			<Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN"/>
 		</CommandPlacement>
 
+		<!-- Context menu results window -->
+		<CommandPlacement guid="CommandSetGuid" id="GrpIdResultsWindowContextSelect" priority="0x0101" >
+			<!-- The parent of the group will be the results window context menu -->
+			<Parent guid="CommandSetGuid" id="ContextIdResultsWindow" />
+		</CommandPlacement>
+		<CommandPlacement guid="CommandSetGuid" id="GrpIdResultsWindowContextPrint" priority="0x0102" >
+			<!-- The parent of the group will be the results window context menu -->
+			<Parent guid="CommandSetGuid" id="ContextIdResultsWindow" />
+		</CommandPlacement>
+
 		<!-- Placement for command. The parent of a command is always a group, never a menu, context menu or toolbar. -->
 
-		<!-- Context menu external group items -->
+		<!-- Context menu editor window items -->
 		<CommandPlacement guid="CommandSetGuid" id="CmdIdToggleIntellisense" priority="0x0001" >
-			<Parent guid="CommandSetGuid" id="MenuIdEditorContextGroup"/>
+			<Parent guid="CommandSetGuid" id="GrpIdEditorWindowContext"/>
 		</CommandPlacement>
 		<CommandPlacement guid="CommandSetGuid" id="CmdIdQuerySettings" priority="0x0002" >
-			<Parent guid="CommandSetGuid" id="MenuIdEditorContextGroup"/>
+			<Parent guid="CommandSetGuid" id="GrpIdEditorWindowContext"/>
+		</CommandPlacement>
+
+		<!-- Context menu results window context select items -->
+		<CommandPlacement guid="CMDSETID_StandardCommandSet97" id="cmdidCopy" priority="0x0101" >
+			<Parent guid="CommandSetGuid" id="GrpIdResultsWindowContextSelect"/>
+		</CommandPlacement>
+		<CommandPlacement guid="CommandSetGuid" id="CmdIdCopyWithHeaders" priority="0x0102" >
+			<Parent guid="CommandSetGuid" id="GrpIdResultsWindowContextSelect"/>
+		</CommandPlacement>
+		<CommandPlacement guid="CMDSETID_StandardCommandSet97" id="cmdidSelectAll" priority="0x0103" >
+			<Parent guid="CommandSetGuid" id="GrpIdResultsWindowContextSelect"/>
+		</CommandPlacement>
+		<CommandPlacement guid="CommandSetGuid" id="CmdIdSaveResultsAs" priority="0x0104" >
+			<Parent guid="CommandSetGuid" id="GrpIdResultsWindowContextSelect"/>
+		</CommandPlacement>
+
+		<!-- Context menu results window context print items -->
+		<CommandPlacement guid="CMDSETID_StandardCommandSet97" id="cmdidPageSetup" priority="0x0101" >
+			<Parent guid="CommandSetGuid" id="GrpIdResultsWindowContextPrint"/>
+		</CommandPlacement>
+		<CommandPlacement guid="CMDSETID_StandardCommandSet97" id="cmdidPrint" priority="0x0102" >
+			<Parent guid="CommandSetGuid" id="GrpIdResultsWindowContextPrint"/>
 		</CommandPlacement>
 
 		<!-- 
-		<CommandPlacement guid="CommandSetGuid" id="MenuIdReusableGroup" priority="0xf600">
-			<Parent guid="CommandSetGuid" id="MenuIdToplevelMenu" />
+		<CommandPlacement guid="CommandSetGuid" id="GrpIdReusableWell" priority="0xf600">
+			<Parent guid="CommandSetGuid" id="MenuIdToplevel" />
 		</CommandPlacement>
 		-->
 	</CommandPlacements>
@@ -574,38 +621,38 @@
 		<!-- This is the guid used to group the menu commands together -->
 		<GuidSymbol name="CommandSetGuid" value="{C6972FD9-9586-438A-800E-1E72AC1FE4E6}">
 			<!-- 49665 -->
-			<IDSymbol name="MenuIdToplevelMenu" value="0xC201" />
+			<IDSymbol name="MenuIdToplevel" value="0xC201" />
 			<!-- 20480 -->
-			<IDSymbol name="MenuIdEditorToolbar" value="0x5000" />
+			<IDSymbol name="ToolbarIdEditorWindow" value="0x5000" />
 			<!-- 20481 unused -->
-			<IDSymbol name="MenuIdOnlineToolbar" value="0x5001" />
+			<IDSymbol name="ToolbarIdOnlineWindow" value="0x5001" />
 
 			<!-- 20736 -->
-			<IDSymbol name="MenuIdEditorToolbarGroup" value="0x5100" />
+			<IDSymbol name="GrpIdEditorToolbar" value="0x5100" />
 			<!-- 20737 unused -->
-			<IDSymbol name="MenuIdOnlineToolbarGroup" value="0x5101" />
+			<IDSymbol name="GrpIdOnlineToolbar" value="0x5101" />
 			<!-- 20738 -->
-			<IDSymbol name="MenuIdReusableGroup" value="0x5102" />
+			<IDSymbol name="GrpIdReusableWell" value="0x5102" />
 
 			<!-- 20992 -->
-			<IDSymbol name="MenuIdSeRootGroup" value="0x5200" />
+			<IDSymbol name="GrpIdSeRootContext" value="0x5200" />
 			<!-- 20993 -->
-			<IDSymbol name="MenuIdSeNodeGroup" value="0x5201" />
+			<IDSymbol name="GrpIdSeNodeContext" value="0x5201" />
 			<!-- 20994 -->
-			<IDSymbol name="MenuIdSeStaticGroup" value="0x5202" />
+			<IDSymbol name="GrpIdSeStaticContext" value="0x5202" />
 			<!-- 20995 -->
-			<IDSymbol name="MenuIdResultsToGroup" value="0x5203" />
+			<IDSymbol name="CtlrIdResultsToToolbar" value="0x5203" />
 			<!-- 20996 -->
-			<IDSymbol name="MenuIdEditorContextGroup" value="0x5204" />
 
-			<IDSymbol name="MenuIdExecuteGroup" value="0x5205" />
+			<IDSymbol name="CtlrIdExecuteToolbar" value="0x5205" />
 
-			<IDSymbol name="CtlrIdResultsToGroup" value="0x5300" />
-			<IDSymbol name="CtlrIdExecuteGroup" value="0x5301" />
+			<IDSymbol name="GrpIdResultsToController" value="0x5300" />
+			<IDSymbol name="GrpIdExecuteController" value="0x5301" />
 
-			<IDSymbol name="ContextIdExecutionSettings" value="0x5400" />
-			<IDSymbol name="ContextIdConnection" value="0x5401" />
-			<IDSymbol name="ContextIdResultsTo" value="0x5402" />
+			<IDSymbol name="GrpIdEditorWindowContext" value="0x5400" />
+			<IDSymbol name="GrpIdResultsWindowContextSelect" value="0x5401" />
+			<IDSymbol name="GrpIdResultsWindowContextPrint" value="0x5402" />
+
 			<IDSymbol name="ContextIdResultsWindow" value="0x5403" />
 			<IDSymbol name="ContextIdMessageWindow" value="0x5404" />
 			<IDSymbol name="ContextIdExecutionPlanWindow" value="0x5405" />

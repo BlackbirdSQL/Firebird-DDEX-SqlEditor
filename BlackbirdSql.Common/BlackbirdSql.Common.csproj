@@ -37,8 +37,8 @@
 	  <Compile Include="Ctl\Enums\EnDeadlockPriority.cs" />
 	  <Compile Include="Ctl\Events\BeforeOpenDocumentEventArgs.cs" />
 	  <Compile Include="Ctl\Interfaces\IBEditorTransientSettings.cs" />
-	  <Compile Include="Controls\Dialogs\FileEncodingDlg.Designer.cs">
-	    <SubType>Form</SubType>
+	  <Compile Include="Controls\Dialogs\FileEncodingDialog.Designer.cs">
+		  <DependentUpon>FileEncodingDialog.cs</DependentUpon>
 	  </Compile>
 	  <Compile Include="Ctl\Commands\SqlEditorTransactionCommitCommand.cs" />
 	  <Compile Include="Ctl\Commands\SqlEditorTransactionRollbackCommand.cs" />
@@ -369,7 +369,9 @@
 	  <Compile Include="Model\Events\StorageNotifyDelegate.cs" />
 	  <Compile Include="Controls\Events\TooltipDataNeededEventArgs.cs" />
 	  <Compile Include="Controls\Events\TooltipDataNeededEventHandler.cs" />
-	  <Compile Include="Controls\Dialogs\FileEncodingDlg.cs" />
+	  <Compile Include="Controls\Dialogs\FileEncodingDialog.cs">
+		  <SubType>Form</SubType>
+	  </Compile>
 	  <Compile Include="Controls\Grid\BlockOfCells.cs" />
 	  <Compile Include="Controls\Grid\ButtonInfo.cs" />
 	  <Compile Include="Controls\Grid\CaptureTracker.cs" />
@@ -681,7 +683,9 @@
 	    <LastGenOutput>AttributeResources.Designer.cs</LastGenOutput>
 	  </EmbeddedResource>
 	  <EmbeddedResource Include="Properties\ControlsResources.resx" />
-	  <EmbeddedResource Include="Controls\Dialogs\FileEncodingDlg.resx" />
+	  <EmbeddedResource Include="Controls\Dialogs\FileEncodingDialog.resx">
+		  <DependentUpon>FileEncodingDialog.cs</DependentUpon>
+	  </EmbeddedResource>
 	  <EmbeddedResource Include="Properties\ExceptionsResources.resx" />
 	  <EmbeddedResource Include="Properties\SqlResources.resx">
 	    <Generator>ResXFileCodeGenerator</Generator>

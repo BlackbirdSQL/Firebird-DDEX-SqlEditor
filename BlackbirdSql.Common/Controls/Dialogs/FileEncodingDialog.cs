@@ -13,10 +13,10 @@ using Microsoft.VisualStudio.Shell.Interop;
 namespace BlackbirdSql.Common.Controls.Dialogs;
 
 
-public partial class FileEncodingDlg : Form, IVsSaveOptionsDlg
+public partial class FileEncodingDialog : Form, IVsSaveOptionsDlg
 {
 
-	public FileEncodingDlg()
+	public FileEncodingDialog()
 	{
 		InitializeComponent();
 		if (!ControlUtils.IsGb18030Supported)
@@ -59,16 +59,6 @@ public partial class FileEncodingDlg : Form, IVsSaveOptionsDlg
 
 
 
-
-
-	protected override void Dispose(bool disposing)
-	{
-		if (disposing && components != null)
-		{
-			components.Dispose();
-		}
-		base.Dispose(disposing);
-	}
 
 	int IVsSaveOptionsDlg.ShowSaveOptionsDlg(uint dwReserved, IntPtr hwndDlgParent, IntPtr fileName)
 	{
