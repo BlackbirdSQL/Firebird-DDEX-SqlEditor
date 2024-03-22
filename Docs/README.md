@@ -1,6 +1,6 @@
 # BlackbirdSQL DDEX 2.0 with SqlEditor Provider for Firebird
 
-The Firebird DDEX 2.0 Provider and SqlEditor with the *"look and feel"* of Microsoft's SqlServer DDEX and SqlEditor extensions.
+The Ultimate Firebird DDEX 2.0 Provider and SqlEditor with the *"look and feel"* of Microsoft's SqlServer DDEX and SqlEditor extensions.
 
 [Download BlackbirdSql DDEX with SqlEditor Extension (Release v11.2.0.0)](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/releases/download/v11.2.0.0/BlackbirdSql.VisualStudio.Ddex.vsix) ([Change Log](https://github.com/BlackbirdSQL/Firebird-DDEX-SqlEditor/blob/master/Docs/CHANGELOG.md))
 
