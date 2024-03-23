@@ -466,7 +466,7 @@ public class Moniker
 		{
 			for (int i = 2; i < 1000; i++)
 			{
-				if (!RdtManager.IsFileInRdt(fullname))
+				if (!RdtManager.IsMonikerRegistered(fullname))
 					break;
 
 				if (i > 100)
@@ -474,8 +474,9 @@ public class Moniker
 				else
 					_UniqueId = i;
 
-				result = string.Format(CultureInfo.InvariantCulture, "{0}_{1}{2}", filename, _UniqueId, extension);
+				fullname = string.Format(CultureInfo.InvariantCulture, "{0}_{1}{2}", filename, _UniqueId, extension);
 			}
+			result = fullname;
 		}
 
 		// Tracer.Trace(GetType(), "BuildDocumentMoniker()", "Result DocumentMoniker: {0}", result);

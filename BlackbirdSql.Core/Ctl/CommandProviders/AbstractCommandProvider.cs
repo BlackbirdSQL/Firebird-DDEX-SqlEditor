@@ -507,6 +507,8 @@ public abstract class AbstractCommandProvider : DataViewCommandProvider
 
 			CsbAgent csa = RctManager.CloneRegistered(Site.ExplorerConnection.ConnectionNode);
 
+			// Tracer.Trace(GetType(), "OnNewSqlQuery()", "csa.DatasetKey: {0}.", csa.DatasetKey);
+
 			service.NewSqlQuery(csa.DatasetKey);
 		}
 	}

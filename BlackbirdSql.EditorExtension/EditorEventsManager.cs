@@ -662,7 +662,7 @@ public sealed class EditorEventsManager : AbstractEventsManager
 		// Break the link between auxdocdata and the explorer moniker, if it exists, because this is now a disk file.
 		if (auxDocData.ExplorerMoniker != null)
 		{
-			DesignerExplorerServices.MonikerCsaTable.Remove(auxDocData.ExplorerMoniker);
+			RdtManager.MonikerCsaTable.Remove(auxDocData.ExplorerMoniker);
 			auxDocData.ExplorerMoniker = null;
 		}
 

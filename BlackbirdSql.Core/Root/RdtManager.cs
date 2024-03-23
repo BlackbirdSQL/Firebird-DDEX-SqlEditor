@@ -47,7 +47,42 @@ public sealed class RdtManager : AbstractRdtManager
 	}
 
 
+	public static string ExplorerMonikerStack
+	{
+		get
+		{
+			if (_ExplorerMonikerEntry == -1)
+				return null;
 
+			string moniker = _ExplorerMonikers[_ExplorerMonikerEntry];
+
+			_ExplorerMonikers.Remove(_ExplorerMonikerEntry);
+
+			_ExplorerMonikerEntry++;
+
+			if (_ExplorerMonikerEntry > _ExplorerMonikerSeed)
+			{
+				_ExplorerMonikerEntry = _ExplorerMonikerSeed = -1;
+				_ExplorerMonikers = null;
+			}
+
+			return moniker;
+		}
+		set
+		{
+			_ExplorerMonikers ??= [];
+
+			if (_ExplorerMonikerEntry == -1)
+				_ExplorerMonikerEntry = 0;
+
+			_ExplorerMonikerSeed++;
+
+			_ExplorerMonikers[_ExplorerMonikerSeed] = value;
+
+		}
+	}
+
+	public static Dictionary<string, object> MonikerCsaTable => _MonikerCsaTable ??= [];
 
 	public static IEnumerable<RunningDocumentInfo> Enumerator => Instance.Rdt;
 
@@ -139,6 +174,14 @@ public sealed class RdtManager : AbstractRdtManager
 
 	public static bool IsFileInRdt(string mkDocument) =>
 		Instance.IsFileInRdtImpl(mkDocument);
+
+	public static bool IsMonikerRegistered(string mkDocument)
+	{
+		if (_MonikerCsaTable == null)
+			return false;
+
+		return _MonikerCsaTable.ContainsKey(mkDocument);
+	}
 
 
 	public static int QueryCloseRunningDocument(string pszMkDocument, out int pfFoundAndClosed) =>

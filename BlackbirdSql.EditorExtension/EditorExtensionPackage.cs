@@ -490,17 +490,17 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 			if (_AuxiliaryDocDataTable == null || !_AuxiliaryDocDataTable.TryGetValue(docData, out AuxiliaryDocData auxDocData))
 			{
 				// Accessing the stack and pop.
-				string explorerMoniker = DesignerExplorerServices.ExplorerMonikerStack;
+				string explorerMoniker = RdtManager.ExplorerMonikerStack;
 
 				// Tracer.Trace(GetType(), "EnsureAuxilliaryDocData()", "explorerMoniker: {0}, documentMoniker: {1}.", explorerMoniker, documentMoniker);
 
 				auxDocData = new AuxiliaryDocData(documentMoniker, explorerMoniker, docData);
 				// hierarchy.GetSite(out Microsoft.VisualStudio.OLE.Interop.IServiceProvider ppSP);
 
-				if (explorerMoniker != null && DesignerExplorerServices.MonikerCsaTable.TryGetValue(explorerMoniker, out object csaObject))
+				if (explorerMoniker != null && RdtManager.MonikerCsaTable.TryGetValue(explorerMoniker, out object csaObject))
 				{
 					auxDocData.SetUserDataCsb((System.Data.Common.DbConnectionStringBuilder)csaObject);
-					DesignerExplorerServices.MonikerCsaTable[explorerMoniker] = null;
+					RdtManager.MonikerCsaTable[explorerMoniker] = null;
 				}
 				// Not point looking because This will always be null for us
 				IBSqlEditorStrategyProvider sqlEditorStrategyProvider = null;
@@ -762,7 +762,7 @@ public abstract class EditorExtensionPackage : AbstractCorePackage, IBEditorPack
 
 
 				if (auxDocData.ExplorerMoniker != null)
-					DesignerExplorerServices.MonikerCsaTable.Remove(auxDocData.ExplorerMoniker);
+					RdtManager.MonikerCsaTable.Remove(auxDocData.ExplorerMoniker);
 
 				_AuxiliaryDocDataTable.Remove(docData);
 				auxDocData?.Dispose();

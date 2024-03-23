@@ -38,6 +38,13 @@ public abstract class AbstractRdtManager : IDisposable
 
 	private IVsUIShell _UiShell = null;
 
+	protected static int _ExplorerMonikerEntry = -1;
+	protected static int _ExplorerMonikerSeed = -1;
+
+	protected static Dictionary<int, string> _ExplorerMonikers = null;
+	protected static Dictionary<string, object> _MonikerCsaTable = null;
+
+
 	private readonly Dictionary<uint, int> _KeepAliveDocCookies = [];
 
 	private readonly object _KeepAliveLockLocal = new object();

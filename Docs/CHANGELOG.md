@@ -2,6 +2,12 @@
 
 ## Change log
 
+### v11.2.0.3
+__New/ Enhancements__</br>
+-- None.</br>
+__Fixes__</br>
+-- Fixed bug where multiple unique new queries were not being registered in the Rdt.
+
 ### v11.2.0.2
 __New/ Enhancements__</br>
 -- None.</br>

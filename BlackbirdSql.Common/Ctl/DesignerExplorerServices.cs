@@ -39,48 +39,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 	{
 	}
 
-	private static int _ExplorerMonikerEntry = -1;
-	private static int _ExplorerMonikerSeed = -1;
-	private static Dictionary<int, string> _ExplorerMonikers = null;
-	private static Dictionary<string, object> _MonikerCsaTable = null;
 
-
-	public static string ExplorerMonikerStack
-	{
-		get
-		{
-			if (_ExplorerMonikerEntry == -1)
-				return null;
-
-			string moniker = _ExplorerMonikers[_ExplorerMonikerEntry];
-
-			_ExplorerMonikers.Remove(_ExplorerMonikerEntry);
-
-			_ExplorerMonikerEntry++;
-
-			if (_ExplorerMonikerEntry > _ExplorerMonikerSeed)
-			{
-				_ExplorerMonikerEntry = _ExplorerMonikerSeed = -1;
-				_ExplorerMonikers = null;
-			}
-
-			return moniker;
-		}
-		set
-		{
-			_ExplorerMonikers ??= [];
-
-			if (_ExplorerMonikerEntry == -1)
-				_ExplorerMonikerEntry = 0;
-
-			_ExplorerMonikerSeed++;
-
-			_ExplorerMonikers[_ExplorerMonikerSeed] = value;
-
-		}
-	}
-
-	public static Dictionary<string, object> MonikerCsaTable => _MonikerCsaTable ??= [];
 
 
 	// Microsoft.VisualStudio.Data.Tools.Package, Version=17.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
@@ -170,7 +129,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 
 		uint documentCookie = 0;
 
-		if (MonikerCsaTable.ContainsKey(explorerMoniker))
+		if (RdtManager.MonikerCsaTable.ContainsKey(explorerMoniker))
 		{
 			foreach (KeyValuePair<object, AuxiliaryDocData> pair in ((IBEditorPackage)ApcManager.DdexPackage).AuxiliaryDocDataTable)
 			{
@@ -185,7 +144,7 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 			}
 
 			if (documentCookie == 0)
-				MonikerCsaTable.Remove(explorerMoniker);
+				RdtManager.MonikerCsaTable.Remove(explorerMoniker);
 		}
 
 		if (documentCookie != 0)
@@ -245,16 +204,16 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 			streamWriter.Close();
 			streamWriter = null;
 
-			ExplorerMonikerStack = explorerMoniker;
-			MonikerCsaTable.Add(explorerMoniker, csa);
+			RdtManager.ExplorerMonikerStack = explorerMoniker;
+			RdtManager.MonikerCsaTable.Add(explorerMoniker, csa);
 
 			OpenAsMiscellaneousFile(tempFilename, filename + SystemData.Extension, new Guid(SystemData.DslEditorFactoryGuid),
 				string.Empty, VSConstants.LOGVIEWID_Primary);
 		}
 		catch
 		{
-			_ = ExplorerMonikerStack;
-			MonikerCsaTable.Remove(explorerMoniker);
+			_ = RdtManager.ExplorerMonikerStack;
+			RdtManager.MonikerCsaTable.Remove(explorerMoniker);
 		}
 		finally
 		{
@@ -333,27 +292,15 @@ public class DesignerExplorerServices : AbstractDesignerServices, IBDesignerExpl
 		if (identifierList != null)
 			identifierArray = new List<string>(identifierList);
 
+
+		// Tracer.Trace(typeof(DesignerExplorerServices), "OpenNewQueryEditor()", "csa.DataSource: {0}, csa.Database: {1}", csa.DataSource, csa.Database);
+
 		string mkDocument = Moniker.BuildDocumentMoniker(csa.DataSource, csa.Database, elementType, ref identifierArray, targetType, true);
-		string newMoniker = null;
 
-		for (int i = 0; i < 9999; i++)
-		{
-			if (i == 0)
-				newMoniker = mkDocument;
-			else
-				newMoniker = mkDocument + "." + i;
-
-			if (!MonikerCsaTable.ContainsKey(newMoniker))
-				break;
-		}
-
-		RaiseBeforeOpenDocument(newMoniker, csa, identifierArray, objectType, targetType, S_BeforeOpenDocumentHandler);
-
-		// OpenMiscDocument(mkDocument, csa, true, false, editorFactory, out uint docCookie, out IVsWindowFrame frame,
-		//	out bool editorAlreadyOpened, out bool documentAlreadyLoaded, physicalViewName);
+		RaiseBeforeOpenDocument(mkDocument, csa, identifierArray, objectType, targetType, S_BeforeOpenDocumentHandler);
 
 
-		bool editorAlreadyOpened = !OpenMiscellaneousSqlFile(newMoniker, null, targetType, csa);
+		bool editorAlreadyOpened = !OpenMiscellaneousSqlFile(mkDocument, null, targetType, csa);
 
 		ExecuteDocumentLoadedCallback(documentLoadedCallback, csa, editorAlreadyOpened);
 

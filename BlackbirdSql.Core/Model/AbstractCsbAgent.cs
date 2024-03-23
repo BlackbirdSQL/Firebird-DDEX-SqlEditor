@@ -1339,8 +1339,7 @@ public abstract class AbstractCsbAgent : FbConnectionStringBuilder
 
 		if (@object == null)
 		{
-			COMException ex = new($"Connection node object for node {node.ExplorerConnection.DisplayName} is null");
-			Diag.Dug(ex);
+			ConnectionString = node.ExplorerConnection.DecryptedConnectionString();
 			return;
 		}
 
